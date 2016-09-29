@@ -1,0 +1,143 @@
+\hypertarget{class_i3_d_1_1ld_houh}{}\section{Referencia de la Clase I3D\+:\+:ld\+Houh}
+\label{class_i3_d_1_1ld_houh}\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+
+
+Detector de lineas Hough.  
+
+
+
+
+{\ttfamily \#include $<$Line\+Detector.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:ld\+Houh\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1ld_houh}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1ld_houh_ad9387cc250dc409bd8ab5e0768f0e8fb}{ld\+Houh} (int threshold=50, const cv\+::\+Scalar \&at=cv\+::\+Scalar(0, C\+V\+\_\+\+PI/2))
+\begin{DoxyCompactList}\small\item\em Constructora de la clase \hyperlink{class_i3_d_1_1ld_houh}{ld\+Houh}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1ld_houh_a2f0c3dd6be7e15fc7fcafdbbf0520cf8}{$\sim$ld\+Houh} ()
+\begin{DoxyCompactList}\small\item\em Destructora de la clase \hyperlink{class_i3_d_1_1ld_houh}{ld\+Houh}. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_houh_a17c6836029eeb9448e6bd661c1aac16c}{run} (cv\+::\+Mat \&image) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformada de Hough para lineas. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_houh_a548494c74a114c679ddc050dc9fd991a}{run} (cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformada de Hough para lineas. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1ld_houh_ae7652d43e53ac59b4bdbca7fd2de3bdb}{set\+Threshold} (int threshold)
+\begin{DoxyCompactList}\small\item\em Establece el valor de threshold. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Detector de lineas Hough. 
+
+Clase para la detección de lineas mediante la transformada de Hough para lineas. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}!ld\+Houh@{ld\+Houh}}
+\index{ld\+Houh@{ld\+Houh}!I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+\subsubsection[{\texorpdfstring{ld\+Houh(int threshold=50, const cv\+::\+Scalar \&at=cv\+::\+Scalar(0, C\+V\+\_\+\+P\+I/2))}{ldHouh(int threshold=50, const cv::Scalar &at=cv::Scalar(0, CV_PI/2))}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+Houh\+::ld\+Houh (
+\begin{DoxyParamCaption}
+\item[{int}]{threshold = {\ttfamily 50}, }
+\item[{const cv\+::\+Scalar \&}]{at = {\ttfamily cv\+:\+:Scalar(0,~CV\+\_\+PI~/~2)}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_houh_ad9387cc250dc409bd8ab5e0768f0e8fb}{}\label{class_i3_d_1_1ld_houh_ad9387cc250dc409bd8ab5e0768f0e8fb}
+
+
+Constructora de la clase \hyperlink{class_i3_d_1_1ld_houh}{ld\+Houh}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em threshold} & \\
+\hline
+\mbox{\tt in}  & {\em at} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}!````~ld\+Houh@{$\sim$ld\+Houh}}
+\index{````~ld\+Houh@{$\sim$ld\+Houh}!I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+\subsubsection[{\texorpdfstring{$\sim$ld\+Houh()}{~ldHouh()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+Houh\+::$\sim$ld\+Houh (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_houh_a2f0c3dd6be7e15fc7fcafdbbf0520cf8}{}\label{class_i3_d_1_1ld_houh_a2f0c3dd6be7e15fc7fcafdbbf0520cf8}
+
+
+Destructora de la clase \hyperlink{class_i3_d_1_1ld_houh}{ld\+Houh}. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image) override}{run(cv::Mat &image) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+Houh\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_houh_a17c6836029eeb9448e6bd661c1aac16c}{}\label{class_i3_d_1_1ld_houh_a17c6836029eeb9448e6bd661c1aac16c}
+
+
+Calcula la transformada de Hough para lineas. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_ad439cb59972938259f6b36bcdbb644b7}{I3\+D\+::\+Line\+Detector}.
+
+\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override}{run(cv::Mat &image, const cv::Scalar &angletol) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+Houh\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image, }
+\item[{const cv\+::\+Scalar \&}]{angletol}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_houh_a548494c74a114c679ddc050dc9fd991a}{}\label{class_i3_d_1_1ld_houh_a548494c74a114c679ddc050dc9fd991a}
+
+
+Calcula la transformada de Hough para lineas. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas \\
+\hline
+\mbox{\tt in}  & {\em angletol} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_abc00c6e15e2386a32720886d60a20ccd}{I3\+D\+::\+Line\+Detector}.
+
+\index{I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}!set\+Threshold@{set\+Threshold}}
+\index{set\+Threshold@{set\+Threshold}!I3\+D\+::ld\+Houh@{I3\+D\+::ld\+Houh}}
+\subsubsection[{\texorpdfstring{set\+Threshold(int threshold)}{setThreshold(int threshold)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::ld\+Houh\+::set\+Threshold (
+\begin{DoxyParamCaption}
+\item[{int}]{threshold}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_houh_ae7652d43e53ac59b4bdbca7fd2de3bdb}{}\label{class_i3_d_1_1ld_houh_ae7652d43e53ac59b4bdbca7fd2de3bdb}
+
+
+Establece el valor de threshold. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em threshold} & threshold \\
+\hline
+\end{DoxyParams}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_line_detector_8h}{Line\+Detector.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{linedetector_8cpp}{linedetector.\+cpp}\end{DoxyCompactItemize}

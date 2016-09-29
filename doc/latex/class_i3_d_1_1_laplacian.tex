@@ -1,0 +1,124 @@
+\hypertarget{class_i3_d_1_1_laplacian}{}\section{Referencia de la Clase I3D\+:\+:Laplacian}
+\label{class_i3_d_1_1_laplacian}\index{I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}}
+
+
+Laplaciano Calcula el laplaciano de un imagen.  
+
+
+
+
+{\ttfamily \#include $<$Img\+Processing.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Laplacian\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_laplacian}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_laplacian_a660abad9d6ad7cbe96544cca51d32e40}{Laplacian} (int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+LT)
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_i3_d_1_1_laplacian}{Laplacian}. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_laplacian_a7e14ea57d17b73a74058083a809fa5c3}{execute} (const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override
+\begin{DoxyCompactList}\small\item\em Ejecuta el proceso. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_laplacian_a5ac3f547a4832a13059e12941328bf58}{set\+Parameters} (int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+LT)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Laplaciano Calcula el laplaciano de un imagen. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}!Laplacian@{Laplacian}}
+\index{Laplacian@{Laplacian}!I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}}
+\subsubsection[{\texorpdfstring{Laplacian(int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+L\+T)}{Laplacian(int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv::BORDER_DEFAULT)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Laplacian\+::\+Laplacian (
+\begin{DoxyParamCaption}
+\item[{int}]{ddepth, }
+\item[{int}]{ksize, }
+\item[{double}]{scale = {\ttfamily 1}, }
+\item[{double}]{delta = {\ttfamily 0}, }
+\item[{int}]{bordertype = {\ttfamily cv\+:\+:BORDER\+\_\+DEFAULT}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_laplacian_a660abad9d6ad7cbe96544cca51d32e40}{}\label{class_i3_d_1_1_laplacian_a660abad9d6ad7cbe96544cca51d32e40}
+
+
+\hyperlink{class_i3_d_1_1_laplacian}{Laplacian}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ddepth} & Profundidad deseada de la imagen de destino \\
+\hline
+\mbox{\tt in}  & {\em ksize} & Apertura del filtro \\
+\hline
+\mbox{\tt in}  & {\em scale} & Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala. \\
+\hline
+\mbox{\tt in}  & {\em delta} & Valor opcional añadido a los píxeles filtrados \\
+\hline
+\mbox{\tt in}  & {\em bordertype} & Método de extrapolación (cv\+::\+Border\+Types) \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}!execute@{execute}}
+\index{execute@{execute}!I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}}
+\subsubsection[{\texorpdfstring{execute(const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override}{execute(const cv::Mat &matIn, cv::Mat *matOut) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::\+Laplacian\+::execute (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Mat \&}]{mat\+In, }
+\item[{cv\+::\+Mat $\ast$}]{mat\+Out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_laplacian_a7e14ea57d17b73a74058083a809fa5c3}{}\label{class_i3_d_1_1_laplacian_a7e14ea57d17b73a74058083a809fa5c3}
+
+
+Ejecuta el proceso. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em mat\+In} & Imagen de entrada \\
+\hline
+\mbox{\tt out}  & {\em mat\+Out} & Imagen de salida \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error. Si los procesos se ejecutan correctamente devuelve 0. 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_img_processing_a74195f05bbf034566e9ff6e10f3af4c9}{I3\+D\+::\+Img\+Processing}.
+
+\index{I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!I3\+D\+::\+Laplacian@{I3\+D\+::\+Laplacian}}
+\subsubsection[{\texorpdfstring{set\+Parameters(int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+L\+T)}{setParameters(int ddepth, int ksize, double scale=1, double delta=0, int bordertype=cv::BORDER_DEFAULT)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Laplacian\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{int}]{ddepth, }
+\item[{int}]{ksize, }
+\item[{double}]{scale = {\ttfamily 1}, }
+\item[{double}]{delta = {\ttfamily 0}, }
+\item[{int}]{bordertype = {\ttfamily cv\+:\+:BORDER\+\_\+DEFAULT}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_laplacian_a5ac3f547a4832a13059e12941328bf58}{}\label{class_i3_d_1_1_laplacian_a5ac3f547a4832a13059e12941328bf58}
+
+
+Establece los parámetros. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ddepth} & Profundidad deseada de la imagen de destino \\
+\hline
+\mbox{\tt in}  & {\em ksize} & Apertura del filtro \\
+\hline
+\mbox{\tt in}  & {\em scale} & Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala. \\
+\hline
+\mbox{\tt in}  & {\em delta} & Valor opcional añadido a los píxeles filtrados \\
+\hline
+\mbox{\tt in}  & {\em bordertype} & Método de extrapolación (cv\+::\+Border\+Types) \\
+\hline
+\end{DoxyParams}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8h}{Img\+Processing.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8cpp}{Img\+Processing.\+cpp}\end{DoxyCompactItemize}

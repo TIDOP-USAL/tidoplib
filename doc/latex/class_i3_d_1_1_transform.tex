@@ -1,0 +1,248 @@
+\hypertarget{class_i3_d_1_1_transform}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Transform$<$ T $>$}
+\label{class_i3_d_1_1_transform}\index{I3\+D\+::\+Transform$<$ T $>$@{I3\+D\+::\+Transform$<$ T $>$}}
+
+
+Clase base para transformaciones.  
+
+
+
+
+{\ttfamily \#include $<$transform.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Transform$<$ T $>$\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=1.320755cm]{class_i3_d_1_1_transform}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_transform_a65f115efcbc52cec0dad27664e2e48c3}{Transform} (int n\+\_\+min=0, \hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} trf\+Type=\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a5b39c8b553c821e7cddc6da64b5bd2ee}{transform\+\_\+type\+::\+D\+E\+F\+A\+U\+LT})
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+virtual \hyperlink{class_i3_d_1_1_transform_a7b3aa01e8b48ee45604ebb9cc1e0ed56}{$\sim$\+Transform} ()
+\begin{DoxyCompactList}\small\item\em Destructora. \end{DoxyCompactList}\item 
+virtual bool \hyperlink{class_i3_d_1_1_transform_a909a4033f9fab3f091b433b9e2261208}{compute} (const std\+::vector$<$ T $>$ \&v1, const std\+::vector$<$ T $>$ \&v2)=0
+\begin{DoxyCompactList}\small\item\em Calcula los parámetros de transformación. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_transform_ab02fc57452ec9edeb339242b682dc829}{is\+Number\+Of\+Points\+Valid} (int npoints) const 
+\begin{DoxyCompactList}\small\item\em Determina si el numero de puntos son suficientes para calcular la transformación. \end{DoxyCompactList}\item 
+virtual void \hyperlink{class_i3_d_1_1_transform_adbec7381bfc66b4a766a00fdf16de0fe}{transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  =0
+\begin{DoxyCompactList}\small\item\em Aplica la transformación. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_transform_ad0a61ba37895c3b70e47b9e66a69bbbd}{min\+Number\+Of\+Points} ()
+\begin{DoxyCompactList}\small\item\em Número mínimo de puntos necesario para la transformación. \end{DoxyCompactList}\item 
+\hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} \hyperlink{class_i3_d_1_1_transform_aaed30aa2e0b864a338c0bac5ccf3d963}{get\+Transform\+Type} ()
+\begin{DoxyCompactList}\small\item\em Tipo de transformación. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Tipos protegidos}
+\begin{DoxyCompactItemize}
+\item 
+typedef T\+::value\+\_\+type \hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type}
+\end{DoxyCompactItemize}
+\subsection*{Métodos protegidos}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T2 $>$ }\\void \hyperlink{class_i3_d_1_1_transform_aa4d27a52571d16156699589050ffd7fc}{format\+Vector\+Out} (const std\+::vector$<$ T2 $>$ \&in, std\+::vector$<$ T2 $>$ $\ast$out) const 
+\begin{DoxyCompactList}\small\item\em Formatea de forma adecuada el vector de salida. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Atributos protegidos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} \hyperlink{class_i3_d_1_1_transform_a1d5c0d6ea45417608b00316a08f164d7}{m\+Trf\+Type}
+\begin{DoxyCompactList}\small\item\em Tipo de transformación. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_transform_a087716ea2e7fa31127003e50479ed01e}{m\+Min\+Point}
+\begin{DoxyCompactList}\small\item\em Número mínimo de puntos necesario para la transformación. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_transform_a53fc627243795344379b92d0a48a31a9}{m\+Dimensions}
+\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Transform$<$ T $>$}
+
+Clase base para transformaciones. 
+
+\subsection{Documentación de los \textquotesingle{}Typedef\textquotesingle{} miembros de la clase}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!sub\+\_\+type@{sub\+\_\+type}}
+\index{sub\+\_\+type@{sub\+\_\+type}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{sub\+\_\+type}{sub_type}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ typedef T\+::value\+\_\+type {\bf I3\+D\+::\+Transform}$<$ T $>$\+::{\bf sub\+\_\+type}\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{}\label{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}
+
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!Transform@{Transform}}
+\index{Transform@{Transform}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{Transform(int n\+\_\+min=0, transform\+\_\+type trf\+Type=transform\+\_\+type\+::\+D\+E\+F\+A\+U\+L\+T)}{Transform(int n_min=0, transform_type trfType=transform_type::DEFAULT)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Transform}$<$ T $>$\+::{\bf Transform} (
+\begin{DoxyParamCaption}
+\item[{int}]{n\+\_\+min = {\ttfamily 0}, }
+\item[{{\bf transform\+\_\+type}}]{trf\+Type = {\ttfamily {\bf transform\+\_\+type\+::\+D\+E\+F\+A\+U\+LT}}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_transform_a65f115efcbc52cec0dad27664e2e48c3}{}\label{class_i3_d_1_1_transform_a65f115efcbc52cec0dad27664e2e48c3}
+
+
+Constructor. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em n\+\_\+min} & Número mínimo de puntos necesario para la transformación \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!````~Transform@{$\sim$\+Transform}}
+\index{````~Transform@{$\sim$\+Transform}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{$\sim$\+Transform()}{~Transform()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual {\bf I3\+D\+::\+Transform}$<$ T $>$\+::$\sim${\bf Transform} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_transform_a7b3aa01e8b48ee45604ebb9cc1e0ed56}{}\label{class_i3_d_1_1_transform_a7b3aa01e8b48ee45604ebb9cc1e0ed56}
+
+
+Destructora. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!compute@{compute}}
+\index{compute@{compute}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&v1, const std\+::vector$<$ T $>$ \&v2)=0}{compute(const std::vector< T > &v1, const std::vector< T > &v2)=0}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual bool {\bf I3\+D\+::\+Transform}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{v1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{v2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{class_i3_d_1_1_transform_a909a4033f9fab3f091b433b9e2261208}{}\label{class_i3_d_1_1_transform_a909a4033f9fab3f091b433b9e2261208}
+
+
+Calcula los parámetros de transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementado en \hyperlink{group__trf3_d_group_gaf6c9d07daaca435365b84688326885e3}{I3\+D\+::\+Helmert3\+D$<$ T $>$}, \hyperlink{class_i3_d_1_1_transform3_d_a3caf93312fc1b3b2ce9f6e88edd9316b}{I3\+D\+::\+Transform3\+D$<$ T $>$}, \hyperlink{group__trf2_d_group_gaae888e9e90db1050898b63386252fc88}{I3\+D\+::\+Projective$<$ T $>$}, \hyperlink{group__trf2_d_group_gabe12d714c522dd1bf40f05f28c5aafe0}{I3\+D\+::\+Afin$<$ T $>$}, \hyperlink{group__trf2_d_group_ga300279dee0a002835c25322bd2ea9398}{I3\+D\+::\+Helmert2\+D$<$ T $>$}, \hyperlink{group__trf2_d_group_gae7637f88523deb1879cf8a712820d12e}{I3\+D\+::\+Rotation$<$ T $>$}, \hyperlink{group__trf2_d_group_ga8cab577e50c525caed001caec42a70a6}{I3\+D\+::\+Translate$<$ T $>$}, \hyperlink{group__trf2_d_group_gaf4d7f0809edd08cc847f3df1db43055e}{I3\+D\+::\+Trf\+Perspective$<$ T $>$}, \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$} y \hyperlink{group__trf_group_ga30e6b58e89d4ad3657e1b6a74edc22cc}{I3\+D\+::\+Trf\+Multiple$<$ T $>$}.
+
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!format\+Vector\+Out@{format\+Vector\+Out}}
+\index{format\+Vector\+Out@{format\+Vector\+Out}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{format\+Vector\+Out(const std\+::vector$<$ T2 $>$ \&in, std\+::vector$<$ T2 $>$ $\ast$out) const }{formatVectorOut(const std::vector< T2 > &in, std::vector< T2 > *out) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ template$<$typename T2 $>$ void {\bf I3\+D\+::\+Transform}$<$ T $>$\+::format\+Vector\+Out (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T2 $>$ \&}]{in, }
+\item[{std\+::vector$<$ T2 $>$ $\ast$}]{out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [protected]}}\hypertarget{class_i3_d_1_1_transform_aa4d27a52571d16156699589050ffd7fc}{}\label{class_i3_d_1_1_transform_aa4d27a52571d16156699589050ffd7fc}
+
+
+Formatea de forma adecuada el vector de salida. 
+
+Prepara el vector de puntos de salida redimensionandolo al tamaño adecuado y limpiando su contenido si ya tenia datos. En caso de que se utilice el mismo vector de entrada y de salida no hace nada. 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!get\+Transform\+Type@{get\+Transform\+Type}}
+\index{get\+Transform\+Type@{get\+Transform\+Type}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{get\+Transform\+Type()}{getTransformType()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf transform\+\_\+type} {\bf I3\+D\+::\+Transform}$<$ T $>$\+::get\+Transform\+Type (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_transform_aaed30aa2e0b864a338c0bac5ccf3d963}{}\label{class_i3_d_1_1_transform_aaed30aa2e0b864a338c0bac5ccf3d963}
+
+
+Tipo de transformación. 
+
+\begin{DoxyReturn}{Devuelve}
+Tipo de transformación 
+\end{DoxyReturn}
+\begin{DoxySeeAlso}{Ver también}
+\hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} 
+\end{DoxySeeAlso}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!is\+Number\+Of\+Points\+Valid@{is\+Number\+Of\+Points\+Valid}}
+\index{is\+Number\+Of\+Points\+Valid@{is\+Number\+Of\+Points\+Valid}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{is\+Number\+Of\+Points\+Valid(int npoints) const }{isNumberOfPointsValid(int npoints) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Transform}$<$ T $>$\+::is\+Number\+Of\+Points\+Valid (
+\begin{DoxyParamCaption}
+\item[{int}]{npoints}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_transform_ab02fc57452ec9edeb339242b682dc829}{}\label{class_i3_d_1_1_transform_ab02fc57452ec9edeb339242b682dc829}
+
+
+Determina si el numero de puntos son suficientes para calcular la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em npoints} & Número de puntos para calcular la transformación \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si son puntos suficientes 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!min\+Number\+Of\+Points@{min\+Number\+Of\+Points}}
+\index{min\+Number\+Of\+Points@{min\+Number\+Of\+Points}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{min\+Number\+Of\+Points()}{minNumberOfPoints()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ int {\bf I3\+D\+::\+Transform}$<$ T $>$\+::min\+Number\+Of\+Points (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_transform_ad0a61ba37895c3b70e47b9e66a69bbbd}{}\label{class_i3_d_1_1_transform_ad0a61ba37895c3b70e47b9e66a69bbbd}
+
+
+Número mínimo de puntos necesario para la transformación. 
+
+\begin{DoxyReturn}{Devuelve}
+Número mínimo de puntos 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!transform@{transform}}
+\index{transform@{transform}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  =0}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  =0}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ virtual void {\bf I3\+D\+::\+Transform}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [pure virtual]}}\hypertarget{class_i3_d_1_1_transform_adbec7381bfc66b4a766a00fdf16de0fe}{}\label{class_i3_d_1_1_transform_adbec7381bfc66b4a766a00fdf16de0fe}
+
+
+Aplica la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa (por defecto) \\
+\hline
+\end{DoxyParams}
+
+
+Implementado en \hyperlink{group__trf3_d_group_ga986e7df721d9a5bb12a0eed3ab10f419}{I3\+D\+::\+Helmert3\+D$<$ T $>$}, \hyperlink{class_i3_d_1_1_transform3_d_a229db14f7cd732f5d9ecf01be5ea8bf5}{I3\+D\+::\+Transform3\+D$<$ T $>$}, \hyperlink{group__trf2_d_group_ga9339dfc7f978fa6bbb9e2233930e8a3c}{I3\+D\+::\+Projective$<$ T $>$}, \hyperlink{group__trf2_d_group_gae1b65d232072a70d58ec72492a430521}{I3\+D\+::\+Afin$<$ T $>$}, \hyperlink{group__trf2_d_group_gab7354b67b291bf01b3fd045578598fb1}{I3\+D\+::\+Helmert2\+D$<$ T $>$}, \hyperlink{group__trf2_d_group_ga0032788395928aa7419d506981ef03d3}{I3\+D\+::\+Rotation$<$ T $>$}, \hyperlink{group__trf2_d_group_ga1e3ba2120da67c8c4606681c4b82f709}{I3\+D\+::\+Translate$<$ T $>$}, \hyperlink{group__trf2_d_group_ga0742db3f66df991a7e4a2d1d91d1a783}{I3\+D\+::\+Trf\+Perspective$<$ T $>$}, \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$} y \hyperlink{group__trf_group_gad8eb1ca9e9b9c6e6d30f1f1b15dee818}{I3\+D\+::\+Trf\+Multiple$<$ T $>$}.
+
+
+
+\subsection{Documentación de los datos miembro}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!m\+Dimensions@{m\+Dimensions}}
+\index{m\+Dimensions@{m\+Dimensions}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{m\+Dimensions}{mDimensions}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ int {\bf I3\+D\+::\+Transform}$<$ T $>$\+::m\+Dimensions\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{class_i3_d_1_1_transform_a53fc627243795344379b92d0a48a31a9}{}\label{class_i3_d_1_1_transform_a53fc627243795344379b92d0a48a31a9}
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!m\+Min\+Point@{m\+Min\+Point}}
+\index{m\+Min\+Point@{m\+Min\+Point}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{m\+Min\+Point}{mMinPoint}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ int {\bf I3\+D\+::\+Transform}$<$ T $>$\+::m\+Min\+Point\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{class_i3_d_1_1_transform_a087716ea2e7fa31127003e50479ed01e}{}\label{class_i3_d_1_1_transform_a087716ea2e7fa31127003e50479ed01e}
+
+
+Número mínimo de puntos necesario para la transformación. 
+
+\index{I3\+D\+::\+Transform@{I3\+D\+::\+Transform}!m\+Trf\+Type@{m\+Trf\+Type}}
+\index{m\+Trf\+Type@{m\+Trf\+Type}!I3\+D\+::\+Transform@{I3\+D\+::\+Transform}}
+\subsubsection[{\texorpdfstring{m\+Trf\+Type}{mTrfType}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf transform\+\_\+type} {\bf I3\+D\+::\+Transform}$<$ T $>$\+::m\+Trf\+Type\hspace{0.3cm}{\ttfamily [protected]}}\hypertarget{class_i3_d_1_1_transform_a1d5c0d6ea45417608b00316a08f164d7}{}\label{class_i3_d_1_1_transform_a1d5c0d6ea45417608b00316a08f164d7}
+
+
+Tipo de transformación. 
+
+\begin{DoxySeeAlso}{Ver también}
+\hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} 
+\end{DoxySeeAlso}
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{transform_8h}{transform.\+h}\end{DoxyCompactItemize}

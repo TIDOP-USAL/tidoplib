@@ -1,0 +1,621 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.11"/>
+<title>Tidop Lib: Referencia de la plantilla de la Clase I3D::Transform&lt; T &gt;</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="navtreedata.js"></script>
+<script type="text/javascript" src="navtree.js"></script>
+<script type="text/javascript">
+  $(document).ready(initResizable);
+  $(window).load(resizeHeight);
+</script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { init_search(); });
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td id="projectlogo"><img alt="Logo" src="Tidop_en.png"/></td>
+  <td id="projectalign" style="padding-left: 0.5em;">
+   <div id="projectname">Tidop Lib
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Generado por Doxygen 1.8.11 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Buscar');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Página&#160;principal</span></a></li>
+      <li><a href="pages.html"><span>Páginas&#160;relacionadas</span></a></li>
+      <li><a href="modules.html"><span>Módulos</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Clases</span></a></li>
+      <li><a href="files.html"><span>Archivos</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Buscar" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Lista&#160;de&#160;clases</span></a></li>
+      <li><a href="classes.html"><span>Índice&#160;de&#160;clases</span></a></li>
+      <li><a href="hierarchy.html"><span>Jerarquía&#160;de&#160;la&#160;clase</span></a></li>
+      <li><a href="functions.html"><span>Miembros&#160;de&#160;las&#160;clases</span></a></li>
+    </ul>
+  </div>
+</div><!-- top -->
+<div id="side-nav" class="ui-resizable side-nav-resizable">
+  <div id="nav-tree">
+    <div id="nav-tree-contents">
+      <div id="nav-sync" class="sync"></div>
+    </div>
+  </div>
+  <div id="splitbar" style="-moz-user-select:none;" 
+       class="ui-resizable-handle">
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function(){initNavTree('class_i3_d_1_1_transform.html','');});
+</script>
+<div id="doc-content">
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Métodos públicos</a> &#124;
+<a href="#pro-types">Tipos protegidos</a> &#124;
+<a href="#pro-methods">Métodos protegidos</a> &#124;
+<a href="#pro-attribs">Atributos protegidos</a> &#124;
+<a href="class_i3_d_1_1_transform-members.html">Lista de todos los miembros</a>  </div>
+  <div class="headertitle">
+<div class="title">Referencia de la plantilla de la Clase I3D::Transform&lt; T &gt;<span class="mlabels"><span class="mlabel">abstract</span></span><div class="ingroups"><a class="el" href="group__trf_group.html">Transformaciones</a></div></div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Clase base para transformaciones.  
+ <a href="class_i3_d_1_1_transform.html#details">Más...</a></p>
+
+<p><code>#include &lt;<a class="el" href="transform_8h_source.html">transform.h</a>&gt;</code></p>
+<div class="dynheader">
+Diagrama de herencias de I3D::Transform&lt; T &gt;</div>
+<div class="dyncontent">
+ <div class="center">
+  <img src="class_i3_d_1_1_transform.png" usemap="#I3D::Transform_3C_20T_20_3E_map" alt=""/>
+  <map id="I3D::Transform_3C_20T_20_3E_map" name="I3D::Transform&lt; T &gt;_map">
+<area href="class_i3_d_1_1_transform2_d.html" alt="I3D::Transform2D&lt; T &gt;" shape="rect" coords="322,56,473,80"/>
+<area href="class_i3_d_1_1_transform3_d.html" alt="I3D::Transform3D&lt; T &gt;" shape="rect" coords="805,56,956,80"/>
+<area href="class_i3_d_1_1_trf_multiple.html" title="Transformación multiple. " alt="I3D::TrfMultiple&lt; T &gt;" shape="rect" coords="966,56,1117,80"/>
+<area href="class_i3_d_1_1_trf_perspective.html" title="perspective " alt="I3D::TrfPerspective&lt; T &gt;" shape="rect" coords="1127,56,1278,80"/>
+<area href="class_i3_d_1_1_afin.html" title="Transformación Afin. " alt="I3D::Afin&lt; T &gt;" shape="rect" coords="0,112,151,136"/>
+<area href="class_i3_d_1_1_helmert2_d.html" title="Helmert 2D. " alt="I3D::Helmert2D&lt; T &gt;" shape="rect" coords="161,112,312,136"/>
+<area href="class_i3_d_1_1_projective.html" title="Transformación Projectiva. " alt="I3D::Projective&lt; T &gt;" shape="rect" coords="322,112,473,136"/>
+<area href="class_i3_d_1_1_rotation.html" title="Rotación. " alt="I3D::Rotation&lt; T &gt;" shape="rect" coords="483,112,634,136"/>
+<area href="class_i3_d_1_1_translate.html" title="Traslación. " alt="I3D::Translate&lt; T &gt;" shape="rect" coords="644,112,795,136"/>
+<area href="class_i3_d_1_1_helmert3_d.html" title="Helmert 3D. " alt="I3D::Helmert3D&lt; T &gt;" shape="rect" coords="805,112,956,136"/>
+</map>
+ </div></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Métodos públicos</h2></td></tr>
+<tr class="memitem:a65f115efcbc52cec0dad27664e2e48c3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a65f115efcbc52cec0dad27664e2e48c3">Transform</a> (int n_min=0, <a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a> trfType=<a class="el" href="group__trf_group.html#gga175e1580b1ecbc0710ad48060d56c2a3a5b39c8b553c821e7cddc6da64b5bd2ee">transform_type::DEFAULT</a>)</td></tr>
+<tr class="memdesc:a65f115efcbc52cec0dad27664e2e48c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <a href="#a65f115efcbc52cec0dad27664e2e48c3">Más...</a><br /></td></tr>
+<tr class="separator:a65f115efcbc52cec0dad27664e2e48c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b3aa01e8b48ee45604ebb9cc1e0ed56"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a7b3aa01e8b48ee45604ebb9cc1e0ed56">~Transform</a> ()</td></tr>
+<tr class="memdesc:a7b3aa01e8b48ee45604ebb9cc1e0ed56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Destructora.  <a href="#a7b3aa01e8b48ee45604ebb9cc1e0ed56">Más...</a><br /></td></tr>
+<tr class="separator:a7b3aa01e8b48ee45604ebb9cc1e0ed56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a909a4033f9fab3f091b433b9e2261208"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a909a4033f9fab3f091b433b9e2261208">compute</a> (const std::vector&lt; T &gt; &amp;v1, const std::vector&lt; T &gt; &amp;v2)=0</td></tr>
+<tr class="memdesc:a909a4033f9fab3f091b433b9e2261208"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calcula los parámetros de transformación.  <a href="#a909a4033f9fab3f091b433b9e2261208">Más...</a><br /></td></tr>
+<tr class="separator:a909a4033f9fab3f091b433b9e2261208"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab02fc57452ec9edeb339242b682dc829"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#ab02fc57452ec9edeb339242b682dc829">isNumberOfPointsValid</a> (int npoints) const </td></tr>
+<tr class="memdesc:ab02fc57452ec9edeb339242b682dc829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determina si el numero de puntos son suficientes para calcular la transformación.  <a href="#ab02fc57452ec9edeb339242b682dc829">Más...</a><br /></td></tr>
+<tr class="separator:ab02fc57452ec9edeb339242b682dc829"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbec7381bfc66b4a766a00fdf16de0fe"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#adbec7381bfc66b4a766a00fdf16de0fe">transform</a> (const std::vector&lt; T &gt; &amp;in, std::vector&lt; T &gt; *out, bool bDirect=true) const  =0</td></tr>
+<tr class="memdesc:adbec7381bfc66b4a766a00fdf16de0fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aplica la transformación.  <a href="#adbec7381bfc66b4a766a00fdf16de0fe">Más...</a><br /></td></tr>
+<tr class="separator:adbec7381bfc66b4a766a00fdf16de0fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0a61ba37895c3b70e47b9e66a69bbbd"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#ad0a61ba37895c3b70e47b9e66a69bbbd">minNumberOfPoints</a> ()</td></tr>
+<tr class="memdesc:ad0a61ba37895c3b70e47b9e66a69bbbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Número mínimo de puntos necesario para la transformación.  <a href="#ad0a61ba37895c3b70e47b9e66a69bbbd">Más...</a><br /></td></tr>
+<tr class="separator:ad0a61ba37895c3b70e47b9e66a69bbbd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaed30aa2e0b864a338c0bac5ccf3d963"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#aaed30aa2e0b864a338c0bac5ccf3d963">getTransformType</a> ()</td></tr>
+<tr class="memdesc:aaed30aa2e0b864a338c0bac5ccf3d963"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tipo de transformación.  <a href="#aaed30aa2e0b864a338c0bac5ccf3d963">Más...</a><br /></td></tr>
+<tr class="separator:aaed30aa2e0b864a338c0bac5ccf3d963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
+Tipos protegidos</h2></td></tr>
+<tr class="memitem:ac087b4b8b9acb1b11a6caa2231d598c7"><td class="memItemLeft" align="right" valign="top">typedef T::value_type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#ac087b4b8b9acb1b11a6caa2231d598c7">sub_type</a></td></tr>
+<tr class="separator:ac087b4b8b9acb1b11a6caa2231d598c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Métodos protegidos</h2></td></tr>
+<tr class="memitem:aa4d27a52571d16156699589050ffd7fc"><td class="memTemplParams" colspan="2">template&lt;typename T2 &gt; </td></tr>
+<tr class="memitem:aa4d27a52571d16156699589050ffd7fc"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#aa4d27a52571d16156699589050ffd7fc">formatVectorOut</a> (const std::vector&lt; T2 &gt; &amp;in, std::vector&lt; T2 &gt; *out) const </td></tr>
+<tr class="memdesc:aa4d27a52571d16156699589050ffd7fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Formatea de forma adecuada el vector de salida.  <a href="#aa4d27a52571d16156699589050ffd7fc">Más...</a><br /></td></tr>
+<tr class="separator:aa4d27a52571d16156699589050ffd7fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Atributos protegidos</h2></td></tr>
+<tr class="memitem:a1d5c0d6ea45417608b00316a08f164d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a1d5c0d6ea45417608b00316a08f164d7">mTrfType</a></td></tr>
+<tr class="memdesc:a1d5c0d6ea45417608b00316a08f164d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tipo de transformación.  <a href="#a1d5c0d6ea45417608b00316a08f164d7">Más...</a><br /></td></tr>
+<tr class="separator:a1d5c0d6ea45417608b00316a08f164d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a087716ea2e7fa31127003e50479ed01e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a087716ea2e7fa31127003e50479ed01e">mMinPoint</a></td></tr>
+<tr class="memdesc:a087716ea2e7fa31127003e50479ed01e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Número mínimo de puntos necesario para la transformación.  <a href="#a087716ea2e7fa31127003e50479ed01e">Más...</a><br /></td></tr>
+<tr class="separator:a087716ea2e7fa31127003e50479ed01e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53fc627243795344379b92d0a48a31a9"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_transform.html#a53fc627243795344379b92d0a48a31a9">mDimensions</a></td></tr>
+<tr class="separator:a53fc627243795344379b92d0a48a31a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Descripción detallada</h2>
+<div class="textblock"><h3>template&lt;typename T&gt;<br />
+class I3D::Transform&lt; T &gt;</h3>
+
+<p>Clase base para transformaciones. </p>
+</div><h2 class="groupheader">Documentación de los 'Typedef' miembros de la clase</h2>
+<a class="anchor" id="ac087b4b8b9acb1b11a6caa2231d598c7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef T::value_type <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::<a class="el" href="class_i3_d_1_1_transform.html#ac087b4b8b9acb1b11a6caa2231d598c7">sub_type</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Documentación del constructor y destructor</h2>
+<a class="anchor" id="a65f115efcbc52cec0dad27664e2e48c3"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::<a class="el" href="class_i3_d_1_1_transform.html">Transform</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>n_min</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a>&#160;</td>
+          <td class="paramname"><em>trfType</em> = <code><a class="el" href="group__trf_group.html#gga175e1580b1ecbc0710ad48060d56c2a3a5b39c8b553c821e7cddc6da64b5bd2ee">transform_type::DEFAULT</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">n_min</td><td>Número mínimo de puntos necesario para la transformación </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a7b3aa01e8b48ee45604ebb9cc1e0ed56"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::~<a class="el" href="class_i3_d_1_1_transform.html">Transform</a> </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Destructora. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Documentación de las funciones miembro</h2>
+<a class="anchor" id="a909a4033f9fab3f091b433b9e2261208"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::compute </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>v2</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Calcula los parámetros de transformación. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">pts1</td><td>Conjunto de puntos en el primero de los sistemas </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pts2</td><td>Conjunto de puntos en el segundo de los sistemas </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Devuelve</dt><dd>Verdadero si el calculo se ha efectuado de forma correcta </dd></dl>
+
+<p>Implementado en <a class="el" href="group__trf3_d_group.html#gaf6c9d07daaca435365b84688326885e3">I3D::Helmert3D&lt; T &gt;</a>, <a class="el" href="class_i3_d_1_1_transform3_d.html#a3caf93312fc1b3b2ce9f6e88edd9316b">I3D::Transform3D&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gaae888e9e90db1050898b63386252fc88">I3D::Projective&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gabe12d714c522dd1bf40f05f28c5aafe0">I3D::Afin&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga300279dee0a002835c25322bd2ea9398">I3D::Helmert2D&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gae7637f88523deb1879cf8a712820d12e">I3D::Rotation&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga8cab577e50c525caed001caec42a70a6">I3D::Translate&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gaf4d7f0809edd08cc847f3df1db43055e">I3D::TrfPerspective&lt; T &gt;</a>, <a class="el" href="class_i3_d_1_1_transform2_d.html#a61b1bb9c9a057ceec35c9320447070b9">I3D::Transform2D&lt; T &gt;</a> y <a class="el" href="group__trf_group.html#ga30e6b58e89d4ad3657e1b6a74edc22cc">I3D::TrfMultiple&lt; T &gt;</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa4d27a52571d16156699589050ffd7fc"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<div class="memtemplate">
+template&lt;typename T2 &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::formatVectorOut </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T2 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T2 &gt; *&#160;</td>
+          <td class="paramname"><em>out</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Formatea de forma adecuada el vector de salida. </p>
+<p>Prepara el vector de puntos de salida redimensionandolo al tamaño adecuado y limpiando su contenido si ya tenia datos. En caso de que se utilice el mismo vector de entrada y de salida no hace nada. </p><dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">in</td><td>Puntos de entrada </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">out</td><td>Puntos de salida </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="aaed30aa2e0b864a338c0bac5ccf3d963"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a> <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::getTransformType </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tipo de transformación. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Tipo de transformación </dd></dl>
+<dl class="section see"><dt>Ver también</dt><dd><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3" title="Tipos de transformaciones. ">transform_type</a> </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ab02fc57452ec9edeb339242b682dc829"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::isNumberOfPointsValid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>npoints</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Determina si el numero de puntos son suficientes para calcular la transformación. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">npoints</td><td>Número de puntos para calcular la transformación </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Devuelve</dt><dd>Verdadero si son puntos suficientes </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ad0a61ba37895c3b70e47b9e66a69bbbd"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::minNumberOfPoints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Número mínimo de puntos necesario para la transformación. </p>
+<dl class="section return"><dt>Devuelve</dt><dd>Número mínimo de puntos </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="adbec7381bfc66b4a766a00fdf16de0fe"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::transform </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;&#160;</td>
+          <td class="paramname"><em>in</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; *&#160;</td>
+          <td class="paramname"><em>out</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>bDirect</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Aplica la transformación. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">in</td><td>Puntos de entrada </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">out</td><td>Puntos de salida </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">bDirect</td><td>Transformación directa (por defecto) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implementado en <a class="el" href="group__trf3_d_group.html#ga986e7df721d9a5bb12a0eed3ab10f419">I3D::Helmert3D&lt; T &gt;</a>, <a class="el" href="class_i3_d_1_1_transform3_d.html#a229db14f7cd732f5d9ecf01be5ea8bf5">I3D::Transform3D&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga9339dfc7f978fa6bbb9e2233930e8a3c">I3D::Projective&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gae1b65d232072a70d58ec72492a430521">I3D::Afin&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#gab7354b67b291bf01b3fd045578598fb1">I3D::Helmert2D&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga0032788395928aa7419d506981ef03d3">I3D::Rotation&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga1e3ba2120da67c8c4606681c4b82f709">I3D::Translate&lt; T &gt;</a>, <a class="el" href="group__trf2_d_group.html#ga0742db3f66df991a7e4a2d1d91d1a783">I3D::TrfPerspective&lt; T &gt;</a>, <a class="el" href="class_i3_d_1_1_transform2_d.html#a636c5afb2a198d46f7d9c3dc8c1800f1">I3D::Transform2D&lt; T &gt;</a> y <a class="el" href="group__trf_group.html#gad8eb1ca9e9b9c6e6d30f1f1b15dee818">I3D::TrfMultiple&lt; T &gt;</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Documentación de los datos miembro</h2>
+<a class="anchor" id="a53fc627243795344379b92d0a48a31a9"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::mDimensions</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a087716ea2e7fa31127003e50479ed01e"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::mMinPoint</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Número mínimo de puntos necesario para la transformación. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1d5c0d6ea45417608b00316a08f164d7"></a>
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3">transform_type</a> <a class="el" href="class_i3_d_1_1_transform.html">I3D::Transform</a>&lt; T &gt;::mTrfType</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Tipo de transformación. </p>
+<dl class="section see"><dt>Ver también</dt><dd><a class="el" href="group__trf_group.html#ga175e1580b1ecbc0710ad48060d56c2a3" title="Tipos de transformaciones. ">transform_type</a> </dd></dl>
+
+</div>
+</div>
+<hr/>La documentación para esta clase fue generada a partir del siguiente fichero:<ul>
+<li>D:/Desarrollo/tidop/src/<a class="el" href="transform_8h_source.html">transform.h</a></li>
+</ul>
+</div><!-- contents -->
+</div><!-- doc-content -->
+<!-- start footer part -->
+<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
+  <ul>
+    <li class="navelem"><a class="el" href="namespace_i3_d.html">I3D</a></li><li class="navelem"><a class="el" href="class_i3_d_1_1_transform.html">Transform</a></li>
+    <li class="footer">Generado por
+    <a href="http://www.doxygen.org/index.html">
+    <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
+  </ul>
+</div>
+</body>
+</html>

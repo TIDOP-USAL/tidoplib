@@ -1,0 +1,112 @@
+\hypertarget{class_i3_d_1_1_blur}{}\section{Referencia de la Clase I3D\+:\+:Blur}
+\label{class_i3_d_1_1_blur}\index{I3\+D\+::\+Blur@{I3\+D\+::\+Blur}}
+
+
+Filtro de desenfoque Provoca un suavizado en la imagen resultante.  
+
+
+
+
+{\ttfamily \#include $<$Img\+Processing.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Blur\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_blur}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_blur_a96bf63044e9fad0a439073ca8fb53e7a}{Blur} (cv\+::\+Size ksize, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+LT)
+\begin{DoxyCompactList}\small\item\em Constructora de la clase. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_blur_a9bc99ea12ce16294f415f67ce467a81b}{execute} (const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override
+\begin{DoxyCompactList}\small\item\em Aplica el filtro de desenfoque. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_blur_a5a141450b0eae0a7a44eea935c0bc418}{set\+Parameters} (cv\+::\+Size ksize, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+LT)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros del filtro. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Filtro de desenfoque Provoca un suavizado en la imagen resultante. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Blur@{I3\+D\+::\+Blur}!Blur@{Blur}}
+\index{Blur@{Blur}!I3\+D\+::\+Blur@{I3\+D\+::\+Blur}}
+\subsubsection[{\texorpdfstring{Blur(cv\+::\+Size ksize, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+L\+T)}{Blur(cv::Size ksize, cv::Point anchor=cv::Point(-1,-1), int borderType=cv::BORDER_DEFAULT)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Blur\+::\+Blur (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Size}]{ksize, }
+\item[{cv\+::\+Point}]{anchor = {\ttfamily cv\+:\+:Point(-\/1,~-\/1)}, }
+\item[{int}]{border\+Type = {\ttfamily cv\+:\+:BORDER\+\_\+DEFAULT}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_blur_a96bf63044e9fad0a439073ca8fb53e7a}{}\label{class_i3_d_1_1_blur_a96bf63044e9fad0a439073ca8fb53e7a}
+
+
+Constructora de la clase. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ksize} & Tamaño del kernel \\
+\hline
+\mbox{\tt in}  & {\em anchor} & Punto de anclaje \\
+\hline
+\mbox{\tt in}  & {\em border\+Type} & Tipo de borde \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Blur@{I3\+D\+::\+Blur}!execute@{execute}}
+\index{execute@{execute}!I3\+D\+::\+Blur@{I3\+D\+::\+Blur}}
+\subsubsection[{\texorpdfstring{execute(const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override}{execute(const cv::Mat &matIn, cv::Mat *matOut) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::\+Blur\+::execute (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Mat \&}]{mat\+In, }
+\item[{cv\+::\+Mat $\ast$}]{mat\+Out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_blur_a9bc99ea12ce16294f415f67ce467a81b}{}\label{class_i3_d_1_1_blur_a9bc99ea12ce16294f415f67ce467a81b}
+
+
+Aplica el filtro de desenfoque. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em mat\+In} & Imagen de entrada. \\
+\hline
+\mbox{\tt out}  & {\em mat\+Out} & Imagen de salida. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error. Si el proceso se ejecuta correctamente devuelve 0. 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_img_processing_a74195f05bbf034566e9ff6e10f3af4c9}{I3\+D\+::\+Img\+Processing}.
+
+\index{I3\+D\+::\+Blur@{I3\+D\+::\+Blur}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!I3\+D\+::\+Blur@{I3\+D\+::\+Blur}}
+\subsubsection[{\texorpdfstring{set\+Parameters(cv\+::\+Size ksize, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+D\+E\+F\+A\+U\+L\+T)}{setParameters(cv::Size ksize, cv::Point anchor=cv::Point(-1,-1), int borderType=cv::BORDER_DEFAULT)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Blur\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Size}]{ksize, }
+\item[{cv\+::\+Point}]{anchor = {\ttfamily cv\+:\+:Point(-\/1,~-\/1)}, }
+\item[{int}]{border\+Type = {\ttfamily cv\+:\+:BORDER\+\_\+DEFAULT}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_blur_a5a141450b0eae0a7a44eea935c0bc418}{}\label{class_i3_d_1_1_blur_a5a141450b0eae0a7a44eea935c0bc418}
+
+
+Establece los parámetros del filtro. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ksize} & Tamaño del kernel \\
+\hline
+\mbox{\tt in}  & {\em anchor} & Punto de anclaje \\
+\hline
+\mbox{\tt in}  & {\em border\+Type} & Tipo de borde \\
+\hline
+\end{DoxyParams}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8h}{Img\+Processing.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8cpp}{Img\+Processing.\+cpp}\end{DoxyCompactItemize}

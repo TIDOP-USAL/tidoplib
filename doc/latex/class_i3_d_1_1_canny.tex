@@ -1,0 +1,106 @@
+\hypertarget{class_i3_d_1_1_canny}{}\section{Referencia de la Clase I3D\+:\+:Canny}
+\label{class_i3_d_1_1_canny}\index{I3\+D\+::\+Canny@{I3\+D\+::\+Canny}}
+
+
+Detector de bordes canny.  
+
+
+
+
+{\ttfamily \#include $<$Img\+Processing.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Canny\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_canny}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_canny_a9dd626da444b5d71b001b458081f6af7}{Canny} (double threshold1=0.\+0, double threshold2=0.\+0)
+\begin{DoxyCompactList}\small\item\em Constructora. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_canny_a5337ec2dd0c95fe7c9d05444ed8f6425}{execute} (const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override
+\begin{DoxyCompactList}\small\item\em Ejecuta el proceso. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_canny_afb3f99083d17f060fe791e8498a7d4a7}{set\+Parameters} (double threshold1, double threshold2)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros para el detector de bordes canny. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Detector de bordes canny. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Canny@{I3\+D\+::\+Canny}!Canny@{Canny}}
+\index{Canny@{Canny}!I3\+D\+::\+Canny@{I3\+D\+::\+Canny}}
+\subsubsection[{\texorpdfstring{Canny(double threshold1=0.\+0, double threshold2=0.\+0)}{Canny(double threshold1=0.0, double threshold2=0.0)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Canny\+::\+Canny (
+\begin{DoxyParamCaption}
+\item[{double}]{threshold1 = {\ttfamily 0.0}, }
+\item[{double}]{threshold2 = {\ttfamily 0.0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_canny_a9dd626da444b5d71b001b458081f6af7}{}\label{class_i3_d_1_1_canny_a9dd626da444b5d71b001b458081f6af7}
+
+
+Constructora. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em threshold1} & \\
+\hline
+\mbox{\tt in}  & {\em threshold2} & \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Canny@{I3\+D\+::\+Canny}!execute@{execute}}
+\index{execute@{execute}!I3\+D\+::\+Canny@{I3\+D\+::\+Canny}}
+\subsubsection[{\texorpdfstring{execute(const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override}{execute(const cv::Mat &matIn, cv::Mat *matOut) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::\+Canny\+::execute (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Mat \&}]{mat\+In, }
+\item[{cv\+::\+Mat $\ast$}]{mat\+Out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_canny_a5337ec2dd0c95fe7c9d05444ed8f6425}{}\label{class_i3_d_1_1_canny_a5337ec2dd0c95fe7c9d05444ed8f6425}
+
+
+Ejecuta el proceso. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em mat\+In} & Imagen de entrada \\
+\hline
+\mbox{\tt out}  & {\em mat\+Out} & Imagen de salida \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error. Si los procesos se ejecutan correctamente devuelve 0. 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_img_processing_a74195f05bbf034566e9ff6e10f3af4c9}{I3\+D\+::\+Img\+Processing}.
+
+\index{I3\+D\+::\+Canny@{I3\+D\+::\+Canny}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!I3\+D\+::\+Canny@{I3\+D\+::\+Canny}}
+\subsubsection[{\texorpdfstring{set\+Parameters(double threshold1, double threshold2)}{setParameters(double threshold1, double threshold2)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Canny\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{double}]{threshold1, }
+\item[{double}]{threshold2}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_canny_afb3f99083d17f060fe791e8498a7d4a7}{}\label{class_i3_d_1_1_canny_afb3f99083d17f060fe791e8498a7d4a7}
+
+
+Establece los parámetros para el detector de bordes canny. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em threshold1} & Primer umbral para el procedimiento de histéresis \\
+\hline
+\mbox{\tt in}  & {\em threshold2} & Segundo umbral para el procedimiento de histéresis \\
+\hline
+\end{DoxyParams}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8h}{Img\+Processing.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8cpp}{Img\+Processing.\+cpp}\end{DoxyCompactItemize}

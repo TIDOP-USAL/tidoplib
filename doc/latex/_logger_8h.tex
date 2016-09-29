@@ -1,0 +1,74 @@
+\hypertarget{_logger_8h}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/\+Logger.h}
+\label{_logger_8h}\index{D\+:/\+Desarrollo/tidop/src/\+Logger.\+h@{D\+:/\+Desarrollo/tidop/src/\+Logger.\+h}}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include \char`\"{}core\textbackslash{}defs.\+h\char`\"{}}\\*
+\subsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_i3_d_1_1_log_msg}{I3\+D\+::\+Log\+Msg}
+\begin{DoxyCompactList}\small\item\em Clase para gestión de ficheros log. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{\textquotesingle{}defines\textquotesingle{}}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{_logger_8h_a7352fe7ef20363ddb1cab2ba0c1669c5}{log\+Debug\+Msg}(msg, ...)    ~Log\+Msg\+::debug\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )
+\item 
+\#define \hyperlink{_logger_8h_a3cdd07a58eb9ee6758c594cbdbea9aad}{log\+Info\+Msg}(msg, ...)      ~Log\+Msg\+::info\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )
+\item 
+\#define \hyperlink{_logger_8h_a3fbac140721f852b74aa079fe65e0d3f}{log\+Warning\+Msg}(msg, ...)~Log\+Msg\+::warning\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )
+\item 
+\#define \hyperlink{_logger_8h_a650587fd3a0b5412ff7aa8a70516132f}{log\+Error\+Msg}(msg, ...)    ~Log\+Msg\+::error\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )
+\end{DoxyCompactItemize}
+\subsection*{Enumeraciones}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{I3\+D\+::\+Log\+Level} \{ \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6aeded50d942c7c2d37d09ba8241ff017f}{I3\+D\+::\+Log\+Level\+::\+L\+O\+G\+\_\+\+D\+E\+B\+UG}, 
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a41abf3cca8cee8cdae01749df7a991c6}{I3\+D\+::\+Log\+Level\+::\+L\+O\+G\+\_\+\+I\+N\+FO}, 
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6ad0cb3df3102ca9270c5785af9a8c137f}{I3\+D\+::\+Log\+Level\+::\+L\+O\+G\+\_\+\+W\+A\+R\+N\+I\+NG}, 
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}{I3\+D\+::\+Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}
+ \}\begin{DoxyCompactList}\small\item\em Niveles de log. \end{DoxyCompactList}
+\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+char $\ast$ \hyperlink{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}{I3\+D\+::\+\_\+msg} (const char $\ast$msg,...)
+\end{DoxyCompactItemize}
+
+
+\subsection{Documentación de los \textquotesingle{}defines\textquotesingle{}}
+\index{Logger.\+h@{Logger.\+h}!log\+Debug\+Msg@{log\+Debug\+Msg}}
+\index{log\+Debug\+Msg@{log\+Debug\+Msg}!Logger.\+h@{Logger.\+h}}
+\subsubsection[{\texorpdfstring{log\+Debug\+Msg}{logDebugMsg}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Debug\+Msg(
+\begin{DoxyParamCaption}
+\item[{}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~Log\+Msg\+::debug\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )}\hypertarget{_logger_8h_a7352fe7ef20363ddb1cab2ba0c1669c5}{}\label{_logger_8h_a7352fe7ef20363ddb1cab2ba0c1669c5}
+\index{Logger.\+h@{Logger.\+h}!log\+Error\+Msg@{log\+Error\+Msg}}
+\index{log\+Error\+Msg@{log\+Error\+Msg}!Logger.\+h@{Logger.\+h}}
+\subsubsection[{\texorpdfstring{log\+Error\+Msg}{logErrorMsg}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Error\+Msg(
+\begin{DoxyParamCaption}
+\item[{}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~Log\+Msg\+::error\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )}\hypertarget{_logger_8h_a650587fd3a0b5412ff7aa8a70516132f}{}\label{_logger_8h_a650587fd3a0b5412ff7aa8a70516132f}
+\index{Logger.\+h@{Logger.\+h}!log\+Info\+Msg@{log\+Info\+Msg}}
+\index{log\+Info\+Msg@{log\+Info\+Msg}!Logger.\+h@{Logger.\+h}}
+\subsubsection[{\texorpdfstring{log\+Info\+Msg}{logInfoMsg}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Info\+Msg(
+\begin{DoxyParamCaption}
+\item[{}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~Log\+Msg\+::info\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )}\hypertarget{_logger_8h_a3cdd07a58eb9ee6758c594cbdbea9aad}{}\label{_logger_8h_a3cdd07a58eb9ee6758c594cbdbea9aad}
+\index{Logger.\+h@{Logger.\+h}!log\+Warning\+Msg@{log\+Warning\+Msg}}
+\index{log\+Warning\+Msg@{log\+Warning\+Msg}!Logger.\+h@{Logger.\+h}}
+\subsubsection[{\texorpdfstring{log\+Warning\+Msg}{logWarningMsg}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Warning\+Msg(
+\begin{DoxyParamCaption}
+\item[{}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)~Log\+Msg\+::warning\+Msg( \+\_\+msg(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+) )}\hypertarget{_logger_8h_a3fbac140721f852b74aa079fe65e0d3f}{}\label{_logger_8h_a3fbac140721f852b74aa079fe65e0d3f}

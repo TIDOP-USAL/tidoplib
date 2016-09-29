@@ -1,0 +1,120 @@
+\hypertarget{class_i3_d_1_1ld_l_s_d}{}\section{Referencia de la Clase I3D\+:\+:ld\+L\+SD}
+\label{class_i3_d_1_1ld_l_s_d}\index{I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}}
+
+
+Clase para la detección de lineas mediante Line \hyperlink{class_i3_d_1_1_segment}{Segment} Detector.  
+
+
+
+
+{\ttfamily \#include $<$Line\+Detector.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:ld\+L\+SD\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1ld_l_s_d}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1ld_l_s_d_a3f2eba9f10daaeab35a1adc7f628c11a}{ld\+L\+SD} (const cv\+::\+Scalar \&angletol=cv\+::\+Scalar(0, C\+V\+\_\+\+PI/2))
+\begin{DoxyCompactList}\small\item\em Constructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_d}{ld\+L\+SD}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1ld_l_s_d_aea5de322f9c8a8f6ab09ff477e9ab340}{$\sim$ld\+L\+SD} ()
+\begin{DoxyCompactList}\small\item\em Destructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_d}{ld\+L\+SD}. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_l_s_d_a451a9385fb8abf87d6c462321518c439}{run} (cv\+::\+Mat \&image) override
+\begin{DoxyCompactList}\small\item\em Ejecuta el detector de lineas L\+SD. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_l_s_d_ab688b28c6cd6e0915404baf9329415d8}{run} (cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override
+\begin{DoxyCompactList}\small\item\em Ejecuta el detector de lineas L\+SD. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Clase para la detección de lineas mediante Line \hyperlink{class_i3_d_1_1_segment}{Segment} Detector. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}!ld\+L\+SD@{ld\+L\+SD}}
+\index{ld\+L\+SD@{ld\+L\+SD}!I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}}
+\subsubsection[{\texorpdfstring{ld\+L\+S\+D(const cv\+::\+Scalar \&angletol=cv\+::\+Scalar(0, C\+V\+\_\+\+P\+I/2))}{ldLSD(const cv::Scalar &angletol=cv::Scalar(0, CV_PI/2))}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+L\+S\+D\+::ld\+L\+SD (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Scalar \&}]{angletol = {\ttfamily cv\+:\+:Scalar(0,~CV\+\_\+PI~/~2)}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_l_s_d_a3f2eba9f10daaeab35a1adc7f628c11a}{}\label{class_i3_d_1_1ld_l_s_d_a3f2eba9f10daaeab35a1adc7f628c11a}
+
+
+Constructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_d}{ld\+L\+SD}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em angletol} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}!````~ld\+L\+SD@{$\sim$ld\+L\+SD}}
+\index{````~ld\+L\+SD@{$\sim$ld\+L\+SD}!I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}}
+\subsubsection[{\texorpdfstring{$\sim$ld\+L\+S\+D()}{~ldLSD()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+L\+S\+D\+::$\sim$ld\+L\+SD (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_l_s_d_aea5de322f9c8a8f6ab09ff477e9ab340}{}\label{class_i3_d_1_1ld_l_s_d_aea5de322f9c8a8f6ab09ff477e9ab340}
+
+
+Destructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_d}{ld\+L\+SD}. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image) override}{run(cv::Mat &image) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+L\+S\+D\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_l_s_d_a451a9385fb8abf87d6c462321518c439}{}\label{class_i3_d_1_1ld_l_s_d_a451a9385fb8abf87d6c462321518c439}
+
+
+Ejecuta el detector de lineas L\+SD. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_ad439cb59972938259f6b36bcdbb644b7}{I3\+D\+::\+Line\+Detector}.
+
+\index{I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+L\+SD@{I3\+D\+::ld\+L\+SD}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override}{run(cv::Mat &image, const cv::Scalar &angletol) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+L\+S\+D\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image, }
+\item[{const cv\+::\+Scalar \&}]{angletol}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_l_s_d_ab688b28c6cd6e0915404baf9329415d8}{}\label{class_i3_d_1_1ld_l_s_d_ab688b28c6cd6e0915404baf9329415d8}
+
+
+Ejecuta el detector de lineas L\+SD. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\mbox{\tt in}  & {\em angletol} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_abc00c6e15e2386a32720886d60a20ccd}{I3\+D\+::\+Line\+Detector}.
+
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_line_detector_8h}{Line\+Detector.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{linedetector_8cpp}{linedetector.\+cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,127 @@
+\hypertarget{class_i3_d_1_1_window}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Window$<$ T $>$}
+\label{class_i3_d_1_1_window}\index{I3\+D\+::\+Window$<$ T $>$@{I3\+D\+::\+Window$<$ T $>$}}
+
+
+The \hyperlink{class_i3_d_1_1_window}{Window} class.  
+
+
+
+
+{\ttfamily \#include $<$window.\+h$>$}
+
+\subsection*{Tipos públicos}
+\begin{DoxyCompactItemize}
+\item 
+typedef T \hyperlink{class_i3_d_1_1_window_adf6b77f358cdb242b37574a88b9e59f3}{type}
+\begin{DoxyCompactList}\small\item\em type \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group___geometric_entities_ga2d226aaf94cc5ed88652f78ef8403820}{Window} ()
+\begin{DoxyCompactList}\small\item\em Constructor por defecto. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_ga029382701e212fdcae3b72350bb7d9cb}{Window} (const \hyperlink{class_i3_d_1_1_window}{Window} \&w)
+\begin{DoxyCompactList}\small\item\em Constructor de copia. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_gaad67f178a66be3d3555c75c9999f2403}{Window} (const cv\+::\+Point\+\_\+$<$ T $>$ \&\hyperlink{class_i3_d_1_1_window_a067d3a7971d68c3920cfca5a4b5358c1}{pt1}, const cv\+::\+Point\+\_\+$<$ T $>$ \&\hyperlink{class_i3_d_1_1_window_ad4d4d2689f3ccd2e695506dcb55e1d44}{pt2})
+\begin{DoxyCompactList}\small\item\em Constructor de movimiento \hyperlink{class_i3_d_1_1_window}{Window}. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_ga15c278087e96c6d37db30cd667a17591}{Window} (cv\+::\+Point\+\_\+$<$ T $>$ \&pt, T sxx, T szy)
+\begin{DoxyCompactList}\small\item\em Constructor \hyperlink{class_i3_d_1_1_window}{Window}. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_gaa4c7acb8b82826e6fef1d9aeb00e6d2e}{Window} (cv\+::\+Point\+\_\+$<$ T $>$ \&pt, T sz)
+\begin{DoxyCompactList}\small\item\em Constructor \hyperlink{class_i3_d_1_1_window}{Window}. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_gad423e12e78a18a2c6bcd65172d2808b7}{Window} (std\+::vector$<$ cv\+::\+Point\+\_\+$<$ T $>$$>$ v)
+\begin{DoxyCompactList}\small\item\em Constructor \hyperlink{class_i3_d_1_1_window}{Window} Crea una ventana que envuelve a un conjunto de puntos. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T2 $>$ }\\\hyperlink{group___geometric_entities_gac888172a38a99ccd02e28b48aa89007d}{Window} (std\+::vector$<$ cv\+::\+Point\+\_\+$<$ T2 $>$$>$ v)
+\begin{DoxyCompactList}\small\item\em Constructor de copia con una ventana de otro tipo. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_window}{Window} \& \hyperlink{group___geometric_entities_gaaaa9e4a378be69b62a9a8717c220d706}{operator=} (const \hyperlink{class_i3_d_1_1_window}{Window} \&w)
+\begin{DoxyCompactList}\small\item\em Sobrecarga del operador de asignación. \end{DoxyCompactList}\item 
+bool \hyperlink{group___geometric_entities_gaa67dcb4334c42c92c1bbb98bca40baac}{operator==} (const \hyperlink{class_i3_d_1_1_window}{Window} \&w) const 
+\begin{DoxyCompactList}\small\item\em Sobrecarga del operador \textquotesingle{}igual que\textquotesingle{}. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T2 $>$ }\\\hyperlink{group___geometric_entities_ga0735f1f595e1d9feece5975ef4c886ce}{operator Window$<$ T2 $>$} () const 
+\begin{DoxyCompactList}\small\item\em Conversión a una ventana de un tipo diferente. \end{DoxyCompactList}\item 
+T \hyperlink{class_i3_d_1_1_window_a26131fd33f48bd3626921a107553dcc8}{get\+Width} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve el ancho de la ventana. \end{DoxyCompactList}\item 
+T \hyperlink{class_i3_d_1_1_window_afe6492d2d94d9cdcfd0f135c2279aff9}{get\+Height} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve el alto de la ventana. \end{DoxyCompactList}\item 
+cv\+::\+Point\+\_\+$<$ T $>$ \hyperlink{group___geometric_entities_gacddf95309d8471ebffc0c51ce4fa9055}{get\+Center} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve centro de la ventana. \end{DoxyCompactList}\item 
+bool \hyperlink{group___geometric_entities_ga538a75457375309a2a519a8b40185bf3}{is\+Empty} () const 
+\begin{DoxyCompactList}\small\item\em Comprueba si la ventana esta vacia. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T2 $>$ }\\bool \hyperlink{group___geometric_entities_gadedaaec93c260131acb5bf30b2e14dda}{contains\+Point} (const cv\+::\+Point\+\_\+$<$ T2 $>$ \&pt) const 
+\begin{DoxyCompactList}\small\item\em Comprueba si un punto está contenido dentro de la ventana. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T2 $>$ }\\bool \hyperlink{group___geometric_entities_ga39b646714c642da0cce15bfe311d1d5c}{contains\+Window} (const \hyperlink{class_i3_d_1_1_window}{Window}$<$ T2 $>$ \&w) const 
+\begin{DoxyCompactList}\small\item\em La ventana contiene la ventana. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Atributos públicos}
+\begin{DoxyCompactItemize}
+\item 
+cv\+::\+Point\+\_\+$<$ T $>$ \hyperlink{class_i3_d_1_1_window_a067d3a7971d68c3920cfca5a4b5358c1}{pt1}
+\begin{DoxyCompactList}\small\item\em Punto 1. \end{DoxyCompactList}\item 
+cv\+::\+Point\+\_\+$<$ T $>$ \hyperlink{class_i3_d_1_1_window_ad4d4d2689f3ccd2e695506dcb55e1d44}{pt2}
+\begin{DoxyCompactList}\small\item\em Punto 2. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Window$<$ T $>$}
+
+The \hyperlink{class_i3_d_1_1_window}{Window} class. 
+
+\subsection{Documentación de los \textquotesingle{}Typedef\textquotesingle{} miembros de la clase}
+\index{I3\+D\+::\+Window@{I3\+D\+::\+Window}!type@{type}}
+\index{type@{type}!I3\+D\+::\+Window@{I3\+D\+::\+Window}}
+\subsubsection[{\texorpdfstring{type}{type}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ typedef T {\bf I3\+D\+::\+Window}$<$ T $>$\+::{\bf type}}\hypertarget{class_i3_d_1_1_window_adf6b77f358cdb242b37574a88b9e59f3}{}\label{class_i3_d_1_1_window_adf6b77f358cdb242b37574a88b9e59f3}
+
+
+type 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Window@{I3\+D\+::\+Window}!get\+Height@{get\+Height}}
+\index{get\+Height@{get\+Height}!I3\+D\+::\+Window@{I3\+D\+::\+Window}}
+\subsubsection[{\texorpdfstring{get\+Height() const }{getHeight() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ T {\bf I3\+D\+::\+Window}$<$ T $>$\+::get\+Height (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_window_afe6492d2d94d9cdcfd0f135c2279aff9}{}\label{class_i3_d_1_1_window_afe6492d2d94d9cdcfd0f135c2279aff9}
+
+
+Devuelve el alto de la ventana. 
+
+\begin{DoxyReturn}{Devuelve}
+Alto 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Window@{I3\+D\+::\+Window}!get\+Width@{get\+Width}}
+\index{get\+Width@{get\+Width}!I3\+D\+::\+Window@{I3\+D\+::\+Window}}
+\subsubsection[{\texorpdfstring{get\+Width() const }{getWidth() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ T {\bf I3\+D\+::\+Window}$<$ T $>$\+::get\+Width (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_window_a26131fd33f48bd3626921a107553dcc8}{}\label{class_i3_d_1_1_window_a26131fd33f48bd3626921a107553dcc8}
+
+
+Devuelve el ancho de la ventana. 
+
+\begin{DoxyReturn}{Devuelve}
+Ancho 
+\end{DoxyReturn}
+
+
+\subsection{Documentación de los datos miembro}
+\index{I3\+D\+::\+Window@{I3\+D\+::\+Window}!pt1@{pt1}}
+\index{pt1@{pt1}!I3\+D\+::\+Window@{I3\+D\+::\+Window}}
+\subsubsection[{\texorpdfstring{pt1}{pt1}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ cv\+::\+Point\+\_\+$<$T$>$ {\bf I3\+D\+::\+Window}$<$ T $>$\+::pt1}\hypertarget{class_i3_d_1_1_window_a067d3a7971d68c3920cfca5a4b5358c1}{}\label{class_i3_d_1_1_window_a067d3a7971d68c3920cfca5a4b5358c1}
+
+
+Punto 1. 
+
+\index{I3\+D\+::\+Window@{I3\+D\+::\+Window}!pt2@{pt2}}
+\index{pt2@{pt2}!I3\+D\+::\+Window@{I3\+D\+::\+Window}}
+\subsubsection[{\texorpdfstring{pt2}{pt2}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ cv\+::\+Point\+\_\+$<$T$>$ {\bf I3\+D\+::\+Window}$<$ T $>$\+::pt2}\hypertarget{class_i3_d_1_1_window_ad4d4d2689f3ccd2e695506dcb55e1d44}{}\label{class_i3_d_1_1_window_ad4d4d2689f3ccd2e695506dcb55e1d44}
+
+
+Punto 2. 
+
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/\hyperlink{window_8h}{window.\+h}\end{DoxyCompactItemize}

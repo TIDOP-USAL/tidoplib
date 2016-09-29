@@ -1,0 +1,369 @@
+\hypertarget{class_i3_d_1_1_log_msg}{}\section{Referencia de la Clase I3D\+:\+:Log\+Msg}
+\label{class_i3_d_1_1_log_msg}\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+
+
+Clase para gestión de ficheros log.  
+
+
+
+
+{\ttfamily \#include $<$Logger.\+h$>$}
+
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_log_msg_a5cb7a7b1765778874c2b87d2245463c6}{Log\+Msg} ()
+\begin{DoxyCompactList}\small\item\em Constructora \hyperlink{class_i3_d_1_1_log_msg}{Log\+Msg}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_log_msg_ac6d1edcbbc1806f42114374f23cacb8d}{Log\+Msg} (const char $\ast$filename, \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} ll=\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}{Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR})
+\begin{DoxyCompactList}\small\item\em Constructora \hyperlink{class_i3_d_1_1_log_msg}{Log\+Msg}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_log_msg_aa0811c5bd5866194a285bd8d066a4f4c}{$\sim$\+Log\+Msg} ()
+\end{DoxyCompactItemize}
+\subsection*{Métodos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a71c24601dd2d2ff79422e1dc718ae722}{write} (const char $\ast$logline, \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} type=\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}{Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR})
+\begin{DoxyCompactList}\small\item\em Escribe una linea en el log. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a147319e07090ca301b9ade50125aa13b}{init} ()
+\begin{DoxyCompactList}\small\item\em Inicializa el log. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a1070a37a80fbd7a1ecb7380b0740b4bb}{debug\+Msg} (const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Mensaje de depuración. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a2ae82253f8773af3755673ce3c234ff5}{debug\+Msg} (const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Debug\+Msg. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a23e6ff7503a9e5d90c91272f59fd48f1}{debug\+Msg} (const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)
+\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a0d60f1ce32bf0ab4a3f22f8e53479122}{info\+Msg} (const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Mensaje de información. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a138623d5ab79424257bf1e0eae8c9a63}{info\+Msg} (const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Info\+Msg. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_ae09d58de7331a1d770da8baf34bb24f2}{info\+Msg} (const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)
+\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a6735f004eeaca67e6296367e7dbf9790}{warning\+Msg} (const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Mensaje de advertencia. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a1c9d60f0b82ac69cf5357d5108cdf903}{warning\+Msg} (const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Warning\+Msg. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_acd07dbd3f6748a5d59f6f24fef6171ac}{warning\+Msg} (const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)
+\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a734144928c13e1d2df4d2c523b28f14d}{error\+Msg} (const char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Mensaje de error. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_a9a729ff245a2d94d39275c56ca022fdc}{error\+Msg} (const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)
+\begin{DoxyCompactList}\small\item\em Error\+Msg. \end{DoxyCompactList}\item 
+static void \hyperlink{class_i3_d_1_1_log_msg_aab45889313e2a3253c487223e2838409}{error\+Msg} (const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)
+\end{DoxyCompactItemize}
+\subsection*{Atributos públicos estáticos}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} \hyperlink{class_i3_d_1_1_log_msg_a1a45bf0f5753da52a4a8ddf930c11ff8}{log\+Level} = \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a41abf3cca8cee8cdae01749df7a991c6}{Log\+Level\+::\+L\+O\+G\+\_\+\+I\+N\+FO}
+\begin{DoxyCompactList}\small\item\em Nivel de log. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Clase para gestión de ficheros log. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!Log\+Msg@{Log\+Msg}}
+\index{Log\+Msg@{Log\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{Log\+Msg()}{LogMsg()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Log\+Msg\+::\+Log\+Msg (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_log_msg_a5cb7a7b1765778874c2b87d2245463c6}{}\label{class_i3_d_1_1_log_msg_a5cb7a7b1765778874c2b87d2245463c6}
+
+
+Constructora \hyperlink{class_i3_d_1_1_log_msg}{Log\+Msg}. 
+
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!Log\+Msg@{Log\+Msg}}
+\index{Log\+Msg@{Log\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{Log\+Msg(const char $\ast$filename, Log\+Level ll=\+Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+O\+R)}{LogMsg(const char *filename, LogLevel ll=LogLevel::LOG_ERROR)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Log\+Msg\+::\+Log\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{filename, }
+\item[{{\bf Log\+Level}}]{ll = {\ttfamily {\bf Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_log_msg_ac6d1edcbbc1806f42114374f23cacb8d}{}\label{class_i3_d_1_1_log_msg_ac6d1edcbbc1806f42114374f23cacb8d}
+
+
+Constructora \hyperlink{class_i3_d_1_1_log_msg}{Log\+Msg}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em filename} & Nombre del fichero log. \\
+\hline
+\mbox{\tt in}  & {\em ll} & Nivel de log \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{Ver también}
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} 
+\end{DoxySeeAlso}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!````~Log\+Msg@{$\sim$\+Log\+Msg}}
+\index{````~Log\+Msg@{$\sim$\+Log\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{$\sim$\+Log\+Msg()}{~LogMsg()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Log\+Msg\+::$\sim$\+Log\+Msg (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_log_msg_aa0811c5bd5866194a285bd8d066a4f4c}{}\label{class_i3_d_1_1_log_msg_aa0811c5bd5866194a285bd8d066a4f4c}
+Destructora 
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!debug\+Msg@{debug\+Msg}}
+\index{debug\+Msg@{debug\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{debug\+Msg(const char $\ast$msg,...)}{debugMsg(const char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::debug\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a1070a37a80fbd7a1ecb7380b0740b4bb}{}\label{class_i3_d_1_1_log_msg_a1070a37a80fbd7a1ecb7380b0740b4bb}
+
+
+Mensaje de depuración. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em msg} & Mensaje \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!debug\+Msg@{debug\+Msg}}
+\index{debug\+Msg@{debug\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{debug\+Msg(const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)}{debugMsg(const char *file, int line, const char *function, char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::debug\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function, }
+\item[{char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a2ae82253f8773af3755673ce3c234ff5}{}\label{class_i3_d_1_1_log_msg_a2ae82253f8773af3755673ce3c234ff5}
+
+
+Debug\+Msg. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em file} & \\
+\hline
+\mbox{\tt in}  & {\em line} & \\
+\hline
+\mbox{\tt in}  & {\em function} & \\
+\hline
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!debug\+Msg@{debug\+Msg}}
+\index{debug\+Msg@{debug\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{debug\+Msg(const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{debugMsg(const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::debug\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a23e6ff7503a9e5d90c91272f59fd48f1}{}\label{class_i3_d_1_1_log_msg_a23e6ff7503a9e5d90c91272f59fd48f1}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!error\+Msg@{error\+Msg}}
+\index{error\+Msg@{error\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{error\+Msg(const char $\ast$msg,...)}{errorMsg(const char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::error\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a734144928c13e1d2df4d2c523b28f14d}{}\label{class_i3_d_1_1_log_msg_a734144928c13e1d2df4d2c523b28f14d}
+
+
+Mensaje de error. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!error\+Msg@{error\+Msg}}
+\index{error\+Msg@{error\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{error\+Msg(const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)}{errorMsg(const char *file, int line, const char *function, char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::error\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function, }
+\item[{char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a9a729ff245a2d94d39275c56ca022fdc}{}\label{class_i3_d_1_1_log_msg_a9a729ff245a2d94d39275c56ca022fdc}
+
+
+Error\+Msg. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em file} & \\
+\hline
+\mbox{\tt in}  & {\em line} & \\
+\hline
+\mbox{\tt in}  & {\em function} & \\
+\hline
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!error\+Msg@{error\+Msg}}
+\index{error\+Msg@{error\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{error\+Msg(const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{errorMsg(const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::error\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_aab45889313e2a3253c487223e2838409}{}\label{class_i3_d_1_1_log_msg_aab45889313e2a3253c487223e2838409}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!info\+Msg@{info\+Msg}}
+\index{info\+Msg@{info\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{info\+Msg(const char $\ast$msg,...)}{infoMsg(const char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::info\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a0d60f1ce32bf0ab4a3f22f8e53479122}{}\label{class_i3_d_1_1_log_msg_a0d60f1ce32bf0ab4a3f22f8e53479122}
+
+
+Mensaje de información. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!info\+Msg@{info\+Msg}}
+\index{info\+Msg@{info\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{info\+Msg(const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)}{infoMsg(const char *file, int line, const char *function, char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::info\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function, }
+\item[{char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a138623d5ab79424257bf1e0eae8c9a63}{}\label{class_i3_d_1_1_log_msg_a138623d5ab79424257bf1e0eae8c9a63}
+
+
+Info\+Msg. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em file} & \\
+\hline
+\mbox{\tt in}  & {\em line} & \\
+\hline
+\mbox{\tt in}  & {\em function} & \\
+\hline
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!info\+Msg@{info\+Msg}}
+\index{info\+Msg@{info\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{info\+Msg(const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{infoMsg(const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::info\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_ae09d58de7331a1d770da8baf34bb24f2}{}\label{class_i3_d_1_1_log_msg_ae09d58de7331a1d770da8baf34bb24f2}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!init@{init}}
+\index{init@{init}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{init()}{init()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::init (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a147319e07090ca301b9ade50125aa13b}{}\label{class_i3_d_1_1_log_msg_a147319e07090ca301b9ade50125aa13b}
+
+
+Inicializa el log. 
+
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!warning\+Msg@{warning\+Msg}}
+\index{warning\+Msg@{warning\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{warning\+Msg(const char $\ast$msg,...)}{warningMsg(const char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::warning\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a6735f004eeaca67e6296367e7dbf9790}{}\label{class_i3_d_1_1_log_msg_a6735f004eeaca67e6296367e7dbf9790}
+
+
+Mensaje de advertencia. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!warning\+Msg@{warning\+Msg}}
+\index{warning\+Msg@{warning\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{warning\+Msg(const char $\ast$file, int line, const char $\ast$function, char $\ast$msg,...)}{warningMsg(const char *file, int line, const char *function, char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::warning\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function, }
+\item[{char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a1c9d60f0b82ac69cf5357d5108cdf903}{}\label{class_i3_d_1_1_log_msg_a1c9d60f0b82ac69cf5357d5108cdf903}
+
+
+Warning\+Msg. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em file} & \\
+\hline
+\mbox{\tt in}  & {\em line} & \\
+\hline
+\mbox{\tt in}  & {\em function} & \\
+\hline
+\mbox{\tt in}  & {\em msg} & \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!warning\+Msg@{warning\+Msg}}
+\index{warning\+Msg@{warning\+Msg}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{warning\+Msg(const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{warningMsg(const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::warning\+Msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{const char $\ast$}]{file, }
+\item[{int}]{line, }
+\item[{const char $\ast$}]{function}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_acd07dbd3f6748a5d59f6f24fef6171ac}{}\label{class_i3_d_1_1_log_msg_acd07dbd3f6748a5d59f6f24fef6171ac}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!write@{write}}
+\index{write@{write}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{write(const char $\ast$logline, Log\+Level type=\+Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+O\+R)}{write(const char *logline, LogLevel type=LogLevel::LOG_ERROR)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Log\+Msg\+::write (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{logline, }
+\item[{{\bf Log\+Level}}]{type = {\ttfamily {\bf Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a71c24601dd2d2ff79422e1dc718ae722}{}\label{class_i3_d_1_1_log_msg_a71c24601dd2d2ff79422e1dc718ae722}
+
+
+Escribe una linea en el log. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em logline} & Texto que se va a escribir en el log. \\
+\hline
+\mbox{\tt in}  & {\em type} & Nivel de log \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{Ver también}
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} 
+\end{DoxySeeAlso}
+
+
+\subsection{Documentación de los datos miembro}
+\index{I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}!log\+Level@{log\+Level}}
+\index{log\+Level@{log\+Level}!I3\+D\+::\+Log\+Msg@{I3\+D\+::\+Log\+Msg}}
+\subsubsection[{\texorpdfstring{log\+Level}{logLevel}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Log\+Level} I3\+D\+::\+Log\+Msg\+::log\+Level = {\bf Log\+Level\+::\+L\+O\+G\+\_\+\+I\+N\+FO}\hspace{0.3cm}{\ttfamily [static]}}\hypertarget{class_i3_d_1_1_log_msg_a1a45bf0f5753da52a4a8ddf930c11ff8}{}\label{class_i3_d_1_1_log_msg_a1a45bf0f5753da52a4a8ddf930c11ff8}
+
+
+Nivel de log. 
+
+Por defecto L\+O\+G\+\_\+\+E\+R\+R\+OR \begin{DoxySeeAlso}{Ver también}
+\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} 
+\end{DoxySeeAlso}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_logger_8h}{Logger.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_logger_8cpp}{Logger.\+cpp}\end{DoxyCompactItemize}

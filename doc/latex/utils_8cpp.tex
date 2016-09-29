@@ -1,0 +1,86 @@
+\hypertarget{utils_8cpp}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/utils.cpp}
+\label{utils_8cpp}\index{D\+:/\+Desarrollo/tidop/src/utils.\+cpp@{D\+:/\+Desarrollo/tidop/src/utils.\+cpp}}
+{\ttfamily \#include $<$windows.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}opencv2/core/core.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}opencv2/imgproc/imgproc.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}utils.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}Logger.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}geometric\+\_\+entities\textbackslash{}segment.\+h\char`\"{}}\\*
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+char $\ast$ \hyperlink{namespace_i3_d_ac1abd2292dc3680c8a4ebacef95e6ade}{I3\+D\+::get\+Runfile} ()
+\begin{DoxyCompactList}\small\item\em Obtiene el path (directorio + nombre + extensión) de la aplicación que esta corriendo. \end{DoxyCompactList}\item 
+bool \hyperlink{namespace_i3_d_a9e1576d9f6cf5fafde1df4088c32839a}{I3\+D\+::is\+Directory} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Comprueba si existe un directorio. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a20e77295ba7f67ba6236394e785f5b0c}{I3\+D\+::create\+Dir} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Crea un directorio. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_acc1ab14ac3d1c9d3efbd87138d8d5392}{I3\+D\+::split\+To\+Numbers} (const std\+::string \&cad, std\+::vector$<$ int $>$ \&v\+Out, char $\ast$chs=\char`\"{},\char`\"{})
+\begin{DoxyCompactList}\small\item\em Separa una cadena en un array de enteros. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a1a92c63612e02d9f70782c1fccb5c082}{I3\+D\+::split\+To\+Numbers} (const std\+::string \&cad, std\+::vector$<$ double $>$ \&v\+Out, char $\ast$chs=\char`\"{},\char`\"{})
+\begin{DoxyCompactList}\small\item\em Separa una cadena en un array de dobles. \end{DoxyCompactList}\item 
+void \hyperlink{namespace_i3_d_a1de171b0987ef1bb08cf213ed720e055}{I3\+D\+::replace\+String} (std\+::string $\ast$str, const std\+::string \&str\+\_\+old, const std\+::string \&str\+\_\+new)
+\begin{DoxyCompactList}\small\item\em Reemplaza una cadena por otra en un texto. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a89da9a4ea917a3dd9dcdaa005427358b}{I3\+D\+::get\+File\+Dir} (const char $\ast$path, char $\ast$dir)
+\begin{DoxyCompactList}\small\item\em Optiene el directorio de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a620c9ad850d6cda696023ae128ad129b}{I3\+D\+::get\+File\+Drive} (const char $\ast$path, char $\ast$drive)
+\begin{DoxyCompactList}\small\item\em Optiene la unidad de disco de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_aaaf86094c42de054e31ad9a37a8d6011}{I3\+D\+::get\+File\+Extension} (const char $\ast$path, char $\ast$ext)
+\begin{DoxyCompactList}\small\item\em Optiene la extensión de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a95e0aa39065813030a0eabd87b2ebba3}{I3\+D\+::get\+File\+Name} (const char $\ast$path, char $\ast$name)
+\begin{DoxyCompactList}\small\item\em Optiene el nombre de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_af80e41a6e1e093328a8f8ef7c229aace}{I3\+D\+::get\+File\+Drive\+Dir} (const char $\ast$path, char $\ast$drive\+Dir)
+\begin{DoxyCompactList}\small\item\em Optiene el directorio de un archivo incluyendo la letra de la unidad. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_adfb7402f3b0af36734d291d955d61b14}{I3\+D\+::change\+File\+Name} (const char $\ast$path, char $\ast$new\+Name, char $\ast$path\+Out)
+\begin{DoxyCompactList}\small\item\em Cambia el nombre de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a5803dd8a7fda212c641d37ea3658e7b6}{I3\+D\+::change\+File\+Extension} (const char $\ast$path, char $\ast$new\+Ext, char $\ast$path\+Out)
+\begin{DoxyCompactList}\small\item\em Cambia la extensión de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a31c036a5febfb508057b281e7d3e5085}{I3\+D\+::change\+File\+Name\+And\+Extension} (const char $\ast$path, char $\ast$new\+Name\+Ext, char $\ast$path\+Out)
+\begin{DoxyCompactList}\small\item\em Cambia el nombre y la extensión de un archivo. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a895265365d8327818f4683e9dd8ecace}{I3\+D\+::split} (const std\+::string \&in, std\+::vector$<$ std\+::string $>$ \&out, char $\ast$chs=\char`\"{},\char`\"{})
+\begin{DoxyCompactList}\small\item\em Separa una cadena. \end{DoxyCompactList}\item 
+double \hyperlink{namespace_i3_d_aa93498c7d5f8b870614b8bdfacc2803f}{I3\+D\+::laplacian\+Variance} (const cv\+::\+Mat \&src)
+\begin{DoxyCompactList}\small\item\em Varianza del laplaciano. \end{DoxyCompactList}\item 
+double \hyperlink{namespace_i3_d_a4e1d5dc1475e3a6776f80309c1c87afe}{I3\+D\+::compute\+Median} (const std\+::vector$<$ double $>$ \&input)
+\item 
+double \hyperlink{namespace_i3_d_aac402911a928691f26695189a567dc57}{I3\+D\+::compute\+Temp\+M\+AD} (const std\+::vector$<$ double $>$ \&input, const double median)
+\item 
+bool \hyperlink{namespace_i3_d_a21089b14dd66b55b189cda65bc2ac2ce}{I3\+D\+::is\+Outlier} (const double temp, const double median, const double mad)
+\item 
+double \hyperlink{namespace_i3_d_a071314591a6a90d4c4f2310f3505209f}{I3\+D\+::regression\+Linear\+YX} (const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)
+\begin{DoxyCompactList}\small\item\em Recta de regresión de Y sobre X La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X. La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X. y = m $\ast$ x + b. \end{DoxyCompactList}\item 
+double \hyperlink{namespace_i3_d_acefc3de7baad17db85d5af2031cb1e15}{I3\+D\+::regression\+Linear\+XY} (const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)
+\begin{DoxyCompactList}\small\item\em Recta de regresión de X sobre Y La recta de regresión de X sobre Y se utiliza para estimar los valores de la X a partir de los de la Y. La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable Y. x = m$\ast$y + b. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a89b1deaee3bf80d044bbc4426978ca97}{I3\+D\+::sort\+Mat\+Rows} (const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)
+\begin{DoxyCompactList}\small\item\em Ordena los valores de una matriz de mayor a menor por filas. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a91f022b6f9299316377acf43b1bb33ff}{I3\+D\+::sort\+Mat\+Cols} (const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)
+\begin{DoxyCompactList}\small\item\em Ordena los valores de una matriz de mayor a menor por columnas. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga6219d37cf7c1be1176f323bdf7982b2b}{I3\+D\+::degrees\+To\+Decimal\+Degrees} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gaedea9963e49e918a8fbfc75e0c1dfc7d}{I3\+D\+::degrees\+To\+Radians} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a radianes. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gafe5e54462cbdb02cc83abd739f1f8e3b}{I3\+D\+::degrees\+To\+Gradians} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a grados centesimales. \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_gac669f1ed12a67d5a4da09c1eb3feb9f6}{I3\+D\+::decimal\+Degrees\+To\+Degrees} (double decimal\+Degrees, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gac80712e13661211ce5325142d963bdfe}{I3\+D\+::decimal\+Degrees\+To\+Radians} (double decimal\+Degrees)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a radianes. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gabf6a21b89de5fd742a94f98732b825f2}{I3\+D\+::decimal\+Degrees\+To\+Gradians} (double decimal\+Degrees)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a grados centesimales. \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_ga3f1cbd404b98911d6a7092b9063543b3}{I3\+D\+::radians\+To\+Degrees} (double radians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de radianes a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga07a4491a18ef984ab74ddd5df5209556}{I3\+D\+::radians\+To\+Decimal\+Degrees} (double radians)
+\begin{DoxyCompactList}\small\item\em Conversión de radianes a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga0779b094fa341344b67294926c0c7ef0}{I3\+D\+::radians\+To\+Gradians} (double radians)
+\begin{DoxyCompactList}\small\item\em radians\+To\+Gradians \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_ga381983c467f07e74896f19393c6d900a}{I3\+D\+::gradians\+To\+Degrees} (double gradians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga15009349cf6dbbf4bba63b9461a2fdb2}{I3\+D\+::gradians\+To\+Decimal\+Degrees} (double gradians)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}{I3\+D\+::gradians\+To\+Radians} (double gradians)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a radianes. \end{DoxyCompactList}\end{DoxyCompactItemize}

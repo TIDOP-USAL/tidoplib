@@ -1,0 +1,97 @@
+\hypertarget{class_i3_d_1_1_rotation}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Rotation$<$ T $>$}
+\label{class_i3_d_1_1_rotation}\index{I3\+D\+::\+Rotation$<$ T $>$@{I3\+D\+::\+Rotation$<$ T $>$}}
+
+
+Rotación.  
+
+
+
+
+{\ttfamily \#include $<$transform.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Rotation$<$ T $>$\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_i3_d_1_1_rotation}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_rotation_aa256156103083742ff0b09e274302a02}{Rotation} ()
+\begin{DoxyCompactList}\small\item\em Constructora por defecto. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_rotation_a76e534145c6f6c81b3d519d97b3d9353}{Rotation} (double angle)
+\begin{DoxyCompactList}\small\item\em Constructora. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_gae7637f88523deb1879cf8a712820d12e}{compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calculo del águlo de rotación. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} \hyperlink{class_i3_d_1_1_rotation_ae7c5193c2f47f782b8707fd8cc02078f}{get\+Angle} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve el ángulo de la rotación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gacc531b7f0f00dd34f197a5c9ba07b8e2}{set\+Angle} (\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} ang)
+\begin{DoxyCompactList}\small\item\em Establece en ángulo de la rotación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga0032788395928aa7419d506981ef03d3}{transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un conjunto de puntos. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga40ad8baf1f908752fe8afe20b71e8d67}{transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_ga7db02aea0ee3a8c5167e16de0c89b079}{transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un punto. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Rotation$<$ T $>$}
+
+Rotación. 
+
+Transformación que aplica una rotación en el plano a un conjunto de puntos 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}!Rotation@{Rotation}}
+\index{Rotation@{Rotation}!I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}}
+\subsubsection[{\texorpdfstring{Rotation()}{Rotation()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::{\bf Rotation} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_rotation_aa256156103083742ff0b09e274302a02}{}\label{class_i3_d_1_1_rotation_aa256156103083742ff0b09e274302a02}
+
+
+Constructora por defecto. 
+
+\index{I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}!Rotation@{Rotation}}
+\index{Rotation@{Rotation}!I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}}
+\subsubsection[{\texorpdfstring{Rotation(double angle)}{Rotation(double angle)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::{\bf Rotation} (
+\begin{DoxyParamCaption}
+\item[{double}]{angle}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_rotation_a76e534145c6f6c81b3d519d97b3d9353}{}\label{class_i3_d_1_1_rotation_a76e534145c6f6c81b3d519d97b3d9353}
+
+
+Constructora. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em angle} & Ángulo \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}!get\+Angle@{get\+Angle}}
+\index{get\+Angle@{get\+Angle}!I3\+D\+::\+Rotation@{I3\+D\+::\+Rotation}}
+\subsubsection[{\texorpdfstring{get\+Angle() const }{getAngle() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf sub\+\_\+type} {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::get\+Angle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_rotation_ae7c5193c2f47f782b8707fd8cc02078f}{}\label{class_i3_d_1_1_rotation_ae7c5193c2f47f782b8707fd8cc02078f}
+
+
+Devuelve el ángulo de la rotación. 
+
+\begin{DoxyReturn}{Devuelve}
+Ángulo en radianes 
+\end{DoxyReturn}
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{transform_8h}{transform.\+h}\end{DoxyCompactItemize}

@@ -1,0 +1,111 @@
+\hypertarget{class_i3_d_1_1_segment3_d}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Segment3D$<$ T $>$}
+\label{class_i3_d_1_1_segment3_d}\index{I3\+D\+::\+Segment3\+D$<$ T $>$@{I3\+D\+::\+Segment3\+D$<$ T $>$}}
+
+
+Clase segmento 3D.  
+
+
+
+
+{\ttfamily \#include $<$segment.\+h$>$}
+
+\subsection*{Tipos públicos}
+\begin{DoxyCompactItemize}
+\item 
+typedef T \hyperlink{class_i3_d_1_1_segment3_d_a367ef41bf0a1e329a4363fe5e3731612}{type}
+\end{DoxyCompactItemize}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group___geometric_entities_ga726c1cdb80b816445604fc035f0b709b}{Segment3D} ()
+\begin{DoxyCompactList}\small\item\em Constructor por defecto. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_gad0a6b6c727b4f675429acb7a28518cbd}{Segment3D} (const \hyperlink{class_i3_d_1_1_segment3_d}{Segment3D} \&segment)
+\begin{DoxyCompactList}\small\item\em Constructor de copia. \end{DoxyCompactList}\item 
+\hyperlink{group___geometric_entities_ga7a2024be1820ddc19158004932d79882}{Segment3D} (const cv\+::\+Point3\+\_\+$<$ T $>$ \&\+\_\+pt1, const cv\+::\+Point3\+\_\+$<$ T $>$ \&\+\_\+pt2)
+\begin{DoxyCompactList}\small\item\em Constructor segment. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_segment3_d}{Segment3D} \& \hyperlink{group___geometric_entities_gaa95bd137286b52bc178a569720bea3d6}{operator=} (const \hyperlink{class_i3_d_1_1_segment3_d}{Segment3D} \&segment)
+\begin{DoxyCompactList}\small\item\em Sobrecarga del operador de asignación. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T2 $>$ }\\\hyperlink{group___geometric_entities_ga0a05ef1543e77df2c3dc9e40d2126b28}{operator Segment3\+D$<$ T2 $>$} () const 
+\begin{DoxyCompactList}\small\item\em Conversión a un segmento de un tipo diferente. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_segment3_d_a3194ca3e7b47dd389a460a7609ee4c1c}{length} () const 
+\begin{DoxyCompactList}\small\item\em Longitud del segmento. \end{DoxyCompactList}\item 
+cv\+::\+Point3\+\_\+$<$ T $>$ \hyperlink{class_i3_d_1_1_segment3_d_a4ac8bf44e4879682ee1626c5b74dbb3d}{vector} () const 
+\begin{DoxyCompactList}\small\item\em Vector. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Atributos públicos}
+\begin{DoxyCompactItemize}
+\item 
+cv\+::\+Point3\+\_\+$<$ T $>$ \hyperlink{class_i3_d_1_1_segment3_d_af9ee76f2e2b78d61ef8ea044bb47fe21}{pt1}
+\begin{DoxyCompactList}\small\item\em Punto 1. \end{DoxyCompactList}\item 
+cv\+::\+Point3\+\_\+$<$ T $>$ \hyperlink{class_i3_d_1_1_segment3_d_a91b9feb55271c1b1cbe6be0254904e21}{pt2}
+\begin{DoxyCompactList}\small\item\em Punto 2. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Segment3\+D$<$ T $>$}
+
+Clase segmento 3D. 
+
+Esta template representa un segmento recto entre dos puntos independientemente de que sean int, double o float. Se utiliza la clase Point3\+\_\+ de Open\+CV.
+
+Se han definido los siguientes alias para facilitar el acceso\+:
+
+typedef Segment3\+D$<$int$>$ Segment3dI; typedef Segment3\+D$<$double$>$ Segment3dD; typedef Segment3\+D$<$float$>$ Segment3dF; 
+
+\subsection{Documentación de los \textquotesingle{}Typedef\textquotesingle{} miembros de la clase}
+\index{I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}!type@{type}}
+\index{type@{type}!I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}}
+\subsubsection[{\texorpdfstring{type}{type}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ typedef T {\bf I3\+D\+::\+Segment3D}$<$ T $>$\+::{\bf type}}\hypertarget{class_i3_d_1_1_segment3_d_a367ef41bf0a1e329a4363fe5e3731612}{}\label{class_i3_d_1_1_segment3_d_a367ef41bf0a1e329a4363fe5e3731612}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}!length@{length}}
+\index{length@{length}!I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}}
+\subsubsection[{\texorpdfstring{length() const }{length() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ double {\bf I3\+D\+::\+Segment3D}$<$ T $>$\+::length (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_segment3_d_a3194ca3e7b47dd389a460a7609ee4c1c}{}\label{class_i3_d_1_1_segment3_d_a3194ca3e7b47dd389a460a7609ee4c1c}
+
+
+Longitud del segmento. 
+
+\begin{DoxyReturn}{Devuelve}
+Longitud del segmento 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}!vector@{vector}}
+\index{vector@{vector}!I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}}
+\subsubsection[{\texorpdfstring{vector() const }{vector() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ cv\+::\+Point3\+\_\+$<$T$>$ {\bf I3\+D\+::\+Segment3D}$<$ T $>$\+::vector (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_segment3_d_a4ac8bf44e4879682ee1626c5b74dbb3d}{}\label{class_i3_d_1_1_segment3_d_a4ac8bf44e4879682ee1626c5b74dbb3d}
+
+
+Vector. 
+
+\begin{DoxyReturn}{Devuelve}
+Vector del segmento 
+\end{DoxyReturn}
+
+
+\subsection{Documentación de los datos miembro}
+\index{I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}!pt1@{pt1}}
+\index{pt1@{pt1}!I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}}
+\subsubsection[{\texorpdfstring{pt1}{pt1}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ cv\+::\+Point3\+\_\+$<$T$>$ {\bf I3\+D\+::\+Segment3D}$<$ T $>$\+::pt1}\hypertarget{class_i3_d_1_1_segment3_d_af9ee76f2e2b78d61ef8ea044bb47fe21}{}\label{class_i3_d_1_1_segment3_d_af9ee76f2e2b78d61ef8ea044bb47fe21}
+
+
+Punto 1. 
+
+\index{I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}!pt2@{pt2}}
+\index{pt2@{pt2}!I3\+D\+::\+Segment3D@{I3\+D\+::\+Segment3D}}
+\subsubsection[{\texorpdfstring{pt2}{pt2}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T$>$ cv\+::\+Point3\+\_\+$<$T$>$ {\bf I3\+D\+::\+Segment3D}$<$ T $>$\+::pt2}\hypertarget{class_i3_d_1_1_segment3_d_a91b9feb55271c1b1cbe6be0254904e21}{}\label{class_i3_d_1_1_segment3_d_a91b9feb55271c1b1cbe6be0254904e21}
+
+
+Punto 2. 
+
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/\hyperlink{segment_8h}{segment.\+h}\end{DoxyCompactItemize}

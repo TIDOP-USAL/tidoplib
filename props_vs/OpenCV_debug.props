@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include;</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_DEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\Libs\opencv\x64\vc12\lib;..\..\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_shape310d.lib;opencv_stitching310d.lib;opencv_superres310d.lib;opencv_videostab310d.lib;opencv_objdetect310d.lib;opencv_photo310d.lib;opencv_calib3d310d.lib;opencv_features2d310d.lib;opencv_flann310d.lib;opencv_highgui310d.lib;opencv_ml310d.lib;opencv_videoio310d.lib;opencv_imgcodecs310d.lib;opencv_video310d.lib;opencv_imgproc310d.lib;opencv_core310d.lib;opencv_line_descriptor310d.lib;opencv_optflow310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

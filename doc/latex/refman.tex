@@ -1,0 +1,255 @@
+\documentclass[twoside]{book}
+
+% Packages required by doxygen
+\usepackage{fixltx2e}
+\usepackage{calc}
+\usepackage{doxygen}
+\usepackage[export]{adjustbox} % also loads graphicx
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{makeidx}
+\usepackage{multicol}
+\usepackage{multirow}
+\PassOptionsToPackage{warn}{textcomp}
+\usepackage{textcomp}
+\usepackage[nointegrals]{wasysym}
+\usepackage[table]{xcolor}
+
+% NLS support packages
+\usepackage[spanish]{babel}
+% Font selection
+\usepackage[T1]{fontenc}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+\usepackage{amssymb}
+\usepackage{sectsty}
+\renewcommand{\familydefault}{\sfdefault}
+\allsectionsfont{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\renewcommand{\DoxyLabelFont}{%
+  \fontseries{bc}\selectfont%
+  \color{darkgray}%
+}
+\newcommand{\+}{\discretionary{\mbox{\scriptsize$\hookleftarrow$}}{}{}}
+
+% Page & text layout
+\usepackage{geometry}
+\geometry{%
+  a4paper,%
+  top=2.5cm,%
+  bottom=2.5cm,%
+  left=2.5cm,%
+  right=2.5cm%
+}
+\tolerance=750
+\hfuzz=15pt
+\hbadness=750
+\setlength{\emergencystretch}{15pt}
+\setlength{\parindent}{0cm}
+\setlength{\parskip}{3ex plus 2ex minus 2ex}
+\makeatletter
+\renewcommand{\paragraph}{%
+  \@startsection{paragraph}{4}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@parafont%
+  }%
+}
+\renewcommand{\subparagraph}{%
+  \@startsection{subparagraph}{5}{0ex}{-1.0ex}{1.0ex}{%
+    \normalfont\normalsize\bfseries\SS@subparafont%
+  }%
+}
+\makeatother
+
+% Headers & footers
+\usepackage{fancyhdr}
+\pagestyle{fancyplain}
+\fancyhead[LE]{\fancyplain{}{\bfseries\thepage}}
+\fancyhead[CE]{\fancyplain{}{}}
+\fancyhead[RE]{\fancyplain{}{\bfseries\leftmark}}
+\fancyhead[LO]{\fancyplain{}{\bfseries\rightmark}}
+\fancyhead[CO]{\fancyplain{}{}}
+\fancyhead[RO]{\fancyplain{}{\bfseries\thepage}}
+\fancyfoot[LE]{\fancyplain{}{}}
+\fancyfoot[CE]{\fancyplain{}{}}
+\fancyfoot[RE]{\fancyplain{}{\bfseries\scriptsize Generado por Doxygen }}
+\fancyfoot[LO]{\fancyplain{}{\bfseries\scriptsize Generado por Doxygen }}
+\fancyfoot[CO]{\fancyplain{}{}}
+\fancyfoot[RO]{\fancyplain{}{}}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\chaptermark}[1]{%
+  \markboth{#1}{}%
+}
+\renewcommand{\sectionmark}[1]{%
+  \markright{\thesection\ #1}%
+}
+
+% Indices & bibliography
+\usepackage{natbib}
+\usepackage[titles]{tocloft}
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{5}
+\makeindex
+
+% Hyperlinks (required, but should be loaded last)
+\usepackage{ifpdf}
+\ifpdf
+  \usepackage[pdftex,pagebackref=true]{hyperref}
+\else
+  \usepackage[ps2pdf,pagebackref=true]{hyperref}
+\fi
+\hypersetup{%
+  colorlinks=true,%
+  linkcolor=blue,%
+  citecolor=blue,%
+  unicode%
+}
+
+% Custom commands
+\newcommand{\clearemptydoublepage}{%
+  \newpage{\pagestyle{empty}\cleardoublepage}%
+}
+
+\usepackage{caption}
+\captionsetup{labelsep=space,justification=centering,font={bf},singlelinecheck=off,skip=4pt,position=top}
+
+%===== C O N T E N T S =====
+
+\begin{document}
+
+% Titlepage & ToC
+\hypersetup{pageanchor=false,
+             bookmarksnumbered=true,
+             pdfencoding=unicode
+            }
+\pagenumbering{roman}
+\begin{titlepage}
+\vspace*{7cm}
+\begin{center}%
+{\Large Tidop Lib }\\
+\vspace*{1cm}
+{\large Generado por Doxygen 1.8.11}\\
+\end{center}
+\end{titlepage}
+\clearemptydoublepage
+\tableofcontents
+\clearemptydoublepage
+\pagenumbering{arabic}
+\hypersetup{pageanchor=true}
+
+%--- Begin generated contents ---
+\chapter{Lista de obsoletos}
+\label{deprecated}
+\hypertarget{deprecated}{}
+\input{deprecated}
+\chapter{Indice de módulos}
+\input{modules}
+\chapter{Indice de namespaces}
+\input{namespaces}
+\chapter{Indice jerárquico}
+\input{hierarchy}
+\chapter{Índice de clases}
+\input{annotated}
+\chapter{Indice de archivos}
+\input{files}
+\chapter{Documentación de módulos}
+\input{group___geometric_entities}
+\include{group___img_proc}
+\include{group___morph_oper}
+\include{group__trf_group}
+\include{group__trf2_d_group}
+\include{group__trf3_d_group}
+\include{group__format_conversion}
+\chapter{Documentación de namespaces}
+\input{namespace_i3_d}
+\chapter{Documentación de las clases}
+\input{class_i3_d_1_1_afin}
+\input{class_i3_d_1_1_bilateral_filter}
+\input{class_i3_d_1_1_binarize}
+\input{class_i3_d_1_1_black_hat}
+\input{class_i3_d_1_1_blur}
+\input{class_i3_d_1_1_box_filter}
+\input{class_i3_d_1_1_canny}
+\input{class_i3_d_1_1_closing}
+\input{class_i3_d_1_1_dilate}
+\input{class_i3_d_1_1_discrete_fourier_trf}
+\input{class_i3_d_1_1_equalize_histogram}
+\input{class_i3_d_1_1_erotion}
+\input{class_i3_d_1_1_features2_d}
+\input{class_i3_d_1_1_filter2_d}
+\input{class_i3_d_1_1_function_process}
+\input{class_i3_d_1_1_gaussian_blur}
+\input{class_i3_d_1_1_gradient}
+\input{class_i3_d_1_1_helmert2_d}
+\input{class_i3_d_1_1_helmert3_d}
+\input{class_i3_d_1_1_img_processing}
+\input{class_i3_d_1_1_img_processing_list}
+\input{class_i3_d_1_1_laplacian}
+\input{class_i3_d_1_1ld_group_lines}
+\input{class_i3_d_1_1ld_houh}
+\input{class_i3_d_1_1ld_houh_fast}
+\input{class_i3_d_1_1ld_houh_p}
+\input{class_i3_d_1_1ld_l_s_d}
+\input{class_i3_d_1_1_line_detector}
+\input{class_i3_d_1_1_log_msg}
+\input{class_i3_d_1_1_matching}
+\input{class_i3_d_1_1_median_blur}
+\input{class_i3_d_1_1morphological_operation}
+\input{class_i3_d_1_1_multi_point}
+\input{class_i3_d_1_1_normalize}
+\input{class_i3_d_1_1_opening}
+\input{class_i3_d_1_1_projective}
+\input{class_i3_d_1_1_resize}
+\input{class_i3_d_1_1_rotation}
+\input{class_i3_d_1_1_segment}
+\input{class_i3_d_1_1_segment3_d}
+\input{class_i3_d_1_1_sobel}
+\input{class_i3_d_1_1_top_hat}
+\input{class_i3_d_1_1_transform}
+\input{class_i3_d_1_1_transform2_d}
+\input{class_i3_d_1_1_transform3_d}
+\input{class_i3_d_1_1_translate}
+\input{class_i3_d_1_1_trf_multiple}
+\input{class_i3_d_1_1_trf_perspective}
+\input{class_i3_d_1_1_video_stream}
+\input{class_i3_d_1_1_video_window}
+\input{class_i3_d_1_1_window}
+\chapter{Documentación de archivos}
+\input{config_8h}
+\input{defs_8h}
+\input{fourier_8cpp}
+\input{fourier_8h}
+\input{operations_8cpp}
+\input{operations_8h}
+\input{point_8cpp}
+\input{point_8h}
+\input{segment_8cpp}
+\input{segment_8h}
+\input{window_8cpp}
+\input{window_8h}
+\input{_img_processing_8cpp}
+\input{_img_processing_8h}
+\input{linedetector_8cpp}
+\input{_line_detector_8h}
+\input{_logger_8cpp}
+\input{_logger_8h}
+\input{matching_8cpp}
+\input{matching_8h}
+\input{transform_8cpp}
+\input{transform_8h}
+\input{utils_8cpp}
+\input{utils_8h}
+\input{_video_stream_8cpp}
+\input{_video_stream_8h}
+%--- End generated contents ---
+
+% Index
+\backmatter
+\newpage
+\phantomsection
+\clearemptydoublepage
+\addcontentsline{toc}{chapter}{Índice}
+\printindex
+
+\end{document}

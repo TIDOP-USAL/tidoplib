@@ -1,0 +1,135 @@
+\hypertarget{class_i3_d_1_1ld_houh_fast}{}\section{Referencia de la Clase I3D\+:\+:ld\+Houh\+Fast}
+\label{class_i3_d_1_1ld_houh_fast}\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+
+
+Detector de lineas rapido de Hough.  
+
+
+
+
+{\ttfamily \#include $<$Line\+Detector.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:ld\+Houh\+Fast\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1ld_houh_fast}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1ld_houh_fast_a750f01c43402983b0839ba47271a2dad}{ld\+Houh\+Fast} (const cv\+::\+Scalar \&at=cv\+::\+Scalar(0, C\+V\+\_\+\+PI/2))
+\begin{DoxyCompactList}\small\item\em Constructora de la clase \hyperlink{class_i3_d_1_1ld_houh_fast}{ld\+Houh\+Fast}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1ld_houh_fast_abe17675e0e7f4aec0c9400f39a8e6963}{$\sim$ld\+Houh\+Fast} ()
+\begin{DoxyCompactList}\small\item\em Destructora de la clase \hyperlink{class_i3_d_1_1ld_houh_p}{ld\+HouhP}. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_houh_fast_a9cbcde2e4327ba3fd7c65d404bea5ee7}{run} (cv\+::\+Mat \&image) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformada de Hough probabilistica para lineas. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1ld_houh_fast_a41fd58bdeeb31893f4a98a90ce9ec516}{run} (cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformada de Hough probabilistica para lineas. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1ld_houh_fast_a514054f1d58cff2d65f3b63f3dc67e32}{set\+Parameters} ()
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Detector de lineas rapido de Hough. 
+
+Clase para la detección de lineas mediante la transformada rapida de Hough para lineas. Extraido de ximgproc\textbackslash{}samples\textbackslash{}fast\+\_\+hough\+\_\+transform.\+cpp 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}!ld\+Houh\+Fast@{ld\+Houh\+Fast}}
+\index{ld\+Houh\+Fast@{ld\+Houh\+Fast}!I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+\subsubsection[{\texorpdfstring{ld\+Houh\+Fast(const cv\+::\+Scalar \&at=cv\+::\+Scalar(0, C\+V\+\_\+\+P\+I/2))}{ldHouhFast(const cv::Scalar &at=cv::Scalar(0, CV_PI/2))}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+Houh\+Fast\+::ld\+Houh\+Fast (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Scalar \&}]{at = {\ttfamily cv\+:\+:Scalar(0,~CV\+\_\+PI~/~2)}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_houh_fast_a750f01c43402983b0839ba47271a2dad}{}\label{class_i3_d_1_1ld_houh_fast_a750f01c43402983b0839ba47271a2dad}
+
+
+Constructora de la clase \hyperlink{class_i3_d_1_1ld_houh_fast}{ld\+Houh\+Fast}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em at} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}!````~ld\+Houh\+Fast@{$\sim$ld\+Houh\+Fast}}
+\index{````~ld\+Houh\+Fast@{$\sim$ld\+Houh\+Fast}!I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+\subsubsection[{\texorpdfstring{$\sim$ld\+Houh\+Fast()}{~ldHouhFast()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+Houh\+Fast\+::$\sim$ld\+Houh\+Fast (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1ld_houh_fast_abe17675e0e7f4aec0c9400f39a8e6963}{}\label{class_i3_d_1_1ld_houh_fast_abe17675e0e7f4aec0c9400f39a8e6963}
+
+
+Destructora de la clase \hyperlink{class_i3_d_1_1ld_houh_p}{ld\+HouhP}. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image) override}{run(cv::Mat &image) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+Houh\+Fast\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_houh_fast_a9cbcde2e4327ba3fd7c65d404bea5ee7}{}\label{class_i3_d_1_1ld_houh_fast_a9cbcde2e4327ba3fd7c65d404bea5ee7}
+
+
+Calcula la transformada de Hough probabilistica para lineas. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_ad439cb59972938259f6b36bcdbb644b7}{I3\+D\+::\+Line\+Detector}.
+
+\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image, const cv\+::\+Scalar \&angletol) override}{run(cv::Mat &image, const cv::Scalar &angletol) override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::ld\+Houh\+Fast\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image, }
+\item[{const cv\+::\+Scalar \&}]{angletol}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_houh_fast_a41fd58bdeeb31893f4a98a90ce9ec516}{}\label{class_i3_d_1_1ld_houh_fast_a41fd58bdeeb31893f4a98a90ce9ec516}
+
+
+Calcula la transformada de Hough probabilistica para lineas. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\mbox{\tt in}  & {\em angletol} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_abc00c6e15e2386a32720886d60a20ccd}{I3\+D\+::\+Line\+Detector}.
+
+\index{I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!I3\+D\+::ld\+Houh\+Fast@{I3\+D\+::ld\+Houh\+Fast}}
+\subsubsection[{\texorpdfstring{set\+Parameters()}{setParameters()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::ld\+Houh\+Fast\+::set\+Parameters (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1ld_houh_fast_a514054f1d58cff2d65f3b63f3dc67e32}{}\label{class_i3_d_1_1ld_houh_fast_a514054f1d58cff2d65f3b63f3dc67e32}
+
+
+Establece los parámetros. 
+
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_line_detector_8h}{Line\+Detector.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{linedetector_8cpp}{linedetector.\+cpp}\end{DoxyCompactItemize}

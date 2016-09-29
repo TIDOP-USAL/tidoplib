@@ -1,0 +1,124 @@
+\hypertarget{class_i3_d_1_1_filter2_d}{}\section{Referencia de la Clase I3D\+:\+:Filter2D}
+\label{class_i3_d_1_1_filter2_d}\index{I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}}
+
+
+Aplica un filtrado mediante una matriz de convolución.  
+
+
+
+
+{\ttfamily \#include $<$Img\+Processing.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Filter2D\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_filter2_d}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_filter2_d_aa34212c2a0de19d4eeba64ec222e8a69}{Filter2D} (int ddepth, cv\+::\+Mat kernel, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), double delta=0, int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+C\+O\+N\+S\+T\+A\+NT)
+\begin{DoxyCompactList}\small\item\em Constructora clase \hyperlink{class_i3_d_1_1_filter2_d}{Filter2D}. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_filter2_d_a46f44465658be004e62d7e72cc40cb84}{execute} (const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override
+\begin{DoxyCompactList}\small\item\em Ejecuta el proceso. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_filter2_d_acf15b9a9958739c909768325fad1a3d7}{set\+Parameters} (int ddepth, cv\+::\+Mat kernel, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), double delta=0, int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+C\+O\+N\+S\+T\+A\+NT)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros del filtro de convolución. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Aplica un filtrado mediante una matriz de convolución. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}!Filter2D@{Filter2D}}
+\index{Filter2D@{Filter2D}!I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}}
+\subsubsection[{\texorpdfstring{Filter2\+D(int ddepth, cv\+::\+Mat kernel, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), double delta=0, int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+C\+O\+N\+S\+T\+A\+N\+T)}{Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor=cv::Point(-1,-1), double delta=0, int borderType=cv::BORDER_CONSTANT)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Filter2\+D\+::\+Filter2D (
+\begin{DoxyParamCaption}
+\item[{int}]{ddepth, }
+\item[{cv\+::\+Mat}]{kernel, }
+\item[{cv\+::\+Point}]{anchor = {\ttfamily cv\+:\+:Point(-\/1,~-\/1)}, }
+\item[{double}]{delta = {\ttfamily 0}, }
+\item[{int}]{border\+Type = {\ttfamily cv\+:\+:BORDER\+\_\+CONSTANT}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_filter2_d_aa34212c2a0de19d4eeba64ec222e8a69}{}\label{class_i3_d_1_1_filter2_d_aa34212c2a0de19d4eeba64ec222e8a69}
+
+
+Constructora clase \hyperlink{class_i3_d_1_1_filter2_d}{Filter2D}. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ddepth} & Profundidad de la imagen de destino. ddepth=-\/1\+: Misma profundidad que la imagen de origen \\
+\hline
+\mbox{\tt in}  & {\em kernel} & Matriz de convolución \\
+\hline
+\mbox{\tt in}  & {\em anchor} & Punto de anclaje. Por defecto es el centro del kernel \\
+\hline
+\mbox{\tt in}  & {\em delta} & Valor opcional añadido a los píxeles filtrados \\
+\hline
+\mbox{\tt in}  & {\em border\+Type} & Método de extrapolación \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}!execute@{execute}}
+\index{execute@{execute}!I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}}
+\subsubsection[{\texorpdfstring{execute(const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override}{execute(const cv::Mat &matIn, cv::Mat *matOut) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::\+Filter2\+D\+::execute (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Mat \&}]{mat\+In, }
+\item[{cv\+::\+Mat $\ast$}]{mat\+Out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_filter2_d_a46f44465658be004e62d7e72cc40cb84}{}\label{class_i3_d_1_1_filter2_d_a46f44465658be004e62d7e72cc40cb84}
+
+
+Ejecuta el proceso. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em mat\+In} & Imagen de entrada \\
+\hline
+\mbox{\tt out}  & {\em mat\+Out} & Imagen de salida \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error. Si los procesos se ejecutan correctamente devuelve 0. 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_img_processing_a74195f05bbf034566e9ff6e10f3af4c9}{I3\+D\+::\+Img\+Processing}.
+
+\index{I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!I3\+D\+::\+Filter2D@{I3\+D\+::\+Filter2D}}
+\subsubsection[{\texorpdfstring{set\+Parameters(int ddepth, cv\+::\+Mat kernel, cv\+::\+Point anchor=cv\+::\+Point(-\/1,-\/1), double delta=0, int border\+Type=cv\+::\+B\+O\+R\+D\+E\+R\+\_\+\+C\+O\+N\+S\+T\+A\+N\+T)}{setParameters(int ddepth, cv::Mat kernel, cv::Point anchor=cv::Point(-1,-1), double delta=0, int borderType=cv::BORDER_CONSTANT)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Filter2\+D\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{int}]{ddepth, }
+\item[{cv\+::\+Mat}]{kernel, }
+\item[{cv\+::\+Point}]{anchor = {\ttfamily cv\+:\+:Point(-\/1,~-\/1)}, }
+\item[{double}]{delta = {\ttfamily 0}, }
+\item[{int}]{border\+Type = {\ttfamily cv\+:\+:BORDER\+\_\+CONSTANT}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_filter2_d_acf15b9a9958739c909768325fad1a3d7}{}\label{class_i3_d_1_1_filter2_d_acf15b9a9958739c909768325fad1a3d7}
+
+
+Establece los parámetros del filtro de convolución. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ddepth} & Profundidad de la imagen de destino. ddepth=-\/1\+: Misma profundidad que la imagen de origen \\
+\hline
+\mbox{\tt in}  & {\em kernel} & Matriz de convolución \\
+\hline
+\mbox{\tt in}  & {\em anchor} & Punto de anclaje. Por defecto es el centro del kernel \\
+\hline
+\mbox{\tt in}  & {\em delta} & Valor opcional añadido a los píxeles filtrados \\
+\hline
+\mbox{\tt in}  & {\em border\+Type} & Método de extrapolación \\
+\hline
+\end{DoxyParams}
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8h}{Img\+Processing.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8cpp}{Img\+Processing.\+cpp}\end{DoxyCompactItemize}

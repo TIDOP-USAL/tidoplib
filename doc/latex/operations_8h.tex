@@ -1,0 +1,24 @@
+\hypertarget{operations_8h}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/operations.h}
+\label{operations_8h}\index{D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/operations.\+h@{D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/operations.\+h}}
+{\ttfamily \#include $<$limits$>$}\\*
+{\ttfamily \#include \char`\"{}opencv2/core/core.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}core\textbackslash{}defs.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}geometric\+\_\+entities\textbackslash{}segment.\+h\char`\"{}}\\*
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga6cfd96fd34bd41f5b201d69d70daa705}{I3\+D\+::length} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
+\begin{DoxyCompactList}\small\item\em Longitud o modulo de un vector 2D. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gadc4e42bc957a28f97e0d45d09d5e1db7}{I3\+D\+::length} (const cv\+::\+Point3\+\_\+$<$ T $>$ \&v)
+\begin{DoxyCompactList}\small\item\em Longitud o modulo de un vector 3D. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaf3a6913bb5125e5d2e69a2e48c7336fd}{I3\+D\+::distance} (const T \&pt1, const T \&pt2)
+\begin{DoxyCompactList}\small\item\em Distancia entre dos puntos. \end{DoxyCompactList}\item 
+int \hyperlink{group___geometric_entities_ga50289ee8c51aeff4b2f4706acbabd932}{I3\+D\+::point\+Nearest} (const std\+::vector$<$ cv\+::\+Point $>$ \&pts\+\_\+fourier, const cv\+::\+Point \&pt\+\_\+intersect)
+\item 
+bool \hyperlink{group___geometric_entities_gaa7aa32d175a13ad9ac23bfe016754b1f}{I3\+D\+::is\+Collinear\+Points} (const cv\+::\+Point \&pt\+\_\+c, const Line \&line\+\_\+i\+\_\+r, double tolerance)
+\end{DoxyCompactItemize}

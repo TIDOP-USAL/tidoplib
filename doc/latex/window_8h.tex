@@ -1,0 +1,38 @@
+\hypertarget{window_8h}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/window.h}
+\label{window_8h}\index{D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/window.\+h@{D\+:/\+Desarrollo/tidop/src/geometric\+\_\+entities/window.\+h}}
+{\ttfamily \#include \char`\"{}opencv2/core/core.\+hpp\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}core\textbackslash{}defs.\+h\char`\"{}}\\*
+\subsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_i3_d_1_1_window}{I3\+D\+::\+Window$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em The \hyperlink{class_i3_d_1_1_window}{Window} class. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{\textquotesingle{}typedefs\textquotesingle{}}
+\begin{DoxyCompactItemize}
+\item 
+typedef Window$<$ int $>$ \hyperlink{group___geometric_entities_ga27980d94ceb3f3eb9e0c34e1fe93b073}{I3\+D\+::\+WindowI}
+\item 
+typedef Window$<$ double $>$ \hyperlink{group___geometric_entities_gac7dc7b0477e34c4c8c43a1710a855b00}{I3\+D\+::\+WindowD}
+\item 
+typedef Window$<$ float $>$ \hyperlink{group___geometric_entities_ga76e43e50a665fdfb754f5825615ffaec}{I3\+D\+::\+WindowF}
+\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\bool \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga49d19dd7415d32cba445301ef821d307}{I3\+D\+::intersect\+Windows} (T w1, T w2)
+\begin{DoxyCompactList}\small\item\em Comprueba si dos ventanas intersectan. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaa929176ef49672b0bc0019c5fe58a017}{I3\+D\+::window\+Intersection} (T w1, T w2)
+\begin{DoxyCompactList}\small\item\em Ventana interseción. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaf677fb79aab3cae623065eb14b719f3d}{I3\+D\+::\+Join\+Window} (T w1, T w2)
+\begin{DoxyCompactList}\small\item\em Unión de dos ventanas. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gae0d2f7fe0786b2ae52a92188c0449718}{I3\+D\+::\+Expand\+Window} (T1 w, T2 szx, T2 szy)
+\begin{DoxyCompactList}\small\item\em Expande una ventana según la cantidad indicada para x e y. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga4ae38f1a99f61c043ae970b0c881dab7}{I3\+D\+::\+Expand\+Window} (T1 w, T2 sz)
+\begin{DoxyCompactList}\small\item\em Expande una ventana. \end{DoxyCompactList}\item 
+{\footnotesize template$<$typename T $>$ }\\Window$<$ T $>$ \hyperlink{group___geometric_entities_ga5893c61910bdaf13dcbd435f1914d868}{I3\+D\+::move\+Window} (const Window$<$ T $>$ \&w, T dx, T dy)
+\end{DoxyCompactItemize}

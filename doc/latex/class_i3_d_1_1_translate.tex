@@ -1,0 +1,122 @@
+\hypertarget{class_i3_d_1_1_translate}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Translate$<$ T $>$}
+\label{class_i3_d_1_1_translate}\index{I3\+D\+::\+Translate$<$ T $>$@{I3\+D\+::\+Translate$<$ T $>$}}
+
+
+Traslación.  
+
+
+
+
+{\ttfamily \#include $<$transform.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Translate$<$ T $>$\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_i3_d_1_1_translate}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_translate_aa65ece5d3be0809aedb1dd05073aa51c}{Translate} ()
+\begin{DoxyCompactList}\small\item\em Constructora por defecto. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_translate_af75eefcf1cc5dfae68bf6a59dc712884}{Translate} (\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} x0, \hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} y0)
+\begin{DoxyCompactList}\small\item\em Constructora. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_ga8cab577e50c525caed001caec42a70a6}{compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calculo de la traslación. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} \hyperlink{class_i3_d_1_1_translate_ae18184337b23daeaf131ce945153b2ef}{get\+TranslationX} ()
+\begin{DoxyCompactList}\small\item\em Devuelve el desplazamiento en x de la transformación. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} \hyperlink{class_i3_d_1_1_translate_a29f7cc2a3a2060c78c8070175e648b11}{get\+TranslationY} ()
+\begin{DoxyCompactList}\small\item\em Devuelve el desplazamiento en y de la transformación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga93831181f6cf779c0a7097b348c9c879}{set\+Translation} (\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} x0, \hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} y0)
+\begin{DoxyCompactList}\small\item\em Establece los valores de desplazamiento. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaa4a82205fd57f86aed9338054104a22f}{set\+TranslationX} (\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} x0)
+\begin{DoxyCompactList}\small\item\em Establece el desplazamiento en el eje x. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaed6d19903cf0da2cd1ced22381ec223b}{set\+TranslationY} (\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} y0)
+\begin{DoxyCompactList}\small\item\em Establece el desplazamiento en el eje y. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga1e3ba2120da67c8c4606681c4b82f709}{transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando una traslación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga8be3570501a8efb7a67210bb24d5218c}{transform} (const std\+::vector$<$ \hyperlink{class_i3_d_1_1_segment}{Segment}$<$ \hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} $>$$>$ \&in, std\+::vector$<$ \hyperlink{class_i3_d_1_1_segment}{Segment}$<$ \hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} $>$$>$ $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de segmentos en otro aplicando una traslación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga2f30e8ab65a36498c27994e2887deb80}{transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_gafdec629c6bb3f71d71934c43d4a54b74}{transform} (const T \&pt, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un punto. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Translate$<$ T $>$}
+
+Traslación. 
+
+Transformación que aplica una traslación en el plano a un conjunto de puntos 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Translate@{I3\+D\+::\+Translate}!Translate@{Translate}}
+\index{Translate@{Translate}!I3\+D\+::\+Translate@{I3\+D\+::\+Translate}}
+\subsubsection[{\texorpdfstring{Translate()}{Translate()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Translate}$<$ T $>$\+::{\bf Translate} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_translate_aa65ece5d3be0809aedb1dd05073aa51c}{}\label{class_i3_d_1_1_translate_aa65ece5d3be0809aedb1dd05073aa51c}
+
+
+Constructora por defecto. 
+
+\index{I3\+D\+::\+Translate@{I3\+D\+::\+Translate}!Translate@{Translate}}
+\index{Translate@{Translate}!I3\+D\+::\+Translate@{I3\+D\+::\+Translate}}
+\subsubsection[{\texorpdfstring{Translate(sub\+\_\+type x0, sub\+\_\+type y0)}{Translate(sub_type x0, sub_type y0)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Translate}$<$ T $>$\+::{\bf Translate} (
+\begin{DoxyParamCaption}
+\item[{{\bf sub\+\_\+type}}]{x0, }
+\item[{{\bf sub\+\_\+type}}]{y0}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_translate_af75eefcf1cc5dfae68bf6a59dc712884}{}\label{class_i3_d_1_1_translate_af75eefcf1cc5dfae68bf6a59dc712884}
+
+
+Constructora. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Traslación en el eje X \\
+\hline
+\mbox{\tt in}  & {\em y0} & Traslación en el eje Y \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Translate@{I3\+D\+::\+Translate}!get\+TranslationX@{get\+TranslationX}}
+\index{get\+TranslationX@{get\+TranslationX}!I3\+D\+::\+Translate@{I3\+D\+::\+Translate}}
+\subsubsection[{\texorpdfstring{get\+Translation\+X()}{getTranslationX()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf sub\+\_\+type} {\bf I3\+D\+::\+Translate}$<$ T $>$\+::get\+TranslationX (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_translate_ae18184337b23daeaf131ce945153b2ef}{}\label{class_i3_d_1_1_translate_ae18184337b23daeaf131ce945153b2ef}
+
+
+Devuelve el desplazamiento en x de la transformación. 
+
+\begin{DoxyReturn}{Devuelve}
+Desplazamiento en el eje x 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Translate@{I3\+D\+::\+Translate}!get\+TranslationY@{get\+TranslationY}}
+\index{get\+TranslationY@{get\+TranslationY}!I3\+D\+::\+Translate@{I3\+D\+::\+Translate}}
+\subsubsection[{\texorpdfstring{get\+Translation\+Y()}{getTranslationY()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf sub\+\_\+type} {\bf I3\+D\+::\+Translate}$<$ T $>$\+::get\+TranslationY (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_translate_a29f7cc2a3a2060c78c8070175e648b11}{}\label{class_i3_d_1_1_translate_a29f7cc2a3a2060c78c8070175e648b11}
+
+
+Devuelve el desplazamiento en y de la transformación. 
+
+\begin{DoxyReturn}{Devuelve}
+Desplazamiento en el eje y 
+\end{DoxyReturn}
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{transform_8h}{transform.\+h}\end{DoxyCompactItemize}

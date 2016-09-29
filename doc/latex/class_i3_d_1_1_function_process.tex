@@ -1,0 +1,104 @@
+\hypertarget{class_i3_d_1_1_function_process}{}\section{Referencia de la Clase I3D\+:\+:Function\+Process}
+\label{class_i3_d_1_1_function_process}\index{I3\+D\+::\+Function\+Process@{I3\+D\+::\+Function\+Process}}
+
+
+Wrapper de una función para ejecutarla como un proceso.  
+
+
+
+
+{\ttfamily \#include $<$Img\+Processing.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Function\+Process\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_function_process}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_function_process_ae88e4f43dbad5a24dddcbc76811f454f}{Function\+Process} (std\+::function$<$ void(const cv\+::\+Mat \&, cv\+::\+Mat $\ast$)$>$ f)
+\begin{DoxyCompactList}\small\item\em Constructora. \end{DoxyCompactList}\item 
+int \hyperlink{class_i3_d_1_1_function_process_aa321eb93219271fa3f841538b61133c3}{execute} (const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override
+\begin{DoxyCompactList}\small\item\em Ejecuta el proceso. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Wrapper de una función para ejecutarla como un proceso. 
+
+Para permitir una mayor libertad en el procesado de las imagenes mediante \hyperlink{class_i3_d_1_1_img_processing_list}{Img\+Processing\+List} se permite asociar una función o lambda a un proceso. La función tiene que ser de la forma\+: \begin{quote}
+std\+::function$<$void(const cv\+::\+Mat \&,cv\+::\+Mat $\ast$)$>$ \end{quote}
+o si es una lambda\+: \begin{quote}
+\mbox{[}\mbox{]}(const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out) \{ ... \}\end{quote}
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+std::shared\_ptr<FunctionProcess> fProcess1 = std::make\_shared<FunctionProcess>(
+  [](\textcolor{keyword}{const} cv::Mat &in, cv::Mat *out) \{
+    in.convertTo(*out, CV\_32F);
+\});
+std::shared\_ptr<FunctionProcess> fProcess2 = std::make\_shared<FunctionProcess>(
+[&](\textcolor{keyword}{const} cv::Mat &in, cv::Mat *out) \{
+cv::normalize(in, *out, 0, 255, CV\_MINMAX);
+out->convertTo(*out, CV\_8U);
+\});
+
+\hyperlink{class_i3_d_1_1_img_processing_list}{I3D::ImgProcessingList} imgprolist\{ fProcess1, fProcess2 \};
+\end{DoxyCode}
+ 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Function\+Process@{I3\+D\+::\+Function\+Process}!Function\+Process@{Function\+Process}}
+\index{Function\+Process@{Function\+Process}!I3\+D\+::\+Function\+Process@{I3\+D\+::\+Function\+Process}}
+\subsubsection[{\texorpdfstring{Function\+Process(std\+::function$<$ void(const cv\+::\+Mat \&, cv\+::\+Mat $\ast$)$>$ f)}{FunctionProcess(std::function< void(const cv::Mat &, cv::Mat *)> f)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Function\+Process\+::\+Function\+Process (
+\begin{DoxyParamCaption}
+\item[{std\+::function$<$ void(const cv\+::\+Mat \&, cv\+::\+Mat $\ast$)$>$}]{f}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_function_process_ae88e4f43dbad5a24dddcbc76811f454f}{}\label{class_i3_d_1_1_function_process_ae88e4f43dbad5a24dddcbc76811f454f}
+
+
+Constructora. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em f} & Función de la forma std\+::function$<$void(const cv\+::\+Mat \&,cv\+::\+Mat $\ast$)$>$ \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Function\+Process@{I3\+D\+::\+Function\+Process}!execute@{execute}}
+\index{execute@{execute}!I3\+D\+::\+Function\+Process@{I3\+D\+::\+Function\+Process}}
+\subsubsection[{\texorpdfstring{execute(const cv\+::\+Mat \&mat\+In, cv\+::\+Mat $\ast$mat\+Out) const  override}{execute(const cv::Mat &matIn, cv::Mat *matOut) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+::\+Function\+Process\+::execute (
+\begin{DoxyParamCaption}
+\item[{const cv\+::\+Mat \&}]{mat\+In, }
+\item[{cv\+::\+Mat $\ast$}]{mat\+Out}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1_function_process_aa321eb93219271fa3f841538b61133c3}{}\label{class_i3_d_1_1_function_process_aa321eb93219271fa3f841538b61133c3}
+
+
+Ejecuta el proceso. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em mat\+In} & Imagen de entrada. \\
+\hline
+\mbox{\tt out}  & {\em mat\+Out} & Imagen de salida. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error. Si los procesos se ejecutan correctamente devuelve 0. 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_img_processing_a74195f05bbf034566e9ff6e10f3af4c9}{I3\+D\+::\+Img\+Processing}.
+
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8h}{Img\+Processing.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_img_processing_8cpp}{Img\+Processing.\+cpp}\end{DoxyCompactItemize}

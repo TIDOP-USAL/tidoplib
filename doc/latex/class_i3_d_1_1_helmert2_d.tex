@@ -1,0 +1,158 @@
+\hypertarget{class_i3_d_1_1_helmert2_d}{}\section{Referencia de la plantilla de la Clase I3D\+:\+:Helmert2D$<$ T $>$}
+\label{class_i3_d_1_1_helmert2_d}\index{I3\+D\+::\+Helmert2\+D$<$ T $>$@{I3\+D\+::\+Helmert2\+D$<$ T $>$}}
+
+
+Helmert 2D.  
+
+
+
+
+{\ttfamily \#include $<$transform.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Helmert2D$<$ T $>$\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{class_i3_d_1_1_helmert2_d}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_helmert2_d_a8eca7720410824fb11469d8d893fb2d6}{Helmert2D} ()
+\begin{DoxyCompactList}\small\item\em Constructor por defecto. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_helmert2_d_acc703bb59be7931c8c1ce6d6ebeb89fd}{Helmert2D} (T \hyperlink{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}{x0}, T \hyperlink{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}{y0}, double scale, double rotation)
+\begin{DoxyCompactList}\small\item\em Constructor. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_ga300279dee0a002835c25322bd2ea9398}{compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gab7354b67b291bf01b3fd045578598fb1}{transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando un helmert 2D. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga11e1634259f4e3085840a16c3bfb314e}{transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_gaa9495c4b5fe0dbfb703a2004b41e310b}{transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_helmert2_d_a7f96184b77dfd19734906e8ea79ec74f}{get\+Rotation} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve el giro. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_helmert2_d_ad748a42c6267e30b8dc009714cc07559}{get\+Scale} () const 
+\begin{DoxyCompactList}\small\item\em Devuelve la escala de la transformación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga792554ed5f33a824b0c619e156697022}{set\+Parameters} (T \hyperlink{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}{x0}, T \hyperlink{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}{y0}, double scale, double rotation)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaf7d2a6c0aeeb81c66b8e07e55236a6d2}{set\+Rotation} (double rotation)
+\begin{DoxyCompactList}\small\item\em Establece la rotación de la transformación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaa732c2f1d68f41b1ab4ca63aa40b21df}{set\+Scale} (double scale)
+\begin{DoxyCompactList}\small\item\em Establece la escala de la transformación. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Atributos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} \hyperlink{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}{x0}
+\begin{DoxyCompactList}\small\item\em Traslación en x. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_transform_ac087b4b8b9acb1b11a6caa2231d598c7}{sub\+\_\+type} \hyperlink{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}{y0}
+\begin{DoxyCompactList}\small\item\em Traslación en y. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+\subsubsection*{template$<$typename T$>$\\*
+class I3\+D\+::\+Helmert2\+D$<$ T $>$}
+
+Helmert 2D. 
+
+El Helmert o Transformación de Semejanza expresa la relación que existe (o transformación que es preciso realizar) entre dos sistemas cartesianos que discrepan en la situación del origen, en la orientación de los ejes y en la unidad de medida a lo largo de los mismos pero de manera que dicha variación en unidad de medida es constante a lo largo de cada eje y entre los dos ejes
+
+\begin{quote}
+a = scale $\ast$ cos(rotation); ~\newline
+ b = scale $\ast$ sin(rotation);
+
+x\textquotesingle{} = a $\ast$ x + b $\ast$ y + X0 ~\newline
+ y\textquotesingle{} = a $\ast$ x -\/ b $\ast$ x + Y0 \end{quote}
+
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!Helmert2D@{Helmert2D}}
+\index{Helmert2D@{Helmert2D}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{Helmert2\+D()}{Helmert2D()}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::{\bf Helmert2D} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_helmert2_d_a8eca7720410824fb11469d8d893fb2d6}{}\label{class_i3_d_1_1_helmert2_d_a8eca7720410824fb11469d8d893fb2d6}
+
+
+Constructor por defecto. 
+
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!Helmert2D@{Helmert2D}}
+\index{Helmert2D@{Helmert2D}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{Helmert2\+D(\+T x0, T y0, double scale, double rotation)}{Helmert2D(T x0, T y0, double scale, double rotation)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::{\bf Helmert2D} (
+\begin{DoxyParamCaption}
+\item[{T}]{x0, }
+\item[{T}]{y0, }
+\item[{double}]{scale, }
+\item[{double}]{rotation}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_helmert2_d_acc703bb59be7931c8c1ce6d6ebeb89fd}{}\label{class_i3_d_1_1_helmert2_d_acc703bb59be7931c8c1ce6d6ebeb89fd}
+
+
+Constructor. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Traslación en x \\
+\hline
+\mbox{\tt in}  & {\em y0} & Traslación en y \\
+\hline
+\mbox{\tt in}  & {\em scale} & Escala \\
+\hline
+\mbox{\tt in}  & {\em rotation} & Rotación \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!get\+Rotation@{get\+Rotation}}
+\index{get\+Rotation@{get\+Rotation}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{get\+Rotation() const }{getRotation() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::get\+Rotation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_helmert2_d_a7f96184b77dfd19734906e8ea79ec74f}{}\label{class_i3_d_1_1_helmert2_d_a7f96184b77dfd19734906e8ea79ec74f}
+
+
+Devuelve el giro. 
+
+\begin{DoxyReturn}{Devuelve}
+\mbox{[}in\mbox{]} Ángulo de rotación en radianes 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!get\+Scale@{get\+Scale}}
+\index{get\+Scale@{get\+Scale}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{get\+Scale() const }{getScale() const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::get\+Scale (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_helmert2_d_ad748a42c6267e30b8dc009714cc07559}{}\label{class_i3_d_1_1_helmert2_d_ad748a42c6267e30b8dc009714cc07559}
+
+
+Devuelve la escala de la transformación. 
+
+\begin{DoxyReturn}{Devuelve}
+Escala de la transformación 
+\end{DoxyReturn}
+
+
+\subsection{Documentación de los datos miembro}
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!x0@{x0}}
+\index{x0@{x0}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{x0}{x0}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf sub\+\_\+type} {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::x0}\hypertarget{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}{}\label{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}
+
+
+Traslación en x. 
+
+\index{I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}!y0@{y0}}
+\index{y0@{y0}!I3\+D\+::\+Helmert2D@{I3\+D\+::\+Helmert2D}}
+\subsubsection[{\texorpdfstring{y0}{y0}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ {\bf sub\+\_\+type} {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::y0}\hypertarget{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}{}\label{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}
+
+
+Traslación en y. 
+
+
+
+La documentación para esta clase fue generada a partir del siguiente fichero\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{transform_8h}{transform.\+h}\end{DoxyCompactItemize}

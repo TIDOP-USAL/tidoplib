@@ -1,0 +1,308 @@
+\hypertarget{group__format_conversion}{}\section{Conversión de formatos}
+\label{group__format_conversion}\index{Conversión de formatos@{Conversión de formatos}}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename T $>$ }\\int \hyperlink{group__format_conversion_ga733eb2d043c69e2b8a0527622e38cfab}{I3\+D\+::is\+Negative} (T t)
+\item 
+double \hyperlink{group__format_conversion_ga6219d37cf7c1be1176f323bdf7982b2b}{I3\+D\+::degrees\+To\+Decimal\+Degrees} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gaedea9963e49e918a8fbfc75e0c1dfc7d}{I3\+D\+::degrees\+To\+Radians} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a radianes. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gafe5e54462cbdb02cc83abd739f1f8e3b}{I3\+D\+::degrees\+To\+Gradians} (int degrees, int minutes, int seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales a grados centesimales. \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_gac669f1ed12a67d5a4da09c1eb3feb9f6}{I3\+D\+::decimal\+Degrees\+To\+Degrees} (double decimal\+Degrees, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gac80712e13661211ce5325142d963bdfe}{I3\+D\+::decimal\+Degrees\+To\+Radians} (double decimal\+Degrees)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a radianes. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_gabf6a21b89de5fd742a94f98732b825f2}{I3\+D\+::decimal\+Degrees\+To\+Gradians} (double decimal\+Degrees)
+\begin{DoxyCompactList}\small\item\em Conversión de grados sexagesimales en notación decimal a grados centesimales. \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_ga3f1cbd404b98911d6a7092b9063543b3}{I3\+D\+::radians\+To\+Degrees} (double radians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de radianes a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga07a4491a18ef984ab74ddd5df5209556}{I3\+D\+::radians\+To\+Decimal\+Degrees} (double radians)
+\begin{DoxyCompactList}\small\item\em Conversión de radianes a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga0779b094fa341344b67294926c0c7ef0}{I3\+D\+::radians\+To\+Gradians} (double radians)
+\begin{DoxyCompactList}\small\item\em radians\+To\+Gradians \end{DoxyCompactList}\item 
+void \hyperlink{group__format_conversion_ga381983c467f07e74896f19393c6d900a}{I3\+D\+::gradians\+To\+Degrees} (double gradians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a grados, minutos y segundos. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga15009349cf6dbbf4bba63b9461a2fdb2}{I3\+D\+::gradians\+To\+Decimal\+Degrees} (double gradians)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
+double \hyperlink{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}{I3\+D\+::gradians\+To\+Radians} (double gradians)
+\begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a radianes. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+
+
+\subsection{Documentación de las funciones}
+\index{Conversión de formatos@{Conversión de formatos}!decimal\+Degrees\+To\+Degrees@{decimal\+Degrees\+To\+Degrees}}
+\index{decimal\+Degrees\+To\+Degrees@{decimal\+Degrees\+To\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{decimal\+Degrees\+To\+Degrees(double decimal\+Degrees, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)}{decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::decimal\+Degrees\+To\+Degrees (
+\begin{DoxyParamCaption}
+\item[{double}]{decimal\+Degrees, }
+\item[{int $\ast$}]{degrees, }
+\item[{int $\ast$}]{minutes, }
+\item[{int $\ast$}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_gac669f1ed12a67d5a4da09c1eb3feb9f6}{}\label{group__format_conversion_gac669f1ed12a67d5a4da09c1eb3feb9f6}
+
+
+Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em decimal\+Degrees} & Grados sexagesimales en notación decima \\
+\hline
+{\em degrees} & Puntero a entero que recibe como valor los grados \\
+\hline
+{\em minutes} & Puntero a entero que recibe como valor los minutos \\
+\hline
+{\em seconds} & Puntero a entero que recibe como valor los segundos \\
+\hline
+\end{DoxyParams}
+\index{Conversión de formatos@{Conversión de formatos}!decimal\+Degrees\+To\+Gradians@{decimal\+Degrees\+To\+Gradians}}
+\index{decimal\+Degrees\+To\+Gradians@{decimal\+Degrees\+To\+Gradians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{decimal\+Degrees\+To\+Gradians(double decimal\+Degrees)}{decimalDegreesToGradians(double decimalDegrees)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::decimal\+Degrees\+To\+Gradians (
+\begin{DoxyParamCaption}
+\item[{double}]{decimal\+Degrees}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_gabf6a21b89de5fd742a94f98732b825f2}{}\label{group__format_conversion_gabf6a21b89de5fd742a94f98732b825f2}
+
+
+Conversión de grados sexagesimales en notación decimal a grados centesimales. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em decimal\+Degrees} & Grados sexagesimales en notación decima \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados centesimales 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!decimal\+Degrees\+To\+Radians@{decimal\+Degrees\+To\+Radians}}
+\index{decimal\+Degrees\+To\+Radians@{decimal\+Degrees\+To\+Radians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{decimal\+Degrees\+To\+Radians(double decimal\+Degrees)}{decimalDegreesToRadians(double decimalDegrees)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::decimal\+Degrees\+To\+Radians (
+\begin{DoxyParamCaption}
+\item[{double}]{decimal\+Degrees}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_gac80712e13661211ce5325142d963bdfe}{}\label{group__format_conversion_gac80712e13661211ce5325142d963bdfe}
+
+
+Conversión de grados sexagesimales en notación decimal a radianes. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em decimal\+Degrees} & Grados sexagesimales en notación decima \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Radianes 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!degrees\+To\+Decimal\+Degrees@{degrees\+To\+Decimal\+Degrees}}
+\index{degrees\+To\+Decimal\+Degrees@{degrees\+To\+Decimal\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{degrees\+To\+Decimal\+Degrees(int degrees, int minutes, int seconds)}{degreesToDecimalDegrees(int degrees, int minutes, int seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::degrees\+To\+Decimal\+Degrees (
+\begin{DoxyParamCaption}
+\item[{int}]{degrees, }
+\item[{int}]{minutes, }
+\item[{int}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga6219d37cf7c1be1176f323bdf7982b2b}{}\label{group__format_conversion_ga6219d37cf7c1be1176f323bdf7982b2b}
+
+
+Conversión de grados sexagesimales a grados sexagesimales en notación decimal. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em degrees} & Grados \\
+\hline
+{\em minutes} & Minutos \\
+\hline
+{\em seconds} & Segundos \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados sexagesimales en notación decimal 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!degrees\+To\+Gradians@{degrees\+To\+Gradians}}
+\index{degrees\+To\+Gradians@{degrees\+To\+Gradians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{degrees\+To\+Gradians(int degrees, int minutes, int seconds)}{degreesToGradians(int degrees, int minutes, int seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::degrees\+To\+Gradians (
+\begin{DoxyParamCaption}
+\item[{int}]{degrees, }
+\item[{int}]{minutes, }
+\item[{int}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_gafe5e54462cbdb02cc83abd739f1f8e3b}{}\label{group__format_conversion_gafe5e54462cbdb02cc83abd739f1f8e3b}
+
+
+Conversión de grados sexagesimales a grados centesimales. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em degrees} & Grados \\
+\hline
+{\em minutes} & Minutos \\
+\hline
+{\em seconds} & Segundos \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados centesimales 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!degrees\+To\+Radians@{degrees\+To\+Radians}}
+\index{degrees\+To\+Radians@{degrees\+To\+Radians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{degrees\+To\+Radians(int degrees, int minutes, int seconds)}{degreesToRadians(int degrees, int minutes, int seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::degrees\+To\+Radians (
+\begin{DoxyParamCaption}
+\item[{int}]{degrees, }
+\item[{int}]{minutes, }
+\item[{int}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_gaedea9963e49e918a8fbfc75e0c1dfc7d}{}\label{group__format_conversion_gaedea9963e49e918a8fbfc75e0c1dfc7d}
+
+
+Conversión de grados sexagesimales a radianes. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em degrees} & Grados \\
+\hline
+{\em minutes} & Minutos \\
+\hline
+{\em seconds} & Segundos \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+radianes 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!gradians\+To\+Decimal\+Degrees@{gradians\+To\+Decimal\+Degrees}}
+\index{gradians\+To\+Decimal\+Degrees@{gradians\+To\+Decimal\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{gradians\+To\+Decimal\+Degrees(double gradians)}{gradiansToDecimalDegrees(double gradians)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::gradians\+To\+Decimal\+Degrees (
+\begin{DoxyParamCaption}
+\item[{double}]{gradians}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga15009349cf6dbbf4bba63b9461a2fdb2}{}\label{group__format_conversion_ga15009349cf6dbbf4bba63b9461a2fdb2}
+
+
+Conversión de grados centesimales a grados sexagesimales en notación decimal. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em gradians} & Grados centesimales \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados sexagesimales en notación decimal 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!gradians\+To\+Degrees@{gradians\+To\+Degrees}}
+\index{gradians\+To\+Degrees@{gradians\+To\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{gradians\+To\+Degrees(double gradians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)}{gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::gradians\+To\+Degrees (
+\begin{DoxyParamCaption}
+\item[{double}]{gradians, }
+\item[{int $\ast$}]{degrees, }
+\item[{int $\ast$}]{minutes, }
+\item[{int $\ast$}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga381983c467f07e74896f19393c6d900a}{}\label{group__format_conversion_ga381983c467f07e74896f19393c6d900a}
+
+
+Conversión de grados centesimales a grados, minutos y segundos. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em gradians} & Grados centesimales \\
+\hline
+{\em degrees} & Puntero a entero que recibe como valor los grados \\
+\hline
+{\em minutes} & Puntero a entero que recibe como valor los minutos \\
+\hline
+{\em seconds} & Puntero a entero que recibe como valor los segundos \\
+\hline
+\end{DoxyParams}
+\index{Conversión de formatos@{Conversión de formatos}!gradians\+To\+Radians@{gradians\+To\+Radians}}
+\index{gradians\+To\+Radians@{gradians\+To\+Radians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{gradians\+To\+Radians(double gradians)}{gradiansToRadians(double gradians)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::gradians\+To\+Radians (
+\begin{DoxyParamCaption}
+\item[{double}]{gradians}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}{}\label{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}
+
+
+Conversión de grados centesimales a radianes. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em gradians} & Grados centesimales \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Radianes 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!is\+Negative@{is\+Negative}}
+\index{is\+Negative@{is\+Negative}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{is\+Negative(\+T t)}{isNegative(T t)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ int I3\+D\+::is\+Negative (
+\begin{DoxyParamCaption}
+\item[{T}]{t}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga733eb2d043c69e2b8a0527622e38cfab}{}\label{group__format_conversion_ga733eb2d043c69e2b8a0527622e38cfab}
+\index{Conversión de formatos@{Conversión de formatos}!radians\+To\+Decimal\+Degrees@{radians\+To\+Decimal\+Degrees}}
+\index{radians\+To\+Decimal\+Degrees@{radians\+To\+Decimal\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{radians\+To\+Decimal\+Degrees(double radians)}{radiansToDecimalDegrees(double radians)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::radians\+To\+Decimal\+Degrees (
+\begin{DoxyParamCaption}
+\item[{double}]{radians}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga07a4491a18ef984ab74ddd5df5209556}{}\label{group__format_conversion_ga07a4491a18ef984ab74ddd5df5209556}
+
+
+Conversión de radianes a grados sexagesimales en notación decimal. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em radians} & Radianes \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados sexagesimales en notación decimal 
+\end{DoxyReturn}
+\index{Conversión de formatos@{Conversión de formatos}!radians\+To\+Degrees@{radians\+To\+Degrees}}
+\index{radians\+To\+Degrees@{radians\+To\+Degrees}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{radians\+To\+Degrees(double radians, int $\ast$degrees, int $\ast$minutes, int $\ast$seconds)}{radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::radians\+To\+Degrees (
+\begin{DoxyParamCaption}
+\item[{double}]{radians, }
+\item[{int $\ast$}]{degrees, }
+\item[{int $\ast$}]{minutes, }
+\item[{int $\ast$}]{seconds}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga3f1cbd404b98911d6a7092b9063543b3}{}\label{group__format_conversion_ga3f1cbd404b98911d6a7092b9063543b3}
+
+
+Conversión de radianes a grados, minutos y segundos. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em radians} & Radianes \\
+\hline
+{\em degrees} & Puntero a entero que recibe como valor los grados \\
+\hline
+{\em minutes} & Puntero a entero que recibe como valor los minutos \\
+\hline
+{\em seconds} & Puntero a entero que recibe como valor los segundos \\
+\hline
+\end{DoxyParams}
+\index{Conversión de formatos@{Conversión de formatos}!radians\+To\+Gradians@{radians\+To\+Gradians}}
+\index{radians\+To\+Gradians@{radians\+To\+Gradians}!Conversión de formatos@{Conversión de formatos}}
+\subsubsection[{\texorpdfstring{radians\+To\+Gradians(double radians)}{radiansToGradians(double radians)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::radians\+To\+Gradians (
+\begin{DoxyParamCaption}
+\item[{double}]{radians}
+\end{DoxyParamCaption}
+)}\hypertarget{group__format_conversion_ga0779b094fa341344b67294926c0c7ef0}{}\label{group__format_conversion_ga0779b094fa341344b67294926c0c7ef0}
+
+
+radians\+To\+Gradians 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em radians} & Radianes \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Grados centesimales 
+\end{DoxyReturn}

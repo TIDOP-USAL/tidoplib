@@ -1,0 +1,569 @@
+\hypertarget{class_i3_d_1_1_video_stream}{}\section{Referencia de la Clase I3D\+:\+:Video\+Stream}
+\label{class_i3_d_1_1_video_stream}\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+
+
+Clase para el manejo de video.  
+
+
+
+
+{\ttfamily \#include $<$Video\+Stream.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:Video\+Stream\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1_video_stream}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1_video_stream_a93cc6df0a8514eefcb1bf85a95168f34}{Video\+Stream} ()
+\begin{DoxyCompactList}\small\item\em Constructora I3\+D\+Video\+Stream. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_video_stream_aaa046c13d80ba4dae903346ac2f512fe}{Video\+Stream} (const char $\ast$file)
+\begin{DoxyCompactList}\small\item\em Constructora I3\+D\+Video\+Stream. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1_video_stream_a3034afe657b7337a8e697b26727b3edd}{$\sim$\+Video\+Stream} ()
+\begin{DoxyCompactList}\small\item\em Destructora I3\+D\+Video\+Stream. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_video_stream_ae9911a61f3c3196ad7efcb49cd3a9595}{fps} ()
+\begin{DoxyCompactList}\small\item\em Frames por segundo del video. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_video_stream_a8deb6c7defcf5bbc01be2ae48c68167e}{get\+Current\+Frame} ()
+\begin{DoxyCompactList}\small\item\em Frame de video actual. \end{DoxyCompactList}\item 
+double \hyperlink{class_i3_d_1_1_video_stream_a2416c9205c1ce815d6692153d162635d}{get\+Frame\+Count} ()
+\begin{DoxyCompactList}\small\item\em Número de frames del video. \end{DoxyCompactList}\item 
+cv\+::\+Size \hyperlink{class_i3_d_1_1_video_stream_adcd195f78a21b8009b1069643fed5a14}{get\+Frame\+Size} ()
+\begin{DoxyCompactList}\small\item\em Devuelve el ancho y alto de los frames de salida. \end{DoxyCompactList}\item 
+cv\+::\+Size \hyperlink{class_i3_d_1_1_video_stream_ac17f6f75aec2c161070d794715033023}{get\+Size} ()
+\begin{DoxyCompactList}\small\item\em Ancho y alto del video. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a11947a15a95cf62d68b987d16887bd23}{is\+Opened} ()
+\begin{DoxyCompactList}\small\item\em Comprueba si el video está abierto. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_ad19ab11928372741ddb1ab0328d9aa8f}{next\+Frame} (cv\+::\+Mat \&vf)
+\begin{DoxyCompactList}\small\item\em Next\+Frame. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a72e10a1973eecdf0b8b87fbefbb56473}{next\+Frame} (cv\+::\+Mat \&vf, \hyperlink{namespace_i3_d_abddd5dc8b13d45924d75d4dc1d6a0c9e}{skip\+\_\+video} skip, int nskip)
+\begin{DoxyCompactList}\small\item\em Siguiente frame del video. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a9643964af546aca51505b3aed39a4d95}{open} (const char $\ast$name)
+\begin{DoxyCompactList}\small\item\em Abre el video. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a6866f7dd07b694123645608da91c998c}{read} (cv\+::\+Mat \&vf)
+\begin{DoxyCompactList}\small\item\em Lee un frame de video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_ad3a32965a9dc2a7fd1b26996064ede92}{set\+Crop\+Rect} (cv\+::\+Rect rf, bool keep\+Ratio=true)
+\begin{DoxyCompactList}\small\item\em Establece la región de recorte del video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a636dc0156e0171f8a106a3dd620ffe7d}{set\+Frame\+Size} (cv\+::\+Size sz, \hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479}{res\+\_\+frame} rf=\hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479ac7d706ac3ce91240180fad0ce2935596}{res\+\_\+frame\+::\+R\+E\+S\+I\+Z\+E\+\_\+\+F\+R\+A\+ME}, bool keep\+Ratio=true)
+\begin{DoxyCompactList}\small\item\em Permite redimensionar la salida del video. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a1ab06a57959461b3f7e55f31728eb0b7}{set\+Pos\+Frame} (double nframe)
+\begin{DoxyCompactList}\small\item\em Establece la posición en el video según el número de frame. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_adffaad173983a8b1e6785d391f7a24f8}{is\+Skip\+Blurry\+Frames} ()
+\begin{DoxyCompactList}\small\item\em Comprueba si esta activado el salto de frames borrosos. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a1cdf99b229663f4a108bc1f12878b7ca}{set\+Skip\+Blurry\+Frames} (bool sbf)
+\begin{DoxyCompactList}\small\item\em Activa el salto de frames borrosos. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a601c01974a67db7a005a49fd89bcaf38}{set\+Skip\+Frames} (int frames)
+\begin{DoxyCompactList}\small\item\em Establece el salto de frames en la lectura del video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a1366a8325fd874eb5f38e9fe438f0933}{set\+Skip\+Millisecond} (int ms)
+\begin{DoxyCompactList}\small\item\em Establece el número de milisegundos que salta el video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a7907f00bb0f577a2768ed50eae0cf868}{pause} ()
+\begin{DoxyCompactList}\small\item\em Adelanta el video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a34e67007241339df2955b649b1a1f1fd}{resume} ()
+\begin{DoxyCompactList}\small\item\em Continua la ejecución del video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a9a32d73484d34da3a6e6337d64271da2}{run} ()
+\begin{DoxyCompactList}\small\item\em Arranca el video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a78751b3d5a094e1b2ae164c9ac0b613b}{skip\+Down} ()
+\begin{DoxyCompactList}\small\item\em Disminuye el salto de frames. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a7fb4bcbf3b3dfb6a6fa9701aa6c86a4a}{skip\+Up} ()
+\begin{DoxyCompactList}\small\item\em Aumenta el salto de frames. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a1d9f6dd120e21ea4fed67e48dc11d26e}{stop} ()
+\begin{DoxyCompactList}\small\item\em Detiene la ejecución del video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a3ef1a64b23da98808d86cde7d5c59f7f}{set\+Read\+Listener} (\hyperlink{namespace_i3_d_a7005f50d43ac0b10e2f50ab09994f45b}{Read\+Callback} ev\+\_\+r=0, void $\ast$userdata=0)
+\begin{DoxyCompactList}\small\item\em Retrasa el video. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a19f732b071dc8870c4db83c8b8abf6d5}{set\+Position\+Change\+Listener} (\hyperlink{namespace_i3_d_a923a852719565a9e40df22d8cd71281e}{Position\+Change\+Callback} ev\+\_\+pc=0, void $\ast$userdata=0)
+\begin{DoxyCompactList}\small\item\em Establece un escuchador para el evento On\+Position\+Change. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1_video_stream_a5cfc8d44a8aafc05a6623c24aaeb31fc}{set\+Show\+Listener} (\hyperlink{namespace_i3_d_a65da91c3d8b7751e061aa6d8462ea890}{Show\+Callback} ev\+\_\+s=0, void $\ast$userdata=0)
+\begin{DoxyCompactList}\small\item\em Establece un escuchador para el evento On\+Show. \end{DoxyCompactList}\item 
+bool \hyperlink{class_i3_d_1_1_video_stream_a3fefb40523072958b4bb8300734f94a3}{show} (cv\+::\+Mat \&vf)
+\begin{DoxyCompactList}\small\item\em Lanza el evento Show. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Clase para el manejo de video. 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!Video\+Stream@{Video\+Stream}}
+\index{Video\+Stream@{Video\+Stream}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{Video\+Stream()}{VideoStream()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Video\+Stream\+::\+Video\+Stream (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a93cc6df0a8514eefcb1bf85a95168f34}{}\label{class_i3_d_1_1_video_stream_a93cc6df0a8514eefcb1bf85a95168f34}
+
+
+Constructora I3\+D\+Video\+Stream. 
+
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!Video\+Stream@{Video\+Stream}}
+\index{Video\+Stream@{Video\+Stream}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{Video\+Stream(const char $\ast$file)}{VideoStream(const char *file)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Video\+Stream\+::\+Video\+Stream (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_aaa046c13d80ba4dae903346ac2f512fe}{}\label{class_i3_d_1_1_video_stream_aaa046c13d80ba4dae903346ac2f512fe}
+
+
+Constructora I3\+D\+Video\+Stream. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em file} & Video \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!````~Video\+Stream@{$\sim$\+Video\+Stream}}
+\index{````~Video\+Stream@{$\sim$\+Video\+Stream}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{$\sim$\+Video\+Stream()}{~VideoStream()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+Video\+Stream\+::$\sim$\+Video\+Stream (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a3034afe657b7337a8e697b26727b3edd}{}\label{class_i3_d_1_1_video_stream_a3034afe657b7337a8e697b26727b3edd}
+
+
+Destructora I3\+D\+Video\+Stream. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!fps@{fps}}
+\index{fps@{fps}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{fps()}{fps()}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+::\+Video\+Stream\+::fps (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_ae9911a61f3c3196ad7efcb49cd3a9595}{}\label{class_i3_d_1_1_video_stream_ae9911a61f3c3196ad7efcb49cd3a9595}
+
+
+Frames por segundo del video. 
+
+\begin{DoxyReturn}{Devuelve}
+Frames por segundo 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!get\+Current\+Frame@{get\+Current\+Frame}}
+\index{get\+Current\+Frame@{get\+Current\+Frame}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{get\+Current\+Frame()}{getCurrentFrame()}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+::\+Video\+Stream\+::get\+Current\+Frame (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a8deb6c7defcf5bbc01be2ae48c68167e}{}\label{class_i3_d_1_1_video_stream_a8deb6c7defcf5bbc01be2ae48c68167e}
+
+
+Frame de video actual. 
+
+\begin{DoxyReturn}{Devuelve}
+
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!get\+Frame\+Count@{get\+Frame\+Count}}
+\index{get\+Frame\+Count@{get\+Frame\+Count}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{get\+Frame\+Count()}{getFrameCount()}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+::\+Video\+Stream\+::get\+Frame\+Count (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a2416c9205c1ce815d6692153d162635d}{}\label{class_i3_d_1_1_video_stream_a2416c9205c1ce815d6692153d162635d}
+
+
+Número de frames del video. 
+
+\begin{DoxyReturn}{Devuelve}
+
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!get\+Frame\+Size@{get\+Frame\+Size}}
+\index{get\+Frame\+Size@{get\+Frame\+Size}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{get\+Frame\+Size()}{getFrameSize()}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Size I3\+D\+::\+Video\+Stream\+::get\+Frame\+Size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_adcd195f78a21b8009b1069643fed5a14}{}\label{class_i3_d_1_1_video_stream_adcd195f78a21b8009b1069643fed5a14}
+
+
+Devuelve el ancho y alto de los frames de salida. 
+
+\begin{DoxyReturn}{Devuelve}
+Tamaño de los frames de salida 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!get\+Size@{get\+Size}}
+\index{get\+Size@{get\+Size}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{get\+Size()}{getSize()}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Size I3\+D\+::\+Video\+Stream\+::get\+Size (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_ac17f6f75aec2c161070d794715033023}{}\label{class_i3_d_1_1_video_stream_ac17f6f75aec2c161070d794715033023}
+
+
+Ancho y alto del video. 
+
+\begin{DoxyReturn}{Devuelve}
+Tamaño del video 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!is\+Opened@{is\+Opened}}
+\index{is\+Opened@{is\+Opened}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{is\+Opened()}{isOpened()}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::is\+Opened (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a11947a15a95cf62d68b987d16887bd23}{}\label{class_i3_d_1_1_video_stream_a11947a15a95cf62d68b987d16887bd23}
+
+
+Comprueba si el video está abierto. 
+
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el video está abierto 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!is\+Skip\+Blurry\+Frames@{is\+Skip\+Blurry\+Frames}}
+\index{is\+Skip\+Blurry\+Frames@{is\+Skip\+Blurry\+Frames}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{is\+Skip\+Blurry\+Frames()}{isSkipBlurryFrames()}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::is\+Skip\+Blurry\+Frames (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_adffaad173983a8b1e6785d391f7a24f8}{}\label{class_i3_d_1_1_video_stream_adffaad173983a8b1e6785d391f7a24f8}
+
+
+Comprueba si esta activado el salto de frames borrosos. 
+
+\begin{DoxyReturn}{Devuelve}
+Verdadero si esta activado 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!next\+Frame@{next\+Frame}}
+\index{next\+Frame@{next\+Frame}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{next\+Frame(cv\+::\+Mat \&vf)}{nextFrame(cv::Mat &vf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::next\+Frame (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{vf}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_ad19ab11928372741ddb1ab0328d9aa8f}{}\label{class_i3_d_1_1_video_stream_ad19ab11928372741ddb1ab0328d9aa8f}
+
+
+Next\+Frame. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em vf} & Frame de video \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si encuentra frame 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!next\+Frame@{next\+Frame}}
+\index{next\+Frame@{next\+Frame}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{next\+Frame(cv\+::\+Mat \&vf, skip\+\_\+video skip, int nskip)}{nextFrame(cv::Mat &vf, skip_video skip, int nskip)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::next\+Frame (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{vf, }
+\item[{{\bf skip\+\_\+video}}]{skip, }
+\item[{int}]{nskip}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a72e10a1973eecdf0b8b87fbefbb56473}{}\label{class_i3_d_1_1_video_stream_a72e10a1973eecdf0b8b87fbefbb56473}
+
+
+Siguiente frame del video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em vf} & Frame de video \\
+\hline
+{\em skip} & Tipo de salto de video aplicado \\
+\hline
+{\em nskip} & Número de salto \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si encuentra frame 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!open@{open}}
+\index{open@{open}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{open(const char $\ast$name)}{open(const char *name)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::open (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{name}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a9643964af546aca51505b3aed39a4d95}{}\label{class_i3_d_1_1_video_stream_a9643964af546aca51505b3aed39a4d95}
+
+
+Abre el video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em name} & Nombre del video \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+verdadero si el video se ha abierto 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!pause@{pause}}
+\index{pause@{pause}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{pause()}{pause()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::pause (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a7907f00bb0f577a2768ed50eae0cf868}{}\label{class_i3_d_1_1_video_stream_a7907f00bb0f577a2768ed50eae0cf868}
+
+
+Adelanta el video. 
+
+Rausa el video \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!read@{read}}
+\index{read@{read}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{read(cv\+::\+Mat \&vf)}{read(cv::Mat &vf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::read (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{vf}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a6866f7dd07b694123645608da91c998c}{}\label{class_i3_d_1_1_video_stream_a6866f7dd07b694123645608da91c998c}
+
+
+Lee un frame de video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em vf} & Frame de video \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Falso si no encuentra ningún frame 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!resume@{resume}}
+\index{resume@{resume}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{resume()}{resume()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::resume (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a34e67007241339df2955b649b1a1f1fd}{}\label{class_i3_d_1_1_video_stream_a34e67007241339df2955b649b1a1f1fd}
+
+
+Continua la ejecución del video. 
+
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!run@{run}}
+\index{run@{run}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{run()}{run()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::run (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a9a32d73484d34da3a6e6337d64271da2}{}\label{class_i3_d_1_1_video_stream_a9a32d73484d34da3a6e6337d64271da2}
+
+
+Arranca el video. 
+
+Ejecuta el video desde el principio. Se puede interactuar con el video mediante las teclas\+:
+\begin{DoxyItemize}
+\item Tecla esc\+: Terminar la ejecución del video.
+\item Tecla +\+: Aumenta el salto entre frames.
+\item Tecla -\/\+: Disminuye el salto entre frames.
+\item Barra espaciadora\+: Pausa/reanuda la ejecución del video. 
+\end{DoxyItemize}\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Crop\+Rect@{set\+Crop\+Rect}}
+\index{set\+Crop\+Rect@{set\+Crop\+Rect}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Crop\+Rect(cv\+::\+Rect rf, bool keep\+Ratio=true)}{setCropRect(cv::Rect rf, bool keepRatio=true)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Crop\+Rect (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Rect}]{rf, }
+\item[{bool}]{keep\+Ratio = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_ad3a32965a9dc2a7fd1b26996064ede92}{}\label{class_i3_d_1_1_video_stream_ad3a32965a9dc2a7fd1b26996064ede92}
+
+
+Establece la región de recorte del video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em rf} & Región de recorte del frame \\
+\hline
+{\em keep\+Ratio} & Mantiene las dimensiones \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Frame\+Size@{set\+Frame\+Size}}
+\index{set\+Frame\+Size@{set\+Frame\+Size}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Frame\+Size(cv\+::\+Size sz, res\+\_\+frame rf=res\+\_\+frame\+::\+R\+E\+S\+I\+Z\+E\+\_\+\+F\+R\+A\+M\+E, bool keep\+Ratio=true)}{setFrameSize(cv::Size sz, res_frame rf=res_frame::RESIZE_FRAME, bool keepRatio=true)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Frame\+Size (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Size}]{sz, }
+\item[{{\bf res\+\_\+frame}}]{rf = {\ttfamily {\bf res\+\_\+frame\+::\+R\+E\+S\+I\+Z\+E\+\_\+\+F\+R\+A\+ME}}, }
+\item[{bool}]{keep\+Ratio = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a636dc0156e0171f8a106a3dd620ffe7d}{}\label{class_i3_d_1_1_video_stream_a636dc0156e0171f8a106a3dd620ffe7d}
+
+
+Permite redimensionar la salida del video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em sz} & Tamaño de salida de video \\
+\hline
+{\em rf} & Redimensión, recorte o tamaño original del video \\
+\hline
+{\em keep\+Ratio} & Mantiene las dimensiones \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Pos\+Frame@{set\+Pos\+Frame}}
+\index{set\+Pos\+Frame@{set\+Pos\+Frame}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Pos\+Frame(double nframe)}{setPosFrame(double nframe)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::set\+Pos\+Frame (
+\begin{DoxyParamCaption}
+\item[{double}]{nframe}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a1ab06a57959461b3f7e55f31728eb0b7}{}\label{class_i3_d_1_1_video_stream_a1ab06a57959461b3f7e55f31728eb0b7}
+
+
+Establece la posición en el video según el número de frame. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em nframe} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Position\+Change\+Listener@{set\+Position\+Change\+Listener}}
+\index{set\+Position\+Change\+Listener@{set\+Position\+Change\+Listener}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Position\+Change\+Listener(\+Position\+Change\+Callback ev\+\_\+pc=0, void $\ast$userdata=0)}{setPositionChangeListener(PositionChangeCallback ev_pc=0, void *userdata=0)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Position\+Change\+Listener (
+\begin{DoxyParamCaption}
+\item[{{\bf Position\+Change\+Callback}}]{ev\+\_\+pc = {\ttfamily 0}, }
+\item[{void $\ast$}]{userdata = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a19f732b071dc8870c4db83c8b8abf6d5}{}\label{class_i3_d_1_1_video_stream_a19f732b071dc8870c4db83c8b8abf6d5}
+
+
+Establece un escuchador para el evento On\+Position\+Change. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em ev\+\_\+pc} & Función que escucha el evento \\
+\hline
+{\em userdata} & Puntero a datos de usuario \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Read\+Listener@{set\+Read\+Listener}}
+\index{set\+Read\+Listener@{set\+Read\+Listener}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Read\+Listener(\+Read\+Callback ev\+\_\+r=0, void $\ast$userdata=0)}{setReadListener(ReadCallback ev_r=0, void *userdata=0)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Read\+Listener (
+\begin{DoxyParamCaption}
+\item[{{\bf Read\+Callback}}]{ev\+\_\+r = {\ttfamily 0}, }
+\item[{void $\ast$}]{userdata = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a3ef1a64b23da98808d86cde7d5c59f7f}{}\label{class_i3_d_1_1_video_stream_a3ef1a64b23da98808d86cde7d5c59f7f}
+
+
+Retrasa el video. 
+
+Establece un escuchador para el evento On\+Read 
+\begin{DoxyParams}{Parámetros}
+{\em ev\+\_\+r} & Función que escucha el evento \\
+\hline
+{\em userdata} & Puntero a datos de usuario \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Show\+Listener@{set\+Show\+Listener}}
+\index{set\+Show\+Listener@{set\+Show\+Listener}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Show\+Listener(\+Show\+Callback ev\+\_\+s=0, void $\ast$userdata=0)}{setShowListener(ShowCallback ev_s=0, void *userdata=0)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Show\+Listener (
+\begin{DoxyParamCaption}
+\item[{{\bf Show\+Callback}}]{ev\+\_\+s = {\ttfamily 0}, }
+\item[{void $\ast$}]{userdata = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a5cfc8d44a8aafc05a6623c24aaeb31fc}{}\label{class_i3_d_1_1_video_stream_a5cfc8d44a8aafc05a6623c24aaeb31fc}
+
+
+Establece un escuchador para el evento On\+Show. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em ev\+\_\+s} & Función que escucha el evento \\
+\hline
+{\em userdata} & Puntero a datos de usuario \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Skip\+Blurry\+Frames@{set\+Skip\+Blurry\+Frames}}
+\index{set\+Skip\+Blurry\+Frames@{set\+Skip\+Blurry\+Frames}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Skip\+Blurry\+Frames(bool sbf)}{setSkipBlurryFrames(bool sbf)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Skip\+Blurry\+Frames (
+\begin{DoxyParamCaption}
+\item[{bool}]{sbf}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a1cdf99b229663f4a108bc1f12878b7ca}{}\label{class_i3_d_1_1_video_stream_a1cdf99b229663f4a108bc1f12878b7ca}
+
+
+Activa el salto de frames borrosos. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em Verdadero} & para activar el salto de frames borrosos \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Skip\+Frames@{set\+Skip\+Frames}}
+\index{set\+Skip\+Frames@{set\+Skip\+Frames}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Skip\+Frames(int frames)}{setSkipFrames(int frames)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Skip\+Frames (
+\begin{DoxyParamCaption}
+\item[{int}]{frames}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a601c01974a67db7a005a49fd89bcaf38}{}\label{class_i3_d_1_1_video_stream_a601c01974a67db7a005a49fd89bcaf38}
+
+
+Establece el salto de frames en la lectura del video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em frames} & Número de frames que salta \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Skip\+Millisecond@{set\+Skip\+Millisecond}}
+\index{set\+Skip\+Millisecond@{set\+Skip\+Millisecond}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{set\+Skip\+Millisecond(int ms)}{setSkipMillisecond(int ms)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::set\+Skip\+Millisecond (
+\begin{DoxyParamCaption}
+\item[{int}]{ms}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a1366a8325fd874eb5f38e9fe438f0933}{}\label{class_i3_d_1_1_video_stream_a1366a8325fd874eb5f38e9fe438f0933}
+
+
+Establece el número de milisegundos que salta el video. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em ms} & Número de milisegundos que salta \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!show@{show}}
+\index{show@{show}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{show(cv\+::\+Mat \&vf)}{show(cv::Mat &vf)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+::\+Video\+Stream\+::show (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{vf}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a3fefb40523072958b4bb8300734f94a3}{}\label{class_i3_d_1_1_video_stream_a3fefb40523072958b4bb8300734f94a3}
+
+
+Lanza el evento Show. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em vf} & Frame de video \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Si hay algún listener para recogerlo devuelve verdadero 
+\end{DoxyReturn}
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!skip\+Down@{skip\+Down}}
+\index{skip\+Down@{skip\+Down}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{skip\+Down()}{skipDown()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::skip\+Down (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a78751b3d5a094e1b2ae164c9ac0b613b}{}\label{class_i3_d_1_1_video_stream_a78751b3d5a094e1b2ae164c9ac0b613b}
+
+
+Disminuye el salto de frames. 
+
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!skip\+Up@{skip\+Up}}
+\index{skip\+Up@{skip\+Up}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{skip\+Up()}{skipUp()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::skip\+Up (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1_video_stream_a7fb4bcbf3b3dfb6a6fa9701aa6c86a4a}{}\label{class_i3_d_1_1_video_stream_a7fb4bcbf3b3dfb6a6fa9701aa6c86a4a}
+
+
+Aumenta el salto de frames. 
+
+\index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!stop@{stop}}
+\index{stop@{stop}!I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}}
+\subsubsection[{\texorpdfstring{stop()}{stop()}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Video\+Stream\+::stop (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_video_stream_a1d9f6dd120e21ea4fed67e48dc11d26e}{}\label{class_i3_d_1_1_video_stream_a1d9f6dd120e21ea4fed67e48dc11d26e}
+
+
+Detiene la ejecución del video. 
+
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8h}{Video\+Stream.\+h}\item 
+D\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8cpp}{Video\+Stream.\+cpp}\end{DoxyCompactItemize}

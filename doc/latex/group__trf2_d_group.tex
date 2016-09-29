@@ -1,0 +1,936 @@
+\hypertarget{group__trf2_d_group}{}\section{Transformaciones 2D}
+\label{group__trf2_d_group}\index{Transformaciones 2D@{Transformaciones 2D}}
+\subsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_i3_d_1_1_transform2_d}{I3\+D\+::\+Transform2\+D$<$ T $>$}
+\item 
+class \hyperlink{class_i3_d_1_1_trf_perspective}{I3\+D\+::\+Trf\+Perspective$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em perspective \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_translate}{I3\+D\+::\+Translate$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Traslación. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_rotation}{I3\+D\+::\+Rotation$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Rotación. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_helmert2_d}{I3\+D\+::\+Helmert2\+D$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Helmert 2D. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_afin}{I3\+D\+::\+Afin$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Transformación \hyperlink{class_i3_d_1_1_afin}{Afin}. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_projective}{I3\+D\+::\+Projective$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Transformación Projectiva. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group__trf2_d_group_ga0742db3f66df991a7e4a2d1d91d1a783}{I3\+D\+::\+Trf\+Perspective$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Aplica la transformación. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_gaf4d7f0809edd08cc847f3df1db43055e}{I3\+D\+::\+Trf\+Perspective$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calcula los parámetros de transformación. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_ga8cab577e50c525caed001caec42a70a6}{I3\+D\+::\+Translate$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calculo de la traslación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga93831181f6cf779c0a7097b348c9c879}{I3\+D\+::\+Translate$<$ T $>$\+::set\+Translation} (sub\+\_\+type x0, sub\+\_\+type y0)
+\begin{DoxyCompactList}\small\item\em Establece los valores de desplazamiento. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaa4a82205fd57f86aed9338054104a22f}{I3\+D\+::\+Translate$<$ T $>$\+::set\+TranslationX} (sub\+\_\+type x0)
+\begin{DoxyCompactList}\small\item\em Establece el desplazamiento en el eje x. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaed6d19903cf0da2cd1ced22381ec223b}{I3\+D\+::\+Translate$<$ T $>$\+::set\+TranslationY} (sub\+\_\+type y0)
+\begin{DoxyCompactList}\small\item\em Establece el desplazamiento en el eje y. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga1e3ba2120da67c8c4606681c4b82f709}{I3\+D\+::\+Translate$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando una traslación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga8be3570501a8efb7a67210bb24d5218c}{I3\+D\+::\+Translate$<$ T $>$\+::transform} (const std\+::vector$<$ Segment$<$ sub\+\_\+type $>$$>$ \&in, std\+::vector$<$ Segment$<$ sub\+\_\+type $>$$>$ $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de segmentos en otro aplicando una traslación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga2f30e8ab65a36498c27994e2887deb80}{I3\+D\+::\+Translate$<$ T $>$\+::transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_gafdec629c6bb3f71d71934c43d4a54b74}{I3\+D\+::\+Translate$<$ T $>$\+::transform} (const T \&pt, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un punto. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_gae7637f88523deb1879cf8a712820d12e}{I3\+D\+::\+Rotation$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calculo del águlo de rotación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gacc531b7f0f00dd34f197a5c9ba07b8e2}{I3\+D\+::\+Rotation$<$ T $>$\+::set\+Angle} (sub\+\_\+type ang)
+\begin{DoxyCompactList}\small\item\em Establece en ángulo de la rotación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga0032788395928aa7419d506981ef03d3}{I3\+D\+::\+Rotation$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un conjunto de puntos. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga40ad8baf1f908752fe8afe20b71e8d67}{I3\+D\+::\+Rotation$<$ T $>$\+::transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_ga7db02aea0ee3a8c5167e16de0c89b079}{I3\+D\+::\+Rotation$<$ T $>$\+::transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica una rotación a un punto. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_ga300279dee0a002835c25322bd2ea9398}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gab7354b67b291bf01b3fd045578598fb1}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando un helmert 2D. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga11e1634259f4e3085840a16c3bfb314e}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_gaa9495c4b5fe0dbfb703a2004b41e310b}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga792554ed5f33a824b0c619e156697022}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::set\+Parameters} (T x0, T y0, double scale, double rotation)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaf7d2a6c0aeeb81c66b8e07e55236a6d2}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::set\+Rotation} (double rotation)
+\begin{DoxyCompactList}\small\item\em Establece la rotación de la transformación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaa732c2f1d68f41b1ab4ca63aa40b21df}{I3\+D\+::\+Helmert2\+D$<$ T $>$\+::set\+Scale} (double scale)
+\begin{DoxyCompactList}\small\item\em Establece la escala de la transformación. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_gabe12d714c522dd1bf40f05f28c5aafe0}{I3\+D\+::\+Afin$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gae1b65d232072a70d58ec72492a430521}{I3\+D\+::\+Afin$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando un helmert 2D. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaf2fb5278c5648034ef5f20c526866b77}{I3\+D\+::\+Afin$<$ T $>$\+::transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_ga8c7cfcf7b749b3adc69ebb6cfc0bb412}{I3\+D\+::\+Afin$<$ T $>$\+::transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaa6f479027bc96a8d58eaf52925822ecc}{I3\+D\+::\+Afin$<$ T $>$\+::set\+Parameters} (T x0, T y0, double scaleX, double scaleY, double rotation)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga07de5ad4be2f59ff5baa9b293211554d}{I3\+D\+::\+Afin$<$ T $>$\+::set\+Rotation} (double rotation)
+\begin{DoxyCompactList}\small\item\em Establece la rotación de la transformación. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga33b6c90a0d7d957adb192d7768b574a1}{I3\+D\+::\+Afin$<$ T $>$\+::set\+ScaleX} (double scaleX)
+\begin{DoxyCompactList}\small\item\em Establece la escala de la transformación en el eje X. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga2795a27b71c8e6364e71b828e042b6d7}{I3\+D\+::\+Afin$<$ T $>$\+::set\+ScaleY} (double scaleY)
+\begin{DoxyCompactList}\small\item\em Establece la escala de la transformación en el eje Y. \end{DoxyCompactList}\item 
+bool \hyperlink{group__trf2_d_group_gaae888e9e90db1050898b63386252fc88}{I3\+D\+::\+Projective$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
+\begin{DoxyCompactList}\small\item\em Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga9339dfc7f978fa6bbb9e2233930e8a3c}{I3\+D\+::\+Projective$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
+\begin{DoxyCompactList}\small\item\em Transforma un conjunto de puntos en otro aplicando un helmert 2D. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_ga1ecc0ebf8cc05c94bd9d9033416ac358}{I3\+D\+::\+Projective$<$ T $>$\+::transform} (const T \&in, T $\ast$out, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+T \hyperlink{group__trf2_d_group_gaf5ad47e08dc23464413870c2b7da4fc0}{I3\+D\+::\+Projective$<$ T $>$\+::transform} (const T \&in, bool b\+Direct=true) const 
+\begin{DoxyCompactList}\small\item\em Aplica un helmert 2D a un punto. \end{DoxyCompactList}\item 
+void \hyperlink{group__trf2_d_group_gaf03861962a0be948aaa7e032b9e1729b}{I3\+D\+::\+Projective$<$ T $>$\+::set\+Parameters} (double a, double b, double c, double d, double e, double f, double g, double h)
+\begin{DoxyCompactList}\small\item\em Establece los parámetros. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Descripción detallada}
+Transformaciones geométricas en el plano 
+
+\subsection{Documentación de las funciones}
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Trf\+Perspective}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gaf4d7f0809edd08cc847f3df1db43055e}{}\label{group__trf2_d_group_gaf4d7f0809edd08cc847f3df1db43055e}
+
+
+Calcula los parámetros de transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform_a909a4033f9fab3f091b433b9e2261208}{I3\+D\+::\+Transform$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Translate}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga8cab577e50c525caed001caec42a70a6}{}\label{group__trf2_d_group_ga8cab577e50c525caed001caec42a70a6}
+
+
+Calculo de la traslación. 
+
+Calcula la traslación entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gae7637f88523deb1879cf8a712820d12e}{}\label{group__trf2_d_group_gae7637f88523deb1879cf8a712820d12e}
+
+
+Calculo del águlo de rotación. 
+
+Calcula la rotación entre dos sistemas de coordenadas a partir de dos conjuntos de puntos
+
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+Rotation<cv::Point2d> rot;
+std::vector<cv::Point2d> pts\_in\{ cv::Point2d(12.3, 34.3), cv::Point2d(10.6, 34.345), cv::Point2d(34.76, 54.
+      26) \};
+std::vector<cv::Point2d> pts\_out\{ cv::Point2d(-7.869, 35.578), cv::Point2d(-9.33, 34.71), cv::Point2d(0.499
+      , 64.43) \};
+rot.compute(pts\_in, pts\_out);
+\end{DoxyCode}
+ 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga300279dee0a002835c25322bd2ea9398}{}\label{group__trf2_d_group_ga300279dee0a002835c25322bd2ea9398}
+
+
+Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Afin}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gabe12d714c522dd1bf40f05f28c5aafe0}{}\label{group__trf2_d_group_gabe12d714c522dd1bf40f05f28c5aafe0}
+
+
+Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!compute@{compute}}
+\index{compute@{compute}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{compute(const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override}{compute(const std::vector< T > &pts1, const std::vector< T > &pts2) override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ bool {\bf I3\+D\+::\+Projective}$<$ T $>$\+::compute (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{pts1, }
+\item[{const std\+::vector$<$ T $>$ \&}]{pts2}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gaae888e9e90db1050898b63386252fc88}{}\label{group__trf2_d_group_gaae888e9e90db1050898b63386252fc88}
+
+
+Calcula la transformación Helmert 2D entre dos sistemas diferentes a partir de dos conjuntos de puntos en cada sistema. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts1} & Conjunto de puntos en el primero de los sistemas \\
+\hline
+\mbox{\tt in}  & {\em pts2} & Conjunto de puntos en el segundo de los sistemas \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Verdadero si el calculo se ha efectuado de forma correcta 
+\end{DoxyReturn}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a61b1bb9c9a057ceec35c9320447070b9}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Angle@{set\+Angle}}
+\index{set\+Angle@{set\+Angle}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Angle(sub\+\_\+type ang)}{setAngle(sub_type ang)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::set\+Angle (
+\begin{DoxyParamCaption}
+\item[{{\bf sub\+\_\+type}}]{ang}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gacc531b7f0f00dd34f197a5c9ba07b8e2}{}\label{group__trf2_d_group_gacc531b7f0f00dd34f197a5c9ba07b8e2}
+
+
+Establece en ángulo de la rotación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ang} & Ángulo en radianes \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Parameters(\+T x0, T y0, double scale, double rotation)}{setParameters(T x0, T y0, double scale, double rotation)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{T}]{x0, }
+\item[{T}]{y0, }
+\item[{double}]{scale, }
+\item[{double}]{rotation}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga792554ed5f33a824b0c619e156697022}{}\label{group__trf2_d_group_ga792554ed5f33a824b0c619e156697022}
+
+
+Establece los parámetros. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Traslación en x \\
+\hline
+\mbox{\tt in}  & {\em y0} & Traslación en y \\
+\hline
+\mbox{\tt in}  & {\em scale} & Escala \\
+\hline
+\mbox{\tt in}  & {\em rotation} & Rotación \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Parameters(\+T x0, T y0, double scale\+X, double scale\+Y, double rotation)}{setParameters(T x0, T y0, double scaleX, double scaleY, double rotation)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{T}]{x0, }
+\item[{T}]{y0, }
+\item[{double}]{scaleX, }
+\item[{double}]{scaleY, }
+\item[{double}]{rotation}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaa6f479027bc96a8d58eaf52925822ecc}{}\label{group__trf2_d_group_gaa6f479027bc96a8d58eaf52925822ecc}
+
+
+Establece los parámetros. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Traslación en x \\
+\hline
+\mbox{\tt in}  & {\em y0} & Traslación en y \\
+\hline
+\mbox{\tt in}  & {\em scaleX} & Escala en x \\
+\hline
+\mbox{\tt in}  & {\em scaleY} & Escala en y \\
+\hline
+\mbox{\tt in}  & {\em rotation} & Rotación \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Parameters@{set\+Parameters}}
+\index{set\+Parameters@{set\+Parameters}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Parameters(double a, double b, double c, double d, double e, double f, double g, double h)}{setParameters(double a, double b, double c, double d, double e, double f, double g, double h)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Projective}$<$ T $>$\+::set\+Parameters (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b, }
+\item[{double}]{c, }
+\item[{double}]{d, }
+\item[{double}]{e, }
+\item[{double}]{f, }
+\item[{double}]{g, }
+\item[{double}]{h}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaf03861962a0be948aaa7e032b9e1729b}{}\label{group__trf2_d_group_gaf03861962a0be948aaa7e032b9e1729b}
+
+
+Establece los parámetros. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em a} & \\
+\hline
+\mbox{\tt in}  & {\em b} & \\
+\hline
+\mbox{\tt in}  & {\em c} & \\
+\hline
+\mbox{\tt in}  & {\em d} & \\
+\hline
+\mbox{\tt in}  & {\em e} & \\
+\hline
+\mbox{\tt in}  & {\em f} & \\
+\hline
+\mbox{\tt in}  & {\em g} & \\
+\hline
+\mbox{\tt in}  & {\em h} & \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Rotation@{set\+Rotation}}
+\index{set\+Rotation@{set\+Rotation}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Rotation(double rotation)}{setRotation(double rotation)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::set\+Rotation (
+\begin{DoxyParamCaption}
+\item[{double}]{rotation}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaf7d2a6c0aeeb81c66b8e07e55236a6d2}{}\label{group__trf2_d_group_gaf7d2a6c0aeeb81c66b8e07e55236a6d2}
+
+
+Establece la rotación de la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Ángulo} & de rotación en radianes \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Rotation@{set\+Rotation}}
+\index{set\+Rotation@{set\+Rotation}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Rotation(double rotation)}{setRotation(double rotation)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::set\+Rotation (
+\begin{DoxyParamCaption}
+\item[{double}]{rotation}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga07de5ad4be2f59ff5baa9b293211554d}{}\label{group__trf2_d_group_ga07de5ad4be2f59ff5baa9b293211554d}
+
+
+Establece la rotación de la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Ángulo} & de rotación en radianes \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Scale@{set\+Scale}}
+\index{set\+Scale@{set\+Scale}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Scale(double scale)}{setScale(double scale)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::set\+Scale (
+\begin{DoxyParamCaption}
+\item[{double}]{scale}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaa732c2f1d68f41b1ab4ca63aa40b21df}{}\label{group__trf2_d_group_gaa732c2f1d68f41b1ab4ca63aa40b21df}
+
+
+Establece la escala de la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Escala} & de la transformación \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+ScaleX@{set\+ScaleX}}
+\index{set\+ScaleX@{set\+ScaleX}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Scale\+X(double scale\+X)}{setScaleX(double scaleX)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::set\+ScaleX (
+\begin{DoxyParamCaption}
+\item[{double}]{scaleX}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga33b6c90a0d7d957adb192d7768b574a1}{}\label{group__trf2_d_group_ga33b6c90a0d7d957adb192d7768b574a1}
+
+
+Establece la escala de la transformación en el eje X. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Escala} & de la transformación \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+ScaleY@{set\+ScaleY}}
+\index{set\+ScaleY@{set\+ScaleY}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Scale\+Y(double scale\+Y)}{setScaleY(double scaleY)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::set\+ScaleY (
+\begin{DoxyParamCaption}
+\item[{double}]{scaleY}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga2795a27b71c8e6364e71b828e042b6d7}{}\label{group__trf2_d_group_ga2795a27b71c8e6364e71b828e042b6d7}
+
+
+Establece la escala de la transformación en el eje Y. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Escala} & de la transformación \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+Translation@{set\+Translation}}
+\index{set\+Translation@{set\+Translation}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Translation(sub\+\_\+type x0, sub\+\_\+type y0)}{setTranslation(sub_type x0, sub_type y0)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::set\+Translation (
+\begin{DoxyParamCaption}
+\item[{{\bf sub\+\_\+type}}]{x0, }
+\item[{{\bf sub\+\_\+type}}]{y0}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga93831181f6cf779c0a7097b348c9c879}{}\label{group__trf2_d_group_ga93831181f6cf779c0a7097b348c9c879}
+
+
+Establece los valores de desplazamiento. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Desplazamiento en el eje x \\
+\hline
+\mbox{\tt in}  & {\em y0} & Desplazamiento en el eje y \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+TranslationX@{set\+TranslationX}}
+\index{set\+TranslationX@{set\+TranslationX}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Translation\+X(sub\+\_\+type x0)}{setTranslationX(sub_type x0)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::set\+TranslationX (
+\begin{DoxyParamCaption}
+\item[{{\bf sub\+\_\+type}}]{x0}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaa4a82205fd57f86aed9338054104a22f}{}\label{group__trf2_d_group_gaa4a82205fd57f86aed9338054104a22f}
+
+
+Establece el desplazamiento en el eje x. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x0} & Desplazamiento en el eje x \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!set\+TranslationY@{set\+TranslationY}}
+\index{set\+TranslationY@{set\+TranslationY}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{set\+Translation\+Y(sub\+\_\+type y0)}{setTranslationY(sub_type y0)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::set\+TranslationY (
+\begin{DoxyParamCaption}
+\item[{{\bf sub\+\_\+type}}]{y0}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaed6d19903cf0da2cd1ced22381ec223b}{}\label{group__trf2_d_group_gaed6d19903cf0da2cd1ced22381ec223b}
+
+
+Establece el desplazamiento en el eje y. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em y0} & Desplazamiento en el eje y \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Trf\+Perspective}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga0742db3f66df991a7e4a2d1d91d1a783}{}\label{group__trf2_d_group_ga0742db3f66df991a7e4a2d1d91d1a783}
+
+
+Aplica la transformación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa (por defecto) \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform_adbec7381bfc66b4a766a00fdf16de0fe}{I3\+D\+::\+Transform$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga1e3ba2120da67c8c4606681c4b82f709}{}\label{group__trf2_d_group_ga1e3ba2120da67c8c4606681c4b82f709}
+
+
+Transforma un conjunto de puntos en otro aplicando una traslación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ Segment$<$ sub\+\_\+type $>$$>$ \&in, std\+::vector$<$ Segment$<$ sub\+\_\+type $>$$>$ $\ast$out, bool b\+Direct=true) const }{transform(const std::vector< Segment< sub_type >> &in, std::vector< Segment< sub_type >> *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ {\bf Segment}$<$ {\bf sub\+\_\+type} $>$$>$ \&}]{in, }
+\item[{std\+::vector$<$ {\bf Segment}$<$ {\bf sub\+\_\+type} $>$$>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga8be3570501a8efb7a67210bb24d5218c}{}\label{group__trf2_d_group_ga8be3570501a8efb7a67210bb24d5218c}
+
+
+Transforma un conjunto de segmentos en otro aplicando una traslación. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, T $\ast$out, bool b\+Direct=true) const }{transform(const T &in, T *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Translate}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{T $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga2f30e8ab65a36498c27994e2887deb80}{}\label{group__trf2_d_group_ga2f30e8ab65a36498c27994e2887deb80}
+
+
+Aplica una traslación a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Punto de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&pt, bool b\+Direct=true) const }{transform(const T &pt, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf I3\+D\+::\+Translate}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{pt, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gafdec629c6bb3f71d71934c43d4a54b74}{}\label{group__trf2_d_group_gafdec629c6bb3f71d71934c43d4a54b74}
+
+
+Aplica una traslación a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Punto de salida 
+\end{DoxyReturn}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga0032788395928aa7419d506981ef03d3}{}\label{group__trf2_d_group_ga0032788395928aa7419d506981ef03d3}
+
+
+Aplica una rotación a un conjunto de puntos. 
+
+Transforma un conjunto de puntos en un sistema cartesiano a otro sistema aplicando un giro.
+
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+Rotation<cv::Point2d> rot(0.562);
+std::vector<cv::Point2d> pts\_in\{ cv::Point2d(12.3, 34.3), cv::Point2d(10.6, 34.345), cv::Point2d(34.76, 54.
+      26) \};
+std::vector<cv::Point2d> pts\_out;
+rot.transform(pts\_in, &pts\_out);
+\end{DoxyCode}
+ 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, T $\ast$out, bool b\+Direct=true) const }{transform(const T &in, T *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{T $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga40ad8baf1f908752fe8afe20b71e8d67}{}\label{group__trf2_d_group_ga40ad8baf1f908752fe8afe20b71e8d67}
+
+
+Aplica una rotación a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Punto de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, bool b\+Direct=true) const }{transform(const T &in, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf I3\+D\+::\+Rotation}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga7db02aea0ee3a8c5167e16de0c89b079}{}\label{group__trf2_d_group_ga7db02aea0ee3a8c5167e16de0c89b079}
+
+
+Aplica una rotación a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Punto de salida 
+\end{DoxyReturn}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gab7354b67b291bf01b3fd045578598fb1}{}\label{group__trf2_d_group_gab7354b67b291bf01b3fd045578598fb1}
+
+
+Transforma un conjunto de puntos en otro aplicando un helmert 2D. 
+
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+Helmert2D<cv::Point2d> h2d(\hyperlink{class_i3_d_1_1_helmert2_d_ad0bb6ad335ff383cf85f29a3da60c2e7}{x0},\hyperlink{class_i3_d_1_1_helmert2_d_a60ddf8a70434410bc53e610abf583dbe}{y0}, scale, rotation);
+std::vector<cv::Point2d> pts\_in\{ cv::Point2d(4157222.543, 664789.307),
+    cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
+    cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
+    cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) \};
+std::vector<cv::Point2d> pts\_out;
+h2d.transform(pts\_in, &pts\_out);
+\end{DoxyCode}
+ 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, T $\ast$out, bool b\+Direct=true) const }{transform(const T &in, T *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{T $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga11e1634259f4e3085840a16c3bfb314e}{}\label{group__trf2_d_group_ga11e1634259f4e3085840a16c3bfb314e}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Punto de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, bool b\+Direct=true) const }{transform(const T &in, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf I3\+D\+::\+Helmert2D}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaa9495c4b5fe0dbfb703a2004b41e310b}{}\label{group__trf2_d_group_gaa9495c4b5fe0dbfb703a2004b41e310b}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Punto de salida 
+\end{DoxyReturn}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_gae1b65d232072a70d58ec72492a430521}{}\label{group__trf2_d_group_gae1b65d232072a70d58ec72492a430521}
+
+
+Transforma un conjunto de puntos en otro aplicando un helmert 2D. 
+
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+\end{DoxyCode}
+ 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, T $\ast$out, bool b\+Direct=true) const }{transform(const T &in, T *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Afin}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{T $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaf2fb5278c5648034ef5f20c526866b77}{}\label{group__trf2_d_group_gaf2fb5278c5648034ef5f20c526866b77}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Punto de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, bool b\+Direct=true) const }{transform(const T &in, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf I3\+D\+::\+Afin}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga8c7cfcf7b749b3adc69ebb6cfc0bb412}{}\label{group__trf2_d_group_ga8c7cfcf7b749b3adc69ebb6cfc0bb412}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Punto de salida 
+\end{DoxyReturn}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Projective}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ T $>$ \&}]{in, }
+\item[{std\+::vector$<$ T $>$ $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{group__trf2_d_group_ga9339dfc7f978fa6bbb9e2233930e8a3c}{}\label{group__trf2_d_group_ga9339dfc7f978fa6bbb9e2233930e8a3c}
+
+
+Transforma un conjunto de puntos en otro aplicando un helmert 2D. 
+
+\paragraph*{Ejemplo\+:}
+
+
+\begin{DoxyCode}
+\end{DoxyCode}
+ 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Puntos de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Puntos de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_transform2_d_a636c5afb2a198d46f7d9c3dc8c1800f1}{I3\+D\+::\+Transform2\+D$<$ T $>$}.
+
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, T $\ast$out, bool b\+Direct=true) const }{transform(const T &in, T *out, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Projective}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{T $\ast$}]{out, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_ga1ecc0ebf8cc05c94bd9d9033416ac358}{}\label{group__trf2_d_group_ga1ecc0ebf8cc05c94bd9d9033416ac358}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt out}  & {\em out} & Punto de salida \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\index{Transformaciones 2D@{Transformaciones 2D}!transform@{transform}}
+\index{transform@{transform}!Transformaciones 2D@{Transformaciones 2D}}
+\subsubsection[{\texorpdfstring{transform(const T \&in, bool b\+Direct=true) const }{transform(const T &in, bool bDirect=true) const }}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ T {\bf I3\+D\+::\+Projective}$<$ T $>$\+::transform (
+\begin{DoxyParamCaption}
+\item[{const T \&}]{in, }
+\item[{bool}]{b\+Direct = {\ttfamily true}}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{group__trf2_d_group_gaf5ad47e08dc23464413870c2b7da4fc0}{}\label{group__trf2_d_group_gaf5ad47e08dc23464413870c2b7da4fc0}
+
+
+Aplica un helmert 2D a un punto. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Punto de entrada \\
+\hline
+\mbox{\tt in}  & {\em b\+Direct} & Transformación directa \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Punto de salida 
+\end{DoxyReturn}
