@@ -1,5 +1,6 @@
 #include <windows.h>
 #include <memory>
+#include <thread> 
 
 // Cabeceras de OpenCV
 #include "opencv2/core/core.hpp"
@@ -33,6 +34,7 @@ LD_TYPE ls = LD_TYPE::HOUGHP;
 
 int main(int argc, char *argv[])
 {
+
   char logfile[_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "InsulatorsDetection.log", logfile);
   LogMsg log(logfile, LogLevel::LOG_DEBUG);
@@ -93,7 +95,7 @@ int main(int argc, char *argv[])
     imgprolist.add(std::make_shared<I3D::Canny>());
   }
 
-
+  
   //std::string img1 = "C:\\Desarrollo\\Datos\\Video_Termico_FLIR\\captura2.jpg";
   //WindowI wTower(cv::Point(290, 25), cv::Point(376, 335)); //"C:\\Desarrollo\\Datos\\Video_Termico_FLIR\\captura2.jpg
   //std::string img1 = "C:\\Desarrollo\\Datos\\insulators6_GRAY.png";
@@ -162,10 +164,15 @@ int main(int argc, char *argv[])
 
     //Comenzamos a agrupar lineas paralelas
     std::vector<ldGroupLines> linesGroupsRight, linesGroupsLeft;
-    groupParallelLines(linesRight, &linesGroupsRight, 0.015);
-    groupParallelLines(linesLeft, &linesGroupsLeft, 0.015);
+    //groupParallelLines(linesRight, &linesGroupsRight, 0.015);
+    //groupParallelLines(linesLeft, &linesGroupsLeft, 0.015)
+    std::thread tL(groupParallelLines,linesRight, &linesGroupsRight, 0.015);
+    std::thread tR(groupParallelLines,linesLeft, &linesGroupsLeft, 0.015);
+
     cv::RNG rng(12345);
     cv::Scalar c;
+
+    tR.join();
 
     int imaxr = 0;
     int maxr = 0;
@@ -175,6 +182,8 @@ int main(int argc, char *argv[])
         imaxr = ilg;
       }
     }
+
+    tL.join();
 
     int imaxl = 0;
     int maxl = 0;
@@ -186,18 +195,17 @@ int main(int argc, char *argv[])
     }
 
     std::vector<ldGroupLines> linesGroupsRight2, linesGroupsLeft2;
-    groupLinesByDist(linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
-    groupLinesByDist(linesGroupsLeft[imaxl].getLines(), &linesGroupsLeft2, 10);
+    //groupLinesByDist(linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
+    //groupLinesByDist(linesGroupsLeft[imaxl].getLines(), &linesGroupsLeft2, 10);
+    tL = std::thread(groupLinesByDist,linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
+    tR = std::thread(groupLinesByDist,linesGroupsLeft[imaxr].getLines(), &linesGroupsLeft2, 10);
+
+    tL.join();
 
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
       std::vector<Line> linesJoinLeft;
       joinLinesByDist(linesGroupsLeft2[ig].getLines(), &linesJoinLeft, 3);
       linesGroupsLeft2[ig] = ldGroupLines(linesJoinLeft);
-    }
-    for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
-      std::vector<Line> linesJoinRight;
-      joinLinesByDist(linesGroupsRight2[ig].getLines(), &linesJoinRight, 3);
-      linesGroupsRight2[ig] = ldGroupLines(linesJoinRight);
     }
 
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
@@ -205,6 +213,14 @@ int main(int argc, char *argv[])
       for (int il = 0; il < linesGroupsLeft2[ig].getSize(); il++) {
         line(frameout, linesGroupsLeft2[ig][il].pt1, linesGroupsLeft2[ig][il].pt2, c, 1, cv::LINE_8);
       }
+    }
+
+    tR.join();
+
+    for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
+      std::vector<Line> linesJoinRight;
+      joinLinesByDist(linesGroupsRight2[ig].getLines(), &linesJoinRight, 3);
+      linesGroupsRight2[ig] = ldGroupLines(linesJoinRight);
     }
 
     for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {

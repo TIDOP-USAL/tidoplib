@@ -157,7 +157,7 @@ void ldGroupLines::add(const Line &line)
   linesgroup.push_back(line);
   WindowI w = laux.getWindow();
   //Se actualiza la ventana  envolvente
-  bbox = (bbox.isEmpty() ) ? w : JoinWindow(bbox, w);
+  bbox = (bbox.isEmpty() ) ? w : joinWindow(bbox, w);
 }
 
 void ldGroupLines::add(const cv::Vec4i &lvect)

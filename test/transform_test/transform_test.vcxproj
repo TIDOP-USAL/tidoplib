@@ -11,53 +11,43 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0A3253BC-1302-4140-80E1-2C73814A0C74}</ProjectGuid>
+    <ProjectGuid>{1914A704-E584-4700-9394-EC0F74987E9F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>DeteccionApoyos</RootNamespace>
+    <RootNamespace>utils_test</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\props\GTest_debug.props" />
     <Import Project="..\..\props_vs\OpenCV_debug.props" />
-    <Import Project="..\..\props_vs\OpenCV_X_debug.props" />
-    <Import Project="..\..\props_vs\PCL_DEBUG.props" />
-    <Import Project="..\..\props_vs\Boost_Debug.props" />
-    <Import Project="..\..\props_vs\VTK_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\props\GTest_release.props" />
     <Import Project="..\..\props_vs\OpenCV_release.props" />
-    <Import Project="..\..\props_vs\OpenCV_X_release.props" />
-    <Import Project="..\..\props_vs\PCL_RELEASE.props" />
-    <Import Project="..\..\props_vs\Boost_release.props" />
-    <Import Project="..\..\props_vs\VTK_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)Obj\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)Obj\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -66,12 +56,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\third_party\libelas\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Desarrollo\Libs\opencv\include;C:\Desarrollo\Libs\googletest\install\include;C:\Desarrollo\Libs\opencv\include;..\..\src;D:\Desarrollo\Libs\googletest\install\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opencv_xfeatures2d310d.lib;opencv_ximgproc310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>D:\Desarrollo\Libs\googletest\install\lib;C:\Desarrollo\Libs\googletest\install\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -83,39 +74,22 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\src;..\..\third_party\libelas\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Desarrollo\Libs\googletest\install\include;C:\Desarrollo\Libs\opencv\include;..\..\src</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
-      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Desarrollo\Libs\googletest\install\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\third_party\libelas\src\descriptor.cpp" />
-    <ClCompile Include="..\..\third_party\libelas\src\elas.cpp" />
-    <ClCompile Include="..\..\third_party\libelas\src\filter.cpp" />
-    <ClCompile Include="..\..\third_party\libelas\src\matrix.cpp" />
-    <ClCompile Include="..\..\third_party\libelas\src\triangle.cpp" />
-    <ClCompile Include="disparity_map.cpp" />
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\third_party\libelas\src\descriptor.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\elas.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\filter.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\image.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\matrix.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\timer.h" />
-    <ClInclude Include="..\..\third_party\libelas\src\triangle.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\tidopLib.vcxproj">
-      <Project>{f39af565-7429-4f4c-a13c-c1edb3c0f529}</Project>
-    </ProjectReference>
+    <ClCompile Include="transform_test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

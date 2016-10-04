@@ -289,10 +289,10 @@ int main(int argc, char *argv[])
 
   std::unique_ptr<LineDetector> oLD;
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
-  if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);// new ldHouh(150, ang_tol);
-  else if (ls == LD_TYPE::HOUGHP)      oLD = std::make_unique<ldHouhP>(75, ang_tol, 50., 30.);//new ldHouhP(75, ang_tol,50, 30); 
-  else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>(); //new ldHouhFast(/*ang_tol*/);
-  else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol); // new ldLSD(ang_tol);
+  if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
+  else if (ls == LD_TYPE::HOUGHP)      oLD = std::make_unique<ldHouhP>(75, ang_tol, 50., 30.);
+  else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
+  else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
   else {
     logErrorMsg("No se ha seleccionado ningún detector de lineas.");
     return 0;

@@ -471,7 +471,7 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
 
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, DECOMP_SVD);
+        cv::solve(A, B, C, cv::DECOMP_SVD);
         translate.x = C.at<sub_type>(2);
         translate.y = C.at<sub_type>(3);
       } catch (std::exception &e) {
@@ -575,7 +575,7 @@ public:
 
   /*!
    * \brief Constructora
-   * \param[in] angle Ángulo
+   * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle) 
     : Transform2D(1, transform_type::ROTATION), angle(angle)
@@ -683,7 +683,7 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
         
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, DECOMP_SVD);
+        cv::solve(A, B, C, cv::DECOMP_SVD);
         r1 = C.at<sub_type>(0);
         r2 = C.at<sub_type>(1);
         angle = acos(r1);
@@ -821,10 +821,10 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Rotación
    */
-  Helmert2D(T x0, T y0, double scale, double rotation) 
+  Helmert2D(sub_type x0, sub_type y0, double scale, double rotation) 
     : Transform2D(2, transform_type::HELMERT_2D), x0(x0), y0(y0), scale(scale), rotation(rotation)
   {
-    uptate();
+    update();
   }
 
   //~Helmert2D();
@@ -944,7 +944,7 @@ bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);
@@ -1106,6 +1106,24 @@ private:
    */
   double d;
 
+  double ai;
+
+  double bi;
+
+  double ci;
+
+  double di;
+
+  /*!
+   * \brief Traslación en x transformación inversa
+   */
+  sub_type x0i;
+
+  /*!
+   * \brief Traslación en y transformación inversa
+   */
+  sub_type y0i;
+
 public:
 
   /*!
@@ -1125,10 +1143,10 @@ public:
    * \param[in] scaleY Escala en el eje Y
    * \param[in] rotation Rotación
    */
-  Afin(T x0, T y0, double scaleX, double scaleY, double rotation)
+  Afin(sub_type x0, sub_type y0, double scaleX, double scaleY, double rotation)
     : Transform2D(3, transform_type::AFIN), x0(x0), y0(y0), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
   {
-    uptate();
+    update();
   }
 
   //~Afin();
@@ -1173,7 +1191,7 @@ public:
    * \brief Devuelve el giro
    * \return Ángulo de rotación en radianes
    */
-  double getRotation() const { return rotation; };
+  double getRotation() const { return mRotation; };
 
   /*!
    * \brief Devuelve la escala correspondiente al eje X
@@ -1260,7 +1278,7 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);
@@ -1355,10 +1373,10 @@ void Afin<T>::setScaleY(double scaleY)
 template<typename T> inline
 void Afin<T>::update()
 {
-  a =  scaleX * cos(rotation);
-  b =  scaleX * sin(rotation);
-  c = -scaleY * sin(rotation);
-  d =  scaleY * cos(rotation);
+  a =  mScaleX * cos(mRotation);
+  b =  mScaleX * sin(mRotation);
+  c = -mScaleY * sin(mRotation);
+  d =  mScaleY * cos(mRotation);
   
   // Transformación inversa
   double det = a * d - c * b;
@@ -1493,7 +1511,7 @@ public:
   Projective(double a, double b, double c, double d, double e, double f, double g, double h)
     : Transform2D(4, transform_type::PROJECTIVE), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
   {
-    uptate();
+    update();
   }
 
   //~Projective();
@@ -1597,7 +1615,7 @@ bool Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);

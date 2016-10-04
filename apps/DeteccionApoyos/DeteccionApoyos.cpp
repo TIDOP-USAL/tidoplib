@@ -110,7 +110,7 @@ void onRun(VideoStream *strmVideo, void* userdata)
   
   //Ventana en la cual se van a buscar los apoyos
   WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
-  ws = ExpandWindow(ws, -100, 0);
+  ws = expandWindow(ws, -100, 0);
 
   try {
 

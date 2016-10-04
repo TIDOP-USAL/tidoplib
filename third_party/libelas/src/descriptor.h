@@ -33,7 +33,8 @@ Street, Fifth Floor, Boston, MA 02110-1301, USA
 #include <math.h>
 
 // Define fixed-width datatypes for Visual Studio projects
-#ifndef _MSC_VER
+//#ifndef _MSC_VER // A partir de la VS 2100 se incluye la cabecera stdint.h
+#if _MSC_VER >= 1600
   #include <stdint.h>
 #else
   typedef __int8            int8_t;

@@ -29,6 +29,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RUN_ALL_TEST", "test\RUN_AL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "window_test", "test\window_test\window_test.vcxproj", "{EF79B18C-2D8B-489D-A477-E8E6E295F129}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "transform_test", "test\transform_test\transform_test.vcxproj", "{1914A704-E584-4700-9394-EC0F74987E9F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -108,6 +110,14 @@ Global
 		{EF79B18C-2D8B-489D-A477-E8E6E295F129}.Release|Mixed Platforms.Build.0 = Release|x64
 		{EF79B18C-2D8B-489D-A477-E8E6E295F129}.Release|x64.ActiveCfg = Release|x64
 		{EF79B18C-2D8B-489D-A477-E8E6E295F129}.Release|x64.Build.0 = Release|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Debug|x64.ActiveCfg = Debug|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Debug|x64.Build.0 = Debug|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Release|Mixed Platforms.Build.0 = Release|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Release|x64.ActiveCfg = Release|x64
+		{1914A704-E584-4700-9394-EC0F74987E9F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,5 +132,6 @@ Global
 		{6CDB80D7-407F-4856-9050-76BC552BC871} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{274618C1-E79B-4320-B2E2-74B6C97EA7FA} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{EF79B18C-2D8B-489D-A477-E8E6E295F129} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
+		{1914A704-E584-4700-9394-EC0F74987E9F} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 	EndGlobalSection
 EndGlobal

@@ -21,8 +21,8 @@ namespace I3D
  * \param[in] w2 Ventana 2
  * \return Verdadero si intersectan
  */
-template<typename T>
-bool I3D_EXPORT intersectWindows(T w1, T w2)
+template<typename T1, typename T2>
+bool I3D_EXPORT intersectWindows(T1 w1, T2 w2)
 {
   return w1.pt2.x >= w2.pt1.x && w1.pt2.y >= w2.pt1.y &&  w1.pt1.x <= w2.pt2.x && w1.pt1.y <= w2.pt2.y;
 }
@@ -53,7 +53,7 @@ T I3D_EXPORT windowIntersection(T w1, T w2)
  * \return Ventana unión
  */
 template<typename T>
-T I3D_EXPORT JoinWindow(T w1, T w2)
+T I3D_EXPORT joinWindow(T w1, T w2)
 {
   T w;
   w.pt1.x = std::min(w1.pt1.x, w2.pt1.x);
@@ -71,7 +71,7 @@ T I3D_EXPORT JoinWindow(T w1, T w2)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 I3D_EXPORT ExpandWindow(T1 w, T2 szx, T2 szy)
+T1 I3D_EXPORT expandWindow(T1 w, T2 szx, T2 szy)
 {
   T1 _w;
   _w.pt1.x = w.pt1.x - szx;
@@ -89,9 +89,9 @@ T1 I3D_EXPORT ExpandWindow(T1 w, T2 szx, T2 szy)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 I3D_EXPORT ExpandWindow(T1 w, T2 sz)
+T1 I3D_EXPORT expandWindow(T1 w, T2 sz)
 {
-  return ExpandWindow(w, sz, sz);
+  return expandWindow(w, sz, sz);
 }
 
 /*!
@@ -269,6 +269,8 @@ Window<T>::Window(cv::Point_<T> &_pt, T sz)
 
 template<typename T> inline
 Window<T>::Window(std::vector<cv::Point_<T>> v)
+  : pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+    pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
 {
   if (v.size() >= 2) {
     for (size_t i = 0; i < v.size(); i++) {
@@ -282,13 +284,22 @@ Window<T>::Window(std::vector<cv::Point_<T>> v)
 
 template<typename T> template<typename T2> inline
 Window<T>::Window(std::vector<cv::Point_<T2>> v)
+  : pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+    pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
 {
   if (v.size() >= 2) {
     for (size_t i = 0; i < v.size(); i++) {
-      if (pt1.x > static_cast<T>(v[i].x)) pt1.x = static_cast<T>(v[i].x);
-      if (pt1.y > static_cast<T>(v[i].y)) pt1.y = static_cast<T>(v[i].y);
-      if (pt2.x < static_cast<T>(v[i].x)) pt2.x = static_cast<T>(v[i].x);
-      if (pt2.y < static_cast<T>(v[i].y)) pt2.y = static_cast<T>(v[i].y);
+      if (typeid(T) == typeid(int)) {
+        if (pt1.x > v[i].x) pt1.x = static_cast<T>(round(v[i].x));
+        if (pt1.y > v[i].y) pt1.y = static_cast<T>(round(v[i].y));
+        if (pt2.x < v[i].x) pt2.x = static_cast<T>(round(v[i].x));
+        if (pt2.y < v[i].y) pt2.y = static_cast<T>(round(v[i].y));
+      } else {
+        if (pt1.x > v[i].x) pt1.x = static_cast<T>(v[i].x);
+        if (pt1.y > v[i].y) pt1.y = static_cast<T>(v[i].y);
+        if (pt2.x < v[i].x) pt2.x = static_cast<T>(v[i].x);
+        if (pt2.y < v[i].y) pt2.y = static_cast<T>(v[i].y);
+      }
     }
   }
 }
@@ -312,9 +323,23 @@ bool Window<T>::operator == (const Window &w) const
 template<typename T> template<typename T2> inline
 Window<T>::operator Window<T2>() const
 {
-  cv::Point_<T2> _pt1 = pt1;
-  cv::Point_<T2> _pt2 = pt2;
-  return Window<T2>(_pt1, _pt2);
+  // El saturate_cast de OpenCV al hacer cast a int parece que no funciona muy bien.
+  // 0.5 lo convierte a 0. 2.5 lo convierte a 2. Sin embargo 1.5 lo convierte a 2...
+  //cv::Point_<T2> _pt1 = pt1;
+  //cv::Point_<T2> _pt2 = pt2;
+  //return Window<T2>(_pt1, _pt2);
+  //habria que crear un cast personalizado para transformar a entero. 
+  Window<T2> w;
+  if (typeid(T2) == typeid(int)) {
+    //Dos posibles soluciones. Ver cual es mas eficiente
+    cv::Point_<T2> _pt1(static_cast<T2>(round(pt1.x)), static_cast<T2>(round(pt1.y)));
+    cv::Point_<T2> _pt2(static_cast<T2>(round(pt2.x)), static_cast<T2>(round(pt2.y)));
+    return Window<T2>(_pt1, _pt2);
+  } else {
+    cv::Point_<T2> _pt1 = pt1;
+    cv::Point_<T2> _pt2 = pt2;
+    return Window<T2>(_pt1, _pt2);
+  }
 }
 
 template<typename T> inline
