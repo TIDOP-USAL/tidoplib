@@ -1,0 +1,123 @@
+\hypertarget{class_i3_d_1_1ld_l_s_w_m_s}{}\section{Referencia de la Clase I3D\+:\+:ld\+L\+S\+W\+MS}
+\label{class_i3_d_1_1ld_l_s_w_m_s}\index{I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}}
+
+
+Clase para la detección de lineas mediante L\+S\+W\+MS.  
+
+
+
+
+{\ttfamily \#include $<$Line\+Detector.\+h$>$}
+
+Diagrama de herencias de I3D\+:\+:ld\+L\+S\+W\+MS\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_i3_d_1_1ld_l_s_w_m_s}
+\end{center}
+\end{figure}
+\subsection*{Métodos públicos}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_i3_d_1_1ld_l_s_w_m_s_a3de74908a087b8e6b0525a2f6c943568}{ld\+L\+S\+W\+MS} (cv\+::\+Size size, cv\+::\+Scalar \+\_\+angletol=cv\+::\+Scalar(0, C\+V\+\_\+\+PI/2))
+\begin{DoxyCompactList}\small\item\em Constructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_w_m_s}{ld\+L\+S\+W\+MS}. \end{DoxyCompactList}\item 
+\hyperlink{class_i3_d_1_1ld_l_s_w_m_s_a0d98071e0e8b797670a79bfd77e8d6d5}{$\sim$ld\+L\+S\+W\+MS} ()
+\begin{DoxyCompactList}\small\item\em Destructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_w_m_s}{ld\+L\+S\+W\+MS}. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1ld_l_s_w_m_s_afe64627e711a33cf37bd4d8b2430c3a1}{draw\+Lines} (cv\+::\+Mat \&canvas, cv\+::\+Scalar color=cv\+::\+Scalar(0, 255, 0), int thickness=1, int line\+Type=cv\+::\+L\+I\+N\+E\+\_\+8)
+\begin{DoxyCompactList}\small\item\em Dibujo de lineas. \end{DoxyCompactList}\item 
+void \hyperlink{class_i3_d_1_1ld_l_s_w_m_s_ab32e51dd8ef06da0f707ec2a51919660}{run} (cv\+::\+Mat \&image) override
+\begin{DoxyCompactList}\small\item\em Ejecuta el detector de lineas L\+S\+W\+MS. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Otros miembros heredados}
+
+
+\subsection{Descripción detallada}
+Clase para la detección de lineas mediante L\+S\+W\+MS. 
+
+Line \hyperlink{class_i3_d_1_1_segment}{Segment} detection using Weighted Mean-\/\+Shift 
+
+\subsection{Documentación del constructor y destructor}
+\index{I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}!ld\+L\+S\+W\+MS@{ld\+L\+S\+W\+MS}}
+\index{ld\+L\+S\+W\+MS@{ld\+L\+S\+W\+MS}!I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}}
+\subsubsection[{\texorpdfstring{ld\+L\+S\+W\+M\+S(cv\+::\+Size size, cv\+::\+Scalar \+\_\+angletol=cv\+::\+Scalar(0, C\+V\+\_\+\+P\+I/2))}{ldLSWMS(cv::Size size, cv::Scalar _angletol=cv::Scalar(0, CV_PI/2))}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+L\+S\+W\+M\+S\+::ld\+L\+S\+W\+MS (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Size}]{size, }
+\item[{cv\+::\+Scalar}]{\+\_\+angletol = {\ttfamily cv\+:\+:Scalar(0,~CV\+\_\+PI~/~2)}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1ld_l_s_w_m_s_a3de74908a087b8e6b0525a2f6c943568}{}\label{class_i3_d_1_1ld_l_s_w_m_s_a3de74908a087b8e6b0525a2f6c943568}
+
+
+Constructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_w_m_s}{ld\+L\+S\+W\+MS}. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em size} & \\
+\hline
+{\em \+\_\+angletol} & Angulo y tolerancia \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}!````~ld\+L\+S\+W\+MS@{$\sim$ld\+L\+S\+W\+MS}}
+\index{````~ld\+L\+S\+W\+MS@{$\sim$ld\+L\+S\+W\+MS}!I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}}
+\subsubsection[{\texorpdfstring{$\sim$ld\+L\+S\+W\+M\+S()}{~ldLSWMS()}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::ld\+L\+S\+W\+M\+S\+::$\sim$ld\+L\+S\+W\+MS (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1ld_l_s_w_m_s_a0d98071e0e8b797670a79bfd77e8d6d5}{}\label{class_i3_d_1_1ld_l_s_w_m_s_a0d98071e0e8b797670a79bfd77e8d6d5}
+
+
+Destructora de la clase \hyperlink{class_i3_d_1_1ld_l_s_w_m_s}{ld\+L\+S\+W\+MS}. 
+
+
+
+\subsection{Documentación de las funciones miembro}
+\index{I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}!draw\+Lines@{draw\+Lines}}
+\index{draw\+Lines@{draw\+Lines}!I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}}
+\subsubsection[{\texorpdfstring{draw\+Lines(cv\+::\+Mat \&canvas, cv\+::\+Scalar color=cv\+::\+Scalar(0, 255, 0), int thickness=1, int line\+Type=cv\+::\+L\+I\+N\+E\+\_\+8)}{drawLines(cv::Mat &canvas, cv::Scalar color=cv::Scalar(0, 255, 0), int thickness=1, int lineType=cv::LINE_8)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::ld\+L\+S\+W\+M\+S\+::draw\+Lines (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{canvas, }
+\item[{cv\+::\+Scalar}]{color = {\ttfamily cv\+:\+:Scalar(0,~255,~0)}, }
+\item[{int}]{thickness = {\ttfamily 1}, }
+\item[{int}]{line\+Type = {\ttfamily cv\+:\+:LINE\+\_\+8}}
+\end{DoxyParamCaption}
+)}\hypertarget{class_i3_d_1_1ld_l_s_w_m_s_afe64627e711a33cf37bd4d8b2430c3a1}{}\label{class_i3_d_1_1ld_l_s_w_m_s_afe64627e711a33cf37bd4d8b2430c3a1}
+
+
+Dibujo de lineas. 
+
+Dibuja las lineas obtenidas mediante L\+S\+W\+MS
+
+
+\begin{DoxyParams}{Parámetros}
+{\em canvas} & cv\+::\+Mat donde se van a pintar las lineas. \\
+\hline
+{\em color} & Color de las lineas \\
+\hline
+{\em thickness} & Grosor de las lineas \\
+\hline
+{\em line\+Type} & Tipo de linea \\
+\hline
+\end{DoxyParams}
+\index{I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}!run@{run}}
+\index{run@{run}!I3\+D\+::ld\+L\+S\+W\+MS@{I3\+D\+::ld\+L\+S\+W\+MS}}
+\subsubsection[{\texorpdfstring{run(cv\+::\+Mat \&image) override}{run(cv::Mat &image) override}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::ld\+L\+S\+W\+M\+S\+::run (
+\begin{DoxyParamCaption}
+\item[{cv\+::\+Mat \&}]{image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}\hypertarget{class_i3_d_1_1ld_l_s_w_m_s_ab32e51dd8ef06da0f707ec2a51919660}{}\label{class_i3_d_1_1ld_l_s_w_m_s_ab32e51dd8ef06da0f707ec2a51919660}
+
+
+Ejecuta el detector de lineas L\+S\+W\+MS. 
+
+
+\begin{DoxyParams}{Parámetros}
+{\em image} & Imagen en la cual se quieren detectar las lineas. \\
+\hline
+\end{DoxyParams}
+
+
+Implementa \hyperlink{class_i3_d_1_1_line_detector_ad439cb59972938259f6b36bcdbb644b7}{I3\+D\+::\+Line\+Detector}.
+
+
+
+La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Desarrollo/tidop/src/\hyperlink{_line_detector_8h}{Line\+Detector.\+h}\item 
+C\+:/\+Desarrollo/tidop/src/\hyperlink{linedetector_8cpp}{linedetector.\+cpp}\end{DoxyCompactItemize}

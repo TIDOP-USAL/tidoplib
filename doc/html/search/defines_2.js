@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['lockfile',['lockfile',['../_logger_8cpp.html#ae23d32fc19c554d20c2eb76869b58806',1,'Logger.cpp']]],
-  ['logdebugmsg',['logDebugMsg',['../_logger_8h.html#a7352fe7ef20363ddb1cab2ba0c1669c5',1,'Logger.h']]],
-  ['logerrormsg',['logErrorMsg',['../_logger_8h.html#a650587fd3a0b5412ff7aa8a70516132f',1,'Logger.h']]],
-  ['loginfomsg',['logInfoMsg',['../_logger_8h.html#a3cdd07a58eb9ee6758c594cbdbea9aad',1,'Logger.h']]],
-  ['logwarningmsg',['logWarningMsg',['../_logger_8h.html#a3fbac140721f852b74aa079fe65e0d3f',1,'Logger.h']]]
+  ['consoleprintdebug',['consolePrintDebug',['../messages_8h.html#ad40673d3f6bf0d926c2e37c4e76833f3',1,'messages.h']]],
+  ['consoleprinterror',['consolePrintError',['../messages_8h.html#ad2806e5503d73f347babd4c36fdc34fe',1,'messages.h']]],
+  ['consoleprintinfo',['consolePrintInfo',['../messages_8h.html#a294aea8ca6863679cfc43bbb53ce278b',1,'messages.h']]],
+  ['consoleprintverbose',['consolePrintVerbose',['../messages_8h.html#a01defe936ec20ab423a6560406f934ed',1,'messages.h']]],
+  ['consoleprintwarning',['consolePrintWarning',['../messages_8h.html#a35f5faca8f4c3ba0cf28b5960c52ea1b',1,'messages.h']]]
 ];

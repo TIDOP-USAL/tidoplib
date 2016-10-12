@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['_7eenumflags',['~EnumFlags',['../class_i3_d_1_1_enum_flags.html#ad46f4d8a86f71f380d0cbc207aa8a059',1,'I3D::EnumFlags']]],
   ['_7efeatures2d',['~Features2D',['../class_i3_d_1_1_features2_d.html#a0596063dc4934fb9b8768e3dd83f830a',1,'I3D::Features2D']]],
   ['_7eimgprocessing',['~ImgProcessing',['../class_i3_d_1_1_img_processing.html#a5afdc256925dc91966d1d976fdf1a6bc',1,'I3D::ImgProcessing']]],
   ['_7eimgprocessinglist',['~ImgProcessingList',['../class_i3_d_1_1_img_processing_list.html#a7c0dc2793b201e13ee1408943bb2daa6',1,'I3D::ImgProcessingList']]],
@@ -9,6 +10,7 @@ var searchData=
   ['_7eldlsd',['~ldLSD',['../class_i3_d_1_1ld_l_s_d.html#aea5de322f9c8a8f6ab09ff477e9ab340',1,'I3D::ldLSD']]],
   ['_7elinedetector',['~LineDetector',['../class_i3_d_1_1_line_detector.html#a1725fe70dfe60c340fb9c5f7609110e4',1,'I3D::LineDetector']]],
   ['_7elogmsg',['~LogMsg',['../class_i3_d_1_1_log_msg.html#aa0811c5bd5866194a285bd8d066a4f4c',1,'I3D::LogMsg']]],
+  ['_7emessage',['~Message',['../class_i3_d_1_1_message.html#a96370615d50060b3c7326da6374887ef',1,'I3D::Message']]],
   ['_7emorphologicaloperation',['~morphologicalOperation',['../class_i3_d_1_1morphological_operation.html#a21bb0f558a0c0d2c670393ec84be231f',1,'I3D::morphologicalOperation']]],
   ['_7etransform',['~Transform',['../class_i3_d_1_1_transform.html#a7b3aa01e8b48ee45604ebb9cc1e0ed56',1,'I3D::Transform']]],
   ['_7etransform2d',['~Transform2D',['../class_i3_d_1_1_transform2_d.html#afe769c95f4b238f62fd9b19ce10e6273',1,'I3D::Transform2D']]],

@@ -1,4 +1,4 @@
- #ifndef I3D_LOGGER_H
+#ifndef I3D_LOGGER_H
 #define I3D_LOGGER_H
 
 #include <iostream>
@@ -22,10 +22,12 @@ enum class LogLevel {
 
 /*!
  * \brief Clase para gestión de ficheros log
+ * \deprecated{ Reemplazada por Message }
  */
 class I3D_EXPORT LogMsg
 {
 private:
+
   /*!
    * \brief logfile
    */
@@ -43,6 +45,7 @@ public:
 
   /*!
    * \brief Constructora LogMsg
+   * \deprecated{ Reemplazada por clase Message }
    */
   LogMsg();
 
@@ -51,6 +54,7 @@ public:
    * \param[in] filename Nombre del fichero log.
    * \param[in] ll Nivel de log
    * \see LogLevel
+   * \deprecated{ Reemplazada por clase Message }
    */
   LogMsg(const char *filename, LogLevel ll = LogLevel::LOG_ERROR);
 
@@ -76,6 +80,7 @@ public:
    * \brief Mensaje de depuración
    * \param[in] msg Mensaje
    */
+  I3D_DEPRECATED("logPrintDebug( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_CONSOLE)")
   static void debugMsg(const char *msg, ... );
   
   /*!
@@ -85,14 +90,17 @@ public:
    * \param[in] function
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintDebug( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void debugMsg(const char *file, int line, const char *function, char *msg, ...);
 
+  I3D_DEPRECATED("logPrintDebug( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void debugMsg(const char *msg, const char *file, int line, const char *function);
 
   /*!
    * \brief Mensaje de información
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintInfo( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG)")
   static void infoMsg(const char *msg, ... );
 
   /*!
@@ -102,14 +110,17 @@ public:
    * \param[in] function
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintInfo( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void infoMsg(const char *file, int line, const char *function, char *msg, ...);
 
+  I3D_DEPRECATED("logPrintInfo( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void infoMsg(const char *msg, const char *file, int line, const char *function);
 
   /*!
    * \brief Mensaje de advertencia
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintWarning( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG)")
   static void warningMsg(const char *msg, ... );
 
   /*!
@@ -119,14 +130,17 @@ public:
    * \param[in] function
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintWarning( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void warningMsg(const char *file, int line, const char *function, char *msg, ...);
 
+  I3D_DEPRECATED("logPrintWarning( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void warningMsg(const char *msg, const char *file, int line, const char *function);
 
   /*!
    * \brief Mensaje de error
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintError( msg, ...) Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE)")
   static void errorMsg(const char *msg, ... );
   
   /*!
@@ -136,8 +150,10 @@ public:
    * \param[in] function
    * \param[in] msg
    */
+  I3D_DEPRECATED("logPrintError( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void errorMsg(const char *file, int line, const char *function, char *msg, ...);
 
+  I3D_DEPRECATED("logPrintError( msg, ...) or Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION)")
   static void errorMsg(const char *msg, const char *file, int line, const char *function);
 };
 
@@ -156,5 +172,7 @@ char *_msg(const char *msg, ...);
 #endif
 
 } // End namespace I3D
+
+
 
 #endif // I3D_LOGGER_H

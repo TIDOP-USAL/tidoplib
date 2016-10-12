@@ -23,6 +23,8 @@ class \hyperlink{class_i3_d_1_1_dilate}{Dilate}
 \begin{DoxyCompactList}\small\item\em Operacion morfologica de dilatación. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_discrete_fourier_trf}{Discrete\+Fourier\+Trf}
 \begin{DoxyCompactList}\small\item\em The Fourier class Discrete Fourier \hyperlink{class_i3_d_1_1_transform}{Transform}. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_enum_flags}{Enum\+Flags}
+\begin{DoxyCompactList}\small\item\em Clase Flag de enums. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_equalize_histogram}{Equalize\+Histogram}
 \begin{DoxyCompactList}\small\item\em Ecualización del histograma. Mejora del contraste de la imagen mediante la ecualización del histograma. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_erotion}{Erotion}
@@ -65,6 +67,8 @@ class \hyperlink{class_i3_d_1_1_matching}{Matching}
 \begin{DoxyCompactList}\small\item\em Clase \hyperlink{class_i3_d_1_1_matching}{Matching}. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_median_blur}{Median\+Blur}
 \begin{DoxyCompactList}\small\item\em Filtro de media Suaviza una imagen con un filtro de media. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1_message}{Message}
+\begin{DoxyCompactList}\small\item\em \hyperlink{class_i3_d_1_1_message}{Message}. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1morphological_operation}{morphological\+Operation}
 \begin{DoxyCompactList}\small\item\em Clase base para las operaciones morfológicas. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_multi_point}{Multi\+Point}
@@ -141,85 +145,10 @@ typedef void($\ast$ \hyperlink{namespace_i3_d_a923a852719565a9e40df22d8cd71281e}
 typedef void($\ast$ \hyperlink{namespace_i3_d_a65da91c3d8b7751e061aa6d8462ea890}{Show\+Callback}) (cv\+::\+Mat $\ast$frame, void $\ast$userdata)
 \end{DoxyCompactItemize}
 \subsection*{Enumeraciones}
-\begin{DoxyCompactItemize}
-\item 
-enum \hyperlink{group___img_proc_gaa7be5aaaa0e9ec5885c5bd72f41dad47}{process\+\_\+type} \{ \\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a7e43491e1bd7fafcef44a8109e565970}{process\+\_\+type\+::\+B\+I\+L\+A\+T\+E\+R\+AL}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47aed5a970f372cc94edf6e8b09cd685e37}{process\+\_\+type\+::\+B\+L\+UR}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a4279737ae8e3e545887bce63f2b099b4}{process\+\_\+type\+::\+B\+O\+X\+\_\+\+F\+I\+L\+T\+ER}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47aaad9e7c2b8cc53dfe8d67c439bed5735}{process\+\_\+type\+::\+F\+I\+L\+T\+E\+R\+\_\+2D}, 
-\\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a31b040a971fe48baed9ed4e8807be11f}{process\+\_\+type\+::\+G\+A\+U\+S\+S\+I\+A\+N\+\_\+\+B\+L\+UR}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a1c2d5f3f8e6cbb0c7b033c388c905d22}{process\+\_\+type\+::\+L\+A\+P\+L\+A\+C\+I\+AN}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a6d30c03323987f0601593b4a029133a6}{process\+\_\+type\+::\+M\+E\+D\+I\+A\+N\+\_\+\+B\+L\+UR}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a2eb35f75582ca62917714c438551bba5}{process\+\_\+type\+::\+S\+O\+B\+EL}, 
-\\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a3701051f20fd8dd55bcd9f355a511745}{process\+\_\+type\+::\+C\+A\+N\+NY}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a4aea7addd87d476e1a94d7dbda99a367}{process\+\_\+type\+::\+N\+O\+R\+M\+A\+L\+I\+ZE}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a9dc124e16d0cde7c724dd121877e9a2d}{process\+\_\+type\+::\+B\+I\+N\+A\+R\+I\+ZE}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a1acac8984c2139895dee3e8aa928de57}{process\+\_\+type\+::\+R\+E\+S\+I\+ZE}, 
-\\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a7ff9380b797de9820165e713ec69a82e}{process\+\_\+type\+::\+E\+Q\+U\+A\+L\+I\+Z\+E\+\_\+\+H\+I\+ST}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a50f05a950873969541b9bdad6df00426}{process\+\_\+type\+::\+F\+U\+N\+C\+T\+I\+O\+N\+\_\+\+P\+R\+O\+C\+E\+SS}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47aa62af16982d33a21604898439056a9d2}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+D\+I\+L\+A\+T\+I\+ON}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47ad8e41fdfaeb278c77596eb6a3c8e0f04}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+E\+R\+O\+T\+I\+ON}, 
-\\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a11d7095a94eea40bb9860b9e0b09c23d}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+O\+P\+E\+N\+I\+NG}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a622378b015185b105eef552549a5cf92}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+C\+L\+O\+S\+I\+NG}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47ad9bd47a1f0c0b296e5db72dc9801b8e6}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+G\+R\+A\+D\+I\+E\+NT}, 
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47a791ac3ec759e1234cb61e8df76dd15e3}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+T\+O\+P\+H\+AT}, 
-\\*
-\hyperlink{group___img_proc_ggaa7be5aaaa0e9ec5885c5bd72f41dad47abab238f32734ecfb0155ddec17535fd7}{process\+\_\+type\+::\+M\+O\+R\+P\+H\+\_\+\+B\+L\+A\+C\+K\+H\+AT}
- \}\begin{DoxyCompactList}\small\item\em Tipos de procesos de imagen. \end{DoxyCompactList}
-\item 
-enum \hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2}{L\+D\+\_\+\+T\+Y\+PE} \{ \\*
-\hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2a41a5c14aad6090eacf08b98adde1fb0b}{L\+D\+\_\+\+T\+Y\+P\+E\+::\+H\+O\+U\+GH}, 
-\hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2acd4e263040872b9246dbf5db76c7c78b}{L\+D\+\_\+\+T\+Y\+P\+E\+::\+H\+O\+U\+G\+HP}, 
-\hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2abbd84f1fdcbb350f37a2d90ce8c70e1a}{L\+D\+\_\+\+T\+Y\+P\+E\+::\+H\+O\+U\+G\+H\+\_\+\+F\+A\+ST}, 
-\hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2acccf51b3cb3320e8dd936bd1bb473a3e}{L\+D\+\_\+\+T\+Y\+P\+E\+::\+L\+SD}, 
-\\*
-\hyperlink{namespace_i3_d_ac3913218d62e4e56ed38931636256ae2a9da21fc303d83db9512f83db24b8b648}{L\+D\+\_\+\+T\+Y\+P\+E\+::\+L\+S\+W\+MS}
- \}\begin{DoxyCompactList}\small\item\em Tipos de detectores de linea. \end{DoxyCompactList}
-\item 
-enum \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6}{Log\+Level} \{ \hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6aeded50d942c7c2d37d09ba8241ff017f}{Log\+Level\+::\+L\+O\+G\+\_\+\+D\+E\+B\+UG}, 
-\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a41abf3cca8cee8cdae01749df7a991c6}{Log\+Level\+::\+L\+O\+G\+\_\+\+I\+N\+FO}, 
-\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6ad0cb3df3102ca9270c5785af9a8c137f}{Log\+Level\+::\+L\+O\+G\+\_\+\+W\+A\+R\+N\+I\+NG}, 
-\hyperlink{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}{Log\+Level\+::\+L\+O\+G\+\_\+\+E\+R\+R\+OR}
- \}\begin{DoxyCompactList}\small\item\em Niveles de log. \end{DoxyCompactList}
-\item 
-enum \hyperlink{group__trf_group_ga175e1580b1ecbc0710ad48060d56c2a3}{transform\+\_\+type} \{ \\*
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a5b39c8b553c821e7cddc6da64b5bd2ee}{transform\+\_\+type\+::\+D\+E\+F\+A\+U\+LT}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a6ba95f0374a24124cc1632dc38333c82}{transform\+\_\+type\+::\+T\+R\+A\+N\+S\+L\+A\+TE}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3aa27939099e0fe4086159364fcf8d5f73}{transform\+\_\+type\+::\+R\+O\+T\+A\+T\+I\+ON}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a451b65c237869c22726d0e7cabe674d7}{transform\+\_\+type\+::\+H\+E\+L\+M\+E\+R\+T\+\_\+2D}, 
-\\*
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a11f9aa324c4ce45b5c88e380cccd43dc}{transform\+\_\+type\+::\+A\+F\+IN}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3ad46c97be63d6c4cb887419a4a3df5347}{transform\+\_\+type\+::\+P\+E\+R\+S\+P\+E\+C\+T\+I\+VE}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a852f7bd2984c084e69c284da9279df7b}{transform\+\_\+type\+::\+P\+R\+O\+J\+E\+C\+T\+I\+VE}, 
-\hyperlink{group__trf_group_gga175e1580b1ecbc0710ad48060d56c2a3a984738e72c54b69efbf714641982b3fc}{transform\+\_\+type\+::\+H\+E\+L\+M\+E\+R\+T\+\_\+3D}
- \}\begin{DoxyCompactList}\small\item\em Tipos de transformaciones. \end{DoxyCompactList}
-\item 
-enum \hyperlink{namespace_i3_d_abddd5dc8b13d45924d75d4dc1d6a0c9e}{skip\+\_\+video} \{ \hyperlink{namespace_i3_d_abddd5dc8b13d45924d75d4dc1d6a0c9eab0263ef12d30ba86202d776352870d44}{skip\+\_\+video\+::\+N\+O\+T\+\_\+\+S\+K\+IP}, 
-\hyperlink{namespace_i3_d_abddd5dc8b13d45924d75d4dc1d6a0c9ead6ce96a3966e21e5ba35ca53b3b925d4}{skip\+\_\+video\+::\+S\+K\+I\+P\+\_\+\+F\+R\+A\+M\+ES}, 
-\hyperlink{namespace_i3_d_abddd5dc8b13d45924d75d4dc1d6a0c9ea4e7623b023b3d356fde32b1392b30f79}{skip\+\_\+video\+::\+S\+K\+I\+P\+\_\+\+M\+I\+L\+L\+I\+S\+E\+C\+O\+N\+DS}
- \}\begin{DoxyCompactList}\small\item\em Tipos salto de frames. \end{DoxyCompactList}
-\item 
-enum \hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479}{res\+\_\+frame} \{ \hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479a967bb7a9639e6d248159eace3ca85eb6}{res\+\_\+frame\+::\+O\+R\+I\+G\+I\+N\+A\+L\+\_\+\+F\+R\+A\+ME}, 
-\hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479ac7d706ac3ce91240180fad0ce2935596}{res\+\_\+frame\+::\+R\+E\+S\+I\+Z\+E\+\_\+\+F\+R\+A\+ME}, 
-\hyperlink{namespace_i3_d_a2952d5af44b39c5dfe7e0344e012c479aa23263786ea4d984a19228b9e7d96e7b}{res\+\_\+frame\+::\+C\+R\+O\+P\+\_\+\+F\+R\+A\+ME}
- \}\begin{DoxyCompactList}\small\item\em Tipo de resolución del frame de video. \end{DoxyCompactList}
-\item 
-enum \hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3}{video\+\_\+status} \{ \\*
-\hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3ab078ffd28db767c502ac367053f6e0ac}{video\+\_\+status\+::\+S\+T\+A\+RT}, 
-\hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3a43491564ebcfd38568918efbd6e840fd}{video\+\_\+status\+::\+R\+U\+N\+N\+I\+NG}, 
-\hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3a291554596c183e837f0a6bec3767c891}{video\+\_\+status\+::\+P\+A\+U\+SE}, 
-\hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3a09d4d696b4e935115b9313e3c412509a}{video\+\_\+status\+::\+S\+T\+O\+P\+P\+ED}, 
-\\*
-\hyperlink{namespace_i3_d_a0ce9cf7811476557a3d1be9da416cbd3a227279d022dc207ab93201dc7688680d}{video\+\_\+status\+::\+F\+I\+N\+A\+L\+I\+Z\+ED}
- \}\begin{DoxyCompactList}\small\item\em Estado del video. \end{DoxyCompactList}
-\end{DoxyCompactItemize}
 \subsection*{Funciones}
 \begin{DoxyCompactItemize}
+\item 
+\hyperlink{namespace_i3_d_a67374982e3085e082db07f2941c693a0}{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS} (\hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output})
 \item 
 void \hyperlink{namespace_i3_d_a61642b345ce36927fc6694a81d6540f7}{log\+Scale} (const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out)
 \item 
@@ -255,15 +184,15 @@ void \hyperlink{group___geometric_entities_gaa8733cce0398776f35f9dcdbb1a3c933}{g
 \item 
 void \hyperlink{group___geometric_entities_gadffdd08b45284c20785b162ee959f11f}{group\+Lines\+By\+Dist} (const std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ \&lines\+In, std\+::vector$<$ \hyperlink{class_i3_d_1_1ld_group_lines}{ld\+Group\+Lines} $>$ $\ast$cur\+Lines\+Grops, int dist)
 \item 
-{\footnotesize template$<$typename T $>$ }\\bool \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga49d19dd7415d32cba445301ef821d307}{intersect\+Windows} (T w1, T w2)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\bool \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga16ec870ad1dfb5178445d023231183e8}{intersect\+Windows} (T1 w1, T2 w2)
 \begin{DoxyCompactList}\small\item\em Comprueba si dos ventanas intersectan. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaa929176ef49672b0bc0019c5fe58a017}{window\+Intersection} (T w1, T w2)
 \begin{DoxyCompactList}\small\item\em Ventana interseción. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaf677fb79aab3cae623065eb14b719f3d}{Join\+Window} (T w1, T w2)
+{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga1aa105cebf6692e4e42f666bc8dd94c1}{join\+Window} (T w1, T w2)
 \begin{DoxyCompactList}\small\item\em Unión de dos ventanas. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gae0d2f7fe0786b2ae52a92188c0449718}{Expand\+Window} (T1 w, T2 szx, T2 szy)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga8ad6c6751aee604442e1a5287b1d0119}{expand\+Window} (T1 w, T2 szx, T2 szy)
 \begin{DoxyCompactList}\small\item\em Expande una ventana según la cantidad indicada para x e y. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga4ae38f1a99f61c043ae970b0c881dab7}{Expand\+Window} (T1 w, T2 sz)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga857396c24d042125f346f288db8e1fa2}{expand\+Window} (T1 w, T2 sz)
 \begin{DoxyCompactList}\small\item\em Expande una ventana. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\\hyperlink{class_i3_d_1_1_window}{Window}$<$ T $>$ \hyperlink{group___geometric_entities_ga5893c61910bdaf13dcbd435f1914d868}{move\+Window} (const \hyperlink{class_i3_d_1_1_window}{Window}$<$ T $>$ \&w, T dx, T dy)
 \item 
@@ -288,6 +217,8 @@ char $\ast$ \hyperlink{namespace_i3_d_ac1abd2292dc3680c8a4ebacef95e6ade}{get\+Ru
 bool \hyperlink{namespace_i3_d_a9e1576d9f6cf5fafde1df4088c32839a}{is\+Directory} (const char $\ast$path)
 \begin{DoxyCompactList}\small\item\em Comprueba si existe un directorio. \end{DoxyCompactList}\item 
 int \hyperlink{namespace_i3_d_a20e77295ba7f67ba6236394e785f5b0c}{create\+Dir} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Crea un directorio. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a15b240f744e5327ebdaaf225807aeae4}{delete\+Dir} (const char $\ast$path, bool confirm=false)
 \begin{DoxyCompactList}\small\item\em Crea un directorio. \end{DoxyCompactList}\item 
 int \hyperlink{namespace_i3_d_acc1ab14ac3d1c9d3efbd87138d8d5392}{split\+To\+Numbers} (const std\+::string \&cad, std\+::vector$<$ int $>$ \&v\+Out, char $\ast$chs=\char`\"{},\char`\"{})
 \begin{DoxyCompactList}\small\item\em Separa una cadena en un array de enteros. \end{DoxyCompactList}\item 
@@ -391,6 +322,8 @@ int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+
 \begin{DoxyCompactList}\small\item\em Obtiene la componente roja de un color. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_ad45a962f16dbbb6bd0682a8271a12a70}{get\+Alpha} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene el canal alfa de un color. \end{DoxyCompactList}\item 
+void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}{int\+To\+R\+GB} (int color, int $\ast$red, int $\ast$green, int $\ast$blue)
+\begin{DoxyCompactList}\small\item\em Convierte un color entero a R\+GB. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a19aa83d403ad807bdd48306de4af8481}{rgb\+To\+Int} (int red, int green, int blue)
 \begin{DoxyCompactList}\small\item\em Convierte un color R\+GB a entero. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a5c525ecbc21267c7d13a427365c75458}{rgba\+To\+Int} (int red, int green, int blue, int alpha)
@@ -464,6 +397,40 @@ L\+O\+G\+\_\+\+W\+A\+R\+N\+I\+NG\hypertarget{namespace_i3_d_ae1af0f2e3b629610c45
 }]Warnings y errores. \index{L\+O\+G\+\_\+\+E\+R\+R\+OR@{L\+O\+G\+\_\+\+E\+R\+R\+OR}!I3D@{I3D}}\index{I3D@{I3D}!L\+O\+G\+\_\+\+E\+R\+R\+OR@{L\+O\+G\+\_\+\+E\+R\+R\+OR}}\item[{\em 
 L\+O\+G\+\_\+\+E\+R\+R\+OR\hypertarget{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}{}\label{namespace_i3_d_ae1af0f2e3b629610c45222809ff521f6a4490aa3d29644e716440fada68f54032}
 }]Sólo errores. \end{description}
+\end{Desc}
+\index{I3D@{I3D}!Message\+Level@{Message\+Level}}
+\index{Message\+Level@{Message\+Level}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{Message\+Level}{MessageLevel}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Level} \+: {\bf int8\+\_\+t}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}
+
+
+Niveles de información de los mensajes. 
+
+\begin{Desc}
+\item[Valores de enumeraciones]\par
+\begin{description}
+\index{M\+S\+G\+\_\+\+D\+E\+B\+UG@{M\+S\+G\+\_\+\+D\+E\+B\+UG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+D\+E\+B\+UG@{M\+S\+G\+\_\+\+D\+E\+B\+UG}}\item[{\em 
+M\+S\+G\+\_\+\+D\+E\+B\+UG\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a918e87a1f80863c7ee35bfa2c58cc41e}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a918e87a1f80863c7ee35bfa2c58cc41e}
+}]Información extra para depuración. \index{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE@{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE@{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE}}\item[{\em 
+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a38ae2439d5fa0d586710ee6decec3f83}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a38ae2439d5fa0d586710ee6decec3f83}
+}]Información extra para depuración. \index{M\+S\+G\+\_\+\+I\+N\+FO@{M\+S\+G\+\_\+\+I\+N\+FO}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+I\+N\+FO@{M\+S\+G\+\_\+\+I\+N\+FO}}\item[{\em 
+M\+S\+G\+\_\+\+I\+N\+FO\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5ad5150815f57a5219a42da2f42f90861e}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5ad5150815f57a5219a42da2f42f90861e}
+}]Warnings, errores y otra información. \index{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG@{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG@{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG}}\item[{\em 
+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a124799373c019c5c7480f21a24104688}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a124799373c019c5c7480f21a24104688}
+}]Warnings y errores. \index{M\+S\+G\+\_\+\+E\+R\+R\+OR@{M\+S\+G\+\_\+\+E\+R\+R\+OR}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+E\+R\+R\+OR@{M\+S\+G\+\_\+\+E\+R\+R\+OR}}\item[{\em 
+M\+S\+G\+\_\+\+E\+R\+R\+OR\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a5c89a276ac7877e1de49cdc1b4750ce4}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a5c89a276ac7877e1de49cdc1b4750ce4}
+}]Sólo errores. \end{description}
+\end{Desc}
+\index{I3D@{I3D}!Message\+Output@{Message\+Output}}
+\index{Message\+Output@{Message\+Output}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{Message\+Output}{MessageOutput}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Output} \+: {\bf int8\+\_\+t}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}
+\begin{Desc}
+\item[Valores de enumeraciones]\par
+\begin{description}
+\index{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE@{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE@{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE}}\item[{\em 
+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103ace1cd665ada8b4f22dfa5f764fed6c6c}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103ace1cd665ada8b4f22dfa5f764fed6c6c}
+}]\index{M\+S\+G\+\_\+\+L\+OG@{M\+S\+G\+\_\+\+L\+OG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+L\+OG@{M\+S\+G\+\_\+\+L\+OG}}\item[{\em 
+M\+S\+G\+\_\+\+L\+OG\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103a8c1a4761ebfadb227927517230ff7b02}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103a8c1a4761ebfadb227927517230ff7b02}
+}]\end{description}
 \end{Desc}
 \index{I3D@{I3D}!res\+\_\+frame@{res\+\_\+frame}}
 \index{res\+\_\+frame@{res\+\_\+frame}!I3D@{I3D}}
@@ -545,6 +512,13 @@ F\+I\+N\+A\+L\+I\+Z\+ED\hypertarget{namespace_i3_d_a0ce9cf7811476557a3d1be9da416
 \item[{}]{...}
 \end{DoxyParamCaption}
 )}\hypertarget{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}{}\label{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}
+\index{I3D@{I3D}!A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}}
+\index{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+N\+S(\+Message\+Output)}{ALLOW_BITWISE_FLAG_OPERATIONS(MessageOutput)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS (
+\begin{DoxyParamCaption}
+\item[{{\bf Message\+Output}}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{namespace_i3_d_a67374982e3085e082db07f2941c693a0}{}\label{namespace_i3_d_a67374982e3085e082db07f2941c693a0}
 \index{I3D@{I3D}!azimut@{azimut}}
 \index{azimut@{azimut}!I3D@{I3D}}
 \subsubsection[{\texorpdfstring{azimut(const cv\+::\+Point\+\_\+$<$ T $>$ \&pt1, const cv\+::\+Point\+\_\+$<$ T $>$ \&pt2)}{azimut(const cv::Point_< T > &pt1, const cv::Point_< T > &pt2)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::azimut (
@@ -567,12 +541,12 @@ F\+I\+N\+A\+L\+I\+Z\+ED\hypertarget{namespace_i3_d_a0ce9cf7811476557a3d1be9da416
 Cambia la extensión de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em new\+Ext} & Nueva extensión \\
+\mbox{\tt in}  & {\em new\+Ext} & Nueva extensión \\
 \hline
-{\em path\+Out} & Ruta del archivo modificada \\
+\mbox{\tt out}  & {\em path\+Out} & Ruta del archivo modificada \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -592,12 +566,12 @@ Cambia la extensión de un archivo.
 Cambia el nombre de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em new\+Name} & Nuevo nombre \\
+\mbox{\tt in}  & {\em new\+Name} & Nuevo nombre \\
 \hline
-{\em path\+Out} & Ruta del archivo modificada \\
+\mbox{\tt out}  & {\em path\+Out} & Ruta del archivo modificada \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -617,12 +591,12 @@ Cambia el nombre de un archivo.
 Cambia el nombre y la extensión de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em new\+Name\+Ext} & Nuevo nombre incluyendo la extensión \\
+\mbox{\tt in}  & {\em new\+Name\+Ext} & Nuevo nombre incluyendo la extensión \\
 \hline
-{\em path\+Out} & Ruta del archivo modificada \\
+\mbox{\tt out}  & {\em path\+Out} & Ruta del archivo modificada \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -655,12 +629,12 @@ Cambia el nombre y la extensión de un archivo.
 Crea un directorio. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del directorio \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del directorio \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
-
+Error = -\/1, creado = 0 y existente = 1 
 \end{DoxyReturn}
 \index{I3D@{I3D}!cv\+Mat\+To\+Vector@{cv\+Mat\+To\+Vector}}
 \index{cv\+Mat\+To\+Vector@{cv\+Mat\+To\+Vector}!I3D@{I3D}}
@@ -675,12 +649,34 @@ Crea un directorio.
 Convierte una matriz de Open\+CV en un vector. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em m} & Matriz de entrada \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em m} & Matriz de entrada \\
 \hline
-{\em av} & Vector de salida \\
+\mbox{\tt out}  & {\em av} & Vector de salida \\
 \hline
 \end{DoxyParams}
+\index{I3D@{I3D}!delete\+Dir@{delete\+Dir}}
+\index{delete\+Dir@{delete\+Dir}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{delete\+Dir(const char $\ast$path, bool confirm=false)}{deleteDir(const char *path, bool confirm=false)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::delete\+Dir (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{path, }
+\item[{bool}]{confirm = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}\hypertarget{namespace_i3_d_a15b240f744e5327ebdaaf225807aeae4}{}\label{namespace_i3_d_a15b240f744e5327ebdaaf225807aeae4}
+
+
+Crea un directorio. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del directorio \\
+\hline
+\mbox{\tt in}  & {\em confirm} & Pide confirmación para borrar el archivo \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Error = -\/1, creado = 0 y existente = 1 
+\end{DoxyReturn}
 \index{I3D@{I3D}!fourier\+Lines\+Detection@{fourier\+Lines\+Detection}}
 \index{fourier\+Lines\+Detection@{fourier\+Lines\+Detection}!I3D@{I3D}}
 \subsubsection[{\texorpdfstring{fourier\+Lines\+Detection(cv\+::\+Mat \&source, std\+::vector$<$ int $>$ \&cols, std\+::vector$<$ std\+::vector$<$ cv\+::\+Point $>$$>$ $\ast$pts, double $\ast$angle=\+N\+U\+L\+L)}{fourierLinesDetection(cv::Mat &source, std::vector< int > &cols, std::vector< std::vector< cv::Point >> *pts, double *angle=NULL)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::fourier\+Lines\+Detection (
@@ -719,8 +715,8 @@ Fourier\+Lines\+Detection Algoritmo de detección de conductores aplicando la tr
 Obtiene el canal alfa de un color. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em color} & Color representado como un entero \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em color} & Color representado como un entero \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -738,8 +734,8 @@ Canal alfa
 Obtiene la componente azul de un color. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em color} & Color representado como un entero \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em color} & Color representado como un entero \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -758,10 +754,10 @@ Componente azul
 Optiene el directorio de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em dir} & Directorio del archivo \\
+\mbox{\tt out}  & {\em dir} & Directorio del archivo \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -780,10 +776,10 @@ Optiene el directorio de un archivo.
 Optiene la unidad de disco de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em drive} & Unidad de disco \\
+\mbox{\tt out}  & {\em drive} & Unidad de disco \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -802,10 +798,10 @@ Optiene la unidad de disco de un archivo.
 Optiene el directorio de un archivo incluyendo la letra de la unidad. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em drive\+Dir} & Unidad de disco y directorio del archivo \\
+\mbox{\tt out}  & {\em drive\+Dir} & Unidad de disco y directorio del archivo \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -824,10 +820,10 @@ Optiene el directorio de un archivo incluyendo la letra de la unidad.
 Optiene la extensión de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em ext} & Extensión del archivo \\
+\mbox{\tt out}  & {\em ext} & Extensión del archivo \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -846,10 +842,10 @@ Optiene la extensión de un archivo.
 Optiene el nombre de un archivo. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del archivo \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del archivo \\
 \hline
-{\em name} & Nombre del archivo \\
+\mbox{\tt out}  & {\em name} & Nombre del archivo \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -867,8 +863,8 @@ Optiene el nombre de un archivo.
 Obtiene la componente verde de un color. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em color} & Color representado como un entero \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em color} & Color representado como un entero \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -886,8 +882,8 @@ Componente verde
 Obtiene la componente roja de un color. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em color} & Color representado como un entero \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em color} & Color representado como un entero \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -916,6 +912,31 @@ path de la aplicación
 \item[{int $\ast$}]{value}
 \end{DoxyParamCaption}
 )}\hypertarget{namespace_i3_d_abdb26f46aa1a52ea2f289b5c30122b75}{}\label{namespace_i3_d_abdb26f46aa1a52ea2f289b5c30122b75}
+\index{I3D@{I3D}!int\+To\+R\+GB@{int\+To\+R\+GB}}
+\index{int\+To\+R\+GB@{int\+To\+R\+GB}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{int\+To\+R\+G\+B(int color, int $\ast$red, int $\ast$green, int $\ast$blue)}{intToRGB(int color, int *red, int *green, int *blue)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::int\+To\+R\+GB (
+\begin{DoxyParamCaption}
+\item[{int}]{color, }
+\item[{int $\ast$}]{red, }
+\item[{int $\ast$}]{green, }
+\item[{int $\ast$}]{blue}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}{}\label{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}
+
+
+Convierte un color entero a R\+GB. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em color} & Color como entero \\
+\hline
+\mbox{\tt out}  & {\em red} & Componente roja \\
+\hline
+\mbox{\tt out}  & {\em green} & Componente verde \\
+\hline
+\mbox{\tt out}  & {\em blue} & Componente azul \\
+\hline
+\end{DoxyParams}
 \index{I3D@{I3D}!is\+Directory@{is\+Directory}}
 \index{is\+Directory@{is\+Directory}!I3D@{I3D}}
 \subsubsection[{\texorpdfstring{is\+Directory(const char $\ast$path)}{isDirectory(const char *path)}}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::is\+Directory (
@@ -928,8 +949,8 @@ path de la aplicación
 Comprueba si existe un directorio. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em path} & Ruta del directorio \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em path} & Ruta del directorio \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -956,8 +977,8 @@ true si existe.
 Varianza del laplaciano. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em src} & \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em src} & \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -973,7 +994,7 @@ Varianza del laplaciano.
 )}\hypertarget{namespace_i3_d_a61642b345ce36927fc6694a81d6540f7}{}\label{namespace_i3_d_a61642b345ce36927fc6694a81d6540f7}
 \index{I3D@{I3D}!Message\+Output@{Message\+Output}}
 \index{Message\+Output@{Message\+Output}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{Message\+Output(\+Log\+Level ll, const char $\ast$msg)}{MessageOutput(LogLevel ll, const char *msg)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Message\+Output (
+\subsubsection[{\texorpdfstring{Message\+Output(\+Log\+Level ll, const char $\ast$msg)}{MessageOutput(LogLevel ll, const char *msg)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+::\+Message\+Output} (
 \begin{DoxyParamCaption}
 \item[{{\bf Log\+Level}}]{ll, }
 \item[{const char $\ast$}]{msg}
@@ -981,7 +1002,7 @@ Varianza del laplaciano.
 )}\hypertarget{namespace_i3_d_a160182ae32315ea85cf97b7bdde4a317}{}\label{namespace_i3_d_a160182ae32315ea85cf97b7bdde4a317}
 \index{I3D@{I3D}!Message\+Output@{Message\+Output}}
 \index{Message\+Output@{Message\+Output}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{Message\+Output(\+Log\+Level ll, const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{MessageOutput(LogLevel ll, const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::\+Message\+Output (
+\subsubsection[{\texorpdfstring{Message\+Output(\+Log\+Level ll, const char $\ast$msg, const char $\ast$file, int line, const char $\ast$function)}{MessageOutput(LogLevel ll, const char *msg, const char *file, int line, const char *function)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+::\+Message\+Output} (
 \begin{DoxyParamCaption}
 \item[{{\bf Log\+Level}}]{ll, }
 \item[{const char $\ast$}]{msg, }
@@ -1034,10 +1055,10 @@ Varianza del laplaciano.
 Determina el número de elementos distintos a un número. Sobrecarga del operador != para determinar el número de elementos de un vector que son distintos al valor pasado como parámetro. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & Vector \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & Vector \\
 \hline
-{\em t} & Valor \\
+\mbox{\tt in}  & {\em t} & Valor \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1072,10 +1093,10 @@ Número de elementos que cumplen la condición
 Determinar el número de elementos iguales a un número. Sobrecarga del operador == para determinar el número de elementos de un vector que son iguales al valor pasado como parámetro. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & Vector \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & Vector \\
 \hline
-{\em t} & Valor \\
+\mbox{\tt in}  & {\em t} & Valor \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1102,10 +1123,10 @@ Número de elementos que cumplen la condición
 operator $>$= 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & \\
 \hline
-{\em t} & \\
+\mbox{\tt in}  & {\em t} & \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1125,12 +1146,12 @@ operator $>$=
 Recta de regresión de X sobre Y La recta de regresión de X sobre Y se utiliza para estimar los valores de la X a partir de los de la Y. La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable Y. x = m$\ast$y + b. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em pts} & Puntos \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts} & Puntos \\
 \hline
-{\em m} & Pendiente de la recta \\
+\mbox{\tt out}  & {\em m} & Pendiente de la recta \\
 \hline
-{\em b} & Ordenada \\
+\mbox{\tt out}  & {\em b} & Ordenada \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1150,12 +1171,12 @@ coeficiente de correlacción
 Recta de regresión de Y sobre X La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X. La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X. y = m $\ast$ x + b. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em pts} & Puntos \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em pts} & Puntos \\
 \hline
-{\em m} & Pendiente de la recta \\
+\mbox{\tt out}  & {\em m} & Pendiente de la recta \\
 \hline
-{\em b} & Ordenada \\
+\mbox{\tt out}  & {\em b} & Ordenada \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1183,12 +1204,12 @@ coeficiente de correlacción
 Reemplaza una cadena por otra en un texto. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em str} & Cadena original \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em str} & Cadena original \\
 \hline
-{\em str\+\_\+old} & Cadena a remplazar \\
+\mbox{\tt in}  & {\em str\+\_\+old} & Cadena a remplazar \\
 \hline
-{\em str\+\_\+new} & Nueva cadena \\
+\mbox{\tt out}  & {\em str\+\_\+new} & Nueva cadena \\
 \hline
 \end{DoxyParams}
 \index{I3D@{I3D}!rgba\+To\+Int@{rgba\+To\+Int}}
@@ -1206,14 +1227,14 @@ Reemplaza una cadena por otra en un texto.
 Convierte un color R\+G\+B+alpha a entero. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em red} & Componente roja \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em red} & Componente roja \\
 \hline
-{\em green} & Componente verde \\
+\mbox{\tt in}  & {\em green} & Componente verde \\
 \hline
-{\em blue} & Componente azul \\
+\mbox{\tt in}  & {\em blue} & Componente azul \\
 \hline
-{\em alpha} & Canal alfa \\
+\mbox{\tt in}  & {\em alpha} & Canal alfa \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1233,12 +1254,12 @@ Color como entero
 Convierte un color R\+GB a entero. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em red} & Componente roja \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em red} & Componente roja \\
 \hline
-{\em green} & Componente verde \\
+\mbox{\tt in}  & {\em green} & Componente verde \\
 \hline
-{\em blue} & Componente azul \\
+\mbox{\tt in}  & {\em blue} & Componente azul \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1256,8 +1277,8 @@ Color como entero
 Ordena los indices de un vector de menor a mayor Para un vector \mbox{[}10,20,15,5\mbox{]} devuelve \mbox{[}3,0,2,1\mbox{]}. El elemento mas pequeño esta en la posición 3, el segundo en la posición 0, ... 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & Vector \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & Vector \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1277,12 +1298,12 @@ Vector con los indices ordenados
 Ordena los valores de una matriz de mayor a menor por columnas. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em in} & \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & \\
 \hline
-{\em out} & \\
+\mbox{\tt out}  & {\em out} & \\
 \hline
-{\em idx} & \\
+\mbox{\tt out}  & {\em idx} & \\
 \hline
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Mat\+Rows@{sort\+Mat\+Rows}}
@@ -1299,12 +1320,12 @@ Ordena los valores de una matriz de mayor a menor por columnas.
 Ordena los valores de una matriz de mayor a menor por filas. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em in} & \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & \\
 \hline
-{\em out} & \\
+\mbox{\tt out}  & {\em out} & \\
 \hline
-{\em idx} & \\
+\mbox{\tt out}  & {\em idx} & \\
 \hline
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Vector@{sort\+Vector}}
@@ -1319,8 +1340,8 @@ Ordena los valores de una matriz de mayor a menor por filas.
 Ordena un vector de menor a mayor. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & Vector \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & Vector \\
 \hline
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Vector\+Inv@{sort\+Vector\+Inv}}
@@ -1335,8 +1356,8 @@ Ordena un vector de menor a mayor.
 Ordena un vector de mayor a menor. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v} & Vector \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v} & Vector \\
 \hline
 \end{DoxyParams}
 \index{I3D@{I3D}!split@{split}}
@@ -1362,12 +1383,12 @@ std::vector<std::string> out;
 \}
 \end{DoxyCode}
  
-\begin{DoxyParams}{Parámetros}
-{\em in} & Cadena de entrada \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em in} & Cadena de entrada \\
 \hline
-{\em out} & vector con las cadenas resultantes \\
+\mbox{\tt out}  & {\em out} & vector con las cadenas resultantes \\
 \hline
-{\em chs} & cadena de separación \\
+\mbox{\tt in}  & {\em chs} & cadena de separación \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1387,12 +1408,12 @@ std::vector<std::string> out;
 Separa una cadena en un array de enteros. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em cad} & Cadena de texto que contiene una lista de numeros \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em cad} & Cadena de texto que contiene una lista de numeros \\
 \hline
-{\em v\+Out} & Vector con los números extraidos \\
+\mbox{\tt out}  & {\em v\+Out} & Vector con los números extraidos \\
 \hline
-{\em chs} & Caracter separador de la cadena \\
+\mbox{\tt in}  & {\em chs} & Caracter separador de la cadena \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1412,12 +1433,12 @@ Separa una cadena en un array de enteros.
 Separa una cadena en un array de dobles. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em cad} & Cadena de texto que contiene una lista de numeros \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em cad} & Cadena de texto que contiene una lista de numeros \\
 \hline
-{\em v\+Out} & Vector con los números extraidos \\
+\mbox{\tt out}  & {\em v\+Out} & Vector con los números extraidos \\
 \hline
-{\em chs} & Caracter separador de la cadena \\
+\mbox{\tt in}  & {\em chs} & Caracter separador de la cadena \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -1436,10 +1457,10 @@ Separa una cadena en un array de dobles.
 Devuelve el ángulo entre dos vectores. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em v1} & Vector 1 \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em v1} & Vector 1 \\
 \hline
-{\em v2} & Vector 2 \\
+\mbox{\tt in}  & {\em v2} & Vector 2 \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}

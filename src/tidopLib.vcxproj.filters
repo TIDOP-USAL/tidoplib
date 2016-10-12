@@ -28,6 +28,9 @@
     <Filter Include="Archivos de encabezado\core">
       <UniqueIdentifier>{f3d024f5-caa7-4372-b46d-ae321d8b4e1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\core">
+      <UniqueIdentifier>{c1e313d5-36f3-4bf1-a747-1dc53cd5e313}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -68,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="VideoStream.cpp">
       <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="core\messages.cpp">
+      <Filter>Archivos de código fuente\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -112,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="VideoStream.h">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="core\messages.h">
+      <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\flags.h">
+      <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

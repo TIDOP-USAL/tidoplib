@@ -12,6 +12,7 @@ var utils_8cpp =
     [ "degreesToDecimalDegrees", "utils_8cpp.html#ga6219d37cf7c1be1176f323bdf7982b2b", null ],
     [ "degreesToGradians", "utils_8cpp.html#gafe5e54462cbdb02cc83abd739f1f8e3b", null ],
     [ "degreesToRadians", "utils_8cpp.html#gaedea9963e49e918a8fbfc75e0c1dfc7d", null ],
+    [ "deleteDir", "utils_8cpp.html#a15b240f744e5327ebdaaf225807aeae4", null ],
     [ "getFileDir", "utils_8cpp.html#a89da9a4ea917a3dd9dcdaa005427358b", null ],
     [ "getFileDrive", "utils_8cpp.html#a620c9ad850d6cda696023ae128ad129b", null ],
     [ "getFileDriveDir", "utils_8cpp.html#af80e41a6e1e093328a8f8ef7c229aace", null ],

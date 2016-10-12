@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['windowd',['WindowD',['../group___geometric_entities.html#gac7dc7b0477e34c4c8c43a1710a855b00',1,'I3D']]],
-  ['windowf',['WindowF',['../group___geometric_entities.html#ga76e43e50a665fdfb754f5825615ffaec',1,'I3D']]],
-  ['windowi',['WindowI',['../group___geometric_entities.html#ga27980d94ceb3f3eb9e0c34e1fe93b073',1,'I3D']]]
+  ['type',['type',['../class_i3_d_1_1_multi_point.html#ae8bafa5f4c3f71c19b294e5495683582',1,'I3D::MultiPoint::type()'],['../class_i3_d_1_1_segment.html#abc51866dd6396476534bda5afd87faf9',1,'I3D::Segment::type()'],['../class_i3_d_1_1_segment3_d.html#a367ef41bf0a1e329a4363fe5e3731612',1,'I3D::Segment3D::type()'],['../class_i3_d_1_1_window.html#adf6b77f358cdb242b37574a88b9e59f3',1,'I3D::Window::type()'],['../class_i3_d_1_1_enum_flags.html#a7a572435bc6e53982a3773ecaf3aad78',1,'I3D::EnumFlags::Type()']]]
 ];

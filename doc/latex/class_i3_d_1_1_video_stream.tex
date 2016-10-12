@@ -107,8 +107,8 @@ Constructora I3\+D\+Video\+Stream.
 Constructora I3\+D\+Video\+Stream. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em file} & Video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em file} & Video \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!````~Video\+Stream@{$\sim$\+Video\+Stream}}
@@ -235,8 +235,8 @@ Verdadero si esta activado
 Next\+Frame. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em vf} & Frame de video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em vf} & Frame de video \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -256,12 +256,12 @@ Verdadero si encuentra frame
 Siguiente frame del video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em vf} & Frame de video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em vf} & Frame de video \\
 \hline
-{\em skip} & Tipo de salto de video aplicado \\
+\mbox{\tt in}  & {\em skip} & Tipo de salto de video aplicado \\
 \hline
-{\em nskip} & Número de salto \\
+\mbox{\tt in}  & {\em nskip} & Número de salto \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -279,8 +279,8 @@ Verdadero si encuentra frame
 Abre el video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em name} & Nombre del video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em name} & Nombre del video \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -309,8 +309,8 @@ Rausa el video \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!read@{
 Lee un frame de video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em vf} & Frame de video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em vf} & Frame de video \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -357,10 +357,10 @@ Ejecuta el video desde el principio. Se puede interactuar con el video mediante 
 Establece la región de recorte del video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em rf} & Región de recorte del frame \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em rf} & Región de recorte del frame \\
 \hline
-{\em keep\+Ratio} & Mantiene las dimensiones \\
+\mbox{\tt in}  & {\em keep\+Ratio} & Mantiene las dimensiones \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Frame\+Size@{set\+Frame\+Size}}
@@ -377,12 +377,12 @@ Establece la región de recorte del video.
 Permite redimensionar la salida del video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em sz} & Tamaño de salida de video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em sz} & Tamaño de salida de video \\
 \hline
-{\em rf} & Redimensión, recorte o tamaño original del video \\
+\mbox{\tt in}  & {\em rf} & Redimensión, recorte o tamaño original del video \\
 \hline
-{\em keep\+Ratio} & Mantiene las dimensiones \\
+\mbox{\tt in}  & {\em keep\+Ratio} & Mantiene las dimensiones \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Pos\+Frame@{set\+Pos\+Frame}}
@@ -397,8 +397,8 @@ Permite redimensionar la salida del video.
 Establece la posición en el video según el número de frame. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em nframe} & \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em nframe} & \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -417,10 +417,10 @@ Establece la posición en el video según el número de frame.
 Establece un escuchador para el evento On\+Position\+Change. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em ev\+\_\+pc} & Función que escucha el evento \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ev\+\_\+pc} & Función que escucha el evento \\
 \hline
-{\em userdata} & Puntero a datos de usuario \\
+\mbox{\tt in}  & {\em userdata} & Puntero a datos de usuario \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Read\+Listener@{set\+Read\+Listener}}
@@ -436,10 +436,10 @@ Establece un escuchador para el evento On\+Position\+Change.
 Retrasa el video. 
 
 Establece un escuchador para el evento On\+Read 
-\begin{DoxyParams}{Parámetros}
-{\em ev\+\_\+r} & Función que escucha el evento \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ev\+\_\+r} & Función que escucha el evento \\
 \hline
-{\em userdata} & Puntero a datos de usuario \\
+\mbox{\tt in}  & {\em userdata} & Puntero a datos de usuario \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Show\+Listener@{set\+Show\+Listener}}
@@ -455,10 +455,10 @@ Establece un escuchador para el evento On\+Read
 Establece un escuchador para el evento On\+Show. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em ev\+\_\+s} & Función que escucha el evento \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ev\+\_\+s} & Función que escucha el evento \\
 \hline
-{\em userdata} & Puntero a datos de usuario \\
+\mbox{\tt in}  & {\em userdata} & Puntero a datos de usuario \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Skip\+Blurry\+Frames@{set\+Skip\+Blurry\+Frames}}
@@ -473,8 +473,8 @@ Establece un escuchador para el evento On\+Show.
 Activa el salto de frames borrosos. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em Verdadero} & para activar el salto de frames borrosos \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em Verdadero} & para activar el salto de frames borrosos \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!set\+Skip\+Frames@{set\+Skip\+Frames}}
@@ -505,8 +505,8 @@ Establece el salto de frames en la lectura del video.
 Establece el número de milisegundos que salta el video. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em ms} & Número de milisegundos que salta \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em ms} & Número de milisegundos que salta \\
 \hline
 \end{DoxyParams}
 \index{I3\+D\+::\+Video\+Stream@{I3\+D\+::\+Video\+Stream}!show@{show}}
@@ -521,8 +521,8 @@ Establece el número de milisegundos que salta el video.
 Lanza el evento Show. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em vf} & Frame de video \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em vf} & Frame de video \\
 \hline
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
@@ -565,5 +565,5 @@ Detiene la ejecución del video.
 
 La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8h}{Video\+Stream.\+h}\item 
-D\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8cpp}{Video\+Stream.\+cpp}\end{DoxyCompactItemize}
+C\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8h}{Video\+Stream.\+h}\item 
+C\+:/\+Desarrollo/tidop/src/\hyperlink{_video_stream_8cpp}{Video\+Stream.\+cpp}\end{DoxyCompactItemize}

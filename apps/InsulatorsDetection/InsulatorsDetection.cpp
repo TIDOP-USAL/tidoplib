@@ -1,5 +1,7 @@
 #include <windows.h>
 #include <memory>
+#include <thread>
+#include <mutex>
 
 // Cabeceras de OpenCV
 #include "opencv2/core/core.hpp"
@@ -21,6 +23,7 @@
 #include "transform.h"
 #include "geometric_entities\point.h"
 #include "geometric_entities\operations.h"
+#include "core\messages.h"
 
 using namespace I3D;
 using namespace cv;
@@ -30,13 +33,97 @@ using namespace std;
 using namespace std::placeholders;
 
 LD_TYPE ls = LD_TYPE::HOUGHP;
+std::mutex thread_mutex;
+
+void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessingList &imgprolist, const Line &lineVertical, LineDetector *oLD) {
+  cv::Mat studyArea;
+  frame.colRange(w.pt1.x, w.pt2.x).rowRange(w.pt1.y, w.pt2.y).copyTo(studyArea);
+
+  //Determinar angulo con Fourier
+  std::vector<int> colFourier;
+  colFourier.push_back(studyArea.cols / 2);
+  std::vector<std::vector<cv::Point>> ptsFourier;
+  double angle = fourierLinesDetection(studyArea, colFourier, &ptsFourier);
+
+  cv::Mat studyAreaProccesed;
+
+  // Procesos imagen
+  imgprolist.execute(studyArea, &studyAreaProccesed);
+
+  cv::Mat studyAreaOut;
+  cvtColor(studyArea, studyAreaOut, CV_GRAY2BGR);
+
+  std::vector<Line> lines;
+  
+  thread_mutex.lock();
+  oLD->run(studyAreaOut, cv::Scalar(angle, 0.15));
+  if (oLD->getLines().empty()) return;
+  Translate<cv::Point> trf(w.pt1.x, w.pt1.y);
+  trf.transform(oLD->getLines(), &lines);
+  thread_mutex.unlock();
+
+  //Comenzamos a agrupar lineas paralelas
+  std::vector<ldGroupLines> linesGroups;
+  groupParallelLines(lines, &linesGroups, 0.015);
+  cv::RNG rng(12345);
+  cv::Scalar c;
+
+  int imaxr = 0;
+  int maxr = 0;
+  for (int ilg = 0; ilg < linesGroups.size(); ilg++) {
+    if (maxr < linesGroups[ilg].getSize()){
+      maxr = linesGroups[ilg].getSize();
+      imaxr = ilg;
+    }
+  }
+
+  std::vector<ldGroupLines> linesGroups2;
+  groupLinesByDist(linesGroups[imaxr].getLines(), &linesGroups2, 10);
+
+  for (size_t ig = 0; ig < linesGroups2.size(); ig++) {
+    std::vector<Line> linesJoin;
+    joinLinesByDist(linesGroups2[ig].getLines(), &linesJoin, 3);
+    linesGroups2[ig] = ldGroupLines(linesJoin);
+  }
+
+  for (size_t ig = 0; ig < linesGroups2.size(); ig++) {
+    c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
+    for (int il = 0; il < linesGroups2[ig].getSize(); il++) {
+      line(studyAreaOut, linesGroups2[ig][il].pt1, linesGroups2[ig][il].pt2, c, 1, cv::LINE_8);
+    }
+  }
+
+  //interseccion con lineas
+  std::vector<cv::Point> pts;
+  for (size_t ig = 0; ig < linesGroups2.size(); ig++) {
+    for (int ir = 0; ir < linesGroups2[ig].getSize(); ir++) {
+      cv::Point ptAux;
+      intersectLines(linesGroups2[ig][ir], lineVertical, &ptAux);
+      pts.push_back(ptAux);
+    }
+  }
+
+  std::vector<int> posVertical(pts.size());
+  for (int ir = 0; ir < pts.size(); ir++) {
+    posVertical[ir] = pts[ir].y;
+  }
+
+  std::vector<cv::Point> ptsSort;
+  for (auto i : sortIdx(posVertical)) {
+    ptsSort.push_back(pts[i]);
+  }
+
+  for (int ir = 0; ir < ptsSort.size(); ir++) {
+    cv::line(studyAreaOut, ptsSort[ir], ptsSort[ir], Scalar(255, 0, 0), 3, LINE_AA);
+  }
+}	
+
 
 int main(int argc, char *argv[])
 {
   char logfile[_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "InsulatorsDetection.log", logfile);
   LogMsg log(logfile, LogLevel::LOG_DEBUG);
-
   std::unique_ptr<LineDetector> oLD;
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
   if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
@@ -44,7 +131,7 @@ int main(int argc, char *argv[])
   else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
   else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
   else {
-    log.errorMsg("No se ha seleccionado ningún detector de lineas.");
+    logPrintError("No se ha seleccionado ningún detector de lineas.");
     return 0;
   }
 
@@ -120,6 +207,13 @@ int main(int argc, char *argv[])
     wRight = windowIntersection(wRight, wFrame);
     wLeft = windowIntersection(wLeft, wFrame);
 
+    //Line lineL(cv::Point(wTower.pt1.x, 0), cv::Point(wTower.pt1.x, frame.rows));
+    //Line lineR(cv::Point(wTower.pt2.x, 0), cv::Point(wTower.pt2.x, frame.rows));
+    //kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, angleRight, lm, gm);
+    //filter2d->setParameters(CV_32F, kernel);
+    //procesado(frame, wLeft, imgprolistL, lineL, oLD.get());
+    //procesado(frame, wRight, imgprolistR, lineR, oLD.get());
+
     cv::Mat right, left;
     frame.colRange(wRight.pt1.x, wRight.pt2.x).rowRange(wRight.pt1.y, wRight.pt2.y).copyTo(right);
     frame.colRange(wLeft.pt1.x, wLeft.pt2.x).rowRange(wLeft.pt1.y, wLeft.pt2.y).copyTo(left);
@@ -162,11 +256,15 @@ int main(int argc, char *argv[])
 
     //Comenzamos a agrupar lineas paralelas
     std::vector<ldGroupLines> linesGroupsRight, linesGroupsLeft;
-    groupParallelLines(linesRight, &linesGroupsRight, 0.015);
-    groupParallelLines(linesLeft, &linesGroupsLeft, 0.015);
+    //groupParallelLines(linesRight, &linesGroupsRight, 0.015);
+    //groupParallelLines(linesLeft, &linesGroupsLeft, 0.015)
+    std::thread tL(groupParallelLines,linesRight, &linesGroupsRight, 0.015);
+    std::thread tR(groupParallelLines,linesLeft, &linesGroupsLeft, 0.015);
+	
     cv::RNG rng(12345);
     cv::Scalar c;
 
+    tR.join();
     int imaxr = 0;
     int maxr = 0;
     for (int ilg = 0; ilg < linesGroupsRight.size(); ilg++) {
@@ -176,6 +274,7 @@ int main(int argc, char *argv[])
       }
     }
 
+    tL.join();
     int imaxl = 0;
     int maxl = 0;
     for (int ilg = 0; ilg < linesGroupsLeft.size(); ilg++) {
@@ -186,19 +285,24 @@ int main(int argc, char *argv[])
     }
 
     std::vector<ldGroupLines> linesGroupsRight2, linesGroupsLeft2;
-    groupLinesByDist(linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
-    groupLinesByDist(linesGroupsLeft[imaxl].getLines(), &linesGroupsLeft2, 10);
+    //groupLinesByDist(linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
+    //groupLinesByDist(linesGroupsLeft[imaxl].getLines(), &linesGroupsLeft2, 10);
+    tL = std::thread(groupLinesByDist,linesGroupsRight[imaxr].getLines(), &linesGroupsRight2, 10);
+    tR = std::thread(groupLinesByDist,linesGroupsLeft[imaxr].getLines(), &linesGroupsLeft2, 10);
+
+    tL.join();
 
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
       std::vector<Line> linesJoinLeft;
       joinLinesByDist(linesGroupsLeft2[ig].getLines(), &linesJoinLeft, 3);
       linesGroupsLeft2[ig] = ldGroupLines(linesJoinLeft);
     }
-    for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
-      std::vector<Line> linesJoinRight;
-      joinLinesByDist(linesGroupsRight2[ig].getLines(), &linesJoinRight, 3);
-      linesGroupsRight2[ig] = ldGroupLines(linesJoinRight);
-    }
+
+	
+	
+	
+	
+	
 
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
       c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
@@ -206,6 +310,17 @@ int main(int argc, char *argv[])
         line(frameout, linesGroupsLeft2[ig][il].pt1, linesGroupsLeft2[ig][il].pt2, c, 1, cv::LINE_8);
       }
     }
+
+    tR.join();
+
+    for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
+      std::vector<Line> linesJoinRight;
+      joinLinesByDist(linesGroupsRight2[ig].getLines(), &linesJoinRight, 3);
+      linesGroupsRight2[ig] = ldGroupLines(linesJoinRight);
+    }
+
+
+
 
     for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
       c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));

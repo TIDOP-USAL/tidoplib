@@ -1,12 +1,6 @@
 #include <windows.h>
 #include <memory>
 
-//#include <QCoreApplication>
-//#include <QFile>
-//#include <QDomDocument>
-//#include <QString>
-//#include <QFileInfo>
-
 // Cabeceras de OpenCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -110,7 +104,7 @@ void onRun(VideoStream *strmVideo, void* userdata)
   
   //Ventana en la cual se van a buscar los apoyos
   WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
-  ws = ExpandWindow(ws, -100, 0);
+  ws = expandWindow(ws, -100, 0);
 
   try {
 

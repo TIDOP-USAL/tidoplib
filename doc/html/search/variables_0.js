@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['loglevel',['logLevel',['../class_i3_d_1_1_log_msg.html#a1a45bf0f5753da52a4a8ddf930c11ff8',1,'I3D::LogMsg']]]
+  ['extend',['extend',['../structmsg_properties.html#a9eb055af2fdf96afc626c6e8eb62442c',1,'msgProperties']]]
 ];

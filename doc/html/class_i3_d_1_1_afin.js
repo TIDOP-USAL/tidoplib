@@ -1,7 +1,7 @@
 var class_i3_d_1_1_afin =
 [
     [ "Afin", "class_i3_d_1_1_afin.html#ac54cf2d2c5335e8b05449ff56d2fd5fd", null ],
-    [ "Afin", "class_i3_d_1_1_afin.html#a380364fda95636a4500637efd7cee797", null ],
+    [ "Afin", "class_i3_d_1_1_afin.html#a31d016fd7f21eb6d3532915d258680e7", null ],
     [ "compute", "group__trf2_d_group.html#gabe12d714c522dd1bf40f05f28c5aafe0", null ],
     [ "getRotation", "class_i3_d_1_1_afin.html#a72b19e66437e67f73b1f0a95eaa91c3f", null ],
     [ "getScaleX", "class_i3_d_1_1_afin.html#a1a4c447002e10793a6c187e028a50a13", null ],

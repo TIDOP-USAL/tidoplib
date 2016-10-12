@@ -259,7 +259,7 @@ Métodos públicos</h2></td></tr>
 <p>Constructora I3DVideoStream. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">file</td><td>Video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">file</td><td>Video </td></tr>
   </table>
   </dd>
 </dl>
@@ -475,7 +475,7 @@ Métodos públicos</h2></td></tr>
 <p>NextFrame. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vf</td><td>Frame de video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vf</td><td>Frame de video </td></tr>
   </table>
   </dd>
 </dl>
@@ -516,9 +516,9 @@ Métodos públicos</h2></td></tr>
 <p>Siguiente frame del video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vf</td><td>Frame de video </td></tr>
-    <tr><td class="paramname">skip</td><td>Tipo de salto de video aplicado </td></tr>
-    <tr><td class="paramname">nskip</td><td>Número de salto </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vf</td><td>Frame de video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">skip</td><td>Tipo de salto de video aplicado </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nskip</td><td>Número de salto </td></tr>
   </table>
   </dd>
 </dl>
@@ -543,7 +543,7 @@ Métodos públicos</h2></td></tr>
 <p>Abre el video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">name</td><td>Nombre del video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">name</td><td>Nombre del video </td></tr>
   </table>
   </dd>
 </dl>
@@ -594,7 +594,7 @@ Métodos públicos</h2></td></tr>
 <p>Lee un frame de video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vf</td><td>Frame de video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vf</td><td>Frame de video </td></tr>
   </table>
   </dd>
 </dl>
@@ -677,8 +677,8 @@ Métodos públicos</h2></td></tr>
 <p>Establece la región de recorte del video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">rf</td><td>Región de recorte del frame </td></tr>
-    <tr><td class="paramname">keepRatio</td><td>Mantiene las dimensiones </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rf</td><td>Región de recorte del frame </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">keepRatio</td><td>Mantiene las dimensiones </td></tr>
   </table>
   </dd>
 </dl>
@@ -718,9 +718,9 @@ Métodos públicos</h2></td></tr>
 <p>Permite redimensionar la salida del video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">sz</td><td>Tamaño de salida de video </td></tr>
-    <tr><td class="paramname">rf</td><td>Redimensión, recorte o tamaño original del video </td></tr>
-    <tr><td class="paramname">keepRatio</td><td>Mantiene las dimensiones </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sz</td><td>Tamaño de salida de video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">rf</td><td>Redimensión, recorte o tamaño original del video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">keepRatio</td><td>Mantiene las dimensiones </td></tr>
   </table>
   </dd>
 </dl>
@@ -744,7 +744,7 @@ Métodos públicos</h2></td></tr>
 <p>Establece la posición en el video según el número de frame. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">nframe</td><td></td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nframe</td><td></td></tr>
   </table>
   </dd>
 </dl>
@@ -779,8 +779,8 @@ Métodos públicos</h2></td></tr>
 <p>Establece un escuchador para el evento OnPositionChange. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ev_pc</td><td>Función que escucha el evento </td></tr>
-    <tr><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ev_pc</td><td>Función que escucha el evento </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
   </table>
   </dd>
 </dl>
@@ -814,8 +814,8 @@ Métodos públicos</h2></td></tr>
 <p>Retrasa el video. </p>
 <p>Establece un escuchador para el evento OnRead </p><dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ev_r</td><td>Función que escucha el evento </td></tr>
-    <tr><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ev_r</td><td>Función que escucha el evento </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
   </table>
   </dd>
 </dl>
@@ -849,8 +849,8 @@ Métodos públicos</h2></td></tr>
 <p>Establece un escuchador para el evento OnShow. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ev_s</td><td>Función que escucha el evento </td></tr>
-    <tr><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ev_s</td><td>Función que escucha el evento </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">userdata</td><td>Puntero a datos de usuario </td></tr>
   </table>
   </dd>
 </dl>
@@ -882,7 +882,7 @@ Métodos públicos</h2></td></tr>
 <p>Activa el salto de frames borrosos. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">Verdadero</td><td>para activar el salto de frames borrosos </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Verdadero</td><td>para activar el salto de frames borrosos </td></tr>
   </table>
   </dd>
 </dl>
@@ -930,7 +930,7 @@ Métodos públicos</h2></td></tr>
 <p>Establece el número de milisegundos que salta el video. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">ms</td><td>Número de milisegundos que salta </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">ms</td><td>Número de milisegundos que salta </td></tr>
   </table>
   </dd>
 </dl>
@@ -954,7 +954,7 @@ Métodos públicos</h2></td></tr>
 <p>Lanza el evento Show. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramname">vf</td><td>Frame de video </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">vf</td><td>Frame de video </td></tr>
   </table>
   </dd>
 </dl>
@@ -1022,8 +1022,8 @@ Métodos públicos</h2></td></tr>
 </div>
 </div>
 <hr/>La documentación para esta clase fue generada a partir de los siguientes ficheros:<ul>
-<li>D:/Desarrollo/tidop/src/<a class="el" href="_video_stream_8h_source.html">VideoStream.h</a></li>
-<li>D:/Desarrollo/tidop/src/<a class="el" href="_video_stream_8cpp.html">VideoStream.cpp</a></li>
+<li>C:/Desarrollo/tidop/src/<a class="el" href="_video_stream_8h_source.html">VideoStream.h</a></li>
+<li>C:/Desarrollo/tidop/src/<a class="el" href="_video_stream_8cpp.html">VideoStream.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

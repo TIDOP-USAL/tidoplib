@@ -1,0 +1,67 @@
+\hypertarget{messages_8cpp}{}\section{Referencia del Archivo C\+:/\+Desarrollo/tidop/src/core/messages.cpp}
+\label{messages_8cpp}\index{C\+:/\+Desarrollo/tidop/src/core/messages.\+cpp@{C\+:/\+Desarrollo/tidop/src/core/messages.\+cpp}}
+{\ttfamily \#include $<$cstdarg$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include \char`\"{}messages.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}utils.\+h\char`\"{}}\\*
+\subsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structmsg_properties}{msg\+Properties}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{Funciones}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{structmsg_properties}{msg\+Properties} \hyperlink{messages_8cpp_a888b15f0e75a99f214e65aba279fcf4c}{Get\+Message\+Properties} (\hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} msg\+Level)
+\item 
+char $\ast$ \hyperlink{messages_8cpp_aede7c0a0b65938a66c60ed0455181f79}{\+\_\+msg} (const char $\ast$msg,...)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+std\+::mutex \hyperlink{messages_8cpp_ad5e0dbd36f0d71fce9b00b7f991b2f38}{mtx}
+\item 
+struct \hyperlink{structmsg_properties}{msg\+Properties} \hyperlink{messages_8cpp_a01d690150fe6552a637e045c198eb2cd}{msg\+Template} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Documentación de las funciones}
+\index{messages.\+cpp@{messages.\+cpp}!\+\_\+msg@{\+\_\+msg}}
+\index{\+\_\+msg@{\+\_\+msg}!messages.\+cpp@{messages.\+cpp}}
+\subsubsection[{\texorpdfstring{\+\_\+msg(const char $\ast$msg,...)}{_msg(const char *msg,...)}}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ \+\_\+msg (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{msg, }
+\item[{}]{...}
+\end{DoxyParamCaption}
+)}\hypertarget{messages_8cpp_aede7c0a0b65938a66c60ed0455181f79}{}\label{messages_8cpp_aede7c0a0b65938a66c60ed0455181f79}
+\index{messages.\+cpp@{messages.\+cpp}!Get\+Message\+Properties@{Get\+Message\+Properties}}
+\index{Get\+Message\+Properties@{Get\+Message\+Properties}!messages.\+cpp@{messages.\+cpp}}
+\subsubsection[{\texorpdfstring{Get\+Message\+Properties(\+Message\+Level msg\+Level)}{GetMessageProperties(MessageLevel msgLevel)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf msg\+Properties} Get\+Message\+Properties (
+\begin{DoxyParamCaption}
+\item[{{\bf Message\+Level}}]{msg\+Level}
+\end{DoxyParamCaption}
+)}\hypertarget{messages_8cpp_a888b15f0e75a99f214e65aba279fcf4c}{}\label{messages_8cpp_a888b15f0e75a99f214e65aba279fcf4c}
+
+
+\subsection{Documentación de las variables}
+\index{messages.\+cpp@{messages.\+cpp}!msg\+Template@{msg\+Template}}
+\index{msg\+Template@{msg\+Template}!messages.\+cpp@{messages.\+cpp}}
+\subsubsection[{\texorpdfstring{msg\+Template}{msgTemplate}}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf msg\+Properties} msg\+Template\mbox{[}$\,$\mbox{]}}\hypertarget{messages_8cpp_a01d690150fe6552a637e045c198eb2cd}{}\label{messages_8cpp_a01d690150fe6552a637e045c198eb2cd}
+{\bfseries Valor inicial\+:}
+\begin{DoxyCode}
+= \{   
+  \{ \textcolor{stringliteral}{"Debug: %s"},   \textcolor{stringliteral}{"Debug: %s (%s:%u, %s)"}, FOREGROUND\_GREEN | FOREGROUND\_BLUE | FOREGROUND\_RED\},
+  \{ \textcolor{stringliteral}{"Verbose: %s"}, \textcolor{stringliteral}{"Verbose: %s (%s:%u, %s)"}, FOREGROUND\_GREEN | FOREGROUND\_BLUE | FOREGROUND\_RED\},
+  \{ \textcolor{stringliteral}{"Info: %s"},    \textcolor{stringliteral}{"Info: %s (%s:%u, %s)"}, FOREGROUND\_GREEN | FOREGROUND\_BLUE | FOREGROUND\_RED\},
+  \{ \textcolor{stringliteral}{"Warning: %s"}, \textcolor{stringliteral}{"Warning: %s (%s:%u, %s)"}, FOREGROUND\_GREEN | FOREGROUND\_RED \},
+  \{ \textcolor{stringliteral}{"Error: %s"},   \textcolor{stringliteral}{"Error: %s (%s:%u, %s)"}, FOREGROUND\_RED \},
+\}
+\end{DoxyCode}
+\index{messages.\+cpp@{messages.\+cpp}!mtx@{mtx}}
+\index{mtx@{mtx}!messages.\+cpp@{messages.\+cpp}}
+\subsubsection[{\texorpdfstring{mtx}{mtx}}]{\setlength{\rightskip}{0pt plus 5cm}std\+::mutex mtx}\hypertarget{messages_8cpp_ad5e0dbd36f0d71fce9b00b7f991b2f38}{}\label{messages_8cpp_ad5e0dbd36f0d71fce9b00b7f991b2f38}

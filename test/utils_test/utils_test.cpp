@@ -19,6 +19,28 @@ TEST(isDirectoryTest, Null){
   EXPECT_FALSE(isDirectory(""));
 }
 
+TEST(createDir, ExistDir){
+  char name[_MAX_PATH];
+  EXPECT_EQ(0, getFileDriveDir(getRunfile(), name));
+  //Se prueba a crear un directorio ya existente
+  EXPECT_EQ(1,createDir(name));
+}
+
+TEST(createDir, NewDir){
+  //Borro por si acaso existia
+  deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir");
+  EXPECT_EQ(0,createDir("D:\\Desarrollo\\tidop\\test\\create_dir\\1"));
+  EXPECT_EQ(0,createDir("D:/Desarrollo/tidop/test/create_dir/1/2"));
+}
+
+TEST(DeleteDir, ExistDir){
+  EXPECT_EQ(0,deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir\\1\\2"));
+  EXPECT_EQ(0,deleteDir("D:/Desarrollo/tidop/test/create_dir"));
+}
+
+TEST(DeleteDir, NoDir){
+  EXPECT_EQ(1,deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir"));
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                        Test Operaciones con cadenas                                */
@@ -253,13 +275,17 @@ TEST(vectorAngle, Test1){
 }
 
 
+TEST(azimut,Test1){
+
+  EXPECT_NEAR(0.7853, azimut(cv::Point(0,0),cv::Point(100,100)),0.0001);
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
 //Datos para los test
-std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85 }, { 243, 55, 123 } };
+std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 },  };
 std::vector<std::string> hex{ "000000", "FF0000", "00FF00", "0000FF", "FFFFFF", "342455", "F3377B" };
 std::vector<int> color{ 0, 16711680, 65280, 255, 16777215, 3417173, 15939451 };
 

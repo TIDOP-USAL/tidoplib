@@ -8,7 +8,7 @@ var searchData=
   ['regressionlinearyx',['regressionLinearYX',['../namespace_i3_d.html#a071314591a6a90d4c4f2310f3505209f',1,'I3D']]],
   ['rel',['rel',['../namespace_i3_d.html#a46d66cb1a9b5f02866f46a854c1ee75d',1,'I3D']]],
   ['replacestring',['replaceString',['../namespace_i3_d.html#a1de171b0987ef1bb08cf213ed720e055',1,'I3D']]],
-  ['resize',['Resize',['../class_i3_d_1_1_resize.html#a4f0bbaa5ea82c7390880dae533a34a92',1,'I3D::Resize::Resize()'],['../class_i3_d_1_1_multi_point.html#abb806a4c8c4e578f5ee440e1f30748a1',1,'I3D::MultiPoint::resize()']]],
+  ['resize',['resize',['../class_i3_d_1_1_multi_point.html#abb806a4c8c4e578f5ee440e1f30748a1',1,'I3D::MultiPoint::resize()'],['../class_i3_d_1_1_resize.html#a4f0bbaa5ea82c7390880dae533a34a92',1,'I3D::Resize::Resize()']]],
   ['resume',['resume',['../class_i3_d_1_1_video_stream.html#a34e67007241339df2955b649b1a1f1fd',1,'I3D::VideoStream']]],
   ['rgbatoint',['rgbaToInt',['../namespace_i3_d.html#a5c525ecbc21267c7d13a427365c75458',1,'I3D']]],
   ['rgbtoint',['rgbToInt',['../namespace_i3_d.html#a19aa83d403ad807bdd48306de4af8481',1,'I3D']]],

@@ -168,7 +168,6 @@ void LogMsg::init()
 //#endif
 }
 
-#pragma warning(disable : 4100)
 void LogMsg::debugMsg(const char *msg, ...)
 {
 #ifdef _DEBUG
@@ -181,7 +180,7 @@ void LogMsg::debugMsg(const char *msg, ...)
   MessageOutput(LogLevel::LOG_DEBUG, buf);
 #endif
 }
-#pragma warning ( default : 4100 )
+
 
 void LogMsg::debugMsg(const char *msg, const char *file, int line, const char *function)
 {

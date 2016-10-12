@@ -38,7 +38,7 @@ var group__trf2_d_group =
     ] ],
     [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html", [
       [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#a8eca7720410824fb11469d8d893fb2d6", null ],
-      [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#acc703bb59be7931c8c1ce6d6ebeb89fd", null ],
+      [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#a810553f036b0e7ecf77e31246dc8edea", null ],
       [ "compute", "group__trf2_d_group.html#ga300279dee0a002835c25322bd2ea9398", null ],
       [ "getRotation", "class_i3_d_1_1_helmert2_d.html#a7f96184b77dfd19734906e8ea79ec74f", null ],
       [ "getScale", "class_i3_d_1_1_helmert2_d.html#ad748a42c6267e30b8dc009714cc07559", null ],
@@ -53,7 +53,7 @@ var group__trf2_d_group =
     ] ],
     [ "Afin", "class_i3_d_1_1_afin.html", [
       [ "Afin", "class_i3_d_1_1_afin.html#ac54cf2d2c5335e8b05449ff56d2fd5fd", null ],
-      [ "Afin", "class_i3_d_1_1_afin.html#a380364fda95636a4500637efd7cee797", null ],
+      [ "Afin", "class_i3_d_1_1_afin.html#a31d016fd7f21eb6d3532915d258680e7", null ],
       [ "compute", "group__trf2_d_group.html#gabe12d714c522dd1bf40f05f28c5aafe0", null ],
       [ "getRotation", "class_i3_d_1_1_afin.html#a72b19e66437e67f73b1f0a95eaa91c3f", null ],
       [ "getScaleX", "class_i3_d_1_1_afin.html#a1a4c447002e10793a6c187e028a50a13", null ],

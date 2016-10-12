@@ -218,8 +218,8 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
 #ifdef _DEBUG
   time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
   printf("\nTime [s]: %.3f\n", time);
-  return r_angle;
 #endif
+  return r_angle;
 }
 
 //int fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle)

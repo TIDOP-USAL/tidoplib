@@ -33,17 +33,25 @@ char I3D_EXPORT *getRunfile();
 
 /*!
  * \brief Comprueba si existe un directorio
- * \param path Ruta del directorio
+ * \param[in] path Ruta del directorio
  * \return true si existe.
  */
 bool I3D_EXPORT isDirectory(const char *path);
 
 /*!
  * \brief Crea un directorio
- * \param path Ruta del directorio
- * \return
+ * \param[in] path Ruta del directorio
+ * \return Error = -1, creado = 0 y existente = 1
  */
 int I3D_EXPORT createDir(const char *path);
+
+/*!
+ * \brief Crea un directorio
+ * \param[in] path Ruta del directorio
+ * \param[in] confirm Pide confirmación para borrar el archivo
+ * \return Error = -1, creado = 0 y existente = 1
+ */
+int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -51,93 +59,93 @@ int I3D_EXPORT createDir(const char *path);
 
 /*!
  * \brief Separa una cadena en un array de enteros
- * \param cad Cadena de texto que contiene una lista de numeros
- * \param vOut Vector con los números extraidos
- * \param chs Caracter separador de la cadena
+ * \param[in] cad Cadena de texto que contiene una lista de numeros
+ * \param[out] vOut Vector con los números extraidos
+ * \param[in] chs Caracter separador de la cadena
  * \return (1) error
  */
 int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs = ",");
 
 /*!
  * \brief Separa una cadena en un array de dobles
- * \param cad Cadena de texto que contiene una lista de numeros
- * \param vOut Vector con los números extraidos
- * \param chs Caracter separador de la cadena
+ * \param[in] cad Cadena de texto que contiene una lista de numeros
+ * \param[out] vOut Vector con los números extraidos
+ * \param[in] chs Caracter separador de la cadena
  * \return (1) error
  */
 int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs = ",");
 
 /*!
  * \brief Reemplaza una cadena por otra en un texto.
- * \param str Cadena original
- * \param str_old Cadena a remplazar
- * \param str_new Nueva cadena
+ * \param[in] str Cadena original
+ * \param[in] str_old Cadena a remplazar
+ * \param[out] str_new Nueva cadena
  */
 void I3D_EXPORT replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
 /*!
  * \brief Optiene el directorio de un archivo
- * \param path Ruta del archivo
- * \param dir Directorio del archivo
+ * \param[in] path Ruta del archivo
+ * \param[out] dir Directorio del archivo
  * \return (1) error
  */
 int I3D_EXPORT getFileDir(const char *path, char *dir);
 
 /*!
  * \brief Optiene la unidad de disco de un archivo
- * \param path Ruta del archivo
- * \param drive Unidad de disco
+ * \param[in] path Ruta del archivo
+ * \param[out] drive Unidad de disco
  * \return (1) error
  */
 int I3D_EXPORT getFileDrive(const char *path, char *drive);
 
 /*!
  * \brief Optiene la extensión de un archivo
- * \param path Ruta del archivo
- * \param ext Extensión del archivo
+ * \param[in] path Ruta del archivo
+ * \param[out] ext Extensión del archivo
  * \return (1) error
  */
 int I3D_EXPORT getFileExtension(const char *path, char *ext);
 
 /*!
  * \brief Optiene el nombre de un archivo
- * \param path Ruta del archivo
- * \param name Nombre del archivo
+ * \param[in] path Ruta del archivo
+ * \param[out] name Nombre del archivo
  * \return (1) error
  */
 int I3D_EXPORT getFileName(const char *path, char *name);
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
- * \param path Ruta del archivo
- * \param driveDir Unidad de disco y directorio del archivo
+ * \param[in] path Ruta del archivo
+ * \param[out] driveDir Unidad de disco y directorio del archivo
  * \return (1) error
  */
 int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
 
 /*!
  * \brief Cambia el nombre de un archivo
- * \param path Ruta del archivo
- * \param newName Nuevo nombre
- * \param pathOut Ruta del archivo modificada
+ * \param[in] path Ruta del archivo
+ * \param[in] newName Nuevo nombre
+ * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
  */
 int I3D_EXPORT changeFileName(const char *path, char *newName, char *pathOut);
 
 /*!
  * \brief Cambia la extensión de un archivo
- * \param path Ruta del archivo
- * \param newExt Nueva extensión
- * \param pathOut Ruta del archivo modificada
+ * \param[in] path Ruta del archivo
+ * \param[in] newExt Nueva extensión
+ * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
  */
 int I3D_EXPORT changeFileExtension(const char *path, char *newExt, char *pathOut);
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
- * \param path Ruta del archivo
- * \param newNameExt Nuevo nombre incluyendo la extensión
- * \param pathOut Ruta del archivo modificada
+ * \param[in] path Ruta del archivo
+ * \param[in] newNameExt Nuevo nombre incluyendo la extensión
+ * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
  */
 int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut);
@@ -154,9 +162,9 @@ int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, ch
  * ...
  * }
  * \endcode
- * \param in Cadena de entrada
- * \param out vector con las cadenas resultantes
- * \param chs cadena de separación
+ * \param[in] in Cadena de entrada
+ * \param[out] out vector con las cadenas resultantes
+ * \param[in] chs cadena de separación
  * \return (1) error
  */
 int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, char *chs = ",");
@@ -165,10 +173,10 @@ int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, char 
 
 /*!
  * \brief Varianza del laplaciano
- * \param src
+ * \param[in] src
  * \return
  */
-double I3D_EXPORT laplacianVariance(const cv::Mat& src);
+double I3D_EXPORT laplacianVariance(const cv::Mat &src);
 
 template<typename T>
 inline double I3D_EXPORT module(const cv::Point_<T> &v)
@@ -178,8 +186,8 @@ inline double I3D_EXPORT module(const cv::Point_<T> &v)
 
 /*!
  * \brief Devuelve el ángulo entre dos vectores
- * \param v1 Vector 1
- * \param v2 Vector 2
+ * \param[in] v1 Vector 1
+ * \param[in] v2 Vector 2
  * \return Ángulo en radianes
  */
 template<typename T>
@@ -230,9 +238,9 @@ bool I3D_EXPORT isOutlier(const double temp, const double median, const double m
  * La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X.
  * y = m * x + b
- * \param pts Puntos
- * \param m Pendiente de la recta
- * \param b Ordenada
+ * \param[in] pts Puntos
+ * \param[out] m Pendiente de la recta
+ * \param[out] b Ordenada
  * \return coeficiente de correlacción
  */
 double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
@@ -242,9 +250,9 @@ double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double
  * La recta de regresión de X sobre Y se utiliza para estimar los valores de la X a partir de los de la Y.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable Y.
  * x = m*y + b
- * \param pts Puntos
- * \param m Pendiente de la recta
- * \param b Ordenada
+ * \param[in] pts Puntos
+ * \param[out] m Pendiente de la recta
+ * \param[out] b Ordenada
  * \return coeficiente de correlacción
  */
 double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
@@ -255,8 +263,8 @@ double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double
 
 /*!
  * \brief Convierte una matriz de OpenCV en un vector
- * \param m Matriz de entrada
- * \param av Vector de salida
+ * \param[in] m Matriz de entrada
+ * \param[out] av Vector de salida
  */
 template<typename T>
 void I3D_EXPORT cvMatToVector(const cv::Mat &m, std::vector<T> *av)
@@ -273,7 +281,7 @@ void I3D_EXPORT cvMatToVector(const cv::Mat &m, std::vector<T> *av)
 
 /*!
  * \brief Ordena un vector de menor a mayor
- * \param v Vector
+ * \param[in] v Vector
  */
 template<typename T>
 void I3D_EXPORT sortVector(std::vector<T> *v)
@@ -283,7 +291,7 @@ void I3D_EXPORT sortVector(std::vector<T> *v)
 
 /*!
  * \brief Ordena un vector de mayor a menor
- * \param v Vector
+ * \param[in] v Vector
  */
 template<typename T>
 void I3D_EXPORT sortVectorInv(std::vector<T> *v)
@@ -295,8 +303,8 @@ void I3D_EXPORT sortVectorInv(std::vector<T> *v)
  * \brief Determinar el número de elementos iguales a un número.
  * Sobrecarga del operador == para determinar el número de elementos de un
  * vector que son iguales al valor pasado como parámetro.
- * \param v Vector
- * \param t Valor
+ * \param[in] v Vector
+ * \param[in] t Valor
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
@@ -314,8 +322,8 @@ int operator==(const std::vector<T> &v, const T t)
  * \brief Determina el número de elementos distintos a un número.
  * Sobrecarga del operador != para determinar el número de elementos de un
  * vector que son distintos al valor pasado como parámetro.
- * \param v Vector
- * \param t Valor
+ * \param[in] v Vector
+ * \param[in] t Valor
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
@@ -331,8 +339,8 @@ int operator!=(const std::vector<T> &v, const T t)
 
 /*!
  * \brief operator >=
- * \param v
- * \param t
+ * \param[in] v
+ * \param[in] t
  * \return
  */
 template<typename T>
@@ -375,17 +383,17 @@ int operator< (const std::vector<T> &v, const T t)
 
 /*!
  * \brief Ordena los valores de una matriz de mayor a menor por filas
- * \param in
- * \param out
- * \param idx
+ * \param[in] in
+ * \param[out] out
+ * \param[out] idx
  */
 int I3D_EXPORT sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 /*!
  * \brief Ordena los valores de una matriz de mayor a menor por columnas
- * \param in
- * \param out
- * \param idx
+ * \param[in] in
+ * \param[out] out
+ * \param[out] idx
  */
 int I3D_EXPORT sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
@@ -393,7 +401,7 @@ int I3D_EXPORT sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  * \brief Ordena los indices de un vector de menor a mayor
  * Para un vector [10,20,15,5] devuelve [3,0,2,1]. El elemento mas 
  * pequeño esta en la posición 3, el segundo en la posición 0, ...
- * \param v Vector
+ * \param[in] v Vector
  * \return Vector con los indices ordenados
  */
 template <typename T>
@@ -413,7 +421,7 @@ std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
 
 /*!
  * \brief Obtiene la componente azul de un color
- * \param color Color representado como un entero
+ * \param[in] color Color representado como un entero
  * \return Componente azul
  */
 inline int I3D_EXPORT getBlue(int color)
@@ -423,7 +431,7 @@ inline int I3D_EXPORT getBlue(int color)
 
 /*!
  * \brief Obtiene la componente verde de un color
- * \param color Color representado como un entero
+ * \param[in] color Color representado como un entero
  * \return Componente verde
  */
 inline int I3D_EXPORT getGreen(int color)
@@ -433,7 +441,7 @@ inline int I3D_EXPORT getGreen(int color)
 
 /*!
  * \brief Obtiene la componente roja de un color
- * \param color Color representado como un entero
+ * \param[in] color Color representado como un entero
  * \return Componente roja
  */
 inline int I3D_EXPORT getRed(int color)
@@ -443,7 +451,7 @@ inline int I3D_EXPORT getRed(int color)
 
 /*!
  * \brief Obtiene el canal alfa de un color
- * \param color Color representado como un entero
+ * \param[in] color Color representado como un entero
  * \return Canal alfa
  */
 inline int I3D_EXPORT getAlpha(int color)
@@ -452,10 +460,24 @@ inline int I3D_EXPORT getAlpha(int color)
 }
 
 /*!
+ * \brief Convierte un color entero a RGB
+ * \param[in] color Color como entero
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+inline void I3D_EXPORT intToRGB(int color, int *red, int *green, int *blue)
+{
+  *red = getRed(color);
+  *green = getGreen(color);
+  *blue = getBlue(color);
+}
+
+/*!
  * \brief Convierte un color RGB a entero
- * \param red Componente roja
- * \param green Componente verde
- * \param blue Componente azul
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
  * \return Color como entero
  */
 inline int I3D_EXPORT rgbToInt(int red, int green, int blue)
@@ -465,10 +487,10 @@ inline int I3D_EXPORT rgbToInt(int red, int green, int blue)
 
 /*!
  * \brief Convierte un color RGB+alpha a entero
- * \param red Componente roja
- * \param green Componente verde
- * \param blue Componente azul
- * \param alpha Canal alfa
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[in] alpha Canal alfa
  * \return Color como entero
  */
 inline int I3D_EXPORT rgbaToInt(int red, int green, int blue, int alpha)
@@ -493,115 +515,101 @@ int isNegative(T t)
 
 /*!
  * \brief Conversión de grados sexagesimales a grados sexagesimales en notación decimal
- * \param degrees Grados
- * \param minutes Minutos
- * \param seconds Segundos
+ * \param[in] degrees Grados
+ * \param[in] minutes Minutos
+ * \param[in] seconds Segundos
  * \return Grados sexagesimales en notación decimal
  */
 double I3D_EXPORT degreesToDecimalDegrees(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a radianes
- * \param degrees Grados
- * \param minutes Minutos
- * \param seconds Segundos
+ * \param[in] degrees Grados
+ * \param[in] minutes Minutos
+ * \param[in] seconds Segundos
  * \return radianes
  */
 double I3D_EXPORT degreesToRadians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a grados centesimales
- * \param degrees Grados
- * \param minutes Minutos
- * \param seconds Segundos
+ * \param[in] degrees Grados
+ * \param[in] minutes Minutos
+ * \param[in] seconds Segundos
  * \return Grados centesimales
  */
 double I3D_EXPORT degreesToGradians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
- * \param decimalDegrees Grados sexagesimales en notación decima
- * \param degrees Puntero a entero que recibe como valor los grados
- * \param minutes Puntero a entero que recibe como valor los minutos
- * \param seconds Puntero a entero que recibe como valor los segundos
+ * \param[in] decimalDegrees Grados sexagesimales en notación decima
+ * \param[out] degrees Puntero a entero que recibe como valor los grados
+ * \param[out] minutes Puntero a entero que recibe como valor los minutos
+ * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
 void I3D_EXPORT decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a radianes
- * \param decimalDegrees Grados sexagesimales en notación decima
+ * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Radianes
  */
 double I3D_EXPORT decimalDegreesToRadians(double decimalDegrees);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados centesimales
- * \param decimalDegrees Grados sexagesimales en notación decima
+ * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Grados centesimales
  */
 double I3D_EXPORT decimalDegreesToGradians(double decimalDegrees);
 
 /*!
  * \brief Conversión de radianes a grados, minutos y segundos
- * \param radians Radianes
- * \param degrees Puntero a entero que recibe como valor los grados
- * \param minutes Puntero a entero que recibe como valor los minutos
- * \param seconds Puntero a entero que recibe como valor los segundos
+ * \param[in] radians Radianes
+ * \param[out] degrees Puntero a entero que recibe como valor los grados
+ * \param[out] minutes Puntero a entero que recibe como valor los minutos
+ * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
 void I3D_EXPORT radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de radianes a grados sexagesimales en notación decimal
- * \param radians Radianes
+ * \param[in] radians Radianes
  * \return Grados sexagesimales en notación decimal
  */
 double I3D_EXPORT radiansToDecimalDegrees(double radians);
 
 /*!
  * \brief radiansToGradians
- * \param radians Radianes
+ * \param[in] radians Radianes
  * \return Grados centesimales
  */
 double I3D_EXPORT radiansToGradians(double radians);
 
 /*!
  * \brief Conversión de grados centesimales a grados, minutos y segundos
- * \param gradians Grados centesimales
- * \param degrees Puntero a entero que recibe como valor los grados
- * \param minutes Puntero a entero que recibe como valor los minutos
- * \param seconds Puntero a entero que recibe como valor los segundos
+ * \param[in] gradians Grados centesimales
+ * \param[out] degrees Puntero a entero que recibe como valor los grados
+ * \param[out] minutes Puntero a entero que recibe como valor los minutos
+ * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
 void I3D_EXPORT gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal
- * \param gradians Grados centesimales
+ * \param[in] gradians Grados centesimales
  * \return Grados sexagesimales en notación decimal
  */
 double I3D_EXPORT gradiansToDecimalDegrees(double gradians);
 
 /*!
  * \brief Conversión de grados centesimales a radianes
- * \param gradians Grados centesimales
+ * \param[in] gradians Grados centesimales
  * \return Radianes
  */
 double I3D_EXPORT gradiansToRadians(double gradians);
 
 /*! \} */ // end of formatConversion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

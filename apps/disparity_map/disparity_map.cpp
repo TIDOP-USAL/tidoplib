@@ -1,19 +1,32 @@
+#include <iostream>
+#include <string>
 #include "opencv2/calib3d.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/core/utility.hpp"
 #include "opencv2/ximgproc/disparity_filter.hpp"
-#include <iostream>
-#include <string>
 
 
+#include "opencv2/features2d.hpp"
+#include "opencv2/xfeatures2d.hpp"
+
+#include <pcl/common/common_headers.h>
+#include <pcl/io/pcd_io.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <boost/thread/thread.hpp>
+#include <pcl/visualization/cloud_viewer.h>
+
+#include "matching.h"
 #include "elas.h"
 #include "image.h"
+#include "transform.h"
 
+using namespace I3D;
 using namespace cv;
 using namespace cv::ximgproc;
 using namespace std;
+using namespace cv::xfeatures2d;
 
 Rect computeROI(Size2i src_sz, Ptr<StereoMatcher> matcher_instance);
 
@@ -156,7 +169,11 @@ int main(int argc, char** argv)
       initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(), optCameraMat, imageSize, CV_16SC2, map1, map2);
       remap(left, left, map1, map2, INTER_LINEAR);
       remap(right, right, map1, map2, INTER_LINEAR);
-
+      
+      // Ver undistort (http://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#void%20undistort(InputArray%20src,%20OutputArray%20dst,%20InputArray%20cameraMatrix,%20InputArray%20distCoeffs,%20InputArray%20newCameraMatrix))
+      // The function is simply a combination of initUndistortRectifyMap() (with unity R ) and remap() (with bilinear interpolation). 
+      
+      // Por otra parte ver el resto de métodos de interpolación 
         if(!no_downscale)
         {
             // downscale the views to speed-up the matching stage, as we will need to compute both left
@@ -401,12 +418,141 @@ int main(int argc, char** argv)
         //! [visualization]
     }
 
-    cv::Mat R, T; //... determinar
+    // Si no disponemos de la posición y orientaciones de las camaras podemos intentar utilizar stereoRectifyUncalibrated
+    //stereoRectifyUncalibrated();
+    cv::Ptr<cv::FeatureDetector> fd = SURF::create();
+    cv::Ptr<cv::DescriptorExtractor> de = SURF::create();
+    Features2D featuresL(fd, de);
+    Features2D featuresR(fd, de);
+    Matching match(cv::DescriptorMatcher::create("FlannBased"));
+
+    WindowI wCrop(cv::Point(0, 0), cv::Point(left.cols,left.rows));
+    wCrop = I3D::expandWindow(wCrop, -100);
+    cv::Mat crop_left, crop_right;
+    left.colRange(wCrop.pt1.x, wCrop.pt2.x).rowRange(wCrop.pt1.y, wCrop.pt2.y).copyTo(crop_left);
+    right.colRange(wCrop.pt1.x, wCrop.pt2.x).rowRange(wCrop.pt1.y, wCrop.pt2.y).copyTo(crop_right);
+    // Se detectan los key points y los descriptores
+    int nft = featuresL.detectKeyPoints(crop_left);
+    featuresL.calcDescriptor(crop_left);
+    nft = featuresR.detectKeyPoints(crop_right);
+    featuresR.calcDescriptor(crop_right);
+  
+    std::vector<DMatch> matches;
+    match.match(featuresL, featuresR, &matches);
+   
+    std::vector<DMatch> good_matches;
+    match.getGoodMatches(&good_matches,0.08);
+
+    //-- Draw only "good" matches
+    Mat img_matches;
+    drawMatches( crop_left, featuresL.getKeyPoints(), crop_right, featuresR.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
+
+    //-- Show detected matches
+    imshow( "Good Matches", img_matches );
+
+    std::vector<Point2f> ptsL;
+    std::vector<Point2f> ptsR;
+    for (size_t igm = 0; igm < good_matches.size(); igm++) {
+      ptsL.push_back(featuresL.getKeyPoint(good_matches[igm].queryIdx).pt);
+      ptsR.push_back(featuresR.getKeyPoint(good_matches[igm].trainIdx).pt);
+    }
+
+    I3D::Translate<Point2f> trfTranslate(wCrop.pt1.x,wCrop.pt1.y);
+    std::vector<Point2f> ptsLOut, ptsROut;
+    trfTranslate.transform(ptsL, &ptsLOut);
+    trfTranslate.transform(ptsR, &ptsROut);
+
+
+    //cv::Mat F = findFundamentalMat(ptsL, ptsR);
+    //cv::Mat H1, H2;
+    //stereoRectifyUncalibrated(ptsL, ptsR, F, imageSize, H1, H2);
+
+    //cv::Mat E = cameraMatrix.t() * F * cameraMatrix;
+    //cv::SVD decomp = cv::SVD(E);
+
+    //cv::Mat U = decomp.u;
+
+    //cv::Mat S(3, 3, CV_64F, cv::Scalar(0));
+    //S.at<double>(0, 0) = decomp.w.at<double>(0, 0);
+    //S.at<double>(1, 1) = decomp.w.at<double>(1, 0);
+    //S.at<double>(2, 2) = decomp.w.at<double>(2, 0);
+
+    ////V
+    //cv::Mat V = decomp.vt; //Needs to be decomp.vt.t(); (transpose once more)
+
+    ////W
+    //cv::Mat W(3, 3, CV_64F, cv::Scalar(0));
+    //W.at<double>(0, 1) = -1;
+    //W.at<double>(1, 0) = 1;
+    //W.at<double>(2, 2) = 1;
+
+    //cv::Mat R = U.t() * W * V.t();
+    //cv::Mat T = decomp.u.col(2);
+
+    cv::Mat R, T;
+    // Lo mismo por OpenCV??
+    cv::Mat essentialMat = findEssentialMat(ptsLOut, ptsROut, cameraMatrix);
+    cv::recoverPose(essentialMat, ptsLOut, ptsROut, cameraMatrix, R, T);
+
+
+    // Si disponemos de las posiciones (matriz T) y orientaciones (Matriz R) de las camaras podemos calular la matriz Q con stereoRectify
     cv::Mat R1, R2, P1, P2, Q;
     cv::stereoRectify(cameraMatrix, distCoeffs, cameraMatrix, distCoeffs, imageSize, R, T, R1, R2, P1, P2, Q);
 
     cv::Mat_<cv::Vec3f> XYZ(filtered_disp.rows,filtered_disp.cols);
-    cv::reprojectImageTo3D(filtered_disp,XYZ,Q);
+    //cv::reprojectImageTo3D(filtered_disp,XYZ,Q);  //... Mejor no usar para poder filtrar la nube de puntos.
+    cv::Mat_<double> vec_tmp(4,1);
+    for(int y=0; y < filtered_disp.rows; ++y) {
+        for(int x=0; x < filtered_disp.cols; ++x) {
+            vec_tmp(0)=x; 
+            vec_tmp(1)=y; 
+            vec_tmp(2)=filtered_disp.at<__int16>(y,x); 
+            if(vec_tmp(2)==0) continue;
+            vec_tmp(3)=1;
+            vec_tmp = Q*vec_tmp;
+            vec_tmp /= vec_tmp(3);
+            if(abs(vec_tmp(0))>10 || abs(vec_tmp(1))>10 || abs(vec_tmp(2))>10) continue;
+            cv::Vec3f &point = XYZ.at<cv::Vec3f>(y,x);
+            point[0] = vec_tmp(0);
+            point[1] = vec_tmp(1);
+            point[2] = vec_tmp(2);
+        }
+    }
+
+    // Crea nube de puntos
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+    uchar pr, pg, pb;
+    for (int i = 0; i < left_for_matcher.rows; i++) {
+      uchar* rgb_ptr = left_for_matcher.ptr<uchar>(i);
+      for (int j = 0; j < right_for_matcher.cols; j++) {
+
+        pcl::PointXYZRGB point;
+        point.x = XYZ.at<cv::Vec3f>(i,j)[0];
+        point.y = XYZ.at<cv::Vec3f>(i,j)[1];
+        point.z = XYZ.at<cv::Vec3f>(i,j)[2];
+        if (point.z < 1.0 || point.z > 0.5) {
+          point.rgb = *left_for_matcher.ptr<float>(i,j);
+          point_cloud_ptr->points.push_back(point);
+        }
+      }
+    }
+    point_cloud_ptr->width = (int)point_cloud_ptr->points.size();
+    point_cloud_ptr->height = 1;
+
+
+    std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    viewer->setBackgroundColor(0, 0, 0);
+    pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(point_cloud_ptr);
+    viewer->addPointCloud<pcl::PointXYZRGB> (point_cloud_ptr, rgb, "reconstruction");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "reconstruction");
+    viewer->addCoordinateSystem( 0.1 );
+    viewer->initCameraParameters();
+    while (!viewer->wasStopped())
+    {
+      viewer->spinOnce(10); //100
+      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+    }
 
     return 0;
 }

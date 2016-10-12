@@ -2,7 +2,7 @@
 
 #include "VideoStream.h"
 #include "utils.h"
-#include "Logger.h"
+#include "core\messages.h"
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -159,7 +159,7 @@ bool VideoStream::read(cv::Mat &vf)
       char c;
       while (duration > posframe && bret == false) {
         posframe++;
-        LogMsg::errorMsg("Error al cargar el frame %.lf", posframe);
+        logPrintError("Error al cargar el frame %.lf", posframe);
         set(CV_CAP_PROP_POS_FRAMES, posframe);
         bret = cv::VideoCapture::read(vf);
         c = (char)cv::waitKey(1);
@@ -219,7 +219,7 @@ void VideoStream::setSkipMillisecond(int ms)
 
 void VideoStream::run()
 {
-  LogMsg::debugMsg("Inicio captura video");
+  logPrintDebug("Inicio captura video");
   vs = video_status::RUNNING;
   int delay = 100 / cvRound(fps());
   char c;
@@ -246,7 +246,7 @@ void VideoStream::run()
     }
   }
   vs = video_status::FINALIZED;
-  LogMsg::debugMsg("Fin captura de video");
+  logPrintDebug("Fin captura de video");
 }
 
 void VideoStream::skipDown()

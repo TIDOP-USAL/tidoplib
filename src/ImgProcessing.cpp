@@ -4,7 +4,7 @@
 #include "opencv2/highgui/highgui.hpp"
 
 #include "ImgProcessing.h"
-#include "Logger.h"
+#include "core/messages.h"
 
 namespace I3D
 {
@@ -42,7 +42,7 @@ int BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -64,7 +64,7 @@ int Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -85,7 +85,7 @@ int BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -108,7 +108,7 @@ int Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -131,7 +131,7 @@ int GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -153,7 +153,7 @@ int Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -176,7 +176,7 @@ int MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -199,7 +199,7 @@ int Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     convertScaleAbs(grad_x, abs_grad_x);
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -233,7 +233,7 @@ int Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     }
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -253,7 +253,7 @@ int Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -280,7 +280,7 @@ int Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     }
     cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -304,7 +304,7 @@ int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
       cv::resize(matIn, *matOut, szImg);
     }
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -324,7 +324,7 @@ int EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     cv::equalizeHist(matIn, *matOut);
   } catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -339,7 +339,7 @@ int FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     f(matIn, matOut);
   }
   catch (cv::Exception &e){
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;
@@ -380,7 +380,7 @@ int morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
       break;
     }
   } catch (cv::Exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_error = 1;
   }
   return i_error;

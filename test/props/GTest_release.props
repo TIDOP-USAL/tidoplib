@@ -5,11 +5,11 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>D:\Desarrollo\Libs\googletest\install\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\Libs\googletest\install\lib;C:\Desarrollo\Libs\googletest\install\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>gtest.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Desarrollo\Libs\googletest\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Desarrollo\Libs\googletest\install\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

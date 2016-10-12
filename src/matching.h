@@ -46,8 +46,8 @@ public:
   /*!
    * \brief Constructora Features2D
    * Se le pasan como parametro un detector de caracteristicas y un extractor de descriptores
-   * \param _fd Detector de caracteristicas
-   * \param _de Extractor de descriptores
+   * \param[in] _fd Detector de caracteristicas
+   * \param[in] _de Extractor de descriptores
    *
    * Detectores soportados:
    * - cv::AgastFeatureDetector::create()
@@ -131,7 +131,11 @@ public:
    */
   const std::vector<cv::KeyPoint> &getKeyPoints() { return mKeyPoints; }
 
-  const cv::Point2f &getKeyPoint(int id) const { return mKeyPoints[id].pt; }
+  /*!
+   * \brief Devuelve un KeyPoint
+   * \return KeyPoint
+   */
+  const cv::KeyPoint &getKeyPoint(int id) const { return mKeyPoints[id]; }
 
   /*!
    * \brief Devuelve los descriptores

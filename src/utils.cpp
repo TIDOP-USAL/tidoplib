@@ -1,8 +1,3 @@
-#if defined( __USE_QT__ ) || defined( __QT_PRJ__ )
-#include <QString>
-#include <QStringList>
-#endif
-
 #include <windows.h>
 
 #include "opencv2/core/core.hpp"
@@ -73,22 +68,49 @@ bool isDirectory(const char *path)
 
 int createDir(const char *path)
 {
-  int iret = 0;
-  if (isDirectory(path)) iret = 1;
-  else {
-    std::string mkdir = "mkdir ";
-    mkdir += "\"";
-    mkdir += path;
-    mkdir += "\"";
+  if (isDirectory(path)) return 1;
+  std::vector<std::string> splitPath;
+  split(path,splitPath,"\\");
+  if (splitPath.size() == 1) 
+    split(path,splitPath,"/");
+  
+  std::string _path = "";
+  for (int i = 0; i < splitPath.size(); i++) {
+    _path += splitPath[i];
+    _path += "\\";
+    if (!isDirectory(_path.c_str())) {
+      std::string mkdir = "mkdir \"";
+      mkdir += _path;
+      mkdir += "\"";
+      try {
+        system(mkdir.c_str());
+      } catch (std::exception &e) {
+        printf(e.what());
+        return -1;
+      }
+    }
+  }
+  return 0;
+}
+
+int deleteDir(const char *path, bool confirm) 
+{
+  if (isDirectory(path)) {
+    std::string delDir = "rmdir /s ";
+    if (!confirm) delDir += "/q ";
+    std::string str = path;
+    replaceString(&str, "/", "\\");
+    delDir += str;
     try {
-      system(mkdir.c_str());
+      system(delDir.c_str());
     } catch (std::exception &e) {
       printf(e.what());
       return -1;
     }
-  }
-  return iret;
+    return 0;
+  } else return 1;
 }
+
 /* ---------------------------------------------------------------------------------- */
 
 /* ---------------------------------------------------------------------------------- */
@@ -100,6 +122,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs)
   int r_err = 0;
   char *dup = strdup(cad.c_str());
   vOut.resize(0);
+
   try {
     char *token = strtok(dup, chs);
     while (token != NULL){
@@ -115,6 +138,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs)
     printf(e.what());
     r_err = 1;
   }
+
   free(dup);
   return r_err;
 }
@@ -124,6 +148,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs)
   int r_err = 0;
   char *dup = strdup(cad.c_str());
   vOut.resize(0);
+
   try {
     char *token = strtok(dup, chs);
     while (token != NULL){
@@ -140,6 +165,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs)
     printf(e.what());
     r_err = 1;
   }
+
   free(dup);
   return r_err;
 }

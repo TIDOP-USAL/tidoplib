@@ -5,7 +5,7 @@
 #include "opencv2/ximgproc.hpp"
 
 #include "utils.h"
-#include "Logger.h"
+#include "core\messages.h"
 
 using namespace std;
 
@@ -37,7 +37,7 @@ int ldHouh::run(cv::Mat &image)
   try{
     HoughLines(image, auxlines, 1, CV_PI / 180, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
   } catch (std::exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_err = 1;
   }
   for (size_t i = 0; i < auxlines.size(); i++)
@@ -83,7 +83,7 @@ int ldHouhP::run(cv::Mat &image)
   try {
     HoughLinesP(image, linesaux, 1, CV_PI / 180, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_ret = 1;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
@@ -142,7 +142,7 @@ int ldHouhFast::run(cv::Mat &image)
       i_ret = 1;
     }
   } catch (exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_ret = 1;
   }
 
@@ -274,7 +274,7 @@ int ldLSD::run(cv::Mat &image)
   try {
     lineSegmentDetector->detect(image, linesaux/*, mWidth, mPrec, nfa*/);
   } catch (exception &e) {
-    logErrorMsg(e.what());
+    logPrintError(e.what());
     i_ret = 1;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {

@@ -1,7 +1,7 @@
 var class_i3_d_1_1_helmert2_d =
 [
     [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#a8eca7720410824fb11469d8d893fb2d6", null ],
-    [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#acc703bb59be7931c8c1ce6d6ebeb89fd", null ],
+    [ "Helmert2D", "class_i3_d_1_1_helmert2_d.html#a810553f036b0e7ecf77e31246dc8edea", null ],
     [ "compute", "group__trf2_d_group.html#ga300279dee0a002835c25322bd2ea9398", null ],
     [ "getRotation", "class_i3_d_1_1_helmert2_d.html#a7f96184b77dfd19734906e8ea79ec74f", null ],
     [ "getScale", "class_i3_d_1_1_helmert2_d.html#ad748a42c6267e30b8dc009714cc07559", null ],

@@ -53,9 +53,9 @@ public:
 
   /*!
    * \brief Constructora de la clase VideoWindow
-   * \param wname Nombre de la ventana de video
-   * \param flags
-   * \param bPos Muestra slider con posición del video
+   * \param[in] wname Nombre de la ventana de video
+   * \param[in] flags
+   * \param[in] bPos Muestra slider con posición del video
    */
   VideoWindow(const char* wname, int flags = CV_WINDOW_AUTOSIZE, bool bPos = true)
     : wname(wname), flags(flags), bPosTrackBar(bPos), nFrames(0), video(0) { }
@@ -67,11 +67,11 @@ public:
 
   /*!
    * \brief Añade un trackbar a la ventana de video
-   * \param trackbarname Nombre del trackbar
-   * \param value Puntero opcional a una variable entera cuyo valor representa la posición del slider.
-   * \param count Posición máxima del slider
-   * \param onChange Manejador del evento onChange.
-   * \param userdata Puntero para pasar parametros al manejador del evento onChange. 
+   * \param[in] trackbarname Nombre del trackbar
+   * \param[in] value Puntero opcional a una variable entera cuyo valor representa la posición del slider.
+   * \param[in] count Posición máxima del slider
+   * \param[in] onChange Manejador del evento onChange.
+   * \param[in] userdata Puntero para pasar parametros al manejador del evento onChange. 
    */
   void addTrackbar(const char *trackbarname, int *value, int count, cv::TrackbarCallback onChange = 0, void* userdata = 0);
 
@@ -84,7 +84,7 @@ public:
 
   /*!
    * \brief Cambia la posición en el trackbar
-   * \param pos Nueva posición
+   * \param[in] pos Nueva posición
    */
   void SetTrackbarPos(double pos);
 
@@ -230,7 +230,7 @@ public:
 
   /*!
    * \brief Constructora I3DVideoStream
-   * \param file Video
+   * \param[in] file Video
    */
   VideoStream(const char *file);
 
@@ -277,52 +277,52 @@ public:
 
   /*!
    * \brief NextFrame
-   * \param vf Frame de video
+   * \param[in] vf Frame de video
    * \return Verdadero si encuentra frame
    */
   bool nextFrame(cv::Mat &vf);
 
   /*!
    * \brief Siguiente frame del video
-   * \param vf Frame de video
-   * \param skip Tipo de salto de video aplicado
-   * \param nskip Número de salto
+   * \param[in] vf Frame de video
+   * \param[in] skip Tipo de salto de video aplicado
+   * \param[in] nskip Número de salto
    * \return Verdadero si encuentra frame
    */
   bool nextFrame(cv::Mat &vf, skip_video skip, int nskip);
 
   /*!
    * \brief Abre el video
-   * \param name Nombre del video
+   * \param[in] name Nombre del video
    * \return verdadero si el video se ha abierto
    */
   bool open(const char *name);
 
   /*!
    * \brief Lee un frame de video
-   * \param vf Frame de video
+   * \param[in] vf Frame de video
    * \return Falso si no encuentra ningún frame
    */
   bool read(cv::Mat &vf);
 
   /*!
    * \brief Establece la región de recorte del video
-   * \param rf Región de recorte del frame
-   * \param keepRatio Mantiene las dimensiones
+   * \param[in] rf Región de recorte del frame
+   * \param[in] keepRatio Mantiene las dimensiones
    */
   void setCropRect(cv::Rect rf, bool keepRatio = true);
 
   /*!
    * \brief Permite redimensionar la salida del video
-   * \param sz Tamaño de salida de video
-   * \param rf Redimensión, recorte o tamaño original del video
-   * \param keepRatio Mantiene las dimensiones
+   * \param[in] sz Tamaño de salida de video
+   * \param[in] rf Redimensión, recorte o tamaño original del video
+   * \param[in] keepRatio Mantiene las dimensiones
    */
   void setFrameSize(cv::Size sz, res_frame rf = res_frame::RESIZE_FRAME, bool keepRatio = true);
 
   /*!
    * \brief Establece la posición en el video según el número de frame
-   * \param nframe
+   * \param[in] nframe
    * \return
    */
   bool setPosFrame(double nframe);
@@ -335,7 +335,7 @@ public:
 
   /*!
    * \brief Activa el salto de frames borrosos
-   * \param Verdadero para activar el salto de frames borrosos
+   * \param[in] Verdadero para activar el salto de frames borrosos
    */
   void setSkipBlurryFrames(bool sbf) { bSkipBlurryFrames = sbf; }
 
@@ -347,7 +347,7 @@ public:
 
   /*!
    * \brief Establece el número de milisegundos que salta el video.
-   * \param ms Número de milisegundos que salta
+   * \param[in] ms Número de milisegundos que salta
    */
   void setSkipMillisecond(int ms);
 
@@ -404,28 +404,28 @@ public:
 
   /*!
    * \brief Establece un escuchador para el evento OnRead
-   * \param ev_r Función que escucha el evento
-   * \param userdata Puntero a datos de usuario
+   * \param[in] ev_r Función que escucha el evento
+   * \param[in] userdata Puntero a datos de usuario
    */
   void setReadListener(ReadCallback ev_r = 0, void *userdata = 0);
 
   /*!
    * \brief Establece un escuchador para el evento OnPositionChange
-   * \param ev_pc Función que escucha el evento
-   * \param userdata Puntero a datos de usuario
+   * \param[in] ev_pc Función que escucha el evento
+   * \param[in] userdata Puntero a datos de usuario
    */
   void setPositionChangeListener( PositionChangeCallback ev_pc = 0, void *userdata = 0 );
 
   /*!
    * \brief Establece un escuchador para el evento OnShow
-   * \param ev_s Función que escucha el evento
-   * \param userdata Puntero a datos de usuario
+   * \param[in] ev_s Función que escucha el evento
+   * \param[in] userdata Puntero a datos de usuario
    */
   void setShowListener(ShowCallback ev_s = 0, void *userdata = 0);
 
   /*!
    * \brief Lanza el evento Show
-   * \param vf Frame de video
+   * \param[in] vf Frame de video
    * \return Si hay algún listener para recogerlo devuelve verdadero
    */
   bool show(cv::Mat &vf);
@@ -434,35 +434,35 @@ public:
 private:
   /*!
    * \brief Recorta el frame de video
-   * \param vf Frame de video
+   * \param[in] vf Frame de video
    */
   void cropFrame(cv::Mat &vf);
 
   /*!
    * \brief Detecta imagenes borrosas con la varianza del laplaciano
-   * \param src Imagen en la que se comprueba si la imagen es borrosa
+   * \param[in] src Imagen en la que se comprueba si la imagen es borrosa
    * \return verdadero si la imagen esta borrosa.
    */
   bool isImageBlurry(const cv::Mat& src);
 
   /*!
    * \brief Redimensiona el frame de video
-   * \param vf Frame de video
+   * \param[in] vf Frame de video
    */
   void resizeFrame(cv::Mat &vf);
 
   /*!
   * \brief Salto de n frames
-  * \param vf Frame de video
-  * \param frames Número de frames que salta
+  * \param[in] vf Frame de video
+  * \param[in] frames Número de frames que salta
   * \return Verdadero mientras encuentre otro frame
   */
   bool skipFrames(cv::Mat &vf, int frames);
 
   /*!
   * \brief Salto de n milisegundos
-  * \param vf Frame de video
-  * \param ms Número de milisegundos que salta
+  * \param[in] vf Frame de video
+  * \param[in] ms Número de milisegundos que salta
   * \return Verdadero mientras encuentre otro frame
   */
   bool skipMillisecond(cv::Mat &vf, int ms);

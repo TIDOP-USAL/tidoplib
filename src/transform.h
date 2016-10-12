@@ -7,6 +7,7 @@
 #include <memory>
 #include <exception>
 #include <array>
+#include <thread>
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
@@ -50,7 +51,7 @@ enum class transform_type {
  * \param[in] dy
  * \deprecated{ Reemplazada por I3D::Translate::transform }
  */
-I3D_DEPRECATED("Reemplazada por I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
+I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
 void I3D_EXPORT translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 void I3D_EXPORT rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
@@ -471,7 +472,7 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
 
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, DECOMP_SVD);
+        cv::solve(A, B, C, cv::DECOMP_SVD);
         translate.x = C.at<sub_type>(2);
         translate.y = C.at<sub_type>(3);
       } catch (std::exception &e) {
@@ -575,7 +576,7 @@ public:
 
   /*!
    * \brief Constructora
-   * \param[in] angle Ángulo
+   * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle) 
     : Transform2D(1, transform_type::ROTATION), angle(angle)
@@ -683,7 +684,7 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
         
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, DECOMP_SVD);
+        cv::solve(A, B, C, cv::DECOMP_SVD);
         r1 = C.at<sub_type>(0);
         r2 = C.at<sub_type>(1);
         angle = acos(r1);
@@ -821,10 +822,10 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Rotación
    */
-  Helmert2D(T x0, T y0, double scale, double rotation) 
+  Helmert2D(sub_type x0, sub_type y0, double scale, double rotation) 
     : Transform2D(2, transform_type::HELMERT_2D), x0(x0), y0(y0), scale(scale), rotation(rotation)
   {
-    uptate();
+    update();
   }
 
   //~Helmert2D();
@@ -944,7 +945,7 @@ bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);
@@ -1106,6 +1107,24 @@ private:
    */
   double d;
 
+  double ai;
+
+  double bi;
+
+  double ci;
+
+  double di;
+
+  /*!
+   * \brief Traslación en x transformación inversa
+   */
+  sub_type x0i;
+
+  /*!
+   * \brief Traslación en y transformación inversa
+   */
+  sub_type y0i;
+
 public:
 
   /*!
@@ -1125,10 +1144,10 @@ public:
    * \param[in] scaleY Escala en el eje Y
    * \param[in] rotation Rotación
    */
-  Afin(T x0, T y0, double scaleX, double scaleY, double rotation)
+  Afin(sub_type x0, sub_type y0, double scaleX, double scaleY, double rotation)
     : Transform2D(3, transform_type::AFIN), x0(x0), y0(y0), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
   {
-    uptate();
+    update();
   }
 
   //~Afin();
@@ -1173,7 +1192,7 @@ public:
    * \brief Devuelve el giro
    * \return Ángulo de rotación en radianes
    */
-  double getRotation() const { return rotation; };
+  double getRotation() const { return mRotation; };
 
   /*!
    * \brief Devuelve la escala correspondiente al eje X
@@ -1260,7 +1279,7 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);
@@ -1286,10 +1305,47 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 template<typename T> inline
 void Afin<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
 {
+//#ifdef _DEBUG
+  //double startTick, time;
+  //startTick = (double)cv::getTickCount();
+//#endif
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
     transform(in[i], &(*out)[i], bDirect);
   }
+
+  //int cores = std::thread::hardware_concurrency();
+  //std::vector<std::thread> workers;
+
+  //size_t n = in.size();
+  //size_t rows = n / cores;
+  //size_t extra = n % cores;
+  //size_t start = 0; // each thread does [start..end)
+  //size_t end = rows;
+
+  //auto code = [&/*n, &in, out, bDirect*/](size_t start, size_t end)
+  //{
+  //  for (size_t i = start; i < end; i++) {
+  //    transform(in[i], &(*out)[i], bDirect);
+  //  }
+  //};
+
+
+  //for (size_t t = 1; t <= cores; t++) {
+  //  if (t == cores) // last thread does extra rows:
+  //    end += extra;
+  //  workers.push_back(std::thread(code, start, end));
+  //  start = end;
+  //  end = start + rows;
+  //}
+
+  //for (std::thread& t : workers)
+  //  t.join();
+//#ifdef _DEBUG
+  //time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
+  //printf("\nTime [s]: %.3f\n", time);
+//#endif
+
 }
 
 template<typename T> inline
@@ -1355,10 +1411,10 @@ void Afin<T>::setScaleY(double scaleY)
 template<typename T> inline
 void Afin<T>::update()
 {
-  a =  scaleX * cos(rotation);
-  b =  scaleX * sin(rotation);
-  c = -scaleY * sin(rotation);
-  d =  scaleY * cos(rotation);
+  a =  mScaleX * cos(mRotation);
+  b =  mScaleX * sin(mRotation);
+  c = -mScaleY * sin(mRotation);
+  d =  mScaleY * cos(mRotation);
   
   // Transformación inversa
   double det = a * d - c * b;
@@ -1493,7 +1549,7 @@ public:
   Projective(double a, double b, double c, double d, double e, double f, double g, double h)
     : Transform2D(4, transform_type::PROJECTIVE), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
   {
-    uptate();
+    update();
   }
 
   //~Projective();
@@ -1597,7 +1653,7 @@ bool Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
         b = C.at<double>(1);

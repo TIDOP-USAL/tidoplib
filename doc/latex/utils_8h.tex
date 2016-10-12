@@ -1,5 +1,5 @@
-\hypertarget{utils_8h}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/utils.h}
-\label{utils_8h}\index{D\+:/\+Desarrollo/tidop/src/utils.\+h@{D\+:/\+Desarrollo/tidop/src/utils.\+h}}
+\hypertarget{utils_8h}{}\section{Referencia del Archivo C\+:/\+Desarrollo/tidop/src/utils.h}
+\label{utils_8h}\index{C\+:/\+Desarrollo/tidop/src/utils.\+h@{C\+:/\+Desarrollo/tidop/src/utils.\+h}}
 {\ttfamily \#include $<$limits$>$}\\*
 {\ttfamily \#include $<$numeric$>$}\\*
 {\ttfamily \#include $<$functional$>$}\\*
@@ -20,6 +20,8 @@ char $\ast$ \hyperlink{namespace_i3_d_ac1abd2292dc3680c8a4ebacef95e6ade}{I3\+D\+
 bool \hyperlink{namespace_i3_d_a9e1576d9f6cf5fafde1df4088c32839a}{I3\+D\+::is\+Directory} (const char $\ast$path)
 \begin{DoxyCompactList}\small\item\em Comprueba si existe un directorio. \end{DoxyCompactList}\item 
 int \hyperlink{namespace_i3_d_a20e77295ba7f67ba6236394e785f5b0c}{I3\+D\+::create\+Dir} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em Crea un directorio. \end{DoxyCompactList}\item 
+int \hyperlink{namespace_i3_d_a15b240f744e5327ebdaaf225807aeae4}{I3\+D\+::delete\+Dir} (const char $\ast$path, bool confirm=false)
 \begin{DoxyCompactList}\small\item\em Crea un directorio. \end{DoxyCompactList}\item 
 int \hyperlink{namespace_i3_d_acc1ab14ac3d1c9d3efbd87138d8d5392}{I3\+D\+::split\+To\+Numbers} (const std\+::string \&cad, std\+::vector$<$ int $>$ \&v\+Out, char $\ast$chs=\char`\"{},\char`\"{})
 \begin{DoxyCompactList}\small\item\em Separa una cadena en un array de enteros. \end{DoxyCompactList}\item 
@@ -99,6 +101,8 @@ int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+
 \begin{DoxyCompactList}\small\item\em Obtiene la componente roja de un color. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_ad45a962f16dbbb6bd0682a8271a12a70}{I3\+D\+::get\+Alpha} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene el canal alfa de un color. \end{DoxyCompactList}\item 
+void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}{I3\+D\+::int\+To\+R\+GB} (int color, int $\ast$red, int $\ast$green, int $\ast$blue)
+\begin{DoxyCompactList}\small\item\em Convierte un color entero a R\+GB. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a19aa83d403ad807bdd48306de4af8481}{I3\+D\+::rgb\+To\+Int} (int red, int green, int blue)
 \begin{DoxyCompactList}\small\item\em Convierte un color R\+GB a entero. \end{DoxyCompactList}\item 
 int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a5c525ecbc21267c7d13a427365c75458}{I3\+D\+::rgba\+To\+Int} (int red, int green, int blue, int alpha)

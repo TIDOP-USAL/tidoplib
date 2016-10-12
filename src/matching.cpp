@@ -1,5 +1,6 @@
 #include "opencv2/calib3d.hpp"
 #include "opencv2/xfeatures2d.hpp"
+#include "opencv2/imgproc.hpp"
 
 #include "matching.h"
 
@@ -64,15 +65,16 @@ int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std:
 {
   mMatches.clear();
   cv::Mat desc1, desc2;
-  if (descriptor1.type() != CV_32F) {
-    descriptor1.convertTo(desc1, CV_32F);
-  }
+  auto getAppropriateFormat = [](const cv::Mat &descIn) -> cv::Mat {
+    cv::Mat descOut;
+    descIn.copyTo(descOut);
+    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
+    if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
+    return std::move(descOut);
+  };
 
-  if (descriptor2.type() != CV_32F) {
-    descriptor2.convertTo(desc2, CV_32F);
-  }
-  try{
-    if (mDescriptorMatcher) mDescriptorMatcher->match(desc1.empty() ? descriptor1 : desc1, desc2.empty() ? descriptor2 : desc2, mMatches);
+  try {
+    if (mDescriptorMatcher) mDescriptorMatcher->match(getAppropriateFormat( descriptor1), getAppropriateFormat( descriptor2 ), mMatches);
   } catch (cv::Exception &e) {
     printf(e.what());
   }

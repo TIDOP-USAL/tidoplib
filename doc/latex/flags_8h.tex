@@ -1,0 +1,57 @@
+\hypertarget{flags_8h}{}\section{Referencia del Archivo C\+:/\+Desarrollo/tidop/src/core/flags.h}
+\label{flags_8h}\index{C\+:/\+Desarrollo/tidop/src/core/flags.\+h@{C\+:/\+Desarrollo/tidop/src/core/flags.\+h}}
+\subsection*{Clases}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{class_i3_d_1_1_enum_flags}{I3\+D\+::\+Enum\+Flags$<$ T $>$}
+\begin{DoxyCompactList}\small\item\em Clase Flag de enums. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \hyperlink{namespace_i3_d}{I3D}
+\end{DoxyCompactItemize}
+\subsection*{\textquotesingle{}defines\textquotesingle{}}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{flags_8h_a074adf7dfa31622c8512eec03e9b9528}{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}(T\+\_\+\+F\+L\+AG)
+\begin{DoxyCompactList}\small\item\em Permite operaciones a nivel de bit con un \textquotesingle{}enum class\textquotesingle{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Documentación de los \textquotesingle{}defines\textquotesingle{}}
+\index{flags.\+h@{flags.\+h}!A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}}
+\index{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}!flags.\+h@{flags.\+h}}
+\subsubsection[{\texorpdfstring{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}{ALLOW_BITWISE_FLAG_OPERATIONS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS(
+\begin{DoxyParamCaption}
+\item[{}]{T\+\_\+\+F\+L\+AG}
+\end{DoxyParamCaption}
+)}\hypertarget{flags_8h_a074adf7dfa31622c8512eec03e9b9528}{}\label{flags_8h_a074adf7dfa31622c8512eec03e9b9528}
+{\bfseries Valor\+:}
+\begin{DoxyCode}
+\textcolor{keyword}{inline} T\_FLAG operator | (\textcolor{keyword}{const} T\_FLAG flag1, \textcolor{keyword}{const} T\_FLAG flag2) \{ \textcolor{keywordflow}{return} \textcolor{keyword}{static\_cast<}T\_FLAG\textcolor{keyword}{>} ( \textcolor{keyword}{
+      static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag1) | \textcolor{keyword}{static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag2) ); \} \(\backslash\)
+inline T\_FLAG operator & (\textcolor{keyword}{const} T\_FLAG flag1, \textcolor{keyword}{const} T\_FLAG flag2) \{ \textcolor{keywordflow}{return} \textcolor{keyword}{static\_cast<}T\_FLAG\textcolor{keyword}{>} ( \textcolor{keyword}{
+      static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag1) & \textcolor{keyword}{static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag2) ); \} \(\backslash\)
+inline T\_FLAG operator ^ (\textcolor{keyword}{const} T\_FLAG flag1, \textcolor{keyword}{const} T\_FLAG flag2) \{ \textcolor{keywordflow}{return} \textcolor{keyword}{static\_cast<}T\_FLAG\textcolor{keyword}{>} ( \textcolor{keyword}{
+      static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag1) ^ \textcolor{keyword}{static\_cast<}std::underlying\_type<T\_FLAG>::type\textcolor{keyword}{>}(flag2) ); \} \(\backslash\)
+inline T\_FLAG operator ~ (\textcolor{keyword}{const} T\_FLAG flag) \{ \textcolor{keywordflow}{return} \textcolor{keyword}{static\_cast<}T\_FLAG\textcolor{keyword}{>} ( ~static\_cast<
+      std::underlying\_type<T\_FLAG>::type>(flag) ); \}
+\end{DoxyCode}
+
+
+Permite operaciones a nivel de bit con un \textquotesingle{}enum class\textquotesingle{}. 
+
+Debe añadirse debajo de la declaración del enum 
+\begin{DoxyCode}
+1 enum class ePrueba2 : int8\_t \{
+2  flag01 = (1 << 0),
+3  flag02 = (1 << 1),
+4  flag03 = (1 << 2),
+5  flag04 = (1 << 3),
+6  flag05 = (1 << 4),
+7  flag06 = (1 << 5),
+8  flag07 = (1 << 6)
+9 \};
+10 
+11 ALLOW\_BITWISE\_FLAG\_OPERATIONS(ePrueba2)
+\end{DoxyCode}
+ 

@@ -7,7 +7,7 @@ var class_i3_d_1_1_features2_d =
     [ "detectKeyPoints", "class_i3_d_1_1_features2_d.html#a62ecf2a0260a7cc171606038e9dff77f", null ],
     [ "filter", "class_i3_d_1_1_features2_d.html#a82849d415643f6e8e1c39e3274cade99", null ],
     [ "getDescriptors", "class_i3_d_1_1_features2_d.html#a360185a32ca3b28f9fdd51d4506574e8", null ],
-    [ "getKeyPoint", "class_i3_d_1_1_features2_d.html#a608ffbdddbe15df01ac14ab9400ab5d7", null ],
+    [ "getKeyPoint", "class_i3_d_1_1_features2_d.html#a725ae53258ccfd1b6a9d75646d75bba7", null ],
     [ "getKeyPoints", "class_i3_d_1_1_features2_d.html#a5543362d3c3d1f1e0072ac1b8090217a", null ],
     [ "read", "class_i3_d_1_1_features2_d.html#ae999316e0882a9c2a29a29e3e5b5e746", null ],
     [ "save", "class_i3_d_1_1_features2_d.html#a9a6855620abadd6571352d3fbfd29381", null ],

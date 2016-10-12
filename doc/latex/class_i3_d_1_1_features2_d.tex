@@ -32,8 +32,8 @@ void \hyperlink{class_i3_d_1_1_features2_d_ae999316e0882a9c2a29a29e3e5b5e746}{re
 \begin{DoxyCompactList}\small\item\em Lectura de un fichero con los keypoints y descriptores. \end{DoxyCompactList}\item 
 const std\+::vector$<$ cv\+::\+Key\+Point $>$ \& \hyperlink{class_i3_d_1_1_features2_d_a5543362d3c3d1f1e0072ac1b8090217a}{get\+Key\+Points} ()
 \begin{DoxyCompactList}\small\item\em Devuelve los Key\+Points. \end{DoxyCompactList}\item 
-const cv\+::\+Point2f \& \hyperlink{class_i3_d_1_1_features2_d_a608ffbdddbe15df01ac14ab9400ab5d7}{get\+Key\+Point} (int id) const 
-\item 
+const cv\+::\+Key\+Point \& \hyperlink{class_i3_d_1_1_features2_d_a725ae53258ccfd1b6a9d75646d75bba7}{get\+Key\+Point} (int id) const 
+\begin{DoxyCompactList}\small\item\em Devuelve un Key\+Point. \end{DoxyCompactList}\item 
 const cv\+::\+Mat \& \hyperlink{class_i3_d_1_1_features2_d_a360185a32ca3b28f9fdd51d4506574e8}{get\+Descriptors} () const 
 \begin{DoxyCompactList}\small\item\em Devuelve los descriptores. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\void \hyperlink{class_i3_d_1_1_features2_d_a82849d415643f6e8e1c39e3274cade99}{filter} (const cv\+::\+Mat \&in, const \hyperlink{class_i3_d_1_1_window}{Window}$<$ T $>$ \&w, cv\+::\+Mat $\ast$out, std\+::vector$<$ cv\+::\+Key\+Point $>$ $\ast$\+\_\+key\+Points, cv\+::\+Mat $\ast$\+\_\+descriptor)
@@ -68,10 +68,10 @@ Constructora por defecto \hyperlink{class_i3_d_1_1_features2_d}{Features2D}.
 Constructora \hyperlink{class_i3_d_1_1_features2_d}{Features2D} Se le pasan como parametro un detector de caracteristicas y un extractor de descriptores. 
 
 
-\begin{DoxyParams}{Parámetros}
-{\em \+\_\+fd} & Detector de caracteristicas \\
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em \+\_\+fd} & Detector de caracteristicas \\
 \hline
-{\em \+\_\+de} & Extractor de descriptores\\
+\mbox{\tt in}  & {\em \+\_\+de} & Extractor de descriptores\\
 \hline
 \end{DoxyParams}
 Detectores soportados\+:
@@ -208,11 +208,18 @@ Descriptores
 \end{DoxyReturn}
 \index{I3\+D\+::\+Features2D@{I3\+D\+::\+Features2D}!get\+Key\+Point@{get\+Key\+Point}}
 \index{get\+Key\+Point@{get\+Key\+Point}!I3\+D\+::\+Features2D@{I3\+D\+::\+Features2D}}
-\subsubsection[{\texorpdfstring{get\+Key\+Point(int id) const }{getKeyPoint(int id) const }}]{\setlength{\rightskip}{0pt plus 5cm}const cv\+::\+Point2f\& I3\+D\+::\+Features2\+D\+::get\+Key\+Point (
+\subsubsection[{\texorpdfstring{get\+Key\+Point(int id) const }{getKeyPoint(int id) const }}]{\setlength{\rightskip}{0pt plus 5cm}const cv\+::\+Key\+Point\& I3\+D\+::\+Features2\+D\+::get\+Key\+Point (
 \begin{DoxyParamCaption}
 \item[{int}]{id}
 \end{DoxyParamCaption}
-) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_features2_d_a608ffbdddbe15df01ac14ab9400ab5d7}{}\label{class_i3_d_1_1_features2_d_a608ffbdddbe15df01ac14ab9400ab5d7}
+) const\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{class_i3_d_1_1_features2_d_a725ae53258ccfd1b6a9d75646d75bba7}{}\label{class_i3_d_1_1_features2_d_a725ae53258ccfd1b6a9d75646d75bba7}
+
+
+Devuelve un Key\+Point. 
+
+\begin{DoxyReturn}{Devuelve}
+Key\+Point 
+\end{DoxyReturn}
 \index{I3\+D\+::\+Features2D@{I3\+D\+::\+Features2D}!get\+Key\+Points@{get\+Key\+Points}}
 \index{get\+Key\+Points@{get\+Key\+Points}!I3\+D\+::\+Features2D@{I3\+D\+::\+Features2D}}
 \subsubsection[{\texorpdfstring{get\+Key\+Points()}{getKeyPoints()}}]{\setlength{\rightskip}{0pt plus 5cm}const std\+::vector$<$cv\+::\+Key\+Point$>$\& I3\+D\+::\+Features2\+D\+::get\+Key\+Points (
@@ -295,5 +302,5 @@ Establece el detector de caracteristicas.
 
 La documentación para esta clase fue generada a partir de los siguientes ficheros\+:\begin{DoxyCompactItemize}
 \item 
-D\+:/\+Desarrollo/tidop/src/\hyperlink{matching_8h}{matching.\+h}\item 
-D\+:/\+Desarrollo/tidop/src/\hyperlink{matching_8cpp}{matching.\+cpp}\end{DoxyCompactItemize}
+C\+:/\+Desarrollo/tidop/src/\hyperlink{matching_8h}{matching.\+h}\item 
+C\+:/\+Desarrollo/tidop/src/\hyperlink{matching_8cpp}{matching.\+cpp}\end{DoxyCompactItemize}
