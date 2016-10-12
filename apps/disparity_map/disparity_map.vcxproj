@@ -35,10 +35,18 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props_vs\OpenCV_debug.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_debug.props" />
+    <Import Project="..\..\props_vs\PCL_DEBUG.props" />
+    <Import Project="..\..\props_vs\Boost_Debug.props" />
+    <Import Project="..\..\props_vs\VTK_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props_vs\OpenCV_release.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_release.props" />
+    <Import Project="..\..\props_vs\PCL_RELEASE.props" />
+    <Import Project="..\..\props_vs\Boost_release.props" />
+    <Import Project="..\..\props_vs\VTK_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,6 +111,11 @@
     <ClInclude Include="..\..\third_party\libelas\src\matrix.h" />
     <ClInclude Include="..\..\third_party\libelas\src\timer.h" />
     <ClInclude Include="..\..\third_party\libelas\src\triangle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tidopLib.vcxproj">
+      <Project>{f39af565-7429-4f4c-a13c-c1edb3c0f529}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
