@@ -9,7 +9,7 @@
       <AdditionalLibraryDirectories>D:\Desarrollo\Libs\pcl-1.8.0-Install\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Desarrollo\Libs\pcl-1.8.0-Install\include\pcl-1.8;D:\Desarrollo\Libs\Eigen\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Desarrollo\Libs\pcl-1.8.0-Install\include\pcl-1.8;D:\Desarrollo\Libs\Eigen\include;D:\Desarrollo\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

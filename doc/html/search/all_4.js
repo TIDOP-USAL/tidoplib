@@ -18,5 +18,5 @@ var searchData=
   ['distance',['distance',['../group___geometric_entities.html#gaf3a6913bb5125e5d2e69a2e48c7336fd',1,'I3D']]],
   ['distpointtoline',['distPointToLine',['../group___geometric_entities.html#gaa655879a00ab3687d5a60674c3f2d730',1,'I3D']]],
   ['distpointtosegment',['distPointToSegment',['../group___geometric_entities.html#ga2c47087468458c7841306da1f626a42d',1,'I3D']]],
-  ['drawlines',['drawLines',['../class_i3_d_1_1_line_detector.html#a057a60f78b7bfa5b6f6f31d8ee8bfe87',1,'I3D::LineDetector']]]
+  ['drawlines',['drawLines',['../class_i3_d_1_1_line_detector.html#a057a60f78b7bfa5b6f6f31d8ee8bfe87',1,'I3D::LineDetector::drawLines()'],['../class_i3_d_1_1ld_l_s_w_m_s.html#afe64627e711a33cf37bd4d8b2430c3a1',1,'I3D::ldLSWMS::drawLines()']]]
 ];

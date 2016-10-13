@@ -33,8 +33,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "transform_test", "test\tran
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "msg_test", "test\messages_test\msg_test.vcxproj", "{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flag_test", "test\flag_test\flag_test.vcxproj", "{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -130,14 +128,6 @@ Global
 		{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9}.Release|Mixed Platforms.Build.0 = Release|x64
 		{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9}.Release|x64.ActiveCfg = Release|x64
 		{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9}.Release|x64.Build.0 = Release|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Debug|x64.ActiveCfg = Debug|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Debug|x64.Build.0 = Debug|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Release|Mixed Platforms.Build.0 = Release|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Release|x64.ActiveCfg = Release|x64
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +144,5 @@ Global
 		{EF79B18C-2D8B-489D-A477-E8E6E295F129} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{1914A704-E584-4700-9394-EC0F74987E9F} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
-		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 	EndGlobalSection
 EndGlobal

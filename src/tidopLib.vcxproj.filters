@@ -29,7 +29,7 @@
       <UniqueIdentifier>{f3d024f5-caa7-4372-b46d-ae321d8b4e1e}</UniqueIdentifier>
     </Filter>
     <Filter Include="Archivos de código fuente\core">
-      <UniqueIdentifier>{c1e313d5-36f3-4bf1-a747-1dc53cd5e313}</UniqueIdentifier>
+      <UniqueIdentifier>{98fae408-8227-42ba-9350-ad17b939ff43}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -120,9 +120,6 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="core\messages.h">
-      <Filter>Archivos de encabezado\core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\flags.h">
       <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
   </ItemGroup>

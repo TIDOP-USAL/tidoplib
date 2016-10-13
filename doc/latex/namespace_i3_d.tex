@@ -23,8 +23,6 @@ class \hyperlink{class_i3_d_1_1_dilate}{Dilate}
 \begin{DoxyCompactList}\small\item\em Operacion morfologica de dilatación. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_discrete_fourier_trf}{Discrete\+Fourier\+Trf}
 \begin{DoxyCompactList}\small\item\em The Fourier class Discrete Fourier \hyperlink{class_i3_d_1_1_transform}{Transform}. \end{DoxyCompactList}\item 
-class \hyperlink{class_i3_d_1_1_enum_flags}{Enum\+Flags}
-\begin{DoxyCompactList}\small\item\em Clase Flag de enums. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_equalize_histogram}{Equalize\+Histogram}
 \begin{DoxyCompactList}\small\item\em Ecualización del histograma. Mejora del contraste de la imagen mediante la ecualización del histograma. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_erotion}{Erotion}
@@ -59,6 +57,8 @@ class \hyperlink{class_i3_d_1_1ld_houh_p}{ld\+HouhP}
 \begin{DoxyCompactList}\small\item\em Detector de lineas Hough probabilistico. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1ld_l_s_d}{ld\+L\+SD}
 \begin{DoxyCompactList}\small\item\em Clase para la detección de lineas mediante Line \hyperlink{class_i3_d_1_1_segment}{Segment} Detector. \end{DoxyCompactList}\item 
+class \hyperlink{class_i3_d_1_1ld_l_s_w_m_s}{ld\+L\+S\+W\+MS}
+\begin{DoxyCompactList}\small\item\em Clase para la detección de lineas mediante L\+S\+W\+MS. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_line_detector}{Line\+Detector}
 \begin{DoxyCompactList}\small\item\em Clase base abstracta para los detectores de lineas. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_log_msg}{Log\+Msg}
@@ -68,7 +68,7 @@ class \hyperlink{class_i3_d_1_1_matching}{Matching}
 class \hyperlink{class_i3_d_1_1_median_blur}{Median\+Blur}
 \begin{DoxyCompactList}\small\item\em Filtro de media Suaviza una imagen con un filtro de media. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_message}{Message}
-\begin{DoxyCompactList}\small\item\em \hyperlink{class_i3_d_1_1_message}{Message}. \end{DoxyCompactList}\item 
+\item 
 class \hyperlink{class_i3_d_1_1morphological_operation}{morphological\+Operation}
 \begin{DoxyCompactList}\small\item\em Clase base para las operaciones morfológicas. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_multi_point}{Multi\+Point}
@@ -148,8 +148,6 @@ typedef void($\ast$ \hyperlink{namespace_i3_d_a65da91c3d8b7751e061aa6d8462ea890}
 \subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
-\hyperlink{namespace_i3_d_a67374982e3085e082db07f2941c693a0}{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS} (\hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output})
-\item 
 void \hyperlink{namespace_i3_d_a61642b345ce36927fc6694a81d6540f7}{log\+Scale} (const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out)
 \item 
 double \hyperlink{namespace_i3_d_a83df44c7261ddd174a2bcdaaa6935552}{fourier\+Lines\+Detection} (cv\+::\+Mat \&source, std\+::vector$<$ int $>$ \&cols, std\+::vector$<$ std\+::vector$<$ cv\+::\+Point $>$$>$ $\ast$pts, double $\ast$angle=N\+U\+LL)
@@ -158,11 +156,11 @@ int \hyperlink{group___geometric_entities_ga50289ee8c51aeff4b2f4706acbabd932}{po
 \item 
 bool \hyperlink{group___geometric_entities_gaa7aa32d175a13ad9ac23bfe016754b1f}{is\+Collinear\+Points} (const cv\+::\+Point \&pt\+\_\+c, const \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} \&line\+\_\+i\+\_\+r, double tolerance)
 \item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga6cfd96fd34bd41f5b201d69d70daa705}{length} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_ga6cfd96fd34bd41f5b201d69d70daa705}{length} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
 \begin{DoxyCompactList}\small\item\em Longitud o modulo de un vector 2D. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gadc4e42bc957a28f97e0d45d09d5e1db7}{length} (const cv\+::\+Point3\+\_\+$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_gadc4e42bc957a28f97e0d45d09d5e1db7}{length} (const cv\+::\+Point3\+\_\+$<$ T $>$ \&v)
 \begin{DoxyCompactList}\small\item\em Longitud o modulo de un vector 3D. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaf3a6913bb5125e5d2e69a2e48c7336fd}{distance} (const T \&pt1, const T \&pt2)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_gaf3a6913bb5125e5d2e69a2e48c7336fd}{distance} (const T \&pt1, const T \&pt2)
 \begin{DoxyCompactList}\small\item\em Distancia entre dos puntos. \end{DoxyCompactList}\item 
 void \hyperlink{group___geometric_entities_gaa2e0864c0027dbf1cf826970a30d47a0}{line\+Buffer} (const \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} \&ln, int size, std\+::vector$<$ cv\+::\+Point $>$ $\ast$buff)
 \begin{DoxyCompactList}\small\item\em Crea un buffer entorno a una linea. \end{DoxyCompactList}\item 
@@ -184,15 +182,15 @@ void \hyperlink{group___geometric_entities_gaa8733cce0398776f35f9dcdbb1a3c933}{g
 \item 
 void \hyperlink{group___geometric_entities_gadffdd08b45284c20785b162ee959f11f}{group\+Lines\+By\+Dist} (const std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ \&lines\+In, std\+::vector$<$ \hyperlink{class_i3_d_1_1ld_group_lines}{ld\+Group\+Lines} $>$ $\ast$cur\+Lines\+Grops, int dist)
 \item 
-{\footnotesize template$<$typename T1 , typename T2 $>$ }\\bool \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga16ec870ad1dfb5178445d023231183e8}{intersect\+Windows} (T1 w1, T2 w2)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\bool I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_ga16ec870ad1dfb5178445d023231183e8}{intersect\+Windows} (T1 w1, T2 w2)
 \begin{DoxyCompactList}\small\item\em Comprueba si dos ventanas intersectan. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_gaa929176ef49672b0bc0019c5fe58a017}{window\+Intersection} (T w1, T w2)
+{\footnotesize template$<$typename T $>$ }\\T I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_gaa929176ef49672b0bc0019c5fe58a017}{window\+Intersection} (T w1, T w2)
 \begin{DoxyCompactList}\small\item\em Ventana interseción. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\T \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga1aa105cebf6692e4e42f666bc8dd94c1}{join\+Window} (T w1, T w2)
+{\footnotesize template$<$typename T $>$ }\\T I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_ga1aa105cebf6692e4e42f666bc8dd94c1}{join\+Window} (T w1, T w2)
 \begin{DoxyCompactList}\small\item\em Unión de dos ventanas. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga8ad6c6751aee604442e1a5287b1d0119}{expand\+Window} (T1 w, T2 szx, T2 szy)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_ga8ad6c6751aee604442e1a5287b1d0119}{expand\+Window} (T1 w, T2 szx, T2 szy)
 \begin{DoxyCompactList}\small\item\em Expande una ventana según la cantidad indicada para x e y. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{group___geometric_entities_ga857396c24d042125f346f288db8e1fa2}{expand\+Window} (T1 w, T2 sz)
+{\footnotesize template$<$typename T1 , typename T2 $>$ }\\T1 I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{group___geometric_entities_ga857396c24d042125f346f288db8e1fa2}{expand\+Window} (T1 w, T2 sz)
 \begin{DoxyCompactList}\small\item\em Expande una ventana. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\\hyperlink{class_i3_d_1_1_window}{Window}$<$ T $>$ \hyperlink{group___geometric_entities_ga5893c61910bdaf13dcbd435f1914d868}{move\+Window} (const \hyperlink{class_i3_d_1_1_window}{Window}$<$ T $>$ \&w, T dx, T dy)
 \item 
@@ -208,9 +206,9 @@ void \hyperlink{namespace_i3_d_a1285f5405325e06442370507b6b08a4e}{Message\+Outpu
 \item 
 char $\ast$ \hyperlink{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}{\+\_\+msg} (const char $\ast$msg,...)
 \item 
-void \hyperlink{group__trf_group_gade75ff2d290c3d31e95b624250c4c2a0}{translate} (const std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ \&lines\+\_\+in, std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ $\ast$lines\+\_\+out, int dx, int dy)
-\begin{DoxyCompactList}\small\item\em Aplica una traslación a un conjunto de segmentos. \end{DoxyCompactList}\item 
-void \hyperlink{group__trf_group_gaedbba4c545b8747f60628f382849b1fa}{rotation\+Matrix} (double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)
+void \hyperlink{namespace_i3_d_af42b0e28a8fa1ad5200480835aec56b2}{translate} (const std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ \&lines\+\_\+in, std\+::vector$<$ \hyperlink{group___geometric_entities_ga483b43891a1b33d99406fdc397e9a445}{Line} $>$ $\ast$lines\+\_\+out, int dx, int dy)
+\item 
+void \hyperlink{namespace_i3_d_a247ba2a50c6293c209753de4b2fea2f6}{rotation\+Matrix} (double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)
 \item 
 char $\ast$ \hyperlink{namespace_i3_d_ac1abd2292dc3680c8a4ebacef95e6ade}{get\+Runfile} ()
 \begin{DoxyCompactList}\small\item\em Obtiene el path (directorio + nombre + extensión) de la aplicación que esta corriendo. \end{DoxyCompactList}\item 
@@ -284,21 +282,21 @@ double \hyperlink{group__format_conversion_ga15009349cf6dbbf4bba63b9461a2fdb2}{g
 \begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a grados sexagesimales en notación decimal. \end{DoxyCompactList}\item 
 double \hyperlink{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}{gradians\+To\+Radians} (double gradians)
 \begin{DoxyCompactList}\small\item\em Conversión de grados centesimales a radianes. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_ae93dfc998984ee54a22bc371d20cc27d}{module} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_ae93dfc998984ee54a22bc371d20cc27d}{module} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
 \item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a386620e496d4db4846d55d78731e7787}{vector\+Angle} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v1, const cv\+::\+Point\+\_\+$<$ T $>$ \&v2)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a386620e496d4db4846d55d78731e7787}{vector\+Angle} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v1, const cv\+::\+Point\+\_\+$<$ T $>$ \&v2)
 \begin{DoxyCompactList}\small\item\em Devuelve el ángulo entre dos vectores. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a4847541051837303bfc248cd2254c8cc}{vector\+Angle\+OX} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a4847541051837303bfc248cd2254c8cc}{vector\+Angle\+OX} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
 \item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a51781d58e33d83f95d83f35378e62c91}{vector\+Angle\+OY} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a51781d58e33d83f95d83f35378e62c91}{vector\+Angle\+OY} (const cv\+::\+Point\+\_\+$<$ T $>$ \&v)
 \item 
-{\footnotesize template$<$typename T $>$ }\\double \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a551345eab65c108de9b2f6c8fc008a8d}{azimut} (const cv\+::\+Point\+\_\+$<$ T $>$ \&pt1, const cv\+::\+Point\+\_\+$<$ T $>$ \&pt2)
+{\footnotesize template$<$typename T $>$ }\\double I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a551345eab65c108de9b2f6c8fc008a8d}{azimut} (const cv\+::\+Point\+\_\+$<$ T $>$ \&pt1, const cv\+::\+Point\+\_\+$<$ T $>$ \&pt2)
 \item 
-{\footnotesize template$<$typename T $>$ }\\void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_af4644a30bcf89cb11d3e5a9fa6a2d5eb}{cv\+Mat\+To\+Vector} (const cv\+::\+Mat \&m, std\+::vector$<$ T $>$ $\ast$av)
+{\footnotesize template$<$typename T $>$ }\\void I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_af4644a30bcf89cb11d3e5a9fa6a2d5eb}{cv\+Mat\+To\+Vector} (const cv\+::\+Mat \&m, std\+::vector$<$ T $>$ $\ast$av)
 \begin{DoxyCompactList}\small\item\em Convierte una matriz de Open\+CV en un vector. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a4917826fdb4cd6c2c5674389df321239}{sort\+Vector} (std\+::vector$<$ T $>$ $\ast$v)
+{\footnotesize template$<$typename T $>$ }\\void I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a4917826fdb4cd6c2c5674389df321239}{sort\+Vector} (std\+::vector$<$ T $>$ $\ast$v)
 \begin{DoxyCompactList}\small\item\em Ordena un vector de menor a mayor. \end{DoxyCompactList}\item 
-{\footnotesize template$<$typename T $>$ }\\void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_afe7938c3460b72deedc1a0d1c823f379}{sort\+Vector\+Inv} (std\+::vector$<$ T $>$ $\ast$v)
+{\footnotesize template$<$typename T $>$ }\\void I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_afe7938c3460b72deedc1a0d1c823f379}{sort\+Vector\+Inv} (std\+::vector$<$ T $>$ $\ast$v)
 \begin{DoxyCompactList}\small\item\em Ordena un vector de mayor a menor. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\int \hyperlink{namespace_i3_d_aba6f2d6e9be610b5f8dea3beeff453c3}{operator==} (const std\+::vector$<$ T $>$ \&v, const T t)
 \begin{DoxyCompactList}\small\item\em Determinar el número de elementos iguales a un número. Sobrecarga del operador == para determinar el número de elementos de un vector que son iguales al valor pasado como parámetro. \end{DoxyCompactList}\item 
@@ -312,21 +310,21 @@ double \hyperlink{group__format_conversion_ga78ace1a72a3d56d4360339cdaed0f409}{g
 \item 
 {\footnotesize template$<$typename T $>$ }\\int \hyperlink{namespace_i3_d_a4f1bb399b1e6e216917b701f1acacaa1}{operator$<$} (const std\+::vector$<$ T $>$ \&v, const T t)
 \item 
-{\footnotesize template$<$typename T $>$ }\\std\+::vector$<$ int $>$ \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a108f553ab39e9dda1d63b7ad2595ee5b}{sort\+Idx} (const std\+::vector$<$ T $>$ \&v)
+{\footnotesize template$<$typename T $>$ }\\std\+::vector$<$ int $>$ I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a108f553ab39e9dda1d63b7ad2595ee5b}{sort\+Idx} (const std\+::vector$<$ T $>$ \&v)
 \begin{DoxyCompactList}\small\item\em Ordena los indices de un vector de menor a mayor Para un vector \mbox{[}10,20,15,5\mbox{]} devuelve \mbox{[}3,0,2,1\mbox{]}. El elemento mas pequeño esta en la posición 3, el segundo en la posición 0, ... \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a5a86634e06e28f0c21899d7a3d88512e}{get\+Blue} (int color)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a5a86634e06e28f0c21899d7a3d88512e}{get\+Blue} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene la componente azul de un color. \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a5ecd9fddbd03f0cddf12c10381b346cb}{get\+Green} (int color)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a5ecd9fddbd03f0cddf12c10381b346cb}{get\+Green} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene la componente verde de un color. \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_ae241c75d66a6d6211b785bd83de75a40}{get\+Red} (int color)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_ae241c75d66a6d6211b785bd83de75a40}{get\+Red} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene la componente roja de un color. \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_ad45a962f16dbbb6bd0682a8271a12a70}{get\+Alpha} (int color)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_ad45a962f16dbbb6bd0682a8271a12a70}{get\+Alpha} (int color)
 \begin{DoxyCompactList}\small\item\em Obtiene el canal alfa de un color. \end{DoxyCompactList}\item 
-void \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}{int\+To\+R\+GB} (int color, int $\ast$red, int $\ast$green, int $\ast$blue)
+void I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a80820a733987b37c8e74aa8eedd464f6}{int\+To\+R\+GB} (int color, int $\ast$red, int $\ast$green, int $\ast$blue)
 \begin{DoxyCompactList}\small\item\em Convierte un color entero a R\+GB. \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a19aa83d403ad807bdd48306de4af8481}{rgb\+To\+Int} (int red, int green, int blue)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a19aa83d403ad807bdd48306de4af8481}{rgb\+To\+Int} (int red, int green, int blue)
 \begin{DoxyCompactList}\small\item\em Convierte un color R\+GB a entero. \end{DoxyCompactList}\item 
-int \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a5c525ecbc21267c7d13a427365c75458}{rgba\+To\+Int} (int red, int green, int blue, int alpha)
+int I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a5c525ecbc21267c7d13a427365c75458}{rgba\+To\+Int} (int red, int green, int blue, int alpha)
 \begin{DoxyCompactList}\small\item\em Convierte un color R\+G\+B+alpha a entero. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\int \hyperlink{group__format_conversion_ga733eb2d043c69e2b8a0527622e38cfab}{is\+Negative} (T t)
 \item 
@@ -339,7 +337,9 @@ void \hyperlink{namespace_i3_d_a508903c40fc536fdefc8142eb436a907}{On\+Frame\+Rea
 \subsection*{Variables}
 \begin{DoxyCompactItemize}
 \item 
-class \hyperlink{defs_8h_a83f373279ee1ca96b4003c673142ec1d}{I3\+D\+\_\+\+E\+X\+P\+O\+RT} \hyperlink{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}{Video\+Stream}
+I3\+D\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED(\char`\"{}I3\+D\+::\+Translate\+::transform(const std\+::vector$<$\hyperlink{class_i3_d_1_1_segment}{Segment}$<$sub\+\_\+type$>$$>$ \&in, std\+::vector$<$\hyperlink{class_i3_d_1_1_segment}{Segment}$<$sub\+\_\+type$>$$>$ $\ast$out)\char`\"{}) void I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_af42b0e28a8fa1ad5200480835aec56b2}{translate}(const std void I3\+D\+\_\+\+E\+X\+P\+OR \hyperlink{group__trf_group_ga9fd1816708824e1c55f816cb7663ffc5}{rotation\+Matrix} )(double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un conjunto de segmentos. \end{DoxyCompactList}\item 
+class I3\+D\+\_\+\+E\+X\+P\+O\+RT \hyperlink{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}{Video\+Stream}
 \end{DoxyCompactItemize}
 
 
@@ -400,7 +400,7 @@ L\+O\+G\+\_\+\+E\+R\+R\+OR\hypertarget{namespace_i3_d_ae1af0f2e3b629610c45222809
 \end{Desc}
 \index{I3D@{I3D}!Message\+Level@{Message\+Level}}
 \index{Message\+Level@{Message\+Level}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{Message\+Level}{MessageLevel}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Level} \+: {\bf int8\+\_\+t}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}
+\subsubsection[{\texorpdfstring{Message\+Level}{MessageLevel}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Level}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}
 
 
 Niveles de información de los mensajes. 
@@ -409,27 +409,27 @@ Niveles de información de los mensajes.
 \item[Valores de enumeraciones]\par
 \begin{description}
 \index{M\+S\+G\+\_\+\+D\+E\+B\+UG@{M\+S\+G\+\_\+\+D\+E\+B\+UG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+D\+E\+B\+UG@{M\+S\+G\+\_\+\+D\+E\+B\+UG}}\item[{\em 
-M\+S\+G\+\_\+\+D\+E\+B\+UG\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a918e87a1f80863c7ee35bfa2c58cc41e}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a918e87a1f80863c7ee35bfa2c58cc41e}
+M\+S\+G\+\_\+\+D\+E\+B\+UG\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a918e87a1f80863c7ee35bfa2c58cc41e}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a918e87a1f80863c7ee35bfa2c58cc41e}
 }]Información extra para depuración. \index{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE@{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE@{M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE}}\item[{\em 
-M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a38ae2439d5fa0d586710ee6decec3f83}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a38ae2439d5fa0d586710ee6decec3f83}
+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a38ae2439d5fa0d586710ee6decec3f83}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a38ae2439d5fa0d586710ee6decec3f83}
 }]Información extra para depuración. \index{M\+S\+G\+\_\+\+I\+N\+FO@{M\+S\+G\+\_\+\+I\+N\+FO}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+I\+N\+FO@{M\+S\+G\+\_\+\+I\+N\+FO}}\item[{\em 
-M\+S\+G\+\_\+\+I\+N\+FO\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5ad5150815f57a5219a42da2f42f90861e}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5ad5150815f57a5219a42da2f42f90861e}
+M\+S\+G\+\_\+\+I\+N\+FO\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0ad5150815f57a5219a42da2f42f90861e}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0ad5150815f57a5219a42da2f42f90861e}
 }]Warnings, errores y otra información. \index{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG@{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG@{M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG}}\item[{\em 
-M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a124799373c019c5c7480f21a24104688}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a124799373c019c5c7480f21a24104688}
+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a124799373c019c5c7480f21a24104688}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a124799373c019c5c7480f21a24104688}
 }]Warnings y errores. \index{M\+S\+G\+\_\+\+E\+R\+R\+OR@{M\+S\+G\+\_\+\+E\+R\+R\+OR}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+E\+R\+R\+OR@{M\+S\+G\+\_\+\+E\+R\+R\+OR}}\item[{\em 
-M\+S\+G\+\_\+\+E\+R\+R\+OR\hypertarget{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a5c89a276ac7877e1de49cdc1b4750ce4}{}\label{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5a5c89a276ac7877e1de49cdc1b4750ce4}
+M\+S\+G\+\_\+\+E\+R\+R\+OR\hypertarget{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a5c89a276ac7877e1de49cdc1b4750ce4}{}\label{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0a5c89a276ac7877e1de49cdc1b4750ce4}
 }]Sólo errores. \end{description}
 \end{Desc}
 \index{I3D@{I3D}!Message\+Output@{Message\+Output}}
 \index{Message\+Output@{Message\+Output}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{Message\+Output}{MessageOutput}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Output} \+: {\bf int8\+\_\+t}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}
+\subsubsection[{\texorpdfstring{Message\+Output}{MessageOutput}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf I3\+D\+::\+Message\+Output}\hspace{0.3cm}{\ttfamily [strong]}}\hypertarget{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{}\label{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}
 \begin{Desc}
 \item[Valores de enumeraciones]\par
 \begin{description}
 \index{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE@{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE@{M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE}}\item[{\em 
-M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103ace1cd665ada8b4f22dfa5f764fed6c6c}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103ace1cd665ada8b4f22dfa5f764fed6c6c}
+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE\hypertarget{namespace_i3_d_accba1eafa248ca79da818a0b72e60964ace1cd665ada8b4f22dfa5f764fed6c6c}{}\label{namespace_i3_d_accba1eafa248ca79da818a0b72e60964ace1cd665ada8b4f22dfa5f764fed6c6c}
 }]\index{M\+S\+G\+\_\+\+L\+OG@{M\+S\+G\+\_\+\+L\+OG}!I3D@{I3D}}\index{I3D@{I3D}!M\+S\+G\+\_\+\+L\+OG@{M\+S\+G\+\_\+\+L\+OG}}\item[{\em 
-M\+S\+G\+\_\+\+L\+OG\hypertarget{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103a8c1a4761ebfadb227927517230ff7b02}{}\label{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103a8c1a4761ebfadb227927517230ff7b02}
+M\+S\+G\+\_\+\+L\+OG\hypertarget{namespace_i3_d_accba1eafa248ca79da818a0b72e60964a8c1a4761ebfadb227927517230ff7b02}{}\label{namespace_i3_d_accba1eafa248ca79da818a0b72e60964a8c1a4761ebfadb227927517230ff7b02}
 }]\end{description}
 \end{Desc}
 \index{I3D@{I3D}!res\+\_\+frame@{res\+\_\+frame}}
@@ -512,16 +512,9 @@ F\+I\+N\+A\+L\+I\+Z\+ED\hypertarget{namespace_i3_d_a0ce9cf7811476557a3d1be9da416
 \item[{}]{...}
 \end{DoxyParamCaption}
 )}\hypertarget{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}{}\label{namespace_i3_d_a4ea725b6964a16cc51fa10eee1ab0044}
-\index{I3D@{I3D}!A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}}
-\index{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS@{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+N\+S(\+Message\+Output)}{ALLOW_BITWISE_FLAG_OPERATIONS(MessageOutput)}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+::\+A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS (
-\begin{DoxyParamCaption}
-\item[{{\bf Message\+Output}}]{}
-\end{DoxyParamCaption}
-)}\hypertarget{namespace_i3_d_a67374982e3085e082db07f2941c693a0}{}\label{namespace_i3_d_a67374982e3085e082db07f2941c693a0}
 \index{I3D@{I3D}!azimut@{azimut}}
 \index{azimut@{azimut}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{azimut(const cv\+::\+Point\+\_\+$<$ T $>$ \&pt1, const cv\+::\+Point\+\_\+$<$ T $>$ \&pt2)}{azimut(const cv::Point_< T > &pt1, const cv::Point_< T > &pt2)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::azimut (
+\subsubsection[{\texorpdfstring{azimut(const cv\+::\+Point\+\_\+$<$ T $>$ \&pt1, const cv\+::\+Point\+\_\+$<$ T $>$ \&pt2)}{azimut(const cv::Point_< T > &pt1, const cv::Point_< T > &pt2)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::azimut (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{pt1, }
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{pt2}
@@ -529,7 +522,7 @@ F\+I\+N\+A\+L\+I\+Z\+ED\hypertarget{namespace_i3_d_a0ce9cf7811476557a3d1be9da416
 )\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{namespace_i3_d_a551345eab65c108de9b2f6c8fc008a8d}{}\label{namespace_i3_d_a551345eab65c108de9b2f6c8fc008a8d}
 \index{I3D@{I3D}!change\+File\+Extension@{change\+File\+Extension}}
 \index{change\+File\+Extension@{change\+File\+Extension}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{change\+File\+Extension(const char $\ast$path, char $\ast$new\+Ext, char $\ast$path\+Out)}{changeFileExtension(const char *path, char *newExt, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::change\+File\+Extension (
+\subsubsection[{\texorpdfstring{change\+File\+Extension(const char $\ast$path, char $\ast$new\+Ext, char $\ast$path\+Out)}{changeFileExtension(const char *path, char *newExt, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::change\+File\+Extension (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{new\+Ext, }
@@ -554,7 +547,7 @@ Cambia la extensión de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!change\+File\+Name@{change\+File\+Name}}
 \index{change\+File\+Name@{change\+File\+Name}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{change\+File\+Name(const char $\ast$path, char $\ast$new\+Name, char $\ast$path\+Out)}{changeFileName(const char *path, char *newName, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::change\+File\+Name (
+\subsubsection[{\texorpdfstring{change\+File\+Name(const char $\ast$path, char $\ast$new\+Name, char $\ast$path\+Out)}{changeFileName(const char *path, char *newName, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::change\+File\+Name (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{new\+Name, }
@@ -579,7 +572,7 @@ Cambia el nombre de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!change\+File\+Name\+And\+Extension@{change\+File\+Name\+And\+Extension}}
 \index{change\+File\+Name\+And\+Extension@{change\+File\+Name\+And\+Extension}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{change\+File\+Name\+And\+Extension(const char $\ast$path, char $\ast$new\+Name\+Ext, char $\ast$path\+Out)}{changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::change\+File\+Name\+And\+Extension (
+\subsubsection[{\texorpdfstring{change\+File\+Name\+And\+Extension(const char $\ast$path, char $\ast$new\+Name\+Ext, char $\ast$path\+Out)}{changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::change\+File\+Name\+And\+Extension (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{new\+Name\+Ext, }
@@ -604,14 +597,14 @@ Cambia el nombre y la extensión de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!compute\+Median@{compute\+Median}}
 \index{compute\+Median@{compute\+Median}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{compute\+Median(const std\+::vector$<$ double $>$ \&input)}{computeMedian(const std::vector< double > &input)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::compute\+Median (
+\subsubsection[{\texorpdfstring{compute\+Median(const std\+::vector$<$ double $>$ \&input)}{computeMedian(const std::vector< double > &input)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::compute\+Median (
 \begin{DoxyParamCaption}
 \item[{const std\+::vector$<$ double $>$ \&}]{input}
 \end{DoxyParamCaption}
 )}\hypertarget{namespace_i3_d_a4e1d5dc1475e3a6776f80309c1c87afe}{}\label{namespace_i3_d_a4e1d5dc1475e3a6776f80309c1c87afe}
 \index{I3D@{I3D}!compute\+Temp\+M\+AD@{compute\+Temp\+M\+AD}}
 \index{compute\+Temp\+M\+AD@{compute\+Temp\+M\+AD}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{compute\+Temp\+M\+A\+D(const std\+::vector$<$ double $>$ \&input, const double median)}{computeTempMAD(const std::vector< double > &input, const double median)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::compute\+Temp\+M\+AD (
+\subsubsection[{\texorpdfstring{compute\+Temp\+M\+A\+D(const std\+::vector$<$ double $>$ \&input, const double median)}{computeTempMAD(const std::vector< double > &input, const double median)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::compute\+Temp\+M\+AD (
 \begin{DoxyParamCaption}
 \item[{const std\+::vector$<$ double $>$ \&}]{input, }
 \item[{const double}]{median}
@@ -619,7 +612,7 @@ Cambia el nombre y la extensión de un archivo.
 )}\hypertarget{namespace_i3_d_aac402911a928691f26695189a567dc57}{}\label{namespace_i3_d_aac402911a928691f26695189a567dc57}
 \index{I3D@{I3D}!create\+Dir@{create\+Dir}}
 \index{create\+Dir@{create\+Dir}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{create\+Dir(const char $\ast$path)}{createDir(const char *path)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::create\+Dir (
+\subsubsection[{\texorpdfstring{create\+Dir(const char $\ast$path)}{createDir(const char *path)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::create\+Dir (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path}
 \end{DoxyParamCaption}
@@ -638,7 +631,7 @@ Error = -\/1, creado = 0 y existente = 1
 \end{DoxyReturn}
 \index{I3D@{I3D}!cv\+Mat\+To\+Vector@{cv\+Mat\+To\+Vector}}
 \index{cv\+Mat\+To\+Vector@{cv\+Mat\+To\+Vector}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{cv\+Mat\+To\+Vector(const cv\+::\+Mat \&m, std\+::vector$<$ T $>$ $\ast$av)}{cvMatToVector(const cv::Mat &m, std::vector< T > *av)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::cv\+Mat\+To\+Vector (
+\subsubsection[{\texorpdfstring{cv\+Mat\+To\+Vector(const cv\+::\+Mat \&m, std\+::vector$<$ T $>$ $\ast$av)}{cvMatToVector(const cv::Mat &m, std::vector< T > *av)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::cv\+Mat\+To\+Vector (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Mat \&}]{m, }
 \item[{std\+::vector$<$ T $>$ $\ast$}]{av}
@@ -657,7 +650,7 @@ Convierte una matriz de Open\+CV en un vector.
 \end{DoxyParams}
 \index{I3D@{I3D}!delete\+Dir@{delete\+Dir}}
 \index{delete\+Dir@{delete\+Dir}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{delete\+Dir(const char $\ast$path, bool confirm=false)}{deleteDir(const char *path, bool confirm=false)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::delete\+Dir (
+\subsubsection[{\texorpdfstring{delete\+Dir(const char $\ast$path, bool confirm=false)}{deleteDir(const char *path, bool confirm=false)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::delete\+Dir (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{bool}]{confirm = {\ttfamily false}}
@@ -679,7 +672,7 @@ Error = -\/1, creado = 0 y existente = 1
 \end{DoxyReturn}
 \index{I3D@{I3D}!fourier\+Lines\+Detection@{fourier\+Lines\+Detection}}
 \index{fourier\+Lines\+Detection@{fourier\+Lines\+Detection}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{fourier\+Lines\+Detection(cv\+::\+Mat \&source, std\+::vector$<$ int $>$ \&cols, std\+::vector$<$ std\+::vector$<$ cv\+::\+Point $>$$>$ $\ast$pts, double $\ast$angle=\+N\+U\+L\+L)}{fourierLinesDetection(cv::Mat &source, std::vector< int > &cols, std::vector< std::vector< cv::Point >> *pts, double *angle=NULL)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::fourier\+Lines\+Detection (
+\subsubsection[{\texorpdfstring{fourier\+Lines\+Detection(cv\+::\+Mat \&source, std\+::vector$<$ int $>$ \&cols, std\+::vector$<$ std\+::vector$<$ cv\+::\+Point $>$$>$ $\ast$pts, double $\ast$angle=\+N\+U\+L\+L)}{fourierLinesDetection(cv::Mat &source, std::vector< int > &cols, std::vector< std::vector< cv::Point >> *pts, double *angle=NULL)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::fourier\+Lines\+Detection (
 \begin{DoxyParamCaption}
 \item[{cv\+::\+Mat \&}]{source, }
 \item[{std\+::vector$<$ int $>$ \&}]{cols, }
@@ -705,7 +698,7 @@ Fourier\+Lines\+Detection Algoritmo de detección de conductores aplicando la tr
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+Alpha@{get\+Alpha}}
 \index{get\+Alpha@{get\+Alpha}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+Alpha(int color)}{getAlpha(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+Alpha (
+\subsubsection[{\texorpdfstring{get\+Alpha(int color)}{getAlpha(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+Alpha (
 \begin{DoxyParamCaption}
 \item[{int}]{color}
 \end{DoxyParamCaption}
@@ -724,7 +717,7 @@ Canal alfa
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+Blue@{get\+Blue}}
 \index{get\+Blue@{get\+Blue}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+Blue(int color)}{getBlue(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+Blue (
+\subsubsection[{\texorpdfstring{get\+Blue(int color)}{getBlue(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+Blue (
 \begin{DoxyParamCaption}
 \item[{int}]{color}
 \end{DoxyParamCaption}
@@ -743,7 +736,7 @@ Componente azul
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+File\+Dir@{get\+File\+Dir}}
 \index{get\+File\+Dir@{get\+File\+Dir}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+File\+Dir(const char $\ast$path, char $\ast$dir)}{getFileDir(const char *path, char *dir)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+File\+Dir (
+\subsubsection[{\texorpdfstring{get\+File\+Dir(const char $\ast$path, char $\ast$dir)}{getFileDir(const char *path, char *dir)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+File\+Dir (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{dir}
@@ -765,7 +758,7 @@ Optiene el directorio de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+File\+Drive@{get\+File\+Drive}}
 \index{get\+File\+Drive@{get\+File\+Drive}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+File\+Drive(const char $\ast$path, char $\ast$drive)}{getFileDrive(const char *path, char *drive)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+File\+Drive (
+\subsubsection[{\texorpdfstring{get\+File\+Drive(const char $\ast$path, char $\ast$drive)}{getFileDrive(const char *path, char *drive)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+File\+Drive (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{drive}
@@ -787,7 +780,7 @@ Optiene la unidad de disco de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+File\+Drive\+Dir@{get\+File\+Drive\+Dir}}
 \index{get\+File\+Drive\+Dir@{get\+File\+Drive\+Dir}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+File\+Drive\+Dir(const char $\ast$path, char $\ast$drive\+Dir)}{getFileDriveDir(const char *path, char *driveDir)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+File\+Drive\+Dir (
+\subsubsection[{\texorpdfstring{get\+File\+Drive\+Dir(const char $\ast$path, char $\ast$drive\+Dir)}{getFileDriveDir(const char *path, char *driveDir)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+File\+Drive\+Dir (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{drive\+Dir}
@@ -809,7 +802,7 @@ Optiene el directorio de un archivo incluyendo la letra de la unidad.
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+File\+Extension@{get\+File\+Extension}}
 \index{get\+File\+Extension@{get\+File\+Extension}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+File\+Extension(const char $\ast$path, char $\ast$ext)}{getFileExtension(const char *path, char *ext)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+File\+Extension (
+\subsubsection[{\texorpdfstring{get\+File\+Extension(const char $\ast$path, char $\ast$ext)}{getFileExtension(const char *path, char *ext)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+File\+Extension (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{ext}
@@ -831,7 +824,7 @@ Optiene la extensión de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+File\+Name@{get\+File\+Name}}
 \index{get\+File\+Name@{get\+File\+Name}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+File\+Name(const char $\ast$path, char $\ast$name)}{getFileName(const char *path, char *name)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+File\+Name (
+\subsubsection[{\texorpdfstring{get\+File\+Name(const char $\ast$path, char $\ast$name)}{getFileName(const char *path, char *name)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+File\+Name (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path, }
 \item[{char $\ast$}]{name}
@@ -853,7 +846,7 @@ Optiene el nombre de un archivo.
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+Green@{get\+Green}}
 \index{get\+Green@{get\+Green}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+Green(int color)}{getGreen(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+Green (
+\subsubsection[{\texorpdfstring{get\+Green(int color)}{getGreen(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+Green (
 \begin{DoxyParamCaption}
 \item[{int}]{color}
 \end{DoxyParamCaption}
@@ -872,7 +865,7 @@ Componente verde
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+Red@{get\+Red}}
 \index{get\+Red@{get\+Red}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+Red(int color)}{getRed(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::get\+Red (
+\subsubsection[{\texorpdfstring{get\+Red(int color)}{getRed(int color)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::get\+Red (
 \begin{DoxyParamCaption}
 \item[{int}]{color}
 \end{DoxyParamCaption}
@@ -891,7 +884,7 @@ Componente roja
 \end{DoxyReturn}
 \index{I3D@{I3D}!get\+Runfile@{get\+Runfile}}
 \index{get\+Runfile@{get\+Runfile}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{get\+Runfile()}{getRunfile()}}]{\setlength{\rightskip}{0pt plus 5cm}char {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} $\ast$ I3\+D\+::get\+Runfile (
+\subsubsection[{\texorpdfstring{get\+Runfile()}{getRunfile()}}]{\setlength{\rightskip}{0pt plus 5cm}char I3\+D\+\_\+\+E\+X\+P\+O\+RT $\ast$ I3\+D\+::get\+Runfile (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
@@ -914,7 +907,7 @@ path de la aplicación
 )}\hypertarget{namespace_i3_d_abdb26f46aa1a52ea2f289b5c30122b75}{}\label{namespace_i3_d_abdb26f46aa1a52ea2f289b5c30122b75}
 \index{I3D@{I3D}!int\+To\+R\+GB@{int\+To\+R\+GB}}
 \index{int\+To\+R\+GB@{int\+To\+R\+GB}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{int\+To\+R\+G\+B(int color, int $\ast$red, int $\ast$green, int $\ast$blue)}{intToRGB(int color, int *red, int *green, int *blue)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::int\+To\+R\+GB (
+\subsubsection[{\texorpdfstring{int\+To\+R\+G\+B(int color, int $\ast$red, int $\ast$green, int $\ast$blue)}{intToRGB(int color, int *red, int *green, int *blue)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::int\+To\+R\+GB (
 \begin{DoxyParamCaption}
 \item[{int}]{color, }
 \item[{int $\ast$}]{red, }
@@ -939,7 +932,7 @@ Convierte un color entero a R\+GB.
 \end{DoxyParams}
 \index{I3D@{I3D}!is\+Directory@{is\+Directory}}
 \index{is\+Directory@{is\+Directory}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{is\+Directory(const char $\ast$path)}{isDirectory(const char *path)}}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::is\+Directory (
+\subsubsection[{\texorpdfstring{is\+Directory(const char $\ast$path)}{isDirectory(const char *path)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::is\+Directory (
 \begin{DoxyParamCaption}
 \item[{const char $\ast$}]{path}
 \end{DoxyParamCaption}
@@ -958,7 +951,7 @@ true si existe.
 \end{DoxyReturn}
 \index{I3D@{I3D}!is\+Outlier@{is\+Outlier}}
 \index{is\+Outlier@{is\+Outlier}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{is\+Outlier(const double temp, const double median, const double mad)}{isOutlier(const double temp, const double median, const double mad)}}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::is\+Outlier (
+\subsubsection[{\texorpdfstring{is\+Outlier(const double temp, const double median, const double mad)}{isOutlier(const double temp, const double median, const double mad)}}]{\setlength{\rightskip}{0pt plus 5cm}bool I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::is\+Outlier (
 \begin{DoxyParamCaption}
 \item[{const double}]{temp, }
 \item[{const double}]{median, }
@@ -967,7 +960,7 @@ true si existe.
 )}\hypertarget{namespace_i3_d_a21089b14dd66b55b189cda65bc2ac2ce}{}\label{namespace_i3_d_a21089b14dd66b55b189cda65bc2ac2ce}
 \index{I3D@{I3D}!laplacian\+Variance@{laplacian\+Variance}}
 \index{laplacian\+Variance@{laplacian\+Variance}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{laplacian\+Variance(const cv\+::\+Mat \&src)}{laplacianVariance(const cv::Mat &src)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::laplacian\+Variance (
+\subsubsection[{\texorpdfstring{laplacian\+Variance(const cv\+::\+Mat \&src)}{laplacianVariance(const cv::Mat &src)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::laplacian\+Variance (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Mat \&}]{src}
 \end{DoxyParamCaption}
@@ -1013,7 +1006,7 @@ Varianza del laplaciano.
 )}\hypertarget{namespace_i3_d_a1285f5405325e06442370507b6b08a4e}{}\label{namespace_i3_d_a1285f5405325e06442370507b6b08a4e}
 \index{I3D@{I3D}!module@{module}}
 \index{module@{module}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{module(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{module(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::module (
+\subsubsection[{\texorpdfstring{module(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{module(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::module (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{v}
 \end{DoxyParamCaption}
@@ -1134,7 +1127,7 @@ operator $>$=
 \end{DoxyReturn}
 \index{I3D@{I3D}!regression\+Linear\+XY@{regression\+Linear\+XY}}
 \index{regression\+Linear\+XY@{regression\+Linear\+XY}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{regression\+Linear\+X\+Y(const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)}{regressionLinearXY(const std::vector< cv::Point2i > &pts, double *m, double *b)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::regression\+Linear\+XY (
+\subsubsection[{\texorpdfstring{regression\+Linear\+X\+Y(const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)}{regressionLinearXY(const std::vector< cv::Point2i > &pts, double *m, double *b)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::regression\+Linear\+XY (
 \begin{DoxyParamCaption}
 \item[{const std\+::vector$<$ cv\+::\+Point2i $>$ \&}]{pts, }
 \item[{double $\ast$}]{m, }
@@ -1159,7 +1152,7 @@ coeficiente de correlacción
 \end{DoxyReturn}
 \index{I3D@{I3D}!regression\+Linear\+YX@{regression\+Linear\+YX}}
 \index{regression\+Linear\+YX@{regression\+Linear\+YX}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{regression\+Linear\+Y\+X(const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)}{regressionLinearYX(const std::vector< cv::Point2i > &pts, double *m, double *b)}}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::regression\+Linear\+YX (
+\subsubsection[{\texorpdfstring{regression\+Linear\+Y\+X(const std\+::vector$<$ cv\+::\+Point2i $>$ \&pts, double $\ast$m, double $\ast$b)}{regressionLinearYX(const std::vector< cv::Point2i > &pts, double *m, double *b)}}]{\setlength{\rightskip}{0pt plus 5cm}double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::regression\+Linear\+YX (
 \begin{DoxyParamCaption}
 \item[{const std\+::vector$<$ cv\+::\+Point2i $>$ \&}]{pts, }
 \item[{double $\ast$}]{m, }
@@ -1192,7 +1185,7 @@ coeficiente de correlacción
 )}\hypertarget{namespace_i3_d_a46d66cb1a9b5f02866f46a854c1ee75d}{}\label{namespace_i3_d_a46d66cb1a9b5f02866f46a854c1ee75d}
 \index{I3D@{I3D}!replace\+String@{replace\+String}}
 \index{replace\+String@{replace\+String}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{replace\+String(std\+::string $\ast$str, const std\+::string \&str\+\_\+old, const std\+::string \&str\+\_\+new)}{replaceString(std::string *str, const std::string &str_old, const std::string &str_new)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::replace\+String (
+\subsubsection[{\texorpdfstring{replace\+String(std\+::string $\ast$str, const std\+::string \&str\+\_\+old, const std\+::string \&str\+\_\+new)}{replaceString(std::string *str, const std::string &str_old, const std::string &str_new)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::replace\+String (
 \begin{DoxyParamCaption}
 \item[{std\+::string $\ast$}]{str, }
 \item[{const std\+::string \&}]{str\+\_\+old, }
@@ -1214,7 +1207,7 @@ Reemplaza una cadena por otra en un texto.
 \end{DoxyParams}
 \index{I3D@{I3D}!rgba\+To\+Int@{rgba\+To\+Int}}
 \index{rgba\+To\+Int@{rgba\+To\+Int}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{rgba\+To\+Int(int red, int green, int blue, int alpha)}{rgbaToInt(int red, int green, int blue, int alpha)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::rgba\+To\+Int (
+\subsubsection[{\texorpdfstring{rgba\+To\+Int(int red, int green, int blue, int alpha)}{rgbaToInt(int red, int green, int blue, int alpha)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::rgba\+To\+Int (
 \begin{DoxyParamCaption}
 \item[{int}]{red, }
 \item[{int}]{green, }
@@ -1242,7 +1235,7 @@ Color como entero
 \end{DoxyReturn}
 \index{I3D@{I3D}!rgb\+To\+Int@{rgb\+To\+Int}}
 \index{rgb\+To\+Int@{rgb\+To\+Int}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{rgb\+To\+Int(int red, int green, int blue)}{rgbToInt(int red, int green, int blue)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::rgb\+To\+Int (
+\subsubsection[{\texorpdfstring{rgb\+To\+Int(int red, int green, int blue)}{rgbToInt(int red, int green, int blue)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::rgb\+To\+Int (
 \begin{DoxyParamCaption}
 \item[{int}]{red, }
 \item[{int}]{green, }
@@ -1265,9 +1258,19 @@ Convierte un color R\+GB a entero.
 \begin{DoxyReturn}{Devuelve}
 Color como entero 
 \end{DoxyReturn}
+\index{I3D@{I3D}!rotation\+Matrix@{rotation\+Matrix}}
+\index{rotation\+Matrix@{rotation\+Matrix}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{rotation\+Matrix(double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$\+R)}{rotationMatrix(double omega, double phi, double kappa, std::array< std::array< double, 3 >, 3 > *R)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::rotation\+Matrix (
+\begin{DoxyParamCaption}
+\item[{double}]{omega, }
+\item[{double}]{phi, }
+\item[{double}]{kappa, }
+\item[{std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$}]{R}
+\end{DoxyParamCaption}
+)}\hypertarget{namespace_i3_d_a247ba2a50c6293c209753de4b2fea2f6}{}\label{namespace_i3_d_a247ba2a50c6293c209753de4b2fea2f6}
 \index{I3D@{I3D}!sort\+Idx@{sort\+Idx}}
 \index{sort\+Idx@{sort\+Idx}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{sort\+Idx(const std\+::vector$<$ T $>$ \&v)}{sortIdx(const std::vector< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ std\+::vector$<$int$>$ {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::sort\+Idx (
+\subsubsection[{\texorpdfstring{sort\+Idx(const std\+::vector$<$ T $>$ \&v)}{sortIdx(const std::vector< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ std\+::vector$<$int$>$ I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::sort\+Idx (
 \begin{DoxyParamCaption}
 \item[{const std\+::vector$<$ T $>$ \&}]{v}
 \end{DoxyParamCaption}
@@ -1286,7 +1289,7 @@ Vector con los indices ordenados
 \end{DoxyReturn}
 \index{I3D@{I3D}!sort\+Mat\+Cols@{sort\+Mat\+Cols}}
 \index{sort\+Mat\+Cols@{sort\+Mat\+Cols}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{sort\+Mat\+Cols(const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)}{sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::sort\+Mat\+Cols (
+\subsubsection[{\texorpdfstring{sort\+Mat\+Cols(const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)}{sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::sort\+Mat\+Cols (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Mat \&}]{in, }
 \item[{cv\+::\+Mat $\ast$}]{out, }
@@ -1308,7 +1311,7 @@ Ordena los valores de una matriz de mayor a menor por columnas.
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Mat\+Rows@{sort\+Mat\+Rows}}
 \index{sort\+Mat\+Rows@{sort\+Mat\+Rows}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{sort\+Mat\+Rows(const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)}{sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::sort\+Mat\+Rows (
+\subsubsection[{\texorpdfstring{sort\+Mat\+Rows(const cv\+::\+Mat \&in, cv\+::\+Mat $\ast$out, cv\+::\+Mat $\ast$idx)}{sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::sort\+Mat\+Rows (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Mat \&}]{in, }
 \item[{cv\+::\+Mat $\ast$}]{out, }
@@ -1330,7 +1333,7 @@ Ordena los valores de una matriz de mayor a menor por filas.
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Vector@{sort\+Vector}}
 \index{sort\+Vector@{sort\+Vector}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{sort\+Vector(std\+::vector$<$ T $>$ $\ast$v)}{sortVector(std::vector< T > *v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::sort\+Vector (
+\subsubsection[{\texorpdfstring{sort\+Vector(std\+::vector$<$ T $>$ $\ast$v)}{sortVector(std::vector< T > *v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::sort\+Vector (
 \begin{DoxyParamCaption}
 \item[{std\+::vector$<$ T $>$ $\ast$}]{v}
 \end{DoxyParamCaption}
@@ -1346,7 +1349,7 @@ Ordena un vector de menor a mayor.
 \end{DoxyParams}
 \index{I3D@{I3D}!sort\+Vector\+Inv@{sort\+Vector\+Inv}}
 \index{sort\+Vector\+Inv@{sort\+Vector\+Inv}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{sort\+Vector\+Inv(std\+::vector$<$ T $>$ $\ast$v)}{sortVectorInv(std::vector< T > *v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::sort\+Vector\+Inv (
+\subsubsection[{\texorpdfstring{sort\+Vector\+Inv(std\+::vector$<$ T $>$ $\ast$v)}{sortVectorInv(std::vector< T > *v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::sort\+Vector\+Inv (
 \begin{DoxyParamCaption}
 \item[{std\+::vector$<$ T $>$ $\ast$}]{v}
 \end{DoxyParamCaption}
@@ -1362,7 +1365,7 @@ Ordena un vector de mayor a menor.
 \end{DoxyParams}
 \index{I3D@{I3D}!split@{split}}
 \index{split@{split}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{split(const std\+::string \&in, std\+::vector$<$ std\+::string $>$ \&out, char $\ast$chs="","")}{split(const std::string &in, std::vector< std::string > &out, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::split (
+\subsubsection[{\texorpdfstring{split(const std\+::string \&in, std\+::vector$<$ std\+::string $>$ \&out, char $\ast$chs="","")}{split(const std::string &in, std::vector< std::string > &out, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::split (
 \begin{DoxyParamCaption}
 \item[{const std\+::string \&}]{in, }
 \item[{std\+::vector$<$ std\+::string $>$ \&}]{out, }
@@ -1396,7 +1399,7 @@ std::vector<std::string> out;
 \end{DoxyReturn}
 \index{I3D@{I3D}!split\+To\+Numbers@{split\+To\+Numbers}}
 \index{split\+To\+Numbers@{split\+To\+Numbers}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{split\+To\+Numbers(const std\+::string \&cad, std\+::vector$<$ int $>$ \&v\+Out, char $\ast$chs="","")}{splitToNumbers(const std::string &cad, std::vector< int > &vOut, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::split\+To\+Numbers (
+\subsubsection[{\texorpdfstring{split\+To\+Numbers(const std\+::string \&cad, std\+::vector$<$ int $>$ \&v\+Out, char $\ast$chs="","")}{splitToNumbers(const std::string &cad, std::vector< int > &vOut, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::split\+To\+Numbers (
 \begin{DoxyParamCaption}
 \item[{const std\+::string \&}]{cad, }
 \item[{std\+::vector$<$ int $>$ \&}]{v\+Out, }
@@ -1421,7 +1424,7 @@ Separa una cadena en un array de enteros.
 \end{DoxyReturn}
 \index{I3D@{I3D}!split\+To\+Numbers@{split\+To\+Numbers}}
 \index{split\+To\+Numbers@{split\+To\+Numbers}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{split\+To\+Numbers(const std\+::string \&cad, std\+::vector$<$ double $>$ \&v\+Out, char $\ast$chs="","")}{splitToNumbers(const std::string &cad, std::vector< double > &vOut, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::split\+To\+Numbers (
+\subsubsection[{\texorpdfstring{split\+To\+Numbers(const std\+::string \&cad, std\+::vector$<$ double $>$ \&v\+Out, char $\ast$chs="","")}{splitToNumbers(const std::string &cad, std::vector< double > &vOut, char *chs=",")}}]{\setlength{\rightskip}{0pt plus 5cm}int I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::split\+To\+Numbers (
 \begin{DoxyParamCaption}
 \item[{const std\+::string \&}]{cad, }
 \item[{std\+::vector$<$ double $>$ \&}]{v\+Out, }
@@ -1444,9 +1447,19 @@ Separa una cadena en un array de dobles.
 \begin{DoxyReturn}{Devuelve}
 (1) error 
 \end{DoxyReturn}
+\index{I3D@{I3D}!translate@{translate}}
+\index{translate@{translate}!I3D@{I3D}}
+\subsubsection[{\texorpdfstring{translate(const std\+::vector$<$ Line $>$ \&lines\+\_\+in, std\+::vector$<$ Line $>$ $\ast$lines\+\_\+out, int dx, int dy)}{translate(const std::vector< Line > &lines_in, std::vector< Line > *lines_out, int dx, int dy)}}]{\setlength{\rightskip}{0pt plus 5cm}void I3\+D\+::translate (
+\begin{DoxyParamCaption}
+\item[{const std\+::vector$<$ {\bf Line} $>$ \&}]{lines\+\_\+in, }
+\item[{std\+::vector$<$ {\bf Line} $>$ $\ast$}]{lines\+\_\+out, }
+\item[{int}]{dx, }
+\item[{int}]{dy}
+\end{DoxyParamCaption}
+)}\hypertarget{namespace_i3_d_af42b0e28a8fa1ad5200480835aec56b2}{}\label{namespace_i3_d_af42b0e28a8fa1ad5200480835aec56b2}
 \index{I3D@{I3D}!vector\+Angle@{vector\+Angle}}
 \index{vector\+Angle@{vector\+Angle}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{vector\+Angle(const cv\+::\+Point\+\_\+$<$ T $>$ \&v1, const cv\+::\+Point\+\_\+$<$ T $>$ \&v2)}{vectorAngle(const cv::Point_< T > &v1, const cv::Point_< T > &v2)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::vector\+Angle (
+\subsubsection[{\texorpdfstring{vector\+Angle(const cv\+::\+Point\+\_\+$<$ T $>$ \&v1, const cv\+::\+Point\+\_\+$<$ T $>$ \&v2)}{vectorAngle(const cv::Point_< T > &v1, const cv::Point_< T > &v2)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::vector\+Angle (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{v1, }
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{v2}
@@ -1468,14 +1481,14 @@ Devuelve el ángulo entre dos vectores.
 \end{DoxyReturn}
 \index{I3D@{I3D}!vector\+Angle\+OX@{vector\+Angle\+OX}}
 \index{vector\+Angle\+OX@{vector\+Angle\+OX}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{vector\+Angle\+O\+X(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{vectorAngleOX(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::vector\+Angle\+OX (
+\subsubsection[{\texorpdfstring{vector\+Angle\+O\+X(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{vectorAngleOX(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::vector\+Angle\+OX (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{v}
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily [inline]}}\hypertarget{namespace_i3_d_a4847541051837303bfc248cd2254c8cc}{}\label{namespace_i3_d_a4847541051837303bfc248cd2254c8cc}
 \index{I3D@{I3D}!vector\+Angle\+OY@{vector\+Angle\+OY}}
 \index{vector\+Angle\+OY@{vector\+Angle\+OY}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{vector\+Angle\+O\+Y(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{vectorAngleOY(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::vector\+Angle\+OY (
+\subsubsection[{\texorpdfstring{vector\+Angle\+O\+Y(const cv\+::\+Point\+\_\+$<$ T $>$ \&v)}{vectorAngleOY(const cv::Point_< T > &v)}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ double I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::vector\+Angle\+OY (
 \begin{DoxyParamCaption}
 \item[{const cv\+::\+Point\+\_\+$<$ T $>$ \&}]{v}
 \end{DoxyParamCaption}
@@ -1485,4 +1498,4 @@ Devuelve el ángulo entre dos vectores.
 \subsection{Documentación de las variables}
 \index{I3D@{I3D}!Video\+Stream@{Video\+Stream}}
 \index{Video\+Stream@{Video\+Stream}!I3D@{I3D}}
-\subsubsection[{\texorpdfstring{Video\+Stream}{VideoStream}}]{\setlength{\rightskip}{0pt plus 5cm}class {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} {\bf I3\+D\+::\+Video\+Stream}}\hypertarget{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}{}\label{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}
+\subsubsection[{\texorpdfstring{Video\+Stream}{VideoStream}}]{\setlength{\rightskip}{0pt plus 5cm}class I3\+D\+\_\+\+E\+X\+P\+O\+RT {\bf I3\+D\+::\+Video\+Stream}}\hypertarget{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}{}\label{namespace_i3_d_a58775d79e6c0d424468e795402091a0a}

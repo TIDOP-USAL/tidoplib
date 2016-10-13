@@ -5,13 +5,12 @@ var indexSectionsWithContent =
   2: "i",
   3: "cdfilmopstuvw",
   4: "_abcdefghijlmnoprstvw~",
-  5: "eflmnptvxyz",
+  5: "eflmnprtvxyz",
   6: "ilmprstuw",
   7: "lmprstv",
   8: "abcdefghlmnoprst",
-  9: "_acilpu",
-  10: "ceopt",
-  11: "lp"
+  9: "ceopt",
+  10: "lp"
 };
 
 var indexSectionNames =
@@ -25,9 +24,8 @@ var indexSectionNames =
   6: "typedefs",
   7: "enums",
   8: "enumvalues",
-  9: "defines",
-  10: "groups",
-  11: "pages"
+  9: "groups",
+  10: "pages"
 };
 
 var indexSectionLabels =
@@ -41,8 +39,7 @@ var indexSectionLabels =
   6: "&apos;typedefs&apos;",
   7: "Enumeraciones",
   8: "Valores de enumeraciones",
-  9: "&apos;defines&apos;",
-  10: "Grupos",
-  11: "Páginas"
+  9: "Grupos",
+  10: "Páginas"
 };
 

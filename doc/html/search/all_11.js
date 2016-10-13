@@ -62,6 +62,5 @@ var searchData=
   ['start',['START',['../namespace_i3_d.html#a0ce9cf7811476557a3d1be9da416cbd3ab078ffd28db767c502ac367053f6e0ac',1,'I3D']]],
   ['stop',['stop',['../class_i3_d_1_1_video_stream.html#a1d9f6dd120e21ea4fed67e48dc11d26e',1,'I3D::VideoStream']]],
   ['stopped',['STOPPED',['../namespace_i3_d.html#a0ce9cf7811476557a3d1be9da416cbd3a09d4d696b4e935115b9313e3c412509a',1,'I3D']]],
-  ['sub_5ftype',['sub_type',['../class_i3_d_1_1_transform.html#ac087b4b8b9acb1b11a6caa2231d598c7',1,'I3D::Transform']]],
-  ['switchflag',['switchFlag',['../class_i3_d_1_1_enum_flags.html#a8c834dc5942c140073152e281a86c71b',1,'I3D::EnumFlags']]]
+  ['sub_5ftype',['sub_type',['../class_i3_d_1_1_transform.html#ac087b4b8b9acb1b11a6caa2231d598c7',1,'I3D::Transform']]]
 ];

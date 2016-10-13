@@ -1,8 +1,6 @@
 var hierarchy =
 [
     [ "I3D::DiscreteFourierTrf", "class_i3_d_1_1_discrete_fourier_trf.html", null ],
-    [ "I3D::EnumFlags< T >", "class_i3_d_1_1_enum_flags.html", null ],
-    [ "I3D::EnumFlags< MessageOutput >", "class_i3_d_1_1_enum_flags.html", null ],
     [ "I3D::Features2D", "class_i3_d_1_1_features2_d.html", null ],
     [ "I3D::ImgProcessing", "class_i3_d_1_1_img_processing.html", [
       [ "I3D::BilateralFilter", "class_i3_d_1_1_bilateral_filter.html", null ],
@@ -35,7 +33,8 @@ var hierarchy =
       [ "I3D::ldHouh", "class_i3_d_1_1ld_houh.html", null ],
       [ "I3D::ldHouhFast", "class_i3_d_1_1ld_houh_fast.html", null ],
       [ "I3D::ldHouhP", "class_i3_d_1_1ld_houh_p.html", null ],
-      [ "I3D::ldLSD", "class_i3_d_1_1ld_l_s_d.html", null ]
+      [ "I3D::ldLSD", "class_i3_d_1_1ld_l_s_d.html", null ],
+      [ "I3D::ldLSWMS", "class_i3_d_1_1ld_l_s_w_m_s.html", null ]
     ] ],
     [ "I3D::LogMsg", "class_i3_d_1_1_log_msg.html", null ],
     [ "I3D::Matching", "class_i3_d_1_1_matching.html", null ],

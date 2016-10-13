@@ -104,7 +104,8 @@ $(document).ready(function(){initNavTree('group__trf_group.html','');});
 <a href="#groups">Módulos</a> &#124;
 <a href="#nested-classes">Clases</a> &#124;
 <a href="#enum-members">Enumeraciones</a> &#124;
-<a href="#func-members">Funciones</a>  </div>
+<a href="#func-members">Funciones</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Transformaciones</div>  </div>
 </div><!--header-->
@@ -131,17 +132,18 @@ Enumeraciones</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Funciones</h2></td></tr>
-<tr class="memitem:gade75ff2d290c3d31e95b624250c4c2a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trf_group.html#gade75ff2d290c3d31e95b624250c4c2a0">I3D::translate</a> (const std::vector&lt; Line &gt; &amp;lines_in, std::vector&lt; Line &gt; *lines_out, int dx, int dy)</td></tr>
-<tr class="memdesc:gade75ff2d290c3d31e95b624250c4c2a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aplica una traslación a un conjunto de segmentos.  <a href="group__trf_group.html#gade75ff2d290c3d31e95b624250c4c2a0">Más...</a><br /></td></tr>
-<tr class="separator:gade75ff2d290c3d31e95b624250c4c2a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaedbba4c545b8747f60628f382849b1fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trf_group.html#gaedbba4c545b8747f60628f382849b1fa">I3D::rotationMatrix</a> (double omega, double phi, double kappa, std::array&lt; std::array&lt; double, 3 &gt;, 3 &gt; *R)</td></tr>
-<tr class="separator:gaedbba4c545b8747f60628f382849b1fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad8eb1ca9e9b9c6e6d30f1f1b15dee818"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trf_group.html#gad8eb1ca9e9b9c6e6d30f1f1b15dee818">I3D::TrfMultiple&lt; T &gt;::transform</a> (const std::vector&lt; T &gt; &amp;in, std::vector&lt; T &gt; *out, bool bDirect=true) const  override</td></tr>
 <tr class="memdesc:gad8eb1ca9e9b9c6e6d30f1f1b15dee818"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aplica la transformación.  <a href="#gad8eb1ca9e9b9c6e6d30f1f1b15dee818">Más...</a><br /></td></tr>
 <tr class="separator:gad8eb1ca9e9b9c6e6d30f1f1b15dee818"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga30e6b58e89d4ad3657e1b6a74edc22cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trf_group.html#ga30e6b58e89d4ad3657e1b6a74edc22cc">I3D::TrfMultiple&lt; T &gt;::compute</a> (const std::vector&lt; T &gt; &amp;pts1, const std::vector&lt; T &gt; &amp;pts2) override</td></tr>
 <tr class="memdesc:ga30e6b58e89d4ad3657e1b6a74edc22cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calcula los parámetros de transformación.  <a href="#ga30e6b58e89d4ad3657e1b6a74edc22cc">Más...</a><br /></td></tr>
 <tr class="separator:ga30e6b58e89d4ad3657e1b6a74edc22cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:ga9fd1816708824e1c55f816cb7663ffc5"><td class="memItemLeft" align="right" valign="top">I3D_DEPRECATED(&quot;I3D::Translate::transform(const std::vector&lt;Segment&lt;sub_type&gt;&gt; &amp;in, std::vector&lt;Segment&lt;sub_type&gt;&gt; *out)&quot;) void I3D_EXPORT translate(const std void I3D_EXPOR&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__trf_group.html#ga9fd1816708824e1c55f816cb7663ffc5">I3D::rotationMatrix</a> )(double omega, double phi, double kappa, std::array&lt; std::array&lt; double, 3 &gt;, 3 &gt; *R)</td></tr>
+<tr class="memdesc:ga9fd1816708824e1c55f816cb7663ffc5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Aplica una traslación a un conjunto de segmentos.  <a href="group__trf_group.html#ga9fd1816708824e1c55f816cb7663ffc5">Más...</a><br /></td></tr>
+<tr class="separator:ga9fd1816708824e1c55f816cb7663ffc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Descripción detallada</h2>
 <p>Transformaciones geométricas </p>
@@ -241,44 +243,6 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="gaedbba4c545b8747f60628f382849b1fa"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="defs_8h.html#a83f373279ee1ca96b4003c673142ec1d">I3D_EXPORT</a> I3D::rotationMatrix </td>
-          <td>(</td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>omega</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>phi</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>kappa</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::array&lt; std::array&lt; double, 3 &gt;, 3 &gt; *&#160;</td>
-          <td class="paramname"><em>R</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a class="anchor" id="gad8eb1ca9e9b9c6e6d30f1f1b15dee818"></a>
 <div class="memitem">
 <div class="memproto">
@@ -333,38 +297,13 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a class="anchor" id="gade75ff2d290c3d31e95b624250c4c2a0"></a>
+<h2 class="groupheader">Documentación de las variables</h2>
+<a class="anchor" id="ga9fd1816708824e1c55f816cb7663ffc5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="defs_8h.html#a83f373279ee1ca96b4003c673142ec1d">I3D_EXPORT</a> I3D::translate </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="group___geometric_entities.html#ga483b43891a1b33d99406fdc397e9a445">Line</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lines_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="group___geometric_entities.html#ga483b43891a1b33d99406fdc397e9a445">Line</a> &gt; *&#160;</td>
-          <td class="paramname"><em>lines_out</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>dx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>dy</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
+          <td class="memname">I3D_DEPRECATED (&quot;I3D::Translate::transform(const std::vector&lt;Segment&lt;sub_type&gt;&gt; &amp;in, std::vector&lt;Segment&lt;sub_type&gt;&gt; *out)&quot;) void I3D_EXPORT translate( const std void I3D_EXPOR I3D::rotationMatrix) (double omega, double phi, double kappa, std::array&lt; std::array&lt; double, 3 &gt;, 3 &gt; *R)</td>
         </tr>
       </table>
 </div><div class="memdoc">

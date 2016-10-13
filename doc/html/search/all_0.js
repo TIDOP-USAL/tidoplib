@@ -1,11 +1,5 @@
 var searchData=
 [
-  ['_5fdouble_5fmax',['_DOUBLE_MAX',['../defs_8h.html#a14980b537f6b1a98bd83a112e20d1928',1,'defs.h']]],
-  ['_5fdouble_5fmin',['_DOUBLE_MIN',['../defs_8h.html#a5dd0423dbaa901d31ab6b07f83d9fcf0',1,'defs.h']]],
-  ['_5ffloat_5fmax',['_FLOAT_MAX',['../defs_8h.html#afade88c3b9f4c6b042c8fe40813ed366',1,'defs.h']]],
-  ['_5ffloat_5fmin',['_FLOAT_MIN',['../defs_8h.html#ada6119edbccfc6fef16fc2437573732f',1,'defs.h']]],
   ['_5fgetlocalextr',['_getLocalExtr',['../namespace_i3_d.html#ad5121bfd2f7a3db01fada22f9e94efbb',1,'I3D']]],
-  ['_5fint_5fmax',['_INT_MAX',['../defs_8h.html#aee4140a6210d4e864d6377af97884d90',1,'defs.h']]],
-  ['_5fint_5fmin',['_INT_MIN',['../defs_8h.html#aa85f7aaf2bce116f11bcda7b05fc9650',1,'defs.h']]],
   ['_5fmsg',['_msg',['../messages_8cpp.html#aede7c0a0b65938a66c60ed0455181f79',1,'_msg(const char *msg,...):&#160;messages.cpp'],['../messages_8h.html#aede7c0a0b65938a66c60ed0455181f79',1,'_msg(const char *msg,...):&#160;messages.cpp'],['../namespace_i3_d.html#a4ea725b6964a16cc51fa10eee1ab0044',1,'I3D::_msg()']]]
 ];

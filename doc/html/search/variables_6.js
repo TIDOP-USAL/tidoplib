@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type',['type',['../class_i3_d_1_1_img_processing.html#af87bd3404d91bca669b04af1f45cbff0',1,'I3D::ImgProcessing']]]
+  ['rotationmatrix',['rotationMatrix',['../group__trf_group.html#ga9fd1816708824e1c55f816cb7663ffc5',1,'I3D']]]
 ];

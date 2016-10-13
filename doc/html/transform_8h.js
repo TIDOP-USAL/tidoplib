@@ -10,6 +10,5 @@ var transform_8h =
       [ "PROJECTIVE", "transform_8h.html#gga175e1580b1ecbc0710ad48060d56c2a3a852f7bd2984c084e69c284da9279df7b", null ],
       [ "HELMERT_3D", "transform_8h.html#gga175e1580b1ecbc0710ad48060d56c2a3a984738e72c54b69efbf714641982b3fc", null ]
     ] ],
-    [ "rotationMatrix", "transform_8h.html#gaedbba4c545b8747f60628f382849b1fa", null ],
-    [ "translate", "transform_8h.html#gade75ff2d290c3d31e95b624250c4c2a0", null ]
+    [ "rotationMatrix", "transform_8h.html#ga9fd1816708824e1c55f816cb7663ffc5", null ]
 ];

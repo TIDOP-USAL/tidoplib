@@ -1,186 +1,21 @@
-\hypertarget{messages_8h}{}\section{Referencia del Archivo C\+:/\+Desarrollo/tidop/src/core/messages.h}
-\label{messages_8h}\index{C\+:/\+Desarrollo/tidop/src/core/messages.\+h@{C\+:/\+Desarrollo/tidop/src/core/messages.\+h}}
-{\ttfamily \#include $<$iostream$>$}\\*
-{\ttfamily \#include $<$memory$>$}\\*
-{\ttfamily \#include $<$mutex$>$}\\*
-{\ttfamily \#include \char`\"{}utils.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}core\textbackslash{}defs.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}core\textbackslash{}config.\+h\char`\"{}}\\*
-{\ttfamily \#include \char`\"{}core\textbackslash{}flags.\+h\char`\"{}}\\*
+\hypertarget{messages_8h}{}\section{Referencia del Archivo D\+:/\+Desarrollo/tidop/src/core/messages.h}
+\label{messages_8h}\index{D\+:/\+Desarrollo/tidop/src/core/messages.\+h@{D\+:/\+Desarrollo/tidop/src/core/messages.\+h}}
 \subsection*{Clases}
 \begin{DoxyCompactItemize}
 \item 
 class \hyperlink{class_i3_d_1_1_message}{I3\+D\+::\+Message}
-\begin{DoxyCompactList}\small\item\em \hyperlink{class_i3_d_1_1_message}{Message}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\end{DoxyCompactItemize}
 \subsection*{Namespaces}
 \begin{DoxyCompactItemize}
 \item 
  \hyperlink{namespace_i3_d}{I3D}
-\end{DoxyCompactItemize}
-\subsection*{\textquotesingle{}defines\textquotesingle{}}
-\begin{DoxyCompactItemize}
-\item 
-\#define \hyperlink{messages_8h_ad40673d3f6bf0d926c2e37c4e76833f3}{console\+Print\+Debug}(msg, ...)
-\item 
-\#define \hyperlink{messages_8h_a01defe936ec20ab423a6560406f934ed}{console\+Print\+Verbose}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a294aea8ca6863679cfc43bbb53ce278b}{console\+Print\+Info}(msg, ...)      ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a35f5faca8f4c3ba0cf28b5960c52ea1b}{console\+Print\+Warning}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_ad2806e5503d73f347babd4c36fdc34fe}{console\+Print\+Error}(msg, ...)    ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_aa8f6dfe5c149ba6a4a9d4c8ef0a7a926}{log\+Print\+Debug}(msg, ...)
-\item 
-\#define \hyperlink{messages_8h_a5b509d11d1006aa09e47c16e2a499743}{log\+Print\+Verbose}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);
-\item 
-\#define \hyperlink{messages_8h_ad09632304e688772e3a381cfbdf1f1a5}{log\+Print\+Info}(msg, ...)      ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);
-\item 
-\#define \hyperlink{messages_8h_a8f7757a0f4ea5e273e7b1874118ca6ec}{log\+Print\+Warning}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);
-\item 
-\#define \hyperlink{messages_8h_a6e535adf3d30c3ca086d6b711193c208}{log\+Print\+Error}(msg, ...)    ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);
-\item 
-\#define \hyperlink{messages_8h_a3b064e63c20ab23261c14601df647e14}{print\+Debug}(msg, ...)    ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+D\+E\+B\+UG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a3d1245841da6ef58c6f9ada046a09f9a}{print\+Verbose}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a945860858215c642411f6f9980fb95ac}{print\+Info}(msg, ...)      ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a5f7dffe92648787d77894dad8e3c5c1b}{print\+Warning}(msg, ...)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
-\item 
-\#define \hyperlink{messages_8h_a62c0c427f6aad640084f4ae93f6e3688}{print\+Error}(msg, ...)    ~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);
 \end{DoxyCompactItemize}
 \subsection*{Enumeraciones}
 \subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
 char $\ast$ \hyperlink{messages_8h_aede7c0a0b65938a66c60ed0455181f79}{\+\_\+msg} (const char $\ast$msg,...)
-\item 
-\hyperlink{namespace_i3_d_a67374982e3085e082db07f2941c693a0}{I3\+D\+::\+A\+L\+L\+O\+W\+\_\+\+B\+I\+T\+W\+I\+S\+E\+\_\+\+F\+L\+A\+G\+\_\+\+O\+P\+E\+R\+A\+T\+I\+O\+NS} (Message\+Output)
 \end{DoxyCompactItemize}
-
-
-\subsection{Documentación de los \textquotesingle{}defines\textquotesingle{}}
-\index{messages.\+h@{messages.\+h}!console\+Print\+Debug@{console\+Print\+Debug}}
-\index{console\+Print\+Debug@{console\+Print\+Debug}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{console\+Print\+Debug}{consolePrintDebug}}]{\setlength{\rightskip}{0pt plus 5cm}\#define console\+Print\+Debug(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)}\hypertarget{messages_8h_ad40673d3f6bf0d926c2e37c4e76833f3}{}\label{messages_8h_ad40673d3f6bf0d926c2e37c4e76833f3}
-\index{messages.\+h@{messages.\+h}!console\+Print\+Error@{console\+Print\+Error}}
-\index{console\+Print\+Error@{console\+Print\+Error}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{console\+Print\+Error}{consolePrintError}}]{\setlength{\rightskip}{0pt plus 5cm}\#define console\+Print\+Error(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_ad2806e5503d73f347babd4c36fdc34fe}{}\label{messages_8h_ad2806e5503d73f347babd4c36fdc34fe}
-\index{messages.\+h@{messages.\+h}!console\+Print\+Info@{console\+Print\+Info}}
-\index{console\+Print\+Info@{console\+Print\+Info}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{console\+Print\+Info}{consolePrintInfo}}]{\setlength{\rightskip}{0pt plus 5cm}\#define console\+Print\+Info(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a294aea8ca6863679cfc43bbb53ce278b}{}\label{messages_8h_a294aea8ca6863679cfc43bbb53ce278b}
-\index{messages.\+h@{messages.\+h}!console\+Print\+Verbose@{console\+Print\+Verbose}}
-\index{console\+Print\+Verbose@{console\+Print\+Verbose}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{console\+Print\+Verbose}{consolePrintVerbose}}]{\setlength{\rightskip}{0pt plus 5cm}\#define console\+Print\+Verbose(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a01defe936ec20ab423a6560406f934ed}{}\label{messages_8h_a01defe936ec20ab423a6560406f934ed}
-\index{messages.\+h@{messages.\+h}!console\+Print\+Warning@{console\+Print\+Warning}}
-\index{console\+Print\+Warning@{console\+Print\+Warning}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{console\+Print\+Warning}{consolePrintWarning}}]{\setlength{\rightskip}{0pt plus 5cm}\#define console\+Print\+Warning(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a35f5faca8f4c3ba0cf28b5960c52ea1b}{}\label{messages_8h_a35f5faca8f4c3ba0cf28b5960c52ea1b}
-\index{messages.\+h@{messages.\+h}!log\+Print\+Debug@{log\+Print\+Debug}}
-\index{log\+Print\+Debug@{log\+Print\+Debug}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{log\+Print\+Debug}{logPrintDebug}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Print\+Debug(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)}\hypertarget{messages_8h_aa8f6dfe5c149ba6a4a9d4c8ef0a7a926}{}\label{messages_8h_aa8f6dfe5c149ba6a4a9d4c8ef0a7a926}
-\index{messages.\+h@{messages.\+h}!log\+Print\+Error@{log\+Print\+Error}}
-\index{log\+Print\+Error@{log\+Print\+Error}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{log\+Print\+Error}{logPrintError}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Print\+Error(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);}\hypertarget{messages_8h_a6e535adf3d30c3ca086d6b711193c208}{}\label{messages_8h_a6e535adf3d30c3ca086d6b711193c208}
-\index{messages.\+h@{messages.\+h}!log\+Print\+Info@{log\+Print\+Info}}
-\index{log\+Print\+Info@{log\+Print\+Info}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{log\+Print\+Info}{logPrintInfo}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Print\+Info(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);}\hypertarget{messages_8h_ad09632304e688772e3a381cfbdf1f1a5}{}\label{messages_8h_ad09632304e688772e3a381cfbdf1f1a5}
-\index{messages.\+h@{messages.\+h}!log\+Print\+Verbose@{log\+Print\+Verbose}}
-\index{log\+Print\+Verbose@{log\+Print\+Verbose}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{log\+Print\+Verbose}{logPrintVerbose}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Print\+Verbose(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);}\hypertarget{messages_8h_a5b509d11d1006aa09e47c16e2a499743}{}\label{messages_8h_a5b509d11d1006aa09e47c16e2a499743}
-\index{messages.\+h@{messages.\+h}!log\+Print\+Warning@{log\+Print\+Warning}}
-\index{log\+Print\+Warning@{log\+Print\+Warning}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{log\+Print\+Warning}{logPrintWarning}}]{\setlength{\rightskip}{0pt plus 5cm}\#define log\+Print\+Warning(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG);}\hypertarget{messages_8h_a8f7757a0f4ea5e273e7b1874118ca6ec}{}\label{messages_8h_a8f7757a0f4ea5e273e7b1874118ca6ec}
-\index{messages.\+h@{messages.\+h}!print\+Debug@{print\+Debug}}
-\index{print\+Debug@{print\+Debug}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{print\+Debug}{printDebug}}]{\setlength{\rightskip}{0pt plus 5cm}\#define print\+Debug(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+D\+E\+B\+UG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a3b064e63c20ab23261c14601df647e14}{}\label{messages_8h_a3b064e63c20ab23261c14601df647e14}
-\index{messages.\+h@{messages.\+h}!print\+Error@{print\+Error}}
-\index{print\+Error@{print\+Error}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{print\+Error}{printError}}]{\setlength{\rightskip}{0pt plus 5cm}\#define print\+Error(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+E\+R\+R\+OR, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a62c0c427f6aad640084f4ae93f6e3688}{}\label{messages_8h_a62c0c427f6aad640084f4ae93f6e3688}
-\index{messages.\+h@{messages.\+h}!print\+Info@{print\+Info}}
-\index{print\+Info@{print\+Info}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{print\+Info}{printInfo}}]{\setlength{\rightskip}{0pt plus 5cm}\#define print\+Info(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+I\+N\+FO, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a945860858215c642411f6f9980fb95ac}{}\label{messages_8h_a945860858215c642411f6f9980fb95ac}
-\index{messages.\+h@{messages.\+h}!print\+Verbose@{print\+Verbose}}
-\index{print\+Verbose@{print\+Verbose}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{print\+Verbose}{printVerbose}}]{\setlength{\rightskip}{0pt plus 5cm}\#define print\+Verbose(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+V\+E\+R\+B\+O\+SE, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a3d1245841da6ef58c6f9ada046a09f9a}{}\label{messages_8h_a3d1245841da6ef58c6f9ada046a09f9a}
-\index{messages.\+h@{messages.\+h}!print\+Warning@{print\+Warning}}
-\index{print\+Warning@{print\+Warning}!messages.\+h@{messages.\+h}}
-\subsubsection[{\texorpdfstring{print\+Warning}{printWarning}}]{\setlength{\rightskip}{0pt plus 5cm}\#define print\+Warning(
-\begin{DoxyParamCaption}
-\item[{}]{msg, }
-\item[{}]{...}
-\end{DoxyParamCaption}
-)~Message\+::message(msg, \+\_\+\+\_\+\+V\+A\+\_\+\+A\+R\+G\+S\+\_\+\+\_\+).print( Message\+Level\+::\+M\+S\+G\+\_\+\+W\+A\+R\+N\+I\+NG, Message\+Output\+::\+M\+S\+G\+\_\+\+L\+OG $\vert$ Message\+Output\+::\+M\+S\+G\+\_\+\+C\+O\+N\+S\+O\+LE);}\hypertarget{messages_8h_a5f7dffe92648787d77894dad8e3c5c1b}{}\label{messages_8h_a5f7dffe92648787d77894dad8e3c5c1b}
 
 
 \subsection{Documentación de las funciones}

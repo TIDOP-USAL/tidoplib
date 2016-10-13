@@ -2,7 +2,6 @@ var _video_stream_8h =
 [
     [ "VideoWindow", "class_i3_d_1_1_video_window.html", "class_i3_d_1_1_video_window" ],
     [ "VideoStream", "class_i3_d_1_1_video_stream.html", "class_i3_d_1_1_video_stream" ],
-    [ "I3D_VIDEO_STREAM_H", "_video_stream_8h.html#a47373b1d467ad238d5430a2b886d7878", null ],
     [ "PositionChangeCallback", "_video_stream_8h.html#a923a852719565a9e40df22d8cd71281e", null ],
     [ "ReadCallback", "_video_stream_8h.html#a7005f50d43ac0b10e2f50ab09994f45b", null ],
     [ "ShowCallback", "_video_stream_8h.html#a65da91c3d8b7751e061aa6d8462ea890", null ],

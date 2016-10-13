@@ -7,6 +7,7 @@ var searchData=
   ['ldhouhfast',['ldHouhFast',['../class_i3_d_1_1ld_houh_fast.html#a750f01c43402983b0839ba47271a2dad',1,'I3D::ldHouhFast']]],
   ['ldhouhp',['ldHouhP',['../class_i3_d_1_1ld_houh_p.html#af281fdf68e939e11d7b26238e5448535',1,'I3D::ldHouhP']]],
   ['ldlsd',['ldLSD',['../class_i3_d_1_1ld_l_s_d.html#a3f2eba9f10daaeab35a1adc7f628c11a',1,'I3D::ldLSD']]],
+  ['ldlswms',['ldLSWMS',['../class_i3_d_1_1ld_l_s_w_m_s.html#a3de74908a087b8e6b0525a2f6c943568',1,'I3D::ldLSWMS']]],
   ['length',['length',['../class_i3_d_1_1_segment.html#a48dc929de83c7e1827e70e8fbf1c25c3',1,'I3D::Segment::length()'],['../class_i3_d_1_1_segment3_d.html#a3194ca3e7b47dd389a460a7609ee4c1c',1,'I3D::Segment3D::length()'],['../group___geometric_entities.html#ga6cfd96fd34bd41f5b201d69d70daa705',1,'I3D::length(const cv::Point_&lt; T &gt; &amp;v)'],['../group___geometric_entities.html#gadc4e42bc957a28f97e0d45d09d5e1db7',1,'I3D::length(const cv::Point3_&lt; T &gt; &amp;v)']]],
   ['linebuffer',['lineBuffer',['../group___geometric_entities.html#gaa2e0864c0027dbf1cf826970a30d47a0',1,'I3D']]],
   ['linedetector',['LineDetector',['../class_i3_d_1_1_line_detector.html#a337305d13282d028b427787271e8d53d',1,'I3D::LineDetector']]],

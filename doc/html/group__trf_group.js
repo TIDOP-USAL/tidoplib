@@ -36,7 +36,6 @@ var group__trf_group =
       [ "HELMERT_3D", "group__trf_group.html#gga175e1580b1ecbc0710ad48060d56c2a3a984738e72c54b69efbf714641982b3fc", null ]
     ] ],
     [ "compute", "group__trf_group.html#ga30e6b58e89d4ad3657e1b6a74edc22cc", null ],
-    [ "rotationMatrix", "group__trf_group.html#gaedbba4c545b8747f60628f382849b1fa", null ],
     [ "transform", "group__trf_group.html#gad8eb1ca9e9b9c6e6d30f1f1b15dee818", null ],
-    [ "translate", "group__trf_group.html#gade75ff2d290c3d31e95b624250c4c2a0", null ]
+    [ "rotationMatrix", "group__trf_group.html#ga9fd1816708824e1c55f816cb7663ffc5", null ]
 ];

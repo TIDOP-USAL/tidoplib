@@ -18,14 +18,15 @@ class \hyperlink{class_i3_d_1_1_trf_multiple}{I3\+D\+::\+Trf\+Multiple$<$ T $>$}
 \subsection*{Funciones}
 \begin{DoxyCompactItemize}
 \item 
-void \hyperlink{group__trf_group_gade75ff2d290c3d31e95b624250c4c2a0}{I3\+D\+::translate} (const std\+::vector$<$ Line $>$ \&lines\+\_\+in, std\+::vector$<$ Line $>$ $\ast$lines\+\_\+out, int dx, int dy)
-\begin{DoxyCompactList}\small\item\em Aplica una traslación a un conjunto de segmentos. \end{DoxyCompactList}\item 
-void \hyperlink{group__trf_group_gaedbba4c545b8747f60628f382849b1fa}{I3\+D\+::rotation\+Matrix} (double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)
-\item 
 void \hyperlink{group__trf_group_gad8eb1ca9e9b9c6e6d30f1f1b15dee818}{I3\+D\+::\+Trf\+Multiple$<$ T $>$\+::transform} (const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override
 \begin{DoxyCompactList}\small\item\em Aplica la transformación. \end{DoxyCompactList}\item 
 bool \hyperlink{group__trf_group_ga30e6b58e89d4ad3657e1b6a74edc22cc}{I3\+D\+::\+Trf\+Multiple$<$ T $>$\+::compute} (const std\+::vector$<$ T $>$ \&pts1, const std\+::vector$<$ T $>$ \&pts2) override
 \begin{DoxyCompactList}\small\item\em Calcula los parámetros de transformación. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+I3\+D\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED(\char`\"{}I3\+D\+::\+Translate\+::transform(const std\+::vector$<$Segment$<$sub\+\_\+type$>$$>$ \&in, std\+::vector$<$Segment$<$sub\+\_\+type$>$$>$ $\ast$out)\char`\"{}) void I3\+D\+\_\+\+E\+X\+P\+O\+RT translate(const std void I3\+D\+\_\+\+E\+X\+P\+OR \hyperlink{group__trf_group_ga9fd1816708824e1c55f816cb7663ffc5}{I3\+D\+::rotation\+Matrix} )(double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)
+\begin{DoxyCompactList}\small\item\em Aplica una traslación a un conjunto de segmentos. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
 
 \subsection{Descripción detallada}
@@ -89,16 +90,6 @@ Verdadero si el calculo se ha efectuado de forma correcta
 
 Implementa \hyperlink{class_i3_d_1_1_transform_a909a4033f9fab3f091b433b9e2261208}{I3\+D\+::\+Transform$<$ T $>$}.
 
-\index{Transformaciones@{Transformaciones}!rotation\+Matrix@{rotation\+Matrix}}
-\index{rotation\+Matrix@{rotation\+Matrix}!Transformaciones@{Transformaciones}}
-\subsubsection[{\texorpdfstring{rotation\+Matrix(double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$\+R)}{rotationMatrix(double omega, double phi, double kappa, std::array< std::array< double, 3 >, 3 > *R)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::rotation\+Matrix (
-\begin{DoxyParamCaption}
-\item[{double}]{omega, }
-\item[{double}]{phi, }
-\item[{double}]{kappa, }
-\item[{std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$}]{R}
-\end{DoxyParamCaption}
-)}\hypertarget{group__trf_group_gaedbba4c545b8747f60628f382849b1fa}{}\label{group__trf_group_gaedbba4c545b8747f60628f382849b1fa}
 \index{Transformaciones@{Transformaciones}!transform@{transform}}
 \index{transform@{transform}!Transformaciones@{Transformaciones}}
 \subsubsection[{\texorpdfstring{transform(const std\+::vector$<$ T $>$ \&in, std\+::vector$<$ T $>$ $\ast$out, bool b\+Direct=true) const  override}{transform(const std::vector< T > &in, std::vector< T > *out, bool bDirect=true) const  override}}]{\setlength{\rightskip}{0pt plus 5cm}template$<$typename T $>$ void {\bf I3\+D\+::\+Trf\+Multiple}$<$ T $>$\+::transform (
@@ -125,16 +116,12 @@ Aplica la transformación.
 
 Implementa \hyperlink{class_i3_d_1_1_transform_adbec7381bfc66b4a766a00fdf16de0fe}{I3\+D\+::\+Transform$<$ T $>$}.
 
-\index{Transformaciones@{Transformaciones}!translate@{translate}}
-\index{translate@{translate}!Transformaciones@{Transformaciones}}
-\subsubsection[{\texorpdfstring{translate(const std\+::vector$<$ Line $>$ \&lines\+\_\+in, std\+::vector$<$ Line $>$ $\ast$lines\+\_\+out, int dx, int dy)}{translate(const std::vector< Line > &lines_in, std::vector< Line > *lines_out, int dx, int dy)}}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf I3\+D\+\_\+\+E\+X\+P\+O\+RT} I3\+D\+::translate (
-\begin{DoxyParamCaption}
-\item[{const std\+::vector$<$ {\bf Line} $>$ \&}]{lines\+\_\+in, }
-\item[{std\+::vector$<$ {\bf Line} $>$ $\ast$}]{lines\+\_\+out, }
-\item[{int}]{dx, }
-\item[{int}]{dy}
-\end{DoxyParamCaption}
-)}\hypertarget{group__trf_group_gade75ff2d290c3d31e95b624250c4c2a0}{}\label{group__trf_group_gade75ff2d290c3d31e95b624250c4c2a0}
+
+
+\subsection{Documentación de las variables}
+\index{Transformaciones@{Transformaciones}!rotation\+Matrix@{rotation\+Matrix}}
+\index{rotation\+Matrix@{rotation\+Matrix}!Transformaciones@{Transformaciones}}
+\subsubsection[{\texorpdfstring{rotation\+Matrix}{rotationMatrix}}]{\setlength{\rightskip}{0pt plus 5cm}I3\+D\+\_\+\+D\+E\+P\+R\+E\+C\+A\+T\+ED (\char`\"{}I3\+D\+::\+Translate\+::transform(const std\+::vector$<$Segment$<$sub\+\_\+type$>$$>$ \&in, std\+::vector$<$Segment$<$sub\+\_\+type$>$$>$ $\ast$out)\char`\"{}) void I3\+D\+\_\+\+E\+X\+P\+O\+RT translate( const std void I3\+D\+\_\+\+E\+X\+P\+OR I3\+D\+::rotation\+Matrix) (double omega, double phi, double kappa, std\+::array$<$ std\+::array$<$ double, 3 $>$, 3 $>$ $\ast$R)}\hypertarget{group__trf_group_ga9fd1816708824e1c55f816cb7663ffc5}{}\label{group__trf_group_ga9fd1816708824e1c55f816cb7663ffc5}
 
 
 Aplica una traslación a un conjunto de segmentos. 

@@ -10,7 +10,6 @@ var searchData=
   ['intersectwindows',['intersectWindows',['../group___geometric_entities.html#ga16ec870ad1dfb5178445d023231183e8',1,'I3D']]],
   ['inttorgb',['intToRGB',['../namespace_i3_d.html#a80820a733987b37c8e74aa8eedd464f6',1,'I3D']]],
   ['inverse',['inverse',['../class_i3_d_1_1_discrete_fourier_trf.html#aa6f6a2e71d2dc2b5b3beca65913416a0',1,'I3D::DiscreteFourierTrf']]],
-  ['isactive',['isActive',['../class_i3_d_1_1_enum_flags.html#a5d4b2ff01155f7385cf11a7f77431c2c',1,'I3D::EnumFlags']]],
   ['iscollinearpoints',['isCollinearPoints',['../group___geometric_entities.html#gaa7aa32d175a13ad9ac23bfe016754b1f',1,'I3D']]],
   ['isdirectory',['isDirectory',['../namespace_i3_d.html#a9e1576d9f6cf5fafde1df4088c32839a',1,'I3D']]],
   ['isempty',['isEmpty',['../group___geometric_entities.html#ga538a75457375309a2a519a8b40185bf3',1,'I3D::Window']]],
