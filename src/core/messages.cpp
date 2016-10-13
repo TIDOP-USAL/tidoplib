@@ -146,6 +146,7 @@ std::string Message::messageOutput(const MessageLevel &msgLevel, const char *fil
 void Message::_print(const MessageLevel &level, const MessageOutput &output, const std::string &msgOut)
 {
   EnumFlags<MessageOutput> flag(output);
+#ifdef  I3D_ENABLE_CONSOLE
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
 #ifdef WIN32
     HANDLE h = GetStdHandle((level == MessageLevel::MSG_ERROR) ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
@@ -167,6 +168,9 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
     //fprintf (stream, "%s", command);
 #endif
   }
+
+#endif //I3D_ENABLE_CONSOLE
+
 
   if (flag.isActive( MessageOutput::MSG_LOG )) {
     if (sLogFile.empty()) {

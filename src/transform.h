@@ -13,6 +13,7 @@
 #include "opencv2/calib3d.hpp"
 
 #include "core\defs.h"
+#include "core\messages.h"
 #include "geometric_entities\segment.h"
 
 namespace I3D
@@ -233,7 +234,8 @@ void TrfMultiple<T>::transform(const std::vector<T> &in, std::vector<T> *out, bo
 template<typename T> inline
 bool TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 {
-  printf("'compute' no esta soportado para TrfMultiple");
+  printError("'compute' no esta soportado para TrfMultiple");
+  COMPILER_WARNING("'compute' no esta soportado para TrfMultiple")
   return false;
 }
 
@@ -476,7 +478,7 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
         translate.x = C.at<sub_type>(2);
         translate.y = C.at<sub_type>(3);
       } catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
       }
       delete[] a;
       delete[] b;
@@ -688,8 +690,8 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
         r1 = C.at<sub_type>(0);
         r2 = C.at<sub_type>(1);
         angle = acos(r1);
-      } catch (...) {
-        printf("...");
+      } catch (std::exception &e) {
+        printError(e.what());
       }
       delete[] a;
       delete[] b;
@@ -955,7 +957,7 @@ bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
         rotation = atan2(b, a);
         scale = sqrt(a*a + b*b);
       } catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
       }
       delete[] A;
       delete[] B;
@@ -1293,7 +1295,7 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
         mScaleY = sqrt(c*c + d*d);
       }
       catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
       }
       delete[] A;
       delete[] B;
@@ -1305,47 +1307,10 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 template<typename T> inline
 void Afin<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
 {
-//#ifdef _DEBUG
-  //double startTick, time;
-  //startTick = (double)cv::getTickCount();
-//#endif
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
     transform(in[i], &(*out)[i], bDirect);
   }
-
-  //int cores = std::thread::hardware_concurrency();
-  //std::vector<std::thread> workers;
-
-  //size_t n = in.size();
-  //size_t rows = n / cores;
-  //size_t extra = n % cores;
-  //size_t start = 0; // each thread does [start..end)
-  //size_t end = rows;
-
-  //auto code = [&/*n, &in, out, bDirect*/](size_t start, size_t end)
-  //{
-  //  for (size_t i = start; i < end; i++) {
-  //    transform(in[i], &(*out)[i], bDirect);
-  //  }
-  //};
-
-
-  //for (size_t t = 1; t <= cores; t++) {
-  //  if (t == cores) // last thread does extra rows:
-  //    end += extra;
-  //  workers.push_back(std::thread(code, start, end));
-  //  start = end;
-  //  end = start + rows;
-  //}
-
-  //for (std::thread& t : workers)
-  //  t.join();
-//#ifdef _DEBUG
-  //time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  //printf("\nTime [s]: %.3f\n", time);
-//#endif
-
 }
 
 template<typename T> inline
@@ -1418,13 +1383,15 @@ void Afin<T>::update()
   
   // Transformación inversa
   double det = a * d - c * b;
-  if (!det) printf("determinante nulo"); //devolver error
-  ai = d / det;
-  bi = -b / det;
-  ci = -c / det;
-  di = a / det;
-  x0i = (-d * x0 + b * y0) / det;
-  y0i = (-a * y0 + c * x0) / det;
+  if (!det) printError("Determinante nulo");
+  else {
+    ai = d / det;
+    bi = -b / det;
+    ci = -c / det;
+    di = a / det;
+    x0i = (-d * x0 + b * y0) / det;
+    y0i = (-a * y0 + c * x0) / det;
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -1665,7 +1632,7 @@ bool Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
         h = C.at<double>(7);
       }
       catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
       }
       delete[] A;
       delete[] B;
@@ -1729,15 +1696,19 @@ void Projective<T>::update()
 {
   // Transformación inversa
   double aux = a * e - b * d;
-  if (!aux) printf("División por cero"); //devolver error
-  ai = (e - f * h) / aux;
-  bi = (c * h - b) / aux;
-  ci = (b * f - c * e) / aux;
-  di = (f * g - d) / aux;
-  ei = (a - c * g) / aux;
-  fi = (c * d - a * f) / aux;
-  gi = (d * h - e * g) / aux;
-  hi = (b * g - a * h) / aux;
+  if (!aux) {
+    printError("División por cero");
+  } else {
+    ai = (e - f * h) / aux;
+    bi = (c * h - b) / aux;
+    ci = (b * f - c * e) / aux;
+    di = (f * g - d) / aux;
+    ei = (a - c * g) / aux;
+    fi = (c * d - a * f) / aux;
+    gi = (d * h - e * g) / aux;
+    hi = (b * g - a * h) / aux;
+  }
+
 }
 
 /*! \} */ // end of trf2DGroup
@@ -2021,7 +1992,7 @@ bool Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
         //rotation = atan2(b, a);
         //mScale = sqrt(a*a + b*b);
       } catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
       }
       //delete[] A;
       //delete[] B;

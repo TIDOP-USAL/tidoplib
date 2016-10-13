@@ -3,6 +3,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
+#include "core\messages.h"
 #include "utils.h"
 #include "Logger.h"
 #include "geometric_entities\segment.h"
@@ -85,7 +86,7 @@ int createDir(const char *path)
       try {
         system(mkdir.c_str());
       } catch (std::exception &e) {
-        printf(e.what());
+        printError(e.what());
         return -1;
       }
     }
@@ -104,7 +105,7 @@ int deleteDir(const char *path, bool confirm)
     try {
       system(delDir.c_str());
     } catch (std::exception &e) {
-      printf(e.what());
+      printError(e.what());
       return -1;
     }
     return 0;
@@ -135,7 +136,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs)
     }
   } catch (std::exception &e) {
     vOut.resize(0);
-    printf(e.what());
+    printError(e.what());
     r_err = 1;
   }
 
@@ -162,7 +163,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs)
     }
   } catch (std::exception &e) {
     vOut.resize(0);
-    printf(e.what());
+    printError(e.what());
     r_err = 1;
   }
 
@@ -268,7 +269,7 @@ int split(const std::string &in, std::vector<std::string> &out, char *chs)
       token = strtok(NULL, chs);
     }
   } catch (std::exception &e) {
-    printf(e.what());
+    printError(e.what());
     r_err = 1;
   }
   free(dup);
@@ -409,7 +410,7 @@ int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
     cv::sortIdx(in, *idx, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printf(e.what());
+    printError(e.what());
     iret = -1;
   }
   return iret;
@@ -423,7 +424,7 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
     cv::sortIdx(in, *idx, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printf(e.what());
+    printError(e.what());
     iret = -1;
   }
   return iret;
@@ -460,7 +461,7 @@ void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, 
 
 double decimalDegreesToRadians(double decimalDegrees)
 {
-  return decimalDegrees * I3D_PI / 180.;
+  return decimalDegrees * I3D_DEG_TO_RAD;
 }
 
 double decimalDegreesToGradians(double decimalDegrees)
@@ -475,12 +476,12 @@ void radiansToDegrees(double rad, int *degrees, int *minutes, int *seconds)
 
 double radiansToDecimalDegrees(double radians)
 { 
-  return radians * 180. / I3D_PI;
+  return radians * I3D_RAD_TO_DEG;
 }
 
 double radiansToGradians(double radians)
 {
-  return radians * 200. / I3D_PI;
+  return radians * I3D_RAD_TO_GRAD;
 }
 
 void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds)
@@ -495,10 +496,7 @@ double gradiansToDecimalDegrees(double gradians)
 
 double gradiansToRadians(double gradians)
 {
-  return gradians * I3D_PI / 200;
+  return gradians * I3D_GRAD_TO_RAD;
 }
-
-
-
 
 } // End namespace I3D

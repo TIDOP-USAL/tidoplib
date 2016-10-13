@@ -3,6 +3,7 @@
 #include "opencv2/imgproc.hpp"
 
 #include "matching.h"
+#include "core\messages.h"
 
 namespace I3D
 {
@@ -23,7 +24,7 @@ int Features2D::detectKeyPoints(const cv::Mat &img, std::vector<cv::KeyPoint> *_
       if (_keyPoints) *_keyPoints = mKeyPoints;
       iret = static_cast<int>(mKeyPoints.size());
     } catch (cv::Exception &e) {
-      printf(e.what());
+      printError(e.what());
     }
   } else if (_keyPoints) _keyPoints->clear();
   return iret;
@@ -35,7 +36,7 @@ void Features2D::calcDescriptor(const cv::Mat &img, std::vector<cv::KeyPoint> *_
     try{
       mDescriptorExtractor->compute(img, !_keyPoints ? mKeyPoints : *_keyPoints, mDescriptor);
     } catch (cv::Exception &e) {
-      printf(e.what());
+      printError(e.what());
     }
     if (_descriptor) mDescriptor.copyTo(*_descriptor);
   }
@@ -76,7 +77,7 @@ int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std:
   try {
     if (mDescriptorMatcher) mDescriptorMatcher->match(getAppropriateFormat( descriptor1), getAppropriateFormat( descriptor2 ), mMatches);
   } catch (cv::Exception &e) {
-    printf(e.what());
+    printError(e.what());
   }
   
   if (_matches) *_matches = mMatches;

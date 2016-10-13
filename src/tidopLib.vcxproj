@@ -104,6 +104,7 @@
   <ItemGroup>
     <ClInclude Include="core\config.h" />
     <ClInclude Include="core\defs.h" />
+    <ClInclude Include="core\flags.h" />
     <ClInclude Include="core\messages.h" />
     <ClInclude Include="fourier.h" />
     <ClInclude Include="geometric_entities\operations.h" />

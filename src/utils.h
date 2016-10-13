@@ -613,6 +613,17 @@ double I3D_EXPORT gradiansToRadians(double gradians);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 //http://stackoverflow.com/questions/21657627/what-is-the-type-signature-of-a-c11-1y-lambda-function/21665705#21665705
 //http://stackoverflow.com/questions/21738775/c11-how-to-write-a-wrapper-function-to-make-stdfunction-objects
 

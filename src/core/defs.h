@@ -21,13 +21,17 @@
 #define I3D_PI   3.1415926535897932384626433832795
 #define I3D_2PI  6.283185307179586476925286766559
 
+#define I3D_RAD_TO_DEG	57.295779513082320876798154814105
+#define I3D_DEG_TO_RAD	0.01745329251994329576923690768489
+#define I3D_RAD_TO_GRAD	63.661977236758134307553505349006
+#define I3D_GRAD_TO_RAD	0.0157079632679489661923132169164
+
 #define _INT_MAX std::numeric_limits<int>().max()
 #define _INT_MIN -std::numeric_limits<int>().max()
 #define _DOUBLE_MAX std::numeric_limits<double>().max()
 #define _DOUBLE_MIN -std::numeric_limits<double>().max()
 #define _FLOAT_MAX std::numeric_limits<float>().max()
 #define _FLOAT_MIN -std::numeric_limits<float>().max()
-
 
 
 #if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3DAPI_EXPORTS
@@ -66,6 +70,17 @@
 #  endif
 #endif
 
+// Mensajes de error y warning para mostrar al compilar
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
+
+#if _MSC_VER
+#  define COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#else
+// Ver si funciona _Pragma()
+#  define COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#endif
 
 // __FUNCTION__ no es estandar (Es de Visual Studio).
 // __func__ es valida a partir de C99 / C++11 

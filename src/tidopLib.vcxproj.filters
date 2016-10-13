@@ -122,5 +122,8 @@
     <ClInclude Include="core\messages.h">
       <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
+    <ClInclude Include="core\flags.h">
+      <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -387,6 +387,16 @@ Window<T> moveWindow(const Window<T> &w, T dx, T dy)
   return w_return;
 }
 
+
+
+/*!
+ * \brief Convierte una ventana a un Rect de OpenCV
+ * \param[in] w Ventana que se va a expandir
+ * \return Ventana resultante
+ */
+cv::Rect I3D_EXPORT windowToCvRect(WindowI w);
+
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace I3D
