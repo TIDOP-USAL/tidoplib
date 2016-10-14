@@ -231,7 +231,7 @@ void onRun(VideoStream *strmVideo, void* userdata)
                   // Busqueda del máximo valor de desplazamiento
                   std::vector<Point> vMagnitudes;
                   cv::Point ptMax;
-                  float maxval = _FLOAT_MIN;
+                  float maxval = I3D_FLOAT_MIN;
                   for (int ir = 0; ir < normMag.rows; ir++) {
                     cv::Point pt(cvRound(m * ir + b), ir);
                     if (pt.x >= 0 && pt.x < normMag.cols) {

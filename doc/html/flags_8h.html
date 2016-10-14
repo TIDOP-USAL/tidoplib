@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Tidop Lib: Referencia del Archivo C:/Desarrollo/tidop/src/core/flags.h</title>
+<title>Tidop Lib: Referencia del Archivo D:/Desarrollo/tidop/src/core/flags.h</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -108,8 +108,7 @@ $(document).ready(function(){initNavTree('flags_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Clases</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#define-members">'defines'</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle">
 <div class="title">Referencia del Archivo flags.h</div>  </div>
 </div><!--header-->
@@ -127,32 +126,7 @@ Clases</h2></td></tr>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespace_i3_d"><td class="memItemLeft" align="right" valign="top"> &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespace_i3_d.html">I3D</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-'defines'</h2></td></tr>
-<tr class="memitem:a074adf7dfa31622c8512eec03e9b9528"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="flags_8h.html#a074adf7dfa31622c8512eec03e9b9528">ALLOW_BITWISE_FLAG_OPERATIONS</a>(T_FLAG)</td></tr>
-<tr class="memdesc:a074adf7dfa31622c8512eec03e9b9528"><td class="mdescLeft">&#160;</td><td class="mdescRight">Permite operaciones a nivel de bit con un 'enum class'.  <a href="#a074adf7dfa31622c8512eec03e9b9528">Más...</a><br /></td></tr>
-<tr class="separator:a074adf7dfa31622c8512eec03e9b9528"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Documentación de los 'defines'</h2>
-<a class="anchor" id="a074adf7dfa31622c8512eec03e9b9528"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define ALLOW_BITWISE_FLAG_OPERATIONS</td>
-          <td>(</td>
-          <td class="paramtype">&#160;</td>
-          <td class="paramname">T_FLAG</td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<b>Valor:</b><div class="fragment"><div class="line"><span class="keyword">inline</span> T_FLAG operator | (<span class="keyword">const</span> T_FLAG flag1, <span class="keyword">const</span> T_FLAG flag2) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T_FLAG<span class="keyword">&gt;</span> ( <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag1) | <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag2) ); } \</div><div class="line">inline T_FLAG operator &amp; (<span class="keyword">const</span> T_FLAG flag1, <span class="keyword">const</span> T_FLAG flag2) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T_FLAG<span class="keyword">&gt;</span> ( <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag1) &amp; <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag2) ); } \</div><div class="line">inline T_FLAG operator ^ (<span class="keyword">const</span> T_FLAG flag1, <span class="keyword">const</span> T_FLAG flag2) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T_FLAG<span class="keyword">&gt;</span> ( <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag1) ^ <span class="keyword">static_cast&lt;</span>std::underlying_type&lt;T_FLAG&gt;::type<span class="keyword">&gt;</span>(flag2) ); } \</div><div class="line">inline T_FLAG operator ~ (<span class="keyword">const</span> T_FLAG flag) { <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>T_FLAG<span class="keyword">&gt;</span> ( ~static_cast&lt;std::underlying_type&lt;T_FLAG&gt;::type&gt;(flag) ); }</div></div><!-- fragment -->
-<p>Permite operaciones a nivel de bit con un 'enum class'. </p>
-<p>Debe añadirse debajo de la declaración del enum </p><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;enum class ePrueba2 : int8_t {</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160; flag01 = (1 &lt;&lt; 0),</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; flag02 = (1 &lt;&lt; 1),</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; flag03 = (1 &lt;&lt; 2),</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; flag04 = (1 &lt;&lt; 3),</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; flag05 = (1 &lt;&lt; 4),</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; flag06 = (1 &lt;&lt; 5),</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; flag07 = (1 &lt;&lt; 6)</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;};</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div><div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;ALLOW_BITWISE_FLAG_OPERATIONS(ePrueba2)</div></div><!-- fragment --> 
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

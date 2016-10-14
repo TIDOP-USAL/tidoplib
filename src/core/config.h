@@ -1,7 +1,7 @@
 #ifndef I3D_CONFIG_H
 #define I3D_CONFIG_H
 
-// Cabecera para configuración 
+/* Cabecera para configuración */
 
 ///*! \mainpage Página principal
 // *
@@ -17,6 +17,7 @@
 // */
 
 // Manejo de errores como log y/o mensajes de consola
+
 #define I3D_MESSAGE_HANDLER
 
 // Mensajes por consola

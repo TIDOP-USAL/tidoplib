@@ -50,36 +50,36 @@ TEST(windowIntersection)
   EXPECT_EQ(50,w.pt2.y);
 
   w = windowIntersection(WindowI(cv::Point(0,0),cv::Point(100,100)), WindowI(cv::Point(150,150),cv::Point(200,200)));
-  EXPECT_EQ(_INT_MAX,w.pt1.x);
-  EXPECT_EQ(_INT_MAX,w.pt1.y);
-  EXPECT_EQ(_INT_MIN,w.pt2.x);
-  EXPECT_EQ(_INT_MIN,w.pt2.y);
+  EXPECT_EQ(I3D_INT_MAX,w.pt1.x);
+  EXPECT_EQ(I3D_INT_MAX,w.pt1.y);
+  EXPECT_EQ(I3D_INT_MIN,w.pt2.x);
+  EXPECT_EQ(I3D_INT_MIN,w.pt2.y);
 }
 
 // Constructor por defecto
 
 TEST(WindowI, DefaultConstructor) {
   const WindowI w;
-  EXPECT_EQ(_INT_MAX, w.pt1.x);
-  EXPECT_EQ(_INT_MAX, w.pt1.y);
-  EXPECT_EQ(_INT_MIN, w.pt2.x);
-  EXPECT_EQ(_INT_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_INT_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_INT_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_INT_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_INT_MIN, w.pt2.y);
 }
 
 TEST(WindowD, DefaultConstructor) {
   const WindowD w;
-  EXPECT_EQ(_DOUBLE_MAX, w.pt1.x);
-  EXPECT_EQ(_DOUBLE_MAX, w.pt1.y);
-  EXPECT_EQ(_DOUBLE_MIN, w.pt2.x);
-  EXPECT_EQ(_DOUBLE_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_DOUBLE_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_DOUBLE_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_DOUBLE_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_DOUBLE_MIN, w.pt2.y);
 }
 
 TEST(WindowF, DefaultConstructor) {
   const WindowF w;
-  EXPECT_EQ(_FLOAT_MAX, w.pt1.x);
-  EXPECT_EQ(_FLOAT_MAX, w.pt1.y);
-  EXPECT_EQ(_FLOAT_MIN, w.pt2.x);
-  EXPECT_EQ(_FLOAT_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_FLOAT_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_FLOAT_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_FLOAT_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_FLOAT_MIN, w.pt2.y);
 }
 
 // Constructor de copia
@@ -173,36 +173,36 @@ TEST(windowIntersection)
   EXPECT_EQ(50,w.pt2.y);
 
   w = windowIntersection(WindowI(cv::Point(0,0),cv::Point(100,100)), WindowI(cv::Point(150,150),cv::Point(200,200)));
-  EXPECT_EQ(_INT_MAX,w.pt1.x);
-  EXPECT_EQ(_INT_MAX,w.pt1.y);
-  EXPECT_EQ(_INT_MIN,w.pt2.x);
-  EXPECT_EQ(_INT_MIN,w.pt2.y);
+  EXPECT_EQ(I3D_INT_MAX,w.pt1.x);
+  EXPECT_EQ(I3D_INT_MAX,w.pt1.y);
+  EXPECT_EQ(I3D_INT_MIN,w.pt2.x);
+  EXPECT_EQ(I3D_INT_MIN,w.pt2.y);
 }
 
 // Constructor por defecto
 
 TEST(WindowI, DefaultConstructor) {
   const WindowI w;
-  EXPECT_EQ(_INT_MAX, w.pt1.x);
-  EXPECT_EQ(_INT_MAX, w.pt1.y);
-  EXPECT_EQ(_INT_MIN, w.pt2.x);
-  EXPECT_EQ(_INT_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_INT_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_INT_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_INT_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_INT_MIN, w.pt2.y);
 }
 
 TEST(WindowD, DefaultConstructor) {
   const WindowD w;
-  EXPECT_EQ(_DOUBLE_MAX, w.pt1.x);
-  EXPECT_EQ(_DOUBLE_MAX, w.pt1.y);
-  EXPECT_EQ(_DOUBLE_MIN, w.pt2.x);
-  EXPECT_EQ(_DOUBLE_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_DOUBLE_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_DOUBLE_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_DOUBLE_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_DOUBLE_MIN, w.pt2.y);
 }
 
 TEST(WindowF, DefaultConstructor) {
   const WindowF w;
-  EXPECT_EQ(_FLOAT_MAX, w.pt1.x);
-  EXPECT_EQ(_FLOAT_MAX, w.pt1.y);
-  EXPECT_EQ(_FLOAT_MIN, w.pt2.x);
-  EXPECT_EQ(_FLOAT_MIN, w.pt2.y);
+  EXPECT_EQ(I3D_FLOAT_MAX, w.pt1.x);
+  EXPECT_EQ(I3D_FLOAT_MAX, w.pt1.y);
+  EXPECT_EQ(I3D_FLOAT_MIN, w.pt2.x);
+  EXPECT_EQ(I3D_FLOAT_MIN, w.pt2.y);
 }
 
 // Constructor de copia

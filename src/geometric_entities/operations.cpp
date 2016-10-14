@@ -5,7 +5,7 @@ namespace I3D
 
 int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect)
 {
-  double distmin = _DOUBLE_MAX;
+  double distmin = I3D_DOUBLE_MAX;
   int ipt = -1;
   for (size_t i = 0; i < pts_fourier.size(); i++) {
     double dist = I3D::distance(pts_fourier[i], pt_intersect);

@@ -117,7 +117,7 @@ $(document).ready(function(){initNavTree('class_i3_d_1_1_multi_point.html','');}
 </div><!--header-->
 <div class="contents">
 
-<p>Clase multi-punto.  
+<p>Clase punto.  
  <a href="class_i3_d_1_1_multi_point.html#details">Más...</a></p>
 
 <p><code>#include &lt;<a class="el" href="point_8h_source.html">point.h</a>&gt;</code></p>
@@ -174,7 +174,25 @@ Métodos públicos</h2></td></tr>
 <div class="textblock"><h3>template&lt;typename T&gt;<br />
 class I3D::MultiPoint&lt; T &gt;</h3>
 
-<p>Clase multi-punto. </p>
+<p>Clase punto. </p>
+<p>Esta template es un wrapper de la template point_&lt;T&gt; de OpenCV.</p>
+<p>Se han definido los siguientes alias para facilitar el acceso: </p><div class="fragment"><div class="line"><span class="comment">// * typedef Point&lt;int&gt; PointI;</span></div><div class="line"><span class="comment">// * typedef Point&lt;double&gt; PointD;</span></div><div class="line"><span class="comment">// * typedef Point&lt;float&gt; PointF;</span></div><div class="line"><span class="comment">// * </span></div></div><!-- fragment --><p>type</p>
+<p>Punto</p>
+<p>Constructora por defecto</p>
+<p>Constructor </p><dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Coordenada x </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>Coordenada y</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Constructor de copia </p><dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>Objeto Point que se copia</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Clase multi-punto</p>
 <p>Esta template representa un conjunto de puntos relaccionados que se agrupan en una misma entidad multipunto.</p>
 <p>Se han definido los siguientes alias para facilitar el acceso: </p><div class="fragment"><div class="line"><span class="keyword">typedef</span> MultiPoint&lt;int&gt; <a class="code" href="group___geometric_entities.html#gacd97741d89ded5ad4fbe71d32309e62b">MultiPointI</a>;</div><div class="line"><span class="keyword">typedef</span> MultiPoint&lt;double&gt; <a class="code" href="group___geometric_entities.html#ga17d41c547edd7b9a916383723c0aeaec">MultiPointD</a>;</div><div class="line"><span class="keyword">typedef</span> MultiPoint&lt;float&gt; <a class="code" href="group___geometric_entities.html#ga7e19d99de4e64c17e396f090e87d438b">MultiPointF</a>;</div></div><!-- fragment --> </div><h2 class="groupheader">Documentación de los 'Typedef' miembros de la clase</h2>
 <a class="anchor" id="ae8bafa5f4c3f71c19b294e5495683582"></a>

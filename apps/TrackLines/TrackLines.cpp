@@ -447,7 +447,7 @@ int main(int argc, char *argv[])
           }
 
           //Busqueda de la recta mas próxima.
-          double minDist = _DOUBLE_MAX;
+          double minDist = I3D_DOUBLE_MAX;
           double dist = 0.0;
           size_t iminl = 0;
           for (size_t i = 0; i < lines.size(); i++) {
@@ -559,7 +559,7 @@ int main(int argc, char *argv[])
             //  cv::line(out, oLD.lines[i].pt1, oLD.lines[i].pt2, cv::Scalar(0, 255, 255), 1);
             //}
             //Busqueda de la recta mas próxima.
-            double minDist = _DOUBLE_MAX;
+            double minDist = I3D_DOUBLE_MAX;
             double dist = 0.0;
             size_t iminl = 0;
             for (size_t i = 0; i < oLD->getLines().size(); i++) {
@@ -784,7 +784,7 @@ int main(int argc, char *argv[])
 //        m = 0.;
 //        b = 0.;
 //        double corr = RegressionLinearYX(pts, &m, &b);
-//        double dist = _DOUBLE_MIN;
+//        double dist = I3D_DOUBLE_MIN;
 //        int idist = 0;
 //        for (int ipt = 0; ipt < pts.size(); ipt++) {
 //          cv::Point pt_r = cv::Point(pts[ipt].x, m * pts[ipt].x + b);
@@ -926,7 +926,7 @@ int main(int argc, char *argv[])
 //          m = 0.;
 //          b = 0.;
 //          double corr = RegressionLinearYX(pts, &m, &b);
-//          double dist = _DOUBLE_MIN;
+//          double dist = I3D_DOUBLE_MIN;
 //          int idist = 0;
 //          for (int ipt = 0; ipt < pts.size(); ipt++) {
 //            cv::Point pt_r = cv::Point(pts[ipt].x, m * pts[ipt].x + b);

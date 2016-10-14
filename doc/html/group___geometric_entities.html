@@ -112,7 +112,7 @@ $(document).ready(function(){initNavTree('group___geometric_entities.html','');}
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Clases</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_multi_point.html">I3D::MultiPoint&lt; T &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clase multi-punto.  <a href="class_i3_d_1_1_multi_point.html#details">Más...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clase punto.  <a href="class_i3_d_1_1_multi_point.html#details">Más...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_i3_d_1_1_segment.html">I3D::Segment&lt; T &gt;</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clase segmento 2D.  <a href="class_i3_d_1_1_segment.html#details">Más...</a><br /></td></tr>
@@ -225,6 +225,9 @@ Funciones</h2></td></tr>
 <tr class="memitem:ga5893c61910bdaf13dcbd435f1914d868"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ga5893c61910bdaf13dcbd435f1914d868"><td class="memTemplItemLeft" align="right" valign="top">Window&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___geometric_entities.html#ga5893c61910bdaf13dcbd435f1914d868">I3D::moveWindow</a> (const Window&lt; T &gt; &amp;w, T dx, T dy)</td></tr>
 <tr class="separator:ga5893c61910bdaf13dcbd435f1914d868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaafdd7fa6be1209a107b86fa04a9f3277"><td class="memItemLeft" align="right" valign="top">cv::Rect&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___geometric_entities.html#gaafdd7fa6be1209a107b86fa04a9f3277">I3D::windowToCvRect</a> (WindowI w)</td></tr>
+<tr class="memdesc:gaafdd7fa6be1209a107b86fa04a9f3277"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convierte una ventana a un Rect de OpenCV.  <a href="group___geometric_entities.html#gaafdd7fa6be1209a107b86fa04a9f3277">Más...</a><br /></td></tr>
+<tr class="separator:gaafdd7fa6be1209a107b86fa04a9f3277"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga15cd19a3ddf5a39c3154efe440dde6c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___geometric_entities.html#ga15cd19a3ddf5a39c3154efe440dde6c7">I3D::MultiPoint&lt; T &gt;::MultiPoint</a> ()</td></tr>
 <tr class="memdesc:ga15cd19a3ddf5a39c3154efe440dde6c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructora por defecto.  <a href="#ga15cd19a3ddf5a39c3154efe440dde6c7">Más...</a><br /></td></tr>
 <tr class="separator:ga15cd19a3ddf5a39c3154efe440dde6c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -982,7 +985,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 
 <p>Ventana envolvente. </p>
-<dl class="section return"><dt>Devuelve</dt><dd>Ventana envolvente del <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase multi-punto. ">MultiPoint</a> </dd></dl>
+<dl class="section return"><dt>Devuelve</dt><dd>Ventana envolvente del <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase punto. ">MultiPoint</a> </dd></dl>
 
 </div>
 </div>
@@ -1671,7 +1674,7 @@ template&lt;typename T &gt; </div>
 <p>Constructor de copia. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">multiPoint</td><td>Objeto <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase multi-punto. ">MultiPoint</a> que se copia </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">multiPoint</td><td>Objeto <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase punto. ">MultiPoint</a> que se copia </td></tr>
   </table>
   </dd>
 </dl>
@@ -1895,11 +1898,11 @@ template&lt;typename T &gt; </div>
 <p>Sobrecarga del operador de asignación. </p>
 <dl class="params"><dt>Parámetros</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">multiPoint</td><td><a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase multi-punto. ">MultiPoint</a> que se asigna </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">multiPoint</td><td><a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase punto. ">MultiPoint</a> que se asigna </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Devuelve</dt><dd>Referencia al <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase multi-punto. ">MultiPoint</a> </dd></dl>
+<dl class="section return"><dt>Devuelve</dt><dd>Referencia al <a class="el" href="class_i3_d_1_1_multi_point.html" title="Clase punto. ">MultiPoint</a> </dd></dl>
 
 </div>
 </div>
@@ -2619,6 +2622,31 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Devuelve</dt><dd>Ventana interseción </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaafdd7fa6be1209a107b86fa04a9f3277"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">cv::Rect I3D_EXPORT I3D::windowToCvRect </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___geometric_entities.html#ga27980d94ceb3f3eb9e0c34e1fe93b073">WindowI</a>&#160;</td>
+          <td class="paramname"><em>w</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convierte una ventana a un Rect de OpenCV. </p>
+<dl class="params"><dt>Parámetros</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">w</td><td>Ventana que se va a expandir </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Devuelve</dt><dd>Ventana resultante </dd></dl>
 
 </div>
 </div>

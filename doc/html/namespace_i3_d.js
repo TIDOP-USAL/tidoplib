@@ -10,6 +10,7 @@ var namespace_i3_d =
     [ "Closing", "class_i3_d_1_1_closing.html", "class_i3_d_1_1_closing" ],
     [ "Dilate", "class_i3_d_1_1_dilate.html", "class_i3_d_1_1_dilate" ],
     [ "DiscreteFourierTrf", "class_i3_d_1_1_discrete_fourier_trf.html", "class_i3_d_1_1_discrete_fourier_trf" ],
+    [ "EnumFlags", "class_i3_d_1_1_enum_flags.html", "class_i3_d_1_1_enum_flags" ],
     [ "EqualizeHistogram", "class_i3_d_1_1_equalize_histogram.html", "class_i3_d_1_1_equalize_histogram" ],
     [ "Erotion", "class_i3_d_1_1_erotion.html", "class_i3_d_1_1_erotion" ],
     [ "Features2D", "class_i3_d_1_1_features2_d.html", "class_i3_d_1_1_features2_d" ],

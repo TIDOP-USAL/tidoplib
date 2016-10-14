@@ -45,9 +45,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_img_processing_8cpp.html",
-"class_i3_d_1_1_segment.html",
-"group___geometric_entities.html#ga2985cb5eede5d9631f87d50aaec4ca5c",
-"messages_8h.html#a994cd716e000a4023e180dcdb9b3a9c0ad5150815f57a5219a42da2f42f90861e"
+"class_i3_d_1_1_opening.html#aadbc4c4574ab7332a109d16deaee21bc",
+"group___geometric_entities.html#ga0a05ef1543e77df2c3dc9e40d2126b28",
+"group__trf_group.html#ga30e6b58e89d4ad3657e1b6a74edc22cc",
+"window_8h.html#ga5893c61910bdaf13dcbd435f1914d868"
 ];
 
 var SYNCONMSG = 'click en deshabilitar sincronización';

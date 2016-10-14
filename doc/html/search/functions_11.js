@@ -37,12 +37,13 @@ var searchData=
   ['skipdown',['skipDown',['../class_i3_d_1_1_video_stream.html#a78751b3d5a094e1b2ae164c9ac0b613b',1,'I3D::VideoStream']]],
   ['skipup',['skipUp',['../class_i3_d_1_1_video_stream.html#a7fb4bcbf3b3dfb6a6fa9701aa6c86a4a',1,'I3D::VideoStream']]],
   ['sobel',['Sobel',['../class_i3_d_1_1_sobel.html#a44bcc6981eb6875500cdee832174af71',1,'I3D::Sobel']]],
-  ['sortidx',['sortIdx',['../namespace_i3_d.html#a108f553ab39e9dda1d63b7ad2595ee5b',1,'I3D']]],
-  ['sortmatcols',['sortMatCols',['../namespace_i3_d.html#a91f022b6f9299316377acf43b1bb33ff',1,'I3D']]],
-  ['sortmatrows',['sortMatRows',['../namespace_i3_d.html#a89b1deaee3bf80d044bbc4426978ca97',1,'I3D']]],
-  ['sortvector',['sortVector',['../namespace_i3_d.html#a4917826fdb4cd6c2c5674389df321239',1,'I3D']]],
-  ['sortvectorinv',['sortVectorInv',['../namespace_i3_d.html#afe7938c3460b72deedc1a0d1c823f379',1,'I3D']]],
-  ['split',['split',['../namespace_i3_d.html#a895265365d8327818f4683e9dd8ecace',1,'I3D']]],
-  ['splittonumbers',['splitToNumbers',['../namespace_i3_d.html#acc1ab14ac3d1c9d3efbd87138d8d5392',1,'I3D::splitToNumbers(const std::string &amp;cad, std::vector&lt; int &gt; &amp;vOut, char *chs=&quot;,&quot;)'],['../namespace_i3_d.html#a1a92c63612e02d9f70782c1fccb5c082',1,'I3D::splitToNumbers(const std::string &amp;cad, std::vector&lt; double &gt; &amp;vOut, char *chs=&quot;,&quot;)']]],
-  ['stop',['stop',['../class_i3_d_1_1_video_stream.html#a1d9f6dd120e21ea4fed67e48dc11d26e',1,'I3D::VideoStream']]]
+  ['sortidx',['sortIdx',['../group__utilities.html#ga108f553ab39e9dda1d63b7ad2595ee5b',1,'I3D']]],
+  ['sortmatcols',['sortMatCols',['../group__utilities.html#ga91f022b6f9299316377acf43b1bb33ff',1,'I3D']]],
+  ['sortmatrows',['sortMatRows',['../group__utilities.html#ga89b1deaee3bf80d044bbc4426978ca97',1,'I3D']]],
+  ['sortvector',['sortVector',['../group__utilities.html#ga4917826fdb4cd6c2c5674389df321239',1,'I3D']]],
+  ['sortvectorinv',['sortVectorInv',['../group__utilities.html#gafe7938c3460b72deedc1a0d1c823f379',1,'I3D']]],
+  ['split',['split',['../group__string_oper.html#ga895265365d8327818f4683e9dd8ecace',1,'I3D']]],
+  ['splittonumbers',['splitToNumbers',['../group__string_oper.html#gacc1ab14ac3d1c9d3efbd87138d8d5392',1,'I3D::splitToNumbers(const std::string &amp;cad, std::vector&lt; int &gt; &amp;vOut, char *chs=&quot;,&quot;)'],['../group__string_oper.html#ga1a92c63612e02d9f70782c1fccb5c082',1,'I3D::splitToNumbers(const std::string &amp;cad, std::vector&lt; double &gt; &amp;vOut, char *chs=&quot;,&quot;)']]],
+  ['stop',['stop',['../class_i3_d_1_1_video_stream.html#a1d9f6dd120e21ea4fed67e48dc11d26e',1,'I3D::VideoStream']]],
+  ['switchflag',['switchFlag',['../class_i3_d_1_1_enum_flags.html#a8c834dc5942c140073152e281a86c71b',1,'I3D::EnumFlags']]]
 ];

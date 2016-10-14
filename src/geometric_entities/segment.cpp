@@ -113,8 +113,8 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
 
   for (int ilg = 0; ilg < linesGrops.size(); ilg++) {
     std::vector<cv::Point> pts;
-    int xmin = _INT_MAX;
-    int xmax = _INT_MIN;
+    int xmin = I3D_INT_MAX;
+    int xmax = I3D_INT_MIN;
     for (int il = 0; il < linesGrops[ilg].getSize(); il++) {
       pts.push_back(linesGrops[ilg][il].pt1);
       xmin = std::min(xmin, linesGrops[ilg][il].pt1.x);

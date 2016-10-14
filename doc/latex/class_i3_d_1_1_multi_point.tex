@@ -2,7 +2,7 @@
 \label{class_i3_d_1_1_multi_point}\index{I3\+D\+::\+Multi\+Point$<$ T $>$@{I3\+D\+::\+Multi\+Point$<$ T $>$}}
 
 
-Clase multi-\/punto.  
+Clase punto.  
 
 
 
@@ -49,7 +49,38 @@ cv\+::\+Point\+\_\+$<$ T $>$ \& \hyperlink{class_i3_d_1_1_multi_point_a24be0acec
 \subsubsection*{template$<$typename T$>$\\*
 class I3\+D\+::\+Multi\+Point$<$ T $>$}
 
-Clase multi-\/punto. 
+Clase punto. 
+
+Esta template es un wrapper de la template point\+\_\+$<$\+T$>$ de Open\+CV.
+
+Se han definido los siguientes alias para facilitar el acceso\+: 
+\begin{DoxyCode}
+\textcolor{comment}{// * typedef Point<int> PointI;}
+\textcolor{comment}{// * typedef Point<double> PointD;}
+\textcolor{comment}{// * typedef Point<float> PointF;}
+\textcolor{comment}{// * }
+\end{DoxyCode}
+
+
+type
+
+Punto
+
+Constructora por defecto
+
+Constructor 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em x} & Coordenada x \\
+\hline
+\mbox{\tt in}  & {\em y} & Coordenada y\\
+\hline
+\end{DoxyParams}
+Constructor de copia 
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em point} & Objeto Point que se copia\\
+\hline
+\end{DoxyParams}
+Clase multi-\/punto
 
 Esta template representa un conjunto de puntos relaccionados que se agrupan en una misma entidad multipunto.
 

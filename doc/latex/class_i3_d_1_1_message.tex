@@ -2,6 +2,11 @@
 \label{class_i3_d_1_1_message}\index{I3\+D\+::\+Message@{I3\+D\+::\+Message}}
 
 
+\hyperlink{class_i3_d_1_1_message}{Message}.  
+
+
+
+
 {\ttfamily \#include $<$messages.\+h$>$}
 
 \subsection*{Métodos públicos}
@@ -13,9 +18,9 @@
 \item 
 void \hyperlink{class_i3_d_1_1_message_a7a757579a6966a8a80aeac7529a34b4b}{operator=} (\hyperlink{class_i3_d_1_1_message}{Message} const \&)=delete
 \item 
-\hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} \hyperlink{class_i3_d_1_1_message_aa5360e772b5fd6921bd4e8b3ec6925d8}{get\+Message\+Level} () const 
+\hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} \hyperlink{class_i3_d_1_1_message_aa5360e772b5fd6921bd4e8b3ec6925d8}{get\+Message\+Level} () const 
 \begin{DoxyCompactList}\small\item\em Nivel de información de los mensajes. \end{DoxyCompactList}\item 
-\hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} \hyperlink{class_i3_d_1_1_message_a50251ba85bee381914c137a23bd0fbe1}{get\+Message\+Output} () const 
+\hyperlink{class_i3_d_1_1_enum_flags}{Enum\+Flags}$<$ \hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} $>$ \hyperlink{class_i3_d_1_1_message_a9b6daa0dce23d8af3f774e9bcc1edc68}{get\+Message\+Output} () const 
 \begin{DoxyCompactList}\small\item\em Nivel de información de los mensajes. \end{DoxyCompactList}\end{DoxyCompactItemize}
 \subsection*{Métodos públicos estáticos}
 \begin{DoxyCompactItemize}
@@ -26,17 +31,20 @@ static \hyperlink{class_i3_d_1_1_message}{Message} \& \hyperlink{class_i3_d_1_1_
 \begin{DoxyCompactList}\small\item\em message \end{DoxyCompactList}\item 
 static void \hyperlink{class_i3_d_1_1_message_a414c9296d819d4ea29cbcb8719d1af2a}{print} ()
 \begin{DoxyCompactList}\small\item\em Imprime un mensaje con las opciones establecidas. \end{DoxyCompactList}\item 
-static void \hyperlink{class_i3_d_1_1_message_abcbe6bb4eaedadfc2a293bc30199b154}{print} (const \hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} \&level, const \hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} \&output)
+static void \hyperlink{class_i3_d_1_1_message_abcbe6bb4eaedadfc2a293bc30199b154}{print} (const \hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} \&level, const \hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} \&output)
 \begin{DoxyCompactList}\small\item\em Imprime un mensaje. \end{DoxyCompactList}\item 
-static void \hyperlink{class_i3_d_1_1_message_a35685ab8b54377a7846917cf065288cf}{print} (const \hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} \&level, const \hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} \&output, const char $\ast$file, int line, const char $\ast$function)
+static void \hyperlink{class_i3_d_1_1_message_a35685ab8b54377a7846917cf065288cf}{print} (const \hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} \&level, const \hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} \&output, const char $\ast$file, int line, const char $\ast$function)
 \begin{DoxyCompactList}\small\item\em Imprime un mensaje. \end{DoxyCompactList}\item 
-static void \hyperlink{class_i3_d_1_1_message_a05802b639ffc072d4921757a7f494fad}{set\+Message\+Level} (const \hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} \&level)
+static void \hyperlink{class_i3_d_1_1_message_a05802b639ffc072d4921757a7f494fad}{set\+Message\+Level} (const \hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} \&level)
 \begin{DoxyCompactList}\small\item\em Establece el nivel de información de los mensajes. \end{DoxyCompactList}\item 
-static void \hyperlink{class_i3_d_1_1_message_a423efa96869839dbb3ae772b58e055a0}{set\+Message\+Output} (const \hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} \&output)
+static void \hyperlink{class_i3_d_1_1_message_a423efa96869839dbb3ae772b58e055a0}{set\+Message\+Output} (const \hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} \&output)
 \begin{DoxyCompactList}\small\item\em Establece la salida del mensaje. \end{DoxyCompactList}\item 
 static void \hyperlink{class_i3_d_1_1_message_ab31745e88a79e1101b047232decd41c6}{set\+Time\+Log\+Format} (const std\+::string time\+Template)
 \begin{DoxyCompactList}\small\item\em set\+Time\+Log\+Format \end{DoxyCompactList}\end{DoxyCompactItemize}
 
+
+\subsection{Descripción detallada}
+\hyperlink{class_i3_d_1_1_message}{Message}. 
 
 \subsection{Documentación del constructor y destructor}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!````~Message@{$\sim$\+Message}}
@@ -82,15 +90,15 @@ Nivel de información de los mensajes.
 Nivel de información de los mensajes 
 \end{DoxyReturn}
 \begin{DoxySeeAlso}{Ver también}
-\hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} 
+\hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} 
 \end{DoxySeeAlso}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!get\+Message\+Output@{get\+Message\+Output}}
 \index{get\+Message\+Output@{get\+Message\+Output}!I3\+D\+::\+Message@{I3\+D\+::\+Message}}
-\subsubsection[{\texorpdfstring{get\+Message\+Output() const }{getMessageOutput() const }}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Message\+Output} I3\+D\+::\+Message\+::get\+Message\+Output (
+\subsubsection[{\texorpdfstring{get\+Message\+Output() const }{getMessageOutput() const }}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Enum\+Flags}$<$ {\bf Message\+Output} $>$ I3\+D\+::\+Message\+::get\+Message\+Output (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
-) const}\hypertarget{class_i3_d_1_1_message_a50251ba85bee381914c137a23bd0fbe1}{}\label{class_i3_d_1_1_message_a50251ba85bee381914c137a23bd0fbe1}
+) const}\hypertarget{class_i3_d_1_1_message_a9b6daa0dce23d8af3f774e9bcc1edc68}{}\label{class_i3_d_1_1_message_a9b6daa0dce23d8af3f774e9bcc1edc68}
 
 
 Nivel de información de los mensajes. 
@@ -99,7 +107,7 @@ Nivel de información de los mensajes.
 Nivel de información de los mensajes 
 \end{DoxyReturn}
 \begin{DoxySeeAlso}{Ver también}
-\hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} 
+\hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} 
 \end{DoxySeeAlso}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!message@{message}}
 \index{message@{message}!I3\+D\+::\+Message@{I3\+D\+::\+Message}}
@@ -159,7 +167,7 @@ Imprime un mensaje.
 \hline
 \end{DoxyParams}
 \begin{DoxySeeAlso}{Ver también}
-\hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level}, \hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} 
+\hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level}, \hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} 
 \end{DoxySeeAlso}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!print@{print}}
 \index{print@{print}!I3\+D\+::\+Message@{I3\+D\+::\+Message}}
@@ -206,7 +214,7 @@ Establece el nivel de información de los mensajes.
 \hline
 \end{DoxyParams}
 \begin{DoxySeeAlso}{Ver también}
-\hyperlink{namespace_i3_d_a994cd716e000a4023e180dcdb9b3a9c0}{Message\+Level} 
+\hyperlink{namespace_i3_d_a1c1740d2076e09b1a37b82e45a0327b5}{Message\+Level} 
 \end{DoxySeeAlso}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!set\+Message\+Output@{set\+Message\+Output}}
 \index{set\+Message\+Output@{set\+Message\+Output}!I3\+D\+::\+Message@{I3\+D\+::\+Message}}
@@ -225,7 +233,7 @@ Establece la salida del mensaje.
 \hline
 \end{DoxyParams}
 \begin{DoxySeeAlso}{Ver también}
-\hyperlink{namespace_i3_d_accba1eafa248ca79da818a0b72e60964}{Message\+Output} 
+\hyperlink{namespace_i3_d_a2ccb65ac6e08844c1175a235107fa103}{Message\+Output} 
 \end{DoxySeeAlso}
 \index{I3\+D\+::\+Message@{I3\+D\+::\+Message}!set\+Time\+Log\+Format@{set\+Time\+Log\+Format}}
 \index{set\+Time\+Log\+Format@{set\+Time\+Log\+Format}!I3\+D\+::\+Message@{I3\+D\+::\+Message}}

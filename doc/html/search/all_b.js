@@ -3,7 +3,7 @@ var searchData=
   ['lista_20de_20obsoletos',['Lista de obsoletos',['../deprecated.html',1,'']]],
   ['laplacian',['Laplacian',['../class_i3_d_1_1_laplacian.html',1,'I3D']]],
   ['laplacian',['Laplacian',['../class_i3_d_1_1_laplacian.html#a660abad9d6ad7cbe96544cca51d32e40',1,'I3D::Laplacian::Laplacian()'],['../group___img_proc.html#ggaa7be5aaaa0e9ec5885c5bd72f41dad47a1c2d5f3f8e6cbb0c7b033c388c905d22',1,'I3D::LAPLACIAN()']]],
-  ['laplacianvariance',['laplacianVariance',['../namespace_i3_d.html#aa93498c7d5f8b870614b8bdfacc2803f',1,'I3D']]],
+  ['laplacianvariance',['laplacianVariance',['../group__utilities.html#gaa93498c7d5f8b870614b8bdfacc2803f',1,'I3D']]],
   ['ld_5ftype',['LD_TYPE',['../namespace_i3_d.html#ac3913218d62e4e56ed38931636256ae2',1,'I3D']]],
   ['ldgrouplines',['ldGroupLines',['../class_i3_d_1_1ld_group_lines.html',1,'I3D']]],
   ['ldgrouplines',['ldGroupLines',['../class_i3_d_1_1ld_group_lines.html#a79a7dd784360a7b5fc298b3b3e234ff2',1,'I3D::ldGroupLines::ldGroupLines()'],['../class_i3_d_1_1ld_group_lines.html#a23755b9c599ff37705e68847d7266b08',1,'I3D::ldGroupLines::ldGroupLines(const std::vector&lt; Line &gt; &amp;lines)']]],

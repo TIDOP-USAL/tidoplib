@@ -151,5 +151,6 @@ var group___geometric_entities =
     [ "Window", "group___geometric_entities.html#gaa4c7acb8b82826e6fef1d9aeb00e6d2e", null ],
     [ "Window", "group___geometric_entities.html#gad423e12e78a18a2c6bcd65172d2808b7", null ],
     [ "Window", "group___geometric_entities.html#gac888172a38a99ccd02e28b48aa89007d", null ],
-    [ "windowIntersection", "group___geometric_entities.html#gaa929176ef49672b0bc0019c5fe58a017", null ]
+    [ "windowIntersection", "group___geometric_entities.html#gaa929176ef49672b0bc0019c5fe58a017", null ],
+    [ "windowToCvRect", "group___geometric_entities.html#gaafdd7fa6be1209a107b86fa04a9f3277", null ]
 ];

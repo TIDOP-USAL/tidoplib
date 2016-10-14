@@ -1,7 +1,7 @@
 var searchData=
 [
   ['laplacian',['Laplacian',['../class_i3_d_1_1_laplacian.html#a660abad9d6ad7cbe96544cca51d32e40',1,'I3D::Laplacian']]],
-  ['laplacianvariance',['laplacianVariance',['../namespace_i3_d.html#aa93498c7d5f8b870614b8bdfacc2803f',1,'I3D']]],
+  ['laplacianvariance',['laplacianVariance',['../group__utilities.html#gaa93498c7d5f8b870614b8bdfacc2803f',1,'I3D']]],
   ['ldgrouplines',['ldGroupLines',['../class_i3_d_1_1ld_group_lines.html#a79a7dd784360a7b5fc298b3b3e234ff2',1,'I3D::ldGroupLines::ldGroupLines()'],['../class_i3_d_1_1ld_group_lines.html#a23755b9c599ff37705e68847d7266b08',1,'I3D::ldGroupLines::ldGroupLines(const std::vector&lt; Line &gt; &amp;lines)']]],
   ['ldhouh',['ldHouh',['../class_i3_d_1_1ld_houh.html#ad9387cc250dc409bd8ab5e0768f0e8fb',1,'I3D::ldHouh']]],
   ['ldhouhfast',['ldHouhFast',['../class_i3_d_1_1ld_houh_fast.html#a750f01c43402983b0839ba47271a2dad',1,'I3D::ldHouhFast']]],

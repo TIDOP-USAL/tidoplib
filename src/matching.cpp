@@ -44,20 +44,41 @@ void Features2D::calcDescriptor(const cv::Mat &img, std::vector<cv::KeyPoint> *_
 
 void Features2D::save( const char *fname ) const
 {
+  //... Habria que guardarlo como binario mejor o dar las dos opciones
   // Salva descriptores
-  cv::FileStorage fs(fname, cv::FileStorage::WRITE);
-  if (!mKeyPoints.empty()) write(fs, "keypoints", mKeyPoints);
-  if (!mDescriptor.empty()) write(fs, "descriptors", mDescriptor);
-  fs.release();
+  char ext[_MAX_EXT];
+  if (getFileExtension(fname, ext)) {
+    return;
+  }
+  int flags = 0;
+  if (strcmp(ext, ".xml") == 0) {
+    flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
+  } else if (strcmp(ext, ".yml") == 0) {
+    flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
+  } else {
+    printError("Extensión de archivo '%s' no valida", ext);
+    return;
+  }
+  cv::FileStorage fs(fname, flags);
+  if (fs.isOpened()) {
+    if (!mKeyPoints.empty()) write(fs, "keypoints", mKeyPoints);
+    if (!mDescriptor.empty()) write(fs, "descriptors", mDescriptor);
+    fs.release();
+  } else
+    printError("No pudo escribir archivo %s", fname);
 }
 
 void Features2D::read( const char *fname )
 {
   cv::FileStorage fs(fname, cv::FileStorage::READ);
-  cv::FileNode fn;
-  if (!mKeyPoints.empty()) fs["keypoints"] >> mKeyPoints;
-  if (!mDescriptor.empty()) fs["descriptors"] >> mDescriptor;
-  fs.release();
+  if (fs.isOpened()) {
+    mKeyPoints.resize(0);
+    mDescriptor.resize(0);
+    fs["keypoints"] >> mKeyPoints;
+    fs["descriptors"] >> mDescriptor;
+    fs.release();
+  } else
+    printError("No pudo leer archivo %s", fname);
 }
 
 /* ---------------------------------------------------------------------------------- */

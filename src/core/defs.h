@@ -1,6 +1,8 @@
 #ifndef I3D_DEFS_H
 #define I3D_DEFS_H
 
+/* Archivo para definir macros y constantes de tipo general */
+
 //#include <cstdint>
 #if _MSC_VER >= 1600
   #include <cstdint>
@@ -26,12 +28,12 @@
 #define I3D_RAD_TO_GRAD	63.661977236758134307553505349006
 #define I3D_GRAD_TO_RAD	0.0157079632679489661923132169164
 
-#define _INT_MAX std::numeric_limits<int>().max()
-#define _INT_MIN -std::numeric_limits<int>().max()
-#define _DOUBLE_MAX std::numeric_limits<double>().max()
-#define _DOUBLE_MIN -std::numeric_limits<double>().max()
-#define _FLOAT_MAX std::numeric_limits<float>().max()
-#define _FLOAT_MIN -std::numeric_limits<float>().max()
+#define I3D_INT_MAX std::numeric_limits<int>().max()
+#define I3D_INT_MIN -std::numeric_limits<int>().max()
+#define I3D_DOUBLE_MAX std::numeric_limits<double>().max()
+#define I3D_DOUBLE_MIN -std::numeric_limits<double>().max()
+#define I3D_FLOAT_MAX std::numeric_limits<float>().max()
+#define I3D_FLOAT_MIN -std::numeric_limits<float>().max()
 
 
 #if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3DAPI_EXPORTS

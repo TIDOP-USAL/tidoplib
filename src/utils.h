@@ -13,8 +13,17 @@
 
 #include "core\defs.h"
 
+// Se necesitaria una función de progreso.
+
 namespace I3D
 {
+
+/*! \defgroup utilities Utilidades
+ *
+ *  Utilidades de proposito general como manipulación de cadenas, información de la 
+ * aplicación etc 
+ *  \{
+ */
 
 /* ---------------------------------------------------------------------------------- */
 /*                           Información de la aplicación                             */
@@ -53,9 +62,18 @@ int I3D_EXPORT createDir(const char *path);
  */
 int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
 
+//Borrar archivo...
+
+
+
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
+
+/*! \defgroup stringOper Operaciones con cadenas
+ *  
+ * \{
+ */
 
 /*!
  * \brief Separa una cadena en un array de enteros
@@ -168,6 +186,8 @@ int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, ch
  * \return (1) error
  */
 int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, char *chs = ",");
+
+/*! \} */ // end of stringOper
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -419,6 +439,11 @@ std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
+/*! \defgroup colorConversion Conversión de color
+ *  
+ * \{
+ */
+
 /*!
  * \brief Obtiene la componente azul de un color
  * \param[in] color Color representado como un entero
@@ -498,14 +523,20 @@ inline int I3D_EXPORT rgbaToInt(int red, int green, int blue, int alpha)
   return((blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000));
 }
 
+/*! \} */ // end of colorConversion
+
 /* ---------------------------------------------------------------------------------- */
 /*                               Conversión de ángulos                                */
 /* ---------------------------------------------------------------------------------- */
 
-/*! \defgroup formatConversion Conversión de formatos
-*  \{
-
-*/
+/*! \defgroup angleConversion Conversión de ángulos
+ *  
+ * Conversiones entre los diferentes formatos ángulares. 
+ * - grados sexagesimales.
+ * - grados centesimales
+ * - radianes
+ * \{
+ */
 
 template<typename T>
 int isNegative(T t) 
@@ -609,9 +640,9 @@ double I3D_EXPORT gradiansToDecimalDegrees(double gradians);
  */
 double I3D_EXPORT gradiansToRadians(double gradians);
 
-/*! \} */ // end of formatConversion
+/*! \} */ // end of angleConversion
 
-
+/*! \} */ // end of ImgProc
 
 
 

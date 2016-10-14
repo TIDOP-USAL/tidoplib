@@ -2,5 +2,6 @@ var searchData=
 [
   ['window',['Window',['../group___geometric_entities.html#ga2d226aaf94cc5ed88652f78ef8403820',1,'I3D::Window::Window()'],['../group___geometric_entities.html#ga029382701e212fdcae3b72350bb7d9cb',1,'I3D::Window::Window(const Window &amp;w)'],['../group___geometric_entities.html#gaad67f178a66be3d3555c75c9999f2403',1,'I3D::Window::Window(const cv::Point_&lt; T &gt; &amp;pt1, const cv::Point_&lt; T &gt; &amp;pt2)'],['../group___geometric_entities.html#ga15c278087e96c6d37db30cd667a17591',1,'I3D::Window::Window(cv::Point_&lt; T &gt; &amp;pt, T sxx, T szy)'],['../group___geometric_entities.html#gaa4c7acb8b82826e6fef1d9aeb00e6d2e',1,'I3D::Window::Window(cv::Point_&lt; T &gt; &amp;pt, T sz)'],['../group___geometric_entities.html#gad423e12e78a18a2c6bcd65172d2808b7',1,'I3D::Window::Window(std::vector&lt; cv::Point_&lt; T &gt;&gt; v)'],['../group___geometric_entities.html#gac888172a38a99ccd02e28b48aa89007d',1,'I3D::Window::Window(std::vector&lt; cv::Point_&lt; T2 &gt;&gt; v)']]],
   ['windowintersection',['windowIntersection',['../group___geometric_entities.html#gaa929176ef49672b0bc0019c5fe58a017',1,'I3D']]],
+  ['windowtocvrect',['windowToCvRect',['../group___geometric_entities.html#gaafdd7fa6be1209a107b86fa04a9f3277',1,'I3D']]],
   ['write',['write',['../class_i3_d_1_1_log_msg.html#a71c24601dd2d2ff79422e1dc718ae722',1,'I3D::LogMsg']]]
 ];

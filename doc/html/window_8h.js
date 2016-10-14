@@ -8,5 +8,6 @@ var window_8h =
     [ "intersectWindows", "window_8h.html#ga16ec870ad1dfb5178445d023231183e8", null ],
     [ "joinWindow", "window_8h.html#ga1aa105cebf6692e4e42f666bc8dd94c1", null ],
     [ "moveWindow", "window_8h.html#ga5893c61910bdaf13dcbd435f1914d868", null ],
-    [ "windowIntersection", "window_8h.html#gaa929176ef49672b0bc0019c5fe58a017", null ]
+    [ "windowIntersection", "window_8h.html#gaa929176ef49672b0bc0019c5fe58a017", null ],
+    [ "windowToCvRect", "window_8h.html#gaafdd7fa6be1209a107b86fa04a9f3277", null ]
 ];

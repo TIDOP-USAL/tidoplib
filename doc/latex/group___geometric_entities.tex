@@ -4,7 +4,7 @@
 \begin{DoxyCompactItemize}
 \item 
 class \hyperlink{class_i3_d_1_1_multi_point}{I3\+D\+::\+Multi\+Point$<$ T $>$}
-\begin{DoxyCompactList}\small\item\em Clase multi-\/punto. \end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Clase punto. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_segment}{I3\+D\+::\+Segment$<$ T $>$}
 \begin{DoxyCompactList}\small\item\em Clase segmento 2D. \end{DoxyCompactList}\item 
 class \hyperlink{class_i3_d_1_1_segment3_d}{I3\+D\+::\+Segment3\+D$<$ T $>$}
@@ -87,6 +87,8 @@ void \hyperlink{group___geometric_entities_gadffdd08b45284c20785b162ee959f11f}{I
 \begin{DoxyCompactList}\small\item\em Expande una ventana. \end{DoxyCompactList}\item 
 {\footnotesize template$<$typename T $>$ }\\Window$<$ T $>$ \hyperlink{group___geometric_entities_ga5893c61910bdaf13dcbd435f1914d868}{I3\+D\+::move\+Window} (const Window$<$ T $>$ \&w, T dx, T dy)
 \item 
+cv\+::\+Rect \hyperlink{group___geometric_entities_gaafdd7fa6be1209a107b86fa04a9f3277}{I3\+D\+::window\+To\+Cv\+Rect} (WindowI w)
+\begin{DoxyCompactList}\small\item\em Convierte una ventana a un Rect de Open\+CV. \end{DoxyCompactList}\item 
 \hyperlink{group___geometric_entities_ga15cd19a3ddf5a39c3154efe440dde6c7}{I3\+D\+::\+Multi\+Point$<$ T $>$\+::\+Multi\+Point} ()
 \begin{DoxyCompactList}\small\item\em Constructora por defecto. \end{DoxyCompactList}\item 
 \hyperlink{group___geometric_entities_ga5581044092b6db2870f35347c8af5b73}{I3\+D\+::\+Multi\+Point$<$ T $>$\+::\+Multi\+Point} (int size)
@@ -1222,4 +1224,23 @@ Ventana interseción.
 \end{DoxyParams}
 \begin{DoxyReturn}{Devuelve}
 Ventana interseción 
+\end{DoxyReturn}
+\index{Entidades geométricas@{Entidades geométricas}!window\+To\+Cv\+Rect@{window\+To\+Cv\+Rect}}
+\index{window\+To\+Cv\+Rect@{window\+To\+Cv\+Rect}!Entidades geométricas@{Entidades geométricas}}
+\subsubsection[{\texorpdfstring{window\+To\+Cv\+Rect(\+Window\+I w)}{windowToCvRect(WindowI w)}}]{\setlength{\rightskip}{0pt plus 5cm}cv\+::\+Rect I3\+D\+\_\+\+E\+X\+P\+O\+RT I3\+D\+::window\+To\+Cv\+Rect (
+\begin{DoxyParamCaption}
+\item[{{\bf WindowI}}]{w}
+\end{DoxyParamCaption}
+)}\hypertarget{group___geometric_entities_gaafdd7fa6be1209a107b86fa04a9f3277}{}\label{group___geometric_entities_gaafdd7fa6be1209a107b86fa04a9f3277}
+
+
+Convierte una ventana a un Rect de Open\+CV. 
+
+
+\begin{DoxyParams}[1]{Parámetros}
+\mbox{\tt in}  & {\em w} & Ventana que se va a expandir \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Devuelve}
+Ventana resultante 
 \end{DoxyReturn}

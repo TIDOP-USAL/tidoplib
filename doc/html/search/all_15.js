@@ -9,5 +9,6 @@ var searchData=
   ['windowf',['WindowF',['../group___geometric_entities.html#ga76e43e50a665fdfb754f5825615ffaec',1,'I3D']]],
   ['windowi',['WindowI',['../group___geometric_entities.html#ga27980d94ceb3f3eb9e0c34e1fe93b073',1,'I3D']]],
   ['windowintersection',['windowIntersection',['../group___geometric_entities.html#gaa929176ef49672b0bc0019c5fe58a017',1,'I3D']]],
+  ['windowtocvrect',['windowToCvRect',['../group___geometric_entities.html#gaafdd7fa6be1209a107b86fa04a9f3277',1,'I3D']]],
   ['write',['write',['../class_i3_d_1_1_log_msg.html#a71c24601dd2d2ff79422e1dc718ae722',1,'I3D::LogMsg']]]
 ];

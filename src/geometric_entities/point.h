@@ -17,6 +17,59 @@ namespace I3D
  *  \{
  */
 
+///*!
+// * \brief Clase punto
+// *
+// * Esta template es un wrapper de la template point_<T> de OpenCV.
+// *
+// * Se han definido los siguientes alias para facilitar el acceso:
+// * \code
+// * typedef Point<int> PointI;
+// * typedef Point<double> PointD;
+// * typedef Point<float> PointF;
+// * \endcode
+// */
+//template<typename T>
+//class I3D_EXPORT Point
+//{
+//public:
+//
+//  /*!
+//   * \brief type
+//   */
+//  typedef T type;
+//
+//private:
+//
+//  /*!
+//   * \brief Punto
+//   */
+//  cv::Point_<T> mPoint;
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  Point();
+//
+//  /*!
+//   * \brief Constructor
+//   * \param[in] x Coordenada x
+//   * \param[in] y Coordenada y
+//   */
+//  Point(T x, T y);
+//
+//  /*!
+//   * \brief Constructor de copia
+//   * \param[in] point Objeto Point que se copia
+//   */
+//  Point(const Point &point);
+//
+//};
+
+
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!
