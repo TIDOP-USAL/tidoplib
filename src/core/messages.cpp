@@ -6,6 +6,7 @@
 
 #include "messages.h"
 #include "utils.h"
+#include "core/console.h"
 
 #ifdef I3D_MESSAGE_HANDLER
 
@@ -16,15 +17,15 @@ std::mutex mtx;
 struct msgProperties {
   const char *normal;
   const char *extend;
-  unsigned short foreColor;
+  console_color foreColor;
 };
 
 struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)", FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED},
-  { "Info: %s",    "Info: %s (%s:%u, %s)", FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED},
-  { "Warning: %s", "Warning: %s (%s:%u, %s)", FOREGROUND_GREEN | FOREGROUND_RED },
-  { "Error: %s",   "Error: %s (%s:%u, %s)", FOREGROUND_RED },
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)", console_color::WHITE},
+  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", console_color::WHITE},
+  { "Info: %s",    "Info: %s (%s:%u, %s)", console_color::WHITE},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)", console_color::MAGENTA },
+  { "Error: %s",   "Error: %s (%s:%u, %s)", console_color::RED },
 };
 
 msgProperties GetMessageProperties( MessageLevel msgLevel ) 
@@ -146,27 +147,14 @@ std::string Message::messageOutput(const MessageLevel &msgLevel, const char *fil
 void Message::_print(const MessageLevel &level, const MessageOutput &output, const std::string &msgOut)
 {
   EnumFlags<MessageOutput> flag(output);
+
 #ifdef  I3D_ENABLE_CONSOLE
+
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
-#ifdef WIN32
-    HANDLE h = GetStdHandle((level == MessageLevel::MSG_ERROR) ? STD_ERROR_HANDLE : STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(h, GetMessageProperties(level).foreColor);
-#else
-    //char command[13];
-    //// Command is the control command to the terminal
-    //sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
-    //fprintf (stream, "%s", command);
-#endif
+    Console console(level == MessageLevel::MSG_ERROR ? console_mode::OUTPUT_ERROR : console_mode::OUTPUT);
+    console.setConsoleForegroundColor(GetMessageProperties(level).foreColor);
     printf_s(msgOut.c_str());
     printf_s("\n");
-#ifdef WIN32
-    SetConsoleTextAttribute(h, 0 | 0 | 0);
-#else
-    //char command[13];
-    //// Command is the control command to the terminal
-    //sprintf (command, "%c[%d;%dm", 0x1B, attribute, fg + 30);
-    //fprintf (stream, "%s", command);
-#endif
   }
 
 #endif //I3D_ENABLE_CONSOLE

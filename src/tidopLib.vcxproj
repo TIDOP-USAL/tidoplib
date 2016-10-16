@@ -87,6 +87,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="core\console.cpp" />
     <ClCompile Include="core\messages.cpp" />
     <ClCompile Include="fourier.cpp" />
     <ClCompile Include="geometric_entities\operations.cpp" />
@@ -103,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\config.h" />
+    <ClInclude Include="core\console.h" />
     <ClInclude Include="core\defs.h" />
     <ClInclude Include="core\flags.h" />
     <ClInclude Include="core\messages.h" />

@@ -1,5 +1,8 @@
 #include <windows.h>
 #include <memory>
+#include <ctime> //For demo
+#include <chrono>
+#include <thread>
 
 // Cabeceras de OpenCV
 #include "opencv2/core/core.hpp"
@@ -16,6 +19,7 @@
 #include "ImgProcessing.h"
 #include "geometric_entities\segment.h"
 #include "geometric_entities\window.h"
+#include "core/console.h"
 
 using namespace std;
 using namespace cv;
@@ -311,6 +315,12 @@ void onRun(VideoStream *strmVideo, void* userdata)
 
 int main(int argc, char *argv[])
 {
+  int kkint;
+
+  CmdParser kk( argc, argv);
+  kk.options = { CmdOption("c"), CmdOption("d") };
+  kk.parameters = { CmdParameterInt("value", &kkint) };
+
   cv::CommandLineParser parser(argc, argv, keys);
   string filename = parser.get<string>(0);
   LD_TYPE ls = LD_TYPE::HOUGHP;//(LD_TYPE)parser.get<int>("ls");
