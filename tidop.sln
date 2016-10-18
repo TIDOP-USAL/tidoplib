@@ -37,6 +37,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "flag_test", "test\flag_test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "camera_position", "apps\camera_position\camera_position.vcxproj", "{18DBB010-32DA-4B37-866C-D0BFBB38CC36}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lineString_test", "test\lineString_test\lineString_test.vcxproj", "{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -148,6 +150,14 @@ Global
 		{18DBB010-32DA-4B37-866C-D0BFBB38CC36}.Release|Mixed Platforms.Build.0 = Release|x64
 		{18DBB010-32DA-4B37-866C-D0BFBB38CC36}.Release|x64.ActiveCfg = Release|x64
 		{18DBB010-32DA-4B37-866C-D0BFBB38CC36}.Release|x64.Build.0 = Release|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Debug|x64.ActiveCfg = Debug|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Debug|x64.Build.0 = Debug|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Release|Mixed Platforms.Build.0 = Release|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Release|x64.ActiveCfg = Release|x64
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -166,5 +176,6 @@ Global
 		{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{738EF327-F1D6-4B9A-B256-FC67D4EEBEE9} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{18DBB010-32DA-4B37-866C-D0BFBB38CC36} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
+		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 	EndGlobalSection
 EndGlobal

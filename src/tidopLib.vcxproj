@@ -96,6 +96,7 @@
     <ClCompile Include="geometric_entities\window.cpp" />
     <ClCompile Include="ImgProcessing.cpp" />
     <ClCompile Include="linedetector.cpp" />
+    <ClCompile Include="lineString.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="transform.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="geometric_entities\window.h" />
     <ClInclude Include="ImgProcessing.h" />
     <ClInclude Include="LineDetector.h" />
+    <ClInclude Include="lineString.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="matching.h" />
     <ClInclude Include="transform.h" />

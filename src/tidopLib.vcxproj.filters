@@ -78,6 +78,9 @@
     <ClCompile Include="core\console.cpp">
       <Filter>Archivos de código fuente\core</Filter>
     </ClCompile>
+    <ClCompile Include="lineString.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geometric_entities\operations.h">
@@ -130,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="core\console.h">
       <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
+    <ClInclude Include="lineString.h">
+      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
