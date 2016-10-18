@@ -24,10 +24,10 @@ public:
 	LineString(std::initializer_list<cv::Point> listPoints);
 
 	/*destructor*/
-	~LineString();
+	//~LineString();
 public: 
 	/*Metodo para saber el tamaño del vector*/
-	int getSize() { return vertices.size(); };
+	int getSize() { return static_cast<int>(vertices.size()); };
 
 	/*Metodo para obtener el vertice con indice deseado*/
 	cv::Point getPoint(int indice) { return vertices[indice];}
