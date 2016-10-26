@@ -56,7 +56,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;D:\Desarrollo\tidop\third_party\bprinter-master\include;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -73,7 +73,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;D:\Desarrollo\tidop\third_party\bprinter-master\include;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -84,19 +84,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="core\console.cpp" />
+    <ClCompile Include="core\events.cpp" />
     <ClCompile Include="core\messages.cpp" />
     <ClCompile Include="fourier.cpp" />
+    <ClCompile Include="geometric_entities\lineString.cpp" />
     <ClCompile Include="geometric_entities\operations.cpp" />
     <ClCompile Include="geometric_entities\point.cpp" />
     <ClCompile Include="geometric_entities\segment.cpp" />
     <ClCompile Include="geometric_entities\window.cpp" />
+    <ClCompile Include="graphic_entities\graphic_entity.cpp" />
     <ClCompile Include="ImgProcessing.cpp" />
     <ClCompile Include="linedetector.cpp" />
-    <ClCompile Include="lineString.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="transform.cpp" />
@@ -107,16 +106,18 @@
     <ClInclude Include="core\config.h" />
     <ClInclude Include="core\console.h" />
     <ClInclude Include="core\defs.h" />
+    <ClInclude Include="core\events.h" />
     <ClInclude Include="core\flags.h" />
     <ClInclude Include="core\messages.h" />
     <ClInclude Include="fourier.h" />
+    <ClInclude Include="geometric_entities\lineString.h" />
     <ClInclude Include="geometric_entities\operations.h" />
     <ClInclude Include="geometric_entities\point.h" />
     <ClInclude Include="geometric_entities\segment.h" />
     <ClInclude Include="geometric_entities\window.h" />
+    <ClInclude Include="graphic_entities\graphic_entity.h" />
     <ClInclude Include="ImgProcessing.h" />
     <ClInclude Include="LineDetector.h" />
-    <ClInclude Include="lineString.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="matching.h" />
     <ClInclude Include="transform.h" />

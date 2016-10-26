@@ -646,6 +646,69 @@ double I3D_EXPORT gradiansToRadians(double gradians);
 
 
 
+//class Path
+//{
+//private:
+//  int mPos;
+//  std::vector<std::string> mPath;
+//
+//public:
+//
+//  Path() : mPos(0), mPath(0)
+//  {
+//  }
+//
+//  Path(std::string path)
+//  {
+//    parse(path);
+//  }
+//
+//  ~Path()
+//  {
+//  }
+//
+//  void parse(std::string path)
+//  {
+//    split(path,mPath,"\\");
+//    if (mPath.size() == 1) 
+//      split(path,mPath,"/");
+//    mPos = mPath.size();
+//
+//    for (int i = 0; mPath[i] == std::string(".."); i++) {
+//      std::string run_file_path = getRunfile();
+//      Path runPath(run_file_path);
+//      runPath.down();
+//    }
+//    
+//    std::string current = runPath.currentPath();
+//  }
+//
+//  std::string getDrive() 
+//  {
+//    return mPath[0];
+//  }
+//
+//  void up() 
+//  {
+//    if (mPos < mPath.size())
+//    mPos++;
+//  }
+//
+//  void down() 
+//  {
+//    if (mPos != 0)
+//      mPos--;
+//  }
+//  
+//  std::string currentPath() 
+//  {
+//    std::string _path;
+//    for (int i = 0; i < mPos; i++) {
+//      _path += mPath[i];
+//      _path += "\\";
+//    }
+//  }
+//};
 
 
 

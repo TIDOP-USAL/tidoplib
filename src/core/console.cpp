@@ -1,13 +1,10 @@
-#if defined WIN32
-# include <windows.h>
-#endif
-#include <iostream> //For I/O
-#include <string> //For strings
-#include <ctime> //For demo
+#include <iostream>
+#include <string>
+#include <ctime>
 
 #include "console.h"
 #include "utils.h"
-
+//#include "bprinter\table_printer.h"
 
 
 using namespace I3D;
@@ -22,18 +19,18 @@ Console::Console()
 #endif
 }
 
-Console::Console(console_mode mode)
+Console::Console(Console::Mode mode)
 { 
 #ifdef WIN32
   DWORD handle;
   switch (mode) {
-  case I3D::console_mode::INPUT:
+  case I3D::Console::Mode::INPUT:
     handle = STD_INPUT_HANDLE;
     break;
-  case I3D::console_mode::OUTPUT:
+  case I3D::Console::Mode::OUTPUT:
     handle = STD_OUTPUT_HANDLE;
     break;
-  case I3D::console_mode::OUTPUT_ERROR:
+  case I3D::Console::Mode::OUTPUT_ERROR:
     break;
     handle = STD_ERROR_HANDLE;
   default:
@@ -56,32 +53,32 @@ void Console::reset()
 #endif
 }
 
-void Console::setConsoleForegroundColor(console_color foreColor)
+void Console::setConsoleForegroundColor(Console::Color foreColor)
 {
 #ifdef WIN32
   switch (foreColor) {
-  case I3D::console_color::BLACK:
+  case I3D::Console::Color::BLACK:
     mForeColor = 0;
     break;
-  case I3D::console_color::BLUE:
+  case I3D::Console::Color::BLUE:
     mForeColor = FOREGROUND_BLUE;
     break;
-  case I3D::console_color::GREEN:
+  case I3D::Console::Color::GREEN:
     mForeColor = FOREGROUND_GREEN;
     break;
-  case I3D::console_color::CYAN:
+  case I3D::Console::Color::CYAN:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
     break;
-  case I3D::console_color::RED:
+  case I3D::Console::Color::RED:
     mForeColor = FOREGROUND_RED;
     break;
-  case I3D::console_color::MAGENTA:
+  case I3D::Console::Color::MAGENTA:
     mForeColor = FOREGROUND_RED | FOREGROUND_BLUE;
     break;
-  case I3D::console_color::YELLOW:
+  case I3D::Console::Color::YELLOW:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_RED;
     break;
-  case I3D::console_color::WHITE:
+  case I3D::Console::Color::WHITE:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
     break;
   default:
@@ -93,32 +90,32 @@ void Console::setConsoleForegroundColor(console_color foreColor)
   update();
 }
 
-void Console::setConsoleBackgroundColor(console_color backColor)
+void Console::setConsoleBackgroundColor(Console::Color backColor)
 {
 #ifdef WIN32
   switch (backColor) {
-  case I3D::console_color::BLACK:
+  case I3D::Console::Color::BLACK:
     mBackColor = 0;
     break;
-  case I3D::console_color::BLUE:
+  case I3D::Console::Color::BLUE:
     mBackColor = BACKGROUND_BLUE;
     break;
-  case I3D::console_color::GREEN:
+  case I3D::Console::Color::GREEN:
     mBackColor = BACKGROUND_GREEN;
     break;
-  case I3D::console_color::CYAN:
+  case I3D::Console::Color::CYAN:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
     break;
-  case I3D::console_color::RED:
+  case I3D::Console::Color::RED:
     mBackColor = BACKGROUND_RED;
     break;
-  case I3D::console_color::MAGENTA:
+  case I3D::Console::Color::MAGENTA:
     mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
     break;
-  case I3D::console_color::YELLOW:
+  case I3D::Console::Color::YELLOW:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
     break;
-  case I3D::console_color::WHITE:
+  case I3D::Console::Color::WHITE:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
     break;
   default:
@@ -127,6 +124,14 @@ void Console::setConsoleBackgroundColor(console_color backColor)
   }
 #endif
   update();
+}
+
+void Console::setConsoleUnicode() 
+{
+#ifdef WIN32
+  SetConsoleOutputCP(1252);     
+  SetConsoleCP(1252);
+#endif
 }
 
 void Console::init(DWORD handle) 
@@ -151,37 +156,109 @@ void Console::update()
 
 /* ---------------------------------------------------------------------------------- */
 
-CmdParser::CmdParser( int argc, const char* const argv[] )
+void CmdParser::add(std::shared_ptr<CmdArgument> argument)
 {
-  for ( int iArg = 1; iArg < argc; ++iArg ) {
-    if ( stricmp(argv[iArg],"--") == 0 ) {
-      // Es un parámetro
-
-    } else {
-      // Es una opción
-
-  //    if ( filein == NULL ) {
-  //      filein = argv[iArg];
-  //    } else if ( fileout == NULL ) {
-  //      fileout = argv[iArg];      
-  //    }  
-    }
-  }
+  // Se ponen primero las opciones
+  if (argument->getType() == ArgType::OPTION)
+    mCmdArgs.push_back(argument);
+  else
+    mCmdArgs.push_front(argument);
 }
 
-CmdParser::~CmdParser()
-{}
+//template<typename T>
+//void CmdParser::add(td::string arg, std::string description, T *value, T *defValue)
+//{
+//  if ( type)
+//  // Se ponen primero las opciones
+//  if (argument->getType() == ArgType::OPTION)
+//    mCmdArgs.push_back(argument);
+//  else
+//    mCmdArgs.push_front(argument);
+//}
+
+int CmdParser::parse(int argc, const char* const argv[])
+{
+  //for (auto arg : mCmdArgs) {
+  //  bool bOptional = arg->isOptional();
+  //  std::string argName = (arg->getType() == ArgType::OPTION) ? "-" : "--";
+  //  argName += arg->getName();
+  //  bool bFind = false;
+  //  for (int i = 1; i < argc; ++i) {
+  //    std::string arg_name = std::string(argv[i]);
+  //    std::size_t found = arg_name.find(argName);
+  //    if (found != std::string::npos) {
+  //      //if (std::string(argv[i]) == argName) {
+  //      if (arg->getType() == ArgType::OPTION) {
+  //        dynamic_cast<CmdOption *>(arg.get())->setOption(true);
+  //      } else if (arg->getType() == ArgType::PARAMETER) {
+  //        std::size_t end = arg_name.find("=",found);
+  //        std::string TagString = arg_name.substr(ini,end-ini+1);
+  //        if (i + 1 < argc) {
+  //          std::string value = argv[i++];
+  //          dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
+  //          bFind = true;
+  //          break;
+  //        } else { 
+  //          //std::cerr << "--destination option requires one argument." << std::endl;
+  //          return 1;
+  //        } 
+  //      } else {
+  //        ;
+  //      }
+  //    //}
+
+  //    }
+  //  }
+  //  // Ver si no es opcional y devolver un error si no existe
+  //  if (bFind == false && bOptional == false) return 1;
+  //}
+  return 0;
+}
+
+void CmdParser::printHelp()
+{
+  //bprinter::TablePrinter tp(&std::cout);
+  //tp.AddColumn("Name", 25);
+  //tp.AddColumn("Optional", 10);
+  //tp.AddColumn("Type", 10);
+  //tp.AddColumn("Description", 60);
+  //tp.PrintHeader();
+  //for (auto arg : mCmdArgs) {
+  //  tp << arg->getName() 
+  //     << (arg->isOptional() ? "O" : "R")
+  //     << ((ArgType::OPTION == arg->getType()) ? "Option" : "Parameter")
+  //     << arg->getDescription();
+  //}
+  //tp.PrintFooter();
+
+  ////... Mensaje usage
+}
+
+
+bool CmdParser::hasOption(const std::string &option) const
+{
+  for (auto arg : mCmdArgs) {
+    if (arg->getType() == ArgType::OPTION) {
+      if (arg->getName() == option) {
+        return true;//dynamic_cast<CmdOption *>(arg.get())->isActive();
+      }
+    }
+  }
+  return false;
+}
 
 /* ---------------------------------------------------------------------------------- */
 
 bool Progress::operator()(double increment) 
 { 
+  if (mProgress == 0) initialize();
   mProgress += increment;
-  int percent = static_cast<int>(round(mProgress / mScale));
+  int percent = static_cast<int>(round(mProgress * mScale));
   if (percent > mPercent) {
     mPercent = percent;
     update();
   }
+  if (mProgress == mMaximun) terminate();
   return true;
 }
 
@@ -196,9 +273,46 @@ void Progress::restart()
   mProgress = 0.;
 }
 
+void Progress::init(double min, double max, std::string msg)
+{
+  mMinimun = min;
+  mMaximun = max;
+  mMsg = msg;
+  restart();
+  updateScale();
+}
+
+void Progress::initialize()
+{
+  printf(mMsg.c_str());
+  printf("\n");
+  if (!onInitialize._Empty()) onInitialize();
+}
+
 void Progress::terminate()
 {
-  // Aqui se debería lanzar un evento indicando que se ha terminado
+  printf("\n");
+  if (!onTerminate._Empty()) onTerminate();
+}
+
+void Progress::updateScale()
+{
+  mScale = 100./(mMaximun - mMinimun);
+}
+
+void Progress::setOnProgressListener(std::function<void(double)> &progressFunction)
+{
+  onProgress = progressFunction;
+}
+
+void Progress::setOnInitializeListener(std::function<void(void)> &initializeFunction)
+{
+  onInitialize = initializeFunction;
+}
+
+void Progress::setOnTerminateListener(std::function<void(void)> &terminateFunction)
+{
+  onTerminate = terminateFunction;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -208,12 +322,10 @@ void ProgressBar::update()
   if (onProgress._Empty()) {
     
     cout << "\r";
-    //cout << "[";
 
-    Console console(console_mode::OUTPUT);
+    Console console(Console::Mode::OUTPUT);
     if (bCustomConsole)
-      //console.setConsoleForegroundColor(console_color::GREEN);
-      console.setConsoleBackgroundColor(console_color::GREEN);
+      console.setConsoleBackgroundColor(Console::Color::GREEN);
     int posInBar = static_cast<int>(round(mPercent * mSize / 100.));
 		
 		for (int a = 0; a < posInBar; a++) {
@@ -223,8 +335,7 @@ void ProgressBar::update()
         cout << "#";
 		}
     if (bCustomConsole)
-      //console.setConsoleForegroundColor(console_color::YELLOW);
-      console.setConsoleBackgroundColor(console_color::YELLOW);
+      console.setConsoleBackgroundColor(Console::Color::YELLOW);
 		for (int b = 0; b < mSize - posInBar; b++) {
       if (bCustomConsole)
         cout << " ";
@@ -232,7 +343,7 @@ void ProgressBar::update()
         cout << "-";
 		}
     if (bCustomConsole) console.reset();
-    cout /*<< "]"*/ << " " << mPercent << "%  completed" << flush;
+    cout << " " << mPercent << "%  completed" << flush;
   } else
     onProgress(mPercent);
 }

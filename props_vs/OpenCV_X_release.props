@@ -6,7 +6,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\Libs\opencv\x64\vc12\lib;..\..\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;opencv_sfm310.lib;opencv_viz310.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
       <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include</AdditionalIncludeDirectories>

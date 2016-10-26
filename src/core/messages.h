@@ -123,7 +123,7 @@ public:
    * \param[in] output Tipo de salida
    * \see MessageLevel, MessageOutput
    */
-  static void print(const MessageLevel &level, /*EnumFlags<MessageOutput> flag*/ const MessageOutput &output);
+  static void print(const MessageLevel &level, const MessageOutput &output);
 
   /*!
    * \brief Imprime un mensaje
@@ -148,6 +148,13 @@ public:
    * \see MessageOutput
    */
   static void setMessageOutput( const MessageOutput &output );
+
+  /*!
+   * \brief Establece la salida del mensaje
+   * \param[in] output Salida del mensaje
+   * \see MessageOutput
+   */
+  static void setMessageLogFile( const std::string logfile );
 
   /*!
    * \brief setTimeLogFormat
@@ -178,7 +185,7 @@ private:
 
   static std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
 
-  static void _print(const MessageLevel &level, /*EnumFlags<MessageOutput> flag*/ const MessageOutput &output, const std::string &msgOut);
+  static void _print(const MessageLevel &level, const MessageOutput &output, const std::string &msgOut);
 };
 
 #ifdef _DEBUG
@@ -220,6 +227,7 @@ private:
 #  define printError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
 
 #endif
+
 
 #else  // End I3D_MESSAGE_HANDLER
 

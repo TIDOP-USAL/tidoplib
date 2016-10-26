@@ -24,6 +24,8 @@
 #include "transform.h"
 #include "geometric_entities\window.h"
 
+#include "core\console.h"
+
 using namespace I3D;
 using namespace cv;
 using namespace cv::ximgproc;
@@ -67,6 +69,20 @@ static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatr
 
 int main(int argc, char** argv)
 {
+
+  //CmdParser cmdParser;
+  //cmdParser.add(std::make_shared<CmdOption>("no-display","don't display results",true));
+  //cmdParser.add(std::make_shared<CmdOption>("no-downscale","force stereo matching on full-sized views to improve quality",true));
+  //cmdParser.add(std::make_shared<CmdParameter>("left","left view of the stereopair ",false));
+  //cmdParser.add(std::make_shared<CmdParameter>("right","right view of the stereopair ",false));
+  //cmdParser.add(std::make_shared<CmdParameter>("GT","ground-truth disparity (MPI-Sintel or Middlebury format)",true));
+  //cmdParser.add(std::make_shared<CmdParameterOptions>("algorithm","bm,sgbm,elas", "stereo matching method",false));
+  //cmdParser.add(std::make_shared<CmdOption>("kk","kk",true));
+  //cmdParser.parse(argc, argv);
+  //if (cmdParser.validate() == false) return 0;
+  //bool no_display = cmdParser.hasOption("no-display");
+  //bool no_downscale = cmdParser.hasOption("no-downscale");
+  //std::string kk = cmdParser.getValue<std::string>("algorithm");
 
   // Ventanas de las torres. Esto tendria que entrar como parametro proveniente de DeteccionApoyos
   WindowI wL(cv::Point(595,78),cv::Point(743,703));  
@@ -180,16 +196,16 @@ int main(int argc, char** argv)
     // Ver undistort (http://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html#void%20undistort(InputArray%20src,%20OutputArray%20dst,%20InputArray%20cameraMatrix,%20InputArray%20distCoeffs,%20InputArray%20newCameraMatrix))
     // The function is simply a combination of initUndistortRectifyMap() (with unity R ) and remap() (with bilinear interpolation). 
     
-    // Se aplica una mascara a la zona del apoyo
-    cv::Mat maskL = cv::Mat::zeros(left.size(),CV_8U);
-    cv::Mat maskR = cv::Mat::zeros(right.size(),CV_8U);
-    cv::rectangle(maskL, windowToCvRect(wL), cv::Scalar(1,1,1),cv::FILLED );
-    cv::rectangle(maskR, windowToCvRect(wR), cv::Scalar(1,1,1),cv::FILLED );
-    cv::Mat left_mask, right_mask;
-    cv::bitwise_and(left, left, left_mask, maskL);
-    cv::bitwise_and(right, right, right_mask, maskR);
-    left_mask.copyTo(left);
-    right_mask.copyTo(right);
+    //// Se aplica una mascara a la zona del apoyo
+    //cv::Mat maskL = cv::Mat::zeros(left.size(),CV_8U);
+    //cv::Mat maskR = cv::Mat::zeros(right.size(),CV_8U);
+    //cv::rectangle(maskL, windowToCvRect(wL), cv::Scalar(1,1,1),cv::FILLED );
+    //cv::rectangle(maskR, windowToCvRect(wR), cv::Scalar(1,1,1),cv::FILLED );
+    //cv::Mat left_mask, right_mask;
+    //cv::bitwise_and(left, left, left_mask, maskL);
+    //cv::bitwise_and(right, right, right_mask, maskR);
+    //left_mask.copyTo(left);
+    //right_mask.copyTo(right);
 
     // Por otra parte ver el resto de métodos de interpolación 
       if(!no_downscale)
@@ -447,24 +463,29 @@ int main(int argc, char** argv)
   //WindowI wCrop(cv::Point(0, 0), cv::Point(left.cols,left.rows));
   //wCrop = I3D::expandWindow(wCrop, -100);
   // Mejor corto por las ventanas de la torres
-  cv::Mat crop_left, crop_right;
-  left.colRange(wL.pt1.x, wL.pt2.x).rowRange(wL.pt1.y, wL.pt2.y).copyTo(crop_left);
-  right.colRange(wR.pt1.x, wR.pt2.x).rowRange(wR.pt1.y, wR.pt2.y).copyTo(crop_right);
+  //cv::Mat crop_left, crop_right;
+  //left.colRange(wL.pt1.x, wL.pt2.x).rowRange(wL.pt1.y, wL.pt2.y).copyTo(crop_left);
+  //right.colRange(wR.pt1.x, wR.pt2.x).rowRange(wR.pt1.y, wR.pt2.y).copyTo(crop_right);
   // Se detectan los key points y los descriptores
-  int nft = featuresL.detectKeyPoints(crop_left);
-  featuresL.calcDescriptor(crop_left);
-  nft = featuresR.detectKeyPoints(crop_right);
-  featuresR.calcDescriptor(crop_right);
-  
+  //int nft = featuresL.detectKeyPoints(crop_left);
+  //featuresL.calcDescriptor(crop_left);
+  //nft = featuresR.detectKeyPoints(crop_right);
+  //featuresR.calcDescriptor(crop_right);
+  int nft = featuresL.detectKeyPoints(left);
+  featuresL.calcDescriptor(left);
+  nft = featuresR.detectKeyPoints(right);
+  featuresR.calcDescriptor(right);
+
   std::vector<DMatch> matches;
   match.match(featuresL, featuresR, &matches);
   
   std::vector<DMatch> good_matches;
-  match.getGoodMatches(&good_matches,0.08);
+  //match.getGoodMatches(&good_matches,0.08);
+   match.getGoodMatches(featuresL, featuresR, &good_matches, 0.01);
 
   //-- Draw only "good" matches
   Mat img_matches;
-  drawMatches( crop_left, featuresL.getKeyPoints(), crop_right, featuresR.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
+  drawMatches( left, featuresL.getKeyPoints(), right, featuresR.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
 
   //-- Show detected matches
   imshow( "Good Matches", img_matches );
@@ -476,11 +497,11 @@ int main(int argc, char** argv)
     ptsR.push_back(featuresR.getKeyPoint(good_matches[igm].trainIdx).pt);
   }
 
-  I3D::Translate<Point2f> trfTranslate(wL.pt1.x,wL.pt1.y);
-  std::vector<Point2f> ptsLOut, ptsROut;
-  trfTranslate.transform(ptsL, &ptsLOut);
-  trfTranslate.setTranslation(wR.pt1.x, wR.pt1.y);
-  trfTranslate.transform(ptsR, &ptsROut);
+  //I3D::Translate<Point2f> trfTranslate(wL.pt1.x,wL.pt1.y);
+  //std::vector<Point2f> ptsLOut, ptsROut;
+  //trfTranslate.transform(ptsL, &ptsLOut);
+  //trfTranslate.setTranslation(wR.pt1.x, wR.pt1.y);
+  //trfTranslate.transform(ptsR, &ptsROut);
 
 
   //cv::Mat F = findFundamentalMat(ptsL, ptsR);
@@ -511,15 +532,16 @@ int main(int argc, char** argv)
 
   cv::Mat R, T;
   // Lo mismo por OpenCV??
-  cv::Mat essentialMat = findEssentialMat(ptsLOut, ptsROut, cameraMatrix);
-  cv::recoverPose(essentialMat, ptsLOut, ptsROut, cameraMatrix, R, T);
+  cv::Mat essentialMat = findEssentialMat(ptsL, ptsR, cameraMatrix);
+  cv::recoverPose(essentialMat, ptsL, ptsR, cameraMatrix, R, T);
 
 
   // Si disponemos de las posiciones (matriz T) y orientaciones (Matriz R) de las camaras podemos calular la matriz Q con stereoRectify
   cv::Mat R1, R2, P1, P2, Q;
   cv::stereoRectify(cameraMatrix, distCoeffs, cameraMatrix, distCoeffs, imageSize, R, T, R1, R2, P1, P2, Q);
 
-  cv::Mat_<cv::Vec3f> XYZ(wL.getHeight(),wL.getWidth());
+  //cv::Mat_<cv::Vec3f> XYZ(wL.getHeight(),wL.getWidth());
+  cv::Mat_<cv::Vec3f> XYZ(filtered_disp.rows,filtered_disp.cols);
   //cv::reprojectImageTo3D(filtered_disp,XYZ,Q);  //... Mejor no usar para poder filtrar la nube de puntos.
   cv::Mat_<double> vec_tmp(4,1);
   
@@ -529,7 +551,8 @@ int main(int argc, char** argv)
     for(int x=0; x < wL.getWidth(); ++x) {
       vec_tmp(0)=x; 
       vec_tmp(1)=y; 
-      vec_tmp(2)=filtered_disp.at<__int16>(wL.pt1.y+y,wL.pt1.x+x); 
+      //vec_tmp(2)=filtered_disp.at<__int16>(wL.pt1.y+y, wL.pt1.x+x); 
+      vec_tmp(2)=left_disp.at<__int16>(wL.pt1.y+y,wL.pt1.x+x); 
       if(vec_tmp(2)==0) continue;
       vec_tmp(3)=1;
       vec_tmp = Q*vec_tmp;

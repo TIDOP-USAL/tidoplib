@@ -128,7 +128,7 @@ TEST(WindowD, CopyConstructorDiff) {
 
 
 /* ---------------------------------------------------------------------------------- */
-/*                        Test Operaciones con ventanas                                */
+/*                        Test Operaciones con ventanas                               */
 /* ---------------------------------------------------------------------------------- */
 
 // Comprueba si dos ventanas intersectan

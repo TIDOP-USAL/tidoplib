@@ -9,6 +9,7 @@
 #include <array>
 #include <thread>
 
+//#include <Eigen/SVD>
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
 
@@ -78,6 +79,9 @@ protected:
    */
   int mMinPoint;
 
+  /*!
+   * 2D o 3D
+   */
   int mDimensions;
 
 public:
@@ -110,12 +114,28 @@ public:
   bool isNumberOfPointsValid(int npoints) const { return npoints >= mMinPoint; }
 
   /*!
-   * \brief Aplica la transformación
+   * \brief Aplica la transformación a un conjunto de puntos
    * \param[in] in Puntos de entrada
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
   virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const = 0;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const T &in, T *out, bool bDirect = true) const = 0;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  virtual T transform(const T &in, bool bDirect = true) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -129,6 +149,24 @@ public:
    * \see transform_type
    */
   transform_type getTransformType() { return mTrfType; }
+
+  double rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+  {
+    size_t n = pts1.size();
+    std::vector<T> ptsOut(n);
+    std::vector<double> err(n);
+    double sumErr = 0.;
+    if (compute(pts1, pts2)) {
+      for (int i = 0; i < n; i++) {
+        transform(pts1[i], &ptsOut[i]);
+        ptsOut[i] -= pts2[i];
+        err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
+        sumErr += err[i];
+      }
+      if (error) *error = err;
+      return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
+    }
+  }
 
 protected:
 
@@ -219,6 +257,21 @@ public:
    */
   void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
 
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  void transform(const T &in, T *out, bool bDirect = true) const override;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  T transform(const T &in, bool bDirect = true) const override;
 };
 
 template<typename T> inline
@@ -228,6 +281,24 @@ void TrfMultiple<T>::transform(const std::vector<T> &in, std::vector<T> *out, bo
   //... Controlar errores
   for (auto trf : mTransf) {
     trf->transform(*out, out, bDirect);
+  }
+}
+
+template<typename T> inline
+void TrfMultiple<T>::transform(const T &in, T *out, bool bDirect) const
+{
+  *out = in;
+  for (auto trf : mTransf) {
+    trf->transform(*out, out, bDirect);
+  }
+}
+
+template<typename T> inline
+T TrfMultiple<T>::transform(const T &in, bool bDirect = true) const
+{
+  *out = in;
+  for (auto trf : mTransf) {
+    *out = trf->transform(*out, bDirect);
   }
 }
 
@@ -275,13 +346,28 @@ public:
   virtual bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override = 0;
 
   /*!
-   * \brief Aplica la transformación
+   * \brief Aplica la transformación a un conjunto de puntos
    * \param[in] in Puntos de entrada
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
   virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override = 0;
 
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const T &in, T *out, bool bDirect = true) const override = 0;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  virtual T transform(const T &in, bool bDirect = true) const override = 0;
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -290,7 +376,7 @@ public:
  * \brief perspective
  */
 template<typename T>
-class I3D_EXPORT TrfPerspective : public Transform<T>
+class I3D_EXPORT TrfPerspective : public Transform2D<T>
 {
 private:
 
@@ -298,7 +384,8 @@ private:
 
 public:
 
-  TrfPerspective() {}
+  TrfPerspective()
+    : Transform2D(1, transform_type::PERSPECTIVE) {}
 
   ~TrfPerspective() {}
 
@@ -318,6 +405,21 @@ public:
    */
   void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
 
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  void transform(const T &in, T *out, bool bDirect = true) const override;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  T transform(const T &in, bool bDirect = true) const override;
 };
 
 template<typename T> inline
@@ -329,9 +431,33 @@ void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out,
 }
 
 template<typename T> inline
+void TrfPerspective<T>::transform(const T &in, T *out, bool bDirect) const
+{
+  std::vector<T> vIn, vOut;
+  vIn.push_back(in);
+  if (bDirect) {
+    cv::perspectiveTransform(vIn, vOut, H);
+    *out = vOut[0];
+  }
+}
+
+template<typename T> inline
+T TrfPerspective<T>::transform(const T &in, bool bDirect) const
+{
+  T out = in;
+  if (bDirect) {
+    transform(in, &out, bDirect);
+  }
+  return out;
+}
+
+template<typename T> inline
 bool TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
 {
   H = cv::findHomography(pts1, pts2, cv::RANSAC);
+  //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
+  //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
+  //cv::Mat H2 = cv::findHomography(pts1, pts2);
   return H.empty() ? false : true;
 }
 
@@ -432,7 +558,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -440,7 +566,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &pt, bool bDirect = true) const;
+  T transform(const T &pt, bool bDirect = true) const override;
 
 };
 
@@ -642,7 +768,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
@@ -650,7 +776,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const;
+  T transform(const T &in, bool bDirect = true) const override;
 
 private:
 
@@ -865,7 +991,7 @@ public:
   * \param[out] out Punto de salida
   * \param[in] bDirect Transformación directa
   */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
   * \brief Aplica un helmert 2D a un punto
@@ -873,7 +999,7 @@ public:
   * \param[in] bDirect Transformación directa
   * \return Punto de salida
   */
-  T transform(const T &in, bool bDirect = true) const;
+  T transform(const T &in, bool bDirect = true) const override;
 
   /*!
    * \brief Devuelve el giro
@@ -1180,7 +1306,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1188,7 +1314,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const;
+  T transform(const T &in, bool bDirect = true) const override;
 
   /*!
    * \brief Devuelve el giro
@@ -1383,8 +1509,9 @@ void Afin<T>::update()
   
   // Transformación inversa
   double det = a * d - c * b;
-  if (!det) printError("Determinante nulo");
-  else {
+  if (!det) {
+    printError("Determinante nulo");
+  } else {
     ai = d / det;
     bi = -b / det;
     ci = -c / det;
@@ -1547,7 +1674,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1555,7 +1682,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const;
+  T transform(const T &in, bool bDirect = true) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -1668,11 +1795,11 @@ T Projective<T>::transform(const T &in, bool bDirect) const
 {
   T r_pt;
   if (bDirect){
-    r_pt->x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
-    r_pt->y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
+    r_pt.x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
+    r_pt.y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
   } else {
-    r_pt->x = static_cast<sub_type>((ai * in.x + bi * in.y + ci) / (g * in.x + h * in.y + 1));
-    r_pt->y = static_cast<sub_type>((di * in.x + ei * in.y + fi) / (g * in.x + h * in.y + 1));
+    r_pt.x = static_cast<sub_type>((ai * in.x + bi * in.y + ci) / (g * in.x + h * in.y + 1));
+    r_pt.y = static_cast<sub_type>((di * in.x + ei * in.y + fi) / (g * in.x + h * in.y + 1));
   }
   return r_pt;
 }
@@ -1756,6 +1883,22 @@ public:
    * \param[in] bDirect Transformación directa (por defecto)
    */
   virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override = 0;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const T &in, T *out, bool bDirect = true) const override = 0;
+
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  virtual T transform(const T &in, bool bDirect = true) const override = 0;
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -1856,38 +1999,38 @@ public:
   bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
 
   /*!
-  * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
-  * <H3>Ejemplo:</H3>
-  * \code
-  * Helmert2D<cv::Point2d> h2d(x0,y0, scale, rotation);
-  * std::vector<cv::Point2d> pts_in{ cv::Point2d(4157222.543, 664789.307),
-  *     cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
-  *     cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
-  *     cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) };
-  * std::vector<cv::Point2d> pts_out;
-  * h2d.transform(pts_in, &pts_out);
-  * \endcode
-  * \param[in] in Puntos de entrada
-  * \param[out] out Puntos de salida
-  * \param[in] bDirect Transformación directa
-  */
+   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
+   * <H3>Ejemplo:</H3>
+   * \code
+   * Helmert2D<cv::Point2d> h2d(x0,y0, scale, rotation);
+   * std::vector<cv::Point2d> pts_in{ cv::Point2d(4157222.543, 664789.307),
+   *     cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
+   *     cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
+   *     cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) };
+   * std::vector<cv::Point2d> pts_out;
+   * h2d.transform(pts_in, &pts_out);
+   * \endcode
+   * \param[in] in Puntos de entrada
+   * \param[out] out Puntos de salida
+   * \param[in] bDirect Transformación directa
+   */
   void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
 
   /*!
-  * \brief Aplica un helmert 2D a un punto
-  * \param[in] in Punto de entrada
-  * \param[out] out Punto de salida
-  * \param[in] bDirect Transformación directa
-  */
-  void transform(const T &in, T *out, bool bDirect = true) const;
+   * \brief Aplica un helmert 2D a un punto
+   * \param[in] in Punto de entrada
+   * \param[out] out Punto de salida
+   * \param[in] bDirect Transformación directa
+   */
+  void transform(const T &in, T *out, bool bDirect = true) const override;
 
   /*!
-  * \brief Aplica un helmert 2D a un punto
-  * \param[in] in Punto de entrada
-  * \param[in] bDirect Transformación directa
-  * \return Punto de salida
-  */
-  T transform(const T &in, bool bDirect = true) const;
+   * \brief Aplica un helmert 2D a un punto
+   * \param[in] in Punto de entrada
+   * \param[in] bDirect Transformación directa
+   * \return Punto de salida
+   */
+  T transform(const T &in, bool bDirect = true) const override;
 
   /*!
    * \brief Devuelve el giro

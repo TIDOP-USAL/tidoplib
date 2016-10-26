@@ -92,7 +92,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
-      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

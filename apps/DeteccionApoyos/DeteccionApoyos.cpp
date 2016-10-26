@@ -315,12 +315,6 @@ void onRun(VideoStream *strmVideo, void* userdata)
 
 int main(int argc, char *argv[])
 {
-  int kkint;
-
-  CmdParser kk( argc, argv);
-  kk.options = { CmdOption("c"), CmdOption("d") };
-  kk.parameters = { CmdParameterInt("value", &kkint) };
-
   cv::CommandLineParser parser(argc, argv, keys);
   string filename = parser.get<string>(0);
   LD_TYPE ls = LD_TYPE::HOUGHP;//(LD_TYPE)parser.get<int>("ls");

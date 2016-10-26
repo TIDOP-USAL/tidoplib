@@ -17,15 +17,15 @@ std::mutex mtx;
 struct msgProperties {
   const char *normal;
   const char *extend;
-  console_color foreColor;
+  Console::Color foreColor;
 };
 
 struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)", console_color::WHITE},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", console_color::WHITE},
-  { "Info: %s",    "Info: %s (%s:%u, %s)", console_color::WHITE},
-  { "Warning: %s", "Warning: %s (%s:%u, %s)", console_color::MAGENTA },
-  { "Error: %s",   "Error: %s (%s:%u, %s)", console_color::RED },
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE},
+  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE},
+  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA },
+  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED },
 };
 
 msgProperties GetMessageProperties( MessageLevel msgLevel ) 
@@ -112,6 +112,11 @@ void Message::setMessageOutput(const MessageOutput &output)
   sOutput = output;
 }
 
+void Message::setMessageLogFile(const std::string logfile)
+{
+ sLogFile = logfile;
+}
+
 void Message::setTimeLogFormat( const std::string timeTemplate)
 {
   sTimeLogFormat = timeTemplate;
@@ -151,7 +156,7 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
 #ifdef  I3D_ENABLE_CONSOLE
 
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
-    Console console(level == MessageLevel::MSG_ERROR ? console_mode::OUTPUT_ERROR : console_mode::OUTPUT);
+    Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
     console.setConsoleForegroundColor(GetMessageProperties(level).foreColor);
     printf_s(msgOut.c_str());
     printf_s("\n");

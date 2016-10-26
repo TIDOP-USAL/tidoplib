@@ -14,11 +14,12 @@
 #include "LineDetector.h"
 #include "VideoStream.h"
 #include "utils.h"
-#include "Logger.h"
 #include "matching.h"
 #include "fourier.h"
 #include "ImgProcessing.h"
 #include "transform.h"
+#include "core\console.h"
+#include "core\messages.h"
 
 using namespace I3D;
 using namespace std;
@@ -284,8 +285,11 @@ int main(int argc, char *argv[])
 
   char logfile[_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "TrackLines.log", logfile);
-  if ( err == 0 )
-    LogMsg log(logfile, LogLevel::LOG_DEBUG);
+  if (err == 0) {
+        //LogMsg log(logfile, LogLevel::LOG_DEBUG);
+    Message::setMessageLogFile(logfile);
+    Message::setMessageLevel(MessageLevel::MSG_DEBUG);
+  }
 
   std::unique_ptr<LineDetector> oLD;
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
@@ -294,7 +298,7 @@ int main(int argc, char *argv[])
   else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
   else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
   else {
-    logErrorMsg("No se ha seleccionado ningún detector de lineas.");
+    logPrintError("No se ha seleccionado ningún detector de lineas.");
     return 0;
   }
 
@@ -366,10 +370,10 @@ int main(int argc, char *argv[])
   for (int i = 0; i < sizeof(img) / sizeof(img[0]); i++) {
     //... Simulación de la carga del video
     std::string img1 = std::string(imgpath) + img[i];
-    logInfoMsg("Frame: %s", img1.c_str());
+    logPrintInfo("Frame: %s", img1.c_str());
     current_frame = cv::imread(img1, cv::IMREAD_GRAYSCALE);
     if (current_frame.empty()) {
-      logErrorMsg("No se puede cargar frame: %s", img1.c_str());
+      logPrintError("No se puede cargar frame: %s", img1.c_str());
     } else {
       ////... Prueba a reducir la resolución
       //cv::Size szImg(current_frame.size().width / 2, current_frame.size().height / 2);
@@ -427,14 +431,14 @@ int main(int argc, char *argv[])
         // Se detectan los key points y los descriptores
         int nft = featuresPrev.detectKeyPoints(crop_frame);
         featuresPrev.calcDescriptor(crop_frame);
-        logInfoMsg("Número de features detectado: %i", nft);
+        logPrintInfo("Número de features detectado: %i", nft);
 
         cv::Mat mOut;
         // Procesado previo a la imagen para la detección de lineas
         imgprolist.execute(crop_frame, &mOut);
         oLD->run(mOut);
         oLD->drawLines(crop_frame);
-        logInfoMsg("Número de lineas detectado: %i", oLD->getLines().size());
+        logPrintInfo("Número de lineas detectado: %i", oLD->getLines().size());
         if (!oLD->getLines().empty()) {
           vector<Line> lines;
           //translate(oLD->getLines(), &lines, wPrev.pt1.x, wPrev.pt1.y);
@@ -462,7 +466,7 @@ int main(int argc, char *argv[])
           conductor_direction = conductor_line_prev.angleOX();
 
         }
-        logInfoMsg("Pendiente recta: %f", conductor_direction);
+        logPrintInfo("Pendiente recta: %f", conductor_direction);
 
       } else {
 
@@ -470,7 +474,7 @@ int main(int argc, char *argv[])
         //... No calcular con toda la ventana. Calcular una ventana estimada
         int nft = featuresCur.detectKeyPoints(current_frame);
         featuresCur.calcDescriptor(current_frame);
-        logInfoMsg("Número de features detectado: %i", nft);
+        logPrintInfo("Número de features detectado: %i", nft);
 
         // Cálculo de matching
         std::vector<DMatch> matches;
@@ -508,7 +512,7 @@ int main(int argc, char *argv[])
           ptsprev.push_back(featuresPrev.getKeyPoint(good_matches[igm].queryIdx).pt);
           ptscur.push_back(featuresCur.getKeyPoint(good_matches[igm].trainIdx).pt);
         }
-        logInfoMsg("Número de matches: %i", good_matches.size());
+        logPrintInfo("Número de matches: %i", good_matches.size());
 
         // drawing the results
         //cv::Mat img_matches;
@@ -552,7 +556,7 @@ int main(int argc, char *argv[])
           //oLD->run(mOut);
           oLD->run(mOut, cv::Scalar(line_proj.angleOY()/*conductor_direction + CV_PI / 2*/, 0.25));
 
-          logInfoMsg("Número de lineas detectado: %i", oLD->getLines().size());
+          logPrintInfo("Número de lineas detectado: %i", oLD->getLines().size());
           if (!oLD->getLines().empty()) {
 
             //for (size_t i = 0; i < oLD.lines.size(); i++) {
@@ -575,16 +579,16 @@ int main(int argc, char *argv[])
               conductor_direction = conductor_line_prev.angleOX();
               intersectLines(line_proj, Line(cv::Point(current_frame.cols / 2, 0), cv::Point(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
               cv::line(out, pt_intersect, pt_intersect, Scalar(0, 0, 255), 3, LINE_AA);
-              logInfoMsg("Punto conductor (%i, %i)", pt_intersect.x, pt_intersect.y);
+              logPrintInfo("Punto conductor (%i, %i)", pt_intersect.x, pt_intersect.y);
               bEstimate = false;
             } else {
               bEstimate = true;
-              logInfoMsg("Ningún conductor detectado próximo al punto. Posición estimada (%i, %i)", pt_intersect.x, pt_intersect.y);
+              logPrintInfo("Ningún conductor detectado próximo al punto. Posición estimada (%i, %i)", pt_intersect.x, pt_intersect.y);
             }
           } else {
-            logInfoMsg("Conductores no encontrados. Punto determinado a partir de la proyección de la línea previa (%i, %i)", pt_intersect.x, pt_intersect.y);
+            logPrintInfo("Conductores no encontrados. Punto determinado a partir de la proyección de la línea previa (%i, %i)", pt_intersect.x, pt_intersect.y);
           }
-          logInfoMsg("Pendiente recta: %f", conductor_direction);
+          logPrintInfo("Pendiente recta: %f", conductor_direction);
 
 
           cv::namedWindow("TrackLines", WINDOW_AUTOSIZE);

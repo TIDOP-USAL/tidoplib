@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "..\..\src\lineString.h"
+#include "geometric_entities\lineString.h"
 #include "..\..\src\utils.h"
 
 using namespace I3D;
@@ -18,7 +18,7 @@ std::initializer_list<cv::Point> ptsIn{
 
 TEST(LineString, DefaultConstructor) {
   /*Creamos un objeto de tipo LineString*/
-  LineString ls;
+  LineStringI ls;
 
   /*Comprobamos si se ha creado con el contructor por defecto*/
   EXPECT_EQ(0, ls.getSize());
@@ -26,7 +26,7 @@ TEST(LineString, DefaultConstructor) {
 
 // Constructor a partir de una lista
 TEST(LineString, ConstructorList) {
-  LineString  line(ptsIn); //Creamos el vector, iniciándolo con la lista iniciadora
+  LineStringI  line(ptsIn); //Creamos el vector, iniciándolo con la lista iniciadora
   //EXPECT_EQ(ptsIn, line.vertices);
   int j = 0;
 
@@ -41,8 +41,8 @@ TEST(LineString, ConstructorList) {
 
 /*Constructor de copia*/
 TEST(LineString, CopyConstructor) {
-	LineString  line(ptsIn); //Creamos el primer vector, iniciándolo con la lista iniciadora
-	LineString copia(line); //Creamos el segundo vectro como copia del primero
+	LineStringI  line(ptsIn); //Creamos el primer vector, iniciándolo con la lista iniciadora
+	LineStringI copia(line); //Creamos el segundo vectro como copia del primero
 
 	EXPECT_EQ(line.getSize(), copia.getSize());
 	int j = 0;
