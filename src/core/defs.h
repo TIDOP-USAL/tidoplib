@@ -35,7 +35,6 @@
 #define I3D_FLOAT_MAX std::numeric_limits<float>().max()
 #define I3D_FLOAT_MIN -std::numeric_limits<float>().max()
 
-
 #if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3DAPI_EXPORTS
 #  define I3D_EXPORT __declspec(dllexport)
 //#elif defined __GNUC__ && __GNUC__ >= 4

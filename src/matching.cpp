@@ -114,7 +114,7 @@ int Matching::match(const Features2D &feat1, const Features2D &feat2, std::vecto
 
 void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 {
-  if (!mMatches.empty()){
+  if (!mMatches.empty()) {
     std::vector<cv::DMatch> match_aux = mMatches;
     sortVector(&match_aux);
     double min_dist = match_aux.front().distance;
@@ -130,49 +130,23 @@ void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio) const
 {
   if (!mMatches.empty()) {
-    //getGoodMatches(gm, ratio);
-    if (gm) *gm = mMatches;
-    std::vector<cv::Point2f> pts1;
-    std::vector<cv::Point2f> pts2;
-    //push_back es lento. asignar tamaño antes
-    for (size_t igm = 0; igm < mMatches.size(); igm++) {
-      pts1.push_back(feat1.getKeyPoint(/*(*gm)*/mMatches[igm].queryIdx).pt);
-      pts2.push_back(feat2.getKeyPoint(/*(*gm)*/mMatches[igm].trainIdx).pt);
+    // Para hacer un primer filtrado
+    getGoodMatches(gm, ratio);
+    if (gm && gm->empty()) *gm = mMatches;
+
+    size_t nPoints = gm->size();
+    std::vector<cv::Point2f> pts1(nPoints);
+    std::vector<cv::Point2f> pts2(nPoints);
+    for (size_t igm = 0; igm < nPoints; igm++) {
+      pts1[igm] = feat1.getKeyPoint((*gm)[igm].queryIdx).pt;
+      pts2[igm] = feat2.getKeyPoint((*gm)[igm].trainIdx).pt;
     }
+
+    // Se calcula una transformación perspectiva y se van limpiando puntos
+    //... Hay que revisar el valor de error medio cuadrático que se pone y
+    //    la forma de ver la convergencia de la solución
     TrfPerspective<cv::Point2f> trfPerps;
-    //trfPerps.compute(pts1, pts2);
-    //double rmse = trfPerps.rootMeanSquareError(pts1, pts2);
-    //cv::Point2f kk;
-    //kk.cross
-    //TrfPerspective<cv::Point2f> trfPerps;
-    //std::vector<cv::Point2f> ptsOut;
-    //if (trfPerps.compute(pts1, pts2)) {
-    //  trfPerps.transform(pts1, &ptsOut);
-    //  for ()
-    //  std::transform(ptsOut.begin(), ptsOut.end(), pts2.begin(), [](cv::Point2f pt1, cv::Point2f pt2) {  pt1 -= pt2; });
-
-    //}
-
-    //Prueba con una transformación proyectiva
-    //Projective<cv::Point2f> trfProj;
     std::vector<double> err;
-    //double rmse = trfProj.rootMeanSquareError(pts1, pts2, &err);
-    //// Quitar del calculo los puntos con mayor error
-    //for (size_t i = 0, j = 0; i < pts1.size(); i++) {
-    //  if (sqrt(err[i]) > rmse) {
-    //    pts1.erase(pts1.begin() + j);
-    //    pts2.erase(pts2.begin() + j);
-    //  } else j++;
-    //}
-    //rmse = trfProj.rootMeanSquareError(pts1, pts2, &err);
-
-    //for (size_t i = 0, j = 0; i < pts1.size(); i++) {
-    //  if (sqrt(err[i]) > std::max(rmse,100.)) {
-    //    pts1.erase(pts1.begin() + j);
-    //    pts2.erase(pts2.begin() + j);
-    //  } else j++;
-    //}
-    //rmse = trfProj.rootMeanSquareError(pts1, pts2, &err);
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
     while ( rmse > 10. ) {
       for (size_t i = 0, j = 0; i < pts1.size(); i++) {
@@ -184,7 +158,6 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
       }
       rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
     }
-
   }
 }
 

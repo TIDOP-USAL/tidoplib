@@ -9,28 +9,31 @@ Observer::~Observer()
     mSubject.get()->deleteObserver(this); 
 }
 
+/* ---------------------------------------------------------------------------------- */
+
 Subject::Subject() 
 { 
   //Se tiene que llamar al evento Create
-  notify("Create");
+  //notify("Create");
 }
 
 Subject::~Subject() 
 {
   //Se tiene que llamar al evento Destroy
-  notify("Destroy");
+  //notify("Destroy");
 }
 
-void Subject::addObserver(const std::string event, std::shared_ptr<Observer> observer)
+void Subject::addObserver(const int event, std::shared_ptr<Observer> observer)
 {
   mObservers[event].push_back(observer);
 }
 
-void Subject::notify(const std::string& event) const
-{
-  for (const auto& obs : mObservers.at(event))
-    (*obs)();
-}
+//void Subject::notify(const int event) const
+//{
+  //De esta forma es limitante a que siempre tengan el mismo número de parametros
+  //for (const auto& obs : mObservers.at(event))
+    //(*obs)();
+//}
 
 void Subject::deleteObserver(const Observer *observer) 
 {

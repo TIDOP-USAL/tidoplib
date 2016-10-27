@@ -481,7 +481,7 @@ int main(int argc, char** argv)
   
   std::vector<DMatch> good_matches;
   //match.getGoodMatches(&good_matches,0.08);
-   match.getGoodMatches(featuresL, featuresR, &good_matches, 0.01);
+   match.getGoodMatches(featuresL, featuresR, &good_matches, 0.1);
 
   //-- Draw only "good" matches
   Mat img_matches;
@@ -545,20 +545,27 @@ int main(int argc, char** argv)
   //cv::reprojectImageTo3D(filtered_disp,XYZ,Q);  //... Mejor no usar para poder filtrar la nube de puntos.
   cv::Mat_<double> vec_tmp(4,1);
   
+  cv::Mat dispFilteredDif = left_disp - filtered_disp;
+  cv::Mat dispMask = cv::Mat::ones(filtered_disp.size(), CV_8U);
+  dispMask.setTo(0, abs(dispFilteredDif) > 10);
+
+  cv::Mat disparity;
+  cv::bitwise_and(left_disp, left_disp, disparity, dispMask);
+
   //for(int y=0; y < filtered_disp.rows; ++y) {
   //    for(int x=0; x < filtered_disp.cols; ++x) {
   for(int y=0; y < wL.getHeight(); ++y) {
     for(int x=0; x < wL.getWidth(); ++x) {
       vec_tmp(0)=x; 
       vec_tmp(1)=y; 
-      //vec_tmp(2)=filtered_disp.at<__int16>(wL.pt1.y+y, wL.pt1.x+x); 
-      vec_tmp(2)=left_disp.at<__int16>(wL.pt1.y+y,wL.pt1.x+x); 
+      vec_tmp(2)=disparity.at<__int16>(wL.pt1.y+y, wL.pt1.x+x); 
+      //vec_tmp(2)=left_disp.at<__int16>(wL.pt1.y+y,wL.pt1.x+x); 
       if(vec_tmp(2)==0) continue;
       vec_tmp(3)=1;
       vec_tmp = Q*vec_tmp;
       vec_tmp /= vec_tmp(3);
       if(abs(vec_tmp(0))>10 || abs(vec_tmp(1))>10 || abs(vec_tmp(2))>10) continue;
-      cv::Vec3f &point = XYZ.at<cv::Vec3f>(y,x);
+      cv::Vec3f &point = XYZ.at<cv::Vec3f>(wL.pt1.y+y,wL.pt1.x+x);
       point[0] = vec_tmp(0);
       point[1] = vec_tmp(1);
       point[2] = vec_tmp(2);
@@ -574,10 +581,10 @@ int main(int argc, char** argv)
     for (int j = 0; j < wL.getWidth(); j++) {
 
       pcl::PointXYZRGB point;
-      point.x = XYZ.at<cv::Vec3f>(i,j)[0];
-      point.y = XYZ.at<cv::Vec3f>(i,j)[1];
-      point.z = XYZ.at<cv::Vec3f>(i,j)[2];
-      if (point.z < 1.0 || point.z > 0.5) {
+      point.x = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[0];
+      point.y = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[1];
+      point.z = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[2];
+      if (abs(point.z) < 1.5 && abs(point.z) > 0.5) {
         point.rgb = *left_for_matcher.ptr<float>(wL.pt1.y+i,wL.pt1.x+j);
         point_cloud_ptr->points.push_back(point);
       }
@@ -592,7 +599,7 @@ int main(int argc, char** argv)
   pcl::visualization::PointCloudColorHandlerRGBField<pcl::PointXYZRGB> rgb(point_cloud_ptr);
   viewer->addPointCloud<pcl::PointXYZRGB> (point_cloud_ptr, rgb, "reconstruction");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "reconstruction");
-  viewer->addCoordinateSystem( 0.1 );
+  viewer->addCoordinateSystem( 1 );
   viewer->initCameraParameters();
   while (!viewer->wasStopped())
   {

@@ -313,7 +313,7 @@ int main(int argc, char** argv)
   //  }
   //}
 
-  printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
+  //printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
 
 
   // Calculo de la posición de la camara
@@ -366,7 +366,7 @@ int main(int argc, char** argv)
   cout << "3D Visualization: " << endl;
   cout << "============================" << endl;
 
-    /// Create 3D windows
+  /// Create 3D windows
   viz::Viz3d window_est("Estimation Coordinate Frame");
              window_est.setBackgroundColor(); // black by default
              window_est.registerKeyboardCallback(&keyboard_callback);

@@ -156,63 +156,53 @@ void Console::update()
 
 /* ---------------------------------------------------------------------------------- */
 
-void CmdParser::add(std::shared_ptr<CmdArgument> argument)
+void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
 {
-  // Se ponen primero las opciones
-  if (argument->getType() == ArgType::OPTION)
-    mCmdArgs.push_back(argument);
-  else
-    mCmdArgs.push_front(argument);
+  mCmdArgs.push_front(std::make_shared<CmdParameter>(name, description, optional, defValue));
 }
 
-//template<typename T>
-//void CmdParser::add(td::string arg, std::string description, T *value, T *defValue)
-//{
-//  if ( type)
-//  // Se ponen primero las opciones
-//  if (argument->getType() == ArgType::OPTION)
-//    mCmdArgs.push_back(argument);
-//  else
-//    mCmdArgs.push_front(argument);
-//}
 
-int CmdParser::parse(int argc, const char* const argv[])
+void CmdParser::addParameterOption(const char *name, const char *options, const char *description, bool optional, const char *defValue)
 {
-  //for (auto arg : mCmdArgs) {
-  //  bool bOptional = arg->isOptional();
-  //  std::string argName = (arg->getType() == ArgType::OPTION) ? "-" : "--";
-  //  argName += arg->getName();
-  //  bool bFind = false;
-  //  for (int i = 1; i < argc; ++i) {
-  //    std::string arg_name = std::string(argv[i]);
-  //    std::size_t found = arg_name.find(argName);
-  //    if (found != std::string::npos) {
-  //      //if (std::string(argv[i]) == argName) {
-  //      if (arg->getType() == ArgType::OPTION) {
-  //        dynamic_cast<CmdOption *>(arg.get())->setOption(true);
-  //      } else if (arg->getType() == ArgType::PARAMETER) {
-  //        std::size_t end = arg_name.find("=",found);
-  //        std::string TagString = arg_name.substr(ini,end-ini+1);
-  //        if (i + 1 < argc) {
-  //          std::string value = argv[i++];
-  //          dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
-  //          bFind = true;
-  //          break;
-  //        } else { 
-  //          //std::cerr << "--destination option requires one argument." << std::endl;
-  //          return 1;
-  //        } 
-  //      } else {
-  //        ;
-  //      }
-  //    //}
+  mCmdArgs.push_front(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
+}
 
-  //    }
-  //  }
-  //  // Ver si no es opcional y devolver un error si no existe
-  //  if (bFind == false && bOptional == false) return 1;
-  //}
-  return 0;
+
+void CmdParser::addOption(const char *name, const char *description, bool optional)
+{
+  mCmdArgs.push_back(std::make_shared<CmdOption>(name, description, optional));
+}
+
+CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
+{
+  for (auto arg : mCmdArgs) {
+    bool bOptional = arg->isOptional();
+    std::string argName = (arg->getType() == ArgType::OPTION) ? "-" : "--";
+    argName += arg->getName();
+    bool bFind = false;
+    for (int i = 1; i < argc; ++i) {
+      std::string arg_name = std::string(argv[i]);
+      std::size_t found = arg_name.find(argName);
+      if (found != std::string::npos) {
+        if (arg->getType() == ArgType::OPTION) {
+          dynamic_cast<CmdOption *>(arg.get())->setOption(true);
+          break;
+        } else if (arg->getType() == ArgType::PARAMETER) {
+          std::size_t val_pos = arg_name.find("=",found);
+          std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+          dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
+          bFind = true;
+          break;
+        } else if (arg->getType() == ArgType::PARAMETER_OPTIONS) {
+          ;
+        }
+
+      }
+    }
+    // Ver si no es opcional y devolver un error si no existe
+    if (bFind == false && bOptional == false) return CmdParser::MSG::PARSE_ERROR;
+  }
+  return CmdParser::MSG::PARSE_SUCCESS;
 }
 
 void CmdParser::printHelp()
@@ -230,8 +220,10 @@ void CmdParser::printHelp()
   //     << arg->getDescription();
   //}
   //tp.PrintFooter();
-
-  ////... Mensaje usage
+  printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+  for (auto arg : mCmdArgs) {
+     printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"),arg->getDescription().c_str());
+  }
 }
 
 bool CmdParser::hasOption(const std::string &option) const
@@ -239,7 +231,7 @@ bool CmdParser::hasOption(const std::string &option) const
   for (auto arg : mCmdArgs) {
     if (arg->getType() == ArgType::OPTION) {
       if (arg->getName() == option) {
-        return true;//dynamic_cast<CmdOption *>(arg.get())->isActive();
+        return true;
       }
     }
   }

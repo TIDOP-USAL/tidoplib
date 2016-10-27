@@ -48,14 +48,37 @@ public:
   /*!
    * \brief Destructor
    */
-  virtual ~Observer();
+  virtual ~Observer() = 0;
 
   /*!
    * \brief operator de asignación que debe ser implementado por
    * las clases que hereden de Observer
    */
-  virtual void operator()() = 0;
+  //virtual void operator()() = 0;
 };
+
+//class FunctionObserver : public Observer
+//{
+//private:
+//
+//  /*!
+//   * \brief Función
+//   */
+//  std::function<void(const cv::Mat &,cv::Mat *)> f;
+//
+//public:
+//  FunctionObserver()
+//  {
+//  }
+//
+//  ~FunctionObserver()
+//  {
+//  }
+//
+//private:
+//
+//};
+
 
 //
 /*!
@@ -67,14 +90,15 @@ public:
  */
 class I3D_EXPORT Subject
 {
+public:
 
-private:
+protected:
 
   // En lugar de función usar función objeto que herede de Observer
   /*!
    * \brief Observadores subscritos
    */
-  std::map<std::string, std::vector<std::shared_ptr<Observer>>> mObservers;
+  std::map<int, std::vector<std::shared_ptr<Observer>>> mObservers;
 
 public:
 
@@ -96,7 +120,7 @@ public:
    * \param event
    * \param observer
    */
-  void addObserver(const std::string event, std::shared_ptr<Observer> observer);
+  void addObserver(const int _event, std::shared_ptr<Observer> observer);
 
   /*!
    * \brief deleteObserver
@@ -108,7 +132,7 @@ public:
    * \brief notify
    * \param event
    */
-  void notify(const std::string& event) const;
+  //void notify(const int _event) const;
 };
 
 //template<typename Context>

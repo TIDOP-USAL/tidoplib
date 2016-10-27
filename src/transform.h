@@ -156,6 +156,8 @@ public:
     std::vector<T> ptsOut(n);
     std::vector<double> err(n);
     double sumErr = 0.;
+
+    //... Sería mejor añadirlo en el propio calculo de los parámetros?
     if (compute(pts1, pts2)) {
       for (int i = 0; i < n; i++) {
         transform(pts1[i], &ptsOut[i]);
