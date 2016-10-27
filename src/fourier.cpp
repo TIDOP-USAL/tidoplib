@@ -82,7 +82,6 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   cv::Mat magI;
   cv::magnitude(planes[0], planes[1], magI);
 
-  // log(1 + sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
   logScale(magI, &magI);
 
   cv::normalize(magI, magI, 0, 1, CV_MINMAX);
@@ -91,12 +90,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   // Linea por angulo
   cv::Point pt1, pt2;
   if (angle) {
-    //double a = cos(*angle), b = sin(*angle);
     int x0 = size.width / 2, y0 = size.height / 2;
-    //pt1.x = cvRound(x0 + 100 * (-b));
-    //pt1.y = cvRound(y0 + 100 * (a));
-    //pt2.x = cvRound(x0 - 100 * (-b));
-    //pt2.y = cvRound(y0 - 100 * (a));
     int dx = cvRound(tan(*angle) * 70.);
     pt1.x = x0 + dx;
     pt1.y = y0 - 70;
@@ -117,23 +111,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
     cv::Scalar med, stdv;
     cv::meanStdDev(magIcrop, med, stdv);
     cv::Mat mask2 = cv::Mat::zeros(rcrop.size(), CV_8U);
-    //mask2.setTo(1, magIcrop > 0.6);
     mask2.setTo(1, magIcrop > med[0] + stdv[0]);
-
-    //cv::Mat nonZeroCoordinates;
-    //cv::findNonZero(mask2, nonZeroCoordinates);    // Buscamos en la mascara los elementos distintos de 0
-    //cv::Mat rc[] = { cv::Mat::zeros(cv::Size(nonZeroCoordinates.rows, 1), CV_32S), cv::Mat::zeros(cv::Size(nonZeroCoordinates.rows, 1), CV_32S) };
-    //cv::split(nonZeroCoordinates, rc);
-    //double rmax, rmin;                      // Máximo y mínimo en filas
-    //cv::Point pmin, pmax;                   // Posición de máximo y mínimo en filas
-    //cv::minMaxLoc(rc[1], &rmin, &rmax, &pmin, &pmax);
-    //pt1.x = rcrop.x + rc[0].at<int>(pmin);
-    //pt1.y = rcrop.y + static_cast<int>(rmin);
-    //pt2.x = rcrop.x + rc[0].at<int>(pmax);
-    //pt2.y = rcrop.y + static_cast<int>(rmax);
-    //r_angle = vectorAngleOX(pt2 - pt1);
-
-
 
     std::vector<cv::Point> pMax;
     cv::Mat idx;
@@ -155,11 +133,8 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
     double b = 0.;
     double corr = regressionLinearXY(pMax, &m, &b);
     
-    //pt1 = cv::Point(cvRound(b), 0);
-    //pt2 = cv::Point(cvRound(m * size.height + b), size.height);
     pt1 = cv::Point(cvRound(b + rcrop.x), rcrop.y);
     pt2 = cv::Point(cvRound(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);
-    //r_angle = CV_PI / 2 + vectorAngleOY(pt2 - pt1);
     r_angle = atan(m) + CV_PI / 2;
   }
 
@@ -179,9 +154,6 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   ft.inverse(complexI, &imageOut);
 
   normalize(imageOut, imageOut, 0, 1, CV_MINMAX);
-
-  //cv::Mat cc2 = cv::Mat::zeros(cv::Size(1, size.height), CV_32F);
-  //imageOut.col(size.width / 2).rowRange(2, size.height).copyTo(cc2);
 
   float prevVar, curVar;
   int prevBinVar, curBinVar;

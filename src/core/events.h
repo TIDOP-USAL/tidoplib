@@ -48,14 +48,37 @@ public:
   /*!
    * \brief Destructor
    */
-  virtual ~Observer();
+  virtual ~Observer() = 0;
 
   /*!
    * \brief operator de asignación que debe ser implementado por
    * las clases que hereden de Observer
    */
-  virtual void operator()() = 0;
+  //virtual void operator()() = 0;
 };
+
+//class FunctionObserver : public Observer
+//{
+//private:
+//
+//  /*!
+//   * \brief Función
+//   */
+//  std::function<void(const cv::Mat &,cv::Mat *)> f;
+//
+//public:
+//  FunctionObserver()
+//  {
+//  }
+//
+//  ~FunctionObserver()
+//  {
+//  }
+//
+//private:
+//
+//};
+
 
 //
 /*!

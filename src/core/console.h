@@ -186,7 +186,7 @@ public:
    * \param description
    * \param optional
    */
-  CmdArgument(std::string name, std::string description, bool optional) 
+  CmdArgument(const char *name, const char *description, bool optional = false) 
     : mName(name), mDescription(description), bOptional(optional) {}
   
   /*!
@@ -241,7 +241,7 @@ public:
    * \param description
    * \param optional
    */
-  CmdOption(std::string name, std::string description, bool optional)
+  CmdOption(const char *name, const char *description, bool optional = false)
     : CmdArgument(name, description, optional), mValue(false) {}
 
   /*!
@@ -283,11 +283,11 @@ public:
    * \param description
    * \param optional
    */
-  CmdParameter(std::string name, std::string description, bool optional)
-    : CmdArgument(name, description, optional)
-  {
-    mDefValue = "";
-  }
+  //CmdParameter(std::string name, std::string description, bool optional)
+  //  : CmdArgument(name, description, optional)
+  //{
+  //  mDefValue = "";
+  //}
 
   /*!
    * \brief CmdParameterString
@@ -296,7 +296,7 @@ public:
    * \param optional
    * \param defValue
    */
-  CmdParameter(std::string name, std::string description, bool optional, std::string defValue) 
+  CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "") 
     : CmdArgument(name, description, optional) 
   {
     mDefValue = defValue;
@@ -312,7 +312,6 @@ public:
    * \brief getValue
    * \return
    */
-  template<typename T>
   std::string getValue() const { return mDefValue; }
 
   /*!
@@ -345,12 +344,12 @@ public:
    * \param description
    * \param optional
    */
-  CmdParameterOptions(std::string name, std::string options, std::string description, bool optional)
-    : CmdArgument(name, description, optional)
-  {
-    mDefValue = "";
-    split(options, mOptions, ",");
-  }
+  //CmdParameterOptions(std::string name, std::string options, std::string description, bool optional)
+  //  : CmdArgument(name, description, optional)
+  //{
+  //  mDefValue = "";
+  //  split(options, mOptions, ",");
+  //}
 
   /*!
    * \brief CmdParameterString
@@ -359,7 +358,7 @@ public:
    * \param optional
    * \param defValue
    */
-  CmdParameterOptions(std::string name, std::string options, std::string description, bool optional, std::string defValue) 
+  CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "") 
     : CmdArgument(name, description, optional) 
   {
     mDefValue = defValue;
@@ -386,298 +385,62 @@ public:
   void setValue(std::string value) { mDefValue = value; }
 };
 
-///*!
-// * \brief The CmdParameterInt struct
-// */
-//struct I3D_EXPORT CmdParameterInt : public CmdArgument
-//{
-//private:
-//
-//  /*!
-//   * \brief mDefValue
-//   */
-//  int mDefValue;
-//
-//public:
-//  /*!
-//   * \brief CmdParameterInt
-//   * \param name
-//   * \param description
-//   * \param optional
-//   */
-//  CmdParameterInt(std::string name, std::string description, bool optional)
-//    : CmdArgument(name, description, optional)
-//  {
-//    mDefValue = I3D_INT_MIN;
-//  }
-//
-//  /*!
-//   * \brief CmdParameterInt
-//   * \param name
-//   * \param description
-//   * \param optional
-//   * \param defValue
-//   */
-//  CmdParameterInt(std::string name, std::string description, bool optional, int defValue) 
-//    : CmdArgument(name, description, optional) 
-//  {
-//    mDefValue = defValue;
-//  }
-//
-//  /*!
-//   * \brief getType
-//   * \return
-//   */
-//  ArgType getType() { return ArgType::PARAMETER_INT; }
-//
-//  /*!
-//   * \brief getValue
-//   * \return
-//   */
-//  int getValue() const { return mDefValue; }
-//
-//private:
-//
-//  /*!
-//   * \brief setValue
-//   * \param value
-//   */
-//  void setValue(int value) { mDefValue = value; }
-//};
-//
-///*!
-// * \brief The CmdParameterDouble struct
-// */
-//struct I3D_EXPORT CmdParameterDouble : public CmdArgument
-//{
-//private:
-//
-//  /*!
-//   * \brief mDefValue
-//   */
-//  double mDefValue;
-//
-//  /*!
-//   * \brief type
-//   */
-//  typedef CmdParameterDouble type;
-//
-//public:
-//
-//  /*!
-//   * \brief CmdParameterDouble
-//   * \param name
-//   * \param description
-//   * \param optional
-//   */
-//  CmdParameterDouble(std::string name, std::string description, bool optional) 
-//    : CmdArgument(name, description, optional)
-//  {
-//    mDefValue = I3D_DOUBLE_MIN;
-//  }
-//
-//  /*!
-//   * \brief CmdParameterDouble
-//   * \param name
-//   * \param description
-//   * \param optional
-//   * \param defValue
-//   */
-//  CmdParameterDouble(std::string name, std::string description, bool optional, double defValue) 
-//    : CmdArgument(name, description, optional) 
-//  {
-//    mDefValue = defValue;
-//  }
-//
-//  /*!
-//   * \brief getType
-//   * \return
-//   */
-//  ArgType getType() { return ArgType::PARAMETER_DOUBLE; }
-//
-//  /*!
-//   * \brief getValue
-//   * \return
-//   */
-//  double getValue() const { return mDefValue; }
-//
-//private:
-//
-//  /*!
-//   * \brief setValue
-//   * \param value
-//   */
-//  void setValue(double value) { mDefValue = value; }
-//};
-//
-///*!
-// * \brief The CmdParameterFloat struct
-// */
-//struct I3D_EXPORT CmdParameterFloat : public CmdArgument
-//{
-//private:
-//
-//  /*!
-//   * \brief mDefValue
-//   */
-//  float mDefValue;
-//
-//public:
-//
-//  /*!
-//   * \brief CmdParameterFloat
-//   * \param name
-//   * \param description
-//   * \param optional
-//   */
-//  CmdParameterFloat(std::string name, std::string description, bool optional)
-//    : CmdArgument(name, description, optional)
-//  {
-//    mDefValue = I3D_FLOAT_MIN;
-//  }
-//
-//  /*!
-//   * \brief CmdParameterFloat
-//   * \param name
-//   * \param description
-//   * \param optional
-//   * \param defValue
-//   */
-//  CmdParameterFloat(std::string name, std::string description, bool optional, float defValue) 
-//    : CmdArgument(name, description, optional) 
-//  {
-//    mDefValue = defValue;
-//  }
-//
-//  /*!
-//   * \brief getType
-//   * \return
-//   */
-//  ArgType getType() { return ArgType::PARAMETER_FLOAT; }
-//
-//  /*!
-//   * \brief getValue
-//   * \return
-//   */
-//  float getValue() const { return mDefValue; }
-//
-//private:
-//
-//  /*!
-//   * \brief setValue
-//   * \param value
-//   */
-//  void setValue(float value) { mDefValue = value; }
-//
-//};
-
-///*!
-// * \brief The CmdParameterString struct
-// */
-//struct I3D_EXPORT CmdParameterString : public CmdArgument
-//{
-//private:
-//
-//  /*!
-//   * \brief mDefValue
-//   */
-//  std::string mDefValue;
-//
-//public:
-//
-//  /*!
-//   * \brief CmdParameterString
-//   * \param name
-//   * \param description
-//   * \param optional
-//   */
-//  CmdParameterString(std::string name, std::string description, bool optional)
-//    : CmdArgument(name, description, optional)
-//  {
-//    mDefValue = "";
-//  }
-//
-//  /*!
-//   * \brief CmdParameterString
-//   * \param name
-//   * \param description
-//   * \param optional
-//   * \param defValue
-//   */
-//  CmdParameterString(std::string name, std::string description, bool optional, std::string defValue) 
-//    : CmdArgument(name, description, optional) 
-//  {
-//    mDefValue = defValue;
-//  }
-//
-//  /*!
-//   * \brief getType
-//   * \return
-//   */
-//  ArgType getType() { return ArgType::PARAMETER_STRING; }
-//
-//  /*!
-//   * \brief getValue
-//   * \return
-//   */
-//  std::string getValue() const { return mDefValue; }
-//
-//private:
-//
-//  /*!
-//   * \brief setValue
-//   * \param value
-//   */
-//  void setValue(std::string value) { mDefValue = value; }
-//};
-
 /*!
- * \brief The CmdParser class
+ * \brief Parseo de los argumentos de entrada  de la consola
  */
 class I3D_EXPORT CmdParser
 {
+public:
+
+  enum class MSG
+  {
+    PARSE_SUCCESS,
+    PARSE_ERROR
+  };
+
 private:
+
+  std::string mCmdName;
+
+  std::string mCmdDescription;
 
   /*!
-   * \brief mCmdArgs
+   * \brief Listado de los argumentos
    */
   std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
-
-private:
-
-  //int argc;
-
-  //char** argv;
-
-  //std::vector<string> options;
-
-  //std::map<std::string, std::string> parameters;
 
 public:
 
   /*!
    * \brief Constructora por defecto
    */
-  CmdParser() {};
+  CmdParser() {}
+
+  CmdParser(char *name, char *description) 
+    : mCmdName(name), mCmdDescription(description) {}
 
   /*!
    * \brief Constructor de lista
    * \param[in] Listado argumentos
    */
-  CmdParser(std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args) 
-    : mCmdArgs(cmd_args) {}
+  CmdParser(char *name, char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args) 
+    : mCmdName(name), mCmdDescription(description), mCmdArgs(cmd_args) {}
   
   /*!
    * \brief Destructora
    */
   ~CmdParser(){}
 
-  void add( std::shared_ptr<CmdArgument> argument);
-  
-  //template<typename T>
-  //void add( std::string arg, std::string description, T *value, T defValue);
+  void addParameter(const char *name, const char *description, bool optional = false, const char *defValue = "");
 
-  int parse(int argc, const char* const argv[]);
+  void addParameterOption(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "");
+
+  void addOption(const char *name, const char *description, bool optional = false);
+
+  /*!
+   * \brief parsea los argumentos de entrada
+   */
+  CmdParser::MSG parse(int argc, const char* const argv[]);
 
   /*!
    * \brief Muestra por consola la ayuda del programa
@@ -692,32 +455,87 @@ public:
   /*!
    * \brief Comprueba si se ha parseado correctamente el comando
    */
-  bool validate() { return true; }
+  //bool validate() { return true; }
+
+    // Solución de openCV
+    //template <typename T>
+    //T get(const String& name, bool space_delete = true) const
+    //{
+    //    T val = T();
+    //    getByName(name, space_delete, ParamType<T>::type, (void*)&val);
+    //    return val;
+    //}
+//void CommandLineParser::getByName(const String& name, bool space_delete, int type, void* dst) const
+//{
+//    try
+//    {
+//        for (size_t i = 0; i < impl->data.size(); i++)
+//        {
+//            for (size_t j = 0; j < impl->data[i].keys.size(); j++)
+//            {
+//                if (name == impl->data[i].keys[j])
+//                {
+//                    String v = impl->data[i].def_value;
+//                    if (space_delete)
+//                        v = cat_string(v);
+//
+//                    // the key was neither specified nor has it a default value
+//                    if((v.empty() && type != Param::STRING) || v == noneValue) {
+//                        impl->error = true;
+//                        impl->error_message = impl->error_message + "Missing parameter: '" + name + "'\n";
+//                        return;
+//                    }
+//
+//                    from_str(v, type, dst);
+//                    return;
+//                }
+//            }
+//        }
+//    }
+//    catch (Exception& e)
+//    {
+//        impl->error = true;
+//        impl->error_message = impl->error_message + "Parameter '"+ name + "': " + e.err + "\n";
+//        return;
+//    }
+//
+//    CV_Error_(Error::StsBadArg, ("undeclared key '%s' requested", name.c_str()));
+//}
 
   template<typename T>
-  T getValue( const std::string &name) const
+  T getValue( const char *name) const
   { 
+    T t = T();
+    void *_value = (void *)&t;
+
+    std::string _name(name);
     for (auto arg : mCmdArgs) {
-      if (arg->getType() == ArgType::OPTION) {
-        if (arg->getName() == name) {
-          std::string value = "";//dynamic_cast<CmdParameter *>(arg.get())->getValue();
-          if (typeid(T) == typeid(std::string))
-            return value;
-          else if (typeid(T) == typeid(int)) {
-            std::string::size_type sz;
-            return std::stoi(value,&sz);
+      if (arg->getType() == ArgType::PARAMETER) {
+        if (arg->getName() == _name) {
+          std::string value = dynamic_cast<CmdParameter *>(arg.get())->getValue();
+          std::stringstream strm_value(value);
+
+          if (typeid(T) == typeid(std::string)) {
+            *(std::string *)_value = value;
+          } else if (typeid(T) == typeid(int)) {
+            strm_value >> *(int *)_value;
+            //std::string::size_type sz;
+            //*(int *)_value = std::stoi(value,&sz);
           } else if (typeid(T) == typeid(double)) {
-            std::string::size_type sz;
-            float mars = std::stod(value,&sz);
+            strm_value >> *(double *)_value;
+            //std::string::size_type sz;
+            //*(double *)value = std::stod(value,&sz);
           } else if (typeid(T) == typeid(float)) {
-            std::string::size_type sz;
-            return std::stof (value,&sz);
+            strm_value >> *(float *)_value;
+            //std::string::size_type sz;
+            //*(float *)value = std::stof(value,&sz);
           } else {
-            return NULL;
+            throw exception("Tipo de dato  no permitido");
           }
         }
       }
     }
+    return t;
   }
 
   bool hasOption( const std::string &option) const;

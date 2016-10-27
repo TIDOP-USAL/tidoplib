@@ -28,8 +28,8 @@ void Subject::addObserver(const std::string event, std::shared_ptr<Observer> obs
 
 void Subject::notify(const std::string& event) const
 {
-  for (const auto& obs : mObservers.at(event))
-    (*obs)();
+  //for (const auto& obs : mObservers.at(event))
+    //(*obs)();
 }
 
 void Subject::deleteObserver(const Observer *observer) 
