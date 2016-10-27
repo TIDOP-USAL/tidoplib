@@ -234,7 +234,6 @@ void CmdParser::printHelp()
   ////... Mensaje usage
 }
 
-
 bool CmdParser::hasOption(const std::string &option) const
 {
   for (auto arg : mCmdArgs) {

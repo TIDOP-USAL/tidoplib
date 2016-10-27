@@ -88,9 +88,7 @@
     <ClCompile Include="core\events.cpp" />
     <ClCompile Include="core\messages.cpp" />
     <ClCompile Include="fourier.cpp" />
-    <ClCompile Include="geometric_entities\lineString.cpp" />
     <ClCompile Include="geometric_entities\operations.cpp" />
-    <ClCompile Include="geometric_entities\point.cpp" />
     <ClCompile Include="geometric_entities\segment.cpp" />
     <ClCompile Include="geometric_entities\window.cpp" />
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />

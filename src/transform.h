@@ -166,6 +166,7 @@ public:
       if (error) *error = err;
       return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
     }
+    return 0.;
   }
 
 protected:
