@@ -50,7 +50,11 @@ public:
   /*!
    * \brief Constructora por defecto  de la clase VideoWindow
    */
-  VideoWindow() : wname("Video"), flags(1), bPosTrackBar(true), nFrames(0), video(0) {}
+  VideoWindow() 
+    : wname("Video"), flags(1), bPosTrackBar(true), nFrames(0), video(0) 
+  {
+    cv::namedWindow(wname, flags);
+  }
 
   /*!
    * \brief Constructora de la clase VideoWindow
@@ -59,7 +63,10 @@ public:
    * \param[in] bPos Muestra slider con posición del video
    */
   VideoWindow(const char* wname, int flags = CV_WINDOW_AUTOSIZE, bool bPos = true)
-    : wname(wname), flags(flags), bPosTrackBar(bPos), nFrames(0), video(0) { }
+    : wname(wname), flags(flags), bPosTrackBar(bPos), nFrames(0), video(0) 
+  { 
+    cv::namedWindow(wname, flags);
+  }
 
   /*!
    * \brief Destructora de la clase I3DVideoCtrls

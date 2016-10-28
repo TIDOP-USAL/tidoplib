@@ -1,8 +1,9 @@
-#include "opencv2/imgproc/imgproc.hpp"
-
 #include "VideoStream.h"
-#include "utils.h"
+
 #include "core\messages.h"
+#include "utils.h"
+
+#include "opencv2/imgproc/imgproc.hpp"
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -29,7 +30,6 @@ void OnFrameReadImage(cv::Mat *frame, void *vw)
   if (_vw && frame && !frame->empty() )
     cv::imshow(_vw->getName(), *frame);
 }
-
 
 //VideoWindow::VideoWindow(const char*_wname, int _flags, bool bPos)
 //{
@@ -73,13 +73,14 @@ void VideoWindow::SetVideo( VideoStream *vs )
 void VideoWindow::Init( )
 {
   if (video) {
-    cv::namedWindow(wname, flags);
     nFrames = video->getFrameCount();
-    cv::createTrackbar("Frame", wname, 0, cvRound(nFrames), onTrackbarPositionChange, video);
+    int trackbarPos = 0;
+    cv::createTrackbar("Frame", wname, &trackbarPos, cvRound(nFrames), onTrackbarPositionChange, video);
     video->setPositionChangeListener( (PositionChangeCallback)OnPositionChange, this);
     video->setShowListener((ShowCallback)OnFrameReadImage,this);
   }
 }
+
 /* ---------------------------------------------------------------------------------- */
 
 //VideoStream::VideoStream( )

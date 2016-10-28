@@ -502,22 +502,23 @@ public:
    * \brief Ventana envolvente del grupo de lineas
    * \return
    */
-  WindowI getBbox() { return bbox; }
+  WindowI getBbox() const { return bbox; }
 
   /*!
    * \brief Número de líneas
    * \return
    */
-  int getSize(){ return static_cast<int>(linesgroup.size()); }
+  int getSize() const { return static_cast<int>(linesgroup.size()); }
 
   /*!
    * \brief Operador de indexación sobrecargado
    * \param[in] id Indice del elemento
    * \return Linea
    */
-  Line &operator[](int id) { return linesgroup[id]; }
+  const Line &operator[](int id) const { return linesgroup[id]; }
 
   const std::vector<Line> &getLines() const { return linesgroup; }
+
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -527,6 +528,8 @@ public:
 void I3D_EXPORT groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *curLinesGrops, double angTol);
 
 void I3D_EXPORT groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines> *curLinesGrops, int dist);
+
+void I3D_EXPORT delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size);
 
 /*! \} */ // end of GeometricEntities
 

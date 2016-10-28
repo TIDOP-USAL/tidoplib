@@ -26,12 +26,6 @@ using namespace cv;
 using namespace optflow;
 using namespace I3D;
 
-const std::string keys =
-"{@imput           |       | imagen o video de entrada }"
-"{si saveimage     | true  | Guarda imagenes }"
-"{dl  DrawLines    | false | Dibuja lineas  }"
-"{drl  DrawRegLine | false | Dibuja recta de regresion  }"
-;
 
 // Variales globales
 int min_threshold = 0;
@@ -51,7 +45,8 @@ double angle = 0;
 double tol = 0.25;
 int thresholdH = 160;
 int thresholdHP = 75;
-skip_video sf = skip_video::NOT_SKIP;
+VideoStream::Skip sf = VideoStream::Skip::NOT_SKIP;
+
 int SkpFrames = 2;
 int SkpSeconds = -1;
 bool bDrawRegressionLine = false;
@@ -67,17 +62,6 @@ void onTrackbarChange(int _pos, void *up)
     static_cast<ldHouh *>(ld)->setThreshold(pos);
   } else if (ld->getType() == LD_TYPE::HOUGHP) {
     static_cast<ldHouhP *>(ld)->setThreshold(pos);
-  }
-}
-
-void delLinesGroupBySize(vector<ldGroupLines> *vlg, int size)
-{
-  for (int ilg = 0; ilg < vlg->size(); ilg++) {
-    ldGroupLines *lg = &vlg->at(ilg);
-    if (lg->getSize() < size) {
-      vlg->erase(vlg->begin() + ilg);
-      ilg--;
-    }
   }
 }
 
@@ -106,9 +90,9 @@ void onRun(VideoStream *strmVideo, void* userdata)
 
   cv::Size sz = strmVideo->getFrameSize();
   
-  //Ventana en la cual se van a buscar los apoyos
-  WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
-  ws = expandWindow(ws, -100, 0);
+  ////Ventana en la cual se van a buscar los apoyos
+  //WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
+  //ws = expandWindow(ws, -100, 0);
 
   try {
 
@@ -313,6 +297,13 @@ void onRun(VideoStream *strmVideo, void* userdata)
   }
 }
 
+const std::string keys =
+"{@imput           |       | imagen o video de entrada }"
+"{si saveimage     | true  | Guarda imagenes }"
+"{dl  DrawLines    | false | Dibuja lineas  }"
+"{drl  DrawRegLine | false | Dibuja recta de regresion  }"
+;
+
 int main(int argc, char *argv[])
 {
   cv::CommandLineParser parser(argc, argv, keys);
@@ -326,99 +317,18 @@ int main(int argc, char *argv[])
   int err = changeFileNameAndExtension(getRunfile(), "LogDeteccionApoyos.log", logfile);
   LogMsg log(logfile, LogLevel::LOG_DEBUG);
 
-  //Lectura de xml de configuración.
-  //QString xmlfile = QString(path) + "config.xml";
-  //QFile file(xmlfile);
-  //if (!file.open(QIODevice::ReadOnly)){
-  //  log.errorMsg("Error al abrir fichero de configuración");
-  //  return 0;
-  //}
-
-  //QDomDocument doc;
-  //if (!doc.setContent(&file)) {
-  //  file.close();
-  //  log.errorMsg("Error al leer fichero de configuración");
-  //  return 0;
-  //}
-  //file.close();
-
-  //// Obtención de root
-  //QDomElement docElem = doc.documentElement();
-
-  //if (!docElem.isNull() && docElem.hasChildNodes()) {
-
-  //  QDomElement xFilters = docElem.firstChildElement("Filters");
-  //  if (!xFilters.isNull() && xFilters.hasChildNodes()){
-  //    QDomElement xGaussianBlur = xFilters.firstChildElement("GaussianBlur");
-  //    if (!xGaussianBlur.isNull() && xGaussianBlur.hasChildNodes()){
-  //      std::string sSize = xGaussianBlur.firstChildElement("Size").text().toStdString();
-  //      double n[2];
-  //      splitStringToNumbers(sSize.c_str(), n, ',');
-  //      gbsize = cv::Size(n[0], n[1]);
-  //      gbsigmax = xGaussianBlur.firstChildElement("sigmaX").text().toDouble();
-  //      gbsigmay = xGaussianBlur.firstChildElement("sigmaY").text().toDouble();
-  //      gbbordertype = xGaussianBlur.firstChildElement("borderType").text().toInt();
-  //    }
-  //  }
-
-  //  QDomElement xLineDetectors = docElem.firstChildElement("LineDetectors");
-  //  if (!xLineDetectors.isNull() && xLineDetectors.hasChildNodes()){
-  //    QDomElement xGeneral = xLineDetectors.firstChildElement("General");
-  //    if (!xGeneral.isNull() && xGeneral.hasChildNodes()){
-  //      angle = xGeneral.firstChildElement("Angle").text().toDouble();
-  //      tol = xGeneral.firstChildElement("Tolerance").text().toDouble();
-  //    }
-  //    QDomElement xHouh = xLineDetectors.firstChildElement("Houh");
-  //    if (!xHouh.isNull() && xHouh.hasChildNodes()){
-  //      //if (xHouh.attribute("active").toStdString().compare("true") == 0) ls = LD_HOUGH;
-  //      thresholdH = xHouh.firstChildElement("threshold").text().toInt();
-  //    }
-  //    QDomElement xHouhP = xLineDetectors.firstChildElement("HouhP");
-  //    if (!xHouhP.isNull() && xHouhP.hasChildNodes()) {
-  //      //if (xHouhP.attribute("active").toStdString().compare("true") == 0) ls = LD_HOUGHP;
-  //      thresholdHP = xHouhP.firstChildElement("threshold").text().toInt();
-  //    }
-  //    QDomElement xLSD = xLineDetectors.firstChildElement("LSD");
-  //    if (!xLSD.isNull() && xLSD.hasChildNodes()) {
-  //      //if (xLSD.attribute("active").toStdString().compare("true") == 0) ls = LD_LSD;
-  //    }
-  //    QDomElement xLSWMS = xLineDetectors.firstChildElement("LSWMS");
-  //    if (!xLSWMS.isNull() && xLSWMS.hasChildNodes()) {
-  //      //if (xLSWMS.attribute("active").toStdString().compare("true") == 0) ls = LD_LSWMS;
-  //    }
-  //  }
-
-  //  QDomElement xVideo = docElem.firstChildElement("Video");
-  //  if (!xVideo.isNull() && xVideo.hasChildNodes()){
-  //    QDomElement xSkipFrames = xVideo.firstChildElement("SkipFrames");
-  //    if (!xSkipFrames.isNull() && xSkipFrames.hasChildNodes()){
-  //      QDomElement xFrames = xSkipFrames.firstChildElement("Frames");
-  //      QDomElement xMSeconds = xSkipFrames.firstChildElement("Millisecond");
-  //      if (!xFrames.isNull() && xFrames.hasChildNodes()){
-  //        if (xFrames.attribute("active").toStdString().compare("true") == 0) sf = SKIP_FRAMES;
-  //        SkpFrames = xFrames.text().toInt();
-  //      }
-  //      if (!xMSeconds.isNull() && xMSeconds.hasChildNodes()) {
-  //        if (xMSeconds.attribute("active").toStdString().compare("true") == 0) sf = SKIP_MILLISECONDS;
-  //        SkpSeconds = xMSeconds.text().toInt();
-  //      }
-  //    }
-  //  }
-  //}
-  //// Fin lectura config
-
   VideoStream strmVideo(filename.c_str());
   if (!strmVideo.isOpened()) {
     log.errorMsg("No se ha podido cargar el video: %s", (char *)filename.c_str());
     return 0;
   }
 
-  strmVideo.setFrameSize(cv::Size(800, 720), res_frame::CROP_FRAME, true);
+  strmVideo.setFrameSize(cv::Size(800, 720), VideoStream::Resolution::CROP_FRAME, true);
   strmVideo.setSkipBlurryFrames(true);
-  if (sf == skip_video::SKIP_FRAMES) strmVideo.setSkipFrames(SkpFrames);
-  else if (sf == skip_video::SKIP_MILLISECONDS) strmVideo.setSkipMillisecond(SkpSeconds);
+  if (sf == VideoStream::Skip::SKIP_FRAMES) strmVideo.setSkipFrames(SkpFrames);
+  else if (sf == VideoStream::Skip::SKIP_MILLISECONDS) strmVideo.setSkipMillisecond(SkpSeconds);
 
-  VideoWindow vc(wname, 1);
+  VideoWindow vc(wname, WINDOW_AUTOSIZE);
   vc.SetVideo(&strmVideo);
 
   //Se crea el detector

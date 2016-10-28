@@ -229,4 +229,17 @@ void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines
     curLinesGrops->push_back(lg);
   }
 }
+
+void delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size)
+{
+  //for (int ilg = 0; ilg < vlg->size(); ilg++) {
+  //  ldGroupLines *lg = &vlg->at(ilg);
+  //  if (lg->getSize() < size) {
+  //    vlg->erase(vlg->begin() + ilg);
+  //    ilg--;
+  //  }
+  //}
+  vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](ldGroupLines &gl) -> bool { return (gl.getSize() < size); }), vlg->end());
+}
+
 } // End namespace I3D
