@@ -9,9 +9,11 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "core\defs.h"
+#include "graphic_entities\color.h"
 
 namespace I3D
 {
+
 
 /*! \defgroup ImgProc Procesos de imagen
  *  Filtrado y preprocesado de imagenes
@@ -33,7 +35,6 @@ enum class process_type {
   CANNY,              /*!< Detector de bordes canny. */
   NORMALIZE,          /*!< Normalización. */
   BINARIZE,           /*!< Binarización. */
-  RESIZE,             /*!< Redimensionar. */  
   EQUALIZE_HIST,      /*!< Equalización del histograma. */
   FUNCTION_PROCESS,   /*!< Proceso que ejecuta una función */
   /* Operaciones morfológicas */
@@ -43,7 +44,9 @@ enum class process_type {
   MORPH_CLOSING,      /*!< Operacion morfologica de cierre. */
   MORPH_GRADIENT,     /*!< Operacion morfologica  */
   MORPH_TOPHAT,       /*!< Operacion morfologica  */
-  MORPH_BLACKHAT      /*!< Operacion morfologica  */
+  MORPH_BLACKHAT,     /*!< Operacion morfologica  */
+  /* Transformación de imagen */
+  RESIZE              /*!< Redimensiona la imagen */
 };
 
 /*!
@@ -837,52 +840,6 @@ public:
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief The Resize class
- */
-class I3D_EXPORT Resize : public ImgProcessing
-{
-private:
-
-  /*!
-   * \brief Ancho
-   */
-  int mWidth;
-
-  /*!
-   * \brief Alto
-   */
-  int mHeight;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] width
-   * \param[in] height
-   */
-  Resize(int width, int height)
-    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height) {}
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
-   */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] width Ancho.
-   * \param[in] height Alto.
-   */
-  void setParameters( int width, int height );
-
-};
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
  * \brief Ecualización del histograma.
  * Mejora del contraste de la imagen mediante la ecualización del histograma
  */
@@ -1268,6 +1225,138 @@ public:
 };
 
 /*! \} */ // end of MorphOper
+
+
+/* ---------------------------------------------------------------------------------- */
+/*             Operaciones que transforman geometricamente la imagen                  */
+/* ---------------------------------------------------------------------------------- */
+
+/*! \defgroup imgTransf Operaciones de transformación de imagenes
+ *  
+ *  \{
+ */
+
+
+/*!
+ * \brief Redimensiona una imagen
+ */
+class I3D_EXPORT Resize : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Ancho
+   */
+  int mWidth;
+
+  /*!
+   * \brief Alto
+   */
+  int mHeight;
+
+  double mScaleX;
+  
+  double mScaleY;
+
+public:
+
+  /*!
+   * \brief Constructora
+   * \param[in] width
+   * \param[in] height
+   */
+  Resize(int width, int height = 0)
+    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height), 
+      mScaleX(0.), mScaleY(0.) {}
+
+  /*!
+   * \brief Constructora
+   * \param[in] scaleX
+   * \param[in] scaleY
+   */
+  Resize(double scaleX, double scaleY = 0.)
+    : ImgProcessing(process_type::RESIZE), mWidth(0), mHeight(0), 
+      mScaleX(scaleX), mScaleY(scaleY ? scaleY : scaleX) {}
+
+  /*!
+   * \brief Ejecuta el proceso.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   */
+  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] width Ancho.
+   * \param[in] height Alto.
+   */
+  void setParameters( int width, int height );
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] scale Escala en porcentaje que se aplica a la imagen
+   */
+  void setParameters( double scaleX, double scaleY = 0. );
+};
+
+/*!
+ * \brief Redimensiona el canvas de una imagen
+ *
+ * Si se amplia se añaden pixeles del color indicado en las 
+ * zonas que no haya imagen. Por defecto el color de fondo es el negro.
+ * Si se reduce se recorta la imagen.
+ */
+class I3D_EXPORT ResizeCanvas : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Ancho
+   */
+  int mWidth;
+
+  /*!
+   * \brief Alto
+   */
+  int mHeight;
+
+  //Añadir color de fondo, posición, ...
+  /*Color mColor;*/
+
+public:
+
+  /*!
+   * \brief Constructora
+   * \param[in] width Nuevo ancho
+   * \param[in] height Nuevo alto
+   * \param[in] color Color
+   */
+  ResizeCanvas(int width, int height/*, const Color &color = Color()*/)
+    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height)/*, mColor(color)*/ {}
+
+  /*!
+   * \brief Ejecuta el proceso.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   */
+  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] width Ancho
+   * \param[in] height Alto
+   * \param[in] color Color
+   */
+  void setParameters( int width, int height/*, const Color &color*/);
+
+};
+
+
+/* ---------------------------------------------------------------------------------- */
+
+/*! \} */ // end of imgTransf
 
 /* ---------------------------------------------------------------------------------- */
 

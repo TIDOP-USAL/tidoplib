@@ -58,7 +58,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;D:\Desarrollo\tidop\third_party\bprinter-master\include;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -75,7 +75,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;D:\Desarrollo\tidop\third_party\bprinter-master\include;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -93,14 +93,14 @@
     <ClCompile Include="geometric_entities\operations.cpp" />
     <ClCompile Include="geometric_entities\segment.cpp" />
     <ClCompile Include="geometric_entities\window.cpp" />
+    <ClCompile Include="graphic_entities\color.cpp" />
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />
-    <ClCompile Include="ImgProcessing.cpp" />
+    <ClCompile Include="img_processing.cpp" />
     <ClCompile Include="linedetector.cpp" />
-    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="utils.cpp" />
-    <ClCompile Include="VideoStream.cpp" />
+    <ClCompile Include="videostream.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\config.h" />
@@ -115,14 +115,14 @@
     <ClInclude Include="geometric_entities\point.h" />
     <ClInclude Include="geometric_entities\segment.h" />
     <ClInclude Include="geometric_entities\window.h" />
+    <ClInclude Include="graphic_entities\color.h" />
     <ClInclude Include="graphic_entities\graphic_entity.h" />
-    <ClInclude Include="ImgProcessing.h" />
-    <ClInclude Include="LineDetector.h" />
-    <ClInclude Include="Logger.h" />
+    <ClInclude Include="img_processing.h" />
+    <ClInclude Include="linedetector.h" />
     <ClInclude Include="matching.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="VideoStream.h" />
+    <ClInclude Include="videostream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

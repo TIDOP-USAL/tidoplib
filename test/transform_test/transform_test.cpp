@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "..\..\src\transform.h"
 #include "..\..\src\utils.h"
+#include "opencv2/core/core.hpp"
 
 using namespace I3D;
 

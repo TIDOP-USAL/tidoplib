@@ -193,7 +193,7 @@ void keyboard_callback(const viz::KeyboardEvent &event, void* cookie)
     camera_pov = !camera_pov;
 }
 
-int getdir(const string _filename, vector<string> &files)
+int getdir(const std::string _filename, std::vector<std::string> &files)
 {
   ifstream myfile(_filename.c_str());
   if (!myfile.is_open()) {
@@ -201,9 +201,9 @@ int getdir(const string _filename, vector<string> &files)
     exit(0);
   } else {;
     size_t found = _filename.find_last_of("/\\");
-    string line_str, path_to_file = _filename.substr(0, found);
+    std::string line_str, path_to_file = _filename.substr(0, found);
     while ( getline(myfile, line_str) )
-      files.push_back(path_to_file+string("/")+line_str);
+      files.push_back(path_to_file+std::string("/")+line_str);
   }
   return 1;
 }
@@ -341,7 +341,7 @@ int main(int argc, char** argv)
   std::vector<Mat> Rs_est, ts_est, points3d_estimated;
 
   // Parse the image paths
-  vector<string> images_paths;
+  std::vector<std::string> images_paths;
   getdir( argv[1], images_paths );
 
   try {
@@ -350,7 +350,7 @@ int main(int argc, char** argv)
     cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {
     printError(e.what());
-  } catch (exception &e) {
+  } catch (std::exception &e) {
     printError(e.what());
   }
   
@@ -374,7 +374,7 @@ int main(int argc, char** argv)
   cout << "Recovering points  ... ";
 
   // recover estimated points3d
-  vector<Vec3f> point_cloud_est;
+  std::vector<Vec3f> point_cloud_est;
   for (int i = 0; i < points3d_estimated.size(); ++i)
     point_cloud_est.push_back(Vec3f(points3d_estimated[i]));
 
@@ -384,7 +384,7 @@ int main(int argc, char** argv)
   /// Recovering cameras
   cout << "Recovering cameras ... ";
 
-  vector<Affine3d> path_est;
+  std::vector<Affine3d> path_est;
   for (size_t i = 0; i < Rs_est.size(); ++i)
     path_est.push_back(Affine3d(Rs_est[i],ts_est[i]));
 

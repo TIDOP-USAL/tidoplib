@@ -551,7 +551,7 @@ void VideoStream::run()
     if (PositionChangeEvent != NULL) {
       PositionChangeEvent(mVideoCapture.get(CV_CAP_PROP_POS_FRAMES),UserDataPositionChangeEvent);
     }
-    notifyOnPositionChange(mVideoCapture.get(CV_CAP_PROP_POS_FRAMES));
+    //notifyOnPositionChange(mVideoCapture.get(CV_CAP_PROP_POS_FRAMES));
 
     c = (char)cv::waitKey(delay);
     if (c == 27) vs = Status::STOPPED;       // - Tecla esc -> Terminar la ejecución del video.

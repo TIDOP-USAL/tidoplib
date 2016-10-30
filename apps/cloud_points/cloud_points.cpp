@@ -7,35 +7,35 @@
 // Cabeceras tidopLib
 #include "core\console.h"
 #include "core\messages.h"
-#include "VideoStream.h"
+#include "videostream.h"
 #include "geometric_entities\segment.h"
-#include "LineDetector.h"
-#include "ImgProcessing.h"
+#include "linedetector.h"
+#include "img_processing.h"
 
 using namespace cv;
 using namespace optflow;
 using namespace I3D;
 
-class OnPositionChange : public VideoStream::OnPositionChange
-{
-public:
-  OnPositionChange()
-  {}
-
-  ~OnPositionChange()
-  {}
-
-  void operator()(double position) override
-  { 
-    if ( position != 0 ) 
-      printf("Haz algo"); 
-  }
-
-};
+//class OnPositionChange : public VideoStream::OnPositionChange
+//{
+//public:
+//  OnPositionChange()
+//  {}
+//
+//  ~OnPositionChange()
+//  {}
+//
+//  void operator()(double position) override
+//  { 
+//    if ( position != 0 ) 
+//      printf("Haz algo"); 
+//  }
+//
+//};
 
 
 // Meter calibración de la camara y corrección
-class detectTransmissionTower
+class DetectTransmissionTower : public VideoStream::Listener
 {
 private:
   //cv::Mat mImage1;
@@ -43,7 +43,7 @@ private:
   //cv::Mat mImage2;
   //cv::Mat mImageGray2;
 
-  vector<ldGroupLines> prevLinesGrops;
+  std::vector<ldGroupLines> prevLinesGrops;
   double prevFrame;
 
   LineDetector *pLineDetector;
@@ -53,7 +53,7 @@ private:
   cv::RNG rng;
   //bool bDrawRegressionLine;
 public:
-  detectTransmissionTower(LineDetector *lineDetector) 
+  DetectTransmissionTower(LineDetector *lineDetector) 
     : pLineDetector(lineDetector) 
   { 
     imgprolist.add(std::make_shared<I3D::Canny>());
@@ -61,7 +61,7 @@ public:
     rng(12345);
   }
 
-  ~detectTransmissionTower()
+  ~DetectTransmissionTower()
   {
   }
 
@@ -71,11 +71,12 @@ public:
   bool isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude);
   void getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude);
 
-private:
-
+  void onRead() { ; }
+  void onPositionChange() { ; }
+  void onShow() { ; }
 };
 
-void detectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<ldGroupLines> *linesGroup)
+void DetectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<ldGroupLines> *linesGroup)
 {
   cv::Mat imageGrayProcces;
   if (img.channels() != 1)
@@ -91,13 +92,13 @@ void detectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<l
   delLinesGroupBySize(linesGroup,10);
 }
 
-void detectTransmissionTower::computeOpticalFlow(const cv::Mat &img1, const cv::Mat &img2, cv::Mat_<cv::Point2f> *flow)
+void DetectTransmissionTower::computeOpticalFlow(const cv::Mat &img1, const cv::Mat &img2, cv::Mat_<cv::Point2f> *flow)
 {
   *flow = cv::Mat(img1.size[0], img1.size[1], CV_32FC2);
   algorithm->calc(img1, img2, *flow);
 }
 
-void detectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,const cv::Mat &img2, const double nFrame2, cv::Mat imgout ) 
+void DetectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,const cv::Mat &img2, const double nFrame2, cv::Mat imgout ) 
 { 
   cv::Size sz = img1.size(); 
 
@@ -119,6 +120,8 @@ void detectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,con
     //determinación del flujo óptico
     cv::Mat_<cv::Point2f> flow;
     computeOpticalFlow(image1, image2, &flow);
+    image1.release();
+    image2.release();
 
     // Se comparan todos los grupos de lineas dos a dos
     for (int iplg = 0; iplg < linesGroup1.size(); iplg++) {
@@ -145,7 +148,7 @@ void detectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,con
 
 }
 
-void detectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude) 
+void DetectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude) 
 {
   cv::Mat flow_split[2];
   split(flow, flow_split);
@@ -155,7 +158,7 @@ void detectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv
 
 }
 
-bool detectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude) {
+bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude) {
 
   WindowI wprev = linesGroup1.getBbox();
 
@@ -172,7 +175,7 @@ bool detectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
     c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
 
     // Buscamos los máximos en la zona
-    vector<Point> pMax;
+    std::vector<Point> pMax;
     cv::Mat idx;
     cv::sortIdx(candidatenorm, idx, CV_SORT_EVERY_ROW + CV_SORT_DESCENDING);
     for (int ir = 0; ir < candidatenorm.rows; ir++) {
@@ -311,6 +314,24 @@ int main(int argc, char** argv)
 
   strmVideo.setSkipFrames(1);
 
+    //Se crea el detector
+  double angle = 0;
+  double tol = 0.25;
+  LD_TYPE ls = LD_TYPE::HOUGHP;
+  std::unique_ptr<LineDetector> oLD;
+  cv::Scalar ang_tol(angle, tol);
+  if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
+  else if (ls == LD_TYPE::HOUGHP)      oLD = std::make_unique<ldHouhP>(75, ang_tol, 50., 30.);
+  else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
+  else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
+  else {
+    printError("No se ha seleccionado ningún detector de lineas.");
+    return 0;
+  }
+
+  DetectTransmissionTower detectTower(oLD.get());
+
+  strmVideo.addListener(&detectTower);
   // No se necesita salida de video
   // VideoWindow vc("", 1);
   // vc.SetVideo(&strmVideo);
@@ -320,7 +341,7 @@ int main(int argc, char** argv)
   
 
   //std::shared_ptr<OnPositionChange> onPositionChange(new OnPositionChange);
-  strmVideo.addOnPositionChangeListener( std::make_shared<OnPositionChange>() );
+  //strmVideo.addOnPositionChangeListener( std::make_shared<OnPositionChange>() );
 
   strmVideo.run();
   return 0;

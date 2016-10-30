@@ -1,10 +1,12 @@
-#include <cstdarg>
-#include <cstdio>
+#include "img_processing.h"
+
+#include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
 
-#include "ImgProcessing.h"
-#include "core/messages.h"
+#include <cstdarg>
+#include <cstdio>
+
 
 namespace I3D
 {
@@ -295,29 +297,6 @@ void Binarize::setParameters(double thresh, double maxval, bool inverse)
 
 /* ---------------------------------------------------------------------------------- */
 
-int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  int i_error = 0;
-  try {
-    if (mWidth != 0 && mHeight != 0) {
-      cv::Size szImg(mWidth, mHeight);
-      cv::resize(matIn, *matOut, szImg);
-    }
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    i_error = 1;
-  }
-  return i_error;
-}
-
-void Resize::setParameters(int width, int height)
-{
-  mWidth = width;
-  mHeight = height;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
 int EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   int i_error = 0;
@@ -395,6 +374,69 @@ void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv:
   mBorderType = borderType;
   mBorderValue = borderValue;
 }
+
+/* ---------------------------------------------------------------------------------- */
+
+int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  int i_error = 0;
+  try {
+    if (mWidth == 0 && mScaleX == 0) throw std::exception("Invalid parameter values");
+    if (mScaleX) {
+      cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
+    } else {
+      if (mHeight == 0) {
+        double scale = static_cast<double>(mWidth / matIn.cols);
+        cv::resize(matIn, *matOut, cv::Size(), scale, scale);
+      } else {
+        cv::resize(matIn, *matOut, cv::Size(mWidth, mHeight));
+      }
+    }
+
+  } catch (cv::Exception &e){
+    printError(e.what());
+    i_error = 1;
+  }
+  return i_error;
+}
+
+void Resize::setParameters(int width, int height = 0)
+{
+  mWidth = width;
+  mHeight = height;
+  mScaleX = mScaleY = 0.;
+}
+
+void Resize::setParameters(double scaleX, double scaleY)
+{
+  mWidth = mHeight = 0;
+  mScaleX = scaleX;
+  mScaleY = scaleY ? scaleY : scaleX;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+int ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  int i_error = 0;
+  try {
+    cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
+    matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
+    *matOut = aux;
+  } catch (cv::Exception &e){
+    printError(e.what());
+    i_error = 1;
+  }
+  return i_error;
+}
+
+void ResizeCanvas::setParameters(int width, int height/*, const Color &color = Color()*/)
+{
+  mWidth = width;
+  mHeight = height;
+  /*mColor = color;*/
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 

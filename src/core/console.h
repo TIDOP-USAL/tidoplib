@@ -12,11 +12,9 @@
 #include <list>
 #include <memory>
 
-#include "defs.h"
+#include "core\defs.h"
+#include "core\events.h"
 #include "utils.h"
-
-//Namespace:
-using namespace std;
 
 namespace I3D
 {
@@ -386,7 +384,7 @@ public:
 };
 
 /*!
- * \brief Parseo de los argumentos de entrada  de la consola
+ * \brief Parser de los argumentos de entrada  de la consola
  */
 class I3D_EXPORT CmdParser
 {
@@ -408,6 +406,8 @@ private:
    * \brief Listado de los argumentos
    */
   std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
+
+  //... Seria conveniente tener un mensaje de help y otro de copyright
 
 public:
 
@@ -452,56 +452,6 @@ public:
    */
   void clear() { mCmdArgs.clear(); }
 
-  /*!
-   * \brief Comprueba si se ha parseado correctamente el comando
-   */
-  //bool validate() { return true; }
-
-    // Solución de openCV
-    //template <typename T>
-    //T get(const String& name, bool space_delete = true) const
-    //{
-    //    T val = T();
-    //    getByName(name, space_delete, ParamType<T>::type, (void*)&val);
-    //    return val;
-    //}
-//void CommandLineParser::getByName(const String& name, bool space_delete, int type, void* dst) const
-//{
-//    try
-//    {
-//        for (size_t i = 0; i < impl->data.size(); i++)
-//        {
-//            for (size_t j = 0; j < impl->data[i].keys.size(); j++)
-//            {
-//                if (name == impl->data[i].keys[j])
-//                {
-//                    String v = impl->data[i].def_value;
-//                    if (space_delete)
-//                        v = cat_string(v);
-//
-//                    // the key was neither specified nor has it a default value
-//                    if((v.empty() && type != Param::STRING) || v == noneValue) {
-//                        impl->error = true;
-//                        impl->error_message = impl->error_message + "Missing parameter: '" + name + "'\n";
-//                        return;
-//                    }
-//
-//                    from_str(v, type, dst);
-//                    return;
-//                }
-//            }
-//        }
-//    }
-//    catch (Exception& e)
-//    {
-//        impl->error = true;
-//        impl->error_message = impl->error_message + "Parameter '"+ name + "': " + e.err + "\n";
-//        return;
-//    }
-//
-//    CV_Error_(Error::StsBadArg, ("undeclared key '%s' requested", name.c_str()));
-//}
-
   template<typename T>
   T getValue( const char *name) const
   { 
@@ -514,23 +464,16 @@ public:
         if (arg->getName() == _name) {
           std::string value = dynamic_cast<CmdParameter *>(arg.get())->getValue();
           std::stringstream strm_value(value);
-
           if (typeid(T) == typeid(std::string)) {
             *(std::string *)_value = value;
           } else if (typeid(T) == typeid(int)) {
             strm_value >> *(int *)_value;
-            //std::string::size_type sz;
-            //*(int *)_value = std::stoi(value,&sz);
           } else if (typeid(T) == typeid(double)) {
             strm_value >> *(double *)_value;
-            //std::string::size_type sz;
-            //*(double *)value = std::stod(value,&sz);
           } else if (typeid(T) == typeid(float)) {
             strm_value >> *(float *)_value;
-            //std::string::size_type sz;
-            //*(float *)value = std::stof(value,&sz);
           } else {
-            throw exception("Tipo de dato  no permitido");
+            throw std::exception("Tipo de dato  no permitido");
           }
         }
       }
@@ -543,6 +486,66 @@ public:
 
 
 /* ---------------------------------------------------------------------------------- */
+
+// Eventos de la clase de progreso
+
+/*!
+ * brief Evento que se produce cada vez que se
+ * avanza una posición en la función de progreso
+ */
+class OnProgress : public Event
+{
+public:
+  OnProgress() : Event("Progress") {}
+
+  ~OnProgress() {}
+};
+
+/*!
+ * \brief Evento que se ejecuta al inicializar la función de 
+ * progreso
+ */
+class OnInitialize : public Event
+{
+public:
+  OnInitialize() : Event("Initialize") {}
+
+  ~OnInitialize() {}
+
+private:
+
+};
+
+/*!
+ * \brief Evento que se ejecuta al terminar la función de progreso
+ */
+class OnTerminate : public Event
+{
+public:
+  OnTerminate() : Event("Terminate") {}
+
+  ~OnTerminate() {}
+};
+
+
+class ProgressEvents
+{
+private:
+
+
+public:
+  ProgressEvents()  {}
+
+  ~ProgressEvents()  {}
+
+  virtual void onProgress(double progress) = 0;
+
+  virtual void onInitialize() = 0;
+
+  virtual void onTerminate() = 0;
+
+  void fire(Event _event);
+};
 
 /*!
  * \brief Función objeto de progreso
@@ -596,6 +599,10 @@ protected:
    * brief Mensaje que se puede añadir con información del proceso.
    */
   std::string mMsg;
+
+  typedef ProgressEvents Listener;
+
+  //std::list<Listener *> mListener;
 
 public:
 
@@ -656,6 +663,11 @@ public:
    * \param msg
    */
   void init(double min, double max, std::string msg = "");
+
+  //void addListener(Listener *listener) 
+  //{ 
+  //  mListener.push_front( listener );
+  //}
 
 protected:
 

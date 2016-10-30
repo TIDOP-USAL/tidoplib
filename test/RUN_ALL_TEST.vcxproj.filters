@@ -1,3 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Desarrollo\Libs\googletest\build\CMakeFiles\b3223f9df71fdee257f8daa3ffd7cdf2\RUN_TESTS_force.rule" />
+  </ItemGroup>
 </Project>

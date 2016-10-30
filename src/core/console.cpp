@@ -1,13 +1,17 @@
+
+
+#include "utils.h"
+
 #include <iostream>
 #include <string>
 #include <ctime>
 
 #include "console.h"
-#include "utils.h"
 //#include "bprinter\table_printer.h"
 
 
 using namespace I3D;
+using namespace std;
 
 namespace I3D
 {
@@ -24,15 +28,15 @@ Console::Console(Console::Mode mode)
 #ifdef WIN32
   DWORD handle;
   switch (mode) {
-  case I3D::Console::Mode::INPUT:
+  case Console::Mode::INPUT:
     handle = STD_INPUT_HANDLE;
     break;
-  case I3D::Console::Mode::OUTPUT:
+  case Console::Mode::OUTPUT:
     handle = STD_OUTPUT_HANDLE;
     break;
-  case I3D::Console::Mode::OUTPUT_ERROR:
-    break;
+  case Console::Mode::OUTPUT_ERROR:
     handle = STD_ERROR_HANDLE;
+    break;
   default:
     handle = STD_OUTPUT_HANDLE;
     break;

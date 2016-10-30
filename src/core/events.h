@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <map>
+#include <list>
 #include <vector>
 #include <utility>
 #include <memory>
@@ -14,6 +15,112 @@
 
 namespace I3D
 {
+
+class Event
+{
+
+protected:
+  
+  int mIdEvent;
+
+  std::string mName;
+
+private:
+
+  static int sCounter;
+  static std::map<std::string, int> mIdName;
+
+public:
+
+  Event(const char *name) : mName(name)
+  {
+    std::map<std::string,int>::iterator it;
+    it = mIdName.find(name);
+    if (it == mIdName.end()) {
+      mIdEvent = sCounter++;
+      mIdName.insert(std::pair<std::string,int>(name,mIdEvent));
+    } else {
+      mIdEvent = it->second;
+    }
+  }
+
+  ~Event()
+  {}
+
+  //tipo de evento. identificador
+  int getType() const { return mIdEvent; }
+  std::string getName() const { return mName;  }
+
+private:
+
+};
+
+
+class I3D_EXPORT Listener
+{
+
+};
+
+class I3D_EXPORT EventEmit
+{
+public:
+
+protected:
+
+  // En lugar de función usar función objeto que herede de Observer
+  /*!
+   * \brief Observadores subscritos
+   */
+  //std::map<int, std::vector<std::shared_ptr<Observer>>> mObservers;
+  std::list<Listener *> mListener;
+
+public:
+
+  /*!
+   * \brief Constructora
+   */
+  EventEmit();
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~EventEmit();
+
+  EventEmit(const EventEmit&)=delete;
+  EventEmit& operator=(const EventEmit&)=delete;
+
+  /*!
+   * \brief addObserver
+   * \param event
+   * \param observer
+   */
+  void addListener(Listener *listener) 
+  { 
+    mListener.push_front(listener); 
+  }
+
+  /*!
+   * \brief deleteObserver
+   * \param observer
+   */
+  void deleteListener(const Listener &listener);
+
+  /*!
+   * \brief notify
+   * \param event
+   */
+  //void notify(const int _event) const;
+};
+
+
+
+
+
+
+
+
+
+
 
 class Subject;
 

@@ -16,6 +16,9 @@
 // * etc...
 // */
 
+
+#define I3D_ENABLE_OPENCV
+
 // Manejo de errores como log y/o mensajes de consola
 
 #define I3D_MESSAGE_HANDLER

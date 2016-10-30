@@ -478,48 +478,102 @@ private:
 //  void init();
 //};
 
-
-class ObserverRead : public Observer
+class Read : public Event
 {
 public:
-  ObserverRead()
-  {
-  }
+  Read() : Event("Read")
+  {}
 
-  virtual ~ObserverRead()
-  {
-  }
+  ~Read()
+  {}
 
-  virtual void operator()() = 0;
+private:
+
 };
 
-class ObserverPositionChange : public Observer
+class PositionChange : public Event
 {
 public:
-  ObserverPositionChange()
-  {
-  }
+  PositionChange() : Event("PositionChange")
+  {}
 
-  virtual ~ObserverPositionChange()
-  {
-  }
+  ~PositionChange()
+  {}
 
-  virtual void operator()(double position) = 0;
+private:
+
 };
 
-class ObserverShow : public Observer
+class Show : public Event
 {
 public:
-  ObserverShow()
-  {
-  }
+  Show() : Event("Show")
+  {}
 
-  virtual ~ObserverShow()
-  {
-  }
+  ~Show()
+  {}
 
-  virtual void operator()() = 0;
+private:
+
 };
+
+class VideoStreamEvents
+{
+
+public:
+  VideoStreamEvents()
+  {}
+
+  ~VideoStreamEvents()
+  {}
+
+  virtual void onRead() = 0;
+  virtual void onPositionChange() = 0;
+  virtual void onShow() = 0;
+};
+
+
+//class ObserverRead : public Observer
+//{
+//public:
+//  ObserverRead()
+//  {
+//  }
+//
+//  virtual ~ObserverRead()
+//  {
+//  }
+//
+//  virtual void operator()() = 0;
+//};
+//
+//class ObserverPositionChange : public Observer
+//{
+//public:
+//  ObserverPositionChange()
+//  {
+//  }
+//
+//  virtual ~ObserverPositionChange()
+//  {
+//  }
+//
+//  virtual void operator()(double position) = 0;
+//};
+//
+//class ObserverShow : public Observer
+//{
+//public:
+//  ObserverShow()
+//  {
+//  }
+//
+//  virtual ~ObserverShow()
+//  {
+//  }
+//
+//  virtual void operator()() = 0;
+//};
 
 // Eventos
 typedef void(*ReadCallback)(void *, void* userdata);
@@ -530,7 +584,7 @@ typedef void(*ShowCallback)(cv::Mat *frame, void *userdata);
 /*!
  * \brief Clase para el manejo de video
  */
-class I3D_EXPORT VideoStream : public Subject
+class I3D_EXPORT VideoStream /*: public Subject*/
 {
 
 public:
@@ -567,13 +621,15 @@ public:
   /*!
    * \brief Eventos
    */
-  static const int ON_READ = 0;
-  static const int ON_POSITION_CHANGE = 1;
-  static const int ON_SHOW = 2;
+  //static const int ON_READ = 0;
+  //static const int ON_POSITION_CHANGE = 1;
+  //static const int ON_SHOW = 2;
 
-  typedef ObserverPositionChange OnPositionChange;
-  typedef ObserverRead OnRead;
-  typedef ObserverShow OnShow;
+  typedef VideoStreamEvents Listener;
+
+  //typedef ObserverPositionChange OnPositionChange;
+  //typedef ObserverRead OnRead;
+  //typedef ObserverShow OnShow;
 
 private:
 
@@ -656,6 +712,8 @@ private:
    * \see video_status
    */
   VideoStream::Status vs;
+
+  Listener *events;
 
 public:
 
@@ -860,9 +918,14 @@ public:
   void setShowListener(ShowCallback ev_s = 0, void *userdata = 0);
 
   // Nuevo sistema de gestion de eventos
-  void addOnPositionChangeListener(std::shared_ptr<OnPositionChange> onPositionChange) { addObserver(ON_POSITION_CHANGE,onPositionChange); }
-  void addOnReadListener(std::shared_ptr<OnRead> onRead) { addObserver(ON_READ,onRead); }
-  void addOnShowListener(std::shared_ptr<OnShow> onShow) { addObserver(ON_SHOW,onShow); }
+  //void addOnPositionChangeListener(std::shared_ptr<OnPositionChange> onPositionChange) { addObserver(ON_POSITION_CHANGE,onPositionChange); }
+  //void addOnReadListener(std::shared_ptr<OnRead> onRead) { addObserver(ON_READ,onRead); }
+  //void addOnShowListener(std::shared_ptr<OnShow> onShow) { addObserver(ON_SHOW,onShow); }
+
+  void addListener(Listener *listener) 
+  { 
+    events = listener;
+  }
 
   /*!
    * \brief Lanza el evento Show
@@ -910,10 +973,10 @@ private:
 
   void init();
 
-  void notifyOnPositionChange(double position) {
-    for (const auto obs : mObservers[ON_POSITION_CHANGE])
-      (*dynamic_cast<OnPositionChange *>(obs.get()))(position);
-  }
+  //void notifyOnPositionChange(double position) {
+  //  for (const auto obs : mObservers[ON_POSITION_CHANGE])
+  //    (*dynamic_cast<OnPositionChange *>(obs.get()))(position);
+  //}
   
 };
 

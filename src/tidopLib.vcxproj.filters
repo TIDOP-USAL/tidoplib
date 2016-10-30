@@ -51,13 +51,7 @@
     <ClCompile Include="fourier.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
-    <ClCompile Include="ImgProcessing.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="linedetector.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="Logger.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
     <ClCompile Include="matching.cpp">
@@ -67,9 +61,6 @@
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoStream.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
     <ClCompile Include="core\messages.cpp">
@@ -83,6 +74,15 @@
     </ClCompile>
     <ClCompile Include="core\events.cpp">
       <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
+    <ClCompile Include="img_processing.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="videostream.cpp">
+      <Filter>Archivos de código fuente</Filter>
+    </ClCompile>
+    <ClCompile Include="graphic_entities\color.cpp">
+      <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,15 +107,6 @@
     <ClInclude Include="fourier.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="ImgProcessing.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="LineDetector.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="Logger.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="matching.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
@@ -123,9 +114,6 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoStream.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="core\messages.h">
@@ -145,6 +133,18 @@
     </ClInclude>
     <ClInclude Include="core\events.h">
       <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
+    <ClInclude Include="img_processing.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="videostream.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="linedetector.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="graphic_entities\color.h">
+      <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

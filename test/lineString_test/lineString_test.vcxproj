@@ -60,13 +60,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>D:\Desarrollo\Libs\opencv\include;..\..\src;D:\Desarrollo\Libs\googletest\install\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\src;..\..\..\Libs\googletest\install\include</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Desarrollo\Libs\opencv\x64\vc12\lib;D:\Desarrollo\Libs\googletest\install\lib;%(AdditionalLibraryDirectories);D:\Desarrollo\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\Libs\opencv\x64\vc12\lib;..\..\..\Libs\googletest\install\lib;%(AdditionalLibraryDirectories);D:\Desarrollo\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_shape310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

@@ -10,7 +10,7 @@
 #include "core\config.h"
 #include "core\flags.h"
 
-char *_msg(const char *msg, ...);
+//char *_msg(const char *msg, ...);
 
 namespace I3D
 {

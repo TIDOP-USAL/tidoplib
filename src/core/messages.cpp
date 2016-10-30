@@ -33,18 +33,18 @@ msgProperties GetMessageProperties( MessageLevel msgLevel )
   return msgTemplate[static_cast<int>(msgLevel)];
 }
 
-char *_msg(const char *msg, ...)
-{
-  static char buf[500];
-  memset(buf, 0, sizeof(buf));
-  std::string aux(msg);
-  replaceString(&aux, "% ", "%% " );
-  va_list args;
-  va_start(args, msg);
-  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-  va_end(args);
-  return buf;
-}
+//char *_msg(const char *msg, ...)
+//{
+//  static char buf[500];
+//  memset(buf, 0, sizeof(buf));
+//  std::string aux(msg);
+//  replaceString(&aux, "% ", "%% " );
+//  va_list args;
+//  va_start(args, msg);
+//  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+//  va_end(args);
+//  return buf;
+//}
 
 namespace I3D
 {
@@ -72,15 +72,20 @@ Message &Message::message(const char *msg, ...)
   if (sObjMessage.get() == 0) {
     sObjMessage.reset(new Message());
   }
-  char buf[500];
-  memset(buf, 0, sizeof(buf));
-  std::string aux(msg);
-  I3D::replaceString(&aux, "% ", "%% ");
-  va_list args;
-  va_start(args, msg);
-  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-  va_end(args);
-  sLastMessage = buf;
+  try {
+    char buf[500];
+    memset(buf, 0, sizeof(buf));
+    std::string aux(msg);
+    I3D::replaceString(&aux, "% ", "%% ");
+    va_list args;
+    va_start(args, msg);
+    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+    va_end(args);
+    sLastMessage = buf;
+  } catch (std::exception &e) {
+    printError(e.what());
+  }
+
   return *sObjMessage;
 }
 
@@ -158,7 +163,9 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
     Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
     console.setConsoleForegroundColor(GetMessageProperties(level).foreColor);
-    printf_s(msgOut.c_str());
+    std::string aux(msgOut);
+    I3D::replaceString(&aux, "%", "%%");
+    printf_s(aux.c_str());
     printf_s("\n");
   }
 

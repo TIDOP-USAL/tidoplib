@@ -12,11 +12,11 @@
 #include "opencv2/optflow.hpp"
 
 // Cabeceras propias
-#include "LineDetector.h"
-#include "VideoStream.h"
+#include "linedetector.h"
+#include "videostream.h"
 #include "utils.h"
 #include "Logger.h"
-#include "ImgProcessing.h"
+#include "img_processing.h"
 #include "geometric_entities\segment.h"
 #include "geometric_entities\window.h"
 #include "core/console.h"
