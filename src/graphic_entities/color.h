@@ -143,15 +143,9 @@ public:
     mColor = rgbaToInt(r, g, b, a);
   }
   
-  Color(const std::string &color) 
-  {
-    mColor = hexToInt(color);
-  }
+  Color(const std::string &color);
 
-  Color(const cv::Scalar &color) 
-  {
-    mColor = rgbToInt(static_cast<int>(round(color[2])), static_cast<int>(round(color[1])), static_cast<int>(round(color[0])));
-  }
+  Color(const cv::Scalar &color);
 
   ~Color() {}
   

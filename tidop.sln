@@ -41,10 +41,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lineString_test", "test\lin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud_points", "apps\cloud_points\cloud_points.vcxproj", "{4E2451FE-7041-4B19-8B44-F8F40C309F81}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "omega", "omega", "{C831C79B-4276-458D-B0CD-1C2BE543ED3A}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Digiflights", "apps\DIGIFLIGHTS\Digiflights.vcxproj", "{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -172,14 +168,6 @@ Global
 		{4E2451FE-7041-4B19-8B44-F8F40C309F81}.Release|Mixed Platforms.Build.0 = Release|x64
 		{4E2451FE-7041-4B19-8B44-F8F40C309F81}.Release|x64.ActiveCfg = Release|x64
 		{4E2451FE-7041-4B19-8B44-F8F40C309F81}.Release|x64.Build.0 = Release|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Debug|x64.ActiveCfg = Debug|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Debug|x64.Build.0 = Debug|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Release|Mixed Platforms.Build.0 = Release|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Release|x64.ActiveCfg = Release|x64
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -200,7 +188,5 @@ Global
 		{18DBB010-32DA-4B37-866C-D0BFBB38CC36} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{4E2451FE-7041-4B19-8B44-F8F40C309F81} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
-		{C831C79B-4276-458D-B0CD-1C2BE543ED3A} = {D072A721-7741-4E10-8FC6-18DA5DEAE85F}
-		{0990B92B-2121-45EF-85C5-ED02FA6ABC5F} = {C831C79B-4276-458D-B0CD-1C2BE543ED3A}
 	EndGlobalSection
 EndGlobal

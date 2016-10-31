@@ -487,65 +487,65 @@ public:
 
 /* ---------------------------------------------------------------------------------- */
 
-// Eventos de la clase de progreso
-
-/*!
- * brief Evento que se produce cada vez que se
- * avanza una posición en la función de progreso
- */
-class OnProgress : public Event
-{
-public:
-  OnProgress() : Event("Progress") {}
-
-  ~OnProgress() {}
-};
-
-/*!
- * \brief Evento que se ejecuta al inicializar la función de 
- * progreso
- */
-class OnInitialize : public Event
-{
-public:
-  OnInitialize() : Event("Initialize") {}
-
-  ~OnInitialize() {}
-
-private:
-
-};
-
-/*!
- * \brief Evento que se ejecuta al terminar la función de progreso
- */
-class OnTerminate : public Event
-{
-public:
-  OnTerminate() : Event("Terminate") {}
-
-  ~OnTerminate() {}
-};
-
-
-class ProgressEvents
-{
-private:
-
-
-public:
-  ProgressEvents()  {}
-
-  ~ProgressEvents()  {}
-
-  virtual void onProgress(double progress) = 0;
-
-  virtual void onInitialize() = 0;
-
-  virtual void onTerminate() = 0;
-
-  void fire(Event _event);
-};
+//// Eventos de la clase de progreso
+//
+///*!
+// * brief Evento que se produce cada vez que se
+// * avanza una posición en la función de progreso
+// */
+//class OnProgress : public Event
+//{
+//public:
+//  OnProgress() : Event("Progress") {}
+//
+//  ~OnProgress() {}
+//};
+//
+///*!
+// * \brief Evento que se ejecuta al inicializar la función de 
+// * progreso
+// */
+//class OnInitialize : public Event
+//{
+//public:
+//  OnInitialize() : Event("Initialize") {}
+//
+//  ~OnInitialize() {}
+//
+//private:
+//
+//};
+//
+///*!
+// * \brief Evento que se ejecuta al terminar la función de progreso
+// */
+//class OnTerminate : public Event
+//{
+//public:
+//  OnTerminate() : Event("Terminate") {}
+//
+//  ~OnTerminate() {}
+//};
+//
+//
+//class ProgressEvents
+//{
+//private:
+//
+//
+//public:
+//  ProgressEvents()  {}
+//
+//  ~ProgressEvents()  {}
+//
+//  virtual void onProgress(double progress) = 0;
+//
+//  virtual void onInitialize() = 0;
+//
+//  virtual void onTerminate() = 0;
+//
+//  void fire(Event _event);
+//};
 
 /*!
  * \brief Función objeto de progreso
@@ -600,7 +600,7 @@ protected:
    */
   std::string mMsg;
 
-  typedef ProgressEvents Listener;
+  //typedef ProgressEvents Listener;
 
   //std::list<Listener *> mListener;
 
@@ -628,10 +628,10 @@ public:
   virtual ~Progress() {}
 
   /*!
-   * \brief Operador de asignación. Se llama cada vez que se quiera avanzar en
+   * \brief Operador de llamada. Se llama cada vez que se quiera avanzar en
    * la función de progreso
    */
-  bool operator()(double increment = 1.);
+  bool operator() (double increment = 1.);
 
   /*!
    * \brief Establece el manejador del evento OnProgress
@@ -692,6 +692,7 @@ protected:
   void updateScale();
 };
 
+
 /*!
  * \brief Barra de progreso de consola
  */
@@ -731,6 +732,12 @@ public:
    * \brief Destructora
    */
   ~ProgressBar() {}
+
+  //... warning C4512: 'I3D::ProgressBar' : no se pudo generar el operador de asignaciones
+  //    Este warning aparece debido a que mSize es constante. impido la asignación que por
+  //    otra parte tampoco me interesa 
+
+  ProgressBar &operator=(const ProgressBar &pb) = delete;
 
 private:
 

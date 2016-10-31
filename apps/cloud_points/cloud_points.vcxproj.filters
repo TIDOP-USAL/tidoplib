@@ -15,4 +15,9 @@
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cloud_points.h">
+      <Filter>Archivos de código fuente</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

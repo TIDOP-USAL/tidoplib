@@ -1,3 +1,5 @@
+#include "cloud_points.h"
+
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
@@ -16,65 +18,8 @@ using namespace cv;
 using namespace optflow;
 using namespace I3D;
 
-//class OnPositionChange : public VideoStream::OnPositionChange
-//{
-//public:
-//  OnPositionChange()
-//  {}
-//
-//  ~OnPositionChange()
-//  {}
-//
-//  void operator()(double position) override
-//  { 
-//    if ( position != 0 ) 
-//      printf("Haz algo"); 
-//  }
-//
-//};
-
-
-// Meter calibración de la camara y corrección
-class DetectTransmissionTower : public VideoStream::Listener
+namespace I3D
 {
-private:
-  //cv::Mat mImage1;
-  //cv::Mat mImageGray1;
-  //cv::Mat mImage2;
-  //cv::Mat mImageGray2;
-
-  std::vector<ldGroupLines> prevLinesGrops;
-  double prevFrame;
-
-  LineDetector *pLineDetector;
-  ImgProcessingList imgprolist;
-  cv::Ptr<cv::DenseOpticalFlow> algorithm;
-  cv::Scalar c;
-  cv::RNG rng;
-  //bool bDrawRegressionLine;
-public:
-  DetectTransmissionTower(LineDetector *lineDetector) 
-    : pLineDetector(lineDetector) 
-  { 
-    imgprolist.add(std::make_shared<I3D::Canny>());
-    algorithm = cv::optflow::createOptFlow_Farneback();
-    rng(12345);
-  }
-
-  ~DetectTransmissionTower()
-  {
-  }
-
-  void detectGroupLines(const cv::Mat &img, std::vector<ldGroupLines> *linesGroup);
-  void computeOpticalFlow(const cv::Mat &img1, const cv::Mat &img2, cv::Mat_<cv::Point2f> *flow);
-  void run(const cv::Mat &img1, const double nFrame1 ,const cv::Mat &img2, const double nFrame2, cv::Mat imgout);
-  bool isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude);
-  void getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude);
-
-  void onRead() { ; }
-  void onPositionChange() { ; }
-  void onShow() { ; }
-};
 
 void DetectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<ldGroupLines> *linesGroup)
 {
@@ -98,7 +43,7 @@ void DetectTransmissionTower::computeOpticalFlow(const cv::Mat &img1, const cv::
   algorithm->calc(img1, img2, *flow);
 }
 
-void DetectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,const cv::Mat &img2, const double nFrame2, cv::Mat imgout ) 
+void DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::Mat imgout ) 
 { 
   cv::Size sz = img1.size(); 
 
@@ -110,7 +55,7 @@ void DetectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,con
 
   // Conversión a escala de grises
   cvtColor(img1, image1, CV_BGR2GRAY);
-  cvtColor(img1, image2, CV_BGR2GRAY);
+  cvtColor(img2, image2, CV_BGR2GRAY);
   
   std::vector<ldGroupLines> linesGroup1, linesGroup2;
   detectGroupLines(image1, &linesGroup1);
@@ -137,24 +82,22 @@ void DetectTransmissionTower::run(const cv::Mat &img1, const double nFrame1 ,con
           getMagnitude(flow, &magnitude);
 
           // Comprueba si se trata de una torre
-          bool bTower = isTower(imgout, linesGroup1[iplg], magnitude);
+          /*bool bTower = */isTower(imgout, linesGroup1[iplg], magnitude);
 
 
         }
       }
     }
   }
-
-
 }
 
 void DetectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude) 
 {
   cv::Mat flow_split[2];
   split(flow, flow_split);
-
+  cv::Mat angle; //... Anque no necesito el angulo tengo que pasarselo
   // Magnitud y angulo del desplazamiento. Sólo interesa la magnitud
-  cartToPolar(flow_split[0], flow_split[1], *magnitude, cv::Mat(), true);
+  cartToPolar(flow_split[0], flow_split[1], *magnitude, angle, true);
 
 }
 
@@ -265,11 +208,11 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
           // Ajustar el BBOX mejor
               
           printInfo("Torre detectada: Frame %i", cvRound(prevFrame));
-          //if (bSaveImages) {
-          //  char buffer[50];
-          //  sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
-          //  cv::imwrite(buffer, imgout);
-          //}
+          if (bSaveImages) {
+            char buffer[50];
+            sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
+            cv::imwrite(buffer, imgout);
+          }
           return true; // Devolvemos que hemos encontrado una torre
         }
       } else printVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", cvRound(prevFrame), ang);
@@ -280,6 +223,87 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
   }
   return false;
 }
+
+} // End namespace I3D
+
+
+/*!
+ * Clase auxiliar para manejar los frames de video. Heredada 
+ * de VideoStream::Listener e implementa los métodos que controlan
+ * la ejecución de los eventos
+ */
+class VideoHelper : public VideoStream::Listener
+{
+public:
+
+  double mCurrentPosition;
+
+  cv::Mat mFramePrev;
+  cv::Mat out;
+
+  DetectTransmissionTower *mDetectTower;
+
+public:
+
+  VideoHelper(DetectTransmissionTower *detectTower) 
+  {
+    mDetectTower = detectTower;
+    mCurrentPosition = 0.;
+  }
+
+  ~VideoHelper() {}
+
+  void onPause();
+
+  void onPositionChange(double position);
+
+  void onRead(cv::Mat &frame);
+
+  void onResume();
+
+  void onShow(cv::Mat &frame);
+
+  void onStop();
+
+};
+
+void VideoHelper::onPause()
+{
+  VideoStream::Listener::onPause(); 
+}
+
+void VideoHelper::onPositionChange(double position) 
+{ 
+  VideoStream::Listener::onPositionChange(position);
+  mDetectTower->prevFrame = position;
+}
+
+void VideoHelper::onRead(cv::Mat &frame) 
+{
+  VideoStream::Listener::onRead(frame);
+  if (!mFramePrev.empty()) {
+    mDetectTower->run(mFramePrev, frame, out);
+  } else {
+    frame.copyTo(mFramePrev);
+  }
+}
+
+void VideoHelper::onResume() 
+{ 
+  VideoStream::Listener::onResume();
+}
+
+void VideoHelper::onShow(cv::Mat &frame) 
+{ 
+  VideoStream::Listener::onShow(frame); 
+}
+
+void VideoHelper::onStop()
+{ 
+  VideoStream::Listener::onStop(); 
+}
+
+
 
 int main(int argc, char** argv)
 {
@@ -314,7 +338,10 @@ int main(int argc, char** argv)
 
   strmVideo.setSkipFrames(1);
 
-    //Se crea el detector
+  //VideoWindow vc("Cloud Points", WINDOW_AUTOSIZE);
+  //vc.setVideo(&strmVideo);
+
+  // Se crea el detector
   double angle = 0;
   double tol = 0.25;
   LD_TYPE ls = LD_TYPE::HOUGHP;
@@ -329,9 +356,12 @@ int main(int argc, char** argv)
     return 0;
   }
 
+  // Detección de apoyos
   DetectTransmissionTower detectTower(oLD.get());
+  VideoHelper videoHelper(&detectTower);
+  strmVideo.addListener(&videoHelper);
 
-  strmVideo.addListener(&detectTower);
+
   // No se necesita salida de video
   // VideoWindow vc("", 1);
   // vc.SetVideo(&strmVideo);
@@ -344,5 +374,8 @@ int main(int argc, char** argv)
   //strmVideo.addOnPositionChangeListener( std::make_shared<OnPositionChange>() );
 
   strmVideo.run();
+
+
+
   return 0;
 }
