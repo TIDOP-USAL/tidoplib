@@ -1,6 +1,3 @@
-//https://juanchopanzacpp.wordpress.com/2013/02/24/simple-observer-pattern-implementation-c11/
-//https://github.com/juanchopanza/cppblog/tree/master/Patterns/Observer
-
 #ifndef I3D_EVENTS_H
 #define I3D_EVENTS_H
 
@@ -16,13 +13,22 @@
 namespace I3D
 {
 
+/*!
+ * \brief Clase Event
+ */
 class Event
 {
 
 protected:
   
+  /*!
+   * \brief Identificador del evento
+   */
   int mIdEvent;
 
+  /*!
+   * \brief Nombre del evento
+   */
   std::string mName;
 
 private:
@@ -121,6 +127,8 @@ public:
 
 
 
+//https://juanchopanzacpp.wordpress.com/2013/02/24/simple-observer-pattern-implementation-c11/
+//https://github.com/juanchopanza/cppblog/tree/master/Patterns/Observer
 
 class Subject;
 
@@ -164,30 +172,6 @@ public:
   //virtual void operator()() = 0;
 };
 
-//class FunctionObserver : public Observer
-//{
-//private:
-//
-//  /*!
-//   * \brief Función
-//   */
-//  std::function<void(const cv::Mat &,cv::Mat *)> f;
-//
-//public:
-//  FunctionObserver()
-//  {
-//  }
-//
-//  ~FunctionObserver()
-//  {
-//  }
-//
-//private:
-//
-//};
-
-
-//
 /*!
  * \brief The Subject class
  *
@@ -241,21 +225,6 @@ public:
    */
   //void notify(const int _event) const;
 };
-
-//template<typename Context>
-//class I3D_EXPORT Listener
-//{
-//private:
-//  Context mContext;
-//public:
-//  Listener(const Context &context) : mContext(context) {}
-//  ~Listener() {}
-//
-//  virtual void operator()() = 0;
-//
-//private:
-//
-//};
 
 } // End namespace I3D
 

@@ -16,7 +16,7 @@ namespace I3D
 
 char *getRunfile()
 {
-  static char runfile[_MAX_PATH];
+  static char runfile[I3D_MAX_PATH];
   ::GetModuleFileNameA(NULL, runfile, sizeof(runfile));
   return runfile;
 }
@@ -185,75 +185,75 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
 
 int getFileDir(const char *path, char *dir)
 {
-  return _splitpath_s(path, NULL, NULL, dir, _MAX_DIR, NULL, NULL, NULL, NULL);
+  return _splitpath_s(path, NULL, NULL, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
 }
 
 int getFileDrive(const char *path, char *drive)
 {
   int r_err;
-  r_err = _splitpath_s(path, drive, _MAX_DRIVE, NULL, NULL, NULL, NULL, NULL, NULL);
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, NULL, NULL, NULL, NULL, NULL, NULL);
   return r_err;
 }
 
 int getFileExtension(const char *path, char *ext)
 {
   int r_err;
-  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, _MAX_EXT);
+  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, I3D_MAX_EXT);
   return r_err;
 }
 
 int getFileName(const char *path, char *name)
 {
   int r_err;
-  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, name, _MAX_FNAME, NULL, NULL);
+  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, name, I3D_MAX_FNAME, NULL, NULL);
   return r_err;
 }
 
 int getFileDriveDir(const char *path, char *drivedir)
 {
   int r_err;
-  char drive[_MAX_DRIVE];
-  char dir[_MAX_DIR];
-  r_err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL, NULL, NULL, NULL);
-  strcpy_s(drivedir, _MAX_DRIVE + _MAX_DIR, drive);
-  strcat_s(drivedir, _MAX_DRIVE + _MAX_DIR, dir);
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
+  strcpy_s(drivedir, I3D_MAX_DRIVE + I3D_MAX_DIR, drive);
+  strcat_s(drivedir, I3D_MAX_DRIVE + I3D_MAX_DIR, dir);
   return r_err;
 }
 
 int changeFileName(const char *path, char *newName, char *pathOut)
 {
-  char drive[_MAX_DRIVE];
-  char dir[_MAX_DIR];
-  char ext[_MAX_EXT];
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+  char ext[I3D_MAX_EXT];
 
-  int r_err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL, NULL, ext, _MAX_EXT);
+  int r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, ext, I3D_MAX_EXT);
   if (r_err == 0 )
-    r_err = _makepath_s(pathOut, _MAX_PATH, drive, dir, newName, ext);
+    r_err = _makepath_s(pathOut, I3D_MAX_PATH, drive, dir, newName, ext);
   return r_err;
 }
 
 int changeFileExtension(const char *path, char *newExt, char *pathOut)
 {
-  char drive[_MAX_DRIVE];
-  char dir[_MAX_DIR];
-  char fname[_MAX_FNAME];
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+  char fname[I3D_MAX_FNAME];
 
-  int r_err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, fname, _MAX_FNAME, NULL, NULL);
+  int r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, fname, I3D_MAX_FNAME, NULL, NULL);
   if (r_err == 0)
-    r_err = _makepath_s(pathOut, _MAX_PATH, drive, dir, fname, newExt);
+    r_err = _makepath_s(pathOut, I3D_MAX_PATH, drive, dir, fname, newExt);
   return r_err;
 }
 
 int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut)
 {
-  char drive[_MAX_DRIVE];
-  char dir[_MAX_DIR];
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
 
-  int r_err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, NULL, NULL, NULL, NULL);
+  int r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
   if (r_err == 0){
     std::vector<std::string> nameext;
     split(newNameExt, nameext, ".");
-    r_err = _makepath_s(pathOut, _MAX_PATH, drive, dir, nameext[0].c_str(), nameext[1].c_str());
+    r_err = _makepath_s(pathOut, I3D_MAX_PATH, drive, dir, nameext[0].c_str(), nameext[1].c_str());
   }
   return r_err;
 }

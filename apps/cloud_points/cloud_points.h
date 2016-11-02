@@ -56,9 +56,9 @@ public:
 
   void computeOpticalFlow(const cv::Mat &img1, const cv::Mat &img2, cv::Mat_<cv::Point2f> *flow);
 
-  void run(const cv::Mat &img1, const cv::Mat &img2, cv::Mat imgout);
+  bool run(const cv::Mat &img1, const cv::Mat &img2, cv::Mat *imgout, WindowI *wOut);
 
-  bool isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude);
+  bool isTower(cv::Mat *imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude);
 
   void getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude);
 

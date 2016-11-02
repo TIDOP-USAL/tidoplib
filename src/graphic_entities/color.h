@@ -11,17 +11,17 @@
 namespace I3D
 {
 
-/*! \defgroup GraphicEntities Entidades gráficas
+/*! \defgroup GraphicEntities Entidades grï¿½ficas
  *  Puntos, lineas, ...
  *  \{
  */
 
 /* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
+/*                                Conversiï¿½n de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
-/*! \defgroup colorConversion Conversión de color
- *  
+/*! \defgroup colorConversion Conversiï¿½n de color
+ *
  * \{
  */
 
@@ -31,8 +31,8 @@ namespace I3D
  * \return Componente azul
  */
 inline int I3D_EXPORT getBlue(int color)
-{ 
-  return(color & 0xFF); 
+{
+  return(color & 0xFF);
 }
 
 /*!
@@ -41,8 +41,8 @@ inline int I3D_EXPORT getBlue(int color)
  * \return Componente verde
  */
 inline int I3D_EXPORT getGreen(int color)
-{ 
-  return((color & 0xFF00) >> 8); 
+{
+  return((color & 0xFF00) >> 8);
 }
 
 /*!
@@ -51,8 +51,8 @@ inline int I3D_EXPORT getGreen(int color)
  * \return Componente roja
  */
 inline int I3D_EXPORT getRed(int color)
-{ 
-  return((color & 0xFF0000) >> 16); 
+{
+  return((color & 0xFF0000) >> 16);
 }
 
 /*!
@@ -61,8 +61,8 @@ inline int I3D_EXPORT getRed(int color)
  * \return Canal alfa
  */
 inline int I3D_EXPORT getAlpha(int color)
-{ 
-  return((color & 0xFF000000) >> 24); 
+{
+  return((color & 0xFF000000) >> 24);
 }
 
 /*!
@@ -135,20 +135,20 @@ class I3D_EXPORT Color
 public:
 
   Color() : mColor(0) {}
-  
+
   Color(int color) : mColor(color) {}
-  
-  Color(int r, int g, int b, int a = 0) 
+
+  Color(int r, int g, int b, int a = 0)
   {
     mColor = rgbaToInt(r, g, b, a);
   }
-  
+
   Color(const std::string &color);
 
   Color(const cv::Scalar &color);
 
   ~Color() {}
-  
+
   template<typename T>
   T get() const;
 
@@ -171,7 +171,7 @@ T Color::get() const
     intToRGB(mColor, &r, &g, &b);
     *(cv::Scalar *)_color = cv::Scalar(g,b,r);
   } else {
-    throw std::exception("Tipo de conversión no permitida");
+    throw std::exception("Tipo de conversiï¿½n no permitida");
   }
   return color;
 }

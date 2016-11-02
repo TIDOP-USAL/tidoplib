@@ -125,8 +125,7 @@ bool VideoStream::read(cv::Mat *vf)
 
 void VideoStream::run()
 {
-  printDebug("Inicio captura video");
-  vs = Status::RUNNING;
+  onInitialize();
   int delay = 100 / cvRound(fps());
   char c;
   while (vs != Status::STOPPED && vs != Status::FINALIZED) {
@@ -146,8 +145,7 @@ void VideoStream::run()
       else onResume();
     }
   }
-  vs = Status::FINALIZED;
-  printDebug("Fin captura de video");
+  onFinish();
 }
 
 void VideoStream::setCropRect(cv::Rect rf, bool keepRatio)
@@ -297,6 +295,26 @@ void VideoStream::init()
   vs = Status::START;
 }
 
+void VideoStream::onFinish() {
+  printDebug("Fin captura de video");
+  vs = Status::FINALIZED;
+  if (!events.empty()) {
+    for (auto ev : events) {
+      ev->onFinish();
+    }
+  }
+}
+
+void VideoStream::onInitialize() {
+  printDebug("Inicio captura video");
+  vs = Status::RUNNING;
+  if (!events.empty()) {
+    for (auto ev : events) {
+      ev->onInitialize();
+    }
+  }
+}
+
 void VideoStream::onPause() 
 { 
   if (vs == Status::RUNNING) {
@@ -367,34 +385,44 @@ void VideoStream::onStop()
 // y que se sobreescribiesen sólo los métodos que se desee pero al obligar a 
 // implementarlos todos me aseguro un mayor control.
 
+void VideoStreamEvents::onFinish()
+{
+  printDebug("Fin captura de video");
+}
+
+void VideoStreamEvents::onInitialize()
+{
+  printDebug("Inicio captura video");
+}
+
 void VideoStreamEvents::onPause()
 {
-  //if (mVideoStream) mVideoStream->onPause();
+  printDebug("Video pausado");
 }
 
 void VideoStreamEvents::onPositionChange(double position) 
 { 
-  //if (mVideoStream) mVideoStream->onPositionChange(position); 
+  printDebug("Posición: %i", static_cast<int>(position));
 }
 
 void VideoStreamEvents::onRead(cv::Mat &frame) 
 { 
-  //if (mVideoStream) mVideoStream->onRead(); 
+
 }
 
 void VideoStreamEvents::onResume() 
 { 
-  //if (mVideoStream) mVideoStream->onRead(); 
+
 }
 
 void VideoStreamEvents::onShow(cv::Mat &frame) 
 { 
-  //if (mVideoStream) mVideoStream->onShow(); 
+
 }
 
 void VideoStreamEvents::onStop()
 { 
-  //if (mVideoStream) mVideoStream->onStop(); 
+  printDebug("Video detenido");
 }
 
 /* ---------------------------------------------------------------------------------- */

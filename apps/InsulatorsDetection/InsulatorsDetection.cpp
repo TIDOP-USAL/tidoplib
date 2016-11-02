@@ -121,7 +121,7 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
 
 int main(int argc, char *argv[])
 {
-  char logfile[_MAX_PATH];
+  char logfile[I3D_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "InsulatorsDetection.log", logfile);
   LogMsg log(logfile, LogLevel::LOG_DEBUG);
   std::unique_ptr<LineDetector> oLD;

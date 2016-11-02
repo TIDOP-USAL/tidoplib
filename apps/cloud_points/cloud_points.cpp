@@ -1,10 +1,17 @@
 #include "cloud_points.h"
 
+#include <stdio.h>
+
 #include "opencv2/core/core.hpp"
+#include "opencv2/core/utility.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/optflow.hpp"
+#include "opencv2/sfm.hpp"
+#include "opencv2/features2d.hpp"
+#include "opencv2/xfeatures2d.hpp"
+#include "opencv2/ximgproc/disparity_filter.hpp"
 
 // Cabeceras tidopLib
 #include "core\console.h"
@@ -17,6 +24,18 @@
 using namespace cv;
 using namespace optflow;
 using namespace I3D;
+
+
+
+static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
+{
+  FileStorage fs(file, FileStorage::READ);
+  fs["image_width"] >> imageSize.width;
+  fs["image_height"] >> imageSize.height;
+  fs["camera_matrix"] >> cameraMatrix;
+  fs["distortion_coefficients"] >> distCoeffs;
+  fs.release();
+}
 
 namespace I3D
 {
@@ -43,10 +62,11 @@ void DetectTransmissionTower::computeOpticalFlow(const cv::Mat &img1, const cv::
   algorithm->calc(img1, img2, *flow);
 }
 
-void DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::Mat imgout ) 
+bool DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::Mat *imgout, WindowI *wOut ) 
 { 
   cv::Size sz = img1.size(); 
-
+  img1.copyTo(*imgout);
+  
   //Ventana en la cual se van a buscar los apoyos
   WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
   ws = expandWindow(ws, -100, 0);
@@ -81,14 +101,15 @@ void DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::
           cv::Mat magnitude;
           getMagnitude(flow, &magnitude);
 
-          // Comprueba si se trata de una torre
-          /*bool bTower = */isTower(imgout, linesGroup1[iplg], magnitude);
-
-
+          if (bool bTower = isTower(imgout, linesGroup1[iplg], magnitude)) {
+            *wOut = linesGroup1[iplg].getBbox();
+            return bTower;
+          }
         }
       }
     }
   }
+  return false;
 }
 
 void DetectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv::Mat *magnitude) 
@@ -101,7 +122,7 @@ void DetectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv
 
 }
 
-bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude) {
+bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &linesGroup1, const cv::Mat &magnitude) {
 
   WindowI wprev = linesGroup1.getBbox();
 
@@ -135,16 +156,16 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
       }
     }
 
-    printVerbose("Frame %i - cols: %i - rows: %i", cvRound(prevFrame), candidatenorm.cols, candidatenorm.rows);
-    printVerbose("Frame %i - N points max: %i", cvRound(prevFrame), pMax.size());
+    printVerbose("Frame %i - cols: %i - rows: %i", static_cast<int>(prevFrame), candidatenorm.cols, candidatenorm.rows);
+    printVerbose("Frame %i - N points max: %i", static_cast<int>(prevFrame), pMax.size());
     if (pMax.size() > 200 ) {
       // Recta de regresión para los máximos
       double m = 0.;
       double b = 0.;
       regressionLinearXY(pMax, &m, &b);
       
-      cv::Point pt1(cvRound(b), 0);
-      cv::Point pt2(cvRound(m * magnitude.rows + b), magnitude.rows);
+      cv::Point pt1(static_cast<int>(round(b)), 0);
+      cv::Point pt2(static_cast<int>(round(m * magnitude.rows + b)), magnitude.rows);
             
       //if (bDrawRegressionLine) {
       //  //Se pinta la recta de regresión
@@ -159,7 +180,7 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
       else if (ang < -CV_PI / 2) ang = ang + CV_PI;
       // tolerancia de inclinación del eje del apoyo respecto a la vertical -> 0.1
       if (ang <= 0.1 && ang >= -0.1) {
-        printVerbose("Frame %i - Angulo: %f", cvRound(prevFrame), ang);
+        printVerbose("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
 
          // Busqueda del máximo valor de desplazamiento
         std::vector<Point> vMagnitudes;
@@ -174,7 +195,7 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
               ptMax = pt;
             }
             if (mg > mean[0])
-              vMagnitudes.push_back(cv::Point(static_cast<int>(mg), ir));
+              vMagnitudes.push_back(cv::Point(static_cast<int>(round(mg)), ir));
           }
         }
        
@@ -205,20 +226,19 @@ bool DetectTransmissionTower::isTower(cv::Mat imgout, const ldGroupLines &linesG
           //}
           
        
-          // Ajustar el BBOX mejor
-              
-          printInfo("Torre detectada: Frame %i", cvRound(prevFrame));
-          if (bSaveImages) {
-            char buffer[50];
-            sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
-            cv::imwrite(buffer, imgout);
-          }
+          // Ajustar el BBOX mejor  
+          printInfo("Torre detectada: Frame %i", static_cast<int>(prevFrame));
+          //if (bSaveImages) {
+          //  char buffer[50];
+          //  sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
+          //  cv::imwrite(buffer, *imgout);
+          //}
           return true; // Devolvemos que hemos encontrado una torre
         }
       } else printVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", cvRound(prevFrame), ang);
     }
   } else {
-    printInfo("Torre rechazada: Frame %i", cvRound(prevFrame) );
+    printInfo("Torre rechazada: Frame %i", static_cast<int>(prevFrame) );
     return false;
   }
   return false;
@@ -243,15 +263,27 @@ public:
 
   DetectTransmissionTower *mDetectTower;
 
+  std::string outPath;
+  std::string outFile;
+
+  std::vector<std::string> framesSaved;
+  std::vector<WindowI> windowsSaved;
+
 public:
 
   VideoHelper(DetectTransmissionTower *detectTower) 
   {
     mDetectTower = detectTower;
     mCurrentPosition = 0.;
+    outPath = "";
+    outFile = "TowerDetected.xml";
   }
 
   ~VideoHelper() {}
+
+  void onFinish();
+
+  void onInitialize();
 
   void onPause();
 
@@ -265,7 +297,32 @@ public:
 
   void onStop();
 
+  void write();
 };
+
+void VideoHelper::onFinish()
+{
+  VideoStream::Listener::onFinish();
+
+  write();
+}
+
+void VideoHelper::onInitialize()
+{
+  VideoStream::Listener::onInitialize();
+
+  if (outPath.empty()) {
+    char path[I3D_MAX_DRIVE + I3D_MAX_DIR];
+    getFileDriveDir(getRunfile(),path);
+    outPath = path;
+  } else {
+    createDir(outPath.c_str());
+  }
+  outFile = outPath + "\\TowerDetected.txt";
+  // Para limpiar el fichero se carga sin la opción append
+  cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML);
+  fs.release();
+}
 
 void VideoHelper::onPause()
 {
@@ -276,13 +333,24 @@ void VideoHelper::onPositionChange(double position)
 { 
   VideoStream::Listener::onPositionChange(position);
   mDetectTower->prevFrame = position;
+  mCurrentPosition = position;
 }
 
 void VideoHelper::onRead(cv::Mat &frame) 
 {
   VideoStream::Listener::onRead(frame);
   if (!mFramePrev.empty()) {
-    mDetectTower->run(mFramePrev, frame, out);
+    WindowI wOut;
+    bool bTower = mDetectTower->run(mFramePrev, frame, &out, &wOut);
+    frame.copyTo(mFramePrev);
+    if (bTower) {
+      char buffer[I3D_MAX_PATH];
+      sprintf_s(buffer, "%s\\Apoyo_%05i.jpg", outPath.c_str(), cvRound(mCurrentPosition));
+      cv::imwrite(buffer, out);
+      
+      framesSaved.push_back(std::string(buffer));
+      windowsSaved.push_back(wOut);
+    }
   } else {
     frame.copyTo(mFramePrev);
   }
@@ -295,12 +363,40 @@ void VideoHelper::onResume()
 
 void VideoHelper::onShow(cv::Mat &frame) 
 { 
-  VideoStream::Listener::onShow(frame); 
+  VideoStream::Listener::onShow(frame);
 }
 
 void VideoHelper::onStop()
 { 
   VideoStream::Listener::onStop(); 
+}
+
+void VideoHelper::write()
+{ 
+  std::string name = outPath + "\\TowerDetected.xml";
+  cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::APPEND | cv::FileStorage::FORMAT_XML);
+  if (fs.isOpened()) {
+    fs << "Towers";
+    fs << "{";
+    for (size_t i = 0; i < framesSaved.size(); i++) {
+
+    fs << "Tower";
+    fs << "{" << "Frame" << framesSaved[i];
+    fs << "Bbox";
+    fs << "{" << "X1" << windowsSaved[i].pt1.x;
+    fs << "Y1" << windowsSaved[i].pt1.y;
+    fs << "X2" << windowsSaved[i].pt2.x;
+    fs << "y2" << windowsSaved[i].pt2.y << "}";
+    fs << "}";
+    }
+    fs << "}";
+  }
+  fs.release();
+
+  //... FileStorage no es lo suficientemente flexible. O eso parece
+  //    De momento en fichero de texto.
+
+
 }
 
 
@@ -323,7 +419,7 @@ int main(int argc, char** argv)
   ProgressBar progress_bar;
 
   //Configuración de log y mensajes por consola
-  char logfile[_MAX_PATH];
+  char logfile[I3D_MAX_PATH];
   if (changeFileExtension(getRunfile(), "log", logfile) == 0) {
     Message::setMessageLogFile(logfile);
     Message::setMessageLevel(MessageLevel::MSG_INFO);
@@ -360,22 +456,60 @@ int main(int argc, char** argv)
   DetectTransmissionTower detectTower(oLD.get());
   VideoHelper videoHelper(&detectTower);
   strmVideo.addListener(&videoHelper);
+  videoHelper.outPath = out_path;
 
+  //strmVideo.run();
 
-  // No se necesita salida de video
-  // VideoWindow vc("", 1);
-  // vc.SetVideo(&strmVideo);
+  // Se cargan datos de calibración de la cámara
+  Size imageSize;
+  Mat cameraMatrix, distCoeffs;
+  std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
+  LoadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
+  // Supongo que ya tengo los grupos de imagenes correspondientes a cada torre.
 
-  //strmVideo.setReadListener((ReadCallback)onRun, oLD.get());
-  //strmVideo.addObserver("",);
-  
+  std::vector<Mat> Rs_est, ts_est, points3d_estimated;
+  Matx33d K = cameraMatrix;
 
-  //std::shared_ptr<OnPositionChange> onPositionChange(new OnPositionChange);
-  //strmVideo.addOnPositionChangeListener( std::make_shared<OnPositionChange>() );
+  std::vector<std::string> images_paths{
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00389.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00393.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00394.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00395.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00396.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00397.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00398.jpg",
+    "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00399.jpg"
+  };
 
-  strmVideo.run();
+  std::vector<WindowI> windows{
+    WindowI(cv::Point(767, 47), cv::Point(845, 719)),
+    WindowI(cv::Point(633, 44), cv::Point(769, 719)),
+    WindowI(cv::Point(623, 86), cv::Point(757, 718)),
+    WindowI(cv::Point(604, 72), cv::Point(740, 719)),
+    WindowI(cv::Point(608, 69), cv::Point(730, 719)),
+    WindowI(cv::Point(582, 85), cv::Point(724, 719)),
+    WindowI(cv::Point(572, 58), cv::Point(711, 719)),
+    WindowI(cv::Point(563, 76), cv::Point(704, 718))
+  };
+  //LoadImages(std::string("D://Desarrollo//datos//cloud_points//Villaseca//TowerDetect01.xml"), images_paths, windows);
 
+  try {
+    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
+    bool is_projective = true;
+    cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
+  } catch (cv::Exception &e) {
+    printError(e.what());
+  } catch (std::exception &e) {
+    printError(e.what());
+  }
 
+  std::vector<Vec3f> point_cloud_est;
+  for (int i = 0; i < points3d_estimated.size(); ++i)
+    point_cloud_est.push_back(Vec3f(points3d_estimated[i]));
+
+  std::vector<Affine3d> path_est;
+  for (size_t i = 0; i < Rs_est.size(); ++i)
+    path_est.push_back(Affine3d(Rs_est[i],ts_est[i]));
 
   return 0;
 }

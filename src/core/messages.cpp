@@ -175,7 +175,7 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
   if (flag.isActive( MessageOutput::MSG_LOG )) {
     if (sLogFile.empty()) {
       // Log por defecto
-      char _logfile[_MAX_PATH];
+      char _logfile[I3D_MAX_PATH];
       changeFileExtension(getRunfile(), "log", _logfile);
       sLogFile = _logfile;
     }

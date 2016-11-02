@@ -302,6 +302,10 @@ private:
 
   void init();
 
+  void onFinish();
+
+  void onInitialize();
+
   /*!
    * \brief Rausa el video
    */
@@ -368,6 +372,8 @@ public:
 
   ~VideoStreamEvents() {}
 
+  virtual void onFinish() = 0;
+  virtual void onInitialize() = 0;
   virtual void onPause() = 0;
   virtual void onPositionChange(double position) = 0;
   virtual void onRead(cv::Mat &frame) = 0;
@@ -456,6 +462,16 @@ public:
    */
   const std::string &getName() const {
     return mWindowName;
+  }
+
+  void onFinish()
+  {
+    VideoStream::Listener::onFinish(); 
+  }
+     
+  void onInitialize()
+  {
+    VideoStream::Listener::onInitialize(); 
   }
 
   void onPause()
