@@ -226,6 +226,7 @@ public:
    * \brief La ventana contiene la ventana
    */
   template<typename T2> bool containsWindow(const Window<T2> &w) const;
+
 };
 
 // Definición de métodos

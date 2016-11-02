@@ -281,62 +281,6 @@ TEST(azimut,Test1){
 }
 
 /* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
-/* ---------------------------------------------------------------------------------- */
-
-//Datos para los test
-std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 },  };
-std::vector<std::string> hex{ "000000", "FF0000", "00FF00", "0000FF", "FFFFFF", "342455", "F3377B" };
-std::vector<int> color{ 0, 16711680, 65280, 255, 16777215, 3417173, 15939451 };
-
-
-TEST(getBlue, TestBlue)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
-  }
-}
-
-TEST(getGreen, TestGreen)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
-  }
-}
-
-TEST(getRed, TestRed)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][0], getRed(color[i]));
-  }
-}
-
-
-///*!
-// * \brief Obtiene el canal alfa de un color
-// * \param color Color representado como un entero
-// * \return Canal alfa
-// */
-//inline int I3D_EXPORT getAlpha(int color)
-//{ 
-//  return((color & 0xFF000000) >> 24); 
-//}
-
-TEST(rgbToInt, Test1)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(color[i], rgbToInt(rbga[i][0], rbga[i][1], rbga[i][2]));
-  }
-}
-
-//TEST(rgbaToInt, Test1)
-//{
-//  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(color[i], rgbaToInt(rbga[i][0], rbga[i][1], rbga[i][2], rbga[i][2]));
-//  }
-//}
-
-/* ---------------------------------------------------------------------------------- */
 /*                          Test conversión de ángulos                                */
 /* ---------------------------------------------------------------------------------- */
 
