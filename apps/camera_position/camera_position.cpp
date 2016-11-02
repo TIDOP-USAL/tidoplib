@@ -199,7 +199,7 @@ int getdir(const std::string _filename, std::vector<std::string> &files)
   if (!myfile.is_open()) {
     cout << "Unable to read file: " << _filename << endl;
     exit(0);
-  } else {;
+  } else {
     size_t found = _filename.find_last_of("/\\");
     std::string line_str, path_to_file = _filename.substr(0, found);
     while ( getline(myfile, line_str) )
@@ -252,10 +252,10 @@ int main(int argc, char** argv)
   std::vector<std::vector<Vec2d> > pass_points;
   std::vector<DMatch> matches;
   
-  char out[_MAX_PATH];
-  char buf[_MAX_PATH];
-  char name1[_MAX_PATH];
-  char name2[_MAX_PATH];
+  char out[I3D_MAX_PATH];
+  char buf[I3D_MAX_PATH];
+  char name1[I3D_MAX_PATH];
+  char name2[I3D_MAX_PATH];
 
 
   //for (int i = 1; i < size - 1; i++) {

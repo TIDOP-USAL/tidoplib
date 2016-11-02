@@ -313,7 +313,7 @@ int main(int argc, char *argv[])
   bDrawLines = parser.get<bool>("dl");
   bDrawRegressionLine = parser.get<bool>("drl");
 
-  char logfile[_MAX_PATH];
+  char logfile[I3D_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "LogDeteccionApoyos.log", logfile);
   LogMsg log(logfile, LogLevel::LOG_DEBUG);
 

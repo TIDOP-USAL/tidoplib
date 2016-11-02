@@ -12,7 +12,7 @@
 namespace I3D
 {
 
-/*! \defgroup GraphicEntities Entidades gráficas
+/*! \defgroup GraphicEntities Entidades grÃ¡ficas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -61,16 +61,16 @@ T Color::get() const
     intToRGB(mColor, &r, &g, &b);
     *(cv::Scalar *)_color = cv::Scalar(g,b,r);
   } else {
-    throw std::exception("Tipo de conversión no permitida");
+    throw std::exception("Tipo de conversiÃ³n no permitida");
   }
   return color;
 }
 
 /* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
+/*                                ConversiÃ³n de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
-/*! \defgroup colorConversion Conversión de color
+/*! \defgroup colorConversion ConversiÃ³n de color
  *  
  * \{
  */

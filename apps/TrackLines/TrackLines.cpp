@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
   Line conductor_line_prev;           // Linea que representa el conductor en la imagen previa         
   double conductor_direction = 0.0;   // Dirección del conductor 
 
-  char logfile[_MAX_PATH];
+  char logfile[I3D_MAX_PATH];
   int err = changeFileNameAndExtension(getRunfile(), "TrackLines.log", logfile);
   if (err == 0) {
         //LogMsg log(logfile, LogLevel::LOG_DEBUG);

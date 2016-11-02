@@ -1,9 +1,11 @@
+/* Archivo para definir macros y constantes de tipo general */
+
 #ifndef I3D_DEFS_H
 #define I3D_DEFS_H
 
-/* Archivo para definir macros y constantes de tipo general */
+#include <limits>
+#include <cstdlib>
 
-//#include <cstdint>
 #if _MSC_VER >= 1600
   #include <cstdint>
 #else
@@ -35,6 +37,17 @@
 #define I3D_FLOAT_MAX std::numeric_limits<float>().max()
 #define I3D_FLOAT_MIN -std::numeric_limits<float>().max()
 
+#if defined WIN32 || defined _WIN32
+#  define I3D_MAX_PATH   _MAX_PATH
+#  define I3D_MAX_DRIVE  _MAX_DRIVE
+#  define I3D_MAX_DIR    _MAX_DIR
+#  define I3D_MAX_FNAME  _MAX_FNAME
+#  define I3D_MAX_EXT    _MAX_EXT
+#else
+
+#endif
+
+        
 #if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3DAPI_EXPORTS
 #  define I3D_EXPORT __declspec(dllexport)
 //#elif defined __GNUC__ && __GNUC__ >= 4

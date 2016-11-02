@@ -51,7 +51,7 @@ void Features2D::save( const char *fname ) const
 {
   //... Habria que guardarlo como binario mejor o dar las dos opciones
   // Salva descriptores
-  char ext[_MAX_EXT];
+  char ext[I3D_MAX_EXT];
   if (getFileExtension(fname, ext)) {
     return;
   }

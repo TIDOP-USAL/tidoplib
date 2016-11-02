@@ -20,7 +20,7 @@ TEST(isDirectoryTest, Null){
 }
 
 TEST(createDir, ExistDir){
-  char name[_MAX_PATH];
+  char name[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDriveDir(getRunfile(), name));
   //Se prueba a crear un directorio ya existente
   EXPECT_EQ(1,createDir(name));
@@ -129,7 +129,7 @@ TEST(replaceString, test1){
 TEST(getFileDir, ValidDir){
 
   const char *file = "D:\\path\\file.ext";
-  char file_dir[_MAX_PATH];
+  char file_dir[I3D_MAX_PATH];
   EXPECT_EQ(0,getFileDir(file, file_dir));
   EXPECT_STREQ("\\path\\", file_dir);
   const char *file2 = "D:/path/file.ext";
@@ -140,7 +140,7 @@ TEST(getFileDir, ValidDir){
 TEST(getFileDir, InvalidDir){
 
   const char *file = "";
-  char file_dir[_MAX_PATH];
+  char file_dir[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDir(file, file_dir));
   EXPECT_STREQ("", file_dir);
   const char *file2 = "file.ext";
@@ -151,7 +151,7 @@ TEST(getFileDir, InvalidDir){
 TEST(getFileDrive, ValidDir){
 
   const char *path = "D:\\path\\file.ext";
-  char drive[_MAX_PATH];
+  char drive[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDrive(path, drive));
   EXPECT_STREQ("D:", drive);
   const char *file2 = "D:/path/file.ext";
@@ -162,7 +162,7 @@ TEST(getFileDrive, ValidDir){
 TEST(getFileExtension, ValidExtension){
 
   const char *path = "D:\\path\\file.ext";
-  char ext[_MAX_PATH];
+  char ext[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileExtension(path, ext));
   EXPECT_STREQ(".ext", ext);
   const char *file2 = "D:/path/file.ext";
@@ -173,7 +173,7 @@ TEST(getFileExtension, ValidExtension){
 TEST(getFileExtension, InvalidExtension){
 
   const char *path = "D:\\path\\file";
-  char ext[_MAX_PATH];
+  char ext[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileExtension(path, ext));
   EXPECT_STREQ("", ext);
   const char *file2 = "D:/path/file";
@@ -184,7 +184,7 @@ TEST(getFileExtension, InvalidExtension){
 TEST(getFileName, ValidName){
 
   const char *path = "D:\\path\\file.ext";
-  char name[_MAX_PATH];
+  char name[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileName(path, name));
   EXPECT_STREQ("file", name);
   const char *path2 = "D:/path/file.ext";
@@ -195,7 +195,7 @@ TEST(getFileName, ValidName){
 TEST(getFileDriveDir, ValidPath){
 
   const char *path = "D:\\path\\file.ext";
-  char name[_MAX_PATH];
+  char name[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDriveDir(path, name));
   EXPECT_STREQ("D:\\path\\", name);
   const char *path2 = "D:/path/file.ext";
@@ -206,7 +206,7 @@ TEST(getFileDriveDir, ValidPath){
 TEST(changeFileName, ValidPath){
 
   const char *path = "D:\\path\\file.ext";
-  char new_path[_MAX_PATH];
+  char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileName(path, "new_file_name", new_path));
   EXPECT_STREQ("D:\\path\\new_file_name.ext", new_path);
   const char *path2 = "D:/path/file.ext";
@@ -217,7 +217,7 @@ TEST(changeFileName, ValidPath){
 TEST(changeFileExtension, ValidPath){
 
   const char *path = "D:\\path\\file.ext";
-  char new_path[_MAX_PATH];
+  char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileExtension(path, "aaa", new_path));
   EXPECT_STREQ("D:\\path\\file.aaa", new_path);
   const char *path2 = "D:/path/file.ext";
@@ -227,7 +227,7 @@ TEST(changeFileExtension, ValidPath){
 
 TEST(changeFileNameAndExtension, ValidPath){
   const char *path = "D:\\path\\file.ext";
-  char new_path[_MAX_PATH];
+  char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileNameAndExtension(path, "new_name.aaa", new_path));
   EXPECT_STREQ("D:\\path\\new_name.aaa", new_path);
   const char *path2 = "D:/path/file.ext";
