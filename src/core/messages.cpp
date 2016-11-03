@@ -1,12 +1,15 @@
+#include "messages.h"
+
+#include "core/utils.h"
+#include "core/console.h"
+
 #include <cstdarg>
 #if defined WIN32
 # include <windows.h>
 #endif
+#include <string>
+#include <iostream>
 #include <fstream>
-
-#include "messages.h"
-#include "utils.h"
-#include "core/console.h"
 
 #ifdef I3D_MESSAGE_HANDLER
 

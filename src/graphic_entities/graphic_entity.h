@@ -3,11 +3,14 @@
 
 #include <string>
 #include <vector>
+#include <array>
 #include <memory>
 
 #include "opencv2/core/core.hpp"
 
 #include "core\defs.h"
+#include "core\flags.h"
+#include "graphic_entities/color.h"
 
 namespace I3D
 {
@@ -68,7 +71,7 @@ protected:
   /*!
    * \brief Color de Pluma
    */
-  uint32_t mPenColor;
+  Color mPenColor;
 
   /*!
    * \brief Ancho de pluma
@@ -125,13 +128,13 @@ public:
    * \brief Devuelve el color de Pluma
    * \return Color de pluma
    */
-  uint32_t getPenColor() { return mPenColor; }
+  Color getPenColor() { return mPenColor; }
 
   /*!
    * \brief Establece el color de Pluma
    * \param[in] pencolor Color de Pluma
    */
-  void setPenColor(uint32_t pencolor) { mPenColor = pencolor; }
+  void setPenColor(Color pencolor) { mPenColor = pencolor; }
 
   /*!
    * \brief Devuelve el ancho de pluma
@@ -230,12 +233,12 @@ protected:
   /*!
    * \brief Color de primer plano
    */
-  uint32_t mForeColor;
+  Color mForeColor;
   
   /*!
    * \brief Color de fondo
    */
-  uint32_t mBackColor;
+  Color mBackColor;
 
   /*!
    * \brief Nombre de pincel
@@ -255,7 +258,7 @@ protected:
   /*!
    * \brief Espaciado entre simbolos
    */
-  std::vector<double> mSpacing;
+  std::array<double,2> mSpacing;
 
   /*!
    * \brief mPriorityLevel
@@ -275,25 +278,25 @@ public:
    * \brief Devuelve el color
    * \return Color
    */
-  uint32_t getForeColor() { return mForeColor; }
+  Color getForeColor() { return mForeColor; }
 
   /*!
    * \brief Establece el color
    * \param[in] forecolor Color
    */
-  void setForeColor(uint32_t forecolor) { mForeColor = forecolor; }
+  void setForeColor(Color forecolor) { mForeColor = forecolor; }
 
     /*!
    * \brief Devuelve el color de fondo
    * \return Color de fondo
    */
-  uint32_t getBackColor() { return mBackColor; }
+  Color getBackColor() { return mBackColor; }
 
   /*!
    * \brief Establece el color de fondo
    * \param[in] backcolor Color de fondo
    */
-  void setBackColor(uint32_t backcolor) { mBackColor = backcolor; }
+  void setBackColor(Color backcolor) { mBackColor = backcolor; }
 
   /*!
    * \brief Devuelve el nombre o id de pincel
@@ -359,16 +362,139 @@ public:
 };
 
 
-class I3D_EXPORT StyleSimbol
+class I3D_EXPORT StyleSymbol
 {
-private:
 
 public:
-  StyleSimbol();
-  ~StyleSimbol();
 
-private:
+  enum class SymbolName
+  {
+    SOLID,             // +
+    DIAGONAL_CROSS,    // x
+    CIRCLE,
+    CIRCLE_FILLED,
+    SQUARE,
+    SQUARE_FILLED,
+    TRIANGLE,
+    TRIANGLE_FILLED,
+    STAR,
+    STAR_FILLED,
+    VERTICAL_BAR
+  };
 
+protected:
+  
+  /*!
+   * \brief Nombre o identificador del simbolo
+   */
+  SymbolName mName;
+
+  /*!
+   * \brief Ángulo de rotación
+   */
+  double mAngle;
+
+  /*!
+   * \brief Color
+   */
+  Color mColor;
+  
+  /*!
+   * \brief Color de borde
+   */
+  Color mOutlineColor;
+
+  /*!
+   * \brief Factor de escala
+   */
+  double mScalingFactor;
+
+  /*!
+   * \brief Offset
+   */
+  std::array<double,2> mOffset;
+
+  /*!
+   * \brief mPriorityLevel
+   */
+  uint32_t mPriorityLevel;
+
+public:
+
+  StyleSymbol();
+
+  ~StyleSymbol();
+
+  /*!
+   * \brief Devuelve el ángulo de rotación
+   * \return Ángulo de rotación
+   */
+  double getAngle() { return mAngle; }
+
+  /*!
+   * \brief Establece el ángulo de rotación
+   * \param[in] angle Ángulo de rotación
+   */
+  void setAngle(double angle) { mAngle = angle; }
+
+  /*!
+   * \brief Devuelve el nombre o id del simbolo
+   * \return Nombre o id del simbolo
+   */
+  SymbolName getName() { return mName; }
+
+  /*!
+   * \brief Establece el nombre o id del simbolo
+   * \param[in] symbolname Nombre o id del simbolo
+   */
+  void setName(SymbolName name) { mName = name; }
+
+    /*!
+   * \brief Devuelve el color
+   * \return Color
+   */
+  Color getColor() { return mColor; }
+
+  /*!
+   * \brief Establece el color
+   * \param[in] symbolcolor Color
+   */
+  void setColor(Color color) { mColor = color; }
+
+    /*!
+   * \brief Devuelve el color de borde
+   * \return Color de borde
+   */
+  Color getOutlineColor() { return mOutlineColor; }
+
+  /*!
+   * \brief Establece el color de borde
+   * \param[in] outlinecolor Color de borde
+   */
+  void setOutlineColor(Color outlinecolor) { mOutlineColor = outlinecolor; }
+
+  /*!
+   * \brief Devuelve el factor de escala
+   * \return Factor de escala
+   */
+  double getScalingFactor() { return mScalingFactor; }
+
+  /*!
+   * \brief Establece el factor de escala
+   * \param[in] scalingFactor Factor de escala
+   */
+  void setScalingFactor(double scalingFactor) { mScalingFactor = scalingFactor; }
+
+  double getOffsetX() { return mOffset[0]; }
+  double getOffsetY() { return mOffset[1]; }
+
+  /*!
+   * \brief Establece el punto de inserción del simbolo
+   * \param[in] dx
+   * \param[in] dy
+   */
+  void setOffset(double dx, double dy) { mOffset[0] = dx; mOffset[1] = dy; }
+  
 };
 
 
@@ -376,13 +502,81 @@ private:
 class I3D_EXPORT StyleLabel
 {
 public:
+
+  enum class AnchorPosition
+  {
+    VERTICAL_BASELINE = 1 << 0, 
+    VERTICAL_CENTER = 1 << 1, 
+    VERTICAL_TOP = 1 << 2, 
+    VERTICAL_BOTTOM = 1 << 3,
+    HORIZONTAL_LEFT = 1 << 4,
+    HORIZONTAL_CENTER = 1 << 5,
+    HORIZONTAL_RIGHT = 1 << 6
+  };
+
+protected:
+
+  std::string mFontName;
+
+  int mFontSize;
+
+  std::string mText;
+
+  double mAngle;
+
+  Color mForegroundColor;
+
+  Color mBackgroundColor;
+
+  Color mOutlineColor;
+
+  Color mShadowColor;
+
+  AnchorPosition mAnchorPosition;
+
+  /*!
+   * \brief Offset
+   */
+  std::array<double,2> mOffset;
+
+  int mPerpendicularOffset;
+
+  bool bBold;
+
+  bool bItalic;
+
+  bool bUnderline;
+
+public:
+
   StyleLabel();
   ~StyleLabel();
 
-private:
+  /*!
+   * \brief Devuelve el ángulo de rotación
+   * \return Ángulo de rotación
+   */
+  double getAngle() { return mAngle; }
+
+  /*!
+   * \brief Establece el ángulo de rotación
+   * \param[in] angle Ángulo de rotación
+   */
+  void setAngle(double angle) { mAngle = angle; }
+
+  double getOffsetX() { return mOffset[0]; }
+  double getOffsetY() { return mOffset[1]; }
+
+  /*!
+   * \brief Establece el punto de inserción del simbolo
+   * \param[in] dx
+   * \param[in] dy
+   */
+  void setOffset(double dx, double dy) { mOffset[0] = dx; mOffset[1] = dy; }
 
 };
 
+ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition);
 
 
 // clase base para las entidades gráficas. Una entidad punto que se dibuje heredará de GraphicEntity y de Point. 
@@ -394,7 +588,7 @@ private:
 
   std::shared_ptr<StylePen>     mStylePen;
   std::shared_ptr<StyleBrush>   mStyleBrush;
-  std::shared_ptr<StyleSimbol>  mStyleSimbol;
+  std::shared_ptr<StyleSymbol>  mStyleSimbol;
   std::shared_ptr<StyleLabel>   mStyleLabel;
 
 public:
@@ -402,6 +596,7 @@ public:
   GraphicEntity();
   ~GraphicEntity();
 
+  virtual void draw(cv::Mat &canvas) = 0;
 };
 
 

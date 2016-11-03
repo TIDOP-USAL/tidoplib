@@ -1,5 +1,6 @@
 #include "matching.h"
 
+#include "core\mathutils.h"
 #include "core\messages.h"
 #include "transform.h"
 

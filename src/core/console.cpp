@@ -1,12 +1,11 @@
+#include "console.h"
 
-
-#include "utils.h"
+#include "core\utils.h"
 
 #include <iostream>
 #include <string>
 #include <ctime>
 
-#include "console.h"
 //#include "bprinter\table_printer.h"
 
 

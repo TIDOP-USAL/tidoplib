@@ -1,15 +1,17 @@
 #include <iostream>
 #include <string>
+
 #include "opencv2/calib3d.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/core/utility.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui.hpp"
-#include "opencv2/core/utility.hpp"
-#include "opencv2/ximgproc/disparity_filter.hpp"
 #include "opencv2/features2d.hpp"
-#include "opencv2/xfeatures2d.hpp"
-#include "opencv2\sfm.hpp"
+#include "opencv2/sfm.hpp"
 #include <opencv2/viz.hpp>
+#include "opencv2/xfeatures2d.hpp"
+#include "opencv2/ximgproc/disparity_filter.hpp"
 
 #include <pcl/common/common_headers.h>
 #include <pcl/io/pcd_io.h>

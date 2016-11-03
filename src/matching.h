@@ -4,7 +4,7 @@
 #include "opencv2/features2d.hpp"
 
 #include "core\defs.h"
-#include "utils.h"
+#include "core\utils.h"
 #include "geometric_entities\window.h"
 
 namespace I3D

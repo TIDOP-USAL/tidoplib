@@ -7,7 +7,6 @@
 #include "opencv2/core/core.hpp"
 
 #include "core\defs.h"
-//#include "core\config.h"
 
 namespace I3D
 {
@@ -19,30 +18,88 @@ namespace I3D
 
 class I3D_EXPORT Color
 {
+
+private:
+
+  /*!
+   * \brief Color
+   */
   uint32_t mColor;
 
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   Color() : mColor(0) {}
   
+  /*!
+   * \brief Constructora de copia
+   * \param color Color como entero
+   */
+  Color(Color &color) : mColor(color.mColor) {}
+
+  /*!
+   * \brief Constructora
+   * \param color Color como entero
+   */
   Color(int color) : mColor(color) {}
   
+  /*!
+   * \brief Constructora RGBA
+   * \param red Componente roja
+   * \param green Componente verde
+   * \param blue Componente azul
+   * \param alpha Canal alfa
+   */
   Color(int red, int green, int blue, int alpha = 0);
   
+  /*!
+   * \brief Constructora
+   * \param color Color como cadena (hexadecimal)
+   */
   Color(const std::string &color);
 
+  /*!
+   * \brief Constructora
+   * \param color Color como cv::Scalar de OpenCV
+   */
   Color(const cv::Scalar &color);
 
+  /*!
+   * \brief Destructora
+   */
   ~Color() {}
   
+  /*!
+   * \brief Devuelve el valor de color para el tipo indicado
+   */
   template<typename T>
   T get() const;
 
+  /*!
+   * \brief Devuelve la componente azul
+   * \return Componente azul
+   */
   int getBlue();
+
+  /*!
+   * \brief Devuelve la componente verde
+   * \return Componente verde
+   */
   int getGreen(); 
+
+  /*!
+   * \brief Devuelve la componente roja
+   * \return Componente rojo
+   */
   int getRed();
+
+  /*!
+   * \brief Devuelve el canal alfa
+   * \return Canal alfa
+   */
   int getAlpha();
-private:
 
 };
 
@@ -83,7 +140,6 @@ T Color::get() const
 inline int I3D_EXPORT getBlue(int color)
 { 
   return Color(color).getBlue();
-  //return(color & 0xFF); 
 }
 
 /*!
@@ -94,7 +150,6 @@ inline int I3D_EXPORT getBlue(int color)
 inline int I3D_EXPORT getGreen(int color)
 { 
   return Color(color).getGreen();
-  //return((color & 0xFF00) >> 8); 
 }
 
 /*!
@@ -105,7 +160,6 @@ inline int I3D_EXPORT getGreen(int color)
 inline int I3D_EXPORT getRed(int color)
 { 
   return Color(color).getRed();
-  //return((color & 0xFF0000) >> 16); 
 }
 
 /*!
@@ -116,7 +170,6 @@ inline int I3D_EXPORT getRed(int color)
 inline int I3D_EXPORT getAlpha(int color)
 { 
   return Color(color).getAlpha();
-  //return((color & 0xFF000000) >> 24); 
 }
 
 /*!
@@ -144,7 +197,6 @@ inline void I3D_EXPORT intToRGB(int color, int *red, int *green, int *blue)
 inline int I3D_EXPORT rgbToInt(int red, int green, int blue)
 {
   return Color(red, green, blue).get<int>();
-  //return((blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000));
 }
 
 /*!
@@ -158,7 +210,6 @@ inline int I3D_EXPORT rgbToInt(int red, int green, int blue)
 inline int I3D_EXPORT rgbaToInt(int red, int green, int blue, int alpha)
 {
   return Color(red, green, blue,alpha).get<int>();
-  //return((blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000));
 }
 
 /*!

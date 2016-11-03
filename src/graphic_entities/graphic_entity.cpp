@@ -26,11 +26,11 @@ StyleBrush::~StyleBrush()
 
 /* ---------------------------------------------------------------------------------- */
 
-StyleSimbol::StyleSimbol()
+StyleSymbol::StyleSymbol()
 {
 }
 
-StyleSimbol::~StyleSimbol()
+StyleSymbol::~StyleSymbol()
 {
 }
 

@@ -6,7 +6,6 @@ namespace I3D
 Color::Color(int red, int green, int blue, int alpha) 
 {
   mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
-  //mColor = rgbaToInt(r, g, b, a);
 }
 
 Color::Color(const std::string &color) 

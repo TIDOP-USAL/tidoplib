@@ -383,6 +383,17 @@ public:
   void setValue(std::string value) { mDefValue = value; }
 };
 
+// Parametros de entrada:
+// in<<c:/in.txt
+// Parametros de salida
+// out<<c:/out.txt
+// Opciones:
+// -b
+// Opción con valores predefinidos
+// -a=VALUE2
+// Parametro
+// --p=value
+
 /*!
  * \brief Parser de los argumentos de entrada  de la consola
  */

@@ -1,5 +1,7 @@
 #include "fourier.h"
-#include "utils.h"
+
+#include "core\utils.h"
+#include "core\mathutils.h"
 
 namespace I3D
 {
