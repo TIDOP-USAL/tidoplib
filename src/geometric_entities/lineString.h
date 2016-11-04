@@ -1,10 +1,13 @@
 #ifndef I3D_LINESTRING_H
 #define I3D_LINESTRING_H
 
-#include "opencv2/core/core.hpp"
-#include "utils.h"
-#include "geometric_entities\window.h"
 #include <cstdarg>
+
+#include "opencv2/core/core.hpp"
+
+#include "core\utils.h"
+#include "geometric_entities\window.h"
+
 template <typename T>
 class I3D_EXPORT LineString 
 {

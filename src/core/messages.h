@@ -1,3 +1,8 @@
+/* 
+  Hay que añadir la posibilidad de añadir un handler personalizado para 
+  facilitar la inclusión de la librería en otros sistemas.
+*/
+
 #ifndef I3D_MESSAGES_H
 #define I3D_MESSAGES_H
 
@@ -9,8 +14,6 @@
 #include "core\defs.h"
 #include "core\config.h"
 #include "core\flags.h"
-
-//char *_msg(const char *msg, ...);
 
 namespace I3D
 {

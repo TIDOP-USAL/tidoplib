@@ -20,6 +20,13 @@
 #include <boost/thread/thread.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_types.h>
+	
+	
+//#include <xercesc/parsers/XercesDOMParser.hpp>
+//#include <xercesc/dom/DOM.hpp>
+//#include <xercesc/sax/HandlerBase.hpp>
+//#include <xercesc/util/XMLString.hpp>
+//#include <xercesc/util/PlatformUtils.hpp>
 
 // Cabeceras tidopLib
 #include "core\console.h"
@@ -29,13 +36,14 @@
 #include "linedetector.h"
 #include "img_processing.h"
 #include "matching.h"
+#include "transform.h"
 
 using namespace cv;
 using namespace optflow;
 using namespace I3D;
 using namespace cv::ximgproc;
 using namespace cv::xfeatures2d;
-
+//using namespace xercesc;
 
 static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
 {
@@ -45,6 +53,21 @@ static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatr
   fs["camera_matrix"] >> cameraMatrix;
   fs["distortion_coefficients"] >> distCoeffs;
   fs.release();
+}
+
+int getdir(const std::string _filename, std::vector<std::string> &files)
+{
+  ifstream myfile(_filename.c_str());
+  if (!myfile.is_open()) {
+    cout << "Unable to read file: " << _filename << endl;
+    exit(0);
+  } else {
+    size_t found = _filename.find_last_of("/\\");
+    std::string line_str, path_to_file = _filename.substr(0, found);
+    while ( getline(myfile, line_str) )
+      files.push_back(path_to_file+std::string("/")+line_str);
+  }
+  return 1;
 }
 
 namespace I3D
@@ -384,29 +407,40 @@ void VideoHelper::onStop()
 void VideoHelper::write()
 { 
   std::string name = outPath + "\\TowerDetected.xml";
-  cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::APPEND | cv::FileStorage::FORMAT_XML);
-  if (fs.isOpened()) {
-    fs << "Towers";
-    fs << "{";
-    for (size_t i = 0; i < framesSaved.size(); i++) {
+  //cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::APPEND | cv::FileStorage::FORMAT_XML);
+  //if (fs.isOpened()) {
+  //  fs << "Towers";
+  //  fs << "{";
+  //  for (size_t i = 0; i < framesSaved.size(); i++) {
 
-    fs << "Tower";
-    fs << "{" << "Frame" << framesSaved[i];
-    fs << "Bbox";
-    fs << "{" << "X1" << windowsSaved[i].pt1.x;
-    fs << "Y1" << windowsSaved[i].pt1.y;
-    fs << "X2" << windowsSaved[i].pt2.x;
-    fs << "y2" << windowsSaved[i].pt2.y << "}";
-    fs << "}";
-    }
-    fs << "}";
-  }
-  fs.release();
+  //  fs << "Tower";
+  //  fs << "{" << "Frame" << framesSaved[i];
+  //  fs << "Bbox";
+  //  fs << "{" << "X1" << windowsSaved[i].pt1.x;
+  //  fs << "Y1" << windowsSaved[i].pt1.y;
+  //  fs << "X2" << windowsSaved[i].pt2.x;
+  //  fs << "y2" << windowsSaved[i].pt2.y << "}";
+  //  fs << "}";
+  //  }
+  //  fs << "}";
+  //}
+  //fs.release();
 
-  //... FileStorage no es lo suficientemente flexible. O eso parece
-  //    De momento en fichero de texto.
+  ////... FileStorage no es lo suficientemente flexible. O eso parece
+  ////    De momento en fichero de texto.
+  //try {
+  //  XMLPlatformUtils::Initialize();
+  //} catch (const XMLException &e) {
+  //  char* message = XMLString::transcode(e.getMessage());
+  //  printError(message);
+  //  return;
+  //}
 
+  //XercesDOMParser *parser = new XercesDOMParser();
+  //parser->setValidationScheme(XercesDOMParser::Val_Never);
+  //parser->setDoNamespaces(true);    // optional
 
+  //XMLPlatformUtils::Terminate();
 }
 
 
@@ -468,7 +502,7 @@ int main(int argc, char** argv)
   strmVideo.addListener(&videoHelper);
   videoHelper.outPath = out_path;
 
-  strmVideo.run();
+  //strmVideo.run();
 
   
   // Se cargan datos de calibración de la cámara
@@ -497,7 +531,10 @@ int main(int argc, char** argv)
   //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00398.jpg",
   //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00399.jpg"
   //};
-  std::vector<std::string> images_paths = videoHelper.framesSaved;
+  std::vector<std::string> images_paths;
+  getdir( std::string("D:/Desarrollo/datos/TORRE_3D/PIX4D/video/Recorte_frames/frames.txt"), images_paths );
+
+  //std::vector<std::string> images_paths = videoHelper.framesSaved;
 
   //std::vector<WindowI> windows{
   //  WindowI(cv::Point(767, 47), cv::Point(845, 719)),
@@ -677,7 +714,7 @@ int main(int argc, char** argv)
       for(int x=0; x < wL.getWidth(); ++x) {
         vec_tmp(0) = x;
         vec_tmp(1) = y;
-        vec_tmp(2) = filtered_disp.at<__int16>(wL.pt1.y + y, wL.pt1.x + x);
+        vec_tmp(2) = disparity.at<__int16>(wL.pt1.y + y, wL.pt1.x + x);
         if (vec_tmp(2) == 0) continue;
         vec_tmp(3) = 1;
         vec_tmp = Q*vec_tmp;

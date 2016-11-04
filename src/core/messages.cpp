@@ -36,19 +36,6 @@ msgProperties GetMessageProperties( MessageLevel msgLevel )
   return msgTemplate[static_cast<int>(msgLevel)];
 }
 
-//char *_msg(const char *msg, ...)
-//{
-//  static char buf[500];
-//  memset(buf, 0, sizeof(buf));
-//  std::string aux(msg);
-//  replaceString(&aux, "% ", "%% " );
-//  va_list args;
-//  va_start(args, msg);
-//  vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-//  va_end(args);
-//  return buf;
-//}
-
 namespace I3D
 {
 

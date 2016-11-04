@@ -20,11 +20,6 @@
 namespace I3D
 {
 
-// forward declarations
-//class Line;
-
-//int svdinverse(double *a, int m, int n, double *b);
-
 /*! \defgroup trfGroup Transformaciones
  *  Transformaciones geométricas
  *  \{
@@ -102,9 +97,10 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  virtual bool compute(const std::vector<T> &v1, const std::vector<T> &v2) = 0;
+  virtual double compute(const std::vector<T> &v1, const std::vector<T> &v2, std::vector<double> *error = NULL) = 0;
 
   /*!
    * \brief Determina si el numero de puntos son suficientes para calcular la transformación
@@ -150,7 +146,11 @@ public:
    */
   transform_type getTransformType() { return mTrfType; }
 
-  double rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+  /*!
+   * root-mean-square error
+   * Raiz cuadrada de error cuadratico medio
+   */
+  double rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
   {
     size_t n = pts1.size();
     std::vector<T> ptsOut(n);
@@ -162,7 +162,8 @@ public:
       for (int i = 0; i < n; i++) {
         transform(pts1[i], &ptsOut[i]);
         ptsOut[i] -= pts2[i];
-        err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
+        //err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
+        err[i] = static_cast<double>((ptsOut[i]).dot(ptsOut[i]));
         sumErr += err[i];
       }
       if (error) *error = err;
@@ -191,6 +192,25 @@ protected:
     }
   }
 
+  double _rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
+  {
+    size_t n = pts1.size();
+    std::vector<T> ptsOut(n);
+    std::vector<double> err(n);
+    double sumErr = 0.;
+
+    for (int i = 0; i < n; i++) {
+      transform(pts1[i], &ptsOut[i]);
+      ptsOut[i] -= pts2[i];
+      //err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
+      err[i] = static_cast<double>(ptsOut[i].dot(ptsOut[i]));
+      sumErr += err[i];
+    }
+
+    if (error) *error = err;
+
+    return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
+  }
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -250,7 +270,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Aplica la transformación
@@ -306,11 +326,11 @@ T TrfMultiple<T>::transform(const T &in, bool bDirect = true) const
 }
 
 template<typename T> inline
-bool TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
   printError("'compute' no esta soportado para TrfMultiple");
   COMPILER_WARNING("'compute' no esta soportado para TrfMultiple")
-  return false;
+  return -1.;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -346,7 +366,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  virtual bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override = 0;
+  virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -398,7 +418,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Aplica la transformación
@@ -455,13 +475,14 @@ T TrfPerspective<T>::transform(const T &in, bool bDirect) const
 }
 
 template<typename T> inline
-bool TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
   H = cv::findHomography(pts1, pts2, cv::RANSAC);
   //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
   //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
   //cv::Mat H2 = cv::findHomography(pts1, pts2);
-  return H.empty() ? false : true;
+  //... determinar error
+  return H.empty() ? -1. : 1.;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -506,7 +527,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Devuelve el desplazamiento en x de la transformación
@@ -574,9 +595,9 @@ public:
 };
 
 template<typename T> inline
-bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool bret = false;
+  double ret = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
   if (n1 != n2) {
@@ -598,7 +619,6 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
           *pa++ = 0;
           *pa++ = 1;
           *pb++ = pts2[i].y;
-          bret = true;
         }
 
         cv::Mat A(m, n, CV_64F, a);
@@ -606,6 +626,9 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
         cv::solve(A, B, C, cv::DECOMP_SVD);
         translate.x = C.at<sub_type>(2);
         translate.y = C.at<sub_type>(3);
+
+        ret = _rootMeanSquareError(pts1, pts2, error);
+
       } catch (std::exception &e) {
         printError(e.what());
       }
@@ -613,7 +636,7 @@ bool Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
       delete[] b;
     }
   }
-  return bret;
+  return ret;
 }
 
 template<typename T> inline
@@ -732,7 +755,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Devuelve el ángulo de la rotación
@@ -790,9 +813,9 @@ private:
 };
 
 template<typename T> inline
-bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool bret = false;
+  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
   if (n1 != n2) {
@@ -810,7 +833,6 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
           *pa++ = pts1[i].y;
           *pa++ = pts1[i].x;
           *pb++ = pts2[i].y;
-          bret = true;
         }
         
         cv::Mat A(m, n, CV_64F, a);
@@ -819,6 +841,8 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
         r1 = C.at<sub_type>(0);
         r2 = C.at<sub_type>(1);
         angle = acos(r1);
+
+        rmse = _rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
         printError(e.what());
       }
@@ -826,7 +850,7 @@ bool Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2
       delete[] b;
     }
   }
-  return bret;
+  return rmse;
 }
 
 template<typename T> inline
@@ -968,7 +992,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -1047,9 +1071,9 @@ private:
 };
 
 template<typename T> inline
-bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool b_ret = true;
+  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
@@ -1085,6 +1109,8 @@ bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
 
         rotation = atan2(b, a);
         scale = sqrt(a*a + b*b);
+
+        rmse = _rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
         printError(e.what());
       }
@@ -1092,7 +1118,7 @@ bool Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts
       delete[] B;
     }
   }
-  return b_ret;
+  return rmse;
 }
 
 template<typename T> inline
@@ -1290,7 +1316,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -1376,9 +1402,9 @@ private:
 
 
 template<typename T> inline
-bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool b_ret = true;
+  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
@@ -1422,6 +1448,8 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
         mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
         mScaleX = sqrt(a*a + b*b);
         mScaleY = sqrt(c*c + d*d);
+
+        rmse = _rootMeanSquareError(pts1, pts2, error);
       }
       catch (std::exception &e) {
         printError(e.what());
@@ -1430,7 +1458,7 @@ bool Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
       delete[] B;
     }
   }
-  return b_ret;
+  return rmse;
 }
 
 template<typename T> inline
@@ -1658,7 +1686,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -1713,9 +1741,9 @@ private:
 
 
 template<typename T> inline
-bool Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool b_ret = true;
+  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
@@ -1760,15 +1788,17 @@ bool Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
         f = C.at<double>(5);
         g = C.at<double>(6);
         h = C.at<double>(7);
-      }
-      catch (std::exception &e) {
+
+        rmse = _rootMeanSquareError(pts1, pts2, error);
+
+      } catch (std::exception &e) {
         printError(e.what());
       }
       delete[] A;
       delete[] B;
     }
   }
-  return b_ret;
+  return rmse;
 }
 
 template<typename T> inline
@@ -1877,7 +1907,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  virtual bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override = 0;
+  virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación
@@ -1999,7 +2029,7 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
-  bool compute(const std::vector<T> &pts1, const std::vector<T> &pts2) override;
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -2081,70 +2111,70 @@ private:
 };
 
 template<typename T> inline
-bool Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2)
+double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  bool b_ret = true;
+  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 6;
-      //std::array<std::array<double, m>, n> A;
-      //std::array<double, m> B;
-      double *A = new double[m*n], *pa = A, *L = new double[m], *pb = L;
+    if (isNumberOfPointsValid(n1)) {
+      int m = n1 * mDimensions, n = 7;
+      double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
       cv::Mat C(n, 1, CV_64F);
       try {
         for (int i = 0; i < n1; i++) {
-          A[i][0] = pts1[i].x;
-          A[i][1] = 0;
-          A[i][2] = -pts1[i].z;
-          A[i][3] = pts1[i].y;
-          A[i][4] = 1;
-          A[i][5] = 0;
-          A[i][6] = 0;
-          L[i] = pts2[i].x;
-          i++;
-          A[i][0] = pts1[i].y;
-          A[i][1] = pts1[i].z;
-          A[i][2] = 0;
-          A[i][3] = -pts1[i].x;
-          A[i][4] = 0;
-          A[i][5] = 1;
-          A[i][6] = 0;
-          L[i] = pts2[i].y;
-          i++;
-          A[i][0] = pts1[i].z;
-          A[i][1] = -pts1[i].y;
-          A[i][2] = pts1[i].x;
-          A[i][3] = 0;
-          A[i][4] = 0;
-          A[i][5] = 0;
-          A[i][6] = 1;
-          L[i] = pts2[i].z;
+          *pa++ = pts1[i].x;
+          *pa++ = 0;
+          *pa++ = -pts1[i].z;
+          *pa++ = pts1[i].y;
+          *pa++ = 1;
+          *pa++ = 0;
+          *pa++ = 0;
+          *pl++ = pts2[i].x;
+          *pa++ = pts1[i].y;
+          *pa++ = pts1[i].z;
+          *pa++ = 0;
+          *pa++ = -pts1[i].x;
+          *pa++ = 0;
+          *pa++ = 1;
+          *pa++ = 0;
+          *pl++ = pts2[i].y;
+          *pa++ = pts1[i].z;
+          *pa++ = -pts1[i].y;
+          *pa++ = pts1[i].x;
+          *pa++ = 0;
+          *pa++ = 0;
+          *pa++ = 0;
+          *pa++ = 1;
+          *pl++ = pts2[i].z;
         }
 
         cv::Mat mA(m, n, CV_64F, A);
-        cv::Mat mB(m, 1, CV_64F, B);
+        cv::Mat mB(m, 1, CV_64F, L);
         cv::solve(mA, mB, C, DECOMP_SVD);
 
-        //a = C.at<double>(0);
-        //b = C.at<double>(1);
-        //x0 = C.at<sub_type>(2);
-        //y0 = C.at<sub_type>(3);
+        mScale = C.at<double>(0);
+        mOmega = C.at<double>(1);
+        mPhi = C.at<double>(2);
+        mKappa = C.at<double>(3);
+        x0 = C.at<double>(4);
+        y0 = C.at<double>(5);
+        z0 = C.at<double>(6);
 
-        //rotation = atan2(b, a);
-        //mScale = sqrt(a*a + b*b);
+        update();
+        
+        rmse = _rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
         printError(e.what());
       }
-      //delete[] A;
-      //delete[] B;
+      delete[] A;
+      delete[] L;
     }
   }
-  return b_ret;
+  return rmse;
 }
 
 template<typename T> inline
@@ -2165,9 +2195,7 @@ void Helmert3D<T>::transform(const T &in, T *out, bool bDirect) const
     out->y = static_cast<sub_type>( mScale * (ptAux.x*R[1][0] + ptAux.y*R[1][1] + ptAux.z*R[1][2]) + y0 );
     out->z = static_cast<sub_type>( mScale * (ptAux.x*R[2][0] + ptAux.y*R[2][1] + ptAux.z*R[2][2]) + z0 );
   } else {
-    //double det = a*a + b*b;
-    //out->x = static_cast<sub_type>((a*(x_aux - x0) + b*(in.y - y0)) / det);
-    //out->y = static_cast<sub_type>((-b*(x_aux - x0) + a*(in.y - y0)) / det);
+
   }
 }
 
@@ -2176,15 +2204,11 @@ T Helmert3D<T>::transform(const T &in, bool bDirect) const
 {
   T r_pt;
   if (bDirect){
-    //r_pt.x = static_cast<sub_type>(a * in.x - b * in.y + x0);
-    //r_pt.y = static_cast<sub_type>(b * in.x + a * in.y + y0);
     r_pt.x = static_cast<sub_type>( mScale * (in.x*R[0][0] + in.y*R[0][1] + in.z*R[0][2]) + x0 );
     r_pt.y = static_cast<sub_type>( mScale * (in.x*R[1][0] + in.y*R[1][1] + in.z*R[1][2]) + y0 );
     r_pt.z = static_cast<sub_type>( mScale * (in.x*R[2][0] + in.y*R[2][1] + in.z*R[2][2]) + z0 );
   } else {
-    double det = a*a + b*b;
-    //r_pt.x = static_cast<sub_type>((a*(in.x - x0) + b*(in.y - y0)) / det);
-    //r_pt.y = static_cast<sub_type>((-b*(in.x - x0) + a*(in.y - y0)) / det);
+
   }
   return r_pt;
 }
@@ -2202,25 +2226,18 @@ void Helmert3D<T>::setParameters(T x0, T y0, T z0, double scale, double omega, d
   update();
 }
 
-//template<typename T> inline
-//void Helmert3D<T>::setRotation(double rotation) 
-//{
-//  this->rotation = rotation;
-//  update();
-//}
-
 template<typename T> inline
 void Helmert3D<T>::setScale(double scale)
 {
   mScale = scale;
-  //update();
 }
 
 template<typename T> inline
 void Helmert3D<T>::update()
 {
-  rotationMatrix(mOmega, mPhi, mKappa, R);
+  rotationMatrix(mOmega, mPhi, mKappa, &R);
 }
+
 /*! \} */ // end of trf3DGroup
 
 /* ---------------------------------------------------------------------------------- */
