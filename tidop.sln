@@ -43,8 +43,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cloud_points", "apps\cloud_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "color_test", "test\color_test\color_test.vcxproj", "{67527D52-E5F1-4236-AC8D-E2C074303632}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "helmparms", "third_party\helmparms3d-code-12\helmparms\helmparms.vcxproj", "{38134670-A3B6-4600-90A5-9B3763FD2944}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -214,18 +212,6 @@ Global
 		{67527D52-E5F1-4236-AC8D-E2C074303632}.Release|Win32.ActiveCfg = Release|x64
 		{67527D52-E5F1-4236-AC8D-E2C074303632}.Release|x64.ActiveCfg = Release|x64
 		{67527D52-E5F1-4236-AC8D-E2C074303632}.Release|x64.Build.0 = Release|x64
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|Win32.ActiveCfg = Debug|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|Win32.Build.0 = Debug|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|x64.ActiveCfg = Debug|x64
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Debug|x64.Build.0 = Debug|x64
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|Win32.ActiveCfg = Release|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|Win32.Build.0 = Release|Win32
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|x64.ActiveCfg = Release|x64
-		{38134670-A3B6-4600-90A5-9B3763FD2944}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -247,6 +233,5 @@ Global
 		{9C5F42EC-D768-43FE-BED3-EA3C65608FE1} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{4E2451FE-7041-4B19-8B44-F8F40C309F81} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{67527D52-E5F1-4236-AC8D-E2C074303632} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
-		{38134670-A3B6-4600-90A5-9B3763FD2944} = {234D218C-F0FF-45E4-8F2B-88391E78F4F8}
 	EndGlobalSection
 EndGlobal

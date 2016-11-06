@@ -247,7 +247,7 @@ bool Progress::operator()(double increment)
 { 
   if (mProgress == 0) initialize();
   mProgress += increment;
-  int percent = static_cast<int>(round(mProgress * mScale));
+  int percent = I3D_ROUND_TO_INT(mProgress * mScale);
   if (percent > mPercent) {
     mPercent = percent;
     update();
@@ -320,7 +320,7 @@ void ProgressBar::update()
     Console console(Console::Mode::OUTPUT);
     if (bCustomConsole)
       console.setConsoleBackgroundColor(Console::Color::GREEN);
-    int posInBar = static_cast<int>(round(mPercent * mSize / 100.));
+    int posInBar = I3D_ROUND_TO_INT(mPercent * mSize / 100.);
 		
 		for (int a = 0; a < posInBar; a++) {
       if (bCustomConsole)

@@ -146,7 +146,7 @@ void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, 
   *degrees = static_cast<int>(decimalDegrees);
   double min = fabs(decimalDegrees - *degrees) * 60.;
   *minutes = static_cast<int>(min);
-  *seconds = static_cast<int>(round(fabs(min - *minutes) * 60.));
+  *seconds = I3D_ROUND_TO_INT(fabs(min - *minutes) * 60.);
 }
 
 double decimalDegreesToRadians(double decimalDegrees)

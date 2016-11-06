@@ -48,7 +48,7 @@
 #endif
 
         
-#if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3DAPI_EXPORTS
+#if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3D_API_EXPORTS
 #  define I3D_EXPORT __declspec(dllexport)
 //#elif defined __GNUC__ && __GNUC__ >= 4
 //#  define I3D_EXPORT __attribute__ ((visibility ("default")))
@@ -107,5 +107,14 @@
 #endif
 //__FUNCSIG__
 
+
+// MACROS
+
+/*!
+ * \brief Redondea un doble o float y ademas convierte a entero
+ * De esta forma se evita el warning C4244 (conversión de 'double' a 'int')
+ * y nos aseguramos de que redondee de la forma correcta.
+ */
+#define I3D_ROUND_TO_INT(n)  static_cast<int>(round(n))
 
 #endif // I3D_DEFS_H

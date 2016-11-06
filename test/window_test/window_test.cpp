@@ -120,7 +120,6 @@ TEST(WindowI, ConstructorVect) {
 TEST(WindowD, CopyConstructorDiff) {
   const WindowD w(cv::Point2d(0.5,0.4),cv::Point2d(100.6,100.4));
   WindowI w2(w);
-  int kk = w2.getKK();
   EXPECT_EQ( 1, w2.pt1.x);
   EXPECT_EQ( 0, w2.pt1.y);
   EXPECT_EQ( 101, w2.pt2.x);
