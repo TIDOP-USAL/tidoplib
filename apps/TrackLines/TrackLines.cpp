@@ -13,7 +13,7 @@
 // Cabeceras propias
 #include "LineDetector.h"
 #include "VideoStream.h"
-#include "utils.h"
+#include "core\utils.h"
 #include "matching.h"
 #include "fourier.h"
 #include "ImgProcessing.h"

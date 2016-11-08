@@ -210,6 +210,9 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
 
 void CmdParser::printHelp()
 {
+
+  //... Solución rapida. modificar
+
   //bprinter::TablePrinter tp(&std::cout);
   //tp.AddColumn("Name", 25);
   //tp.AddColumn("Optional", 10);
@@ -227,6 +230,12 @@ void CmdParser::printHelp()
   for (auto arg : mCmdArgs) {
      printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"),arg->getDescription().c_str());
   }
+  printf_s("Using:\n");
+  printf_s("%s", mCmdName.c_str());
+  for (auto arg : mCmdArgs) {
+    printf_s( " %s%s%s", ((ArgType::OPTION == arg->getType())? "-" : "--"), arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "" : "=[value]"));
+  }
+  printf_s("\n");
 }
 
 bool CmdParser::hasOption(const std::string &option) const
@@ -318,28 +327,75 @@ void ProgressBar::update()
     cout << "\r";
 
     Console console(Console::Mode::OUTPUT);
-    if (bCustomConsole)
-      console.setConsoleBackgroundColor(Console::Color::GREEN);
+  //  if (bCustomConsole)
+  //    console.setConsoleBackgroundColor(Console::Color::GREEN);
     int posInBar = I3D_ROUND_TO_INT(mPercent * mSize / 100.);
-		
-		for (int a = 0; a < posInBar; a++) {
-      if (bCustomConsole)
-        cout << " ";
-      else 
-        cout << "#";
-		}
-    if (bCustomConsole)
-      console.setConsoleBackgroundColor(Console::Color::YELLOW);
-		for (int b = 0; b < mSize - posInBar; b++) {
-      if (bCustomConsole)
-        cout << " ";
-      else 
-        cout << "-";
-		}
-    if (bCustomConsole) console.reset();
-    cout << " " << mPercent << "%  completed" << flush;
-  } else
+
+		//for (int a = 0; a < posInBar; a++) {
+  //    if (bCustomConsole) {
+  //      cout << " ";
+  //    } else {
+  //      cout << "#";
+  //    }
+		//}
+
+  //  if (bCustomConsole) console.setConsoleBackgroundColor(Console::Color::YELLOW);
+
+		//for (int b = 0; b < mSize - posInBar; b++) {
+  //    if (bCustomConsole) {
+  //      cout << " ";
+  //    } else {
+  //      cout << "-";
+  //    }
+		//}
+    int ini = mSize / 2 - 2;
+    for (int i = 0; i < mSize; i++) {
+      if (i < posInBar) {
+        if (bCustomConsole) {
+          console.setConsoleBackgroundColor(Console::Color::GREEN);
+          //cout << " ";
+        } else {
+          cout << "#";
+        }
+      } else {
+        if (bCustomConsole) {
+          console.setConsoleBackgroundColor(Console::Color::YELLOW);
+          //cout << " ";
+        } else {
+          cout << "-";
+        }
+      }
+      if (bCustomConsole) {
+        int nDigits = posInBar > 0 ? (int) log10 ((double) posInBar) + 1 : 1;
+        int n;
+        if (i == ini) {
+          n = mPercent / 100 % 10;
+          if ( n > 0 ) cout << n;
+          else cout << " ";
+        } else if (i == ini + 1) {
+          n = mPercent / 10 % 10;
+          if ( n > 0 || mPercent >= 10) cout << n;
+          else cout << " ";
+        } else if (i == ini + 2) {
+          n = mPercent % 10;
+          cout << n;
+        } else if (i == ini + 3) {
+          cout << "%";
+        } else {
+          cout << " ";
+        }
+      }
+    }
+
+
+    if (bCustomConsole) {
+      console.reset();
+    } else {
+      cout << " " << mPercent << "%  completed" << flush;
+    }
+  } else {
     onProgress(mPercent);
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */

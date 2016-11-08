@@ -314,21 +314,21 @@ public:
 
   ~VideoHelper() {}
 
-  void onFinish();
+  void onFinish() override;
 
-  void onInitialize();
+  void onInitialize() override;
 
-  void onPause();
+  void onPause() override;
 
-  void onPositionChange(double position);
+  void onPositionChange(double position) override;
 
-  void onRead(cv::Mat &frame);
+  void onRead(cv::Mat &frame) override;
 
-  void onResume();
+  void onResume() override;
 
-  void onShow(cv::Mat &frame);
+  void onShow(cv::Mat &frame) override;
 
-  void onStop();
+  void onStop() override;
 
   void write();
 };
@@ -502,7 +502,7 @@ int main(int argc, char** argv)
   strmVideo.addListener(&videoHelper);
   videoHelper.outPath = out_path;
 
-  //strmVideo.run();
+  //strmVideo.run(); // Lo comento para que no busque por ahora la zona de las torres
 
   
   // Se cargan datos de calibración de la cámara
@@ -520,6 +520,11 @@ int main(int argc, char** argv)
 
   std::vector<Mat> Rs_est, ts_est, points3d_estimated;
   Matx33d K = cameraMatrix;
+  //float f  = 1174.86, cx = 625.55, cy = 344.6;
+
+  //Matx33d K = Matx33d( f, 0, cx,
+  //                     0, f, cy,
+  //                     0, 0,  1);
 
   //std::vector<std::string> images_paths{
   //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00389.jpg",
@@ -532,7 +537,8 @@ int main(int argc, char** argv)
   //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00399.jpg"
   //};
   std::vector<std::string> images_paths;
-  getdir( std::string("D:/Desarrollo/datos/TORRE_3D/PIX4D/video/Recorte_frames/frames.txt"), images_paths );
+  //getdir( std::string("D:/Desarrollo/datos/TORRE_3D/pruebas/frames/frames.txt"), images_paths );
+  getdir( std::string("C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\dataset_files.txt"), images_paths );
 
   //std::vector<std::string> images_paths = videoHelper.framesSaved;
 
@@ -546,6 +552,7 @@ int main(int argc, char** argv)
   //  WindowI(cv::Point(572, 58), cv::Point(711, 719)),
   //  WindowI(cv::Point(563, 76), cv::Point(704, 718))
   //};
+
 
   std::vector<WindowI> windows = videoHelper.windowsSaved;
 
@@ -571,8 +578,8 @@ int main(int argc, char** argv)
 
   // guardamos las orientaciones y desplazamiento de las camaras.
   std::vector<Affine3d> path_est;
-  std::remove("D:\\Desarrollo\\datos\\TORRE_3D\\camaras.txt");
-  std::ofstream hPos("D:\\Desarrollo\\datos\\TORRE_3D\\camaras.txt",std::ofstream::app);
+  std::remove("D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\camaras.txt");
+  std::ofstream hPos("D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\camaras.txt",std::ofstream::app);
   for (size_t i = 0; i < Rs_est.size(); ++i) {
     
     if (hPos.is_open()) {
@@ -606,7 +613,40 @@ int main(int argc, char** argv)
 
   /* ---------------------------------------------------------------------------------- */
 
-  // Calculo de los mapas de disparidad
+  // Guardamos nube de puntos
+
+  // Crea nube de puntos
+  pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+
+  for (int i = 0; i < point_cloud_est.size(); i++) {
+    pcl::PointXYZ point;
+    point.x = point_cloud_est[i][0];
+    point.y = point_cloud_est[i][1];
+    point.z = point_cloud_est[i][2];
+    point_cloud_ptr->points.push_back(point);
+  }
+  point_cloud_ptr->width = (int)point_cloud_ptr->points.size();
+  point_cloud_ptr->height = 1;
+  std::string pcd_file = "D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\test_pcd.pcd";
+  pcl::io::savePCDFileASCII(pcd_file, *point_cloud_ptr);
+
+  std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
+    viewer->setBackgroundColor(0, 0, 0);
+    pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> rgb(point_cloud_ptr);
+    viewer->addPointCloud<pcl::PointXYZ> (point_cloud_ptr, rgb, "reconstruction");
+    viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, "reconstruction");
+    viewer->addCoordinateSystem( 1 );
+    viewer->initCameraParameters();
+
+    while (!viewer->wasStopped())
+    {
+      viewer->spinOnce(10); //100
+      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+    }
+
+  /* ---------------------------------------------------------------------------------- */
+
+/*  // Calculo de los mapas de disparidad
 
   // Mapa de disparidad para cada imagen
   int max_disp = 160;
@@ -746,6 +786,7 @@ int main(int argc, char** argv)
     point_cloud_ptr->width = (int)point_cloud_ptr->points.size();
     point_cloud_ptr->height = 1;
 
+    
 
     std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor(0, 0, 0);
@@ -767,7 +808,7 @@ int main(int argc, char** argv)
     pcl::io::savePCDFileASCII(cp, *point_cloud_ptr);
 
   }
-
+*/
 
   return 0;
 }

@@ -100,6 +100,7 @@
     <ClCompile Include="img_processing.cpp" />
     <ClCompile Include="linedetector.cpp" />
     <ClCompile Include="matching.cpp" />
+    <ClCompile Include="stereo\anaglyph.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="videostream.cpp" />
   </ItemGroup>
@@ -123,6 +124,7 @@
     <ClInclude Include="img_processing.h" />
     <ClInclude Include="linedetector.h" />
     <ClInclude Include="matching.h" />
+    <ClInclude Include="stereo\anaglyph.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="videostream.h" />
   </ItemGroup>

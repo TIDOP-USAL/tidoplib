@@ -464,27 +464,27 @@ public:
     return mWindowName;
   }
 
-  void onFinish()
+  void onFinish() override
   {
     VideoStream::Listener::onFinish(); 
   }
      
-  void onInitialize()
+  void onInitialize() override
   {
     VideoStream::Listener::onInitialize(); 
   }
 
-  void onPause()
+  void onPause() override
   {
     VideoStream::Listener::onPause(); 
   }
 
-  void onRead(cv::Mat &frame) 
+  void onRead(cv::Mat &frame) override 
   { 
     VideoStream::Listener::onRead(frame);
   }
 
-  void onPositionChange(double position) 
+  void onPositionChange(double position) override
   { 
     VideoStream::Listener::onPositionChange(position);
 
@@ -493,19 +493,19 @@ public:
       cv::setTrackbarPos("Frame", mWindowName, cvRound(position));
   }
 
-  void onResume()
+  void onResume() override
   {
     VideoStream::Listener::onResume(); 
   }
 
-  void onShow(cv::Mat &frame) 
+  void onShow(cv::Mat &frame) override
   { 
     VideoStream::Listener::onShow(frame);
     if ( !frame.empty() )
       cv::imshow(mWindowName, frame);
   }
 
-  void onStop()
+  void onStop() override
   { 
     VideoStream::Listener::onStop(); 
   }

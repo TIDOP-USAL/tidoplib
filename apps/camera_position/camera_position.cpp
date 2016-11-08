@@ -117,26 +117,26 @@ using namespace cv::xfeatures2d;
 
 static const char *img[] = { 
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h08m50s737.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h08m56s325.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m00s431.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h08m56s325.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m00s431.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m06s731.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m11s371.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m17s941.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m11s371.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m17s941.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m23s339.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m27s417.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m32s852.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m27s417.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m32s852.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m37s075.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m42s135.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m46s148.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m42s135.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m46s148.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m49s401.png",
- /* "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m55s406.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m00s108.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m55s406.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m00s108.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m06s073.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m10s846.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m15s090.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m10s846.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m15s090.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m22s543.png",
-  /*"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m27s912.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m32s618.png",*/
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m27s912.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m32s618.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m38s468.png"/*,
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m43s198.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m47s583.png",
@@ -259,63 +259,130 @@ int main(int argc, char** argv)
   char name1[I3D_MAX_PATH];
   char name2[I3D_MAX_PATH];
 
+  /*
+  for (int i = 1; i < size - 1; i++) {
+    Features2D ft1, ft2;
+    changeFileExtension(img[i-1], "xml", out);
+    ft1.read(out);
+    changeFileExtension(img[i], "xml", out);
+    ft2.read(out);
 
-  //for (int i = 1; i < size - 1; i++) {
-  //  Features2D ft1, ft2;
-  //  changeFileExtension(img[i-1], "xml", out);
-  //  ft1.read(out);
-  //  changeFileExtension(img[i], "xml", out);
-  //  ft2.read(out);
+    match.match(ft1, ft2, &matches);
 
-  //  match.match(ft1, ft2, &matches);
+    // Esto hay que hacerlo mejor
+    std::vector<DMatch> good_matches;
+    //match.getGoodMatches(&good_matches, 0.05);
+    match.getGoodMatches(ft1, ft2, &good_matches, 0.1);
 
-  //  // Esto hay que hacerlo mejor
-  //  std::vector<DMatch> good_matches;
-  //  match.getGoodMatches(&good_matches, 0.05);
+    getFileName(img[i-1], name1);
+    getFileName(img[i], name2);
 
-  //  getFileName(img[i-1], name1);
-  //  getFileName(img[i], name2);
+    sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
 
-  //  sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
+    progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
 
-  //  progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
+    std::vector<Point2f> pts1;
+    std::vector<Point2f> pts2;
+    int idx1, idx2;
+    for (size_t igm = 0; igm < good_matches.size(); igm++) {
+      idx1 = good_matches[igm].queryIdx;
+      idx2 = good_matches[igm].trainIdx;
 
-  //  std::vector<Point2f> pts1;
-  //  std::vector<Point2f> pts2;
-  //  int idx1, idx2;
-  //  for (size_t igm = 0; igm < good_matches.size(); igm++) {
-  //    idx1 = good_matches[igm].queryIdx;
-  //    idx2 = good_matches[igm].trainIdx;
+      //Busqueda de si ya esta añadido ese punto
+      bool addNew = true;
+      for (int j = 0; j < idx_pass_points.size(); j++) {
+        if (idx_pass_points[j][i - 1] == idx1 ) {
+          idx_pass_points[j][i] = idx2;
+          addNew = false;
+        } else if (idx_pass_points[j][i] == idx2) {
+          idx_pass_points[j][i - 1] = idx1;
+          addNew = false;
+        }
+      }
+      if (addNew) {
+        std::vector<int> v(size, -1);
+        v[i - 1] = idx1;
+        v[i] = idx2;
+        idx_pass_points.push_back(v);
 
-  //    //Busqueda de si ya esta añadido ese punto
-  //    bool addNew = true;
-  //    for (int j = 0; j < idx_pass_points.size(); j++) {
-  //      if (idx_pass_points[j][i - 1] == idx1 ) {
-  //        idx_pass_points[j][i] = idx2;
-  //        addNew = false;
-  //      } else if (idx_pass_points[j][i] == idx2) {
-  //        idx_pass_points[j][i - 1] = idx1;
-  //        addNew = false;
-  //      }
-  //    }
-  //    if (addNew) {
-  //      std::vector<int> v(size, -1);
-  //      v[i - 1] = idx1;
-  //      v[i] = idx2;
-  //      idx_pass_points.push_back(v);
+        std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
+        cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
+        cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
+        v_points[i - 1] = Vec2d(point1.x, point1.y);
+        v_points[i] = Vec2d(point2.x, point2.y);
+        pass_points.push_back(v_points);
+      }
+      progress_bar();
+    }
+  }
+  */
 
-  //      std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
-  //      cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
-  //      cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
-  //      v_points[i - 1] = Vec2d(point1.x, point1.y);
-  //      v_points[i] = Vec2d(point2.x, point2.y);
-  //      pass_points.push_back(v_points);
-  //    }
-  //    progress_bar();
-  //  }
-  //}
+  for (int i = 0; i < size - 1; i++) {
+    for (int j = i+1; j < size; j++) {
+      Features2D ft1, ft2;
+      changeFileExtension(img[i], "xml", out);
+      ft1.read(out);
+      changeFileExtension(img[j], "xml", out);
+      ft2.read(out);
 
-  //printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
+      match.match(ft1, ft2, &matches);
+
+      // Esto hay que hacerlo mejor
+      std::vector<DMatch> good_matches;
+      //match.getGoodMatches(&good_matches, 0.5);
+      match.getGoodMatches(ft1, ft2, &good_matches, 0.8);
+
+      // drawing the results
+      cv::Mat img_matches, img1, img2;
+      img1 = cv::imread(img[i]);
+      img2 = cv::imread(img[j]);
+      cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+
+      getFileName(img[i], name1);
+      getFileName(img[j], name2);
+
+      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
+
+      progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
+
+      std::vector<Point2f> pts1;
+      std::vector<Point2f> pts2;
+      int idx1, idx2;
+      for (size_t igm = 0; igm < good_matches.size(); igm++) {
+        idx1 = good_matches[igm].queryIdx;
+        idx2 = good_matches[igm].trainIdx;
+
+        //Busqueda de si ya esta añadido ese punto
+        bool addNew = true;
+        for (int k = 0; k < idx_pass_points.size(); k++) {
+          if (idx_pass_points[k][i] == idx1 ) {
+            idx_pass_points[k][j] = idx2;
+            addNew = false;
+          } else if (idx_pass_points[k][j] == idx2) {
+            idx_pass_points[k][i] = idx1;
+            addNew = false;
+          }
+        }
+        if (addNew) {
+          std::vector<int> v(size, -1);
+          v[i] = idx1;
+          v[j] = idx2;
+          idx_pass_points.push_back(v);
+
+          std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
+          cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
+          cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
+          v_points[i] = Vec2d(point1.x, point1.y);
+          v_points[j] = Vec2d(point2.x, point2.y);
+          pass_points.push_back(v_points);
+        }
+        progress_bar();
+      }
+    }
+  }
+
+  printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
 
 
   // Calculo de la posición de la camara
@@ -327,16 +394,16 @@ int main(int argc, char** argv)
 
   // Se necesita el modulo SFM(Structure from Motion) de OpenCV
   // Hay que volver a compilar con las dependencias Eigen, GLog, GFlags y Ceres Solver.
-  //std::vector<Mat> points2d;
-  //for (int i = 0; i < size; ++i) {
-  //    Mat_<double> frame(2, pass_points.size());
-  //    for (int j = 0; j < pass_points.size(); ++j)
-  //    {
-  //      frame(0,j) = pass_points[j][i][0];
-  //      frame(1,j) = pass_points[j][i][1];
-  //    }
-  //    points2d.push_back(Mat(frame));
-  //  }
+  std::vector<Mat> points2d;
+  for (int i = 0; i < size; ++i) {
+    Mat_<double> frame(2, pass_points.size());
+    for (int j = 0; j < pass_points.size(); ++j)
+    {
+      frame(0,j) = pass_points[j][i][0];
+      frame(1,j) = pass_points[j][i][1];
+    }
+    points2d.push_back(Mat(frame));
+  }
 
   Matx33d K = cameraMatrix;
 
@@ -347,9 +414,9 @@ int main(int argc, char** argv)
   getdir( argv[1], images_paths );
 
   try {
-    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
     bool is_projective = true;
-    cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
+    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated, is_projective);
+    //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {
     printError(e.what());
   } catch (std::exception &e) {

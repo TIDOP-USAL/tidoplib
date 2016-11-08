@@ -37,6 +37,12 @@
     <Filter Include="Archivos de código fuente\graphic_entities">
       <UniqueIdentifier>{6b7b45c7-c3a0-41cb-96db-6a3d7749c64b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\stereo">
+      <UniqueIdentifier>{f0ed6fbe-90d7-4a2d-8c7c-5c53396fa276}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\stereo">
+      <UniqueIdentifier>{c0688772-5546-4f7c-9804-ae9941b581d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geometric_entities\operations.cpp">
@@ -86,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="core\mathutils.cpp">
       <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
+    <ClCompile Include="stereo\anaglyph.cpp">
+      <Filter>Archivos de código fuente\stereo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="core\mathutils.h">
       <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
+    <ClInclude Include="stereo\anaglyph.h">
+      <Filter>Archivos de encabezado\stereo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
