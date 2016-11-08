@@ -477,11 +477,22 @@ T TrfPerspective<T>::transform(const T &in, bool bDirect) const
 template<typename T> inline
 double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
-  H = cv::findHomography(pts1, pts2, cv::RANSAC);
-  //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
-  //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
-  //cv::Mat H2 = cv::findHomography(pts1, pts2);
-  //... determinar error
+  if (error) error = NULL; // Habria que poder calcular el error
+  int n1 = static_cast<int>(pts1.size());
+  int n2 = static_cast<int>(pts2.size());
+  if (n1 != n2) {
+    printf("...");
+  } else {
+    // Controlar estos errores a nivel general
+    if (isNumberOfPointsValid(n1)) {
+
+      H = cv::findHomography(pts1, pts2, cv::RANSAC);
+      //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
+      //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
+      //cv::Mat H2 = cv::findHomography(pts1, pts2);
+      //... determinar error
+    }
+  }
   return H.empty() ? -1. : 1.;
 }
 
@@ -2017,7 +2028,7 @@ public:
   Helmert3D(T x0, T y0, T z0, double scale, double omega, double phi, double kappa) 
     : Transform3D(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
   {
-    uptate();
+    update();
   }
 
   //~Helmert3D();

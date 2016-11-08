@@ -39,6 +39,7 @@ int Features2D::detectKeyPoints(const cv::Mat &img, std::vector<cv::KeyPoint> *_
 void Features2D::calcDescriptor(const cv::Mat &img, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor)
 {
   if (mDescriptorExtractor) {
+    mDescriptor.resize(0);
     try{
       mDescriptorExtractor->compute(img, !_keyPoints ? mKeyPoints : *_keyPoints, mDescriptor);
     } catch (cv::Exception &e) {
