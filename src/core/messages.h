@@ -90,7 +90,7 @@ private:
   /*!
    * \brief Constructora Message
    */
-  Message() {};
+  Message();
 
 public:
 

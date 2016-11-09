@@ -125,6 +125,17 @@ static const char *img[] = {
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m23s339.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m27s417.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m32s852.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m37s075.png"
+
+  /*,"C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h08m50s737.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h08m56s325.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m00s431.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m06s731.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m11s371.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m17s941.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m23s339.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m27s417.png",
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m32s852.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m37s075.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m42s135.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h09m46s148.png",
@@ -137,7 +148,7 @@ static const char *img[] = {
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m22s543.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m27s912.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m32s618.png",
-  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m38s468.png"/*,
+  "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m38s468.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m43s198.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m47s583.png",
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h10m51s120.png",
@@ -330,14 +341,13 @@ int main(int argc, char** argv)
       // Esto hay que hacerlo mejor
       std::vector<DMatch> good_matches;
       //match.getGoodMatches(&good_matches, 0.5);
-      match.getGoodMatches(ft1, ft2, &good_matches, 0.8);
+      match.getGoodMatches(ft1, ft2, &good_matches, 1);
 
       // drawing the results
       cv::Mat img_matches, img1, img2;
       img1 = cv::imread(img[i]);
       img2 = cv::imread(img[j]);
       cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
-
 
       getFileName(img[i], name1);
       getFileName(img[j], name2);

@@ -28,16 +28,6 @@
 
 #if defined(I3D_MESSAGE_HANDLER) && defined(I3D_ENABLE_CONSOLE)
 
-//// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
-//int handleError( int status, const char* func_name,
-//            const char* err_msg, const char* file_name,
-//            int line, void* userdata )
-//{
-//    return 0;
-//}
-//
-//cv::redirectError(handleError);
-
 #endif
 
 

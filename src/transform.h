@@ -917,21 +917,19 @@ void Rotation<T>::update()
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief Helmert 2D
+ * \brief Tranformación Helmert 2D o transformación de semejanza
  *
- * El Helmert o Transformación de Semejanza expresa la relación que existe (o 
- * transformación que es preciso realizar)  entre dos sistemas cartesianos que 
- * discrepan en la situación del origen, en la orientación de los ejes y en la 
- * unidad de medida a lo largo de los mismos pero de manera que dicha variación 
- * en unidad de medida es constante a lo largo de cada eje y entre los dos ejes  
+ * Esta transformación expresa la relación que existe (o transformación que es 
+ * preciso realizar)  entre dos sistemas cartesianos que discrepan en la situación 
+ * del origen, en la orientación de los ejes y en la unidad de medida a lo largo 
+ * de los mismos pero de manera que dicha variación en unidad de medida es constante 
+ * a lo largo de cada eje y entre los dos ejes  
  *
- * <BLOCKQUOTE>
- *    a = scale * cos(rotation); <BR>
- *    b = scale * sin(rotation);
- *  
- *    x' = a * x + b * y + X0 <BR>
- *    y' = a * x - b * x + Y0
- * </BLOCKQUOTE>
+ * \f$ a = scale * cos(rotation)\f$<BR>
+ * \f$ b = scale * sin(rotation)\f$<BR>
+ *
+ * \f$ x' = a * x + b * y + X0\f$<BR>
+ * \f$ y' = a * x - b * x + Y0\f$
  */
 template<typename T>
 class I3D_EXPORT Helmert2D : public Transform2D<T>
@@ -1006,21 +1004,22 @@ public:
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
-  * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
-  * <H3>Ejemplo:</H3>
-  * \code
-  * Helmert2D<cv::Point2d> h2d(x0,y0, scale, rotation);
-  * std::vector<cv::Point2d> pts_in{ cv::Point2d(4157222.543, 664789.307),
-  *     cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
-  *     cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
-  *     cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) };
-  * std::vector<cv::Point2d> pts_out;
-  * h2d.transform(pts_in, &pts_out);
-  * \endcode
-  * \param[in] in Puntos de entrada
-  * \param[out] out Puntos de salida
-  * \param[in] bDirect Transformación directa
-  */
+   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
+   * \param[in] in Puntos de entrada
+   * \param[out] out Puntos de salida
+   * \param[in] bDirect Transformación directa
+   *  
+   * <H3>Ejemplo:</H3>
+   * \code
+   * Helmert2D<cv::Point2d> h2d(x0,y0, scale, rotation);
+   * std::vector<cv::Point2d> pts_in{ cv::Point2d(4157222.543, 664789.307),
+   *     cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
+   *     cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
+   *     cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) };
+   * std::vector<cv::Point2d> pts_out;
+   * h2d.transform(pts_in, &pts_out);
+   * \endcode
+   */
   void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
 
   /*!
@@ -1214,15 +1213,13 @@ void Helmert2D<T>::update()
  * mismos de manera que dicha variación en unidad de medida es constante a lo largo 
  * de cada eje pero no entre los dos ejes.
  *
- * <BLOCKQUOTE>
- *    a =  scaleX * cos(rotation); <BR>
- *    b =  scaleX * sin(rotation); <BR>
- *    c = -scaleY * sin(rotation); <BR>
- *    d =  scaleY * cos(rotation);
+ * \f$ a = scaleX * cos(rotation)\f$<BR>
+ * \f$ b = scaleX * sin(rotation)\f$<BR>
+ * \f$ c = -scaleY * sin(rotation)\f$<BR>
+ * \f$ d =  scaleY * cos(rotation)\f$<BR>
  *
- *    x' = a * x + b * y + X0 <BR>
- *    y' = d * y + c * x + Y0
- * </BLOCKQUOTE>
+ * \f$ x' = a * x + b * y + x0\f$<BR>
+ * \f$ y' = d * y + c * x + y0\f$
  */
 template<typename T>
 class I3D_EXPORT Afin : public Transform2D<T>

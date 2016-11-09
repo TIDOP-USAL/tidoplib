@@ -68,8 +68,17 @@ int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
  * \brief Separa una cadena en un array de enteros
  * \param[in] cad Cadena de texto que contiene una lista de numeros
  * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena
+ * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string aux = "1102,3654";
+ * std::vector<int> coord;
+ * if ( splitToNumbers(aux, coord) == 0 ){
+ *   ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs = ",");
 
@@ -77,8 +86,17 @@ int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, ch
  * \brief Separa una cadena en un array de dobles
  * \param[in] cad Cadena de texto que contiene una lista de numeros
  * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena
+ * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string aux = "1102.52,3654.95";
+ * std::vector<double> coord;
+ * if ( splitToNumbers(aux, coord) == 0 ){
+ *   ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs = ",");
 
@@ -160,19 +178,20 @@ int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, ch
 /*!
  * \brief Separa una cadena
  *
- * Ejemplo:
+ * \param[in] in Cadena de entrada
+ * \param[out] out vector con las cadenas resultantes
+ * \param[in] chs cadena de separación. Si se omite toma por defecto ","
+ * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
  * \code
  * char *in = "cadena1,cadena2";
  * std::vector<std::string> out;
  *
- * if ( split(in, &out, ",") == 0 ){
+ * if ( split(in, out, ",") == 0 ){
  * ...
  * }
  * \endcode
- * \param[in] in Cadena de entrada
- * \param[out] out vector con las cadenas resultantes
- * \param[in] chs cadena de separación
- * \return (1) error
  */
 int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, char *chs = ",");
 

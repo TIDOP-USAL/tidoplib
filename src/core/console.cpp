@@ -1,13 +1,11 @@
 #include "console.h"
 
+#include "core\config.h"
 #include "core\utils.h"
 
 #include <iostream>
 #include <string>
 #include <ctime>
-
-//#include "bprinter\table_printer.h"
-
 
 using namespace I3D;
 using namespace std;

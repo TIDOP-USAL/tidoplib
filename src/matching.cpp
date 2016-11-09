@@ -119,11 +119,11 @@ int Matching::match(const Features2D &feat1, const Features2D &feat2, std::vecto
 
 void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 {
-  if (!mMatches.empty()) {
+  if (!mMatches.empty() && gm) {
     std::vector<cv::DMatch> match_aux = mMatches;
     sortVector(&match_aux);
     double min_dist = match_aux.front().distance;
-
+    
     for (int i = 0; i < match_aux.size(); i++) {
       if (match_aux[i].distance <= std::max(2 * min_dist, ratio)) {
         gm->push_back(match_aux[i]);
@@ -134,11 +134,10 @@ void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 
 void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio) const
 {
-  if (!mMatches.empty()) {
+  if (!mMatches.empty() && gm) {
     // Para hacer un primer filtrado
     getGoodMatches(gm, ratio);
     if (gm && gm->empty()) *gm = mMatches;
-
     size_t nPoints = gm->size();
     std::vector<cv::Point2f> pts1(nPoints);
     std::vector<cv::Point2f> pts2(nPoints);
@@ -190,6 +189,40 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
 //      goodMatches->push_back(*itM);
 //    }
 //  }
+//}
+
+//void ransacTest(const std::vector<cv::DMatch> matches,const std::vector<cv::KeyPoint>&keypoints1,const std::vector<cv::KeyPoint>& keypoints2,std::vector<cv::DMatch>& goodMatches,double distance,double confidence,double minInlierRatio)
+//{
+//    goodMatches.clear();
+//    // Convert keypoints into Point2f
+//    std::vector<cv::Point2f> points1, points2;
+//    for (std::vector<cv::DMatch>::const_iterator it= matches.begin();it!= matches.end(); ++it)
+//    {
+//        // Get the position of left keypoints
+//        float x= keypoints1[it->queryIdx].pt.x;
+//        float y= keypoints1[it->queryIdx].pt.y;
+//        points1.push_back(cv::Point2f(x,y));
+//        // Get the position of right keypoints
+//        x= keypoints2[it->trainIdx].pt.x;
+//        y= keypoints2[it->trainIdx].pt.y;
+//        points2.push_back(cv::Point2f(x,y));
+//    }
+//    // Compute F matrix using RANSAC
+//    std::vector<uchar> inliers(points1.size(),0);
+//    cv::Mat fundemental= cv::findFundamentalMat(cv::Mat(points1),cv::Mat(points2),inliers,CV_FM_RANSAC,distance,confidence); // confidence probability
+//    // extract the surviving (inliers) matches
+//    std::vector<uchar>::const_iterator
+//    itIn= inliers.begin();
+//    std::vector<cv::DMatch>::const_iterator
+//    itM= matches.begin();
+//    // for all matches
+//    for ( ;itIn!= inliers.end(); ++itIn, ++itM)
+//    {
+//        if (*itIn)
+//        { // it is a valid match
+//            goodMatches.push_back(*itM);
+//        }
+//    }
 //}
 
 //cv::Mat *Matching::GetHomography()

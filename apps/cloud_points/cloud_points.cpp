@@ -21,7 +21,6 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_types.h>
 	
-	
 //#include <xercesc/parsers/XercesDOMParser.hpp>
 //#include <xercesc/dom/DOM.hpp>
 //#include <xercesc/sax/HandlerBase.hpp>
@@ -70,6 +69,28 @@ int getdir(const std::string _filename, std::vector<std::string> &files)
   return 1;
 }
 
+
+void getTowerImageAndWindow(const char * file, std::vector<std::string> &images_paths, std::vector<WindowI> &windows) 
+{
+  std::ifstream read_handler(file, std::ifstream::in);
+  if (!read_handler.is_open()) {
+    consolePrintInfo("Unable to read file: %s", file);
+  } else {
+    std::string line;
+    std::vector<std::string> out;
+    while (!read_handler.eof()) {
+      read_handler >> line;
+      if (split(line, out, "|") == 0) {
+        images_paths.push_back(out[0]);
+        std::vector<int> coord;
+        if (splitToNumbers(out[1], coord, ";") == 0) {
+          windows.push_back(WindowI(cv::Point(coord[0], coord[1]), cv::Point(coord[2], coord[3])));
+        }
+      }
+    }
+  }
+}
+
 namespace I3D
 {
 
@@ -86,7 +107,7 @@ void DetectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<l
   groupLinesByDist(pLineDetector->getLines(), linesGroup, 10);
 
   // Se eliminan los grupos con pocas lineas
-  delLinesGroupBySize(linesGroup,10);
+  delLinesGroupBySize(linesGroup,5);
 }
 
 void DetectTransmissionTower::computeOpticalFlow(const cv::Mat &img1, const cv::Mat &img2, cv::Mat_<cv::Point2f> *flow)
@@ -100,9 +121,9 @@ bool DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::
   cv::Size sz = img1.size(); 
   img1.copyTo(*imgout);
   
-  //Ventana en la cual se van a buscar los apoyos
-  WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
-  ws = expandWindow(ws, -100, 0);
+  ////Ventana en la cual se van a buscar los apoyos
+  //WindowI ws(cv::Point(0, 0), cv::Point(sz.width, sz.height));
+  //ws = expandWindow(ws, -100, 0);
 
   cv::Mat image1, image2;
 
@@ -212,7 +233,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       if (ang > I3D_PI / 2)  ang = ang - I3D_PI;
       else if (ang < -I3D_PI / 2) ang = ang + I3D_PI;
       // tolerancia de inclinación del eje del apoyo respecto a la vertical -> 0.1
-      if (ang <= 0.1 && ang >= -0.1) {
+      if (ang <= 0.2 && ang >= -0.2) {
         printVerbose("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
 
          // Busqueda del máximo valor de desplazamiento
@@ -302,6 +323,8 @@ public:
   std::vector<std::string> framesSaved;
   std::vector<WindowI> windowsSaved;
 
+  //DOMImplementation *impl;
+
 public:
 
   VideoHelper(DetectTransmissionTower *detectTower) 
@@ -309,7 +332,7 @@ public:
     mDetectTower = detectTower;
     mCurrentPosition = 0.;
     outPath = "";
-    outFile = "TowerDetected.xml";
+    outFile = "TowerDetected.txt";
   }
 
   ~VideoHelper() {}
@@ -351,10 +374,6 @@ void VideoHelper::onInitialize()
   } else {
     createDir(outPath.c_str());
   }
-  outFile = outPath + "\\TowerDetected.txt";
-  // Para limpiar el fichero se carga sin la opción append
-  cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML);
-  fs.release();
 }
 
 void VideoHelper::onPause()
@@ -378,7 +397,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     frame.copyTo(mFramePrev);
     if (bTower) {
       char buffer[I3D_MAX_PATH];
-      sprintf_s(buffer, "%s\\Apoyo_%05i.jpg", outPath.c_str(), cvRound(mCurrentPosition));
+      sprintf_s(buffer, "%s\\Apoyo_%05i.png", outPath.c_str(), cvRound(mCurrentPosition));
       cv::imwrite(buffer, out);
       
       framesSaved.push_back(std::string(buffer));
@@ -406,43 +425,124 @@ void VideoHelper::onStop()
 
 void VideoHelper::write()
 { 
-  std::string name = outPath + "\\TowerDetected.xml";
-  //cv::FileStorage fs(outFile.c_str(), cv::FileStorage::WRITE | cv::FileStorage::APPEND | cv::FileStorage::FORMAT_XML);
-  //if (fs.isOpened()) {
-  //  fs << "Towers";
-  //  fs << "{";
-  //  for (size_t i = 0; i < framesSaved.size(); i++) {
-
-  //  fs << "Tower";
-  //  fs << "{" << "Frame" << framesSaved[i];
-  //  fs << "Bbox";
-  //  fs << "{" << "X1" << windowsSaved[i].pt1.x;
-  //  fs << "Y1" << windowsSaved[i].pt1.y;
-  //  fs << "X2" << windowsSaved[i].pt2.x;
-  //  fs << "y2" << windowsSaved[i].pt2.y << "}";
-  //  fs << "}";
-  //  }
-  //  fs << "}";
-  //}
-  //fs.release();
-
-  ////... FileStorage no es lo suficientemente flexible. O eso parece
-  ////    De momento en fichero de texto.
-  //try {
-  //  XMLPlatformUtils::Initialize();
-  //} catch (const XMLException &e) {
-  //  char* message = XMLString::transcode(e.getMessage());
-  //  printError(message);
-  //  return;
-  //}
-
-  //XercesDOMParser *parser = new XercesDOMParser();
-  //parser->setValidationScheme(XercesDOMParser::Val_Never);
-  //parser->setDoNamespaces(true);    // optional
-
-  //XMLPlatformUtils::Terminate();
+  char buffer[I3D_MAX_PATH];
+  sprintf_s(buffer, "%s\\%s", outPath.c_str(), outFile.c_str());
+  std::string name = outPath + "\\TowerDetected.txt";
+  std::remove(buffer);
+  std::ofstream hWrite(buffer);
+  for (size_t i = 0; i < framesSaved.size(); ++i) {
+    
+    if (hWrite.is_open()) {
+      hWrite << framesSaved[i].c_str() << "|" << windowsSaved[i].pt1.x <<  ";" << windowsSaved[i].pt1.y <<  ";" << windowsSaved[i].pt2.x <<  ";" << windowsSaved[i].pt2.y << "\n";
+    }
+  }
+  hWrite.close();
 }
 
+void reconstruct(std::vector<std::string> &images_paths, std::vector<Mat> &points2d)
+{
+  std::vector<std::vector<int> > idx_pass_points;
+  // Puntos de paso
+  std::vector<std::vector<Vec2d> > pass_points;
+  std::vector<DMatch> matches;
+  
+  char out[I3D_MAX_PATH];
+  char buf[I3D_MAX_PATH];
+  char name1[I3D_MAX_PATH];
+  char name2[I3D_MAX_PATH];
+
+  cv::Ptr<cv::FeatureDetector> fd = SURF::create();
+  cv::Ptr<cv::DescriptorExtractor> de = SURF::create();
+  Features2D features(fd, de);
+  Matching match(cv::DescriptorMatcher::create("FlannBased"));
+
+  size_t size = images_paths.size();
+  for (int i = 0; i < size - 1; i++) {
+    for (int j = i+1; j < size; j++) {
+      Features2D ft1, ft2;
+      changeFileExtension(images_paths[i].c_str(), "xml", out);
+      ft1.read(out);
+      changeFileExtension(images_paths[j].c_str(), "xml", out);
+      ft2.read(out);
+
+      match.match(ft1, ft2, &matches);
+
+      std::vector<DMatch> good_matches;
+      //match.getGoodMatches(&good_matches, 0.5);
+      match.getGoodMatches(ft1, ft2, &good_matches, 1);
+
+      // drawing the results
+      cv::Mat img_matches, img1, img2;
+      img1 = cv::imread(images_paths[i].c_str());
+      img2 = cv::imread(images_paths[j].c_str());
+      cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+      getFileName(images_paths[i].c_str(), name1);
+      getFileName(images_paths[j].c_str(), name2);
+
+      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
+
+      //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
+
+      std::vector<Point2f> pts1;
+      std::vector<Point2f> pts2;
+      int idx1, idx2;
+      for (size_t igm = 0; igm < good_matches.size(); igm++) {
+        idx1 = good_matches[igm].queryIdx;
+        idx2 = good_matches[igm].trainIdx;
+
+        //Busqueda de si ya esta añadido ese punto
+        bool addNew = true;
+        for (int k = 0; k < idx_pass_points.size(); k++) {
+          if (idx_pass_points[k][i] == idx1 ) {
+            idx_pass_points[k][j] = idx2;
+            addNew = false;
+          } else if (idx_pass_points[k][j] == idx2) {
+            idx_pass_points[k][i] = idx1;
+            addNew = false;
+          }
+        }
+        if (addNew) {
+          std::vector<int> v(size, -1);
+          v[i] = idx1;
+          v[j] = idx2;
+          idx_pass_points.push_back(v);
+
+          std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
+          cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
+          cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
+          v_points[i] = Vec2d(point1.x, point1.y);
+          v_points[j] = Vec2d(point2.x, point2.y);
+          pass_points.push_back(v_points);
+        }
+        //progress_bar();
+      }
+    }
+  }
+
+  printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
+
+
+  // Calculo de la posición de la camara
+  // http://docs.opencv.org/3.1.0/d5/dab/tutorial_sfm_trajectory_estimation.html
+  // En primer lugar en el ejemplo parsea un archivo y lo almacena como std::vector<Mat> points2d;
+  // Seria interesante leer y escribir este archivo
+  // Despues establece ls matriz de calibración de la camara.
+  // Luego llama a la función reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated, is_projective);
+
+  // Se necesita el modulo SFM(Structure from Motion) de OpenCV
+  // Hay que volver a compilar con las dependencias Eigen, GLog, GFlags y Ceres Solver.
+  
+  for (int i = 0; i < size; ++i) {
+    Mat_<double> frame(2, pass_points.size());
+    for (int j = 0; j < pass_points.size(); ++j)
+    {
+      frame(0,j) = pass_points[j][i][0];
+      frame(1,j) = pass_points[j][i][1];
+    }
+    points2d.push_back(Mat(frame));
+  }
+}
 
 
 int main(int argc, char** argv)
@@ -476,14 +576,14 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  strmVideo.setSkipFrames(1);
+  strmVideo.setSkipFrames(3);
 
   //VideoWindow vc("Cloud Points", WINDOW_AUTOSIZE);
   //vc.setVideo(&strmVideo);
 
   // Se crea el detector
   double angle = 0;
-  double tol = 0.25;
+  double tol = 0.3;
   LD_TYPE ls = LD_TYPE::HOUGHP;
   std::unique_ptr<LineDetector> oLD;
   cv::Scalar ang_tol(angle, tol);
@@ -504,7 +604,6 @@ int main(int argc, char** argv)
 
   //strmVideo.run(); // Lo comento para que no busque por ahora la zona de las torres
 
-  
   // Se cargan datos de calibración de la cámara
   //bool bCalibratedCamera = true;
   //if (bCalibratedCamera) {
@@ -512,8 +611,8 @@ int main(int argc, char** argv)
   //}
   Size imageSize;
   Mat cameraMatrix, distCoeffs;
-  //std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
-  std::string file = "D://Desarrollo//datos//TORRE_3D//calib.xml";
+  std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
+  //std::string file = "D://Desarrollo//datos//TORRE_3D//calib.xml";
 
   LoadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
   // Supongo que ya tengo los grupos de imagenes correspondientes a cada torre.
@@ -537,8 +636,11 @@ int main(int argc, char** argv)
   //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00399.jpg"
   //};
   std::vector<std::string> images_paths;
+  std::vector<WindowI> windows;
+  std::string file2 = out_path + "//TowerDetected.txt";
+  getTowerImageAndWindow(file2.c_str(), images_paths, windows );
   //getdir( std::string("D:/Desarrollo/datos/TORRE_3D/pruebas/frames/frames.txt"), images_paths );
-  getdir( std::string("C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\dataset_files.txt"), images_paths );
+  //getdir( std::string("C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\dataset_files.txt"), images_paths );
 
   //std::vector<std::string> images_paths = videoHelper.framesSaved;
 
@@ -553,15 +655,13 @@ int main(int argc, char** argv)
   //  WindowI(cv::Point(563, 76), cv::Point(704, 718))
   //};
 
-
-  std::vector<WindowI> windows = videoHelper.windowsSaved;
-
   //LoadImages(std::string("D://Desarrollo//datos//cloud_points//Villaseca//TowerDetect01.xml"), images_paths, windows);
-
+  std::vector<Mat> points2d;
   try {
-    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
-    bool is_projective = true;
-    cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
+    reconstruct(images_paths, points2d);
+    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
+    //bool is_projective = true;
+    //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {
     printError(e.what());
   } catch (std::exception &e) {
@@ -614,10 +714,13 @@ int main(int argc, char** argv)
   /* ---------------------------------------------------------------------------------- */
 
   // Guardamos nube de puntos
-
+#ifdef _DEBUG
+  double startTick, time;
+  startTick = (double)cv::getTickCount(); // measure time
+#endif
   // Crea nube de puntos
   pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-
+  //point_cloud_ptr->points.resize(point_cloud_est.size());
   for (int i = 0; i < point_cloud_est.size(); i++) {
     pcl::PointXYZ point;
     point.x = point_cloud_est[i][0];
@@ -629,7 +732,10 @@ int main(int argc, char** argv)
   point_cloud_ptr->height = 1;
   std::string pcd_file = "D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\test_pcd.pcd";
   pcl::io::savePCDFileASCII(pcd_file, *point_cloud_ptr);
-
+#ifdef _DEBUG
+  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
+  printf("\nTime Creación nube de puntos [s]: %.3f\n", time);
+#endif
   std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor(0, 0, 0);
     pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> rgb(point_cloud_ptr);
