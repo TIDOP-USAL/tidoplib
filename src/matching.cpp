@@ -119,6 +119,7 @@ int Matching::match(const Features2D &feat1, const Features2D &feat2, std::vecto
 void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 {
   if (!mMatches.empty() && gm) {
+    gm->clear();
     std::vector<cv::DMatch> match_aux = mMatches;
     sortVector(&match_aux);
     double min_dist = match_aux.front().distance;
@@ -164,72 +165,40 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
   }
 }
 
-//void  Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector<cv::DMatch> *goodMatches, double distance, double confidence, double minInlierRatio) const
-//{
-//  std::vector<cv::DMatch> match_aux = matches;
-//  //goodMatches.clear();
-//  // Convert keypoints into Point2f
-//  std::vector<cv::Point2f> points1, points2;
-//  for (std::vector<cv::DMatch>::const_iterator it = match_aux.begin(); it != match_aux.end(); ++it) {
-//    points1.push_back(feat1.getKeyPoint(it->queryIdx));
-//    points2.push_back(feat2.getKeyPoint(it->queryIdx));
-//  }
-//  // Compute F matrix using RANSAC
-//  std::vector<uchar> inliers(points1.size(), 0);
-//  cv::Mat fundamental = cv::findFundamentalMat(cv::Mat(points1), cv::Mat(points2), inliers, CV_FM_RANSAC, distance, confidence); // confidence probability
-//  // extract the surviving (inliers) matches
-//  std::vector<uchar>::const_iterator
-//    itIn = inliers.begin();
-//  std::vector<cv::DMatch>::const_iterator
-//    itM = match_aux.begin();
-//  // for all matches
-//  for (; itIn != inliers.end(); ++itIn, ++itM) {
-//    if (*itIn) { // it is a valid match
-//      goodMatches->push_back(*itM);
-//    }
-//  }
-//}
+void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const
+{
+#ifdef _DEBUG
+  double startTick, time;
+  startTick = (double)cv::getTickCount(); // measure time
+#endif
+  if (!mMatches.empty() && gm) {
+    gm->clear();
+    size_t nPoints = mMatches.size();
+    std::vector<cv::Point2f> pts1(nPoints);
+    std::vector<cv::Point2f> pts2(nPoints);
 
-//void ransacTest(const std::vector<cv::DMatch> matches,const std::vector<cv::KeyPoint>&keypoints1,const std::vector<cv::KeyPoint>& keypoints2,std::vector<cv::DMatch>& goodMatches,double distance,double confidence,double minInlierRatio)
-//{
-//    goodMatches.clear();
-//    // Convert keypoints into Point2f
-//    std::vector<cv::Point2f> points1, points2;
-//    for (std::vector<cv::DMatch>::const_iterator it= matches.begin();it!= matches.end(); ++it)
-//    {
-//        // Get the position of left keypoints
-//        float x= keypoints1[it->queryIdx].pt.x;
-//        float y= keypoints1[it->queryIdx].pt.y;
-//        points1.push_back(cv::Point2f(x,y));
-//        // Get the position of right keypoints
-//        x= keypoints2[it->trainIdx].pt.x;
-//        y= keypoints2[it->trainIdx].pt.y;
-//        points2.push_back(cv::Point2f(x,y));
-//    }
-//    // Compute F matrix using RANSAC
-//    std::vector<uchar> inliers(points1.size(),0);
-//    cv::Mat fundemental= cv::findFundamentalMat(cv::Mat(points1),cv::Mat(points2),inliers,CV_FM_RANSAC,distance,confidence); // confidence probability
-//    // extract the surviving (inliers) matches
-//    std::vector<uchar>::const_iterator
-//    itIn= inliers.begin();
-//    std::vector<cv::DMatch>::const_iterator
-//    itM= matches.begin();
-//    // for all matches
-//    for ( ;itIn!= inliers.end(); ++itIn, ++itM)
-//    {
-//        if (*itIn)
-//        { // it is a valid match
-//            goodMatches.push_back(*itM);
-//        }
-//    }
-//}
+    for (size_t igm = 0; igm < nPoints; igm++) {
+      pts1[igm] = feat1.getKeyPoint(mMatches[igm].queryIdx).pt;
+      pts2[igm] = feat2.getKeyPoint(mMatches[igm].trainIdx).pt;
+    }
 
-//cv::Mat *Matching::GetHomography()
-//{
-//  if (matches){
-//    return cv::findHomography(obj, scene, cv::RANSAC);
-//  }
-//  else return NULL;
-//}
+    std::vector<uchar> inliers(nPoints, 0);
+    cv::Mat fundamental = cv::findFundamentalMat(cv::Mat(pts1), cv::Mat(pts2), inliers, CV_FM_RANSAC, distance, confidence);
+
+    std::vector<uchar>::const_iterator itIn = inliers.begin();
+
+    std::vector<cv::DMatch>::const_iterator itM = mMatches.begin();
+
+    for (; itIn != inliers.end(); ++itIn, ++itM) {
+      if (*itIn) { 
+        gm->push_back(*itM);
+      }
+    }
+  }
+#ifdef _DEBUG
+  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
+  printf("\nTime ldHouhP [s]: %.3f\n", time);
+#endif
+}
 
 } // End namespace I3D

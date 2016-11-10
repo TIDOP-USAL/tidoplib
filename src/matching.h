@@ -239,7 +239,7 @@ public:
   void getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio = 0.1) const;
 
   // http://stackoverflow.com/questions/17967950/improve-matching-of-feature-points-with-opencv
-  // void getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector<cv::DMatch> *goodMatches, double distance = 3., double confidence = 0.99, double minInlierRatio = 0.) const;
+  void getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const;
 
   /*!
    * \brief SetDescriptorMatcher
