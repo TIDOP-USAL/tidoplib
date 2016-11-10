@@ -107,7 +107,18 @@
 #endif
 //__FUNCSIG__
 
-
+// Desactivar/activar warnings
+#if defined _MSC_VER
+#  define I3D_SUPPRESS_WARNINGS __pragma(warning(push, 0))
+#  define I3D_DEFAULT_WARNINGS __pragma(warning(pop))
+#  define I3D_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
+#  define I3D_ENABLE_WARNING(warn) __pragma(warning(default : warn)) 
+#else
+#  define I3D_SUPPRESS_WARNINGS 
+#  define I3D_DEFAULT_WARNINGS
+#  define I3D_DISABLE_WARNING(warn)
+#  define I3D_ENABLE_WARNING(warn)
+#endif
 // MACROS
 
 /*!

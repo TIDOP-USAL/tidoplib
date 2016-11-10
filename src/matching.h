@@ -2,6 +2,7 @@
 #define I3D_MATCHING_H
 
 #include "opencv2/features2d.hpp"
+#include "opencv2/xfeatures2d.hpp"
 
 #include "core\defs.h"
 #include "core\utils.h"
@@ -16,6 +17,7 @@ namespace I3D
 class I3D_EXPORT Features2D
 {
 private:
+
   /*!
    * \brief keyPoints
    */

@@ -93,7 +93,6 @@ void Features2D::read( const char *fname )
 int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector< cv::DMatch > *_matches)
 {
   mMatches.clear();
-  cv::Mat desc1, desc2;
   auto getAppropriateFormat = [](const cv::Mat &descIn) -> cv::Mat {
     cv::Mat descOut;
     descIn.copyTo(descOut);

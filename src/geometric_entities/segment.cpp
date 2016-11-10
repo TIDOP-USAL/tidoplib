@@ -6,7 +6,7 @@
 namespace I3D
 {
 
-#pragma warning(disable : 4244)
+
 void lineBuffer(const Line &ln, const int size, std::vector<cv::Point> *buff)
 {
   *buff = std::vector<cv::Point>(4);
@@ -15,14 +15,12 @@ void lineBuffer(const Line &ln, const int size, std::vector<cv::Point> *buff)
   double acimut = azimut(pt1, pt2);
   double dx = size * sin(acimut + CV_PI / 2.);
   double dy = size * cos(acimut + CV_PI / 2.);
-  (*buff)[0] = cv::Point(pt1.x + dx, pt1.y + dy);
-  (*buff)[1] = cv::Point(pt2.x + dx, pt2.y + dy);
-  (*buff)[2] = cv::Point(pt2.x - dx, pt2.y - dy);
-  (*buff)[3] = cv::Point(pt1.x - dx, pt1.y - dy);
+  (*buff)[0] = cv::Point(I3D_ROUND_TO_INT(pt1.x + dx), I3D_ROUND_TO_INT(pt1.y + dy));
+  (*buff)[1] = cv::Point(I3D_ROUND_TO_INT(pt2.x + dx), I3D_ROUND_TO_INT(pt2.y + dy));
+  (*buff)[2] = cv::Point(I3D_ROUND_TO_INT(pt2.x - dx), I3D_ROUND_TO_INT(pt2.y - dy));
+  (*buff)[3] = cv::Point(I3D_ROUND_TO_INT(pt1.x - dx), I3D_ROUND_TO_INT(pt1.y - dy));
 }
-#pragma warning ( default : 4244 )
 
-#pragma warning(disable : 4244)
 int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp)
 {
   int iret = 0;
@@ -30,15 +28,14 @@ int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp)
   cv::Point v2 = ln.vector();
   double daux = v1.ddot(v2);
   float r = (float)(daux / (v2.x * v2.x + v2.y * v2.y));
-  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x)*r;
-  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y)*r;
+  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
+  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
 
   if (daux <= 0) iret = -1;
   else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
   else if (daux == 0) iret = 2; // Esta en la línea
   return iret;
 }
-#pragma warning ( default : 4244 )
 
 double distPointToSegment(const cv::Point &pt, const Line &ln)
 {

@@ -9,18 +9,22 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/optflow.hpp"
+I3D_SUPPRESS_WARNINGS
 #include "opencv2/sfm.hpp"
+I3D_DEFAULT_WARNINGS
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/ximgproc/disparity_filter.hpp"
 
+I3D_DISABLE_WARNING(4512 4324 4702)
 #include <pcl/common/common_headers.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <boost/thread/thread.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_types.h>
-	
+I3D_ENABLE_WARNING(4512 4324 4702)
+
 //#include <xercesc/parsers/XercesDOMParser.hpp>
 //#include <xercesc/dom/DOM.hpp>
 //#include <xercesc/sax/HandlerBase.hpp>
@@ -439,35 +443,47 @@ void VideoHelper::write()
   hWrite.close();
 }
 
-void reconstruct(std::vector<std::string> &images_paths, std::vector<Mat> &points2d)
+void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &points2d)
 {
   std::vector<std::vector<int> > idx_pass_points;
   // Puntos de paso
-  std::vector<std::vector<Vec2d> > pass_points;
-  std::vector<DMatch> matches;
+  std::vector<std::vector<cv::Vec2d> > pass_points;
+  std::vector<cv::DMatch> matches;
   
   char out[I3D_MAX_PATH];
   char buf[I3D_MAX_PATH];
   char name1[I3D_MAX_PATH];
   char name2[I3D_MAX_PATH];
 
-  cv::Ptr<cv::FeatureDetector> fd = SURF::create();
-  cv::Ptr<cv::DescriptorExtractor> de = SURF::create();
-  Features2D features(fd, de);
+  cv::Ptr<cv::FeatureDetector> fdORB = cv::ORB::create(10000);
+  cv::Ptr<cv::DescriptorExtractor> deDAISY = cv::xfeatures2d::DAISY::create();
+  Features2D ft1(fdORB, deDAISY);
+  Features2D ft2(fdORB, deDAISY);
   Matching match(cv::DescriptorMatcher::create("FlannBased"));
+  cv::Ptr<cv::Feature2D> fd = cv::ORB::create(10000);
+  cv::Ptr<cv::Feature2D> de = cv::xfeatures2d::DAISY::create();
+  Features2D feature1(fd, de);
+  Features2D feature2(fd, de);
+  cv::FlannBasedMatcher matcherA;
+
 
   size_t size = images_paths.size();
   for (int i = 0; i < size - 1; i++) {
     for (int j = i+1; j < size; j++) {
-      Features2D ft1, ft2;
-      changeFileExtension(images_paths[i].c_str(), "xml", out);
-      ft1.read(out);
-      changeFileExtension(images_paths[j].c_str(), "xml", out);
-      ft2.read(out);
-
+      //Features2D ft1, ft2;
+      //changeFileExtension(images_paths[i].c_str(), "xml", out);
+      //ft1.read(out);
+      //changeFileExtension(images_paths[j].c_str(), "xml", out);
+      //ft2.read(out);
+      cv::Mat image1  = imread(images_paths[i].c_str(), IMREAD_GRAYSCALE);
+      cv::Mat image2  = imread(images_paths[j].c_str(), IMREAD_GRAYSCALE);
+      ft1.detectKeyPoints(image1);
+      ft1.calcDescriptor(image1);
+      ft2.detectKeyPoints(image2);
+      ft2.calcDescriptor(image2);
       match.match(ft1, ft2, &matches);
 
-      std::vector<DMatch> good_matches;
+      std::vector<cv::DMatch> good_matches;
       //match.getGoodMatches(&good_matches, 0.5);
       match.getGoodMatches(ft1, ft2, &good_matches, 1);
 
@@ -476,6 +492,29 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<Mat> &point
       img1 = cv::imread(images_paths[i].c_str());
       img2 = cv::imread(images_paths[j].c_str());
       cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
+      //int nft = feature1.detectKeyPoints(image1);
+      //feature1.calcDescriptor(image1);
+      //nft = feature2.detectKeyPoints(image2);
+      //feature2.calcDescriptor(image2);
+      //
+      ////matcherA.add(std::vector<cv::Mat>(1, feature2.getDescriptors()));
+      //std::vector <std::vector<cv::DMatch>> matchesA;
+      //matcherA.knnMatch(feature1.getDescriptors(), feature2.getDescriptors(), matchesA, 2);
+
+      //std::vector<cv::DMatch> goodMatchesA;
+      //int max_track_number = 0;
+      //for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
+      //  float distance0 = matchesA[iMatch][0].distance;
+      //  float distance1 = matchesA[iMatch][1].distance;
+      //  if (distance0 < 0.8 * distance1) {
+      //    goodMatchesA.push_back(matchesA[iMatch][0]);
+      //  }
+      //}
+
+      //cv::Mat img_matchesA;
+      //cv::drawMatches(img1, feature1.getKeyPoints(), img2, feature2.getKeyPoints(), goodMatchesA, img_matchesA, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+
 
       getFileName(images_paths[i].c_str(), name1);
       getFileName(images_paths[j].c_str(), name2);
@@ -625,16 +664,6 @@ int main(int argc, char** argv)
   //                     0, f, cy,
   //                     0, 0,  1);
 
-  //std::vector<std::string> images_paths{
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00389.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00393.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00394.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00395.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00396.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00397.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00398.jpg",
-  //  "D://Desarrollo//datos//cloud_points//Villaseca//Apoyo_00399.jpg"
-  //};
   std::vector<std::string> images_paths;
   std::vector<WindowI> windows;
   std::string file2 = out_path + "//TowerDetected.txt";
@@ -644,22 +673,11 @@ int main(int argc, char** argv)
 
   //std::vector<std::string> images_paths = videoHelper.framesSaved;
 
-  //std::vector<WindowI> windows{
-  //  WindowI(cv::Point(767, 47), cv::Point(845, 719)),
-  //  WindowI(cv::Point(633, 44), cv::Point(769, 719)),
-  //  WindowI(cv::Point(623, 86), cv::Point(757, 718)),
-  //  WindowI(cv::Point(604, 72), cv::Point(740, 719)),
-  //  WindowI(cv::Point(608, 69), cv::Point(730, 719)),
-  //  WindowI(cv::Point(582, 85), cv::Point(724, 719)),
-  //  WindowI(cv::Point(572, 58), cv::Point(711, 719)),
-  //  WindowI(cv::Point(563, 76), cv::Point(704, 718))
-  //};
-
   //LoadImages(std::string("D://Desarrollo//datos//cloud_points//Villaseca//TowerDetect01.xml"), images_paths, windows);
   std::vector<Mat> points2d;
   try {
     reconstruct(images_paths, points2d);
-    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
+    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
     //bool is_projective = true;
     //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {
@@ -714,28 +732,20 @@ int main(int argc, char** argv)
   /* ---------------------------------------------------------------------------------- */
 
   // Guardamos nube de puntos
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
   // Crea nube de puntos
   pcl::PointCloud<pcl::PointXYZ>::Ptr point_cloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
-  //point_cloud_ptr->points.resize(point_cloud_est.size());
-  for (int i = 0; i < point_cloud_est.size(); i++) {
-    pcl::PointXYZ point;
-    point.x = point_cloud_est[i][0];
-    point.y = point_cloud_est[i][1];
-    point.z = point_cloud_est[i][2];
-    point_cloud_ptr->points.push_back(point);
+  int nPoints = point_cloud_est.size();
+  point_cloud_ptr->points.resize(nPoints);
+  for (int i = 0; i < nPoints; i++) {
+    point_cloud_ptr->points[i].x = point_cloud_est[i][0];
+    point_cloud_ptr->points[i].y = point_cloud_est[i][1];
+    point_cloud_ptr->points[i].z = point_cloud_est[i][2];
   }
-  point_cloud_ptr->width = (int)point_cloud_ptr->points.size();
+  point_cloud_ptr->width = nPoints;
   point_cloud_ptr->height = 1;
   std::string pcd_file = "D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\test_pcd.pcd";
   pcl::io::savePCDFileASCII(pcd_file, *point_cloud_ptr);
-#ifdef _DEBUG
-  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  printf("\nTime Creación nube de puntos [s]: %.3f\n", time);
-#endif
+
   std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
     viewer->setBackgroundColor(0, 0, 0);
     pcl::visualization::PointCloudColorHandlerRandom<pcl::PointXYZ> rgb(point_cloud_ptr);
