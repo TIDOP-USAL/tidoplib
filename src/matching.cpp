@@ -134,6 +134,12 @@ void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
 
 void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio) const
 {
+  getGoodMatches(feat1.getKeyPoints(), feat2.getKeyPoints(), gm, ratio);
+}
+
+void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const std::vector<cv::KeyPoint> &keyPoints2, 
+                              std::vector< cv::DMatch > *gm, double ratio) const
+{
   if (!mMatches.empty() && gm) {
     // Para hacer un primer filtrado
     getGoodMatches(gm, ratio);
@@ -142,8 +148,8 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
     std::vector<cv::Point2f> pts1(nPoints);
     std::vector<cv::Point2f> pts2(nPoints);
     for (size_t igm = 0; igm < nPoints; igm++) {
-      pts1[igm] = feat1.getKeyPoint((*gm)[igm].queryIdx).pt;
-      pts2[igm] = feat2.getKeyPoint((*gm)[igm].trainIdx).pt;
+      pts1[igm] = keyPoints1[(*gm)[igm].queryIdx].pt;
+      pts2[igm] = keyPoints2[(*gm)[igm].trainIdx].pt;
     }
 
     // Se calcula una transformación perspectiva y se van limpiando puntos
@@ -165,12 +171,9 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
   }
 }
 
-void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const
+void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const std::vector<cv::KeyPoint> &keyPoints2, 
+                              std::vector< cv::DMatch > *gm, double distance, double confidence) const
 {
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
   if (!mMatches.empty() && gm) {
     gm->clear();
     size_t nPoints = mMatches.size();
@@ -178,8 +181,8 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
     std::vector<cv::Point2f> pts2(nPoints);
 
     for (size_t igm = 0; igm < nPoints; igm++) {
-      pts1[igm] = feat1.getKeyPoint(mMatches[igm].queryIdx).pt;
-      pts2[igm] = feat2.getKeyPoint(mMatches[igm].trainIdx).pt;
+      pts1[igm] = keyPoints1[(*gm)[igm].queryIdx].pt;
+      pts2[igm] = keyPoints2[(*gm)[igm].trainIdx].pt;
     }
 
     std::vector<uchar> inliers(nPoints, 0);
@@ -195,10 +198,31 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
       }
     }
   }
-#ifdef _DEBUG
-  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  printf("\nTime ldHouhP [s]: %.3f\n", time);
-#endif
 }
+
+void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const
+{
+  getGoodMatches(feat1.getKeyPoints(), feat2.getKeyPoints(), gm, distance, confidence);
+}
+
+
+  //int nft = feature1.detectKeyPoints(image1);
+  //feature1.calcDescriptor(image1);
+  //nft = feature2.detectKeyPoints(image2);
+  //feature2.calcDescriptor(image2);
+  //
+  ////matcherA.add(std::vector<cv::Mat>(1, feature2.getDescriptors()));
+  //std::vector <std::vector<cv::DMatch>> matchesA;
+  //matcherA.knnMatch(feature1.getDescriptors(), feature2.getDescriptors(), matchesA, 2);
+
+  //std::vector<cv::DMatch> goodMatchesA;
+  //int max_track_number = 0;
+  //for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
+  //  float distance0 = matchesA[iMatch][0].distance;
+  //  float distance1 = matchesA[iMatch][1].distance;
+  //  if (distance0 < 0.8 * distance1) {
+  //    goodMatchesA.push_back(matchesA[iMatch][0]);
+  //  }
+  //}
 
 } // End namespace I3D

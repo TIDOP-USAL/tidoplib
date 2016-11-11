@@ -184,6 +184,7 @@ T EnumFlags<T>::getFlags() const
  * \brief Permite operaciones a nivel de bit con un 'enum class'
  *
  * Debe añadirse debajo de la declaración del enum
+ *
  * \code
  * enum class ePrueba2 : int8_t {
  *  flag01 = (1 << 0),

@@ -40,6 +40,7 @@ I3D_ENABLE_WARNING(4512 4324 4702)
 #include "img_processing.h"
 #include "matching.h"
 #include "transform.h"
+#include "experimental\experimental.h"
 
 using namespace cv;
 using namespace optflow;
@@ -80,11 +81,11 @@ void getTowerImageAndWindow(const char * file, std::vector<std::string> &images_
   if (!read_handler.is_open()) {
     consolePrintInfo("Unable to read file: %s", file);
   } else {
-    std::string line;
     std::vector<std::string> out;
     while (!read_handler.eof()) {
+      std::string line;
       read_handler >> line;
-      if (split(line, out, "|") == 0) {
+      if ( !line.empty() && split(line, out, "|") == 0) {
         images_paths.push_back(out[0]);
         std::vector<int> coord;
         if (splitToNumbers(out[1], coord, ";") == 0) {
@@ -457,8 +458,8 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
 
   cv::Ptr<cv::FeatureDetector> fdORB = cv::ORB::create(10000);
   cv::Ptr<cv::DescriptorExtractor> deDAISY = cv::xfeatures2d::DAISY::create();
-  Features2D ft1(fdORB, deDAISY);
-  Features2D ft2(fdORB, deDAISY);
+  //Features2D ft1(fdORB, deDAISY);
+  //Features2D ft2(fdORB, deDAISY);
   Matching match(cv::DescriptorMatcher::create("FlannBased"));
   cv::Ptr<cv::Feature2D> fd = cv::ORB::create(10000);
   cv::Ptr<cv::Feature2D> de = cv::xfeatures2d::DAISY::create();
@@ -477,58 +478,58 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       //ft2.read(out);
       cv::Mat image1  = imread(images_paths[i].c_str(), IMREAD_GRAYSCALE);
       cv::Mat image2  = imread(images_paths[j].c_str(), IMREAD_GRAYSCALE);
-      ft1.detectKeyPoints(image1);
-      ft1.calcDescriptor(image1);
-      ft2.detectKeyPoints(image2);
-      ft2.calcDescriptor(image2);
-      match.match(ft1, ft2, &matches);
+      //ft1.detectKeyPoints(image1);
+      //ft1.calcDescriptor(image1);
+      //ft2.detectKeyPoints(image2);
+      //ft2.calcDescriptor(image2);
+      //match.match(ft1, ft2, &matches);
 
-      std::vector<cv::DMatch> good_matches;
-      //match.getGoodMatches(&good_matches, 0.5);
-      match.getGoodMatches(ft1, ft2, &good_matches, 1);
+      //std::vector<cv::DMatch> good_matches;
+      ////match.getGoodMatches(&good_matches, 0.5);
+      //match.getGoodMatches(ft1, ft2, &good_matches, 0.1);
 
-      // drawing the results
-      cv::Mat img_matches, img1, img2;
-      img1 = cv::imread(images_paths[i].c_str());
-      img2 = cv::imread(images_paths[j].c_str());
-      cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+      //// drawing the results
+      //cv::Mat img_matches;
+      cv::Mat img1 = cv::imread(images_paths[i].c_str());
+      cv::Mat img2 = cv::imread(images_paths[j].c_str());
+      //cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
-      //int nft = feature1.detectKeyPoints(image1);
-      //feature1.calcDescriptor(image1);
-      //nft = feature2.detectKeyPoints(image2);
-      //feature2.calcDescriptor(image2);
-      //
-      ////matcherA.add(std::vector<cv::Mat>(1, feature2.getDescriptors()));
-      //std::vector <std::vector<cv::DMatch>> matchesA;
-      //matcherA.knnMatch(feature1.getDescriptors(), feature2.getDescriptors(), matchesA, 2);
+      int nft = feature1.detectKeyPoints(image1);
+      feature1.calcDescriptor(image1);
+      nft = feature2.detectKeyPoints(image2);
+      feature2.calcDescriptor(image2);
+      
+      //matcherA.add(std::vector<cv::Mat>(1, feature2.getDescriptors()));
+      std::vector <std::vector<cv::DMatch>> matchesA;
+      matcherA.knnMatch(feature1.getDescriptors(), feature2.getDescriptors(), matchesA, 2);
 
-      //std::vector<cv::DMatch> goodMatchesA;
-      //int max_track_number = 0;
-      //for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
-      //  float distance0 = matchesA[iMatch][0].distance;
-      //  float distance1 = matchesA[iMatch][1].distance;
-      //  if (distance0 < 0.8 * distance1) {
-      //    goodMatchesA.push_back(matchesA[iMatch][0]);
-      //  }
-      //}
+      std::vector<cv::DMatch> goodMatchesA;
+      int max_track_number = 0;
+      for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
+        float distance0 = matchesA[iMatch][0].distance;
+        float distance1 = matchesA[iMatch][1].distance;
+        if (distance0 < 0.8 * distance1) {
+          goodMatchesA.push_back(matchesA[iMatch][0]);
+        }
+      }
 
-      //cv::Mat img_matchesA;
-      //cv::drawMatches(img1, feature1.getKeyPoints(), img2, feature2.getKeyPoints(), goodMatchesA, img_matchesA, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+      cv::Mat img_matchesA;
+      cv::drawMatches(img1, feature1.getKeyPoints(), img2, feature2.getKeyPoints(), goodMatchesA, img_matchesA, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
 
       getFileName(images_paths[i].c_str(), name1);
       getFileName(images_paths[j].c_str(), name2);
 
-      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
+      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", goodMatchesA.size(), name1, name2);
 
       //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
 
       std::vector<Point2f> pts1;
       std::vector<Point2f> pts2;
       int idx1, idx2;
-      for (size_t igm = 0; igm < good_matches.size(); igm++) {
-        idx1 = good_matches[igm].queryIdx;
-        idx2 = good_matches[igm].trainIdx;
+      for (size_t igm = 0; igm < goodMatchesA.size(); igm++) {
+        idx1 = goodMatchesA[igm].queryIdx;
+        idx2 = goodMatchesA[igm].trainIdx;
 
         //Busqueda de si ya esta añadido ese punto
         bool addNew = true;
@@ -548,8 +549,8 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
           idx_pass_points.push_back(v);
 
           std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
-          cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
-          cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
+          cv::Point2f point1 = feature1.getKeyPoint(idx1).pt;
+          cv::Point2f point2 = feature2.getKeyPoint(idx2).pt;
           v_points[i] = Vec2d(point1.x, point1.y);
           v_points[j] = Vec2d(point2.x, point2.y);
           pass_points.push_back(v_points);
@@ -581,6 +582,16 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
     }
     points2d.push_back(Mat(frame));
   }
+  //int nPoints = static_cast<int>(pass_points.size());
+  //for (int i = 0; i < nPoints; ++i) {
+  //  Mat_<double> frame(2, size);
+  //  for (int j = 0; j < size; ++j)
+  //  {
+  //    frame(0,j) = pass_points[i][j][0];
+  //    frame(1,j) = pass_points[i][j][1];
+  //  }
+  //  points2d.push_back(Mat(frame));
+  //}
 }
 
 
@@ -674,10 +685,20 @@ int main(int argc, char** argv)
   //std::vector<std::string> images_paths = videoHelper.framesSaved;
 
   //LoadImages(std::string("D://Desarrollo//datos//cloud_points//Villaseca//TowerDetect01.xml"), images_paths, windows);
-  std::vector<Mat> points2d;
+  //std::vector<Mat> points2d;
+  cv::Ptr<cv::FeatureDetector> fdORB = cv::ORB::create(10000);
+  cv::Ptr<cv::DescriptorExtractor> deDAISY = cv::xfeatures2d::DAISY::create();
+  I3D::EXPERIMENTAL::Reconstruction3D reconstruct(fdORB, deDAISY);
+  // Se obtienen los keypoints y descriptores
+  //reconstruct.getKeyPointAndDescriptor(images_paths, true);
+  // Los cargo para probar aunque no lo necesitaria
+  reconstruct.loadKeyPointAndDescriptor(images_paths);
+  // Se calcula el matching de todas las imagenes
+  std::vector<cv::Mat> points2d;
+  reconstruct.multiImageMatching(points2d);
   try {
-    reconstruct(images_paths, points2d);
-    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
+    //reconstruct(images_paths, points2d);
+    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
     //bool is_projective = true;
     //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {

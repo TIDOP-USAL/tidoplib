@@ -131,7 +131,7 @@ public:
    * \brief Devuelve los KeyPoints
    * \return KeyPoints
    */
-  const std::vector<cv::KeyPoint> &getKeyPoints() { return mKeyPoints; }
+  const std::vector<cv::KeyPoint> &getKeyPoints() const { return mKeyPoints; }
 
   /*!
    * \brief Devuelve un KeyPoint
@@ -192,7 +192,10 @@ public:
   /*!
    * \brief Constructora por defecto de la clase Matching
    */
-  Matching(){}
+  Matching()
+  {
+    mDescriptorMatcher = cv::DescriptorMatcher::create("FlannBased");
+  }
 
   /*!
    * \brief Constructora de la clase Matching
@@ -237,9 +240,12 @@ public:
   void getGoodMatches(std::vector< cv::DMatch > *gm, double ratio = 0.05) const;
 
   void getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio = 0.1) const;
+  void getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const std::vector<cv::KeyPoint> &keyPoints2, std::vector< cv::DMatch > *gm, double ratio) const;
 
   // http://stackoverflow.com/questions/17967950/improve-matching-of-feature-points-with-opencv
   void getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const;
+  
+  void getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const std::vector<cv::KeyPoint> &keyPoints2, std::vector< cv::DMatch > *gm, double distance, double confidence) const;
 
   /*!
    * \brief SetDescriptorMatcher

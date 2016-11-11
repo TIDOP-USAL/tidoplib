@@ -2,8 +2,8 @@
  Clases y funciones experimentales
 */
 
-#ifndef I3D_FLAGS_H
-#define I3D_FLAGS_H
+#ifndef I3D_EXPERIMENTAL_H
+#define I3D_EXPERIMENTAL_H
 
 #include <vector>
 #include <memory>
@@ -21,8 +21,10 @@ namespace EXPERIMENTAL
 
 class Reconstruction3D
 {
-  //std::vector<std::string> images_paths;
+
   std::vector<cv::Mat> points2d;
+
+  std::vector<std::string> mImagesPaths;
 
   /*!
    * \brief keyPoints
@@ -46,7 +48,7 @@ class Reconstruction3D
 
   std::unique_ptr<Features2D> mFeature2D;
 
-  cv::FlannBasedMatcher matcherA;
+  Matching mMatcher;
 
 public:
 
@@ -83,9 +85,25 @@ public:
    */
   ~Reconstruction3D() {}
 
-  void getKeyPointAndDescriptor(std::vector<std::string> &images_paths, bool bSave = true);
+  /*!
+   * \brief A partir de un conjunto de imagenes obtiene sus keypoints y descriptores. Opcionalmente 
+   * puede guardarlos para su uso posterior
+   * \param[in] imagesPaths Imagenes que se cargan. Se toma el nombre de archivo y se carga su xml asociado
+   * \param[in] bSave Salva keypoints y descriptores en un xml con igual nombre que la imagen
+   */
+  void getKeyPointAndDescriptor(const std::vector<std::string> &imagesPaths, bool bSave = true);
 
-  void loadKeyPointAndDescriptor(std::vector<std::string> &images_paths);
+  /*!
+   * \brief carga puntos y descriptores asociados a un set de imagenes
+   * \param[in] imagesPaths Imagenes que se cargan. Se toma el nombre de archivo y se carga su xml asociado
+   */
+  void loadKeyPointAndDescriptor(const std::vector<std::string> &imagesPaths);
+
+  /*!
+   * \brief Calculo del matching entre todas las imagenes
+   * \param[out] points2d Puntos de paso encontrados entre todas las fotos. Si un punto no existe en una foto es (-1,-1)
+   */
+  void multiImageMatching(std::vector<cv::Mat> &points2d);
 
 private:
 
@@ -96,4 +114,4 @@ private:
 
 } // End namespace I3D
 
-#endif // I3D_FLAGS_H
+#endif // I3D_EXPERIMENTAL_H
