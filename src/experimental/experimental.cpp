@@ -136,12 +136,14 @@ void Reconstruction3D::multiImageMatching( std::vector<cv::Mat> &points2d)
     }
   }
 
-  printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
+  int nPassPoint = static_cast<int>(pass_points.size());
+
+  printInfo("Número de puntos de paso encontrados: %i", nPassPoint);
 
   // Formato necesario para sfm
   for (int i = 0; i < size; ++i) {
-    cv::Mat_<double> frame(2, pass_points.size());
-    for (int j = 0; j < pass_points.size(); ++j)
+    cv::Mat_<double> frame(2, nPassPoint);
+    for (int j = 0; j < nPassPoint; ++j)
     {
       frame(0,j) = pass_points[j][i][0];
       frame(1,j) = pass_points[j][i][1];
@@ -159,6 +161,46 @@ void Reconstruction3D::multiImageMatching( std::vector<cv::Mat> &points2d)
   //  points2d.push_back(cv::Mat(frame));
   //}
 }
+
+/*
+Metric
+
+Kilometre1
+Metre1000
+Decimetre10000
+Centimetre100000
+Millimetre1000000
+Micrometre1000000000
+Nanometre1E12
+Angstrom1E13
+
+British/American
+
+League 0,21
+Mile 0,62 
+Furlong 4,97
+Chain 49,71
+Rod 198,84
+Yard 1093,61
+Foot 3280,84
+Link 4970,97
+Hand 9842,52
+Inch 39370,08
+Line 393700,79
+Mil 39370078,74
+Thou 39370078,74
+
+Nautical
+
+Sea mile 0,54
+Fathom 546,81
+
+*/
+
+
+
+
+
 
 
 } // End namespace EXPERIMENTAL

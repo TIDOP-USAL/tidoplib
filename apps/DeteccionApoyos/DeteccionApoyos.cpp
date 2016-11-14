@@ -190,16 +190,16 @@ void onRun(VideoStream *strmVideo, void* userdata)
               }
 
 
-              LogMsg::debugMsg("Frame %i - cols: %i - rows: %i", cvRound(prevFrame), candidatenorm.cols, candidatenorm.rows);
-              LogMsg::debugMsg("Frame %i - N points max: %i", cvRound(prevFrame), pMax.size());
+              LogMsg::debugMsg("Frame %i - cols: %i - rows: %i", I3D_ROUND_TO_INT(prevFrame), candidatenorm.cols, candidatenorm.rows);
+              LogMsg::debugMsg("Frame %i - N points max: %i", I3D_ROUND_TO_INT(prevFrame), pMax.size());
               if (pMax.size() > 200 ) {
                 // Recta de regresión para los máximos
                 double m = 0.;
                 double b = 0.;
                 regressionLinearXY(pMax, &m, &b);
 
-                cv::Point pt1(cvRound(b), 0);
-                cv::Point pt2(cvRound(m * magnitude.rows + b), magnitude.rows);
+                cv::Point pt1(I3D_ROUND_TO_INT(b), 0);
+                cv::Point pt2(I3D_ROUND_TO_INT(m * magnitude.rows + b), magnitude.rows);
                 
                 if (bDrawRegressionLine) {
                   //Se pinta la recta de regresión
@@ -214,14 +214,14 @@ void onRun(VideoStream *strmVideo, void* userdata)
                 else if (ang < -CV_PI / 2) ang = ang + CV_PI;
                 // tolerancia de inclinación del eje del apoyo respecto a la vertical -> 0.1
                 if (ang <= 0.1 && ang >= -0.1) {
-                  LogMsg::debugMsg("Frame %i - Angulo: %f", cvRound(prevFrame), ang);
+                  LogMsg::debugMsg("Frame %i - Angulo: %f", I3D_ROUND_TO_INT(prevFrame), ang);
 
                   // Busqueda del máximo valor de desplazamiento
                   std::vector<Point> vMagnitudes;
                   cv::Point ptMax;
                   float maxval = I3D_FLOAT_MIN;
                   for (int ir = 0; ir < normMag.rows; ir++) {
-                    cv::Point pt(cvRound(m * ir + b), ir);
+                    cv::Point pt(I3D_ROUND_TO_INT(m * ir + b), ir);
                     if (pt.x >= 0 && pt.x < normMag.cols) {
                       float mg = magnitude.at<float>(pt);
                       if (mg > maxval){
@@ -262,20 +262,20 @@ void onRun(VideoStream *strmVideo, void* userdata)
 
                     // Ajustar el BBOX mejor
                         
-                    LogMsg::infoMsg("Torre detectada: Frame %i", cvRound(prevFrame));
+                    LogMsg::infoMsg("Torre detectada: Frame %i", I3D_ROUND_TO_INT(prevFrame));
                     if (bSaveImages) {
                       char buffer[50];
-                      sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
+                      sprintf_s(buffer, "Apoyo_%05i.jpg", I3D_ROUND_TO_INT(prevFrame));
                       cv::imwrite(buffer, imgout);
                     }
                     
                     break; // para que no entre otra vez si ha encontrado una torre.
                   }
                   //} else LogMsg::DebugMsg("Frame %i rechazado. lmag.size() < 3", cvRound(prevFrame));
-                } else LogMsg::debugMsg("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", cvRound(prevFrame), ang);
+                } else LogMsg::debugMsg("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
               }  
             } else {
-              LogMsg::infoMsg("Torre rechazada: Frame %i", cvRound(prevFrame) );
+              LogMsg::infoMsg("Torre rechazada: Frame %i", I3D_ROUND_TO_INT(prevFrame) );
             }
           }
         }

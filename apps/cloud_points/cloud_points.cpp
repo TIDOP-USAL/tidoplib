@@ -246,7 +246,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
         cv::Point ptMax;
         float maxval = I3D_FLOAT_MIN;
         for (int ir = 0; ir < normMag.rows; ir++) {
-          cv::Point pt(cvRound(m * ir + b), ir);
+          cv::Point pt(I3D_ROUND_TO_INT(m * ir + b), ir);
           if (pt.x >= 0 && pt.x < normMag.cols) {
             float mg = magnitude.at<float>(pt);
             if (mg > maxval){
@@ -294,7 +294,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
           //}
           return true; // Devolvemos que hemos encontrado una torre
         }
-      } else printVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", cvRound(prevFrame), ang);
+      } else printVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
     }
   } else {
     printInfo("Torre rechazada: Frame %i", static_cast<int>(prevFrame) );
@@ -402,7 +402,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     frame.copyTo(mFramePrev);
     if (bTower) {
       char buffer[I3D_MAX_PATH];
-      sprintf_s(buffer, "%s\\Apoyo_%05i.png", outPath.c_str(), cvRound(mCurrentPosition));
+      sprintf_s(buffer, "%s\\Apoyo_%05i.png", outPath.c_str(), I3D_ROUND_TO_INT(mCurrentPosition));
       cv::imwrite(buffer, out);
       
       framesSaved.push_back(std::string(buffer));

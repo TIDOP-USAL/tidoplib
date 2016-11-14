@@ -1,6 +1,8 @@
 #ifndef I3D_WINDOW_H
 #define I3D_WINDOW_H
 
+#include <algorithm>
+
 #include "opencv2/core/core.hpp"
 
 #include "core\defs.h"
@@ -257,16 +259,26 @@ Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2)
 template<typename T> inline
 Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy)
 { 
-  pt1 = cv::Point_<T>(_pt.x - sxx / 2, _pt.y - szy / 2);
-  pt2 = cv::Point_<T>(_pt.x + sxx / 2, _pt.y + szy / 2);
+  if (typeid(T) == typeid(int)) {
+    // Prefiero hacer la conversión a entero para evitar que OpenCV 
+    // lo haga mediante cvRound 
+    int sxx_2 = I3D_ROUND_TO_INT(sxx / 2);
+    int szy_2 = I3D_ROUND_TO_INT(szy / 2);
+    int dx = static_cast<int>(sxx) % 2;
+    int dy = static_cast<int>(szy) % 2;
+    pt1 = cv::Point_<T>(_pt.x - sxx_2, _pt.y - szy_2);
+    pt2 = cv::Point_<T>(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy);
+  } else {
+    // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
+    I3D_DISABLE_WARNING(4244)
+    pt1 = cv::Point_<T>(_pt.x - sxx / 2., _pt.y - szy / 2.);
+    pt2 = cv::Point_<T>(_pt.x + sxx / 2., _pt.y + szy / 2.);
+    I3D_ENABLE_WARNING(4244)
+  }
 }
 
 template<typename T> inline
-Window<T>::Window(cv::Point_<T> &_pt, T sz)
-{
-  pt1 = cv::Point_<T>(_pt.x - sz / 2, _pt.y - sz / 2);
-  pt2 = cv::Point_<T>(_pt.x + sz / 2, _pt.y + sz / 2);
-}
+Window<T>::Window(cv::Point_<T> &_pt, T sz) : Window<T>::Window(_pt, sz, sz) {}
 
 template<typename T> inline
 Window<T>::Window(std::vector<cv::Point_<T>> v)
@@ -291,10 +303,10 @@ Window<T>::Window(std::vector<cv::Point_<T2>> v)
   if (v.size() >= 2) {
     for (size_t i = 0; i < v.size(); i++) {
       if (typeid(T) == typeid(int)) {
-        if (pt1.x > v[i].x) pt1.x = static_cast<T>(round(v[i].x));
-        if (pt1.y > v[i].y) pt1.y = static_cast<T>(round(v[i].y));
-        if (pt2.x < v[i].x) pt2.x = static_cast<T>(round(v[i].x));
-        if (pt2.y < v[i].y) pt2.y = static_cast<T>(round(v[i].y));
+        if (pt1.x > v[i].x) pt1.x = I3D_ROUND_TO_INT(v[i].x);
+        if (pt1.y > v[i].y) pt1.y = I3D_ROUND_TO_INT(v[i].y);
+        if (pt2.x < v[i].x) pt2.x = I3D_ROUND_TO_INT(v[i].x);
+        if (pt2.y < v[i].y) pt2.y = I3D_ROUND_TO_INT(v[i].y);
       } else {
         if (pt1.x > v[i].x) pt1.x = static_cast<T>(v[i].x);
         if (pt1.y > v[i].y) pt1.y = static_cast<T>(v[i].y);
@@ -330,11 +342,10 @@ Window<T>::operator Window<T2>() const
   //cv::Point_<T2> _pt2 = pt2;
   //return Window<T2>(_pt1, _pt2);
   //habria que crear un cast personalizado para transformar a entero. 
-  Window<T2> w;
   if (typeid(T2) == typeid(int)) {
     //Dos posibles soluciones. Ver cual es mas eficiente
-    cv::Point_<T2> _pt1(static_cast<T2>(round(pt1.x)), static_cast<T2>(round(pt1.y)));
-    cv::Point_<T2> _pt2(static_cast<T2>(round(pt2.x)), static_cast<T2>(round(pt2.y)));
+    cv::Point_<T2> _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y));
+    cv::Point_<T2> _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y));
     return Window<T2>(_pt1, _pt2);
   } else {
     cv::Point_<T2> _pt1 = pt1;
@@ -346,7 +357,13 @@ Window<T>::operator Window<T2>() const
 template<typename T> inline
 cv::Point_<T> Window<T>::getCenter() const
 {
-  return cv::Point_<T>((pt1.x + pt2.x) / 2, (pt1.y + pt2.y) / 2);
+  if (typeid(T) == typeid(int)) {
+    return cv::Point_<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), static_cast<int>(std::floor((pt1.y + pt2.y) / 2)));
+  } else {
+    I3D_DISABLE_WARNING(4244)
+    return cv::Point_<T>((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
+    I3D_ENABLE_WARNING(4244)
+  }
 }
 
 template<typename T> inline

@@ -48,8 +48,8 @@ cv::Size VideoStream::getSize()
 {
   cv::Size sz(0, 0);
   if (isOpened()){
-    int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
-    int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    int width =  static_cast<int>(mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH));
+    int height = static_cast<int>(mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT));
     sz = cv::Size(width, height);
   }
   return sz;
@@ -127,7 +127,7 @@ bool VideoStream::read(cv::Mat *vf)
 void VideoStream::run()
 {
   onInitialize();
-  int delay = 100 / cvRound(fps());
+  int delay = I3D_ROUND_TO_INT( 100. / fps());
   char c;
   while (vs != Status::STOPPED && vs != Status::FINALIZED) {
     if (vs != Status::PAUSE) {
@@ -196,7 +196,7 @@ void VideoStream::skipDown()
       else mSkip /= 2;
     }
   } else if ( sv == Skip::SKIP_MILLISECONDS ) {
-    int n = cvRound(mSkip/fps());
+    int n = I3D_ROUND_TO_INT(mSkip/fps());
     if (n == -1){
       mSkip = 1;
     } else if ( n != 16 ) {
@@ -217,7 +217,7 @@ void VideoStream::skipUp()
       else mSkip /= 2;
     }
   } else if ( sv == Skip::SKIP_MILLISECONDS ) {
-    int n = cvRound(mSkip/fps());
+    int n = I3D_ROUND_TO_INT(mSkip/fps());
     if (n == 1){
       mSkip = -2;
     } else if ( n != -16 ) {
@@ -266,7 +266,7 @@ void VideoStream::resizeFrame()
     float scale = (float)szv.width / (float)sz.width;
     sz.height = int(szv.height / scale);
   }
-  resize(mFrame, mFrame, sz, 0, 0, cv::INTER_NEAREST); //... Ver tipo de interpolación
+  resize(mFrame, mFrame, sz, 0., 0., cv::INTER_NEAREST); //... Ver tipo de interpolación
 }
 
 bool VideoStream::skipFrames(cv::Mat *vf, int frames)
@@ -456,7 +456,7 @@ void VideoWindow::init( )
   if (mVideo) {
     mVideoSize = mVideo->getFrameCount();
     int trackbarPos = 0;
-    cv::createTrackbar("Frame", mWindowName, &trackbarPos, cvRound(mVideoSize), onTrackbarPositionChange, mVideo);
+    cv::createTrackbar("Frame", mWindowName, &trackbarPos, I3D_ROUND_TO_INT(mVideoSize), onTrackbarPositionChange, mVideo);
   }
 }
 

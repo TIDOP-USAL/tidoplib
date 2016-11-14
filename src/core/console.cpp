@@ -263,17 +263,6 @@ bool Progress::operator()(double increment)
   return true;
 }
 
-void Progress::update() 
-{
-  if (!onProgress._Empty()) onProgress(mPercent);
-}
-
-void Progress::restart()
-{
-  mPercent = 0;
-  mProgress = 0.;
-}
-
 void Progress::init(double min, double max, std::string msg)
 {
   mMinimun = min;
@@ -283,22 +272,10 @@ void Progress::init(double min, double max, std::string msg)
   updateScale();
 }
 
-void Progress::initialize()
+void Progress::restart()
 {
-  printf(mMsg.c_str());
-  printf("\n");
-  if (!onInitialize._Empty()) onInitialize();
-}
-
-void Progress::terminate()
-{
-  printf("\n");
-  if (!onTerminate._Empty()) onTerminate();
-}
-
-void Progress::updateScale()
-{
-  mScale = 100./(mMaximun - mMinimun);
+  mPercent = 0;
+  mProgress = 0.;
 }
 
 void Progress::setOnProgressListener(std::function<void(double)> &progressFunction)
@@ -315,6 +292,32 @@ void Progress::setOnTerminateListener(std::function<void(void)> &terminateFuncti
 {
   onTerminate = terminateFunction;
 }
+
+/* metodos protected*/
+
+void Progress::initialize()
+{
+  printf(mMsg.c_str());
+  printf("\n");
+  if (!onInitialize._Empty()) onInitialize();
+}
+
+void Progress::update() 
+{
+  if (!onProgress._Empty()) onProgress(mPercent);
+}
+
+void Progress::updateScale()
+{
+  mScale = 100./(mMaximun - mMinimun);
+}
+
+void Progress::terminate()
+{
+  printf("\n");
+  if (!onTerminate._Empty()) onTerminate();
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 

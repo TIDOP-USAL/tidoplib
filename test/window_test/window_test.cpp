@@ -126,6 +126,87 @@ TEST(WindowD, CopyConstructorDiff) {
   EXPECT_EQ( 100, w2.pt2.y);
 }
 
+// Comprobación de que redondea bien con ventanas de enteros
+
+TEST(WindowI, ConstructorCentroAnchoAlto) {
+  // Tamaño par
+  cv::Point ptc(50, 50);
+  WindowI w(ptc,50,50);
+  EXPECT_EQ( 50, w.getWidth());
+  EXPECT_EQ( 50, w.getHeight());
+
+  //Tamaño impar
+  cv::Point ptc2(50, 50);
+  WindowI w2(ptc2,51,51);
+  EXPECT_EQ( 51, w2.getWidth());
+  EXPECT_EQ( 51, w2.getHeight());
+
+  // Ventana double
+  cv::Point2d ptc3(50.67, 50.76);
+  WindowD w3(ptc3, 100.32, 254.25);
+  EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
+  EXPECT_NEAR(254.25, w3.getHeight(), 0.01);
+
+  // Ventana float
+  cv::Point2f ptc4(50.67f, 50.76f);
+  WindowF w4(ptc4, 100.34f, 254.23f);
+  EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
+  EXPECT_NEAR(254.23f, w4.getHeight(), 0.01);
+
+}
+
+TEST(WindowI, ConstructorCenterSize) {
+  // Tamaño par
+  cv::Point ptc(50, 50);
+  WindowI w(ptc,50);
+  EXPECT_EQ( 50, w.getWidth());
+  EXPECT_EQ( 50, w.getHeight());
+
+  //Tamaño impar
+  cv::Point ptc2(50, 50);
+  WindowI w2(ptc2,51);
+  EXPECT_EQ( 51, w2.getWidth());
+  EXPECT_EQ( 51, w2.getHeight());
+
+  // Ventana double
+  cv::Point2d ptc3(50.67, 50.76);
+  WindowD w3(ptc3, 100.32);
+  EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
+  EXPECT_NEAR(100.32, w3.getHeight(), 0.01);
+
+  // Ventana float
+  cv::Point2f ptc4(50.67f, 50.76f);
+  WindowF w4(ptc4, 100.34f);
+  EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
+  EXPECT_NEAR(100.34f, w4.getHeight(), 0.01);
+
+}
+
+TEST(getCenter, WindowCenter) {
+  // Tamaño par
+  cv::Point ptc(50, 50);
+  WindowI w(ptc,50);
+  EXPECT_EQ( ptc, w.getCenter());
+
+  //Tamaño impar
+  cv::Point ptc2(50, 50);
+  WindowI w2(ptc2,51);
+  EXPECT_EQ( ptc2, w2.getCenter());
+
+  //// Ventana double
+  //cv::Point2d ptc3(50.67, 50.76);
+  //WindowD w3(ptc3, 100.32);
+  //EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
+  //EXPECT_NEAR(100.32, w3.getHeight(), 0.01);
+
+  //// Ventana float
+  //cv::Point2f ptc4(50.67f, 50.76f);
+  //WindowF w4(ptc4, 100.34f);
+  //EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
+  //EXPECT_NEAR(100.34f, w4.getHeight(), 0.01);
+
+}
+
 GTEST_API_ int main(int argc, char **argv) {
   printf("Running main() from gtest_main.cc\n");
   testing::InitGoogleTest(&argc, argv);

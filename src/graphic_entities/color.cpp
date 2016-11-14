@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 
+
 namespace I3D
 {
 
@@ -11,7 +12,122 @@ Color::Color(int red, int green, int blue, int alpha)
   mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
 }
 
-Color::Color(double cyan, double magenta, double yellow, double key) 
+Color::Color(double cyan, double magenta, double yellow, double key) : mColor(0)
+{
+  fromCMYK(cyan, magenta, yellow, key);
+  //double aux = (1 - key) * 255;
+  //mColor = (I3D_ROUND_TO_INT((1 - yellow) * aux) & 0xFF) 
+  //       | ((I3D_ROUND_TO_INT((1 - magenta) * aux) << 8) & 0xFF00) 
+  //       | ((I3D_ROUND_TO_INT((1 - cyan) * aux) << 16) & 0xFF0000);
+}
+
+Color::Color(double hue, double saturation, double value) : mColor(0)
+{
+  fromHSV(hue, saturation, value);
+  //mColor = 0;
+  //if (hue < 0) hue = 0;
+  //if (saturation < 0) saturation = 0;
+  //if (value < 0) value = 0;
+  //if (hue >= 360) hue = 359;
+  //if (saturation > 100) saturation = 100;
+  //if (value > 100) value = 100;
+  //value /= 100.;
+  //saturation /= 100.;
+  //double chroma = value * saturation;
+  //double h = hue / 60.;
+  //double x = chroma * (1 - fabs(fmod(h,2)-1));
+
+  //std::array<double, 3> _rgb = { 0., 0., 0. };
+
+  //if (h >= 0 && h < 1) {
+  //  _rgb[0] = chroma;
+  //  _rgb[1] = x;
+  //} else if (h >= 0 && h < 1) {
+  //  _rgb[0] = x;
+  //  _rgb[1] = chroma;
+  //} else if (h >= 1 && h < 2) {
+  //  _rgb[1] = chroma;
+  //  _rgb[2] = x;
+  //} else if (h >= 2 && h < 3) {
+  //  _rgb[1] = chroma;
+  //  _rgb[2] = x;
+  //} else if (h >= 3 && h < 4) {
+  //  _rgb[1] = x;
+  //  _rgb[2] = chroma;
+  //} else if (h >= 4 && h < 5) {
+  //  _rgb[0] = x;
+  //  _rgb[2] = chroma;
+  //} else {
+  //  _rgb[0] = chroma;
+  //  _rgb[2] = x;
+  //}
+
+  //double m = value - chroma;
+  //_rgb[0] += m;
+  //_rgb[1] += m;
+  //_rgb[2] += m;
+  //
+  //mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
+  //       | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
+  //       | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
+}
+
+Color::Color(const std::string &color) 
+{
+  mColor = std::stoi(color,nullptr,16);
+}
+
+Color::Color(const Color::NAME &color)
+{
+  mColor = static_cast<uint32_t>(color);
+}
+
+Color::Color(const cv::Scalar &color) 
+{
+  mColor = rgbToInt(I3D_ROUND_TO_INT(color[2]), I3D_ROUND_TO_INT(color[1]), I3D_ROUND_TO_INT(color[0]));
+}
+
+/*!
+ * \brief Obtiene la componente azul de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente azul
+ */
+int Color::getBlue() const
+{ 
+  return (mColor & 0xFF);
+}
+
+/*!
+ * \brief Obtiene la componente verde de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente verde
+ */
+int Color::getGreen() const
+{ 
+  return((mColor & 0xFF00) >> 8); 
+}
+
+/*!
+ * \brief Obtiene la componente roja de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente roja
+ */
+int Color::getRed() const
+{ 
+  return((mColor & 0xFF0000) >> 16); 
+}
+
+/*!
+ * \brief Obtiene el canal alfa de un color
+ * \param[in] color Color representado como un entero
+ * \return Canal alfa
+ */
+int Color::getAlpha() const
+{ 
+  return((mColor & 0xFF000000) >> 24); 
+}
+
+void Color::fromCMYK(const double cyan, const double magenta, const double yellow, const double key)
 {
   double aux = (1 - key) * 255;
   mColor = (I3D_ROUND_TO_INT((1 - yellow) * aux) & 0xFF) 
@@ -19,20 +135,24 @@ Color::Color(double cyan, double magenta, double yellow, double key)
          | ((I3D_ROUND_TO_INT((1 - cyan) * aux) << 16) & 0xFF0000);
 }
 
-Color::Color(double hue, double saturation, double value)
+void Color::fromHSV(const double hue, const double saturation, const double value)
 {
-  if (hue < 0) hue = 0;
-  if (saturation < 0) saturation = 0;
-  if (value < 0) value = 0;
-  if (hue >= 360) hue = 359;
-  if (saturation > 100) saturation = 100;
-  if (value > 100) value = 100;  value /= 100.;
-  saturation /= 100.;
-  double chroma = value * saturation;
-  double h = hue / 60.;
+  double _hue, _saturation, _value;
+
+  if (hue < 0) _hue = 0;
+  if (saturation < 0) _saturation = 0;
+  if (value < 0) _value = 0;
+  if (hue >= 360) _hue = 359;
+  if (saturation > 100) _saturation = 100;
+  if (value > 100) _value = 100;
+
+  _value /= 100.;
+  _saturation /= 100.;
+  double chroma = _value * _saturation;
+  double h = _hue / 60.;
   double x = chroma * (1 - fabs(fmod(h,2)-1));
 
-  std::array<double, 3> _rgb = { 0, 0, 0 };
+  std::array<double, 3> _rgb = { 0., 0., 0. };
 
   if (h >= 0 && h < 1) {
     _rgb[0] = chroma;
@@ -57,7 +177,7 @@ Color::Color(double hue, double saturation, double value)
     _rgb[2] = x;
   }
 
-  double m = value - chroma;
+  double m = _value - chroma;
   _rgb[0] += m;
   _rgb[1] += m;
   _rgb[2] += m;
@@ -67,62 +187,13 @@ Color::Color(double hue, double saturation, double value)
          | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
 }
 
-Color::Color(const std::string &color) 
-{
-  mColor = std::stoi(color,nullptr,16);
-}
 
-Color::Color(const cv::Scalar &color) 
-{
-  mColor = rgbToInt(I3D_ROUND_TO_INT(color[2]), I3D_ROUND_TO_INT(color[1]), I3D_ROUND_TO_INT(color[0]));
-}
-
-/*!
- * \brief Obtiene la componente azul de un color
- * \param[in] color Color representado como un entero
- * \return Componente azul
- */
-int Color::getBlue()
-{ 
-  return (mColor & 0xFF);
-}
-
-/*!
- * \brief Obtiene la componente verde de un color
- * \param[in] color Color representado como un entero
- * \return Componente verde
- */
-int Color::getGreen()
-{ 
-  return((mColor & 0xFF00) >> 8); 
-}
-
-/*!
- * \brief Obtiene la componente roja de un color
- * \param[in] color Color representado como un entero
- * \return Componente roja
- */
-int Color::getRed()
-{ 
-  return((mColor & 0xFF0000) >> 16); 
-}
-
-/*!
- * \brief Obtiene el canal alfa de un color
- * \param[in] color Color representado como un entero
- * \return Canal alfa
- */
-inline int Color::getAlpha()
-{ 
-  return((mColor & 0xFF000000) >> 24); 
-}
-
-void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key) 
+void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  const
 {
   double rgb[3] = { getRed()/255., getGreen()/255., getBlue()/255. };
   double max = *std::max_element(rgb, rgb + 3);
-  *key = 1 - max;
-  if (*key == 1) {
+  *key = 1. - max;
+  if (*key == 1.) {
     *cyan = *magenta = *yellow = 0.;
   } else {
     double aux = max;
@@ -132,7 +203,7 @@ void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)
   }
 }
 
-void Color::toHSV(double *hue, double *saturation, double *value )
+void Color::toHSV(double *hue, double *saturation, double *value ) const
 {
   double rgb[3] = { getRed()/255., getGreen()/255., getBlue()/255. };
 
@@ -164,11 +235,12 @@ void Color::toHSV(double *hue, double *saturation, double *value )
     *saturation = 0.;
   }
   
-  *saturation *= 100;
+  *saturation *= 100;
+
 }
 
   
-int Color::toLuminance()
+int Color::toLuminance() const
 {
   return I3D_ROUND_TO_INT( 0.2126 * getRed() + 0.7152 * getGreen() + 0.0722 * getBlue());
 }

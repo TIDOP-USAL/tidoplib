@@ -13,6 +13,9 @@
 namespace I3D
 {
 
+namespace EXPERIMENTAL
+{
+
 /*!
  * \brief Clase Event
  */
@@ -225,6 +228,8 @@ public:
    */
   //void notify(const int _event) const;
 };
+
+} // End namespace EXPERIMENTAL
 
 } // End namespace I3D
 

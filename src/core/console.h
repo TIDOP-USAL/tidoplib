@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "core\defs.h"
-#include "core\events.h"
+//#include "core\events.h"
 #include "utils.h"
 
 namespace I3D
@@ -645,22 +645,12 @@ public:
   bool operator() (double increment = 1.);
 
   /*!
-   * \brief Establece el manejador del evento OnProgress
-   * \param progressFunction Función de control del progreso
+   * \brief Inicializa el progreso
+   * \param min Valor minimo
+   * \param max
+   * \param msg
    */
-  void setOnProgressListener(std::function<void(double)> &progressFunction);
-  
-  /*!
-   * \brief Establece el manejador del evento OnInitialize
-   * \param initializeFunction Función que se llama al inicializar
-   */
-  void setOnInitializeListener(std::function<void(void)> &initializeFunction);
-  
-  /*!
-   * \brief Establece el manejador del evento OnTerminate
-   * \param terminateFunction Función que se llama al terminar
-   */
-  void setOnTerminateListener(std::function<void(void)> &terminateFunction);
+  void init(double min, double max, std::string msg = "");
 
   /*!
    * \brief Restablece los valores al inicio
@@ -668,12 +658,22 @@ public:
   void restart();
 
   /*!
-   * \brief Inicializa el progreso
-   * \param min Valor minimo
-   * \param max
-   * \param msg
+   * \brief Establece el manejador del evento OnInitialize
+   * \param initializeFunction Función que se llama al inicializar
    */
-  void init(double min, double max, std::string msg = "");
+  void setOnInitializeListener(std::function<void(void)> &initializeFunction);
+
+  /*!
+   * \brief Establece el manejador del evento OnProgress
+   * \param progressFunction Función de control del progreso
+   */
+  void setOnProgressListener(std::function<void(double)> &progressFunction);
+  
+  /*!
+   * \brief Establece el manejador del evento OnTerminate
+   * \param terminateFunction Función que se llama al terminar
+   */
+  void setOnTerminateListener(std::function<void(void)> &terminateFunction);
 
   //void addListener(Listener *listener) 
   //{ 
@@ -683,24 +683,24 @@ public:
 protected:
 
   /*!
-   * \brief
-   */
-  virtual void update();
-
-  /*!
    * \brief initialize
    */
   void initialize();
 
   /*!
-   * \brief terminate
+   * \brief
    */
-  void terminate();
+  virtual void update();
 
   /*!
    * \brief updateScale
    */
   void updateScale();
+
+  /*!
+   * \brief terminate
+   */
+  void terminate();
 };
 
 

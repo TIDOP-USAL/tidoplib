@@ -93,7 +93,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   cv::Point pt1, pt2;
   if (angle) {
     int x0 = size.width / 2, y0 = size.height / 2;
-    int dx = cvRound(tan(*angle) * 70.);
+    int dx = I3D_ROUND_TO_INT(tan(*angle) * 70.);
     pt1.x = x0 + dx;
     pt1.y = y0 - 70;
     pt2.x = x0 - dx;
@@ -135,9 +135,9 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
     double b = 0.;
     double corr = regressionLinearXY(pMax, &m, &b);
     
-    pt1 = cv::Point(cvRound(b + rcrop.x), rcrop.y);
-    pt2 = cv::Point(cvRound(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);
-    r_angle = atan(m) + CV_PI / 2;
+    pt1 = cv::Point(I3D_ROUND_TO_INT(b + rcrop.x), rcrop.y);
+    pt2 = cv::Point(I3D_ROUND_TO_INT(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);
+    r_angle = atan(m) + CV_PI / 2.;
   }
 
   cv::Mat maskLine = cv::Mat::zeros(size, CV_8U);

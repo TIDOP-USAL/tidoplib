@@ -79,7 +79,7 @@ public:
   /*!
    * \brief Sobrecarga del operador de asignación
    * \param[in] segment Segmento que se asigna
-   * \return Referencia a la ventana
+   * \return Referencia al segmento
    */
   Segment &operator = (const Segment &segment);
 
@@ -307,7 +307,7 @@ public:
 // Definición de métodos
 
 template<typename T> inline
-Segment3D<T>::Segment3D( ) : pt1(0, 0, 0), pt2(0, 0, 0) {}
+Segment3D<T>::Segment3D( ) : pt1(cv::Point3_<T>()), pt2(cv::Point3_<T>()) {}
 
 template<typename T> inline
 Segment3D<T>::Segment3D(const Segment3D &Segment) : pt1(Segment.pt1), pt2(Segment.pt2) {}

@@ -49,10 +49,10 @@ bool isOutlier(const double temp, const double median, const double mad)
 double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b)
 {
   double corr = 0.0;
-  double sx = 0, sy = 0, sx2 = 0, sy2 = 0, sxy = 0;
+  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
   size_t n = pts.size();
   if (n >= 2) {
-    for (int i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
       sx += pts[i].x;
       sy += pts[i].y;
       sx2 += pts[i].x * pts[i].x;
@@ -74,11 +74,16 @@ double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double
 double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b)
 {
   double corr = 0.0;
-  double sx = 0, sy = 0, sx2 = 0, sy2 = 0, sxy = 0;
-  int n = static_cast<int>(pts.size());
+  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+  size_t n = pts.size();
   if (n >= 2) {
-    for (int i = 0; i < n; i++)
-      sx += pts[i].x, sy += pts[i].y, sx2 += pts[i].x * pts[i].x, sy2 += pts[i].y * pts[i].y, sxy += pts[i].x * pts[i].y;
+    for (size_t i = 0; i < n; i++) {
+      sx += pts[i].x;
+      sy += pts[i].y;
+      sx2 += pts[i].x * pts[i].x;
+      sy2 += pts[i].y * pts[i].y;
+      sxy += pts[i].x * pts[i].y;
+    }
     double den = (n*sy2 - sy*sy);
     if (den) {
       *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);

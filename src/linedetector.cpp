@@ -35,7 +35,7 @@ int ldHouh::run(cv::Mat &image)
   mLines.clear();
   std::vector<cv::Vec2f> auxlines;
   try{
-    HoughLines(image, auxlines, 1, CV_PI / 180, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
+    HoughLines(image, auxlines, 1, I3D_DEG_TO_RAD, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
   } catch (std::exception &e) {
     logPrintError(e.what());
     i_err = 1;
@@ -47,10 +47,10 @@ int ldHouh::run(cv::Mat &image)
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
     Line l;
-    l.pt1.x = cvRound(x0 + 1000 * (-b));
-    l.pt1.y = cvRound(y0 + 1000 * (a));
-    l.pt2.x = cvRound(x0 - 1000 * (-b));
-    l.pt2.y = cvRound(y0 - 1000 * (a));
+    l.pt1.x = I3D_ROUND_TO_INT(x0 + 1000. * (-b));
+    l.pt1.y = I3D_ROUND_TO_INT(y0 + 1000. * (a));
+    l.pt2.x = I3D_ROUND_TO_INT(x0 - 1000. * (-b));
+    l.pt2.y = I3D_ROUND_TO_INT(y0 - 1000. * (a));
     mLines.push_back(l);
   }
   return i_err;
@@ -81,7 +81,7 @@ int ldHouhP::run(cv::Mat &image)
   mLines.clear();
   vector<cv::Vec4i> linesaux;
   try {
-    HoughLinesP(image, linesaux, 1, CV_PI / 180, mThreshold, mMinLineLength, mMaxLineGap);
+    HoughLinesP(image, linesaux, 1., I3D_DEG_TO_RAD, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {
     logPrintError(e.what());
     i_ret = 1;
@@ -89,7 +89,7 @@ int ldHouhP::run(cv::Mat &image)
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
     angle = l.angleOY();
-    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + CV_PI && angle <= mMaxTheta + CV_PI) ) {
+    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) ) {
       mLines.push_back(l);
     }
   }
@@ -135,7 +135,7 @@ int ldHouhFast::run(cv::Mat &image)
     //... Hay que ver en función del angulo el valor de 'angleRange'
     cv::ximgproc::FastHoughTransform(image, hough, 4/*dstDepth, angleRange, op, skew*/);
 
-    float minWeight = static_cast<float>(255 * 0.3 * std::min(image.rows, image.cols));
+    float minWeight = 255.f * 0.3f * std::min(image.rows, image.cols);
     if (!ldHouhFast::getLocalExtr(linesaux, image, hough, minWeight, 100)) {
       //cout << "Failed to find local maximums on FHT image";
       //return -2;
@@ -149,7 +149,7 @@ int ldHouhFast::run(cv::Mat &image)
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
     angle = l.angleOY();
-    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + CV_PI && angle <= mMaxTheta + CV_PI) ) {
+    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) ) {
       mLines.push_back(l);
     }
   }
@@ -280,7 +280,7 @@ int ldLSD::run(cv::Mat &image)
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
     angle = l.angleOY();
-    if (angle >= mMinTheta && angle <= mMaxTheta || angle >= mMinTheta + CV_PI && angle <= mMaxTheta + CV_PI) {
+    if (angle >= mMinTheta && angle <= mMaxTheta || angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) {
       mLines.push_back(l);
     }
   }

@@ -34,7 +34,7 @@ inline double I3D_EXPORT module(const cv::Point_<T> &v)
 template<typename T>
 inline double I3D_EXPORT vectorAngle(const cv::Point_<T> &v1, const cv::Point_<T> &v2)
 {
-  if (v1 == cv::Point_<T>(0,0) || v2 == cv::Point_<T>(0,0))
+  if (v1 == cv::Point_<T>() || v2 == cv::Point_<T>())
     return 0.0;
   return acos((v1.x*v2.x + v1.y*v2.y) / (module(v1) * module(v2)));
 }

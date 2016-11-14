@@ -18,6 +18,159 @@ namespace I3D
 
 class I3D_EXPORT Color
 {
+public:
+  
+  /*!
+   * Nombres de color html
+   * http://www.w3schools.com/colors/colors_names.asp
+   */
+  enum class NAME
+  {
+  //  Color                   Hex	         (R,G,B)	      (H,S,V)	          (H,S,L)
+  // ----------------------------------------------------------------------------------
+
+    Black =	                0x000000,   // (0,0,0)        (0°,0%,0%)	      (0°,0%,0%)
+    Navy =	                0x000080,   // (0,0,128)	    (240°,100%,50%)	  (240°,100%,25%)
+    DarkBlue =	            0x00008B,
+    MediumBlue =	          0x0000CD,
+    Blue =	                0x0000FF,   // (0,0,255)      (240°,100%,100%)	(240°,100%,50%)
+    DarkGreen =	            0x006400,
+    Green =	                0x008000,   // (0,128,0)	    (120°,100%,50%)	  (120°,100%,25%)
+    Teal =	                0x008080,   // (0,128,128)	  (180°,100%,50%)	  (180°,100%,25%)
+    DarkCyan =	            0x008B8B,
+    DeepSkyBlue =	          0x00BFFF,
+    DarkTurquoise =	        0x00CED1,
+    MediumSpringGreen =	    0x00FA9A,
+    Lime =	                0x00FF00,   // (0,255,0)	    (120°,100%,100%)	(120°,100%,50%)
+    SpringGreen =	          0x00FF7F,
+    Aqua =	                0x00FFFF,
+    Cyan =	                0x00FFFF,   // (0,255,255)	  (180°,100%,100%)	(180°,100%,50%)  
+    MidnightBlue =	        0x191970,
+    DodgerBlue =	          0x1E90FF,
+    LightSeaGreen =	        0x20B2AA,
+    ForestGreen =	          0x228B22,
+    SeaGreen =	            0x2E8B57,
+    DarkSlateGray =	        0x2F4F4F,
+    LimeGreen =	            0x32CD32,
+    MediumSeaGreen =	      0x3CB371,
+    Turquoise =	            0x40E0D0,
+    RoyalBlue =	            0x4169E1,
+    SteelBlue =	            0x4682B4,
+    DarkSlateBlue =	        0x483D8B,
+    MediumTurquoise =	      0x48D1CC,
+    Indigo = 	              0x4B0082,
+    DarkOliveGreen =	      0x556B2F,
+    CadetBlue =	            0x5F9EA0,
+    CornflowerBlue =	      0x6495ED,
+    RebeccaPurple =   	    0x663399,
+    MediumAquaMarine =	    0x66CDAA,
+    DimGray =	              0x696969,
+    SlateBlue =	            0x6A5ACD,
+    OliveDrab =	            0x6B8E23,
+    SlateGray =	            0x708090,
+    LightSlateGray =	      0x778899,
+    MediumSlateBlue =	      0x7B68EE,
+    LawnGreen =	            0x7CFC00,
+    Chartreuse =	          0x7FFF00,
+    Aquamarine =	          0x7FFFD4,
+    Maroon =	              0x800000,   // (128,0,0)	    (0°,100%,50%)   	(0°,100%,25%)
+    Purple =	              0x800080,   // (128,0,128)	  (300°,100%,50%)	  (300°,100%,25%)
+    Olive =	                0x808000,   // (128,128,0)	  (60°,100%,50%)	  (60°,100%,25%)
+    Gray =	                0x808080,   // (128,128,128)	(0°,0%,50%)	      (0°,0%,50%)
+    SkyBlue =	              0x87CEEB,
+    LightSkyBlue =	        0x87CEFA,
+    BlueViolet =	          0x8A2BE2,
+    DarkRed =	              0x8B0000,
+    DarkMagenta =	          0x8B008B,
+    SaddleBrown =	          0x8B4513,
+    DarkSeaGreen =	        0x8FBC8F,
+    LightGreen =	          0x90EE90,
+    MediumPurple =	        0x9370DB,
+    DarkViolet =	          0x9400D3,
+    PaleGreen =	            0x98FB98,
+    DarkOrchid =	          0x9932CC,
+    YellowGreen =	          0x9ACD32,
+    Sienna =	              0xA0522D,
+    Brown =   	            0xA52A2A,
+    DarkGray =	            0xA9A9A9,
+    LightBlue =	            0xADD8E6,
+    GreenYellow =	          0xADFF2F,
+    PaleTurquoise =	        0xAFEEEE,
+    LightSteelBlue =	      0xB0C4DE,
+    PowderBlue =	          0xB0E0E6,
+    FireBrick =	            0xB22222,
+    DarkGoldenRod =	        0xB8860B,
+    MediumOrchid =	        0xBA55D3,
+    RosyBrown =	            0xBC8F8F,
+    DarkKhaki =	            0xBDB76B,
+    Silver =	              0xC0C0C0,   // (192,192,192)	(0°,0%,75%)	      (0°,0%,75%)
+    MediumVioletRed =	      0xC71585,
+    IndianRed = 	          0xCD5C5C,
+    Peru =	                0xCD853F,
+    Chocolate =	            0xD2691E,
+    Tan =	                  0xD2B48C,
+    LightGray =	            0xD3D3D3,
+    Thistle =	              0xD8BFD8,
+    Orchid =	              0xDA70D6,
+    GoldenRod =	            0xDAA520,
+    PaleVioletRed =	        0xDB7093,
+    Crimson =	              0xDC143C,
+    Gainsboro =	            0xDCDCDC,
+    Plum =	                0xDDA0DD,
+    BurlyWood =	            0xDEB887,
+    LightCyan =	            0xE0FFFF,
+    Lavender =	            0xE6E6FA,
+    DarkSalmon =	          0xE9967A,
+    Violet =	              0xEE82EE,
+    PaleGoldenRod =	        0xEEE8AA,
+    LightCoral =	          0xF08080,
+    Khaki =	                0xF0E68C,
+    AliceBlue =	            0xF0F8FF,
+    HoneyDew =	            0xF0FFF0,
+    Azure =	                0xF0FFFF,
+    SandyBrown =	          0xF4A460,
+    Wheat =	                0xF5DEB3,
+    Beige =	                0xF5F5DC,
+    WhiteSmoke = 	          0xF5F5F5,
+    MintCream =	            0xF5FFFA,
+    GhostWhite =	          0xF8F8FF,
+    Salmon =	              0xFA8072,
+    AntiqueWhite =	        0xFAEBD7,
+    Linen =	                0xFAF0E6,
+    LightGoldenRodYellow =	0xFAFAD2,
+    OldLace =	              0xFDF5E6,
+    Red =	                  0xFF0000,   // (255,0,0)	    (0°,100%,100%)	  (0°,100%,50%)
+    Fuchsia =	              0xFF00FF,
+    Magenta =	              0xFF00FF,   // (255,0,255)	  (300°,100%,100%)	(300°,100%,50%)
+    DeepPink =	            0xFF1493,
+    OrangeRed =	            0xFF4500,
+    Tomato =	              0xFF6347,
+    HotPink =	              0xFF69B4,
+    Coral =	                0xFF7F50,
+    DarkOrange =	          0xFF8C00,
+    LightSalmon =	          0xFFA07A,
+    Orange =	              0xFFA500,
+    LightPink =	            0xFFB6C1,
+    Pink =	                0xFFC0CB,
+    Gold =	                0xFFD700,
+    PeachPuff =	            0xFFDAB9,
+    NavajoWhite =	          0xFFDEAD,
+    Moccasin =	            0xFFE4B5,
+    Bisque =	              0xFFE4C4,
+    MistyRose =	            0xFFE4E1,
+    BlanchedAlmond =	      0xFFEBCD,
+    PapayaWhip =	          0xFFEFD5,
+    LavenderBlush =	        0xFFF0F5,
+    SeaShell =	            0xFFF5EE,
+    Cornsilk =	            0xFFF8DC,
+    LemonChiffon =	        0xFFFACD,
+    FloralWhite =	          0xFFFAF0,
+    Snow =	                0xFFFAFA,
+    Yellow =	              0xFFFF00,   // (255,255,0)	  (60°,100%,100%)	  (60°,100%,50%)
+    LightYellow =	          0xFFFFE0,
+    Ivory =	                0xFFFFF0,
+    White = 	              0xFFFFFF    // (255,255,255)	(0°,0%,100%)	    (0°,0%,100%)
+  };
 
 private:
 
@@ -72,10 +225,25 @@ public:
   Color(double hue, double saturation, double value);
 
   /*!
+   * \brief Constructora HSL
+   * \param hue
+   * \param saturation
+   * \param lightness
+   */
+  //Color(double hue, double saturation, double lightness);
+
+  /*!
    * \brief Constructora
    * \param color Color como cadena (hexadecimal)
    */
   Color(const std::string &color);
+
+  /*!
+   * \brief Constructora
+   * \param color Nombre del color
+   * \see NAME
+   */
+  Color(const Color::NAME &color);
 
   /*!
    * \brief Constructora
@@ -98,32 +266,43 @@ public:
    * \brief Devuelve la componente azul
    * \return Componente azul
    */
-  int getBlue();
+  int getBlue() const;
 
   /*!
    * \brief Devuelve la componente verde
    * \return Componente verde
    */
-  int getGreen(); 
+  int getGreen() const; 
 
   /*!
    * \brief Devuelve la componente roja
    * \return Componente rojo
    */
-  int getRed();
+  int getRed() const;
 
   /*!
    * \brief Devuelve el canal alfa
    * \return Canal alfa
    */
-  int getAlpha();
+  int getAlpha() const;
 
-  void toCMYK(double *cyan, double *magenta, double *yellow, double *key);
+  void fromCMYK(const double cyan, const double magenta, const double yellow, const double key);
 
-  void toHSV(double *hue, double *saturation, double *value );
+  void fromHSV(const double hue, const double saturation, const double value );
 
-  int toLuminance();
+  void toCMYK(double *cyan, double *magenta, double *yellow, double *key) const;
 
+  void toHSV(double *hue, double *saturation, double *value ) const;
+
+  int toLuminance() const;
+
+  Color &operator = (const Color &color)
+  {
+    if (this != &color) {
+      mColor = color.mColor;
+    }
+    return *this;
+  }
 };
 
 template<typename T> inline
@@ -137,9 +316,7 @@ T Color::get() const
   } else if (typeid(T) == typeid(int)) {
     color = mColor;
   } else if (typeid(T) == typeid(cv::Scalar)) {
-    int r, g, b;
-    intToRGB(mColor, &r, &g, &b);
-    *(cv::Scalar *)_color = cv::Scalar(g,b,r);
+    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
   } else {
     throw std::exception("Tipo de conversión no permitida");
   }

@@ -1,6 +1,9 @@
-#include "core/events.h"
+#include "events.h"
 
 namespace I3D
+{
+
+namespace EXPERIMENTAL
 {
 
 Observer::~Observer() 
@@ -40,5 +43,7 @@ void Subject::deleteObserver(const Observer *observer)
   //for (const auto& obs : mObservers)
 
 }
+
+} // End namespace EXPERIMENTAL
 
 }

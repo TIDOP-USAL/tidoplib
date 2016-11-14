@@ -451,6 +451,9 @@ void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out,
   //formatVectorOut(out, in.size());
   if (bDirect)
     cv::perspectiveTransform(in, *out, H);
+  else {
+    cv::perspectiveTransform(in, *out, H.inv());
+  }
 }
 
 template<typename T> inline
@@ -635,8 +638,8 @@ double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
         cv::solve(A, B, C, cv::DECOMP_SVD);
-        translate.x = C.at<sub_type>(2);
-        translate.y = C.at<sub_type>(3);
+        translate.x = static_cast<sub_type>(C.at<double>(2));
+        translate.y = static_cast<sub_type>(C.at<double>(3));
 
         ret = _rootMeanSquareError(pts1, pts2, error);
 
@@ -849,8 +852,8 @@ double Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
         cv::solve(A, B, C, cv::DECOMP_SVD);
-        r1 = C.at<sub_type>(0);
-        r2 = C.at<sub_type>(1);
+        r1 = static_cast<sub_type>(C.at<double>(0));
+        r2 = static_cast<sub_type>(C.at<double>(1));
         angle = acos(r1);
 
         rmse = _rootMeanSquareError(pts1, pts2, error);
@@ -1114,8 +1117,8 @@ double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
 
         a = C.at<double>(0);
         b = C.at<double>(1);
-        x0 = C.at<sub_type>(2);
-        y0 = C.at<sub_type>(3);
+        x0 = static_cast<sub_type>(C.at<double>(2));
+        y0 = static_cast<sub_type>(C.at<double>(3));
 
         rotation = atan2(b, a);
         scale = sqrt(a*a + b*b);
@@ -1418,8 +1421,7 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
 
   if (n1 != n2) {
     printf("...");
-  }
-  else {
+  } else {
     if (isNumberOfPointsValid(n1)){
       int m = n1 * mDimensions, n = 6;
       double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
@@ -1435,8 +1437,8 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
           *pb++ = pts2[i].x;
           *pa++ = 0;
           *pa++ = 0;
-          *pa++ = pts1[i].y;
           *pa++ = pts1[i].x;
+          *pa++ = pts1[i].y;
           *pa++ = 0;
           *pa++ = 1;
           *pb++ = pts2[i].y;
@@ -1447,19 +1449,18 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
         cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
-        b = C.at<double>(1);
-        c = C.at<double>(2);
+        c = C.at<double>(1);
+        b = C.at<double>(2);
         d = C.at<double>(3);
-        x0 = C.at<sub_type>(4);
-        y0 = C.at<sub_type>(5);
+        x0 = static_cast<sub_type>(C.at<double>(4));
+        y0 = static_cast<sub_type>(C.at<double>(5));
 
         mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
         mScaleX = sqrt(a*a + b*b);
         mScaleY = sqrt(c*c + d*d);
 
         rmse = _rootMeanSquareError(pts1, pts2, error);
-      }
-      catch (std::exception &e) {
+      } catch (std::exception &e) {
         printError(e.what());
       }
       delete[] A;
@@ -1555,8 +1556,10 @@ void Afin<T>::update()
     bi = -b / det;
     ci = -c / det;
     di = a / det;
+    I3D_DISABLE_WARNING(4244)
     x0i = (-d * x0 + b * y0) / det;
     y0i = (-a * y0 + c * x0) / det;
+    I3D_ENABLE_WARNING(4244)
   }
 }
 
@@ -2168,9 +2171,9 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
         mOmega = C.at<double>(1);
         mPhi = C.at<double>(2);
         mKappa = C.at<double>(3);
-        x0 = C.at<double>(4);
-        y0 = C.at<double>(5);
-        z0 = C.at<double>(6);
+        x0 = static_cast<sub_type>(C.at<double>(4));
+        y0 = static_cast<sub_type>(C.at<double>(5));
+        z0 = static_cast<sub_type>(C.at<double>(6));
 
         update();
         
