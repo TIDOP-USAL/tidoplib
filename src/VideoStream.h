@@ -2,12 +2,11 @@
 #define I3D_VIDEO_STREAM_H
 
 #include <ctime>
-#include <list>
 
 #include "opencv2/highgui/highgui.hpp"
 
 #include "core\defs.h"
-//#include "core\events.h"
+#include "experimental\events.h"
 
 namespace I3D
 {
@@ -491,7 +490,7 @@ public:
 
     //... La posición del trackbar se pasa en entero. para videos muy largos podria desbordarse
     if ( mVideoSize >= position )
-      cv::setTrackbarPos("Frame", mWindowName, I3D_ROUND_TO_INT(position));
+      cv::setTrackbarPos("Frame", mWindowName, cvRound(position));
   }
 
   void onResume() override

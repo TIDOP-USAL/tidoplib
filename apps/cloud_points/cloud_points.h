@@ -33,7 +33,7 @@ public:
 
   cv::RNG rng;
 
-  //bool bDrawRegressionLine;
+  bool bDrawRegressionLine;
   
   bool bSaveImages;
 
@@ -46,6 +46,7 @@ public:
     algorithm = cv::optflow::createOptFlow_Farneback();
     rng(12345);
     prevFrame = 0.;
+    bDrawRegressionLine = false;
   }
 
   ~DetectTransmissionTower()

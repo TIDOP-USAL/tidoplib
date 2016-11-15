@@ -1,3 +1,5 @@
+//--video=D:\Desarrollo\datos\Videos\Torres_Pasillo_Villaseca_2.MP4 --out_path=D:\Desarrollo\datos\Videos\Torres_Pasillo_Villaseca_2
+
 #include "cloud_points.h"
 
 #include <stdio.h>
@@ -209,8 +211,8 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
         if (cmax != 0. && cmax > mean[0] + stdv[0]) {
           cv::Point paux(wprev.pt1.x + id, wprev.pt1.y + ir);
           pMax.push_back(paux);
-          //if (bDrawRegressionLine)
-            //line(imgout, paux, paux, c, 1, cv::LINE_8);
+          if (bDrawRegressionLine)
+            line(*imgout, paux, paux, c, 1, cv::LINE_8);
         } else break;
       }
     }
@@ -226,10 +228,10 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       cv::Point pt1(I3D_ROUND_TO_INT(b), 0);
       cv::Point pt2(I3D_ROUND_TO_INT(m * magnitude.rows + b), magnitude.rows);
             
-      //if (bDrawRegressionLine) {
-      //  //Se pinta la recta de regresión
-      //  line(imgout, pt1, pt2, cv::Scalar(0, 0, 150), 1, cv::LINE_8);
-      //}
+      if (bDrawRegressionLine) {
+        //Se pinta la recta de regresión
+        line(*imgout, pt1, pt2, cv::Scalar(0, 0, 150), 1, cv::LINE_8);
+      }
             
 
       //Buscamos sólo cuando la torre este mas vertical
@@ -274,7 +276,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
         if (abs(wprev.pt1.y - ptMax.y) <= 200) {
        
           //Rectangulo envolvente de la torre            
-          //cv::rectangle(imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
+          //cv::rectangle(*imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
        
           //if (bDrawLines){
           //  for (int il = 0; il < linesGroup1.getSize(); il++) {
@@ -400,6 +402,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     WindowI wOut;
     bool bTower = mDetectTower->run(mFramePrev, frame, &out, &wOut);
     frame.copyTo(mFramePrev);
+    out.copyTo(frame);
     if (bTower) {
       char buffer[I3D_MAX_PATH];
       sprintf_s(buffer, "%s\\Apoyo_%05i.png", outPath.c_str(), I3D_ROUND_TO_INT(mCurrentPosition));
@@ -452,7 +455,7 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
   std::vector<cv::DMatch> matches;
   
   char out[I3D_MAX_PATH];
-  char buf[I3D_MAX_PATH];
+  //char buf[I3D_MAX_PATH];
   char name1[I3D_MAX_PATH];
   char name2[I3D_MAX_PATH];
 
@@ -467,8 +470,22 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
   Features2D feature2(fd, de);
   cv::FlannBasedMatcher matcherA;
 
-
   size_t size = images_paths.size();
+//////
+  // calculo de descriptores
+  //for (int i = 0; i < size; i++) {
+  //   cv::Mat image  = imread(images_paths[i].c_str(), IMREAD_GRAYSCALE);
+  //  int nft = feature1.detectKeyPoints(image);
+  //  feature1.calcDescriptor(image);
+
+  //  char out[_MAX_PATH];
+  //  changeFileExtension(images_paths[i].c_str(), "xml", out);
+  //  // Salvamos key points y los descriptores
+  //  feature1.save(out);
+  //}
+////////
+
+  
   for (int i = 0; i < size - 1; i++) {
     for (int j = i+1; j < size; j++) {
       //Features2D ft1, ft2;
@@ -476,8 +493,7 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       //ft1.read(out);
       //changeFileExtension(images_paths[j].c_str(), "xml", out);
       //ft2.read(out);
-      cv::Mat image1  = imread(images_paths[i].c_str(), IMREAD_GRAYSCALE);
-      cv::Mat image2  = imread(images_paths[j].c_str(), IMREAD_GRAYSCALE);
+
       //ft1.detectKeyPoints(image1);
       //ft1.calcDescriptor(image1);
       //ft2.detectKeyPoints(image2);
@@ -488,28 +504,43 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       ////match.getGoodMatches(&good_matches, 0.5);
       //match.getGoodMatches(ft1, ft2, &good_matches, 0.1);
 
+      changeFileExtension(images_paths[i].c_str(), "xml", out);
+      feature1.read(out);
+      changeFileExtension(images_paths[j].c_str(), "xml", out);
+      feature2.read(out);
+
       //// drawing the results
       //cv::Mat img_matches;
       cv::Mat img1 = cv::imread(images_paths[i].c_str());
       cv::Mat img2 = cv::imread(images_paths[j].c_str());
       //cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
-      int nft = feature1.detectKeyPoints(image1);
-      feature1.calcDescriptor(image1);
-      nft = feature2.detectKeyPoints(image2);
-      feature2.calcDescriptor(image2);
-      
       //matcherA.add(std::vector<cv::Mat>(1, feature2.getDescriptors()));
       std::vector <std::vector<cv::DMatch>> matchesA;
       matcherA.knnMatch(feature1.getDescriptors(), feature2.getDescriptors(), matchesA, 2);
 
+      //std::vector<cv::DMatch> goodMatchesA;
+      //int max_track_number = 0;
+      //for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
+      //  float distance0 = matchesA[iMatch][0].distance;
+      //  float distance1 = matchesA[iMatch][1].distance;
+      //  if (distance0 < 0.8 * distance1) {
+      //    goodMatchesA.push_back(matchesA[iMatch][0]);
+      //  }
+      //}
+
       std::vector<cv::DMatch> goodMatchesA;
       int max_track_number = 0;
+      std::vector<cv::Point2f> _pts1;
+      std::vector<cv::Point2f> _pts2;
       for (size_t iMatch = 0; iMatch < matchesA.size(); ++iMatch) {
         float distance0 = matchesA[iMatch][0].distance;
         float distance1 = matchesA[iMatch][1].distance;
         if (distance0 < 0.8 * distance1) {
+          //_pts1.push_back(feature1.getKeyPoint(matchesA[iMatch][0].queryIdx).pt);
+          //_pts2.push_back(feature2.getKeyPoint(matchesA[iMatch][0].trainIdx).pt);
           goodMatchesA.push_back(matchesA[iMatch][0]);
+          ++max_track_number;
         }
       }
 
@@ -520,7 +551,7 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       getFileName(images_paths[i].c_str(), name1);
       getFileName(images_paths[j].c_str(), name2);
 
-      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", goodMatchesA.size(), name1, name2);
+      //sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", goodMatchesA.size(), name1, name2);
 
       //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
 
@@ -535,11 +566,17 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
         bool addNew = true;
         for (int k = 0; k < idx_pass_points.size(); k++) {
           if (idx_pass_points[k][i] == idx1 ) {
+            addNew = false;
             idx_pass_points[k][j] = idx2;
-            addNew = false;
+            cv::Point2f point2 = feature2.getKeyPoint(idx2).pt;
+            pass_points[k][j] = Vec2d(point2.x, point2.y);
+            break;
           } else if (idx_pass_points[k][j] == idx2) {
-            idx_pass_points[k][i] = idx1;
             addNew = false;
+            idx_pass_points[k][i] = idx1;
+            cv::Point2f point1 = feature1.getKeyPoint(idx1).pt;
+            pass_points[k][i] = Vec2d(point1.x, point1.y);
+            break;
           }
         }
         if (addNew) {
@@ -626,10 +663,10 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  strmVideo.setSkipFrames(3);
+  strmVideo.setSkipFrames(2);
 
-  //VideoWindow vc("Cloud Points", WINDOW_AUTOSIZE);
-  //vc.setVideo(&strmVideo);
+  VideoWindow vc("Cloud Points", WINDOW_AUTOSIZE);
+  vc.setVideo(&strmVideo);
 
   // Se crea el detector
   double angle = 0;
@@ -717,8 +754,9 @@ int main(int argc, char** argv)
 
   // guardamos las orientaciones y desplazamiento de las camaras.
   std::vector<Affine3d> path_est;
-  std::remove("D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\camaras.txt");
-  std::ofstream hPos("D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\camaras.txt",std::ofstream::app);
+  file2 = out_path + "//camaras.txt";
+  std::remove(file2.c_str());
+  std::ofstream hPos(file2.c_str(), std::ofstream::app);
   for (size_t i = 0; i < Rs_est.size(); ++i) {
     
     if (hPos.is_open()) {
@@ -764,7 +802,7 @@ int main(int argc, char** argv)
   }
   point_cloud_ptr->width = nPoints;
   point_cloud_ptr->height = 1;
-  std::string pcd_file = "D:\\Desarrollo\\datos\\TORRE_3D\\pruebas\\frames\\test_pcd.pcd";
+  std::string pcd_file = "D:\\Desarrollo\\datos\\Videos\\Torres_Pasillo_Villaseca_2\\test_pcd.pcd";
   pcl::io::savePCDFileASCII(pcd_file, *point_cloud_ptr);
 
   std::unique_ptr<pcl::visualization::PCLVisualizer> viewer (new pcl::visualization::PCLVisualizer ("3D Viewer"));
