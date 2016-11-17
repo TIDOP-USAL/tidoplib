@@ -1,8 +1,8 @@
 #include "VideoStream.h"
 
-#include "core\messages.h"
-#include "core\utils.h"
-#include "core\mathutils.h"
+#include "core/messages.h"
+#include "core/utils.h"
+#include "core/mathutils.h"
 
 #include "opencv2/imgproc/imgproc.hpp"
 

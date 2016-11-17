@@ -3,9 +3,9 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\utils.h"
-#include "core\mathutils.h"
-#include "geometric_entities\window.h"
+#include "core/utils.h"
+#include "core/mathutils.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {

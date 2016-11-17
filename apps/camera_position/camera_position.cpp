@@ -31,9 +31,9 @@
 //#include "elas.h"
 //#include "image.h"
 //#include "transform.h"
-#include "geometric_entities\window.h"
-#include "core\console.h"
-#include "core\messages.h"
+#include "geometric_entities/window.h"
+#include "core/console.h"
+#include "core/messages.h"
 
 using namespace I3D;
 using namespace cv;

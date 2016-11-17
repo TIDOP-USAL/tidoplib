@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "core\defs.h"
+#include "core/defs.h"
 
 namespace I3D
 {
@@ -105,6 +105,12 @@ int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut,
  * \param[in] str Cadena original
  * \param[in] str_old Cadena a remplazar
  * \param[out] str_new Nueva cadena
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string str = "Hola mundo";
+ * replaceString(str, " ", "_");
+ * \endcode
  */
 void I3D_EXPORT replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
@@ -113,6 +119,14 @@ void I3D_EXPORT replaceString(std::string *str, const std::string &str_old, cons
  * \param[in] path Ruta del archivo
  * \param[out] dir Directorio del archivo
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char dir[I3D_MAX_DIR];
+ * if (getFileDir("c:\temp\file.txt", dir) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT getFileDir(const char *path, char *dir);
 
@@ -121,6 +135,14 @@ int I3D_EXPORT getFileDir(const char *path, char *dir);
  * \param[in] path Ruta del archivo
  * \param[out] drive Unidad de disco
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char drive[I3D_MAX_DRIVE];
+ * if (getFileDrive("c:\temp\file.txt", drive) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT getFileDrive(const char *path, char *drive);
 
@@ -129,6 +151,14 @@ int I3D_EXPORT getFileDrive(const char *path, char *drive);
  * \param[in] path Ruta del archivo
  * \param[out] ext Extensión del archivo
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char ext[I3D_MAX_EXT];
+ * if (getFileName("c:\temp\file.txt", ext) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT getFileExtension(const char *path, char *ext);
 
@@ -137,6 +167,14 @@ int I3D_EXPORT getFileExtension(const char *path, char *ext);
  * \param[in] path Ruta del archivo
  * \param[out] name Nombre del archivo
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char name[I3D_MAX_FNAME];
+ * if (getFileName("c:\temp\file.txt", name) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT getFileName(const char *path, char *name);
 
@@ -145,6 +183,14 @@ int I3D_EXPORT getFileName(const char *path, char *name);
  * \param[in] path Ruta del archivo
  * \param[out] driveDir Unidad de disco y directorio del archivo
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char driveDir[I3D_MAX_PATH];
+ * if (getFileDriveDir("c:\temp\file.txt", driveDir) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
 
@@ -154,6 +200,14 @@ int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
  * \param[in] newName Nuevo nombre
  * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char new_name[I3D_MAX_PATH];
+ * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT changeFileName(const char *path, char *newName, char *pathOut);
 
@@ -163,6 +217,14 @@ int I3D_EXPORT changeFileName(const char *path, char *newName, char *pathOut);
  * \param[in] newExt Nueva extensión
  * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char logfile[I3D_MAX_PATH];
+ * if (changeFileExtension(getRunfile(), "log", logfile) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT changeFileExtension(const char *path, char *newExt, char *pathOut);
 
@@ -172,6 +234,14 @@ int I3D_EXPORT changeFileExtension(const char *path, char *newExt, char *pathOut
  * \param[in] newNameExt Nuevo nombre incluyendo la extensión
  * \param[out] pathOut Ruta del archivo modificada
  * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * char logfile[I3D_MAX_FNAME + I3D_MAX_EXT];
+ * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile) == 0) {
+ * ...
+ * }
+ * \endcode
  */
 int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut);
 

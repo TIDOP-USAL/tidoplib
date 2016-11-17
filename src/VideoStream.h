@@ -5,8 +5,8 @@
 
 #include "opencv2/highgui/highgui.hpp"
 
-#include "core\defs.h"
-#include "experimental\events.h"
+#include "core/defs.h"
+#include "experimental/events.h"
 
 namespace I3D
 {

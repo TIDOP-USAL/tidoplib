@@ -5,12 +5,12 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
+#include "core/defs.h"
 
 namespace I3D
 {
 
-/*! \defgroup GeometricEntities Entidades geomÈtricas
+/*! \defgroup GeometricEntities Entidades geom√©tricas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -77,7 +77,7 @@ public:
   //~Bbox();
 
   /*!
-   * \brief Sobrecarga del operador  de asignaciÛn
+   * \brief Sobrecarga del operador  de asignaci√≥n
    * \param[in] w Bbox que se asigna
    * \return Referencia al Bbox
    */
@@ -91,7 +91,7 @@ public:
   bool operator == (const Bbox &bbox) const;
 
   /*!
-   * \brief ConversiÛn a una ventana de un tipo diferente
+   * \brief Conversi√≥n a una ventana de un tipo diferente
    */
   template<typename T2> operator Bbox<T2>() const;
 
@@ -120,7 +120,7 @@ public:
   bool isEmpty() const;
 
   /*!
-   * \brief Comprueba si un punto est· contenido dentro del Bbox
+   * \brief Comprueba si un punto est√° contenido dentro del Bbox
    * \param[in] pt Punto
    * \return true si el punto esta dentro del Bbox
    */
@@ -133,7 +133,7 @@ public:
 
 };
 
-// DefiniciÛn de mÈtodos
+// Definici√≥n de m√©todos
 
 template<typename T> inline
 Bbox<T>::Bbox() 

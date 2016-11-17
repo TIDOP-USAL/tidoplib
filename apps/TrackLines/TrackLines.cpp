@@ -13,13 +13,13 @@
 // Cabeceras propias
 #include "LineDetector.h"
 #include "VideoStream.h"
-#include "core\utils.h"
+#include "core/utils.h"
 #include "matching.h"
 #include "fourier.h"
 #include "ImgProcessing.h"
 #include "transform.h"
-#include "core\console.h"
-#include "core\messages.h"
+#include "core/console.h"
+#include "core/messages.h"
 
 using namespace I3D;
 using namespace std;

@@ -11,9 +11,9 @@
 #include <mutex>
 
 #include "utils.h"
-#include "core\defs.h"
-#include "core\config.h"
-#include "core\flags.h"
+#include "core/defs.h"
+#include "core/config.h"
+#include "core/flags.h"
 
 namespace I3D
 {

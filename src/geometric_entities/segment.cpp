@@ -1,7 +1,7 @@
 #include "segment.h"
 
-#include "geometric_entities\operations.h"
-#include "core\mathutils.h"
+#include "geometric_entities/operations.h"
+#include "core/mathutils.h"
 
 namespace I3D
 {

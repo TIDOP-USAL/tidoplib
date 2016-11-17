@@ -12,8 +12,8 @@
 #include <list>
 #include <memory>
 
-#include "core\defs.h"
-//#include "core\events.h"
+#include "core/defs.h"
+//#include "core/events.h"
 #include "utils.h"
 
 namespace I3D

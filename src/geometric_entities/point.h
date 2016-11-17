@@ -6,8 +6,8 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
-#include "geometric_entities\window.h"
+#include "core/defs.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {

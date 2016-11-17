@@ -7,8 +7,8 @@
 #include "LSWMS.h"
 #endif
 
-#include "core\defs.h"
-#include "geometric_entities\segment.h"
+#include "core/defs.h"
+#include "geometric_entities/segment.h"
 
 namespace I3D
 {

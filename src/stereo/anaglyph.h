@@ -23,7 +23,7 @@ enum class StereoMode {
  * \param[in] left Imagen derecha
  * \param[in] right Imagen Izquierda
  * \param[out] stimage imagen estereo
- * \param[in] mode Modo de visualización
+ * \param[in] mode Modo de visualizaciÃ³n
  * \see StereoMode
  */
 int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::NORMAL);

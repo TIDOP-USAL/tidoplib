@@ -1,4 +1,4 @@
-// Visualización estereo
+// VisualizaciÃ³n estereo
 //
 // Las matrices estan reordenadas para adaptarnos a OpenCV (orden de bandas BGR)
 // INFO:

@@ -34,15 +34,15 @@ I3D_ENABLE_WARNING(4512 4324 4702)
 //#include <xercesc/util/PlatformUtils.hpp>
 
 // Cabeceras tidopLib
-#include "core\console.h"
-#include "core\messages.h"
+#include "core/console.h"
+#include "core/messages.h"
 #include "videostream.h"
-#include "geometric_entities\segment.h"
+#include "geometric_entities/segment.h"
 #include "linedetector.h"
 #include "img_processing.h"
 #include "matching.h"
 #include "transform.h"
-#include "experimental\experimental.h"
+#include "experimental/experimental.h"
 
 using namespace cv;
 using namespace optflow;

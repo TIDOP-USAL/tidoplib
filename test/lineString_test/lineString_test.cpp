@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "geometric_entities\lineString.h"
-#include "..\..\src\utils.h"
+#include "geometric_entities/lineString.h"
+#include "../../src/utils.h"
 
 using namespace I3D;
 

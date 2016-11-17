@@ -21,9 +21,9 @@
 #include "fourier.h"
 #include "ImgProcessing.h"
 #include "transform.h"
-#include "geometric_entities\point.h"
-#include "geometric_entities\operations.h"
-#include "core\messages.h"
+#include "geometric_entities/point.h"
+#include "geometric_entities/operations.h"
+#include "core/messages.h"
 
 using namespace I3D;
 using namespace cv;

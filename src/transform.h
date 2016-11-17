@@ -13,9 +13,9 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
 
-#include "core\defs.h"
-#include "core\messages.h"
-#include "geometric_entities\segment.h"
+#include "core/defs.h"
+#include "core/messages.h"
+#include "geometric_entities/segment.h"
 
 namespace I3D
 {

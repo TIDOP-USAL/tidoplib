@@ -8,8 +8,8 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
-#include "core\flags.h"
+#include "core/defs.h"
+#include "core/flags.h"
 #include "graphic_entities/color.h"
 
 namespace I3D

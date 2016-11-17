@@ -1,7 +1,8 @@
 #include "console.h"
 
-#include "core\config.h"
-#include "core\utils.h"
+#include "core/config.h"
+#include "core/utils.h"
+#include "core/messages.h"
 
 #include <iostream>
 #include <string>
@@ -201,7 +202,10 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
       }
     }
     // Ver si no es opcional y devolver un error si no existe
-    if (bFind == false && bOptional == false) return CmdParser::MSG::PARSE_ERROR;
+    if (bFind == false && bOptional == false) {
+      consolePrintError("Falta %s. Parámetro obligatorio/n", arg->getName().c_str());
+      return CmdParser::MSG::PARSE_ERROR;
+    }
   }
   return CmdParser::MSG::PARSE_SUCCESS;
 }
@@ -209,7 +213,7 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
 void CmdParser::printHelp()
 {
 
-  //... Soluci�n rapida. modificar
+  //... Solución rapida. modificar
 
   //bprinter::TablePrinter tp(&std::cout);
   //tp.AddColumn("Name", 25);

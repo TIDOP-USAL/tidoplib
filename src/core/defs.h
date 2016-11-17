@@ -20,7 +20,7 @@
   typedef unsigned long long uint64_t;
 #endif
 
-// Definici髇 de constantes de tipo general
+// Definici贸n de constantes de tipo general
 
 #define I3D_PI   3.1415926535897932384626433832795
 #define I3D_2PI  6.283185307179586476925286766559
@@ -66,8 +66,8 @@
 
 
 
-// Warning para informar que una funci髇 esta obsoleta
-// Se debe anteceder a la funci髇 obsoleta a馻diendo el m閠odo que lo reemplaza;
+// Warning para informar que una funci贸n esta obsoleta
+// Se debe anteceder a la funci贸n obsoleta a帽adiendo el m茅todo que lo reemplaza;
 // DEPRECATED("Use NewFunc(int a, float b) en su lugar") 
 // void OldFunc(int a, float b);
 
@@ -123,7 +123,7 @@
 
 /*!
  * \brief Redondea un doble o float y ademas convierte a entero
- * De esta forma se evita el warning C4244 (conversi髇 de 'double' a 'int')
+ * De esta forma se evita el warning C4244 (conversi贸n de 'double' a 'int')
  * y nos aseguramos de que redondee de la forma correcta.
  */
 #define I3D_ROUND_TO_INT(n)  static_cast<int>(round(n))
