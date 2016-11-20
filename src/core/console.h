@@ -11,10 +11,12 @@
 #include <vector>
 #include <list>
 #include <memory>
+#include <iostream>
+#include <sstream>
 
 #include "core/defs.h"
 //#include "core/events.h"
-#include "utils.h"
+#include "core/utils.h"
 
 namespace I3D
 {
@@ -28,17 +30,22 @@ class I3D_EXPORT Console
 {
 public:
 
+  enum class Intensity : int8_t{
+    NORMAL,
+    BRIGHT
+  };
+  
   /*!
    * \brief Tipos de color de fondo y caracter.
    */
   enum class Color : int8_t {
     BLACK,
-    BLUE,
-    GREEN,
-    CYAN,
     RED,
-    MAGENTA,
+    GREEN,
     YELLOW,
+    BLUE,
+    MAGENTA,
+    CYAN,
     WHITE
   };
 
@@ -60,6 +67,11 @@ private:
   HANDLE h;
 
   /*!
+   * \brief Intensidad
+   */
+  WORD mIntensity;
+
+  /*!
    * \brief Color de caracteres
    */
   WORD mForeColor;
@@ -75,7 +87,26 @@ private:
   WORD mOldColorAttrs;
 
 #else
-  //... Código para otros sistemas operativos
+
+  FILE *mStream;
+
+  char mCommand[13];
+
+  /*!
+   * \brief Intensidad
+   */
+  int mIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  int mForeColor;
+
+  /*!
+   * \brief Color de fondo
+   */
+  int mBackColor;
+  
 #endif
 
 public:
@@ -105,13 +136,13 @@ public:
    * \brief Establece el color de caracter
    * \param foreColor Color
    */
-  void setConsoleForegroundColor(Console::Color foreColor);
+  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
   /*!
    * \brief Establece el color de fondo
    * \param backColor Color
    */
-  void setConsoleBackgroundColor(Console::Color backColor);
+  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
   /*!
    * \brief setConsoleUnicode
@@ -120,11 +151,18 @@ public:
 
 private:
 
+#ifdef WIN32
   /*!
    * \brief Inicializa la consola guardando la configuración  actual.
    * \param handle
    */
   void init( DWORD handle );
+#else
+  /*!
+   * \brief Inicializa la consola guardando la configuración  actual.
+   */
+  void init(FILE *stream);
+#endif
 
   /*!
    * \brief Actualiza la consola
@@ -571,11 +609,6 @@ protected:
   double mProgress;
 
   /*!
-   * \brief Valor actual en tanto por ciento 
-   */
-  int mPercent; 
-
-  /*!
    * \brief Valor mínimo
    */
   double mMinimun;
@@ -586,30 +619,35 @@ protected:
   double mMaximun;
 
   /*!
-   * brief Manejador del evento que se produce cada vez que se
-   * avanza una posición en la función de progreso
+   * \brief Valor actual en tanto por ciento 
    */
-  std::function<void(double)> onProgress;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al inicializar
-   */
-  std::function<void(void)> onInitialize;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al terminar
-   */
-  std::function<void(void)> onTerminate;
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
+  int mPercent; 
 
   /*!
    * brief Mensaje que se puede añadir con información del proceso.
    */
   std::string mMsg;
+
+  /*!
+   * brief Manejador del evento que se produce cada vez que se
+   * avanza una posición en la función de progreso
+   */
+  std::function<void(double)> *onProgress;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al inicializar
+   */
+  std::function<void(void)> *onInitialize;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al terminar
+   */
+  std::function<void(void)> *onTerminate;
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
 
   //typedef ProgressEvents Listener;
 

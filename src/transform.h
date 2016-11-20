@@ -61,8 +61,6 @@ class I3D_EXPORT Transform
 {
 protected:
 
-  typedef typename T::value_type sub_type;
-
   /*!
    * \brief Tipo de transformación
    * \see transform_type
@@ -86,7 +84,7 @@ public:
    * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
   Transform(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : mMinPoint(n_min), mTrfType(trfType){}
+    : mTrfType(trfType), mMinPoint(n_min) {}
 
   /*!
    * \brief Destructora
@@ -159,7 +157,7 @@ public:
 
     //... Sería mejor añadirlo en el propio calculo de los parámetros?
     if (compute(pts1, pts2)) {
-      for (int i = 0; i < n; i++) {
+      for (size_t i = 0; i < n; i++) {
         transform(pts1[i], &ptsOut[i]);
         ptsOut[i] -= pts2[i];
         //err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
@@ -237,19 +235,19 @@ public:
   /*!
    * \brief Constructora
    */
-  TrfMultiple() : Transform(0) {}
+  TrfMultiple() : Transform<T>(0) {}
 
   /*!
    * \brief Constructor de lista
    * \param[in] transfList listado de transformaciones
    */
   TrfMultiple(std::initializer_list<std::shared_ptr<Transform<T>>> transfList)
-    : Transform(), mTransf(transfList) {}
+    : Transform<T>(), mTransf(transfList) {}
 
   /*!
    * \brief Destructora
    */
-  ~TrfMultiple() {};
+  ~TrfMultiple() {}
 
 public:
 
@@ -317,19 +315,20 @@ void TrfMultiple<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T TrfMultiple<T>::transform(const T &in, bool bDirect = true) const
+T TrfMultiple<T>::transform(const T &in, bool bDirect) const
 {
-  *out = in;
+  T out = in;
   for (auto trf : mTransf) {
-    *out = trf->transform(*out, bDirect);
+    out = trf->transform(out, bDirect);
   }
+  return out;
 }
 
 template<typename T> inline
 double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
 {
   printError("'compute' no esta soportado para TrfMultiple");
-  COMPILER_WARNING("'compute' no esta soportado para TrfMultiple")
+  I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
   return -1.;
 }
 
@@ -350,9 +349,9 @@ public:
    * \param n_min Número mínimo de puntos necesario para la transformación
    */
   Transform2D(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : Transform(n_min, trfType) 
+    : Transform<T>(n_min, trfType)
   {
-    mDimensions = 2;
+    this->mDimensions = 2;
   }
 
   /*!
@@ -408,7 +407,7 @@ private:
 public:
 
   TrfPerspective()
-    : Transform2D(1, transform_type::PERSPECTIVE) {}
+    : Transform2D<T>(1, transform_type::PERSPECTIVE) {}
 
   ~TrfPerspective() {}
 
@@ -487,7 +486,7 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
     printf("...");
   } else {
     // Controlar estos errores a nivel general
-    if (isNumberOfPointsValid(n1)) {
+    if (this->isNumberOfPointsValid(n1)) {
 
       H = cv::findHomography(pts1, pts2, cv::RANSAC);
       //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
@@ -516,13 +515,14 @@ private:
    */
   T translate;
 
+  typedef typename T::value_type sub_type;
 public:
 
   /*!
    * \brief Constructora por defecto
    */
   Translate()
-    : Transform2D(1, transform_type::TRANSLATE), translate(T()) {}
+    : Transform2D<T>(1, transform_type::TRANSLATE), translate(T()) {}
 
   /*!
    * \brief Constructora
@@ -530,7 +530,7 @@ public:
    * \param[in] y0 Traslación en el eje Y
    */
   Translate(sub_type x0, sub_type y0)
-    : Transform2D(1, transform_type::TRANSLATE), translate(T(x0, y0)) { }
+    : Transform2D<T>(1, transform_type::TRANSLATE), translate(T(x0, y0)) { }
 
   /*!
    * \brief Calculo de la traslación
@@ -616,9 +616,8 @@ double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   int n2 = static_cast<int>(pts2.size());
   if (n1 != n2) {
     printf("...");
-  } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 4;
+    if (this->isNumberOfPointsValid(n1)){
+      int m = n1 * this->mDimensions, n = 4;
       double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
       cv::Mat C(n, 1, CV_64F);
       try {
@@ -731,13 +730,14 @@ private:
    */
   double r2;
 
+  typedef typename T::value_type sub_type;
 public:
 
   /*!
    * \brief Constructora por defecto
    */
   Rotation() 
-    : Transform2D(1, transform_type::ROTATION), angle(0)
+    : Transform2D<T>(1, transform_type::ROTATION), angle(0)
   {
     update();
   }
@@ -747,7 +747,7 @@ public:
    * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle) 
-    : Transform2D(1, transform_type::ROTATION), angle(angle)
+    : Transform2D<T>(1, transform_type::ROTATION), angle(angle)
   {
     update();
   }
@@ -835,8 +835,8 @@ double Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 2;
+    if (this->isNumberOfPointsValid(n1)){
+      int m = n1 * this->mDimensions, n = 2;
       double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
       cv::Mat C(2, 1, CV_64F);
       try {
@@ -937,6 +937,9 @@ void Rotation<T>::update()
 template<typename T>
 class I3D_EXPORT Helmert2D : public Transform2D<T>
 {
+private:
+
+  typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -977,7 +980,7 @@ public:
    * \brief Constructor por defecto
    */
   Helmert2D()
-    : Transform2D(2, transform_type::HELMERT_2D), x0(0), y0(0), scale(1.), rotation(0.)
+    : Transform2D<T>(2, transform_type::HELMERT_2D), x0(0), y0(0), scale(1.), rotation(0.)
   {
     update();
   }
@@ -990,7 +993,7 @@ public:
    * \param[in] rotation Rotación
    */
   Helmert2D(sub_type x0, sub_type y0, double scale, double rotation) 
-    : Transform2D(2, transform_type::HELMERT_2D), x0(x0), y0(y0), scale(scale), rotation(rotation)
+    : Transform2D<T>(2, transform_type::HELMERT_2D), x0(x0), y0(y0), scale(scale), rotation(rotation)
   {
     update();
   }
@@ -1093,8 +1096,8 @@ double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 4;
+    if (this->isNumberOfPointsValid(n1)){
+      int m = n1 * this->mDimensions, n = 4;
       double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
       cv::Mat C(n, 1, CV_64F);
       try {
@@ -1227,6 +1230,9 @@ void Helmert2D<T>::update()
 template<typename T>
 class I3D_EXPORT Afin : public Transform2D<T>
 {
+private:
+
+  typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -1299,7 +1305,7 @@ public:
    * \brief Constructor por defecto
    */
   Afin()
-    : Transform2D(3, transform_type::AFIN), x0(0), y0(0), mScaleX(1.), mScaleY(1.), mRotation(0.)
+    : Transform2D<T>(3, transform_type::AFIN), x0(0), y0(0), mScaleX(1.), mScaleY(1.), mRotation(0.)
   {
     update();
   }
@@ -1313,7 +1319,7 @@ public:
    * \param[in] rotation Rotación
    */
   Afin(sub_type x0, sub_type y0, double scaleX, double scaleY, double rotation)
-    : Transform2D(3, transform_type::AFIN), x0(x0), y0(y0), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
+    : Transform2D<T>(3, transform_type::AFIN), x0(x0), y0(y0), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
   {
     update();
   }
@@ -1422,8 +1428,8 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 6;
+    if (this->isNumberOfPointsValid(n1)){
+      int m = n1 * this->mDimensions, n = 6;
       double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
       cv::Mat C(n, 1, CV_64F);
       try {
@@ -1580,6 +1586,7 @@ class I3D_EXPORT Projective : public Transform2D<T>
 {
 private:
 
+  typedef typename T::value_type sub_type;
   /*!
    * \brief Parámetro a
    */
@@ -1666,7 +1673,7 @@ public:
    * \brief Constructor por defecto
    */
   Projective()
-    : Transform2D(4, transform_type::PROJECTIVE), a(1), b(0), c(0), d(0), e(1), f(0), g(0), h(0)
+    : Transform2D<T>(4, transform_type::PROJECTIVE), a(1), b(0), c(0), d(0), e(1), f(0), g(0), h(0)
   {
     update();
   }
@@ -1683,7 +1690,7 @@ public:
    * \param[in] h
    */
   Projective(double a, double b, double c, double d, double e, double f, double g, double h)
-    : Transform2D(4, transform_type::PROJECTIVE), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
+    : Transform2D<T>(4, transform_type::PROJECTIVE), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
   {
     update();
   }
@@ -1761,8 +1768,8 @@ double Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)){
-      int m = n1 * mDimensions, n = 8;
+    if (this->isNumberOfPointsValid(n1)){
+      int m = n1 * this->mDimensions, n = 8;
       double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
       cv::Mat C(n, 1, CV_64F);
       try {
@@ -1902,9 +1909,9 @@ public:
    * \brief Transform
    */
   Transform3D(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : Transform(n_min, trfType) 
+    : Transform<T>(n_min, trfType)
   {
-    mDimensions = 3;
+    this->mDimensions = 3;
   }
 
   /*!
@@ -1963,6 +1970,9 @@ public:
 template<typename T>
 class I3D_EXPORT Helmert3D : public Transform3D<T>
 {
+private:
+
+  typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -2013,7 +2023,7 @@ public:
    * \brief Constructor por defecto
    */
   Helmert3D()
-    : Transform3D(3, transform_type::HELMERT_3D), x0(0), y0(0), z0(0), mScale(1.), mOmega(0.), mPhi(0.), mKappa(0.)
+    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(0), y0(0), z0(0), mScale(1.), mOmega(0.), mPhi(0.), mKappa(0.)
   {
     update();
   }
@@ -2026,7 +2036,7 @@ public:
    * \param[in] rotation Rotación
    */
   Helmert3D(T x0, T y0, T z0, double scale, double omega, double phi, double kappa) 
-    : Transform3D(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
+    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
   {
     update();
   }
@@ -2131,8 +2141,8 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   if (n1 != n2) {
     printf("...");
   } else {
-    if (isNumberOfPointsValid(n1)) {
-      int m = n1 * mDimensions, n = 7;
+    if (this->isNumberOfPointsValid(n1)) {
+      int m = n1 * this->mDimensions, n = 7;
       double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
       cv::Mat C(n, 1, CV_64F);
       try {
@@ -2165,7 +2175,7 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
 
         cv::Mat mA(m, n, CV_64F, A);
         cv::Mat mB(m, 1, CV_64F, L);
-        cv::solve(mA, mB, C, DECOMP_SVD);
+        cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         mScale = C.at<double>(0);
         mOmega = C.at<double>(1);

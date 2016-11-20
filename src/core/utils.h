@@ -26,7 +26,7 @@ namespace I3D
  * que esta corriendo
  * \return path de la aplicación
  */
-char I3D_EXPORT *getRunfile();
+const char I3D_EXPORT *getRunfile();
 
 
 //bool getAppVersion(char *libName, std::string *companyName, std::string *productName,
@@ -80,7 +80,7 @@ int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
  * }
  * \endcode
  */
-int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs = ",");
+int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
 
 /*!
  * \brief Separa una cadena en un array de dobles
@@ -98,7 +98,7 @@ int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, ch
  * }
  * \endcode
  */
-int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs = ",");
+int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut,const  char *chs = ",");
 
 /*!
  * \brief Reemplaza una cadena por otra en un texto.
@@ -209,7 +209,7 @@ int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
  * }
  * \endcode
  */
-int I3D_EXPORT changeFileName(const char *path, char *newName, char *pathOut);
+int I3D_EXPORT changeFileName(const char *path, const char *newName, char *pathOut);
 
 /*!
  * \brief Cambia la extensión de un archivo
@@ -226,7 +226,7 @@ int I3D_EXPORT changeFileName(const char *path, char *newName, char *pathOut);
  * }
  * \endcode
  */
-int I3D_EXPORT changeFileExtension(const char *path, char *newExt, char *pathOut);
+int I3D_EXPORT changeFileExtension(const char *path, const char *newExt, char *pathOut);
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -263,7 +263,7 @@ int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, ch
  * }
  * \endcode
  */
-int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, char *chs = ",");
+int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
 
 /*! \} */ // end of stringOper
 

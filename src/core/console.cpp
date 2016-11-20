@@ -1,12 +1,13 @@
 #include "console.h"
 
+#include "core/defs.h"
 #include "core/config.h"
 #include "core/utils.h"
 #include "core/messages.h"
 
 #include <iostream>
-#include <string>
 #include <ctime>
+#include <cstdio>
 
 using namespace I3D;
 using namespace std;
@@ -18,6 +19,8 @@ Console::Console()
 { 
 #ifdef WIN32
   init(STD_OUTPUT_HANDLE);
+#else
+  init(stdout);
 #endif
 }
 
@@ -40,6 +43,23 @@ Console::Console(Console::Mode mode)
     break;
   }
   init(handle);
+#else
+  FILE *stream;
+    switch (mode) {
+    case Console::Mode::INPUT:
+      stream = stdin;
+      break;
+    case Console::Mode::OUTPUT:
+      stream = stdout;
+      break;
+    case Console::Mode::OUTPUT_ERROR:
+      stream = stderr;
+      break;
+    default:
+      stream = stdout;
+      break;
+    }
+    init(stream);
 #endif
 }
 
@@ -52,10 +72,13 @@ void Console::reset()
 {
 #ifdef WIN32
   SetConsoleTextAttribute(h, mOldColorAttrs);
+#else
+  sprintf(mCommand, "%c[0;m", 0x1B);
+  fprintf(mStream, "%s", mCommand);
 #endif
 }
 
-void Console::setConsoleForegroundColor(Console::Color foreColor)
+void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity)
 {
 #ifdef WIN32
   switch (foreColor) {
@@ -87,12 +110,20 @@ void Console::setConsoleForegroundColor(Console::Color foreColor)
     mForeColor = 0;
     break;
   }
+
+  if(intensity == Console::Intensity::NORMAL)
+      mIntensity = 0;
+  else
+      mIntensity = FOREGROUND_INTENSITY;
+#else
+  mForeColor = static_cast<int>(foreColor) + 30;
+  mIntensity = static_cast<int>(intensity);
 #endif
 
   update();
 }
 
-void Console::setConsoleBackgroundColor(Console::Color backColor)
+void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
 {
 #ifdef WIN32
   switch (backColor) {
@@ -124,6 +155,13 @@ void Console::setConsoleBackgroundColor(Console::Color backColor)
     mBackColor = 0;
     break;
   }
+  if(intensity == Console::Intensity::NORMAL)
+      mIntensity = 0;
+  else
+      mIntensity = BACKGROUND_INTENSITY;
+#else
+  mBackColor = static_cast<int>(backColor) + 40;
+  mIntensity = static_cast<int>(intensity);
 #endif
   update();
 }
@@ -136,9 +174,9 @@ void Console::setConsoleUnicode()
 #endif
 }
 
+#ifdef WIN32
 void Console::init(DWORD handle) 
 { 
-#ifdef WIN32
   h = GetStdHandle(handle);
   CONSOLE_SCREEN_BUFFER_INFO info; 
   if (! GetConsoleScreenBufferInfo(h, &info)) {
@@ -148,12 +186,25 @@ void Console::init(DWORD handle)
   }
   mForeColor = (mOldColorAttrs & 0x0007);
   mBackColor = (mOldColorAttrs & 0x0070);
-#endif
 }
+#else
+void Console::init(FILE *stream)
+{
+  mStream = stream;
+  mIntensity = 0;
+  mForeColor = 0;
+  mBackColor = 0;
+}
+#endif
 
 void Console::update()
 {
+#ifdef WIN32
   SetConsoleTextAttribute(h, mForeColor | mBackColor);
+#else
+  sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mIntensity, mForeColor, mBackColor);
+  fprintf(mStream, "%s", mCommand);
+#endif
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -228,7 +279,8 @@ void CmdParser::printHelp()
   //     << arg->getDescription();
   //}
   //tp.PrintFooter();
-  printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+  printf("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+  //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
   for (auto arg : mCmdArgs) {
      printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"),arg->getDescription().c_str());
   }
@@ -284,31 +336,31 @@ void Progress::restart()
 
 void Progress::setOnProgressListener(std::function<void(double)> &progressFunction)
 {
-  onProgress = progressFunction;
+  *onProgress = progressFunction;
 }
 
 void Progress::setOnInitializeListener(std::function<void(void)> &initializeFunction)
 {
-  onInitialize = initializeFunction;
+  *onInitialize = initializeFunction;
 }
 
 void Progress::setOnTerminateListener(std::function<void(void)> &terminateFunction)
 {
-  onTerminate = terminateFunction;
+  *onTerminate = terminateFunction;
 }
 
 /* metodos protected*/
 
 void Progress::initialize()
 {
-  printf(mMsg.c_str());
-  printf("\n");
-  if (!onInitialize._Empty()) onInitialize();
+  printf_s("%s\n", mMsg.c_str());
+
+  if (onInitialize) (*onInitialize)();
 }
 
 void Progress::update() 
 {
-  if (!onProgress._Empty()) onProgress(mPercent);
+  if (onProgress) (*onProgress)(mPercent);
 }
 
 void Progress::updateScale()
@@ -319,7 +371,7 @@ void Progress::updateScale()
 void Progress::terminate()
 {
   printf("\n");
-  if (!onTerminate._Empty()) onTerminate();
+  if (onTerminate) (*onTerminate)();
 }
 
 
@@ -327,7 +379,7 @@ void Progress::terminate()
 
 void ProgressBar::update() 
 {
-  if (onProgress._Empty()) {
+  if (onProgress == NULL) {
     
     cout << "\r";
 
@@ -371,7 +423,7 @@ void ProgressBar::update()
         }
       }
       if (bCustomConsole) {
-        int nDigits = posInBar > 0 ? (int) log10 ((double) posInBar) + 1 : 1;
+        //int nDigits = posInBar > 0 ? (int) log10 ((double) posInBar) + 1 : 1;
         int n;
         if (i == ini) {
           n = mPercent / 100 % 10;
@@ -399,7 +451,7 @@ void ProgressBar::update()
       cout << " " << mPercent << "%  completed" << flush;
     }
   } else {
-    onProgress(mPercent);
+    (*onProgress)(mPercent);
   }
 }
 
@@ -407,11 +459,11 @@ void ProgressBar::update()
 
 void ProgressPercent::update() 
 {
-  if (onProgress._Empty()) {
+  if (onProgress == NULL) {
     cout << "\r";
     cout << " " << mPercent << "%  completed" << flush;
   } else
-    onProgress(mPercent);
+    (*onProgress)(mPercent);
 }
 
 } // End mamespace I3D

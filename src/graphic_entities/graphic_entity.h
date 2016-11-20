@@ -6,7 +6,11 @@
 #include <array>
 #include <memory>
 
+#include "core/config.h"
+
+#ifdef I3D_ENABLE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
 #include "core/defs.h"
 #include "core/flags.h"
@@ -596,7 +600,9 @@ public:
   GraphicEntity();
   ~GraphicEntity();
 
+#ifdef I3D_ENABLE_OPENCV
   virtual void draw(cv::Mat &canvas) = 0;
+#endif
 };
 
 

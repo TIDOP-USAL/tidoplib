@@ -194,7 +194,7 @@ void ldGroupLines::add(const cv::Vec4i &lvect)
 double ldGroupLines::angleMean()
 {
   double angle = 0.0;
-  for (int i = 0; i < linesgroup.size(); i++){
+  for (size_t i = 0; i < linesgroup.size(); i++){
     angle += linesgroup[i].angleOX();
   }
   angle /= linesgroup.size();
@@ -219,7 +219,7 @@ void groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *c
     linesaux.erase(linesaux.begin());
 
     for (int ilg = 0; ilg < lg.getSize(); ilg++) {
-      for (int i = 0; i < linesaux.size(); i++) {
+      for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isParallel(linesaux[i], angTol)) {
           lg.add(linesaux[i]);
           linesaux.erase(linesaux.begin() + i);

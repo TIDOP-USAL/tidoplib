@@ -2,6 +2,7 @@
 #define I3D_WINDOW_H
 
 #include <algorithm>
+#include <typeinfo>
 
 #include "opencv2/core/core.hpp"
 

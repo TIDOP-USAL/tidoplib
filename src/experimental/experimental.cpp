@@ -190,7 +190,7 @@ void Reconstruction3D::getKeyPointAndDescriptor(const std::vector<std::string> &
     mDescriptor[i] = descriptor;
 
     if (bSave) {
-      char out[_MAX_PATH];
+      char out[I3D_MAX_PATH];
       changeFileExtension(mImagesPaths[i].c_str(), "xml", out);
 
       // Salvamos key points y los descriptores

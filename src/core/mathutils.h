@@ -152,7 +152,7 @@ template<typename T>
 int operator==(const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::pair<std::vector<T>::iterator, std::vector<T>::iterator> bounds;
+  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
   bounds = std::equal_range(v.begin(), v.end(), t);
   int ini = bounds.first - v.begin();
   int end = bounds.second - v.begin();
@@ -171,7 +171,7 @@ template<typename T>
 int operator!=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::pair<std::vector<T>::iterator, std::vector<T>::iterator> bounds;
+  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
   bounds = std::equal_range(v.begin(), v.end(), t);
   int r1 = bounds.first - v.begin();
   int r2 = v.end() - bounds.second;
@@ -188,7 +188,7 @@ template<typename T>
 int operator>=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::vector<T>::iterator upOrEq;
+  typename std::vector<T>::iterator upOrEq;
   upOrEq = std::lower_bound(v.begin(), v.end(), t);
   return (v.end() - upOrEq);
 }
@@ -197,7 +197,7 @@ template<typename T>
 int operator<=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::vector<T>::iterator lowOrEq;
+  typename std::vector<T>::iterator lowOrEq;
   lowOrEq = std::upper_bound(v.begin(), v.end(), t);
   return (lowOrEq - v.begin());
 }
@@ -206,7 +206,7 @@ template<typename T>
 int operator> (const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::vector<T>::iterator up;
+  typename std::vector<T>::iterator up;
   up = std::upper_bound(v.begin(), v.end(), t);
   return (v.end() - up);
 }
@@ -215,7 +215,7 @@ template<typename T>
 int operator< (const std::vector<T> &v, const T t)
 {
   sortVector(v);
-  std::vector<T>::iterator low;
+  typename std::vector<T>::iterator low;
   low = std::lower_bound(v.begin(), v.end(), t);
   return (low - v.begin());
 }

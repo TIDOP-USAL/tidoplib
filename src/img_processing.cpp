@@ -381,7 +381,7 @@ int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   int i_error = 0;
   try {
-    if (mWidth == 0 && mScaleX == 0) throw std::exception("Invalid parameter values");
+    if (mWidth == 0 && mScaleX == 0) throw std::runtime_error("Invalid parameter values");
     if (mScaleX) {
       cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
     } else {

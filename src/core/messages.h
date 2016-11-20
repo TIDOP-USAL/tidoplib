@@ -10,7 +10,7 @@
 #include <memory>
 #include <mutex>
 
-#include "utils.h"
+#include "core/utils.h"
 #include "core/defs.h"
 #include "core/config.h"
 #include "core/flags.h"
@@ -192,42 +192,42 @@ private:
 };
 
 #ifdef _DEBUG
-#  define consolePrintDebug( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define consolePrintVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define consolePrintInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define consolePrintWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define consolePrintError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define consolePrintDebug(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define consolePrintVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define consolePrintInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define consolePrintWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define consolePrintError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
 
-#  define logPrintDebug( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define logPrintVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define logPrintInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define logPrintWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define logPrintError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define logPrintDebug(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define logPrintVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define logPrintInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define logPrintWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define logPrintError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG, __FILE__, __LINE__, I3D_FUNCTION);
 
-#  define printDebug( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define printVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define printInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define printWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define printError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define printDebug(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define printVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define printInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define printWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define printError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE, __FILE__, __LINE__, I3D_FUNCTION);
 
 #else
-#  define consolePrintDebug( msg, ...)
-#  define consolePrintVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_CONSOLE);
-#  define consolePrintInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_CONSOLE);
-#  define consolePrintWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_CONSOLE);
-#  define consolePrintError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
+#  define consolePrintDebug(...)
+#  define consolePrintVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_CONSOLE);
+#  define consolePrintInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_CONSOLE);
+#  define consolePrintWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_CONSOLE);
+#  define consolePrintError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
 
-#  define logPrintDebug( msg, ...)
-#  define logPrintVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG);
-#  define logPrintInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG);
-#  define logPrintWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG);
-#  define logPrintError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG);
+#  define logPrintDebug(...)
+#  define logPrintVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG);
+#  define logPrintInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG);
+#  define logPrintWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG);
+#  define logPrintError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG);
 
-#  define printDebug( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
-#  define printVerbose( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
-#  define printInfo( msg, ...)     Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
-#  define printWarning( msg, ...)  Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
-#  define printError( msg, ...)    Message::message(msg, __VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
+#  define printDebug(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_DEBUG, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
+#  define printVerbose(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_VERBOSE, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
+#  define printInfo(...)     Message::message(__VA_ARGS__).print( MessageLevel::MSG_INFO, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
+#  define printWarning(...)  Message::message(__VA_ARGS__).print( MessageLevel::MSG_WARNING, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
+#  define printError(...)    Message::message(__VA_ARGS__).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG | MessageOutput::MSG_CONSOLE);
 
 #endif
 
@@ -235,23 +235,23 @@ private:
 #else  // End I3D_MESSAGE_HANDLER
 
 // No se utiliza el manejador de mensajes
-#  define consolePrintDebug( msg, ...)
-#  define consolePrintVerbose( msg, ...)
-#  define consolePrintInfo( msg, ...)
-#  define consolePrintWarning( msg, ...)
-#  define consolePrintError( msg, ...)
+#  define consolePrintDebug(...)
+#  define consolePrintVerbose(...)
+#  define consolePrintInfo(...)
+#  define consolePrintWarning(...)
+#  define consolePrintError(...)
 
-#  define logPrintDebug( msg, ...)
-#  define logPrintVerbose( msg, ...)
-#  define logPrintInfo( msg, ...)
-#  define logPrintWarning( msg, ...)
-#  define logPrintError( msg, ...) 
+#  define logPrintDebug(...)
+#  define logPrintVerbose(...)
+#  define logPrintInfo(...)
+#  define logPrintWarning(...)
+#  define logPrintError(...)
 
-#  define printDebug( msg, ...)
-#  define printVerbose( msg, ...)
-#  define printInfo( msg, ...)
-#  define printWarning( msg, ...)
-#  define printError( msg, ...)
+#  define printDebug(...)
+#  define printVerbose(...)
+#  define printInfo(...)
+#  define printWarning(...)
+#  define printError(...)
 
 #endif  
 
