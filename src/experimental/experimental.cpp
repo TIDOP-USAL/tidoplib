@@ -1,6 +1,6 @@
 #include "experimental.h"
 
-#include "core\messages.h"
+#include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
 //#include "opencv2\sfm\libmv_light\libmv_capi.h"
@@ -204,7 +204,7 @@ void Reconstruction3D::getKeyPointAndDescriptor(const std::vector<std::string> &
     mDescriptor[i] = descriptor;
 
     if (bSave) {
-      char out[_MAX_PATH];
+      char out[I3D_MAX_PATH];
       changeFileExtension(mImagesPaths[i].c_str(), "xml", out);
 
       // Salvamos key points y los descriptores

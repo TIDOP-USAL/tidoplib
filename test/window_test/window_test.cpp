@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "..\..\src\geometric_entities\window.h"
+#include "../../src/geometric_entities/window.h"
 
 using namespace I3D;
 

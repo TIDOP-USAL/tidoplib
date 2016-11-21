@@ -2,10 +2,11 @@
 #define I3D_WINDOW_H
 
 #include <algorithm>
+#include <typeinfo>
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
+#include "core/defs.h"
 
 namespace I3D
 {

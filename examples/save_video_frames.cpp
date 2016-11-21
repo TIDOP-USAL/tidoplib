@@ -7,11 +7,11 @@
 #include "opencv2/highgui/highgui.hpp"
 
 // Cabeceras tidopLib
-#include "core\console.h"
-#include "core\messages.h"
+#include "core/console.h"
+#include "core/messages.h"
 #include "videostream.h"
 #include "img_processing.h"
-#include "geometric_entities\window.h"
+#include "geometric_entities/window.h"
 
 using namespace cv;
 using namespace I3D;

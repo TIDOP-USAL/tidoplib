@@ -3,13 +3,18 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <array>
 #include <memory>
 
-#include "opencv2/core/core.hpp"
+#include "core/config.h"
 
-#include "core\defs.h"
-#include "core\flags.h"
+#ifdef I3D_ENABLE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif
+
+#include "core/defs.h"
+#include "core/flags.h"
 #include "graphic_entities/color.h"
 
 namespace I3D
@@ -578,25 +583,99 @@ public:
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition);
 
+//Estilos de una entidad
+class I3D_EXPORT Style
+{
+protected:
+  std::shared_ptr<StylePen>     mStylePen;
+  std::shared_ptr<StyleBrush>   mStyleBrush;
+  std::shared_ptr<StyleSymbol>  mStyleSymbol;
+  std::shared_ptr<StyleLabel>   mStyleLabel;
+
+public:
+  Style()
+  {
+  }
+
+  ~Style()
+  {
+  }
+
+  bool read();
+
+  bool write();
+
+private:
+
+};
+
+//metadatos que pueden ir asociados a una entidad.
+class I3D_EXPORT Metadata
+{
+public:
+  Metadata()
+  {
+  }
+
+  ~Metadata()
+  {
+  }
+
+private:
+
+};
+
+
+class I3D_EXPORT Entity : public Metadata
+{
+public:
+  Entity()
+  {
+  }
+
+  ~Entity()
+  {
+  }
+
+private:
+
+};
+
 
 // clase base para las entidades gráficas. Una entidad punto que se dibuje heredará de GraphicEntity y de Point. 
 // Point, LineString, etc definen la geometría, GraphicEntity las propiedades generales y GPoint, GLineString, ... las especificas 
 
-class I3D_EXPORT GraphicEntity
+class I3D_EXPORT GraphicEntity : public Style, public Entity
 {
-private:
-
-  std::shared_ptr<StylePen>     mStylePen;
-  std::shared_ptr<StyleBrush>   mStyleBrush;
-  std::shared_ptr<StyleSymbol>  mStyleSimbol;
-  std::shared_ptr<StyleLabel>   mStyleLabel;
 
 public:
   
   GraphicEntity();
   ~GraphicEntity();
 
+#ifdef I3D_ENABLE_OPENCV
   virtual void draw(cv::Mat &canvas) = 0;
+#endif
+};
+
+
+class I3D_EXPORT Layer
+{
+  std::list<std::shared_ptr<Entity>> entities;
+
+public:
+  Layer()
+  {
+  }
+
+  ~Layer()
+  {
+  }
+
+
+private:
+  void add(std::shared_ptr<Entity> entity);
+  void del();
 };
 
 

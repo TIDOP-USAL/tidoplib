@@ -5,8 +5,8 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
-#include "geometric_entities\segment.h"
+#include "core/defs.h"
+#include "geometric_entities/segment.h"
 
 namespace I3D
 {

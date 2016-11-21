@@ -22,9 +22,9 @@
 #include "elas.h"
 #include "image.h"
 #include "transform.h"
-#include "geometric_entities\window.h"
+#include "geometric_entities/window.h"
 
-#include "core\console.h"
+#include "core/console.h"
 #include "transform.h"
 
 using namespace I3D;
@@ -71,29 +71,56 @@ static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatr
 int main(int argc, char** argv)
 {
 
-  cv::Mat_<float> _R(3, 3);
-  cv::Mat_<float> _T(3, 1);
-  _R[0][0] = 0.99693932795844131256f;
-  _R[0][1] = 0.06848097100395370007f;
-  _R[0][2] = 0.03771383009092664496f;
-  _R[1][0] = -0.01436193881015421572f;
-  _R[1][1] = 0.63461718697310531834f;
-  _R[1][2] = -0.77269318666075759161f;
-  _R[2][0] = -0.07684862447295343069f;
-  _R[2][1] = 0.76978658250757947545f;
-  _R[2][2] = 0.63365835140706272544f;
-  _T[0][0] = -118.50965947382184140224f;  
-  _T[1][0] = -4.55077933799274170212f;
-  _T[2][0] = -2.50547815201278334385f;
-  cv::Mat R, T;
-  _R.convertTo(R, CV_64F);
-  _T.convertTo(T, CV_64F);
+  //cv::Mat_<float> R1(3, 3);
+  //cv::Mat_<float> T1(3, 1);
+  //R1[0][0] = 0.99693932795844131256f;
+  //R1[0][1] = 0.06848097100395370007f;
+  //R1[0][2] = 0.03771383009092664496f;
+  //R1[1][0] = -0.01436193881015421572f;
+  //R1[1][1] = 0.63461718697310531834f;
+  //R1[1][2] = -0.77269318666075759161f;
+  //R1[2][0] = -0.07684862447295343069f;
+  //R1[2][1] = 0.76978658250757947545f;
+  //R1[2][2] = 0.63365835140706272544f;
+  //T1[0][0] = -118.50965947382184140224f;  
+  //T1[1][0] = -4.55077933799274170212f;
+  //T1[2][0] = -2.50547815201278334385f;
+  //cv::Mat R, T;
+  //R1.convertTo(R, CV_64F);
+  //T1.convertTo(T, CV_64F);
 
-  std::array<std::array<double, 3>, 3> Rot = { 0.99693932795844131256, 0.06848097100395370007, 0.03771383009092664496,
-  -0.01436193881015421572, 0.63461718697310531834, -0.77269318666075759161,
-  -0.07684862447295343069, 0.76978658250757947545, 0.63365835140706272544 };
+  std::array<std::array<double, 3>, 3> Rot1 = { 0.99693932795844131256, 0.06848097100395370007, 0.03771383009092664496,
+                                               -0.01436193881015421572, 0.63461718697310531834, -0.77269318666075759161,
+                                               -0.07684862447295343069, 0.76978658250757947545, 0.63365835140706272544 };
+  cv::Point3f pt1(-118.50965947382184140224f, -4.55077933799274170212f, -2.50547815201278334385f);
+  Helmert3D<cv::Point3f> trf1(-118.50965947382184140224f,-4.55077933799274170212f,-2.50547815201278334385f, 1., Rot1);
 
-  Helmert3D<cv::Point3f> trf1(-118.50965947382184140224f,-4.55077933799274170212f,-2.50547815201278334385f, 1., Rot);
+  std::array<std::array<double, 3>, 3> Rot2 = {  0.99722213904673195906, 0.06740271780672897617, 0.03169982692897044263,
+                                                -0.01833075228757959085, 0.63457959527556306867, -0.77264009783370279916,
+                                                -0.07219410582334001569, 0.76991272940000732294, 0.63405236391973129884 };
+
+  cv::Point3f pt2(-116.07708330618355319075f, -4.82290173288454759870f, -1.33048451741542894666f);
+  Helmert3D<cv::Point3f> trf2(-116.07708330618355319075f, -4.82290173288454759870f, -1.33048451741542894666f, 1., Rot2);
+
+  cv::Point3f ptTrf;
+  trf1.transform(pt2, &ptTrf);
+  //Mat matRot1 = Mat(3, 3, CV_64F, Rot1.data());
+  //Mat matRot2Inv = Mat(3, 3, CV_64F, Rot2.data()).inv();
+  Mat matRot1inv = Mat(3, 3, CV_64F, Rot1.data()).inv();
+  Mat matRot2 = Mat(3, 3, CV_64F, Rot2.data());
+  Mat divRot = matRot2 * matRot1inv;
+  cv::Point3f r_pt;
+  r_pt.x = (trf2.x0*Rot1[0][0] + trf2.y0*Rot1[0][1] + trf2.z0*Rot1[0][2]) - trf1.x0;
+  r_pt.y = (trf2.x0*Rot1[1][0] + trf2.y0*Rot1[1][1] + trf2.z0*Rot1[1][2]) - trf1.y0;
+  r_pt.z = (trf2.x0*Rot1[2][0] + trf2.y0*Rot1[2][1] + trf2.z0*Rot1[2][2]) - trf1.z0;
+
+  cv::Mat_<float> T1(3, 1);
+  T1[0][0] = r_pt.x;  
+  T1[1][0] = r_pt.y;
+  T1[2][0] = r_pt.z;
+  Mat _T;
+  T1.convertTo(_T, CV_64F);
+  //Helmert3D<cv::Point3f> trf12 = trf2 - trf1;
 
   // Ventanas de las torres. Esto tendria que entrar como parametro proveniente de DeteccionApoyos
   WindowI wL(cv::Point(595,78),cv::Point(743,703));  
@@ -544,10 +571,11 @@ int main(int argc, char** argv)
   //cv::Mat T = decomp.u.col(2);
 
 
-  //cv::Mat R, T;
+  cv::Mat R, T;
   //cv::Mat essentialMat = findEssentialMat(ptsL, ptsR, cameraMatrix);
   //cv::recoverPose(essentialMat, ptsL, ptsR, cameraMatrix, R, T);
-
+  R = divRot;
+  T = _T;
 
   // Si disponemos de las posiciones (matriz T) y orientaciones (Matriz R) de las camaras podemos calular la matriz Q con stereoRectify
   cv::Mat R1, R2, P1, P2, Q;

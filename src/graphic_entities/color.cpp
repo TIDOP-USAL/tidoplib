@@ -82,10 +82,12 @@ Color::Color(const Color::NAME &color)
   mColor = static_cast<uint32_t>(color);
 }
 
+#ifdef I3D_ENABLE_OPENCV
 Color::Color(const cv::Scalar &color) 
 {
   mColor = rgbToInt(I3D_ROUND_TO_INT(color[2]), I3D_ROUND_TO_INT(color[1]), I3D_ROUND_TO_INT(color[0]));
 }
+#endif
 
 /*!
  * \brief Obtiene la componente azul de un color
@@ -137,14 +139,16 @@ void Color::fromCMYK(const double cyan, const double magenta, const double yello
 
 void Color::fromHSV(const double hue, const double saturation, const double value)
 {
-  double _hue, _saturation, _value;
+  double _hue = hue;
+  double _saturation = saturation;
+  double _value = value;
 
-  if (hue < 0) _hue = 0;
-  if (saturation < 0) _saturation = 0;
-  if (value < 0) _value = 0;
-  if (hue >= 360) _hue = 359;
-  if (saturation > 100) _saturation = 100;
-  if (value > 100) _value = 100;
+  if (_hue < 0) _hue = 0;
+  if (_saturation < 0) _saturation = 0;
+  if (_value < 0) _value = 0;
+  if (_hue >= 360) _hue = 359;
+  if (_saturation > 100) _saturation = 100;
+  if (_value > 100) _value = 100;
 
   _value /= 100.;
   _saturation /= 100.;
@@ -196,7 +200,6 @@ void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  
   if (*key == 1.) {
     *cyan = *magenta = *yellow = 0.;
   } else {
-    double aux = max;
     *cyan = 1. - rgb[0] / max;
     *magenta = 1. - rgb[1] / max;
     *yellow = 1. - rgb[2] / max;
@@ -246,7 +249,7 @@ int Color::toLuminance() const
 }
 
 /* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
+/*                                ConversiÃ³n de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
 int getBlue(int color)

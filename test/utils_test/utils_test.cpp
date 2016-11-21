@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "..\..\src\core\utils.h"
+#include "../../src/core/utils.h"
 
 using namespace I3D;
 

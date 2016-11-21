@@ -5,15 +5,15 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\utils.h"
-#include "geometric_entities\window.h"
+#include "core/utils.h"
+#include "geometric_entities/window.h"
 
 template <typename T>
 class I3D_EXPORT LineString 
 {
 public:
-	/*Una LineString estará formada por una colección de puntos
-	En este caso de enteros, pero podría ser de cualquier tipo 
+	/*Una LineString estarÃ¡ formada por una colecciÃ³n de puntos
+	En este caso de enteros, pero podrÃ­a ser de cualquier tipo 
 	o bien con una plantila */
 	std::vector<cv::Point_<T>> vertices;
 public:
@@ -23,21 +23,21 @@ public:
 	/*constructor de copia*/
 	LineString(const LineString &linestring);
 
-	/*constructor a partir de una colección de puntos
+	/*constructor a partir de una colecciÃ³n de puntos
 	Se pasan los puntos como una funcion con numero indeterminado de args*/
 	LineString(std::initializer_list<cv::Point_<T>> listPoints);
 
 	/*destructor*/
 	//~LineString();
 public: 
-	/*Metodo para saber el tamaño del vector*/
+	/*Metodo para saber el tamaÃ±o del vector*/
 	int getSize() { return static_cast<int>(vertices.size()); };
 
 	/*Metodo para obtener el vertice con indice deseado*/
 	cv::Point_<T> getPoint(int indice) { return vertices[indice];}
 };
 
-/*CONSTRUCTOR POR DEFECTO. Crea la clase y el vector de vértices con 0 elementos*/
+/*CONSTRUCTOR POR DEFECTO. Crea la clase y el vector de vÃ©rtices con 0 elementos*/
 template <typename T> 
 LineString<T>::LineString() : vertices(0) {}
 
@@ -45,7 +45,7 @@ LineString<T>::LineString() : vertices(0) {}
 template <typename T> 
 LineString<T>::LineString(const LineString &linea) : vertices(linea.vertices) {}
 
-/*CONSTRUCTOR A PARTIR DE LISTA DE PUNTOS- Con una colección de puntos creamos la polilinea. */
+/*CONSTRUCTOR A PARTIR DE LISTA DE PUNTOS- Con una colecciÃ³n de puntos creamos la polilinea. */
 template <typename T> 
 LineString<T>::LineString(std::initializer_list<cv::Point_<T>> listPoints): vertices(listPoints) {}
 
@@ -53,7 +53,7 @@ LineString<T>::LineString(std::initializer_list<cv::Point_<T>> listPoints): vert
 #pragma warning(disable : 4244)
 template <typename T>
 	float distanciaTotal(LineString<T> &polilinea) {
-		/*¿porque si pongo float distanciaTotal(const LineString &polilinea) no me deja hacer el getPoint(1)??*/
+		/*Â¿porque si pongo float distanciaTotal(const LineString &polilinea) no me deja hacer el getPoint(1)??*/
 		cv::Point_<T> anterior = polilinea.getPoint(0);
 		cv::Point_<T> siguiente;
 		float dist = 0;

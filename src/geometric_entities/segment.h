@@ -3,9 +3,9 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\utils.h"
-#include "core\mathutils.h"
-#include "geometric_entities\window.h"
+#include "core/utils.h"
+#include "core/mathutils.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {
@@ -180,8 +180,7 @@ double Segment<T>::angleOX() const
   double angle = 0.0;
   if (pt1 != pt2){
     angle = vectorAngleOX(vector());
-  } else
-    angle = NULL;
+  }
   return angle;
 
 }
@@ -192,8 +191,7 @@ double Segment<T>::angleOY() const
   double angle = 0.0;
   if (pt1 != pt2){
     angle = vectorAngleOY(vector());
-  } else
-    angle = NULL;
+  }
   return angle;
 }
 

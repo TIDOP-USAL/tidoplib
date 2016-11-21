@@ -1,9 +1,11 @@
 #include "mathutils.h"
 
-#include "core\messages.h"
+#include "core/messages.h"
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+
+#include <cmath> 
 
 namespace I3D
 {
@@ -100,7 +102,9 @@ void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, d
 { 
   if (omega) *omega = atan2(R[1][2], R[2][2]);
   if (phi) *phi = atan2(-R[0][2], sqrt(R[0][0] * R[0][0] + R[0][1] * R[0][1]));
-  if (kappa) *kappa = atan2(R[0][1], R[0][0]);
+  double s1 = sin(*omega);
+  double c1 = cos(*omega);
+  if (kappa) *kappa = atan2(s1 * R[2][0] - c1 * R[1][0], c1 * R[1][1] - s1 * R[2][1]);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -113,7 +117,7 @@ int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
     cv::sortIdx(in, *idx, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printError(e.what());
+    printError("%s", e.what());
     iret = -1;
   }
   return iret;
@@ -127,7 +131,7 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
     cv::sortIdx(in, *idx, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printError(e.what());
+    printError("%s", e.what());
     iret = -1;
   }
   return iret;

@@ -8,8 +8,8 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "core\defs.h"
-#include "graphic_entities\color.h"
+#include "core/defs.h"
+#include "graphic_entities/color.h"
 
 namespace I3D
 {

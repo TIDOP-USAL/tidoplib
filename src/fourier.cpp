@@ -1,7 +1,7 @@
 #include "fourier.h"
 
-#include "core\utils.h"
-#include "core\mathutils.h"
+#include "core/utils.h"
+#include "core/mathutils.h"
 
 namespace I3D
 {
@@ -162,7 +162,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
 
   pts->clear();
   pts->resize(cols.size());
-  for (int j = 0; j < cols.size(); j++) {
+  for (size_t j = 0; j < cols.size(); j++) {
 
     for (int i = 0; i < size.height; i++) {
       curVar = imageOut.at<float>(cv::Point(cols[j], i)) - imageOut.at<float>(cv::Point(cols[j], 0));

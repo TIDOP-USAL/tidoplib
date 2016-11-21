@@ -9,16 +9,16 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\utils.h"
-#include "core\mathutils.h"
-#include "geometric_entities\window.h"
-#include "geometric_entities\point.h"
-#include "geometric_entities\operations.h"
+#include "core/utils.h"
+#include "core/mathutils.h"
+#include "geometric_entities/window.h"
+#include "geometric_entities/point.h"
+#include "geometric_entities/operations.h"
 
 namespace I3D
 {
 
-/*! \defgroup GeometricEntities Entidades geométricas
+/*! \defgroup GeometricEntities Entidades geomÃ©tricas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -44,33 +44,33 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Polygon() : PointsList() {}
+  Polygon() : PointsList<T>() {}
 
   /*!
-   * \brief Constructor que establece el tamaño del poligono
+   * \brief Constructor que establece el tamaÃ±o del poligono
    */
-  Polygon(int size) : PointsList(size) {}
+  Polygon(int size) : PointsList<T>(size) {}
 
   /*!
    * \brief Constructor de copia
    * \param[in] polygon
    */
-  Polygon(const Polygon &polygon) : PointsList(multiPoint) {}
+  Polygon(const Polygon &polygon) : PointsList<T>(multiPoint) {}
 
   /*!
    * \brief Constructor
    * \param[in] points
    */
-  Polygon(const std::vector<cv::Point_<T>> &points) : PointsList(points) {}
+  Polygon(const std::vector<cv::Point_<T>> &points) : PointsList<T>(points) {}
 
   /*!
-   * \brief Constructor lista de inicialización
+   * \brief Constructor lista de inicializaciÃ³n
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon(std::initializer_list<cv::Point_<T>> listPoints) : PointsList(listPoints) {}
+  Polygon(std::initializer_list<cv::Point_<T>> listPoints) : PointsList<T>(listPoints) {}
 
   /*!
-   * \brief Sobrecarga del operador de asignación
+   * \brief Sobrecarga del operador de asignaciÃ³n
    * \param[in] polygon Poligono que se asigna
    * \return Referencia al poligono
    */
@@ -83,8 +83,8 @@ public:
   //Window<T> getWindow() const;
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
+   * \brief AÃ±ade un punto a la colecciÃ³n
+   * \param[in] point Punto que se aÃ±ade
    */
   void add(const cv::Point_<T> &point) override;
 
@@ -102,7 +102,7 @@ public:
 
 };
 
-// Definición de métodos
+// DefiniciÃ³n de mÃ©todos
 
 //template<typename T> inline
 //Polygon<T>::Polygon( ) : mPoints(0) {}
@@ -212,34 +212,34 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Polygon3D() : Points3DList() {}
+  Polygon3D() : Points3DList<T>() {}
 
   /*!
-   * \brief Constructor que establece el tamaño del poligono
+   * \brief Constructor que establece el tamaÃ±o del poligono
    */
-  Polygon3D(int size) : Points3DList(size) {}
+  Polygon3D(int size) : Points3DList<T>(size) {}
 
   /*!
    * \brief Constructor de copia
    * \param[in] polygon
    */
-  Polygon3D(const Polygon3D &polygon) : Points3DList(multiPoint) {}
+  Polygon3D(const Polygon3D &polygon) : Points3DList<T>(multiPoint) {}
 
   /*!
    * \brief Constructor
    * \param[in] points
    */
-  Polygon3D(const std::vector<cv::Point3_<T>> &points) : Points3DList(vPoint) {}
+  Polygon3D(const std::vector<cv::Point3_<T>> &points) : Points3DList<T>(vPoint) {}
 
   /*!
-   * \brief Constructor lista de inicialización
+   * \brief Constructor lista de inicializaciÃ³n
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints) : Points3DList(listPoints) {}
+  Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints) : Points3DList<T>(listPoints) {}
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
+   * \brief AÃ±ade un punto a la colecciÃ³n
+   * \param[in] point Punto que se aÃ±ade
    */
   void add(const cv::Point3_<T> &point) override;
 

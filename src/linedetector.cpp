@@ -1,11 +1,11 @@
 #include "LineDetector.h"
 
-#include "opencv2\imgproc.hpp"
+#include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/ximgproc.hpp"
 
-#include "core\utils.h"
-#include "core\messages.h"
+#include "core/utils.h"
+#include "core/messages.h"
 
 using namespace std;
 

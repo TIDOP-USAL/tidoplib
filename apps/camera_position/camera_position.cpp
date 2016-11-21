@@ -31,9 +31,10 @@
 //#include "elas.h"
 //#include "image.h"
 //#include "transform.h"
-#include "geometric_entities\window.h"
-#include "core\console.h"
-#include "core\messages.h"
+#include "geometric_entities/window.h"
+#include "core/console.h"
+#include "core/messages.h"
+#include "transform.h"
 
 using namespace I3D;
 using namespace cv;
@@ -223,7 +224,7 @@ int getdir(const std::string _filename, std::vector<std::string> &files)
 
 int main(int argc, char** argv)
 {
-  ProgressBar progress_bar;
+  //ProgressBar progress_bar;
 
   Message::setMessageLevel(MessageLevel::MSG_INFO);
 
@@ -354,7 +355,7 @@ int main(int argc, char** argv)
 
       sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
 
-      progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
+      //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
 
       std::vector<Point2f> pts1;
       std::vector<Point2f> pts2;
@@ -387,7 +388,7 @@ int main(int argc, char** argv)
           v_points[j] = Vec2d(point2.x, point2.y);
           pass_points.push_back(v_points);
         }
-        progress_bar();
+        //progress_bar();
       }
     }
   }
@@ -425,8 +426,8 @@ int main(int argc, char** argv)
 
   try {
     bool is_projective = true;
-    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated, is_projective);
-    //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
+    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated, is_projective);
+    cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {
     printError(e.what());
   } catch (std::exception &e) {
@@ -544,10 +545,10 @@ int main(int argc, char** argv)
   Features2D featuresR(fd, de);
   //Matching match(cv::DescriptorMatcher::create("FlannBased"));
 
-  for (int i = 1; i < images_paths.size(); i++) {
+  for (int i = 1; i < images_paths.size() - 1; i++) {
     
     String left_im = images_paths[i-1];
-    String right_im = images_paths[i];
+    String right_im = images_paths[i+1];
     
     // Se cargan las imagenes
     Mat left  = imread(left_im ,IMREAD_COLOR);
@@ -647,14 +648,21 @@ int main(int argc, char** argv)
     //trfTranslate.setTranslation(wR.pt1.x, wR.pt1.y);
     //trfTranslate.transform(ptsR, &ptsROut);
 
-    cv::Mat R, T;
+    cv::Mat RC1, TC1, RC2, TC2;
     //// Lo mismo por OpenCV??
     //cv::Mat essentialMat = findEssentialMat(ptsLOut, ptsROut, cameraMatrix);
     //cv::recoverPose(essentialMat, ptsLOut, ptsROut, cameraMatrix, R, T);
 
     //... La matriz de rotación y las translaciones ya las tengo calculadas
-    R = Rs_est[i];
-    T = ts_est[i];
+    RC1 = Rs_est[i-1];
+    TC1 = ts_est[i-1];
+    RC2 = Rs_est[i+1];
+    TC2 = ts_est[i+1];
+
+    Mat R1_inv = RC1.inv();
+    Mat R = RC2 * R1_inv;
+    cv::Point3f r_pt;
+    cv::Mat T = RC1*TC2 - TC1;
 
     cv::Mat R1, R2, P1, P2, Q;
     cv::stereoRectify(cameraMatrix, distCoeffs, cameraMatrix, distCoeffs, imageSize, R, T, R1, R2, P1, P2, Q);
@@ -665,13 +673,21 @@ int main(int argc, char** argv)
     //cv::reprojectImageTo3D(filtered_disp,XYZ,Q);  //... Mejor no usar para poder filtrar la nube de puntos.
     cv::Mat_<double> vec_tmp(4,1);
   
+    cv::Mat dispFilteredDif = left_disp - filtered_disp;
+    cv::Mat dispMask = cv::Mat::ones(filtered_disp.size(), CV_8U);
+    dispMask.setTo(0, abs(dispFilteredDif) > 10);
+
+    cv::Mat disparity;
+    cv::bitwise_and(filtered_disp, filtered_disp, disparity, dispMask);
+
     //for(int y=0; y < filtered_disp.rows; ++y) {
     //    for(int x=0; x < filtered_disp.cols; ++x) {
-    for(int y=0; y < size.height; ++y) {
-      for(int x=0; x < size.width; ++x) {
+    for(int y=50; y < size.height-50; ++y) {
+      for(int x=50; x < size.width-50; ++x) {
         vec_tmp(0)=x; 
         vec_tmp(1)=y; 
-        vec_tmp(2)=filtered_disp.at<__int16>(y,x); 
+        //vec_tmp(2)=filtered_disp.at<__int16>(y,x);
+        vec_tmp(2) = disparity.at<__int16>(y, x);
         if(vec_tmp(2)==0) continue;
         vec_tmp(3)=1;
         vec_tmp = Q*vec_tmp;

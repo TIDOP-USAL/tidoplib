@@ -3,10 +3,15 @@
 
 #include <string>
 #include <sstream>
+#include <typeinfo>
 
+#include "core/config.h"
+
+#ifdef I3D_ENABLE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
-#include "core\defs.h"
+#include "core/defs.h"
 
 namespace I3D
 {

@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "..\..\src\graphic_entities\color.h"
+#include "../../src/graphic_entities/color.h"
 
 using namespace I3D;
 using namespace std;

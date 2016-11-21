@@ -4,9 +4,9 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
-#include "core\defs.h"
-#include "core\utils.h"
-#include "geometric_entities\window.h"
+#include "core/defs.h"
+#include "core/utils.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {

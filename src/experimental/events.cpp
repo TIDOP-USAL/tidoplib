@@ -33,7 +33,7 @@ void Subject::addObserver(const int event, std::shared_ptr<Observer> observer)
 
 //void Subject::notify(const int event) const
 //{
-  //De esta forma es limitante a que siempre tengan el mismo número de parametros
+  //De esta forma es limitante a que siempre tengan el mismo nÃºmero de parametros
   //for (const auto& obs : mObservers.at(event))
     //(*obs)();
 //}

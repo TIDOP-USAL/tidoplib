@@ -6,8 +6,8 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "core\defs.h"
-#include "geometric_entities\window.h"
+#include "core/defs.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {
@@ -412,30 +412,30 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  MultiPoint() : PointsList() {}
+  MultiPoint() : PointsList<T>() {}
 
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiPoint(int size) : PointsList(size) {}
+  MultiPoint(int size) : PointsList<T>(size) {}
 
   /*!
    * \brief Constructor de copia
    * \param[in] multiPoint Objeto MultiPoint que se copia
    */
-  MultiPoint(const MultiPoint &multiPoint) : PointsList(multiPoint) {}
+  MultiPoint(const MultiPoint &multiPoint) : PointsList<T>(multiPoint) {}
 
   /*!
    * \brief Constructor
    * \param[in] vPoint vector de puntos
    */
-  MultiPoint(const std::vector<cv::Point_<T>> &vPoint) : PointsList(vPoint) {}
+  MultiPoint(const std::vector<cv::Point_<T>> &vPoint) : PointsList<T>(vPoint) {}
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  MultiPoint(std::initializer_list<cv::Point_<T>> listPoints) : PointsList(listPoints) {}
+  MultiPoint(std::initializer_list<cv::Point_<T>> listPoints) : PointsList<T>(listPoints) {}
 
   //~MultiPoint();
 

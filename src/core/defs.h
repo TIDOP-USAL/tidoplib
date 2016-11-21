@@ -6,9 +6,9 @@
 #include <limits>
 #include <cstdlib>
 
-#if _MSC_VER >= 1600
-  #include <cstdint>
-#else
+
+#if defined _MSC_VER && _MSC_VER < 1600
+
 //Copiado de stdint.h. Las versiones antiguas de Visual Studio no incluyen stdint.h
   typedef signed char        int8_t;
   typedef short              int16_t;
@@ -18,9 +18,11 @@
   typedef unsigned short     uint16_t;
   typedef unsigned int       uint32_t;
   typedef unsigned long long uint64_t;
+#else
+  #include <cstdint>
 #endif
 
-// Definici髇 de constantes de tipo general
+// Definici贸n de constantes de tipo general
 
 #define I3D_PI   3.1415926535897932384626433832795
 #define I3D_2PI  6.283185307179586476925286766559
@@ -44,7 +46,12 @@
 #  define I3D_MAX_FNAME  _MAX_FNAME
 #  define I3D_MAX_EXT    _MAX_EXT
 #else
-
+#include <linux/limits.h>
+#  define I3D_MAX_PATH   PATH_MAX
+#  define I3D_MAX_FNAME  NAME_MAX
+#  define I3D_MAX_DRIVE  PATH_MAX
+#  define I3D_MAX_DIR    PATH_MAX
+#  define I3D_MAX_EXT    NAME_MAX
 #endif
 
         
@@ -66,8 +73,8 @@
 
 
 
-// Warning para informar que una funci髇 esta obsoleta
-// Se debe anteceder a la funci髇 obsoleta a馻diendo el m閠odo que lo reemplaza;
+// Warning para informar que una funci贸n esta obsoleta
+// Se debe anteceder a la funci贸n obsoleta a帽adiendo el m茅todo que lo reemplaza;
 // DEPRECATED("Use NewFunc(int a, float b) en su lugar") 
 // void OldFunc(int a, float b);
 
@@ -92,8 +99,15 @@
 #if _MSC_VER
 #  define COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
-// Ver si funciona _Pragma()
-#  define COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+// Ver si funciona _Pragma()... Da los errores:
+// /home/esteban/desarrollo/tidoplib/src/transform.h:331: error: _Pragma takes a parenthesized string literal
+// I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
+//                                                                   ^
+// /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
+//  #  define I3D_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+//                                                                                                                   ^
+// Por ahora no hace nada...
+#  define I3D_COMPILER_WARNING(msg) //_Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 // __FUNCTION__ no es estandar (Es de Visual Studio).
@@ -123,9 +137,15 @@
 
 /*!
  * \brief Redondea un doble o float y ademas convierte a entero
- * De esta forma se evita el warning C4244 (conversi髇 de 'double' a 'int')
+ * De esta forma se evita el warning C4244 (conversi贸n de 'double' a 'int')
  * y nos aseguramos de que redondee de la forma correcta.
  */
 #define I3D_ROUND_TO_INT(n)  static_cast<int>(round(n))
+
+#ifndef _MSC_VER
+//En el compilador de LINUX no incluye printf_s de C++11
+//Se quita el warning pero a ver si funciona...
+#define printf_s(...) printf( __VA_ARGS__)
+#endif
 
 #endif // I3D_DEFS_H

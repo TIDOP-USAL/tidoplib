@@ -1,5 +1,6 @@
 #include "messages.h"
 
+#include "core/defs.h"
 #include "core/utils.h"
 #include "core/console.h"
 
@@ -11,7 +12,10 @@
 #if defined WIN32
 # include <windows.h>
 #endif
-#include <string>
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <ctime>
+#include <cstring>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 
@@ -89,11 +93,15 @@ Message &Message::message(const char *msg, ...)
     I3D::replaceString(&aux, "% ", "%% ");
     va_list args;
     va_start(args, msg);
+#ifdef _MSC_VER
     vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+#else
+    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
+#endif
     va_end(args);
     sLastMessage = buf;
   } catch (std::exception &e) {
-    printError(e.what());
+    printError("%s", e.what());
   }
 
   return *sObjMessage;
@@ -153,14 +161,22 @@ EnumFlags<MessageOutput> Message::getMessageOutput() const
 std::string Message::messageOutput(const MessageLevel &msgLevel)
 {
   char buf[500];
+#if defined _MSC_VER
   sprintf_s(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
+#else
+  snprintf(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
+#endif
   return std::string(buf);
 }
 
 std::string Message::messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function)
 {
   char buf[500];
+#if defined _MSC_VER
   sprintf_s(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+#else
+  snprintf(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+#endif
   return std::string(buf);
 }
 
@@ -175,8 +191,7 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
     console.setConsoleForegroundColor(GetMessageProperties(level).foreColor);
     std::string aux(msgOut);
     I3D::replaceString(&aux, "%", "%%");
-    printf_s(aux.c_str());
-    printf_s("\n");
+    printf_s("%s\n", aux.c_str());
   }
 
 #endif //I3D_ENABLE_CONSOLE
@@ -191,17 +206,24 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
     }
     std::ofstream hLog(sLogFile,std::ofstream::app);
     if (hLog.is_open()) {
-      errno_t err;
       char date[64];
-      time_t now;
-      now = time(NULL);
-      struct tm _tm;
+      std::time_t now = std::time(NULL);
+// Como estoy bloqueando me da igual usar localtime_s asi que uso localtime y me evito problemas
+// de plataformas
+//      std::tm _tm;
+//#ifdef __STDC_LIB_EXT1__
+//      errno_t err;
+//      err = localtime_s(&now, &_tm);
+//#else
+
       std::lock_guard<std::mutex> lck(mtx);
-      err = localtime_s(&_tm, &now);
-      if (err == 0) {
-        strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm);
+      std::tm *_tm = std::localtime(&now);
+//#endif
+      if (_tm) {
+
+        std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
       } else {
-        strcpy_s(date, "NULL");
+        strcpy(date, "NULL");
       }
       hLog << date << " - " << msgOut << "\n";
       hLog.close();

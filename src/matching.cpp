@@ -1,7 +1,7 @@
 #include "matching.h"
 
-#include "core\mathutils.h"
-#include "core\messages.h"
+#include "core/mathutils.h"
+#include "core/messages.h"
 #include "transform.h"
 
 #include "opencv2/calib3d.hpp"
@@ -63,7 +63,7 @@ void Features2D::save( const char *fname ) const
   } else if (strcmp(ext, ".yml") == 0) {
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
   } else {
-    printError("Extensión de archivo '%s' no valida", ext);
+    printError("ExtensiÃ³n de archivo '%s' no valida", ext);
     return;
   }
   cv::FileStorage fs(fname, flags);
@@ -152,9 +152,9 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
       pts2[igm] = keyPoints2[(*gm)[igm].trainIdx].pt;
     }
 
-    // Se calcula una transformación perspectiva y se van limpiando puntos
-    //... Hay que revisar el valor de error medio cuadrático que se pone y
-    //    la forma de ver la convergencia de la solución
+    // Se calcula una transformaciÃ³n perspectiva y se van limpiando puntos
+    //... Hay que revisar el valor de error medio cuadrÃ¡tico que se pone y
+    //    la forma de ver la convergencia de la soluciÃ³n
     TrfPerspective<cv::Point2f> trfPerps;
     std::vector<double> err;
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
