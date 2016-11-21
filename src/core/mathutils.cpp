@@ -95,6 +95,14 @@ double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double
   return(corr);
 }
 
+//https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa) 
+{ 
+  if (omega) *omega = atan2(R[1][2], R[2][2]);
+  if (phi) *phi = atan2(-R[0][2], sqrt(R[0][0] * R[0][0] + R[0][1] * R[0][1]));
+  if (kappa) *kappa = atan2(R[0][1], R[0][0]);
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)

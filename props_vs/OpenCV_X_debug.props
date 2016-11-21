@@ -5,12 +5,12 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\..\Libs\opencv\include\opencv2\sfm\libmv_light;</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_DEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\Libs\opencv\x64\vc12\lib;..\..\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_xfeatures2d310d.lib;opencv_ximgproc310d.lib;opencv_sfm310d.lib;opencv_viz310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_xfeatures2d310d.lib;opencv_ximgproc310d.lib;opencv_sfm310d.lib;opencv_viz310d.lib;simple_pipelined.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

@@ -6,10 +6,10 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalLibraryDirectories>..\..\..\Libs\opencv\x64\vc12\lib;..\..\Libs\opencv\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;opencv_sfm310.lib;opencv_viz310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_xfeatures2d310.lib;opencv_ximgproc310.lib;opencv_sfm310.lib;opencv_viz310.lib;simple_pipeline.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Libs\opencv\include;..\..\Libs\opencv\include;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\..\Libs\opencv\include\opencv2\sfm\libmv_light</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

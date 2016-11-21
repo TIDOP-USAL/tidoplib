@@ -2005,7 +2005,7 @@ private:
   /*!
    * \brief Matriz de rotación
    */
-  std::array<std::array<double, 3>, 3> R;
+  std::array<std::array<double, 3>, 3> mR;
 
 public:
 
@@ -2020,14 +2020,32 @@ public:
 
   /*!
    * \brief Constructor
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] x0 Traslación en X
+   * \param[in] y0 Traslación en Y
+   * \param[in] z0 Traslación en Z
    * \param[in] scale Escala
-   * \param[in] rotation Rotación
+   * \param[in] omega Rotación respecto al eje X
+   * \param[in] phi Rotación respecto al eje Y
+   * \param[in] kappa Rotación respecto al eje Z
    */
-  Helmert3D(T x0, T y0, T z0, double scale, double omega, double phi, double kappa) 
+  Helmert3D(sub_type x0, sub_type y0, sub_type z0, double scale, double omega, double phi, double kappa) 
     : Transform3D(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
   {
+    update();
+  }
+
+  /*!
+   * \brief Constructor
+   * \param[in] x0 Traslación en X
+   * \param[in] y0 Traslación en Y
+   * \param[in] z0 Traslación en Z
+   * \param[in] scale Escala
+   * \param[in] rotation Matriz de rotación
+   */
+  Helmert3D(sub_type x0, sub_type y0, sub_type z0, double scale, const std::array<std::array<double, 3>, 3> &rotation) 
+    : Transform3D(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mR(rotation)
+  {
+    eulerAngles(mR, &mOmega, &mPhi, &mKappa);
     update();
   }
 
@@ -2041,6 +2059,11 @@ public:
    * \return Verdadero si el calculo se ha efectuado de forma correcta
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+
+  /*!
+   * \brief Devuelve una referencia a la matriz de rotación
+   */
+  const std::array<std::array<double, 3>, 3> &getRotationMatrix() const;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -2086,7 +2109,7 @@ public:
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
-  double getScale() const { return mScale;  };
+  double getScale() const { return mScale; };
 
   /*!
    * \brief Establece los parámetros
@@ -2189,6 +2212,12 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
 }
 
 template<typename T> inline
+const std::array<std::array<double, 3>, 3> &Helmert3D<T>::getRotationMatrix() const 
+{
+  return mR;
+}
+
+template<typename T> inline
 void Helmert3D<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
 {
   formatVectorOut(in, out);
@@ -2202,9 +2231,9 @@ void Helmert3D<T>::transform(const T &in, T *out, bool bDirect) const
 {
   T ptAux = in;
   if (bDirect){
-    out->x = static_cast<sub_type>( mScale * (ptAux.x*R[0][0] + ptAux.y*R[0][1] + ptAux.z*R[0][2]) + x0 );
-    out->y = static_cast<sub_type>( mScale * (ptAux.x*R[1][0] + ptAux.y*R[1][1] + ptAux.z*R[1][2]) + y0 );
-    out->z = static_cast<sub_type>( mScale * (ptAux.x*R[2][0] + ptAux.y*R[2][1] + ptAux.z*R[2][2]) + z0 );
+    out->x = static_cast<sub_type>( mScale * (ptAux.x*mR[0][0] + ptAux.y*mR[0][1] + ptAux.z*mR[0][2]) + x0 );
+    out->y = static_cast<sub_type>( mScale * (ptAux.x*mR[1][0] + ptAux.y*mR[1][1] + ptAux.z*mR[1][2]) + y0 );
+    out->z = static_cast<sub_type>( mScale * (ptAux.x*mR[2][0] + ptAux.y*mR[2][1] + ptAux.z*mR[2][2]) + z0 );
   } else {
 
   }
@@ -2215,9 +2244,9 @@ T Helmert3D<T>::transform(const T &in, bool bDirect) const
 {
   T r_pt;
   if (bDirect){
-    r_pt.x = static_cast<sub_type>( mScale * (in.x*R[0][0] + in.y*R[0][1] + in.z*R[0][2]) + x0 );
-    r_pt.y = static_cast<sub_type>( mScale * (in.x*R[1][0] + in.y*R[1][1] + in.z*R[1][2]) + y0 );
-    r_pt.z = static_cast<sub_type>( mScale * (in.x*R[2][0] + in.y*R[2][1] + in.z*R[2][2]) + z0 );
+    r_pt.x = static_cast<sub_type>( mScale * (in.x*mR[0][0] + in.y*mR[0][1] + in.z*mR[0][2]) + x0 );
+    r_pt.y = static_cast<sub_type>( mScale * (in.x*mR[1][0] + in.y*mR[1][1] + in.z*mR[1][2]) + y0 );
+    r_pt.z = static_cast<sub_type>( mScale * (in.x*mR[2][0] + in.y*mR[2][1] + in.z*mR[2][2]) + z0 );
   } else {
 
   }
@@ -2246,7 +2275,27 @@ void Helmert3D<T>::setScale(double scale)
 template<typename T> inline
 void Helmert3D<T>::update()
 {
-  rotationMatrix(mOmega, mPhi, mKappa, &R);
+  rotationMatrix(mOmega, mPhi, mKappa, &mR);
+}
+
+template<typename T> inline
+Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
+{
+  const std::array<std::array<double, 3>, 3> R1 = trf1.getRotationMatrix();
+  const std::array<std::array<double, 3>, 3> R2 = trf2.getRotationMatrix();
+
+  cv::Mat _r1 = cv::Mat(3, 3, CV_32F, R1);
+
+  std::array<std::array<double, 3>, 3> R;
+  //R[0][0] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[0][1] = R1[0][0] * R2[1][0] + R1[1][0] * R2[1][1] + R1[1][0] * R2[1][2];
+  //R[0][2] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[1][0] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[1][1] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[1][2] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[2][0] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[2][1] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
+  //R[2][2] = R1[0][0] * R2[0][0] + R1[1][0] * R2[0][1] + R1[1][0] * R2[0][2];
 }
 
 /*! \} */ // end of trf3DGroup

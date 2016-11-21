@@ -11,6 +11,18 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
 
+#define CERES_FOUND 1 //Por ahora
+#include <opencv2/sfm/conditioning.hpp>
+#include <opencv2/sfm/fundamental.hpp>
+#include <opencv2/sfm/io.hpp>
+#include <opencv2/sfm/numeric.hpp>
+#include <opencv2/sfm/projection.hpp>
+#include <opencv2/sfm/triangulation.hpp>
+#if CERES_FOUND
+#include <opencv2/sfm/reconstruct.hpp>
+#include <opencv2/sfm/simple_pipeline.hpp>
+#endif
+
 #include "matching.h"
 
 namespace I3D
@@ -20,38 +32,58 @@ namespace EXPERIMENTAL
 {
 
 
+// Clase para matching robusto. Necesitaria que tener una clase matching 
+// virtual donde se definan todos los métodos comunes
+// con esta clase sustituire a nRobustViewMatching y tendre mayor control. 
 
-class RobustMatcher {
+class RobustMatching {
+
+private:
+
+  /*!
+   * \brief 
+   */
+  cv::Ptr<cv::DescriptorMatcher> mDescriptorMatcher;
+
+  /*!
+   * \brief Máximo tolerancia entre el primer y segundo NN
+   */
+  float mRatio;
+
+  //std::vector<std::vector<cv::DMatch> > mMatches;
+
 public:
-  RobustMatcher() : ratio_(0.8f)
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  RobustMatching()
   {
-    // ORB is the default feature
-    detector_ = cv::ORB::create();
-    extractor_ = cv::ORB::create();
-
-    // BruteFroce matcher with Norm Hamming is the default matcher
-    matcher_ = cv::makePtr<cv::BFMatcher>((int)cv::NORM_HAMMING, false);
-
+    mDescriptorMatcher = cv::makePtr<cv::BFMatcher>((int)cv::NORM_HAMMING, false);
+    mRatio = 0.8f;
   }
-  virtual ~RobustMatcher();
 
-  // Set the feature detector
-  void setFeatureDetector(const cv::Ptr<cv::FeatureDetector>& detect) {  detector_ = detect; }
+  /*!
+   * \brief Constructora
+   */
+  RobustMatching( const cv::Ptr<cv::DescriptorMatcher> &dm) : mDescriptorMatcher(dm)
+  {
+    mRatio = 0.8f;
+  }
 
-  // Set the descriptor extractor
-  void setDescriptorExtractor(const cv::Ptr<cv::DescriptorExtractor>& desc) { extractor_ = desc; }
+  /*!
+   * \brief destructora
+   */
+  virtual ~RobustMatching() {}
 
-  // Set the matcher
-  void setDescriptorMatcher(const cv::Ptr<cv::DescriptorMatcher>& match) {  matcher_ = match; }
-
-  // Compute the keypoints of an image
-  void computeKeyPoints( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints);
-
-  // Compute the descriptors of an image given its keypoints
-  void computeDescriptors( const cv::Mat& image, std::vector<cv::KeyPoint>& keypoints, cv::Mat& descriptors);
+  /*!
+   * \brief Establece el matcher
+   * \param[in] matcher 
+   */
+  void setDescriptorMatcher(const cv::Ptr<cv::DescriptorMatcher> &matcher) {  mDescriptorMatcher = matcher; }
 
   // Set ratio parameter for the ratio test
-  void setRatio( float rat) { ratio_ = rat; }
+  void setRatio( float ratio) { mRatio = ratio; }
 
   // Clear matches for which NN ratio is > than threshold
   // return the number of removed points
@@ -64,25 +96,14 @@ public:
                      const std::vector<std::vector<cv::DMatch> >& matches2,
                      std::vector<cv::DMatch>& symMatches );
 
+  // Insert symmetrical matches in symMatches vector
+  void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches, std::vector<std::vector<cv::DMatch>> *symMatches );
+
   // Match feature points using ratio and symmetry test
-  void robustMatch( const cv::Mat& frame, std::vector<cv::DMatch>& good_matches,
-                      std::vector<cv::KeyPoint>& keypoints_frame,
-                      const cv::Mat& descriptors_model );
+  void robustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<cv::DMatch>& goodMatches, std::vector<std::vector<cv::DMatch>> *pMatches12,  std::vector<std::vector<cv::DMatch>> *pMatches21);
 
- // Match feature points using ratio test
- void fastRobustMatch( const cv::Mat& frame, std::vector<cv::DMatch>& good_matches,
-                       std::vector<cv::KeyPoint>& keypoints_frame,
-                       const cv::Mat& descriptors_model );
-
-private:
-  // pointer to the feature point detector object
-  cv::Ptr<cv::FeatureDetector> detector_;
-  // pointer to the feature descriptor extractor object
-  cv::Ptr<cv::DescriptorExtractor> extractor_;
-  // pointer to the matcher object
-  cv::Ptr<cv::DescriptorMatcher> matcher_;
-  // max ratio between 1st and 2nd NN
-  float ratio_;
+  // Match feature points using ratio test
+  void fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches);
 };
 
 
@@ -102,10 +123,6 @@ private:
 class Reconstruction3D
 {
 
-  std::vector<cv::Mat> points2d;
-
-  std::vector<std::string> mImagesPaths;
-
 
   /*!
    * \brief keyPoints
@@ -118,20 +135,38 @@ class Reconstruction3D
   std::vector<cv::Mat> mDescriptor;
 
   /*!
-   * \brief Detector de caracteristicas
+   * \brief imagenes
    */
-  cv::Ptr<cv::FeatureDetector> mFeatureDetector;
+  std::vector<std::string> mImagesPaths;
 
-  /*!
-   * \brief Extractor de descriptores
-   */
-  cv::Ptr<cv::DescriptorExtractor> mDescriptorExtractor;
+
+  std::vector<cv::Mat> points2d;
 
   std::unique_ptr<Features2D> mFeature2D;
+
+  ///*!
+  // * \brief Detector de caracteristicas
+  // */
+  //cv::Ptr<cv::FeatureDetector> mFeatureDetector;
+
+  ///*!
+  // * \brief Extractor de descriptores
+  // */
+  //cv::Ptr<cv::DescriptorExtractor> mDescriptorExtractor;
 
   Matching mMatcher;
 
   cv::FlannBasedMatcher mMatcherFB;
+
+  //Para sfm
+  cv::Ptr<cv::sfm::BaseSFM> reconstruction;
+  bool bRefinement;
+
+
+  /*!
+   * \brief Matching robusto
+   */
+  std::shared_ptr<RobustMatching> mRobustMatching;
 
 public:
 
@@ -140,6 +175,8 @@ public:
    */
   Reconstruction3D() { 
     mFeature2D = std::make_unique<Features2D>(cv::ORB::create(10000), cv::xfeatures2d::DAISY::create());
+    mRobustMatching = std::make_shared<RobustMatching>();
+    init();
   }
 
   /*!
@@ -158,7 +195,8 @@ public:
    * - cv::xfeatures2d::SIFT::create();
    * - cv::xfeatures2d::SURF::create();
    */
-  Reconstruction3D(const cv::Ptr<cv::FeatureDetector> &fd, const cv::Ptr<cv::DescriptorExtractor> &de) 
+  Reconstruction3D(const cv::Ptr<cv::FeatureDetector> &fd, const cv::Ptr<cv::DescriptorExtractor> &de, const std::shared_ptr<RobustMatching> robustMatching) 
+    : mRobustMatching(robustMatching)
   { 
     mFeature2D = std::make_unique<Features2D>(fd, de);
   }
@@ -188,12 +226,17 @@ public:
    */
   void multiImageMatching(std::vector<cv::Mat> &points2d);
 
-  int ratioTest(std::vector<std::vector<cv::DMatch> > &matches, float ratio = 0.7f);
-  int ratioTest2(std::vector<std::vector<cv::DMatch> > &matches, float ratio = 0.8f);
-  void symmetryTest(const std::vector<std::vector<cv::DMatch> >& matches1,
-                    const std::vector<std::vector<cv::DMatch> >& matches2,
-                    std::vector<cv::DMatch>& symMatches);
+  //int ratioTest(std::vector<std::vector<cv::DMatch> > &matches, float ratio = 0.7f);
+  //int ratioTest2(std::vector<std::vector<cv::DMatch> > &matches, float ratio = 0.8f);
+  //void symmetryTest(const std::vector<std::vector<cv::DMatch> >& matches1,
+  //                  const std::vector<std::vector<cv::DMatch> >& matches2,
+  //                  std::vector<cv::DMatch>& symMatches);
   void saveTracks(const std::string &filename, std::vector<std::vector<cv::Vec2d> > passPoints);
+
+  // Tomado de sfm
+  void reconstruct(std::vector<std::string> &images, std::vector<cv::Mat> &Rs_est, std::vector<cv::Mat> &ts_est, cv::Matx33d &K, std::vector<cv::Mat> &points3d_estimated);
+
+  void init(bool refinement = true);
 };
 
 

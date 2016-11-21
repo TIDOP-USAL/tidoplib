@@ -26,6 +26,7 @@ I3D_DISABLE_WARNING(4512 4324 4702)
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_types.h>
 I3D_ENABLE_WARNING(4512 4324 4702)
+#include "libmv\multiview\robust_fundamental.h"
 
 //#include <xercesc/parsers/XercesDOMParser.hpp>
 //#include <xercesc/dom/DOM.hpp>
@@ -725,15 +726,20 @@ int main(int argc, char** argv)
   //std::vector<Mat> points2d;
   cv::Ptr<cv::FeatureDetector> fdORB = cv::ORB::create(10000);
   cv::Ptr<cv::DescriptorExtractor> deDAISY = cv::xfeatures2d::DAISY::create();
-  I3D::EXPERIMENTAL::Reconstruction3D reconstruct(fdORB, deDAISY);
+  cv::Ptr<cv::DescriptorMatcher> dMatcher = cv::DescriptorMatcher::create("FlannBased");
+  std::shared_ptr<I3D::EXPERIMENTAL::RobustMatching> robustMatching = std::make_shared<I3D::EXPERIMENTAL::RobustMatching>(dMatcher);
+  
+  I3D::EXPERIMENTAL::Reconstruction3D reconstruct(fdORB, deDAISY, robustMatching);
   // Se obtienen los keypoints y descriptores
   //reconstruct.getKeyPointAndDescriptor(images_paths, true);
   // Los cargo para probar aunque no lo necesitaria
-  reconstruct.loadKeyPointAndDescriptor(images_paths);
+  //reconstruct.loadKeyPointAndDescriptor(images_paths);
   // Se calcula el matching de todas las imagenes
   std::vector<cv::Mat> points2d;
-  reconstruct.multiImageMatching(points2d);
+  
+  //reconstruct.multiImageMatching(points2d);
   try {
+    reconstruct.reconstruct(images_paths, Rs_est, ts_est, K, points2d);
     //reconstruct(images_paths, points2d);
     cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
     //bool is_projective = true;

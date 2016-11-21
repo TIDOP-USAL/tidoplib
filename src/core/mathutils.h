@@ -2,6 +2,7 @@
 #define I3D_MATHUTILS_H
 
 #include <vector>
+#include <array>
 
 #include "opencv2/core/core.hpp"
 
@@ -78,11 +79,18 @@ bool I3D_EXPORT isOutlier(const double temp, const double median, const double m
  * \brief Recta de regresión de Y sobre X
  * La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X.
- * y = m * x + b
+ * \f$ y = m * x + b\f$<BR>
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
  * \return coeficiente de correlacción
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * double m = 0.;
+ * double b = 0.;
+ * double corr = regressionLinearYX(pts, &m, &b);
+ * \endcode
  */
 double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
 
@@ -90,13 +98,23 @@ double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double
  * \brief Recta de regresión de X sobre Y
  * La recta de regresión de X sobre Y se utiliza para estimar los valores de la X a partir de los de la Y.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable Y.
- * x = m*y + b
+ * \f$ x = m*y + b\f$<BR>
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
  * \return coeficiente de correlacción
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * double m = 0.;
+ * double b = 0.;
+ * double corr = regressionLinearXY(pts, &m, &b);
+ * \endcode
  */
 double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
+
+void I3D_EXPORT eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
 
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
@@ -308,6 +326,13 @@ double I3D_EXPORT degreesToGradians(int degrees, int minutes, int seconds);
  * \param[out] degrees Puntero a entero que recibe como valor los grados
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
+ *
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * int degrees, minutes, seconds;
+ * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
+ * \endcode
  */
 void I3D_EXPORT decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
 

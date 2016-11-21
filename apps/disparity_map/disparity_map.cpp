@@ -25,6 +25,7 @@
 #include "geometric_entities\window.h"
 
 #include "core\console.h"
+#include "transform.h"
 
 using namespace I3D;
 using namespace cv;
@@ -70,19 +71,29 @@ static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatr
 int main(int argc, char** argv)
 {
 
-  //CmdParser cmdParser;
-  //cmdParser.add(std::make_shared<CmdOption>("no-display","don't display results",true));
-  //cmdParser.add(std::make_shared<CmdOption>("no-downscale","force stereo matching on full-sized views to improve quality",true));
-  //cmdParser.add(std::make_shared<CmdParameter>("left","left view of the stereopair ",false));
-  //cmdParser.add(std::make_shared<CmdParameter>("right","right view of the stereopair ",false));
-  //cmdParser.add(std::make_shared<CmdParameter>("GT","ground-truth disparity (MPI-Sintel or Middlebury format)",true));
-  //cmdParser.add(std::make_shared<CmdParameterOptions>("algorithm","bm,sgbm,elas", "stereo matching method",false));
-  //cmdParser.add(std::make_shared<CmdOption>("kk","kk",true));
-  //cmdParser.parse(argc, argv);
-  //if (cmdParser.validate() == false) return 0;
-  //bool no_display = cmdParser.hasOption("no-display");
-  //bool no_downscale = cmdParser.hasOption("no-downscale");
-  //std::string kk = cmdParser.getValue<std::string>("algorithm");
+  cv::Mat_<float> _R(3, 3);
+  cv::Mat_<float> _T(3, 1);
+  _R[0][0] = 0.99693932795844131256f;
+  _R[0][1] = 0.06848097100395370007f;
+  _R[0][2] = 0.03771383009092664496f;
+  _R[1][0] = -0.01436193881015421572f;
+  _R[1][1] = 0.63461718697310531834f;
+  _R[1][2] = -0.77269318666075759161f;
+  _R[2][0] = -0.07684862447295343069f;
+  _R[2][1] = 0.76978658250757947545f;
+  _R[2][2] = 0.63365835140706272544f;
+  _T[0][0] = -118.50965947382184140224f;  
+  _T[1][0] = -4.55077933799274170212f;
+  _T[2][0] = -2.50547815201278334385f;
+  cv::Mat R, T;
+  _R.convertTo(R, CV_64F);
+  _T.convertTo(T, CV_64F);
+
+  std::array<std::array<double, 3>, 3> Rot = { 0.99693932795844131256, 0.06848097100395370007, 0.03771383009092664496,
+  -0.01436193881015421572, 0.63461718697310531834, -0.77269318666075759161,
+  -0.07684862447295343069, 0.76978658250757947545, 0.63365835140706272544 };
+
+  Helmert3D<cv::Point3f> trf1(-118.50965947382184140224f,-4.55077933799274170212f,-2.50547815201278334385f, 1., Rot);
 
   // Ventanas de las torres. Esto tendria que entrar como parametro proveniente de DeteccionApoyos
   WindowI wL(cv::Point(595,78),cv::Point(743,703));  
@@ -185,7 +196,8 @@ int main(int argc, char** argv)
   if(filter=="wls_conf") // filtering with confidence (significantly better quality than wls_no_conf)
   {    
     
-    std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
+    //std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
+    std::string file = "D://Desarrollo//datos//TORRE_3D//calib.xml";
     LoadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
     Mat rleft, rright, map1, map2;
     Mat optCameraMat = getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0);
@@ -452,6 +464,7 @@ int main(int argc, char** argv)
       //! [visualization]
   }
 
+
   // Si no disponemos de la posición y orientaciones de las camaras podemos intentar utilizar stereoRectifyUncalibrated
   //stereoRectifyUncalibrated();
   cv::Ptr<cv::FeatureDetector> fd = SURF::create();
@@ -530,10 +543,10 @@ int main(int argc, char** argv)
   //cv::Mat R = U.t() * W * V.t();
   //cv::Mat T = decomp.u.col(2);
 
-  cv::Mat R, T;
-  // Lo mismo por OpenCV??
-  cv::Mat essentialMat = findEssentialMat(ptsL, ptsR, cameraMatrix);
-  cv::recoverPose(essentialMat, ptsL, ptsR, cameraMatrix, R, T);
+
+  //cv::Mat R, T;
+  //cv::Mat essentialMat = findEssentialMat(ptsL, ptsR, cameraMatrix);
+  //cv::recoverPose(essentialMat, ptsL, ptsR, cameraMatrix, R, T);
 
 
   // Si disponemos de las posiciones (matriz T) y orientaciones (Matriz R) de las camaras podemos calular la matriz Q con stereoRectify

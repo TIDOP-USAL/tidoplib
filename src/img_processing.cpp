@@ -14,7 +14,7 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-void ImgProcessingList::add(std::shared_ptr<ImgProcessing> ip)
+void ImgProcessingList::add(const std::shared_ptr<ImgProcessing> &ip)
 {
   mProcessList.push_back(ip);
 }

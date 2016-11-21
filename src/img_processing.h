@@ -142,7 +142,7 @@ public:
    * \brief Añade un nuevo proceso a la lista
    * \param[in] ip Proceso que se añade
    */
-  void add(std::shared_ptr<ImgProcessing> ip);
+  void add(const std::shared_ptr<ImgProcessing> &ip);
 
   /*!
    * \brief Ejecuta la lista de procesos
