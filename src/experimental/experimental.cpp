@@ -1,14 +1,17 @@
 #include "experimental.h"
 
+#include "core/defs.h"
 #include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
-//#include "opencv2\sfm\libmv_light\libmv_capi.h"
-#include "libmv\simple_pipeline\reconstruction.h"
-#include "libmv\simple_pipeline\tracks.h"
-#include "libmv\simple_pipeline\camera_intrinsics.h"
-#include "libmv\correspondence\matches.h"
-#include "libmv\multiview\robust_fundamental.h"
+
+I3D_SUPPRESS_WARNINGS
+#include "libmv/simple_pipeline/reconstruction.h"
+#include "libmv/simple_pipeline/tracks.h"
+#include "libmv/simple_pipeline/camera_intrinsics.h"
+#include "libmv/correspondence/matches.h"
+#include "libmv/multiview/robust_fundamental.h"
+I3D_DEFAULT_WARNINGS
 
 //Extraido de libmv_capi.h
 
@@ -31,10 +34,6 @@ namespace EXPERIMENTAL
 
 int RobustMatching::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
 {
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
   int removed = 0;
   // for all matches
   for (std::vector<std::vector<cv::DMatch> >::iterator
