@@ -37,6 +37,7 @@ I3D_ENABLE_WARNING(4512 4324 4702)
 // Cabeceras tidopLib
 #include "core/console.h"
 #include "core/messages.h"
+#include "core/utils.h"
 #include "videostream.h"
 #include "geometric_entities/segment.h"
 #include "linedetector.h"
@@ -639,7 +640,6 @@ int main(int argc, char** argv)
   CmdParser cmdParser("cloud_points", "Calculo de nubes de puntos a partir de imagenes de video");
   cmdParser.addParameter("video", "Video en el que vamos a buscar las torres");
   cmdParser.addParameter("out_path", "Directorio de salida");
-  cmdParser.parse(argc, argv);
   if (cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
     cmdParser.printHelp(); // Esto habria que hacerlo directamente en cmdParser.parse y mostrar un mensaje de error por consola
     return 0;
@@ -739,9 +739,9 @@ int main(int argc, char** argv)
   
   //reconstruct.multiImageMatching(points2d);
   try {
-    reconstruct.reconstruct(images_paths, Rs_est, ts_est, K, points2d);
+    reconstruct.reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated);
     //reconstruct(images_paths, points2d);
-    cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
+    //cv::sfm::reconstruct(points2d, Rs_est, ts_est, K, points3d_estimated,true);
     //bool is_projective = true;
     //cv::sfm::reconstruct(images_paths, Rs_est, ts_est, K, points3d_estimated, is_projective);
   } catch (cv::Exception &e) {

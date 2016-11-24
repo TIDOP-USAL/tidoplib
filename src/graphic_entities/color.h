@@ -1,3 +1,5 @@
+// Añadir generación de color aleatorio. util para pruebas
+
 #ifndef I3D_COLOR_H
 #define I3D_COLOR_H
 
@@ -408,7 +410,6 @@ int I3D_EXPORT hexToInt(const std::string &colorhex);
 std::string I3D_EXPORT intToHex(const int color);
 
 /*! \} */ // end of colorConversion
-
 
 /*! \} */ // end of GraphicEntities
 

@@ -23,6 +23,8 @@
 #include <opencv2/sfm/simple_pipeline.hpp>
 #endif
 
+#include "libmv\simple_pipeline\tracks.h"
+
 #include "matching.h"
 
 namespace I3D
@@ -36,17 +38,20 @@ namespace EXPERIMENTAL
 // virtual donde se definan todos los métodos comunes
 // con esta clase sustituire a nRobustViewMatching y tendre mayor control. 
 
+/*!
+ * \brief Matching robusto
+ */
 class RobustMatching {
 
 private:
 
   /*!
-   * \brief 
+   * \brief Descriptor
    */
   cv::Ptr<cv::DescriptorMatcher> mDescriptorMatcher;
 
   /*!
-   * \brief Máximo tolerancia entre el primer y segundo NN
+   * \brief Máxima tolerancia entre el primer y segundo NN
    */
   float mRatio;
 
@@ -82,27 +87,58 @@ public:
    */
   void setDescriptorMatcher(const cv::Ptr<cv::DescriptorMatcher> &matcher) {  mDescriptorMatcher = matcher; }
 
-  // Set ratio parameter for the ratio test
+  /*!
+   * \brief Establece el valor de ratio para el test
+   * \param[in] ratio 
+   */
   void setRatio( float ratio) { mRatio = ratio; }
 
   // Clear matches for which NN ratio is > than threshold
   // return the number of removed points
   // (corresponding entries being cleared,
   // i.e. size will be 0)
+  /*!
+   * \brief 
+   * \param[in] matches 
+   */
   int ratioTest(std::vector<std::vector<cv::DMatch> > &matches);
 
-  // Insert symmetrical matches in symMatches vector
+  /*!
+   * \brief test de simetría
+   * Busqueda de matches simétricos
+   * \param[in] matches1 
+   * \param[in] matches2 
+   * \param[out] symMatches 
+   */
   void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches1,
                      const std::vector<std::vector<cv::DMatch> >& matches2,
                      std::vector<cv::DMatch>& symMatches );
 
-  // Insert symmetrical matches in symMatches vector
+  /*!
+   * \brief test de simetría
+   * Busqueda de matches simétricos
+   * \param[in] matches
+   * \param[out] symMatches 
+   */
   void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches, std::vector<std::vector<cv::DMatch>> *symMatches );
 
-  // Match feature points using ratio and symmetry test
-  void robustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<cv::DMatch>& goodMatches, std::vector<std::vector<cv::DMatch>> *pMatches12,  std::vector<std::vector<cv::DMatch>> *pMatches21);
+  /*!
+   * \brief Matching robusto
+   * 
+   * \param[in] descriptor1
+   * \param[in] descriptor2
+   * \param[out] pMatches12 
+   * \param[out] pMatches21 
+   */
+  void robustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches12,  std::vector<std::vector<cv::DMatch>> *pMatches21);
 
-  // Match feature points using ratio test
+  /*!
+   * \brief Matching robusto
+   * 
+   * \param[in] descriptor1
+   * \param[in] descriptor2
+   * \param[out] pMatches
+   */
   void fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches);
 };
 
@@ -167,6 +203,9 @@ class Reconstruction3D
    * \brief Matching robusto
    */
   std::shared_ptr<RobustMatching> mRobustMatching;
+
+  // Intentar escribir directamente la estructura de libmv
+  libmv::Tracks tracks;
 
 public:
 

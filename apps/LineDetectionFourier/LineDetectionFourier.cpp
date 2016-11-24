@@ -6,18 +6,27 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/ml.hpp"
 
-using namespace std;
-
-const std::string keys =
-"{@imput          |      | imagen de entrada }"
-;
-
+#include "core/console.h"
+#include "core/messages.h"
+#include "core/utils.h"
 #include "fourier.h"
+
+using namespace std;
+using namespace I3D;
 
 int main(int argc, char *argv[])
 {
-  cv::CommandLineParser parser(argc, argv, keys);
-  string filename = parser.get<string>(0);
+  
+  char name[I3D_MAX_FNAME];
+  getFileName(getRunfile(), name);
+
+  CmdParser cmdParser(name, "Detección de lineas por fourier");
+  cmdParser.addParameter("img", "Imagen en la que se buscan las líneas");
+  if (cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
+    cmdParser.printHelp(); 
+    exit(EXIT_FAILURE);
+  }
+  std::string filename = cmdParser.getValue<std::string>("img");
 
   cv::Mat mSource = cv::imread(filename, cv::IMREAD_GRAYSCALE);
   if (mSource.empty())
@@ -35,9 +44,12 @@ int main(int argc, char *argv[])
   /*double angle = -0.1;*/
   I3D::fourierLinesDetection(mSource, col_fourier, &pts_fourier/*, &angle*/);
 
+  Message::setMessageLevel(MessageLevel::MSG_INFO);
+  consolePrintInfo("Número de lineas detectadas: %i", pts_fourier[0].size());
   for (int ift = 0; ift < pts_fourier[0].size(); ift++) {
     cv::line(mSource, cv::Point(pts_fourier[0][ift].x, pts_fourier[0][ift].y - 5), cv::Point(pts_fourier[0][ift].x, pts_fourier[0][ift].y + 5), cv::Scalar(255, 255, 255));
     cv::line(mSource, cv::Point(pts_fourier[0][ift].x - 5, pts_fourier[0][ift].y), cv::Point(pts_fourier[0][ift].x + 5, pts_fourier[0][ift].y), cv::Scalar(255, 255, 255));
+    consolePrintInfo("Linea %i: (%i, %i)", ift, pts_fourier[0][ift].x, pts_fourier[0][ift].y);
   }
 
   imshow("Fourier", mSource);

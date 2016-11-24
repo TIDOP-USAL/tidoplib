@@ -89,38 +89,59 @@ int main(int argc, char** argv)
   //R1.convertTo(R, CV_64F);
   //T1.convertTo(T, CV_64F);
 
-  std::array<std::array<double, 3>, 3> Rot1 = { 0.99693932795844131256, 0.06848097100395370007, 0.03771383009092664496,
-                                               -0.01436193881015421572, 0.63461718697310531834, -0.77269318666075759161,
-                                               -0.07684862447295343069, 0.76978658250757947545, 0.63365835140706272544 };
-  cv::Point3f pt1(-118.50965947382184140224f, -4.55077933799274170212f, -2.50547815201278334385f);
-  Helmert3D<cv::Point3f> trf1(-118.50965947382184140224f,-4.55077933799274170212f,-2.50547815201278334385f, 1., Rot1);
+  //std::array<std::array<double, 3>, 3> Rot1 = { 0.99693932795844131256, 0.06848097100395370007, 0.03771383009092664496,
+  //                                             -0.01436193881015421572, 0.63461718697310531834, -0.77269318666075759161,
+  //                                             -0.07684862447295343069, 0.76978658250757947545, 0.63365835140706272544 };
 
-  std::array<std::array<double, 3>, 3> Rot2 = {  0.99722213904673195906, 0.06740271780672897617, 0.03169982692897044263,
-                                                -0.01833075228757959085, 0.63457959527556306867, -0.77264009783370279916,
-                                                -0.07219410582334001569, 0.76991272940000732294, 0.63405236391973129884 };
+  //cv::Point3f pt1(-118.50965947382184140224f, -4.55077933799274170212f, -2.50547815201278334385f);
+  //Helmert3D<cv::Point3f> trf1(-95.00335599008813858291f, -3.70688917597173261953f, 0.04724531272857411535f, 1., Rot1);
 
-  cv::Point3f pt2(-116.07708330618355319075f, -4.82290173288454759870f, -1.33048451741542894666f);
-  Helmert3D<cv::Point3f> trf2(-116.07708330618355319075f, -4.82290173288454759870f, -1.33048451741542894666f, 1., Rot2);
+  //std::array<std::array<double, 3>, 3> Rot2 = {  0.99722213904673195906, 0.06740271780672897617, 0.03169982692897044263,
+  //                                              -0.01833075228757959085, 0.63457959527556306867, -0.77264009783370279916,
+  //                                              -0.07219410582334001569, 0.76991272940000732294, 0.63405236391973129884 };
+  
+  std::array<std::array<double, 3>, 3> Rot1 = {
+    0.99693551805571689606, 0.07504783394755248915, -0.02207703464598198551,
+    -0.06460740812210033490, 0.63076765712280136178, -0.77327746995729562673,
+    -0.04410731974087366003, 0.77233411510018934454, 0.63368332706303998059
+  };
 
-  cv::Point3f ptTrf;
-  trf1.transform(pt2, &ptTrf);
-  //Mat matRot1 = Mat(3, 3, CV_64F, Rot1.data());
-  //Mat matRot2Inv = Mat(3, 3, CV_64F, Rot2.data()).inv();
-  Mat matRot1inv = Mat(3, 3, CV_64F, Rot1.data()).inv();
-  Mat matRot2 = Mat(3, 3, CV_64F, Rot2.data());
-  Mat divRot = matRot2 * matRot1inv;
-  cv::Point3f r_pt;
-  r_pt.x = (trf2.x0*Rot1[0][0] + trf2.y0*Rot1[0][1] + trf2.z0*Rot1[0][2]) - trf1.x0;
-  r_pt.y = (trf2.x0*Rot1[1][0] + trf2.y0*Rot1[1][1] + trf2.z0*Rot1[1][2]) - trf1.y0;
-  r_pt.z = (trf2.x0*Rot1[2][0] + trf2.y0*Rot1[2][1] + trf2.z0*Rot1[2][2]) - trf1.z0;
+  std::array<std::array<double, 3>, 3> Rot2 = {
+     0.99674870566493223301, 0.07736343588197151788, -0.02251480721255568612,
+    -0.06626072813018964169, 0.62805684301349173904, -0.77534129120767414367,
+    -0.04584248753001479021, 0.77431227597944118912, 0.63114100294989394779 };
 
-  cv::Mat_<float> T1(3, 1);
-  T1[0][0] = r_pt.x;  
-  T1[1][0] = r_pt.y;
-  T1[2][0] = r_pt.z;
-  Mat _T;
-  T1.convertTo(_T, CV_64F);
-  //Helmert3D<cv::Point3f> trf12 = trf2 - trf1;
+  std::array<double, 3> Tr1 = { -95.00335599008813858291, -3.70688917597173261953, 0.04724531272857411535 };
+  std::array<double, 3> Tr2 = { -88.29396221856259785454, -3.39792952511921431125, 0.02805001851757512460 };
+
+  
+  cv::Mat RC1 = cv::Mat(3, 3, CV_64F, Rot1.data());
+  cv::Mat RC2 = cv::Mat(3, 3, CV_64F, Rot2.data());
+  cv::Mat TC1 = cv::Mat(3, 1, CV_64F, Tr1.data());
+  cv::Mat TC2 = cv::Mat(3, 1, CV_64F, Tr2.data());
+
+  //cv::Point3f pt2(-90.69342306274536724686f, -3.31914519508625627253f, -0.38884126518369416248f);
+  //Helmert3D<cv::Point3f> trf2(-90.69342306274536724686f, -3.31914519508625627253f, -0.38884126518369416248f, 1., Rot2);
+
+  //cv::Point3f ptTrf;
+  //trf1.transform(pt2, &ptTrf);
+  ////Mat matRot1 = Mat(3, 3, CV_64F, Rot1.data());
+  ////Mat matRot2Inv = Mat(3, 3, CV_64F, Rot2.data()).inv();
+  //Mat matRot1inv = Mat(3, 3, CV_64F, Rot1.data()).inv();
+  //Mat matRot2 = Mat(3, 3, CV_64F, Rot2.data());
+  //Mat divRot = matRot2 * matRot1inv;
+  //cv::Point3f r_pt;
+  //r_pt.x = (trf2.x0*Rot1[0][0] + trf2.y0*Rot1[0][1] + trf2.z0*Rot1[0][2]) - trf1.x0;
+  //r_pt.y = (trf2.x0*Rot1[1][0] + trf2.y0*Rot1[1][1] + trf2.z0*Rot1[1][2]) - trf1.y0;
+  //r_pt.z = (trf2.x0*Rot1[2][0] + trf2.y0*Rot1[2][1] + trf2.z0*Rot1[2][2]) - trf1.z0;
+
+  //cv::Mat_<float> T1(3, 1);
+  //T1[0][0] = r_pt.x;  
+  //T1[1][0] = r_pt.y;
+  //T1[2][0] = r_pt.z;
+  //Mat _T;
+  //T1.convertTo(_T, CV_64F);
+  ////Helmert3D<cv::Point3f> trf12 = trf2 - trf1;
 
   // Ventanas de las torres. Esto tendria que entrar como parametro proveniente de DeteccionApoyos
   WindowI wL(cv::Point(595,78),cv::Point(743,703));  
@@ -571,18 +592,24 @@ int main(int argc, char** argv)
   //cv::Mat T = decomp.u.col(2);
 
 
-  cv::Mat R, T;
+  //cv::Mat R, T;
   //cv::Mat essentialMat = findEssentialMat(ptsL, ptsR, cameraMatrix);
   //cv::recoverPose(essentialMat, ptsL, ptsR, cameraMatrix, R, T);
-  R = divRot;
-  T = _T;
+  //R = divRot;
+  //T = _T;
+  Mat R1_inv = RC1.inv();
+  Mat R = RC2 * R1_inv;
+  cv::Point3f r_pt;
+  cv::Mat T = RC1*TC2 - TC1;
 
   // Si disponemos de las posiciones (matriz T) y orientaciones (Matriz R) de las camaras podemos calular la matriz Q con stereoRectify
   cv::Mat R1, R2, P1, P2, Q;
   cv::stereoRectify(cameraMatrix, distCoeffs, cameraMatrix, distCoeffs, imageSize, R, T, R1, R2, P1, P2, Q);
 
+  cv::Size size = left.size();
+
   //cv::Mat_<cv::Vec3f> XYZ(wL.getHeight(),wL.getWidth());
-  cv::Mat_<cv::Vec3f> XYZ(filtered_disp.rows,filtered_disp.cols);
+  cv::Mat_<cv::Vec3f> XYZ(size);
   //cv::reprojectImageTo3D(filtered_disp,XYZ,Q);  //... Mejor no usar para poder filtrar la nube de puntos.
   cv::Mat_<double> vec_tmp(4,1);
   
@@ -591,22 +618,24 @@ int main(int argc, char** argv)
   dispMask.setTo(0, abs(dispFilteredDif) > 10);
 
   cv::Mat disparity;
-  cv::bitwise_and(left_disp, left_disp, disparity, dispMask);
+  cv::bitwise_and(filtered_disp, filtered_disp, disparity, dispMask);
 
-  //for(int y=0; y < filtered_disp.rows; ++y) {
-  //    for(int x=0; x < filtered_disp.cols; ++x) {
-  for(int y=0; y < wL.getHeight(); ++y) {
-    for(int x=0; x < wL.getWidth(); ++x) {
+    for(int y=50; y < size.height-50; ++y) {
+      for(int x=50; x < size.width-50; ++x) {
+  //for(int y=0; y < wL.getHeight(); ++y) {
+  //  for(int x=0; x < wL.getWidth(); ++x) {
       vec_tmp(0)=x; 
-      vec_tmp(1)=y; 
-      vec_tmp(2)=disparity.at<__int16>(wL.pt1.y+y, wL.pt1.x+x); 
+      vec_tmp(1)=y;
+      vec_tmp(2)=disparity.at<__int16>(y, x); 
+      //vec_tmp(2)=disparity.at<__int16>(wL.pt1.y+y, wL.pt1.x+x); 
       //vec_tmp(2)=left_disp.at<__int16>(wL.pt1.y+y,wL.pt1.x+x); 
       if(vec_tmp(2)==0) continue;
       vec_tmp(3)=1;
       vec_tmp = Q*vec_tmp;
       vec_tmp /= vec_tmp(3);
       if(abs(vec_tmp(0))>10 || abs(vec_tmp(1))>10 || abs(vec_tmp(2))>10) continue;
-      cv::Vec3f &point = XYZ.at<cv::Vec3f>(wL.pt1.y+y,wL.pt1.x+x);
+      //cv::Vec3f &point = XYZ.at<cv::Vec3f>(wL.pt1.y+y,wL.pt1.x+x);
+      cv::Vec3f &point = XYZ.at<cv::Vec3f>(y,x);
       point[0] = vec_tmp(0);
       point[1] = vec_tmp(1);
       point[2] = vec_tmp(2);
@@ -617,16 +646,20 @@ int main(int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr point_cloud_ptr(new pcl::PointCloud<pcl::PointXYZRGB>);
 
   //uchar pr, pg, pb;
-  for (int i = 0; i < wL.getHeight(); i++) {
+  for (int i = 0; i < size.height; i++) {
     //uchar* rgb_ptr = left_for_matcher.ptr<uchar>(i);
-    for (int j = 0; j < wL.getWidth(); j++) {
+    for (int j = 0; j < size.width; j++) {
 
       pcl::PointXYZRGB point;
-      point.x = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[0];
-      point.y = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[1];
-      point.z = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[2];
+      point.x = XYZ.at<cv::Vec3f>(i,j)[0];
+      point.y = XYZ.at<cv::Vec3f>(i,j)[1];
+      point.z = XYZ.at<cv::Vec3f>(i,j)[2];
+      //point.x = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[0];
+      //point.y = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[1];
+      //point.z = XYZ.at<cv::Vec3f>(wL.pt1.y+i,wL.pt1.x+j)[2];
       if (abs(point.z) < 1.5 && abs(point.z) > 0.5) {
-        point.rgb = *left_for_matcher.ptr<float>(wL.pt1.y+i,wL.pt1.x+j);
+        //point.rgb = *left_for_matcher.ptr<float>(wL.pt1.y+i,wL.pt1.x+j);
+        point.rgb = *left_for_matcher.ptr<float>(i,j);
         point_cloud_ptr->points.push_back(point);
       }
     }

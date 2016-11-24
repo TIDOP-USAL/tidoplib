@@ -38,14 +38,15 @@ struct msgProperties {
   const char *normal;
   const char *extend;
   Console::Color foreColor;
+  Console::Intensity intensity;
 };
 
 struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE},
-  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE},
-  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA },
-  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED },
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
+  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
 };
 
 msgProperties GetMessageProperties( MessageLevel msgLevel ) 
@@ -188,7 +189,7 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
 
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
     Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
-    console.setConsoleForegroundColor(GetMessageProperties(level).foreColor);
+    console.setConsoleForegroundColor(GetMessageProperties(level).foreColor, GetMessageProperties(level).intensity);
     std::string aux(msgOut);
     I3D::replaceString(&aux, "%", "%%");
     printf_s("%s\n", aux.c_str());

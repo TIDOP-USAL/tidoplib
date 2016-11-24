@@ -55,16 +55,19 @@ public:
    */
   typedef VideoStreamEvents Listener;
 
-private:
+protected:
 
   cv::Mat mFrame;
 
-  cv::VideoCapture mVideoCapture;
-
   /*!
-   * \brief Tamaño de los frames del video
+   * \brief Tamaño original de los frames del video
    */
   cv::Size mSize;
+
+  /*!
+   * \brief Tamaño de los frames del video despues de recortar
+   */
+  cv::Size mFrameSize;
 
   /*!
    * \brief Región de recorte del video
@@ -110,19 +113,30 @@ private:
   VideoStream::Status vs;
 
   std::list<Listener *> events;
+  
+private:
+
+  cv::VideoCapture mVideoCapture;
 
 public:
 
   /*!
    * \brief Constructora I3DVideoStream
    */
-  VideoStream( );
+  VideoStream() : mSize(0, 0) 
+  {
+    init();
+  }
 
   /*!
    * \brief Constructora I3DVideoStream
    * \param[in] file Video
    */
-  VideoStream(const char *file);
+  VideoStream(const char *file) : mSize(0, 0)
+  {
+    init();
+    open(file);
+  }
 
   /*!
    * \brief Destructora I3DVideoStream
@@ -138,19 +152,19 @@ public:
    * \brief Frames por segundo del video
    * \return Frames por segundo
    */
-  double fps() { return mVideoCapture.get(CV_CAP_PROP_FPS); }
+  virtual double fps() { return mVideoCapture.get(CV_CAP_PROP_FPS); }
 
   /*!
    * \brief Frame de video actual
    * \return
    */
-  double getCurrentFrame() { return mVideoCapture.get(CV_CAP_PROP_POS_FRAMES); }
+  virtual double getCurrentFrame() { return mVideoCapture.get(CV_CAP_PROP_POS_FRAMES); }
 
   /*!
    * \brief Número de frames del video
    * \return
    */
-  double getFrameCount() { return mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT); }
+  virtual double getFrameCount() { return mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT); }
 
   /*!
    * \brief Devuelve el ancho y alto de los frames de salida
@@ -168,7 +182,7 @@ public:
   * \brief Comprueba si el video está abierto
   * \return Verdadero si el video está abierto
   */
-  bool isOpened() { return mVideoCapture.isOpened(); }
+  virtual bool isOpened() { return mVideoCapture.isOpened(); }
 
   /*!
    * \brief Comprueba si esta activado el salto de frames borrosos
@@ -197,14 +211,14 @@ public:
    * \param[in] name Nombre del video
    * \return verdadero si el video se ha abierto
    */
-  bool open(const char *name);
+  virtual bool open(const char *name);
 
   /*!
    * \brief Lee un frame de video
    * \param[out] vf Frame de video
    * \return Falso si no encuentra ningún frame
    */
-  bool read(cv::Mat *vf);
+  virtual bool read(cv::Mat *vf);
 
   /*!
    * \brief Establece la región de recorte del video
@@ -226,7 +240,7 @@ public:
    * \param[in] nframe
    * \return
    */
-  bool setPosFrame(double nframe);
+  virtual bool setPosFrame(double nframe);
 
   /*!
    * \brief Activa el salto de frames borrosos
@@ -285,8 +299,7 @@ public:
    */
   //bool show(cv::Mat &vf);
 
-  // Métodos privados
-private:
+protected:
 
   /*!
    * \brief Recorta el frame de video
@@ -359,6 +372,103 @@ private:
 
   // No me convence usar friend pero...
   friend class VideoStreamEvents;
+};
+
+
+
+class ImagesStream : public VideoStream
+{
+private:
+
+  std::vector<std::string> mImages;
+
+  double mfps;
+
+  double mCurrentFrame;
+
+  bool bIsOpened;
+
+public:
+
+  /*!
+   * \brief Constructora ImagesStream
+   */
+  ImagesStream() : VideoStream(), mImages(0), mfps(0.), mCurrentFrame(0) {}
+
+  /*!
+   * \brief Constructora I3DVideoStream
+   * \param[in] file Video o fichero de texto con un listado de imagenes
+   */
+  ImagesStream(const char *file) : VideoStream(file) {}
+
+  /*!
+   * \brief Destructora
+   */
+  ~ImagesStream()
+  {
+  }
+
+  /*!
+   * \brief Frames por segundo del video
+   * \return Frames por segundo
+   */
+  virtual double fps() { return mfps; }
+
+  /*!
+   * \brief Frame de video actual
+   * \return
+   */
+  virtual double getCurrentFrame() { return mCurrentFrame; }
+
+  /*!
+   * \brief Número de frames del video
+   * \return
+   */
+  virtual double getFrameCount() { return static_cast<double>(mImages.size()); }
+
+  /*!
+  * \brief Comprueba si el video está abierto
+  * \return Verdadero si el video está abierto
+  */
+  virtual bool isOpened() { return bIsOpened; }
+
+  /*!
+   * \brief Abre el listado de imagenes
+   * \param[in] name Fichero con el listado de imagenes
+   * \return verdadero si el video se ha abierto
+   */
+  virtual bool open(const char *name);
+
+  /*!
+   * \brief Lee un frame de video
+   * \param[out] vf Frame de video
+   * \return Falso si no encuentra ningún frame
+   */
+  virtual bool read(cv::Mat *vf);
+
+  /*!
+   * \brief Establece la posición en el video según el número de frame
+   * \param[in] nframe
+   * \return
+   */
+  virtual bool setPosFrame(double nframe);
+
+  ///*!
+  // * \brief Salto de n frames
+  // * \param[in] vf Frame de video
+  // * \param[in] frames Número de frames que salta
+  // * \return Verdadero mientras encuentre otro frame
+  // */
+  //virtual bool skipFrames(cv::Mat *vf, int frames);
+
+  ///*!
+  // * \brief Salto de n milisegundos
+  // * \param[in] vf Frame de video
+  // * \param[in] ms Número de milisegundos que salta
+  // * \return Verdadero mientras encuentre otro frame
+  // */
+  //virtual bool skipMillisecond(cv::Mat *vf, int ms);
+
 };
 
 class VideoStreamEvents

@@ -16,7 +16,7 @@
 #include "core/utils.h"
 #include "matching.h"
 #include "fourier.h"
-#include "ImgProcessing.h"
+#include "img_processing.h"
 #include "transform.h"
 #include "core/console.h"
 #include "core/messages.h"
@@ -33,7 +33,7 @@ const std::string keys =
 "{drl  DrawRegLine | false | Dibuja recta de regresion  }"
 ;
 
-skip_video sf = skip_video::NOT_SKIP;
+VideoStream::Skip sf = VideoStream::Skip::NOT_SKIP;
 int SkpFrames = 2;
 int SkpSeconds = -1;
 

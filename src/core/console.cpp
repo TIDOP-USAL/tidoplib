@@ -112,12 +112,12 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
   }
 
   if(intensity == Console::Intensity::NORMAL)
-      mIntensity = 0;
+      mForeIntensity = 0;
   else
-      mIntensity = FOREGROUND_INTENSITY;
+      mForeIntensity = FOREGROUND_INTENSITY;
 #else
   mForeColor = static_cast<int>(foreColor) + 30;
-  mIntensity = static_cast<int>(intensity);
+  mForeIntensity = static_cast<int>(intensity);
 #endif
 
   update();
@@ -156,12 +156,12 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
     break;
   }
   if(intensity == Console::Intensity::NORMAL)
-      mIntensity = 0;
+      mBackIntensity = 0;
   else
-      mIntensity = BACKGROUND_INTENSITY;
+      mBackIntensity = BACKGROUND_INTENSITY;
 #else
   mBackColor = static_cast<int>(backColor) + 40;
-  mIntensity = static_cast<int>(intensity);
+  mBackIntensity = static_cast<int>(intensity);
 #endif
   update();
 }
@@ -169,14 +169,16 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
 void Console::setConsoleUnicode() 
 {
 #ifdef WIN32
-  SetConsoleOutputCP(1252);     
-  SetConsoleCP(1252);
+  //SetConsoleOutputCP(1252);     
+  //SetConsoleCP(1252);
+  SetConsoleOutputCP(65001);
 #endif
 }
 
 #ifdef WIN32
 void Console::init(DWORD handle) 
-{ 
+{
+  setConsoleUnicode();
   h = GetStdHandle(handle);
   CONSOLE_SCREEN_BUFFER_INFO info; 
   if (! GetConsoleScreenBufferInfo(h, &info)) {
@@ -185,24 +187,27 @@ void Console::init(DWORD handle)
     mOldColorAttrs = info.wAttributes; 
   }
   mForeColor = (mOldColorAttrs & 0x0007);
+  mForeIntensity = (mOldColorAttrs & 0x0008);
   mBackColor = (mOldColorAttrs & 0x0070);
+  mBackIntensity = (mOldColorAttrs & 0x0080);
 }
 #else
 void Console::init(FILE *stream)
 {
   mStream = stream;
-  mIntensity = 0;
   mForeColor = 0;
+  mForeIntensity = 0;
   mBackColor = 0;
+  mBackIntensity = 0;
 }
 #endif
 
 void Console::update()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(h, mForeColor | mBackColor);
+  SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
 #else
-  sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mIntensity, mForeColor, mBackColor);
+  sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mForeIntensity, mForeColor, mBackColor);
   fprintf(mStream, "%s", mCommand);
 #endif
 }

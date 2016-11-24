@@ -21,17 +21,6 @@ void onTrackbarPositionChange(int _pos, void *vs)
 
 /* ---------------------------------------------------------------------------------- */
 
-VideoStream::VideoStream( )
-{
-  init();
-}
-
-VideoStream::VideoStream( const char *file )
-{
-  init();
-  open(file);
-}
-
 void VideoStream::addListener(Listener *listener)
 { 
   events.push_back(listener);
@@ -40,19 +29,19 @@ void VideoStream::addListener(Listener *listener)
 
 cv::Size VideoStream::getFrameSize()
 {
-  if (mSize!=cv::Size(0,0)) return mSize;
-  else return getSize();
+  return mFrameSize;
 }
 
 cv::Size VideoStream::getSize()
 {
-  cv::Size sz(0, 0);
-  if (isOpened()){
-    int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
-    int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-    sz = cv::Size(width, height);
-  }
-  return sz;
+  //cv::Size sz(0, 0);
+  //if (isOpened()){
+  //  int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+  //  int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+  //  sz = cv::Size(width, height);
+  //}
+  //return sz;
+  return mSize;
 }
 
 bool VideoStream::nextFrame(cv::Mat *vf)
@@ -72,8 +61,14 @@ bool VideoStream::nextFrame(cv::Mat *vf, VideoStream::Skip skip, int nskip)
 bool VideoStream::open(const char *name)
 {
   mVideoCapture.open(name);
-  if (!isOpened()) return false;
-  else return true;
+  if (! mVideoCapture.isOpened()) return false;
+  else {
+    //cv::Size sz(0, 0);
+    int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
+    int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    mSize = mFrameSize = cv::Size(width, height);
+    return true;
+  }
 }
 
 bool VideoStream::read(cv::Mat *vf)
@@ -152,16 +147,16 @@ void VideoStream::run()
 void VideoStream::setCropRect(cv::Rect rf, bool keepRatio)
 {
   rframe = rf;
-  mSize  = rframe.size();
+  mFrameSize  = rframe.size();
   bKeepRatio = keepRatio;
   mResolutionFrame = Resolution::CROP_FRAME;
 }
 
 void VideoStream::setFrameSize(cv::Size sz, Resolution rf, bool keepRatio)
 {
-  mSize = sz;
+  mFrameSize = sz;
   bKeepRatio = keepRatio;
-  mResolutionFrame = (mSize == getSize()) ? Resolution::ORIGINAL_FRAME : rf;
+  mResolutionFrame = (mFrameSize == mSize) ? Resolution::ORIGINAL_FRAME : rf;
 }
 
 bool VideoStream::setPosFrame(double nframe)
@@ -233,21 +228,18 @@ void VideoStream::skipUp()
 
 void VideoStream::cropFrame()
 {
-  cv::Size szf;
   if ( rframe == cv::Rect()){
-    cv::Size szf = getFrameSize();
-    cv::Size szv = getSize();
-    int dw = szv.width - szf.width;
-    int dh = szv.height - szf.height;
+    int dw = mSize.width - mFrameSize.width;
+    int dh = mSize.height - mFrameSize.height;
     if (dw > 0){
       rframe.x = dw / 2;
-      rframe.width = szf.width;
+      rframe.width = mFrameSize.width;
     }
     if (dh > 0){
       rframe.y = dh / 2;
-      rframe.height = szf.height;
+      rframe.height = mFrameSize.height;
     } else {
-      rframe.height = szv.height;
+      rframe.height = mSize.height;
     }
   }
   mFrame = mFrame(rframe);
@@ -260,13 +252,11 @@ bool VideoStream::isImageBlurry(const cv::Mat& src)
 
 void VideoStream::resizeFrame()
 {
-  cv::Size szv = getSize();
-  cv::Size sz(getFrameSize());
   if (bKeepRatio) {
-    float scale = (float)szv.width / (float)sz.width;
-    sz.height = int(szv.height / scale);
+    float scale = (float)mSize.width / (float)mFrameSize.width;
+    mFrameSize.height = int(mSize.height / scale);
   }
-  resize(mFrame, mFrame, sz, 0, 0, cv::INTER_NEAREST); //... Ver tipo de interpolación
+  resize(mFrame, mFrame, mFrameSize, 0, 0, cv::INTER_NEAREST); //... Ver tipo de interpolación
 }
 
 bool VideoStream::skipFrames(cv::Mat *vf, int frames)
@@ -376,7 +366,65 @@ void VideoStream::onStop()
   }
 }
 
+/* ---------------------------------------------------------------------------------- */
 
+bool ImagesStream::open(const char *name)
+{
+  std::ifstream read_handler(name, std::ifstream::in);
+  if (!read_handler.is_open()) {
+    printError("Unable to read file: %s", name);
+    bIsOpened = false;
+  } else {
+    std::vector<std::string> out;
+    while (!read_handler.eof()) {
+      std::string line;
+      read_handler >> line;
+      if ( !line.empty() )
+        mImages.push_back(line);
+    }
+    bIsOpened = true;
+  }
+  return bIsOpened;
+}
+
+bool ImagesStream::read(cv::Mat *vf)
+{
+  if (mCurrentFrame < mImages.size()) {
+    std::string imgFile = mImages[mCurrentFrame];
+    mFrame = cv::imread(imgFile);
+    if (mResolutionFrame == Resolution::RESIZE_FRAME) {
+      resizeFrame();
+    } else if (mResolutionFrame == Resolution::CROP_FRAME) {
+      cropFrame();
+    }
+    if (vf) mFrame.copyTo(*vf);
+    return true;
+  }
+  return false;
+}
+
+bool ImagesStream::setPosFrame(double nframe)
+{ 
+  if (nframe > mImages.size()) return false;
+  mCurrentFrame = nframe;
+  return true;
+}
+
+//bool ImagesStream::skipFrames(cv::Mat *vf, int frames)
+//{
+//  //double posframe = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES) + frames - 1.; // -1 porque read ya suma uno
+//  //mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe); 
+//  return read(vf);
+//}
+//
+//bool ImagesStream::skipMillisecond(cv::Mat *vf, int ms)
+//{
+//  //double posms = mVideoCapture.get(CV_CAP_PROP_POS_MSEC);
+//  //mVideoCapture.set(CV_CAP_PROP_POS_MSEC, posms + ms);
+//  //double posframe = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES) - 1.; // -1 porque read ya suma un
+//  //mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe);
+//  return read(vf);
+//}
 /* ---------------------------------------------------------------------------------- */
 
 // Aunque son funciones virtuales puras defino su cuerpo.

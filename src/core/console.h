@@ -61,20 +61,26 @@ public:
 private:
 
 #ifdef WIN32
+
   /*!
    * \brief Manejador de la consola 
    */
   HANDLE h;
 
   /*!
-   * \brief Intensidad
+   * \brief Intensidad de caracter
    */
-  WORD mIntensity;
+  WORD mForeIntensity;
 
   /*!
    * \brief Color de caracteres
    */
   WORD mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  WORD mBackIntensity;
 
   /*!
    * \brief Color de fondo
@@ -660,6 +666,9 @@ public:
    */
   Progress() : mProgress(0.), mMinimun(0.), mMaximun(100.), mPercent(-1), mMsg("")
   {
+    onProgress = NULL;
+    onInitialize = NULL;
+    onTerminate = NULL;
     updateScale();
   }
 
@@ -668,6 +677,9 @@ public:
    */
   Progress(double min, double max, std::string msg = "") : mProgress(0.), mMinimun(min), mMaximun(max), mPercent(-1), mMsg(msg)
   {
+    onProgress = NULL;
+    onInitialize = NULL;
+    onTerminate = NULL;
     updateScale();
   }
 

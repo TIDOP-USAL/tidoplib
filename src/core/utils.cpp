@@ -136,7 +136,7 @@ int deleteDir(const char *path, bool confirm)
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
 
-int splitToNumbers(const std::string &cad, std::vector<int> &vOut, char *chs)
+int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
 {
   int r_err = 0;
   char *dup = strdup(cad.c_str());

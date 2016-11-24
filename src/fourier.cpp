@@ -49,10 +49,6 @@ void logScale(const cv::Mat &in, cv::Mat *out)
 
 double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle )
 {
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount();
-#endif
   if (source.empty()) return 0;
 
   //cv::Size size = source.size();
@@ -189,10 +185,6 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
       prevBinVar = curBinVar;
     }
   }
-#ifdef _DEBUG
-  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  printf("\nTime [s]: %.3f\n", time);
-#endif
   return r_angle;
 }
 

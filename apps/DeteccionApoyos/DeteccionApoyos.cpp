@@ -14,7 +14,7 @@
 // Cabeceras propias
 #include "linedetector.h"
 #include "videostream.h"
-#include "utils.h"
+#include "core/utils.h"
 #include "Logger.h"
 #include "img_processing.h"
 #include "geometric_entities\segment.h"
@@ -96,7 +96,7 @@ void onRun(VideoStream *strmVideo, void* userdata)
 
   try {
 
-    if (!strmVideo->nextFrame(curVideoFrame)) {
+    if (!strmVideo->nextFrame(&curVideoFrame)) {
       strmVideo->stop();
       return;
     }

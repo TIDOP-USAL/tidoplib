@@ -329,69 +329,69 @@ int main(int argc, char** argv)
   }
   */
 
-  for (int i = 0; i < size - 1; i++) {
-    for (int j = i+1; j < size; j++) {
-      Features2D ft1, ft2;
-      changeFileExtension(img[i], "xml", out);
-      ft1.read(out);
-      changeFileExtension(img[j], "xml", out);
-      ft2.read(out);
+  //for (int i = 0; i < size - 1; i++) {
+  //  for (int j = i+1; j < size; j++) {
+  //    Features2D ft1, ft2;
+  //    changeFileExtension(img[i], "xml", out);
+  //    ft1.read(out);
+  //    changeFileExtension(img[j], "xml", out);
+  //    ft2.read(out);
 
-      match.match(ft1, ft2, &matches);
+  //    match.match(ft1, ft2, &matches);
 
-      // Esto hay que hacerlo mejor
-      std::vector<DMatch> good_matches;
-      //match.getGoodMatches(&good_matches, 0.5);
-      match.getGoodMatches(ft1, ft2, &good_matches, 1);
+  //    // Esto hay que hacerlo mejor
+  //    std::vector<DMatch> good_matches;
+  //    //match.getGoodMatches(&good_matches, 0.5);
+  //    match.getGoodMatches(ft1, ft2, &good_matches, 1);
 
-      // drawing the results
-      cv::Mat img_matches, img1, img2;
-      img1 = cv::imread(img[i]);
-      img2 = cv::imread(img[j]);
-      cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
+  //    // drawing the results
+  //    cv::Mat img_matches, img1, img2;
+  //    img1 = cv::imread(img[i]);
+  //    img2 = cv::imread(img[j]);
+  //    cv::drawMatches(img1, ft1.getKeyPoints(), img2, ft2.getKeyPoints(), good_matches, img_matches, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
-      getFileName(img[i], name1);
-      getFileName(img[j], name2);
+  //    getFileName(img[i], name1);
+  //    getFileName(img[j], name2);
 
-      sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
+  //    sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", good_matches.size(), name1, name2);
 
-      //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
+  //    //progress_bar.init(0, static_cast<double>(good_matches.size()), buf);
 
-      std::vector<Point2f> pts1;
-      std::vector<Point2f> pts2;
-      int idx1, idx2;
-      for (size_t igm = 0; igm < good_matches.size(); igm++) {
-        idx1 = good_matches[igm].queryIdx;
-        idx2 = good_matches[igm].trainIdx;
+  //    std::vector<Point2f> pts1;
+  //    std::vector<Point2f> pts2;
+  //    int idx1, idx2;
+  //    for (size_t igm = 0; igm < good_matches.size(); igm++) {
+  //      idx1 = good_matches[igm].queryIdx;
+  //      idx2 = good_matches[igm].trainIdx;
 
-        //Busqueda de si ya esta añadido ese punto
-        bool addNew = true;
-        for (int k = 0; k < idx_pass_points.size(); k++) {
-          if (idx_pass_points[k][i] == idx1 ) {
-            idx_pass_points[k][j] = idx2;
-            addNew = false;
-          } else if (idx_pass_points[k][j] == idx2) {
-            idx_pass_points[k][i] = idx1;
-            addNew = false;
-          }
-        }
-        if (addNew) {
-          std::vector<int> v(size, -1);
-          v[i] = idx1;
-          v[j] = idx2;
-          idx_pass_points.push_back(v);
+  //      //Busqueda de si ya esta añadido ese punto
+  //      bool addNew = true;
+  //      for (int k = 0; k < idx_pass_points.size(); k++) {
+  //        if (idx_pass_points[k][i] == idx1 ) {
+  //          idx_pass_points[k][j] = idx2;
+  //          addNew = false;
+  //        } else if (idx_pass_points[k][j] == idx2) {
+  //          idx_pass_points[k][i] = idx1;
+  //          addNew = false;
+  //        }
+  //      }
+  //      if (addNew) {
+  //        std::vector<int> v(size, -1);
+  //        v[i] = idx1;
+  //        v[j] = idx2;
+  //        idx_pass_points.push_back(v);
 
-          std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
-          cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
-          cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
-          v_points[i] = Vec2d(point1.x, point1.y);
-          v_points[j] = Vec2d(point2.x, point2.y);
-          pass_points.push_back(v_points);
-        }
-        //progress_bar();
-      }
-    }
-  }
+  //        std::vector<Vec2d> v_points(size,Vec2d(-1,-1));
+  //        cv::Point2f point1 = ft1.getKeyPoint(idx1).pt;
+  //        cv::Point2f point2 = ft2.getKeyPoint(idx2).pt;
+  //        v_points[i] = Vec2d(point1.x, point1.y);
+  //        v_points[j] = Vec2d(point2.x, point2.y);
+  //        pass_points.push_back(v_points);
+  //      }
+  //      //progress_bar();
+  //    }
+  //  }
+  //}
 
   printInfo("Número de puntos de paso encontrados: %i", pass_points.size());
 
@@ -545,10 +545,10 @@ int main(int argc, char** argv)
   Features2D featuresR(fd, de);
   //Matching match(cv::DescriptorMatcher::create("FlannBased"));
 
-  for (int i = 1; i < images_paths.size() - 1; i++) {
+  for (int i = 1; i < images_paths.size(); i++) {
     
     String left_im = images_paths[i-1];
-    String right_im = images_paths[i+1];
+    String right_im = images_paths[i];
     
     // Se cargan las imagenes
     Mat left  = imread(left_im ,IMREAD_COLOR);

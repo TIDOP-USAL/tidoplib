@@ -15,61 +15,11 @@ Color::Color(int red, int green, int blue, int alpha)
 Color::Color(double cyan, double magenta, double yellow, double key) : mColor(0)
 {
   fromCMYK(cyan, magenta, yellow, key);
-  //double aux = (1 - key) * 255;
-  //mColor = (I3D_ROUND_TO_INT((1 - yellow) * aux) & 0xFF) 
-  //       | ((I3D_ROUND_TO_INT((1 - magenta) * aux) << 8) & 0xFF00) 
-  //       | ((I3D_ROUND_TO_INT((1 - cyan) * aux) << 16) & 0xFF0000);
 }
 
 Color::Color(double hue, double saturation, double value) : mColor(0)
 {
   fromHSV(hue, saturation, value);
-  //mColor = 0;
-  //if (hue < 0) hue = 0;
-  //if (saturation < 0) saturation = 0;
-  //if (value < 0) value = 0;
-  //if (hue >= 360) hue = 359;
-  //if (saturation > 100) saturation = 100;
-  //if (value > 100) value = 100;
-  //value /= 100.;
-  //saturation /= 100.;
-  //double chroma = value * saturation;
-  //double h = hue / 60.;
-  //double x = chroma * (1 - fabs(fmod(h,2)-1));
-
-  //std::array<double, 3> _rgb = { 0., 0., 0. };
-
-  //if (h >= 0 && h < 1) {
-  //  _rgb[0] = chroma;
-  //  _rgb[1] = x;
-  //} else if (h >= 0 && h < 1) {
-  //  _rgb[0] = x;
-  //  _rgb[1] = chroma;
-  //} else if (h >= 1 && h < 2) {
-  //  _rgb[1] = chroma;
-  //  _rgb[2] = x;
-  //} else if (h >= 2 && h < 3) {
-  //  _rgb[1] = chroma;
-  //  _rgb[2] = x;
-  //} else if (h >= 3 && h < 4) {
-  //  _rgb[1] = x;
-  //  _rgb[2] = chroma;
-  //} else if (h >= 4 && h < 5) {
-  //  _rgb[0] = x;
-  //  _rgb[2] = chroma;
-  //} else {
-  //  _rgb[0] = chroma;
-  //  _rgb[2] = x;
-  //}
-
-  //double m = value - chroma;
-  //_rgb[0] += m;
-  //_rgb[1] += m;
-  //_rgb[2] += m;
-  //
-  //mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
 }
 
 Color::Color(const std::string &color) 
