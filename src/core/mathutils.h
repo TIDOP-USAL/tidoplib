@@ -113,165 +113,43 @@ double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double
  */
 double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
 
+/*!
+ * \brief ángulos de Euler
+ *
+ * A partir de una matriz de rotación obtiene los ángulos de giro.
+ * \param[in] R Matriz de rotación
+ * \param[out] omega Rotación respecto al eje X
+ * \param[out] phi Rotación respecto al eje Y
+ * \param[out] kappa Rotación respecto al eje Z
+ * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+ */
 void I3D_EXPORT eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
-
-/* ---------------------------------------------------------------------------------- */
-/*                              Operaciones con vectores                              */
-/* ---------------------------------------------------------------------------------- */
-
 /*!
- * \brief Convierte una matriz de OpenCV en un vector
- * \param[in] m Matriz de entrada
- * \param[out] av Vector de salida
+ * \brief Obtiene la ecuación de un plano que pasa por tres puntos
+ *
+ * \f$ A*x + B*y + C*z + D = 0\f$
+ *
+ * param[in] points Puntos que definen el plano
+ * param[out] plane Parametros de la ecuación general del plano normalizados (A, B, C, D)
  */
 template<typename T>
-void I3D_EXPORT cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane) 
 {
-  av->resize(m.rows*m.cols);
-  if (m.isContinuous()) {
-    av->assign((T*)m.datastart, (T*)m.dataend);
-  } else {
-    for (int i = 0; i < m.rows; ++i) {
-      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
-    }
+  T v1 = points[1] - points[0];
+  T v2 = points[2] - points[0];
+  double A = v1.y*v2.z - v1.z*v2.y;
+  double B = v1.z*v2.x - v1.x*v2.z;
+  double C = v1.x*v2.y - v2.x*v1.y;
+  double D = -A *points[0].x - B*points[0].y - C*points[0].z;
+  double N = sqrt(A*A + B*B + C*C);
+  if ( N ) { 
+    plane[0] = A / N;
+    plane[1] = B / N;
+    plane[2] = C / N;
+    plane[3] = D / N;
   }
-}
-
-/*!
- * \brief Ordena un vector de menor a mayor
- * \param[in] v Vector
- */
-template<typename T>
-void I3D_EXPORT sortVector(std::vector<T> *v)
-{
-  std::sort(v->begin(), v->end());
-}
-
-/*!
- * \brief Ordena un vector de mayor a menor
- * \param[in] v Vector
- */
-template<typename T>
-void I3D_EXPORT sortVectorInv(std::vector<T> *v)
-{
-  std::sort(v->rbegin(),v->rend());
-}
-
-/*!
- * \brief Determinar el número de elementos iguales a un número.
- * Sobrecarga del operador == para determinar el número de elementos de un
- * vector que son iguales al valor pasado como parámetro.
- * \param[in] v Vector
- * \param[in] t Valor
- * \return Número de elementos que cumplen la condición
- */
-template<typename T>
-int operator==(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
-  bounds = std::equal_range(v.begin(), v.end(), t);
-  int ini = bounds.first - v.begin();
-  int end = bounds.second - v.begin();
-  return ( end - ini );
-}
-
-/*!
- * \brief Determina el número de elementos distintos a un número.
- * Sobrecarga del operador != para determinar el número de elementos de un
- * vector que son distintos al valor pasado como parámetro.
- * \param[in] v Vector
- * \param[in] t Valor
- * \return Número de elementos que cumplen la condición
- */
-template<typename T>
-int operator!=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
-  bounds = std::equal_range(v.begin(), v.end(), t);
-  int r1 = bounds.first - v.begin();
-  int r2 = v.end() - bounds.second;
-  return (r1 + r2 );
-}
-
-/*!
- * \brief operator >=
- * \param[in] v
- * \param[in] t
- * \return
- */
-template<typename T>
-int operator>=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator upOrEq;
-  upOrEq = std::lower_bound(v.begin(), v.end(), t);
-  return (v.end() - upOrEq);
-}
-
-template<typename T>
-int operator<=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator lowOrEq;
-  lowOrEq = std::upper_bound(v.begin(), v.end(), t);
-  return (lowOrEq - v.begin());
-}
-
-template<typename T>
-int operator> (const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator up;
-  up = std::upper_bound(v.begin(), v.end(), t);
-  return (v.end() - up);
-}
-
-template<typename T>
-int operator< (const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator low;
-  low = std::lower_bound(v.begin(), v.end(), t);
-  return (low - v.begin());
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por filas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-int I3D_EXPORT sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por columnas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-int I3D_EXPORT sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-
-/*!
- * \brief Ordena los indices de un vector de menor a mayor
- * Para un vector [10,20,15,5] devuelve [3,0,2,1]. El elemento mas 
- * pequeño esta en la posición 3, el segundo en la posición 0, ...
- * \param[in] v Vector
- * \return Vector con los indices ordenados
- */
-template <typename T>
-std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
-{
-  std::vector<int> idx(v.size());
-  iota(idx.begin(), idx.end(), 0);
-
-  sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2]; });
-
-  return idx;
+  return( N );
 }
 
 /* ---------------------------------------------------------------------------------- */

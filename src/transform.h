@@ -51,7 +51,14 @@ enum class transform_type {
 I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
 void I3D_EXPORT translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
-void I3D_EXPORT rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+/*!
+ * \brief Cálculo de la matriz de rotación
+ * \param[in] omega Rotación respecto al eje X
+ * \param[in] phi Rotación respecto al eje Y
+ * \param[in] kappa Rotación respecto al eje Z
+ * \param[out] R Matriz de rotación
+ */
+ void I3D_EXPORT rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 /*!
  * \brief Clase base para transformaciones
