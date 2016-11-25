@@ -549,13 +549,15 @@ public:
   VideoWindow(const char* wname, int flags = CV_WINDOW_AUTOSIZE, bool bPos = true)
     : mWindowName(wname), mFlags(flags), bPosTrackBar(bPos), mVideoSize(0), mVideo(0) 
   { 
-    cv::namedWindow(wname, flags);
+    cv::namedWindow(mWindowName, mFlags);
   }
 
   /*!
    * \brief Destructora de la clase I3DVideoCtrls
    */
   ~VideoWindow();
+
+  void addButton(const char *name, int type, cv::ButtonCallback onChange, void* userdata, bool buttonState);
 
   /*!
    * \brief Añade un trackbar a la ventana de video
@@ -582,6 +584,7 @@ public:
   void onInitialize() override
   {
     VideoStream::Listener::onInitialize(); 
+    cv::namedWindow(mWindowName, mFlags);
   }
 
   void onPause() override

@@ -129,7 +129,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
     // Recta de regresión para los máximos
     double m = 0.;
     double b = 0.;
-    double corr = regressionLinearXY(pMax, &m, &b);
+    /*double corr = */regressionLinearXY(pMax, &m, &b);
     
     pt1 = cv::Point(I3D_ROUND_TO_INT(b + rcrop.x), rcrop.y);
     pt2 = cv::Point(I3D_ROUND_TO_INT(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);

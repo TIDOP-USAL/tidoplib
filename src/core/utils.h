@@ -427,6 +427,8 @@ std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
   return idx;
 }
 
+void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+
 } // End namespace I3D
 
 #endif // I3D_UTILS_H

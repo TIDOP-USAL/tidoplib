@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "../../src/core/messages.h"
-#include "../../src/utils.h"
+#include "core\messages.h"
+#include "core\utils.h"
 
 using namespace I3D;
 

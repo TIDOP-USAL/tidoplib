@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6ACFE087-2C05-4191-AC46-9D5ECDF73AF9}</ProjectGuid>
+    <ProjectGuid>{AF105F4A-9860-4751-9CE4-1EDB2A703E4B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>utils_test</RootNamespace>
   </PropertyGroup>
@@ -67,7 +67,6 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_shape310d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -94,7 +93,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="msg_test.cpp" />
+    <ClCompile Include="mathutils_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\tidopLib.vcxproj">

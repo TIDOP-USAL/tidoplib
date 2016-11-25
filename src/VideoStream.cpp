@@ -390,7 +390,7 @@ bool ImagesStream::open(const char *name)
 bool ImagesStream::read(cv::Mat *vf)
 {
   if (mCurrentFrame < mImages.size()) {
-    std::string imgFile = mImages[mCurrentFrame];
+    std::string imgFile = mImages[static_cast<unsigned int>(mCurrentFrame)];
     mFrame = cv::imread(imgFile);
     if (mResolutionFrame == Resolution::RESIZE_FRAME) {
       resizeFrame();
@@ -482,10 +482,10 @@ VideoWindow::~VideoWindow()
 }
 
 //Se necesita OpenCV compilado con soporte de QT
-//void I3DVideoWindow::addButton(const char *name, int type, cv::ButtonCallback onChange, void* userdata, bool buttonState)
-//{
-//  cv::createButton(name, onChange, &userdata, type, buttonState);
-//}
+void VideoWindow::addButton(const char *name, int type, cv::ButtonCallback onChange, void* userdata, bool buttonState)
+{
+  cv::createButton(name, onChange, &userdata, type, buttonState);
+}
 
 void VideoWindow::addTrackbar(const char *trackbarname, int* value, int count, cv::TrackbarCallback onChange, void *userdata)
 {

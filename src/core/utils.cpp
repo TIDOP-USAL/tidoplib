@@ -335,4 +335,16 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 
 /* ---------------------------------------------------------------------------------- */
 
+void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
+{
+  cv::FileStorage fs(file, cv::FileStorage::READ);
+  fs["image_width"] >> imageSize.width;
+  fs["image_height"] >> imageSize.height;
+  fs["camera_matrix"] >> cameraMatrix;
+  fs["distortion_coefficients"] >> distCoeffs;
+  fs.release();
+}
+
+/* ---------------------------------------------------------------------------------- */
+
 } // End namespace I3D

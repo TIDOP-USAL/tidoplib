@@ -214,6 +214,20 @@ void Console::update()
 
 /* ---------------------------------------------------------------------------------- */
 
+
+
+void CmdParameterOptions::setValue(std::string value) 
+{
+  for (auto opt : mOptions) {
+    if (value == opt) {
+      mDefValue = value;
+      break;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------------- */
+
 void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
 {
   mCmdArgs.push_front(std::make_shared<CmdParameter>(name, description, optional, defValue));
@@ -252,7 +266,9 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
           bFind = true;
           break;
         } else if (arg->getType() == ArgType::PARAMETER_OPTIONS) {
-          ;
+          std::size_t val_pos = arg_name.find("=",found);
+          std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+          dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
         }
 
       }
@@ -302,7 +318,7 @@ bool CmdParser::hasOption(const std::string &option) const
   for (auto arg : mCmdArgs) {
     if (arg->getType() == ArgType::OPTION) {
       if (arg->getName() == option) {
-        return true;
+        return dynamic_cast<CmdOption *>(arg.get())->isActive();
       }
     }
   }

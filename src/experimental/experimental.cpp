@@ -3,13 +3,14 @@
 #include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
-#include "opencv2/sfm/libmv_light/libmv_capi.h"
 #include "opencv2/core/eigen.hpp"
-
+I3D_SUPPRESS_WARNINGS
+#include "opencv2/sfm/libmv_light/libmv_capi.h"
 #include "libmv/simple_pipeline/reconstruction.h"
 #include "libmv/simple_pipeline/camera_intrinsics.h"
 #include "libmv/correspondence/matches.h"
 #include "libmv/multiview/robust_fundamental.h"
+I3D_DEFAULT_WARNINGS
 
 namespace I3D
 {
@@ -21,10 +22,6 @@ namespace EXPERIMENTAL
 
 int RobustMatching::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
 {
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
   int removed = 0;
   // for all matches
   for (std::vector<std::vector<cv::DMatch> >::iterator
@@ -87,7 +84,7 @@ void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> >& m
 void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> > &matches, std::vector<std::vector<cv::DMatch>> *symMatches)
 {
   if (symMatches && !matches.empty()) {
-    int max_track_number = 0;
+    //int max_track_number = 0;
     for (size_t i = 0; i < matches.size(); i++) {
       float distance0 = matches[i][0].distance;
       float distance1 = matches[i][1].distance;
@@ -151,7 +148,7 @@ void Reconstruction3D::getKeyPointAndDescriptor(const std::vector<std::string> &
     std::vector<cv::KeyPoint> keyPoint;
     cv::Mat descriptor;
     // Se detectan los key points y los descriptores
-    int nft = mFeature2D->detectKeyPoints(image, &keyPoint);
+    /*int nft = */mFeature2D->detectKeyPoints(image, &keyPoint);
     mFeature2D->calcDescriptor(image, NULL, &descriptor);
 
     mKeyPoints[i] = keyPoint;
@@ -391,7 +388,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
         }
         libmv::vector<int> inliers;
         Eigen::Matrix<double, 3, 3> H;
-        double max_error = 0.1;
+        //double max_error = 0.1;
         // TODO(pmoulon) Make the Correspondence filter a parameter.
         //HomographyFromCorrespondences2PointRobust(x[0], x[1], 0.3, &H, &inliers);
         //HomographyFromCorrespondences4PointRobust(x[0], x[1], 0.3, &H, &inliers);
@@ -400,7 +397,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
         
         std::vector<cv::Point2f> pts1;
         std::vector<cv::Point2f> pts2;
-        for (size_t igm = 0; igm < inliers.size(); igm++) {
+        for (int igm = 0; igm < inliers.size(); igm++) {
           idx1 = symMatches[inliers[igm]][0].queryIdx;
           idx2 = symMatches[inliers[igm]][0].trainIdx;
 
@@ -520,7 +517,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
     
     Matx33d R;
     Vec3d t;
-    for(size_t i = 0; i < n_views; ++i)
+    for(int i = 0; i < n_views; ++i)
     {
       eigen2cv(rec->reconstruction.AllCameras()[i].R, R);
       eigen2cv(rec->reconstruction.AllCameras()[i].t, t);
@@ -530,12 +527,12 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
       ts_est[i] = cv::Mat(t);
     }
 
-    const size_t n_points = rec->reconstruction.AllPoints().size();
+    int n_points = rec->reconstruction.AllPoints().size();
 
     //points3d.create(n_points, 1, CV_64F);
 
     cv::Vec3d point3d;
-    for ( size_t i = 0; i < n_points; ++i ) {
+    for ( int i = 0; i < n_points; ++i ) {
       for ( int j = 0; j < 3; ++j )
         point3d[j] = rec->reconstruction.AllPoints()[i].X[j];
       //cv::Mat(point3d).copyTo(points3d.getMatRef(i));

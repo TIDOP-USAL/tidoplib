@@ -1,11 +1,11 @@
 #ifndef I3D_CONSOLE_H
 #define I3D_CONSOLE_H
 
-#if defined WIN32
-// Para que no den problemas std::numeric_limits<T>().max() 
-#define NOMINMAX 
-# include <windows.h>
-#endif
+//#if defined WIN32
+//// Para que no den problemas std::numeric_limits<T>().max() 
+//#define NOMINMAX 
+//# include <windows.h>
+//#endif
 #include <functional>
 #include <map>
 #include <vector>
@@ -401,9 +401,8 @@ public:
    * \param defValue
    */
   CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "") 
-    : CmdArgument(name, description, optional) 
+    : CmdArgument(name, description, optional), mDefValue(defValue)
   {
-    mDefValue = defValue;
     split(options, mOptions, ",");
   }
 
@@ -417,14 +416,13 @@ public:
    * \brief getValue
    * \return
    */
-  template<typename T>
   std::string getValue() const { return mDefValue; }
 
   /*!
    * \brief setValue
    * \param value
    */
-  void setValue(std::string value) { mDefValue = value; }
+  void setValue(std::string value);
 };
 
 // Parametros de entrada:
@@ -515,9 +513,10 @@ public:
 
     std::string _name(name);
     for (auto arg : mCmdArgs) {
-      if (arg->getType() == ArgType::PARAMETER) {
+      if (arg->getType() == ArgType::PARAMETER || arg->getType() == ArgType::PARAMETER_OPTIONS) {
         if (arg->getName() == _name) {
-          std::string value = dynamic_cast<CmdParameter *>(arg.get())->getValue();
+          std::string value = (arg->getType() == ArgType::PARAMETER) ? 
+            dynamic_cast<CmdParameter *>(arg.get())->getValue() : dynamic_cast<CmdParameterOptions *>(arg.get())->getValue();
           std::stringstream strm_value(value);
           if (typeid(T) == typeid(std::string)) {
             *(std::string *)_value = value;
@@ -528,7 +527,7 @@ public:
           } else if (typeid(T) == typeid(float)) {
             strm_value >> *(float *)_value;
           } else {
-            throw std::exception("Tipo de dato  no permitido");
+            throw std::runtime_error("Tipo de dato  no permitido");
           }
         }
       }

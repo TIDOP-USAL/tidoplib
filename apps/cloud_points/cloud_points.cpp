@@ -53,15 +53,15 @@ using namespace cv::ximgproc;
 using namespace cv::xfeatures2d;
 //using namespace xercesc;
 
-static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
-{
-  FileStorage fs(file, FileStorage::READ);
-  fs["image_width"] >> imageSize.width;
-  fs["image_height"] >> imageSize.height;
-  fs["camera_matrix"] >> cameraMatrix;
-  fs["distortion_coefficients"] >> distCoeffs;
-  fs.release();
-}
+//static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
+//{
+//  FileStorage fs(file, FileStorage::READ);
+//  fs["image_width"] >> imageSize.width;
+//  fs["image_height"] >> imageSize.height;
+//  fs["camera_matrix"] >> cameraMatrix;
+//  fs["distortion_coefficients"] >> distCoeffs;
+//  fs.release();
+//}
 
 int getdir(const std::string _filename, std::vector<std::string> &files)
 {

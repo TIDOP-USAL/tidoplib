@@ -94,11 +94,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DeteccionApoyos.cpp" />
+    <ClCompile Include="DetectTransmissionTower.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\tidopLib.vcxproj">
       <Project>{f39af565-7429-4f4c-a13c-c1edb3c0f529}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DetectTransmissionTower.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -11,6 +11,8 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
 
+#include "core/defs.h" // Para quitar warnings de sfm
+I3D_SUPPRESS_WARNINGS
 #define CERES_FOUND 1 //Por ahora
 #include <opencv2/sfm/conditioning.hpp>
 #include <opencv2/sfm/fundamental.hpp>
@@ -24,6 +26,7 @@
 #endif
 
 #include "libmv\simple_pipeline\tracks.h"
+I3D_DEFAULT_WARNINGS
 
 #include "matching.h"
 

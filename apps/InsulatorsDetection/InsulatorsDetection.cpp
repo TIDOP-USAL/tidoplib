@@ -15,15 +15,15 @@
 // Cabeceras propias
 #include "LineDetector.h"
 #include "VideoStream.h"
-#include "utils.h"
-#include "Logger.h"
+#include "core/utils.h"
+#include "core/messages.h"
 #include "matching.h"
 #include "fourier.h"
-#include "ImgProcessing.h"
+#include "img_processing.h"
 #include "transform.h"
 #include "geometric_entities/point.h"
 #include "geometric_entities/operations.h"
-#include "core/messages.h"
+
 
 using namespace I3D;
 using namespace cv;
@@ -121,9 +121,17 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
 
 int main(int argc, char *argv[])
 {
+  char name[I3D_MAX_FNAME];
+  getFileName(getRunfile(), name);
+  char dir[I3D_MAX_DIR];
+  getFileDriveDir(getRunfile(), dir);
+
+  //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];
-  int err = changeFileNameAndExtension(getRunfile(), "InsulatorsDetection.log", logfile);
-  LogMsg log(logfile, LogLevel::LOG_DEBUG);
+  sprintf(logfile, "%s//%s.log", dir, name );
+  Message::setMessageLogFile(logfile);
+  Message::setMessageLevel(MessageLevel::MSG_INFO);
+
   std::unique_ptr<LineDetector> oLD;
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
   if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
@@ -198,7 +206,7 @@ int main(int argc, char *argv[])
   cv::Mat frame = cv::imread(img1, cv::IMREAD_GRAYSCALE);
   WindowI wFrame(cv::Point(0, 0), cv::Point(frame.cols, frame.rows));
   if (frame.empty()) {
-    log.errorMsg("No se puede cargar frame: %s", img1.c_str());
+    logPrintError("No se puede cargar frame: %s", img1.c_str());
   } else {
 
     //regiones a derecha e izquierda de la torre donde detectaremos las lineas
@@ -499,202 +507,3 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-//int main(int argc, char *argv[])
-//{
-//
-//  char runfile[256];
-//  ::GetModuleFileNameA(NULL, runfile, sizeof(runfile));
-//  const char *path;
-//  path = extractfiledrivedir(runfile);
-//  std::string logfile = std::string(path) + "InsulatorsDetection.log";
-//  LogMsg log(logfile.c_str(), LOG_DEBUG);
-//
-//  std::unique_ptr<LineDetector> oLD;
-//  cv::Scalar ang_tol(CV_PI / 2, 0.25);
-//  if (ls == LD_HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
-//  else if (ls == LD_HOUGHP)      oLD = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
-//  else if (ls == LD_HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
-//  else if (ls == LD_LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
-//  else {
-//    log.errorMsg("No se ha seleccionado ningún detector de lineas.");
-//    return 0;
-//  }
-//
-//  //Procesos que se aplican a las imagenes
-//  I3D::ImgProcessingList imgprolist;
-//  imgprolist.add(std::make_shared<I3D::Normalize>(0., 255.));
-//  //imgprolist.add(std::make_shared<I3D::GaussianBlur>(cv::Size(9, 9), 3., 1.));
-//  imgprolist.add(std::make_shared<I3D::BilateralFilter>(5, 50., 50.));
-//
-//  //imgprolist.add(std::make_shared<I3D::EqualizeHistogram>());
-//  //imgprolist.add(std::make_shared<I3D::Erotion>(1));
-//  //imgprolist.add(std::make_shared<I3D::Dilate>(1));
-//
-//  //imgprolist.add(std::make_shared<I3D::BilateralFilter>(5, 50., 50.));
-//  //imgprolist.add(std::make_shared<I3D::Binarize>(0., 0., true));
-//  if (ls == LD_LSD) {
-//    imgprolist.add(std::make_shared<I3D::Sobel>(1, 0, 3, 1., 0.));
-//  } else {
-//    imgprolist.add(std::make_shared<I3D::Canny>());
-//  }
-//
-//  //std::string img1 = "C:\\Desarrollo\\Datos\\Video_Termico_FLIR\\captura2.jpg";
-//  //std::string img1 = "C:\\Desarrollo\\Datos\\insulators6_GRAY.png";
-//  //std::string img1 = "C:\\Desarrollo\\Datos\\FlirLepton_01.PNG";
-//  std::string img1 = "D:\\Desarrollo\\Datos\\V1_01.PNG";
-//
-//
-//  cv::Mat frame = cv::imread(img1, cv::IMREAD_GRAYSCALE);
-//  WindowI wFrame(cv::Point(0, 0), cv::Point(frame.cols, frame.rows));
-//  if (frame.empty()) {
-//    log.errorMsg("No se puede cargar frame: %s", img1.c_str());
-//  } else {
-//    // Tenemos la posición de la torre 
-//    //WindowI wTower(cv::Point(254, 47), cv::Point(345, 380));
-//    //WindowI wTower(cv::Point(290, 25), cv::Point(376, 335)); //"C:\\Desarrollo\\Datos\\Video_Termico_FLIR\\captura2.jpg
-//    //WindowI wTower(cv::Point(250, 100), cv::Point(315, 290)); //capture.PNG
-//    //WindowI wTower(cv::Point(617, 180), cv::Point(715, 630));
-//    //WindowI wTower(cv::Point(250, 0), cv::Point(415, 480)); //"C:\\Desarrollo\\Datos\\FlirLepton_01.PNG"
-//    WindowI wTower(cv::Point(400, 25), cv::Point(550, 470)); //"C:\\Desarrollo\\Datos\\V1_01.PNG"
-//
-//    //regiones a derecha e izquierda de la torre donde detectaremos las lineas
-//    WindowI wRight(cv::Point(wTower.pt2.x, wTower.pt1.y), cv::Point(wTower.pt2.x + 300, wTower.pt2.y));
-//    WindowI wLeft(cv::Point(wTower.pt1.x - 300, wTower.pt1.y), cv::Point(wTower.pt1.x, wTower.pt2.y));
-//    wRight = windowIntersection(wRight, wFrame);
-//    wLeft = windowIntersection(wLeft, wFrame);
-//
-//    cv::Mat right, left;
-//    frame.colRange(wRight.pt1.x, wRight.pt2.x).rowRange(wRight.pt1.y, wRight.pt2.y).copyTo(right);
-//    frame.colRange(wLeft.pt1.x, wLeft.pt2.x).rowRange(wLeft.pt1.y, wLeft.pt2.y).copyTo(left);
-//
-//    //Determinar angulo con Fourier
-//    std::vector<int> colFourierRight, colFourierLeft;
-//    colFourierRight.push_back(right.cols / 2);
-//    colFourierLeft.push_back(left.cols / 2);
-//    std::vector<std::vector<cv::Point>> ptsFourierRight, ptsFourierLeft;
-//    double angleRight = fourierLinesDetection(right, colFourierRight, &ptsFourierRight);
-//    double angleLeft = fourierLinesDetection(left, colFourierLeft, &ptsFourierLeft);
-//
-//    bool bConcave = angleLeft - angleRight > 0.;
-//
-//    cv::Mat outRight, outLeft;
-//    imgprolist.execute(right, &outRight);
-//    imgprolist.execute(left, &outLeft);
-//
-//    cv::Mat frameout;
-//    cvtColor(frame, frameout, CV_GRAY2BGR);
-//
-//    std::vector<Line> linesRight, linesLeft;
-//    oLD->run(outRight, cv::Scalar(angleRight, 0.15));
-//    if (oLD->getLines().empty()) return 0;
-//    translate(oLD->getLines(), &linesRight, wRight.pt1.x, wRight.pt1.y);
-//    oLD->run(outLeft, cv::Scalar(angleLeft, 0.15));
-//    if (oLD->getLines().empty()) return 0;
-//    translate(oLD->getLines(), &linesLeft, wLeft.pt1.x, wLeft.pt1.y);
-//
-//    //Comenzamos a agrupar lineas paralelas
-//    std::vector<ldGroupLines> linesGroupsRight, linesGroupsLeft;
-//    groupParallelLines(linesRight, &linesGroupsRight, 0.015);
-//    groupParallelLines(linesLeft, &linesGroupsLeft, 0.015);
-//    cv::RNG rng(12345);
-//    cv::Scalar c;
-//
-//    int imaxr = 0;
-//    int maxr = 0;
-//    for (int ilg = 0; ilg < linesGroupsRight.size(); ilg++) {
-//      if (maxr < linesGroupsRight[ilg].getSize()){
-//        maxr = linesGroupsRight[ilg].getSize();
-//        imaxr = ilg;
-//      }
-//    }
-//
-//    int imaxl = 0;
-//    int maxl = 0;
-//    for (int ilg = 0; ilg < linesGroupsLeft.size(); ilg++) {
-//      if (maxl < linesGroupsLeft[ilg].getSize()){
-//        maxl = linesGroupsLeft[ilg].getSize();
-//        imaxl = ilg;
-//      }
-//    }
-//
-//    std::vector<Line> linesJoinLeft, linesJoinRight;
-//    joinLinesByDist(linesGroupsRight[imaxr].getLines(), &linesJoinRight, 10);
-//
-//    std::vector<Line> linesJoin;
-//    joinLinesByDist(linesGroupsLeft[imaxl].getLines(), &linesJoinLeft, 10);
-//
-//    c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-//    for (int ig = 0; ig < linesJoinLeft.size(); ig++) {
-//      line(frameout, linesJoinLeft[ig].pt1, linesJoinLeft[ig].pt2, c, 1, cv::LINE_8);
-//    }
-//
-//    c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-//    for (int ig = 0; ig < linesJoinRight.size(); ig++) {
-//      line(frameout, linesJoinRight[ig].pt1, linesJoinRight[ig].pt2, c, 1, cv::LINE_8);
-//    }
-//
-//    // Linea vertical
-//    line(frameout, cv::Point(wTower.pt1.x, 0), cv::Point(wTower.pt1.x, frameout.rows), Scalar(0, 255, 0), 1, LINE_AA);
-//    line(frameout, cv::Point(wTower.pt2.x, 0), cv::Point(wTower.pt2.x, frameout.rows), Scalar(0, 255, 0), 1, LINE_AA);
-//
-//    //interseccion con lineas
-//    std::vector<cv::Point> ptsL(linesJoinLeft.size());
-//    for (int il = 0; il < linesJoinLeft.size(); il++) {
-//      intersectLines(linesJoinLeft[il], Line(cv::Point(wTower.pt1.x, 0), cv::Point(wTower.pt1.x, frameout.rows)), &ptsL[il]);
-//    }
-//    std::vector<cv::Point> ptsR(linesJoinRight.size());
-//    for (int ir = 0; ir < linesJoinRight.size(); ir++) {
-//      intersectLines(linesJoinRight[ir], Line(cv::Point(wTower.pt2.x, 0), cv::Point(wTower.pt2.x, frameout.rows)), &ptsR[ir]);
-//    }
-//
-//
-//    std::vector<int> posVerticalL(ptsL.size());
-//    for (int il = 0; il < ptsL.size(); il++) {
-//      posVerticalL[il] = ptsL[il].y;
-//    }
-//
-//    std::vector<cv::Point> ptsLSort;
-//    for (auto i : sortIdx(posVerticalL)) {
-//      ptsLSort.push_back(ptsL[i]);
-//    }
-//
-//    std::vector<int> posVerticalR(ptsR.size());
-//    for (int ir = 0; ir < ptsR.size(); ir++) {
-//      posVerticalR[ir] = ptsR[ir].y;
-//    }
-//
-//    std::vector<cv::Point> ptsRSort;
-//    for (auto i : sortIdx(posVerticalR)) {
-//      ptsRSort.push_back(ptsR[i]);
-//    }
-//
-//    for (int il = 0; il < ptsLSort.size(); il++) {
-//      cv::line(frameout, ptsLSort[il], ptsLSort[il], Scalar(255, 0, 0), 3, LINE_AA);
-//    }
-//
-//    for (int ir = 0; ir < ptsRSort.size(); ir++) {
-//      cv::line(frameout, ptsRSort[ir], ptsRSort[ir], Scalar(255, 0, 0), 3, LINE_AA);
-//    }
-//
-//    //Recorremos los puntos dos a dos
-//    cv::Point pt_intersect;
-//    for (int i = 0; i < min(ptsRSort.size(), ptsLSort.size()); i++) {
-//      //... Comprobar que sea la linea correspondiente
-//
-//      cv::line(frameout, ptsRSort[i], ptsLSort[i], Scalar(255, 255, 0), 1, LINE_AA);
-//    }
-//
-//    int idx = 0;
-//    std::vector<int> idxL = sortIdx(posVerticalL);
-//    std::vector<int> idxR = sortIdx(posVerticalR);
-//    //... Supuesto de que encontramos todos las líneas
-//    for (int i = 0; i < min(ptsRSort.size(), ptsLSort.size()); i++) {
-//        cv::Point pt_intersect;
-//        intersectLines(linesJoinLeft[idxL[i]], linesJoinRight[idxR[i]], &pt_intersect);
-//        line(frameout, pt_intersect, pt_intersect, cv::Scalar(0,0,255), 3, cv::LINE_8);
-//    }
-//
-//  }
-//
-//  return 0;
-//}
