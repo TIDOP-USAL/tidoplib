@@ -3,6 +3,8 @@
 
 #include <opencv2/core.hpp>
 
+#include "core/defs.h"
+
 namespace I3D
 {
 
@@ -26,7 +28,7 @@ enum class StereoMode {
  * \param[in] mode Modo de visualización
  * \see StereoMode
  */
-int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::NORMAL);
+I3D_EXPORT int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::NORMAL);
 
 } // End namespace I3D
 

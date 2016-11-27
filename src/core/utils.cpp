@@ -162,7 +162,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
   return r_err;
 }
 
-int splitToNumbers(const std::string &cad, std::vector<double> &vOut, char *chs)
+int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char *chs)
 {
   int r_err = 0;
   char *dup = strdup(cad.c_str());
@@ -261,7 +261,7 @@ int getFileDriveDir(const char *path, char *drivedir)
   return r_err;
 }
 
-int changeFileName(const char *path, char *newName, char *pathOut)
+int changeFileName(const char *path, const char *newName, char *pathOut)
 {
   int r_err = 0;
   char drive[I3D_MAX_DRIVE];

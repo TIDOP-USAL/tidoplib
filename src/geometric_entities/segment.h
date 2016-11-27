@@ -358,7 +358,7 @@ typedef Segment3D<float> Segment3dF;
  * \param[in] size Tamaño de buffer
  * \param[out] buff Buffer
  */
-void I3D_EXPORT lineBuffer(const Line &ln, int size, std::vector<cv::Point> *buff);
+I3D_EXPORT void lineBuffer(const Line &ln, int size, std::vector<cv::Point> *buff);
 
 /*!
  * \brief Projecta un punto en un segmento de recta.
@@ -368,7 +368,7 @@ void I3D_EXPORT lineBuffer(const Line &ln, int size, std::vector<cv::Point> *buf
  * \param[out] ptp Punto proyectado
  * \return -1, 0, 1
  */
-int I3D_EXPORT projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp);
+I3D_EXPORT int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp);
 
 /*!
  * \brief Calcula la distancia de un punto a un segmento de linea.
@@ -376,7 +376,7 @@ int I3D_EXPORT projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Po
  * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
-double I3D_EXPORT distPointToSegment(const cv::Point &pt, const Line &ln);
+I3D_EXPORT double distPointToSegment(const cv::Point &pt, const Line &ln);
 
 /*!
  * \brief distPointToLine
@@ -384,7 +384,7 @@ double I3D_EXPORT distPointToSegment(const cv::Point &pt, const Line &ln);
  * \param[in] ln
  * \return
  */
-double I3D_EXPORT distPointToLine(const cv::Point &pt, const Line &ln);
+I3D_EXPORT double distPointToLine(const cv::Point &pt, const Line &ln);
 
 /*!
  * \brief Calcula la distancia mínima entre dos segmentos de linea.
@@ -392,7 +392,7 @@ double I3D_EXPORT distPointToLine(const cv::Point &pt, const Line &ln);
  * \param[in] ln2 Segmento 2
  * \return Distancia entre segmentos
  */
-double I3D_EXPORT minDistanceSegments(const Line &ln1, const Line &ln2);
+I3D_EXPORT double minDistanceSegments(const Line &ln1, const Line &ln2);
 
 /*!
  * \brief Intersect de dos segmentos de línea
@@ -401,7 +401,7 @@ double I3D_EXPORT minDistanceSegments(const Line &ln1, const Line &ln2);
  * \param pt Punto de intersección
  * \return
  */
-int I3D_EXPORT intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt);
+I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt);
 
 /*!
  * \brief Determina la intersección de los lineas
@@ -410,7 +410,7 @@ int I3D_EXPORT intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt
  * \param[out] pt Punto de intersección
  * \return
  */
-int I3D_EXPORT intersectLines(const Line &ln1, const Line &ln2, cv::Point *pt);
+I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, cv::Point *pt);
 
 /*!
  * \brief joinLinesByDist
@@ -418,7 +418,7 @@ int I3D_EXPORT intersectLines(const Line &ln1, const Line &ln2, cv::Point *pt);
  * \param[out] linesOut
  * \param[in] dist
  */
-void I3D_EXPORT joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesOut, int dist);
+I3D_EXPORT void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesOut, int dist);
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -524,11 +524,11 @@ public:
 /*                          Operaciones con grupos de Líneas                          */
 /* ---------------------------------------------------------------------------------- */
 
-void I3D_EXPORT groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *curLinesGrops, double angTol);
+I3D_EXPORT void groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *curLinesGrops, double angTol);
 
-void I3D_EXPORT groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines> *curLinesGrops, int dist);
+I3D_EXPORT void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines> *curLinesGrops, int dist);
 
-void I3D_EXPORT delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size);
+I3D_EXPORT void delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size);
 
 /*! \} */ // end of GeometricEntities
 

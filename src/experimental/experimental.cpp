@@ -353,7 +353,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
     std::vector<std::vector<cv::Vec2d> > pass_points;
 
     // matching cruzado
-    bool bRes2 = true;
+    //bool bRes2 = true;
     for (int i = 0; i < images.size(); ++i) {
       for (int j = 0; j < i; ++j) {
         std::vector<std::vector<cv::DMatch>> robus_matches;

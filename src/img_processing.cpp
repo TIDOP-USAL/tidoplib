@@ -316,8 +316,7 @@ int FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   int i_error = 0;
   try {
     f(matIn, matOut);
-  }
-  catch (cv::Exception &e){
+  } catch (cv::Exception &e){
     logPrintError(e.what());
     i_error = 1;
   }

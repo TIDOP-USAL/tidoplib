@@ -102,8 +102,8 @@
     <ClCompile Include="experimental\experimental.cpp">
       <Filter>Archivos de código fuente\experimental</Filter>
     </ClCompile>
-    <ClCompile Include="experimental\events.cpp">
-      <Filter>Archivos de código fuente\experimental</Filter>
+    <ClCompile Include="core\exception.cpp">
+      <Filter>Archivos de código fuente\core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,14 +173,14 @@
     <ClInclude Include="experimental\experimental.h">
       <Filter>Archivos de encabezado\experimental</Filter>
     </ClInclude>
-    <ClInclude Include="experimental\events.h">
-      <Filter>Archivos de encabezado\experimental</Filter>
-    </ClInclude>
     <ClInclude Include="geometric_entities\polygon.h">
       <Filter>Archivos de encabezado\geometric_entities</Filter>
     </ClInclude>
     <ClInclude Include="geometric_entities\bbox.h">
       <Filter>Archivos de encabezado\geometric_entities</Filter>
+    </ClInclude>
+    <ClInclude Include="core\exception.h">
+      <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

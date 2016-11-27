@@ -18,10 +18,10 @@ namespace I3D
  * \param[in] src
  * \return
  */
-double I3D_EXPORT laplacianVariance(const cv::Mat &src);
+I3D_EXPORT double laplacianVariance(const cv::Mat &src);
 
 template<typename T>
-inline double I3D_EXPORT module(const cv::Point_<T> &v)
+I3D_EXPORT inline double module(const cv::Point_<T> &v)
 {
   return sqrt(v.x * v.x + v.y*v.y);
 }
@@ -33,7 +33,7 @@ inline double I3D_EXPORT module(const cv::Point_<T> &v)
  * \return Ángulo en radianes
  */
 template<typename T>
-inline double I3D_EXPORT vectorAngle(const cv::Point_<T> &v1, const cv::Point_<T> &v2)
+I3D_EXPORT inline double vectorAngle(const cv::Point_<T> &v1, const cv::Point_<T> &v2)
 {
   if (v1 == cv::Point_<T>() || v2 == cv::Point_<T>())
     return 0.0;
@@ -41,7 +41,7 @@ inline double I3D_EXPORT vectorAngle(const cv::Point_<T> &v1, const cv::Point_<T
 }
 
 template<typename T>
-inline double I3D_EXPORT vectorAngleOX(const cv::Point_<T> &v)
+I3D_EXPORT inline double vectorAngleOX(const cv::Point_<T> &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -50,7 +50,7 @@ inline double I3D_EXPORT vectorAngleOX(const cv::Point_<T> &v)
 }
 
 template<typename T>
-inline double I3D_EXPORT vectorAngleOY(const cv::Point_<T> &v)
+I3D_EXPORT inline double vectorAngleOY(const cv::Point_<T> &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -59,7 +59,7 @@ inline double I3D_EXPORT vectorAngleOY(const cv::Point_<T> &v)
 }
 
 template<typename T>
-inline double I3D_EXPORT azimut(const cv::Point_<T> &pt1, const cv::Point_<T> &pt2)
+I3D_EXPORT inline double azimut(const cv::Point_<T> &pt1, const cv::Point_<T> &pt2)
 {
   double azimut = 0.;
   cv::Point v = pt2 - pt1;
@@ -69,11 +69,11 @@ inline double I3D_EXPORT azimut(const cv::Point_<T> &pt1, const cv::Point_<T> &p
   return azimut;
 }
 
-double I3D_EXPORT computeMedian(const std::vector<double> &input);
+I3D_EXPORT double computeMedian(const std::vector<double> &input);
 
-double I3D_EXPORT computeTempMAD(const std::vector<double> &input, const double median);
+I3D_EXPORT double computeTempMAD(const std::vector<double> &input, const double median);
 
-bool I3D_EXPORT isOutlier(const double temp, const double median, const double mad);
+I3D_EXPORT bool isOutlier(const double temp, const double median, const double mad);
 
 /*!
  * \brief Recta de regresión de Y sobre X
@@ -83,7 +83,7 @@ bool I3D_EXPORT isOutlier(const double temp, const double median, const double m
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
- * \return coeficiente de correlacción
+ * \return Coeficiente de correlacción. Valor entre -1 (pendiente negativa) y 1 (pendiente positiva). Valores próximos a cero suponen un mal ajuste
  *
  * <h4>Ejemplo</h4>
  * \code
@@ -92,7 +92,32 @@ bool I3D_EXPORT isOutlier(const double temp, const double median, const double m
  * double corr = regressionLinearYX(pts, &m, &b);
  * \endcode
  */
-double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//I3D_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
+template<typename Point_t>
+I3D_EXPORT double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
+{
+  double corr = 0.0;
+  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+  size_t n = pts.size();
+  if (n >= 2) {
+    for (size_t i = 0; i < n; i++) {
+      sx += pts[i].x;
+      sy += pts[i].y;
+      sx2 += pts[i].x * pts[i].x;
+      sy2 += pts[i].y * pts[i].y;
+      sxy += pts[i].x * pts[i].y;
+    }
+    double den = (n*sx2 - sx*sx);
+    if (den) {
+      // Línea no vertical
+      *m = (n*sxy - sy*sx) / (n*sx2 - sx*sx);
+      *b = (sy - *m*sx) / n;
+      den = sy2 - sy*sy / n;
+      corr = sqrt(*m * (sxy - sx*sy / n) / (sy2 - sy*sy / n));
+    }
+  }
+  return(corr);
+}
 
 /*!
  * \brief Recta de regresión de X sobre Y
@@ -102,7 +127,7 @@ double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
- * \return coeficiente de correlacción
+ * \return Coeficiente de correlacción. Valor entre -1 (pendiente negativa) y 1 (pendiente positiva). Valores próximos a cero suponen un mal ajuste
  *
  * <h4>Ejemplo</h4>
  * \code
@@ -111,7 +136,71 @@ double I3D_EXPORT regressionLinearYX(const std::vector<cv::Point2i> &pts, double
  * double corr = regressionLinearXY(pts, &m, &b);
  * \endcode
  */
-double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//I3D_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
+template<typename Point_t>
+I3D_EXPORT double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
+{
+  double corr = 0.0;
+  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+  size_t n = pts.size();
+  if (n >= 2) {
+    for (size_t i = 0; i < n; i++) {
+      sx += pts[i].x;
+      sy += pts[i].y;
+      sx2 += pts[i].x * pts[i].x;
+      sy2 += pts[i].y * pts[i].y;
+      sxy += pts[i].x * pts[i].y;
+    }
+    double den = (n*sy2 - sy*sy);
+    if (den) {
+      *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);
+      *b = (sx - *m*sy) / n;
+      den = sx2 - sx*sx / n;
+      corr = sqrt(*m * (sxy - sx*sy / n) / (sx2 - sx*sx / n));
+    }
+  }
+  return(corr);
+}
+
+/*!
+ * \brief Regresión exponencial
+ * Ajusta una curva exponencial de regresión a un conjunto de datos según la formula:
+ * 
+ * \f$ y = A*r^x \f$<BR>
+ *
+ * A partir de esta expresión tomando logaritmos en ambos lados tenemos que:
+ *
+ * \f$ log10(y) = log10(A*r^x) \f$<BR>
+ * \f$ log10(y) = log10(A) + log10(r^x) \f$<BR>
+ * \f$ log10(y) = log10(A) + x * log10(r) \f$<BR>
+ *
+ * El logaritmo de y se puede expresar ahora como una función lineal y resolver mediante 
+ * la recta de regresión donde:
+ *
+ * \f$ m = log10(r) \f$<BR>
+ * \f$ b = log10(A) \f$<BR>
+ *
+ * y por tanto:
+ *
+ * \f$ r = 10^m \f$<BR>
+ * \f$ A = 10^b \f$<BR>
+ *
+ * \param[in] pts Puntos
+ * \param[out] A 
+ * \param[out] r 
+ */
+template<typename Point_t>
+I3D_EXPORT void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+{
+  std::vector<cv::Point2d> ptsLog(pts.size());
+  std::transform(pts.begin(), pts.end(), ptsLog.begin(), [](Point_t pt) -> cv::Point2d { return cv::Point2d(pt.x, log10(pt.y)); });
+
+  double m = 0.;
+  double b = 0.;
+  regressionLinearYX<cv::Point2d>(ptsLog, &m, &b);
+  *A = pow(10, b);
+  *r = pow(10, m);
+}
 
 /*!
  * \brief ángulos de Euler
@@ -122,8 +211,9 @@ double I3D_EXPORT regressionLinearXY(const std::vector<cv::Point2i> &pts, double
  * \param[out] phi Rotación respecto al eje Y
  * \param[out] kappa Rotación respecto al eje Z
  * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+ * http://mathworld.wolfram.com/EulerAngles.html
  */
-void I3D_EXPORT eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
 /*!
  * \brief Obtiene la ecuación de un plano que pasa por tres puntos
@@ -134,7 +224,7 @@ void I3D_EXPORT eulerAngles(const std::array<std::array<double, 3>, 3> &R, doubl
  * param[out] plane Parametros de la ecuación general del plano normalizados (A, B, C, D)
  */
 template<typename T>
-double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane) 
+I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane) 
 {
   T v1 = points[1] - points[0];
   T v2 = points[2] - points[0];
@@ -178,7 +268,7 @@ int isNegative(T t)
  * \param[in] seconds Segundos
  * \return Grados sexagesimales en notación decimal
  */
-double I3D_EXPORT degreesToDecimalDegrees(int degrees, int minutes, int seconds);
+I3D_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a radianes
@@ -187,7 +277,7 @@ double I3D_EXPORT degreesToDecimalDegrees(int degrees, int minutes, int seconds)
  * \param[in] seconds Segundos
  * \return radianes
  */
-double I3D_EXPORT degreesToRadians(int degrees, int minutes, int seconds);
+I3D_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a grados centesimales
@@ -196,7 +286,7 @@ double I3D_EXPORT degreesToRadians(int degrees, int minutes, int seconds);
  * \param[in] seconds Segundos
  * \return Grados centesimales
  */
-double I3D_EXPORT degreesToGradians(int degrees, int minutes, int seconds);
+I3D_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
@@ -212,21 +302,21 @@ double I3D_EXPORT degreesToGradians(int degrees, int minutes, int seconds);
  * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
  * \endcode
  */
-void I3D_EXPORT decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
+I3D_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a radianes
  * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Radianes
  */
-double I3D_EXPORT decimalDegreesToRadians(double decimalDegrees);
+I3D_EXPORT double decimalDegreesToRadians(double decimalDegrees);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados centesimales
  * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Grados centesimales
  */
-double I3D_EXPORT decimalDegreesToGradians(double decimalDegrees);
+I3D_EXPORT double decimalDegreesToGradians(double decimalDegrees);
 
 /*!
  * \brief Conversión de radianes a grados, minutos y segundos
@@ -235,21 +325,21 @@ double I3D_EXPORT decimalDegreesToGradians(double decimalDegrees);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-void I3D_EXPORT radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
+I3D_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de radianes a grados sexagesimales en notación decimal
  * \param[in] radians Radianes
  * \return Grados sexagesimales en notación decimal
  */
-double I3D_EXPORT radiansToDecimalDegrees(double radians);
+I3D_EXPORT double radiansToDecimalDegrees(double radians);
 
 /*!
  * \brief radiansToGradians
  * \param[in] radians Radianes
  * \return Grados centesimales
  */
-double I3D_EXPORT radiansToGradians(double radians);
+I3D_EXPORT double radiansToGradians(double radians);
 
 /*!
  * \brief Conversión de grados centesimales a grados, minutos y segundos
@@ -258,21 +348,21 @@ double I3D_EXPORT radiansToGradians(double radians);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-void I3D_EXPORT gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
+I3D_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal
  * \param[in] gradians Grados centesimales
  * \return Grados sexagesimales en notación decimal
  */
-double I3D_EXPORT gradiansToDecimalDegrees(double gradians);
+I3D_EXPORT double gradiansToDecimalDegrees(double gradians);
 
 /*!
  * \brief Conversión de grados centesimales a radianes
  * \param[in] gradians Grados centesimales
  * \return Radianes
  */
-double I3D_EXPORT gradiansToRadians(double gradians);
+I3D_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion
 

@@ -1,6 +1,7 @@
 #ifndef I3D_FLAGS_H
 #define I3D_FLAGS_H
 
+#include "core/defs.h"
 
 namespace I3D
 {
@@ -50,7 +51,7 @@ namespace I3D
  * \endcode
  */
 template<typename T>
-class EnumFlags
+class I3D_EXPORT EnumFlags
 {
 
 public:
