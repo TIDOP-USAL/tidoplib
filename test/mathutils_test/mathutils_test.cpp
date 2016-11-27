@@ -22,6 +22,42 @@ TEST(azimut,Test1){
   EXPECT_NEAR(0.7853, azimut(cv::Point(0,0),cv::Point(100,100)),0.0001);
 }
 
+TEST(regressionLinear,YX){
+  std::vector<cv::Point> pts{
+    cv::Point(160, 126),
+    cv::Point(180, 103),
+    cv::Point(200, 82),
+    cv::Point(220, 75),
+    cv::Point(240, 82),
+    cv::Point(260, 40),
+    cv::Point(280, 20)
+  };
+  double m = 0.;
+  double b = 0.;
+  double coef = regressionLinearYX(pts, &m, &b);
+
+  EXPECT_NEAR(-0.7929, m, 0.0001);
+  EXPECT_NEAR(249.9, b, 0.1);
+
+}
+
+
+TEST(expRegression, test1){
+  std::vector<cv::Point> pts{
+    cv::Point(0, 3),
+    cv::Point(2, 4),
+    cv::Point(4, 11),
+    cv::Point(7, 25)
+  };
+  double A = 0.;
+  double r = 0.;
+  expRegression<cv::Point>(pts, &A, &r);
+
+  EXPECT_NEAR(1.3774, r, 0.0001);
+  EXPECT_NEAR(2.6770, A, 0.0001);
+
+}
+
 /* ---------------------------------------------------------------------------------- */
 /*                          Test conversión de ángulos                                */
 /* ---------------------------------------------------------------------------------- */

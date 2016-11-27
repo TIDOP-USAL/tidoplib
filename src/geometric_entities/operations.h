@@ -26,7 +26,7 @@ namespace I3D
  * \return Longitud
  */
 template<typename T> inline
-double I3D_EXPORT length(const cv::Point_<T> &v)
+I3D_EXPORT double length(const cv::Point_<T> &v)
 {
   return (sqrt(v.x*v.x + v.y*v.y));
 }
@@ -37,7 +37,7 @@ double I3D_EXPORT length(const cv::Point_<T> &v)
  * \return Longitud
  */
 template<typename T> inline
-double I3D_EXPORT length(const cv::Point3_<T> &v)
+I3D_EXPORT double length(const cv::Point3_<T> &v)
 {
   return (sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
 }
@@ -49,7 +49,7 @@ double I3D_EXPORT length(const cv::Point3_<T> &v)
  * \return Distancia
  */
 template<typename T> inline
-double I3D_EXPORT distance(const T &pt1, const T &pt2)
+I3D_EXPORT double distance(const T &pt1, const T &pt2)
 {
   T v = pt2 - pt1;
   return length(v);
@@ -59,12 +59,12 @@ double I3D_EXPORT distance(const T &pt1, const T &pt2)
 /* ---------------------------------------------------------------------------------- */
 
 
-int I3D_EXPORT pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect);
+I3D_EXPORT int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect);
 
 /*!
  * Comprobación de que los 3 puntos están en la misma línea
  */
-bool I3D_EXPORT isCollinearPoints(const cv::Point &pt_c, const Line &line_i_r, double tolerance = 2.);
+I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const Line &line_i_r, double tolerance = 2.);
 
 /*! \} */ // end of GeometricEntities
 

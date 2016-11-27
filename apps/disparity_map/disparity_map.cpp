@@ -58,15 +58,15 @@ const String keys =
 //C:\Users\Tido\Pictures\vlcsnap-2016-09-26-11h54m06s036.png C:\Users\Tido\Pictures\vlcsnap-2016-09-26-11h55m03s330.png -algorithm=sgbm -no-downscale -dst_path=C:\Users\Tido\Pictures\vt2.png
 //C:\Users\Tido\Pictures\vlcsnap-2016-09-26-11h54m33s634.png C:\Users\Tido\Pictures\vlcsnap-2016-09-26-11h55m03s330.png -algorithm=sgbm -no-downscale -dst_path=C:\Users\Tido\Pictures\vt3.png
 //D:\Desarrollo\Libs\opencv\sources\samples\data\aloeL.jpg D:\Desarrollo\Libs\opencv\sources\samples\data\aloeR.jpg -GT=D:\Desarrollo\Libs\opencv\sources\samples\data\aloeGT.png -algorithm=sgbm -no-downscale
-static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
-{
-  FileStorage fs(file, FileStorage::READ);
-  fs["image_width"] >> imageSize.width;
-  fs["image_height"] >> imageSize.height;
-  fs["camera_matrix"] >> cameraMatrix;
-  fs["distortion_coefficients"] >> distCoeffs;
-  fs.release();
-}
+//static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
+//{
+//  FileStorage fs(file, FileStorage::READ);
+//  fs["image_width"] >> imageSize.width;
+//  fs["image_height"] >> imageSize.height;
+//  fs["camera_matrix"] >> cameraMatrix;
+//  fs["distortion_coefficients"] >> distCoeffs;
+//  fs.release();
+//}
 
 int main(int argc, char** argv)
 {

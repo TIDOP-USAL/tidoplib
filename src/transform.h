@@ -49,7 +49,7 @@ enum class transform_type {
  * \deprecated{ Reemplazada por I3D::Translate::transform }
  */
 I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
-void I3D_EXPORT translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
+I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 /*!
  * \brief Cálculo de la matriz de rotación
@@ -58,7 +58,7 @@ void I3D_EXPORT translate(const std::vector<Line> &lines_in, std::vector<Line> *
  * \param[in] kappa Rotación respecto al eje Z
  * \param[out] R Matriz de rotación
  */
- void I3D_EXPORT rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 /*!
  * \brief Clase base para transformaciones
@@ -103,7 +103,7 @@ public:
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[in] error Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   virtual double compute(const std::vector<T> &v1, const std::vector<T> &v2, std::vector<double> *error = NULL) = 0;
 
@@ -152,8 +152,11 @@ public:
   transform_type getTransformType() { return mTrfType; }
 
   /*!
-   * root-mean-square error
-   * Raiz cuadrada de error cuadratico medio
+   * \brief root-mean-square error (Raiz cuadrada de error cuadratico medio)
+   * \param pts1 Puntos en el sistema de entrada
+   * \param pts2 Puntos en el sistema de salida
+   * \param error Vector con los errores para cada punto
+   * \return RMSE
    */
   double rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
   {
@@ -197,6 +200,13 @@ protected:
     }
   }
 
+  /*!
+   * \brief root-mean-square error
+   * \param pts1 Puntos en el sistema de entrada
+   * \param pts2 Puntos en el sistema de salida
+   * \param error Vector con los errores para cada punto
+   * \return RMSE
+   */
   double _rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
   {
     size_t n = pts1.size();
@@ -273,7 +283,7 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -370,7 +380,7 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
 
@@ -422,7 +432,7 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -490,7 +500,7 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
   if (n1 != n2) {
-    printf("...");
+    printError("Número de puntos distinto en cada conjunto de puntos"); 
   } else {
     // Controlar estos errores a nivel general
     if (this->isNumberOfPointsValid(n1)) {
@@ -500,7 +510,8 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
       //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
       //cv::Mat H2 = cv::findHomography(pts1, pts2);
       //... determinar error
-    }
+    } else
+      printError("Número de puntos no valido. Se necesitan %i puntos para poder calcular los parámetros de la transformación", mMinPoint); 
   }
   return H.empty() ? -1. : 1.;
 }
@@ -546,7 +557,7 @@ public:
    * de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -623,6 +634,7 @@ double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   int n2 = static_cast<int>(pts2.size());
   if (n1 != n2) {
     printf("...");
+  } else {
     if (this->isNumberOfPointsValid(n1)){
       int m = n1 * this->mDimensions, n = 4;
       double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
@@ -774,7 +786,7 @@ public:
    * \endcode
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -1012,7 +1024,7 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -1338,7 +1350,7 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -1709,7 +1721,7 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -1896,6 +1908,131 @@ void Projective<T>::update()
 
 }
 
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+/*!
+ * \brief Tranformación polinómica
+ *
+ */
+template<typename T>
+class I3D_EXPORT polynomialTransform : public Transform2D<T>
+{
+private:
+
+  typedef typename T::value_type sub_type;
+
+public:
+
+  /*!
+   * \brief Constructor por defecto
+   */
+  polynomialTransform()
+    : Transform2D<T>(2, transform_type::POLYNOMIAL)
+  {
+  }
+
+  //~Helmert2D();
+
+  /*!
+   * \brief Calcula la transformación polinómica entre dos sistemas
+   * diferentes a partir de dos conjuntos de puntos en cada sistema
+   * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
+   * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \return RMSE (Root Mean Square Error)
+   */
+  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+
+  /*!
+   * \brief Transforma un conjunto de puntos en otro aplicando una transformación polinómica
+   * \param[in] in Puntos de entrada
+   * \param[out] out Puntos de salida
+   * \param[in] bDirect Transformación directa
+   */
+  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+
+  /*!
+  * \brief Aplica una transformación polinómica a un punto
+  * \param[in] in Punto de entrada
+  * \param[out] out Punto de salida
+  * \param[in] bDirect Transformación directa
+  */
+  void transform(const T &in, T *out, bool bDirect = true) const override;
+
+  /*!
+  * \brief Aplica una transformación polinómica a un punto
+  * \param[in] in Punto de entrada
+  * \param[in] bDirect Transformación directa
+  * \return Punto de salida
+  */
+  T transform(const T &in, bool bDirect = true) const override;
+
+};
+
+template<typename T> inline
+double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+{
+  double rmse = -1.;
+  int n1 = static_cast<int>(pts1.size());
+  int n2 = static_cast<int>(pts2.size());
+
+  if (n1 != n2) {
+    printf("...");
+  } else {
+    if (this->isNumberOfPointsValid(n1)) {
+      double xmin = I3D_DOUBLE_MAX;
+      double ymin = I3D_DOUBLE_MAX;
+      double xmax = I3D_DOUBLE_MIN;
+      double ymax = I3D_DOUBLE_MIN;
+      for( int iv = 0; iv < n1; iv++ ) {
+        T &ptoi = pts1[ipt];
+        if ( ptoi.x > xmax ) xmax = ptoi.x;
+        if ( ptoi.x < xmin ) xmin = ptoi.x;
+        if ( ptoi.y > ymax ) ymax = ptoi.y;
+        if ( ptoi.y < ymin ) ymin = ptoi.y;
+      }
+      double xc = (xmax + xmin) / 2;
+      double yc = (ymax + ymin) / 2;
+
+      //...
+    
+
+    }
+  }
+  return rmse;
+}
+
+template<typename T> inline
+void polynomialTransform<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+{
+  formatVectorOut(in, out);
+  for (int i = 0; i < in.size(); i++) {
+    transform(in[i], &(*out)[i], bDirect);
+  }
+}
+
+template<typename T> inline
+void polynomialTransform<T>::transform(const T &in, T *out, bool bDirect) const
+{
+  sub_type x_aux = in.x;
+
+  //...
+}
+
+template<typename T> inline
+T polynomialTransform<T>::transform(const T &in, bool bDirect) const
+{
+  T r_pt;
+  
+  //...
+  
+  return r_pt;
+}
+
 /*! \} */ // end of trf2DGroup
 
 /* ---------------------------------------------------------------------------------- */
@@ -1930,7 +2067,7 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
 
@@ -2078,7 +2215,7 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \return Verdadero si el calculo se ha efectuado de forma correcta
+   * \return RMSE (Root Mean Square Error)
    */
   double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
 
@@ -2278,9 +2415,9 @@ T Helmert3D<T>::transform(const T &in, bool bDirect) const
     sub_type dx = in.x - x0; 
     sub_type dy = in.y - y0; 
     sub_type dz = in.z - z0;
-    r_pt->x = static_cast<sub_type>(mScale * (dx*mRinv[0][0] + dy*mRinv[0][1] + dz*mRinv[0][2]));
-    r_pt->y = static_cast<sub_type>(mScale * (dx*mRinv[1][0] + dy*mRinv[1][1] + dz*mRinv[1][2]));
-    r_pt->z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
+    r_pt.x = static_cast<sub_type>(mScale * (dx*mRinv[0][0] + dy*mRinv[0][1] + dz*mRinv[0][2]));
+    r_pt.y = static_cast<sub_type>(mScale * (dx*mRinv[1][0] + dy*mRinv[1][1] + dz*mRinv[1][2]));
+    r_pt.z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
   }
   return r_pt;
 }

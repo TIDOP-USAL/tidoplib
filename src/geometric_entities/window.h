@@ -25,7 +25,7 @@ namespace I3D
  * \return Verdadero si intersectan
  */
 template<typename T1, typename T2>
-bool I3D_EXPORT intersectWindows(T1 w1, T2 w2)
+I3D_EXPORT bool intersectWindows(T1 w1, T2 w2)
 {
   return w1.pt2.x >= w2.pt1.x && w1.pt2.y >= w2.pt1.y &&  w1.pt1.x <= w2.pt2.x && w1.pt1.y <= w2.pt2.y;
 }
@@ -37,7 +37,7 @@ bool I3D_EXPORT intersectWindows(T1 w1, T2 w2)
  * \return Ventana interseción
  */
 template<typename T>
-T I3D_EXPORT windowIntersection(T w1, T w2)
+I3D_EXPORT T windowIntersection(T w1, T w2)
 {
   T w;
   if (intersectWindows(w1, w2)) {
@@ -56,7 +56,7 @@ T I3D_EXPORT windowIntersection(T w1, T w2)
  * \return Ventana unión
  */
 template<typename T>
-T I3D_EXPORT joinWindow(T w1, T w2)
+I3D_EXPORT T joinWindow(T w1, T w2)
 {
   T w;
   w.pt1.x = std::min(w1.pt1.x, w2.pt1.x);
@@ -74,7 +74,7 @@ T I3D_EXPORT joinWindow(T w1, T w2)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 I3D_EXPORT expandWindow(T1 w, T2 szx, T2 szy)
+I3D_EXPORT T1 expandWindow(T1 w, T2 szx, T2 szy)
 {
   T1 _w;
   _w.pt1.x = w.pt1.x - szx;
@@ -92,10 +92,12 @@ T1 I3D_EXPORT expandWindow(T1 w, T2 szx, T2 szy)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-T1 I3D_EXPORT expandWindow(T1 w, T2 sz)
+I3D_EXPORT T1 expandWindow(T1 w, T2 sz)
 {
   return expandWindow(w, sz, sz);
 }
+
+
 
 /*!
 * \brief The Window class
@@ -397,7 +399,7 @@ typedef Window<float> WindowF;
 
 
 template<typename T>
-Window<T> moveWindow(const Window<T> &w, T dx, T dy)
+I3D_EXPORT Window<T> moveWindow(const Window<T> &w, T dx, T dy)
 {
   Window<T> w_return = w;
   cv::Point_<T> t(dx, dy);
@@ -406,14 +408,12 @@ Window<T> moveWindow(const Window<T> &w, T dx, T dy)
   return w_return;
 }
 
-
-
 /*!
  * \brief Convierte una ventana a un Rect de OpenCV
  * \param[in] w Ventana que se va a expandir
  * \return Ventana resultante
  */
-cv::Rect I3D_EXPORT windowToCvRect(WindowI w);
+I3D_EXPORT cv::Rect windowToCvRect(WindowI w);
 
 
 /*! \} */ // end of GeometricEntities

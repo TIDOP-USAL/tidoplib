@@ -454,6 +454,7 @@ void VideoStreamEvents::onPositionChange(double position)
   printDebug("Posición: %i", static_cast<int>(position));
 }
 
+I3D_DISABLE_WARNING(4100)
 void VideoStreamEvents::onRead(cv::Mat &frame) 
 { 
 
@@ -468,6 +469,7 @@ void VideoStreamEvents::onShow(cv::Mat &frame)
 { 
 
 }
+I3D_ENABLE_WARNING(4100)
 
 void VideoStreamEvents::onStop()
 { 

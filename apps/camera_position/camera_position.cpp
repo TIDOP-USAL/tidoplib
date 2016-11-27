@@ -189,15 +189,15 @@ static const char *img[] = {
   "C:\\Users\\Tido\\Pictures\\Torres_Pasillo_illescas\\vlcsnap-2016-10-24-16h13m39s127.png"*/
 };
 
-static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
-{
-  FileStorage fs(file, FileStorage::READ);
-  fs["image_width"] >> imageSize.width;
-  fs["image_height"] >> imageSize.height;
-  fs["camera_matrix"] >> cameraMatrix;
-  fs["distortion_coefficients"] >> distCoeffs;
-  fs.release();
-}
+//static void LoadCameraParams(std::string &file, Size &imageSize, Mat &cameraMatrix, Mat& distCoeffs)
+//{
+//  FileStorage fs(file, FileStorage::READ);
+//  fs["image_width"] >> imageSize.width;
+//  fs["image_height"] >> imageSize.height;
+//  fs["camera_matrix"] >> cameraMatrix;
+//  fs["distortion_coefficients"] >> distCoeffs;
+//  fs.release();
+//}
 
 bool camera_pov = false;
 

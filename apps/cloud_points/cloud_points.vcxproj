@@ -71,8 +71,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>xerces-c_2D.lib;..\..\..\Libs\glog\lib\glogd.lib;..\..\..\Libs\gflags\Lib\gflags-debug.lib;..\..\..\Libs\opencv\x64\vc12\lib\multiview.lib;..\..\..\Libs\opencv\x64\vc12\lib\numeric.lib;..\..\..\Libs\ceres\lib\ceres-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\Libs\xerces\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>..\..\..\Libs\glog\lib\glogd.lib;..\..\..\Libs\gflags\Lib\gflags-debug.lib;..\..\..\Libs\opencv\x64\vc12\lib\multiview.lib;..\..\..\Libs\opencv\x64\vc12\lib\numeric.lib;..\..\..\Libs\ceres\lib\ceres-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -93,8 +93,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
-      <AdditionalDependencies>..\..\..\Libs\glog\lib\glog.lib;..\..\..\Libs\gflags\Lib\gflags.lib;..\..\..\Libs\opencv\x64\vc12\lib\multiview.lib;..\..\..\Libs\opencv\x64\vc12\lib\numeric.lib;..\..\..\Libs\ceres\lib\ceres.lib;xerces-c_2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\Libs\xerces\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>..\..\..\Libs\glog\lib\glog.lib;..\..\..\Libs\gflags\Lib\gflags.lib;..\..\..\Libs\opencv\x64\vc12\lib\multiview.lib;..\..\..\Libs\opencv\x64\vc12\lib\numeric.lib;..\..\..\Libs\ceres\lib\ceres.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

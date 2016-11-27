@@ -218,8 +218,8 @@ public:
    * \brief Constructora CMYK
    * \param cyan Cian
    * \param magenta Magenta
-   * \param yellow Negro
-   * \param key Canal alfa
+   * \param yellow Amarillo
+   * \param key
    */
   Color(double cyan, double magenta, double yellow, double key);
 
@@ -293,16 +293,51 @@ public:
    */
   int getAlpha() const;
 
+  /*!
+   * \brief Obtiene un color a partir de sus valores CMYK
+   * \param[in] cyan Cian
+   * \param[in] magenta Magenta
+   * \param[in] yellow Amarillo
+   * \param[in] key
+   */
   void fromCMYK(const double cyan, const double magenta, const double yellow, const double key);
 
+  /*!
+   * \brief Obtiene un color a partir de sus valores HSV
+   * \param hue
+   * \param saturation
+   * \param value
+   */
   void fromHSV(const double hue, const double saturation, const double value );
 
+  /*!
+   * \brief Convierte un color a CMYK
+   * \param cyan
+   * \param magenta
+   * \param yellow
+   * \param key
+   */
   void toCMYK(double *cyan, double *magenta, double *yellow, double *key) const;
 
+  /*!
+   * \brief Convierte un color a HSV
+   * \param hue
+   * \param saturation
+   * \param value
+   */
   void toHSV(double *hue, double *saturation, double *value ) const;
 
+  /*!
+   * \brief Convierte un color a luminancia
+   * \return Valor de la luminancia entre 0 y 255
+   */
   int toLuminance() const;
 
+  /*!
+   * \brief operador de asignación
+   * \param color Color
+   * \return Referencia al color
+   */
   Color &operator = (const Color &color)
   {
     if (this != &color) {
@@ -344,28 +379,28 @@ T Color::get() const
  * \param[in] color Color representado como un entero
  * \return Componente azul
  */
-int I3D_EXPORT getBlue(int color);
+I3D_EXPORT int getBlue(int color);
 
 /*!
  * \brief Obtiene la componente verde de un color
  * \param[in] color Color representado como un entero
  * \return Componente verde
  */
-int I3D_EXPORT getGreen(int color);
+I3D_EXPORT int getGreen(int color);
 
 /*!
  * \brief Obtiene la componente roja de un color
  * \param[in] color Color representado como un entero
  * \return Componente roja
  */
-int I3D_EXPORT getRed(int color);
+I3D_EXPORT int getRed(int color);
 
 /*!
  * \brief Obtiene el canal alfa de un color
  * \param[in] color Color representado como un entero
  * \return Canal alfa
  */
-int I3D_EXPORT getAlpha(int color);
+I3D_EXPORT int getAlpha(int color);
 
 /*!
  * \brief Convierte un color entero a RGB
@@ -374,7 +409,7 @@ int I3D_EXPORT getAlpha(int color);
  * \param[out] green Componente verde
  * \param[out] blue Componente azul
  */
-void I3D_EXPORT intToRGB(int color, int *red, int *green, int *blue);
+I3D_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
 
 /*!
  * \brief Convierte un color RGB a entero
@@ -383,7 +418,7 @@ void I3D_EXPORT intToRGB(int color, int *red, int *green, int *blue);
  * \param[in] blue Componente azul
  * \return Color como entero
  */
-int I3D_EXPORT rgbToInt(int red, int green, int blue);
+I3D_EXPORT int rgbToInt(int red, int green, int blue);
 
 /*!
  * \brief Convierte un color RGB+alpha a entero
@@ -393,21 +428,21 @@ int I3D_EXPORT rgbToInt(int red, int green, int blue);
  * \param[in] alpha Canal alfa
  * \return Color como entero
  */
-int I3D_EXPORT rgbaToInt(int red, int green, int blue, int alpha);
+I3D_EXPORT int rgbaToInt(int red, int green, int blue, int alpha);
 
 /*!
  * \brief Convierte un color de hexadecimal (como cadena) a entero
  * \param[in] colorhex Color en hexadecimal
  * \return Color como entero
  */
-int I3D_EXPORT hexToInt(const std::string &colorhex);
+I3D_EXPORT int hexToInt(const std::string &colorhex);
 
 /*!
  * \brief Convierte un color de hexadecimal (como cadena) a entero
  * \param[in] colorhex Color en hexadecimal
  * \return Color como entero
  */
-std::string I3D_EXPORT intToHex(const int color);
+I3D_EXPORT std::string intToHex(const int color);
 
 /*! \} */ // end of colorConversion
 

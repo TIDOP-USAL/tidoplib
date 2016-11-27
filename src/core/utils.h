@@ -28,7 +28,7 @@ namespace I3D
  * que esta corriendo
  * \return path de la aplicación
  */
-const char I3D_EXPORT *getRunfile();
+I3D_EXPORT const char *getRunfile();
 
 
 //bool getAppVersion(char *libName, std::string *companyName, std::string *productName,
@@ -39,14 +39,14 @@ const char I3D_EXPORT *getRunfile();
  * \param[in] path Ruta del directorio
  * \return true si existe.
  */
-bool I3D_EXPORT isDirectory(const char *path);
+I3D_EXPORT bool isDirectory(const char *path);
 
 /*!
  * \brief Crea un directorio
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1
  */
-int I3D_EXPORT createDir(const char *path);
+I3D_EXPORT int createDir(const char *path);
 
 /*!
  * \brief Crea un directorio
@@ -54,7 +54,7 @@ int I3D_EXPORT createDir(const char *path);
  * \param[in] confirm Pide confirmación para borrar el archivo
  * \return Error
  */
-int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
+I3D_EXPORT int deleteDir(const char *path, bool confirm = false);
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -82,7 +82,7 @@ int I3D_EXPORT deleteDir(const char *path, bool confirm = false);
  * }
  * \endcode
  */
-int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
+I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
 
 /*!
  * \brief Separa una cadena en un array de dobles
@@ -100,7 +100,7 @@ int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<int> &vOut, co
  * }
  * \endcode
  */
-int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut,const  char *chs = ",");
+I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
 
 /*!
  * \brief Reemplaza una cadena por otra en un texto.
@@ -114,7 +114,7 @@ int I3D_EXPORT splitToNumbers(const std::string &cad, std::vector<double> &vOut,
  * replaceString(str, " ", "_");
  * \endcode
  */
-void I3D_EXPORT replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
+I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
 /*!
  * \brief Optiene el directorio de un archivo
@@ -130,7 +130,7 @@ void I3D_EXPORT replaceString(std::string *str, const std::string &str_old, cons
  * }
  * \endcode
  */
-int I3D_EXPORT getFileDir(const char *path, char *dir);
+I3D_EXPORT int getFileDir(const char *path, char *dir);
 
 /*!
  * \brief Optiene la unidad de disco de un archivo
@@ -146,7 +146,7 @@ int I3D_EXPORT getFileDir(const char *path, char *dir);
  * }
  * \endcode
  */
-int I3D_EXPORT getFileDrive(const char *path, char *drive);
+I3D_EXPORT int getFileDrive(const char *path, char *drive);
 
 /*!
  * \brief Optiene la extensión de un archivo
@@ -162,7 +162,7 @@ int I3D_EXPORT getFileDrive(const char *path, char *drive);
  * }
  * \endcode
  */
-int I3D_EXPORT getFileExtension(const char *path, char *ext);
+I3D_EXPORT int getFileExtension(const char *path, char *ext);
 
 /*!
  * \brief Optiene el nombre de un archivo
@@ -178,7 +178,7 @@ int I3D_EXPORT getFileExtension(const char *path, char *ext);
  * }
  * \endcode
  */
-int I3D_EXPORT getFileName(const char *path, char *name);
+I3D_EXPORT int getFileName(const char *path, char *name);
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
@@ -194,7 +194,7 @@ int I3D_EXPORT getFileName(const char *path, char *name);
  * }
  * \endcode
  */
-int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
+I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir);
 
 /*!
  * \brief Cambia el nombre de un archivo
@@ -211,7 +211,7 @@ int I3D_EXPORT getFileDriveDir(const char *path, char *driveDir);
  * }
  * \endcode
  */
-int I3D_EXPORT changeFileName(const char *path, const char *newName, char *pathOut);
+I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut);
 
 /*!
  * \brief Cambia la extensión de un archivo
@@ -228,7 +228,7 @@ int I3D_EXPORT changeFileName(const char *path, const char *newName, char *pathO
  * }
  * \endcode
  */
-int I3D_EXPORT changeFileExtension(const char *path, const char *newExt, char *pathOut);
+I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut);
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -245,7 +245,7 @@ int I3D_EXPORT changeFileExtension(const char *path, const char *newExt, char *p
  * }
  * \endcode
  */
-int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut);
+I3D_EXPORT int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut);
 
 /*!
  * \brief Separa una cadena
@@ -265,7 +265,7 @@ int I3D_EXPORT changeFileNameAndExtension(const char *path, char *newNameExt, ch
  * }
  * \endcode
  */
-int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
+I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
 
 /*! \} */ // end of stringOper
 
@@ -279,7 +279,7 @@ int I3D_EXPORT split(const std::string &in, std::vector<std::string> &out, const
  * \param[out] av Vector de salida
  */
 template<typename T>
-void I3D_EXPORT cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+I3D_EXPORT void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
 {
   av->resize(m.rows*m.cols);
   if (m.isContinuous()) {
@@ -296,7 +296,7 @@ void I3D_EXPORT cvMatToVector(const cv::Mat &m, std::vector<T> *av)
  * \param[in] v Vector
  */
 template<typename T>
-void I3D_EXPORT sortVector(std::vector<T> *v)
+I3D_EXPORT void sortVector(std::vector<T> *v)
 {
   std::sort(v->begin(), v->end());
 }
@@ -306,7 +306,7 @@ void I3D_EXPORT sortVector(std::vector<T> *v)
  * \param[in] v Vector
  */
 template<typename T>
-void I3D_EXPORT sortVectorInv(std::vector<T> *v)
+I3D_EXPORT void sortVectorInv(std::vector<T> *v)
 {
   std::sort(v->rbegin(),v->rend());
 }
@@ -320,7 +320,7 @@ void I3D_EXPORT sortVectorInv(std::vector<T> *v)
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
-int operator==(const std::vector<T> &v, const T t)
+I3D_EXPORT int operator==(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -339,7 +339,7 @@ int operator==(const std::vector<T> &v, const T t)
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
-int operator!=(const std::vector<T> &v, const T t)
+I3D_EXPORT int operator!=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -356,7 +356,7 @@ int operator!=(const std::vector<T> &v, const T t)
  * \return
  */
 template<typename T>
-int operator>=(const std::vector<T> &v, const T t)
+I3D_EXPORT int operator>=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator upOrEq;
@@ -365,7 +365,7 @@ int operator>=(const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-int operator<=(const std::vector<T> &v, const T t)
+I3D_EXPORT int operator<=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator lowOrEq;
@@ -374,7 +374,7 @@ int operator<=(const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-int operator> (const std::vector<T> &v, const T t)
+I3D_EXPORT int operator> (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator up;
@@ -383,7 +383,7 @@ int operator> (const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-int operator< (const std::vector<T> &v, const T t)
+I3D_EXPORT int operator< (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator low;
@@ -399,7 +399,7 @@ int operator< (const std::vector<T> &v, const T t)
  * \param[out] out
  * \param[out] idx
  */
-int I3D_EXPORT sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+I3D_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 /*!
  * \brief Ordena los valores de una matriz de mayor a menor por columnas
@@ -407,7 +407,7 @@ int I3D_EXPORT sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  * \param[out] out
  * \param[out] idx
  */
-int I3D_EXPORT sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 /*!
  * \brief Ordena los indices de un vector de menor a mayor
@@ -417,7 +417,7 @@ int I3D_EXPORT sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  * \return Vector con los indices ordenados
  */
 template <typename T>
-std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
+I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
 {
   std::vector<int> idx(v.size());
   iota(idx.begin(), idx.end(), 0);
@@ -427,7 +427,7 @@ std::vector<int> I3D_EXPORT sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+I3D_EXPORT void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
 } // End namespace I3D
 
