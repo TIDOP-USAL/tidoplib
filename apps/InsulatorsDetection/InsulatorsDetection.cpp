@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
   //std::string img1 = "C:\\Desarrollo\\Datos\\insulators6_GRAY.png";
   //std::string img1 = "D:\\Desarrollo\\Datos\\FlirLepton_01.PNG";
   //WindowI wTower(cv::Point(250, 0), cv::Point(415, 480)); //"C:\\Desarrollo\\Datos\\FlirLepton_01.PNG"
-  std::string img1 = "D:\\Desarrollo\\Datos\\V1_01.PNG";
+  std::string img1 = "C:\\Desarrollo\\Datos\\V1_01.PNG";
   WindowI wTower(cv::Point(400, 25), cv::Point(550, 470)); //"C:\\Desarrollo\\Datos\\V1_01.PNG"
   //std::string img1 = "D:\\Desarrollo\\Datos\\V1_02.PNG";
   //WindowI wTower(cv::Point(277, 25), cv::Point(392, 535)); //"C:\\Desarrollo\\Datos\\V1_02.PNG"

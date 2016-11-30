@@ -18,9 +18,14 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/point_types.h>
 
-#include "matching.h"
+#include "core/defs.h"
+I3D_SUPPRESS_WARNINGS
 #include "elas.h"
 #include "image.h"
+I3D_DEFAULT_WARNINGS
+
+#include "matching.h"
+
 #include "transform.h"
 #include "geometric_entities/window.h"
 

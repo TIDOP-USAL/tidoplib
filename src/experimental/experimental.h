@@ -282,6 +282,99 @@ public:
 };
 
 
+
+
+
+/*!
+ * \brief Clase base virtual para algoritmos de lineas
+ *
+ */
+class lineAlgorithms
+{
+public:
+
+  enum class Type
+  {
+    BRESENHAM
+  };
+
+protected:
+
+  int count;
+
+public:
+
+  lineAlgorithms() {}
+
+  virtual ~lineAlgorithms() {}
+
+  /*!
+   * \brief Ejecuta
+   */
+  virtual void execute(const cv::Mat &image, const cv::Point &pt1, const cv::Point &pt2) = 0;
+
+  /*!
+   * \brief Determina la posición actual
+   * \return Posición actual
+   */
+  cv::Point position();
+
+private:
+
+};
+
+/*!
+ * \brief Algoritmo de Bresenham para líneas
+ *
+ * Un algoritmo preciso y efectivo para la generación de líneas de rastreo, 
+ * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas 
+ * utilizando solo cálculos incrementales con enteros que se pueden adaptar para
+ * desplegar también curvas.
+ * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la  * trayectoria de la línea.
+ */
+class BresenhamLine : public lineAlgorithms
+{
+public:
+  BresenhamLine();
+  ~BresenhamLine();
+
+private:
+
+};
+
+BresenhamLine::BresenhamLine()
+{}
+
+BresenhamLine::~BresenhamLine()
+{}
+
+/*!
+ * \brief Algoritmo DDA (analizador diferenciador digital)
+ *
+ * El algoritmo DDA (Digital Differential Analyzer) es un algoritmo 
+ * de conversion de rastreo que se basa en el calculo ya sea de Dy 
+ * o Dx por medio de una de las ecuaciones:
+ * \f$ Dy = m * Dx \f$<BR>
+ * \f$ Dx = Dy / m \f$<BR>
+ * Se efectúa un muestreo de la línea en intervalos unitarios en una 
+ * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
+ */
+class DDA : public lineAlgorithms
+{
+public:
+  DDA();
+  ~DDA();
+
+private:
+
+};
+
+DDA::DDA()
+{}
+
+DDA::~DDA()
+{}
+
 } // End namespace EXPERIMENTAL
 
 } // End namespace I3D

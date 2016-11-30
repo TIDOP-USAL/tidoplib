@@ -214,7 +214,37 @@ void Console::update()
 
 /* ---------------------------------------------------------------------------------- */
 
+ArgType CmdParameterOptions::getType() const
+{ 
+  return ArgType::PARAMETER_OPTIONS; 
+}
 
+std::string CmdParameterOptions::getValue() const 
+{ 
+  return mDefValue; 
+}
+
+int CmdParameterOptions::getIndex(std::string value) const
+{
+  for ( int i = 0; i < mOptions.size(); i++ ) {
+    if (mOptions[i] == value) {
+      return i;
+      break;
+    }
+  }
+  return 0;
+}
+
+int CmdParameterOptions::getIndex() const
+{
+  for ( int i = 0; i < mOptions.size(); i++ ) {
+    if (mOptions[i] == mDefValue) {
+      return i;
+      break;
+    }
+  }
+  return 0;
+}
 
 void CmdParameterOptions::setValue(std::string value) 
 {
@@ -405,46 +435,24 @@ void ProgressBar::update()
     cout << "\r";
 
     Console console(Console::Mode::OUTPUT);
-  //  if (bCustomConsole)
-  //    console.setConsoleBackgroundColor(Console::Color::GREEN);
     int posInBar = I3D_ROUND_TO_INT(mPercent * mSize / 100.);
 
-		//for (int a = 0; a < posInBar; a++) {
-  //    if (bCustomConsole) {
-  //      cout << " ";
-  //    } else {
-  //      cout << "#";
-  //    }
-		//}
-
-  //  if (bCustomConsole) console.setConsoleBackgroundColor(Console::Color::YELLOW);
-
-		//for (int b = 0; b < mSize - posInBar; b++) {
-  //    if (bCustomConsole) {
-  //      cout << " ";
-  //    } else {
-  //      cout << "-";
-  //    }
-		//}
     int ini = mSize / 2 - 2;
     for (int i = 0; i < mSize; i++) {
       if (i < posInBar) {
         if (bCustomConsole) {
           console.setConsoleBackgroundColor(Console::Color::GREEN);
-          //cout << " ";
         } else {
           cout << "#";
         }
       } else {
         if (bCustomConsole) {
           console.setConsoleBackgroundColor(Console::Color::YELLOW);
-          //cout << " ";
         } else {
           cout << "-";
         }
       }
       if (bCustomConsole) {
-        //int nDigits = posInBar > 0 ? (int) log10 ((double) posInBar) + 1 : 1;
         int n;
         if (i == ini) {
           n = mPercent / 100 % 10;
@@ -464,7 +472,6 @@ void ProgressBar::update()
         }
       }
     }
-
 
     if (bCustomConsole) {
       console.reset();

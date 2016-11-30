@@ -12,11 +12,12 @@
 namespace I3D
 {
 
-/*! \defgroup utilities Utilidades
+/*! 
+ * \defgroup utilities Utilidades
  *
- *  Utilidades de proposito general como manipulación de cadenas, información de la 
+ * Utilidades de proposito general como manipulación de cadenas, información de la 
  * aplicación etc 
- *  \{
+ * \{
  */
 
 /* ---------------------------------------------------------------------------------- */

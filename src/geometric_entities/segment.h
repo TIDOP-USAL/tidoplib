@@ -72,9 +72,18 @@ public:
 
   /*!
    * \brief Constructor segment
-   * \param[in]lvect
+   * \param[in] lvect
    */
   Segment(const cv::Vec<T, 4> &lvect);
+
+  /*!
+   * \brief Constructor segment
+   * \param[in] pt Coordenadas del punto central o inicial (según el valor de bCenter)
+   * \param[in] angle Ángulo de la recta
+   * \param[in] lenght Longitud del segmento
+   * \param[in] bCenter Si es verdadero es el centro de la línea
+   */
+  Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter = true);
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -155,6 +164,22 @@ Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
   pt2.x = lvect[2];
   pt2.y = lvect[3];
 }
+
+template<typename T> inline
+Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter = true)
+{
+  double a = cos(angle), b = sin(angle);
+  double l1 = 0;
+  double l2 = lenght;
+  if (bCenter) {
+    l1 = l2 = lenght / 2;
+  }
+  pt1.x = I3D_ROUND_TO_INT(pt.x - l1 * -b);
+  pt1.y = I3D_ROUND_TO_INT(pt.y - l1 * a);
+  pt2.x = I3D_ROUND_TO_INT(pt.x + l2 * -b);
+  pt2.y = I3D_ROUND_TO_INT(pt.y + l2 * a);
+}
+
 
 template<typename T> inline
 Segment<T> &Segment<T>::operator = (const Segment &segment)

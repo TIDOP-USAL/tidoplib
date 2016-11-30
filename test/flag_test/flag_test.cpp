@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "..\..\src\core\flags.h"
+#include "core/flags.h"
 
 #include <cstdint>
 

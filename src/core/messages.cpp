@@ -19,6 +19,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "core/defs.h"
+
 #ifdef I3D_MESSAGE_HANDLER
 
 using namespace I3D;
@@ -26,12 +28,14 @@ using namespace I3D;
 std::mutex mtx;
 
 #ifdef I3D_ENABLE_OPENCV
+I3D_DISABLE_WARNING(4100)
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
 {
   Message::message(err_msg).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE, file_name, line, func_name);
   return 0;
 }
+I3D_ENABLE_WARNING(4100)
 #endif
 
 struct msgProperties {
@@ -188,6 +192,9 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
 #ifdef  I3D_ENABLE_CONSOLE
 
   if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
+    // Por si esta corriendo la barra de progreso
+    std::cout << "\r";
+
     Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
     console.setConsoleForegroundColor(GetMessageProperties(level).foreColor, GetMessageProperties(level).intensity);
     std::string aux(msgOut);

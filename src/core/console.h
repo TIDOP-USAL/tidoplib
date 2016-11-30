@@ -263,7 +263,7 @@ public:
    * \brief getType
    * \return
    */
-  virtual ArgType getType() = 0;
+  virtual ArgType getType() const = 0;
 };
 
 struct I3D_EXPORT CmdOption : public CmdArgument
@@ -290,7 +290,7 @@ public:
    * \brief getType
    * \return
    */
-  ArgType getType() { return ArgType::OPTION; }
+  ArgType getType() const override { return ArgType::OPTION; }
 
   /*!
    * \brief isActive
@@ -348,7 +348,7 @@ public:
    * \brief getType
    * \return
    */
-  ArgType getType() { return ArgType::PARAMETER; }
+  ArgType getType() const override { return ArgType::PARAMETER; }
 
   /*!
    * \brief getValue
@@ -376,6 +376,9 @@ private:
    */
   std::string mDefValue;
 
+  /*!
+   * \brief listado de opciones
+   */
   std::vector<std::string> mOptions;
 
 public:
@@ -410,19 +413,32 @@ public:
    * \brief getType
    * \return
    */
-  ArgType getType() { return ArgType::PARAMETER_OPTIONS; }
+  ArgType getType() const override;
 
   /*!
    * \brief getValue
    * \return
    */
-  std::string getValue() const { return mDefValue; }
+  std::string getValue() const;
+
+  /*!
+   * \brief Indice de opción
+   * \return Indice
+   */
+  int getIndex(std::string value) const;
+
+  /*!
+   * \brief Indice de opción seleccionada
+   * \return Indice
+   */
+  int getIndex() const;
 
   /*!
    * \brief setValue
    * \param value
    */
   void setValue(std::string value);
+
 };
 
 // Parametros de entrada:
@@ -501,10 +517,15 @@ public:
   void printHelp();
 
   /*!
-   * \brief
+   * \brief Limpia el parser de comando
    */
   void clear() { mCmdArgs.clear(); }
-
+  
+  /*!
+   * \brief Devuelve el valor de un parametro
+   * param[in] name Nombre del parámetro
+   * return Valor del parámetro en el tipo indicado
+   */
   template<typename T>
   T getValue( const char *name) const
   { 
@@ -535,6 +556,26 @@ public:
     return t;
   }
 
+  /*!
+   * \brief Devuelve el indice de un parámetro 
+   * param[in] name Nombre del parámetro
+   * return Valor del parámetro en el tipo indicado
+   */
+  template<typename T>
+  T getParameterOptionIndex(const char *name) const
+  {
+    std::string _name(name);
+    for (auto arg : mCmdArgs) {
+      if ( arg->getType() == ArgType::PARAMETER_OPTIONS ) {
+        if ( arg->getName() == _name ) {
+          CmdParameterOptions *cpo = dynamic_cast<CmdParameterOptions *>(arg.get());
+          return static_cast<T>(cpo->getIndex());
+        }
+      }
+    }
+    return static_cast<T>(0);
+  }
+  
   bool hasOption( const std::string &option) const;
 };
 

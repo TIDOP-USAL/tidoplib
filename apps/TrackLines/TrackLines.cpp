@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 {
 
   int ipto = 1; //Punto que queremos seguir
-  const char *imgpath = "D:\\Desarrollo\\datos\\capturas_deteccion_conductores\\";
+  const char *imgpath = "C:\\Desarrollo\\datos\\capturas_deteccion_conductores\\";
 
   static const char *img[] = {
     /*"captura001.jpg",

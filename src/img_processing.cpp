@@ -26,7 +26,7 @@ int ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     i_error = 1;
   } else {
     matIn.copyTo(*matOut);
-    for (auto process : mProcessList) {
+    for (const auto process : mProcessList) {
       if (int i_error = process->execute(*matOut, matOut))
         return i_error; //Error
     }

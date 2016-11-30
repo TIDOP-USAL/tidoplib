@@ -48,55 +48,6 @@ bool isOutlier(const double temp, const double median, const double mad)
   }
 }
 
-//double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b)
-//{
-//  double corr = 0.0;
-//  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
-//  size_t n = pts.size();
-//  if (n >= 2) {
-//    for (size_t i = 0; i < n; i++) {
-//      sx += pts[i].x;
-//      sy += pts[i].y;
-//      sx2 += pts[i].x * pts[i].x;
-//      sy2 += pts[i].y * pts[i].y;
-//      sxy += pts[i].x * pts[i].y;
-//    }
-//    double den = (n*sx2 - sx*sx);
-//    if (den) {
-//      // Línea no vertical
-//      *m = (n*sxy - sy*sx) / (n*sx2 - sx*sx);
-//      *b = (sy - *m*sx) / n;
-//      den = sy2 - sy*sy / n;
-//      corr = sqrt(*m * (sxy - sx*sy / n) / (sy2 - sy*sy / n));
-//    }
-//  }
-//  return(corr);
-//}
-
-//double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b)
-//{
-//  double corr = 0.0;
-//  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
-//  size_t n = pts.size();
-//  if (n >= 2) {
-//    for (size_t i = 0; i < n; i++) {
-//      sx += pts[i].x;
-//      sy += pts[i].y;
-//      sx2 += pts[i].x * pts[i].x;
-//      sy2 += pts[i].y * pts[i].y;
-//      sxy += pts[i].x * pts[i].y;
-//    }
-//    double den = (n*sy2 - sy*sy);
-//    if (den) {
-//      *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);
-//      *b = (sx - *m*sy) / n;
-//      den = sx2 - sx*sx / n;
-//      corr = sqrt(*m * (sxy - sx*sy / n) / (sx2 - sx*sx / n));
-//    }
-//  }
-//  return(corr);
-//}
-
 //https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
 void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa) 
 { 

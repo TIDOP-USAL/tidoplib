@@ -1,10 +1,11 @@
 #include "experimental.h"
 
 #include "core/messages.h"
+#include "core/defs.h"
 
 #include "opencv2/highgui/highgui.hpp"
-#include "opencv2/core/eigen.hpp"
 I3D_SUPPRESS_WARNINGS
+#include "opencv2/core/eigen.hpp"
 #include "opencv2/sfm/libmv_light/libmv_capi.h"
 #include "libmv/simple_pipeline/reconstruction.h"
 #include "libmv/simple_pipeline/camera_intrinsics.h"
@@ -543,6 +544,17 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
   }
 
 }
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+
+
+
 
 } // End namespace EXPERIMENTAL
 
