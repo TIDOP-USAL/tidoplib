@@ -209,7 +209,7 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
     if (sLogFile.empty()) {
       // Log por defecto
       char _logfile[I3D_MAX_PATH];
-      changeFileExtension(getRunfile(), "log", _logfile);
+      changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
       sLogFile = _logfile;
     }
     std::ofstream hLog(sLogFile,std::ofstream::app);

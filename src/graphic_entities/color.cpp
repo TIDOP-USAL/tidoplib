@@ -2,7 +2,7 @@
 
 #include <algorithm>
 #include <array>
-
+#include <thread>
 
 namespace I3D
 {
@@ -144,16 +144,17 @@ void Color::fromHSV(const double hue, const double saturation, const double valu
 
 void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  const
 {
-  double rgb[3] = { getRed()/255., getGreen()/255., getBlue()/255. };
-  double max = *std::max_element(rgb, rgb + 3);
-  *key = 1. - max;
-  if (*key == 1.) {
-    *cyan = *magenta = *yellow = 0.;
-  } else {
-    *cyan = 1. - rgb[0] / max;
-    *magenta = 1. - rgb[1] / max;
-    *yellow = 1. - rgb[2] / max;
-  }
+  rgbToCmyk(getRed(), getGreen(), getBlue(), cyan, magenta, yellow, key);
+  //double rgb[3] = { getRed()/255., getGreen()/255., getBlue()/255. };
+  //double max = *std::max_element(rgb, rgb + 3);
+  //*key = 1. - max;
+  //if (*key == 1.) {
+  //  *cyan = *magenta = *yellow = 0.;
+  //} else {
+  //  *cyan = 1. - rgb[0] / max;
+  //  *magenta = 1. - rgb[1] / max;
+  //  *yellow = 1. - rgb[2] / max;
+  //}
 }
 
 void Color::toHSV(double *hue, double *saturation, double *value ) const
@@ -252,6 +253,58 @@ std::string intToHex(const int color)
   stream << std::hex << color;
   return std::string( stream.str() );
 }
+
+void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key)
+{
+  double rgb[3] = { red/255., green/255., blue/255. };
+  double max = *std::max_element(rgb, rgb + 3);
+  *key = 1. - max;
+  if (*key == 1.) {
+    *cyan = *magenta = *yellow = 0.;
+  } else {
+    *cyan = 1. - rgb[0] / max;
+    *magenta = 1. - rgb[1] / max;
+    *yellow = 1. - rgb[2] / max;
+  }
+}
+
+void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk)
+{
+  cmyk->create( rgb.size(), CV_32FC4);
+  cv::Mat _cmyk = *cmyk;
+  int r, g, b;
+  double cyan, magenta, yellow, key;
+  
+  auto trfRgbToCmyk = [&](int ini, int end) {
+    for (int r = ini; r < end; r++) {
+      uchar *rgb_ptr = rgb.ptr<uchar>(r);
+      uchar* cmyk_ptr = _cmyk.ptr<uchar>(r);
+      for (int c = 0; c < rgb.cols; c++) {
+        rgbToCmyk(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &cyan, &magenta, &yellow, &key);
+        _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(cyan, magenta, yellow, key);
+      }
+    }
+  };
+
+  int num_threads = cv::getNumThreads();
+  std::thread t[10];
+ 
+  int size = rgb.rows / num_threads;
+  for (int i = 0; i < num_threads; ++i) {
+    int ini = i * size;
+    int end = ini + size;
+    if ( end > rgb.rows ) end = rgb.rows;
+    t[i] = std::thread(trfRgbToCmyk, ini, end);
+  }
+
+  for (int i = 0; i < num_threads; ++i) {
+    t[i].join();
+  }
+
+}
+
+
+
 
 
 } // End namespace I3D

@@ -126,12 +126,12 @@ I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, cons
  * <h4>Ejemplo</h4>
  * \code
  * char dir[I3D_MAX_DIR];
- * if (getFileDir("c:\temp\file.txt", dir) == 0) {
+ * if (getFileDir("c:\temp\file.txt", dir, I3D_MAX_DIR) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDir(const char *path, char *dir);
+I3D_EXPORT int getFileDir(const char *path, char *dir, int size);
 
 /*!
  * \brief Optiene la unidad de disco de un archivo
@@ -142,12 +142,12 @@ I3D_EXPORT int getFileDir(const char *path, char *dir);
  * <h4>Ejemplo</h4>
  * \code
  * char drive[I3D_MAX_DRIVE];
- * if (getFileDrive("c:\temp\file.txt", drive) == 0) {
+ * if (getFileDrive("c:\temp\file.txt", drive, I3D_MAX_DRIVE) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDrive(const char *path, char *drive);
+I3D_EXPORT int getFileDrive(const char *path, char *drive, int size);
 
 /*!
  * \brief Optiene la extensión de un archivo
@@ -158,12 +158,12 @@ I3D_EXPORT int getFileDrive(const char *path, char *drive);
  * <h4>Ejemplo</h4>
  * \code
  * char ext[I3D_MAX_EXT];
- * if (getFileName("c:\temp\file.txt", ext) == 0) {
+ * if (getFileName("c:\temp\file.txt", ext, I3D_MAX_EXT) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileExtension(const char *path, char *ext);
+I3D_EXPORT int getFileExtension(const char *path, char *ext, int size);
 
 /*!
  * \brief Optiene el nombre de un archivo
@@ -174,12 +174,12 @@ I3D_EXPORT int getFileExtension(const char *path, char *ext);
  * <h4>Ejemplo</h4>
  * \code
  * char name[I3D_MAX_FNAME];
- * if (getFileName("c:\temp\file.txt", name) == 0) {
+ * if (getFileName("c:\temp\file.txt", name, I3D_MAX_FNAME) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileName(const char *path, char *name);
+I3D_EXPORT int getFileName(const char *path, char *name, int size);
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
@@ -190,12 +190,12 @@ I3D_EXPORT int getFileName(const char *path, char *name);
  * <h4>Ejemplo</h4>
  * \code
  * char driveDir[I3D_MAX_PATH];
- * if (getFileDriveDir("c:\temp\file.txt", driveDir) == 0) {
+ * if (getFileDriveDir("c:\temp\file.txt", driveDir, I3D_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir);
+I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
 
 /*!
  * \brief Cambia el nombre de un archivo
@@ -207,12 +207,12 @@ I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir);
  * <h4>Ejemplo</h4>
  * \code
  * char new_name[I3D_MAX_PATH];
- * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name) == 0) {
+ * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name, I3D_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut);
+I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
 
 /*!
  * \brief Cambia la extensión de un archivo
@@ -224,12 +224,12 @@ I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathO
  * <h4>Ejemplo</h4>
  * \code
  * char logfile[I3D_MAX_PATH];
- * if (changeFileExtension(getRunfile(), "log", logfile) == 0) {
+ * if (changeFileExtension(getRunfile(), "log", logfile, I3D_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut);
+I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -241,12 +241,12 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  * <h4>Ejemplo</h4>
  * \code
  * char logfile[I3D_MAX_FNAME + I3D_MAX_EXT];
- * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile) == 0) {
+ * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile, I3D_MAX_FNAME + I3D_MAX_EXT) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut);
+I3D_EXPORT int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut, int size);
 
 /*!
  * \brief Separa una cadena

@@ -444,6 +444,10 @@ I3D_EXPORT int hexToInt(const std::string &colorhex);
  */
 I3D_EXPORT std::string intToHex(const int color);
 
+I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
+
+I3D_EXPORT void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk);
+
 /*! \} */ // end of colorConversion
 
 /*! \} */ // end of GraphicEntities

@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
     joinLinesByDist(linesGroups[ig].getLines(), &linesJoin, 40);
   }
 
+  cv::Mat gap = cv::Mat::zeros(image.size(), CV_8U);
 
   Helmert2D<cv::Point> trf(0, 0, 4, 0.0);
   //std::vector<std::vector<cv::Point>> buffer;
@@ -178,7 +179,7 @@ int main(int argc, char *argv[])
     cv::Mat searchArea;
     cv::bitwise_and(image, image, searchArea, mask);
     //imshow("Fourier", searchArea);
-    cv::waitKey();
+    //cv::waitKey();
 
     // binarización de la imagen
     cv::meanStdDev(searchArea, m, stdv, mask);
@@ -187,16 +188,16 @@ int main(int argc, char *argv[])
     //Mirar algoritmos para ver la anchura de la linea.
 
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 4, false);
-
+   
     progress_bar.init(0, li.count, "Busqueda de daños en conductor");
     
-
+    std::vector<int> v_with(li.count, 0);
     cv::Point axis;
     for ( int i = 0; i < li.count; i++, ++li ) {
       axis = li.pos();
       // Tenemos las coordenadas del eje de la línea. A partir de esto buscar la anchura para 
       // cada punto
-      // Tendria que estimar la ancchura del aislador antes. Así podría servirme para el
+      // Tendria que estimar la anchura del aislador antes. Así podría servirme para el
       // buffer y para determinar esta linea auxiliar
       Line laux(axis, line.angleOX(), 60, true);
       // Ahora con un LineIterator recorro la linea y busco el cambio de b/n
@@ -204,43 +205,73 @@ int main(int argc, char *argv[])
       int width = 0;
       int ini = -1;
       int end = 0;
+      std::vector<int> v_aux(li2.count, 0);
+      std::vector<cv::Point> v_pts_aux(li2.count);
+      int value_prev = -1;
       for ( int j = 0; j < li2.count; j++, ++li2 ) {
-        int value  = (int)li2.ptr[0];
+        int value = (int)li2.ptr[0];
+        if ( value_prev == -1 ) {
+          if ( value == 255 )
+            v_aux[j] = 1;
+        } else {
+          int dif = value - value_prev;
+          if ( dif < 0 ) {
+            v_aux[j] = -1;
+          } else if ( dif > 0 ) {
+            v_aux[j] = 1;
+          }
+        }
+        value_prev = value;
+
         if ( value == 255 ) {
           if (ini == -1) ini = j;
           end = j;
           width++;
         }
+        v_pts_aux[j] = li2.pos();
       }
+      v_with[i] = width;
+      // Busqueda del primer punto, último punto y huecos en la linea
+      //std::vector<int>::iterator it_first, it_last;
+      //int nb[] = { 1, -1 };
+      //it_first = std::find_first_of(v_aux.begin(), v_aux.end(), nb, nb);
+      //it_last = std::find_end(v_aux.begin(), v_aux.end(), nb+1, nb+1);
+
+      std::vector<int> v_(li2.count);
+      for ( int k = ini; k < width; k++ ) {
+        if ( v_aux[k] == -1 ) {
+          cv::line(gap, v_pts_aux[k], v_pts_aux[k], cv::Scalar(255,255,255));
+        }
+      }
+
+
       //if ( width != end - ini ) 
       //  printWarning("Posible daño");
-      //printInfo("Ancho línea %i", width);
+      logPrintInfo("Ancho línea %i", width);
       progress_bar();
     }
+
+    // Buscar máxima y mínima anchura
+    cv::Mat mat_aux(v_with);
+    //cv::Mat mat_aux = cv::Mat(v_with.size(), 1, CV_64F, v_with.data());
+    cv::Scalar m, stdv;
+    cv::meanStdDev(mat_aux, m, stdv);
+    double th1 = m[0] - stdv[0];
+    double th2 = m[0] + stdv[0];
+    
+    cv::LineIterator li3(imgBN, line.pt1, line.pt2, 4, false);
+    // Ahora buscar si quedan pixeles fuera
+    for ( int is = 0; is < v_with.size(); is++, ++li3 ) {
+      if ( v_with[is] < th1 || v_with[is] > th2 ) {
+        // Pixel fuera de rango.
+        axis = li3.pos();
+        logPrintWarning("Posible daño (%i, %i)", axis.x, axis.y);
+      }
+    }
+    // La busqueda tiene que hacerse contando con los pixeles vecinos.
+    // ¿Aplicar un suavizado para eliminar picos?
+
   }
-
-  //cv::Scalar m, stdv;
-  //bilateralFilter->execute(image, &image);
-  //for ( const auto &buff : buffer) {
-  //  // Se aplica la mascara a la imagen y obtenemos la zona de estudio.
-  //  cv::Mat mask = cv::Mat::zeros(image.size(), CV_8U);
-  //  cv::Mat aux(buff);
-  //  const cv::Point *pts = (const cv::Point*) aux.data;
-  //  int npts = aux.rows;
-  //  cv::fillPoly(mask, &pts, &npts, 1, cv::Scalar(1, 1, 1) );
-  //  cv::Mat searchArea;
-  //  cv::bitwise_and(image, image, searchArea, mask);
-  //  imshow("Fourier", searchArea);
-  //  cv::waitKey();
-
-  //  // binarización de la imagen
-  //  cv::meanStdDev(searchArea, m, stdv, mask);
-  //  cv::Mat imgBN;
-  //  cv::threshold(searchArea, imgBN, m[0] + stdv[0], 255, cv::THRESH_BINARY);
-  //  //Mirar algoritmos para ver la anchura de la linea.
-
-  //  //cv::LineIterator li(img, pt1, pt2, connectivity, false);
-  //}
   
   
   

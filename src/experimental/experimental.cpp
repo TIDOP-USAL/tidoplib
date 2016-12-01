@@ -157,7 +157,7 @@ void Reconstruction3D::getKeyPointAndDescriptor(const std::vector<std::string> &
 
     if (bSave) {
       char out[I3D_MAX_PATH];
-      changeFileExtension(mImagesPaths[i].c_str(), "xml", out);
+      changeFileExtension(mImagesPaths[i].c_str(), "xml", out, I3D_MAX_PATH);
 
       // Salvamos key points y los descriptores
       mFeature2D->save(out);
@@ -175,7 +175,7 @@ void Reconstruction3D::loadKeyPointAndDescriptor(const std::vector<std::string> 
   char out[I3D_MAX_PATH];
 
   for (int i = 0; i < size; i++) {
-    changeFileExtension(mImagesPaths[i].c_str(), "xml", out);
+    changeFileExtension(mImagesPaths[i].c_str(), "xml", out, I3D_MAX_PATH);
     mFeature2D->read(out);
     mKeyPoints[i] = mFeature2D->getKeyPoints();
     mDescriptor[i] = mFeature2D->getDescriptors();
