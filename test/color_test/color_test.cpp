@@ -158,6 +158,14 @@ TEST(convert, toHSV)
 //  }
 //}
 
+
+TEST(convert, rgbToCmyk)
+{
+  //cargar imagen o generar matriz
+  //cv::Mat out;
+  //rgbToCmyk();
+}
+
 GTEST_API_ int main(int argc, char **argv) {
   printf("Running main() from gtest_main.cc\n");
   testing::InitGoogleTest(&argc, argv);

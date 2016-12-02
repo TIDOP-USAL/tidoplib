@@ -311,6 +311,14 @@ public:
   void fromHSV(const double hue, const double saturation, const double value );
 
   /*!
+   * \brief Obtiene un color a partir de sus valores HSV
+   * \param hue
+   * \param saturation
+   * \param lightness
+   */
+  void fromHSL(const double hue, const double saturation, const double lightness );
+
+  /*!
    * \brief Convierte un color a CMYK
    * \param cyan
    * \param magenta
@@ -326,6 +334,14 @@ public:
    * \param value
    */
   void toHSV(double *hue, double *saturation, double *value ) const;
+
+  /*!
+   * \brief Convierte un color a HSL
+   * \param hue
+   * \param saturation
+   * \param lightness
+   */
+  void toHSL(double *hue, double *saturation, double *lightness) const;
 
   /*!
    * \brief Convierte un color a luminancia
@@ -447,6 +463,10 @@ I3D_EXPORT std::string intToHex(const int color);
 I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
 
 I3D_EXPORT void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk);
+
+I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
+
+I3D_EXPORT void rgbToHSL(cv::Mat &rgb, cv::Mat *hsl);
 
 /*! \} */ // end of colorConversion
 
