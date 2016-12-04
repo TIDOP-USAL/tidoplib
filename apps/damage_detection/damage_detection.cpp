@@ -38,9 +38,9 @@ int main(int argc, char *argv[])
   ProgressBar progress_bar;
 
   char name[I3D_MAX_FNAME];
-  getFileName(getRunfile(), name);
+  getFileName(getRunfile(), name, I3D_MAX_FNAME);
   char dir[I3D_MAX_DIR];
-  getFileDriveDir(getRunfile(), dir);
+  getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
 
   CmdParser cmdParser(name, "Detección de daños en conductores de líneas eléctricas");
   cmdParser.addParameter("img", "Imagen de los conductores");
@@ -106,22 +106,22 @@ int main(int argc, char *argv[])
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
   
   switch ( ls ) {
-  case I3D::LD_TYPE::HOUGH:
-    pLineDetector = std::make_unique<ldHouh>(150, ang_tol);
-    break;
-  case I3D::LD_TYPE::HOUGHP:
-    pLineDetector = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
-    break;
-  case I3D::LD_TYPE::HOUGH_FAST:
-    pLineDetector = std::make_unique<ldHouhFast>();
-    break;
-  case I3D::LD_TYPE::LSD:
-    pLineDetector = std::make_unique<ldLSD>(ang_tol);
-    break;
-  default:
-    printError("No se ha seleccionado ningún detector de lineas.");
-    exit(EXIT_FAILURE);
-    break;
+    case I3D::LD_TYPE::HOUGH:
+      pLineDetector = std::make_unique<ldHouh>(150, ang_tol);
+      break;
+    case I3D::LD_TYPE::HOUGHP:
+      pLineDetector = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
+      break;
+    case I3D::LD_TYPE::HOUGH_FAST:
+      pLineDetector = std::make_unique<ldHouhFast>();
+      break;
+    case I3D::LD_TYPE::LSD:
+      pLineDetector = std::make_unique<ldLSD>(ang_tol);
+      break;
+    default:
+      printError("No se ha seleccionado ningún detector de lineas.");
+      exit(EXIT_FAILURE);
+      break;
   }
 
   printInfo("Leyendo imagen %s", img.c_str());

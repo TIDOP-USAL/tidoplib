@@ -11,6 +11,7 @@
 
 #include "core/utils.h"
 #include "core/mathutils.h"
+#include "geometric_entities/entity.h"
 #include "geometric_entities/window.h"
 #include "geometric_entities/point.h"
 #include "geometric_entities/operations.h"
@@ -30,13 +31,13 @@ namespace I3D
  *
  * Se han definido los siguientes alias para facilitar el acceso:
  * \code
- * typedef Polygon<int>PolygonI;
+ * typedef Polygon<int> PolygonI;
  * typedef Polygon<double> PolygonD;
  * typedef Polygon<float> PolygonF;
  * \endcode
  */
 template<typename T>
-class I3D_EXPORT Polygon : public PointsList<T>
+class I3D_EXPORT Polygon : public EntityPoints<T>
 {
 
 public:
@@ -44,30 +45,35 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Polygon() : PointsList<T>() {}
+  Polygon();
 
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon(int size) : PointsList<T>(size) {}
+  Polygon(int size);
 
   /*!
    * \brief Constructor de copia
    * \param[in] polygon
    */
-  Polygon(const Polygon &polygon) : PointsList<T>(multiPoint) {}
+  Polygon(const Polygon &polygon);
 
   /*!
    * \brief Constructor
    * \param[in] points
    */
-  Polygon(const std::vector<cv::Point_<T>> &points) : PointsList<T>(points) {}
+  Polygon(const std::vector<cv::Point_<T>> &points);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon(std::initializer_list<cv::Point_<T>> listPoints) : PointsList<T>(listPoints) {}
+  Polygon(std::initializer_list<cv::Point_<T>> listPoints);
+
+  /*!
+   * \brief Destructora
+   */
+  ~Polygon() {}
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -75,12 +81,6 @@ public:
    * \return Referencia al poligono
    */
   //Polygon &operator = (const Polygon &polygon);
-
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente del segmento
-   */
-  //Window<T> getWindow() const;
 
   /*!
    * \brief Añade un punto a la colección
@@ -104,18 +104,26 @@ public:
 
 // Definición de métodos
 
-//template<typename T> inline
-//Polygon<T>::Polygon( ) : mPoints(0) {}
-//
-//template<typename T> inline
-//Polygon<T>::Polygon(const Polygon &polygon) : mPoints(polygon.mPoints) {}
-//
-//template<typename T> inline
-//Polygon<T>::Polygon(const std::vector<cv::Point_<T>> &vPoint) : mPoints(vPoint) {}
-//
-//template<typename T> inline
-//Polygon<T>::Polygon(std::initializer_list<cv::Point_<T>> listPoints) : mPoints(listPoints) {}
-//
+template<typename T> inline
+Polygon<T>::Polygon() 
+  : EntityPoints<T>(entity_type::POLYGON_2D) {}
+
+template<typename T> inline
+Polygon<T>::Polygon(int size) 
+  : EntityPoints<T>(entity_type::POLYGON_2D, size) {}
+
+template<typename T> inline
+Polygon<T>::Polygon(const Polygon &polygon) 
+  : EntityPoints<T>(entity_type::POLYGON_2D, polygon) {}
+
+template<typename T> inline
+Polygon<T>::Polygon(const std::vector<cv::Point_<T>> &points) 
+  : EntityPoints<T>(entity_type::POLYGON_2D, points) {}
+
+template<typename T> inline
+Polygon<T>::Polygon(std::initializer_list<cv::Point_<T>> listPoints) 
+  : EntityPoints<T>(entity_type::POLYGON_2D, listPoints) {}
+
 //template<typename T> inline
 //Polygon<T> &Polygon<T>::operator = (const Polygon &poligon)
 //{
@@ -123,22 +131,9 @@ public:
 //  return *this;
 //}
 
-//template<typename T> inline
-//Window<T> Polygon<T>::getWindow() const
-//{
-//  Window<T> w;
-//  for (size_t i = 0; i < mPoints.size(); i++) {
-//    if (w.pt1.x > mPoints[i].x) w.pt1.x = mPoints[i].x;
-//    if (w.pt1.y > mPoints[i].y) w.pt1.y = mPoints[i].y;
-//    if (w.pt2.x < mPoints[i].x) w.pt2.x = mPoints[i].x;
-//    if (w.pt2.y < mPoints[i].y) w.pt2.y = mPoints[i].y;
-//  }
-//  return w;
-//}
-
 template<typename T> inline
 void Polygon<T>::add(const cv::Point_<T> &point)
-{
+{ 
   mPoints.push_back(point);
 }
 
@@ -204,7 +199,7 @@ typedef Polygon<float> PolygonF;
  *
  */
 template<typename T>
-class I3D_EXPORT Polygon3D : public Points3DList<T>
+class I3D_EXPORT Polygon3D : public Entity3DPoints<T>
 {
 
 public:
@@ -212,30 +207,30 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Polygon3D() : Points3DList<T>() {}
+  Polygon3D();
 
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon3D(int size) : Points3DList<T>(size) {}
+  Polygon3D(int size);
 
   /*!
    * \brief Constructor de copia
    * \param[in] polygon
    */
-  Polygon3D(const Polygon3D &polygon) : Points3DList<T>(multiPoint) {}
+  Polygon3D(const Polygon3D &polygon);
 
   /*!
    * \brief Constructor
    * \param[in] points
    */
-  Polygon3D(const std::vector<cv::Point3_<T>> &points) : Points3DList<T>(vPoint) {}
+  Polygon3D(const std::vector<cv::Point3_<T>> &points);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints) : Points3DList<T>(listPoints) {}
+  Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints);
 
   /*!
    * \brief Añade un punto a la colección
@@ -250,6 +245,26 @@ public:
   double perimeter() const;
 
 };
+
+template<typename T> inline
+Polygon3D<T>::Polygon3D() 
+  : Entity3DPoints<T>(entity_type::POLYGON_3D) {}
+
+template<typename T> inline
+Polygon3D<T>::Polygon3D(int size) 
+  : Entity3DPoints<T>(entity_type::POLYGON_3D, size) {}
+
+template<typename T> inline
+Polygon3D<T>::Polygon3D(const Polygon3D &polygon) 
+  : Entity3DPoints<T>(entity_type::POLYGON_3D, multiPoint) {}
+
+template<typename T> inline
+Polygon3D<T>::Polygon3D(const std::vector<cv::Point3_<T>> &points) 
+  : Entity3DPoints<T>(entity_type::POLYGON_3D, vPoint) {}
+
+template<typename T> inline
+Polygon3D<T>::Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints) 
+  : Entity3DPoints<T>(entity_type::POLYGON_3D, listPoints) {}
 
 template<typename T> inline
 void Polygon3D<T>::add(const cv::Point3_<T> &point)

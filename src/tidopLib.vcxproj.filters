@@ -182,5 +182,8 @@
     <ClInclude Include="core\exception.h">
       <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
+    <ClInclude Include="geometric_entities\entity.h">
+      <Filter>Archivos de encabezado\geometric_entities</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

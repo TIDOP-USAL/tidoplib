@@ -7,6 +7,7 @@
 #include "opencv2/core/core.hpp"
 
 #include "core/defs.h"
+#include "geometric_entities/entity.h"
 
 namespace I3D
 {
@@ -103,7 +104,7 @@ I3D_EXPORT T1 expandWindow(T1 w, T2 sz)
 * \brief The Window class
 */
 template<typename T>
-class I3D_EXPORT Window
+class I3D_EXPORT Window : public Entity<T>
 {
 public:
 
@@ -237,11 +238,14 @@ public:
 // Definición de métodos
 
 template<typename T> inline
-Window<T>::Window() : pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
-                      pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max()) {}
+Window<T>::Window() 
+  : Entity<T>(entity_type::WINDOW), 
+    pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+    pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max()) {}
 
 template<typename T> inline
-Window<T>::Window(const Window &w) : pt1(w.pt1), pt2(w.pt2) {}
+Window<T>::Window(const Window &w) 
+  : Entity<T>(entity_type::WINDOW), pt1(w.pt1), pt2(w.pt2) {}
 
 //template<typename T> inline
 //Window<T>::Window(Window &&w)
@@ -251,7 +255,8 @@ Window<T>::Window(const Window &w) : pt1(w.pt1), pt2(w.pt2) {}
 //}
 
 template<typename T> inline
-Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2)
+Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2) 
+  : Entity<T>(entity_type::WINDOW) 
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -260,7 +265,7 @@ Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2)
 }
 
 template<typename T> inline
-Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy)
+Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
 { 
   if (typeid(T) == typeid(int)) {
     // Prefiero hacer la conversión a entero para evitar que OpenCV 
@@ -281,11 +286,13 @@ Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy)
 }
 
 template<typename T> inline
-Window<T>::Window(cv::Point_<T> &_pt, T sz) : Window<T>::Window(_pt, sz, sz) {}
+Window<T>::Window(cv::Point_<T> &_pt, T sz) 
+  : Entity<T>(entity_type::WINDOW), Window<T>::Window(_pt, sz, sz) {}
 
 template<typename T> inline
 Window<T>::Window(std::vector<cv::Point_<T>> v)
-  : pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+  : Entity<T>(entity_type::WINDOW),
+    pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
     pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
 {
   if (v.size() >= 2) {
@@ -300,7 +307,8 @@ Window<T>::Window(std::vector<cv::Point_<T>> v)
 
 template<typename T> template<typename T2> inline
 Window<T>::Window(std::vector<cv::Point_<T2>> v)
-  : pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+  : Entity<T>(entity_type::WINDOW),
+    pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
     pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
 {
   if (v.size() >= 2) {
@@ -324,8 +332,9 @@ template<typename T> inline
 Window<T> &Window<T>::operator = (const Window &w)
 {
   if (this != &w) {
-    pt1 = w.pt1;
-    pt2 = w.pt2;
+    this->pt1 = w.pt1;
+    this->pt2 = w.pt2;
+    this->mEntityType = w.mEntityType;
   }
   return *this;
 }
@@ -376,7 +385,7 @@ bool Window<T>::isEmpty() const
           && pt1.y == std::numeric_limits<T>().max() 
           && pt2.x == -std::numeric_limits<T>().max() 
           && pt2.y == -std::numeric_limits<T>().max()); 
-};
+}
 
 template<typename T> template<typename T2> inline
 bool Window<T>::containsPoint(const cv::Point_<T2> &pt) const

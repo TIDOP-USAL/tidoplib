@@ -65,9 +65,9 @@ using namespace cv::xfeatures2d;
 
 int getdir(const std::string _filename, std::vector<std::string> &files)
 {
-  ifstream myfile(_filename.c_str());
+  std::ifstream myfile(_filename.c_str());
   if (!myfile.is_open()) {
-    cout << "Unable to read file: " << _filename << endl;
+    std::cout << "Unable to read file: " << _filename << std::endl;
     exit(0);
   } else {
     size_t found = _filename.find_last_of("/\\");
@@ -378,7 +378,7 @@ void VideoHelper::onInitialize()
 
   if (outPath.empty()) {
     char path[I3D_MAX_DRIVE + I3D_MAX_DIR];
-    getFileDriveDir(getRunfile(),path);
+    getFileDriveDir(getRunfile(),path, I3D_MAX_DRIVE + I3D_MAX_DIR);
     outPath = path;
   } else {
     createDir(outPath.c_str());
@@ -506,9 +506,9 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       ////match.getGoodMatches(&good_matches, 0.5);
       //match.getGoodMatches(ft1, ft2, &good_matches, 0.1);
 
-      changeFileExtension(images_paths[i].c_str(), "xml", out);
+      changeFileExtension(images_paths[i].c_str(), "xml", out, I3D_MAX_PATH);
       feature1.read(out);
-      changeFileExtension(images_paths[j].c_str(), "xml", out);
+      changeFileExtension(images_paths[j].c_str(), "xml", out, I3D_MAX_PATH);
       feature2.read(out);
 
       //// drawing the results
@@ -550,8 +550,8 @@ void reconstruct(std::vector<std::string> &images_paths, std::vector<cv::Mat> &p
       cv::drawMatches(img1, feature1.getKeyPoints(), img2, feature2.getKeyPoints(), goodMatchesA, img_matchesA, Scalar::all(-1), Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS);
 
 
-      getFileName(images_paths[i].c_str(), name1);
-      getFileName(images_paths[j].c_str(), name2);
+      getFileName(images_paths[i].c_str(), name1, I3D_MAX_PATH);
+      getFileName(images_paths[j].c_str(), name2, I3D_MAX_PATH);
 
       //sprintf_s(buf, 500, "%i matches seleccionados entre %s y %s", goodMatchesA.size(), name1, name2);
 
@@ -652,7 +652,7 @@ int main(int argc, char** argv)
 
   //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];
-  if (changeFileExtension(getRunfile(), "log", logfile) == 0) {
+  if (changeFileExtension(getRunfile(), "log", logfile, I3D_MAX_PATH) == 0) {
     Message::setMessageLogFile(logfile);
     Message::setMessageLevel(MessageLevel::MSG_INFO);
   }

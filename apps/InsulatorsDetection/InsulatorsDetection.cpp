@@ -122,9 +122,11 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
 int main(int argc, char *argv[])
 {
   char name[I3D_MAX_FNAME];
-  getFileName(getRunfile(), name);
+  getFileName(getRunfile(), name, I3D_MAX_FNAME);
   char dir[I3D_MAX_DIR];
-  getFileDriveDir(getRunfile(), dir);
+  getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+
+  //LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
 
   //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];
@@ -132,15 +134,25 @@ int main(int argc, char *argv[])
   Message::setMessageLogFile(logfile);
   Message::setMessageLevel(MessageLevel::MSG_INFO);
 
-  std::unique_ptr<LineDetector> oLD;
+  std::unique_ptr<LineDetector> pLineDetector;
   cv::Scalar ang_tol(CV_PI / 2, 0.25);
-  if (ls == LD_TYPE::HOUGH)            oLD = std::make_unique<ldHouh>(150, ang_tol);
-  else if (ls == LD_TYPE::HOUGHP)      oLD = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
-  else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_unique<ldHouhFast>();
-  else if (ls == LD_TYPE::LSD)         oLD = std::make_unique<ldLSD>(ang_tol);
-  else {
-    logPrintError("No se ha seleccionado ningún detector de lineas.");
-    return 0;
+  switch ( ls ) {
+    case I3D::LD_TYPE::HOUGH:
+      pLineDetector = std::make_unique<ldHouh>(150, ang_tol);
+      break;
+    case I3D::LD_TYPE::HOUGHP:
+      pLineDetector = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
+      break;
+    case I3D::LD_TYPE::HOUGH_FAST:
+      pLineDetector = std::make_unique<ldHouhFast>();
+      break;
+    case I3D::LD_TYPE::LSD:
+      pLineDetector = std::make_unique<ldLSD>(ang_tol);
+      break;
+    default:
+      printError("No se ha seleccionado ningún detector de lineas.");
+      exit(EXIT_FAILURE);
+      break;
   }
 
   //Procesos que se aplican a las imagenes
@@ -252,15 +264,15 @@ int main(int argc, char *argv[])
     cvtColor(frame, frameout, CV_GRAY2BGR);
 
     std::vector<Line> linesRight, linesLeft;
-    oLD->run(outRight, cv::Scalar(angleRight, 0.15));
-    if (oLD->getLines().empty()) return 0;
+    pLineDetector->run(outRight, cv::Scalar(angleRight, 0.15));
+    if (pLineDetector->getLines().empty()) return 0;
     Translate<cv::Point> trf(wRight.pt1.x, wRight.pt1.y);
-    trf.transform(oLD->getLines(), &linesRight);
+    trf.transform(pLineDetector->getLines(), &linesRight);
     
-    oLD->run(outLeft, cv::Scalar(angleLeft, 0.15));
-    if (oLD->getLines().empty()) return 0;
+    pLineDetector->run(outLeft, cv::Scalar(angleLeft, 0.15));
+    if (pLineDetector->getLines().empty()) return 0;
     trf.setTranslation(wLeft.pt1.x, wLeft.pt1.y);
-    trf.transform(oLD->getLines(), &linesLeft);
+    trf.transform(pLineDetector->getLines(), &linesLeft);
 
     //Comenzamos a agrupar lineas paralelas
     std::vector<ldGroupLines> linesGroupsRight, linesGroupsLeft;

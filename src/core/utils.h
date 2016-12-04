@@ -430,6 +430,16 @@ I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
 
 I3D_EXPORT void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
+/* ---------------------------------------------------------------------------------- */
+/*                         Concurrencia, hilos y multiproceso                         */
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief número optimo de hilos
+ */
+I3D_EXPORT unsigned int getOptimalNumberOfThreads();
+
+
 } // End namespace I3D
 
 #endif // I3D_UTILS_H

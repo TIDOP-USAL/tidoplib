@@ -5,6 +5,7 @@
 
 #include "core/utils.h"
 #include "core/mathutils.h"
+#include "geometric_entities/entity.h"
 #include "geometric_entities/window.h"
 
 namespace I3D
@@ -32,7 +33,7 @@ namespace I3D
  * \endcode
  */
 template<typename T>
-class I3D_EXPORT Segment
+class I3D_EXPORT Segment : public Entity<T>
 {
 public:
 
@@ -148,16 +149,20 @@ public:
 // Definición de métodos
 
 template<typename T> inline
-Segment<T>::Segment( ) : pt1(0, 0), pt2(0, 0) {}
+Segment<T>::Segment( ) 
+  : Entity<T>(entity_type::SEGMENT_2D), pt1(0, 0), pt2(0, 0) {}
 
 template<typename T> inline
-Segment<T>::Segment(const Segment &Segment) : pt1(Segment.pt1), pt2(Segment.pt2) {}
+Segment<T>::Segment(const Segment &Segment) 
+  : Entity<T>(entity_type::SEGMENT_2D), pt1(Segment.pt1), pt2(Segment.pt2) {}
 
 template<typename T> inline
-Segment<T>::Segment( const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2 ) : pt1(_pt1), pt2(_pt2) {}
+Segment<T>::Segment( const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2 ) 
+  : Entity<T>(entity_type::SEGMENT_2D), pt1(_pt1), pt2(_pt2) {}
 
 template<typename T> inline
-Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
+Segment<T>::Segment( const cv::Vec<T, 4> &lvect ) 
+  : Entity<T>(entity_type::SEGMENT_2D)
 {
   pt1.x = lvect[0];
   pt1.y = lvect[1];
@@ -167,6 +172,7 @@ Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
 
 template<typename T> inline
 Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter = true)
+  : Entity<T>(entity_type::SEGMENT_2D)
 {
   double a = cos(angle), b = sin(angle);
   double l1 = 0;
@@ -185,8 +191,9 @@ template<typename T> inline
 Segment<T> &Segment<T>::operator = (const Segment &segment)
 {
   if (this != &segment) {
-    pt1 = segment.pt1;
-    pt2 = segment.pt2;
+    this->pt1 = segment.pt1;
+    this->pt2 = segment.pt2;
+    this->mEntityType = segment.mEntityType;
   }
   return *this;
 }
@@ -260,7 +267,7 @@ typedef SegmentI Line;
  *
  */
 template<typename T>
-class I3D_EXPORT Segment3D
+class I3D_EXPORT Segment3D : public Entity<T>
 {
 public:
 
@@ -330,20 +337,24 @@ public:
 // Definición de métodos
 
 template<typename T> inline
-Segment3D<T>::Segment3D( ) : pt1(cv::Point3_<T>()), pt2(cv::Point3_<T>()) {}
+Segment3D<T>::Segment3D( ) 
+  : Entity<T>(entity_type::SEGMENT_3D), pt1(cv::Point3_<T>()), pt2(cv::Point3_<T>()) {}
 
 template<typename T> inline
-Segment3D<T>::Segment3D(const Segment3D &Segment) : pt1(Segment.pt1), pt2(Segment.pt2) {}
+Segment3D<T>::Segment3D(const Segment3D &Segment) 
+  : Entity<T>(entity_type::SEGMENT_3D), pt1(Segment.pt1), pt2(Segment.pt2) {}
 
 template<typename T> inline
-Segment3D<T>::Segment3D( const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2 ) : pt1(_pt1), pt2(_pt2) {}
+Segment3D<T>::Segment3D( const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2 ) 
+  : Entity<T>(entity_type::SEGMENT_3D), pt1(_pt1), pt2(_pt2) {}
 
 template<typename T> inline
 Segment3D<T> &Segment3D<T>::operator = (const Segment3D &segment)
 {
   if (this != &segment) {
-    pt1 = segment.pt1;
-    pt2 = segment.pt2;
+    this->pt1 = segment.pt1;
+    this->pt2 = segment.pt2;
+    this->mEntityType = segment.mEntityType;
   }
   return *this;
 }

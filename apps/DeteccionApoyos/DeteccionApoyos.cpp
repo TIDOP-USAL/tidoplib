@@ -135,7 +135,7 @@ void VideoHelper::onInitialize()
 
   if (outPath.empty()) {
     char path[I3D_MAX_DRIVE + I3D_MAX_DIR];
-    getFileDriveDir(getRunfile(),path);
+    getFileDriveDir(getRunfile(), path, I3D_MAX_DRIVE + I3D_MAX_DIR);
     outPath = path;
   } else {
     createDir(outPath.c_str());
@@ -295,9 +295,9 @@ int main(int argc, char** argv)
 {
 
   char name[I3D_MAX_FNAME];
-  getFileName(getRunfile(), name);
+  getFileName(getRunfile(), name, I3D_MAX_FNAME);
   char dir[I3D_MAX_DIR];
-  getFileDriveDir(getRunfile(), dir);
+  getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
 
   CmdParser cmdParser(name, "Detección de apoyos");
   cmdParser.addParameter("video", "Video en el que vamos a buscar las torres");
@@ -318,8 +318,9 @@ int main(int argc, char** argv)
   bool bDrawLines = cmdParser.hasOption("dl");
   bool bShowVideo = cmdParser.hasOption("show_video");
   int skip_frames = cmdParser.getValue<int>("skip_frames");
-  std::string l_detect = cmdParser.getValue<std::string>("l_detect");
-  
+  //std::string l_detect = cmdParser.getValue<std::string>("l_detect");
+  LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
+
   // Barra de progreso
   //ProgressBar progress_bar;
 
@@ -345,16 +346,25 @@ int main(int argc, char** argv)
   }
   
   // Se crea el detector de líneas
-  LD_TYPE ls = LD_TYPE::HOUGHP;
-  std::shared_ptr<I3D::LineDetector> oLD;
+  std::shared_ptr<I3D::LineDetector> pLineDetector;
   cv::Scalar ang_tol(0., 0.3);
-  if (ls == LD_TYPE::HOUGH)            oLD = std::make_shared<ldHouh>(150, ang_tol);
-  else if (ls == LD_TYPE::HOUGHP)      oLD = std::make_shared<ldHouhP>(75, ang_tol, 50., 30.);
-  else if (ls == LD_TYPE::HOUGH_FAST)  oLD = std::make_shared<ldHouhFast>();
-  else if (ls == LD_TYPE::LSD)         oLD = std::make_shared<ldLSD>(ang_tol);
-  else {
-    printError("No se ha seleccionado ningún detector de lineas.");
-    exit(EXIT_FAILURE);
+  switch ( ls ) {
+    case I3D::LD_TYPE::HOUGH:
+      pLineDetector = std::make_unique<ldHouh>(150, ang_tol);
+      break;
+    case I3D::LD_TYPE::HOUGHP:
+      pLineDetector = std::make_unique<ldHouhP>(100, ang_tol, 60., 30.);
+      break;
+    case I3D::LD_TYPE::HOUGH_FAST:
+      pLineDetector = std::make_unique<ldHouhFast>();
+      break;
+    case I3D::LD_TYPE::LSD:
+      pLineDetector = std::make_unique<ldLSD>(ang_tol);
+      break;
+    default:
+      printError("No se ha seleccionado ningún detector de lineas.");
+      exit(EXIT_FAILURE);
+      break;
   }
 
   // Procesos previos que se aplican a las imagenes
@@ -362,7 +372,7 @@ int main(int argc, char** argv)
   imgprolist->add(std::make_shared<I3D::Canny>());
 
   // Detección de apoyos
-  DetectTransmissionTower detectTower(oLD, imgprolist, bDrawLines);
+  DetectTransmissionTower detectTower(pLineDetector, imgprolist, bDrawLines);
   VideoHelper videoHelper(&detectTower, out_path, bSaveImages);
   strmVideo.addListener(&videoHelper);
   videoHelper.outPath = out_path;

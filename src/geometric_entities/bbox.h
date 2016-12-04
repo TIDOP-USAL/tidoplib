@@ -5,6 +5,7 @@
 
 #include "opencv2/core/core.hpp"
 
+#include "geometric_entities/entity.h"
 #include "core/defs.h"
 
 namespace I3D
@@ -19,7 +20,7 @@ namespace I3D
  * \brief The Window class
  */
 template<typename T>
-class I3D_EXPORT Bbox
+class I3D_EXPORT Bbox : public Entity<T>
 {
 public:
 
@@ -130,21 +131,22 @@ public:
    * \brief La ventana contiene la ventana
    */
   template<typename T2> bool containsBbox(const Window<T2> &w) const;
-
 };
 
 // Definición de métodos
 
 template<typename T> inline
 Bbox<T>::Bbox() 
-: pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
+: Entity<T>(entity_type::BBOX), pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
   pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max(), -std::numeric_limits<T>().max()) {}
 
 template<typename T> inline
-Bbox<T>::Bbox(const Bbox &bbox) : pt1(bbox.pt1), pt2(bbox.pt2) {}
+Bbox<T>::Bbox(const Bbox &bbox) 
+  : Entity<T>(entity_type::BBOX), pt1(bbox.pt1), pt2(bbox.pt2) {}
 
 template<typename T> inline
-Bbox<T>::Bbox(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2)
+Bbox<T>::Bbox(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2) 
+  : Entity<T>(entity_type::BBOX)
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -155,7 +157,8 @@ Bbox<T>::Bbox(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2)
 }
 
 template<typename T> inline
-Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz)
+Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz) 
+  : Entity<T>(entity_type::BBOX)
 { 
   if (typeid(T) == typeid(int)) {
     int sxx_2 = I3D_ROUND_TO_INT(sxx / 2);
@@ -176,14 +179,16 @@ Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz)
 }
 
 template<typename T> inline
-Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sz) : Bbox<T>::Bbox(_pt, sz, sz, sz) {}
+Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sz) 
+  : Entity<T>(entity_type::BBOX), Bbox<T>::Bbox(_pt, sz, sz, sz) {}
 
 template<typename T> inline
 Bbox<T> &Bbox<T>::operator = (const Bbox &bbox)
 {
   if (this != &bbox) {
-    pt1 = bbox.pt1;
-    pt2 = bbox.pt2;
+    this->pt1 = bbox.pt1;
+    this->pt2 = bbox.pt2;
+    this->mEntityType = bbox.mEntityType;
   }
   return *this;
 }

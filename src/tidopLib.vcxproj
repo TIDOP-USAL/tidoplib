@@ -117,6 +117,7 @@
     <ClInclude Include="experimental\experimental.h" />
     <ClInclude Include="fourier.h" />
     <ClInclude Include="geometric_entities\bbox.h" />
+    <ClInclude Include="geometric_entities\entity.h" />
     <ClInclude Include="geometric_entities\lineString.h" />
     <ClInclude Include="geometric_entities\operations.h" />
     <ClInclude Include="geometric_entities\point.h" />

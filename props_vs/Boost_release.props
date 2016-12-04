@@ -5,11 +5,11 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalDependencies>libboost_system-vc120-mt-1_62.lib;libboost_filesystem-vc120-mt-1_62.lib;libboost_thread-vc120-mt-1_62.lib;libboost_date_time-vc120-mt-1_62.lib;libboost_iostreams-vc120-mt-1_62.lib;libboost_chrono-vc120-mt-1_62.lib;libboost_atomic-vc120-mt-1_62.lib;libboost_regex-vc120-mt-1_62.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\..\Libs\boost_1_62_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libboost_system-vc120-mt-1_62.lib;libboost_filesystem-vc120-mt-1_62.lib;libboost_thread-vc120-mt-1_62.lib;libboost_date_time-vc120-mt-1_62.lib;libboost_iostreams-vc120-mt-1_62.lib;libboost_chrono-vc120-mt-1_62.lib;libboost_atomic-vc120-mt-1_62.lib;libboost_regex-vc120-mt-1_62.lib;libboost_system-vc120-mt-1_61.lib;libboost_filesystem-vc120-mt-1_61.lib;libboost_thread-vc120-mt-1_61.lib;libboost_date_time-vc120-mt-1_61.lib;libboost_iostreams-vc120-mt-1_61.lib;libboost_chrono-vc120-mt-1_61.lib;libboost_atomic-vc120-mt-1_61.lib;libboost_regex-vc120-mt-1_61.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\Libs\boost_1_62_0\lib64-msvc-12.0;..\..\..\Libs\boost_1_61_0\lib64-msvc-12.0;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\Libs\boost_1_62_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\Libs\boost_1_62_0;..\..\..\Libs\boost_1_61_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

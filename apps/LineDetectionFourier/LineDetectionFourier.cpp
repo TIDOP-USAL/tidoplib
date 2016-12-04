@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
 {
   
   char name[I3D_MAX_FNAME];
-  getFileName(getRunfile(), name);
+  getFileName(getRunfile(), name, I3D_MAX_FNAME);
 
   CmdParser cmdParser(name, "Detección de lineas por fourier");
   cmdParser.addParameter("img", "Imagen en la que se buscan las líneas");

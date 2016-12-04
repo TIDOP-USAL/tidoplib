@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
   double conductor_direction = 0.0;   // Dirección del conductor 
 
   char logfile[I3D_MAX_PATH];
-  int err = changeFileNameAndExtension(getRunfile(), "TrackLines.log", logfile);
+  int err = changeFileNameAndExtension(getRunfile(), "TrackLines.log", logfile, I3D_MAX_PATH);
   if (err == 0) {
         //LogMsg log(logfile, LogLevel::LOG_DEBUG);
     Message::setMessageLogFile(logfile);

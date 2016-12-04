@@ -15,6 +15,7 @@
 
 #include "core/defs.h"
 #include "core/messages.h"
+#include "geometric_entities/entity.h"
 #include "geometric_entities/segment.h"
 
 namespace I3D
@@ -84,6 +85,8 @@ protected:
    */
   int mDimensions;
 
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -137,6 +140,46 @@ public:
    * \return Punto de salida
    */
   virtual T transform(const T &in, bool bDirect = true) const = 0;
+
+  /*!
+   * \brief Aplica la transformación a una imagen
+   * \param[in] in Imagen de entrada
+   * \param[out] out Imagen de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  //void transform(const cv::Mat_<T> &in, cv::Mat_<T> *out, bool bDirect = true) {
+  //  int num_threads = getOptimalNumberOfThreads();
+  //  std::vector<std::thread> threads(num_threads);
+
+  //  auto trf = [&](int ini, int end) {
+  ////    cv::Point pt_out;
+  ////    for (int r = ini; r < end; r++) {
+  ////      uchar *in_ptr = in.ptr<uchar>(r);
+  ////      for (int c = 0; c < rgb.cols; c++) {
+  ////        // ... Al reves. calcular el tamaño de la imagen transformada y calcular el valor rgb correspondiente a cada pixel
+  ////        transform(cv::Point(c, r), &pt_out, bDirect);
+  ////      }
+  ////    }
+  //  };
+
+  //  int size = in.rows / num_threads;
+  //  for (int i = 0; i < num_threads; i++) {
+  //    int ini = i * size;
+  //    int end = ini + size;
+  //    if ( end > in.rows ) end = in.rows;
+  //    t[i] = std::thread(trf, ini, end);
+  //  }
+
+  //  for (auto &_thread : threads) _thread.join();
+  //}
+
+  /*!
+   * \brief Aplica la transformación a una entidad geométrica
+   * \param[in] in Entidad de entrada
+   * \param[out] out Entidad de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -310,6 +353,15 @@ public:
    * \return Punto de salida
    */
   T transform(const T &in, bool bDirect = true) const override;
+
+  /*!
+   * \brief Aplica la transformación a una entidad geométrica
+   * \param[in] in Entidad de entrada
+   * \param[out] out Entidad de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+
 };
 
 template<typename T> inline
@@ -347,6 +399,15 @@ double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> 
   printError("'compute' no esta soportado para TrfMultiple");
   I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
   return -1.;
+}
+
+template<typename T> inline
+void TrfMultiple<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+{
+  *out = in;
+  for (auto trf : mTransf) {
+    trf->transform(*out, out, bDirect);
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -407,7 +468,42 @@ public:
    * \return Punto de salida
    */
   virtual T transform(const T &in, bool bDirect = true) const override = 0;
+
+  /*!
+   * \brief Aplica la transformación a una entidad geométrica
+   * \param[in] in Entidad de entrada
+   * \param[out] out Entidad de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
 };
+
+template<typename T> inline
+void Transform2D<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+{
+  if (in.getType() == entity_type::WINDOW) {
+    Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
+    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, bDirect);
+    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, bDirect);
+  } else if ( in.getType() == entity_type::SEGMENT_2D) {
+    Segment<sub_type> *s = dynamic_cast<Segment<sub_type> *>(out);
+    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, bDirect);
+    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, bDirect);
+  } else if (in.getType() == entity_type::LINESTRING_2D ||
+             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
+             in.getType() == entity_type::POLYGON_2D) {
+    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
+    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
+    std::vector<cv::Point_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+    for (std::vector<cv::Point_<sub_type>>::const_iterator it = _in.begin(); 
+      it != _in.end(); it++, it_out++) {
+      this->transform(*it, &(*it_out), bDirect);
+    }
+  } else {
+    //tipo no soportado
+    return;
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -2094,7 +2190,31 @@ public:
    * \return Punto de salida
    */
   virtual T transform(const T &in, bool bDirect = true) const override = 0;
+
+  /*!
+   * \brief Aplica la transformación a una entidad geométrica
+   * \param[in] in Entidad de entrada
+   * \param[out] out Entidad de salida
+   * \param[in] bDirect Transformación directa (por defecto)
+   */
+  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
 };
+
+template<typename T> inline
+void Transform3D<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+{
+  if (in.getType() == entity_type::BBOX  ||
+      in.getType() == entity_type::SEGMENT_3D) {
+
+  } else if (in.getType() == entity_type::LINESTRING_3D ||
+             in.getType() == entity_type::MULTIPOINT_POINT_3D ||
+             in.getType() == entity_type::POLYGON_3D) {
+
+  } else {
+    //tipo no soportado
+    return;
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 

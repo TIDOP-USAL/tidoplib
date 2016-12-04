@@ -48,6 +48,7 @@ using namespace cv::xfeatures2d;
  */
 int main(int argc, char *argv[])
 {
+
   ProgressBar progress_bar;
 
   char name[I3D_MAX_FNAME];
@@ -65,7 +66,6 @@ int main(int argc, char *argv[])
 
   std::string img = cmdParser.getValue<std::string>("img");
   std::string out_path = cmdParser.getValue<std::string>("out");
-  LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
 
   if (createDir(out_path.c_str()) == -1) { 
     consolePrintError("No se ha podido crear el directorio: %s", out_path.c_str()); 

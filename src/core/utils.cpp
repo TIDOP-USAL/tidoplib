@@ -12,6 +12,7 @@
 #include <vector>
 #include <cstring>
 #include <exception>
+#include <thread>
 
 namespace I3D
 {
@@ -343,6 +344,14 @@ void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMat
   fs["camera_matrix"] >> cameraMatrix;
   fs["distortion_coefficients"] >> distCoeffs;
   fs.release();
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+I3D_EXPORT unsigned int getOptimalNumberOfThreads()
+{
+  unsigned int n_threads = std::thread::hardware_concurrency();
+  return n_threads == 0 ? 1 : n_threads;
 }
 
 /* ---------------------------------------------------------------------------------- */
