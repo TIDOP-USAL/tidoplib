@@ -76,13 +76,6 @@ public:
   ~Polygon() {}
 
   /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] polygon Poligono que se asigna
-   * \return Referencia al poligono
-   */
-  //Polygon &operator = (const Polygon &polygon);
-
-  /*!
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */

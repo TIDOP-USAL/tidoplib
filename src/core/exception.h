@@ -27,12 +27,12 @@ protected:
   std::string mFile;
 
   /*!
-   * \brief Número de línea donde se ha producido el error
+   * \brief NÃºmero de lÃ­nea donde se ha producido el error
    */
   int mLine;
 
   /*!
-   * \brief Nombre de la función donde se ha producido el error
+   * \brief Nombre de la funciÃ³n donde se ha producido el error
    */
   std::string mFunction;
 
@@ -59,7 +59,7 @@ public:
   virtual ~Exception() throw () {}
 
   /*!
-   * \brief Descripción del error
+   * \brief DescripciÃ³n del error
    */
   virtual const char *what() const throw ();
 

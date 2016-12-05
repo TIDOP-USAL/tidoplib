@@ -18,7 +18,7 @@ namespace I3D
 template<typename T> class Window;
 
 
-/*! \defgroup GeometricEntities Entidades geom閠ricas
+/*! \defgroup GeometricEntities Entidades geom茅tricas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -103,7 +103,7 @@ public:
   EntityPoints(entity_type type);
 
   /*!
-   * \brief Constructor que reserva tama駉 para n puntos
+   * \brief Constructor que reserva tama帽o para n puntos
    */
   EntityPoints(entity_type type, int size);
 
@@ -120,7 +120,7 @@ public:
   EntityPoints(entity_type type, const std::vector<cv::Point_<T>> &vPoint);
 
   /*!
-   * \brief Constructor lista de inicializaci髇
+   * \brief Constructor lista de inicializaci贸n
    * \param[in] listPoints Inicializador de lista con los puntos
    */
   EntityPoints(entity_type type, std::initializer_list<cv::Point_<T>> listPoints);
@@ -128,20 +128,20 @@ public:
   //~EntityPoints();
 
   /*!
-   * \brief Sobrecarga del operador de asignaci髇
+   * \brief Sobrecarga del operador de asignaci贸n
    * \param[in] EntityPoints EntityPoints que se asigna
    * \return Referencia al EntityPoints
    */
   EntityPoints &operator = (const EntityPoints &entityPoints);
 
   /*!
-   * \brief A馻de un punto a la colecci髇
-   * \param[in] point Punto que se a馻de
+   * \brief A帽ade un punto a la colecci贸n
+   * \param[in] point Punto que se a帽ade
    */
   virtual void add(const cv::Point_<T> &point) = 0;
 
   /*!
-   * \brief Devuelve los puntos de la colecci髇
+   * \brief Devuelve los puntos de la colecci贸n
    * \return vector de puntos
    */
   const std::vector<cv::Point_<T>> &getPoints() const { return mPoints; }
@@ -154,8 +154,8 @@ public:
   std::vector<cv::Point_<T>> getPointsInWindow(const Window<T> &w) const;
 
   /*!
-   * \brief N鷐ero de puntos de la colecci髇
-   * \return N鷐ero de puntos
+   * \brief N煤mero de puntos de la colecci贸n
+   * \return N煤mero de puntos
    */
   int getSize() const { return static_cast<int>(mPoints.size()); }
 
@@ -167,12 +167,12 @@ public:
 
   /*!
    * \brief resize
-   * \param[in] size nuevo tama駉
+   * \param[in] size nuevo tama帽o
    */
   void resize(int size) { mPoints.resize(size); }
 
   /*!
-   * \brief Operador de indexaci髇 sobrecargado
+   * \brief Operador de indexaci贸n sobrecargado
    * \param[in] id indice del elemento
    * \return cv::Point_<T>
    */
@@ -309,45 +309,53 @@ public:
   Entity3DPoints(entity_type type);
 
   /*!
-   * \brief Constructor que reserva tama駉 para n puntos
+   * \brief Constructor que reserva tama帽o para n puntos
+   * \param[in] type Tipo de entidad
+   * \see entity_type
    */
   Entity3DPoints(entity_type type, int size);
 
   /*!
    * \brief Constructor de copia
-   * \param[in] multiPoint Objeto MultiPoint que se copia
+   * \param[in] type Tipo de entidad
+   * \param[in] entity3DPoints Entidad que se copia
+   * \see entity_type
    */
   Entity3DPoints(entity_type type, const Entity3DPoints &entity3DPoints);
 
   /*!
    * \brief Constructor
+   * \param[in] type Tipo de entidad
    * \param[in] vPoint vector de puntos
+   * \see entity_type
    */
   Entity3DPoints(entity_type type, const std::vector<cv::Point3_<T>> &vPoint);
 
   /*!
-   * \brief Constructor lista de inicializaci髇
+   * \brief Constructor lista de inicializaci贸n
+   * \param[in] type Tipo de entidad
    * \param[in] listPoints Inicializador de lista con los puntos
+   * \see entity_type
    */
   Entity3DPoints(entity_type type, std::initializer_list<cv::Point3_<T>> listPoints);
 
   //~Entity3DPoints();
 
   /*!
-   * \brief Sobrecarga del operador de asignaci髇
+   * \brief Sobrecarga del operador de asignaci贸n
    * \param[in] EntityPoints EntityPoints que se asigna
    * \return Referencia al EntityPoints
    */
   Entity3DPoints &operator = (const Entity3DPoints &entityPoints);
 
   /*!
-   * \brief A馻de un punto a la colecci髇
-   * \param[in] point Punto que se a馻de
+   * \brief A帽ade un punto a la colecci贸n
+   * \param[in] point Punto que se a帽ade
    */
   virtual void add(const cv::Point3_<T> &point) = 0;
 
   /*!
-   * \brief Devuelve los puntos de la colecci髇
+   * \brief Devuelve los puntos de la colecci贸n
    * \return vector de puntos
    */
   const std::vector<cv::Point3_<T>> &getPoints() const { return mPoints; }
@@ -360,8 +368,8 @@ public:
   std::vector<cv::Point3_<T>> getPointsInWindow(const Window<T> &w) const;
 
   /*!
-   * \brief N鷐ero de puntos de la colecci髇
-   * \return N鷐ero de puntos
+   * \brief N煤mero de puntos de la colecci贸n
+   * \return N煤mero de puntos
    */
   int getSize() const { return static_cast<int>(mPoints.size()); }
 
@@ -373,12 +381,12 @@ public:
 
   /*!
    * \brief resize
-   * \param[in] size nuevo tama駉
+   * \param[in] size nuevo tama帽o
    */
   void resize(int size) { mPoints.resize(size); }
 
   /*!
-   * \brief Operador de indexaci髇 sobrecargado
+   * \brief Operador de indexaci贸n sobrecargado
    * \param[in] id indice del elemento
    * \return cv::Point_<T>
    */

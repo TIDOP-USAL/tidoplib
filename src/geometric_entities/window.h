@@ -287,7 +287,24 @@ Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WIN
 
 template<typename T> inline
 Window<T>::Window(cv::Point_<T> &_pt, T sz) 
-  : Entity<T>(entity_type::WINDOW), Window<T>::Window(_pt, sz, sz) {}
+  : Entity<T>(entity_type::WINDOW)
+{ 
+  if (typeid(T) == typeid(int)) {
+    // Prefiero hacer la conversión a entero para evitar que OpenCV 
+    // lo haga mediante cvRound 
+    int sz_2 = I3D_ROUND_TO_INT(sz / 2);
+    int dxy = static_cast<int>(sz) % 2;
+    pt1 = cv::Point_<T>(_pt.x - sz_2, _pt.y - sz_2);
+    pt2 = cv::Point_<T>(_pt.x + sz_2 + dxy, _pt.y + sz_2 + dxy);
+  } else {
+    // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
+    I3D_DISABLE_WARNING(4244)
+    T sz_2 = sz / 2;
+    pt1 = cv::Point_<T>(_pt.x - sz_2, _pt.y - sz_2);
+    pt2 = cv::Point_<T>(_pt.x + sz_2, _pt.y + sz_2);
+    I3D_ENABLE_WARNING(4244)
+  }
+}
 
 template<typename T> inline
 Window<T>::Window(std::vector<cv::Point_<T>> v)

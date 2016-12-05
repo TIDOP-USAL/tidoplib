@@ -179,7 +179,7 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const = 0;
+  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -360,7 +360,7 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
 
 };
 
@@ -402,7 +402,7 @@ double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> 
 }
 
 template<typename T> inline
-void TrfMultiple<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
 {
   *out = in;
   for (auto trf : mTransf) {
@@ -475,11 +475,11 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
 };
 
 template<typename T> inline
-void Transform2D<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
 {
   if (in.getType() == entity_type::WINDOW) {
     Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
@@ -629,7 +629,7 @@ private:
    */
   T translate;
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -845,7 +845,7 @@ private:
    */
   double r2;
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -1054,7 +1054,7 @@ class I3D_EXPORT Helmert2D : public Transform2D<T>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -1182,13 +1182,13 @@ public:
 
   /*!
    * \brief Establece la rotación de la transformación
-   * \param[in] Ángulo de rotación en radianes
+   * \param[in] rotation Ángulo de rotación en radianes
    */
   void setRotation(double rotation);
 
   /*!
    * \brief Establece la escala de la transformación
-   * \param[in] Escala de la transformación
+   * \param[in] scale Escala de la transformación
    */
   void setScale(double scale);
 
@@ -1347,7 +1347,7 @@ class I3D_EXPORT Afin : public Transform2D<T>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 public:
 
   /*!
@@ -1507,19 +1507,19 @@ public:
 
   /*!
    * \brief Establece la rotación de la transformación
-   * \param[in] Ángulo de rotación en radianes
+   * \param[in] rotation Ángulo de rotación en radianes
    */
   void setRotation(double rotation);
 
   /*!
    * \brief Establece la escala de la transformación en el eje X
-   * \param[in] Escala de la transformación
+   * \param[in] scaleX Escala de la transformación
    */
   void setScaleX(double scaleX);
 
   /*!
    * \brief Establece la escala de la transformación en el eje Y
-   * \param[in] Escala de la transformación
+   * \param[in] scaleY Escala de la transformación
    */
   void setScaleY(double scaleY);
 
@@ -1701,7 +1701,7 @@ class I3D_EXPORT Projective : public Transform2D<T>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
   /*!
    * \brief Parámetro a
    */
@@ -2020,7 +2020,7 @@ class I3D_EXPORT polynomialTransform : public Transform2D<T>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 
 public:
 
@@ -2197,19 +2197,29 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+
 };
 
 template<typename T> inline
-void Transform3D<T>::transform(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
 {
-  if (in.getType() == entity_type::BBOX  ||
-      in.getType() == entity_type::SEGMENT_3D) {
-
+  if (in.getType() == entity_type::BBOX) {
+    this->transform(dynamic_cast<const BBOX<sub_type> &>(in).pt1, &w->pt1, bDirect);
+    this->transform(dynamic_cast<const BBOX<sub_type> &>(in).pt2, &w->pt2, bDirect);
+  } else if(in.getType() == entity_type::SEGMENT_3D) {
+    this->transform(dynamic_cast<const SEGMENT_3D<sub_type> &>(in).pt1, &w->pt1, bDirect);
+    this->transform(dynamic_cast<const SEGMENT_3D<sub_type> &>(in).pt2, &w->pt2, bDirect);
   } else if (in.getType() == entity_type::LINESTRING_3D ||
              in.getType() == entity_type::MULTIPOINT_POINT_3D ||
              in.getType() == entity_type::POLYGON_3D) {
-
+    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
+    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
+    std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+    for (std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin(); 
+      it != _in.end(); it++, it_out++) {
+      this->transform(*it, &(*it_out), bDirect);
+    }
   } else {
     //tipo no soportado
     return;
@@ -2236,7 +2246,7 @@ class I3D_EXPORT Helmert3D : public Transform3D<T>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  //typedef typename T::value_type sub_type;
 public:
 
   /*!

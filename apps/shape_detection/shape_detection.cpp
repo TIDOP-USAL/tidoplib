@@ -80,8 +80,8 @@ int main(int argc, char *argv[])
 
   //std::shared_ptr<I3D::Normalize> normalize = std::make_shared<I3D::Normalize>(255, 0);
   std::shared_ptr<I3D::BilateralFilter> bilateralFilter = std::make_shared<I3D::BilateralFilter>(5, 50., 50.);
-  std::shared_ptr<I3D::Erotion> erotion = std::make_shared<I3D::Erotion>(2);
-  std::shared_ptr<I3D::Dilate> dilate = std::make_shared<I3D::Dilate>(3);
+  std::shared_ptr<I3D::Erotion> erotion = std::make_shared<I3D::Erotion>(1);
+  std::shared_ptr<I3D::Dilate> dilate = std::make_shared<I3D::Dilate>(1);
   std::shared_ptr<I3D::Canny> canny = std::make_shared<I3D::Canny>();
   std::shared_ptr<I3D::GaussianBlur> gaussianBlur = std::make_shared<I3D::GaussianBlur>(cv::Size(9, 9), 2., 2.);
   cv::Mat image = cv::imread(img.c_str());
@@ -100,9 +100,52 @@ int main(int argc, char *argv[])
   cv::split(image, channels);
   cv::Mat red = channels[2];
 
-  // binarización de la imagen
-  cv::Mat red_binary;
-  cv::threshold(red, red_binary, 190, 255, cv::THRESH_BINARY);
+  cv::Mat image_cmyk;
+  rgbToCmyk(image, &image_cmyk);
+  cv::Mat channels_cmyk[4];
+  cv::split(image_cmyk, channels_cmyk);
+
+  cv::Mat key = channels_cmyk[3];
+  cv::normalize(key, key, 255, 0, CV_MINMAX);
+  key.convertTo(key, CV_8U);
+
+  //cv::Mat red2(key.size(), CV_8U);
+
+  //auto f_clear_shadow = [&](int ini, int end) {
+  //  for (int r = ini; r < end; r++) {
+  //    uchar *red_ptr = red.ptr<uchar>(r);
+  //    uchar *key_ptr = key.ptr<uchar>(r);
+  //    for (int c = 0; c < red.cols; c++) {
+  //      //rgbToHSL(s_ptr[3*c+2], s_ptr[3*c+1], s_ptr[3*c], &hue, &saturation, &lightness);
+  //      //_hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), static_cast<float>(saturation), static_cast<float>(lightness));
+  //      red2.at<uchar>(r, c) = red_ptr[c] - key_ptr[c];
+  //    }
+  //  }
+  //};
+
+  //int num_threads = getOptimalNumberOfThreads();
+  //std::vector<std::thread> threads(num_threads);
+ 
+  //int size = key.rows / num_threads;
+  //for (int i = 0; i < num_threads; i++) {
+  //  int ini = i * size;
+  //  int end = ini + size;
+  //  if ( end > key.rows ) end = key.rows;
+  //  threads[i] = std::thread(f_clear_shadow, ini, end);
+  //}
+
+  //for (auto &_thread : threads) _thread.join();
+
+  //cv::Mat image_hsv;
+  //cvtColor(image, image_hsv, CV_RGB2HSV);
+  //cv::Mat channels_hsv[3];
+  //cv::split(image_hsv, channels_hsv);
+
+
+
+  //// binarización de la imagen
+  //cv::Mat red_binary;
+  //cv::threshold(red, red_binary, 190, 255, cv::THRESH_BINARY);
 
   //cv::Mat image_gray;
   //cvtColor(image, image_gray, CV_RGB2GRAY);
@@ -112,18 +155,22 @@ int main(int argc, char *argv[])
     channels[i].release();
 
   // Busqueda baliza
-  medianBlur(red, red, 5);
+  medianBlur(red, red, 3);
+  //erotion->execute(red, &red);
+  //dilate->execute(red, &red);
   std::vector<Vec3f> circles;
   HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/4, 200, 100, 25, 150 );
-  for( size_t i = 0; i < circles.size(); i++ ) {
+  for (size_t i = 0; i < circles.size(); i++) {
     cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
     circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
+    printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
   }
-  
-  cv::imshow("Baliza", image);
-  cv::waitKey();
+
+  // Recortar la imagen para mostrarla
+  //cv::imshow("Baliza", image);
+  //cv::waitKey();
 
   return 0;
 }

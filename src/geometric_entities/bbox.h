@@ -73,7 +73,7 @@ public:
    * \param[in] pt Punto central
    * \param[in] sz Dimensiones
    */
-  Bbox(cv::Point_<T> &pt, T sz);
+  Bbox(cv::Point3_<T> &pt, T sz);
 
   //~Bbox();
 
@@ -180,7 +180,22 @@ Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz)
 
 template<typename T> inline
 Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sz) 
-  : Entity<T>(entity_type::BBOX), Bbox<T>::Bbox(_pt, sz, sz, sz) {}
+  : Entity<T>(entity_type::BBOX) 
+{
+  if (typeid(T) == typeid(int)) {
+    int sz_2 = I3D_ROUND_TO_INT(sz / 2);
+    int dxyz = static_cast<int>(sz) % 2;
+    pt1 = cv::Point3_<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
+    pt2 = cv::Point3_<T>(_pt.x + sz_2 + dxyz, _pt.y + sz_2 + dxyz, _pt.z + sz_2 + dxyz);
+  } else {
+    // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
+    I3D_DISABLE_WARNING(4244)
+    int sz_2 = sz / 2.;
+    pt1 = cv::Point3_<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
+    pt2 = cv::Point3_<T>(_pt.x + sz_2, _pt.y + sz_2, _pt.z + sz_2);
+    I3D_ENABLE_WARNING(4244)
+  }
+}
 
 template<typename T> inline
 Bbox<T> &Bbox<T>::operator = (const Bbox &bbox)

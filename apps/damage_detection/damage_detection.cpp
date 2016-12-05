@@ -157,13 +157,16 @@ int main(int argc, char *argv[])
 
   cv::Mat gap = cv::Mat::zeros(image.size(), CV_8U);
 
-  Helmert2D<cv::Point> trf(0, 0, 4, 0.0);
+  Helmert2D<cv::Point> trf(0, 0, 4., 0.0);
+  //std::unique_ptr<Transform2D<cv::Point>> trf = std::make_unique<Helmert2D<cv::Point>>(0, 0, 4, 0.0);
+
   //std::vector<std::vector<cv::Point>> buffer;
   cv::Scalar m, stdv;
   bilateralFilter->execute(image, &image);
   for (auto &line : linesJoin) {
-    line.pt1 = trf.transform(line.pt1, true);
-    line.pt2 = trf.transform(line.pt2, true);
+    //line.pt1 = trf.transform(line.pt1, true);
+    //line.pt2 = trf.transform(line.pt2, true);
+    trf.transformEntity(line, &line, true);
     //Para comprobar...
     //cv::line(image, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
