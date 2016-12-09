@@ -195,66 +195,66 @@ public:
   
   /*!
    * \brief Constructora de copia
-   * \param color Color como entero
+   * \param[in] color Color como entero
    */
   Color(Color &color) : mColor(color.mColor) {}
 
   /*!
    * \brief Constructora
-   * \param color Color como entero
+   * \param[in] color Color como entero
    */
   Color(int color) : mColor(color) {}
   
   /*!
    * \brief Constructora RGBA
-   * \param red Componente roja
-   * \param green Componente verde
-   * \param blue Componente azul
-   * \param alpha Canal alfa
-   */
+   * \param[in] red Componente roja
+   * \param[in] green Componente verde
+   * \param[in] blue Componente azul
+   * \param[in] alpha Canal alfa
+   */      
   Color(int red, int green, int blue, int alpha = 0);
   
   /*!
    * \brief Constructora CMYK
-   * \param cyan Cian
-   * \param magenta Magenta
-   * \param yellow Amarillo
-   * \param key
+   * \param[in] cyan Cian
+   * \param[in] magenta Magenta
+   * \param[in] yellow Amarillo
+   * \param[in] key
    */
   Color(double cyan, double magenta, double yellow, double key);
 
   /*!
    * \brief Constructora HSV
-   * \param hue
-   * \param saturation
-   * \param value
+   * \param[in] hue
+   * \param[in] saturation
+   * \param[in] value
    */
   Color(double hue, double saturation, double value);
 
   /*!
    * \brief Constructora HSL
-   * \param hue
-   * \param saturation
-   * \param lightness
+   * \param[in] hue
+   * \param[in] saturation
+   * \param[in] lightness
    */
   //Color(double hue, double saturation, double lightness);
 
   /*!
    * \brief Constructora
-   * \param color Color como cadena (hexadecimal)
+   * \param[in] color Color como cadena (hexadecimal)
    */
   Color(const std::string &color);
 
   /*!
    * \brief Constructora
-   * \param color Nombre del color
+   * \param[in] color Nombre del color
    * \see NAME
    */
   Color(const Color::NAME &color);
 
   /*!
    * \brief Constructora
-   * \param color Color como cv::Scalar de OpenCV
+   * \param[in] color Color como cv::Scalar de OpenCV
    */
   Color(const cv::Scalar &color);
 
@@ -300,46 +300,46 @@ public:
    * \param[in] yellow Amarillo
    * \param[in] key
    */
-  void fromCMYK(const double cyan, const double magenta, const double yellow, const double key);
+  void fromCMYK(double cyan, double magenta, double yellow, double key);
 
   /*!
    * \brief Obtiene un color a partir de sus valores HSV
-   * \param hue
-   * \param saturation
-   * \param value
+   * \param[in] hue
+   * \param[in] saturation
+   * \param[in] value
    */
-  void fromHSV(const double hue, const double saturation, const double value );
+  void fromHSV(double hue, double saturation, double value );
 
   /*!
    * \brief Obtiene un color a partir de sus valores HSV
-   * \param hue
-   * \param saturation
-   * \param lightness
+   * \param[in] hue
+   * \param[in] saturation
+   * \param[in] lightness
    */
-  void fromHSL(const double hue, const double saturation, const double lightness );
+  void fromHSL(double hue, double saturation, double lightness );
 
   /*!
    * \brief Convierte un color a CMYK
-   * \param cyan
-   * \param magenta
-   * \param yellow
-   * \param key
+   * \param[out] cyan
+   * \param[out] magenta
+   * \param[out] yellow
+   * \param[out] key
    */
   void toCMYK(double *cyan, double *magenta, double *yellow, double *key) const;
 
   /*!
    * \brief Convierte un color a HSV
-   * \param hue
-   * \param saturation
-   * \param value
+   * \param[out] hue
+   * \param[out] saturation
+   * \param[out] value
    */
   void toHSV(double *hue, double *saturation, double *value ) const;
 
   /*!
    * \brief Convierte un color a HSL
-   * \param hue
-   * \param saturation
-   * \param lightness
+   * \param[out] hue
+   * \param[out] saturation
+   * \param[out] lightness
    */
   void toHSL(double *hue, double *saturation, double *lightness) const;
 
@@ -458,15 +458,77 @@ I3D_EXPORT int hexToInt(const std::string &colorhex);
  * \param[in] colorhex Color en hexadecimal
  * \return Color como entero
  */
-I3D_EXPORT std::string intToHex(const int color);
+I3D_EXPORT std::string intToHex(int color);
 
+/*!
+ * \brief Convierte un color de RGB a CMYK
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] cyan cian
+ * \param[out] magenta Magenta
+ * \param[out] yellow Amarillo
+ * \param[out] key Negro
+ */
 I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
 
-I3D_EXPORT void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk);
+/*!
+ * \brief Convierte una matriz de RGB a CMYK
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] cyan cian
+ * \param[out] magenta Magenta
+ * \param[out] yellow Amarillo
+ * \param[out] key Negro
+ */
+I3D_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
 
+/*!
+ * \brief Convierte un color de CMYK a RGB
+ * \param[in] cyan cian
+ * \param[in] magenta Magenta
+ * \param[in] yellow Amarillo
+ * \param[in] key Negro
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red, int *green, int *blue);
+
+/*!
+ * \brief Convierte una matriz de CMYK a RGB
+ * \param[in] cyan cian
+ * \param[in] magenta Magenta
+ * \param[in] yellow Amarillo
+ * \param[in] key Negro
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
+
+/*!
+ * \brief Convierte un color de RGB a HSL
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] hue
+ * \param[out] saturation
+ * \param[out] lightness
+ */
 I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
 
-I3D_EXPORT void rgbToHSL(cv::Mat &rgb, cv::Mat *hsl);
+/*!
+ * \brief Convierte una matriz de RGB a HSL
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] hue
+ * \param[out] saturation
+ * \param[out] lightness
+ */
+I3D_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
 
 /*! \} */ // end of colorConversion
 

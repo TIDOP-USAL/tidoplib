@@ -158,20 +158,17 @@ int main(int argc, char *argv[])
   cv::Mat gap = cv::Mat::zeros(image.size(), CV_8U);
 
   Helmert2D<cv::Point> trf(0, 0, 4., 0.0);
-  //std::unique_ptr<Transform2D<cv::Point>> trf = std::make_unique<Helmert2D<cv::Point>>(0, 0, 4, 0.0);
 
   //std::vector<std::vector<cv::Point>> buffer;
   cv::Scalar m, stdv;
+
   bilateralFilter->execute(image, &image);
   for (auto &line : linesJoin) {
-    //line.pt1 = trf.transform(line.pt1, true);
-    //line.pt2 = trf.transform(line.pt2, true);
     trf.transformEntity(line, &line, true);
     //Para comprobar...
     //cv::line(image, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
     lineBuffer(line, 80, &buff);
-    //buffer.push_back(buff);
 
     // Se aplica la mascara a la imagen y obtenemos la zona de estudio.
     cv::Mat mask = cv::Mat::zeros(image.size(), CV_8U);
@@ -185,9 +182,9 @@ int main(int argc, char *argv[])
     //cv::waitKey();
 
     // binarización de la imagen
-    cv::meanStdDev(searchArea, m, stdv, mask);
+    cv::meanStdDev(image, m, stdv, mask);
     cv::Mat imgBN;
-    cv::threshold(searchArea, imgBN, m[0] + stdv[0], 255, cv::THRESH_BINARY);
+    cv::threshold(searchArea, imgBN, 120/*m[0] + stdv[0]*/, 255, cv::THRESH_BINARY);
     //Mirar algoritmos para ver la anchura de la linea.
 
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 4, false);
@@ -205,7 +202,7 @@ int main(int argc, char *argv[])
       Line laux(axis, line.angleOX(), 60, true);
       // Ahora con un LineIterator recorro la linea y busco el cambio de b/n
       cv::LineIterator li2(imgBN, laux.pt1, laux.pt2, 4, false);
-      int width = 0;
+      int width = 0;  //Anchura a lo largo de la línea
       int ini = -1;
       int end = 0;
       std::vector<int> v_aux(li2.count, 0);
@@ -234,6 +231,7 @@ int main(int argc, char *argv[])
         v_pts_aux[j] = li2.pos();
       }
       v_with[i] = width;
+      //v_with[axis.x] = width;
       // Busqueda del primer punto, último punto y huecos en la linea
       //std::vector<int>::iterator it_first, it_last;
       //int nb[] = { 1, -1 };
@@ -250,7 +248,7 @@ int main(int argc, char *argv[])
 
       //if ( width != end - ini ) 
       //  printWarning("Posible daño");
-      logPrintInfo("Ancho línea %i", width);
+      //logPrintInfo("Ancho línea %i", width);
       progress_bar();
     }
 
@@ -259,17 +257,29 @@ int main(int argc, char *argv[])
     //cv::Mat mat_aux = cv::Mat(v_with.size(), 1, CV_64F, v_with.data());
     cv::Scalar m, stdv;
     cv::meanStdDev(mat_aux, m, stdv);
-    double th1 = m[0] - stdv[0];
-    double th2 = m[0] + stdv[0];
+    double th1 = m[0] - stdv[0] - 1; // Un pixel mas de margen
+    double th2 = m[0] + stdv[0] + 1;
     
     cv::LineIterator li3(imgBN, line.pt1, line.pt2, 4, false);
     // Ahora buscar si quedan pixeles fuera
-    for ( int is = 0; is < v_with.size(); is++, ++li3 ) {
-      if ( v_with[is] < th1 || v_with[is] > th2 ) {
+    
+    // Arrastramos una medía de 20 posiciones para ver la variación
+    //std::vector<int> accumulated;
+    for (int is = 25; is < v_with.size() - 25; is++, ++li3) {
+      double sum = std::accumulate(v_with.begin() + is - 25, v_with.begin() + is + 25, 0);
+      int accumul = I3D_ROUND_TO_INT(sum / 50.);
+      if ( accumul < I3D_ROUND_TO_INT(th1) || accumul > I3D_ROUND_TO_INT(th2) ) {
         // Pixel fuera de rango.
         axis = li3.pos();
-        logPrintWarning("Posible daño (%i, %i)", axis.x, axis.y);
+        logPrintWarning("Posible daño (%i, %i). Ancho línea: %i", axis.x, axis.y, accumul);
       }
+
+      // Buscar pixel a pixel no parece lo mas correcto
+      //if ( v_with[is] < th1 || v_with[is] > th2 ) {
+      //  // Pixel fuera de rango.
+      //  axis = li3.pos();
+      //  logPrintWarning("Posible daño (%i, %i)", axis.x, axis.y);
+      //}
     }
     // La busqueda tiene que hacerse contando con los pixeles vecinos.
     // ¿Aplicar un suavizado para eliminar picos?

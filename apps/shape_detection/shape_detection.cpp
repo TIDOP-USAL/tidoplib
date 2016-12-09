@@ -1,15 +1,18 @@
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7854.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7854  // Encuentra baliza
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0699.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0699  // No hay baliza y saca circulos en zonas que no hay
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0728.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0728
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0736.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0736
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7949.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7949
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7954.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7954
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7973.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7973  // Encuentra baliza
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8066.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8066
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8187.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8187
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8288.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8288  // Encuentra baliza
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8308.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8308  // Encuentra baliza
-//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8424.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8424
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7854.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7854  // Encuentra baliza con medianBlur
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7973.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7973  // Encuentra baliza con medianBlur
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8288.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8288  // Encuentra baliza con medianBlur
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8308.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8308  // Encuentra baliza con medianBlur
+
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0728.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0728
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0736.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0736  // Encuentra baliza con gaussianBlur
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7949.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7949
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7954.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7954
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8066.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8066
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8187.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8187
+
+
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8424.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8424
+//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0699.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0699  // No hay baliza y saca circulos en zonas que no hay
 
 #include <windows.h>
 #include <memory>
@@ -84,6 +87,9 @@ int main(int argc, char *argv[])
   std::shared_ptr<I3D::Dilate> dilate = std::make_shared<I3D::Dilate>(1);
   std::shared_ptr<I3D::Canny> canny = std::make_shared<I3D::Canny>();
   std::shared_ptr<I3D::GaussianBlur> gaussianBlur = std::make_shared<I3D::GaussianBlur>(cv::Size(9, 9), 2., 2.);
+  std::shared_ptr<I3D::MedianBlur> medianBlur = std::make_shared<I3D::MedianBlur>(5);
+  std::shared_ptr<I3D::EqualizeHistogram> equalizeHistogram = std::make_shared<I3D::EqualizeHistogram>();
+
   cv::Mat image = cv::imread(img.c_str());
   //I3D::Resize res(50.);
   //res.execute(image, &image);
@@ -96,70 +102,103 @@ int main(int argc, char *argv[])
   //image.rowRange(6193, 7698).colRange(1300, 3400).copyTo(image_crop2);
   //image.release();
 
-  cv::Mat channels[3];
-  cv::split(image, channels);
-  cv::Mat red = channels[2];
+  //cv::Mat channels[3];
+  //cv::split(image, channels);
+  //cv::Mat red = channels[2];
 
-  cv::Mat image_cmyk;
-  rgbToCmyk(image, &image_cmyk);
-  cv::Mat channels_cmyk[4];
-  cv::split(image_cmyk, channels_cmyk);
+  // Intento de quitar la sombra de la baliza
+  //cv::Mat image_cmyk;
+  //rgbToCmyk(image, &image_cmyk);
+  //cv::Mat channels_cmyk[4];
+  //cv::split(image_cmyk, channels_cmyk);
+  //channels_cmyk[3] = 0.f;
+  //merge(channels_cmyk, 4, image_cmyk);
+  //cv::Mat rgb;
+  //cmykToRgb(image_cmyk, &rgb);
+  //cv::Mat key = channels_cmyk[3];
+  //cv::normalize(key, key, 255, 0, CV_MINMAX);
+  //key.convertTo(key, CV_8U);
 
-  cv::Mat key = channels_cmyk[3];
-  cv::normalize(key, key, 255, 0, CV_MINMAX);
-  key.convertTo(key, CV_8U);
+  //cv::Mat channels[3];
+  //cv::split(rgb, channels);
+  //cv::Mat red = channels[2];
 
-  //cv::Mat red2(key.size(), CV_8U);
+  cv::Mat image_gray;
+  cvtColor(image, image_gray, CV_RGB2GRAY);
+  bilateralFilter->execute(image_gray, &image_gray);
+  equalizeHistogram->execute(image_gray, &image_gray);
 
-  //auto f_clear_shadow = [&](int ini, int end) {
-  //  for (int r = ini; r < end; r++) {
-  //    uchar *red_ptr = red.ptr<uchar>(r);
-  //    uchar *key_ptr = key.ptr<uchar>(r);
-  //    for (int c = 0; c < red.cols; c++) {
-  //      //rgbToHSL(s_ptr[3*c+2], s_ptr[3*c+1], s_ptr[3*c], &hue, &saturation, &lightness);
-  //      //_hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), static_cast<float>(saturation), static_cast<float>(lightness));
-  //      red2.at<uchar>(r, c) = red_ptr[c] - key_ptr[c];
-  //    }
-  //  }
-  //};
 
-  //int num_threads = getOptimalNumberOfThreads();
-  //std::vector<std::thread> threads(num_threads);
- 
-  //int size = key.rows / num_threads;
-  //for (int i = 0; i < num_threads; i++) {
-  //  int ini = i * size;
-  //  int end = ini + size;
-  //  if ( end > key.rows ) end = key.rows;
-  //  threads[i] = std::thread(f_clear_shadow, ini, end);
+ // cv::medianBlur(image, image, 3);
+
+ // cv::Mat image_hsv;
+ // cvtColor(image, image_hsv, CV_RGB2HSV);
+ // cv::Mat channels_hsv[3];
+ // cv::split(image_hsv, channels_hsv);
+ // cv::Mat lower_red_hue_range;
+ // cv::Mat upper_red_hue_range;
+ // cv::inRange(image_hsv, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
+ // cv::inRange(image_hsv, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), upper_red_hue_range);
+ //	// Combine the above two images
+	//cv::Mat red_hue_image;
+	//cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
+ //
+ //	cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
+
+
+
+
+
+  // binarización de la imagen
+  //cv::Mat red_binary;
+  //cv::threshold(red, red_binary, 200, 255, cv::THRESH_BINARY);
+  //std::vector<std::vector<cv::Point>> contours;
+  //std::vector<cv::Vec4i> hierarchy;
+  //cv::findContours( red_binary, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+  ///// Find contours
+  //findContours( red_binary, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+
+  ///// Approximate contours to polygons + get bounding rects and circles
+  //vector<vector<Point> > contours_poly( contours.size() );
+  //vector<Rect> boundRect( contours.size() );
+  //vector<Point2f>center( contours.size() );
+  //vector<float>radius( contours.size() );
+
+  //for( int i = 0; i < contours.size(); i++ ) { approxPolyDP( Mat(contours[i]), contours_poly[i], 3, true );
+  //  boundRect[i] = boundingRect( Mat(contours_poly[i]) );
+  //  minEnclosingCircle( (Mat)contours_poly[i], center[i], radius[i] );
   //}
 
-  //for (auto &_thread : threads) _thread.join();
 
-  //cv::Mat image_hsv;
-  //cvtColor(image, image_hsv, CV_RGB2HSV);
-  //cv::Mat channels_hsv[3];
-  //cv::split(image_hsv, channels_hsv);
+  ///// Draw polygonal contour + bonding rects + circles
+  //for( int i = 0; i< contours.size(); i++ ) {
+  //  Scalar color = Scalar( 0, 255, 0 );
+  //  drawContours( image, contours_poly, i, color, 1, 8, vector<Vec4i>(), 0, Point() );
+  //  rectangle( image, boundRect[i].tl(), boundRect[i].br(), color, 2, 8, 0 );
+  //  circle( image, center[i], (int)radius[i], color, 2, 8, 0 );
+  //}
 
 
 
-  //// binarización de la imagen
-  //cv::Mat red_binary;
-  //cv::threshold(red, red_binary, 190, 255, cv::THRESH_BINARY);
+
+
+
 
   //cv::Mat image_gray;
   //cvtColor(image, image_gray, CV_RGB2GRAY);
 
   // libero memoria
-  for (int i = 0; i < 3; i++)
-    channels[i].release();
+  //for (int i = 0; i < 3; i++)
+  //  channels[i].release();
 
   // Busqueda baliza
-  medianBlur(red, red, 3);
+  medianBlur->execute(image_gray, &image_gray);
+  //gaussianBlur->execute(image_gray, &image_gray);
   //erotion->execute(red, &red);
   //dilate->execute(red, &red);
   std::vector<Vec3f> circles;
-  HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/4, 200, 100, 25, 150 );
+  HoughCircles(image_gray, circles, HOUGH_GRADIENT, 2, image_gray.rows/4, 150, 100, 25, 150 );
   for (size_t i = 0; i < circles.size(); i++) {
     cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
