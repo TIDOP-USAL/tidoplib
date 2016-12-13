@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <thread>
+#include <random>
 
 #include "core/exception.h"
 #include "core/utils.h"
@@ -247,6 +248,14 @@ int Color::toLuminance() const
   return I3D_ROUND_TO_INT( 0.2126 * getRed() + 0.7152 * getGreen() + 0.0722 * getBlue());
 }
 
+Color Color::randomColor()
+{
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dis(0, 16777216);
+  return std::move(Color(dis(gen)));
+}
+
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */
@@ -369,9 +378,9 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
       for (int c = 0; c < cmyk.cols; c++) {
         cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
         cmykToRgb(v_cmyk[0], v_cmyk[1], v_cmyk[2], v_cmyk[3], &red, &green, &blue);
-        _rgb.at<cv::Vec3b>(r,c)[0] = blue;
-        _rgb.at<cv::Vec3b>(r,c)[1] = green;
-        _rgb.at<cv::Vec3b>(r,c)[2] = red;
+        _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
+        _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
+        _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
       }
     }
   };

@@ -102,9 +102,10 @@ int main(int argc, char *argv[])
   //image.rowRange(6193, 7698).colRange(1300, 3400).copyTo(image_crop2);
   //image.release();
 
-  //cv::Mat channels[3];
-  //cv::split(image, channels);
-  //cv::Mat red = channels[2];
+  cv::Mat channels[3];
+  cv::split(image, channels);
+  cv::Mat red = channels[2];
+  cv::Mat blue = channels[0];
 
   // Intento de quitar la sombra de la baliza
   //cv::Mat image_cmyk;
@@ -123,11 +124,11 @@ int main(int argc, char *argv[])
   //cv::split(rgb, channels);
   //cv::Mat red = channels[2];
 
-  cv::Mat image_gray;
-  cvtColor(image, image_gray, CV_RGB2GRAY);
-  bilateralFilter->execute(image_gray, &image_gray);
-  equalizeHistogram->execute(image_gray, &image_gray);
-
+  //cv::Mat image_gray;
+  //cvtColor(image, image_gray, CV_RGB2GRAY);
+  //bilateralFilter->execute(image_gray, &image_gray);
+  //equalizeHistogram->execute(image_gray, &image_gray);
+  bilateralFilter->execute(blue, &blue);
 
  // cv::medianBlur(image, image, 3);
 
@@ -193,12 +194,12 @@ int main(int argc, char *argv[])
   //  channels[i].release();
 
   // Busqueda baliza
-  medianBlur->execute(image_gray, &image_gray);
+  medianBlur->execute(blue, &blue);
   //gaussianBlur->execute(image_gray, &image_gray);
   //erotion->execute(red, &red);
   //dilate->execute(red, &red);
   std::vector<Vec3f> circles;
-  HoughCircles(image_gray, circles, HOUGH_GRADIENT, 2, image_gray.rows/4, 150, 100, 25, 150 );
+  HoughCircles(blue, circles, HOUGH_GRADIENT, 2, blue.rows/4, 150, 100, 25, 150 );
   for (size_t i = 0; i < circles.size(); i++) {
     cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
     int radius = I3D_ROUND_TO_INT(circles[i][2]);

@@ -19,35 +19,30 @@ void ImgProcessingList::add(const std::shared_ptr<ImgProcessing> &ip)
   mProcessList.push_back(ip);
 }
 
-int ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
-  if (matIn.empty()) {
-    i_error = 1;
-  } else {
-    matIn.copyTo(*matOut);
-    for (const auto process : mProcessList) {
-      if (int i_error = process->execute(*matOut, matOut))
-        return i_error; //Error
-    }
+  if (matIn.empty()) return ProcessExit::FAILURE;
+  matIn.copyTo(*matOut);
+  for (const auto process : mProcessList) {
+    if (process->execute(*matOut, matOut) == ProcessExit::FAILURE)
+      return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
-int BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
   try {
     cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigmaSpace, int borderType)
@@ -60,16 +55,15 @@ void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigm
 
 /* ---------------------------------------------------------------------------------- */
 
-int Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
@@ -81,16 +75,15 @@ void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
 
 /* ---------------------------------------------------------------------------------- */
 
-int BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
@@ -104,16 +97,15 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-int Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
@@ -127,16 +119,15 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 
 /* ---------------------------------------------------------------------------------- */
 
-int GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, int bordertype)
@@ -149,16 +140,15 @@ void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, in
 
 /* ---------------------------------------------------------------------------------- */
 
-int Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta, int borderType)
@@ -172,16 +162,15 @@ void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-int MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void MedianBlur::setParameters(int ksize)
@@ -191,9 +180,8 @@ void MedianBlur::setParameters(int ksize)
 
 /* ---------------------------------------------------------------------------------- */
 
-int Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   cv::Mat grad_x, grad_y;
   cv::Mat abs_grad_x, abs_grad_y;
   try {
@@ -202,9 +190,9 @@ int Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
@@ -222,9 +210,8 @@ void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-int Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   double th1 = mThreshold1, th2 = mThreshold2;
   try {
     if (th1 == 0.0 && th2 == 0.0) {
@@ -236,9 +223,9 @@ int Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Canny::setParameters(double threshold1, double threshold2)
@@ -249,85 +236,8 @@ void Canny::setParameters(double threshold1, double threshold2)
 
 /* ---------------------------------------------------------------------------------- */
 
-int Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ProcessExit morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
-  try {
-    cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    i_error = 1;
-  }
-  return i_error;
-}
-
-void Normalize::setParameters(double _lowRange, double _upRange)
-{
-  mLowRange = _lowRange;
-  mUpRange = _upRange;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-int Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  int i_error = 0;
-  double th = mThresh, max = mMaxVal;
-  try {
-    if (th == 0.0 && max == 0.0) {
-      cv::Scalar m, stdv;
-      cv::meanStdDev(matIn, m, stdv);
-      th = m[0] - stdv[0];
-      max = m[0] + stdv[0];
-    }
-    cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    i_error = 1;
-  }
-  return i_error;
-}
-
-void Binarize::setParameters(double thresh, double maxval, bool inverse)
-{
-  mThresh = thresh;
-  mMaxVal = maxval;
-  bInverse = inverse;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-int EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  int i_error = 0;
-  try {
-    cv::equalizeHist(matIn, *matOut);
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    i_error = 1;
-  }
-  return i_error;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-int FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  int i_error = 0;
-  try {
-    f(matIn, matOut);
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    i_error = 1;
-  }
-  return i_error;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-int morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  int i_error = 0;
   try {
     cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
     switch (type)
@@ -354,14 +264,13 @@ int morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
       morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
       break;
     default:
-      i_error = 1;
-      break;
+      return ProcessExit::FAILURE;
     }
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv::Point anchor, int iterations, int borderType, const cv::Scalar &borderValue)
@@ -376,9 +285,9 @@ void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv:
 
 /* ---------------------------------------------------------------------------------- */
 
-int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+
+ProcessExit Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     if (mWidth == 0 && mScaleX == 0) throw std::runtime_error("Invalid parameter values");
     if (mScaleX) {
@@ -394,9 +303,9 @@ int Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 
   } catch (cv::Exception &e){
     printError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
 void Resize::setParameters(int width, int height = 0)
@@ -415,27 +324,132 @@ void Resize::setParameters(double scaleX, double scaleY)
 
 /* ---------------------------------------------------------------------------------- */
 
-int ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+
+ProcessExit ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  int i_error = 0;
   try {
     cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
     matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
     *matOut = aux;
   } catch (cv::Exception &e){
     printError(e.what());
-    i_error = 1;
+    return ProcessExit::FAILURE;
   }
-  return i_error;
+  return ProcessExit::SUCCESS;
 }
 
-void ResizeCanvas::setParameters(int width, int height/*, const Color &color = Color()*/)
+void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
 {
   mWidth = width;
   mHeight = height;
-  /*mColor = color;*/
+  mPosition = position;
+  mColor = color;
 }
 
+//void ResizeCanvas::update()
+//{
+//  switch (mPosition) {
+//    case I3D::ResizeCanvas::Position::BOTTOM_CENTER:
+//      
+//      break;
+//    case I3D::ResizeCanvas::Position::BOTTOM_LEFT:
+//      break;
+//    case I3D::ResizeCanvas::Position::BOTTOM_RIGHT:
+//      break;
+//    case I3D::ResizeCanvas::Position::CENTER:
+//      break;
+//    case I3D::ResizeCanvas::Position::CENTER_LEFT:
+//      break;
+//    case I3D::ResizeCanvas::Position::CENTER_RIGHT:
+//      break;
+//    case I3D::ResizeCanvas::Position::TOP_CENTER:
+//      break;
+//    case I3D::ResizeCanvas::Position::TOP_LEFT:
+//      mTopLeft = cv::Point(0, 0);
+//      break;
+//    case I3D::ResizeCanvas::Position::TOP_RIGHT:
+//      mTopLeft = cv::Point(0, 0);
+//      break;
+//    default:
+//      break;
+//  }
+//}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+ProcessExit Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  try {
+    cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
+  } catch (cv::Exception &e){
+    logPrintError(e.what());
+    return ProcessExit::FAILURE;
+  }
+  return ProcessExit::SUCCESS;
+}
+
+void Normalize::setParameters(double _lowRange, double _upRange)
+{
+  mLowRange = _lowRange;
+  mUpRange = _upRange;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+ProcessExit Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  double th = mThresh, max = mMaxVal;
+  try {
+    if (th == 0.0 && max == 0.0) {
+      cv::Scalar m, stdv;
+      cv::meanStdDev(matIn, m, stdv);
+      th = m[0] - stdv[0];
+      max = m[0] + stdv[0];
+    }
+    cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
+  } catch (cv::Exception &e){
+    logPrintError(e.what());
+    return ProcessExit::FAILURE;
+  }
+  return ProcessExit::SUCCESS;
+}
+
+void Binarize::setParameters(double thresh, double maxval, bool inverse)
+{
+  mThresh = thresh;
+  mMaxVal = maxval;
+  bInverse = inverse;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+ProcessExit EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  try {
+    cv::equalizeHist(matIn, *matOut);
+  } catch (cv::Exception &e){
+    logPrintError(e.what());
+    return ProcessExit::FAILURE;
+  }
+  return ProcessExit::SUCCESS;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+ProcessExit FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  try {
+    f(matIn, matOut);
+  } catch (cv::Exception &e){
+    logPrintError(e.what());
+    return ProcessExit::FAILURE;
+  }
+  return ProcessExit::SUCCESS;
+}
 
 /* ---------------------------------------------------------------------------------- */
 

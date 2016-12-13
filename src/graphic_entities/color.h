@@ -197,7 +197,7 @@ public:
    * \brief Constructora de copia
    * \param[in] color Color como entero
    */
-  Color(Color &color) : mColor(color.mColor) {}
+  Color(const Color &color) : mColor(color.mColor) {}
 
   /*!
    * \brief Constructora
@@ -256,7 +256,9 @@ public:
    * \brief Constructora
    * \param[in] color Color como cv::Scalar de OpenCV
    */
+#ifdef I3D_ENABLE_OPENCV
   Color(const cv::Scalar &color);
+#endif
 
   /*!
    * \brief Destructora
@@ -361,6 +363,11 @@ public:
     }
     return *this;
   }
+
+  /*! 
+   * \brief Genera un color aleatorio 
+   */
+  static Color randomColor();
 };
 
 template<typename T> inline
@@ -373,9 +380,13 @@ T Color::get() const
     *(std::string *)_color = intToHex(mColor);
   } else if (typeid(T) == typeid(int)) {
     color = mColor;
-  } else if (typeid(T) == typeid(cv::Scalar)) {
+  } 
+#ifdef I3D_ENABLE_OPENCV
+  else if (typeid(T) == typeid(cv::Scalar)) {
     *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
-  } else {
+  } 
+#endif
+  else {
     throw std::exception("Tipo de conversión no permitida");
   }
   return color;

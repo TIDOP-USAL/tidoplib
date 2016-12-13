@@ -2,6 +2,7 @@
 
 #include "core/defs.h"
 #include "core/messages.h"
+#include "core/exception.h"
 #include "segment.h"
 
 using namespace I3D;
@@ -13,9 +14,9 @@ void DetectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<l
     cvtColor(img, imageGrayProcces, CV_BGR2GRAY);
   
   // Se aplican procesos previos a las imagenes
-  pImgprolist->execute(img, &imageGrayProcces);
+  if (pImgprolist->execute(img, &imageGrayProcces) == ProcessExit::FAILURE) return;
 
-  pLineDetector->run(imageGrayProcces);
+  if (pLineDetector->run(imageGrayProcces) == LineDetector::Exit::FAILURE) return;
   groupLinesByDist(pLineDetector->getLines(), linesGroup, 10);
 
   // Se eliminan los grupos con pocas lineas

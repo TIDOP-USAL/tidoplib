@@ -34,6 +34,14 @@ enum class LD_TYPE {
  */
 class I3D_EXPORT LineDetector
 {
+public:
+
+  enum class Exit
+  {
+    SUCCESS,
+    FAILURE
+  };
+
 protected:
 
   /*!
@@ -95,17 +103,19 @@ public:
   /*!
    * \brief Ejecuta el detector de lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  virtual int run(cv::Mat &image) = 0;
+  virtual LineDetector::Exit run(cv::Mat &image) = 0;
 
   /*!
    * \brief Ejecuta el detector de lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
    * \param[in] angletol Angulo y tolerancia
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  virtual int run(cv::Mat &image, const cv::Scalar &angletol) = 0;
+  virtual LineDetector::Exit run(cv::Mat &image, const cv::Scalar &angletol) = 0;
 
   /*!
    * \brief Establece rango angular en el cual se buscarán las líneas
@@ -162,17 +172,19 @@ public:
   /*!
    * \brief Calcula la transformada de Hough para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image) override;
+  LineDetector::Exit run(cv::Mat &image) override;
 
   /*!
    * \brief Calcula la transformada de Hough para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas
    * \param[in] angletol Angulo y tolerancia
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image, const cv::Scalar &angletol) override;
+  LineDetector::Exit run(cv::Mat &image, const cv::Scalar &angletol) override;
 
   /*!
    * \brief Establece el valor de threshold.
@@ -229,17 +241,19 @@ public:
   /*!
    * \brief Calcula la transformada de Hough probabilistica para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image) override;
+  LineDetector::Exit run(cv::Mat &image) override;
 
   /*!
    * \brief Calcula la transformada de Hough probabilistica para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
    * \param[in] angletol Angulo y tolerancia
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image, const cv::Scalar &angletol) override;
+  LineDetector::Exit run(cv::Mat &image, const cv::Scalar &angletol) override;
 
   /*!
    * \brief Establece el valor de threshold.
@@ -283,17 +297,19 @@ public:
   /*!
    * \brief Calcula la transformada de Hough probabilistica para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image) override;
+  LineDetector::Exit run(cv::Mat &image) override;
 
   /*!
    * \brief Calcula la transformada de Hough probabilistica para lineas
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
    * \param[in] angletol Angulo y tolerancia
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image, const cv::Scalar &angletol) override;
+  LineDetector::Exit run(cv::Mat &image, const cv::Scalar &angletol) override;
 
   /*!
    * \brief Establece los parámetros
@@ -354,17 +370,19 @@ public:
   /*!
    * \brief Ejecuta el detector de lineas LSD
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image) override;
+  LineDetector::Exit run(cv::Mat &image) override;
 
   /*!
    * \brief Ejecuta el detector de lineas LSD
    * \param[in] image Imagen en la cual se quieren detectar las lineas.
    * \param[in] angletol Angulo y tolerancia
-   * \return Error
+   * \return Exit::SUCCESS Si la operación se ha realizado con éxito o Exit::FAILURE en caso de error.
+   * \see Exit
    */
-  int run(cv::Mat &image, const cv::Scalar &angletol) override;
+  LineDetector::Exit run(cv::Mat &image, const cv::Scalar &angletol) override;
 };
 
 /* ---------------------------------------------------------------------------------- */

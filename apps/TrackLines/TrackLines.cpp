@@ -436,8 +436,8 @@ int main(int argc, char *argv[])
 
         cv::Mat mOut;
         // Procesado previo a la imagen para la detección de lineas
-        imgprolist.execute(crop_frame, &mOut);
-        oLD->run(mOut);
+        if (imgprolist.execute(crop_frame, &mOut) == ProcessExit::FAILURE) exit(EXIT_FAILURE);
+        if (oLD->run(mOut) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
         oLD->drawLines(crop_frame);
         logPrintInfo("Número de lineas detectado: %i", oLD->getLines().size());
         if (!oLD->getLines().empty()) {
@@ -554,8 +554,7 @@ int main(int argc, char *argv[])
           // Procesado previo a la imagen para la detección de lineas
           imgprolist.execute(crop_frame, &mOut);
           
-          //oLD->run(mOut);
-          oLD->run(mOut, cv::Scalar(line_proj.angleOY()/*conductor_direction + CV_PI / 2*/, 0.25));
+          if (oLD->run(mOut, cv::Scalar(line_proj.angleOY(), 0.25)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
 
           logPrintInfo("Número de lineas detectado: %i", oLD->getLines().size());
           if (!oLD->getLines().empty()) {

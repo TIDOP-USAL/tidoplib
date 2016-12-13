@@ -6,6 +6,7 @@
 
 #include "core/utils.h"
 #include "core/messages.h"
+#include "core/exception.h"
 
 using namespace std;
 
@@ -29,16 +30,15 @@ void LineDetector::setAngleRange(const cv::Scalar &at)
 
 /* ---------------------------------------------------------------------------------- */
 
-int ldHouh::run(cv::Mat &image)
+LineDetector::Exit ldHouh::run(cv::Mat &image)
 {
-  int i_err = 0;
   mLines.clear();
   std::vector<cv::Vec2f> auxlines;
   try{
     HoughLines(image, auxlines, 1, I3D_DEG_TO_RAD, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
   } catch (std::exception &e) {
     logPrintError(e.what());
-    i_err = 1;
+    return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < auxlines.size(); i++)
   {
@@ -53,30 +53,29 @@ int ldHouh::run(cv::Mat &image)
     l.pt2.y = I3D_ROUND_TO_INT(y0 - 1000. * (a));
     mLines.push_back(l);
   }
-  return i_err;
+  return LineDetector::Exit::SUCCESS;
 }
 
-int ldHouh::run(cv::Mat &image, const cv::Scalar &_angletol)
+LineDetector::Exit ldHouh::run(cv::Mat &image, const cv::Scalar &_angletol)
 {
   double _min_theta = mMinTheta;
   double _max_theta = mMaxTheta;
   mMinTheta = _angletol[0] - _angletol[1];
   mMaxTheta = _angletol[0] + _angletol[1];
-  int i_ret = run(image);
+  LineDetector::Exit r_lde = run(image);
   mMinTheta = _min_theta;
   mMaxTheta = _max_theta;
-  return i_ret;
+  return r_lde;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
-int ldHouhP::run(cv::Mat &image)
+LineDetector::Exit ldHouhP::run(cv::Mat &image)
 {
-  int i_ret = 0;
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
+//#ifdef _DEBUG
+//  double startTick, time;
+//  startTick = (double)cv::getTickCount(); // measure time
+//#endif
   double angle = 0.0;
   mLines.clear();
   vector<cv::Vec4i> linesaux;
@@ -84,7 +83,7 @@ int ldHouhP::run(cv::Mat &image)
     HoughLinesP(image, linesaux, 1., I3D_DEG_TO_RAD, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {
     logPrintError(e.what());
-    i_ret = 1;
+    return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
@@ -93,23 +92,23 @@ int ldHouhP::run(cv::Mat &image)
       mLines.push_back(l);
     }
   }
-#ifdef _DEBUG
-  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  printf("\nTime ldHouhP [s]: %.3f\n", time);
-#endif
-  return i_ret;
+//#ifdef _DEBUG
+//  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
+//  printf("\nTime ldHouhP [s]: %.3f\n", time);
+//#endif
+  return LineDetector::Exit::SUCCESS;
 }
 
-int ldHouhP::run(cv::Mat &image, const cv::Scalar &_angletol)
+LineDetector::Exit ldHouhP::run(cv::Mat &image, const cv::Scalar &_angletol)
 {
   double _min_theta = mMinTheta;
   double _max_theta = mMaxTheta;
   mMinTheta = _angletol[0] - _angletol[1];
   mMaxTheta = _angletol[0] + _angletol[1];
-  int i_ret = run(image);
+  LineDetector::Exit r_lde = run(image);
   mMinTheta = _min_theta;
   mMaxTheta = _max_theta;
-  return i_ret;
+  return r_lde;
 }
 
 void ldHouhP::setParameters(double _minLineLength, double _maxLineGap)
@@ -120,13 +119,8 @@ void ldHouhP::setParameters(double _minLineLength, double _maxLineGap)
 
 /* ---------------------------------------------------------------------------------- */
 
-int ldHouhFast::run(cv::Mat &image)
+LineDetector::Exit ldHouhFast::run(cv::Mat &image)
 {
-  int i_ret = 0;
-#ifdef _DEBUG
-  double startTick, time;
-  startTick = (double)cv::getTickCount(); // measure time
-#endif
   double angle = 0.0;
   mLines.clear();
   std::vector<cv::Vec4i> linesaux;
@@ -139,11 +133,12 @@ int ldHouhFast::run(cv::Mat &image)
     if (!ldHouhFast::getLocalExtr(linesaux, image, hough, minWeight, 100)) {
       //cout << "Failed to find local maximums on FHT image";
       //return -2;
-      i_ret = 1;
+      //logPrintError("Failed to find local maximums on FHT image");
+      I3D_THROW_ERROR("Failed to find local maximums on FHT image");
     }
-  } catch (exception &e) {
-    logPrintError(e.what());
-    i_ret = 1;
+  } catch (I3D::Exception &e) {
+    Message::message(e.what()).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG);
+    return LineDetector::Exit::FAILURE;
   }
 
   for (size_t i = 0; i < linesaux.size(); i++) {
@@ -153,23 +148,19 @@ int ldHouhFast::run(cv::Mat &image)
       mLines.push_back(l);
     }
   }
-#ifdef _DEBUG
-  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-  printf("\nTime ldHouhP [s]: %.3f\n", time);
-#endif
-  return i_ret;
+  return LineDetector::Exit::SUCCESS;
 }
 
-int ldHouhFast::run(cv::Mat &image, const cv::Scalar &_angletol)
+LineDetector::Exit ldHouhFast::run(cv::Mat &image, const cv::Scalar &_angletol)
 {
   double _min_theta = mMinTheta;
   double _max_theta = mMaxTheta;
   mMinTheta = _angletol[0] - _angletol[1];
   mMaxTheta = _angletol[0] + _angletol[1];
-  int i_ret = run(image);
+  LineDetector::Exit r_lde = run(image);
   mMinTheta = _min_theta;
   mMaxTheta = _max_theta;
-  return i_ret;
+  return r_lde;
 }
 
 void ldHouhFast::setParameters( )
@@ -265,9 +256,8 @@ bool ldHouhFast::getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src,
 }
 /* ---------------------------------------------------------------------------------- */
 
-int ldLSD::run(cv::Mat &image)
+LineDetector::Exit ldLSD::run(cv::Mat &image)
 {
-  int i_ret = 0;
   double angle = 0.0;
   mLines.clear();
   vector<cv::Vec4i> linesaux;
@@ -275,7 +265,7 @@ int ldLSD::run(cv::Mat &image)
     lineSegmentDetector->detect(image, linesaux/*, mWidth, mPrec, nfa*/);
   } catch (exception &e) {
     logPrintError(e.what());
-    i_ret = 1;
+    return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
@@ -284,19 +274,19 @@ int ldLSD::run(cv::Mat &image)
       mLines.push_back(l);
     }
   }
-  return i_ret;
+  return LineDetector::Exit::SUCCESS;
 }
 
-int ldLSD::run(cv::Mat &image, const cv::Scalar &_angletol)
+LineDetector::Exit ldLSD::run(cv::Mat &image, const cv::Scalar &_angletol)
 {
   double _min_theta = mMinTheta;
   double _max_theta = mMaxTheta;
   mMinTheta = _angletol[0] - _angletol[1];
   mMaxTheta = _angletol[0] + _angletol[1];
-  int i_ret = run(image);
+  LineDetector::Exit r_lde = run(image);
   mMinTheta = _min_theta;
   mMaxTheta = _max_theta;
-  return i_ret;
+  return r_lde;
 }
 
 /* ---------------------------------------------------------------------------------- */

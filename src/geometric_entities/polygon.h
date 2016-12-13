@@ -163,6 +163,12 @@ bool Polygon<T>::isInner(const cv::Point_<T> &point) const
     nIntersection--;
   if (nIntersection % 2 == 0) return false;
   else return true;
+
+  // Probar con OpenCV
+  //double i_pol_test = cv::pointPolygonTest(mPoints, cv::Point2f(point.x, point.y), false);
+  //if (i_pol_test == -1) return false;
+  //else return true
+
 }
 
 template<typename T> inline
