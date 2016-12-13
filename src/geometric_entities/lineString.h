@@ -107,15 +107,15 @@ LineString<T>::LineString(std::initializer_list<cv::Point_<T>> listPoints)
 template<typename T> inline
 void LineString<T>::add(const cv::Point_<T> &point)
 { 
-  mPoints.push_back(point);
+  this->mPoints.push_back(point);
 }
 
 template<typename T> inline
 double LineString<T>::length()  const
 {
   double length = 0.;
-  for (size_t i = 1; i < mPoints.size(); i++) {
-    length += distance(mPoints[i-1], mPoints[i]);
+  for (size_t i = 1; i < this->mPoints.size(); i++) {
+    length += distance(this->mPoints[i-1], this->mPoints[i]);
   }
   return length;
 }

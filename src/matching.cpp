@@ -124,7 +124,7 @@ void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
     sortVector(&match_aux);
     double min_dist = match_aux.front().distance;
     
-    for (int i = 0; i < match_aux.size(); i++) {
+    for (size_t i = 0; i < match_aux.size(); i++) {
       if (match_aux[i].distance <= std::max(2 * min_dist, ratio)) {
         gm->push_back(match_aux[i]);
       }

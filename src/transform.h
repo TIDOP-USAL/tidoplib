@@ -17,6 +17,7 @@
 #include "core/messages.h"
 #include "geometric_entities/entity.h"
 #include "geometric_entities/segment.h"
+#include "geometric_entities/bbox.h"
 
 namespace I3D
 {
@@ -37,7 +38,8 @@ enum class transform_type {
   AFIN,            /*!< Afin */
   PERSPECTIVE,     /*!< Perspectiva */
   PROJECTIVE,      /*!< Projectiva */
-  HELMERT_3D
+  HELMERT_3D,      /*!< Helmert 3D */
+  POLYNOMIAL       /*!< Transformación polinómica*/
 };
 
 
@@ -290,6 +292,8 @@ private:
    */
   std::list<std::shared_ptr<Transform<T>>> mTransf;
 
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -402,7 +406,7 @@ double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> 
 }
 
 template<typename T> inline
-void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
 {
   *out = in;
   for (auto trf : mTransf) {
@@ -420,6 +424,10 @@ void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type
 template<typename T>
 class I3D_EXPORT Transform2D : public Transform<T>
 {
+private:
+
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -479,7 +487,7 @@ public:
 };
 
 template<typename T> inline
-void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
 {
   if (in.getType() == entity_type::WINDOW) {
     Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
@@ -494,9 +502,8 @@ void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type
              in.getType() == entity_type::POLYGON_2D) {
     const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
     dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
-    std::vector<cv::Point_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
-    for (std::vector<cv::Point_<sub_type>>::const_iterator it = _in.begin(); 
-      it != _in.end(); it++, it_out++) {
+    typename std::vector<T>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+    for (typename std::vector<T>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
       this->transform(*it, &(*it_out), bDirect);
     }
   } else {
@@ -516,6 +523,8 @@ class I3D_EXPORT TrfPerspective : public Transform2D<T>
 private:
 
   cv::Mat H;
+
+  typedef typename T::value_type sub_type;
 
 public:
 
@@ -607,7 +616,7 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
       //cv::Mat H2 = cv::findHomography(pts1, pts2);
       //... determinar error
     } else
-      printError("Número de puntos no valido. Se necesitan %i puntos para poder calcular los parámetros de la transformación", mMinPoint); 
+      printError("Número de puntos no valido. Se necesitan %i puntos para poder calcular los parámetros de la transformación", this->mMinPoint);
   }
   return H.empty() ? -1. : 1.;
 }
@@ -629,7 +638,8 @@ private:
    */
   T translate;
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -845,7 +855,8 @@ private:
    */
   double r2;
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -1054,7 +1065,8 @@ class I3D_EXPORT Helmert2D : public Transform2D<T>
 {
 private:
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -1347,7 +1359,8 @@ class I3D_EXPORT Afin : public Transform2D<T>
 {
 private:
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -1701,7 +1714,6 @@ class I3D_EXPORT Projective : public Transform2D<T>
 {
 private:
 
-  //typedef typename T::value_type sub_type;
   /*!
    * \brief Parámetro a
    */
@@ -1781,6 +1793,8 @@ private:
    * \brief Parámetro 'h' transformación inversa
    */
   double hi;
+
+  typedef typename T::value_type sub_type;
 
 public:
 
@@ -2020,7 +2034,7 @@ class I3D_EXPORT polynomialTransform : public Transform2D<T>
 {
 private:
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
 
 public:
 
@@ -2084,7 +2098,7 @@ double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::ve
       double ymin = I3D_DOUBLE_MAX;
       double xmax = I3D_DOUBLE_MIN;
       double ymax = I3D_DOUBLE_MIN;
-      for( int iv = 0; iv < n1; iv++ ) {
+      for( int ipt = 0; ipt < n1; ipt++ ) {
         T &ptoi = pts1[ipt];
         if ( ptoi.x > xmax ) xmax = ptoi.x;
         if ( ptoi.x < xmin ) xmin = ptoi.x;
@@ -2143,8 +2157,12 @@ T polynomialTransform<T>::transform(const T &in, bool bDirect) const
 template<typename T>
 class I3D_EXPORT Transform3D : public Transform<T>
 {
+private:
+
+  typedef typename T::value_type sub_type;
 
 public:
+
   /*!
    * \brief Transform
    */
@@ -2202,21 +2220,23 @@ public:
 };
 
 template<typename T> inline
-void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const
+void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
 {
   if (in.getType() == entity_type::BBOX) {
-    this->transform(dynamic_cast<const BBOX<sub_type> &>(in).pt1, &w->pt1, bDirect);
-    this->transform(dynamic_cast<const BBOX<sub_type> &>(in).pt2, &w->pt2, bDirect);
+    Bbox<sub_type> *bbox = dynamic_cast<const Bbox<sub_type> *>(out);
+    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt1, &bbox->pt1, bDirect);
+    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt2, &bbox->pt2, bDirect);
   } else if(in.getType() == entity_type::SEGMENT_3D) {
-    this->transform(dynamic_cast<const SEGMENT_3D<sub_type> &>(in).pt1, &w->pt1, bDirect);
-    this->transform(dynamic_cast<const SEGMENT_3D<sub_type> &>(in).pt2, &w->pt2, bDirect);
+    Segment3D<sub_type> *segment3d = dynamic_cast<Segment3D<sub_type> *>(out);
+    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt1, &segment3d->pt1, bDirect);
+    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt2, &segment3d->pt2, bDirect);
   } else if (in.getType() == entity_type::LINESTRING_3D ||
              in.getType() == entity_type::MULTIPOINT_POINT_3D ||
              in.getType() == entity_type::POLYGON_3D) {
     const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
     dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
-    std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
-    for (std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin(); 
+    typename std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+    for (typename std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin();
       it != _in.end(); it++, it_out++) {
       this->transform(*it, &(*it_out), bDirect);
     }
@@ -2246,7 +2266,8 @@ class I3D_EXPORT Helmert3D : public Transform3D<T>
 {
 private:
 
-  //typedef typename T::value_type sub_type;
+  typedef typename T::value_type sub_type;
+
 public:
 
   /*!
@@ -2332,7 +2353,7 @@ public:
    * \param[in] rotation Matriz de rotación
    */
   Helmert3D(sub_type x0, sub_type y0, sub_type z0, double scale, const std::array<std::array<double, 3>, 3> &rotation) 
-    : Transform3D(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mR(rotation)
+    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mR(rotation)
   {
     eulerAngles(mR, &mOmega, &mPhi, &mKappa);
     update();

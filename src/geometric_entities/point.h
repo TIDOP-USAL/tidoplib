@@ -130,7 +130,7 @@ public:
    * \brief resize
    * \param[in] size nuevo tamaño
    */
-  void resize(int size) { mPoints.resize(size); }
+  void resize(int size) { this->mPoints.resize(size); }
 
 };
 
@@ -158,7 +158,7 @@ MultiPoint<T>::MultiPoint(std::initializer_list<cv::Point_<T>> listPoints)
 template<typename T> inline
 void MultiPoint<T>::add(const cv::Point_<T> &point)
 {
-  mPoints.push_back(point);
+  this->mPoints.push_back(point);
 }
 
 typedef MultiPoint<int> MultiPointI;

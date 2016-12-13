@@ -29,9 +29,9 @@ void Exception::messagef()
     mMessage = mError;
   } else {
 #if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError, mFile, mLine, mFunction);
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
 #else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", mError, mFile, mLine, mFunction);
+    snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
 #endif
     mMessage = std::string(buf);
   }  

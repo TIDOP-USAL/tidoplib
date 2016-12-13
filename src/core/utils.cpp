@@ -206,15 +206,15 @@ int getFileDir(const char *path, char *dir, int size)
 #ifdef _MSC_VER
   return _splitpath_s(path, NULL, NULL, dir, size, NULL, NULL, NULL, NULL);
 #else
-  char *dirc = strdup(path);
-  dir = dirname(dirc);
+  char *dirc = (char *)malloc(size);//strdup(path);
+  if (dirc) dir = dirname(dirc);
   return (dir) ? 0 : 1;
 #endif
 }
 
 int getFileDrive(const char *path, char *drive, int size)
 {
-  int r_err;
+  int r_err = 0;
 #ifdef _MSC_VER
   r_err = _splitpath_s(path, drive, size, NULL, NULL, NULL, NULL, NULL, NULL);
 #else
@@ -225,7 +225,7 @@ int getFileDrive(const char *path, char *drive, int size)
 
 int getFileExtension(const char *path, char *ext, int size)
 {
-  int r_err;
+  int r_err = 0;
 #ifdef _MSC_VER
   r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, size);
 #else
@@ -236,20 +236,18 @@ int getFileExtension(const char *path, char *ext, int size)
 
 int getFileName(const char *path, char *name, int size)
 {
-  int r_err;
 #ifdef _MSC_VER
-  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
+  return _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
 #else
-  char *basec = strdup(path);
-  name = basename(basec);
+  char *basec = (char *)malloc(size);
+  if (basec) name = basename(basec);
   return (name) ? 0 : 1;
 #endif
-  return r_err;
 }
 
 int getFileDriveDir(const char *path, char *drivedir, int size)
 {
-  int r_err;
+  int r_err = 0;
   char drive[I3D_MAX_DRIVE];
   char dir[I3D_MAX_DIR];
 #ifdef _MSC_VER

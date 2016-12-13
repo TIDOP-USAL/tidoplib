@@ -136,7 +136,7 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
   std::vector<ldGroupLines> linesGrops;
   groupLinesByDist(linesIn, &linesGrops, dist);
 
-  for (int ilg = 0; ilg < linesGrops.size(); ilg++) {
+  for (size_t ilg = 0; ilg < linesGrops.size(); ilg++) {
     std::vector<cv::Point> pts;
     int xmin = I3D_INT_MAX;
     int xmax = I3D_INT_MIN;
@@ -243,7 +243,7 @@ void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines
     linesaux.erase(linesaux.begin());
 
     for (int ilg = 0; ilg < lg.getSize(); ilg++) {
-      for (int i = 0; i < linesaux.size(); i++) {
+      for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isNear(linesaux[i], dist)) {
           lg.add(linesaux[i]);
           linesaux.erase(linesaux.begin() + i);

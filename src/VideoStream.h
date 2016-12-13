@@ -511,14 +511,14 @@ private:
   std::string mWindowName;
 
   /*!
-   * \brief Añade una barra de posición del video
-   */
-  bool bPosTrackBar;
-
-  /*!
    * \brief flags de ventana de OpenCV
    */
   int mFlags;
+
+  /*!
+   * \brief Añade una barra de posición del video
+   */
+  bool bPosTrackBar;
 
   /*!
    * \brief Número de frames del video

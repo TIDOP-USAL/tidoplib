@@ -12,8 +12,9 @@
 #include "opencv2/core/utility.hpp"
 
 #include "core/defs.h" // Para quitar warnings de sfm
+
+#ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
-#define CERES_FOUND 1 //Por ahora
 #include <opencv2/sfm/conditioning.hpp>
 #include <opencv2/sfm/fundamental.hpp>
 #include <opencv2/sfm/io.hpp>
@@ -24,9 +25,9 @@ I3D_SUPPRESS_WARNINGS
 #include <opencv2/sfm/reconstruct.hpp>
 #include <opencv2/sfm/simple_pipeline.hpp>
 #endif
-
 #include "libmv\simple_pipeline\tracks.h"
 I3D_DEFAULT_WARNINGS
+#endif
 
 #include "matching.h"
 
@@ -157,7 +158,7 @@ public:
 
 
 
-
+#ifdef I3D_ENABLE_OPENCV_SFM
 
 class Reconstruction3D
 {
@@ -281,7 +282,7 @@ public:
   void init(bool refinement = true);
 };
 
-
+#endif
 
 
 
@@ -330,7 +331,8 @@ private:
  * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas 
  * utilizando solo cálculos incrementales con enteros que se pueden adaptar para
  * desplegar también curvas.
- * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la  * trayectoria de la línea.
+ * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
+ * trayectoria de la línea.
  */
 class BresenhamLine : public lineAlgorithms
 {
@@ -357,7 +359,7 @@ BresenhamLine::~BresenhamLine()
  * \f$ Dy = m * Dx \f$<BR>
  * \f$ Dx = Dy / m \f$<BR>
  * Se efectúa un muestreo de la línea en intervalos unitarios en una 
- * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
+ * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
  */
 class DDA : public lineAlgorithms
 {
