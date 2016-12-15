@@ -1,18 +1,18 @@
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7854.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7854  // Encuentra baliza con medianBlur
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7973.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7973  // Encuentra baliza con medianBlur
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8288.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8288  // Encuentra baliza con medianBlur
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8308.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8308  // Encuentra baliza con medianBlur
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7854.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7854  // Encuentra baliza con medianBlur
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7973.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7973  // Encuentra baliza con medianBlur
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8288.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8288  // Encuentra baliza con medianBlur
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8308.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8308  // Encuentra baliza con medianBlur
 
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0728.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0728
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0736.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0736  // Encuentra baliza con gaussianBlur
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7949.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7949
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A7954.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A7954
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8066.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8066
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8187.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8187
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0728.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0728
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0736.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0736  // Encuentra baliza con gaussianBlur
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7949.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7949
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A7954.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A7954
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8066.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8066
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8187.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8187
 
 
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A8424.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A8424
-//--img=D:\Desarrollo\datos\elementos_a_detectar\2K7A0699.jpg --out=D:\Desarrollo\datos\elementos_a_detectar\2K7A0699  // No hay baliza y saca circulos en zonas que no hay
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A8424.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A8424
+//--img=C:\Desarrollo\datos\elementos_a_detectar\2K7A0699.jpg --out=C:\Desarrollo\datos\elementos_a_detectar\2K7A0699  // No hay baliza y saca circulos en zonas que no hay
 
 #include <windows.h>
 #include <memory>
@@ -41,6 +41,57 @@ using namespace I3D;
 using namespace std;
 using namespace cv;
 using namespace cv::xfeatures2d;
+
+// Variables globales para pruebas
+int higher_threshold = 220;
+int max_higher_threshold = 255;
+int higher_accum_threshold = 80;
+int max_higher_accum_threshold = 255;
+
+cv::Mat image;
+
+std::mutex _mtx;
+
+
+void houghCircles( cv::Mat &red )
+{
+  std::vector<Vec3f> circles;
+  if ( higher_accum_threshold <= 0 || higher_threshold <= 0 ) return;
+  HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, higher_threshold, higher_accum_threshold, 30, 80 );
+  for (size_t i = 0; i < circles.size(); i++) {
+    
+    cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
+    int radius = I3D_ROUND_TO_INT(circles[i][2]);
+    cv::Mat aux;
+    image.copyTo(aux);
+    circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
+    circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
+    printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+    WindowI w_aux(center,300);
+    w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
+    cv::Mat m_aux;
+    aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+    _mtx.lock();
+    cv::imshow("Baliza", m_aux);
+    _mtx.unlock();
+    cv::waitKey();
+  }
+}
+
+void change_higher_threshold( int _pos, void *_image )
+{
+  cv::Mat red = *(cv::Mat *)_image;
+  higher_threshold = _pos;
+  houghCircles(red);
+}
+
+void change_higher_accum_threshold( int _pos, void *_image )
+{
+  cv::Mat red = *(cv::Mat *)_image;
+  higher_accum_threshold = _pos;
+  houghCircles(red);
+}
+
 
 /*!
  * Detección de daños en conductores de líneas eléctricas:
@@ -90,7 +141,8 @@ int main(int argc, char *argv[])
   std::shared_ptr<I3D::MedianBlur> medianBlur = std::make_shared<I3D::MedianBlur>(5);
   std::shared_ptr<I3D::EqualizeHistogram> equalizeHistogram = std::make_shared<I3D::EqualizeHistogram>();
 
-  cv::Mat image = cv::imread(img.c_str());
+  //cv::Mat image = cv::imread(img.c_str());
+  image = cv::imread(img.c_str());
   //I3D::Resize res(50.);
   //res.execute(image, &image);
   
@@ -105,7 +157,9 @@ int main(int argc, char *argv[])
   cv::Mat channels[3];
   cv::split(image, channels);
   cv::Mat red = channels[2];
-  cv::Mat blue = channels[0];
+  // libero memoria
+  for (int i = 0; i < 3; i++)
+    channels[i].release();
 
   // Intento de quitar la sombra de la baliza
   //cv::Mat image_cmyk;
@@ -128,7 +182,7 @@ int main(int argc, char *argv[])
   //cvtColor(image, image_gray, CV_RGB2GRAY);
   //bilateralFilter->execute(image_gray, &image_gray);
   //equalizeHistogram->execute(image_gray, &image_gray);
-  bilateralFilter->execute(blue, &blue);
+  bilateralFilter->execute(red, &red);
 
  // cv::medianBlur(image, image, 3);
 
@@ -189,28 +243,41 @@ int main(int argc, char *argv[])
   //cv::Mat image_gray;
   //cvtColor(image, image_gray, CV_RGB2GRAY);
 
-  // libero memoria
-  //for (int i = 0; i < 3; i++)
-  //  channels[i].release();
 
   // Busqueda baliza
-  medianBlur->execute(blue, &blue);
-  //gaussianBlur->execute(image_gray, &image_gray);
+  medianBlur->execute(red, &red);
+  //gaussianBlur->execute(red, &red);
   //erotion->execute(red, &red);
   //dilate->execute(red, &red);
-  std::vector<Vec3f> circles;
-  HoughCircles(blue, circles, HOUGH_GRADIENT, 2, blue.rows/4, 150, 100, 25, 150 );
-  for (size_t i = 0; i < circles.size(); i++) {
-    cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
-    int radius = I3D_ROUND_TO_INT(circles[i][2]);
-    circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
-    circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
-    printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+
+  if ( 0 ) {
+    std::vector<Vec3f> circles;
+    //HoughCircles(red, circles, HOUGH_GRADIENT, 1, red.rows/4, 200, 50, 25, 150 );
+    HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, 220, 85, 50, 100 );
+    for (size_t i = 0; i < circles.size(); i++) {
+      cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
+      int radius = I3D_ROUND_TO_INT(circles[i][2]);
+      circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
+      circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
+      printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+      WindowI w_aux(center,300);
+      w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
+      cv::Mat m_aux;
+      image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+      cv::imshow("Baliza", m_aux);
+      cv::waitKey();
+    }
+  } else {
+    cv::namedWindow( "Baliza", WINDOW_AUTOSIZE );
+    cv::createTrackbar( "Threshold: ", "Baliza", &higher_threshold, max_higher_threshold, change_higher_threshold, &red );
+    cv::createTrackbar( "Accumulator threshold: ", "Baliza", &higher_accum_threshold, max_higher_accum_threshold, change_higher_accum_threshold, &red );
+    //cv::imshow( "Baliza", src );
+
+    houghCircles(red);
   }
 
-  // Recortar la imagen para mostrarla
-  //cv::imshow("Baliza", image);
-  //cv::waitKey();
+
+  cv::waitKey(0);
 
   return 0;
 }

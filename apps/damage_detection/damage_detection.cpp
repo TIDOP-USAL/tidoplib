@@ -136,19 +136,23 @@ int main(int argc, char *argv[])
   }
 
   printInfo("Leyendo imagen %s", img.c_str());
-  cv::Mat image = cv::imread(img.c_str(), cv::IMREAD_GRAYSCALE);
-
+  cv::Mat full_image = cv::imread(img.c_str());
+  cv::Mat image;
+  full_image.colRange(1000, full_image.cols - 1000).copyTo(image);
+  full_image.release();
+  cv::Mat image_gray;
+  cvtColor(image, image_gray, CV_BGR2GRAY);
   // Determinar angulo con Fourier
   std::vector<int> colFourier;
-  colFourier.push_back(image.cols / 2);
+  colFourier.push_back(image_gray.cols / 2);
   std::vector<std::vector<cv::Point>> ptsFourier;
-  double angleFourier = fourierLinesDetection(image, colFourier, &ptsFourier);
+  double angleFourier = fourierLinesDetection(image_gray, colFourier, &ptsFourier);
 
   // Se aplica el procesado previo a la imagen
   // kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, angleFourier, lm, gm);
   // filter2d->setParameters(CV_32F, kernel);
   cv::Mat image_pro;
-  if ( imgprolist.execute(image, &image_pro) == ProcessExit::FAILURE) 
+  if ( imgprolist.execute(image_gray, &image_pro) == ProcessExit::FAILURE) 
     exit(EXIT_FAILURE);
 
   // Detección de lineas
@@ -156,7 +160,7 @@ int main(int argc, char *argv[])
   if (pLineDetector->run(image_pro, cv::Scalar(angleFourier, 0.15)) == LineDetector::Exit::FAILURE) 
     exit(EXIT_FAILURE);
 
-  pLineDetector->drawLines(image);
+  pLineDetector->drawLines(image_gray);
   const std::vector<Line> &detect_lines = pLineDetector->getLines();
   if ( detect_lines.empty() ) { 
     printError("No se han detectando lineas");
@@ -171,37 +175,37 @@ int main(int argc, char *argv[])
     joinLinesByDist(linesGroups[ig].getLines(), &linesJoin, 40);
   }
 
-  cv::Mat gap = cv::Mat::zeros(image.size(), CV_8U);
+  cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
 
   Helmert2D<cv::Point> trf(0, 0, 4., 0.0);
 
   //std::vector<std::vector<cv::Point>> buffer;
   cv::Scalar m, stdv;
 
-  bilateralFilter->execute(image, &image);
+  bilateralFilter->execute(image_gray, &image_gray);
 
   int widthBuffer = 80;
 
   for (auto &line : linesJoin) {
     trf.transformEntity(line, &line, true);
     //Para comprobar...
-    cv::line(image, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
+    cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
     lineBuffer(line, widthBuffer, &buff);
 
     // Se aplica la mascara a la imagen y obtenemos la zona de estudio.
-    cv::Mat mask = cv::Mat::zeros(image.size(), CV_8U);
+    cv::Mat mask = cv::Mat::zeros(image_gray.size(), CV_8U);
     cv::Mat aux(buff);
     const cv::Point *pts = (const cv::Point*) aux.data;
     int npts = aux.rows;
     cv::fillPoly(mask, &pts, &npts, 1, cv::Scalar(1, 1, 1) );
     cv::Mat searchArea;
-    cv::bitwise_and(image, image, searchArea, mask);
+    cv::bitwise_and(image_gray, image_gray, searchArea, mask);
     //imshow("Fourier", searchArea);
     //cv::waitKey();
 
     // binarización de la imagen
-    cv::meanStdDev(image, m, stdv, mask);
+    cv::meanStdDev(image_gray, m, stdv, mask);
     cv::Mat imgBN;
     cv::threshold(searchArea, imgBN, 120/*m[0] + stdv[0]*/, 255, cv::THRESH_BINARY);
 
@@ -292,32 +296,37 @@ int main(int argc, char *argv[])
     // Arrastramos una media de 25 posiciones para ver la variación
     //std::vector<int> accumulated;
 
-    cv::Point ini_ = cv::Point(0, 0);
-    cv::Point end_ = cv::Point(0, 0);
+    cv::Point iniDamage = cv::Point(0, 0);
+    cv::Point endDamage = cv::Point(0, 0);
+    std::vector<SegmentI> segmentDamage;
     for (int is = 25; is < v_with.size() - 25; is++, ++li3) {
       double sum = std::accumulate(v_with.begin() + is - 25, v_with.begin() + is + 25, 0);
       int accumul = I3D_ROUND_TO_INT(sum / 50.);
       if ( accumul < I3D_ROUND_TO_INT(th1) || accumul > I3D_ROUND_TO_INT(th2) ) {
         // Pixel fuera de rango.
         axis = li3.pos();
-        if (ini_ == cv::Point(0, 0)) ini_ = axis;
-        end_ = axis; 
+        if (iniDamage == cv::Point(0, 0)) iniDamage = axis;
+        endDamage = axis; 
         logPrintWarning("Posible daño (%i, %i). Ancho línea: %i. Máximo: %f. Mínimo: %f", axis.x, axis.y, accumul, th1, th2);
         // Ir acumulando la zona total del daño
       } else {
-        if (ini_ != cv::Point(0, 0)) {
-          cv::Mat imageRGB = cv::imread(img.c_str());
-          Line line(ini_, end_);
-          std::vector<cv::Point> buff;
-          lineBuffer(line, th2 + 10, &buff);
+        if (iniDamage != cv::Point(0, 0)) {
+          //cv::Mat imageRGB = cv::imread(img.c_str());
+          //Line line(ini_, end_);
+          //std::vector<cv::Point> buff;
+          //lineBuffer(line, th2 + 10, &buff);
           
-          cv::Mat aux(buff);
-          const cv::Point *pts = (const cv::Point*) aux.data;
-          int npts = aux.rows;
-          cv::polylines(imageRGB, &pts, &npts, 1, true, Color::randomColor().get<cv::Scalar>() );
+          //cv::Mat aux(buff);
+          //const cv::Point *pts = (const cv::Point*) aux.data;
+          //int npts = aux.rows;
+          //cv::polylines(imageRGB, &pts, &npts, 1, true, Color::randomColor().get<cv::Scalar>() );
+          LineIterator it3 = li3;
+          for ( int k = 0; k < 24; k++ ) ++it3; // Un poco ñapas pero para salir del paso. LineIterator esta poco documentada. 
+          endDamage = it3.pos();
+          segmentDamage.push_back(SegmentI(iniDamage, endDamage));
           
-          cv::Point ini_ = cv::Point(0, 0);
-          cv::Point end_ = cv::Point(0, 0);
+          iniDamage = cv::Point(0, 0);
+          endDamage = cv::Point(0, 0);
         }
       }
 
@@ -329,23 +338,53 @@ int main(int argc, char *argv[])
       //}
     }
 
+    // Se muestran las zonas encontradas
+    for ( int isd = 0; isd < segmentDamage.size(); isd++ ) {
+      SegmentI line = segmentDamage[isd];
+      if ( line.length() > 10. ) {
+        WindowI w_aux = expandWindow(segmentDamage[isd].getWindow(), 100);
+        w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
+        
+        cv::Mat m_aux;
+        image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+        
+        std::vector<cv::Point> buff;
+        I3D::Translate<cv::Point> trf(w_aux.pt1.x, w_aux.pt1.y);
+        trf.transformEntity(line, &line, false);
+        lineBuffer(line, th2 + 10, &buff);
+        cv::Mat aux(buff);
+        const cv::Point *pts = (const cv::Point*) aux.data;
+        int npts = aux.rows;
+        cv::polylines(m_aux, &pts, &npts, 1, true, Color::randomColor().get<cv::Scalar>() );
+        
+        cv::imshow("Warning", m_aux);
+        cv::waitKey();
+      }
+
+    }
 
     cv::Mat canny_output;
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours( gap, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
-    cv::Mat imageRGB = cv::imread(img.c_str());
+    //cv::Mat imageRGB = cv::imread(img.c_str());
     for( size_t i = 0; i< contours.size(); i++ ) {
       if (contours[i].size() < 3) continue;
       cv::Scalar color = Color::randomColor().get<cv::Scalar>();
       //cv::Rect boundRect = boundingRect( contours[i] );
       WindowI w_aux = cvRectToWindow(boundingRect( contours[i] ));
       w_aux = expandWindow(w_aux, 10);
-      cv::rectangle( imageRGB, w_aux.pt1, w_aux.pt2, color, 2, 8, 0 );
+      cv::rectangle( image, w_aux.pt1, w_aux.pt2, color, 2, 8, 0 );
       //cv::drawContours( imageRGB, contours, (int)i, color, 2, 8, hierarchy, 0, Point() );
-   }
-   imageRGB.release();
+      w_aux = expandWindow(w_aux, 100);
+      w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
+      cv::Mat m_aux;
+      image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+      cv::imshow("Warning", m_aux);
+      cv::waitKey();
+    }
+    //image.release();
     // La busqueda tiene que hacerse contando con los pixeles vecinos.
     // ¿Aplicar un suavizado para eliminar picos?
 

@@ -64,7 +64,7 @@ I3D_EXPORT int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv:
 /*!
  * Comprobación de que los 3 puntos están en la misma línea
  */
-I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const Line &line_i_r, double tolerance = 2.);
+//I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const SegmentI &line_i_r, double tolerance = 2.);
 
 /*! \} */ // end of GeometricEntities
 

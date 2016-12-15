@@ -2,6 +2,12 @@
  Clases y funciones experimentales
 */
 
+// Parece interesante probarlo para la detección de objetos
+// https://en.wikipedia.org/wiki/Generalised_Hough_transform
+// http://www.itriacasa.it/generalized-hough-transform/default.html
+
+
+
 #ifndef I3D_EXPERIMENTAL_H
 #define I3D_EXPERIMENTAL_H
 
@@ -330,7 +336,8 @@ private:
  * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas 
  * utilizando solo cálculos incrementales con enteros que se pueden adaptar para
  * desplegar también curvas.
- * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la  * trayectoria de la línea.
+ * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la 
+ * trayectoria de la línea.
  */
 class BresenhamLine : public lineAlgorithms
 {
@@ -357,7 +364,8 @@ BresenhamLine::~BresenhamLine()
  * \f$ Dy = m * Dx \f$<BR>
  * \f$ Dx = Dy / m \f$<BR>
  * Se efectúa un muestreo de la línea en intervalos unitarios en una 
- * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
+ * coordenada y se determina los valores enteros correspondientes mas 
+ * próximos a la trayectoria de la línea para la otra coordenada.
  */
 class DDA : public lineAlgorithms
 {
