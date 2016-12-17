@@ -13,7 +13,7 @@
 #include "opencv2/calib3d.hpp"
 
 // Cabeceras propias
-#include "LineDetector.h"
+#include "feature_detection/linedetector.h"
 #include "VideoStream.h"
 #include "core/utils.h"
 #include "core/messages.h"

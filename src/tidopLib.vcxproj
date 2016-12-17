@@ -92,6 +92,8 @@
     <ClCompile Include="core\messages.cpp" />
     <ClCompile Include="core\utils.cpp" />
     <ClCompile Include="experimental\experimental.cpp" />
+    <ClCompile Include="feature_detection\linedetector.cpp" />
+    <ClCompile Include="feature_detection\shapedetection.cpp" />
     <ClCompile Include="fourier.cpp" />
     <ClCompile Include="geometric_entities\operations.cpp" />
     <ClCompile Include="geometric_entities\segment.cpp" />
@@ -99,7 +101,6 @@
     <ClCompile Include="graphic_entities\color.cpp" />
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />
     <ClCompile Include="img_processing.cpp" />
-    <ClCompile Include="linedetector.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="stereo\anaglyph.cpp" />
     <ClCompile Include="transform.cpp" />
@@ -115,6 +116,8 @@
     <ClInclude Include="core\messages.h" />
     <ClInclude Include="core\utils.h" />
     <ClInclude Include="experimental\experimental.h" />
+    <ClInclude Include="feature_detection\linedetector.h" />
+    <ClInclude Include="feature_detection\shapedetection.h" />
     <ClInclude Include="fourier.h" />
     <ClInclude Include="geometric_entities\bbox.h" />
     <ClInclude Include="geometric_entities\entity.h" />
@@ -127,7 +130,6 @@
     <ClInclude Include="graphic_entities\color.h" />
     <ClInclude Include="graphic_entities\graphic_entity.h" />
     <ClInclude Include="img_processing.h" />
-    <ClInclude Include="linedetector.h" />
     <ClInclude Include="matching.h" />
     <ClInclude Include="stereo\anaglyph.h" />
     <ClInclude Include="transform.h" />

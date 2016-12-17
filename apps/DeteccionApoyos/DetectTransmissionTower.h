@@ -8,7 +8,7 @@
 
 
 #include "img_processing.h"
-#include "linedetector.h"
+#include "feature_detection/linedetector.h"
 #include "videostream.h"
 
 // Meter calibración de la camara y corrección
@@ -41,6 +41,8 @@ public:
    */
   bool bDrawRegressionLine;
 
+  bool bDrawLines;
+
   /*!
    * Flujo óptico
    */
@@ -62,9 +64,9 @@ public:
    * \param drawregressionline
    */
   DetectTransmissionTower( std::shared_ptr<I3D::LineDetector> lineDetector, std::shared_ptr<I3D::ImgProcessingList> imgprolist, 
-                           bool drawregressionline = false) 
+                           bool drawregressionline = false, bool drawLines = false) 
     : pLineDetector(lineDetector), pImgprolist(imgprolist), 
-      bDrawRegressionLine(drawregressionline)
+    bDrawRegressionLine(drawregressionline), bDrawLines(drawLines)
   { 
     algorithm = cv::optflow::createOptFlow_Farneback();
     rng(12345);

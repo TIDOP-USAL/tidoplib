@@ -114,6 +114,8 @@ protected:
 
   std::list<Listener *> events;
   
+  double mfps;
+
 private:
 
   cv::VideoCapture mVideoCapture;
@@ -152,7 +154,7 @@ public:
    * \brief Frames por segundo del video
    * \return Frames por segundo
    */
-  virtual double fps() { return mVideoCapture.get(CV_CAP_PROP_FPS); }
+  virtual double fps() { return mfps/*mVideoCapture.get(CV_CAP_PROP_FPS)*/; }
 
   /*!
    * \brief Frame de video actual
@@ -382,7 +384,7 @@ private:
 
   std::vector<std::string> mImages;
 
-  double mfps;
+  //double mfps;
 
   double mCurrentFrame;
 
@@ -393,13 +395,22 @@ public:
   /*!
    * \brief Constructora ImagesStream
    */
-  ImagesStream() : VideoStream(), mImages(0), mfps(0.), mCurrentFrame(0) {}
+  ImagesStream() : /*VideoStream(),*/ mImages(0), mCurrentFrame(0) 
+  {
+    init();
+    mfps = 1.;
+  }
 
   /*!
    * \brief Constructora I3DVideoStream
    * \param[in] file Video o fichero de texto con un listado de imagenes
    */
-  ImagesStream(const char *file) : VideoStream(file) {}
+  ImagesStream(const char *file) : /*VideoStream(file),*/ mCurrentFrame(0)  
+  {
+    init();
+    open(file);
+    mfps = 1.;
+  }
 
   /*!
    * \brief Destructora
@@ -412,46 +423,46 @@ public:
    * \brief Frames por segundo del video
    * \return Frames por segundo
    */
-  virtual double fps() { return mfps; }
+  //double fps() override { return mfps; }
 
   /*!
    * \brief Frame de video actual
    * \return
    */
-  virtual double getCurrentFrame() { return mCurrentFrame; }
+  double getCurrentFrame() override { return mCurrentFrame; }
 
   /*!
    * \brief Número de frames del video
    * \return
    */
-  virtual double getFrameCount() { return static_cast<double>(mImages.size()); }
+  double getFrameCount() override { return static_cast<double>(mImages.size()); }
 
   /*!
   * \brief Comprueba si el video está abierto
   * \return Verdadero si el video está abierto
   */
-  virtual bool isOpened() { return bIsOpened; }
+  bool isOpened() override { return bIsOpened; }
 
   /*!
    * \brief Abre el listado de imagenes
    * \param[in] name Fichero con el listado de imagenes
    * \return verdadero si el video se ha abierto
    */
-  virtual bool open(const char *name);
+  bool open(const char *name) override;
 
   /*!
    * \brief Lee un frame de video
    * \param[out] vf Frame de video
    * \return Falso si no encuentra ningún frame
    */
-  virtual bool read(cv::Mat *vf);
+  bool read(cv::Mat *vf) override;
 
   /*!
    * \brief Establece la posición en el video según el número de frame
    * \param[in] nframe
    * \return
    */
-  virtual bool setPosFrame(double nframe);
+  bool setPosFrame(double nframe) override;
 
   ///*!
   // * \brief Salto de n frames

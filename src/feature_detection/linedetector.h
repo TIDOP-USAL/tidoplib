@@ -13,6 +13,11 @@
 namespace I3D
 {
 
+/*! \defgroup FeatDetection Feature detection
+ * 
+ *  \{
+ */
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -444,6 +449,8 @@ public:
 
 };
 #endif
+
+/*! \} */ // end of FeatDetection
 
 } // End namespace I3D
 

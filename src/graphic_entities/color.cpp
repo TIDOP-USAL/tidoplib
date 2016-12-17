@@ -148,56 +148,58 @@ void Color::fromHSV(double hue, double saturation, double value)
 
 void Color::fromHSL(double hue, double saturation, double lightness)
 {
-  double _hue = hue;
-  double _saturation = saturation;
-  double _lightness = lightness;
+  int red, green, blue;
+  hslToRgb(hue, saturation, lightness, &red, &green, &blue);
+  //double _hue = hue;
+  //double _saturation = saturation;
+  //double _lightness = lightness;
 
-  if (_hue < 0) _hue = 0;
-  if (_saturation < 0) _saturation = 0;
-  if (_lightness < 0) _lightness = 0;
-  if (_hue >= 360) _hue = 359;
-  if (_saturation > 100) _saturation = 100;
-  if (_lightness > 100) _lightness = 100;
+  //if (_hue < 0) _hue = 0;
+  //if (_saturation < 0) _saturation = 0;
+  //if (_lightness < 0) _lightness = 0;
+  //if (_hue >= 360) _hue = 359;
+  //if (_saturation > 100) _saturation = 100;
+  //if (_lightness > 100) _lightness = 100;
 
-  _lightness /= 100.;
-  _saturation /= 100.;
-  double chroma = (1-abs(2 * _lightness - 1)) * _saturation;
-  double h = _hue / 60.;
-  double x = chroma * (1 - fabs(fmod(h,2)-1));
+  //_lightness /= 100.;
+  //_saturation /= 100.;
+  //double chroma = (1-abs(2 * _lightness - 1)) * _saturation;
+  //double h = _hue / 60.;
+  //double x = chroma * (1 - fabs(fmod(h,2)-1));
 
-  std::array<double, 3> _rgb = { 0., 0., 0. };
+  //std::array<double, 3> _rgb = { 0., 0., 0. };
 
-  if (h >= 0 && h < 1) {
-    _rgb[0] = chroma;
-    _rgb[1] = x;
-  } else if (h >= 0 && h < 1) {
-    _rgb[0] = x;
-    _rgb[1] = chroma;
-  } else if (h >= 1 && h < 2) {
-    _rgb[1] = chroma;
-    _rgb[2] = x;
-  } else if (h >= 2 && h < 3) {
-    _rgb[1] = chroma;
-    _rgb[2] = x;
-  } else if (h >= 3 && h < 4) {
-    _rgb[1] = x;
-    _rgb[2] = chroma;
-  } else if (h >= 4 && h < 5) {
-    _rgb[0] = x;
-    _rgb[2] = chroma;
-  } else {
-    _rgb[0] = chroma;
-    _rgb[2] = x;
-  }
+  //if (h >= 0 && h < 1) {
+  //  _rgb[0] = chroma;
+  //  _rgb[1] = x;
+  //} else if (h >= 0 && h < 1) {
+  //  _rgb[0] = x;
+  //  _rgb[1] = chroma;
+  //} else if (h >= 1 && h < 2) {
+  //  _rgb[1] = chroma;
+  //  _rgb[2] = x;
+  //} else if (h >= 2 && h < 3) {
+  //  _rgb[1] = chroma;
+  //  _rgb[2] = x;
+  //} else if (h >= 3 && h < 4) {
+  //  _rgb[1] = x;
+  //  _rgb[2] = chroma;
+  //} else if (h >= 4 && h < 5) {
+  //  _rgb[0] = x;
+  //  _rgb[2] = chroma;
+  //} else {
+  //  _rgb[0] = chroma;
+  //  _rgb[2] = x;
+  //}
 
-  double m = _lightness - chroma / 2;
-  _rgb[0] += m;
-  _rgb[1] += m;
-  _rgb[2] += m;
-  
-  mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
-         | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
-         | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
+  //double m = _lightness - chroma / 2;
+  //_rgb[0] += m;
+  //_rgb[1] += m;
+  //_rgb[2] += m;
+  //
+  mColor = (I3D_ROUND_TO_INT(red*255.) & 0xFF) 
+         | ((I3D_ROUND_TO_INT(green*255.) << 8) & 0xFF00) 
+         | ((I3D_ROUND_TO_INT(blue*255.) << 16) & 0xFF0000);
 }
 
 
@@ -463,6 +465,91 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl)
   for (auto &_thread : threads) _thread.join();
 }
 
+void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue)
+{
+  double _hue = hue;
+  double _saturation = saturation;
+  double _lightness = lightness;
 
+  if (_hue < 0) _hue = 0;
+  if (_saturation < 0) _saturation = 0;
+  if (_lightness < 0) _lightness = 0;
+  if (_hue >= 360) _hue = 359;
+  if (_saturation > 100) _saturation = 100;
+  if (_lightness > 100) _lightness = 100;
+
+  _lightness /= 100.;
+  _saturation /= 100.;
+  double chroma = (1-abs(2 * _lightness - 1)) * _saturation;
+  double h = _hue / 60.;
+  double x = chroma * (1 - fabs(fmod(h,2)-1));
+
+  std::array<double, 3> _rgb = { 0., 0., 0. };
+
+  if (h >= 0 && h < 1) {
+    _rgb[0] = chroma;
+    _rgb[1] = x;
+  } else if (h >= 0 && h < 1) {
+    _rgb[0] = x;
+    _rgb[1] = chroma;
+  } else if (h >= 1 && h < 2) {
+    _rgb[1] = chroma;
+    _rgb[2] = x;
+  } else if (h >= 2 && h < 3) {
+    _rgb[1] = chroma;
+    _rgb[2] = x;
+  } else if (h >= 3 && h < 4) {
+    _rgb[1] = x;
+    _rgb[2] = chroma;
+  } else if (h >= 4 && h < 5) {
+    _rgb[0] = x;
+    _rgb[2] = chroma;
+  } else {
+    _rgb[0] = chroma;
+    _rgb[2] = x;
+  }
+
+  double m = _lightness - chroma / 2;
+  *red += m;
+  *green += m;
+  *blue += m;
+  
+  //mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
+  //       | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
+  //       | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
+}
+
+void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
+{
+  if ( hsl.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
+  rgb->create( hsl.size(), CV_8UC3);
+  cv::Mat _rgb = *rgb;
+  
+  auto trfHslToRgb = [&](int ini, int end) {
+    int red, green, blue;
+    for (int r = ini; r < end; r++) {
+      for (int c = 0; c < hsl.cols; c++) {
+        cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
+        hslToRgb(v_hsl[0], v_hsl[1], v_hsl[2], &red, &green, &blue);
+        _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
+        _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
+        _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
+      }
+    }
+  };
+
+  int num_threads = getOptimalNumberOfThreads();
+  std::vector<std::thread> threads(num_threads);
+ 
+  int size = hsl.rows / num_threads;
+  for (int i = 0; i < num_threads; i++) {
+    int ini = i * size;
+    int end = ini + size;
+    if ( end > hsl.rows ) end = hsl.rows;
+    threads[i] = std::thread(trfHslToRgb, ini, end);
+  }
+
+  for (auto &_thread : threads) _thread.join();
+}
 
 } // End namespace I3D

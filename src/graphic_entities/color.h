@@ -541,6 +541,28 @@ I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *satu
  */
 I3D_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
 
+/*!
+ * \brief Convierte un color de a HSL a RGB
+ * \param[in] hue
+ * \param[in] saturation
+ * \param[in] lightness
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue);
+
+/*!
+ * \brief Convierte una matriz de HSL a RGB
+ * \param[in] hue
+ * \param[in] saturation
+ * \param[in] lightness
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
+
 /*! \} */ // end of colorConversion
 
 /*! \} */ // end of GraphicEntities

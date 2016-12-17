@@ -14,7 +14,7 @@
 #include "core/utils.h"
 #include "core/console.h"
 #include "core/messages.h"
-#include "LineDetector.h"
+#include "feature_detection/linedetector.h"
 #include "VideoStream.h"
 #include "matching.h"
 #include "fourier.h"
@@ -137,6 +137,8 @@ int main(int argc, char *argv[])
 
   printInfo("Leyendo imagen %s", img.c_str());
   cv::Mat full_image = cv::imread(img.c_str());
+  if (full_image.empty()) exit(EXIT_FAILURE);
+
   cv::Mat image;
   full_image.colRange(1000, full_image.cols - 1000).copyTo(image);
   full_image.release();
@@ -187,6 +189,7 @@ int main(int argc, char *argv[])
   int widthBuffer = 80;
 
   for (auto &line : linesJoin) {
+    cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
     trf.transformEntity(line, &line, true);
     //Para comprobar...
     cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
@@ -214,7 +217,7 @@ int main(int argc, char *argv[])
 
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 4, false);
 
-    progress_bar.init(0, li.count, "Busqueda de daños en conductor");
+    //progress_bar.init(0, li.count, "Obteniendo anchura a lo largo de la línea");
     
     std::vector<int> v_with(li.count, 0);
     cv::Point axis;
@@ -279,7 +282,7 @@ int main(int argc, char *argv[])
       //if ( width != end - ini ) 
       //  printWarning("Posible daño");
       //logPrintInfo("Ancho línea %i", width);
-      progress_bar();
+      //progress_bar();
     }
 
     // Buscar máxima y mínima anchura
@@ -299,6 +302,8 @@ int main(int argc, char *argv[])
     cv::Point iniDamage = cv::Point(0, 0);
     cv::Point endDamage = cv::Point(0, 0);
     std::vector<SegmentI> segmentDamage;
+    printInfo("Ancho línea: Mínimo: %f. Máximo: %f", th1, th2);
+    progress_bar.init(0, v_with.size()-50, "Busqueda de zonas dañadas");
     for (int is = 25; is < v_with.size() - 25; is++, ++li3) {
       double sum = std::accumulate(v_with.begin() + is - 25, v_with.begin() + is + 25, 0);
       int accumul = I3D_ROUND_TO_INT(sum / 50.);
@@ -307,7 +312,7 @@ int main(int argc, char *argv[])
         axis = li3.pos();
         if (iniDamage == cv::Point(0, 0)) iniDamage = axis;
         endDamage = axis; 
-        logPrintWarning("Posible daño (%i, %i). Ancho línea: %i. Máximo: %f. Mínimo: %f", axis.x, axis.y, accumul, th1, th2);
+        logPrintWarning("Posible daño (%i, %i). Ancho línea: %i. Mínimo: %f. Máximo: %f", axis.x, axis.y, accumul, th1, th2);
         // Ir acumulando la zona total del daño
       } else {
         if (iniDamage != cv::Point(0, 0)) {
@@ -336,6 +341,7 @@ int main(int argc, char *argv[])
       //  axis = li3.pos();
       //  logPrintWarning("Posible daño (%i, %i)", axis.x, axis.y);
       //}
+      progress_bar();
     }
 
     // Se muestran las zonas encontradas

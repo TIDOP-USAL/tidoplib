@@ -49,6 +49,12 @@
     <Filter Include="Archivos de encabezado\experimental">
       <UniqueIdentifier>{f10fafe7-b75b-4156-86fb-d5b868296f1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\feature_detection">
+      <UniqueIdentifier>{b842224d-51eb-4605-99bd-1d8938d45b23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\feature_detection">
+      <UniqueIdentifier>{d19ec710-25e7-4f94-9faf-1f00badab3b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geometric_entities\operations.cpp">
@@ -61,9 +67,6 @@
       <Filter>Archivos de código fuente\geometric_entities</Filter>
     </ClCompile>
     <ClCompile Include="fourier.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
-    <ClCompile Include="linedetector.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
     <ClCompile Include="matching.cpp">
@@ -104,6 +107,12 @@
     </ClCompile>
     <ClCompile Include="core\exception.cpp">
       <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
+    <ClCompile Include="feature_detection\linedetector.cpp">
+      <Filter>Archivos de código fuente\feature_detection</Filter>
+    </ClCompile>
+    <ClCompile Include="feature_detection\shapedetection.cpp">
+      <Filter>Archivos de código fuente\feature_detection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -155,9 +164,6 @@
     <ClInclude Include="videostream.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="linedetector.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="graphic_entities\color.h">
       <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
@@ -184,6 +190,12 @@
     </ClInclude>
     <ClInclude Include="geometric_entities\entity.h">
       <Filter>Archivos de encabezado\geometric_entities</Filter>
+    </ClInclude>
+    <ClInclude Include="feature_detection\linedetector.h">
+      <Filter>Archivos de encabezado\feature_detection</Filter>
+    </ClInclude>
+    <ClInclude Include="feature_detection\shapedetection.h">
+      <Filter>Archivos de encabezado\feature_detection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

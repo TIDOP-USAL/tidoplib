@@ -49,6 +49,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "damage_detection", "apps\da
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shape_detection", "apps\shape_detection\shape_detection.vcxproj", "{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generalised_hough", "apps\generalised_hough\generalised_hough.vcxproj", "{837D83F8-3F84-4D71-AC93-2AB83A18B944}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -249,6 +251,16 @@ Global
 		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Win32.ActiveCfg = Release|x64
 		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.ActiveCfg = Release|x64
 		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.Build.0 = Release|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Debug|Win32.ActiveCfg = Debug|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Debug|x64.ActiveCfg = Debug|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Debug|x64.Build.0 = Debug|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|Mixed Platforms.Build.0 = Release|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|Win32.ActiveCfg = Release|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.ActiveCfg = Release|x64
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,5 +285,6 @@ Global
 		{DBE5D28F-1FC1-4CE7-A9BE-01A0BC707287} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{71900CA6-8286-4AF2-B45C-AFA346E65298} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
+		{837D83F8-3F84-4D71-AC93-2AB83A18B944} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 	EndGlobalSection
 EndGlobal

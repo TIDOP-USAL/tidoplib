@@ -182,15 +182,15 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
         if (abs(wprev.pt1.y - ptMax.y) <= 200) {
        
           //Rectangulo envolvente de la torre            
-          //cv::rectangle(*imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
+          cv::rectangle(*imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
        
-          //if (bDrawLines){
-          //  for (int il = 0; il < linesGroup1.getSize(); il++) {
-          //    cv::Point pt1 = linesGroup1[il].pt1;
-          //    cv::Point pt2 = linesGroup1[il].pt2;
-          //    line(imgout, pt1, pt2, cv::Scalar(0, 255, 0), 1, cv::LINE_8);
-          //  }
-          //}
+          if (bDrawLines){
+            for (int il = 0; il < linesGroup1.getSize(); il++) {
+              cv::Point pt1 = linesGroup1[il].pt1;
+              cv::Point pt2 = linesGroup1[il].pt2;
+              line(*imgout, pt1, pt2, cv::Scalar(0, 255, 0), 1, cv::LINE_8);
+            }
+          }
           
        
           // Ajustar el BBOX mejor  
