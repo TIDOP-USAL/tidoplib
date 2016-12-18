@@ -67,6 +67,7 @@ bool VideoStream::open(const char *name)
     int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
     int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
     mSize = mFrameSize = cv::Size(width, height);
+    mfps = mVideoCapture.get(CV_CAP_PROP_FPS);
     return true;
   }
 }
@@ -128,7 +129,8 @@ void VideoStream::run()
     if (vs != Status::PAUSE) {
       onRead();
       if (vs == Status::FINALIZED) break;
-      onPositionChange(mVideoCapture.get(CV_CAP_PROP_POS_FRAMES));
+      double currentFrame = getCurrentFrame();
+      onPositionChange( currentFrame /*mVideoCapture.get(CV_CAP_PROP_POS_FRAMES)*/);
       onShow();  
     }
     
@@ -284,6 +286,7 @@ void VideoStream::init()
   sv = Skip::NOT_SKIP;
   mSkip = 1;
   vs = Status::START;
+  mfps = 30;
 }
 
 void VideoStream::onFinish() {
@@ -392,12 +395,14 @@ bool ImagesStream::read(cv::Mat *vf)
   if (mCurrentFrame < mImages.size()) {
     std::string imgFile = mImages[static_cast<unsigned int>(mCurrentFrame)];
     mFrame = cv::imread(imgFile);
+    printInfo("Imagen: %s", imgFile.c_str());
     if (mResolutionFrame == Resolution::RESIZE_FRAME) {
       resizeFrame();
     } else if (mResolutionFrame == Resolution::CROP_FRAME) {
       cropFrame();
     }
     if (vf) mFrame.copyTo(*vf);
+    mCurrentFrame++;
     return true;
   }
   return false;

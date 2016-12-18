@@ -7,6 +7,7 @@
 #include "core/mathutils.h"
 #include "geometric_entities/entity.h"
 #include "geometric_entities/window.h"
+#include "geometric_entities/operations.h"
 
 namespace I3D
 {

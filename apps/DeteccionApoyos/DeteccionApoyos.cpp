@@ -19,7 +19,7 @@
 #include "core/utils.h"
 #include "videostream.h"
 #include "geometric_entities/segment.h"
-#include "linedetector.h"
+#include "feature_detection/linedetector.h"
 #include "img_processing.h"
 #include "matching.h"
 #include "transform.h"
@@ -304,6 +304,7 @@ int main(int argc, char** argv)
   cmdParser.addParameter("out", "Directorio de salida donde se guardan las imagenes y otra información de salida", true, dir);
   cmdParser.addOption("si", "Guarda imagenes", true);
   cmdParser.addOption("dl", "Dibuja lineas", true);
+  cmdParser.addOption("drl", "Dibuja recta de regresión", true);
   cmdParser.addOption("show_video", "Muestra el video mientras corre el programa", true);
   cmdParser.addParameter("skip_frames", "Salto de frames", true, "1");
   cmdParser.addParameterOption("l_detect", "HOUGH,HOUGHP,HOUGH_FAST,LSD", "Detector de lineas", true, "HOUGHP");
@@ -316,6 +317,7 @@ int main(int argc, char** argv)
   std::string out_path = cmdParser.getValue<std::string>("out");
   bool bSaveImages = cmdParser.hasOption("si");
   bool bDrawLines = cmdParser.hasOption("dl");
+  bool bDrawRegressionLine = cmdParser.hasOption("drl");
   bool bShowVideo = cmdParser.hasOption("show_video");
   int skip_frames = cmdParser.getValue<int>("skip_frames");
   //std::string l_detect = cmdParser.getValue<std::string>("l_detect");
@@ -372,7 +374,7 @@ int main(int argc, char** argv)
   imgprolist->add(std::make_shared<I3D::Canny>());
 
   // Detección de apoyos
-  DetectTransmissionTower detectTower(pLineDetector, imgprolist, bDrawLines);
+  DetectTransmissionTower detectTower(pLineDetector, imgprolist, bDrawRegressionLine, bDrawLines);
   VideoHelper videoHelper(&detectTower, out_path, bSaveImages);
   strmVideo.addListener(&videoHelper);
   videoHelper.outPath = out_path;

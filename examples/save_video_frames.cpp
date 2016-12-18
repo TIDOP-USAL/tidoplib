@@ -140,7 +140,7 @@ void VideoHelper::onRead(cv::Mat &frame)
   char buffer[I3D_MAX_PATH];
   sprintf_s(buffer, "%s\\frame%05i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), mExtFile.c_str());
   cv::imwrite(buffer, frame);
-  (*pProgress)();
+  if (pProgress)(*pProgress)();
 }
 
 void VideoHelper::onResume() 

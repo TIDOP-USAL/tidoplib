@@ -2,6 +2,7 @@
 
 #include "core/defs.h"
 #include "core/messages.h"
+#include "core/exception.h"
 #include "segment.h"
 
 using namespace I3D;
@@ -13,9 +14,9 @@ void DetectTransmissionTower::detectGroupLines(const cv::Mat &img, std::vector<l
     cvtColor(img, imageGrayProcces, CV_BGR2GRAY);
   
   // Se aplican procesos previos a las imagenes
-  pImgprolist->execute(img, &imageGrayProcces);
+  if (pImgprolist->execute(img, &imageGrayProcces) == ProcessExit::FAILURE) return;
 
-  pLineDetector->run(imageGrayProcces);
+  if (pLineDetector->run(imageGrayProcces) == LineDetector::Exit::FAILURE) return;
   groupLinesByDist(pLineDetector->getLines(), linesGroup, 10);
 
   // Se eliminan los grupos con pocas lineas
@@ -181,15 +182,15 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
         if (abs(wprev.pt1.y - ptMax.y) <= 200) {
        
           //Rectangulo envolvente de la torre            
-          //cv::rectangle(*imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
+          cv::rectangle(*imgout, wprev.pt1, wprev.pt2, cv::Scalar(0, 255, 0), 1);
        
-          //if (bDrawLines){
-          //  for (int il = 0; il < linesGroup1.getSize(); il++) {
-          //    cv::Point pt1 = linesGroup1[il].pt1;
-          //    cv::Point pt2 = linesGroup1[il].pt2;
-          //    line(imgout, pt1, pt2, cv::Scalar(0, 255, 0), 1, cv::LINE_8);
-          //  }
-          //}
+          if (bDrawLines){
+            for (int il = 0; il < linesGroup1.getSize(); il++) {
+              cv::Point pt1 = linesGroup1[il].pt1;
+              cv::Point pt2 = linesGroup1[il].pt2;
+              line(*imgout, pt1, pt2, cv::Scalar(0, 255, 0), 1, cv::LINE_8);
+            }
+          }
           
        
           // Ajustar el BBOX mejor  

@@ -13,7 +13,7 @@
 #include "opencv2/calib3d.hpp"
 
 // Cabeceras propias
-#include "LineDetector.h"
+#include "feature_detection/linedetector.h"
 #include "VideoStream.h"
 #include "core/utils.h"
 #include "core/messages.h"
@@ -56,7 +56,7 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
   std::vector<Line> lines;
   
   thread_mutex.lock();
-  oLD->run(studyAreaOut, cv::Scalar(angle, 0.15));
+  if (oLD->run(studyAreaOut, cv::Scalar(angle, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
   if (oLD->getLines().empty()) return;
   Translate<cv::Point> trf(w.pt1.x, w.pt1.y);
   trf.transform(oLD->getLines(), &lines);
@@ -253,23 +253,23 @@ int main(int argc, char *argv[])
     // Procesos imagen derecha
     kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, angleRight, lm, gm);
     filter2d->setParameters(CV_32F, kernel);
-    imgprolist.execute(right, &outRight);
+    if (imgprolist.execute(right, &outRight) == ProcessExit::FAILURE) exit(EXIT_FAILURE);
 
     // Procesos imagen izquierda
     kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, angleLeft, lm, gm);
     filter2d->setParameters(CV_32F, kernel);
-    imgprolist.execute(left, &outLeft);
+    if (imgprolist.execute(left, &outLeft) == ProcessExit::FAILURE) exit(EXIT_FAILURE);
 
     cv::Mat frameout;
     cvtColor(frame, frameout, CV_GRAY2BGR);
 
     std::vector<Line> linesRight, linesLeft;
-    pLineDetector->run(outRight, cv::Scalar(angleRight, 0.15));
+    if (pLineDetector->run(outRight, cv::Scalar(angleRight, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
     if (pLineDetector->getLines().empty()) return 0;
     Translate<cv::Point> trf(wRight.pt1.x, wRight.pt1.y);
     trf.transform(pLineDetector->getLines(), &linesRight);
     
-    pLineDetector->run(outLeft, cv::Scalar(angleLeft, 0.15));
+    if (pLineDetector->run(outLeft, cv::Scalar(angleLeft, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
     if (pLineDetector->getLines().empty()) return 0;
     trf.setTranslation(wLeft.pt1.x, wLeft.pt1.y);
     trf.transform(pLineDetector->getLines(), &linesLeft);
@@ -475,7 +475,7 @@ int main(int argc, char *argv[])
     cv::Mat matRgbF;
     matRgb.convertTo(matRgbF, CV_32F);
 
-    imgprolist2.execute(matRgbF, &matRgbF);
+    if (imgprolist2.execute(matRgbF, &matRgbF) == ProcessExit::FAILURE) exit(EXIT_FAILURE);
 
     cv::normalize(matRgbF, matRgbF, 0, 255, CV_MINMAX);
     matRgbF.convertTo(matRgbF, CV_8U);

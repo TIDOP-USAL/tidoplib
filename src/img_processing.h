@@ -20,10 +20,17 @@ namespace I3D
  *  \{
  */
 
+enum class ProcessExit
+{
+  SUCCESS,
+  FAILURE
+};
+
 /*!
  * \brief Tipos de procesos de imagen
  */
 enum class process_type {
+  /* Filtros */
   BILATERAL,          /*!< Filtro bilateral. */
   BLUR,               /*!< Filtro desenfoque. */
   BOX_FILTER,         /*!<  */
@@ -33,10 +40,6 @@ enum class process_type {
   MEDIAN_BLUR,        /*!<  */
   SOBEL,              /*!< Operador Sobel. */
   CANNY,              /*!< Detector de bordes canny. */
-  NORMALIZE,          /*!< Normalización. */
-  BINARIZE,           /*!< Binarización. */
-  EQUALIZE_HIST,      /*!< Equalización del histograma. */
-  FUNCTION_PROCESS,   /*!< Proceso que ejecuta una función */
   /* Operaciones morfológicas */
   MORPH_DILATION,     /*!< Operacion morfologica de dilatación. */
   MORPH_EROTION,      /*!< Operacion morfologica de erosión. */
@@ -46,7 +49,12 @@ enum class process_type {
   MORPH_TOPHAT,       /*!< Operacion morfologica  */
   MORPH_BLACKHAT,     /*!< Operacion morfologica  */
   /* Transformación de imagen */
-  RESIZE              /*!< Redimensiona la imagen */
+  RESIZE,             /*!< Redimensiona la imagen */
+  RESIZE_CANVAS,
+  NORMALIZE,          /*!< Normalización. */
+  BINARIZE,           /*!< Binarización. */
+  EQUALIZE_HIST,      /*!< Equalización del histograma. */
+  FUNCTION_PROCESS    /*!< Proceso que ejecuta una función */
 };
 
 /*!
@@ -83,9 +91,11 @@ public:
    * Metodo virtual puro que deben implementar las clases hijas
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  virtual int execute(const cv::Mat &matIn, cv::Mat *matOut) const = 0 ;
+  virtual ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const = 0 ;
 
 };
 
@@ -148,9 +158,11 @@ public:
    * \brief Ejecuta la lista de procesos
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const;
 
   /*!
    * \brief Limpia la lista de procesos
@@ -160,6 +172,12 @@ public:
 };
 
 /* ---------------------------------------------------------------------------------- */
+
+
+/*! \defgroup Filters Filtros
+ *  
+ *  \{
+ */
 
 /*!
  * \brief Filtro bilateral
@@ -209,9 +227,11 @@ public:
    * \brief Aplica el filtro bilateral a una imagen
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Error. Si el proceso se ejecuta correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro bilateral
@@ -265,9 +285,11 @@ public:
    * \brief Aplica el filtro de desenfoque.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Error. Si el proceso se ejecuta correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro
@@ -327,9 +349,11 @@ public:
    * \brief Aplica el filtro de desenfoque.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Error. Si el proceso se ejecuta correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro
@@ -396,9 +420,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro de convolución
@@ -457,9 +483,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -525,9 +553,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -569,9 +599,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -659,9 +691,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -712,9 +746,11 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros para el detector de bordes canny
@@ -725,202 +761,8 @@ public:
 
 };
 
-/* ---------------------------------------------------------------------------------- */
 
-/*!
- * \brief Clase Normalize
- */
-class I3D_EXPORT Normalize : public ImgProcessing
-{
-private:
 
-  /*!
-   * \brief Rango inferior
-   */
-  double mLowRange;
-
-  /*!
-   * \brief Rango superior
-   */
-  double mUpRange;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase Normalize
-   * \param lowRange
-   * \param upRange
-   */
-  Normalize(double lowRange, double upRange)
-    : ImgProcessing(process_type::NORMALIZE), mLowRange(lowRange), mUpRange(upRange) {}
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
-   */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] lowRange Rango inferior
-   * \param[in] upRange Rango superior
-   */
-  void setParameters(double lowRange, double upRange);
-};
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Clase Binarize
- * Convierte una imagen a binaria
- */
-class I3D_EXPORT Binarize : public ImgProcessing
-{
-private:
-  
-  /*!
-   * \brief Umbral
-   */
-  double mThresh;
-
-  /*!
-   * \brief Valor máximo
-   */
-  double mMaxVal;
-
-  /*!
-   * \brief bInverse
-   */
-  bool bInverse;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase Binarize
-   * Si thresh y maxVal son 0 se calculan internamente a partir de la media y desviación típica.
-   * \param thresh Umbral
-   * \param maxVal Valor máximo
-   * \param bInverse Binarización inversa
-   */
-  Binarize(double thresh = 0., double maxVal = 0., bool bInverse = false)
-    : ImgProcessing(process_type::BINARIZE), mThresh(thresh), mMaxVal(maxVal), bInverse(bInverse) {}
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
-   */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] thresh Umbral
-   * \param[in] maxVal Valor máximo
-   * \param[in] bInverse Binarización inversa
-   */
-  void setParameters(double thresh, double maxVal, bool bInverse = false);
-
-  /*!
-   * \brief Binarización inversa
-   * \param[in] inverse
-   */
-  void setInverse(bool inverse = true) { bInverse = inverse; }
-
-  /*!
-   * \brief GetInverse
-   * \return
-   */
-  bool getInverse() const { return bInverse; }
-
-};
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Ecualización del histograma.
- * Mejora del contraste de la imagen mediante la ecualización del histograma
- */
-class I3D_EXPORT EqualizeHistogram : public ImgProcessing
-{
-
-public:
-
-  /*!
-   * \brief Constructora de la clase
-   */
-  EqualizeHistogram()
-    : ImgProcessing(process_type::EQUALIZE_HIST) {}
-
-  //~EqualizeHistogram();
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
-   */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-};
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Wrapper de una función para ejecutarla como un proceso.
- * 
- * Para permitir una mayor libertad en el procesado de las imagenes mediante
- * ImgProcessingList se permite asociar una función o lambda a un proceso. La
- * función tiene que ser de la forma:
- * <BLOCKQUOTE>std::function<void(const cv::Mat &,cv::Mat *)> </BLOCKQUOTE>
- * o si es una lambda:
- * <BLOCKQUOTE>[](const cv::Mat &in, cv::Mat *out) { ... }</BLOCKQUOTE>
- * <H3>Ejemplo:</H3>
- * \code
- * std::shared_ptr<FunctionProcess> fProcess1 = std::make_shared<FunctionProcess>(
- *   [](const cv::Mat &in, cv::Mat *out) {
- *     in.convertTo(*out, CV_32F);
- * });
- * std::shared_ptr<FunctionProcess> fProcess2 = std::make_shared<FunctionProcess>(
- * [&](const cv::Mat &in, cv::Mat *out) {
- * cv::normalize(in, *out, 0, 255, CV_MINMAX);
- * out->convertTo(*out, CV_8U);
- * });
- *
- * I3D::ImgProcessingList imgprolist{ fProcess1, fProcess2 };
- * \endcode
- */
-class I3D_EXPORT FunctionProcess : public ImgProcessing
-{
-private:
-
-  /*!
-   * \brief Función
-   */
-  std::function<void(const cv::Mat &,cv::Mat *)> f;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] f Función de la forma std::function<void(const cv::Mat &,cv::Mat *)>
-   */
-  FunctionProcess(std::function<void(const cv::Mat &, cv::Mat *)> f)
-    : ImgProcessing(process_type::FUNCTION_PROCESS), f(f) {}
-
-  //~FunctionProcess();
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
-   */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-};
 
 /* ---------------------------------------------------------------------------------- */
 /*                          Operaciones morfologicas                                  */
@@ -1000,9 +842,11 @@ public:
    * Metodo virtual puro que deben implementar las clases hijas
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -1226,6 +1070,7 @@ public:
 
 /*! \} */ // end of MorphOper
 
+/*! \} */ // end of Filters
 
 /* ---------------------------------------------------------------------------------- */
 /*             Operaciones que transforman geometricamente la imagen                  */
@@ -1282,9 +1127,11 @@ public:
    * \brief Ejecuta el proceso.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -1309,6 +1156,23 @@ public:
  */
 class I3D_EXPORT ResizeCanvas : public ImgProcessing
 {
+public:
+  
+  /*!
+   * \brief Posición del canvas
+   */
+  enum class Position {
+    BOTTOM_CENTER,  
+    BOTTOM_LEFT,    
+    BOTTOM_RIGHT,   
+    CENTER,         
+    CENTER_LEFT,    
+    CENTER_RIGHT,   
+    TOP_CENTER,     
+    TOP_LEFT,       
+    TOP_RIGHT       
+  };
+
 private:
 
   /*!
@@ -1321,8 +1185,20 @@ private:
    */
   int mHeight;
 
-  //Añadir color de fondo, posición, ...
-  /*Color mColor;*/
+  /*!
+   * \brief Coordenadas de la esquina superior izquierda
+   */
+  cv::Point mTopLeft;
+
+  /*!
+   * \brief Color de fondo
+   */
+  Color mColor;
+
+  /*!
+   * \brief Posición
+   */
+  Position mPosition;
 
 public:
 
@@ -1331,26 +1207,45 @@ public:
    * \param[in] width Nuevo ancho
    * \param[in] height Nuevo alto
    * \param[in] color Color
+   * \param[in] position Posición
+   * \see Position
    */
-  ResizeCanvas(int width, int height/*, const Color &color = Color()*/)
-    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height)/*, mColor(color)*/ {}
+  ResizeCanvas(int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT)
+    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mColor(color), mPosition(position) { }
+
+  /*!
+   * \brief Constructora
+   * \param[in] width Nuevo ancho
+   * \param[in] height Nuevo alto
+   * \param[in] point Coordenadas de la esquina superior izquierda
+   * \param[in] color Color
+   * \see Position
+   */
+  ResizeCanvas(int width, int height, const cv::Point &point, const Color &color = Color())
+    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mTopLeft(point), mColor(color) {}
+
 
   /*!
    * \brief Ejecuta el proceso.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Error. Si los procesos se ejecutan correctamente devuelve 0.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
    */
-  int execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
    * \param[in] width Ancho
    * \param[in] height Alto
    * \param[in] color Color
+   * \param[in] position Posición
+   * \see Position
    */
-  void setParameters( int width, int height/*, const Color &color*/);
+  void setParameters( int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT);
 
+  //void update();
 };
 
 
@@ -1358,7 +1253,212 @@ public:
 
 /*! \} */ // end of imgTransf
 
+
+
 /* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase Normalize
+ */
+class I3D_EXPORT Normalize : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Rango inferior
+   */
+  double mLowRange;
+
+  /*!
+   * \brief Rango superior
+   */
+  double mUpRange;
+
+public:
+
+  /*!
+   * \brief Constructora de la clase Normalize
+   * \param lowRange
+   * \param upRange
+   */
+  Normalize(double lowRange, double upRange)
+    : ImgProcessing(process_type::NORMALIZE), mLowRange(lowRange), mUpRange(upRange) {}
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] lowRange Rango inferior
+   * \param[in] upRange Rango superior
+   */
+  void setParameters(double lowRange, double upRange);
+};
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase Binarize
+ * Convierte una imagen a binaria
+ */
+class I3D_EXPORT Binarize : public ImgProcessing
+{
+private:
+  
+  /*!
+   * \brief Umbral
+   */
+  double mThresh;
+
+  /*!
+   * \brief Valor máximo
+   */
+  double mMaxVal;
+
+  /*!
+   * \brief bInverse
+   */
+  bool bInverse;
+
+public:
+
+  /*!
+   * \brief Constructora de la clase Binarize
+   * Si thresh y maxVal son 0 se calculan internamente a partir de la media y desviación típica.
+   * \param thresh Umbral
+   * \param maxVal Valor máximo
+   * \param bInverse Binarización inversa
+   */
+  Binarize(double thresh = 0., double maxVal = 0., bool bInverse = false)
+    : ImgProcessing(process_type::BINARIZE), mThresh(thresh), mMaxVal(maxVal), bInverse(bInverse) {}
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] thresh Umbral
+   * \param[in] maxVal Valor máximo
+   * \param[in] bInverse Binarización inversa
+   */
+  void setParameters(double thresh, double maxVal, bool bInverse = false);
+
+  /*!
+   * \brief Binarización inversa
+   * \param[in] inverse
+   */
+  void setInverse(bool inverse = true) { bInverse = inverse; }
+
+  /*!
+   * \brief GetInverse
+   * \return
+   */
+  bool getInverse() const { return bInverse; }
+
+};
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Ecualización del histograma.
+ * Mejora del contraste de la imagen mediante la ecualización del histograma
+ */
+class I3D_EXPORT EqualizeHistogram : public ImgProcessing
+{
+
+public:
+
+  /*!
+   * \brief Constructora de la clase
+   */
+  EqualizeHistogram()
+    : ImgProcessing(process_type::EQUALIZE_HIST) {}
+
+  //~EqualizeHistogram();
+
+  /*!
+   * \brief Ejecuta el proceso.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+};
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Wrapper de una función para ejecutarla como un proceso.
+ * 
+ * Para permitir una mayor libertad en el procesado de las imagenes mediante
+ * ImgProcessingList se permite asociar una función o lambda a un proceso. La
+ * función tiene que ser de la forma:
+ * <BLOCKQUOTE>std::function<void(const cv::Mat &,cv::Mat *)> </BLOCKQUOTE>
+ * o si es una lambda:
+ * <BLOCKQUOTE>[](const cv::Mat &in, cv::Mat *out) { ... }</BLOCKQUOTE>
+ * <H3>Ejemplo:</H3>
+ * \code
+ * std::shared_ptr<FunctionProcess> fProcess1 = std::make_shared<FunctionProcess>(
+ *   [](const cv::Mat &in, cv::Mat *out) {
+ *     in.convertTo(*out, CV_32F);
+ * });
+ * std::shared_ptr<FunctionProcess> fProcess2 = std::make_shared<FunctionProcess>(
+ * [&](const cv::Mat &in, cv::Mat *out) {
+ * cv::normalize(in, *out, 0, 255, CV_MINMAX);
+ * out->convertTo(*out, CV_8U);
+ * });
+ *
+ * I3D::ImgProcessingList imgprolist{ fProcess1, fProcess2 };
+ * \endcode
+ */
+class I3D_EXPORT FunctionProcess : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Función
+   */
+  std::function<void(const cv::Mat &,cv::Mat *)> f;
+
+public:
+
+  /*!
+   * \brief Constructora
+   * \param[in] f Función de la forma std::function<void(const cv::Mat &,cv::Mat *)>
+   */
+  FunctionProcess(std::function<void(const cv::Mat &, cv::Mat *)> f)
+    : ImgProcessing(process_type::FUNCTION_PROCESS), f(f) {}
+
+  //~FunctionProcess();
+
+  /*!
+   * \brief Ejecuta el proceso.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+};
 
 /*! \} */ // end of ImgProc
 
