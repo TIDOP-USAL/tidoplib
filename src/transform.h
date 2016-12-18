@@ -42,6 +42,10 @@ enum class transform_type {
   POLYNOMIAL       /*!< Transformación polinómica*/
 };
 
+enum class transform_order {
+  DIRECT,   /*!< Transformación directa. */
+  INVERSE   /*!< Transformación inversa. */
+};
 
 /*!
  * \brief Aplica una traslación a un conjunto de segmentos
@@ -69,6 +73,7 @@ I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::arra
 template<typename T>
 class I3D_EXPORT Transform
 {
+
 protected:
 
   /*!
@@ -125,7 +130,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const = 0;
+  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -133,7 +138,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const T &in, T *out, bool bDirect = true) const = 0;
+  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -141,7 +146,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  virtual T transform(const T &in, bool bDirect = true) const = 0;
+  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Aplica la transformación a una imagen
@@ -181,7 +186,7 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const = 0;
+  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -340,7 +345,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -348,7 +353,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -356,7 +361,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a una entidad geométrica
@@ -364,35 +369,35 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
 template<typename T> inline
-void TrfMultiple<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void TrfMultiple<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   *out = in;
   //... Controlar errores
   for (auto trf : mTransf) {
-    trf->transform(*out, out, bDirect);
+    trf->transform(*out, out, trfOrder);
   }
 }
 
 template<typename T> inline
-void TrfMultiple<T>::transform(const T &in, T *out, bool bDirect) const
+void TrfMultiple<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   *out = in;
   for (auto trf : mTransf) {
-    trf->transform(*out, out, bDirect);
+    trf->transform(*out, out, trfOrder);
   }
 }
 
 template<typename T> inline
-T TrfMultiple<T>::transform(const T &in, bool bDirect) const
+T TrfMultiple<T>::transform(const T &in, transform_order trfOrder) const
 {
   T out = in;
   for (auto trf : mTransf) {
-    out = trf->transform(out, bDirect);
+    out = trf->transform(out, trfOrder);
   }
   return out;
 }
@@ -406,11 +411,11 @@ double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> 
 }
 
 template<typename T> inline
-void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
+void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
 {
   *out = in;
   for (auto trf : mTransf) {
-    trf->transform(*out, out, bDirect);
+    trf->transform(*out, out, trfOrder);
   }
 }
 
@@ -459,7 +464,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override = 0;
+  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -467,7 +472,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const T &in, T *out, bool bDirect = true) const override = 0;
+  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -475,7 +480,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  virtual T transform(const T &in, bool bDirect = true) const override = 0;
+  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a una entidad geométrica
@@ -483,20 +488,20 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 };
 
 template<typename T> inline
-void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
+void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
 {
   if (in.getType() == entity_type::WINDOW) {
     Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
-    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, bDirect);
-    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, bDirect);
+    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, trfOrder);
+    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, trfOrder);
   } else if ( in.getType() == entity_type::SEGMENT_2D) {
     Segment<sub_type> *s = dynamic_cast<Segment<sub_type> *>(out);
-    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, bDirect);
-    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, bDirect);
+    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, trfOrder);
+    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, trfOrder);
   } else if (in.getType() == entity_type::LINESTRING_2D ||
              in.getType() == entity_type::MULTIPOINT_POINT_2D ||
              in.getType() == entity_type::POLYGON_2D) {
@@ -504,7 +509,7 @@ void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type
     dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
     typename std::vector<T>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
     for (typename std::vector<T>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-      this->transform(*it, &(*it_out), bDirect);
+      this->transform(*it, &(*it_out), trfOrder);
     }
   } else {
     //tipo no soportado
@@ -547,7 +552,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -555,7 +560,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -563,14 +568,14 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 };
 
 template<typename T> inline
-void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   //formatVectorOut(out, in.size());
-  if (bDirect)
+  if (trfOrder == transform_order::DIRECT)
     cv::perspectiveTransform(in, *out, H);
   else {
     cv::perspectiveTransform(in, *out, H.inv());
@@ -578,23 +583,23 @@ void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out,
 }
 
 template<typename T> inline
-void TrfPerspective<T>::transform(const T &in, T *out, bool bDirect) const
+void TrfPerspective<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   std::vector<T> vIn, vOut;
   vIn.push_back(in);
-  if (bDirect) {
+  if (trfOrder == transform_order::DIRECT) {
     cv::perspectiveTransform(vIn, vOut, H);
-    *out = vOut[0];
+  } else {
+    cv::perspectiveTransform(vIn, vOut, H.inv());
   }
+  *out = vOut[0];
 }
 
 template<typename T> inline
-T TrfPerspective<T>::transform(const T &in, bool bDirect) const
+T TrfPerspective<T>::transform(const T &in, transform_order trfOrder) const
 {
   T out = in;
-  if (bDirect) {
-    transform(in, &out, bDirect);
-  }
+  transform(in, &out, trfOrder);
   return out;
 }
 
@@ -704,7 +709,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Transforma un conjunto de segmentos en otro aplicando una traslación
@@ -712,7 +717,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, bool bDirect = true) const;
+  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -720,7 +725,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -728,7 +733,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &pt, bool bDirect = true) const override;
+  T transform(const T &pt, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
@@ -797,35 +802,35 @@ void Translate<T>::setTranslationY(sub_type y0)
 }
 
 template<typename T> inline
-void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, bool bDirect) const
+void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i].pt1, &(*out)[i].pt1, bDirect);
-    transform(in[i].pt2, &(*out)[i].pt2, bDirect);
+    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
+    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
   }
 }
 
 template<typename T> inline
-void Translate<T>::transform(const T &in, T *out, bool bDirect) const
+void Translate<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   //... Podria llamar a transform(in, bDirect) pero es mas rapido hacerlo directamente
-  *out = bDirect ? in + translate : in - translate;
+  *out = (trfOrder == transform_order::DIRECT) ? in + translate : in - translate;
 }
 
 template<typename T> inline
-T Translate<T>::transform(const T &in, bool bDirect) const
+T Translate<T>::transform(const T &in, transform_order trfOrder) const
 {
-  return bDirect ? in + translate : in - translate;
+  return (trfOrder == transform_order::DIRECT) ? in + translate : in - translate;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -926,7 +931,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
@@ -934,7 +939,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
@@ -942,7 +947,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
 private:
 
@@ -1001,19 +1006,19 @@ void Rotation<T>::setAngle(sub_type ang)
 }
 
 template<typename T> inline
-void Rotation<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Rotation<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Rotation<T>::transform(const T &in, T *out, bool bDirect) const
+void Rotation<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   sub_type x_aux = in.x;
-  if (bDirect) {
+  if (trfOrder == transform_order::DIRECT) {
     out->x = static_cast<sub_type>(x_aux*r1 - in.y*r2);
     out->y = static_cast<sub_type>(x_aux*r2 + in.y*r1);
   } else {
@@ -1023,10 +1028,10 @@ void Rotation<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T Rotation<T>::transform(const T &in, bool bDirect) const
+T Rotation<T>::transform(const T &in, transform_order trfOrder) const
 {
   T out;
-  if (bDirect) {
+  if (trfOrder == transform_order::DIRECT) {
     out.x = in.x*r1 - in.y*r2;
     out.y = in.x*r2 + in.y*r1;
   } else {
@@ -1153,7 +1158,7 @@ public:
    * h2d.transform(pts_in, &pts_out);
    * \endcode
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica un helmert 2D a un punto
@@ -1161,7 +1166,7 @@ public:
   * \param[out] out Punto de salida
   * \param[in] bDirect Transformación directa
   */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica un helmert 2D a un punto
@@ -1169,7 +1174,7 @@ public:
   * \param[in] bDirect Transformación directa
   * \return Punto de salida
   */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Devuelve el giro
@@ -1265,19 +1270,19 @@ double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
 }
 
 template<typename T> inline
-void Helmert2D<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Helmert2D<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Helmert2D<T>::transform(const T &in, T *out, bool bDirect) const
+void Helmert2D<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   sub_type x_aux = in.x;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     out->x = static_cast<sub_type>(a * x_aux - b * in.y + x0);
     out->y = static_cast<sub_type>(b * x_aux + a * in.y + y0);
   } else {
@@ -1289,10 +1294,10 @@ void Helmert2D<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T Helmert2D<T>::transform(const T &in, bool bDirect) const
+T Helmert2D<T>::transform(const T &in, transform_order trfOrder) const
 {
   T r_pt;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     r_pt.x = static_cast<sub_type>(a * in.x - b * in.y + x0);
     r_pt.y = static_cast<sub_type>(b * in.x + a * in.y + y0);
   } else {
@@ -1472,7 +1477,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1480,7 +1485,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1488,7 +1493,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Devuelve el giro
@@ -1605,19 +1610,19 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
 }
 
 template<typename T> inline
-void Afin<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Afin<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Afin<T>::transform(const T &in, T *out, bool bDirect) const
+void Afin<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   sub_type x_aux = in.x;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     out->x = static_cast<sub_type>(a * x_aux + b * in.y + x0);
     out->y = static_cast<sub_type>(c * x_aux + d * in.y + y0);
   } else {
@@ -1627,10 +1632,10 @@ void Afin<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T Afin<T>::transform(const T &in, bool bDirect) const
+T Afin<T>::transform(const T &in, transform_order trfOrder) const
 {
   T r_pt;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     r_pt.x = static_cast<sub_type>(a * in.x + b * in.y + x0);
     r_pt.y = static_cast<sub_type>(c * in.x + d * in.y + y0);
   }
@@ -1844,7 +1849,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1852,7 +1857,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -1860,7 +1865,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -1949,19 +1954,19 @@ double Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &
 }
 
 template<typename T> inline
-void Projective<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Projective<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Projective<T>::transform(const T &in, T *out, bool bDirect) const
+void Projective<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   T pt_aux = in;
-  if (bDirect){
+  if ( trfOrder == transform_order::DIRECT ) {
     out->x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
     out->y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
   } else {
@@ -1971,10 +1976,10 @@ void Projective<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T Projective<T>::transform(const T &in, bool bDirect) const
+T Projective<T>::transform(const T &in, transform_order trfOrder) const
 {
   T r_pt;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     r_pt.x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
     r_pt.y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
   } else {
@@ -2063,7 +2068,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
@@ -2071,7 +2076,7 @@ public:
   * \param[out] out Punto de salida
   * \param[in] bDirect Transformación directa
   */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
@@ -2079,7 +2084,7 @@ public:
   * \param[in] bDirect Transformación directa
   * \return Punto de salida
   */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
@@ -2117,16 +2122,16 @@ double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::ve
 }
 
 template<typename T> inline
-void polynomialTransform<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void polynomialTransform<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void polynomialTransform<T>::transform(const T &in, T *out, bool bDirect) const
+void polynomialTransform<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   sub_type x_aux = in.x;
 
@@ -2134,7 +2139,7 @@ void polynomialTransform<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T polynomialTransform<T>::transform(const T &in, bool bDirect) const
+T polynomialTransform<T>::transform(const T &in, transform_order trfOrder) const
 {
   T r_pt;
   
@@ -2191,7 +2196,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override = 0;
+  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -2199,7 +2204,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transform(const T &in, T *out, bool bDirect = true) const override = 0;
+  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -2207,7 +2212,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  virtual T transform(const T &in, bool bDirect = true) const override = 0;
+  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a una entidad geométrica
@@ -2215,21 +2220,21 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect = true) const override;
+  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
 template<typename T> inline
-void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, bool bDirect) const
+void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const
 {
   if (in.getType() == entity_type::BBOX) {
     Bbox<sub_type> *bbox = dynamic_cast<const Bbox<sub_type> *>(out);
-    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt1, &bbox->pt1, bDirect);
-    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt2, &bbox->pt2, bDirect);
+    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt1, &bbox->pt1, trfOrder);
+    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt2, &bbox->pt2, trfOrder);
   } else if(in.getType() == entity_type::SEGMENT_3D) {
     Segment3D<sub_type> *segment3d = dynamic_cast<Segment3D<sub_type> *>(out);
-    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt1, &segment3d->pt1, bDirect);
-    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt2, &segment3d->pt2, bDirect);
+    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt1, &segment3d->pt1, trfOrder);
+    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt2, &segment3d->pt2, trfOrder);
   } else if (in.getType() == entity_type::LINESTRING_3D ||
              in.getType() == entity_type::MULTIPOINT_POINT_3D ||
              in.getType() == entity_type::POLYGON_3D) {
@@ -2238,7 +2243,7 @@ void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type
     typename std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
     for (typename std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin();
       it != _in.end(); it++, it_out++) {
-      this->transform(*it, &(*it_out), bDirect);
+      this->transform(*it, &(*it_out), trfOrder);
     }
   } else {
     //tipo no soportado
@@ -2391,7 +2396,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect = true) const override;
+  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -2399,7 +2404,7 @@ public:
    * \param[out] out Punto de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const T &in, T *out, bool bDirect = true) const override;
+  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica un helmert 2D a un punto
@@ -2407,7 +2412,7 @@ public:
    * \param[in] bDirect Transformación directa
    * \return Punto de salida
    */
-  T transform(const T &in, bool bDirect = true) const override;
+  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Devuelve el giro
@@ -2528,19 +2533,19 @@ const std::array<std::array<double, 3>, 3> &Helmert3D<T>::getRotationMatrix() co
 }
 
 template<typename T> inline
-void Helmert3D<T>::transform(const std::vector<T> &in, std::vector<T> *out, bool bDirect) const
+void Helmert3D<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], bDirect);
+    transform(in[i], &(*out)[i], trfOrder);
   }
 }
 
 template<typename T> inline
-void Helmert3D<T>::transform(const T &in, T *out, bool bDirect) const
+void Helmert3D<T>::transform(const T &in, T *out, transform_order trfOrder) const
 {
   T ptAux = in;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     out->x = static_cast<sub_type>( mScale * (ptAux.x*mR[0][0] + ptAux.y*mR[0][1] + ptAux.z*mR[0][2]) + x0 );
     out->y = static_cast<sub_type>( mScale * (ptAux.x*mR[1][0] + ptAux.y*mR[1][1] + ptAux.z*mR[1][2]) + y0 );
     out->z = static_cast<sub_type>( mScale * (ptAux.x*mR[2][0] + ptAux.y*mR[2][1] + ptAux.z*mR[2][2]) + z0 );
@@ -2555,10 +2560,10 @@ void Helmert3D<T>::transform(const T &in, T *out, bool bDirect) const
 }
 
 template<typename T> inline
-T Helmert3D<T>::transform(const T &in, bool bDirect) const
+T Helmert3D<T>::transform(const T &in, transform_order trfOrder) const
 {
   T r_pt;
-  if (bDirect){
+  if (trfOrder == transform_order::DIRECT){
     r_pt.x = static_cast<sub_type>( mScale * (in.x*mR[0][0] + in.y*mR[0][1] + in.z*mR[0][2]) + x0 );
     r_pt.y = static_cast<sub_type>( mScale * (in.x*mR[1][0] + in.y*mR[1][1] + in.z*mR[1][2]) + y0 );
     r_pt.z = static_cast<sub_type>( mScale * (in.x*mR[2][0] + in.y*mR[2][1] + in.z*mR[2][2]) + z0 );
