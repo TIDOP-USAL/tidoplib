@@ -14,6 +14,7 @@
 #endif
 
 #include "core/defs.h"
+#include "core/exception.h"
 
 namespace I3D
 {
@@ -23,6 +24,131 @@ namespace I3D
  *  \{
  */
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                                Conversión de color                                 */
+/* ---------------------------------------------------------------------------------- */
+
+/*! \defgroup colorConversion Conversión de color
+ *
+ * \{
+ */
+
+/*!
+ * \brief Obtiene la componente azul de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente azul
+ */
+I3D_EXPORT int getBlue(int color);
+
+/*!
+ * \brief Obtiene la componente verde de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente verde
+ */
+I3D_EXPORT int getGreen(int color);
+
+/*!
+ * \brief Obtiene la componente roja de un color
+ * \param[in] color Color representado como un entero
+ * \return Componente roja
+ */
+I3D_EXPORT int getRed(int color);
+
+/*!
+ * \brief Obtiene el canal alfa de un color
+ * \param[in] color Color representado como un entero
+ * \return Canal alfa
+ */
+I3D_EXPORT int getAlpha(int color);
+
+/*!
+ * \brief Convierte un color entero a RGB
+ * \param[in] color Color como entero
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
+
+/*!
+ * \brief Convierte un color RGB a entero
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \return Color como entero
+ */
+I3D_EXPORT int rgbToInt(int red, int green, int blue);
+
+/*!
+ * \brief Convierte un color RGB+alpha a entero
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[in] alpha Canal alfa
+ * \return Color como entero
+ */
+I3D_EXPORT int rgbaToInt(int red, int green, int blue, int alpha);
+
+/*!
+ * \brief Convierte un color de hexadecimal (como cadena) a entero
+ * \param[in] colorhex Color en hexadecimal
+ * \return Color como entero
+ */
+I3D_EXPORT int hexToInt(const std::string &colorhex);
+
+/*!
+ * \brief Convierte un color de hexadecimal (como cadena) a entero
+ * \param[in] colorhex Color en hexadecimal
+ * \return Color como entero
+ */
+I3D_EXPORT std::string intToHex(const int color);
+
+/*!
+ * \brief rgbToCmyk
+ * \param red
+ * \param green
+ * \param blue
+ * \param cyan
+ * \param magenta
+ * \param yellow
+ * \param key
+ */
+I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
+
+/*!
+ * \brief rgbToCmyk
+ * \param rgb
+ * \param cmyk
+ */
+I3D_EXPORT void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk);
+
+/*!
+ * \brief rgbToHSL
+ * \param red
+ * \param green
+ * \param blue
+ * \param hue
+ * \param saturation
+ * \param lightness
+ */
+I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
+
+/*!
+ * \brief rgbToHSL
+ * \param rgb
+ * \param hsl
+ */
+I3D_EXPORT void rgbToHSL(cv::Mat &rgb, cv::Mat *hsl);
+
+/*! \} */ // end of colorConversion
+
+
+
+
+/*!
+ * \brief La clase Color permite trabajar con diferenres modelos de color
+ */
 class I3D_EXPORT Color
 {
 public:
@@ -387,14 +513,11 @@ T Color::get() const
   } 
 #endif
   else {
-    throw std::exception("Tipo de conversión no permitida");
+    throw I3D::Exception("Tipo de conversión no permitida");
   }
   return color;
 }
 
-/* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
-/* ---------------------------------------------------------------------------------- */
 
 /*! \defgroup colorConversion Conversión de color
  *  

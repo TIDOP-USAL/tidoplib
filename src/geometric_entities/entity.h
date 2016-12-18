@@ -73,7 +73,7 @@ public:
   /*!
    * \brief Devuelve el tipo de entidad 
    */
-  const entity_type getType() const { return mEntityType; }
+  entity_type getType() const { return mEntityType; }
 };
 
 /* ---------------------------------------------------------------------------------- */

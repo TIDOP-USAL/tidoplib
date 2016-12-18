@@ -270,7 +270,7 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
   for (size_t i = 0; i < linesaux.size(); i++) {
     Line l(linesaux[i]);
     angle = l.angleOY();
-    if (angle >= mMinTheta && angle <= mMaxTheta || angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) {
+    if ((angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI)) {
       mLines.push_back(l);
     }
   }

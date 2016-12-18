@@ -87,7 +87,7 @@ bool VideoStream::read(cv::Mat *vf)
 //#endif
   //
   bool bret = false;
-  if (bret = mVideoCapture.read(mFrame)){
+  if ((bret = mVideoCapture.read(mFrame))){
     while (bSkipBlurryFrames && isImageBlurry(mFrame)) {
       bret = mVideoCapture.read(mFrame);
       if (bret == false) break;

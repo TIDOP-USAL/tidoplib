@@ -172,7 +172,7 @@ Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
 }
 
 template<typename T> inline
-Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter = true)
+Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter)
   : Entity<T>(entity_type::SEGMENT_2D)
 {
   double a = cos(angle), b = sin(angle);

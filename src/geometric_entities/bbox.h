@@ -130,7 +130,7 @@ public:
   /*!
    * \brief La ventana contiene la ventana
    */
-  template<typename T2> bool containsBbox(const Window<T2> &w) const;
+  template<typename T2> bool containsBbox(const Bbox<T2> &bbox) const;
 };
 
 // Definición de métodos
@@ -230,7 +230,7 @@ Bbox<T>::operator Bbox<T2>() const
 }
 
 template<typename T> inline
-cv::Point_<T> Bbox<T>::getCenter() const
+cv::Point3_<T> Bbox<T>::getCenter() const
 {
   if (typeid(T) == typeid(int)) {
     return cv::Point3_<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), 
@@ -252,7 +252,7 @@ bool Bbox<T>::isEmpty() const
           && pt2.x == -std::numeric_limits<T>().max() 
           && pt2.y == -std::numeric_limits<T>().max()
           && pt2.z == -std::numeric_limits<T>().max()); 
-};
+}
 
 template<typename T> template<typename T2> inline
 bool Bbox<T>::containsPoint(const cv::Point3_<T2> &pt) const

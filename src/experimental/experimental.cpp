@@ -4,6 +4,7 @@
 #include "core/defs.h"
 
 #include "opencv2/highgui/highgui.hpp"
+#ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
 #include "opencv2/core/eigen.hpp"
 #include "opencv2/sfm/libmv_light/libmv_capi.h"
@@ -12,6 +13,7 @@ I3D_SUPPRESS_WARNINGS
 #include "libmv/correspondence/matches.h"
 #include "libmv/multiview/robust_fundamental.h"
 I3D_DEFAULT_WARNINGS
+#endif
 
 namespace I3D
 {
@@ -136,6 +138,7 @@ void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &
 
 
 /* ----------------------------------------------------------------------------------------- */
+#ifdef I3D_ENABLE_OPENCV_SFM
 
 void Reconstruction3D::getKeyPointAndDescriptor(const std::vector<std::string> &imagesPaths, bool bSave)
 {
@@ -545,7 +548,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 }
 
-
+#endif
 
 
 /* ---------------------------------------------------------------------------------- */
