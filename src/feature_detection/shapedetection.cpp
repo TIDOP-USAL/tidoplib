@@ -27,9 +27,9 @@ GeneralizedHough::GeneralizedHough()
   rangeXY = 6;
   
   // min value allowed is -pi
-  phimin = -I3D_PI;
+  phimin = -static_cast<float>(I3D_PI);
   // max value allowed is +pi
-  phimax = +I3D_PI;
+  phimax = static_cast<float>(I3D_PI);
   // number of slices (angles) in R-table
   intervals = 16;
 }

@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 
   for (auto &line : linesJoin) {
     cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
-    trf.transformEntity(line, &line, true);
+    trf.transformEntity(line, &line, transform_order::DIRECT);
     //Para comprobar...
     cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
@@ -293,6 +293,17 @@ int main(int argc, char *argv[])
     double th1 = m[0] - stdv[0] - 1; // Un pixel mas de margen
     double th2 = m[0] + stdv[0] + 1;
     
+    // Hay que mirar si el máximo representa un pico muy claro. En ese caso podria ser un separador.
+    cv::Point min_loc, max_loc;
+    double min, max;
+    cv::minMaxLoc(mat_aux, &min, &max, &min_loc, &max_loc);
+
+     for (int iw = 0; iw   < v_with.size(); iw++) 
+    {
+
+    }
+
+
     cv::LineIterator li3(imgBN, line.pt1, line.pt2, 4, false);
     // Ahora buscar si quedan pixeles fuera
     
@@ -356,7 +367,7 @@ int main(int argc, char *argv[])
         
         std::vector<cv::Point> buff;
         I3D::Translate<cv::Point> trf(w_aux.pt1.x, w_aux.pt1.y);
-        trf.transformEntity(line, &line, false);
+        trf.transformEntity(line, &line, transform_order::INVERSE);
         lineBuffer(line, th2 + 10, &buff);
         cv::Mat aux(buff);
         const cv::Point *pts = (const cv::Point*) aux.data;

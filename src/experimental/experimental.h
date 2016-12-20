@@ -10,8 +10,10 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
+#include "opencv2/xphoto.hpp"
 
 #include "core/defs.h" // Para quitar warnings de sfm
+#include "graphic_entities/color.h"
 
 #ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
@@ -344,11 +346,7 @@ private:
 
 };
 
-BresenhamLine::BresenhamLine()
-{}
 
-BresenhamLine::~BresenhamLine()
-{}
 
 /*!
  * \brief Algoritmo DDA (analizador diferenciador digital)
@@ -371,11 +369,54 @@ private:
 
 };
 
-DDA::DDA()
-{}
 
-DDA::~DDA()
-{}
+
+
+// Coordenadas Cromáticas:
+// Cuando una imagen presenta cambios de intesidad, luz mas tenue, etc. una solución pasa por eliminar
+// los efectos de la intensidad en la imagen. Para ello se pasa a un espacio de color invariante a la
+// intensidad como las coordenadas cromáticas.
+// 
+// Paso a coordenadas cromáticas (división por la Intensidad)
+// (R, G, B) -> (R/(R+G+B), G/(R+G+B), B/(R+G+B)) 
+//
+// Un cambio de intensidad en la imagen es un producto con un escalar
+// (R, G, B) -> s.(R, G, B) -> (s.R, s.G, s.B)
+//
+// La intensidad se cancelará y el nuevo descriptor es invariante a la intensidad
+// El nuevo descriptor es de dimensión 2, es una proyección sobre el plano
+// R +G + B = 1
+// https://engineering.purdue.edu/~bouman/ece637/notes/pdf/ColorSpaces.pdf
+// The chromaticity specifies the hue and saturation, but not the lightness.
+
+void chromaticityCoordinates(int Red, int Green, int Blue, double *r, double *g, double *b);
+
+void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+
+
+
+
+// Balance de blancos
+// https://courses.cs.washington.edu/courses/cse467/08au/labs/l5/whiteBalance.pdf
+
+// 10.4.1 Gray World
+//   Lo implementa OpenCV como cv::xphoto::GrayworldWB
+// 10.4.2 White Patch
+//
+// 10.4.3 Iterative White Balancing  
+//
+// 10.4.4 Illuminant Voting
+//
+// 10.4.5 Color by Correlation
+
+
+
+
+
+
+
+
+
 
 } // End namespace EXPERIMENTAL
 

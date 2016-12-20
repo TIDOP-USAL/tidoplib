@@ -228,7 +228,7 @@ int CmdParameterOptions::getIndex(std::string value) const
 {
   for ( size_t i = 0; i < mOptions.size(); i++ ) {
     if (mOptions[i] == value) {
-      return i;
+      return static_cast<int>(i);
       break;
     }
   }
@@ -239,7 +239,7 @@ int CmdParameterOptions::getIndex() const
 {
   for ( size_t i = 0; i < mOptions.size(); i++ ) {
     if (mOptions[i] == mDefValue) {
-      return i;
+      return static_cast<int>(i);
       break;
     }
   }
@@ -260,13 +260,13 @@ void CmdParameterOptions::setValue(std::string value)
 
 void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
 {
-  mCmdArgs.push_front(std::make_shared<CmdParameter>(name, description, optional, defValue));
+  mCmdArgs.push_back(std::make_shared<CmdParameter>(name, description, optional, defValue));
 }
 
 
 void CmdParser::addParameterOption(const char *name, const char *options, const char *description, bool optional, const char *defValue)
 {
-  mCmdArgs.push_front(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
+  mCmdArgs.push_back(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
 }
 
 
@@ -278,6 +278,8 @@ void CmdParser::addOption(const char *name, const char *description, bool option
 CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
 {
   for (auto arg : mCmdArgs) {
+    //// Comando de ayuda
+    //if ( strcmp(argv[1], "-help") == 0 ) return;
     bool bOptional = arg->isOptional();
     std::string argName = (arg->getType() == ArgType::OPTION) ? "-" : "--";
     argName += arg->getName();
@@ -286,21 +288,24 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
       std::string arg_name = std::string(argv[i]);
       std::size_t found = arg_name.find(argName);
       if (found != std::string::npos) {
-        if (arg->getType() == ArgType::OPTION) {
+        if (arg_name == argName && arg->getType() == ArgType::OPTION) {
           dynamic_cast<CmdOption *>(arg.get())->setOption(true);
           break;
-        } else if (arg->getType() == ArgType::PARAMETER) {
+        } else {
           std::size_t val_pos = arg_name.find("=",found);
-          std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-          dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
-          bFind = true;
-          break;
-        } else if (arg->getType() == ArgType::PARAMETER_OPTIONS) {
-          std::size_t val_pos = arg_name.find("=",found);
-          std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-          dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
+          std::string name = arg_name.substr(0, val_pos);
+          if (val_pos != std::string::npos && name == argName) {
+            if (arg->getType() == ArgType::PARAMETER) {
+              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+              dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
+              bFind = true;
+              break;
+            } else if (arg->getType() == ArgType::PARAMETER_OPTIONS) {
+              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+              dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
+            }
+          }
         }
-
       }
     }
     // Ver si no es opcional y devolver un error si no existe

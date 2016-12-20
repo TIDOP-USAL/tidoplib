@@ -247,6 +247,9 @@ void Color::toHSL(double *hue, double *saturation, double *lightness) const
 
 int Color::toLuminance() const
 {
+  // Poynton	       0.2125	0.7154	0.0721
+  // sRGB proposal   0.2126	0.7152	0.0722
+  // W3              0.2126	0.7152	0.0722
   return I3D_ROUND_TO_INT( 0.2126 * getRed() + 0.7152 * getGreen() + 0.0722 * getBlue());
 }
 
@@ -510,13 +513,9 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   }
 
   double m = _lightness - chroma / 2;
-  *red += m;
-  *green += m;
-  *blue += m;
-  
-  //mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
+  *red = static_cast<int>((_rgb[2] + m) * 255);
+  *green = static_cast<int>((_rgb[1] + m) * 255);
+  *blue = static_cast<int>((_rgb[0] + m) *255);
 }
 
 void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)

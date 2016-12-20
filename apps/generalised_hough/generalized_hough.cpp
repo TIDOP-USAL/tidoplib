@@ -94,20 +94,21 @@ int main(int argc, char *argv[])
   cv::Mat imgtempl = cv::imread(templ.c_str(), 0);
   //runGHT('r');
 
-  I3D::GeneralizedHough ght;
-  //ght.createTemplate(templ.c_str(), "C:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\contour_rough.bmp");
+ I3D::GeneralizedHough ght;
+ //ght.createTemplate(templ.c_str(), "D:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\contour_rough.bmp");
 
-  ght.createRtable("C:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\2K7A2606_.png", "C:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\\\contour_.bmp");
-		//cv::Mat detect_img = imread("files\\Img_01.png", 1);
-  cv::Mat detect_img = imread("C:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\2K7A2606.jpg", 1);
-		//cv::Mat detect_img = imread("files\\Img_03.png", 1);
+  ght.createRtable("D:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\2K7A2606.png", "D:\\Desarrollo\\datos\\Vuelo2_2-2_Conductores\\Recortes\\contour.bmp");
+	//	//cv::Mat detect_img = imread("files\\Img_01.png", 1);
+  cv::Mat detect_img = imread(img.c_str(), 1);
+	//	//cv::Mat detect_img = imread("files\\Img_03.png", 1);
 	ght.accumulate(detect_img);
 	ght.bestCandidate();
 
-  //// create template
+  ////// create template
   //cv::Ptr<cv::GeneralizedHoughBallard> ght = createGeneralizedHoughBallard();
-  //ght->setTemplate(imgtempl, cv::Point(255, 350));
-  
+  //ght->setTemplate(imgtempl, cv::Point(30, 126));
+  //ght->setCannyHighThresh(255);
+  //ght->setCannyLowThresh(150);
 
   //cv::Mat_<Vec4f> pos; //an array of (x,y,1,0) tuples
   //ght->detect(imageGray, pos);
