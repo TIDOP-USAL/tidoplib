@@ -557,7 +557,6 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 
 
-
 //BresenhamLine::BresenhamLine()
 //{}
 //
@@ -586,18 +585,22 @@ BresenhamLine BresenhamLine::operator ++(int)
   return it;
 }
 
-//BresenhamLine BresenhamLine::&operator --()
-//{
-//  //... Implementar
-//  return *this;
-//}
+BresenhamLine &BresenhamLine::operator --()
+{
+  if (dx > dy) {
+    _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, -mStepX, -mStepY);
+  } else {
+    _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, -mStepY, -mStepX);
+  }
+  return *this;
+}
 
-//BresenhamLine BresenhamLine::operator --(int) 
-//{
-//  BresenhamLine it = *this;
-//  --(*this);
-//  return it;
-//}
+BresenhamLine BresenhamLine::operator --(int) 
+{
+  BresenhamLine it = *this;
+  --(*this);
+  return it;
+}
 
 BresenhamLine &BresenhamLine::begin()
 {
@@ -622,6 +625,54 @@ cv::Point BresenhamLine::position(int id)
   }
 }
 
+/*
+//http://rosettacode.org/wiki/Bitmap/Bresenham's_line_algorithm#C
+void Line( const float x1, const float y1, const float x2, const float y2, const Color& color )
+{
+  // Bresenham's line algorithm
+  const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+  if(steep)
+  {
+    std::swap(x1, y1);
+    std::swap(x2, y2);
+  }
+ 
+  if(x1 > x2)
+  {
+    std::swap(x1, x2);
+    std::swap(y1, y2);
+  }
+ 
+  const float dx = x2 - x1;
+  const float dy = fabs(y2 - y1);
+ 
+  float error = dx / 2.0f;
+  const int ystep = (y1 < y2) ? 1 : -1;
+  int y = (int)y1;
+ 
+  const int maxX = (int)x2;
+ 
+  for(int x=(int)x1; x<maxX; x++)
+  {
+    if(steep)
+    {
+        SetPixel(y,x, color);
+    }
+    else
+    {
+        SetPixel(x,y, color);
+    }
+ 
+    error -= dy;
+    if(error < 0)
+    {
+        y += ystep;
+        error += dx;
+    }
+  }
+}
+*/
+
 void BresenhamLine::init()
 {
   if (dy < 0) { 
@@ -643,22 +694,29 @@ void BresenhamLine::init()
   } else {
     mCount = dy + 1;
   }
+
+  if (dx > dy) {
+    p = 2 * dy - dx;
+    incE = 2 * dy;
+    incNE = 2 * (dy - dx);
+  } else {
+    p = 2 * dx - dy;
+    incE = 2 * dx;
+    incNE = 2 * (dx - dy);
+  }
 }
 
 void BresenhamLine::_next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
 {
-  int p = 2 * dMin - dMax;
-  int incE = 2 * dMin;
-  int incNE = 2 * (dMin - dMax);
-  //while (*max != endMax){
-  *max += stepMax;
-  if (p < 0){
-    p += incE;
-  } else {
-    *min += stepMin;
-    p += incNE;
+  if (*max < endMax) {
+    *max += stepMax;
+    if (p < 0) {
+      p += incE;
+    } else {
+      *min += stepMin;
+      p += incNE;
+    }
   }
-  //}
 }
 
 int BresenhamLine::size() const 
@@ -666,17 +724,136 @@ int BresenhamLine::size() const
   return mCount;
 }
 
+std::vector<cv::Point> BresenhamLine::getPoints()
+{
+  std::vector<cv::Point> pts;
+  while ( mPos != mPt2) {
+    this->operator++();
+    pts.push_back(mPos);
+  }
+  return pts;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
 //DDA::DDA()
 //{}
 //
 //DDA::~DDA()
 //{}
 
+cv::Point &DDA::operator*()
+{
+  return mPos;
+}
+
+DDA &DDA::operator ++()
+{
+  if (dx > dy) {
+    _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
+  } else {
+    _next(&mPos.y, &mPos.x, dx, mPt2.y, mStepY);
+  }
+  return *this;
+}
+
+DDA DDA::operator ++(int) 
+{
+  DDA it = *this;
+  ++(*this);
+  return it;
+}
+
+DDA &DDA::operator --()
+{
+  if (dx > dy) {
+    _next(&mPos.x, &mPos.y, dy, mPt2.x, mStepX);
+  } else {
+    _next(&mPos.y, &mPos.x, dx, mPt2.y, mStepY);
+  }
+  return *this;
+}
+
+DDA DDA::operator --(int) 
+{
+  DDA it = *this;
+  --(*this);
+  return it;
+}
+
+DDA &DDA::begin()
+{
+  mPos = mPt1;
+  return *this;
+}
+
+DDA &DDA::end() 
+{
+  mPos = mPt2;
+  return *this;
+}
+
+cv::Point DDA::position(int id) 
+{
+  if (id == -1) {
+    return mPos;
+  } else {
+    begin();
+    for (int i = 0; i < id; i++) ++(*this);
+    return mPos;
+  }
+}
+
+void DDA::init()
+{
+  if (dx > dy) {
+    m = (float)dy / (float)dx;
+    b = mPt1.y - m * mPt1.x;
+  } else {
+    m = (float)dx / (float)dy;
+    b = mPt1.x - m * mPt1.y;
+  }
+
+  if (dy < 0) {
+    dy = -dy;
+    mStepY = -1;
+  } else {
+    mStepY = 1;
+  }
+
+  if (dx < 0) {
+    dx = -dx;
+    mStepX = -1;
+  } else {
+    mStepX = 1;
+  }
+}
+
+void DDA::_next(int *max, int *min, int dMin, int endMax, int step) 
+{
+  if (*max < endMax) {
+    *max += step;
+    if ( dMin != 0) 
+      *min = I3D_ROUND_TO_INT(m * *max + b);
+  }
+}
+
+int DDA::size() const 
+{
+  return mCount;
+}
+
+std::vector<cv::Point> DDA::getPoints()
+{
+  std::vector<cv::Point> pts;
+  while ( mPos != mPt2) {
+    this->operator++();
+    pts.push_back(mPos);
+  }
+  return pts;
+}
 
 /* ---------------------------------------------------------------------------------- */
-
-
-
 
 
 } // End namespace EXPERIMENTAL

@@ -292,7 +292,7 @@ public:
  * \brief Clase base virtual para algoritmos de lineas
  *
  */
-class LineAlgorithms /*: public std::iterator<std::bidirectional_iterator_tag, int>*/  //deberia ser un iterador
+class LineAlgorithms
 {
 public:
 
@@ -300,45 +300,85 @@ public:
   {
     BRESENHAM,
     DDA
+    //XiaolinWu
   };
+
+  /*!
+   * \brief 
+   */
+  Type mType;
 
 protected:
 
-  Type mType;
-
+  /*!
+   * \brief Punto inicial
+   */
   cv::Point mPt1;
 
+  /*!
+   * \brief Punto final
+   */
   cv::Point mPt2;
 
+  /*!
+   * \brief Paso en X
+   */
   int mStepX;
 
+  /*!
+   * \brief Paso en Y
+   */
   int mStepY;
 
+  /*!
+   * \brief Posición actual
+   */
   cv::Point mPos;
 
+  /*!
+   * \brief Incremento en X
+   */
   int dx;
 
+  /*!
+   * \brief Incremento en Y
+   */
   int dy;
+
+  /*!
+   * \brief número de puntos
+   */
+  int mCount;
 
 public:
 
-  LineAlgorithms(Type type) : mType(type) {}
-
+  /*!
+   * \brief Constructora
+   */
   LineAlgorithms(Type type, const cv::Point &pt1, const cv::Point &pt2) 
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
     dy = pt2.y - pt1.y;
+    mPos = pt1;
   }
 
+  /*!
+   * \brief Destructora
+   */
   virtual ~LineAlgorithms() {}
 
   /*!
    * \brief Determina la posición actual
+   * \param[in] id Identificador de la posición
    * \return Posición actual
    */
   virtual cv::Point position(int id = -1) = 0;
 
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  virtual std::vector<cv::Point> getPoints() = 0;
 };
 
 /*!
@@ -351,20 +391,30 @@ public:
  * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
  * trayectoria de la línea.
  */
-class BresenhamLine : public LineAlgorithms
+class BresenhamLine : public LineAlgorithms, public std::iterator<std::bidirectional_iterator_tag, int>
 {
+private:
+
+  int p;
+  int incE;
+  int incNE;
+
 public:
 
-  int mCount;
-
-public:
-
+  /*!
+   * \brief Constructora
+   * I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+   * std::vector<cv::Point> v1 = lineIter1.getPoints();
+   */
   BresenhamLine(const cv::Point &pt1, const cv::Point &pt2) 
     : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2) 
   {
     init();
   }
 
+  /*!
+   * \brief Destructora
+   */
   ~BresenhamLine() {}
 
   /*!
@@ -385,18 +435,31 @@ public:
   /*!
    * \brief Decrementa una posición
    */
-  //BresenhamLine &operator --();
+  BresenhamLine &operator --();
   
   /*!
    * \brief Decrementa una posición
    */
-  //BresenhamLine operator --(int);
+  BresenhamLine operator --(int);
 
+  /*!
+   * \brief Operador igual que
+   */
   bool operator==(const BresenhamLine& bl) {return mPt2==bl.mPos;}
+  
+  /*!
+   * \brief Operador distinto que
+   */
   bool operator!=(const BresenhamLine& bl) {return mPt2!=bl.mPos;}
 
+  /*!
+   * \brief Iterador al primer punto
+   */
   BresenhamLine &begin();
 
+  /*!
+   * \brief Iterador al último punto
+   */
   BresenhamLine &end();
 
   /*!
@@ -407,7 +470,15 @@ public:
    */
   cv::Point position(int id = -1) override;
 
+  /*!
+   * \brief Tamaño de la linea
+   */
   int size() const;
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<cv::Point> getPoints() override;
 
 private:
 
@@ -431,10 +502,28 @@ private:
  * coordenada y se determina los valores enteros correspondientes mas  
  * próximos a la trayectoria de la línea para la otra coordenada.
  */
-class DDA : public LineAlgorithms
+class DDA : public LineAlgorithms, public std::iterator<std::bidirectional_iterator_tag, int>
 {
+
+private:
+
+  /*!
+   * \brief Pendiente de la recta
+   */
+  float m;
+
+  /*!
+   * \brief Ordenada en el origen
+   */
+  float b;
+
 public:
 
+  /*!
+   *
+   * I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
+   * std::vector<cv::Point> v2 = lineIter2.getPoints();
+   */
   DDA(const cv::Point &pt1, const cv::Point &pt2)
     : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
   {
@@ -446,180 +535,72 @@ public:
   /*!
    * \brief Punto actual
    */
-  cv::Point &operator*()
-  {
-    return mPos;
-  }
+  cv::Point &operator*();
 
   /*!
    * \brief Incrementa una posición
    */
-  DDA &operator ++()
-  {
-    if (dx > dy) {
-      _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
-    } else {
-      _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
-    }
-    return *this;
-  }
+  DDA &operator ++();
   
   /*!
    * \brief Incrementa una posición
    */
-  DDA operator ++(int) 
-  {
-    DDA it = *this;
-    ++(*this);
-    return it;
-  }
+  DDA operator ++(int);
 
-  virtual cv::Point position(int id = -1) override 
-  {
-    if (id == -1) {
-      return mPos;
-    } else {
-      //if (dx > dy) {
-      //  _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
-      //} else {
-      //  _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
-      //}
-    }
-  }
+  /*!
+   * \brief Decrementa una posición
+   */
+  DDA &operator --();
+  
+  /*!
+   * \brief Decrementa una posición
+   */
+  DDA operator --(int);
+
+  /*!
+   * \brief Operador igual que
+   */
+  bool operator==(const DDA &bl) { return mPt2 == bl.mPos; }
+
+  /*!
+   * \brief Operador distinto que
+   */
+  bool operator!=(const DDA& bl) { return mPt2 != bl.mPos; }
+
+  /*!
+   * \brief Iterador al primer punto
+   */
+  DDA &begin();
+
+  /*!
+   * \brief Iterador al último punto
+   */
+  DDA &end();
+
+  /*!
+   * \brief Determina la posición actual o la posición correspondiente al indice
+   * El indice es la coordenada x o y del punto en función de que dx > dy o dx < dy
+   * \param[in] id Indice del punto
+   * \return Posición actual
+   */
+  cv::Point position(int id = -1) override;
+
+  /*!
+   * \brief Tamaño de la linea
+   */
+  int size() const;
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<cv::Point> getPoints() override;
 
 private:
 
-  void init()
-  {
-    if (dy < 0) {
-      dy = -dy;
-      mStepY = -1;
-    } else {
-      mStepY = 1;
-    }
+  void init();
 
-    if (dx < 0) {
-      dx = -dx;
-      mStepX = -1;
-    } else {
-      mStepX = 1;
-    }
-
-    //if (dx > dy) {
-    //  mCount = dx + 1;
-    //} else {
-    //  mCount = dy + 1;
-    //}
-  }
-
-  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
-  {
-    float m = (float)dMin / (float)dMax;
-    float b = *min - m * *max;
-    while (*max != endMax) {
-      *max += dx;
-      *min = I3D_ROUND_TO_INT(m * *max + b);
-    }
-  }
+  void _next(int *max, int *min, int dMin, int endMax, int step);
 };
-
-/*!
- * Algoritmo de trazado de lineas en el que se acumula los incrementos desde el origen
- *
- */
-//class Line : public LineAlgorithms
-//{
-//
-//public:
-//
-//  DDA(const cv::Point &pt1, const cv::Point &pt2)
-//    : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
-//  {
-//    init();
-//  }
-//
-//  ~DDA() {}
-//
-//  /*!
-//   * \brief Punto actual
-//   */
-//  cv::Point &operator*()
-//  {
-//    return mPos;
-//  }
-//
-//  /*!
-//   * \brief Incrementa una posición
-//   */
-//  DDA &operator ++()
-//  {
-//    if (dx > dy) {
-//      _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
-//    } else {
-//      _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
-//    }
-//    return *this;
-//  }
-//  
-//  /*!
-//   * \brief Incrementa una posición
-//   */
-//  DDA operator ++(int) 
-//  {
-//    DDA it = *this;
-//    ++(*this);
-//    return it;
-//  }
-//
-//  virtual cv::Point position(int id = -1) override 
-//  {
-//    if (id == -1) {
-//      return mPos;
-//    } else {
-//      //if (dx > dy) {
-//      //  _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
-//      //} else {
-//      //  _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
-//      //}
-//    }
-//  }
-//
-//private:
-//
-//  void init()
-//  {
-//    if (dy < 0) {
-//      dy = -dy;
-//      mStepY = -1;
-//    } else {
-//      mStepY = 1;
-//    }
-//
-//    if (dx < 0) {
-//      dx = -dx;
-//      mStepX = -1;
-//    } else {
-//      mStepX = 1;
-//    }
-//
-//    //if (dx > dy) {
-//    //  mCount = dx + 1;
-//    //} else {
-//    //  mCount = dy + 1;
-//    //}
-//  }
-//
-//  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
-//  {
-//    float m = (float)dMin / (float)dMax;
-//    float b = *min - m * *max;
-//    while (*max != endMax) {
-//      *max += dx;
-//      *min = I3D_ROUND_TO_INT(m * *max + b);
-//    }
-//  }
-//};
-
 
 
 

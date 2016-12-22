@@ -94,6 +94,16 @@ std::vector<DamageCandidates> damages;
  */
 int main(int argc, char *argv[])
 {
+
+  SegmentI _line(cv::Point(4, 25), cv::Point(36, 11));
+
+  I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+  I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
+
+  std::vector<cv::Point> v1 = lineIter1.getPoints();
+  std::vector<cv::Point> v2 = lineIter2.getPoints();
+
+
   // Barra de progreso
   ProgressBar progress_bar;
 
