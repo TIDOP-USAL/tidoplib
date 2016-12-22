@@ -556,65 +556,124 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 /* ---------------------------------------------------------------------------------- */
 
 
-BresenhamLine::BresenhamLine()
-{}
-
-BresenhamLine::~BresenhamLine()
-{}
 
 
-DDA::DDA()
-{}
+//BresenhamLine::BresenhamLine()
+//{}
+//
+//BresenhamLine::~BresenhamLine()
+//{}
 
-DDA::~DDA()
-{}
+cv::Point &BresenhamLine::operator*()
+{
+  return mPos;
+}
+
+BresenhamLine &BresenhamLine::operator ++()
+{
+  if (dx > dy) {
+    _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+  } else {
+    _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+  }
+  return *this;
+}
+
+BresenhamLine BresenhamLine::operator ++(int) 
+{
+  BresenhamLine it = *this;
+  ++(*this);
+  return it;
+}
+
+//BresenhamLine BresenhamLine::&operator --()
+//{
+//  //... Implementar
+//  return *this;
+//}
+
+//BresenhamLine BresenhamLine::operator --(int) 
+//{
+//  BresenhamLine it = *this;
+//  --(*this);
+//  return it;
+//}
+
+BresenhamLine &BresenhamLine::begin()
+{
+  mPos = mPt1;
+  return *this;
+}
+
+BresenhamLine &BresenhamLine::end() 
+{
+  mPos = mPt2;
+  return *this;
+}
+
+cv::Point BresenhamLine::position(int id)
+{
+  if (id == -1) {
+    return mPos;
+  } else {
+    begin();
+    for (int i = 0; i < id; i++) ++(*this);
+    return mPos;
+  }
+}
+
+void BresenhamLine::init()
+{
+  if (dy < 0) { 
+    dy = -dy; 
+    mStepY = -1; 
+  } else {
+    mStepY = 1;
+  }
+
+  if (dx < 0) {  
+    dx = -dx;  
+    mStepX = -1; 
+  } else {
+    mStepX = 1;
+  }
+
+  if (dx > dy) {
+    mCount = dx + 1;
+  } else {
+    mCount = dy + 1;
+  }
+}
+
+void BresenhamLine::_next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
+{
+  int p = 2 * dMin - dMax;
+  int incE = 2 * dMin;
+  int incNE = 2 * (dMin - dMax);
+  //while (*max != endMax){
+  *max += stepMax;
+  if (p < 0){
+    p += incE;
+  } else {
+    *min += stepMin;
+    p += incNE;
+  }
+  //}
+}
+
+int BresenhamLine::size() const 
+{
+  return mCount;
+}
+
+//DDA::DDA()
+//{}
+//
+//DDA::~DDA()
+//{}
 
 
 /* ---------------------------------------------------------------------------------- */
-
-
-
-void chromaticityCoordinates(int Red, int Green, int Blue, double *r, double *g, double *b)
-{
-  double sum = Red + Green + Blue;
-  *r = Red / sum;
-  *g = Green / sum;
-  *b = Blue / sum;
-}
-
-void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
-{
-  if ( rgb.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
-  chroma_rgb->create( rgb.size(), CV_32FC3);
-  cv::Mat chroma_coord = *chroma_rgb;
-  
-  auto trfChromaticity = [&](int ini, int end) {
-    double c_red, c_green, c_blue;
-    for (int r = ini; r < end; r++) {
-      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
-      for (int c = 0; c < rgb.cols; c++) {
-        chromaticityCoordinates(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &c_red, &c_green, &c_blue);
-        //chroma_coord.at<cv::Vec3b>(r,c)[0] = (uchar)c_blue;
-        //chroma_coord.at<cv::Vec3b>(r,c)[1] = (uchar)c_green;
-        //chroma_coord.at<cv::Vec3b>(r,c)[2] = (uchar)c_red;
-        chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(c_blue), static_cast<float>(c_green), static_cast<float>(c_red));
-      }
-    }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = rgb.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > rgb.rows ) end = rgb.rows;
-    threads[i] = std::thread(trfChromaticity, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
-}
 
 
 

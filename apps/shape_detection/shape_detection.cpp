@@ -234,7 +234,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     red = channels[2];
   } else {
     cv::Mat imageChromaticity;
-    I3D::EXPERIMENTAL::chromaticityCoordinates(image, &imageChromaticity);
+    chromaticityCoordinates(image, &imageChromaticity);
     cv::Mat channels[3];
     cv::split(imageChromaticity, channels);
     cv::Mat red;
@@ -401,7 +401,7 @@ int main(int argc, char *argv[])
       red = channels[2];
     } else {
       cv::Mat imageChromaticity;
-      I3D::EXPERIMENTAL::chromaticityCoordinates(image, &imageChromaticity);
+      chromaticityCoordinates(image, &imageChromaticity);
       cv::split(imageChromaticity, channels);
       cv::normalize(channels[2], red, 0, 255, CV_MINMAX); 
       red.convertTo(red, CV_8U);

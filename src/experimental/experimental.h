@@ -292,37 +292,52 @@ public:
  * \brief Clase base virtual para algoritmos de lineas
  *
  */
-class lineAlgorithms
+class LineAlgorithms /*: public std::iterator<std::bidirectional_iterator_tag, int>*/  //deberia ser un iterador
 {
 public:
 
   enum class Type
   {
-    BRESENHAM
+    BRESENHAM,
+    DDA
   };
 
 protected:
 
-  int count;
+  Type mType;
+
+  cv::Point mPt1;
+
+  cv::Point mPt2;
+
+  int mStepX;
+
+  int mStepY;
+
+  cv::Point mPos;
+
+  int dx;
+
+  int dy;
 
 public:
 
-  lineAlgorithms() {}
+  LineAlgorithms(Type type) : mType(type) {}
 
-  virtual ~lineAlgorithms() {}
+  LineAlgorithms(Type type, const cv::Point &pt1, const cv::Point &pt2) 
+    : mType(type), mPt1(pt1), mPt2(pt2)
+  {
+    dx = pt2.x - pt1.x;
+    dy = pt2.y - pt1.y;
+  }
 
-  /*!
-   * \brief Ejecuta
-   */
-  virtual void execute(const cv::Mat &image, const cv::Point &pt1, const cv::Point &pt2) = 0;
+  virtual ~LineAlgorithms() {}
 
   /*!
    * \brief Determina la posición actual
    * \return Posición actual
    */
-  cv::Point position();
-
-private:
+  virtual cv::Point position(int id = -1) = 0;
 
 };
 
@@ -336,13 +351,69 @@ private:
  * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
  * trayectoria de la línea.
  */
-class BresenhamLine : public lineAlgorithms
+class BresenhamLine : public LineAlgorithms
 {
 public:
-  BresenhamLine();
-  ~BresenhamLine();
+
+  int mCount;
+
+public:
+
+  BresenhamLine(const cv::Point &pt1, const cv::Point &pt2) 
+    : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2) 
+  {
+    init();
+  }
+
+  ~BresenhamLine() {}
+
+  /*!
+   * \brief Punto actual
+   */
+  cv::Point &operator*();
+
+  /*!
+   * \brief Incrementa una posición
+   */
+  BresenhamLine &operator ++();
+  
+  /*!
+   * \brief Incrementa una posición
+   */
+  BresenhamLine operator ++(int);
+
+  /*!
+   * \brief Decrementa una posición
+   */
+  //BresenhamLine &operator --();
+  
+  /*!
+   * \brief Decrementa una posición
+   */
+  //BresenhamLine operator --(int);
+
+  bool operator==(const BresenhamLine& bl) {return mPt2==bl.mPos;}
+  bool operator!=(const BresenhamLine& bl) {return mPt2!=bl.mPos;}
+
+  BresenhamLine &begin();
+
+  BresenhamLine &end();
+
+  /*!
+   * \brief Determina la posición actual o la posición correspondiente al indice
+   * El indice es la coordenada x o y del punto en función de que dx > dy o dx < dy
+   * \param[in] id Indice del punto
+   * \return Posición actual
+   */
+  cv::Point position(int id = -1) override;
+
+  int size() const;
 
 private:
+
+  void init();
+
+  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin);
 
 };
 
@@ -357,41 +428,198 @@ private:
  * \f$ Dy = m * Dx \f$<BR>
  * \f$ Dx = Dy / m \f$<BR>
  * Se efectúa un muestreo de la línea en intervalos unitarios en una 
- * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
+ * coordenada y se determina los valores enteros correspondientes mas  
+ * próximos a la trayectoria de la línea para la otra coordenada.
  */
-class DDA : public lineAlgorithms
+class DDA : public LineAlgorithms
 {
 public:
-  DDA();
-  ~DDA();
+
+  DDA(const cv::Point &pt1, const cv::Point &pt2)
+    : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
+  {
+    init();
+  }
+
+  ~DDA() {}
+
+  /*!
+   * \brief Punto actual
+   */
+  cv::Point &operator*()
+  {
+    return mPos;
+  }
+
+  /*!
+   * \brief Incrementa una posición
+   */
+  DDA &operator ++()
+  {
+    if (dx > dy) {
+      _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+    } else {
+      _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+    }
+    return *this;
+  }
+  
+  /*!
+   * \brief Incrementa una posición
+   */
+  DDA operator ++(int) 
+  {
+    DDA it = *this;
+    ++(*this);
+    return it;
+  }
+
+  virtual cv::Point position(int id = -1) override 
+  {
+    if (id == -1) {
+      return mPos;
+    } else {
+      //if (dx > dy) {
+      //  _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+      //} else {
+      //  _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+      //}
+    }
+  }
 
 private:
 
+  void init()
+  {
+    if (dy < 0) {
+      dy = -dy;
+      mStepY = -1;
+    } else {
+      mStepY = 1;
+    }
+
+    if (dx < 0) {
+      dx = -dx;
+      mStepX = -1;
+    } else {
+      mStepX = 1;
+    }
+
+    //if (dx > dy) {
+    //  mCount = dx + 1;
+    //} else {
+    //  mCount = dy + 1;
+    //}
+  }
+
+  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
+  {
+    float m = (float)dMin / (float)dMax;
+    float b = *min - m * *max;
+    while (*max != endMax) {
+      *max += dx;
+      *min = I3D_ROUND_TO_INT(m * *max + b);
+    }
+  }
 };
 
-
-
-
-// Coordenadas Cromáticas:
-// Cuando una imagen presenta cambios de intesidad, luz mas tenue, etc. una solución pasa por eliminar
-// los efectos de la intensidad en la imagen. Para ello se pasa a un espacio de color invariante a la
-// intensidad como las coordenadas cromáticas.
-// 
-// Paso a coordenadas cromáticas (división por la Intensidad)
-// (R, G, B) -> (R/(R+G+B), G/(R+G+B), B/(R+G+B)) 
+/*!
+ * Algoritmo de trazado de lineas en el que se acumula los incrementos desde el origen
+ *
+ */
+//class Line : public LineAlgorithms
+//{
 //
-// Un cambio de intensidad en la imagen es un producto con un escalar
-// (R, G, B) -> s.(R, G, B) -> (s.R, s.G, s.B)
+//public:
 //
-// La intensidad se cancelará y el nuevo descriptor es invariante a la intensidad
-// El nuevo descriptor es de dimensión 2, es una proyección sobre el plano
-// R +G + B = 1
-// https://engineering.purdue.edu/~bouman/ece637/notes/pdf/ColorSpaces.pdf
-// The chromaticity specifies the hue and saturation, but not the lightness.
-
-void chromaticityCoordinates(int Red, int Green, int Blue, double *r, double *g, double *b);
-
-void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+//  DDA(const cv::Point &pt1, const cv::Point &pt2)
+//    : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
+//  {
+//    init();
+//  }
+//
+//  ~DDA() {}
+//
+//  /*!
+//   * \brief Punto actual
+//   */
+//  cv::Point &operator*()
+//  {
+//    return mPos;
+//  }
+//
+//  /*!
+//   * \brief Incrementa una posición
+//   */
+//  DDA &operator ++()
+//  {
+//    if (dx > dy) {
+//      _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+//    } else {
+//      _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+//    }
+//    return *this;
+//  }
+//  
+//  /*!
+//   * \brief Incrementa una posición
+//   */
+//  DDA operator ++(int) 
+//  {
+//    DDA it = *this;
+//    ++(*this);
+//    return it;
+//  }
+//
+//  virtual cv::Point position(int id = -1) override 
+//  {
+//    if (id == -1) {
+//      return mPos;
+//    } else {
+//      //if (dx > dy) {
+//      //  _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+//      //} else {
+//      //  _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+//      //}
+//    }
+//  }
+//
+//private:
+//
+//  void init()
+//  {
+//    if (dy < 0) {
+//      dy = -dy;
+//      mStepY = -1;
+//    } else {
+//      mStepY = 1;
+//    }
+//
+//    if (dx < 0) {
+//      dx = -dx;
+//      mStepX = -1;
+//    } else {
+//      mStepX = 1;
+//    }
+//
+//    //if (dx > dy) {
+//    //  mCount = dx + 1;
+//    //} else {
+//    //  mCount = dy + 1;
+//    //}
+//  }
+//
+//  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
+//  {
+//    float m = (float)dMin / (float)dMax;
+//    float b = *min - m * *max;
+//    while (*max != endMax) {
+//      *max += dx;
+//      *min = I3D_ROUND_TO_INT(m * *max + b);
+//    }
+//  }
+//};
+
 
 
 
