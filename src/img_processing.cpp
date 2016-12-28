@@ -3,6 +3,7 @@
 #include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/xphoto/white_balance.hpp"
 
 #include <cstdarg>
 #include <cstdio>
@@ -452,5 +453,7 @@ ProcessExit FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+
 
 } // End namespace I3D

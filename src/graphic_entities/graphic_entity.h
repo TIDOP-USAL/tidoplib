@@ -133,90 +133,90 @@ public:
    * \brief Devuelve el color de Pluma
    * \return Color de pluma
    */
-  Color getPenColor() { return mPenColor; }
+  Color getPenColor();
 
   /*!
    * \brief Establece el color de Pluma
    * \param[in] pencolor Color de Pluma
    */
-  void setPenColor(Color pencolor) { mPenColor = pencolor; }
+  void setPenColor(Color pencolor);
 
   /*!
    * \brief Devuelve el ancho de pluma
    * \return Ancho de pluma
    */
-  uint8_t getPenWidth() { return mPenWidth; }
+  uint8_t getPenWidth();
 
   /*!
    * \brief Establece el ancho de pluma
    * \param[in] penwidth Ancho de pluma
    */
-  void setPenWidth(uint8_t penwidth) { mPenWidth = penwidth; }
+  void setPenWidth(uint8_t penwidth);
 
   /*!
    * \brief Devuelve el patrón de pluma
    * \return Patrón de pluma
    */
-  std::string getPattern() { return mPattern; }
+  std::string getPattern();
 
   /*!
    * \brief Establece el patrón de pluma
    * \param[in] pattern Patrón de pluma
    */
-  void setPattern(std::string pattern) { mPattern = pattern; }
+  void setPattern(std::string pattern);
 
   /*!
    * \brief Devuelve el nombre o id de pluma
    * \return Nombre o id de pluma
    */
-  PenName getPenName() { return mPenName; }
+  PenName getPenName();
 
   /*!
    * \brief Establece el nombre o id de pluma
    * \param[in] penname Nombre o id de pluma
    */
-  void setPenName(PenName penname) { mPenName = penname; }
+  void setPenName(PenName penname);
 
   /*!
    * \brief Devuelve la forma de puntos extremos de las líneas
    * \return Forma de puntos extremos de las líneas
    */
-  PenCap getPenCap() { return mPenCap; }
+  PenCap getPenCap();
 
-  /*!
-   * \brief Establece la forma de puntos extremos de las líneas
-   * \param[in] pencap Forma de puntos extremos de las líneas
-   */
-  void setPenCap(PenCap pencap) { mPenCap = pencap; }
+    /*!
+     * \brief Establece la forma de puntos extremos de las líneas
+     * \param[in] pencap Forma de puntos extremos de las líneas
+     */
+   void setPenCap(PenCap pencap);
 
   /*!
    * \brief Devuelve la forma del punto de unión (vértice) de líneas
    * \return Forma del punto de unión (vértice) de líneas
    */
-  PenJoin getPenJoin() { return mPenJoin; }
+   PenJoin getPenJoin();
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
    * \param[in] penjoin Forma del punto de unión (vértice) de líneas
    */
-  void setPenJoin(PenJoin penjoin) { mPenJoin = penjoin; }
+   void setPenJoin(PenJoin penjoin);
 
   /*!
    * \brief Devuelve el desplazamiento desde el centro de la línea.
    * \return Desplazamiento desde el centro de la línea.
    */
-  int32_t getPerpendicularOffset() { return mPerpendicularOffset; }
+  int32_t getPerpendicularOffset();
 
   /*!
    * \brief Establece el desplazamiento desde el centro de la línea.
    * Si es negativo se dibuja a la izquierda
    * \param[in] perpendicularoffset Desplazamiento desde el centro de la línea.
    */
-  void setPerpendicularOffset(int32_t perpendicularoffset) { mPerpendicularOffset = perpendicularoffset; }
+  void setPerpendicularOffset(int32_t perpendicularoffset);
 
-  uint32_t getPriorityLevel() { return mPriorityLevel; }
+  uint32_t getPriorityLevel();
 
-  void setPriorityLevel(uint32_t priorityLevel) { mPriorityLevel = priorityLevel; }
+  void setPriorityLevel(uint32_t priorityLevel);
 };
 
 class I3D_EXPORT StyleBrush
@@ -233,6 +233,7 @@ public:
     CROSS_HATCH,       //  ++++++
     DIAGCROSS_HATCH    //  xxxxxx 
   };
+
 protected:
 
   /*!
@@ -628,6 +629,8 @@ private:
 
 class I3D_EXPORT Entity : public Metadata
 {
+
+
 public:
   Entity()
   {
@@ -658,7 +661,9 @@ public:
 #endif
 };
 
-
+/*!
+ * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
+ */
 class I3D_EXPORT Layer
 {
   std::list<std::shared_ptr<Entity>> entities;

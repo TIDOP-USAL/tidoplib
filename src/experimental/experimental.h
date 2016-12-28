@@ -10,6 +10,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
+#include "opencv2/xphoto/white_balance.hpp"
 
 #include "core/defs.h" // Para quitar warnings de sfm
 
@@ -30,6 +31,7 @@ I3D_DEFAULT_WARNINGS
 #endif
 
 #include "matching.h"
+#include "img_processing.h"
 
 namespace I3D
 {
@@ -334,21 +336,21 @@ private:
  * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
  * trayectoria de la línea.
  */
-class BresenhamLine : public lineAlgorithms
-{
-public:
-  BresenhamLine();
-  ~BresenhamLine();
-
-private:
-
-};
-
-BresenhamLine::BresenhamLine()
-{}
-
-BresenhamLine::~BresenhamLine()
-{}
+//class BresenhamLine : public lineAlgorithms
+//{
+//public:
+//  BresenhamLine();
+//  ~BresenhamLine();
+//
+//private:
+//
+//};
+//
+//BresenhamLine::BresenhamLine()
+//{}
+//
+//BresenhamLine::~BresenhamLine()
+//{}
 
 /*!
  * \brief Algoritmo DDA (analizador diferenciador digital)
@@ -361,21 +363,172 @@ BresenhamLine::~BresenhamLine()
  * Se efectúa un muestreo de la línea en intervalos unitarios en una 
  * coordenada y se determina los valores enteros correspondientes mas  * próximos a la trayectoria de la línea para la otra coordenada.
  */
-class DDA : public lineAlgorithms
-{
-public:
-  DDA();
-  ~DDA();
+//class DDA : public lineAlgorithms
+//{
+//public:
+//  DDA();
+//  ~DDA();
+//
+//private:
+//
+//};
+//
+//DDA::DDA()
+//{}
+//
+//DDA::~DDA()
+//{}
 
+
+
+//https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
+//https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
+
+enum class Thinning
+{
+  ZHANG_SUEN,
+  GUO_HALL
+};
+
+/*!
+ * Perform one thinning iteration.
+ * Normally you wouldn't call this function directly from your code.
+ *
+ * \param image Binary image with range = 0-1
+ * \param iter 0=even, 1=odd
+ */
+//void thinningGuoHallIteration(const cv::Mat &image, int iter);
+
+
+/**
+ * Perform one thinning iteration.
+ * Normally you wouldn't call this function directly from your code.
+ *
+ * \param image Binary image with range = 0-1
+ * \param iter  0=even, 1=odd
+ */
+//void thinningZhangSuenIteration(const cv::Mat &image, int iter);
+
+/*!
+ * Function for thinning the given binary image
+ * Zhang-Suen algorithm: The algorithm is explained in “A fast parallel algorithm 
+ * for thinning digital patterns” by T.Y. Zhang and C.Y. Suen.
+ * Guo-Hall algorithm: The algorithm is explained in “Parallel thinning with two 
+ * sub-iteration algorithms” by Zicheng Guo and Richard Hall.
+ * \param image  Binary image with range = 0-255
+ * \param thin
+ */
+void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin = Thinning::ZHANG_SUEN);
+
+
+
+
+// Balance de blancos
+// https://courses.cs.washington.edu/courses/cse467/08au/labs/l5/whiteBalance.pdf
+
+// 10.4.1 Gray World
+//   Lo implementa OpenCV como cv::xphoto::GrayworldWB
+
+// Balance de blancos
+// https://courses.cs.washington.edu/courses/cse467/08au/labs/l5/whiteBalance.pdf
+
+/*!
+ * \brief Balance de blancos  Gray World
+ */
+class I3D_EXPORT Grayworld : public ImgProcessing
+{
 private:
+
+  /*!
+   * \brief Tamaño del kernel
+   */
+  cv::Ptr<cv::xphoto::GrayworldWB> wb;
+
+public:
+
+  /*!
+   * \brief Constructora Gray World
+   */
+  Grayworld()
+    : ImgProcessing(process_type::GRAYWORLD) 
+  {
+    wb = cv::xphoto::createGrayworldWB();
+  }
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] kSize Tamaño del kernel
+   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
+   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
+   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
+   */
+  void setParameters();
 
 };
 
-DDA::DDA()
-{}
+// 10.4.2 White Patch
+// Asume que los valores máximos de color en los tres canales de la imagen es el 
+// color del blanco bajo la luz de la escena, entonces se elimina el efecto de 
+// esa luz y se impone una luz blanca
+//
+// Estimación del color de la luz de la escena de la imagen:
+// Rmax(I): Valor máximo del canal rojo de la imagen I
+// Gmax(I): Valor máximo del canal verde de la imagen I
+// Bmax(I): Valor máximo del canal azul de la imagen I
+// Para una luz blanca de (255,255,255) se elimina la luz de la escena y se
+// introduce la luz blanca:
+// (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
 
-DDA::~DDA()
-{}
+/*!
+ * \brief Balance de blancos  White Patch
+ */
+class I3D_EXPORT WhitePatch : public ImgProcessing
+{
+private:
+
+  cv::Scalar mWhite;
+
+public:
+
+  /*!
+   * \brief Constructora Gray World
+   */
+  WhitePatch()
+    : ImgProcessing(process_type::WHITEPATCH) { }
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   */
+  void setParameters();
+
+};
+
+// 10.4.3 Iterative White Balancing  
+//
+// 10.4.4 Illuminant Voting
+//
+// 10.4.5 Color by Correlation
+
 
 } // End namespace EXPERIMENTAL
 

@@ -356,9 +356,11 @@ bool CmdParser::hasOption(const std::string &option) const
 }
 
 /* ---------------------------------------------------------------------------------- */
+std::mutex mtx_prgs;
 
 bool Progress::operator()(double increment) 
 { 
+  std::lock_guard<std::mutex> lck(mtx_prgs);
   if (mProgress == 0) initialize();
   mProgress += increment;
   int percent = I3D_ROUND_TO_INT(mProgress * mScale);

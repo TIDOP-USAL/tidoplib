@@ -49,7 +49,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "damage_detection", "apps\da
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shape_detection", "apps\shape_detection\shape_detection.vcxproj", "{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generalised_hough", "apps\generalised_hough\generalised_hough.vcxproj", "{837D83F8-3F84-4D71-AC93-2AB83A18B944}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generalized_hough", "apps\generalised_hough\generalised_hough.vcxproj", "{837D83F8-3F84-4D71-AC93-2AB83A18B944}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "omega", "omega", "{A4D903B7-04A5-4797-AF92-B8765F6CD83C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calibration", "..\omega\calibracion\calibration.vcxproj", "{F911FB89-9580-4472-83F4-9372C4751CFE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "remap", "..\omega\remap\remap.vcxproj", "{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mosaic", "..\omega\mosaic\mosaic.vcxproj", "{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -261,6 +269,36 @@ Global
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|Win32.ActiveCfg = Release|x64
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.ActiveCfg = Release|x64
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.Build.0 = Release|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Debug|Win32.ActiveCfg = Debug|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Debug|x64.ActiveCfg = Debug|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Debug|x64.Build.0 = Debug|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Release|Mixed Platforms.Build.0 = Release|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Release|Win32.ActiveCfg = Release|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Release|x64.ActiveCfg = Release|x64
+		{F911FB89-9580-4472-83F4-9372C4751CFE}.Release|x64.Build.0 = Release|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Debug|Win32.ActiveCfg = Debug|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Debug|x64.ActiveCfg = Debug|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Debug|x64.Build.0 = Debug|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Release|Mixed Platforms.Build.0 = Release|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Release|Win32.ActiveCfg = Release|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Release|x64.ActiveCfg = Release|x64
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004}.Release|x64.Build.0 = Release|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Debug|Win32.ActiveCfg = Debug|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Debug|x64.ActiveCfg = Debug|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Debug|x64.Build.0 = Debug|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Release|Mixed Platforms.Build.0 = Release|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Release|Win32.ActiveCfg = Release|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Release|x64.ActiveCfg = Release|x64
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -286,5 +324,9 @@ Global
 		{71900CA6-8286-4AF2-B45C-AFA346E65298} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
+		{A4D903B7-04A5-4797-AF92-B8765F6CD83C} = {D072A721-7741-4E10-8FC6-18DA5DEAE85F}
+		{F911FB89-9580-4472-83F4-9372C4751CFE} = {A4D903B7-04A5-4797-AF92-B8765F6CD83C}
+		{F1D2A2DB-2791-4F44-B596-4DEDECCF0004} = {A4D903B7-04A5-4797-AF92-B8765F6CD83C}
+		{CA53D5D5-2CC0-4137-B9F8-AB292A2229A3} = {A4D903B7-04A5-4797-AF92-B8765F6CD83C}
 	EndGlobalSection
 EndGlobal
