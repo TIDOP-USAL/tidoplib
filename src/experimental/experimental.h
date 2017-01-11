@@ -27,11 +27,12 @@ I3D_SUPPRESS_WARNINGS
 #include <opencv2/sfm/reconstruct.hpp>
 #include <opencv2/sfm/simple_pipeline.hpp>
 #endif
-#include "libmv\simple_pipeline\tracks.h"
+#include "libmv/simple_pipeline/tracks.h"
 I3D_DEFAULT_WARNINGS
 #endif
 
 #include "matching.h"
+#include "img_process/img_processing.h"
 
 namespace I3D
 {
@@ -445,22 +446,22 @@ public:
   /*!
    * \brief Operador igual que
    */
-  bool operator==(const BresenhamLine& bl) {return mPt2==bl.mPos;}
+  bool operator==(const BresenhamLine& bl) {return mPos==bl.mPos;}
   
   /*!
    * \brief Operador distinto que
    */
-  bool operator!=(const BresenhamLine& bl) {return mPt2!=bl.mPos;}
+  bool operator!=(const BresenhamLine& bl) {return mPos!=bl.mPos;}
 
   /*!
    * \brief Iterador al primer punto
    */
-  BresenhamLine &begin();
+  BresenhamLine begin();
 
   /*!
    * \brief Iterador al último punto
    */
-  BresenhamLine &end();
+  BresenhamLine end();
 
   /*!
    * \brief Determina la posición actual o la posición correspondiente al indice
@@ -560,22 +561,22 @@ public:
   /*!
    * \brief Operador igual que
    */
-  bool operator==(const DDA &bl) { return mPt2 == bl.mPos; }
+  bool operator==(const DDA &bl) { return mPos == bl.mPos; }
 
   /*!
    * \brief Operador distinto que
    */
-  bool operator!=(const DDA& bl) { return mPt2 != bl.mPos; }
+  bool operator!=(const DDA& bl) { return mPos != bl.mPos; }
 
   /*!
    * \brief Iterador al primer punto
    */
-  DDA &begin();
+  DDA begin();
 
   /*!
    * \brief Iterador al último punto
    */
-  DDA &end();
+  DDA end();
 
   /*!
    * \brief Determina la posición actual o la posición correspondiente al indice
@@ -610,8 +611,24 @@ private:
 
 // 10.4.1 Gray World
 //   Lo implementa OpenCV como cv::xphoto::GrayworldWB
+// Implementado en white_balance.cpp
+
+
 // 10.4.2 White Patch
+// Asume que los valores máximos de color en los tres canales de la imagen es el 
+// color del blanco bajo la luz de la escena, entonces se elimina el efecto de 
+// esa luz y se impone una luz blanca
 //
+// Estimación del color de la luz de la escena de la imagen:
+// Rmax(I): Valor máximo del canal rojo de la imagen I
+// Gmax(I): Valor máximo del canal verde de la imagen I
+// Bmax(I): Valor máximo del canal azul de la imagen I
+// Para una luz blanca de (255,255,255) se elimina la luz de la escena y se
+// introduce la luz blanca:
+// (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
+
+// Implementado en white_balance.cpp
+
 // 10.4.3 Iterative White Balancing  
 //
 // 10.4.4 Illuminant Voting

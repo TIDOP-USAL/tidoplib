@@ -55,6 +55,12 @@
     <Filter Include="Archivos de código fuente\feature_detection">
       <UniqueIdentifier>{d19ec710-25e7-4f94-9faf-1f00badab3b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\img_process">
+      <UniqueIdentifier>{ba38e2b4-4e54-4d89-ae83-5fcc398df526}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\img_process">
+      <UniqueIdentifier>{f65d565a-8f60-497d-aad7-953934602e8f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geometric_entities\operations.cpp">
@@ -84,9 +90,6 @@
     <ClCompile Include="graphic_entities\graphic_entity.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
-    <ClCompile Include="img_processing.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="videostream.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
@@ -113,6 +116,18 @@
     </ClCompile>
     <ClCompile Include="feature_detection\shapedetection.cpp">
       <Filter>Archivos de código fuente\feature_detection</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\img_processing.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\white_balance.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\filters.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\skeleton.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,9 +173,6 @@
     <ClInclude Include="graphic_entities\graphic_entity.h">
       <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
-    <ClInclude Include="img_processing.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="videostream.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
@@ -196,6 +208,18 @@
     </ClInclude>
     <ClInclude Include="feature_detection\shapedetection.h">
       <Filter>Archivos de encabezado\feature_detection</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\img_processing.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\white_balance.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\filters.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\skeleton.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

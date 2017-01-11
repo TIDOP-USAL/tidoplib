@@ -1,3 +1,19 @@
+/*
+
+Color Detection:
+http://opencv-srf.blogspot.com.es/2010/09/object-detection-using-color-seperation.html
+
+Para eliminar falsos positivos se comprobará el color de la baliza. Si no es naranja o blanco se
+pasará al siguiente elemento. Para el naranja se pasará de RGB a HSV y se tomara el valor naranja
+como H=0-20.
+
+
+
+
+
+*/
+
+
 #include <windows.h>
 #include <memory>
 
@@ -18,7 +34,9 @@
 #include "VideoStream.h"
 #include "matching.h"
 #include "fourier.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
+#include "img_process/white_balance.h"
 #include "transform.h"
 #include "experimental/experimental.h"
 
@@ -127,6 +145,11 @@ public:
   cv::Mat out;
 
   int nFound;
+
+  /*!
+   * \brief guarda la ventana de la baliza
+   */
+  bool bSaveImage;
 
 public:
 
@@ -258,24 +281,86 @@ void VideoHelper::onRead(cv::Mat &frame)
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     cv::Mat aux;
     image.copyTo(aux);
-    circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
-    circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
-    printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+    //circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
+    //circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
+    //printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
     WindowI w_aux(center,300);
     w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
     //cv::Mat m_aux;
     aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(aux);
-    if ( i == 0 ) out = aux; // Sólo muestro la primera
-    char buffer[I3D_MAX_PATH];
-    sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
-    printInfo("Baliza guardada en: %s", buffer);
-    cv::imwrite(buffer, aux);
-    nFound++;
-    if (bSaveAll) break;
-    //_mtx.lock();
-    //cv::imshow("Baliza", m_aux);
-    //_mtx.unlock();
-    //cv::waitKey();
+    
+    
+    if ( 1 ) {
+      cv::Point c_moments;
+      cv::Mat img_hsv;
+      cvtColor(aux, img_hsv, COLOR_BGR2HSV);
+
+      WindowI w_aux2(center-w_aux.pt1, radius*2 + 20);
+      img_hsv.rowRange(w_aux2.pt1.y, w_aux2.pt2.y).colRange(w_aux2.pt1.x, w_aux2.pt2.x).copyTo(img_hsv);
+      
+      cv::Mat img_thresh;
+
+      // Umbral por rango de color naranja
+      cv::inRange(img_hsv, cv::Scalar(0, 0, 110), cv::Scalar(20, 255, 255), img_thresh);
+
+      // Operación morfológica de apertura para eliminar elementos pequeños del fondo
+      Opening opening(2, cv::MORPH_ELLIPSE);
+      opening.execute(img_thresh, &img_thresh);
+
+      // Operación morfológica de cierre para eliminar agujeros en el fondo
+      Closing closing(2, cv::MORPH_ELLIPSE);
+      closing.execute(img_thresh, &img_thresh);
+
+      //Calculate the moments of the thresholded image
+      //cv::Moments _moments = moments(img_thresh);
+
+      //double dM01 = _moments.m01;
+      //double dM10 = _moments.m10;
+      //double dArea = _moments.m00;
+
+      //if ( dArea > 1000000 ) {
+      //  c_moments.x = dM10 / dArea;
+      //  c_moments.y = dM01 / dArea;
+      //} else continue;
+
+      int count_white = cv::countNonZero(img_thresh == 0);
+      int area = static_cast<int>(radius * radius * I3D_PI);
+
+      if ( abs(area - count_white) > (area * 0.3) ) continue;
+
+      cv::Point c = center - w_aux.pt1;
+      //cv::Point p_diff = c_moments - c;
+
+      //if ( abs(p_diff.x) < 10 && abs(p_diff.y) < 10 ) {
+        circle( aux, center-w_aux.pt1, 3, Scalar(0,255,0), -1, 8, 0 );
+        circle( aux, center-w_aux.pt1, radius, Scalar(0,0,255), 3, 8, 0 );
+        printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+        if ( i == 0 ) out = aux; // Sólo muestro la primera
+        char buffer[I3D_MAX_PATH];
+        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+        printInfo("Baliza guardada en: %s", buffer);
+        cv::imwrite(buffer, aux);
+        nFound++;
+        if (bSaveAll) break;
+      //}
+
+    } else {
+      circle( aux, center-w_aux.pt1, 3, Scalar(0,255,0), -1, 8, 0 );
+      circle( aux, center-w_aux.pt1, radius, Scalar(0,0,255), 3, 8, 0 );
+      printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+
+      if ( i == 0 ) out = aux; // Sólo muestro la primera
+      char buffer[I3D_MAX_PATH];
+      sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+      printInfo("Baliza guardada en: %s", buffer);
+      cv::imwrite(buffer, aux);
+      nFound++;
+      if (bSaveAll) break;
+      //_mtx.lock();
+      //cv::imshow("Baliza", m_aux);
+      //_mtx.unlock();
+      //cv::waitKey();
+    }
   }
 
 
@@ -294,7 +379,8 @@ void VideoHelper::onResume()
 void VideoHelper::onShow(cv::Mat &frame) 
 { 
   VideoStream::Listener::onShow(frame);
-  cv::imshow("Baliza", out);
+  if (!out.empty())
+    cv::imshow("Baliza", out);
   // Mostrar imagen de torre completa
   cv::Mat res;
   cv::resize(image, res, cv::Size(), 0.1, 0.1);
@@ -392,6 +478,8 @@ int main(int argc, char *argv[])
   if ( in_type == 0 ) { // Busqueda en una imagen
     
     image = cv::imread(img.c_str());
+    std::shared_ptr<I3D::WhitePatch> whiteBalance = std::make_shared<I3D::WhitePatch>();
+    whiteBalance->execute(image, &image);
     if (image.empty()) exit(EXIT_FAILURE);
 
     cv::Mat channels[3];

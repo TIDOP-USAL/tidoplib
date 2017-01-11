@@ -602,16 +602,18 @@ BresenhamLine BresenhamLine::operator --(int)
   return it;
 }
 
-BresenhamLine &BresenhamLine::begin()
+BresenhamLine BresenhamLine::begin()
 {
-  mPos = mPt1;
-  return *this;
+  BresenhamLine it = *this;
+  it.mPos = mPt1;
+  return it;
 }
 
-BresenhamLine &BresenhamLine::end() 
+BresenhamLine BresenhamLine::end() 
 {
-  mPos = mPt2;
-  return *this;
+  BresenhamLine it = *this;
+  it.mPos = mPt2;
+  return it;
 }
 
 cv::Point BresenhamLine::position(int id)
@@ -619,9 +621,9 @@ cv::Point BresenhamLine::position(int id)
   if (id == -1) {
     return mPos;
   } else {
-    begin();
-    for (int i = 0; i < id; i++) ++(*this);
-    return mPos;
+    BresenhamLine it = begin();
+    for ( int i = 0; i < id; i++ ) ++it;//++(*this);
+    return it.mPos;
   }
 }
 
@@ -781,16 +783,18 @@ DDA DDA::operator --(int)
   return it;
 }
 
-DDA &DDA::begin()
+DDA DDA::begin()
 {
-  mPos = mPt1;
-  return *this;
+  DDA it = *this;
+  it.mPos = mPt1;
+  return it;
 }
 
-DDA &DDA::end() 
+DDA DDA::end() 
 {
-  mPos = mPt2;
-  return *this;
+  DDA it = *this;
+  it.mPos = mPt2;
+  return it;
 }
 
 cv::Point DDA::position(int id) 
@@ -798,9 +802,9 @@ cv::Point DDA::position(int id)
   if (id == -1) {
     return mPos;
   } else {
-    begin();
-    for (int i = 0; i < id; i++) ++(*this);
-    return mPos;
+    DDA it = begin();
+    for ( int i = 0; i < id; i++ ) ++it;
+    return it.mPos;
   }
 }
 

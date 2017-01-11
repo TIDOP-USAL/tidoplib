@@ -18,7 +18,8 @@
 #include "videostream.h"
 #include "matching.h"
 #include "fourier.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
 #include "transform.h"
 
 //#include "generalized_hough.h"

@@ -579,6 +579,8 @@ I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
  * \param[in] green Componente verde
  * \param[in] blue Componente azul
  * \param[out] r Componente roja en coordenadas cromáticas
+ * \param[out] g Componente verde en coordenadas cromáticas
+ * \param[out] b Componente azul en coordenadas cromáticas
  */
 void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
 

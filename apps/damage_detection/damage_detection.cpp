@@ -18,7 +18,8 @@
 #include "VideoStream.h"
 #include "matching.h"
 #include "fourier.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
 #include "transform.h"
 #include "experimental/experimental.h"
 
@@ -95,13 +96,13 @@ std::vector<DamageCandidates> damages;
 int main(int argc, char *argv[])
 {
 
-  SegmentI _line(cv::Point(4, 25), cv::Point(36, 11));
+  //SegmentI _line(cv::Point(4, 25), cv::Point(36, 11));
 
-  I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
-  I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
+  //I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+  //I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
 
-  std::vector<cv::Point> v1 = lineIter1.getPoints();
-  std::vector<cv::Point> v2 = lineIter2.getPoints();
+  //std::vector<cv::Point> v1 = lineIter1.getPoints();
+  //std::vector<cv::Point> v2 = lineIter2.getPoints();
 
 
   // Barra de progreso
@@ -125,6 +126,7 @@ int main(int argc, char *argv[])
   std::string img = cmdParser.getValue<std::string>("img");
   std::string out_path = cmdParser.getValue<std::string>("out");
   LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
+  bool bDrawholes = false;
 
   if (createDir(out_path.c_str()) == -1) { 
     consolePrintError("No se ha podido crear el directorio: %s", out_path.c_str()); 
@@ -156,7 +158,7 @@ int main(int argc, char *argv[])
   //    out->convertTo(*out, CV_8U); 
   //    out->colRange(kernel_size, out->cols - kernel_size).rowRange(31, out->rows - kernel_size).copyTo(*out); 
   //});
-
+  //std::shared_ptr<I3D::EXPERIMENTAL::WhitePatch> whiteBalance = std::make_shared<I3D::EXPERIMENTAL::WhitePatch>();
   std::shared_ptr<I3D::BilateralFilter> bilateralFilter = std::make_shared<I3D::BilateralFilter>(5, 50., 50.);
   std::shared_ptr<I3D::Erotion> erotion = std::make_shared<I3D::Erotion>(1);
   std::shared_ptr<I3D::Dilate> dilate = std::make_shared<I3D::Dilate>(1);
@@ -204,15 +206,17 @@ int main(int argc, char *argv[])
   //printInfo("Leyendo imagen %s", img.c_str());
   cv::Mat full_image = cv::imread(img.c_str());
   if (full_image.empty()) exit(EXIT_FAILURE);
-
+  
   // Se limita la zona de estudio para minimizar los efectos de la distorsión de la camara
   cv::Mat image;
   full_image.colRange(1000, full_image.cols - 1000).copyTo(image);
   full_image.release();
+  //cv::Mat imgWB;
+  //whiteBalance->execute(image, &imgWB);
   cv::Mat image_gray;
   cvtColor(image, image_gray, CV_BGR2GRAY);
 
-  // Determinar angulo con Fourier
+  // Determinar ángulo con Fourier
   std::vector<int> colFourier;
   colFourier.push_back(image_gray.cols / 2);
   std::vector<std::vector<cv::Point>> ptsFourier;
@@ -229,7 +233,7 @@ int main(int argc, char *argv[])
   if (pLineDetector->run(image_pro, cv::Scalar(angleFourier, 0.15)) == LineDetector::Exit::FAILURE) 
     exit(EXIT_FAILURE);
 
-  pLineDetector->drawLines(image_gray);
+  //pLineDetector->drawLines(image_gray);
   const std::vector<Line> &detect_lines = pLineDetector->getLines();
   if ( detect_lines.empty() ) { 
     printError("No se han detectando lineas");
@@ -261,7 +265,7 @@ int main(int argc, char *argv[])
     cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
     trf.transformEntity(line, &line, transform_order::DIRECT);
     //Para comprobar...
-    cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
+    //cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
     lineBuffer(line, widthBuffer, &buff);
 
@@ -279,7 +283,7 @@ int main(int argc, char *argv[])
     // binarización de la imagen
     cv::meanStdDev(image_gray, m, stdv, mask);
     cv::Mat imgBN;
-    cv::threshold(searchArea, imgBN, 120/*m[0] + stdv[0]*/, 255, cv::THRESH_BINARY);
+    cv::threshold(searchArea, imgBN, /*120*/m[0] + stdv[0], 255, cv::THRESH_BINARY);
 
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 8, false);
     std::vector<int> v_width(li.count, 0);
@@ -287,10 +291,14 @@ int main(int argc, char *argv[])
     cv::Point axis;
 
     I3D::EXPERIMENTAL::BresenhamLine lineIter(line.pt1, line.pt2);
-    if (0) {
-      for (; lineIter != lineIter.end(); lineIter++) {
+    if (1) {
+      v_width.resize(li.count-20);
+      vPosWidth.resize(li.count-20);
+      //for (I3D::EXPERIMENTAL::BresenhamLine it = lineIter.begin(); it != lineIter.end(); it++, i++) {
+      lineIter.position(10);
+      for ( int i = 0; i < lineIter.size()-20; i++, lineIter++ ) {
         axis = lineIter.position();
-         
+        
         // Tenemos las coordenadas del eje de la línea. A partir de esto buscar la anchura para 
         // cada punto
         // Tendria que estimar la anchura del aislador antes. Así podría servirme para el
@@ -329,6 +337,10 @@ int main(int argc, char *argv[])
           }
           v_pts_aux[j] = li2.pos();
         }
+
+        // Anchura teniendo en cuenta los huecos
+        v_width[i] = end - ini + 1;
+        vPosWidth[i] = cv::Point(i+10, v_width[i]);
       }
 
       // Hay que mirar si el máximo representa un pico muy claro. En ese caso podria ser un separador.
@@ -340,7 +352,7 @@ int main(int argc, char *argv[])
       for (size_t idp = 1; idp < vPosWidthDP.size(); idp++) {
         // Pendiente
         double slope = SegmentI(vPosWidthDP[idp-1], vPosWidthDP[idp]).angleOX();
-        if (idp > 1 && (slopePrev - slope) > 0.5) {
+        if (idp > 1 && abs(slopePrev - slope) > 0.15) {
           cv::Point pt1 = lineIter.position(vPosWidthDP[idp-1].x);
           cv::Point pt2 = lineIter.position(vPosWidthDP[idp].x);
           //searchPoint(li.ptr0, idp-1);
@@ -350,7 +362,7 @@ int main(int argc, char *argv[])
         slopePrev = slope;
       }
 
-
+      damages.size();
 
     } else {
 
@@ -400,10 +412,12 @@ int main(int argc, char *argv[])
         v_width[i] = end - ini + 1; // width;
         vPosWidth[i] = cv::Point(i, v_width[i]);
 
-        std::vector<int> v_(li2.count);
-        for ( int k = ini; k < end; k++ ) {
-          if ( v_aux[k] == -1 ) {
-            cv::line(gap, v_pts_aux[k], v_pts_aux[k], cv::Scalar(255));
+        if ( ini != -1 ) {
+          std::vector<int> v_(li2.count);
+          for ( int k = ini; k < end; k++ ) {
+            if ( v_aux[k] == -1 ) {
+              cv::line(gap, v_pts_aux[k], v_pts_aux[k], cv::Scalar(255));
+            }
           }
         }
 
@@ -433,7 +447,7 @@ int main(int argc, char *argv[])
     cv::Point endDamage = cv::Point(0, 0);
     std::vector<SegmentI> segmentDamage;
     printInfo("Ancho línea: Mínimo: %f. Máximo: %f", th1, th2);
-    progress_bar.init(0, v_width.size()-50, "Busqueda de zonas dañadas");
+    progress_bar.init(0., static_cast<double>(v_width.size()-50), "Busqueda de zonas dañadas");
     for (int is = 25; is < v_width.size() - 25; is++, ++li3) {
       double sum = std::accumulate(v_width.begin() + is - 25, v_width.begin() + is + 25, 0);
       int accumul = I3D_ROUND_TO_INT(sum / 50.);
@@ -487,13 +501,18 @@ int main(int argc, char *argv[])
         std::vector<cv::Point> buff;
         I3D::Translate<cv::Point> trf(w_aux.pt1.x, w_aux.pt1.y);
         trf.transformEntity(line, &line, transform_order::INVERSE);
-        lineBuffer(line, th2 + 10, &buff);
+        lineBuffer(line, static_cast<int>(th2) + 10, &buff);
         cv::Mat aux(buff);
         const cv::Point *pts = (const cv::Point*) aux.data;
         int npts = aux.rows;
         cv::polylines(m_aux, &pts, &npts, 1, true, Color::randomColor().get<cv::Scalar>() );
         
         cv::imshow("Warning", m_aux);
+        cv::Mat res_out, _aux;
+        image.copyTo(_aux);
+        cv::rectangle(_aux, windowToCvRect(w_aux), cv::Scalar(0, 255, 0), 4);
+        cv::resize(_aux, _aux, cv::Size(), 0.2, 0.2);
+        cv::imshow("Vista general", _aux);
         cv::waitKey();
       }
 
@@ -507,21 +526,29 @@ int main(int argc, char *argv[])
     // Esto se podria hacer probablemento con componentes conexas ...
 
     //cv::Mat imageRGB = cv::imread(img.c_str());
-    for( size_t i = 0; i< contours.size(); i++ ) {
-      if (contours[i].size() < 3) continue;
-      cv::Scalar color = Color::randomColor().get<cv::Scalar>();
-      //cv::Rect boundRect = boundingRect( contours[i] );
-      WindowI w_aux = cvRectToWindow(boundingRect( contours[i] ));
-      w_aux = expandWindow(w_aux, 10);
-      cv::rectangle( image, w_aux.pt1, w_aux.pt2, color, 2, 8, 0 );
-      //cv::drawContours( imageRGB, contours, (int)i, color, 2, 8, hierarchy, 0, Point() );
-      w_aux = expandWindow(w_aux, 100);
-      w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
-      cv::Mat m_aux;
-      image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
-      cv::imshow("Warning", m_aux);
-      cv::waitKey();
+    if ( bDrawholes) {
+      for( size_t i = 0; i< contours.size(); i++ ) {
+        if (contours[i].size() < 3) continue;
+        cv::Scalar color = Color::randomColor().get<cv::Scalar>();
+        //cv::Rect boundRect = boundingRect( contours[i] );
+        WindowI w_aux = cvRectToWindow(boundingRect( contours[i] ));
+        w_aux = expandWindow(w_aux, 10);
+        cv::Mat _aux;
+        image.copyTo(_aux);
+        cv::rectangle(_aux, w_aux.pt1, w_aux.pt2, color, 2, 8, 0);
+        //cv::drawContours( imageRGB, contours, (int)i, color, 2, 8, hierarchy, 0, Point() );
+        w_aux = expandWindow(w_aux, 100);
+        w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
+        cv::Mat m_aux;
+        _aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+        cv::imshow("Warning", m_aux);
+        cv::rectangle(_aux, windowToCvRect(w_aux), cv::Scalar(0, 255, 0), 4);
+        cv::resize(_aux, _aux, cv::Size(), 0.2, 0.2);
+        cv::imshow("Vista general", _aux);
+        cv::waitKey();
+      }
     }
+    
     //image.release();
     // La busqueda tiene que hacerse contando con los pixeles vecinos.
     // ¿Aplicar un suavizado para eliminar picos?
