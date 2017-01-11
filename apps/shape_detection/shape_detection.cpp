@@ -252,6 +252,8 @@ void VideoHelper::onRead(cv::Mat &frame)
   cv::Mat channels[3];
   cv::Mat red;
   image = frame;
+  //std::shared_ptr<I3D::WhitePatch> whiteBalance = std::make_shared<I3D::WhitePatch>();
+  //whiteBalance->execute(image, &image);
   if (1) {
     cv::split(frame, channels);
     red = channels[2];
@@ -290,7 +292,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(aux);
     
     
-    if ( 1 ) {
+    if ( 1 ) { // Para diferenciar los dos tipos de balizas.
       cv::Point c_moments;
       cv::Mat img_hsv;
       cvtColor(aux, img_hsv, COLOR_BGR2HSV);
@@ -323,30 +325,62 @@ void VideoHelper::onRead(cv::Mat &frame)
       //  c_moments.y = dM01 / dArea;
       //} else continue;
 
-      int count_white = cv::countNonZero(img_thresh == 0);
-      int area = static_cast<int>(radius * radius * I3D_PI);
+      int count_white = cv::countNonZero(img_thresh != 0);
+      int area_max = static_cast<int>((radius+5) * (radius+5) * I3D_PI);
+      int area_min = static_cast<int>((radius) * (radius) * I3D_PI / 2); // Margen hasta media esfera.
 
-      if ( abs(area - count_white) > (area * 0.3) ) continue;
+      cv::Scalar color;
+      //if ( abs(area - count_white) > (area * 0.3) ) continue;
+      if (count_white < area_min || count_white > area_max) {
+        // Ver si es una baliza blanca y naranja
+        //std::shared_ptr<I3D::WhitePatch> whiteBalance = std::make_shared<I3D::WhitePatch>();
+        //cv::Mat img_wb;
+        //whiteBalance->execute(aux, &img_wb);
+        cv::Mat aux_gray;        
+        cvtColor(aux, aux_gray, CV_BGR2GRAY);
+        I3D::EqualizeHistogram eh;
+        eh.execute(aux_gray, &aux_gray);
+        cv::Mat aux_bn;
+        cv::threshold(aux_gray, aux_bn, 240, 255, cv::THRESH_BINARY);
+
+        // Si hay mas elementos que la baliza los etiquetamos y los estudiamos por separado
+        cv::Mat labels;
+        int n_labels = cv::connectedComponents(aux_bn, labels);
+        bool bFound = false;
+        for (int i = 0; i < n_labels; i++) {
+          int count_white = cv::countNonZero(img_thresh != 0);
+          int area_max = static_cast<int>((radius+5) * (radius+5) * I3D_PI);
+          int area_min = static_cast<int>((radius) * (radius) * I3D_PI / 2);     
+          if (count_white >= area_min && count_white <= area_max) {
+            color = cv::Scalar(255, 0, 0);
+            bFound = true;
+            break;
+          }
+        }
+        if (!bFound) continue;
+      } else {
+        color = cv::Scalar(0, 0, 255);
+      }
 
       cv::Point c = center - w_aux.pt1;
       //cv::Point p_diff = c_moments - c;
 
       //if ( abs(p_diff.x) < 10 && abs(p_diff.y) < 10 ) {
-        circle( aux, center-w_aux.pt1, 3, Scalar(0,255,0), -1, 8, 0 );
-        circle( aux, center-w_aux.pt1, radius, Scalar(0,0,255), 3, 8, 0 );
-        printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
-        if ( i == 0 ) out = aux; // Sólo muestro la primera
-        char buffer[I3D_MAX_PATH];
-        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
-        printInfo("Baliza guardada en: %s", buffer);
-        cv::imwrite(buffer, aux);
-        nFound++;
-        if (bSaveAll) break;
+      circle( aux, center-w_aux.pt1, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+      circle( aux, center-w_aux.pt1, radius, color, 3, 8, 0 );
+      printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+      if ( i == 0 ) out = aux; // Sólo muestro la primera
+      char buffer[I3D_MAX_PATH];
+      sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+      printInfo("Baliza guardada en: %s", buffer);
+      cv::imwrite(buffer, aux);
+      nFound++;
+      if (bSaveAll) break;
       //}
 
     } else {
-      circle( aux, center-w_aux.pt1, 3, Scalar(0,255,0), -1, 8, 0 );
-      circle( aux, center-w_aux.pt1, radius, Scalar(0,0,255), 3, 8, 0 );
+      circle( aux, center-w_aux.pt1, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+      circle( aux, center-w_aux.pt1, radius, cv::Scalar(0,0,255), 3, 8, 0 );
       printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
 
       if ( i == 0 ) out = aux; // Sólo muestro la primera
@@ -478,9 +512,9 @@ int main(int argc, char *argv[])
   if ( in_type == 0 ) { // Busqueda en una imagen
     
     image = cv::imread(img.c_str());
+    if (image.empty()) exit(EXIT_FAILURE);
     std::shared_ptr<I3D::WhitePatch> whiteBalance = std::make_shared<I3D::WhitePatch>();
     whiteBalance->execute(image, &image);
-    if (image.empty()) exit(EXIT_FAILURE);
 
     cv::Mat channels[3];
     cv::Mat red;

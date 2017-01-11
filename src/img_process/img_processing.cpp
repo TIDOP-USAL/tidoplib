@@ -226,7 +226,7 @@ ProcessExit EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) co
 {
   try {
     cv::equalizeHist(matIn, *matOut);
-  } catch (cv::Exception &e){
+  } catch (cv::Exception &e) {
     logPrintError(e.what());
     return ProcessExit::FAILURE;
   }

@@ -571,9 +571,9 @@ cv::Point &BresenhamLine::operator*()
 BresenhamLine &BresenhamLine::operator ++()
 {
   if (dx > dy) {
-    _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, mStepX, mStepY);
+    _next(&mPos.x, &mPos.y, /*dx, dy,*/ mPt2.x, mStepX, mStepY);
   } else {
-    _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, mStepY, mStepX);
+    _next(&mPos.y, &mPos.x, /*dy, dx,*/ mPt2.y, mStepY, mStepX);
   }
   return *this;
 }
@@ -588,9 +588,9 @@ BresenhamLine BresenhamLine::operator ++(int)
 BresenhamLine &BresenhamLine::operator --()
 {
   if (dx > dy) {
-    _next(&mPos.x, &mPos.y, dx, dy, mPt2.x, -mStepX, -mStepY);
+    _next(&mPos.x, &mPos.y, /*dx, dy,*/ mPt2.x, -mStepX, -mStepY);
   } else {
-    _next(&mPos.y, &mPos.x, dy, dx, mPt2.y, -mStepY, -mStepX);
+    _next(&mPos.y, &mPos.x, /*dy, dx,*/ mPt2.y, -mStepY, -mStepX);
   }
   return *this;
 }
@@ -708,7 +708,7 @@ void BresenhamLine::init()
   }
 }
 
-void BresenhamLine::_next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin) 
+void BresenhamLine::_next(int *max, int *min, /*int dMax, int dMin,*/ int endMax, int stepMax, int stepMin) 
 {
   if (*max < endMax) {
     *max += stepMax;

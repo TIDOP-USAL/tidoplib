@@ -485,7 +485,7 @@ private:
 
   void init();
 
-  void _next(int *max, int *min, int dMax, int dMin, int endMax, int stepMax, int stepMin);
+  void _next(int *max, int *min, /*int dMax, int dMin,*/ int endMax, int stepMax, int stepMin);
 
 };
 
