@@ -13,6 +13,7 @@
 #include "opencv2/xphoto/white_balance.hpp"
 
 #include "core/defs.h" // Para quitar warnings de sfm
+#include "graphic_entities/color.h"
 
 #ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
@@ -381,45 +382,6 @@ private:
 
 
 
-//https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
-//https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
-
-enum class Thinning
-{
-  ZHANG_SUEN,
-  GUO_HALL
-};
-
-/*!
- * Perform one thinning iteration.
- * Normally you wouldn't call this function directly from your code.
- *
- * \param image Binary image with range = 0-1
- * \param iter 0=even, 1=odd
- */
-//void thinningGuoHallIteration(const cv::Mat &image, int iter);
-
-
-/**
- * Perform one thinning iteration.
- * Normally you wouldn't call this function directly from your code.
- *
- * \param image Binary image with range = 0-1
- * \param iter  0=even, 1=odd
- */
-//void thinningZhangSuenIteration(const cv::Mat &image, int iter);
-
-/*!
- * Function for thinning the given binary image
- * Zhang-Suen algorithm: The algorithm is explained in “A fast parallel algorithm 
- * for thinning digital patterns” by T.Y. Zhang and C.Y. Suen.
- * Guo-Hall algorithm: The algorithm is explained in “Parallel thinning with two 
- * sub-iteration algorithms” by Zicheng Guo and Richard Hall.
- * \param image  Binary image with range = 0-255
- * \param thin
- */
-void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin = Thinning::ZHANG_SUEN);
-
 
 
 
@@ -496,15 +458,16 @@ class I3D_EXPORT WhitePatch : public ImgProcessing
 {
 private:
 
-  cv::Scalar mWhite;
+  Color mWhite;
 
 public:
 
   /*!
-   * \brief Constructora Gray World
+   * \brief Constructora WhitePatch
+   * \param[in] color Luz blanca. Por defecto (255, 255, 255)
    */
-  WhitePatch()
-    : ImgProcessing(process_type::WHITEPATCH) { }
+  WhitePatch(Color &white = Color(Color::White))
+    : ImgProcessing(process_type::WHITEPATCH), mWhite(white) { }
 
   /*!
    * \brief Ejecuta el proceso
@@ -518,8 +481,9 @@ public:
 
   /*!
    * \brief Establece los parámetros
+   * \param[in] color Luz blanca. Por defecto (255, 255, 255)
    */
-  void setParameters();
+  void setParameters(Color &white = Color(Color::White));
 
 };
 

@@ -344,6 +344,44 @@ void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMat
   fs.release();
 }
 
+void loadBinMat(const char *file, cv::Mat *data)
+{
+  FILE* fp = std::fopen(file, "rb");
+  if(!fp) {
+    exit(EXIT_FAILURE);
+  }
+  //cabecera
+  int rows;
+  int cols;
+  int type;
+  std::fread(&rows, sizeof(int), 1,fp);
+  std::fread(&cols, sizeof(int), 1,fp);
+  std::fread(&type, sizeof(int), 1,fp);
+  //Cuerpo
+  cv::Mat aux(rows, cols, type);
+  std::fread(aux.data, sizeof(float), rows*cols, fp);
+  std::fclose(fp);
+  aux.copyTo(*data);
+}
+
+void saveBinMat(const char *file, cv::Mat &data)
+{
+  FILE* fp = std::fopen(file, "wb");
+  if(!fp) {
+    exit(EXIT_FAILURE);
+  }
+  //cabecera
+  int rows = data.rows;
+  int cols = data.cols;
+  int type = data.type();
+  std::fwrite(&data.rows, sizeof(int), 1,fp);
+  std::fwrite(&data.cols, sizeof(int), 1,fp);
+  std::fwrite(&type, sizeof(int), 1,fp);
+  //Cuerpo
+  std::fwrite(data.data, sizeof(float), rows*cols, fp);
+  std::fclose(fp);
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 I3D_EXPORT unsigned int getOptimalNumberOfThreads()
