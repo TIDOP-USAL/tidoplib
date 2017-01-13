@@ -54,7 +54,10 @@ enum class process_type {
   NORMALIZE,          /*!< Normalización. */
   BINARIZE,           /*!< Binarización. */
   EQUALIZE_HIST,      /*!< Equalización del histograma. */
-  FUNCTION_PROCESS    /*!< Proceso que ejecuta una función */
+  FUNCTION_PROCESS,   /*!< Proceso que ejecuta una función */
+  /* Balance de blancos */
+  GRAYWORLD,
+  WHITEPATCH
 };
 
 /*!
@@ -504,7 +507,8 @@ public:
 
 /*!
  * \brief Laplaciano
- * Calcula el laplaciano de un imagen
+ * Calcula el laplaciano de un imagen.
+ * LoG (Laplacian of Gaussian)
  */
 class I3D_EXPORT Laplacian : public ImgProcessing
 {
@@ -1459,6 +1463,11 @@ public:
   ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
 };
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
 
 /*! \} */ // end of ImgProc
 

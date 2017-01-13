@@ -428,7 +428,12 @@ I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-I3D_EXPORT void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+
+
+I3D_EXPORT void loadBinMat(const char *file, cv::Mat *data);
+
+I3D_EXPORT void saveBinMat(const char *file, cv::Mat &data);
 
 /* ---------------------------------------------------------------------------------- */
 /*                         Concurrencia, hilos y multiproceso                         */

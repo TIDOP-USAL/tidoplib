@@ -55,6 +55,12 @@
     <Filter Include="Archivos de código fuente\feature_detection">
       <UniqueIdentifier>{d19ec710-25e7-4f94-9faf-1f00badab3b9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de código fuente\img_process">
+      <UniqueIdentifier>{39942843-4ace-4d5d-9420-3216fdee43a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\img_process">
+      <UniqueIdentifier>{0b969bd5-e0cc-4c96-9385-0cef44fa23cb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geometric_entities\operations.cpp">
@@ -113,6 +119,9 @@
     </ClCompile>
     <ClCompile Include="feature_detection\shapedetection.cpp">
       <Filter>Archivos de código fuente\feature_detection</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\skeleton.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="feature_detection\shapedetection.h">
       <Filter>Archivos de encabezado\feature_detection</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\skeleton.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

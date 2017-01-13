@@ -47,10 +47,10 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
     Line l;
-    l.pt1.x = I3D_ROUND_TO_INT(x0 + 1000. * (-b));
-    l.pt1.y = I3D_ROUND_TO_INT(y0 + 1000. * (a));
-    l.pt2.x = I3D_ROUND_TO_INT(x0 - 1000. * (-b));
-    l.pt2.y = I3D_ROUND_TO_INT(y0 - 1000. * (a));
+    l.pt1.x = I3D_ROUND_TO_INT(x0 + image.cols * (-b));
+    l.pt1.y = I3D_ROUND_TO_INT(y0 + image.rows * (a));
+    l.pt2.x = I3D_ROUND_TO_INT(x0 - image.cols * (-b));
+    l.pt2.y = I3D_ROUND_TO_INT(y0 - image.rows * (a));
     mLines.push_back(l);
   }
   return LineDetector::Exit::SUCCESS;
