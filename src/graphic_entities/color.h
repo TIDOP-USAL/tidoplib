@@ -25,129 +25,8 @@ namespace I3D
  */
 
 
-/* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup colorConversion Conversión de color
- *
- * \{
- */
-
 /*!
- * \brief Obtiene la componente azul de un color
- * \param[in] color Color representado como un entero
- * \return Componente azul
- */
-I3D_EXPORT int getBlue(int color);
-
-/*!
- * \brief Obtiene la componente verde de un color
- * \param[in] color Color representado como un entero
- * \return Componente verde
- */
-I3D_EXPORT int getGreen(int color);
-
-/*!
- * \brief Obtiene la componente roja de un color
- * \param[in] color Color representado como un entero
- * \return Componente roja
- */
-I3D_EXPORT int getRed(int color);
-
-/*!
- * \brief Obtiene el canal alfa de un color
- * \param[in] color Color representado como un entero
- * \return Canal alfa
- */
-I3D_EXPORT int getAlpha(int color);
-
-/*!
- * \brief Convierte un color entero a RGB
- * \param[in] color Color como entero
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
- */
-I3D_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
-
-/*!
- * \brief Convierte un color RGB a entero
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \return Color como entero
- */
-I3D_EXPORT int rgbToInt(int red, int green, int blue);
-
-/*!
- * \brief Convierte un color RGB+alpha a entero
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[in] alpha Canal alfa
- * \return Color como entero
- */
-I3D_EXPORT int rgbaToInt(int red, int green, int blue, int alpha);
-
-/*!
- * \brief Convierte un color de hexadecimal (como cadena) a entero
- * \param[in] colorhex Color en hexadecimal
- * \return Color como entero
- */
-I3D_EXPORT int hexToInt(const std::string &colorhex);
-
-/*!
- * \brief Convierte un color de hexadecimal (como cadena) a entero
- * \param[in] colorhex Color en hexadecimal
- * \return Color como entero
- */
-I3D_EXPORT std::string intToHex(const int color);
-
-/*!
- * \brief rgbToCmyk
- * \param red
- * \param green
- * \param blue
- * \param cyan
- * \param magenta
- * \param yellow
- * \param key
- */
-I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
-
-/*!
- * \brief rgbToCmyk
- * \param rgb
- * \param cmyk
- */
-I3D_EXPORT void rgbToCmyk(cv::Mat &rgb, cv::Mat *cmyk);
-
-/*!
- * \brief rgbToHSL
- * \param red
- * \param green
- * \param blue
- * \param hue
- * \param saturation
- * \param lightness
- */
-I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
-
-/*!
- * \brief rgbToHSL
- * \param rgb
- * \param hsl
- */
-I3D_EXPORT void rgbToHSL(cv::Mat &rgb, cv::Mat *hsl);
-
-/*! \} */ // end of colorConversion
-
-
-
-
-/*!
- * \brief La clase Color permite trabajar con diferenres modelos de color
+ * \brief La clase Color permite trabajar con diferentes modelos de color
  */
 class I3D_EXPORT Color
 {
@@ -345,23 +224,23 @@ public:
    * \param[in] cyan Cian
    * \param[in] magenta Magenta
    * \param[in] yellow Amarillo
-   * \param[in] key
+   * \param[in] key Negro
    */
   Color(double cyan, double magenta, double yellow, double key);
 
   /*!
-   * \brief Constructora HSV
-   * \param[in] hue
-   * \param[in] saturation
-   * \param[in] value
+   * \brief Constructora HSV (Hue, Saturation, Value)
+   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[in] saturation Saturación
+   * \param[in] value Valor
    */
   Color(double hue, double saturation, double value);
 
   /*!
-   * \brief Constructora HSL
-   * \param[in] hue
-   * \param[in] saturation
-   * \param[in] lightness
+   * \brief Constructora HSL (Hue, Saturation, Lightness) o HSI (Hue, Saturation, Intensity)
+   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[in] saturation Saturación
+   * \param[in] lightness Luminosidad
    */
   //Color(double hue, double saturation, double lightness);
 
@@ -426,48 +305,48 @@ public:
    * \param[in] cyan Cian
    * \param[in] magenta Magenta
    * \param[in] yellow Amarillo
-   * \param[in] key
+   * \param[in] key Negro
    */
   void fromCMYK(double cyan, double magenta, double yellow, double key);
 
   /*!
    * \brief Obtiene un color a partir de sus valores HSV
-   * \param[in] hue
-   * \param[in] saturation
-   * \param[in] value
+   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[in] saturation Saturación
+   * \param[in] value Valor
    */
   void fromHSV(double hue, double saturation, double value );
 
   /*!
    * \brief Obtiene un color a partir de sus valores HSV
-   * \param[in] hue
-   * \param[in] saturation
-   * \param[in] lightness
+   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[in] saturation Saturación
+   * \param[in] lightness Luminosidad
    */
   void fromHSL(double hue, double saturation, double lightness );
 
   /*!
    * \brief Convierte un color a CMYK
-   * \param[out] cyan
-   * \param[out] magenta
-   * \param[out] yellow
-   * \param[out] key
+   * \param[out] cyan Cian
+   * \param[out] magenta Magenta
+   * \param[out] yellow Amarillo
+   * \param[out] key Negro
    */
   void toCMYK(double *cyan, double *magenta, double *yellow, double *key) const;
 
   /*!
    * \brief Convierte un color a HSV
-   * \param[out] hue
-   * \param[out] saturation
-   * \param[out] value
+   * \param[out] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[out] saturation Saturación
+   * \param[out] value Valor
    */
   void toHSV(double *hue, double *saturation, double *value ) const;
 
   /*!
-   * \brief Convierte un color a HSL
-   * \param[out] hue
-   * \param[out] saturation
-   * \param[out] lightness
+   * \brief Convierte un color a HSL o HSI
+   * \param[out] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
+   * \param[out] saturation Saturación
+   * \param[out] lightness Luminosidad
    */
   void toHSL(double *hue, double *saturation, double *lightness) const;
 
@@ -519,8 +398,16 @@ T Color::get() const
 }
 
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                                Conversión de color                                 */
+/* ---------------------------------------------------------------------------------- */
+
+
+
 /*! \defgroup colorConversion Conversión de color
  *  
+ * Conversiones entre los modulos de color mas habituales
  * \{
  */
 
@@ -599,7 +486,7 @@ I3D_EXPORT std::string intToHex(int color);
  * \param[in] red Componente roja
  * \param[in] green Componente verde
  * \param[in] blue Componente azul
- * \param[out] cyan cian
+ * \param[out] cyan Cian
  * \param[out] magenta Magenta
  * \param[out] yellow Amarillo
  * \param[out] key Negro
@@ -608,19 +495,14 @@ I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *ma
 
 /*!
  * \brief Convierte una matriz de RGB a CMYK
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[out] cyan cian
- * \param[out] magenta Magenta
- * \param[out] yellow Amarillo
- * \param[out] key Negro
+ * \param[in] rgb Imagen cmyk
+ * \param[out] cmyk Imagen rgb
  */
 I3D_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
 
 /*!
  * \brief Convierte un color de CMYK a RGB
- * \param[in] cyan cian
+ * \param[in] cyan Cian
  * \param[in] magenta Magenta
  * \param[in] yellow Amarillo
  * \param[in] key Negro
@@ -632,13 +514,8 @@ I3D_EXPORT void cmykToRgb(double cyan, double magenta, double yellow, double key
 
 /*!
  * \brief Convierte una matriz de CMYK a RGB
- * \param[in] cyan cian
- * \param[in] magenta Magenta
- * \param[in] yellow Amarillo
- * \param[in] key Negro
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \param[in] cmyk Imagen cmyk
+ * \param[out] rgb Imagen rgb
  */
 I3D_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
 
@@ -647,28 +524,24 @@ I3D_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
  * \param[in] red Componente roja
  * \param[in] green Componente verde
  * \param[in] blue Componente azul
- * \param[out] hue
- * \param[out] saturation
- * \param[out] lightness
+ * \param[out] hue Matiz
+ * \param[out] saturation Saturación
+ * \param[out] lightness Luminosidad
  */
 I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
 
 /*!
  * \brief Convierte una matriz de RGB a HSL
- * \param[in] red Componente roja
- * \param[in] green Componente verde
- * \param[in] blue Componente azul
- * \param[out] hue
- * \param[out] saturation
- * \param[out] lightness
+ * \param[in] rgb
+ * \param[out] hsl
  */
 I3D_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
 
 /*!
  * \brief Convierte un color de a HSL a RGB
- * \param[in] hue
- * \param[in] saturation
- * \param[in] lightness
+ * \param[in] hue Matiz
+ * \param[in] saturation Saturación
+ * \param[in] lightness Luminosidad
  * \param[out] red Componente roja
  * \param[out] green Componente verde
  * \param[out] blue Componente azul
@@ -677,14 +550,48 @@ I3D_EXPORT void hslToRgb(double hue, double saturation, double lightness, int *r
 
 /*!
  * \brief Convierte una matriz de HSL a RGB
- * \param[in] hue
- * \param[in] saturation
- * \param[in] lightness
- * \param[out] red Componente roja
- * \param[out] green Componente verde
- * \param[out] blue Componente azul
+ * \param[in] hsl
+ * \param[out] rgb
  */
 I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
+
+/*!
+ * \brief Conversión a coordenadas cromáticas
+ *
+ * Cuando una imagen presenta cambios de intesidad, luz mas tenue, etc. una solución 
+ * pasa por eliminar los efectos de la intensidad en la imagen. Para ello se pasa a 
+ * un espacio de color invariante a la intensidad como las coordenadas cromáticas.
+ * La cromaticidad especifica el matiz y la saturación de un color pero no su luminosidad.
+
+ * Paso a coordenadas cromáticas (división por la Intensidad)
+ * (R, G, B) -> (R/(R+G+B), G/(R+G+B), B/(R+G+B)) 
+ *
+ * Un cambio de intensidad en la imagen es un producto con un escalar
+ * (R, G, B) -> s.(R, G, B) -> (s.R, s.G, s.B)
+ *
+ * La intensidad se cancelará y el nuevo descriptor es invariante a la intensidad
+ * El nuevo descriptor es de dimensión 2, es una proyección sobre el plano:
+ *
+ * R +G + B = 1
+ *
+ * https://engineering.purdue.edu/~bouman/ece637/notes/pdf/ColorSpaces.pdf
+ * 
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] r Componente roja en coordenadas cromáticas
+ * \param[out] g Componente verde en coordenadas cromáticas
+ * \param[out] b Componente azul en coordenadas cromáticas
+ */
+void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
+
+/*!
+ * \brief Conversión de una imagen a coordenadas cromáticas
+ * \param[in] rgb Imagen RGB
+ * \param[out] chroma_rgb Imagen en coordenadas cromaticas
+ */
+void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+
 
 /*! \} */ // end of colorConversion
 

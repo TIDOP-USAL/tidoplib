@@ -207,13 +207,48 @@ I3D_EXPORT void expRegression(const std::vector<Point_t> &pts, double *A, double
  *
  * A partir de una matriz de rotación obtiene los ángulos de giro.
  * \param[in] R Matriz de rotación
- * \param[out] omega Rotación respecto al eje X
- * \param[out] phi Rotación respecto al eje Y
- * \param[out] kappa Rotación respecto al eje Z
+ * \param[out] omega Rotación respecto al eje X en radianes
+ * \param[out] phi Rotación respecto al eje Y en radianes
+ * \param[out] kappa Rotación respecto al eje Z en radianes
+ * \param[in] order Orden de ejes
  * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
  * http://mathworld.wolfram.com/EulerAngles.html
  */
 I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+//Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
+//https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
+//I3D_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
+//... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
+/*!
+ * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
+ * \param[in] rX Rotación respecto al eje X en radianes
+ * \param[in] rY Rotación respecto al eje Y en radianes
+ * \param[in] rZ Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+//I3D_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje X
+ * \param[in] rX Rotación respecto al eje X en radianes
+ * \param[out] RX Matriz de rotación
+ */
+void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje Y
+ * \param[in] rY Rotación respecto al eje Y en radianes
+ * \param[out] RY Matriz de rotación
+ */
+void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje Z
+ * \param[in] rZ Rotación respecto al eje Z en radianes
+ * \param[out] RZ Matriz de rotación
+ */
+void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
 /*!
  * \brief Obtiene la ecuación de un plano que pasa por tres puntos
@@ -221,23 +256,25 @@ I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, doubl
  * \f$ A*x + B*y + C*z + D = 0\f$
  *
  * param[in] points Puntos que definen el plano
- * param[out] plane Parametros de la ecuación general del plano normalizados (A, B, C, D)
+ * param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * return Normal al plano
  */
 template<typename T>
-I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane) 
+I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
 {
   T v1 = points[1] - points[0];
   T v2 = points[2] - points[0];
-  double A = v1.y*v2.z - v1.z*v2.y;
-  double B = v1.z*v2.x - v1.x*v2.z;
-  double C = v1.x*v2.y - v2.x*v1.y;
-  double D = -A *points[0].x - B*points[0].y - C*points[0].z;
-  double N = sqrt(A*A + B*B + C*C);
-  if ( N ) { 
-    plane[0] = A / N;
-    plane[1] = B / N;
-    plane[2] = C / N;
-    plane[3] = D / N;
+  plane[0] = v1.y*v2.z - v1.z*v2.y;
+  plane[1] = v1.z*v2.x - v1.x*v2.z;
+  plane[2] = v1.x*v2.y - v2.x*v1.y;
+  plane[3] = -plane[0] *points[0].x - plane[1]*points[0].y - plane[2]*points[0].z;
+  double N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + plane[2]*plane[2]);
+  if ( N && normalize ) { 
+    plane[0] /= N;
+    plane[1] /= N;
+    plane[2] /= N;
+    plane[3] /= N;
   }
   return( N );
 }

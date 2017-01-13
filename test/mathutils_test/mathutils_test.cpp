@@ -3,6 +3,10 @@
 
 using namespace I3D;
 
+// Para testear angulos de euler
+//http://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm
+//http://euclideanspace.com/maths/geometry/rotations/conversions/index.htm
+
 /* ---------------------------------------------------------------------------------- */
 /*                                    Vectores                                        */
 /* ---------------------------------------------------------------------------------- */
@@ -18,7 +22,7 @@ TEST(vectorAngle, Test1){
 
 
 TEST(azimut,Test1){
-
+  //... hacer mas pruebas
   EXPECT_NEAR(0.7853, azimut(cv::Point(0,0),cv::Point(100,100)),0.0001);
 }
 
@@ -55,6 +59,46 @@ TEST(expRegression, test1){
 
   EXPECT_NEAR(1.3774, r, 0.0001);
   EXPECT_NEAR(2.6770, A, 0.0001);
+
+}
+
+//Para los calculos del test:
+//http://keisan.casio.com/exec/system/1223596129
+//http://onlinemschool.com/math/assistance/cartesian_coordinate/plane/
+TEST(threePointsPlane, testPointInt){
+  std::array<cv::Point3i,3> pts = {
+    cv::Point3i(1, 2, -2),
+    cv::Point3i(3, -2, 1),
+    cv::Point3i(5, 1, -4)
+  };
+
+  std::array<double, 4> plane;
+  //Sin normalizar
+  threePointsPlane(pts, plane, false);
+
+  EXPECT_EQ(11, plane[0]);
+  EXPECT_EQ(16, plane[1]);
+  EXPECT_EQ(14, plane[2]);
+  EXPECT_EQ(-15, plane[3]);
+
+}
+
+
+TEST(threePointsPlane, testPointDouble){
+  std::array<cv::Point3d,3> pts = {
+    cv::Point3d(34.34, 234.56, 158.65),
+    cv::Point3d(34.22, -245.91, 224.85),
+    cv::Point3d(25.65, 174.32, -148.69)
+  };
+
+  std::array<double, 4> plane;
+  //Sin normalizar
+  threePointsPlane(pts, plane, false);
+
+  EXPECT_NEAR(151655.5378, plane[0], 0.001);
+  EXPECT_NEAR(-612.1588, plane[1], 0.001);
+  EXPECT_NEAR(-4168.0555, plane[2], 0.001);
+  EXPECT_NEAR(-4403001.195, plane[3], 0.001);
 
 }
 

@@ -3,20 +3,6 @@
 
 /* Cabecera para configuración */
 
-///*! \mainpage Página principal
-// *
-// * \section intro_sec Introducción
-// *
-// * Tidop Lib
-// *
-// * \section Modulos
-// *
-// * \subsection Entidades GeometricEntities 
-// *
-// * etc...
-// */
-
-
 #define I3D_ENABLE_OPENCV 1
 
 #ifdef I3D_ENABLE_OPENCV

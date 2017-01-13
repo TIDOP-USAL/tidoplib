@@ -60,9 +60,9 @@ I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *
 
 /*!
  * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X
- * \param[in] phi Rotación respecto al eje Y
- * \param[in] kappa Rotación respecto al eje Z
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
  * \param[out] R Matriz de rotación
  */
 I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);

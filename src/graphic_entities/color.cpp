@@ -11,6 +11,10 @@
 namespace I3D
 {
 
+/* ---------------------------------------------------------------------------------- */
+/*                                     Clase Color                                    */
+/* ---------------------------------------------------------------------------------- */
+
 Color::Color(int red, int green, int blue, int alpha) 
 {
   mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
@@ -116,12 +120,9 @@ void Color::fromHSV(double hue, double saturation, double value)
   if (h >= 0 && h < 1) {
     _rgb[0] = chroma;
     _rgb[1] = x;
-  } else if (h >= 0 && h < 1) {
+  } else if (h >= 1 && h < 2) {
     _rgb[0] = x;
     _rgb[1] = chroma;
-  } else if (h >= 1 && h < 2) {
-    _rgb[1] = chroma;
-    _rgb[2] = x;
   } else if (h >= 2 && h < 3) {
     _rgb[1] = chroma;
     _rgb[2] = x;
@@ -150,56 +151,9 @@ void Color::fromHSL(double hue, double saturation, double lightness)
 {
   int red, green, blue;
   hslToRgb(hue, saturation, lightness, &red, &green, &blue);
-  //double _hue = hue;
-  //double _saturation = saturation;
-  //double _lightness = lightness;
-
-  //if (_hue < 0) _hue = 0;
-  //if (_saturation < 0) _saturation = 0;
-  //if (_lightness < 0) _lightness = 0;
-  //if (_hue >= 360) _hue = 359;
-  //if (_saturation > 100) _saturation = 100;
-  //if (_lightness > 100) _lightness = 100;
-
-  //_lightness /= 100.;
-  //_saturation /= 100.;
-  //double chroma = (1-abs(2 * _lightness - 1)) * _saturation;
-  //double h = _hue / 60.;
-  //double x = chroma * (1 - fabs(fmod(h,2)-1));
-
-  //std::array<double, 3> _rgb = { 0., 0., 0. };
-
-  //if (h >= 0 && h < 1) {
-  //  _rgb[0] = chroma;
-  //  _rgb[1] = x;
-  //} else if (h >= 0 && h < 1) {
-  //  _rgb[0] = x;
-  //  _rgb[1] = chroma;
-  //} else if (h >= 1 && h < 2) {
-  //  _rgb[1] = chroma;
-  //  _rgb[2] = x;
-  //} else if (h >= 2 && h < 3) {
-  //  _rgb[1] = chroma;
-  //  _rgb[2] = x;
-  //} else if (h >= 3 && h < 4) {
-  //  _rgb[1] = x;
-  //  _rgb[2] = chroma;
-  //} else if (h >= 4 && h < 5) {
-  //  _rgb[0] = x;
-  //  _rgb[2] = chroma;
-  //} else {
-  //  _rgb[0] = chroma;
-  //  _rgb[2] = x;
-  //}
-
-  //double m = _lightness - chroma / 2;
-  //_rgb[0] += m;
-  //_rgb[1] += m;
-  //_rgb[2] += m;
-  //
-  mColor = (I3D_ROUND_TO_INT(red*255.) & 0xFF) 
-         | ((I3D_ROUND_TO_INT(green*255.) << 8) & 0xFF00) 
-         | ((I3D_ROUND_TO_INT(blue*255.) << 16) & 0xFF0000);
+  mColor = (blue & 0xFF) 
+         | ((green << 8) & 0xFF00) 
+         | ((red << 16) & 0xFF0000);
 }
 
 
@@ -231,13 +185,10 @@ void Color::toHSV(double *hue, double *saturation, double *value ) const
 
   *value = max * 100.;
 
-  if(max > 0)
-    *saturation = delta / max;
-  else
+  if(max == 0)
     *saturation = 0.;
-  
-  *saturation *= 100;
-
+  else
+    *saturation = (delta / max) * 100;
 }
 
 void Color::toHSL(double *hue, double *saturation, double *lightness) const
@@ -247,6 +198,9 @@ void Color::toHSL(double *hue, double *saturation, double *lightness) const
 
 int Color::toLuminance() const
 {
+  // Poynton	       0.2125	0.7154	0.0721
+  // sRGB proposal   0.2126	0.7152	0.0722
+  // W3              0.2126	0.7152	0.0722
   return I3D_ROUND_TO_INT( 0.2126 * getRed() + 0.7152 * getGreen() + 0.0722 * getBlue());
 }
 
@@ -403,7 +357,7 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
 
 void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness)
 {
-   double rgb[3] = { red/255., green/255., blue/255. };
+  double rgb[3] = { red/255., green/255., blue/255. };
 
   double max = *std::max_element(rgb, rgb + 3);
   double min = *std::min_element(rgb, rgb + 3);
@@ -424,11 +378,11 @@ void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, dou
 
   *lightness = (max + min) / 2;
 
-  if(max > 0)
-    *saturation = delta / (1 - abs(2 * *lightness - 1));
-  else
+  if(delta == 0)
     *saturation = 0.;
-  
+  else
+    *saturation = delta / (1 - abs(2 * *lightness - 1));
+
   *saturation *= 100;
   *lightness *= 100;
 }
@@ -510,13 +464,9 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   }
 
   double m = _lightness - chroma / 2;
-  *red += m;
-  *green += m;
-  *blue += m;
-  
-  //mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
-  //       | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
+  *red = I3D_ROUND_TO_INT((_rgb[0] + m) * 255);
+  *green = I3D_ROUND_TO_INT((_rgb[1] + m) * 255);
+  *blue = I3D_ROUND_TO_INT((_rgb[2] + m) *255);
 }
 
 void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
@@ -551,5 +501,46 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
 
   for (auto &_thread : threads) _thread.join();
 }
+
+
+void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b)
+{
+  double sum = red + green + blue;
+  *r = red / sum;
+  *g = green / sum;
+  *b = blue / sum;
+}
+
+void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
+{
+  if ( rgb.channels() != 3 ) return; //throw std::runtime_error("Tipo de imagen no valida");
+  chroma_rgb->create( rgb.size(), CV_32FC3);
+  cv::Mat chroma_coord = *chroma_rgb;
+  
+  auto trfChromaticity = [&](int ini, int end) {
+    double c_red, c_green, c_blue;
+    for (int r = ini; r < end; r++) {
+      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+      for (int c = 0; c < rgb.cols; c++) {
+        chromaticityCoordinates(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &c_red, &c_green, &c_blue);
+        chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(c_blue), static_cast<float>(c_green), static_cast<float>(c_red));
+      }
+    }
+  };
+
+  int num_threads = getOptimalNumberOfThreads();
+  std::vector<std::thread> threads(num_threads);
+ 
+  int size = rgb.rows / num_threads;
+  for (int i = 0; i < num_threads; i++) {
+    int ini = i * size;
+    int end = ini + size;
+    if ( end > rgb.rows ) end = rgb.rows;
+    threads[i] = std::thread(trfChromaticity, ini, end);
+  }
+
+  for (auto &_thread : threads) _thread.join();
+}
+
 
 } // End namespace I3D
