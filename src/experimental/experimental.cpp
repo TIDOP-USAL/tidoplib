@@ -634,7 +634,7 @@ ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   return ProcessExit::SUCCESS;
 }
 
-void WhitePatch::setParameters(Color &white)
+void WhitePatch::setParameters(Color white)
 {
   mWhite = white;
 }

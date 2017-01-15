@@ -53,6 +53,10 @@ public:
  */
 I3D_EXPORT double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle = NULL);
 
+//I3D_EXPORT double verticalLinesDetection(cv::Mat &source, std::vector<cv::Point> *pts);
+//
+//I3D_EXPORT double horizontalLinesDetection(cv::Mat &source, std::vector<std::vector<cv::Point>> *pts);
+
 } // End namespace I3D
 
 #endif // I3D_FOURIER_H

@@ -717,7 +717,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
+  //void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -810,15 +810,15 @@ void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, tran
   }
 }
 
-template<typename T> inline
-void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
-{
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
-    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
-  }
-}
+//template<typename T> inline
+//void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
+//{
+//  formatVectorOut(in, out);
+//  for (int i = 0; i < in.size(); i++) {
+//    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
+//    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
+//  }
+//}
 
 template<typename T> inline
 void Translate<T>::transform(const T &in, T *out, transform_order trfOrder) const

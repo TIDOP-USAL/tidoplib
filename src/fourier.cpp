@@ -188,6 +188,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   return r_angle;
 }
 
+
 //int fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle)
 //{
 //  double startTick, time;
