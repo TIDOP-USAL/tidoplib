@@ -102,12 +102,12 @@ void Color::fromHSV(double hue, double saturation, double value)
   double _saturation = saturation;
   double _value = value;
 
-  if (_hue < 0) _hue = 0;
-  if (_saturation < 0) _saturation = 0;
-  if (_value < 0) _value = 0;
-  if (_hue >= 360) _hue = 359;
-  if (_saturation > 100) _saturation = 100;
-  if (_value > 100) _value = 100;
+  if (_hue < 0.) _hue = 0.;
+  if (_saturation < 0.) _saturation = 0.;
+  if (_value < 0.) _value = 0.;
+  if (_hue >= 360.) _hue = 359.;
+  if (_saturation > 100.) _saturation = 100.;
+  if (_value > 100.) _value = 100.;
 
   _value /= 100.;
   _saturation /= 100.;
@@ -286,33 +286,17 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk)
   if ( rgb.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
   cmyk->create( rgb.size(), CV_32FC4);
   cv::Mat _cmyk = *cmyk;
-  
-  auto trfRgbToCmyk = [&](int ini, int end) {
+
+  parallel_for(0, rgb.rows, [&](int r) {
     double cyan, magenta, yellow, key;
-    for (int r = ini; r < end; r++) {
-      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
-      for (int c = 0; c < rgb.cols; c++) {
-        rgbToCmyk(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &cyan, &magenta, &yellow, &key);
-        _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan), static_cast<float>(magenta), static_cast<float>(yellow), static_cast<float>(key));
-      }
+    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+    for (int c = 0; c < rgb.cols; c++) {
+      rgbToCmyk(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &cyan, &magenta, &yellow, &key);
+      _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan), static_cast<float>(magenta), 
+                                            static_cast<float>(yellow), static_cast<float>(key));
     }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = rgb.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > rgb.rows ) end = rgb.rows;
-    threads[i] = std::thread(trfRgbToCmyk, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
-
+  });
 }
-
 
 void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red, int *green, int *blue)
 {
@@ -327,32 +311,17 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
   if ( cmyk.channels() != 4 ) return;//throw std::runtime_error("Tipo de imagen no valida");
   rgb->create( cmyk.size(), CV_8UC3);
   cv::Mat _rgb = *rgb;
-  
-  auto trfCmykToRgb = [&](int ini, int end) {
+
+  parallel_for(0, cmyk.rows, [&](int r) {
     int red, green, blue;
-    for (int r = ini; r < end; r++) {
-      for (int c = 0; c < cmyk.cols; c++) {
-        cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
-        cmykToRgb(v_cmyk[0], v_cmyk[1], v_cmyk[2], v_cmyk[3], &red, &green, &blue);
-        _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
-        _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
-        _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
-      }
+    for (int c = 0; c < cmyk.cols; c++) {
+      cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
+      cmykToRgb(v_cmyk[0], v_cmyk[1], v_cmyk[2], v_cmyk[3], &red, &green, &blue);
+      _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
+      _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
+      _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
     }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = cmyk.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > cmyk.rows ) end = cmyk.rows;
-    threads[i] = std::thread(trfCmykToRgb, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
+  });
 }
 
 void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness)
@@ -393,30 +362,15 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl)
   if ( rgb.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
   hsl->create( rgb.size(), CV_32FC3);
   cv::Mat _hsl = *hsl;
-  
-  auto trfRgbToHsl = [&](int ini, int end) {
+
+  parallel_for(0, rgb.rows, [&](int r) {
     double hue, saturation, lightness;
-    for (int r = ini; r < end; r++) {
-      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
-      for (int c = 0; c < rgb.cols; c++) {
-        rgbToHSL(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &hue, &saturation, &lightness);
-        _hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), static_cast<float>(saturation), static_cast<float>(lightness));
-      }
+    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+    for (int c = 0; c < rgb.cols; c++) {
+      rgbToHSL(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &hue, &saturation, &lightness);
+      _hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), static_cast<float>(saturation), static_cast<float>(lightness));
     }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = rgb.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > rgb.rows ) end = rgb.rows;
-    threads[i] = std::thread(trfRgbToHsl, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
+  });
 }
 
 void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue)
@@ -425,12 +379,12 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   double _saturation = saturation;
   double _lightness = lightness;
 
-  if (_hue < 0) _hue = 0;
-  if (_saturation < 0) _saturation = 0;
-  if (_lightness < 0) _lightness = 0;
-  if (_hue >= 360) _hue = 359;
-  if (_saturation > 100) _saturation = 100;
-  if (_lightness > 100) _lightness = 100;
+  if (_hue < 0) _hue = 0.;
+  if (_saturation < 0.) _saturation = 0.;
+  if (_lightness < 0.) _lightness = 0.;
+  if (_hue >= 360.) _hue = 359.;
+  if (_saturation > 100.) _saturation = 100.;
+  if (_lightness > 100.) _lightness = 100.;
 
   _lightness /= 100.;
   _saturation /= 100.;
@@ -443,12 +397,9 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   if (h >= 0 && h < 1) {
     _rgb[0] = chroma;
     _rgb[1] = x;
-  } else if (h >= 0 && h < 1) {
+  } else if (h >= 1 && h < 2) {
     _rgb[0] = x;
     _rgb[1] = chroma;
-  } else if (h >= 1 && h < 2) {
-    _rgb[1] = chroma;
-    _rgb[2] = x;
   } else if (h >= 2 && h < 3) {
     _rgb[1] = chroma;
     _rgb[2] = x;
@@ -474,32 +425,17 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
   if ( hsl.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
   rgb->create( hsl.size(), CV_8UC3);
   cv::Mat _rgb = *rgb;
-  
-  auto trfHslToRgb = [&](int ini, int end) {
+
+  parallel_for(0, hsl.rows, [&](int r) {
     int red, green, blue;
-    for (int r = ini; r < end; r++) {
-      for (int c = 0; c < hsl.cols; c++) {
-        cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
-        hslToRgb(v_hsl[0], v_hsl[1], v_hsl[2], &red, &green, &blue);
-        _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
-        _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
-        _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
-      }
+    for (int c = 0; c < hsl.cols; c++) {
+      cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
+      hslToRgb(v_hsl[0], v_hsl[1], v_hsl[2], &red, &green, &blue);
+      _rgb.at<cv::Vec3b>(r,c)[0] = (uchar)blue;
+      _rgb.at<cv::Vec3b>(r,c)[1] = (uchar)green;
+      _rgb.at<cv::Vec3b>(r,c)[2] = (uchar)red;
     }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = hsl.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > hsl.rows ) end = hsl.rows;
-    threads[i] = std::thread(trfHslToRgb, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
+  });
 }
 
 
@@ -516,30 +452,15 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
   if ( rgb.channels() != 3 ) return; //throw std::runtime_error("Tipo de imagen no valida");
   chroma_rgb->create( rgb.size(), CV_32FC3);
   cv::Mat chroma_coord = *chroma_rgb;
-  
-  auto trfChromaticity = [&](int ini, int end) {
+
+  parallel_for(0, rgb.rows, [&](int r) {
     double c_red, c_green, c_blue;
-    for (int r = ini; r < end; r++) {
-      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
-      for (int c = 0; c < rgb.cols; c++) {
-        chromaticityCoordinates(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &c_red, &c_green, &c_blue);
-        chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(c_blue), static_cast<float>(c_green), static_cast<float>(c_red));
-      }
+    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+    for (int c = 0; c < rgb.cols; c++) {
+      chromaticityCoordinates(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &c_red, &c_green, &c_blue);
+      chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(c_blue), static_cast<float>(c_green), static_cast<float>(c_red));
     }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
- 
-  int size = rgb.rows / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int ini = i * size;
-    int end = ini + size;
-    if ( end > rgb.rows ) end = rgb.rows;
-    threads[i] = std::thread(trfChromaticity, ini, end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
+  });
 }
 
 

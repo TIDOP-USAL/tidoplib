@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 #include "opencv2/core/core.hpp"
 
@@ -442,7 +443,22 @@ I3D_EXPORT void saveBinMat(const char *file, cv::Mat &data);
 /*!
  * \brief número optimo de hilos
  */
-I3D_EXPORT unsigned int getOptimalNumberOfThreads();
+I3D_EXPORT uint32_t getOptimalNumberOfThreads();
+
+/*!
+ * \brief Ejecuta una función en paralelo
+ * \param[in] ini
+ * \param[in] end 
+ * \param[in] f Función o lambda
+ */
+I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief tiempo actual
+ */
+I3D_EXPORT uint64_t getTickCount();
 
 
 } // End namespace I3D

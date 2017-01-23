@@ -8,11 +8,18 @@
 #include <sys/stat.h>
 #include <libgen.h>
 #endif
-
+#include <chrono>
 #include <vector>
 #include <cstring>
 #include <exception>
 #include <thread>
+
+#if defined I3D_MSVS_CONCURRENCY
+  #include <ppl.h>
+#endif
+#include <functional>
+
+#include <omp.h>
 
 namespace I3D
 {
@@ -384,12 +391,55 @@ void saveBinMat(const char *file, cv::Mat &data)
 
 /* ---------------------------------------------------------------------------------- */
 
-I3D_EXPORT unsigned int getOptimalNumberOfThreads()
+I3D_EXPORT uint32_t getOptimalNumberOfThreads()
 {
-  unsigned int n_threads = std::thread::hardware_concurrency();
+#ifdef I3D_MSVS_CONCURRENCY
+  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
+#else
+  uint32_t n_threads = std::thread::hardware_concurrency();
   return n_threads == 0 ? 1 : n_threads;
+#endif
+}
+
+void parallel_for(int ini, int end, std::function<void(int)> f) { 
+  uint64_t time_ini = getTickCount();
+#ifdef I3D_MSVS_CONCURRENCY
+  Concurrency::parallel_for(ini, end, f);
+#else
+  
+  auto f_aux = [&](int ini, int end) {
+    //double cyan, magenta, yellow, key;
+    for (int r = ini; r < end; r++) {
+      f(r);
+    }
+  };
+  
+  int num_threads = getOptimalNumberOfThreads();
+  std::vector<std::thread> threads(num_threads);
+
+  int size = (end - ini) / num_threads;
+  for (int i = 0; i < num_threads; i++) {
+    int _ini = i * size + ini;
+    int _end = _ini + size;
+    if (i == num_threads -1) _end = end;
+    threads[i] = std::thread(f_aux, _ini, _end);
+  }
+
+  for (auto &_thread : threads) _thread.join();
+#endif
+  double time = (getTickCount() - time_ini) / 1000.;
+  printf("Time %f", time);
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+uint64_t getTickCount()
+{
+#if defined _MSC_VER
+  return GetTickCount64();
+#else
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+#endif
+}
 
 } // End namespace I3D

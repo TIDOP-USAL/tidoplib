@@ -8,67 +8,6 @@
 namespace I3D
 {
 
-//void thinningZhangSuenIteration(const cv::Mat &image, int iter)
-//{
-//  cv::Mat marker = cv::Mat::zeros(image.size(), CV_8UC1);
-//
-//  for ( int i = 1; i < image.rows - 1; i++ ) {
-//    for (int j = 1; j < image.cols-1; j++) {
-//      uchar p2 = image.at<uchar>(i-1, j);
-//      uchar p3 = image.at<uchar>(i-1, j+1);
-//      uchar p4 = image.at<uchar>(i, j+1);
-//      uchar p5 = image.at<uchar>(i+1, j+1);
-//      uchar p6 = image.at<uchar>(i+1, j);
-//      uchar p7 = image.at<uchar>(i+1, j-1);
-//      uchar p8 = image.at<uchar>(i, j-1);
-//      uchar p9 = image.at<uchar>(i-1, j-1);
-//
-//      int A  = (p2 == 0 && p3 == 1) + (p3 == 0 && p4 == 1) + 
-//               (p4 == 0 && p5 == 1) + (p5 == 0 && p6 == 1) + 
-//               (p6 == 0 && p7 == 1) + (p7 == 0 && p8 == 1) +
-//               (p8 == 0 && p9 == 1) + (p9 == 0 && p2 == 1);
-//      int B  = p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9;
-//      int m1 = iter == 0 ? (p2 * p4 * p6) : (p2 * p4 * p8);
-//      int m2 = iter == 0 ? (p4 * p6 * p8) : (p2 * p6 * p8);
-//
-//      if (A == 1 && (B >= 2 && B <= 6) && m1 == 0 && m2 == 0)
-//        marker.at<uchar>(i,j) = 1;
-//    }
-//  }
-//
-//  image &= ~marker;
-//}
-
-//void thinningGuoHallIteration(const cv::Mat &image, int iter)
-//{
-//  cv::Mat marker = cv::Mat::zeros(image.size(), CV_8UC1); 
-//
-//  for (int i = 1; i < image.rows - 1; i++) {
-//    for (int j = 1; j < image.cols-1; j++) {
-//      uchar p2 = image.at<uchar>(i-1, j);
-//      uchar p3 = image.at<uchar>(i-1, j+1);
-//      uchar p4 = image.at<uchar>(i, j+1);
-//      uchar p5 = image.at<uchar>(i+1, j+1);
-//      uchar p6 = image.at<uchar>(i+1, j);
-//      uchar p7 = image.at<uchar>(i+1, j-1);
-//      uchar p8 = image.at<uchar>(i, j-1); 
-//      uchar p9 = image.at<uchar>(i-1, j-1);
-//      
-//      int C  = (!p2 & (p3 | p4)) + (!p4 & (p5 | p6)) +
-//               (!p6 & (p7 | p8)) + (!p8 & (p9 | p2));
-//      int N1 = (p9 | p2) + (p3 | p4) + (p5 | p6) + (p7 | p8);
-//      int N2 = (p2 | p3) + (p4 | p5) + (p6 | p7) + (p8 | p9);
-//      int N  = N1 < N2 ? N1 : N2;
-//      int m  = iter == 0 ? ((p6 | p7 | !p9) & p8) : ((p2 | p3 | !p5) & p4);
-//      
-//      if (C == 1 && (N >= 2 && N <= 3) & (m == 0))
-//        marker.at<uchar>(i,j) = 1;
-//    }
-//  }
-//
-//  image &= ~marker;
-//}
-
 void thinningZhangSuen(cv::Mat &image, cv::Mat &marker, int iter, int ini, int end) {
   for ( int i = ini; i < end; i++ ) {
     for ( int j = 1; j < image.cols - 1; j++ ) {
@@ -163,13 +102,6 @@ void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin)
   do {
     thinningIteration(*out, 0, thin);
     thinningIteration(*out, 1, thin);
-    //if ( thin == Thinning::GUO_HALL ) {
-    //  thinningGuoHallIteration(*out, 0);
-    //  thinningGuoHallIteration(*out, 1);
-    //} else {
-    //  thinningZhangSuenIteration(*out, 0);
-    //  thinningZhangSuenIteration(*out, 1);
-    //}
 
     cv::absdiff(*out, prev, diff);
     out->copyTo(prev);

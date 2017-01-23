@@ -423,9 +423,9 @@ public:
    * \param[out] matOut Imagen de salida
    * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
    * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -477,7 +477,7 @@ public:
    * En caso contrario devuelve ProcessExit::FAILURE
    * \see ProcessExit
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros

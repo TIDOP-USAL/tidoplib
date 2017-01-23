@@ -116,50 +116,43 @@ int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, 
   } else {
     stimage->create(height, width, type);
 
-    //if (left.isContinuous())
-    //{
-    //    width *= height;
-    //    height = 1;
-    //}
-    //const cv::Vec3b *pl, *pr;
-
-    //cv::Vec3b bgrPxL, bgrPxR;
-    //for ( int r = 0, c = 0; r < height; r++ ) {
-    //  for ( c = 0; c < width; c++ ) {
-    //    bgrPxL = left.at<cv::Vec3b>(r, c);
-    //    bgrPxR = right.at<cv::Vec3b>(r, c);
-    //    cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(r, c);
-    //    int imode = static_cast<int>(mode) - 1;
-    //    bgrSt = AnaglyphMatrix[imode].imgRight*bgrPxR + AnaglyphMatrix[imode].imgLeft*bgrPxL;
+    //auto makeStereo = [&](int ini, int end) {
+    //  cv::Vec3b bgrPxL, bgrPxR;
+    //  for ( int r = ini, c = 0; r < end; r++ ) {
+    //    for ( c = 0; c < width; c++ ) {
+    //      bgrPxL = left.at<cv::Vec3b>(r, c);
+    //      bgrPxR = right.at<cv::Vec3b>(r, c);
+    //      cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(r, c);
+    //      int imode = static_cast<int>(mode) - 1;
+    //      bgrSt = AnaglyphMatrix[imode].imgRight*bgrPxR + AnaglyphMatrix[imode].imgLeft*bgrPxL;
+    //    }
     //  }
+    //};
+
+
+    //int num_threads = getOptimalNumberOfThreads();
+    //std::vector<std::thread> threads(num_threads);
+ 
+    //int size = height / num_threads;
+    //for (int i = 0; i < num_threads; i++) {
+    //  int ini = i * size;
+    //  int end = ini + size;
+    //  if ( end > height ) end = height;
+    //  threads[i] = std::thread(makeStereo, ini, end);
     //}
 
-    auto makeStereo = [&](int ini, int end) {
+    //for (auto &_thread : threads) _thread.join();
+
+    parallel_for(0, height, [&](int r) {
       cv::Vec3b bgrPxL, bgrPxR;
-      for ( int r = ini, c = 0; r < end; r++ ) {
-        for ( c = 0; c < width; c++ ) {
-          bgrPxL = left.at<cv::Vec3b>(r, c);
-          bgrPxR = right.at<cv::Vec3b>(r, c);
-          cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(r, c);
-          int imode = static_cast<int>(mode) - 1;
-          bgrSt = AnaglyphMatrix[imode].imgRight*bgrPxR + AnaglyphMatrix[imode].imgLeft*bgrPxL;
-        }
+      for ( int c = 0; c < width; c++ ) {
+        bgrPxL = left.at<cv::Vec3b>(r, c);
+        bgrPxR = right.at<cv::Vec3b>(r, c);
+        cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(r, c);
+        int imode = static_cast<int>(mode) - 1;
+        bgrSt = AnaglyphMatrix[imode].imgRight*bgrPxR + AnaglyphMatrix[imode].imgLeft*bgrPxL;
       }
-    };
-
-
-    int num_threads = getOptimalNumberOfThreads();
-    std::vector<std::thread> threads(num_threads);
- 
-    int size = height / num_threads;
-    for (int i = 0; i < num_threads; i++) {
-      int ini = i * size;
-      int end = ini + size;
-      if ( end > height ) end = height;
-      threads[i] = std::thread(makeStereo, ini, end);
-    }
-
-    for (auto &_thread : threads) _thread.join();
+    });
 
     return 1;
   }

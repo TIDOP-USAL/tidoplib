@@ -25,7 +25,7 @@ ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) co
   if (matIn.empty()) return ProcessExit::FAILURE;
   matIn.copyTo(*matOut);
   for (const auto process : mProcessList) {
-    if (process->execute(*matOut, matOut) == ProcessExit::FAILURE)
+    if (process->execute(*matOut, matOut) != ImgProcessing::Status::OK)
       return ProcessExit::FAILURE;
   }
   return ProcessExit::SUCCESS;
@@ -33,7 +33,7 @@ ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) co
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
   try {
@@ -41,9 +41,9 @@ ProcessExit BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigmaSpace, int borderType)
@@ -56,15 +56,16 @@ void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigm
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
@@ -76,15 +77,16 @@ void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::OK;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
@@ -98,15 +100,16 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
@@ -120,15 +123,16 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, int bordertype)
@@ -141,15 +145,16 @@ void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, in
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta, int borderType)
@@ -163,15 +168,16 @@ void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void MedianBlur::setParameters(int ksize)
@@ -181,8 +187,9 @@ void MedianBlur::setParameters(int ksize)
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   cv::Mat grad_x, grad_y;
   cv::Mat abs_grad_x, abs_grad_y;
   try {
@@ -191,9 +198,9 @@ ProcessExit Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
@@ -211,8 +218,9 @@ void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   double th1 = mThreshold1, th2 = mThreshold2;
   try {
     if (th1 == 0.0 && th2 == 0.0) {
@@ -224,9 +232,9 @@ ProcessExit Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Canny::setParameters(double threshold1, double threshold2)
@@ -237,8 +245,9 @@ void Canny::setParameters(double threshold1, double threshold2)
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
     switch (type)
@@ -265,13 +274,13 @@ ProcessExit morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOu
       morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
       break;
     default:
-      return ProcessExit::FAILURE;
+      return ImgProcessing::Status::INCORRECT_INPUT_DATA;
     }
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv::Point anchor, int iterations, int borderType, const cv::Scalar &borderValue)
@@ -287,10 +296,15 @@ void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv:
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  try {
-    if (mWidth == 0 && mScaleX == 0) throw std::runtime_error("Invalid parameter values");
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+
+  if (mWidth == 0 && mScaleX == 0) {
+    printError("Invalid parameter values");
+    return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  }
+  try {    
     if (mScaleX) {
       cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
     } else {
@@ -304,9 +318,9 @@ ProcessExit Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 
   } catch (cv::Exception &e){
     printError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Resize::setParameters(int width, int height = 0)
@@ -326,17 +340,18 @@ void Resize::setParameters(double scaleX, double scaleY)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
     matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
     *matOut = aux;
   } catch (cv::Exception &e){
     printError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
@@ -379,15 +394,16 @@ void ResizeCanvas::setParameters(int width, int height, const Color &color, cons
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Normalize::setParameters(double _lowRange, double _upRange)
@@ -399,8 +415,9 @@ void Normalize::setParameters(double _lowRange, double _upRange)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   double th = mThresh, max = mMaxVal;
   try {
     if (th == 0.0 && max == 0.0) {
@@ -412,9 +429,9 @@ ProcessExit Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Binarize::setParameters(double thresh, double maxval, bool inverse)
@@ -427,29 +444,31 @@ void Binarize::setParameters(double thresh, double maxval, bool inverse)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::equalizeHist(matIn, *matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     f(matIn, matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 /* ---------------------------------------------------------------------------------- */

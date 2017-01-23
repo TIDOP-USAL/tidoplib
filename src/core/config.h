@@ -24,5 +24,8 @@
 
 #endif
 
+#if defined _MSC_VER && _MSC_VER >= 1600
+  #define I3D_MSVS_CONCURRENCY
+#endif
 
 #endif // I3D_CONFIG_H

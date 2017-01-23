@@ -560,15 +560,15 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   try {
     wb->balanceWhite(matIn, *matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Grayworld::setParameters()
@@ -578,7 +578,7 @@ void Grayworld::setParameters()
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   try {
     // Buscar máximo R, G, B
@@ -602,7 +602,6 @@ ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::Mat wp = *matOut;
   
     auto trfRgbToWhitePatch = [&](int ini, int end) {
-      double hue, saturation, lightness;
       for (int r = ini; r < end; r++) {
         const uchar *rgb_ptr = matIn.ptr<uchar>(r);
         for (int c = 0; c < matIn.cols; c++) {
@@ -629,9 +628,9 @@ ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void WhitePatch::setParameters(Color white)

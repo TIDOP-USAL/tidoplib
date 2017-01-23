@@ -228,7 +228,7 @@ int CmdParameterOptions::getIndex(std::string value) const
 {
   for ( size_t i = 0; i < mOptions.size(); i++ ) {
     if (mOptions[i] == value) {
-      return i;
+      return static_cast<int>(i);
       break;
     }
   }
@@ -239,7 +239,7 @@ int CmdParameterOptions::getIndex() const
 {
   for ( size_t i = 0; i < mOptions.size(); i++ ) {
     if (mOptions[i] == mDefValue) {
-      return i;
+      return static_cast<int>(i);
       break;
     }
   }
