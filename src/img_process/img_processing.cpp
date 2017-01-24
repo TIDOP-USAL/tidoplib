@@ -3,6 +3,7 @@
 #include "core/messages.h"
 
 #include "opencv2/highgui/highgui.hpp"
+#include "opencv2/xphoto/white_balance.hpp"
 
 #include <cstdarg>
 #include <cstdio>
@@ -24,7 +25,7 @@ ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) co
   if (matIn.empty()) return ProcessExit::FAILURE;
   matIn.copyTo(*matOut);
   for (const auto process : mProcessList) {
-    if (process->execute(*matOut, matOut) == ProcessExit::FAILURE)
+    if (process->execute(*matOut, matOut) != ImgProcessing::Status::OK)
       return ProcessExit::FAILURE;
   }
   return ProcessExit::SUCCESS;
@@ -32,8 +33,9 @@ ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) co
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
     switch (type)
@@ -60,13 +62,13 @@ ProcessExit morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOu
       morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
       break;
     default:
-      return ProcessExit::FAILURE;
+      return ImgProcessing::Status::INCORRECT_INPUT_DATA;
     }
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv::Point anchor, int iterations, int borderType, const cv::Scalar &borderValue)
@@ -82,10 +84,15 @@ void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv:
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  try {
-    if (mWidth == 0 && mScaleX == 0) throw std::runtime_error("Invalid parameter values");
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+
+  if (mWidth == 0 && mScaleX == 0) {
+    printError("Invalid parameter values");
+    return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  }
+  try {    
     if (mScaleX) {
       cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
     } else {
@@ -99,9 +106,9 @@ ProcessExit Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 
   } catch (cv::Exception &e){
     printError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Resize::setParameters(int width, int height = 0)
@@ -121,17 +128,18 @@ void Resize::setParameters(double scaleX, double scaleY)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
     matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
     *matOut = aux;
   } catch (cv::Exception &e){
     printError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
@@ -174,15 +182,16 @@ void ResizeCanvas::setParameters(int width, int height, const Color &color, cons
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Normalize::setParameters(double _lowRange, double _upRange)
@@ -194,8 +203,9 @@ void Normalize::setParameters(double _lowRange, double _upRange)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   double th = mThresh, max = mMaxVal;
   try {
     if (th == 0.0 && max == 0.0) {
@@ -207,9 +217,9 @@ ProcessExit Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Binarize::setParameters(double thresh, double maxval, bool inverse)
@@ -222,31 +232,35 @@ void Binarize::setParameters(double thresh, double maxval, bool inverse)
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::equalizeHist(matIn, *matOut);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 
-ProcessExit FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     f(matIn, matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+
 
 } // End namespace I3D

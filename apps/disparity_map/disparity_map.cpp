@@ -30,6 +30,7 @@ I3D_DEFAULT_WARNINGS
 #include "geometric_entities/window.h"
 
 #include "core/console.h"
+#include "core/utils.h"
 #include "transform.h"
 
 using namespace I3D;
@@ -251,7 +252,7 @@ int main(int argc, char** argv)
     
     //std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
     std::string file = "D://Desarrollo//datos//TORRE_3D//calib.xml";
-    LoadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
+    loadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
     Mat rleft, rright, map1, map2;
     Mat optCameraMat = getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, 0);
     initUndistortRectifyMap(cameraMatrix, distCoeffs, Mat(), optCameraMat, imageSize, CV_16SC2, map1, map2);
@@ -301,10 +302,10 @@ int main(int argc, char** argv)
           cvtColor(left_for_matcher,  left_for_matcher,  COLOR_BGR2GRAY);
           cvtColor(right_for_matcher, right_for_matcher, COLOR_BGR2GRAY);
 
-          matching_time = (double)getTickCount();
+          matching_time = (double)cv::getTickCount();
           left_matcher-> compute(left_for_matcher, right_for_matcher,left_disp);
           right_matcher->compute(right_for_matcher,left_for_matcher, right_disp);
-          matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
+          matching_time = ((double)cv::getTickCount() - matching_time)/getTickFrequency();
           //! [matching]
       }
       else if(algo=="sgbm")
@@ -317,10 +318,10 @@ int main(int argc, char** argv)
           wls_filter = createDisparityWLSFilter(left_matcher);
           Ptr<StereoMatcher> right_matcher = createRightMatcher(left_matcher);
 
-          matching_time = (double)getTickCount();
+          matching_time = (double)cv::getTickCount();
           left_matcher-> compute(left_for_matcher, right_for_matcher,left_disp);
           right_matcher->compute(right_for_matcher,left_for_matcher, right_disp);
-          matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
+          matching_time = ((double)cv::getTickCount() - matching_time)/getTickFrequency();
       }
       else if (algo == "elas")
       {
@@ -369,9 +370,9 @@ int main(int argc, char** argv)
         //! [filtering]
         wls_filter->setLambda(lambda);
         wls_filter->setSigmaColor(sigma);
-        filtering_time = (double)getTickCount();
+        filtering_time = (double)cv::getTickCount();
         wls_filter->filter(left_disp, left, filtered_disp, right_disp);
-        filtering_time = ((double)getTickCount() - filtering_time) / getTickFrequency();
+        filtering_time = ((double)cv::getTickCount() - filtering_time) / getTickFrequency();
         //! [filtering]
         conf_map = wls_filter->getConfidenceMap();
 
@@ -406,9 +407,9 @@ int main(int argc, char** argv)
           wls_filter = createDisparityWLSFilterGeneric(false);
           wls_filter->setDepthDiscontinuityRadius((int)ceil(0.33*wsize));
 
-          matching_time = (double)getTickCount();
+          matching_time = (double)cv::getTickCount();
           matcher->compute(left_for_matcher,right_for_matcher,left_disp);
-          matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
+          matching_time = ((double)cv::getTickCount() - matching_time)/getTickFrequency();
       }
       else if(algo=="sgbm")
       {
@@ -423,9 +424,9 @@ int main(int argc, char** argv)
           wls_filter = createDisparityWLSFilterGeneric(false);
           wls_filter->setDepthDiscontinuityRadius((int)ceil(0.5*wsize));
 
-          matching_time = (double)getTickCount();
+          matching_time = (double)cv::getTickCount();
           matcher->compute(left_for_matcher,right_for_matcher,left_disp);
-          matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
+          matching_time = ((double)cv::getTickCount() - matching_time)/getTickFrequency();
       }
       else
       {
@@ -435,9 +436,9 @@ int main(int argc, char** argv)
 
       wls_filter->setLambda(lambda);
       wls_filter->setSigmaColor(sigma);
-      filtering_time = (double)getTickCount();
+      filtering_time = (double)cv::getTickCount();
       wls_filter->filter(left_disp,left,filtered_disp,Mat(),ROI);
-      filtering_time = ((double)getTickCount() - filtering_time)/getTickFrequency();
+      filtering_time = ((double)cv::getTickCount() - filtering_time)/getTickFrequency();
   }
   else
   {

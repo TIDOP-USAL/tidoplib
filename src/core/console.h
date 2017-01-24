@@ -15,7 +15,6 @@
 #include <sstream>
 
 #include "core/defs.h"
-//#include "core/events.h"
 #include "core/utils.h"
 
 namespace I3D

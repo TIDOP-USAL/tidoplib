@@ -1,5 +1,7 @@
 #include "operations.h"
 
+#include "geometric_entities/segment.h"
+
 namespace I3D
 {
 
@@ -17,10 +19,10 @@ int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_
   return ipt;
 }
 
-//bool isCollinearPoints(const cv::Point &pt_c, const SegmentI &line_i_r, double tolerance)
-//{
-//   return tolerance > distPointToSegment(pt_c, line_i_r);
-//}
+bool isCollinearPoints(const cv::Point &pt_c, const I3D::Segment<int> &line_i_r, double tolerance)
+{
+  return tolerance > distPointToSegment(pt_c, line_i_r);
+}
 
 //double length(const cv::Point &v)
 //{

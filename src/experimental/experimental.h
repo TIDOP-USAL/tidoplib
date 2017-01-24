@@ -42,7 +42,7 @@ namespace EXPERIMENTAL
 
 
 // Clase para matching robusto. Necesitaria que tener una clase matching 
-// virtual donde se definan todos los métodos comunes
+// virtual donde se definan todos los mÃ©todos comunes
 // con esta clase sustituire a nRobustViewMatching y tendre mayor control. 
 
 /*!
@@ -58,7 +58,7 @@ private:
   cv::Ptr<cv::DescriptorMatcher> mDescriptorMatcher;
 
   /*!
-   * \brief Máxima tolerancia entre el primer y segundo NN
+   * \brief MÃ¡xima tolerancia entre el primer y segundo NN
    */
   float mRatio;
 
@@ -111,8 +111,8 @@ public:
   int ratioTest(std::vector<std::vector<cv::DMatch> > &matches);
 
   /*!
-   * \brief test de simetría
-   * Busqueda de matches simétricos
+   * \brief test de simetrÃ­a
+   * Busqueda de matches simÃ©tricos
    * \param[in] matches1 
    * \param[in] matches2 
    * \param[out] symMatches 
@@ -122,8 +122,8 @@ public:
                      std::vector<cv::DMatch>& symMatches );
 
   /*!
-   * \brief test de simetría
-   * Busqueda de matches simétricos
+   * \brief test de simetrÃ­a
+   * Busqueda de matches simÃ©tricos
    * \param[in] matches
    * \param[out] symMatches 
    */
@@ -286,45 +286,6 @@ public:
 };
 
 #endif
-
-
-
-// Balance de blancos
-// https://courses.cs.washington.edu/courses/cse467/08au/labs/l5/whiteBalance.pdf
-
-// 10.4.1 Gray World
-//   Lo implementa OpenCV como cv::xphoto::GrayworldWB
-// Implementado en white_balance.cpp
-
-
-// 10.4.2 White Patch
-// Asume que los valores máximos de color en los tres canales de la imagen es el 
-// color del blanco bajo la luz de la escena, entonces se elimina el efecto de 
-// esa luz y se impone una luz blanca
-//
-// Estimación del color de la luz de la escena de la imagen:
-// Rmax(I): Valor máximo del canal rojo de la imagen I
-// Gmax(I): Valor máximo del canal verde de la imagen I
-// Bmax(I): Valor máximo del canal azul de la imagen I
-// Para una luz blanca de (255,255,255) se elimina la luz de la escena y se
-// introduce la luz blanca:
-// (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
-
-// Implementado en white_balance.cpp
-
-// 10.4.3 Iterative White Balancing  
-//
-// 10.4.4 Illuminant Voting
-//
-// 10.4.5 Color by Correlation
-
-
-
-
-
-
-
-
 
 
 } // End namespace EXPERIMENTAL

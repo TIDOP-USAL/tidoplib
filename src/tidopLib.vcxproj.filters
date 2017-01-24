@@ -56,10 +56,10 @@
       <UniqueIdentifier>{d19ec710-25e7-4f94-9faf-1f00badab3b9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Archivos de código fuente\img_process">
-      <UniqueIdentifier>{ba38e2b4-4e54-4d89-ae83-5fcc398df526}</UniqueIdentifier>
+      <UniqueIdentifier>{39942843-4ace-4d5d-9420-3216fdee43a4}</UniqueIdentifier>
     </Filter>
     <Filter Include="Archivos de encabezado\img_process">
-      <UniqueIdentifier>{f65d565a-8f60-497d-aad7-953934602e8f}</UniqueIdentifier>
+      <UniqueIdentifier>{0b969bd5-e0cc-4c96-9385-0cef44fa23cb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

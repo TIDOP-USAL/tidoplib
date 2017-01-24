@@ -209,7 +209,7 @@ TEST(changeFileName, ValidPath){
   char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileName(path, "new_file_name", new_path, I3D_MAX_PATH));
   EXPECT_STREQ("C:\\path\\new_file_name.ext", new_path);
-  const char *path2 = "D:/path/file.ext";
+  const char *path2 = "C:/path/file.ext";
   EXPECT_EQ(0, changeFileName(path2, "new_file_name", new_path, I3D_MAX_PATH));
   EXPECT_STREQ("C:/path/new_file_name.ext", new_path);
 }
@@ -220,7 +220,7 @@ TEST(changeFileExtension, ValidPath){
   char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileExtension(path, "aaa", new_path, I3D_MAX_PATH));
   EXPECT_STREQ("C:\\path\\file.aaa", new_path);
-  const char *path2 = "D:/path/file.ext";
+  const char *path2 = "C:/path/file.ext";
   EXPECT_EQ(0, changeFileExtension(path2, "bbb", new_path, I3D_MAX_PATH));
   EXPECT_STREQ("C:/path/file.bbb", new_path);
 }

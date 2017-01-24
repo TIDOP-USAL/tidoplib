@@ -33,8 +33,8 @@ TEST(LineString, ConstructorList) {
   /*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
   creadoes igual a cada uno de los puntos de la lista de iniciación*/
   for (auto i : ptsIn) {
-	  EXPECT_EQ(i.x, line.getPoint(j).x);
-	  EXPECT_EQ(i.y, line.getPoint(j).y);
+	  EXPECT_EQ(i.x, line[j].x);
+	  EXPECT_EQ(i.y, line[j].y);
 	  j++;
   }
 }
@@ -50,8 +50,8 @@ TEST(LineString, CopyConstructor) {
 	/*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
 	creadoes igual a cada uno de los puntos de la lista de iniciación*/
 	for (auto i : ptsIn) {
-		EXPECT_EQ(i.x, copia.getPoint(j).x);
-		EXPECT_EQ(i.y, copia.getPoint(j).y);
+		EXPECT_EQ(i.x, copia[j].x);
+		EXPECT_EQ(i.y, copia[j].y);
 		j++;
 	}
 }

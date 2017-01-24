@@ -3,6 +3,7 @@
 
 #include "opencv2/core/core.hpp"
 
+#include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
 #include "geometric_entities/entity.h"
@@ -11,6 +12,9 @@
 
 namespace I3D
 {
+
+// forward declaration
+template<typename T> class Window;
 
 /*! \defgroup GeometricEntities Entidades geométricas
  *  Puntos, lineas, ...
@@ -82,10 +86,10 @@ public:
    * \brief Constructor segment
    * \param[in] pt Coordenadas del punto central o inicial (según el valor de bCenter)
    * \param[in] angle Ángulo de la recta
-   * \param[in] lenght Longitud del segmento
+   * \param[in] length Longitud del segmento
    * \param[in] bCenter Si es verdadero es el centro de la línea
    */
-  Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter = true);
+  Segment(const cv::Point_<T> &pt, double angle, double length, bool bCenter = true);
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -172,14 +176,14 @@ Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
 }
 
 template<typename T> inline
-Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double lenght, bool bCenter)
+Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double length, bool bCenter)
   : Entity<T>(entity_type::SEGMENT_2D)
 {
   double a = cos(angle), b = sin(angle);
   double l1 = 0;
-  double l2 = lenght;
+  double l2 = length;
   if (bCenter) {
-    l1 = l2 = lenght / 2;
+    l1 = l2 = length / 2;
   }
   pt1.x = I3D_ROUND_TO_INT(pt.x - l1 * -b);
   pt1.y = I3D_ROUND_TO_INT(pt.y - l1 * a);

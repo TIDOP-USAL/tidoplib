@@ -9,10 +9,20 @@
 #include <libgen.h>
 #endif
 
+#include <chrono>
 #include <vector>
 #include <cstring>
 #include <exception>
+#include <functional>
+
+// Paralelismo
+#if defined I3D_OMP
+#include <omp.h>  // OpenMP
+#elif defined I3D_MSVS_CONCURRENCY
+#include <ppl.h> // Parallel Patterns Library
+#elif 
 #include <thread>
+#endif
 
 namespace I3D
 {
@@ -334,7 +344,7 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 
 /* ---------------------------------------------------------------------------------- */
 
-void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
+void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
 {
   cv::FileStorage fs(file, cv::FileStorage::READ);
   fs["image_width"] >> imageSize.width;
@@ -344,15 +354,102 @@ void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMat
   fs.release();
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-I3D_EXPORT unsigned int getOptimalNumberOfThreads()
+void loadBinMat(const char *file, cv::Mat *data)
 {
-  unsigned int n_threads = std::thread::hardware_concurrency();
-  return n_threads == 0 ? 1 : n_threads;
+  FILE* fp = std::fopen(file, "rb");
+  if(!fp) {
+    exit(EXIT_FAILURE);
+  }
+  //cabecera
+  int rows;
+  int cols;
+  int type;
+  std::fread(&rows, sizeof(int), 1,fp);
+  std::fread(&cols, sizeof(int), 1,fp);
+  std::fread(&type, sizeof(int), 1,fp);
+  //Cuerpo
+  cv::Mat aux(rows, cols, type);
+  std::fread(aux.data, sizeof(float), rows*cols, fp);
+  std::fclose(fp);
+  aux.copyTo(*data);
+}
+
+void saveBinMat(const char *file, cv::Mat &data)
+{
+  FILE* fp = std::fopen(file, "wb");
+  if(!fp) {
+    exit(EXIT_FAILURE);
+  }
+  //cabecera
+  int rows = data.rows;
+  int cols = data.cols;
+  int type = data.type();
+  std::fwrite(&data.rows, sizeof(int), 1,fp);
+  std::fwrite(&data.cols, sizeof(int), 1,fp);
+  std::fwrite(&type, sizeof(int), 1,fp);
+  //Cuerpo
+  std::fwrite(data.data, sizeof(float), rows*cols, fp);
+  std::fclose(fp);
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+// Añadir cancelación para poder detener los procesos en caso de error
+
+I3D_EXPORT uint32_t getOptimalNumberOfThreads()
+{
+#ifdef I3D_MSVS_CONCURRENCY
+  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
+#else
+  uint32_t n_threads = std::thread::hardware_concurrency();
+  return n_threads == 0 ? 1 : n_threads;
+#endif
+}
+
+void parallel_for(int ini, int end, std::function<void(int)> f) { 
+  uint64_t time_ini = getTickCount();
+#ifdef I3D_MSVS_CONCURRENCY
+  //Concurrency::cancellation_token_source cts;
+  //Concurrency::run_with_cancellation_token([ini, end, f]() {
+  //  Concurrency::parallel_for(ini, end, f);
+  //},cts.get_token());
+  Concurrency::parallel_for(ini, end, f);
+#else
+  
+  auto f_aux = [&](int ini, int end) {
+    //double cyan, magenta, yellow, key;
+    for (int r = ini; r < end; r++) {
+      f(r);
+    }
+  };
+  
+  int num_threads = getOptimalNumberOfThreads();
+  std::vector<std::thread> threads(num_threads);
+
+  int size = (end - ini) / num_threads;
+  for (int i = 0; i < num_threads; i++) {
+    int _ini = i * size + ini;
+    int _end = _ini + size;
+    if (i == num_threads -1) _end = end;
+    threads[i] = std::thread(f_aux, _ini, _end);
+  }
+
+  for (auto &_thread : threads) _thread.join();
+#endif
+  double time = (getTickCount() - time_ini) / 1000.;
+  printf("Time %f", time);
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+uint64_t getTickCount()
+{
+#if defined _MSC_VER
+  return GetTickCount64();
+#else
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+#endif
+}
 
 
 

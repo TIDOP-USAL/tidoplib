@@ -1,17 +1,18 @@
 #ifndef I3D_OPERATIONS_H
 #define I3D_OPERATIONS_H
 
-#include <limits>
-
 #include "opencv2/core/core.hpp"
 
 #include "core/defs.h"
-#include "geometric_entities/segment.h"
+//#include "geometric_entities/segment.h"
 
 namespace I3D
 {
-	
-/*! \defgroup GeometricEntities Entidades geom√©tricas
+
+// forward declaration
+template<typename T> class Segment;
+
+/*! \defgroup GeometricEntities Entidades geomÈtricas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -62,9 +63,9 @@ I3D_EXPORT double distance(const T &pt1, const T &pt2)
 I3D_EXPORT int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect);
 
 /*!
- * Comprobaci√≥n de que los 3 puntos est√°n en la misma l√≠nea
+ * ComprobaciÛn de que los 3 puntos est·n en la misma lÌnea
  */
-//I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const SegmentI &line_i_r, double tolerance = 2.);
+I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
 
 /*! \} */ // end of GeometricEntities
 

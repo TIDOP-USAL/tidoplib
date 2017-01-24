@@ -26,7 +26,7 @@ namespace I3D
 
 
 /*!
- * \brief La clase Color permite trabajar con diferenres modelos de color
+ * \brief La clase Color permite trabajar con diferentes modelos de color
  */
 class I3D_EXPORT Color
 {
@@ -407,6 +407,7 @@ T Color::get() const
 
 /*! \defgroup colorConversion Conversión de color
  *  
+ * Conversiones entre los modulos de color mas habituales
  * \{
  */
 

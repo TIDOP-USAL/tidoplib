@@ -102,7 +102,6 @@
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />
     <ClCompile Include="img_process\filters.cpp" />
     <ClCompile Include="img_process\img_processing.cpp" />
-    <ClCompile Include="img_process\skeleton.cpp" />
     <ClCompile Include="img_process\white_balance.cpp" />
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="stereo\anaglyph.cpp" />
@@ -134,7 +133,6 @@
     <ClInclude Include="graphic_entities\graphic_entity.h" />
     <ClInclude Include="img_process\filters.h" />
     <ClInclude Include="img_process\img_processing.h" />
-    <ClInclude Include="img_process\skeleton.h" />
     <ClInclude Include="img_process\white_balance.h" />
     <ClInclude Include="matching.h" />
     <ClInclude Include="stereo\anaglyph.h" />

@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <functional>
 
 #include "opencv2/core/core.hpp"
 
@@ -428,7 +429,12 @@ I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-I3D_EXPORT void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+
+
+I3D_EXPORT void loadBinMat(const char *file, cv::Mat *data);
+
+I3D_EXPORT void saveBinMat(const char *file, cv::Mat &data);
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -438,7 +444,22 @@ I3D_EXPORT void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat
 /*!
  * \brief número optimo de hilos
  */
-I3D_EXPORT unsigned int getOptimalNumberOfThreads();
+I3D_EXPORT uint32_t getOptimalNumberOfThreads();
+
+/*!
+ * \brief Ejecuta una función en paralelo
+ * \param[in] ini
+ * \param[in] end 
+ * \param[in] f Función o lambda
+ */
+I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief tiempo actual
+ */
+I3D_EXPORT uint64_t getTickCount();
 
 
 /* ---------------------------------------------------------------------------------- */

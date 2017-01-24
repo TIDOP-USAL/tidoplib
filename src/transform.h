@@ -60,9 +60,9 @@ I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *
 
 /*!
  * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X
- * \param[in] phi Rotación respecto al eje Y
- * \param[in] kappa Rotación respecto al eje Z
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
  * \param[out] R Matriz de rotación
  */
 I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
@@ -717,7 +717,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
+  //void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -810,15 +810,15 @@ void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, tran
   }
 }
 
-template<typename T> inline
-void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
-{
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
-    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
-  }
-}
+//template<typename T> inline
+//void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
+//{
+//  formatVectorOut(in, out);
+//  for (int i = 0; i < in.size(); i++) {
+//    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
+//    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
+//  }
+//}
 
 template<typename T> inline
 void Translate<T>::transform(const T &in, T *out, transform_order trfOrder) const
