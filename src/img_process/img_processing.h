@@ -75,6 +75,12 @@ public:
    */
   process_type type;
 
+  enum class Status
+  {
+    OK,
+    FAILURE // Añadir lista de posibles errores
+  };
+
 public:
 
   /*!

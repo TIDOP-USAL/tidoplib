@@ -1,19 +1,3 @@
-/*
-
-Color Detection:
-http://opencv-srf.blogspot.com.es/2010/09/object-detection-using-color-seperation.html
-
-Para eliminar falsos positivos se comprobará el color de la baliza. Si no es naranja o blanco se
-pasará al siguiente elemento. Para el naranja se pasará de RGB a HSV y se tomara el valor naranja
-como H=0-20.
-
-
-
-
-
-*/
-
-
 #include <windows.h>
 #include <memory>
 
@@ -52,6 +36,9 @@ int higher_accum_threshold = 60;
 int max_higher_accum_threshold = 255;
 int minRadius = 30;
 int maxRadius = 80;
+bool bDraw = false;
+bool bShowImg = true;
+bool bSaveImages = true;
 bool bSaveAll = false;
 
 cv::Mat image;
@@ -70,18 +57,23 @@ void houghCircles( cv::Mat &red )
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     cv::Mat aux;
     image.copyTo(aux);
-    circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
-    circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
+    if (bDraw) {
+      circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
+      circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
+    }
+
     printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
     WindowI w_aux(center,300);
     w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
-    cv::Mat m_aux;
-    //... chequear si es una baliza o es un falso positivo
-    aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
-    _mtx.lock();
-    cv::imshow("Baliza", m_aux);
-    _mtx.unlock();
-    cv::waitKey();
+    if (bShowImg) {
+      cv::Mat m_aux;
+      //... chequear si es una baliza o es un falso positivo
+      aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
+      _mtx.lock();
+      cv::imshow("Baliza", m_aux);
+      _mtx.unlock();
+      cv::waitKey();
+    }
     if (bSaveAll == false) return;
   }
 }
@@ -208,6 +200,9 @@ public:
   void setProgressBar( ProgressBar *progress);
 
   void setImgprolist(std::shared_ptr<I3D::ImgProcessingList> imgprolist);
+
+  void setSaveImage(bool saveImg) { bSaveImage = saveImg; }
+
 };
 
 void VideoHelper::onFinish()
@@ -228,9 +223,11 @@ void VideoHelper::onInitialize()
     createDir(mOutPath.c_str());
   }
   nFound = 0;
-  cv::namedWindow( "Baliza", WINDOW_AUTOSIZE );
-  cv::createTrackbar( "Threshold: ", "Baliza", &higher_threshold, max_higher_threshold, change_higher_threshold );
-  cv::createTrackbar( "Accumulator threshold: ", "Baliza", &higher_accum_threshold, max_higher_accum_threshold, change_higher_accum_threshold );
+  if (bShowImg) {
+    cv::namedWindow("Baliza", WINDOW_AUTOSIZE);
+    cv::createTrackbar("Threshold: ", "Baliza", &higher_threshold, max_higher_threshold, change_higher_threshold);
+    cv::createTrackbar("Accumulator threshold: ", "Baliza", &higher_accum_threshold, max_higher_accum_threshold, change_higher_accum_threshold);
+  }
 }
 
 void VideoHelper::onPause()
@@ -252,12 +249,12 @@ void VideoHelper::onRead(cv::Mat &frame)
   cv::Mat channels[3];
   cv::Mat red;
   image = frame;
-  //std::shared_ptr<I3D::WhitePatch> whiteBalance = std::make_shared<I3D::WhitePatch>();
-  //whiteBalance->execute(image, &image);
+
   if (1) {
     cv::split(frame, channels);
     red = channels[2];
   } else {
+    //... prueba
     cv::Mat imageChromaticity;
     chromaticityCoordinates(image, &imageChromaticity);
     cv::Mat channels[3];
@@ -274,7 +271,6 @@ void VideoHelper::onRead(cv::Mat &frame)
   // Se aplican los procesos previos
   pImgprolist->execute(red, &red);
 
-  //houghCircles(red);
   std::vector<Vec3f> circles;
   if ( higher_accum_threshold <= 0 || higher_threshold <= 0 ) return;
   HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, higher_threshold, higher_accum_threshold, minRadius, maxRadius );
@@ -283,16 +279,23 @@ void VideoHelper::onRead(cv::Mat &frame)
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     cv::Mat aux;
     image.copyTo(aux);
-    //circle( aux, center, 3, Scalar(0,255,0), -1, 8, 0 );
-    //circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
-    //printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
     WindowI w_aux(center,300);
     w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
-    //cv::Mat m_aux;
     aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(aux);
     
-    
-    if ( 1 ) { // Para diferenciar los dos tipos de balizas.
+    if ( 0 ) { // Prueba para diferenciar los dos tipos de balizas.
+
+/*
+
+Color Detection:
+http://opencv-srf.blogspot.com.es/2010/09/object-detection-using-color-seperation.html
+
+Para eliminar falsos positivos se comprobará el color de la baliza. Si no es naranja o blanco se
+pasará al siguiente elemento. Para el naranja se pasará de RGB a HSV y se tomara el valor naranja
+como H=0-20.
+
+*/
+
       cv::Point c_moments;
       cv::Mat img_hsv;
       cvtColor(aux, img_hsv, COLOR_BGR2HSV);
@@ -363,45 +366,61 @@ void VideoHelper::onRead(cv::Mat &frame)
       }
 
       cv::Point c = center - w_aux.pt1;
-      //cv::Point p_diff = c_moments - c;
+      if (bDraw) {
+        circle( aux, c, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        circle( aux, c, radius, color, 3, 8, 0 );
+      } else {
+        cv::Mat mask = cv::Mat::zeros(aux.size(), CV_8U);
+        cv::circle(mask, c, radius, cv::Scalar(1,1,1), -1);
+        cv::bitwise_and(aux, aux, aux, mask);
+      }
 
-      //if ( abs(p_diff.x) < 10 && abs(p_diff.y) < 10 ) {
-      circle( aux, center-w_aux.pt1, 3, cv::Scalar(0,255,0), -1, 8, 0 );
-      circle( aux, center-w_aux.pt1, radius, color, 3, 8, 0 );
       printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+
       if ( i == 0 ) out = aux; // Sólo muestro la primera
-      char buffer[I3D_MAX_PATH];
-      sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
-      printInfo("Baliza guardada en: %s", buffer);
-      cv::imwrite(buffer, aux);
+
+      if (bSaveImage) {
+        char buffer[I3D_MAX_PATH];
+        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+        printInfo("Baliza guardada en: %s", buffer);
+        cv::imwrite(buffer, aux);
+      }
+
       nFound++;
-      if (bSaveAll) break;
-      //}
+      if (!bSaveAll) break;
 
     } else {
-      circle( aux, center-w_aux.pt1, 3, cv::Scalar(0,255,0), -1, 8, 0 );
-      circle( aux, center-w_aux.pt1, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+      //if (bDraw) {
+      //  circle(aux, center - w_aux.pt1, 3, cv::Scalar(0, 255, 0), -1, 8, 0);
+      //  circle(aux, center - w_aux.pt1, radius, cv::Scalar(0, 0, 255), 3, 8, 0);
+      //}
+      cv::Point c = center - w_aux.pt1;
+      if (bDraw) {
+        circle( aux, c, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        circle( aux, c, radius, cv::Scalar(0, 0, 255), 3, 8, 0 );
+      } else {
+        cv::Mat mask = cv::Mat::zeros(aux.size(), CV_8UC3);
+        cv::circle(mask, c, radius+1, cv::Scalar(255,255,255), -1);
+        cv::Mat _aux;
+        aux.copyTo(_aux, mask);
+        aux = _aux;
+      }
       printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
 
       if ( i == 0 ) out = aux; // Sólo muestro la primera
-      char buffer[I3D_MAX_PATH];
-      sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
-      printInfo("Baliza guardada en: %s", buffer);
-      cv::imwrite(buffer, aux);
+
+      if (bSaveImage) {
+        char buffer[I3D_MAX_PATH];
+        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+        printInfo("Baliza guardada en: %s", buffer);
+        cv::imwrite(buffer, aux);
+      }
+
       nFound++;
-      if (bSaveAll) break;
-      //_mtx.lock();
-      //cv::imshow("Baliza", m_aux);
-      //_mtx.unlock();
-      //cv::waitKey();
+      if (!bSaveAll) break;
     }
   }
 
-
-  //WindowI wOut;
-  //char buffer[I3D_MAX_PATH];
-  //sprintf_s(buffer, "%s\\frame%05i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), mExtFile.c_str());
-  //cv::imwrite(buffer, frame);
   if (pProgress) (*pProgress)();
 }
 
@@ -413,12 +432,14 @@ void VideoHelper::onResume()
 void VideoHelper::onShow(cv::Mat &frame) 
 { 
   VideoStream::Listener::onShow(frame);
-  if (!out.empty())
-    cv::imshow("Baliza", out);
-  // Mostrar imagen de torre completa
-  cv::Mat res;
-  cv::resize(image, res, cv::Size(), 0.1, 0.1);
-  cv::imshow("Apoyo", res);
+  if (bShowImg) {
+    if (!out.empty())
+      cv::imshow("Baliza", out);
+    // Mostrar imagen de torre completa
+    cv::Mat res;
+    cv::resize(image, res, cv::Size(), 0.1, 0.1);
+    cv::imshow("Apoyo", res);
+  }
 }
 
 void VideoHelper::onStop()
@@ -438,36 +459,38 @@ void VideoHelper::setImgprolist(std::shared_ptr<I3D::ImgProcessingList> imgproli
 }
 
 
-
 /*!
  * Detección de daños en conductores de líneas eléctricas:
  *
- * img:         Imagen de los conductores
+ * img:         Imagen o listado de imagenes de los conductores
  * out:         Directorio de salida donde se guarda el log y toda la información generada
- * l_detect:    Detector de lineas. Puede ser HOUGH, HOUGHP, HOUGH_FAST o LSD
- *
- *
- *
- *
+ * in_type:     Tipo de los datos de entrada. Puede ser imagen o video. Como video tambien soporta un txt con un listado de imagenes
+ * th:          Umbral más alto del detector de bordes de Canny
+ * th_acu:      Umbral del acumulador para los centros de los círculos
+ * r_min:       Radio mínimo para los círculos
+ * r_max:       Radio máximo para los círculos
+ * draw:        Dibuja el circulo y su centro
+ * showImg:     Muestra las imagenes
+ * all:         Guarda todos los resultados de la detección en cada imagen. Por defecto sólo guarda el primero
  */
 int main(int argc, char *argv[])
 {
-
-  ProgressBar progress_bar;
-
   char name[I3D_MAX_FNAME];
   getFileName(getRunfile(), name, I3D_MAX_FNAME);
   char dir[I3D_MAX_DRIVE + I3D_MAX_DIR];
   getFileDriveDir(getRunfile(), dir, I3D_MAX_DRIVE + I3D_MAX_DIR);
 
   CmdParser cmdParser(name, "Detección de balizas de líneas eléctricas");
-  cmdParser.addParameter("in", "Imagen, listado de imagenes o video de los conductores");
+  cmdParser.addParameter("in", "Imagen o listado de imagenes de los conductores");
   cmdParser.addParameter("out", "Directorio de salida donde se guarda el log y toda la información generada", true, dir);
-  cmdParser.addParameterOption("in_type", "image,video", "Tipo de los datos de entrada", true, "image");
+  cmdParser.addParameterOption("in_type", "image,stream", "Tipo de los datos de entrada", true, "image");
   cmdParser.addParameter("th", "Umbral más alto del detector de bordes de Canny", true, std::to_string(higher_threshold).c_str());
   cmdParser.addParameter("th_acu", "Umbral del acumulador para los centros de los círculos", true, std::to_string(higher_accum_threshold).c_str());
   cmdParser.addParameter("r_min", "Radio mínimo para los círculos", true, std::to_string(minRadius).c_str());
   cmdParser.addParameter("r_max", "Radio máximo para los círculos", true, std::to_string(maxRadius).c_str());
+  cmdParser.addOption("draw", "Dibuja el circulo y su centro", true);
+  cmdParser.addOption("show_img", "Muestra las imagenes", true);
+  cmdParser.addOption("save_img", "Salva las imagenes", true);
   cmdParser.addOption("all", "Guarda todos los resultados de la detección en cada imagen. Por defecto sólo guarda el primero", true);
 
   if ( cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
@@ -483,6 +506,9 @@ int main(int argc, char *argv[])
   higher_accum_threshold = cmdParser.getValue<int>("th_acu");
   minRadius = cmdParser.getValue<int>("r_min");
   maxRadius = cmdParser.getValue<int>("r_max");
+  bDraw = cmdParser.hasOption("draw");
+  bShowImg = cmdParser.hasOption("show_img");
+  bSaveImages = cmdParser.hasOption("save_img");
   bSaveAll = cmdParser.hasOption("all");
 
   if (createDir(out_path.c_str()) == -1) { 
@@ -542,8 +568,10 @@ int main(int argc, char *argv[])
       for (size_t i = 0; i < circles.size(); i++) {
         cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
         int radius = I3D_ROUND_TO_INT(circles[i][2]);
-        circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
-        circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
+        if (bDraw) {
+          circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
+          circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
+        }
         printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
         WindowI w_aux(center,300);
         w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
@@ -553,9 +581,11 @@ int main(int argc, char *argv[])
         cv::waitKey();
       }
     } else {
-      cv::namedWindow( "Baliza", WINDOW_AUTOSIZE );
-      cv::createTrackbar( "Threshold: ", "Baliza", &higher_threshold, max_higher_threshold, change_higher_threshold, &red );
-      cv::createTrackbar( "Accumulator threshold: ", "Baliza", &higher_accum_threshold, max_higher_accum_threshold, change_higher_accum_threshold, &red );
+      if (bShowImg) {
+        cv::namedWindow( "Baliza", WINDOW_AUTOSIZE );
+        cv::createTrackbar( "Threshold: ", "Baliza", &higher_threshold, max_higher_threshold, change_higher_threshold, &red );
+        cv::createTrackbar( "Accumulator threshold: ", "Baliza", &higher_accum_threshold, max_higher_accum_threshold, change_higher_accum_threshold, &red );
+      }
 
       houghCircles(red);
     }
@@ -564,21 +594,16 @@ int main(int argc, char *argv[])
   } else {     // Busqueda en video
  
     
-    // Lectura de video
+    // Lectura de listado de imagenes
     std::unique_ptr<VideoStream> strmVideo = std::make_unique<ImagesStream>(img.c_str());
     if (!strmVideo->isOpened()) {
-      printInfo("No se ha podido cargar el video: %s", img.c_str());
+      printInfo("No se ha podido cargar el listado de imagenes o esta mal formado: %s", img.c_str());
       return 0;
     }
-  
-    
-    // Barra de progreso
-    //ProgressBar progress_bar;
-    //progress_bar.init(0, strmVideo.getFrameCount());
 
     VideoHelper videoHelper(out_path, "jpg");
     videoHelper.setImgprolist(imgprolist);
-    //videoHelper.setProgressBar(&progress_bar);
+    videoHelper.setSaveImage(bSaveImages);
     strmVideo->addListener(&videoHelper);
 
     strmVideo->run(); 

@@ -24,66 +24,67 @@
 #include "experimental/experimental.h"
 
 using namespace I3D;
+using namespace I3D::EXPERIMENTAL;
 using namespace std;
 using namespace cv;
 using namespace cv::xfeatures2d;
 
 
-// Clasificar puntos en la imagen como daño, separador, antivibrador, etc.
-// Se saca la anchura y se hace un primer estudio de 'picos' para ver si hay algún elemento que destaque mucho como los separadores.
-// Se parte la linea por ese punto (una ventana) y se vuelve a calcular la anchura para quitar la influencia de esos valores altos 
-// que alterarian la media.
+// - Clasificar puntos en la imagen como daño, separador, antivibrador, etc.
+// - Se saca la anchura y se hace un primer estudio de 'picos' para ver si hay algún elemento que destaque mucho como los separadores.
+// - Se parte la linea por ese punto (una ventana) y se vuelve a calcular la anchura para quitar la influencia de esos valores altos 
+//   que alterarian la media.
 
 /*!
  * Puntos candidatos con un posible daño.
  * Se guarda el punto, una zona de influencia y tipo de daño.
  */
-class DamageCandidates
-{
-public:
-  /*!
-   * \brief Tipo de daño
-   */
-  enum class Type
-  {
-    unknown,
-    Type1, // ver que nombres poner
-    Type2,
-    Type3,
-    Type4
-  };
-
-  /*!
-   * \brief Punto sobre el centro del conductor donde esta el posible daño
-   */
-  cv::Point mPt;
-
-  /*!
-   * \brief Ventana con la zona del posible daño
-   */
-  WindowI mWindow;
-
-public:
-
-  /*!
-   *
-   */
-  DamageCandidates(cv::Point pt, WindowI w) : mPt(pt), mWindow(w) {}
-  
-  /*!
-   *
-   */
-  ~DamageCandidates();
-
-private:
-
-};
-
-DamageCandidates::~DamageCandidates()
-{
-}
-
-std::vector<DamageCandidates> damages;
+//class DamageCandidates
+//{
+//public:
+//  /*!
+//   * \brief Tipo de daño
+//   */
+//  enum class Type
+//  {
+//    unknown,
+//    Type1, // ver que nombres poner
+//    Type2,
+//    Type3,
+//    Type4
+//  };
+//
+//  /*!
+//   * \brief Punto sobre el centro del conductor donde esta el posible daño
+//   */
+//  cv::Point mPt;
+//
+//  /*!
+//   * \brief Ventana con la zona del posible daño
+//   */
+//  WindowI mWindow;
+//
+//public:
+//
+//  /*!
+//   *
+//   */
+//  DamageCandidates(cv::Point pt, WindowI w) : mPt(pt), mWindow(w) {}
+//  
+//  /*!
+//   *
+//   */
+//  ~DamageCandidates();
+//
+//private:
+//
+//};
+//
+//DamageCandidates::~DamageCandidates()
+//{
+//}
+//
+//std::vector<DamageCandidates> damages;
 
 
 /*!
@@ -95,15 +96,6 @@ std::vector<DamageCandidates> damages;
  */
 int main(int argc, char *argv[])
 {
-
-  //SegmentI _line(cv::Point(4, 25), cv::Point(36, 11));
-
-  //I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
-  //I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
-
-  //std::vector<cv::Point> v1 = lineIter1.getPoints();
-  //std::vector<cv::Point> v2 = lineIter2.getPoints();
-
 
   // Barra de progreso
   ProgressBar progress_bar;
@@ -126,7 +118,7 @@ int main(int argc, char *argv[])
   std::string img = cmdParser.getValue<std::string>("img");
   std::string out_path = cmdParser.getValue<std::string>("out");
   LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
-  bool bDrawholes = false;
+  bool bDrawHoles = false;
 
   if (createDir(out_path.c_str()) == -1) { 
     consolePrintError("No se ha podido crear el directorio: %s", out_path.c_str()); 
@@ -142,32 +134,12 @@ int main(int argc, char *argv[])
   // Procesos que se aplican a las imagenes
   // Hacemos un remuestreo al 25% para que tarde menos en determinar los buffer de lineas
   std::shared_ptr<I3D::Resize> resize = std::make_shared<I3D::Resize>(25.);
-
-  //std::shared_ptr<FunctionProcess> fProcess1 = std::make_shared<FunctionProcess>(
-  //  [](const cv::Mat &in, cv::Mat *out) {
-  //    in.convertTo(*out, CV_32F);
-  //});
-  //int kernel_size = 31;
-  //double sig = 1., th = I3D_PI / 2., lm = 1.0, gm = 0.02/*, ps = 0.*/;
-  //cv::Mat kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, th, lm, gm);
-  //// Se inicializa Filter2D. Posteriormente se modifica según el angulo obtenido por fourier
-  //std::shared_ptr<I3D::Filter2D> filter2d = std::make_shared<I3D::Filter2D>(CV_32F, kernel);
-  //std::shared_ptr<FunctionProcess> fProcess2 = std::make_shared<FunctionProcess> (
-  //  [&](const cv::Mat &in, cv::Mat *out) {
-  //    cv::normalize(in, *out, 0, 255, CV_MINMAX); 
-  //    out->convertTo(*out, CV_8U); 
-  //    out->colRange(kernel_size, out->cols - kernel_size).rowRange(31, out->rows - kernel_size).copyTo(*out); 
-  //});
-  //std::shared_ptr<I3D::EXPERIMENTAL::WhitePatch> whiteBalance = std::make_shared<I3D::EXPERIMENTAL::WhitePatch>();
   std::shared_ptr<I3D::BilateralFilter> bilateralFilter = std::make_shared<I3D::BilateralFilter>(5, 50., 50.);
   std::shared_ptr<I3D::Erotion> erotion = std::make_shared<I3D::Erotion>(1);
   std::shared_ptr<I3D::Dilate> dilate = std::make_shared<I3D::Dilate>(1);
 
   // Listado de procesos
   I3D::ImgProcessingList imgprolist { 
-    /*fProcess1, 
-    filter2d,
-    fProcess2,*/
     resize,
     bilateralFilter,
     erotion,
@@ -203,7 +175,6 @@ int main(int argc, char *argv[])
       break;
   }
 
-  //printInfo("Leyendo imagen %s", img.c_str());
   cv::Mat full_image = cv::imread(img.c_str());
   if (full_image.empty()) exit(EXIT_FAILURE);
   
@@ -211,8 +182,6 @@ int main(int argc, char *argv[])
   cv::Mat image;
   full_image.colRange(1000, full_image.cols - 1000).copyTo(image);
   full_image.release();
-  //cv::Mat imgWB;
-  //whiteBalance->execute(image, &imgWB);
   cv::Mat image_gray;
   cvtColor(image, image_gray, CV_BGR2GRAY);
 
@@ -223,8 +192,6 @@ int main(int argc, char *argv[])
   double angleFourier = fourierLinesDetection(image_gray, colFourier, &ptsFourier);
 
   // Se aplica el procesado previo a la imagen
-  // kernel = cv::getGaborKernel(cv::Size(kernel_size, kernel_size), sig, angleFourier, lm, gm);
-  // filter2d->setParameters(CV_32F, kernel);
   cv::Mat image_pro;
   if ( imgprolist.execute(image_gray, &image_pro) == ProcessExit::FAILURE) 
     exit(EXIT_FAILURE);
@@ -264,8 +231,6 @@ int main(int argc, char *argv[])
   for (auto &line : linesJoin) {
     cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
     trf.transformEntity(line, &line, transform_order::DIRECT);
-    //Para comprobar...
-    //cv::line(image_gray, line.pt1, line.pt2, cv::Scalar(255, 0, 0));
     std::vector<cv::Point> buff;
     lineBuffer(line, widthBuffer, &buff);
 
@@ -277,24 +242,24 @@ int main(int argc, char *argv[])
     cv::fillPoly(mask, &pts, &npts, 1, cv::Scalar(1, 1, 1) );
     cv::Mat searchArea;
     cv::bitwise_and(image_gray, image_gray, searchArea, mask);
-    //imshow("Fourier", searchArea);
-    //cv::waitKey();
 
     // binarización de la imagen
     cv::meanStdDev(image_gray, m, stdv, mask);
     cv::Mat imgBN;
-    cv::threshold(searchArea, imgBN, /*120*/m[0] + stdv[0], 255, cv::THRESH_BINARY);
+    double thresh = m[0] + stdv[0];
+    double maxval = 255.;
+    cv::threshold(searchArea, imgBN, thresh, maxval, cv::THRESH_BINARY);
 
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 8, false);
     std::vector<int> v_width(li.count, 0);
     std::vector<cv::Point> vPosWidth(li.count); // Almacenamos un vector de puntos cuya abscisa representa la posición en la linea y sus ordenadas la anchura en ese punto
     cv::Point axis;
 
-    I3D::EXPERIMENTAL::BresenhamLine lineIter(line.pt1, line.pt2);
-    if (1) {
+    BresenhamLine lineIter(line.pt1, line.pt2);
+    if (0) {
+      // Pruebas para clasificar los daños o elementos
       v_width.resize(li.count-20);
       vPosWidth.resize(li.count-20);
-      //for (I3D::EXPERIMENTAL::BresenhamLine it = lineIter.begin(); it != lineIter.end(); it++, i++) {
       lineIter.position(10);
       for ( int i = 0; i < lineIter.size()-20; i++, lineIter++ ) {
         axis = lineIter.position();
@@ -355,14 +320,12 @@ int main(int argc, char *argv[])
         if (idp > 1 && abs(slopePrev - slope) > 0.15) {
           cv::Point pt1 = lineIter.position(vPosWidthDP[idp-1].x);
           cv::Point pt2 = lineIter.position(vPosWidthDP[idp].x);
-          //searchPoint(li.ptr0, idp-1);
           // Se añade un posible daño
-          damages.push_back(DamageCandidates(pt1,WindowI(pt1,pt2)));
+          //damages.push_back(DamageCandidates(pt1,WindowI(pt1,pt2)));
         }
         slopePrev = slope;
       }
 
-      damages.size();
 
     } else {
 
@@ -434,8 +397,8 @@ int main(int argc, char *argv[])
     cv::Mat mat_aux(v_width);
     cv::Scalar m, stdv;
     cv::meanStdDev(mat_aux, m, stdv);
-    double th1 = m[0] - stdv[0] - 1; // Un pixel mas de margen
-    double th2 = m[0] + stdv[0] + 1;
+    double th1 = m[0] - stdv[0] - 2; // Un pixel mas de margen
+    double th2 = m[0] + stdv[0] + 2;
 
 
     cv::LineIterator li3(imgBN, line.pt1, line.pt2, 8, false);
@@ -460,15 +423,6 @@ int main(int argc, char *argv[])
         // Ir acumulando la zona total del daño
       } else {
         if (iniDamage != cv::Point(0, 0)) {
-          //cv::Mat imageRGB = cv::imread(img.c_str());
-          //Line line(ini_, end_);
-          //std::vector<cv::Point> buff;
-          //lineBuffer(line, th2 + 10, &buff);
-          
-          //cv::Mat aux(buff);
-          //const cv::Point *pts = (const cv::Point*) aux.data;
-          //int npts = aux.rows;
-          //cv::polylines(imageRGB, &pts, &npts, 1, true, Color::randomColor().get<cv::Scalar>() );
           LineIterator it3 = li3;
           for ( int k = 0; k < 24; k++ ) ++it3; // Un poco ñapas pero para salir del paso. LineIterator esta poco documentada. 
           endDamage = it3.pos();
@@ -479,12 +433,6 @@ int main(int argc, char *argv[])
         }
       }
 
-      // Buscar pixel a pixel no parece lo mas correcto
-      //if ( v_with[is] < th1 || v_with[is] > th2 ) {
-      //  // Pixel fuera de rango.
-      //  axis = li3.pos();
-      //  logPrintWarning("Posible daño (%i, %i)", axis.x, axis.y);
-      //}
       progress_bar();
     }
 
@@ -523,20 +471,15 @@ int main(int argc, char *argv[])
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours( gap, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
-    // Esto se podria hacer probablemento con componentes conexas ...
-
-    //cv::Mat imageRGB = cv::imread(img.c_str());
-    if ( bDrawholes) {
+    if ( bDrawHoles) {
       for( size_t i = 0; i< contours.size(); i++ ) {
         if (contours[i].size() < 3) continue;
         cv::Scalar color = Color::randomColor().get<cv::Scalar>();
-        //cv::Rect boundRect = boundingRect( contours[i] );
         WindowI w_aux = cvRectToWindow(boundingRect( contours[i] ));
         w_aux = expandWindow(w_aux, 10);
         cv::Mat _aux;
         image.copyTo(_aux);
         cv::rectangle(_aux, w_aux.pt1, w_aux.pt2, color, 2, 8, 0);
-        //cv::drawContours( imageRGB, contours, (int)i, color, 2, 8, hierarchy, 0, Point() );
         w_aux = expandWindow(w_aux, 100);
         w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
         cv::Mat m_aux;
@@ -548,10 +491,6 @@ int main(int argc, char *argv[])
         cv::waitKey();
       }
     }
-    
-    //image.release();
-    // La busqueda tiene que hacerse contando con los pixeles vecinos.
-    // ¿Aplicar un suavizado para eliminar picos?
 
   }
   
