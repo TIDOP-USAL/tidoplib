@@ -385,7 +385,11 @@ bool ImagesStream::open(const char *name)
       if ( !line.empty() )
         mImages.push_back(line);
     }
-    bIsOpened = true;
+    if (mImages.size() == 0) bIsOpened = false;
+    else {
+      cv::Mat aux = cv::imread(mImages[0]);
+      bIsOpened = !aux.empty();
+    }
   }
   return bIsOpened;
 }

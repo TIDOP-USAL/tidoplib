@@ -20,7 +20,8 @@
 #include "videostream.h"
 #include "geometric_entities/segment.h"
 #include "feature_detection/linedetector.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
 #include "matching.h"
 #include "transform.h"
 

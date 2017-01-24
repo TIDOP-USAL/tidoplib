@@ -90,9 +90,6 @@
     <ClCompile Include="graphic_entities\graphic_entity.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
-    <ClCompile Include="img_processing.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="videostream.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
@@ -119,6 +116,15 @@
     </ClCompile>
     <ClCompile Include="feature_detection\shapedetection.cpp">
       <Filter>Archivos de código fuente\feature_detection</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\img_processing.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\white_balance.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
+    </ClCompile>
+    <ClCompile Include="img_process\filters.cpp">
+      <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
     <ClCompile Include="img_process\skeleton.cpp">
       <Filter>Archivos de código fuente\img_process</Filter>
@@ -167,9 +173,6 @@
     <ClInclude Include="graphic_entities\graphic_entity.h">
       <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
-    <ClInclude Include="img_processing.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
     <ClInclude Include="videostream.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
@@ -205,6 +208,15 @@
     </ClInclude>
     <ClInclude Include="feature_detection\shapedetection.h">
       <Filter>Archivos de encabezado\feature_detection</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\img_processing.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\white_balance.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="img_process\filters.h">
+      <Filter>Archivos de encabezado\img_process</Filter>
     </ClInclude>
     <ClInclude Include="img_process\skeleton.h">
       <Filter>Archivos de encabezado\img_process</Filter>

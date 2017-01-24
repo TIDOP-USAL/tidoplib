@@ -79,7 +79,9 @@ I3D_EXPORT bool isOutlier(const double temp, const double median, const double m
  * \brief Recta de regresión de Y sobre X
  * La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X.
+ *
  * \f$ y = m * x + b\f$<BR>
+ *
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
@@ -123,7 +125,9 @@ I3D_EXPORT double regressionLinearYX(const std::vector<Point_t> &pts, double *m,
  * \brief Recta de regresión de X sobre Y
  * La recta de regresión de X sobre Y se utiliza para estimar los valores de la X a partir de los de la Y.
  * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable Y.
+ *
  * \f$ x = m*y + b\f$<BR>
+ *
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
@@ -174,7 +178,7 @@ I3D_EXPORT double regressionLinearXY(const std::vector<Point_t> &pts, double *m,
  * \f$ log10(y) = log10(A) + log10(r^x) \f$<BR>
  * \f$ log10(y) = log10(A) + x * log10(r) \f$<BR>
  *
- * El logaritmo de y se puede expresar ahora como una función lineal y resolver mediante 
+ * El logaritmo de <b>y</B> se puede expresar ahora como una función lineal y resolver mediante 
  * la recta de regresión donde:
  *
  * \f$ m = log10(r) \f$<BR>

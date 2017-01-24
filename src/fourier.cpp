@@ -153,8 +153,8 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
 
   normalize(imageOut, imageOut, 0, 1, CV_MINMAX);
 
-  float prevVar, curVar;
-  int prevBinVar, curBinVar;
+  float prevVar = 0.f, curVar = 0.f;
+  int prevBinVar = 0, curBinVar = 0;
 
   pts->clear();
   pts->resize(cols.size());

@@ -151,9 +151,9 @@ void Color::fromHSL(double hue, double saturation, double lightness)
 {
   int red, green, blue;
   hslToRgb(hue, saturation, lightness, &red, &green, &blue);
-  mColor = (blue & 0xFF) 
-         | ((green << 8) & 0xFF00) 
-         | ((red << 16) & 0xFF0000);
+  mColor = (I3D_ROUND_TO_INT(red) & 0xFF) 
+         | ((I3D_ROUND_TO_INT(green) << 8) & 0xFF00) 
+         | ((I3D_ROUND_TO_INT(blue) << 16) & 0xFF0000);
 }
 
 

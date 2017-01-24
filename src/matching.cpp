@@ -73,7 +73,7 @@ void Features2D::save( const char *fname ) const
     if (fp) {
       // Cabecera
       // - KeyPoints
-      int size = mKeyPoints.size();
+      int size = static_cast<int>(mKeyPoints.size());
       // - Descriptor
       int rows = mDescriptor.rows;
       int cols = mDescriptor.cols;

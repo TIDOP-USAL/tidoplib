@@ -10,7 +10,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
-#include "opencv2/xphoto/white_balance.hpp"
+#include "opencv2/xphoto.hpp"
 
 #include "core/defs.h" // Para quitar warnings de sfm
 #include "graphic_entities/color.h"
@@ -27,12 +27,12 @@ I3D_SUPPRESS_WARNINGS
 #include <opencv2/sfm/reconstruct.hpp>
 #include <opencv2/sfm/simple_pipeline.hpp>
 #endif
-#include "libmv\simple_pipeline\tracks.h"
+#include "libmv/simple_pipeline/tracks.h"
 I3D_DEFAULT_WARNINGS
 #endif
 
 #include "matching.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
 
 namespace I3D
 {

@@ -1,5 +1,7 @@
 #include "experimental.h"
 
+#include <thread>
+
 #include "core/messages.h"
 #include "core/defs.h"
 
@@ -553,7 +555,6 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 #endif
 
 /* ---------------------------------------------------------------------------------- */
-
 
 } // End namespace EXPERIMENTAL
 

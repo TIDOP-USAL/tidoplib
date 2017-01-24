@@ -10,6 +10,8 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
+I3D_SUPPRESS_WARNINGS  // Se desactivan los warnings
+
 GeneralizedHough::GeneralizedHough()
 {
   // default values
@@ -55,10 +57,10 @@ void GeneralizedHough::setAngularPars(int p1, int p2, int ints)
 {
   if ( p1 < p2 ) {
     if ( p1 > -I3D_PI ) {
-      phimin = p1;
+      phimin = static_cast<float>(p1);
 		}
     if ( p2 < I3D_PI ) {
-			phimax = p2;
+			phimax = static_cast<float>(p2);
 		}
 	}
 	intervals = ints;
@@ -106,7 +108,7 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 	// load all points from image all image contours on vector pts2
 	int nl= detected_edges.rows;
 	int nc= detected_edges.cols; 
-  float deltaphi = I3D_PI / intervals;
+  float deltaphi = I3D_PI / (float)intervals;
   float inv_deltaphi = (float)intervals / I3D_PI;
 	float inv_rangeXY = (float)1/rangeXY;
   float pi_half = I3D_PI * 0.5f;
@@ -315,6 +317,8 @@ void GeneralizedHough::readRtable()
 		Rtable[angleindex].push_back( cv::Vec2i(pts[t].dx, pts[t].dy) );
 	}
 }
+
+I3D_DEFAULT_WARNINGS // Se vuelven a activar los warnings
 
 /* ---------------------------------------------------------------------------------- */
 
