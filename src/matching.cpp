@@ -62,30 +62,102 @@ void Features2D::save( const char *fname ) const
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
   } else if (strcmp(ext, ".yml") == 0) {
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
+  } else if (strcmp(ext, ".bin") == 0) {
+    
   } else {
     printError("Extensión de archivo '%s' no valida", ext);
     return;
   }
-  cv::FileStorage fs(fname, flags);
-  if (fs.isOpened()) {
-    if (!mKeyPoints.empty()) write(fs, "keypoints", mKeyPoints);
-    if (!mDescriptor.empty()) write(fs, "descriptors", mDescriptor);
-    fs.release();
-  } else
-    printError("No pudo escribir archivo %s", fname);
+  if (strcmp(ext, ".bin") == 0) {
+    FILE* fp = std::fopen(fname, "wb");
+    if (fp) {
+      // Cabecera
+      // - KeyPoints
+      int size = mKeyPoints.size();
+      // - Descriptor
+      int rows = mDescriptor.rows;
+      int cols = mDescriptor.cols;
+      int type = mDescriptor.type();
+      std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, fp);
+      std::fwrite(&size, sizeof(int), 1, fp);
+      std::fwrite(&rows, sizeof(int), 1, fp);
+      std::fwrite(&cols, sizeof(int), 1, fp);
+      std::fwrite(&type, sizeof(int), 1, fp);
+      char extraHead[200]; // Reserva de espacio para futuros usos
+      std::fwrite(&extraHead, sizeof(char), 200, fp);
+      //Cuerpo
+      for (auto &kp : mKeyPoints) {
+        std::fwrite(&kp.pt.x, sizeof(float), 1, fp);
+        std::fwrite(&kp.pt.y, sizeof(float), 1, fp);
+        std::fwrite(&kp.size, sizeof(float), 1, fp);
+        std::fwrite(&kp.angle, sizeof(float), 1, fp);
+        std::fwrite(&kp.response, sizeof(float), 1, fp);
+        std::fwrite(&kp.octave, sizeof(float), 1, fp);
+        std::fwrite(&kp.class_id, sizeof(float), 1, fp);
+      }
+      std::fwrite(mDescriptor.data, sizeof(float), rows*cols, fp);
+      std::fclose(fp);
+    } else {
+      printError("No pudo escribir archivo %s", fname);
+    } 
+  } else {
+    cv::FileStorage fs(fname, flags);
+    if (fs.isOpened()) {
+      if (!mKeyPoints.empty()) write(fs, "keypoints", mKeyPoints);
+      if (!mDescriptor.empty()) write(fs, "descriptors", mDescriptor);
+      fs.release();
+    } else
+      printError("No pudo escribir archivo %s", fname);
+  }
 }
 
 void Features2D::read( const char *fname )
 {
-  cv::FileStorage fs(fname, cv::FileStorage::READ);
-  if (fs.isOpened()) {
-    mKeyPoints.resize(0);
-    mDescriptor.resize(0);
-    fs["keypoints"] >> mKeyPoints;
-    fs["descriptors"] >> mDescriptor;
-    fs.release();
-  } else
-    printError("No pudo leer archivo %s", fname);
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(fname, ext, I3D_MAX_EXT) == 0) {
+    if (strcmp(ext, ".bin") == 0) {
+      if (FILE* fp = std::fopen(fname, "rb")) {
+        //cabecera
+        char h[24];
+        int size;
+        int rows;
+        int cols;
+        int type;
+        char extraHead[200];
+        std::fread(h, sizeof(char), 24, fp);
+        std::fread(&size, sizeof(int), 1, fp);
+        std::fread(&rows, sizeof(int), 1, fp);
+        std::fread(&cols, sizeof(int), 1, fp);
+        std::fread(&type, sizeof(int), 1, fp);
+        std::fread(&extraHead, sizeof(char), 200, fp);
+        //Cuerpo
+        mKeyPoints.resize(size);
+        for (auto &kp : mKeyPoints) {
+          std::fread(&kp.pt.x, sizeof(float), 1, fp);
+          std::fread(&kp.pt.y, sizeof(float), 1, fp);
+          std::fread(&kp.size, sizeof(float), 1, fp);
+          std::fread(&kp.angle, sizeof(float), 1, fp);
+          std::fread(&kp.response, sizeof(float), 1, fp);
+          std::fread(&kp.octave, sizeof(float), 1, fp);
+          std::fread(&kp.class_id, sizeof(float), 1, fp);
+        }
+        cv::Mat aux(rows, cols, type);
+        std::fread(aux.data, sizeof(float), rows*cols, fp);
+        aux.copyTo(mDescriptor);
+        std::fclose(fp);
+      } else
+        printError("No pudo leer archivo %s", fname);
+    } else if (strcmp(ext, ".xml") == 0 || strcmp(ext, ".yml") == 0) {
+      cv::FileStorage fs(fname, cv::FileStorage::READ);
+      if (fs.isOpened()) {
+        mKeyPoints.resize(0);
+        mDescriptor.resize(0);
+        fs["keypoints"] >> mKeyPoints;
+        fs["descriptors"] >> mDescriptor;
+        fs.release();
+      } else printError("No pudo leer archivo %s", fname);
+    }
+  } else printError("Fichero no valido: %s", fname);
 }
 
 /* ---------------------------------------------------------------------------------- */

@@ -20,7 +20,7 @@ void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, 
 
   ////... Mismo resultado pero algo mas lento
   //*lines_out = std::vector<Line>(lines_in.size());
-  std::transform(lines_in.begin(), lines_in.end(), lines_out->begin(), [&t](Line ln) -> Line { return Line(ln.pt1 + t, ln.pt2 + t); });
+  //std::transform(lines_in.begin(), lines_in.end(), lines_out->begin(), [&t](Line ln) -> Line { return Line(ln.pt1 + t, ln.pt2 + t); });
 }
 
 void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R) 

@@ -26,7 +26,6 @@ using namespace std;
 using namespace cv;
 using namespace cv::xfeatures2d;
 
-
 /*!
  * Detección de daños en conductores de líneas eléctricas:
  *
@@ -36,7 +35,6 @@ using namespace cv::xfeatures2d;
  */
 int main(int argc, char *argv[])
 {
-
   // Barra de progreso
   ProgressBar progress_bar;
 

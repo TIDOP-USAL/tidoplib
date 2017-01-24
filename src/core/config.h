@@ -24,6 +24,10 @@
 
 #endif
 
+// OpenMP
+#undef I3D_OMP
+
+// Parallel Patterns Library
 #if defined _MSC_VER && _MSC_VER >= 1600
   #define I3D_MSVS_CONCURRENCY
 #endif

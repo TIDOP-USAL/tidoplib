@@ -8,18 +8,21 @@
 #include <sys/stat.h>
 #include <libgen.h>
 #endif
+
 #include <chrono>
 #include <vector>
 #include <cstring>
 #include <exception>
-#include <thread>
-
-#if defined I3D_MSVS_CONCURRENCY
-  #include <ppl.h>
-#endif
 #include <functional>
 
-#include <omp.h>
+// Paralelismo
+#if defined I3D_OMP
+#include <omp.h>  // OpenMP
+#elif defined I3D_MSVS_CONCURRENCY
+#include <ppl.h> // Parallel Patterns Library
+#elif 
+#include <thread>
+#endif
 
 namespace I3D
 {
@@ -341,7 +344,7 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 
 /* ---------------------------------------------------------------------------------- */
 
-void LoadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
+void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
 {
   cv::FileStorage fs(file, cv::FileStorage::READ);
   fs["image_width"] >> imageSize.width;
@@ -391,6 +394,8 @@ void saveBinMat(const char *file, cv::Mat &data)
 
 /* ---------------------------------------------------------------------------------- */
 
+// Añadir cancelación para poder detener los procesos en caso de error
+
 I3D_EXPORT uint32_t getOptimalNumberOfThreads()
 {
 #ifdef I3D_MSVS_CONCURRENCY
@@ -404,6 +409,10 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads()
 void parallel_for(int ini, int end, std::function<void(int)> f) { 
   uint64_t time_ini = getTickCount();
 #ifdef I3D_MSVS_CONCURRENCY
+  //Concurrency::cancellation_token_source cts;
+  //Concurrency::run_with_cancellation_token([ini, end, f]() {
+  //  Concurrency::parallel_for(ini, end, f);
+  //},cts.get_token());
   Concurrency::parallel_for(ini, end, f);
 #else
   

@@ -268,7 +268,7 @@ void Reconstruction3D::multiImageMatching(std::vector<cv::Mat> &points2d)
         idx1 = goodMatches[igm].queryIdx;
         idx2 = goodMatches[igm].trainIdx;
 
-        //Busqueda de si ya esta añadido ese punto
+        //Busqueda de si ya esta aÃ±adido ese punto
         bool addNew = true;
         for (int k = 0; k < idx_pass_points.size(); k++) {
           if (idx_pass_points[k][i] == idx1) {
@@ -306,7 +306,7 @@ void Reconstruction3D::multiImageMatching(std::vector<cv::Mat> &points2d)
   saveTracks("D:\\Desarrollo\\datos\\Videos\\Torres_Pasillo_illescas\\tracks.txt", pass_points);
   int nPassPoint = static_cast<int>(pass_points.size());
 
-  printInfo("Número de puntos de paso encontrados: %i", nPassPoint);
+  printInfo("NÃºmero de puntos de paso encontrados: %i", nPassPoint);
 
   // Formato necesario para sfm
   for (int i = 0; i < size; ++i) {
@@ -407,7 +407,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
           idx1 = symMatches[inliers[igm]][0].queryIdx;
           idx2 = symMatches[inliers[igm]][0].trainIdx;
 
-          //Busqueda de si ya esta añadido ese punto
+          //Busqueda de si ya esta aÃ±adido ese punto
           bool addNew = true;
           if (bfirst == false) {
             for (int k = 0; k < idx_pass_points.size(); k++) {
@@ -479,7 +479,7 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
     
     //int nPassPoint = static_cast<int>(pass_points.size());
 
-    printInfo("Número de puntos de paso encontrados: %i", itrack);
+    printInfo("NÃºmero de puntos de paso encontrados: %i", itrack);
 
 
     // Initial reconstruction
@@ -551,92 +551,6 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 }
 
 #endif
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-ImgProcessing::Status Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  try {
-    wb->balanceWhite(matIn, *matOut);
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
-  }
-  return ImgProcessing::Status::OK;
-}
-
-void Grayworld::setParameters()
-{
-
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  try {
-    // Buscar máximo R, G, B
-    double sr, sg, sb;
-    {
-      double r, g, b;
-      std::vector<cv::Mat> bgr(3);
-      cv::split(matIn, bgr);
-      cv::minMaxLoc(bgr[2], NULL, &r);
-      cv::minMaxLoc(bgr[1], NULL, &g);
-      cv::minMaxLoc(bgr[0], NULL, &b);
-      sr = mWhite.getRed() / r;
-      sg = mWhite.getGreen() / g;
-      sb = mWhite.getBlue() / b;
-    }
-
-    // Recorrer la imagen y calcular el nuevo valor
-
-    if ( matIn.channels() != 3 ) throw std::runtime_error("Tipo de imagen no valida");
-    matOut->create( matIn.size(), CV_8UC3);
-    cv::Mat wp = *matOut;
-  
-    auto trfRgbToWhitePatch = [&](int ini, int end) {
-      for (int r = ini; r < end; r++) {
-        const uchar *rgb_ptr = matIn.ptr<uchar>(r);
-        for (int c = 0; c < matIn.cols; c++) {
-          wp.at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
-          wp.at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
-          wp.at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
-        }
-      }
-    };
-
-    int num_threads = getOptimalNumberOfThreads();
-    std::vector<std::thread> threads(num_threads);
- 
-    int size = matIn.rows / num_threads;
-    for (int i = 0; i < num_threads; i++) {
-      int ini = i * size;
-      int end = ini + size;
-      if ( end > matIn.rows ) end = matIn.rows;
-      threads[i] = std::thread(trfRgbToWhitePatch, ini, end);
-    }
-
-    for (auto &_thread : threads) _thread.join();
-
-
-  } catch (cv::Exception &e){
-    logPrintError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
-  }
-  return ImgProcessing::Status::OK;
-}
-
-void WhitePatch::setParameters(Color white)
-{
-  mWhite = white;
-}
 
 /* ---------------------------------------------------------------------------------- */
 
