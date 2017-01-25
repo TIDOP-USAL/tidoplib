@@ -14,6 +14,7 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
+// OpenCV 3.2
 //ProcessExit Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 //{
 //  try {
@@ -32,10 +33,10 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   try {
-    if ( matIn.channels() != 3 ) throw std::runtime_error("Tipo de imagen no valida");
+    if ( matIn.channels() != 3 ) ImgProcessing::Status::INCORRECT_INPUT_DATA;
 
     // Buscar máximo R, G, B
     double sr, sg, sb;
@@ -57,36 +58,46 @@ ProcessExit WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     matOut->create( matIn.size(), CV_8UC3);
     cv::Mat wp = *matOut;
   
-    auto trfRgbToWhitePatch = [&](int ini, int end) {
-      for (int r = ini; r < end; r++) {
-        const uchar *rgb_ptr = matIn.ptr<uchar>(r);
-        for (int c = 0; c < matIn.cols; c++) {
-          wp.at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
-          wp.at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
-          wp.at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
-        }
+    //auto trfRgbToWhitePatch = [&](int ini, int end) {
+    //  for (int r = ini; r < end; r++) {
+    //    const uchar *rgb_ptr = matIn.ptr<uchar>(r);
+    //    for (int c = 0; c < matIn.cols; c++) {
+    //      wp.at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
+    //      wp.at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
+    //      wp.at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
+    //    }
+    //  }
+    //};
+
+    //int num_threads = getOptimalNumberOfThreads();
+    //std::vector<std::thread> threads(num_threads);
+ 
+    //int size = matIn.rows / num_threads;
+    //for (int i = 0; i < num_threads; i++) {
+    //  int ini = i * size;
+    //  int end = ini + size;
+    //  if ( end > matIn.rows ) end = matIn.rows;
+    //  threads[i] = std::thread(trfRgbToWhitePatch, ini, end);
+    //}
+
+    //for (auto &_thread : threads) _thread.join();
+
+    auto trfRgbToWhitePatch = [&](int r) {
+      const uchar *rgb_ptr = matIn.ptr<uchar>(r);
+      for (int c = 0; c < matIn.cols; c++) {
+        wp.at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
+        wp.at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
+        wp.at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
       }
     };
 
-    int num_threads = getOptimalNumberOfThreads();
-    std::vector<std::thread> threads(num_threads);
- 
-    int size = matIn.rows / num_threads;
-    for (int i = 0; i < num_threads; i++) {
-      int ini = i * size;
-      int end = ini + size;
-      if ( end > matIn.rows ) end = matIn.rows;
-      threads[i] = std::thread(trfRgbToWhitePatch, ini, end);
-    }
-
-    for (auto &_thread : threads) _thread.join();
-
+    parallel_for(0, matIn.rows, trfRgbToWhitePatch);
 
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void WhitePatch::setParameters(const Color &white)

@@ -7,7 +7,7 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
   try {
@@ -15,9 +15,9 @@ ProcessExit BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigmaSpace, int borderType)
@@ -30,15 +30,16 @@ void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigm
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
@@ -50,15 +51,16 @@ void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::OK;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
@@ -72,15 +74,16 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
@@ -94,15 +97,16 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, int bordertype)
@@ -115,15 +119,16 @@ void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, in
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta, int borderType)
@@ -137,15 +142,16 @@ void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void MedianBlur::setParameters(int ksize)
@@ -155,8 +161,9 @@ void MedianBlur::setParameters(int ksize)
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   cv::Mat grad_x, grad_y;
   cv::Mat abs_grad_x, abs_grad_y;
   try {
@@ -165,9 +172,9 @@ ProcessExit Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
@@ -185,8 +192,9 @@ void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
-ProcessExit Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   double th1 = mThreshold1, th2 = mThreshold2;
   try {
     if (th1 == 0.0 && th2 == 0.0) {
@@ -198,9 +206,9 @@ ProcessExit Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Canny::setParameters(double threshold1, double threshold2)

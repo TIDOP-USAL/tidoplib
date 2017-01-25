@@ -106,11 +106,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros

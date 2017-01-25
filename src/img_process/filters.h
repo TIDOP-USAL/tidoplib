@@ -69,11 +69,10 @@ public:
    * \brief Aplica el filtro bilateral a una imagen
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro bilateral
@@ -128,10 +127,10 @@ public:
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
    * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro
@@ -191,11 +190,10 @@ public:
    * \brief Aplica el filtro de desenfoque.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro
@@ -262,11 +260,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro de convolución
@@ -325,11 +322,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -395,11 +391,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -441,11 +436,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -533,11 +527,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -588,11 +581,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros para el detector de bordes canny
