@@ -1,5 +1,6 @@
 #include "VideoStream.h"
 
+#ifdef HAVE_OPENCV
 #include "core/messages.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
@@ -522,3 +523,5 @@ void VideoWindow::init( )
 /* ---------------------------------------------------------------------------------- */
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV

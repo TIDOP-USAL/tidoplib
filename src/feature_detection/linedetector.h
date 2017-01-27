@@ -1,6 +1,9 @@
 #ifndef I3D_LINE_DETECTOR_H
 #define I3D_LINE_DETECTOR_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #if defined( USE_LSWMS )
@@ -450,8 +453,11 @@ public:
 };
 #endif
 
+
 /*! \} */ // end of FeatDetection
 
 } // End namespace I3D
+
+#endif HAVE_OPENCV
 
 #endif // I3D_LINE_DETECTOR_H

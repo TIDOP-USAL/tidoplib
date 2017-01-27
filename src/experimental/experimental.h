@@ -8,12 +8,13 @@
 #include <vector>
 #include <memory>
 
+#include "core/defs.h" // Para quitar warnings de sfm
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/core/utility.hpp"
 #include "opencv2/xphoto.hpp"
 
-#include "core/defs.h" // Para quitar warnings de sfm
-#include "graphic_entities/color.h"
 
 #ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
@@ -30,9 +31,11 @@ I3D_SUPPRESS_WARNINGS
 #include "libmv/simple_pipeline/tracks.h"
 I3D_DEFAULT_WARNINGS
 #endif
+#endif // HAVE_OPENCV
 
 #include "matching.h"
 #include "img_process/img_processing.h"
+#include "graphic_entities/color.h"
 
 namespace I3D
 {
@@ -44,6 +47,8 @@ namespace EXPERIMENTAL
 // Clase para matching robusto. Necesitaria que tener una clase matching 
 // virtual donde se definan todos los métodos comunes
 // con esta clase sustituire a nRobustViewMatching y tendre mayor control. 
+
+#ifdef HAVE_OPENCV
 
 /*!
  * \brief Matching robusto
@@ -285,8 +290,9 @@ public:
   void init(bool refinement = true);
 };
 
-#endif
+#endif // I3D_ENABLE_OPENCV_SFM
 
+#endif // HAVE_OPENCV
 
 } // End namespace EXPERIMENTAL
 

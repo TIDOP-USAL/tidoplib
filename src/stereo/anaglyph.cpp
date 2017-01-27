@@ -9,8 +9,11 @@
 
 
 
-#include "anaglyph.h"
+
+#include "stereo/anaglyph.h"
 #include "core/utils.h"
+
+#ifdef HAVE_OPENCV
 
 #include "opencv2/core.hpp"
 #include "opencv2/calib3d.hpp"
@@ -159,3 +162,5 @@ int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, 
 }
 
 } // End namespace I3D
+
+#endif

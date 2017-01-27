@@ -40,7 +40,7 @@ Color::Color(const Color::NAME &color)
   mColor = static_cast<uint32_t>(color);
 }
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 Color::Color(const cv::Scalar &color) 
 {
   //... Orden RGB o BGR???
@@ -281,6 +281,8 @@ void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, doub
   }
 }
 
+#ifdef HAVE_OPENCV
+
 void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk)
 {
   if ( rgb.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
@@ -298,6 +300,8 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk)
   });
 }
 
+#endif // HAVE_OPENCV
+
 void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red, int *green, int *blue)
 {
   double aux = (1 - key) * 255;
@@ -305,6 +309,8 @@ void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red,
   *green = I3D_ROUND_TO_INT((1 - magenta) * aux);
   *blue = I3D_ROUND_TO_INT((1 - yellow) * aux);
 }
+
+#ifdef HAVE_OPENCV
 
 void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
 {
@@ -323,6 +329,8 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
     }
   });
 }
+
+#endif // HAVE_OPENCV
 
 void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness)
 {
@@ -356,6 +364,7 @@ void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, dou
   *lightness *= 100;
 }
 
+#ifdef HAVE_OPENCV
 
 void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl)
 {
@@ -372,6 +381,8 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl)
     }
   });
 }
+
+#endif // HAVE_OPENCV
 
 void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue)
 {
@@ -420,6 +431,8 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   *blue = I3D_ROUND_TO_INT((_rgb[2] + m) *255);
 }
 
+#ifdef HAVE_OPENCV
+
 void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
 {
   if ( hsl.channels() != 3 ) return;//throw std::runtime_error("Tipo de imagen no valida");
@@ -438,6 +451,7 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
   });
 }
 
+#endif // HAVE_OPENCV
 
 void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b)
 {
@@ -446,6 +460,8 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
   *g = green / sum;
   *b = blue / sum;
 }
+
+#ifdef HAVE_OPENCV
 
 void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
 {
@@ -463,5 +479,6 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
   });
 }
 
+#endif // HAVE_OPENCV
 
 } // End namespace I3D

@@ -9,9 +9,9 @@
 
 #include "core/config.h"
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif
+#endif // HAVE_OPENCV
 
 #include "core/defs.h"
 #include "core/exception.h"
@@ -261,7 +261,7 @@ public:
    * \brief Constructora
    * \param[in] color Color como cv::Scalar de OpenCV
    */
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
   Color(const cv::Scalar &color);
 #endif
 
@@ -386,7 +386,7 @@ T Color::get() const
   } else if (typeid(T) == typeid(int)) {
     color = mColor;
   } 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
   else if (typeid(T) == typeid(cv::Scalar)) {
     *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
   } 
@@ -493,12 +493,18 @@ I3D_EXPORT std::string intToHex(int color);
  */
 I3D_EXPORT void rgbToCmyk(int red, int green, int blue, double *cyan, double *magenta, double *yellow, double *key);
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una matriz de RGB a CMYK
  * \param[in] rgb Imagen cmyk
  * \param[out] cmyk Imagen rgb
  */
 I3D_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
+
+#endif // HAVE_OPENCV
+
+
 
 /*!
  * \brief Convierte un color de CMYK a RGB
@@ -512,12 +518,17 @@ I3D_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
  */
 I3D_EXPORT void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red, int *green, int *blue);
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una matriz de CMYK a RGB
  * \param[in] cmyk Imagen cmyk
  * \param[out] rgb Imagen rgb
  */
 I3D_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
+
+#endif // HAVE_OPENCV
+
 
 /*!
  * \brief Convierte un color de RGB a HSL
@@ -530,12 +541,17 @@ I3D_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
  */
 I3D_EXPORT void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, double *lightness);
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una matriz de RGB a HSL
  * \param[in] rgb
  * \param[out] hsl
  */
 I3D_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
+
+#endif // HAVE_OPENCV
+
 
 /*!
  * \brief Convierte un color de a HSL a RGB
@@ -548,12 +564,16 @@ I3D_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
  */
 I3D_EXPORT void hslToRgb(double hue, double saturation, double lightness, int *red, int *green, int *blue);
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una matriz de HSL a RGB
  * \param[in] hsl
  * \param[out] rgb
  */
 I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
+
+#endif // HAVE_OPENCV
 
 /*!
  * \brief Conversión a coordenadas cromáticas
@@ -585,12 +605,18 @@ I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
  */
 void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Conversión de una imagen a coordenadas cromáticas
  * \param[in] rgb Imagen RGB
  * \param[out] chroma_rgb Imagen en coordenadas cromaticas
  */
 void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+
+#endif // HAVE_OPENCV
+
+
 
 
 /*! \} */ // end of colorConversion

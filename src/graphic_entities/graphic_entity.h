@@ -9,7 +9,7 @@
 
 #include "core/config.h"
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif
 
@@ -872,7 +872,7 @@ public:
   GraphicEntity();
   ~GraphicEntity();
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
   virtual void draw(cv::Mat &canvas) = 0;
 #endif
 };

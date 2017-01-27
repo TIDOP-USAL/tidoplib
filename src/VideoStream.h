@@ -3,6 +3,9 @@
 
 #include <ctime>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
 
 #include "core/defs.h"
@@ -652,5 +655,7 @@ private:
 
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV
 
 #endif // I3D_VIDEO_STREAM_H

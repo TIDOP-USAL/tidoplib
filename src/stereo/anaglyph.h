@@ -1,7 +1,11 @@
 #ifndef I3D_ANAGLYPH_H
 #define I3D_ANAGLYPH_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include <opencv2/core.hpp>
+
 
 #include "core/defs.h"
 
@@ -31,5 +35,7 @@ enum class StereoMode {
 I3D_EXPORT int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::NORMAL);
 
 } // End namespace I3D
+
+#endif
 
 #endif // I3D_ANAGLYPH_H

@@ -1,5 +1,6 @@
 #include "matching.h"
 
+#ifdef HAVE_OPENCV
 #include "core/mathutils.h"
 #include "core/messages.h"
 #include "transform.h"
@@ -298,3 +299,5 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
   //}
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV

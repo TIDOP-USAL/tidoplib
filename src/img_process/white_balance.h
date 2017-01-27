@@ -1,8 +1,12 @@
 #ifndef I3D_WHITE_BALANCE_H
 #define I3D_WHITE_BALANCE_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+
 
 #include "core/defs.h"
 #include "graphic_entities/color.h"
@@ -27,49 +31,55 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
+#if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
+#  if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
+
 /*!
  * \brief Balance de blancos  Gray World
  */
-//class I3D_EXPORT Grayworld : public ImgProcessing
-//{
-//private:
-//
-//  /*!
-//   * \brief Tamaño del kernel
-//   */
-//  cv::Ptr<cv::xphoto::GrayworldWB> wb;
-//
-//public:
-//
-//  /*!
-//   * \brief Constructora Gray World
-//   */
-//  Grayworld()
-//    : ImgProcessing(process_type::GRAYWORLD) 
-//  {
-//    wb = cv::xphoto::createGrayworldWB();
-//  }
-//
-//  /*!
-//   * \brief Ejecuta el proceso
-//   * \param[in] matIn Imagen de entrada
-//   * \param[out] matOut Imagen de salida
-//   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-//   * En caso contrario devuelve ProcessExit::FAILURE
-//   * \see ProcessExit
-//   */
-//  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-//
-//  /*!
-//   * \brief Establece los parámetros
-//   * \param[in] kSize Tamaño del kernel
-//   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
-//   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
-//   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
-//   */
-//  void setParameters();
-//
-//};
+class I3D_EXPORT Grayworld : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Tamaño del kernel
+   */
+  cv::Ptr<cv::xphoto::GrayworldWB> wb;
+
+public:
+
+  /*!
+   * \brief Constructora Gray World
+   */
+  Grayworld()
+    : ImgProcessing(process_type::GRAYWORLD) 
+  {
+    wb = cv::xphoto::createGrayworldWB();
+  }
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
+   * En caso contrario devuelve ProcessExit::FAILURE
+   * \see ProcessExit
+   */
+  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] kSize Tamaño del kernel
+   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
+   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
+   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
+   */
+  void setParameters();
+
+};
+
+#  endif // CV_VERSION_MINOR
+#endif // CV_VERSION_MAJOR
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -124,5 +134,7 @@ public:
 /*! \} */ // end of ImgProc
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV
 
 #endif // I3D_WHITE_BALANCE_H

@@ -1,6 +1,9 @@
 #ifndef I3D_FOURIER_H
 #define I3D_FOURIER_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
@@ -58,5 +61,7 @@ I3D_EXPORT double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols,
 //I3D_EXPORT double horizontalLinesDetection(cv::Mat &source, std::vector<std::vector<cv::Point>> *pts);
 
 } // End namespace I3D
+
+#endif
 
 #endif // I3D_FOURIER_H

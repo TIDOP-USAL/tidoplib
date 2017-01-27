@@ -5,6 +5,7 @@
 #include "core/messages.h"
 #include "core/defs.h"
 
+#ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
 #ifdef I3D_ENABLE_OPENCV_SFM
 I3D_SUPPRESS_WARNINGS
@@ -15,7 +16,8 @@ I3D_SUPPRESS_WARNINGS
 #include "libmv/correspondence/matches.h"
 #include "libmv/multiview/robust_fundamental.h"
 I3D_DEFAULT_WARNINGS
-#endif
+#endif // I3D_ENABLE_OPENCV_SFM
+#endif // HAVE_OPENCV
 
 #include <thread>
 
@@ -25,6 +27,7 @@ namespace I3D
 namespace EXPERIMENTAL
 {
 
+#ifdef HAVE_OPENCV
 //// http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
 
 int RobustMatching::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
@@ -552,7 +555,9 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 }
 
-#endif
+#endif // I3D_ENABLE_OPENCV_SFM
+
+#endif // HAVE_OPENCV
 
 /* ---------------------------------------------------------------------------------- */
 

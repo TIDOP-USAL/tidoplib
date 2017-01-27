@@ -1,7 +1,8 @@
-#include "img_processing.h"
+#include "img_process/img_processing.h"
 
 #include "core/messages.h"
 
+#ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/xphoto/white_balance.hpp"
 
@@ -261,6 +262,6 @@ ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *ma
 
 /* ---------------------------------------------------------------------------------- */
 
-
-
 } // End namespace I3D
+
+#endif // HAVE_OPENCV

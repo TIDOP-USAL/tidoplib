@@ -6,6 +6,7 @@
 namespace I3D
 {
 
+#ifdef HAVE_OPENCV
 void DiscreteFourierTrf::forward(const cv::Mat &source, cv::Mat *out) const
 {
   cv::dft(source, *out);
@@ -188,6 +189,7 @@ double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vecto
   return r_angle;
 }
 
+#endif
 
 //int fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle)
 //{

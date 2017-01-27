@@ -1,6 +1,9 @@
 #ifndef I3D_FILTERS_H
 #define I3D_FILTERS_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
@@ -602,5 +605,7 @@ public:
 /*! \} */ // end of ImgProc
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV
 
 #endif // I3D_FILTERS_H

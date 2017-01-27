@@ -4,7 +4,7 @@
 #include "core/utils.h"
 #include "core/console.h"
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 #include "opencv2/core/utility.hpp"
 #endif
 
@@ -27,7 +27,7 @@ using namespace I3D;
 
 std::mutex mtx;
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 I3D_DISABLE_WARNING(4100)
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
@@ -36,7 +36,7 @@ int handleError( int status, const char* func_name, const char* err_msg, const c
   return 0;
 }
 I3D_ENABLE_WARNING(4100)
-#endif
+#endif // HAVE_OPENCV
 
 struct msgProperties {
   const char *normal;
@@ -73,9 +73,9 @@ std::string Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
 Message::Message() 
 {
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
   cv::redirectError(handleError);
-#endif
+#endif // HAVE_OPENCV
 }
 
 Message &Message::get()

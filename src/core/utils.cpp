@@ -16,13 +16,17 @@
 #include <functional>
 
 // Paralelismo
-#if defined I3D_OMP
-#include <omp.h>  // OpenMP
-#elif defined I3D_MSVS_CONCURRENCY
-#include <ppl.h> // Parallel Patterns Library
+#if defined HAVE_OMP
+#  include <omp.h>  // OpenMP
+#elif defined HAVE_PPL 
+#  if defined _MSC_VER && _MSC_VER >= 1600
+#    define I3D_MSVS_CONCURRENCY
+#    include <ppl.h>  // Parallel Patterns Library (PPL) 
+#  endif
 #elif 
-#include <thread>
+#  include <thread>
 #endif
+
 
 namespace I3D
 {

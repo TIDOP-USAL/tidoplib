@@ -23,6 +23,7 @@
 #include "img_process/white_balance.h"
 #include "transform.h"
 #include "experimental/experimental.h"
+#include "geometric_entities/point.h"
 
 using namespace I3D;
 using namespace std;
@@ -475,6 +476,7 @@ void VideoHelper::setImgprolist(std::shared_ptr<I3D::ImgProcessingList> imgproli
  */
 int main(int argc, char *argv[])
 {
+
   char name[I3D_MAX_FNAME];
   getFileName(getRunfile(), name, I3D_MAX_FNAME);
   char dir[I3D_MAX_DRIVE + I3D_MAX_DIR];

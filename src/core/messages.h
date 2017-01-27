@@ -10,9 +10,8 @@
 #include <memory>
 #include <mutex>
 
-#include "core/utils.h"
 #include "core/defs.h"
-#include "core/config.h"
+#include "core/utils.h"
 #include "core/flags.h"
 
 namespace I3D

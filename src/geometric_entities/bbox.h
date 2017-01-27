@@ -5,8 +5,9 @@
 
 #include "opencv2/core/core.hpp"
 
-#include "geometric_entities/entity.h"
 #include "core/defs.h"
+#include "geometric_entities/entity.h"
+
 
 namespace I3D
 {

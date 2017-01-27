@@ -1,6 +1,9 @@
 #ifndef I3D_MATCHING_H
 #define I3D_MATCHING_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/features2d.hpp"
 #include "opencv2/xfeatures2d.hpp"
 
@@ -256,5 +259,7 @@ public:
 };
 
 } // End namespace I3D
+
+#endif
 
 #endif // I3D_MATCHING_H

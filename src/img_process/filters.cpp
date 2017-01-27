@@ -1,5 +1,7 @@
 #include "filters.h"
 
+#ifdef HAVE_OPENCV
+
 #include "core/messages.h"
 
 namespace I3D
@@ -220,3 +222,5 @@ void Canny::setParameters(double threshold1, double threshold2)
 /* ---------------------------------------------------------------------------------- */
 
 }
+
+#endif // HAVE_OPENCV

@@ -3,6 +3,8 @@
 #ifndef I3D_DEFS_H
 #define I3D_DEFS_H
 
+#include "core/config.h"
+
 #include <limits>
 #include <cstdlib>
 
@@ -34,8 +36,8 @@
 
 #if defined WIN32
 // Para que no den problemas std::numeric_limits<T>().max() 
-#define NOMINMAX 
-# include <windows.h>
+#  define NOMINMAX 
+#  include <windows.h>
 #endif
 
 #define I3D_INT_MAX std::numeric_limits<int>().max()

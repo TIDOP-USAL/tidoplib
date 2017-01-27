@@ -3,13 +3,14 @@
 
 /* Cabecera para configuración */
 
-#define I3D_ENABLE_OPENCV 1
+#define HAVE_OPENCV 
 
-#ifdef I3D_ENABLE_OPENCV
+#ifdef HAVE_OPENCV
 
 // Modulos contrib de OpenCV
 #undef I3D_ENABLE_OPENCV_SFM
 
+#undef HAVE_GDAL
 
 #endif
 
@@ -25,11 +26,10 @@
 #endif
 
 // OpenMP
-#undef I3D_OMP
+#undef HAVE_OMP // De momento no se usa
 
 // Parallel Patterns Library
-#if defined _MSC_VER && _MSC_VER >= 1600
-  #define I3D_MSVS_CONCURRENCY
-#endif
+// https://msdn.microsoft.com/es-es/library/dd492418.aspx
+#define HAVE_PPL 
 
 #endif // I3D_CONFIG_H

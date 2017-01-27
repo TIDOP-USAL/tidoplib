@@ -5,6 +5,9 @@
 #include <memory>
 #include <functional>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
@@ -888,5 +891,7 @@ public:
 /*! \} */ // end of ImgProc
 
 } // End namespace I3D
+
+#endif // HAVE_OPENCV
 
 #endif // I3D_IMG_PROCESSING_H

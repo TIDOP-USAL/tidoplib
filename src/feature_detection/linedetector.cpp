@@ -1,5 +1,6 @@
 #include "LineDetector.h"
 
+#ifdef HAVE_OPENCV
 #include "opencv2/imgproc.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/ximgproc.hpp"
@@ -333,3 +334,5 @@ void ldLSWMS::run(cv::Mat &image)
 #endif
 
 } // End namespace I3D
+
+#endif
