@@ -28,7 +28,7 @@ public:
   /*!
    * \brief type
    */
-  typedef T type;
+  typedef T value_type;
 
   /*!
    * \brief Punto 1

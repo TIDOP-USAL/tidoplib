@@ -5,7 +5,7 @@
 namespace I3D
 {
 
-int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect)
+int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect)
 {
   double distmin = I3D_DOUBLE_MAX;
   int ipt = -1;
@@ -19,7 +19,7 @@ int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_
   return ipt;
 }
 
-bool isCollinearPoints(const cv::Point &pt_c, const I3D::Segment<int> &line_i_r, double tolerance)
+bool isCollinearPoints(const PointI &pt_c, const I3D::Segment<int> &line_i_r, double tolerance)
 {
   return tolerance > distPointToSegment(pt_c, line_i_r);
 }

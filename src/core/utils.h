@@ -426,6 +426,9 @@ I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
 
 #ifdef HAVE_OPENCV
 
+/* ---------------------------------------------------------------------------------- */
+/*                Utilidades de carga y guardado para OpenCV                          */
+/* ---------------------------------------------------------------------------------- */
 I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
 I3D_EXPORT void loadBinMat(const char *file, cv::Mat *data);

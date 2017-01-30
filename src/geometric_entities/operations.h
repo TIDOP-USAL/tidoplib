@@ -1,10 +1,14 @@
 #ifndef I3D_OPERATIONS_H
 #define I3D_OPERATIONS_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
 #include "core/defs.h"
-//#include "geometric_entities/segment.h"
+#include "geometric_entities/point.h"
 
 namespace I3D
 {
@@ -27,10 +31,12 @@ template<typename T> class Segment;
  * \return Longitud
  */
 template<typename T> inline
-I3D_EXPORT double length(const cv::Point_<T> &v)
+I3D_EXPORT double length(const Point<T> &v)
 {
   return (sqrt(v.x*v.x + v.y*v.y));
 }
+
+#ifdef HAVE_OPENCV
 
 /*!
  * \brief Longitud o modulo de un vector 3D
@@ -42,6 +48,8 @@ I3D_EXPORT double length(const cv::Point3_<T> &v)
 {
   return (sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
 }
+
+#endif
 
 /*!
  * \brief Distancia entre dos puntos
@@ -60,12 +68,12 @@ I3D_EXPORT double distance(const T &pt1, const T &pt2)
 /* ---------------------------------------------------------------------------------- */
 
 
-I3D_EXPORT int pointNearest(const std::vector<cv::Point> &pts_fourier, const cv::Point &pt_intersect);
+I3D_EXPORT int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect);
 
 /*!
  * Comprobación de que los 3 puntos están en la misma línea
  */
-I3D_EXPORT bool isCollinearPoints(const cv::Point &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
+I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
 
 /*! \} */ // end of GeometricEntities
 

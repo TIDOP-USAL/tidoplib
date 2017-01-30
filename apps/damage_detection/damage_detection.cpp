@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
   cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U); // Para los huecos en conductores
 
   // Transformación al sistema origen
-  Helmert2D<cv::Point> trf(0, 0, 4., 0.0);
+  Helmert2D<PointI> trf(0, 0, 4., 0.0);
 
   //std::vector<std::vector<cv::Point>> buffer;
   cv::Scalar m, stdv;
@@ -232,7 +232,7 @@ int main(int argc, char *argv[])
     cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
     //trf.transformEntity(line, &line, transform_order::DIRECT);
     transform(line, &line, &trf, transform_order::DIRECT);
-    std::vector<cv::Point> buff;
+    std::vector<PointI> buff;
     lineBuffer(line, widthBuffer, &buff);
 
     // Se aplica la mascara a la imagen y obtenemos la zona de estudio.
@@ -447,8 +447,8 @@ int main(int argc, char *argv[])
         cv::Mat m_aux;
         image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
         
-        std::vector<cv::Point> buff;
-        I3D::Translate<cv::Point> trf(w_aux.pt1.x, w_aux.pt1.y);
+        std::vector<PointI> buff;
+        I3D::Translate<PointI> trf(w_aux.pt1.x, w_aux.pt1.y);
         //trf.transformEntity(line, &line, transform_order::INVERSE);
         transform(line, &line, &trf, transform_order::INVERSE);
         lineBuffer(line, static_cast<int>(th2) + 10, &buff);

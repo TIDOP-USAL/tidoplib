@@ -6,7 +6,11 @@
 #include <numeric>
 #include <vector>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
 #include "core/defs.h"
 //#include "geometric_entities/window.h"
@@ -16,7 +20,7 @@ namespace I3D
 
 // forward declaration
 template<typename T> class Window;
-
+template<typename T> class Point;
 
 /*! \defgroup GeometricEntities Entidades geométricas
  *  Puntos, lineas, ...
@@ -86,14 +90,14 @@ public:
   /*!
    * \brief type
    */
-  typedef T type;
+  typedef T value_type;
 
 protected:
 
   /*!
    * \brief Conjunto de puntos
    */
-  std::vector<cv::Point_<T>> mPoints;
+  std::vector<Point<T>> mPoints;
 
 public:
 
@@ -117,13 +121,13 @@ public:
    * \brief Constructor
    * \param[in] vPoint vector de puntos
    */
-  EntityPoints(entity_type type, const std::vector<cv::Point_<T>> &vPoint);
+  EntityPoints(entity_type type, const std::vector<Point<T>> &vPoint);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  EntityPoints(entity_type type, std::initializer_list<cv::Point_<T>> listPoints);
+  EntityPoints(entity_type type, std::initializer_list<Point<T>> listPoints);
 
   //~EntityPoints();
 
@@ -138,20 +142,20 @@ public:
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  virtual void add(const cv::Point_<T> &point) = 0;
+  virtual void add(const Point<T> &point) = 0;
 
   /*!
    * \brief Devuelve los puntos de la colección
    * \return vector de puntos
    */
-  const std::vector<cv::Point_<T>> &getPoints() const { return mPoints; }
+  const std::vector<Point<T>> &getPoints() const { return mPoints; }
 
   /*!
    * \brief Devuelve los puntos que esta dentro de una ventana
    * \param[in] w Ventana
    * \return Puntos que entran dentro de la ventana
    */
-  std::vector<cv::Point_<T>> getPointsInWindow(const Window<T> &w) const;
+  std::vector<Point<T>> getPointsInWindow(const Window<T> &w) const;
 
   /*!
    * \brief Número de puntos de la colección
@@ -174,29 +178,29 @@ public:
   /*!
    * \brief Operador de indexación sobrecargado
    * \param[in] id indice del elemento
-   * \return cv::Point_<T>
+   * \return Point<T>
    */
-  cv::Point_<T> &operator[](size_t id) { return mPoints[id];  }
+  Point<T> &operator[](size_t id) { return mPoints[id];  }
 
   /*!
    * \brief Iterador al inicio
    */
-  virtual typename std::vector<cv::Point_<T>>::iterator begin();
+  virtual typename std::vector<Point<T>>::iterator begin();
 
   /*!
    * \brief Iterador constante al inicio
    */
-  virtual typename std::vector<cv::Point_<T>>::const_iterator begin() const;
+  virtual typename std::vector<Point<T>>::const_iterator begin() const;
 
   /*!
    * \brief Iterador al final
    */
-  virtual typename std::vector<cv::Point_<T>>::iterator end();
+  virtual typename std::vector<Point<T>>::iterator end();
 
   /*!
    * \brief Iterador constante al final
    */
-  virtual typename std::vector<cv::Point_<T>>::const_iterator end() const;
+  virtual typename std::vector<Point<T>>::const_iterator end() const;
 };
 
 
@@ -213,11 +217,11 @@ EntityPoints<T>::EntityPoints(entity_type type, const EntityPoints &entityPoints
   : Entity<T>(type), mPoints(entityPoints.mPoints) {}
 
 template<typename T> inline
-EntityPoints<T>::EntityPoints(entity_type type, const std::vector<cv::Point_<T>> &vPoint) 
+EntityPoints<T>::EntityPoints(entity_type type, const std::vector<Point<T>> &vPoint) 
   : Entity<T>(type), mPoints(vPoint) {}
 
 template<typename T> inline
-EntityPoints<T>::EntityPoints(entity_type type, std::initializer_list<cv::Point_<T>> entityPoints)
+EntityPoints<T>::EntityPoints(entity_type type, std::initializer_list<Point<T>> entityPoints)
   : Entity<T>(type), mPoints(entityPoints) {}
 
 template<typename T> inline
@@ -231,9 +235,9 @@ EntityPoints<T> &EntityPoints<T>::operator = (const EntityPoints &entityPoints)
 }
 
 template<typename T> inline
-std::vector<cv::Point_<T>> EntityPoints<T>::getPointsInWindow(const Window<T> &w) const
+std::vector<Point<T>> EntityPoints<T>::getPointsInWindow(const Window<T> &w) const
 {
-  std::vector<cv::Point_<T>> r_points(mPoints.size());
+  std::vector<Point<T>> r_points(mPoints.size());
   int j = 0;
   for (size_t i = 0; i < mPoints.size(); i++) {
     if (w.containsPoint(mPoints[i])) {
@@ -259,31 +263,31 @@ Window<T> EntityPoints<T>::getWindow() const
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point_<T>>::iterator EntityPoints<T>::begin() 
+typename std::vector<Point<T>>::iterator EntityPoints<T>::begin() 
 {
   return mPoints.begin();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point_<T>>::const_iterator EntityPoints<T>::begin() const 
+typename std::vector<Point<T>>::const_iterator EntityPoints<T>::begin() const 
 {
   return mPoints.cbegin();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point_<T>>::iterator EntityPoints<T>::end()
+typename std::vector<Point<T>>::iterator EntityPoints<T>::end()
 {
   return mPoints.end();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point_<T>>::const_iterator EntityPoints<T>::end() const 
+typename std::vector<Point<T>>::const_iterator EntityPoints<T>::end() const 
 {
   return mPoints.cend();
 }
 
 /* ---------------------------------------------------------------------------------- */
-
+#ifdef HAVE_OPENCV
 template<typename T>
 class I3D_EXPORT Entity3DPoints : public Entity<T>
 {
@@ -292,7 +296,7 @@ public:
   /*!
    * \brief type
    */
-  typedef T type;
+  typedef T value_type;
 
 protected:
 
@@ -388,7 +392,7 @@ public:
   /*!
    * \brief Operador de indexación sobrecargado
    * \param[in] id indice del elemento
-   * \return cv::Point_<T>
+   * \return cv::Point3_<T>
    */
   cv::Point3_<T> &operator[](size_t id) { return mPoints[id];  }
 
@@ -495,6 +499,8 @@ typename std::vector<cv::Point3_<T>>::const_iterator Entity3DPoints<T>::end() co
 {
   return mPoints.cend();
 }
+
+#endif
 
 /* ---------------------------------------------------------------------------------- */
 

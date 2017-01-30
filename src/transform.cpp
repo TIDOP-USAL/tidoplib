@@ -11,7 +11,7 @@ namespace I3D
 
 void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy)
 {
-  cv::Point t(dx, dy);
+  PointI t(dx, dy);
   *lines_out = lines_in;
   for (size_t i = 0; i < lines_out->size(); i++) {
     (*lines_out)[i].pt1 += t;

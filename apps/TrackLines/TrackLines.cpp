@@ -266,14 +266,14 @@ int main(int argc, char *argv[])
     "capturas199.jpg",
     "capturas200.jpg" };
 
-  std::vector<cv::Point> ptsPrev;
+  std::vector<PointI> ptsPrev;
 
-  ptsPrev.push_back(cv::Point(320, 132)); // Punto 1. OK
-  ptsPrev.push_back(cv::Point(320, 161)); // Punto 2. OK
-  ptsPrev.push_back(cv::Point(320, 206)); // Punto 3. OK
-  ptsPrev.push_back(cv::Point(320, 242)); // Punto 4. OK
-  ptsPrev.push_back(cv::Point(320, 288)); // Punto 5. OK
-  ptsPrev.push_back(cv::Point(320, 314)); // Punto 6. OK
+  ptsPrev.push_back(PointI(320, 132)); // Punto 1. OK
+  ptsPrev.push_back(PointI(320, 161)); // Punto 2. OK
+  ptsPrev.push_back(PointI(320, 206)); // Punto 3. OK
+  ptsPrev.push_back(PointI(320, 242)); // Punto 4. OK
+  ptsPrev.push_back(PointI(320, 288)); // Punto 5. OK
+  ptsPrev.push_back(PointI(320, 314)); // Punto 6. OK
 
   cv::Mat current_frame;              // Ventana de video actual 
   cv::Mat crop_frame;                 // Ventana recortada del frame actual                  
@@ -390,7 +390,7 @@ int main(int argc, char *argv[])
         // Partimos de un punto obtenido de la detección de los aisladores
         //... Suponemos la posición conocida
 
-		  cv::Point ptPrev = ptsPrev[ipto];
+		  PointI ptPrev = ptsPrev[ipto];
 		  //ptPrev = cv::Point(320, 144); // Punto 1. OK
 		  //ptPrev = cv::Point(320, 171); // Punto 2. OK
 		  //ptPrev = cv::Point(320, 217); // Punto 3. OK
@@ -508,8 +508,8 @@ int main(int argc, char *argv[])
         std::vector<DMatch> good_matches;
         match.getGoodMatches(&good_matches,0.04);
 
-        std::vector<Point2f> ptsprev;
-        std::vector<Point2f> ptscur;
+        std::vector<PointF> ptsprev;
+        std::vector<PointF> ptscur;
         for (size_t igm = 0; igm < good_matches.size(); igm++) {
           ptsprev.push_back(featuresPrev.getKeyPoint(good_matches[igm].queryIdx).pt);
           ptscur.push_back(featuresCur.getKeyPoint(good_matches[igm].trainIdx).pt);
@@ -522,11 +522,11 @@ int main(int argc, char *argv[])
 
 
         // Calculo de la transformación proyectiva
-        TrfPerspective<Point2f> trfPerps;
+        TrfPerspective<PointF> trfPerps;
         if (trfPerps.compute(ptsprev, ptscur)) {
           // Se transforma la línea del conductor para determinar la posición en la imagen actual
-          std::vector<cv::Point2f> l_in = { conductor_line_prev.pt1, conductor_line_prev.pt2 };
-          std::vector<cv::Point2f> l_out;
+          std::vector<PointF> l_in = { conductor_line_prev.pt1, conductor_line_prev.pt2 };
+          std::vector<PointF> l_out;
           trfPerps.transform(l_in, &l_out);
           Line line_proj(l_out[0], l_out[1]);
 
@@ -539,7 +539,7 @@ int main(int argc, char *argv[])
           line(out, cv::Point(current_frame.cols / 2, 0), cv::Point(current_frame.cols / 2, current_frame.rows), Scalar(0, 255, 0), 1, LINE_AA);
 
           // Intersección de línea de centro con línea proyectada para determinar el punto del conductor. Este punto se considera una primera aproximación
-          cv::Point pt_intersect;
+          PointI pt_intersect;
           intersectLines(line_proj, Line(cv::Point(current_frame.cols / 2, 0), cv::Point(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
           cv::line(out, pt_intersect, pt_intersect, Scalar(255, 0, 0), 3, LINE_AA);
 

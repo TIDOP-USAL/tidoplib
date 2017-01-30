@@ -347,6 +347,8 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 }
 
 /* ---------------------------------------------------------------------------------- */
+/*                Utilidades de carga y guardado para OpenCV                          */
+/* ---------------------------------------------------------------------------------- */
 
 #ifdef HAVE_OPENCV
 
@@ -400,6 +402,8 @@ void saveBinMat(const char *file, cv::Mat &data)
 
 #endif // HAVE_OPENCV
 
+/* ---------------------------------------------------------------------------------- */
+/*                         Concurrencia, hilos y multiproceso                         */
 /* ---------------------------------------------------------------------------------- */
 
 // Añadir cancelación para poder detener los procesos en caso de error

@@ -10,30 +10,30 @@ namespace I3D
 //    - Meter todas las funciones como templates
 //    - Test para ver que donde deberia usar double o float para no perder precisión
 
-void lineBuffer(const Line &ln, const int size, std::vector<cv::Point> *buff)
+void lineBuffer(const Line &ln, const int size, std::vector<PointI> *buff)
 {
-  *buff = std::vector<cv::Point>(4);
-  cv::Point pt1 = ln.pt1;
-  cv::Point pt2 = ln.pt2;
+  *buff = std::vector<PointI>(4);
+  PointI pt1 = ln.pt1;
+  PointI pt2 = ln.pt2;
   double acimut = azimut(pt1, pt2);
-  double dx = size * sin(acimut + CV_PI / 2.);
-  double dy = size * cos(acimut + CV_PI / 2.);
-  (*buff)[0] = cv::Point(I3D_ROUND_TO_INT(pt1.x + dx), I3D_ROUND_TO_INT(pt1.y + dy));
-  (*buff)[1] = cv::Point(I3D_ROUND_TO_INT(pt2.x + dx), I3D_ROUND_TO_INT(pt2.y + dy));
-  (*buff)[2] = cv::Point(I3D_ROUND_TO_INT(pt2.x - dx), I3D_ROUND_TO_INT(pt2.y - dy));
-  (*buff)[3] = cv::Point(I3D_ROUND_TO_INT(pt1.x - dx), I3D_ROUND_TO_INT(pt1.y - dy));
+  double dx = size * sin(acimut + I3D_PI_2);
+  double dy = size * cos(acimut + I3D_PI_2);
+  (*buff)[0] = PointI(I3D_ROUND_TO_INT(pt1.x + dx), I3D_ROUND_TO_INT(pt1.y + dy));
+  (*buff)[1] = PointI(I3D_ROUND_TO_INT(pt2.x + dx), I3D_ROUND_TO_INT(pt2.y + dy));
+  (*buff)[2] = PointI(I3D_ROUND_TO_INT(pt2.x - dx), I3D_ROUND_TO_INT(pt2.y - dy));
+  (*buff)[3] = PointI(I3D_ROUND_TO_INT(pt1.x - dx), I3D_ROUND_TO_INT(pt1.y - dy));
 }
 
 // mejor como template
-int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp)
+int projectPointInSegment(const Line &ln, const PointI &pt, PointI *ptp)
 {
   int iret = 0;
   if (pt == ln.pt1 || pt == ln.pt2) {
     *ptp = pt;
     return 2;
   } 
-  cv::Point v1 = pt - ln.pt1;
-  cv::Point v2 = ln.vector();
+  PointI v1 = pt - ln.pt1;
+  PointI v2 = ln.vector();
   double daux = v1.ddot(v2);
   float r = (float)(daux / (v2.x * v2.x + v2.y * v2.y));
   ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
@@ -45,15 +45,15 @@ int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp)
   return iret;
 }
 
-int projectPointInSegment(const SegmentD &ln, const cv::Point2d &pt, cv::Point2d *ptp)
+int projectPointInSegment(const SegmentD &ln, const PointD &pt, PointD *ptp)
 {
   int iret = 0;
   if (pt == ln.pt1 || pt == ln.pt2) {
     *ptp = pt;
     return 2;
   } 
-  cv::Point2d v1 = pt - ln.pt1;
-  cv::Point2d v2 = ln.vector();
+  PointD v1 = pt - ln.pt1;
+  PointD v2 = ln.vector();
   double daux = v1.ddot(v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y);
   ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
@@ -65,20 +65,20 @@ int projectPointInSegment(const SegmentD &ln, const cv::Point2d &pt, cv::Point2d
   return iret;
 }
 
-double distPointToSegment(const cv::Point &pt, const Line &ln)
+double distPointToSegment(const PointI &pt, const Line &ln)
 {
-  cv::Point2d ptp;
+  PointD ptp;
   int ipr = projectPointInSegment(ln, pt, &ptp);
   
   if (ipr == -1) ptp = ln.pt1;
   else if (ipr == 1) ptp = ln.pt2;
-  return distance(cv::Point2d(pt), ptp);
+  return distance(PointD(pt), ptp);
 }
 
-double distPointToLine(const cv::Point &pt, const Line &ln)
+double distPointToLine(const PointI &pt, const Line &ln)
 {
-  cv::Point v1 = pt - ln.pt1;
-  cv::Point v2 = ln.vector();
+  PointI v1 = pt - ln.pt1;
+  PointI v2 = ln.vector();
   return abs(v1.ddot(v2) / (v2.x * v2.x + v2.y * v2.y));
 }
 
@@ -93,15 +93,15 @@ double minDistanceSegments(const Line &ln1, const Line &ln2)
 }
 
 
-int intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt)
+int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt)
 {
   int iret = 0;
-  cv::Point vs1, vs2;
+  PointI vs1, vs2;
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
   if (double cross_product = vs1.cross(vs2)) {
-    cv::Point v11_12 = ln2.pt1 - ln1.pt1;
+    PointI v11_12 = ln2.pt1 - ln1.pt1;
     double t = v11_12.cross(vs2) / cross_product;
     double u = v11_12.cross(vs1) / cross_product;
     if (t >= 0.  &&  t <= 1  &&  u >= 0.  &&  u <= 1) {
@@ -113,15 +113,15 @@ int intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt)
   return(iret);
 }
 
-int intersectLines(const Line &ln1, const Line &ln2, cv::Point *pt)
+int intersectLines(const Line &ln1, const Line &ln2, PointI *pt)
 {
   int iret = 0;
-  cv::Point vs1, vs2;
+  PointI vs1, vs2;
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
   if (double cross_product = vs1.cross(vs2)) {
-    cv::Point v11_12 = ln2.pt1 - ln1.pt1;
+    PointI v11_12 = ln2.pt1 - ln1.pt1;
     double t = v11_12.cross(vs2) / cross_product;
 
     pt->x = ln1.pt1.x + I3D_ROUND_TO_INT(t * vs1.x);
@@ -137,7 +137,7 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
   groupLinesByDist(linesIn, &linesGrops, dist);
 
   for (size_t ilg = 0; ilg < linesGrops.size(); ilg++) {
-    std::vector<cv::Point> pts;
+    std::vector<PointI> pts;
     int xmin = I3D_INT_MAX;
     int xmax = I3D_INT_MIN;
     for (int il = 0; il < linesGrops[ilg].getSize(); il++) {
@@ -152,8 +152,8 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
     double b = 0.;
     regressionLinearYX(pts, &m, &b);
 
-    cv::Point pt1 = cv::Point(xmin, I3D_ROUND_TO_INT(m * xmin + b));
-    cv::Point pt2 = cv::Point(xmax, I3D_ROUND_TO_INT(m * xmax + b));
+    PointI pt1 = PointI(xmin, I3D_ROUND_TO_INT(m * xmin + b));
+    PointI pt2 = PointI(xmax, I3D_ROUND_TO_INT(m * xmax + b));
     linesOut->push_back(Line(pt1, pt2));
   }
 }
@@ -185,11 +185,15 @@ void ldGroupLines::add(const Line &line)
   bbox = (bbox.isEmpty() ) ? w : joinWindow(bbox, w);
 }
 
+#ifdef HAVE_OPENCV
+
 void ldGroupLines::add(const cv::Vec4i &lvect)
 {
   Line _line(lvect);
   add(_line);
 }
+
+#endif
 
 double ldGroupLines::angleMean()
 {

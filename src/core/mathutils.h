@@ -29,8 +29,8 @@ I3D_EXPORT double laplacianVariance(const cv::Mat &src);
 
 #endif
 
-template<typename T>
-I3D_EXPORT inline double module(const cv::Point_<T> &v)
+template<typename Point_t>
+I3D_EXPORT inline double module(const Point_t &v)
 {
   return sqrt(v.x * v.x + v.y*v.y);
 }
@@ -41,16 +41,16 @@ I3D_EXPORT inline double module(const cv::Point_<T> &v)
  * \param[in] v2 Vector 2
  * \return Ángulo en radianes
  */
-template<typename T>
-I3D_EXPORT inline double vectorAngle(const cv::Point_<T> &v1, const cv::Point_<T> &v2)
+template<typename Point_t>
+I3D_EXPORT inline double vectorAngle(const Point_t &v1, const Point_t &v2)
 {
-  if (v1 == cv::Point_<T>() || v2 == cv::Point_<T>())
+  if (v1 == Point_t() || v2 == Point_t())
     return 0.0;
   return acos((v1.x*v2.x + v1.y*v2.y) / (module(v1) * module(v2)));
 }
 
-template<typename T>
-I3D_EXPORT inline double vectorAngleOX(const cv::Point_<T> &v)
+template<typename Point_t>
+I3D_EXPORT inline double vectorAngleOX(const Point_t &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -58,8 +58,8 @@ I3D_EXPORT inline double vectorAngleOX(const cv::Point_<T> &v)
   return angle; 
 }
 
-template<typename T>
-I3D_EXPORT inline double vectorAngleOY(const cv::Point_<T> &v)
+template<typename Point_t>
+I3D_EXPORT inline double vectorAngleOY(const Point_t &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -67,14 +67,14 @@ I3D_EXPORT inline double vectorAngleOY(const cv::Point_<T> &v)
   return angle;
 }
 
-template<typename T>
-I3D_EXPORT inline double azimut(const cv::Point_<T> &pt1, const cv::Point_<T> &pt2)
+template<typename Point_t>
+I3D_EXPORT inline double azimut(const Point_t &pt1, const Point_t &pt2)
 {
   double azimut = 0.;
-  cv::Point v = pt2 - pt1;
+  Point_t v = pt2 - pt1;
   if (v.x == 0 && v.y == 0) return azimut;
   azimut = atan2(v.x, v.y);
-  if (azimut < 0.) azimut += CV_PI * 2.;
+  if (azimut < 0.) azimut += I3D_2PI;
   return azimut;
 }
 
@@ -205,12 +205,12 @@ I3D_EXPORT double regressionLinearXY(const std::vector<Point_t> &pts, double *m,
 template<typename Point_t>
 I3D_EXPORT void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 {
-  std::vector<cv::Point2d> ptsLog(pts.size());
-  std::transform(pts.begin(), pts.end(), ptsLog.begin(), [](Point_t pt) -> cv::Point2d { return cv::Point2d(pt.x, log10(pt.y)); });
+  std::vector<PointD> ptsLog(pts.size());
+  std::transform(pts.begin(), pts.end(), ptsLog.begin(), [](Point_t pt) -> PointD { return PointD(pt.x, log10(pt.y)); });
 
   double m = 0.;
   double b = 0.;
-  regressionLinearYX<cv::Point2d>(ptsLog, &m, &b);
+  regressionLinearYX<PointD>(ptsLog, &m, &b);
   *A = pow(10, b);
   *r = pow(10, m);
 }

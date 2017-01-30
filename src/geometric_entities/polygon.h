@@ -9,6 +9,7 @@
 
 #include "opencv2/core/core.hpp"
 
+#include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
 #include "geometric_entities/entity.h"
@@ -42,6 +43,10 @@ class I3D_EXPORT Polygon : public EntityPoints<T>
 
 public:
 
+  typedef T value_type;
+
+public:
+
   /*!
    * \brief Constructora por defecto
    */
@@ -62,13 +67,13 @@ public:
    * \brief Constructor
    * \param[in] points
    */
-  Polygon(const std::vector<cv::Point_<T>> &points);
+  Polygon(const std::vector<Point<T>> &points);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon(std::initializer_list<cv::Point_<T>> listPoints);
+  Polygon(std::initializer_list<Point<T>> listPoints);
 
   /*!
    * \brief Destructora
@@ -79,13 +84,13 @@ public:
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  void add(const cv::Point_<T> &point) override;
+  void add(const Point<T> &point) override;
 
   /*!
    * \brief Comprueba si un punto esta dentro del poligono
    * \param[in] point Punto
    */
-  bool isInner(const cv::Point_<T> &point) const;
+  bool isInner(const Point<T> &point) const;
   
   /*!
    * \brief Perimetro del poligono
@@ -110,11 +115,11 @@ Polygon<T>::Polygon(const Polygon &polygon)
   : EntityPoints<T>(entity_type::POLYGON_2D, polygon) {}
 
 template<typename T> inline
-Polygon<T>::Polygon(const std::vector<cv::Point_<T>> &points) 
+Polygon<T>::Polygon(const std::vector<Point<T>> &points) 
   : EntityPoints<T>(entity_type::POLYGON_2D, points) {}
 
 template<typename T> inline
-Polygon<T>::Polygon(std::initializer_list<cv::Point_<T>> listPoints) 
+Polygon<T>::Polygon(std::initializer_list<Point<T>> listPoints) 
   : EntityPoints<T>(entity_type::POLYGON_2D, listPoints) {}
 
 //template<typename T> inline
@@ -125,13 +130,13 @@ Polygon<T>::Polygon(std::initializer_list<cv::Point_<T>> listPoints)
 //}
 
 template<typename T> inline
-void Polygon<T>::add(const cv::Point_<T> &point)
+void Polygon<T>::add(const Point<T> &point)
 { 
   mPoints.push_back(point);
 }
 
 template<typename T> inline
-bool Polygon<T>::isInner(const cv::Point_<T> &point) const
+bool Polygon<T>::isInner(const Point<T> &point) const
 {
   Window<T> w = getWindow();
   // Comprueba si esta dentro de la ventana envolvente.
@@ -154,7 +159,7 @@ bool Polygon<T>::isInner(const cv::Point_<T> &point) const
     if ( isCollinearPoints(point, segment, 0.5)) return true;
     cv::Point ptp;
     //if (projectPointInSegment(segment, point, &ptp) == 2) return true;
-    Segment<T> sPointH(point, cv::Point_<T>(w.pt2.x, point.y));
+    Segment<T> sPointH(point, Point<T>(w.pt2.x, point.y));
     if (point.y == segment.pt1.y || point.y == segment.pt2.y)
       bVertex = true;
     nIntersection += intersectSegments(segment, sPointH, &ptp);

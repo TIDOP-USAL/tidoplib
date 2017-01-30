@@ -98,7 +98,7 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
   std::vector<cv::Point> pts;
   for (size_t ig = 0; ig < linesGroups2.size(); ig++) {
     for (int ir = 0; ir < linesGroups2[ig].getSize(); ir++) {
-      cv::Point ptAux;
+      PointI ptAux;
       intersectLines(linesGroups2[ig][ir], lineVertical, &ptAux);
       pts.push_back(ptAux);
     }
@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
     std::vector<cv::Point> ptsL;
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
       for (int il = 0; il < linesGroupsLeft2[ig].getSize(); il++) {
-        cv::Point ptAux;
+        PointI ptAux;
         intersectLines(linesGroupsLeft2[ig][il], Line(cv::Point(wTower.pt1.x, 0), cv::Point(wTower.pt1.x, frameout.rows)), &ptAux);
         ptsL.push_back(ptAux);
       }
@@ -366,7 +366,7 @@ int main(int argc, char *argv[])
     std::vector<cv::Point> ptsR;
     for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
       for (int ir = 0; ir < linesGroupsRight2[ig].getSize(); ir++) {
-        cv::Point ptAux;
+        PointI ptAux;
         intersectLines(linesGroupsRight2[ig][ir], Line(cv::Point(wTower.pt2.x, 0), cv::Point(wTower.pt2.x, frameout.rows)), &ptAux);
         ptsR.push_back(ptAux);
       }
@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
         c = cv::Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
         for (int il = 0; il < linesGroupsLeft2[igl].getSize(); il++) {
           for (int ir = 0; ir < linesGroupsRight2[igr].getSize(); ir++) {
-            cv::Point pt_intersect;
+            PointI pt_intersect;
             intersectLines(linesGroupsLeft2[igl][il], linesGroupsRight2[igr][ir], &pt_intersect);
             if (wTower.containsPoint(pt_intersect)) {
               groupPoints.add(pt_intersect);

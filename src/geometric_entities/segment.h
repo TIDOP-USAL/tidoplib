@@ -1,11 +1,16 @@
 #ifndef I3D_SEGMENT_H
 #define I3D_SEGMENT_H
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
 #include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
+#include "geometric_entities/point.h"
 #include "geometric_entities/entity.h"
 #include "geometric_entities/window.h"
 #include "geometric_entities/operations.h"
@@ -45,17 +50,17 @@ public:
   /*!
    * \brief type
    */
-  typedef T type;
+  typedef T value_type;
 
   /*!
    * \brief Punto 1
    */
-  cv::Point_<T> pt1;
+  Point<T> pt1;
 
   /*!
    * \brief Punto 2
    */
-  cv::Point_<T> pt2;
+  Point<T> pt2;
 
 public:
 
@@ -74,13 +79,17 @@ public:
    * \param[in] _pt1
    * \param[in] _pt2
    */
-  Segment(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2);
+  Segment(const Point<T> &_pt1, const Point<T> &_pt2);
+
+#ifdef HAVE_OPENCV
 
   /*!
    * \brief Constructor segment
    * \param[in] lvect
    */
   Segment(const cv::Vec<T, 4> &lvect);
+
+#endif
 
   /*!
    * \brief Constructor segment
@@ -89,7 +98,7 @@ public:
    * \param[in] length Longitud del segmento
    * \param[in] bCenter Si es verdadero es el centro de la línea
    */
-  Segment(const cv::Point_<T> &pt, double angle, double length, bool bCenter = true);
+  Segment(const Point<T> &pt, double angle, double length, bool bCenter = true);
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -148,7 +157,7 @@ public:
    * \brief Vector
    * \return Vector del segmento
    */
-  cv::Point_<T> vector() const { return (pt2 - pt1); }
+  Point<T> vector() const { return (pt2 - pt1); }
 };
 
 // Definición de métodos
@@ -162,8 +171,10 @@ Segment<T>::Segment(const Segment &Segment)
   : Entity<T>(entity_type::SEGMENT_2D), pt1(Segment.pt1), pt2(Segment.pt2) {}
 
 template<typename T> inline
-Segment<T>::Segment( const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2 ) 
+Segment<T>::Segment( const Point<T> &_pt1, const Point<T> &_pt2 ) 
   : Entity<T>(entity_type::SEGMENT_2D), pt1(_pt1), pt2(_pt2) {}
+
+#ifdef HAVE_OPENCV
 
 template<typename T> inline
 Segment<T>::Segment( const cv::Vec<T, 4> &lvect ) 
@@ -175,8 +186,10 @@ Segment<T>::Segment( const cv::Vec<T, 4> &lvect )
   pt2.y = lvect[3];
 }
 
+#endif
+
 template<typename T> inline
-Segment<T>::Segment(const cv::Point_<T> &pt, double angle, double length, bool bCenter)
+Segment<T>::Segment(const Point<T> &pt, double angle, double length, bool bCenter)
   : Entity<T>(entity_type::SEGMENT_2D)
 {
   double a = cos(angle), b = sin(angle);
@@ -206,8 +219,8 @@ Segment<T> &Segment<T>::operator = (const Segment &segment)
 template<typename T> template<typename T2> inline
 Segment<T>::operator Segment<T2>() const
 {
-  cv::Point_<T2> _pt1 = pt1;
-  cv::Point_<T2> _pt2 = pt2;
+  Point<T2> _pt1 = pt1;
+  Point<T2> _pt2 = pt2;
   return Segment<T2>(_pt1, _pt2);
 }
 
@@ -257,6 +270,8 @@ typedef Segment<float> SegmentF;
 typedef SegmentI Line;
 
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
 
 /*!
  * \brief Clase segmento 3D
@@ -389,6 +404,8 @@ typedef Segment3D<int> Segment3dI;
 typedef Segment3D<double> Segment3dD;
 typedef Segment3D<float> Segment3dF;
 
+#endif
+
 /* ---------------------------------------------------------------------------------- */
 /*                               Operaciones con Líneas                               */
 /* ---------------------------------------------------------------------------------- */
@@ -399,7 +416,7 @@ typedef Segment3D<float> Segment3dF;
  * \param[in] size Tamaño de buffer
  * \param[out] buff Buffer
  */
-I3D_EXPORT void lineBuffer(const Line &ln, int size, std::vector<cv::Point> *buff);
+I3D_EXPORT void lineBuffer(const Line &ln, int size, std::vector<PointI> *buff);
 
 /*!
  * \brief Projecta un punto en un segmento de recta.
@@ -409,7 +426,7 @@ I3D_EXPORT void lineBuffer(const Line &ln, int size, std::vector<cv::Point> *buf
  * \param[out] ptp Punto proyectado
  * \return -1, 0, 1
  */
-I3D_EXPORT int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Point *ptp);
+I3D_EXPORT int projectPointInSegment(const Line &ln, const PointI &pt, PointI *ptp);
 
 /*!
  * \brief Calcula la distancia de un punto a un segmento de linea.
@@ -417,7 +434,7 @@ I3D_EXPORT int projectPointInSegment(const Line &ln, const cv::Point &pt, cv::Po
  * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
-I3D_EXPORT double distPointToSegment(const cv::Point &pt, const Line &ln);
+I3D_EXPORT double distPointToSegment(const PointI &pt, const Line &ln);
 
 /*!
  * \brief distPointToLine
@@ -425,7 +442,7 @@ I3D_EXPORT double distPointToSegment(const cv::Point &pt, const Line &ln);
  * \param[in] ln
  * \return
  */
-I3D_EXPORT double distPointToLine(const cv::Point &pt, const Line &ln);
+I3D_EXPORT double distPointToLine(const PointI &pt, const Line &ln);
 
 /*!
  * \brief Calcula la distancia mínima entre dos segmentos de linea.
@@ -442,7 +459,7 @@ I3D_EXPORT double minDistanceSegments(const Line &ln1, const Line &ln2);
  * \param pt Punto de intersección
  * \return
  */
-I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt);
+I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
 
 /*!
  * \brief Determina la intersección de los lineas
@@ -451,7 +468,7 @@ I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, cv::Point *pt
  * \param[out] pt Punto de intersección
  * \return
  */
-I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, cv::Point *pt);
+I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, PointI *pt);
 
 /*!
  * \brief joinLinesByDist
@@ -512,11 +529,15 @@ public:
    */
   void add(const Line &line);
 
+#ifdef HAVE_OPENCV
+
   /*!
    * \brief Añade una línea
    * \param[in] lvect
    */
   void add(const cv::Vec4i &lvect);
+
+#endif
 
   ///*!
   // * \brief Ángulo máximo del grupo de líneas

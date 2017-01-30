@@ -10,8 +10,12 @@
 #include <thread>
 
 //#include <Eigen/SVD>
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
+#endif
 
 #include "core/defs.h"
 #include "core/messages.h"
@@ -46,26 +50,6 @@ enum class transform_order {
   DIRECT,   /*!< Transformación directa. */
   INVERSE   /*!< Transformación inversa. */
 };
-
-/*!
- * \brief Aplica una traslación a un conjunto de segmentos
- * \param[in] lines_in
- * \param[out] lines_out
- * \param[in] dx
- * \param[in] dy
- * \deprecated{ Reemplazada por I3D::Translate::transform }
- */
-I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
-I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
-
-/*!
- * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X en radianes
- * \param[in] phi Rotación respecto al eje Y en radianes
- * \param[in] kappa Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 /*!
  * \brief Clase base para transformaciones
@@ -2642,6 +2626,27 @@ Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
 /*! \} */ // end of trf3DGroup
 
 /* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Aplica una traslación a un conjunto de segmentos
+ * \param[in] lines_in
+ * \param[out] lines_out
+ * \param[in] dx
+ * \param[in] dy
+ * \deprecated{ Reemplazada por I3D::Translate::transform }
+ */
+I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
+I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
+
+/*!
+ * \brief Cálculo de la matriz de rotación
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+
 
 template<typename T, typename Point_t>
 I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)

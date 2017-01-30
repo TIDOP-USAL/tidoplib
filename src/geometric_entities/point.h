@@ -79,7 +79,7 @@ public:
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
-  Point& operator = (const Point<T>& pt);
+  Point<T>& operator = (const Point<T>& pt);
 
   /*!
    * \brief Conversión de tipo
@@ -105,12 +105,6 @@ public:
    */
   Point(const cv::Point_<T> &point);
 
-  ///*!
-  // * \brief Operador de asignación cv::Point_
-  // * 
-  // * \param[in] point Objeto Point que se copia
-  // */
-  //Point& operator = (const cv::Point_<T>& pt);
 
   //Para evitar su uso y no de problemas si no esta activado OpenCV
   //operator cv::Vec<T, 2>() const = delete;
@@ -136,17 +130,11 @@ template<typename T> inline
 Point<T>::Point(T x, T y) : cv::Point_<T>(x, y) {}
 
 template<typename T> inline
-Point<T>::Point(const Point<T>& pt) : cv::Point_<T>(pt) {}
+Point<T>::Point(const Point<T>& pt) : cv::Point_<T>(pt.x, pt.y) {}
 
 template<typename T> inline
 Point<T>::Point(const cv::Point_<T>& pt) : cv::Point_<T>(pt) {}
 
-//template<typename T> inline
-//Point<T>& Point<T>::operator = (const cv::Point_<T>& pt)
-//{
-//  x = pt.x; y = pt.y;
-//  return *this;
-//}
 
 #else
 
@@ -242,7 +230,7 @@ Point<T1>& operator *= (Point<T1>& a, T2 b)
 }
 
 template<typename T1, typename T2> static inline
-Point<T1>& operator /= (Point<T1>& a, int b)
+Point<T1>& operator /= (Point<T1>& a, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
     a.x = I3D_ROUND_TO_INT(a.x / b);
@@ -322,7 +310,13 @@ Point<T2> operator * (T1 a, const Point<T2>& b)
 template<typename T>
 class I3D_EXPORT MultiPoint : public EntityPoints<T>
 {
+public:
 
+  /*!
+   * \brief type
+   */
+  typedef T value_type;
+  
 public:
 
   /*!
@@ -345,13 +339,13 @@ public:
    * \brief Constructor
    * \param[in] vPoint vector de puntos
    */
-  MultiPoint(const std::vector<cv::Point_<T>> &vPoint);
+  MultiPoint(const std::vector<Point<T>> &vPoint);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  MultiPoint(std::initializer_list<cv::Point_<T>> listPoints);
+  MultiPoint(std::initializer_list<Point<T>> listPoints);
 
   ~MultiPoint() {}
 
@@ -359,7 +353,7 @@ public:
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  void add(const cv::Point_<T> &point) override;
+  void add(const Point<T> &point) override;
 
   /*!
    * \brief resize
@@ -382,16 +376,16 @@ MultiPoint<T>::MultiPoint(const MultiPoint &multiPoint)
   : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, multiPoint) {}
 
 template<typename T> inline
-MultiPoint<T>::MultiPoint(const std::vector<cv::Point_<T>> &vPoint) 
+MultiPoint<T>::MultiPoint(const std::vector<Point<T>> &vPoint) 
   : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, vPoint) {}
 
 template<typename T> inline
-MultiPoint<T>::MultiPoint(std::initializer_list<cv::Point_<T>> listPoints) 
+MultiPoint<T>::MultiPoint(std::initializer_list<Point<T>> listPoints) 
 : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, listPoints) {}
 
 
 template<typename T> inline
-void MultiPoint<T>::add(const cv::Point_<T> &point)
+void MultiPoint<T>::add(const Point<T> &point)
 {
   this->mPoints.push_back(point);
 }

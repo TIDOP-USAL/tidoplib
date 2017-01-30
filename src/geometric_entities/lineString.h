@@ -3,6 +3,7 @@
 
 #include "opencv2/core/core.hpp"
 
+#include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
 #include "geometric_entities/entity.h"
@@ -33,6 +34,9 @@ namespace I3D
 template <typename T>
 class I3D_EXPORT LineString : public EntityPoints<T> 
 {
+public:
+
+  typedef T value_type;
 
 public:
 
@@ -57,13 +61,13 @@ public:
    * \brief Constructor vector de puntos
    * \param[in] points
    */
-  LineString(const std::vector<cv::Point_<T>> &points);
+  LineString(const std::vector<Point<T>> &points);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-	LineString(std::initializer_list<cv::Point_<T>> listPoints);
+	LineString(std::initializer_list<Point<T>> listPoints);
     
   /*!
    * \brief Destructora
@@ -74,7 +78,7 @@ public:
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  void add(const cv::Point_<T> &point) override;
+  void add(const Point<T> &point) override;
 
   /*!
    * \brief Longitud de la polilínea
@@ -97,15 +101,15 @@ LineString<T>::LineString(const LineString &linea)
   : EntityPoints<T>(entity_type::LINESTRING_2D, linea) {}
 
 template <typename T> inline 
-LineString<T>::LineString(const std::vector<cv::Point_<T>> &points)
+LineString<T>::LineString(const std::vector<Point<T>> &points)
   : EntityPoints<T>(entity_type::LINESTRING_2D, points) {}
 
 template <typename T> inline
-LineString<T>::LineString(std::initializer_list<cv::Point_<T>> listPoints) 
+LineString<T>::LineString(std::initializer_list<Point<T>> listPoints) 
   : EntityPoints<T>(entity_type::LINESTRING_2D, listPoints) {}
 
 template<typename T> inline
-void LineString<T>::add(const cv::Point_<T> &point)
+void LineString<T>::add(const Point<T> &point)
 { 
   this->mPoints.push_back(point);
 }

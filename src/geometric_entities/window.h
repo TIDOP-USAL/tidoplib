@@ -12,6 +12,7 @@
 
 #include "core/defs.h"
 #include "geometric_entities/entity.h"
+#include "geometric_entities/point.h"
 
 namespace I3D
 {
@@ -115,17 +116,17 @@ public:
   /*!
    * \brief type
    */
-  typedef T type;
+  typedef T value_type;
 
   /*!
    * \brief Punto 1
    */
-  cv::Point_<T> pt1;
+  Point<T> pt1;
 
   /*!
    * \brief Punto 2
    */
-  cv::Point_<T> pt2;
+  Point<T> pt2;
 
 public:
 
@@ -149,7 +150,7 @@ public:
    * \param[in] pt1 Primer punto
    * \param[in] pt2 Segundo punto
    */
-  Window(const cv::Point_<T> &pt1, const cv::Point_<T> &pt2);
+  Window(const Point<T> &pt1, const Point<T> &pt2);
 
   /*!
    * \brief Constructor Window
@@ -157,14 +158,14 @@ public:
    * \param[in] sxx Ancho de la ventana
    * \param[in] szy Alto de la ventana
    */
-  Window(cv::Point_<T> &pt, T sxx, T szy);
+  Window(Point<T> &pt, T sxx, T szy);
 
   /*!
    * \brief Constructor Window
    * \param[in] pt Punto central
    * \param[in] sz Alto y ancho de la ventana
    */
-  Window(cv::Point_<T> &pt, T sz);
+  Window(Point<T> &pt, T sz);
 
   /*!
    * \brief Constructor Window
@@ -172,13 +173,13 @@ public:
    *
    * \param[in] v vector de puntos
    */
-  Window(std::vector<cv::Point_<T>> v);
+  Window(std::vector<Point<T>> v);
 
   /*!
    * \brief Constructor de copia con una ventana de otro tipo
    * \param[in] v Ventana
    */
-  template<typename T2> Window(std::vector<cv::Point_<T2>> v);
+  template<typename T2> Window(std::vector<Point<T2>> v);
 
   //~Window();
 
@@ -217,7 +218,7 @@ public:
    * \brief Devuelve centro de la ventana
    * \return Centro de la ventana
    */
-  cv::Point_<T> getCenter() const;
+  Point<T> getCenter() const;
 
   /*!
    * \brief Comprueba si la ventana esta vacia
@@ -230,7 +231,7 @@ public:
    * \param[in] pt Punto
    * \return True si el punto esta dentro de la ventana
    */
-  template<typename T2> bool containsPoint(const cv::Point_<T2> &pt) const;
+  template<typename T2> bool containsPoint(const Point<T2> &pt) const;
 
   /*!
    * \brief La ventana contiene la ventana
@@ -259,7 +260,7 @@ Window<T>::Window(const Window &w)
 //}
 
 template<typename T> inline
-Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2) 
+Window<T>::Window(const Point<T> &_pt1, const Point<T> &_pt2) 
   : Entity<T>(entity_type::WINDOW) 
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
@@ -269,7 +270,7 @@ Window<T>::Window(const cv::Point_<T> &_pt1, const cv::Point_<T> &_pt2)
 }
 
 template<typename T> inline
-Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
+Window<T>::Window(Point<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
 { 
   if (typeid(T) == typeid(int)) {
     // Prefiero hacer la conversión a entero para evitar que OpenCV 
@@ -278,19 +279,19 @@ Window<T>::Window(cv::Point_<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WIN
     int szy_2 = I3D_ROUND_TO_INT(szy / 2);
     int dx = static_cast<int>(sxx) % 2;
     int dy = static_cast<int>(szy) % 2;
-    pt1 = cv::Point_<T>(_pt.x - sxx_2, _pt.y - szy_2);
-    pt2 = cv::Point_<T>(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy);
+    pt1 = Point<T>(_pt.x - sxx_2, _pt.y - szy_2);
+    pt2 = Point<T>(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
     I3D_DISABLE_WARNING(4244)
-    pt1 = cv::Point_<T>(_pt.x - sxx / 2., _pt.y - szy / 2.);
-    pt2 = cv::Point_<T>(_pt.x + sxx / 2., _pt.y + szy / 2.);
+    pt1 = Point<T>(_pt.x - sxx / 2., _pt.y - szy / 2.);
+    pt2 = Point<T>(_pt.x + sxx / 2., _pt.y + szy / 2.);
     I3D_ENABLE_WARNING(4244)
   }
 }
 
 template<typename T> inline
-Window<T>::Window(cv::Point_<T> &_pt, T sz) 
+Window<T>::Window(Point<T> &_pt, T sz) 
   : Entity<T>(entity_type::WINDOW)
 { 
   if (typeid(T) == typeid(int)) {
@@ -298,20 +299,20 @@ Window<T>::Window(cv::Point_<T> &_pt, T sz)
     // lo haga mediante cvRound 
     int sz_2 = I3D_ROUND_TO_INT(sz / 2);
     int dxy = static_cast<int>(sz) % 2;
-    pt1 = cv::Point_<T>(_pt.x - sz_2, _pt.y - sz_2);
-    pt2 = cv::Point_<T>(_pt.x + sz_2 + dxy, _pt.y + sz_2 + dxy);
+    pt1 = Point<T>(_pt.x - sz_2, _pt.y - sz_2);
+    pt2 = Point<T>(_pt.x + sz_2 + dxy, _pt.y + sz_2 + dxy);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
     I3D_DISABLE_WARNING(4244)
     T sz_2 = sz / 2;
-    pt1 = cv::Point_<T>(_pt.x - sz_2, _pt.y - sz_2);
-    pt2 = cv::Point_<T>(_pt.x + sz_2, _pt.y + sz_2);
+    pt1 = Point<T>(_pt.x - sz_2, _pt.y - sz_2);
+    pt2 = Point<T>(_pt.x + sz_2, _pt.y + sz_2);
     I3D_ENABLE_WARNING(4244)
   }
 }
 
 template<typename T> inline
-Window<T>::Window(std::vector<cv::Point_<T>> v)
+Window<T>::Window(std::vector<Point<T>> v)
   : Entity<T>(entity_type::WINDOW),
     pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
     pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
@@ -327,7 +328,7 @@ Window<T>::Window(std::vector<cv::Point_<T>> v)
 }
 
 template<typename T> template<typename T2> inline
-Window<T>::Window(std::vector<cv::Point_<T2>> v)
+Window<T>::Window(std::vector<Point<T2>> v)
   : Entity<T>(entity_type::WINDOW),
     pt1(std::numeric_limits<T>().max(), std::numeric_limits<T>().max()), 
     pt2(-std::numeric_limits<T>().max(), -std::numeric_limits<T>().max())
@@ -371,30 +372,30 @@ Window<T>::operator Window<T2>() const
 {
   // El saturate_cast de OpenCV al hacer cast a int parece que no funciona muy bien.
   // 0.5 lo convierte a 0. 2.5 lo convierte a 2. Sin embargo 1.5 lo convierte a 2...
-  //cv::Point_<T2> _pt1 = pt1;
-  //cv::Point_<T2> _pt2 = pt2;
+  //Point<T2> _pt1 = pt1;
+  //Point<T2> _pt2 = pt2;
   //return Window<T2>(_pt1, _pt2);
   //habria que crear un cast personalizado para transformar a entero. 
   if (typeid(T2) == typeid(int)) {
     //Dos posibles soluciones. Ver cual es mas eficiente
-    cv::Point_<T2> _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y));
-    cv::Point_<T2> _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y));
+    Point<T2> _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y));
+    Point<T2> _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y));
     return Window<T2>(_pt1, _pt2);
   } else {
-    cv::Point_<T2> _pt1 = pt1;
-    cv::Point_<T2> _pt2 = pt2;
+    Point<T2> _pt1 = pt1;
+    Point<T2> _pt2 = pt2;
     return Window<T2>(_pt1, _pt2);
   }
 }
 
 template<typename T> inline
-cv::Point_<T> Window<T>::getCenter() const
+Point<T> Window<T>::getCenter() const
 {
   if (typeid(T) == typeid(int)) {
-    return cv::Point_<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), static_cast<int>(std::floor((pt1.y + pt2.y) / 2)));
+    return Point<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), static_cast<int>(std::floor((pt1.y + pt2.y) / 2)));
   } else {
     I3D_DISABLE_WARNING(4244)
-    return cv::Point_<T>((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
+    return Point<T>((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
     I3D_ENABLE_WARNING(4244)
   }
 }
@@ -409,9 +410,9 @@ bool Window<T>::isEmpty() const
 }
 
 template<typename T> template<typename T2> inline
-bool Window<T>::containsPoint(const cv::Point_<T2> &pt) const
+bool Window<T>::containsPoint(const Point<T2> &pt) const
 {
-  cv::Point_<T> _pt = pt;
+  Point<T> _pt = pt;
   return ((pt2.x >= _pt.x) && (pt2.y >= _pt.y) &&
     (pt1.x <= _pt.x) && (pt1.y <= _pt.y));
 }
@@ -432,7 +433,7 @@ template<typename T>
 I3D_EXPORT Window<T> moveWindow(const Window<T> &w, T dx, T dy)
 {
   Window<T> w_return = w;
-  cv::Point_<T> t(dx, dy);
+  Point<T> t(dx, dy);
   w_return.pt1 += t;
   w_return.pt2 += t;
   return w_return;
