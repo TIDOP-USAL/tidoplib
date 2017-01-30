@@ -256,6 +256,8 @@ public:
    */
   void setDescriptorMatcher(const cv::Ptr<cv::DescriptorMatcher> &dm){ mDescriptorMatcher = dm; }
 
+  void save(const char *fname ) const;
+  void load(const char *fname );
 };
 
 } // End namespace I3D

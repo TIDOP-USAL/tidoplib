@@ -2,15 +2,20 @@
 
 #include "core/messages.h"
 
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+#endif
 
 #include <cmath> 
+
 
 namespace I3D
 {
 
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
 
 double laplacianVariance(const cv::Mat& src)
 {
@@ -20,6 +25,8 @@ double laplacianVariance(const cv::Mat& src)
   cv::meanStdDev(laplacian, mean, stddev);
   return (stddev.val[0] * stddev.val[0]);
 }
+
+#endif
 
 double computeMedian(const std::vector<double> &input)
 {
@@ -153,6 +160,8 @@ void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef HAVE_OPENCV
+
 int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
 {
   int iret = 1;
@@ -181,7 +190,7 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
   return iret;
 }
 
-
+#endif
 
 /* ---------------------------------------------------------------------------------- */
 

@@ -34,6 +34,7 @@
 #include "geometric_entities/window.h"
 #include "core/console.h"
 #include "core/messages.h"
+#include "core/utils.h"
 #include "transform.h"
 
 using namespace I3D;
@@ -237,7 +238,7 @@ int main(int argc, char** argv)
   Size imageSize;
   Mat cameraMatrix, distCoeffs;
   std::string file = "D://Esteban//Ingenio3000//Imagenes_Para_Calibracion_GoPro//video_1280x720//out_camera_data.xml";
-  LoadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
+  loadCameraParams(file, imageSize, cameraMatrix, distCoeffs);
 
   // 1. Carga de las imagenes y determinación de key points y los descriptores
   int size = sizeof(img) / sizeof(img[0]);
@@ -596,19 +597,19 @@ int main(int argc, char** argv)
       wls_filter = createDisparityWLSFilter(left_matcher);
       Ptr<StereoMatcher> right_matcher = createRightMatcher(left_matcher);
 
-      matching_time = (double)getTickCount();
+      //matching_time = (double)getTickCount();
       left_matcher-> compute(left_for_matcher, right_for_matcher,left_disp);
       right_matcher->compute(right_for_matcher,left_for_matcher, right_disp);
-      matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
+      //matching_time = ((double)getTickCount() - matching_time)/getTickFrequency();
     //}
 
       //if (algo != "elas") {
         //! [filtering]
         wls_filter->setLambda(lambda);
         wls_filter->setSigmaColor(sigma);
-        filtering_time = (double)getTickCount();
+        //filtering_time = (double)getTickCount();
         wls_filter->filter(left_disp, left, filtered_disp, right_disp);
-        filtering_time = ((double)getTickCount() - filtering_time) / getTickFrequency();
+        //filtering_time = ((double)getTickCount() - filtering_time) / getTickFrequency();
         //! [filtering]
         //conf_map = wls_filter->getConfidenceMap();
 

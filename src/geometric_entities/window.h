@@ -4,7 +4,11 @@
 #include <algorithm>
 #include <typeinfo>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
 
 #include "core/defs.h"
 #include "geometric_entities/entity.h"
@@ -434,6 +438,8 @@ I3D_EXPORT Window<T> moveWindow(const Window<T> &w, T dx, T dy)
   return w_return;
 }
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una ventana a un Rect de OpenCV
  * \param[in] w Ventana
@@ -447,6 +453,8 @@ I3D_EXPORT cv::Rect windowToCvRect(WindowI w);
  * \return Ventana
  */
 I3D_EXPORT WindowI cvRectToWindow(cv::Rect rect);
+
+#endif // HAVE_OPENCV
 
 /*! \} */ // end of GeometricEntities
 

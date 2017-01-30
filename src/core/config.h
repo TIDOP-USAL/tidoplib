@@ -10,9 +10,13 @@
 // Modulos contrib de OpenCV
 #undef I3D_ENABLE_OPENCV_SFM
 
-#undef HAVE_GDAL
+
 
 #endif
+
+#undef HAVE_GDAL
+
+#define HAVE_RAW // libraw
 
 // Manejo de errores como log y/o mensajes de consola
 

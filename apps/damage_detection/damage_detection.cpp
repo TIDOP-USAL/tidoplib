@@ -230,7 +230,8 @@ int main(int argc, char *argv[])
   // Se estudian uno a uno los conductores
   for (auto &line : linesJoin) {
     cv::Mat gap = cv::Mat::zeros(image_gray.size(), CV_8U);
-    trf.transformEntity(line, &line, transform_order::DIRECT);
+    //trf.transformEntity(line, &line, transform_order::DIRECT);
+    transform(line, &line, &trf, transform_order::DIRECT);
     std::vector<cv::Point> buff;
     lineBuffer(line, widthBuffer, &buff);
 
@@ -448,7 +449,8 @@ int main(int argc, char *argv[])
         
         std::vector<cv::Point> buff;
         I3D::Translate<cv::Point> trf(w_aux.pt1.x, w_aux.pt1.y);
-        trf.transformEntity(line, &line, transform_order::INVERSE);
+        //trf.transformEntity(line, &line, transform_order::INVERSE);
+        transform(line, &line, &trf, transform_order::INVERSE);
         lineBuffer(line, static_cast<int>(th2) + 10, &buff);
         cv::Mat aux(buff);
         const cv::Point *pts = (const cv::Point*) aux.data;
@@ -469,7 +471,7 @@ int main(int argc, char *argv[])
     cv::Mat canny_output;
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
-    cv::findContours( gap, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0) );
+    cv::findContours( gap, contours, hierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, cv::Point(0, 0) );
 
     if ( bDrawHoles) {
       for( size_t i = 0; i< contours.size(); i++ ) {

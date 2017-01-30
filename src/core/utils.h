@@ -6,9 +6,14 @@
 #include <fstream>
 #include <functional>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
 
 #include "core/defs.h"
+#include "geometric_entities/point.h"
 
 namespace I3D
 {
@@ -247,7 +252,7 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut, int size);
+I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
 
 /*!
  * \brief Separa una cadena
@@ -275,6 +280,8 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
 /*                              Operaciones con vectores                              */
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef HAVE_OPENCV
+
 /*!
  * \brief Convierte una matriz de OpenCV en un vector
  * \param[in] m Matriz de entrada
@@ -292,6 +299,8 @@ I3D_EXPORT void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
     }
   }
 }
+
+#endif // HAVE_OPENCV
 
 /*!
  * \brief Ordena un vector de menor a mayor
@@ -395,21 +404,7 @@ I3D_EXPORT int operator< (const std::vector<T> &v, const T t)
 
 /* ---------------------------------------------------------------------------------- */
 
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por filas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-I3D_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por columnas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 /*!
  * \brief Ordena los indices de un vector de menor a mayor
@@ -429,13 +424,15 @@ I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+#ifdef HAVE_OPENCV
 
+I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
 I3D_EXPORT void loadBinMat(const char *file, cv::Mat *data);
 
 I3D_EXPORT void saveBinMat(const char *file, cv::Mat &data);
 
+#endif // HAVE_OPENCV
 
 /* ---------------------------------------------------------------------------------- */
 /*                         Concurrencia, hilos y multiproceso                         */
@@ -491,12 +488,12 @@ protected:
   /*!
    * \brief Punto inicial
    */
-  cv::Point mPt1;
+  PointI mPt1;
 
   /*!
    * \brief Punto final
    */
-  cv::Point mPt2;
+  PointI mPt2;
 
   /*!
    * \brief Paso en X
@@ -511,7 +508,7 @@ protected:
   /*!
    * \brief Posición actual
    */
-  cv::Point mPos;
+  PointI mPos;
 
   /*!
    * \brief Incremento en X
@@ -533,7 +530,7 @@ public:
   /*!
    * \brief Constructora
    */
-  LineAlgorithms(Type type, const cv::Point &pt1, const cv::Point &pt2) 
+  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2) 
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
@@ -551,12 +548,12 @@ public:
    * \param[in] id Identificador de la posición
    * \return Posición actual
    */
-  virtual cv::Point position(int id = -1) = 0;
+  virtual PointI position(int id = -1) = 0;
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  virtual std::vector<cv::Point> getPoints() = 0;
+  virtual std::vector<PointI> getPoints() = 0;
 };
 
 /*!
@@ -584,7 +581,7 @@ public:
    * I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
-  BresenhamLine(const cv::Point &pt1, const cv::Point &pt2) 
+  BresenhamLine(const PointI &pt1, const PointI &pt2) 
     : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2) 
   {
     init();
@@ -598,7 +595,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  cv::Point &operator*();
+  PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -646,7 +643,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  cv::Point position(int id = -1) override;
+  PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -656,13 +653,13 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<cv::Point> getPoints() override;
+  std::vector<PointI> getPoints() override;
 
 private:
 
   void init();
 
-  void _next(int *max, int *min, /*int dMax, int dMin,*/ int endMax, int stepMax, int stepMin);
+  void _next(int *max, int *min, int endMax, int stepMax, int stepMin);
 
 };
 
@@ -702,7 +699,7 @@ public:
    * I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
-  DDA(const cv::Point &pt1, const cv::Point &pt2)
+  DDA(const PointI &pt1, const PointI &pt2)
     : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
   {
     init();
@@ -713,7 +710,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  cv::Point &operator*();
+  PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -761,7 +758,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  cv::Point position(int id = -1) override;
+  PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -771,7 +768,7 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<cv::Point> getPoints() override;
+  std::vector<PointI> getPoints() override;
 
 private:
 
@@ -779,8 +776,6 @@ private:
 
   void _next(int *max, int *min, int dMin, int endMax, int step);
 };
-
-
 
 
 } // End namespace I3D

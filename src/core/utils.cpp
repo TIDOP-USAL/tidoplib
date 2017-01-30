@@ -308,7 +308,7 @@ int changeFileExtension(const char *path, const char *newExt, char *pathOut, int
   return r_err;
 }
 
-int changeFileNameAndExtension(const char *path, char *newNameExt, char *pathOut, int size)
+int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
 {
   int r_err = 0;
   char drive[I3D_MAX_DRIVE];
@@ -347,6 +347,8 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
 
 void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
 {
@@ -395,6 +397,8 @@ void saveBinMat(const char *file, cv::Mat &data)
   std::fwrite(data.data, sizeof(float), rows*cols, fp);
   std::fclose(fp);
 }
+
+#endif // HAVE_OPENCV
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -457,7 +461,11 @@ uint64_t getTickCount()
 
 
 
-cv::Point &BresenhamLine::operator*()
+/* ---------------------------------------------------------------------------------- */
+/*                        Algoritmos de trazado de lineas                             */
+/* ---------------------------------------------------------------------------------- */
+
+PointI &BresenhamLine::operator*()
 {
   return mPos;
 }
@@ -465,9 +473,9 @@ cv::Point &BresenhamLine::operator*()
 BresenhamLine &BresenhamLine::operator ++()
 {
   if (dx > dy) {
-    _next(&mPos.x, &mPos.y, /*dx, dy,*/ mPt2.x, mStepX, mStepY);
+    _next(&mPos.x, &mPos.y, mPt2.x, mStepX, mStepY);
   } else {
-    _next(&mPos.y, &mPos.x, /*dy, dx,*/ mPt2.y, mStepY, mStepX);
+    _next(&mPos.y, &mPos.x, mPt2.y, mStepY, mStepX);
   }
   return *this;
 }
@@ -482,9 +490,9 @@ BresenhamLine BresenhamLine::operator ++(int)
 BresenhamLine &BresenhamLine::operator --()
 {
   if (dx > dy) {
-    _next(&mPos.x, &mPos.y, /*dx, dy,*/ mPt2.x, -mStepX, -mStepY);
+    _next(&mPos.x, &mPos.y, mPt2.x, -mStepX, -mStepY);
   } else {
-    _next(&mPos.y, &mPos.x, /*dy, dx,*/ mPt2.y, -mStepY, -mStepX);
+    _next(&mPos.y, &mPos.x, mPt2.y, -mStepY, -mStepX);
   }
   return *this;
 }
@@ -510,7 +518,7 @@ BresenhamLine BresenhamLine::end()
   return it;
 }
 
-cv::Point BresenhamLine::position(int id)
+PointI BresenhamLine::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -620,9 +628,9 @@ int BresenhamLine::size() const
   return mCount;
 }
 
-std::vector<cv::Point> BresenhamLine::getPoints()
+std::vector<PointI> BresenhamLine::getPoints()
 {
-  std::vector<cv::Point> pts;
+  std::vector<PointI> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);
@@ -632,16 +640,11 @@ std::vector<cv::Point> BresenhamLine::getPoints()
 
 /* ---------------------------------------------------------------------------------- */
 
-//DDA::DDA()
-//{}
-//
-//DDA::~DDA()
-//{}
-
-cv::Point &DDA::operator*()
+PointI &DDA::operator*()
 {
   return mPos;
 }
+
 
 DDA &DDA::operator ++()
 {
@@ -691,7 +694,7 @@ DDA DDA::end()
   return it;
 }
 
-cv::Point DDA::position(int id) 
+PointI DDA::position(int id) 
 {
   if (id == -1) {
     return mPos;
@@ -741,9 +744,9 @@ int DDA::size() const
   return mCount;
 }
 
-std::vector<cv::Point> DDA::getPoints()
+std::vector<PointI> DDA::getPoints()
 {
-  std::vector<cv::Point> pts;
+  std::vector<PointI> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);

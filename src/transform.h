@@ -149,44 +149,12 @@ public:
   virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
-   * \brief Aplica la transformación a una imagen
-   * \param[in] in Imagen de entrada
-   * \param[out] out Imagen de salida
-   * \param[in] bDirect Transformación directa (por defecto)
-   */
-  //void transform(const cv::Mat_<T> &in, cv::Mat_<T> *out, bool bDirect = true) {
-  //  int num_threads = getOptimalNumberOfThreads();
-  //  std::vector<std::thread> threads(num_threads);
-
-  //  auto trf = [&](int ini, int end) {
-  ////    cv::Point pt_out;
-  ////    for (int r = ini; r < end; r++) {
-  ////      uchar *in_ptr = in.ptr<uchar>(r);
-  ////      for (int c = 0; c < rgb.cols; c++) {
-  ////        // ... Al reves. calcular el tamaño de la imagen transformada y calcular el valor rgb correspondiente a cada pixel
-  ////        transform(cv::Point(c, r), &pt_out, bDirect);
-  ////      }
-  ////    }
-  //  };
-
-  //  int size = in.rows / num_threads;
-  //  for (int i = 0; i < num_threads; i++) {
-  //    int ini = i * size;
-  //    int end = ini + size;
-  //    if ( end > in.rows ) end = in.rows;
-  //    t[i] = std::thread(trf, ini, end);
-  //  }
-
-  //  for (auto &_thread : threads) _thread.join();
-  //}
-
-  /*!
    * \brief Aplica la transformación a una entidad geométrica
    * \param[in] in Entidad de entrada
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
+  //virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -369,7 +337,7 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  //virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
@@ -410,14 +378,14 @@ double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> 
   return -1.;
 }
 
-template<typename T> inline
-void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
-{
-  *out = in;
-  for (auto trf : mTransf) {
-    trf->transform(*out, out, trfOrder);
-  }
-}
+//template<typename T> inline
+//void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
+//{
+//  *out = in;
+//  for (auto trf : mTransf) {
+//    trf->transform(*out, out, trfOrder);
+//  }
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -488,34 +456,34 @@ public:
    * \param[out] out Entidad de salida
    * \param[in] bDirect Transformación directa (por defecto)
    */
-  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  //void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 };
 
-template<typename T> inline
-void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
-{
-  if (in.getType() == entity_type::WINDOW) {
-    Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
-    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, trfOrder);
-    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, trfOrder);
-  } else if ( in.getType() == entity_type::SEGMENT_2D) {
-    Segment<sub_type> *s = dynamic_cast<Segment<sub_type> *>(out);
-    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, trfOrder);
-    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, trfOrder);
-  } else if (in.getType() == entity_type::LINESTRING_2D ||
-             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
-             in.getType() == entity_type::POLYGON_2D) {
-    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
-    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
-    typename std::vector<T>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
-    for (typename std::vector<T>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-      this->transform(*it, &(*it_out), trfOrder);
-    }
-  } else {
-    //tipo no soportado
-    return;
-  }
-}
+//template<typename T> inline
+//void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
+//{
+//  if (in.getType() == entity_type::WINDOW) {
+//    Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
+//    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, trfOrder);
+//    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, trfOrder);
+//  } else if ( in.getType() == entity_type::SEGMENT_2D) {
+//    Segment<sub_type> *s = dynamic_cast<Segment<sub_type> *>(out);
+//    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, trfOrder);
+//    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, trfOrder);
+//  } else if (in.getType() == entity_type::LINESTRING_2D ||
+//             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
+//             in.getType() == entity_type::POLYGON_2D) {
+//    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
+//    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
+//    typename std::vector<T>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+//    for (typename std::vector<T>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+//      this->transform(*it, &(*it_out), trfOrder);
+//    }
+//  } else {
+//    //tipo no soportado
+//    return;
+//  }
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -717,7 +685,7 @@ public:
    * \param[out] out Puntos de salida
    * \param[in] bDirect Transformación directa
    */
-  //void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
+  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -810,15 +778,15 @@ void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, tran
   }
 }
 
-//template<typename T> inline
-//void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
-//{
-//  formatVectorOut(in, out);
-//  for (int i = 0; i < in.size(); i++) {
-//    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
-//    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
-//  }
-//}
+template<typename T> inline
+void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
+{
+  formatVectorOut(in, out);
+  for (int i = 0; i < in.size(); i++) {
+    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
+    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
+  }
+}
 
 template<typename T> inline
 void Translate<T>::transform(const T &in, T *out, transform_order trfOrder) const
@@ -868,7 +836,7 @@ public:
    * \brief Constructora por defecto
    */
   Rotation() 
-    : Transform2D<T>(1, transform_type::ROTATION), angle(0)
+    : Transform2D<T>(1, transform_type::ROTATION), angle(0.)
   {
     update();
   }
@@ -1351,13 +1319,13 @@ void Helmert2D<T>::update()
  * mismos de manera que dicha variación en unidad de medida es constante a lo largo 
  * de cada eje pero no entre los dos ejes.
  *
- * \f$ a = scaleX * cos(rotation)\f$<BR>
- * \f$ b = scaleX * sin(rotation)\f$<BR>
- * \f$ c = -scaleY * sin(rotation)\f$<BR>
- * \f$ d =  scaleY * cos(rotation)\f$<BR>
+ * \f[ a =  scaleX * cos(rotation)\f]
+ * \f[ b = -scaleY * sin(rotation)\f]
+ * \f[ c =  scaleX * sin(rotation)\f]
+ * \f[ d =  scaleY * cos(rotation)\f]
  *
- * \f$ x' = a * x + b * y + x0\f$<BR>
- * \f$ y' = d * y + c * x + y0\f$
+ * \f[ x' = a * x + b * y + x0\f]
+ * \f[ y' = c * x + d * y + y0\f]
  */
 template<typename T>
 class I3D_EXPORT Afin : public Transform2D<T>
@@ -1400,12 +1368,12 @@ private:
   double a;
 
   /*!
-   * \brief b = scaleX * sin(rotation)
+   * \brief b = -scaleY * sin(rotation)
    */
   double b;
 
   /*!
-   * \brief c = -scaleY * sin(rotation)
+   * \brief c = scaleX * sin(rotation)
    */
   double c;
 
@@ -1495,6 +1463,8 @@ public:
    */
   T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
 
+  void getParameters(double *a, double *b, double *c, double *d);
+
   /*!
    * \brief Devuelve el giro
    * \return Ángulo de rotación en radianes
@@ -1522,6 +1492,17 @@ public:
    * \param[in] rotation Rotación
    */
   void setParameters(T x0, T y0, double scaleX, double scaleY, double rotation);
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] a
+   * \param[in] b
+   * \param[in] c
+   * \param[in] d
+   * \param[in] x0 Traslación en x
+   * \param[in] y0 Traslación en y
+   */
+  void setParameters(double a, double b, double c, double d, T x0, T y0);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -1588,15 +1569,18 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
         cv::solve(mA, mB, C, cv::DECOMP_SVD);
 
         a = C.at<double>(0);
-        c = C.at<double>(1);
-        b = C.at<double>(2);
+        b = C.at<double>(1);
+        c = C.at<double>(2);
         d = C.at<double>(3);
         x0 = static_cast<sub_type>(C.at<double>(4));
         y0 = static_cast<sub_type>(C.at<double>(5));
 
-        mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
-        mScaleX = sqrt(a*a + b*b);
-        mScaleY = sqrt(c*c + d*d);
+        //double f = atan2( c, a );
+        //double w = atan2( -b, d );
+
+        mRotation = (atan2(c, a) + atan2(-b, d) ) / 2.; //... Revisar lo de un unico giro
+        mScaleX = sqrt(a*a + c*c);
+        mScaleY = sqrt(b*b + d*d);
 
         rmse = _rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
@@ -1647,6 +1631,16 @@ T Afin<T>::transform(const T &in, transform_order trfOrder) const
 }
 
 template<typename T> inline
+void Afin<T>::getParameters(double *_a, double *_b, double *_c, double *_d)
+{
+  *_a = a;
+  *_b = b;
+  *_c = c;
+  *_d = d;
+}
+
+
+template<typename T> inline
 void Afin<T>::setParameters(T x0, T y0, double scaleX, double scaleY, double rotation)
 {
   this->x0 = x0;
@@ -1655,6 +1649,20 @@ void Afin<T>::setParameters(T x0, T y0, double scaleX, double scaleY, double rot
   mScaleY = scaleY;
   mRotation = rotation;
   update();
+}
+
+template<typename T> inline
+void setParameters(double a, double b, double c, double d, T x0, T y0)
+{
+  this->a = a;
+  this->b = b;
+  this->c = c;
+  this->d = d;
+  this->x0 = x0;
+  this->y0 = y0;
+  mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
+  mScaleX = sqrt(a*a + b*b);
+  mScaleY = sqrt(c*c + d*d);
 }
 
 template<typename T> inline
@@ -1682,8 +1690,8 @@ template<typename T> inline
 void Afin<T>::update()
 {
   a =  mScaleX * cos(mRotation);
-  b =  mScaleX * sin(mRotation);
-  c = -mScaleY * sin(mRotation);
+  b = -mScaleY * sin(mRotation);
+  c =  mScaleX * sin(mRotation);
   d =  mScaleY * cos(mRotation);
   
   // Transformación inversa
@@ -2635,6 +2643,114 @@ Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
 
 /* ---------------------------------------------------------------------------------- */
 
+template<typename T, typename Point_t>
+I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)
+{
+  if (in.getType() == entity_type::WINDOW) {
+    Window<T> *w = dynamic_cast<Window<T> *>(out);
+    trf->transform(dynamic_cast<const Window<T> &>(in).pt1, &w->pt1, trfOrder);
+    trf->transform(dynamic_cast<const Window<T> &>(in).pt2, &w->pt2, trfOrder);
+  } else if ( in.getType() == entity_type::SEGMENT_2D) {
+    Segment<T> *s = dynamic_cast<Segment<T> *>(out);
+    trf->transform(dynamic_cast<const Segment<T> &>(in).pt1, &s->pt1, trfOrder);
+    trf->transform(dynamic_cast<const Segment<T> &>(in).pt2, &s->pt2, trfOrder);
+  } else if (in.getType() == entity_type::LINESTRING_2D ||
+             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
+             in.getType() == entity_type::POLYGON_2D) {
+    const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
+    dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());
+    typename std::vector<Point_t>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
+    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+      trf->transform(*it, &(*it_out), trfOrder);
+    }
+  } else {
+    //tipo no soportado
+    return;
+  }
+}
+
+template<typename Entity_t, typename Point_t>
+I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, Transform<Point_t> trf, transform_order trfOrder)
+{
+  for (int i = 0; i < in.size(); i++) {
+    transform(in[i], &(*out)[i], trf, trfOrder);
+  }
+}
+
+#ifdef HAVE_OPENCV
+
+// Aplica una transformación a una imagen
+template<typename T>
+I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<T> trf, transform_order trfOrder)
+{
+  transform_type type = trf->getTransformType();
+  switch (type) {
+  case I3D::transform_type::TRANSLATE:
+    Translate<T> transTrf = dynamic_cast<Translate<T>>(trf);
+    cv::Mat translateMat( 2, 3, CV_32FC1 );
+    translateMat.at<float>(0, 0) = 1.f;
+    translateMat.at<float>(0, 1) = 0.f;
+    translateMat.at<float>(0, 2) = transTrf.getTranslationX();
+    translateMat.at<float>(1, 0) = 0.f;
+    translateMat.at<float>(1, 1) = 1.f;
+    translateMat.at<float>(1, 2) = transTrf.getTranslationY();
+    cv::warpAffine(in, out, translateMat);
+    break;
+  case I3D::transform_type::ROTATION:
+    Rotation<T> rotTrf = dynamic_cast<Rotation<T>>(trf);
+    cv::Mat rotMat( 2, 3, CV_32FC1 );
+    double a = cos(rotTrf.getAngle());
+    double b = sin(rotTrf.getAngle());
+    rotMat.at<float>(0, 0) = a;
+    rotMat.at<float>(0, 1) = b;
+    rotMat.at<float>(0, 2) = 0.f;
+    rotMat.at<float>(1, 0) = b;
+    rotMat.at<float>(1, 1) = a;
+    rotMat.at<float>(1, 2) = 0.f;
+    cv::warpAffine(in, out, rotMat);
+    break;
+  case I3D::transform_type::HELMERT_2D:
+    Helmert2D<T> h2dTrf = dynamic_cast<Helmert2D<T>>(trf);
+    cv::Mat h2DMat( 2, 3, CV_32FC1 );
+    double rotation = h2dTrf.getRotation();
+    double scale = h2dTrf.getScale();
+    double a = scale * cos(rotation);
+    double b = scale * sin(rotation);
+    h2DMat.at<float>(0, 0) = a;
+    h2DMat.at<float>(0, 1) = b;
+    h2DMat.at<float>(0, 2) = h2dTrf.x0;
+    h2DMat.at<float>(1, 0) = b;
+    h2DMat.at<float>(1, 1) = a;
+    h2DMat.at<float>(1, 2) = h2dTrf.y0;
+    cv::warpAffine(in, out, h2DMat);
+    break;
+  case I3D::transform_type::AFIN:
+    Afin<T> afinTrf = dynamic_cast<Afin<T>>(trf);
+    double a, b, c, d;
+    afinTrf.getParameters(&a, &b, &c, &d);
+    cv::Mat afinMat( 2, 3, CV_32FC1 );
+    afinMat.at<float>(0, 0) = a;
+    afinMat.at<float>(0, 1) = b;
+    afinMat.at<float>(0, 2) = afinTrf.x0;
+    afinMat.at<float>(1, 0) = c;
+    afinMat.at<float>(1, 1) = d;
+    afinMat.at<float>(1, 2) = afinTrf.y0;
+    cv::warpAffine(in, out, afinMat);
+    break;
+  case I3D::transform_type::PERSPECTIVE:
+
+    cv::warpPerspective();
+    break;
+  case I3D::transform_type::PROJECTIVE:
+    break;
+  case I3D::transform_type::POLYNOMIAL:
+    break;
+  default:
+    break;
+  }
+}
+
+#endif // HAVE_OPENCV
 
 /*! \} */ // end of trfGroup
 

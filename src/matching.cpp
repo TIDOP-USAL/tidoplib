@@ -74,16 +74,16 @@ void Features2D::save( const char *fname ) const
     if (fp) {
       // Cabecera
       // - KeyPoints
-      int size = static_cast<int>(mKeyPoints.size());
+      int32_t size = static_cast<int32_t>(mKeyPoints.size());
       // - Descriptor
-      int rows = mDescriptor.rows;
-      int cols = mDescriptor.cols;
-      int type = mDescriptor.type();
+      int32_t rows = mDescriptor.rows;
+      int32_t cols = mDescriptor.cols;
+      int32_t type = mDescriptor.type();
       std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, fp);
-      std::fwrite(&size, sizeof(int), 1, fp);
-      std::fwrite(&rows, sizeof(int), 1, fp);
-      std::fwrite(&cols, sizeof(int), 1, fp);
-      std::fwrite(&type, sizeof(int), 1, fp);
+      std::fwrite(&size, sizeof(int32_t), 1, fp);
+      std::fwrite(&rows, sizeof(int32_t), 1, fp);
+      std::fwrite(&cols, sizeof(int32_t), 1, fp);
+      std::fwrite(&type, sizeof(int32_t), 1, fp);
       char extraHead[200]; // Reserva de espacio para futuros usos
       std::fwrite(&extraHead, sizeof(char), 200, fp);
       //Cuerpo
@@ -126,10 +126,10 @@ void Features2D::read( const char *fname )
         int type;
         char extraHead[200];
         std::fread(h, sizeof(char), 24, fp);
-        std::fread(&size, sizeof(int), 1, fp);
-        std::fread(&rows, sizeof(int), 1, fp);
-        std::fread(&cols, sizeof(int), 1, fp);
-        std::fread(&type, sizeof(int), 1, fp);
+        std::fread(&size, sizeof(int32_t), 1, fp);
+        std::fread(&rows, sizeof(int32_t), 1, fp);
+        std::fread(&cols, sizeof(int32_t), 1, fp);
+        std::fread(&type, sizeof(int32_t), 1, fp);
         std::fread(&extraHead, sizeof(char), 200, fp);
         //Cuerpo
         mKeyPoints.resize(size);
@@ -231,7 +231,7 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
     TrfPerspective<cv::Point2f> trfPerps;
     std::vector<double> err;
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
-    while ( rmse > 10. ) {
+    while ( rmse > 0.1 ) {
       for (size_t i = 0, j = 0; i < pts1.size(); i++) {
         if (sqrt(err[i]) > rmse) {
           pts1.erase(pts1.begin() + j);
@@ -297,6 +297,64 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
   //    goodMatchesA.push_back(matchesA[iMatch][0]);
   //  }
   //}
+
+void Matching::save(const char *fname ) const
+{
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(fname, ext, I3D_MAX_EXT)) {
+    printError("Fichero no valido: %s", fname);
+    return;
+  }
+  if (strcmp(ext, ".bin") == 0) {
+    FILE* fp = std::fopen(fname, "wb");
+    if (fp) {
+      // Cabecera
+      int size = static_cast<int>(mMatches.size());
+      std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, fp);
+      std::fwrite(&size, sizeof(int32_t), 1, fp);
+      char extraHead[100]; // Reserva de espacio para futuros usos
+      std::fwrite(&extraHead, sizeof(char), 100, fp);
+      //Cuerpo
+      for (int i = 0; i < mMatches.size(); i++) {
+        std::fwrite(&mMatches[i].queryIdx, sizeof(int32_t), 1, fp);
+        std::fwrite(&mMatches[i].trainIdx, sizeof(int32_t), 1, fp);
+        std::fwrite(&mMatches[i].imgIdx, sizeof(int32_t), 1, fp);
+        std::fwrite(&mMatches[i].distance, sizeof(float), 1, fp);
+      }
+      std::fclose(fp);
+    } else {
+      printError("No pudo escribir archivo %s", fname);
+    } 
+  }
+}
+
+void Matching::load( const char *fname )
+{
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(fname, ext, I3D_MAX_EXT) == 0) {
+    if (strcmp(ext, ".bin") == 0) {
+      if (FILE* fp = std::fopen(fname, "rb")) {
+        //cabecera
+        char h[22];
+        int size;
+        char extraHead[100];
+        std::fread(h, sizeof(char), 22, fp);
+        std::fread(&size, sizeof(int32_t), 1, fp);
+        std::fread(&extraHead, sizeof(char), 100, fp);
+        //Cuerpo
+        mMatches.resize(size);
+        for (auto &match : mMatches) {
+          std::fread(&match.queryIdx, sizeof(int32_t), 1, fp);
+          std::fread(&match.trainIdx, sizeof(int32_t), 1, fp);
+          std::fread(&match.imgIdx, sizeof(int32_t), 1, fp);
+          std::fread(&match.distance, sizeof(float), 1, fp);
+        }
+        std::fclose(fp);
+      } else
+        printError("No pudo leer archivo %s", fname);
+    }
+  } else printError("Fichero no valido: %s", fname);
+}
 
 } // End namespace I3D
 

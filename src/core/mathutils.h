@@ -4,14 +4,21 @@
 #include <vector>
 #include <array>
 
+#include "core/config.h"
+
+#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
+#endif
 
 #include "core/defs.h"
+#include "geometric_entities/point.h"
 
 namespace I3D
 {
 
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
 
 /*!
  * \brief Varianza del laplaciano
@@ -19,6 +26,8 @@ namespace I3D
  * \return
  */
 I3D_EXPORT double laplacianVariance(const cv::Mat &src);
+
+#endif
 
 template<typename T>
 I3D_EXPORT inline double module(const cv::Point_<T> &v)
@@ -253,6 +262,26 @@ void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
  * \param[out] RZ Matriz de rotación
  */
 void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
+
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Ordena los valores de una matriz de mayor a menor por filas
+ * \param[in] in
+ * \param[out] out
+ * \param[out] idx
+ */
+I3D_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+
+/*!
+ * \brief Ordena los valores de una matriz de mayor a menor por columnas
+ * \param[in] in
+ * \param[out] out
+ * \param[out] idx
+ */
+I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+
+#endif
 
 /*!
  * \brief Obtiene la ecuación de un plano que pasa por tres puntos
