@@ -443,9 +443,9 @@ int main(int argc, char *argv[])
         logPrintInfo("Número de lineas detectado: %i", oLD->getLines().size());
         if (!oLD->getLines().empty()) {
           vector<Line> lines;
-          //translate(oLD->getLines(), &lines, wPrev.pt1.x, wPrev.pt1.y);
-          Translate<cv::Point> trf(wPrev.pt1.x, wPrev.pt1.y);
-          trf.transform(oLD->getLines(), &lines);
+          Translate<PointI> trf(wPrev.pt1.x, wPrev.pt1.y);
+          //trf.transform(oLD->getLines(), &lines);
+          transform(oLD->getLines(), &lines, &trf, transform_order::DIRECT);
 
           cvtColor(current_frame, out, CV_GRAY2BGR);
           for (size_t i = 0; i < lines.size(); i++) {

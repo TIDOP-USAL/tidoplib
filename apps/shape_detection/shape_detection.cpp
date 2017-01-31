@@ -54,7 +54,7 @@ void houghCircles( cv::Mat &red )
   HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, higher_threshold, higher_accum_threshold, minRadius, maxRadius );
   for (size_t i = 0; i < circles.size(); i++) {
     
-    cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
+    PointI center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     cv::Mat aux;
     image.copyTo(aux);
@@ -276,7 +276,7 @@ void VideoHelper::onRead(cv::Mat &frame)
   if ( higher_accum_threshold <= 0 || higher_threshold <= 0 ) return;
   HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, higher_threshold, higher_accum_threshold, minRadius, maxRadius );
   for (size_t i = 0; i < circles.size(); i++) {
-    cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
+    PointI center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
     int radius = I3D_ROUND_TO_INT(circles[i][2]);
     cv::Mat aux;
     image.copyTo(aux);
@@ -300,8 +300,8 @@ como H=0-20.
       cv::Point c_moments;
       cv::Mat img_hsv;
       cvtColor(aux, img_hsv, COLOR_BGR2HSV);
-
-      WindowI w_aux2(center-w_aux.pt1, radius*2 + 20);
+      PointI pt_c = center - w_aux.pt1;
+      WindowI w_aux2(pt_c, radius*2 + 20);
       img_hsv.rowRange(w_aux2.pt1.y, w_aux2.pt2.y).colRange(w_aux2.pt1.x, w_aux2.pt2.x).copyTo(img_hsv);
       
       cv::Mat img_thresh;
@@ -568,7 +568,7 @@ int main(int argc, char *argv[])
       std::vector<Vec3f> circles;
       HoughCircles(red, circles, HOUGH_GRADIENT, 2, red.rows/8, higher_threshold, higher_accum_threshold, minRadius, maxRadius );
       for (size_t i = 0; i < circles.size(); i++) {
-        cv::Point center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
+        PointI center(I3D_ROUND_TO_INT(circles[i][0]), I3D_ROUND_TO_INT(circles[i][1]));
         int radius = I3D_ROUND_TO_INT(circles[i][2]);
         if (bDraw) {
           circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );

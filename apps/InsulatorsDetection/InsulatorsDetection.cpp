@@ -59,8 +59,9 @@ void procesado( const cv::Mat &frame, const WindowI &w, const I3D::ImgProcessing
   thread_mutex.lock();
   if (oLD->run(studyAreaOut, cv::Scalar(angle, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
   if (oLD->getLines().empty()) return;
-  Translate<cv::Point> trf(w.pt1.x, w.pt1.y);
-  trf.transform(oLD->getLines(), &lines);
+  Translate<PointI> trf(w.pt1.x, w.pt1.y);
+  //trf.transform(oLD->getLines(), &lines);
+  transform(oLD->getLines(), &lines, &trf, transform_order::DIRECT);
   thread_mutex.unlock();
 
   //Comenzamos a agrupar lineas paralelas
@@ -267,13 +268,16 @@ int main(int argc, char *argv[])
     std::vector<Line> linesRight, linesLeft;
     if (pLineDetector->run(outRight, cv::Scalar(angleRight, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
     if (pLineDetector->getLines().empty()) return 0;
-    Translate<cv::Point> trf(wRight.pt1.x, wRight.pt1.y);
-    trf.transform(pLineDetector->getLines(), &linesRight);
-    
+    Translate<PointI> trf(wRight.pt1.x, wRight.pt1.y);
+    //trf.transform(pLineDetector->getLines(), &linesRight);
+    transform(pLineDetector->getLines(), &linesRight, &trf, transform_order::DIRECT);
+
     if (pLineDetector->run(outLeft, cv::Scalar(angleLeft, 0.15)) == LineDetector::Exit::FAILURE) exit(EXIT_FAILURE);
     if (pLineDetector->getLines().empty()) return 0;
-    trf.setTranslation(wLeft.pt1.x, wLeft.pt1.y);
-    trf.transform(pLineDetector->getLines(), &linesLeft);
+    trf.tx = wLeft.pt1.x;
+    trf.ty = wLeft.pt1.y;
+    //trf.transform(pLineDetector->getLines(), &linesLeft);
+    transform(pLineDetector->getLines(), &linesLeft, &trf, transform_order::DIRECT);
 
     //Comenzamos a agrupar lineas paralelas
     std::vector<ldGroupLines> linesGroupsRight, linesGroupsLeft;

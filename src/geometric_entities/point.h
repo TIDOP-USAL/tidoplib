@@ -180,6 +180,7 @@ Point<T>& Point<T>::operator = (const Point& pt)
   return *this;
 }
 
+I3D_DISABLE_WARNING(4244)
 template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
@@ -189,6 +190,7 @@ Point<T>::operator Point<T2>() const
     return Point<T2>(static_cast<T2>(x), static_cast<T2>(y));
   }
 }
+I3D_ENABLE_WARNING(4244)
 
 template<typename T1, typename T2> static inline
 Point<T1>& operator += (Point<T1>& a, const Point<T2>& b)

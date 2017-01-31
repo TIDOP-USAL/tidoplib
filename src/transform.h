@@ -9,8 +9,11 @@
 #include <array>
 #include <thread>
 
-//#include <Eigen/SVD>
 #include "core/config.h"
+
+#ifdef HAVE_EIGEN
+#include <Eigen/SVD>
+#endif
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -35,7 +38,6 @@ namespace I3D
  * \brief Tipos de transformaciones
  */
 enum class transform_type {
-  DEFAULT,         /*!<   */
   TRANSLATE,       /*!< Desplazamiento. */
   ROTATION,        /*!< Giro. */
   HELMERT_2D,      /*!< Helmert 2D */
@@ -43,7 +45,9 @@ enum class transform_type {
   PERSPECTIVE,     /*!< Perspectiva */
   PROJECTIVE,      /*!< Projectiva */
   HELMERT_3D,      /*!< Helmert 3D */
-  POLYNOMIAL       /*!< Transformación polinómica*/
+  POLYNOMIAL,      /*!< Transformación polinómica*/
+  // tipos expeciales
+  MULTIPLE
 };
 
 enum class transform_order {
@@ -54,7 +58,7 @@ enum class transform_order {
 /*!
  * \brief Clase base para transformaciones
  */
-template<typename T>
+template<typename Point_t>
 class I3D_EXPORT Transform
 {
 
@@ -72,20 +76,29 @@ protected:
   int mMinPoint;
 
   /*!
-   * 2D o 3D
+   * \brief Dimensiones de la transformación. 2D o 3D
    */
   int mDimensions;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
   /*!
    * \brief Constructor
+   * \param[in] trfType Tipo de transformación
    * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
-  Transform(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : mTrfType(trfType), mMinPoint(n_min) {}
+  Transform(transform_type trfType, int nMin = 0)
+    : mTrfType(trfType), mMinPoint(nMin) {}
 
   /*!
    * \brief Destructora
@@ -96,10 +109,10 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  virtual double compute(const std::vector<T> &v1, const std::vector<T> &v2, std::vector<double> *error = NULL) = 0;
+  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) = 0;
 
   /*!
    * \brief Determina si el numero de puntos son suficientes para calcular la transformación
@@ -110,35 +123,30 @@ public:
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
+  virtual void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
+  virtual void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const = 0;
-
-  /*!
-   * \brief Aplica la transformación a una entidad geométrica
-   * \param[in] in Entidad de entrada
-   * \param[out] out Entidad de salida
-   * \param[in] bDirect Transformación directa (por defecto)
-   */
-  //virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const = 0;
+  virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const = 0;
 
   /*!
    * \brief Número mínimo de puntos necesario para la transformación
@@ -155,25 +163,24 @@ public:
 
   /*!
    * \brief root-mean-square error (Raiz cuadrada de error cuadratico medio)
-   * \param pts1 Puntos en el sistema de entrada
-   * \param pts2 Puntos en el sistema de salida
+   * \param ptsIn Puntos en el sistema de entrada
+   * \param ptsOut Puntos en el sistema de salida
    * \param error Vector con los errores para cada punto
    * \return RMSE
    */
-  double rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
+  double rootMeanSquareError(const std::vector<Point_t> &ptsIn, const std::vector<Point_t> &ptsOut, std::vector<double> *error = NULL)
   {
-    size_t n = pts1.size();
-    std::vector<T> ptsOut(n);
+    size_t n = ptsIn.size();
+    std::vector<Point_t> pts_out(n);
     std::vector<double> err(n);
     double sumErr = 0.;
 
     //... Sería mejor añadirlo en el propio calculo de los parámetros?
-    if (compute(pts1, pts2)) {
+    if (compute(ptsIn, ptsOut)) {
       for (size_t i = 0; i < n; i++) {
-        transform(pts1[i], &ptsOut[i]);
-        ptsOut[i] -= pts2[i];
-        //err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
-        err[i] = static_cast<double>((ptsOut[i]).dot(ptsOut[i]));
+        transform(ptsIn[i], &pts_out[i]);
+        pts_out[i] -= ptsOut[i];
+        err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
         sumErr += err[i];
       }
       if (error) *error = err;
@@ -191,36 +198,35 @@ protected:
    * tamaño adecuado y limpiando su contenido si ya tenia datos.
    * En caso de que se utilice el mismo vector de entrada y de salida no
    * hace nada.
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
    */
   template<typename T2> 
-  void formatVectorOut(const std::vector<T2> &in, std::vector<T2> *out) const {
-    if (&in != out && in.size() != out->size()) {
-      out->clear();
-      out->resize(in.size());
+  void formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const {
+    if (&ptsIn != ptsOut && ptsIn.size() != ptsOut->size()) {
+      ptsOut->clear();
+      ptsOut->resize(ptsIn.size());
     }
   }
 
   /*!
    * \brief root-mean-square error
-   * \param pts1 Puntos en el sistema de entrada
-   * \param pts2 Puntos en el sistema de salida
+   * \param ptsIn Puntos en el sistema de entrada
+   * \param ptsOut Puntos en el sistema de salida
    * \param error Vector con los errores para cada punto
    * \return RMSE
    */
-  double _rootMeanSquareError(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL)
+  double _rootMeanSquareError(const std::vector<Point_t> &ptsIn, const std::vector<Point_t> &ptsOut, std::vector<double> *error = NULL)
   {
-    size_t n = pts1.size();
-    std::vector<T> ptsOut(n);
+    size_t n = ptsIn.size();
+    std::vector<Point_t> pts_out(n);
     std::vector<double> err(n);
     double sumErr = 0.;
 
     for (int i = 0; i < n; i++) {
-      transform(pts1[i], &ptsOut[i]);
-      ptsOut[i] -= pts2[i];
-      //err[i] = static_cast<double>(ptsOut[i].x * ptsOut[i].x + ptsOut[i].y * ptsOut[i].y);
-      err[i] = static_cast<double>(ptsOut[i].dot(ptsOut[i]));
+      transform(ptsIn[i], &pts_out[i]);
+      pts_out[i] -= ptsOut[i];
+      err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
       sumErr += err[i];
     }
 
@@ -238,8 +244,8 @@ protected:
  * Una transformación multiple permite agrupar varias transformaciones de 
  * forma que se ejecutan a la vez (consecutivamente).
  */
-template<typename T>
-class I3D_EXPORT TrfMultiple : public Transform<T>
+template<typename Point_t>
+class I3D_EXPORT TrfMultiple : public Transform<Point_t>
 {
 
 private:
@@ -247,23 +253,31 @@ private:
   /*!
    * \brief Lista de transformaciones
    */
-  std::list<std::shared_ptr<Transform<T>>> mTransf;
+  std::list<std::shared_ptr<Transform<Point_t>>> mTransf;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
   /*!
    * \brief Constructora
    */
-  TrfMultiple() : Transform<T>(0) {}
+  TrfMultiple() : Transform<Point_t>(transform_type::MULTIPLE) {}
 
   /*!
    * \brief Constructor de lista
    * \param[in] transfList listado de transformaciones
    */
-  TrfMultiple(std::initializer_list<std::shared_ptr<Transform<T>>> transfList)
-    : Transform<T>(), mTransf(transfList) {}
+  TrfMultiple(std::initializer_list<std::shared_ptr<Transform<Point_t>>> transfList)
+    : Transform<Point_t>(transform_type::MULTIPLE), mTransf(transfList) {}
 
   /*!
    * \brief Destructora
@@ -276,7 +290,7 @@ public:
    * \brief Añade una nueva transformación a la lista
    * \param[in] trf Transformación que se añade
    */
-  void add(std::shared_ptr<Transform<T>> trf) { mTransf.push_back(trf); }
+  void add(std::shared_ptr<Transform<Point_t>> trf) { mTransf.push_back(trf); }
 
   /*!
    * \brief Borra las transformaciones
@@ -287,103 +301,104 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
-   * \brief Aplica la transformación
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \brief Aplica la transformación a un conjunto de puntos
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
-
-  /*!
-   * \brief Aplica la transformación a una entidad geométrica
-   * \param[in] in Entidad de entrada
-   * \param[out] out Entidad de salida
-   * \param[in] bDirect Transformación directa (por defecto)
-   */
-  //virtual void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
-template<typename T> inline
-void TrfMultiple<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
-{
-  *out = in;
-  //... Controlar errores
-  for (auto trf : mTransf) {
-    trf->transform(*out, out, trfOrder);
-  }
-}
-
-template<typename T> inline
-void TrfMultiple<T>::transform(const T &in, T *out, transform_order trfOrder) const
-{
-  *out = in;
-  for (auto trf : mTransf) {
-    trf->transform(*out, out, trfOrder);
-  }
-}
-
-template<typename T> inline
-T TrfMultiple<T>::transform(const T &in, transform_order trfOrder) const
-{
-  T out = in;
-  for (auto trf : mTransf) {
-    out = trf->transform(out, trfOrder);
-  }
-  return out;
-}
-
-template<typename T> inline
-double TrfMultiple<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   printError("'compute' no esta soportado para TrfMultiple");
   I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
   return -1.;
 }
 
-//template<typename T> inline
-//void TrfMultiple<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
-//{
-//  *out = in;
-//  for (auto trf : mTransf) {
-//    trf->transform(*out, out, trfOrder);
-//  }
-//}
+template<typename Point_t> inline
+void TrfMultiple<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+{
+  *ptsOut = ptsIn;
+  //... Controlar errores
+  for (auto trf : mTransf) {
+    trf->transform(*ptsOut, ptsOut, trfOrder);
+  }
+}
+
+template<typename Point_t> inline
+void TrfMultiple<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+{
+  *ptOut = ptIn;
+  for (auto trf : mTransf) {
+    trf->transform(*ptOut, ptOut, trfOrder);
+  }
+}
+
+template<typename Point_t> inline
+Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+{
+  Point_t out = ptIn;
+  for (auto trf : mTransf) {
+    out = trf->transform(out, trfOrder);
+  }
+  return out;
+}
+
 
 /* ---------------------------------------------------------------------------------- */
+
 
 /*! \defgroup trf2DGroup Transformaciones 2D
 *  Transformaciones geométricas en el plano
 *  \{
 */
 
-template<typename T>
-class I3D_EXPORT Transform2D : public Transform<T>
+/*!
+ * \brief Clase base para transformaciones 2D
+ */
+template<typename Point_t>
+class I3D_EXPORT Transform2D : public Transform<Point_t>
 {
+
 private:
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -391,8 +406,8 @@ public:
    * \brief Transform2D
    * \param n_min Número mínimo de puntos necesario para la transformación
    */
-  Transform2D(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : Transform<T>(n_min, trfType)
+  Transform2D(transform_type trfType, int n_min = 0)
+    : Transform<Point_t>(trfType, n_min)
   {
     this->mDimensions = 2;
   }
@@ -406,157 +421,152 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
+  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
-  /*!
-   * \brief Aplica la transformación a una entidad geométrica
-   * \param[in] in Entidad de entrada
-   * \param[out] out Entidad de salida
-   * \param[in] bDirect Transformación directa (por defecto)
-   */
-  //void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 };
-
-//template<typename T> inline
-//void Transform2D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder) const
-//{
-//  if (in.getType() == entity_type::WINDOW) {
-//    Window<sub_type> *w = dynamic_cast<Window<sub_type> *>(out);
-//    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt1, &w->pt1, trfOrder);
-//    this->transform(dynamic_cast<const Window<sub_type> &>(in).pt2, &w->pt2, trfOrder);
-//  } else if ( in.getType() == entity_type::SEGMENT_2D) {
-//    Segment<sub_type> *s = dynamic_cast<Segment<sub_type> *>(out);
-//    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt1, &s->pt1, trfOrder);
-//    this->transform(dynamic_cast<const Segment<sub_type> &>(in).pt2, &s->pt2, trfOrder);
-//  } else if (in.getType() == entity_type::LINESTRING_2D ||
-//             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
-//             in.getType() == entity_type::POLYGON_2D) {
-//    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
-//    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
-//    typename std::vector<T>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
-//    for (typename std::vector<T>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-//      this->transform(*it, &(*it_out), trfOrder);
-//    }
-//  } else {
-//    //tipo no soportado
-//    return;
-//  }
-//}
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef HAVE_OPENCV
+
 /*!
- * \brief perspective
+ * \brief Transformación perspectiva
  */
-template<typename T>
-class I3D_EXPORT TrfPerspective : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT TrfPerspective : public Transform2D<Point_t>
 {
 private:
 
+  /*!
+   * \brief Parámetros de la transformación
+   */
   cv::Mat H;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
+  /*!
+   * \brief Constructor
+   * \param[in] trfType Tipo de transformación
+   * \param[in] n_min Número mínimo de puntos necesario para la transformación
+   */
   TrfPerspective()
-    : Transform2D<T>(1, transform_type::PERSPECTIVE) {}
+    : Transform2D<Point_t>(transform_type::PERSPECTIVE, 1) {}
 
+  /*!
+   * \brief Destructora
+   */
   ~TrfPerspective() {}
 
   /*!
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
-   * \brief Aplica la transformación
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \brief Aplica la transformación a un conjunto de puntos
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &in, transform_order trfOrder = transform_order::DIRECT) const override;
 };
 
-template<typename T> inline
-void TrfPerspective<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  //formatVectorOut(out, in.size());
   if (trfOrder == transform_order::DIRECT)
-    cv::perspectiveTransform(in, *out, H);
+    cv::perspectiveTransform(ptsIn, *ptsOut, H);
   else {
-    cv::perspectiveTransform(in, *out, H.inv());
+    cv::perspectiveTransform(ptsIn, *ptsOut, H.inv());
   }
 }
 
-template<typename T> inline
-void TrfPerspective<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void TrfPerspective<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  std::vector<T> vIn, vOut;
-  vIn.push_back(in);
+  std::vector<Point_t> vIn, vOut;
+  vIn.push_back(ptIn);
   if (trfOrder == transform_order::DIRECT) {
     cv::perspectiveTransform(vIn, vOut, H);
   } else {
     cv::perspectiveTransform(vIn, vOut, H.inv());
   }
-  *out = vOut[0];
+  *ptOut = vOut[0];
 }
 
-template<typename T> inline
-T TrfPerspective<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T out = in;
-  transform(in, &out, trfOrder);
+  Point_t out = ptIn;
+  transform(ptIn, &out, trfOrder);
   return out;
 }
 
-template<typename T> inline
-double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   if (error) error = NULL; // Habria que poder calcular el error
   int n1 = static_cast<int>(pts1.size());
@@ -578,6 +588,8 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
   return H.empty() ? -1. : 1.;
 }
 
+#endif // HAVE_OPENCV
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -585,17 +597,33 @@ double TrfPerspective<T>::compute(const std::vector<T> &pts1, const std::vector<
  *
  * Transformación que aplica una traslación en el plano a un conjunto de puntos
  */
-template<typename T>
-class I3D_EXPORT Translate : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT Translate : public Transform2D<Point_t>
 {
+
+public:
+
+  /*!
+   * \brief Traslación en X
+   */
+  double tx;
+
+  /*!
+   * \brief Traslación en Y
+   */
+  double ty;
+
 private:
 
   /*!
-   * \brief Traslación
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
    */
-  T translate;
+  typedef Point_t value_type;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -603,15 +631,15 @@ public:
    * \brief Constructora por defecto
    */
   Translate()
-    : Transform2D<T>(1, transform_type::TRANSLATE), translate(T()) {}
+    : Transform2D<Point_t>(transform_type::TRANSLATE, 1), tx(0.), ty(0.) {}
 
   /*!
    * \brief Constructora
-   * \param[in] x0 Traslación en el eje X
-   * \param[in] y0 Traslación en el eje Y
+   * \param[in] tx Traslación en el eje X
+   * \param[in] ty Traslación en el eje Y
    */
-  Translate(sub_type x0, sub_type y0)
-    : Transform2D<T>(1, transform_type::TRANSLATE), translate(T(x0, y0)) { }
+  Translate(double tx, double ty)
+    : Transform2D<Point_t>(transform_type::TRANSLATE, 1), tx(tx), ty(ty) { }
 
   /*!
    * \brief Calculo de la traslación
@@ -620,77 +648,50 @@ public:
    * de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
-
-  /*!
-   * \brief Devuelve el desplazamiento en x de la transformación
-   * \return Desplazamiento en el eje x
-   */
-  sub_type getTranslationX() { return translate.x; }
-
-  /*!
-   * \brief Devuelve el desplazamiento en y de la transformación
-   * \return  Desplazamiento en el eje y
-   */
-  sub_type getTranslationY() { return translate.y; }
-
-  /*!
-   * \brief Establece los valores de desplazamiento
-   * \param[in] x0 Desplazamiento en el eje x
-   * \param[in] y0 Desplazamiento en el eje y
-   */
-  void setTranslation(sub_type x0, sub_type y0);
-
-  /*!
-   * \brief Establece el desplazamiento en el eje x
-   * \param[in] x0 Desplazamiento en el eje x
-   */
-  void setTranslationX(sub_type x0);
-
-  /*!
-   * \brief Establece el desplazamiento en el eje y
-   * \param[in] y0 Desplazamiento en el eje y
-   */
-  void setTranslationY(sub_type y0);
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una traslación
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
-  /*!
-   * \brief Transforma un conjunto de segmentos en otro aplicando una traslación
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
-   */
-  void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
-
-  /*!
-   * \brief Aplica una traslación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa
-   */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  ///*!
+  // * \brief Transforma un conjunto de segmentos en otro aplicando una traslación
+  // * \param[in] in Puntos de entrada
+  // * \param[out] out Puntos de salida
+  // * \param[in] bDirect Transformación directa
+  // */
+  //void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica una traslación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
+   */
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+
+  /*!
+   * \brief Aplica una traslación a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &pt, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
-template<typename T> inline
-double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Translate<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double ret = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -719,8 +720,8 @@ double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
         cv::Mat A(m, n, CV_64F, a);
         cv::Mat B(m, 1, CV_64F, b);
         cv::solve(A, B, C, cv::DECOMP_SVD);
-        translate.x = static_cast<sub_type>(C.at<double>(2));
-        translate.y = static_cast<sub_type>(C.at<double>(3));
+        tx = static_cast<sub_type>(C.at<double>(2));
+        ty = static_cast<sub_type>(C.at<double>(3));
 
         ret = _rootMeanSquareError(pts1, pts2, error);
 
@@ -734,55 +735,51 @@ double Translate<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   return ret;
 }
 
-template<typename T> inline
-void Translate<T>::setTranslation(sub_type x0, sub_type y0)
+template<typename Point_t> inline
+void Translate<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  translate.x = x0;
-  translate.y = y0;
-}
-
-template<typename T> inline
-void Translate<T>::setTranslationX(sub_type x0)
-{
-  translate.x = x0;
-}
-
-template<typename T> inline
-void Translate<T>::setTranslationY(sub_type y0)
-{
-  translate.y = y0;
-}
-
-template<typename T> inline
-void Translate<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
-{
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void Translate<T>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
+//template<typename Point_t> inline
+//void Translate<Point_t>::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder) const
+//{
+//  formatVectorOut(in, out);
+//  for (int i = 0; i < in.size(); i++) {
+//    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
+//    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
+//  }
+//}
+
+template<typename Point_t> inline
+void Translate<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i].pt1, &(*out)[i].pt1, trfOrder);
-    transform(in[i].pt2, &(*out)[i].pt2, trfOrder);
+  Point_t pt_aux;
+  if (typeid(Point_t) == typeid(int)) {
+    pt_aux.x = I3D_ROUND_TO_INT(tx);
+    pt_aux.y = I3D_ROUND_TO_INT(ty);
+  } else {
+    pt_aux.x = static_cast<sub_type>(tx);
+    pt_aux.y = static_cast<sub_type>(ty);
   }
+  *ptOut = (trfOrder == transform_order::DIRECT) ? ptIn + pt_aux : ptIn - pt_aux;
 }
 
-template<typename T> inline
-void Translate<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Translate<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  //... Podria llamar a transform(in, bDirect) pero es mas rapido hacerlo directamente
-  *out = (trfOrder == transform_order::DIRECT) ? in + translate : in - translate;
-}
-
-template<typename T> inline
-T Translate<T>::transform(const T &in, transform_order trfOrder) const
-{
-  return (trfOrder == transform_order::DIRECT) ? in + translate : in - translate;
+  Point_t pt_aux;
+  if (typeid(Point_t) == typeid(int)) {
+    pt_aux.x = I3D_ROUND_TO_INT(tx);
+    pt_aux.y = I3D_ROUND_TO_INT(ty);
+  } else {
+    pt_aux.x = static_cast<sub_type>(tx);
+    pt_aux.y = static_cast<sub_type>(ty);
+  }
+  return (trfOrder == transform_order::DIRECT) ? ptIn + pt_aux : ptIn - pt_aux;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -792,8 +789,8 @@ T Translate<T>::transform(const T &in, transform_order trfOrder) const
  *
  * Transformación que aplica una rotación en el plano a un conjunto de puntos 
  */
-template<typename T> 
-class I3D_EXPORT Rotation : public Transform2D<T>
+template<typename Point_t> 
+class I3D_EXPORT Rotation : public Transform2D<Point_t>
 {
 private:
 
@@ -812,7 +809,15 @@ private:
    */
   double r2;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o cv::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -820,7 +825,7 @@ public:
    * \brief Constructora por defecto
    */
   Rotation() 
-    : Transform2D<T>(1, transform_type::ROTATION), angle(0.)
+    : Transform2D<Point_t>(transform_type::ROTATION, 1), angle(0.)
   {
     update();
   }
@@ -830,13 +835,13 @@ public:
    * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle) 
-    : Transform2D<T>(1, transform_type::ROTATION), angle(angle)
+    : Transform2D<Point_t>(transform_type::ROTATION, 1), angle(angle)
   {
     update();
   }
   
   /*!
-   * \brief Calculo del águlo de rotación
+   * \brief Calculo del ángulo de rotación
    *
    * Calcula la rotación entre dos sistemas de coordenadas a partir de dos 
    * conjuntos de puntos
@@ -850,21 +855,22 @@ public:
    * \endcode
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Devuelve el ángulo de la rotación
    * \return Ángulo en radianes
    */
-  sub_type getAngle() const { return angle; }
+  double getAngle() const { return angle; }
 
   /*!
    * \brief Establece en ángulo de la rotación
    * \param[in] ang Ángulo en radianes
    */
-  void setAngle(sub_type ang);
+  void setAngle(double ang);
 
   /*!
    * \brief Aplica una rotación a un conjunto de puntos
@@ -879,27 +885,30 @@ public:
    * std::vector<cv::Point2d> pts_out;
    * rot.transform(pts_in, &pts_out);
    * \endcode
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
 private:
 
@@ -909,8 +918,8 @@ private:
   void update();
 };
 
-template<typename T> inline
-double Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Rotation<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -950,15 +959,15 @@ double Rotation<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pt
   return rmse;
 }
 
-template<typename T> inline
-void Rotation<T>::setAngle(sub_type ang)
+template<typename Point_t> inline
+void Rotation<Point_t>::setAngle(double ang)
 { 
   angle = ang; 
   update(); 
 }
 
-template<typename T> inline
-void Rotation<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Rotation<Point_t>::transform(const std::vector<Point_t> &in, std::vector<Point_t> *out, transform_order trfOrder) const
 {
   formatVectorOut(in, out);
   for (int i = 0; i < in.size(); i++) {
@@ -966,35 +975,35 @@ void Rotation<T>::transform(const std::vector<T> &in, std::vector<T> *out, trans
   }
 }
 
-template<typename T> inline
-void Rotation<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *ptsOut, transform_order trfOrder) const
 {
-  sub_type x_aux = in.x;
+  sub_type x_aux = ptsIn.x;
   if (trfOrder == transform_order::DIRECT) {
-    out->x = static_cast<sub_type>(x_aux*r1 - in.y*r2);
-    out->y = static_cast<sub_type>(x_aux*r2 + in.y*r1);
+    ptsOut->x = static_cast<sub_type>(x_aux*r1 - ptsIn.y*r2);
+    ptsOut->y = static_cast<sub_type>(x_aux*r2 + ptsIn.y*r1);
   } else {
-    out->x = static_cast<sub_type>(x_aux*r1 + in.y*r2);
-    out->y = static_cast<sub_type>(in.y*r1 - x_aux*r2);
+    ptsOut->x = static_cast<sub_type>(x_aux*r1 + ptsIn.y*r2);
+    ptsOut->y = static_cast<sub_type>(ptsIn.y*r1 - x_aux*r2);
   }
 }
 
-template<typename T> inline
-T Rotation<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, transform_order trfOrder) const
 {
-  T out;
+  Point_t out;
   if (trfOrder == transform_order::DIRECT) {
-    out.x = in.x*r1 - in.y*r2;
-    out.y = in.x*r2 + in.y*r1;
+    out.x = ptsIn.x*r1 - ptsIn.y*r2;
+    out.y = ptsIn.x*r2 + ptsIn.y*r1;
   } else {
-    out.x = in.x*r1 + in.y*r2;
-    out.y = in.y*r1 - in.x*r2;
+    out.x = ptsIn.x*r1 + ptsIn.y*r2;
+    out.y = ptsIn.y*r1 - ptsIn.x*r2;
   }
   return out;
 }
 
-template<typename T> inline
-void Rotation<T>::update()
+template<typename Point_t> inline
+void Rotation<Point_t>::update()
 {
   r1 = cos(angle);
   r2 = sin(angle);
@@ -1017,36 +1026,44 @@ void Rotation<T>::update()
  * \f$ x' = a * x + b * y + X0\f$<BR>
  * \f$ y' = a * x - b * x + Y0\f$
  */
-template<typename T>
-class I3D_EXPORT Helmert2D : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT Helmert2D : public Transform2D<Point_t>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
   /*!
    * \brief Traslación en x
    */
-  sub_type x0;
+  double tx;
 
   /*!
    * \brief Traslación en y
    */
-  sub_type y0;
+  double ty;
 
 private:
 
   /*!
    * \brief Escala
    */
-  double scale;
+  double mScale;
 
   /*!
    * \brief Ángulo de rotation
    */
-  double rotation;
+  double mRotation;
 
   /*!
    * \brief a = scale * cos(rotation);
@@ -1064,7 +1081,7 @@ public:
    * \brief Constructor por defecto
    */
   Helmert2D()
-    : Transform2D<T>(2, transform_type::HELMERT_2D), x0(0), y0(0), scale(1.), rotation(0.)
+    : Transform2D<Point_t>(transform_type::HELMERT_2D, 2), tx(0), ty(0), mScale(1.), mRotation(0.)
   {
     update();
   }
@@ -1076,8 +1093,8 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Rotación
    */
-  Helmert2D(sub_type x0, sub_type y0, double scale, double rotation) 
-    : Transform2D<T>(2, transform_type::HELMERT_2D), x0(x0), y0(y0), scale(scale), rotation(rotation)
+  Helmert2D(double tx, double ty, double scale, double rotation)
+    : Transform2D<Point_t>(transform_type::HELMERT_2D, 2), tx(tx), ty(ty), mScale(scale), mRotation(rotation)
   {
     update();
   }
@@ -1089,15 +1106,17 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    *  
    * <H3>Ejemplo:</H3>
    * \code
@@ -1110,44 +1129,46 @@ public:
    * h2d.transform(pts_in, &pts_out);
    * \endcode
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica un helmert 2D a un punto
-  * \param[in] in Punto de entrada
-  * \param[out] out Punto de salida
-  * \param[in] bDirect Transformación directa
-  */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
+   */
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-  * \brief Aplica un helmert 2D a un punto
-  * \param[in] in Punto de entrada
-  * \param[in] bDirect Transformación directa
-  * \return Punto de salida
-  */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+   * \brief Aplica un helmert 2D a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \return Punto de salida
+   * \see transform_order
+   */
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Devuelve el giro
    * \return[in] Ángulo de rotación en radianes
    */
-  double getRotation() const { return rotation; };
+  double getRotation() const { return mRotation; };
 
   /*!
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
-  double getScale() const { return scale;  };
+  double getScale() const { return mScale;  };
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] tx Traslación en x
+   * \param[in] ty Traslación en y
    * \param[in] scale Escala
    * \param[in] rotation Rotación
    */
-  void setParameters(T x0, T y0, double scale, double rotation);
+  void setParameters(double tx, double ty, double scale, double rotation);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -1170,8 +1191,8 @@ private:
 
 };
 
-template<typename T> inline
-double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -1204,11 +1225,11 @@ double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
 
         a = C.at<double>(0);
         b = C.at<double>(1);
-        x0 = static_cast<sub_type>(C.at<double>(2));
-        y0 = static_cast<sub_type>(C.at<double>(3));
+        tx = C.at<double>(2);
+        ty = C.at<double>(3);
 
-        rotation = atan2(b, a);
-        scale = sqrt(a*a + b*b);
+        mRotation = atan2(b, a);
+        mScale = sqrt(a*a + b*b);
 
         rmse = _rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
@@ -1221,74 +1242,73 @@ double Helmert2D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   return rmse;
 }
 
-template<typename T> inline
-void Helmert2D<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void Helmert2D<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  sub_type x_aux = in.x;
+  sub_type x_aux = ptIn.x;
   if (trfOrder == transform_order::DIRECT){
-    out->x = static_cast<sub_type>(a * x_aux - b * in.y + x0);
-    out->y = static_cast<sub_type>(b * x_aux + a * in.y + y0);
+    ptOut->x = static_cast<sub_type>(a * x_aux - b * ptIn.y + tx);
+    ptOut->y = static_cast<sub_type>(b * x_aux + a * ptIn.y + ty);
   } else {
     double det = a*a + b*b;
-    out->x = static_cast<sub_type>((a*(x_aux - x0) + b*(in.y - y0)) / det);
-    out->y = static_cast<sub_type>((-b*(x_aux - x0) + a*(in.y - y0)) / det);
+    ptOut->x = static_cast<sub_type>((a*(x_aux - tx) + b*(ptIn.y - ty)) / det);
+    ptOut->y = static_cast<sub_type>((-b*(x_aux - tx) + a*(ptIn.y - ty)) / det);
   }
-  //*out = transform(in, bDirect);
 }
 
-template<typename T> inline
-T Helmert2D<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T r_pt;
+  Point_t r_pt;
   if (trfOrder == transform_order::DIRECT){
-    r_pt.x = static_cast<sub_type>(a * in.x - b * in.y + x0);
-    r_pt.y = static_cast<sub_type>(b * in.x + a * in.y + y0);
+    r_pt.x = static_cast<sub_type>(a * ptIn.x - b * ptIn.y + tx);
+    r_pt.y = static_cast<sub_type>(b * ptIn.x + a * ptIn.y + ty);
   } else {
     double det = a*a + b*b;
-    r_pt.x = static_cast<sub_type>((a*(in.x - x0) + b*(in.y - y0)) / det);
-    r_pt.y = static_cast<sub_type>((-b*(in.x - x0) + a*(in.y - y0)) / det);
+    r_pt.x = static_cast<sub_type>((a*(ptIn.x - tx) + b*(ptIn.y - ty)) / det);
+    r_pt.y = static_cast<sub_type>((-b*(ptIn.x - tx) + a*(ptIn.y - ty)) / det);
   }
   return r_pt;
 }
 
-template<typename T> inline
-void Helmert2D<T>::setParameters(T x0, T y0, double scale, double rotation)
+template<typename Point_t> inline
+void Helmert2D<Point_t>::setParameters(double tx, double ty, double scale, double rotation)
 {
-  this->x0 = x0;
-  this->y0 = y0;
-  this->scale = scale;
-  this->rotation = rotation;
+  this->tx = tx;
+  this->ty = ty;
+  mScale = scale;
+  mRotation = rotation;
   update();
 }
 
-template<typename T> inline
-void Helmert2D<T>::setRotation(double rotation) 
+template<typename Point_t> inline
+void Helmert2D<Point_t>::setRotation(double rotation) 
 {
-  this->rotation = rotation;
+  mRotation = rotation;
   update();
 }
 
-template<typename T> inline
-void Helmert2D<T>::setScale(double scale)
+template<typename Point_t> inline
+void Helmert2D<Point_t>::setScale(double scale)
 {
-  this->scale = scale;
+  mScale = scale;
   update();
 }
 
-template<typename T> inline
-void Helmert2D<T>::update()
+template<typename Point_t> inline
+void Helmert2D<Point_t>::update()
 {
-  a = scale * cos(rotation);
-  b = scale * sin(rotation);
+  a = mScale * cos(mRotation);
+  b = mScale * sin(mRotation);
 }
 
 
@@ -1311,24 +1331,20 @@ void Helmert2D<T>::update()
  * \f[ x' = a * x + b * y + x0\f]
  * \f[ y' = c * x + d * y + y0\f]
  */
-template<typename T>
-class I3D_EXPORT Afin : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT Afin : public Transform2D<Point_t>
 {
-private:
-
-  typedef typename T::value_type sub_type;
-
 public:
 
   /*!
    * \brief Traslación en x
    */
-  sub_type x0;
+  double tx;
 
   /*!
    * \brief Traslación en y
    */
-  sub_type y0;
+  double ty;
 
 private:
 
@@ -1377,12 +1393,22 @@ private:
   /*!
    * \brief Traslación en x transformación inversa
    */
-  sub_type x0i;
+  double txi;
 
   /*!
    * \brief Traslación en y transformación inversa
    */
-  sub_type y0i;
+  double tyi;
+
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -1390,21 +1416,21 @@ public:
    * \brief Constructor por defecto
    */
   Afin()
-    : Transform2D<T>(3, transform_type::AFIN), x0(0), y0(0), mScaleX(1.), mScaleY(1.), mRotation(0.)
+    : Transform2D<Point_t>(transform_type::AFIN, 3), tx(0), ty(0), mScaleX(1.), mScaleY(1.), mRotation(0.)
   {
     update();
   }
 
   /*!
    * \brief Constructor
-   * \param[in] x0 Traslación en el eje X
-   * \param[in] y0 Traslación en el eje Y
+   * \param[in] tx Traslación en el eje X
+   * \param[in] ty Traslación en el eje Y
    * \param[in] scaleX Escala en el eje X
    * \param[in] scaleY Escala en el eje Y
    * \param[in] rotation Rotación
    */
-  Afin(sub_type x0, sub_type y0, double scaleX, double scaleY, double rotation)
-    : Transform2D<T>(3, transform_type::AFIN), x0(x0), y0(y0), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
+  Afin(double tx, double ty, double scaleX, double scaleY, double rotation)
+    : Transform2D<Point_t>(transform_type::AFIN, 3), tx(tx), ty(ty), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
   {
     update();
   }
@@ -1416,37 +1442,48 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
-   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
+   * \brief Transforma un conjunto de puntos en otro aplicando una transformación afín
    * <H3>Ejemplo:</H3>
    * \code
    * \endcode
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica una transformación afín a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica una transformación afín a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
+  /*!
+   * \brief Devuelve los coeficientes de la transformación
+   * \param[out] a Coeficiente a
+   * \param[out] b Coeficiente b
+   * \param[out] c Coeficiente c
+   * \param[out] d Coeficiente d
+   */
   void getParameters(double *a, double *b, double *c, double *d);
 
   /*!
@@ -1469,24 +1506,24 @@ public:
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] tx Traslación en x
+   * \param[in] ty Traslación en y
    * \param[in] scaleX Escala en x
    * \param[in] scaleY Escala en y
    * \param[in] rotation Rotación
    */
-  void setParameters(T x0, T y0, double scaleX, double scaleY, double rotation);
+  void setParameters(double tx, double ty, double scaleX, double scaleY, double rotation);
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] a
-   * \param[in] b
-   * \param[in] c
-   * \param[in] d
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] a Coeficiente a
+   * \param[in] b Coeficiente b
+   * \param[in] c Coeficiente c
+   * \param[in] d Coeficiente d
+   * \param[in] tx Traslación en x
+   * \param[in] ty Traslación en y
    */
-  void setParameters(double a, double b, double c, double d, T x0, T y0);
+  void setParameters(double a, double b, double c, double d, double x0, double y0);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -1516,8 +1553,8 @@ private:
 };
 
 
-template<typename T> inline
-double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Afin<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -1556,8 +1593,8 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
         b = C.at<double>(1);
         c = C.at<double>(2);
         d = C.at<double>(3);
-        x0 = static_cast<sub_type>(C.at<double>(4));
-        y0 = static_cast<sub_type>(C.at<double>(5));
+        tx = C.at<double>(4);
+        ty = C.at<double>(5);
 
         //double f = atan2( c, a );
         //double w = atan2( -b, d );
@@ -1577,45 +1614,45 @@ double Afin<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, 
   return rmse;
 }
 
-template<typename T> inline
-void Afin<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Afin<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void Afin<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Afin<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  sub_type x_aux = in.x;
+  sub_type x_aux = ptIn.x;
   if (trfOrder == transform_order::DIRECT){
-    out->x = static_cast<sub_type>(a * x_aux + b * in.y + x0);
-    out->y = static_cast<sub_type>(c * x_aux + d * in.y + y0);
+    ptOut->x = static_cast<sub_type>(a * x_aux + b * ptIn.y + tx);
+    ptOut->y = static_cast<sub_type>(c * x_aux + d * ptIn.y + ty);
   } else {
-    out->x = static_cast<sub_type>(ai * x_aux + bi * in.y + x0i);
-    out->y = static_cast<sub_type>(ci * x_aux + di * in.y + y0i);
+    ptOut->x = static_cast<sub_type>(ai * x_aux + bi * ptIn.y + txi);
+    ptOut->y = static_cast<sub_type>(ci * x_aux + di * ptIn.y + tyi);
   }
 }
 
-template<typename T> inline
-T Afin<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Afin<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T r_pt;
+  Point_t r_pt;
   if (trfOrder == transform_order::DIRECT){
-    r_pt.x = static_cast<sub_type>(a * in.x + b * in.y + x0);
-    r_pt.y = static_cast<sub_type>(c * in.x + d * in.y + y0);
+    r_pt.x = static_cast<sub_type>(a * ptIn.x + b * ptIn.y + tx);
+    r_pt.y = static_cast<sub_type>(c * ptIn.x + d * ptIn.y + ty);
   }
   else {
-    r_pt.x = static_cast<sub_type>(ai * in.x + bi * in.y + x0i);
-    r_pt.y = static_cast<sub_type>(ci * in.x + di * in.y + y0i);
+    r_pt.x = static_cast<sub_type>(ai * ptIn.x + bi * ptIn.y + txi);
+    r_pt.y = static_cast<sub_type>(ci * ptIn.x + di * ptIn.y + tyi);
   }
   return r_pt;
 }
 
-template<typename T> inline
-void Afin<T>::getParameters(double *_a, double *_b, double *_c, double *_d)
+template<typename Point_t> inline
+void Afin<Point_t>::getParameters(double *_a, double *_b, double *_c, double *_d)
 {
   *_a = a;
   *_b = b;
@@ -1624,54 +1661,54 @@ void Afin<T>::getParameters(double *_a, double *_b, double *_c, double *_d)
 }
 
 
-template<typename T> inline
-void Afin<T>::setParameters(T x0, T y0, double scaleX, double scaleY, double rotation)
+template<typename Point_t> inline
+void Afin<Point_t>::setParameters(double tx, double ty, double scaleX, double scaleY, double rotation)
 {
-  this->x0 = x0;
-  this->y0 = y0;
+  this->tx = tx;
+  this->ty = ty;
   mScaleX = scaleX;
   mScaleY = scaleY;
   mRotation = rotation;
   update();
 }
 
-template<typename T> inline
-void setParameters(double a, double b, double c, double d, T x0, T y0)
+template<typename Point_t> inline
+void Afin<Point_t>::setParameters(double a, double b, double c, double d, double tx, double ty)
 {
   this->a = a;
   this->b = b;
   this->c = c;
   this->d = d;
-  this->x0 = x0;
-  this->y0 = y0;
+  this->tx = tx;
+  this->ty = ty;
   mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
   mScaleX = sqrt(a*a + b*b);
   mScaleY = sqrt(c*c + d*d);
 }
 
-template<typename T> inline
-void Afin<T>::setRotation(double rotation)
+template<typename Point_t> inline
+void Afin<Point_t>::setRotation(double rotation)
 {
   mRotation = rotation;
   update();
 }
 
-template<typename T> inline
-void Afin<T>::setScaleX(double scaleX)
+template<typename Point_t> inline
+void Afin<Point_t>::setScaleX(double scaleX)
 {
   mScaleX = scaleX;
   update();
 }
 
-template<typename T> inline
-void Afin<T>::setScaleY(double scaleY)
+template<typename Point_t> inline
+void Afin<Point_t>::setScaleY(double scaleY)
 {
   mScaleY = scaleY;
   update();
 }
 
-template<typename T> inline
-void Afin<T>::update()
+template<typename Point_t> inline
+void Afin<Point_t>::update()
 {
   a =  mScaleX * cos(mRotation);
   b = -mScaleY * sin(mRotation);
@@ -1688,8 +1725,8 @@ void Afin<T>::update()
     ci = -c / det;
     di = a / det;
     I3D_DISABLE_WARNING(4244)
-    x0i = (-d * x0 + b * y0) / det;
-    y0i = (-a * y0 + c * x0) / det;
+    this->txi = (-d * tx + b * ty) / det;
+    this->tyi = (-a * ty + c * tx) / det;
     I3D_ENABLE_WARNING(4244)
   }
 }
@@ -1706,8 +1743,8 @@ void Afin<T>::update()
  *    y' = ( d * x + e * y + f ) / ( g * x + h * y + 1 )
  * </BLOCKQUOTE>
  */
-template<typename T>
-class I3D_EXPORT Projective : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT Projective : public Transform2D<Point_t>
 {
 private:
 
@@ -1791,7 +1828,15 @@ private:
    */
   double hi;
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o cv::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -1799,7 +1844,7 @@ public:
    * \brief Constructor por defecto
    */
   Projective()
-    : Transform2D<T>(4, transform_type::PROJECTIVE), a(1), b(0), c(0), d(0), e(1), f(0), g(0), h(0)
+    : Transform2D<Point_t>(transform_type::PROJECTIVE, 4), a(1), b(0), c(0), d(0), e(1), f(0), g(0), h(0)
   {
     update();
   }
@@ -1816,7 +1861,7 @@ public:
    * \param[in] h
    */
   Projective(double a, double b, double c, double d, double e, double f, double g, double h)
-    : Transform2D<T>(4, transform_type::PROJECTIVE), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
+    : Transform2D<Point_t>(transform_type::PROJECTIVE, 4), a(a), b(b), c(c), d(d), e(e), f(f), g(g), h(h)
   {
     update();
   }
@@ -1824,40 +1869,46 @@ public:
   //~Projective();
 
   /*!
-   * \brief Calcula la transformación Helmert 2D entre dos sistemas
+   * \brief Calcula la transformación proyectiva entre dos sistemas
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
-   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
+   * \brief Transforma un conjunto de puntos en otro aplicando una 
+   * transformación proyectiva
+   *
    * <H3>Ejemplo:</H3>
    * \code
    * \endcode
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica una transformación proyectiva a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica una transformación proyectiva a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -1872,7 +1923,7 @@ public:
    */
   void setParameters(double a, double b, double c, double d, double e, double f, double g, double h);
 
-  //getParameters();
+  void getParameters(double *a, double *b, double *c, double *d, double *e, double *f, double *g, double *h);
 
 private:
 
@@ -1884,8 +1935,8 @@ private:
 };
 
 
-template<typename T> inline
-double Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Projective<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -1945,44 +1996,44 @@ double Projective<T>::compute(const std::vector<T> &pts1, const std::vector<T> &
   return rmse;
 }
 
-template<typename T> inline
-void Projective<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Projective<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void Projective<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Projective<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  T pt_aux = in;
+  Point_t pt_aux = ptIn;
   if ( trfOrder == transform_order::DIRECT ) {
-    out->x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
-    out->y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
+    ptOut->x = static_cast<sub_type>((a * ptIn.x + b * ptIn.y + c) / (g * ptIn.x + h * ptIn.y + 1));
+    ptOut->y = static_cast<sub_type>((d * ptIn.x + e * ptIn.y + f) / (g * ptIn.x + h * ptIn.y + 1));
   } else {
-    out->x = static_cast<sub_type>((ai * in.x + bi * in.y + ci) / (g * in.x + h * in.y + 1));
-    out->y = static_cast<sub_type>((di * in.x + ei * in.y + fi) / (g * in.x + h * in.y + 1));
+    ptOut->x = static_cast<sub_type>((ai * ptIn.x + bi * ptIn.y + ci) / (g * ptIn.x + h * ptIn.y + 1));
+    ptOut->y = static_cast<sub_type>((di * ptIn.x + ei * ptIn.y + fi) / (g * ptIn.x + h * ptIn.y + 1));
   }
 }
 
-template<typename T> inline
-T Projective<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Projective<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T r_pt;
+  Point_t r_pt;
   if (trfOrder == transform_order::DIRECT){
-    r_pt.x = static_cast<sub_type>((a * in.x + b * in.y + c) / (g * in.x + h * in.y + 1));
-    r_pt.y = static_cast<sub_type>((d * in.x + e * in.y + f) / (g * in.x + h * in.y + 1));
+    r_pt.x = static_cast<sub_type>((a * ptIn.x + b * ptIn.y + c) / (g * ptIn.x + h * ptIn.y + 1));
+    r_pt.y = static_cast<sub_type>((d * ptIn.x + e * ptIn.y + f) / (g * ptIn.x + h * ptIn.y + 1));
   } else {
-    r_pt.x = static_cast<sub_type>((ai * in.x + bi * in.y + ci) / (g * in.x + h * in.y + 1));
-    r_pt.y = static_cast<sub_type>((di * in.x + ei * in.y + fi) / (g * in.x + h * in.y + 1));
+    r_pt.x = static_cast<sub_type>((ai * ptIn.x + bi * ptIn.y + ci) / (g * ptIn.x + h * ptIn.y + 1));
+    r_pt.y = static_cast<sub_type>((di * ptIn.x + ei * ptIn.y + fi) / (g * ptIn.x + h * ptIn.y + 1));
   }
   return r_pt;
 }
 
-template<typename T> inline
-void Projective<T>::setParameters(double _a, double _b, double _c, double _d, double _e, double _f, double _g, double _h)
+template<typename Point_t> inline
+void Projective<Point_t>::setParameters(double _a, double _b, double _c, double _d, double _e, double _f, double _g, double _h)
 {
   a = _a;
   b = _b;
@@ -1995,8 +2046,21 @@ void Projective<T>::setParameters(double _a, double _b, double _c, double _d, do
   update();
 }
 
-template<typename T> inline
-void Projective<T>::update()
+template<typename Point_t> inline
+void Projective<Point_t>::getParameters(double *_a, double *_b, double *_c, double *_d, double *_e, double *_f, double *_g, double *_h)
+{
+  *_a = a;
+  *_b = b;
+  *_c = c;
+  *_d = d;
+  *_e = e;
+  *_f = f;
+  *_g = g;
+  *_h = h;
+}
+
+template<typename Point_t> inline
+void Projective<Point_t>::update()
 {
   // Transformación inversa
   double aux = a * e - b * d;
@@ -2026,12 +2090,20 @@ void Projective<T>::update()
  * \brief Tranformación polinómica
  *
  */
-template<typename T>
-class I3D_EXPORT polynomialTransform : public Transform2D<T>
+template<typename Point_t>
+class I3D_EXPORT polynomialTransform : public Transform2D<Point_t>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -2039,7 +2111,7 @@ public:
    * \brief Constructor por defecto
    */
   polynomialTransform()
-    : Transform2D<T>(2, transform_type::POLYNOMIAL)
+    : Transform2D<Point_t>(transform_type::POLYNOMIAL, 2)
   {
   }
 
@@ -2050,38 +2122,42 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una transformación polinómica
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
-  * \param[in] in Punto de entrada
-  * \param[out] out Punto de salida
-  * \param[in] bDirect Transformación directa
-  */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
+   */
+  void transform(const Point_t &in, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
-  * \param[in] in Punto de entrada
-  * \param[in] bDirect Transformación directa
-  * \return Punto de salida
-  */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \return Punto de salida
+   * \see transform_order
+   */
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
-template<typename T> inline
-double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -2096,7 +2172,7 @@ double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::ve
       double xmax = I3D_DOUBLE_MIN;
       double ymax = I3D_DOUBLE_MIN;
       for( int ipt = 0; ipt < n1; ipt++ ) {
-        T &ptoi = pts1[ipt];
+        Point_t &ptoi = pts1[ipt];
         if ( ptoi.x > xmax ) xmax = ptoi.x;
         if ( ptoi.x < xmin ) xmin = ptoi.x;
         if ( ptoi.y > ymax ) ymax = ptoi.y;
@@ -2113,27 +2189,27 @@ double polynomialTransform<T>::compute(const std::vector<T> &pts1, const std::ve
   return rmse;
 }
 
-template<typename T> inline
-void polynomialTransform<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void polynomialTransform<Point_t>::transform(const std::vector<Point_t> &ptsOut, std::vector<Point_t> *out, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void polynomialTransform<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void polynomialTransform<Point_t>::transform(const Point_t &ptIn, Point_t *out, transform_order trfOrder) const
 {
-  sub_type x_aux = in.x;
+  sub_type x_aux = ptIn.x;
 
   //...
 }
 
-template<typename T> inline
-T polynomialTransform<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T r_pt;
+  Point_t r_pt;
   
   //...
   
@@ -2151,20 +2227,28 @@ T polynomialTransform<T>::transform(const T &in, transform_order trfOrder) const
 
 /* ---------------------------------------------------------------------------------- */
 
-template<typename T>
-class I3D_EXPORT Transform3D : public Transform<T>
+template<typename Point_t>
+class I3D_EXPORT Transform3D : public Transform<Point_t>
 {
 private:
 
-  typedef typename T::value_type sub_type;
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o cv::Point_<sub_type>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
 
 public:
 
   /*!
    * \brief Transform
    */
-  Transform3D(int n_min = 0, transform_type trfType = transform_type::DEFAULT)
-    : Transform<T>(n_min, trfType)
+  Transform3D(transform_type trfType, int n_min = 0)
+    : Transform<Point_t>(trfType, n_min)
   {
     this->mDimensions = 3;
   }
@@ -2178,70 +2262,74 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  virtual double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override = 0;
+  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa (por defecto)
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  virtual void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  virtual T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override = 0;
+  virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override = 0;
 
-  /*!
-   * \brief Aplica la transformación a una entidad geométrica
-   * \param[in] in Entidad de entrada
-   * \param[out] out Entidad de salida
-   * \param[in] bDirect Transformación directa (por defecto)
-   */
-  void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  ///*!
+  // * \brief Aplica la transformación a una entidad geométrica
+  // * \param[in] in Entidad de entrada
+  // * \param[out] out Entidad de salida
+  // * \param[in] bDirect Transformación directa (por defecto)
+  // */
+  //void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
-template<typename T> inline
-void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const
-{
-  if (in.getType() == entity_type::BBOX) {
-    Bbox<sub_type> *bbox = dynamic_cast<const Bbox<sub_type> *>(out);
-    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt1, &bbox->pt1, trfOrder);
-    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt2, &bbox->pt2, trfOrder);
-  } else if(in.getType() == entity_type::SEGMENT_3D) {
-    Segment3D<sub_type> *segment3d = dynamic_cast<Segment3D<sub_type> *>(out);
-    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt1, &segment3d->pt1, trfOrder);
-    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt2, &segment3d->pt2, trfOrder);
-  } else if (in.getType() == entity_type::LINESTRING_3D ||
-             in.getType() == entity_type::MULTIPOINT_POINT_3D ||
-             in.getType() == entity_type::POLYGON_3D) {
-    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
-    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
-    typename std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
-    for (typename std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin();
-      it != _in.end(); it++, it_out++) {
-      this->transform(*it, &(*it_out), trfOrder);
-    }
-  } else {
-    //tipo no soportado
-    return;
-  }
-}
+//template<typename Point_t> inline
+//void Transform3D<Point_t>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const
+//{
+//  if (in.getType() == entity_type::BBOX) {
+//    Bbox<sub_type> *bbox = dynamic_cast<const Bbox<sub_type> *>(out);
+//    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt1, &bbox->pt1, trfOrder);
+//    this->transform(dynamic_cast<const Bbox<sub_type> &>(in).pt2, &bbox->pt2, trfOrder);
+//  } else if(in.getType() == entity_type::SEGMENT_3D) {
+//    Segment3D<sub_type> *segment3d = dynamic_cast<Segment3D<sub_type> *>(out);
+//    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt1, &segment3d->pt1, trfOrder);
+//    this->transform(dynamic_cast<const Segment3D<sub_type> &>(in).pt2, &segment3d->pt2, trfOrder);
+//  } else if (in.getType() == entity_type::LINESTRING_3D ||
+//             in.getType() == entity_type::MULTIPOINT_POINT_3D ||
+//             in.getType() == entity_type::POLYGON_3D) {
+//    const EntityPoints<sub_type> &_in = dynamic_cast<const EntityPoints<sub_type> &>(in);
+//    dynamic_cast<EntityPoints<sub_type> *>(out)->resize(_in.getSize());
+//    typename std::vector<cv::Point3_<sub_type>>::iterator it_out = dynamic_cast<EntityPoints<sub_type> *>(out)->begin();
+//    for (typename std::vector<cv::Point3_<sub_type>>::const_iterator it = _in.begin();
+//      it != _in.end(); it++, it_out++) {
+//      this->transform(*it, &(*it_out), trfOrder);
+//    }
+//  } else {
+//    //tipo no soportado
+//    return;
+//  }
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -2258,29 +2346,25 @@ void Transform3D<T>::transformEntity(const Entity<sub_type> &in, Entity<sub_type
 
  * </BLOCKQUOTE>
  */
-template<typename T>
-class I3D_EXPORT Helmert3D : public Transform3D<T>
+template<typename Point_t>
+class I3D_EXPORT Helmert3D : public Transform3D<Point_t>
 {
-private:
-
-  typedef typename T::value_type sub_type;
-
 public:
 
   /*!
    * \brief Traslación en x
    */
-  sub_type x0;
+  double tx;
 
   /*!
    * \brief Traslación en y
    */
-  sub_type y0;
+  double ty;
 
   /*!
    * \brief Traslación en z
    */
-  sub_type z0;
+  double tz;
 
 private:
 
@@ -2314,43 +2398,53 @@ private:
    */
   std::array<std::array<double, 3>, 3> mRinv;
 
+  /*!
+   * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
+   */
+  typedef Point_t value_type;
+
+  /*!
+   * \brief Tipo de dato basico. int, float o double
+   */
+  typedef typename Point_t::value_type sub_type;
+
 public:
 
   /*!
    * \brief Constructor por defecto
    */
   Helmert3D()
-    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(0), y0(0), z0(0), mScale(1.), mOmega(0.), mPhi(0.), mKappa(0.)
+    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(0.), ty(0.), tz(0.), mScale(1.), mOmega(0.), mPhi(0.), mKappa(0.)
   {
     update();
   }
 
   /*!
    * \brief Constructor
-   * \param[in] x0 Traslación en X
-   * \param[in] y0 Traslación en Y
-   * \param[in] z0 Traslación en Z
+   * \param[in] tx Traslación en X
+   * \param[in] ty Traslación en Y
+   * \param[in] tz Traslación en Z
    * \param[in] scale Escala
    * \param[in] omega Rotación respecto al eje X
    * \param[in] phi Rotación respecto al eje Y
    * \param[in] kappa Rotación respecto al eje Z
    */
-  Helmert3D(sub_type x0, sub_type y0, sub_type z0, double scale, double omega, double phi, double kappa) 
-    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
+  Helmert3D(double tx, double ty, double tz, double scale, double omega, double phi, double kappa) 
+    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(tx), ty(ty), tz(tz), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
   {
     update();
   }
 
   /*!
    * \brief Constructor
-   * \param[in] x0 Traslación en X
-   * \param[in] y0 Traslación en Y
-   * \param[in] z0 Traslación en Z
+   * \param[in] tx Traslación en X
+   * \param[in] ty Traslación en Y
+   * \param[in] tz Traslación en Z
    * \param[in] scale Escala
    * \param[in] rotation Matriz de rotación
    */
-  Helmert3D(sub_type x0, sub_type y0, sub_type z0, double scale, const std::array<std::array<double, 3>, 3> &rotation) 
-    : Transform3D<T>(3, transform_type::HELMERT_3D), x0(x0), y0(y0), z0(z0), mScale(scale), mR(rotation)
+  Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation) 
+    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(tx), ty(ty), tz(tz), mScale(scale), mR(rotation)
   {
     eulerAngles(mR, &mOmega, &mPhi, &mKappa);
     update();
@@ -2359,13 +2453,14 @@ public:
   //~Helmert3D();
 
   /*!
-   * \brief Calcula la transformación Helmert 2D entre dos sistemas
+   * \brief Calcula la transformación Helmert 3D entre dos sistemas
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
    * \return RMSE (Root Mean Square Error)
    */
-  double compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error = NULL) override;
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
 
   /*!
    * \brief Devuelve una referencia a la matriz de rotación
@@ -2373,44 +2468,31 @@ public:
   const std::array<std::array<double, 3>, 3> &getRotationMatrix() const;
 
   /*!
-   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
-   * <H3>Ejemplo:</H3>
-   * \code
-   * Helmert2D<cv::Point2d> h2d(x0,y0, scale, rotation);
-   * std::vector<cv::Point2d> pts_in{ cv::Point2d(4157222.543, 664789.307),
-   *     cv::Point2d(4149043.336, 688836.443), cv::Point2d(4172803.511, 690340.078),
-   *     cv::Point2d(4177148.376, 642997.635), cv::Point2d(4137012.190, 671808.029), 
-   *     cv::Point2d(4146292.729, 666952.887), cv::Point2d(4138759.902, 702670.738) };
-   * std::vector<cv::Point2d> pts_out;
-   * h2d.transform(pts_in, &pts_out);
-   * \endcode
-   * \param[in] in Puntos de entrada
-   * \param[out] out Puntos de salida
-   * \param[in] bDirect Transformación directa
+   * \brief Transforma un conjunto de puntos en otro aplicando un helmert 3D
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[out] out Punto de salida
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica un helmert 3D a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
    */
-  void transform(const T &in, T *out, transform_order trfOrder = transform_order::DIRECT) const override;
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
-   * \brief Aplica un helmert 2D a un punto
-   * \param[in] in Punto de entrada
-   * \param[in] bDirect Transformación directa
+   * \brief Aplica un helmert 3D a un punto
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
+   * \see transform_order
    */
-  T transform(const T &in, transform_order trfOrder = transform_order::DIRECT) const override;
-
-  /*!
-   * \brief Devuelve el giro
-   * \return Ángulo de rotación en radianes
-   */
-  //double getRotation() const { return rotation; };
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Devuelve la escala de la transformación
@@ -2420,15 +2502,15 @@ public:
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] x0 Traslación en X
-   * \param[in] y0 Traslación en Y
-   * \param[in] z0 Traslación en Z
+   * \param[in] tx Traslación en X
+   * \param[in] ty Traslación en Y
+   * \param[in] tz Traslación en Z
    * \param[in] scale Escala
    * \param[in] omega Rotación respecto al eje X
    * \param[in] phi Rotación respecto al eje Y
    * \param[in] kappa Rotación respecto al eje Z
    */
-  void setParameters(T x0, T y0, T z0, double scale, double omega, double phi, double kappa);
+  void setParameters(double tx, double ty, double tz, double scale, double omega, double phi, double kappa);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -2451,8 +2533,8 @@ private:
 
 };
 
-template<typename T> inline
-double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &pts2, std::vector<double> *error)
+template<typename Point_t> inline
+double Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -2501,9 +2583,9 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
         mOmega = C.at<double>(1);
         mPhi = C.at<double>(2);
         mKappa = C.at<double>(3);
-        x0 = static_cast<sub_type>(C.at<double>(4));
-        y0 = static_cast<sub_type>(C.at<double>(5));
-        z0 = static_cast<sub_type>(C.at<double>(6));
+        tx = C.at<double>(4);
+        ty = C.at<double>(5);
+        tz = C.at<double>(6);
 
         update();
         
@@ -2518,51 +2600,51 @@ double Helmert3D<T>::compute(const std::vector<T> &pts1, const std::vector<T> &p
   return rmse;
 }
 
-template<typename T> inline
-const std::array<std::array<double, 3>, 3> &Helmert3D<T>::getRotationMatrix() const 
+template<typename Point_t> inline
+const std::array<std::array<double, 3>, 3> &Helmert3D<Point_t>::getRotationMatrix() const 
 {
   return mR;
 }
 
-template<typename T> inline
-void Helmert3D<T>::transform(const std::vector<T> &in, std::vector<T> *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(in, out);
-  for (int i = 0; i < in.size(); i++) {
-    transform(in[i], &(*out)[i], trfOrder);
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
 }
 
-template<typename T> inline
-void Helmert3D<T>::transform(const T &in, T *out, transform_order trfOrder) const
+template<typename Point_t> inline
+void Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
-  T ptAux = in;
+  Point_t ptAux = ptIn;
   if (trfOrder == transform_order::DIRECT){
-    out->x = static_cast<sub_type>( mScale * (ptAux.x*mR[0][0] + ptAux.y*mR[0][1] + ptAux.z*mR[0][2]) + x0 );
-    out->y = static_cast<sub_type>( mScale * (ptAux.x*mR[1][0] + ptAux.y*mR[1][1] + ptAux.z*mR[1][2]) + y0 );
-    out->z = static_cast<sub_type>( mScale * (ptAux.x*mR[2][0] + ptAux.y*mR[2][1] + ptAux.z*mR[2][2]) + z0 );
+    ptOut->x = static_cast<sub_type>( mScale * (ptAux.x*mR[0][0] + ptAux.y*mR[0][1] + ptAux.z*mR[0][2]) + tx );
+    ptOut->y = static_cast<sub_type>( mScale * (ptAux.x*mR[1][0] + ptAux.y*mR[1][1] + ptAux.z*mR[1][2]) + ty );
+    ptOut->z = static_cast<sub_type>( mScale * (ptAux.x*mR[2][0] + ptAux.y*mR[2][1] + ptAux.z*mR[2][2]) + tz );
   } else {
-    sub_type dx = in.x - x0; 
-    sub_type dy = in.y - y0; 
-    sub_type dz = in.z - z0;
-    out->x = static_cast<sub_type>(mScale * (dx*mRinv[0][0] + dy*mRinv[0][1] + dz*mRinv[0][2]));
-    out->y = static_cast<sub_type>(mScale * (dx*mRinv[1][0] + dy*mRinv[1][1] + dz*mRinv[1][2]));
-    out->z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
+    sub_type dx = ptIn.x - tx; 
+    sub_type dy = ptIn.y - ty; 
+    sub_type dz = ptIn.z - tz;
+    ptOut->x = static_cast<sub_type>(mScale * (dx*mRinv[0][0] + dy*mRinv[0][1] + dz*mRinv[0][2]));
+    ptOut->y = static_cast<sub_type>(mScale * (dx*mRinv[1][0] + dy*mRinv[1][1] + dz*mRinv[1][2]));
+    ptOut->z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
   }
 }
 
-template<typename T> inline
-T Helmert3D<T>::transform(const T &in, transform_order trfOrder) const
+template<typename Point_t> inline
+Point_t Helmert3D<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
-  T r_pt;
+  Point_t r_pt;
   if (trfOrder == transform_order::DIRECT){
-    r_pt.x = static_cast<sub_type>( mScale * (in.x*mR[0][0] + in.y*mR[0][1] + in.z*mR[0][2]) + x0 );
-    r_pt.y = static_cast<sub_type>( mScale * (in.x*mR[1][0] + in.y*mR[1][1] + in.z*mR[1][2]) + y0 );
-    r_pt.z = static_cast<sub_type>( mScale * (in.x*mR[2][0] + in.y*mR[2][1] + in.z*mR[2][2]) + z0 );
+    r_pt.x = static_cast<sub_type>( mScale * (ptIn.x*mR[0][0] + ptIn.y*mR[0][1] + ptIn.z*mR[0][2]) + tx );
+    r_pt.y = static_cast<sub_type>( mScale * (ptIn.x*mR[1][0] + ptIn.y*mR[1][1] + ptIn.z*mR[1][2]) + ty );
+    r_pt.z = static_cast<sub_type>( mScale * (ptIn.x*mR[2][0] + ptIn.y*mR[2][1] + ptIn.z*mR[2][2]) + tz );
   } else {
-    sub_type dx = in.x - x0; 
-    sub_type dy = in.y - y0; 
-    sub_type dz = in.z - z0;
+    sub_type dx = ptIn.x - tx; 
+    sub_type dy = ptIn.y - ty; 
+    sub_type dz = ptIn.z - tz;
     r_pt.x = static_cast<sub_type>(mScale * (dx*mRinv[0][0] + dy*mRinv[0][1] + dz*mRinv[0][2]));
     r_pt.y = static_cast<sub_type>(mScale * (dx*mRinv[1][0] + dy*mRinv[1][1] + dz*mRinv[1][2]));
     r_pt.z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
@@ -2570,12 +2652,12 @@ T Helmert3D<T>::transform(const T &in, transform_order trfOrder) const
   return r_pt;
 }
 
-template<typename T> inline
-void Helmert3D<T>::setParameters(T x0, T y0, T z0, double scale, double omega, double phi, double kappa)
+template<typename Point_t> inline
+void Helmert3D<Point_t>::setParameters(double tx, double ty, double tz, double scale, double omega, double phi, double kappa)
 {
-  this->x0 = x0;
-  this->y0 = y0;
-  this->z0 = z0;
+  this->tx = tx;
+  this->ty = ty;
+  this->tz = tz;
   mScale = scale;
   mOmega = omega;
   mPhi = phi;
@@ -2583,14 +2665,14 @@ void Helmert3D<T>::setParameters(T x0, T y0, T z0, double scale, double omega, d
   update();
 }
 
-template<typename T> inline
-void Helmert3D<T>::setScale(double scale)
+template<typename Point_t> inline
+void Helmert3D<Point_t>::setScale(double scale)
 {
   mScale = scale;
 }
 
-template<typename T> inline
-void Helmert3D<T>::update()
+template<typename Point_t> inline
+void Helmert3D<Point_t>::update()
 {
   rotationMatrix(mOmega, mPhi, mKappa, &mR);
   cv::Mat inv = cv::Mat(3, 3, CV_64F, mR.data()).inv();
@@ -2601,8 +2683,8 @@ void Helmert3D<T>::update()
   }
 }
 
-template<typename T> inline
-Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
+template<typename Point_t> inline
+Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1, Helmert3D<Point_t> &trf2)
 {
   //const std::array<std::array<double, 3>, 3> R1 = trf1.getRotationMatrix();
   //const std::array<std::array<double, 3>, 3> R2 = trf2.getRotationMatrix();
@@ -2614,12 +2696,12 @@ Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
   //cv::Mat matRot2 = cv::Mat(3, 3, CV_64F, R2.data());
   //cv::Mat rot = matRot1 * matRot2;
 
-  //T r_pt;
+  //Point_t r_pt;
   //r_pt.x = static_cast<sub_type>( trf2.getScale() * (trf2.x*R1[0][0] + trf2.y*R1[0][1] + trf2.z*R1[0][2]) + trf2.x0 );
   //r_pt.y = static_cast<sub_type>( trf2.getScale() * (trf2.x*R1[1][0] + trf2.y*R1[1][1] + trf2.z*R1[1][2]) + trf2.y0 );
   //r_pt.z = static_cast<sub_type>( trf2.getScale() * (trf2.x*R1[2][0] + trf2.y*R1[2][1] + trf2.z*R1[2][2]) + trf2.z0 );
 
-  //Helmert3D<T> trf(r_pt.x, r_pt.y, r_pt.z, trf1.getScale(), rot);
+  //Helmert3D<Point_t> trf(r_pt.x, r_pt.y, r_pt.z, trf1.getScale(), rot);
 
 }
 
@@ -2635,7 +2717,7 @@ Helmert3D<T> operator*(Helmert3D<T> &trf1, Helmert3D<T> &trf2)
  * \param[in] dy
  * \deprecated{ Reemplazada por I3D::Translate::transform }
  */
-I3D_DEPRECATED("I3D::Translate::transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out)")
+I3D_DEPRECATED("transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)")
 I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 /*!
@@ -2647,9 +2729,15 @@ I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *
  */
 I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
-
+/*!
+ * \brief Aplica una transformación a una entidad
+ * \param[in] in Entidad de entrada
+ * \param[out] out Entidad de salida
+ * \param[in] trf Transformación que se aplica a la entidad
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
 template<typename T, typename Point_t>
-I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)
+I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   if (in.getType() == entity_type::WINDOW) {
     Window<T> *w = dynamic_cast<Window<T> *>(out);
@@ -2674,8 +2762,15 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t
   }
 }
 
+/*!
+ * \brief Aplica una transformación a un conjunto de entidades
+ * \param[in] in Entidad de entrada
+ * \param[out] out Entidad de salida
+ * \param[in] trf Transformación que se aplica a la entidad
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
 template<typename Entity_t, typename Point_t>
-I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, Transform<Point_t> trf, transform_order trfOrder)
+I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   for (int i = 0; i < in.size(); i++) {
     transform(in[i], &(*out)[i], trf, trfOrder);
@@ -2684,14 +2779,20 @@ I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t>
 
 #ifdef HAVE_OPENCV
 
-// Aplica una transformación a una imagen
-template<typename T>
-I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<T> trf, transform_order trfOrder)
+/*!
+ * \brief Aplica una transformación a una imagen
+ * \param[in] in Imagen de entrada
+ * \param[out] out Imagen de salida
+ * \param[in] trf Transformación que se aplica a la imagen
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
+template<typename Point_t>
+I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
   transform_type type = trf->getTransformType();
   switch (type) {
   case I3D::transform_type::TRANSLATE:
-    Translate<T> transTrf = dynamic_cast<Translate<T>>(trf);
+    Translate<Point_t> transTrf = dynamic_cast<Translate<Point_t>>(trf);
     cv::Mat translateMat( 2, 3, CV_32FC1 );
     translateMat.at<float>(0, 0) = 1.f;
     translateMat.at<float>(0, 1) = 0.f;
@@ -2702,7 +2803,7 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<T> trf, transform_o
     cv::warpAffine(in, out, translateMat);
     break;
   case I3D::transform_type::ROTATION:
-    Rotation<T> rotTrf = dynamic_cast<Rotation<T>>(trf);
+    Rotation<Point_t> rotTrf = dynamic_cast<Rotation<Point_t>>(trf);
     cv::Mat rotMat( 2, 3, CV_32FC1 );
     double a = cos(rotTrf.getAngle());
     double b = sin(rotTrf.getAngle());
@@ -2715,7 +2816,7 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<T> trf, transform_o
     cv::warpAffine(in, out, rotMat);
     break;
   case I3D::transform_type::HELMERT_2D:
-    Helmert2D<T> h2dTrf = dynamic_cast<Helmert2D<T>>(trf);
+    Helmert2D<Point_t> h2dTrf = dynamic_cast<Helmert2D<Point_t>>(trf);
     cv::Mat h2DMat( 2, 3, CV_32FC1 );
     double rotation = h2dTrf.getRotation();
     double scale = h2dTrf.getScale();
@@ -2730,7 +2831,7 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<T> trf, transform_o
     cv::warpAffine(in, out, h2DMat);
     break;
   case I3D::transform_type::AFIN:
-    Afin<T> afinTrf = dynamic_cast<Afin<T>>(trf);
+    Afin<Point_t> afinTrf = dynamic_cast<Afin<Point_t>>(trf);
     double a, b, c, d;
     afinTrf.getParameters(&a, &b, &c, &d);
     cv::Mat afinMat( 2, 3, CV_32FC1 );

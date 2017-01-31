@@ -14,13 +14,42 @@ std::vector<cv::Point2d> ptsIn{
     cv::Point2d(4146292.729, 666952.887),
     cv::Point2d(4138759.902, 702670.738) };
 
+  //cv::Point2f srcTri[3];
+  //cv::Point2f dstTri[3];
+
+  //srcTri[0] = cv::Point2f( 0,0 );
+  //srcTri[1] = cv::Point2f( 1024 - 1, 0 );
+  //srcTri[2] = cv::Point2f( 0, 760 - 1 );
+
+  //dstTri[0] = cv::Point2f( 1024*0.0, 760*0.33 );
+  //dstTri[1] = cv::Point2f( 1024*0.85, 760*0.25 );
+  //dstTri[2] = cv::Point2f( 1024*0.15, 760*0.7 );
+
+  //cv::Mat t_afin( 2, 3, CV_32FC1 );
+
+  //t_afin = cv::getAffineTransform(srcTri, dstTri);
+
+  //std::vector< cv::Point2d> src { 
+  //  cv::Point2d( 0,0 ), 
+  //  cv::Point2d( 1024 - 1, 0 ), 
+  //  cv::Point2d( 0, 760 - 1 )
+  //};
+
+  //std::vector< cv::Point2d> dst {
+  //  cv::Point2d(1024 * 0.0, 760 * 0.33),
+  //  cv::Point2d( 1024*0.85, 760*0.25 ),
+  //  cv::Point2d( 1024*0.15, 760*0.7 )
+  //};
+
+  //Afin<cv::Point2d> t_afin2;
+  //t_afin2.compute(src, dst);
 
 TEST(Translate, DefaultConstructor)
 {
   Translate<cv::Point2d> trf;
   EXPECT_EQ(transform_type::TRANSLATE, trf.getTransformType());
-  EXPECT_EQ(0,trf.getTranslationX());
-  EXPECT_EQ(0,trf.getTranslationY());
+  EXPECT_EQ(0,trf.tx);
+  EXPECT_EQ(0,trf.ty);
   EXPECT_EQ(1,trf.minNumberOfPoints());
 }
 
@@ -28,8 +57,8 @@ TEST(Translate, Constructor)
 {
   Translate<cv::Point2d> trf(150.0, 75.0);
   EXPECT_EQ(transform_type::TRANSLATE, trf.getTransformType());
-  EXPECT_EQ(150.0,trf.getTranslationX());
-  EXPECT_EQ(75.0,trf.getTranslationY());
+  EXPECT_EQ(150.0,trf.tx);
+  EXPECT_EQ(75.0,trf.ty);
   EXPECT_EQ(1,trf.minNumberOfPoints());
 }
 
@@ -39,8 +68,8 @@ TEST(Translate, Compute)
   std::vector<cv::Point2d> ptsOut;
   trf.transform(ptsIn, &ptsOut);
   trf.compute(ptsIn,ptsOut);
-  EXPECT_NEAR(150.0,trf.getTranslationX(),0.1);
-  EXPECT_NEAR(75.0,trf.getTranslationY(),0.1);
+  EXPECT_NEAR(150.0,trf.tx,0.1);
+  EXPECT_NEAR(75.0,trf.ty,0.1);
 }
 
 
@@ -61,6 +90,15 @@ TEST(Rotation, Constructor)
   EXPECT_EQ(1,rot.minNumberOfPoints());
 }
 
+TEST(Rotation, Compute)
+{
+  Rotation<cv::Point2d> trf(45. );
+  std::vector<cv::Point2d> ptsOut;
+  trf.transform(ptsIn, &ptsOut);
+  trf.compute(ptsIn,ptsOut);
+  trf.getAngle();
+  EXPECT_NEAR(45. * I3D_DEG_TO_RAD, trf.getAngle(), 0.1);
+}
 
 
 
@@ -70,8 +108,8 @@ TEST(Helmert2D, DefaultConstructor)
   EXPECT_EQ(transform_type::HELMERT_2D, trf.getTransformType());
   EXPECT_EQ(0.0,trf.getRotation());
   EXPECT_EQ(1.,trf.getScale());
-  EXPECT_EQ(0.,trf.x0);
-  EXPECT_EQ(0.,trf.y0);
+  EXPECT_EQ(0.,trf.tx);
+  EXPECT_EQ(0.,trf.ty);
   EXPECT_EQ(2,trf.minNumberOfPoints());
 }
 
@@ -81,8 +119,8 @@ TEST(Helmert2D, Constructor)
   EXPECT_EQ(transform_type::HELMERT_2D, trf.getTransformType());
   EXPECT_NEAR(I3D_PI/180 * 35, trf.getRotation(), 0.0001);
   EXPECT_EQ(0.25,trf.getScale());
-  EXPECT_EQ(150.0,trf.x0);
-  EXPECT_EQ(75.0,trf.y0);
+  EXPECT_EQ(150.0,trf.tx);
+  EXPECT_EQ(75.0,trf.ty);
   EXPECT_EQ(2,trf.minNumberOfPoints());
 }
 
@@ -94,8 +132,8 @@ TEST(Afin, DefaultConstructor)
   EXPECT_EQ(0.0, trf.getRotation());
   EXPECT_EQ(1., trf.getScaleX());
   EXPECT_EQ(1., trf.getScaleY());
-  EXPECT_EQ(0., trf.x0);
-  EXPECT_EQ(0., trf.y0);
+  EXPECT_EQ(0., trf.tx);
+  EXPECT_EQ(0., trf.ty);
   EXPECT_EQ(3, trf.minNumberOfPoints());
 }
 
@@ -106,8 +144,8 @@ TEST(Afin, Constructor)
   EXPECT_NEAR(I3D_PI / 180 * 35,trf.getRotation(), 0.0001);
   EXPECT_EQ(0.25, trf.getScaleX());
   EXPECT_EQ(0.25, trf.getScaleY());
-  EXPECT_EQ(150.0, trf.x0);
-  EXPECT_EQ(75.0, trf.y0);
+  EXPECT_EQ(150.0, trf.tx);
+  EXPECT_EQ(75.0, trf.ty);
   EXPECT_EQ(3, trf.minNumberOfPoints());
 
   std::vector<cv::Point2d> in;
@@ -191,7 +229,9 @@ TEST(getTransformType, AllTrfTest)
   EXPECT_EQ(transform_type::PROJECTIVE,trfProjective.getTransformType());
 }
 
-// Test de transformación de entidades
+// Pendiente test de transformación de entidades
+// Pendiente test de transformación de imagenes
+// Pendiente test transformación multiple
 
 
 GTEST_API_ int main(int argc, char **argv) {
