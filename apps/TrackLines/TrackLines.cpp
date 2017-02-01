@@ -1,4 +1,6 @@
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <memory>
 
 // Cabeceras de OpenCV
@@ -426,7 +428,7 @@ int main(int argc, char *argv[])
         wPrev = WindowI(ptPrev, 200);
 
         // Nos aseguramos que la ventana no se sale de los límites.
-        wPrev = windowIntersection(wPrev, WindowI(cv::Point(0, 0), cv::Point(current_frame.cols, current_frame.rows)));
+        wPrev = windowIntersection(wPrev, WindowI(PointI(0, 0), PointI(current_frame.cols, current_frame.rows)));
         // Cortamos el frame actual quedandonos con la ventana del punto
         current_frame.colRange(wPrev.pt1.x, wPrev.pt2.x).rowRange(wPrev.pt1.y, wPrev.pt2.y).copyTo(crop_frame);
 
@@ -511,8 +513,10 @@ int main(int argc, char *argv[])
         std::vector<PointF> ptsprev;
         std::vector<PointF> ptscur;
         for (size_t igm = 0; igm < good_matches.size(); igm++) {
-          ptsprev.push_back(featuresPrev.getKeyPoint(good_matches[igm].queryIdx).pt);
-          ptscur.push_back(featuresCur.getKeyPoint(good_matches[igm].trainIdx).pt);
+          PointF ptPrev(featuresPrev.getKeyPoint(good_matches[igm].queryIdx).pt.x, featuresPrev.getKeyPoint(good_matches[igm].queryIdx).pt.y);
+          PointF ptCur(featuresCur.getKeyPoint(good_matches[igm].trainIdx).pt.x, featuresCur.getKeyPoint(good_matches[igm].trainIdx).pt.y);
+          ptsprev.push_back(ptPrev);
+          ptscur.push_back(ptCur);
         }
         logPrintInfo("Número de matches: %i", good_matches.size());
 
@@ -540,14 +544,14 @@ int main(int argc, char *argv[])
 
           // Intersección de línea de centro con línea proyectada para determinar el punto del conductor. Este punto se considera una primera aproximación
           PointI pt_intersect;
-          intersectLines(line_proj, Line(cv::Point(current_frame.cols / 2, 0), cv::Point(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
+          intersectLines(line_proj, Line(PointI(current_frame.cols / 2, 0), PointI(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
           cv::line(out, pt_intersect, pt_intersect, Scalar(255, 0, 0), 3, LINE_AA);
 
           // Repetido...
 
           // Obtenemos la ventana envolvente del punto
           wCur = WindowI(pt_intersect, 200);
-          wCur = windowIntersection(wCur, WindowI(cv::Point(0, 0), cv::Point(current_frame.cols, current_frame.rows)));
+          wCur = windowIntersection(wCur, WindowI(PointI(0, 0), PointI(current_frame.cols, current_frame.rows)));
           // Aplicamos un filtrado de features por ventana para eliminar las que esten fuera
           featuresCur.filter(current_frame, wCur, &crop_frame, NULL, NULL);
 
@@ -578,7 +582,7 @@ int main(int argc, char *argv[])
             if (minDist < 5.) {
               conductor_line_prev = oLD->getLines()[iminl];
               conductor_direction = conductor_line_prev.angleOX();
-              intersectLines(line_proj, Line(cv::Point(current_frame.cols / 2, 0), cv::Point(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
+              intersectLines(line_proj, Line(PointI(current_frame.cols / 2, 0), PointI(current_frame.cols / 2, current_frame.rows)), &pt_intersect);
               cv::line(out, pt_intersect, pt_intersect, Scalar(0, 0, 255), 3, LINE_AA);
               logPrintInfo("Punto conductor (%i, %i)", pt_intersect.x, pt_intersect.y);
               bEstimate = false;
@@ -597,7 +601,7 @@ int main(int argc, char *argv[])
           cv::waitKey(1);
 
           char buffer[50];
-          sprintf_s(buffer, "TrackLines_%i_%02i.jpg", ipto, i);
+          sprintf_s(buffer, 50, "TrackLines_%i_%02i.jpg", ipto, i);
           cv::imwrite(buffer, out);
 
           // Asignamos valores previos para la siguiente iteración

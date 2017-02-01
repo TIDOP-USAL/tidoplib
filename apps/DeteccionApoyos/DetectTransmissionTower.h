@@ -9,7 +9,7 @@
 
 #include "img_process/img_processing.h"
 #include "feature_detection/linedetector.h"
-#include "videostream.h"
+#include "VideoStream.h"
 
 // Meter calibración de la camara y corrección
 class I3D_EXPORT DetectTransmissionTower

@@ -103,7 +103,7 @@ public:
    * \brief Constructor de copia
    * \param[in] point Objeto Point que se copia
    */
-  Point(const cv::Point_<T> &point);
+  //Point(const cv::Point_<T> &point);
 
 
   //Para evitar su uso y no de problemas si no esta activado OpenCV
@@ -132,8 +132,8 @@ Point<T>::Point(T x, T y) : cv::Point_<T>(x, y) {}
 template<typename T> inline
 Point<T>::Point(const Point<T>& pt) : cv::Point_<T>(pt.x, pt.y) {}
 
-template<typename T> inline
-Point<T>::Point(const cv::Point_<T>& pt) : cv::Point_<T>(pt) {}
+//template<typename T> inline
+//Point<T>::Point(const cv::Point_<T>& pt) : cv::Point_<T>(pt) {}
 
 
 #else
@@ -176,7 +176,8 @@ double Point<T>::cross(const Point& pt) const
 template<typename T> inline
 Point<T>& Point<T>::operator = (const Point& pt)
 {
-  x = pt.x; y = pt.y;
+  this->x = pt.x;
+  this->y = pt.y;
   return *this;
 }
 
@@ -185,9 +186,9 @@ template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
   if (typeid(T2) == typeid(int)) {
-    return Point<T2>(I3D_ROUND_TO_INT(x), I3D_ROUND_TO_INT(y));
+    return Point<T2>(I3D_ROUND_TO_INT(this->x), I3D_ROUND_TO_INT(this->y));
   } else {
-    return Point<T2>(static_cast<T2>(x), static_cast<T2>(y));
+    return Point<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
   }
 }
 I3D_ENABLE_WARNING(4244)

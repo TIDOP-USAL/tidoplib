@@ -489,14 +489,14 @@ public:
    */
   CmdParser() {}
 
-  CmdParser(char *name, char *description) 
+  CmdParser(const char *name, const char *description)
     : mCmdName(name), mCmdDescription(description) {}
 
   /*!
    * \brief Constructor de lista
    * \param[in] Listado argumentos
    */
-  CmdParser(char *name, char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args) 
+  CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
     : mCmdName(name), mCmdDescription(description), mCmdArgs(cmd_args) {}
   
   /*!

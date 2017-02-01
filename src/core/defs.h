@@ -134,9 +134,9 @@
 #  define I3D_SUPPRESS_WARNINGS __pragma(warning(push, 0))
 #  define I3D_DEFAULT_WARNINGS __pragma(warning(pop))
 #  define I3D_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
-#  define I3D_ENABLE_WARNING(warn) __pragma(warning(default : warn)) 
+#  define I3D_ENABLE_WARNING(warn) __pragma(warning(default : warn))
 #else
-#  define I3D_SUPPRESS_WARNINGS 
+#  define I3D_SUPPRESS_WARNINGS
 #  define I3D_DEFAULT_WARNINGS
 #  define I3D_DISABLE_WARNING(warn)
 #  define I3D_ENABLE_WARNING(warn)
@@ -152,8 +152,9 @@
 
 #ifndef _MSC_VER
 //En el compilador de LINUX no incluye printf_s de C++11
-//Se quita el warning pero a ver si funciona...
+// De momento lo hago asi...
 #define printf_s(...) printf( __VA_ARGS__)
+#define sprintf_s(dest, len, format, ...) snprintf(dest, len, format, __VA_ARGS__)
 #endif
 
 #endif // I3D_DEFS_H

@@ -18,6 +18,8 @@
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
+#include "opencv2/imgproc.hpp"
+
 #endif
 
 #include "core/defs.h"
@@ -33,6 +35,18 @@ namespace I3D
  *  Transformaciones geométricas
  *  \{
  */
+
+
+/*!
+ * \brief Cálculo de la matriz de rotación
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+
+
 
 /*!
  * \brief Tipos de transformaciones
@@ -465,12 +479,15 @@ public:
 template<typename Point_t>
 class I3D_EXPORT TrfPerspective : public Transform2D<Point_t>
 {
-private:
+
+public:
 
   /*!
    * \brief Parámetros de la transformación
    */
   cv::Mat H;
+
+private:
 
   /*!
    * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
@@ -723,7 +740,7 @@ double Translate<Point_t>::compute(const std::vector<Point_t> &pts1, const std::
         tx = static_cast<sub_type>(C.at<double>(2));
         ty = static_cast<sub_type>(C.at<double>(3));
 
-        ret = _rootMeanSquareError(pts1, pts2, error);
+        ret = this->_rootMeanSquareError(pts1, pts2, error);
 
       } catch (std::exception &e) {
         printError(e.what());
@@ -738,7 +755,7 @@ double Translate<Point_t>::compute(const std::vector<Point_t> &pts1, const std::
 template<typename Point_t> inline
 void Translate<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(ptsIn, ptsOut);
+  this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
@@ -1231,7 +1248,7 @@ double Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::
         mRotation = atan2(b, a);
         mScale = sqrt(a*a + b*b);
 
-        rmse = _rootMeanSquareError(pts1, pts2, error);
+        rmse = this->_rootMeanSquareError(pts1, pts2, error);
       } catch (std::exception &e) {
         printError(e.what());
       }
@@ -1245,7 +1262,7 @@ double Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::
 template<typename Point_t> inline
 void Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  formatVectorOut(ptsIn, ptsOut);
+  this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
@@ -2190,7 +2207,7 @@ double polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, c
 }
 
 template<typename Point_t> inline
-void polynomialTransform<Point_t>::transform(const std::vector<Point_t> &ptsOut, std::vector<Point_t> *out, transform_order trfOrder) const
+void polynomialTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
   formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
@@ -2721,15 +2738,6 @@ I3D_DEPRECATED("transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t
 I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 /*!
- * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X en radianes
- * \param[in] phi Rotación respecto al eje Y en radianes
- * \param[in] kappa Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
-
-/*!
  * \brief Aplica una transformación a una entidad
  * \param[in] in Entidad de entrada
  * \param[out] out Entidad de salida
@@ -2800,20 +2808,26 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, tran
     translateMat.at<float>(1, 0) = 0.f;
     translateMat.at<float>(1, 1) = 1.f;
     translateMat.at<float>(1, 2) = transTrf.getTranslationY();
-    cv::warpAffine(in, out, translateMat);
+    if (trfOrder == transform_order::DIRECT)
+      cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
+    else
+      cv::warpAffine(in, out, translateMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::ROTATION:
     Rotation<Point_t> rotTrf = dynamic_cast<Rotation<Point_t>>(trf);
     cv::Mat rotMat( 2, 3, CV_32FC1 );
-    double a = cos(rotTrf.getAngle());
-    double b = sin(rotTrf.getAngle());
-    rotMat.at<float>(0, 0) = a;
-    rotMat.at<float>(0, 1) = b;
+    double r1 = cos(rotTrf.getAngle());
+    double r2 = sin(rotTrf.getAngle());
+    rotMat.at<float>(0, 0) = r1;
+    rotMat.at<float>(0, 1) = r2;
     rotMat.at<float>(0, 2) = 0.f;
-    rotMat.at<float>(1, 0) = b;
-    rotMat.at<float>(1, 1) = a;
+    rotMat.at<float>(1, 0) = r2;
+    rotMat.at<float>(1, 1) = r1;
     rotMat.at<float>(1, 2) = 0.f;
-    cv::warpAffine(in, out, rotMat);
+    if (trfOrder == transform_order::DIRECT)
+      cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
+    else
+      cv::warpAffine(in, out, rotMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::HELMERT_2D:
     Helmert2D<Point_t> h2dTrf = dynamic_cast<Helmert2D<Point_t>>(trf);
@@ -2828,24 +2842,33 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, tran
     h2DMat.at<float>(1, 0) = b;
     h2DMat.at<float>(1, 1) = a;
     h2DMat.at<float>(1, 2) = h2dTrf.y0;
-    cv::warpAffine(in, out, h2DMat);
+    if (trfOrder == transform_order::DIRECT)
+      cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
+    else
+      cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::AFIN:
     Afin<Point_t> afinTrf = dynamic_cast<Afin<Point_t>>(trf);
-    double a, b, c, d;
-    afinTrf.getParameters(&a, &b, &c, &d);
+    double r00, r10, r01, r11;
+    afinTrf.getParameters(&r00, &r10, &r01, &r11);
     cv::Mat afinMat( 2, 3, CV_32FC1 );
-    afinMat.at<float>(0, 0) = a;
-    afinMat.at<float>(0, 1) = b;
+    afinMat.at<float>(0, 0) = r00;
+    afinMat.at<float>(0, 1) = r10;
     afinMat.at<float>(0, 2) = afinTrf.x0;
-    afinMat.at<float>(1, 0) = c;
-    afinMat.at<float>(1, 1) = d;
+    afinMat.at<float>(1, 0) = r01;
+    afinMat.at<float>(1, 1) = r11;
     afinMat.at<float>(1, 2) = afinTrf.y0;
-    cv::warpAffine(in, out, afinMat);
+    if (trfOrder == transform_order::DIRECT)
+      cv::warpAffine(in, out, afinMat, in.size(), cv::INTER_LINEAR);
+    else
+      cv::warpAffine(in, out, afinMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::PERSPECTIVE:
-
-    cv::warpPerspective();
+    TrfPerspective<Point_t> perspTrf = dynamic_cast<TrfPerspective<Point_t>>(trf);
+    if (trfOrder == transform_order::DIRECT)
+      cv::warpPerspective(in, out, perspTrf.H, in.size(), cv::INTER_LINEAR);
+    else
+      cv::warpPerspective(in, out, perspTrf.H.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::PROJECTIVE:
     break;

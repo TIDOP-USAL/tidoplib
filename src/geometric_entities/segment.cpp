@@ -72,7 +72,8 @@ double distPointToSegment(const PointI &pt, const Line &ln)
   
   if (ipr == -1) ptp = ln.pt1;
   else if (ipr == 1) ptp = ln.pt2;
-  return distance(PointD(pt), ptp);
+  PointD _pt(pt);
+  return distance(_pt, ptp);
 }
 
 double distPointToLine(const PointI &pt, const Line &ln)

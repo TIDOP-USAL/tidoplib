@@ -1,4 +1,6 @@
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <memory>
 
 // Cabeceras de OpenCV
@@ -65,7 +67,7 @@ void houghCircles( cv::Mat &red )
 
     printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
     WindowI w_aux(center,300);
-    w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
+    w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(red.cols, red.rows)));
     if (bShowImg) {
       cv::Mat m_aux;
       //... chequear si es una baliza o es un falso positivo
@@ -111,11 +113,6 @@ class VideoHelper : public VideoStream::Listener
 public:
 
   /*!
-   * \brief mCurrentPosition Posición actual del video
-   */
-  double mCurrentPosition;
-
-  /*!
    * \brief mOutPath Ruta donde se guardan las imagenes de salida
    */
   std::string mOutPath;
@@ -134,6 +131,11 @@ public:
    * Procesos que se aplican a la imagen
    */
   std::shared_ptr<I3D::ImgProcessingList> pImgprolist;
+
+  /*!
+   * \brief mCurrentPosition Posición actual del video
+   */
+  double mCurrentPosition;
 
   cv::Mat out;
 
@@ -281,7 +283,7 @@ void VideoHelper::onRead(cv::Mat &frame)
     cv::Mat aux;
     image.copyTo(aux);
     WindowI w_aux(center,300);
-    w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
+    w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(red.cols, red.rows)));
     aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(aux);
     
     if ( 0 ) { // Prueba para diferenciar los dos tipos de balizas.
@@ -382,7 +384,7 @@ como H=0-20.
 
       if (bSaveImage) {
         char buffer[I3D_MAX_PATH];
-        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+        sprintf_s(buffer, I3D_MAX_PATH, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), static_cast<int>(i), mExtFile.c_str());
         printInfo("Baliza guardada en: %s", buffer);
         cv::imwrite(buffer, aux);
       }
@@ -412,7 +414,7 @@ como H=0-20.
 
       if (bSaveImage) {
         char buffer[I3D_MAX_PATH];
-        sprintf_s(buffer, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), i, mExtFile.c_str());
+        sprintf_s(buffer, I3D_MAX_PATH, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), static_cast<int>(i), mExtFile.c_str());
         printInfo("Baliza guardada en: %s", buffer);
         cv::imwrite(buffer, aux);
       }
@@ -576,7 +578,7 @@ int main(int argc, char *argv[])
         }
         printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
         WindowI w_aux(center,300);
-        w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(red.cols, red.rows)));
+        w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(red.cols, red.rows)));
         cv::Mat m_aux;
         image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
         cv::imshow("Baliza", m_aux);

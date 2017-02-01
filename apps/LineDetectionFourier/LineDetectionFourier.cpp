@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
   Message::setMessageLevel(MessageLevel::MSG_INFO);
   consolePrintInfo("Número de lineas detectadas: %i", pts_fourier[0].size());
-  for (int ift = 0; ift < pts_fourier[0].size(); ift++) {
+  for (size_t ift = 0; ift < pts_fourier[0].size(); ift++) {
     cv::line(mSource, cv::Point(pts_fourier[0][ift].x, pts_fourier[0][ift].y - 5), cv::Point(pts_fourier[0][ift].x, pts_fourier[0][ift].y + 5), cv::Scalar(255, 255, 255));
     cv::line(mSource, cv::Point(pts_fourier[0][ift].x - 5, pts_fourier[0][ift].y), cv::Point(pts_fourier[0][ift].x + 5, pts_fourier[0][ift].y), cv::Scalar(255, 255, 255));
     consolePrintInfo("Linea %i: (%i, %i)", ift, pts_fourier[0][ift].x, pts_fourier[0][ift].y);

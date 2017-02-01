@@ -18,12 +18,10 @@
 // Paralelismo
 #if defined HAVE_OMP
 #  include <omp.h>  // OpenMP
-#elif defined HAVE_PPL 
-#  if defined _MSC_VER && _MSC_VER >= 1600
-#    define I3D_MSVS_CONCURRENCY
-#    include <ppl.h>  // Parallel Patterns Library (PPL) 
-#  endif
-#elif 
+#elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
+#  define I3D_MSVS_CONCURRENCY
+#  include <ppl.h>  // Parallel Patterns Library (PPL)
+#else
 #  include <thread>
 #endif
 

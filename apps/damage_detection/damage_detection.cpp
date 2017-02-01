@@ -1,4 +1,6 @@
+#ifdef WIN32
 #include <windows.h>
+#endif
 #include <memory>
 
 // Cabeceras de OpenCV
@@ -254,7 +256,7 @@ int main(int argc, char *argv[])
     cv::LineIterator li(imgBN, line.pt1, line.pt2, 8, false);
     std::vector<int> v_width(li.count, 0);
     std::vector<cv::Point> vPosWidth(li.count); // Almacenamos un vector de puntos cuya abscisa representa la posición en la linea y sus ordenadas la anchura en ese punto
-    cv::Point axis;
+    PointI axis;
 
     BresenhamLine lineIter(line.pt1, line.pt2);
     if (0) {
@@ -311,7 +313,7 @@ int main(int argc, char *argv[])
 
       // Hay que mirar si el máximo representa un pico muy claro. En ese caso podria ser un separador.
       // Aplicamos douglas-Peucker para simplificar la linea
-      std::vector<cv::Point> vPosWidthDP;
+      std::vector<PointI> vPosWidthDP;
       approxPolyDP(vPosWidth, vPosWidthDP, 5, false);  // Ver que valor se introduce como distancia máxima. ¿En función de la desviaciòn tipica?
 
       double slopePrev = 0.;
@@ -332,7 +334,7 @@ int main(int argc, char *argv[])
 
 
       for ( int i = 0; i < li.count; i++, ++li ) {
-        axis = li.pos();
+        axis =  PointI(li.pos().x, li.pos().y);
         // Tenemos las coordenadas del eje de la línea. A partir de esto buscar la anchura para 
         // cada punto
         // Tendria que estimar la anchura del aislador antes. Así podría servirme para el
@@ -407,8 +409,8 @@ int main(int argc, char *argv[])
     
     // Arrastramos una media de 25 posiciones para ver la variación
 
-    cv::Point iniDamage = cv::Point(0, 0);
-    cv::Point endDamage = cv::Point(0, 0);
+    PointI iniDamage = PointI(0, 0);
+    PointI endDamage = PointI(0, 0);
     std::vector<SegmentI> segmentDamage;
     printInfo("Ancho línea: Mínimo: %f. Máximo: %f", th1, th2);
     progress_bar.init(0., static_cast<double>(v_width.size()-50), "Busqueda de zonas dañadas");
@@ -417,20 +419,20 @@ int main(int argc, char *argv[])
       int accumul = I3D_ROUND_TO_INT(sum / 50.);
       if ( accumul < I3D_ROUND_TO_INT(th1) || accumul > I3D_ROUND_TO_INT(th2) ) {
         // Pixel fuera de rango.
-        axis = li3.pos();
-        if (iniDamage == cv::Point(0, 0)) iniDamage = axis;
+        axis = PointI(li3.pos().x, li3.pos().y);
+        if (iniDamage == PointI(0, 0)) iniDamage = axis;
         endDamage = axis; 
         logPrintWarning("Posible daño (%i, %i). Ancho línea: %i. Mínimo: %f. Máximo: %f", axis.x, axis.y, accumul, th1, th2);
         // Ir acumulando la zona total del daño
       } else {
-        if (iniDamage != cv::Point(0, 0)) {
+        if (iniDamage != PointI(0, 0)) {
           LineIterator it3 = li3;
           for ( int k = 0; k < 24; k++ ) ++it3; // Un poco ñapas pero para salir del paso. LineIterator esta poco documentada. 
-          endDamage = it3.pos();
+          (cv::Point &)endDamage = it3.pos();
           segmentDamage.push_back(SegmentI(iniDamage, endDamage));
           
-          iniDamage = cv::Point(0, 0);
-          endDamage = cv::Point(0, 0);
+          iniDamage = PointI(0, 0);
+          endDamage = PointI(0, 0);
         }
       }
 
@@ -442,7 +444,7 @@ int main(int argc, char *argv[])
       SegmentI line = segmentDamage[isd];
       if ( line.length() > 10. ) {
         WindowI w_aux = expandWindow(segmentDamage[isd].getWindow(), 100);
-        w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
+        w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(image.cols, image.rows)));
         
         cv::Mat m_aux;
         image.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
@@ -483,7 +485,7 @@ int main(int argc, char *argv[])
         image.copyTo(_aux);
         cv::rectangle(_aux, w_aux.pt1, w_aux.pt2, color, 2, 8, 0);
         w_aux = expandWindow(w_aux, 100);
-        w_aux = windowIntersection(w_aux, WindowI(cv::Point(0, 0), cv::Point(image.cols, image.rows)));
+        w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(image.cols, image.rows)));
         cv::Mat m_aux;
         _aux.rowRange(w_aux.pt1.y, w_aux.pt2.y).colRange(w_aux.pt1.x, w_aux.pt2.x).copyTo(m_aux);
         cv::imshow("Warning", m_aux);

@@ -458,6 +458,6 @@ public:
 
 } // End namespace I3D
 
-#endif HAVE_OPENCV
+#endif //HAVE_OPENCV
 
 #endif // I3D_LINE_DETECTOR_H

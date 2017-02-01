@@ -1,4 +1,4 @@
-#include "LineDetector.h"
+#include "feature_detection/linedetector.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/imgproc.hpp"

@@ -375,28 +375,6 @@ public:
   static Color randomColor();
 };
 
-template<typename T> inline
-T Color::get() const
-{
-  T color = T();
-  void *_color = (void *)&color;
-
-  if (typeid(T) == typeid(std::string)) {
-    *(std::string *)_color = intToHex(mColor);
-  } else if (typeid(T) == typeid(int)) {
-    color = mColor;
-  } 
-#ifdef HAVE_OPENCV
-  else if (typeid(T) == typeid(cv::Scalar)) {
-    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
-  } 
-#endif
-  else {
-    throw I3D::Exception("Tipo de conversión no permitida");
-  }
-  return color;
-}
-
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -616,7 +594,27 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
 
 #endif // HAVE_OPENCV
 
+template<typename T> inline
+T Color::get() const
+{
+  T color = T();
+  void *_color = (void *)&color;
 
+  if (typeid(T) == typeid(std::string)) {
+    *(std::string *)_color = I3D::intToHex(mColor);
+  } else if (typeid(T) == typeid(int)) {
+    color = mColor;
+  }
+#ifdef HAVE_OPENCV
+  else if (typeid(T) == typeid(cv::Scalar)) {
+    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
+  }
+#endif
+  else {
+    throw I3D::Exception("Tipo de conversión no permitida");
+  }
+  return color;
+}
 
 
 /*! \} */ // end of colorConversion
