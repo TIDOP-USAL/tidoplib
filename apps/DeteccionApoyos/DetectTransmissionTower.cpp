@@ -131,8 +131,8 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       double b = 0.;
       regressionLinearXY(pMax, &m, &b);
       
-      cv::Point pt1(I3D_ROUND_TO_INT(b), 0);
-      cv::Point pt2(I3D_ROUND_TO_INT(m * magnitude.rows + b), magnitude.rows);
+      PointI pt1(I3D_ROUND_TO_INT(b), 0);
+      PointI pt2(I3D_ROUND_TO_INT(m * magnitude.rows + b), magnitude.rows);
             
       if (bDrawRegressionLine) {
         //Se pinta la recta de regresión

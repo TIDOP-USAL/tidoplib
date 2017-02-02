@@ -18,10 +18,15 @@ QT       -= core gui
 TARGET = tidoplib
 TEMPLATE = lib
 CONFIG += staticlib
-CONFIG += c++14
+
+unix {
+    CONFIG += c++14
+} else {
+    CONFIG += c++11
+}
 
 INCLUDEPATH += ../../src/ \
-               /home/esteban/desarrollo/libs/opencv/include/
+               $$PWD/../../../Libs/opencv/include
 
 SOURCES += \
     ../../src/core/console.cpp \
@@ -77,6 +82,7 @@ HEADERS += \
     ../../src/img_process/img_processing.h \
     ../../src/img_process/skeleton.h \
     ../../src/img_process/white_balance.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

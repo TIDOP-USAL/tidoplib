@@ -22,7 +22,11 @@ QT += core
 QT += xml
 QT -= gui
 
-CONFIG += c++11
+unix {
+    CONFIG += c++14
+} else {
+    CONFIG += c++11
+}
 
 TARGET = DeteccionApoyos
 CONFIG += console
@@ -30,12 +34,13 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-INCLUDEPATH += $$PWD/../../../libs/opencv/include \
-               $$PWD/../../src
+INCLUDEPATH += $$PWD/../../src \
+               $$PWD/../../../libs/opencv/include
+
 
 
 SOURCES +=  ../../apps/DeteccionApoyos/DetectTransmissionTower.cpp \
-    ../../apps/DeteccionApoyos/DeteccionApoyos.cpp
+            ../../apps/DeteccionApoyos/DeteccionApoyos.cpp
 
 HEADERS  += ../../apps/DeteccionApoyos/DetectTransmissionTower.h
 
@@ -43,11 +48,17 @@ win32{
     debug{
         LIBS += -L$$PWD/../../../Libs/opencv/x64/vc12/bin
         LIBS += -L$$PWD/../../../Libs/opencv/x64/vc12/lib
-        LIBS += -lopencv_core310d -lopencv_shape310d -lopencv_stitching310d -lopencv_superres310d -lopencv_videostab310d -lopencv_objdetect310d -lopencv_photo310d -lopencv_calib3d310d -lopencv_features2d310d -lopencv_flann310d -lopencv_highgui310d -lopencv_ml310d -lopencv_videoio310d -lopencv_imgcodecs310d -lopencv_video310d -lopencv_imgproc310d -lopencv_optflow310d
+        LIBS += -lopencv_core310d -lopencv_shape310d -lopencv_stitching310d -lopencv_superres310d -lopencv_videostab310d -lopencv_objdetect310d \
+                -lopencv_photo310d -lopencv_calib3d310d -lopencv_features2d310d -lopencv_flann310d -lopencv_highgui310d -lopencv_ml310d -lopencv_videoio310d \
+                -lopencv_imgcodecs310d -lopencv_video310d -lopencv_imgproc310d -lopencv_ximgproc310d -lopencv_optflow310d
+        LIBS += -L$$PWD/../../src/x64/debug/ -ltidopLib
     }else{
         LIBS += -L$$PWD/../../../Libs/opencv/x64/vc12/bin
         LIBS += -L$$PWD/../../../Libs/opencv/x64/vc12/lib
-        LIBS += -lopencv_core310 -lopencv_shape310 -lopencv_stitching310 -lopencv_superres310 -lopencv_videostab310 -lopencv_objdetect310 -lopencv_photo310 -lopencv_calib3d310 -lopencv_features2d310 -lopencv_flann310 -lopencv_highgui310 -lopencv_ml310 -lopencv_videoio310 -lopencv_imgcodecs310 -lopencv_video310 -lopencv_imgproc310 -lopencv_optflow310 -lopencv_optflow310
+        LIBS += -lopencv_core310 -lopencv_shape310 -lopencv_stitching310 -lopencv_superres310 -lopencv_videostab310 -lopencv_objdetect310 \
+                -lopencv_photo310 -lopencv_calib3d310 -lopencv_features2d310 -lopencv_flann310 -lopencv_highgui310 -lopencv_ml310 -lopencv_videoio310 \
+                -lopencv_imgcodecs310 -lopencv_video310 -lopencv_imgproc310 -lopencv_ximgproc310 -lopencv_optflow310
+        LIBS += -L$$PWD/../../src/x64/release/ -ltidopLib
     }
 } else {
     DEPENDPATH += $$PWD/../../../libs/opencv/include

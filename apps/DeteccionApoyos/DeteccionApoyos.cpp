@@ -61,7 +61,7 @@ void getTowerImageAndWindow(const char * file, std::vector<std::string> &images_
         images_paths.push_back(out[0]);
         std::vector<int> coord;
         if (splitToNumbers(out[1], coord, ";") == 0) {
-          windows.push_back(WindowI(cv::Point(coord[0], coord[1]), cv::Point(coord[2], coord[3])));
+          windows.push_back(WindowI(PointI(coord[0], coord[1]), PointI(coord[2], coord[3])));
         }
       }
     }

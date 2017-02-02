@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
   //std::string img1 = "D:\\Desarrollo\\Datos\\FlirLepton_01.PNG";
   //WindowI wTower(cv::Point(250, 0), cv::Point(415, 480)); //"C:\\Desarrollo\\Datos\\FlirLepton_01.PNG"
   std::string img1 = "C:\\Desarrollo\\Datos\\V1_01.PNG";
-  WindowI wTower(cv::Point(400, 25), cv::Point(550, 470)); //"C:\\Desarrollo\\Datos\\V1_01.PNG"
+  WindowI wTower(PointI(400, 25), PointI(550, 470)); //"C:\\Desarrollo\\Datos\\V1_01.PNG"
   //std::string img1 = "D:\\Desarrollo\\Datos\\V1_02.PNG";
   //WindowI wTower(cv::Point(277, 25), cv::Point(392, 535)); //"C:\\Desarrollo\\Datos\\V1_02.PNG"
   //std::string img1 = "D:\\Desarrollo\\Datos\\paramotor.PNG";
@@ -218,14 +218,14 @@ int main(int argc, char *argv[])
   //WindowI wTower(cv::Point(190, 0), cv::Point(280, 250)); //"C:\\Desarrollo\\Datos\\V1_01.PNG"
 
   cv::Mat frame = cv::imread(img1, cv::IMREAD_GRAYSCALE);
-  WindowI wFrame(cv::Point(0, 0), cv::Point(frame.cols, frame.rows));
+  WindowI wFrame(PointI(0, 0), PointI(frame.cols, frame.rows));
   if (frame.empty()) {
     logPrintError("No se puede cargar frame: %s", img1.c_str());
   } else {
 
     //regiones a derecha e izquierda de la torre donde detectaremos las lineas
-    WindowI wRight(cv::Point(wTower.pt2.x, wTower.pt1.y), cv::Point(wTower.pt2.x + 300, wTower.pt2.y));
-    WindowI wLeft(cv::Point(wTower.pt1.x - 300, wTower.pt1.y), cv::Point(wTower.pt1.x, wTower.pt2.y));
+    WindowI wRight(PointI(wTower.pt2.x, wTower.pt1.y), PointI(wTower.pt2.x + 300, wTower.pt2.y));
+    WindowI wLeft(PointI(wTower.pt1.x - 300, wTower.pt1.y), PointI(wTower.pt1.x, wTower.pt2.y));
     wRight = windowIntersection(wRight, wFrame);
     wLeft = windowIntersection(wLeft, wFrame);
 
@@ -363,7 +363,7 @@ int main(int argc, char *argv[])
     for (size_t ig = 0; ig < linesGroupsLeft2.size(); ig++) {
       for (int il = 0; il < linesGroupsLeft2[ig].getSize(); il++) {
         PointI ptAux;
-        intersectLines(linesGroupsLeft2[ig][il], Line(cv::Point(wTower.pt1.x, 0), cv::Point(wTower.pt1.x, frameout.rows)), &ptAux);
+        intersectLines(linesGroupsLeft2[ig][il], Line(PointI(wTower.pt1.x, 0), PointI(wTower.pt1.x, frameout.rows)), &ptAux);
         ptsL.push_back(ptAux);
       }
     }
@@ -371,7 +371,7 @@ int main(int argc, char *argv[])
     for (size_t ig = 0; ig < linesGroupsRight2.size(); ig++) {
       for (int ir = 0; ir < linesGroupsRight2[ig].getSize(); ir++) {
         PointI ptAux;
-        intersectLines(linesGroupsRight2[ig][ir], Line(cv::Point(wTower.pt2.x, 0), cv::Point(wTower.pt2.x, frameout.rows)), &ptAux);
+        intersectLines(linesGroupsRight2[ig][ir], Line(PointI(wTower.pt2.x, 0), PointI(wTower.pt2.x, frameout.rows)), &ptAux);
         ptsR.push_back(ptAux);
       }
     }
