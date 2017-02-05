@@ -310,7 +310,8 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
     }
     // Ver si no es opcional y devolver un error si no existe
     if (bFind == false && bOptional == false) {
-      consolePrintError("Falta %s. Parámetro obligatorio/n", arg->getName().c_str());
+      consolePrintError("Falta %s. Parámetro obligatorio ", arg->getName().c_str());
+      printHelp();
       return CmdParser::MSG::PARSE_ERROR;
     }
   }
@@ -320,27 +321,37 @@ CmdParser::MSG CmdParser::parse(int argc, const char* const argv[])
 void CmdParser::printHelp()
 {
 
-  //... Solución rapida. modificar
+  Console console(Console::Mode::OUTPUT);
 
-  //bprinter::TablePrinter tp(&std::cout);
-  //tp.AddColumn("Name", 25);
-  //tp.AddColumn("Optional", 10);
-  //tp.AddColumn("Type", 10);
-  //tp.AddColumn("Description", 60);
-  //tp.PrintHeader();
-  //for (auto arg : mCmdArgs) {
-  //  tp << arg->getName() 
-  //     << (arg->isOptional() ? "O" : "R")
-  //     << ((ArgType::OPTION == arg->getType()) ? "Option" : "Parameter")
-  //     << arg->getDescription();
-  //}
-  //tp.PrintFooter();
-  printf("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+
+  //... Solución rapida. modificar
+  printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
   //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+
+  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
+
   for (auto arg : mCmdArgs) {
-     printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"),arg->getDescription().c_str());
+    std::string s_type, s_description;
+    if (arg->getType() == ArgType::OPTION) {
+      s_type = "Opción";
+      s_description = arg->getDescription().c_str();
+    } else if (arg->getType() == ArgType::PARAMETER) {
+      s_type = "Parámetro";
+      s_description = arg->getDescription().c_str();
+    } else if (arg->getType() == ArgType::PARAMETER_OPTIONS) {
+      s_type = "Lista de opciones";
+      s_description = arg->getDescription().c_str();
+      s_description = ". Los valores posibles son: ";
+      for (auto opt : dynamic_cast<CmdParameterOptions *>(arg.get())->getOptions()) {
+        s_description += " ";
+        s_description += opt;
+      }
+    } else continue;
+     printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
+    //printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
   }
-  printf_s("Using:\n");
+  printf_s("\nUsing:\n");
   printf_s("%s", mCmdName.c_str());
   for (auto arg : mCmdArgs) {
     printf_s( " %s%s%s", ((ArgType::OPTION == arg->getType())? "-" : "--"), arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "" : "=[value]"));

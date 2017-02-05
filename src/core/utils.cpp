@@ -145,6 +145,195 @@ int deleteDir(const char *path, bool confirm)
   } else return 1;
 }
 
+int getFileDir(const char *path, char *dir, int size)
+{
+#ifdef _MSC_VER
+  return _splitpath_s(path, NULL, NULL, dir, size, NULL, NULL, NULL, NULL);
+#else
+  char *dirc = (char *)malloc(size);//strdup(path);
+  if (dirc) dir = dirname(dirc);
+  return (dir) ? 0 : 1;
+#endif
+}
+
+int getFileDrive(const char *path, char *drive, int size)
+{
+  int r_err = 0;
+#ifdef _MSC_VER
+  r_err = _splitpath_s(path, drive, size, NULL, NULL, NULL, NULL, NULL, NULL);
+#else
+
+#endif
+  return r_err;
+}
+
+int getFileExtension(const char *path, char *ext, int size)
+{
+  int r_err = 0;
+#ifdef _MSC_VER
+  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, size);
+#else
+
+#endif
+  return r_err;
+}
+
+int getFileName(const char *path, char *name, int size)
+{
+#ifdef _MSC_VER
+  return _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
+#else
+  char *basec = (char *)malloc(size);
+  if (basec) name = basename(basec);
+  return (name) ? 0 : 1;
+#endif
+}
+
+int getFileDriveDir(const char *path, char *drivedir, int size)
+{
+  int r_err = 0;
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+#ifdef _MSC_VER
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
+  strcpy_s(drivedir, size, drive);
+  strcat_s(drivedir, size, dir);
+#else
+  char *dirc = (char *)malloc(size);
+  if (dirc) drivedir = dirname(dirc);
+  return (drivedir) ? 0 : 1;
+#endif
+  return r_err;
+}
+
+int changeFileName(const char *path, const char *newName, char *pathOut, int size)
+{
+  int r_err = 0;
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+  char ext[I3D_MAX_EXT];
+#ifdef _MSC_VER
+
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, ext, I3D_MAX_EXT);
+  if (r_err == 0 )
+    r_err = _makepath_s(pathOut, size, drive, dir, newName, ext);
+#else
+
+#endif
+  return r_err;
+}
+
+int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size)
+{
+  int r_err = 0;
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+  char fname[I3D_MAX_FNAME];
+#ifdef _MSC_VER
+
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, fname, I3D_MAX_FNAME, NULL, NULL);
+  if (r_err == 0)
+    r_err = _makepath_s(pathOut, size, drive, dir, fname, newExt);
+#else
+
+#endif
+  return r_err;
+}
+
+int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
+{
+  int r_err = 0;
+  char drive[I3D_MAX_DRIVE];
+  char dir[I3D_MAX_DIR];
+#ifdef _MSC_VER
+
+  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
+  if (r_err == 0){
+    std::vector<std::string> nameext;
+    split(newNameExt, nameext, ".");
+    r_err = _makepath_s(pathOut, size, drive, dir, nameext[0].c_str(), nameext[1].c_str());
+  }
+#else
+
+#endif
+  return r_err;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+void Path::parse(const std::string &path)
+{
+  split(path, mPath, "/\\");
+  mPos = static_cast<int>(mPath.size());
+  if (mPath.size() == 0) return;
+
+  // rutas relativas
+  if (mPath[0] == std::string("..")) {
+    char dir[I3D_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    //std::string runFilePath = getRunfile();
+    Path runPath(dir);
+    int i = 0;
+    for (; mPath[i] == std::string(".."); i++) {
+      runPath.down();
+    }
+
+    std::vector<std::string> current = runPath.currentPath();
+    for (int j = i; j < mPath.size(); j++)
+      current.push_back(mPath[j]);
+    mPath = current;
+    mPos = static_cast<int>(mPath.size());
+  } else if (mPath[0] == std::string(".")) {
+    char dir[I3D_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    Path runPath(dir);
+    std::vector<std::string> current = runPath.currentPath();
+    for (int j = 1; j < mPath.size(); j++)
+      current.push_back(mPath[j]);
+    mPath = current;
+    mPos = static_cast<int>(mPath.size());
+  }
+}
+
+
+std::string Path::getDrive() 
+{
+  return mPath[0];
+}
+
+void Path::up() 
+{
+  if (mPos < mPath.size())
+  mPos++;
+}
+
+void Path::down() 
+{
+  if (mPos != 0)
+    mPos--;
+}
+  
+std::vector<std::string> Path::currentPath() 
+{
+  std::vector<std::string> cur_path;
+  for (int i = 0; i < mPos; i++) {
+    cur_path.push_back(mPath[i]);
+  }
+  return cur_path;
+}
+
+
+std::string Path::toString()
+{
+  std::string _path;
+  for (int i = 0; i < mPos; i++) {
+    _path += mPath[i];
+    _path += "\\";
+  }
+  return _path;
+}
+
+
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
@@ -211,118 +400,6 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
     str->replace(ini, str_old.size(), str_new);
     ini = str->find(str_old, str_new.size() + ini);
   }
-}
-
-int getFileDir(const char *path, char *dir, int size)
-{
-#ifdef _MSC_VER
-  return _splitpath_s(path, NULL, NULL, dir, size, NULL, NULL, NULL, NULL);
-#else
-  char *dirc = (char *)malloc(size);//strdup(path);
-  if (dirc) dir = dirname(dirc);
-  return (dir) ? 0 : 1;
-#endif
-}
-
-int getFileDrive(const char *path, char *drive, int size)
-{
-  int r_err = 0;
-#ifdef _MSC_VER
-  r_err = _splitpath_s(path, drive, size, NULL, NULL, NULL, NULL, NULL, NULL);
-#else
-
-#endif
-  return r_err;
-}
-
-int getFileExtension(const char *path, char *ext, int size)
-{
-  int r_err = 0;
-#ifdef _MSC_VER
-  r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, size);
-#else
-
-#endif
-  return r_err;
-}
-
-int getFileName(const char *path, char *name, int size)
-{
-#ifdef _MSC_VER
-  return _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
-#else
-  char *basec = (char *)malloc(size);
-  if (basec) name = basename(basec);
-  return (name) ? 0 : 1;
-#endif
-}
-
-int getFileDriveDir(const char *path, char *drivedir, int size)
-{
-  int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-#ifdef _MSC_VER
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
-  strcpy_s(drivedir, size, drive);
-  strcat_s(drivedir, size, dir);
-#else
-
-#endif
-  return r_err;
-}
-
-int changeFileName(const char *path, const char *newName, char *pathOut, int size)
-{
-  int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-  char ext[I3D_MAX_EXT];
-#ifdef _MSC_VER
-
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, ext, I3D_MAX_EXT);
-  if (r_err == 0 )
-    r_err = _makepath_s(pathOut, size, drive, dir, newName, ext);
-#else
-
-#endif
-  return r_err;
-}
-
-int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size)
-{
-  int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-  char fname[I3D_MAX_FNAME];
-#ifdef _MSC_VER
-
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, fname, I3D_MAX_FNAME, NULL, NULL);
-  if (r_err == 0)
-    r_err = _makepath_s(pathOut, size, drive, dir, fname, newExt);
-#else
-
-#endif
-  return r_err;
-}
-
-int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
-{
-  int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-#ifdef _MSC_VER
-
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
-  if (r_err == 0){
-    std::vector<std::string> nameext;
-    split(newNameExt, nameext, ".");
-    r_err = _makepath_s(pathOut, size, drive, dir, nameext[0].c_str(), nameext[1].c_str());
-  }
-#else
-
-#endif
-  return r_err;
 }
 
 int split(const std::string &in, std::vector<std::string> &out, const char *chs)
@@ -417,7 +494,7 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads()
 }
 
 void parallel_for(int ini, int end, std::function<void(int)> f) { 
-  uint64_t time_ini = getTickCount();
+  //uint64_t time_ini = getTickCount();
 #ifdef I3D_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
@@ -446,8 +523,8 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
 
   for (auto &_thread : threads) _thread.join();
 #endif
-  double time = (getTickCount() - time_ini) / 1000.;
-  printf("Time %f", time);
+  //double time = (getTickCount() - time_ini) / 1000.;
+  //printf("Time %f", time);
 }
 
 /* ---------------------------------------------------------------------------------- */

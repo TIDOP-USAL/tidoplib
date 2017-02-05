@@ -373,6 +373,7 @@ public:
  */
 struct I3D_EXPORT CmdParameterOptions : public CmdArgument
 {
+
 private:
 
   /*!
@@ -443,6 +444,10 @@ public:
    */
   void setValue(std::string value);
 
+  /*!
+   * \brief listado de opciones
+   */
+  std::vector<std::string> getOptions() { return mOptions; }
 };
 
 // Parametros de entrada:

@@ -63,66 +63,6 @@ I3D_EXPORT int createDir(const char *path);
  */
 I3D_EXPORT int deleteDir(const char *path, bool confirm = false);
 
-
-/* ---------------------------------------------------------------------------------- */
-/*                             Operaciones con cadenas                                */
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup stringOper Operaciones con cadenas
- *  
- * \{
- */
-
-/*!
- * \brief Separa una cadena en un array de enteros
- * \param[in] cad Cadena de texto que contiene una lista de numeros
- * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::string aux = "1102,3654";
- * std::vector<int> coord;
- * if ( splitToNumbers(aux, coord) == 0 ){
- *   ...
- * }
- * \endcode
- */
-I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
-
-/*!
- * \brief Separa una cadena en un array de dobles
- * \param[in] cad Cadena de texto que contiene una lista de numeros
- * \param[out] vOut Vector con los números extraidos
- * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::string aux = "1102.52,3654.95";
- * std::vector<double> coord;
- * if ( splitToNumbers(aux, coord) == 0 ){
- *   ...
- * }
- * \endcode
- */
-I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
-
-/*!
- * \brief Reemplaza una cadena por otra en un texto.
- * \param[in] str Cadena original
- * \param[in] str_old Cadena a remplazar
- * \param[out] str_new Nueva cadena
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::string str = "Hola mundo";
- * replaceString(str, " ", "_");
- * \endcode
- */
-I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
-
 /*!
  * \brief Optiene el directorio de un archivo
  * \param[in] path Ruta del archivo
@@ -253,6 +193,159 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  * \endcode
  */
 I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
+
+/*!
+ * \brief The Path class
+ */
+class Path
+{
+private:
+
+ /*!
+  * \brief mPos
+  */
+  int mPos;
+
+  /*!
+   * \brief mPath
+   */
+  std::vector<std::string> mPath;
+
+#if defined WIN32
+
+  /*!
+   * \brief Unidad de disco
+   */
+  std::string mDrive;
+
+#endif
+
+public:
+
+  /*!
+   * \brief Constructor por defecto
+   */
+  Path() : mPos(0), mPath(0)
+  {
+  }
+
+  /*!
+   * \brief Constructor
+   * \param path Ruta
+   */
+  Path(const std::string &path) : mPos(0), mPath(0)
+  {
+    parse(path);
+  }
+
+  /*!
+   * \brief Constructor de copia
+   * \param path Ruta
+   */
+  Path(const Path &path) : mPos(path.mPos), mPath(path.mPath) { }
+
+  /*!
+   * \brief Destructora
+   */
+  ~Path()
+  {
+  }
+
+  /*!
+   * \brief Parsea una cadena
+   * \param path
+   */
+  void parse(const std::string &path);
+
+  /*!
+   * \brief getDrive
+   * \return
+   */
+  std::string getDrive();
+
+  /*!
+   * \brief up
+   */
+  void up();
+
+  /*!
+   * \brief down
+   */
+  void down();
+  
+  /*!
+   * \brief currentPath
+   * \return
+   */
+  std::vector<std::string> currentPath();
+
+  /*!
+   * \brief convierte el path a una cadena
+   * \return
+   */
+  std::string toString();
+};
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                             Operaciones con cadenas                                */
+/* ---------------------------------------------------------------------------------- */
+
+/*! \defgroup stringOper Operaciones con cadenas
+ *  
+ * \{
+ */
+
+/*!
+ * \brief Separa una cadena en un array de enteros
+ * \param[in] cad Cadena de texto que contiene una lista de numeros
+ * \param[out] vOut Vector con los números extraidos
+ * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
+ * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string aux = "1102,3654";
+ * std::vector<int> coord;
+ * if ( splitToNumbers(aux, coord) == 0 ){
+ *   ...
+ * }
+ * \endcode
+ */
+I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
+
+/*!
+ * \brief Separa una cadena en un array de dobles
+ * \param[in] cad Cadena de texto que contiene una lista de numeros
+ * \param[out] vOut Vector con los números extraidos
+ * \param[in] chs Caracter separador de la cadena. Si se omite toma por defecto ","
+ * \return (1) error
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string aux = "1102.52,3654.95";
+ * std::vector<double> coord;
+ * if ( splitToNumbers(aux, coord) == 0 ){
+ *   ...
+ * }
+ * \endcode
+ */
+I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
+
+/*!
+ * \brief Reemplaza una cadena por otra en un texto.
+ * \param[in] str Cadena original
+ * \param[in] str_old Cadena a remplazar
+ * \param[out] str_new Nueva cadena
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::string str = "Hola mundo";
+ * replaceString(str, " ", "_");
+ * \endcode
+ */
+I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
+
 
 /*!
  * \brief Separa una cadena

@@ -1567,6 +1567,10 @@ private:
    */
   void update();
 
+  /*!
+   * \brief Actualiza los parámetros de la transformacion inversa
+   */
+  void updateInv();
 };
 
 
@@ -1612,7 +1616,8 @@ double Afin<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vecto
         d = C.at<double>(3);
         tx = C.at<double>(4);
         ty = C.at<double>(5);
-
+        
+        updateInv();
         //double f = atan2( c, a );
         //double w = atan2( -b, d );
 
@@ -1732,6 +1737,12 @@ void Afin<Point_t>::update()
   c =  mScaleX * sin(mRotation);
   d =  mScaleY * cos(mRotation);
   
+  updateInv();
+}
+
+template<typename Point_t> inline
+void Afin<Point_t>::updateInv()
+{
   // Transformación inversa
   double det = a * d - c * b;
   if (!det) {
@@ -1747,7 +1758,6 @@ void Afin<Point_t>::update()
     I3D_ENABLE_WARNING(4244)
   }
 }
-
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -2760,8 +2770,8 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t
              in.getType() == entity_type::POLYGON_2D) {
     const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
     dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());
-    typename std::vector<Point_t>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
-    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+    typename std::vector<Point<T>>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
+    for (typename std::vector<Point<T>>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
       trf->transform(*it, &(*it_out), trfOrder);
     }
   } else {

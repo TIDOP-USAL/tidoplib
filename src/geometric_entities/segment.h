@@ -452,6 +452,8 @@ I3D_EXPORT double distPointToLine(const PointI &pt, const Line &ln);
  */
 I3D_EXPORT double minDistanceSegments(const Line &ln1, const Line &ln2);
 
+I3D_DISABLE_WARNING(4244)
+
 /*!
  * \brief Intersect de dos segmentos de línea
  * \param ln1 Primer segmento
@@ -459,7 +461,32 @@ I3D_EXPORT double minDistanceSegments(const Line &ln1, const Line &ln2);
  * \param pt Punto de intersección
  * \return
  */
-I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
+//I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
+template <typename T>
+I3D_EXPORT int intersectSegments(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
+{
+  int iret = 0;
+  Point<T> vs1, vs2;
+  vs1 = ln1.vector();
+  vs2 = ln2.vector();
+  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+  if (double cross_product = vs1.cross(vs2)) {
+    Point<T> v11_12 = ln2.pt1 - ln1.pt1;
+    double t = v11_12.cross(vs2) / cross_product;
+    double u = v11_12.cross(vs1) / cross_product;
+    if (t >= 0.  &&  t <= 1  &&  u >= 0.  &&  u <= 1) {
+      if (typeid(T) == typeid(int)) {
+        pt->x = I3D_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
+        pt->y = I3D_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+      } else {
+        pt->x += static_cast<T>(ln1.pt1.x + t * vs1.x);
+        pt->y += static_cast<T>(ln1.pt1.y + t * vs1.y);
+      }
+      iret = 1;
+    }
+  }
+  return(iret);
+}
 
 /*!
  * \brief Determina la intersección de los lineas
@@ -468,7 +495,31 @@ I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
  * \param[out] pt Punto de intersección
  * \return
  */
-I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, PointI *pt);
+//I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, PointI *pt);
+template <typename T>
+I3D_EXPORT int intersectLines(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
+{
+  int iret = 0;
+  Point<T> vs1, vs2;
+  vs1 = ln1.vector();
+  vs2 = ln2.vector();
+  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+  if (double cross_product = vs1.cross(vs2)) {
+    Point<T> v11_12 = ln2.pt1 - ln1.pt1;
+    double t = v11_12.cross(vs2) / cross_product;
+    if (typeid(T) == typeid(int)) {
+      pt->x = I3D_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
+      pt->y = I3D_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+    } else {
+      pt->x = static_cast<T>(ln1.pt1.x + t * vs1.x);
+      pt->y = static_cast<T>(ln1.pt1.y + t * vs1.y);
+    }
+    iret = 1;
+  }
+  return(iret);
+}
+
+I3D_ENABLE_WARNING(4244)
 
 /*!
  * \brief joinLinesByDist

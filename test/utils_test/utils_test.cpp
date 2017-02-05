@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "core/utils.h"
+#include "experimental/experimental.h"
 
 using namespace I3D;
 
@@ -260,6 +261,38 @@ TEST(split, CustomSeparatorCharacter){
   EXPECT_EQ("cad2", out[1]);
   EXPECT_EQ("cad3", out[2]);
 }
+
+
+
+
+
+TEST(Path, DefaultConstructor){
+  EXPERIMENTAL::Path path;
+  // Path esta vacio con lo cual el path actual tiene que estar vacio
+  std::vector<std::string> _path = path.currentPath();
+  EXPECT_EQ(0, _path.size());
+  //No tiene que dar error...
+  path.down();
+  path.up();
+}
+
+TEST(Path, Constructor){
+  EXPERIMENTAL::Path path1("C:\\Desarrollo\\Libs");
+  std::vector<std::string> _path = path1.currentPath();
+  EXPECT_EQ(3, _path.size());
+  EXPERIMENTAL::Path path2("C:/Desarrollo/Libs/");
+  std::vector<std::string> _path2 = path2.currentPath();
+  EXPECT_EQ(3, _path2.size());
+}
+
+TEST(Path, CopyConstructor){
+
+}
+
+TEST(Path, parse){
+
+}
+
 
 GTEST_API_ int main(int argc, char **argv) {
   printf("Running main() from gtest_main.cc\n");
