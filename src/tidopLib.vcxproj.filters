@@ -129,6 +129,9 @@
     <ClCompile Include="img_process\skeleton.cpp">
       <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
+    <ClCompile Include="core\datamodel.cpp">
+      <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geometric_entities\operations.h">
@@ -220,6 +223,9 @@
     </ClInclude>
     <ClInclude Include="img_process\skeleton.h">
       <Filter>Archivos de encabezado\img_process</Filter>
+    </ClInclude>
+    <ClInclude Include="core\datamodel.h">
+      <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

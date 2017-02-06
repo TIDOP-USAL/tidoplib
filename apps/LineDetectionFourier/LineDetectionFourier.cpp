@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
   CmdParser cmdParser(name, "Detección de lineas por fourier");
   cmdParser.addParameter("img", "Imagen en la que se buscan las líneas");
-  if (cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
+  if (cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     cmdParser.printHelp(); 
     exit(EXIT_FAILURE);
   }

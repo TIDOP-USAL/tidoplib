@@ -50,7 +50,8 @@ SOURCES += \
     ../../src/img_process/skeleton.cpp \
     ../../src/img_process/white_balance.cpp \
     ../../src/feature_detection/linedetector.cpp \
-    ../../src/feature_detection/shapedetection.cpp
+    ../../src/feature_detection/shapedetection.cpp \
+    ../../src/core/datamodel.cpp
 
 HEADERS += \
     ../../src/core/config.h \
@@ -81,7 +82,8 @@ HEADERS += \
     ../../src/img_process/filters.h \
     ../../src/img_process/img_processing.h \
     ../../src/img_process/skeleton.h \
-    ../../src/img_process/white_balance.h
+    ../../src/img_process/white_balance.h \
+    ../../src/core/datamodel.h
 
 unix {
     target.path = /usr/lib

@@ -303,13 +303,13 @@ int main(int argc, char** argv)
   CmdParser cmdParser(name, "Detección de apoyos");
   cmdParser.addParameter("video", "Video en el que vamos a buscar las torres");
   cmdParser.addParameter("out", "Directorio de salida donde se guardan las imagenes y otra información de salida", true, dir);
-  cmdParser.addOption("si", "Guarda imagenes", true);
-  cmdParser.addOption("dl", "Dibuja lineas", true);
-  cmdParser.addOption("drl", "Dibuja recta de regresión", true);
-  cmdParser.addOption("show_video", "Muestra el video mientras corre el programa", true);
+  cmdParser.addOption("si", "Guarda imagenes");
+  cmdParser.addOption("dl", "Dibuja lineas");
+  cmdParser.addOption("drl", "Dibuja recta de regresión");
+  cmdParser.addOption("show_video", "Muestra el video mientras corre el programa");
   cmdParser.addParameter("skip_frames", "Salto de frames", true, "1");
   cmdParser.addParameterOption("l_detect", "HOUGH,HOUGHP,HOUGH_FAST,LSD", "Detector de lineas", true, "HOUGHP");
-  if (cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
+  if (cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     cmdParser.printHelp(); 
     exit(EXIT_FAILURE);
   }

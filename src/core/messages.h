@@ -23,11 +23,11 @@ namespace I3D
  * \brief Niveles de información de los mensajes
  */
 enum class MessageLevel : int8_t {
-  MSG_DEBUG,      /**< Información extra para depuración. */
-  MSG_VERBOSE,    /**< Información extra para depuración. */
-  MSG_INFO,       /**< Warnings, errores y otra información. */
-  MSG_WARNING,    /**< Warnings y errores. */
-  MSG_ERROR       /**< Sólo errores. */
+  MSG_DEBUG,      /*!< Información extra para depuración. */
+  MSG_VERBOSE,    /*!< Información extra para depuración. */
+  MSG_INFO,       /*!< Warnings, errores y otra información. */
+  MSG_WARNING,    /*!< Warnings y errores. */
+  MSG_ERROR       /*!< Sólo errores. */
 };
 
 enum class MessageOutput : int8_t {
