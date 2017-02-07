@@ -6,7 +6,7 @@
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
-
+#include "opencv2/xphoto/white_balance.hpp"
 
 #include "core/defs.h"
 #include "graphic_entities/color.h"
@@ -25,7 +25,7 @@ namespace I3D
 
 
 /*! \defgroup WhiteBalance Balance de blancos
- *  
+ *
  *  \{
  */
 
@@ -52,7 +52,7 @@ public:
    * \brief Constructora Gray World
    */
   Grayworld()
-    : ImgProcessing(process_type::GRAYWORLD) 
+    : ImgProcessing(process_type::GRAYWORLD)
   {
     wb = cv::xphoto::createGrayworldWB();
   }
@@ -61,11 +61,10 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * En caso contrario devuelve ProcessExit::FAILURE
-   * \see ProcessExit
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK.
+   * \see ImgProcessing::Status
    */
-  ProcessExit execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -86,8 +85,8 @@ public:
 /*!
  * \brief Balance de blancos White Patch
  *
- * Asume que los valores máximos de color en los tres canales de la imagen es el 
- * color del blanco bajo la luz de la escena, entonces se elimina el efecto de 
+ * Asume que los valores máximos de color en los tres canales de la imagen es el
+ * color del blanco bajo la luz de la escena, entonces se elimina el efecto de
  * esa luz y se impone una luz blanca
  * Estimación del color de la luz de la escena de la imagen:
  * Rmax(I): Valor máximo del canal rojo de la imagen I
@@ -116,7 +115,7 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK.
    * \see ImgProcessing::Status
    */
   ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;

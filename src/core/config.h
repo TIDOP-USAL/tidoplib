@@ -3,7 +3,7 @@
 
 /* Cabecera para configuración */
 
-#define HAVE_OPENCV 
+#define HAVE_OPENCV
 
 #ifdef HAVE_OPENCV
 
@@ -23,7 +23,7 @@
 
 // Parallel Patterns Library
 // https://msdn.microsoft.com/es-es/library/dd492418.aspx
-#define HAVE_PPL 
+#define HAVE_PPL
 
 // Manejo de errores como log y/o mensajes de consola
 

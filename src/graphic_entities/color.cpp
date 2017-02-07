@@ -4,6 +4,7 @@
 #include <array>
 #include <thread>
 #include <random>
+#include <string>
 
 #include "core/exception.h"
 #include "core/utils.h"
@@ -15,7 +16,7 @@ namespace I3D
 /*                                     Clase Color                                    */
 /* ---------------------------------------------------------------------------------- */
 
-Color::Color(int red, int green, int blue, int alpha) 
+Color::Color(int red, int green, int blue, int alpha)
 {
   mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
 }
@@ -30,9 +31,9 @@ Color::Color(double hue, double saturation, double value) : mColor(0)
   fromHSV(hue, saturation, value);
 }
 
-Color::Color(const std::string &color) 
+Color::Color(const std::string &color)
 {
-  mColor = std::stoi(color,nullptr,16);
+  mColor = stringToInteger(color, I3D::Base::HEXADECIMAL);//std::stoi(color,nullptr,16);
 }
 
 Color::Color(const Color::NAME &color)
@@ -41,7 +42,7 @@ Color::Color(const Color::NAME &color)
 }
 
 #ifdef HAVE_OPENCV
-Color::Color(const cv::Scalar &color) 
+Color::Color(const cv::Scalar &color)
 {
   //... Orden RGB o BGR???
   mColor = rgbToInt(I3D_ROUND_TO_INT(color[2]), I3D_ROUND_TO_INT(color[1]), I3D_ROUND_TO_INT(color[0]));
@@ -54,7 +55,7 @@ Color::Color(const cv::Scalar &color)
  * \return Componente azul
  */
 int Color::getBlue() const
-{ 
+{
   return (mColor & 0xFF);
 }
 
@@ -64,8 +65,8 @@ int Color::getBlue() const
  * \return Componente verde
  */
 int Color::getGreen() const
-{ 
-  return((mColor & 0xFF00) >> 8); 
+{
+  return((mColor & 0xFF00) >> 8);
 }
 
 /*!
@@ -74,8 +75,8 @@ int Color::getGreen() const
  * \return Componente roja
  */
 int Color::getRed() const
-{ 
-  return((mColor & 0xFF0000) >> 16); 
+{
+  return((mColor & 0xFF0000) >> 16);
 }
 
 /*!
@@ -84,15 +85,15 @@ int Color::getRed() const
  * \return Canal alfa
  */
 int Color::getAlpha() const
-{ 
-  return((mColor & 0xFF000000) >> 24); 
+{
+  return((mColor & 0xFF000000) >> 24);
 }
 
 void Color::fromCMYK(double cyan, double magenta, double yellow, double key)
 {
   double aux = (1 - key) * 255;
-  mColor = (I3D_ROUND_TO_INT((1 - yellow) * aux) & 0xFF) 
-         | ((I3D_ROUND_TO_INT((1 - magenta) * aux) << 8) & 0xFF00) 
+  mColor = (I3D_ROUND_TO_INT((1 - yellow) * aux) & 0xFF)
+         | ((I3D_ROUND_TO_INT((1 - magenta) * aux) << 8) & 0xFF00)
          | ((I3D_ROUND_TO_INT((1 - cyan) * aux) << 16) & 0xFF0000);
 }
 
@@ -141,9 +142,9 @@ void Color::fromHSV(double hue, double saturation, double value)
   _rgb[0] += m;
   _rgb[1] += m;
   _rgb[2] += m;
-  
-  mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF) 
-         | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00) 
+
+  mColor = (I3D_ROUND_TO_INT(_rgb[2]*255.) & 0xFF)
+         | ((I3D_ROUND_TO_INT(_rgb[1]*255.) << 8) & 0xFF00)
          | ((I3D_ROUND_TO_INT(_rgb[0]*255.) << 16) & 0xFF0000);
 }
 
@@ -151,8 +152,8 @@ void Color::fromHSL(double hue, double saturation, double lightness)
 {
   int red, green, blue;
   hslToRgb(hue, saturation, lightness, &red, &green, &blue);
-  mColor = (I3D_ROUND_TO_INT(blue) & 0xFF) 
-         | ((I3D_ROUND_TO_INT(green) << 8) & 0xFF00) 
+  mColor = (I3D_ROUND_TO_INT(blue) & 0xFF)
+         | ((I3D_ROUND_TO_INT(green) << 8) & 0xFF00)
          | ((I3D_ROUND_TO_INT(red) << 16) & 0xFF0000);
 }
 
@@ -169,7 +170,7 @@ void Color::toHSV(double *hue, double *saturation, double *value ) const
   double max = *std::max_element(rgb, rgb + 3);
   double min = *std::min_element(rgb, rgb + 3);
   double delta = max - min;
-  
+
   if(delta > 0.) {
     if(max == rgb[0])
       *hue = 60. * (fmod(((rgb[1] - rgb[2]) / delta), 6.));
@@ -180,7 +181,7 @@ void Color::toHSV(double *hue, double *saturation, double *value ) const
   } else {
     *hue = 0.;
   }
-  
+
   if(*hue < 0.) *hue += 360.;
 
   *value = max * 100.;
@@ -217,22 +218,22 @@ Color Color::randomColor()
 /* ---------------------------------------------------------------------------------- */
 
 int getBlue(int color)
-{ 
+{
   return Color(color).getBlue();
 }
 
 int getGreen(int color)
-{ 
+{
   return Color(color).getGreen();
 }
 
 int getRed(int color)
-{ 
+{
   return Color(color).getRed();
 }
 
 int getAlpha(int color)
-{ 
+{
   return Color(color).getAlpha();
 }
 
@@ -294,7 +295,7 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk)
     const uchar *rgb_ptr = rgb.ptr<uchar>(r);
     for (int c = 0; c < rgb.cols; c++) {
       rgbToCmyk(rgb_ptr[3*c+2], rgb_ptr[3*c+1], rgb_ptr[3*c], &cyan, &magenta, &yellow, &key);
-      _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan), static_cast<float>(magenta), 
+      _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan), static_cast<float>(magenta),
                                             static_cast<float>(yellow), static_cast<float>(key));
     }
   });
@@ -339,7 +340,7 @@ void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, dou
   double max = *std::max_element(rgb, rgb + 3);
   double min = *std::min_element(rgb, rgb + 3);
   double delta = max - min;
-  
+
   if(delta > 0.) {
     if(max == rgb[0])
       *hue = 60. * (fmod(((rgb[1] - rgb[2]) / delta), 6.));
@@ -350,7 +351,7 @@ void rgbToHSL(int red, int green, int blue, double *hue, double *saturation, dou
   } else {
     *hue = 0.;
   }
-  
+
   if(*hue < 0.) *hue += 360.;
 
   *lightness = (max + min) / 2;

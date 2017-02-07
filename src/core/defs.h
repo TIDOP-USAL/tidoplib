@@ -8,6 +8,9 @@
 #include <limits>
 #include <cstdlib>
 
+#ifdef __GNUC__
+#include <cstdio>
+#endif // __GNUC__
 
 #if defined _MSC_VER && _MSC_VER < 1600
 
@@ -35,8 +38,10 @@
 #define I3D_GRAD_TO_RAD	0.0157079632679489661923132169164
 
 #if defined WIN32
-// Para que no den problemas std::numeric_limits<T>().max() 
-#  define NOMINMAX 
+// Para que no den problemas std::numeric_limits<T>().max()
+#  ifndef NOMINMAX
+#    define NOMINMAX
+#  endif
 #  include <windows.h>
 #endif
 
@@ -48,13 +53,25 @@
 #define I3D_FLOAT_MIN -std::numeric_limits<float>().max()
 
 #if defined WIN32 || defined _WIN32
-#  define I3D_MAX_PATH   _MAX_PATH
-#  define I3D_MAX_DRIVE  _MAX_DRIVE
-#  define I3D_MAX_DIR    _MAX_DIR
-#  define I3D_MAX_FNAME  _MAX_FNAME
-#  define I3D_MAX_EXT    _MAX_EXT
+#  ifdef _MSC_VER
+#    define I3D_MAX_PATH   _MAX_PATH
+#    define I3D_MAX_DRIVE  _MAX_DRIVE
+#    define I3D_MAX_DIR    _MAX_DIR
+#    define I3D_MAX_FNAME  _MAX_FNAME
+#    define I3D_MAX_EXT    _MAX_EXT
+#  else //__GNUC__ No encuentra _MAX_DRIVE, _MAX_DIR, _MAX_FNAME y _MAX_EXT
+#    ifdef __GNUC__
+#      define I3D_MAX_PATH   MAX_PATH
+#    else
+#      define I3D_MAX_PATH  260
+#    endif
+#    define I3D_MAX_DRIVE  3
+#    define I3D_MAX_DIR    256
+#    define I3D_MAX_FNAME  256
+#    define I3D_MAX_EXT    256
+#  endif
 #else
-#include <linux/limits.h>
+#  include <linux/limits.h>
 #  define I3D_MAX_PATH   PATH_MAX
 #  define I3D_MAX_FNAME  NAME_MAX
 #  define I3D_MAX_DRIVE  PATH_MAX
@@ -62,7 +79,7 @@
 #  define I3D_MAX_EXT    NAME_MAX
 #endif
 
-        
+
 #if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined I3D_API_EXPORTS
 #  define I3D_EXPORT __declspec(dllexport)
 //#elif defined __GNUC__ && __GNUC__ >= 4
@@ -83,7 +100,7 @@
 
 // Warning para informar que una función esta obsoleta
 // Se debe anteceder a la función obsoleta añadiendo el método que lo reemplaza;
-// DEPRECATED("Use NewFunc(int a, float b) en su lugar") 
+// DEPRECATED("Use NewFunc(int a, float b) en su lugar")
 // void OldFunc(int a, float b);
 
 #if __cplusplus >= 201402L // c++ 14
@@ -119,7 +136,7 @@
 #endif
 
 // __FUNCTION__ no es estandar (Es de Visual Studio).
-// __func__ es valida a partir de C99 / C++11 
+// __func__ es valida a partir de C99 / C++11
 #if defined (__GNUC__) || __cplusplus >= 201103L
 #  define I3D_FUNCTION __func__
 #elif defined _MSC_VER
