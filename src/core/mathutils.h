@@ -12,6 +12,7 @@
 
 #include "core/defs.h"
 #include "geometric_entities/point.h"
+#include "geometric_entities/segment.h" 
 
 namespace I3D
 {
@@ -288,10 +289,10 @@ I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  *
  * \f$ A*x + B*y + C*z + D = 0\f$
  *
- * param[in] points Puntos que definen el plano
- * param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * param[int] normalize Si es verdadero normaliza la ecuación del plano
- * return Normal al plano
+ * \param[in] points Puntos que definen el plano
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \return Normal al plano
  */
 template<typename T>
 I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
@@ -311,6 +312,38 @@ I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<do
   }
   return( N );
 }
+
+/*!
+ * \brief Obtiene la distancia de un punto a un plano
+ *
+ * \param[in] point Punto
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \return Distancia del punto al plano
+ */
+template<typename Point_t>
+I3D_EXPORT double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane) 
+{
+  double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];
+  double normal = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
+  if ( normal == 0. ) throw std::runtime_errorr( "3 puntos alineados" );
+  return(num / normal);
+}
+
+/*!
+ * \brief Obtiene el ángulo entre una recta y un plano
+ *
+ * \param[in] line Linea
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \return Ángulo entre una recta y un plano
+ */
+//template<typename T>
+//I3D_EXPORT double linePlaneAngle(const Segment3D<T> &line, const std::array<double, 4> &plane)
+//{
+//  Point3D v = line.vector();
+//  double num = plane[0] * v.x + plane[1] * v.y + plane[2] * v.z;
+//  double den = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]) + line.length();
+//  return den ? asin(num / den) : 0.;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 /*                               Conversión de ángulos                                */

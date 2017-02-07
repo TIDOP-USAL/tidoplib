@@ -9,6 +9,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{D072A721-7
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeteccionApoyos", "apps\DeteccionApoyos\DeteccionApoyos.vcxproj", "{33C5DFD4-C195-4F92-969D-E2802AEF5957}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "disparity_map", "apps\disparity_map\disparity_map.vcxproj", "{0A3253BC-1302-4140-80E1-2C73814A0C74}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InsulatorsDetection", "apps\InsulatorsDetection\InsulatorsDetection.vcxproj", "{205E008A-6401-43CB-9312-5DE64CE3AB4E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1597BE8E-4955-4BE2-9443-716CAF26723C}"
@@ -43,8 +45,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "damage_detection", "apps\da
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generalized_hough", "apps\generalised_hough\generalised_hough.vcxproj", "{837D83F8-3F84-4D71-AC93-2AB83A18B944}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shape_detection", "apps\shape_detection\shape_detection.vcxproj", "{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -75,6 +75,16 @@ Global
 		{33C5DFD4-C195-4F92-969D-E2802AEF5957}.Release|Win32.ActiveCfg = Release|x64
 		{33C5DFD4-C195-4F92-969D-E2802AEF5957}.Release|x64.ActiveCfg = Release|x64
 		{33C5DFD4-C195-4F92-969D-E2802AEF5957}.Release|x64.Build.0 = Release|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Debug|Win32.ActiveCfg = Debug|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Debug|x64.ActiveCfg = Debug|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Debug|x64.Build.0 = Debug|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Release|Mixed Platforms.Build.0 = Release|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Release|Win32.ActiveCfg = Release|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Release|x64.ActiveCfg = Release|x64
+		{0A3253BC-1302-4140-80E1-2C73814A0C74}.Release|x64.Build.0 = Release|x64
 		{205E008A-6401-43CB-9312-5DE64CE3AB4E}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{205E008A-6401-43CB-9312-5DE64CE3AB4E}.Debug|Mixed Platforms.Build.0 = Debug|x64
 		{205E008A-6401-43CB-9312-5DE64CE3AB4E}.Debug|Win32.ActiveCfg = Debug|x64
@@ -215,22 +225,13 @@ Global
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|Win32.ActiveCfg = Release|x64
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.ActiveCfg = Release|x64
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944}.Release|x64.Build.0 = Release|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Win32.ActiveCfg = Debug|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|x64.ActiveCfg = Debug|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|x64.Build.0 = Debug|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Mixed Platforms.Build.0 = Release|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Win32.ActiveCfg = Release|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.ActiveCfg = Release|x64
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{33C5DFD4-C195-4F92-969D-E2802AEF5957} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
+		{0A3253BC-1302-4140-80E1-2C73814A0C74} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{205E008A-6401-43CB-9312-5DE64CE3AB4E} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{F404908D-958E-4D40-B9DE-5D6256FDE6FD} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{A439A09C-DC30-464B-86E0-54E807539192} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
@@ -246,6 +247,5 @@ Global
 		{DBE5D28F-1FC1-4CE7-A9BE-01A0BC707287} = {1597BE8E-4955-4BE2-9443-716CAF26723C}
 		{71900CA6-8286-4AF2-B45C-AFA346E65298} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
-		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 	EndGlobalSection
 EndGlobal

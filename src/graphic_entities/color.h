@@ -553,6 +553,53 @@ I3D_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
 
 #endif // HAVE_OPENCV
 
+
+/*!
+ * \brief Convierte un color de RGB a HSV
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \param[out] hue Matiz
+ * \param[out] saturation Saturación
+ * \param[out] value Valor
+ */
+I3D_EXPORT void rgbToHSV(int red, int green, int blue, double *hue, double *saturation, double *value);
+
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Convierte una matriz de RGB a HSV
+ * \param[in] rgb
+ * \param[out] hsv
+ */
+I3D_EXPORT void rgbToHSV(const cv::Mat &rgb, cv::Mat *hsv);
+
+#endif // HAVE_OPENCV
+
+
+/*!
+ * \brief Convierte un color de a HSV a RGB
+ * \param[in] hue Matiz
+ * \param[in] saturation Saturación
+ * \param[in] value Valor
+ * \param[out] red Componente roja
+ * \param[out] green Componente verde
+ * \param[out] blue Componente azul
+ */
+I3D_EXPORT void hsvToRgb(double hue, double saturation, double value, int *red, int *green, int *blue);
+
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Convierte una matriz de HSV a RGB
+ * \param[in] hsv
+ * \param[out] rgb
+ */
+I3D_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb);
+
+#endif // HAVE_OPENCV
+
+
 /*!
  * \brief Conversión a coordenadas cromáticas
  *

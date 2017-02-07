@@ -148,90 +148,6 @@ int deleteDir(const char *path, bool confirm)
   } else return 1;
 }
 
-/* ---------------------------------------------------------------------------------- */
-/*                             Operaciones con cadenas                                */
-/* ---------------------------------------------------------------------------------- */
-
-int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup;
-#ifdef __GNUC__
-  size_t len = strlen(cad.c_str())+1;
-  char *s = (char *)malloc(len);
-  if (!s) return 1;
-  dup = (char *)memcpy(s, cad.c_str(), len);
-#else
-  dup = strdup(cad.c_str());
-#endif
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    while (token != NULL){
-      char *pEnd;
-      int number = strtol(token, &pEnd, 10);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(NULL, chs);
-      } else throw std::runtime_error("Split string to numbers fail\n");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    printError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
-
-int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char *chs)
-{
-  int r_err = 0;
-  char *dup;
-#ifdef __GNUC__
-  size_t len = strlen(cad.c_str())+1;
-  char *s = (char *)malloc(len);
-  if (!s) return 1;
-  dup = (char *)memcpy(s, cad.c_str(), len);
-#else
-  dup = strdup(cad.c_str());
-#endif
-  vOut.resize(0);
-
-  try {
-    char *token = strtok(dup, chs);
-    while (token != NULL){
-      //vOut.push_back(atof(token));
-      char *pEnd;
-      double number = strtod(token, &pEnd);
-      if (*pEnd == 0) {
-        vOut.push_back(number);
-        token = strtok(NULL, chs);
-      } else throw std::runtime_error("Split string to numbers fail\n");
-    }
-  } catch (std::exception &e) {
-    vOut.resize(0);
-    printError(e.what());
-    r_err = 1;
-  }
-
-  free(dup);
-  return r_err;
-}
-
-void replaceString(std::string *str, const std::string &str_old, const std::string &str_new)
-{
-  std::size_t ini = str->find(str_old);
-  //std::size_t end;
-  while (ini != std::string::npos) {
-    //end = ini + str_old.size();
-    str->replace(ini, str_old.size(), str_new);
-    ini = str->find(str_old, str_new.size() + ini);
-  }
-}
-
 int getFileDir(const char *path, char *dir, int size)
 {
 #ifdef _MSC_VER
@@ -288,7 +204,9 @@ int getFileDriveDir(const char *path, char *drivedir, int size)
   strcpy_s(drivedir, size, drive);
   strcat_s(drivedir, size, dir);
 #else
-
+  char *dirc = (char *)malloc(size);
+  if (dirc) drivedir = dirname(dirc);
+  return (drivedir) ? 0 : 1;
 #endif
   return r_err;
 }
@@ -344,6 +262,149 @@ int changeFileNameAndExtension(const char *path, const char *newNameExt, char *p
 
 #endif
   return r_err;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+void Path::parse(const std::string &path)
+{
+  split(path, mPath, "/\\");
+  mPos = static_cast<int>(mPath.size());
+  if (mPath.size() == 0) return;
+
+  // rutas relativas
+  if (mPath[0] == std::string("..")) {
+    char dir[I3D_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    //std::string runFilePath = getRunfile();
+    Path runPath(dir);
+    int i = 0;
+    for (; mPath[i] == std::string(".."); i++) {
+      runPath.down();
+    }
+
+    std::vector<std::string> current = runPath.currentPath();
+    for (int j = i; j < mPath.size(); j++)
+      current.push_back(mPath[j]);
+    mPath = current;
+    mPos = static_cast<int>(mPath.size());
+  } else if (mPath[0] == std::string(".")) {
+    char dir[I3D_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    Path runPath(dir);
+    std::vector<std::string> current = runPath.currentPath();
+    for (int j = 1; j < mPath.size(); j++)
+      current.push_back(mPath[j]);
+    mPath = current;
+    mPos = static_cast<int>(mPath.size());
+  }
+}
+
+
+std::string Path::getDrive() 
+{
+  return mPath[0];
+}
+
+void Path::up() 
+{
+  if (mPos < mPath.size())
+  mPos++;
+}
+
+void Path::down() 
+{
+  if (mPos != 0)
+    mPos--;
+}
+  
+std::vector<std::string> Path::currentPath() 
+{
+  std::vector<std::string> cur_path;
+  for (int i = 0; i < mPos; i++) {
+    cur_path.push_back(mPath[i]);
+  }
+  return cur_path;
+}
+
+
+std::string Path::toString()
+{
+  std::string _path;
+  for (int i = 0; i < mPos; i++) {
+    _path += mPath[i];
+    _path += "\\";
+  }
+  return _path;
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                             Operaciones con cadenas                                */
+/* ---------------------------------------------------------------------------------- */
+
+int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
+{
+  int r_err = 0;
+  char *dup = strdup(cad.c_str());
+  vOut.resize(0);
+
+  try {
+    char *token = strtok(dup, chs);
+    while (token != NULL){
+      char *pEnd;
+      int number = strtol(token, &pEnd, 10);
+      if (*pEnd == 0) {
+        vOut.push_back(number);
+        token = strtok(NULL, chs);
+      } else throw std::runtime_error("Split string to numbers fail\n");
+    }
+  } catch (std::exception &e) {
+    vOut.resize(0);
+    printError(e.what());
+    r_err = 1;
+  }
+
+  free(dup);
+  return r_err;
+}
+
+int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char *chs)
+{
+  int r_err = 0;
+  char *dup = strdup(cad.c_str());
+  vOut.resize(0);
+
+  try {
+    char *token = strtok(dup, chs);
+    while (token != NULL){
+      //vOut.push_back(atof(token));
+      char *pEnd;
+      double number = strtod(token, &pEnd);
+      if (*pEnd == 0) {
+        vOut.push_back(number);
+        token = strtok(NULL, chs);
+      } else throw std::runtime_error("Split string to numbers fail\n");
+    }
+  } catch (std::exception &e) {
+    vOut.resize(0);
+    printError(e.what());
+    r_err = 1;
+  }
+
+  free(dup);
+  return r_err;
+}
+
+void replaceString(std::string *str, const std::string &str_old, const std::string &str_new)
+{
+  std::size_t ini = str->find(str_old);
+  //std::size_t end;
+  while (ini != std::string::npos) {
+    //end = ini + str_old.size();
+    str->replace(ini, str_old.size(), str_new);
+    ini = str->find(str_old, str_new.size() + ini);
+  }
 }
 
 int split(const std::string &in, std::vector<std::string> &out, const char *chs)
@@ -466,7 +527,7 @@ uint32_t getOptimalNumberOfThreads()
 }
 
 void parallel_for(int ini, int end, std::function<void(int)> f) {
-  uint64_t time_ini = getTickCount();
+  //uint64_t time_ini = getTickCount();
 #ifdef I3D_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
@@ -495,8 +556,8 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
 
   for (auto &_thread : threads) _thread.join();
 #endif
-  double time = (getTickCount() - time_ini) / 1000.;
-  printf("Time %f", time);
+  //double time = (getTickCount() - time_ini) / 1000.;
+  //printf("Time %f", time);
 }
 
 /* ---------------------------------------------------------------------------------- */

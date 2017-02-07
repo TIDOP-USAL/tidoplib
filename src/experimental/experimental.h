@@ -294,6 +294,8 @@ public:
 
 #endif // HAVE_OPENCV
 
+
+
 } // End namespace EXPERIMENTAL
 
 } // End namespace I3D

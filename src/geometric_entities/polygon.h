@@ -157,7 +157,7 @@ bool Polygon<T>::isInner(const Point<T> &point) const
     
     // El punto es colineal con el segmento
     if ( isCollinearPoints(point, segment, 0.5)) return true;
-    cv::Point ptp;
+    Point<T> ptp;
     //if (projectPointInSegment(segment, point, &ptp) == 2) return true;
     Segment<T> sPointH(point, Point<T>(w.pt2.x, point.y));
     if (point.y == segment.pt1.y || point.y == segment.pt2.y)

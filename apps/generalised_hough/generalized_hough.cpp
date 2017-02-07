@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   cmdParser.addParameter("img", "Imagen");
   cmdParser.addParameter("template", "Template");
   cmdParser.addParameter("out", "Directorio de salida donde se guarda el log y toda la información generada", true);
-  if ( cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
+  if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     cmdParser.printHelp();
     exit(EXIT_FAILURE);
   }

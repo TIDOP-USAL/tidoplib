@@ -94,43 +94,43 @@ double minDistanceSegments(const Line &ln1, const Line &ln2)
 }
 
 
-int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt)
-{
-  int iret = 0;
-  PointI vs1, vs2;
-  vs1 = ln1.vector();
-  vs2 = ln2.vector();
-  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = vs1.cross(vs2)) {
-    PointI v11_12 = ln2.pt1 - ln1.pt1;
-    double t = v11_12.cross(vs2) / cross_product;
-    double u = v11_12.cross(vs1) / cross_product;
-    if (t >= 0.  &&  t <= 1  &&  u >= 0.  &&  u <= 1) {
-      pt->x = ln1.pt1.x + I3D_ROUND_TO_INT(t * vs1.x);
-      pt->y = ln1.pt1.y + I3D_ROUND_TO_INT(t * vs1.y);
-      iret = 1;
-    }
-  }
-  return(iret);
-}
-
-int intersectLines(const Line &ln1, const Line &ln2, PointI *pt)
-{
-  int iret = 0;
-  PointI vs1, vs2;
-  vs1 = ln1.vector();
-  vs2 = ln2.vector();
-  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = vs1.cross(vs2)) {
-    PointI v11_12 = ln2.pt1 - ln1.pt1;
-    double t = v11_12.cross(vs2) / cross_product;
-
-    pt->x = ln1.pt1.x + I3D_ROUND_TO_INT(t * vs1.x);
-    pt->y = ln1.pt1.y + I3D_ROUND_TO_INT(t * vs1.y);
-    iret = 1;
-  }
-  return(iret);
-}
+//int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt)
+//{
+//  int iret = 0;
+//  PointI vs1, vs2;
+//  vs1 = ln1.vector();
+//  vs2 = ln2.vector();
+//  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+//  if (double cross_product = vs1.cross(vs2)) {
+//    PointI v11_12 = ln2.pt1 - ln1.pt1;
+//    double t = v11_12.cross(vs2) / cross_product;
+//    double u = v11_12.cross(vs1) / cross_product;
+//    if (t >= 0.  &&  t <= 1  &&  u >= 0.  &&  u <= 1) {
+//      pt->x = ln1.pt1.x + I3D_ROUND_TO_INT(t * vs1.x);
+//      pt->y = ln1.pt1.y + I3D_ROUND_TO_INT(t * vs1.y);
+//      iret = 1;
+//    }
+//  }
+//  return(iret);
+//}
+//
+//int intersectLines(const Line &ln1, const Line &ln2, PointI *pt)
+//{
+//  int iret = 0;
+//  PointI vs1, vs2;
+//  vs1 = ln1.vector();
+//  vs2 = ln2.vector();
+//  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+//  if (double cross_product = vs1.cross(vs2)) {
+//    PointI v11_12 = ln2.pt1 - ln1.pt1;
+//    double t = v11_12.cross(vs2) / cross_product;
+//
+//    pt->x = ln1.pt1.x + I3D_ROUND_TO_INT(t * vs1.x);
+//    pt->y = ln1.pt1.y + I3D_ROUND_TO_INT(t * vs1.y);
+//    iret = 1;
+//  }
+//  return(iret);
+//}
 
 void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesOut, int dist)
 {

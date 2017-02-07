@@ -112,8 +112,7 @@ int main(int argc, char *argv[])
   cmdParser.addParameter("img", "Imagen de los conductores");
   cmdParser.addParameter("out", "Directorio de salida donde se guarda el log y toda la información generada", true, dir);
   cmdParser.addParameterOption("l_detect", "HOUGH,HOUGHP,HOUGH_FAST,LSD", "Detector de lineas", true, "HOUGHP");
-  if ( cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
-    cmdParser.printHelp();
+  if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     exit(EXIT_FAILURE);
   }
 

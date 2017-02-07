@@ -33,7 +33,7 @@ template<typename T> class Segment;
 template<typename T> inline
 I3D_EXPORT double length(const Point<T> &v)
 {
-  return (sqrt(v.x*v.x + v.y*v.y));
+  return sqrt(v.x*v.x + v.y*v.y);
 }
 
 #ifdef HAVE_OPENCV
@@ -46,7 +46,7 @@ I3D_EXPORT double length(const Point<T> &v)
 template<typename T> inline
 I3D_EXPORT double length(const cv::Point3_<T> &v)
 {
-  return (sqrt(v.x*v.x + v.y*v.y + v.z*v.z));
+  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
 }
 
 #endif

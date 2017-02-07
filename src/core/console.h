@@ -22,44 +22,62 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
+/*! \addtogroup utilities
+ *  \{
+ */
+
+/*! \defgroup Console Utilidades de consola
+ *
+ *  \{
+ */
+
 /*!
  * \brief Clase para gestionar la configuración de la ventana de comandos
+ *
+ * Permite modificar el color e intensidad de caracter y de fondo,
+ * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
+ * salida, error)
  */
 class I3D_EXPORT Console
 {
 public:
 
+  /*!
+   * \brief Valores de intensidad de color
+   */
   enum class Intensity : int8_t{
-    NORMAL,
-    BRIGHT
+    NORMAL,  /*!< Normal */
+    BRIGHT   /*!< Brillante */
   };
 
   /*!
    * \brief Tipos de color de fondo y caracter.
    */
   enum class Color : int8_t {
-    BLACK,
-    RED,
-    GREEN,
-    YELLOW,
-    BLUE,
-    MAGENTA,
-    CYAN,
-    WHITE
+    BLACK,    /*!< Negro */
+    RED,      /*!< Rojo */
+    GREEN,    /*!< Verde */
+    YELLOW,   /*!< Amarillo */
+    BLUE,     /*!< Azul */
+    MAGENTA,  /*!< Magenta */
+    CYAN,     /*!< Cian */
+    WHITE     /*!< Blanco */
   };
 
   /*!
    * \brief Modo de consola
    */
   enum class Mode : int8_t {
-    INPUT,
-    OUTPUT,
-    OUTPUT_ERROR
+    INPUT,          /*!< Consola en modo entrada */
+    OUTPUT,         /*!< Consola en modo salida */
+    OUTPUT_ERROR    /*!< Consola en modo salida de errores */
   };
 
 private:
 
 #ifdef WIN32
+
+  // Consola de Windows
 
   /*!
    * \brief Manejador de la consola
@@ -87,14 +105,25 @@ private:
   WORD mBackColor;
 
   /*!
-   * \brief Configuración de la consola al iniciar. Se recupera al salir o con el método reset
+   * \brief Configuración de la consola al iniciar.
+   *
+   * La configuración inicial se recupera al salir o
+   * con el método reset
    */
   WORD mOldColorAttrs;
 
 #else
 
+  // Consola Linux
+
+  /*!
+   * \brief mStream
+   */
   FILE *mStream;
 
+  /*!
+   * \brief mCommand
+   */
   char mCommand[13];
 
   /*!
@@ -127,8 +156,9 @@ public:
   Console();
 
   /*!
-   * \brief Constructora
-   * \param mode Modo de consola
+   * \brief Constructora de copia
+   * \param[in] mode Modo de consola
+   * \see Mode
    */
   Console(Console::Mode mode);
 
@@ -144,34 +174,41 @@ public:
 
   /*!
    * \brief Establece el color de caracter
-   * \param foreColor Color
+   * \param[in] foreColor Color de caracter
+   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+   * \see Console::Color, Console::Intensity
    */
   void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
   /*!
    * \brief Establece el color de fondo
-   * \param backColor Color
+   * \param[in] backColor Color de fondo
+   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
   void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
   /*!
-   * \brief setConsoleUnicode
+   * \brief Establece la consola como modo Unicode
    */
   void setConsoleUnicode();
 
 private:
 
 #ifdef WIN32
+
   /*!
    * \brief Inicializa la consola guardando la configuración  actual.
    * \param handle
    */
   void init( DWORD handle );
+
 #else
+
   /*!
    * \brief Inicializa la consola guardando la configuración  actual.
    */
   void init(FILE *stream);
+
 #endif
 
   /*!
@@ -196,117 +233,134 @@ private:
 //
 //Para especificar un argumento para una larga, debe escribirse '--name = valor'. Esta sintaxis permite una opción a largo para aceptar un argumento que es en sí opcional.
 
-enum class ArgType : int8_t {
-  OPTION,
-  PARAMETER,
-  PARAMETER_OPTIONS
-};
+//enum class ArgType : int8_t {
+//  OPTION,
+//  PARAMETER,
+//  PARAMETER_OPTIONS
+//};
 
 /*!
  * \brief The CmdArgument struct
  */
 struct I3D_EXPORT CmdArgument
 {
+public:
+
+  /*!
+   * \brief Tipo de argumento
+   */
+  enum class Type : int8_t {
+    OPTION,             /*!< Opción */
+    PARAMETER,          /*!< Parámetro */
+    PARAMETER_OPTIONS   /*!< */
+  };
+
 protected:
 
   /*!
-   * \brief mName
+   * \brief Nombre del argumento
    */
   std::string mName;
 
   /*!
-   * \brief mDescription
+   * \brief Descripción del argumento
    */
   std::string mDescription;
 
   /*!
-   * \brief bOptional
+   * \brief Argumento opcional u obligatorio
    */
   bool bOptional;
 
 public:
 
   /*!
-   * \brief CmdArgument
-   * \param name
-   * \param description
-   * \param optional
+   * \brief Constructor
+   * \param[in] name Nombre de argumento
+   * \param[in] description Descripción
+   * \param[in] optional Párametro obligatorio u opcional. Por defecto es obligatorio.
    */
   CmdArgument(const char *name, const char *description, bool optional = false)
     : mName(name), mDescription(description), bOptional(optional) {}
 
-  /*!
-   * \brief CmdArgument
-   */
-  CmdArgument(CmdArgument const&) = delete;
+  virtual ~CmdArgument(){}
 
-  /*!
-   * \brief operator =
-   */
+  CmdArgument(CmdArgument const&) = delete;
   void operator=(CmdArgument const&) = delete;
 
   /*!
-   * \brief getName
-   * \return
+   * \brief Devuelve el nombre del argumento
+   * \return Nombre del argumento
    */
   const std::string &getName() const { return mName; }
 
   /*!
-   * \brief getDescription
-   * \return
+   * \brief Devuelve la descripción del argumento
+   * \return Descripción
    */
   const std::string &getDescription() const { return mDescription; }
 
   /*!
-   * \brief isOptional
+   * \brief Devuelve si el argumento es opcional
    * \return
    */
   bool isOptional() const { return bOptional; }
 
   /*!
-   * \brief getType
+   * \brief Tipo
    * \return
    */
-  virtual ArgType getType() const = 0;
+  virtual Type getType() const = 0;
 };
 
+
+/*!
+ * \brief Opción de un comando
+ */
 struct I3D_EXPORT CmdOption : public CmdArgument
 {
 private:
 
   /*!
-   * \brief mValue
+   * \brief Valor de la opción (verdadero o falso)
    */
   bool mValue;
 
 public:
 
   /*!
-   * \brief CmdOption
-   * \param name
-   * \param description
-   * \param optional
+   * \brief Constructora de la clase CmdOption
+   * \param[in] name Nombre de la opción
+   * \param[in] description Descripción de la opción
    */
-  CmdOption(const char *name, const char *description, bool optional = false)
-    : CmdArgument(name, description, optional), mValue(false) {}
+  CmdOption(const char *name, const char *description)
+    : CmdArgument(name, description, true), mValue(false) {}
 
   /*!
    * \brief getType
    * \return
    */
-  ArgType getType() const override { return ArgType::OPTION; }
+  CmdArgument::Type getType() const override { return CmdArgument::Type::OPTION; }
 
   /*!
-   * \brief isActive
-   * \return
+   * \brief Comprueba si la opción esta activada
+   * \return Verdadero si esta activada y falso en caso contrario
    */
   bool isActive() const { return mValue; }
 
   /*!
-   * \brief setOption
-   * \param option
+   * \brief Establece si esta activada o no
+   * \param[in] option
+   * \deprecated Use I3D::CmdOption::setActive en su lugar
    */
+  I3D_DEPRECATED("Use setActive(bool active) en su lugar")
   void setOption(bool option) { mValue = option; }
+
+  /*!
+   * \brief Establece si esta activada o no
+   * \param[in] option
+   */
+  void setActive(bool active) { mValue = active; }
 };
 
 /*!
@@ -324,23 +378,11 @@ private:
 public:
 
   /*!
-   * \brief CmdParameterString
-   * \param name
-   * \param description
-   * \param optional
-   */
-  //CmdParameter(std::string name, std::string description, bool optional)
-  //  : CmdArgument(name, description, optional)
-  //{
-  //  mDefValue = "";
-  //}
-
-  /*!
-   * \brief CmdParameterString
-   * \param name
-   * \param description
-   * \param optional
-   * \param defValue
+   * \brief Constructora de la clase CmdParameter
+   * \param[in] name Nombre del parámetro
+   * \param[in] description Descripción del parámetro
+   * \param[in] optional El parametro es opcional. Por defecto no es opcional
+   * \param[in] defValue Valor por defecto
    */
   CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "")
     : CmdArgument(name, description, optional)
@@ -352,17 +394,17 @@ public:
    * \brief getType
    * \return
    */
-  ArgType getType() const override { return ArgType::PARAMETER; }
+  CmdArgument::Type getType() const override { return CmdArgument::Type::PARAMETER; }
 
   /*!
-   * \brief getValue
-   * \return
+   * \brief Devuelve el valor del parámetro
+   * \return Valor del parámetro
    */
   std::string getValue() const { return mDefValue; }
 
   /*!
-   * \brief setValue
-   * \param value
+   * \brief Establece el valor del perámetro
+   * \param[in] value Valor del parámetro
    */
   void setValue(std::string value) { mDefValue = value; }
 };
@@ -373,6 +415,7 @@ public:
  */
 struct I3D_EXPORT CmdParameterOptions : public CmdArgument
 {
+
 private:
 
   /*!
@@ -388,24 +431,12 @@ private:
 public:
 
   /*!
-   * \brief CmdParameterString
-   * \param name
-   * \param description
-   * \param optional
-   */
-  //CmdParameterOptions(std::string name, std::string options, std::string description, bool optional)
-  //  : CmdArgument(name, description, optional)
-  //{
-  //  mDefValue = "";
-  //  split(options, mOptions, ",");
-  //}
-
-  /*!
-   * \brief CmdParameterString
-   * \param name
-   * \param description
-   * \param optional
-   * \param defValue
+   * \brief Constructora de la clase CmdParameterOptions
+   * \param[in] name Nombre del parámetro
+   * \param[in] options Valores que puede tomar el parámetro
+   * \param[in] description Descripción del parámetro
+   * \param[in] optional El parametro es opcional. Por defecto no es opcional
+   * \param[in] defValue Valor por defecto
    */
   CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "")
     : CmdArgument(name, description, optional), mDefValue(defValue)
@@ -417,7 +448,7 @@ public:
    * \brief getType
    * \return
    */
-  ArgType getType() const override;
+  CmdArgument::Type getType() const override;
 
   /*!
    * \brief getValue
@@ -443,40 +474,62 @@ public:
    */
   void setValue(std::string value);
 
+  /*!
+   * \brief listado de opciones
+   */
+  std::vector<std::string> getOptions() { return mOptions; }
 };
-
-// Parametros de entrada:
-// in<<c:/in.txt
-// Parametros de salida
-// out<<c:/out.txt
-// Opciones:
-// -b
-// Opción con valores predefinidos
-// -a=VALUE2
-// Parametro
-// --p=value
 
 /*!
  * \brief Parser de los argumentos de entrada  de la consola
+ *
+ * La estructura de un comando es:
+ *
+ * cmdName --param1=[Value] --param2=[Value] --par_op=["Value1" o "Value2"] -opt
+ *
+ * Ejemplo de uso:
+ *
+ * \code
+ * CmdParser cmdParser("cmdName", "Descripción del comando");
+ * cmdParser.addParameter("param1", "Descripción del primer parámetro");
+ * cmdParser.addParameter("param2", "Descripción del segundo parámetro. Este es opcional", true);
+ * cmdParser.addParameterOption("par_op", "Value1,Value2", "Parámetro con una lista de valores predetermidados", true, "Value1"); // "Value1" es el valor por defecto
+ * cmdParser.addOption("opt", "Opción");
+ *
+ * // Se parsea el comando y si da error se cierra la aplicación
+ * if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
+ *   exit(EXIT_FAILURE);
+ * }
+ * \endcode
  */
 class I3D_EXPORT CmdParser
 {
 public:
 
-  enum class MSG
+  /*!
+   * \brief Estado de salida del parseo del comando
+   */
+  enum class Status
   {
-    PARSE_SUCCESS,
-    PARSE_ERROR
+    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
+    PARSE_HELP      /*!< Se pasa como parametro: help */
   };
 
 private:
 
+  /*!
+   * \brief Nombre del comando
+   */
   std::string mCmdName;
 
+  /*!
+   * \brief Descripción del comando
+   */
   std::string mCmdDescription;
 
   /*!
-   * \brief Listado de los argumentos
+   * \brief Listado de los argumentos del comando
    */
   std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
 
@@ -489,12 +542,19 @@ public:
    */
   CmdParser() {}
 
+  /*!
+   * \brief Constructor CmdParser
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   */
   CmdParser(const char *name, const char *description)
     : mCmdName(name), mCmdDescription(description) {}
 
   /*!
    * \brief Constructor de lista
-   * \param[in] Listado argumentos
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   * \param[in] cmd_args Lista de argumentos
    */
   CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
     : mCmdName(name), mCmdDescription(description), mCmdArgs(cmd_args) {}
@@ -504,16 +564,39 @@ public:
    */
   ~CmdParser(){}
 
+  /*!
+   * \brief Añade un parámetro
+   * \param[in] name Nombre del parámetro
+   * \param[in] description Descripción del parámetro
+   * \param[in] optional Parametro opcional o no. Por defecto es requerido
+   * \param[in] defValue Valor por defecto
+   */
   void addParameter(const char *name, const char *description, bool optional = false, const char *defValue = "");
 
+  /*!
+   * \brief Añade un parámetro
+   * \param[in] name Nombre del parámetro
+   * \param[in] options Lista separada por comas de los valores que puede tomar el parámetro
+   * \param[in] description Descripción del parámetro
+   * \param[in] optional Parametro opcional o no. Por defecto es requerido
+   * \param[in] defValue Valor por defecto
+   */
   void addParameterOption(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "");
 
-  void addOption(const char *name, const char *description, bool optional = false);
+  /*!
+   * \brief Añade una opción
+   * \param[in] name Nombre de la opción
+   * \param[in] description Descripción de la opción
+   */
+  void addOption(const char *name, const char *description);
 
   /*!
    * \brief parsea los argumentos de entrada
+   * \param[in] argc
+   * \param[in] argv
+   * \return
    */
-  CmdParser::MSG parse(int argc, const char* const argv[]);
+  CmdParser::Status parse(int argc, const char* const argv[]);
 
   /*!
    * \brief Muestra por consola la ayuda del programa
@@ -527,8 +610,17 @@ public:
 
   /*!
    * \brief Devuelve el valor de un parametro
-   * param[in] name Nombre del parámetro
-   * return Valor del parámetro en el tipo indicado
+   * \param[in] name Nombre del parámetro
+   * \return Valor del parámetro en el tipo indicado
+   *
+   * Ejemplo de uso:
+   *
+   * \code
+   * std::string filename = cmdParser.getValue<std::string>("img");
+   * bool bSaveImages = cmdParser.hasOption("si");
+   * int skip_frames = cmdParser.getValue<int>("skip_frames");
+   * LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
+   * \endcode
    */
   template<typename T>
   T getValue( const char *name) const
@@ -538,9 +630,9 @@ public:
 
     std::string _name(name);
     for (auto arg : mCmdArgs) {
-      if (arg->getType() == ArgType::PARAMETER || arg->getType() == ArgType::PARAMETER_OPTIONS) {
+      if (arg->getType() == CmdArgument::Type::PARAMETER || arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
         if (arg->getName() == _name) {
-          std::string value = (arg->getType() == ArgType::PARAMETER) ?
+          std::string value = (arg->getType() == CmdArgument::Type::PARAMETER) ? 
             dynamic_cast<CmdParameter *>(arg.get())->getValue() : dynamic_cast<CmdParameterOptions *>(arg.get())->getValue();
           std::stringstream strm_value(value);
           if (typeid(T) == typeid(std::string)) {
@@ -562,15 +654,15 @@ public:
 
   /*!
    * \brief Devuelve el indice de un parámetro
-   * param[in] name Nombre del parámetro
-   * return Valor del parámetro en el tipo indicado
+   * \param[in] name Nombre del parámetro
+   * \return Valor del parámetro en el tipo indicado
    */
   template<typename T>
   T getParameterOptionIndex(const char *name) const
   {
     std::string _name(name);
     for (auto arg : mCmdArgs) {
-      if ( arg->getType() == ArgType::PARAMETER_OPTIONS ) {
+      if ( arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS ) {
         if ( arg->getName() == _name ) {
           CmdParameterOptions *cpo = dynamic_cast<CmdParameterOptions *>(arg.get());
           return static_cast<T>(cpo->getIndex());
@@ -586,65 +678,6 @@ public:
 
 /* ---------------------------------------------------------------------------------- */
 
-//// Eventos de la clase de progreso
-//
-///*!
-// * brief Evento que se produce cada vez que se
-// * avanza una posición en la función de progreso
-// */
-//class OnProgress : public Event
-//{
-//public:
-//  OnProgress() : Event("Progress") {}
-//
-//  ~OnProgress() {}
-//};
-//
-///*!
-// * \brief Evento que se ejecuta al inicializar la función de
-// * progreso
-// */
-//class OnInitialize : public Event
-//{
-//public:
-//  OnInitialize() : Event("Initialize") {}
-//
-//  ~OnInitialize() {}
-//
-//private:
-//
-//};
-//
-///*!
-// * \brief Evento que se ejecuta al terminar la función de progreso
-// */
-//class OnTerminate : public Event
-//{
-//public:
-//  OnTerminate() : Event("Terminate") {}
-//
-//  ~OnTerminate() {}
-//};
-//
-//
-//class ProgressEvents
-//{
-//private:
-//
-//
-//public:
-//  ProgressEvents()  {}
-//
-//  ~ProgressEvents()  {}
-//
-//  virtual void onProgress(double progress) = 0;
-//
-//  virtual void onInitialize() = 0;
-//
-//  virtual void onTerminate() = 0;
-//
-//  void fire(Event _event);
-//};
 
 /*!
  * \brief Función objeto de progreso
@@ -674,12 +707,12 @@ protected:
   int mPercent;
 
   /*!
-   * brief Mensaje que se puede añadir con información del proceso.
+   * \brief Mensaje que se puede añadir con información del proceso.
    */
   std::string mMsg;
 
   /*!
-   * brief Manejador del evento que se produce cada vez que se
+   * \brief Manejador del evento que se produce cada vez que se
    * avanza una posición en la función de progreso
    */
   std::function<void(double)> *onProgress;
@@ -699,10 +732,6 @@ protected:
    */
   double mScale;
 
-  //typedef ProgressEvents Listener;
-
-  //std::list<Listener *> mListener;
-
 public:
 
   /*!
@@ -717,9 +746,13 @@ public:
   }
 
   /*!
-   * \brief Constructora
+   * \brief Constructora de la clase Progress
+   * \param[min] min Valor mínimo
+   * \param[min] max Valor máximo
+   * \param[min] msg Mensaje opcional con información del proceso.
    */
-  Progress(double min, double max, std::string msg = "") : mProgress(0.), mMinimun(min), mMaximun(max), mPercent(-1), mMsg(msg)
+  Progress(double min, double max, std::string msg = "") :
+    mProgress(0.), mMinimun(min), mMaximun(max), mPercent(-1), mMsg(msg)
   {
     onProgress = NULL;
     onInitialize = NULL;
@@ -733,16 +766,17 @@ public:
   virtual ~Progress() {}
 
   /*!
-   * \brief Operador de llamada. Se llama cada vez que se quiera avanzar en
-   * la función de progreso
+   * \brief Operador de llamada.
+   *
+   * Se llama cada vez que se quiera avanzar en la función de progreso
    */
   bool operator() (double increment = 1.);
 
   /*!
    * \brief Inicializa el progreso
-   * \param min Valor minimo
-   * \param max
-   * \param msg
+   * \param[in] min Valor minimo
+   * \param[in] max Valor máximo
+   * \param[in] msg Mensaje opcional con información del proceso.
    */
   void init(double min, double max, std::string msg = "");
 
@@ -753,26 +787,21 @@ public:
 
   /*!
    * \brief Establece el manejador del evento OnInitialize
-   * \param initializeFunction Función que se llama al inicializar
+   * \param[in] initializeFunction Función que se llama al inicializar
    */
   void setOnInitializeListener(std::function<void(void)> &initializeFunction);
 
   /*!
    * \brief Establece el manejador del evento OnProgress
-   * \param progressFunction Función de control del progreso
+   * \param[in] progressFunction Función de control del progreso
    */
   void setOnProgressListener(std::function<void(double)> &progressFunction);
 
   /*!
    * \brief Establece el manejador del evento OnTerminate
-   * \param terminateFunction Función que se llama al terminar
+   * \param[in] terminateFunction Función que se llama al terminar
    */
   void setOnTerminateListener(std::function<void(void)> &terminateFunction);
-
-  //void addListener(Listener *listener)
-  //{
-  //  mListener.push_front( listener );
-  //}
 
 protected:
 
@@ -819,7 +848,7 @@ public:
 
   /*!
    * \brief Constructora
-   * \param customConsole
+   * \param[in] customConsole
    */
   ProgressBar(bool customConsole = true)
     : Progress(), bCustomConsole(customConsole) {}
@@ -827,8 +856,8 @@ public:
   /*!
    * \brief Constructora
    * \param min Valor mínimo
-   * \param max
-   * \param customConsole
+   * \param max Valor máximo
+   * \param customConsole Si este valor esta activado la barra de progreso se muestra en color
    */
   ProgressBar(double min, double max, bool customConsole = true)
     : Progress(min, max), bCustomConsole(customConsole) {}
@@ -867,7 +896,7 @@ private:
 public:
 
   /*!
-   * \brief Constructora
+   * \brief Constructora ProgressPercent
    * \param customConsole
    */
   ProgressPercent(bool customConsole = false)
@@ -894,6 +923,10 @@ private:
    */
   void update() override;
 };
+
+/*! \} */ // end of Console
+
+/*! \} */ // end of utilities
 
 } // End namespace I3D
 
