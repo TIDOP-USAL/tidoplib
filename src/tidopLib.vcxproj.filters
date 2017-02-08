@@ -16,9 +16,6 @@
     <Filter Include="Archivos de código fuente\geometric_entities">
       <UniqueIdentifier>{b274c850-5e68-4b78-b63d-59a55af66e8d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Archivos de código fuente\point_cloud">
-      <UniqueIdentifier>{c64704e5-adad-4280-bc15-b0b069e6bf1c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Archivos de encabezado\point_cloud">
       <UniqueIdentifier>{3c6277b2-7feb-4ddf-9c88-a12d5fa693d7}</UniqueIdentifier>
     </Filter>
@@ -60,6 +57,18 @@
     </Filter>
     <Filter Include="Archivos de encabezado\img_process">
       <UniqueIdentifier>{0b969bd5-e0cc-4c96-9385-0cef44fa23cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\img">
+      <UniqueIdentifier>{1cea2104-facf-44e8-9326-5cda99820d03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\img">
+      <UniqueIdentifier>{55d08674-0bf2-4950-a2c3-c46f3e6473b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\vect">
+      <UniqueIdentifier>{024e411d-4cec-402a-8e26-14a9a835406b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\vect">
+      <UniqueIdentifier>{0ce57a0d-74a2-4a00-9f42-4847412a5247}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -131,6 +140,12 @@
     </ClCompile>
     <ClCompile Include="core\datamodel.cpp">
       <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
+    <ClCompile Include="img\imgio.cpp">
+      <Filter>Archivos de código fuente\img</Filter>
+    </ClCompile>
+    <ClCompile Include="vect\vectio.cpp">
+      <Filter>Archivos de código fuente\vect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +241,12 @@
     </ClInclude>
     <ClInclude Include="core\datamodel.h">
       <Filter>Archivos de encabezado\core</Filter>
+    </ClInclude>
+    <ClInclude Include="img\imgio.h">
+      <Filter>Archivos de encabezado\img</Filter>
+    </ClInclude>
+    <ClInclude Include="vect\vectio.h">
+      <Filter>Archivos de encabezado\vect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

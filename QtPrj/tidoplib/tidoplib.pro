@@ -51,7 +51,9 @@ SOURCES += \
     ../../src/img_process/white_balance.cpp \
     ../../src/feature_detection/linedetector.cpp \
     ../../src/feature_detection/shapedetection.cpp \
-    ../../src/core/datamodel.cpp
+    ../../src/core/datamodel.cpp \
+    ../../src/img/imgio.cpp \
+    ../../src/vect/vectio.cpp
 
 HEADERS += \
     ../../src/core/config.h \
@@ -83,7 +85,9 @@ HEADERS += \
     ../../src/img_process/img_processing.h \
     ../../src/img_process/skeleton.h \
     ../../src/img_process/white_balance.h \
-    ../../src/core/datamodel.h
+    ../../src/core/datamodel.h \
+    ../../src/img/imgio.h \
+    ../../src/vect/vectio.h
 
 unix {
     target.path = /usr/lib

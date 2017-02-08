@@ -36,11 +36,13 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\props_vs\OpenCV_debug.props" />
     <Import Project="..\props_vs\QT_debug.props" />
+    <Import Project="..\props_vs\GDAL_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\props_vs\OpenCV_release.props" />
     <Import Project="..\props_vs\QT_release.props" />
+    <Import Project="..\props_vs\GDAL_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -101,6 +103,7 @@
     <ClCompile Include="geometric_entities\window.cpp" />
     <ClCompile Include="graphic_entities\color.cpp" />
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />
+    <ClCompile Include="img\imgio.cpp" />
     <ClCompile Include="img_process\filters.cpp" />
     <ClCompile Include="img_process\img_processing.cpp" />
     <ClCompile Include="img_process\skeleton.cpp" />
@@ -108,6 +111,7 @@
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="stereo\anaglyph.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="vect\vectio.cpp" />
     <ClCompile Include="videostream.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +138,7 @@
     <ClInclude Include="geometric_entities\window.h" />
     <ClInclude Include="graphic_entities\color.h" />
     <ClInclude Include="graphic_entities\graphic_entity.h" />
+    <ClInclude Include="img\imgio.h" />
     <ClInclude Include="img_process\filters.h" />
     <ClInclude Include="img_process\img_processing.h" />
     <ClInclude Include="img_process\skeleton.h" />
@@ -141,6 +146,7 @@
     <ClInclude Include="matching.h" />
     <ClInclude Include="stereo\anaglyph.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="vect\vectio.h" />
     <ClInclude Include="videostream.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

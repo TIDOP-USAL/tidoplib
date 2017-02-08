@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts;D:\Desarrollo\Libs_sources\gdal-2.1.2\gcore;D:\Desarrollo\Libs_sources\gdal-2.1.2\ogr;D:\Desarrollo\Libs_sources\gdal-2.1.2\port;D:\Desarrollo\Libs_sources\gdal-2.1.2\alg;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aaigrid;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\adrg;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>

@@ -12,7 +12,8 @@
 
 #endif
 
-#undef HAVE_GDAL
+// Activa GDAL
+#define HAVE_GDAL
 
 #define HAVE_RAW // libraw
 
