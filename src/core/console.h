@@ -2,8 +2,8 @@
 #define I3D_CONSOLE_H
 
 //#if defined WIN32
-//// Para que no den problemas std::numeric_limits<T>().max() 
-//#define NOMINMAX 
+//// Para que no den problemas std::numeric_limits<T>().max()
+//#define NOMINMAX
 //# include <windows.h>
 //#endif
 #include <functional>
@@ -49,7 +49,7 @@ public:
     NORMAL,  /*!< Normal */
     BRIGHT   /*!< Brillante */
   };
-  
+
   /*!
    * \brief Tipos de color de fondo y caracter.
    */
@@ -80,7 +80,7 @@ private:
   // Consola de Windows
 
   /*!
-   * \brief Manejador de la consola 
+   * \brief Manejador de la consola
    */
   HANDLE h;
 
@@ -145,7 +145,7 @@ private:
    * \brief Color de fondo
    */
   int mBackColor;
-  
+
 #endif
 
 public:
@@ -228,7 +228,7 @@ private:
 // Option names are single alphanumeric characters (as for isalnum; see Classification of Characters).
 // Ciertas opciones requieren un argumento. Por ejemplo, el '-o' comando del comando ld requiere un argumento nombre-archivo de salida.
 // Una opción y su argumento pueden o no pueden aparecer como fichas separadas. (En otras palabras, el espacio en blanco que los separa es opcional.) Por lo tanto, '-o foo' y '-ofoo' son equivalentes.
-// 
+//
 //GNU añade opciones de larga duración a estas convenciones. Las opciones largas consisten en '-' seguido de un nombre hecho de caracteres alfanuméricos y guiones. Los nombres de opciones son por lo general de una a tres palabras de largo, con guiones para separar las palabras. Los usuarios pueden abreviar los nombres de las opciones, siempre y cuando las abreviaturas son únicos.
 //
 //Para especificar un argumento para una larga, debe escribirse '--name = valor'. Esta sintaxis permite una opción a largo para aceptar un argumento que es en sí opcional.
@@ -280,9 +280,9 @@ public:
    * \param[in] description Descripción
    * \param[in] optional Párametro obligatorio u opcional. Por defecto es obligatorio.
    */
-  CmdArgument(const char *name, const char *description, bool optional = false) 
+  CmdArgument(const char *name, const char *description, bool optional = false)
     : mName(name), mDescription(description), bOptional(optional) {}
-  
+
   virtual ~CmdArgument(){}
 
   CmdArgument(CmdArgument const&) = delete;
@@ -384,8 +384,8 @@ public:
    * \param[in] optional El parametro es opcional. Por defecto no es opcional
    * \param[in] defValue Valor por defecto
    */
-  CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "") 
-    : CmdArgument(name, description, optional) 
+  CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "")
+    : CmdArgument(name, description, optional)
   {
     mDefValue = defValue;
   }
@@ -438,7 +438,7 @@ public:
    * \param[in] optional El parametro es opcional. Por defecto no es opcional
    * \param[in] defValue Valor por defecto
    */
-  CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "") 
+  CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "")
     : CmdArgument(name, description, optional), mDefValue(defValue)
   {
     split(options, mOptions, ",");
@@ -558,7 +558,7 @@ public:
    */
   CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
     : mCmdName(name), mCmdDescription(description), mCmdArgs(cmd_args) {}
-  
+
   /*!
    * \brief Destructora
    */
@@ -607,7 +607,7 @@ public:
    * \brief Limpia el parser de comando
    */
   void clear() { mCmdArgs.clear(); }
-  
+
   /*!
    * \brief Devuelve el valor de un parametro
    * \param[in] name Nombre del parámetro
@@ -624,7 +624,7 @@ public:
    */
   template<typename T>
   T getValue( const char *name) const
-  { 
+  {
     T t = T();
     void *_value = (void *)&t;
 
@@ -653,7 +653,7 @@ public:
   }
 
   /*!
-   * \brief Devuelve el indice de un parámetro 
+   * \brief Devuelve el indice de un parámetro
    * \param[in] name Nombre del parámetro
    * \return Valor del parámetro en el tipo indicado
    */
@@ -671,7 +671,7 @@ public:
     }
     return static_cast<T>(0);
   }
-  
+
   bool hasOption( const std::string &option) const;
 };
 
@@ -695,16 +695,16 @@ protected:
    * \brief Valor mínimo
    */
   double mMinimun;
-  
+
   /*!
    * \brief Valor máximo
    */
   double mMaximun;
 
   /*!
-   * \brief Valor actual en tanto por ciento 
+   * \brief Valor actual en tanto por ciento
    */
-  int mPercent; 
+  int mPercent;
 
   /*!
    * \brief Mensaje que se puede añadir con información del proceso.
@@ -796,7 +796,7 @@ public:
    * \param[in] progressFunction Función de control del progreso
    */
   void setOnProgressListener(std::function<void(double)> &progressFunction);
-  
+
   /*!
    * \brief Establece el manejador del evento OnTerminate
    * \param[in] terminateFunction Función que se llama al terminar
@@ -850,7 +850,7 @@ public:
    * \brief Constructora
    * \param[in] customConsole
    */
-  ProgressBar(bool customConsole = true) 
+  ProgressBar(bool customConsole = true)
     : Progress(), bCustomConsole(customConsole) {}
 
   /*!
@@ -859,7 +859,7 @@ public:
    * \param max Valor máximo
    * \param customConsole Si este valor esta activado la barra de progreso se muestra en color
    */
-  ProgressBar(double min, double max, bool customConsole = true) 
+  ProgressBar(double min, double max, bool customConsole = true)
     : Progress(min, max), bCustomConsole(customConsole) {}
 
   /*!
@@ -869,7 +869,7 @@ public:
 
   //... warning C4512: 'I3D::ProgressBar' : no se pudo generar el operador de asignaciones
   //    Este warning aparece debido a que mSize es constante. impido la asignación que por
-  //    otra parte tampoco me interesa 
+  //    otra parte tampoco me interesa
 
   ProgressBar &operator=(const ProgressBar &pb) = delete;
 
@@ -899,7 +899,7 @@ public:
    * \brief Constructora ProgressPercent
    * \param customConsole
    */
-  ProgressPercent(bool customConsole = false) 
+  ProgressPercent(bool customConsole = false)
     : Progress(), bCustomConsole(customConsole) {}
 
   /*!
@@ -908,7 +908,7 @@ public:
    * \param max Valor máximo
    * \param customConsole
    */
-  ProgressPercent(double min, double max, bool customConsole = false) 
+  ProgressPercent(double min, double max, bool customConsole = false)
     : Progress(min, max), bCustomConsole(customConsole) {}
 
   /*!

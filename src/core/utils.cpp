@@ -1,9 +1,12 @@
 #include "utils.h"
 
 #include "core/messages.h"
+
 #if defined WIN32
 #include <windows.h>
-#else
+#endif
+
+#if defined __linux__ || defined __GNUC__
 #include <unistd.h>
 #include <sys/stat.h>
 #include <libgen.h>
@@ -105,9 +108,9 @@ int createDir(const char *path)
   if (isDirectory(path)) return 1;
   std::vector<std::string> splitPath;
   I3D::split(path, splitPath, "\\");
-  if (splitPath.size() == 1) 
+  if (splitPath.size() == 1)
     I3D::split(path, splitPath, "/");
-  
+
   std::string _path = "";
   for (size_t i = 0; i < splitPath.size(); i++) {
     _path += splitPath[i];
@@ -127,7 +130,7 @@ int createDir(const char *path)
   return 0;
 }
 
-int deleteDir(const char *path, bool confirm) 
+int deleteDir(const char *path, bool confirm)
 {
   if (isDirectory(path)) {
     std::string delDir = "rmdir /s ";
@@ -182,6 +185,8 @@ int getFileName(const char *path, char *name, int size)
 {
 #ifdef _MSC_VER
   return _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
+#elif defined __GNUC__
+
 #else
   char *basec = (char *)malloc(size);
   if (basec) name = basename(basec);
@@ -403,10 +408,18 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
 }
 
 int split(const std::string &in, std::vector<std::string> &out, const char *chs)
-{ 
+{
   out.resize(0);
   int r_err = 0;
-  char *dup = strdup(in.c_str());
+  char *dup;
+#ifdef __GNUC__
+  size_t len = strlen(in.c_str())+1;
+  char *s = (char *)malloc(len);
+  if (!s) return 1;
+  dup = (char *)memcpy(s, in.c_str(), len);
+#else
+  dup = strdup(in.c_str());
+#endif
   try {
     char *token = strtok(dup, chs);
     while (token != NULL){
@@ -419,6 +432,26 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   }
   free(dup);
   return r_err;
+}
+
+int stringToInteger(const std::string &text, I3D::Base base)
+{
+  std::istringstream ss(text);
+  switch (base) {
+    case I3D::Base::OCTAL:
+      ss.setf(std::ios_base::oct, std::ios::basefield);
+      break;
+    case I3D::Base::DECIMAL:
+      ss.setf(std::ios_base::dec, std::ios::basefield);
+      break;
+    case I3D::Base::HEXADECIMAL:
+      ss.setf(std::ios_base::hex, std::ios::basefield);
+      break;
+    default:
+      break;
+  }
+  int number;
+  return ss >> number ? number : 0;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -483,7 +516,7 @@ void saveBinMat(const char *file, cv::Mat &data)
 
 // Añadir cancelación para poder detener los procesos en caso de error
 
-I3D_EXPORT uint32_t getOptimalNumberOfThreads()
+uint32_t getOptimalNumberOfThreads()
 {
 #ifdef I3D_MSVS_CONCURRENCY
   return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
@@ -493,7 +526,7 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads()
 #endif
 }
 
-void parallel_for(int ini, int end, std::function<void(int)> f) { 
+void parallel_for(int ini, int end, std::function<void(int)> f) {
   //uint64_t time_ini = getTickCount();
 #ifdef I3D_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
@@ -502,14 +535,14 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
   //},cts.get_token());
   Concurrency::parallel_for(ini, end, f);
 #else
-  
+
   auto f_aux = [&](int ini, int end) {
     //double cyan, magenta, yellow, key;
     for (int r = ini; r < end; r++) {
       f(r);
     }
   };
-  
+
   int num_threads = getOptimalNumberOfThreads();
   std::vector<std::thread> threads(num_threads);
 
@@ -559,7 +592,7 @@ BresenhamLine &BresenhamLine::operator ++()
   return *this;
 }
 
-BresenhamLine BresenhamLine::operator ++(int) 
+BresenhamLine BresenhamLine::operator ++(int)
 {
   BresenhamLine it = *this;
   ++(*this);
@@ -576,7 +609,7 @@ BresenhamLine &BresenhamLine::operator --()
   return *this;
 }
 
-BresenhamLine BresenhamLine::operator --(int) 
+BresenhamLine BresenhamLine::operator --(int)
 {
   BresenhamLine it = *this;
   --(*this);
@@ -590,7 +623,7 @@ BresenhamLine BresenhamLine::begin()
   return it;
 }
 
-BresenhamLine BresenhamLine::end() 
+BresenhamLine BresenhamLine::end()
 {
   BresenhamLine it = *this;
   it.mPos = mPt2;
@@ -619,22 +652,22 @@ void Line( const float x1, const float y1, const float x2, const float y2, const
     std::swap(x1, y1);
     std::swap(x2, y2);
   }
- 
+
   if(x1 > x2)
   {
     std::swap(x1, x2);
     std::swap(y1, y2);
   }
- 
+
   const float dx = x2 - x1;
   const float dy = fabs(y2 - y1);
- 
+
   float error = dx / 2.0f;
   const int ystep = (y1 < y2) ? 1 : -1;
   int y = (int)y1;
- 
+
   const int maxX = (int)x2;
- 
+
   for(int x=(int)x1; x<maxX; x++)
   {
     if(steep)
@@ -645,7 +678,7 @@ void Line( const float x1, const float y1, const float x2, const float y2, const
     {
         SetPixel(x,y, color);
     }
- 
+
     error -= dy;
     if(error < 0)
     {
@@ -658,16 +691,16 @@ void Line( const float x1, const float y1, const float x2, const float y2, const
 
 void BresenhamLine::init()
 {
-  if (dy < 0) { 
-    dy = -dy; 
-    mStepY = -1; 
+  if (dy < 0) {
+    dy = -dy;
+    mStepY = -1;
   } else {
     mStepY = 1;
   }
 
-  if (dx < 0) {  
-    dx = -dx;  
-    mStepX = -1; 
+  if (dx < 0) {
+    dx = -dx;
+    mStepX = -1;
   } else {
     mStepX = 1;
   }
@@ -689,7 +722,7 @@ void BresenhamLine::init()
   }
 }
 
-void BresenhamLine::_next(int *max, int *min, /*int dMax, int dMin,*/ int endMax, int stepMax, int stepMin) 
+void BresenhamLine::_next(int *max, int *min, /*int dMax, int dMin,*/ int endMax, int stepMax, int stepMin)
 {
   if (*max < endMax) {
     *max += stepMax;
@@ -702,7 +735,7 @@ void BresenhamLine::_next(int *max, int *min, /*int dMax, int dMin,*/ int endMax
   }
 }
 
-int BresenhamLine::size() const 
+int BresenhamLine::size() const
 {
   return mCount;
 }
@@ -735,7 +768,7 @@ DDA &DDA::operator ++()
   return *this;
 }
 
-DDA DDA::operator ++(int) 
+DDA DDA::operator ++(int)
 {
   DDA it = *this;
   ++(*this);
@@ -752,7 +785,7 @@ DDA &DDA::operator --()
   return *this;
 }
 
-DDA DDA::operator --(int) 
+DDA DDA::operator --(int)
 {
   DDA it = *this;
   --(*this);
@@ -766,14 +799,14 @@ DDA DDA::begin()
   return it;
 }
 
-DDA DDA::end() 
+DDA DDA::end()
 {
   DDA it = *this;
   it.mPos = mPt2;
   return it;
 }
 
-PointI DDA::position(int id) 
+PointI DDA::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -809,16 +842,16 @@ void DDA::init()
   }
 }
 
-void DDA::_next(int *max, int *min, int dMin, int endMax, int step) 
+void DDA::_next(int *max, int *min, int dMin, int endMax, int step)
 {
   if (*max < endMax) {
     *max += step;
-    if ( dMin != 0) 
+    if ( dMin != 0)
       *min = I3D_ROUND_TO_INT(m * *max + b);
   }
 }
 
-int DDA::size() const 
+int DDA::size() const
 {
   return mCount;
 }

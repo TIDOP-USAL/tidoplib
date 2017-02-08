@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0A3253BC-1302-4140-80E1-2C73814A0C74}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>DeteccionApoyos</RootNamespace>
+    <RootNamespace>disparity_map</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">

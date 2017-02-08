@@ -4,6 +4,7 @@
 #include <array>
 #include <thread>
 #include <random>
+#include <string>
 
 #include "core/exception.h"
 #include "core/utils.h"
@@ -36,7 +37,7 @@ Color::Color(double hue, double saturation, double value) : mColor(0)
 
 Color::Color(const std::string &color)
 {
-  mColor = std::stoi(color, nullptr, 16);
+  mColor = stringToInteger(color, I3D::Base::HEXADECIMAL);//std::stoi(color,nullptr,16);
 }
 
 Color::Color(const Color::NAME &color)
@@ -113,8 +114,8 @@ void Color::fromHSL(double hue, double saturation, double lightness)
   int red, green, blue;
   hslToRgb(hue, saturation, lightness, &red, &green, &blue);
   mColor = (I3D_ROUND_TO_INT(blue) & 0xFF)
-    | ((I3D_ROUND_TO_INT(green) << 8) & 0xFF00)
-    | ((I3D_ROUND_TO_INT(red) << 16) & 0xFF0000);
+         | ((I3D_ROUND_TO_INT(green) << 8) & 0xFF00)
+         | ((I3D_ROUND_TO_INT(red) << 16) & 0xFF0000);
 }
 
 

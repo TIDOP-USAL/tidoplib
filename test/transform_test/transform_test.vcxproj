@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1914A704-E584-4700-9394-EC0F74987E9F}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>utils_test</RootNamespace>
+    <RootNamespace>transform_test</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">

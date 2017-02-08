@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tidopLib" />
+		<Option platforms="Windows;" />
+		<Option execution_dir="C:/Desarrollo/tidop/src/" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug x64">
+				<Option output="lib/tidopLibd" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-std=c++11" />
+					<Add option="-DWIN32" />
+					<Add option="-DGLOG_NO_ABBREVIATED_SEVERITIES" />
+					<Add option="-D_DEBUG" />
+					<Add option="-D_LIB" />
+					<Add option="-D_GNU_SURCE" />
+					<Add directory="../../Libs/gflags/Include" />
+					<Add directory="../../Libs/glog/include" />
+					<Add directory="../src" />
+					<Add directory="../../Libs/Eigen/include/eigen3" />
+					<Add directory="../../Libs/opencv-3.2.0/include" />
+				</Compiler>
+			</Target>
+			<Target title="Release x64">
+				<Option output="lib/tidopLib" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-DWIN32" />
+					<Add option="-DGLOG_NO_ABBREVIATED_SEVERITIES" />
+					<Add option="-DNDEBUG" />
+					<Add option="-D_LIB" />
+					<Add directory="../../Libs/gflags/Include" />
+					<Add directory="../../Libs/glog/include" />
+					<Add directory="../src" />
+					<Add directory="../../Libs/Eigen/include/eigen3" />
+					<Add directory="../../Libs/opencv-3.2.0/include" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Unit filename="../src/core/config.h" />
+		<Unit filename="../src/core/console.cpp" />
+		<Unit filename="../src/core/console.h" />
+		<Unit filename="../src/core/defs.h" />
+		<Unit filename="../src/core/exception.cpp" />
+		<Unit filename="../src/core/exception.h" />
+		<Unit filename="../src/core/flags.h" />
+		<Unit filename="../src/core/mathutils.cpp" />
+		<Unit filename="../src/core/mathutils.h" />
+		<Unit filename="../src/core/messages.cpp" />
+		<Unit filename="../src/core/messages.h" />
+		<Unit filename="../src/core/utils.cpp" />
+		<Unit filename="../src/core/utils.h" />
+		<Unit filename="../src/experimental/experimental.cpp" />
+		<Unit filename="../src/experimental/experimental.h" />
+		<Unit filename="../src/feature_detection/linedetector.cpp" />
+		<Unit filename="../src/feature_detection/linedetector.h" />
+		<Unit filename="../src/feature_detection/shapedetection.cpp" />
+		<Unit filename="../src/feature_detection/shapedetection.h" />
+		<Unit filename="../src/fourier.cpp" />
+		<Unit filename="../src/fourier.h" />
+		<Unit filename="../src/geometric_entities/bbox.h" />
+		<Unit filename="../src/geometric_entities/entity.h" />
+		<Unit filename="../src/geometric_entities/lineString.h" />
+		<Unit filename="../src/geometric_entities/operations.cpp" />
+		<Unit filename="../src/geometric_entities/operations.h" />
+		<Unit filename="../src/geometric_entities/point.h" />
+		<Unit filename="../src/geometric_entities/polygon.h" />
+		<Unit filename="../src/geometric_entities/segment.cpp" />
+		<Unit filename="../src/geometric_entities/segment.h" />
+		<Unit filename="../src/geometric_entities/window.cpp" />
+		<Unit filename="../src/geometric_entities/window.h" />
+		<Unit filename="../src/graphic_entities/color.cpp" />
+		<Unit filename="../src/graphic_entities/color.h" />
+		<Unit filename="../src/graphic_entities/graphic_entity.cpp" />
+		<Unit filename="../src/graphic_entities/graphic_entity.h" />
+		<Unit filename="../src/img_process/filters.cpp" />
+		<Unit filename="../src/img_process/filters.h" />
+		<Unit filename="../src/img_process/img_processing.cpp" />
+		<Unit filename="../src/img_process/img_processing.h" />
+		<Unit filename="../src/img_process/skeleton.cpp" />
+		<Unit filename="../src/img_process/skeleton.h" />
+		<Unit filename="../src/img_process/white_balance.cpp" />
+		<Unit filename="../src/img_process/white_balance.h" />
+		<Unit filename="../src/matching.cpp" />
+		<Unit filename="../src/matching.h" />
+		<Unit filename="../src/stereo/anaglyph.cpp" />
+		<Unit filename="../src/stereo/anaglyph.h" />
+		<Unit filename="../src/transform.cpp" />
+		<Unit filename="../src/transform.h" />
+		<Unit filename="../src/videostream.cpp" />
+		<Unit filename="../src/videostream.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger>
+				<search_path add="..\..\Libs\opencv-3.2.0\include" />
+			</debugger>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

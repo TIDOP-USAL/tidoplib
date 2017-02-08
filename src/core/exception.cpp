@@ -5,13 +5,13 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-Exception::Exception(const char *error) 
+Exception::Exception(const char *error)
   : mError(error), mFile(""), mLine(-1), mFunction("")
 {
   messagef();
 }
 
-Exception::Exception(const char *error, const char *file, int line, const char *function ) 
+Exception::Exception(const char *error, const char *file, int line, const char *function )
   : mError(error), mFile(file), mLine(line), mFunction(function)
 {
   messagef();
@@ -34,7 +34,7 @@ void Exception::messagef()
     snprintf(buf, 1000, "%s (%s:%u, %s)", mError.c_str(), mFile.c_str(), mLine, mFunction.c_str());
 #endif
     mMessage = std::string(buf);
-  }  
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */

@@ -18,15 +18,16 @@ namespace I3D
 #if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
 #  if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
 // OpenCV 3.2
-ProcessExit Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImgProcessing::Status Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     wb->balanceWhite(matIn, *matOut);
   } catch (cv::Exception &e) {
     logPrintError(e.what());
-    return ProcessExit::FAILURE;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
-  return ProcessExit::SUCCESS;
+  return ImgProcessing::Status::OK;
 }
 
 void Grayworld::setParameters()
@@ -40,8 +41,9 @@ void Grayworld::setParameters()
 
 ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
-    if ( matIn.channels() != 3 ) ImgProcessing::Status::INCORRECT_INPUT_DATA;
+    if ( matIn.channels() != 3 ) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
 
     // Buscar máximo R, G, B
     double sr, sg, sb;

@@ -18,11 +18,11 @@
 namespace I3D
 {
 
-/*! 
+/*!
  * \defgroup utilities Utilidades
  *
- * Utilidades de proposito general como manipulación de cadenas, información de la 
- * aplicación etc 
+ * Utilidades de proposito general como manipulación de cadenas, información de la
+ * aplicación etc
  * \{
  */
 
@@ -369,6 +369,50 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
 
 /*! \} */ // end of stringOper
 
+/*!
+ * \brief Convierte un número a una cadena de texto
+ * \param[in] number Numero
+ * \return Cadena de texto
+ */
+template <typename T>
+I3D_EXPORT std::string numberToString(T number)
+{
+  std::ostringstream ss;
+  ss << number;
+  return ss.str();
+}
+
+
+template <typename T>
+/*!
+ * \brief Convierte una cadena de texto a un número
+ * \param[in] text Texto
+ * \return número
+ */
+I3D_EXPORT T stringToNumber(const std::string &text)
+{
+  T number;
+  return (std::istringstream(text) >> number) ? number : 0;
+}
+
+enum class Base : int8_t
+{
+  OCTAL       =  8,
+  DECIMAL     = 10,
+  HEXADECIMAL = 16
+};
+
+/*!
+ * \brief Convierte una cadena a un número entero.
+ *
+ * La cadena puede tener un número en base octal, decimal o hexadecimal
+ * \param text Cadena de texto
+ * \param base Base en la cual esta el número
+ * \return Número
+ * \see Base
+ */
+I3D_EXPORT int stringToInteger(const std::string &text, I3D::Base base = I3D::Base::DECIMAL);
+
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
 /* ---------------------------------------------------------------------------------- */
@@ -501,7 +545,7 @@ I3D_EXPORT int operator< (const std::vector<T> &v, const T t)
 
 /*!
  * \brief Ordena los indices de un vector de menor a mayor
- * Para un vector [10,20,15,5] devuelve [3,0,2,1]. El elemento mas 
+ * Para un vector [10,20,15,5] devuelve [3,0,2,1]. El elemento mas
  * pequeño esta en la posición 3, el segundo en la posición 0, ...
  * \param[in] v Vector
  * \return Vector con los indices ordenados
@@ -542,7 +586,7 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads();
 /*!
  * \brief Ejecuta una función en paralelo
  * \param[in] ini
- * \param[in] end 
+ * \param[in] end
  * \param[in] f Función o lambda
  */
 I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
@@ -575,7 +619,7 @@ public:
   };
 
   /*!
-   * \brief 
+   * \brief
    */
   Type mType;
 
@@ -626,7 +670,7 @@ public:
   /*!
    * \brief Constructora
    */
-  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2) 
+  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2)
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
@@ -655,8 +699,8 @@ public:
 /*!
  * \brief Algoritmo de Bresenham para líneas
  *
- * Un algoritmo preciso y efectivo para la generación de líneas de rastreo, 
- * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas 
+ * Un algoritmo preciso y efectivo para la generación de líneas de rastreo,
+ * desarrollado por Bresenham (1965), convierte mediante rastreo las líneas
  * utilizando solo cálculos incrementales con enteros que se pueden adaptar para
  * desplegar también curvas.
  * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
@@ -677,8 +721,8 @@ public:
    * I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
-  BresenhamLine(const PointI &pt1, const PointI &pt2) 
-    : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2) 
+  BresenhamLine(const PointI &pt1, const PointI &pt2)
+    : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2)
   {
     init();
   }
@@ -697,7 +741,7 @@ public:
    * \brief Incrementa una posición
    */
   BresenhamLine &operator ++();
-  
+
   /*!
    * \brief Incrementa una posición
    */
@@ -707,7 +751,7 @@ public:
    * \brief Decrementa una posición
    */
   BresenhamLine &operator --();
-  
+
   /*!
    * \brief Decrementa una posición
    */
@@ -717,7 +761,7 @@ public:
    * \brief Operador igual que
    */
   bool operator==(const BresenhamLine& bl) {return mPos==bl.mPos;}
-  
+
   /*!
    * \brief Operador distinto que
    */
@@ -764,13 +808,13 @@ private:
 /*!
  * \brief Algoritmo DDA (analizador diferenciador digital)
  *
- * El algoritmo DDA (Digital Differential Analyzer) es un algoritmo 
- * de conversion de rastreo que se basa en el calculo ya sea de Dy 
+ * El algoritmo DDA (Digital Differential Analyzer) es un algoritmo
+ * de conversion de rastreo que se basa en el calculo ya sea de Dy
  * o Dx por medio de una de las ecuaciones:
  * \f$ Dy = m * Dx \f$<BR>
  * \f$ Dx = Dy / m \f$<BR>
- * Se efectúa un muestreo de la línea en intervalos unitarios en una 
- * coordenada y se determina los valores enteros correspondientes mas  
+ * Se efectúa un muestreo de la línea en intervalos unitarios en una
+ * coordenada y se determina los valores enteros correspondientes mas
  * próximos a la trayectoria de la línea para la otra coordenada.
  */
 class DDA : public LineAlgorithms, public std::iterator<std::bidirectional_iterator_tag, int>
@@ -812,7 +856,7 @@ public:
    * \brief Incrementa una posición
    */
   DDA &operator ++();
-  
+
   /*!
    * \brief Incrementa una posición
    */
@@ -822,7 +866,7 @@ public:
    * \brief Decrementa una posición
    */
   DDA &operator --();
-  
+
   /*!
    * \brief Decrementa una posición
    */
