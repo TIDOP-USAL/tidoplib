@@ -109,11 +109,11 @@ void RasterGraphics::update()
 
 void RasterGraphics::loadImage(cv::Mat *image, const WindowI &w, double scale)
 {
+  
+  WindowI wAll(PointI(0, 0), PointI(mCols, mRows));
+  WindowI wImage = windowIntersection(wAll, w);
+
   cv::Size size(mRows, mCols);
-
-  // Comprobar la ventana para ver que esta dentro 
-
-
   image->create(size, gdalToOpenCv(mDataType, mBands));
   if ( image->empty() ) return;
 
@@ -122,7 +122,18 @@ void RasterGraphics::loadImage(cv::Mat *image, const WindowI &w, double scale)
   size_t nLineSpace = image->elemSize() * image->cols;
   size_t nBandSpace = image->elemSize1();
 
+  std::vector<int> panBandMap;
 
+  static int panBandMap1[] = { 1 };
+  static int panBandMap3[] = { 3, 2, 1 };
+  static int panBandMap4[] = { 3, 2, 1, 4 };
+  if      ( mBands == 1 ) panBandMap = { 1 };
+  else if ( mBands == 3 ) panBandMap = { 3, 2, 1 };   // Orden de bandas de OpenCV
+  else if ( mBands == 4 ) panBandMap = { 3, 2, 1, 4 };
+
+  CPLErr cerr = pDataset->RasterIO( GF_Read, wImage.pt1.x, wImage.pt1.y, wImage.getWidth(), wImage.getHeight(), 
+    buff, size.width, size.height, mDataType, mBands, 
+          panBandMap.data(), (int)nPixelSpace, (int)nLineSpace, (int)nBandSpace );
 }
 
 #endif // HAVE_OPENCV
