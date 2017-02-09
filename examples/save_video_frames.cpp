@@ -10,7 +10,7 @@
 #include "core/console.h"
 #include "core/messages.h"
 #include "videostream.h"
-#include "img_processing.h"
+#include "img_process/img_processing.h"
 #include "geometric_entities/window.h"
 
 using namespace cv;
@@ -115,7 +115,7 @@ void VideoHelper::onInitialize()
 
   if (mOutPath.empty()) {
     char path[I3D_MAX_DRIVE + I3D_MAX_DIR];
-    getFileDriveDir(getRunfile(),path);
+    getFileDriveDir(getRunfile(), path, I3D_MAX_DRIVE + I3D_MAX_DIR);
     mOutPath = path;
   } else {
     createDir(mOutPath.c_str());
@@ -181,8 +181,7 @@ int main(int argc, char** argv)
   cmdParser.addParameter("out_path", "Directorio de salida donde se guardan las imagenes");
   cmdParser.addParameter("ext", "Extensión del formato de imagen de salida", true, "*.png");
   cmdParser.parse(argc, argv);
-  if (cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
-    cmdParser.printHelp();
+  if (cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     return 0;
   }
   std::string video = cmdParser.getValue<std::string>("video");
@@ -191,7 +190,7 @@ int main(int argc, char** argv)
 
   //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];
-  if (changeFileExtension(getRunfile(), "log", logfile) == 0) {
+  if (changeFileExtension(getRunfile(), "log", logfile, I3D_MAX_PATH) == 0) {
     Message::setMessageLogFile(logfile);
     Message::setMessageLevel(MessageLevel::MSG_INFO);
   }

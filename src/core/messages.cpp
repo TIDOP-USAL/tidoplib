@@ -8,6 +8,12 @@
 #include "opencv2/core/utility.hpp"
 #endif
 
+#ifdef HAVE_GDAL
+I3D_SUPPRESS_WARNINGS
+#include "gdal_priv.h"
+I3D_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
+
 #include <cstdarg>
 #if defined WIN32
 # include <windows.h>
@@ -37,6 +43,27 @@ int handleError( int status, const char* func_name, const char* err_msg, const c
 }
 I3D_ENABLE_WARNING(4100)
 #endif // HAVE_OPENCV
+
+#ifdef HAVE_GDAL
+// Manejador de eventos para GDAL 
+void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
+{
+  MessageLevel ml;
+  if (err == CE_Debug) {
+    ml = MessageLevel::MSG_DEBUG;
+  } else if (err == CE_Warning) {
+    ml = MessageLevel::MSG_WARNING;
+  } else if (err == CE_Failure) {
+    ml = MessageLevel::MSG_ERROR;
+  } else if (err == CE_Fatal) {
+    ml = MessageLevel::MSG_ERROR;
+  } else {
+    ml = MessageLevel::MSG_INFO;
+  }
+  Message::message(err_msg).print( ml, MessageOutput::MSG_CONSOLE);
+  return;
+}
+#endif // HAVE_GDAL
 
 struct msgProperties {
   const char *normal;
@@ -73,9 +100,6 @@ std::string Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
 Message::Message() 
 {
-#ifdef HAVE_OPENCV
-  cv::redirectError(handleError);
-#endif // HAVE_OPENCV
 }
 
 Message &Message::get()
@@ -155,8 +179,6 @@ MessageLevel Message::getMessageLevel() const
 {
   return sLevel;
 }
-
-
 
 EnumFlags<MessageOutput> Message::getMessageOutput() const
 {
@@ -242,6 +264,18 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
   }
   return;
 }
+
+void Message::initExternalHandlers()
+{
+  #ifdef HAVE_OPENCV
+    cv::redirectError(handleError);
+  #endif // HAVE_OPENCV
+
+  #ifdef HAVE_GDAL
+    CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
+  #endif // HAVE_GDAL
+}
+
 
 } // End mamespace I3D
 

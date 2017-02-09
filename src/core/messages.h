@@ -11,6 +11,7 @@
 #include <mutex>
 
 #include "core/defs.h"
+
 #include "core/utils.h"
 #include "core/flags.h"
 
@@ -180,6 +181,11 @@ public:
    * \see MessageOutput
    */
   EnumFlags<MessageOutput> getMessageOutput() const;
+
+  /*!
+   * \brief Inicializa los manejadores para las librerias externas
+   */
+  static void initExternalHandlers();
 
 private:
 

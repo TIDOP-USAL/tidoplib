@@ -104,7 +104,7 @@ I3D_EXPORT int getFileDrive(const char *path, char *drive, int size);
  * <h4>Ejemplo</h4>
  * \code
  * char ext[I3D_MAX_EXT];
- * if (getFileName("c:\temp\file.txt", ext, I3D_MAX_EXT) == 0) {
+ * if (getFileExtension("c:\temp\file.txt", ext, I3D_MAX_EXT) == 0) {
  * ...
  * }
  * \endcode

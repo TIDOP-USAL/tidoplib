@@ -1,8 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?> 
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
-  <ItemDefinitionGroup />
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalLibraryDirectories>D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>gdal-2.1.2.lib;gdal-ogr.lib;gdal-ogrsf_frmts.lib;gdal-ogrsf_frmts_sup.lib;gdal-port.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

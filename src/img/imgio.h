@@ -22,11 +22,12 @@ I3D_DEFAULT_WARNINGS
 #include "core/defs.h"
 #include "graphic_entities/color.h"
 #include "geometric_entities/point.h"
+#include "transform.h"
 
 namespace I3D
 {
 
-template<typename T> class Afin;
+#ifdef HAVE_GDAL
 
 class I3D_EXPORT RegisterGdal
 {
@@ -48,7 +49,7 @@ private:
 
 };
 
-
+#endif // HAVE_GDAL
 
 
 /*!
@@ -109,6 +110,8 @@ protected:
 
   GDALDataType mDataType;
 
+  std::string mName;
+
 public:
 
   /*!
@@ -124,13 +127,33 @@ public:
    */
   ~RasterGraphics();
 
-  Status open(char *file, Mode mode = Mode::Read);
-  Status save(char *file);
+  Status open(const char *file, Mode mode = Mode::Read);
 
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   */
+  void read(cv::Mat *image, const WindowI &wLoad, double scale = 1.);
 
-  // Dataset Information
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   */
+  Status write(cv::Mat image, WindowI w = WindowI());
 
-  Status readMetadata();
+  void close();
+
+  /*!
+   * \brief Crea una imagen
+   * \param[in] row Número de filas de la imagen
+   * \param[in] col Número de columnas de la imagen
+   * \param[in] bands Número de bandas de la imagen
+   * \param[in] type 
+   */
+  Status create(int rows, int cols, int bands, int type);
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -150,18 +173,26 @@ public:
    */
   int getBands() const;
 
-#ifdef HAVE_OPENCV
+  /*!
+   * \brief Guarda una imagen con otro nombre o con otro formato
+   * \param[in] file Nombre con el que se guarda el fichero
+   * \return 
+   */
+  Status saveAs(const char *file);
 
-  void loadImage(cv::Mat *image, const WindowI &w, double scale);
+  // Dataset Information
 
-#endif // HAVE_OPENCV
+  Status readMetadata();
 
+  
 
 protected:
 
   virtual void update();
 
 private:
+
+  std::vector<int> panBandMap();
 
 };
 
@@ -194,6 +225,14 @@ public:
   std::array<double, 6> georeference() const;
 
   void setGeoreference(const std::array<double, 6> &georef);
+
+  /*!
+   * \brief Carga el trozo de imagen correspondiente a una ventana
+   * \param[out] image
+   * \param[in] wRead Ventana en coordenadas terreno de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   */
+  void loadImage(cv::Mat *image, const WindowD &wLoad, double scale = 1.);
 
 private:
 
