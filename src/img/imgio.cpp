@@ -21,6 +21,8 @@ void RegisterGdal::init()
 
 /* ---------------------------------------------------------------------------------- */
 
+// Definir datos propios... Iguales a los de OpenCV
+
 int gdalToOpenCv( const GDALDataType gdalType, const int channels )
 {
   int depth;
@@ -133,7 +135,27 @@ const char* getGDALDriverName( char *ext )
 
 RasterGraphics::~RasterGraphics()
 {
-  if (pDataset) GDALClose(pDataset), pDataset = 0; //delete pDataset;
+  char **tmp = 0;
+  if (bTempFile) {
+    char ext[I3D_MAX_EXT];
+    if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) == 0) {
+      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext));
+      GDALDataset *pTempDataSet = driver->CreateCopy(mName.c_str(), pDataset, FALSE, NULL, NULL, NULL);
+      if (!pTempDataSet) {
+        printError("No se pudo crear la imagen");
+      } else {
+        GDALClose((GDALDatasetH)pTempDataSet);
+      }
+      tmp = pDataset->GetFileList();
+    } else printError("No se pudo crear la imagen");
+  }
+
+  if (pDataset) GDALClose(pDataset), pDataset = 0; 
+
+  if (bTempFile) {
+    for (int i = 0; i < sizeof(**tmp); i++)
+      remove(tmp[i]);
+  }
 }
 
 RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
@@ -156,12 +178,27 @@ RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
     gdal_access = GA_ReadOnly;
     break;
   }
+  
+  bTempFile = false;
 
   if (mode == Mode::Create) {
     char ext[I3D_MAX_EXT];
     if (getFileExtension(file, ext, I3D_MAX_EXT) == 0) {
       GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext)); 
-      if (driver == NULL) return Status::SUCCESS;
+      if (driver == NULL) return Status::FAILURE;
+      char **gdalMetadata = driver->GetMetadata();
+      if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
+        // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
+        driver = GetGDALDriverManager()->GetDriverByName("GTiff");
+        char path[I3D_MAX_PATH];
+        GetTempPathA(I3D_MAX_PATH, path);
+        char name[I3D_MAX_FNAME];
+        getFileName("c:\temp\file.txt", name, I3D_MAX_FNAME);
+        char buffer[I3D_MAX_PATH];
+        sprintf_s(buffer, "%s\\%s.tif", path, name);
+        bTempFile = true;
+        mTempName = name;
+      }
     }
   } else {
     pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
@@ -262,8 +299,16 @@ void RasterGraphics::close()
   mName = "";
 }
 
-RasterGraphics::Status create(int rows, int cols, int bands, int type) {
-
+RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, int type) {
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) == 0) {
+    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext));
+    if (driver == NULL) return Status::FAILURE;
+    close(); // Por asegurar que no hay un dataset
+    pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, openCvToGdal(type), NULL/*gdalOpt*/);
+    if (!pDataset) return Status::FAILURE;
+  }
+  return Status::SUCCESS;
 }
 
 #endif // HAVE_OPENCV

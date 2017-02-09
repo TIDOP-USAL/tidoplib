@@ -106,18 +106,22 @@ protected:
    */
   int mBands;
 
+  bool bTempFile;
+
   GDALRasterBand  *pRasterBand;
 
   GDALDataType mDataType;
 
   std::string mName;
 
+  std::string mTempName;
+
 public:
 
   /*!
    * \brief Constructo de la clase RasterGraphics
    */
-  RasterGraphics() : pDataset(0), mRows(0), mCols(0), mBands(0)
+  RasterGraphics() : pDataset(0), mRows(0), mCols(0), mBands(0), bTempFile(false)
   {
     RegisterGdal::init();
   }
