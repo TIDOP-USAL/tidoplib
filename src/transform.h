@@ -19,7 +19,12 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
 #include "opencv2/imgproc.hpp"
+#endif
 
+#ifdef HAVE_GDAL
+#include "ogr_spatialref.h"
+#include "ogr_p.h"
+#include "ogr_api.h"
 #endif
 
 #include "core/defs.h"
@@ -60,8 +65,9 @@ enum class transform_type {
   PROJECTIVE,      /*!< Projectiva */
   HELMERT_3D,      /*!< Helmert 3D */
   POLYNOMIAL,      /*!< Transformación polinómica*/
-  // tipos expeciales
-  MULTIPLE
+  // tipos especiales
+  MULTIPLE,
+  CRS
 };
 
 enum class transform_order {
@@ -2892,6 +2898,273 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, tran
 #endif // HAVE_OPENCV
 
 /*! \} */ // end of trfGroup
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+// Clase sistema de referencia
+class I3D_EXPORT Crs
+{
+private:
+  
+  std::string mEpsg;
+
+  std::string mGrid;
+
+  std::string mGeoid;
+
+  OGRSpatialReference *pCrs;
+
+public:
+
+  Crs(const char *epsg, const char *grid = NULL, const char *geoid = NULL);
+
+  ~Crs();
+
+  const char *getEPSG();
+
+  bool isGeocentric();
+
+  bool isGeographic();
+
+  const OGRSpatialReference &getOGRSpatialReference( ) const { return *pCrs; };
+};
+
+
+
+//... Cache de sistemas de referencia
+// Tiene que ser un singleton
+class CrsCache
+{
+private:
+  
+  static std::unique_ptr<CrsCache> sCrsCache;
+
+  std::vector <std::shared_ptr<Crs>> mCrss;
+
+private:
+
+  /*!
+   * \brief Constructor privado
+   */
+  CrsCache() {}
+
+public:
+
+  ~CrsCache() {}
+
+  // Se impide la copia y asignación
+  CrsCache(CrsCache const&) = delete;
+  void operator=(CrsCache const&) = delete;
+  
+  static void get();
+
+  std::shared_ptr<Crs> getCrs(const char *epsg);
+
+  std::shared_ptr<Crs> findCrs(const char *epsg);
+
+private:
+
+  int add(const char *epsg);
+
+};
+
+// controlar cuando es altura elipsoidal y ortométrica
+
+template<typename Point_t>
+class I3D_EXPORT CrsTransform : public Transform3D<Point_t>
+{
+protected:
+  
+  /*!
+   * \brief Sistema de referencia de entrada
+   */
+  std::shared_ptr<Crs> mEpsgIn;
+
+  /*!
+   * \brief Sistema de referencia de salida
+   */
+  std::shared_ptr<Crs> mEpsgOut;
+
+  OGRCoordinateTransformation *pCoordinateTransformation;
+  
+  OGRCoordinateTransformation *pCoordinateTransformationInv;
+
+private:
+
+public:
+
+  /*!
+   * \brief Constructor
+   */
+  CrsTransform(const Crs &epsgIn, const Crs &epsgOut);
+  
+  CrsTransform(const char *epsgIn, const char *epsgOut);
+
+  ~CrsTransform();
+
+  /*!
+   * \brief Operación no soportada para CrsTransform
+   * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
+   * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
+   * \param[in] error Vector con los errores para cada punto
+   * \return RMSE (Root Mean Square Error)
+   */
+  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+
+  /*!
+   * \brief Transforma un conjunto de puntos a otro sistema de referencia
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
+   */
+  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
+
+  /*!
+   * \brief Transforma un punto a otro sistema de referencia
+   * \param[in] ptIn Punto de entrada
+   * \param[out] ptOut Punto de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \see transform_order
+   */
+  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+
+  /*!
+   * \brief Transforma un punto a otro sistema de referencia
+   * \param[in] ptIn Punto de entrada
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \return Punto de salida
+   * \see transform_order
+   */
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
+
+private:
+
+  void init();
+
+};
+
+
+template<typename Point_t> inline
+CrsTransform<Point_t>::CrsTransform(const Crs &epsgIn, const Crs &epsgOut) 
+  : Transform3D<Point_t>(transform_type::CRS), mEpsgIn(epsgin), mEpsgOut(epsgout), 
+  pCoordinateTransformation(0), pCoordinateTransformationInv(0) 
+{
+  init();
+}
+
+template<typename Point_t> inline
+CrsTransform<Point_t>::CrsTransform(const char *epsgIn, const char *epsgOut) 
+  : Transform3D<Point_t>(transform_type::CRS), mEpsgIn(std::make_shared<Crs>(epsgin)), mEpsgOut(std::make_shared<Crs>(epsgout)), 
+  pCoordinateTransformation(0), pCoordinateTransformationInv(0) 
+{
+  init();
+}
+
+template<typename Point_t> inline
+CrsTransform<Point_t>::~CrsTransform() 
+{
+  if (pCoordinateTransformation) 
+    OGRCoordinateTransformation::DestroyCT( pCoordinateTransformation );
+  if (pCoordinateTransformationInv) 
+    OGRCoordinateTransformation::DestroyCT( pCoordinateTransformationInv );
+  OSRCleanup();
+}
+
+
+template<typename Point_t> inline
+double CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+{
+  printError("'compute' no esta soportado para CrsTransform");
+  I3D_COMPILER_WARNING("'compute' no esta soportado para CrsTransform");
+  return -1.;
+}
+
+
+template<typename Point_t> inline
+void CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+{
+  formatVectorOut(ptsIn, ptsOut);
+  for (int i = 0; i < ptsIn.size(); i++) {
+    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
+  }
+}
+
+
+template<typename Point_t> inline
+void CrsTransform<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+{
+  *ptOut = ptIn;
+  try {
+    if (trfOrder == transform_order::DIRECT){
+      pCoordinateTransformation->Transform(1, &ptOut->x, &ptOut->y, &ptOut->z);
+    } else {
+      pCoordinateTransformationInv->Transform(1, &ptOut->x, &ptOut->y, &ptOut->z);
+    }
+  } catch (std::exception &e) {
+    throw std::runtime_error( e.what() );
+  }
+}
+
+
+template<typename Point_t> inline
+Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+{
+  Point_t r_pt = ptIn;
+  try{
+    if (trfOrder == transform_order::DIRECT){
+      pCoordinateTransformation->Transform(1, &r_pt->x, &r_pt->y, &r_pt->z);
+    } else {
+      pCoordinateTransformationInv->Transform(1, &r_pt->x, &r_pt->y, &r_pt->z);
+    }
+  } catch (std::exception &e) {
+    throw std::runtime_error( e.what() );
+  }
+  return r_pt;
+}
+
+template<typename Point_t> inline
+void CrsTransform<Point_t>::init()
+{
+  pCoordinateTransformation = OGRCreateCoordinateTransformation( mEpsgIn.getOGRSpatialReference(), mEpsgOut.getOGRSpatialReference() );
+  pCoordinateTransformationInv = OGRCreateCoordinateTransformation( mEpsgOut.getOGRSpatialReference(), mEpsgIn.getOGRSpatialReference() );
+  OSRCleanup();
+}
+
+
+//class CrsTransformCache
+//{
+//public:
+//  CrsTransformCache();
+//  ~CrsTransformCache();
+//
+//private:
+//
+//};
+//
+//CrsTransformCache::CrsTransformCache()
+//{
+//}
+//
+//CrsTransformCache::~CrsTransformCache()
+//{
+//}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+
+
 
 } // End namespace I3D
 

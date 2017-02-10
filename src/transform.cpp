@@ -44,4 +44,58 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
 }
 
 
+/* ---------------------------------------------------------------------------------- */
+
+Crs::Crs(const char *epsg, const char *grid, const char *geoid) 
+  : mEpsg(epsg), mGrid(grid), mGeoid(geoid)
+{
+  pCrs->importFromEPSG(atoi(epsg+5));
+  if ( grid ) {
+    char *cprj = NULL;
+    pCrs->exportToProj4(&cprj);
+    std::string crs_prj4 = std::string(cprj) + "+nadgrids=" + mGrid;
+    pCrs->importFromProj4(crs_prj4.c_str());
+    CPLFree(cprj);
+  }
+  if (geoid) {
+    char *prjin = NULL;
+    pCrs->exportToProj4(&prjin);
+    std::string crs_prj4 = std::string(prjin) + "+geoidgrids=" + mGeoid;
+    pCrs->importFromProj4(crs_prj4.c_str());
+    CPLFree(prjin);
+  }
+}
+
+Crs::~Crs()
+{
+  OGRSpatialReference::DestroySpatialReference(pCrs);
+}
+
+const char *Crs::getEPSG() 
+{ 
+  return mEpsg.c_str(); 
+};
+
+bool Crs::isGeocentric()
+{
+  return pCrs->IsGeocentric();
+}
+
+bool Crs::isGeographic()
+{
+  return pCrs->IsGeographic();
+}
+
+
+std::unique_ptr<CrsCache> CrsCache::sCrsCache;
+
+void CrsCache::get()
+{
+  if (sCrsCache.get() == 0) {
+    sCrsCache.reset(new CrsCache());
+
+  }
+}
+
+
 } // End namespace I3D

@@ -29,23 +29,33 @@ namespace I3D
 
 #ifdef HAVE_GDAL
 
+/*!
+ * \brief Clase singleton para registrar los drivers de GDAL
+ *
+ */
 class I3D_EXPORT RegisterGdal
 {
 private:
 
   static std::unique_ptr<RegisterGdal> sRegisterGdal;
 
+  /*!
+   * \brief Constructor privado
+   */
   RegisterGdal() {}
 
 public:
 
   ~RegisterGdal() {}
+
+  // Se impide la copia y asignación
   RegisterGdal(RegisterGdal const&) = delete;
   void operator=(RegisterGdal const&) = delete;
 
+  /*!
+   * \brief Método para iniciar GDAL una unica vez
+   */
   static void init();
-
-private:
 
 };
 
@@ -86,12 +96,6 @@ public:
 protected:
 
   /*!
-   * \brief Dataset de GDAL
-   */
-  //std::unique_ptr<GDALDataset> pDataset;
-  GDALDataset *pDataset;
-
-  /*!
    * \brief Número de filas de la imagen
    */
   int mRows;
@@ -106,24 +110,56 @@ protected:
    */
   int mBands;
 
-  bool bTempFile;
-
-  GDALRasterBand  *pRasterBand;
-
-  GDALDataType mDataType;
-
+  /*!
+   * \brief Nombre del fichero
+   */
   std::string mName;
 
+#ifdef HAVE_GDAL
+
+  /*!
+   * \brief Crea fichero temporal
+   */
+  bool bTempFile;
+
+  /*!
+   * \brief Dataset de GDAL
+   */
+  GDALDataset *pDataset;
+
+  /*!
+   * \brief pRasterBand
+   */
+  GDALRasterBand  *pRasterBand;
+
+  /*!
+   * \brief mDataType
+   */
+  GDALDataType mDataType;
+
+  /*!
+   * \brief Nombre del fichero temporal
+   */
   std::string mTempName;
+
+  GDALDriver *driver;
+
+#endif // HAVE_GDAL
 
 public:
 
   /*!
-   * \brief Constructo de la clase RasterGraphics
+   * \brief Constructor de la clase RasterGraphics
    */
-  RasterGraphics() : pDataset(0), mRows(0), mCols(0), mBands(0), bTempFile(false)
+  RasterGraphics()
+    : mRows(0), mCols(0), mBands(0), mName("")
+#ifdef HAVE_GDAL
+    , bTempFile(false), pDataset(0), pRasterBand(0), mDataType(GDT_Unknown), mTempName("")
+#endif // HAVE_GDAL
   {
+#ifdef HAVE_GDAL
     RegisterGdal::init();
+#endif // HAVE_GDAL
   }
 
   /*!
@@ -131,33 +167,62 @@ public:
    */
   ~RasterGraphics();
 
-  Status open(const char *file, Mode mode = Mode::Read);
-
   /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \brief close
    */
-  void read(cv::Mat *image, const WindowI &wLoad, double scale = 1.);
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   */
-  Status write(cv::Mat image, WindowI w = WindowI());
-
   void close();
+
+  /*!
+   * \brief Abre un archivo imagen
+   * \param file Nombre del fichero
+   * \param mode Modo de apertura del fichero
+   * \return Status
+   * \see Mode
+   */
+  Status open(const char *file, Mode mode = Mode::Read);
 
   /*!
    * \brief Crea una imagen
    * \param[in] row Número de filas de la imagen
    * \param[in] col Número de columnas de la imagen
    * \param[in] bands Número de bandas de la imagen
-   * \param[in] type 
+   * \param[in] type
    */
-  Status create(int rows, int cols, int bands, int type);
+  Status create(int rows, int cols, int bands, int type); //... No me convence el nombre
+
+#ifdef HAVE_OPENCV
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  void read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   */
+  Status write(cv::Mat &image, WindowI w = WindowI());
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
+   */
+  Status write(cv::Mat &image, Helmert2D<PointI> *trf = NULL);
+
+#endif // HAVE_OPENCV
+
+  ///*!
+  // * \brief Guarda una imagen con otro nombre o con otro formato
+  // * \param[in] file Nombre con el que se guarda el fichero
+  // * \return
+  // */
+  //Status saveAs(const char *file);
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -177,18 +242,9 @@ public:
    */
   int getBands() const;
 
-  /*!
-   * \brief Guarda una imagen con otro nombre o con otro formato
-   * \param[in] file Nombre con el que se guarda el fichero
-   * \return 
-   */
-  Status saveAs(const char *file);
-
   // Dataset Information
 
-  Status readMetadata();
-
-  
+  //Status readMetadata();
 
 protected:
 
@@ -230,6 +286,8 @@ public:
 
   void setGeoreference(const std::array<double, 6> &georef);
 
+#ifdef HAVE_OPENCV
+
   /*!
    * \brief Carga el trozo de imagen correspondiente a una ventana
    * \param[out] image
@@ -237,6 +295,8 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
   void loadImage(cv::Mat *image, const WindowD &wLoad, double scale = 1.);
+
+#endif // HAVE_OPENCV
 
 private:
 

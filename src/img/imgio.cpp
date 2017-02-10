@@ -23,7 +23,15 @@ void RegisterGdal::init()
 
 // Definir datos propios... Iguales a los de OpenCV
 
-int gdalToOpenCv( const GDALDataType gdalType, const int channels )
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Obtiene el tipo de dato de OpenCV
+ * \param gdalType Tipo de GDAL
+ * \param channels NÃºmero de canales
+ * \return Tipo de OpenCV
+ */
+int gdalToOpenCv(GDALDataType gdalType, int channels)
 {
   int depth;
   if      ( gdalType == GDT_Byte    ) depth = CV_8U ;   // GDT_Byte    == 1   CV_8U == 0
@@ -41,7 +49,12 @@ int gdalToOpenCv( const GDALDataType gdalType, const int channels )
   return( CV_MAKETYPE(depth,channels) );
 }
 
-GDALDataType openCvToGdal( int cvdt )
+/*!
+ * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
+ * \param cvdt Profundidad de bits
+ * \return GDALDataType
+ */
+GDALDataType openCvToGdal(int cvdt)
 {
   GDALDataType ret;
   if      ( cvdt == CV_8U  )  ret = GDT_Byte;      //  CV_8U  == 0     GDT_Byte == 1
@@ -55,43 +68,14 @@ GDALDataType openCvToGdal( int cvdt )
   return( ret );
 }
 
-// ****************************************************************************
-//   CABECERA DE FUNCION                                                       
-// ****************************************************************************
-//  Nombre.....: dt_gdalBpc()                                           
-//  Descripción: Devuelve los Bytes Per Color de un tipo de dato en Gdal 
-//  Entrada....: - gdalType: Tipo de dato en GDAL: GDT_Byte, GDT_Float32,....
-//  Salida.....: == -1: Tipo de dato inválido. 
-//               >=  0: Número de bytes por color                                          
-// ****************************************************************************
-int gdalBytesPerColor( const GDALDataType gdalType )
-{
-  int bpc;
-  if      ( gdalType == GDT_Byte    ) bpc = 1;   // GDT_Byte    == 1  
-  else if ( gdalType == GDT_UInt16  ) bpc = 2;   // GDT_UInt16  == 2  
-  else if ( gdalType == GDT_Int16   ) bpc = 2;   // GDT_Int16   == 3  
-  else if ( gdalType == GDT_UInt32  ) bpc = 4;   // GDT_UInt32  == 4  
-  else if ( gdalType == GDT_Int32   ) bpc = 4;   // GDT_Int32   == 5  
-  else if ( gdalType == GDT_Float32 ) bpc = 4;   // GDT_Float32 == 6  
-  else if ( gdalType == GDT_Float64 ) bpc = 8;   // GDT_Float64 == 7  
-  else if ( gdalType == GDT_CInt16  ) bpc = 2;   // GDT_CInt16  == 8  
-  else if ( gdalType == GDT_CInt32  ) bpc = 4;   // GDT_CInt32  == 9  
-  else if ( gdalType == GDT_CFloat32) bpc = 4;   // GDT_CFloat32==10   
-  else if ( gdalType == GDT_CFloat64) bpc = 8;   // GDT_CFloat64==11   
-  else                                bpc =-1;   // GDT_Unknown == 0
-  return( bpc );
+#endif // HAVE_OPENCV
 
-}
-
-
-// ****************************************************************************
-//   CABECERA DE FUNCION                                                       
-// ****************************************************************************
-//  Nombre.....: GetGDALDriverName()                              
-//  Descripción: Devuelve el driver GDAL correspondiente en función de la
-//              extensión del archivo que se está leyendo.
-// ****************************************************************************
-const char* getGDALDriverName( char *ext )
+/*!
+ * \brief Devuelve el driver de GDAL
+ * \param ext ExtensiÃ³n del archivo
+ * \return Driver de GDAL
+ */
+const char* getGDALDriverName(const char *ext)
 {
   const char *format;
   if      ( strcmpi( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
@@ -131,10 +115,13 @@ const char* getGDALDriverName( char *ext )
   return( format );*/
 }
 
+#endif // HAVE_GDAL
+
 /* ---------------------------------------------------------------------------------- */
 
 RasterGraphics::~RasterGraphics()
 {
+#ifdef HAVE_GDAL
   char **tmp = 0;
   if (bTempFile) {
     char ext[I3D_MAX_EXT];
@@ -156,6 +143,21 @@ RasterGraphics::~RasterGraphics()
     for (int i = 0; i < sizeof(**tmp); i++)
       remove(tmp[i]);
   }
+#endif // HAVE_GDAL
+}
+
+void RasterGraphics::close()
+{
+#ifdef HAVE_GDAL
+  if (pDataset) GDALClose(pDataset);
+  mDataType = GDT_Unknown;
+  mTempName = "";
+  bTempFile = false;
+#endif // HAVE_GDAL
+  mCols = 0;
+  mRows = 0;
+  mBands = 0;
+  mName = "";
 }
 
 RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
@@ -184,7 +186,7 @@ RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
   if (mode == Mode::Create) {
     char ext[I3D_MAX_EXT];
     if (getFileExtension(file, ext, I3D_MAX_EXT) == 0) {
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext)); 
+      driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext)); 
       if (driver == NULL) return Status::FAILURE;
       char **gdalMetadata = driver->GetMetadata();
       if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
@@ -193,13 +195,15 @@ RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
         char path[I3D_MAX_PATH];
         GetTempPathA(I3D_MAX_PATH, path);
         char name[I3D_MAX_FNAME];
-        getFileName("c:\temp\file.txt", name, I3D_MAX_FNAME);
+        getFileName(file, name, I3D_MAX_FNAME);
         char buffer[I3D_MAX_PATH];
         sprintf_s(buffer, "%s\\%s.tif", path, name);
         bTempFile = true;
-        mTempName = name;
+        mTempName = buffer;
       }
-    }
+      return Status::OPEN_OK; 
+    } else 
+      return Status::OPEN_FAIL;
   } else {
     pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
     if (pDataset == NULL) {
@@ -211,33 +215,53 @@ RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
   }
 }
 
-int RasterGraphics::getRows() const
-{
-  return mRows;
-}
-
-int RasterGraphics::getCols() const
-{
-  return mCols;
-}
-
-int RasterGraphics::getBands() const
-{
-  return mBands;
-}
-
-void RasterGraphics::update()
-{
-  mCols = pDataset->GetRasterXSize();
-  mRows = pDataset->GetRasterYSize();
-  mBands = pDataset->GetRasterCount();
-  pRasterBand = pDataset->GetRasterBand(1);
-  mDataType = pRasterBand->GetRasterDataType();
+RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, int type) {
+  if (driver == NULL) return Status::FAILURE;
+  if (pDataset) GDALClose(pDataset);
+  pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, openCvToGdal(type), NULL/*gdalOpt*/);
+  if (!pDataset) return Status::FAILURE;
+  update();
+  return Status::SUCCESS;
 }
 
 #ifdef HAVE_OPENCV
 
-RasterGraphics::Status RasterGraphics::write(cv::Mat image, WindowI w)
+void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+{
+  WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
+  WindowI wRead = windowIntersection(wAll, wLoad);    // Ventana real que se lee. Se evita leer fuera
+  PointI offset = wRead.pt1 - wLoad.pt1;
+  offset /= scale; // Corregido por la escala
+
+  cv::Size size;
+  //if (scale >= 1.) { // Si interesase hacer el remuetreo posteriormente se harÃ­a asi
+    size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
+    size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+    if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
+  //} else {
+  //  size.width = wRead.getWidth();
+  //  size.height = wRead.getHeight();
+  //  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
+  //}
+
+  //cv::Size size(mRows, mCols);
+  image->create(size, gdalToOpenCv(mDataType, mBands));
+  if ( image->empty() ) return;
+
+  uchar *buff = image->ptr();
+  size_t nPixelSpace = image->elemSize();
+  size_t nLineSpace = image->elemSize() * image->cols;
+  size_t nBandSpace = image->elemSize1();
+
+  CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
+                                    wRead.getWidth(), wRead.getHeight(),
+                                    buff, size.width, size.height, mDataType,
+                                    mBands, panBandMap().data(), (int)nPixelSpace,
+                                    (int)nLineSpace, (int)nBandSpace );
+
+}
+
+RasterGraphics::Status RasterGraphics::write(cv::Mat &image, WindowI w)
 {
   if (pDataset) {
     if (!image.isContinuous()) image = image.clone();
@@ -258,60 +282,51 @@ RasterGraphics::Status RasterGraphics::write(cv::Mat image, WindowI w)
   } else return Status::FAILURE;
 }
 
-RasterGraphics::Status RasterGraphics::saveAs(const char *file)
+RasterGraphics::Status RasterGraphics::write(cv::Mat &image, Helmert2D<PointI> *trf)
 {
-  return Status::SAVE_OK;
-}
+  if (pDataset) {
+    if (!image.isContinuous()) image = image.clone();
+    uchar *buff = image.ptr();
+    size_t nPixelSpace = image.elemSize();
+    size_t nLineSpace = image.elemSize() * image.cols;
+    size_t nBandSpace = image.elemSize1();
 
-void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale)
-{
-  WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
-  WindowI wRead = windowIntersection(wAll, wLoad);    // Ventana real que se lee. Se evita leer fuera
+    Helmert2D<PointI> _trf;
+    if (trf) _trf = *trf;
+    
+    CPLErr cerr = pDataset->RasterIO(GF_Write, _trf.tx, _trf.ty, 
+                                     image.cols, image.rows, buff, 
+                                     image.cols, image.rows, 
+                                     openCvToGdal(image.depth()), mBands, 
+                                     panBandMap().data(), (int)nPixelSpace, 
+                                     (int)nLineSpace, (int)nBandSpace);
 
-  cv::Size size;
-  size.width = wRead.getWidth() / scale;
-  size.height = wRead.getHeight() / scale;
-
-  //cv::Size size(mRows, mCols);
-  image->create(size, gdalToOpenCv(mDataType, mBands));
-  if ( image->empty() ) return;
-
-  uchar *buff = image->ptr();
-  size_t nPixelSpace = image->elemSize();
-  size_t nLineSpace = image->elemSize() * image->cols;
-  size_t nBandSpace = image->elemSize1();
-
-  CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y, 
-                                    wRead.getWidth(), wRead.getHeight(), 
-                                    buff, size.width, size.height, mDataType, 
-                                    mBands, panBandMap().data(), (int)nPixelSpace, 
-                                    (int)nLineSpace, (int)nBandSpace );
-
-}
-
-void RasterGraphics::close()
-{
-  if (pDataset) GDALClose(pDataset);
-  mCols = 0;
-  mRows = 0;
-  mBands = 0;
-  mDataType = GDT_Unknown;
-  mName = "";
-}
-
-RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, int type) {
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) == 0) {
-    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext));
-    if (driver == NULL) return Status::FAILURE;
-    close(); // Por asegurar que no hay un dataset
-    pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, openCvToGdal(type), NULL/*gdalOpt*/);
-    if (!pDataset) return Status::FAILURE;
-  }
-  return Status::SUCCESS;
+    if ( cerr ) return Status::FAILURE;
+    else return Status::SUCCESS;
+  } else return Status::FAILURE;
 }
 
 #endif // HAVE_OPENCV
+
+//RasterGraphics::Status RasterGraphics::saveAs(const char *file)
+//{
+//  return Status::SAVE_OK;
+//}
+
+int RasterGraphics::getRows() const
+{
+  return mRows;
+}
+
+int RasterGraphics::getCols() const
+{
+  return mCols;
+}
+
+int RasterGraphics::getBands() const
+{
+  return mBands;
+}
 
 std::vector<int> RasterGraphics::panBandMap()
 {
@@ -327,6 +342,17 @@ std::vector<int> RasterGraphics::panBandMap()
 #endif
 
   return panBandMap;
+}
+
+void RasterGraphics::update()
+{
+#ifdef HAVE_GDAL
+  mCols = pDataset->GetRasterXSize();
+  mRows = pDataset->GetRasterYSize();
+  mBands = pDataset->GetRasterCount();
+  pRasterBand = pDataset->GetRasterBand(1);
+  mDataType = pRasterBand->GetRasterDataType();
+#endif
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -398,8 +424,6 @@ void GeoRasterGraphics::update()
                           mGeoTransform[3]);
 
 }
-
-#endif // HAVE_GDAL
 
 /* ---------------------------------------------------------------------------------- */
 
