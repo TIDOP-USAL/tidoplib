@@ -2909,6 +2909,7 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, tran
 
 
 /* ---------------------------------------------------------------------------------- */
+#ifdef HAVE_GDAL
 
 // Clase sistema de referencia
 class I3D_EXPORT Crs
@@ -3161,7 +3162,7 @@ void CrsTransform<Point_t>::init()
 
 /* ---------------------------------------------------------------------------------- */
 
-
+#endif // HAVE_GDAL
 
 
 

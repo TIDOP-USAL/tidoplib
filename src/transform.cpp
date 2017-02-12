@@ -46,6 +46,8 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef HAVE_GDAL
+
 Crs::Crs(const char *epsg, const char *grid, const char *geoid) 
   : mEpsg(epsg), mGrid(grid), mGeoid(geoid)
 {
@@ -78,12 +80,12 @@ const char *Crs::getEPSG()
 
 bool Crs::isGeocentric()
 {
-  return pCrs->IsGeocentric();
+  return pCrs->IsGeocentric() != 0;
 }
 
 bool Crs::isGeographic()
 {
-  return pCrs->IsGeographic();
+  return pCrs->IsGeographic()!= 0;
 }
 
 
@@ -93,9 +95,9 @@ void CrsCache::get()
 {
   if (sCrsCache.get() == 0) {
     sCrsCache.reset(new CrsCache());
-
   }
 }
 
+#endif // HAVE_GDAL
 
 } // End namespace I3D
