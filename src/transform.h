@@ -1712,6 +1712,7 @@ void Afin<Point_t>::setParameters(double a, double b, double c, double d, double
   mRotation = (atan2(b, a) + atan2(-c, d) ) / 2.;
   mScaleX = sqrt(a*a + b*b);
   mScaleY = sqrt(c*c + d*d);
+  updateInv();
 }
 
 template<typename Point_t> inline
