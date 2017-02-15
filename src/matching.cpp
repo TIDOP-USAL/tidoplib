@@ -231,9 +231,9 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
     TrfPerspective<cv::Point2f> trfPerps;
     std::vector<double> err;
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
-    while ( rmse > 0.1 ) {
+    while ( rmse > 0.5 ) {
       for (size_t i = 0, j = 0; i < pts1.size(); i++) {
-        if (sqrt(err[i]) > rmse) {
+        if (sqrt(err[i]) > 2*rmse) {
           pts1.erase(pts1.begin() + j);
           pts2.erase(pts2.begin() + j);
           gm->erase(gm->begin() + j);

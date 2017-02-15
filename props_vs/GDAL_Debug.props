@@ -5,10 +5,10 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts;D:\Desarrollo\Libs_sources\gdal-2.1.2\gcore;D:\Desarrollo\Libs_sources\gdal-2.1.2\ogr;D:\Desarrollo\Libs_sources\gdal-2.1.2\port;D:\Desarrollo\Libs_sources\gdal-2.1.2\alg;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aaigrid;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\adrg;D:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Desarrollo\Libs_sources\gdal-2.1.2\frmts;C:\Desarrollo\Libs_sources\gdal-2.1.2\gcore;C:\Desarrollo\Libs_sources\gdal-2.1.2\ogr;C:\Desarrollo\Libs_sources\gdal-2.1.2\port;C:\Desarrollo\Libs_sources\gdal-2.1.2\alg;C:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aaigrid;C:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\adrg;C:\Desarrollo\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gdal-2.1.2.lib;gdal-ogrd.lib;gdal-ogrsf_frmts_supd.lib;gdal-ogrsf_frmtsd.lib;gdal-portd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

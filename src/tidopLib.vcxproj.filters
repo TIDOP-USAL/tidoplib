@@ -249,7 +249,4 @@
       <Filter>Archivos de encabezado\vect</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
 </Project>

@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 
   // Imagen que se guarda
   RasterGraphics imageOut;
-  imageOut.open(img_out.c_str(), RasterGraphics::Mode::Create);
+  imageOut.open(img_out.c_str(), Mode::Create);
   imageOut.create(1000, 1000, 3, 0);
   imageOut.write(mat_out, &trf);
 

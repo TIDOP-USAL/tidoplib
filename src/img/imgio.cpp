@@ -508,16 +508,19 @@ RasterGraphics::Status RasterGraphics::open(const char *file, Mode mode)
   mName = file;
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
-  
+
+#ifdef HAVE_GDAL // Por ahora...
+
   if (const char *driverName = getGDALDriverName(ext)) { // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalRaster>();
-    
   } else {
     // Otros formatos
-
   }
+#endif
+
   mImageFormat->open(file, mode);
   update();
+
 }
 
 RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, int type) {
