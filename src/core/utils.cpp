@@ -470,11 +470,11 @@ void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMat
   fs.release();
 }
 
-void loadBinMat(const char *file, cv::Mat *data)
+int loadBinMat(const char *file, cv::Mat *data)
 {
   FILE* fp = std::fopen(file, "rb");
   if(!fp) {
-    exit(EXIT_FAILURE);
+    return 1;
   }
   //cabecera
   int rows;
@@ -488,13 +488,14 @@ void loadBinMat(const char *file, cv::Mat *data)
   std::fread(aux.data, sizeof(float), rows*cols, fp);
   std::fclose(fp);
   aux.copyTo(*data);
+  return 0;
 }
 
-void saveBinMat(const char *file, cv::Mat &data)
+int saveBinMat(const char *file, cv::Mat &data)
 {
   FILE* fp = std::fopen(file, "wb");
   if(!fp) {
-    exit(EXIT_FAILURE);
+    return 1;
   }
   //cabecera
   int rows = data.rows;
@@ -506,6 +507,7 @@ void saveBinMat(const char *file, cv::Mat &data)
   //Cuerpo
   std::fwrite(data.data, sizeof(float), rows*cols, fp);
   std::fclose(fp);
+  return 0;
 }
 
 #endif // HAVE_OPENCV

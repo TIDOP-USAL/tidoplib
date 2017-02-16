@@ -561,7 +561,15 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 /* ---------------------------------------------------------------------------------- */
 
-
+//VectFile::~VectFile()
+//{}
+//
+//VectFile::Status VectFile::open()
+//{
+//  poDataset = (GDALDataset *) GDALOpen( mFile.c_str(), GA_ReadOnly );
+//  if (poDataset == NULL) return Status::OPEN_ERROR;
+//  else Status::OPEN_OK;
+//}
 
 
 } // End namespace EXPERIMENTAL
