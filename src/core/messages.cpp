@@ -110,6 +110,11 @@ Message &Message::get()
   return *sObjMessage;
 }
 
+const char *Message::getMessage() const 
+{
+  return sLastMessage.c_str();
+}
+
 Message &Message::message(const char *msg, ...)
 {
   if (sObjMessage.get() == 0) {

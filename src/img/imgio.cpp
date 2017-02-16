@@ -648,43 +648,57 @@ Status GeoRasterGraphics::open(const char *file, Mode mode)
   mName = file;
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
-  
+#ifdef HAVE_GDAL
   if (const char *driverName = getGDALDriverName(ext)) { 
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalGeoRaster>();
   } else {
     // Otros formatos
   }
-  
+#endif 
+
   mImageFormat->open(file, mode);
   update();
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const
 {
+#ifdef HAVE_GDAL
   return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->georeference();
+#else
+  return std::array<double, 6>();
+#endif
 }
 
 const char *GeoRasterGraphics::projection() const
 {
+#ifdef HAVE_GDAL
   return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->projection();
+#else
+  return NULL;
+#endif
 }
 
 void GeoRasterGraphics::setGeoreference(const std::array<double, 6> &georef)
 {
+#ifdef HAVE_GDAL
   dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setGeoreference(georef);
+#endif
 }
 
 void GeoRasterGraphics::setProjection(const char *proj)
 {
+#ifdef HAVE_GDAL
   dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setProjection(proj);
+#endif
 }
 
 void GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
 {
+#ifdef HAVE_GDAL
   // No me gusta... Tiene que quedar mas sencillo la lectura de imagenes georeferenciadas.
   dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
-
+#endif
 }
 
 void GeoRasterGraphics::update()

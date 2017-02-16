@@ -22,16 +22,39 @@ namespace I3D
 
 Color::Color(int red, int green, int blue, int alpha)
 {
+  // Para asegurarse que no hay valores fuera de rango.
+  if (red < 0) red = 0;
+  else if (red > 255) red = 255;
+  if (green < 0) green = 0;
+  else if (green > 255) green = 255;
+  if (blue < 0) blue = 0;
+  else if (blue > 255) blue = 255;
+  if (alpha < 0) alpha = 0;
+  else if (alpha > 255) alpha = 255;
   mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
 }
 
 Color::Color(double cyan, double magenta, double yellow, double key) : mColor(0)
 {
+  if (cyan < 0.) cyan = 0.;
+  else if (cyan > 1.) cyan = 1.;
+  if (magenta < 0.) magenta = 0.;
+  else if (magenta > 1) magenta = 1.;
+  if (yellow < 0.) yellow = 0.;
+  else if (yellow > 1.) yellow = 1.;
+  if (key < 0.) key = 0.;
+  else if (key > 1.) key = 1.;
   fromCMYK(cyan, magenta, yellow, key);
 }
 
 Color::Color(double hue, double saturation, double value) : mColor(0)
 {
+  if (hue < 0) hue = 0.;
+  else if (hue >= 360.) hue = 359.;
+  if (saturation < 0.) saturation = 0.;
+  else if (saturation > 100.) saturation = 100.;
+  if (value < 0.) value = 0.;
+  else if (value > 100.) value = 100.;
   fromHSV(hue, saturation, value);
 }
 

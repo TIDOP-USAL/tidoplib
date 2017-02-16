@@ -843,61 +843,61 @@ private:
 };
 
 
-class I3D_EXPORT Entity : public Metadata
-{
-
-
-public:
-  Entity()
-  {
-  }
-
-  ~Entity()
-  {
-  }
-
-private:
-
-};
+//class I3D_EXPORT Entity_ : public Metadata
+//{
+//
+//
+//public:
+//  Entity_()
+//  {
+//  }
+//
+//  ~Entity_()
+//  {
+//  }
+//
+//private:
+//
+//};
 
 
 // clase base para las entidades gráficas. Una entidad punto que se dibuje heredará de GraphicEntity y de Point. 
 // Point, LineString, etc definen la geometría, GraphicEntity las propiedades generales y GPoint, GLineString, ... las especificas 
 
-class I3D_EXPORT GraphicEntity : public Style, public Entity
-{
+//class I3D_EXPORT GraphicEntity : public Style, public Entity_
+//{
+//
+//public:
+//  
+//  GraphicEntity();
+//  ~GraphicEntity();
+//
+//#ifdef HAVE_OPENCV
+//  virtual void draw(cv::Mat &canvas) = 0;
+//#endif
+//};
 
-public:
-  
-  GraphicEntity();
-  ~GraphicEntity();
-
-#ifdef HAVE_OPENCV
-  virtual void draw(cv::Mat &canvas) = 0;
-#endif
-};
-
-/*!
- * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
- */
-class I3D_EXPORT Layer
-{
-  std::list<std::shared_ptr<Entity>> entities;
-
-public:
-  Layer()
-  {
-  }
-
-  ~Layer()
-  {
-  }
-
-
-private:
-  void add(std::shared_ptr<Entity> entity);
-  void del();
-};
+///*!
+// * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
+// */
+//class I3D_EXPORT Layer
+//{
+//  std::list<std::shared_ptr<Entity_>> entities;
+//
+//public:
+//  Layer()
+//  {
+//  }
+//
+//  ~Layer()
+//  {
+//  }
+//
+//
+//private:
+//  void add(std::shared_ptr<Entity_> entity);
+//  void del();
+//};
 
 
 

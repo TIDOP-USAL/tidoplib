@@ -109,6 +109,12 @@ public:
   static Message &get();
 
   /*!
+   * \brief Devuelve la cadena de texto con el mensaje
+   * \return Mensaje
+   */
+  const char *getMessage() const;
+
+  /*!
    * \brief message
    * \param[in] msg
    * \return

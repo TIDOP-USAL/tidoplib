@@ -410,12 +410,12 @@ void StyleLabel::setOffset(double dx, double dy)
 
 /* ---------------------------------------------------------------------------------- */
 
-GraphicEntity::GraphicEntity()
-{
-}
-
-GraphicEntity::~GraphicEntity()
-{
-}
+//GraphicEntity::GraphicEntity()
+//{
+//}
+//
+//GraphicEntity::~GraphicEntity()
+//{
+//}
 
 } // End namespace I3D

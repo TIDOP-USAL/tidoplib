@@ -39,12 +39,12 @@ void Exception::messagef()
 
 /* ---------------------------------------------------------------------------------- */
 
-void throw_exception(const char *error, const char *file, int line, const char *function)
-{
-  throw Exception(error, file, line, function);
-}
+//void throw_exception(const char *error, const char *file, int line, const char *function)
+//{
+//  throw Exception(error, file, line, function);
+//}
 
-Exception error(const char *error, const char *file, int line, const char *function)
+Exception make_exception(const char *error, const char *file, int line, const char *function)
 {
   return Exception(error, file, line, function);
 }
