@@ -46,9 +46,20 @@ int main(int argc, char** argv)
 
   // Imagen que se guarda
   RasterGraphics imageOut;
-  imageOut.open(img_out.c_str(), RasterGraphics::Mode::Create);
+  imageOut.open(img_out.c_str(), Mode::Create);
   imageOut.create(1000, 1000, 3, 0);
   imageOut.write(mat_out, &trf);
+
+  //GdalGeoRaster geo;
+  //geo.open("D://Desarrollo//datos//mtn25_epsg25830_0033-3.tif", Mode::Read);
+  
+  Afin<PointD> TrfAfin;
+  TrfAfin.setParameters(0.67646181611214418, 0.0013147558867338115, -0.0013312380792860341, 0.67646180945385193, 848.026479127, 19.43015351242);
+
+  GeoRasterGraphics geoRaster;
+  geoRaster.open("D://Desarrollo//datos//mtn25_epsg25830_0033-3.tif", Mode::Read);
+  WindowD w_g(PointD(377386.335, 4801010.256), PointD(380324.165, 4803176.748));
+  geoRaster.read(&mat_out, w_g, scale);
 
   return 0;
 }
