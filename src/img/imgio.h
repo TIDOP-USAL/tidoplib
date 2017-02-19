@@ -315,7 +315,7 @@ private:
   /*!
    * \brief Transformación afin que relacción las coordenadas terreno con las pixel
    */
-  std::unique_ptr<Afin<PointD>> mTrfAfin;
+  std::unique_ptr<Affine<PointD>> mTrfAffine;
 
   /*!
    * \brief Proyección
@@ -335,7 +335,7 @@ public:
     mGeoTransform[3] = 0.;
     mGeoTransform[4] = 0.;
     mGeoTransform[5] = -1.;
-    mTrfAfin = std::make_unique<Afin<PointD>>();
+    mTrfAffine = std::make_unique<Affine<PointD>>();
   }
 
   /*!

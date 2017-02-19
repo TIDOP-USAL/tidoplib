@@ -351,6 +351,15 @@ public:
   void toHSL(double *hue, double *saturation, double *lightness) const;
 
   /*!
+   * \brief Convierte un color a RGBA
+   * \param[out] red Componente roja
+   * \param[out] green Componente verde
+   * \param[out] blue Componente azul
+   * \param[out] alpha Canal alfa. Opcional
+   */
+  void toRGB(int *red, int *green, int *blue, int *alpha = NULL) const;
+
+  /*!
    * \brief Convierte un color a luminancia
    * \return Valor de la luminancia entre 0 y 255
    */
@@ -374,8 +383,6 @@ public:
    */
   static Color randomColor();
 };
-
-
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */

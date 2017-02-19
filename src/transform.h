@@ -61,7 +61,7 @@ enum class transform_type {
   TRANSLATE,       /*!< Desplazamiento. */
   ROTATION,        /*!< Giro. */
   HELMERT_2D,      /*!< Helmert 2D */
-  AFIN,            /*!< Afin */
+  AFFINE,          /*!< Afin */
   PERSPECTIVE,     /*!< Perspectiva */
   PROJECTIVE,      /*!< Projectiva */
   HELMERT_3D,      /*!< Helmert 3D */
@@ -145,7 +145,7 @@ public:
    * \param[in] npoints Número de puntos para calcular la transformación
    * \return Verdadero si son puntos suficientes
    */
-  bool isNumberOfPointsValid(int npoints) const { return npoints >= mMinPoint; }
+  virtual bool isNumberOfPointsValid(int npoints) const { return npoints >= mMinPoint; }
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -156,6 +156,16 @@ public:
    * \see transform_order, transform_status
    */
   virtual transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const = 0;
+
+  /*!
+   * \brief Aplica la transformación a un conjunto de puntos aplicando paralelismo
+   * \param[in] ptsIn Puntos de entrada
+   * \param[out] ptsOut Puntos de salida
+   * \param[in] trfOrder Transformación directa (por defecto) o inversa
+   * \return transform_status
+   * \see transform_order, transform_status
+   */
+  virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -196,26 +206,7 @@ public:
    * \param error Vector con los errores para cada punto
    * \return RMSE
    */
-  double rootMeanSquareError(const std::vector<Point_t> &ptsIn, const std::vector<Point_t> &ptsOut, std::vector<double> *error = NULL)
-  {
-    size_t n = ptsIn.size();
-    std::vector<Point_t> pts_out(n);
-    std::vector<double> err(n);
-    double sumErr = 0.;
-
-    //... Sería mejor añadirlo en el propio calculo de los parámetros?
-    if (compute(ptsIn, ptsOut)) {
-      for (size_t i = 0; i < n; i++) {
-        transform(ptsIn[i], &pts_out[i]);
-        pts_out[i] -= ptsOut[i];
-        err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
-        sumErr += err[i];
-      }
-      if (error) *error = err;
-      return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
-    }
-    return 0.;
-  }
+  double rootMeanSquareError(const std::vector<Point_t> &ptsIn, const std::vector<Point_t> &ptsOut, std::vector<double> *error = NULL);
 
 protected:
 
@@ -230,12 +221,7 @@ protected:
    * \param[out] ptsOut Puntos de salida
    */
   template<typename T2> 
-  void formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const {
-    if (&ptsIn != ptsOut && ptsIn.size() != ptsOut->size()) {
-      ptsOut->clear();
-      ptsOut->resize(ptsIn.size());
-    }
-  }
+  void formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const;
 
   /*!
    * \brief root-mean-square error
@@ -244,25 +230,79 @@ protected:
    * \param error Vector con los errores para cada punto
    * \return RMSE
    */
-  double _rootMeanSquareError(const std::vector<Point_t> &ptsIn, const std::vector<Point_t> &ptsOut, std::vector<double> *error = NULL)
-  {
-    size_t n = ptsIn.size();
-    std::vector<Point_t> pts_out(n);
-    std::vector<double> err(n);
-    double sumErr = 0.;
+  double _rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
+                              const std::vector<Point_t> &ptsOut, 
+                              std::vector<double> *error = NULL);
+};
 
-    for (int i = 0; i < n; i++) {
+
+template<typename Point_t> inline
+transform_status Transform<Point_t>::transformParallel( const std::vector<Point_t> &ptsIn, 
+                                                        std::vector<Point_t> *ptsOut, 
+                                                        transform_order trfOrder = transform_order::DIRECT) const
+{
+  formatVectorOut(ptsIn, ptsOut);
+  transform_status r_status;
+  parallel_for(0, static_cast<int>(ptsIn.size()), [&](int i) {
+    r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
+    if ( r_status == transform_status::FAILURE ) return;
+  });
+  return r_status;
+}
+
+template<typename Point_t> inline
+double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
+                                               const std::vector<Point_t> &ptsOut, 
+                                               std::vector<double> *error = NULL)
+{
+  size_t n = ptsIn.size();
+  std::vector<Point_t> pts_out(n);
+  std::vector<double> err(n);
+  double sumErr = 0.;
+
+  //... Sería mejor añadirlo en el propio calculo de los parámetros?
+  if (compute(ptsIn, ptsOut)) {
+    for (size_t i = 0; i < n; i++) {
       transform(ptsIn[i], &pts_out[i]);
       pts_out[i] -= ptsOut[i];
       err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
       sumErr += err[i];
     }
-
     if (error) *error = err;
-
     return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
   }
-};
+  return 0.;
+}
+
+template<typename Point_t> template<typename T2> inline
+void Transform<Point_t>::formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const {
+  if (&ptsIn != ptsOut && ptsIn.size() != ptsOut->size()) {
+    ptsOut->clear();
+    ptsOut->resize(ptsIn.size());
+  }
+}
+
+template<typename Point_t> inline
+double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
+                                                const std::vector<Point_t> &ptsOut, 
+                                                std::vector<double> *error = NULL)
+{
+  size_t n = ptsIn.size();
+  std::vector<Point_t> pts_out(n);
+  std::vector<double> err(n);
+  double sumErr = 0.;
+
+  for (int i = 0; i < n; i++) {
+    transform(ptsIn[i], &pts_out[i]);
+    pts_out[i] -= ptsOut[i];
+    err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
+    sumErr += err[i];
+  }
+
+  if (error) *error = err;
+
+  return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -325,6 +365,8 @@ public:
    */
   void clear() { mTransf.clear(); }
 
+  bool isNumberOfPointsValid(int npoints) const override;
+
   /*!
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
@@ -364,6 +406,14 @@ public:
   Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
+
+template<typename Point_t> inline
+bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
+{ 
+  printError("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
+  I3D_COMPILER_WARNING("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
+  return true;
+}
 
 template<typename Point_t> inline
 double TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
@@ -1408,7 +1458,7 @@ void Helmert2D<Point_t>::update()
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief Transformación Afin
+ * \brief Transformación Affine
  *
  * La Transformación Afín expresa la relación que existe (o la transformación que es 
  * preciso realizar) entre dos sistemas cartesianos que discrepan en la situación del 
@@ -1425,7 +1475,7 @@ void Helmert2D<Point_t>::update()
  * \f[ y' = c * x + d * y + y0\f]
  */
 template<typename Point_t>
-class I3D_EXPORT Afin : public Transform2D<Point_t>
+class I3D_EXPORT Affine : public Transform2D<Point_t>
 {
 public:
 
@@ -1508,8 +1558,8 @@ public:
   /*!
    * \brief Constructor por defecto
    */
-  Afin()
-    : Transform2D<Point_t>(transform_type::AFIN, 3), tx(0.), ty(0.), mScaleX(1.), mScaleY(1.), mRotation(0.)
+  Affine()
+    : Transform2D<Point_t>(transform_type::AFFINE, 3), tx(0.), ty(0.), mScaleX(1.), mScaleY(1.), mRotation(0.)
   {
     update();
   }
@@ -1522,13 +1572,13 @@ public:
    * \param[in] scaleY Escala en el eje Y
    * \param[in] rotation Rotación
    */
-  Afin(double tx, double ty, double scaleX, double scaleY, double rotation)
-    : Transform2D<Point_t>(transform_type::AFIN, 3), tx(tx), ty(ty), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
+  Affine(double tx, double ty, double scaleX, double scaleY, double rotation)
+    : Transform2D<Point_t>(transform_type::AFFINE, 3), tx(tx), ty(ty), mScaleX(scaleX), mScaleY(scaleY), mRotation(rotation)
   {
     update();
   }
 
-  //~Afin();
+  //~Affine();
 
   /*!
    * \brief Calcula la transformación Helmert 2D entre dos sistemas
@@ -1653,7 +1703,7 @@ private:
 
 
 template<typename Point_t> inline
-double Afin<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+double Affine<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
 {
   double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
@@ -1715,7 +1765,7 @@ double Afin<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vecto
 }
 
 template<typename Point_t> inline
-transform_status Afin<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+transform_status Affine<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
   transform_status r_status;
   this->formatVectorOut(ptsIn, ptsOut);
@@ -1727,7 +1777,7 @@ transform_status Afin<Point_t>::transform(const std::vector<Point_t> &ptsIn, std
 }
 
 template<typename Point_t> inline
-transform_status Afin<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+transform_status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
   transform_status r_status = transform_status::SUCCESS;
   sub_type x_aux = ptIn.x;
@@ -1747,7 +1797,7 @@ transform_status Afin<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, t
 }
 
 template<typename Point_t> inline
-Point_t Afin<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Affine<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
   Point_t r_pt;
   if (trfOrder == transform_order::DIRECT){
@@ -1762,7 +1812,7 @@ Point_t Afin<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) 
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::getParameters(double *_a, double *_b, double *_c, double *_d)
+void Affine<Point_t>::getParameters(double *_a, double *_b, double *_c, double *_d)
 {
   *_a = a;
   *_b = b;
@@ -1772,7 +1822,7 @@ void Afin<Point_t>::getParameters(double *_a, double *_b, double *_c, double *_d
 
 
 template<typename Point_t> inline
-void Afin<Point_t>::setParameters(double tx, double ty, double scaleX, double scaleY, double rotation)
+void Affine<Point_t>::setParameters(double tx, double ty, double scaleX, double scaleY, double rotation)
 {
   this->tx = tx;
   this->ty = ty;
@@ -1783,7 +1833,7 @@ void Afin<Point_t>::setParameters(double tx, double ty, double scaleX, double sc
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::setParameters(double a, double b, double c, double d, double tx, double ty)
+void Affine<Point_t>::setParameters(double a, double b, double c, double d, double tx, double ty)
 {
   this->a = a;
   this->b = b;
@@ -1798,28 +1848,28 @@ void Afin<Point_t>::setParameters(double a, double b, double c, double d, double
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::setRotation(double rotation)
+void Affine<Point_t>::setRotation(double rotation)
 {
   mRotation = rotation;
   update();
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::setScaleX(double scaleX)
+void Affine<Point_t>::setScaleX(double scaleX)
 {
   mScaleX = scaleX;
   update();
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::setScaleY(double scaleY)
+void Affine<Point_t>::setScaleY(double scaleY)
 {
   mScaleY = scaleY;
   update();
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::update()
+void Affine<Point_t>::update()
 {
   a =  mScaleX * cos(mRotation);
   b = -mScaleY * sin(mRotation);
@@ -1830,7 +1880,7 @@ void Afin<Point_t>::update()
 }
 
 template<typename Point_t> inline
-void Afin<Point_t>::updateInv()
+void Affine<Point_t>::updateInv()
 {
   // Transformación inversa
   double det = a * d - c * b;
@@ -2983,21 +3033,21 @@ I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, tran
     else
       cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
-  case I3D::transform_type::AFIN:
-    Afin<Point_t> afinTrf = dynamic_cast<Afin<Point_t>>(trf);
+  case I3D::transform_type::Affine:
+    Affine<Point_t> affineTrf = dynamic_cast<Affine<Point_t>>(trf);
     double r00, r10, r01, r11;
-    afinTrf.getParameters(&r00, &r10, &r01, &r11);
-    cv::Mat afinMat( 2, 3, CV_32FC1 );
-    afinMat.at<float>(0, 0) = r00;
-    afinMat.at<float>(0, 1) = r10;
-    afinMat.at<float>(0, 2) = afinTrf.x0;
-    afinMat.at<float>(1, 0) = r01;
-    afinMat.at<float>(1, 1) = r11;
-    afinMat.at<float>(1, 2) = afinTrf.y0;
+    affineTrf.getParameters(&r00, &r10, &r01, &r11);
+    cv::Mat affMat( 2, 3, CV_32FC1 );
+    affMat.at<float>(0, 0) = r00;
+    affMat.at<float>(0, 1) = r10;
+    affMat.at<float>(0, 2) = affineTrf.x0;
+    affMat.at<float>(1, 0) = r01;
+    affMat.at<float>(1, 1) = r11;
+    affMat.at<float>(1, 2) = affineTrf.y0;
     if (trfOrder == transform_order::DIRECT)
-      cv::warpAffine(in, out, afinMat, in.size(), cv::INTER_LINEAR);
+      cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
     else
-      cv::warpAffine(in, out, afinMat.inv(), in.size(), cv::INTER_LINEAR);
+      cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
   case I3D::transform_type::PERSPECTIVE:
     TrfPerspective<Point_t> perspTrf = dynamic_cast<TrfPerspective<Point_t>>(trf);

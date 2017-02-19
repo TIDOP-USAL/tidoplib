@@ -53,8 +53,8 @@ int main(int argc, char** argv)
   //GdalGeoRaster geo;
   //geo.open("D://Desarrollo//datos//mtn25_epsg25830_0033-3.tif", Mode::Read);
   
-  Afin<PointD> TrfAfin;
-  TrfAfin.setParameters(0.67646181611214418, 0.0013147558867338115, -0.0013312380792860341, 0.67646180945385193, 848.026479127, 19.43015351242);
+  Affine<PointD> TrfAffine;
+  TrfAffine.setParameters(0.67646181611214418, 0.0013147558867338115, -0.0013312380792860341, 0.67646180945385193, 848.026479127, 19.43015351242);
 
   GeoRasterGraphics geoRaster;
   geoRaster.open("D://Desarrollo//datos//mtn25_epsg25830_0033-3.tif", Mode::Read);

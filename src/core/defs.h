@@ -37,6 +37,8 @@
 #define I3D_RAD_TO_GRAD	63.661977236758134307553505349006
 #define I3D_GRAD_TO_RAD	0.0157079632679489661923132169164
 
+
+
 #if defined WIN32
 // Para que no den problemas std::numeric_limits<T>().max()
 #  ifndef NOMINMAX
@@ -54,6 +56,8 @@
 #define I3D_DOUBLE_MIN -std::numeric_limits<double>().max()
 #define I3D_FLOAT_MAX std::numeric_limits<float>().max()
 #define I3D_FLOAT_MIN -std::numeric_limits<float>().max()
+
+
 
 #if defined WIN32 || defined _WIN32
 #  ifdef _MSC_VER
@@ -91,6 +95,8 @@
 #  define I3D_EXPORT
 #endif
 
+
+
 #ifndef I3D_EXTERN_C
 #  ifdef __cplusplus
 #    define I3D_EXTERN_C extern "C"
@@ -119,13 +125,15 @@
 #  endif
 #endif
 
+
+
 // Mensajes de error y warning para mostrar al compilar
 
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 
 #if _MSC_VER
-#  define COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#  define I3D_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
 // Ver si funciona _Pragma()... Da los errores:
 // /home/esteban/desarrollo/tidoplib/src/transform.h:331: error: _Pragma takes a parenthesized string literal
@@ -138,6 +146,8 @@
 #  define I3D_COMPILER_WARNING(msg) //_Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
+
+
 // __FUNCTION__ no es estandar (Es de Visual Studio).
 // __func__ es valida a partir de C99 / C++11
 #if defined (__GNUC__) || __cplusplus >= 201103L
@@ -148,6 +158,8 @@
 #  define I3D_FUNCTION ""
 #endif
 //__FUNCSIG__
+
+
 
 // Desactivar/activar warnings
 #if defined _MSC_VER
@@ -161,6 +173,9 @@
 #  define I3D_DISABLE_WARNING(warn)
 #  define I3D_ENABLE_WARNING(warn)
 #endif
+
+
+
 // MACROS
 
 /*!

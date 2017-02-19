@@ -376,7 +376,7 @@ void GdalGeoRaster::read(cv::Mat *image, const WindowD &wTerrain, double scale)
 
   // Se transforma la ventana a coordenadas imagen
   WindowD wLoad;
-  transform(wTerrain, &wLoad, mTrfAfin.get(), transform_order::INVERSE);
+  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
 
   WindowI wRead(wLoad);
   Helmert2D<PointI> trf;
@@ -401,7 +401,7 @@ void GdalGeoRaster::update()
     mProjection = prj;
   }
 
-  mTrfAfin->setParameters(mGeoTransform[1], 
+  mTrfAffine->setParameters(mGeoTransform[1], 
                           mGeoTransform[2], 
                           mGeoTransform[4], 
                           mGeoTransform[5], 
