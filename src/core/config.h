@@ -17,7 +17,7 @@
 
 #undef HAVE_RAW // libraw
 
-#undef HAVE_EIGEN // De momento no se usa
+#define HAVE_EIGEN // De momento no se usa
 
 // OpenMP
 #undef HAVE_OMP // De momento no se usa

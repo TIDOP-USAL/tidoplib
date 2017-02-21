@@ -264,7 +264,7 @@ private:
 #  define printWarning(...)
 #  define printError(...)
 
-#endif  
+#endif
 
 
 } // End namespace I3D

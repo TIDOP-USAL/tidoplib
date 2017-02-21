@@ -11,10 +11,6 @@
 
 #include "core/config.h"
 
-#ifdef HAVE_EIGEN
-#include <Eigen/SVD>
-#endif
-
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/calib3d.hpp"
@@ -52,7 +48,15 @@ namespace I3D
  */
 I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
-
+/*!
+ * \brief Singular value decomposition 
+ * \param[in] nRows Número de filas
+ * \param[in] nCols ´Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Tipos de transformaciones
@@ -135,10 +139,12 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) = 0;
+  virtual transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL, double *rmse = NULL) = 0;
 
   /*!
    * \brief Determina si el numero de puntos son suficientes para calcular la transformación
@@ -261,7 +267,7 @@ double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn
   double sumErr = 0.;
 
   //... Sería mejor añadirlo en el propio calculo de los parámetros?
-  if (compute(ptsIn, ptsOut)) {
+  if (compute(ptsIn, ptsOut) == transform_status::SUCCESS) { //... Revisar esto
     for (size_t i = 0; i < n; i++) {
       transform(ptsIn[i], &pts_out[i]);
       pts_out[i] -= ptsOut[i];
@@ -371,10 +377,12 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL, double *rmse = NULL) override;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -416,11 +424,11 @@ bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
 }
 
 template<typename Point_t> inline
-double TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error, double *rmse)
 {
   printError("'compute' no esta soportado para TrfMultiple");
   I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
-  return -1.;
+  return transform_status::FAILURE;
 }
 
 template<typename Point_t> inline
@@ -506,10 +514,12 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override = 0;
+  virtual transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL, double *rmse = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -591,10 +601,12 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL, double *rmse = NULL) override;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -627,7 +639,9 @@ public:
 };
 
 template<typename Point_t> inline
-transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+                                                    std::vector<Point_t> *ptsOut, 
+                                                    transform_order trfOrder) const
 {
   try {
     if (trfOrder == transform_order::DIRECT)
@@ -643,7 +657,9 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
 }
 
 template<typename Point_t> inline
-transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn, 
+                                                    Point_t *ptOut, 
+                                                    transform_order trfOrder) const
 {
   std::vector<Point_t> vIn, vOut;
   vIn.push_back(ptIn);
@@ -670,26 +686,33 @@ Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, transform_order 
 }
 
 template<typename Point_t> inline
-double TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                                  const std::vector<Point_t> &pts2, 
+                                                  std::vector<double> *error, 
+                                                  double *rmse)
 {
   if (error) error = NULL; // Habria que poder calcular el error
+  if (rmse) rmse = NULL;
+
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
-  if (n1 != n2) {
-    printError("Número de puntos distinto en cada conjunto de puntos"); 
-  } else {
-    // Controlar estos errores a nivel general
-    if (this->isNumberOfPointsValid(n1)) {
 
-      H = cv::findHomography(pts1, pts2, cv::RANSAC);
-      //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
-      //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
-      //cv::Mat H2 = cv::findHomography(pts1, pts2);
-      //... determinar error
-    } else
-      printError("Número de puntos no valido. Se necesitan %i puntos para poder calcular los parámetros de la transformación", this->mMinPoint);
+  if (n1 != n2) {
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
   }
-  return H.empty() ? -1. : 1.;
+
+  if (this->isNumberOfPointsValid(n1)) {
+    H = cv::findHomography(pts1, pts2, cv::RANSAC);
+    //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
+    //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
+    //cv::Mat H2 = cv::findHomography(pts1, pts2);
+    //... determinar error
+    return H.empty() ? transform_status::FAILURE : transform_status::SUCCESS;
+  } else {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
+  }
 }
 
 #endif // HAVE_OPENCV
@@ -752,10 +775,15 @@ public:
    * de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL, 
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una traslación
@@ -765,7 +793,9 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const std::vector<Point_t> &ptsIn, 
+                             std::vector<Point_t> *ptsOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   ///*!
   // * \brief Transforma un conjunto de segmentos en otro aplicando una traslación
@@ -783,7 +813,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una traslación a un punto
@@ -797,56 +828,70 @@ public:
 };
 
 template<typename Point_t> inline
-double Translate<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Translate<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                             const std::vector<Point_t> &pts2, 
+                                             std::vector<double> *error, 
+                                             double *rmse)
 {
-  double ret = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
-  //if (n1 != n2) I3D_THROW_ERROR("Número de puntos distinto en cada conjunto de puntos");
+  
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)){
-      int m = n1 * this->mDimensions, n = 4;
-      double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
-      cv::Mat C(n, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pb++ = pts2[i].x;
-          *pa++ = 0;
-          *pa++ = pts1[i].y;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pb++ = pts2[i].y;
-        }
-
-        cv::Mat A(m, n, CV_64F, a);
-        cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, cv::DECOMP_SVD);
-        tx = static_cast<sub_type>(C.at<double>(2));
-        ty = static_cast<sub_type>(C.at<double>(3));
-
-        ret = this->_rootMeanSquareError(pts1, pts2, error);
-
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] a;
-      delete[] b;
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return ret;
+
+  transform_status status = transform_status::SUCCESS;
+  int m = n1 * this->mDimensions, n = 4;
+  double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
+  double *c = new double[n];
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pb++ = pts2[i].x;
+      *pa++ = 0;
+      *pa++ = pts1[i].y;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pb++ = pts2[i].y;
+    }
+
+    solveSVD(m, n, a, b, c);
+    tx = c[2];
+    ty = c[3];
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+    
+
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+
+  delete[] a;
+  delete[] b;
+  delete[] c;
+
+  return status;
 }
 
 template<typename Point_t> inline
-transform_status Translate<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+transform_status Translate<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+                                               std::vector<Point_t> *ptsOut, 
+                                               transform_order trfOrder) const
 {
   this->formatVectorOut(ptsIn, ptsOut);
-  transform_status r_status;
+  transform_status r_status = transform_status::SUCCESS;
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
     if ( r_status == transform_status::FAILURE ) break;
@@ -865,7 +910,9 @@ transform_status Translate<Point_t>::transform(const std::vector<Point_t> &ptsIn
 //}
 
 template<typename Point_t> inline
-transform_status Translate<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+transform_status Translate<Point_t>::transform(const Point_t &ptIn, 
+                                               Point_t *ptOut, 
+                                               transform_order trfOrder) const
 {
   transform_status r_status = transform_status::SUCCESS;
   try {
@@ -972,10 +1019,15 @@ public:
    * \endcode
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL, 
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Devuelve el ángulo de la rotación
@@ -1008,7 +1060,9 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const std::vector<Point_t> &ptsIn, 
+                             std::vector<Point_t> *ptsOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
@@ -1018,7 +1072,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
@@ -1027,7 +1082,8 @@ public:
    * \return Punto de salida
    * \see transform_order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, 
+                    transform_order trfOrder = transform_order::DIRECT) const override;
 
 private:
 
@@ -1038,44 +1094,57 @@ private:
 };
 
 template<typename Point_t> inline
-double Rotation<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                            const std::vector<Point_t> &pts2, 
+                                            std::vector<double> *error, 
+                                            double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
+  
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)){
-      int m = n1 * this->mDimensions, n = 2;
-      double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
-      cv::Mat C(2, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = -pts1[i].y;
-          *pb++ = pts2[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = pts1[i].x;
-          *pb++ = pts2[i].y;
-        }
-        
-        cv::Mat A(m, n, CV_64F, a);
-        cv::Mat B(m, 1, CV_64F, b);
-        cv::solve(A, B, C, cv::DECOMP_SVD);
-        r1 = static_cast<sub_type>(C.at<double>(0));
-        r2 = static_cast<sub_type>(C.at<double>(1));
-        angle = acos(r1);
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
 
-        rmse = _rootMeanSquareError(pts1, pts2, error);
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] a;
-      delete[] b;
-    }
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+
+  transform_status status = transform_status::SUCCESS;
+  int m = n1 * this->mDimensions, n = 2;
+  double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
+  double *c = new double[n];
+
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = -pts1[i].y;
+      *pb++ = pts2[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = pts1[i].x;
+      *pb++ = pts2[i].y;
+    }
+    
+    solveSVD(m, n, a, b, c);
+    r1 = c[0];
+    r2 = c[1];
+    angle = acos(r1);
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+
+  delete[] a;
+  delete[] b;
+  delete[] c;
+
+  return status;
 }
 
 template<typename Point_t> inline
@@ -1235,10 +1304,15 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL, 
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 2D
@@ -1323,60 +1397,73 @@ private:
 };
 
 template<typename Point_t> inline
-double Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                             const std::vector<Point_t> &pts2, 
+                                             std::vector<double> *error,
+                                             double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)){
-      int m = n1 * this->mDimensions, n = 4;
-      double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
-      cv::Mat C(n, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pb++ = pts2[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = -pts1[i].x;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pb++ = pts2[i].y;
-        }
-
-        cv::Mat mA(m, n, CV_64F, A);
-        cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, cv::DECOMP_SVD);
-
-        a = C.at<double>(0);
-        b = C.at<double>(1);
-        tx = C.at<double>(2);
-        ty = C.at<double>(3);
-
-        mRotation = atan2(b, a);
-        mScale = sqrt(a*a + b*b);
-
-        rmse = this->_rootMeanSquareError(pts1, pts2, error);
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] A;
-      delete[] B;
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+    
+  transform_status status = transform_status::SUCCESS;
+  int m = n1 * this->mDimensions, n = 4;
+  double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
+  double *c = new double[n];
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pb++ = pts2[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = -pts1[i].x;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pb++ = pts2[i].y;
+    }
+
+    solveSVD(m, n, A, B, c);
+
+    a = c[0];
+    b = c[1];
+    tx = c[2];
+    ty = c[3];
+
+    mRotation = atan2(b, a);
+    mScale = sqrt(a*a + b*b);
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+  delete[] A;
+  delete[] B;
+  delete[] c;
+
+  return status;
 }
 
 template<typename Point_t> inline
-transform_status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
+transform_status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+                                               std::vector<Point_t> *ptsOut, 
+                                               transform_order trfOrder) const
 {
-  transform_status r_status;
+  transform_status r_status = transform_status::SUCCESS;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
@@ -1386,7 +1473,8 @@ transform_status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn
 }
 
 template<typename Point_t> inline
-transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
+                                               transform_order trfOrder) const
 {
   transform_status r_status = transform_status::SUCCESS;
   sub_type x_aux = ptIn.x;
@@ -1585,10 +1673,15 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL,
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una transformación afín
@@ -1601,7 +1694,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una transformación afín a un punto
@@ -1611,7 +1705,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una transformación afín a un punto
@@ -1703,71 +1798,84 @@ private:
 
 
 template<typename Point_t> inline
-double Affine<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                          const std::vector<Point_t> &pts2, 
+                                          std::vector<double> *error,
+                                          double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)){
-      int m = n1 * this->mDimensions, n = 6;
-      double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
-      cv::Mat C(n, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pb++ = pts2[i].x;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = pts1[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pb++ = pts2[i].y;
-        }
-
-        cv::Mat mA(m, n, CV_64F, A);
-        cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, cv::DECOMP_SVD);
-
-        a = C.at<double>(0);
-        b = C.at<double>(1);
-        c = C.at<double>(2);
-        d = C.at<double>(3);
-        tx = C.at<double>(4);
-        ty = C.at<double>(5);
-        
-        updateInv();
-        //double f = atan2( c, a );
-        //double w = atan2( -b, d );
-
-        mRotation = (atan2(c, a) + atan2(-b, d) ) / 2.; //... Revisar lo de un unico giro
-        mScaleX = sqrt(a*a + c*c);
-        mScaleY = sqrt(b*b + d*d);
-
-        rmse = _rootMeanSquareError(pts1, pts2, error);
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] A;
-      delete[] B;
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+
+  transform_status status = transform_status::SUCCESS;
+
+  int m = n1 * this->mDimensions, n = 6;
+  double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
+  double *C = new double[n];
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pb++ = pts2[i].x;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = pts1[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pb++ = pts2[i].y;
+    }
+
+    solveSVD(m, n, A, B, C);
+
+    a = C[0];
+    b = C[1];
+    c = C[2];
+    d = C[3];
+    tx = C[4];
+    ty = C[5];
+    
+    updateInv();
+    //double f = atan2( c, a );
+    //double w = atan2( -b, d );
+
+    mRotation = (atan2(c, a) + atan2(-b, d) ) / 2.; //... Revisar lo de un unico giro
+    mScaleX = sqrt(a*a + c*c);
+    mScaleY = sqrt(b*b + d*d);
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+
+  delete[] A;
+  delete[] B;
+  delete[] C;
+
+  return status;
 }
 
 template<typename Point_t> inline
 transform_status Affine<Point_t>::transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder) const
 {
-  transform_status r_status;
+  transform_status r_status = transform_status::SUCCESS;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
@@ -2039,10 +2147,15 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL,
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una 
@@ -2057,7 +2170,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una transformación proyectiva a un punto
@@ -2067,7 +2181,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Aplica una transformación proyectiva a un punto
@@ -2076,7 +2191,8 @@ public:
    * \return Punto de salida
    * \see transform_order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, 
+                    transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -2104,64 +2220,76 @@ private:
 
 
 template<typename Point_t> inline
-double Projective<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                              const std::vector<Point_t> &pts2, 
+                                              std::vector<double> *error, 
+                                              double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)){
-      int m = n1 * this->mDimensions, n = 8;
-      double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
-      cv::Mat C(n, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = -pts1[i].x * pts2[i].x;
-          *pa++ = -pts2[i].x * pts1[i].y;
-          *pb++ = pts2[i].x;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = pts1[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = 1;
-          *pa++ = -pts2[i].y * pts1[i].x;
-          *pa++ = -pts2[i].y * pts1[i].y;
-          *pb++ = pts2[i].y;
-        }
-
-        cv::Mat mA(m, n, CV_64F, A);
-        cv::Mat mB(m, 1, CV_64F, B);
-        cv::solve(mA, mB, C, cv::DECOMP_SVD);
-
-        a = C.at<double>(0);
-        b = C.at<double>(1);
-        c = C.at<double>(2);
-        d = C.at<double>(3);
-        e = C.at<double>(4);
-        f = C.at<double>(5);
-        g = C.at<double>(6);
-        h = C.at<double>(7);
-
-        rmse = _rootMeanSquareError(pts1, pts2, error);
-
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] A;
-      delete[] B;
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+
+  transform_status status = transform_status::SUCCESS;
+
+  int m = n1 * this->mDimensions, n = 8;
+  double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
+  double *C = new double[n];
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = -pts1[i].x * pts2[i].x;
+      *pa++ = -pts2[i].x * pts1[i].y;
+      *pb++ = pts2[i].x;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = pts1[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = 1;
+      *pa++ = -pts2[i].y * pts1[i].x;
+      *pa++ = -pts2[i].y * pts1[i].y;
+      *pb++ = pts2[i].y;
+    }
+
+    solveSVD(m, n, A, B, C);
+
+    a = C[0];
+    b = C[1];
+    c = C[2];
+    d = C[3];
+    e = C[4];
+    f = C[5];
+    g = C[6];
+    h = C[7];
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+
+  delete[] A;
+  delete[] B;
+  delete[] C;
+
+  return status;
 }
 
 template<typename Point_t> inline
@@ -2300,10 +2428,15 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL, 
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una transformación polinómica
@@ -2337,36 +2470,48 @@ public:
 };
 
 template<typename Point_t> inline
-double polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                                       const std::vector<Point_t> &pts2, 
+                                                       std::vector<double> *error,
+                                                       double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)) {
-      double xmin = I3D_DOUBLE_MAX;
-      double ymin = I3D_DOUBLE_MAX;
-      double xmax = I3D_DOUBLE_MIN;
-      double ymax = I3D_DOUBLE_MIN;
-      for( int ipt = 0; ipt < n1; ipt++ ) {
-        Point_t &ptoi = pts1[ipt];
-        if ( ptoi.x > xmax ) xmax = ptoi.x;
-        if ( ptoi.x < xmin ) xmin = ptoi.x;
-        if ( ptoi.y > ymax ) ymax = ptoi.y;
-        if ( ptoi.y < ymin ) ymin = ptoi.y;
-      }
-      double xc = (xmax + xmin) / 2;
-      double yc = (ymax + ymin) / 2;
-
-      //...
-    
-
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+
+  transform_status status = transform_status::SUCCESS;
+
+  double xmin = I3D_DOUBLE_MAX;
+  double ymin = I3D_DOUBLE_MAX;
+  double xmax = I3D_DOUBLE_MIN;
+  double ymax = I3D_DOUBLE_MIN;
+  for( int ipt = 0; ipt < n1; ipt++ ) {
+    Point_t &ptoi = pts1[ipt];
+    if ( ptoi.x > xmax ) xmax = ptoi.x;
+    if ( ptoi.x < xmin ) xmin = ptoi.x;
+    if ( ptoi.y > ymax ) ymax = ptoi.y;
+    if ( ptoi.y < ymin ) ymin = ptoi.y;
+  }
+  double xc = (xmax + xmin) / 2;
+  double yc = (ymax + ymin) / 2;
+
+  //...
+  
+
+  if (error) {
+    if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+  }  
+  
+  return status;
 }
 
 template<typename Point_t> inline
@@ -2451,10 +2596,15 @@ public:
    * \brief Calcula los parámetros de transformación
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  virtual double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override = 0;
+  virtual transform_status compute(const std::vector<Point_t> &pts1, 
+                                   const std::vector<Point_t> &pts2, 
+                                   std::vector<double> *error = NULL,
+                                   double *rmse = NULL) override = 0;
 
   /*!
    * \brief Aplica la transformación
@@ -2648,10 +2798,15 @@ public:
    * diferentes a partir de dos conjuntos de puntos en cada sistema
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL,
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Devuelve una referencia a la matriz de rotación
@@ -2727,70 +2882,82 @@ private:
 };
 
 template<typename Point_t> inline
-double Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                             const std::vector<Point_t> &pts2, 
+                                             std::vector<double> *error,
+                                             double *rmse)
 {
-  double rmse = -1.;
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printf("...");
-  } else {
-    if (this->isNumberOfPointsValid(n1)) {
-      int m = n1 * this->mDimensions, n = 7;
-      double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
-      cv::Mat C(n, 1, CV_64F);
-      try {
-        for (int i = 0; i < n1; i++) {
-          *pa++ = pts1[i].x;
-          *pa++ = 0;
-          *pa++ = -pts1[i].z;
-          *pa++ = pts1[i].y;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pl++ = pts2[i].x;
-          *pa++ = pts1[i].y;
-          *pa++ = pts1[i].z;
-          *pa++ = 0;
-          *pa++ = -pts1[i].x;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pa++ = 0;
-          *pl++ = pts2[i].y;
-          *pa++ = pts1[i].z;
-          *pa++ = -pts1[i].y;
-          *pa++ = pts1[i].x;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = 0;
-          *pa++ = 1;
-          *pl++ = pts2[i].z;
-        }
-
-        cv::Mat mA(m, n, CV_64F, A);
-        cv::Mat mB(m, 1, CV_64F, L);
-        cv::solve(mA, mB, C, cv::DECOMP_SVD);
-
-        mScale = C.at<double>(0);
-        mOmega = C.at<double>(1);
-        mPhi = C.at<double>(2);
-        mKappa = C.at<double>(3);
-        tx = C.at<double>(4);
-        ty = C.at<double>(5);
-        tz = C.at<double>(6);
-
-        update();
-        
-        rmse = _rootMeanSquareError(pts1, pts2, error);
-      } catch (std::exception &e) {
-        printError(e.what());
-      }
-      delete[] A;
-      delete[] L;
-    }
+    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    return transform_status::FAILURE;
+  } 
+  
+  if (!this->isNumberOfPointsValid(n1)) {
+    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    return transform_status::FAILURE;
   }
-  return rmse;
+
+  transform_status status = transform_status::SUCCESS;
+
+  int m = n1 * this->mDimensions, n = 7;
+  double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
+  double *C = new double[n];
+  try {
+    for (int i = 0; i < n1; i++) {
+      *pa++ = pts1[i].x;
+      *pa++ = 0;
+      *pa++ = -pts1[i].z;
+      *pa++ = pts1[i].y;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pl++ = pts2[i].x;
+      *pa++ = pts1[i].y;
+      *pa++ = pts1[i].z;
+      *pa++ = 0;
+      *pa++ = -pts1[i].x;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pa++ = 0;
+      *pl++ = pts2[i].y;
+      *pa++ = pts1[i].z;
+      *pa++ = -pts1[i].y;
+      *pa++ = pts1[i].x;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = 0;
+      *pa++ = 1;
+      *pl++ = pts2[i].z;
+    }
+
+    solveSVD(m, n, A, L, C);
+
+    mScale = C[0];
+    mOmega = C[1];
+    mPhi = C[2];
+    mKappa = C[3];
+    tx = C[4];
+    ty = C[5];
+    tz = C[6];
+
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+    
+    rmse = _rootMeanSquareError(pts1, pts2, error);
+  } catch (std::exception &e) {
+    printError(e.what());
+    status = transform_status::FAILURE;
+  }
+
+  delete[] A;
+  delete[] L;
+  delete[] C;
+
+  return status;
 }
 
 template<typename Point_t> inline
@@ -3186,10 +3353,15 @@ public:
    * \brief Operación no soportada para CrsTransform
    * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[in] error Vector con los errores para cada punto
-   * \return RMSE (Root Mean Square Error)
+   * \param[out] error Vector con los errores para cada punto
+   * \param[out] rmse Root Mean Square Error
+   * \return transform_status
+   * \see transform_status
    */
-  double compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error = NULL) override;
+  transform_status compute(const std::vector<Point_t> &pts1, 
+                           const std::vector<Point_t> &pts2, 
+                           std::vector<double> *error = NULL,
+                           double *rmse = NULL) override;
 
   /*!
    * \brief Transforma un conjunto de puntos a otro sistema de referencia
@@ -3253,11 +3425,14 @@ CrsTransform<Point_t>::~CrsTransform()
 
 
 template<typename Point_t> inline
-double CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, std::vector<double> *error)
+transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                      const std::vector<Point_t> &pts2, 
+                                      std::vector<double> *error,
+                                      double *rmse)
 {
   printError("'compute' no esta soportado para CrsTransform");
   I3D_COMPILER_WARNING("'compute' no esta soportado para CrsTransform");
-  return -1.;
+  return transform_status::FAILURE;
 }
 
 

@@ -2,7 +2,9 @@
 
 #include "core/utils.h"
 
-#include "opencv2/core/core.hpp"
+#ifdef HAVE_EIGEN
+#include <Eigen/SVD>
+#endif
 
 namespace I3D
 {
@@ -43,6 +45,57 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
   (*R)[2][2] = cosOmega * cosPhi;
 }
 
+void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
+{
+#ifdef HAVE_EIGEN
+  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+  Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  std::memcpy(c, C.data(), nCols*sizeof(double));
+#elif defined( HAVE_OPENCV)
+  cv::Mat A(nRows, nCols, CV_64F, a);
+  cv::Mat B(nRows, 1, CV_64F, b);
+  cv::Mat C(nCols, 1, CV_64F);
+  cv::solve(A, B, C, cv::DECOMP_SVD);
+  std::vector<double> v_aux;
+  cvMatToVector(C, &v_aux);
+  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+#else
+  // O implementar método alternativo o devolver error
+  // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
+#endif
+}
+
+void solveQR(int nRows, int nCols, double *a, double *b, double *c)
+{
+#if defined( HAVE_OPENCV)
+  cv::Mat A(nRows, nCols, CV_64F, a);
+  cv::Mat B(nRows, 1, CV_64F, b);
+  cv::Mat C(nCols, 1, CV_64F);
+  cv::solve(A, B, C, cv::DECOMP_QR);
+  std::vector<double> v_aux;
+  cvMatToVector(C, &v_aux);
+  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+#else
+
+#endif
+}
+
+void solveLU(int nRows, int nCols, double *a, double *b, double *c)
+{
+#if defined( HAVE_OPENCV)
+  cv::Mat A(nRows, nCols, CV_64F, a);
+  cv::Mat B(nRows, 1, CV_64F, b);
+  cv::Mat C(nCols, 1, CV_64F);
+  cv::solve(A, B, C, cv::DECOMP_LU);
+  std::vector<double> v_aux;
+  cvMatToVector(C, &v_aux);
+  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+#else
+
+#endif
+}
 
 /* ---------------------------------------------------------------------------------- */
 

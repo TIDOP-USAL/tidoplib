@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "transform.h"
 #include "core/utils.h"
+#include "core/exception.h"
 #include "opencv2/core/core.hpp"
 
 using namespace I3D;
@@ -101,6 +102,29 @@ TEST(Translate, Compute)
   trf.compute(ptsIn,ptsOut);
   EXPECT_NEAR(150.0,trf.tx,0.1);
   EXPECT_NEAR(75.0,trf.ty,0.1);
+
+  // Error
+
+  std::vector<cv::Point2d> ptsIn2{
+    cv::Point2d(4157222.543, 664789.307),
+    cv::Point2d(4149043.336, 688836.443),
+    cv::Point2d(4172803.511, 690340.078),
+    cv::Point2d(4177148.376, 642997.635)};
+
+  transform_status status = trf.compute(ptsIn2, ptsOut);
+
+  EXPECT_EQ(transform_status::FAILURE, trf.compute(ptsIn2, ptsOut));
+
+  //EXPECT_THROW({
+  //      try
+  //      {
+  //        // Distinto número de puntos
+  //        trf.compute(ptsIn2, ptsOut);
+  //      } catch( I3D::Exception &e ) {
+  //          EXPECT_STREQ( "Sets of points with different size", e.what() );
+  //          throw;
+  //      }
+  //  }, I3D::Exception );
 }
 
 // Rotation

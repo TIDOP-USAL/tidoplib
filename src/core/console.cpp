@@ -278,8 +278,11 @@ void CmdParser::addOption(const char *name, const char *description)
 CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
 {
   for (auto arg : mCmdArgs) {
-    //// Comando de ayuda
-    //if ( strcmp(argv[1], "-help") == 0 ) return;
+    // Comando de ayuda
+    if (strcmp(argv[1], "-help") == 0) {
+      printHelp();
+      return CmdParser::Status::PARSE_HELP;
+    }
     bool bOptional = arg->isOptional();
     std::string argName = (arg->getType() == CmdArgument::Type::OPTION) ? "-" : "--";
     argName += arg->getName();
@@ -351,13 +354,14 @@ void CmdParser::printHelp()
      printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
     //printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
   }
-  printf_s("\nUsing:\n");
+  printf_s("\nUso:\n");
   printf_s("%s", mCmdName.c_str());
   for (auto arg : mCmdArgs) {
     printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"), 
              arg->getName().c_str(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
   }
-  printf_s("\n");
+  //printf_s("\n\nPulse intro para continuar");
+  //getchar();
 }
 
 bool CmdParser::hasOption(const std::string &option) const

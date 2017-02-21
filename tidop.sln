@@ -49,6 +49,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{31
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "read_image", "examples\read_image.vcxproj", "{73A32862-77F0-49F7-A5C8-53F71F42091C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shape_detection", "apps\shape_detection\shape_detection.vcxproj", "{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -239,6 +241,16 @@ Global
 		{73A32862-77F0-49F7-A5C8-53F71F42091C}.Release|Win32.ActiveCfg = Release|x64
 		{73A32862-77F0-49F7-A5C8-53F71F42091C}.Release|x64.ActiveCfg = Release|x64
 		{73A32862-77F0-49F7-A5C8-53F71F42091C}.Release|x64.Build.0 = Release|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|Win32.ActiveCfg = Debug|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|x64.ActiveCfg = Debug|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Debug|x64.Build.0 = Debug|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Mixed Platforms.Build.0 = Release|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|Win32.ActiveCfg = Release|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.ActiveCfg = Release|x64
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -262,5 +274,6 @@ Global
 		{71900CA6-8286-4AF2-B45C-AFA346E65298} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{837D83F8-3F84-4D71-AC93-2AB83A18B944} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{73A32862-77F0-49F7-A5C8-53F71F42091C} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
+		{4A944EC0-3C3E-44A6-8228-40CC9EA27AED} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 	EndGlobalSection
 EndGlobal

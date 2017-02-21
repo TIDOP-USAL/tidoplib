@@ -562,6 +562,9 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
   //printf("Time %f", time);
 }
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                                 Medición de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
 
 uint64_t getTickCount()
@@ -574,6 +577,70 @@ uint64_t getTickCount()
 }
 
 
+Chrono::Chrono(bool writeMsg) : mTimeIni(0), mAccumulated(0), mStatus(Chrono::Status::START), bWriteMsg(writeMsg)
+{
+  run();
+}
+
+Chrono::~Chrono()
+{
+  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+    stop();
+  }
+  mStatus = Status::FINALIZED;
+}
+
+uint64_t Chrono::pause()
+{
+  if (mStatus == Status::RUNNING) {
+    mAccumulated += getTickCount() - mTimeIni;
+    mStatus = Status::PAUSE;
+    return mAccumulated;  
+    if (bWriteMsg) consolePrintVerbose("Chrono paused");
+  }
+}
+
+void Chrono::reset()
+{
+  mTimeIni = 0;
+  mAccumulated = 0;
+  mStatus = Status::START;
+  if (bWriteMsg) consolePrintVerbose("Chrono reset");
+}
+
+void Chrono::resume()
+{
+  if (mStatus == Status::PAUSE) {
+    mTimeIni = getTickCount();
+    mStatus = Status::RUNNING;
+    if (bWriteMsg) consolePrintVerbose("Chrono resume");
+  }
+}
+
+uint64_t Chrono::run()
+{
+  mTimeIni = getTickCount();
+  mAccumulated = 0;
+  mStatus = Status::RUNNING;
+  if (bWriteMsg) consolePrintVerbose("Chrono run");
+  return mTimeIni;
+}
+
+uint64_t Chrono::stop()
+{
+  uint64_t time;
+  if (mStatus == Status::RUNNING) {
+    time = getTickCount() - mTimeIni + mAccumulated;
+    mStatus = Status::STOPPED;
+  } else if (mStatus == Status::PAUSE) {
+    // Puede estar pausado y querer terminar
+    mStatus = Status::STOPPED;
+    time = mAccumulated;
+  } else
+    time = 0;
+  if (bWriteMsg) consolePrintInfo("Time %f (seconds)", time / 1000.);
+  return time;
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                        Algoritmos de trazado de lineas                             */

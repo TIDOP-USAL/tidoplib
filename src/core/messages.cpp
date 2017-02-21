@@ -243,23 +243,16 @@ void Message::_print(const MessageLevel &level, const MessageOutput &output, con
     if (hLog.is_open()) {
       char date[64];
       std::time_t now = std::time(NULL);
-// Como estoy bloqueando me da igual usar localtime_s asi que uso localtime y me evito problemas
-// de plataformas
-//      std::tm _tm;
-//#ifdef __STDC_LIB_EXT1__
-//      errno_t err;
-//      err = localtime_s(&now, &_tm);
-//#else
 
       std::lock_guard<std::mutex> lck(mtx);
       std::tm *_tm = std::localtime(&now);
-//#endif
+      
       if (_tm) {
-
         std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
       } else {
         strcpy(date, "NULL");
       }
+
       hLog << date << " - " << msgOut << "\n";
       hLog.close();
     } else {

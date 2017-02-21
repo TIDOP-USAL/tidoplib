@@ -16,15 +16,20 @@ using namespace I3D;
  */
 int main(int argc, char** argv)
 {
+
+  // Para redirección de errores de otras librerias
   Message::initExternalHandlers();
 
   CmdParser cmdParser("read_image", "");
   cmdParser.addParameter("img", "Imagen");
   cmdParser.addParameter("img_out", "Imagen de salida");
-  cmdParser.parse(argc, argv);
-  if (cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
-    return 0;
+  CmdParser::Status status = cmdParser.parse(argc, argv);
+  if (status == CmdParser::Status::PARSE_ERROR ) {
+    exit(EXIT_FAILURE);
+  } else if (status == CmdParser::Status::PARSE_HELP) {
+    exit(EXIT_SUCCESS);
   }
+
   std::string img = cmdParser.getValue<std::string>("img");
   std::string img_out = cmdParser.getValue<std::string>("img_out");
 
@@ -34,6 +39,35 @@ int main(int argc, char** argv)
     Message::setMessageLogFile(logfile);
     Message::setMessageLevel(MessageLevel::MSG_INFO);
   }
+
+  ////
+  
+  std::vector<cv::Point2d> ptsIn{
+    cv::Point2d(4157222.543, 664789.307),
+    cv::Point2d(4149043.336, 688836.443),
+    cv::Point2d(4172803.511, 690340.078),
+    cv::Point2d(4177148.376, 642997.635),
+    cv::Point2d(4137012.190, 671808.029),
+    cv::Point2d(4146292.729, 666952.887),
+    cv::Point2d(4138759.902, 702670.738) };
+
+  Translate<cv::Point2d> _trf(150.0, 75.0);
+  std::vector<cv::Point2d> ptsOut;
+  _trf.transform(ptsIn, &ptsOut);
+  std::vector<cv::Point2d> ptsIn2{
+    cv::Point2d(4157222.543, 664789.307),
+    cv::Point2d(4149043.336, 688836.443),
+    cv::Point2d(4172803.511, 690340.078),
+    cv::Point2d(4177148.376, 642997.635)};
+
+  try {
+    _trf.compute(ptsIn2, ptsOut);
+  } catch (I3D::Exception &e) {
+    printError(e.what());
+  }
+  
+
+  /////
 
   RasterGraphics image;
   image.open(img.c_str());
@@ -61,5 +95,5 @@ int main(int argc, char** argv)
   WindowD w_g(PointD(377386.335, 4801010.256), PointD(380324.165, 4803176.748));
   geoRaster.read(&mat_out, w_g, scale);
 
-  return 0;
+  exit(EXIT_SUCCESS);
 }

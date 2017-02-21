@@ -299,50 +299,202 @@ public:
 #endif // HAVE_OPENCV
 
 
+/*!
+ * \brief Niveles de información de los mensajes
+ */
+enum class MessageLevel : int8_t {
+  MSG_DEBUG,      /*!< Información extra para depuración. */
+  MSG_VERBOSE,    /*!< Información extra para depuración. */
+  MSG_INFO,       /*!< Warnings, errores y otra información. */
+  MSG_WARNING,    /*!< Warnings y errores. */
+  MSG_ERROR       /*!< Sólo errores. */
+};
 
-//
-//class VectFile
-//{
-//public:
-//  enum class Status
-//  {
-//    OPEN_OK,
-//    OPEN_ERROR
-//  };
-//
-//private:
-//  std::string mFile;
-//  GDALDataset  *poDataset;
-//
-//public:
-//
-//  VectFile(const char *file) : mFile(file) { }
-//
-//  ~VectFile();
-//
-//  Status open();
-//  
-//  bool read( );
-//  bool write( );
-//
-//  WindowI getWindow();
-//
-//private:
-//  const char* GetOGRDriverName(const char *ext ) {
-//    const char *format;
-//    if      ( strcmpi( ext, ".dxf" ) == 0 )  format = "DXF";
-//    else if ( strcmpi( ext, ".dwg" ) == 0 )  format = "DWG";
-//    else if ( strcmpi( ext, ".dgn" ) == 0 )  format = "DGN";
-//    else if ( strcmpi( ext, ".shp" ) == 0 )  format = "ESRI Shapefile";
-//    else if ( strcmpi( ext, ".gml" ) == 0 )  format = "GML";
-//    else if ( strcmpi( ext, ".kml" ) == 0 )  format = "LIBKML";
-//    else if ( strcmpi( ext, ".kmz" ) == 0 )  format = "LIBKML";
-//    else if ( strcmpi( ext, ".json") == 0 )  format = "GeoJSON";
-//    else if ( strcmpi( ext, ".osm" ) == 0 )  format = "OSM";
-//    else                                     format = 0;
-//    return( format );
-//  }
-//};
+class _Message
+{
+
+public:
+
+  class Listener
+  {
+  protected:
+    std::shared_ptr<_Message> mMessage;
+  public:
+    Listener()
+    {
+    }
+
+    ~Listener()
+    {
+    }
+
+    virtual void onMsgDebug(const char *msg, char mDate[64]) = 0;
+    virtual void onMsgVerbose(const char *msg, char mDate[64]) = 0;
+    virtual void onMsgInfo(const char *msg, char mDate[64]) = 0;
+    virtual void onMsgWarning(const char *msg, char mDate[64]) = 0;
+    virtual void onMsgError(const char *msg, char mDate[64]) = 0;
+
+  };
+
+private:
+
+  static std::unique_ptr<_Message> sObjMessage;
+
+  std::list<Listener *> mListeners;
+
+  /*!
+   * \brief Nivel de información de los mensajes
+   *
+   * Por defecto MSG_ERROR
+   * \see MessageLevel
+   */
+  static MessageLevel sLevel;
+
+  /*!
+   * \brief sLastMessage
+   */
+  static std::string sLastMessage;
+
+private:
+
+  /*!
+   * \brief Constructora Message
+   */
+  _Message();
+
+public:
+  ~_Message();
+
+  void addListener(Listener *listener);
+
+  _Message(_Message const&) = delete;
+  
+  void operator=(_Message const&) = delete;
+
+  /*!
+   * \brief Singleton para obtener una referencia única
+   */
+  static _Message &get();
+
+  /*!
+   * \brief Devuelve la cadena de texto con el mensaje
+   * \return Mensaje
+   */
+  const char *getMessage() const;
+
+  /*!
+   * \brief message
+   * \param[in] msg
+   * \return
+   */
+  static _Message &message(const char *msg, ...);
+
+  /*!
+   * \brief Imprime un mensaje con las opciones establecidas
+   */
+  static void print();
+
+  /*!
+   * \brief Imprime un mensaje
+   * \param[in] level Nivel del mensaje
+   * \see MessageLevel
+   */
+  static void print(const MessageLevel &level);
+
+  /*!
+   * \brief Imprime un mensaje
+   * \param[in] level Nivel del mensaje
+   * \param[in] file Nombre del fichero
+   * \param[in] line Número de línea
+   * \param[in] function Nombre de función
+   */
+  static void print(const MessageLevel &level, const char *file, int line, const char *function);
+ 
+
+  /*!
+   * \brief Inicializa los manejadores para las librerias externas
+   */
+  static void initExternalHandlers();
+
+protected:
+
+  void onDebug(const char *msg, char mDate[64]);
+  void onVerbose(const char *msg, char mDate[64]);
+  void onInfo(const char *msg, char mDate[64]);
+  void onWarning(const char *msg, char mDate[64]);
+  void onError(const char *msg, char mDate[64]);
+
+private:
+
+  static std::string messageOutput(const MessageLevel &msgLevel);
+
+  static std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
+
+  static void _print(const MessageLevel &level, const std::string &msgOut);
+
+};
+
+
+class Log : public _Message::Listener
+{
+private:
+
+  /*!
+   * \brief logfile
+   */
+  static std::string sLogFile;
+
+  char mDate[64];
+
+  std::string mLevel;
+
+  std::string mMessage;
+
+  /*!
+   * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
+   *
+   * Por defecto la plantilla es:
+   * \code
+   * std::string Message::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
+   * \endcode
+   * \see setTimeLogFormat
+   */
+  static std::string sTimeLogFormat;
+
+public:
+
+  Log();
+  
+  ~Log();
+
+  void onMsgDebug(const char *msg, char mDate[64]) override
+  {
+
+  }
+
+  void onMsgVerbose(const char *msg, char mDate[64]) override
+  {
+
+  }
+
+  void onMsgInfo(const char *msg, char mDate[64]) override
+  {
+
+  }
+
+  void onMsgWarning(const char *msg, char mDate[64]) override
+  {
+
+  }
+
+  void onMsgError(const char *msg, char mDate[64]) override
+  {
+
+  }
+
+};
+
+
 
 
 } // End namespace EXPERIMENTAL

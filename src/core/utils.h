@@ -595,8 +595,100 @@ I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 
 /*!
  * \brief tiempo actual
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * uint64_t time_ini = getTickCount();
+ * ...
+ * double time = (getTickCount() - time_ini) / 1000.;
+ * consolePrintInfo("Time %f", time);
+ * \endcode
  */
 I3D_EXPORT uint64_t getTickCount();
+
+/*!
+ * \brief Clase para medir tiempos.
+ *
+ * Su uso esta pensado para medir tiempos en depuración
+ */
+class I3D_EXPORT Chrono
+{
+public:
+
+  /*!
+   * \brief Posibles estados del cronómetro
+   */
+  enum class Status {
+    START,      /*!< Iniciado */
+    RUNNING,    /*!< Corriendo */
+    PAUSE,      /*!< Pausado */
+    STOPPED,    /*!< Detenido */
+    FINALIZED   /*!< Finalizado */
+  };
+
+private:
+  
+  /*!
+   * Tiempo de inicio en milisegundos
+   */
+  uint64_t mTimeIni;
+
+  /*!
+   * Tiempo acumulado en milisegundos
+   */
+  uint64_t mAccumulated;
+
+  /*!
+   * \brief Estado del cronómetro
+   */
+  Status mStatus;
+
+  /*!
+   * \brief Escribe mensajes en log y consola
+   */
+  bool bWriteMsg;
+
+public:
+
+  /*!
+   * \brief Constructor
+   */
+  Chrono(bool writeMsg = true);
+
+  /*!
+   * \brief Destructora
+   * En la destructora se llama al método stop si este no ha sido llamado
+   */
+  ~Chrono();
+
+  /*!
+   * \brief
+   */
+  uint64_t pause();
+
+  /*!
+   * \brief
+   */
+  void reset();
+
+  /*!
+   * \brief
+   */
+  void resume();
+
+  /*!
+   * \brief
+   */
+  uint64_t run();
+
+  /*!
+   * \brief
+   */
+  uint64_t stop();
+
+private:
+
+};
 
 
 /* ---------------------------------------------------------------------------------- */

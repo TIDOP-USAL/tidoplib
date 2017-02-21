@@ -1,7 +1,5 @@
 #include "experimental.h"
 
-#include <thread>
-
 #include "core/messages.h"
 #include "core/defs.h"
 
@@ -20,6 +18,7 @@ I3D_DEFAULT_WARNINGS
 #endif // HAVE_OPENCV
 
 #include <thread>
+#include <ctime>
 
 namespace I3D
 {
@@ -561,15 +560,217 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 /* ---------------------------------------------------------------------------------- */
 
-//VectFile::~VectFile()
-//{}
-//
-//VectFile::Status VectFile::open()
-//{
-//  poDataset = (GDALDataset *) GDALOpen( mFile.c_str(), GA_ReadOnly );
-//  if (poDataset == NULL) return Status::OPEN_ERROR;
-//  else Status::OPEN_OK;
-//}
+
+struct msgProperties {
+  const char *normal;
+  const char *extend;
+};
+
+struct msgProperties msgTemplate[] = {   
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)"},
+  { "Verbose: %s", "Verbose: %s (%s:%u, %s)"},
+  { "Info: %s",    "Info: %s (%s:%u, %s)"},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)"},
+  { "Error: %s",   "Error: %s (%s:%u, %s)"}
+};
+
+msgProperties GetMessageProperties( MessageLevel msgLevel ) 
+{
+  return msgTemplate[static_cast<int>(msgLevel)];
+}
+
+MessageLevel _Message::sLevel = MessageLevel::MSG_ERROR;
+std::string _Message::sLastMessage = "";
+std::unique_ptr<_Message> _Message::sObjMessage;
+
+_Message::_Message()
+{
+}
+
+_Message::~_Message()
+{
+}
+
+void _Message::addListener(Listener *listener)
+{ 
+  mListeners.push_back(listener);
+}
+
+_Message &_Message::get()
+{
+  if (sObjMessage.get() == 0) {
+    sObjMessage.reset(new _Message());
+  }
+  return *sObjMessage;
+}
+
+const char *_Message::getMessage() const 
+{
+  return sLastMessage.c_str();
+}
+
+_Message &_Message::message(const char *msg, ...)
+{
+  if (sObjMessage.get() == 0) {
+    sObjMessage.reset(new _Message());
+  }
+  try {
+    char buf[500];
+    memset(buf, 0, sizeof(buf));
+    std::string aux(msg);
+    I3D::replaceString(&aux, "% ", "%% ");
+    va_list args;
+    va_start(args, msg);
+#ifdef _MSC_VER
+    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+#else
+    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
+#endif
+    va_end(args);
+    sLastMessage = buf;
+  } catch (std::exception &e) {
+    //printError("%s", e.what());
+  }
+
+  return *sObjMessage;
+}
+
+void _Message::print()
+{
+  print(sLevel);
+}
+
+void _Message::print(const MessageLevel &level)
+{
+  _Message::_print( level, messageOutput(level) );
+}
+
+void _Message::print(const MessageLevel &level, const char *file, int line, const char *function)
+{
+  _Message::_print( level, messageOutput(level, file, line, function) );
+}
+
+void _Message::_print(const MessageLevel &level, const std::string &msgOut)
+{
+
+   char date[64];
+   std::time_t now = std::time(NULL);
+   std::tm *_tm = std::localtime(&now);
+   
+   if (_tm) {
+     std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
+   } else {
+     strcpy(date, "NULL");
+   }
+
+  switch (level) {
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
+    sObjMessage->onDebug(msgOut.c_str(), date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
+    sObjMessage->onVerbose(msgOut.c_str(), date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
+    sObjMessage->onInfo(msgOut.c_str(), date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
+    sObjMessage->onWarning(msgOut.c_str(), date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
+    sObjMessage->onError(msgOut.c_str(), date);
+    break;
+  default:
+    break;
+  }
+}
+
+std::string _Message::messageOutput(const MessageLevel &msgLevel)
+{
+  char buf[500];
+#if defined _MSC_VER
+  sprintf_s(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
+#else
+  snprintf(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
+#endif
+  return std::string(buf);
+}
+
+std::string _Message::messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function)
+{
+  char buf[500];
+#if defined _MSC_VER
+  sprintf_s(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+#else
+  snprintf(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+#endif
+  return std::string(buf);
+}
+
+void _Message::initExternalHandlers()
+{
+  //#ifdef HAVE_OPENCV
+  //  cv::redirectError(handleError);
+  //#endif // HAVE_OPENCV
+
+  //#ifdef HAVE_GDAL
+  //  CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
+  //#endif // HAVE_GDAL
+}
+
+void _Message::onDebug(const char *msg, char mDate[64])
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgDebug(msg, mDate);
+    }
+  }
+}
+
+void _Message::onVerbose(const char *msg, char mDate[64]) 
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgVerbose(msg, mDate);
+    }
+  }
+}
+
+void _Message::onInfo(const char *msg, char mDate[64])
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgInfo(msg, mDate);
+    }
+  }
+}
+
+void _Message::onWarning(const char *msg, char mDate[64])
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgWarning(msg, mDate);
+    }
+  }
+}
+
+void _Message::onError(const char *msg, char mDate[64])
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgError(msg, mDate);
+    }
+  }
+}
+
+
+Log::Log()
+{
+  
+}
+
+Log::~Log()
+{
+}
 
 
 } // End namespace EXPERIMENTAL
