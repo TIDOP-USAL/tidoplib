@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <memory>
-
 #include "core/defs.h" // Para quitar warnings de sfm
 
 #ifdef HAVE_OPENCV
@@ -299,6 +298,15 @@ public:
 #endif // HAVE_OPENCV
 
 
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+
+
+
+
 /*!
  * \brief Niveles de información de los mensajes
  */
@@ -310,20 +318,35 @@ enum class MessageLevel : int8_t {
   MSG_ERROR       /*!< Sólo errores. */
 };
 
-class _Message
+/*!
+ * \brief The MessageManager class
+ */
+class MessageManager
 {
 
 public:
 
+  /*!
+   * \brief The Listener class
+   */
   class Listener
   {
   protected:
-    std::shared_ptr<_Message> mMessage;
+
+    //std::shared_ptr<MessageManager> mMessage;
+
   public:
+
+    /*!
+     * \brief Constructora
+     */
     Listener()
     {
     }
 
+    /*!
+     * \brief destructora
+     */
     ~Listener()
     {
     }
@@ -336,10 +359,93 @@ public:
 
   };
 
+  /*!
+   * \brief The Message class
+   */
+  class Message
+  {
+  private:
+
+    /*!
+     * \brief mMessage
+     */
+    std::string mMessage;
+
+    char mDate[64];
+
+  public:
+    
+    /*!
+     * \brief Message
+     * \param msg
+     */
+    Message(const char *msg, ...)
+    {
+      try {
+        char buf[500];
+        memset(buf, 0, sizeof(buf));
+        std::string aux(msg);
+        I3D::replaceString(&aux, "% ", "%% ");
+        va_list args;
+        va_start(args, msg);
+#ifdef _MSC_VER
+        vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+#else
+        vsnprintf(buf, sizeof(buf), aux.c_str(), args);
+#endif
+        va_end(args);
+        mMessage = buf;
+      } catch (std::exception &e) {
+        // Por evitar un error en la constructora... 
+      }
+    }
+
+    ~Message()
+    {
+    }
+
+    /*!
+     * \brief getMessage
+     * \return
+     */
+    const char *getMessage() 
+    {
+      return mMessage.c_str();
+    }
+
+    // ¿Deberia guardar fecha y hora aqui???
+
+  private:
+
+    /*!
+     * \brief messageOutput
+     * \param msgLevel
+     * \return
+     */
+    std::string messageOutput(const MessageLevel &msgLevel);
+
+    /*!
+     * \brief messageOutput
+     * \param msgLevel
+     * \param file
+     * \param line
+     * \param function
+     * \return
+     */
+    std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
+
+  };
+
 private:
 
-  static std::unique_ptr<_Message> sObjMessage;
+  /*!
+   * \brief sObjMessage
+   */
+  static std::unique_ptr<MessageManager> sObjMessage;
 
+  /*!
+   * \brief mListeners
+   */
   std::list<Listener *> mListeners;
 
   /*!
@@ -350,66 +456,48 @@ private:
    */
   static MessageLevel sLevel;
 
-  /*!
-   * \brief sLastMessage
-   */
-  static std::string sLastMessage;
-
 private:
 
   /*!
-   * \brief Constructora Message
+   * \brief Constructora MessageManager
    */
-  _Message();
+  MessageManager();
 
 public:
-  ~_Message();
 
+
+  ~MessageManager();
+
+  /*!
+   * \brief addListener
+   * \param listener
+   */
   void addListener(Listener *listener);
 
-  _Message(_Message const&) = delete;
-  
-  void operator=(_Message const&) = delete;
+  MessageManager(MessageManager const&) = delete;
+  void operator=(MessageManager const&) = delete;
 
   /*!
    * \brief Singleton para obtener una referencia única
    */
-  static _Message &get();
-
-  /*!
-   * \brief Devuelve la cadena de texto con el mensaje
-   * \return Mensaje
-   */
-  const char *getMessage() const;
+  static MessageManager &getInstance();
 
   /*!
    * \brief message
    * \param[in] msg
    * \return
    */
-  static _Message &message(const char *msg, ...);
+  //static MessageManager &message(const char *msg, ...);
 
   /*!
-   * \brief Imprime un mensaje con las opciones establecidas
+   * \brief release
+   * \param msg
+   * \param level
+   * \param file
+   * \param line
+   * \param function
    */
-  static void print();
-
-  /*!
-   * \brief Imprime un mensaje
-   * \param[in] level Nivel del mensaje
-   * \see MessageLevel
-   */
-  static void print(const MessageLevel &level);
-
-  /*!
-   * \brief Imprime un mensaje
-   * \param[in] level Nivel del mensaje
-   * \param[in] file Nombre del fichero
-   * \param[in] line Número de línea
-   * \param[in] function Nombre de función
-   */
-  static void print(const MessageLevel &level, const char *file, int line, const char *function);
- 
+  static void release(const char *msg, const MessageLevel &level, const char *file = NULL, int line = -1, const char *function = NULL);
 
   /*!
    * \brief Inicializa los manejadores para las librerias externas
@@ -424,78 +512,136 @@ protected:
   void onWarning(const char *msg, char mDate[64]);
   void onError(const char *msg, char mDate[64]);
 
-private:
-
-  static std::string messageOutput(const MessageLevel &msgLevel);
-
-  static std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
-
-  static void _print(const MessageLevel &level, const std::string &msgOut);
-
 };
 
 
-class Log : public _Message::Listener
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase para gestionar ficheros log
+ */
+class Log : public MessageManager::Listener
 {
 private:
 
+
   /*!
-   * \brief logfile
+   * \brief sObjMessage
+   */
+  static std::unique_ptr<Log> sObjLog;
+
+  /*!
+   * \brief Fichero log
    */
   static std::string sLogFile;
 
-  char mDate[64];
+  static MessageLevel mLevel;
 
-  std::string mLevel;
-
-  std::string mMessage;
+  //std::string mMessage;
 
   /*!
    * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
    *
    * Por defecto la plantilla es:
    * \code
-   * std::string Message::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
+   * std::string MessageManager::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
    * \endcode
    * \see setTimeLogFormat
    */
   static std::string sTimeLogFormat;
 
+private:
+
+  /*!
+   * \brief Constructora privada
+   */
+  Log() {}
+
 public:
 
-  Log();
-  
-  ~Log();
+  /*!
+   * \brief Destructora
+   */
+  ~Log() {}
 
-  void onMsgDebug(const char *msg, char mDate[64]) override
-  {
+  Log(Log const&) = delete;
+  void operator=(Log const&) = delete;
 
-  }
+  /*!
+   * \brief Singleton para obtener una referencia única
+   */
+  static Log &getInstance();
 
-  void onMsgVerbose(const char *msg, char mDate[64]) override
-  {
+  void setLogFile(const char* file);
 
-  }
+  void setLogLevel(MessageLevel level);
 
-  void onMsgInfo(const char *msg, char mDate[64]) override
-  {
+  /*!
+   * \brief Escribe una linea en el log
+   * \param msg Mensaje que se escribe en el log
+   * \param date Fecha y hora del mensaje
+   */
+  void write(const char *msg);
 
-  }
+protected:
 
-  void onMsgWarning(const char *msg, char mDate[64]) override
-  {
+  /*!
+   * \brief onMsgDebug
+   * \param msg
+   * \param date
+   */
+  void onMsgDebug(const char *msg, char date[64]) override;
 
-  }
+  /*!
+   * \brief onMsgVerbose
+   * \param msg
+   * \param date
+   */
+  void onMsgVerbose(const char *msg, char date[64]) override;
 
-  void onMsgError(const char *msg, char mDate[64]) override
-  {
+  /*!
+   * \brief onMsgInfo
+   * \param msg
+   * \param date
+   */
+  void onMsgInfo(const char *msg, char date[64]) override;
 
-  }
+  /*!
+   * \brief onMsgWarning
+   * \param msg
+   * \param date
+   */
+  void onMsgWarning(const char *msg, char date[64]) override;
+
+  /*!
+   * \brief onMsgError
+   * \param msg
+   * \param date
+   */
+  void onMsgError(const char *msg, char date[64]) override;
+
+  /*!
+   * \brief Escribe una linea en el log
+   * \param msg Mensaje que se escribe en el log
+   * \param date Fecha y hora del mensaje
+   */
+  void _write(const char *msg, char date[64]);
 
 };
 
-
-
+#ifdef _DEBUG
+#  define msgDebug(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgVerbose(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgInfo(...)     MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgWarning(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgError(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
+#else
+#  define msgDebug(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG);
+#  define msgVerbose(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE);
+#  define msgInfo(...)     MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO);
+#  define msgWarning(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING);
+#  define msgError(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR);
+#endif
 
 } // End namespace EXPERIMENTAL
 

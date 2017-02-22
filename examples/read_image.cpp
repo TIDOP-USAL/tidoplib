@@ -5,6 +5,8 @@
 #include "core/messages.h"
 #include "img/imgio.h"
 
+#include "experimental/experimental.h"
+
 using namespace I3D;
 
 
@@ -16,6 +18,10 @@ using namespace I3D;
  */
 int main(int argc, char** argv)
 {
+
+  //EXPERIMENTAL::MessageManager::message("Prueba de Mensaje %i", 1).print(EXPERIMENTAL::MessageLevel::MSG_DEBUG);
+
+
 
   // Para redirección de errores de otras librerias
   Message::initExternalHandlers();
@@ -40,40 +46,24 @@ int main(int argc, char** argv)
     Message::setMessageLevel(MessageLevel::MSG_INFO);
   }
 
-  ////
-  
-  std::vector<cv::Point2d> ptsIn{
-    cv::Point2d(4157222.543, 664789.307),
-    cv::Point2d(4149043.336, 688836.443),
-    cv::Point2d(4172803.511, 690340.078),
-    cv::Point2d(4177148.376, 642997.635),
-    cv::Point2d(4137012.190, 671808.029),
-    cv::Point2d(4146292.729, 666952.887),
-    cv::Point2d(4138759.902, 702670.738) };
+///////////////
+  //Fichero de log
+  EXPERIMENTAL::Log &log = EXPERIMENTAL::Log::getInstance();
+  log.setLogFile(logfile);
+  log.setLogLevel(EXPERIMENTAL::MessageLevel::MSG_INFO);
 
-  Translate<cv::Point2d> _trf(150.0, 75.0);
-  std::vector<cv::Point2d> ptsOut;
-  _trf.transform(ptsIn, &ptsOut);
-  std::vector<cv::Point2d> ptsIn2{
-    cv::Point2d(4157222.543, 664789.307),
-    cv::Point2d(4149043.336, 688836.443),
-    cv::Point2d(4172803.511, 690340.078),
-    cv::Point2d(4177148.376, 642997.635)};
-
-  try {
-    _trf.compute(ptsIn2, ptsOut);
-  } catch (I3D::Exception &e) {
-    printError(e.what());
-  }
-  
-
-  /////
+  //Configuración de mensajes
+  EXPERIMENTAL::MessageManager &msg_h = EXPERIMENTAL::MessageManager::getInstance();
+  msg_h.addListener(&log);
+  msg_h.release("Mensaje de prueba", EXPERIMENTAL::MessageLevel::MSG_ERROR);
+  msg_h.release(EXPERIMENTAL::MessageManager::Message("Mensaje de prueba %i", 1).getMessage(), EXPERIMENTAL::MessageLevel::MSG_ERROR);
+/////////
 
   RasterGraphics image;
   image.open(img.c_str());
   cv::Mat mat_out;
   WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000
-  double scale = 4.;                                 // 25% de escala de la resulución original  
+  double scale = 4.;                                 // 25% de escala de la resolución original  
   
   Helmert2D<PointI> trf;
   image.read(&mat_out, w, scale, &trf);                         

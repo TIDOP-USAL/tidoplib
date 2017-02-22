@@ -19,6 +19,9 @@ I3D_DEFAULT_WARNINGS
 
 #include <thread>
 #include <ctime>
+#include <mutex>
+
+std::mutex _mtx;
 
 namespace I3D
 {
@@ -558,7 +561,15 @@ void Reconstruction3D::reconstruct(std::vector<std::string> &images, std::vector
 
 #endif // HAVE_OPENCV
 
+
+
+
+
+
+
+
 /* ---------------------------------------------------------------------------------- */
+
 
 
 struct msgProperties {
@@ -579,134 +590,59 @@ msgProperties GetMessageProperties( MessageLevel msgLevel )
   return msgTemplate[static_cast<int>(msgLevel)];
 }
 
-MessageLevel _Message::sLevel = MessageLevel::MSG_ERROR;
-std::string _Message::sLastMessage = "";
-std::unique_ptr<_Message> _Message::sObjMessage;
+MessageLevel MessageManager::sLevel = MessageLevel::MSG_ERROR;
+//std::string MessageManager::sLastMessage = "";
+std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 
-_Message::_Message()
+MessageManager::MessageManager()
 {
 }
 
-_Message::~_Message()
+MessageManager::~MessageManager()
 {
 }
 
-void _Message::addListener(Listener *listener)
+void MessageManager::addListener(Listener *listener)
 { 
   mListeners.push_back(listener);
 }
 
-_Message &_Message::get()
+MessageManager &MessageManager::getInstance()
 {
   if (sObjMessage.get() == 0) {
-    sObjMessage.reset(new _Message());
+    sObjMessage.reset(new MessageManager());
   }
   return *sObjMessage;
 }
 
-const char *_Message::getMessage() const 
-{
-  return sLastMessage.c_str();
-}
+//MessageManager &MessageManager::message(const char *msg, ...)
+//{
+//  if (sObjMessage.get() == 0) {
+//    sObjMessage.reset(new MessageManager());
+//  }
+//  try {
+//    char buf[500];
+//    memset(buf, 0, sizeof(buf));
+//    std::string aux(msg);
+//    I3D::replaceString(&aux, "% ", "%% ");
+//    va_list args;
+//    va_start(args, msg);
+//#ifdef _MSC_VER
+//    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
+//#else
+//    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
+//#endif
+//    va_end(args);
+//    //sLastMessage = buf; //Controlar que no se mezclen los mensajes entre hilos
+//  } catch (std::exception &e) {
+//    //printError("%s", e.what());
+//  }
 
-_Message &_Message::message(const char *msg, ...)
-{
-  if (sObjMessage.get() == 0) {
-    sObjMessage.reset(new _Message());
-  }
-  try {
-    char buf[500];
-    memset(buf, 0, sizeof(buf));
-    std::string aux(msg);
-    I3D::replaceString(&aux, "% ", "%% ");
-    va_list args;
-    va_start(args, msg);
-#ifdef _MSC_VER
-    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-#else
-    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
-#endif
-    va_end(args);
-    sLastMessage = buf;
-  } catch (std::exception &e) {
-    //printError("%s", e.what());
-  }
+//  return *sObjMessage;
+//}
 
-  return *sObjMessage;
-}
 
-void _Message::print()
-{
-  print(sLevel);
-}
-
-void _Message::print(const MessageLevel &level)
-{
-  _Message::_print( level, messageOutput(level) );
-}
-
-void _Message::print(const MessageLevel &level, const char *file, int line, const char *function)
-{
-  _Message::_print( level, messageOutput(level, file, line, function) );
-}
-
-void _Message::_print(const MessageLevel &level, const std::string &msgOut)
-{
-
-   char date[64];
-   std::time_t now = std::time(NULL);
-   std::tm *_tm = std::localtime(&now);
-   
-   if (_tm) {
-     std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
-   } else {
-     strcpy(date, "NULL");
-   }
-
-  switch (level) {
-  case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
-    sObjMessage->onDebug(msgOut.c_str(), date);
-    break;
-  case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
-    sObjMessage->onVerbose(msgOut.c_str(), date);
-    break;
-  case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
-    sObjMessage->onInfo(msgOut.c_str(), date);
-    break;
-  case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
-    sObjMessage->onWarning(msgOut.c_str(), date);
-    break;
-  case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
-    sObjMessage->onError(msgOut.c_str(), date);
-    break;
-  default:
-    break;
-  }
-}
-
-std::string _Message::messageOutput(const MessageLevel &msgLevel)
-{
-  char buf[500];
-#if defined _MSC_VER
-  sprintf_s(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
-#else
-  snprintf(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
-#endif
-  return std::string(buf);
-}
-
-std::string _Message::messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function)
-{
-  char buf[500];
-#if defined _MSC_VER
-  sprintf_s(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
-#else
-  snprintf(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
-#endif
-  return std::string(buf);
-}
-
-void _Message::initExternalHandlers()
+void MessageManager::initExternalHandlers()
 {
   //#ifdef HAVE_OPENCV
   //  cv::redirectError(handleError);
@@ -717,7 +653,7 @@ void _Message::initExternalHandlers()
   //#endif // HAVE_GDAL
 }
 
-void _Message::onDebug(const char *msg, char mDate[64])
+void MessageManager::onDebug(const char *msg, char mDate[64])
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
@@ -726,7 +662,7 @@ void _Message::onDebug(const char *msg, char mDate[64])
   }
 }
 
-void _Message::onVerbose(const char *msg, char mDate[64]) 
+void MessageManager::onVerbose(const char *msg, char mDate[64]) 
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
@@ -735,7 +671,7 @@ void _Message::onVerbose(const char *msg, char mDate[64])
   }
 }
 
-void _Message::onInfo(const char *msg, char mDate[64])
+void MessageManager::onInfo(const char *msg, char mDate[64])
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
@@ -744,7 +680,7 @@ void _Message::onInfo(const char *msg, char mDate[64])
   }
 }
 
-void _Message::onWarning(const char *msg, char mDate[64])
+void MessageManager::onWarning(const char *msg, char mDate[64])
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
@@ -753,7 +689,7 @@ void _Message::onWarning(const char *msg, char mDate[64])
   }
 }
 
-void _Message::onError(const char *msg, char mDate[64])
+void MessageManager::onError(const char *msg, char mDate[64])
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
@@ -762,16 +698,128 @@ void _Message::onError(const char *msg, char mDate[64])
   }
 }
 
-
-Log::Log()
+void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
+  char date[64];
+  std::time_t now = std::time(NULL);
+  std::tm *_tm = std::localtime(&now);
   
+  if (_tm) {
+    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm); 
+  } else {
+    strcpy(date, "NULL");
+  }
+
+  switch (level) {
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
+    sObjMessage->onDebug(msg, date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
+    sObjMessage->onVerbose(msg, date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
+    sObjMessage->onInfo(msg, date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
+    sObjMessage->onWarning(msg, date);
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
+    sObjMessage->onError(msg, date);
+    break;
+  default:
+    break;
+  }
 }
 
-Log::~Log()
+
+/* ---------------------------------------------------------------------------------- */
+
+std::unique_ptr<Log> Log::sObjLog;
+std::string Log::sLogFile = "";
+MessageLevel Log::mLevel = MessageLevel::MSG_ERROR;
+
+void Log::setLogFile(const char* file)
 {
+  sLogFile = file;
 }
 
+void Log::setLogLevel(MessageLevel level)
+{
+  mLevel = level;
+}
+
+Log &Log::getInstance()
+{
+  if (sObjLog.get() == 0) {
+    sObjLog.reset(new Log());
+  }
+  return *sObjLog;
+}
+
+void Log::write(const char *msg)
+{
+
+  char date[64];
+  std::time_t now = std::time(NULL);
+  std::tm *_tm = std::localtime(&now);
+  
+  if (_tm) {
+    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
+  } else {
+    strcpy(date, "NULL");
+  }
+
+  if (sLogFile.empty()) {
+    // Log por defecto
+    char _logfile[I3D_MAX_PATH];
+    changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
+    sLogFile = _logfile;
+  }
+  std::ofstream hLog(sLogFile,std::ofstream::app);
+  if (hLog.is_open()) {
+    std::lock_guard<std::mutex> lck(_mtx);
+    hLog << date << " - " << msg << "\n";
+    hLog.close();
+  } else {
+    //Error al abrir/crear archivo. Se saca el error por consola
+    //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
+  }
+}
+
+void Log::onMsgDebug(const char *msg, char date[64])
+{
+  if (mLevel <= MessageLevel::MSG_DEBUG) {
+    _write(msg, date);
+  }
+}
+
+void Log::onMsgVerbose(const char *msg, char date[64])
+{
+  if (mLevel <= MessageLevel::MSG_VERBOSE) {
+    _write(msg, date);
+  }
+}
+
+void Log::onMsgInfo(const char *msg, char date[64])
+{
+  if (mLevel <= MessageLevel::MSG_INFO) {
+    _write(msg, date);
+  }
+}
+
+void Log::onMsgWarning(const char *msg, char date[64])
+{
+  if (mLevel <= MessageLevel::MSG_WARNING) {
+    _write(msg, date);
+  }
+}
+
+void Log::onMsgError(const char *msg, char date[64])
+{
+  if (mLevel <= MessageLevel::MSG_ERROR) {
+    _write(msg, date);
+  }
+}
 
 } // End namespace EXPERIMENTAL
 
