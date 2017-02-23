@@ -36,8 +36,12 @@ int main(int argc, char** argv)
     exit(EXIT_SUCCESS);
   }
 
-  std::string img = cmdParser.getValue<std::string>("img");
-  std::string img_out = cmdParser.getValue<std::string>("img_out");
+  //std::string img = cmdParser.getValue<std::string>("img");
+  //std::string img_out = cmdParser.getValue<std::string>("img_out");
+
+  std::string img = cmdParser.getValue<Path>("img").toString();
+  std::string img_out = cmdParser.getValue<Path>("img_out").toString();
+
 
   //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];

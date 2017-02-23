@@ -211,6 +211,11 @@ private:
    */
   std::vector<std::string> mPath;
 
+  /*!
+   * \brief Directorio o fichero
+   */
+  //bool bDir;
+
 #if defined WIN32
 
   /*!

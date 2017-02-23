@@ -821,6 +821,26 @@ void Log::onMsgError(const char *msg, char date[64])
   }
 }
 
+void Log::_write(const char *msg, char date[64])
+{
+
+  if (sLogFile.empty()) {
+    // Log por defecto
+    char _logfile[I3D_MAX_PATH];
+    changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
+    sLogFile = _logfile;
+  }
+  std::ofstream hLog(sLogFile,std::ofstream::app);
+  if (hLog.is_open()) {
+    std::lock_guard<std::mutex> lck(_mtx);
+    hLog << date << " - " << msg << "\n";
+    hLog.close();
+  } else {
+    //Error al abrir/crear archivo. Se saca el error por consola
+    //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
+  }
+}
+
 } // End namespace EXPERIMENTAL
 
 } // End namespace I3D

@@ -333,7 +333,7 @@ std::string Path::toString()
   std::string _path;
   for (int i = 0; i < mPos; i++) {
     _path += mPath[i];
-    _path += "\\";
+    if (i < mPos-1) _path += "\\"; 
   }
   return _path;
 }

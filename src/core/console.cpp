@@ -300,6 +300,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
           if (val_pos != std::string::npos && name == argName) {
             if (arg->getType() == CmdArgument::Type::PARAMETER) {
               std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+              I3D::replaceString(&value, "\"", "\\");
               dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
               bFind = true;
               break;

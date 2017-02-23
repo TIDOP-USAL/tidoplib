@@ -6,14 +6,27 @@ using namespace I3D;
 
 //
 TEST(isDirectoryTest, Expect){
-  EXPECT_TRUE(isDirectory("C:/Desarrollo"));
-  EXPECT_TRUE(isDirectory("C:/Desarrollo/tidop/test"));
-  EXPECT_TRUE(isDirectory("C:\\Desarrollo"));
-  EXPECT_TRUE(isDirectory("C:\\Desarrollo\\tidop\\test"));
-  EXPECT_FALSE(isDirectory("C:/Desarrollo_"));
-  EXPECT_FALSE(isDirectory("C:/Desarrollo/no_existe_dir"));
-  EXPECT_FALSE(isDirectory("C:\\Desarrollo_"));
-  EXPECT_FALSE(isDirectory("C:\\Desarrollo\\no_existe_dir"));
+  EXPECT_TRUE(isDirectory("D:/Desarrollo"));
+  EXPECT_TRUE(isDirectory("D:/Desarrollo/tidop/test"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo\\tidop\\test"));
+  EXPECT_FALSE(isDirectory("D:/Desarrollo_"));
+  EXPECT_FALSE(isDirectory("D:/Desarrollo/no_existe_dir"));
+  EXPECT_FALSE(isDirectory("D:\\Desarrollo_"));
+  EXPECT_FALSE(isDirectory("D:\\Desarrollo\\no_existe_dir"));
+
+  // Con barra final
+  EXPECT_TRUE(isDirectory("D:/Desarrollo/"));
+  EXPECT_TRUE(isDirectory("D:/Desarrollo/tidop/test/"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo\\"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo\\tidop\\test\\"));
+
+  // Con espacios
+  EXPECT_TRUE(isDirectory("D:/Desarrollo/Nueva carpeta"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo\\Nueva carpeta"));
+  EXPECT_TRUE(isDirectory("D:/Desarrollo/Nueva carpeta/"));
+  EXPECT_TRUE(isDirectory("D:\\Desarrollo\\Nueva carpeta\\"));
+
 }
 
 TEST(isDirectoryTest, Null){
@@ -29,18 +42,18 @@ TEST(createDir, ExistDir){
 
 TEST(createDir, NewDir){
   //Borro por si acaso existia
-  deleteDir("C:\\Desarrollo\\tidop\\test\\create_dir");
-  EXPECT_EQ(0,createDir("C:\\Desarrollo\\tidop\\test\\create_dir\\1"));
-  EXPECT_EQ(0,createDir("C:/Desarrollo/tidop/test/create_dir/1/2"));
+  deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir");
+  EXPECT_EQ(0,createDir("D:\\Desarrollo\\tidop\\test\\create_dir\\1"));
+  EXPECT_EQ(0,createDir("D:/Desarrollo/tidop/test/create_dir/1/2"));
 }
 
 TEST(DeleteDir, ExistDir){
-  EXPECT_EQ(0,deleteDir("C:\\Desarrollo\\tidop\\test\\create_dir\\1\\2"));
-  EXPECT_EQ(0,deleteDir("C:/Desarrollo/tidop/test/create_dir"));
+  EXPECT_EQ(0,deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir\\1\\2"));
+  EXPECT_EQ(0,deleteDir("D:/Desarrollo/tidop/test/create_dir"));
 }
 
 TEST(DeleteDir, NoDir){
-  EXPECT_EQ(1,deleteDir("C:\\Desarrollo\\tidop\\test\\create_dir"));
+  EXPECT_EQ(1,deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir"));
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -129,11 +142,11 @@ TEST(replaceString, test1){
 
 TEST(getFileDir, ValidDir){
 
-  const char *file = "C:\\path\\file.ext";
+  const char *file = "D:\\path\\file.ext";
   char file_dir[I3D_MAX_PATH];
   EXPECT_EQ(0,getFileDir(file, file_dir, I3D_MAX_PATH));
   EXPECT_STREQ("\\path\\", file_dir);
-  const char *file2 = "C:/path/file.ext";
+  const char *file2 = "D:/path/file.ext";
   EXPECT_EQ(0, getFileDir(file2, file_dir, I3D_MAX_PATH));
   EXPECT_STREQ("/path/", file_dir);
 }
@@ -151,89 +164,89 @@ TEST(getFileDir, InvalidDir){
 
 TEST(getFileDrive, ValidDir){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char drive[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDrive(path, drive, I3D_MAX_PATH));
-  EXPECT_STREQ("C:", drive);
-  const char *file2 = "C:/path/file.ext";
+  EXPECT_STREQ("D:", drive);
+  const char *file2 = "D:/path/file.ext";
   EXPECT_EQ(0, getFileDrive(file2, drive, I3D_MAX_PATH));
-  EXPECT_STREQ("C:", drive);
+  EXPECT_STREQ("D:", drive);
 }
 
 TEST(getFileExtension, ValidExtension){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char ext[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileExtension(path, ext, I3D_MAX_PATH));
   EXPECT_STREQ(".ext", ext);
-  const char *file2 = "C:/path/file.ext";
+  const char *file2 = "D:/path/file.ext";
   EXPECT_EQ(0, getFileExtension(file2, ext, I3D_MAX_PATH));
   EXPECT_STREQ(".ext", ext);
 }
 
 TEST(getFileExtension, InvalidExtension){
 
-  const char *path = "C:\\path\\file";
+  const char *path = "D:\\path\\file";
   char ext[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileExtension(path, ext, I3D_MAX_PATH));
   EXPECT_STREQ("", ext);
-  const char *file2 = "C:/path/file";
+  const char *file2 = "D:/path/file";
   EXPECT_EQ(0, getFileExtension(file2, ext, I3D_MAX_PATH));
   EXPECT_STREQ("", ext);
 }
 
 TEST(getFileName, ValidName){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char name[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileName(path, name, I3D_MAX_PATH));
   EXPECT_STREQ("file", name);
-  const char *path2 = "C:/path/file.ext";
+  const char *path2 = "D:/path/file.ext";
   EXPECT_EQ(0, getFileName(path2, name, I3D_MAX_PATH));
   EXPECT_STREQ("file", name);
 }
 
 TEST(getFileDriveDir, ValidPath){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char name[I3D_MAX_PATH];
   EXPECT_EQ(0, getFileDriveDir(path, name, I3D_MAX_PATH));
-  EXPECT_STREQ("C:\\path\\", name);
-  const char *path2 = "C:/path/file.ext";
+  EXPECT_STREQ("D:\\path\\", name);
+  const char *path2 = "D:/path/file.ext";
   EXPECT_EQ(0, getFileDriveDir(path2, name, I3D_MAX_PATH));
-  EXPECT_STREQ("C:/path/", name);
+  EXPECT_STREQ("D:/path/", name);
 }
 
 TEST(changeFileName, ValidPath){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileName(path, "new_file_name", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:\\path\\new_file_name.ext", new_path);
-  const char *path2 = "C:/path/file.ext";
+  EXPECT_STREQ("D:\\path\\new_file_name.ext", new_path);
+  const char *path2 = "D:/path/file.ext";
   EXPECT_EQ(0, changeFileName(path2, "new_file_name", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:/path/new_file_name.ext", new_path);
+  EXPECT_STREQ("D:/path/new_file_name.ext", new_path);
 }
 
 TEST(changeFileExtension, ValidPath){
 
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileExtension(path, "aaa", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:\\path\\file.aaa", new_path);
-  const char *path2 = "C:/path/file.ext";
+  EXPECT_STREQ("D:\\path\\file.aaa", new_path);
+  const char *path2 = "D:/path/file.ext";
   EXPECT_EQ(0, changeFileExtension(path2, "bbb", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:/path/file.bbb", new_path);
+  EXPECT_STREQ("D:/path/file.bbb", new_path);
 }
 
 TEST(changeFileNameAndExtension, ValidPath){
-  const char *path = "C:\\path\\file.ext";
+  const char *path = "D:\\path\\file.ext";
   char new_path[I3D_MAX_PATH];
   EXPECT_EQ(0, changeFileNameAndExtension(path, "new_name.aaa", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:\\path\\new_name.aaa", new_path);
-  const char *path2 = "C:/path/file.ext";
+  EXPECT_STREQ("D:\\path\\new_name.aaa", new_path);
+  const char *path2 = "D:/path/file.ext";
   EXPECT_EQ(0, changeFileNameAndExtension(path2, "new_name.bbb", new_path, I3D_MAX_PATH));
-  EXPECT_STREQ("C:/path/new_name.bbb", new_path);
+  EXPECT_STREQ("D:/path/new_name.bbb", new_path);
 }
 
 TEST(split, NullString){
@@ -267,7 +280,7 @@ TEST(split, CustomSeparatorCharacter){
 
 
 TEST(Path, DefaultConstructor){
-  EXPERIMENTAL::Path path;
+  Path path;
   // Path esta vacio con lo cual el path actual tiene que estar vacio
   std::vector<std::string> _path = path.currentPath();
   EXPECT_EQ(0, _path.size());
@@ -277,10 +290,10 @@ TEST(Path, DefaultConstructor){
 }
 
 TEST(Path, Constructor){
-  EXPERIMENTAL::Path path1("C:\\Desarrollo\\Libs");
+  Path path1("D:\\Desarrollo\\Libs");
   std::vector<std::string> _path = path1.currentPath();
   EXPECT_EQ(3, _path.size());
-  EXPERIMENTAL::Path path2("C:/Desarrollo/Libs/");
+  Path path2("D:/Desarrollo/Libs/");
   std::vector<std::string> _path2 = path2.currentPath();
   EXPECT_EQ(3, _path2.size());
 }

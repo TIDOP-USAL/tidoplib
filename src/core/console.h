@@ -643,6 +643,8 @@ public:
             strm_value >> *(double *)_value;
           } else if (typeid(T) == typeid(float)) {
             strm_value >> *(float *)_value;
+          } else if (typeid(T) == typeid(Path)) {
+            *(Path *)_value = Path(value);
           } else {
             throw std::runtime_error("Tipo de dato  no permitido");
           }

@@ -630,17 +630,17 @@ protected:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgVerbose(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgInfo(...)     MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgWarning(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgError(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgDebug(...)    EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgVerbose(...)  EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_VERBOSE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgInfo(...)     EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgWarning(...)  EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgError(...)    EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
 #else
-#  define msgDebug(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG);
-#  define msgVerbose(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE);
-#  define msgInfo(...)     MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO);
-#  define msgWarning(...)  MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING);
-#  define msgError(...)    MessageManager::release(MessageManager::message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR);
+#  define msgDebug(...)    EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_DEBUG);
+#  define msgVerbose(...)  EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_VERBOSE);
+#  define msgInfo(...)     EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_INFO);
+#  define msgWarning(...)  EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_WARNING);
+#  define msgError(...)    EXPERIMENTAL::MessageManager::release(EXPERIMENTAL::MessageManager::Message(__VA_ARGS__).getMessage(), EXPERIMENTAL::MessageLevel::MSG_ERROR);
 #endif
 
 } // End namespace EXPERIMENTAL
