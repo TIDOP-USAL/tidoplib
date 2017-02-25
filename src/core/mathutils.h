@@ -79,6 +79,90 @@ I3D_EXPORT inline double azimut(const Point_t &pt1, const Point_t &pt2)
   return azimut;
 }
 
+
+/* ---------------------------------------------------------------------------------- */
+// Estadistica
+
+template<typename T>
+I3D_EXPORT double mean(const T &data)
+{
+  size_t n = data.size();
+  if (n <= 1) return 0.0; // Mensaje de error
+  // Comprobar que es un contenedor con tipos numéricos
+  T::value_type sum;
+  for (auto &t : data) {
+    sum += t;
+  }
+  return static_cast<double>(sum / n);
+}
+
+template<typename T>
+I3D_EXPORT double variance(const T &data)
+{
+  size_t n = data.size();
+  if (n <= 1) return 0.0; // Mensaje de error
+  double _mean = mean(data);
+  double sum;
+  double aux;
+  for (auto &t : data) {
+    aux = t - _mean;
+    sum += aux*aux;
+  }
+  return sum / (n-1);
+}
+
+template<typename T>
+I3D_EXPORT double standarDeviation(const T &data)
+{
+  return sqrt(variance(data));
+}
+
+//average deviation or mean absolute deviation
+// Estimador mas robusto que la desviacion estandar y la varianza
+template<typename T>
+I3D_EXPORT averageAbsoluteDeviation(const T &data)
+{
+  size_t n = data.size();
+  if (n <= 1) return 0.0; // Mensaje de error
+  double _mean = mean(data);
+  double sum;
+  for (auto &t : data) {
+    sum += std::abs(t - _mean);
+  }
+  return sum / n;
+}
+
+template<typename T>
+I3D_EXPORT skewness(const T &data)
+{
+  // Para que sea lo mas rapido posible no llamo a las funciones previas
+  // Hago todo el desarrollo aqui para no repetir pasos
+  size_t n = data.size();
+// Varianza 
+  if (n <= 1) return 0.0; // Mensaje de error
+  double _mean = mean(data);
+  double sum;
+  double aux;
+  double variance;
+  double skew;
+  for (auto &t : data) {
+
+  }
+
+  double variance =  sum / (n-1);  // Varianza
+
+  if (variance) {
+    double stdDev = sqrt(variance); // Desviación tipica
+    skew /= (n*variance*stdDev);
+  } else return 0.;// "No skew when variance = 0 (in moment)")
+}
+
+template<typename T>
+I3D_EXPORT kurtosis(const T &data)
+{
+
+}
+
 I3D_EXPORT double computeMedian(const std::vector<double> &input);
 
 I3D_EXPORT double computeTempMAD(const std::vector<double> &input, const double median);
