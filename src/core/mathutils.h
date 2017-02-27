@@ -103,12 +103,16 @@ I3D_EXPORT double variance(const T &data)
   if (n <= 1) return 0.0; // Mensaje de error
   double _mean = mean(data);
   double sum;
+  double ep = 0.0;
   double aux;
   for (auto &t : data) {
     aux = t - _mean;
+    ep += aux;
     sum += aux*aux;
   }
-  return sum / (n-1);
+  //return sum / (n-1);
+  // corrected two-pass algorithm
+  return (sum - ep*ep / n) / (n - 1);
 }
 
 template<typename T>
@@ -120,7 +124,7 @@ I3D_EXPORT double standarDeviation(const T &data)
 //average deviation or mean absolute deviation
 // Estimador mas robusto que la desviacion estandar y la varianza
 template<typename T>
-I3D_EXPORT averageAbsoluteDeviation(const T &data)
+I3D_EXPORT double averageAbsoluteDeviation(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
@@ -133,34 +137,59 @@ I3D_EXPORT averageAbsoluteDeviation(const T &data)
 }
 
 template<typename T>
-I3D_EXPORT skewness(const T &data)
+I3D_EXPORT double skewness(const T &data)
 {
   // Para que sea lo mas rapido posible no llamo a las funciones previas
   // Hago todo el desarrollo aqui para no repetir pasos
   size_t n = data.size();
-// Varianza 
-  if (n <= 1) return 0.0; // Mensaje de error
+// Varianza
+  if (n <= 1) return 0.; // Mensaje de error
   double _mean = mean(data);
-  double sum;
+  double ep = 0.;
   double aux;
   double variance;
   double skew;
+  double aux2;
   for (auto &t : data) {
-
+    aux = t - _mean;
+    ep += aux;
+    sum += (aux2 = aux*aux);
+    skew += aux2 * aux; 
   }
 
-  double variance =  sum / (n-1);  // Varianza
+  double variance =  (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
 
   if (variance) {
     double stdDev = sqrt(variance); // Desviación tipica
-    skew /= (n*variance*stdDev);
+    return skew / (n*variance*stdDev);
   } else return 0.;// "No skew when variance = 0 (in moment)")
 }
 
 template<typename T>
-I3D_EXPORT kurtosis(const T &data)
+I3D_EXPORT double kurtosis(const T &data)
 {
+  size_t n = data.size();
+// Varianza
+  if (n <= 1) return 0.; // Mensaje de error
+  double _mean = mean(data);
+  double ep = 0.;
+  double aux;
+  double variance;
+  double _kurtosis;
 
+  for (auto &t : data) {
+    aux = t - _mean;
+    ep += aux;
+    aux *= aux;
+    _kurtosis += aux*aux; 
+  }
+
+  double variance =  (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
+
+  if (variance) {
+    _kurtosis /= (n*variance*variance);
+    return _kurtosis - 3.;
+  } else return 0.;// "No kurtosis when variance = 0 (in moment)")
 }
 
 I3D_EXPORT double computeMedian(const std::vector<double> &input);

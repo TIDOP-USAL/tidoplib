@@ -396,6 +396,7 @@ public:
         va_end(args);
         mMessage = buf;
       } catch (std::exception &e) {
+
         // Por evitar un error en la constructora... 
       }
     }
@@ -626,6 +627,8 @@ protected:
    * \param date Fecha y hora del mensaje
    */
   void _write(const char *msg, char date[64]);
+
+  //static std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
 
 };
 

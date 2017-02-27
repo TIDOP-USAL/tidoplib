@@ -710,27 +710,50 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
     strcpy(date, "NULL");
   }
 
+  char buf[1000];
+  #if defined _MSC_VER
+    if (line != -1)
+      sprintf_s(buf, 1000, GetMessageProperties(level).normal, msg, file, line, function);
+    else
+      sprintf_s(buf, 1000, GetMessageProperties(level).extend, msg, file, line, function);
+  #else
+    if (line != -1)
+      snprintf(buf, 1000, GetMessageProperties(level).normal, msg, file, line, function);
+    else
+      snprintf(buf, 1000, GetMessageProperties(level).extend, msg, file, line, function);
+  #endif
+
   switch (level) {
   case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
-    sObjMessage->onDebug(msg, date);
+    sObjMessage->onDebug(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
-    sObjMessage->onVerbose(msg, date);
+    sObjMessage->onVerbose(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
-    sObjMessage->onInfo(msg, date);
+    sObjMessage->onInfo(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
-    sObjMessage->onWarning(msg, date);
+    sObjMessage->onWarning(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
-    sObjMessage->onError(msg, date);
+    sObjMessage->onError(buf, date);
     break;
   default:
     break;
   }
 }
 
+//std::string MessageManager::messageOutput(const EXPERIMENTAL::MessageLevel &msgLevel, const char *file, int line, const char *function)
+//{
+//  char buf[500];
+//#if defined _MSC_VER
+//  sprintf_s(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+//#else
+//  snprintf(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
+//#endif
+//  return std::string(buf);
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
