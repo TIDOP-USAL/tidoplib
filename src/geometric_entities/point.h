@@ -397,6 +397,304 @@ typedef MultiPoint<int> MultiPointI;
 typedef MultiPoint<double> MultiPointD;
 typedef MultiPoint<float> MultiPointF;
 
+
+
+
+/*!
+ * \brief Clase punto 3D
+ *
+ * Se han definido los siguientes alias para facilitar el acceso:
+ * \code
+ * typedef Point<int> Point3I;
+ * typedef Point<double> Point3D;
+ * typedef Point<float> Point3F;
+ * \endcode
+ */
+template<typename T>
+class I3D_EXPORT Point3
+#ifdef HAVE_OPENCV
+  : public cv::Point3_<T>
+#endif
+{
+  // Por si no esta activado OpenCV. Para evitar problemas ya que el
+  // uso de point esta muy extendido por la libreria se copia la clase
+  // Point_ de OpenCV
+#ifndef HAVE_OPENCV
+
+public:
+
+  /*!
+   * \brief type
+   */
+  typedef T value_type;
+
+  T x;
+
+  T y;
+
+  T z;
+
+#endif
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  Point3();
+
+  /*!
+   * \brief Constructor
+   * \param[in] x Coordenada x
+   * \param[in] y Coordenada y
+   * \param[in] z Coordenada z
+   */
+  Point3(T x, T y, T z);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] point Objeto Point que se copia
+   */
+  Point3(const Point3<T> &point);
+
+  /*!
+   * \brief Operador de asignación
+   * \param[in] point Objeto Point que se copia
+   */
+  Point3<T>& operator = (const Point3<T>& pt);
+
+  /*!
+   * \brief Conversión de tipo
+   */
+  template<typename T2> operator Point3<T2>() const;
+
+#ifndef HAVE_OPENCV
+
+  //! dot product
+  T dot(const Point3& pt) const;
+    
+  //! dot product computed in double-precision arithmetics
+  double ddot(const Point3& pt) const;
+    
+  //! cross-product
+  double cross(const Point3& pt) const;
+
+#else
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] point Objeto Point que se copia
+   */
+  //Point(const cv::Point3_<T> &point);
+
+
+  //Para evitar su uso y no de problemas si no esta activado OpenCV
+  //operator cv::Vec<T, 2>() const = delete;
+
+  //Point(const cv::Size_<T>& sz) = delete;
+  //Point(const cv::Vec<T, 2>& v) = delete;
+  //bool inside(const cv::Rect_<T>& r) const = delete;
+
+#endif
+
+};
+
+typedef Point3<int> Point3I;
+typedef Point3<double> Point3D;
+typedef Point3<float> Point3F;
+
+#ifdef HAVE_OPENCV
+
+template<typename T> inline
+Point3<T>::Point3() : cv::Point3_<T>() {}
+
+template<typename T> inline
+Point3<T>::Point3(T x, T y, T z) : cv::Point3_<T>(x, y, z) {}
+
+template<typename T> inline
+Point3<T>::Point3(const Point3<T>& pt) : cv::Point3_<T>(pt.x, pt.y, pt.z) {}
+
+//template<typename T> inline
+//Point3<T>::Point3(const cv::Point3_<T>& pt) : cv::Point3_<T>(pt) {}
+
+
+#else
+
+template<typename T> inline
+Point3<T>::Point3()
+    : x(0), y(0), z(0) {}
+
+template<typename T> inline
+Point3<T>::Point3(T x, T y, Tz)
+    : x(x), y(y), z(z) {}
+
+template<typename T> inline
+Point<3T>::Point3(const Point& pt)
+    : x(pt.x), y(pt.y), z(pt.z) {}
+    
+
+
+template<typename _Tp> inline
+Point3_<_Tp> Point3_<_Tp>::cross(const Point3_<_Tp>& pt) const
+{
+    return Point3_<_Tp>(y*pt.z - z*pt.y, z*pt.x - x*pt.z, x*pt.y - y*pt.x);
+}
+
+template<typename T> inline
+T Point3<T>::dot(const Point3& pt) const
+{
+  if (typeid(T2) == typeid(int))
+    return I3D_ROUND_TO_INT(x*pt.x + y*pt.y + z*pt.z);
+  else
+    return static_cast<T>(x*pt.x + y*pt.y + z*pt.z);
+}
+
+template<typename T> inline
+double Point3<T>::ddot(const Point3& pt) const
+{
+  return static_cast<double>(x*pt.x + y*pt.y + z*pt.z);
+}
+
+template<typename T> inline
+Point3<T>  Point3<T>::cross(const Point3& pt) const
+{
+  return Point3<T>(y*pt.z - z*pt.y, z*pt.x - x*pt.z, x*pt.y - y*pt.x);
+}
+
+#endif // HAVE_OPENCV
+
+template<typename T> inline
+Point3<T>& Point3<T>::operator = (const Point3& pt)
+{
+  this->x = pt.x;
+  this->y = pt.y;
+  this->z = pt.z;
+  return *this;
+}
+
+I3D_DISABLE_WARNING(4244)
+template<typename T> template<typename T2> inline
+Point3<T>::operator Point3<T2>() const
+{
+  if (typeid(T2) == typeid(int)) {
+    return Point3<T2>(I3D_ROUND_TO_INT(this->x), I3D_ROUND_TO_INT(this->y), I3D_ROUND_TO_INT(this->z));
+  } else {
+    return Point3<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y), static_cast<T2>(this->z));
+  }
+}
+I3D_ENABLE_WARNING(4244)
+
+template<typename T1, typename T2> static inline
+Point3<T1>& operator += (Point3<T1>& a, const Point3<T2>& b)
+{
+  if (typeid(T1) == typeid(int)) {
+    a.x += I3D_ROUND_TO_INT(b.x);
+    a.y += I3D_ROUND_TO_INT(b.y);
+    a.z += I3D_ROUND_TO_INT(b.z);
+  } else {
+    a.x += static_cast<T1>(b.x);
+    a.y += static_cast<T1>(b.y);
+    a.z += static_cast<T1>(b.z);
+  }
+  return a;
+}
+
+template<typename T1, typename T2> static inline
+Point3<T1>& operator -= (Point3<T1>& a, const Point3<T2>& b)
+{
+  if (typeid(T1) == typeid(int)) {
+    a.x -= I3D_ROUND_TO_INT(b.x);
+    a.y -= I3D_ROUND_TO_INT(b.y);
+    a.z -= I3D_ROUND_TO_INT(b.z);
+  } else {
+    a.x -= static_cast<T1>(b.x);
+    a.y -= static_cast<T1>(b.y);
+    a.z -= static_cast<T1>(b.z);
+  }
+  return a;
+}
+
+template<typename T1, typename T2> static inline
+Point3<T1>& operator *= (Point3<T1>& a, T2 b)
+{
+  if (typeid(T1) == typeid(int)) {
+    a.x = I3D_ROUND_TO_INT(a.x * b);
+    a.y = I3D_ROUND_TO_INT(a.y * b);
+    a.z = I3D_ROUND_TO_INT(a.z * b);
+  } else {
+    a.x = static_cast<T1>(a.x * b);
+    a.y = static_cast<T1>(a.y * b);
+    a.z = static_cast<T1>(a.z * b);
+  }
+  return a;
+}
+
+template<typename T1, typename T2> static inline
+Point3<T1>& operator /= (Point3<T1>& a, T2 b)
+{
+  if (typeid(T1) == typeid(int)) {
+    a.x = I3D_ROUND_TO_INT(a.x / b);
+    a.y = I3D_ROUND_TO_INT(a.y / b);
+    a.z = I3D_ROUND_TO_INT(a.z / b);
+  } else {
+    a.x = static_cast<T1>(a.x / b);
+    a.y = static_cast<T1>(a.y / b);
+    a.z = static_cast<T1>(a.z / b);
+  }
+  return a;
+}
+
+template<typename T> static inline
+bool operator == (const Point3<T>& a, const Point3<T>& b)
+{
+  return a.x == b.x && a.y == b.y && a.z == b.z;
+}
+
+template<typename T> static inline
+bool operator != (const Point3<T>& a, const Point3<T>& b)
+{
+  return a.x != b.x || a.y != b.y || a.z != b.z;
+}
+
+template<typename T> static inline
+Point3<T> operator + (const Point3<T>& a, const Point3<T>& b)
+{
+  return Point3<T>(a.x + b.x, a.y + b.y, a.z + b.z);
+}
+
+template<typename T> static inline
+Point3<T> operator - (const Point3<T>& a, const Point3<T>& b)
+{
+  return Point3<T>(a.x - b.x, a.y - b.y, a.z - b.z);
+}
+
+template<typename T> static inline
+Point3<T> operator - (const Point3<T>& a)
+{
+  return Point3<T>(-a.x, -a.y, -a.z);
+}
+
+template<typename T1, typename T2> static inline
+Point3<T1> operator * (const Point3<T1>& a, T2 b)
+{
+  if (typeid(T1) == typeid(int)) {
+    return Point3<T1>(I3D_ROUND_TO_INT(a.x*b), I3D_ROUND_TO_INT(a.y*b), I3D_ROUND_TO_INT(a.z*b));
+  } else {
+    return Point3<T1>(static_cast<T1>(a.x*b), static_cast<T1>(a.y*b), static_cast<T1>(a.z*b));
+  }
+}
+
+template<typename T1, typename T2> static inline
+Point3<T2> operator * (T1 a, const Point3<T2>& b)
+{
+  if (typeid(T2) == typeid(int)) {
+    return Point3<T2>(I3D_ROUND_TO_INT(b.x*a), I3D_ROUND_TO_INT(b.y*a), I3D_ROUND_TO_INT(b.z*a));
+  } else {
+    return Point3<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a), static_cast<T2>(b.z*a));
+  }
+}
+
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace I3D

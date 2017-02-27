@@ -594,6 +594,8 @@ MessageLevel MessageManager::sLevel = MessageLevel::MSG_ERROR;
 //std::string MessageManager::sLastMessage = "";
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 
+std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
+
 MessageManager::MessageManager()
 {
 }
@@ -653,47 +655,47 @@ void MessageManager::initExternalHandlers()
   //#endif // HAVE_GDAL
 }
 
-void MessageManager::onDebug(const char *msg, char mDate[64])
+void MessageManager::onDebug(const char *msg, const char *date)
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgDebug(msg, mDate);
+      lst->onMsgDebug(msg, date);
     }
   }
 }
 
-void MessageManager::onVerbose(const char *msg, char mDate[64]) 
+void MessageManager::onVerbose(const char *msg, const char *date) 
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgVerbose(msg, mDate);
+      lst->onMsgVerbose(msg, date);
     }
   }
 }
 
-void MessageManager::onInfo(const char *msg, char mDate[64])
+void MessageManager::onInfo(const char *msg, const char *date)
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgInfo(msg, mDate);
+      lst->onMsgInfo(msg, date);
     }
   }
 }
 
-void MessageManager::onWarning(const char *msg, char mDate[64])
+void MessageManager::onWarning(const char *msg, const char *date)
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgWarning(msg, mDate);
+      lst->onMsgWarning(msg, date);
     }
   }
 }
 
-void MessageManager::onError(const char *msg, char mDate[64])
+void MessageManager::onError(const char *msg, const char *date)
 {
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgError(msg, mDate);
+      lst->onMsgError(msg, date);
     }
   }
 }
@@ -725,6 +727,42 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
     sObjMessage->onError(msg, date);
+    break;
+  default:
+    break;
+  }
+}
+
+void MessageManager::release(const Message &msg)
+{
+  std::string msg_out;
+  if (msg.getLine() == -1 && msg.getFile() == "" && msg.getFunction() == "") {
+    msg_out = msg.getMessage();
+  } else {
+    char buf[1000];
+#if defined _MSC_VER
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+#else
+    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+#endif
+    msg_out =  std::string(buf);
+  }
+
+  switch (msg.getLevel()) {
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
+    sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
+    sObjMessage->onVerbose(msg_out.c_str(), msg.getDate());
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
+    sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
+    sObjMessage->onWarning(msg_out.c_str(), msg.getDate());
+    break;
+  case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
+    sObjMessage->onError(msg_out.c_str(), msg.getDate());
     break;
   default:
     break;
@@ -786,42 +824,42 @@ void Log::write(const char *msg)
   }
 }
 
-void Log::onMsgDebug(const char *msg, char date[64])
+void Log::onMsgDebug(const char *msg, const char *date)
 {
   if (mLevel <= MessageLevel::MSG_DEBUG) {
     _write(msg, date);
   }
 }
 
-void Log::onMsgVerbose(const char *msg, char date[64])
+void Log::onMsgVerbose(const char *msg, const char *date)
 {
   if (mLevel <= MessageLevel::MSG_VERBOSE) {
     _write(msg, date);
   }
 }
 
-void Log::onMsgInfo(const char *msg, char date[64])
+void Log::onMsgInfo(const char *msg, const char *date)
 {
   if (mLevel <= MessageLevel::MSG_INFO) {
     _write(msg, date);
   }
 }
 
-void Log::onMsgWarning(const char *msg, char date[64])
+void Log::onMsgWarning(const char *msg, const char *date)
 {
   if (mLevel <= MessageLevel::MSG_WARNING) {
     _write(msg, date);
   }
 }
 
-void Log::onMsgError(const char *msg, char date[64])
+void Log::onMsgError(const char *msg, const char *date)
 {
   if (mLevel <= MessageLevel::MSG_ERROR) {
     _write(msg, date);
   }
 }
 
-void Log::_write(const char *msg, char date[64])
+void Log::_write(const char *msg, const char *date)
 {
 
   if (sLogFile.empty()) {
@@ -840,6 +878,7 @@ void Log::_write(const char *msg, char date[64])
     //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
   }
 }
+
 
 } // End namespace EXPERIMENTAL
 

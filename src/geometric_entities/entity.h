@@ -21,6 +21,7 @@ namespace I3D
 // forward declaration
 template<typename T> class Window;
 template<typename T> class Point;
+template<typename T> class Point3;
 
 /*! \defgroup GeometricEntities Entidades geométricas
  *  Puntos, lineas, ...
@@ -303,7 +304,7 @@ protected:
   /*!
    * \brief Conjunto de puntos
    */
-  std::vector<cv::Point3_<T>> mPoints;
+  std::vector<Point3<T>> mPoints;
 
 public:
 
@@ -333,7 +334,7 @@ public:
    * \param[in] vPoint vector de puntos
    * \see entity_type
    */
-  Entity3DPoints(entity_type type, const std::vector<cv::Point3_<T>> &vPoint);
+  Entity3DPoints(entity_type type, const std::vector<Point3<T>> &vPoint);
 
   /*!
    * \brief Constructor lista de inicialización
@@ -341,7 +342,7 @@ public:
    * \param[in] listPoints Inicializador de lista con los puntos
    * \see entity_type
    */
-  Entity3DPoints(entity_type type, std::initializer_list<cv::Point3_<T>> listPoints);
+  Entity3DPoints(entity_type type, std::initializer_list<Point3<T>> listPoints);
 
   //~Entity3DPoints();
 
@@ -356,20 +357,20 @@ public:
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  virtual void add(const cv::Point3_<T> &point) = 0;
+  virtual void add(const Point3<T> &point) = 0;
 
   /*!
    * \brief Devuelve los puntos de la colección
    * \return vector de puntos
    */
-  const std::vector<cv::Point3_<T>> &getPoints() const { return mPoints; }
+  const std::vector<Point3<T>> &getPoints() const { return mPoints; }
 
   /*!
    * \brief Devuelve los puntos que esta dentro de una ventana
    * \param[in] w Ventana
    * \return Puntos que entran dentro de la ventana
    */
-  std::vector<cv::Point3_<T>> getPointsInWindow(const Window<T> &w) const;
+  std::vector<Point3<T>> getPointsInWindow(const Window<T> &w) const;
 
   /*!
    * \brief Número de puntos de la colección
@@ -392,29 +393,29 @@ public:
   /*!
    * \brief Operador de indexación sobrecargado
    * \param[in] id indice del elemento
-   * \return cv::Point3_<T>
+   * \return Point3<T>
    */
-  cv::Point3_<T> &operator[](size_t id) { return mPoints[id];  }
+  Point3<T> &operator[](size_t id) { return mPoints[id];  }
 
   /*!
    * \brief Iterador al inicio
    */
-  virtual typename std::vector<cv::Point3_<T>>::iterator begin();
+  virtual typename std::vector<Point3<T>>::iterator begin();
 
   /*!
    * \brief Iterador constante al inicio
    */
-  virtual typename std::vector<cv::Point3_<T>>::const_iterator begin() const;
+  virtual typename std::vector<Point3<T>>::const_iterator begin() const;
 
   /*!
    * \brief Iterador al final
    */
-  virtual typename std::vector<cv::Point3_<T>>::iterator end();
+  virtual typename std::vector<Point3<T>>::iterator end();
 
   /*!
    * \brief Iterador constante al final
    */
-  virtual typename std::vector<cv::Point3_<T>>::const_iterator end() const;
+  virtual typename std::vector<Point3<T>>::const_iterator end() const;
 };
 
 
@@ -431,11 +432,11 @@ Entity3DPoints<T>::Entity3DPoints(entity_type type, const Entity3DPoints &entity
   : Entity<T>(type), mPoints(entityPoints.mPoints) {}
 
 template<typename T> inline
-Entity3DPoints<T>::Entity3DPoints(entity_type type, const std::vector<cv::Point3_<T>> &vPoint) 
+Entity3DPoints<T>::Entity3DPoints(entity_type type, const std::vector<Point3<T>> &vPoint) 
   : Entity<T>(type), mPoints(vPoint) {}
 
 template<typename T> inline
-Entity3DPoints<T>::Entity3DPoints(entity_type type, std::initializer_list<cv::Point3_<T>> entityPoints) 
+Entity3DPoints<T>::Entity3DPoints(entity_type type, std::initializer_list<Point3<T>> entityPoints) 
   : Entity<T>(type), mPoints(entityPoints) {}
 
 template<typename T> inline
@@ -449,9 +450,9 @@ Entity3DPoints<T> &Entity3DPoints<T>::operator = (const Entity3DPoints &entityPo
 }
 
 template<typename T> inline
-std::vector<cv::Point3_<T>> Entity3DPoints<T>::getPointsInWindow(const Window<T> &w) const
+std::vector<Point3<T>> Entity3DPoints<T>::getPointsInWindow(const Window<T> &w) const
 {
-  std::vector<cv::Point3_<T>> r_points(mPoints.size());
+  std::vector<Point3<T>> r_points(mPoints.size());
   int j = 0;
   for (size_t i = 0; i < mPoints.size(); i++) {
     if (w.containsPoint(mPoints[i])) {
@@ -477,25 +478,25 @@ Window<T> Entity3DPoints<T>::getWindow() const
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point3_<T>>::iterator Entity3DPoints<T>::begin() 
+typename std::vector<Point3<T>>::iterator Entity3DPoints<T>::begin() 
 {
   return mPoints.begin();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point3_<T>>::const_iterator Entity3DPoints<T>::begin() const 
+typename std::vector<Point3<T>>::const_iterator Entity3DPoints<T>::begin() const 
 {
   return mPoints.cbegin();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point3_<T>>::iterator Entity3DPoints<T>::end()
+typename std::vector<Point3<T>>::iterator Entity3DPoints<T>::end()
 {
   return mPoints.end();
 }
 
 template<typename T> inline 
-typename std::vector<cv::Point3_<T>>::const_iterator Entity3DPoints<T>::end() const 
+typename std::vector<Point3<T>>::const_iterator Entity3DPoints<T>::end() const 
 {
   return mPoints.cend();
 }
