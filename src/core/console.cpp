@@ -15,6 +15,29 @@ using namespace std;
 namespace I3D
 {
 
+struct msgProperties {
+  const char *normal;
+  const char *extend;
+  Console::Color foreColor;
+  Console::Intensity intensity;
+};
+
+struct msgProperties msgTemplate[] = {   
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
+  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
+};
+
+msgProperties getMessageProperties( MessageLevel msgLevel ) 
+{
+  return msgTemplate[static_cast<int>(msgLevel)];
+}
+
+
+MessageLevel Console::sLevel = MessageLevel::MSG_ERROR;
+
 Console::Console() 
 { 
 #ifdef WIN32
@@ -173,6 +196,70 @@ void Console::setConsoleUnicode()
   //SetConsoleCP(1252);
   SetConsoleOutputCP(65001);
 #endif
+}
+
+void Console::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+void Console::printMessage(const char *msg)
+{
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  std::string aux(msg);
+  I3D::replaceString(&aux, "%", "%%");
+  printf_s("%s\n", aux.c_str());
+}
+
+void Console::printErrorMessage(const char *msg)
+{
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  setConsoleForegroundColor(Console::Color::RED, Console::Intensity::BRIGHT);
+  std::string aux(msg);
+  I3D::replaceString(&aux, "%", "%%");
+  printf_s("%s\n", aux.c_str());
+  reset();
+}
+
+void Console::onMsgDebug(const char *msg, const char *date)
+{
+  if (sLevel <= MessageLevel::MSG_DEBUG) {
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgVerbose(const char *msg, const char *date)
+{
+  if (sLevel <= MessageLevel::MSG_VERBOSE) {
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgInfo(const char *msg, const char *date)
+{
+  if (sLevel <= MessageLevel::MSG_INFO) {
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgWarning(const char *msg, const char *date)
+{
+  setConsoleForegroundColor(Console::Color::YELLOW, Console::Intensity::BRIGHT);
+  if (sLevel <= MessageLevel::MSG_WARNING) {
+    printMessage(msg);
+  }
+  reset();
+}
+
+void Console::onMsgError(const char *msg, const char *date)
+{
+  if (sLevel <= MessageLevel::MSG_ERROR) {
+    printErrorMessage(msg);
+  }
 }
 
 #ifdef WIN32

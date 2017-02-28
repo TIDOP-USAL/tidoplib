@@ -16,6 +16,7 @@
 
 #include "core/defs.h"
 #include "core/utils.h"
+#include "core/messages.h"
 
 namespace I3D
 {
@@ -38,7 +39,7 @@ namespace I3D
  * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
  * salida, error)
  */
-class I3D_EXPORT Console
+class I3D_EXPORT Console : public MessageManager::Listener
 {
 public:
 
@@ -147,6 +148,14 @@ private:
   int mBackColor;
 
 #endif
+  
+  /*!
+   * \brief Nivel de información de los mensajes
+   *
+   * Por defecto MSG_ERROR
+   * \see MessageLevel
+   */
+  static MessageLevel sLevel;
 
 public:
 
@@ -164,6 +173,7 @@ public:
 
   /*!
    * Destructora
+   * Se recuperan las opciones por defecto de la consola
    */
   ~Console();
 
@@ -191,6 +201,57 @@ public:
    * \brief Establece la consola como modo Unicode
    */
   void setConsoleUnicode();
+
+  void setLogLevel(MessageLevel level);
+
+  /*!
+   * \brief Imprime un mensaje en la consola
+   * \param[in] msg Mensaje
+   */
+  void printMessage(const char *msg);
+
+  /*!
+   * \brief Imprime un mensaje de error en la consola
+   * \param[in] msg Mensaje
+   */
+  void printErrorMessage(const char *msg);
+
+protected:
+
+  /*!
+   * \brief onMsgDebug
+   * \param msg
+   * \param date
+   */
+  void onMsgDebug(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgVerbose
+   * \param msg
+   * \param date
+   */
+  void onMsgVerbose(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgInfo
+   * \param msg
+   * \param date
+   */
+  void onMsgInfo(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgWarning
+   * \param msg
+   * \param date
+   */
+  void onMsgWarning(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgError
+   * \param msg
+   * \param date
+   */
+  void onMsgError(const char *msg, const char *date) override;
 
 private:
 

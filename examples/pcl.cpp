@@ -1,15 +1,17 @@
 #include <stdio.h>
 
+#include "core/defs.h"
+
+I3D_SUPPRESS_WARNINGS
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
+I3D_DEFAULT_WARNINGS
 
 // Cabeceras tidopLib
 #include "core/console.h"
 #include "core/messages.h"
 #include "img/imgio.h"
-
-#include "experimental/experimental.h"
 
 using namespace I3D;
 
@@ -36,20 +38,27 @@ int main(int argc, char** argv)
 
   std::string file = cmdParser.getValue<std::string>("file");
 
-  //Fichero de log
-  EXPERIMENTAL::Log &log = EXPERIMENTAL::Log::getInstance();
+  // Fichero de log
+  Log &log = Log::getInstance();
   //Configuración de log y mensajes por consola
   char logfile[I3D_MAX_PATH];
   if (changeFileExtension(getRunfile(), "log", logfile, I3D_MAX_PATH) == 0) {
     log.setLogFile(logfile);
   }
-  log.setLogLevel(EXPERIMENTAL::MessageLevel::MSG_INFO);
+  log.setLogLevel(MessageLevel::MSG_INFO);
+
+  // Consola
+  Console console;
+  console.setLogLevel(MessageLevel::MSG_INFO);
+  console.setConsoleUnicode();
 
   //Configuración de mensajes
-  EXPERIMENTAL::MessageManager &msg_h = EXPERIMENTAL::MessageManager::getInstance();
+  MessageManager &msg_h = MessageManager::getInstance();
   msg_h.addListener(&log);
+  msg_h.addListener(&console);
 
   msgInfo("Abriendo fichero: %s", file.c_str());
+
   pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZRGBA>);
   if (pcl::io::loadPCDFile(file.c_str(), *cloud) == -1) {
     msgError("Couldn't read file test_pcd.pcd \n");
