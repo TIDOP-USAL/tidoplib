@@ -279,7 +279,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
 {
   for (auto arg : mCmdArgs) {
     // Comando de ayuda
-    if (strcmp(argv[1], "-help") == 0) {
+    if (argc > 1 && strcmp(argv[1], "-help") == 0) {
       printHelp();
       return CmdParser::Status::PARSE_HELP;
     }
