@@ -702,6 +702,7 @@ void MessageManager::onError(const char *msg, const char *date)
 
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
+  // Bloqueo aqui para evitar problemas entre hilos
   char date[64];
   std::time_t now = std::time(NULL);
   std::tm *_tm = std::localtime(&now);
