@@ -26,7 +26,8 @@ unix {
 }
 
 INCLUDEPATH += ../../src/ \
-               $$PWD/../../../Libs/opencv/include
+               $$PWD/../../../Libs/opencv/include \
+               $$PWD/../../../Libs/eigen/include/eigen3
 
 SOURCES += \
     ../../src/core/console.cpp \

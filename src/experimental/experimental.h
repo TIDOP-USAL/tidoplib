@@ -494,6 +494,7 @@ public:
         va_end(args);
         mMessage = buf;
       } catch (...) {
+
         // Por evitar un error en la constructora... 
       }
     }
@@ -826,6 +827,238 @@ protected:
    * \param date Fecha y hora del mensaje
    */
   void _write(const char *msg, const char *date);
+
+  //static std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
+
+};
+
+
+/*!
+ * \brief Clase para gestionar la configuración de la ventana de comandos
+ *
+ * Permite modificar el color e intensidad de caracter y de fondo,
+ * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
+ * salida, error)
+ */
+class I3D_EXPORT Console : public MessageManager::Listener
+{
+public:
+
+  /*!
+   * \brief Valores de intensidad de color
+   */
+  enum class Intensity : int8_t{
+    NORMAL,  /*!< Normal */
+    BRIGHT   /*!< Brillante */
+  };
+
+  /*!
+   * \brief Tipos de color de fondo y caracter.
+   */
+  enum class Color : int8_t {
+    BLACK,    /*!< Negro */
+    RED,      /*!< Rojo */
+    GREEN,    /*!< Verde */
+    YELLOW,   /*!< Amarillo */
+    BLUE,     /*!< Azul */
+    MAGENTA,  /*!< Magenta */
+    CYAN,     /*!< Cian */
+    WHITE     /*!< Blanco */
+  };
+
+  /*!
+   * \brief Modo de consola
+   */
+  enum class Mode : int8_t {
+    INPUT,          /*!< Consola en modo entrada */
+    OUTPUT,         /*!< Consola en modo salida */
+    OUTPUT_ERROR    /*!< Consola en modo salida de errores */
+  };
+
+private:
+
+#ifdef WIN32
+
+  // Consola de Windows
+
+  /*!
+   * \brief Manejador de la consola
+   */
+  HANDLE h;
+
+  /*!
+   * \brief Intensidad de caracter
+   */
+  WORD mForeIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  WORD mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  WORD mBackIntensity;
+
+  /*!
+   * \brief Color de fondo
+   */
+  WORD mBackColor;
+
+  /*!
+   * \brief Configuración de la consola al iniciar.
+   *
+   * La configuración inicial se recupera al salir o
+   * con el método reset
+   */
+  WORD mOldColorAttrs;
+
+#else
+
+  // Consola Linux
+
+  /*!
+   * \brief mStream
+   */
+  FILE *mStream;
+
+  /*!
+   * \brief mCommand
+   */
+  char mCommand[13];
+
+  /*!
+   * \brief Intensidad de caracter
+   */
+  int mForeIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  int mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  int mBackIntensity;
+
+  /*!
+   * \brief Color de fondo
+   */
+  int mBackColor;
+
+#endif
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  Console();
+
+  /*!
+   * \brief Constructora de copia
+   * \param[in] mode Modo de consola
+   * \see Mode
+   */
+  Console(Console::Mode mode);
+
+  /*!
+   * Destructora
+   */
+  ~Console();
+
+  /*!
+   * \brief Recupera los valores iniciales
+   */
+  void reset();
+
+  /*!
+   * \brief Establece el color de caracter
+   * \param[in] foreColor Color de caracter
+   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+   * \see Console::Color, Console::Intensity
+   */
+  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+
+  /*!
+   * \brief Establece el color de fondo
+   * \param[in] backColor Color de fondo
+   * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
+   */
+  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+
+  /*!
+   * \brief Establece la consola como modo Unicode
+   */
+  void setConsoleUnicode();
+
+  /*!
+   * \brief Imprime un mensaje en la consola
+   */
+  void printMessage(const char *msg);
+
+protected:
+
+  /*!
+   * \brief onMsgDebug
+   * \param msg
+   * \param date
+   */
+  void onMsgDebug(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgVerbose
+   * \param msg
+   * \param date
+   */
+  void onMsgVerbose(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgInfo
+   * \param msg
+   * \param date
+   */
+  void onMsgInfo(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgWarning
+   * \param msg
+   * \param date
+   */
+  void onMsgWarning(const char *msg, const char *date) override;
+
+  /*!
+   * \brief onMsgError
+   * \param msg
+   * \param date
+   */
+  void onMsgError(const char *msg, const char *date) override;
+
+private:
+
+#ifdef WIN32
+
+  /*!
+   * \brief Inicializa la consola guardando la configuración  actual.
+   * \param handle
+   */
+  void init( DWORD handle );
+
+#else
+
+  /*!
+   * \brief Inicializa la consola guardando la configuración  actual.
+   */
+  void init(FILE *stream);
+
+#endif
+
+  /*!
+   * \brief Actualiza la consola
+   */
+  void update();
 
 };
 

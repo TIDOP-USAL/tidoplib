@@ -713,21 +713,34 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
     strcpy(date, "NULL");
   }
 
+  char buf[1000];
+  #if defined _MSC_VER
+    if (line != -1)
+      sprintf_s(buf, 1000, GetMessageProperties(level).normal, msg, file, line, function);
+    else
+      sprintf_s(buf, 1000, GetMessageProperties(level).extend, msg, file, line, function);
+  #else
+    if (line != -1)
+      snprintf(buf, 1000, GetMessageProperties(level).normal, msg, file, line, function);
+    else
+      snprintf(buf, 1000, GetMessageProperties(level).extend, msg, file, line, function);
+  #endif
+
   switch (level) {
   case I3D::EXPERIMENTAL::MessageLevel::MSG_DEBUG:
-    sObjMessage->onDebug(msg, date);
+    sObjMessage->onDebug(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_VERBOSE:
-    sObjMessage->onVerbose(msg, date);
+    sObjMessage->onVerbose(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_INFO:
-    sObjMessage->onInfo(msg, date);
+    sObjMessage->onInfo(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_WARNING:
-    sObjMessage->onWarning(msg, date);
+    sObjMessage->onWarning(buf, date);
     break;
   case I3D::EXPERIMENTAL::MessageLevel::MSG_ERROR:
-    sObjMessage->onError(msg, date);
+    sObjMessage->onError(buf, date);
     break;
   default:
     break;
@@ -880,6 +893,266 @@ void Log::_write(const char *msg, const char *date)
   }
 }
 
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+Console::Console() 
+{ 
+#ifdef WIN32
+  init(STD_OUTPUT_HANDLE);
+#else
+  init(stdout);
+#endif
+}
+
+Console::Console(Console::Mode mode)
+{ 
+#ifdef WIN32
+  DWORD handle;
+  switch (mode) {
+  case Console::Mode::INPUT:
+    handle = STD_INPUT_HANDLE;
+    break;
+  case Console::Mode::OUTPUT:
+    handle = STD_OUTPUT_HANDLE;
+    break;
+  case Console::Mode::OUTPUT_ERROR:
+    handle = STD_ERROR_HANDLE;
+    break;
+  default:
+    handle = STD_OUTPUT_HANDLE;
+    break;
+  }
+  init(handle);
+#else
+  FILE *stream;
+    switch (mode) {
+    case Console::Mode::INPUT:
+      stream = stdin;
+      break;
+    case Console::Mode::OUTPUT:
+      stream = stdout;
+      break;
+    case Console::Mode::OUTPUT_ERROR:
+      stream = stderr;
+      break;
+    default:
+      stream = stdout;
+      break;
+    }
+    init(stream);
+#endif
+}
+
+Console::~Console() 
+{
+  reset();
+}
+
+void Console::reset() 
+{
+#ifdef WIN32
+  SetConsoleTextAttribute(h, mOldColorAttrs);
+#else
+  sprintf(mCommand, "%c[0;m", 0x1B);
+  fprintf(mStream, "%s", mCommand);
+#endif
+}
+
+void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity)
+{
+#ifdef WIN32
+  switch (foreColor) {
+  case I3D::Console::Color::BLACK:
+    mForeColor = 0;
+    break;
+  case I3D::Console::Color::BLUE:
+    mForeColor = FOREGROUND_BLUE;
+    break;
+  case I3D::Console::Color::GREEN:
+    mForeColor = FOREGROUND_GREEN;
+    break;
+  case I3D::Console::Color::CYAN:
+    mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
+    break;
+  case I3D::Console::Color::RED:
+    mForeColor = FOREGROUND_RED;
+    break;
+  case I3D::Console::Color::MAGENTA:
+    mForeColor = FOREGROUND_RED | FOREGROUND_BLUE;
+    break;
+  case I3D::Console::Color::YELLOW:
+    mForeColor = FOREGROUND_GREEN | FOREGROUND_RED;
+    break;
+  case I3D::Console::Color::WHITE:
+    mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
+    break;
+  default:
+    mForeColor = 0;
+    break;
+  }
+
+  if(intensity == Console::Intensity::NORMAL)
+      mForeIntensity = 0;
+  else
+      mForeIntensity = FOREGROUND_INTENSITY;
+#else
+  mForeColor = static_cast<int>(foreColor) + 30;
+  mForeIntensity = static_cast<int>(intensity);
+#endif
+
+  update();
+}
+
+void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
+{
+#ifdef WIN32
+  switch (backColor) {
+  case I3D::Console::Color::BLACK:
+    mBackColor = 0;
+    break;
+  case I3D::Console::Color::BLUE:
+    mBackColor = BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::GREEN:
+    mBackColor = BACKGROUND_GREEN;
+    break;
+  case I3D::Console::Color::CYAN:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::RED:
+    mBackColor = BACKGROUND_RED;
+    break;
+  case I3D::Console::Color::MAGENTA:
+    mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::YELLOW:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
+    break;
+  case I3D::Console::Color::WHITE:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
+    break;
+  default:
+    mBackColor = 0;
+    break;
+  }
+  if(intensity == Console::Intensity::NORMAL)
+      mBackIntensity = 0;
+  else
+      mBackIntensity = BACKGROUND_INTENSITY;
+#else
+  mBackColor = static_cast<int>(backColor) + 40;
+  mBackIntensity = static_cast<int>(intensity);
+#endif
+  update();
+}
+
+void Console::setConsoleUnicode() 
+{
+#ifdef WIN32
+  //SetConsoleOutputCP(1252);     
+  //SetConsoleCP(1252);
+  SetConsoleOutputCP(65001);
+#endif
+}
+
+void Console::printMessage(const char *msg)
+{
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  /*Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
+  console.*/setConsoleForegroundColor(GetMessageProperties(level).foreColor, GetMessageProperties(level).intensity);
+  std::string aux(msg);
+  I3D::replaceString(&aux, "%", "%%");
+  printf_s("%s\n", aux.c_str());
+  reset();
+}
+
+void Console::onMsgDebug(const char *msg, const char *date)
+{
+  if (mLevel <= MessageLevel::MSG_DEBUG) {
+    //_write(msg, date);
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgVerbose(const char *msg, const char *date)
+{
+  if (mLevel <= MessageLevel::MSG_VERBOSE) {
+    //_write(msg, date);
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgInfo(const char *msg, const char *date)
+{
+  if (mLevel <= MessageLevel::MSG_INFO) {
+    //_write(msg, date);
+    printMessage(msg);
+  }
+}
+
+void Console::onMsgWarning(const char *msg, const char *date)
+{
+  if (mLevel <= MessageLevel::MSG_WARNING) {
+    //_write(msg, date);
+    printMessage(msg);
+  }
+}
+
+void Log::onMsgError(const char *msg, const char *date)
+{
+  if (mLevel <= MessageLevel::MSG_ERROR) {
+    //_write(msg, date);
+    printMessage(msg);
+  }
+}
+
+#ifdef WIN32
+void Console::init(DWORD handle) 
+{
+  setConsoleUnicode();
+  h = GetStdHandle(handle);
+  CONSOLE_SCREEN_BUFFER_INFO info; 
+  if (! GetConsoleScreenBufferInfo(h, &info)) {
+    mOldColorAttrs = 0x0007;
+  } else {
+    mOldColorAttrs = info.wAttributes; 
+  }
+  mForeColor = (mOldColorAttrs & 0x0007);
+  mForeIntensity = (mOldColorAttrs & 0x0008);
+  mBackColor = (mOldColorAttrs & 0x0070);
+  mBackIntensity = (mOldColorAttrs & 0x0080);
+}
+#else
+void Console::init(FILE *stream)
+{
+  mStream = stream;
+  mForeColor = 0;
+  mForeIntensity = 0;
+  mBackColor = 0;
+  mBackIntensity = 0;
+}
+#endif
+
+void Console::update()
+{
+#ifdef WIN32
+  SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
+#else
+  sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mForeIntensity, mForeColor, mBackColor);
+  fprintf(mStream, "%s", mCommand);
+#endif
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
+/* ---------------------------------------------------------------------------------- */
 
 } // End namespace EXPERIMENTAL
 

@@ -594,10 +594,10 @@ uint64_t Chrono::pause()
 {
   if (mStatus == Status::RUNNING) {
     mAccumulated += getTickCount() - mTimeIni;
-    mStatus = Status::PAUSE;
-    return mAccumulated;  
+    mStatus = Status::PAUSE; 
     if (bWriteMsg) consolePrintVerbose("Chrono paused");
   }
+  return mAccumulated;
 }
 
 void Chrono::reset()
