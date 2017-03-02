@@ -80,7 +80,7 @@ public:
 
   /*!
    * \brief Sobrecarga del operador  de asignación
-   * \param[in] w Bbox que se asigna
+   * \param[in] bbox Bbox que se asigna
    * \return Referencia al Bbox
    */
   Bbox &operator = (const Bbox &bbox);

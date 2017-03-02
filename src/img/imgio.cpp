@@ -584,10 +584,11 @@ Status RasterGraphics::open(const char *file, Mode mode)
     // Otros formatos
   }
 #endif
-
-  mImageFormat->open(file, mode);
-  update();
-
+  if (mImageFormat) {
+    mImageFormat->open(file, mode);
+    update();
+    return Status::OPEN_OK;
+  } else return Status::OPEN_FAIL;
 }
 
 Status RasterGraphics::create(int rows, int cols, int bands, int type) {
@@ -599,18 +600,19 @@ Status RasterGraphics::create(int rows, int cols, int bands, int type) {
 
 void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
+  if (!mImageFormat) throw I3D_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
 }
 
 Status RasterGraphics::write(cv::Mat &image, WindowI w)
 {
-  if (mImageFormat->write(image, w) == 0) return Status::SUCCESS;
+  if (mImageFormat && mImageFormat->write(image, w) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
 Status RasterGraphics::write(cv::Mat &image, Helmert2D<PointI> *trf)
 {
-  if (mImageFormat->write(image, trf) == 0) return Status::SUCCESS;
+  if (mImageFormat && mImageFormat->write(image, trf) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
@@ -633,9 +635,11 @@ int RasterGraphics::getBands() const
 
 void RasterGraphics::update()
 {
-  mCols = mImageFormat->getCols();
-  mRows = mImageFormat->getRows();
-  mBands = mImageFormat->getBands();
+  if (mImageFormat) {
+    mCols = mImageFormat->getCols();
+    mRows = mImageFormat->getRows();
+    mBands = mImageFormat->getBands();
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -657,39 +661,47 @@ Status GeoRasterGraphics::open(const char *file, Mode mode)
   }
 #endif 
 
-  mImageFormat->open(file, mode);
-  update();
+  if (mImageFormat) {
+    mImageFormat->open(file, mode);
+    update();
+  }
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const
 {
 #ifdef HAVE_GDAL
-  return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->georeference();
-#else
-  return std::array<double, 6>();
+  if (mImageFormat)
+    return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->georeference();
+  else
 #endif
+  return std::array<double, 6>();
+
 }
 
 const char *GeoRasterGraphics::projection() const
 {
 #ifdef HAVE_GDAL
-  return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->projection();
-#else
-  return NULL;
+  if (mImageFormat)
+    return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->projection();
+  else
 #endif
+  return NULL;
+
 }
 
 void GeoRasterGraphics::setGeoreference(const std::array<double, 6> &georef)
 {
 #ifdef HAVE_GDAL
-  dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setGeoreference(georef);
+  if (mImageFormat)
+    dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setGeoreference(georef);
 #endif
 }
 
 void GeoRasterGraphics::setProjection(const char *proj)
 {
 #ifdef HAVE_GDAL
-  dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setProjection(proj);
+  if (mImageFormat)
+    dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->setProjection(proj);
 #endif
 }
 
@@ -697,7 +709,8 @@ void GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
 {
 #ifdef HAVE_GDAL
   // No me gusta... Tiene que quedar mas sencillo la lectura de imagenes georeferenciadas.
-  dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
+  if (mImageFormat)
+    dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
 #endif
 }
 

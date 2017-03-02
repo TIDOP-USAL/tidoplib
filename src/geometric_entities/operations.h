@@ -16,7 +16,7 @@ namespace I3D
 // forward declaration
 template<typename T> class Segment;
 
-/*! \defgroup GeometricEntities Entidades geomÈtricas
+/*! \defgroup GeometricEntities Entidades geom√©tricas
  *  Puntos, lineas, ...
  *  \{
  */
@@ -53,8 +53,8 @@ I3D_EXPORT double length(const cv::Point3_<T> &v)
 
 /*!
  * \brief Distancia entre dos puntos
- * \param pt1[in] Punto 1
- * \param pt2[in] Punto 2
+ * \param[in] pt1 Punto 1
+ * \param[in] pt2 Punto 2
  * \return Distancia
  */
 template<typename T> inline
@@ -71,7 +71,7 @@ I3D_EXPORT double distance(const T &pt1, const T &pt2)
 I3D_EXPORT int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect);
 
 /*!
- * ComprobaciÛn de que los 3 puntos est·n en la misma lÌnea
+ * Comprobaci√≥n de que los 3 puntos est√°n en la misma l√≠nea
  */
 I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
 

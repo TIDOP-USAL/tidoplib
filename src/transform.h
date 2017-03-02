@@ -272,6 +272,23 @@ public:
   virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, 
                                              std::vector<Point_t> *ptsOut, 
                                              transform_order trfOrder = transform_order::DIRECT) const;
+  
+  //template<typename T1, typename T2> 
+  //transform_status transform( T1 in_first, T1 in_last, T2 out_first, transform_order trfOrder = transform_order::DIRECT) const
+  //{
+  //  while (in_first != in_last) {
+  //    transform(*in_first++, *out_first++, trfOrder);
+  //  }
+  //}
+
+//template<typename T, typename Point_t>
+//I3D_EXPORT void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
+//                          transform_order trfOrder = transform_order::DIRECT)
+//{
+//  while (in_first != in_last) {
+//    trf->transform(*in_first++, &(*out_first++), trfOrder);
+//  }
+//}
 
   /*!
    * \brief Aplica la transformación a un punto
@@ -359,6 +376,7 @@ transform_status Transform<Point_t>::transformParallel( const std::vector<Point_
   return r_status;
 }
 
+
 template<typename Point_t> inline
 double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                                                const std::vector<Point_t> &ptsOut, 
@@ -433,7 +451,7 @@ private:
   std::list<std::shared_ptr<Transform<Point_t>>> mTransf;
 
   /*!
-   * \brief Tipo de objeto punto. Puede ser Point<Point_t> o CV::Point_<Point_t>
+   * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
    */
   typedef Point_t value_type;
 
@@ -473,6 +491,8 @@ public:
    * \brief Borra las transformaciones
    */
   void clear() { mTransf.clear(); }
+
+  void del(int id) { mTransf.erase(mTransf.begin() + id); }
 
   bool isNumberOfPointsValid(int npoints) const override;
 
@@ -754,7 +774,7 @@ public:
    * \return Punto de salida
    * \see transform_order
    */
-  Point_t transform(const Point_t &in, transform_order trfOrder = transform_order::DIRECT) const override;
+  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 };
 
 template<typename Point_t> inline
@@ -916,14 +936,6 @@ public:
                              std::vector<Point_t> *ptsOut, 
                              transform_order trfOrder = transform_order::DIRECT) const override;
 
-  ///*!
-  // * \brief Transforma un conjunto de segmentos en otro aplicando una traslación
-  // * \param[in] in Puntos de entrada
-  // * \param[out] out Puntos de salida
-  // * \param[in] bDirect Transformación directa
-  // */
-  //void transform(const std::vector<Segment<sub_type>> &in, std::vector<Segment<sub_type>> *out, transform_order trfOrder = transform_order::DIRECT) const;
-
   /*!
    * \brief Aplica una traslación a un punto
    * \param[in] ptIn Punto de entrada
@@ -991,7 +1003,6 @@ transform_status Translate<Point_t>::compute(const std::vector<Point_t> &pts1,
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
     
-
   } catch (std::exception &e) {
     printError(e.what());
     status = transform_status::FAILURE;
@@ -1408,8 +1419,8 @@ public:
 
   /*!
    * \brief Constructor
-   * \param[in] x0 Traslación en x
-   * \param[in] y0 Traslación en y
+   * \param[in] tx Traslación en x
+   * \param[in] ty Traslación en y
    * \param[in] scale Escala
    * \param[in] rotation Rotación
    */
@@ -1884,8 +1895,8 @@ public:
    * \param[in] b Coeficiente b
    * \param[in] c Coeficiente c
    * \param[in] d Coeficiente d
-   * \param[in] tx Traslación en x
-   * \param[in] ty Traslación en y
+   * \param[in] x0 Traslación en x
+   * \param[in] y0 Traslación en y
    */
   void setParameters(double a, double b, double c, double d, double x0, double y0);
 
@@ -2596,7 +2607,7 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  transform_status transform(const Point_t &in, Point_t *ptOut, 
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
                              transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
@@ -2780,14 +2791,6 @@ public:
    * \see transform_order
    */
   virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override = 0;
-
-  ///*!
-  // * \brief Aplica la transformación a una entidad geométrica
-  // * \param[in] in Entidad de entrada
-  // * \param[out] out Entidad de salida
-  // * \param[in] bDirect Transformación directa (por defecto)
-  // */
-  //void transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::DIRECT) const override;
 
 };
 
@@ -3008,15 +3011,15 @@ public:
    */
   void setParameters(double tx, double ty, double tz, double scale, double omega, double phi, double kappa);
 
-  /*!
-   * \brief Establece la rotación de la transformación
-   * \param Ángulo de rotación en radianes
-   */
+  ///*!
+  // * \brief Establece la rotación de la transformación
+  // * \param Ángulo de rotación en radianes
+  // */
   //void setRotation(double rotation);
 
   /*!
    * \brief Establece la escala de la transformación
-   * \param[in] Escala de la transformación
+   * \param[in] scale Escala de la transformación
    */
   void setScale(double scale);
 
@@ -3273,6 +3276,16 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out,
     return;
   }
 }
+
+// Otra alternativa siguiendo el funcionamiento de std::transform
+//template<typename T, typename Point_t>
+//I3D_EXPORT void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
+//                          transform_order trfOrder = transform_order::DIRECT)
+//{
+//  while (in_first != in_last) {
+//    trf->transform(*in_first++, &(*out_first++), trfOrder);
+//  }
+//}
 
 /*!
  * \brief Aplica una transformación a un conjunto de entidades
@@ -3686,9 +3699,6 @@ void CrsTransform<Point_t>::init()
 /* ---------------------------------------------------------------------------------- */
 
 #endif // HAVE_GDAL
-
-
-
 
 } // End namespace I3D
 

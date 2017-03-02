@@ -84,7 +84,7 @@ I3D_EXPORT inline double azimut(const Point_t &pt1, const Point_t &pt2)
 // Estadistica
 
 template<typename T>
-I3D_EXPORT double mean(const T &data)
+I3D_EXPORT inline double mean(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
@@ -97,7 +97,7 @@ I3D_EXPORT double mean(const T &data)
 }
 
 template<typename T>
-I3D_EXPORT double variance(const T &data)
+I3D_EXPORT inline double variance(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
@@ -116,7 +116,7 @@ I3D_EXPORT double variance(const T &data)
 }
 
 template<typename T>
-I3D_EXPORT double standarDeviation(const T &data)
+I3D_EXPORT inline double standarDeviation(const T &data)
 {
   return sqrt(variance(data));
 }
@@ -124,7 +124,7 @@ I3D_EXPORT double standarDeviation(const T &data)
 //average deviation or mean absolute deviation
 // Estimador mas robusto que la desviacion estandar y la varianza
 template<typename T>
-I3D_EXPORT double averageAbsoluteDeviation(const T &data)
+I3D_EXPORT inline double averageAbsoluteDeviation(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
@@ -137,7 +137,7 @@ I3D_EXPORT double averageAbsoluteDeviation(const T &data)
 }
 
 template<typename T>
-I3D_EXPORT double skewness(const T &data)
+I3D_EXPORT inline double skewness(const T &data)
 {
   // Para que sea lo mas rapido posible no llamo a las funciones previas
   // Hago todo el desarrollo aqui para no repetir pasos
@@ -166,7 +166,7 @@ I3D_EXPORT double skewness(const T &data)
 }
 
 template<typename T>
-I3D_EXPORT double kurtosis(const T &data)
+I3D_EXPORT inline double kurtosis(const T &data)
 {
   size_t n = data.size();
 // Varianza
@@ -219,7 +219,7 @@ I3D_EXPORT bool isOutlier(const double temp, const double median, const double m
  */
 //I3D_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
 template<typename Point_t>
-I3D_EXPORT double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
+I3D_EXPORT inline double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
   double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
@@ -265,7 +265,7 @@ I3D_EXPORT double regressionLinearYX(const std::vector<Point_t> &pts, double *m,
  */
 //I3D_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
 template<typename Point_t>
-I3D_EXPORT double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
+I3D_EXPORT inline double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
   double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
@@ -317,7 +317,7 @@ I3D_EXPORT double regressionLinearXY(const std::vector<Point_t> &pts, double *m,
  * \param[out] r 
  */
 template<typename Point_t>
-I3D_EXPORT void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+I3D_EXPORT inline void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 {
   std::vector<PointD> ptsLog(pts.size());
   std::transform(pts.begin(), pts.end(), ptsLog.begin(), [](Point_t pt) -> PointD { return PointD(pt.x, log10(pt.y)); });
@@ -337,7 +337,6 @@ I3D_EXPORT void expRegression(const std::vector<Point_t> &pts, double *A, double
  * \param[out] omega Rotación respecto al eje X en radianes
  * \param[out] phi Rotación respecto al eje Y en radianes
  * \param[out] kappa Rotación respecto al eje Z en radianes
- * \param[in] order Orden de ejes
  * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
  * http://mathworld.wolfram.com/EulerAngles.html
  */
@@ -408,7 +407,7 @@ I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  * \return Normal al plano
  */
 template<typename T>
-I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
+I3D_EXPORT inline double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
 {
   T v1 = points[1] - points[0];
   T v2 = points[2] - points[0];
@@ -429,12 +428,12 @@ I3D_EXPORT double threePointsPlane(const std::array<T, 3> &points, std::array<do
 /*!
  * \brief Obtiene la distancia de un punto a un plano
  *
- * \param[in] point Punto
+ * \param[in] pt Punto
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
  * \return Distancia del punto al plano
  */
 template<typename Point_t>
-I3D_EXPORT double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane) 
+I3D_EXPORT inline double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane) 
 {
   double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];
   double normal = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
@@ -442,15 +441,8 @@ I3D_EXPORT double distantePointToPlane(const Point_t &pt, const std::array<doubl
   return(num / normal);
 }
 
-/*!
- * \brief Obtiene el ángulo entre una recta y un plano
- *
- * \param[in] line Linea
- * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \return Ángulo entre una recta y un plano
- */
 //template<typename T>
-//I3D_EXPORT double linePlaneAngle(const Segment3D<T> &line, const std::array<double, 4> &plane)
+//I3D_EXPORT inline double linePlaneAngle(const Segment3D<T> &line, const std::array<double, 4> &plane)
 //{
 //  Point3D v = line.vector();
 //  double num = plane[0] * v.x + plane[1] * v.y + plane[2] * v.z;
@@ -472,7 +464,7 @@ I3D_EXPORT double distantePointToPlane(const Point_t &pt, const std::array<doubl
  */
 
 template<typename T>
-int isNegative(T t) 
+inline int isNegative(T t) 
 {
   return t < 0 ? -1 : 1;
 }

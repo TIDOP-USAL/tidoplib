@@ -104,28 +104,34 @@ public:
 
   /*!
    * \brief Constructora por defecto
+   * \param[in] type Tipo de entidad
    */
   EntityPoints(entity_type type);
 
   /*!
    * \brief Constructor que reserva tamaño para n puntos
+   * \param[in] type Tipo de entidad
+   * \param[in] size Tamaños que se reserva
    */
   EntityPoints(entity_type type, int size);
 
   /*!
    * \brief Constructor de copia
-   * \param[in] multiPoint Objeto MultiPoint que se copia
+   * \param[in] type Tipo de entidad
+   * \param[in] entityPoints Objeto EntityPoints que se copia
    */
   EntityPoints(entity_type type, const EntityPoints &entityPoints);
 
   /*!
    * \brief Constructor
+   * \param[in] type Tipo de entidad
    * \param[in] vPoint vector de puntos
    */
   EntityPoints(entity_type type, const std::vector<Point<T>> &vPoint);
 
   /*!
    * \brief Constructor lista de inicialización
+   * \param[in] type Tipo de entidad
    * \param[in] listPoints Inicializador de lista con los puntos
    */
   EntityPoints(entity_type type, std::initializer_list<Point<T>> listPoints);
@@ -134,7 +140,7 @@ public:
 
   /*!
    * \brief Sobrecarga del operador de asignación
-   * \param[in] EntityPoints EntityPoints que se asigna
+   * \param[in] entityPoints EntityPoints que se asigna
    * \return Referencia al EntityPoints
    */
   EntityPoints &operator = (const EntityPoints &entityPoints);
@@ -287,8 +293,10 @@ typename std::vector<Point<T>>::const_iterator EntityPoints<T>::end() const
   return mPoints.cend();
 }
 
+
 /* ---------------------------------------------------------------------------------- */
-#ifdef HAVE_OPENCV
+
+
 template<typename T>
 class I3D_EXPORT Entity3DPoints : public Entity<T>
 {
@@ -310,12 +318,14 @@ public:
 
   /*!
    * \brief Constructora por defecto
+   * \param[in] type Tipo de entidad
    */
   Entity3DPoints(entity_type type);
 
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    * \param[in] type Tipo de entidad
+   * \param[in] size Tamaño que se reserva
    * \see entity_type
    */
   Entity3DPoints(entity_type type, int size);
@@ -348,7 +358,7 @@ public:
 
   /*!
    * \brief Sobrecarga del operador de asignación
-   * \param[in] EntityPoints EntityPoints que se asigna
+   * \param[in] entityPoints EntityPoints que se asigna
    * \return Referencia al EntityPoints
    */
   Entity3DPoints &operator = (const Entity3DPoints &entityPoints);
@@ -501,7 +511,6 @@ typename std::vector<Point3<T>>::const_iterator Entity3DPoints<T>::end() const
   return mPoints.cend();
 }
 
-#endif
 
 /* ---------------------------------------------------------------------------------- */
 

@@ -42,6 +42,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MessageOutput);
 
 /*!
  * \brief Message
+ * \deprecated{ Usar I3D::MessageManager en combinación con I3D::Log y I3D::Console}
  */
 class I3D_EXPORT Message
 {
@@ -245,7 +246,14 @@ private:
 
 
 
+/*! \addtogroup utilities
+ *  \{
+ */
 
+/*! \defgroup Messages Gestión de mensajes
+ *
+ *  \{
+ */
 
 
 /*!
@@ -523,13 +531,6 @@ public:
   static MessageManager &getInstance();
 
   /*!
-   * \brief message
-   * \param[in] msg
-   * \return
-   */
-  //static MessageManager &message(const char *msg, ...);
-
-  /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
    * \param[in] msg Mensaje que se lanza
    * \param[in] level
@@ -574,7 +575,15 @@ protected:
 #  define msgError(...)    MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR);
 #endif
 
+/*! \} */ // end of Messages
+
 /* ---------------------------------------------------------------------------------- */
+
+/*! \defgroup Log Fichero log
+ *
+ *  \{
+ */
+
 
 /*!
  * \brief Clase para gestionar ficheros log
@@ -700,6 +709,9 @@ protected:
 
 };
 
+/*! \} */ // end of Log
+
+/*! \} */ // end of utilities
 
 #else  // End I3D_MESSAGE_HANDLER
 
@@ -721,6 +733,12 @@ protected:
 #  define printInfo(...)
 #  define printWarning(...)
 #  define printError(...)
+
+#  define msgDebug(...)
+#  define msgVerbose(...)
+#  define msgInfo(...)
+#  define msgWarning(...)
+#  define msgError(...)
 
 #endif
 

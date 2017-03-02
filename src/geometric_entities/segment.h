@@ -463,7 +463,7 @@ I3D_DISABLE_WARNING(4244)
  */
 //I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
 template <typename T>
-I3D_EXPORT int intersectSegments(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
+I3D_EXPORT inline int intersectSegments(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
 {
   int iret = 0;
   Point<T> vs1, vs2;
@@ -497,7 +497,7 @@ I3D_EXPORT int intersectSegments(const Segment<T> &ln1, const Segment<T> &ln2, P
  */
 //I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, PointI *pt);
 template <typename T>
-I3D_EXPORT int intersectLines(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
+I3D_EXPORT inline int intersectLines(const Segment<T> &ln1, const Segment<T> &ln2, Point<T> *pt)
 {
   int iret = 0;
   Point<T> vs1, vs2;

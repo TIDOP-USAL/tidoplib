@@ -460,9 +460,9 @@ I3D_EXPORT int rgbaToInt(int red, int green, int blue, int alpha);
 I3D_EXPORT int hexToInt(const std::string &colorhex);
 
 /*!
- * \brief Convierte un color de hexadecimal (como cadena) a entero
- * \param[in] colorhex Color en hexadecimal
- * \return Color como entero
+ * \brief Convierte un color como entero a hexadecimal
+ * \param[in] color Color como entero
+ * \return Color en hexadecimal
  */
 I3D_EXPORT std::string intToHex(int color);
 

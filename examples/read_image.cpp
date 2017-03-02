@@ -19,9 +19,21 @@ using namespace I3D;
 int main(int argc, char** argv)
 {
 
-  //EXPERIMENTAL::MessageManager::message("Prueba de Mensaje %i", 1).print(EXPERIMENTAL::MessageLevel::MSG_DEBUG);
+  std::vector<PointD> ptsIn{
+    PointD(4157222.543, 664789.307),
+    PointD(4149043.336, 688836.443),
+    PointD(4172803.511, 690340.078),
+    PointD(4177148.376, 642997.635),
+    PointD(4137012.190, 671808.029),
+    PointD(4146292.729, 666952.887),
+    PointD(4138759.902, 702670.738) };
 
+  std::vector<PointD> ptsOut(7);
+  Helmert2D<PointD> _trf(100., 100., 1., 0.0);
+  PointD ptout = ptsIn[0] * _trf;
 
+  //std::transform(ptsIn.begin(), ptsIn.end(), ptsOut.begin(), [&ptsIn](PointD pt) -> PointD { return pt; });
+  //I3D::transform(ptsIn.begin(), ptsIn.end(), ptsOut.begin(), &_trf);
 
   // Para redirección de errores de otras librerias
   Message::initExternalHandlers();
@@ -36,8 +48,6 @@ int main(int argc, char** argv)
     exit(EXIT_SUCCESS);
   }
 
-  //std::string img = cmdParser.getValue<std::string>("img");
-  //std::string img_out = cmdParser.getValue<std::string>("img_out");
 
   std::string img = cmdParser.getValue<Path>("img").toString();
   std::string img_out = cmdParser.getValue<Path>("img_out").toString();
@@ -50,27 +60,21 @@ int main(int argc, char** argv)
     Message::setMessageLevel(MessageLevel::MSG_INFO);
   }
 
-///////////////
-  //Fichero de log
-  EXPERIMENTAL::Log &log = EXPERIMENTAL::Log::getInstance();
-  log.setLogFile(logfile);
-  log.setLogLevel(EXPERIMENTAL::MessageLevel::MSG_INFO);
-
-  //Configuración de mensajes
-  EXPERIMENTAL::MessageManager &msg_h = EXPERIMENTAL::MessageManager::getInstance();
-  msg_h.addListener(&log);
-  msg_h.release("Mensaje de prueba", EXPERIMENTAL::MessageLevel::MSG_ERROR);
-  msg_h.release(EXPERIMENTAL::MessageManager::Message("Mensaje de prueba %i", 1).getMessage(), EXPERIMENTAL::MessageLevel::MSG_ERROR);
-/////////
-
   RasterGraphics image;
-  image.open(img.c_str());
-  cv::Mat mat_out;
-  WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000
-  double scale = 4.;                                 // 25% de escala de la resolución original  
-  
   Helmert2D<PointI> trf;
-  image.read(&mat_out, w, scale, &trf);                         
+  cv::Mat mat_out;
+  double scale = 4.;   // 25% de escala de la resolución original 
+
+  if (image.open(img.c_str()) == Status::OPEN_FAIL) exit(EXIT_FAILURE);
+
+  try {    
+    WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000                          
+    image.read(&mat_out, w, scale, &trf);
+
+  } catch (I3D::Exception &e) {
+    printError(e.what());
+    exit(EXIT_FAILURE);
+  }
 
   // Imagen que se guarda
   RasterGraphics imageOut;

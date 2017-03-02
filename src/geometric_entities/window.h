@@ -31,7 +31,7 @@ namespace I3D
  * \return Verdadero si intersectan
  */
 template<typename T1, typename T2>
-I3D_EXPORT bool intersectWindows(T1 w1, T2 w2)
+I3D_EXPORT inline bool intersectWindows(T1 w1, T2 w2)
 {
   return w1.pt2.x >= w2.pt1.x && w1.pt2.y >= w2.pt1.y &&  w1.pt1.x <= w2.pt2.x && w1.pt1.y <= w2.pt2.y;
 }
@@ -43,7 +43,7 @@ I3D_EXPORT bool intersectWindows(T1 w1, T2 w2)
  * \return Ventana interseción
  */
 template<typename T>
-I3D_EXPORT T windowIntersection(T w1, T w2)
+I3D_EXPORT inline T windowIntersection(T w1, T w2)
 {
   T w;
   if (intersectWindows(w1, w2)) {
@@ -62,7 +62,7 @@ I3D_EXPORT T windowIntersection(T w1, T w2)
  * \return Ventana unión
  */
 template<typename T>
-I3D_EXPORT T joinWindow(T w1, T w2)
+I3D_EXPORT inline T joinWindow(T w1, T w2)
 {
   T w;
   w.pt1.x = std::min(w1.pt1.x, w2.pt1.x);
@@ -80,7 +80,7 @@ I3D_EXPORT T joinWindow(T w1, T w2)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-I3D_EXPORT T1 expandWindow(T1 w, T2 szx, T2 szy)
+I3D_EXPORT inline T1 expandWindow(T1 w, T2 szx, T2 szy)
 {
   T1 _w;
   _w.pt1.x = w.pt1.x - szx;
@@ -98,7 +98,7 @@ I3D_EXPORT T1 expandWindow(T1 w, T2 szx, T2 szy)
  * \return Ventana resultante
  */
 template<typename T1, typename T2>
-I3D_EXPORT T1 expandWindow(T1 w, T2 sz)
+I3D_EXPORT inline T1 expandWindow(T1 w, T2 sz)
 {
   return expandWindow(w, sz, sz);
 }
@@ -430,7 +430,7 @@ typedef Window<float> WindowF;
 
 
 template<typename T>
-I3D_EXPORT Window<T> moveWindow(const Window<T> &w, T dx, T dy)
+I3D_EXPORT inline Window<T> moveWindow(const Window<T> &w, T dx, T dy)
 {
   Window<T> w_return = w;
   Point<T> t(dx, dy);

@@ -691,10 +691,12 @@ public:
 
     std::string _name(name);
     for (auto arg : mCmdArgs) {
-      if (arg->getType() == CmdArgument::Type::PARAMETER || arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
+      if (arg->getType() == CmdArgument::Type::PARAMETER 
+          || arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
         if (arg->getName() == _name) {
           std::string value = (arg->getType() == CmdArgument::Type::PARAMETER) ? 
-            dynamic_cast<CmdParameter *>(arg.get())->getValue() : dynamic_cast<CmdParameterOptions *>(arg.get())->getValue();
+            dynamic_cast<CmdParameter *>(arg.get())->getValue() 
+            : dynamic_cast<CmdParameterOptions *>(arg.get())->getValue();
           std::stringstream strm_value(value);
           if (typeid(T) == typeid(std::string)) {
             *(std::string *)_value = value;

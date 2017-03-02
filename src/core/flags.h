@@ -132,7 +132,7 @@ public:
 };
 
 
-template<typename T>
+template<typename T> inline
 EnumFlags<T>::~EnumFlags()
 {
 }

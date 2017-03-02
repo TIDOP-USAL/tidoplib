@@ -49,8 +49,14 @@ public:
    */
   typedef T value_type;
 
+  /*!
+   * \brief Coordenada X
+   */
   T x;
 
+  /*!
+   * \brief Coordenada Y
+   */
   T y;
 
 #endif
@@ -79,7 +85,7 @@ public:
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
-  Point<T>& operator = (const Point<T>& pt);
+  Point<T>& operator = (const Point<T>& point);
 
   /*!
    * \brief Conversión de tipo
@@ -461,7 +467,7 @@ public:
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
-  Point3<T>& operator = (const Point3<T>& pt);
+  Point3<T>& operator = (const Point3<T>& point);
 
   /*!
    * \brief Conversión de tipo

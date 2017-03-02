@@ -67,6 +67,7 @@ I3D_EXPORT int deleteDir(const char *path, bool confirm = false);
  * \brief Optiene el directorio de un archivo
  * \param[in] path Ruta del archivo
  * \param[out] dir Directorio del archivo
+ * \param[in] size Tamaño de dir
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -83,6 +84,7 @@ I3D_EXPORT int getFileDir(const char *path, char *dir, int size);
  * \brief Optiene la unidad de disco de un archivo
  * \param[in] path Ruta del archivo
  * \param[out] drive Unidad de disco
+ * \param[in] size Tamaño de drive
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -99,6 +101,7 @@ I3D_EXPORT int getFileDrive(const char *path, char *drive, int size);
  * \brief Optiene la extensión de un archivo
  * \param[in] path Ruta del archivo
  * \param[out] ext Extensión del archivo
+ * \param[in] size Tamaño de ext
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -115,6 +118,7 @@ I3D_EXPORT int getFileExtension(const char *path, char *ext, int size);
  * \brief Optiene el nombre de un archivo
  * \param[in] path Ruta del archivo
  * \param[out] name Nombre del archivo
+ * \param[in] size Tamaño de name
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -131,6 +135,7 @@ I3D_EXPORT int getFileName(const char *path, char *name, int size);
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
  * \param[in] path Ruta del archivo
  * \param[out] driveDir Unidad de disco y directorio del archivo
+ * \param[in] size Tamaño de driveDir
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -148,6 +153,7 @@ I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
  * \param[in] path Ruta del archivo
  * \param[in] newName Nuevo nombre
  * \param[out] pathOut Ruta del archivo modificada
+ * \param[in] size Tamaño de pathOut
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -165,6 +171,7 @@ I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathO
  * \param[in] path Ruta del archivo
  * \param[in] newExt Nueva extensión
  * \param[out] pathOut Ruta del archivo modificada
+ * \param[in] size Tamaño de pathOut
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -182,6 +189,7 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  * \param[in] path Ruta del archivo
  * \param[in] newNameExt Nuevo nombre incluyendo la extensión
  * \param[out] pathOut Ruta del archivo modificada
+ * \param[in] size Tamaño de pathOut
  * \return (1) error
  *
  * <h4>Ejemplo</h4>
@@ -197,7 +205,7 @@ I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameE
 /*!
  * \brief The Path class
  */
-class Path
+class I3D_EXPORT Path
 {
 private:
 
@@ -380,7 +388,7 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
  * \return Cadena de texto
  */
 template <typename T>
-I3D_EXPORT std::string numberToString(T number)
+I3D_EXPORT inline std::string numberToString(T number)
 {
   std::ostringstream ss;
   ss << number;
@@ -388,13 +396,14 @@ I3D_EXPORT std::string numberToString(T number)
 }
 
 
-template <typename T>
+
 /*!
  * \brief Convierte una cadena de texto a un número
  * \param[in] text Texto
  * \return número
  */
-I3D_EXPORT T stringToNumber(const std::string &text)
+template <typename T>
+I3D_EXPORT inline T stringToNumber(const std::string &text)
 {
   T number;
   return (std::istringstream(text) >> number) ? number : 0;
@@ -430,7 +439,7 @@ I3D_EXPORT int stringToInteger(const std::string &text, I3D::Base base = I3D::Ba
  * \param[out] av Vector de salida
  */
 template<typename T>
-I3D_EXPORT void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+I3D_EXPORT inline void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
 {
   av->resize(m.rows*m.cols);
   if (m.isContinuous()) {
@@ -449,7 +458,7 @@ I3D_EXPORT void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
  * \param[in] v Vector
  */
 template<typename T>
-I3D_EXPORT void sortVector(std::vector<T> *v)
+I3D_EXPORT inline void sortVector(std::vector<T> *v)
 {
   std::sort(v->begin(), v->end());
 }
@@ -459,7 +468,7 @@ I3D_EXPORT void sortVector(std::vector<T> *v)
  * \param[in] v Vector
  */
 template<typename T>
-I3D_EXPORT void sortVectorInv(std::vector<T> *v)
+I3D_EXPORT inline void sortVectorInv(std::vector<T> *v)
 {
   std::sort(v->rbegin(),v->rend());
 }
@@ -473,7 +482,7 @@ I3D_EXPORT void sortVectorInv(std::vector<T> *v)
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
-I3D_EXPORT int operator==(const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator==(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -492,7 +501,7 @@ I3D_EXPORT int operator==(const std::vector<T> &v, const T t)
  * \return Número de elementos que cumplen la condición
  */
 template<typename T>
-I3D_EXPORT int operator!=(const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator!=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -509,7 +518,7 @@ I3D_EXPORT int operator!=(const std::vector<T> &v, const T t)
  * \return
  */
 template<typename T>
-I3D_EXPORT int operator>=(const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator>=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator upOrEq;
@@ -518,7 +527,7 @@ I3D_EXPORT int operator>=(const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-I3D_EXPORT int operator<=(const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator<=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator lowOrEq;
@@ -527,7 +536,7 @@ I3D_EXPORT int operator<=(const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-I3D_EXPORT int operator> (const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator> (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator up;
@@ -536,7 +545,7 @@ I3D_EXPORT int operator> (const std::vector<T> &v, const T t)
 }
 
 template<typename T>
-I3D_EXPORT int operator< (const std::vector<T> &v, const T t)
+I3D_EXPORT inline int operator< (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator low;
@@ -556,7 +565,7 @@ I3D_EXPORT int operator< (const std::vector<T> &v, const T t)
  * \return Vector con los indices ordenados
  */
 template <typename T>
-I3D_EXPORT std::vector<int> sortIdx(const std::vector<T> &v)
+I3D_EXPORT inline std::vector<int> sortIdx(const std::vector<T> &v)
 {
   std::vector<int> idx(v.size());
   iota(idx.begin(), idx.end(), 0);
