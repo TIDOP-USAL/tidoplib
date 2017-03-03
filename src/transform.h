@@ -3283,7 +3283,7 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out,
 //                          transform_order trfOrder = transform_order::DIRECT)
 //{
 //  while (in_first != in_last) {
-//    trf->transform(*in_first++, &(*out_first++), trfOrder);
+//    trf->transform(*in_first++, *out_first++, trfOrder);
 //  }
 //}
 

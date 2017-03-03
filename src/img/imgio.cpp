@@ -21,7 +21,8 @@ void RegisterGdal::init()
 
 /* ---------------------------------------------------------------------------------- */
 
-// Definir datos propios... Iguales a los de OpenCV
+// - Definir datos propios... Iguales a los de OpenCV
+// - Errores. id de error y cadenas descriptivas del error
 
 #ifdef HAVE_OPENCV
 
@@ -70,53 +71,6 @@ GDALDataType openCvToGdal(int cvdt)
 
 #endif // HAVE_OPENCV
 
-/*!
- * \brief Devuelve el driver de GDAL
- * \param ext Extensión del archivo
- * \return Driver de GDAL
- */
-const char* getGDALDriverName(const char *ext)
-{
-  const char *format;
-  if      ( strcmpi( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
-  else if ( strcmpi( ext, ".png" ) == 0 )  format = "PNG";          // Portable Network Graphics (.png)
-  else if ( strcmpi( ext, ".jpg" ) == 0 )  format = "JPEG";         // JPEG JFIF (.jpg)
-  else if ( strcmpi( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
-  else if ( strcmpi( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)  
-  else if ( strcmpi( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
-  else if ( strcmpi( ext, ".grd" ) == 0 )  format = "AAIGrid";      // Arc/Info ASCII Grid
-  else if ( strcmpi( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
-  else if ( strcmpi( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
-  else if ( strcmpi( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
-  else if ( strcmpi( ext, ".lan" ) == 0 )  format = "LAN";          // Erdas 7.x .LAN and .GIS
-  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "ENVI";         // ENVI .hdr Labelled Raster
-  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmpi( ext, ".blx" ) == 0 || 
-            strcmpi( ext, ".xlb" ) == 0 )  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
-  else if ( strcmpi( ext, ".map" ) == 0 )  format = "MAP";          // OziExplorer .MAP
-  else if ( strcmpi( ext, ".e00" ) == 0 )  format = "E00GRID";      // Arc/Info Export E00 GRID
-  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
-  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmpi( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
-  else                                     format = 0;
-  return format;
-  /*const char *format = 0;
-  const char *dext;
-  GDALDriverManager *poDM = GetGDALDriverManager();
-
-  for( int id = 0; id < poDM->GetDriverCount(); id++ ) {
-    GDALDriver *driver;
-    driver = poDM->GetDriver( id );
-    if ( driver->pfnOpen == NULL ) continue;
-    dext = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
-    if ( dext && strcmp(ext,dext) == 0 ) 
-      format = driver->GetDescription();
-  }
-  return( format );*/
-}
-
-
-
 /* ---------------------------------------------------------------------------------- */
 
 GdalRaster::GdalRaster() 
@@ -138,7 +92,7 @@ GdalRaster::~GdalRaster()
   if (bTempFile) {
     char ext[I3D_MAX_EXT];
     if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) == 0) {
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getGDALDriverName(ext));
+      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
       GDALDataset *pTempDataSet = driver->CreateCopy(mName.c_str(), pDataset, FALSE, NULL, NULL, NULL);
       if (!pTempDataSet) {
         printError("No se pudo crear la imagen");
@@ -177,7 +131,7 @@ int GdalRaster::open(const char *file, Mode mode)
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return 1;
   
-  const char *driverName = getGDALDriverName(ext);
+  const char *driverName = getDriverFromExt(ext);
   if (driverName == NULL) return 1;
 
   GDALAccess gdal_access;
@@ -315,6 +269,48 @@ int GdalRaster::write(cv::Mat &image, Helmert2D<PointI> *trf)
   else return 0;
 }
 
+const char* GdalRaster::getDriverFromExt(const char *ext)
+{
+  const char *format;
+  if      ( strcmpi( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
+  else if ( strcmpi( ext, ".png" ) == 0 )  format = "PNG";          // Portable Network Graphics (.png)
+  else if ( strcmpi( ext, ".jpg" ) == 0 )  format = "JPEG";         // JPEG JFIF (.jpg)
+  else if ( strcmpi( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+  else if ( strcmpi( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)  
+  else if ( strcmpi( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
+  else if ( strcmpi( ext, ".grd" ) == 0 )  format = "AAIGrid";      // Arc/Info ASCII Grid
+  else if ( strcmpi( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
+  else if ( strcmpi( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
+  else if ( strcmpi( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
+  else if ( strcmpi( ext, ".lan" ) == 0 )  format = "LAN";          // Erdas 7.x .LAN and .GIS
+  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "ENVI";         // ENVI .hdr Labelled Raster
+  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
+  else if ( strcmpi( ext, ".blx" ) == 0 || 
+            strcmpi( ext, ".xlb" ) == 0 )  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
+  else if ( strcmpi( ext, ".map" ) == 0 )  format = "MAP";          // OziExplorer .MAP
+  else if ( strcmpi( ext, ".e00" ) == 0 )  format = "E00GRID";      // Arc/Info Export E00 GRID
+  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
+  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
+  else if ( strcmpi( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
+  else                                     format = 0;
+  return format;
+
+  // debería funcionar para GDAL
+  /*const char *format = 0;
+  const char *dext;
+  GDALDriverManager *poDM = GetGDALDriverManager();
+
+  for( int id = 0; id < poDM->GetDriverCount(); id++ ) {
+    GDALDriver *driver;
+    driver = poDM->GetDriver( id );
+    if ( driver->pfnOpen == NULL ) continue;
+    dext = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
+    if ( dext && strcmp(ext,dext) == 0 ) 
+      format = driver->GetDescription();
+  }
+  return( format );*/
+}
+
 std::vector<int> GdalRaster::panBandMap()
 {
   std::vector<int> panBandMap;
@@ -423,7 +419,7 @@ void GdalGeoRaster::update()
 RawImage::RawImage() 
   : VrtRaster() 
 {
-  rawProcessor = std::make_unique<LibRaw>();
+  mRawProcessor = std::make_unique<LibRaw>();
 
   //rawProcessor->imgdata.params.gamm[0] = 1.0;
   //rawProcessor->imgdata.params.gamm[1] = 0.0;
@@ -440,26 +436,44 @@ RawImage::RawImage()
 
 RawImage::~RawImage()
 {
-  LibRaw::dcraw_clear_mem(mProcessedImage);
-  rawProcessor->recycle();
+  close();
+  mRawProcessor->recycle();
 }
 
-void close()
+void RawImage::close()
 {
-
+  LibRaw::dcraw_clear_mem(mProcessedImage);
+  mCols = 0;
+  mRows = 0;
+  mBands = 0;
+  mName = "";
 }
 
 int RawImage::open(const char *file, Mode mode)
 {
-  if (LIBRAW_SUCCESS == rawProcessor->open_file(file)) {
-    if (LIBRAW_SUCCESS == rawProcessor->unpack()) {
-      if (LIBRAW_SUCCESS == rawProcessor->dcraw_process()) {
-        mProcessedImage = rawProcessor->dcraw_make_mem_image();
-        update();
-        return 0;
-      }
-    }
+  int  ret;
+  if ( (ret = mRawProcessor->open_file(file)) != LIBRAW_SUCCESS) {
+    msgError("Cannot open_file %s: %s", file, libraw_strerror(ret));
+    return 1;
   }
+
+  if ((ret = mRawProcessor->unpack()) != LIBRAW_SUCCESS) {
+    msgError("Cannot unpack %s: %s", file, libraw_strerror(ret));
+    return 1;
+  }
+
+  // .... esto se deberia mover de aqui?
+  if ((ret = mRawProcessor->dcraw_process()) != LIBRAW_SUCCESS) {
+    msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
+    return 1;
+  }
+   
+  if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
+    msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
+    return 1;
+  } else  
+    update();
+
   return 0;
 }
 
@@ -493,33 +507,24 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   
   if ( image->empty() ) return;
 
-  rawProcessor->imgdata.params.no_interpolation = 1;
-  rawProcessor->imgdata.params.no_auto_scale = 1;
-  rawProcessor->imgdata.params.no_auto_bright = 1;
-
+  //mRawProcessor->imgdata.params.use_camera_wb = 1;
+  //mRawProcessor->imgdata.params.use_auto_wb = 1;
+  //mRawProcessor->imgdata.params.cropbox[0] = wRead.pt1.x;
+  //mRawProcessor->imgdata.params.cropbox[1] = wRead.pt1.y;
+  //mRawProcessor->imgdata.params.cropbox[2] = wRead.pt2.x;
+  //mRawProcessor->imgdata.params.cropbox[3] = wRead.pt2.y;
+  //int ret;
+  //if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
+  //  msgError("Cannot unpack %s to memory buffer: %s" , mName.c_str(), libraw_strerror(ret));
+  //  return;
+  //}
+  cv::Mat aux;
   if (LIBRAW_IMAGE_JPEG == mProcessedImage->type) {
-//          //image.loadFromData((uchar*)output->data, output->data_size, "JPEG");
-//          //LibRawImagePerformFlip(RawProcessor.imgdata.sizes.flip, image);
+    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_8UC3, mProcessedImage->data);
   } else if (LIBRAW_IMAGE_BITMAP == mProcessedImage->type) {
-//          
-//          //image= LibRawImageToQImage(
-//          //                  (uchar*)output->data,
-//          //                  output->width,
-//          //                  output->height,
-//          //                  output->colors,
-//          //                  output->bits);
+    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_8UC3, mProcessedImage->data);
   }
-
-  //uchar *buff = image->ptr();
-  //size_t nPixelSpace = image->elemSize();
-  //size_t nLineSpace = image->elemSize() * image->cols;
-  //size_t nBandSpace = image->elemSize1();
-
-  //CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
-  //                                  wRead.getWidth(), wRead.getHeight(),
-  //                                  buff, size.width, size.height, mDataType,
-  //                                  mBands, panBandMap().data(), (int)nPixelSpace,
-  //                                  (int)nLineSpace, (int)nBandSpace );
+  cvtColor(aux, *image, CV_RGB2BGR);
 }
   
 int RawImage::write(cv::Mat &image, WindowI w)
@@ -533,6 +538,14 @@ int RawImage::write(cv::Mat &image, Helmert2D<PointI> *trf)
 }
 
 #endif // HAVE_OPENCV
+
+bool RawImage::isRawExt(const char *ext)
+{
+  bool bRet = false;
+  // Completar y hacer mejor
+  if ( strcmpi( ext, ".CR2" ) == 0 )  bRet = true;          // Canon
+  return bRet;
+}
 
 void RawImage::update()
 {
@@ -575,15 +588,23 @@ Status RasterGraphics::open(const char *file, Mode mode)
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
 
-#ifdef HAVE_GDAL // Por ahora...
+  const char *frtName;
 
-  if (const char *driverName = getGDALDriverName(ext)) { 
+#ifdef HAVE_GDAL
+  if (frtName = GdalRaster::getDriverFromExt(ext)) { 
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalRaster>();
-  } else {
+  } else 
+#endif
+#ifdef HAVE_RAW
+  if (RawImage::isRawExt(ext)) {
+    mImageFormat = std::make_unique<RawImage>();
+  } else 
+#endif  
+  {
     // Otros formatos
   }
-#endif
+
   if (mImageFormat) {
     mImageFormat->open(file, mode);
     update();
@@ -653,7 +674,7 @@ Status GeoRasterGraphics::open(const char *file, Mode mode)
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
 #ifdef HAVE_GDAL
-  if (const char *driverName = getGDALDriverName(ext)) { 
+  if (const char *driverName = GdalRaster::getDriverFromExt(ext)) { 
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalGeoRaster>();
   } else {

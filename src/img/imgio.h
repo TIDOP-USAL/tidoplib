@@ -295,6 +295,14 @@ public:
 
 #endif
 
+  /*!
+   * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
+   * Si la extensión no se correspondo con un driver disponible devuelve nulo.
+   * \param ext Extensión del archivo
+   * \return Nombre del Driver de GDAL
+   */
+  static const char *getDriverFromExt(const char *ext);
+
 protected:
 
   virtual void update();
@@ -357,7 +365,7 @@ public:
   std::array<double, 6> georeference() const;
 
   /*!
-   * \brief Proyection
+   * \brief Proyección
    * \return
    */
   const char *projection() const;
@@ -402,12 +410,12 @@ private:
 #endif // HAVE_GDAL
 
 #ifdef HAVE_RAW
-
+// http://www.libraw.org/node/2165
 class RawImage : public VrtRaster
 {
 private:
   
-  std::unique_ptr<LibRaw> rawProcessor;
+  std::unique_ptr<LibRaw> mRawProcessor;
 
   libraw_processed_image_t *mProcessedImage;
 
@@ -478,6 +486,14 @@ public:
    * \return
    */
   int write(cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Comprueba si una extensión de archivo se corresponde con una del formato RAW
+   * Si la extensión no se corresponde con el formato raw devuelve nulo.
+   * \param ext Extensión del archivo
+   * \return verdadero si es raw
+   */
+  static bool isRawExt(const char *ext);
 
 #endif
 

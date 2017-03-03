@@ -13,10 +13,13 @@
 #endif
 
 // Activa GDAL
-#undef HAVE_GDAL
+#define HAVE_GDAL
 
-#undef HAVE_RAW // libraw
+// libraw: Lectura de formato raw
+#define HAVE_RAW 
 
+// Eigen Lib: Se utiliza para la resolución de sistemas de ecuaciones lineales
+// Es mucho mas rapida que OpenCV
 #define HAVE_EIGEN
 
 // OpenMP
