@@ -31,8 +31,8 @@ I3D_DEFAULT_WARNINGS
 
 using namespace I3D;
 
-std::mutex mtx;
-std::mutex _mtx;
+//std::mutex mtx;
+//std::mutex _mtx;
 
 #ifdef HAVE_OPENCV
 I3D_DISABLE_WARNING(4100)
@@ -98,6 +98,7 @@ std::string Message::sLastMessage = "";
 std::unique_ptr<Message> Message::sObjMessage;
 std::string Message::sLogFile = "";
 std::string Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
+std::mutex Message::mtx;
 
 Message::Message() 
 {
@@ -604,6 +605,7 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
 std::unique_ptr<Log> Log::sObjLog;
 std::string Log::sLogFile = "";
 MessageLevel Log::sLevel = MessageLevel::MSG_ERROR;
+std::mutex Log::mtx;
 
 void Log::setLogFile(const char* file)
 {
@@ -644,7 +646,7 @@ void Log::write(const char *msg)
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {
-    std::lock_guard<std::mutex> lck(_mtx);
+    std::lock_guard<std::mutex> lck(Log::mtx);
     hLog << date << " - " << msg << "\n";
     hLog.close();
   } else {
@@ -699,7 +701,7 @@ void Log::_write(const char *msg, const char *date)
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {
-    std::lock_guard<std::mutex> lck(_mtx);
+    std::lock_guard<std::mutex> lck(Log::mtx);
     hLog << date << " - " << msg << "\n";
     hLog.close();
   } else {

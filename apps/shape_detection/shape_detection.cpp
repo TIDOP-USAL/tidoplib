@@ -492,12 +492,12 @@ int main(int argc, char *argv[])
   cmdParser.addParameter("th_acu", "Umbral del acumulador para los centros de los círculos", true, std::to_string(higher_accum_threshold).c_str());
   cmdParser.addParameter("r_min", "Radio mínimo para los círculos", true, std::to_string(minRadius).c_str());
   cmdParser.addParameter("r_max", "Radio máximo para los círculos", true, std::to_string(maxRadius).c_str());
-  cmdParser.addOption("draw", "Dibuja el circulo y su centro", true);
-  cmdParser.addOption("show_img", "Muestra las imagenes", true);
-  cmdParser.addOption("save_img", "Salva las imagenes", true);
-  cmdParser.addOption("all", "Guarda todos los resultados de la detección en cada imagen. Por defecto sólo guarda el primero", true);
+  cmdParser.addOption("draw", "Dibuja el circulo y su centro");
+  cmdParser.addOption("show_img", "Muestra las imagenes");
+  cmdParser.addOption("save_img", "Salva las imagenes");
+  cmdParser.addOption("all", "Guarda todos los resultados de la detección en cada imagen. Por defecto sólo guarda el primero");
 
-  if ( cmdParser.parse(argc, argv) == CmdParser::MSG::PARSE_ERROR ) {
+  if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
     cmdParser.printHelp();
     exit(EXIT_FAILURE);
   }

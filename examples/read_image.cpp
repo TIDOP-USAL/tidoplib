@@ -59,21 +59,22 @@ int main(int argc, char** argv)
   double scale = 4.;   // 25% de escala de la resolución original 
 
   if (image.open(img.c_str()) == Status::OPEN_FAIL) exit(EXIT_FAILURE);
+  image.saveAs(img_out.c_str());
 
-  try {    
-    WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000                          
-    image.read(&mat_out, w, scale, &trf);
+  //try {    
+  //  WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000                          
+  //  image.read(&mat_out, w, scale, &trf);
 
-  } catch (I3D::Exception &e) {
-    printError(e.what());
-    exit(EXIT_FAILURE);
-  }
+  //} catch (I3D::Exception &e) {
+  //  printError(e.what());
+  //  exit(EXIT_FAILURE);
+  //}
 
-  // Imagen que se guarda
-  RasterGraphics imageOut;
-  imageOut.open(img_out.c_str(), Mode::Create);
-  imageOut.create(1000, 1000, 3, 0);
-  imageOut.write(mat_out, &trf);
+  //// Imagen que se guarda
+  //RasterGraphics imageOut;
+  //imageOut.open(img_out.c_str(), Mode::Create);
+  //imageOut.create(1000, 1000, 3, 0);
+  //imageOut.write(mat_out, &trf);
 
 
   //GeoRasterGraphics geoRaster;

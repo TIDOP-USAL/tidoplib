@@ -5,6 +5,17 @@
 namespace I3D
 {
 
+void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const
+{
+  WindowI wAll(PointI(0, 0), PointI(this->mCols, this->mRows));   // Ventana total de imagen
+  if ( wLoad.isEmpty() ) {
+    *wRead = wAll;  // Se lee toda la ventana
+  } else {
+    *wRead = windowIntersection(wAll, wLoad);
+    *offset = wRead->pt1 - wLoad.pt1;
+  }
+}
+
 #ifdef HAVE_GDAL
 
 /* ---------------------------------------------------------------------------------- */
@@ -168,6 +179,10 @@ int GdalRaster::open(const char *file, Mode mode)
       bTempFile = true;
       mTempName = buffer;
     }
+    // Se crea el directorio si no existe
+    char dir[I3D_MAX_PATH];
+    if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
+      createDir(dir);
     return 0; 
   } else {
     pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
@@ -193,9 +208,18 @@ int GdalRaster::create(int rows, int cols, int bands, int type) {
 
 void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
+  WindowI wRead;
+  PointI offset;
+  windowRead(wLoad, &wRead, &offset);
   WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
-  WindowI wRead = windowIntersection(wAll, wLoad);    // Ventana real que se lee. Se evita leer fuera
-  PointI offset = wRead.pt1 - wLoad.pt1;
+
+  //if ( wLoad.isEmpty() ) {
+  //  wRead = wAll;  // Se lee toda la ventana
+  //} else {
+  //  wRead = windowIntersection(wAll, wLoad);
+  //  offset = wRead.pt1 - wLoad.pt1;
+  //}
+  
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
@@ -226,11 +250,12 @@ void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmer
 
 }
 
-int GdalRaster::write(cv::Mat &image, WindowI w)
+int GdalRaster::write(const cv::Mat &image, const WindowI &w)
 {
   if (pDataset == NULL) return 1;
-  if (!image.isContinuous()) image = image.clone();
-  uchar *buff = image.ptr();
+  //if (!image.isContinuous()) image = image.clone();
+  //uchar *buff = image.ptr();
+  uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
   size_t nPixelSpace = image.elemSize();
   size_t nLineSpace = image.elemSize() * image.cols;
   size_t nBandSpace = image.elemSize1();
@@ -246,11 +271,13 @@ int GdalRaster::write(cv::Mat &image, WindowI w)
   else return 0;
 }
 
-int GdalRaster::write(cv::Mat &image, Helmert2D<PointI> *trf)
+int GdalRaster::write(const cv::Mat &image, Helmert2D<PointI> *trf)
 {
   if (pDataset == NULL) return 1;
-  if (!image.isContinuous()) image = image.clone();
-  uchar *buff = image.ptr();
+  //if (!image.isContinuous()) image = image.clone();
+  //uchar *buff = image.ptr();
+  uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
+  
   size_t nPixelSpace = image.elemSize();
   size_t nLineSpace = image.elemSize() * image.cols;
   size_t nBandSpace = image.elemSize1();
@@ -486,9 +513,10 @@ int RawImage::create(int rows, int cols, int bands, int type)
 
 void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
-  WindowI wRead = windowIntersection(wAll, wLoad);    // Ventana real que se lee. Se evita leer fuera
-  PointI offset = wRead.pt1 - wLoad.pt1;
+  WindowI wRead;
+  PointI offset;
+  windowRead(wLoad, &wRead, &offset);
+
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
@@ -503,7 +531,7 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   //}
 
   //cv::Size size(mRows, mCols);
-  image->create(size, CV_8UC3); // Hacer la conversión de tipos
+  image->create(size, CV_8UC3); // Hacer la conversión de tipos para convertir al tipo correcto
   
   if ( image->empty() ) return;
 
@@ -527,12 +555,12 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   cvtColor(aux, *image, CV_RGB2BGR);
 }
   
-int RawImage::write(cv::Mat &image, WindowI w)
+int RawImage::write(const cv::Mat &image, const WindowI &w)
 {
   return 0;
 }
  
-int RawImage::write(cv::Mat &image, Helmert2D<PointI> *trf)
+int RawImage::write(const cv::Mat &image, Helmert2D<PointI> *trf)
 {
   return 0;
 }
@@ -591,7 +619,7 @@ Status RasterGraphics::open(const char *file, Mode mode)
   const char *frtName;
 
 #ifdef HAVE_GDAL
-  if (frtName = GdalRaster::getDriverFromExt(ext)) { 
+  if ((frtName = GdalRaster::getDriverFromExt(ext)) != NULL) { 
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalRaster>();
   } else 
@@ -625,16 +653,28 @@ void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, He
   mImageFormat->read(image, wLoad, scale, trf);
 }
 
-Status RasterGraphics::write(cv::Mat &image, WindowI w)
+Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
 {
   if (mImageFormat && mImageFormat->write(image, w) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
-Status RasterGraphics::write(cv::Mat &image, Helmert2D<PointI> *trf)
+Status RasterGraphics::write(const cv::Mat &image, Helmert2D<PointI> *trf)
 {
   if (mImageFormat && mImageFormat->write(image, trf) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
+}
+
+Status RasterGraphics::saveAs(const char *file) 
+{
+  if ( !mImageFormat ) return Status::FAILURE;
+  cv::Mat buff; //Probar directamente con un buffer
+  mImageFormat->read(&buff);
+  RasterGraphics imageOut;
+  imageOut.open(file, Mode::Create);
+  imageOut.create(mRows, mCols, mBands, 0);
+  imageOut.write(buff);
+  return Status::SUCCESS;
 }
 
 #endif // HAVE_OPENCV
@@ -726,6 +766,8 @@ void GeoRasterGraphics::setProjection(const char *proj)
 #endif
 }
 
+#ifdef HAVE_OPENCV
+
 void GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
 {
 #ifdef HAVE_GDAL
@@ -734,6 +776,7 @@ void GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
     dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
 #endif
 }
+#endif // HAVE_OPENCV
 
 void GeoRasterGraphics::update()
 {

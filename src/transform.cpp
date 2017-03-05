@@ -233,17 +233,19 @@ void solveCholesky(int nRows, int nCols, double *a, double *b, double *c)
 #endif
 }
 
+#ifdef HAVE_EIGEN
 // Robust Cholesky decomposition
 void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c)
 {
-#ifdef HAVE_EIGEN
+
   Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
   Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
   Eigen::LLT<Eigen::MatrixXd> cholesky(A);
   Eigen::VectorXd C = A.ldlt().solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-#endif
+
 }
+#endif
 
 /* ---------------------------------------------------------------------------------- */
 

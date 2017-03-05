@@ -187,7 +187,7 @@ Point<T>& Point<T>::operator = (const Point& pt)
   return *this;
 }
 
-I3D_DISABLE_WARNING(4244)
+//I3D_DISABLE_WARNING(4244)
 template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
@@ -197,7 +197,7 @@ Point<T>::operator Point<T2>() const
     return Point<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
   }
 }
-I3D_ENABLE_WARNING(4244)
+//I3D_ENABLE_WARNING(4244)
 
 template<typename T1, typename T2> static inline
 Point<T1>& operator += (Point<T1>& a, const Point<T2>& b)
@@ -477,13 +477,13 @@ public:
 #ifndef HAVE_OPENCV
 
   //! dot product
-  T dot(const Point3& pt) const;
+  T dot(const Point3 &pt) const;
     
   //! dot product computed in double-precision arithmetics
-  double ddot(const Point3& pt) const;
+  double ddot(const Point3 &pt) const;
     
   //! cross-product
-  double cross(const Point3& pt) const;
+  Point3<T> cross(const Point3 &pt) const;
 
 #else
 
@@ -531,23 +531,16 @@ Point3<T>::Point3()
     : x(0), y(0), z(0) {}
 
 template<typename T> inline
-Point3<T>::Point3(T x, T y, Tz)
+Point3<T>::Point3(T x, T y, T z)
     : x(x), y(y), z(z) {}
 
 template<typename T> inline
-Point<3T>::Point3(const Point& pt)
+Point3<T>::Point3(const Point3 &pt)
     : x(pt.x), y(pt.y), z(pt.z) {}
     
 
-
-template<typename _Tp> inline
-Point3_<_Tp> Point3_<_Tp>::cross(const Point3_<_Tp>& pt) const
-{
-    return Point3_<_Tp>(y*pt.z - z*pt.y, z*pt.x - x*pt.z, x*pt.y - y*pt.x);
-}
-
 template<typename T> inline
-T Point3<T>::dot(const Point3& pt) const
+T Point3<T>::dot(const Point3 &pt) const
 {
   if (typeid(T2) == typeid(int))
     return I3D_ROUND_TO_INT(x*pt.x + y*pt.y + z*pt.z);

@@ -111,19 +111,19 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] wRead Ventana de la imagen que se quiere cargar. Por defecto toda la ventana
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
+  //virtual void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  virtual int write(cv::Mat &image, WindowI w = WindowI()) = 0;
+  //virtual int write(uchar *buff, WindowI w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -131,7 +131,32 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual int write(cv::Mat &image, Helmert2D<PointI> *trf = NULL) = 0;
+  //virtual int write(uchar *buff, Helmert2D<PointI> *trf = NULL) = 0;
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  virtual void read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \return
+   */
+  virtual int write(const cv::Mat &image, const WindowI &w = WindowI()) = 0;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  virtual int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -150,7 +175,10 @@ public:
    * \return Número de bandas de la imagen
    */
   virtual int getBands() const { return mBands; }
-
+  
+protected:
+  
+  void windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const;
 };
 
 
@@ -266,6 +294,31 @@ public:
    */
   int create(int rows, int cols, int bands, int type) override;
 
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  //void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   * \return
+   */
+  //int write(uchar *buff, WindowI w) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  //int write(uchar *buff, Helmert2D<PointI> *trf = NULL) override;
+
 #ifdef HAVE_OPENCV  
 
   /*!
@@ -275,7 +328,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+  void read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -283,7 +336,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  int write(cv::Mat &image, WindowI w = WindowI()) override;
+  int write(const cv::Mat &image, const WindowI &w = WindowI()) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -291,7 +344,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  int write(cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+  int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
 
 #endif
 
@@ -460,6 +513,31 @@ public:
    */
   int create(int rows, int cols, int bands, int type) override;
 
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  //void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \return
+   */
+  //int write(uchar *buff, WindowI w) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  //int write(uchar *buff, Helmert2D<PointI> *trf = NULL) override;
+
 #ifdef HAVE_OPENCV  
 
   /*!
@@ -469,7 +547,7 @@ public:
     * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
     * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
     */
-  void read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+  void read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -477,7 +555,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  int write(cv::Mat &image, WindowI w = WindowI()) override;
+  int write(const cv::Mat &image, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -485,7 +563,9 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  int write(cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+  int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+
+#endif
 
   /*!
    * \brief Comprueba si una extensión de archivo se corresponde con una del formato RAW
@@ -494,8 +574,6 @@ public:
    * \return verdadero si es raw
    */
   static bool isRawExt(const char *ext);
-
-#endif
 
 private:
 
@@ -616,23 +694,23 @@ public:
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  Status write(cv::Mat &image, WindowI w = WindowI());
+  Status write(const cv::Mat &image, const WindowI &w);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
-  Status write(cv::Mat &image, Helmert2D<PointI> *trf = NULL);
+  Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
 
 #endif // HAVE_OPENCV
 
-  ///*!
-  // * \brief Guarda una imagen con otro nombre o con otro formato
-  // * \param[in] file Nombre con el que se guarda el fichero
-  // * \return
-  // */
-  //Status saveAs(const char *file);
+  /*!
+   * \brief Guarda una imagen con otro nombre o con otro formato
+   * \param[in] file Nombre con el que se guarda el fichero
+   * \return
+   */
+  Status saveAs(const char *file);
 
   /*!
    * \brief Devuelve el número de filas de la imagen

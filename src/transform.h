@@ -33,6 +33,10 @@
 namespace I3D
 {
 
+
+template<typename Point_t> class I3D_EXPORT Helmert2D;
+template<typename Point_t> class I3D_EXPORT Affine;
+
 /*! \defgroup trfGroup Transformaciones
  *  Transformaciones geométricas
  *  \{
@@ -137,6 +141,8 @@ I3D_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
  */
 I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
+#ifdef HAVE_EIGEN
+
 /*!
  * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
  *
@@ -150,7 +156,7 @@ I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double
  */
 I3D_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
-
+#endif
 
 /*!
  * \brief Tipos de transformaciones
@@ -360,7 +366,6 @@ protected:
                               const std::vector<Point_t> &ptsOut, 
                               std::vector<double> *error = NULL);
 };
-
 
 template<typename Point_t> inline
 transform_status Transform<Point_t>::transformParallel( const std::vector<Point_t> &ptsIn, 
@@ -956,6 +961,10 @@ public:
    */
   Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
+  // conversión a otras transformaciones
+
+  explicit operator Helmert2D<Point_t>() const;
+  explicit operator Affine<Point_t>() const;
 };
 
 template<typename Point_t> inline
@@ -1076,6 +1085,18 @@ Point_t Translate<Point_t>::transform(const Point_t &ptIn, transform_order trfOr
   return (trfOrder == transform_order::DIRECT) ? ptIn + pt_aux : ptIn - pt_aux;
 }
 
+template<typename Point_t> inline
+Translate<Point_t>::operator Helmert2D<Point_t>() const
+{
+  return Helmert2D<T>(tx, ty, 1., 0.);
+}
+  
+template<typename Point_t> inline
+Translate<Point_t>::operator Affine<Point_t>() const
+{
+  return Affine<Point_t>(tx, ty, 1., 1., 0.);
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -1091,7 +1112,7 @@ private:
   /*!
    * \brief Ángulo de rotación
    */
-  double angle;
+  double mAngle;
 
   /*!
    * \brief r1 = cos(angle);
@@ -1119,7 +1140,7 @@ public:
    * \brief Constructora por defecto
    */
   Rotation() 
-    : Transform2D<Point_t>(transform_type::ROTATION, 1), angle(0.)
+    : Transform2D<Point_t>(transform_type::ROTATION, 1), mAngle(0.)
   {
     update();
   }
@@ -1129,7 +1150,7 @@ public:
    * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle) 
-    : Transform2D<Point_t>(transform_type::ROTATION, 1), angle(angle)
+    : Transform2D<Point_t>(transform_type::ROTATION, 1), mAngle(angle)
   {
     update();
   }
@@ -1163,7 +1184,7 @@ public:
    * \brief Devuelve el ángulo de la rotación
    * \return Ángulo en radianes
    */
-  double getAngle() const { return angle; }
+  double getAngle() const;
 
   /*!
    * \brief Establece en ángulo de la rotación
@@ -1215,6 +1236,10 @@ public:
   Point_t transform(const Point_t &ptIn, 
                     transform_order trfOrder = transform_order::DIRECT) const override;
 
+  
+  explicit operator Helmert2D<Point_t>() const;
+  explicit operator Affine<Point_t>() const;
+
 private:
 
   /*!
@@ -1260,7 +1285,7 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
     solveSVD(m, n, a, b, c);
     r1 = c[0];
     r2 = c[1];
-    angle = acos(r1);
+    mAngle = acos(r1);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
@@ -1278,9 +1303,15 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
+double Rotation<Point_t>::getAngle() const 
+{ 
+  return mAngle; 
+}
+
+template<typename Point_t> inline
 void Rotation<Point_t>::setAngle(double ang)
 { 
-  angle = ang; 
+  mAngle = ang; 
   update(); 
 }
 
@@ -1334,10 +1365,22 @@ Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, transform_order trfOr
 }
 
 template<typename Point_t> inline
+Rotation<Point_t>::operator Helmert2D<Point_t>() const
+{
+  return Helmert2D<T>(0., 0., 1., mAngle);
+}
+  
+template<typename Point_t> inline
+Rotation<Point_t>::operator Affine<Point_t>() const
+{
+  return Affine<Point_t>(0., 0., 1., 1., mAngle);
+}
+
+template<typename Point_t> inline
 void Rotation<Point_t>::update()
 {
-  r1 = cos(angle);
-  r2 = sin(angle);
+  r1 = cos(mAngle);
+  r2 = sin(mAngle);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -1522,6 +1565,8 @@ public:
    */
   void setScale(double scale);
 
+  explicit operator Affine<Point_t>() const;
+
 private:
 
   /*!
@@ -1668,6 +1713,12 @@ void Helmert2D<Point_t>::setScale(double scale)
 {
   mScale = scale;
   update();
+}
+
+template<typename Point_t> inline
+Helmert2D<Point_t>::operator Affine<Point_t>() const
+{
+  return Affine<Point_t>(tx, ty, mScale, mScale, mRotation);
 }
 
 template<typename Point_t> inline

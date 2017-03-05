@@ -87,6 +87,8 @@ private:
    */
   static std::string sTimeLogFormat;
 
+  static std::mutex mtx;
+
 private:
 
   /*!
@@ -627,6 +629,8 @@ private:
    * \see setTimeLogFormat
    */
   static std::string sTimeLogFormat;
+
+  static std::mutex mtx;
 
 private:
 
