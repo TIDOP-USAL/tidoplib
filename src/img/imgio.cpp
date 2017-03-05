@@ -131,6 +131,7 @@ void GdalRaster::close()
   mCols = 0;
   mRows = 0;
   mBands = 0;
+  mColorDepth = 0;
   mName = "";
 }
 
@@ -204,6 +205,34 @@ int GdalRaster::create(int rows, int cols, int bands, int type) {
   return 0;
 }
 
+void GdalRaster::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+{
+  WindowI wRead;
+  PointI offset;
+  windowRead(wLoad, &wRead, &offset);
+  WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
+  
+  offset /= scale; // Corregido por la escala
+
+  cv::Size size;
+  size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
+  size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
+
+  buff = (uchar *)std::malloc(mRows*mCols*mBands*mColorDepth);
+  size_t nPixelSpace = mBands*mColorDepth;
+  size_t nLineSpace = mBands*mColorDepth * mCols;
+  size_t nBandSpace = mBands*mColorDepth*mCols;
+
+  /*CPLErr cerr =*/ pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
+                                    wRead.getWidth(), wRead.getHeight(),
+                                    buff, size.width, size.height, mDataType,
+                                    mBands, panBandMap().data(), (int)nPixelSpace,
+                                    (int)nLineSpace, (int)nBandSpace );
+
+}
+
+
 #ifdef HAVE_OPENCV
 
 void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
@@ -212,13 +241,6 @@ void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmer
   PointI offset;
   windowRead(wLoad, &wRead, &offset);
   WindowI wAll(PointI(0, 0), PointI(mCols, mRows));   // Ventana total de imagen
-
-  //if ( wLoad.isEmpty() ) {
-  //  wRead = wAll;  // Se lee toda la ventana
-  //} else {
-  //  wRead = windowIntersection(wAll, wLoad);
-  //  offset = wRead.pt1 - wLoad.pt1;
-  //}
   
   offset /= scale; // Corregido por la escala
 
@@ -271,7 +293,7 @@ int GdalRaster::write(const cv::Mat &image, const WindowI &w)
   else return 0;
 }
 
-int GdalRaster::write(const cv::Mat &image, Helmert2D<PointI> *trf)
+int GdalRaster::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
 {
   if (pDataset == NULL) return 1;
   //if (!image.isContinuous()) image = image.clone();
@@ -361,6 +383,7 @@ void GdalRaster::update()
   mBands = pDataset->GetRasterCount();
   pRasterBand = pDataset->GetRasterBand(1);
   mDataType = pRasterBand->GetRasterDataType();
+  mColorDepth = GDALGetDataTypeSizeBits(mDataType);
 }
 
 #endif // HAVE_OPENCV
@@ -560,7 +583,7 @@ int RawImage::write(const cv::Mat &image, const WindowI &w)
   return 0;
 }
  
-int RawImage::write(const cv::Mat &image, Helmert2D<PointI> *trf)
+int RawImage::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
 {
   return 0;
 }
@@ -580,7 +603,7 @@ void RawImage::update()
   mCols = mProcessedImage->width;
   mRows = mProcessedImage->height;
   mBands = mProcessedImage->colors;
-  mBits = mProcessedImage->bits;
+  mColorDepth = mProcessedImage->bits;
   //mType = mProcessedImage->type;
   //mData = mProcessedImage->data;
   mSize = mProcessedImage->data_size;

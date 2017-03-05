@@ -146,10 +146,7 @@ I3D_EXPORT inline double skewness(const T &data)
   if (n <= 1) return 0.; // Mensaje de error
   double _mean = mean(data);
   double ep = 0.;
-  double aux;
-  double variance;
-  double skew;
-  double aux2;
+  double aux, aux2, skew;
   for (auto &t : data) {
     aux = t - _mean;
     ep += aux;
@@ -173,9 +170,7 @@ I3D_EXPORT inline double kurtosis(const T &data)
   if (n <= 1) return 0.; // Mensaje de error
   double _mean = mean(data);
   double ep = 0.;
-  double aux;
-  double variance;
-  double _kurtosis;
+  double aux, _kurtosis;
 
   for (auto &t : data) {
     aux = t - _mean;

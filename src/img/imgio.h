@@ -18,7 +18,6 @@ I3D_SUPPRESS_WARNINGS
 I3D_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
-#include "core/defs.h"
 #include "graphic_entities/color.h"
 #include "geometric_entities/point.h"
 #include "transform.h"
@@ -68,6 +67,11 @@ protected:
   int mBands;
 
   /*!
+   * \brief Profundidad de color o número de bits por pixel
+   */
+  int mColorDepth;
+
+  /*!
    * \brief Nombre del fichero
    */
   std::string mName;
@@ -115,7 +119,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  //virtual void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
+  virtual void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -123,7 +127,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  //virtual int write(uchar *buff, WindowI w) = 0;
+  virtual int write(const uchar *buff, const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -131,7 +135,9 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  //virtual int write(uchar *buff, Helmert2D<PointI> *trf = NULL) = 0;
+  virtual int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) = 0;
+
+#ifdef HAVE_OPENCV
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
@@ -156,7 +162,9 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) = 0;
+  virtual int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) = 0;
+
+#endif
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -176,6 +184,12 @@ public:
    */
   virtual int getBands() const { return mBands; }
   
+  /*!
+   * \brief Devuelve la profundidad de color o bits por pixel de una imangen
+   * \return Profundidad de color
+   */
+  virtual int getColorDepth() const { return mColorDepth; }
+
 protected:
   
   void windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const;
@@ -301,7 +315,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  //void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -309,7 +323,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  //int write(uchar *buff, WindowI w) override;
+  int write(const uchar *buff, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -317,7 +331,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  //int write(uchar *buff, Helmert2D<PointI> *trf = NULL) override;
+  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
 
 #ifdef HAVE_OPENCV  
 
@@ -344,7 +358,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+  int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
 
 #endif
 
@@ -472,7 +486,7 @@ private:
 
   libraw_processed_image_t *mProcessedImage;
 
-  unsigned short mBits;
+  //unsigned short mBits;
   //LibRaw_image_formats mType;
   //unsigned char *mData;
   unsigned int mSize;
@@ -520,7 +534,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  //void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -528,7 +542,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  //int write(uchar *buff, WindowI w) override;
+  int write(const uchar *buff, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -536,7 +550,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  //int write(uchar *buff, Helmert2D<PointI> *trf = NULL) override;
+  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
 
 #ifdef HAVE_OPENCV  
 
@@ -563,7 +577,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  int write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL) override;
+  int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
 
 #endif
 
@@ -636,6 +650,11 @@ protected:
   int mBands;
 
   /*!
+   * \brief Profundidad de color o número de bits por pixel
+   */
+  int mColorDepth;
+
+  /*!
    * \brief Nombre del fichero
    */
   std::string mName;
@@ -648,7 +667,7 @@ public:
    * \brief Constructor de la clase RasterGraphics
    */
   RasterGraphics()
-    : mRows(0), mCols(0), mBands(0), mName("") { }
+    : mRows(0), mCols(0), mBands(0), mColorDepth(0), mName("") { }
 
   /*!
    * \brief Destructora de la clase RasterGraphics
@@ -729,6 +748,12 @@ public:
    * \return Número de bandas de la imagen
    */
   int getBands() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color
+   * \return Profundidad de color
+   */
+  int getColorDepth() const;
 
   // Dataset Information
 
