@@ -47,6 +47,18 @@ enum class Status
   FAILURE
 };
 
+enum class DataType
+{
+  I3D_8U,      // Equivalente a CV_8U y GDT_Byte
+  I3D_8S,      // Equivalente a CV_8S
+  I3D_16U,     // Equivalente a CV_16U y GDT_UInt16
+  I3D_16S,     // Equivalente a CV_16S y GDT_Int16
+  I3D_32U,     // Equivalente a GDT_UInt32
+  I3D_32S,     // Equivalente a CV_32S y GDT_Int32
+  I3D_32F,     // Equivalente a CV_32F y GDT_Float32  
+  I3D_64F      // Equivalente a CV_64F y GDT_Float64
+};
+
 class VrtRaster
 {
 protected:
@@ -66,6 +78,8 @@ protected:
    */
   int mBands;
 
+  DataType mDataType;
+
   /*!
    * \brief Profundidad de color o número de bits por pixel
    */
@@ -81,7 +95,7 @@ public:
   /*!
    * \brief Constructora
    */
-  VrtRaster() : mRows(0), mCols(0), mBands(0), mName("") {}
+  VrtRaster() : mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0), mName("") {}
 
   /*!
    * \brief Destructora
@@ -110,32 +124,7 @@ public:
    * \param[in] type
    * \return
    */
-  virtual int create(int rows, int cols, int bands, int type) = 0;
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar. Por defecto toda la ventana
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  virtual void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   * \return
-   */
-  virtual int write(const uchar *buff, const WindowI &w) = 0;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
-   * \return
-   */
-  virtual int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) = 0;
+  virtual int create(int rows, int cols, int bands, DataType type) = 0;
 
 #ifdef HAVE_OPENCV
 
@@ -164,6 +153,34 @@ public:
    */
   virtual int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) = 0;
 
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar. Por defecto toda la ventana
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  virtual void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   * \return
+   */
+  virtual int write(const uchar *buff, const WindowI &w) = 0;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  virtual int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) = 0;
+
+
 #endif
 
   /*!
@@ -183,7 +200,13 @@ public:
    * \return Número de bandas de la imagen
    */
   virtual int getBands() const { return mBands; }
-  
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return 
+   */
+  virtual DataType getDataType() const { return mDataType; }
+
   /*!
    * \brief Devuelve la profundidad de color o bits por pixel de una imangen
    * \return Profundidad de color
@@ -254,7 +277,7 @@ protected:
   /*!
    * \brief mDataType
    */
-  GDALDataType mDataType;
+  GDALDataType mGdalDataType;
 
   /*!
    * \brief Nombre del fichero temporal
@@ -306,32 +329,7 @@ public:
    * \param[in] type
    * \return
    */
-  int create(int rows, int cols, int bands, int type) override;
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   * \return
-   */
-  int write(const uchar *buff, const WindowI &w) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
-   * \return
-   */
-  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
+  int create(int rows, int cols, int bands, DataType type) override;
 
 #ifdef HAVE_OPENCV  
 
@@ -359,6 +357,34 @@ public:
    * \return
    */
   int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
+
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   * \return
+   */
+  int write(const uchar *buff, const WindowI &w) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
+
 
 #endif
 
@@ -525,32 +551,7 @@ public:
    * \param[in] type
    * \return
    */
-  int create(int rows, int cols, int bands, int type) override;
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
-   * \return
-   */
-  int write(const uchar *buff, const WindowI &w) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
-   * \return
-   */
-  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
+  int create(int rows, int cols, int bands, DataType type) override;
 
 #ifdef HAVE_OPENCV  
 
@@ -578,6 +579,34 @@ public:
    * \return
    */
   int write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
+
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  void read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \return
+   */
+  int write(const uchar *buff, const WindowI &w) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  int write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
+
 
 #endif
 
@@ -649,6 +678,8 @@ protected:
    */
   int mBands;
 
+  DataType mDataType;
+
   /*!
    * \brief Profundidad de color o número de bits por pixel
    */
@@ -667,7 +698,7 @@ public:
    * \brief Constructor de la clase RasterGraphics
    */
   RasterGraphics()
-    : mRows(0), mCols(0), mBands(0), mColorDepth(0), mName("") { }
+    : mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0), mName("") { }
 
   /*!
    * \brief Destructora de la clase RasterGraphics
@@ -693,9 +724,9 @@ public:
    * \param[in] row Número de filas de la imagen
    * \param[in] col Número de columnas de la imagen
    * \param[in] bands Número de bandas de la imagen
-   * \param[in] type
+   * \param[in] type Tipo de datos
    */
-  Status create(int rows, int cols, int bands, int type); //... No me convence el nombre
+  Status create(int rows, int cols, int bands, DataType type); //... No me convence el nombre
 
 #ifdef HAVE_OPENCV
 
@@ -721,6 +752,31 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
   Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
+
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  void read(uchar *buff, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   */
+  Status write(const uchar *buff, const WindowI &w);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
+   */
+  Status write(const uchar *buff, Helmert2D<PointI> *trf = NULL);
 
 #endif // HAVE_OPENCV
 
@@ -748,6 +804,12 @@ public:
    * \return Número de bandas de la imagen
    */
   int getBands() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return
+   */
+  DataType getDataType() const;
 
   /*!
    * \brief Devuelve la profundidad de color
