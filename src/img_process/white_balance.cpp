@@ -20,11 +20,12 @@ namespace I3D
 // OpenCV 3.2
 ImgProcessing::Status Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
+  // Tiene que ser imagen con tres canales 
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
     wb->balanceWhite(matIn, *matOut);
   } catch (cv::Exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -77,7 +78,7 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
     parallel_for(0, matIn.rows, trfRgbToWhitePatch);
 
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;

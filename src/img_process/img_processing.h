@@ -60,7 +60,9 @@ enum class process_type {
   FUNCTION_PROCESS,   /*!< Proceso que ejecuta una función */
   /* Balance de blancos */
   GRAYWORLD,
-  WHITEPATCH
+  WHITEPATCH,
+  /* Balance de blancos */
+  COLOR_CONVERSION
 };
 
 /*!
@@ -886,7 +888,42 @@ public:
 
 /* ---------------------------------------------------------------------------------- */
 
+/*!
+ * \brief Conversión del modo de color.
+ * Conversión entre distintos tipos de modos de color
+ */
+class I3D_EXPORT ColorConversion : public ImgProcessing
+{
 
+public:
+
+  /*!
+   * \brief Constructora de la clase
+   */
+  ColorConversion()
+    : ImgProcessing(process_type::COLOR_CONVERSION) {}
+
+  //~ColorConversion();
+
+  /*!
+   * \brief Ejecuta el proceso.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
+   */
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] thresh Umbral
+   * \param[in] maxVal Valor máximo
+   * \param[in] bInverse Binarización inversa
+   */
+  void setParameters(double thresh, double maxVal, bool bInverse = false);
+};
+
+/* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of ImgProc
 

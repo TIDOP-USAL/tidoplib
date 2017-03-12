@@ -327,7 +327,7 @@ std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 
 std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
-MessageManager::MessageManager()
+MessageManager::MessageManager() : mListeners(0)
 {
 }
 
@@ -388,11 +388,13 @@ void MessageManager::initExternalHandlers()
 
 void MessageManager::onDebug(const char *msg, const char *date)
 {
+#ifdef _DEBUG
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgDebug(msg, date);
     }
   }
+#endif
 }
 
 void MessageManager::onVerbose(const char *msg, const char *date) 
@@ -433,6 +435,7 @@ void MessageManager::onError(const char *msg, const char *date)
 
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
+  getInstance();
   // Bloqueo aqui para evitar problemas entre hilos
   char date[64];
   std::time_t now = std::time(NULL);
@@ -480,6 +483,8 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
 void MessageManager::release(const Message &msg)
 {
+  getInstance();
+
   std::string msg_out;
   if (msg.getLine() == -1 && msg.getFile() == "" && msg.getFunction() == "") {
     msg_out = msg.getMessage();

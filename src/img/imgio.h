@@ -289,6 +289,13 @@ protected:
    */
   GDALDriver *driver;
 
+  static char **gdalOpt;
+  static int BMP[];
+  static int GTiff[];
+  static int GTX[];
+  static int NTv2[];
+  static int LAN[];
+
 public:
 
   /*!

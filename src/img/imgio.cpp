@@ -150,6 +150,14 @@ DataType convertDataType(GDALDataType dataType)
 
 /* ---------------------------------------------------------------------------------- */
 
+int  GdalRaster::BMP[] = {  GDT_Byte };
+int  GdalRaster::GTiff[] = {  GDT_Byte, GDT_UInt16, GDT_Int16, GDT_UInt32, GDT_Int32, GDT_Float32, GDT_Float64, GDT_CInt16, GDT_CInt32, GDT_CFloat32, GDT_CFloat64 };
+int  GdalRaster::GTX[] = {  GDT_Float32 };
+int  GdalRaster::NTv2[] = {  GDT_Float32 };
+int  GdalRaster::LAN[] = {  GDT_Byte, GDT_Int16 };
+char **GdalRaster::gdalOpt = 0;//CSLSetNameValue( SGD_ImgFileGDAL::gdalOpt, "QUALITY", "70" );
+
+
 GdalRaster::GdalRaster() 
   : VrtRaster(), bTempFile(false), pDataset(0), pRasterBand(0), mGdalDataType(GDT_Unknown), mTempName("") 
 {
