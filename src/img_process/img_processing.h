@@ -894,14 +894,35 @@ public:
  */
 class I3D_EXPORT ColorConversion : public ImgProcessing
 {
+public:
+  
+  /*!
+   * Modelos de color
+   */
+  enum class Model
+  {
+    RGB,
+    RGBA,
+    CMYK,
+    HSL,
+    HSV,
+    LUMINANCE,
+    CHROMATICITY,
+  };
+
+private:
+
+  Model mModelIn;
+  
+  Model mModelOut;
 
 public:
 
   /*!
    * \brief Constructora de la clase
    */
-  ColorConversion()
-    : ImgProcessing(process_type::COLOR_CONVERSION) {}
+  ColorConversion(Model modelIn, Model modelOut)
+    : ImgProcessing(process_type::COLOR_CONVERSION), mModelIn(modelIn), mModelOut(modelOut) {}
 
   //~ColorConversion();
 
@@ -916,11 +937,10 @@ public:
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] thresh Umbral
-   * \param[in] maxVal Valor máximo
-   * \param[in] bInverse Binarización inversa
+   * \param[in] modelIn Modelo de color de entrada
+   * \param[in] modelOut Modelo de color de salida
    */
-  void setParameters(double thresh, double maxVal, bool bInverse = false);
+  //void setParameters(Model modelIn, Model modelOut);
 };
 
 /* ---------------------------------------------------------------------------------- */

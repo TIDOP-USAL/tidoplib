@@ -658,6 +658,11 @@ private:
   Status mStatus;
 
   /*!
+   * \brief Mensaje de información opcional
+   */
+  std::string mMessage;
+
+  /*!
    * \brief Escribe mensajes en log y consola
    */
   bool bWriteMsg;
@@ -667,7 +672,7 @@ public:
   /*!
    * \brief Constructor
    */
-  Chrono(bool writeMsg = true);
+  Chrono(const char *msg = "", bool writeMsg = true);
 
   /*!
    * \brief Destructora
@@ -699,6 +704,8 @@ public:
    * \brief
    */
   uint64_t stop();
+
+  void setMessage(const char *msg);
 
 private:
 

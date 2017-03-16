@@ -1,6 +1,7 @@
 #include "img_process/img_processing.h"
 
 #include "core/messages.h"
+#include "graphic_entities/color.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
@@ -260,7 +261,33 @@ ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *ma
   return ImgProcessing::Status::OK;
 }
 
+
 /* ---------------------------------------------------------------------------------- */
+
+
+ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  try {
+    if ( mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSL ) {
+      rgbToHSL(matIn, matOut);
+    }
+  } catch (cv::Exception &e){
+    logPrintError(e.what());
+    return ImgProcessing::Status::PROCESS_ERROR;
+  }
+  return ImgProcessing::Status::OK;
+}
+
+//void ColorConversion::setParameters(Model modelIn, Model modelOut)
+//{
+//  mThresh = thresh;
+//  mMaxVal = maxval;
+//  bInverse = inverse;
+//}
+
+/* ---------------------------------------------------------------------------------- */
+
 
 } // End namespace I3D
 

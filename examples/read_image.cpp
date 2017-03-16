@@ -19,7 +19,10 @@ using namespace I3D;
 int main(int argc, char** argv)
 {
 
-  CmdParser cmdParser("read_image", "");
+  char name[I3D_MAX_FNAME];
+  getFileName(getRunfile(), name, I3D_MAX_FNAME);
+
+  CmdParser cmdParser(name, "");
   cmdParser.addParameter("img", "Imagen");
   cmdParser.addParameter("img_out", "Imagen de salida");
   CmdParser::Status status = cmdParser.parse(argc, argv);

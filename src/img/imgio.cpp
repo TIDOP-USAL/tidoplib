@@ -188,7 +188,7 @@ GdalRaster::~GdalRaster()
     } else printError("No se pudo crear la imagen");
   }
 
-  if (pDataset) GDALClose(pDataset), pDataset = 0; 
+  if (pDataset) GDALClose(pDataset), pDataset = NULL; 
 
   if (bTempFile) {
     for (int i = 0; i < sizeof(**tmp); i++)
@@ -198,7 +198,7 @@ GdalRaster::~GdalRaster()
 
 void GdalRaster::close()
 {
-  if (pDataset) GDALClose(pDataset);
+  if (pDataset) GDALClose(pDataset), pDataset = NULL;
   mGdalDataType = GDT_Unknown;
   mTempName = "";
   bTempFile = false;
