@@ -88,7 +88,8 @@ HEADERS += \
     ../../src/img_process/white_balance.h \
     ../../src/core/datamodel.h \
     ../../src/img/imgio.h \
-    ../../src/vect/vectio.h
+    ../../src/vect/vectio.h \
+    ../../src/geometric_entities/entity.h
 
 unix {
     target.path = /usr/lib

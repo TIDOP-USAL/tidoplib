@@ -594,14 +594,11 @@ RawImage::RawImage()
   //rawProcessor->imgdata.params.gamm[0] = 1.0;
   //rawProcessor->imgdata.params.gamm[1] = 0.0;
   //rawProcessor->imgdata.params.user_qual = 0; // fastest interpolation (linear)
-  //rawProcessor->imgdata.params.use_camera_wb = 1;
-//        //rawProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
-//		    //rawProcessor.imgdata.params.output_bps = 16; // Write 16 bits per color value
-////		rawProcessor_.imgdata.params.gamm[0] = rawProcessor_.imgdata.params.gamm[1] = 1.0; // linear gamma curve
-//    		rawProcessor.imgdata.params.no_auto_bright = 1; // Don't use automatic increase of brightness by histogram.
-//		    //rawProcessor.imgdata.params.document_mode = 0; // standard processing (with white balance)
-//		    rawProcessor.imgdata.params.use_camera_wb = 1; // If possible, use the white balance from the camera.
-//		    rawProcessor.imgdata.params.half_size = 1;
+  mRawProcessor->imgdata.params.use_camera_wb = 1;
+  mRawProcessor->imgdata.params.output_tiff = 1;
+  //rawProcessor->imgdata.params.auto_bright_thr = 1.f;
+  //mRawProcessor->imgdata.params.output_bps = 16;
+
 }
 
 RawImage::~RawImage()
@@ -663,18 +660,14 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  //if (scale >= 1.) { // Si interesase hacer el remuetreo posteriormente se haría asi
-    size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
-    size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
-    if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
-  //} else {
-  //  size.width = wRead.getWidth();
-  //  size.height = wRead.getHeight();
-  //  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
-  //}
+  size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
+  size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
 
   //cv::Size size(mRows, mCols);
-  image->create(size, CV_8UC3); // Hacer la conversión de tipos para convertir al tipo correcto
+    
+  int depth = (mDataType == DataType::I3D_16U) ? CV_16U : CV_8U;
+  image->create(size, CV_MAKETYPE(depth, mBands)/*CV_8UC3*/); // Hacer la conversión de tipos para convertir al tipo correcto
   
   if ( image->empty() ) return;
 
@@ -691,10 +684,21 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   //}
   cv::Mat aux;
   if (LIBRAW_IMAGE_JPEG == mProcessedImage->type) {
-    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_8UC3, mProcessedImage->data);
+    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
   } else if (LIBRAW_IMAGE_BITMAP == mProcessedImage->type) {
-    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_8UC3, mProcessedImage->data);
+    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
   }
+
+  //// Convert the Bayer data from 16-bit to to 8-bit
+  //cv::Mat bayer8BitMat = aux.clone();
+  //// The 3rd parameter here scales the data by 1/16 so that it fits in 8 bits.
+  //// Without it, convertTo() just seems to chop off the high order bits.
+  //bayer8BitMat.convertTo(bayer8BitMat, CV_8UC3, 255);
+
+  ////// Convert the Bayer data to 8-bit RGB
+  ////cv::Mat rgb8BitMat(mProcessedImage->height, mProcessedImage->width, CV_8UC3);
+  ////cv::cvtColor(bayer8BitMat, rgb8BitMat, CV_BayerGR2RGB);
+
   cvtColor(aux, *image, CV_RGB2BGR);
 }
   
@@ -737,10 +741,22 @@ bool RawImage::isRawExt(const char *ext)
 
 void RawImage::update()
 {
+  //mRawProcessor->imgdata.sizes;
+  //ushort      raw_height,
+  //            raw_width,
+  //            height,
+  //            width,
+  //            top_margin,
+  //            left_margin;
+  //ushort      iheight,
+  //            iwidth;
+
+
   mCols = mProcessedImage->width;
   mRows = mProcessedImage->height;
-  mBands = mProcessedImage->colors;
+  mBands = mRawProcessor->imgdata.idata.colors; //mProcessedImage->colors;
   mColorDepth = mProcessedImage->bits;
+  mDataType = mProcessedImage->bits == 16 ? DataType::I3D_16U : DataType::I3D_8U;
   //mType = mProcessedImage->type;
   //mData = mProcessedImage->data;
   mSize = mProcessedImage->data_size;
@@ -852,15 +868,15 @@ Status RasterGraphics::saveAs(const char *file)
 {
   if ( !mImageFormat ) return Status::FAILURE;
 #ifdef HAVE_OPENCV
-  cv::Mat *buff; 
+  cv::Mat buff; 
 #else
   uchar *buff;
 #endif
-  mImageFormat->read(buff);
+  mImageFormat->read(&buff);
   RasterGraphics imageOut;
   imageOut.open(file, Mode::Create);
   imageOut.create(mRows, mCols, mBands, mDataType);
-  imageOut.write(*buff);
+  imageOut.write(buff);
   return Status::SUCCESS;
 }
 

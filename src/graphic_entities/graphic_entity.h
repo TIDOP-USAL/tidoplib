@@ -20,6 +20,10 @@
 namespace I3D
 {
 
+template<typemame T> class LineString<T>;
+template<typemame T> class Polygon<T>;
+
+
 /*! \defgroup GraphicEntities Entidades gráficas
  *  Puntos, lineas, ...
  *  \{
@@ -186,11 +190,11 @@ public:
    */
   PenCap getPenCap();
 
-    /*!
-     * \brief Establece la forma de puntos extremos de las líneas
-     * \param[in] pencap Forma de puntos extremos de las líneas
-     */
-   void setPenCap(PenCap pencap);
+  /*!
+   * \brief Establece la forma de puntos extremos de las líneas
+   * \param[in] pencap Forma de puntos extremos de las líneas
+   */
+  void setPenCap(PenCap pencap);
 
   /*!
    * \brief Devuelve la forma del punto de unión (vértice) de líneas
@@ -222,6 +226,10 @@ public:
   void setPriorityLevel(uint32_t priorityLevel);
 };
 
+
+/*!
+ * \brief Clase estilo de pincel
+ */
 class I3D_EXPORT StyleBrush
 {
 public:
@@ -380,6 +388,9 @@ public:
 };
 
 
+/*!
+ * \brief Clase estilo simbolo
+ */
 class I3D_EXPORT StyleSymbol
 {
 
@@ -541,7 +552,9 @@ public:
 };
 
 
-
+/*!
+ * \brief Clase estilo de texto
+ */
 class I3D_EXPORT StyleLabel
 {
 public:
@@ -798,10 +811,15 @@ public:
 
 };
 
-ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition);
+ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
 
 //Estilos de una entidad, de un layer o de un archivo
-class I3D_EXPORT Style
+/*!
+ * \brief Clase estilos
+ *
+ * Estilos de una entidad, de un layer o de un archivo
+ */
+class I3D_EXPORT GraphicStyle
 {
 protected:
   std::shared_ptr<StylePen>     mStylePen;
@@ -810,11 +828,12 @@ protected:
   std::shared_ptr<StyleLabel>   mStyleLabel;
 
 public:
-  Style()
+
+  GraphicStyle()
   {
   }
 
-  ~Style()
+  ~GraphicStyle()
   {
   }
 
@@ -843,61 +862,102 @@ private:
 };
 
 
-//class I3D_EXPORT Entity_ : public Metadata
-//{
-//
-//
-//public:
-//  Entity_()
-//  {
-//  }
-//
-//  ~Entity_()
-//  {
-//  }
-//
-//private:
-//
-//};
+
+// clase base para las entidades gráficas. Una entidad punto
+// que se dibuje heredará de GraphicEntity y de Point.
+// Point, LineString, etc definen la geometría, GraphicEntity
+// las propiedades generales y GPoint, GLineString, ... las especificas
+
+/*!
+ * \brief Clase base para las entidades gráficas
+ *
+ */
+class I3D_EXPORT GraphicEntity : public GraphicStyle, public Metadata
+{
+
+public:
+
+  GraphicEntity();
+  ~GraphicEntity();
+
+#ifdef HAVE_OPENCV
+  virtual void draw(cv::Mat &canvas) = 0;
+#endif
+};
 
 
-// clase base para las entidades gráficas. Una entidad punto que se dibuje heredará de GraphicEntity y de Point. 
-// Point, LineString, etc definen la geometría, GraphicEntity las propiedades generales y GPoint, GLineString, ... las especificas 
+template<typename T>
+class I3D_EXPORT GPoint : public Point<T>, GraphicEntity
+{
+public:
 
-//class I3D_EXPORT GraphicEntity : public Style, public Entity_
-//{
-//
-//public:
-//  
-//  GraphicEntity();
-//  ~GraphicEntity();
-//
-//#ifdef HAVE_OPENCV
-//  virtual void draw(cv::Mat &canvas) = 0;
-//#endif
-//};
+  GPoint() : Point<T>(), GraphicEntity(){}
 
-///*!
-// * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
-// */
-//class I3D_EXPORT Layer
-//{
-//  std::list<std::shared_ptr<Entity_>> entities;
-//
-//public:
-//  Layer()
-//  {
-//  }
-//
-//  ~Layer()
-//  {
-//  }
-//
-//
-//private:
-//  void add(std::shared_ptr<Entity_> entity);
-//  void del();
-//};
+  ~GPoint(){}
+
+};
+
+
+template<typename T>
+class I3D_EXPORT GPoint3D : public Point3<T>, GraphicEntity
+{
+public:
+
+  GPoint3D() : Point3<T>(), GraphicEntity(){}
+
+  ~GPoint3D(){}
+
+};
+
+template<typename T>
+class I3D_EXPORT GLineString : public LineString<T>, GraphicEntity
+{
+public:
+
+  GLineString() : LineString<T>(), GraphicEntity(){}
+
+  ~GLineString(){}
+
+};
+
+template<typename T>
+class I3D_EXPORT GPolygon : public Polygon<T>, GraphicEntity
+{
+public:
+
+  GPolygon() : Polygon<T>(), GraphicEntity(){}
+
+  ~GPolygon(){}
+
+};
+
+
+//TODO: completar
+
+/*!
+ * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
+ */
+class I3D_EXPORT Layer
+{
+  std::list<std::shared_ptr<GraphicEntity>> entities;
+
+public:
+  Layer()
+  {
+  }
+
+  ~Layer()
+  {
+  }
+
+
+private:
+  void add(std::shared_ptr<GraphicEntity> entity);
+  void del();
+};
+
+
+
 
 
 

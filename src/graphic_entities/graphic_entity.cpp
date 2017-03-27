@@ -285,6 +285,7 @@ void StyleSymbol::setPriorityLevel(uint32_t priorityLevel)
 {
   mPriorityLevel = priorityLevel;
 }
+
 /* ---------------------------------------------------------------------------------- */
 
 StyleLabel::StyleLabel()
@@ -410,12 +411,27 @@ void StyleLabel::setOffset(double dx, double dy)
 
 /* ---------------------------------------------------------------------------------- */
 
-//GraphicEntity::GraphicEntity()
-//{
-//}
-//
-//GraphicEntity::~GraphicEntity()
-//{
-//}
+bool GraphicStyle::read()
+{
+  return false;
+}
+
+bool GraphicStyle::write()
+{
+  return false;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+GraphicEntity::GraphicEntity()
+  : GraphicStyle(),
+    Metadata()
+{
+}
+
+GraphicEntity::~GraphicEntity()
+{
+}
 
 } // End namespace I3D

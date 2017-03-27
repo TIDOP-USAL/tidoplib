@@ -31,7 +31,7 @@ template<typename T> class Point3;
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief Tipos de transformaciones
+ * \brief Tipos de entidades
  */
 enum class entity_type {
   POINT_2D,                   /*!< Punto 2D */

@@ -99,41 +99,21 @@ Color::Color(const cv::Scalar &color)
 }
 #endif
 
-/*!
- * \brief Obtiene la componente azul de un color
- * \param[in] color Color representado como un entero
- * \return Componente azul
- */
 int Color::getBlue() const
 {
   return (mColor & 0xFF);
 }
 
-/*!
- * \brief Obtiene la componente verde de un color
- * \param[in] color Color representado como un entero
- * \return Componente verde
- */
 int Color::getGreen() const
 {
   return((mColor & 0xFF00) >> 8);
 }
 
-/*!
- * \brief Obtiene la componente roja de un color
- * \param[in] color Color representado como un entero
- * \return Componente roja
- */
 int Color::getRed() const
 {
   return((mColor & 0xFF0000) >> 16);
 }
 
-/*!
- * \brief Obtiene el canal alfa de un color
- * \param[in] color Color representado como un entero
- * \return Canal alfa
- */
 int Color::getAlpha() const
 {
   return((mColor & 0xFF000000) >> 24);

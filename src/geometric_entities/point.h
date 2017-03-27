@@ -33,9 +33,11 @@ namespace I3D
  */
 template<typename T>
 class I3D_EXPORT Point
+  : public
 #ifdef HAVE_OPENCV
-  : public cv::Point_<T>
+  cv::Point_<T>,
 #endif
+  Entity<T>
 {
   // Por si no esta activado OpenCV. Para evitar problemas ya que el
   // uso de point esta muy extendido por la libreria se copia la clase
@@ -130,13 +132,19 @@ typedef Point<float> PointF;
 #ifdef HAVE_OPENCV
 
 template<typename T> inline
-Point<T>::Point() : cv::Point_<T>() {}
+Point<T>::Point()
+    : cv::Point_<T>(),
+      Entity(entity_type::POINT_2D){}
 
 template<typename T> inline
-Point<T>::Point(T x, T y) : cv::Point_<T>(x, y) {}
+Point<T>::Point(T x, T y)
+    : cv::Point_<T>(x, y),
+      Entity(entity_type::POINT_2D) {}
 
 template<typename T> inline
-Point<T>::Point(const Point<T>& pt) : cv::Point_<T>(pt.x, pt.y) {}
+Point<T>::Point(const Point<T>& pt)
+    : cv::Point_<T>(pt.x, pt.y),
+      Entity(entity_type::POINT_2D) {}
 
 //template<typename T> inline
 //Point<T>::Point(const cv::Point_<T>& pt) : cv::Point_<T>(pt) {}
@@ -146,15 +154,15 @@ Point<T>::Point(const Point<T>& pt) : cv::Point_<T>(pt.x, pt.y) {}
 
 template<typename T> inline
 Point<T>::Point()
-    : x(0), y(0) {}
+    : Entity(entity_type::POINT_2D), x(0), y(0) {}
 
 template<typename T> inline
 Point<T>::Point(T x, T y)
-    : x(x), y(y) {}
+    : Entity(entity_type::POINT_2D), x(x), y(y) {}
 
 template<typename T> inline
 Point<T>::Point(const Point& pt)
-    : x(pt.x), y(pt.y) {}
+    : Entity(entity_type::POINT_2D), x(pt.x), y(pt.y) {}
 
 template<typename T> inline
 T Point<T>::dot(const Point& pt) const
@@ -418,9 +426,11 @@ typedef MultiPoint<float> MultiPointF;
  */
 template<typename T>
 class I3D_EXPORT Point3
+  : public
 #ifdef HAVE_OPENCV
-  : public cv::Point3_<T>
+  cv::Point3_<T>,
 #endif
+  Entity<T>
 {
   // Por si no esta activado OpenCV. Para evitar problemas ya que el
   // uso de point esta muy extendido por la libreria se copia la clase
@@ -512,13 +522,19 @@ typedef Point3<float> Point3F;
 #ifdef HAVE_OPENCV
 
 template<typename T> inline
-Point3<T>::Point3() : cv::Point3_<T>() {}
+Point3<T>::Point3()
+    : cv::Point3_<T>(),
+      Entity<T>(entity_type::POINT_3D) {}
 
 template<typename T> inline
-Point3<T>::Point3(T x, T y, T z) : cv::Point3_<T>(x, y, z) {}
+Point3<T>::Point3(T x, T y, T z)
+    : cv::Point3_<T>(x, y, z),
+      Entity<T>(entity_type::POINT_3D) {}
 
 template<typename T> inline
-Point3<T>::Point3(const Point3<T>& pt) : cv::Point3_<T>(pt.x, pt.y, pt.z) {}
+Point3<T>::Point3(const Point3<T>& pt)
+    : cv::Point3_<T>(pt.x, pt.y, pt.z),
+      Entity<T>(entity_type::POINT_3D) {}
 
 //template<typename T> inline
 //Point3<T>::Point3(const cv::Point3_<T>& pt) : cv::Point3_<T>(pt) {}
@@ -528,15 +544,18 @@ Point3<T>::Point3(const Point3<T>& pt) : cv::Point3_<T>(pt.x, pt.y, pt.z) {}
 
 template<typename T> inline
 Point3<T>::Point3()
-    : x(0), y(0), z(0) {}
+    : x(0), y(0), z(0),
+      Entity<T>(entity_type::POINT_3D) {}
 
 template<typename T> inline
 Point3<T>::Point3(T x, T y, T z)
-    : x(x), y(y), z(z) {}
+    : x(x), y(y), z(z),
+      Entity<T>(entity_type::POINT_3D) {}
 
 template<typename T> inline
 Point3<T>::Point3(const Point3 &pt)
-    : x(pt.x), y(pt.y), z(pt.z) {}
+    : x(pt.x), y(pt.y), z(pt.z),
+      Entity<T>(entity_type::POINT_3D) {}
     
 
 template<typename T> inline
