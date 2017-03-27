@@ -3,7 +3,17 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\..\Libs\opencv\x64\vc12\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output14 --in_type=stream --th=220 --th_acu=60 --r_min=30 --r_max=80 -show_img -save_img</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output14 --in_type=stream --th=220 --th_acu=60 --r_min=30 --r_max=80 -show_img -save_img -draw</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\..\Libs\opencv\x64\vc12\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output14 --in_type=stream --th=220 --th_acu=60 --r_min=30 --r_max=80 -show_img -save_img -draw</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugVld|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\..\Libs\opencv\x64\vc12\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output14 --in_type=stream --th=220 --th_acu=60 --r_min=30 --r_max=80 -show_img -save_img -draw</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\..\Libs\opencv\x64\vc12\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>

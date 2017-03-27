@@ -5,6 +5,16 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--template=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes\contour.bmp --img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2622.jpg --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes</LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\Libs\pcl-1.8.0-install\bin;..\..\..\Libs\opencv\x64\vc12\bin;..\..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>--template=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes\contour.bmp --img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2622.jpg --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes</LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugVld|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\Libs\pcl-1.8.0-install\bin;..\..\..\Libs\opencv\x64\vc12\bin;..\..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>--template=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes\contour.bmp --img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2622.jpg --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\Recortes</LocalDebuggerCommandArguments>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\Libs\pcl-1.8.0-install\bin;..\..\..\Libs\opencv\x64\vc12\bin;..\..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>

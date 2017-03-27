@@ -9,6 +9,9 @@
 
 using namespace I3D;
 
+#ifdef VISUAL_LEAK_DETECTOR
+#include <vld.h>
+#endif
 
 /*!
  * read_image: 
