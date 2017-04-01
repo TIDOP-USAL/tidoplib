@@ -34,6 +34,7 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\props_vs\libs.props" />
     <Import Project="..\props_vs\OpenCV_debug-3.2.0.props" />
     <Import Project="..\props_vs\QT_debug.props" />
     <Import Project="..\props_vs\GDAL_Debug.props" />
@@ -41,6 +42,7 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\props_vs\libs.props" />
     <Import Project="..\props_vs\OpenCV_release-3.2.0.props" />
     <Import Project="..\props_vs\QT_release.props" />
     <Import Project="..\props_vs\GDAL_Release.props" />
@@ -62,7 +64,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Libs\gflags\Include;..\..\Libs\glog\include;..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -79,7 +81,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\Libs\gflags\Include;..\..\Libs\glog\include;..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>

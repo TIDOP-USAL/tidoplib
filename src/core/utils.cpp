@@ -564,7 +564,9 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
   //printf("Time %f", time);
 }
 
-
+// Añadir método para ejecutar código de forma asincrona
+// std::async
+// Concurrency::task<T> (PPL)
 /* ---------------------------------------------------------------------------------- */
 /*                                 Medición de tiempos                                */
 /* ---------------------------------------------------------------------------------- */

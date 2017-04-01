@@ -159,8 +159,11 @@ public:
    */
   template<typename T> void filter(const cv::Mat &in, const Window<T> &w, cv::Mat *out, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor) {
     Window<T> waux = w;
+    Point<T> pt_aux;
     for (int j = 0; j < mKeyPoints.size(); j++) {
-      if (!waux.containsPoint((Point<T> &)mKeyPoints[j].pt)) {
+      pt_aux.x = mKeyPoints[j].pt.x;
+      pt_aux.y = mKeyPoints[j].pt.y;
+      if (!waux.containsPoint(pt_aux)) {
         mKeyPoints.erase(mKeyPoints.begin() + j);
         j--;
       } else mKeyPoints[j].pt = mKeyPoints[j].pt - (cv::Point2f)waux.pt1;

@@ -1,7 +1,12 @@
-#ifdef WIN32
-#include <windows.h>
-#endif
-#include <memory>
+// Cabeceras tidopLib
+#include "core/core.h"
+#include "feature_detection/linedetector.h"
+#include "VideoStream.h"
+#include "matching.h"
+#include "fourier.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
+#include "transform.h"
 
 // Cabeceras de OpenCV
 #include "opencv2/core/core.hpp"
@@ -12,17 +17,7 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/calib3d.hpp"
 
-// Cabeceras propias
-#include "feature_detection/linedetector.h"
-#include "VideoStream.h"
-#include "core/utils.h"
-#include "matching.h"
-#include "fourier.h"
-#include "img_process/img_processing.h"
-#include "img_process/filters.h"
-#include "transform.h"
-#include "core/console.h"
-#include "core/messages.h"
+#include <memory>
 
 using namespace I3D;
 using namespace std;
@@ -527,7 +522,7 @@ int main(int argc, char *argv[])
 
         // Calculo de la transformación proyectiva
         TrfPerspective<PointF> trfPerps;
-        if (trfPerps.compute(ptsprev, ptscur)) {
+        if (trfPerps.compute(ptsprev, ptscur) == transform_status::SUCCESS) {
           // Se transforma la línea del conductor para determinar la posición en la imagen actual
           std::vector<PointF> l_in = { conductor_line_prev.pt1, conductor_line_prev.pt2 };
           std::vector<PointF> l_out;

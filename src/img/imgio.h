@@ -31,6 +31,9 @@ I3D_DEFAULT_WARNINGS
 namespace I3D
 {
 
+//namespace IO
+//{
+
 enum class Mode
 {
   Read,
@@ -46,6 +49,9 @@ enum class Status
   SUCCESS,
   FAILURE
 };
+
+//}
+
 
 enum class DataType
 {

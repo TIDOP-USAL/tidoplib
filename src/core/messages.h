@@ -456,7 +456,7 @@ public:
     void setMessageLevel(const MessageLevel &level);
 
     /*!
-     * \brief Añade la locacización del mensaje (fichero, número de línea
+     * \brief Añade la localización del mensaje (fichero, número de línea
      * y función) y el nivel de información de los mensajes
      * \param[in] level Nivel de información del mensaje
      * \param[in] file Nombre del fichero desde el cual se lanza el mensaje

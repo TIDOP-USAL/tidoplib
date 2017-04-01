@@ -5,10 +5,10 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBSSRC)\gdal-2.1.2\frmts;$(LIBSSRC)\gdal-2.1.2\gcore;$(LIBSSRC)\gdal-2.1.2\ogr;$(LIBSSRC)\gdal-2.1.2\port;$(LIBSSRC)\gdal-2.1.2\alg;$(LIBSSRC)\gdal-2.1.2\frmts\aaigrid;$(LIBSSRC)\gdal-2.1.2\frmts\adrg;$(LIBSSRC)\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\..\Libs_sources\gdal-2.1.2\bin\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBSSRC)\gdal-2.1.2\bin\x64\Debug;$(LIBSSRC)\gdal-2.1.2\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gdal-2.1.2.lib;gdal-ogrd.lib;gdal-ogrsf_frmts_supd.lib;gdal-ogrsf_frmtsd.lib;gdal-portd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

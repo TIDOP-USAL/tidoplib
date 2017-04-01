@@ -39,7 +39,9 @@ I3D_DISABLE_WARNING(4100)
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
 {
+  // Por ahora mantengo la clase Message
   Message::message(err_msg).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE, file_name, line, func_name);
+  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR, file_name, line, func_name);
   return 0;
 }
 I3D_ENABLE_WARNING(4100)
@@ -62,6 +64,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
     ml = MessageLevel::MSG_INFO;
   }
   Message::message(err_msg).print( ml, MessageOutput::MSG_CONSOLE);
+  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR);
   return;
 }
 #endif // HAVE_GDAL

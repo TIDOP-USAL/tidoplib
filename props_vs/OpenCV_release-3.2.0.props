@@ -3,14 +3,15 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <OPENCV_3_2_0>C:\Desarrollo\Libs\opencv-3.2.0</OPENCV_3_2_0>
+    <OPENCV_3_2_0>..\..\Libs\opencv-3.2.0</OPENCV_3_2_0>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>$(OPENCV_3_2_0)\x64\vc12\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBS)\opencv-3.2.0\x64\vc12\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>opencv_shape320.lib;opencv_stitching320.lib;opencv_superres320.lib;opencv_videostab320.lib;opencv_objdetect320.lib;opencv_photo320.lib;opencv_calib3d320.lib;opencv_features2d320.lib;opencv_flann320.lib;opencv_highgui320.lib;opencv_ml320.lib;opencv_videoio320.lib;opencv_imgcodecs320.lib;opencv_video320.lib;opencv_imgproc320.lib;opencv_core320.lib;opencv_line_descriptor320.lib;opencv_optflow320.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(OPENCV_3_2_0)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\opencv-3.2.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

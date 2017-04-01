@@ -20,8 +20,9 @@
 namespace I3D
 {
 
-template<typemame T> class LineString<T>;
-template<typemame T> class Polygon<T>;
+// forward declaration
+template<typename T> class LineString;
+template<typename T> class Polygon;
 
 
 /*! \defgroup GraphicEntities Entidades gráficas

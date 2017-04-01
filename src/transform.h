@@ -787,15 +787,28 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
                                                     std::vector<Point_t> *ptsOut, 
                                                     transform_order trfOrder) const
 {
+  // TODO: chapuza...
+  size_t n = ptsIn.size();
+  std::vector<cv::Point_<sub_type>> in(n);
+  std::vector<cv::Point_<sub_type>> out;
+  for ( int i = 0; i < n; i++ ) {
+    in[i] = ptsIn[i];
+  }
+
   try {
     if (trfOrder == transform_order::DIRECT)
-      cv::perspectiveTransform(ptsIn, *ptsOut, H);
+      cv::perspectiveTransform(in, out, H);
     else {
-      cv::perspectiveTransform(ptsIn, *ptsOut, H.inv());
+      cv::perspectiveTransform(in, out, H.inv());
     }
   } catch ( cv::Exception &e ) {
     printError("Error en transformación perspectiva: %s",e.what());
     return transform_status::FAILURE; 
+  }
+  ptsOut->resize(n);
+  for ( int i = 0; i < n; i++ ) {
+    (*ptsOut)[i].x = out[i].x;
+    (*ptsOut)[i].y = out[i].y;
   }
   return transform_status::SUCCESS; 
 }
@@ -846,12 +859,25 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
     return transform_status::FAILURE;
   }
 
+  //TODO: chapuza...
+  std::vector<cv::Point_<sub_type>> in(n1);
+  std::vector<cv::Point_<sub_type>> out(n1);
+  for ( int i = 0; i < n1; i++ ) {
+    in[i] = pts1[i];
+    out[i] = pts2[i];
+  }
+
   if (this->isNumberOfPointsValid(n1)) {
-    H = cv::findHomography(pts1, pts2, cv::RANSAC);
-    //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
-    //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
-    //cv::Mat H2 = cv::findHomography(pts1, pts2);
-    //... determinar error
+    try {
+      H = cv::findHomography(in, out, cv::RANSAC);
+      //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
+      //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
+      //cv::Mat H2 = cv::findHomography(pts1, pts2);
+      //... determinar error
+    } catch ( ... ) {
+
+    }
+
     return H.empty() ? transform_status::FAILURE : transform_status::SUCCESS;
   } else {
     printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
@@ -3349,6 +3375,7 @@ template<typename Entity_t, typename Point_t>
 I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
+  out->resize(in.size());
   for (int i = 0; i < in.size(); i++) {
     transform(in[i], &(*out)[i], trf, trfOrder);
   }
