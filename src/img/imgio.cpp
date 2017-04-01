@@ -2,6 +2,18 @@
 
 #include "transform.h"
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
+
+#ifdef HAVE_GDAL
+I3D_SUPPRESS_WARNINGS
+#include "gdal.h"
+#include "gdal_priv.h"
+#include "cpl_conv.h"
+I3D_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
+
 namespace I3D
 {
 
@@ -591,14 +603,18 @@ RawImage::RawImage()
 {
   mRawProcessor = std::make_unique<LibRaw>();
 
-  //rawProcessor->imgdata.params.gamm[0] = 1.0;
-  //rawProcessor->imgdata.params.gamm[1] = 0.0;
+  //mRawProcessor->imgdata.params.gamm[0] = 0.0;
+  //mRawProcessor->imgdata.params.gamm[1] = 0.0;
   //rawProcessor->imgdata.params.user_qual = 0; // fastest interpolation (linear)
-  //rawProcessor->imgdata.params.use_camera_wb = 1;
+  mRawProcessor->imgdata.params.use_camera_wb = 1;
+  mRawProcessor->imgdata.params.use_auto_wb = 0;
+  mRawProcessor->imgdata.params.no_interpolation = 1; //disables demosaic
+  mRawProcessor->imgdata.params.no_auto_scale = 1; //disables scaling from camera maximum to 64k
+  mRawProcessor->imgdata.params.no_auto_bright = 1; //disables auto brighten
 //        //rawProcessor.imgdata.params.filtering_mode = LIBRAW_FILTERING_AUTOMATIC;
 //		    //rawProcessor.imgdata.params.output_bps = 16; // Write 16 bits per color value
 ////		rawProcessor_.imgdata.params.gamm[0] = rawProcessor_.imgdata.params.gamm[1] = 1.0; // linear gamma curve
-//    		rawProcessor.imgdata.params.no_auto_bright = 1; // Don't use automatic increase of brightness by histogram.
+  //mRawProcessor->imgdata.params.no_auto_bright = 1; // Don't use automatic increase of brightness by histogram.
 //		    //rawProcessor.imgdata.params.document_mode = 0; // standard processing (with white balance)
 //		    rawProcessor.imgdata.params.use_camera_wb = 1; // If possible, use the white balance from the camera.
 //		    rawProcessor.imgdata.params.half_size = 1;
@@ -637,7 +653,7 @@ int RawImage::open(const char *file, Mode mode)
     msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
     return 1;
   }
-   
+
   if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
     msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
     return 1;
@@ -801,17 +817,17 @@ Status RasterGraphics::open(const char *file, Mode mode)
 }
 
 Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
-  
-  if ( mImageFormat->create(rows, cols, bands, type) == 0) return Status::SUCCESS;
+  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
 #ifdef HAVE_OPENCV
 
-void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  if (!mImageFormat) throw I3D_ERROR("No se puede leer imagen");
+  if (!mImageFormat) return Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
+  return Status::SUCCESS;
 }
 
 Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
@@ -852,16 +868,20 @@ Status RasterGraphics::saveAs(const char *file)
 {
   if ( !mImageFormat ) return Status::FAILURE;
 #ifdef HAVE_OPENCV
-  cv::Mat *buff; 
+  cv::Mat buff; 
 #else
   uchar *buff;
 #endif
-  mImageFormat->read(buff);
+  mImageFormat->read(&buff);
   RasterGraphics imageOut;
-  imageOut.open(file, Mode::Create);
-  imageOut.create(mRows, mCols, mBands, mDataType);
-  imageOut.write(*buff);
-  return Status::SUCCESS;
+  if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+    if (imageOut.create(mRows, mCols, mBands, mDataType) != Status::FAILURE) {
+      if (imageOut.write(buff) != Status::FAILURE) {
+        return Status::SUCCESS;
+      }
+    }
+  } 
+  return Status::FAILURE;
 }
 
 

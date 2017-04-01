@@ -34,11 +34,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\props_vs\OpenCV_debug.props" />
+    <Import Project="..\props_vs\OpenCV_debug-3.2.0.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\props_vs\OpenCV_release.props" />
+    <Import Project="..\props_vs\OpenCV_release-3.2.0.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -58,7 +58,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs_sources\LibRaw-0.18.0\libraw;%(AdditionalIncludeDirectories);..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\curlpp-0.3.2-rc2\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\curlpp-0.3.2-rc2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -76,7 +76,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;%(AdditionalIncludeDirectories);..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\curlpp-0.3.2-rc2\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs_sources\EDSDKv0305W\Windows\EDSDK\Header;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\curlpp-0.3.2-rc2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
