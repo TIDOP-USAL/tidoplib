@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug VLD|x64">
+      <Configuration>Debug VLD</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -17,6 +21,12 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
@@ -39,6 +49,13 @@
     <Import Project="..\props_vs\GDAL_Debug.props" />
     <Import Project="..\props_vs\OpenCV_X_debug-3.2.0.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\props_vs\OpenCV_debug-3.2.0.props" />
+    <Import Project="..\props_vs\QT_debug.props" />
+    <Import Project="..\props_vs\GDAL_Debug.props" />
+    <Import Project="..\props_vs\OpenCV_X_debug-3.2.0.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\props_vs\OpenCV_release-3.2.0.props" />
@@ -48,6 +65,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)Obj\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)Obj\</IntDir>
   </PropertyGroup>
@@ -63,6 +84,21 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\..\Libs\gflags\Include;..\..\Libs\glog\include;..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\EDSDKv0305W\Windows\EDSDK\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;VISUAL_LEAK_DETECTOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\Libs\gflags\Include;..\..\Libs\glog\include;..\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs\opencv\include\opencv2\sfm\libmv_light;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>

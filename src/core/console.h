@@ -1,11 +1,6 @@
 #ifndef I3D_CONSOLE_H
 #define I3D_CONSOLE_H
 
-//#if defined WIN32
-//// Para que no den problemas std::numeric_limits<T>().max()
-//#define NOMINMAX
-//# include <windows.h>
-//#endif
 #include <functional>
 #include <map>
 #include <vector>

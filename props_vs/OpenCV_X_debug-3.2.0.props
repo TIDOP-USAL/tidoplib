@@ -3,6 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
     <OPENCV_3_2_0>C:\Desarrollo\Libs\opencv-3.2.0</OPENCV_3_2_0>
+    <OPENCV_3_2_0>..\..\Libs\opencv-3.2.0</OPENCV_3_2_0>
   </PropertyGroup>
   <PropertyGroup />
   <ItemDefinitionGroup>
