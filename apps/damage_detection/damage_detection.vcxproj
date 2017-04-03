@@ -34,11 +34,17 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props_vs\OpenCV_debug.props" />
+    <Import Project="..\..\props_vs\libs.props" />
+    <Import Project="..\..\props_vs\OpenCV_debug-3.2.0.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_debug-3.2.0.props" />
+    <Import Project="..\..\props_vs\GDAL_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\props_vs\OpenCV_release.props" />
+    <Import Project="..\..\props_vs\libs.props" />
+    <Import Project="..\..\props_vs\OpenCV_release-3.2.0.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_release-3.2.0.props" />
+    <Import Project="..\..\props_vs\GDAL_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -58,13 +64,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\tidop\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\curlpp-0.3.2-rc2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(LIBSSRC)\curlpp-0.3.2-rc2\src;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libcurl_impd.lib;libraw.lib;gdal-2.1.2.lib;gdal-ogrd.lib;gdal-ogrsf_frmts_supd.lib;gdal-ogrsf_frmtsd.lib;gdal-portd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\Libs\curl\lib;..\..\Libs_sources\LibRaw-0.18.0\buildfiles\debug;..\..\Libs_sources\gdal-2.1.2\x64\Debug;..\..\Libs_sources\gdal-2.1.2\bin\x64\Debug;</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -76,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\tidop\src;..\..\Libs\Eigen\include\eigen3;..\..\Libs_sources\LibRaw-0.18.0\libraw;..\..\Libs_sources\gdal-2.1.2\frmts;..\..\Libs_sources\gdal-2.1.2\gcore;..\..\Libs_sources\gdal-2.1.2\ogr;..\..\Libs_sources\gdal-2.1.2\port;..\..\Libs_sources\gdal-2.1.2\alg;..\..\Libs_sources\gdal-2.1.2\frmts\aaigrid;..\..\Libs_sources\gdal-2.1.2\frmts\adrg;..\..\Libs_sources\gdal-2.1.2\frmts\aigrid;..\..\Libs_sources\curlpp-0.3.2-rc2\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;$(LIBSSRC)\curlpp-0.3.2-rc2\src;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,7 +92,7 @@
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <AdditionalDependencies>libcurl_imp.lib;libraw.lib;gdal-2.1.2.lib;gdal-ogr.lib;gdal-ogrsf_frmts.lib;gdal-ogrsf_frmts_sup.lib;gdal-port.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\..\Libs\curl\lib;..\..\Libs_sources\gdal-2.1.2\bin\x64\Release;..\..\Libs_sources\LibRaw-0.18.0\buildfiles\release;..\..\Libs_sources\gdal-2.1.2\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

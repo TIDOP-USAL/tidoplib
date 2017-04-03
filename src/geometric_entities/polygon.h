@@ -291,6 +291,28 @@ typedef Polygon3D<double> Polygon3dD;
 typedef Polygon3D<float> Polygon3dF;
 
 
+template <typename T>
+class I3D_EXPORT MultiPolygon : public Entity<T>
+{
+public:
+
+  typedef T value_type;
+
+protected:
+
+  /*!
+   * \brief Conjunto de poligonos
+   */
+  std::vector<Polygon<T>> mPolygons;
+
+public:
+
+  MultiPolygon() : Entity<T>(entity_type::MULTIPOLYGON_2D), mPolygons(0) {}
+  ~MultiPolygon() {}
+
+
+};
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace I3D

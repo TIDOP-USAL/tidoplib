@@ -16,13 +16,15 @@
 #include "core/defs.h"
 #include "core/flags.h"
 #include "graphic_entities/color.h"
+#include "geometric_entities/linestring.h"
+#include "geometric_entities/polygon.h"
 
 namespace I3D
 {
 
 // forward declaration
-template<typename T> class LineString;
-template<typename T> class Polygon;
+//template<typename T> class LineString;
+//template<typename T> class Polygon;
 
 
 /*! \defgroup GraphicEntities Entidades gráficas
@@ -882,79 +884,143 @@ public:
   ~GraphicEntity();
 
 #ifdef HAVE_OPENCV
-  virtual void draw(cv::Mat &canvas) = 0;
+  virtual void draw(cv::Mat &canvas) const = 0;
 #endif
 };
 
 
-template<typename T>
-class I3D_EXPORT GPoint : public Point<T>, GraphicEntity
+//template<typename T = double>
+class I3D_EXPORT GPoint : public Point<double>, public GraphicEntity
 {
 public:
 
-  GPoint() : Point<T>(), GraphicEntity(){}
-
+  GPoint() : Point<double>(), GraphicEntity(){}
+  GPoint(double x, double y) : Point<double>(x, y), GraphicEntity(){}
+  GPoint(Point<double> pt) : Point<double>(pt), GraphicEntity(){}  
   ~GPoint(){}
+
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
 
 };
 
 
-template<typename T>
-class I3D_EXPORT GPoint3D : public Point3<T>, GraphicEntity
+//template<typename T>
+class I3D_EXPORT GPoint3D : public Point3<double>, public GraphicEntity
 {
 public:
 
-  GPoint3D() : Point3<T>(), GraphicEntity(){}
+  GPoint3D() : Point3<double>(), GraphicEntity(){}
 
   ~GPoint3D(){}
 
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
 };
 
-template<typename T>
-class I3D_EXPORT GLineString : public LineString<T>, GraphicEntity
+//template<typename T>
+class I3D_EXPORT GLineString : public LineString<double>, public GraphicEntity
 {
 public:
 
-  GLineString() : LineString<T>(), GraphicEntity(){}
+  GLineString() : LineString<double>(), GraphicEntity(){}
 
   ~GLineString(){}
 
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
 };
 
-template<typename T>
-class I3D_EXPORT GPolygon : public Polygon<T>, GraphicEntity
+//template<typename T>
+class I3D_EXPORT GPolygon : public Polygon<double>, public GraphicEntity
 {
 public:
 
-  GPolygon() : Polygon<T>(), GraphicEntity(){}
+  GPolygon() : Polygon<double>(), GraphicEntity(){}
 
   ~GPolygon(){}
 
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
 };
 
+class I3D_EXPORT GMultiPoint : public MultiPoint<double>, public GraphicEntity
+{
+public:
 
-//TODO: completar
+  GMultiPoint() : MultiPoint<double>(), GraphicEntity(){}
+
+  ~GMultiPoint(){}
+
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+
+};
+
+class I3D_EXPORT GMultiLineString : public MultiLineString<double>, public GraphicEntity
+{
+public:
+
+  GMultiLineString() : MultiLineString<double>(), GraphicEntity(){}
+
+  ~GMultiLineString(){}
+
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
+
+class I3D_EXPORT GMultiPolygon : public MultiPolygon<double>, public GraphicEntity
+{
+public:
+
+  GMultiPolygon() : MultiPolygon<double>(), GraphicEntity(){}
+
+  ~GMultiPolygon(){}
+
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
 
 /*!
  * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
  */
-class I3D_EXPORT Layer
+class I3D_EXPORT GLayer
 {
-  std::list<std::shared_ptr<GraphicEntity>> entities;
+
+protected:
+
+  /*!
+   * \brief Nombre de la capa
+   */
+  std::string mName;
+
+  std::list<std::shared_ptr<GraphicEntity>> mEntities;
+
+  std::shared_ptr<GraphicEntity> mSelectEntity;
 
 public:
-  Layer()
+
+  GLayer() : mName(""), mEntities(0), mSelectEntity(0)
   {
   }
 
-  ~Layer()
+  ~GLayer()
   {
   }
 
+  const char *getName() const;
 
-private:
+  void setName(const char *name);
+
   void add(std::shared_ptr<GraphicEntity> entity);
-  void del();
+  void remove();
 };
 
 

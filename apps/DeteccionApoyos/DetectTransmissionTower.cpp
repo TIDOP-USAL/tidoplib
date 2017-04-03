@@ -123,8 +123,8 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       }
     }
 
-    printVerbose("Frame %i - cols: %i - rows: %i", static_cast<int>(prevFrame), candidatenorm.cols, candidatenorm.rows);
-    printVerbose("Frame %i - N points max: %i", static_cast<int>(prevFrame), pMax.size());
+    msgVerbose("Frame %i - cols: %i - rows: %i", static_cast<int>(prevFrame), candidatenorm.cols, candidatenorm.rows);
+    msgVerbose("Frame %i - N points max: %i", static_cast<int>(prevFrame), pMax.size());
     if (pMax.size() > 200 ) {
       // Recta de regresión para los máximos
       double m = 0.;
@@ -147,7 +147,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       else if (ang < -I3D_PI / 2) ang = ang + I3D_PI;
       // tolerancia de inclinación del eje del apoyo respecto a la vertical -> 0.1
       if (ang <= 0.2 && ang >= -0.2) {
-        printVerbose("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
+        msgVerbose("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
 
          // Busqueda del máximo valor de desplazamiento
         std::vector<cv::Point> vMagnitudes;
@@ -194,7 +194,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
           
        
           // Ajustar el BBOX mejor  
-          printInfo("Torre detectada: Frame %i", static_cast<int>(prevFrame));
+          msgInfo("Torre detectada: Frame %i", static_cast<int>(prevFrame));
           //if (bSaveImages) {
           //  char buffer[50];
           //  sprintf_s(buffer, "Apoyo_%05i.jpg", cvRound(prevFrame));
@@ -202,10 +202,10 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
           //}
           return true; // Devolvemos que hemos encontrado una torre
         }
-      } else printVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
+      } else msgVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
     }
   } else {
-    printInfo("Torre rechazada: Frame %i", static_cast<int>(prevFrame) );
+    msgInfo("Torre rechazada: Frame %i", static_cast<int>(prevFrame) );
     return false;
   }
   return false;

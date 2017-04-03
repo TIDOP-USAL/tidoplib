@@ -401,7 +401,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
     }
     // Ver si no es opcional y devolver un error si no existe
     if (bFind == false && bOptional == false) {
-      consolePrintError("Falta %s. Parámetro obligatorio ", arg->getName().c_str());
+      msgError("Falta %s. Parámetro obligatorio ", arg->getName().c_str());
       printHelp();
       return CmdParser::Status::PARSE_ERROR;
     }

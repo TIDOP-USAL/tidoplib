@@ -44,8 +44,12 @@ enum class entity_type {
   SEGMENT_3D,                 /*!< Segmento 3D */
   WINDOW,                     /*!< Ventana */
   BBOX,                       /*!< BBOX */
-  MULTIPOINT_POINT_2D,        /*!< Multipunto 2D */
-  MULTIPOINT_POINT_3D         /*!< Multipunto 3D */
+  MULTIPOINT_2D,              /*!< Multipunto 2D */
+  MULTIPOINT_3D,              /*!< Multipunto 3D */
+  MULTILINE_2D,
+  MULTILINE_3D,
+  MULTIPOLYGON_2D,
+  MULTIPOLYGON_3D
 };
 
 /*!

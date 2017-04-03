@@ -1,5 +1,17 @@
 #include "DetectTransmissionTower.h"
 
+// Cabeceras tidopLib
+#include "core/console.h"
+#include "core/messages.h"
+#include "core/utils.h"
+#include "videostream.h"
+#include "geometric_entities/segment.h"
+#include "feature_detection/linedetector.h"
+#include "img_process/img_processing.h"
+#include "img_process/filters.h"
+#include "matching.h"
+#include "transform.h"
+
 #include <cstdio>
 
 #include "opencv2/calib3d.hpp"
@@ -13,17 +25,6 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/ximgproc/disparity_filter.hpp"
 
-// Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "core/utils.h"
-#include "videostream.h"
-#include "geometric_entities/segment.h"
-#include "feature_detection/linedetector.h"
-#include "img_process/img_processing.h"
-#include "img_process/filters.h"
-#include "matching.h"
-#include "transform.h"
 
 using namespace cv;
 using namespace optflow;
@@ -309,13 +310,17 @@ int main(int argc, char** argv)
   cmdParser.addOption("show_video", "Muestra el video mientras corre el programa");
   cmdParser.addParameter("skip_frames", "Salto de frames", true, "1");
   cmdParser.addParameterOption("l_detect", "HOUGH,HOUGHP,HOUGH_FAST,LSD", "Detector de lineas", true, "HOUGHP");
-  if (cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
-    cmdParser.printHelp(); 
+  CmdParser::Status status = cmdParser.parse(argc, argv);
+  if (status == CmdParser::Status::PARSE_ERROR ) {
     exit(EXIT_FAILURE);
+  } else if ( status == CmdParser::Status::PARSE_HELP ) {
+    exit(EXIT_SUCCESS);
   }
 
-  std::string video = cmdParser.getValue<std::string>("video");
-  std::string out_path = cmdParser.getValue<std::string>("out");
+  //std::string video = cmdParser.getValue<std::string>("video");
+  //std::string out_path = cmdParser.getValue<std::string>("out");
+  std::string video = cmdParser.getValue<Path>("video").toString();
+  std::string out_path = cmdParser.getValue<Path>("out").toString();
   bool bSaveImages = cmdParser.hasOption("si");
   bool bDrawLines = cmdParser.hasOption("dl");
   bool bDrawRegressionLine = cmdParser.hasOption("drl");
@@ -328,15 +333,36 @@ int main(int argc, char** argv)
   //ProgressBar progress_bar;
 
   //Configuración de log y mensajes por consola
+  //char logfile[I3D_MAX_PATH];
+  //sprintf(logfile, "%s//%s.log", out_path.c_str(), name );
+  //Message::setMessageLogFile(logfile);
+  //Message::setMessageLevel(MessageLevel::MSG_INFO);
+
+  // Configuración de log y mensajes por consola
+
+  // Fichero de log
+  Log &log = Log::getInstance();
   char logfile[I3D_MAX_PATH];
   sprintf(logfile, "%s//%s.log", out_path.c_str(), name );
-  Message::setMessageLogFile(logfile);
-  Message::setMessageLevel(MessageLevel::MSG_INFO);
+  log.setLogFile(logfile);
+  log.setLogLevel(MessageLevel::MSG_INFO);
+
+  // Consola
+  Console console;
+  console.setLogLevel(MessageLevel::MSG_INFO);
+  console.setConsoleUnicode();
+
+  // Configuración de mensajes
+  MessageManager &msg_h = MessageManager::getInstance();
+  msg_h.addListener(&log);
+  msg_h.addListener(&console);
+
 
   // Lectura de video
   VideoStream strmVideo(video.c_str());
   if (!strmVideo.isOpened()) {
-    printError("No se ha podido cargar el video: %s", video.c_str());
+    //printError("No se ha podido cargar el video: %s", video.c_str());
+    msgError("No se ha podido cargar el video: %s", video.c_str());
     exit(EXIT_FAILURE);
   }
 
@@ -365,7 +391,7 @@ int main(int argc, char** argv)
       pLineDetector = std::make_unique<ldLSD>(ang_tol);
       break;
     default:
-      printError("No se ha seleccionado ningún detector de lineas.");
+      msgError("No se ha seleccionado ningún detector de lineas.");
       exit(EXIT_FAILURE);
       break;
   }

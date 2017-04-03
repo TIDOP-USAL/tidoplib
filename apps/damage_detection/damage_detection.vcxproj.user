@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\opencv\x64\vc12\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;..\..\Libs_sources\gdal-2.1.2\x64\Release;..\..\Libs\curl\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;C:\Desarrollo\Libs_sources\gdal-2.1.2\x64\Debug;C:\Desarrollo\Libs_sources\LibRaw-0.18.0\buildfiles\debug;C:\Desarrollo\Libs_sources\curl-7.52.1\build\lib\Debug;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_.png --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\opencv\x64\vc12\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;..\..\Libs_sources\gdal-2.1.2\x64\Release;..\..\Libs\curl\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;C:\Desarrollo\Libs_sources\gdal-2.1.2\x64\Release;C:\Desarrollo\Libs_sources\LibRaw-0.18.0\buildfiles\release;C:\Desarrollo\Libs_sources\curl-7.52.1\build\lib\Release;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--img=C:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2744.jpg --out=C:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2744</LocalDebuggerCommandArguments>
   </PropertyGroup>

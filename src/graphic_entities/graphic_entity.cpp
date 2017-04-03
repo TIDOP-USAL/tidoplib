@@ -434,4 +434,66 @@ GraphicEntity::~GraphicEntity()
 {
 }
 
+
+/* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
+void GPoint::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
+void GPoint3D::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+
+#ifdef HAVE_OPENCV
+void GLineString::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
+void GPolygon::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+
+const char *GLayer::getName() const
+{
+  return mName.c_str();
+}
+
+
+void GLayer::setName(const char *name)
+{
+  mName = name;
+}
+
+void GLayer::add(std::shared_ptr<GraphicEntity> entity)
+{
+
+}
+
+void GLayer::remove()
+{
+
+}
+
 } // End namespace I3D

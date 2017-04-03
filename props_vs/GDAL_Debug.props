@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(LIBSSRC)\gdal-2.1.2\frmts;$(LIBSSRC)\gdal-2.1.2\gcore;$(LIBSSRC)\gdal-2.1.2\ogr;$(LIBSSRC)\gdal-2.1.2\port;$(LIBSSRC)\gdal-2.1.2\alg;$(LIBSSRC)\gdal-2.1.2\frmts\aaigrid;$(LIBSSRC)\gdal-2.1.2\frmts\adrg;$(LIBSSRC)\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBSSRC)\gdal-2.1.2\frmts;$(LIBSSRC)\gdal-2.1.2\gcore;$(LIBSSRC)\gdal-2.1.2\ogr;$(LIBSSRC)\gdal-2.1.2\port;$(LIBSSRC)\gdal-2.1.2\alg;$(LIBSSRC)\gdal-2.1.2\frmts\aaigrid;$(LIBSSRC)\gdal-2.1.2\frmts\adrg;$(LIBSSRC)\gdal-2.1.2\frmts\aigrid;$(LIBSSRC)\gdal-2.1.2\ogr\ogrsf_frmts;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(LIBSSRC)\gdal-2.1.2\bin\x64\Debug;$(LIBSSRC)\gdal-2.1.2\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

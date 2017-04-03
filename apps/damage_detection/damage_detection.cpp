@@ -1,6 +1,3 @@
-#ifdef WIN32
-#include <windows.h>
-#endif
 #include <memory>
 
 // Cabeceras de OpenCV

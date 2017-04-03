@@ -123,6 +123,7 @@ public:
    * \param[in] msg
    * \return
    */
+  I3D_DEPRECATED("MessageManager::release()")
   static Message &message(const char *msg, ...);
 
   /*!

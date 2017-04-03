@@ -376,29 +376,29 @@ public:
    * \brief resize
    * \param[in] size nuevo tamaño
    */
-  void resize(int size) { this->mPoints.resize(size); }
+  //void resize(int size) { this->mPoints.resize(size); }
 
 };
 
 template<typename T> inline
 MultiPoint<T>::MultiPoint() 
-  : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D) {}
+  : EntityPoints<T>(entity_type::MULTIPOINT_2D) {}
 
 template<typename T> inline
 MultiPoint<T>::MultiPoint(int size) 
-  : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, size) {}
+  : EntityPoints<T>(entity_type::MULTIPOINT_2D, size) {}
 
 template<typename T> inline
 MultiPoint<T>::MultiPoint(const MultiPoint &multiPoint) 
-  : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, multiPoint) {}
+  : EntityPoints<T>(entity_type::MULTIPOINT_2D, multiPoint) {}
 
 template<typename T> inline
 MultiPoint<T>::MultiPoint(const std::vector<Point<T>> &vPoint) 
-  : EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, vPoint) {}
+  : EntityPoints<T>(entity_type::MULTIPOINT_2D, vPoint) {}
 
 template<typename T> inline
 MultiPoint<T>::MultiPoint(std::initializer_list<Point<T>> listPoints) 
-: EntityPoints<T>(entity_type::MULTIPOINT_POINT_2D, listPoints) {}
+: EntityPoints<T>(entity_type::MULTIPOINT_2D, listPoints) {}
 
 
 template<typename T> inline

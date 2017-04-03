@@ -9,7 +9,7 @@
       <AdditionalDependencies>gdal-2.1.2.lib;gdal-ogr.lib;gdal-ogrsf_frmts.lib;gdal-ogrsf_frmts_sup.lib;gdal-port.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(LIBSSRC)\gdal-2.1.2\frmts;$(LIBSSRC)\gdal-2.1.2\gcore;$(LIBSSRC)\gdal-2.1.2\ogr;$(LIBSSRC)\gdal-2.1.2\port;$(LIBSSRC)\gdal-2.1.2\alg;$(LIBSSRC)\gdal-2.1.2\frmts\aaigrid;$(LIBSSRC)\gdal-2.1.2\frmts\adrg;$(LIBSSRC)\gdal-2.1.2\frmts\aigrid;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBSSRC)\gdal-2.1.2\frmts;$(LIBSSRC)\gdal-2.1.2\gcore;$(LIBSSRC)\gdal-2.1.2\ogr;$(LIBSSRC)\gdal-2.1.2\port;$(LIBSSRC)\gdal-2.1.2\alg;$(LIBSSRC)\gdal-2.1.2\frmts\aaigrid;$(LIBSSRC)\gdal-2.1.2\frmts\adrg;$(LIBSSRC)\gdal-2.1.2\frmts\aigrid;$(LIBSSRC)\gdal-2.1.2\ogr\ogrsf_frmts;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup />

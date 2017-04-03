@@ -128,6 +128,31 @@ typedef LineString<int> LineStringI;
 typedef LineString<float> LineStringF;
 typedef LineString<double> LineStringD;
 
+
+
+template <typename T>
+class I3D_EXPORT MultiLineString : public Entity<T>
+{
+public:
+
+  typedef T value_type;
+
+protected:
+
+  /*!
+   * \brief Conjunto de polilineas
+   */
+  std::vector<LineString<T>> mLines;
+
+public:
+
+  MultiLineString() : Entity<T>(entity_type::MULTILINE_2D), mLines(0) {}
+  ~MultiLineString() {}
+
+
+};
+
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace I3D

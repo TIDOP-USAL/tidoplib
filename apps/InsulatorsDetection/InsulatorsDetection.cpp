@@ -1,4 +1,3 @@
-#include <windows.h>
 #include <memory>
 #include <thread>
 #include <mutex>

@@ -58,7 +58,6 @@ int main(int argc, char** argv)
   msg_h.addListener(&log);
   msg_h.addListener(&console);
 
-
   RasterGraphics image;
   Helmert2D<PointI> trf;
   cv::Mat mat_out;

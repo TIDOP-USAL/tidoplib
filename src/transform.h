@@ -3340,7 +3340,7 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out,
     trf->transform(dynamic_cast<const Segment<T> &>(in).pt1, &s->pt1, trfOrder);
     trf->transform(dynamic_cast<const Segment<T> &>(in).pt2, &s->pt2, trfOrder);
   } else if (in.getType() == entity_type::LINESTRING_2D ||
-             in.getType() == entity_type::MULTIPOINT_POINT_2D ||
+             in.getType() == entity_type::MULTIPOINT_2D ||
              in.getType() == entity_type::POLYGON_2D) {
     const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
     dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());

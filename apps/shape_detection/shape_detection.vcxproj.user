@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\opencv\x64\vc12\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;..\..\Libs_sources\gdal-2.1.2\x64\Release;..\..\Libs\curl\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin; PATH=%PATH%;C:\Desarrollo\Libs_sources\gdal-2.1.2\x64\Debug;C:\Desarrollo\Libs\curl\bin;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output14 --in_type=stream --th=220 --th_acu=60 --r_min=30 --r_max=80 -show_img -save_img -draw</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\opencv\x64\vc12\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;..\..\Libs_sources\gdal-2.1.2\x64\Release;..\..\Libs\curl\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;..\..\Libs\cuda\bin;..\Libs\pcl-1.8.0-install\bin;..\..\Libs\googletest\lib;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;C:\Desarrollo\Libs_sources\gdal-2.1.2\x64\Release;C:\Desarrollo\Libs_sources\LibRaw-0.18.0\buildfiles\release;C:\Desarrollo\Libs_sources\curl-7.52.1\build\lib\Release;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--in=D:\Desarrollo\datos\JPG_Torres3D\JPG_Torres3D.txt --out=D:\Desarrollo\datos\JPG_Torres3D\output13 --in_type=video --th=220 --th_acu=60 --r_min=30 --r_max=80 -all -show_img -draw -save_img</LocalDebuggerCommandArguments>
   </PropertyGroup>

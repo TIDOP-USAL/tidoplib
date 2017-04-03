@@ -2,6 +2,18 @@
 
 #include "transform.h"
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
+
+#ifdef HAVE_GDAL
+I3D_SUPPRESS_WARNINGS
+#include "gdal.h"
+#include "gdal_priv.h"
+#include "cpl_conv.h"
+I3D_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
+
 namespace I3D
 {
 
@@ -591,8 +603,8 @@ RawImage::RawImage()
 {
   mRawProcessor = std::make_unique<LibRaw>();
 
-  //rawProcessor->imgdata.params.gamm[0] = 1.0;
-  //rawProcessor->imgdata.params.gamm[1] = 0.0;
+  //mRawProcessor->imgdata.params.gamm[0] = 0.0;
+  //mRawProcessor->imgdata.params.gamm[1] = 0.0;
   //rawProcessor->imgdata.params.user_qual = 0; // fastest interpolation (linear)
   mRawProcessor->imgdata.params.use_camera_wb = 1;
   mRawProcessor->imgdata.params.output_tiff = 1;
@@ -634,7 +646,7 @@ int RawImage::open(const char *file, Mode mode)
     msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
     return 1;
   }
-   
+
   if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
     msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
     return 1;
@@ -817,17 +829,17 @@ Status RasterGraphics::open(const char *file, Mode mode)
 }
 
 Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
-  
-  if ( mImageFormat->create(rows, cols, bands, type) == 0) return Status::SUCCESS;
+  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
 #ifdef HAVE_OPENCV
 
-void RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  if (!mImageFormat) throw I3D_ERROR("No se puede leer imagen");
+  if (!mImageFormat) return Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
+  return Status::SUCCESS;
 }
 
 Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
@@ -874,10 +886,14 @@ Status RasterGraphics::saveAs(const char *file)
 #endif
   mImageFormat->read(&buff);
   RasterGraphics imageOut;
-  imageOut.open(file, Mode::Create);
-  imageOut.create(mRows, mCols, mBands, mDataType);
-  imageOut.write(buff);
-  return Status::SUCCESS;
+  if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+    if (imageOut.create(mRows, mCols, mBands, mDataType) != Status::FAILURE) {
+      if (imageOut.write(buff) != Status::FAILURE) {
+        return Status::SUCCESS;
+      }
+    }
+  } 
+  return Status::FAILURE;
 }
 
 

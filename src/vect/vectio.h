@@ -2,6 +2,7 @@
 #define I3D_VECT_IO_H
 
 #include <memory>
+#include <list>
 
 #include "core/config.h"
 #include "core/defs.h"
@@ -16,6 +17,26 @@ I3D_SUPPRESS_WARNINGS
 I3D_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+namespace I3D
+{
+class GLayer;
+class GraphicEntity;
+class VectorGraphics;
+class GPoint;
+class GLineString;
+class GPolygon;
+class GMultiPoint;
+class GMultiLineString;
+class GMultiPolygon;
+}
+
+class OGRFeature;
+class OGRPoint;
+class OGRLineString;
+class OGRPolygon;
+class OGRMultiPoint;
+class OGRMultiLineString;
+class OGRMultiPolygon;
 
 namespace I3D
 {
@@ -46,9 +67,15 @@ protected:
    */
   std::string mName;
 
+  /*!
+   * \brief Número de capas
+   */
+  int mLayersCount;
+
 public:
-  VrtVector();
-  ~VrtVector();
+
+  VrtVector() : mName(""), mLayersCount(0) {}
+  ~VrtVector() {}
 
   /*!
    * \brief Cierra el fichero imagen
@@ -56,20 +83,16 @@ public:
   virtual void close() = 0;
   virtual int open(const char *file, Mode mode = Mode::Read) = 0;
   virtual int create() = 0;
-  virtual void read();
-  virtual int write();
+  virtual void read(VectorGraphics *vector) = 0;
+  virtual void read(int id, GLayer *layer) = 0;
+  virtual void read(const char *name, GLayer *layer) = 0;
+  virtual int write(VectorGraphics *vector) = 0;
+  int getLayersCount() const;
 
 private:
 
 };
 
-VrtVector::VrtVector()
-{
-}
-
-VrtVector::~VrtVector()
-{
-}
 
 #ifdef HAVE_GDAL
 
@@ -83,10 +106,14 @@ protected:
    */
   GDALDataset *pDataset;
 
+  OGRFeature *pFeature;
+
   /*!
    * \brief Driver GDAL
    */
-  GDALDriver *driver;
+  GDALDriver *pDriver;
+
+  const char *mDriverName;
 
 public:
 
@@ -113,9 +140,10 @@ public:
    */
   int create() override;
 
-  void read() override;
-
-  int write() override;
+  void read(VectorGraphics *vector) override;
+  void read(int id, GLayer *layer) override;
+  void read(const char *name, GLayer *layer) override;
+  int write(VectorGraphics *vector) override;
 
   /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -127,6 +155,14 @@ public:
 
 private:
 
+  void read(OGRLayer *pLayer, GLayer *layer);
+  void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEntity> gEntity);
+  void readPoint(OGRPoint *ogrPoint, GPoint *gPoint);
+  void readLineString(OGRLineString *ogrLineString, GLineString *gLineString);
+  void readPolygon(OGRPolygon *ogrPolygon, GPolygon *gPolygon);
+  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMultiPoint);
+  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMultiLineString *gMultiLineString);
+  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygon *gMultiPolygon);
   void update();
 
 };
@@ -146,8 +182,10 @@ protected:
    * \brief Nombre del fichero
    */
   std::string mName;
+  
+  std::list<std::shared_ptr<GLayer>> mLayers;
 
-  std::unique_ptr<VrtVector> mImageFormat;
+  std::unique_ptr<VrtVector> mVectorFormat;
 
 public:
   VectorGraphics();
@@ -165,10 +203,16 @@ public:
    * \return Status
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Read);
+  Status open(const char *file, Mode mode = Mode::Read);
+
+  Status create();
+  Status read();
+  Status write();
+  int getLayersCount() const;
 
 private:
 
+  void update();
 };
 
 
