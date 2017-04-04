@@ -43,7 +43,11 @@ bool DetectTransmissionTower::run(const cv::Mat &img1, const cv::Mat &img2, cv::
   // Conversión a escala de grises
   cvtColor(img1, image1, CV_BGR2GRAY);
   cvtColor(img2, image2, CV_BGR2GRAY);
-  
+
+  // Prueba de pasar a hsv y quedarnos con el tono (hue)
+  //rgbToHSV(img1, &image1);
+  //rgbToHSV(img2, &image2);
+
   std::vector<ldGroupLines> linesGroup1, linesGroup2;
   detectGroupLines(image1, &linesGroup1);
   detectGroupLines(image2, &linesGroup2);
@@ -83,7 +87,7 @@ void DetectTransmissionTower::getMagnitude(const cv::Mat_<cv::Point2f> &flow, cv
 {
   cv::Mat flow_split[2];
   split(flow, flow_split);
-  cv::Mat angle; //... Anque no necesito el angulo tengo que pasarselo
+  cv::Mat angle; //... Anque no necesito el ángulo tengo que pasarselo
   // Magnitud y angulo del desplazamiento. Sólo interesa la magnitud
   cartToPolar(flow_split[0], flow_split[1], *magnitude, angle, true);
 

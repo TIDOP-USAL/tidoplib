@@ -16,7 +16,7 @@ ImgProcessing::Status BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *ma
     cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -38,7 +38,7 @@ ImgProcessing::Status Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -59,7 +59,7 @@ ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) 
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::OK;
   }
   return ImgProcessing::Status::OK;
@@ -82,7 +82,7 @@ ImgProcessing::Status Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) c
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -105,7 +105,7 @@ ImgProcessing::Status GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOu
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -127,7 +127,7 @@ ImgProcessing::Status Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) 
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -150,7 +150,7 @@ ImgProcessing::Status MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut)
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -173,7 +173,7 @@ ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     convertScaleAbs(grad_x, abs_grad_x);
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -207,7 +207,7 @@ ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     }
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;

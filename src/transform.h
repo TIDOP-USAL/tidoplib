@@ -551,7 +551,7 @@ public:
 template<typename Point_t> inline
 bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
 { 
-  printError("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
+  msgError("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
   I3D_COMPILER_WARNING("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
   return true;
 }
@@ -561,7 +561,7 @@ transform_status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1,
                                                const std::vector<Point_t> &pts2, 
                                                std::vector<double> *error, double *rmse)
 {
-  printError("'compute' no esta soportado para TrfMultiple");
+  msgError("'compute' no esta soportado para TrfMultiple");
   I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
   return transform_status::FAILURE;
 }
@@ -802,7 +802,7 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
       cv::perspectiveTransform(in, out, H.inv());
     }
   } catch ( cv::Exception &e ) {
-    printError("Error en transformación perspectiva: %s",e.what());
+    msgError("Error en transformación perspectiva: %s",e.what());
     return transform_status::FAILURE; 
   }
   ptsOut->resize(n);
@@ -828,7 +828,7 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
     }
     *ptOut = vOut[0];
   } catch ( cv::Exception &e ) {
-    printError("Error en transformación perspectiva: %s", e.what());
+    msgError("Error en transformación perspectiva: %s", e.what());
     return transform_status::FAILURE; 
   }
   return transform_status::SUCCESS; 
@@ -855,7 +855,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   }
 
@@ -880,7 +880,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
 
     return H.empty() ? transform_status::FAILURE : transform_status::SUCCESS;
   } else {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 }
@@ -1003,12 +1003,12 @@ transform_status Translate<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
   
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -1039,7 +1039,7 @@ transform_status Translate<Point_t>::compute(const std::vector<Point_t> &pts1,
     }
     
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
 
@@ -1091,7 +1091,7 @@ transform_status Translate<Point_t>::transform(const Point_t &ptIn,
     }
     *ptOut = (trfOrder == transform_order::DIRECT) ? ptIn + pt_aux : ptIn - pt_aux;
   } catch ( std::exception &e ) {
-    printError("Error en traslación: %s", e.what());
+    msgError("Error en traslación: %s", e.what());
     r_status = transform_status::FAILURE; 
   }
   return r_status;
@@ -1284,12 +1284,12 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
   
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
 
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -1317,7 +1317,7 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
 
@@ -1370,7 +1370,7 @@ transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *pts
       ptsOut->y = static_cast<sub_type>(ptsIn.y*r1 - x_aux*r2);
     }
   } catch (std::exception &e ) {
-    printError("Error al aplicar la rotación: %s", e.what());
+    msgError("Error al aplicar la rotación: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -1612,12 +1612,12 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
     
@@ -1654,7 +1654,7 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
     }
 
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
   delete[] A;
@@ -1695,7 +1695,7 @@ transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
       ptOut->y = static_cast<sub_type>((-b*(x_aux - tx) + a*(ptIn.y - ty)) / det);
     }
   } catch (I3D::Exception &e ) {
-    printError("Error al aplicar la transformación Helmert 2D: %s", e.what());
+    msgError("Error al aplicar la transformación Helmert 2D: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status;
@@ -2019,12 +2019,12 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -2073,7 +2073,7 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
     }
 
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
 
@@ -2112,7 +2112,7 @@ transform_status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut,
       ptOut->y = static_cast<sub_type>(ci * x_aux + di * ptIn.y + tyi);
     }
   } catch (std::exception &e ) {
-    printError("Error al aplicar la transformación afín: %s", e.what());
+    msgError("Error al aplicar la transformación afín: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -2207,7 +2207,7 @@ void Affine<Point_t>::updateInv()
   // Transformación inversa
   double det = a * d - c * b;
   if (!det) {
-    printError("Determinante nulo");
+    msgError("Determinante nulo");
   } else {
     ai = d / det;
     bi = -b / det;
@@ -2443,12 +2443,12 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -2495,7 +2495,7 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
     }
 
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
 
@@ -2539,7 +2539,7 @@ transform_status Projective<Point_t>::transform(const Point_t &ptIn, Point_t *pt
                                        / (g * ptIn.x + h * ptIn.y + 1));
     }
   } catch (std::exception &e ) {
-    printError("Error al aplicar la transformación proyectiva: %s", e.what());
+    msgError("Error al aplicar la transformación proyectiva: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -2598,7 +2598,7 @@ void Projective<Point_t>::update()
   // Transformación inversa
   double aux = a * e - b * d;
   if (!aux) {
-    printError("División por cero");
+    msgError("División por cero");
   } else {
     ai = (e - f * h) / aux;
     bi = (c * h - b) / aux;
@@ -2708,12 +2708,12 @@ transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -2766,7 +2766,7 @@ transform_status polynomialTransform<Point_t>::transform(const Point_t &ptIn, Po
   try {
     //...
   } catch (std::exception &e ) {
-    printError("Error al aplicar la rotación: %s", e.what());
+    msgError("Error al aplicar la rotación: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -3119,12 +3119,12 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
   int n2 = static_cast<int>(pts2.size());
 
   if (n1 != n2) {
-    printError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
+    msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
     return transform_status::FAILURE;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    printError("Invalid number of points: %i < %i", n1, this->mMinPoint);
+    msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
 
@@ -3177,7 +3177,7 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
     
     rmse = _rootMeanSquareError(pts1, pts2, error);
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     status = transform_status::FAILURE;
   }
 
@@ -3227,7 +3227,7 @@ transform_status Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
       ptOut->z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
     }
   } catch (std::exception &e ) {
-    printError("Error al aplicar la rotación: %s", e.what());
+    msgError("Error al aplicar la rotación: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -3695,7 +3695,7 @@ transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1
                                       std::vector<double> *error,
                                       double *rmse)
 {
-  printError("'compute' no esta soportado para CrsTransform");
+  msgError("'compute' no esta soportado para CrsTransform");
   I3D_COMPILER_WARNING("'compute' no esta soportado para CrsTransform");
   return transform_status::FAILURE;
 }

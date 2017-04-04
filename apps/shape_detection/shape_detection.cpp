@@ -64,7 +64,7 @@ void houghCircles( cv::Mat &red )
       circle( aux, center, radius, Scalar(0,0,255), 3, 8, 0 );
     }
 
-    printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+    msgInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
     WindowI w_aux(center,300);
     w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(red.cols, red.rows)));
     if (bShowImg) {
@@ -210,7 +210,7 @@ public:
 void VideoHelper::onFinish()
 {
   VideoStream::Listener::onFinish();
-  printInfo("Número de balizas encontradas: %i", nFound);
+  msgInfo("Número de balizas encontradas: %i", nFound);
 }
 
 void VideoHelper::onInitialize()
@@ -235,7 +235,7 @@ void VideoHelper::onInitialize()
 void VideoHelper::onPause()
 {
   VideoStream::Listener::onPause(); 
-  consolePrintInfo("Proceso en pausa. Tabulación para continuar");
+  msgInfo("Proceso en pausa. Tabulación para continuar");
 }
 
 void VideoHelper::onPositionChange(double position) 
@@ -377,14 +377,14 @@ como H=0-20.
         cv::bitwise_and(aux, aux, aux, mask);
       }
 
-      printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+      msgInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
 
       if ( i == 0 ) out = aux; // Sólo muestro la primera
 
       if (bSaveImage) {
         char buffer[I3D_MAX_PATH];
         sprintf_s(buffer, I3D_MAX_PATH, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), static_cast<int>(i), mExtFile.c_str());
-        printInfo("Baliza guardada en: %s", buffer);
+        msgInfo("Baliza guardada en: %s", buffer);
         cv::imwrite(buffer, aux);
       }
 
@@ -407,14 +407,14 @@ como H=0-20.
         aux.copyTo(_aux, mask);
         aux = _aux;
       }
-      printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+      msgInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
 
       if ( i == 0 ) out = aux; // Sólo muestro la primera
 
       if (bSaveImage) {
         char buffer[I3D_MAX_PATH];
         sprintf_s(buffer, I3D_MAX_PATH, "%s\\frame%05i_%02i.%s", mOutPath.c_str(), cvRound(mCurrentPosition), static_cast<int>(i), mExtFile.c_str());
-        printInfo("Baliza guardada en: %s", buffer);
+        msgInfo("Baliza guardada en: %s", buffer);
         cv::imwrite(buffer, aux);
       }
 
@@ -447,7 +447,7 @@ void VideoHelper::onShow(cv::Mat &frame)
 void VideoHelper::onStop()
 { 
   VideoStream::Listener::onStop(); 
-  printInfo("Proceso detenido por el usuario");
+  msgInfo("Proceso detenido por el usuario");
 }
 
 void VideoHelper::setProgressBar(ProgressBar *progress)
@@ -496,14 +496,18 @@ int main(int argc, char *argv[])
   cmdParser.addOption("save_img", "Salva las imagenes");
   cmdParser.addOption("all", "Guarda todos los resultados de la detección en cada imagen. Por defecto sólo guarda el primero");
 
-  if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
-    cmdParser.printHelp();
+  CmdParser::Status status = cmdParser.parse(argc, argv);
+  if (status == CmdParser::Status::PARSE_ERROR ) {
     exit(EXIT_FAILURE);
+  } else if ( status == CmdParser::Status::PARSE_HELP ) {
+    exit(EXIT_SUCCESS);
   }
 
   // Se parsean los parámetros del comando
-  std::string img = cmdParser.getValue<std::string>("in");
-  std::string out_path = cmdParser.getValue<std::string>("out");
+  //std::string img = cmdParser.getValue<std::string>("in");
+  //std::string out_path = cmdParser.getValue<std::string>("out");
+  std::string img = cmdParser.getValue<Path>("in").toString();
+  std::string out_path = cmdParser.getValue<Path>("out").toString();
   int in_type = cmdParser.getParameterOptionIndex<int>("in_type");
   higher_threshold = cmdParser.getValue<int>("th");
   higher_accum_threshold = cmdParser.getValue<int>("th_acu");
@@ -514,16 +518,29 @@ int main(int argc, char *argv[])
   bSaveImages = cmdParser.hasOption("save_img");
   bSaveAll = cmdParser.hasOption("all");
 
-  if (createDir(out_path.c_str()) == -1) { 
-    consolePrintError("No se ha podido crear el directorio: %s", out_path.c_str()); 
-    exit(EXIT_FAILURE);
-  }
-
   //Configuración de log y mensajes por consola
+  Log &log = Log::getInstance();
   char logfile[I3D_MAX_PATH];
   sprintf(logfile, "%s\\%s.log", out_path.c_str(), name );
-  Message::setMessageLogFile(logfile);
-  Message::setMessageLevel(MessageLevel::MSG_INFO);
+  log.setLogFile(logfile);
+  log.setLogLevel(MessageLevel::MSG_INFO);
+  //Message::setMessageLogFile(logfile);
+  //Message::setMessageLevel(MessageLevel::MSG_INFO);
+
+  // Consola
+  Console console;
+  console.setLogLevel(MessageLevel::MSG_INFO);
+  console.setConsoleUnicode();
+
+  // Configuración de mensajes
+  MessageManager &msg_h = MessageManager::getInstance();
+  msg_h.addListener(&log);
+  msg_h.addListener(&console);
+
+  if (createDir(out_path.c_str()) == -1) { 
+    msgError("No se ha podido crear el directorio: %s", out_path.c_str()); 
+    exit(EXIT_FAILURE);
+  }
 
   //std::shared_ptr<I3D::Normalize> normalize = std::make_shared<I3D::Normalize>(255, 0);
   std::shared_ptr<I3D::BilateralFilter> bilateralFilter = std::make_shared<I3D::BilateralFilter>(5, 50., 50.);
@@ -575,7 +592,7 @@ int main(int argc, char *argv[])
           circle( image, center, 3, Scalar(0,255,0), -1, 8, 0 );
           circle( image, center, radius, Scalar(0,0,255), 3, 8, 0 );
         }
-        printInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
+        msgInfo("Baliza detectada: Centro (%i, %i). Radio: %i", center.x, center.y, radius);
         WindowI w_aux(center,300);
         w_aux = windowIntersection(w_aux, WindowI(PointI(0, 0), PointI(red.cols, red.rows)));
         cv::Mat m_aux;
@@ -600,7 +617,7 @@ int main(int argc, char *argv[])
     // Lectura de listado de imagenes
     std::unique_ptr<VideoStream> strmVideo = std::make_unique<ImagesStream>(img.c_str());
     if (!strmVideo->isOpened()) {
-      printInfo("No se ha podido cargar el listado de imagenes o esta mal formado: %s", img.c_str());
+      msgInfo("No se ha podido cargar el listado de imagenes o esta mal formado: %s", img.c_str());
       return 0;
     }
 

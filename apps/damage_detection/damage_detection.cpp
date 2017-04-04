@@ -113,21 +113,39 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  std::string img = cmdParser.getValue<std::string>("img");
-  std::string out_path = cmdParser.getValue<std::string>("out");
+  std::string img = cmdParser.getValue<Path>("img").toString();
+  std::string out_path = cmdParser.getValue<Path>("out").toString();
   LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
   bool bDrawHoles = false;
 
+  ////Configuración de log y mensajes por consola
+  //char logfile[I3D_MAX_PATH];
+  //sprintf(logfile, "%s\\%s.log", out_path.c_str(), name );
+  //Message::setMessageLogFile(logfile);
+  //Message::setMessageLevel(MessageLevel::MSG_INFO);
+
+  // Fichero de log
+  Log &log = Log::getInstance();
+  char logfile[I3D_MAX_PATH];
+  sprintf(logfile, "%s//%s.log", out_path.c_str(), name );
+  log.setLogFile(logfile);
+  log.setLogLevel(MessageLevel::MSG_INFO);
+
+  // Consola
+  Console console;
+  console.setLogLevel(MessageLevel::MSG_INFO);
+  console.setConsoleUnicode();
+
+  // Configuración de mensajes
+  MessageManager &msg_h = MessageManager::getInstance();
+  msg_h.addListener(&log);
+  msg_h.addListener(&console);
+
+
   if (createDir(out_path.c_str()) == -1) { 
-    consolePrintError("No se ha podido crear el directorio: %s", out_path.c_str()); 
+    msgError("No se ha podido crear el directorio: %s", out_path.c_str()); 
     exit(EXIT_FAILURE);
   }
-
-  //Configuración de log y mensajes por consola
-  char logfile[I3D_MAX_PATH];
-  sprintf(logfile, "%s\\%s.log", out_path.c_str(), name );
-  Message::setMessageLogFile(logfile);
-  Message::setMessageLevel(MessageLevel::MSG_INFO);
 
   // Procesos que se aplican a las imagenes
   // Hacemos un remuestreo al 25% para que tarde menos en determinar los buffer de lineas
@@ -168,7 +186,7 @@ int main(int argc, char *argv[])
       pLineDetector = std::make_unique<ldLSD>(ang_tol);
       break;
     default:
-      printError("No se ha seleccionado ningún detector de lineas.");
+      msgError("No se ha seleccionado ningún detector de lineas.");
       exit(EXIT_FAILURE);
       break;
   }
@@ -201,7 +219,7 @@ int main(int argc, char *argv[])
   //pLineDetector->drawLines(image_gray);
   const std::vector<Line> &detect_lines = pLineDetector->getLines();
   if ( detect_lines.empty() ) { 
-    printError("No se han detectando lineas");
+    msgError("No se han detectando lineas");
     exit(EXIT_FAILURE);
   }
   //printInfo("Número de lineas detectada %i", detect_lines.size());
@@ -408,7 +426,7 @@ int main(int argc, char *argv[])
     PointI iniDamage = PointI(0, 0);
     PointI endDamage = PointI(0, 0);
     std::vector<SegmentI> segmentDamage;
-    printInfo("Ancho línea: Mínimo: %f. Máximo: %f", th1, th2);
+    msgInfo("Ancho línea: Mínimo: %f. Máximo: %f", th1, th2);
     progress_bar.init(0., static_cast<double>(v_width.size()-50), "Busqueda de zonas dañadas");
     for (int is = 25; is < v_width.size() - 25; is++, ++li3) {
       double sum = std::accumulate(v_width.begin() + is - 25, v_width.begin() + is + 25, 0);
@@ -418,7 +436,7 @@ int main(int argc, char *argv[])
         axis = PointI(li3.pos().x, li3.pos().y);
         if (iniDamage == PointI(0, 0)) iniDamage = axis;
         endDamage = axis; 
-        logPrintWarning("Posible daño (%i, %i). Ancho línea: %i. Mínimo: %f. Máximo: %f", axis.x, axis.y, accumul, th1, th2);
+        msgWarning("Posible daño (%i, %i). Ancho línea: %i. Mínimo: %f. Máximo: %f", axis.x, axis.y, accumul, th1, th2);
         // Ir acumulando la zona total del daño
       } else {
         if (iniDamage != PointI(0, 0)) {

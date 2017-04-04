@@ -159,7 +159,7 @@ public:
    */
   template<typename T> void filter(const cv::Mat &in, const Window<T> &w, cv::Mat *out, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor) {
     Window<T> waux = w;
-    Point<T> pt_aux;
+    PointF pt_aux;
     for (int j = 0; j < mKeyPoints.size(); j++) {
       pt_aux.x = mKeyPoints[j].pt.x;
       pt_aux.y = mKeyPoints[j].pt.y;

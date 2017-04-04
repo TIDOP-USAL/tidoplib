@@ -68,7 +68,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libcurl_impd.lib;libraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

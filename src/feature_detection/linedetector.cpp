@@ -38,7 +38,7 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
   try{
     HoughLines(image, auxlines, 1, I3D_DEG_TO_RAD, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
   } catch (std::exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < auxlines.size(); i++)
@@ -83,7 +83,7 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
   try {
     HoughLinesP(image, linesaux, 1., I3D_DEG_TO_RAD, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
@@ -138,7 +138,7 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
       I3D_THROW_ERROR("Failed to find local maximums on FHT image");
     }
   } catch (I3D::Exception &e) {
-    Message::message(e.what()).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_LOG);
+    msgError(e.what());
     return LineDetector::Exit::FAILURE;
   }
 
@@ -265,7 +265,7 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
   try {
     lineSegmentDetector->detect(image, linesaux/*, mWidth, mPrec, nfa*/);
   } catch (exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {

@@ -101,7 +101,7 @@ bool VideoStream::read(cv::Mat *vf)
       char c;
       while (duration > posframe && bret == false) {
         posframe++;
-        logPrintError("Error al cargar el frame %.lf", posframe);
+        msgError("Error al cargar el frame %.lf", posframe);
         mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe);
         bret = mVideoCapture.read(mFrame);
         c = (char)cv::waitKey(1);
@@ -291,7 +291,7 @@ void VideoStream::init()
 }
 
 void VideoStream::onFinish() {
-  printDebug("Fin captura de video");
+  msgDebug("Fin captura de video");
   vs = Status::FINALIZED;
   if (!events.empty()) {
     for (auto ev : events) {
@@ -301,7 +301,7 @@ void VideoStream::onFinish() {
 }
 
 void VideoStream::onInitialize() {
-  printDebug("Inicio captura video");
+  msgDebug("Inicio captura video");
   vs = Status::RUNNING;
   if (!events.empty()) {
     for (auto ev : events) {
@@ -376,7 +376,7 @@ bool ImagesStream::open(const char *name)
 {
   std::ifstream read_handler(name, std::ifstream::in);
   if (!read_handler.is_open()) {
-    printError("Unable to read file: %s", name);
+    msgError("Unable to read file: %s", name);
     bIsOpened = false;
   } else {
     std::vector<std::string> out;
@@ -400,7 +400,7 @@ bool ImagesStream::read(cv::Mat *vf)
   if (mCurrentFrame < mImages.size()) {
     std::string imgFile = mImages[static_cast<unsigned int>(mCurrentFrame)];
     mFrame = cv::imread(imgFile);
-    printInfo("Imagen: %s", imgFile.c_str());
+    msgInfo("Imagen: %s", imgFile.c_str());
     if (mResolutionFrame == Resolution::RESIZE_FRAME) {
       resizeFrame();
     } else if (mResolutionFrame == Resolution::CROP_FRAME) {
@@ -446,22 +446,22 @@ bool ImagesStream::setPosFrame(double nframe)
 
 void VideoStreamEvents::onFinish()
 {
-  printDebug("Fin captura de video");
+  msgDebug("Fin captura de video");
 }
 
 void VideoStreamEvents::onInitialize()
 {
-  printDebug("Inicio captura video");
+  msgDebug("Inicio captura video");
 }
 
 void VideoStreamEvents::onPause()
 {
-  printDebug("Video pausado");
+  msgDebug("Video pausado");
 }
 
 void VideoStreamEvents::onPositionChange(double position) 
 { 
-  printDebug("Posición: %i", static_cast<int>(position));
+  msgDebug("Posición: %i", static_cast<int>(position));
 }
 
 I3D_DISABLE_WARNING(4100)
@@ -483,7 +483,7 @@ I3D_ENABLE_WARNING(4100)
 
 void VideoStreamEvents::onStop()
 { 
-  printDebug("Video detenido");
+  msgDebug("Video detenido");
 }
 
 /* ---------------------------------------------------------------------------------- */

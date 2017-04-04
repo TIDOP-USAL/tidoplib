@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
       pLineDetector = std::make_unique<ldLSD>(ang_tol);
       break;
     default:
-      printError("No se ha seleccionado ningún detector de lineas.");
+      msgError("No se ha seleccionado ningún detector de lineas.");
       exit(EXIT_FAILURE);
       break;
   }
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
   cv::Mat frame = cv::imread(img1, cv::IMREAD_GRAYSCALE);
   WindowI wFrame(PointI(0, 0), PointI(frame.cols, frame.rows));
   if (frame.empty()) {
-    logPrintError("No se puede cargar frame: %s", img1.c_str());
+    msgError("No se puede cargar frame: %s", img1.c_str());
   } else {
 
     //regiones a derecha e izquierda de la torre donde detectaremos las lineas

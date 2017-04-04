@@ -170,7 +170,7 @@ int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
     cv::sortIdx(in, *idx, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printError("%s", e.what());
+    msgError("%s", e.what());
     iret = -1;
   }
   return iret;
@@ -184,7 +184,7 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
     cv::sortIdx(in, *idx, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
     cv::sort(in, *out, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
   } catch (std::exception &e) {
-    printError("%s", e.what());
+    msgError("%s", e.what());
     iret = -1;
   }
   return iret;

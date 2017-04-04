@@ -67,7 +67,7 @@ ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::
       return ImgProcessing::Status::INCORRECT_INPUT_DATA;
     }
   } catch (cv::Exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -91,7 +91,7 @@ ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) con
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
 
   if (mWidth == 0 && mScaleX == 0) {
-    printError("Invalid parameter values");
+    msgError("Invalid parameter values");
     return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   }
   try {    
@@ -107,7 +107,7 @@ ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) con
     }
 
   } catch (cv::Exception &e){
-    printError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -138,7 +138,7 @@ ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOu
     matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
     *matOut = aux;
   } catch (cv::Exception &e){
-    printError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -190,7 +190,7 @@ ImgProcessing::Status Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) 
   try {
     cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -218,7 +218,7 @@ ImgProcessing::Status Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) c
     }
     cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -240,7 +240,7 @@ ImgProcessing::Status EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *
   try {
     cv::equalizeHist(matIn, *matOut);
   } catch (cv::Exception &e) {
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -255,7 +255,7 @@ ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *ma
   try {
     f(matIn, matOut);
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
@@ -273,7 +273,7 @@ ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *ma
       rgbToHSL(matIn, matOut);
     }
   } catch (cv::Exception &e){
-    logPrintError(e.what());
+    msgError(e.what());
     return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;

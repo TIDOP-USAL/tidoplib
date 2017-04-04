@@ -31,7 +31,7 @@ int Features2D::detectKeyPoints(const cv::Mat &img, std::vector<cv::KeyPoint> *_
       if (_keyPoints) *_keyPoints = mKeyPoints;
       iret = static_cast<int>(mKeyPoints.size());
     } catch (cv::Exception &e) {
-      printError(e.what());
+      msgError(e.what());
     }
   } else if (_keyPoints) _keyPoints->clear();
   return iret;
@@ -44,7 +44,7 @@ void Features2D::calcDescriptor(const cv::Mat &img, std::vector<cv::KeyPoint> *_
     try{
       mDescriptorExtractor->compute(img, !_keyPoints ? mKeyPoints : *_keyPoints, mDescriptor);
     } catch (cv::Exception &e) {
-      printError(e.what());
+      msgError(e.what());
     }
     if (_descriptor) mDescriptor.copyTo(*_descriptor);
   }
@@ -66,7 +66,7 @@ void Features2D::save( const char *fname ) const
   } else if (strcmp(ext, ".bin") == 0) {
     
   } else {
-    printError("Extensión de archivo '%s' no valida", ext);
+    msgError("Extensión de archivo '%s' no valida", ext);
     return;
   }
   if (strcmp(ext, ".bin") == 0) {
@@ -99,7 +99,7 @@ void Features2D::save( const char *fname ) const
       std::fwrite(mDescriptor.data, sizeof(float), rows*cols, fp);
       std::fclose(fp);
     } else {
-      printError("No pudo escribir archivo %s", fname);
+      msgError("No pudo escribir archivo %s", fname);
     } 
   } else {
     cv::FileStorage fs(fname, flags);
@@ -108,7 +108,7 @@ void Features2D::save( const char *fname ) const
       if (!mDescriptor.empty()) write(fs, "descriptors", mDescriptor);
       fs.release();
     } else
-      printError("No pudo escribir archivo %s", fname);
+      msgError("No pudo escribir archivo %s", fname);
   }
 }
 
@@ -147,7 +147,7 @@ void Features2D::read( const char *fname )
         aux.copyTo(mDescriptor);
         std::fclose(fp);
       } else
-        printError("No pudo leer archivo %s", fname);
+        msgError("No pudo leer archivo %s", fname);
     } else if (strcmp(ext, ".xml") == 0 || strcmp(ext, ".yml") == 0) {
       cv::FileStorage fs(fname, cv::FileStorage::READ);
       if (fs.isOpened()) {
@@ -156,9 +156,9 @@ void Features2D::read( const char *fname )
         fs["keypoints"] >> mKeyPoints;
         fs["descriptors"] >> mDescriptor;
         fs.release();
-      } else printError("No pudo leer archivo %s", fname);
+      } else msgError("No pudo leer archivo %s", fname);
     }
-  } else printError("Fichero no valido: %s", fname);
+  } else msgError("Fichero no valido: %s", fname);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -177,7 +177,7 @@ int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std:
   try {
     if (mDescriptorMatcher) mDescriptorMatcher->match(getAppropriateFormat( descriptor1), getAppropriateFormat( descriptor2 ), mMatches);
   } catch (cv::Exception &e) {
-    printError(e.what());
+    msgError(e.what());
   }
   
   if (_matches) *_matches = mMatches;
@@ -302,7 +302,7 @@ void Matching::save(const char *fname ) const
 {
   char ext[I3D_MAX_EXT];
   if (getFileExtension(fname, ext, I3D_MAX_EXT)) {
-    printError("Fichero no valido: %s", fname);
+    msgError("Fichero no valido: %s", fname);
     return;
   }
   if (strcmp(ext, ".bin") == 0) {
@@ -323,7 +323,7 @@ void Matching::save(const char *fname ) const
       }
       std::fclose(fp);
     } else {
-      printError("No pudo escribir archivo %s", fname);
+      msgError("No pudo escribir archivo %s", fname);
     } 
   }
 }
@@ -351,9 +351,9 @@ void Matching::load( const char *fname )
         }
         std::fclose(fp);
       } else
-        printError("No pudo leer archivo %s", fname);
+        msgError("No pudo leer archivo %s", fname);
     }
-  } else printError("Fichero no valido: %s", fname);
+  } else msgError("Fichero no valido: %s", fname);
 }
 
 } // End namespace I3D

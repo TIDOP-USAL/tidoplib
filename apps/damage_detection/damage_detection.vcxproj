@@ -36,15 +36,15 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props_vs\libs.props" />
     <Import Project="..\..\props_vs\OpenCV_debug-3.2.0.props" />
-    <Import Project="..\..\props_vs\OpenCV_X_debug-3.2.0.props" />
     <Import Project="..\..\props_vs\GDAL_Debug.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_debug-3.2.0.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\props_vs\libs.props" />
     <Import Project="..\..\props_vs\OpenCV_release-3.2.0.props" />
-    <Import Project="..\..\props_vs\OpenCV_X_release-3.2.0.props" />
     <Import Project="..\..\props_vs\GDAL_Release.props" />
+    <Import Project="..\..\props_vs\OpenCV_X_release-3.2.0.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -69,8 +69,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libcurl_impd.lib;libraw.lib;gdal-2.1.2.lib;gdal-ogrd.lib;gdal-ogrsf_frmts_supd.lib;gdal-ogrsf_frmtsd.lib;gdal-portd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_impd.lib;libraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -91,7 +91,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
-      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;gdal-2.1.2.lib;gdal-ogr.lib;gdal-ogrsf_frmts.lib;gdal-ogrsf_frmts_sup.lib;gdal-port.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(LIBS)\curl\lib;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

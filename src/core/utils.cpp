@@ -124,7 +124,7 @@ int createDir(const char *path)
       try {
         system(mkdir.c_str());
       } catch (std::exception &e) {
-        printError(e.what());
+        msgError(e.what());
         return -1;
       }
     }
@@ -143,7 +143,7 @@ int deleteDir(const char *path, bool confirm)
     try {
       system(delDir.c_str());
     } catch (std::exception &e) {
-      printError(e.what());
+      msgError(e.what());
       return -1;
     }
     return 0;
@@ -363,7 +363,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
     }
   } catch (std::exception &e) {
     vOut.resize(0);
-    printError(e.what());
+    msgError(e.what());
     r_err = 1;
   }
 
@@ -390,7 +390,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
     }
   } catch (std::exception &e) {
     vOut.resize(0);
-    printError(e.what());
+    msgError(e.what());
     r_err = 1;
   }
 
@@ -429,7 +429,7 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
       token = strtok(NULL, chs);
     }
   } catch (std::exception &e) {
-    printError(e.what());
+    msgError(e.what());
     r_err = 1;
   }
   free(dup);

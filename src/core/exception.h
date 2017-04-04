@@ -75,16 +75,14 @@ I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, 
 }
 
 #ifdef _DEBUG
-//#define I3D_ERROR(e_msg) make_exception(e_msg, __FILE__, __LINE__, I3D_FUNCTION)
-//#define I3D_THROW_ERROR(e_msg) throw_exception(e_msg, __FILE__, __LINE__, I3D_FUNCTION)
-#define I3D_ERROR(...) make_exception( Message::message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
-#define I3D_THROW_ERROR(...) throw make_exception(Message::message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
+#define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
+#define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 //#define I3D_CHECK_AND_THROW(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MESSAGE, __FILE__, __LINE__, I3D_FUNCTION); }
 #else
-#define I3D_ERROR(...) make_exception(Message::message(__VA_ARGS__).getMessage())
-#define I3D_THROW_ERROR(...) throw make_exception(Message::message(__VA_ARGS__).getMessage())
+#define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
+#define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 //#define I3D_CHECK_AND_THROW(EXPRESSION, ...) if(!(EXPRESSION)) { ; throw Exception(#EXPRESSION MESSAGE); }

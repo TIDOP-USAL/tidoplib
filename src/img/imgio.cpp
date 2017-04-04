@@ -192,12 +192,12 @@ GdalRaster::~GdalRaster()
       GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
       GDALDataset *pTempDataSet = driver->CreateCopy(mName.c_str(), pDataset, FALSE, NULL, NULL, NULL);
       if (!pTempDataSet) {
-        printError("No se pudo crear la imagen");
+        msgError("No se pudo crear la imagen");
       } else {
         GDALClose((GDALDatasetH)pTempDataSet);
       }
       tmp = pDataset->GetFileList();
-    } else printError("No se pudo crear la imagen");
+    } else msgError("No se pudo crear la imagen");
   }
 
   if (pDataset) GDALClose(pDataset), pDataset = NULL; 

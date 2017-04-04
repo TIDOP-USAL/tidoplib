@@ -34,17 +34,18 @@ using namespace I3D;
 //std::mutex mtx;
 //std::mutex _mtx;
 
-#ifdef HAVE_OPENCV
+
+
 I3D_DISABLE_WARNING(4100)
+
+#ifdef HAVE_OPENCV
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
 {
-  // Por ahora mantengo la clase Message
-  Message::message(err_msg).print( MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE, file_name, line, func_name);
   MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR, file_name, line, func_name);
   return 0;
 }
-I3D_ENABLE_WARNING(4100)
+
 #endif // HAVE_OPENCV
 
 #ifdef HAVE_GDAL
@@ -63,11 +64,15 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
   } else {
     ml = MessageLevel::MSG_INFO;
   }
-  Message::message(err_msg).print( ml, MessageOutput::MSG_CONSOLE);
   MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR);
   return;
 }
 #endif // HAVE_GDAL
+
+I3D_ENABLE_WARNING(4100)
+
+
+
 
 struct msgProperties {
   const char *normal;

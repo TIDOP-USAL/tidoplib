@@ -52,7 +52,7 @@ void getTowerImageAndWindow(const char * file, std::vector<std::string> &images_
 {
   std::ifstream read_handler(file, std::ifstream::in);
   if (!read_handler.is_open()) {
-    consolePrintInfo("Unable to read file: %s", file);
+    msgInfo("Unable to read file: %s", file);
   } else {
     std::vector<std::string> out;
     while (!read_handler.eof()) {

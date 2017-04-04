@@ -5,7 +5,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>$(LIBSSRC)\gdal-2.1.2\bin\x64\Release;$(LIBSSRC)\gdal-2.1.2\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(LIBSSRC)\gdal-2.1.2\bin\x64\Release;$(LIBSSRC)\gdal-2.1.2\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>gdal-2.1.2.lib;gdal-ogr.lib;gdal-ogrsf_frmts.lib;gdal-ogrsf_frmts_sup.lib;gdal-port.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
