@@ -16,7 +16,8 @@
 #define HAVE_GDAL
 
 // libraw: Lectura de formato raw
-#define HAVE_RAW
+#undef HAVE_LIBRAW
+#define HAVE_EDSDK
 
 // Eigen Lib: Se utiliza para la resolución de sistemas de ecuaciones lineales
 // Es mucho mas rapida que OpenCV
