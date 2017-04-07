@@ -94,7 +94,7 @@ GDALDataType openCvToGdal(int cvdt)
 
 GDALDataType getGdalDataType(DataType dataType)
 { 
-  GDALDataType ret;
+  GDALDataType ret = GDT_Unknown;
   switch ( dataType ) {
   case I3D::DataType::I3D_8U:
     ret = GDT_Byte;
@@ -121,7 +121,7 @@ GDALDataType getGdalDataType(DataType dataType)
     ret = GDT_Float64;
     break;
   default:
-    //ret = 0;
+    ret = GDT_Unknown;
     break;
   }
   return ret;
@@ -153,6 +153,7 @@ DataType convertDataType(GDALDataType dataType)
     ret = I3D::DataType::I3D_64F;
     break;
   default:
+    ret = I3D::DataType::I3D_8U;
     break;
   }
   return ret;
@@ -451,6 +452,22 @@ int GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
 
 #endif // HAVE_OPENCV
 
+int GdalRaster::createCopy(const char *fileOut)
+{
+  //TODO: revisar
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) == 0) {
+    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
+    GDALDataset *pTempDataSet = driver->CreateCopy(fileOut, pDataset, FALSE, NULL, NULL, NULL);
+    if (!pTempDataSet) {
+      msgError("No se pudo crear la imagen");
+    } else {
+      GDALClose((GDALDatasetH)pTempDataSet);
+    }
+  } else msgError("No se pudo crear la imagen");
+  return 1;
+}
+
 const char* GdalRaster::getDriverFromExt(const char *ext)
 {
   const char *format;
@@ -597,31 +614,66 @@ void GdalGeoRaster::update()
 
 #ifdef HAVE_RAW
 
+#ifdef HAVE_EDSDK
+
+std::unique_ptr<RegisterEDSDK> RegisterEDSDK::sRegisterEDSDK;
+
+RegisterEDSDK::RegisterEDSDK() 
+{
+
+}
+
+RegisterEDSDK::~RegisterEDSDK() 
+{
+  EdsTerminateSDK();
+}
+
+void RegisterEDSDK::init()
+{
+  if (sRegisterEDSDK.get() == 0) {
+    sRegisterEDSDK.reset(new RegisterEDSDK());
+    EdsInitializeSDK();
+  }
+}
+#endif
+
+
 
 RawImage::RawImage() 
   : VrtRaster() 
 {
+#ifdef HAVE_LIBRAW 
   mRawProcessor = std::make_unique<LibRaw>();
-
-  //mRawProcessor->imgdata.params.gamm[0] = 0.0;
-  //mRawProcessor->imgdata.params.gamm[1] = 0.0;
-  //rawProcessor->imgdata.params.user_qual = 0; // fastest interpolation (linear)
   mRawProcessor->imgdata.params.use_camera_wb = 1;
   mRawProcessor->imgdata.params.output_tiff = 1;
-  //rawProcessor->imgdata.params.auto_bright_thr = 1.f;
-  //mRawProcessor->imgdata.params.output_bps = 16;
-
+#endif //HAVE_LIBRAW
+#ifdef HAVE_EDSDK
+  RegisterEDSDK::init();
+#endif
 }
 
 RawImage::~RawImage()
 {
   close();
+#ifdef HAVE_LIBRAW 
   mRawProcessor->recycle();
+#endif //HAVE_LIBRAW
 }
 
 void RawImage::close()
 {
+#ifdef HAVE_EDSDK
+  if ( bCanon ) {
+    EdsRelease(mInputStream);
+    EdsRelease(mEdsImage);
+  } else {
+#endif
+#ifdef HAVE_LIBRAW 
   LibRaw::dcraw_clear_mem(mProcessedImage);
+#endif
+#ifdef HAVE_EDSDK
+  }
+#endif
   mCols = 0;
   mRows = 0;
   mBands = 0;
@@ -631,27 +683,77 @@ void RawImage::close()
 int RawImage::open(const char *file, Mode mode)
 {
   int  ret;
-  if ( (ret = mRawProcessor->open_file(file)) != LIBRAW_SUCCESS) {
-    msgError("Cannot open_file %s: %s", file, libraw_strerror(ret));
-    return 1;
-  }
+  
+  mName = file;
 
-  if ((ret = mRawProcessor->unpack()) != LIBRAW_SUCCESS) {
-    msgError("Cannot unpack %s: %s", file, libraw_strerror(ret));
-    return 1;
-  }
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return 1;
+  bCanon = isRawExt(ext) == 1;
 
-  // .... esto se deberia mover de aqui?
-  if ((ret = mRawProcessor->dcraw_process()) != LIBRAW_SUCCESS) {
-    msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
-    return 1;
-  }
+#ifdef HAVE_EDSDK
+  // Formato cr2. Se lee con el EDSDK si esta cargado. En caso contrario se lee con LibRaw
+  if ( bCanon) {
 
-  if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
-    msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
+    EdsAccess eds_access;
+    EdsFileCreateDisposition eds_create;
+    switch (mode) {
+    case I3D::Mode::Read:
+      eds_access = kEdsAccess_Read;
+      eds_create = kEdsFileCreateDisposition_OpenExisting;
+      break;
+    case I3D::Mode::Update:
+      eds_access = kEdsAccess_ReadWrite;
+      eds_create = kEdsFileCreateDisposition_OpenExisting;
+      break;
+    case I3D::Mode::Create:
+      eds_access = kEdsAccess_Write;
+      eds_create = kEdsFileCreateDisposition_CreateAlways;
+      break;
+    default:
+      eds_access = kEdsAccess_Read;
+      eds_create = kEdsFileCreateDisposition_OpenExisting;
+      break;
+    }
+    
+    EdsError err = EdsCreateFileStream(mName.c_str(), eds_create, eds_access, &mInputStream);
+    if (err == EDS_ERR_OK) {
+      err = EdsCreateImageRef(mInputStream, &mEdsImage);
+      if (err == EDS_ERR_OK) {
+        update();
+        return 0;
+      }
+    } 
     return 1;
-  } else  
-    update();
+  } else {
+#endif
+#ifdef HAVE_LIBRAW
+  
+    if ( (ret = mRawProcessor->open_file(file)) != LIBRAW_SUCCESS) {
+      msgError("Cannot open_file %s: %s", file, libraw_strerror(ret));
+      return 1;
+    }
+
+    if ((ret = mRawProcessor->unpack()) != LIBRAW_SUCCESS) {
+      msgError("Cannot unpack %s: %s", file, libraw_strerror(ret));
+      return 1;
+    }
+
+    // .... esto se deberia mover de aqui?
+    if ((ret = mRawProcessor->dcraw_process()) != LIBRAW_SUCCESS) {
+      msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
+      return 1;
+    }
+
+    if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
+      msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
+      return 1;
+    } else  
+      update();
+#endif
+
+#ifdef HAVE_EDSDK
+  }
+#endif
 
   return 0;
 }
@@ -675,43 +777,66 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
   size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
-
-  //cv::Size size(mRows, mCols);
-    
-  int depth = (mDataType == DataType::I3D_16U) ? CV_16U : CV_8U;
-  image->create(size, CV_MAKETYPE(depth, mBands)/*CV_8UC3*/); // Hacer la conversión de tipos para convertir al tipo correcto
+  
+  //TODO: crear método similar a getGdalDataType
+  //int depth = (mDataType == DataType::I3D_16U) ? CV_16U : CV_8U;
+  int depth = CV_8U;
+  image->create(size, CV_MAKETYPE(depth, mBands));
   
   if ( image->empty() ) return;
 
-  //mRawProcessor->imgdata.params.use_camera_wb = 1;
-  //mRawProcessor->imgdata.params.use_auto_wb = 1;
-  //mRawProcessor->imgdata.params.cropbox[0] = wRead.pt1.x;
-  //mRawProcessor->imgdata.params.cropbox[1] = wRead.pt1.y;
-  //mRawProcessor->imgdata.params.cropbox[2] = wRead.pt2.x;
-  //mRawProcessor->imgdata.params.cropbox[3] = wRead.pt2.y;
-  //int ret;
-  //if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
-  //  msgError("Cannot unpack %s to memory buffer: %s" , mName.c_str(), libraw_strerror(ret));
-  //  return;
-  //}
   cv::Mat aux;
-  if (LIBRAW_IMAGE_JPEG == mProcessedImage->type) {
-    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
-  } else if (LIBRAW_IMAGE_BITMAP == mProcessedImage->type) {
-    aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
+
+#ifdef HAVE_EDSDK
+
+  if ( bCanon ) {
+  	EdsRect rect;
+	  rect.point.x	= wRead.pt1.x;
+	  rect.point.y	= wRead.pt1.y;
+	  rect.size.width	= wRead.getWidth();
+	  rect.size.height = wRead.getHeight();
+
+    EdsSize eds_size;
+	  eds_size.width = size.width;
+	  eds_size.height = size.height;
+
+    EdsError err = EDS_ERR_OK;
+    EdsStreamRef dstStreamRef;
+    err = EdsCreateMemoryStream(0, &dstStreamRef);
+    if (err == EDS_ERR_OK) {
+      err = EdsGetImage(mEdsImage, kEdsImageSrc_RAWFullView, kEdsTargetImageType_RGB, rect, eds_size, dstStreamRef);
+      if (err == EDS_ERR_OK) {
+        EdsVoid* pBuff;
+        EdsGetPointer(dstStreamRef, &pBuff);
+        aux = cv::Mat(size.height, size.width, CV_MAKETYPE(depth, mBands), pBuff);
+      }
+    }
+    EdsRelease(dstStreamRef);
+  } else {
+#endif
+#ifdef HAVE_LIBRAW
+    //mRawProcessor->imgdata.params.use_camera_wb = 1;
+    //mRawProcessor->imgdata.params.use_auto_wb = 1;
+    //mRawProcessor->imgdata.params.cropbox[0] = wRead.pt1.x;
+    //mRawProcessor->imgdata.params.cropbox[1] = wRead.pt1.y;
+    //mRawProcessor->imgdata.params.cropbox[2] = wRead.pt2.x;
+    //mRawProcessor->imgdata.params.cropbox[3] = wRead.pt2.y;
+    //int ret;
+    //if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
+    //  msgError("Cannot unpack %s to memory buffer: %s" , mName.c_str(), libraw_strerror(ret));
+    //  return;
+    //}
+    if (LIBRAW_IMAGE_JPEG == mProcessedImage->type) {
+      aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
+    } else if (LIBRAW_IMAGE_BITMAP == mProcessedImage->type) {
+      aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
+    }
+#endif //HAVE_LIBRAW
+#ifdef HAVE_EDSDK
   }
-
-  //// Convert the Bayer data from 16-bit to to 8-bit
-  //cv::Mat bayer8BitMat = aux.clone();
-  //// The 3rd parameter here scales the data by 1/16 so that it fits in 8 bits.
-  //// Without it, convertTo() just seems to chop off the high order bits.
-  //bayer8BitMat.convertTo(bayer8BitMat, CV_8UC3, 255);
-
-  ////// Convert the Bayer data to 8-bit RGB
-  ////cv::Mat rgb8BitMat(mProcessedImage->height, mProcessedImage->width, CV_8UC3);
-  ////cv::cvtColor(bayer8BitMat, rgb8BitMat, CV_BayerGR2RGB);
-
-  cvtColor(aux, *image, CV_RGB2BGR);
+#endif
+  if (aux.empty() == false )
+    cvtColor(aux, *image, CV_RGB2BGR);
 }
   
 int RawImage::write(const cv::Mat &image, const WindowI &w)
@@ -743,35 +868,93 @@ int RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf)
 
 #endif // HAVE_OPENCV
 
-bool RawImage::isRawExt(const char *ext)
+int RawImage::createCopy(const char *fileOut)
 {
-  bool bRet = false;
+  int i_ret = 0;
+
+#ifdef HAVE_EDSDK
+
+  if (bCanon) {
+    EdsError err;
+    EdsStreamRef output_stream;
+    err = EdsCreateFileStream(fileOut, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_Write, &output_stream);
+    if (err == EDS_ERR_OK) {
+      EdsImageRef input_image;
+      err = EdsCreateImageRef(mInputStream, &input_image);
+      if (err == EDS_ERR_OK) {
+        EdsSaveImageSetting settings;
+        settings.iccProfileStream = 0;
+        settings.reserved = 0;
+        settings.JPEGQuality = 10;
+
+        err = EdsSaveImage(input_image, kEdsTargetImageType_TIFF/*kEdsTargetImageType_Jpeg*/, settings, output_stream);
+        EdsRelease(output_stream);
+      }
+      EdsRelease(input_image);
+    }
+    if (err != EDS_ERR_OK) i_ret = 1;
+  } else {
+#endif
+#ifdef HAVE_LIBRAW
+
+#endif
+
+#ifdef HAVE_EDSDK
+  }
+#endif
+  return i_ret;
+}
+
+int RawImage::isRawExt(const char *ext)
+{
+  int i_ret = 0;
   // Completar y hacer mejor
-  if ( strcmpi( ext, ".CR2" ) == 0 )  bRet = true;          // Canon
-  return bRet;
+  if ( strcmpi( ext, ".CR2" ) == 0 )  i_ret = 1;          // Canon
+  else i_ret = 2;
+  return i_ret;
 }
 
 void RawImage::update()
 {
-  //mRawProcessor->imgdata.sizes;
-  //ushort      raw_height,
-  //            raw_width,
-  //            height,
-  //            width,
-  //            top_margin,
-  //            left_margin;
-  //ushort      iheight,
-  //            iwidth;
+#ifdef HAVE_EDSDK
 
+  if (bCanon) {
+    EdsImageInfo imageInfo;
+    EdsError err = EdsGetImageInfo(mEdsImage, kEdsImageSrc_FullView, &imageInfo);
+    if (err == EDS_ERR_OK) {
+      mCols = imageInfo.width;
+      mRows = imageInfo.height;
+      mBands = imageInfo.numOfComponents;
+      //TODO: Imagenes de 16 bits. De momento se convierten a 8 bits
+      //
+      if (imageInfo.componentDepth == 16) {
+        mColorDepth = 8;
+        mDataType = imageInfo.componentDepth == 16 ? DataType::I3D_16U : DataType::I3D_8U;
+        msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
+      } else {
+        mColorDepth = imageInfo.componentDepth;
+        //TODO: completar
+        mDataType = DataType::I3D_8U;
+      }
+    }
+  } else {
+#endif
+#ifdef HAVE_LIBRAW 
+    mCols = mProcessedImage->width;
+    mRows = mProcessedImage->height;
+    mBands = mRawProcessor->imgdata.idata.colors; //mProcessedImage->colors;
 
-  mCols = mProcessedImage->width;
-  mRows = mProcessedImage->height;
-  mBands = mRawProcessor->imgdata.idata.colors; //mProcessedImage->colors;
-  mColorDepth = mProcessedImage->bits;
-  mDataType = mProcessedImage->bits == 16 ? DataType::I3D_16U : DataType::I3D_8U;
-  //mType = mProcessedImage->type;
-  //mData = mProcessedImage->data;
-  mSize = mProcessedImage->data_size;
+    mColorDepth = mProcessedImage->bits;
+    mDataType = mProcessedImage->bits == 16 ? DataType::I3D_16U : DataType::I3D_8U;
+
+    //mType = mProcessedImage->type;
+    //mData = mProcessedImage->data;
+    mSize = mProcessedImage->data_size;
+#endif //HAVE_LIBRAW
+
+#ifdef HAVE_EDSDK
+  }
+#endif
 }
 
 
@@ -878,6 +1061,8 @@ Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
 
 Status RasterGraphics::saveAs(const char *file) 
 {
+  //TODO: Comprobar si se puede convertir directamente entre formatos. 
+  // Ahora se esta trabajando en memoria pero para imagenes dará problemas asi que hay que modificarlo
   if ( !mImageFormat ) return Status::FAILURE;
 #ifdef HAVE_OPENCV
   cv::Mat buff; 
@@ -957,6 +1142,7 @@ Status GeoRasterGraphics::open(const char *file, Mode mode)
     mImageFormat->open(file, mode);
     update();
   }
+  return Status::OPEN_OK;
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const

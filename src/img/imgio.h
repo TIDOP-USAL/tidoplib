@@ -22,10 +22,20 @@ I3D_DEFAULT_WARNINGS
 #include "geometric_entities/point.h"
 #include "transform.h"
 
-#ifdef HAVE_RAW
+#ifdef HAVE_EDSDK
+#include "EDSDK.h"
+#ifndef HAVE_RAW
+#  define HAVE_RAW
+#endif
+#endif // HAVE_EDSDK
+
+#ifdef HAVE_LIBRAW
 I3D_SUPPRESS_WARNINGS
 #include "libraw.h"
 I3D_DEFAULT_WARNINGS
+#ifndef HAVE_RAW
+#  define HAVE_RAW
+#endif
 #endif // HAVE_RAW
 
 namespace I3D
@@ -64,6 +74,9 @@ enum class DataType
   I3D_32F,     // Equivalente a CV_32F y GDT_Float32  
   I3D_64F      // Equivalente a CV_64F y GDT_Float64
 };
+
+//TODO: Añadir flags de opciones de formato
+
 
 class VrtRaster
 {
@@ -188,6 +201,11 @@ public:
 
 
 #endif
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  virtual int createCopy(const char *fileOut) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -402,6 +420,11 @@ public:
 #endif
 
   /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  int createCopy(const char *fileOut) override;
+
+  /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
    * Si la extensión no se correspondo con un driver disponible devuelve nulo.
    * \param ext Extensión del archivo
@@ -516,19 +539,68 @@ private:
 #endif // HAVE_GDAL
 
 #ifdef HAVE_RAW
+
+
+#ifdef HAVE_EDSDK
+
+/*!
+ * \brief Clase singleton para registrar la API de canon
+ *
+ */
+class I3D_EXPORT RegisterEDSDK
+{
+private:
+
+  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+
+  /*!
+   * \brief Constructor privado
+   */
+  RegisterEDSDK();
+
+public:
+
+  ~RegisterEDSDK();
+
+  RegisterEDSDK(RegisterEDSDK const&) = delete;
+  void operator=(RegisterEDSDK const&) = delete;
+
+  /*!
+   * \brief Inicio de la API EDSDK
+   */
+  static void init();
+
+};
+
+#endif \\ HAVE_EDSDK 
+
+
 // http://www.libraw.org/node/2165
 class RawImage : public VrtRaster
 {
 private:
-  
+
+#ifdef HAVE_LIBRAW 
   std::unique_ptr<LibRaw> mRawProcessor;
 
   libraw_processed_image_t *mProcessedImage;
+#endif //HAVE_LIBRAW
+
+#ifdef HAVE_EDSDK
+  EdsStreamRef mInputStream;
+  EdsImageRef mEdsImage;
+#endif 
 
   //unsigned short mBits;
   //LibRaw_image_formats mType;
   //unsigned char *mData;
   unsigned int mSize;
+
+  /*!
+   * \brief Formato raw especifico de canon.
+   * Se lee con el EDSDK
+   */
+  bool bCanon;
 
 public:
 
@@ -624,12 +696,17 @@ public:
 #endif
 
   /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  int createCopy(const char *fileOut) override;
+
+  /*!
    * \brief Comprueba si una extensión de archivo se corresponde con una del formato RAW
    * Si la extensión no se corresponde con el formato raw devuelve nulo.
    * \param ext Extensión del archivo
    * \return verdadero si es raw
    */
-  static bool isRawExt(const char *ext);
+  static int isRawExt(const char *ext);
 
 private:
 
