@@ -107,6 +107,7 @@
     <ClCompile Include="geometric_entities\window.cpp" />
     <ClCompile Include="graphic_entities\color.cpp" />
     <ClCompile Include="graphic_entities\graphic_entity.cpp" />
+    <ClCompile Include="graphic_entities\linealgorithms.cpp" />
     <ClCompile Include="img\imgio.cpp" />
     <ClCompile Include="img_process\filters.cpp" />
     <ClCompile Include="img_process\img_processing.cpp" />
@@ -143,6 +144,7 @@
     <ClInclude Include="geometric_entities\window.h" />
     <ClInclude Include="graphic_entities\color.h" />
     <ClInclude Include="graphic_entities\graphic_entity.h" />
+    <ClInclude Include="graphic_entities\linealgorithms.h" />
     <ClInclude Include="img\imgio.h" />
     <ClInclude Include="img_process\filters.h" />
     <ClInclude Include="img_process\img_processing.h" />
