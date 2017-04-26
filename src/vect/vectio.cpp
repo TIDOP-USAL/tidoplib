@@ -17,7 +17,7 @@ int VrtVector::getLayersCount() const
   return mLayersCount;
 }
 
-
+#ifdef HAVE_GDAL
 GdalVector::GdalVector() : VrtVector(), pDataset(0), pDriver(0), mDriverName("")
 {
 
@@ -261,7 +261,7 @@ void GdalVector::update()
   mLayersCount = pDataset->GetLayerCount();
 }
 
-
+#endif // HAVE_GDAL
 
 
 

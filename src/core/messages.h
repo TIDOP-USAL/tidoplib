@@ -662,7 +662,6 @@ public:
   /*!
    * \brief Escribe una linea en el log
    * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
    */
   void write(const char *msg);
 

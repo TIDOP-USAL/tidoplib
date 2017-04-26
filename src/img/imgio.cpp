@@ -811,6 +811,9 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
         aux = cv::Mat(size.height, size.width, CV_MAKETYPE(depth, mBands), pBuff);
       }
     }
+    if (aux.empty() == false ) 
+      cvtColor(aux, *image, CV_RGB2BGR);
+
     EdsRelease(dstStreamRef);
   } else {
 #endif
@@ -831,12 +834,12 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
     } else if (LIBRAW_IMAGE_BITMAP == mProcessedImage->type) {
       aux = cv::Mat(mProcessedImage->height, mProcessedImage->width, CV_MAKETYPE(depth, mBands), mProcessedImage->data);
     }
+    if (aux.empty() == false )
+      cvtColor(aux, *image, CV_RGB2BGR);
 #endif //HAVE_LIBRAW
 #ifdef HAVE_EDSDK
   }
 #endif
-  if (aux.empty() == false )
-    cvtColor(aux, *image, CV_RGB2BGR);
 }
   
 int RawImage::write(const cv::Mat &image, const WindowI &w)
