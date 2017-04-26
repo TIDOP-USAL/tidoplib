@@ -19,6 +19,12 @@
 #include "geometric_entities/linestring.h"
 #include "geometric_entities/polygon.h"
 
+class OGRStyleMgr;
+class OGRStylePen;
+class OGRStyleBrush;
+class OGRStyleSymbol;
+class OGRStyleLabel;
+
 namespace I3D
 {
 
@@ -816,7 +822,6 @@ public:
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
 
-//Estilos de una entidad, de un layer o de un archivo
 /*!
  * \brief Clase estilos
  *
@@ -825,38 +830,120 @@ ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
 class I3D_EXPORT GraphicStyle
 {
 protected:
+
+  /*!
+   * \brief Estilo de pluma
+   */
   std::shared_ptr<StylePen>     mStylePen;
+  
+  /*!
+   * \brief Estilo de pincel
+   */
   std::shared_ptr<StyleBrush>   mStyleBrush;
+  
+  /*!
+   * \brief Estilo de simbolos
+   */  
   std::shared_ptr<StyleSymbol>  mStyleSymbol;
+  
+  /*!
+   * \brief Estilo de etiqueta
+   */
   std::shared_ptr<StyleLabel>   mStyleLabel;
 
 public:
 
+  /*!
+   * \brief Constructora
+   */
   GraphicStyle()
   {
   }
 
+  /*!
+   * \brief Destructora
+   */
   ~GraphicStyle()
   {
   }
 
-  bool read();
+#ifdef HAVE_GDAL
+  
+  /*!
+   * \brief Lee los estilos de GDAL/OGR
+   * \param[in] ogrStyle Estilos ogr
+   * \return
+   */
+  bool readFromOGR(OGRStyleMgr *ogrStyle);
+
+#endif 
 
   bool write();
 
+  /*!
+   * \brief Establece el estilo de pluma
+   * \param[in] stylePen Estilo de pluma
+   */
+  void setStylePen(std::shared_ptr<StylePen> stylePen);
+  
+  /*!
+   * \brief Establece el estilo de pincel
+   * \param[in] styleBrush Estilo de pincel
+   */
+  void setStyleBrush(std::shared_ptr<StyleBrush> styleBrush);
+
+  /*!
+   * \brief Establece el estilo de simbolos
+   * \param[in] styleSymbol Estilo simbolos
+   */
+  void setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol);
+
+  /*!
+   * \brief Establece el estilo de etiqueta
+   * \param[in] styleLabel Estilo de etiqueta
+   */
+  void setStyleLabel(std::shared_ptr<StyleLabel> styleLabel);
+
 private:
 
+#ifdef HAVE_GDAL
+
+  /*!
+   * \brief Lee el estilo de pincel
+   * \param[in] ogrStylePen Estilo pincel GDAL
+   */
+  void readStylePen(OGRStylePen *ogrStylePen);
+
+  /*!
+   * \brief Lee el estilo de pluma
+   * \param[in] ogrStylePen Estilo pluma GDAL
+   */
+  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
+
+  /*!
+   * \brief Lee el estilo símbolo
+   * \param[in] ogrStylePen Estilo símbolo GDAL
+   */
+  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
+
+  /*!
+   * \brief Lee el estilo etiqueta
+   * \param[in] ogrStylePen Estilo etiqueta GDAL
+   */
+  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+
+#endif
 };
 
-//metadatos que pueden ir asociados a una entidad.
-class I3D_EXPORT Metadata
+//datos que pueden ir asociados a una entidad.
+class I3D_EXPORT GData
 {
 public:
-  Metadata()
+  GData()
   {
   }
 
-  ~Metadata()
+  ~GData()
   {
   }
 
@@ -875,7 +962,7 @@ private:
  * \brief Clase base para las entidades gráficas
  *
  */
-class I3D_EXPORT GraphicEntity : public GraphicStyle, public Metadata
+class I3D_EXPORT GraphicEntity : public GraphicStyle, public GData
 {
 
 public:
@@ -889,7 +976,7 @@ public:
 };
 
 
-//template<typename T = double>
+
 class I3D_EXPORT GPoint : public Point<double>, public GraphicEntity
 {
 public:
@@ -906,7 +993,6 @@ public:
 };
 
 
-//template<typename T>
 class I3D_EXPORT GPoint3D : public Point3<double>, public GraphicEntity
 {
 public:
@@ -920,7 +1006,6 @@ public:
 #endif
 };
 
-//template<typename T>
 class I3D_EXPORT GLineString : public LineString<double>, public GraphicEntity
 {
 public:
@@ -934,7 +1019,7 @@ public:
 #endif
 };
 
-//template<typename T>
+
 class I3D_EXPORT GPolygon : public Polygon<double>, public GraphicEntity
 {
 public:

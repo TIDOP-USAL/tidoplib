@@ -507,6 +507,8 @@ private:
    */
   //static MessageLevel sLevel;
 
+  static bool sStopHandler;
+
 private:
 
   /*!
@@ -553,6 +555,16 @@ public:
    * \brief Inicializa los manejadores para las librerias externas
    */
   static void initExternalHandlers();
+
+  /*!
+   * \brief Pausa el envio de mensajes
+   */
+  static void pause();
+
+  /*!
+   * \brief Reanuda el envio de mensajes
+   */
+  static void resume();
 
 protected:
 
