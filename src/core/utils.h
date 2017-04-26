@@ -2,9 +2,11 @@
 #define I3D_UTILS_H
 
 #include <vector>
+#include <list>
 #include <iostream>
 #include <fstream>
 #include <functional>
+#include <memory>
 
 #include "core/config.h"
 
@@ -298,6 +300,93 @@ public:
    */
   std::string toString();
 };
+
+
+class Process
+{
+public:
+
+  Process() {}
+  ~Process() {}
+
+  virtual int run() = 0;
+
+private:
+
+};
+
+
+class CmdProcess : public Process
+{
+protected:
+
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+  std::string mCmd;
+
+public:
+
+  CmdProcess(const std::string &cmd);
+  ~CmdProcess();
+
+  virtual int run() override;
+
+private:
+
+};
+
+
+class BatchProcess
+{
+protected:
+
+  /*!
+   * \brief Lista de procesos
+   */
+  std::list<std::shared_ptr<Process>> mProcessList;
+
+public:  
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  BatchProcess(){}
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] batchProcess Procesos que se copia
+   */
+  BatchProcess(const BatchProcess &batchProcess) : mProcessList(batchProcess.mProcessList) {}
+
+  /*!
+   * \brief Constructor de lista
+   * \param[in] Listado de procesos
+   */
+  BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList) : mProcessList(procList) {}
+
+  /*!
+   * \brief Destructora
+   */
+  ~BatchProcess() {}
+
+  /*!
+   * \brief Añade un nuevo proceso a la lista
+   * \param[in] process Proceso que se añade
+   */
+  void add(const std::shared_ptr<Process> &process);
+
+  /*!
+   * \brief Limpia la lista de procesos
+   */
+  void clear();
+
+  /*!
+   * \brief Corre los procesos
+   */
+  int run();
+
+};
+
 
 
 /* ---------------------------------------------------------------------------------- */

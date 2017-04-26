@@ -871,10 +871,21 @@ int RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf)
 int RawImage::createCopy(const char *fileOut)
 {
   int i_ret = 0;
-
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) != 0) return 1;
 #ifdef HAVE_EDSDK
 
   if (bCanon) {
+    EdsTargetImageType edsTargetImageType;
+    if (strcmpi(ext, ".TIF") == 0) {
+      edsTargetImageType = kEdsTargetImageType_TIFF;
+    } else if (strcmpi(ext, ".JPG") == 0) {
+      edsTargetImageType = kEdsTargetImageType_Jpeg;
+    } else {
+      msgError("No se pudo crear la imagen");
+      return 1;
+    }
+
     EdsError err;
     EdsStreamRef output_stream;
     err = EdsCreateFileStream(fileOut, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_Write, &output_stream);
@@ -887,12 +898,15 @@ int RawImage::createCopy(const char *fileOut)
         settings.reserved = 0;
         settings.JPEGQuality = 10;
 
-        err = EdsSaveImage(input_image, kEdsTargetImageType_TIFF/*kEdsTargetImageType_Jpeg*/, settings, output_stream);
+        err = EdsSaveImage(input_image, edsTargetImageType, settings, output_stream);
         EdsRelease(output_stream);
       }
       EdsRelease(input_image);
     }
-    if (err != EDS_ERR_OK) i_ret = 1;
+    if (err != EDS_ERR_OK) {
+      i_ret = 1;
+      msgError("No se pudo crear la imagen");
+    }
   } else {
 #endif
 #ifdef HAVE_LIBRAW
@@ -1062,23 +1076,66 @@ Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
 Status RasterGraphics::saveAs(const char *file) 
 {
   //TODO: Comprobar si se puede convertir directamente entre formatos. 
-  // Ahora se esta trabajando en memoria pero para imagenes dará problemas asi que hay que modificarlo
-  if ( !mImageFormat ) return Status::FAILURE;
+  if (!mImageFormat) return Status::FAILURE;
+  MessageManager::pause();
+  int err = mImageFormat->createCopy(file);
+  MessageManager::resume();
+  if (err == 1) {
+    // No se puede hacer directamente la copia
+    //TODO: Ahora se esta trabajando en memoria pero para imagenes muy grandes dará problemas asi que hay que modificarlo
+    //mImageFormat->read(&buff);
+    //RasterGraphics imageOut;
+    //if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+    //  if (imageOut.create(mRows, mCols, mBands, mDataType) != Status::FAILURE) {
+    //    if (imageOut.write(buff) != Status::FAILURE) {
+    //      return Status::SUCCESS;
+    //    }
+    //  }
+    //} 
+ 
+    //TODO: Imagenes de 16 bits. De momento se convierten a 8 bits
+    DataType outDataType;
+    if (mDataType == DataType::I3D_16U) {
+      outDataType = DataType::I3D_8U;
+      msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
+    } else {
+      outDataType = mDataType;
+    }
+
+    RasterGraphics imageOut;
+    if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+      if (imageOut.create(mRows, mCols, mBands, outDataType) != Status::FAILURE) {
+        for (int r = 0; r < mRows - 1; r++) {
 #ifdef HAVE_OPENCV
-  cv::Mat buff; 
+          cv::Mat buff; 
 #else
-  uchar *buff;
+          uchar *buff;
 #endif
-  mImageFormat->read(&buff);
-  RasterGraphics imageOut;
-  if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
-    if (imageOut.create(mRows, mCols, mBands, mDataType) != Status::FAILURE) {
-      if (imageOut.write(buff) != Status::FAILURE) {
-        return Status::SUCCESS;
+          WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
+          mImageFormat->read(&buff, wrw);
+          if (imageOut.write(buff, wrw) != Status::FAILURE) {
+            return Status::SUCCESS;
+          }
+        }
+        
+//        parallel_for(0, mRows - 1, [&](int r) {
+//#ifdef HAVE_OPENCV
+//          cv::Mat buff; 
+//#else
+//          uchar *buff;
+//#endif
+//          WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
+//          mImageFormat->read(&buff, wrw);
+//          if (imageOut.write(buff, wrw) != Status::FAILURE) {
+//            //return Status::SUCCESS;
+//          }
+//        });
+
       }
     }
-  } 
-  return Status::FAILURE;
+    return Status::FAILURE;
+  }
+  return Status::SUCCESS;
 }
 
 

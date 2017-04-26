@@ -1,5 +1,14 @@
 #include "graphic_entities/graphic_entity.h"
 
+#ifdef HAVE_GDAL
+I3D_SUPPRESS_WARNINGS
+#include "gdal_priv.h"
+#include "cpl_conv.h"
+#include "ogr_core.h"
+#include "ogr_featurestyle.h"
+I3D_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
+
 namespace I3D
 {
 
@@ -411,22 +420,136 @@ void StyleLabel::setOffset(double dx, double dy)
 
 /* ---------------------------------------------------------------------------------- */
 
-bool GraphicStyle::read()
+#ifdef HAVE_GDAL
+bool GraphicStyle::readFromOGR(OGRStyleMgr *ogrStyle)
 {
+  OGRStyleTool *ogrStyleTool = NULL;
+  for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
+    if (ogrStyleTool = ogrStyle->GetPart(i)) {
+      OGRSTClassId oci = ogrStyleTool->GetType();
+      switch (oci) {
+      case OGRSTCPen:
+        readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool));
+        break;
+      case OGRSTCBrush:
+        readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool));
+        break;
+      case OGRSTCSymbol:
+        readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool));
+        break;
+      case OGRSTCLabel:
+        readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool));
+        break;
+      case OGRSTCVector:
+
+        break;
+      default:
+        break;
+      }
+    }
+  }
   return false;
 }
+#endif 
 
 bool GraphicStyle::write()
 {
   return false;
 }
 
+void GraphicStyle::setStylePen(std::shared_ptr<StylePen> stylePen)
+{
+  mStylePen = stylePen;
+}
+
+void GraphicStyle::setStyleBrush(std::shared_ptr<StyleBrush> styleBrush)
+{
+  mStyleBrush = styleBrush;
+}
+
+void GraphicStyle::setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol)
+{
+  mStyleSymbol = styleSymbol;
+}
+
+void GraphicStyle::setStyleLabel(std::shared_ptr<StyleLabel> styleLabel)
+{
+  mStyleLabel = styleLabel;
+}
+
+#ifdef HAVE_GDAL
+
+void GraphicStyle::readStylePen(OGRStylePen *ogrStylePen)
+{
+  GBool bDefault = false;
+  std::shared_ptr<StylePen> stylePen = std::make_shared<StylePen>();
+  const char *hexColor = ogrStylePen->Color(bDefault);
+  if (!bDefault) stylePen->setPenColor(Color(hexColor));
+
+  double width = ogrStylePen->Width(bDefault);
+  if ( !bDefault ) { 
+    //unsigned __int8 w = (unsigned __int8)GetWidthPx( wd, poStylePen->GetUnit() );
+    //gs->AddStyle( gstPenWidth, w );
+    //stylePen->setPenWidth();
+  }
+
+  const char *pattern = ogrStylePen->Pattern(bDefault);
+  if (!bDefault) stylePen->setPattern(pattern);
+
+  //const char *name = ogrStylePen->Id(bDefault);
+  //if ( !bDefault ) {
+  //  stylePen->setPenName()
+  //}
+
+  const char *cap = ogrStylePen->Cap(bDefault);
+  if ( !bDefault ) {
+    StylePen::PenCap penCap;
+    if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::BUTT;
+    else if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::PROJECTING;
+    else if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::ROUND;
+    stylePen->setPenCap(penCap);
+  }
+
+  const char *join = ogrStylePen->Join(bDefault);
+  if ( !bDefault ) {
+    StylePen::PenJoin penJoin;
+    if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::MITER;
+    else if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::ROUNDED;
+    else if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::BEVEL;
+    stylePen->setPenJoin(penJoin);
+  }
+
+  double perpendicularOffset = ogrStylePen->PerpendicularOffset(bDefault);
+  if ( !bDefault ) {
+    stylePen->setPerpendicularOffset(I3D_ROUND_TO_INT(perpendicularOffset));
+  }
+
+  setStylePen(stylePen);
+}
+
+void GraphicStyle::readStyleBrush(OGRStyleBrush *ogrStyleBrush)
+{
+
+}
+
+void GraphicStyle::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol)
+{
+
+}
+
+void GraphicStyle::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
+{
+
+}
+
+#endif
+
 /* ---------------------------------------------------------------------------------- */
 
 
 GraphicEntity::GraphicEntity()
   : GraphicStyle(),
-    Metadata()
+    GData()
 {
 }
 

@@ -78,6 +78,44 @@ enum class DataType
 //TODO: Añadir flags de opciones de formato
 
 
+class I3D_EXPORT RasterOptions
+{
+public:
+  
+  enum class Format
+  {
+    TIFF,
+    JPG,
+    JP2000,
+    PNG,
+    BMP
+  };
+
+protected:
+
+  Format mFormat;
+
+public:
+
+  RasterOptions(Format format) : mFormat(format) {}
+  virtual ~RasterOptions() {}
+
+
+};
+
+
+class I3D_EXPORT TiffOptions : RasterOptions
+{
+
+public:
+  TiffOptions() : RasterOptions(Format::TIFF) {}
+  ~TiffOptions() {}
+
+};
+
+
+
+
 class VrtRaster
 {
 protected:

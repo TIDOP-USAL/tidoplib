@@ -340,6 +340,63 @@ std::string Path::toString()
   return _path;
 }
 
+/* ---------------------------------------------------------------------------------- */
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdProcess::CmdProcess(const std::string &cmd) : Process(), mCmd(cmd)
+{
+  ZeroMemory( &si, sizeof(si) );
+  si.cb = sizeof(si);
+  ZeroMemory( &pi, sizeof(pi) );
+}
+
+CmdProcess::~CmdProcess()
+{
+  // Se cierran procesos e hilos 
+  CloseHandle( pi.hProcess );
+  CloseHandle( pi.hThread );
+}
+
+int CmdProcess::run()
+{
+  size_t len = strlen(mCmd.c_str());
+  std::wstring wCmdLine(len, L'#');
+  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+  if ( !CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL, 
+                      NULL, FALSE, 0, NULL, NULL, &si, &pi ) ) {
+    printf( "CreateProcess failed (%d).\n", GetLastError() );
+    return 1;
+  }
+
+  // Wait until child process exits.
+  WaitForSingleObject( pi.hProcess, INFINITE );
+  return 0;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+void BatchProcess::add(const std::shared_ptr<Process> &process)
+{
+  mProcessList.push_back(process);
+}
+
+void BatchProcess::clear()
+{ 
+  mProcessList.clear();
+}
+
+int BatchProcess::run()
+{
+  for (const auto process : mProcessList) {
+    if (process->run())
+      return 1;
+  }
+  return 0;
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -541,7 +598,6 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
 #else
 
   auto f_aux = [&](int ini, int end) {
-    //double cyan, magenta, yellow, key;
     for (int r = ini; r < end; r++) {
       f(r);
     }
@@ -567,6 +623,7 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
 // Añadir método para ejecutar código de forma asincrona
 // std::async
 // Concurrency::task<T> (PPL)
+
 /* ---------------------------------------------------------------------------------- */
 /*                                 Medición de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
