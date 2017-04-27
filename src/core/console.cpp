@@ -469,6 +469,7 @@ bool CmdParser::hasOption(const std::string &option) const
 }
 
 /* ---------------------------------------------------------------------------------- */
+
 std::mutex mtx_prgs;
 
 bool Progress::operator()(double increment) 
@@ -479,7 +480,7 @@ bool Progress::operator()(double increment)
   int percent = I3D_ROUND_TO_INT(mProgress * mScale);
   if (percent > mPercent) {
     mPercent = percent;
-    update();
+    updateProgress();
   }
   if (mProgress == mMaximun) terminate();
   return true;
@@ -492,6 +493,7 @@ void Progress::init(double min, double max, std::string msg)
   mMsg = msg;
   restart();
   updateScale();
+  update();
 }
 
 void Progress::restart()
@@ -524,10 +526,10 @@ void Progress::initialize()
   if (onInitialize) (*onInitialize)();
 }
 
-void Progress::update() 
-{
-  if (onProgress) (*onProgress)(mPercent);
-}
+//void Progress::updateProgress() 
+//{
+//  if (onProgress) (*onProgress)(mPercent);
+//}
 
 void Progress::updateScale()
 {
@@ -543,7 +545,7 @@ void Progress::terminate()
 
 /* ---------------------------------------------------------------------------------- */
 
-void ProgressBar::update() 
+void ProgressBar::updateProgress() 
 {
   if (onProgress == NULL) {
     
@@ -598,15 +600,58 @@ void ProgressBar::update()
   }
 }
 
+void ProgressBar::update()
+{
+
+}
+
 /* ---------------------------------------------------------------------------------- */
 
-void ProgressPercent::update() 
+void ProgressPercent::updateProgress() 
 {
   if (onProgress == NULL) {
     cout << "\r";
     cout << " " << mPercent << "%  completed" << flush;
   } else
     (*onProgress)(mPercent);
+}
+
+void ProgressPercent::update()
+{
+
+}
+/* ---------------------------------------------------------------------------------- */
+
+//TODO: sacar de aqui
+
+qtProgress::qtProgress()
+  : Progress() 
+{
+}
+
+qtProgress::qtProgress(double min, double max) 
+  : Progress(min, max)
+{
+}
+
+qtProgress::~qtProgress()
+{
+}
+
+void qtProgress::updateProgress() 
+{
+  if (onProgress == NULL) {
+    //TODO: Actualizar desde aqui
+    //mProgressBar->setValue(mPercent);
+  } else
+    (*onProgress)(mPercent);
+}
+
+void qtProgress::update() 
+{
+  //TODO: Aqui se inicializan los valores de QProgressBar
+  //mProgressBar->setMaximum();
+  //mProgressBar->setMinimum();
 }
 
 } // End mamespace I3D

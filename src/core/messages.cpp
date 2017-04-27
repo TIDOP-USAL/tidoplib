@@ -332,6 +332,7 @@ _msgProperties getMessageProperties( MessageLevel msgLevel )
 //MessageLevel MessageManager::sLevel = MessageLevel::MSG_ERROR;
 //std::string MessageManager::sLastMessage = "";
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
+bool MessageManager::sStopHandler = false;
 
 std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
@@ -385,19 +386,29 @@ MessageManager &MessageManager::getInstance()
 
 void MessageManager::initExternalHandlers()
 {
-  //#ifdef HAVE_OPENCV
-  //  cv::redirectError(handleError);
-  //#endif // HAVE_OPENCV
+#ifdef HAVE_OPENCV
+  cv::redirectError(handleError);
+#endif // HAVE_OPENCV
 
-  //#ifdef HAVE_GDAL
-  //  CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
-  //#endif // HAVE_GDAL
+#ifdef HAVE_GDAL
+  CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
+#endif // HAVE_GDAL
+}
+
+void MessageManager::pause()
+{
+  sStopHandler = true;
+}
+
+void MessageManager::resume()
+{
+  sStopHandler = false;
 }
 
 void MessageManager::onDebug(const char *msg, const char *date)
 {
 #ifdef _DEBUG
-  if (!mListeners.empty()) {
+  if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgDebug(msg, date);
     }
@@ -407,7 +418,7 @@ void MessageManager::onDebug(const char *msg, const char *date)
 
 void MessageManager::onVerbose(const char *msg, const char *date) 
 {
-  if (!mListeners.empty()) {
+  if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgVerbose(msg, date);
     }
@@ -416,7 +427,7 @@ void MessageManager::onVerbose(const char *msg, const char *date)
 
 void MessageManager::onInfo(const char *msg, const char *date)
 {
-  if (!mListeners.empty()) {
+  if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgInfo(msg, date);
     }
@@ -425,7 +436,7 @@ void MessageManager::onInfo(const char *msg, const char *date)
 
 void MessageManager::onWarning(const char *msg, const char *date)
 {
-  if (!mListeners.empty()) {
+  if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgWarning(msg, date);
     }
@@ -434,7 +445,7 @@ void MessageManager::onWarning(const char *msg, const char *date)
 
 void MessageManager::onError(const char *msg, const char *date)
 {
-  if (!mListeners.empty()) {
+  if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onMsgError(msg, date);
     }
@@ -444,6 +455,9 @@ void MessageManager::onError(const char *msg, const char *date)
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
   getInstance();
+
+  if (sStopHandler) return;
+
   // Bloqueo aqui para evitar problemas entre hilos
   char date[64];
   std::time_t now = std::time(NULL);
@@ -492,6 +506,8 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 void MessageManager::release(const Message &msg)
 {
   getInstance();
+  
+  if (sStopHandler) return;
 
   std::string msg_out;
   if (msg.getLine() == -1 && msg.getFile() == "" && msg.getFunction() == "") {

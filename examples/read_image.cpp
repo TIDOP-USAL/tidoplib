@@ -64,6 +64,8 @@ int main(int argc, char** argv)
   double scale = 4.;   // 25% de escala de la resolución original 
 
   if (image.open(img.c_str()) == Status::OPEN_FAIL) exit(EXIT_FAILURE);
+
+  // saveAs() tiene que crear una copia con la libreria adecuada si tienen modo de copia
   image.saveAs(img_out.c_str());
 
   //try {    

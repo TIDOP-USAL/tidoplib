@@ -771,6 +771,9 @@ protected:
    */
   std::string mMsg;
 
+  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
+  //      crear una clase hija si hace falta
+
   /*!
    * \brief Manejador del evento que se produce cada vez que se
    * avanza una posición en la función de progreso
@@ -803,6 +806,7 @@ public:
     onInitialize = NULL;
     onTerminate = NULL;
     updateScale();
+    update();
   }
 
   /*!
@@ -818,6 +822,7 @@ public:
     onInitialize = NULL;
     onTerminate = NULL;
     updateScale();
+    update();
   }
 
   /*!
@@ -873,7 +878,12 @@ protected:
   /*!
    * \brief
    */
-  virtual void update();
+  virtual void update() = 0;
+
+  /*!
+   * \brief
+   */
+  virtual void updateProgress() = 0;
 
   /*!
    * \brief updateScale
@@ -938,6 +948,8 @@ private:
   /*!
    * \brief Actualiza la barra de progreso
    */
+  void updateProgress() override;
+
   void update() override;
 };
 
@@ -981,13 +993,57 @@ private:
   /*!
    * \brief Actualiza la barra de progreso
    */
+  void updateProgress() override;
+
   void update() override;
 };
+
+
+//TODO: sacar de aqui
+
+class I3D_EXPORT qtProgress : public Progress
+{
+
+private:
+  
+  //QProgressBar *mProgressBar
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  qtProgress();
+
+  /*!
+   * \brief Constructora
+   * \param min Valor mínimo
+   * \param max Valor máximo
+   */
+  qtProgress(double min, double max);
+    
+
+  /*!
+   * \brief Destructora
+   */
+  ~qtProgress();
+
+private:
+
+  /*!
+   * \brief Actualiza la barra de progreso
+   */
+  void updateProgress() override;
+
+  void update() override;
+};
+
 
 /*! \} */ // end of Console
 
 /*! \} */ // end of utilities
 
 } // End namespace I3D
+
 
 #endif // I3D_CONSOLE_H

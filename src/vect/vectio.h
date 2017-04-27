@@ -28,6 +28,12 @@ class GPolygon;
 class GMultiPoint;
 class GMultiLineString;
 class GMultiPolygon;
+class GraphicStyle;
+class GData;
+class StylePen;
+class StyleBrush;
+class StyleSymbol;
+class StyleLabel;
 }
 
 class OGRFeature;
@@ -37,6 +43,11 @@ class OGRPolygon;
 class OGRMultiPoint;
 class OGRMultiLineString;
 class OGRMultiPolygon;
+class OGRStyleMgr;
+class OGRStylePen;
+class OGRStyleBrush;
+class OGRStyleSymbol;
+class OGRStyleLabel;
 
 namespace I3D
 {
@@ -163,6 +174,12 @@ private:
   void readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMultiPoint);
   void readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMultiLineString *gMultiLineString);
   void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygon *gMultiPolygon);
+  void readStyles(OGRStyleMgr *ogrStyle, GraphicStyle *gStyle);
+  void readStylePen(OGRStylePen *ogrStylePen, GraphicStyle *gStyle);
+  void readStyleBrush(OGRStyleBrush *ogrStyleBrush, GraphicStyle *gStyle);
+  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, GraphicStyle *gStyle);
+  void readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gStyle);
+  //void readData();
   void update();
 
 };
@@ -206,6 +223,7 @@ public:
   Status open(const char *file, Mode mode = Mode::Read);
 
   Status create();
+  Status createCopy();
   Status read();
   Status write();
   int getLayersCount() const;

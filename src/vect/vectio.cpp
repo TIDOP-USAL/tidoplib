@@ -114,22 +114,32 @@ void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
     layer->setName(layerName);
     if (OGRGeometry *pGeometry = pFeature->GetGeometryRef()) {
       std::shared_ptr<GraphicEntity> entity;
-      readEntity(pGeometry, entity);
-      layer->add(entity);
+      OGRStyleMgr *ogrStyleMgr;
+      try {
+        readEntity(pGeometry, entity);
+        ogrStyleMgr = new OGRStyleMgr();
+        ogrStyleMgr->GetStyleString(pFeature);
+        readStyles(ogrStyleMgr, entity.get());
+        //readData()
+        layer->add(entity);
+
+      } catch (std::exception &e) {
+        msgError(e.what());
+      }
+      delete ogrStyleMgr, ogrStyleMgr = 0;
+
           //GVE_Base *gent;
           //gent = ReadOgrGeometry( poGeometry, ly );
           //if ( gent ) {
             //// Estilos
             //GVE_Style gs;
-            OGRStyleMgr *pStyleMgr = new OGRStyleMgr();
-            pStyleMgr->GetStyleString(pFeature);
             //ReadOgrStyles( poStyleMgr, &gs );
             //gent->SetStyles( &gs );
             // Atributos
             //CSL_SetStr sat;
             //ReadOgrFeatureVal( poFeature, &sat );
             //gent->SetAttributes( &sat );
-            delete pStyleMgr, pStyleMgr = 0;
+            
           //} else {
           //  // Salida a fichero log con errores.  GDAL en OpenCv lo envía a cout
           //}
@@ -235,6 +245,64 @@ void GdalVector::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygo
 
 }
 
+void GdalVector::readStyles(OGRStyleMgr *ogrStyle, GraphicStyle *gStyle)
+{
+  OGRStyleTool *ogrStyleTool = NULL;
+  for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
+    if (ogrStyleTool = ogrStyle->GetPart(i)) {
+      OGRSTClassId oci = ogrStyleTool->GetType();
+      switch (oci) {
+      case OGRSTCPen:
+        readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool), gStyle);
+        break;
+      case OGRSTCBrush:
+        readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool), gStyle);
+        break;
+      case OGRSTCSymbol:
+        readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool), gStyle);
+        break;
+      case OGRSTCLabel:
+        readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool), gStyle);
+        break;
+      case OGRSTCVector:
+
+        break;
+      default:
+        break;
+      }
+    }
+  }
+}
+
+void GdalVector::readStylePen(OGRStylePen *ogrStylePen, GraphicStyle *gStyle)
+{
+  GBool bDefault = false;
+  std::shared_ptr<StylePen> stylePen = std::make_shared<StylePen>();
+  const char *hexColor = ogrStylePen->Color(bDefault);
+  if (!bDefault) stylePen->setPenColor(Color(hexColor));
+
+  gStyle->setStylePen(stylePen);
+}
+
+void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, GraphicStyle *gStyle)
+{
+  std::shared_ptr<StyleBrush> styleBrush = std::make_shared<StyleBrush>();
+  gStyle->setStyleBrush(styleBrush);
+}
+
+void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, GraphicStyle *gStyle)
+{
+  std::shared_ptr<StyleSymbol> styleSymbol = std::make_shared<StyleSymbol>();
+  gStyle->setStyleSymbol(styleSymbol);
+}
+
+void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gStyle)
+{
+  std::shared_ptr<StyleLabel> styleLabel = std::make_shared<StyleLabel>();
+  gStyle->setStyleLabel(styleLabel);
+}
+
+
 int GdalVector::write(VectorGraphics *vector) 
 {
   return 1;
@@ -311,6 +379,11 @@ Status VectorGraphics::open(const char *file, Mode mode)
 }
 
 Status VectorGraphics::create()
+{
+  return Status::FAILURE;
+}
+
+Status VectorGraphics::createCopy()
 {
   return Status::FAILURE;
 }
