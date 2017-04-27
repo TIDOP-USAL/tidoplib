@@ -20,7 +20,7 @@
 #include "img_process/img_processing.h"
 #include "img_process/filters.h"
 #include "transform.h"
-#include "experimental/experimental.h"
+#include "graphic_entities/linealgorithms.h"
 
 using namespace I3D;
 using namespace I3D::EXPERIMENTAL;

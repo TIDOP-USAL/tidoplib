@@ -116,7 +116,7 @@ public:
 
 
 
-class VrtRaster
+class I3D_EXPORT VrtRaster
 {
 protected:
   
@@ -316,7 +316,7 @@ public:
 /*!
  * \brief Ficheros imagen que son gestionados por GDAL
  */
-class GdalRaster : public VrtRaster
+class I3D_EXPORT GdalRaster : public VrtRaster
 {
 
 protected:
@@ -614,7 +614,7 @@ public:
 
 
 // http://www.libraw.org/node/2165
-class RawImage : public VrtRaster
+class I3D_EXPORT RawImage : public VrtRaster
 {
 private:
 

@@ -147,8 +147,8 @@
     <ClCompile Include="vect\vectio.cpp">
       <Filter>Archivos de código fuente\vect</Filter>
     </ClCompile>
-    <ClCompile Include="VrtFormatptions.cpp">
-      <Filter>Archivos de código fuente</Filter>
+    <ClCompile Include="graphic_entities\linealgorithms.cpp">
+      <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -251,8 +251,8 @@
     <ClInclude Include="vect\vectio.h">
       <Filter>Archivos de encabezado\vect</Filter>
     </ClInclude>
-    <ClInclude Include="VrtFormatptions.h">
-      <Filter>Archivos de encabezado</Filter>
+    <ClInclude Include="graphic_entities\linealgorithms.h">
+      <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -275,7 +275,7 @@ public:
    * el gestor de mensajes
    *
    * Las clases que implementen este listener y se subcriban al gestor de
-   * mensajes mediante el método addListener() recibiran las diferentes 
+   * mensajes mediante el método addListener() recibiran los diferentes 
    * mensajes (Depuración, error, etc) que se emitan desde la librería.
    */
   class Listener

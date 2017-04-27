@@ -118,7 +118,6 @@
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="vect\vectio.cpp" />
     <ClCompile Include="videostream.cpp" />
-    <ClCompile Include="VrtFormatptions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\config.h" />
@@ -155,7 +154,6 @@
     <ClInclude Include="transform.h" />
     <ClInclude Include="vect\vectio.h" />
     <ClInclude Include="videostream.h" />
-    <ClInclude Include="VrtFormatptions.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
