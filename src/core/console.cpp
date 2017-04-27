@@ -225,6 +225,8 @@ void Console::printErrorMessage(const char *msg)
   reset();
 }
 
+I3D_DISABLE_WARNING(4100)
+
 void Console::onMsgDebug(const char *msg, const char *date)
 {
   if (sLevel <= MessageLevel::MSG_DEBUG) {
@@ -261,6 +263,8 @@ void Console::onMsgError(const char *msg, const char *date)
     printErrorMessage(msg);
   }
 }
+
+I3D_ENABLE_WARNING(4100)
 
 #ifdef WIN32
 void Console::init(DWORD handle) 

@@ -432,7 +432,7 @@ I3D_EXPORT inline double distantePointToPlane(const Point_t &pt, const std::arra
 {
   double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];
   double normal = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
-  if ( normal == 0. ) throw std::runtime_errorr( "3 puntos alineados" );
+  if ( normal == 0. ) throw std::runtime_error( "3 puntos alineados" );
   return(num / normal);
 }
 
