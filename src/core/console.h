@@ -806,7 +806,6 @@ public:
     onInitialize = NULL;
     onTerminate = NULL;
     updateScale();
-    update();
   }
 
   /*!
@@ -822,7 +821,6 @@ public:
     onInitialize = NULL;
     onTerminate = NULL;
     updateScale();
-    update();
   }
 
   /*!
@@ -843,7 +841,7 @@ public:
    * \param[in] max Valor máximo
    * \param[in] msg Mensaje opcional con información del proceso.
    */
-  void init(double min, double max, std::string msg = "");
+  virtual void init(double min, double max, std::string msg = "");
 
   /*!
    * \brief Restablece los valores al inicio
@@ -878,11 +876,6 @@ protected:
   /*!
    * \brief
    */
-  virtual void update() = 0;
-
-  /*!
-   * \brief
-   */
   virtual void updateProgress() = 0;
 
   /*!
@@ -893,7 +886,7 @@ protected:
   /*!
    * \brief terminate
    */
-  void terminate();
+  virtual void terminate() = 0;
 };
 
 
@@ -950,7 +943,10 @@ private:
    */
   void updateProgress() override;
 
-  void update() override;
+  /*!
+   * \brief terminate
+   */
+  void terminate() override;
 };
 
 /*!
@@ -995,49 +991,11 @@ private:
    */
   void updateProgress() override;
 
-  void update() override;
+  /*!
+   * \brief terminate
+   */
+  void terminate() override;
 };
-
-
-//TODO: sacar de aqui
-
-class I3D_EXPORT qtProgress : public Progress
-{
-
-private:
-  
-  //QProgressBar *mProgressBar
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  qtProgress();
-
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   */
-  qtProgress(double min, double max);
-    
-
-  /*!
-   * \brief Destructora
-   */
-  ~qtProgress();
-
-private:
-
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
-
-  void update() override;
-};
-
 
 /*! \} */ // end of Console
 

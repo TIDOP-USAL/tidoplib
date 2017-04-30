@@ -310,6 +310,9 @@ public:
 
   virtual int run() = 0;
 
+  // pause() ??
+  // stop() ??
+
 private:
 
 };
@@ -349,7 +352,7 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  BatchProcess(){}
+  BatchProcess();
 
   /*!
    * \brief Constructor de copia
@@ -366,7 +369,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~BatchProcess() {}
+  ~BatchProcess();
 
   /*!
    * \brief Añade un nuevo proceso a la lista
@@ -383,7 +386,6 @@ public:
    * \brief Corre los procesos
    */
   int run();
-
 };
 
 
