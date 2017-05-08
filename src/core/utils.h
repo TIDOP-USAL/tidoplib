@@ -665,9 +665,11 @@ I3D_EXPORT inline std::vector<int> sortIdx(const std::vector<T> &v)
 
 #ifdef HAVE_OPENCV
 
+
 /* ---------------------------------------------------------------------------------- */
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
+
 I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
 I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
@@ -675,6 +677,7 @@ I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
 I3D_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 
 #endif // HAVE_OPENCV
+
 
 /* ---------------------------------------------------------------------------------- */
 /*                         Concurrencia, hilos y multiproceso                         */
@@ -693,6 +696,9 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads();
  */
 I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                                Medición de tiempo                                  */
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -769,27 +775,27 @@ public:
   ~Chrono();
 
   /*!
-   * \brief
+   * \brief Pausa el cronometro
    */
   uint64_t pause();
 
   /*!
-   * \brief
+   * \brief Reinicio del cronometro
    */
   void reset();
 
   /*!
-   * \brief
+   * \brief Continua corriendo el cronometro cuando estaba pausado
    */
   void resume();
 
   /*!
-   * \brief
+   * \brief Arranca el cronometro
    */
   uint64_t run();
 
   /*!
-   * \brief
+   * \brief Detiene el cronometro
    */
   uint64_t stop();
 
@@ -798,6 +804,70 @@ public:
 private:
 
 };
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                               Plantillas html y xml                                */
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase virtual para la sustitución de etiquetas en textos, ficheros html o xml.
+ */
+class VrtTemplate
+{
+
+private:
+  
+  /*!
+   * \brief Texto con las etiquetas de reemplazo
+   */
+  std::string mText;
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  VrtTemplate();
+
+  /*!
+   * \brief Constructora
+   */
+  VrtTemplate(const char *file);
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~VrtTemplate();
+
+  /*!
+   * \brief Lee un fichero plantilla
+   * \param[in] file Fichero plantilla
+   * \return
+   */
+  virtual int read(const char *file) = 0;
+
+  /*!
+   * \brief Establece la plantilla
+   * \param[in] templ Texto con la plantilla
+   * \return
+   */
+  virtual int setTemplate(const char *templ) = 0;
+
+  /*!
+   * \brief Remplaza todas las ocurrencias de las etiquetas
+   * de plantilla
+   * \param[out] output Texto con las etiquetas sustituidas
+   * \return
+   */
+  virtual int replace(std::string *output) = 0;
+
+};
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
 
 } // End namespace I3D
 

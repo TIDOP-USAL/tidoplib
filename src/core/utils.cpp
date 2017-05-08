@@ -714,5 +714,25 @@ void Chrono::setMessage(const char *msg)
   mMessage = msg;
 }
 
+
 /* ---------------------------------------------------------------------------------- */
+
+VrtTemplate::VrtTemplate() : mText("")
+{
+}
+
+VrtTemplate::VrtTemplate(const char *file) : mText("")
+{
+  read(file);
+}
+
+VrtTemplate::~VrtTemplate()
+{
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
 } // End namespace I3D
