@@ -28,7 +28,7 @@
 
 // Parallel Patterns Library
 // https://msdn.microsoft.com/es-es/library/dd492418.aspx
-#define HAVE_PPL
+#undef HAVE_PPL
 
 // Manejo de errores como log y/o mensajes de consola
 

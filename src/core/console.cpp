@@ -493,7 +493,6 @@ void Progress::init(double min, double max, std::string msg)
   mMsg = msg;
   restart();
   updateScale();
-  update();
 }
 
 void Progress::restart()
@@ -536,11 +535,11 @@ void Progress::updateScale()
   mScale = 100./(mMaximun - mMinimun);
 }
 
-void Progress::terminate()
-{
-  printf("\n");
-  if (onTerminate) (*onTerminate)();
-}
+//void Progress::terminate()
+//{
+//  printf("\n");
+//  if (onTerminate) (*onTerminate)();
+//}
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -600,9 +599,12 @@ void ProgressBar::updateProgress()
   }
 }
 
-void ProgressBar::update()
+void ProgressBar::terminate()
 {
-
+  if (onTerminate == NULL)
+    printf("\n");
+  else 
+    (*onTerminate)();
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -616,42 +618,14 @@ void ProgressPercent::updateProgress()
     (*onProgress)(mPercent);
 }
 
-void ProgressPercent::update()
+void ProgressPercent::terminate()
 {
-
+  if (onTerminate == NULL)
+    printf("\n");
+  else 
+    (*onTerminate)();
 }
+
 /* ---------------------------------------------------------------------------------- */
-
-//TODO: sacar de aqui
-
-qtProgress::qtProgress()
-  : Progress() 
-{
-}
-
-qtProgress::qtProgress(double min, double max) 
-  : Progress(min, max)
-{
-}
-
-qtProgress::~qtProgress()
-{
-}
-
-void qtProgress::updateProgress() 
-{
-  if (onProgress == NULL) {
-    //TODO: Actualizar desde aqui
-    //mProgressBar->setValue(mPercent);
-  } else
-    (*onProgress)(mPercent);
-}
-
-void qtProgress::update() 
-{
-  //TODO: Aqui se inicializan los valores de QProgressBar
-  //mProgressBar->setMaximum();
-  //mProgressBar->setMinimum();
-}
 
 } // End mamespace I3D

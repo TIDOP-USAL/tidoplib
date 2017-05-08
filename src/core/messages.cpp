@@ -634,6 +634,7 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
 std::unique_ptr<Log> Log::sObjLog;
 std::string Log::sLogFile = "";
 MessageLevel Log::sLevel = MessageLevel::MSG_ERROR;
+std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
 void Log::setLogFile(const char* file)
@@ -660,9 +661,9 @@ void Log::write(const char *msg)
   char date[64];
   std::time_t now = std::time(NULL);
   std::tm *_tm = std::localtime(&now);
-  
   if (_tm) {
-    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
+    //std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
+    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), _tm);
   } else {
     strcpy(date, "NULL");
   }

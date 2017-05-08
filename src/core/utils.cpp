@@ -379,6 +379,16 @@ int CmdProcess::run()
 
 /* ---------------------------------------------------------------------------------- */
 
+BatchProcess::BatchProcess() 
+{
+
+}
+
+BatchProcess::~BatchProcess()
+{
+
+}
+
 void BatchProcess::add(const std::shared_ptr<Process> &process)
 {
   mProcessList.push_back(process);

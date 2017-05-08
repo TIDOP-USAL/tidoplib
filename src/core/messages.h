@@ -577,17 +577,17 @@ protected:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgVerbose(...)  MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgInfo(...)     MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgWarning(...)  MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgError(...)    MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgDebug(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgVerbose(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_VERBOSE, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgInfo(...)     I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgWarning(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgError(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
 #else
-#  define msgDebug(...)    MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_DEBUG);
-#  define msgVerbose(...)  MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_VERBOSE);
-#  define msgInfo(...)     MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_INFO);
-#  define msgWarning(...)  MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_WARNING);
-#  define msgError(...)    MessageManager::release(MessageManager::Message(__VA_ARGS__).getMessage(), MessageLevel::MSG_ERROR);
+#  define msgDebug(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_DEBUG);
+#  define msgVerbose(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_VERBOSE);
+#  define msgInfo(...)     I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_INFO);
+#  define msgWarning(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_WARNING);
+#  define msgError(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_ERROR);
 #endif
 
 /*! \} */ // end of Messages
@@ -674,7 +674,6 @@ public:
   /*!
    * \brief Escribe una linea en el log
    * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
    */
   void write(const char *msg);
 
