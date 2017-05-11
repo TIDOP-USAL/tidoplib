@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include "core/messages.h"
+#include "core/console.h"
 
 #if defined WIN32
 #include <windows.h>
@@ -360,14 +361,14 @@ CmdProcess::~CmdProcess()
   CloseHandle( pi.hThread );
 }
 
-int CmdProcess::run()
+int CmdProcess::run(Progress *progressBar)
 {
   size_t len = strlen(mCmd.c_str());
   std::wstring wCmdLine(len, L'#');
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
   if ( !CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL, 
-                      NULL, FALSE, 0, NULL, NULL, &si, &pi ) ) {
+                      NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi ) ) {
     printf( "CreateProcess failed (%d).\n", GetLastError() );
     return 1;
   }
@@ -399,11 +400,15 @@ void BatchProcess::clear()
   mProcessList.clear();
 }
 
-int BatchProcess::run()
+int BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
 {
+  if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
   for (const auto process : mProcessList) {
     if (process->run())
       return 1;
+    else {
+      if (progressBarTotal) (*progressBarTotal)();
+    }
   }
   return 0;
 }

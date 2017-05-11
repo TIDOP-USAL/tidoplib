@@ -333,6 +333,7 @@ _msgProperties getMessageProperties( MessageLevel msgLevel )
 //std::string MessageManager::sLastMessage = "";
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 bool MessageManager::sStopHandler = false;
+std::mutex MessageManager::sMutex;
 
 std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
@@ -459,6 +460,7 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   if (sStopHandler) return;
 
   // Bloqueo aqui para evitar problemas entre hilos
+  std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   char date[64];
   std::time_t now = std::time(NULL);
   std::tm *_tm = std::localtime(&now);
@@ -471,12 +473,12 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
   char buf[1000];
   #if defined _MSC_VER
-    if (line != -1)
+    if (line == -1)
       sprintf_s(buf, 1000, getMessageProperties(level).normal, msg, file, line, function);
     else
       sprintf_s(buf, 1000, getMessageProperties(level).extend, msg, file, line, function);
   #else
-    if (line != -1)
+    if (line == -1)
       snprintf(buf, 1000, getMessageProperties(level).normal, msg, file, line, function);
     else
       snprintf(buf, 1000, getMessageProperties(level).extend, msg, file, line, function);
@@ -509,6 +511,7 @@ void MessageManager::release(const Message &msg)
   
   if (sStopHandler) return;
 
+  std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   std::string msg_out;
   if (msg.getLine() == -1 && msg.getFile() == "" && msg.getFunction() == "") {
     msg_out = msg.getMessage();

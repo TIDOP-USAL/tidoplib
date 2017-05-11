@@ -354,6 +354,9 @@ int GdalRaster::write(const cv::Mat &image, const WindowI &w)
 
 int GdalRaster::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
 {
+  //TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
+  //anteriormente a create y asignar los valores correctos.
+  // De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
   if (pDataset == NULL) return 1;
   //if (!image.isContinuous()) image = image.clone();
   //uchar *buff = image.ptr();

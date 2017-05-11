@@ -19,6 +19,8 @@
 namespace I3D
 {
 
+class Progress;
+
 /*!
  * \defgroup utilities Utilidades
  *
@@ -308,7 +310,7 @@ public:
   Process() {}
   ~Process() {}
 
-  virtual int run() = 0;
+  virtual int run(Progress *progressBar = NULL) = 0;
 
   // pause() ??
   // stop() ??
@@ -331,7 +333,7 @@ public:
   CmdProcess(const std::string &cmd);
   ~CmdProcess();
 
-  virtual int run() override;
+  virtual int run(Progress *progressBar = NULL) override;
 
 private:
 
@@ -384,8 +386,10 @@ public:
 
   /*!
    * \brief Corre los procesos
+   * \param[in] progressBarTotal Barra de progreso total
+   * \param[in] progressBarPartial Barra de progreso parcial
    */
-  int run();
+  int run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
 };
 
 
