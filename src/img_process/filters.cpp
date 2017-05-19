@@ -9,6 +9,15 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
+BilateralFilter::BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType)
+  : ImgProcessing(process_type::BILATERAL), 
+    mDiameter(diameter), 
+    mSigmaColor(sigmaColor), 
+    mSigmaSpace(sigmaSpace), 
+    mBorderType(borderType) 
+{
+}
+
 ImgProcessing::Status BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
@@ -32,6 +41,14 @@ void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigm
 
 /* ---------------------------------------------------------------------------------- */
 
+Blur::Blur(cv::Size ksize, cv::Point anchor, int borderType)
+  : ImgProcessing(process_type::BLUR), 
+    mKernelSize(ksize), 
+    mAnchor(anchor), 
+    mBorderType(borderType) 
+{
+}
+
 ImgProcessing::Status Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
@@ -52,6 +69,16 @@ void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+BoxFilter::BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
+  : ImgProcessing(process_type::BOX_FILTER), 
+    mDepth(ddepth), 
+    mKernelSize(ksize), 
+    mAnchor(anchor), 
+    mNormalize(normalize), 
+    mBorderType(borderType) 
+{
+}
 
 ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
@@ -76,6 +103,17 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
+Filter2D::Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
+  : ImgProcessing(process_type::FILTER_2D), 
+    mDepth(ddepth), 
+    mKernel(kernel), 
+    mAnchor(anchor), 
+    mDelta(delta), 
+    mBorderType(borderType) 
+{
+}
+
+
 ImgProcessing::Status Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
@@ -99,6 +137,15 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 
 /* ---------------------------------------------------------------------------------- */
 
+GaussianBlur::GaussianBlur(cv::Size size, double sigmaX, double sigmaY, int borderType)
+  : ImgProcessing(process_type::GAUSSIAN_BLUR), 
+    mKernelSize(size), 
+    mSigmaX(sigmaX), 
+    mSigmaY(sigmaY), 
+    mBorderType(borderType) 
+{
+}
+
 ImgProcessing::Status GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
@@ -120,6 +167,16 @@ void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, in
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+Laplacian::Laplacian(int ddepth, int ksize, double scale , double delta, int bordertype)
+  : ImgProcessing(process_type::LAPLACIAN), 
+    mDepth(ddepth), 
+    mKernelsize(ksize), 
+    mScale(scale), 
+    mDelta(delta), 
+    mBorderType(bordertype) 
+{
+}
 
 ImgProcessing::Status Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
@@ -144,6 +201,12 @@ void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta,
 
 /* ---------------------------------------------------------------------------------- */
 
+MedianBlur::MedianBlur(int ksize)
+  : ImgProcessing(process_type::MEDIAN_BLUR), 
+    mKernelSize(ksize) 
+{
+}
+
 ImgProcessing::Status MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
@@ -162,6 +225,21 @@ void MedianBlur::setParameters(int ksize)
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+Sobel::Sobel(int dx, int dy, int ksize, double scale, double delta,
+             int ddepth, double thresh, double maxval, int bordertype)
+  : ImgProcessing(process_type::SOBEL),
+    mDx(dx), 
+    mDy(dy), 
+    mKernelSize(ksize), 
+    mScale(scale), 
+    mDelta(delta), 
+    mDepth(ddepth),
+    mThresh(thresh), 
+    mMaxVal(maxval), 
+    mBorderType(bordertype) 
+{
+}
 
 ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
@@ -193,6 +271,13 @@ void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta,
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+Canny::Canny(double threshold1, double threshold2)
+  : ImgProcessing(process_type::CANNY), 
+    mThreshold1(threshold1), 
+    mThreshold2(threshold2) 
+{
+}
 
 ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {

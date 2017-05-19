@@ -76,7 +76,7 @@ LD_TYPE ls = LD_TYPE::HOUGHP;
 int main(int argc, char *argv[])
 {
 
-  int ipto = 1; //Punto que queremos seguir
+  int ipto = 0; //Punto que queremos seguir
   const char *imgpath = "D:\\Desarrollo\\datos\\capturas_deteccion_conductores\\";
 
   static const char *img[] = {

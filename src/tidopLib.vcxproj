@@ -64,7 +64,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\CURL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -81,7 +81,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\CURL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -93,12 +93,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\console.cpp" />
-    <ClCompile Include="core\datamodel.cpp" />
     <ClCompile Include="core\exception.cpp" />
     <ClCompile Include="core\mathutils.cpp" />
     <ClCompile Include="core\messages.cpp" />
     <ClCompile Include="core\utils.cpp" />
-    <ClCompile Include="experimental\experimental.cpp" />
     <ClCompile Include="feature_detection\linedetector.cpp" />
     <ClCompile Include="feature_detection\shapedetection.cpp" />
     <ClCompile Include="fourier.cpp" />
@@ -122,14 +120,12 @@
   <ItemGroup>
     <ClInclude Include="core\config.h" />
     <ClInclude Include="core\console.h" />
-    <ClInclude Include="core\datamodel.h" />
     <ClInclude Include="core\defs.h" />
     <ClInclude Include="core\exception.h" />
     <ClInclude Include="core\flags.h" />
     <ClInclude Include="core\mathutils.h" />
     <ClInclude Include="core\messages.h" />
     <ClInclude Include="core\utils.h" />
-    <ClInclude Include="experimental\experimental.h" />
     <ClInclude Include="feature_detection\linedetector.h" />
     <ClInclude Include="feature_detection\shapedetection.h" />
     <ClInclude Include="fourier.h" />

@@ -23,11 +23,10 @@ struct msgProperties {
 };
 
 struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
+  { "Debug: %s",   "Debug: %s (%s:%u, %s)",   Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Info: %s",    "Info: %s (%s:%u, %s)",    Console::Color::WHITE, Console::Intensity::BRIGHT},
   { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
-  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
+  { "Error: %s",   "Error: %s (%s:%u, %s)",   Console::Color::RED, Console::Intensity::BRIGHT}
 };
 
 msgProperties getMessageProperties( MessageLevel msgLevel ) 
@@ -36,7 +35,8 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 }
 
 
-MessageLevel Console::sLevel = MessageLevel::MSG_ERROR;
+
+EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
 
 Console::Console() 
 { 
@@ -215,13 +215,8 @@ void Console::printMessage(const char *msg)
 
 void Console::printErrorMessage(const char *msg)
 {
-  // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
-
-  setConsoleForegroundColor(Console::Color::RED, Console::Intensity::BRIGHT);
-  std::string aux(msg);
-  I3D::replaceString(&aux, "%", "%%");
-  printf_s("%s\n", aux.c_str());
+  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, getMessageProperties(MessageLevel::MSG_ERROR).intensity);
+  printMessage(msg);
   reset();
 }
 
@@ -229,37 +224,34 @@ I3D_DISABLE_WARNING(4100)
 
 void Console::onMsgDebug(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_DEBUG) {
+  if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_DEBUG).foreColor, getMessageProperties(MessageLevel::MSG_DEBUG).intensity);
     printMessage(msg);
-  }
-}
-
-void Console::onMsgVerbose(const char *msg, const char *date)
-{
-  if (sLevel <= MessageLevel::MSG_VERBOSE) {
-    printMessage(msg);
+    reset();
   }
 }
 
 void Console::onMsgInfo(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_INFO) {
+  if (sLevel.isActive(MessageLevel::MSG_INFO)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_INFO).foreColor, getMessageProperties(MessageLevel::MSG_INFO).intensity);
     printMessage(msg);
+    reset();
   }
 }
 
 void Console::onMsgWarning(const char *msg, const char *date)
 {
-  setConsoleForegroundColor(Console::Color::YELLOW, Console::Intensity::BRIGHT);
-  if (sLevel <= MessageLevel::MSG_WARNING) {
+  if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_WARNING).foreColor, getMessageProperties(MessageLevel::MSG_WARNING).intensity);
     printMessage(msg);
+    reset();
   }
-  reset();
 }
 
 void Console::onMsgError(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_ERROR) {
+  if (sLevel.isActive(MessageLevel::MSG_ERROR)) {
     printErrorMessage(msg);
   }
 }

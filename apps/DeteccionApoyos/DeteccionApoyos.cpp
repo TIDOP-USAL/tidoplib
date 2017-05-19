@@ -345,11 +345,11 @@ int main(int argc, char** argv)
   char logfile[I3D_MAX_PATH];
   sprintf(logfile, "%s//%s.log", out_path.c_str(), name );
   log.setLogFile(logfile);
-  log.setLogLevel(MessageLevel::MSG_INFO);
+  log.setLogLevel(MessageLevel::MSG_VERBOSE);
 
   // Consola
   Console console;
-  console.setLogLevel(MessageLevel::MSG_INFO);
+  console.setLogLevel(MessageLevel::MSG_INFO | MessageLevel::MSG_ERROR);
   console.setConsoleUnicode();
 
   // Configuración de mensajes

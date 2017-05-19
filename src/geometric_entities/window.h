@@ -158,14 +158,14 @@ public:
    * \param[in] sxx Ancho de la ventana
    * \param[in] szy Alto de la ventana
    */
-  Window(Point<T> &pt, T sxx, T szy);
+  Window(const Point<T> &pt, T sxx, T szy);
 
   /*!
    * \brief Constructor Window
    * \param[in] pt Punto central
    * \param[in] sz Alto y ancho de la ventana
    */
-  Window(Point<T> &pt, T sz);
+  Window(const Point<T> &pt, T sz);
 
   /*!
    * \brief Constructor Window
@@ -270,7 +270,7 @@ Window<T>::Window(const Point<T> &_pt1, const Point<T> &_pt2)
 }
 
 template<typename T> inline
-Window<T>::Window(Point<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
+Window<T>::Window(const Point<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
 { 
   if (typeid(T) == typeid(int)) {
     // Prefiero hacer la conversión a entero para evitar que OpenCV 
@@ -291,7 +291,7 @@ Window<T>::Window(Point<T> &_pt, T sxx, T szy) : Entity<T>(entity_type::WINDOW)
 }
 
 template<typename T> inline
-Window<T>::Window(Point<T> &_pt, T sz) 
+Window<T>::Window(const Point<T> &_pt, T sz) 
   : Entity<T>(entity_type::WINDOW)
 { 
   if (typeid(T) == typeid(int)) {

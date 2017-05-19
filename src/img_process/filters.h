@@ -65,8 +65,7 @@ public:
    * \param[in] sigmaSpace Núcleo espacial para suavizar las diferencias de coordenadas
    * \param[in] borderType
    */
-  BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType = cv::BORDER_DEFAULT)
-    : ImgProcessing(process_type::BILATERAL), mDiameter(diameter), mSigmaColor(sigmaColor), mSigmaSpace(sigmaSpace), mBorderType(borderType) {}
+  BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType = cv::BORDER_DEFAULT);
 
   /*!
    * \brief Aplica el filtro bilateral a una imagen
@@ -122,8 +121,7 @@ public:
    * \param[in] anchor Punto de anclaje
    * \param[in] borderType Tipo de borde
    */
-  Blur(cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), int borderType = cv::BORDER_DEFAULT)
-    : ImgProcessing(process_type::BLUR), mKernelSize(ksize), mAnchor(anchor), mBorderType(borderType) {}
+  Blur(cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), int borderType = cv::BORDER_DEFAULT);
 
   /*!
    * \brief Aplica el filtro de desenfoque.
@@ -186,8 +184,7 @@ public:
    * \param[in] normalize Normalizar
    * \param[in] borderType Tipo de borde
    */
-  BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), bool normalize = true, int borderType = cv::BORDER_DEFAULT)
-    : ImgProcessing(process_type::BOX_FILTER), mDepth(ddepth), mKernelSize(ksize), mAnchor(anchor), mNormalize(normalize), mBorderType(borderType) {}
+  BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), bool normalize = true, int borderType = cv::BORDER_DEFAULT);
 
   /*!
    * \brief Aplica el filtro de desenfoque.
@@ -256,8 +253,7 @@ public:
    * \param[in] delta Valor opcional añadido a los píxeles filtrados
    * \param[in] borderType Método de extrapolación
    */
-  Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT)
-    : ImgProcessing(process_type::FILTER_2D), mDepth(ddepth), mKernel(kernel), mAnchor(anchor), mDelta(delta), mBorderType(borderType) {}
+  Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
 
   /*!
    * \brief Ejecuta el proceso
@@ -318,8 +314,7 @@ public:
    * \param[in] sigmaY Desviación estándar del kernel en la dirección Y.
    * \param[in] borderType Método de extrapolación (cv::BorderTypes)
    */
-  GaussianBlur(cv::Size size, double sigmaX, double sigmaY = 0., int borderType = 4)
-    : ImgProcessing(process_type::GAUSSIAN_BLUR), mKernelSize(size), mSigmaX(sigmaX), mSigmaY(sigmaY), mBorderType(borderType) {}
+  GaussianBlur(cv::Size size, double sigmaX, double sigmaY = 0., int borderType = 4);
 
   /*!
    * \brief Ejecuta el proceso
@@ -387,8 +382,7 @@ public:
    * \param[in] delta Valor opcional añadido a los píxeles filtrados
    * \param[in] bordertype Método de extrapolación (cv::BorderTypes)
    */
-  Laplacian(int ddepth, int ksize, double scale = 1, double delta = 0, int bordertype = cv::BORDER_DEFAULT)
-    : ImgProcessing(process_type::LAPLACIAN), mDepth(ddepth), mKernelsize(ksize), mScale(scale), mDelta(delta), mBorderType(bordertype) {}
+  Laplacian(int ddepth, int ksize, double scale = 1, double delta = 0, int bordertype = cv::BORDER_DEFAULT);
 
   /*!
    * \brief Ejecuta el proceso
@@ -432,8 +426,7 @@ public:
    * \brief Constructora
    * \param ksize Tamaño del filtro
    */
-  MedianBlur(int ksize)
-    : ImgProcessing(process_type::MEDIAN_BLUR), mKernelSize(ksize) {}
+  MedianBlur(int ksize);
 
   /*!
    * \brief Ejecuta el proceso
@@ -521,10 +514,7 @@ public:
    */
   Sobel(int dx, int dy, int ksize = 3, double scale = 1., double delta = 0.,
         int ddepth = CV_16S, double thresh = 50., double maxval = 200.,
-        int bordertype = cv::BORDER_DEFAULT)
-    : ImgProcessing(process_type::SOBEL),
-    mDx(dx), mDy(dy), mKernelSize(ksize), mScale(scale), mDelta(delta), mDepth(ddepth),
-    mThresh(thresh), mMaxVal(maxval), mBorderType(bordertype) {}
+        int bordertype = cv::BORDER_DEFAULT);
 
   /*!
    * \brief Ejecuta el proceso
@@ -577,8 +567,7 @@ public:
    * \param[in] threshold1
    * \param[in] threshold2
    */
-  Canny(double threshold1 = 0.0, double threshold2 = 0.0)
-    : ImgProcessing(process_type::CANNY), mThreshold1(threshold1), mThreshold2(threshold2) {}
+  Canny(double threshold1 = 0.0, double threshold2 = 0.0);
 
   /*!
    * \brief Ejecuta el proceso
