@@ -109,7 +109,7 @@
 
 // Warning para informar que una función esta obsoleta
 // Se debe anteceder a la función obsoleta añadiendo el método que lo reemplaza;
-// DEPRECATED("Use NewFunc(int a, float b) en su lugar")
+// I3D_DEPRECATED("Use NewFunc(int a, float b) en su lugar")
 // void OldFunc(int a, float b);
 
 #if __cplusplus >= 201402L // c++ 14

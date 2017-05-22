@@ -343,9 +343,54 @@ std::string Path::toString()
 
 /* ---------------------------------------------------------------------------------- */
 
+Process::~Process() 
+{
+  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+    stop();
+  }
+  mStatus = Status::FINALIZED;
+}
 
+void Process::pause()
+{
+  mStatus = Status::PAUSE;
+}
+
+void Process::reset()
+{
+  mStatus = Status::START;
+}
+
+void Process::resume()
+{
+  if (mStatus == Status::PAUSE) {
+    mStatus = Status::RUNNING;
+  }
+}
+
+I3D_DISABLE_WARNING(4100)
+Process::Status Process::run(Progress *progressBar)
+{
+  return mStatus = Status::RUNNING;
+}
+I3D_ENABLE_WARNING(4100)
+
+void Process::stop()
+{
+  if (mStatus == Status::RUNNING) {
+    mStatus = Status::STOPPED;
+  } else if (mStatus == Status::PAUSE) {
+    mStatus = Status::STOPPED;
+  }
+}
+
+Process::Status Process::getStatus()
+{
+  return mStatus;
+}
 
 /* ---------------------------------------------------------------------------------- */
+
 
 CmdProcess::CmdProcess(const std::string &cmd) : Process(), mCmd(cmd)
 {
@@ -357,12 +402,14 @@ CmdProcess::CmdProcess(const std::string &cmd) : Process(), mCmd(cmd)
 CmdProcess::~CmdProcess()
 {
   // Se cierran procesos e hilos 
-  CloseHandle( pi.hProcess );
-  CloseHandle( pi.hThread );
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
 }
 
-int CmdProcess::run(Progress *progressBar)
+I3D_DISABLE_WARNING(4100)
+Process::Status CmdProcess::run(Progress *progressBar)
 {
+  Process::run();
   size_t len = strlen(mCmd.c_str());
   std::wstring wCmdLine(len, L'#');
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
@@ -370,24 +417,43 @@ int CmdProcess::run(Progress *progressBar)
   if ( !CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL, 
                       NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi ) ) {
     printf( "CreateProcess failed (%d).\n", GetLastError() );
-    return 1;
+    return Process::Status::FINALIZED_ERROR;
   }
 
   // Wait until child process exits.
-  WaitForSingleObject( pi.hProcess, INFINITE );
-  return 0;
+  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED)
+    return Process::Status::FINALIZED_ERROR;
+  else 
+    return Process::Status::FINALIZED;
 }
+I3D_ENABLE_WARNING(4100)
 
 /* ---------------------------------------------------------------------------------- */
 
 BatchProcess::BatchProcess() 
+  : mStatus(Status::START),
+  mProcessList(0)
 {
+}
 
+BatchProcess::BatchProcess(const BatchProcess &batchProcess) 
+  : mStatus(Status::START), 
+    mProcessList(batchProcess.mProcessList) 
+{
+}
+
+BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList) 
+  : mStatus(Status::START), 
+    mProcessList(procList) 
+{
 }
 
 BatchProcess::~BatchProcess()
 {
-
+  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+    stop();
+  }
+  mStatus = Status::FINALIZED;
 }
 
 void BatchProcess::add(const std::shared_ptr<Process> &process)
@@ -398,20 +464,58 @@ void BatchProcess::add(const std::shared_ptr<Process> &process)
 void BatchProcess::clear()
 { 
   mProcessList.clear();
+  mStatus = Status::START;
 }
 
-int BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
+void BatchProcess::pause()
 {
+  mStatus = Status::PAUSE;
+}
+
+void BatchProcess::reset()
+{
+  //TODO: Si esta corriendo no se puede hacer un reset
+  if (mStatus == Status::RUNNING) {
+    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
+  } else {
+    mStatus = Status::START;
+    mProcessList.clear();
+  }
+
+}
+
+void BatchProcess::resume()
+{
+  if (mStatus == Status::PAUSE) {
+    mStatus = Status::RUNNING;
+  }
+}
+
+BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
+{
+  mStatus = Status::RUNNING;
   if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
   for (const auto process : mProcessList) {
-    if (process->run())
-      return 1;
-    else {
-      if (progressBarTotal) (*progressBarTotal)();
+    while (mStatus == Status::PAUSE) ;
+    if (mStatus == Status::STOPPED) {
+      // Se fuerza la terminación
+      return Status::STOPPED;
+    } else {
+      if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+        return Status::FINALIZED_ERROR;
+      } else {
+        if (progressBarTotal) (*progressBarTotal)();
+      }
     }
   }
-  return 0;
+  return Status::FINALIZED;
 }
+
+void BatchProcess::stop()
+{
+  mStatus = Status::STOPPED;
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -605,7 +709,7 @@ uint32_t getOptimalNumberOfThreads()
 void parallel_for(int ini, int end, std::function<void(int)> f) {
   //uint64_t time_ini = getTickCount();
 #ifdef I3D_MSVS_CONCURRENCY
-  //Concurrency::cancellation_token_source cts;
+  Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
   //  Concurrency::parallel_for(ini, end, f);
   //},cts.get_token());
@@ -634,6 +738,7 @@ void parallel_for(int ini, int end, std::function<void(int)> f) {
   //double time = (getTickCount() - time_ini) / 1000.;
   //printf("Time %f", time);
 }
+
 
 // Añadir método para ejecutar código de forma asincrona
 // std::async
@@ -729,5 +834,90 @@ void Chrono::setMessage(const char *msg)
   mMessage = msg;
 }
 
+
 /* ---------------------------------------------------------------------------------- */
+
+int readToString(const char *file, std::string *text)
+{
+  //TODO: Forma muy sencilla para salir de paso por ahora
+  std::ifstream in(file);
+  *text = static_cast<std::stringstream const&>(std::stringstream() << in.rdbuf()).str();
+  //TODO: Por ahora se devuelve 0. Cuando se controlen los errores se devolvera 1 en caso de error
+  return 0;
+}
+
+VrtTemplate::VrtTemplate() : mText("")
+{
+}
+
+VrtTemplate::VrtTemplate(const char *text) : mText(text)
+{
+}
+
+VrtTemplate::~VrtTemplate()
+{
+}
+
+int VrtTemplate::read(const char *file)
+{
+  return readToString(file, &mText);
+}
+
+int VrtTemplate::replace(std::string *output) const
+{
+  int i_ret = 0;
+  output->append(mText);
+  size_t ini = output->find("<#");
+  size_t end;
+  while (ini!=std::string::npos)
+  {
+    end=output->find(">",ini);
+    size_t size = end-ini+1;
+    std::string tagString = output->substr(ini+2,end-(ini+2));
+    std::string replaceText;
+    replaceTag(tagString, &replaceText);
+    output->replace(ini, size, replaceText);
+    ini = output->find("<#", replaceText.size());
+  }
+  return i_ret;
+}
+
+void VrtTemplate::setTemplate(const char *templ)
+{
+  mText = templ;
+}
+
+
+HtmlTemplate::HtmlTemplate()
+  : VrtTemplate(),
+    mTagValues()
+{
+}
+
+HtmlTemplate::HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values)
+  : VrtTemplate(text),
+    mTagValues(tag_values)
+{
+
+}
+
+HtmlTemplate::~HtmlTemplate()
+{
+
+}
+
+void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) const
+{
+  std::map<std::string, std::string>::const_iterator it = mTagValues.find(tag);
+  if (it != mTagValues.end())
+    *replaceText = it->second;
+  else
+    *replaceText = "";
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
 } // End namespace I3D

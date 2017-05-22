@@ -409,7 +409,7 @@ public:
    * \param[in] option
    * \deprecated Use I3D::CmdOption::setActive en su lugar
    */
-  I3D_DEPRECATED("Use setActive(bool active) en su lugar")
+  I3D_DEPRECATED("CmdOption::setActive(bool active)")
   void setOption(bool option) { mValue = option; }
 
   /*!

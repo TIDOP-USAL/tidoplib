@@ -7,6 +7,7 @@
 #include <fstream>
 #include <functional>
 #include <memory>
+#include <map>
 
 #include "core/config.h"
 
@@ -303,17 +304,78 @@ public:
 };
 
 
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
 class Process
 {
+
+public:
+  
+  /*!
+   * \brief Estados del proceso
+   */
+  enum class Status {
+    START,             /*!< Inicio */
+    RUNNING,           /*!< Corriendo */
+    PAUSE,             /*!< Pausado */
+    STOPPED,           /*!< Detenido */
+    FINALIZED,         /*!< Finalizado */
+    FINALIZED_ERROR    /*!< Terminado con error */
+  };
+
+protected:
+
+  Status mStatus;
+
 public:
 
-  Process() {}
-  ~Process() {}
+  /*!
+   * \brief Constructora
+   */
+  Process() : mStatus(Status::START) {}
 
-  virtual int run(Progress *progressBar = NULL) = 0;
+  /*!
+   * \brief Destructora
+   */
+  virtual ~Process();
 
-  // pause() ??
-  // stop() ??
+  /*!
+   * \brief Pausa el proceso
+   */
+  virtual void pause();
+
+  /*!
+   * \brief Reinicia el proceso
+   */
+  virtual void reset();
+
+  /*!
+   * \brief Continua ejecutando el proceso
+   */
+  virtual void resume();
+
+  /*!
+   * \brief Arranca el proceso
+   * Aunque es virtual pura se define el comportamiento por defecto.
+   * Desde la implementación del método en la clase hija se debe incluir 
+   * Process::run() o establecer directamente mStatus = Status::RUNNING
+   * al inicio del método para establecer que el proceso esta corriendo.
+   */
+  virtual Status run(Progress *progressBar = NULL) = 0;
+
+  /*!
+   * \brief Detiene el proceso
+   */
+  virtual void stop();
+
+  /*!
+   * \brief Devuelve el estado actual de la ejecución 
+   */
+  Status getStatus();
 
 private:
 
@@ -333,7 +395,7 @@ public:
   CmdProcess(const std::string &cmd);
   ~CmdProcess();
 
-  virtual int run(Progress *progressBar = NULL) override;
+  virtual Process::Status run(Progress *progressBar = NULL) override;
 
 private:
 
@@ -342,7 +404,26 @@ private:
 
 class BatchProcess
 {
+public:
+
+  /*!
+   * \brief Estados de Batch
+   */
+  enum class Status {
+    START,             /*!< Inicio */
+    RUNNING,           /*!< Corriendo */
+    PAUSE,             /*!< Pausado */
+    STOPPED,           /*!< Detenido */
+    FINALIZED,         /*!< Finalizado */
+    FINALIZED_ERROR    /*!< Terminado con error */
+  };
+
 protected:
+
+  /*!
+   * \brief Estado del batch
+   */
+  Status mStatus;
 
   /*!
    * \brief Lista de procesos
@@ -360,13 +441,13 @@ public:
    * \brief Constructor de copia
    * \param[in] batchProcess Procesos que se copia
    */
-  BatchProcess(const BatchProcess &batchProcess) : mProcessList(batchProcess.mProcessList) {}
+  BatchProcess(const BatchProcess &batchProcess);
 
   /*!
    * \brief Constructor de lista
    * \param[in] Listado de procesos
    */
-  BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList) : mProcessList(procList) {}
+  BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList);
 
   /*!
    * \brief Destructora
@@ -381,15 +462,38 @@ public:
 
   /*!
    * \brief Limpia la lista de procesos
+   * \deprecated Use I3D::CmdOption::setActive en su lugar
    */
+  I3D_DEPRECATED("BatchProcess::reset()")
   void clear();
+
+  /*!
+   * \brief Pausa los procesos
+   */
+  void pause();
+
+  /*!
+   * \brief Reinicio los procesos
+   */
+  void reset();
+
+  /*!
+   * \brief Continua corriendo los procesos
+   */
+  void resume();
 
   /*!
    * \brief Corre los procesos
    * \param[in] progressBarTotal Barra de progreso total
    * \param[in] progressBarPartial Barra de progreso parcial
    */
-  int run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
+  Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
+
+  /*!
+   * \brief Detiene los procesos
+   */
+  void stop();
+
 };
 
 
@@ -671,9 +775,11 @@ I3D_EXPORT inline std::vector<int> sortIdx(const std::vector<T> &v)
 
 #ifdef HAVE_OPENCV
 
+
 /* ---------------------------------------------------------------------------------- */
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
+
 I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
 
 I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
@@ -681,6 +787,7 @@ I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
 I3D_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 
 #endif // HAVE_OPENCV
+
 
 /* ---------------------------------------------------------------------------------- */
 /*                         Concurrencia, hilos y multiproceso                         */
@@ -699,6 +806,9 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads();
  */
 I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                                Medición de tiempo                                  */
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -727,7 +837,7 @@ public:
    * \brief Posibles estados del cronómetro
    */
   enum class Status {
-    START,      /*!< Iniciado */
+    START,      /*!< Inicio */
     RUNNING,    /*!< Corriendo */
     PAUSE,      /*!< Pausado */
     STOPPED,    /*!< Detenido */
@@ -775,27 +885,27 @@ public:
   ~Chrono();
 
   /*!
-   * \brief
+   * \brief Pausa el cronometro
    */
   uint64_t pause();
 
   /*!
-   * \brief
+   * \brief Reinicio del cronometro
    */
   void reset();
 
   /*!
-   * \brief
+   * \brief Continua corriendo el cronometro cuando estaba pausado
    */
   void resume();
 
   /*!
-   * \brief
+   * \brief Arranca el cronometro
    */
   uint64_t run();
 
   /*!
-   * \brief
+   * \brief Detiene el cronometro
    */
   uint64_t stop();
 
@@ -804,6 +914,110 @@ public:
 private:
 
 };
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                               Plantillas html y xml                                */
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase virtual para la sustitución de etiquetas en textos, ficheros html o xml.
+ */
+class VrtTemplate
+{
+
+protected:
+
+  /*!
+   * \brief Texto con las etiquetas de reemplazo
+   */
+  std::string mText;
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  VrtTemplate();
+
+  /*!
+   * \brief Constructora
+   */
+  VrtTemplate(const char *text);
+
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~VrtTemplate();
+
+  /*!
+   * \brief Lee un fichero plantilla
+   * \param[in] file Fichero plantilla
+   * \return
+   */
+  virtual int read(const char *file);
+
+  /*!
+   * \brief Establece la plantilla
+   * \param[in] templ Texto con la plantilla
+   * \return
+   */
+  void setTemplate(const char *templ);
+
+  /*!
+   * \brief Remplaza todas las ocurrencias de las etiquetas
+   * de plantilla
+   * \param[out] output Texto con las etiquetas sustituidas
+   * \return
+   */
+  virtual int replace(std::string *output) const;
+
+  /*!
+   * \brief Reemplaza una etiqueta por su valor
+   * \param tag Etiqueta que se sustituye
+   * \param replaceText Texto que sustituye a la etiqueta
+   */
+  virtual void replaceTag(const std::string &tag, std::string *replaceText) const = 0;
+
+};
+
+
+class HtmlTemplate : public VrtTemplate
+{
+
+protected:
+
+  std::map<std::string, std::string> mTagValues;
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  HtmlTemplate();
+
+  /*!
+   * \brief Constructora
+   */
+  HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values);
+
+  /*!
+   * \brief Destructora
+   */
+  ~HtmlTemplate();
+
+  /*!
+   * \brief Reemplaza una etiqueta por su valor
+   * \param tag Etiqueta que se sustituye
+   * \param replaceText Texto que sustituye a la etiqueta
+   */
+  void replaceTag(const std::string &tag, std::string *replaceText) const override;
+};
+
+
+/* ---------------------------------------------------------------------------------- */
+
 
 } // End namespace I3D
 

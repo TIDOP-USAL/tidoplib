@@ -138,9 +138,6 @@
     <ClCompile Include="img_process\skeleton.cpp">
       <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
-    <ClCompile Include="core\datamodel.cpp">
-      <Filter>Archivos de código fuente\core</Filter>
-    </ClCompile>
     <ClCompile Include="img\imgio.cpp">
       <Filter>Archivos de código fuente\img</Filter>
     </ClCompile>
@@ -241,9 +238,6 @@
     </ClInclude>
     <ClInclude Include="img_process\skeleton.h">
       <Filter>Archivos de encabezado\img_process</Filter>
-    </ClInclude>
-    <ClInclude Include="core\datamodel.h">
-      <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
     <ClInclude Include="img\imgio.h">
       <Filter>Archivos de encabezado\img</Filter>

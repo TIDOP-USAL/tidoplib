@@ -1024,8 +1024,7 @@ Status RasterGraphics::open(const char *file, Mode mode)
     // Otros formatos
   }
 
-  if (mImageFormat) {
-    mImageFormat->open(file, mode);
+  if (mImageFormat && mImageFormat->open(file, mode) == 0) {
     update();
     return Status::OPEN_OK;
   } else return Status::OPEN_FAIL;
