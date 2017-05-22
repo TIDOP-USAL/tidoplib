@@ -263,6 +263,119 @@ public:
   void load(const char *fname );
 };
 
+
+
+
+
+
+
+/*!
+ * \brief Matching robusto
+ */
+class I3D_EXPORT RobustMatching {
+
+private:
+
+  /*!
+   * \brief Descriptor
+   */
+  cv::Ptr<cv::DescriptorMatcher> mDescriptorMatcher;
+
+  /*!
+   * \brief Máxima tolerancia entre el primer y segundo NN
+   */
+  float mRatio;
+
+  //std::vector<std::vector<cv::DMatch> > mMatches;
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  RobustMatching()
+  {
+    mDescriptorMatcher = cv::makePtr<cv::BFMatcher>((int)cv::NORM_HAMMING, false);
+    mRatio = 0.8f;
+  }
+
+  /*!
+   * \brief Constructora
+   */
+  RobustMatching( const cv::Ptr<cv::DescriptorMatcher> &dm) : mDescriptorMatcher(dm)
+  {
+    mRatio = 0.8f;
+  }
+
+  /*!
+   * \brief destructora
+   */
+  virtual ~RobustMatching() {}
+
+  /*!
+   * \brief Establece el matcher
+   * \param[in] matcher 
+   */
+  void setDescriptorMatcher(const cv::Ptr<cv::DescriptorMatcher> &matcher) {  mDescriptorMatcher = matcher; }
+
+  /*!
+   * \brief Establece el valor de ratio para el test
+   * \param[in] ratio 
+   */
+  void setRatio( float ratio) { mRatio = ratio; }
+
+  // Clear matches for which NN ratio is > than threshold
+  // return the number of removed points
+  // (corresponding entries being cleared,
+  // i.e. size will be 0)
+  /*!
+   * \brief 
+   * \param[in] matches 
+   */
+  int ratioTest(std::vector<std::vector<cv::DMatch> > &matches);
+
+  /*!
+   * \brief test de simetría
+   * Busqueda de matches simétricos
+   * \param[in] matches1 
+   * \param[in] matches2 
+   * \param[out] symMatches 
+   */
+  void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches1,
+                     const std::vector<std::vector<cv::DMatch> >& matches2,
+                     std::vector<cv::DMatch>& symMatches );
+
+  /*!
+   * \brief test de simetría
+   * Busqueda de matches simétricos
+   * \param[in] matches
+   * \param[out] symMatches 
+   */
+  void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches, std::vector<std::vector<cv::DMatch>> *symMatches );
+
+  /*!
+   * \brief Matching robusto
+   * 
+   * \param[in] descriptor1
+   * \param[in] descriptor2
+   * \param[out] pMatches12 
+   * \param[out] pMatches21 
+   */
+  void robustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches12,  std::vector<std::vector<cv::DMatch>> *pMatches21);
+
+  /*!
+   * \brief Matching robusto
+   * 
+   * \param[in] descriptor1
+   * \param[in] descriptor2
+   * \param[out] pMatches
+   */
+  void fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches);
+};
+
+
+
+
 } // End namespace I3D
 
 #endif

@@ -397,20 +397,39 @@ bool ImagesStream::open(const char *name)
 
 bool ImagesStream::read(cv::Mat *vf)
 {
+  bool b_ret = false;
   if (mCurrentFrame < mImages.size()) {
     std::string imgFile = mImages[static_cast<unsigned int>(mCurrentFrame)];
     mFrame = cv::imread(imgFile);
-    msgInfo("Imagen: %s", imgFile.c_str());
-    if (mResolutionFrame == Resolution::RESIZE_FRAME) {
-      resizeFrame();
-    } else if (mResolutionFrame == Resolution::CROP_FRAME) {
-      cropFrame();
+    if (mFrame.empty()) {
+      // No ha podido leer el frame. Tratamos de seguir leyendo mientras no lleguemos al final del video.
+      double duration = getFrameCount();
+      char c;
+      while (duration > mCurrentFrame && b_ret == false) {
+        msgError("No se ha podido cargar la imagen: %s", imgFile.c_str());
+        mCurrentFrame++;
+        imgFile = mImages[static_cast<unsigned int>(mCurrentFrame)];
+        mFrame = cv::imread(imgFile);
+        b_ret = !mFrame.empty();
+        c = (char)cv::waitKey(1);
+        if (c == 27) return false;
+      }
+    } else 
+      b_ret = true;
+    
+    if (b_ret) {
+      msgInfo("Imagen: %s", imgFile.c_str());
+      
+      if (mResolutionFrame == Resolution::RESIZE_FRAME) {
+        resizeFrame();
+      } else if (mResolutionFrame == Resolution::CROP_FRAME) {
+        cropFrame();
+      }
+      if (vf) mFrame.copyTo(*vf);
     }
-    if (vf) mFrame.copyTo(*vf);
     mCurrentFrame++;
-    return true;
   }
-  return false;
+  return b_ret;
 }
 
 bool ImagesStream::setPosFrame(double nframe)

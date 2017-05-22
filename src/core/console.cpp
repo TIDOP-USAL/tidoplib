@@ -31,7 +31,26 @@ struct msgProperties msgTemplate[] = {
 
 msgProperties getMessageProperties( MessageLevel msgLevel ) 
 {
-  return msgTemplate[static_cast<int>(msgLevel)];
+  //return msgTemplate[static_cast<int>(msgLevel)];
+  int iLevel = 0;
+  switch (msgLevel) {
+  case I3D::MessageLevel::MSG_DEBUG:
+    iLevel = 0;
+    break;
+  case I3D::MessageLevel::MSG_INFO:
+    iLevel = 1;
+    break;
+  case I3D::MessageLevel::MSG_WARNING:
+    iLevel = 2;
+    break;
+  case I3D::MessageLevel::MSG_ERROR:
+    iLevel = 3;
+    break;
+  default:
+    iLevel = 3;
+    break;
+  }
+  return msgTemplate[iLevel];
 }
 
 
@@ -102,7 +121,7 @@ void Console::reset()
 }
 
 void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity)
-{
+      {
 #ifdef WIN32
   switch (foreColor) {
   case I3D::Console::Color::BLACK:
@@ -215,7 +234,8 @@ void Console::printMessage(const char *msg)
 
 void Console::printErrorMessage(const char *msg)
 {
-  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, getMessageProperties(MessageLevel::MSG_ERROR).intensity);
+  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, 
+                            getMessageProperties(MessageLevel::MSG_ERROR).intensity);
   printMessage(msg);
   reset();
 }
@@ -225,7 +245,8 @@ I3D_DISABLE_WARNING(4100)
 void Console::onMsgDebug(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_DEBUG).foreColor, getMessageProperties(MessageLevel::MSG_DEBUG).intensity);
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_DEBUG).foreColor, 
+                              getMessageProperties(MessageLevel::MSG_DEBUG).intensity);
     printMessage(msg);
     reset();
   }
@@ -234,7 +255,8 @@ void Console::onMsgDebug(const char *msg, const char *date)
 void Console::onMsgInfo(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::MSG_INFO)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_INFO).foreColor, getMessageProperties(MessageLevel::MSG_INFO).intensity);
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_INFO).foreColor, 
+                              getMessageProperties(MessageLevel::MSG_INFO).intensity);
     printMessage(msg);
     reset();
   }
@@ -243,7 +265,8 @@ void Console::onMsgInfo(const char *msg, const char *date)
 void Console::onMsgWarning(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_WARNING).foreColor, getMessageProperties(MessageLevel::MSG_WARNING).intensity);
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_WARNING).foreColor, 
+                              getMessageProperties(MessageLevel::MSG_WARNING).intensity);
     printMessage(msg);
     reset();
   }

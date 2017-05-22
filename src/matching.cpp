@@ -356,6 +356,123 @@ void Matching::load( const char *fname )
   } else msgError("Fichero no valido: %s", fname);
 }
 
+
+
+
+//// http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
+
+int RobustMatching::ratioTest(std::vector<std::vector<cv::DMatch> > &matches)
+{
+  int removed = 0;
+  // for all matches
+  for (std::vector<std::vector<cv::DMatch> >::iterator
+       matchIterator = matches.begin(); matchIterator != matches.end(); ++matchIterator) {
+    // if 2 NN has been identified
+    if (matchIterator->size() > 1) {
+      // check distance ratio
+      if ((*matchIterator)[0].distance / (*matchIterator)[1].distance > mRatio) {
+        matchIterator->clear(); // remove match
+        removed++;
+      }
+    } else { // does not have 2 neighbours
+      matchIterator->clear(); // remove match
+      removed++;
+    }
+  }
+  return removed;
+}
+
+void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> >& matches1,
+                                  const std::vector<std::vector<cv::DMatch> >& matches2,
+                                  std::vector<cv::DMatch>& symMatches)
+{
+#ifdef _DEBUG
+  double startTick, time;
+  startTick = (double)cv::getTickCount(); // measure time
+#endif
+  // for all matches image 1 -> image 2
+  for (std::vector<std::vector<cv::DMatch> >::const_iterator
+       matchIterator1 = matches1.begin(); matchIterator1 != matches1.end(); ++matchIterator1) {
+
+    // ignore deleted matches
+    if (matchIterator1->empty() || matchIterator1->size() < 2)
+      continue;
+
+    // for all matches image 2 -> image 1
+    for (std::vector<std::vector<cv::DMatch> >::const_iterator
+         matchIterator2 = matches2.begin(); matchIterator2 != matches2.end(); ++matchIterator2) {
+      // ignore deleted matches
+      if (matchIterator2->empty() || matchIterator2->size() < 2)
+        continue;
+
+      // Match symmetry test
+      if ((*matchIterator1)[0].queryIdx == (*matchIterator2)[0].trainIdx && (*matchIterator2)[0].queryIdx == (*matchIterator1)[0].trainIdx) {
+        // add symmetrical match
+        // ????
+        symMatches.push_back(cv::DMatch((*matchIterator1)[0].queryIdx, (*matchIterator1)[0].trainIdx, (*matchIterator1)[0].distance));
+        // No es lo mismo??:
+        // symMatches.push_back(matchIterator1[0]);
+        break; // next match in image 1 -> image 2
+      }
+    }
+  }
+#ifdef _DEBUG
+  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
+  printf("\nTime Reconstruction3D::symmetryTest [s]: %.3f\n", time);
+#endif
+}
+
+void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> > &matches, std::vector<std::vector<cv::DMatch>> *symMatches)
+{
+  if (symMatches && !matches.empty()) {
+    //int max_track_number = 0;
+    for (size_t i = 0; i < matches.size(); i++) {
+      float distance0 = matches[i][0].distance;
+      float distance1 = matches[i][1].distance;
+      if (distance0 < /*fRatio*/0.8f * distance1) {
+        //... Creo que es lo mismo
+        symMatches->push_back(matches[i]);
+        //matches.Insert(0, max_track_number, &m_ViewData[images[i]].features[i]);
+        //matches.Insert(1, max_track_number, &m_ViewData[images[j]].features[matchesA[i][0].trainIdx]);
+        //++max_track_number;
+      }
+    }
+  }
+}
+
+
+void RobustMatching::robustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches12, std::vector<std::vector<cv::DMatch>> *pMatches21)
+{
+  std::vector<std::vector<cv::DMatch> > matches12, matches21;
+
+  mDescriptorMatcher->knnMatch(descriptor1, descriptor2, matches12, 2); // return 2 nearest neighbours
+  if (pMatches21) *pMatches12 = matches12;
+
+  mDescriptorMatcher->knnMatch(descriptor2, descriptor1, matches21, 2); // return 2 nearest neighbours
+  if (pMatches21) *pMatches21 = matches21;
+}
+
+void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std::vector<std::vector<cv::DMatch>> *pMatches)
+{
+
+  auto getAppropriateFormat = [](const cv::Mat &descIn) -> cv::Mat {
+    cv::Mat descOut;
+    descIn.copyTo(descOut);
+    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
+    if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
+    return std::move(descOut);
+  };
+
+  std::vector<std::vector<cv::DMatch> > matches;
+  mDescriptorMatcher->knnMatch(descriptor1, descriptor2, matches, 2);
+  try {
+    if (mDescriptorMatcher) mDescriptorMatcher->knnMatch(getAppropriateFormat( descriptor1), getAppropriateFormat( descriptor2 ), matches, 2);
+  } catch (cv::Exception &e) {
+    msgError(e.what());
+  }
+  if (pMatches) *pMatches = matches;
+}
+
 } // End namespace I3D
 
 #endif // HAVE_OPENCV

@@ -610,7 +610,7 @@ I3D_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb);
 /*!
  * \brief Conversión a coordenadas cromáticas
  *
- * Cuando una imagen presenta cambios de intesidad, luz mas tenue, etc. una solución 
+ * Cuando una imagen presenta cambios de intensidad, luz mas tenue, etc. una solución 
  * pasa por eliminar los efectos de la intensidad en la imagen. Para ello se pasa a 
  * un espacio de color invariante a la intensidad como las coordenadas cromáticas.
  * La cromaticidad especifica el matiz y la saturación de un color pero no su luminosidad.

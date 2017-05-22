@@ -2,7 +2,7 @@
 
 #include "core/defs.h"
 #include "core/utils.h"
-#include "core/console.h"
+//#include "core/console.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/utility.hpp"

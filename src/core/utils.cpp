@@ -756,7 +756,7 @@ Chrono::Chrono(const char *msg, bool writeMsg)
     mMessage(msg),
     bWriteMsg(writeMsg)
 {
-  run();
+  //run();
 }
 
 Chrono::~Chrono()

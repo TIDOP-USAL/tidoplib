@@ -89,7 +89,7 @@ I3D_EXPORT inline double mean(const T &data)
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
   // Comprobar que es un contenedor con tipos numéricos
-  T::value_type sum;
+  T::value_type sum = 0.0;
   for (auto &t : data) {
     sum += t;
   }
@@ -102,9 +102,9 @@ I3D_EXPORT inline double variance(const T &data)
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
   double _mean = mean(data);
-  double sum;
+  double sum = 0.0;
   double ep = 0.0;
-  double aux;
+  double aux = 0.0;
   for (auto &t : data) {
     aux = t - _mean;
     ep += aux;
@@ -129,7 +129,7 @@ I3D_EXPORT inline double averageAbsoluteDeviation(const T &data)
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
   double _mean = mean(data);
-  double sum;
+  double sum = 0.0;
   for (auto &t : data) {
     sum += std::abs(t - _mean);
   }
@@ -146,7 +146,9 @@ I3D_EXPORT inline double skewness(const T &data)
   if (n <= 1) return 0.; // Mensaje de error
   double _mean = mean(data);
   double ep = 0.;
-  double aux, aux2, skew;
+  double aux = 0.;
+  double aux2 = 0.;
+  double skew = 0.;
   for (auto &t : data) {
     aux = t - _mean;
     ep += aux;
@@ -170,7 +172,8 @@ I3D_EXPORT inline double kurtosis(const T &data)
   if (n <= 1) return 0.; // Mensaje de error
   double _mean = mean(data);
   double ep = 0.;
-  double aux, _kurtosis;
+  double aux = 0.;
+  double _kurtosis = 0.;
 
   for (auto &t : data) {
     aux = t - _mean;
@@ -179,7 +182,7 @@ I3D_EXPORT inline double kurtosis(const T &data)
     _kurtosis += aux*aux; 
   }
 
-  double variance =  (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
+  double variance = (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
 
   if (variance) {
     _kurtosis /= (n*variance*variance);
