@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include "core/messages.h"
+#include "core/console.h"
 
 #if defined WIN32
 #include <windows.h>
@@ -367,10 +368,12 @@ void Process::resume()
   }
 }
 
-Process::Status Process::run()
+I3D_DISABLE_WARNING(4100)
+Process::Status Process::run(Progress *progressBar)
 {
   return mStatus = Status::RUNNING;
 }
+I3D_ENABLE_WARNING(4100)
 
 void Process::stop()
 {
@@ -403,7 +406,8 @@ CmdProcess::~CmdProcess()
   CloseHandle(pi.hThread);
 }
 
-Process::Status CmdProcess::run()
+I3D_DISABLE_WARNING(4100)
+Process::Status CmdProcess::run(Progress *progressBar)
 {
   Process::run();
   size_t len = strlen(mCmd.c_str());
@@ -411,7 +415,7 @@ Process::Status CmdProcess::run()
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
   if ( !CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL, 
-                      NULL, FALSE, 0, NULL, NULL, &si, &pi ) ) {
+                      NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi ) ) {
     printf( "CreateProcess failed (%d).\n", GetLastError() );
     return Process::Status::FINALIZED_ERROR;
   }
@@ -422,6 +426,7 @@ Process::Status CmdProcess::run()
   else 
     return Process::Status::FINALIZED;
 }
+I3D_ENABLE_WARNING(4100)
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -486,17 +491,21 @@ void BatchProcess::resume()
   }
 }
 
-BatchProcess::Status BatchProcess::run()
+BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
 {
   mStatus = Status::RUNNING;
+  if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
   for (const auto process : mProcessList) {
     while (mStatus == Status::PAUSE) ;
     if (mStatus == Status::STOPPED) {
       // Se fuerza la terminación
       return Status::STOPPED;
     } else {
-      if (process->run() == Process::Status::FINALIZED_ERROR)
+      if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
         return Status::FINALIZED_ERROR;
+      } else {
+        if (progressBarTotal) (*progressBarTotal)();
+      }
     }
   }
   return Status::FINALIZED;
@@ -858,8 +867,8 @@ int VrtTemplate::replace(std::string *output) const
 {
   int i_ret = 0;
   output->append(mText);
-  std::size_t ini = output->find("<#");
-  std::size_t end;
+  size_t ini = output->find("<#");
+  size_t end;
   while (ini!=std::string::npos)
   {
     end=output->find(">",ini);

@@ -288,6 +288,8 @@ private:
 
   static bool sStopHandler;
 
+  static std::mutex sMutex;
+
 private:
 
   /*!

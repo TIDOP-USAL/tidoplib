@@ -20,6 +20,8 @@
 namespace I3D
 {
 
+class Progress;
+
 /*!
  * \defgroup utilities Utilidades
  *
@@ -363,7 +365,7 @@ public:
    * Process::run() o establecer directamente mStatus = Status::RUNNING
    * al inicio del método para establecer que el proceso esta corriendo.
    */
-  virtual Status run() = 0;
+  virtual Status run(Progress *progressBar = NULL) = 0;
 
   /*!
    * \brief Detiene el proceso
@@ -393,7 +395,7 @@ public:
   CmdProcess(const std::string &cmd);
   ~CmdProcess();
 
-  virtual Process::Status run() override;
+  virtual Process::Status run(Progress *progressBar = NULL) override;
 
 private:
 
@@ -402,6 +404,7 @@ private:
 
 class BatchProcess
 {
+public:
 
   /*!
    * \brief Estados de Batch
@@ -481,8 +484,10 @@ public:
 
   /*!
    * \brief Corre los procesos
+   * \param[in] progressBarTotal Barra de progreso total
+   * \param[in] progressBarPartial Barra de progreso parcial
    */
-  Status run();
+  Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
 
   /*!
    * \brief Detiene los procesos
