@@ -650,7 +650,7 @@ void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMat
 
 int loadBinMat(const char *file, cv::Mat *data)
 {
-  FILE* fp = std::fopen(file, "rb");
+  FILE *fp = std::fopen(file, "rb");
   if(!fp) {
     return 1;
   }
@@ -781,7 +781,7 @@ uint64_t Chrono::pause()
   if (mStatus == Status::RUNNING) {
     mAccumulated += getTickCount() - mTimeIni;
     mStatus = Status::PAUSE; 
-    if (bWriteMsg) msgVerbose("Chrono paused");
+    if (bWriteMsg) msgInfo("Chrono paused");
   }
   return mAccumulated;
 }
@@ -792,7 +792,7 @@ void Chrono::reset()
   mAccumulated = 0;
   mStatus = Status::START;
   mMessage = "";
-  if (bWriteMsg) msgVerbose("Chrono reset");
+  if (bWriteMsg) msgInfo("Chrono reset");
 }
 
 void Chrono::resume()
@@ -800,7 +800,7 @@ void Chrono::resume()
   if (mStatus == Status::PAUSE) {
     mTimeIni = getTickCount();
     mStatus = Status::RUNNING;
-    if (bWriteMsg) msgVerbose("Chrono resume");
+    if (bWriteMsg) msgInfo("Chrono resume");
   }
 }
 
@@ -809,7 +809,7 @@ uint64_t Chrono::run()
   mTimeIni = getTickCount();
   mAccumulated = 0;
   mStatus = Status::RUNNING;
-  if (bWriteMsg) msgVerbose("Chrono run");
+  if (bWriteMsg) msgInfo("Chrono run");
   return mTimeIni;
 }
 

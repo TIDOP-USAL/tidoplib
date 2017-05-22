@@ -150,7 +150,7 @@ private:
    * Por defecto MSG_ERROR
    * \see MessageLevel
    */
-  static MessageLevel sLevel;
+  static EnumFlags<MessageLevel> sLevel;
 
 public:
 
@@ -219,13 +219,6 @@ protected:
    * \param date
    */
   void onMsgDebug(const char *msg, const char *date) override;
-
-  /*!
-   * \brief onMsgVerbose
-   * \param msg
-   * \param date
-   */
-  void onMsgVerbose(const char *msg, const char *date) override;
 
   /*!
    * \brief onMsgInfo

@@ -29,11 +29,8 @@ I3D_DEFAULT_WARNINGS
 
 #ifdef I3D_MESSAGE_HANDLER
 
-using namespace I3D;
-
-//std::mutex mtx;
-//std::mutex _mtx;
-
+namespace I3D
+{
 
 
 I3D_DISABLE_WARNING(4100)
@@ -73,244 +70,6 @@ I3D_ENABLE_WARNING(4100)
 
 
 
-
-struct msgProperties {
-  const char *normal;
-  const char *extend;
-  Console::Color foreColor;
-  Console::Intensity intensity;
-};
-
-struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Info: %s",    "Info: %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
-  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
-  { "Error: %s",   "Error: %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
-};
-
-msgProperties GetMessageProperties( MessageLevel msgLevel ) 
-{
-  return msgTemplate[static_cast<int>(msgLevel)];
-}
-
-namespace I3D
-{
-
-
-// inicialización de miembros estáticos
-
-MessageLevel Message::sLevel = MessageLevel::MSG_ERROR;
-EnumFlags<MessageOutput> Message::sOutput = MessageOutput::MSG_CONSOLE;
-std::string Message::sLastMessage = "";
-std::unique_ptr<Message> Message::sObjMessage;
-std::string Message::sLogFile = "";
-std::string Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
-std::mutex Message::mtx;
-
-Message::Message() 
-{
-}
-
-Message &Message::get()
-{
-  if (sObjMessage.get() == 0) {
-    sObjMessage.reset(new Message());
-  }
-  return *sObjMessage;
-}
-
-const char *Message::getMessage() const 
-{
-  return sLastMessage.c_str();
-}
-
-Message &Message::message(const char *msg, ...)
-{
-  if (sObjMessage.get() == 0) {
-    sObjMessage.reset(new Message());
-  }
-  try {
-    char buf[500];
-    memset(buf, 0, sizeof(buf));
-    std::string aux(msg);
-    I3D::replaceString(&aux, "% ", "%% ");
-    va_list args;
-    va_start(args, msg);
-#ifdef _MSC_VER
-    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-#else
-    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
-#endif
-    va_end(args);
-    sLastMessage = buf;
-  } catch (std::exception &e) {
-    printError("%s", e.what());
-  }
-
-  return *sObjMessage;
-}
-
-void Message::print()
-{
-  print(sLevel, sOutput.getFlags());
-}
-
-void Message::print(const MessageLevel &level, const MessageOutput &output)
-{
-  if (sLevel <= level) 
-    Message::_print( level, output, messageOutput(level) );
-}
-
-void Message::print(const MessageLevel &level, const MessageOutput &output, const char *file, int line, const char *function)
-{
-  if (sLevel <= level) 
-    Message::_print( level, output, messageOutput(level, file, line, function) );
-}
-
-
-void Message::setMessageLevel(const MessageLevel &level)
-{
-  sLevel = level;
-}
-
-void Message::setMessageOutput(const MessageOutput &output)
-{
-  sOutput = output;
-}
-
-void Message::setMessageLogFile(const std::string logfile)
-{
- sLogFile = logfile;
-}
-
-void Message::setTimeLogFormat( const std::string timeTemplate)
-{
-  sTimeLogFormat = timeTemplate;
-}
-
-
-MessageLevel Message::getMessageLevel() const
-{
-  return sLevel;
-}
-
-EnumFlags<MessageOutput> Message::getMessageOutput() const
-{
-  return sOutput;
-}
-
-std::string Message::messageOutput(const MessageLevel &msgLevel)
-{
-  char buf[500];
-#if defined _MSC_VER
-  sprintf_s(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
-#else
-  snprintf(buf, 500, GetMessageProperties(msgLevel).normal, sLastMessage.c_str());
-#endif
-  return std::string(buf);
-}
-
-std::string Message::messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function)
-{
-  char buf[500];
-#if defined _MSC_VER
-  sprintf_s(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
-#else
-  snprintf(buf, 500, GetMessageProperties(msgLevel).extend, sLastMessage.c_str(), file, line, function);
-#endif
-  return std::string(buf);
-}
-
-void Message::_print(const MessageLevel &level, const MessageOutput &output, const std::string &msgOut)
-{
-  EnumFlags<MessageOutput> flag(output);
-
-#ifdef  I3D_ENABLE_CONSOLE
-
-  if (flag.isActive( MessageOutput::MSG_CONSOLE ) ) {
-    // Por si esta corriendo la barra de progreso
-    std::cout << "\r";
-
-    Console console(level == MessageLevel::MSG_ERROR ? Console::Mode::OUTPUT_ERROR : Console::Mode::OUTPUT);
-    console.setConsoleForegroundColor(GetMessageProperties(level).foreColor, GetMessageProperties(level).intensity);
-    std::string aux(msgOut);
-    I3D::replaceString(&aux, "%", "%%");
-    printf_s("%s\n", aux.c_str());
-  }
-
-#endif //I3D_ENABLE_CONSOLE
-
-
-  if (flag.isActive( MessageOutput::MSG_LOG )) {
-    if (sLogFile.empty()) {
-      // Log por defecto
-      char _logfile[I3D_MAX_PATH];
-      changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
-      sLogFile = _logfile;
-    }
-    std::ofstream hLog(sLogFile,std::ofstream::app);
-    if (hLog.is_open()) {
-      char date[64];
-      std::time_t now = std::time(NULL);
-
-      std::lock_guard<std::mutex> lck(mtx);
-      std::tm *_tm = std::localtime(&now);
-      
-      if (_tm) {
-        std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
-      } else {
-        strcpy(date, "NULL");
-      }
-
-      hLog << date << " - " << msgOut << "\n";
-      hLog.close();
-    } else {
-      //Error al abrir/crear archivo. Se saca el error por consola
-      Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
-    }
-  }
-  return;
-}
-
-void Message::initExternalHandlers()
-{
-  #ifdef HAVE_OPENCV
-    cv::redirectError(handleError);
-  #endif // HAVE_OPENCV
-
-  #ifdef HAVE_GDAL
-    CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
-  #endif // HAVE_GDAL
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct _msgProperties {
   const char *normal;
   const char *extend;
@@ -318,19 +77,34 @@ struct _msgProperties {
 
 struct _msgProperties _msgTemplate[] = {   
   { "Debug: %s",   "Debug: %s (%s:%u, %s)"},
-  { "Verbose: %s", "Verbose: %s (%s:%u, %s)"},
   { "Info: %s",    "Info: %s (%s:%u, %s)"},
   { "Warning: %s", "Warning: %s (%s:%u, %s)"},
   { "Error: %s",   "Error: %s (%s:%u, %s)"}
 };
 
-_msgProperties getMessageProperties( MessageLevel msgLevel ) 
+_msgProperties getMessageProperties(MessageLevel msgLevel) 
 {
-  return _msgTemplate[static_cast<int>(msgLevel)];
+  int iLevel = 0;
+  switch (msgLevel) {
+  case I3D::MessageLevel::MSG_DEBUG:
+    iLevel = 0;
+    break;
+  case I3D::MessageLevel::MSG_INFO:
+    iLevel = 1;
+    break;
+  case I3D::MessageLevel::MSG_WARNING:
+    iLevel = 2;
+    break;
+  case I3D::MessageLevel::MSG_ERROR:
+    iLevel = 3;
+    break;
+  default:
+    iLevel = 3;
+    break;
+  }
+  return _msgTemplate[iLevel];
 }
 
-//MessageLevel MessageManager::sLevel = MessageLevel::MSG_ERROR;
-//std::string MessageManager::sLastMessage = "";
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 bool MessageManager::sStopHandler = false;
 std::mutex MessageManager::sMutex;
@@ -357,33 +131,6 @@ MessageManager &MessageManager::getInstance()
   }
   return *sObjMessage;
 }
-
-//MessageManager &MessageManager::message(const char *msg, ...)
-//{
-//  if (sObjMessage.get() == 0) {
-//    sObjMessage.reset(new MessageManager());
-//  }
-//  try {
-//    char buf[500];
-//    memset(buf, 0, sizeof(buf));
-//    std::string aux(msg);
-//    I3D::replaceString(&aux, "% ", "%% ");
-//    va_list args;
-//    va_start(args, msg);
-//#ifdef _MSC_VER
-//    vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
-//#else
-//    vsnprintf(buf, sizeof(buf), aux.c_str(), args);
-//#endif
-//    va_end(args);
-//    //sLastMessage = buf; //Controlar que no se mezclen los mensajes entre hilos
-//  } catch (std::exception &e) {
-//    //printError("%s", e.what());
-//  }
-
-//  return *sObjMessage;
-//}
-
 
 void MessageManager::initExternalHandlers()
 {
@@ -415,15 +162,6 @@ void MessageManager::onDebug(const char *msg, const char *date)
     }
   }
 #endif
-}
-
-void MessageManager::onVerbose(const char *msg, const char *date) 
-{
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onMsgVerbose(msg, date);
-    }
-  }
 }
 
 void MessageManager::onInfo(const char *msg, const char *date)
@@ -488,9 +226,6 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   case I3D::MessageLevel::MSG_DEBUG:
     sObjMessage->onDebug(buf, date);
     break;
-  case I3D::MessageLevel::MSG_VERBOSE:
-    sObjMessage->onVerbose(buf, date);
-    break;
   case I3D::MessageLevel::MSG_INFO:
     sObjMessage->onInfo(buf, date);
     break;
@@ -528,9 +263,6 @@ void MessageManager::release(const Message &msg)
   switch (msg.getLevel()) {
   case I3D::MessageLevel::MSG_DEBUG:
     sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
-    break;
-  case I3D::MessageLevel::MSG_VERBOSE:
-    sObjMessage->onVerbose(msg_out.c_str(), msg.getDate());
     break;
   case I3D::MessageLevel::MSG_INFO:
     sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
@@ -636,9 +368,22 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
 
 std::unique_ptr<Log> Log::sObjLog;
 std::string Log::sLogFile = "";
-MessageLevel Log::sLevel = MessageLevel::MSG_ERROR;
+EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
+
+Log &Log::getInstance()
+{
+  if (sObjLog.get() == 0) {
+    sObjLog.reset(new Log());
+  }
+  return *sObjLog;
+}
+
+EnumFlags<MessageLevel> Log::getLogLevel() const
+{
+  return sLevel;
+}
 
 void Log::setLogFile(const char* file)
 {
@@ -648,14 +393,6 @@ void Log::setLogFile(const char* file)
 void Log::setLogLevel(MessageLevel level)
 {
   sLevel = level;
-}
-
-Log &Log::getInstance()
-{
-  if (sObjLog.get() == 0) {
-    sObjLog.reset(new Log());
-  }
-  return *sObjLog;
 }
 
 void Log::write(const char *msg)
@@ -690,35 +427,28 @@ void Log::write(const char *msg)
 
 void Log::onMsgDebug(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_DEBUG) {
-    _write(msg, date);
-  }
-}
-
-void Log::onMsgVerbose(const char *msg, const char *date)
-{
-  if (sLevel <= MessageLevel::MSG_VERBOSE) {
+  if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgInfo(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_INFO) {
+  if (sLevel.isActive(MessageLevel::MSG_INFO)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgWarning(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_WARNING) {
+  if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgError(const char *msg, const char *date)
 {
-  if (sLevel <= MessageLevel::MSG_ERROR) {
+  if (sLevel.isActive(MessageLevel::MSG_ERROR)) {
     _write(msg, date);
   }
 }

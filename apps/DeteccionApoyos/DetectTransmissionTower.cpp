@@ -127,8 +127,8 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       }
     }
 
-    msgVerbose("Frame %i - cols: %i - rows: %i", static_cast<int>(prevFrame), candidatenorm.cols, candidatenorm.rows);
-    msgVerbose("Frame %i - N points max: %i", static_cast<int>(prevFrame), pMax.size());
+    msgInfo("Frame %i - cols: %i - rows: %i", static_cast<int>(prevFrame), candidatenorm.cols, candidatenorm.rows);
+    msgInfo("Frame %i - N points max: %i", static_cast<int>(prevFrame), pMax.size());
     if (pMax.size() > 200 ) {
       // Recta de regresión para los máximos
       double m = 0.;
@@ -151,7 +151,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
       else if (ang < -I3D_PI / 2) ang = ang + I3D_PI;
       // tolerancia de inclinación del eje del apoyo respecto a la vertical -> 0.1
       if (ang <= 0.2 && ang >= -0.2) {
-        msgVerbose("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
+        msgInfo("Frame %i - Angulo: %f", static_cast<int>(prevFrame), ang);
 
          // Busqueda del máximo valor de desplazamiento
         std::vector<cv::Point> vMagnitudes;
@@ -206,7 +206,7 @@ bool DetectTransmissionTower::isTower(cv::Mat *imgout, const ldGroupLines &lines
           //}
           return true; // Devolvemos que hemos encontrado una torre
         }
-      } else msgVerbose("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
+      } else msgInfo("Frame %i rechazado por angulo de recta de regresion mayor al limite. angulo=%f", I3D_ROUND_TO_INT(prevFrame), ang);
     }
   } else {
     msgInfo("Torre rechazada: Frame %i", static_cast<int>(prevFrame) );
