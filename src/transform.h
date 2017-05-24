@@ -551,8 +551,8 @@ public:
 template<typename Point_t> inline
 bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
 { 
-  msgError("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
-  I3D_COMPILER_WARNING("'isNumberOfPointsValid' no esta soportado para TrfMultiple");
+  msgError("'isNumberOfPointsValid' is not supported for TrfMultiple");
+  I3D_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TrfMultiple");
   return true;
 }
 
@@ -561,8 +561,8 @@ transform_status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1,
                                                const std::vector<Point_t> &pts2, 
                                                std::vector<double> *error, double *rmse)
 {
-  msgError("'compute' no esta soportado para TrfMultiple");
-  I3D_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
+  msgError("'compute' is not supported for TrfMultiple");
+  I3D_COMPILER_WARNING("'compute' is not supported for TrfMultiple");
   return transform_status::FAILURE;
 }
 
@@ -731,7 +731,7 @@ public:
    * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
   TrfPerspective()
-    : Transform2D<Point_t>(transform_type::PERSPECTIVE, 1) {}
+    : Transform2D<Point_t>(transform_type::PERSPECTIVE, 4) {}
 
   /*!
    * \brief Destructora
@@ -802,7 +802,7 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
       cv::perspectiveTransform(in, out, H.inv());
     }
   } catch ( cv::Exception &e ) {
-    msgError("Error en transformación perspectiva: %s",e.what());
+    msgError("Error in perspective transformation: %s",e.what());
     return transform_status::FAILURE; 
   }
   ptsOut->resize(n);
@@ -818,7 +818,7 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
                                                     Point_t *ptOut, 
                                                     transform_order trfOrder) const
 {
-  std::vector<Point_t> vIn, vOut;
+  std::vector<cv::Point_<sub_type>> vIn, vOut;
   vIn.push_back(ptIn);
   try {
     if (trfOrder == transform_order::DIRECT) {
@@ -826,9 +826,9 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
     } else {
       cv::perspectiveTransform(vIn, vOut, H.inv());
     }
-    *ptOut = vOut[0];
+    (cv::Point_<sub_type> &)(*ptOut) = vOut[0];
   } catch ( cv::Exception &e ) {
-    msgError("Error en transformación perspectiva: %s", e.what());
+    msgError("Error in perspective transformation: %s", e.what());
     return transform_status::FAILURE; 
   }
   return transform_status::SUCCESS; 
@@ -848,8 +848,8 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
                                                   std::vector<double> *error, 
                                                   double *rmse)
 {
-  if (error) error = NULL; // Habria que poder calcular el error
-  if (rmse) rmse = NULL;
+  //if (error) error = NULL; // Habria que poder calcular el error
+  //if (rmse) rmse = NULL;
 
   int n1 = static_cast<int>(pts1.size());
   int n2 = static_cast<int>(pts2.size());
@@ -867,22 +867,31 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
     out[i] = pts2[i];
   }
 
-  if (this->isNumberOfPointsValid(n1)) {
-    try {
-      H = cv::findHomography(in, out, cv::RANSAC);
-      //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
-      //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
-      //cv::Mat H2 = cv::findHomography(pts1, pts2);
-      //... determinar error
-    } catch ( ... ) {
-
-    }
-
-    return H.empty() ? transform_status::FAILURE : transform_status::SUCCESS;
-  } else {
+  if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
     return transform_status::FAILURE;
   }
+  
+  transform_status status = transform_status::SUCCESS;
+
+  try {
+    H = cv::findHomography(in, out, cv::RANSAC);
+    //cv::Mat H0 = cv::findHomography(pts1, pts2, cv::RANSAC);
+    //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
+    //cv::Mat H2 = cv::findHomography(pts1, pts2);
+    //... determinar error
+    I3D_THROW_ASSERT(!H.empty(), "Error al calcular los parámetros de la transformación");
+    if (error) {
+      if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+    }
+
+  } catch (std::exception &e) {
+    //msgError(e.what());
+    I3D::MessageManager::release(e.what(), I3D::MessageLevel::MSG_ERROR);
+    status = transform_status::FAILURE;
+  }
+
+  return status;
 }
 
 #endif // HAVE_OPENCV
@@ -1091,7 +1100,7 @@ transform_status Translate<Point_t>::transform(const Point_t &ptIn,
     }
     *ptOut = (trfOrder == transform_order::DIRECT) ? ptIn + pt_aux : ptIn - pt_aux;
   } catch ( std::exception &e ) {
-    msgError("Error en traslación: %s", e.what());
+    msgError("Error in Translate: %s", e.what());
     r_status = transform_status::FAILURE; 
   }
   return r_status;
@@ -1370,7 +1379,7 @@ transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *pts
       ptsOut->y = static_cast<sub_type>(ptsIn.y*r1 - x_aux*r2);
     }
   } catch (std::exception &e ) {
-    msgError("Error al aplicar la rotación: %s", e.what());
+    msgError("Error applying rotation: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -1690,12 +1699,12 @@ transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
       ptOut->y = static_cast<sub_type>(b * x_aux + a * ptIn.y + ty);
     } else {
       double det = a*a + b*b;
-      if ( det == 0. ) throw I3D_ERROR("División por cero");
+      if ( det == 0. ) throw I3D_ERROR("Division by zero");
       ptOut->x = static_cast<sub_type>((a*(x_aux - tx) + b*(ptIn.y - ty)) / det);
       ptOut->y = static_cast<sub_type>((-b*(x_aux - tx) + a*(ptIn.y - ty)) / det);
     }
   } catch (I3D::Exception &e ) {
-    msgError("Error al aplicar la transformación Helmert 2D: %s", e.what());
+    msgError("Helmert 2D transformation error: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status;
@@ -1710,7 +1719,7 @@ Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, transform_order trfOr
     r_pt.y = static_cast<sub_type>(b * ptIn.x + a * ptIn.y + ty);
   } else {
     double det = a*a + b*b;
-    if ( det == 0. ) throw I3D_ERROR("División por cero");
+    if ( det == 0. ) throw I3D_ERROR("Division by zero");
     r_pt.x = static_cast<sub_type>((a*(ptIn.x - tx) + b*(ptIn.y - ty)) / det);
     r_pt.y = static_cast<sub_type>((-b*(ptIn.x - tx) + a*(ptIn.y - ty)) / det);
   }
@@ -1800,6 +1809,7 @@ private:
    * \brief Escala en el eje Y
    */
   double mScaleY;
+
   /*!
    * \brief Ángulo de rotation
    */
@@ -2112,7 +2122,7 @@ transform_status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut,
       ptOut->y = static_cast<sub_type>(ci * x_aux + di * ptIn.y + tyi);
     }
   } catch (std::exception &e ) {
-    msgError("Error al aplicar la transformación afín: %s", e.what());
+    msgError("Affine transformation error: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -2207,7 +2217,7 @@ void Affine<Point_t>::updateInv()
   // Transformación inversa
   double det = a * d - c * b;
   if (!det) {
-    msgError("Determinante nulo");
+    msgError("determinant null");
   } else {
     ai = d / det;
     bi = -b / det;
@@ -2539,7 +2549,7 @@ transform_status Projective<Point_t>::transform(const Point_t &ptIn, Point_t *pt
                                        / (g * ptIn.x + h * ptIn.y + 1));
     }
   } catch (std::exception &e ) {
-    msgError("Error al aplicar la transformación proyectiva: %s", e.what());
+    msgError("Error in projective transformation: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -2598,7 +2608,7 @@ void Projective<Point_t>::update()
   // Transformación inversa
   double aux = a * e - b * d;
   if (!aux) {
-    msgError("División por cero");
+    msgError("Division by zero");
   } else {
     ai = (e - f * h) / aux;
     bi = (c * h - b) / aux;
@@ -2766,7 +2776,7 @@ transform_status polynomialTransform<Point_t>::transform(const Point_t &ptIn, Po
   try {
     //...
   } catch (std::exception &e ) {
-    msgError("Error al aplicar la rotación: %s", e.what());
+    msgError("Polynomial transform error: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -3227,7 +3237,7 @@ transform_status Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
       ptOut->z = static_cast<sub_type>(mScale * (dx*mRinv[2][0] + dy*mRinv[2][1] + dz*mRinv[2][2]));
     }
   } catch (std::exception &e ) {
-    msgError("Error al aplicar la rotación: %s", e.what());
+    msgError("Error in Helmert 3D transformation: %s", e.what());
     r_status = transform_status::FAILURE;
   }
   return r_status; 
@@ -3681,10 +3691,10 @@ CrsTransform<Point_t>::CrsTransform(const char *epsgIn, const char *epsgOut)
 template<typename Point_t> inline
 CrsTransform<Point_t>::~CrsTransform() 
 {
-  if (pCoordinateTransformation) 
-    OGRCoordinateTransformation::DestroyCT( pCoordinateTransformation );
-  if (pCoordinateTransformationInv) 
-    OGRCoordinateTransformation::DestroyCT( pCoordinateTransformationInv );
+  if (pCoordinateTransformation)
+    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformation);
+  if (pCoordinateTransformationInv)
+    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformationInv);
   OSRCleanup();
 }
 
@@ -3695,8 +3705,8 @@ transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1
                                       std::vector<double> *error,
                                       double *rmse)
 {
-  msgError("'compute' no esta soportado para CrsTransform");
-  I3D_COMPILER_WARNING("'compute' no esta soportado para CrsTransform");
+  msgError("'compute' is not supported for CrsTransform");
+  I3D_COMPILER_WARNING("'compute' is not supported for CrsTransform");
   return transform_status::FAILURE;
 }
 
@@ -3748,10 +3758,10 @@ Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, transform_order tr
 template<typename Point_t> inline
 void CrsTransform<Point_t>::init()
 {
-  pCoordinateTransformation = OGRCreateCoordinateTransformation( mEpsgIn.getOGRSpatialReference(), 
-                                                                mEpsgOut.getOGRSpatialReference() );
-  pCoordinateTransformationInv = OGRCreateCoordinateTransformation( mEpsgOut.getOGRSpatialReference(), 
-                                                                   mEpsgIn.getOGRSpatialReference() );
+  pCoordinateTransformation = OGRCreateCoordinateTransformation(mEpsgIn.getOGRSpatialReference(),
+                                                                mEpsgOut.getOGRSpatialReference());
+  pCoordinateTransformationInv = OGRCreateCoordinateTransformation(mEpsgOut.getOGRSpatialReference(),
+                                                                   mEpsgIn.getOGRSpatialReference());
   OSRCleanup();
 }
 

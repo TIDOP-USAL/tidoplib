@@ -79,13 +79,15 @@ I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, 
 #define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
-//#define I3D_CHECK_AND_THROW(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MESSAGE, __FILE__, __LINE__, I3D_FUNCTION); }
+//#define I3D_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION); }
+#define I3D_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { I3D_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
+
 #else
 #define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
 #define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
-//#define I3D_CHECK_AND_THROW(EXPRESSION, ...) if(!(EXPRESSION)) { ; throw Exception(#EXPRESSION MESSAGE); }
+#define I3D_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { I3D_THROW_ERROR(#EXPRESSION MESSAGE); }
 
 #endif
 #endif // I3D_EXCEPTION_H

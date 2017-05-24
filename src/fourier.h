@@ -54,7 +54,7 @@ public:
  * \param[in] angle Angulo medido desde el eje x en el sistema de coordenadas pixel 
  * \return
  */
-I3D_EXPORT double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle = NULL);
+I3D_EXPORT double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle = NULL);
 
 //I3D_EXPORT double verticalLinesDetection(cv::Mat &source, std::vector<cv::Point> *pts);
 //

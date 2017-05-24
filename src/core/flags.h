@@ -201,11 +201,168 @@ T EnumFlags<T>::getFlags() const
  *
  * \endcode
  */
-#define ALLOW_BITWISE_FLAG_OPERATIONS(T_FLAG) \
-inline T_FLAG operator | (const T_FLAG flag1, const T_FLAG flag2) { return static_cast<T_FLAG> ( static_cast<std::underlying_type<T_FLAG>::type>(flag1) | static_cast<std::underlying_type<T_FLAG>::type>(flag2) ); } \
-inline T_FLAG operator & (const T_FLAG flag1, const T_FLAG flag2) { return static_cast<T_FLAG> ( static_cast<std::underlying_type<T_FLAG>::type>(flag1) & static_cast<std::underlying_type<T_FLAG>::type>(flag2) ); } \
-inline T_FLAG operator ^ (const T_FLAG flag1, const T_FLAG flag2) { return static_cast<T_FLAG> ( static_cast<std::underlying_type<T_FLAG>::type>(flag1) ^ static_cast<std::underlying_type<T_FLAG>::type>(flag2) ); } \
-inline T_FLAG operator ~ (const T_FLAG flag) { return static_cast<T_FLAG> ( ~static_cast<std::underlying_type<T_FLAG>::type>(flag) ); }
+#define ALLOW_BITWISE_FLAG_OPERATIONS(T_FLAG)                       \
+inline T_FLAG operator | (const T_FLAG flag1, const T_FLAG flag2)   \
+{                                                                   \
+  return static_cast<T_FLAG> (                                      \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag1) |        \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag2)          \
+  );                                                                \
+}                                                                   \
+                                                                    \
+inline T_FLAG operator & (const T_FLAG flag1, const T_FLAG flag2)   \
+{                                                                   \
+  return static_cast<T_FLAG> (                                      \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag1) &        \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag2)          \
+  );                                                                \
+}                                                                   \
+                                                                    \
+inline T_FLAG operator ^ (const T_FLAG flag1, const T_FLAG flag2)   \
+{                                                                   \
+  return static_cast<T_FLAG> (                                      \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag1) ^        \
+    static_cast<std::underlying_type<T_FLAG>::type>(flag2)          \
+  );                                                                \
+}                                                                   \
+                                                                    \
+inline T_FLAG operator ~ (const T_FLAG flag)                        \
+{                                                                   \
+  return static_cast<T_FLAG> (                                      \
+    ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
+  );                                                                \
+}
+
+
+//template<typename T>
+//class I3D_EXPORT Flags
+//{
+//
+//public:
+//
+//  /*!
+//   * \brief Tipo del flag
+//   */
+//  typedef T Type; 
+//
+//private:
+//
+//  /*!
+//   * \brief mFlag
+//   */
+//  Type mFlag;
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  Flags() : mFlag(0) {}
+//
+//  /*!
+//   * \brief Destructora
+//   */
+//  ~Flags();
+//
+//  /*!
+//   * \brief Operador asignación
+//   * \param flag enumeracion o unión de ellas
+//   * \return Referencia al objeto EnumFlags
+//   */
+//  Flags &operator = (const Flags<T> flag);
+//
+//  /*!
+//   * \brief Comprueba si el flag esta activo
+//   * \param flag Flag que se comprueba
+//   * \return Verdadero si esta activo y falso en caso contrario.
+//   */
+//  bool isActive(int flag) const;
+//
+//  /*!
+//   * \brief Activa un flag
+//   * \param flag Flag que se activa
+//   */
+//  void flagOn(int flag);
+//
+//  /*!
+//   * \brief Desactiva un flag
+//   * \param flag Flag que se desactiva
+//   */
+//  void flagOff(int flag);
+//
+//  /*!
+//   * \brief Invierte un flag
+//   * \param flag Flag que se invierte
+//   */
+//  void switchFlag(int flag);
+//
+//  /*!
+//   * \brief Pone a cero todos los flags
+//   */
+//  void clear();
+//
+//  /*!
+//   * \brief Devuelve los flags
+//   * \return
+//   */
+//  T getFlags() const;
+//
+//};
+//
+//template<typename T> inline
+//Flags<T>::~Flags()
+//{
+//}
+//
+//template<typename T> inline
+//Flags<T> &Flags<T>::operator = (const Flags<T> flag)
+//{
+//  mFlag = flag.mFlag;
+//  return *this;
+//}
+//
+//template<typename T> inline
+//bool Flags<T>::isActive(int flag) const
+//{
+//  return 0 != (mFlag & static_cast<Type>(1 << flag) );
+//}
+//
+//template<typename T> inline
+//void Flags<T>::flagOn(int flag)
+//{
+//  mFlag |= static_cast<Type>(1 << flag);
+//}
+//
+//template<typename T> inline
+//void Flags<T>::flagOff(int flag)
+//{
+//  mFlag &= ~static_cast<Type>(1 << flag);
+//}
+//
+//template<typename T> inline
+//void Flags<T>::switchFlag(int flag)
+//{
+//  if ( isActive(flag) ) flagOff(flag);
+//  else flagOn(flag);
+//}
+//
+//template<typename T> inline
+//void Flags<T>::clear()
+//{
+//  mFlag = static_cast<Type>(0);
+//}
+//
+//template<typename T> inline
+//T Flags<T>::getFlags() const
+//{
+//  return static_cast<T> (mFlag);
+//}
+//
+//typedef Flags<uint8_t> Flags_8;
+//typedef Flags<uint16_t> Flags_16;
+//typedef Flags<uint32_t> Flags_32;
+//typedef Flags<uint64_t> Flags_64;
+//
 
 } // End namespace I3D
 

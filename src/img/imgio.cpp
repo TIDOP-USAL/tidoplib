@@ -172,14 +172,23 @@ char **GdalRaster::gdalOpt = 0;//CSLSetNameValue( SGD_ImgFileGDAL::gdalOpt, "QUA
 
 
 GdalRaster::GdalRaster() 
-  : VrtRaster(), bTempFile(false), pDataset(0), pRasterBand(0), mGdalDataType(GDT_Unknown), mTempName("") 
+  : VrtRaster(), 
+    bTempFile(false), 
+    pDataset(0), 
+    pRasterBand(0), 
+    mGdalDataType(GDT_Unknown), 
+    mTempName("") 
 {
   RegisterGdal::init();
 }
 
 GdalRaster::GdalRaster(const GdalRaster &gdalRaster)
-  : VrtRaster(), bTempFile(gdalRaster.bTempFile), pDataset(gdalRaster.pDataset),
-    pRasterBand(gdalRaster.pRasterBand), mGdalDataType(gdalRaster.mGdalDataType), mTempName(gdalRaster.mTempName)
+  : VrtRaster(), 
+    bTempFile(gdalRaster.bTempFile), 
+    pDataset(gdalRaster.pDataset),
+    pRasterBand(gdalRaster.pRasterBand), 
+    mGdalDataType(gdalRaster.mGdalDataType), 
+    mTempName(gdalRaster.mTempName)
 {
   RegisterGdal::init();
 }
@@ -222,26 +231,26 @@ void GdalRaster::close()
   mName = "";
 }
 
-int GdalRaster::open(const char *file, Mode mode)
+GdalRaster::Status GdalRaster::open(const char *file, Mode mode)
 {
   close();
 
   mName = file;
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return 1;
+  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
   
   const char *driverName = getDriverFromExt(ext);
-  if (driverName == NULL) return 1;
+  if (driverName == NULL) return Status::OPEN_FAIL;
 
   GDALAccess gdal_access;
   switch (mode) {
-  case I3D::Mode::Read:
+  case GdalRaster::Mode::Read:
     gdal_access = GA_ReadOnly;
     break;
-  case I3D::Mode::Update:
+  case GdalRaster::Mode::Update:
     gdal_access = GA_Update;
     break;
-  case I3D::Mode::Create:
+  case GdalRaster::Mode::Create:
     gdal_access = GA_Update;
     break;
   default:
@@ -251,9 +260,9 @@ int GdalRaster::open(const char *file, Mode mode)
 
   bTempFile = false;
 
-  if (mode == Mode::Create) {
+  if (mode == GdalRaster::Mode::Create) {
     driver = GetGDALDriverManager()->GetDriverByName(driverName); 
-    if (driver == NULL) return 1;
+    if (driver == NULL) return Status::OPEN_FAIL;
     char **gdalMetadata = driver->GetMetadata();
     if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
       // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
@@ -271,14 +280,14 @@ int GdalRaster::open(const char *file, Mode mode)
     char dir[I3D_MAX_PATH];
     if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
       createDir(dir);
-    return 0; 
+    return Status::OPEN_OK; 
   } else {
     pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
     if (pDataset == NULL) {
-      return 1;
+      return Status::OPEN_FAIL;
     } else {
       update();
-      return 0; 
+      return Status::OPEN_OK; 
     }
   }
 }
@@ -455,7 +464,7 @@ int GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
 
 #endif // HAVE_OPENCV
 
-int GdalRaster::createCopy(const char *fileOut)
+File::Status GdalRaster::createCopy(const char *fileOut)
 {
   //TODO: revisar
   char ext[I3D_MAX_EXT];
@@ -464,11 +473,15 @@ int GdalRaster::createCopy(const char *fileOut)
     GDALDataset *pTempDataSet = driver->CreateCopy(fileOut, pDataset, FALSE, NULL, NULL, NULL);
     if (!pTempDataSet) {
       msgError("No se pudo crear la imagen");
+      return Status::FAILURE;
     } else {
       GDALClose((GDALDatasetH)pTempDataSet);
+      return Status::SUCCESS;
     }
-  } else msgError("No se pudo crear la imagen");
-  return 1;
+  } else {
+    msgError("No se pudo crear la imagen");
+    return Status::FAILURE;
+  }
 }
 
 const char* GdalRaster::getDriverFromExt(const char *ext)
@@ -987,7 +1000,15 @@ void RawImage::update()
 /* ---------------------------------------------------------------------------------- */
 
 
-
+RasterGraphics::RasterGraphics()
+  : File(),
+    mRows(0), 
+    mCols(0), 
+    mBands(0), 
+    mDataType(DataType::I3D_8U), 
+    mColorDepth(0) 
+{
+}
 
 RasterGraphics::~RasterGraphics()
 {
@@ -999,13 +1020,13 @@ void RasterGraphics::close()
   if (mImageFormat) mImageFormat->close();
 }
 
-Status RasterGraphics::open(const char *file, Mode mode)
+File::Status RasterGraphics::open(const char *file, File::Mode mode)
 {
   close();
 
   mName = file;
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
 
   const char *frtName;
 
@@ -1024,36 +1045,36 @@ Status RasterGraphics::open(const char *file, Mode mode)
     // Otros formatos
   }
 
-  if (mImageFormat && mImageFormat->open(file, mode) == 0) {
+  if (mImageFormat && mImageFormat->open(file, mode) == File::Status::OPEN_OK) {
     update();
-    return Status::OPEN_OK;
-  } else return Status::OPEN_FAIL;
+    return File::Status::OPEN_OK;
+  } else return File::Status::OPEN_FAIL;
 }
 
-Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
-  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == 0) return Status::SUCCESS;
-  else return Status::FAILURE;
+File::Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
+  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == 0) return File::Status::SUCCESS;
+  else return File::Status::FAILURE;
 }
 
 #ifdef HAVE_OPENCV
 
-Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+File::Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  if (!mImageFormat) return Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
+  if (!mImageFormat) return File::Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
-  return Status::SUCCESS;
+  return File::Status::SUCCESS;
 }
 
-Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
+File::Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
 {
-  if (mImageFormat && mImageFormat->write(image, w) == 0) return Status::SUCCESS;
-  else return Status::FAILURE;
+  if (mImageFormat && mImageFormat->write(image, w) == 0) return File::Status::SUCCESS;
+  else return File::Status::FAILURE;
 }
 
-Status RasterGraphics::write(const cv::Mat &image, Helmert2D<PointI> *trf)
+File::Status RasterGraphics::write(const cv::Mat &image, Helmert2D<PointI> *trf)
 {
-  if (mImageFormat && mImageFormat->write(image, trf) == 0) return Status::SUCCESS;
-  else return Status::FAILURE;
+  if (mImageFormat && mImageFormat->write(image, trf) == 0) return File::Status::SUCCESS;
+  else return File::Status::FAILURE;
 }
 
 #else
@@ -1078,14 +1099,79 @@ Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
 
 #endif
 
-Status RasterGraphics::saveAs(const char *file) 
+//int RasterGraphics::saveAs(const char *file) 
+//{
+//  //TODO: Comprobar si se puede convertir directamente entre formatos. 
+//  if (!mImageFormat) return 1;
+//  MessageManager::pause();
+//  Status err = mImageFormat->createCopy(file);
+//  MessageManager::resume();
+//  if (err == 1) {
+//    // No se puede hacer directamente la copia
+//    //TODO: Ahora se esta trabajando en memoria pero para imagenes muy grandes dará problemas asi que hay que modificarlo
+//    //mImageFormat->read(&buff);
+//    //RasterGraphics imageOut;
+//    //if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+//    //  if (imageOut.create(mRows, mCols, mBands, mDataType) != Status::FAILURE) {
+//    //    if (imageOut.write(buff) != Status::FAILURE) {
+//    //      return Status::SUCCESS;
+//    //    }
+//    //  }
+//    //} 
+// 
+//    //TODO: Imagenes de 16 bits. De momento se convierten a 8 bits
+//    DataType outDataType;
+//    if (mDataType == DataType::I3D_16U) {
+//      outDataType = DataType::I3D_8U;
+//      msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
+//    } else {
+//      outDataType = mDataType;
+//    }
+//
+//    RasterGraphics imageOut;
+//    if (imageOut.open(file, File::Mode::Create) != File::Status::OPEN_FAIL) {
+//      if (imageOut.create(mRows, mCols, mBands, outDataType) != File::Status::FAILURE) {
+//        for (int r = 0; r < mRows - 1; r++) {
+//#ifdef HAVE_OPENCV
+//          cv::Mat buff; 
+//#else
+//          uchar *buff;
+//#endif
+//          WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
+//          mImageFormat->read(&buff, wrw);
+//          if (imageOut.write(buff, wrw) != File::Status::FAILURE) {
+//            return File::Status::SUCCESS;
+//          }
+//        }
+//        
+////        parallel_for(0, mRows - 1, [&](int r) {
+////#ifdef HAVE_OPENCV
+////          cv::Mat buff; 
+////#else
+////          uchar *buff;
+////#endif
+////          WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
+////          mImageFormat->read(&buff, wrw);
+////          if (imageOut.write(buff, wrw) != Status::FAILURE) {
+////            //return Status::SUCCESS;
+////          }
+////        });
+//
+//      }
+//    }
+//    return File::Status::FAILURE;
+//  }
+//  return File::Status::SUCCESS;
+//}
+
+File::Status RasterGraphics::createCopy(const char *file) 
 {
   //TODO: Comprobar si se puede convertir directamente entre formatos. 
-  if (!mImageFormat) return Status::FAILURE;
+  if (!mImageFormat) return File::Status::FAILURE;
   MessageManager::pause();
-  int err = mImageFormat->createCopy(file);
+  Status status = mImageFormat->createCopy(file);
   MessageManager::resume();
-  if (err == 1) {
+  if (status == Status::FAILURE) {
     // No se puede hacer directamente la copia
     //TODO: Ahora se esta trabajando en memoria pero para imagenes muy grandes dará problemas asi que hay que modificarlo
     //mImageFormat->read(&buff);
@@ -1108,8 +1194,8 @@ Status RasterGraphics::saveAs(const char *file)
     }
 
     RasterGraphics imageOut;
-    if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
-      if (imageOut.create(mRows, mCols, mBands, outDataType) != Status::FAILURE) {
+    if (imageOut.open(file, File::Mode::Create) != File::Status::OPEN_FAIL) {
+      if (imageOut.create(mRows, mCols, mBands, outDataType) != File::Status::FAILURE) {
         for (int r = 0; r < mRows - 1; r++) {
 #ifdef HAVE_OPENCV
           cv::Mat buff; 
@@ -1118,8 +1204,8 @@ Status RasterGraphics::saveAs(const char *file)
 #endif
           WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
           mImageFormat->read(&buff, wrw);
-          if (imageOut.write(buff, wrw) != Status::FAILURE) {
-            return Status::SUCCESS;
+          if (imageOut.write(buff, wrw) != File::Status::FAILURE) {
+            return File::Status::SUCCESS;
           }
         }
         
@@ -1138,12 +1224,10 @@ Status RasterGraphics::saveAs(const char *file)
 
       }
     }
-    return Status::FAILURE;
-  }
-  return Status::SUCCESS;
+    return File::Status::FAILURE;
+  } 
+  return status;
 }
-
-
 
 int RasterGraphics::getRows() const
 {
@@ -1184,13 +1268,13 @@ void RasterGraphics::update()
 /* ---------------------------------------------------------------------------------- */
 
 
-Status GeoRasterGraphics::open(const char *file, Mode mode)
+File::Status GeoRasterGraphics::open(const char *file, File::Mode mode)
 {
   close();
 
   mName = file;
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
 #ifdef HAVE_GDAL
   if (const char *driverName = GdalRaster::getDriverFromExt(ext)) { 
     // Existe un driver de GDAL para el formato de imagen
@@ -1204,7 +1288,7 @@ Status GeoRasterGraphics::open(const char *file, Mode mode)
     mImageFormat->open(file, mode);
     update();
   }
-  return Status::OPEN_OK;
+  return File::Status::OPEN_OK;
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const

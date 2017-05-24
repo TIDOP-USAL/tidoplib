@@ -48,7 +48,7 @@ void logScale(const cv::Mat &in, cv::Mat *out)
   cv::log(*out, *out);
 }
 
-double fourierLinesDetection(cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle )
+double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std::vector<std::vector<cv::Point>> *pts, double *angle )
 {
   if (source.empty()) return 0;
 

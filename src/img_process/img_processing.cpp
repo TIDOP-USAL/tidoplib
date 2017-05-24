@@ -26,7 +26,7 @@ ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) co
 {
   if (matIn.empty()) return ProcessExit::FAILURE;
   matIn.copyTo(*matOut);
-  for (const auto process : mProcessList) {
+  for (const auto &process : mProcessList) {
     if (process->execute(*matOut, matOut) != ImgProcessing::Status::OK)
       return ProcessExit::FAILURE;
   }

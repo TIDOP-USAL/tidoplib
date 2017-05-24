@@ -1018,6 +1018,78 @@ public:
 
 /* ---------------------------------------------------------------------------------- */
 
+/*!
+ * \brief Clase base para manejo de ficheros.
+ *
+ * Esta clase define la interfaz básica para lectura, creación y escritura de ficheros
+ */
+class I3D_EXPORT File
+{
+public:
+
+  //TODO: Revisar los modos. Igual es mejor utilizar flags
+  /*!
+   * \brief Modos de apertura de ficheros
+   */
+  enum class Mode
+  {
+    Read,      /*!< Lectura */
+    Update,    /*!< Lectura y escritura. */
+    Create     /*!< Creaciçón */
+  };
+
+  /*!
+   * \brief Estado
+   */
+  enum class Status
+  {
+    OPEN_OK,
+    OPEN_FAIL,
+    SAVE_OK,
+    SUCCESS,
+    FAILURE
+  };
+
+protected:
+  
+  /*!
+   * \brief Nombre del fichero
+   */
+  std::string mName;
+
+public:
+
+  /*!
+   * \brief Constructora
+   */
+  File() : mName("") {}
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~File(){}
+
+  /*!
+   * \brief Cierra el fichero
+   */
+  virtual void close() = 0;
+
+  /*!
+   * \brief Abre un fichero
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura
+   * \return
+   * \see Mode
+   */
+  virtual Status open(const char *file, Mode mode = Mode::Read) = 0;
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  virtual Status createCopy(const char *fileOut) = 0;
+
+};
+
 
 } // End namespace I3D
 

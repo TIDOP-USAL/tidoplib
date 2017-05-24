@@ -6,6 +6,7 @@
 
 #include "core/config.h"
 #include "core/defs.h"
+#include "core/utils.h" 
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -44,21 +45,21 @@ namespace I3D
 //namespace IO
 //{
 
-enum class Mode
-{
-  Read,
-  Update,
-  Create
-};
+//enum class Mode
+//{
+//  Read,
+//  Update,
+//  Create
+//};
 
-enum class Status
-{
-  OPEN_OK,
-  OPEN_FAIL,
-  SAVE_OK,
-  SUCCESS,
-  FAILURE
-};
+//enum class Status
+//{
+//  OPEN_OK,
+//  OPEN_FAIL,
+//  SAVE_OK,
+//  SUCCESS,
+//  FAILURE
+//};
 
 //}
 
@@ -116,8 +117,9 @@ public:
 
 
 
-class I3D_EXPORT VrtRaster
+class I3D_EXPORT VrtRaster : public File
 {
+
 protected:
   
   /*!
@@ -145,14 +147,14 @@ protected:
   /*!
    * \brief Nombre del fichero
    */
-  std::string mName;
+  //std::string mName;
 
 public:
 
   /*!
    * \brief Constructora
    */
-  VrtRaster() : mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0), mName("") {}
+  VrtRaster() : File(), mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0) {}
 
   /*!
    * \brief Destructora
@@ -162,7 +164,7 @@ public:
   /*!
    * \brief Cierra el fichero imagen
    */
-  virtual void close() = 0;
+  //virtual void close() = 0;
 
   /*!
    * \brief Abre un fichero imagen
@@ -171,7 +173,7 @@ public:
    * \return
    * \see Mode
    */
-  virtual int open(const char *file, Mode mode = Mode::Read) = 0;
+  //virtual int open(const char *file, Mode mode = Mode::Read) = 0;
 
   /*!
    * \brief Crea una imagen
@@ -243,7 +245,7 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  virtual int createCopy(const char *fileOut) = 0;
+  //virtual int createCopy(const char *fileOut) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -388,7 +390,7 @@ public:
    * \return
    * \see Mode
    */
-  int open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const char *file, File::Mode mode = File::Mode::Read) override;
 
   /*!
    * \brief Crea una imagen
@@ -460,7 +462,7 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  int createCopy(const char *fileOut) override;
+  Status createCopy(const char *fileOut) override;
 
   /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -768,7 +770,7 @@ private:
  * Una vez abierta la imagen se puede cargar la totalidad o parte de una
  * imagen. Se puede cargar a resolución completa o a otra resolución
  */
-class I3D_EXPORT RasterGraphics
+class I3D_EXPORT RasterGraphics : public File
 {
 
 public:
@@ -816,7 +818,7 @@ protected:
   /*!
    * \brief Nombre del fichero
    */
-  std::string mName;
+  //std::string mName;
 
   std::unique_ptr<VrtRaster> mImageFormat;
 
@@ -825,8 +827,7 @@ public:
   /*!
    * \brief Constructor de la clase RasterGraphics
    */
-  RasterGraphics()
-    : mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0), mName("") { }
+  RasterGraphics();
 
   /*!
    * \brief Destructora de la clase RasterGraphics
@@ -845,7 +846,7 @@ public:
    * \return Status
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Read);
+  virtual File::Status open(const char *file, File::Mode mode = File::Mode::Read) override;
 
   /*!
    * \brief Crea una imagen
@@ -854,7 +855,7 @@ public:
    * \param[in] bands Número de bandas de la imagen
    * \param[in] type Tipo de datos
    */
-  Status create(int rows, int cols, int bands, DataType type); //... No me convence el nombre
+  File::Status create(int rows, int cols, int bands, DataType type); //... No me convence el nombre
 
 #ifdef HAVE_OPENCV
 
@@ -865,21 +866,21 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
+  File::Status read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  Status write(const cv::Mat &image, const WindowI &w);
+  File::Status write(const cv::Mat &image, const WindowI &w);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
-  Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
+  File::Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
 
 #else
 
@@ -913,7 +914,7 @@ public:
    * \param[in] file Nombre con el que se guarda el fichero
    * \return
    */
-  Status saveAs(const char *file);
+  File::Status createCopy(const char *fileOut) override;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -983,7 +984,7 @@ public:
    * \param mode
    * \return
    */
-  Status open(const char *file, Mode mode) override;
+  File::Status open(const char *file, File::Mode mode) override;
 
   /*!
    * \brief georeference

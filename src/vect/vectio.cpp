@@ -126,7 +126,7 @@ void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
       } catch (std::exception &e) {
         msgError(e.what());
       }
-      delete ogrStyleMgr, ogrStyleMgr = 0;
+      if (ogrStyleMgr) delete ogrStyleMgr, ogrStyleMgr = 0;
 
           //GVE_Base *gent;
           //gent = ReadOgrGeometry( poGeometry, ly );
