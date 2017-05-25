@@ -185,10 +185,10 @@ int main(int argc, char** argv)
   cv::Mat mat_out;
   double scale = 4.;   // 25% de escala de la resolución original 
 
-  if (image.open(img.c_str()) == Status::OPEN_FAIL) exit(EXIT_FAILURE);
+  if (image.open(img.c_str()) == RasterGraphics::Status::OPEN_FAIL) exit(EXIT_FAILURE);
 
   // saveAs() tiene que crear una copia con la libreria adecuada si tienen modo de copia
-  image.saveAs(img_out.c_str());
+  image.createCopy(img_out.c_str());
 
   //try {    
   //  WindowI w(PointI(-100, -100), PointI(3900, 3900)); // Ventana de 4000x4000                          

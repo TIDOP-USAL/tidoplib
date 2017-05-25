@@ -231,7 +231,7 @@ void GdalRaster::close()
   mName = "";
 }
 
-GdalRaster::Status GdalRaster::open(const char *file, Mode mode)
+GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 {
   close();
 
@@ -244,13 +244,13 @@ GdalRaster::Status GdalRaster::open(const char *file, Mode mode)
 
   GDALAccess gdal_access;
   switch (mode) {
-  case GdalRaster::Mode::Read:
+  case Mode::Read:
     gdal_access = GA_ReadOnly;
     break;
-  case GdalRaster::Mode::Update:
+  case Mode::Update:
     gdal_access = GA_Update;
     break;
-  case GdalRaster::Mode::Create:
+  case Mode::Create:
     gdal_access = GA_Update;
     break;
   default:
@@ -260,7 +260,7 @@ GdalRaster::Status GdalRaster::open(const char *file, Mode mode)
 
   bTempFile = false;
 
-  if (mode == GdalRaster::Mode::Create) {
+  if (mode == Mode::Create) {
     driver = GetGDALDriverManager()->GetDriverByName(driverName); 
     if (driver == NULL) return Status::OPEN_FAIL;
     char **gdalMetadata = driver->GetMetadata();
@@ -292,18 +292,18 @@ GdalRaster::Status GdalRaster::open(const char *file, Mode mode)
   }
 }
 
-int GdalRaster::create(int rows, int cols, int bands, DataType type) {
-  if (driver == NULL) return 1;
+GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) {
+  if (driver == NULL) return Status::FAILURE;
   if (pDataset) GDALClose(pDataset);
   pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
-  if (!pDataset) return 1;
+  if (!pDataset) return Status::FAILURE;
   update();
-  return 0;
+  return Status::SUCCESS;
 }
 
 #ifdef HAVE_OPENCV
 
-void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
   WindowI wRead;
   PointI offset;
@@ -325,24 +325,26 @@ void GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmer
 
   //cv::Size size(mRows, mCols);
   image->create(size, gdalToOpenCv(mGdalDataType, mBands));
-  if ( image->empty() ) return;
+  if ( image->empty() ) return Status::FAILURE;
 
   uchar *buff = image->ptr();
   size_t nPixelSpace = image->elemSize();
   size_t nLineSpace = image->elemSize() * image->cols;
   size_t nBandSpace = image->elemSize1();
 
-  /*CPLErr cerr =*/ pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
+  CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
                                     wRead.getWidth(), wRead.getHeight(),
                                     buff, size.width, size.height, mGdalDataType,
                                     mBands, panBandMap().data(), (int)nPixelSpace,
                                     (int)nLineSpace, (int)nBandSpace );
 
+  if (cerr == 0) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
-int GdalRaster::write(const cv::Mat &image, const WindowI &w)
+GdalRaster::Status GdalRaster::write(const cv::Mat &image, const WindowI &w)
 {
-  if (pDataset == NULL) return 1;
+  if (pDataset == NULL) return Status::FAILURE;
   //if (!image.isContinuous()) image = image.clone();
   //uchar *buff = image.ptr();
   uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
@@ -357,16 +359,16 @@ int GdalRaster::write(const cv::Mat &image, const WindowI &w)
                                    panBandMap().data(), (int)nPixelSpace, 
                                    (int)nLineSpace, (int)nBandSpace);
 
-  if ( cerr ) return 1;
-  else return 0;
+  if (cerr == 0) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
-int GdalRaster::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
 {
   //TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
   //anteriormente a create y asignar los valores correctos.
   // De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
-  if (pDataset == NULL) return 1;
+  if (pDataset == NULL) return Status::FAILURE;
   //if (!image.isContinuous()) image = image.clone();
   //uchar *buff = image.ptr();
   uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
@@ -385,13 +387,13 @@ int GdalRaster::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
                                    panBandMap().data(), (int)nPixelSpace, 
                                    (int)nLineSpace, (int)nBandSpace);
 
-  if ( cerr ) return 1;
-  else return 0;
+  if (cerr == 0) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
 #else
 
-void GdalRaster::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
   WindowI wRead;
   PointI offset;
@@ -410,17 +412,19 @@ void GdalRaster::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D
   size_t nLineSpace = mBands*mColorDepth * mCols;
   size_t nBandSpace = mBands*mColorDepth*mCols;
 
-  /*CPLErr cerr =*/ pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
+  CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
                                     wRead.getWidth(), wRead.getHeight(),
                                     buff, size.width, size.height, mGdalDataType,
                                     mBands, panBandMap().data(), (int)nPixelSpace,
                                     (int)nLineSpace, (int)nBandSpace );
 
+  if (cerr == 0) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
-int GdalRaster::write(const uchar *buff, const WindowI &w)
+GdalRaster::Status GdalRaster::write(const uchar *buff, const WindowI &w)
 {
-  if (pDataset == NULL) return 1;
+  if (pDataset == NULL) return Status::FAILURE;
   size_t nPixelSpace = mBands;
   size_t nLineSpace = mBands * w.getWidth();
   size_t nBandSpace = 1;
@@ -432,11 +436,11 @@ int GdalRaster::write(const uchar *buff, const WindowI &w)
                                    panBandMap().data(), (int)nPixelSpace, 
                                    (int)nLineSpace, (int)nBandSpace);
 
-  if ( cerr ) return 1;
-  else return 0;
+  if (cerr == 0) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
-int GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
 {
   //if (pDataset == NULL) return 1;
   ////if (!image.isContinuous()) image = image.clone();
@@ -464,7 +468,7 @@ int GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
 
 #endif // HAVE_OPENCV
 
-File::Status GdalRaster::createCopy(const char *fileOut)
+GdalRaster::Status GdalRaster::createCopy(const char *fileOut)
 {
   //TODO: revisar
   char ext[I3D_MAX_EXT];
@@ -582,7 +586,7 @@ void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
 }
 
 
-void GdalGeoRaster::read(cv::Mat *image, const WindowD &wTerrain, double scale)
+GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const WindowD &wTerrain, double scale)
 {
 
   // Se transforma la ventana a coordenadas imagen
@@ -591,7 +595,7 @@ void GdalGeoRaster::read(cv::Mat *image, const WindowD &wTerrain, double scale)
 
   WindowI wRead(wLoad);
   Helmert2D<PointI> trf;
-  GdalRaster::read(image, wRead, scale, &trf);
+  return GdalRaster::read(image, wRead, scale, &trf);
 }
 
 void GdalGeoRaster::update()
@@ -696,14 +700,14 @@ void RawImage::close()
   mName = "";
 }
 
-int RawImage::open(const char *file, Mode mode)
+RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
 {
   int  ret;
   
   mName = file;
 
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return 1;
+  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
   bCanon = isRawExt(ext) == 1;
 
 #ifdef HAVE_EDSDK
@@ -713,15 +717,15 @@ int RawImage::open(const char *file, Mode mode)
     EdsAccess eds_access;
     EdsFileCreateDisposition eds_create;
     switch (mode) {
-    case I3D::Mode::Read:
+    case Mode::Read:
       eds_access = kEdsAccess_Read;
       eds_create = kEdsFileCreateDisposition_OpenExisting;
       break;
-    case I3D::Mode::Update:
+    case Mode::Update:
       eds_access = kEdsAccess_ReadWrite;
       eds_create = kEdsFileCreateDisposition_OpenExisting;
       break;
-    case I3D::Mode::Create:
+    case Mode::Create:
       eds_access = kEdsAccess_Write;
       eds_create = kEdsFileCreateDisposition_CreateAlways;
       break;
@@ -736,33 +740,33 @@ int RawImage::open(const char *file, Mode mode)
       err = EdsCreateImageRef(mInputStream, &mEdsImage);
       if (err == EDS_ERR_OK) {
         update();
-        return 0;
+        return Status::OPEN_OK;
       }
     } 
-    return 1;
+    return Status::OPEN_FAIL;
   } else {
 #endif
 #ifdef HAVE_LIBRAW
   
     if ( (ret = mRawProcessor->open_file(file)) != LIBRAW_SUCCESS) {
       msgError("Cannot open_file %s: %s", file, libraw_strerror(ret));
-      return 1;
+      return Status::OPEN_FAIL;
     }
 
     if ((ret = mRawProcessor->unpack()) != LIBRAW_SUCCESS) {
       msgError("Cannot unpack %s: %s", file, libraw_strerror(ret));
-      return 1;
+      return Status::OPEN_FAIL;
     }
 
     // .... esto se deberia mover de aqui?
     if ((ret = mRawProcessor->dcraw_process()) != LIBRAW_SUCCESS) {
       msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
-      return 1;
+      return Status::OPEN_FAIL;
     }
 
     if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
       msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
-      return 1;
+      return Status::OPEN_FAIL;
     } else  
       update();
 #endif
@@ -771,18 +775,19 @@ int RawImage::open(const char *file, Mode mode)
   }
 #endif
 
-  return 0;
+  return Status::OPEN_OK;
 }
 
-int RawImage::create(int rows, int cols, int bands, DataType type)
+RawImage::Status RawImage::create(int rows, int cols, int bands, DataType type)
 {
-  return 0;
+  return Status::FAILURE;
 }
 
 #ifdef HAVE_OPENCV  
 
-void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+RawImage::Status RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
+  Status status = Status::FAILURE;
   WindowI wRead;
   PointI offset;
   windowRead(wLoad, &wRead, &offset);
@@ -799,7 +804,7 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
   int depth = CV_8U;
   image->create(size, CV_MAKETYPE(depth, mBands));
   
-  if ( image->empty() ) return;
+  if ( image->empty() ) return status;
 
   cv::Mat aux;
 
@@ -825,10 +830,12 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
         EdsVoid* pBuff;
         EdsGetPointer(dstStreamRef, &pBuff);
         aux = cv::Mat(size.height, size.width, CV_MAKETYPE(depth, mBands), pBuff);
+        if (aux.empty() == false) {
+          cvtColor(aux, *image, CV_RGB2BGR);
+          status = Status::SUCCESS;
+        }
       }
     }
-    if (aux.empty() == false ) 
-      cvtColor(aux, *image, CV_RGB2BGR);
 
     EdsRelease(dstStreamRef);
   } else {
@@ -856,42 +863,43 @@ void RawImage::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2
 #ifdef HAVE_EDSDK
   }
 #endif
+  return status;
 }
   
-int RawImage::write(const cv::Mat &image, const WindowI &w)
+RawImage::Status RawImage::write(const cv::Mat &image, const WindowI &w)
 {
-  return 0;
+  return Status::FAILURE;
 }
  
-int RawImage::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
+RawImage::Status RawImage::write(const cv::Mat &image, const Helmert2D<PointI> *trf)
 {
-  return 0;
+  return Status::FAILURE;
 }
 
 #else
 
-void RawImage::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+RawImage::Status RawImage::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-
+  return Status::FAILURE;
 }
   
-int RawImage::write(const uchar *buff, const WindowI &w)
+RawImage::Status RawImage::write(const uchar *buff, const WindowI &w)
 {
-  return 0;
+  return Status::FAILURE;
 }
  
-int RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf)
+RawImage::Status RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf)
 {
-  return 0;
+  return Status::FAILURE;
 }
 
 #endif // HAVE_OPENCV
 
-int RawImage::createCopy(const char *fileOut)
+RawImage::Status RawImage::createCopy(const char *fileOut)
 {
-  int i_ret = 0;
+  Status status = Status::SUCCESS;
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) != 0) return 1;
+  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
 #ifdef HAVE_EDSDK
 
   if (bCanon) {
@@ -902,7 +910,7 @@ int RawImage::createCopy(const char *fileOut)
       edsTargetImageType = kEdsTargetImageType_Jpeg;
     } else {
       msgError("No se pudo crear la imagen");
-      return 1;
+      return Status::FAILURE;
     }
 
     EdsError err;
@@ -923,7 +931,7 @@ int RawImage::createCopy(const char *fileOut)
       EdsRelease(input_image);
     }
     if (err != EDS_ERR_OK) {
-      i_ret = 1;
+      status = Status::FAILURE;
       msgError("No se pudo crear la imagen");
     }
   } else {
@@ -935,7 +943,7 @@ int RawImage::createCopy(const char *fileOut)
 #ifdef HAVE_EDSDK
   }
 #endif
-  return i_ret;
+  return status;
 }
 
 int RawImage::isRawExt(const char *ext)
@@ -1020,13 +1028,13 @@ void RasterGraphics::close()
   if (mImageFormat) mImageFormat->close();
 }
 
-File::Status RasterGraphics::open(const char *file, File::Mode mode)
+RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mode mode)
 {
   close();
 
   mName = file;
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
+  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
 
   const char *frtName;
 
@@ -1045,35 +1053,35 @@ File::Status RasterGraphics::open(const char *file, File::Mode mode)
     // Otros formatos
   }
 
-  if (mImageFormat && mImageFormat->open(file, mode) == File::Status::OPEN_OK) {
+  if (mImageFormat && mImageFormat->open(file, mode) == Status::OPEN_OK) {
     update();
-    return File::Status::OPEN_OK;
-  } else return File::Status::OPEN_FAIL;
+    return Status::OPEN_OK;
+  } else return Status::OPEN_FAIL;
 }
 
-File::Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
-  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == 0) return File::Status::SUCCESS;
+RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
+  if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == Status::SUCCESS) return File::Status::SUCCESS;
   else return File::Status::FAILURE;
 }
 
 #ifdef HAVE_OPENCV
 
-File::Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+RasterGraphics::Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
   if (!mImageFormat) return File::Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
   return File::Status::SUCCESS;
 }
 
-File::Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
+RasterGraphics::Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
 {
-  if (mImageFormat && mImageFormat->write(image, w) == 0) return File::Status::SUCCESS;
-  else return File::Status::FAILURE;
+  if (mImageFormat && mImageFormat->write(image, w) == Status::SUCCESS) return Status::SUCCESS;
+  else return Status::FAILURE;
 }
 
-File::Status RasterGraphics::write(const cv::Mat &image, Helmert2D<PointI> *trf)
+RasterGraphics::Status RasterGraphics::write(const cv::Mat &image, Helmert2D<PointI> *trf)
 {
-  if (mImageFormat && mImageFormat->write(image, trf) == 0) return File::Status::SUCCESS;
+  if (mImageFormat && mImageFormat->write(image, trf) == Status::SUCCESS) return Status::SUCCESS;
   else return File::Status::FAILURE;
 }
 
@@ -1164,10 +1172,10 @@ Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
 //  return File::Status::SUCCESS;
 //}
 
-File::Status RasterGraphics::createCopy(const char *file) 
+RasterGraphics::Status RasterGraphics::createCopy(const char *file) 
 {
   //TODO: Comprobar si se puede convertir directamente entre formatos. 
-  if (!mImageFormat) return File::Status::FAILURE;
+  if (!mImageFormat) return Status::FAILURE;
   MessageManager::pause();
   Status status = mImageFormat->createCopy(file);
   MessageManager::resume();
@@ -1194,8 +1202,8 @@ File::Status RasterGraphics::createCopy(const char *file)
     }
 
     RasterGraphics imageOut;
-    if (imageOut.open(file, File::Mode::Create) != File::Status::OPEN_FAIL) {
-      if (imageOut.create(mRows, mCols, mBands, outDataType) != File::Status::FAILURE) {
+    if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+      if (imageOut.create(mRows, mCols, mBands, outDataType) != Status::FAILURE) {
         for (int r = 0; r < mRows - 1; r++) {
 #ifdef HAVE_OPENCV
           cv::Mat buff; 
@@ -1204,8 +1212,8 @@ File::Status RasterGraphics::createCopy(const char *file)
 #endif
           WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
           mImageFormat->read(&buff, wrw);
-          if (imageOut.write(buff, wrw) != File::Status::FAILURE) {
-            return File::Status::SUCCESS;
+          if (imageOut.write(buff, wrw) != Status::FAILURE) {
+            return Status::SUCCESS;
           }
         }
         
@@ -1224,7 +1232,7 @@ File::Status RasterGraphics::createCopy(const char *file)
 
       }
     }
-    return File::Status::FAILURE;
+    return Status::FAILURE;
   } 
   return status;
 }
@@ -1331,12 +1339,13 @@ void GeoRasterGraphics::setProjection(const char *proj)
 
 #ifdef HAVE_OPENCV
 
-void GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
+GeoRasterGraphics::Status GeoRasterGraphics::read(cv::Mat *image, const WindowD &wLoad, double scale)
 {
 #ifdef HAVE_GDAL
   // No me gusta... Tiene que quedar mas sencillo la lectura de imagenes georeferenciadas.
   if (mImageFormat)
-    dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
+    return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
+  else return Status::FAILURE;
 #endif
 }
 #endif // HAVE_OPENCV
