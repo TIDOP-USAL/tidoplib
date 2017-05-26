@@ -110,4 +110,35 @@ void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin)
     (*out) *= 255;
 }
 
+
+/* ---------------------------------------------------------------------------------- */
+
+ThinningProc::ThinningProc(Thinning type)
+  : ImgProcessing(process_type::BILATERAL), 
+    mType(type)
+{
+}
+
+ThinningProc::Status ThinningProc::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  try {
+    I3D_THROW_ASSERT(!matIn.empty() && matIn.channels() == 1, "Incorrect input data");
+    thinning(matIn, matOut, mType);
+  } catch (cv::Exception &e) {
+    msgError(e.what());
+    return Status::PROCESS_ERROR;
+  } catch (I3D::Exception &e) {
+    MessageManager::release(e.what(), I3D::MessageLevel::MSG_ERROR);
+    return Status::PROCESS_ERROR;
+  }
+  return Status::OK;
+}
+
+void ThinningProc::setParameters(Thinning type)
+{
+  mType = type;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
 }

@@ -42,29 +42,8 @@ I3D_DEFAULT_WARNINGS
 namespace I3D
 {
 
-//namespace IO
-//{
 
-//enum class Mode
-//{
-//  Read,
-//  Update,
-//  Create
-//};
-
-//enum class Status
-//{
-//  OPEN_OK,
-//  OPEN_FAIL,
-//  SAVE_OK,
-//  SUCCESS,
-//  FAILURE
-//};
-
-//}
-
-
-enum class DataType
+enum class DataType : int8_t
 {
   I3D_8U,      // Equivalente a CV_8U y GDT_Byte
   I3D_8S,      // Equivalente a CV_8S
@@ -75,6 +54,7 @@ enum class DataType
   I3D_32F,     // Equivalente a CV_32F y GDT_Float32  
   I3D_64F      // Equivalente a CV_64F y GDT_Float64
 };
+
 
 //TODO: Añadir flags de opciones de formato
 
@@ -148,11 +128,6 @@ protected:
    */
   int mColorDepth;
 
-  /*!
-   * \brief Nombre del fichero
-   */
-  //std::string mName;
-
 public:
 
   /*!
@@ -164,20 +139,6 @@ public:
    * \brief Destructora
    */
   virtual ~VrtRaster(){}
-
-  /*!
-   * \brief Cierra el fichero imagen
-   */
-  //virtual void close() = 0;
-
-  /*!
-   * \brief Abre un fichero imagen
-   * \param[in] file Nombre del fichero
-   * \param[in] mode Modo de apertura
-   * \return
-   * \see Mode
-   */
-  //virtual int open(const char *file, Mode mode = Mode::Read) = 0;
 
   /*!
    * \brief Crea una imagen
@@ -245,11 +206,6 @@ public:
 
 
 #endif
-
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  //virtual int createCopy(const char *fileOut) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -777,24 +733,6 @@ private:
 class I3D_EXPORT RasterGraphics : public File
 {
 
-public:
-
-  //enum class Status
-  //{
-  //  OPEN_OK,
-  //  OPEN_FAIL,
-  //  SAVE_OK,
-  //  SUCCESS,
-  //  FAILURE
-  //};
-
-  //enum class Mode
-  //{
-  //  Read,
-  //  Update,
-  //  Create
-  //};
-
 protected:
 
   /*!
@@ -819,11 +757,6 @@ protected:
    */
   int mColorDepth;
 
-  /*!
-   * \brief Nombre del fichero
-   */
-  //std::string mName;
-
   std::unique_ptr<VrtRaster> mImageFormat;
 
 public:
@@ -841,7 +774,7 @@ public:
   /*!
    * \brief Cierra el archivo imagen
    */
-  void close();
+  virtual void close() override;
 
   /*!
    * \brief Abre un archivo imagen
@@ -918,7 +851,7 @@ public:
    * \param[in] file Nombre con el que se guarda el fichero
    * \return
    */
-  Status createCopy(const char *fileOut) override;
+  virtual Status createCopy(const char *fileOut) override;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -988,7 +921,7 @@ public:
    * \param mode
    * \return
    */
-  File::Status open(const char *file, File::Mode mode) override;
+  File::Status open(const char *file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief georeference

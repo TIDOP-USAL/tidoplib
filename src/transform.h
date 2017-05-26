@@ -3392,7 +3392,7 @@ I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t>
 }
 
 /*!
- * \brief Aplica una transformación a un conjunto de entidades
+ * \brief Aplica una transformación en paralelo a un conjunto de entidades
  * \param[in] in Entidad de entrada
  * \param[out] out Entidad de salida
  * \param[in] trf Transformación que se aplica a la entidad

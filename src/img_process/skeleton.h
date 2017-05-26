@@ -2,6 +2,7 @@
 #define I3D_SKELETON_H
 
 #include "opencv2/core/core.hpp"
+#include "img_process/img_processing.h"
 
 namespace I3D
 {
@@ -47,6 +48,26 @@ void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin = Thinning::ZHAN
 
 //https://hal.archives-ouvertes.fr/hal-01245393/document
 //https://hal.archives-ouvertes.fr/hal-01222698/document
+
+
+
+
+class I3D_EXPORT ThinningProc : public ImgProcessing
+{
+
+private:
+
+  Thinning mType;
+
+public:
+
+  ThinningProc(Thinning type = Thinning::ZHANG_SUEN);
+
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  void setParameters(Thinning thin);
+};
+
 
 /*! \} */ // end of ImgProc
 

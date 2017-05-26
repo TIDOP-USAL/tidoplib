@@ -76,6 +76,7 @@ double distPointToSegment(const PointI &pt, const Line &ln)
   return distance(_pt, ptp);
 }
 
+//TODO: revisar
 double distPointToLine(const PointI &pt, const Line &ln)
 {
   PointI v1 = pt - ln.pt1;

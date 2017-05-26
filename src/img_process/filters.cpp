@@ -87,7 +87,7 @@ ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) 
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::OK;
+    return ImgProcessing::Status::PROCESS_ERROR;
   }
   return ImgProcessing::Status::OK;
 }

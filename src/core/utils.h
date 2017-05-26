@@ -1031,7 +1031,7 @@ public:
   /*!
    * \brief Modos de apertura de ficheros
    */
-  enum class Mode
+  enum class Mode : int8_t
   {
     Read,      /*!< Lectura */
     Update,    /*!< Lectura y escritura. */
@@ -1041,7 +1041,7 @@ public:
   /*!
    * \brief Estado
    */
-  enum class Status
+  enum class Status : int8_t
   {
     OPEN_OK,
     OPEN_FAIL,
@@ -1089,6 +1089,62 @@ public:
   virtual Status createCopy(const char *fileOut) = 0;
 
 };
+
+
+
+
+
+// Pole of Inaccessibility
+//void poleOfInaccessibility();
+//void poleOfInaccessibility()
+//{
+//  cv::Mat canvas = cv::Mat::zeros(400, 600, CV_8U);
+//  std::vector<cv::Point> points{
+//    cv::Point(100, 144),
+//    cv::Point(157, 93),
+//    cv::Point(245, 83),
+//    cv::Point(333, 56),
+//    cv::Point(399, 82),
+//    cv::Point(457, 117),
+//    cv::Point(465, 158),
+//    cv::Point(433, 225),
+//    cv::Point(369, 235),
+//    cv::Point(242, 264),
+//    cv::Point(171, 227),
+//    cv::Point(118, 206)
+//  };
+//
+//
+//  cv::Mat aux(points);
+//  const cv::Point *pts = (const cv::Point*) aux.data;
+//  int npts = aux.rows;
+//  cv::fillPoly(canvas, &pts, &npts, 1, cv::Scalar(255, 255, 255) );
+//  cv::Mat m_out;
+//  cv::distanceTransform(canvas, m_out, DIST_L2, 5);
+//  double max_val;
+//  cv::Point center;
+//
+//  cv::minMaxLoc(m_out, NULL, &max_val, NULL, &center);
+//  cv::Mat canvas_rgb;
+//  cvtColor(canvas, canvas_rgb, CV_GRAY2BGR);
+//  cv::line(canvas_rgb, center, center, cv::Scalar(0, 0, 255), 2);
+//
+//  double radius = I3D_DOUBLE_MAX;
+//  double dist;
+//  for (int i = 0; i < points.size(); i++) {
+//    if (i == points.size() - 1) {
+//      dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[0]));
+//    } else {
+//      dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[i+1]));
+//    }
+//    if (dist < radius) radius = dist;
+//  }
+//
+//    
+//  cv::circle(canvas_rgb, center, radius, cv::Scalar(255, 0, 0), 2);
+//
+//}
+
 
 
 } // End namespace I3D
