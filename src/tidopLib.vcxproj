@@ -93,6 +93,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="core\console.cpp" />
+    <ClCompile Include="core\datamodel.cpp" />
     <ClCompile Include="core\exception.cpp" />
     <ClCompile Include="core\mathutils.cpp" />
     <ClCompile Include="core\messages.cpp" />
@@ -120,6 +121,7 @@
   <ItemGroup>
     <ClInclude Include="core\config.h" />
     <ClInclude Include="core\console.h" />
+    <ClInclude Include="core\datamodel.h" />
     <ClInclude Include="core\defs.h" />
     <ClInclude Include="core\exception.h" />
     <ClInclude Include="core\flags.h" />

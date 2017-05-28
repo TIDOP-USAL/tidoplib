@@ -2,6 +2,7 @@
 #define I3D_DATA_MODEL_H
 
 #include <list>
+#include <vector>
 #include <memory>
 
 #include "core/defs.h"
@@ -9,24 +10,22 @@
 namespace I3D
 {
 
-class I3D_EXPORT TableRegister
-{
-public:
-  TableRegister();
-  ~TableRegister();
-
-private:
-
-};
 
 /*!
  * \brief Campo de la tabla
  *
- * Clase virtual pura que se extendera para cada tipo de dato que se
- * necesite
  */
-class I3D_EXPORT TableField
+class I3D_EXPORT TableHeaderField
 {
+public:
+
+  enum class Type
+  {
+    INT,
+    DOUBLE,
+    FLOAT,
+    STRING
+  };
 
 private:
 
@@ -35,74 +34,139 @@ private:
    */
   std::string mName;
 
+  /*!
+   * \brief Tipo del campo
+   */
+  Type mType;
+
 public:
 
   /*!
    * \brief Constructor
    * \param name Nombre del campo
    */
-  TableField(const std::string name) : mName(mName) {}
+  TableHeaderField(const std::string &name, Type type);
 
   /*!
    * \brief Destructor
    */
-  ~TableField();
+  ~TableHeaderField();
 
+  /*!
+   * \brief Devuelve el nombre del campo
+   */
+  const char *getName();
+
+  /*!
+   * \brief Devuelve el tipo del campo
+   */
+  Type getType();
 };
 
+
 /*!
- * \brief Campo de tabla de tipo entero
+ * \brief Cabecera de la tabla
  */
-class I3D_EXPORT TableFieldInt : public TableField
+class I3D_EXPORT TableHeader
 {
+private:
+
+  /*!
+   * \brief Campos de la tabla
+   */
+  std::vector<std::shared_ptr<TableHeaderField>> mTableFields;
+
 public:
 
-  TableFieldInt(const std::string name) : TableField(name)
-  {
-  }
+  /*!
+   * \brief Constructora por defecto
+   */
+  TableHeader();
 
-  ~TableFieldInt()
-  {
-  }
+  /*!
+   * \brief Constructor de copia
+   * \param[in] tableHeader
+   */
+  TableHeader(const TableHeader &tableHeader);
+
+  /*!
+   * \brief Constructor de lista
+   * \param[in] tableHeader
+   */
+  TableHeader(std::initializer_list<std::shared_ptr<TableHeaderField>> tableHeader);
+
+  /*!
+   * \brief Destructora
+   */
+  ~TableHeader();
+
+  void addField(std::shared_ptr<TableHeaderField> field);
+
+  /*!
+   * \brief Limpia la lista de procesos
+   */
+  void clear();
+
+  size_t getFieldCount();
+
+  TableHeaderField *getTableFieldName(int idx);
 
 private:
 
 };
 
-/*!
- * \brief Campo de datos de tipo double
- */
-class I3D_EXPORT TableFieldDouble : public TableField
+
+class TableRegisterField
 {
 public:
-  TableFieldDouble(const std::string name) : TableField(name)
-  {
-  }
-
-  ~TableFieldDouble()
-  {
-  }
+  TableRegisterField();
+  ~TableRegisterField();
 
 private:
 
 };
 
+
+
+
 /*!
- * \brief Campo de datos de tipo float
+ * \brief Clase que representa un registro de una tabla
  */
-class I3D_EXPORT TableFieldFloat : public TableField
+class I3D_EXPORT TableRegister
 {
+
+protected:
+  
+  /*!
+   * \brief Campos de la tabla
+   */
+  std::vector<std::shared_ptr<TableRegisterField>> mRegisterValues;
+
 public:
-  TableFieldFloat(const std::string name) : TableField(name)
-  {
-  }
 
-  ~TableFieldFloat()
-  {
-  }
+  /*!
+   * \brief Constructora por defecto
+   */
+  TableRegister();
 
-private:
+  /*!
+   * \brief Constructor de copia
+   * \param[in] tableRegister
+   */
+  TableRegister(const TableRegister &_register);
+  
+  /*!
+   * \brief Constructor de lista
+   * \param[in] registerFields
+   */
+  TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields);
 
+  /*!
+   * \brief Destructora
+   */
+  ~TableRegister();
+
+  const char *getValue(int idx);
 };
 
 
@@ -123,12 +187,12 @@ private:
   /*!
    * \brief Nombre de la tabla
    */
-  std::string mName;
+  std::string mTableName;
 
   /*!
    * \brief Campos de la tabla
    */
-  std::list<std::shared_ptr<TableField>> mTableFields;
+  std::shared_ptr<TableHeader> mTableHeader;
 
   /*!
    * \brief Registros de la tabla
@@ -139,29 +203,34 @@ private:
 
 public:
 
-  DataTable(const std::string tableName, const std::list<std::shared_ptr<TableField>> tableFields)
-    : mName(tableName), mTableFields(tableFields) { }
+  DataTable() 
+    : mTableName(""), mTableHeader(0) { }
+
+  DataTable(const DataTable &dataTable) 
+    : mTableName(dataTable.mTableName), mTableHeader(dataTable.mTableHeader) {}
+  DataTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader)
+    : mTableName(tableName), mTableHeader(tableHeader) { }
 
   ~DataTable() {}
 
-  /*!
-   * \brief read
-   */
-  void read();
+  ///*!
+  // * \brief read
+  // */
+  //void read();
+
+  ///*!
+  // * \brief write
+  // */
+  //void write();
+
 
   /*!
-   * \brief write
-   */
-  void write();
-
-
-  /*!
-   * \brief Iterador al primer punto
+   * \brief Iterador al primer registro
    */
   iterator begin();
 
   /*!
-   * \brief Iterador al último punto
+   * \brief Iterador al último registro
    */
   iterator end();
 
@@ -181,7 +250,7 @@ public:
    * \brief Nombre de la tabla
    * \return Nombre de la tabla
    */
-  std::string getName() const;
+  const char *getName() const;
 
   /*!
    * \brief Devuelve el registro
@@ -194,7 +263,13 @@ public:
    * \brief Establece el nombre de la tabla
    * \param[in] name Nombre de la tabla
    */
-  void setName(const std::string &name);
+  void setName(const char *name);
+
+  /*!
+   * \brief Establece la cabecera de la tabla
+   * \param[in] tableHeader Cabecera de la tabla
+   */
+  void setTableHeader(std::shared_ptr<TableHeader> tableHeader);
 };
 
 
@@ -231,7 +306,7 @@ public:
    * \param[in] tableFields Campos de la tabla
    * \see TableField
    */
-  void createTable(std::string tableName, std::list<std::shared_ptr<TableField>> tableFields);
+  void createTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader);
 
   /*!
    * \brief Añade una tabla al modelo de datos

@@ -7,23 +7,103 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-TableRegister::TableRegister()
+TableHeaderField::TableHeaderField(const std::string &name, Type type) 
+  : mName(name),
+    mType(type)
 {
+}
+
+TableHeaderField::~TableHeaderField()
+{
+}
+
+const char *TableHeaderField::getName()
+{
+  return mName.c_str();
+}
+
+TableHeaderField::Type TableHeaderField::getType()
+{
+  return mType;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+TableHeader::TableHeader()
+  : mTableFields(0)
+{
+}
+
+TableHeader::TableHeader(const TableHeader &tableHeader) 
+  : mTableFields(tableHeader.mTableFields) 
+{
+}
+
+TableHeader::TableHeader(std::initializer_list<std::shared_ptr<TableHeaderField>> tableHeader) 
+  : mTableFields(tableHeader) 
+{
+}
+
+TableHeader::~TableHeader()
+{
+}
+
+void TableHeader::addField(std::shared_ptr<TableHeaderField> field)
+{
+  mTableFields.push_back(field);
+}
+
+void TableHeader::clear() 
+{ 
+  mTableFields.clear(); 
+}
+
+size_t TableHeader::getFieldCount()
+{
+  return mTableFields.size();
+}
+
+TableHeaderField *TableHeader::getTableFieldName(int idx)
+{
+  return mTableFields[idx].get();
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+TableRegisterField::TableRegisterField()
+{}
+
+TableRegisterField::~TableRegisterField()
+{}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+TableRegister::TableRegister()
+  : mRegisterValues(0)
+{
+}
+
+TableRegister::TableRegister(const TableRegister &_register)
+  : mRegisterValues(_register.mRegisterValues)
+{
+}
+
+TableRegister::TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields)
+  : mRegisterValues(registerFields)
+{
+
 }
 
 TableRegister::~TableRegister()
 {
 }
 
-
-/* ---------------------------------------------------------------------------------- */
-
-
-TableField::~TableField()
+const char *TableRegister::getValue(int idx)
 {
+  //TODO: Aqui hay que ver como devolver el tipo adecuado
+  ;
 }
-
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -50,9 +130,9 @@ void DataTable::deleteRegister(int index)
   mRegister.erase(it);
 }
 
-std::string DataTable::getName() const
+const char *DataTable::getName() const
 {
-  return mName;
+  return mTableName.c_str();
 }
 
 std::shared_ptr<TableRegister> DataTable::getRegister(int index)
@@ -62,9 +142,14 @@ std::shared_ptr<TableRegister> DataTable::getRegister(int index)
   return *it;
 }
 
-void DataTable::setName(const std::string &name)
+void DataTable::setName(const char *name)
 {
-  mName = name;
+  mTableName = name;
+}
+
+void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
+{
+  mTableHeader = tableHeader;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -78,9 +163,9 @@ DataModel::~DataModel()
 {
 }
 
-void DataModel::createTable(std::string tableName, std::list<std::shared_ptr<TableField>> tableFields) 
+void DataModel::createTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader) 
 {
-  mDataTables.push_back(std::make_shared<DataTable>(tableName, tableFields));
+  mDataTables.push_back(std::make_shared<DataTable>(tableName, tableHeader));
 }
 
 void DataModel::addTable(std::shared_ptr<DataTable> table)

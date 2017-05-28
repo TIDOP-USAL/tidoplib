@@ -138,6 +138,9 @@
     <ClCompile Include="graphic_entities\linealgorithms.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
+    <ClCompile Include="core\datamodel.cpp">
+      <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="geometric_entities\operations.h">
@@ -235,6 +238,9 @@
     </ClInclude>
     <ClInclude Include="graphic_entities\linealgorithms.h">
       <Filter>Archivos de encabezado\graphic_entities</Filter>
+    </ClInclude>
+    <ClInclude Include="core\datamodel.h">
+      <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -16,6 +16,7 @@
 #endif // HAVE_OPENCV
 
 #include "core/defs.h"
+#include "core/datamodel.h"
 
 namespace I3D
 {
@@ -1081,7 +1082,7 @@ public:
    * \return
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Read) = 0;
+  virtual Status open(const char *file, Mode mode = Mode::Update) = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1091,59 +1092,67 @@ public:
 };
 
 
+class I3D_EXPORT Csv : public File, private DataTable
+{
+private:
 
+  std::fstream fs;
 
+public:
 
-// Pole of Inaccessibility
-//void poleOfInaccessibility();
-//void poleOfInaccessibility()
-//{
-//  cv::Mat canvas = cv::Mat::zeros(400, 600, CV_8U);
-//  std::vector<cv::Point> points{
-//    cv::Point(100, 144),
-//    cv::Point(157, 93),
-//    cv::Point(245, 83),
-//    cv::Point(333, 56),
-//    cv::Point(399, 82),
-//    cv::Point(457, 117),
-//    cv::Point(465, 158),
-//    cv::Point(433, 225),
-//    cv::Point(369, 235),
-//    cv::Point(242, 264),
-//    cv::Point(171, 227),
-//    cv::Point(118, 206)
-//  };
-//
-//
-//  cv::Mat aux(points);
-//  const cv::Point *pts = (const cv::Point*) aux.data;
-//  int npts = aux.rows;
-//  cv::fillPoly(canvas, &pts, &npts, 1, cv::Scalar(255, 255, 255) );
-//  cv::Mat m_out;
-//  cv::distanceTransform(canvas, m_out, DIST_L2, 5);
-//  double max_val;
-//  cv::Point center;
-//
-//  cv::minMaxLoc(m_out, NULL, &max_val, NULL, &center);
-//  cv::Mat canvas_rgb;
-//  cvtColor(canvas, canvas_rgb, CV_GRAY2BGR);
-//  cv::line(canvas_rgb, center, center, cv::Scalar(0, 0, 255), 2);
-//
-//  double radius = I3D_DOUBLE_MAX;
-//  double dist;
-//  for (int i = 0; i < points.size(); i++) {
-//    if (i == points.size() - 1) {
-//      dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[0]));
-//    } else {
-//      dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[i+1]));
-//    }
-//    if (dist < radius) radius = dist;
-//  }
-//
-//    
-//  cv::circle(canvas_rgb, center, radius, cv::Scalar(255, 0, 0), 2);
-//
-//}
+  /*!
+   * \brief Constructora
+   */
+  Csv();
+
+  /*!
+   * \brief Destructora
+   */
+  ~Csv();
+
+  /*!
+   * \brief Cierra el fichero csv
+   */
+  void close() override;
+
+  /*!
+   * \brief Crea el fichero
+   */
+  Status create(std::shared_ptr<TableHeader> tableHeader);
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  Status createCopy(const char *fileOut) override;
+
+  /*!
+   * \brief Abre un fichero csv
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura
+   * \return
+   * \see Mode
+   */
+  Status open(const char *file, Mode mode = Mode::Read) override;
+
+  /*!
+   * \brief Lee un registro de la tabla
+   */
+  TableRegister *read(int id);
+
+  /*!
+   * \brief Escribe una linea en el fichero
+   * \return
+   */
+  Status write(std::shared_ptr<TableRegister> _register);
+
+private:
+
+  /*!
+   * \brief Lee la cabecera
+   */
+  Status readHeader();
+
+};
 
 
 
