@@ -51,6 +51,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pcl", "examples\pcl.vcxproj
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrackLines", "apps\TrackLines\TrackLines.vcxproj", "{A439A09C-DC30-464B-86E0-54E807539192}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InscribedCircle", "examples\InscribedCircle.vcxproj", "{96149890-0D81-4924-8CC8-37BAD999B647}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -251,6 +253,16 @@ Global
 		{A439A09C-DC30-464B-86E0-54E807539192}.Release|Win32.ActiveCfg = Release|x64
 		{A439A09C-DC30-464B-86E0-54E807539192}.Release|x64.ActiveCfg = Release|x64
 		{A439A09C-DC30-464B-86E0-54E807539192}.Release|x64.Build.0 = Release|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Debug|Win32.ActiveCfg = Debug|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Debug|x64.ActiveCfg = Debug|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Debug|x64.Build.0 = Debug|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|Mixed Platforms.Build.0 = Release|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|Win32.ActiveCfg = Release|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|x64.ActiveCfg = Release|x64
+		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,5 +287,6 @@ Global
 		{B06BD6A3-71B5-4455-9905-ABC3A1EAFB44} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
 		{65D17603-3DB6-4EBE-94CA-5CE7D6AC0756} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
 		{A439A09C-DC30-464B-86E0-54E807539192} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
+		{96149890-0D81-4924-8CC8-37BAD999B647} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
 	EndGlobalSection
 EndGlobal

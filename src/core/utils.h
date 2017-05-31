@@ -781,7 +781,7 @@ I3D_EXPORT inline std::vector<int> sortIdx(const std::vector<T> &v)
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
 
-I3D_EXPORT void loadCameraParams(std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs);
+I3D_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
 
 I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
 
@@ -1155,6 +1155,10 @@ private:
 };
 
 
+
+
+
+//TODO: funcion para conversión entre tipos basicos en templates para evitar warnings
 
 } // End namespace I3D
 

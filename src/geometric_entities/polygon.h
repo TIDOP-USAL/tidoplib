@@ -228,19 +228,19 @@ public:
    * \brief Constructor
    * \param[in] points
    */
-  Polygon3D(const std::vector<cv::Point3_<T>> &points);
+  Polygon3D(const std::vector<Point3<T>> &points);
 
   /*!
    * \brief Constructor lista de inicialización
    * \param[in] listPoints Inicializador de lista con los puntos
    */
-  Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints);
+  Polygon3D(std::initializer_list<Point3<T>> listPoints);
 
   /*!
    * \brief Añade un punto a la colección
    * \param[in] point Punto que se añade
    */
-  void add(const cv::Point3_<T> &point) override;
+  void add(const Point3<T> &point) override;
 
   /*!
    * \brief Perimetro del poligono
@@ -263,15 +263,15 @@ Polygon3D<T>::Polygon3D(const Polygon3D &polygon)
   : Entity3DPoints<T>(entity_type::POLYGON_3D, multiPoint) {}
 
 template<typename T> inline
-Polygon3D<T>::Polygon3D(const std::vector<cv::Point3_<T>> &points) 
+Polygon3D<T>::Polygon3D(const std::vector<Point3<T>> &points) 
   : Entity3DPoints<T>(entity_type::POLYGON_3D, vPoint) {}
 
 template<typename T> inline
-Polygon3D<T>::Polygon3D(std::initializer_list<cv::Point3_<T>> listPoints) 
+Polygon3D<T>::Polygon3D(std::initializer_list<Point3<T>> listPoints) 
   : Entity3DPoints<T>(entity_type::POLYGON_3D, listPoints) {}
 
 template<typename T> inline
-void Polygon3D<T>::add(const cv::Point3_<T> &point)
+void Polygon3D<T>::add(const Point3<T> &point)
 {
   mPoints.push_back(point);
 }

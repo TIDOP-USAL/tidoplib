@@ -103,6 +103,13 @@ I3D_EXPORT inline T1 expandWindow(T1 w, T2 sz)
   return expandWindow(w, sz, sz);
 }
 
+//template<typename T1, typename T2> static inline
+//Window<T1>& operator / (Window<T1> &w, T2 a)
+//{
+//  Window<T1> w;
+//
+//  return w;
+//}
 
 
 /*!

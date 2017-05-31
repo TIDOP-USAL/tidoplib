@@ -22,6 +22,7 @@ namespace I3D
 template<typename T> class Window;
 template<typename T> class Point;
 template<typename T> class Point3;
+template<typename T> class Bbox;
 
 /*! \defgroup GeometricEntities Entidades geométricas
  *  Puntos, lineas, ...
@@ -172,7 +173,7 @@ public:
    * \brief Número de puntos de la colección
    * \return Número de puntos
    */
-  int getSize() const { return static_cast<int>(mPoints.size()); }
+  size_t getSize() const { return mPoints.size(); }
 
   /*!
    * \brief Ventana envolvente
@@ -384,7 +385,7 @@ public:
    * \param[in] w Ventana
    * \return Puntos que entran dentro de la ventana
    */
-  std::vector<Point3<T>> getPointsInWindow(const Window<T> &w) const;
+  std::vector<Point3<T>> getPointsInBox(const Bbox<T> &box) const;
 
   /*!
    * \brief Número de puntos de la colección
@@ -396,7 +397,7 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-  Window<T> getWindow() const;
+  Bbox<T> getBox() const;
 
   /*!
    * \brief resize
@@ -464,12 +465,12 @@ Entity3DPoints<T> &Entity3DPoints<T>::operator = (const Entity3DPoints &entityPo
 }
 
 template<typename T> inline
-std::vector<Point3<T>> Entity3DPoints<T>::getPointsInWindow(const Window<T> &w) const
+std::vector<Point3<T>> Entity3DPoints<T>::getPointsInBox(const Bbox<T> &box) const
 {
   std::vector<Point3<T>> r_points(mPoints.size());
   int j = 0;
   for (size_t i = 0; i < mPoints.size(); i++) {
-    if (w.containsPoint(mPoints[i])) {
+    if (box.containsPoint(mPoints[i])) {
       r_points[i] = mPoints[i];
       j++;
     }
@@ -479,16 +480,18 @@ std::vector<Point3<T>> Entity3DPoints<T>::getPointsInWindow(const Window<T> &w) 
 }
 
 template<typename T> inline
-Window<T> Entity3DPoints<T>::getWindow() const
+Bbox<T> Entity3DPoints<T>::getBox() const
 {
-  Window<T> w;
+  Bbox<T> box;
   for (size_t i = 0; i < mPoints.size(); i++) {
-    if (w.pt1.x > mPoints[i].x) w.pt1.x = mPoints[i].x;
-    if (w.pt1.y > mPoints[i].y) w.pt1.y = mPoints[i].y;
-    if (w.pt2.x < mPoints[i].x) w.pt2.x = mPoints[i].x;
-    if (w.pt2.y < mPoints[i].y) w.pt2.y = mPoints[i].y;
+    if (box.pt1.x > mPoints[i].x) box.pt1.x = mPoints[i].x;
+    if (box.pt1.y > mPoints[i].y) box.pt1.y = mPoints[i].y;
+    if (box.pt1.z > mPoints[i].z) box.pt1.z = mPoints[i].z;
+    if (box.pt2.x < mPoints[i].x) box.pt2.x = mPoints[i].x;
+    if (box.pt2.y < mPoints[i].y) box.pt2.y = mPoints[i].y;
+    if (box.pt2.z < mPoints[i].z) box.pt2.z = mPoints[i].z;
   }
-  return w;
+  return box;
 }
 
 template<typename T> inline 

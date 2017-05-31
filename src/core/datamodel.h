@@ -259,6 +259,8 @@ public:
    */
   std::shared_ptr<TableRegister> getRegister(int index);
 
+  TableHeader *getTableHeader();
+
   /*!
    * \brief Establece el nombre de la tabla
    * \param[in] name Nombre de la tabla

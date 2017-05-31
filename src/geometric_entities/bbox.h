@@ -33,12 +33,12 @@ public:
   /*!
    * \brief Punto 1
    */
-  cv::Point3_<T> pt1;
+  Point3<T> pt1;
 
   /*!
    * \brief Punto 2
    */
-  cv::Point3_<T> pt2;
+  Point3<T> pt2;
 
 public:
 
@@ -50,14 +50,14 @@ public:
   /*!
    * \brief Constructor de copia
    */
-  Bbox(const Bbox &w);
+  Bbox(const Bbox &box);
 
   /*!
    * \brief Constructor
    * \param[in] pt1 Primer punto
    * \param[in] pt2 Segundo punto
    */
-  Bbox(const cv::Point3_<T> &pt1, const cv::Point3_<T> &pt2);
+  Bbox(const Point3<T> &pt1, const Point3<T> &pt2);
 
   /*!
    * \brief Constructor
@@ -67,14 +67,14 @@ public:
    * \param[in] szz Alto de la ventana 
    * tendria que mirar el tema de los ejes...
    */
-  Bbox(cv::Point3_<T> &pt, T sxx, T szy, T szz);
+  Bbox(Point3<T> &pt, T sxx, T szy, T szz);
 
   /*!
    * \brief Constructor 
    * \param[in] pt Punto central
    * \param[in] sz Dimensiones
    */
-  Bbox(cv::Point3_<T> &pt, T sz);
+  Bbox(Point3<T> &pt, T sz);
 
   //~Bbox();
 
@@ -113,7 +113,7 @@ public:
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox
    */
-  cv::Point3_<T> getCenter() const;
+  Point3<T> getCenter() const;
 
   /*!
    * \brief Comprueba si el Bbox esta vacio
@@ -126,7 +126,7 @@ public:
    * \param[in] pt Punto
    * \return true si el punto esta dentro del Bbox
    */
-  template<typename T2> bool containsPoint(const cv::Point3_<T2> &pt) const;
+  template<typename T2> bool containsPoint(const Point3<T2> &pt) const;
 
   /*!
    * \brief La ventana contiene la ventana
@@ -146,7 +146,7 @@ Bbox<T>::Bbox(const Bbox &bbox)
   : Entity<T>(entity_type::BBOX), pt1(bbox.pt1), pt2(bbox.pt2) {}
 
 template<typename T> inline
-Bbox<T>::Bbox(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2) 
+Bbox<T>::Bbox(const Point3<T> &_pt1, const Point3<T> &_pt2) 
   : Entity<T>(entity_type::BBOX)
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
@@ -158,7 +158,7 @@ Bbox<T>::Bbox(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2)
 }
 
 template<typename T> inline
-Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz) 
+Bbox<T>::Bbox(Point3<T> &_pt, T sxx, T szy, T szz) 
   : Entity<T>(entity_type::BBOX)
 { 
   if (typeid(T) == typeid(int)) {
@@ -168,32 +168,32 @@ Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sxx, T szy, T szz)
     int dx = static_cast<int>(sxx) % 2;
     int dy = static_cast<int>(szy) % 2;
     int dz = static_cast<int>(szz) % 2;
-    pt1 = cv::Point3_<T>(_pt.x - sxx_2, _pt.y - szy_2, _pt.z - szz_2);
-    pt2 = cv::Point3_<T>(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy, _pt.z + szz_2 + dz);
+    pt1 = Point3<T>(_pt.x - sxx_2, _pt.y - szy_2, _pt.z - szz_2);
+    pt2 = Point3<T>(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy, _pt.z + szz_2 + dz);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
     I3D_DISABLE_WARNING(4244)
-    pt1 = cv::Point3_<T>(_pt.x - sxx / 2., _pt.y - szy / 2., _pt.z - szz / 2.);
-    pt2 = cv::Point3_<T>(_pt.x + sxx / 2., _pt.y + szy / 2., _pt.z + szz / 2.);
+    pt1 = Point3<T>(_pt.x - sxx / 2., _pt.y - szy / 2., _pt.z - szz / 2.);
+    pt2 = Point3<T>(_pt.x + sxx / 2., _pt.y + szy / 2., _pt.z + szz / 2.);
     I3D_ENABLE_WARNING(4244)
   }
 }
 
 template<typename T> inline
-Bbox<T>::Bbox(cv::Point3_<T> &_pt, T sz) 
+Bbox<T>::Bbox(Point3<T> &_pt, T sz) 
   : Entity<T>(entity_type::BBOX) 
 {
   if (typeid(T) == typeid(int)) {
     int sz_2 = I3D_ROUND_TO_INT(sz / 2);
     int dxyz = static_cast<int>(sz) % 2;
-    pt1 = cv::Point3_<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
-    pt2 = cv::Point3_<T>(_pt.x + sz_2 + dxyz, _pt.y + sz_2 + dxyz, _pt.z + sz_2 + dxyz);
+    pt1 = Point3<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
+    pt2 = Point3<T>(_pt.x + sz_2 + dxyz, _pt.y + sz_2 + dxyz, _pt.z + sz_2 + dxyz);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
     I3D_DISABLE_WARNING(4244)
     int sz_2 = sz / 2.;
-    pt1 = cv::Point3_<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
-    pt2 = cv::Point3_<T>(_pt.x + sz_2, _pt.y + sz_2, _pt.z + sz_2);
+    pt1 = Point3<T>(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
+    pt2 = Point3<T>(_pt.x + sz_2, _pt.y + sz_2, _pt.z + sz_2);
     I3D_ENABLE_WARNING(4244)
   }
 }
@@ -220,26 +220,26 @@ Bbox<T>::operator Bbox<T2>() const
 {
   if (typeid(T2) == typeid(int)) {
     //Dos posibles soluciones. Ver cual es mas eficiente
-    cv::Point3_<T2> _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y), I3D_ROUND_TO_INT(pt1.z));
-    cv::Point3_<T2> _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y), I3D_ROUND_TO_INT(pt2.z));
+    Point3<T2> _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y), I3D_ROUND_TO_INT(pt1.z));
+    Point3<T2> _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y), I3D_ROUND_TO_INT(pt2.z));
     return Bbox<T2>(_pt1, _pt2);
   } else {
-    cv::Point3_<T2> _pt1 = pt1;
-    cv::Point3_<T2> _pt2 = pt2;
+    Point3<T2> _pt1 = pt1;
+    Point3<T2> _pt2 = pt2;
     return Bbox<T2>(_pt1, _pt2);
   }
 }
 
 template<typename T> inline
-cv::Point3_<T> Bbox<T>::getCenter() const
+Point3<T> Bbox<T>::getCenter() const
 {
   if (typeid(T) == typeid(int)) {
-    return cv::Point3_<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), 
+    return Point3<T>(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), 
                           static_cast<int>(std::floor((pt1.y + pt2.y) / 2)), 
                           static_cast<int>(std::floor((pt1.z + pt2.z) / 2)));
   } else {
     I3D_DISABLE_WARNING(4244)
-    return cv::Point3_<T>((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
+    return Point3<T>((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
     I3D_ENABLE_WARNING(4244)
   }
 }
@@ -256,7 +256,7 @@ bool Bbox<T>::isEmpty() const
 }
 
 template<typename T> template<typename T2> inline
-bool Bbox<T>::containsPoint(const cv::Point3_<T2> &pt) const
+bool Bbox<T>::containsPoint(const Point3<T2> &pt) const
 {
   return ((pt2.x >= pt.x) && (pt2.y >= pt.y) && (pt2.z >= pt.z)
        && (pt1.x <= pt.x) && (pt1.y <= pt.y) && (pt1.z <= pt.z));
