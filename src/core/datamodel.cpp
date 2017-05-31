@@ -102,7 +102,7 @@ TableRegister::~TableRegister()
 const char *TableRegister::getValue(int idx)
 {
   //TODO: Aqui hay que ver como devolver el tipo adecuado
-  ;
+  return NULL;
 }
 
 /* ---------------------------------------------------------------------------------- */

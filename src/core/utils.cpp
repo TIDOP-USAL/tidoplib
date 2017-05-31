@@ -930,11 +930,12 @@ Csv::Status Csv::create(std::shared_ptr<TableHeader> tableHeader)
 {
   setName(File::mName.c_str()); //TODO: poner nombre del fichero
   setTableHeader(tableHeader);
+  return Status::SUCCESS;
 }
 
 Csv::Status Csv::createCopy(const char *fileOut)
 {
-
+return Status::SUCCESS;
 }
 
 Csv::Status Csv::open(const char *file, Csv::Mode mode)
@@ -980,7 +981,7 @@ TableRegister *Csv::read(int id)
 
 Csv::Status Csv::readHeader()
 {
-  
+  return Status::SUCCESS;
 }
 
 Csv::Status Csv::write(std::shared_ptr<TableRegister> _register)

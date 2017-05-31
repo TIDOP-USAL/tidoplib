@@ -1093,13 +1093,13 @@ void RasterGraphics::read(uchar *buff, const WindowI &wLoad, double scale, Helme
   mImageFormat->read(buff, wLoad, scale, trf);
 }
 
-Status RasterGraphics::write(const uchar *buff, const WindowI &w)
+RasterGraphics::Status RasterGraphics::write(const uchar *buff, const WindowI &w)
 {
   if (mImageFormat && mImageFormat->write(buff, w) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
-Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
+RasterGraphics::Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
 {
   if (mImageFormat && mImageFormat->write(buff, trf) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
@@ -1276,7 +1276,7 @@ void RasterGraphics::update()
 /* ---------------------------------------------------------------------------------- */
 
 
-File::Status GeoRasterGraphics::open(const char *file, File::Mode mode)
+RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode)
 {
   close();
 
