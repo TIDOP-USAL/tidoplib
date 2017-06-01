@@ -36,8 +36,8 @@ bool isCollinearPoints(const PointI &pt_c, const I3D::Segment<int> &line_i_r, do
 //}
 
 
-void poleOfInaccessibility(const std::vector<cv::Point> &points)
-{
+//void poleOfInaccessibility(const std::vector<cv::Point> &points)
+//{
 
 //  cv::Mat canvas = cv::Mat::zeros(400, 600, CV_8U);
 
@@ -69,7 +69,7 @@ void poleOfInaccessibility(const std::vector<cv::Point> &points)
 //    
 //  cv::circle(canvas_rgb, center, radius, cv::Scalar(255, 0, 0), 2);
 
-}
+//}
 
 
 } // End namespace I3D

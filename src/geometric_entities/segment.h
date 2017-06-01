@@ -296,12 +296,12 @@ public:
   /*!
    * \brief Punto 1
    */
-  cv::Point3_<T> pt1;
+  Point3<T> pt1;
 
   /*!
    * \brief Punto 2
    */
-  cv::Point3_<T> pt2;
+  Point3<T> pt2;
 
 public:
 
@@ -321,7 +321,7 @@ public:
    * \param[in] _pt1 Punto 1
    * \param[in] _pt2 Punto 2
    */
-  Segment3D(const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2);
+  Segment3D(const Point3<T> &_pt1, const Point3<T> &_pt2);
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -351,21 +351,21 @@ public:
    * \brief Vector
    * \return Vector del segmento
    */
-  cv::Point3_<T> vector() const { return (pt2 - pt1); }
+  Point3<T> vector() const { return (pt2 - pt1); }
 };
 
 // Definición de métodos
 
 template<typename T> inline
 Segment3D<T>::Segment3D( ) 
-  : Entity<T>(entity_type::SEGMENT_3D), pt1(cv::Point3_<T>()), pt2(cv::Point3_<T>()) {}
+  : Entity<T>(entity_type::SEGMENT_3D), pt1(Point3<T>()), pt2(Point3<T>()) {}
 
 template<typename T> inline
 Segment3D<T>::Segment3D(const Segment3D &Segment) 
   : Entity<T>(entity_type::SEGMENT_3D), pt1(Segment.pt1), pt2(Segment.pt2) {}
 
 template<typename T> inline
-Segment3D<T>::Segment3D( const cv::Point3_<T> &_pt1, const cv::Point3_<T> &_pt2 ) 
+Segment3D<T>::Segment3D( const Point3<T> &_pt1, const Point3<T> &_pt2 ) 
   : Entity<T>(entity_type::SEGMENT_3D), pt1(_pt1), pt2(_pt2) {}
 
 template<typename T> inline
@@ -382,8 +382,8 @@ Segment3D<T> &Segment3D<T>::operator = (const Segment3D &segment)
 template<typename T> template<typename T2> inline
 Segment3D<T>::operator Segment3D<T2>() const
 {
-  cv::Point3_<T2> _pt1 = pt1;
-  cv::Point3_<T2> _pt2 = pt2;
+  Point3<T2> _pt1 = pt1;
+  Point3<T2> _pt2 = pt2;
   return Segment3D<T2>(_pt1, _pt2);
 }
 
@@ -410,6 +410,8 @@ typedef Segment3D<float> Segment3dF;
 /*                               Operaciones con Líneas                               */
 /* ---------------------------------------------------------------------------------- */
 
+//TODO: creo que mejor mover a operations
+
 /*!
  * \brief Crea un buffer entorno a una linea
  * \param[in] ln Línea
@@ -426,7 +428,76 @@ I3D_EXPORT void lineBuffer(const Line &ln, int size, std::vector<PointI> *buff);
  * \param[out] ptp Punto proyectado
  * \return -1, 0, 1
  */
-I3D_EXPORT int projectPointInSegment(const Line &ln, const PointI &pt, PointI *ptp);
+//I3D_EXPORT int projectPointInSegment(const Line &ln, const PointI &pt, PointI *ptp);
+
+template<typename T> inline
+I3D_EXPORT int projectPointInSegment(const Segment<T> &ln, const Point<T> &pt, Point<T> *ptp)
+{
+  int iret = 0;
+  if (pt == ln.pt1 || pt == ln.pt2) {
+    *ptp = pt;
+    return 2;
+  } 
+  PointD v1 = pt - ln.pt1;
+  PointD v2 = ln.vector();
+  double daux = v1.ddot(v2);
+  double r = daux / (v2.x * v2.x + v2.y * v2.y);
+
+  //if (typeid(T) == typeid(int)) {
+  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
+  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
+  //} else {
+  //  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
+  //  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y) * r;
+  //}
+  if (typeid(T) == typeid(int)) {
+    ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
+    ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+  } else {
+    ptp->x = ln.pt1.x + v2.x * r;
+    ptp->y = ln.pt1.y + v2.x * r;
+  }
+
+  if (daux <= 0) iret = -1;
+  else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
+  else if (daux == 0) iret = 2; // Esta en la línea
+  return iret;
+}
+
+
+template<typename T> inline
+I3D_EXPORT int projectPointInSegment(const Segment3D<T> &ln, const Point3<T> &pt, Point3<T> *ptp)
+{
+  int iret = 0;
+  if (pt == ln.pt1 || pt == ln.pt2) {
+    *ptp = pt;
+    return 2;
+  } 
+  Point3D v1 = pt - ln.pt1;
+  Point3D v2 = ln.vector();
+  double daux = v1.ddot(v2);
+  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
+
+  //if (typeid(T) == typeid(int)) {
+  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
+  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
+  //} else {
+  //  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
+  //  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y) * r;
+  //}
+  //if (typeid(T) == typeid(int)) {
+  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
+  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+  //} else {
+    *ptp = ln.pt1 + v2 * r;
+  //}
+
+  if (daux <= 0) iret = -1;
+  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
+  else if (daux == 0) iret = 2; // Esta en la línea
+  return iret;
+}
+
 
 /*!
  * \brief Calcula la distancia de un punto a un segmento de linea.
@@ -434,7 +505,31 @@ I3D_EXPORT int projectPointInSegment(const Line &ln, const PointI &pt, PointI *p
  * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
-I3D_EXPORT double distPointToSegment(const PointI &pt, const Line &ln);
+//I3D_EXPORT double distPointToSegment(const PointI &pt, const Line &ln);
+
+template<typename T> inline
+I3D_EXPORT double distPointToSegment(const Point<T> &pt, const Segment<T> &ln)
+{
+  Point<T> ptp;
+  int ipr = projectPointInSegment(ln, pt, &ptp); 
+  
+  if (ipr == -1) ptp = ln.pt1;
+  else if (ipr == 1) ptp = ln.pt2;
+  Point<T> _pt(pt);
+  return distance(_pt, ptp);
+}
+
+template<typename T> inline
+I3D_EXPORT double distPointToSegment(const Point3<T> &pt, const Segment3D<T> &ln)
+{
+  Point3<T> ptp;
+  int ipr = projectPointInSegment(ln, pt, &ptp); 
+  
+  if (ipr == -1) ptp = ln.pt1;
+  else if (ipr == 1) ptp = ln.pt2;
+  Point3<T> _pt(pt);
+  return distance(_pt, ptp);
+}
 
 /*!
  * \brief distPointToLine

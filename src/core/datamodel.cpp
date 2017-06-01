@@ -142,6 +142,11 @@ std::shared_ptr<TableRegister> DataTable::getRegister(int index)
   return *it;
 }
 
+TableHeader *DataTable::getTableHeader()
+{
+  return mTableHeader.get();
+}
+
 void DataTable::setName(const char *name)
 {
   mTableName = name;
@@ -151,6 +156,7 @@ void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
 {
   mTableHeader = tableHeader;
 }
+
 
 /* ---------------------------------------------------------------------------------- */
 
