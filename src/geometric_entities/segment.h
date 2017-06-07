@@ -454,8 +454,8 @@ I3D_EXPORT int projectPointInSegment(const Segment<T> &ln, const Point<T> &pt, P
     ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
     ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
   } else {
-    ptp->x = ln.pt1.x + v2.x * r;
-    ptp->y = ln.pt1.y + v2.x * r;
+    ptp->x = ln.pt1.x + static_cast<T>(v2.x * r);
+    ptp->y = ln.pt1.y + static_cast<T>(v2.x * r);
   }
 
   if (daux <= 0) iret = -1;

@@ -11,24 +11,13 @@
 #endif
 
 #include "core/defs.h"
+//TODO: Debería sacar todas las entidades geometricas de aqui
 #include "geometric_entities/point.h"
-#include "geometric_entities/segment.h" 
 
 namespace I3D
 {
 
 /* ---------------------------------------------------------------------------------- */
-
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Varianza del laplaciano
- * \param[in] src
- * \return
- */
-I3D_EXPORT double laplacianVariance(const cv::Mat &src);
-
-#endif
 
 template<typename Point_t>
 I3D_EXPORT inline double module(const Point_t &v)
@@ -80,15 +69,29 @@ I3D_EXPORT inline double azimut(const Point_t &pt1, const Point_t &pt2)
 }
 
 
+
+
 /* ---------------------------------------------------------------------------------- */
-// Estadistica
+/*                                 ESTADISTICA                                        */
+/* ---------------------------------------------------------------------------------- */
+
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Varianza del laplaciano
+ * \param[in] src
+ * \return
+ */
+I3D_EXPORT double laplacianVariance(const cv::Mat &src);
+
+#endif
 
 template<typename T>
 I3D_EXPORT inline double mean(const T &data)
 {
   size_t n = data.size();
-  if (n <= 1) return 0.0; // Mensaje de error
-  // Comprobar que es un contenedor con tipos numéricos
+  if (n <= 1) return 0.0; //TODO: Mensaje de error
+  //TODO: Comprobar que es un contenedor con tipos numéricos
   T::value_type sum = 0.0;
   for (auto &t : data) {
     sum += t;
@@ -100,7 +103,7 @@ template<typename T>
 I3D_EXPORT inline double variance(const T &data)
 {
   size_t n = data.size();
-  if (n <= 1) return 0.0; // Mensaje de error
+  if (n <= 1) return 0.0; //TODO: Mensaje de error
   double _mean = mean(data);
   double sum = 0.0;
   double ep = 0.0;
@@ -196,6 +199,13 @@ I3D_EXPORT double computeTempMAD(const std::vector<double> &input, const double 
 
 I3D_EXPORT bool isOutlier(const double temp, const double median, const double mad);
 
+
+
+/* ---------------------------------------------------------------------------------- */
+/*           AJUSTES DE PUNTOS A GEOMETRIAS (LINEAS, PLANOS, ...)                     */
+/* ---------------------------------------------------------------------------------- */
+
+
 /*!
  * \brief Recta de regresión de Y sobre X
  * La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X.
@@ -235,7 +245,6 @@ I3D_EXPORT inline double regressionLinearYX(const std::vector<Point_t> &pts, dou
       // Línea no vertical
       *m = (n*sxy - sy*sx) / (n*sx2 - sx*sx);
       *b = (sy - *m*sx) / n;
-      den = sy2 - sy*sy / n;
       corr = sqrt(*m * (sxy - sx*sy / n) / (sy2 - sy*sy / n));
     }
   }
@@ -280,8 +289,75 @@ I3D_EXPORT inline double regressionLinearXY(const std::vector<Point_t> &pts, dou
     if (den) {
       *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);
       *b = (sx - *m*sy) / n;
-      den = sx2 - sx*sx / n;
       corr = sqrt(*m * (sxy - sx*sy / n) / (sx2 - sx*sx / n));
+    }
+  }
+  return(corr);
+}
+
+
+
+/*!
+ * \brief Ajusta una recta a un conjunto de puntos por mínimos cuadrados
+ *
+ * La recta de regresión de Y sobre X se utiliza para estimar los valores de la Y a partir de los de la X.
+ * La pendiente de la recta es el cociente entre la covarianza y la varianza de la variable X.
+ *
+ * \f$ y = m * x + b\f$<BR>
+ *
+ * Si se calcula la recta de regresión de Y sobre X la expresión utilizada es:
+ *
+ * \f$ x = m*y + b\f$<BR>
+ * https://www.geometrictools.com/Documentation/LeastSquaresFitting.pdf
+ *
+ * \param[in] pts Puntos
+ * \param[out] m Pendiente de la recta
+ * \param[out] b Ordenada
+ * \param[int] YX Si es true (valor por defecto) se cálcula la recta de regresión de Y sobre X. En caso contrario se calcula la recta de X sobre Y.
+ * \return Coeficiente de correlacción. Valor entre -1 (pendiente negativa) y 1 (pendiente positiva). Valores próximos a cero suponen un mal ajuste
+ *
+ * <h4>Ejemplo de determinación de la recta de mejor ajuste</h4>
+ * \code
+ * double m = 0.;
+ * double b = 0.;
+ * double corr = linearFittingLS(pts, &m, &b);
+ *
+ * // Para el caso de la recta de X sobre Y
+ * corr = linearFittingLS(pts, &m, &b, false); 
+ *
+ * \endcode
+ */
+template<typename Point_t>
+I3D_EXPORT inline double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bool YX = true)
+{
+  double corr = 0.0;
+  size_t size = pts.size();
+  if (size >= 2) {
+    int _m = static_cast<int>(size) * 2, _n = 2;
+    double *_a = new double[_m*_n], *pa = _a, *_b = new double[_m], *pb = _b;
+    double *_c = new double[_n];
+    double sum_sx = 0., sum_sy = 0., sum_sx2 = 0., sum_sy2 = 0., sum_sxy = 0.;
+    double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+    for (size_t i = 0; i < size; i++) {
+      sum_sx += (sx = pts[i].x);
+      sum_sy += (sy = pts[i].y);
+      sum_sx2 += (sx2 = pts[i].x * pts[i].x);
+      sum_sy2 += (sy2 = pts[i].y * pts[i].y);
+      sum_sxy += (sxy = pts[i].x * pts[i].y );
+      *pa++ = YX ? sx2 : sy2;
+      *pa++ = YX ? sx : sy;
+      *pb++ = sxy;
+      *pa++ = YX ? sx : sy;
+      *pa++ = 1;
+      *pb++ = YX ? sy : sx;
+    }
+    
+    solveSVD(_m, _n, _a, _b, _c);
+    *m = _c[0];
+    *b = _c[1];
+    double div = YX ? (sum_sy2 - sum_sy*sum_sy / size) : (sum_sx2 - sum_sx*sum_sx / size);
+    if (div != 0) {
+      corr = sqrt(*m * (sum_sxy - sum_sx*sum_sy / size) / div);
     }
   }
   return(corr);
@@ -318,7 +394,10 @@ template<typename Point_t>
 I3D_EXPORT inline void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 {
   std::vector<PointD> ptsLog(pts.size());
-  std::transform(pts.begin(), pts.end(), ptsLog.begin(), [](Point_t pt) -> PointD { return PointD(pt.x, log10(pt.y)); });
+  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
+                 [](Point_t pt) -> PointD {
+                    return PointD(pt.x, log10(pt.y)); 
+                  });
 
   double m = 0.;
   double b = 0.;
@@ -327,23 +406,139 @@ I3D_EXPORT inline void expRegression(const std::vector<Point_t> &pts, double *A,
   *r = pow(10, m);
 }
 
+
+/*!
+ * \brief Obtiene la ecuación de un plano que pasa por tres puntos
+ *
+ * \f$ A*x + B*y + C*z + D = 0\f$
+ *
+ * \param[in] points Puntos que definen el plano
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \return Normal al plano
+ */
+template<typename T>
+I3D_EXPORT inline double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
+{
+  T v1 = points[1] - points[0];
+  T v2 = points[2] - points[0];
+  plane[0] = v1.y*v2.z - v1.z*v2.y;
+  plane[1] = v1.z*v2.x - v1.x*v2.z;
+  plane[2] = v1.x*v2.y - v2.x*v1.y;
+  plane[3] = -plane[0] *points[0].x - plane[1]*points[0].y - plane[2]*points[0].z;
+  double N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + plane[2]*plane[2]);
+  if ( N && normalize ) { 
+    plane[0] /= N;
+    plane[1] /= N;
+    plane[2] /= N;
+    plane[3] /= N;
+  }
+  return N ;
+}
+
+/*!
+ * \brief Obtiene la ecuación del plano de mejor ajuste de un conjunto de puntos resolviendo el sistema de ecuaciones por minimos cuadrados
+ *
+ * \f$ A*x + B*y + C*z + D = 0\f$
+ *
+ * Referencias:
+ *
+ * https://www.geometrictools.com/Documentation/LeastSquaresFitting.pdf
+ * http://casanchi.com/mat/ajustesuperficies01.pdf
+ *
+ * \param[in] points Puntos que definen el plano
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \return Normal al plano
+ */
+template<typename Point_t>
+I3D_EXPORT inline double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> &plane, bool normalize = false)
+{
+  double N = 0.;
+  size_t size = points.size();
+  if (size < 3) {
+    return 0.; // O devolver error
+  } else if (size == 3) {
+    std::array<Point_t, 3> _points;
+    std::copy_n(points.begin(), 3, _points.begin());
+    threePointsPlane(_points, plane, normalize);
+  } else {
+    int m = static_cast<int>(size) * 3, n = 3;
+    double *_a = new double[m*n], *pa = _a, *_b = new double[m], *pb = _b;
+    double *_c = new double[n];
+    try {
+      for (int i = 0; i < size; i++) {
+        *pa++ = points[i].x*points[i].x;
+        *pa++ = points[i].x*points[i].y;
+        *pa++ = points[i].x;
+        *pb++ = points[i].x*points[i].z;
+        *pa++ = points[i].x*points[i].y;
+        *pa++ = points[i].y*points[i].y;
+        *pa++ = points[i].y;
+        *pb++ = points[i].z*points[i].y;
+        *pa++ = points[i].x;
+        *pa++ = points[i].y;
+        *pa++ = 1;
+        *pb++ = points[i].z;
+      }
+
+      solveSVD(m, n, _a, _b, _c);
+      
+      plane[0] = _c[0];
+      plane[1] = _c[1];
+      plane[2] = -1;
+      plane[3] = _c[2];
+
+      // Por si me interesase devolver el error
+      double dz = 0.;
+      double sumErr = 0.;
+      for (int i = 0; i < size; i++) {
+        dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
+        sumErr += dz*dz;
+      }
+
+      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
+
+      if ( N && normalize ) { 
+        plane[0] /= N;
+        plane[1] /= N;
+        plane[2] /= N;
+        plane[3] /= N;
+      }
+      
+    } catch (std::exception &e) {
+      msgError(e.what());
+    }
+
+  }
+  return N ;
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
 /*!
  * \brief ángulos de Euler
  *
  * A partir de una matriz de rotación obtiene los ángulos de giro.
+ *
+ * Referencias:
+ * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+ * http://mathworld.wolfram.com/EulerAngles.html
+ *
  * \param[in] R Matriz de rotación
  * \param[out] omega Rotación respecto al eje X en radianes
  * \param[out] phi Rotación respecto al eje Y en radianes
  * \param[out] kappa Rotación respecto al eje Z en radianes
- * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
- * http://mathworld.wolfram.com/EulerAngles.html
  */
 I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
 //Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //I3D_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
 //... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
+
 /*!
  * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
  * \param[in] rX Rotación respecto al eje X en radianes
@@ -374,6 +569,20 @@ void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
  */
 void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
+/*!
+ * \brief Cálculo de la matriz de rotación
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
 #ifdef HAVE_OPENCV
 
 /*!
@@ -394,59 +603,7 @@ I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 #endif
 
-/*!
- * \brief Obtiene la ecuación de un plano que pasa por tres puntos
- *
- * \f$ A*x + B*y + C*z + D = 0\f$
- *
- * \param[in] points Puntos que definen el plano
- * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] normalize Si es verdadero normaliza la ecuación del plano
- * \return Normal al plano
- */
-template<typename T>
-I3D_EXPORT inline double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
-{
-  T v1 = points[1] - points[0];
-  T v2 = points[2] - points[0];
-  plane[0] = v1.y*v2.z - v1.z*v2.y;
-  plane[1] = v1.z*v2.x - v1.x*v2.z;
-  plane[2] = v1.x*v2.y - v2.x*v1.y;
-  plane[3] = -plane[0] *points[0].x - plane[1]*points[0].y - plane[2]*points[0].z;
-  double N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + plane[2]*plane[2]);
-  if ( N && normalize ) { 
-    plane[0] /= N;
-    plane[1] /= N;
-    plane[2] /= N;
-    plane[3] /= N;
-  }
-  return( N );
-}
 
-/*!
- * \brief Obtiene la distancia de un punto a un plano
- *
- * \param[in] pt Punto
- * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \return Distancia del punto al plano
- */
-template<typename Point_t>
-I3D_EXPORT inline double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane) 
-{
-  double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];
-  double normal = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
-  if ( normal == 0. ) throw std::runtime_error( "3 puntos alineados" );
-  return(num / normal);
-}
-
-//template<typename T>
-//I3D_EXPORT inline double linePlaneAngle(const Segment3D<T> &line, const std::array<double, 4> &plane)
-//{
-//  Point3D v = line.vector();
-//  double num = plane[0] * v.x + plane[1] * v.y + plane[2] * v.z;
-//  double den = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]) + line.length();
-//  return den ? asin(num / den) : 0.;
-//}
 
 /* ---------------------------------------------------------------------------------- */
 /*                               Conversión de ángulos                                */
@@ -571,6 +728,117 @@ I3D_EXPORT double gradiansToDecimalDegrees(double gradians);
 I3D_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion
+
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
+/* ---------------------------------------------------------------------------------- */
+
+// La resolución de sistemas lineales con OpenCV es muy lenta: 
+// http://www.patrikhuber.ch/blog/5-solving-linear-systems-with-eigen
+// Se usa Eigen en caso de que este presente la libreria.
+
+/*!
+ * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
+ * 
+ * En álgebra lineal, la descomposición en valores singulares de una matriz real 
+ * o compleja es una factorización de la misma con muchas aplicaciones, entre ellas 
+ * la resolución de sistemas lineales.
+ *
+ * Dada una matriz real A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n) 
+ * y una matriz diagonal Σ (de tamaño m×n) tales que:
+ *
+ * \f[ A = UΣV^T  \f]
+ *
+ * Esta factorización de A se llama descomposición en valores singulares de A.
+ *
+ *
+ * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
+ * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Factorización QR
+ *
+ * La descomposición o factorización QR de una matriz es una descomposición de 
+ * la misma como producto de una matriz ortogonal por una triangular superior.
+ *
+ * La descomposición QR de una matriz cuadrada real A es:
+ * 
+ * \f[ A = QR \f]
+ *
+ * donde Q es una matriz ortogonal:
+ *
+ * \f[ Q^TQ = I \f]
+ *
+ * y R es una matriz triangular superior.
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Factorización o descomposición LU 
+ *
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ *
+ * \f[ A=LU \f]
+ *
+ * donde L y U son matrices inferiores y superiores triangulares respectivamente.
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
+ *
+ * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto 
+ * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe 
+ * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva, 
+ * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama 
+ * la descomposición o factorización de Cholesky.
+ *
+ * La matriz A tiene que ser simétrica y definida positiva.
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
+
+#ifdef HAVE_EIGEN
+
+/*!
+ * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
+ *
+ * Resolución por Cholesky para el caso de matrices semidefinidas positivas o negativas
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a 
+ * \param[in] b 
+ * \param[out] c 
+ */
+I3D_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
+
+#endif
 
 } // End namespace I3D
 
