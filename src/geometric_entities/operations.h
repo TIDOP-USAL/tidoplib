@@ -628,6 +628,21 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
     if (distance > max_dist) max_dist = distance;
   }
 
+  // Plano horizontal (1,1,0)
+  std::array<double, 4> plane_z;
+  plane_z[0] = 1;
+  plane_z[1] = 1;
+  plane_z[2] = 0;
+  plane_z[3] = pia.x + pia.y;
+
+  Polygon<T> poligon_z;
+  for (int i = 0; i < polygon.getSize(); i++) {
+    Point3<T> pt;
+    projectPointToPlane(polygon[i], plane_z, &pt);
+    poligon_z.add(Point<T>(pt.x, pt.y));
+  }
+
+
 	double increment_x = (bounds.pt2.x - bounds.pt1.x) / xCells;
 	double increment_y = (bounds.pt2.y - bounds.pt1.y) / yCells;
   double increment_z = (bounds.pt2.z - bounds.pt1.z) / zCells;
@@ -653,8 +668,13 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
 
         Bbox<T> box = polygon.getBox();
         if ( box.containsPoint(tmp) ) {
-          if (distantePointToPlane(tmp, plane) < max_dist) {
-          //if (polygon.isInner(tmp)) { // A ver que solucion damos...
+              
+          Point3<T> pt;
+          projectPointToPlane(tmp, plane_z, &pt);
+          Point<T> pt_2d(pt.x, pt.y);
+          if (abs(distantePointToPlane(tmp, plane)) < max_dist && poligon_z.isInner(pt_2d)) { 
+            // Proyectar al plano z = 0 y hacer isInner()
+            // 
             tmp_distance = distPointToPolygon(tmp, polygon);
             if (tmp_distance > max_distance) {
               max_distance = tmp_distance;

@@ -7,6 +7,7 @@
 
 #include "opencv2/core/core.hpp"
 #include "geometric_entities/bbox.h"
+#include "geometric_entities/lineString.h"
 
 using namespace I3D;
 
@@ -201,6 +202,21 @@ int main(int argc, char** argv)
   //double N = nPointsPlaneLS(vertex, plane);
   //double kk = plane[0] / plane[2];
   //double N2 = sqrt(31.15*31.15 + -0.08*-0.08 + -1*-1);
+
+
+
+
+  geometry::Box<Point3<int>> box;
+  Point3<int> _center = box.getCenter();
+
+
+  geometry::LineString<Point<double>> linestring(5);
+
+  size_t n_vertex = linestring.getSize();
+
+
+
+
 
   exit(EXIT_SUCCESS);
 }
