@@ -107,21 +107,11 @@ int main(int argc, char** argv)
   //cv::minMaxLoc(m_out, NULL, &max_val, NULL, &center);
   cv::Mat canvas_rgb;
   cvtColor(canvas, canvas_rgb, CV_GRAY2BGR);
-  cv::line(canvas_rgb, center, center, cv::Scalar(0, 0, 255), 2);
-
-  //double radius = I3D_DOUBLE_MAX;
-  //double dist;
-  //for (int i = 0; i < points.size(); i++) {
-  //  if (i == points.size() - 1) {
-  //    dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[0]));
-  //  } else {
-  //    dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[i+1]));
-  //  }
-  //  if (dist < radius) radius = dist;
-  //}
-
-    
+  cv::line(canvas_rgb, center, center, cv::Scalar(0, 0, 255), 2); 
   cv::circle(canvas_rgb, center, radius, cv::Scalar(255, 0, 0), 2);
+
+
+
 
   // Lo mismo en 3d
 
@@ -149,6 +139,7 @@ int main(int argc, char** argv)
 
   Point3D center3d;
   poleOfInaccessibility(polygon3d, &center3d);
+  double radius3d = distPointToPolygon(center3d, polygon3d);
 
   exit(EXIT_SUCCESS);
 }

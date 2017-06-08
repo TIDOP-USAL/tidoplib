@@ -421,10 +421,13 @@ I3D_DISABLE_WARNING(4100)
   }
 
   // Wait until child process exits.
-  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED)
+  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED) {
+    msgError("Error al ejecutar el comando: %s", mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
-  else
+  } else {
+    msgInfo("Comando ejecutado: %s", mCmd.c_str());
     return Process::Status::FINALIZED;
+  }
 }
 I3D_ENABLE_WARNING(4100)
 
