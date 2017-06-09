@@ -19,21 +19,27 @@ I3D_DEFAULT_WARNINGS
 
 namespace I3D
 {
-class GLayer;
-class GraphicEntity;
+
 class VectorGraphics;
-class GPoint;
-class GLineString;
-class GPolygon;
-class GMultiPoint;
-class GMultiLineString;
-class GMultiPolygon;
-class GraphicStyle;
-class GData;
-class StylePen;
-class StyleBrush;
-class StyleSymbol;
-class StyleLabel;
+
+namespace graph
+{
+  class StylePen;
+  class StyleBrush;
+  class StyleSymbol;
+  class StyleLabel;
+  class GLayer;
+  class GraphicEntity;
+  class GPoint;
+  class GLineString;
+  class GPolygon;
+  class GMultiPoint;
+  class GMultiLineString;
+  class GMultiPolygon;
+  class GraphicStyle;
+  class GData;
+}
+
 }
 
 class OGRFeature;
@@ -95,8 +101,8 @@ public:
   virtual int open(const char *file, Mode mode = Mode::Read) = 0;
   virtual int create() = 0;
   virtual void read(VectorGraphics *vector) = 0;
-  virtual void read(int id, GLayer *layer) = 0;
-  virtual void read(const char *name, GLayer *layer) = 0;
+  virtual void read(int id, graph::GLayer *layer) = 0;
+  virtual void read(const char *name, graph::GLayer *layer) = 0;
   virtual int write(VectorGraphics *vector) = 0;
   int getLayersCount() const;
 
@@ -152,8 +158,8 @@ public:
   int create() override;
 
   void read(VectorGraphics *vector) override;
-  void read(int id, GLayer *layer) override;
-  void read(const char *name, GLayer *layer) override;
+  void read(int id, graph::GLayer *layer) override;
+  void read(const char *name, graph::GLayer *layer) override;
   int write(VectorGraphics *vector) override;
 
   /*!
@@ -166,19 +172,19 @@ public:
 
 private:
 
-  void read(OGRLayer *pLayer, GLayer *layer);
-  void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEntity> gEntity);
-  void readPoint(OGRPoint *ogrPoint, GPoint *gPoint);
-  void readLineString(OGRLineString *ogrLineString, GLineString *gLineString);
-  void readPolygon(OGRPolygon *ogrPolygon, GPolygon *gPolygon);
-  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMultiPoint);
-  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMultiLineString *gMultiLineString);
-  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygon *gMultiPolygon);
-  void readStyles(OGRStyleMgr *ogrStyle, GraphicStyle *gStyle);
-  void readStylePen(OGRStylePen *ogrStylePen, GraphicStyle *gStyle);
-  void readStyleBrush(OGRStyleBrush *ogrStyleBrush, GraphicStyle *gStyle);
-  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, GraphicStyle *gStyle);
-  void readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gStyle);
+  void read(OGRLayer *pLayer, graph::GLayer *layer);
+  void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<graph::GraphicEntity> gEntity);
+  void readPoint(OGRPoint *ogrPoint, graph::GPoint *gPoint);
+  void readLineString(OGRLineString *ogrLineString, graph::GLineString *gLineString);
+  void readPolygon(OGRPolygon *ogrPolygon, graph::GPolygon *gPolygon);
+  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, graph::GMultiPoint *gMultiPoint);
+  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, graph::GMultiLineString *gMultiLineString);
+  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, graph::GMultiPolygon *gMultiPolygon);
+  void readStyles(OGRStyleMgr *ogrStyle, graph::GraphicStyle *gStyle);
+  void readStylePen(OGRStylePen *ogrStylePen, graph::GraphicStyle *gStyle);
+  void readStyleBrush(OGRStyleBrush *ogrStyleBrush, graph::GraphicStyle *gStyle);
+  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, graph::GraphicStyle *gStyle);
+  void readStyleLabel(OGRStyleLabel *ogrStyleLabel, graph::GraphicStyle *gStyle);
   //void readData();
   void update();
 
@@ -200,7 +206,7 @@ protected:
    */
   std::string mName;
   
-  std::list<std::shared_ptr<GLayer>> mLayers;
+  std::list<std::shared_ptr<graph::GLayer>> mLayers;
 
   std::unique_ptr<VrtVector> mVectorFormat;
 

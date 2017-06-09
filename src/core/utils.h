@@ -311,7 +311,7 @@ public:
 
 
 
-class Process
+class I3D_EXPORT Process
 {
 
 public:
@@ -383,7 +383,7 @@ private:
 };
 
 
-class CmdProcess : public Process
+class I3D_EXPORT CmdProcess : public Process
 {
 protected:
 
@@ -586,8 +586,8 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
  * \param[in] number Numero
  * \return Cadena de texto
  */
-template <typename T>
-I3D_EXPORT inline std::string numberToString(T number)
+template <typename T> inline 
+std::string numberToString(T number)
 {
   std::ostringstream ss;
   ss << number;
@@ -601,8 +601,8 @@ I3D_EXPORT inline std::string numberToString(T number)
  * \param[in] text Texto
  * \return número
  */
-template <typename T>
-I3D_EXPORT inline T stringToNumber(const std::string &text)
+template <typename T> inline 
+T stringToNumber(const std::string &text)
 {
   T number;
   return (std::istringstream(text) >> number) ? number : 0;
@@ -637,8 +637,8 @@ I3D_EXPORT int stringToInteger(const std::string &text, I3D::Base base = I3D::Ba
  * \param[in] m Matriz de entrada
  * \param[out] av Vector de salida
  */
-template<typename T>
-I3D_EXPORT inline void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+template<typename T> inline 
+void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
 {
   av->resize(m.rows*m.cols);
   if (m.isContinuous()) {
@@ -656,8 +656,8 @@ I3D_EXPORT inline void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
  * \brief Ordena un vector de menor a mayor
  * \param[in] v Vector
  */
-template<typename T>
-I3D_EXPORT inline void sortVector(std::vector<T> *v)
+template<typename T> inline 
+void sortVector(std::vector<T> *v)
 {
   std::sort(v->begin(), v->end());
 }
@@ -666,8 +666,8 @@ I3D_EXPORT inline void sortVector(std::vector<T> *v)
  * \brief Ordena un vector de mayor a menor
  * \param[in] v Vector
  */
-template<typename T>
-I3D_EXPORT inline void sortVectorInv(std::vector<T> *v)
+template<typename T> inline 
+void sortVectorInv(std::vector<T> *v)
 {
   std::sort(v->rbegin(),v->rend());
 }
@@ -680,8 +680,8 @@ I3D_EXPORT inline void sortVectorInv(std::vector<T> *v)
  * \param[in] t Valor
  * \return Número de elementos que cumplen la condición
  */
-template<typename T>
-I3D_EXPORT inline int operator==(const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator==(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -699,8 +699,8 @@ I3D_EXPORT inline int operator==(const std::vector<T> &v, const T t)
  * \param[in] t Valor
  * \return Número de elementos que cumplen la condición
  */
-template<typename T>
-I3D_EXPORT inline int operator!=(const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator!=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
@@ -716,8 +716,8 @@ I3D_EXPORT inline int operator!=(const std::vector<T> &v, const T t)
  * \param[in] t
  * \return
  */
-template<typename T>
-I3D_EXPORT inline int operator>=(const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator>=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator upOrEq;
@@ -725,8 +725,8 @@ I3D_EXPORT inline int operator>=(const std::vector<T> &v, const T t)
   return (v.end() - upOrEq);
 }
 
-template<typename T>
-I3D_EXPORT inline int operator<=(const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator<=(const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator lowOrEq;
@@ -734,8 +734,8 @@ I3D_EXPORT inline int operator<=(const std::vector<T> &v, const T t)
   return (lowOrEq - v.begin());
 }
 
-template<typename T>
-I3D_EXPORT inline int operator> (const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator> (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator up;
@@ -743,8 +743,8 @@ I3D_EXPORT inline int operator> (const std::vector<T> &v, const T t)
   return (v.end() - up);
 }
 
-template<typename T>
-I3D_EXPORT inline int operator< (const std::vector<T> &v, const T t)
+template<typename T> inline 
+int operator< (const std::vector<T> &v, const T t)
 {
   sortVector(v);
   typename std::vector<T>::iterator low;
@@ -763,8 +763,8 @@ I3D_EXPORT inline int operator< (const std::vector<T> &v, const T t)
  * \param[in] v Vector
  * \return Vector con los indices ordenados
  */
-template <typename T>
-I3D_EXPORT inline std::vector<int> sortIdx(const std::vector<T> &v)
+template <typename T> inline 
+std::vector<int> sortIdx(const std::vector<T> &v)
 {
   std::vector<int> idx(v.size());
   iota(idx.begin(), idx.end(), 0);
@@ -924,7 +924,7 @@ private:
 /*!
  * \brief Clase virtual para la sustitución de etiquetas en textos, ficheros html o xml.
  */
-class VrtTemplate
+class I3D_EXPORT VrtTemplate
 {
 
 protected:
@@ -984,7 +984,7 @@ public:
 };
 
 
-class HtmlTemplate : public VrtTemplate
+class I3D_EXPORT HtmlTemplate : public VrtTemplate
 {
 
 protected:

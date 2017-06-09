@@ -171,7 +171,7 @@ int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std:
     descIn.copyTo(descOut);
     if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
     if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
-    return std::move(descOut);
+    return descOut;
   };
 
   try {
@@ -460,7 +460,7 @@ void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &
     descIn.copyTo(descOut);
     if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
     if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
-    return std::move(descOut);
+    return descOut;
   };
 
   std::vector<std::vector<cv::DMatch> > matches;

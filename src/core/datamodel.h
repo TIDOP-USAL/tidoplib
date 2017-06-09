@@ -116,7 +116,7 @@ private:
 };
 
 
-class TableRegisterField
+class I3D_EXPORT TableRegisterField
 {
 public:
   TableRegisterField();

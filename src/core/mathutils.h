@@ -19,10 +19,73 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-template<typename Point_t>
-I3D_EXPORT inline double module(const Point_t &v)
+
+/*!
+ * \brief Producto vectorial de dos vectores en el plano
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto vectorial de los dos vectores
+ */
+template<typename Point_t> inline
+double crossProduct(const Point_t &pt1, const Point_t &pt2)
 {
-  return sqrt(v.x * v.x + v.y*v.y);
+  return static_cast<double>(pt1.x*pt2.y - pt1.y*pt2.x);
+}
+
+/*!
+ * \brief Producto vectorial de dos vectores en 3 dimensiones
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto vectorial de los dos vectores
+ */
+template<typename Point3_t> inline 
+double crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+{
+  return Point3_t(pt1.y*pt2.z - pt1.z*pt2.y, pt1.z*pt2.x - pt1.x*pt2.z, pt1.x*pt2.y - pt1.y*pt2.x);
+}
+
+/*!
+ * \brief Producto escalar de dos vectores en el plano
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto escalar de los dos vectores
+ */
+template<typename Point_t> inline 
+double dotProduct(const Point_t &pt1, const Point_t &pt2)
+{
+  return static_cast<double>(pt1.x*pt2.x + pt1.y*pt2.y);
+}
+
+/*!
+ * \brief Producto escalar de dos vectores en 3 dimensiones
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto escalar de los dos vectores
+ */
+template<typename Point3_t> inline 
+double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+{
+  return static_cast<double>(pt1.x*pt2.x + pt1.y*pt2.y + pt1.z*pt2.z);
+}
+
+/*!
+ * \brief Módulo de un vector 2D
+ * \param[in] v Vector 
+ */
+template<typename Point_t> inline 
+double module(const Point_t &v)
+{
+  return sqrt(dotProduct(v, v));
+}
+
+/*!
+ * \brief Módulo de un vector 3D
+ * \param[in] v Vector
+ */
+template<typename Point3_t> inline 
+double module3D(const Point3_t &v)
+{
+  return sqrt(dotProduct3D(v, v));
 }
 
 /*!
@@ -31,16 +94,16 @@ I3D_EXPORT inline double module(const Point_t &v)
  * \param[in] v2 Vector 2
  * \return Ángulo en radianes
  */
-template<typename Point_t>
-I3D_EXPORT inline double vectorAngle(const Point_t &v1, const Point_t &v2)
+template<typename Point_t> inline 
+double vectorAngle(const Point_t &v1, const Point_t &v2)
 {
   if (v1 == Point_t() || v2 == Point_t())
     return 0.0;
   return acos((v1.x*v2.x + v1.y*v2.y) / (module(v1) * module(v2)));
 }
 
-template<typename Point_t>
-I3D_EXPORT inline double vectorAngleOX(const Point_t &v)
+template<typename Point_t> inline 
+double vectorAngleOX(const Point_t &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -48,8 +111,8 @@ I3D_EXPORT inline double vectorAngleOX(const Point_t &v)
   return angle; 
 }
 
-template<typename Point_t>
-I3D_EXPORT inline double vectorAngleOY(const Point_t &v)
+template<typename Point_t> inline 
+double vectorAngleOY(const Point_t &v)
 {
   double angle = 0.0;
   if (!(v.x == 0 && v.y == 0))
@@ -57,8 +120,8 @@ I3D_EXPORT inline double vectorAngleOY(const Point_t &v)
   return angle;
 }
 
-template<typename Point_t>
-I3D_EXPORT inline double azimut(const Point_t &pt1, const Point_t &pt2)
+template<typename Point_t> inline 
+double azimut(const Point_t &pt1, const Point_t &pt2)
 {
   double azimut = 0.;
   Point_t v = pt2 - pt1;
@@ -86,8 +149,8 @@ I3D_EXPORT double laplacianVariance(const cv::Mat &src);
 
 #endif
 
-template<typename T>
-I3D_EXPORT inline double mean(const T &data)
+template<typename T> inline
+double mean(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; //TODO: Mensaje de error
@@ -99,8 +162,8 @@ I3D_EXPORT inline double mean(const T &data)
   return static_cast<double>(sum / n);
 }
 
-template<typename T>
-I3D_EXPORT inline double variance(const T &data)
+template<typename T> inline 
+double variance(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; //TODO: Mensaje de error
@@ -118,16 +181,16 @@ I3D_EXPORT inline double variance(const T &data)
   return (sum - ep*ep / n) / (n - 1);
 }
 
-template<typename T>
-I3D_EXPORT inline double standarDeviation(const T &data)
+template<typename T> inline 
+double standarDeviation(const T &data)
 {
   return sqrt(variance(data));
 }
 
 //average deviation or mean absolute deviation
 // Estimador mas robusto que la desviacion estandar y la varianza
-template<typename T>
-I3D_EXPORT inline double averageAbsoluteDeviation(const T &data)
+template<typename T> inline 
+double averageAbsoluteDeviation(const T &data)
 {
   size_t n = data.size();
   if (n <= 1) return 0.0; // Mensaje de error
@@ -139,8 +202,8 @@ I3D_EXPORT inline double averageAbsoluteDeviation(const T &data)
   return sum / n;
 }
 
-template<typename T>
-I3D_EXPORT inline double skewness(const T &data)
+template<typename T> inline 
+double skewness(const T &data)
 {
   // Para que sea lo mas rapido posible no llamo a las funciones previas
   // Hago todo el desarrollo aqui para no repetir pasos
@@ -167,8 +230,8 @@ I3D_EXPORT inline double skewness(const T &data)
   } else return 0.;// "No skew when variance = 0 (in moment)")
 }
 
-template<typename T>
-I3D_EXPORT inline double kurtosis(const T &data)
+template<typename T> inline 
+double kurtosis(const T &data)
 {
   size_t n = data.size();
 // Varianza
@@ -226,8 +289,8 @@ I3D_EXPORT bool isOutlier(const double temp, const double median, const double m
  * \endcode
  */
 //I3D_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
-template<typename Point_t>
-I3D_EXPORT inline double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
+template<typename Point_t> inline 
+double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
   double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
@@ -271,8 +334,8 @@ I3D_EXPORT inline double regressionLinearYX(const std::vector<Point_t> &pts, dou
  * \endcode
  */
 //I3D_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
-template<typename Point_t>
-I3D_EXPORT inline double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
+template<typename Point_t> inline 
+double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
   double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
@@ -327,8 +390,8 @@ I3D_EXPORT inline double regressionLinearXY(const std::vector<Point_t> &pts, dou
  *
  * \endcode
  */
-template<typename Point_t>
-I3D_EXPORT inline double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bool YX = true)
+template<typename Point_t> inline 
+double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bool YX = true)
 {
   double corr = 0.0;
   size_t size = pts.size();
@@ -390,8 +453,8 @@ I3D_EXPORT inline double linearFittingLS(const std::vector<Point_t> &pts, double
  * \param[out] A 
  * \param[out] r 
  */
-template<typename Point_t>
-I3D_EXPORT inline void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+template<typename Point_t> inline 
+void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 {
   std::vector<PointD> ptsLog(pts.size());
   std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
@@ -417,8 +480,8 @@ I3D_EXPORT inline void expRegression(const std::vector<Point_t> &pts, double *A,
  * \param[int] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
-template<typename T>
-I3D_EXPORT inline double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
+template<typename T> inline 
+double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &plane, bool normalize = false) 
 {
   T v1 = points[1] - points[0];
   T v2 = points[2] - points[0];
@@ -451,8 +514,8 @@ I3D_EXPORT inline double threePointsPlane(const std::array<T, 3> &points, std::a
  * \param[int] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
-template<typename Point_t>
-I3D_EXPORT inline double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> &plane, bool normalize = false)
+template<typename Point_t> inline 
+double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> &plane, bool normalize = false)
 {
   double N = 0.;
   size_t size = points.size();

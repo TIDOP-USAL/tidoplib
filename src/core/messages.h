@@ -52,7 +52,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
  * Proporciona las herramientas necesarias para la impresión de mensajes por
  * consola, en un fichero log y la comunicación con otras librerias o aplicaciones
  */
-class MessageManager
+class I3D_EXPORT MessageManager
 {
 
 public:
@@ -385,7 +385,7 @@ protected:
  * al gestor de mensajes (MessageManager) recibe automaticamente
  * los mensajes
  */
-class Log : public MessageManager::Listener
+class I3D_EXPORT Log : public MessageManager::Listener
 {
 
 private:

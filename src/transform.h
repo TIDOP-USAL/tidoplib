@@ -34,8 +34,8 @@ namespace I3D
 {
 
 
-template<typename Point_t> class I3D_EXPORT Helmert2D;
-template<typename Point_t> class I3D_EXPORT Affine;
+template<typename Point_t> class Helmert2D;
+template<typename Point_t> class Affine;
 
 /*! \defgroup trfGroup Transformaciones
  *  Transformaciones geométricas
@@ -74,7 +74,7 @@ enum class transform_status {
  * \brief Clase base para transformaciones
  */
 template<typename Point_t>
-class I3D_EXPORT Transform
+class Transform
 {
 
 protected:
@@ -173,7 +173,7 @@ public:
   //}
 
 //template<typename T, typename Point_t>
-//I3D_EXPORT void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
+// void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
 //                          transform_order trfOrder = transform_order::DIRECT)
 //{
 //  while (in_first != in_last) {
@@ -330,7 +330,7 @@ double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsI
  * forma que se ejecutan a la vez (consecutivamente).
  */
 template<typename Point_t>
-class I3D_EXPORT TrfMultiple : public Transform<Point_t>
+class TrfMultiple : public Transform<Point_t>
 {
 
 private:
@@ -501,7 +501,7 @@ Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, transform_order trf
  * \brief Clase base para transformaciones 2D
  */
 template<typename Point_t>
-class I3D_EXPORT Transform2D : public Transform<Point_t>
+class Transform2D : public Transform<Point_t>
 {
 
 private:
@@ -586,7 +586,7 @@ public:
  * \brief Transformación perspectiva
  */
 template<typename Point_t>
-class I3D_EXPORT TrfPerspective : public Transform2D<Point_t>
+class TrfPerspective : public Transform2D<Point_t>
 {
 
 public:
@@ -789,7 +789,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
  * Transformación que aplica una traslación en el plano a un conjunto de puntos
  */
 template<typename Point_t>
-class I3D_EXPORT Translate : public Transform2D<Point_t>
+class Translate : public Transform2D<Point_t>
 {
 
 public:
@@ -1025,7 +1025,7 @@ Translate<Point_t>::operator Affine<Point_t>() const
  * Transformación que aplica una rotación en el plano a un conjunto de puntos 
  */
 template<typename Point_t> 
-class I3D_EXPORT Rotation : public Transform2D<Point_t>
+class Rotation : public Transform2D<Point_t>
 {
 private:
 
@@ -1321,7 +1321,7 @@ void Rotation<Point_t>::update()
  * \f$ y' = a * x - b * x + Y0\f$
  */
 template<typename Point_t>
-class I3D_EXPORT Helmert2D : public Transform2D<Point_t>
+class Helmert2D : public Transform2D<Point_t>
 {
 private:
 
@@ -1669,7 +1669,7 @@ void Helmert2D<Point_t>::update()
  * \f[ y' = c * x + d * y + y0\f]
  */
 template<typename Point_t>
-class I3D_EXPORT Affine : public Transform2D<Point_t>
+class Affine : public Transform2D<Point_t>
 {
 public:
 
@@ -2127,7 +2127,7 @@ void Affine<Point_t>::updateInv()
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class I3D_EXPORT Projective : public Transform2D<Point_t>
+class Projective : public Transform2D<Point_t>
 {
 private:
 
@@ -2519,7 +2519,7 @@ void Projective<Point_t>::update()
  *
  */
 template<typename Point_t>
-class I3D_EXPORT polynomialTransform : public Transform2D<Point_t>
+class polynomialTransform : public Transform2D<Point_t>
 {
 private:
 
@@ -2689,7 +2689,7 @@ Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, transform_o
 /* ---------------------------------------------------------------------------------- */
 
 template<typename Point_t>
-class I3D_EXPORT Transform3D : public Transform<Point_t>
+class Transform3D : public Transform<Point_t>
 {
 private:
 
@@ -2809,7 +2809,7 @@ public:
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class I3D_EXPORT Helmert3D : public Transform3D<Point_t>
+class Helmert3D : public Transform3D<Point_t>
 {
 public:
 
@@ -3222,8 +3222,8 @@ I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *
  * \param[in] trf Transformación que se aplica a la entidad
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-template<typename T, typename Point_t>
-I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out, 
+template<typename T, typename Point_t> inline
+void transform(const Entity<T> &in, Entity<T> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   if (in.getType() == entity_type::WINDOW) {
@@ -3250,8 +3250,8 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out,
 }
 
 // Otra alternativa siguiendo el funcionamiento de std::transform
-//template<typename T, typename Point_t>
-//I3D_EXPORT void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
+//template<typename T, typename Point_t> inline
+//void transform(T in_first, T in_last, T out_first, Transform<Point_t> *trf, 
 //                          transform_order trfOrder = transform_order::DIRECT)
 //{
 //  while (in_first != in_last) {
@@ -3266,8 +3266,8 @@ I3D_EXPORT void transform(const Entity<T> &in, Entity<T> *out,
  * \param[in] trf Transformación que se aplica a la entidad
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-template<typename Entity_t, typename Point_t>
-I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
+template<typename Entity_t, typename Point_t> inline
+void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   out->resize(in.size());
@@ -3283,8 +3283,8 @@ I3D_EXPORT void transform(const std::vector<Entity_t> &in, std::vector<Entity_t>
  * \param[in] trf Transformación que se aplica a la entidad
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-template<typename Entity_t, typename Point_t>
-I3D_EXPORT void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
+template<typename Entity_t, typename Point_t> inline
+void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
                                   Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   parallel_for(0, static_cast<int>(in.size()), [&](int i) {
@@ -3301,8 +3301,8 @@ I3D_EXPORT void transformParalell(const std::vector<Entity_t> &in, std::vector<E
  * \param[in] trf Transformación que se aplica a la imagen
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-template<typename Point_t>
-I3D_EXPORT void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
+template<typename Point_t> inline
+void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
   transform_type type = trf->getTransformType();
   switch (type) {
@@ -3472,7 +3472,7 @@ private:
 // controlar cuando es altura elipsoidal y ortométrica
 
 template<typename Point_t>
-class I3D_EXPORT CrsTransform : public Transform3D<Point_t>
+class CrsTransform : public Transform3D<Point_t>
 {
 protected:
   
