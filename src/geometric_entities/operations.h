@@ -25,8 +25,8 @@ template<typename T> class Segment;
  */
 
 /* ---------------------------------------------------------------------------------- */
-
-// Templates para operaciones entre puntos
+/*                    TEMPLATES PARA OPERACIONES ENTRE PUNTOS                         */
+/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Longitud o modulo de un vector 2D
@@ -68,15 +68,134 @@ I3D_EXPORT double distance(const T &pt1, const T &pt2)
 }
 
 
-/* ---------------------------------------------------------------------------------- */
-
-
 I3D_EXPORT int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect);
 
 /*!
  * Comprobación de que los 3 puntos están en la misma línea
  */
 I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                               Operaciones con Líneas                               */
+/* ---------------------------------------------------------------------------------- */
+
+// TODO: Mover de segment todas las operaciones ...
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+/*!
+ * \brief Calcula la distancia de un punto a un poligono.
+ * \param[in] pt Punto
+ * \param[in] polygon Poligono
+ * \return Distancia de un punto a un poligono
+ */
+template<typename T> inline
+I3D_EXPORT double distPointToPolygon(const Point<T> &pt, const Polygon<T> &polygon)
+{
+  double max_dist = I3D_DOUBLE_MAX;
+  double dist;
+  Polygon<T> _p = polygon;
+  for (size_t i = 0; i < polygon.getSize(); i++) {
+    if (i == polygon.getSize() - 1) {
+      dist = distPointToSegment(pt, Segment<T>(_p[i], _p[0]));
+    } else {
+      dist = distPointToSegment(pt, Segment<T>(_p[i], _p[i+1]));
+    }
+    if (dist < max_dist) max_dist = dist;
+  }
+  return max_dist;
+}
+
+/*!
+ * \brief Calcula la distancia de un punto a un poligono 3d.
+ * \param[in] pt Punto
+ * \param[in] polygon Poligono
+ * \return Distancia de un punto a un poligono
+ */
+template<typename T> inline
+I3D_EXPORT double distPointToPolygon(const Point3<T> &pt, const Polygon3D<T> &polygon)
+{
+  double max_dist = I3D_DOUBLE_MAX;
+  double dist;
+  Polygon3D<T> _p = polygon;
+  for (size_t i = 0; i < polygon.getSize(); i++) {
+    if (i == polygon.getSize() - 1) {
+      dist = distPointToSegment(pt, Segment3D<T>(_p[i], _p[0]));
+    } else {
+      dist = distPointToSegment(pt, Segment3D<T>(_p[i], _p[i+1]));
+    }
+    if (dist < max_dist) max_dist = dist;
+  }
+  return max_dist;
+}
+
+
+/*!
+ * \brief Obtiene la distancia de un punto a un plano
+ *
+ * \param[in] pt Punto
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \return Distancia del punto al plano
+ */
+template<typename Point_t>
+I3D_EXPORT inline double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plane) 
+{
+  double num = plane[0] * pt.x + plane[1] * pt.y + plane[2] * pt.z + plane[3];
+  double normal = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
+  if ( normal == 0. ) throw std::runtime_error( "3 puntos alineados" );
+  return(num / normal);
+}
+
+
+//template<typename T>
+//I3D_EXPORT inline double linePlaneAngle(const Segment3D<T> &line, const std::array<double, 4> &plane)
+//{
+//  Point3<T> v = line.vector();
+//  double num = plane[0] * v.x + plane[1] * v.y + plane[2] * v.z;
+//  double den = sqrt(plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]) + line.length();
+//  return den ? asin(num / den) : 0.;
+//}
+
+//TODO: testear
+
+/*!
+ * \brief Proyecta un punto en un plano
+ *
+ * \param[in] point Punto
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[int] planePoint Punto proyectado
+ */
+template<typename Point_t>
+I3D_EXPORT inline void projectPointToPlane(const Point_t &point, const std::array<double, 4> &plane, Point_t *planePoint)
+{
+  double t = (plane[0]*point.x + plane[1]*point.y + plane[2]*point.z + plane[3]) 
+              / (plane[0] * plane[0] + plane[1] * plane[1] + plane[2] * plane[2]);
+  planePoint->x = point.x + plane[0] * t;
+  planePoint->y = point.y + plane[1] * t;
+  planePoint->z = point.z + plane[2] * t;
+}
+
+// TODO: esto debería ser mucho mas generico. Para cualquier entidad gráfica
+
+/*!
+ * \brief Proyecta un poligono en un plano
+ *
+ * \param[in] polygon Puntos que definen el plano
+ * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[int] projectPolygon Poligono proyectado
+ */
+template<typename T>
+I3D_EXPORT inline void projectPolygonToPlane(const Polygon3D<T> &polygon, const std::array<double, 4> &plane, Polygon3D<T> *projectPolygon)
+{
+  for (int i = 0; i < polygon.getSize(); i++) {
+    Point3<T> pt;
+    projectPointToPlane(polygon3d[i], plane, &pt);
+    projectPolygon->add();
+  }
+}
 
 /*! \} */ // end of GeometricEntities
 
@@ -87,7 +206,7 @@ I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i
 
 
 
-/* ---------------------------------------------------------------------------------- */
+
 
 
 
@@ -179,51 +298,9 @@ I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i
 
 
 
-/*!
- * \brief Calcula la distancia de un punto a un poligono.
- * \param[in] pt Punto
- * \param[in] polygon Poligono
- * \return Distancia de un punto a un poligono
- */
-template<typename T> inline
-I3D_EXPORT double distPointToPolygon(const Point<T> &pt, const Polygon<T> &polygon)
-{
-  double max_dist = I3D_DOUBLE_MAX;
-  double dist;
-  Polygon<T> _p = polygon;
-  for (size_t i = 0; i < polygon.getSize(); i++) {
-    if (i == polygon.getSize() - 1) {
-      dist = distPointToSegment(pt, Segment<T>(_p[i], _p[0]));
-    } else {
-      dist = distPointToSegment(pt, Segment<T>(_p[i], _p[i+1]));
-    }
-    if (dist < max_dist) max_dist = dist;
-  }
-  return max_dist;
-}
 
-/*!
- * \brief Calcula la distancia de un punto a un poligono 3d.
- * \param[in] pt Punto
- * \param[in] polygon Poligono
- * \return Distancia de un punto a un poligono
- */
-template<typename T> inline
-I3D_EXPORT double distPointToPolygon(const Point3<T> &pt, const Polygon3D<T> &polygon)
-{
-  double max_dist = I3D_DOUBLE_MAX;
-  double dist;
-  Polygon3D<T> _p = polygon;
-  for (size_t i = 0; i < polygon.getSize(); i++) {
-    if (i == polygon.getSize() - 1) {
-      dist = distPointToSegment(pt, Segment3D<T>(_p[i], _p[0]));
-    } else {
-      dist = distPointToSegment(pt, Segment3D<T>(_p[i], _p[i+1]));
-    }
-    if (dist < max_dist) max_dist = dist;
-  }
-  return max_dist;
-}
+
+
 
 
 //TODO: En https://github.com/omtinez/CenterPolygon estas variables las da como enteros
@@ -234,14 +311,14 @@ I3D_EXPORT double distPointToPolygon(const Point3<T> &pt, const Polygon3D<T> &po
 #define CONSECUTIVE_MISS	15
 
 template<typename T> inline
-Point<T> &findInscribedCircleSequential(const Polygon<T> &polygon, const Window<T> bounds, double nCells, double mCells) 
+Point<T> findInscribedCircleSequential(const Polygon<T> &polygon, const Window<T> bounds, double nCells, double mCells) 
 {
   Point<T> pia = bounds.getCenter();
   Point<T> tmp;
 
 	// calculate the required increment for x and y
-	float increment_x = (bounds.pt2.x - bounds.pt1.x) / nCells;
-	float increment_y = (bounds.pt2.y - bounds.pt1.y) / mCells;
+	double increment_x = (bounds.pt2.x - bounds.pt1.x) / nCells;
+	double increment_y = (bounds.pt2.y - bounds.pt1.y) / mCells;
 
 	// biggest known distance
 	double max_distance = 0.;
@@ -267,7 +344,7 @@ Point<T> &findInscribedCircleSequential(const Polygon<T> &polygon, const Window<
 		}
 	}
 
-	return pia;
+	return std::move(pia);
 }
 
 
@@ -527,14 +604,37 @@ I3D_EXPORT void poleOfInaccessibility(const Polygon<T> &polygon, Point<T> *pole,
 
 
 template<typename T> inline
-Point3<T> &findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<T> bounds, double xCells, double yCells, double zCells) 
+Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<T> bounds, double xCells, double yCells, double zCells) 
 {
   Point3<T> pia = bounds.getCenter();
   Point3<T> tmp;
 
-	float increment_x = (bounds.pt2.x - bounds.pt1.x) / xCells;
-	float increment_y = (bounds.pt2.y - bounds.pt1.y) / yCells;
-  float increment_z = (bounds.pt2.z - bounds.pt1.z) / zCells;
+  // Se determina el plano de mejor ajuste
+  std::array<double, 4> plane;
+  nPointsPlaneLS(polygon.getPoints(), plane);
+  //Polygon3D<T> _poligon = polygon;
+  //// Proyectar polilinea en plano
+  //Polygon3D<T> poligon2;
+  //for (int i = 0; i < _poligon.getSize(); i++) {
+  //  Point3<T> pt;
+  //  projectPointToPlane(_poligon[i], plane, &pt);
+  //  poligon2.add(pt);
+  //}
+  // Máxima distancia de los puntos al plano
+  double max_dist = I3D_DOUBLE_MIN;
+  for (int i = 0; i < polygon.getSize(); i++) {
+    Point3<T> pt;
+    double distance = distantePointToPlane(polygon[i], plane);
+    if (distance > max_dist) max_dist = distance;
+  }
+
+	double increment_x = (bounds.pt2.x - bounds.pt1.x) / xCells;
+	double increment_y = (bounds.pt2.y - bounds.pt1.y) / yCells;
+  double increment_z = (bounds.pt2.z - bounds.pt1.z) / zCells;
+
+  //max_dist = std::max(max_dist, std::min(increment_x, std::min(increment_y, increment_z)));
+
+
 
 	double max_distance = 0.;
 
@@ -553,13 +653,15 @@ Point3<T> &findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox
 
         Bbox<T> box = polygon.getBox();
         if ( box.containsPoint(tmp) ) {
-        //if (polygon.isInner(tmp)) {
-          tmp_distance = distPointToPolygon(tmp, polygon);
-          if (tmp_distance > max_distance) {
-            max_distance = tmp_distance;
-            pia.x = tmp.x;
-            pia.y = tmp.y;
-            pia.z = tmp.z;
+          if (distantePointToPlane(tmp, plane) < max_dist) {
+          //if (polygon.isInner(tmp)) { // A ver que solucion damos...
+            tmp_distance = distPointToPolygon(tmp, polygon);
+            if (tmp_distance > max_distance) {
+              max_distance = tmp_distance;
+              pia.x = tmp.x;
+              pia.y = tmp.y;
+              pia.z = tmp.z;
+            }
           }
         }
 
@@ -567,7 +669,7 @@ Point3<T> &findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox
 		}
 	}
 
-	return pia;
+	return std::move(pia);
 }
 
 

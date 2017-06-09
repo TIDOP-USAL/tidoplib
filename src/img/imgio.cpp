@@ -380,7 +380,8 @@ GdalRaster::Status GdalRaster::write(const cv::Mat &image, const Helmert2D<Point
   Helmert2D<PointI> _trf;
   if (trf) _trf = *trf;
   
-  CPLErr cerr = pDataset->RasterIO(GF_Write, _trf.tx, _trf.ty, 
+  CPLErr cerr = pDataset->RasterIO(GF_Write, static_cast<int>(_trf.tx), 
+                                   static_cast<int>(_trf.ty), 
                                    image.cols, image.rows, buff, 
                                    image.cols, image.rows, 
                                    openCvToGdal(image.depth()), mBands, 

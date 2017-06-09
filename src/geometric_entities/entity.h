@@ -185,7 +185,7 @@ public:
    * \brief resize
    * \param[in] size nuevo tamaño
    */
-  void resize(int size) { mPoints.resize(size); }
+  void resize(size_t size) { mPoints.resize(size); }
 
   /*!
    * \brief Operador de indexación sobrecargado
@@ -410,7 +410,7 @@ public:
    * \param[in] id indice del elemento
    * \return Point3<T>
    */
-  Point3<T> &operator[](size_t id) { return mPoints[id];  }
+  const Point3<T> &operator[](size_t id) const { return mPoints[id];  }
 
   /*!
    * \brief Iterador al inicio
