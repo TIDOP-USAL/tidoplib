@@ -10,7 +10,7 @@ namespace I3D
 //    - Meter todas las funciones como templates
 //    - Test para ver que donde deberia usar double o float para no perder precisión
 
-void lineBuffer(const Line &ln, const int size, std::vector<PointI> *buff)
+void lineBuffer(const Line &ln, int size, std::vector<PointI> *buff)
 {
   *buff = std::vector<PointI>(4);
   PointI pt1 = ln.pt1;
@@ -23,58 +23,6 @@ void lineBuffer(const Line &ln, const int size, std::vector<PointI> *buff)
   (*buff)[2] = PointI(I3D_ROUND_TO_INT(pt2.x - dx), I3D_ROUND_TO_INT(pt2.y - dy));
   (*buff)[3] = PointI(I3D_ROUND_TO_INT(pt1.x - dx), I3D_ROUND_TO_INT(pt1.y - dy));
 }
-
-// mejor como template
-//int projectPointInSegment(const Line &ln, const PointI &pt, PointI *ptp)
-//{
-//  int iret = 0;
-//  if (pt == ln.pt1 || pt == ln.pt2) {
-//    *ptp = pt;
-//    return 2;
-//  } 
-//  PointI v1 = pt - ln.pt1;
-//  PointI v2 = ln.vector();
-//  double daux = v1.ddot(v2);
-//  float r = (float)(daux / (v2.x * v2.x + v2.y * v2.y));
-//  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
-//  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
-//
-//  if (daux <= 0) iret = -1;
-//  else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
-//  else if (daux == 0) iret = 2; // Esta en la línea
-//  return iret;
-//}
-//
-//int projectPointInSegment(const SegmentD &ln, const PointD &pt, PointD *ptp)
-//{
-//  int iret = 0;
-//  if (pt == ln.pt1 || pt == ln.pt2) {
-//    *ptp = pt;
-//    return 2;
-//  } 
-//  PointD v1 = pt - ln.pt1;
-//  PointD v2 = ln.vector();
-//  double daux = v1.ddot(v2);
-//  double r = daux / (v2.x * v2.x + v2.y * v2.y);
-//  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
-//  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y) * r;
-//
-//  if (daux <= 0) iret = -1;
-//  else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
-//  else if (daux == 0) iret = 2; // Esta en la línea
-//  return iret;
-//}
-//
-//double distPointToSegment(const PointI &pt, const Line &ln)
-//{
-//  PointD ptp;
-//  int ipr = projectPointInSegment(ln, pt, &ptp);
-//  
-//  if (ipr == -1) ptp = ln.pt1;
-//  else if (ipr == 1) ptp = ln.pt2;
-//  PointD _pt(pt);
-//  return distance(_pt, ptp);
-//}
 
 //TODO: revisar
 double distPointToLine(const PointI &pt, const Line &ln)

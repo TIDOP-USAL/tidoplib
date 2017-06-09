@@ -38,6 +38,11 @@ namespace I3D
  *  \{
  */
 
+namespace graph
+{
+
+
+
 // Tomado de GDAL
 // PEN: For linear styles
 // BRUSH: For filling areas
@@ -977,14 +982,14 @@ public:
 
 
 
-class I3D_EXPORT GPoint : public Point<double>, public GraphicEntity
+class I3D_EXPORT GPoint : public geometry::Point<float>, public GraphicEntity
 {
 public:
 
-  GPoint() : Point<double>(), GraphicEntity(){}
-  GPoint(double x, double y) : Point<double>(x, y), GraphicEntity(){}
-  GPoint(Point<double> pt) : Point<double>(pt), GraphicEntity(){}  
-  ~GPoint(){}
+  GPoint();
+  GPoint(float x, float y);
+  GPoint(const Point<float> &pt);
+  ~GPoint();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
@@ -993,26 +998,27 @@ public:
 };
 
 
-class I3D_EXPORT GPoint3D : public Point3<double>, public GraphicEntity
+class I3D_EXPORT GPoint3D : public geometry::Point3<float>, public GraphicEntity
 {
 public:
 
-  GPoint3D() : Point3<double>(), GraphicEntity(){}
-
-  ~GPoint3D(){}
+  GPoint3D();
+  GPoint3D(float x, float y, float z);
+  GPoint3D(const Point3<float> &pt);
+  ~GPoint3D();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
-class I3D_EXPORT GLineString : public LineString<double>, public GraphicEntity
+class I3D_EXPORT GLineString : public geometry::LineString<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
-  GLineString() : LineString<double>(), GraphicEntity(){}
+  GLineString();
 
-  ~GLineString(){}
+  ~GLineString();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
@@ -1020,26 +1026,26 @@ public:
 };
 
 
-class I3D_EXPORT GPolygon : public Polygon<double>, public GraphicEntity
+class I3D_EXPORT GPolygon : public geometry::Polygon<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
-  GPolygon() : Polygon<double>(), GraphicEntity(){}
+  GPolygon();
 
-  ~GPolygon(){}
+  ~GPolygon();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
-class I3D_EXPORT GMultiPoint : public MultiPoint<double>, public GraphicEntity
+class I3D_EXPORT GMultiPoint : public geometry::MultiPoint<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
-  GMultiPoint() : MultiPoint<double>(), GraphicEntity(){}
+  GMultiPoint();
 
-  ~GMultiPoint(){}
+  ~GMultiPoint();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
@@ -1047,26 +1053,26 @@ public:
 
 };
 
-class I3D_EXPORT GMultiLineString : public MultiLineString<double>, public GraphicEntity
+class I3D_EXPORT GMultiLineString : public geometry::MultiLineString<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
-  GMultiLineString() : MultiLineString<double>(), GraphicEntity(){}
+  GMultiLineString();
 
-  ~GMultiLineString(){}
+  ~GMultiLineString();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
-class I3D_EXPORT GMultiPolygon : public MultiPolygon<double>, public GraphicEntity
+class I3D_EXPORT GMultiPolygon : public geometry::MultiPolygon<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
-  GMultiPolygon() : MultiPolygon<double>(), GraphicEntity(){}
+  GMultiPolygon();
 
-  ~GMultiPolygon(){}
+  ~GMultiPolygon();
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
@@ -1111,10 +1117,10 @@ public:
 
 
 
+} // Fin namespace graph
 
+/*! \} */ // Fin GraphicEntities
 
-/*! \} */ // end of GraphicEntities
-
-} // End namespace I3D
+} // Fin namespace I3D
 
 #endif // I3D_GRAPHIC_H

@@ -183,7 +183,7 @@ Color Color::randomColor()
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_int_distribution<> dis(0, 16777216);
-  return std::move(Color(dis(gen)));
+  return Color(dis(gen));
 }
 
 /* ---------------------------------------------------------------------------------- */

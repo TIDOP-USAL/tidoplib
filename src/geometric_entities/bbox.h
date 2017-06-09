@@ -21,7 +21,7 @@ namespace I3D
  * \brief The Window class
  */
 template<typename T>
-class I3D_EXPORT Bbox : public Entity<T>
+class Bbox : public Entity<T>
 {
 public:
 
@@ -287,7 +287,7 @@ namespace geometry
  * \brief The Window class
  */
 template<typename Point3_t>
-class I3D_EXPORT Box : public Entity
+class Box : public Entity
 {
 public:
 

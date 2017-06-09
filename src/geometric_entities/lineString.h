@@ -32,7 +32,7 @@ namespace I3D
  * \endcode
  */
 template <typename T>
-class I3D_EXPORT LineString : public EntityPoints<T>
+class LineString : public EntityPoints<T>
 {
 public:
 
@@ -131,7 +131,7 @@ typedef LineString<double> LineStringD;
 
 
 template <typename T>
-class I3D_EXPORT MultiLineString : public Entity<T>
+class MultiLineString : public Entity<T>
 {
 public:
 
@@ -175,7 +175,7 @@ namespace geometry
  * \endcode
  */
 template <typename Point_t>
-class I3D_EXPORT LineString : public EntityPoints<Point_t>
+class LineString : public EntityPoints<Point_t>
 {
 public:
 
@@ -286,7 +286,7 @@ typedef LineString<Point<double>> LineStringD;
 
 
 template <typename Point_t>
-class I3D_EXPORT MultiLineString : public Entity
+class MultiLineString : public Entity
 {
 public:
 
@@ -323,7 +323,7 @@ MultiLineString<Point_t>::MultiLineString()
  *
  */
 template <typename Point3_t>
-class I3D_EXPORT LineString3D : public Entity3DPoints<Point3_t>
+class LineString3D : public Entity3DPoints<Point3_t>
 {
 public:
 
@@ -430,7 +430,7 @@ double LineString3D<Point3_t>::length()  const
 
 
 template <typename Point3_t>
-class I3D_EXPORT MultiLineString3D : public Entity
+class MultiLineString3D : public Entity
 {
 public:
 

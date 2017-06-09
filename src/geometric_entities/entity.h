@@ -57,7 +57,7 @@ enum class entity_type {
  * \brief Clase base para entidades geometricas
  */
 template<typename T>
-class I3D_EXPORT Entity
+class Entity
 {
 protected:
 
@@ -89,7 +89,7 @@ public:
 /* ---------------------------------------------------------------------------------- */
 
 template<typename T>
-class I3D_EXPORT EntityPoints : public Entity<T>
+class EntityPoints : public Entity<T>
 {
 public:
 
@@ -303,7 +303,7 @@ typename std::vector<Point<T>>::const_iterator EntityPoints<T>::end() const
 
 
 template<typename T>
-class I3D_EXPORT Entity3DPoints : public Entity<T>
+class Entity3DPoints : public Entity<T>
 {
 public:
 
@@ -599,7 +599,7 @@ public:
  * \brief Entidades 2D
  */
 template<typename Point_t>
-class I3D_EXPORT EntityPoints : public Entity
+class EntityPoints : public Entity
 {
 
 protected:
@@ -671,44 +671,6 @@ public:
   virtual void add(const Point_t &point) = 0;
 
   /*!
-   * \brief Devuelve los puntos de la colección
-   * \return vector de puntos
-   */
-  const std::vector<Point_t> &getPoints() const { return mPoints; }
-
-  /*!
-   * \brief Devuelve los puntos que esta dentro de una ventana
-   * \param[in] w Ventana
-   * \return Puntos que entran dentro de la ventana
-   */
-  std::vector<Point_t> getPointsInWindow(const Window<Point_t> &w) const;
-
-  /*!
-   * \brief Número de puntos de la colección
-   * \return Número de puntos
-   */
-  size_t getSize() const { return mPoints.size(); }
-
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente de los puntos
-   */
-  Window<Point_t> getWindow() const;
-
-  /*!
-   * \brief resize
-   * \param[in] size nuevo tamaño
-   */
-  void resize(int size) { mPoints.resize(size); }
-
-  /*!
-   * \brief Operador de indexación sobrecargado
-   * \param[in] id indice del elemento
-   * \return Point_t
-   */
-  Point_t &operator[](size_t id) { return mPoints[id];  }
-
-  /*!
    * \brief Iterador al inicio
    */
   virtual typename std::vector<Point_t>::iterator begin();
@@ -727,28 +689,89 @@ public:
    * \brief Iterador constante al final
    */
   virtual typename std::vector<Point_t>::const_iterator end() const;
+
+  /*!
+   * \brief Devuelve los puntos de la colección
+   * \return vector de puntos
+   */
+  const std::vector<Point_t> &getPoints() const;
+
+  /*!
+   * \brief Devuelve los puntos que esta dentro de una ventana
+   * \param[in] w Ventana
+   * \return Puntos que entran dentro de la ventana
+   */
+  std::vector<Point_t> getPointsInWindow(const Window<Point_t> &w) const;
+
+  /*!
+   * \brief Número de puntos de la colección
+   * \return Número de puntos
+   */
+  size_t getSize() const;
+
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   */
+  Window<Point_t> getWindow() const;
+
+  /*!
+   * \brief Comprueba si la entidad esta vacia
+   * \return True si la entidad es nula
+   */
+  bool isEmpty() const;
+
+  /*!
+   * \brief resize
+   * \param[in] size nuevo tamaño
+   */
+  void resize(int size);
+
+  /*!
+   * \brief Operador de indexación sobrecargado
+   * \param[in] id indice del elemento
+   * \return Point_t
+   */
+  Point_t &operator[](size_t id) { return mPoints[id];  }
+
+  const Point_t &operator[](size_t id) const { return mPoints[id];  }
 };
 
 
 template<typename Point_t> inline
 EntityPoints<Point_t>::EntityPoints(Entity::type type) 
-  : Entity(type), mPoints(0) {}
+  : Entity(type), 
+    mPoints(0) 
+{
+}
 
 template<typename Point_t> inline
 EntityPoints<Point_t>::EntityPoints(Entity::type type, int size) 
-  : Entity(type), mPoints(size) {}
+  : Entity(type), 
+    mPoints(size) 
+{
+}
 
 template<typename Point_t> inline
 EntityPoints<Point_t>::EntityPoints(Entity::type type, const EntityPoints &entityPoints) 
-  : Entity(type), mPoints(entityPoints.mPoints) {}
+  : Entity(type), 
+    mPoints(entityPoints.mPoints) 
+{
+}
 
 template<typename Point_t> inline
 EntityPoints<Point_t>::EntityPoints(Entity::type type, const std::vector<Point_t> &vPoint) 
-  : Entity(type), mPoints(vPoint) {}
+  : Entity(type),
+    mPoints(vPoint) 
+{
+}
 
 template<typename Point_t> inline
 EntityPoints<Point_t>::EntityPoints(Entity::type type, std::initializer_list<Point_t> entityPoints)
-  : Entity(type), mPoints(entityPoints) {}
+  : Entity(type),
+    mPoints(entityPoints)
+{
+}
 
 template<typename Point_t> inline
 EntityPoints<Point_t> &EntityPoints<Point_t>::operator = (const EntityPoints &entityPoints)
@@ -758,34 +781,6 @@ EntityPoints<Point_t> &EntityPoints<Point_t>::operator = (const EntityPoints &en
     this->mEntityType = entityPoints.mEntityType;
   }
   return *this;
-}
-
-template<typename Point_t> inline
-std::vector<Point_t> EntityPoints<Point_t>::getPointsInWindow(const Window<Point_t> &w) const
-{
-  std::vector<Point_t> r_points(mPoints.size());
-  int j = 0;
-  for (size_t i = 0; i < mPoints.size(); i++) {
-    if (w.containsPoint(mPoints[i])) {
-      r_points[i] = mPoints[i];
-      j++;
-    }
-  }
-  r_points.resize(j);
-  return r_points;
-}
-
-template<typename Point_t> inline
-Window<Point_t> EntityPoints<Point_t>::getWindow() const
-{
-  Window<Point_t> w;
-  for (size_t i = 0; i < mPoints.size(); i++) {
-    if (w.pt1.x > mPoints[i].x) w.pt1.x = mPoints[i].x;
-    if (w.pt1.y > mPoints[i].y) w.pt1.y = mPoints[i].y;
-    if (w.pt2.x < mPoints[i].x) w.pt2.x = mPoints[i].x;
-    if (w.pt2.y < mPoints[i].y) w.pt2.y = mPoints[i].y;
-  }
-  return w;
 }
 
 template<typename Point_t> inline 
@@ -812,6 +807,51 @@ typename std::vector<Point_t>::const_iterator EntityPoints<Point_t>::end() const
   return mPoints.cend();
 }
 
+template<typename Point_t> inline
+const std::vector<Point_t> &EntityPoints<Point_t>::getPoints() const 
+{ 
+  return mPoints; 
+}
+
+template<typename Point_t> inline
+std::vector<Point_t> EntityPoints<Point_t>::getPointsInWindow(const Window<Point_t> &w) const
+{
+  std::vector<Point_t> r_points(mPoints.size());
+  int j = 0;
+  for (size_t i = 0; i < mPoints.size(); i++) {
+    if (w.containsPoint(mPoints[i])) {
+      r_points[i] = mPoints[i];
+      j++;
+    }
+  }
+  r_points.resize(j);
+  return r_points;
+}
+
+template<typename Point_t> inline
+size_t EntityPoints<Point_t>::getSize() const 
+{ 
+  return mPoints.size(); 
+}
+
+template<typename Point_t> inline
+Window<Point_t> EntityPoints<Point_t>::getWindow() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < mPoints.size(); i++) {
+    if (w.pt1.x > mPoints[i].x) w.pt1.x = mPoints[i].x;
+    if (w.pt1.y > mPoints[i].y) w.pt1.y = mPoints[i].y;
+    if (w.pt2.x < mPoints[i].x) w.pt2.x = mPoints[i].x;
+    if (w.pt2.y < mPoints[i].y) w.pt2.y = mPoints[i].y;
+  }
+  return w;
+}
+
+template<typename Point_t> inline
+void EntityPoints<Point_t>::resize(int size) 
+{ 
+  mPoints.resize(size); 
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -819,7 +859,7 @@ typename std::vector<Point_t>::const_iterator EntityPoints<Point_t>::end() const
  * \brief Entidades 3D
  */
 template<typename Point3_t>
-class I3D_EXPORT Entity3DPoints : public Entity
+class Entity3DPoints : public Entity
 {
 
 protected:
@@ -833,8 +873,6 @@ protected:
    * \brief type
    */
   typedef Point3_t value_type;
-
-  //typedef typename Point3_t::value_type basic_type;
 
 public:
 
@@ -892,44 +930,6 @@ public:
   virtual void add(const Point3_t &point) = 0;
 
   /*!
-   * \brief Devuelve los puntos de la colección
-   * \return vector de puntos
-   */
-  const std::vector<Point3_t> &getPoints() const { return mPoints; }
-  
-  /*!
-   * \brief Devuelve los puntos que esta dentro de una caja
-   * \param[in] box Caja
-   * \return Puntos que entran dentro de la caja
-   */
-  std::vector<Point3_t> getPointsInBox(const Box<Point3_t> &box) const;
-
-  /*!
-   * \brief Número de puntos de la colección
-   * \return Número de puntos
-   */
-  size_t getSize() const { return mPoints.size(); }
-
-  /*!
-   * \brief Caja envolvente
-   * \return Caja envolvente de los puntos
-   */
-  Box<Point3_t> getBox() const;
-
-  /*!
-   * \brief resize
-   * \param[in] size nuevo tamaño
-   */
-  void resize(int size) { mPoints.resize(size); }
-
-  /*!
-   * \brief Operador de indexación sobrecargado
-   * \param[in] id indice del elemento
-   * \return Point3_t
-   */
-  Point3_t &operator[](size_t id) { return mPoints[id];  }
-
-  /*!
    * \brief Iterador al inicio
    */
   virtual typename std::vector<Point3_t>::iterator begin();
@@ -948,6 +948,45 @@ public:
    * \brief Iterador constante al final
    */
   virtual typename std::vector<Point3_t>::const_iterator end() const;
+
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de los puntos
+   */
+  Box<Point3_t> getBox() const;
+
+  /*!
+   * \brief Devuelve los puntos de la colección
+   * \return vector de puntos
+   */
+  const std::vector<Point3_t> &getPoints() const;
+  
+  /*!
+   * \brief Devuelve los puntos que esta dentro de una caja
+   * \param[in] box Caja
+   * \return Puntos que entran dentro de la caja
+   */
+  std::vector<Point3_t> getPointsInBox(const Box<Point3_t> &box) const;
+
+  /*!
+   * \brief Número de puntos de la colección
+   * \return Número de puntos
+   */
+  size_t getSize() const;
+
+  /*!
+   * \brief resize
+   * \param[in] size nuevo tamaño
+   */
+  void resize(int size);
+
+  /*!
+   * \brief Operador de indexación sobrecargado
+   * \param[in] id indice del elemento
+   * \return Point3_t
+   */
+  Point3_t &operator[](size_t id) { return mPoints[id]; }
+  const Point3_t &operator[](size_t id) const { return mPoints[id]; }
 };
 
 
@@ -981,36 +1020,6 @@ Entity3DPoints<Point3_t> &Entity3DPoints<Point3_t>::operator = (const Entity3DPo
   return *this;
 }
 
-template<typename Point3_t> inline
-std::vector<Point3_t> Entity3DPoints<Point3_t>::getPointsInBox(const Box<Point3_t> &box) const
-{
-  std::vector<Point3_t> r_points(mPoints.size());
-  int j = 0;
-  for (size_t i = 0; i < mPoints.size(); i++) {
-    if (box.containsPoint(mPoints[i])) {
-      r_points[i] = mPoints[i];
-      j++;
-    }
-  }
-  r_points.resize(j);
-  return r_points;
-}
-
-template<typename Point3_t> inline
-Box<Point3_t> Entity3DPoints<Point3_t>::getBox() const
-{
-  Box<Point3_t> box;
-  for (size_t i = 0; i < mPoints.size(); i++) {
-    if (box.pt1.x > mPoints[i].x) box.pt1.x = mPoints[i].x;
-    if (box.pt1.y > mPoints[i].y) box.pt1.y = mPoints[i].y;
-    if (box.pt1.z > mPoints[i].z) box.pt1.z = mPoints[i].z;
-    if (box.pt2.x < mPoints[i].x) box.pt2.x = mPoints[i].x;
-    if (box.pt2.y < mPoints[i].y) box.pt2.y = mPoints[i].y;
-    if (box.pt2.z < mPoints[i].z) box.pt2.z = mPoints[i].z;
-  }
-  return box;
-}
-
 template<typename Point3_t> inline 
 typename std::vector<Point3_t>::iterator Entity3DPoints<Point3_t>::begin() 
 {
@@ -1033,6 +1042,54 @@ template<typename Point3_t> inline
 typename std::vector<Point3_t>::const_iterator Entity3DPoints<Point3_t>::end() const 
 {
   return mPoints.cend();
+}
+
+template<typename Point3_t> inline
+Box<Point3_t> Entity3DPoints<Point3_t>::getBox() const
+{
+  Box<Point3_t> box;
+  for (size_t i = 0; i < mPoints.size(); i++) {
+    if (box.pt1.x > mPoints[i].x) box.pt1.x = mPoints[i].x;
+    if (box.pt1.y > mPoints[i].y) box.pt1.y = mPoints[i].y;
+    if (box.pt1.z > mPoints[i].z) box.pt1.z = mPoints[i].z;
+    if (box.pt2.x < mPoints[i].x) box.pt2.x = mPoints[i].x;
+    if (box.pt2.y < mPoints[i].y) box.pt2.y = mPoints[i].y;
+    if (box.pt2.z < mPoints[i].z) box.pt2.z = mPoints[i].z;
+  }
+  return box;
+}
+
+template<typename Point3_t> inline
+const std::vector<Point3_t> &Entity3DPoints<Point3_t>::getPoints() const 
+{ 
+  return mPoints; 
+}
+
+template<typename Point3_t> inline
+std::vector<Point3_t> Entity3DPoints<Point3_t>::getPointsInBox(const Box<Point3_t> &box) const
+{
+  std::vector<Point3_t> r_points(mPoints.size());
+  int j = 0;
+  for (size_t i = 0; i < mPoints.size(); i++) {
+    if (box.containsPoint(mPoints[i])) {
+      r_points[i] = mPoints[i];
+      j++;
+    }
+  }
+  r_points.resize(j);
+  return r_points;
+}
+
+template<typename Point3_t> inline
+size_t Entity3DPoints<Point3_t>::getSize() const 
+{ 
+  return mPoints.size(); 
+}
+
+template<typename Point3_t> inline
+void Entity3DPoints<Point3_t>::resize(int size) 
+{ 
+  mPoints.resize(size); 
 }
 
 

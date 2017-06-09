@@ -11,7 +11,10 @@ I3D_DEFAULT_WARNINGS
 
 namespace I3D
 {
-  
+
+using namespace graph;
+using namespace geometry;
+
 int VrtVector::getLayersCount() const
 {
   return mLayersCount;
@@ -201,7 +204,7 @@ void GdalVector::readLineString(OGRLineString *ogrLineString, GLineString *gLine
   gLineString->resize(n);
   for (int i = 0; i < n; i++) {
     //gLineString->add(PointD(ogrLineString->getX(i), ogrLineString->getY(i)));
-    gLineString->operator[](i) = PointD(ogrLineString->getX(i), ogrLineString->getY(i));
+    gLineString->operator[](i) = geometry::Point<float>(ogrLineString->getX(i), ogrLineString->getY(i));
   }
 }
 
@@ -211,7 +214,7 @@ void GdalVector::readPolygon(OGRPolygon *ogrPolygon, GPolygon *gPolygon)
   OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
   int n = ogrLinearRing->getNumPoints();
   for (int i = 0; i < n; i++) {
-    gPolygon->add(PointD(ogrLinearRing->getX(i), ogrLinearRing->getY(i)));
+    gPolygon->add(geometry::Point<float>(ogrLinearRing->getX(i), ogrLinearRing->getY(i)));
   }
   //TODO: modificar la clase Polygon para permitir Islas
   //n = ogrPolygon->getNumInteriorRings();
@@ -231,7 +234,7 @@ void GdalVector::readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMult
   for (int i = 0; i < n; i++) {
     OGRPoint *ogrPoint = (OGRPoint *)ogrMultiPoint->getGeometryRef(i);
     //gMultiPoint[i] = PointD(ogrPoint->getX(), ogrPoint->getY());
-    gMultiPoint->operator[](i) = PointD(ogrPoint->getX(), ogrPoint->getY());
+    gMultiPoint->operator[](i) = geometry::Point<float>(ogrPoint->getX(), ogrPoint->getY());
   }
 }
 

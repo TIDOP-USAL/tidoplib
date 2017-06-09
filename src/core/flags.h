@@ -51,7 +51,7 @@ namespace I3D
  * \endcode
  */
 template<typename T>
-class I3D_EXPORT EnumFlags
+class EnumFlags
 {
 
 public:
@@ -235,7 +235,7 @@ inline T_FLAG operator ~ (const T_FLAG flag)                        \
 
 
 //template<typename T>
-//class I3D_EXPORT Flags
+//class Flags
 //{
 //
 //public:

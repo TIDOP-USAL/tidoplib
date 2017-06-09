@@ -9,8 +9,14 @@ I3D_SUPPRESS_WARNINGS
 I3D_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+
 namespace I3D
 {
+
+using namespace geometry;
+
+namespace graph
+{ 
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -560,6 +566,27 @@ GraphicEntity::~GraphicEntity()
 
 /* ---------------------------------------------------------------------------------- */
 
+GPoint::GPoint() 
+  : Point<float>(), 
+    GraphicEntity()
+{
+}
+
+GPoint::GPoint(float x, float y) 
+  : Point<float>(x, y), 
+    GraphicEntity()
+{
+}
+
+GPoint::GPoint(const Point<float> &pt) 
+  : Point<float>(pt), 
+    GraphicEntity()
+{
+}  
+
+GPoint::~GPoint()
+{}
+
 #ifdef HAVE_OPENCV
 void GPoint::draw(cv::Mat &canvas) const
 {
@@ -568,6 +595,28 @@ void GPoint::draw(cv::Mat &canvas) const
 #endif
 
 /* ---------------------------------------------------------------------------------- */
+
+GPoint3D::GPoint3D() 
+  : Point3<float>(), 
+  GraphicEntity()
+{
+}
+
+GPoint3D::GPoint3D(float x, float y, float z) 
+  : Point3<float>(x, y, z), 
+  GraphicEntity()
+{
+}
+
+GPoint3D::GPoint3D(const Point3<float> &pt) 
+  : Point3<float>(pt), 
+  GraphicEntity()
+{
+}
+
+GPoint3D::~GPoint3D()
+{
+}
 
 #ifdef HAVE_OPENCV
 void GPoint3D::draw(cv::Mat &canvas) const
@@ -578,6 +627,15 @@ void GPoint3D::draw(cv::Mat &canvas) const
 
 /* ---------------------------------------------------------------------------------- */
 
+GLineString::GLineString() 
+  : LineString<geometry::Point<float>>(), 
+    GraphicEntity()
+{
+}
+
+GLineString::~GLineString()
+{
+}
 
 #ifdef HAVE_OPENCV
 void GLineString::draw(cv::Mat &canvas) const
@@ -588,6 +646,16 @@ void GLineString::draw(cv::Mat &canvas) const
 
 /* ---------------------------------------------------------------------------------- */
 
+GPolygon::GPolygon() 
+  : Polygon<geometry::Point<float>>(), 
+    GraphicEntity()
+{
+}
+
+GPolygon::~GPolygon()
+{
+}
+
 #ifdef HAVE_OPENCV
 void GPolygon::draw(cv::Mat &canvas) const
 {
@@ -597,6 +665,62 @@ void GPolygon::draw(cv::Mat &canvas) const
 
 /* ---------------------------------------------------------------------------------- */
 
+GMultiPoint::GMultiPoint()
+  : MultiPoint<geometry::Point<float>>(), 
+    GraphicEntity()
+{
+}
+
+GMultiPoint::~GMultiPoint()
+{
+}
+
+#ifdef HAVE_OPENCV
+void GMultiPoint::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+GMultiLineString::GMultiLineString()
+  : MultiLineString<geometry::Point<float>>(), 
+    GraphicEntity()
+{
+}
+
+GMultiLineString::~GMultiLineString()
+{
+}
+
+#ifdef HAVE_OPENCV
+void GMultiLineString::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
+
+GMultiPolygon::GMultiPolygon()
+  : MultiPolygon<geometry::Point<float>>(), 
+    GraphicEntity()
+{
+}
+
+GMultiPolygon::~GMultiPolygon()
+{
+}
+
+#ifdef HAVE_OPENCV
+void GMultiPolygon::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+/* ---------------------------------------------------------------------------------- */
 
 const char *GLayer::getName() const
 {
@@ -618,5 +742,7 @@ void GLayer::remove()
 {
 
 }
+
+} // Fin namespace graph
 
 } // End namespace I3D

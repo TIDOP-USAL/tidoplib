@@ -30,8 +30,8 @@ namespace I3D
  * \param[in] w2 Ventana 2
  * \return Verdadero si intersectan
  */
-template<typename T1, typename T2>
-I3D_EXPORT inline bool intersectWindows(T1 w1, T2 w2)
+template<typename T1, typename T2> inline 
+bool intersectWindows(T1 w1, T2 w2)
 {
   return w1.pt2.x >= w2.pt1.x && w1.pt2.y >= w2.pt1.y &&  w1.pt1.x <= w2.pt2.x && w1.pt1.y <= w2.pt2.y;
 }
@@ -42,8 +42,8 @@ I3D_EXPORT inline bool intersectWindows(T1 w1, T2 w2)
  * \param[in] w2 Ventana 2
  * \return Ventana interseción
  */
-template<typename T>
-I3D_EXPORT inline T windowIntersection(T w1, T w2)
+template<typename T> inline 
+T windowIntersection(T w1, T w2)
 {
   T w;
   if (intersectWindows(w1, w2)) {
@@ -61,8 +61,8 @@ I3D_EXPORT inline T windowIntersection(T w1, T w2)
  * \param[in] w2 Ventana 2
  * \return Ventana unión
  */
-template<typename T>
-I3D_EXPORT inline T joinWindow(T w1, T w2)
+template<typename T> inline 
+T joinWindow(T w1, T w2)
 {
   T w;
   w.pt1.x = std::min(w1.pt1.x, w2.pt1.x);
@@ -79,8 +79,8 @@ I3D_EXPORT inline T joinWindow(T w1, T w2)
  * \param[in] szy Aumento en y
  * \return Ventana resultante
  */
-template<typename T1, typename T2>
-I3D_EXPORT inline T1 expandWindow(T1 w, T2 szx, T2 szy)
+template<typename T1, typename T2> inline 
+T1 expandWindow(T1 w, T2 szx, T2 szy)
 {
   T1 _w;
   _w.pt1.x = w.pt1.x - szx;
@@ -97,8 +97,8 @@ I3D_EXPORT inline T1 expandWindow(T1 w, T2 szx, T2 szy)
  * \param[in] sz Cantidad en que se expande
  * \return Ventana resultante
  */
-template<typename T1, typename T2>
-I3D_EXPORT inline T1 expandWindow(T1 w, T2 sz)
+template<typename T1, typename T2> inline 
+T1 expandWindow(T1 w, T2 sz)
 {
   return expandWindow(w, sz, sz);
 }
@@ -116,7 +116,7 @@ I3D_EXPORT inline T1 expandWindow(T1 w, T2 sz)
 * \brief The Window class
 */
 template<typename T>
-class I3D_EXPORT Window : public Entity<T>
+class Window : public Entity<T>
 {
 public:
 
@@ -437,7 +437,7 @@ typedef Window<float> WindowF;
 
 
 template<typename T>
-I3D_EXPORT inline Window<T> moveWindow(const Window<T> &w, T dx, T dy)
+inline Window<T> moveWindow(const Window<T> &w, T dx, T dy)
 {
   Window<T> w_return = w;
   Point<T> t(dx, dy);
@@ -479,7 +479,7 @@ namespace geometry
 * \brief The Window class
 */
 template<typename Point_t>
-class I3D_EXPORT Window : public Entity
+class Window : public Entity
 {
 public:
 
@@ -629,13 +629,6 @@ Window<Point_t>::Window(const Window &w)
 {
 }
 
-//template<typename T> inline
-//Window<T>::Window(Window &&w)
-//{
-//  pt1 = std::move(w.pt1);
-//  pt2 = std::move(w.pt2);
-//}
-
 template<typename Point_t> inline
 Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2) 
   : Entity(Entity::type::WINDOW) 
@@ -718,10 +711,10 @@ Window<Point_t>::Window(std::vector<Point_t2> v)
         if (pt2.x < v[i].x) pt2.x = I3D_ROUND_TO_INT(v[i].x);
         if (pt2.y < v[i].y) pt2.y = I3D_ROUND_TO_INT(v[i].y);
       } else {
-        if (pt1.x > v[i].x) pt1.x = static_cast<T>(v[i].x);
-        if (pt1.y > v[i].y) pt1.y = static_cast<T>(v[i].y);
-        if (pt2.x < v[i].x) pt2.x = static_cast<T>(v[i].x);
-        if (pt2.y < v[i].y) pt2.y = static_cast<T>(v[i].y);
+        if (pt1.x > v[i].x) pt1.x = static_cast<typename Point_t::value_type>(v[i].x);
+        if (pt1.y > v[i].y) pt1.y = static_cast<typename Point_t::value_type>(v[i].y);
+        if (pt2.x < v[i].x) pt2.x = static_cast<typename Point_t::value_type>(v[i].x);
+        if (pt2.y < v[i].y) pt2.y = static_cast<typename Point_t::value_type>(v[i].y);
       }
     }
   }
@@ -752,17 +745,19 @@ Window<Point_t>::operator Window<Point_t2>() const
   //Point<T2> _pt1 = pt1;
   //Point<T2> _pt2 = pt2;
   //return Window<T2>(_pt1, _pt2);
-  //habria que crear un cast personalizado para transformar a entero. 
+  Window<Point_t2> w;
   if (typeid(typename Point_t2::value_type) == typeid(int)) {
-    //Dos posibles soluciones. Ver cual es mas eficiente
-    Point_t _pt1(I3D_ROUND_TO_INT(pt1.x), I3D_ROUND_TO_INT(pt1.y));
-    Point_t _pt2(I3D_ROUND_TO_INT(pt2.x), I3D_ROUND_TO_INT(pt2.y));
-    return Window<Point_t2>(_pt1, _pt2);
+    w.pt1.x = I3D_ROUND_TO_INT(pt1.x);
+    w.pt1.y = I3D_ROUND_TO_INT(pt1.y);
+    w.pt2.x = I3D_ROUND_TO_INT(pt2.x);
+    w.pt2.y = I3D_ROUND_TO_INT(pt2.y);
   } else {
-    Point_t2 _pt1 = pt1;
-    Point_t2 _pt2 = pt2;
-    return Window<Point_t2>(_pt1, _pt2);
+    w.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
+    w.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
+    w.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
+    w.pt2.y = static_cast<typename Point_t2::value_type>(pt1.y);
   }
+  return w;
 }
 
 template<typename Point_t> inline
