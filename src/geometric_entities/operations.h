@@ -750,6 +750,7 @@ namespace geometry
 // forward declaration
 template<typename T> class Segment;
 template<typename T> class Segment3D;
+class GroupLines;
 
 /* ---------------------------------------------------------------------------------- */
 /*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
@@ -828,7 +829,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   }
   PointD v1 = pt - ln.pt1;
   PointD v2 = ln.vector();
-  double daux = v1.ddot(v2);
+  double daux = dotProduct(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -933,6 +934,12 @@ double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &
   dist[3] = distPointToSegment(ln2.pt2, ln1);
   return *std::min_element(dist, dist + 4);
 }
+
+void groupParallelLines(std::vector<Segment<Point<int>>> linesaux, std::vector<GroupLines> *curLinesGrops, double angTol);
+
+void groupLinesByDist(const std::vector<Segment<PointI>> &linesIn, std::vector<GroupLines> *curLinesGrops, int dist);
+
+void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size);
 
 
 }

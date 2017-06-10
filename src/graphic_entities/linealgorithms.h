@@ -37,12 +37,12 @@ protected:
   /*!
    * \brief Punto inicial
    */
-  PointI mPt1;
+  geometry::PointI mPt1;
 
   /*!
    * \brief Punto final
    */
-  PointI mPt2;
+  geometry::PointI mPt2;
 
   /*!
    * \brief Paso en X
@@ -57,7 +57,7 @@ protected:
   /*!
    * \brief Posición actual
    */
-  PointI mPos;
+  geometry::PointI mPos;
 
   /*!
    * \brief Incremento en X
@@ -79,7 +79,7 @@ public:
   /*!
    * \brief Constructora
    */
-  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2)
+  LineAlgorithms(Type type, const geometry::PointI &pt1, const geometry::PointI &pt2)
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
@@ -97,12 +97,12 @@ public:
    * \param[in] id Identificador de la posición
    * \return Posición actual
    */
-  virtual PointI position(int id = -1) = 0;
+  virtual geometry::PointI position(int id = -1) = 0;
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  virtual std::vector<PointI> getPoints() = 0;
+  virtual std::vector<geometry::PointI> getPoints() = 0;
 };
 
 /*!
@@ -130,7 +130,7 @@ public:
    * I3D::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
-  BresenhamLine(const PointI &pt1, const PointI &pt2)
+  BresenhamLine(const geometry::PointI &pt1, const geometry::PointI &pt2)
     : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2)
   {
     init();
@@ -144,7 +144,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  PointI &operator*();
+  geometry::PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -192,7 +192,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  PointI position(int id = -1) override;
+  geometry::PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -202,7 +202,7 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<PointI> getPoints() override;
+  std::vector<geometry::PointI> getPoints() override;
 
 private:
 
@@ -248,7 +248,7 @@ public:
    * I3D::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
-  DDA(const PointI &pt1, const PointI &pt2)
+  DDA(const geometry::PointI &pt1, const geometry::PointI &pt2)
     : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
   {
     init();
@@ -259,7 +259,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  PointI &operator*();
+  geometry::PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -307,7 +307,7 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  PointI position(int id = -1) override;
+  geometry::PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
@@ -317,7 +317,7 @@ public:
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  std::vector<PointI> getPoints() override;
+  std::vector<geometry::PointI> getPoints() override;
 
 private:
 

@@ -4,11 +4,14 @@
 namespace I3D 
 {
 
+using namespace geometry;
+
+
 /* ---------------------------------------------------------------------------------- */
 /*                        Algoritmos de trazado de lineas                             */
 /* ---------------------------------------------------------------------------------- */
 
-PointI &BresenhamLine::operator*()
+geometry::PointI &BresenhamLine::operator*()
 {
   return mPos;
 }
@@ -61,7 +64,7 @@ BresenhamLine BresenhamLine::end()
   return it;
 }
 
-PointI BresenhamLine::position(int id)
+geometry::PointI BresenhamLine::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -171,9 +174,9 @@ int BresenhamLine::size() const
   return mCount;
 }
 
-std::vector<PointI> BresenhamLine::getPoints()
+std::vector<geometry::PointI> BresenhamLine::getPoints()
 {
-  std::vector<PointI> pts;
+  std::vector<geometry::PointI> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);
@@ -183,7 +186,7 @@ std::vector<PointI> BresenhamLine::getPoints()
 
 /* ---------------------------------------------------------------------------------- */
 
-PointI &DDA::operator*()
+geometry::PointI &DDA::operator*()
 {
   return mPos;
 }
@@ -237,7 +240,7 @@ DDA DDA::end()
   return it;
 }
 
-PointI DDA::position(int id)
+geometry::PointI DDA::position(int id)
 {
   if (id == -1) {
     return mPos;
@@ -287,9 +290,9 @@ int DDA::size() const
   return mCount;
 }
 
-std::vector<PointI> DDA::getPoints()
+std::vector<geometry::PointI> DDA::getPoints()
 {
-  std::vector<PointI> pts;
+  std::vector<geometry::PointI> pts;
   while ( mPos != mPt2) {
     this->operator++();
     pts.push_back(mPos);

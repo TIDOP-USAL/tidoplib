@@ -72,4 +72,66 @@ bool isCollinearPoints(const PointI &pt_c, const I3D::Segment<int> &line_i_r, do
 //}
 
 
+
+
+
+
+
+namespace geometry
+{
+  void groupParallelLines(std::vector<Line> linesaux, std::vector<GroupLines> *curLinesGrops, double angTol) 
+{
+
+  //Comenzamos a agrupar por la primera linea
+  while (linesaux.size() > 0) {
+
+    GroupLines lg;
+    lg.add(linesaux[0]);
+    linesaux.erase(linesaux.begin());
+
+    for (int ilg = 0; ilg < lg.getSize(); ilg++) {
+      for (size_t i = 0; i < linesaux.size(); i++) {
+        if (lg[ilg].isParallel(linesaux[i], angTol)) {
+          lg.add(linesaux[i]);
+          linesaux.erase(linesaux.begin() + i);
+          i--;
+        }
+      }
+    }
+    curLinesGrops->push_back(lg);
+  }
+}
+
+void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<GroupLines> *curLinesGrops, int dist) 
+{
+
+  //Comenzamos a agrupar por la primera linea
+  std::vector<Line> linesaux = linesIn;
+  while (linesaux.size() > 0) {
+
+    GroupLines lg;
+    lg.add(linesaux[0]);
+    linesaux.erase(linesaux.begin());
+
+    for (int ilg = 0; ilg < lg.getSize(); ilg++) {
+      for (size_t i = 0; i < linesaux.size(); i++) {
+        if (lg[ilg].isNear(linesaux[i], dist)) {
+          lg.add(linesaux[i]);
+          linesaux.erase(linesaux.begin() + i);
+          i--;
+        }
+      }
+    }
+    curLinesGrops->push_back(lg);
+  }
+}
+
+void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size)
+{
+  vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](GroupLines &gl) -> bool { return (gl.getSize() < size); }), vlg->end());
+}
+
+}
+
+
 } // End namespace I3D

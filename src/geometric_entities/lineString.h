@@ -32,7 +32,7 @@ namespace I3D
  * \endcode
  */
 template <typename T>
-class LineString : public EntityPoints<T>
+class I3D_DEPRECATED("geometry::LineString<Point<T>>") LineString : public EntityPoints<T>
 {
 public:
 

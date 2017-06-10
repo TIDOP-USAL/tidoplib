@@ -74,7 +74,7 @@ protected:
   /*!
    * \brief Lineas detectadas
    */
-  std::vector<Line> mLines;
+  std::vector<geometry::SegmentI> mLines;
 
 public:
 
@@ -135,7 +135,7 @@ public:
    * \brief Devuelve una referencia a las líneas detectadas
    * \return Lineas
    */
-  const std::vector<Line> &getLines() const { return mLines; }
+  const std::vector<geometry::SegmentI> &getLines() const { return mLines; }
 
 protected:
 

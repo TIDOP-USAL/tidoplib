@@ -32,7 +32,7 @@ namespace I3D
  * \endcode
  */
 template<typename T>
-class Point
+class I3D_DEPRECATED("gemetry::Point<T>") Point
   : public
 #ifdef HAVE_OPENCV
   cv::Point_<T>,
@@ -325,7 +325,7 @@ Point<T2> operator * (T1 a, const Point<T2>& b)
  * \endcode
  */
 template<typename T>
-class MultiPoint : public EntityPoints<T>
+class I3D_DEPRECATED("gemetry::MultiPoint<Point<T>>")  MultiPoint : public EntityPoints<T>
 {
 public:
 
@@ -425,7 +425,7 @@ typedef MultiPoint<float> MultiPointF;
  * \endcode
  */
 template<typename T>
-class Point3
+class I3D_DEPRECATED("geometry::Point3<T>") Point3
   : public
 #ifdef HAVE_OPENCV
   cv::Point3_<T>,

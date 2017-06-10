@@ -633,7 +633,7 @@ I3D_ENABLE_WARNING(4244)
 /*!
  * \brief The ldGroupLines class
  */
-class I3D_EXPORT ldGroupLines
+class I3D_DEPRECATED("GroupLines") I3D_EXPORT ldGroupLines
 {
 private:
   /*!
@@ -732,10 +732,13 @@ public:
 /*                          Operaciones con grupos de Líneas                          */
 /* ---------------------------------------------------------------------------------- */
 
+I3D_DEPRECATED("geometry::groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *curLinesGrops, double angTol);")
 I3D_EXPORT void groupParallelLines(std::vector<Line> linesaux, std::vector<ldGroupLines> *curLinesGrops, double angTol);
 
+I3D_DEPRECATED("geometry::groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines> *curLinesGrops, int dist);")
 I3D_EXPORT void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<ldGroupLines> *curLinesGrops, int dist);
 
+I3D_DEPRECATED("geometry::delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size);")
 I3D_EXPORT void delLinesGroupBySize(std::vector<ldGroupLines> *vlg, int size);
 
 
@@ -1245,6 +1248,80 @@ typedef Segment3D<Point3<int>> Segment3dI;
 typedef Segment3D<Point3<double>> Segment3dD;
 typedef Segment3D<Point3<float>> Segment3dF;
 
+
+
+
+/*!
+ * \brief The ldGroupLines class
+ */
+class I3D_EXPORT GroupLines
+{
+private:
+  /*!
+   * \brief linesgrops
+   */
+  std::vector<Line> linesgroup;
+
+  /*!
+   * \brief Ventana envolvente del grupo de líneas
+   */
+  WindowI bbox;
+
+public:
+  /*!
+   * \brief Constructora GroupLines
+   */
+  GroupLines();
+
+  GroupLines(const std::vector<Line> &lines);
+
+  /*!
+   * \brief Añade una línea
+   * \param[in] Line Linea
+   */
+  void add(const Line &line);
+
+#ifdef HAVE_OPENCV
+
+  /*!
+   * \brief Añade una línea
+   * \param[in] lvect
+   */
+  void add(const cv::Vec4i &lvect);
+
+#endif
+
+  /*!
+   * \brief Ángulo medio
+   * \return
+   */
+  double angleMean();
+
+  void DeleteLine(int id);
+
+  /*!
+   * \brief Ventana envolvente del grupo de lineas
+   * \return
+   */
+  WindowI getBbox() const { return bbox; }
+
+  /*!
+   * \brief Número de líneas
+   * \return
+   */
+  size_t getSize() const { return linesgroup.size(); }
+
+  /*!
+   * \brief Operador de indexación sobrecargado
+   * \param[in] id Indice del elemento
+   * \return Linea
+   */
+  const Line &operator[](int id) const { return linesgroup[id]; }
+  Line &operator[](int id)  { return linesgroup[id]; }
+
+  const std::vector<Line> &getLines() const { return linesgroup; }
+
+};
 
 }
 

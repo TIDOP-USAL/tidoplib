@@ -38,7 +38,7 @@ namespace I3D
  * \endcode
  */
 template<typename T>
-class Polygon : public EntityPoints<T>
+class I3D_DEPRECATED("geometry::Polygon<Point_t>") Polygon : public EntityPoints<T>
 {
 
 public:

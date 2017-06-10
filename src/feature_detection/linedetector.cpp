@@ -10,16 +10,18 @@
 #include "core/exception.h"
 
 using namespace std;
+using namespace I3D::geometry;
 
 namespace I3D
 {
+
 
 /* ---------------------------------------------------------------------------------- */
 
 void LineDetector::drawLines(cv::Mat &canvas, const cv::Scalar &color, int thickness, int lineType) const
 {
   for (size_t i = 0; i < mLines.size(); i++) {
-    line(canvas, mLines[i].pt1, mLines[i].pt2, color, thickness, lineType);
+    cv::line(canvas, (cv::Point &)mLines[i].pt1, (cv::Point &)mLines[i].pt2, color, thickness, lineType);
   }
 }
 
@@ -47,7 +49,7 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
     cv::Point pt1, pt2;
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
-    Line l;
+    geometry::SegmentI l;
     l.pt1.x = I3D_ROUND_TO_INT(x0 + 1.1 * image.cols * (-b));
     l.pt1.y = I3D_ROUND_TO_INT(y0 + 1.1 * image.rows * (a));
     l.pt2.x = I3D_ROUND_TO_INT(x0 - 1.1 * image.cols * (-b));
@@ -73,10 +75,6 @@ LineDetector::Exit ldHouh::run(cv::Mat &image, const cv::Scalar &_angletol)
 
 LineDetector::Exit ldHouhP::run(cv::Mat &image)
 {
-//#ifdef _DEBUG
-//  double startTick, time;
-//  startTick = (double)cv::getTickCount(); // measure time
-//#endif
   double angle = 0.0;
   mLines.clear();
   vector<cv::Vec4i> linesaux;
@@ -87,16 +85,16 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
     return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
-    Line l(linesaux[i]);
+    geometry::SegmentI l;
+    l.pt1.x = linesaux[i][0];
+    l.pt1.y = linesaux[i][1];
+    l.pt2.x = linesaux[i][2];
+    l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
     if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) ) {
       mLines.push_back(l);
     }
   }
-//#ifdef _DEBUG
-//  time = ((double)cv::getTickCount() - startTick) / cv::getTickFrequency();
-//  printf("\nTime ldHouhP [s]: %.3f\n", time);
-//#endif
   return LineDetector::Exit::SUCCESS;
 }
 
@@ -143,7 +141,11 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
   }
 
   for (size_t i = 0; i < linesaux.size(); i++) {
-    Line l(linesaux[i]);
+    geometry::SegmentI l;
+    l.pt1.x = linesaux[i][0];
+    l.pt1.y = linesaux[i][1];
+    l.pt2.x = linesaux[i][2];
+    l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
     if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI) ) {
       mLines.push_back(l);
@@ -269,7 +271,11 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
     return LineDetector::Exit::FAILURE;
   }
   for (size_t i = 0; i < linesaux.size(); i++) {
-    Line l(linesaux[i]);
+    geometry::SegmentI l;
+    l.pt1.x = linesaux[i][0];
+    l.pt1.y = linesaux[i][1];
+    l.pt2.x = linesaux[i][2];
+    l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
     if ((angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + I3D_PI && angle <= mMaxTheta + I3D_PI)) {
       mLines.push_back(l);
