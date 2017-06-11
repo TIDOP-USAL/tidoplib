@@ -29,10 +29,10 @@
 #include "geometric_entities/entity.h"
 #include "geometric_entities/segment.h"
 #include "geometric_entities/bbox.h"
+#include "geometric_entities/window.h"
 
 namespace I3D
 {
-
 
 template<typename Point_t> class Helmert2D;
 template<typename Point_t> class Affine;
@@ -711,7 +711,8 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
     } else {
       cv::perspectiveTransform(vIn, vOut, H.inv());
     }
-    (cv::Point_<sub_type> &)(*ptOut) = vOut[0];
+    ptOut->x = vOut[0].x;
+    ptOut->y = vOut[0].y;
   } catch ( cv::Exception &e ) {
     msgError("Error in perspective transformation: %s", e.what());
     return transform_status::FAILURE; 
@@ -3212,8 +3213,8 @@ Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1, Helmert3D<Point_t> &trf2)
  * \param[in] dy
  * \deprecated{ Reemplazada por I3D::Translate::transform }
  */
-I3D_DEPRECATED("transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)")
-I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
+//I3D_DEPRECATED("transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)")
+//I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 /*!
  * \brief Aplica una transformación a una entidad
@@ -3222,31 +3223,66 @@ I3D_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *
  * \param[in] trf Transformación que se aplica a la entidad
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-template<typename T, typename Point_t> inline
-void transform(const Entity<T> &in, Entity<T> *out, 
+//template<typename T, typename Point_t> inline
+//void transform(const Entity<T> &in, Entity<T> *out, 
+//                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
+//{
+//  if (in.getType() == entity_type::WINDOW) {
+//    Window<T> *w = dynamic_cast<Window<T> *>(out);
+//    trf->transform(dynamic_cast<const Window<T> &>(in).pt1, &w->pt1, trfOrder);
+//    trf->transform(dynamic_cast<const Window<T> &>(in).pt2, &w->pt2, trfOrder);
+//  } else if ( in.getType() == entity_type::SEGMENT_2D) {
+//    Segment<T> *s = dynamic_cast<Segment<T> *>(out);
+//    trf->transform(dynamic_cast<const Segment<T> &>(in).pt1, &s->pt1, trfOrder);
+//    trf->transform(dynamic_cast<const Segment<T> &>(in).pt2, &s->pt2, trfOrder);
+//  } else if (in.getType() == entity_type::LINESTRING_2D ||
+//             in.getType() == entity_type::MULTIPOINT_2D ||
+//             in.getType() == entity_type::POLYGON_2D) {
+//    const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
+//    dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());
+//    typename std::vector<Point<T>>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
+//    for (typename std::vector<Point<T>>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+//      trf->transform(*it, &(*it_out), trfOrder);
+//    }
+//  } else {
+//    //tipo no soportado
+//    return;
+//  }
+//}
+
+template<typename Point_t> inline
+void transform(const geometry::EntityPoints<Point_t> &in, geometry::EntityPoints<Point_t> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
-  if (in.getType() == entity_type::WINDOW) {
-    Window<T> *w = dynamic_cast<Window<T> *>(out);
-    trf->transform(dynamic_cast<const Window<T> &>(in).pt1, &w->pt1, trfOrder);
-    trf->transform(dynamic_cast<const Window<T> &>(in).pt2, &w->pt2, trfOrder);
-  } else if ( in.getType() == entity_type::SEGMENT_2D) {
-    Segment<T> *s = dynamic_cast<Segment<T> *>(out);
-    trf->transform(dynamic_cast<const Segment<T> &>(in).pt1, &s->pt1, trfOrder);
-    trf->transform(dynamic_cast<const Segment<T> &>(in).pt2, &s->pt2, trfOrder);
-  } else if (in.getType() == entity_type::LINESTRING_2D ||
-             in.getType() == entity_type::MULTIPOINT_2D ||
-             in.getType() == entity_type::POLYGON_2D) {
-    const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
-    dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());
-    typename std::vector<Point<T>>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
-    for (typename std::vector<Point<T>>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+  if (in.getType() == geometry::Entity::type::LINESTRING_2D ||
+      in.getType() == geometry::Entity::type::MULTIPOINT_2D ||
+      in.getType() == geometry::Entity::type::POLYGON_2D) {
+    //const EntityPoints<Point_t> &_in = dynamic_cast<const EntityPoints<Point_t> &>(in);
+    out->resize(in.getSize());
+    typename std::vector<Point_t>::iterator it_out = out->begin();
+    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
       trf->transform(*it, &(*it_out), trfOrder);
     }
   } else {
     //tipo no soportado
     return;
   }
+}
+
+template<typename Point_t> inline
+void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out, 
+                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
+{
+  trf->transform(in.pt1, &out->pt1, trfOrder);
+  trf->transform(in.pt2, &out->pt2, trfOrder);
+}
+
+template<typename Point_t> inline
+void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> *out, 
+                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
+{
+  trf->transform(in.pt1, &out->pt1, trfOrder);
+  trf->transform(in.pt2, &out->pt2, trfOrder);
 }
 
 // Otra alternativa siguiendo el funcionamiento de std::transform

@@ -242,5 +242,8 @@
     <ClInclude Include="core\datamodel.h">
       <Filter>Archivos de encabezado\core</Filter>
     </ClInclude>
+    <ClInclude Include="experimental\experimental.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

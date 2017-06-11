@@ -16,44 +16,35 @@
 namespace I3D
 {
 
-// forward declaration
-template<typename T> class Segment;
-template<typename T> class Segment3D;
-
 /*! \defgroup GeometricEntities Entidades geométricas
  *  Puntos, lineas, ...
  *  \{
  */
 
+namespace geometry
+{
+
+// forward declaration
+template<typename T> class Segment;
+template<typename T> class Segment3D;
+class GroupLines;
+
 /* ---------------------------------------------------------------------------------- */
-/*                    TEMPLATES PARA OPERACIONES ENTRE PUNTOS                         */
+/*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
 /* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Longitud o modulo de un vector 2D
  * \param[in] v vector
  * \return Longitud
+ * \deprecated { Reemplazada por I3D::Translate::transform }
  */
-template<typename T> inline
-double length(const Point<T> &v)
+template<typename Point_t> inline
+I3D_DEPRECATED("double module(const Point_t &v)")
+double length(const Point_t &v)
 {
   return sqrt(v.x*v.x + v.y*v.y);
 }
-
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Longitud o modulo de un vector 3D
- * \param[in] v Vector
- * \return Longitud
- */
-template<typename T> inline
-double length(const cv::Point3_<T> &v)
-{
-  return sqrt(v.x*v.x + v.y*v.y + v.z*v.z);
-}
-
-#endif
 
 /*!
  * \brief Distancia entre dos puntos
@@ -61,31 +52,258 @@ double length(const cv::Point3_<T> &v)
  * \param[in] pt2 Punto 2
  * \return Distancia
  */
-template<typename T> inline
-double distance(const T &pt1, const T &pt2)
+template<typename Point_t> inline
+double distance(const Point_t &pt1, const Point_t &pt2)
 {
-  T v = pt2 - pt1;
-  return length(v);
+  Point_t v = pt2 - pt1;
+  return module(v);
+}
+template<typename Point3_t> inline
+double distance3D(const Point3_t &pt1, const Point3_t &pt2)
+{
+  Point3_t v = pt2 - pt1;
+  return module3D(v);
 }
 
+
+
+/*!
+ * \brief Crea un buffer entorno a una linea
+ * \param[in] ln Línea
+ * \param[in] size Tamaño de buffer
+ * \param[out] buff Buffer
+ */
+template<typename Point_t> inline
+void lineBuffer(const Segment<Point_t> &ln, int size, std::vector<Point_t> *buff)
+{
+  *buff = std::vector<Point_t>(4);
+  Point_t pt1 = ln.pt1;
+  Point_t pt2 = ln.pt2;
+  double acimut = azimut(pt1, pt2);
+  double dx = size * sin(acimut + I3D_PI_2);
+  double dy = size * cos(acimut + I3D_PI_2);
+  (*buff)[0] = Point_t(pt1.x + dx, pt1.y + dy);
+  (*buff)[1] = Point_t(pt2.x + dx, pt2.y + dy);
+  (*buff)[2] = Point_t(pt2.x - dx, pt2.y - dy);
+  (*buff)[3] = Point_t(pt1.x - dx, pt1.y - dy);
+}
+
+/*!
+ * \brief Projecta un punto en un segmento de recta.
+ * Si no hay punto de proyección en el segmento se devuelve nulo
+ * \param[in] ln Segmento de línea
+ * \param[in] pt Punto que se proyecta
+ * \param[out] ptp Punto proyectado
+ * \return -1, 0, 1
+ */
+template<typename Point_t> inline
+int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t *ptp)
+{
+  int iret = 0;
+  if (pt == ln.pt1 || pt == ln.pt2) {
+    *ptp = pt;
+    return 2;
+  }
+  PointD v1 = pt - ln.pt1;
+  PointD v2 = ln.vector();
+  double daux = dotProduct(v1, v2);
+  double r = daux / (v2.x * v2.x + v2.y * v2.y);
+
+  if (typeid(typename Point_t::value_type) == typeid(int)) {
+    ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
+    ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+  } else {
+    ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
+    ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
+  }
+
+  if (daux <= 0) iret = -1;
+  else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
+  else if (daux == 0) iret = 2; // Esta en la línea
+  return iret;
+}
+
+
+template<typename Point_t> inline
+int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
+{
+  int iret = 0;
+  if (pt == ln.pt1 || pt == ln.pt2) {
+    *ptp = pt;
+    return 2;
+  }
+  Point3D v1 = pt - ln.pt1;
+  Point3D v2 = ln.vector();
+  double daux = v1.ddot(v2);
+  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
+
+  //if (typeid(T) == typeid(int)) {
+  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
+  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
+  //} else {
+  //  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
+  //  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y) * r;
+  //}
+  //if (typeid(T) == typeid(int)) {
+  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
+  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+  //} else {
+  *ptp = ln.pt1 + v2 * r;
+  //}
+
+  if (daux <= 0) iret = -1;
+  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
+  else if (daux == 0) iret = 2; // Esta en la línea
+  return iret;
+}
+
+/*!
+ * \brief Calcula la distancia de un punto a un segmento de linea.
+ * \param[in] pt Punto
+ * \param[in] ln Linea
+ * \return Distancia de un punto a una segmento de linea
+ */
+template<typename Point_t> inline
+double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
+{
+  Point_t ptp;
+  int ipr = projectPointInSegment(ln, pt, &ptp);
+
+  if (ipr == -1) ptp = ln.pt1;
+  else if (ipr == 1) ptp = ln.pt2;
+  //Point_t _pt(pt);
+  return distance(pt, ptp);
+}
+
+template<typename Point3_t> inline
+double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
+{
+  Point3_t ptp;
+  int ipr = projectPointInSegment(ln, pt, &ptp);
+
+  if (ipr == -1) ptp = ln.pt1;
+  else if (ipr == 1) ptp = ln.pt2;
+  //Point3<T> _pt(pt);
+  return distance(pt, ptp);
+}
+
+/*!
+ * \brief distPointToLine
+ * \param[in] pt
+ * \param[in] ln
+ * \return
+ */
+//I3D_EXPORT double distPointToLine(const PointI &pt, const Line &ln);
+//double distPointToLine(const PointI &pt, const Line &ln)
+//{
+//  PointI v1 = pt - ln.pt1;
+//  PointI v2 = ln.vector();
+//  return abs(v1.ddot(v2) / (v2.x * v2.x + v2.y * v2.y));
+//}
+
+/*!
+ * \brief Calcula la distancia mínima entre dos segmentos de linea.
+ * \param[in] ln1 Segmento 1
+ * \param[in] ln2 Segmento 2
+ * \return Distancia entre segmentos
+ */
+template<typename Point_t> inline
+double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2)
+{
+  double dist[4];
+  dist[0] = distPointToSegment(ln1.pt1, ln2);
+  dist[1] = distPointToSegment(ln1.pt2, ln2);
+  dist[2] = distPointToSegment(ln2.pt1, ln1);
+  dist[3] = distPointToSegment(ln2.pt2, ln1);
+  return *std::min_element(dist, dist + 4);
+}
+
+/*!
+ * \brief Intersect de dos segmentos de línea
+ * \param ln1 Primer segmento
+ * \param ln2 Segundo segmento
+ * \param pt Punto de intersección
+ * \return
+ */
+ //I3D_EXPORT int intersectSegments(const Line &ln1, const Line &ln2, PointI *pt);
+template <typename Point_t>
+inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
+{
+  int iret = 0;
+  Point_t vs1, vs2;
+  vs1 = ln1.vector();
+  vs2 = ln2.vector();
+  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+  if (double cross_product = crossProduct(vs1, vs2)) {
+    Point_t v11_12 = ln2.pt1 - ln1.pt1;
+    double t = crossProduct(v11_12, vs2) / cross_product;
+    double u = crossProduct(v11_12, vs1) / cross_product;
+    if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
+      if (typeid(typename Point_t::value_type) == typeid(int)) {
+        pt->x = I3D_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
+        pt->y = I3D_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+      } else {
+        pt->x += static_cast<Point_t::value_type>(ln1.pt1.x + t * vs1.x);
+        pt->y += static_cast<Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+      }
+      iret = 1;
+    }
+  }
+  return(iret);
+}
+
+/*!
+ * \brief Determina la intersección de los lineas
+ * \param[in] ln1 Primera línea
+ * \param[in] ln2 Segunda linea
+ * \param[out] pt Punto de intersección
+ * \return
+ */
+//I3D_EXPORT int intersectLines(const Line &ln1, const Line &ln2, PointI *pt);
+template<typename Point_t>
+inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
+{
+  int iret = 0;
+  Point_t vs1, vs2;
+  vs1 = ln1.vector();
+  vs2 = ln2.vector();
+  // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
+  if (double cross_product = crossProduct(vs1, vs2)) {
+    Point_t v11_12 = ln2.pt1 - ln1.pt1;
+    double t = crossProduct(v11_12, vs2) / cross_product;
+    if (typeid(typename Point_t::value_type) == typeid(int)) {
+      pt->x = I3D_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
+      pt->y = I3D_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+    } else {
+      pt->x = static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
+      pt->y = static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+    }
+    iret = 1;
+  }
+  return(iret);
+}
+
+/*!
+ * \brief joinLinesByDist
+ * \param[in] linesIn
+ * \param[out] linesOut
+ * \param[in] dist
+ */
+I3D_EXPORT void joinLinesByDist(const std::vector<Segment<PointI>> &linesIn, std::vector<Segment<PointI>> *linesOut, int dist);
+
+
+I3D_EXPORT void groupParallelLines(std::vector<Segment<Point<int>>> linesaux, std::vector<GroupLines> *curLinesGrops, double angTol);
+
+I3D_EXPORT void groupLinesByDist(const std::vector<Segment<PointI>> &linesIn, std::vector<GroupLines> *curLinesGrops, int dist);
+
+I3D_EXPORT void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size);
 
 I3D_EXPORT int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect);
 
 /*!
  * Comprobación de que los 3 puntos están en la misma línea
  */
-I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i_r, double tolerance = 2.);
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                               Operaciones con Líneas                               */
-/* ---------------------------------------------------------------------------------- */
-
-// TODO: Mover de segment todas las operaciones ...
-
-
-/* ---------------------------------------------------------------------------------- */
-
+I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<PointI> &line_i_r, double tolerance = 2.);
 
 /*!
  * \brief Calcula la distancia de un punto a un poligono.
@@ -93,12 +311,12 @@ I3D_EXPORT bool isCollinearPoints(const PointI &pt_c, const Segment<int> &line_i
  * \param[in] polygon Poligono
  * \return Distancia de un punto a un poligono
  */
-template<typename T> inline
-double distPointToPolygon(const Point<T> &pt, const Polygon<T> &polygon)
+template<typename Point_t> inline
+double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
 {
   double max_dist = I3D_DOUBLE_MAX;
   double dist;
-  Polygon<T> _p = polygon;
+  Polygon<Point_t> _p = polygon;
   for (size_t i = 0; i < polygon.getSize(); i++) {
     if (i == polygon.getSize() - 1) {
       dist = distPointToSegment(pt, Segment<T>(_p[i], _p[0]));
@@ -116,12 +334,12 @@ double distPointToPolygon(const Point<T> &pt, const Polygon<T> &polygon)
  * \param[in] polygon Poligono
  * \return Distancia de un punto a un poligono
  */
-template<typename T> inline
-double distPointToPolygon(const Point3<T> &pt, const Polygon3D<T> &polygon)
+template<typename Point_t> inline
+double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
 {
   double max_dist = I3D_DOUBLE_MAX;
   double dist;
-  Polygon3D<T> _p = polygon;
+  Polygon3D<Point_t> _p = polygon;
   for (size_t i = 0; i < polygon.getSize(); i++) {
     if (i == polygon.getSize() - 1) {
       dist = distPointToSegment(pt, Segment3D<T>(_p[i], _p[0]));
@@ -188,115 +406,15 @@ void projectPointToPlane(const Point_t &point, const std::array<double, 4> &plan
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
  * \param[int] projectPolygon Poligono proyectado
  */
-template<typename T>
-I3D_EXPORT inline void projectPolygonToPlane(const Polygon3D<T> &polygon, const std::array<double, 4> &plane, Polygon3D<T> *projectPolygon)
+template<typename Point_t>
+I3D_EXPORT inline void projectPolygonToPlane(const Polygon3D<Point_t> &polygon, const std::array<double, 4> &plane, Polygon3D<Point_t> *projectPolygon)
 {
   for (int i = 0; i < polygon.getSize(); i++) {
-    Point3<T> pt;
+    Point_t pt;
     projectPointToPlane(polygon3d[i], plane, &pt);
     projectPolygon->add();
   }
 }
-
-/*! \} */ // end of GeometricEntities
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Código para probar
-
-/*
-
-
-  I3D::Polygon<int> polygon{
-    PointI(100, 144),
-    PointI(157, 93),
-    PointI(245, 83),
-    PointI(333, 56),
-    PointI(399, 82),
-    PointI(457, 117),
-    PointI(465, 158),
-    PointI(433, 225),
-    PointI(369, 235),
-    PointI(242, 264),
-    PointI(171, 227),
-    PointI(118, 206) 
-  };
-
-  std::vector<cv::Point> points{
-    cv::Point(100, 144),
-    cv::Point(157, 93),
-    cv::Point(245, 83),
-    cv::Point(333, 56),
-    cv::Point(399, 82),
-    cv::Point(457, 117),
-    cv::Point(465, 158),
-    cv::Point(433, 225),
-    cv::Point(369, 235),
-    cv::Point(242, 264),
-    cv::Point(171, 227),
-    cv::Point(118, 206)
-  };
-
-  PointI center;
-
-  poleOfInaccessibility(polygon, &center);
-  double radius = distPointToPolygon(center, polygon);
-
-  PointI center2;
-  _poleOfInaccessibility(points, &center2);
-  double radius2 = distPointToPolygon(center2, polygon);
-
-  cv::Mat canvas = cv::Mat::zeros(400, 600, CV_8U);
-
-  cv::Mat aux(points);
-  const cv::Point *pts = (const cv::Point*) aux.data;
-  int npts = aux.rows;
-  cv::fillPoly(canvas, &pts, &npts, 1, cv::Scalar(255, 255, 255) );
-  //cv::Mat m_out;
-  //cv::distanceTransform(canvas, m_out, DIST_L2, 5);
-  //double max_val;
-  //cv::Point center;
-
-  //cv::minMaxLoc(m_out, NULL, &max_val, NULL, &center);
-  cv::Mat canvas_rgb;
-  cvtColor(canvas, canvas_rgb, CV_GRAY2BGR);
-  cv::line(canvas_rgb, center, center, cv::Scalar(0, 0, 255), 2);
-
-  //double radius = I3D_DOUBLE_MAX;
-  //double dist;
-  //for (int i = 0; i < points.size(); i++) {
-  //  if (i == points.size() - 1) {
-  //    dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[0]));
-  //  } else {
-  //    dist = distPointToSegment((PointI &)center, SegmentI((PointI &)points[i], (PointI &)points[i+1]));
-  //  }
-  //  if (dist < radius) radius = dist;
-  //}
-
-    
-  cv::circle(canvas_rgb, center, radius, cv::Scalar(255, 0, 0), 2);
-
-  */
-
-
-
-
-
-//void poleOfInaccessibility(const std::vector<cv::Point> &points);
-
-
 
 
 
@@ -311,11 +429,11 @@ I3D_EXPORT inline void projectPolygonToPlane(const Polygon3D<T> &polygon, const 
 //#define M_CELLS 20.
 #define CONSECUTIVE_MISS	15
 
-template<typename T> inline
-Point<T> findInscribedCircleSequential(const Polygon<T> &polygon, const Window<T> bounds, double nCells, double mCells) 
+template<typename Point_t> inline
+Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, const Window<Point_t> bounds, double nCells, double mCells) 
 {
-  Point<T> pia = bounds.getCenter();
-  Point<T> tmp;
+  Point_t pia = bounds.getCenter();
+  Point_t tmp;
 
 	// calculate the required increment for x and y
 	double increment_x = (bounds.pt2.x - bounds.pt1.x) / nCells;
@@ -463,13 +581,13 @@ Point<T> findInscribedCircleSequential(const Polygon<T> &polygon, const Window<T
 //	return point_pia;
 //}
 
-template<typename T> inline
-void poleOfInaccessibility(const Polygon<T> &polygon, Point<T> *pole, double nCells = 20., double mCells = 20.) 
+template<typename Point_t> inline
+void poleOfInaccessibility(const Polygon<Point_t> &polygon, Point_t *pole, double nCells = 20., double mCells = 20.) 
 {
   if (pole == NULL) return;
-  Window<T> w = polygon.getWindow();
+  Window<Point_t> w = polygon.getWindow();
 
-	Point<T> point_tmp;
+	Point_t point_tmp;
 
 	int count = 1;
 	while (count++) {
@@ -483,7 +601,7 @@ void poleOfInaccessibility(const Polygon<T> &polygon, Point<T> *pole, double nCe
 		pole->x = point_tmp.x;
 		pole->y = point_tmp.y;
 
-    Point<T> aux;
+    Point_t aux;
     aux.x = (w.pt2.x - w.pt1.x) / (sqrt(2.) * 2.);
 		aux.y = (w.pt2.y - w.pt1.y) / (sqrt(2.) * 2.);
 
@@ -497,118 +615,17 @@ void poleOfInaccessibility(const Polygon<T> &polygon, Point<T> *pole, double nCe
 
 
 
-// Lo mismo para contenedores y puntos genericos
-
-//https://stackoverflow.com/a/19931604
-
-//template <class T>
-//    using Value_Type = typename std::remove_reference<
-//        decltype(*std::begin(std::declval<
-//            typename std::add_lvalue_reference<T>::type>()))>::type;
-//
-//template<typename Polygon_t, typename Window_t, typename Point_t> inline
-//void _findInscribedCircleSequential(const Polygon_t &polygon, const Window_t bounds, Point_t *pia, double nCells, double mCells) 
-//{
-//  //typename typedef Value_Type<Polygon_t> type;
-//
-//  *pia = bounds.getCenter();
-//  PointD tmp;
-//
-//	// calculate the required increment for x and y
-//	float increment_x = (bounds.pt2.x - bounds.pt1.x) / nCells;
-//	float increment_y = (bounds.pt2.y - bounds.pt1.y) / mCells;
-//
-//	// biggest known distance
-//	double max_distance = 0.;
-//
-//	int i, j;
-//  double tmp_distance = I3D_DOUBLE_MAX;
-//	for (i = 0; i <= nCells; i++) {
-//
-//		tmp.x = bounds.pt1.x + i * increment_x;
-//
-//		for (j = 0; j <= mCells; j++) {
-//
-//			tmp.y = bounds.pt1.y + j * increment_y;
-//
-//      //TODO: isInner y distPointToPolygon se tienen que sacar a una función para permitir uso de contenedores
-//   //   if (pol.isInner(tmp)) {
-//   //     tmp_distance = distPointToPolygon(tmp, pol);
-//			//	if (tmp_distance > max_distance) {
-//			//		max_distance = tmp_distance;
-//			//		pia->x = tmp.x;
-//			//		pia->y = tmp.y;
-//			//	}
-//			//}
-//		}
-//	}
-//}
-//
-//template<typename Polygon_t, typename Point_t> inline
-//I3D_EXPORT void _poleOfInaccessibility(const Polygon_t &polygon, Point_t *pole, double nCells = 20., double mCells = 20.) 
-//{
-//  if (pole == NULL) return;
-//  //Window<T> w = polygon.getWindow();
-//  //typename Value_Type<Point_t> type;
-//  //// O si quiero que sea mas generica la funcion y se le pueda pasar cualquier contenedor
-//  //Window<typename Value_Type<Point_t>> w;
-//  WindowF w;
-//  for (auto &pt : polygon) {
-//    if (w.pt1.x > pt.x) w.pt1.x = pt.x;
-//    if (w.pt1.y > pt.y) w.pt1.y = pt.y;
-//    if (w.pt2.x < pt.x) w.pt2.x = pt.x;
-//    if (w.pt2.y < pt.y) w.pt2.y = pt.y;
-//  }
-//
-//	Point_t point_tmp;
-//
-//	int count = 1;
-//	while (count++) {
-//
-//		/*if (method == METHOD_SEQUENTIAL) {*/
-//			_findInscribedCircleSequential(polygon, w, &point_tmp, nCells, mCells);
-//		/*} else if (method == METHOD_RANDOMIZED) {
-//			point_tmp = findInscribedCircleRandomized(polygon, w);
-//		}*/
-//
-//		pole->x = point_tmp.x;
-//		pole->y = point_tmp.y;
-//
-//    Point_t aux;
-//    aux.x = (w.pt2.x - w.pt1.x) / (sqrt(2.) * 2.);
-//		aux.y = (w.pt2.y - w.pt1.y) / (sqrt(2.) * 2.);
-//
-//    w.pt1 = *pole - aux;
-//    w.pt2 = *pole + aux;
-//
-//		if (w.pt2.x - w.pt1.x < 0.01 || w.pt2.y - w.pt1.y < 0.01) break;
-//
-//	}
-//}
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-template<typename T> inline
-Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<T> bounds, double xCells, double yCells, double zCells) 
+template<typename Point3_t> inline
+Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const Box<Point3_t> bounds, double xCells, double yCells, double zCells) 
 {
-  Point3<T> pia = bounds.getCenter();
-  Point3<T> tmp;
+  Point3_t pia = bounds.getCenter();
+  Point3_t tmp;
 
   // Se determina el plano de mejor ajuste
   std::array<double, 4> plane;
@@ -624,7 +641,7 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
   // Máxima distancia de los puntos al plano
   double max_dist = I3D_DOUBLE_MIN;
   for (int i = 0; i < polygon.getSize(); i++) {
-    Point3<T> pt;
+    Point3_t pt;
     double distance = distantePointToPlane(polygon[i], plane);
     if (distance > max_dist) max_dist = distance;
   }
@@ -636,11 +653,11 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
   plane_z[2] = 0;
   plane_z[3] = pia.x + pia.y;
 
-  Polygon<T> poligon_z;
+  Polygon<Point<typename Point3_t::value_type>> poligon_z;
   for (int i = 0; i < polygon.getSize(); i++) {
     Point3<T> pt;
     projectPointToPlane(polygon[i], plane_z, &pt);
-    poligon_z.add(Point<T>(pt.x, pt.y));
+    poligon_z.add(Point<typename Point3_t::value_type>(pt.x, pt.y));
   }
 
 
@@ -667,12 +684,12 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
 
         tmp.z = bounds.pt1.z + k * increment_z;
 
-        Bbox<T> box = polygon.getBox();
+        Bbox<Point3_t> box = polygon.getBox();
         if ( box.containsPoint(tmp) ) {
               
-          Point3<T> pt;
+          Point3_t pt;
           projectPointToPlane(tmp, plane_z, &pt);
-          Point<T> pt_2d(pt.x, pt.y);
+          Point<typename Point3_t::value_type> pt_2d(pt.x, pt.y);
           if (abs(distantePointToPlane(tmp, plane)) < max_dist && poligon_z.isInner(pt_2d)) { 
             // Proyectar al plano z = 0 y hacer isInner()
             // 
@@ -694,13 +711,13 @@ Point3<T> findInscribedCircleSequential(const Polygon3D<T> &polygon, const Bbox<
 }
 
 
-template<typename T> inline
-void poleOfInaccessibility(const Polygon3D<T> &polygon, Point3<T> *pole, double xCells = 20., double yCells = 20., double zCells = 20.) 
+template<typename Point3_t> inline
+void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, double xCells = 20., double yCells = 20., double zCells = 20.) 
 {
   if (pole == NULL) return;
-  Bbox<T> box = polygon.getBox();
+  Bbox<Point3_t> box = polygon.getBox();
 
-	Point3<T> point_tmp;
+	Point3_t point_tmp;
 
 	int count = 1;
 	while (count++) {
@@ -715,7 +732,7 @@ void poleOfInaccessibility(const Polygon3D<T> &polygon, Point3<T> *pole, double 
 		pole->y = point_tmp.y;
     pole->z = point_tmp.z;
 
-    Point3<T> aux;
+    Point3_t aux;
     aux.x = (box.pt2.x - box.pt1.x) / (sqrt(2.) * 2.);
 		aux.y = (box.pt2.y - box.pt1.y) / (sqrt(2.) * 2.);
     aux.z = (box.pt2.z - box.pt1.z) / (sqrt(2.) * 2.);
@@ -728,223 +745,9 @@ void poleOfInaccessibility(const Polygon3D<T> &polygon, Point3<T> *pole, double 
 	}
 }
 
+} // Fin namespacegeometry
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-namespace geometry
-{
-
-// forward declaration
-template<typename T> class Segment;
-template<typename T> class Segment3D;
-class GroupLines;
-
-/* ---------------------------------------------------------------------------------- */
-/*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Longitud o modulo de un vector 2D
- * \param[in] v vector
- * \return Longitud
- * \deprecated { Reemplazada por I3D::Translate::transform }
- */
-template<typename Point_t> inline
-I3D_DEPRECATED("double module(const Point_t &v)")
-double length(const Point_t &v)
-{
-  return sqrt(v.x*v.x + v.y*v.y);
-}
-
-/*!
- * \brief Distancia entre dos puntos
- * \param[in] pt1 Punto 1
- * \param[in] pt2 Punto 2
- * \return Distancia
- */
-template<typename Point_t> inline
-double distance(const Point_t &pt1, const Point_t &pt2)
-{
-  Point_t v = pt2 - pt1;
-  return module(v);
-}
-template<typename Point3_t> inline
-double distance3D(const Point3_t &pt1, const Point3_t &pt2)
-{
-  Point3_t v = pt2 - pt1;
-  return module3D(v);
-}
-
-
-
-/*!
- * \brief Crea un buffer entorno a una linea
- * \param[in] ln Línea
- * \param[in] size Tamaño de buffer
- * \param[out] buff Buffer
- */
-template<typename Point_t> inline
-void lineBuffer(const Segment<Point_t> &ln, int size, std::vector<Point_t> *buff)
-{
-  *buff = std::vector<Point_t>(4);
-  Point_t pt1 = ln.pt1;
-  Point_t pt2 = ln.pt2;
-  double acimut = azimut(pt1, pt2);
-  double dx = size * sin(acimut + I3D_PI_2);
-  double dy = size * cos(acimut + I3D_PI_2);
-  (*buff)[0] = Point_t(pt1.x + dx, pt1.y + dy);
-  (*buff)[1] = Point_t(pt2.x + dx, pt2.y + dy);
-  (*buff)[2] = Point_t(pt2.x - dx, pt2.y - dy);
-  (*buff)[3] = Point_t(pt1.x - dx, pt1.y - dy);
-}
-
-/*!
- * \brief Projecta un punto en un segmento de recta.
- * Si no hay punto de proyección en el segmento se devuelve nulo
- * \param[in] ln Segmento de línea
- * \param[in] pt Punto que se proyecta
- * \param[out] ptp Punto proyectado
- * \return -1, 0, 1
- */
-template<typename Point_t> inline
-int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t *ptp)
-{
-  int iret = 0;
-  if (pt == ln.pt1 || pt == ln.pt2) {
-    *ptp = pt;
-    return 2;
-  }
-  PointD v1 = pt - ln.pt1;
-  PointD v2 = ln.vector();
-  double daux = dotProduct(v1, v2);
-  double r = daux / (v2.x * v2.x + v2.y * v2.y);
-
-  if (typeid(typename Point_t::value_type) == typeid(int)) {
-    ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
-    ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
-  } else {
-    ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
-    ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.x * r);
-  }
-
-  if (daux <= 0) iret = -1;
-  else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
-  return iret;
-}
-
-
-template<typename Point_t> inline
-int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
-{
-  int iret = 0;
-  if (pt == ln.pt1 || pt == ln.pt2) {
-    *ptp = pt;
-    return 2;
-  }
-  Point3D v1 = pt - ln.pt1;
-  Point3D v2 = ln.vector();
-  double daux = v1.ddot(v2);
-  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
-
-  //if (typeid(T) == typeid(int)) {
-  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT((ln.pt2.x - ln.pt1.x) * r);
-  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT((ln.pt2.y - ln.pt1.y) * r);
-  //} else {
-  //  ptp->x = ln.pt1.x + (ln.pt2.x - ln.pt1.x) * r;
-  //  ptp->y = ln.pt1.y + (ln.pt2.y - ln.pt1.y) * r;
-  //}
-  //if (typeid(T) == typeid(int)) {
-  //  ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
-  //  ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
-  //} else {
-  *ptp = ln.pt1 + v2 * r;
-  //}
-
-  if (daux <= 0) iret = -1;
-  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
-  return iret;
-}
-
-/*!
- * \brief Calcula la distancia de un punto a un segmento de linea.
- * \param[in] pt Punto
- * \param[in] ln Linea
- * \return Distancia de un punto a una segmento de linea
- */
-template<typename Point_t> inline
-double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
-{
-  Point_t ptp;
-  int ipr = projectPointInSegment(ln, pt, &ptp);
-
-  if (ipr == -1) ptp = ln.pt1;
-  else if (ipr == 1) ptp = ln.pt2;
-  //Point_t _pt(pt);
-  return distance(pt, ptp);
-}
-
-template<typename Point3_t> inline
-double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
-{
-  Point3_t ptp;
-  int ipr = projectPointInSegment(ln, pt, &ptp);
-
-  if (ipr == -1) ptp = ln.pt1;
-  else if (ipr == 1) ptp = ln.pt2;
-  //Point3<T> _pt(pt);
-  return distance(pt, ptp);
-}
-
-/*!
- * \brief distPointToLine
- * \param[in] pt
- * \param[in] ln
- * \return
- */
-//I3D_EXPORT double distPointToLine(const PointI &pt, const Line &ln);
-
-/*!
- * \brief Calcula la distancia mínima entre dos segmentos de linea.
- * \param[in] ln1 Segmento 1
- * \param[in] ln2 Segmento 2
- * \return Distancia entre segmentos
- */
-template<typename Point_t> inline
-double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2)
-{
-  double dist[4];
-  dist[0] = distPointToSegment(ln1.pt1, ln2);
-  dist[1] = distPointToSegment(ln1.pt2, ln2);
-  dist[2] = distPointToSegment(ln2.pt1, ln1);
-  dist[3] = distPointToSegment(ln2.pt2, ln1);
-  return *std::min_element(dist, dist + 4);
-}
-
-void groupParallelLines(std::vector<Segment<Point<int>>> linesaux, std::vector<GroupLines> *curLinesGrops, double angTol);
-
-void groupLinesByDist(const std::vector<Segment<PointI>> &linesIn, std::vector<GroupLines> *curLinesGrops, int dist);
-
-void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size);
-
-
-}
-
-
+/*! \} */ // end of GeometricEntities
 
 
 } // End namespace I3D

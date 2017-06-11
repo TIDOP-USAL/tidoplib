@@ -10,7 +10,7 @@
 #include "geometric_entities/lineString.h"
 
 using namespace I3D;
-
+using namespace I3D::geometry;
 /*!
  * read_image: 
  *
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   //msg_h.addListener(&console);
 
 
-  I3D::Polygon<int> polygon{
+  I3D::Polygon<PointI> polygon{
     PointI(100, 144),
     PointI(157, 93),
     PointI(245, 83),
@@ -206,11 +206,11 @@ int main(int argc, char** argv)
 
 
 
-  geometry::Box<Point3<int>> box;
+  Box<Point3<int>> box;
   Point3<int> _center = box.getCenter();
 
 
-  geometry::LineString<Point<double>> linestring(5);
+  LineString<Point<double>> linestring(5);
 
   size_t n_vertex = linestring.getSize();
 

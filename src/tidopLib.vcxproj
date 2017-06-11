@@ -128,6 +128,7 @@
     <ClInclude Include="core\mathutils.h" />
     <ClInclude Include="core\messages.h" />
     <ClInclude Include="core\utils.h" />
+    <ClInclude Include="experimental\experimental.h" />
     <ClInclude Include="feature_detection\linedetector.h" />
     <ClInclude Include="feature_detection\shapedetection.h" />
     <ClInclude Include="fourier.h" />

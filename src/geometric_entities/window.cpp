@@ -3,11 +3,14 @@
 namespace I3D
 {
 
+namespace geometry
+{
+
 #ifdef HAVE_OPENCV
 
 cv::Rect windowToCvRect(WindowI w)
 {
-  return cv::Rect(w.pt1,w.pt2);
+  return cv::Rect(point_cast<cv::Point>(w.pt1), point_cast<cv::Point>(w.pt2));
 }
 
 WindowI cvRectToWindow(cv::Rect rect)
@@ -18,5 +21,8 @@ WindowI cvRectToWindow(cv::Rect rect)
 }
 
 #endif // HAVE_OPENCV
+
+}
+
 
 } // End namespace I3D

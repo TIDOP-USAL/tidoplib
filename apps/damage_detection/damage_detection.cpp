@@ -442,7 +442,7 @@ int main(int argc, char *argv[])
         if (iniDamage != PointI(0, 0)) {
           LineIterator it3 = li3;
           for ( int k = 0; k < 24; k++ ) ++it3; // Un poco ñapas pero para salir del paso. LineIterator esta poco documentada. 
-          (cv::Point &)endDamage = it3.pos();
+          endDamage = it3.pos();
           segmentDamage.push_back(SegmentI(iniDamage, endDamage));
           
           iniDamage = PointI(0, 0);

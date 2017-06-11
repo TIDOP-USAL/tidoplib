@@ -628,7 +628,7 @@ void GPoint3D::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GLineString::GLineString() 
-  : LineString<geometry::Point<float>>(), 
+  : LineString<Point<float>>(), 
     GraphicEntity()
 {
 }
@@ -647,7 +647,7 @@ void GLineString::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GPolygon::GPolygon() 
-  : Polygon<geometry::Point<float>>(), 
+  : Polygon<Point<float>>(), 
     GraphicEntity()
 {
 }
@@ -666,7 +666,7 @@ void GPolygon::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiPoint::GMultiPoint()
-  : MultiPoint<geometry::Point<float>>(), 
+  : MultiPoint<Point<float>>(), 
     GraphicEntity()
 {
 }
@@ -685,7 +685,7 @@ void GMultiPoint::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString::GMultiLineString()
-  : MultiLineString<geometry::Point<float>>(), 
+  : MultiLineString<Point<float>>(), 
     GraphicEntity()
 {
 }
@@ -704,7 +704,7 @@ void GMultiLineString::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiPolygon::GMultiPolygon()
-  : MultiPolygon<geometry::Point<float>>(), 
+  : MultiPolygon<Point<float>>(), 
     GraphicEntity()
 {
 }

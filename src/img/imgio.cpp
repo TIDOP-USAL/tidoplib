@@ -1,6 +1,7 @@
 #include "img/imgio.h"
 
 #include "transform.h"
+#include "geometric_entities/window.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -16,6 +17,8 @@ I3D_DEFAULT_WARNINGS
 
 namespace I3D
 {
+
+using namespace geometry;
 
 void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const
 {
@@ -587,11 +590,11 @@ void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
 }
 
 
-GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const WindowD &wTerrain, double scale)
+GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const Window<PointD> &wTerrain, double scale)
 {
 
   // Se transforma la ventana a coordenadas imagen
-  WindowD wLoad;
+  Window<PointD> wLoad;
   transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
 
   WindowI wRead(wLoad);
