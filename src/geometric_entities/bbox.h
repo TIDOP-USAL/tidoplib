@@ -159,7 +159,7 @@ Box<Point3_t>::Box()
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Box &box) 
   : Entity(Entity::type::BOX), 
-    pt1(bbox.pt1), pt2(bbox.pt2) 
+    pt1(box.pt1), pt2(box.pt2) 
 {
 }
 

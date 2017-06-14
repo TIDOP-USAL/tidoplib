@@ -938,8 +938,8 @@ Csv::Status Csv::create(std::shared_ptr<TableHeader> tableHeader)
 
 Csv::Status Csv::createCopy(const char *fileOut)
 {
-  //Csv csv;
-  //csv.open(fileOut, Mode::Create);
+  Csv csv;
+  csv.open(fileOut, Mode::Create);
   //csv.create(std::make_shared<TableHeader>(getTableHeader()));
   return Status::FAILURE;
 }

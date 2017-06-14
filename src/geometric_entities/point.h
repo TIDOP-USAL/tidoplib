@@ -609,25 +609,46 @@ Point3<T2> operator * (T1 a, const Point3<T2>& b)
   }
 }
 
+}
+
 //TODO: revisar y ver si se puede hacer mejor
 
 template<typename Point_t> static inline 
-Point_t point_cast(const Point<int> &pt)    
+Point_t point_cast(const geometry::Point<int> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
 
 template<typename Point_t> static inline 
-Point_t point_cast(const Point<double> &pt)    
+Point_t point_cast(const geometry::Point<double> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
 
 template<typename Point_t> static inline 
-Point_t point_cast(const Point<float> &pt)    
+Point_t point_cast(const geometry::Point<float> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
+
+template<typename Point_t> static inline 
+Point_t point_cast(const geometry::Point3<int> &pt)    
+{ 
+  return Point_t(pt.x, pt.y, pt.z); 
+}
+
+template<typename Point_t> static inline 
+Point_t point_cast(const geometry::Point3<double> &pt)    
+{ 
+  return Point_t(pt.x, pt.y, pt.z); 
+}
+
+template<typename Point_t> static inline 
+Point_t point_cast(const geometry::Point3<float> &pt)    
+{ 
+  return Point_t(pt.x, pt.y, pt.z); 
+}
+
 
 template<typename Point_t> static inline 
 Point_t point_cast(const cv::Point_<int> &pt)    
@@ -646,10 +667,6 @@ Point_t point_cast(const cv::Point_<float> &pt)
 { 
   return Point_t(pt.x, pt.y); 
 }
-
-}
-
-
 
 /*! \} */ // end of GeometricEntities
 

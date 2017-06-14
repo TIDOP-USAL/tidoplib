@@ -89,24 +89,7 @@ void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size)
   vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](GroupLines &gl) -> bool { return (gl.getSize() < size); }), vlg->end());
 }
 
-int pointNearest(const std::vector<PointI> &pts_fourier, const PointI &pt_intersect)
-{
-  double distmin = I3D_DOUBLE_MAX;
-  int ipt = -1;
-  for (size_t i = 0; i < pts_fourier.size(); i++) {
-    double dist = distance(pts_fourier[i], pt_intersect);
-    if (distmin > dist) {
-      distmin = dist;
-      ipt = static_cast<int>(i);
-    }
-  }
-  return ipt;
-}
 
-bool isCollinearPoints(const PointI &pt_c, const SegmentI &line_i_r, double tolerance)
-{
-  return tolerance > distPointToSegment(pt_c, line_i_r);
-}
 
 }
 

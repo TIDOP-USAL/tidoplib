@@ -577,7 +577,70 @@ double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> 
   return N ;
 }
 
+template<typename it> inline 
+double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool normalize = false)
+{
+  double N = 0.;
+  typename std::iterator_traits<it>::difference_type size = std::distance(it_begin, it_end);
+  typedef typename std::iterator_traits<it>::value_type Point3_t;
+  if (size < 3) {
+    return 0.; // O devolver error
+  } else if (size == 3) {
+    std::array<Point3_t, 3> _points;
+    std::copy_n(it_begin, 3, _points.begin());
+    threePointsPlane(_points, plane, normalize);
+  } else {
+    int m = static_cast<int>(size) * 3, n = 3;
+    double *_a = new double[m*n], *pa = _a, *_b = new double[m], *pb = _b;
+    double *_c = new double[n];
+    try {
+      for (int i = 0; i < size; i++, it_begin++) {
+        *pa++ = it_begin->x*it_begin->x;
+        *pa++ = it_begin->x*it_begin->y;
+        *pa++ = it_begin->x;
+        *pb++ = it_begin->x*it_begin->z;
+        *pa++ = it_begin->x*it_begin->y;
+        *pa++ = it_begin->y*it_begin->y;
+        *pa++ = it_begin->y;
+        *pb++ = it_begin->z*it_begin->y;
+        *pa++ = it_begin->x;
+        *pa++ = it_begin->y;
+        *pa++ = 1;
+        *pb++ = it_begin->z;
 
+      }
+
+      solveSVD(m, n, _a, _b, _c);
+      
+      plane[0] = _c[0];
+      plane[1] = _c[1];
+      plane[2] = -1;
+      plane[3] = _c[2];
+
+      //// Por si me interesase devolver el error
+      //double dz = 0.;
+      //double sumErr = 0.;
+      //for (int i = 0; i < size; i++) {
+      //  dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
+      //  sumErr += dz*dz;
+      //}
+
+      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
+
+      if ( N && normalize ) { 
+        plane[0] /= N;
+        plane[1] /= N;
+        plane[2] /= N;
+        plane[3] /= N;
+      }
+      
+    } catch (std::exception &e) {
+      msgError(e.what());
+    }
+
+  }
+  return N ;
+}
 /* ---------------------------------------------------------------------------------- */
 
 /*!

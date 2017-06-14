@@ -278,19 +278,19 @@ Polygon3D<Point3_t>::Polygon3D(int size)
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon) 
-  : Entity3DPoints<Point3_t>(entity_type::POLYGON_3D, polygon.mPoints)
+  : Entity3DPoints<Point3_t>(Entity::type::POLYGON_3D, polygon.mPoints)
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const std::vector<Point3_t> &points) 
-  : Entity3DPoints<Point3_t>(entity_type::POLYGON_3D, vPoint) 
+  : Entity3DPoints<Point3_t>(Entity::type::POLYGON_3D, vPoint) 
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(std::initializer_list<Point3_t> listPoints) 
-  : Entity3DPoints<Point3_t>(entity_type::POLYGON_3D, listPoints) 
+  : Entity3DPoints<Point3_t>(Entity::type::POLYGON_3D, listPoints) 
 {
 }
 

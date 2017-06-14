@@ -103,6 +103,20 @@ public:
 template<typename Point_t>
 class EntityPoints : public Entity
 {
+public:
+
+  /*!
+   * \brief Tipo de punto
+   */
+  //typedef Point_t value_type;
+
+  typedef typename std::vector<Point_t>::difference_type difference_type;
+  typedef typename std::vector<Point_t>::value_type value_type;
+  typedef typename std::vector<Point_t>::pointer pointer;
+  typedef typename std::vector<Point_t>::const_pointer const_pointer;
+  typedef typename std::vector<Point_t>::reference reference;
+  typedef typename std::vector<Point_t>::const_reference const_reference;
+  //TODO: añadir la sobrecarga de operadores necesarios para el acceso generico como contenedores
 
 protected:
 
@@ -111,10 +125,6 @@ protected:
    */
   std::vector<Point_t> mPoints;
 
-  /*!
-   * \brief Tipo de punto
-   */
-  typedef Point_t value_type;
 
   /*!
    * \brief Tipo básico

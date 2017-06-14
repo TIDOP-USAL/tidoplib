@@ -8,9 +8,11 @@
 #include "opencv2/core/core.hpp"
 #include "geometric_entities/bbox.h"
 #include "geometric_entities/lineString.h"
+#include "geometric_entities/polygon.h"
 
 using namespace I3D;
 using namespace I3D::geometry;
+
 /*!
  * read_image: 
  *
@@ -19,6 +21,7 @@ using namespace I3D::geometry;
  */
 int main(int argc, char** argv)
 {
+
 
   //char name[I3D_MAX_FNAME];
   //getFileName(getRunfile(), name, I3D_MAX_FNAME);
@@ -55,7 +58,7 @@ int main(int argc, char** argv)
   //msg_h.addListener(&console);
 
 
-  I3D::Polygon<PointI> polygon{
+  geometry::Polygon<PointI> polygon{
     PointI(100, 144),
     PointI(157, 93),
     PointI(245, 83),
@@ -126,7 +129,7 @@ int main(int argc, char** argv)
 
   // Lo mismo en 3d
 
-  I3D::Polygon3D<double> polygon3d {
+  Polygon3D<Point3D> polygon3d {
     Point3D(-2.8728270531, 4.2343444824, -0.6537694335),
     Point3D(-2.8656525612, 4.2345046997, -0.6240240932),
     Point3D(-2.8581471443, 4.2335939407, -0.5940701962),
@@ -165,7 +168,7 @@ int main(int argc, char** argv)
   Point3D center3d;
   poleOfInaccessibility(polygon3d, &center3d);
 
-  /*std::vector<Point3D> vertex {
+  std::vector<Point3D> vertex {
     Point3D(-2.8728270531, 4.2343444824, -0.6537694335),
     Point3D(-2.8656525612, 4.2345046997, -0.6240240932),
     Point3D(-2.8581471443, 4.2335939407, -0.5940701962),
@@ -185,7 +188,11 @@ int main(int argc, char** argv)
     Point3D(-2.8867816925, 4.2140669823, -0.7331582308),
     Point3D(-2.8821890354, 4.2241053581, -0.7034013271),
     Point3D(-2.8747916222, 4.2333650589, -0.6629241109)
-  };*/
+  };
+
+  Point3D _center3d;
+  poleOfInaccessibility(vertex.begin(), vertex.end(), &_center3d);
+
 
   //std::vector<Point3D> vertex {
   //  Point3D(0.02, 1000.0, 71.9),
@@ -202,21 +209,6 @@ int main(int argc, char** argv)
   //double N = nPointsPlaneLS(vertex, plane);
   //double kk = plane[0] / plane[2];
   //double N2 = sqrt(31.15*31.15 + -0.08*-0.08 + -1*-1);
-
-
-
-
-  Box<Point3<int>> box;
-  Point3<int> _center = box.getCenter();
-
-
-  LineString<Point<double>> linestring(5);
-
-  size_t n_vertex = linestring.getSize();
-
-
-
-
 
   exit(EXIT_SUCCESS);
 }
