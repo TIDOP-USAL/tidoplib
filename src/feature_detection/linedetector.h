@@ -137,8 +137,6 @@ public:
    */
   const std::vector<geometry::SegmentI> &getLines() const { return mLines; }
 
-protected:
-
   /*!
    * \brief Establece rango angular en el cual se buscarán las líneas
    * \param[in] at Angulo y tolerancia

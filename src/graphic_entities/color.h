@@ -606,6 +606,26 @@ I3D_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb);
 
 #endif // HAVE_OPENCV
 
+/*!
+ * \brief Convierte un color de RGB a escala de grises
+ * \param[in] red Componente roja
+ * \param[in] green Componente verde
+ * \param[in] blue Componente azul
+ * \return Luminancia
+ */
+I3D_EXPORT int rgbToLuminance(int red, int green, int blue);
+
+#ifdef HAVE_OPENCV
+
+/*!
+ * \brief Convierte una matriz de RGB a escala de grises
+ * \param[in] rgb
+ * \param[out] gray
+ */
+I3D_EXPORT void rgbToLuminance(const cv::Mat &rgb, cv::Mat *gray);
+
+#endif // HAVE_OPENCV
+
 
 /*!
  * \brief Conversión a coordenadas cromáticas

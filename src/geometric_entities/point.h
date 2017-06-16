@@ -34,6 +34,7 @@ namespace geometry
 //  return a.x == b.x && a.y == b.y;
 //}
 
+/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Clase punto
@@ -267,112 +268,8 @@ Point<T2> operator * (T1 a, const Point<T2>& b)
   }
 }
 
+
 /* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Clase multi-punto
- *
- * Esta template representa un conjunto de puntos relaccionados que se agrupan
- * en una misma entidad multipunto.
- *
- * Se han definido los siguientes alias para facilitar el acceso:
- * \code
- * typedef MultiPoint<int> MultiPointI;
- * typedef MultiPoint<double> MultiPointD;
- * typedef MultiPoint<float> MultiPointF;
- * \endcode
- */
-template<typename Point_t>
-class MultiPoint : public EntityPoints<Point_t>
-{
-public:
-
-  /*!
-   * \brief type
-   */
-  typedef Point_t value_type;
-  
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  MultiPoint();
-
-  /*!
-   * \brief Constructor que reserva tamaño para n puntos
-   */
-  MultiPoint(int size);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] multiPoint Objeto MultiPoint que se copia
-   */
-  MultiPoint(const MultiPoint &multiPoint);
-
-  /*!
-   * \brief Constructor
-   * \param[in] vPoint vector de puntos
-   */
-  MultiPoint(const std::vector<Point_t> &vPoint);
-
-  /*!
-   * \brief Constructor lista de inicialización
-   * \param[in] listPoints Inicializador de lista con los puntos
-   */
-  MultiPoint(std::initializer_list<Point_t> listPoints);
-
-  ~MultiPoint() {}
-
-  /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
-   */
-  void add(const Point_t &point) override;
-
-};
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint() 
-  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(int size) 
-  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, size) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
-  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, multiPoint) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, vPoint) 
-{
-}
-
-template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
-: EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, listPoints)
-{
-}
-
-template<typename Point_t> inline
-void MultiPoint<Point_t>::add(const Point_t &point)
-{
-  this->mPoints.push_back(point);
-}
-
-typedef MultiPoint<Point<int>> MultiPointI;
-typedef MultiPoint<Point<double>> MultiPointD;
-typedef MultiPoint<Point<float>> MultiPointF;
-
-
 
 
 /*!
@@ -608,6 +505,334 @@ Point3<T2> operator * (T1 a, const Point3<T2>& b)
                       static_cast<T2>(b.z*a));
   }
 }
+
+
+///* ---------------------------------------------------------------------------------- */
+//
+///*!
+// * \brief Clase multi-punto
+// *
+// * Esta template representa un conjunto de puntos relaccionados que se agrupan
+// * en una misma entidad multipunto.
+// *
+// * Se han definido los siguientes alias para facilitar el acceso:
+// * \code
+// * typedef MultiPoint<int> MultiPointI;
+// * typedef MultiPoint<double> MultiPointD;
+// * typedef MultiPoint<float> MultiPointF;
+// * \endcode
+// */
+//template<typename Point_t>
+//class MultiPoint : public EntityPoints<Point_t>
+//{
+//public:
+//
+//  /*!
+//   * \brief type
+//   */
+//  typedef Point_t value_type;
+//  
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  MultiPoint();
+//
+//  /*!
+//   * \brief Constructor que reserva tamaño para n puntos
+//   */
+//  MultiPoint(int size);
+//
+//  /*!
+//   * \brief Constructor de copia
+//   * \param[in] multiPoint Objeto MultiPoint que se copia
+//   */
+//  MultiPoint(const MultiPoint &multiPoint);
+//
+//  /*!
+//   * \brief Constructor
+//   * \param[in] vPoint vector de puntos
+//   */
+//  MultiPoint(const std::vector<Point_t> &vPoint);
+//
+//  /*!
+//   * \brief Constructor lista de inicialización
+//   * \param[in] listPoints Inicializador de lista con los puntos
+//   */
+//  MultiPoint(std::initializer_list<Point_t> listPoints);
+//
+//  ~MultiPoint() {}
+//
+//  /*!
+//   * \brief Añade un punto a la colección
+//   * \param[in] point Punto que se añade
+//   */
+//  void add(const Point_t &point) override;
+//
+//};
+//
+//template<typename Point_t> inline
+//MultiPoint<Point_t>::MultiPoint() 
+//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D) 
+//{
+//}
+//
+//template<typename Point_t> inline
+//MultiPoint<Point_t>::MultiPoint(int size) 
+//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, size) 
+//{
+//}
+//
+//template<typename Point_t> inline
+//MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
+//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, multiPoint) 
+//{
+//}
+//
+//template<typename Point_t> inline
+//MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
+//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, vPoint) 
+//{
+//}
+//
+//template<typename Point_t> inline
+//MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
+//: EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, listPoints)
+//{
+//}
+//
+//template<typename Point_t> inline
+//void MultiPoint<Point_t>::add(const Point_t &point)
+//{
+//  this->mPoints.push_back(point);
+//}
+//
+//typedef MultiPoint<Point<int>> MultiPointI;
+//typedef MultiPoint<Point<double>> MultiPointD;
+//typedef MultiPoint<Point<float>> MultiPointF;
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase multi-punto
+ *
+ * Esta template representa un conjunto de puntos relaccionados que se agrupan
+ * en una misma entidad multipunto.
+ *
+ * Se han definido los siguientes alias para facilitar el acceso:
+ * \code
+ * typedef MultiPoint<int> MultiPointI;
+ * typedef MultiPoint<double> MultiPointD;
+ * typedef MultiPoint<float> MultiPointF;
+ * \endcode
+ */
+template<typename Point_t>
+class MultiPoint : public Entity, public Entities2D<Point_t>
+{
+//public:
+//
+//  /*!
+//   * \brief type
+//   */
+//  typedef Point_t value_type;
+  
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  MultiPoint();
+
+  /*!
+   * \brief Constructor que reserva tamaño para n puntos
+   */
+  MultiPoint(int size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiPoint Objeto MultiPoint que se copia
+   */
+  MultiPoint(const MultiPoint &multiPoint);
+
+  /*!
+   * \brief Constructor
+   * \param[in] vPoint vector de puntos
+   */
+  MultiPoint(const std::vector<Point_t> &vPoint);
+
+  /*!
+   * \brief Constructor lista de inicialización
+   * \param[in] listPoints Inicializador de lista con los puntos
+   */
+  MultiPoint(std::initializer_list<Point_t> listPoints);
+
+  ~MultiPoint() {}
+
+  ///*!
+  // * \brief Añade un punto a la colección
+  // * \param[in] point Punto que se añade
+  // */
+  //void add(const Point_t &point) override;
+
+};
+
+template<typename Point_t> inline
+MultiPoint<Point_t>::MultiPoint() 
+  : Entity(Entity::type::MULTIPOINT_2D), 
+    Entities2D<Point_t>() 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint<Point_t>::MultiPoint(int size) 
+  : Entity(Entity::type::MULTIPOINT_2D),
+    Entities2D<Point_t>(size) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
+  : Entity(Entity::type::MULTIPOINT_2D), 
+    Entities2D<Point_t>(multiPoint) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
+  : Entity(Entity::type::MULTIPOINT_2D), 
+    Entities2D<Point_t>(vPoint) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
+  : Entity(Entity::type::MULTIPOINT_2D), 
+    Entities2D<Point_t>(listPoints)
+{
+}
+
+//template<typename Point_t> inline
+//void MultiPoint<Point_t>::add(const Point_t &point)
+//{
+//  this->mPoints.push_back(point);
+//}
+
+typedef MultiPoint<Point<int>> MultiPointI;
+typedef MultiPoint<Point<double>> MultiPointD;
+typedef MultiPoint<Point<float>> MultiPointF;
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase multi-punto 3D
+ *
+ * Esta template representa un conjunto de puntos relaccionados que se agrupan
+ * en una misma entidad multipunto.
+ *
+ * Se han definido los siguientes alias para facilitar el acceso:
+ * \code
+ * typedef MultiPoint3D<int> MultiPoint3dI;
+ * typedef MultiPoint3D<double> MultiPoint3dD;
+ * typedef MultiPoint3D<float> MultiPoint3dF;
+ * \endcode
+ */
+template<typename Point_t>
+class MultiPoint3D : public Entity, public Entities3D<Point_t>
+{
+//public:
+//
+//  /*!
+//   * \brief type
+//   */
+//  typedef Point_t value_type;
+  
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  MultiPoint3D();
+
+  /*!
+   * \brief Constructor que reserva tamaño para n puntos
+   */
+  MultiPoint3D(int size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiPoint Objeto MultiPoint que se copia
+   */
+  MultiPoint3D(const MultiPoint3D &multiPoint);
+
+  /*!
+   * \brief Constructor
+   * \param[in] vPoint vector de puntos
+   */
+  MultiPoint3D(const std::vector<Point_t> &vPoint);
+
+  /*!
+   * \brief Constructor lista de inicialización
+   * \param[in] listPoints Inicializador de lista con los puntos
+   */
+  MultiPoint3D(std::initializer_list<Point_t> listPoints);
+
+  ~MultiPoint3D() {}
+
+  ///*!
+  // * \brief Añade un punto a la colección
+  // * \param[in] point Punto que se añade
+  // */
+  //void add(const Point_t &point) override;
+
+};
+
+template<typename Point_t> inline
+MultiPoint3D<Point_t>::MultiPoint3D() 
+  : Entity(Entity::type::MULTIPOINT_3D), 
+    Entities3D<Point_t>() 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint3D<Point_t>::MultiPoint3D(int size) 
+  : Entity(Entity::type::MULTIPOINT_3D),
+    Entities3D<Point_t>(size) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint3D<Point_t>::MultiPoint3D(const MultiPoint3D &multiPoint) 
+  : Entity(Entity::type::MULTIPOINT_3D),
+    Entities3D<Point_t>(multiPoint) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint3D<Point_t>::MultiPoint3D(const std::vector<Point_t> &vPoint) 
+  : Entity(Entity::type::MULTIPOINT_3D),
+    Entities3D<Point_t>(vPoint) 
+{
+}
+
+template<typename Point_t> inline
+MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints) 
+  : Entity(Entity::type::MULTIPOINT_3D),
+    Entities3D<Point_t>(listPoints)
+{
+}
+
+//template<typename Point_t> inline
+//void MultiPoint3D<Point_t>::add(const Point_t &point)
+//{
+//  this->mPoints.push_back(point);
+//}
+
+typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
+typedef MultiPoint3D<Point3<double>> MultiPoint3dD;
+typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
+
+/* ---------------------------------------------------------------------------------- */
 
 }
 

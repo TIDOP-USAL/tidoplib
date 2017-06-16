@@ -172,10 +172,7 @@ void Color::toRGB(int *red, int *green, int *blue, int *alpha) const
 
 int Color::toLuminance() const
 {
-  // Poynton	       0.2125	0.7154	0.0721
-  // sRGB proposal   0.2126	0.7152	0.0722
-  // W3              0.2126	0.7152	0.0722
-  return I3D_ROUND_TO_INT(0.2126 * getRed() + 0.7152 * getGreen() + 0.0722 * getBlue());
+  return rgbToLuminance(getRed(), getGreen(), getBlue());
 }
 
 Color Color::randomColor()
@@ -227,7 +224,6 @@ int rgbaToInt(int red, int green, int blue, int alpha)
 {
   return Color(red, green, blue, alpha).get<int>();
 }
-
 
 int hexToInt(const std::string &colorhex)
 {
@@ -529,6 +525,24 @@ void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb)
   //  }
   //});
   cv::cvtColor(hsv, *rgb, cv::COLOR_BGR2HSV);
+}
+
+#endif // HAVE_OPENCV
+
+int rgbToLuminance(int red, int green, int blue)
+{
+  //TODO: permitir diferentes tipos de conversión
+  // Poynton	       0.2125	0.7154	0.0721
+  // sRGB proposal   0.2126	0.7152	0.0722
+  // W3              0.2126	0.7152	0.0722
+  return I3D_ROUND_TO_INT(0.2126 * red + 0.7152 * green + 0.0722 * blue);
+}
+
+#ifdef HAVE_OPENCV
+
+void rgbToLuminance(const cv::Mat &rgb, cv::Mat *gray)
+{
+  cvtColor(rgb, *gray, CV_BGR2GRAY);
 }
 
 #endif // HAVE_OPENCV
