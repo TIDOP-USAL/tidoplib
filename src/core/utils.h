@@ -282,12 +282,12 @@ public:
   std::string getDrive();
 
   /*!
-   * \brief up
+   * \brief Sube una posición en el path
    */
   void up();
 
   /*!
-   * \brief down
+   * \brief Baja una posición
    */
   void down();
   
@@ -383,6 +383,10 @@ private:
 };
 
 
+
+/* ---------------------------------------------------------------------------------- */
+
+
 class I3D_EXPORT CmdProcess : public Process
 {
 protected:
@@ -402,6 +406,40 @@ private:
 
 };
 
+
+/* ---------------------------------------------------------------------------------- */
+
+
+///*!
+// * \brief Wrapper de una función para ejecutarla como un proceso.
+// * 
+// */
+//class I3D_EXPORT FunctionProcess : public Process
+//{
+//
+//private:
+//
+//  /*!
+//   * \brief Función
+//   */
+//  std::function<void()> f;
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora
+//   * \param[in] f Función de la forma std::function<void(const cv::Mat &,cv::Mat *)>
+//   */
+//  FunctionProcess(std::function<void()> f);
+//
+//  ~FunctionProcess();
+//
+//  virtual Process::Status run(Progress *progressBar = NULL) override;
+//
+//};
+
+
+/* ---------------------------------------------------------------------------------- */
 
 class BatchProcess
 {

@@ -11,6 +11,7 @@
 
 using namespace I3D;
 using namespace I3D::geometry;
+
 /*!
  * read_image: 
  *
@@ -55,7 +56,7 @@ int main(int argc, char** argv)
   //msg_h.addListener(&console);
 
 
-  I3D::Polygon<PointI> polygon{
+  Polygon<PointI> polygon{
     PointI(100, 144),
     PointI(157, 93),
     PointI(245, 83),

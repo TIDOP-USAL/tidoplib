@@ -342,6 +342,8 @@ std::string Path::toString()
 }
 
 /* ---------------------------------------------------------------------------------- */
+/*          PROCESOS Y BATCH                                                          */
+/* ---------------------------------------------------------------------------------- */
 
 Process::~Process()
 {
@@ -389,6 +391,7 @@ Process::Status Process::getStatus()
   return mStatus;
 }
 
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -431,9 +434,58 @@ I3D_DISABLE_WARNING(4100)
 }
 I3D_ENABLE_WARNING(4100)
 
-  /* ---------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------- */
 
-  BatchProcess::BatchProcess()
+//FunctionProcess::FunctionProcess(std::function<void()> f) 
+//  : Process(),
+//    f(f)
+//{
+//
+//}
+//
+//FunctionProcess::~FunctionProcess()
+//{
+//  // Se cierran procesos e hilos 
+//  CloseHandle(pi.hProcess);
+//  CloseHandle(pi.hThread);
+//}
+//
+//Process::Status FunctionProcess::run(Progress *progressBar)
+//{
+//  Process::run();
+//  size_t len = strlen(mCmd.c_str());
+//  std::wstring wCmdLine(len, L'#');
+//  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+//  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+//  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
+//    NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+//    printf("CreateProcess failed (%d).\n", GetLastError());
+//    return Process::Status::FINALIZED_ERROR;
+//  }
+//
+//  // Wait until child process exits.
+//  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED) {
+//    msgError("Error al ejecutar el comando: %s", mCmd.c_str());
+//    return Process::Status::FINALIZED_ERROR;
+//  } else {
+//    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+//    return Process::Status::FINALIZED;
+//  }
+//
+//  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+//  try {
+//    f(matIn, matOut);
+//  } catch (cv::Exception &e){
+//    msgError(e.what());
+//    return Process::Status::FINALIZED;
+//  }
+//  return ImgProcessing::Status::OK;
+//}
+//I3D_ENABLE_WARNING(4100)
+
+/* ---------------------------------------------------------------------------------- */
+
+BatchProcess::BatchProcess()
   : mStatus(Status::START),
   mProcessList(0)
 {}

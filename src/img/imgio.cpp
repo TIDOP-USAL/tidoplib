@@ -297,7 +297,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 
 GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) {
   if (driver == NULL) return Status::FAILURE;
-  if (pDataset) GDALClose(pDataset);
+  if (pDataset) GDALClose(pDataset), pDataset = NULL;
   pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
   if (!pDataset) return Status::FAILURE;
   update();
