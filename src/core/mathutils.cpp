@@ -8,9 +8,11 @@
 #endif
 
 #ifdef HAVE_EIGEN
+I3D_DISABLE_WARNING(4714)
 #include <Eigen/SVD>
 #include <Eigen/LU>
 #include <Eigen/QR>
+I3D_ENABLE_WARNING(4714)
 #endif
 
 #include <cmath> 

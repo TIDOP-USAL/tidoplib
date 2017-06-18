@@ -573,13 +573,20 @@ public:
    */
   double angleMean();
 
-  void DeleteLine(int id);
+  void deleteLine(int id);
 
   /*!
    * \brief Ventana envolvente del grupo de lineas
    * \return
    */
+  I3D_DEPRECATED("getWindow()")
   WindowI getBbox() const { return bbox; }
+
+  /*!
+   * \brief Ventana envolvente del grupo de lineas
+   * \return
+   */
+  WindowI getWindow() const { return bbox; }
 
   /*!
    * \brief Número de líneas

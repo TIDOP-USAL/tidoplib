@@ -269,8 +269,16 @@ ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *ma
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
-    if ( mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSL ) {
+    if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSL) {
       rgbToHSL(matIn, matOut);
+    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSV) {
+      rgbToHSV(matIn, matOut);
+    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::CMYK) {
+      rgbToCmyk(matIn, matOut);
+    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::LUMINANCE) {
+      rgbToLuminance(matIn, matOut);
+    } else {
+      msgWarning("Conversión no disponible")
     }
   } catch (cv::Exception &e){
     msgError(e.what());

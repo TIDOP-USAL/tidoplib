@@ -90,9 +90,6 @@
     <ClCompile Include="core\console.cpp">
       <Filter>Archivos de código fuente\core</Filter>
     </ClCompile>
-    <ClCompile Include="graphic_entities\graphic_entity.cpp">
-      <Filter>Archivos de código fuente\graphic_entities</Filter>
-    </ClCompile>
     <ClCompile Include="videostream.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
@@ -131,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="img\imgio.cpp">
       <Filter>Archivos de código fuente\img</Filter>
-    </ClCompile>
-    <ClCompile Include="vect\vectio.cpp">
-      <Filter>Archivos de código fuente\vect</Filter>
     </ClCompile>
     <ClCompile Include="graphic_entities\linealgorithms.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
@@ -181,9 +175,6 @@
     </ClInclude>
     <ClInclude Include="geometric_entities\lineString.h">
       <Filter>Archivos de encabezado\geometric_entities</Filter>
-    </ClInclude>
-    <ClInclude Include="graphic_entities\graphic_entity.h">
-      <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
     <ClInclude Include="videostream.h">
       <Filter>Archivos de encabezado</Filter>
@@ -233,17 +224,11 @@
     <ClInclude Include="img\imgio.h">
       <Filter>Archivos de encabezado\img</Filter>
     </ClInclude>
-    <ClInclude Include="vect\vectio.h">
-      <Filter>Archivos de encabezado\vect</Filter>
-    </ClInclude>
     <ClInclude Include="graphic_entities\linealgorithms.h">
       <Filter>Archivos de encabezado\graphic_entities</Filter>
     </ClInclude>
     <ClInclude Include="core\datamodel.h">
       <Filter>Archivos de encabezado\core</Filter>
-    </ClInclude>
-    <ClInclude Include="experimental\experimental.h">
-      <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

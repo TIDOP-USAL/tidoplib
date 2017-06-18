@@ -114,10 +114,16 @@
  * I3D_DEPRECATED("newFunc(int a, float b)")
  * void oldFunc(int a, float b);
  *
- * En el caso de una clase completa:
+ * En el caso de una clase completa se debe añadir entre class y el nombre de la clase:
  *
  * class I3D_DEPRECATED(NewClass) OldClass
  * { ...
+ *
+ * En el caso de las funciones template:
+ *
+ * template<typename T> inline
+ * I3D_DEPRECATED("void newFunc(T a, T b)")
+ * void oldFunc(T a, T b);
  */
 #if __cplusplus >= 201402L // c++ 14
 #  define I3D_DEPRECATED(msg)  [[deprecated("Deprecated: " msg)]]
