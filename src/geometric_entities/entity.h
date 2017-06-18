@@ -825,7 +825,7 @@ void Entity3DPoints<Point3_t>::resize(int size)
 
 
 
-
+// 
 
 /*!
  * \brief Entidades 2D
@@ -887,8 +887,7 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-  template<typename Window_t>
-  Window_t getWindow() const;
+  Window<Entity_t> getWindow() const;
 };
 
 
@@ -946,10 +945,10 @@ std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &
   return r_points;
 }
 
-template<typename Entity_t> template<typename Window_t> inline
-Window_t Entities2D<Entity_t>::getWindow() const
+template<typename Entity_t> inline
+Window<Entity_t> Entities2D<Entity_t>::getWindow() const
 {
-  Window_t w;
+  Window<Entity_t> w;
   for (size_t i = 0; i < mEntities.size(); i++) {
     if (w.pt1.x > mEntities[i].x) w.pt1.x = mEntities[i].x;
     if (w.pt1.y > mEntities[i].y) w.pt1.y = mEntities[i].y;
@@ -1007,16 +1006,14 @@ public:
    * \brief Caja envolvente
    * \return Caja envolvente de los puntos
    */
-  template<typename Box_t>
-  Box_t getBox() const;
+  Box<Entity_t> getBox() const;
   
   /*!
    * \brief Devuelve los puntos que esta dentro de una caja
    * \param[in] box Caja
    * \return Puntos que entran dentro de la caja
    */
-  template<typename Box_t>
-  std::vector<Entity_t> getEntitiesInBox(const Box_t &box) const;
+  std::vector<Entity_t> getEntitiesInBox(const Box<Entity_t> &box) const;
 
 };
 
@@ -1060,10 +1057,10 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 //  return *this;
 //}
 
-template<typename Entity_t> template<typename Box_t> inline
-Box_t Entities3D<Entity_t>::getBox() const
+template<typename Entity_t> inline
+Box<Entity_t> Entities3D<Entity_t>::getBox() const
 {
-  Box_t box;
+  Box<Entity_t> box;
   for (size_t i = 0; i < mEntities.size(); i++) {
     if (box.pt1.x > mEntities[i].x) box.pt1.x = mEntities[i].x;
     if (box.pt1.y > mEntities[i].y) box.pt1.y = mEntities[i].y;
@@ -1075,8 +1072,8 @@ Box_t Entities3D<Entity_t>::getBox() const
   return box;
 }
 
-template<typename Entity_t> template<typename Box_t> inline
-std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box_t &box) const
+template<typename Entity_t> inline
+std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
 {
   std::vector<Entity_t> r_points(mEntities.size());
   int j = 0;

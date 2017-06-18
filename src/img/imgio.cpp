@@ -284,7 +284,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
     // Se crea el directorio si no existe
     char dir[I3D_MAX_PATH];
     if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
-      createDir(dir);
+      if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     return Status::OPEN_OK; 
   } else {
     pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
@@ -302,7 +302,7 @@ GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType ty
     msgError("Utilice el modo Create para abrir el archivo");
     return Status::FAILURE; 
   }
-  if (pDataset) GDALClose(pDataset);
+  if (pDataset) GDALClose(pDataset), pDataset = NULL;
   pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
   if (!pDataset) return Status::FAILURE;
   update();

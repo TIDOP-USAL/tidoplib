@@ -287,7 +287,7 @@ Polygon3D<Point3_t>::Polygon3D(int size)
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon) 
   : Entity(Entity::type::POLYGON_3D), 
-    Entities3D<Point3_t>(polygon.mPoints)
+    Entities3D<Point3_t>(polygon.mEntities)
 {
 }
 
@@ -328,52 +328,52 @@ typedef Polygon3D<Point3<float>> Polygon3dF;
 
 
 
-template <typename Polygon_t>
-class MultiPolygon : public Entity, public Entities2D<Polygon_t>
-{
-
-public:
-
-  MultiPolygon();
-  MultiPolygon(int size);
-  MultiPolygon(const MultiPolygon &multiPoligon);
-
-  ~MultiPolygon() {}
-
-
-};
-
-template <typename Polygon_t> inline
-MultiPolygon<Polygon_t>::MultiPolygon() 
-  : Entity(Entity::type::MULTIPOLYGON_2D), 
-    Entities2D<Polygon_t>() 
-{
-}
-
-template <typename Polygon_t> inline
-MultiPolygon<Polygon_t>::MultiPolygon(int size) 
-  : Entity(Entity::type::MULTIPOLYGON_2D), 
-    Entities2D<Polygon_t>(size) 
-{
-}
-
-template <typename Polygon_t> inline
-MultiPolygon<Polygon_t>::MultiPolygon(const MultiPolygon &multiPoligon) 
-  : Entity(Entity::type::MULTIPOLYGON_2D), 
-    Entities2D<Polygon_t>(multiPoligon) 
-{
-}
-
-template <typename Polygon_t>
-class MultiPolygon3D : public Entity, public Entities3D<Polygon_t>
-{
-
-public:
-
-  MultiPolygon3D() : Entity(Entity::type::MULTIPOLYGON_3D), mPolygons() {}
-  ~MultiPolygon3D() {}
-
-};
+//template <typename Point_t>
+//class MultiPolygon : public Entity, public MultiEntities2D<Polygon<Point_t>>
+//{
+//
+//public:
+//
+//  MultiPolygon();
+//  MultiPolygon(int size);
+//  MultiPolygon(const MultiPolygon &multiPoligon);
+//
+//  ~MultiPolygon() {}
+//
+//
+//};
+//
+//template <typename Polygon_t> inline
+//MultiPolygon<Polygon_t>::MultiPolygon() 
+//  : Entity(Entity::type::MULTIPOLYGON_2D), 
+//    Entities2D<Polygon_t>() 
+//{
+//}
+//
+//template <typename Polygon_t> inline
+//MultiPolygon<Polygon_t>::MultiPolygon(int size) 
+//  : Entity(Entity::type::MULTIPOLYGON_2D), 
+//    Entities2D<Polygon_t>(size) 
+//{
+//}
+//
+//template <typename Polygon_t> inline
+//MultiPolygon<Polygon_t>::MultiPolygon(const MultiPolygon &multiPoligon) 
+//  : Entity(Entity::type::MULTIPOLYGON_2D), 
+//    Entities2D<Polygon_t>(multiPoligon) 
+//{
+//}
+//
+//template <typename Polygon_t>
+//class MultiPolygon3D : public Entity, public Entities3D<Polygon_t>
+//{
+//
+//public:
+//
+//  MultiPolygon3D() : Entity(Entity::type::MULTIPOLYGON_3D), mPolygons() {}
+//  ~MultiPolygon3D() {}
+//
+//};
 
 }
 

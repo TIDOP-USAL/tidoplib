@@ -149,6 +149,7 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
+  I3D_DEPRECATED("")
   virtual transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
                                      transform_order trfOrder = transform_order::DIRECT) const = 0;
 
@@ -171,6 +172,7 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
+  I3D_DEPRECATED("transform")
   virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
                                              transform_order trfOrder = transform_order::DIRECT) const;
   
@@ -3307,15 +3309,6 @@ void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> 
   trf->transform(in.pt2, &out->pt2, trfOrder);
 }
 
-// Forma mas genérica
-template<typename itIn, typename itOut, typename trf_t> inline
-void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transform_order trfOrder = transform_order::DIRECT)
-{
-  while (in_first != in_last) {
-    trf->transform(*in_first++, &(*out_first++), trfOrder);
-  }
-}
-
 /*!
  * \brief Aplica una transformación a un conjunto de entidades
  * \param[in] in Entidad de entrada
@@ -3348,6 +3341,28 @@ void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *o
     transform(in[i], &(*out)[i], trf, trfOrder);
   });
 }
+
+// Forma mas genérica
+template<typename itIn, typename itOut, typename trf_t> inline
+void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transform_order trfOrder = transform_order::DIRECT)
+{
+  while (in_first != in_last) {
+    trf->transform(*in_first++, &(*out_first++), trfOrder);
+  }
+}
+
+template<typename itIn, typename itOut, typename trf_t> inline
+void transformParalell(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transform_order trfOrder = transform_order::DIRECT)
+{
+  typename std::iterator_traits<itIn>::difference_type size = std::distance(in_first, in_last);
+  parallel_for(in_first, in_last, [&](itIn first, ) {
+    transform(in[i], &(*out)[i], trf, trfOrder);
+  });
+  while (in_first != in_last) {
+    trf->transform(*in_first++, &(*out_first++), trfOrder);
+  }
+}
+
 
 #ifdef HAVE_OPENCV
 

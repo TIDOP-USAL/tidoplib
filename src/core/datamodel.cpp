@@ -17,12 +17,12 @@ TableHeaderField::~TableHeaderField()
 {
 }
 
-const char *TableHeaderField::getName()
+const char *TableHeaderField::getName() const
 {
   return mName.c_str();
 }
 
-TableHeaderField::Type TableHeaderField::getType()
+TableHeaderField::Type TableHeaderField::getType() const
 {
   return mType;
 }
@@ -63,18 +63,29 @@ size_t TableHeader::getFieldCount()
   return mTableFields.size();
 }
 
-TableHeaderField *TableHeader::getTableFieldName(int idx)
+const TableHeaderField *TableHeader::getTableHeaderField(int idx) const
 {
   return mTableFields[idx].get();
 }
 
 /* ---------------------------------------------------------------------------------- */
 
-TableRegisterField::TableRegisterField()
-{}
-
-TableRegisterField::~TableRegisterField()
-{}
+//TableRegisterField::TableRegisterField(const std::string &value) 
+//  : mValue(value)
+//{}
+//
+//TableRegisterField::~TableRegisterField()
+//{}
+//
+//std::string  TableRegisterField::getValue() const
+//{
+//  return mValue;
+//}
+//
+//void TableRegisterField::setValue(const std::string &value)
+//{
+//  mValue = value;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -84,16 +95,21 @@ TableRegister::TableRegister()
 {
 }
 
+TableRegister::TableRegister(int size)
+  : mRegisterValues(size)
+{
+}
+
 TableRegister::TableRegister(const TableRegister &_register)
   : mRegisterValues(_register.mRegisterValues)
 {
 }
 
-TableRegister::TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields)
-  : mRegisterValues(registerFields)
-{
-
-}
+//TableRegister::TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields)
+//  : mRegisterValues(registerFields)
+//{
+//
+//}
 
 TableRegister::~TableRegister()
 {
@@ -102,7 +118,20 @@ TableRegister::~TableRegister()
 const char *TableRegister::getValue(int idx)
 {
   //TODO: Aqui hay que ver como devolver el tipo adecuado
-  return NULL;
+  if (idx < mRegisterValues.size())
+    return mRegisterValues[idx].c_str();
+  else return NULL;
+}
+
+void TableRegister::setField(int idx, const std::string &field)
+{
+  if (idx < mRegisterValues.size())
+    mRegisterValues[idx] = field;
+}
+
+void TableRegister::setSize(int size)
+{
+  mRegisterValues.resize(size);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -147,6 +176,11 @@ TableHeader *DataTable::getTableHeader()
   return mTableHeader.get();
 }
 
+size_t DataTable::getFieldCount()
+{
+  return mTableHeader->getFieldCount();
+}
+
 void DataTable::setName(const char *name)
 {
   mTableName = name;
@@ -155,6 +189,11 @@ void DataTable::setName(const char *name)
 void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
 {
   mTableHeader = tableHeader;
+}
+
+size_t DataTable::size()
+{
+  return mRegister.size();
 }
 
 

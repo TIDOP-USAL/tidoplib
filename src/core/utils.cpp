@@ -342,6 +342,8 @@ std::string Path::toString()
 }
 
 /* ---------------------------------------------------------------------------------- */
+/*          PROCESOS Y BATCH                                                          */
+/* ---------------------------------------------------------------------------------- */
 
 Process::~Process()
 {
@@ -389,6 +391,7 @@ Process::Status Process::getStatus()
   return mStatus;
 }
 
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -431,9 +434,58 @@ I3D_DISABLE_WARNING(4100)
 }
 I3D_ENABLE_WARNING(4100)
 
-  /* ---------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------------- */
 
-  BatchProcess::BatchProcess()
+//FunctionProcess::FunctionProcess(std::function<void()> f) 
+//  : Process(),
+//    f(f)
+//{
+//
+//}
+//
+//FunctionProcess::~FunctionProcess()
+//{
+//  // Se cierran procesos e hilos 
+//  CloseHandle(pi.hProcess);
+//  CloseHandle(pi.hThread);
+//}
+//
+//Process::Status FunctionProcess::run(Progress *progressBar)
+//{
+//  Process::run();
+//  size_t len = strlen(mCmd.c_str());
+//  std::wstring wCmdLine(len, L'#');
+//  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+//  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+//  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
+//    NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+//    printf("CreateProcess failed (%d).\n", GetLastError());
+//    return Process::Status::FINALIZED_ERROR;
+//  }
+//
+//  // Wait until child process exits.
+//  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED) {
+//    msgError("Error al ejecutar el comando: %s", mCmd.c_str());
+//    return Process::Status::FINALIZED_ERROR;
+//  } else {
+//    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+//    return Process::Status::FINALIZED;
+//  }
+//
+//  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+//  try {
+//    f(matIn, matOut);
+//  } catch (cv::Exception &e){
+//    msgError(e.what());
+//    return Process::Status::FINALIZED;
+//  }
+//  return ImgProcessing::Status::OK;
+//}
+//I3D_ENABLE_WARNING(4100)
+
+/* ---------------------------------------------------------------------------------- */
+
+BatchProcess::BatchProcess()
   : mStatus(Status::START),
   mProcessList(0)
 {}
@@ -915,8 +967,8 @@ void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) 
 /* ---------------------------------------------------------------------------------- */
 
 Csv::Csv()
-  : File(),
-    DataTable()
+  : File()/*,
+    DataTable()*/
 {
 }
 
@@ -926,14 +978,61 @@ Csv::~Csv()
 
 void Csv::close()
 {
-  if (fs.is_open()) fs.close();
+  if (fs.is_open()) 
+    fs.close();
 }
 
-Csv::Status Csv::create(std::shared_ptr<TableHeader> tableHeader)
+//Csv::Status Csv::create(std::shared_ptr<TableHeader> tableHeader)
+//{
+//  if (!fs.is_open()) {
+//    msgError("No se ha abierto el archivo");
+//    return Status::FAILURE; 
+//  }
+//
+//  if (mMode != Mode::Create) { 
+//    msgError("Utilice el modo 'Create' para abrir el archivo");
+//    return Status::FAILURE; 
+//  }
+//  
+//  setName(File::mName.c_str());
+//  setTableHeader(tableHeader);
+//
+//  size_t size = getFieldCount();
+//  for (size_t i = 0; i < size; i++) {
+//    fs << tableHeader->getTableHeaderField(i)->getName();
+//    if (i != size -1) fs << ";";
+//  }
+//  fs << std::endl;
+//
+//  return Status::SUCCESS;
+//}
+
+Csv::Status Csv::create(const std::string &header)
 {
-  setName(File::mName.c_str());
-  setTableHeader(tableHeader);
-  return Status::SUCCESS;
+  if (!fs.is_open()) {
+    msgError("No se ha abierto el archivo");
+    return Status::FAILURE; 
+  }
+
+  if (mMode != Mode::Create) { 
+    msgError("Utilice el modo 'Create' para abrir el archivo");
+    return Status::FAILURE; 
+  }
+  
+  //setName(File::mName.c_str());
+  
+
+  std::vector<std::string> out;
+  if (split(header, out, ";") == 0) {
+    size_t size = out.size();
+    for (size_t i = 0; i < size; i++) {
+      fs << out[i];
+      if (i != size - 1) fs << ";";
+    }
+    fs << std::endl;
+    return Status::SUCCESS;
+  } else 
+    return Status::FAILURE; 
 }
 
 Csv::Status Csv::createCopy(const char *fileOut)
@@ -947,15 +1046,16 @@ Csv::Status Csv::createCopy(const char *fileOut)
 Csv::Status Csv::open(const char *file, Csv::Mode mode)
 {
   close();
-
+  
   mName = file;
+  mMode = mode;
 
   char ext[I3D_MAX_EXT];
   if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
   if (strcmpi(ext, ".csv") == 0) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;
-  switch (mode) {
+  switch (mMode) {
   case Mode::Read:
     _mode = std::fstream::in;
     break;
@@ -973,31 +1073,65 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
   fs.open(file, _mode);
 
   if (fs.is_open()) {
-    //TODO: se carga el fichero a memoria si es para leer o lectura escritura
-    if (mode == Mode::Read) {
-      
+    if (mMode == Mode::Create) {
+      char dir[I3D_MAX_PATH];
+      if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
+        if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     }
     return Status::OPEN_OK;
-  } else return Status::OPEN_FAIL;
+  } else {
+    msgError("File open failed: %s", std::strerror(errno));
+    return Status::OPEN_FAIL;
+  }
 }
 
 
 
-TableRegister *Csv::read(int id)
-{
-  return getRegister(id).get();
-}
+//TableRegister *Csv::read(int id)
+//{
+//  return getRegister(id).get();
+//}
 
-Csv::Status Csv::readHeader()
+//Csv::Status Csv::readHeader()
+//{
+//  return Status::SUCCESS;
+//}
+
+//Csv::Status Csv::write(std::shared_ptr<TableRegister> _register)
+//{
+//  addRegister(_register);
+//
+//  TableRegister *reg = getRegister(size()-1).get();
+//  size_t size = getFieldCount();
+//  for (size_t i = 0; i < size; i++) {
+//    fs << reg->getValue(i);
+//    if (i != size -1) fs << ";";
+//  }
+//  fs << std::endl;
+//  return Status::SUCCESS;
+//}
+
+Csv::Status Csv::write(const std::vector<std::string> &_register)
 {
+  size_t size = _register.size();
+  for (size_t i = 0; i < size; i++) {
+    fs << _register[i];
+    if (i != size -1) fs << ";";
+  }
+  fs << std::endl;
   return Status::SUCCESS;
 }
 
-Csv::Status Csv::write(std::shared_ptr<TableRegister> _register)
-{
-  addRegister(_register);
-  //fs << ...
-  return Status::SUCCESS;
-}
+//Csv::Status Csv::load(std::shared_ptr<TableRegister> _register)
+//{
+//
+//  return Status::SUCCESS;
+//}
+//
+//Csv::Status Csv::save()
+//{
+//
+//  return Status::SUCCESS;
+//}
 
 } // End namespace I3D

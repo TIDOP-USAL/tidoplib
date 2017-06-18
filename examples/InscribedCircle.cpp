@@ -47,15 +47,40 @@ int main(int argc, char** argv)
   //}
   //log.setLogLevel(MessageLevel::MSG_INFO);
 
-  //// Consola
-  //Console console;
-  //console.setLogLevel(MessageLevel::MSG_INFO);
-  //console.setConsoleUnicode();
+  // Consola
+  Console console;
+  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setConsoleUnicode();
 
-  ////Configuración de mensajes
-  //MessageManager &msg_h = MessageManager::getInstance();
+  //Configuración de mensajes
+  MessageManager &msg_h = MessageManager::getInstance();
   //msg_h.addListener(&log);
-  //msg_h.addListener(&console);
+  msg_h.addListener(&console);
+
+
+  Csv csv;
+  Csv::Status err = csv.open("C:\\Desarrollo\\datos\\Omega\\2017_03_02\\kk.cvs", I3D::File::Mode::Create);
+  if (err == Csv::Status::OPEN_FAIL) exit(1);
+
+  std::shared_ptr<TableHeader> tableHeader = std::make_shared<TableHeader>();
+  tableHeader->addField(std::make_shared<TableHeaderField>("Id", TableHeaderField::Type::INT));
+  tableHeader->addField(std::make_shared<TableHeaderField>("Name", TableHeaderField::Type::STRING));
+  //Lo mismo con inicializador de lista
+  //TableHeader tableHeader {
+  //  std::make_shared<TableHeaderField>("Id", TableHeaderField::Type::INT),
+  //  std::make_shared<TableHeaderField>("Name", TableHeaderField::Type::STRING)
+  //};
+
+  csv.create("head1;header2");
+  //std::shared_ptr<TableRegister> _register = std::make_shared<TableRegister>(2);
+  //_register->setField(0, "kk1");
+  //_register->setField(1, "kk2");
+  std::vector<std::string> _register {"kk", "kk2"};
+
+  csv.write(_register);
+
+
+
 
 
   geometry::Polygon<PointI> polygon{

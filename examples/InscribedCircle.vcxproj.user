@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerEnvironment>PATH=%PATH%;D:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin;D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;D:\Desarrollo\Libs\CURL\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <LocalDebuggerEnvironment>PATH=%PATH%;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin;c:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;c:\Desarrollo\Libs\CURL\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>
     </LocalDebuggerCommandArguments>

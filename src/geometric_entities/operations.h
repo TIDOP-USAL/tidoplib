@@ -386,8 +386,8 @@ double distPointToPolygon(const Point_t &pt, const Polygon<Point_t> &polygon)
   double max_dist = I3D_DOUBLE_MAX;
   double dist;
   Polygon<Point_t> _p = polygon;
-  for (size_t i = 0; i < polygon.getSize(); i++) {
-    if (i == polygon.getSize() - 1) {
+  for (size_t i = 0; i < polygon.size(); i++) {
+    if (i == polygon.size() - 1) {
       dist = distPointToSegment(pt, Segment<Point_t>(_p[i], _p[0]));
     } else {
       dist = distPointToSegment(pt, Segment<Point_t>(_p[i], _p[i+1]));
@@ -409,8 +409,8 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
   double max_dist = I3D_DOUBLE_MAX;
   double dist;
   Polygon3D<Point_t> _p = polygon;
-  for (size_t i = 0; i < polygon.getSize(); i++) {
-    if (i == polygon.getSize() - 1) {
+  for (size_t i = 0; i < polygon.size(); i++) {
+    if (i == polygon.size() - 1) {
       dist = distPointToSegment(pt, Segment3D<Point_t>(_p[i], _p[0]));
     } else {
       dist = distPointToSegment(pt, Segment3D<Point_t>(_p[i], _p[i+1]));
@@ -765,7 +765,7 @@ Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const
 
   // Se determina el plano de mejor ajuste
   std::array<double, 4> plane;
-  nPointsPlaneLS(polygon.getPoints(), plane);
+  nPointsPlaneLS(polygon.begin(), polygon.end(), plane);
   //Polygon3D<T> _poligon = polygon;
   //// Proyectar polilinea en plano
   //Polygon3D<T> poligon2;
@@ -776,7 +776,7 @@ Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const
   //}
   // Máxima distancia de los puntos al plano
   double max_dist = I3D_DOUBLE_MIN;
-  for (int i = 0; i < polygon.getSize(); i++) {
+  for (int i = 0; i < polygon.size(); i++) {
     Point3_t pt;
     double distance = distantePointToPlane(polygon[i], plane);
     if (distance > max_dist) max_dist = distance;
@@ -790,7 +790,7 @@ Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const
   plane_z[3] = pia.x + pia.y;
 
   Polygon<Point<typename Point3_t::value_type>> poligon_z;
-  for (int i = 0; i < polygon.getSize(); i++) {
+  for (int i = 0; i < polygon.size(); i++) {
     Point3_t pt;
     projectPointToPlane(polygon[i], plane_z, &pt);
     poligon_z.add(Point<typename Point3_t::value_type>(pt.x, pt.y));

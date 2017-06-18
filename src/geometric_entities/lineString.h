@@ -380,7 +380,7 @@ typedef LineString<Point<double>> LineStringD;
  *
  */
 template <typename Point3_t>
-class LineString3D : public Entity, public Entities3D<Point_t>
+class LineString3D : public Entity, public Entities3D<Point3_t>
 {
 
 public:

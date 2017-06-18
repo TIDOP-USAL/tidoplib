@@ -25,6 +25,7 @@ public:
     DOUBLE,
     FLOAT,
     STRING
+    //....
   };
 
 private:
@@ -39,6 +40,7 @@ private:
    */
   Type mType;
 
+  //TODO: Añadir tamaño??
 public:
 
   /*!
@@ -55,12 +57,12 @@ public:
   /*!
    * \brief Devuelve el nombre del campo
    */
-  const char *getName();
+  const char *getName() const;
 
   /*!
    * \brief Devuelve el tipo del campo
    */
-  Type getType();
+  Type getType() const;
 };
 
 
@@ -109,22 +111,29 @@ public:
 
   size_t getFieldCount();
 
-  TableHeaderField *getTableFieldName(int idx);
+  const TableHeaderField *getTableHeaderField(int idx) const;
 
 private:
 
 };
 
 
-class I3D_EXPORT TableRegisterField
-{
-public:
-  TableRegisterField();
-  ~TableRegisterField();
-
-private:
-
-};
+//class I3D_EXPORT TableRegisterField
+//{
+//private:
+//
+//  //Por ahora cargo una cadena con el valor
+//  std::string mValue;
+//
+//public:
+//  TableRegisterField(const std::string &value);
+//  ~TableRegisterField();
+//
+//  std::string  getValue() const;
+//  void setValue(const std::string &value);
+//private:
+//
+//};
 
 
 
@@ -140,7 +149,8 @@ protected:
   /*!
    * \brief Campos de la tabla
    */
-  std::vector<std::shared_ptr<TableRegisterField>> mRegisterValues;
+  //std::vector<std::shared_ptr<TableRegisterField>> mRegisterValues;
+  std::vector<std::string> mRegisterValues;
 
 public:
 
@@ -148,7 +158,7 @@ public:
    * \brief Constructora por defecto
    */
   TableRegister();
-
+  TableRegister(int size);
   /*!
    * \brief Constructor de copia
    * \param[in] tableRegister
@@ -159,7 +169,7 @@ public:
    * \brief Constructor de lista
    * \param[in] registerFields
    */
-  TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields);
+  //TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields);
 
   /*!
    * \brief Destructora
@@ -167,6 +177,11 @@ public:
   ~TableRegister();
 
   const char *getValue(int idx);
+
+  void setField(int idx, const std::string &field);
+
+  void setSize(int size);
+
 };
 
 
@@ -260,7 +275,9 @@ public:
   std::shared_ptr<TableRegister> getRegister(int index);
 
   TableHeader *getTableHeader();
-
+  
+  size_t getFieldCount();
+  
   /*!
    * \brief Establece el nombre de la tabla
    * \param[in] name Nombre de la tabla
@@ -272,6 +289,8 @@ public:
    * \param[in] tableHeader Cabecera de la tabla
    */
   void setTableHeader(std::shared_ptr<TableHeader> tableHeader);
+
+  size_t size();
 };
 
 
