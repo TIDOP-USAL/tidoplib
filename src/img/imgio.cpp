@@ -180,7 +180,8 @@ GdalRaster::GdalRaster()
     pDataset(0), 
     pRasterBand(0), 
     mGdalDataType(GDT_Unknown), 
-    mTempName("") 
+    mTempName(""),
+    pDriver(0)
 {
   RegisterGdal::init();
 }
@@ -191,7 +192,8 @@ GdalRaster::GdalRaster(const GdalRaster &gdalRaster)
     pDataset(gdalRaster.pDataset),
     pRasterBand(gdalRaster.pRasterBand), 
     mGdalDataType(gdalRaster.mGdalDataType), 
-    mTempName(gdalRaster.mTempName)
+    mTempName(gdalRaster.mTempName),
+    pDriver(0)
 {
   RegisterGdal::init();
 }
@@ -264,12 +266,12 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   bTempFile = false;
 
   if (mode == Mode::Create) {
-    driver = GetGDALDriverManager()->GetDriverByName(driverName); 
-    if (driver == NULL) return Status::OPEN_FAIL;
-    char **gdalMetadata = driver->GetMetadata();
+    pDriver = GetGDALDriverManager()->GetDriverByName(driverName); 
+    if (pDriver == NULL) return Status::OPEN_FAIL;
+    char **gdalMetadata = pDriver->GetMetadata();
     if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
       // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
-      driver = GetGDALDriverManager()->GetDriverByName("GTiff");
+      pDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
       char path[I3D_MAX_PATH];
       GetTempPathA(I3D_MAX_PATH, path);
       char name[I3D_MAX_FNAME];
@@ -296,9 +298,12 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 }
 
 GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) {
-  if (driver == NULL) return Status::FAILURE;
+  if (pDriver == NULL) { 
+    msgError("Utilice el modo Create para abrir el archivo");
+    return Status::FAILURE; 
+  }
   if (pDataset) GDALClose(pDataset);
-  pDataset = driver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
+  pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
   if (!pDataset) return Status::FAILURE;
   update();
   return Status::SUCCESS;

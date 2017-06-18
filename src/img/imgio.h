@@ -310,7 +310,7 @@ protected:
   /*!
    * \brief Driver GDAL
    */
-  GDALDriver *driver;
+  GDALDriver *pDriver;
 
   static char **gdalOpt;
   static int BMP[];
