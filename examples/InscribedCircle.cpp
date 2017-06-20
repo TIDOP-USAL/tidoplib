@@ -58,28 +58,6 @@ int main(int argc, char** argv)
   msg_h.addListener(&console);
 
 
-  Csv csv;
-  Csv::Status err = csv.open("C:\\Desarrollo\\datos\\Omega\\2017_03_02\\kk.cvs", I3D::File::Mode::Create);
-  if (err == Csv::Status::OPEN_FAIL) exit(1);
-
-  std::shared_ptr<TableHeader> tableHeader = std::make_shared<TableHeader>();
-  tableHeader->addField(std::make_shared<TableHeaderField>("Id", TableHeaderField::Type::INT));
-  tableHeader->addField(std::make_shared<TableHeaderField>("Name", TableHeaderField::Type::STRING));
-  //Lo mismo con inicializador de lista
-  //TableHeader tableHeader {
-  //  std::make_shared<TableHeaderField>("Id", TableHeaderField::Type::INT),
-  //  std::make_shared<TableHeaderField>("Name", TableHeaderField::Type::STRING)
-  //};
-
-  csv.create("head1;header2");
-  //std::shared_ptr<TableRegister> _register = std::make_shared<TableRegister>(2);
-  //_register->setField(0, "kk1");
-  //_register->setField(1, "kk2");
-  std::vector<std::string> _register {"kk", "kk2"};
-
-  csv.write(_register);
-
-
 
 
 
@@ -190,8 +168,8 @@ int main(int argc, char** argv)
   //}
 
 
-  Point3D center3d;
-  poleOfInaccessibility(polygon3d, &center3d);
+  //Point3D center3d;
+  //poleOfInaccessibility(polygon3d, &center3d);
 
   std::vector<Point3D> vertex {
     Point3D(-2.8728270531, 4.2343444824, -0.6537694335),
@@ -216,8 +194,7 @@ int main(int argc, char** argv)
   };
 
   Point3D _center3d;
-  poleOfInaccessibility(vertex.begin(), vertex.end(), &_center3d);
-
+  //poleOfInaccessibility(vertex.begin(), vertex.end(), &_center3d);
 
   //std::vector<Point3D> vertex {
   //  Point3D(0.02, 1000.0, 71.9),
@@ -234,6 +211,112 @@ int main(int argc, char** argv)
   //double N = nPointsPlaneLS(vertex, plane);
   //double kk = plane[0] / plane[2];
   //double N2 = sqrt(31.15*31.15 + -0.08*-0.08 + -1*-1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //Resolución del problema proyectando los puntos en un plano horizontal y trabajando en 2D
+  
+  //TODO: sacar a función
+  std::array<Point3D, 2> box;
+  box[0].x = box[0].y = box[0].z = std::numeric_limits<double>().max();
+  box[1].x = box[1].y = box[1].z = -std::numeric_limits<double>().max();
+  auto temp = vertex.begin(); 
+  while (temp != vertex.end()) {
+    if (box[0].x > temp->x) box[0].x = temp->x;
+    if (box[0].y > temp->y) box[0].y = temp->y;
+    if (box[0].z > temp->z) box[0].z = temp->z;
+    if (box[1].x < temp->x) box[1].x = temp->x;
+    if (box[1].y < temp->y) box[1].y = temp->y;
+    if (box[1].z < temp->z) box[1].z = temp->z;
+    *temp++;
+  }
+ 
+  //Point3D point_tmp;
+  
+  //Point3D tmp;
+  
+  // Se determina el plano de mejor ajuste
+  std::array<double, 4> plane;
+  nPointsPlaneLS(vertex.begin(), vertex.end(), plane, true);
+
+  // Máxima distancia de los puntos al plano
+  double max_dist = I3D_DOUBLE_MIN;
+
+  temp = vertex.begin();
+  while (temp != vertex.end()) {
+    Point3D pt;
+    double distance = distantePointToPlane(*temp, plane);
+    if (distance > max_dist) max_dist = distance;
+    *temp++;
+  }
+
+
+  // Proyectar polilinea en el plano de mejor ajuste
+  std::vector<Point3D> poligon_plane;
+  temp = vertex.begin();;
+  while (temp != vertex.end()) {
+    Point3D pt;
+    projectPointToPlane(*temp, plane, &pt);
+    msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+    poligon_plane.push_back(pt);
+    *temp++;
+  }
+
+  // Se toma como pia el centro de la caja envolvente
+  Point3D pia((box[0].x + box[1].x) / 2., (box[0].y + box[1].y) / 2., (box[0].z + box[1].z) / 2.);
+
+  // Plano horizontal (1,1,0)
+  std::array<double, 4> plane_z;
+  plane_z[0] = 0;
+  plane_z[1] = 0;
+  plane_z[2] = 1;
+  plane_z[3] = -plane_z[0] * pia.x - plane_z[1] * pia.y - plane_z[2] * pia.z;
+
+  geometry::Polygon<PointD> poligon_z;
+  //std::vector<PointD> poligon_z;
+
+  for (int i = 0; i < poligon_plane.size(); i++){
+    Point3D pt;
+    projectPointToPlane(poligon_plane[i], plane_z, &pt);
+    msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+    poligon_z.add(PointD(pt.x, pt.y));
+  }
+
+  PointD center2D;
+
+  poleOfInaccessibility(poligon_z, &center2D);
+  
+  Point3D _center3D(center2D.x, center2D.y, pia.z);
+
+
+  ////Proyectar el punto al revés
+  Point3D center3D;
+  projectPointToPlane(_center3D, plane_z, &center3D, Point3D(plane[0], plane[1], plane[2]));
+
+  poleOfInaccessibility3D(vertex.begin(), vertex.end(), &center3D);
+  double _radius = distPointToPolygon(center, polygon);
 
   exit(EXIT_SUCCESS);
 }

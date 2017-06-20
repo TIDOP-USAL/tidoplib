@@ -173,16 +173,21 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
     Segment<Point_t> segment(mEntities[i], mEntities[j]);
     
     // El punto es colineal con el segmento
-    if ( isCollinearPoints(point, segment, 0.5)) return true;
+    //if (isCollinearPoints(point, segment, 0.5)) return true;
     Point_t ptp;
     //if (projectPointInSegment(segment, point, &ptp) == 2) return true;
     Segment<Point_t> sPointH(point, Point_t(w.pt2.x, point.y));
+
+    // La proyección del punto cae en un vertice del poligono
+    // Debido a esto los dos segmento que parte de ese vertice daran una intersección
+    // y por eso se resta 1
     if (point.y == segment.pt1.y || point.y == segment.pt2.y)
       bVertex = true;
     nIntersection += intersectSegments(segment, sPointH, &ptp);
   }
   if (bVertex) 
     nIntersection--;
+  if (nIntersection < 0) return false;
   if (nIntersection % 2 == 0) return false;
   else return true;
 
