@@ -159,6 +159,14 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   // Comprueba si esta dentro de la ventana envolvente.
   if (w.containsPoint(point) == false) return false;
 
+  // Se comprueba si el punto es uno de los vertices
+  for (int i = 0; i < mEntities.size(); i++) {
+    // Por ahora se devuelve true. Lo suyo sería indicar que es un vertice.
+    if (mEntities[i] == point) return true;
+  }
+
+  Segment<Point_t> sPointH(point, Point_t(w.pt2.x, point.y));
+
   // Comprueba si corta una recta que pase por el punto corta en un numero 
   // par al poligono. La recta va desde el punto a la parte inferior, superior,
   // derecha o izquierda de la ventana.
@@ -167,34 +175,84 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   //cv::line(aux, point-w.pt1, point-w.pt1, Color(Color::NAME::Red).get<cv::Scalar>(), 1);
   int nIntersection = 0;
   bool bVertex = false;
+  std::vector<int> vertex_id;
+
+  int aux = 0;
   for (size_t i = 0, j = 1; i < mEntities.size(); i++, j++) {
     if (j == mEntities.size()) j = 0;
-    //cv::line(aux, mPoints[i]-w.pt1, mPoints[j]-w.pt1, Color(Color::NAME::Blue).get<cv::Scalar>(), 1);
+
+
     Segment<Point_t> segment(mEntities[i], mEntities[j]);
     
-    // El punto es colineal con el segmento
-    //if (isCollinearPoints(point, segment, 0.5)) return true;
-    Point_t ptp;
-    //if (projectPointInSegment(segment, point, &ptp) == 2) return true;
-    Segment<Point_t> sPointH(point, Point_t(w.pt2.x, point.y));
+    // El punto es colineal con el segmento y esta dentro del mismo.
+    if (distPointToSegment(point, segment) == 0) return true;
 
-    // La proyección del punto cae en un vertice del poligono
-    // Debido a esto los dos segmento que parte de ese vertice daran una intersección
-    // y por eso se resta 1
-    if (point.y == segment.pt1.y || point.y == segment.pt2.y)
+    Point_t ptp;
+    //if (projectPointInSegment(segment, point, &ptp) == 2) return true; // esta en la linea
+
+      
+    if (point.y == segment.pt1.y) {
+      vertex_id.push_back(i);
       bVertex = true;
-    nIntersection += intersectSegments(segment, sPointH, &ptp);
+    }
+
+    if (point.y == segment.pt1.y && point.y == segment.pt2.y) {
+      // los dos segmentos forman parte de la misma linea horizontal
+      // como no va a aparecer intersección...
+      //nIntersection += 2;
+    } else {
+      nIntersection += intersectSegments(segment, sPointH, &ptp);
+    }
+
   }
-  if (bVertex) 
-    nIntersection--;
+
+  // hay vertices
+  // Si hay vertices hay que estudiar mas en detalle si el punto esta dentro o fuera
+  if (bVertex == true) {
+    std::vector<int> order;
+    int vertex_prev = 0;
+    int vertex_next = 0;
+    for (int i = 0; i < vertex_id.size(); i++) {
+      // Se comprueban los puntos anterior y siguiente
+      if (vertex_id[i] == 0) vertex_prev = mEntities.size() - 1;
+      else vertex_prev = vertex_id[i] - 1;
+
+      if (vertex_id[i] == mEntities.size() - 1) vertex_next = 0;
+      else vertex_next = vertex_id[i] + 1;
+
+      if (mEntities[vertex_prev].y == sPointH.pt1.y) {
+        continue;
+      } else {
+        if (mEntities[vertex_next].y == sPointH.pt1.y) {
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_prev]);
+          if (vertex_next == mEntities.size() - 1) vertex_next = 0;
+          else vertex_next = vertex_next + 1;
+          int next = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_next]);
+          if (prev == next) nIntersection -= 2;
+          else nIntersection--;
+        } else {
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_prev]);
+          int next = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_next]);
+          if (prev == next) nIntersection -= 2;
+          else nIntersection--;
+        }
+
+      }
+
+    }
+  }
   if (nIntersection < 0) return false;
   if (nIntersection % 2 == 0) return false;
   else return true;
 
-  // Probar con OpenCV
-  //double i_pol_test = cv::pointPolygonTest(mPoints, cv::Point2f(point.x, point.y), false);
+  //// Probar con OpenCV
+  //std::vector<cv::Point2f> points;
+  //for (int i = 0; i < mEntities.size(); i++) {
+  //  points.push_back(cv::Point2f(mEntities[i].x, mEntities[i].y));
+  //}
+  //double i_pol_test = cv::pointPolygonTest(mEntities, cv::Point2f(point.x, point.y), false);
   //if (i_pol_test == -1) return false;
-  //else return true
+  //else return true;
 
 }
 

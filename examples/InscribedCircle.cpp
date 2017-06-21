@@ -61,46 +61,106 @@ int main(int argc, char** argv)
 
 
 
-  geometry::Polygon<PointI> polygon{
-    PointI(100, 144),
-    PointI(157, 93),
-    PointI(245, 83),
-    PointI(333, 56),
-    PointI(399, 82),
-    PointI(457, 117),
-    PointI(465, 158),
-    PointI(433, 225),
-    PointI(369, 235),
-    PointI(242, 264),
-    PointI(171, 227),
-    PointI(118, 206) 
-  };
+  //geometry::Polygon<PointI> polygon{
+  //  PointI(100, 144),
+  //  PointI(157, 93),
+  //  PointI(245, 83),
+  //  PointI(333, 56),
+  //  PointI(399, 82),
+  //  PointI(457, 117),
+  //  PointI(465, 158),
+  //  PointI(433, 225),
+  //  PointI(369, 235),
+  //  PointI(242, 264),
+  //  PointI(171, 227),
+  //  PointI(118, 206) 
+  //};
+
+  //std::vector<cv::Point> points{
+  //  cv::Point(100, 144),
+  //  cv::Point(157, 93),
+  //  cv::Point(245, 83),
+  //  cv::Point(333, 56),
+  //  cv::Point(399, 82),
+  //  cv::Point(457, 117),
+  //  cv::Point(465, 158),
+  //  cv::Point(433, 225),
+  //  cv::Point(369, 235),
+  //  cv::Point(242, 264),
+  //  cv::Point(171, 227),
+  //  cv::Point(118, 206)
+  //};
+
+  //PointI center;
+  //poleOfInaccessibility(polygon, &center);
+  //double radius = distPointToPolygon(center, polygon);
 
   std::vector<cv::Point> points{
-    cv::Point(100, 144),
-    cv::Point(157, 93),
-    cv::Point(245, 83),
-    cv::Point(333, 56),
-    cv::Point(399, 82),
-    cv::Point(457, 117),
-    cv::Point(465, 158),
-    cv::Point(433, 225),
-    cv::Point(369, 235),
-    cv::Point(242, 264),
-    cv::Point(171, 227),
-    cv::Point(118, 206)
+    cv::Point(12.7173,	723.4344),
+    cv::Point(15.0836,	725.3743),
+    cv::Point(17.5414,	727.246 ),
+    cv::Point(18.5374,	727.8854),
+    cv::Point(20.3303,	727.7669),
+    cv::Point(22.9782,	727.474 ),
+    cv::Point(24.4978,	727.2503),
+    cv::Point(28.6463,	726.3747),
+    cv::Point(29.3584,	726.2018),
+    cv::Point(30.0367,	725.4599),
+    cv::Point(29.1288,	723.4344),
+    cv::Point(26.8875,	720.5285),
+    cv::Point(6.52680,	698.2653),
+    cv::Point(4.3078,	696.4163),
+    cv::Point(5.93840,	710.4889),
+    cv::Point(6.89190,	714.6938),
+    cv::Point(7.78660,	716.7431),
+    cv::Point(9.4646,	719.4371),
+    cv::Point(12.0538,	722.7664)
   };
 
-  PointI center;
-
+  geometry::Polygon<PointD> polygon{
+    PointD(-2.872827, 4.234344),
+    PointD(-2.849164, 4.253743),
+    PointD(-2.824586, 4.272460),
+    PointD(-2.814626, 4.278854),
+    PointD(-2.796697, 4.277669),
+    PointD(-2.770218, 4.274740),
+    PointD(-2.755022, 4.272503),
+    PointD(-2.713537, 4.263747),
+    PointD(-2.706416, 4.262018),
+    PointD(-2.699633, 4.254599),
+    PointD(-2.708712, 4.234344),
+    PointD(-2.731125, 4.205285),
+    PointD(-2.934732, 3.982653),
+    PointD(-2.956922, 3.964163),
+    PointD(-2.940616, 4.104889),
+    PointD(-2.931081, 4.146938),
+    PointD(-2.922134, 4.167431),
+    PointD(-2.905354, 4.194371),
+    PointD(-2.879462, 4.227664)
+  };
+  
+  PointD center;
   poleOfInaccessibility(polygon, &center);
   double radius = distPointToPolygon(center, polygon);
+
+  //poleOfInaccessibility2D(polygon.begin(), polygon.end(), &center);
+
+  //double radius = I3D_DOUBLE_MAX;
+  //double dist;
+  //for (size_t i = 0; i < polygon.size(); i++) {
+  //  if (i == polygon.size() - 1) {
+  //    dist = distPointToSegment(center, Segment<PointD>(polygon[i], polygon[0]));
+  //  } else {
+  //    dist = distPointToSegment(center, Segment<PointD>(polygon[i], polygon[i+1]));
+  //  }
+  //  if (dist < radius) radius = dist;
+  //}
 
   //PointI center2;
   //_poleOfInaccessibility(points, &center2);
   //double radius2 = distPointToPolygon(center2, polygon);
 
-  cv::Mat canvas = cv::Mat::zeros(400, 600, CV_8U);
+  cv::Mat canvas = cv::Mat::zeros(1000, 1000, CV_8U);
 
   cv::Mat aux(points);
   const cv::Point *pts = (const cv::Point*) aux.data;
@@ -316,7 +376,7 @@ int main(int argc, char** argv)
   projectPointToPlane(_center3D, plane_z, &center3D, Point3D(plane[0], plane[1], plane[2]));
 
   poleOfInaccessibility3D(vertex.begin(), vertex.end(), &center3D);
-  double _radius = distPointToPolygon(center, polygon);
+  //double _radius = distPointToPolygon(center, polygon);
 
   exit(EXIT_SUCCESS);
 }
