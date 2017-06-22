@@ -3274,24 +3274,24 @@ Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1, Helmert3D<Point_t> &trf2)
 //  }
 //}
 
-template<typename Point_t> inline
-void transform(const geometry::EntityPoints<Point_t> &in, geometry::EntityPoints<Point_t> *out, 
-                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
-{
-  if (in.getType() == geometry::Entity::type::LINESTRING_2D ||
-      in.getType() == geometry::Entity::type::MULTIPOINT_2D ||
-      in.getType() == geometry::Entity::type::POLYGON_2D) {
-    //const EntityPoints<Point_t> &_in = dynamic_cast<const EntityPoints<Point_t> &>(in);
-    out->resize(in.getSize());
-    typename std::vector<Point_t>::iterator it_out = out->begin();
-    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-      trf->transform(*it, &(*it_out), trfOrder);
-    }
-  } else {
-    //tipo no soportado
-    return;
-  }
-}
+//template<typename Point_t> inline
+//void transform(const geometry::EntityPoints<Point_t> &in, geometry::EntityPoints<Point_t> *out, 
+//                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
+//{
+//  if (in.getType() == geometry::Entity::type::LINESTRING_2D ||
+//      in.getType() == geometry::Entity::type::MULTIPOINT_2D ||
+//      in.getType() == geometry::Entity::type::POLYGON_2D) {
+//    //const EntityPoints<Point_t> &_in = dynamic_cast<const EntityPoints<Point_t> &>(in);
+//    out->resize(in.getSize());
+//    typename std::vector<Point_t>::iterator it_out = out->begin();
+//    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
+//      trf->transform(*it, &(*it_out), trfOrder);
+//    }
+//  } else {
+//    //tipo no soportado
+//    return;
+//  }
+//}
 
 template<typename Point_t> inline
 void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out, 

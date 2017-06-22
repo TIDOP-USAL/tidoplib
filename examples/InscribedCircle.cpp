@@ -360,7 +360,7 @@ int main(int argc, char** argv)
   for (int i = 0; i < poligon_plane.size(); i++){
     Point3D pt;
     projectPointToPlane(poligon_plane[i], plane_z, &pt);
-    msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+    //msgInfo("%f %f %f", pt.x, pt.y, pt.z);
     poligon_z.add(PointD(pt.x, pt.y));
   }
 
@@ -376,7 +376,7 @@ int main(int argc, char** argv)
   projectPointToPlane(_center3D, plane_z, &center3D, Point3D(plane[0], plane[1], plane[2]));
 
   poleOfInaccessibility3D(vertex.begin(), vertex.end(), &center3D);
-  //double _radius = distPointToPolygon(center, polygon);
+  double _radius = distPointToPolygon(center3D, polygon3d);
 
   exit(EXIT_SUCCESS);
 }

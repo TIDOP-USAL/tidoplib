@@ -207,6 +207,8 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  */
 I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
 
+//TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
+
 /*!
  * \brief The Path class
  */
@@ -279,7 +281,7 @@ public:
    * \brief getDrive
    * \return
    */
-  std::string getDrive();
+  const char *getDrive();
 
   /*!
    * \brief Sube una posición en el path
@@ -486,7 +488,7 @@ public:
    * \brief Constructor de lista
    * \param[in] Listado de procesos
    */
-  BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList);
+  BatchProcess(std::initializer_list<std::shared_ptr<Process>> &procList);
 
   /*!
    * \brief Destructora
@@ -624,7 +626,8 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
  * \param[in] number Numero
  * \return Cadena de texto
  */
-template <typename T> inline 
+template <typename T> inline
+I3D_DEPRECATED("std::to_string()")
 std::string numberToString(T number)
 {
   std::ostringstream ss;
