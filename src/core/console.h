@@ -12,6 +12,7 @@
 #include "core/defs.h"
 #include "core/utils.h"
 #include "core/messages.h"
+#include "core/exception.h"
 
 namespace I3D
 {

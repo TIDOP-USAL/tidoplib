@@ -439,6 +439,27 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
   return max_dist;
 }
 
+/*!
+ * \brief Calcula la distancia de un punto a un poligono 3d mediante iteradores
+ *
+ * \param[in] pt Punto
+ * \param[in] polygon Poligono
+ * \return Distancia de un punto a un poligono
+ */
+template<typename Point_t, typename Polygon_it_t> inline 
+double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t it_end)
+{
+  double max_dist = I3D_DOUBLE_MAX;
+  double dist;
+  Polygon_it_t it = it_begin;
+  Point_t prev = *(it_end-1);
+  while (it != it_end) {
+    dist = distPointToSegment3D(prev, *it, center3D);
+    if (dist < max_dist) max_dist = dist;
+    prev = *it++;
+  }
+  return max_dist;
+}
 
 /*!
  * \brief Obtiene la distancia de un punto a un plano
