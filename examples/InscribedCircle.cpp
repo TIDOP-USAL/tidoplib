@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 
   PointI center;
 
-  poleOfInaccessibility(polygon, &center);
+  //poleOfInaccessibility(polygon, &center);
   double radius = distPointToPolygon(center, polygon);
 
   //PointI center2;

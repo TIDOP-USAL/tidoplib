@@ -1010,12 +1010,12 @@ void Csv::close()
 Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
-    msgError("No se ha abierto el archivo");
+    msgError("No se ha abierto el archivo %s", mName.c_str());
     return Status::FAILURE; 
   }
 
   if (mMode != Mode::Create) { 
-    msgError("Utilice el modo 'Create' para abrir el archivo");
+    msgError("Utilice el modo 'Create' al abrir el archivo");
     return Status::FAILURE; 
   }
   
@@ -1035,6 +1035,42 @@ Csv::Status Csv::create(const std::string &header)
     return Status::FAILURE; 
 }
 
+//Csv::Status Csv::create(const DataTable &dataTable)
+//{
+//  if (!fs.is_open()) {
+//    msgError("No se ha abierto el archivo");
+//    return Status::FAILURE; 
+//  }
+//
+//  if (mMode != Mode::Create) { 
+//    msgError("Utilice el modo 'Create' para abrir el archivo");
+//    return Status::FAILURE; 
+//  }
+//
+//  size_t size = dataTable.getFieldCount();
+//
+//  // Cabecera
+//
+//  const TableHeader *header = dataTable.getTableHeader();
+//  for (size_t i = 0; i < size; i++) {
+//    fs << header->getTableHeaderField(i)->getName();
+//    if (i != size -1) fs << ";";
+//  }
+//  fs << std::endl;
+//
+//  // datos
+//  for (auto &reg : dataTable) {
+//    size_t size = getFieldCount();
+//    for (size_t i = 0; i < size; i++) {
+//      fs << reg->getValue(i);
+//      if (i != size -1) fs << ";";
+//    }
+//    fs << std::endl;
+//  }
+//
+//  return Status::SUCCESS;
+//}
+
 Csv::Status Csv::createCopy(const char *fileOut)
 {
   Csv csv;
@@ -1052,7 +1088,7 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
 
   char ext[I3D_MAX_EXT];
   if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
-  if (strcmpi(ext, ".csv") == 0) return Status::OPEN_FAIL;
+  if (strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;
   switch (mMode) {

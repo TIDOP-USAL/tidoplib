@@ -109,7 +109,7 @@ public:
    */
   void clear();
 
-  size_t getFieldCount();
+  size_t getFieldCount() const;
 
   const TableHeaderField *getTableHeaderField(int idx) const;
 
@@ -274,9 +274,9 @@ public:
    */
   std::shared_ptr<TableRegister> getRegister(int index);
 
-  TableHeader *getTableHeader();
+  const TableHeader *getTableHeader() const;
   
-  size_t getFieldCount();
+  size_t getFieldCount() const;
   
   /*!
    * \brief Establece el nombre de la tabla

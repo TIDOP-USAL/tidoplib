@@ -1200,7 +1200,11 @@ public:
    * \brief Crea el fichero
    */
   Status create(const std::string &header);
-  //Status create(std::shared_ptr<TableHeader> tableHeader);
+  
+  /*!
+   * \brief Crea el fichero
+   */  
+  //Status create(const DataTable &dataTable);
 
   /*!
    * \brief Guarda una copia con otro nonbre

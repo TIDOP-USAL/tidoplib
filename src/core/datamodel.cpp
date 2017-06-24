@@ -58,7 +58,7 @@ void TableHeader::clear()
   mTableFields.clear(); 
 }
 
-size_t TableHeader::getFieldCount()
+size_t TableHeader::getFieldCount() const
 {
   return mTableFields.size();
 }
@@ -171,12 +171,12 @@ std::shared_ptr<TableRegister> DataTable::getRegister(int index)
   return *it;
 }
 
-TableHeader *DataTable::getTableHeader()
+const TableHeader *DataTable::getTableHeader() const
 {
   return mTableHeader.get();
 }
 
-size_t DataTable::getFieldCount()
+size_t DataTable::getFieldCount() const
 {
   return mTableHeader->getFieldCount();
 }
