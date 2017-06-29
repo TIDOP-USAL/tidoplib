@@ -365,7 +365,7 @@ public:
   ldLSD(const cv::Scalar &angletol = cv::Scalar(0, CV_PI / 2))
     : LineDetector(LD_TYPE::LSD, angletol)
   {
-    lineSegmentDetector = createLineSegmentDetector(cv::LSD_REFINE_ADV);
+    lineSegmentDetector = createLineSegmentDetector(cv::LSD_REFINE_STD/*cv::LSD_REFINE_ADV*/);
   };
 
   /*!

@@ -62,13 +62,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;D:\Desarrollo\Libs\PCL\include\pcl-1.8;D:\Desarrollo\Libs\boost_1_61_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Debug;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;libboost_system-vc120-mt-gd-1_61.lib;libboost_filesystem-vc120-mt-gd-1_61.lib;libboost_thread-vc120-mt-gd-1_61.lib;libboost_date_time-vc120-mt-gd-1_61.lib;libboost_iostreams-vc120-mt-gd-1_61.lib;libboost_chrono-vc120-mt-gd-1_61.lib;libboost_atomic-vc120-mt-gd-1_61.lib;libboost_regex-vc120-mt-gd-1_61.lib;pcl_common_debug.lib;pcl_features_debug.lib;pcl_filters_debug.lib;pcl_io_debug.lib;pcl_io_ply_debug.lib;pcl_kdtree_debug.lib;pcl_keypoints_debug.lib;pcl_ml_debug.lib;pcl_octree_debug.lib;pcl_outofcore_debug.lib;pcl_people_debug.lib;pcl_recognition_debug.lib;pcl_registration_debug.lib;pcl_sample_consensus_debug.lib;pcl_search_debug.lib;pcl_segmentation_debug.lib;pcl_stereo_debug.lib;pcl_surface_debug.lib;pcl_tracking_debug.lib;pcl_visualization_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Debug;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;D:\Desarrollo\Libs\boost_1_61_0\lib64-msvc-12.0;D:\Desarrollo\Libs\PCL\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;D:\Desarrollo\Libs\PCL\include\pcl-1.8;D:\Desarrollo\Libs\boost_1_61_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

@@ -64,18 +64,16 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
 
 
     matOut->create( matIn.size(), CV_8UC3);
-    cv::Mat wp = *matOut;
+    //cv::Mat wp = *matOut;
 
-    auto trfRgbToWhitePatch = [&](int r) {
+    parallel_for(0, matIn.rows, [&](int r) {
       const uchar *rgb_ptr = matIn.ptr<uchar>(r);
       for (int c = 0; c < matIn.cols; c++) {
-        wp.at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
-        wp.at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
-        wp.at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
+        matOut->at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
+        matOut->at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
+        matOut->at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
       }
-    };
-
-    parallel_for(0, matIn.rows, trfRgbToWhitePatch);
+    });
 
   } catch (cv::Exception &e){
     msgError(e.what());

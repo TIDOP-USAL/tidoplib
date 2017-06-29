@@ -46,7 +46,7 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
   for (size_t i = 0; i < auxlines.size(); i++)
   {
     float rho = auxlines[i][0], theta = auxlines[i][1];
-    cv::Point pt1, pt2;
+    //cv::Point pt1, pt2;
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
     SegmentI l;
