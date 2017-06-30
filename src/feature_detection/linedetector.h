@@ -44,10 +44,25 @@ class I3D_EXPORT LineDetector
 {
 public:
 
+  //TODO: Cambiar nombre a Status
   enum class Exit
   {
     SUCCESS,
     FAILURE
+  };
+
+  //TODO: reemplazar LD_TYPE por Type
+
+  /*!
+   * \brief Tipos de detectores de linea
+   */
+  enum class Type 
+  {
+    HOUGH,       /*!< Hough transform. */
+    HOUGHP,      /*!< Probabilistic Hough transform. */
+    HOUGH_FAST,  /*!< Fast hough transform */
+    LSD,         /*!< Line Segment Detector. */
+    LSWMS        /*!< Line Segment detection using Weighted Mean-Shift . */
   };
 
 protected:
