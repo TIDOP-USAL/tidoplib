@@ -250,7 +250,7 @@ void Console::setConsoleUnicode()
 #ifdef WIN32
   //SetConsoleOutputCP(1252);     
   //SetConsoleCP(1252);
-  SetConsoleOutputCP(65001);
+  SetConsoleOutputCP(CP_UTF8/*65001*/);
 #endif
 }
 
@@ -590,6 +590,7 @@ void CmdParser::printHelp()
     printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"), 
              arg->getName(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
   }
+  printf_s("\n\n");
   //printf_s("\n\nPulse intro para continuar");
   //getchar();
 }

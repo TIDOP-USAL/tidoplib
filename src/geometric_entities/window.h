@@ -348,7 +348,6 @@ Window<Point_t>::Window(std::vector<Point_t2> v)
 {
   if (v.size() >= 2) {
     for (size_t i = 0; i < v.size(); i++) {
-      //TODO: Esto deberia controlarse a nivel de punto
       if (typeid(typename Point_t::value_type) == typeid(int)) {
         if (pt1.x > v[i].x) pt1.x = I3D_ROUND_TO_INT(v[i].x);
         if (pt1.y > v[i].y) pt1.y = I3D_ROUND_TO_INT(v[i].y);
@@ -399,7 +398,7 @@ Window<Point_t>::operator Window<Point_t2>() const
     w.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
     w.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
     w.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
-    w.pt2.y = static_cast<typename Point_t2::value_type>(pt1.y);
+    w.pt2.y = static_cast<typename Point_t2::value_type>(pt2.y);
   }
   return w;
 }

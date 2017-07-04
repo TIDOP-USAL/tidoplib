@@ -252,13 +252,17 @@ double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)
  * \param[in] ln
  * \return
  */
-//I3D_EXPORT double distPointToLine(const PointI &pt, const Line &ln);
-//double distPointToLine(const PointI &pt, const Line &ln)
-//{
-//  PointI v1 = pt - ln.pt1;
-//  PointI v2 = ln.vector();
-//  return abs(v1.ddot(v2) / (v2.x * v2.x + v2.y * v2.y));
-//}
+template<typename Point_t> inline
+double distPointToLine(const Point_t &pt, const Segment<Point_t> &ln)
+{
+  Point_t v1 = vector2D(ln.pt1, pt);
+  Point_t v2 = ln.vector();
+  double b = dotProduct(v1, v2) / dotProduct(v2, v2);
+  Point_t pt2;
+  pt2.x = ln.pt1.x + b * v2.x;
+  pt2.y = ln.pt1.y + b * v2.y;
+  return distance(pt, pt2);
+}
 
 /*!
  * \brief Calcula la distancia mínima entre dos segmentos de linea.

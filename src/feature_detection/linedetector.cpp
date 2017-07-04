@@ -46,14 +46,14 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
   for (size_t i = 0; i < auxlines.size(); i++)
   {
     float rho = auxlines[i][0], theta = auxlines[i][1];
-    cv::Point pt1, pt2;
+    //cv::Point pt1, pt2;
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
     SegmentI l;
-    l.pt1.x = I3D_ROUND_TO_INT(x0 + 1.1 * image.cols * (-b));
-    l.pt1.y = I3D_ROUND_TO_INT(y0 + 1.1 * image.rows * (a));
-    l.pt2.x = I3D_ROUND_TO_INT(x0 - 1.1 * image.cols * (-b));
-    l.pt2.y = I3D_ROUND_TO_INT(y0 - 1.1 * image.rows * (a));
+    l.pt1.x = I3D_ROUND_TO_INT(x0 + 1.1 * image.cols * -b);
+    l.pt1.y = I3D_ROUND_TO_INT(y0 + 1.1 * image.rows * a);
+    l.pt2.x = I3D_ROUND_TO_INT(x0 - 1.1 * image.cols * -b);
+    l.pt2.y = I3D_ROUND_TO_INT(y0 - 1.1 * image.rows * a);
     mLines.push_back(l);
   }
   return LineDetector::Exit::SUCCESS;
@@ -77,7 +77,7 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
 {
   double angle = 0.0;
   mLines.clear();
-  vector<cv::Vec4i> linesaux;
+  std::vector<cv::Vec4i> linesaux;
   try {
     HoughLinesP(image, linesaux, 1., I3D_DEG_TO_RAD, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {

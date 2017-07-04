@@ -34,6 +34,31 @@ namespace I3D
 /* ---------------------------------------------------------------------------------- */
 
 /*!
+ * \brief Vector entre dos puntos
+ * \param[in] pt1 punto 1
+ * \param[in] pt2 punto 2
+ * \return Vector
+ */
+template<typename Point_t> inline
+Point_t vector2D(const Point_t &pt1, const Point_t &pt2)
+{
+  Point_t v;
+  v.x = pt2.x - pt1.x;
+  v.y = pt2.y - pt1.y;
+  return v;
+}
+
+template<typename Point_t> inline
+Point_t vector3D(const Point_t &pt1, const Point_t &pt2)
+{
+  Point_t v;
+  v.x = pt2.x - pt1.x;
+  v.y = pt2.y - pt1.y;
+  v.z = pt2.z - pt1.z;
+  return v;
+}
+
+/*!
  * \brief Producto vectorial de dos vectores en el plano
  * \param[in] pt1 Vector o punto 1
  * \param[in] pt2 Vector o punto 2
@@ -52,7 +77,7 @@ double crossProduct(const Point_t &pt1, const Point_t &pt2)
  * \return Producto vectorial de los dos vectores
  */
 template<typename Point3_t> inline 
-double crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
   return Point3_t(pt1.y*pt2.z - pt1.z*pt2.y, pt1.z*pt2.x - pt1.x*pt2.z, pt1.x*pt2.y - pt1.y*pt2.x);
 }
@@ -137,7 +162,7 @@ template<typename Point_t> inline
 double azimut(const Point_t &pt1, const Point_t &pt2)
 {
   double azimut = 0.;
-  Point_t v = pt2 - pt1;
+  Point_t v = vector2D(pt1, pt2);
   if (v.x == 0 && v.y == 0) return azimut;
   azimut = atan2(v.x, v.y);
   if (azimut < 0.) azimut += I3D_2PI;

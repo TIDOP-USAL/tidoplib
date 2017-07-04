@@ -37,7 +37,7 @@ namespace geometry
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief Clase punto
+ * \brief Clase punto 2D
  *
  * Se han definido los siguientes alias para facilitar el acceso:
  * \code
@@ -167,104 +167,125 @@ Point<T>::operator cv::Point_<T2>() const
 I3D_ENABLE_WARNING(4244)
 
 template<typename T1, typename T2> static inline
-Point<T1>& operator += (Point<T1>& a, const Point<T2>& b)
+Point<T1>& operator += (Point<T1> &pt1, const Point<T2> &pt2)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x += I3D_ROUND_TO_INT(b.x);
-    a.y += I3D_ROUND_TO_INT(b.y);
+    pt1.x += I3D_ROUND_TO_INT(pt2.x);
+    pt1.y += I3D_ROUND_TO_INT(pt2.y);
   } else {
-    a.x += static_cast<T1>(b.x);
-    a.y += static_cast<T1>(b.y);
+    pt1.x += static_cast<T1>(pt2.x);
+    pt1.y += static_cast<T1>(pt2.y);
   }
-  return a;
+  return pt1;
 }
 
 template<typename T1, typename T2> static inline
-Point<T1>& operator -= (Point<T1>& a, const Point<T2>& b)
+Point<T1>& operator -= (Point<T1> &pt1, const Point<T2> &pt2)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x -= I3D_ROUND_TO_INT(b.x);
-    a.y -= I3D_ROUND_TO_INT(b.y);
+    pt1.x -= I3D_ROUND_TO_INT(pt2.x);
+    pt1.y -= I3D_ROUND_TO_INT(pt2.y);
   } else {
-    a.x -= static_cast<T1>(b.x);
-    a.y -= static_cast<T1>(b.y);
+    pt1.x -= static_cast<T1>(pt2.x);
+    pt1.y -= static_cast<T1>(pt2.y);
   }
-  return a;
+  return pt1;
 }
 
 template<typename T1, typename T2> static inline
-Point<T1>& operator *= (Point<T1>& a, T2 b)
+Point<T1>& operator *= (Point<T1>& pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x = I3D_ROUND_TO_INT(a.x * b);
-    a.y = I3D_ROUND_TO_INT(a.y * b);
+    pt.x = I3D_ROUND_TO_INT(pt.x * b);
+    pt.y = I3D_ROUND_TO_INT(pt.y * b);
   } else {
-    a.x = static_cast<T1>(a.x * b);
-    a.y = static_cast<T1>(a.y * b);
+    pt.x = static_cast<T1>(pt.x * b);
+    pt.y = static_cast<T1>(pt.y * b);
   }
-  return a;
+  return pt;
 }
 
 template<typename T1, typename T2> static inline
-Point<T1>& operator /= (Point<T1>& a, T2 b)
+Point<T1> &operator /= (Point<T1> &pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x = I3D_ROUND_TO_INT(a.x / b);
-    a.y = I3D_ROUND_TO_INT(a.y / b);
+    pt.x = I3D_ROUND_TO_INT(pt.x / b);
+    pt.y = I3D_ROUND_TO_INT(pt.y / b);
   } else {
-    a.x = static_cast<T1>(a.x / b);
-    a.y = static_cast<T1>(a.y / b);
+    pt.x = static_cast<T1>(pt.x / b);
+    pt.y = static_cast<T1>(pt.y / b);
   }
-  return a;
+  return pt;
 }
 
 template<typename T> static inline
-bool operator == (const Point<T>& a, const Point<T>& b)
+bool operator == (const Point<T> &pt1, const Point<T> &pt2)
 {
-  return a.x == b.x && a.y == b.y;
+  return pt1.x == pt2.x && pt1.y == pt2.y;
 }
 
 template<typename T> static inline
-bool operator != (const Point<T>& a, const Point<T>& b)
+bool operator != (const Point<T> &pt1, const Point<T> &pt2)
 {
-  return a.x != b.x || a.y != b.y;
+  return pt1.x != pt2.x || pt1.y != pt2.y;
 }
 
 template<typename T> static inline
-Point<T> operator + (const Point<T>& a, const Point<T>& b)
+Point<T> operator + (const Point<T> &pt1, const Point<T> &pt2)
 {
-  return Point<T>(a.x + b.x, a.y + b.y);
+  return Point<T>(pt1.x + pt2.x, pt1.y + pt2.y);
 }
 
 template<typename T> static inline
-Point<T> operator - (const Point<T>& a, const Point<T>& b)
+Point<T> operator - (const Point<T> &pt1, const Point<T> &pt2)
 {
-  return Point<T>(a.x - b.x, a.y - b.y);
+  return Point<T>(pt1.x - pt2.x, pt1.y - pt2.y);
 }
 
 template<typename T> static inline
-Point<T> operator - (const Point<T>& a)
+Point<T> operator - (const Point<T> &pt1)
 {
-  return Point<T>(-a.x, -a.y);
+  return Point<T>(-pt1.x, -pt1.y);
 }
 
 template<typename T1, typename T2> static inline
-Point<T1> operator * (const Point<T1>& a, T2 b)
+Point<T1> operator * (const Point<T1> &pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    return Point<T1>(I3D_ROUND_TO_INT(a.x*b), I3D_ROUND_TO_INT(a.y*b));
+    return Point<T1>(I3D_ROUND_TO_INT(pt.x*b), I3D_ROUND_TO_INT(pt.y*b));
   } else {
-    return Point<T1>(static_cast<T1>(a.x*b), static_cast<T1>(a.y*b));
+    return Point<T1>(static_cast<T1>(pt.x*b), static_cast<T1>(pt.y*b));
   }
 }
 
 template<typename T1, typename T2> static inline
-Point<T2> operator * (T1 a, const Point<T2>& b)
+Point<T2> operator * (T1 a, const Point<T2> &b)
 {
   if (typeid(T2) == typeid(int)) {
     return Point<T2>(I3D_ROUND_TO_INT(b.x*a), I3D_ROUND_TO_INT(b.y*a));
   } else {
     return Point<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a));
+  }
+}
+
+
+template<typename T1, typename T2> static inline
+Point<T1> operator / (const Point<T1> &pt, T2 b)
+{
+  if (typeid(T1) == typeid(int)) {
+    return Point<T1>(I3D_ROUND_TO_INT(pt.x/b), I3D_ROUND_TO_INT(pt.y/b));
+  } else {
+    return Point<T1>(static_cast<T1>(pt.x/b), static_cast<T1>(pt.y/b));
+  }
+}
+
+template<typename T1, typename T2> static inline
+Point<T2> operator / (T1 a, const Point<T2> &b)
+{
+  if (typeid(T2) == typeid(int)) {
+    return Point<T2>(I3D_ROUND_TO_INT(b.x/a), I3D_ROUND_TO_INT(b.y/a));
+  } else {
+    return Point<T2>(static_cast<T2>(b.x/a), static_cast<T2>(b.y/a));
   }
 }
 
@@ -389,228 +410,151 @@ Point3<T>::operator Point3<T2>() const
 I3D_ENABLE_WARNING(4244)
 
 template<typename T1, typename T2> static inline
-Point3<T1>& operator += (Point3<T1>& a, const Point3<T2>& b)
+Point3<T1>& operator += (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x += I3D_ROUND_TO_INT(b.x);
-    a.y += I3D_ROUND_TO_INT(b.y);
-    a.z += I3D_ROUND_TO_INT(b.z);
+    pt1.x += I3D_ROUND_TO_INT(pt2.x);
+    pt1.y += I3D_ROUND_TO_INT(pt2.y);
+    pt1.z += I3D_ROUND_TO_INT(pt2.z);
   } else {
-    a.x += static_cast<T1>(b.x);
-    a.y += static_cast<T1>(b.y);
-    a.z += static_cast<T1>(b.z);
+    pt1.x += static_cast<T1>(pt2.x);
+    pt1.y += static_cast<T1>(pt2.y);
+    pt1.z += static_cast<T1>(pt2.z);
   }
-  return a;
+  return pt1;
 }
 
 template<typename T1, typename T2> static inline
-Point3<T1>& operator -= (Point3<T1>& a, const Point3<T2>& b)
+Point3<T1>& operator -= (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x -= I3D_ROUND_TO_INT(b.x);
-    a.y -= I3D_ROUND_TO_INT(b.y);
-    a.z -= I3D_ROUND_TO_INT(b.z);
+    pt1.x -= I3D_ROUND_TO_INT(pt2.x);
+    pt1.y -= I3D_ROUND_TO_INT(pt2.y);
+    pt1.z -= I3D_ROUND_TO_INT(pt2.z);
   } else {
-    a.x -= static_cast<T1>(b.x);
-    a.y -= static_cast<T1>(b.y);
-    a.z -= static_cast<T1>(b.z);
+    pt1.x -= static_cast<T1>(pt2.x);
+    pt1.y -= static_cast<T1>(pt2.y);
+    pt1.z -= static_cast<T1>(pt2.z);
   }
-  return a;
+  return pt1;
 }
 
 template<typename T1, typename T2> static inline
-Point3<T1>& operator *= (Point3<T1>& a, T2 b)
+Point3<T1>& operator *= (Point3<T1>& pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x = I3D_ROUND_TO_INT(a.x * b);
-    a.y = I3D_ROUND_TO_INT(a.y * b);
-    a.z = I3D_ROUND_TO_INT(a.z * b);
+    pt.x = I3D_ROUND_TO_INT(pt.x * b);
+    pt.y = I3D_ROUND_TO_INT(pt.y * b);
+    pt.z = I3D_ROUND_TO_INT(pt.z * b);
   } else {
-    a.x = static_cast<T1>(a.x * b);
-    a.y = static_cast<T1>(a.y * b);
-    a.z = static_cast<T1>(a.z * b);
+    pt.x = static_cast<T1>(pt.x * b);
+    pt.y = static_cast<T1>(pt.y * b);
+    pt.z = static_cast<T1>(pt.z * b);
   }
-  return a;
+  return pt;
 }
 
 template<typename T1, typename T2> static inline
-Point3<T1>& operator /= (Point3<T1>& a, T2 b)
+Point3<T1>& operator /= (Point3<T1>& pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    a.x = I3D_ROUND_TO_INT(a.x / b);
-    a.y = I3D_ROUND_TO_INT(a.y / b);
-    a.z = I3D_ROUND_TO_INT(a.z / b);
+    pt.x = I3D_ROUND_TO_INT(pt.x / b);
+    pt.y = I3D_ROUND_TO_INT(pt.y / b);
+    pt.z = I3D_ROUND_TO_INT(pt.z / b);
   } else {
-    a.x = static_cast<T1>(a.x / b);
-    a.y = static_cast<T1>(a.y / b);
-    a.z = static_cast<T1>(a.z / b);
+    pt.x = static_cast<T1>(pt.x / b);
+    pt.y = static_cast<T1>(pt.y / b);
+    pt.z = static_cast<T1>(pt.z / b);
   }
-  return a;
+  return pt;
 }
 
 template<typename T> static inline
-bool operator == (const Point3<T>& a, const Point3<T>& b)
+bool operator == (const Point3<T>& pt1, const Point3<T>& pt2)
 {
-  return a.x == b.x && a.y == b.y && a.z == b.z;
+  return pt1.x == pt2.x && pt1.y == pt2.y && pt1.z == pt2.z;
 }
 
 template<typename T> static inline
-bool operator != (const Point3<T>& a, const Point3<T>& b)
+bool operator != (const Point3<T>& pt1, const Point3<T>& pt2)
 {
-  return a.x != b.x || a.y != b.y || a.z != b.z;
+  return pt1.x != pt2.x || pt1.y != pt2.y || pt1.z != pt2.z;
 }
 
 template<typename T> static inline
-Point3<T> operator + (const Point3<T>& a, const Point3<T>& b)
+Point3<T> operator + (const Point3<T>& pt1, const Point3<T>& pt2)
 {
-  return Point3<T>(a.x + b.x, a.y + b.y, a.z + b.z);
+  return Point3<T>(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
 }
 
 template<typename T> static inline
-Point3<T> operator - (const Point3<T>& a, const Point3<T>& b)
+Point3<T> operator - (const Point3<T>& pt1, const Point3<T>& pt2)
 {
-  return Point3<T>(a.x - b.x, a.y - b.y, a.z - b.z);
+  return Point3<T>(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
 }
 
 template<typename T> static inline
-Point3<T> operator - (const Point3<T>& a)
+Point3<T> operator - (const Point3<T>& pt1)
 {
-  return Point3<T>(-a.x, -a.y, -a.z);
+  return Point3<T>(-pt1.x, -pt1.y, -pt1.z);
 }
 
 template<typename T1, typename T2> static inline
-Point3<T1> operator * (const Point3<T1>& a, T2 b)
+Point3<T1> operator * (const Point3<T1>& pt, T2 b)
 {
   if (typeid(T1) == typeid(int)) {
-    return Point3<T1>(I3D_ROUND_TO_INT(a.x*b), 
-                      I3D_ROUND_TO_INT(a.y*b), 
-                      I3D_ROUND_TO_INT(a.z*b));
+    return Point3<T1>(I3D_ROUND_TO_INT(pt.x*b), 
+                      I3D_ROUND_TO_INT(pt.y*b), 
+                      I3D_ROUND_TO_INT(pt.z*b));
   } else {
-    return Point3<T1>(static_cast<T1>(a.x*b), 
-                      static_cast<T1>(a.y*b), 
-                      static_cast<T1>(a.z*b));
+    return Point3<T1>(static_cast<T1>(pt.x*b), 
+                      static_cast<T1>(pt.y*b), 
+                      static_cast<T1>(pt.z*b));
   }
 }
 
 template<typename T1, typename T2> static inline
-Point3<T2> operator * (T1 a, const Point3<T2>& b)
+Point3<T2> operator * (T1 a, const Point3<T2>& pt)
 {
   if (typeid(T2) == typeid(int)) {
-    return Point3<T2>(I3D_ROUND_TO_INT(b.x*a), 
-                      I3D_ROUND_TO_INT(b.y*a), 
-                      I3D_ROUND_TO_INT(b.z*a));
+    return Point3<T2>(I3D_ROUND_TO_INT(pt.x*a), 
+                      I3D_ROUND_TO_INT(pt.y*a), 
+                      I3D_ROUND_TO_INT(pt.z*a));
   } else {
-    return Point3<T2>(static_cast<T2>(b.x*a), 
-                      static_cast<T2>(b.y*a), 
-                      static_cast<T2>(b.z*a));
+    return Point3<T2>(static_cast<T2>(pt.x*a), 
+                      static_cast<T2>(pt.y*a), 
+                      static_cast<T2>(pt.z*a));
   }
 }
 
+template<typename T1, typename T2> static inline
+Point3<T1> operator / (const Point3<T1>& pt, T2 b)
+{
+  if (typeid(T1) == typeid(int)) {
+    return Point3<T1>(I3D_ROUND_TO_INT(pt.x/b), 
+                      I3D_ROUND_TO_INT(pt.y/b), 
+                      I3D_ROUND_TO_INT(pt.z/b));
+  } else {
+    return Point3<T1>(static_cast<T1>(pt.x/b), 
+                      static_cast<T1>(pt.y/b), 
+                      static_cast<T1>(pt.z/b));
+  }
+}
 
-///* ---------------------------------------------------------------------------------- */
-//
-///*!
-// * \brief Clase multi-punto
-// *
-// * Esta template representa un conjunto de puntos relaccionados que se agrupan
-// * en una misma entidad multipunto.
-// *
-// * Se han definido los siguientes alias para facilitar el acceso:
-// * \code
-// * typedef MultiPoint<int> MultiPointI;
-// * typedef MultiPoint<double> MultiPointD;
-// * typedef MultiPoint<float> MultiPointF;
-// * \endcode
-// */
-//template<typename Point_t>
-//class MultiPoint : public EntityPoints<Point_t>
-//{
-//public:
-//
-//  /*!
-//   * \brief type
-//   */
-//  typedef Point_t value_type;
-//  
-//public:
-//
-//  /*!
-//   * \brief Constructora por defecto
-//   */
-//  MultiPoint();
-//
-//  /*!
-//   * \brief Constructor que reserva tamaño para n puntos
-//   */
-//  MultiPoint(int size);
-//
-//  /*!
-//   * \brief Constructor de copia
-//   * \param[in] multiPoint Objeto MultiPoint que se copia
-//   */
-//  MultiPoint(const MultiPoint &multiPoint);
-//
-//  /*!
-//   * \brief Constructor
-//   * \param[in] vPoint vector de puntos
-//   */
-//  MultiPoint(const std::vector<Point_t> &vPoint);
-//
-//  /*!
-//   * \brief Constructor lista de inicialización
-//   * \param[in] listPoints Inicializador de lista con los puntos
-//   */
-//  MultiPoint(std::initializer_list<Point_t> listPoints);
-//
-//  ~MultiPoint() {}
-//
-//  /*!
-//   * \brief Añade un punto a la colección
-//   * \param[in] point Punto que se añade
-//   */
-//  void add(const Point_t &point) override;
-//
-//};
-//
-//template<typename Point_t> inline
-//MultiPoint<Point_t>::MultiPoint() 
-//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D) 
-//{
-//}
-//
-//template<typename Point_t> inline
-//MultiPoint<Point_t>::MultiPoint(int size) 
-//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, size) 
-//{
-//}
-//
-//template<typename Point_t> inline
-//MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
-//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, multiPoint) 
-//{
-//}
-//
-//template<typename Point_t> inline
-//MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-//  : EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, vPoint) 
-//{
-//}
-//
-//template<typename Point_t> inline
-//MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
-//: EntityPoints<Point_t>(Entity::type::MULTIPOINT_2D, listPoints)
-//{
-//}
-//
-//template<typename Point_t> inline
-//void MultiPoint<Point_t>::add(const Point_t &point)
-//{
-//  this->mPoints.push_back(point);
-//}
-//
-//typedef MultiPoint<Point<int>> MultiPointI;
-//typedef MultiPoint<Point<double>> MultiPointD;
-//typedef MultiPoint<Point<float>> MultiPointF;
+template<typename T1, typename T2> static inline
+Point3<T2> operator / (T1 a, const Point3<T2>& pt)
+{
+  if (typeid(T2) == typeid(int)) {
+    return Point3<T2>(I3D_ROUND_TO_INT(pt.x/a), 
+                      I3D_ROUND_TO_INT(pt.y/a), 
+                      I3D_ROUND_TO_INT(pt.z/a));
+  } else {
+    return Point3<T2>(static_cast<T2>(pt.x/a), 
+                      static_cast<T2>(pt.y/a), 
+                      static_cast<T2>(pt.z/a));
+  }
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -630,13 +574,7 @@ Point3<T2> operator * (T1 a, const Point3<T2>& b)
 template<typename Point_t>
 class MultiPoint : public Entity, public Entities2D<Point_t>
 {
-//public:
-//
-//  /*!
-//   * \brief type
-//   */
-//  typedef Point_t value_type;
-  
+
 public:
 
   /*!
@@ -668,12 +606,6 @@ public:
   MultiPoint(std::initializer_list<Point_t> listPoints);
 
   ~MultiPoint() {}
-
-  ///*!
-  // * \brief Añade un punto a la colección
-  // * \param[in] point Punto que se añade
-  // */
-  //void add(const Point_t &point) override;
 
 };
 
@@ -712,12 +644,6 @@ MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints)
 {
 }
 
-//template<typename Point_t> inline
-//void MultiPoint<Point_t>::add(const Point_t &point)
-//{
-//  this->mPoints.push_back(point);
-//}
-
 typedef MultiPoint<Point<int>> MultiPointI;
 typedef MultiPoint<Point<double>> MultiPointD;
 typedef MultiPoint<Point<float>> MultiPointF;
@@ -740,12 +666,6 @@ typedef MultiPoint<Point<float>> MultiPointF;
 template<typename Point_t>
 class MultiPoint3D : public Entity, public Entities3D<Point_t>
 {
-//public:
-//
-//  /*!
-//   * \brief type
-//   */
-//  typedef Point_t value_type;
   
 public:
 
@@ -778,12 +698,6 @@ public:
   MultiPoint3D(std::initializer_list<Point_t> listPoints);
 
   ~MultiPoint3D() {}
-
-  ///*!
-  // * \brief Añade un punto a la colección
-  // * \param[in] point Punto que se añade
-  // */
-  //void add(const Point_t &point) override;
 
 };
 
@@ -822,11 +736,6 @@ MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints)
 {
 }
 
-//template<typename Point_t> inline
-//void MultiPoint3D<Point_t>::add(const Point_t &point)
-//{
-//  this->mPoints.push_back(point);
-//}
 
 typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
 typedef MultiPoint3D<Point3<double>> MultiPoint3dD;

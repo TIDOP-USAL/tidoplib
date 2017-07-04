@@ -89,7 +89,14 @@ void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size)
   vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](GroupLines &gl) -> bool { return (gl.getSize() < size); }), vlg->end());
 }
 
-
+//double distPointToLine(const PointI &pt, const Line &ln)
+//{
+//  PointI v1 = pt - ln.pt1;
+//  PointI v2 = ln.vector();
+//  double b = dotProduct(v1, v2) / dotProduct(v2, v2);
+//  PointI pt2 = ln.pt1 + b * v2;
+//  return distance(pt, pt2);
+//}
 
 }
 
