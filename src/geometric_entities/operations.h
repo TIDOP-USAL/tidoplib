@@ -73,7 +73,16 @@ double distance3D(const Point3_t &pt1, const Point3_t &pt2)
   return module3D(v);
 }
 
-
+// Comprueba si un punto esta a la derecha o izquierda de una linea
+template<typename Point_t> inline
+int isLeft( Point_t ln_pt1, Point_t ln_pt2, Point_t pt )
+{
+  double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
+             - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
+  if (aux > 0) return 1;
+  else if (aux < 0) return -1;
+  else return 0;
+}
 
 /*!
  * \brief Crea un buffer entorno a una linea
@@ -149,9 +158,11 @@ int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Poi
   if (typeid(typename Point_t::value_type) == typeid(int)) {
     ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
     ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+    ptp->z = ln.pt1.z + I3D_ROUND_TO_INT(v2.z * r);
   } else {
     ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
     ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
+    ptp->z = ln.pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
   }
   //*ptp = ln.pt1 + v2 * r;
 
@@ -177,9 +188,11 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
   if (typeid(typename Point_t::value_type) == typeid(int)) {
     ptp->x = ln.pt1.x + I3D_ROUND_TO_INT(v2.x * r);
     ptp->y = ln.pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+    ptp->z = ln.pt1.z + I3D_ROUND_TO_INT(v2.z * r);
   } else {
     ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
     ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
+    ptp->z = ln.pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
   }
   //*ptp = ln.pt1 + point_cast<Point_t>(v2 * r);
 
@@ -426,6 +439,27 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
   return max_dist;
 }
 
+/*!
+ * \brief Calcula la distancia de un punto a un poligono 3d mediante iteradores
+ *
+ * \param[in] pt Punto
+ * \param[in] polygon Poligono
+ * \return Distancia de un punto a un poligono
+ */
+template<typename Point_t, typename Polygon_it_t> inline 
+double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t it_end)
+{
+  double max_dist = I3D_DOUBLE_MAX;
+  double dist;
+  Polygon_it_t it = it_begin;
+  Point_t prev = *(it_end-1);
+  while (it != it_end) {
+    dist = distPointToSegment3D(prev, *it, center3D);
+    if (dist < max_dist) max_dist = dist;
+    prev = *it++;
+  }
+  return max_dist;
+}
 
 /*!
  * \brief Obtiene la distancia de un punto a un plano
@@ -941,8 +975,45 @@ int projectPointInSegment(const Point_t &segment_pt1, const Point_t &segment_pt2
     ptp->y = segment_pt1.y + static_cast<typename Point_t::value_type>(v2[1] * r);
   }
 
+  //TODO: comprobar esto
   if (daux <= 0) iret = -1;
   else if (daux >= (v2[0] * v2[0] + v2[1] * v2[1])) iret = 1;
+  else if (daux == 0) iret = 2; // Esta en la línea
+  return iret;
+}
+
+template<typename Point_t> inline
+int projectPointInSegment3D(const Point_t &segment_pt1, const Point_t &segment_pt2, const Point_t &pt, Point_t *ptp)
+{
+  int iret = 0;
+  if (pt == segment_pt1 || pt == segment_pt2) {
+    *ptp = pt;
+    return 2;
+  }
+  Point_t v1; //= pt - segment_pt1;
+  Point_t v2; //= ln.vector();
+  v1.x = pt.x - segment_pt1.x;
+  v1.y = pt.y - segment_pt1.y;
+  v1.z = pt.z - segment_pt1.z;
+  v2.x = segment_pt2.x - segment_pt1.x;
+  v2.y = segment_pt2.y - segment_pt1.y;
+  v2.z = segment_pt2.z - segment_pt1.z;
+
+  double daux = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z; // v1.ddot(v2);
+  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
+
+  if (typeid(typename Point_t::value_type) == typeid(int)) {
+    ptp->x = segment_pt1.x + I3D_ROUND_TO_INT(v2.x * r);
+    ptp->y = segment_pt1.y + I3D_ROUND_TO_INT(v2.y * r);
+    ptp->z = segment_pt1.z + I3D_ROUND_TO_INT(v2.z * r);
+  } else {
+    ptp->x = segment_pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
+    ptp->y = segment_pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
+    ptp->z = segment_pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
+  }
+
+  if (daux <= 0) iret = -1;
+  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
   else if (daux == 0) iret = 2; // Esta en la línea
   return iret;
 }
@@ -963,6 +1034,24 @@ double distPointToSegment(const Point_t &segment_pt1, const Point_t &segment_pt2
   else if (ipr == 1) ptp = segment_pt2;
   return distance(pt, ptp);
 }
+
+/*!
+ * \brief Calcula la distancia de un punto a un segmento de linea 3D.
+ * \param[in] pt Punto
+ * \param[in] ln Linea
+ * \return Distancia de un punto a una segmento de linea
+ */
+template<typename Point_t> inline
+double distPointToSegment3D(const Point_t &segment_pt1, const Point_t &segment_pt2, const Point_t &pt)
+{
+  Point_t ptp;
+  int ipr = projectPointInSegment3D(segment_pt1, segment_pt2, pt, &ptp);
+
+  if (ipr == -1) ptp = segment_pt1;
+  else if (ipr == 1) ptp = segment_pt2;
+  return distance(pt, ptp);
+}
+
 
 template<typename Point_t> inline
 bool collinearPoints(const Point_t &segment_pt1, const Point_t &segment_pt2, const Point_t &pt_c, double tolerance)
@@ -1247,6 +1336,7 @@ typename std::iterator_traits<T>::value_type
 findInscribedCircleSequential(T in_first, T in_last, const std::array<typename std::iterator_traits<T>::value_type, 2> bounds, double nCells, double mCells) 
 {
   typedef typename std::iterator_traits<T>::value_type Point_t;
+  typename std::iterator_traits<T>::difference_type size = std::distance(in_first, in_last);
 
   Point_t pia((bounds[0].x + bounds[1].x) / 2., (bounds[0].y + bounds[1].y) / 2.);
   Point_t pt_tmp;
@@ -1282,43 +1372,127 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
 
 			pt_tmp.y = bounds[0].y + j * increment_y;
 
+      // Se comprueba si esta dentro de la ventana envolvente
       if ((bounds[1].x >= pt_tmp.x) && (bounds[1].y >= pt_tmp.y) &&
           (bounds[0].x <= pt_tmp.x) && (bounds[0].y <= pt_tmp.y)) {
-        bool isInner = false;
-        int nIntersection = 0;
-        bool bVertex = false;
-        T temp = in_first;
-        T prev = in_last - 1;
-        while (temp != in_last) {
-          
-          //if (collinearPoints(prev, temp, pt_tmp, 0.005)) {
-          //  isInner = true;
-          //  break;
-          //}
-          
-          if (pt_tmp.y == temp->y || pt_tmp.y == prev->y)
-            bVertex = true;
 
-          Point_t ptp;
+        bool isInner = false;
+
+        // Se comprueba si el punto es uno de los vertices
+        //for (int i = 0; i < mEntities.size(); i++) {
+        T temp = in_first;
+        while (temp != in_last) {
+          // Por ahora se devuelve true. Lo suyo sería indicar que es un vertice.
+          if (temp == pt_tmp) isInner = true;
+          temp++;
+        }
+
+        if (isInner == false) {
+            
           Point_t pth1 = pt_tmp;
           Point_t pth2(w_pol[1].x, pt_tmp.y);
-          nIntersection += intersectSegments(*prev, *temp, pth1, pth2, &ptp);
-          *prev = *temp++;
+
+          int nIntersection = 0;
+          bool bVertex = false;
+          std::vector<int> vertex_id;
+
+          temp = in_first;
+          Point_t prev = *(in_last -1);
+          int i = 0;
+          while (temp != in_last) {
+            //if (collinearPoints(prev, temp, pt_tmp, 0.005)) {
+            //  isInner = true;
+            //  break;
+            //}
+            // El punto es colineal con el segmento y esta dentro del mismo.
+            //Implementarlo con iteradores
+            //if (distPointToSegment(point, segment) == 0) {
+            //  isInner = true;
+            //  break;
+            //}
+
+            if (pt_tmp.y == temp->y) {
+              vertex_id.push_back(i);
+              bVertex = true;
+            }
+            
+            if (pt_tmp.y == temp->y && pt_tmp.y == prev.y) {
+              // los dos segmentos forman parte de la misma linea horizontal
+            } else {
+              Point_t ptp;
+              nIntersection += intersectSegments(prev, *temp, pth1, pth2, &ptp);
+            }
+            prev = *temp++;
+            i++;
+          }
+
+          
+          if (bVertex == true) {
+            std::vector<int> order;
+            int vertex_prev = 0;
+            int vertex_next = 0;
+            Point_t pt_prev;
+            Point_t pt_next;
+            for (int i = 0; i < vertex_id.size(); i++) {
+              // Se comprueban los puntos anterior y siguiente
+              if (vertex_id[i] == 0) {
+                pt_prev = *(in_first + size - 1);
+                vertex_prev = size - 1;
+              } else {
+                pt_prev = (in_first + i - 1);
+                vertex_prev = vertex_id[i] - 1;
+              }
+
+              if (vertex_id[i] == size - 1) {
+                pt_next = *(in_first);
+                vertex_next = 0;
+              } else {
+                pt_next = *(in_first + i + 1);
+                vertex_next = vertex_id[i] + 1;
+              }
+
+              if (pt_prev.y == pth1.y) {
+                continue;
+              } else {
+                if (pt_next.y == pth1.y) {
+                  int prev = isLeft(pth1, pth2, pt_prev);
+                  if (vertex_next == size - 1) {
+                    vertex_next = 0;
+                    pt_next = *(in_first);
+                  } else {
+                    vertex_next = vertex_next + 1;
+                    pt_next = *(in_first + vertex_next + 1);
+                  }
+                  int next = isLeft(pth1, pth2, pt_next);
+                  if (prev == next) nIntersection -= 2;
+                  else nIntersection--;
+                } else {
+                  int prev = isLeft(pth1, pth2, pt_prev);
+                  int next = isLeft(pth1, pth2, pt_next);
+                  if (prev == next) nIntersection -= 2;
+                  else nIntersection--;
+                }
+
+              }
+
+            }
+          }
+          if (bVertex) 
+            nIntersection--;
+          if (nIntersection < 0 || nIntersection % 2 == 0) isInner = false;
+          else isInner = true;
         }
-        if (bVertex) 
-          nIntersection--;
-        if (nIntersection < 0 || nIntersection % 2 == 0) isInner = false;
-        else isInner = true;
 
         if (isInner) {
-          double tmp_distance = 0.;
+          double tmp_distance = I3D_DOUBLE_MAX;
           double dist;
           temp = in_first;
-          prev = in_last - 1;
+          prev = *(in_last-1);
           while (temp != in_last) {
-            dist = distPointToSegment(*prev, *temp, pt_tmp);
+            msgInfo("%f,%f", temp->x, temp->y);
+            dist = distPointToSegment(prev, *temp, pt_tmp);
             if (dist < tmp_distance) tmp_distance = dist;
-            *prev = *temp++;
+            prev = *temp++;
           }
 
           if (tmp_distance > max_distance) {
@@ -1329,14 +1503,6 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
         }
       }
       
-      //if (polygon.isInner(tmp)) {
-   //     tmp_distance = distPointToPolygon(tmp, polygon);
-			//	if (tmp_distance > max_distance) {
-			//		max_distance = tmp_distance;
-			//		pia.x = tmp.x;
-			//		pia.y = tmp.y;
-			//	}
-			//}
 		}
 	}
 
@@ -1382,6 +1548,8 @@ void poleOfInaccessibility2D(T in_first, T in_last, typename std::iterator_trait
 		aux.y = (w[1].y - w[0].y) / (sqrt(2.) * 2.);
 
     w[0].x = pole->x - aux.x;
+    w[0].y = pole->y - aux.y;
+    w[1].x = pole->x + aux.x;
     w[1].y = pole->y + aux.y;
 
 		if (w[1].x - w[0].x < 0.01 || w[1].y - w[0].y < 0.01) break;
@@ -1397,20 +1565,21 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
   if (pole == NULL) return;
 
   typedef typename std::iterator_traits<T>::value_type Point_t;
-  T temp = in_first;
+  typename std::iterator_traits<T>::difference_type size = std::distance(in_first, in_last);
+
+  T it = in_first;
   
-  //TODO: sacar a función
   std::array<Point_t, 2> box;
   box[0].x = box[0].y = box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
   box[1].x = box[1].y = box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
-  while (temp != in_last) {
-    if (box[0].x > temp->x) box[0].x = temp->x;
-    if (box[0].y > temp->y) box[0].y = temp->y;
-    if (box[0].z > temp->z) box[0].z = temp->z;
-    if (box[1].x < temp->x) box[1].x = temp->x;
-    if (box[1].y < temp->y) box[1].y = temp->y;
-    if (box[1].z < temp->z) box[1].z = temp->z;
-    *temp++;
+  while (it != in_last) {
+    if (box[0].x > it->x) box[0].x = it->x;
+    if (box[0].y > it->y) box[0].y = it->y;
+    if (box[0].z > it->z) box[0].z = it->z;
+    if (box[1].x < it->x) box[1].x = it->x;
+    if (box[1].y < it->y) box[1].y = it->y;
+    if (box[1].z < it->z) box[1].z = it->z;
+    *it++;
   }
  
 
@@ -1421,23 +1590,22 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
   // Máxima distancia de los puntos al plano
   double max_dist = I3D_DOUBLE_MIN;
 
-  temp = in_first;
-  while (temp != in_last) {
+  it = in_first;
+  while (it != in_last) {
     Point_t pt;
-    double distance = distantePointToPlane(*temp, plane);
+    double distance = distantePointToPlane(*it, plane);
     if (distance > max_dist) max_dist = distance;
-    *temp++;
+    *it++;
   }
 
   // Proyectar polilinea en el plano de mejor ajuste
   std::vector<Point_t> poligon_plane;
-  temp = in_first;
-  while (temp != in_last) {
+  it = in_first;
+  while (it != in_last) {
     Point_t pt;
-    projectPointToPlane(*temp, plane, &pt);
-    //msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+    projectPointToPlane(*it, plane, &pt);
     poligon_plane.push_back(pt);
-    *temp++;
+    *it++;
   }
 
   // Punto central
@@ -1459,17 +1627,430 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
     poligon_z.push_back(point_2d_temp<typename Point_t::value_type>(pt.x, pt.y));
   }
 
-  //Ahora el problema se reduce a su solución en 2D
-  point_2d_temp<typename Point_t::value_type> center2D;
-  poleOfInaccessibility2D(poligon_z.begin(), poligon_z.end(), &center2D);
+  typedef typename point_2d_temp<typename Point_t::value_type> point2d_t;
 
-  Point_t _center3D(center2D.x, center2D.y, pc.z);
+  // Ventana envolvente del poligono 
+  std::array<point2d_t, 2> w_pol;
+  // Ventana de busqueda
+  std::array<Point_t, 2> w;
+  w[0].x = w[0].y = std::numeric_limits<typename Point_t::value_type>().max();
+  w[1].x = w[1].y = -std::numeric_limits<typename Point_t::value_type>().max();
+  auto it2 = poligon_z.begin();
+  while (it2 != poligon_z.end()) {
+    if (w[0].x > it2->x) w_pol[0].x = w[0].x = it2->x;
+    if (w[0].y > it2->y) w_pol[0].y = w[0].y = it2->y;
+    if (w[1].x < it2->x) w_pol[1].x = w[1].x = it2->x;
+    if (w[1].y < it2->y) w_pol[1].y = w[1].y = it2->y;
+    *it2++;
+  }
 
-  //Proyectar el punto al revés
-  projectPointToPlane(_center3D, plane_z, pole, Point3D(plane[0], plane[1], plane[2]));
+  //Point_t point_tmp;
+  point2d_t center2D;
+
+	int count = 1;
+	while (count++) {
+
+		//point_tmp =	findInscribedCircleSequential(in_first, in_last, w, nCells, mCells);
+    point2d_t pia_2d((w[0].x + w[1].x) / 2., (w[0].y + w[1].y) / 2.);
+    point2d_t tmp;
+
+    // Incrementos para x e y
+	  double increment_x = (w[1].x - w[0].x) / xCells;
+	  double increment_y = (w[1].y - w[0].y) / yCells;
+
+    // Maxima distancia
+	  double max_distance = 0.;
+
+	  int i, j;
+    double tmp_distance = std::numeric_limits<double>().max();
+	  for (i = 0; i <= xCells; i++) {
+
+		  tmp.x = w[0].x + i * increment_x;
+
+		  for (j = 0; j <= yCells; j++) {
+
+			  tmp.y = w[0].y + j * increment_y;
+
+        // Se comprueba si esta dentro de la ventana envolvente
+        if ((w[1].x >= tmp.x) && (w[1].y >= tmp.y) &&
+            (w[0].x <= tmp.x) && (w[0].y <= tmp.y)) {
+
+          bool isInner = false;
+
+          // Se comprueba si el punto es uno de los vertices
+          it2 = poligon_z.begin();
+          while (it2 != poligon_z.end()) {
+            // Por ahora se devuelve true. Lo suyo sería indicar que es un vertice.
+            if (it2->x == tmp.x && it2->y == tmp.y) 
+              isInner = true;
+            it2++;
+          }
+          
+          if (isInner == false) {
+
+            point2d_t pth1 = tmp;
+            point2d_t pth2(w_pol[1].x, tmp.y);
+
+            int nIntersection = 0;
+            bool bVertex = false;
+            std::vector<int> vertex_id;
+
+            it2 = poligon_z.begin();
+            point2d_t prev = *(poligon_z.end() - 1);
+            int i = 0;
+            while (it2 != poligon_z.end()) {
+
+              if (tmp.y == it2->y) {
+                vertex_id.push_back(i);
+                bVertex = true;
+              }
+
+              if (tmp.y == it2->y && tmp.y == prev.y) {
+                // los dos segmentos forman parte de la misma linea horizontal
+              } else {
+                point2d_t ptp;
+                nIntersection += intersectSegments(prev, *it2, pth1, pth2, &ptp);
+              }
+              prev = *it2++;
+              i++;
+            }
+
+
+            if (bVertex == true) {
+              std::vector<int> order;
+              int vertex_prev = 0;
+              int vertex_next = 0;
+              point2d_t pt_prev;
+              point2d_t pt_next;
+              for (int i = 0; i < vertex_id.size(); i++) {
+                // Se comprueban los puntos anterior y siguiente
+                if (vertex_id[i] == 0) {
+                  pt_prev = *(poligon_z.begin() + size - 1);
+                  vertex_prev = size - 1;
+                } else {
+                  pt_prev = *(poligon_z.begin() + vertex_id[i] - 1);
+                  vertex_prev = vertex_id[i] - 1;
+                }
+
+                if (vertex_id[i] == size - 1) {
+                  pt_next = *(poligon_z.begin());
+                  vertex_next = 0;
+                } else {
+                  pt_next = *(poligon_z.begin() + vertex_id[i] + 1);
+                  vertex_next = vertex_id[i] + 1;
+                }
+
+                if (pt_prev.y == pth1.y) {
+                  continue;
+                } else {
+                  if (pt_next.y == pth1.y) {
+                    int prev = isLeft(pth1, pth2, pt_prev);
+                    if (vertex_next == size - 1) {
+                      vertex_next = 0;
+                      pt_next = *(poligon_z.begin());
+                    } else {
+                      vertex_next = vertex_next + 1;
+                      pt_next = *(poligon_z.begin() + vertex_next + 1);
+                    }
+                    int next = isLeft(pth1, pth2, pt_next);
+                    if (prev == next) nIntersection -= 2;
+                    else nIntersection--;
+                  } else {
+                    int prev = isLeft(pth1, pth2, pt_prev);
+                    int next = isLeft(pth1, pth2, pt_next);
+                    if (prev == next) nIntersection -= 2;
+                    else nIntersection--;
+                  }
+
+                }
+
+              }
+            }
+            if (nIntersection < 0 || nIntersection % 2 == 0) isInner = false;
+            else isInner = true;
+          }
+
+          // Si el punto esta dentro se pasa a 3D y se calcula la máxima distancia
+          if (isInner) {
+
+            //Proyectar el punto al revés
+            Point_t center3D;
+            Point_t _center3D(tmp.x, tmp.y, pc.z);
+            projectPointToPlane(_center3D, plane, &center3D, Point3D(plane_z[0], plane_z[1], plane_z[2]));
+
+            // inicio distPointToPolygon
+            double tmp_distance = I3D_DOUBLE_MAX;
+            double dist;
+            it = in_first;
+            Point_t prev2 = *(in_last-1);
+            while (it != in_last) {
+              dist = distPointToSegment3D(prev2, *it, center3D);
+              if (dist < tmp_distance) tmp_distance = dist;
+              prev2 = *it++;
+            }
+
+            if (tmp_distance > max_distance) {
+              max_distance = tmp_distance;
+              pole->x = center3D.x;
+              pole->y = center3D.y;
+              pole->z = center3D.z;
+              pia_2d.x = tmp.x;
+              pia_2d.y = tmp.y;
+              
+            }
+          }
+
+        }
+		  }
+	  }
+
+    Point_t aux;
+    aux.x = (w[1].x - w[0].x) / (sqrt(2.) * 2.);
+		aux.y = (w[1].y - w[0].y) / (sqrt(2.) * 2.);
+
+    w[0].x = pia_2d.x - aux.x;
+    w[0].y = pia_2d.y - aux.y;
+    w[1].x = pia_2d.x + aux.x;
+    w[1].y = pia_2d.y + aux.y;
+
+    // TODO: relaccionar este valor con el tamaño de la ventana envolvente
+		if (w[1].x - w[0].x < 0.0001 || w[1].y - w[0].y < 0.0001) break;
+
+	}
 
 }
 
+
+//template<typename T> inline
+//typename std::iterator_traits<T>::value_type 
+//findInscribedCircleSequential(T in_first, T in_last, const std::array<typename std::iterator_traits<T>::value_type, 2> bounds, double nCells, double mCells) 
+//{
+//  typedef typename std::iterator_traits<T>::value_type Point_t;
+//  typename std::iterator_traits<T>::difference_type size = std::distance(in_first, in_last);
+//
+//  Point_t pia((bounds[0].x + bounds[1].x) / 2., (bounds[0].y + bounds[1].y) / 2.);
+//  Point_t pt_tmp;
+//
+//  // Incrementos para x e y
+//	double increment_x = (bounds[1].x - bounds[0].x) / nCells;
+//	double increment_y = (bounds[1].y - bounds[0].y) / mCells;
+//
+//  // Ventana envolvente del poligono 
+//  std::array<Point_t, 2> w_pol;
+//  w_pol[0].x = w_pol[0].y = std::numeric_limits<typename Point_t::value_type>().max();
+//  w_pol[1].x = w_pol[1].y = -std::numeric_limits<typename Point_t::value_type>().max();
+//  T temp = in_first;
+//  while (temp != in_last) {
+//    if (w_pol[0].x > temp->x) w_pol[0].x = temp->x;
+//    if (w_pol[0].y > temp->y) w_pol[0].y = temp->y;
+//    if (w_pol[1].x < temp->x) w_pol[1].x = temp->x;
+//    if (w_pol[1].y < temp->y) w_pol[1].y = temp->y;
+//    *temp++;
+//  }
+//
+//
+//  // Maxima distancia
+//	double max_distance = 0.;
+//
+//	int i, j;
+//  double tmp_distance = std::numeric_limits<double>().max();
+//	for (i = 0; i <= nCells; i++) {
+//
+//		pt_tmp.x = bounds[0].x + i * increment_x;
+//
+//		for (j = 0; j <= mCells; j++) {
+//
+//			pt_tmp.y = bounds[0].y + j * increment_y;
+//
+//      if ((bounds[1].x >= pt_tmp.x) && (bounds[1].y >= pt_tmp.y) &&
+//          (bounds[0].x <= pt_tmp.x) && (bounds[0].y <= pt_tmp.y)) {
+//        bool isInner = false;
+//        int nIntersection = 0;
+//        bool bVertex = false;
+//        T temp = in_first;
+//        Point_t prev = *(in_last -1);
+//        while (temp != in_last) {
+//          //if (collinearPoints(prev, temp, pt_tmp, 0.005)) {
+//          //  isInner = true;
+//          //  break;
+//          //}
+//          
+//          if (pt_tmp.y == temp->y || pt_tmp.y == prev.y)
+//            bVertex = true;
+//
+//          Point_t ptp;
+//          Point_t pth1 = pt_tmp;
+//          Point_t pth2(w_pol[1].x, pt_tmp.y);
+//          nIntersection += intersectSegments(prev, *temp, pth1, pth2, &ptp);
+//          prev = *temp++;
+//        }
+//        if (bVertex) 
+//          nIntersection--;
+//        if (nIntersection < 0 || nIntersection % 2 == 0) isInner = false;
+//        else isInner = true;
+//
+//        if (isInner) {
+//          double tmp_distance = I3D_DOUBLE_MAX;
+//          double dist;
+//          temp = in_first;
+//          prev = *(in_last-1);
+//          while (temp != in_last) {
+//            //msgInfo("%f,%f", temp->x, temp->y);
+//            dist = distPointToSegment(prev, *temp, pt_tmp);
+//            if (dist < tmp_distance) tmp_distance = dist;
+//            prev = *temp++;
+//          }
+//
+//          if (tmp_distance > max_distance) {
+//            max_distance = tmp_distance;
+//            pia.x = pt_tmp.x;
+//            pia.y = pt_tmp.y;
+//          }
+//        }
+//      }
+//      
+//      //if (polygon.isInner(tmp)) {
+//   //     tmp_distance = distPointToPolygon(tmp, polygon);
+//			//	if (tmp_distance > max_distance) {
+//			//		max_distance = tmp_distance;
+//			//		pia.x = tmp.x;
+//			//		pia.y = tmp.y;
+//			//	}
+//			//}
+//		}
+//	}
+//
+//	return pia;
+//}
+//
+//
+//template<typename T> inline
+//void poleOfInaccessibility2D(T in_first, T in_last, typename std::iterator_traits<T>::value_type *pole, double nCells = 20., double mCells = 20.) 
+//{
+//  if (pole == NULL) return;
+//  typedef typename std::iterator_traits<T>::value_type Point_t;
+//
+//  //Window<Point_t> w = polygon.getWindow();
+//  std::array<Point_t, 2> w;
+//  w[0].x = w[0].y = std::numeric_limits<typename Point_t::value_type>().max();
+//  w[1].x = w[1].y = -std::numeric_limits<typename Point_t::value_type>().max();
+//  T temp = in_first;
+//  while (temp != in_last) {
+//    if (w[0].x > temp->x) w[0].x = temp->x;
+//    if (w[0].y > temp->y) w[0].y = temp->y;
+//    if (w[1].x < temp->x) w[1].x = temp->x;
+//    if (w[1].y < temp->y) w[1].y = temp->y;
+//    *temp++;
+//  }
+//
+//	Point_t point_tmp;
+//
+//	int count = 1;
+//	while (count++) {
+//
+//		/*if (method == METHOD_SEQUENTIAL) {*/
+//			point_tmp =	findInscribedCircleSequential(in_first, in_last, w, nCells, mCells);
+//		/*} else if (method == METHOD_RANDOMIZED) {
+//			point_tmp = findInscribedCircleRandomized(polygon, w);
+//		}*/
+//
+//		pole->x = point_tmp.x;
+//		pole->y = point_tmp.y;
+//
+//    Point_t aux;
+//    aux.x = (w[1].x - w[0].x) / (sqrt(2.) * 2.);
+//		aux.y = (w[1].y - w[0].y) / (sqrt(2.) * 2.);
+//
+//    w[0].x = pole->x - aux.x;
+//    w[0].y = pole->y - aux.y;
+//    w[1].x = pole->x + aux.x;
+//    w[1].y = pole->y + aux.y;
+//
+//		if (w[1].x - w[0].x < 0.01 || w[1].y - w[0].y < 0.01) break;
+//
+//	}
+//}
+//
+//
+//
+//template<typename T> inline
+//void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_traits<T>::value_type *pole, double xCells = 20., double yCells = 20., double zCells = 20.) 
+//{
+//  if (pole == NULL) return;
+//
+//  typedef typename std::iterator_traits<T>::value_type Point_t;
+//  T temp = in_first;
+//  
+//  //TODO: sacar a función
+//  std::array<Point_t, 2> box;
+//  box[0].x = box[0].y = box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
+//  box[1].x = box[1].y = box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
+//  while (temp != in_last) {
+//    if (box[0].x > temp->x) box[0].x = temp->x;
+//    if (box[0].y > temp->y) box[0].y = temp->y;
+//    if (box[0].z > temp->z) box[0].z = temp->z;
+//    if (box[1].x < temp->x) box[1].x = temp->x;
+//    if (box[1].y < temp->y) box[1].y = temp->y;
+//    if (box[1].z < temp->z) box[1].z = temp->z;
+//    *temp++;
+//  }
+// 
+//
+//  // Se determina el plano de mejor ajuste
+//  std::array<double, 4> plane;
+//  nPointsPlaneLS(in_first, in_last, plane, true);
+//
+//  // Máxima distancia de los puntos al plano
+//  double max_dist = I3D_DOUBLE_MIN;
+//
+//  temp = in_first;
+//  while (temp != in_last) {
+//    Point_t pt;
+//    double distance = distantePointToPlane(*temp, plane);
+//    if (distance > max_dist) max_dist = distance;
+//    *temp++;
+//  }
+//
+//  // Proyectar polilinea en el plano de mejor ajuste
+//  std::vector<Point_t> poligon_plane;
+//  temp = in_first;
+//  while (temp != in_last) {
+//    Point_t pt;
+//    projectPointToPlane(*temp, plane, &pt);
+//    //msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+//    poligon_plane.push_back(pt);
+//    *temp++;
+//  }
+//
+//  // Punto central
+//  Point_t pc((box[0].x + box[1].x) / 2., (box[0].y + box[1].y) / 2., (box[0].z + box[1].z) / 2.);
+//
+//  // Plano horizontal (1,1,0)
+//  std::array<double, 4> plane_z;
+//  plane_z[0] = 0;
+//  plane_z[1] = 0;
+//  plane_z[2] = 1;
+//  plane_z[3] = -plane_z[0] * pc.x - plane_z[1] * pc.y - plane_z[2] * pc.z;
+//
+//  std::vector<point_2d_temp<typename Point_t::value_type>> poligon_z;
+//
+//  for (int i = 0; i < poligon_plane.size(); i++){
+//    Point_t pt;
+//    projectPointToPlane(poligon_plane[i], plane_z, &pt);
+//    //msgInfo("%f %f %f", pt.x, pt.y, pt.z);
+//    poligon_z.push_back(point_2d_temp<typename Point_t::value_type>(pt.x, pt.y));
+//  }
+//
+//  //Ahora el problema se reduce a su solución en 2D
+//  point_2d_temp<typename Point_t::value_type> center2D;
+//  poleOfInaccessibility2D(poligon_z.begin(), poligon_z.end(), &center2D);
+//
+//  Point_t _center3D(center2D.x, center2D.y, pc.z);
+//
+//  //Proyectar el punto al revés
+//  projectPointToPlane(_center3D, plane_z, pole, Point3D(plane[0], plane[1], plane[2]));
+//
+//}
 
 
 I3D_ENABLE_WARNING(4100)

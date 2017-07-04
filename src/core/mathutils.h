@@ -12,13 +12,26 @@
 
 #include "core/defs.h"
 //TODO: Debería sacar todas las entidades geometricas de aqui
-#include "geometric_entities/point.h"
+//#include "geometric_entities/point.h"
 
 namespace I3D
 {
 
-/* ---------------------------------------------------------------------------------- */
+/*!
+ * \defgroup mathUtils Utilidades matemáticas
+ *
+ * Utilidades para operaciones entre vectores (tanto en el plano como en espacio),
+ * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
+ * de sistemas de ecuaciones lineales.
+ *
+ * Se utilizan contenedores y un tipo de punto generico (con métodos miembro x, y, z).
+ *
+ * \{
+ */
 
+/* ---------------------------------------------------------------------------------- */
+/*            Operaciones entre vectores en el plano y en el espacio                  */
+/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Producto vectorial de dos vectores en el plano
@@ -130,8 +143,6 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   if (azimut < 0.) azimut += I3D_2PI;
   return azimut;
 }
-
-
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -577,6 +588,7 @@ double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> 
   return N ;
 }
 
+//Lo mismo pero con contenedores
 template<typename it> inline 
 double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool normalize = false)
 {
@@ -641,6 +653,7 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
   }
   return N ;
 }
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -965,6 +978,8 @@ I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double
 I3D_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
 #endif
+
+/*! \} */ // end of mathUtils
 
 } // End namespace I3D
 

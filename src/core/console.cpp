@@ -31,7 +31,6 @@ struct msgProperties msgTemplate[] = {
 
 msgProperties getMessageProperties( MessageLevel msgLevel ) 
 {
-  //return msgTemplate[static_cast<int>(msgLevel)];
   int iLevel = 0;
   switch (msgLevel) {
   case I3D::MessageLevel::MSG_DEBUG:
@@ -105,8 +104,46 @@ Console::Console(Console::Mode mode)
 #endif
 }
 
+Console::Console(const Console &console) :
+#ifdef WIN32
+  h(console.h),
+  mOldColorAttrs(console.mOldColorAttrs),
+#else
+  mStream(console.mStream),
+  mCommand(0),
+#endif
+  mForeIntensity(console.mForeIntensity),
+  mForeColor(console.mForeColor),
+  mBackIntensity(console.mBackIntensity),
+  mBackColor(console.mBackColor)
+{
+}
+
 Console::~Console() 
 {
+  reset();
+}
+
+EnumFlags<MessageLevel> Console::getMessageLevel() const
+{
+  return sLevel;
+}
+
+void Console::printMessage(const char *msg)
+{
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  std::string aux(msg);
+  I3D::replaceString(&aux, "%", "%%");
+  printf_s("%s\n", aux.c_str());
+}
+
+void Console::printErrorMessage(const char *msg)
+{
+  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, 
+                            getMessageProperties(MessageLevel::MSG_ERROR).intensity);
+  printMessage(msg);
   reset();
 }
 
@@ -118,6 +155,49 @@ void Console::reset()
   sprintf(mCommand, "%c[0;m", 0x1B);
   fprintf(mStream, "%s", mCommand);
 #endif
+}
+
+void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
+{
+#ifdef WIN32
+  switch (backColor) {
+  case I3D::Console::Color::BLACK:
+    mBackColor = 0;
+    break;
+  case I3D::Console::Color::BLUE:
+    mBackColor = BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::GREEN:
+    mBackColor = BACKGROUND_GREEN;
+    break;
+  case I3D::Console::Color::CYAN:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::RED:
+    mBackColor = BACKGROUND_RED;
+    break;
+  case I3D::Console::Color::MAGENTA:
+    mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
+    break;
+  case I3D::Console::Color::YELLOW:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
+    break;
+  case I3D::Console::Color::WHITE:
+    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
+    break;
+  default:
+    mBackColor = 0;
+    break;
+  }
+  if(intensity == Console::Intensity::NORMAL)
+      mBackIntensity = 0;
+  else
+      mBackIntensity = BACKGROUND_INTENSITY;
+#else
+  mBackColor = static_cast<int>(backColor) + 40;
+  mBackIntensity = static_cast<int>(intensity);
+#endif
+  update();
 }
 
 void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity)
@@ -165,49 +245,6 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
   update();
 }
 
-void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
-{
-#ifdef WIN32
-  switch (backColor) {
-  case I3D::Console::Color::BLACK:
-    mBackColor = 0;
-    break;
-  case I3D::Console::Color::BLUE:
-    mBackColor = BACKGROUND_BLUE;
-    break;
-  case I3D::Console::Color::GREEN:
-    mBackColor = BACKGROUND_GREEN;
-    break;
-  case I3D::Console::Color::CYAN:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
-    break;
-  case I3D::Console::Color::RED:
-    mBackColor = BACKGROUND_RED;
-    break;
-  case I3D::Console::Color::MAGENTA:
-    mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
-    break;
-  case I3D::Console::Color::YELLOW:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
-    break;
-  case I3D::Console::Color::WHITE:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
-    break;
-  default:
-    mBackColor = 0;
-    break;
-  }
-  if(intensity == Console::Intensity::NORMAL)
-      mBackIntensity = 0;
-  else
-      mBackIntensity = BACKGROUND_INTENSITY;
-#else
-  mBackColor = static_cast<int>(backColor) + 40;
-  mBackIntensity = static_cast<int>(intensity);
-#endif
-  update();
-}
-
 void Console::setConsoleUnicode() 
 {
 #ifdef WIN32
@@ -222,23 +259,6 @@ void Console::setLogLevel(MessageLevel level)
   sLevel = level;
 }
 
-void Console::printMessage(const char *msg)
-{
-  // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
-
-  std::string aux(msg);
-  I3D::replaceString(&aux, "%", "%%");
-  printf_s("%s\n", aux.c_str());
-}
-
-void Console::printErrorMessage(const char *msg)
-{
-  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, 
-                            getMessageProperties(MessageLevel::MSG_ERROR).intensity);
-  printMessage(msg);
-  reset();
-}
 
 I3D_DISABLE_WARNING(4100)
 
@@ -318,19 +338,99 @@ void Console::update()
 #endif
 }
 
+
+
 /* ---------------------------------------------------------------------------------- */
 
-CmdArgument::Type CmdParameterOptions::getType() const
-{ 
-  return CmdArgument::Type::PARAMETER_OPTIONS; 
+CmdArgument::CmdArgument(const char *name, const char *description, bool optional)
+  : mName(name), 
+    mDescription(description), 
+    bOptional(optional) 
+{
 }
 
-std::string CmdParameterOptions::getValue() const 
+const char *CmdArgument::getDescription() const 
 { 
-  return mDefValue; 
+  return mDescription.c_str(); 
 }
 
-int CmdParameterOptions::getIndex(std::string value) const
+const char *CmdArgument::getName() const 
+{ 
+  return mName.c_str(); 
+}
+
+bool CmdArgument::isOptional() const 
+{ 
+  return bOptional; 
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdOption::CmdOption(const char *name, const char *description)
+  : CmdArgument(name, description, true), mValue(false) 
+{
+}
+
+CmdArgument::Type CmdOption::getType() const 
+{ 
+  return CmdArgument::Type::OPTION; 
+}
+
+bool CmdOption::isActive() const 
+{ 
+  return mValue; 
+}
+
+void CmdOption::setActive(bool active)
+{ 
+  mValue = active; 
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdParameter::CmdParameter(const char *name, const char *description, bool optional, const char *defValue)
+  : CmdArgument(name, description, optional), mValue(defValue)
+{
+}
+
+CmdArgument::Type CmdParameter::getType() const 
+{ 
+  return CmdArgument::Type::PARAMETER; 
+}
+
+const char *CmdParameter::getValue() const 
+{ 
+  return mValue.c_str(); 
+}
+
+void CmdParameter::setValue(const std::string &value) 
+{
+  mValue = value; 
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdParameterOptions::CmdParameterOptions(const char *name, const char *options, const char *description, bool optional, const char *defValue)
+  : CmdArgument(name, description, optional), mValue(defValue)
+{
+  split(options, mOptions, ",");
+}
+
+int CmdParameterOptions::getIndex() const
+{
+  for ( size_t i = 0; i < mOptions.size(); i++ ) {
+    if (mOptions[i] == mValue) {
+      return static_cast<int>(i);
+      break;
+    }
+  }
+  return 0;
+}
+
+int CmdParameterOptions::getIndex(const std::string &value) const
 {
   for ( size_t i = 0; i < mOptions.size(); i++ ) {
     if (mOptions[i] == value) {
@@ -341,28 +441,51 @@ int CmdParameterOptions::getIndex(std::string value) const
   return 0;
 }
 
-int CmdParameterOptions::getIndex() const
-{
-  for ( size_t i = 0; i < mOptions.size(); i++ ) {
-    if (mOptions[i] == mDefValue) {
-      return static_cast<int>(i);
-      break;
-    }
-  }
-  return 0;
+std::vector<std::string> CmdParameterOptions::getOptions() const
+{ 
+  return mOptions; 
 }
 
-void CmdParameterOptions::setValue(std::string value) 
+CmdArgument::Type CmdParameterOptions::getType() const
+{ 
+  return CmdArgument::Type::PARAMETER_OPTIONS; 
+}
+
+const char *CmdParameterOptions::getValue() const 
+{ 
+  return mValue.c_str(); 
+}
+
+void CmdParameterOptions::setValue(const std::string &value) 
 {
   for (auto opt : mOptions) {
     if (value == opt) {
-      mDefValue = value;
+      mValue = value;
       break;
     }
   }
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+CmdParser::CmdParser()
+  : mCmdName(""), 
+    mCmdDescription("") 
+{
+}
+
+CmdParser::CmdParser(const char *name, const char *description)
+  : mCmdName(name), 
+    mCmdDescription(description) 
+{
+}
+
+CmdParser::CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
+  : mCmdName(name), 
+    mCmdDescription(description), 
+    mCmdArgs(cmd_args)
+{
+}
 
 void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
 {
@@ -420,7 +543,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
     }
     // Ver si no es opcional y devolver un error si no existe
     if (bFind == false && bOptional == false) {
-      msgError("Falta %s. Parámetro obligatorio ", arg->getName().c_str());
+      msgError("Falta %s. Parámetro obligatorio ", arg->getName());
       printHelp();
       return CmdParser::Status::PARSE_ERROR;
     }
@@ -445,27 +568,27 @@ void CmdParser::printHelp()
     std::string s_type, s_description;
     if (arg->getType() == CmdArgument::Type::OPTION) {
       s_type = "Opción";
-      s_description = arg->getDescription().c_str();
+      s_description = arg->getDescription();
     } else if (arg->getType() == CmdArgument::Type::PARAMETER) {
       s_type = "Parámetro";
-      s_description = arg->getDescription().c_str();
+      s_description = arg->getDescription();
     } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
       s_type = "Lista de opciones";
-      s_description = arg->getDescription().c_str();
+      s_description = arg->getDescription();
       s_description = ". Los valores posibles son: ";
       for (auto opt : dynamic_cast<CmdParameterOptions *>(arg.get())->getOptions()) {
         s_description += " ";
         s_description += opt;
       }
     } else continue;
-     printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
-    //printf_s("%s [%s | %s]: %s \n", arg->getName().c_str(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
+     printf_s("%s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
+    //printf_s("%s [%s | %s]: %s \n", arg->getName(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
   }
   printf_s("\nUso:\n");
   printf_s("%s", mCmdName.c_str());
   for (auto arg : mCmdArgs) {
     printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"), 
-             arg->getName().c_str(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
+             arg->getName(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
   }
   //printf_s("\n\nPulse intro para continuar");
   //getchar();
@@ -485,11 +608,38 @@ bool CmdParser::hasOption(const std::string &option) const
 
 /* ---------------------------------------------------------------------------------- */
 
-std::mutex mtx_prgs;
+//std::mutex mtx_prgs; //Mejor añadirlo a la clase como dato miembro estático
+std::mutex Progress::sMutex;
+
+Progress::Progress() 
+  : mProgress(0.), 
+    mMinimun(0.), 
+    mMaximun(100.), 
+    mPercent(-1), 
+    mMsg(""),
+    onProgress(0),
+    onInitialize(0),
+    onTerminate(0)
+{
+  updateScale();
+}
+
+Progress::Progress(double min, double max, const std::string &msg) 
+  : mProgress(0.), 
+    mMinimun(min), 
+    mMaximun(max), 
+    mPercent(-1), 
+    mMsg(msg),
+    onProgress(0),
+    onInitialize(0),
+    onTerminate(0)
+{
+  updateScale();
+}
 
 bool Progress::operator()(double increment) 
 { 
-  std::lock_guard<std::mutex> lck(mtx_prgs);
+  std::lock_guard<std::mutex> lck(Progress::sMutex);
   if (mProgress == 0) initialize();
   mProgress += increment;
   int percent = I3D_ROUND_TO_INT(mProgress * mScale);
@@ -501,7 +651,7 @@ bool Progress::operator()(double increment)
   return true;
 }
 
-void Progress::init(double min, double max, std::string msg)
+void Progress::init(double min, double max, const std::string &msg)
 {
   mMinimun = min;
   mMaximun = max;
@@ -558,6 +708,18 @@ void Progress::updateScale()
 
 
 /* ---------------------------------------------------------------------------------- */
+
+ProgressBar::ProgressBar(bool customConsole)
+  : Progress(), 
+    bCustomConsole(customConsole) 
+{
+}
+
+ProgressBar::ProgressBar(double min, double max, bool customConsole)
+  : Progress(min, max),
+    bCustomConsole(customConsole) 
+{
+}
 
 void ProgressBar::updateProgress() 
 {
@@ -623,6 +785,18 @@ void ProgressBar::terminate()
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+ProgressPercent::ProgressPercent(bool customConsole)
+  : Progress(),
+    bCustomConsole(customConsole) 
+{
+}
+
+ProgressPercent::ProgressPercent(double min, double max, bool customConsole)
+  : Progress(min, max), 
+    bCustomConsole(customConsole) 
+{
+}
 
 void ProgressPercent::updateProgress() 
 {

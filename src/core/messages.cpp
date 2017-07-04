@@ -119,17 +119,17 @@ MessageManager::~MessageManager()
 {
 }
 
-void MessageManager::addListener(Listener *listener)
-{ 
-  mListeners.push_back(listener);
-}
-
 MessageManager &MessageManager::getInstance()
 {
   if (sObjMessage.get() == 0) {
     sObjMessage.reset(new MessageManager());
   }
   return *sObjMessage;
+}
+
+void MessageManager::addListener(Listener *listener)
+{ 
+  mListeners.push_back(listener);
 }
 
 void MessageManager::initExternalHandlers()
@@ -146,49 +146,6 @@ void MessageManager::initExternalHandlers()
 void MessageManager::pause()
 {
   sStopHandler = true;
-}
-
-void MessageManager::resume()
-{
-  sStopHandler = false;
-}
-
-void MessageManager::onDebug(const char *msg, const char *date)
-{
-#ifdef _DEBUG
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onMsgDebug(msg, date);
-    }
-  }
-#endif
-}
-
-void MessageManager::onInfo(const char *msg, const char *date)
-{
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onMsgInfo(msg, date);
-    }
-  }
-}
-
-void MessageManager::onWarning(const char *msg, const char *date)
-{
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onMsgWarning(msg, date);
-    }
-  }
-}
-
-void MessageManager::onError(const char *msg, const char *date)
-{
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onMsgError(msg, date);
-    }
-  }
 }
 
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
@@ -248,7 +205,7 @@ void MessageManager::release(const Message &msg)
 
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   std::string msg_out;
-  if (msg.getLine() == -1 && msg.getFile() == "" && msg.getFunction() == "") {
+  if (msg.getLine() == -1 && strcmp(msg.getFile(), "") == 0 && strcmp(msg.getFunction(), "") == 0) {
     msg_out = msg.getMessage();
   } else {
     char buf[1000];
@@ -278,11 +235,55 @@ void MessageManager::release(const Message &msg)
   }
 }
 
+void MessageManager::resume()
+{
+  sStopHandler = false;
+}
+
+void MessageManager::onDebug(const char *msg, const char *date)
+{
+#ifdef _DEBUG
+  if (!sStopHandler && !mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgDebug(msg, date);
+    }
+  }
+#endif
+}
+
+void MessageManager::onInfo(const char *msg, const char *date)
+{
+  if (!sStopHandler && !mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgInfo(msg, date);
+    }
+  }
+}
+
+void MessageManager::onWarning(const char *msg, const char *date)
+{
+  if (!sStopHandler && !mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgWarning(msg, date);
+    }
+  }
+}
+
+void MessageManager::onError(const char *msg, const char *date)
+{
+  if (!sStopHandler && !mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onMsgError(msg, date);
+    }
+  }
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 MessageManager::Message::Message(const char *msg, ...)
   : mLevel(MessageLevel::MSG_ERROR),
-    mFile(""), mLine(-1),
+    mFile(""), 
+    mLine(-1),
     mFunction("")
 {
   try {
@@ -316,14 +317,19 @@ MessageManager::Message::Message(const char *msg, ...)
   }
 }
 
-const char *MessageManager::Message::getMessage() const
-{
-  return mMessage.c_str();
-}
-
 const char *MessageManager::Message::getDate() const
 {
   return mDate.c_str();
+}
+
+const char *MessageManager::Message::getFile() const
+{
+  return mFile.c_str();
+}
+    
+const char *MessageManager::Message::getFunction() const
+{
+  return mFunction.c_str();
 }
 
 MessageLevel MessageManager::Message::getLevel() const
@@ -331,19 +337,14 @@ MessageLevel MessageManager::Message::getLevel() const
   return mLevel;
 }
 
-std::string MessageManager::Message::getFile() const
-{
-  return mFile;
-}
-
 int MessageManager::Message::getLine() const
 {
   return mLine;
 }
-    
-std::string MessageManager::Message::getFunction() const
+
+const char *MessageManager::Message::getMessage() const
 {
-  return mFunction;
+  return mMessage.c_str();
 }
     
 void MessageManager::Message::setTimeLogFormat( const char *timeTemplate)

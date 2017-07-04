@@ -197,16 +197,22 @@ public:
     ~Message() { }
 
     /*!
-     * \brief Devuelve el mensaje como cadena de texto
-     * \return Mensaje
-     */
-    const char *getMessage() const;
-
-    /*!
      * \brief Devuelve la fecha y hora del mensaje
      * \return Fecha y hora del mensaje
      */
     const char *getDate() const;
+
+    /*!
+     * \brief getFile
+     * \return
+     */
+    const char *getFile() const;
+
+    /*!
+     * \brief getFunction
+     * \return
+     */
+    const char *getFunction() const;
 
     /*!
      * \brief Nivel del mensaje
@@ -215,22 +221,16 @@ public:
     MessageLevel getLevel() const;
 
     /*!
-     * \brief getFile
-     * \return
-     */
-    std::string getFile() const;
-
-    /*!
      * \brief getLine
      * \return
      */
     int getLine() const;
 
     /*!
-     * \brief getFunction
-     * \return
+     * \brief Devuelve el mensaje como cadena de texto
+     * \return Mensaje
      */
-    std::string getFunction() const;
+    const char *getMessage() const;
 
     /*!
      * \brief setTimeLogFormat
@@ -299,14 +299,10 @@ private:
 
 public:
 
-
-  ~MessageManager();
-
   /*!
-   * \brief Añade un escuchador de mensajes
-   * \param[in] listener Objeto escuchador
+   * \brief Destructora
    */
-  void addListener(Listener *listener);
+  ~MessageManager();
 
   MessageManager(MessageManager const&) = delete;
   void operator=(MessageManager const&) = delete;
@@ -315,6 +311,22 @@ public:
    * \brief Singleton para obtener una referencia única
    */
   static MessageManager &getInstance();
+
+  /*!
+   * \brief Añade un escuchador de mensajes
+   * \param[in] listener Objeto escuchador
+   */
+  void addListener(Listener *listener);
+
+  /*!
+   * \brief Inicializa los manejadores para las librerias externas
+   */
+  static void initExternalHandlers();
+
+  /*!
+   * \brief Pausa el envio de mensajes
+   */
+  static void pause();
 
   /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
@@ -331,16 +343,6 @@ public:
    * \param[in] msg Mensaje que se lanza
    */
   static void release(const Message &msg);
-
-  /*!
-   * \brief Inicializa los manejadores para las librerias externas
-   */
-  static void initExternalHandlers();
-
-  /*!
-   * \brief Pausa el envio de mensajes
-   */
-  static void pause();
 
   /*!
    * \brief Reanuda el envio de mensajes

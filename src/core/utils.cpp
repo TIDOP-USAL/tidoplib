@@ -304,9 +304,9 @@ void Path::parse(const std::string &path)
 }
 
 
-std::string Path::getDrive()
+const char *Path::getDrive()
 {
-  return mPath[0];
+  return mPath[0].c_str();
 }
 
 void Path::up()
@@ -492,12 +492,12 @@ BatchProcess::BatchProcess()
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
   : mStatus(Status::START),
-  mProcessList(batchProcess.mProcessList)
+    mProcessList(batchProcess.mProcessList)
 {}
 
 BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
   : mStatus(Status::START),
-  mProcessList(procList)
+    mProcessList(procList)
 {}
 
 BatchProcess::~BatchProcess()
