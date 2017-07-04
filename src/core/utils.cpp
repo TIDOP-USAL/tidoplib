@@ -750,7 +750,10 @@ int saveBinMat(const char *file, cv::Mat &data)
 
 uint32_t getOptimalNumberOfThreads()
 {
-#ifdef I3D_MSVS_CONCURRENCY
+#ifdef HAVE_OMP
+  //TODO: Sin probar
+  return omp_get_max_threads();
+#elif defined I3D_MSVS_CONCURRENCY
   return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
 #else
   uint32_t n_threads = std::thread::hardware_concurrency();
@@ -761,7 +764,13 @@ uint32_t getOptimalNumberOfThreads()
 void parallel_for(int ini, int end, std::function<void(int)> f)
 {
   //uint64_t time_ini = getTickCount();
-#ifdef I3D_MSVS_CONCURRENCY
+#ifdef HAVE_OMP
+  //TODO: Sin probar
+  #pragma omp parallel for
+  for (size_t i = ini; i < end; i++) {
+    f(i);
+  }
+#elif defined I3D_MSVS_CONCURRENCY
   Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
   //  Concurrency::parallel_for(ini, end, f);

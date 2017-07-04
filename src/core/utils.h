@@ -856,9 +856,9 @@ I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
  * \param[in] f Función o lambda
  */
 //https://stackoverflow.com/questions/11307406/ptr-fun-cant-create-a-type
-//template<typename itIn, typename itOut> inline
-//void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, *itOut)> f)
-//{
+template<typename itIn, typename itOut> inline
+void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, itOut *)> f)
+{
 //#ifdef I3D_MSVS_CONCURRENCY
 //  Concurrency::cancellation_token_source cts;
 //  //Concurrency::run_with_cancellation_token([ini, end, f]() {
@@ -867,27 +867,28 @@ I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 //  Concurrency::parallel_for(ini, end, f);
 //#else
 
-  //auto f_aux = [&](itIn ini, itIn end, itOut *out) {
-  //  while (in_first != in_last) {
-  //    f(ini, end, out);
-  //  }
-  //};
+  auto f_aux = [&](itIn ini, itIn end, itOut *out) {
+    while (in_first != in_last) {
+      f(ini, end, out);
+    }
+  };
 
-  //int num_threads = getOptimalNumberOfThreads();
-  //std::vector<std::thread> threads(num_threads);
-  //typename std::iterator_traits<it>::difference_type size = std::distance(it_begin, it_end);
-  //int _size = size / num_threads;
-  //for (int i = 0; i < num_threads; i++) {
-  //  itIn _ini = i * _size + it_begin;
-  //  itIn _end = _ini + _size;
-  //  itOut _out = i * _size + it_out_begin;
-  //  if (i == num_threads -1) _end = it_end;
-  //  threads[i] = std::thread(f_aux, _ini, it_out_begin, _end);
-  //}
+  int num_threads = getOptimalNumberOfThreads();
+  std::vector<std::thread> threads(num_threads);
+  auto size = std::distance(it_begin, it_end);
+  int _size = size / num_threads;
+  for (int i = 0; i < num_threads; i++) {
+    itIn _ini = i * _size + it_begin;
+    itIn _end = _ini + _size;
+    itOut _out = i * _size + it_out_begin;
+    if (i == num_threads -1) _end = it_end;
+    threads[i] = std::thread(f_aux, _ini, it_out_begin, _end);
+  }
 
-  //for (auto &_thread : threads) _thread.join();
+  for (auto &_thread : threads) _thread.join();
 //#endif
-//}
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Medición de tiempo                                  */
