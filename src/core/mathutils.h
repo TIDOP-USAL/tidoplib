@@ -77,7 +77,7 @@ double crossProduct(const Point_t &pt1, const Point_t &pt2)
  * \return Producto vectorial de los dos vectores
  */
 template<typename Point3_t> inline 
-double crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
   return Point3_t(pt1.y*pt2.z - pt1.z*pt2.y, pt1.z*pt2.x - pt1.x*pt2.z, pt1.x*pt2.y - pt1.y*pt2.x);
 }
