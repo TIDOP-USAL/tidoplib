@@ -64,7 +64,9 @@ public:
     MULTILINE_2D,
     MULTILINE_3D,
     MULTIPOLYGON_2D,
-    MULTIPOLYGON_3D
+    MULTIPOLYGON_3D,
+    CIRCLE,
+    ELLIPSE
   };
 
 protected:
@@ -109,18 +111,54 @@ class EntityContainer
 
 public:
 
+  /*!
+   * \brief Allocator
+   */
   typedef typename std::vector<Entity_t>::allocator_type allocator_type;
 
+  /*!
+   * \brief value_type
+   */
   typedef typename std::vector<Entity_t>::value_type value_type;
+
+  /*!
+   * \brief Tipo entero sin signo (por lo general size_t) 
+   */
   typedef typename std::vector<Entity_t>::size_type size_type;
+
+  /*!
+   * \brief Tipo entero con signo (por lo general ptrdiff_t)
+   */
   typedef typename std::vector<Entity_t>::difference_type difference_type;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::pointer
+   */
   typedef typename std::vector<Entity_t>::pointer pointer;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::const_pointer 
+   */
   typedef typename std::vector<Entity_t>::const_pointer const_pointer;
+
+  /*!
+   * \brief value_type&
+   */
   typedef typename std::vector<Entity_t>::reference reference;
+
+  /*!
+   * \brief const value_type&
+   */
   typedef typename std::vector<Entity_t>::const_reference const_reference;
 
-  // Iteradores
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
   typedef typename std::vector<Entity_t>::iterator iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
   typedef typename std::vector<Entity_t>::const_iterator const_iterator;
 
 protected:
@@ -132,57 +170,137 @@ protected:
 
 public:
   
+  /*!
+   * \brief Constructora por defecto
+   */
   EntityContainer();
+
+  /*!
+   * \brief Constructora
+   * \param[int] Tamaño que se reserva para el contenedor
+   */
   EntityContainer(int size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[int] entity Objeto que se copia
+   */
   EntityContainer(const EntityContainer &entity);
+
+  /*!
+   * \brief Constructor
+   * \param[int] entities
+   */
   EntityContainer(const std::vector<Entity_t> &entities);
+
+  /*!
+   * \brief Constructora de lista
+   * \param[int] entities listado de entidades
+   */
   EntityContainer(std::initializer_list<Entity_t> entities);
 
+  /*!
+   * \brief Destructora
+   */
   ~EntityContainer() {}
 
 
   /*!
-   * \brief Iterador al inicio
+   * \brief Devuelve un iterador al inicio del contenedor
+   * \return Iterador al primer elemento
    */
   virtual iterator begin();
 
   /*!
-   * \brief Iterador constante al inicio
+   * \brief Devuelve un iterador constante al inicio del contenedor
+   * \return Iterador al primer elemento
    */
   virtual const_iterator begin() const;
 
   /*!
-   * \brief Iterador al final
+   * \brief Devuelve un iterador al siguiente elemento después del final del contenedor
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del final del contenedor
    */
   virtual iterator end();
 
   /*!
-   * \brief Iterador constante al final
+   * \brief Devuelve un iterador constante al siguiente elemento después del final del contenedor
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
+   * \return Iterador al siguiente elemento después del final del contenedor
    */
   virtual const_iterator end() const;
 
   /*!
-   * \brief resize
-   * \param[in] size nuevo tamaño
+   * \brief Agrega un elemento al final del contenedor
    */
-  void resize(int size);
+  void add(const Entity_t &entity);
 
   /*!
-   * \brief clear
+   * \brief Devuelve una referencia constante al elemento de la posición indicada
+   * return Referencia constante al elemento
+   */
+  const_reference at(size_type position) const;
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * return Referencia al elemento
+   */
+  reference at(size_type position);
+
+  /*!
+   * \brief Elimina los elementos del recipiente
    */
   void clear();
     
-  //TODO: ordenar y documentar
-  void reserve(size_type count);
-  void resize(size_type newSize);
-  void resize(size_type newSize, const Entity_t &entity);
-  size_type size() const;
+  /*!
+   * \brief Comprueba si el contenedor esta vacio
+   * \return true si el contenedor está vacío y false en caso contrario
+   */
   bool empty() const;
-  const_reference at(size_type position) const;
-  reference at(size_type position);
+
+  /*!
+   * \brief Establece el tamaño del contenedor
+   * \param[int] size
+   */
+  void reserve(size_type size);
+
+  /*!
+   * \brief Modifica el tamaño del contenedor
+   * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual 
+   * es mayor que count el contenedor se trunca al número de elementos indicados.
+   * \param[int] count Nuevo tamaño del contenedor
+   */
+  void resize(size_type count);
+
+  /*!
+   * \brief Modifica el tamaño del contenedor
+   * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
+   * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
+   * \param[int] count Nuevo tamaño del contenedor
+   * \param[int] value Valor que se asigna a los nuevos elementos
+   */
+  void resize(size_type count, const Entity_t &value);
+
+  /*!
+   * \brief Devuelve el tamaño del contenedor
+   * \return Tamaño
+   */
+  size_type size() const;
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
+   * return Referencia constante al elemento
+   */
   const_reference operator[](size_type position) const;
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
+   * return Referencia al elemento
+   */
   reference operator[](size_type position);
-  void add(const Entity_t &entity);
 
 };
 
@@ -218,24 +336,6 @@ EntityContainer<Entity_t>::EntityContainer(std::initializer_list<Entity_t> entit
 {
 }
 
-template<typename Entity_t> inline
-void EntityContainer<Entity_t>::add(const Entity_t &entity)
-{
-  mEntities.push_back(entity);
-}
-
-template<typename Entity_t> inline
-void EntityContainer<Entity_t>::clear() 
-{ 
-  mEntities.clear();
-}
-
-template<typename Entity_t> inline
-typename EntityContainer<Entity_t>::size_type EntityContainer<Entity_t>::size() const
-{ 
-  return mEntities.size();
-}
-
 template<typename Entity_t> inline 
 typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::begin() 
 {
@@ -261,9 +361,57 @@ typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::en
 }
 
 template<typename Entity_t> inline
-void EntityContainer<Entity_t>::resize(int size) 
+void EntityContainer<Entity_t>::add(const Entity_t &entity)
+{
+  mEntities.push_back(entity);
+}
+
+template<typename Entity_t> inline
+typename std::vector<Entity_t>::const_reference EntityContainer<Entity_t>::at(size_type position) const
+{
+  return mEntities.at(position);
+}
+
+template<typename Entity_t> inline
+typename std::vector<Entity_t>::reference EntityContainer<Entity_t>::at(size_type position)
+{
+  return mEntities.at(position);
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::clear() 
 { 
-  mEntities.resize(size); 
+  mEntities.clear();
+}
+
+template<typename Entity_t> inline
+bool EntityContainer<Entity_t>::empty() const
+{
+  return mEntities.empty();
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::reserve(size_type size)
+{
+  mEntities.reserve(size);
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::resize(size_type count)
+{
+  mEntities.resize(count);
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::resize(size_type count, const Entity_t &value)
+{
+  mEntities.resize(count, value);
+}
+
+template<typename Entity_t> inline
+typename EntityContainer<Entity_t>::size_type EntityContainer<Entity_t>::size() const
+{ 
+  return mEntities.size();
 }
 
 template<typename Entity_t> inline

@@ -83,13 +83,12 @@ public:
   ~Polygon() {}
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
+   * \brief Area de un poligono simple
+   * http://mathworld.wolfram.com/PolygonArea.html
+   * 
+   * \return Area
    */
-  //void add(const Point_t &point) override;
-
-  //TODO: falta...
-  //double area() const;
+  double area() const;
 
   /*!
    * \brief Comprueba si un punto esta dentro del poligono
@@ -101,8 +100,8 @@ public:
    * \brief Perimetro del poligono
    * \return Perimetro del poligono
    */
-  double perimeter() const;
-
+  //double perimeter() const;
+  double length() const;
 };
 
 // Definición de métodos
@@ -141,19 +140,6 @@ Polygon<Point_t>::Polygon(std::initializer_list<Point_t> listPoints)
     Entities2D<Point_t>(listPoints) 
 {
 }
-
-//template<typename T> inline
-//Polygon<T> &Polygon<T>::operator = (const Polygon &poligon)
-//{
-//  if (this != &poligon) mPoints = poligon.mPoints;
-//  return *this;
-//}
-
-//template<typename Point_t> inline
-//void Polygon<Point_t>::add(const Point_t &point)
-//{ 
-//  mPoints.push_back(point);
-//}
 
 template<typename Point_t> inline
 bool Polygon<Point_t>::isInner(const Point_t &point) const
@@ -260,13 +246,24 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
 }
 
 template<typename Point_t> inline
-double Polygon<Point_t>::perimeter()  const
+double Polygon<Point_t>::length()  const
 {
   double perimeter = 0.;
   for (size_t i = 1; i < mEntities.size(); i++) {
     perimeter += distance(mEntities[i-1], mEntities[i]);
   }
   return perimeter;
+}
+
+template<typename Point_t> inline
+double Polygon<Point_t>::area() const
+{
+  //TODO: Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo
+  double area = 0.;
+  for (size_t i = 1; i < mEntities.size(); i++) {
+    area += crossProduct(mEntities[i-1], mEntities[i]);
+  }
+  return area / 2.;
 }
 
 typedef Polygon<Point<int>> PolygonI;
@@ -323,17 +320,11 @@ public:
   Polygon3D(std::initializer_list<Point3_t> listPoints);
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
-   */
-  //void add(const Point3_t &point) override;
-
-  /*!
    * \brief Perimetro del poligono
    * \return Perimetro del poligono
    */
-  double perimeter() const;
-
+  //double perimeter() const;
+  double length() const;
 };
 
 template<typename Point3_t> inline
@@ -370,15 +361,9 @@ Polygon3D<Point3_t>::Polygon3D(std::initializer_list<Point3_t> listPoints)
     Entities3D<Point3_t>(listPoints) 
 {
 }
-//
-//template<typename Point3_t> inline
-//void Polygon3D<Point3_t>::add(const Point3_t &point)
-//{
-//  mPoints.push_back(point);
-//}
 
 template<typename Point3_t> inline
-double Polygon3D<Point3_t>::perimeter()  const
+double Polygon3D<Point3_t>::length()  const
 {
   double perimeter = 0.;
   for (size_t i = 1; i < mEntities.size(); i++) {

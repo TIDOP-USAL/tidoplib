@@ -8,13 +8,17 @@
 namespace I3D
 {
 
-VrtFrmtOptions::VrtFrmtOptions()
+RasterOptions::RasterOptions(Format format) 
+  : mFormat(format)
 {}
 
-VrtFrmtOptions::~VrtFrmtOptions()
+RasterOptions::~RasterOptions()
 {}
 
-
+RasterOptions::Format RasterOptions::getFormat()
+{
+  return mFormat;
+}
 
 //Open options
 //
@@ -25,13 +29,20 @@ VrtFrmtOptions::~VrtFrmtOptions()
 //SPARSE_OK=TRUE/FALSE ((GDAL > 2.2): Should empty blocks be omitted on disk? When this option is set, any attempt of writing a block whose all pixels are 0 or the nodata value will cause it not to be written at all (unless there is a corresponding block already allocated in the file). Sparse files have 0 tile/strip offsets for blocks never written and save space; however, most non-GDAL packages cannot read such files. The default is FALSE.
 
 
-DataType TiffOptions::dataTypes[] = { I3D_8U, I3D_16U, I3D_16S, I3D_32U, I3D_32S, I3D_32F, I3D_64F };
+//DataType TiffOptions::dataTypes[] = { I3D_8U, I3D_16U, I3D_16S, I3D_32U, I3D_32S, I3D_32F, I3D_64F };
 
-TiffOptions::TiffOptions() : VrtFrmtOptions()
-{}
+TiffOptions::TiffOptions() 
+  : RasterOptions(RasterOptions::Format::TIFF)
+{
+  mDataTypes = { I3D_8U, I3D_16U, I3D_16S, I3D_32U, I3D_32S, I3D_32F, I3D_64F };
+}
 
 TiffOptions::~TiffOptions()
 {}
 
+const char *TiffOptions::getOptions()
+{
+
+}
 
 }

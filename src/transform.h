@@ -149,7 +149,7 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  I3D_DEPRECATED("")
+  //I3D_DEPRECATED("")
   virtual transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
                                      transform_order trfOrder = transform_order::DIRECT) const = 0;
 
@@ -172,7 +172,7 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  I3D_DEPRECATED("transform")
+  //I3D_DEPRECATED("transform")
   virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
                                              transform_order trfOrder = transform_order::DIRECT) const;
   

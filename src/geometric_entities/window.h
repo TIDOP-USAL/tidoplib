@@ -108,8 +108,8 @@ T1 expandWindow(const T1 &w, T2 sz)
   return expandWindow(w, sz, sz);
 }
 
-template<typename Point_t, typename T>
-inline Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
+template<typename Point_t, typename T> inline
+Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
 {
   Window<Point_t> w_return = w;
   Point<T> t(dx, dy);
@@ -451,14 +451,28 @@ typedef Window<Point<float>> WindowF;
  * \param[in] w Ventana
  * \return cv::Rect
  */
-I3D_EXPORT cv::Rect windowToCvRect(WindowI w);
+//I3D_EXPORT cv::Rect windowToCvRect(WindowI w);
+template<typename T> inline
+cv::Rect_<T> windowToCvRect(const Window<Point<T>> &w)
+{
+  return cv::Rect_<T>(point_cast<cv::Point_<T>>(w.pt1), point_cast<cv::Point_<T>>(w.pt2));
+}
 
 /*!
  * \brief Convierte una Rect de OpenCV a un objeto WindowI
  * \param[in] rect cv::Rect
  * \return Ventana
  */
-I3D_EXPORT WindowI cvRectToWindow(cv::Rect rect);
+//I3D_EXPORT WindowI cvRectToWindow(cv::Rect rect);
+template<typename T> inline
+Window<T> cvRectToWindow(const cv::Rect_<T> &rect)
+{
+  Point<T> pt1(rect.tl().x,rect.tl().y);
+  Point<T> pt2(rect.br().x,rect.br().y);
+  return Window<T>(pt1, pt2);
+}
+
+
 
 
 }
