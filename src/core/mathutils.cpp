@@ -22,48 +22,7 @@ namespace I3D
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
-
-double laplacianVariance(const cv::Mat& src)
-{
-  cv::Mat laplacian;
-  cv::Laplacian(src, laplacian, CV_64F);
-  cv::Scalar mean, stddev;
-  cv::meanStdDev(laplacian, mean, stddev);
-  return (stddev.val[0] * stddev.val[0]);
-}
-
-#endif
-
-double computeMedian(const std::vector<double> &input)
-{
-  size_t size = input.size();
-  if (size % 2 == 0)
-    return (input[size / 2 - 1] + input[size / 2]) / 2;
-  else
-    return input[size / 2];
-}
-
-double computeTempMAD(const std::vector<double> &input, const double median)
-{
-  std::vector<double> inp = input;
-  for (size_t i = 0; i < inp.size(); ++i) {
-    inp[i] = abs(inp[i] - median);
-  }
-  sort(inp.begin(), inp.end());
-  return computeMedian(inp)*1.4826;
-}
-
-bool isOutlier(const double temp, const double median, const double mad)
-{
-  if ((abs(temp - median) / mad)>2) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-//https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+  //https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
 void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa)
 {
   if (omega) *omega = atan2(R[1][2], R[2][2]);
@@ -187,6 +146,46 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
 }
 
 /* ---------------------------------------------------------------------------------- */
+#ifdef HAVE_OPENCV
+
+double laplacianVariance(const cv::Mat& src)
+{
+  cv::Mat laplacian;
+  cv::Laplacian(src, laplacian, CV_64F);
+  cv::Scalar mean, stddev;
+  cv::meanStdDev(laplacian, mean, stddev);
+  return (stddev.val[0] * stddev.val[0]);
+}
+
+#endif
+
+double computeMedian(const std::vector<double> &input)
+{
+  size_t size = input.size();
+  if (size % 2 == 0)
+    return (input[size / 2 - 1] + input[size / 2]) / 2;
+  else
+    return input[size / 2];
+}
+
+double computeTempMAD(const std::vector<double> &input, const double median)
+{
+  std::vector<double> inp = input;
+  for (size_t i = 0; i < inp.size(); ++i) {
+    inp[i] = abs(inp[i] - median);
+  }
+  sort(inp.begin(), inp.end());
+  return computeMedian(inp)*1.4826;
+}
+
+bool isOutlier(const double temp, const double median, const double mad)
+{
+  if ((abs(temp - median) / mad)>2) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 #ifdef HAVE_OPENCV
 

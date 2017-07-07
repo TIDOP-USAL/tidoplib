@@ -29,8 +29,11 @@ namespace I3D
  * \{
  */
 
+
 /* ---------------------------------------------------------------------------------- */
-/*            Operaciones entre vectores en el plano y en el espacio                  */
+/*                                 ALGEBRA                                            */
+/* ---------------------------------------------------------------------------------- */
+/* Operaciones entre vectores en el plano y en el espacio                             */
 /* ---------------------------------------------------------------------------------- */
 
 /*!
@@ -167,6 +170,227 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   azimut = atan2(v.x, v.y);
   if (azimut < 0.) azimut += I3D_2PI;
   return azimut;
+}
+
+/*!
+ * \brief ángulos de Euler
+ *
+ * A partir de una matriz de rotación obtiene los ángulos de giro.
+ *
+ * Referencias:
+ * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
+ * http://mathworld.wolfram.com/EulerAngles.html
+ *
+ * \param[in] R Matriz de rotación
+ * \param[out] omega Rotación respecto al eje X en radianes
+ * \param[out] phi Rotación respecto al eje Y en radianes
+ * \param[out] kappa Rotación respecto al eje Z en radianes
+ */
+I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
+//Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
+//https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
+//I3D_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
+//... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
+
+/*!
+ * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
+ * \param[in] rX Rotación respecto al eje X en radianes
+ * \param[in] rY Rotación respecto al eje Y en radianes
+ * \param[in] rZ Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+//I3D_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje X
+ * \param[in] rX Rotación respecto al eje X en radianes
+ * \param[out] RX Matriz de rotación
+ */
+void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje Y
+ * \param[in] rY Rotación respecto al eje Y en radianes
+ * \param[out] RY Matriz de rotación
+ */
+void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
+
+/*!
+ * \brief Cálculo de la matriz de rotación respecto al eje Z
+ * \param[in] rZ Rotación respecto al eje Z en radianes
+ * \param[out] RZ Matriz de rotación
+ */
+void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
+
+/*!
+ * \brief Cálculo de la matriz de rotación
+ * \param[in] omega Rotación respecto al eje X en radianes
+ * \param[in] phi Rotación respecto al eje Y en radianes
+ * \param[in] kappa Rotación respecto al eje Z en radianes
+ * \param[out] R Matriz de rotación
+ */
+I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
+
+/*!
+ * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
+ * Los cuaterniones unitarios proporcionan una notación matemática para representar 
+ * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con 
+ * los ángulos de Euler, son más simples de componer y evitan el problema del bloqueo 
+ * del cardán. Comparados con las matrices de rotación, son más eficientes y más 
+ * estables numéricamente.
+ *
+ * Un cuaternión se representa como:
+ * \f[ w+xi+yj+zk \f]
+ */
+template<typename T>
+class Quaternion
+{
+public:
+  T x;
+  T y;
+  T z;
+  T w;
+
+public:
+
+  /*!
+   * \brief Constructor por defecto
+   */
+  Quaternion();
+  
+  /*!
+   * \brief Constructor
+   * \param[in] x
+   * \param[in] y
+   * \param[in] z
+   * \param[in] w
+   */
+  Quaternion(T x, T y, T z, Tw);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] quaternion Objeto que se copia
+   */
+  Quaternion(const Quaternion<T> &quaternion);
+
+  /*!
+   * \brief Constructor
+   * \param[in] R Matriz de rotación
+   */
+  Quaternion(std::array<std::array<double, 3>, 3> *R);
+
+  /*!
+   * \brief destructora
+   */
+  ~Quaternion();
+
+  /*!
+   * \brief Operador de asignación
+   * \param[in] quat Objeto que se copia
+   */
+  Quaternion& operator = (const Quaternion<T>& quat);
+
+  /*!
+   * \brief Conjugado
+   * \f[ q = w-xi-yj-zk \f]
+   */
+  Quaternion<T> conjugate();
+
+  /*!
+   * \brief Norma
+   * \f[ q = w+xi+yj+zk \f]
+   * \f[ n(q) = sqrt{q.q} = sqrt{w^2+x^2+y^2+z^2} \f]
+   */
+  double norm();
+
+private:
+
+};
+
+template<typename T> inline
+Quaternion::Quaternion()
+  : x(0), y(0), z(0), w(0)
+{
+}
+
+template<typename T> inline
+Quaternion::Quaternion(T x, T y, T z, T w)
+  : x(x), y(y), z(z), w(w)
+{
+}
+
+template<typename T> inline
+Quaternion::Quaternion(const Quaternion<T> &quaternion)
+  : x(quaternion.x), 
+    y(quaternion.y), 
+    z(quaternion.z), 
+    w(quaternion.w)
+{
+}
+
+template<typename T> inline
+Quaternion(std::array<std::array<double, 3>, 3> *R)
+{
+
+}
+
+template<typename T> inline
+Quaternion::~Quaternion()
+{}
+
+template<typename T> inline
+Quaternion<T>& Quaternion<T>::operator = (const Quaternion& quaternion)
+{
+  this->x = quaternion.x;
+  this->y = quaternion.y;
+  this->z = quaternion.z;
+  this->w = quaternion.w;
+  return *this;
+}
+
+template<typename T> inline
+Quaternion<T> Quaternion<T>::conjugate()
+{
+  return Quaternion<T>(-x, -y, -z, w);
+}
+
+template<typename T> inline
+double Quaternion<T>::norm()
+{
+  return sqrt(x*x+y*y+z*z+w*w)
+}
+
+// Operaciones entre cuaterniones
+
+/*!
+ * \brief Multiplicación de cuaterniones
+ * \f[ q1 = w1+x1i+y1j+z1k \f]
+ * \f[ q2 = w2+x2i+y2j+z2k \f]
+ * \f[ q1.q2 = \f]
+ */
+template<typename T> inline
+Quaternion<T> operator *(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
+{
+  return Quaternion<T>(
+    quat1.x*quat2.w + quat1.y*quat2.z - quat1.z*quat2.y + quat1.w*quat2.x,
+    -quat1.x.quat2z + quat1.y*quat2.w + quat1.z*quat2.x + quat1.w*quat2.y,
+    quat1.x*quat2.y - quat1.y*quat2.x + quat1.z*quat2.w + quat1.w*quat2.z,
+    -quat1.x*quat2.x - quat1.y*quat2.y - quat1.z*quat2.z + quat1.w*quat2.w
+  );
+}
+
+/*!
+ * \brief Suma de cuaterniones
+ * \f[ q1 = w1+x1i+y1j+z1k \f]
+ * \f[ q2 = w2+x2i+y2j+z2k \f]
+ * \f[ q1 + q2 = \f]
+ */
+template<typename T> inline
+Quaternion<T> operator +(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
+{
+  return Quaternion<T>(quat1.x+quat2.x, quat1.y+quat2.y, quat1.z+quat2.z, quat1.w+quat2.w);
 }
 
 
@@ -680,69 +904,6 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
 }
 
 /* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief ángulos de Euler
- *
- * A partir de una matriz de rotación obtiene los ángulos de giro.
- *
- * Referencias:
- * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
- * http://mathworld.wolfram.com/EulerAngles.html
- *
- * \param[in] R Matriz de rotación
- * \param[out] omega Rotación respecto al eje X en radianes
- * \param[out] phi Rotación respecto al eje Y en radianes
- * \param[out] kappa Rotación respecto al eje Z en radianes
- */
-I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
-
-//Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
-//https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
-//I3D_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
-
-//... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
-
-/*!
- * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
- * \param[in] rX Rotación respecto al eje X en radianes
- * \param[in] rY Rotación respecto al eje Y en radianes
- * \param[in] rZ Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-//I3D_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje X
- * \param[in] rX Rotación respecto al eje X en radianes
- * \param[out] RX Matriz de rotación
- */
-void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje Y
- * \param[in] rY Rotación respecto al eje Y en radianes
- * \param[out] RY Matriz de rotación
- */
-void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje Z
- * \param[in] rZ Rotación respecto al eje Z en radianes
- * \param[out] RZ Matriz de rotación
- */
-void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
-
-/*!
- * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X en radianes
- * \param[in] phi Rotación respecto al eje Y en radianes
- * \param[in] kappa Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
-
-
 
 /* ---------------------------------------------------------------------------------- */
 
