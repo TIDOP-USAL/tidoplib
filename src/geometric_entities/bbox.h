@@ -105,18 +105,6 @@ public:
    */
   template<typename Point_t2> operator Box<Point_t2>() const;
 
-  ///*!
-  // * \brief Devuelve el ancho de la ventana
-  // * \return Ancho
-  // */
-  //T getWidth() const { return pt2.x - pt1.x; }
-
-  ///*!
-  // * \brief Devuelve el alto de la ventana
-  // * \return Alto
-  // */
-  //T getHeight() const { return pt2.y - pt1.y; }
-
   /*!
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox

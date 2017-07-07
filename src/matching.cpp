@@ -205,7 +205,7 @@ void Matching::getGoodMatches(std::vector< cv::DMatch > *gm, double ratio) const
   }
 }
 
-void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double ratio) const
+void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector<cv::DMatch> *gm, double ratio) const
 {
   getGoodMatches(feat1.getKeyPoints(), feat2.getKeyPoints(), gm, ratio);
 }
@@ -273,7 +273,7 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
   }
 }
 
-void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector< cv::DMatch > *gm, double distance, double confidence) const
+void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, std::vector<cv::DMatch> *gm, double distance, double confidence) const
 {
   getGoodMatches(feat1.getKeyPoints(), feat2.getKeyPoints(), gm, distance, confidence);
 }

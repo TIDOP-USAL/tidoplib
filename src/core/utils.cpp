@@ -371,7 +371,7 @@ void Process::resume()
 }
 
 I3D_DISABLE_WARNING(4100)
-  Process::Status Process::run(Progress *progressBar)
+Process::Status Process::run(Progress *progressBar)
 {
   return mStatus = Status::RUNNING;
 }
@@ -410,7 +410,7 @@ CmdProcess::~CmdProcess()
 }
 
 I3D_DISABLE_WARNING(4100)
-  Process::Status CmdProcess::run(Progress *progressBar)
+Process::Status CmdProcess::run(Progress *progressBar)
 {
   Process::run();
   size_t len = strlen(mCmd.c_str());
@@ -487,7 +487,8 @@ I3D_ENABLE_WARNING(4100)
 
 BatchProcess::BatchProcess()
   : mStatus(Status::START),
-  mProcessList(0)
+  mProcessList(0),
+  _thread()
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
@@ -515,8 +516,9 @@ void BatchProcess::add(const std::shared_ptr<Process> &process)
 
 void BatchProcess::clear()
 {
-  mProcessList.clear();
-  mStatus = Status::START;
+  //mProcessList.clear();
+  //mStatus = Status::START;
+  reset();
 }
 
 void BatchProcess::pause()
@@ -562,6 +564,35 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
   }
   return Status::FINALIZED;
 }
+
+//BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
+//{
+//  mStatus = Status::RUNNING;
+//  //if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
+//  //for (const auto process : mProcessList) {
+//  //  while (mStatus == Status::PAUSE);
+//  //  if (mStatus == Status::STOPPED) {
+//  //    // Se fuerza la terminación
+//  //    return Status::STOPPED;
+//  //  } else {
+//  //    if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+//  //      return Status::FINALIZED_ERROR;
+//  //    } else {
+//  //      if (progressBarTotal) (*progressBarTotal)();
+//  //    }
+//  //  }
+//  //}
+//  //return Status::FINALIZED;
+//
+//  auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
+//  
+//  };
+//
+//  std::thread t(f_aux, progressBarTotal, progressBarPartial);
+//  t.detach();
+//  //return Status::FINALIZED;
+//}
+
 
 void BatchProcess::stop()
 {
@@ -822,10 +853,10 @@ uint64_t getTickCount()
 
 Chrono::Chrono(const char *msg, bool writeMsg)
   : mTimeIni(0),
-  mAccumulated(0),
-  mStatus(Chrono::Status::START),
-  mMessage(msg),
-  bWriteMsg(writeMsg)
+    mAccumulated(0),
+    mStatus(Chrono::Status::START),
+    mMessage(msg),
+    bWriteMsg(writeMsg)
 {
   //run();
 }

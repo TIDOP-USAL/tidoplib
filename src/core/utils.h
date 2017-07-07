@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <map>
+#include <thread>
 
 #include "core/config.h"
 
@@ -471,6 +472,10 @@ protected:
    */
   std::list<std::shared_ptr<Process>> mProcessList;
 
+
+  std::thread _thread;
+  //std::mutex mtx;
+
 public:  
 
   /*!
@@ -503,7 +508,7 @@ public:
 
   /*!
    * \brief Limpia la lista de procesos
-   * \deprecated Use I3D::CmdOption::setActive en su lugar
+   * \deprecated Use reset() en su lugar
    */
   I3D_DEPRECATED("BatchProcess::reset()")
   void clear();
@@ -529,6 +534,8 @@ public:
    * \param[in] progressBarPartial Barra de progreso parcial
    */
   Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
+
+  Status run_async(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
 
   /*!
    * \brief Detiene los procesos
@@ -851,20 +858,20 @@ I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 /*!
  * \brief Ejecuta una función en paralelo
  * Método sobrecargado para trabajar con contenedores
- * \param[in] ini
- * \param[in] end
+ * \param[in] it_begin
+ * \param[in] it_end
+ * \param[out] it_out_begin 
  * \param[in] f Función o lambda
  */
-//https://stackoverflow.com/questions/11307406/ptr-fun-cant-create-a-type
 template<typename itIn, typename itOut> inline
 void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, itOut *)> f)
 {
 //#ifdef I3D_MSVS_CONCURRENCY
-//  Concurrency::cancellation_token_source cts;
-//  //Concurrency::run_with_cancellation_token([ini, end, f]() {
-//  //  Concurrency::parallel_for(ini, end, f);
-//  //},cts.get_token());
-//  Concurrency::parallel_for(ini, end, f);
+  //Concurrency::cancellation_token_source cts;
+  //Concurrency::run_with_cancellation_token([ini, end, f]() {
+  //  Concurrency::parallel_for(ini, end, f);
+  //},cts.get_token());
+  //Concurrency::parallel_for(ini, end, f);
 //#else
 
   auto f_aux = [&](itIn ini, itIn end, itOut *out) {
