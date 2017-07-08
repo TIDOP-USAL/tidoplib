@@ -9,6 +9,7 @@
 #include <memory>
 #include <map>
 #include <thread>
+#include <mutex>
 
 #include "core/config.h"
 
@@ -326,7 +327,7 @@ public:
     START,             /*!< Inicio */
     RUNNING,           /*!< Corriendo */
     PAUSE,             /*!< Pausado */
-    STOPPED,           /*!< Detenido */
+    STOPPED,           /*!< Detenido por el usuario*/
     FINALIZED,         /*!< Finalizado */
     FINALIZED_ERROR    /*!< Terminado con error */
   };
@@ -472,9 +473,9 @@ protected:
    */
   std::list<std::shared_ptr<Process>> mProcessList;
 
-
   std::thread _thread;
-  //std::mutex mtx;
+  std::mutex mtx;
+  Process *mCurrentProcess;
 
 public:  
 
@@ -535,6 +536,11 @@ public:
    */
   Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
 
+  /*!
+   * \brief Corre los procesos en otro hilo de ejecución
+   * \param[in] progressBarTotal Barra de progreso total
+   * \param[in] progressBarPartial Barra de progreso parcial
+   */
   Status run_async(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
 
   /*!

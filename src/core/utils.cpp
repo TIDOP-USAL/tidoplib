@@ -524,6 +524,9 @@ void BatchProcess::clear()
 void BatchProcess::pause()
 {
   mStatus = Status::PAUSE;
+  if (mCurrentProcess) {
+    mCurrentProcess->pause();
+  }
 }
 
 void BatchProcess::reset()
@@ -542,6 +545,8 @@ void BatchProcess::resume()
 {
   if (mStatus == Status::PAUSE) {
     mStatus = Status::RUNNING;
+    if (mCurrentProcess) 
+      mCurrentProcess->resume();
   }
 }
 
@@ -565,38 +570,42 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
   return Status::FINALIZED;
 }
 
-//BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
-//{
-//  mStatus = Status::RUNNING;
-//  //if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
-//  //for (const auto process : mProcessList) {
-//  //  while (mStatus == Status::PAUSE);
-//  //  if (mStatus == Status::STOPPED) {
-//  //    // Se fuerza la terminación
-//  //    return Status::STOPPED;
-//  //  } else {
-//  //    if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
-//  //      return Status::FINALIZED_ERROR;
-//  //    } else {
-//  //      if (progressBarTotal) (*progressBarTotal)();
-//  //    }
-//  //  }
-//  //}
-//  //return Status::FINALIZED;
-//
-//  auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
-//  
-//  };
-//
-//  std::thread t(f_aux, progressBarTotal, progressBarPartial);
-//  t.detach();
-//  //return Status::FINALIZED;
-//}
+BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
+{
+  mStatus = Status::RUNNING;
+
+  auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
+    if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
+    for (const auto process : mProcessList) {
+      mCurrentProcess = process.get();
+      while (mStatus == Status::PAUSE);
+      if (mStatus == Status::STOPPED) {
+        // Se fuerza la terminación
+        return Status::STOPPED;
+      } else {
+        if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+          return Status::FINALIZED_ERROR;
+        } else {
+          if (progressBarTotal) (*progressBarTotal)();
+        }
+      }
+    }
+    return Status::FINALIZED;
+  };
+
+  _thread = std::thread(f_aux, progressBarTotal, progressBarPartial);
+  _thread.detach();
+
+  return mStatus;
+}
 
 
 void BatchProcess::stop()
 {
   mStatus = Status::STOPPED;
+  if (mCurrentProcess) {
+    mCurrentProcess->stop();
+  }
 }
 
 

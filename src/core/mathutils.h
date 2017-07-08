@@ -267,7 +267,7 @@ public:
    * \param[in] z
    * \param[in] w
    */
-  Quaternion(T x, T y, T z, Tw);
+  Quaternion(T x, T y, T z, T w);
 
   /*!
    * \brief Constructor de copia
@@ -310,19 +310,19 @@ private:
 };
 
 template<typename T> inline
-Quaternion::Quaternion()
+Quaternion<T>::Quaternion()
   : x(0), y(0), z(0), w(0)
 {
 }
 
 template<typename T> inline
-Quaternion::Quaternion(T x, T y, T z, T w)
+Quaternion<T>::Quaternion(T x, T y, T z, T w)
   : x(x), y(y), z(z), w(w)
 {
 }
 
 template<typename T> inline
-Quaternion::Quaternion(const Quaternion<T> &quaternion)
+Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
   : x(quaternion.x), 
     y(quaternion.y), 
     z(quaternion.z), 
@@ -331,13 +331,13 @@ Quaternion::Quaternion(const Quaternion<T> &quaternion)
 }
 
 template<typename T> inline
-Quaternion(std::array<std::array<double, 3>, 3> *R)
+Quaternion<T>::Quaternion(std::array<std::array<double, 3>, 3> *R)
 {
 
 }
 
 template<typename T> inline
-Quaternion::~Quaternion()
+Quaternion<T>::~Quaternion()
 {}
 
 template<typename T> inline
