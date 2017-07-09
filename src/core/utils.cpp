@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <libgen.h>
+#include <dirent.h>
 #endif
 
 #include <iostream>
@@ -267,7 +268,73 @@ int changeFileNameAndExtension(const char *path, const char *newNameExt, char *p
   return r_err;
 }
 
-  /* ---------------------------------------------------------------------------------- */
+void directoryList(const char *directory, std::list<std::string> *dirList)
+{
+#ifdef _MSC_VER
+  WIN32_FIND_DATAA findData;
+  HANDLE hFind;
+
+  char dir[I3D_MAX_PATH];
+  strcpy(dir, directory);
+  strcat(dir, "/*");
+
+  hFind = FindFirstFileA(dir, &findData);
+  if (hFind == INVALID_HANDLE_VALUE) {
+    msgError("FindFirstFile failed (%d)\n", GetLastError());
+    return;
+  } else { 
+    while (FindNextFileA(hFind, &findData) != 0) {
+      if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        if (strcmp(findData.cFileName, "..") == 0) continue;
+        dirList->push_back(findData.cFileName);
+      }
+    }
+    FindClose(hFind);
+  }
+#else
+  //TODO: Sin probar...
+  DIR *dir = opendir(directory);
+
+  struct dirent *entry = readdir(dir);
+
+  while (entry != NULL) {
+    if (entry->d_type == DT_DIR)
+      dirList->push_back(entry->d_name);
+      
+    entry = readdir(dir);
+  }
+  closedir(dir);
+#endif
+}
+
+void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard)
+{
+#ifdef _MSC_VER
+  WIN32_FIND_DATAA findData;
+  HANDLE hFind;
+
+  char dir[I3D_MAX_PATH];
+  strcpy(dir, directory);
+  strcpy(dir, "\\");
+  strcat(dir, wildcard);
+
+  hFind = FindFirstFileA(dir, &findData);
+  if (hFind == INVALID_HANDLE_VALUE) {
+    msgError("FindFirstFile failed (%d)\n", GetLastError());
+    return;
+  } else { 
+    fileList->push_back(findData.cFileName);
+    while (FindNextFileA(hFind, &findData) != 0) {
+      fileList->push_back(findData.cFileName);
+    }
+    FindClose(hFind);
+  }
+#else
+
+#endif
+}
+
+/* ---------------------------------------------------------------------------------- */
 
 void Path::parse(const std::string &path)
 {
@@ -488,17 +555,22 @@ I3D_ENABLE_WARNING(4100)
 BatchProcess::BatchProcess()
   : mStatus(Status::START),
   mProcessList(0),
+  mCurrentProcess(0),
   _thread()
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
   : mStatus(Status::START),
-    mProcessList(batchProcess.mProcessList)
+    mProcessList(batchProcess.mProcessList),
+    mCurrentProcess(0),
+    _thread()
 {}
 
 BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
   : mStatus(Status::START),
-    mProcessList(procList)
+    mProcessList(procList),
+    mCurrentProcess(0),
+    _thread()
 {}
 
 BatchProcess::~BatchProcess()
@@ -575,7 +647,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
   mStatus = Status::RUNNING;
 
   auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
-    if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
+    if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
     for (const auto process : mProcessList) {
       mCurrentProcess = process.get();
       while (mStatus == Status::PAUSE);
@@ -583,10 +655,10 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         // Se fuerza la terminación
         return Status::STOPPED;
       } else {
-        if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+        if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
           return Status::FINALIZED_ERROR;
         } else {
-          if (progressBarTotal) (*progressBarTotal)();
+          if (progress_bar_total) (*progress_bar_total)();
         }
       }
     }

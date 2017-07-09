@@ -209,6 +209,11 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  */
 I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
 
+
+I3D_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
+
+I3D_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
+
 //TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
 
 /*!
@@ -306,6 +311,11 @@ public:
    * \return
    */
   std::string toString();
+
+  //TODO: Un path no solo apunta a un directorio con lo cual habría que añadir utilidades para imagenes
+  // bool isDirectory();
+  // bool isFile();
+  // void listFiles();  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
 };
 
 
