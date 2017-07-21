@@ -336,27 +336,106 @@ public:
   enum class Status {
     START,             /*!< Inicio */
     RUNNING,           /*!< Corriendo */
+    PAUSING,           /*!< Pausando */
     PAUSE,             /*!< Pausado */
     STOPPED,           /*!< Detenido por el usuario*/
     FINALIZED,         /*!< Finalizado */
     FINALIZED_ERROR    /*!< Terminado con error */
   };
 
+  /*!
+   * \brief Interfaz que se debe implementar para recibir los eventos del proceso
+   *
+   * Las clases que implementen este listener y se subcriban mediante el método 
+   * addListener() recibiran los diferentes eventos que se emitan desde el proceso.
+   */
+  class Listener
+  {
+  public:
+
+    /*!
+     * \brief Constructora
+     */
+    Listener()
+    {
+    }
+
+    /*!
+     * \brief destructora
+     */
+    virtual ~Listener()
+    {
+    }
+
+    /*!
+     * \brief Evento pausa
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onPause() = 0;
+
+    /*!
+     * \brief Evento reanudación
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onResume() = 0;
+
+    /*!
+     * \brief Evento proceso corriendo
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onRun() = 0;
+
+    /*!
+     * \brief Evento inicio procesos
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onStart() = 0;
+
+    /*!
+     * \brief Evento detención
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onStop() = 0;
+
+    /*!
+     * \brief Mensaje de depuración
+     * \param msg Mensaje que recibe el escuchador
+     * \param date Fecha y hora en la que se emite el mensaje
+     */
+    virtual void onEnd() = 0;
+  };
+
 protected:
 
   Status mStatus;
+
+  /*!
+   * \brief Lista con los escuchadores subscritos al gestor de eventos
+   */
+  std::list<Listener *> mListeners;
 
 public:
 
   /*!
    * \brief Constructora
    */
-  Process() : mStatus(Status::START) {}
+  Process();
 
   /*!
    * \brief Destructora
    */
   virtual ~Process();
+
+  /*!
+   * \brief Añade un escuchador de eventos
+   * \param[in] listener Objeto escuchador
+   */
+  void addListener(Listener *listener);
 
   /*!
    * \brief Pausa el proceso
@@ -388,11 +467,23 @@ public:
   virtual void stop();
 
   /*!
+   * \brief Devuelve el proceso como una linea de comandos
+   */
+  //virtual std::string toString() = 0;
+
+  /*!
    * \brief Devuelve el estado actual de la ejecución 
    */
   Status getStatus();
 
-private:
+protected:
+
+  void endTriggered();
+  void pauseTriggered();
+  void resumeTriggered();
+  void runTriggered();
+  void startTriggered();
+  void stopTriggered();
 
 };
 
@@ -455,7 +546,7 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-class BatchProcess
+class BatchProcess :  public Process::Listener
 {
 public:
 
@@ -465,6 +556,7 @@ public:
   enum class Status {
     START,             /*!< Inicio */
     RUNNING,           /*!< Corriendo */
+    PAUSING,           /*!< Pausando */
     PAUSE,             /*!< Pausado */
     STOPPED,           /*!< Detenido */
     FINALIZED,         /*!< Finalizado */
@@ -558,6 +650,14 @@ public:
    */
   void stop();
 
+protected:
+  
+  void onPause() override;
+  void onResume() override;
+  void onRun() override;
+  void onStart() override;
+  void onStop() override;
+  void onEnd() override;
 };
 
 
