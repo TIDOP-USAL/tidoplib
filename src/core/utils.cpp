@@ -315,7 +315,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 
   char dir[I3D_MAX_PATH];
   strcpy(dir, directory);
-  strcpy(dir, "\\");
+  strcat(dir, "\\"); // TODO: el tema de las barras aunque a efectos practicos de igual no queda elegante el mezclar los dos tipos de barras...
   strcat(dir, wildcard);
 
   hFind = FindFirstFileA(dir, &findData);
@@ -412,17 +412,28 @@ std::string Path::toString()
 /*          PROCESOS Y BATCH                                                          */
 /* ---------------------------------------------------------------------------------- */
 
+Process::Process() 
+  : mStatus(Status::START),
+    mListeners(0) 
+{
+}
+
 Process::~Process()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     stop();
   }
   mStatus = Status::FINALIZED;
 }
 
+void Process::addListener(Listener *listener)
+{ 
+  mListeners.push_back(listener);
+}
+
 void Process::pause()
 {
-  mStatus = Status::PAUSE;
+  mStatus = Status::PAUSING;
 }
 
 void Process::reset()
@@ -432,23 +443,25 @@ void Process::reset()
 
 void Process::resume()
 {
-  if (mStatus == Status::PAUSE) {
+  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     mStatus = Status::RUNNING;
   }
+  resumeTriggered();
 }
 
 I3D_DISABLE_WARNING(4100)
 Process::Status Process::run(Progress *progressBar)
 {
+  runTriggered();
   return mStatus = Status::RUNNING;
 }
 I3D_ENABLE_WARNING(4100)
 
-  void Process::stop()
+void Process::stop()
 {
   if (mStatus == Status::RUNNING) {
     mStatus = Status::STOPPED;
-  } else if (mStatus == Status::PAUSE) {
+  } else if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     mStatus = Status::STOPPED;
   }
 }
@@ -458,6 +471,66 @@ Process::Status Process::getStatus()
   return mStatus;
 }
 
+
+void Process::endTriggered()
+{
+  mStatus = Status::FINALIZED;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onEnd();
+    }
+  }
+}
+
+void Process::pauseTriggered()
+{
+  mStatus = Status::PAUSE;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onPause();
+    }
+  }
+}
+
+void Process::resumeTriggered()
+{
+  mStatus = Status::RUNNING;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onResume();
+    }
+  }
+}
+
+void Process::runTriggered()
+{
+  mStatus = Status::RUNNING;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onRun();
+    }
+  }
+}
+
+void Process::startTriggered()
+{
+  mStatus = Status::START;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onStart();
+    }
+  }
+}
+
+void Process::stopTriggered()
+{
+  mStatus = Status::STOPPED;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onStop();
+    }
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -502,6 +575,7 @@ Process::Status CmdProcess::run(Progress *progressBar)
 I3D_ENABLE_WARNING(4100)
 
 /* ---------------------------------------------------------------------------------- */
+
 
 //FunctionProcess::FunctionProcess(std::function<void()> f) 
 //  : Process(),
@@ -564,18 +638,26 @@ BatchProcess::BatchProcess(const BatchProcess &batchProcess)
     mProcessList(batchProcess.mProcessList),
     mCurrentProcess(0),
     _thread()
-{}
+{
+  for (auto process : mProcessList) {
+    process->addListener(this);
+  }
+}
 
 BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
   : mStatus(Status::START),
     mProcessList(procList),
     mCurrentProcess(0),
     _thread()
-{}
+{
+  for (auto process : mProcessList) {
+    process->addListener(this);
+  }
+}
 
 BatchProcess::~BatchProcess()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     stop();
   }
   mStatus = Status::FINALIZED;
@@ -584,6 +666,7 @@ BatchProcess::~BatchProcess()
 void BatchProcess::add(const std::shared_ptr<Process> &process)
 {
   mProcessList.push_back(process);
+  process->addListener(this);
 }
 
 void BatchProcess::clear()
@@ -595,7 +678,7 @@ void BatchProcess::clear()
 
 void BatchProcess::pause()
 {
-  mStatus = Status::PAUSE;
+  mStatus = Status::PAUSING;
   if (mCurrentProcess) {
     mCurrentProcess->pause();
   }
@@ -615,7 +698,7 @@ void BatchProcess::reset()
 
 void BatchProcess::resume()
 {
-  if (mStatus == Status::PAUSE) {
+  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     mStatus = Status::RUNNING;
     if (mCurrentProcess) 
       mCurrentProcess->resume();
@@ -627,8 +710,10 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
   mStatus = Status::RUNNING;
   if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
   for (const auto process : mProcessList) {
-    while (mStatus == Status::PAUSE);
-    if (mStatus == Status::STOPPED) {
+    if (mStatus == Status::PAUSING) {
+      mStatus = Status::PAUSE;
+      while (mStatus == Status::PAUSE);
+    } else if (mStatus == Status::STOPPED) {
       // Se fuerza la terminación
       return Status::STOPPED;
     } else {
@@ -650,8 +735,10 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
     if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
     for (const auto process : mProcessList) {
       mCurrentProcess = process.get();
-      while (mStatus == Status::PAUSE);
-      if (mStatus == Status::STOPPED) {
+      if (mStatus == Status::PAUSING) {
+        mStatus = Status::PAUSE;
+        while (mStatus == Status::PAUSE);
+      } else if (mStatus == Status::STOPPED) {
         // Se fuerza la terminación
         return Status::STOPPED;
       } else {
@@ -680,6 +767,35 @@ void BatchProcess::stop()
   }
 }
 
+void BatchProcess::onPause()
+{
+
+}
+
+void BatchProcess::onResume()
+{
+
+}
+
+void BatchProcess::onRun()
+{
+
+}
+
+void BatchProcess::onStart()
+{
+
+}
+
+void BatchProcess::onStop()
+{
+
+}
+
+void BatchProcess::onEnd()
+{
+
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */

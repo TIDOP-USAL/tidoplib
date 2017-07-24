@@ -302,6 +302,7 @@ public:
    */
   reference operator[](size_type position);
 
+  //TODO:Falta erase()
 };
 
 // Implementación EntityContainer

@@ -83,7 +83,7 @@ public:
     /*!
      * \brief destructora
      */
-    ~Listener()
+    virtual ~Listener()
     {
     }
 
