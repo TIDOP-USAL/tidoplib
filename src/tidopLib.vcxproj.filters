@@ -126,14 +126,14 @@
     <ClCompile Include="img_process\skeleton.cpp">
       <Filter>Archivos de código fuente\img_process</Filter>
     </ClCompile>
-    <ClCompile Include="img\imgio.cpp">
-      <Filter>Archivos de código fuente\img</Filter>
-    </ClCompile>
     <ClCompile Include="graphic_entities\linealgorithms.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
     </ClCompile>
     <ClCompile Include="core\datamodel.cpp">
       <Filter>Archivos de código fuente\core</Filter>
+    </ClCompile>
+    <ClCompile Include="img\imgio.cpp">
+      <Filter>Archivos de código fuente\img</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

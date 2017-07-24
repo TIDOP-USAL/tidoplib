@@ -62,13 +62,13 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;$(LIBS)\proj4\local\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;C:\Desarrollo\Libs\EDSDKv0305W\Windows\EDSDK_64\Library\EDSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Debug;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;proj_4_9_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Debug;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\debug;%(AdditionalLibraryDirectories);$(LIBS)\proj4\local\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,7 +80,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;$(LIBS)\proj4\local\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -89,8 +89,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
-      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;C:\Desarrollo\Libs\EDSDKv0305W\Windows\EDSDK_64\Library\EDSDK.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Release;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libcurl_imp.lib;libraw.lib;proj_4_9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LIBSSRC)\curl-7.52.1\build\lib\Release;$(LIBSSRC)\LibRaw-0.18.0\buildfiles\release;%(AdditionalLibraryDirectories);$(LIB\proj.4\proj4\local\lib;$(LIBS)\proj4\local\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

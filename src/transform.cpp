@@ -27,17 +27,20 @@ namespace I3D
 #ifdef HAVE_GDAL
 
 Crs::Crs(const char *epsg, const char *grid, const char *geoid) 
-  : mEpsg(epsg), mGrid(grid), mGeoid(geoid)
+  : mEpsg(epsg), 
+    mGrid(grid), 
+    mGeoid(geoid),
+    pCrs(new OGRSpatialReference())
 {
   pCrs->importFromEPSG(atoi(epsg+5));
-  if ( grid ) {
+  if (mGrid.empty() == false) {
     char *cprj = NULL;
     pCrs->exportToProj4(&cprj);
     std::string crs_prj4 = std::string(cprj) + "+nadgrids=" + mGrid;
     pCrs->importFromProj4(crs_prj4.c_str());
     CPLFree(cprj);
   }
-  if (geoid) {
+  if (mGeoid.empty() == false) {
     char *prjin = NULL;
     pCrs->exportToProj4(&prjin);
     std::string crs_prj4 = std::string(prjin) + "+geoidgrids=" + mGeoid;

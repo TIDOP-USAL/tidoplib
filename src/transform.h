@@ -3489,7 +3489,7 @@ private:
 
 public:
 
-  Crs(const char *epsg, const char *grid = NULL, const char *geoid = NULL);
+  Crs(const char *epsg, const char *grid = "", const char *geoid = "");
 
   ~Crs();
 
@@ -3499,7 +3499,8 @@ public:
 
   bool isGeographic();
 
-  const OGRSpatialReference &getOGRSpatialReference( ) const { return *pCrs; };
+  //const OGRSpatialReference *getOGRSpatialReference( ) const { return pCrs; };
+   OGRSpatialReference *getOGRSpatialReference( ) { return pCrs; };
 };
 
 
@@ -3596,7 +3597,7 @@ public:
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \see transform_order
    */
-  void transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
                  transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
@@ -3606,7 +3607,7 @@ public:
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \see transform_order
    */
-  void transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
+  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::DIRECT) const override;
 
   /*!
    * \brief Transforma un punto a otro sistema de referencia
@@ -3627,7 +3628,7 @@ private:
 template<typename Point_t> inline
 CrsTransform<Point_t>::CrsTransform(const Crs &epsgIn, const Crs &epsgOut) 
   : Transform3D<Point_t>(transform_type::CRS), 
-  mEpsgIn(epsgin), mEpsgOut(epsgout), 
+  mEpsgIn(epsgIn), mEpsgOut(epsgOut), 
   pCoordinateTransformation(0), 
   pCoordinateTransformationInv(0) 
 {
@@ -3637,8 +3638,8 @@ CrsTransform<Point_t>::CrsTransform(const Crs &epsgIn, const Crs &epsgOut)
 template<typename Point_t> inline
 CrsTransform<Point_t>::CrsTransform(const char *epsgIn, const char *epsgOut) 
   : Transform3D<Point_t>(transform_type::CRS), 
-  mEpsgIn(std::make_shared<Crs>(epsgin)), 
-  mEpsgOut(std::make_shared<Crs>(epsgout)), 
+  mEpsgIn(std::make_shared<Crs>(epsgIn)), 
+  mEpsgOut(std::make_shared<Crs>(epsgOut)), 
   pCoordinateTransformation(0), 
   pCoordinateTransformationInv(0) 
 {
@@ -3669,7 +3670,7 @@ transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1
 
 
 template<typename Point_t> inline
-void CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                       std::vector<Point_t> *ptsOut, 
                                       transform_order trfOrder) const
 {
@@ -3677,11 +3678,12 @@ void CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn,
   for (int i = 0; i < ptsIn.size(); i++) {
     transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
+  return transform_status::SUCCESS;
 }
 
 
 template<typename Point_t> inline
-void CrsTransform<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+transform_status CrsTransform<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
 {
   *ptOut = ptIn;
   try {
@@ -3693,6 +3695,7 @@ void CrsTransform<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, trans
   } catch (std::exception &e) {
     throw std::runtime_error( e.what() );
   }
+  return transform_status::SUCCESS;
 }
 
 
@@ -3702,9 +3705,9 @@ Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, transform_order tr
   Point_t r_pt = ptIn;
   try{
     if (trfOrder == transform_order::DIRECT){
-      pCoordinateTransformation->Transform(1, &r_pt->x, &r_pt->y, &r_pt->z);
+      pCoordinateTransformation->Transform(1, &r_pt.x, &r_pt.y, &r_pt.z);
     } else {
-      pCoordinateTransformationInv->Transform(1, &r_pt->x, &r_pt->y, &r_pt->z);
+      pCoordinateTransformationInv->Transform(1, &r_pt.x, &r_pt.y, &r_pt.z);
     }
   } catch (std::exception &e) {
     throw std::runtime_error( e.what() );
@@ -3715,10 +3718,10 @@ Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, transform_order tr
 template<typename Point_t> inline
 void CrsTransform<Point_t>::init()
 {
-  pCoordinateTransformation = OGRCreateCoordinateTransformation(mEpsgIn.getOGRSpatialReference(),
-                                                                mEpsgOut.getOGRSpatialReference());
-  pCoordinateTransformationInv = OGRCreateCoordinateTransformation(mEpsgOut.getOGRSpatialReference(),
-                                                                   mEpsgIn.getOGRSpatialReference());
+  pCoordinateTransformation = OGRCreateCoordinateTransformation(mEpsgIn->getOGRSpatialReference(),
+                                                                mEpsgOut->getOGRSpatialReference());
+  pCoordinateTransformationInv = OGRCreateCoordinateTransformation(mEpsgOut->getOGRSpatialReference(),
+                                                                   mEpsgIn->getOGRSpatialReference());
   OSRCleanup();
 }
 

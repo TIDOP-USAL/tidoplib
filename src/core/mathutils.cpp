@@ -295,18 +295,19 @@ double gradiansToRadians(double gradians)
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
 /* ---------------------------------------------------------------------------------- */
 
-//void svdcmp(float **a, int m, int n, float w[], float **v)
-//{
-//  float pythag(float a, float b);
-//  int flag, i, its, j, jj, k, l, nm;
-//  float anorm, c, f, g, h, s, scale, x, y, z, *rv1;
-//  // reserva de memoria. Usar std::array
+void svdcmp(float **a, int m, int n, float w[], float **v)
+{
+  float pythag(float a, float b);
+  int flag, i, its, j, jj, k, l, nm;
+  float anorm, c, f, g, h, s, scale, x, y, z/*, *rv1*/;
+//  // reserva de memoria.
 //  rv1 = vector(1, n);
-//  g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
-//  for (i = 1; i <= n; i++) {
-//    l = i + 1;
-//    rv1[i] = scale*g;
-//    g = s = scale = 0.0;
+  std::vector<float> rv1(n);
+  g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
+  for (i = 1; i <= n; i++) {
+    l = i + 1;
+    rv1[i] = scale*g;
+    g = s = scale = 0.0;
 //    if (i <= m) {
 //      for (k = i; k <= m; k++) scale += fabs(a[k][i]);
 //      if (scale) {
@@ -471,9 +472,9 @@ double gradiansToRadians(double gradians)
 //      rv1[k] = f;
 //      w[k] = x;
 //    }
-//  }
+  }
 //  free_vector(rv1, 1, n);
-//}
+}
 
 void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
 {
