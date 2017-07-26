@@ -109,6 +109,9 @@ private:
    */
   WORD mBackColor;
 
+  //TODO: Por terminar
+  CONSOLE_FONT_INFOEX mIniFont;
+  CONSOLE_FONT_INFOEX mCurrentFont;
 #else
 
   // Consola Linux
@@ -211,7 +214,6 @@ public:
    */
   void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
-
   /*!
    * \brief Establece el color de caracter
    * \param[in] foreColor Color de caracter
@@ -219,6 +221,12 @@ public:
    * \see Console::Color, Console::Intensity
    */
   void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+
+  /*!
+   * \brief Establece la fuente como negrita
+   * \param[in] bBold 
+   */
+  void setConsoleFontBold(bool bBold);  
 
   /*!
    * \brief Establece la consola como modo Unicode

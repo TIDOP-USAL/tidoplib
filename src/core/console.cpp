@@ -245,6 +245,16 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
   update();
 }
 
+void Console::setConsoleFontBold(bool bBold)
+{
+  if (bBold) {
+    mCurrentFont.FontWeight = FW_BOLD;
+  } else {
+    mCurrentFont.FontWeight = FW_NORMAL;
+  }
+  update();
+}
+
 void Console::setConsoleUnicode() 
 {
 #ifdef WIN32
@@ -316,6 +326,13 @@ void Console::init(DWORD handle)
   mForeIntensity = (mOldColorAttrs & 0x0008);
   mBackColor = (mOldColorAttrs & 0x0070);
   mBackIntensity = (mOldColorAttrs & 0x0080);
+
+  mIniFont.cbSize = sizeof(mIniFont);
+  GetCurrentConsoleFontEx(h, FALSE, &mIniFont);
+  mCurrentFont.cbSize = sizeof(mCurrentFont);
+  mCurrentFont = mIniFont;
+  COORD fontSize = GetConsoleFontSize(h, mIniFont.nFont);
+
 }
 #else
 void Console::init(FILE *stream)
@@ -332,6 +349,7 @@ void Console::update()
 {
 #ifdef WIN32
   SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
+  SetCurrentConsoleFontEx(h, FALSE, &mCurrentFont);
 #else
   sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mForeIntensity, mForeColor, mBackColor);
   fprintf(mStream, "%s", mCommand);
@@ -557,13 +575,17 @@ void CmdParser::printHelp()
   Console console(Console::Mode::OUTPUT);
 
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
-
-  //... Solución rapida. modificar
+  console.setConsoleFontBold(true);
+  //TODO: Solución rapida. modificar
   printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
   //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
 
   console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
+  console.setConsoleFontBold(false);
 
+  printf("Listado de parámetros: \n\n", mCmdName.c_str(), mCmdDescription.c_str());
+
+  //TODO: Añadir automaticamente el valor por defecto
   for (auto arg : mCmdArgs) {
     std::string s_type, s_description;
     if (arg->getType() == CmdArgument::Type::OPTION) {
@@ -581,10 +603,10 @@ void CmdParser::printHelp()
         s_description += opt;
       }
     } else continue;
-     printf_s("%s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
+     printf_s("- %s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
     //printf_s("%s [%s | %s]: %s \n", arg->getName(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
   }
-  printf_s("\nUso:\n");
+  printf_s("\nUso:\n\n");
   printf_s("%s", mCmdName.c_str());
   for (auto arg : mCmdArgs) {
     printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"), 

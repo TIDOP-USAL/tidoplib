@@ -599,8 +599,8 @@ public:
    * \param[in] id Indice del elemento
    * \return Linea
    */
-  const Line &operator[](int id) const { return linesgroup[id]; }
-  Line &operator[](int id)  { return linesgroup[id]; }
+  const Line &operator[](size_t id) const { return linesgroup[id]; }
+  Line &operator[](size_t id)  { return linesgroup[id]; }
 
   const std::vector<Line> &getLines() const { return linesgroup; }
 
