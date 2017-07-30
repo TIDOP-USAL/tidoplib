@@ -1355,6 +1355,8 @@ GeoRasterGraphics::Status GeoRasterGraphics::read(cv::Mat *image, const WindowD 
   if (mImageFormat)
     return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->read(image, wLoad, scale);
   else return Status::FAILURE;
+#else
+  return Status::FAILURE;
 #endif
 }
 #endif // HAVE_OPENCV

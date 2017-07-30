@@ -2,6 +2,7 @@
 #define I3D_VIDEO_STREAM_H
 
 #include <ctime>
+#include <list>
 
 #include "core/config.h"
 
@@ -9,7 +10,6 @@
 #include "opencv2/highgui/highgui.hpp"
 
 #include "core/defs.h"
-#include "experimental/events.h"
 
 namespace I3D
 {
