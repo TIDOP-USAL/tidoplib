@@ -111,6 +111,7 @@ Console::Console(const Console &console) :
 #else
   mStream(console.mStream),
   mCommand(0),
+  mBold(console.mBold),
 #endif
   mForeIntensity(console.mForeIntensity),
   mForeColor(console.mForeColor),
@@ -245,16 +246,6 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
   update();
 }
 
-void Console::setConsoleFontBold(bool bBold)
-{
-  if (bBold) {
-    mCurrentFont.FontWeight = FW_BOLD;
-  } else {
-    mCurrentFont.FontWeight = FW_NORMAL;
-  }
-  update();
-}
-
 void Console::setConsoleUnicode() 
 {
 #ifdef WIN32
@@ -264,11 +255,41 @@ void Console::setConsoleUnicode()
 #endif
 }
 
+void Console::setFontBold(bool bBold)
+{
+#ifdef WIN32
+  if (bBold) {
+    mCurrentFont.FontWeight = FW_BOLD;
+  } else {
+    mCurrentFont.FontWeight = FW_NORMAL;
+  }
+#else
+  if (bBold) {
+    mBold = 1;
+  } else {
+    mBold = 21;
+  }
+#endif
+  update();
+}
+
+void Console::setFontHeight(int size)
+{
+#ifdef WIN32
+  mCurrentFont.dwFontSize.Y = size;
+#endif
+  update();
+}
+
 void Console::setLogLevel(MessageLevel level)
 {
   sLevel = level;
 }
 
+void Console::setTitle(const char *title)
+{
+  SetConsoleTitleA(title);
+}
 
 I3D_DISABLE_WARNING(4100)
 
@@ -331,8 +352,7 @@ void Console::init(DWORD handle)
   GetCurrentConsoleFontEx(h, FALSE, &mIniFont);
   mCurrentFont.cbSize = sizeof(mCurrentFont);
   mCurrentFont = mIniFont;
-  COORD fontSize = GetConsoleFontSize(h, mIniFont.nFont);
-
+  //COORD fontSize = GetConsoleFontSize(h, mIniFont.nFont);
 }
 #else
 void Console::init(FILE *stream)
@@ -342,6 +362,7 @@ void Console::init(FILE *stream)
   mForeIntensity = 0;
   mBackColor = 0;
   mBackIntensity = 0;
+  mBold = 21;
 }
 #endif
 
@@ -351,7 +372,7 @@ void Console::update()
   SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
   SetCurrentConsoleFontEx(h, FALSE, &mCurrentFont);
 #else
-  sprintf(mCommand, "%c[%d;%d;%dm", 0x1B, mForeIntensity, mForeColor, mBackColor);
+  sprintf(mCommand, "%c[%d,%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
   fprintf(mStream, "%s", mCommand);
 #endif
 }
@@ -575,13 +596,13 @@ void CmdParser::printHelp()
   Console console(Console::Mode::OUTPUT);
 
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
-  console.setConsoleFontBold(true);
+  console.setFontBold(true);
   //TODO: Solución rapida. modificar
   printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
   //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
 
   console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
-  console.setConsoleFontBold(false);
+  console.setFontBold(false);
 
   printf("Listado de parámetros: \n\n", mCmdName.c_str(), mCmdDescription.c_str());
 

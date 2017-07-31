@@ -28,6 +28,10 @@ namespace I3D
  *  \{
  */
 
+//TODO: ¿Debería ser un singleton???
+// Hay ciertos casos que interesa que no sea un singleton para que en la destructora recupere las
+// opciones por defecto. Siempre se podria obligar a llamar a la función reset()
+
 /*!
  * \brief Clase para gestionar la configuración de la ventana de comandos
  *
@@ -111,7 +115,9 @@ private:
 
   //TODO: Por terminar
   CONSOLE_FONT_INFOEX mIniFont;
+
   CONSOLE_FONT_INFOEX mCurrentFont;
+
 #else
 
   // Consola Linux
@@ -145,6 +151,8 @@ private:
    * \brief Color de fondo
    */
   int mBackColor;
+
+  int mBold;
 
 #endif
   
@@ -223,21 +231,34 @@ public:
   void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
 
   /*!
-   * \brief Establece la fuente como negrita
-   * \param[in] bBold 
-   */
-  void setConsoleFontBold(bool bBold);  
-
-  /*!
    * \brief Establece la consola como modo Unicode
    */
   void setConsoleUnicode();
 
   /*!
+   * \brief Establece la fuente como negrita
+   * \param[in] bBold 
+   */
+  void setFontBold(bool bBold);  
+
+  /*!
+   * \brief Establece el tamaño de la fuente
+   * \param[in] size Tamaño de la fuente
+   */
+  void setFontHeight(int size);
+
+  /*!
    * \brief Establece los niveles de mensajes que se muestran por consola
+   * \param[in] level Nivel de log
    * \see MessageLevel
    */
   void setLogLevel(MessageLevel level);
+
+  /*!
+   * \brief Establece el título de la consola
+   * \param[in] title Titulo de la consola
+   */
+  void setTitle(const char *title);
 
 protected:
 
