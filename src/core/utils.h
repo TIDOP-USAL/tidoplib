@@ -485,6 +485,7 @@ public:
 
 protected:
 
+  // Eventos que se lanzan
   void endTriggered();
   void pauseTriggered();
   void resumeTriggered();
@@ -498,13 +499,16 @@ protected:
 
 /* ---------------------------------------------------------------------------------- */
 
-
+//TODO: Pendiente para Linux
 class I3D_EXPORT CmdProcess : public Process
 {
 protected:
 
+#ifdef WIN32
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
+
+#endif
   std::string mCmd;
 
 public:

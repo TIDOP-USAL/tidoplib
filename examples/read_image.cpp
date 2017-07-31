@@ -28,6 +28,18 @@ using namespace I3D::geometry;
  */
 int main(int argc, char** argv)
 {
+      
+  HANDLE hStdout;
+  CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
+   hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
+
+    if (! GetConsoleScreenBufferInfo(hStdout, &csbiInfo)) 
+    {
+        MessageBox(NULL, TEXT("GetConsoleScreenBufferInfo"), 
+            TEXT("Console Error"), MB_OK); 
+        return 1;
+    }
+
 
   char name[I3D_MAX_FNAME];
   getFileName(getRunfile(), name, I3D_MAX_FNAME);
@@ -57,13 +69,19 @@ int main(int argc, char** argv)
 
   // Consola
   Console console;
+  console.setTitle(name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
   console.setConsoleUnicode();
+  //console.setFontBold(true);
+  console.setFontHeight(24);
 
   //Configuración de mensajes
   MessageManager &msg_h = MessageManager::getInstance();
   msg_h.addListener(&log);
   msg_h.addListener(&console);
+
+  msgInfo("prueba");
+
 
   CrsTransform<Point3D> crs("EPSG:25830", "EPSG:4326");
   Point3D pt_utm(350000., 4800000., 0.);

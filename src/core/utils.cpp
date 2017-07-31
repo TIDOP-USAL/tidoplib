@@ -541,24 +541,32 @@ void Process::stopTriggered()
 /* ---------------------------------------------------------------------------------- */
 
 
-CmdProcess::CmdProcess(const std::string &cmd) : Process(), mCmd(cmd)
+CmdProcess::CmdProcess(const std::string &cmd) 
+  : Process(),
+    mCmd(cmd)
 {
+#ifdef WIN32
   ZeroMemory(&si, sizeof(si));
   si.cb = sizeof(si);
   ZeroMemory(&pi, sizeof(pi));
+#endif
 }
 
 CmdProcess::~CmdProcess()
 {
+#ifdef WIN32
   // Se cierran procesos e hilos 
   CloseHandle(pi.hProcess);
   CloseHandle(pi.hThread);
+#endif
 }
 
 I3D_DISABLE_WARNING(4100)
 Process::Status CmdProcess::run(Progress *progressBar)
 {
   Process::run();
+
+#ifdef WIN32
   size_t len = strlen(mCmd.c_str());
   std::wstring wCmdLine(len, L'#');
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
@@ -577,6 +585,7 @@ Process::Status CmdProcess::run(Progress *progressBar)
     msgInfo("Comando ejecutado: %s", mCmd.c_str());
     return Process::Status::FINALIZED;
   }
+#endif
 }
 I3D_ENABLE_WARNING(4100)
 
