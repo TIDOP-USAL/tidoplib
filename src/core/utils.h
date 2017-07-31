@@ -56,6 +56,13 @@ I3D_EXPORT const char *getRunfile();
 I3D_EXPORT bool isDirectory(const char *path);
 
 /*!
+ * \brief Comprueba si existe el fichero
+ * \param[in] file Fichero
+ * \return true si existe.
+ */
+I3D_EXPORT bool isFile(const char *file);
+
+/*!
  * \brief Crea un directorio
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1

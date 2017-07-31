@@ -107,6 +107,12 @@ bool isDirectory(const char *path)
   return false;
 }
 
+bool isFile(const char *file)
+{
+  FILE *fp = std::fopen(file, "rb");
+  if (!fp) return false;
+  else return true;
+}
 int createDir(const char *path)
 {
   if (isDirectory(path)) return 1;
