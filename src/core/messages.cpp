@@ -122,7 +122,10 @@ MessageManager::~MessageManager()
 MessageManager &MessageManager::getInstance()
 {
   if (sObjMessage.get() == 0) {
-    sObjMessage.reset(new MessageManager());
+    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
+    if (sObjMessage.get() == 0) {
+      sObjMessage.reset(new MessageManager());
+    }
   }
   return *sObjMessage;
 }
