@@ -259,24 +259,19 @@ public:
   /*!
    * \brief Constructor por defecto
    */
-  Path() : mPos(0), mPath(0)
-  {
-  }
+  Path();
 
   /*!
    * \brief Constructor
    * \param path Ruta
    */
-  Path(const std::string &path) : mPos(0), mPath(0)
-  {
-    parse(path);
-  }
+  Path(const std::string &path);
 
   /*!
    * \brief Constructor de copia
    * \param path Ruta
    */
-  Path(const Path &path) : mPos(path.mPos), mPath(path.mPath) { }
+  Path(const Path &path);
 
   /*!
    * \brief Destructora

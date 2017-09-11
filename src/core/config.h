@@ -41,4 +41,7 @@
 
 #endif
 
+// Visual Leak Detector
+#define HAVE_VLD
+
 #endif // I3D_CONFIG_H

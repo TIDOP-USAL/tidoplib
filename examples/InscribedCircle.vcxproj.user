@@ -7,6 +7,11 @@
     </LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;C:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin;C:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;C:\Desarrollo\Libs\CURL\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
     <LocalDebuggerEnvironment>PATH=%PATH%;..\..\..\Libs\cuda\bin;..\..\..\Libs\opencv\x64\vc12\bin;C:\Qt\Qt5.7.0\5.7\msvc2013_64\bin;D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;D:\Desarrollo\Libs_sources\curl-7.52.1\build\lib\Debug;D:\Desarrollo\Libs_sources\LibRaw-0.18.0\buildfiles\debug</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--img=D:\Documentación\RAW_CANON_EOS_1DX.CR2 --img_out=D:\Documentación\out.tif</LocalDebuggerCommandArguments>

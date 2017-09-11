@@ -5,6 +5,11 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>--img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_.png --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_</LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'">
+    <LocalDebuggerEnvironment>PATH=%PATH%;D:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin;D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;D:\Desarrollo\Libs\CURL\bin;C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin</LocalDebuggerEnvironment>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerCommandArguments>--img=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_.png --out=D:\Desarrollo\datos\Vuelo2_2-2_Conductores\2K7A2618_</LocalDebuggerCommandArguments>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerEnvironment>PATH=%PATH%;D:\Desarrollo\Libs\opencv-3.2.0\x64\vc12\bin;D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Release;D:\Desarrollo\Libs\CURL\bin;C:\Qt\Qt5.6.0\5.6\msvc2013_64\bin</LocalDebuggerEnvironment>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>

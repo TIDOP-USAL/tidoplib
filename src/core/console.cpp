@@ -509,13 +509,15 @@ void CmdParameterOptions::setValue(const std::string &value)
 
 CmdParser::CmdParser()
   : mCmdName(""), 
-    mCmdDescription("") 
+    mCmdDescription(""),
+    mCmdArgs(0)
 {
 }
 
 CmdParser::CmdParser(const char *name, const char *description)
   : mCmdName(name), 
-    mCmdDescription(description) 
+    mCmdDescription(description),
+    mCmdArgs(0)
 {
 }
 
