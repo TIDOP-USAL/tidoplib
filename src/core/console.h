@@ -432,13 +432,15 @@ public:
    * \param[in] description Descripción de la opción
    */
   CmdOption(const char *name, const char *description);
+  
+  ~CmdOption() {}
 
   /*!
    * \brief getType
    * \return
    */
   CmdArgument::Type getType() const override;
-
+  
   /*!
    * \brief Comprueba si la opción esta activada
    * \return Verdadero si esta activada y falso en caso contrario
@@ -483,6 +485,8 @@ public:
    */
   CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "");
 
+  ~CmdParameter() {}
+  
   /*!
    * \brief getType
    * \return
@@ -532,6 +536,8 @@ public:
    * \param[in] defValue Valor por defecto
    */
   CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "");
+
+  ~CmdParameterOptions() {}
 
   /*!
    * \brief Indice de opción
@@ -652,7 +658,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~CmdParser(){}
+  ~CmdParser() {}
 
   /*!
    * \brief Añade un parámetro

@@ -342,6 +342,26 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 
 /* ---------------------------------------------------------------------------------- */
 
+Path::Path() 
+  : mPos(0), 
+    mPath(0)
+{
+}
+
+Path::Path(const std::string &path) 
+  : mPos(0), 
+    mPath(0)
+{
+  parse(path);
+}
+
+Path::Path(const Path &path) 
+  : mPos(path.mPos), 
+    mPath(path.mPath) 
+{ 
+}
+
+
 void Path::parse(const std::string &path)
 {
   split(path, mPath, "/\\");
@@ -408,8 +428,8 @@ std::string Path::toString()
 {
   std::string _path;
   for (int i = 0; i < mPos; i++) {
-    _path += mPath[i];
-    if (i < mPos - 1) _path += "\\";
+    _path.append(mPath[i]);
+    if (i < mPos - 1) _path.append("\\");
   }
   return _path;
 }
