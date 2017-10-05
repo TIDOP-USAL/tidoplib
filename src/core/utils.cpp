@@ -711,6 +711,11 @@ void BatchProcess::clear()
   reset();
 }
 
+bool BatchProcess::isRunning() const
+{
+  return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
+}
+
 void BatchProcess::pause()
 {
   mStatus = Status::PAUSING;
