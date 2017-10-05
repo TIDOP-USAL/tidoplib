@@ -85,7 +85,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;GLOG_NO_ABBREVIATED_SEVERITIES;_DEBUG;_LIB;VISUAL_LEAK_DETECTOR;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(LIBS)\gflags\Include;$(LIBS)\glog\include;..\src;$(LIBS)\Eigen\include\eigen3;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\CURL\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
