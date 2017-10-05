@@ -728,7 +728,7 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
                                                     transform_order trfOrder) const
 {
   std::vector<cv::Point_<sub_type>> vIn, vOut;
-  vIn.push_back(ptIn);
+  vIn.push_back(cv::Point_<sub_type>(ptIn.x, ptIn.y));
   try {
     if (trfOrder == transform_order::DIRECT) {
       cv::perspectiveTransform(vIn, vOut, H);
