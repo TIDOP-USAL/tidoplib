@@ -166,7 +166,6 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   bool bVertex = false;
   std::vector<int> vertex_id;
 
-  int aux = 0;
   for (size_t i = 0, j = 1; i < mEntities.size(); i++, j++) {
     if (j == mEntities.size()) j = 0;
 
@@ -181,7 +180,7 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
 
       
     if (point.y == segment.pt1.y) {
-      vertex_id.push_back(i);
+      vertex_id.push_back(static_cast<int>(i));
       bVertex = true;
     }
 
