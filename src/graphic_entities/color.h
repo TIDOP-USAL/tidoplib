@@ -655,7 +655,7 @@ I3D_EXPORT void rgbToLuminance(const cv::Mat &rgb, cv::Mat *gray);
  * \param[out] g Componente verde en coordenadas cromáticas
  * \param[out] b Componente azul en coordenadas cromáticas
  */
-void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
+I3D_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
 
 #ifdef HAVE_OPENCV
 
@@ -664,7 +664,7 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
  * \param[in] rgb Imagen RGB
  * \param[out] chroma_rgb Imagen en coordenadas cromaticas
  */
-void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+I3D_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
 
 #endif // HAVE_OPENCV
 

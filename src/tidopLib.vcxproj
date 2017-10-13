@@ -142,6 +142,7 @@
     <ClCompile Include="geometric_entities\segment.cpp" />
     <ClCompile Include="geometric_entities\window.cpp" />
     <ClCompile Include="graphic_entities\color.cpp" />
+    <ClCompile Include="graphic_entities\graphic_entity.cpp" />
     <ClCompile Include="graphic_entities\linealgorithms.cpp" />
     <ClCompile Include="img\imgio.cpp" />
     <ClCompile Include="img_process\filters.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="geometric_entities\segment.h" />
     <ClInclude Include="geometric_entities\window.h" />
     <ClInclude Include="graphic_entities\color.h" />
+    <ClInclude Include="graphic_entities\graphic_entity.h" />
     <ClInclude Include="graphic_entities\linealgorithms.h" />
     <ClInclude Include="img\imgio.h" />
     <ClInclude Include="img_process\filters.h" />
@@ -182,9 +184,13 @@
     <ClInclude Include="img_process\skeleton.h" />
     <ClInclude Include="img_process\white_balance.h" />
     <ClInclude Include="matching.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stereo\anaglyph.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="videostream.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tidopLib.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

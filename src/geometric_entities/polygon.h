@@ -376,6 +376,50 @@ typedef Polygon3D<Point3<int>> Polygon3dI;
 typedef Polygon3D<Point3<double>> Polygon3dD;
 typedef Polygon3D<Point3<float>> Polygon3dF;
 
+
+/* ---------------------------------------------------------------------------------- */
+
+template <typename Polygon_t>
+class MultiPolygon : public Entity, public Entities2D<Polygon_t>
+{
+
+public:
+
+  MultiPolygon();
+  ~MultiPolygon() {}
+
+
+};
+
+template <typename Polygon_t>
+MultiPolygon<Polygon_t>::MultiPolygon()
+  : Entity(Entity::type::MULTIPOLYGON_2D),
+    Entities2D<Polygon_t>()
+{
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+template <typename Polygon3D_t>
+class MultiPolygon3D : public Entity, public Entities3D<Polygon3D_t>
+{
+
+public:
+
+  MultiPolygon3D();
+  ~MultiPolygon3D() {}
+
+};
+
+template <typename Polygon3D_t>
+MultiPolygon3D<Polygon3D_t>::MultiPolygon3D()
+  : Entity(Entity::type::MULTIPOLYGON_3D),
+    Entities3D<Polygon3D_t>()
+{
+}
+
+
 }
 
 /*! \} */ // end of GeometricEntities

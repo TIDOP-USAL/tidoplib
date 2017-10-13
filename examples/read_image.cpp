@@ -29,6 +29,11 @@ using namespace I3D::geometry;
 int main(int argc, char** argv)
 {
 
+
+
+
+
+
   //HANDLE hStdout;
   //CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
   // hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 

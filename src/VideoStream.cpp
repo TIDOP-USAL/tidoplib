@@ -390,6 +390,7 @@ bool ImagesStream::open(const char *name)
     else {
       cv::Mat aux = cv::imread(mImages[0]);
       bIsOpened = !aux.empty();
+      mSize = mFrameSize = cv::Size(aux.cols, aux.rows);
     }
   }
   return bIsOpened;

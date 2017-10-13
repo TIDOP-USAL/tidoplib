@@ -259,6 +259,10 @@ double LineString3D<Point3_t>::length()  const
   return length;
 }
 
+typedef LineString3D<Point3<int>> LineString3dI;
+typedef LineString3D<Point3<double>> LineString3dD;
+typedef LineString3D<Point3<float>> LineString3dF;
+
 /* ---------------------------------------------------------------------------------- */
 
 template <typename LineString_t>
@@ -273,8 +277,8 @@ public:
 
 };
 
-template <typename Point_t>
-MultiLineString<Point_t>::MultiLineString()
+template <typename LineString_t>
+MultiLineString<LineString_t>::MultiLineString()
   : Entity(Entity::type::MULTILINE_2D),
     Entities2D<LineString_t>()
 {
