@@ -716,6 +716,11 @@ void BatchProcess::clear()
   reset();
 }
 
+bool BatchProcess::isRunning() const
+{
+  return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
+}
+
 void BatchProcess::pause()
 {
   mStatus = Status::PAUSING;
@@ -757,14 +762,16 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
       // Se fuerza la terminación
       return Status::STOPPED;
     } else {
-      if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
-        return Status::FINALIZED_ERROR;
-      } else {
-        if (progressBarTotal) (*progressBarTotal)();
-      }
+      //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+      //  return Status::FINALIZED_ERROR;
+      //} else {
+      //  if (progressBarTotal) (*progressBarTotal)();
+      //}
+      process->run(progressBarPartial);
+      if (progressBarTotal) (*progressBarTotal)();
     }
   }
-  return Status::FINALIZED;
+  return (mStatus = Status::FINALIZED);
 }
 
 BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
@@ -782,14 +789,15 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         // Se fuerza la terminación
         return Status::STOPPED;
       } else {
-        if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
-          return Status::FINALIZED_ERROR;
-        } else {
+        process->run(progress_bar_partial);
+        //if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
+        //  return Status::FINALIZED_ERROR;
+        //} else {
           if (progress_bar_total) (*progress_bar_total)();
-        }
+        //}
       }
     }
-    return Status::FINALIZED;
+    return (mStatus = Status::FINALIZED);
   };
 
   _thread = std::thread(f_aux, progressBarTotal, progressBarPartial);

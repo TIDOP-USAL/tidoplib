@@ -625,6 +625,11 @@ public:
   void clear();
 
   /*!
+   * \brief Comprueba si esta corriendo
+   */
+  bool isRunning() const;
+
+  /*!
    * \brief Pausa los procesos
    */
   void pause();
