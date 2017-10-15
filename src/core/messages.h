@@ -345,6 +345,12 @@ public:
   static void release(const Message &msg);
 
   /*!
+   * \brief Quita un escuchador de mensajes
+   * \param[in] listener Objeto escuchador
+   */
+  void removeListener(Listener *listener);
+
+  /*!
    * \brief Reanuda el envio de mensajes
    */
   static void resume();

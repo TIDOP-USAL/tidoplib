@@ -189,9 +189,6 @@
     <ClInclude Include="transform.h" />
     <ClInclude Include="videostream.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="tidopLib.rc" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

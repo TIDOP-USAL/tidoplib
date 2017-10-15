@@ -238,6 +238,13 @@ void MessageManager::release(const Message &msg)
   }
 }
 
+void MessageManager::removeListener(Listener *listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
+}
+
 void MessageManager::resume()
 {
   sStopHandler = false;
