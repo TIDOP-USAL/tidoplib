@@ -373,45 +373,39 @@ public:
 
     /*!
      * \brief Evento pausa
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onPause() = 0;
+    virtual void onPause(unsigned long id) = 0;
 
     /*!
      * \brief Evento reanudación
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onResume() = 0;
+    virtual void onResume(unsigned long id) = 0;
 
     /*!
      * \brief Evento proceso corriendo
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onRun() = 0;
+    virtual void onRun(unsigned long id) = 0;
 
     /*!
      * \brief Evento inicio procesos
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onStart() = 0;
+    virtual void onStart(unsigned long id) = 0;
 
     /*!
      * \brief Evento detención
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onStop() = 0;
+    virtual void onStop(unsigned long id) = 0;
 
     /*!
      * \brief Mensaje de depuración
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
+     * \param id Identificador del proceso
      */
-    virtual void onEnd() = 0;
+    virtual void onEnd(unsigned long id) = 0;
   };
 
 protected:
@@ -422,6 +416,16 @@ protected:
    * \brief Lista con los escuchadores subscritos al gestor de eventos
    */
   std::list<Listener *> mListeners;
+
+  /*!
+   * \brief Número de procesos
+   */
+  static unsigned long sProcessCount;
+
+  /*!
+   * \brief Identificador del proceso 
+   */    
+  unsigned long mProcessId;
 
 public:
 
@@ -479,6 +483,8 @@ public:
    * \brief Devuelve el estado actual de la ejecución 
    */
   Status getStatus();
+
+  unsigned long getProcessId() const;
 
 protected:
 
@@ -665,12 +671,12 @@ public:
 
 protected:
   
-  void onPause() override;
-  void onResume() override;
-  void onRun() override;
-  void onStart() override;
-  void onStop() override;
-  void onEnd() override;
+  virtual void onPause(unsigned long id) override;
+  virtual void onResume(unsigned long id) override;
+  virtual void onRun(unsigned long id) override;
+  virtual void onStart(unsigned long id) override;
+  virtual void onStop(unsigned long id) override;
+  virtual void onEnd(unsigned long id) override;
 };
 
 

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <array>
+#include <mutex>
 
 #include "core/config.h"
 #include "core/defs.h"
@@ -551,6 +552,8 @@ class I3D_EXPORT RegisterEDSDK
 private:
 
   static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+    
+  static std::mutex sMutex;
 
   /*!
    * \brief Constructor privado

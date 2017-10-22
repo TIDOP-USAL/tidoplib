@@ -215,7 +215,7 @@ GdalRaster::~GdalRaster()
     } else msgError("No se pudo crear la imagen");
   }
 
-  if (pDataset) GDALClose(pDataset), pDataset = NULL; 
+  if (pDataset) GDALClose(pDataset), pDataset = nullptr; 
 
   if (bTempFile) {
     for (int i = 0; i < sizeof(**tmp); i++)
@@ -225,7 +225,7 @@ GdalRaster::~GdalRaster()
 
 void GdalRaster::close()
 {
-  if (pDataset) GDALClose(pDataset), pDataset = NULL;
+  if (pDataset) GDALClose(pDataset), pDataset = nullptr;
   mGdalDataType = GDT_Unknown;
   mTempName = "";
   bTempFile = false;
@@ -245,7 +245,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
   
   const char *driverName = getDriverFromExt(ext);
-  if (driverName == NULL) return Status::OPEN_FAIL;
+  if (driverName == nullptr) return Status::OPEN_FAIL;
 
   GDALAccess gdal_access;
   switch (mode) {
@@ -267,7 +267,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 
   if (mode == Mode::Create) {
     pDriver = GetGDALDriverManager()->GetDriverByName(driverName); 
-    if (pDriver == NULL) return Status::OPEN_FAIL;
+    if (pDriver == nullptr) return Status::OPEN_FAIL;
     char **gdalMetadata = pDriver->GetMetadata();
     if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
       // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
@@ -298,12 +298,12 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 }
 
 GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) {
-  if (pDriver == NULL) { 
+  if (pDriver == nullptr) { 
     msgError("Utilice el modo Create para abrir el archivo");
     return Status::FAILURE; 
   }
-  if (pDataset) GDALClose(pDataset), pDataset = NULL;
-  pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), NULL/*gdalOpt*/);
+  if (pDataset) GDALClose(pDataset), pDataset = nullptr;
+  pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), nullptr/*gdalOpt*/);
   if (!pDataset) return Status::FAILURE;
   update();
   return Status::SUCCESS;
@@ -646,10 +646,11 @@ void GdalGeoRaster::update()
 #ifdef HAVE_EDSDK
 
 std::unique_ptr<RegisterEDSDK> RegisterEDSDK::sRegisterEDSDK;
+std::mutex RegisterEDSDK::sMutex;
 
 RegisterEDSDK::RegisterEDSDK() 
 {
-
+  EdsInitializeSDK();
 }
 
 RegisterEDSDK::~RegisterEDSDK() 
@@ -659,12 +660,15 @@ RegisterEDSDK::~RegisterEDSDK()
 
 void RegisterEDSDK::init()
 {
-  if (sRegisterEDSDK.get() == 0) {
-    sRegisterEDSDK.reset(new RegisterEDSDK());
-    EdsInitializeSDK();
+  if (sRegisterEDSDK.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterEDSDK::sMutex);
+    if (sRegisterEDSDK.get() == nullptr) {
+      sRegisterEDSDK.reset(new RegisterEDSDK());
+    }
   }
 }
-#endif
+
+#endif // HAVE_EDSDK
 
 
 
@@ -675,10 +679,11 @@ RawImage::RawImage()
   mRawProcessor = std::make_unique<LibRaw>();
   mRawProcessor->imgdata.params.use_camera_wb = 1;
   mRawProcessor->imgdata.params.output_tiff = 1;
-#endif //HAVE_LIBRAW
+#endif // HAVE_LIBRAW
+
 #ifdef HAVE_EDSDK
   RegisterEDSDK::init();
-#endif
+#endif // HAVE_EDSDK
 }
 
 RawImage::~RawImage()
@@ -696,13 +701,13 @@ void RawImage::close()
     EdsRelease(mInputStream);
     EdsRelease(mEdsImage);
   } else {
-#endif
+#endif // HAVE_EDSDK
 #ifdef HAVE_LIBRAW 
   LibRaw::dcraw_clear_mem(mProcessedImage);
-#endif
+#endif // HAVE_LIBRAW
 #ifdef HAVE_EDSDK
   }
-#endif
+#endif // HAVE_EDSDK
   mCols = 0;
   mRows = 0;
   mBands = 0;

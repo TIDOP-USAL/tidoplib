@@ -449,10 +449,13 @@ std::string Path::toString()
 /*          PROCESOS Y BATCH                                                          */
 /* ---------------------------------------------------------------------------------- */
 
+unsigned long Process::sProcessCount = 0;
+
 Process::Process() 
   : mStatus(Status::START),
     mListeners(0) 
 {
+  mProcessId = ++sProcessCount;
 }
 
 Process::~Process()
@@ -514,7 +517,7 @@ void Process::endTriggered()
   mStatus = Status::FINALIZED;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onEnd();
+      lst->onEnd(getProcessId());
     }
   }
 }
@@ -524,7 +527,7 @@ void Process::pauseTriggered()
   mStatus = Status::PAUSE;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onPause();
+      lst->onPause(getProcessId());
     }
   }
 }
@@ -534,7 +537,7 @@ void Process::resumeTriggered()
   mStatus = Status::RUNNING;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onResume();
+      lst->onResume(getProcessId());
     }
   }
 }
@@ -544,7 +547,7 @@ void Process::runTriggered()
   mStatus = Status::RUNNING;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onRun();
+      lst->onRun(getProcessId());
     }
   }
 }
@@ -554,7 +557,7 @@ void Process::startTriggered()
   mStatus = Status::START;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStart();
+      lst->onStart(getProcessId());
     }
   }
 }
@@ -564,9 +567,14 @@ void Process::stopTriggered()
   mStatus = Status::STOPPED;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStop();
+      lst->onStop(getProcessId());
     }
   }
+}
+
+unsigned long Process::getProcessId() const
+{
+  return mProcessId;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -674,9 +682,9 @@ I3D_ENABLE_WARNING(4100)
 
 BatchProcess::BatchProcess()
   : mStatus(Status::START),
-  mProcessList(0),
-  mCurrentProcess(0),
-  _thread()
+    mProcessList(0),
+    mCurrentProcess(0),
+    _thread()
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
@@ -821,32 +829,32 @@ void BatchProcess::stop()
   }
 }
 
-void BatchProcess::onPause()
+void BatchProcess::onPause(unsigned long id)
 {
 
 }
 
-void BatchProcess::onResume()
+void BatchProcess::onResume(unsigned long id)
 {
 
 }
 
-void BatchProcess::onRun()
+void BatchProcess::onRun(unsigned long id)
 {
 
 }
 
-void BatchProcess::onStart()
+void BatchProcess::onStart(unsigned long id)
 {
 
 }
 
-void BatchProcess::onStop()
+void BatchProcess::onStop(unsigned long id)
 {
 
 }
 
-void BatchProcess::onEnd()
+void BatchProcess::onEnd(unsigned long id)
 {
 
 }
