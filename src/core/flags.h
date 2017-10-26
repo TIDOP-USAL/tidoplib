@@ -36,7 +36,7 @@ namespace I3D
  *   flag2.flagOn(ePrueba3::flag03);
  *
  *   // Desactiva un flag
- *   flag2.flagOn(ePrueba3::flag01);
+ *   flag2.flagOff(ePrueba3::flag01);
  *
  *   // Invierte un flag
  *   flag2.switchFlag(ePrueba3::flag15);

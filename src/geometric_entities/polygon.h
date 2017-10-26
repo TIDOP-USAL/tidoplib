@@ -202,7 +202,7 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
     int vertex_next = 0;
     for (int i = 0; i < vertex_id.size(); i++) {
       // Se comprueban los puntos anterior y siguiente
-      if (vertex_id[i] == 0) vertex_prev = mEntities.size() - 1;
+      if (vertex_id[i] == 0) vertex_prev = static_cast<int>(mEntities.size()) - 1;
       else vertex_prev = vertex_id[i] - 1;
 
       if (vertex_id[i] == mEntities.size() - 1) vertex_next = 0;

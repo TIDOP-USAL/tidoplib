@@ -281,6 +281,8 @@ double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &
   return *std::min_element(dist, dist + 4);
 }
 
+I3D_DISABLE_WARNING(4244)
+
 /*!
  * \brief Intersect de dos segmentos de línea
  * \param ln1 Primer segmento
@@ -345,6 +347,8 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
   }
   return(iret);
 }
+
+I3D_ENABLE_WARNING(4244)
 
 template<typename Point_t>
 bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Point_t> &ln, Point_t *intersect)

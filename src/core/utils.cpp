@@ -120,6 +120,7 @@ bool isFile(const char *file)
 }
 int createDir(const char *path)
 {
+  int i_ret = 0;
   if (isDirectory(path)) return 1;
   std::vector<std::string> splitPath;
   I3D::split(path, splitPath, "\\");
@@ -127,40 +128,45 @@ int createDir(const char *path)
     I3D::split(path, splitPath, "/");
 
   std::string _path = "";
-  for (size_t i = 0; i < splitPath.size(); i++) {
-    _path += splitPath[i];
-    _path += "\\";
-    if (!isDirectory(_path.c_str())) {
-      std::string mkdir = "mkdir \"";
-      mkdir += _path;
-      mkdir += "\"";
-      try {
+  try {
+    for (size_t i = 0; i < splitPath.size(); i++) {
+      _path += splitPath[i];
+      _path += "\\";
+      if (!isDirectory(_path.c_str())) {
+        std::string mkdir = "mkdir \"";
+        mkdir += _path;
+        mkdir += "\"";
+      
         system(mkdir.c_str());
-      } catch (std::exception &e) {
-        msgError(e.what());
-        return -1;
       }
     }
+  } catch (std::exception &e) {
+    msgError(e.what());
+    i_ret = -1;
   }
-  return 0;
+  return i_ret;
 }
 
 int deleteDir(const char *path, bool confirm)
 {
-  if (isDirectory(path)) {
-    std::string delDir = "rmdir /s ";
-    if (!confirm) delDir += "/q ";
-    std::string str = path;
-    replaceString(&str, "/", "\\");
-    delDir += str;
-    try {
+  int i_ret = 0;
+  try {
+    if (isDirectory(path)) {
+      std::string delDir = "rmdir /s ";
+      if (!confirm) delDir += "/q ";
+      std::string str = path;
+      replaceString(&str, "/", "\\");
+      delDir += str;
       system(delDir.c_str());
-    } catch (std::exception &e) {
-      msgError(e.what());
-      return -1;
+      i_ret = 0;
+    } else {
+      i_ret = 1;
     }
-    return 0;
-  } else return 1;
+  } catch (std::exception &e) {
+    msgError(e.what());
+    i_ret = -1;
+  }
+  return i_ret;
 }
 
 int getFileDir(const char *path, char *dir, int size)
@@ -443,10 +449,13 @@ std::string Path::toString()
 /*          PROCESOS Y BATCH                                                          */
 /* ---------------------------------------------------------------------------------- */
 
+unsigned long Process::sProcessCount = 0;
+
 Process::Process() 
   : mStatus(Status::START),
     mListeners(0) 
 {
+  mProcessId = ++sProcessCount;
 }
 
 Process::~Process()
@@ -508,7 +517,7 @@ void Process::endTriggered()
   mStatus = Status::FINALIZED;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onEnd();
+      lst->onEnd(getProcessId());
     }
   }
 }
@@ -518,7 +527,7 @@ void Process::pauseTriggered()
   mStatus = Status::PAUSE;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onPause();
+      lst->onPause(getProcessId());
     }
   }
 }
@@ -528,7 +537,7 @@ void Process::resumeTriggered()
   mStatus = Status::RUNNING;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onResume();
+      lst->onResume(getProcessId());
     }
   }
 }
@@ -538,7 +547,7 @@ void Process::runTriggered()
   mStatus = Status::RUNNING;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onRun();
+      lst->onRun(getProcessId());
     }
   }
 }
@@ -548,7 +557,7 @@ void Process::startTriggered()
   mStatus = Status::START;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStart();
+      lst->onStart(getProcessId());
     }
   }
 }
@@ -558,9 +567,14 @@ void Process::stopTriggered()
   mStatus = Status::STOPPED;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStop();
+      lst->onStop(getProcessId());
     }
   }
+}
+
+unsigned long Process::getProcessId() const
+{
+  return mProcessId;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -668,9 +682,9 @@ I3D_ENABLE_WARNING(4100)
 
 BatchProcess::BatchProcess()
   : mStatus(Status::START),
-  mProcessList(0),
-  mCurrentProcess(0),
-  _thread()
+    mProcessList(0),
+    mCurrentProcess(0),
+    _thread()
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
@@ -815,32 +829,32 @@ void BatchProcess::stop()
   }
 }
 
-void BatchProcess::onPause()
+void BatchProcess::onPause(unsigned long id)
 {
 
 }
 
-void BatchProcess::onResume()
+void BatchProcess::onResume(unsigned long id)
 {
 
 }
 
-void BatchProcess::onRun()
+void BatchProcess::onRun(unsigned long id)
 {
 
 }
 
-void BatchProcess::onStart()
+void BatchProcess::onStart(unsigned long id)
 {
 
 }
 
-void BatchProcess::onStop()
+void BatchProcess::onStop(unsigned long id)
 {
 
 }
 
-void BatchProcess::onEnd()
+void BatchProcess::onEnd(unsigned long id)
 {
 
 }
