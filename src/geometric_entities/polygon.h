@@ -57,7 +57,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon(int size);
+  Polygon(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -114,7 +114,7 @@ Polygon<Point_t>::Polygon()
 }
 
 template<typename Point_t> inline
-Polygon<Point_t>::Polygon(int size) 
+Polygon<Point_t>::Polygon(size_type size) 
   : Entity(Entity::type::POLYGON_2D), 
     Entities2D<Point_t>(size) 
 {
@@ -298,7 +298,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon3D(int size);
+  Polygon3D(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -334,7 +334,7 @@ Polygon3D<Point3_t>::Polygon3D()
 }
 
 template<typename Point3_t> inline
-Polygon3D<Point3_t>::Polygon3D(int size) 
+Polygon3D<Point3_t>::Polygon3D(size_type size) 
   : Entity(Entity::type::POLYGON_3D), 
     Entities3D<Point3_t>(size) 
 {

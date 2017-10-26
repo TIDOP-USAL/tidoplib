@@ -429,9 +429,9 @@ void StyleLabel::setOffset(double dx, double dy)
 #ifdef HAVE_GDAL
 bool GraphicStyle::readFromOGR(OGRStyleMgr *ogrStyle)
 {
-  OGRStyleTool *ogrStyleTool = NULL;
+  OGRStyleTool *ogrStyleTool = nullptr;
   for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
-    if (ogrStyleTool = ogrStyle->GetPart(i)) {
+    if ((ogrStyleTool = ogrStyle->GetPart(i)) != nullptr) {
       OGRSTClassId oci = ogrStyleTool->GetType();
       switch (oci) {
       case OGRSTCPen:

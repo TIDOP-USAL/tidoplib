@@ -273,7 +273,7 @@ void Console::setFontBold(bool bBold)
   update();
 }
 
-void Console::setFontHeight(int size)
+void Console::setFontHeight(int16_t size)
 {
 #ifdef WIN32
   mCurrentFont.dwFontSize.Y = size;

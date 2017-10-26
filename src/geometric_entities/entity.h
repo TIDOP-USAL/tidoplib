@@ -61,12 +61,12 @@ public:
     BOX,                        /*!< Caja */
     MULTIPOINT_2D,              /*!< Multipunto 2D */
     MULTIPOINT_3D,              /*!< Multipunto 3D */
-    MULTILINE_2D,
-    MULTILINE_3D,
-    MULTIPOLYGON_2D,
-    MULTIPOLYGON_3D,
-    CIRCLE,
-    ELLIPSE
+    MULTILINE_2D,               /*!< Multi-línea 2D */
+    MULTILINE_3D,               /*!< Multi-línea 3D */
+    MULTIPOLYGON_2D,            /*!< Multi-polígono 2D */
+    MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
+    CIRCLE,                     /*!< Circulo */
+    ELLIPSE                     /*!< Elipse */
   };
 
 protected:
@@ -102,7 +102,7 @@ public:
 /*!
  * \brief Contenedor para entidades geométricas
  * 
- * Es un simple wrapper de std::vector para que las clases de geometrias 
+ * Es un simple wrapper de std::vector para que las clases de geometrías 
  * se puedan utilizar como contenedores.
  */
 template<typename Entity_t>
@@ -179,7 +179,7 @@ public:
    * \brief Constructora
    * \param[int] Tamaño que se reserva para el contenedor
    */
-  EntityContainer(int size);
+  EntityContainer(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -314,7 +314,7 @@ EntityContainer<Entity_t>::EntityContainer()
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t>::EntityContainer(int size)
+EntityContainer<Entity_t>::EntityContainer(size_type size)
   : mEntities(size)
 {
 }
@@ -449,7 +449,7 @@ public:
    * \brief Constructor que reserva tamaño para n puntos
    * \param[in] size Tamaños que se reserva
    */
-  Entities2D(int size);
+  Entities2D(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -502,7 +502,7 @@ Entities2D<Entity_t>::Entities2D()
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t>::Entities2D(int size) 
+Entities2D<Entity_t>::Entities2D(size_type size) 
   : EntityContainer<Entity_t>(size) 
 {
 }
@@ -538,7 +538,7 @@ template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
 {
   std::vector<Entity_t> r_points(mEntities.size());
-  int j = 0;
+  size_t j = 0;
   for (size_t i = 0; i < mEntities.size(); i++) {
     if (w.containsPoint(mEntities[i])) {
       r_points[i] = mEntities[i];
@@ -583,7 +583,7 @@ public:
    * \param[in] size Tamaño que se reserva
    * \see entity_type
    */
-  Entities3D(int size);
+  Entities3D(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -629,7 +629,7 @@ Entities3D<Entity_t>::Entities3D()
 }
 
 template<typename Entity_t> inline
-Entities3D<Entity_t>::Entities3D(int size) 
+Entities3D<Entity_t>::Entities3D(size_type size) 
   : EntityContainer<Entity_t>(size) 
 {
 }
@@ -680,7 +680,7 @@ template<typename Entity_t> inline
 std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
 {
   std::vector<Entity_t> r_points(mEntities.size());
-  int j = 0;
+  size_t j = 0;
   for (size_t i = 0; i < mEntities.size(); i++) {
     if (box.containsPoint(mEntities[i])) {
       r_points[i] = mEntities[i];

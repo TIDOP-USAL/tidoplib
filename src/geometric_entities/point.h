@@ -585,7 +585,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiPoint(int size);
+  MultiPoint(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -617,7 +617,7 @@ MultiPoint<Point_t>::MultiPoint()
 }
 
 template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(int size) 
+MultiPoint<Point_t>::MultiPoint(size_type size) 
   : Entity(Entity::type::MULTIPOINT_2D),
     Entities2D<Point_t>(size) 
 {
@@ -677,7 +677,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiPoint3D(int size);
+  MultiPoint3D(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -709,7 +709,7 @@ MultiPoint3D<Point_t>::MultiPoint3D()
 }
 
 template<typename Point_t> inline
-MultiPoint3D<Point_t>::MultiPoint3D(int size) 
+MultiPoint3D<Point_t>::MultiPoint3D(size_type size) 
   : Entity(Entity::type::MULTIPOINT_3D),
     Entities3D<Point_t>(size) 
 {

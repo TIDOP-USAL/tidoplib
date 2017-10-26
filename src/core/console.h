@@ -245,7 +245,7 @@ public:
    * \brief Establece el tamaño de la fuente
    * \param[in] size Tamaño de la fuente
    */
-  void setFontHeight(int size);
+  void setFontHeight(int16_t size);
 
   /*!
    * \brief Establece los niveles de mensajes que se muestran por consola
