@@ -3676,6 +3676,21 @@ transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &pt
 {
   formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
+    // TODO: Debería ser mas rapido hacer:
+    // size_t n = ptsIn.size();
+    // double *x = new double[n], *p_x = x;
+    // double *y = new double[n], *p_y = y;
+    // double *z = new double[n], *p_z = z;
+    // for (int i = 0; i < n; i++) {
+    //  *p_x++ = ptsIn[i].x;
+    //  *p_y++ = ptsIn[i].y;
+    //  *p_z++ = ptsIn[i].z;
+    //}
+    // if (trfOrder == transform_order::DIRECT){
+    //   pCoordinateTransformation->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
+    // } else {
+    //   pCoordinateTransformationInv->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
+    //}
     transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
   return transform_status::SUCCESS;

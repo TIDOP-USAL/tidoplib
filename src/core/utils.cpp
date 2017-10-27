@@ -831,32 +831,32 @@ void BatchProcess::stop()
 
 void BatchProcess::onPause(unsigned long id)
 {
-
+  msgInfo("Proceso %i en pausa", id);
 }
 
 void BatchProcess::onResume(unsigned long id)
 {
-
+  msgInfo("Proceso %i reanudado", id);
 }
 
 void BatchProcess::onRun(unsigned long id)
 {
-
+  msgInfo("Proceso %i corriendo", id);
 }
 
 void BatchProcess::onStart(unsigned long id)
 {
-
+  msgInfo("Proceso %i preparado", id);
 }
 
 void BatchProcess::onStop(unsigned long id)
 {
-
+  msgInfo("Proceso %i detenido", id);
 }
 
 void BatchProcess::onEnd(unsigned long id)
 {
-
+  msgInfo("Proceso %i finalizado", id);
 }
 
 /* ---------------------------------------------------------------------------------- */

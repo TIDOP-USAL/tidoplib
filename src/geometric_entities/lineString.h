@@ -53,7 +53,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño de la polilínea
    */
-  LineString(int size);
+  LineString(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -100,7 +100,7 @@ LineString<Point_t>::LineString()
 }
 
 template<typename Point_t> inline
-LineString<Point_t>::LineString(int size)
+LineString<Point_t>::LineString(size_type size)
   : Entity(Entity::type::LINESTRING_2D), 
     Entities2D<Point_t>(size) 
 {
@@ -169,7 +169,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño de la polilínea
    */
-  LineString3D(int size);
+  LineString3D(size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -216,7 +216,7 @@ LineString3D<Point3_t>::LineString3D()
 }
 
 template<typename Point3_t> inline
-LineString3D<Point3_t>::LineString3D(int size)
+LineString3D<Point3_t>::LineString3D(size_type size)
   : Entity(Entity::type::LINESTRING_3D), 
     Entities3D<Point3_t>(size) 
 {
