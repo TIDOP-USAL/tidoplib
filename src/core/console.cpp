@@ -706,6 +706,16 @@ void Progress::init(double min, double max, const std::string &msg)
   updateScale();
 }
 
+void Progress::setMinimun(double min)
+{
+  mMinimun = min;
+}
+
+void Progress::setMaximun(double max)
+{
+  mMaximun = max;
+}
+
 void Progress::restart()
 {
   mPercent = 0;
