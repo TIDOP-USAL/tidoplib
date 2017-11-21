@@ -113,6 +113,13 @@ public:
   void flagOff(const T flag);
 
   /*!
+   * \brief Activa o desactiva un flag
+   * \param flag Flag que se desactiva
+   * \param active Verdadero para activar el flag
+   */
+  void activeFlag(const T flag, bool active);
+
+  /*!
    * \brief Invierte un flag
    * \param flag Flag que se invierte
    */
@@ -160,6 +167,13 @@ template<typename T> inline
 void EnumFlags<T>::flagOff(const T flag)
 {
   mFlag &= ~static_cast<Type>(flag);
+}
+
+template<typename T> inline
+void EnumFlags<T>::activeFlag(const T flag, bool active)
+{
+  if (active) flagOn(flag);
+  else flagOff(flag);
 }
 
 template<typename T> inline

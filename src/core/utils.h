@@ -320,6 +320,7 @@ public:
   // bool isDirectory();
   // bool isFile();
   // void listFiles();  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
+  // void createDir();
 };
 
 
@@ -402,10 +403,16 @@ public:
     virtual void onStop(unsigned long id) = 0;
 
     /*!
-     * \brief Mensaje de depuración
+     * \brief 
      * \param id Identificador del proceso
      */
     virtual void onEnd(unsigned long id) = 0;
+
+    /*!
+     * \brief 
+     * \param id Identificador del proceso
+     */
+    virtual void onError(unsigned long id) = 0;
   };
 
 protected:
@@ -427,12 +434,14 @@ protected:
    */    
   unsigned long mProcessId;
 
+  Process *mParentProcess;
+
 public:
 
   /*!
    * \brief Constructora
    */
-  Process();
+  Process(Process *parentProcess = nullptr);
 
   /*!
    * \brief Destructora
@@ -495,7 +504,7 @@ protected:
   void runTriggered();
   void startTriggered();
   void stopTriggered();
-
+  void errorTriggered();
 };
 
 
@@ -516,7 +525,7 @@ protected:
 
 public:
 
-  CmdProcess(const std::string &cmd);
+  CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
   ~CmdProcess();
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
@@ -677,6 +686,7 @@ protected:
   virtual void onStart(unsigned long id) override;
   virtual void onStop(unsigned long id) override;
   virtual void onEnd(unsigned long id) override;
+  virtual void onError(unsigned long id) override;
 };
 
 

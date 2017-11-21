@@ -898,6 +898,15 @@ public:
    */
   void setOnTerminateListener(std::function<void(void)> &terminateFunction);
 
+  void setMinimun(double min);
+
+  void setMaximun(double max);
+
+  /*!
+   * \brief updateScale
+   */
+  void updateScale();
+
 protected:
 
   /*!
@@ -909,11 +918,6 @@ protected:
    * \brief
    */
   virtual void updateProgress() = 0;
-
-  /*!
-   * \brief updateScale
-   */
-  void updateScale();
 
   /*!
    * \brief terminate
