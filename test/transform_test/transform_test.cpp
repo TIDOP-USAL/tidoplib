@@ -5,6 +5,7 @@
 #include "opencv2/core/core.hpp"
 
 using namespace I3D;
+using namespace I3D::geometry;
 
 // Pendiente
 // - TrfMultiple

@@ -759,7 +759,7 @@ public:
    * \param[in] name Nombre del parámetro
    * \return Valor del parámetro en el tipo indicado
    */
-  template<typename T>
+  template<typename T = int>
   T getParameterOptionIndex(const char *name) const
   {
     std::string _name(name);

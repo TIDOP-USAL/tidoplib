@@ -44,6 +44,8 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\props_vs\libs.props" />
+    <Import Project="..\..\props_vs\OpenCV_debug.props" />
     <Import Project="..\..\props_vs\GTest_debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'" Label="PropertySheets">
@@ -52,6 +54,8 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\props_vs\libs.props" />
+    <Import Project="..\..\props_vs\OpenCV_release.props" />
     <Import Project="..\..\props_vs\GTest_release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -129,6 +133,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\core\flags.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\tidopLib.vcxproj">
+      <Project>{f39af565-7429-4f4c-a13c-c1edb3c0f529}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
