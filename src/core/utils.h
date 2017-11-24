@@ -460,6 +460,12 @@ public:
   virtual void pause();
 
   /*!
+   * \brief Quita un escuchador de mensajes
+   * \param[in] listener Objeto escuchador
+   */
+  void removeListener(Listener *listener);
+
+  /*!
    * \brief Reinicia el proceso
    */
   virtual void reset();
@@ -492,8 +498,15 @@ public:
    * \brief Devuelve el estado actual de la ejecución 
    */
   Status getStatus();
+  
+  void setStatus(Status status);
 
-  unsigned long getProcessId() const;
+  uint64_t getProcessId() const;
+
+  /*!
+   * \brief Establece el contador de procesos a cero
+   */
+  static void processCountReset();
 
 protected:
 
@@ -638,6 +651,9 @@ public:
    */
   I3D_DEPRECATED("BatchProcess::reset()")
   void clear();
+
+  void remove(uint64_t id);
+  void remove(const std::shared_ptr<Process> &process);
 
   /*!
    * \brief Comprueba si esta corriendo

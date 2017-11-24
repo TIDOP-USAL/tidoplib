@@ -116,7 +116,7 @@ bool isFile(const char *file)
 {
   FILE *fp = std::fopen(file, "rb");
   if (!fp) {
-    msgError("%i: %s", errno, strerror(errno));
+    //msgError("%i: %s", errno, strerror(errno));
     return false;
   } else {
     std::fclose(fp);
@@ -499,6 +499,13 @@ void Process::pause()
   mStatus = Status::PAUSING;
 }
 
+void Process::removeListener(Listener *listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
+}
+
 void Process::reset()
 {
   mStatus = Status::START;
@@ -515,8 +522,9 @@ void Process::resume()
 I3D_DISABLE_WARNING(4100)
 Process::Status Process::run(Progress *progressBar)
 {
-  runTriggered();
-  return mStatus = Status::RUNNING;
+  if (mStatus != Status::FINALIZED) // Util para saltar procesos ya realizados.
+    runTriggered();
+  return mStatus;
 }
 I3D_ENABLE_WARNING(4100)
 
@@ -534,6 +542,10 @@ Process::Status Process::getStatus()
   return mStatus;
 }
 
+void Process::setStatus(Process::Status status)
+{
+  mStatus = status;
+}
 
 void Process::endTriggered()
 {
@@ -606,9 +618,14 @@ void Process::errorTriggered()
 }
 
 
-unsigned long Process::getProcessId() const
+uint64_t Process::getProcessId() const
 {
   return mProcessId;
+}
+
+void Process::processCountReset()
+{
+  sProcessCount = 0;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -764,6 +781,23 @@ void BatchProcess::clear()
   reset();
 }
 
+void BatchProcess::remove(uint64_t id)
+{
+  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
+    if ((*it)->getProcessId() == id) {
+      remove(*it);
+      break;
+    }
+  }
+}
+
+void BatchProcess::remove(const std::shared_ptr<Process> &process)
+{
+  process->removeListener(this);
+  mProcessList.remove(process);
+}
+
+
 bool BatchProcess::isRunning() const
 {
   return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
@@ -785,8 +819,8 @@ void BatchProcess::reset()
   } else {
     mStatus = Status::START;
     mProcessList.clear();
+    Process::processCountReset();
   }
-
 }
 
 void BatchProcess::resume()
