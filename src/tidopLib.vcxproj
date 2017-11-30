@@ -152,7 +152,9 @@
     <ClCompile Include="matching.cpp" />
     <ClCompile Include="stereo\anaglyph.cpp" />
     <ClCompile Include="transform.cpp" />
+    <ClCompile Include="vect\vectio.cpp" />
     <ClCompile Include="videostream.cpp" />
+    <ClCompile Include="video\videoio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\config.h" />
@@ -188,7 +190,9 @@
     <ClInclude Include="resource1.h" />
     <ClInclude Include="stereo\anaglyph.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="vect\vectio.h" />
     <ClInclude Include="videostream.h" />
+    <ClInclude Include="video\videoio.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tidopLib.rc" />

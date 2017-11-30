@@ -1322,13 +1322,24 @@ void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) 
 /* ---------------------------------------------------------------------------------- */
 
 Csv::Csv()
-  : File()/*,
-    DataTable()*/
+  : File()
+{
+}
+
+Csv::Csv(const char *file, Mode mode)
+  : File(file, mode)
+{
+  open(file, mode);
+}
+
+Csv::Csv(const Csv &csv)
+  : File(csv)
 {
 }
 
 Csv::~Csv()
 {
+  close();
 }
 
 void Csv::close()
@@ -1365,7 +1376,7 @@ void Csv::close()
 Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
-    msgError("No se ha abierto el archivo %s", mName.c_str());
+    msgError("No se ha abierto el archivo %s", mFile.c_str());
     return Status::FAILURE; 
   }
 
@@ -1438,11 +1449,11 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
 {
   close();
   
-  mName = file;
+  mFile = file;
   mMode = mode;
 
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
   if (strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;

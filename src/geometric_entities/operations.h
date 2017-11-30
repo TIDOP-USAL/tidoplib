@@ -29,6 +29,8 @@ namespace geometry
 // forward declaration
 template<typename T> class Segment;
 template<typename T> class Segment3D;
+template<typename T> class Polygon;
+template<typename T> class Polygon3D;
 class GroupLines;
 
 /* ---------------------------------------------------------------------------------- */

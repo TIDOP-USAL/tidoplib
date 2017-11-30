@@ -133,7 +133,7 @@ public:
   /*!
    * \brief Constructora
    */
-  VrtRaster() : File(), mRows(0), mCols(0), mBands(0), mDataType(DataType::I3D_8U), mColorDepth(0) {}
+  VrtRaster();
 
   /*!
    * \brief Destructora

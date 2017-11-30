@@ -7,6 +7,7 @@
 
 #include "opencv2/imgproc/imgproc.hpp"
 
+#define TEST_DETECT_ANIMALS 1
 /* ---------------------------------------------------------------------------------- */
 
 namespace I3D
@@ -106,8 +107,15 @@ bool VideoStream::open(const char *name)
   else {
     int width =  (int)mVideoCapture.get(cv::CAP_PROP_FRAME_WIDTH);
     int height = (int)mVideoCapture.get(cv::CAP_PROP_FRAME_HEIGHT);
+    msgInfo("Video size: %ix%i", width, height);
     mSize = mFrameSize = cv::Size(width, height);
+#ifdef TEST_DETECT_ANIMALS
     mfps = mVideoCapture.get(cv::CAP_PROP_FPS);
+    msgInfo("Framerate: %f", mfps);
+
+#else    
+   mfps = mVideoCapture.get(cv::CAP_PROP_FPS);
+#endif
     return true;
   }
 }
@@ -129,10 +137,10 @@ bool VideoStream::read(cv::Mat *vf)
   
   bool bret = false;
   if ((bret = mVideoCapture.read(mFrame))){
-    while (bSkipBlurryFrames && isImageBlurry(mFrame)) {
-      bret = mVideoCapture.read(mFrame);
-      if (bret == false) break;
-    }
+    //while (bSkipBlurryFrames && isImageBlurry(mFrame)) {
+    //  bret = mVideoCapture.read(mFrame);
+    //  if (bret == false) break;
+    //}
   } else {
     // No ha podido leer el frame. Tratamos de seguir leyendo mientras no lleguemos al final del video.
     if (mFrame.empty()) {
@@ -140,16 +148,16 @@ bool VideoStream::read(cv::Mat *vf)
       double duration = mVideoCapture.get(cv::CAP_PROP_FRAME_COUNT);
       char c;
 
-      if (1) {
-        // para streaming
-        while (bret == false) {
-          mVideoCapture.release();
-          mVideoCapture.open("rtsp://admin:admin@192.168.1.168:554");
-          bret = mVideoCapture.read(mFrame);
-          c = (char)cv::waitKey(1);
-          if (c == 27) return false;
-        }
-      } else {
+      //if (1) {
+      //  // para streaming
+      //  while (bret == false) {
+      //    mVideoCapture.release();
+      //    mVideoCapture.open("rtsp://admin:admin@192.168.1.168:554");
+      //    bret = mVideoCapture.read(mFrame);
+      //    c = (char)cv::waitKey(1);
+      //    if (c == 27) return false;
+      //  }
+      //} else {
         while (duration > posframe && bret == false) {
           posframe++;
           msgError("Error al cargar el frame %.lf", posframe);
@@ -158,7 +166,7 @@ bool VideoStream::read(cv::Mat *vf)
           c = (char)cv::waitKey(1);
           if (c == 27) return false;
         }
-      }
+      //}
     }
   }
   if (bret) {

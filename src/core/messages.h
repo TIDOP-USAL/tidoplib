@@ -75,9 +75,13 @@ public:
 
     /*!
      * \brief Constructora
+     * \param[in] add Si add es true se añade directamente al gestor de mensajes
      */
-    Listener()
+    Listener(bool add = true)
     {
+      if (add) {
+        MessageManager::getInstance().addListener(this);
+      }
     }
 
     /*!
@@ -85,6 +89,7 @@ public:
      */
     virtual ~Listener()
     {
+      MessageManager::getInstance().removeListener(this);
     }
 
     /*!
@@ -436,14 +441,14 @@ private:
   /*!
    * \brief Constructora privada
    */
-  Log() {}
+  Log(bool add = true);
 
 public:
 
   /*!
    * \brief Destructora
    */
-  ~Log() {}
+  ~Log();
 
   Log(Log const&) = delete;
   void operator=(Log const&) = delete;
