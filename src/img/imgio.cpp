@@ -321,7 +321,7 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  //if (scale >= 1.) { // Si interesase hacer el remuetreo posteriormente se haría asi
+  //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
     size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
     size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
     if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);

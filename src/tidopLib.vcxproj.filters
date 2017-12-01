@@ -75,9 +75,6 @@
     <ClCompile Include="geometric_entities\window.cpp">
       <Filter>Archivos de código fuente\geometric_entities</Filter>
     </ClCompile>
-    <ClCompile Include="fourier.cpp">
-      <Filter>Archivos de código fuente</Filter>
-    </ClCompile>
     <ClCompile Include="matching.cpp">
       <Filter>Archivos de código fuente</Filter>
     </ClCompile>
@@ -137,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="graphic_entities\graphic_entity.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
+    </ClCompile>
+    <ClCompile Include="fourier.cpp">
+      <Filter>Archivos de código fuente</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
