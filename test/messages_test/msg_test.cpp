@@ -1,11 +1,9 @@
 #include <gtest/gtest.h>
 #include "core\messages.h"
 #include "core\utils.h"
-#include "experimental\experimental.h"
 
 
 using namespace I3D;
-using namespace EXPERIMENTAL;
 
 TEST(Message, Default) {
 

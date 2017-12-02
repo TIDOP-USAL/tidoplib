@@ -115,13 +115,20 @@ bool isDirectory(const char *path)
 bool isFile(const char *file)
 {
   FILE *fp = std::fopen(file, "rb");
-  if (!fp) return false;
-  else return true;
+  if (!fp) {
+    //msgError("%i: %s", errno, strerror(errno));
+    return false;
+  } else {
+    std::fclose(fp);
+    return true;
+  } 
 }
+
 int createDir(const char *path)
 {
   int i_ret = 0;
   if (isDirectory(path)) return 1;
+
   std::vector<std::string> splitPath;
   I3D::split(path, splitPath, "\\");
   if (splitPath.size() == 1)
@@ -133,17 +140,28 @@ int createDir(const char *path)
       _path += splitPath[i];
       _path += "\\";
       if (!isDirectory(_path.c_str())) {
+
+#ifdef _MSC_VER
+
+        if (!CreateDirectoryA(_path.c_str(), NULL)) {
+          i_ret = -1;
+        }
+
+#else
+
         std::string mkdir = "mkdir \"";
-        mkdir += _path;
-        mkdir += "\"";
-      
+        mkdir.append(_path);
+        mkdir.append("\"");
         system(mkdir.c_str());
+
+#endif
       }
     }
   } catch (std::exception &e) {
     msgError(e.what());
     i_ret = -1;
   }
+
   return i_ret;
 }
 
@@ -475,11 +493,14 @@ void Path::deleteDir()
 
 unsigned long Process::sProcessCount = 0;
 
-Process::Process() 
+Process::Process(Process *parentProcess) 
   : mStatus(Status::START),
+    mParentProcess(parentProcess),
     mListeners(0) 
 {
-  mProcessId = ++sProcessCount;
+  if (mParentProcess == nullptr) {
+    mProcessId = ++sProcessCount;
+  }
 }
 
 Process::~Process()
@@ -492,12 +513,21 @@ Process::~Process()
 
 void Process::addListener(Listener *listener)
 { 
-  mListeners.push_back(listener);
+  if (mParentProcess == nullptr) {
+    mListeners.push_back(listener);
+  }
 }
 
 void Process::pause()
 {
   mStatus = Status::PAUSING;
+}
+
+void Process::removeListener(Listener *listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
 }
 
 void Process::reset()
@@ -516,8 +546,9 @@ void Process::resume()
 I3D_DISABLE_WARNING(4100)
 Process::Status Process::run(Progress *progressBar)
 {
-  runTriggered();
-  return mStatus = Status::RUNNING;
+  if (mStatus != Status::FINALIZED) // Util para saltar procesos ya realizados.
+    runTriggered();
+  return mStatus;
 }
 I3D_ENABLE_WARNING(4100)
 
@@ -535,6 +566,10 @@ Process::Status Process::getStatus()
   return mStatus;
 }
 
+void Process::setStatus(Process::Status status)
+{
+  mStatus = status;
+}
 
 void Process::endTriggered()
 {
@@ -596,16 +631,32 @@ void Process::stopTriggered()
   }
 }
 
-unsigned long Process::getProcessId() const
+void Process::errorTriggered()
+{
+  mStatus = Status::FINALIZED_ERROR;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onError(getProcessId());
+    }
+  }
+}
+
+
+uint64_t Process::getProcessId() const
 {
   return mProcessId;
+}
+
+void Process::processCountReset()
+{
+  sProcessCount = 0;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 
-CmdProcess::CmdProcess(const std::string &cmd) 
-  : Process(),
+CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
+  : Process(parentProcess),
     mCmd(cmd)
 {
 #ifdef WIN32
@@ -754,6 +805,23 @@ void BatchProcess::clear()
   reset();
 }
 
+void BatchProcess::remove(uint64_t id)
+{
+  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
+    if ((*it)->getProcessId() == id) {
+      remove(*it);
+      break;
+    }
+  }
+}
+
+void BatchProcess::remove(const std::shared_ptr<Process> &process)
+{
+  process->removeListener(this);
+  mProcessList.remove(process);
+}
+
+
 bool BatchProcess::isRunning() const
 {
   return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
@@ -775,8 +843,8 @@ void BatchProcess::reset()
   } else {
     mStatus = Status::START;
     mProcessList.clear();
+    Process::processCountReset();
   }
-
 }
 
 void BatchProcess::resume()
@@ -819,6 +887,11 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
   auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
     if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
     for (const auto process : mProcessList) {
+      if (progress_bar_total) {
+        // Se han añadido nuevos procesos asi que se actualiza
+        progress_bar_total->setMaximun((double)mProcessList.size());
+        progress_bar_total->updateScale();
+      }
       mCurrentProcess = process.get();
       if (mStatus == Status::PAUSING) {
         mStatus = Status::PAUSE;
@@ -881,6 +954,11 @@ void BatchProcess::onStop(unsigned long id)
 void BatchProcess::onEnd(unsigned long id)
 {
   msgInfo("Proceso %i finalizado", id);
+}
+
+void BatchProcess::onError(unsigned long id)
+{
+  msgInfo("Proceso %i. Error al procesar", id);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -1020,19 +1098,25 @@ int loadBinMat(const char *file, cv::Mat *data)
   if (!fp) {
     return 1;
   }
+  int i_ret = 0;
   //cabecera
   int32_t rows;
   int32_t cols;
   int32_t type;
-  std::fread(&rows, sizeof(int32_t), 1, fp);
-  std::fread(&cols, sizeof(int32_t), 1, fp);
-  std::fread(&type, sizeof(int32_t), 1, fp);
-  //Cuerpo
-  cv::Mat aux(rows, cols, type);
-  std::fread(aux.data, sizeof(float), rows*cols, fp);
+  try {
+    std::fread(&rows, sizeof(int32_t), 1, fp);
+    std::fread(&cols, sizeof(int32_t), 1, fp);
+    std::fread(&type, sizeof(int32_t), 1, fp);
+    //Cuerpo
+    cv::Mat aux(rows, cols, type);
+    std::fread(aux.data, sizeof(float), rows*cols, fp);
+    aux.copyTo(*data);
+  } catch (std::exception &e) {
+    msgError(e.what());
+    i_ret = 1;
+  }
   std::fclose(fp);
-  aux.copyTo(*data);
-  return 0;
+  return i_ret;
 }
 
 int saveBinMat(const char *file, cv::Mat &data)
@@ -1041,17 +1125,23 @@ int saveBinMat(const char *file, cv::Mat &data)
   if (!fp) {
     return 1;
   }
+  int i_ret = 0;
   //cabecera
   int32_t rows = data.rows;
   int32_t cols = data.cols;
   int32_t type = data.type();
-  std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
-  std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
-  std::fwrite(&type, sizeof(int32_t), 1, fp);
-  //Cuerpo
-  std::fwrite(data.data, sizeof(float), rows*cols, fp);
+  try {
+    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
+    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
+    std::fwrite(&type, sizeof(int32_t), 1, fp);
+    //Cuerpo
+    std::fwrite(data.data, sizeof(float), rows*cols, fp);
+  } catch (std::exception &e) {
+    msgError(e.what());
+    i_ret = 1;
+  }
   std::fclose(fp);
-  return 0;
+  return i_ret;
 }
 
 #endif // HAVE_OPENCV
@@ -1290,13 +1380,24 @@ void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) 
 /* ---------------------------------------------------------------------------------- */
 
 Csv::Csv()
-  : File()/*,
-    DataTable()*/
+  : File()
+{
+}
+
+Csv::Csv(const char *file, Mode mode)
+  : File(file, mode)
+{
+  open(file, mode);
+}
+
+Csv::Csv(const Csv &csv)
+  : File(csv)
 {
 }
 
 Csv::~Csv()
 {
+  close();
 }
 
 void Csv::close()
@@ -1333,7 +1434,7 @@ void Csv::close()
 Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
-    msgError("No se ha abierto el archivo %s", mName.c_str());
+    msgError("No se ha abierto el archivo %s", mFile.c_str());
     return Status::FAILURE; 
   }
 
@@ -1406,11 +1507,11 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
 {
   close();
   
-  mName = file;
+  mFile = file;
   mMode = mode;
 
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
   if (strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;

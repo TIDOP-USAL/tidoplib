@@ -411,10 +411,16 @@ public:
     virtual void onStop(unsigned long id) = 0;
 
     /*!
-     * \brief Mensaje de depuración
+     * \brief 
      * \param id Identificador del proceso
      */
     virtual void onEnd(unsigned long id) = 0;
+
+    /*!
+     * \brief 
+     * \param id Identificador del proceso
+     */
+    virtual void onError(unsigned long id) = 0;
   };
 
 protected:
@@ -436,12 +442,14 @@ protected:
    */    
   unsigned long mProcessId;
 
+  Process *mParentProcess;
+
 public:
 
   /*!
    * \brief Constructora
    */
-  Process();
+  Process(Process *parentProcess = nullptr);
 
   /*!
    * \brief Destructora
@@ -458,6 +466,12 @@ public:
    * \brief Pausa el proceso
    */
   virtual void pause();
+
+  /*!
+   * \brief Quita un escuchador de mensajes
+   * \param[in] listener Objeto escuchador
+   */
+  void removeListener(Listener *listener);
 
   /*!
    * \brief Reinicia el proceso
@@ -492,8 +506,15 @@ public:
    * \brief Devuelve el estado actual de la ejecución 
    */
   Status getStatus();
+  
+  void setStatus(Status status);
 
-  unsigned long getProcessId() const;
+  uint64_t getProcessId() const;
+
+  /*!
+   * \brief Establece el contador de procesos a cero
+   */
+  static void processCountReset();
 
 protected:
 
@@ -504,7 +525,7 @@ protected:
   void runTriggered();
   void startTriggered();
   void stopTriggered();
-
+  void errorTriggered();
 };
 
 
@@ -525,7 +546,7 @@ protected:
 
 public:
 
-  CmdProcess(const std::string &cmd);
+  CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
   ~CmdProcess();
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
@@ -639,6 +660,9 @@ public:
   I3D_DEPRECATED("BatchProcess::reset()")
   void clear();
 
+  void remove(uint64_t id);
+  void remove(const std::shared_ptr<Process> &process);
+
   /*!
    * \brief Comprueba si esta corriendo
    */
@@ -686,6 +710,7 @@ protected:
   virtual void onStart(unsigned long id) override;
   virtual void onStop(unsigned long id) override;
   virtual void onEnd(unsigned long id) override;
+  virtual void onError(unsigned long id) override;
 };
 
 
@@ -1269,7 +1294,7 @@ public:
   {
     Read,      /*!< Lectura */
     Update,    /*!< Lectura y escritura. */
-    Create     /*!< Creaciçón */
+    Create     /*!< Creación */
   };
 
   /*!
@@ -1287,16 +1312,20 @@ public:
 protected:
   
   /*!
-   * \brief Nombre del fichero
+   * \brief Fichero
    */
-  std::string mName;
+  std::string mFile;
+
+  Mode mMode;
 
 public:
 
   /*!
    * \brief Constructora
    */
-  File() : mName("") {}
+  File() : mFile("") {}
+
+  File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
 
   /*!
    * \brief Destructora
@@ -1310,7 +1339,7 @@ public:
 
   /*!
    * \brief Abre un fichero
-   * \param[in] file Nombre del fichero
+   * \param[in] file Fichero
    * \param[in] mode Modo de apertura
    * \return
    * \see Mode
@@ -1332,14 +1361,16 @@ private:
 
   std::fstream fs;
 
-  Mode mMode;
-
 public:
 
   /*!
    * \brief Constructora
    */
   Csv();
+
+  Csv(const char *file, Mode mode = Mode::Update);
+
+  Csv(const Csv &csv);
 
   /*!
    * \brief Destructora

@@ -234,6 +234,8 @@ public:
   Status write();
   int getLayersCount() const;
 
+  void createLayer();
+
 private:
 
   void update();

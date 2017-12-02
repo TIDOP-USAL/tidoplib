@@ -14,7 +14,11 @@
 namespace I3D
 {
 
-class I3D_EXPORT VideoStreamEvents;
+//class I3D_EXPORT VideoStreamEvents;
+
+// TODO: OpenCV detecta camaras detectadas con lo cual se podría hacer 
+//       un metodo que liste todas las camaras detectadas para poder acceder
+//       a ellas con open(0), open(1), etc. 
 
 /*!
  * \brief Clase para el manejo de video
@@ -56,7 +60,33 @@ public:
   /*!
    * \brief Eventos
    */
-  typedef VideoStreamEvents Listener;
+  //typedef VideoStreamEvents Listener;
+  class Listener
+  {
+  protected:
+
+    VideoStream *mVideoStream;
+  
+  public:
+    Listener() {}
+
+    ~Listener() {}
+
+    virtual void onFinish() = 0;
+    virtual void onInitialize() = 0;
+    virtual void onPause() = 0;
+    virtual void onPositionChange(double position) = 0;
+    virtual void onRead(cv::Mat &frame) = 0;
+    virtual void onResume() = 0;
+    virtual void onShow(cv::Mat &frame) = 0;
+    virtual void onStop() = 0;
+  
+    void setVideoStream(VideoStream *videoStream) 
+    { 
+      mVideoStream = videoStream; 
+    }
+
+  };
 
 protected:
 
@@ -128,25 +158,18 @@ public:
   /*!
    * \brief Constructora I3DVideoStream
    */
-  VideoStream() : mSize(0, 0) 
-  {
-    init();
-  }
+  VideoStream();
 
   /*!
    * \brief Constructora I3DVideoStream
    * \param[in] file Video
    */
-  VideoStream(const char *file) : mSize(0, 0)
-  {
-    init();
-    open(file);
-  }
+  VideoStream(const char *file);
 
   /*!
    * \brief Destructora I3DVideoStream
    */
-  ~VideoStream(){}
+  ~VideoStream();
 
   /*!
    *
@@ -157,19 +180,19 @@ public:
    * \brief Frames por segundo del video
    * \return Frames por segundo
    */
-  virtual double fps() { return mfps/*mVideoCapture.get(CV_CAP_PROP_FPS)*/; }
+  virtual double fps();
 
   /*!
    * \brief Frame de video actual
    * \return
    */
-  virtual double getCurrentFrame() { return mVideoCapture.get(CV_CAP_PROP_POS_FRAMES); }
+  virtual double getCurrentFrame();
 
   /*!
    * \brief Número de frames del video
    * \return
    */
-  virtual double getFrameCount() { return mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT); }
+  virtual double getFrameCount();
 
   /*!
    * \brief Devuelve el ancho y alto de los frames de salida
@@ -187,13 +210,13 @@ public:
   * \brief Comprueba si el video está abierto
   * \return Verdadero si el video está abierto
   */
-  virtual bool isOpened() { return mVideoCapture.isOpened(); }
+  virtual bool isOpened();
 
   /*!
    * \brief Comprueba si esta activado el salto de frames borrosos
    * \return Verdadero si esta activado
    */
-  bool isSkipBlurryFrames() { return bSkipBlurryFrames;  }
+  bool isSkipBlurryFrames();
 
   /*!
    * \brief NextFrame
@@ -251,7 +274,7 @@ public:
    * \brief Activa el salto de frames borrosos
    * \param[in] Verdadero para activar el salto de frames borrosos
    */
-  void setSkipBlurryFrames(bool sbf) { bSkipBlurryFrames = sbf; }
+  void setSkipBlurryFrames(bool sbf);
 
   /*!
    * \brief Establece el salto de frames en la lectura del video
@@ -288,9 +311,29 @@ public:
   void skipUp();
 
   /*!
+   * \brief lee el siguiente frame
+   */
+  void read();
+
+  /*!
    * \brief Detiene la ejecución del video
    */
-  //void stop() { vs = VideoStream::Status::STOPPED; }
+  void stop();
+
+  /*!
+   * \brief Pausa la ejecución del video
+   */
+  void pause();
+
+  /*!
+   * \brief Continua la ejecución del video
+   */
+  void resume();
+
+  /*!
+   * \brief Finaliza la ejecución del video
+   */
+  void finish();
 
 //  /*!
 //   * \brief Retrasa el video
@@ -398,22 +441,13 @@ public:
   /*!
    * \brief Constructora ImagesStream
    */
-  ImagesStream() : /*VideoStream(),*/ mImages(0), mCurrentFrame(0) 
-  {
-    init();
-    mfps = 1.;
-  }
+  ImagesStream();
 
   /*!
    * \brief Constructora I3DVideoStream
    * \param[in] file Video o fichero de texto con un listado de imagenes
    */
-  ImagesStream(const char *file) : /*VideoStream(file),*/ mCurrentFrame(0)  
-  {
-    init();
-    open(file);
-    mfps = 1.;
-  }
+  ImagesStream(const char *file);
 
   /*!
    * \brief Destructora
@@ -485,32 +519,32 @@ public:
 
 };
 
-class VideoStreamEvents
-{
-protected:
-
-  VideoStream *mVideoStream;
-  
-public:
-  VideoStreamEvents() {}
-
-  ~VideoStreamEvents() {}
-
-  virtual void onFinish() = 0;
-  virtual void onInitialize() = 0;
-  virtual void onPause() = 0;
-  virtual void onPositionChange(double position) = 0;
-  virtual void onRead(cv::Mat &frame) = 0;
-  virtual void onResume() = 0;
-  virtual void onShow(cv::Mat &frame) = 0;
-  virtual void onStop() = 0;
-  
-  void setVideoStream(VideoStream *videoStream) 
-  { 
-    mVideoStream = videoStream; 
-  }
-
-};
+//class VideoStreamEvents
+//{
+//protected:
+//
+//  VideoStream *mVideoStream;
+//  
+//public:
+//  VideoStreamEvents() {}
+//
+//  ~VideoStreamEvents() {}
+//
+//  virtual void onFinish() = 0;
+//  virtual void onInitialize() = 0;
+//  virtual void onPause() = 0;
+//  virtual void onPositionChange(double position) = 0;
+//  virtual void onRead(cv::Mat &frame) = 0;
+//  virtual void onResume() = 0;
+//  virtual void onShow(cv::Mat &frame) = 0;
+//  virtual void onStop() = 0;
+//  
+//  void setVideoStream(VideoStream *videoStream) 
+//  { 
+//    mVideoStream = videoStream; 
+//  }
+//
+//};
 
 
 /*!
@@ -545,14 +579,11 @@ private:
   VideoStream *mVideo;
 
 public:
+
   /*!
    * \brief Constructora por defecto  de la clase VideoWindow
    */
-  VideoWindow() 
-    : mWindowName("Video"), mFlags(1), bPosTrackBar(true), mVideoSize(0), mVideo(0) 
-  {
-    cv::namedWindow(mWindowName, mFlags);
-  }
+  VideoWindow();
 
   /*!
    * \brief Constructora de la clase VideoWindow
@@ -560,11 +591,13 @@ public:
    * \param[in] flags
    * \param[in] bPos Muestra slider con posición del video
    */
-  VideoWindow(const char* wname, int flags = CV_WINDOW_AUTOSIZE, bool bPos = true)
-    : mWindowName(wname), mFlags(flags), bPosTrackBar(bPos), mVideoSize(0), mVideo(0) 
-  { 
-    cv::namedWindow(mWindowName, mFlags);
-  }
+  VideoWindow(const char* wname, int flags = CV_WINDOW_AUTOSIZE, bool bPos = true);
+
+  /*!
+   * \brief Constructora de copia de clase VideoWindow
+   * \param[in] video objeto que se copia
+   */
+  VideoWindow(const VideoWindow &video);
 
   /*!
    * \brief Destructora de la clase I3DVideoCtrls
@@ -586,56 +619,23 @@ public:
   /*!
    * \brief Devuelve una referencia al nombre de la ventana
    */
-  const std::string &getName() const {
-    return mWindowName;
-  }
+  const std::string &getName() const;
 
-  void onFinish() override
-  {
-    VideoStream::Listener::onFinish(); 
-  }
+  void onFinish() override;
      
-  void onInitialize() override
-  {
-    VideoStream::Listener::onInitialize(); 
-    cv::namedWindow(mWindowName, mFlags);
-  }
+  void onInitialize() override;
 
-  void onPause() override
-  {
-    VideoStream::Listener::onPause(); 
-  }
+  void onPause() override;
 
-  void onRead(cv::Mat &frame) override 
-  { 
-    VideoStream::Listener::onRead(frame);
-  }
+  void onRead(cv::Mat &frame) override;
 
-  void onPositionChange(double position) override
-  { 
-    VideoStream::Listener::onPositionChange(position);
+  void onPositionChange(double position) override;
 
-    //... La posición del trackbar se pasa en entero. para videos muy largos podria desbordarse
-    if ( mVideoSize >= position )
-      cv::setTrackbarPos("Frame", mWindowName, cvRound(position));
-  }
+  void onResume() override;
 
-  void onResume() override
-  {
-    VideoStream::Listener::onResume(); 
-  }
+  void onShow(cv::Mat &frame) override;
 
-  void onShow(cv::Mat &frame) override
-  { 
-    VideoStream::Listener::onShow(frame);
-    if ( !frame.empty() )
-      cv::imshow(mWindowName, frame);
-  }
-
-  void onStop() override
-  { 
-    VideoStream::Listener::onStop(); 
-  }
+  void onStop() override;
 
   /*!
    * \brief Añade una referencia a un objeto VideoStream
@@ -650,6 +650,7 @@ private:
   void init();
 
 };
+
 
 
 

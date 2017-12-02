@@ -64,6 +64,12 @@
     <Filter Include="Archivos de código fuente\vect">
       <UniqueIdentifier>{0ce57a0d-74a2-4a00-9f42-4847412a5247}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de encabezado\video">
+      <UniqueIdentifier>{70cabfd4-6014-4b80-a25b-81268bc83188}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de código fuente\video">
+      <UniqueIdentifier>{a0968caa-fcf2-4e97-9e10-b3e7916cf299}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="geometric_entities\operations.cpp">
@@ -137,6 +143,12 @@
     </ClCompile>
     <ClCompile Include="graphic_entities\graphic_entity.cpp">
       <Filter>Archivos de código fuente\graphic_entities</Filter>
+    </ClCompile>
+    <ClCompile Include="video\videoio.cpp">
+      <Filter>Archivos de código fuente\video</Filter>
+    </ClCompile>
+    <ClCompile Include="vect\vectio.cpp">
+      <Filter>Archivos de código fuente\vect</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,5 +251,19 @@
     <ClInclude Include="resource.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="resource1.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="video\videoio.h">
+      <Filter>Archivos de encabezado\video</Filter>
+    </ClInclude>
+    <ClInclude Include="vect\vectio.h">
+      <Filter>Archivos de encabezado\vect</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tidopLib.rc">
+      <Filter>Archivos de recursos</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

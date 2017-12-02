@@ -56,7 +56,8 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 
 EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
 
-Console::Console() 
+Console::Console(bool add) 
+  : MessageManager::Listener(add)
 { 
 #ifdef WIN32
   init(STD_OUTPUT_HANDLE);
@@ -65,7 +66,8 @@ Console::Console()
 #endif
 }
 
-Console::Console(Console::Mode mode)
+Console::Console(Console::Mode mode, bool add)
+  : MessageManager::Listener(add)
 { 
 #ifdef WIN32
   DWORD handle;
@@ -104,7 +106,8 @@ Console::Console(Console::Mode mode)
 #endif
 }
 
-Console::Console(const Console &console) :
+Console::Console(const Console &console, bool add) 
+  : MessageManager::Listener(add),
 #ifdef WIN32
   h(console.h),
   mOldColorAttrs(console.mOldColorAttrs),
@@ -595,7 +598,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
 void CmdParser::printHelp()
 {
 
-  Console console(Console::Mode::OUTPUT);
+  Console console(Console::Mode::OUTPUT, false);
 
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
@@ -704,6 +707,16 @@ void Progress::init(double min, double max, const std::string &msg)
   mMsg = msg;
   restart();
   updateScale();
+}
+
+void Progress::setMinimun(double min)
+{
+  mMinimun = min;
+}
+
+void Progress::setMaximun(double max)
+{
+  mMaximun = max;
 }
 
 void Progress::restart()

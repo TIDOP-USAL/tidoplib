@@ -5,11 +5,11 @@
   <PropertyGroup />
   <ItemDefinitionGroup>
     <Link>
-      <AdditionalLibraryDirectories>..\..\Libs\opencv\x64\vc12\lib;..\..\..\Libs\opencv\x64\vc12\lib;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_shape310.lib;opencv_stitching310.lib;opencv_superres310.lib;opencv_videostab310.lib;opencv_objdetect310.lib;opencv_photo310.lib;opencv_calib3d310.lib;opencv_features2d310.lib;opencv_flann310.lib;opencv_highgui310.lib;opencv_ml310.lib;opencv_videoio310.lib;opencv_imgcodecs310.lib;opencv_video310.lib;opencv_imgproc310.lib;opencv_core310.lib;opencv_line_descriptor310.lib;opencv_optflow310.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(LIBS)\$(OPENCV)\x64\vc12\lib;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_shape$(OPENCV_VERSION).lib;opencv_stitching$(OPENCV_VERSION).lib;opencv_superres$(OPENCV_VERSION).lib;opencv_videostab$(OPENCV_VERSION).lib;opencv_objdetect$(OPENCV_VERSION).lib;opencv_photo$(OPENCV_VERSION).lib;opencv_calib3d$(OPENCV_VERSION).lib;opencv_features2d$(OPENCV_VERSION).lib;opencv_flann$(OPENCV_VERSION).lib;opencv_highgui$(OPENCV_VERSION).lib;opencv_ml$(OPENCV_VERSION).lib;opencv_videoio$(OPENCV_VERSION).lib;opencv_imgcodecs$(OPENCV_VERSION).lib;opencv_video$(OPENCV_VERSION).lib;opencv_imgproc$(OPENCV_VERSION).lib;opencv_core$(OPENCV_VERSION).lib;opencv_line_descriptor$(OPENCV_VERSION).lib;opencv_optflow$(OPENCV_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\Libs\opencv\include;..\..\..\Libs\opencv\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\$(OPENCV)\include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

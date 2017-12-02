@@ -20,6 +20,16 @@ namespace I3D
 
 using namespace geometry;
 
+VrtRaster::VrtRaster() 
+  : File(), 
+    mRows(0), 
+    mCols(0), 
+    mBands(0), 
+    mDataType(DataType::I3D_8U), 
+    mColorDepth(0)
+{
+}
+
 void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const
 {
   WindowI wAll(PointI(0, 0), PointI(this->mCols, this->mRows));   // Ventana total de imagen
@@ -203,9 +213,9 @@ GdalRaster::~GdalRaster()
   char **tmp = 0;
   if (bTempFile) {
     char ext[I3D_MAX_EXT];
-    if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) == 0) {
+    if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) == 0) {
       GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
-      GDALDataset *pTempDataSet = driver->CreateCopy(mName.c_str(), pDataset, FALSE, NULL, NULL, NULL);
+      GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, NULL, NULL, NULL);
       if (!pTempDataSet) {
         msgError("No se pudo crear la imagen");
       } else {
@@ -233,14 +243,14 @@ void GdalRaster::close()
   mRows = 0;
   mBands = 0;
   mColorDepth = 0;
-  mName = "";
+  mFile = "";
 }
 
 GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
 {
   close();
 
-  mName = file;
+  mFile = file;
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
   
@@ -297,13 +307,14 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   }
 }
 
-GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) {
+GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) 
+{
   if (pDriver == nullptr) { 
     msgError("Utilice el modo Create para abrir el archivo");
     return Status::FAILURE; 
   }
   if (pDataset) GDALClose(pDataset), pDataset = nullptr;
-  pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mName.c_str(), cols, rows, bands, getGdalDataType(type), nullptr/*gdalOpt*/);
+  pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mFile.c_str(), cols, rows, bands, getGdalDataType(type), nullptr/*gdalOpt*/);
   if (!pDataset) return Status::FAILURE;
   update();
   return Status::SUCCESS;
@@ -1046,7 +1057,7 @@ RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mo
 {
   close();
 
-  mName = file;
+  mFile = file;
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
 
@@ -1210,7 +1221,7 @@ RasterGraphics::Status RasterGraphics::createCopy(const char *file)
     DataType outDataType;
     if (mDataType == DataType::I3D_16U) {
       outDataType = DataType::I3D_8U;
-      msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
+      msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mFile.c_str());
     } else {
       outDataType = mDataType;
     }
@@ -1294,7 +1305,7 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode
 {
   close();
 
-  mName = file;
+  mFile = file;
   char ext[I3D_MAX_EXT];
   if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
 #ifdef HAVE_GDAL

@@ -9,7 +9,7 @@
       <AdditionalDependencies>gtest.lib;gtest_main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\..\Libs\googletest\include;..\..\Libs\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\googletest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

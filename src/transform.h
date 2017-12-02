@@ -1343,7 +1343,7 @@ void Rotation<Point_t>::update()
  * \f$ b = scale * sin(rotation)\f$<BR>
  *
  * \f$ x' = a * x + b * y + X0\f$<BR>
- * \f$ y' = a * x - b * x + Y0\f$
+ * \f$ y' = a * y - b * x + Y0\f$
  */
 template<typename Point_t>
 class Helmert2D : public Transform2D<Point_t>
@@ -3307,6 +3307,18 @@ void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> 
 {
   trf->transform(in.pt1, &out->pt1, trfOrder);
   trf->transform(in.pt2, &out->pt2, trfOrder);
+}
+
+template<typename Point_t> inline
+transform_status transform(const geometry::EntityContainer<Point_t> &ptsIn, geometry::EntityContainer<Point_t> *ptsOut,
+               Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
+{
+  transform_status r_status = transform_status::SUCCESS;
+  for (int i = 0; i < ptsIn.size(); i++) {
+    r_status = trf->transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
+    if ( r_status == transform_status::FAILURE ) break;
+  }
+  return r_status;
 }
 
 /*!
