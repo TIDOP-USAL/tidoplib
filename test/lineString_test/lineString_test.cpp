@@ -3,16 +3,17 @@
 #include "core\utils.h"
 
 using namespace I3D;
+using namespace I3D::geometry;
 
 /*Creamos un vector de puntos para hacer las pruebas*/
-std::initializer_list<cv::Point> ptsIn{
-	cv::Point(4157222, 664789),
-	cv::Point(4149043, 688836),
-	cv::Point(4172803, 690340),
-	cv::Point(4177148, 642997),
-	cv::Point(4137012, 671808),
-	cv::Point(4146292, 666953),
-	cv::Point(4138759, 702670) };
+std::initializer_list<PointI> ptsIn{
+	PointI(4157222, 664789),
+	PointI(4149043, 688836),
+	PointI(4172803, 690340),
+	PointI(4177148, 642997),
+	PointI(4137012, 671808),
+	PointI(4146292, 666953),
+	PointI(4138759, 702670) };
 
 // Constructor por defecto
 
@@ -21,7 +22,7 @@ TEST(LineString, DefaultConstructor) {
   LineStringI ls;
 
   /*Comprobamos si se ha creado con el contructor por defecto*/
-  EXPECT_EQ(0, ls.getSize());
+  EXPECT_EQ(0, ls.size());
 }
 
 // Constructor a partir de una lista
@@ -44,7 +45,7 @@ TEST(LineString, CopyConstructor) {
 	LineStringI  line(ptsIn); //Creamos el primer vector, iniciándolo con la lista iniciadora
 	LineStringI copia(line); //Creamos el segundo vectro como copia del primero
 
-	EXPECT_EQ(line.getSize(), copia.getSize());
+	EXPECT_EQ(line.size(), copia.size());
 	int j = 0;
 
 	/*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices

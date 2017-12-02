@@ -132,7 +132,16 @@ MessageManager &MessageManager::getInstance()
 
 void MessageManager::addListener(Listener *listener)
 { 
-  mListeners.push_back(listener);
+  // Se comprueba que no este añadido
+  bool bAdded = false;
+  for (auto l : mListeners) {
+    if (l == listener){
+      bAdded = true;
+      break;
+    }
+  }
+  if (!bAdded)
+    mListeners.push_back(listener);
 }
 
 void MessageManager::initExternalHandlers()
@@ -383,10 +392,21 @@ EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
+Log::Log(bool add) 
+  : MessageManager::Listener(add)
+{
+}
+
+Log::~Log() {
+}
+
 Log &Log::getInstance()
 {
-  if (sObjLog.get() == 0) {
-    sObjLog.reset(new Log());
+  if (sObjLog.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(Log::mtx);
+    if (sObjLog.get() == nullptr) {
+      sObjLog.reset(new Log());
+    }
   }
   return *sObjLog;
 }

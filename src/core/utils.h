@@ -1286,7 +1286,7 @@ public:
   {
     Read,      /*!< Lectura */
     Update,    /*!< Lectura y escritura. */
-    Create     /*!< Creaciçón */
+    Create     /*!< Creación */
   };
 
   /*!
@@ -1304,16 +1304,20 @@ public:
 protected:
   
   /*!
-   * \brief Nombre del fichero
+   * \brief Fichero
    */
-  std::string mName;
+  std::string mFile;
+
+  Mode mMode;
 
 public:
 
   /*!
    * \brief Constructora
    */
-  File() : mName("") {}
+  File() : mFile("") {}
+
+  File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
 
   /*!
    * \brief Destructora
@@ -1327,7 +1331,7 @@ public:
 
   /*!
    * \brief Abre un fichero
-   * \param[in] file Nombre del fichero
+   * \param[in] file Fichero
    * \param[in] mode Modo de apertura
    * \return
    * \see Mode
@@ -1349,14 +1353,16 @@ private:
 
   std::fstream fs;
 
-  Mode mMode;
-
 public:
 
   /*!
    * \brief Constructora
    */
   Csv();
+
+  Csv(const char *file, Mode mode = Mode::Update);
+
+  Csv(const Csv &csv);
 
   /*!
    * \brief Destructora

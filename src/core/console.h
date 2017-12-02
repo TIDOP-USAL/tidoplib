@@ -169,21 +169,21 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Console();
+  Console(bool add = true);
 
   /*!
    * \brief Constructor
    * \param[in] mode Modo de consola
    * \see Mode
    */
-  Console(Console::Mode mode);
+  Console(Console::Mode mode, bool add = true);
 
   /*!
    * \brief Constructor de copia
    * \param[in] mode Modo de consola
    * \see Mode
    */
-  Console(const Console &console);
+  Console(const Console &console, bool add = true);
 
   /*!
    * Destructora
@@ -759,7 +759,7 @@ public:
    * \param[in] name Nombre del parámetro
    * \return Valor del parámetro en el tipo indicado
    */
-  template<typename T>
+  template<typename T = int>
   T getParameterOptionIndex(const char *name) const
   {
     std::string _name(name);

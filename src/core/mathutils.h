@@ -12,7 +12,7 @@
 
 #include "core/defs.h"
 //TODO: Debería sacar todas las entidades geometricas de aqui
-//#include "geometric_entities/point.h"
+#include "geometric_entities/point.h"
 
 namespace I3D
 {
@@ -716,15 +716,15 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
 template<typename Point_t> inline 
 void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 {
-  std::vector<PointD> ptsLog(pts.size());
+  std::vector<geometry::PointD> ptsLog(pts.size());
   std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
-                 [](Point_t pt) -> PointD {
-                    return PointD(pt.x, log10(pt.y)); 
+                 [](Point_t pt) -> geometry::PointD {
+                    return geometry::PointD(pt.x, log10(pt.y)); 
                   });
 
   double m = 0.;
   double b = 0.;
-  regressionLinearYX<PointD>(ptsLog, &m, &b);
+  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
   *A = pow(10, b);
   *r = pow(10, m);
 }

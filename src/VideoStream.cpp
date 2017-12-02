@@ -7,6 +7,7 @@
 
 #include "opencv2/imgproc/imgproc.hpp"
 
+#define TEST_DETECT_ANIMALS 1
 /* ---------------------------------------------------------------------------------- */
 
 namespace I3D
@@ -22,10 +23,41 @@ void onTrackbarPositionChange(int _pos, void *vs)
 
 /* ---------------------------------------------------------------------------------- */
 
+VideoStream::VideoStream() 
+  : mSize(0, 0) 
+{
+  init();
+}
+
+VideoStream::VideoStream(const char *file) 
+  : mSize(0, 0)
+{
+  init();
+  open(file);
+}
+
+VideoStream::~VideoStream()
+{
+}
+
 void VideoStream::addListener(Listener *listener)
 { 
   events.push_back(listener);
-  //listener->setVideoStream(this);
+}
+
+double VideoStream::fps() 
+{ 
+  return mfps; 
+}
+
+double VideoStream::getCurrentFrame() 
+{ 
+  return mVideoCapture.get(cv::CAP_PROP_POS_FRAMES); 
+}
+
+double VideoStream::getFrameCount()
+{
+  return mVideoCapture.get(cv::CAP_PROP_FRAME_COUNT);
 }
 
 cv::Size VideoStream::getFrameSize()
@@ -35,14 +67,17 @@ cv::Size VideoStream::getFrameSize()
 
 cv::Size VideoStream::getSize()
 {
-  //cv::Size sz(0, 0);
-  //if (isOpened()){
-  //  int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
-  //  int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
-  //  sz = cv::Size(width, height);
-  //}
-  //return sz;
   return mSize;
+}
+
+bool VideoStream::isOpened()
+{
+  return mVideoCapture.isOpened();
+}
+
+bool VideoStream::isSkipBlurryFrames()
+{
+  return bSkipBlurryFrames;
 }
 
 bool VideoStream::nextFrame(cv::Mat *vf)
@@ -53,22 +88,34 @@ bool VideoStream::nextFrame(cv::Mat *vf)
 bool VideoStream::nextFrame(cv::Mat *vf, VideoStream::Skip skip, int nskip)
 {
   bool bret = false;
-  if (skip == VideoStream::Skip::SKIP_FRAMES)             bret = skipFrames(vf, nskip);
-  else if (skip == VideoStream::Skip::SKIP_MILLISECONDS)  bret = skipMillisecond(vf, nskip);
-  else                                                    bret = read(vf);
+  if (skip == VideoStream::Skip::SKIP_FRAMES)             
+    bret = skipFrames(vf, nskip);
+  else if (skip == VideoStream::Skip::SKIP_MILLISECONDS)  
+    bret = skipMillisecond(vf, nskip);
+  else                                                    
+    bret = read(vf);
   return bret;
 }
 
 bool VideoStream::open(const char *name)
 {
+  if (mVideoCapture.isOpened())
+    mVideoCapture.release();
+
   mVideoCapture.open(name);
   if (! mVideoCapture.isOpened()) return false;
   else {
-    //cv::Size sz(0, 0);
-    int width =  (int)mVideoCapture.get(CV_CAP_PROP_FRAME_WIDTH);
-    int height = (int)mVideoCapture.get(CV_CAP_PROP_FRAME_HEIGHT);
+    int width =  (int)mVideoCapture.get(cv::CAP_PROP_FRAME_WIDTH);
+    int height = (int)mVideoCapture.get(cv::CAP_PROP_FRAME_HEIGHT);
+    msgInfo("Video size: %ix%i", width, height);
     mSize = mFrameSize = cv::Size(width, height);
-    mfps = mVideoCapture.get(CV_CAP_PROP_FPS);
+#ifdef TEST_DETECT_ANIMALS
+    mfps = mVideoCapture.get(cv::CAP_PROP_FPS);
+    msgInfo("Framerate: %f", mfps);
+
+#else    
+   mfps = mVideoCapture.get(cv::CAP_PROP_FPS);
+#endif
     return true;
   }
 }
@@ -87,26 +134,39 @@ bool VideoStream::read(cv::Mat *vf)
 //  }
 //#endif
   //
+  
   bool bret = false;
   if ((bret = mVideoCapture.read(mFrame))){
-    while (bSkipBlurryFrames && isImageBlurry(mFrame)) {
-      bret = mVideoCapture.read(mFrame);
-      if (bret == false) break;
-    }
+    //while (bSkipBlurryFrames && isImageBlurry(mFrame)) {
+    //  bret = mVideoCapture.read(mFrame);
+    //  if (bret == false) break;
+    //}
   } else {
     // No ha podido leer el frame. Tratamos de seguir leyendo mientras no lleguemos al final del video.
     if (mFrame.empty()) {
-      double posframe = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES);
-      double duration = mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT);
+      double posframe = mVideoCapture.get(cv::CAP_PROP_POS_FRAMES);
+      double duration = mVideoCapture.get(cv::CAP_PROP_FRAME_COUNT);
       char c;
-      while (duration > posframe && bret == false) {
-        posframe++;
-        msgError("Error al cargar el frame %.lf", posframe);
-        mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe);
-        bret = mVideoCapture.read(mFrame);
-        c = (char)cv::waitKey(1);
-        if (c == 27) return false;
-      }
+
+      //if (1) {
+      //  // para streaming
+      //  while (bret == false) {
+      //    mVideoCapture.release();
+      //    mVideoCapture.open("rtsp://admin:admin@192.168.1.168:554");
+      //    bret = mVideoCapture.read(mFrame);
+      //    c = (char)cv::waitKey(1);
+      //    if (c == 27) return false;
+      //  }
+      //} else {
+        while (duration > posframe && bret == false) {
+          posframe++;
+          msgError("Error al cargar el frame %.lf", posframe);
+          mVideoCapture.set(cv::CAP_PROP_POS_FRAMES, posframe);
+          bret = mVideoCapture.read(mFrame);
+          c = (char)cv::waitKey(1);
+          if (c == 27) return false;
+        }
+      //}
     }
   }
   if (bret) {
@@ -128,23 +188,23 @@ void VideoStream::run()
   char c;
   while (vs != Status::STOPPED && vs != Status::FINALIZED) {
     if (vs != Status::PAUSE) {
-      onRead();
+      read();
       if (vs == Status::FINALIZED) break;
       double currentFrame = getCurrentFrame();
       onPositionChange( currentFrame /*mVideoCapture.get(CV_CAP_PROP_POS_FRAMES)*/);
       onShow();  
     }
     
-    c = (char)cv::waitKey(delay);
-    if (c == 27) onStop();              // - Tecla esc -> Terminar la ejecución del video.
+    c = (char) cv::waitKey(delay);
+    if (c == 27) stop();                // - Tecla esc -> Terminar la ejecución del video.
     else if (c == 43) skipDown();       // - Tecla + -> Aumenta el salto entre frames.
     else if (c == 45) skipUp();         // - Tecla - -> Disminuye el salto entre frames.
     else if (c == 32) {                 // - Barra espaciadora -> Pausa/reanuda la ejecución del video.
-      if (vs == Status::RUNNING) onPause();
-      else onResume();
+      if (vs == Status::RUNNING) pause();
+      else resume();
     }
   }
-  onFinish();
+  finish();
 }
 
 void VideoStream::setCropRect(cv::Rect rf, bool keepRatio)
@@ -164,10 +224,15 @@ void VideoStream::setFrameSize(cv::Size sz, Resolution rf, bool keepRatio)
 
 bool VideoStream::setPosFrame(double nframe)
 { 
-  double duration = mVideoCapture.get(CV_CAP_PROP_FRAME_COUNT);
+  double duration = mVideoCapture.get(cv::CAP_PROP_FRAME_COUNT);
   if (nframe > duration) return false;
-  mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, nframe);
+  mVideoCapture.set(cv::CAP_PROP_POS_FRAMES, nframe);
   return true;
+}
+
+void VideoStream::setSkipBlurryFrames(bool sbf)
+{
+  bSkipBlurryFrames = sbf;
 }
 
 void VideoStream::setSkipFrames(int frames)
@@ -225,6 +290,44 @@ void VideoStream::skipUp()
   }
 }
 
+void VideoStream::read()
+{ 
+  if (!nextFrame(NULL)) {
+    finish();
+  } else {
+    onRead();
+  }
+}
+
+void VideoStream::stop() 
+{ 
+  vs = Status::STOPPED;
+  mVideoCapture.release();
+  onStop();
+}
+
+void VideoStream::pause() 
+{ 
+  if (vs == Status::RUNNING) {
+    vs = VideoStream::Status::PAUSE;
+    onPause();
+  }
+}
+
+void VideoStream::resume() 
+{ 
+  if (vs == Status::PAUSE) {
+    vs = Status::RUNNING;
+    onResume();
+  }
+}
+
+void VideoStream::finish() 
+{ 
+  vs = Status::FINALIZED;
+  onFinish();
+}
+
 /*********************************************************/
 /*                Métodos privados                       */
 /*********************************************************/
@@ -264,17 +367,17 @@ void VideoStream::resizeFrame()
 
 bool VideoStream::skipFrames(cv::Mat *vf, int frames)
 {
-  double posframe = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES) + frames - 1.; // -1 porque read ya suma uno
-  mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe); 
+  double posframe = mVideoCapture.get(cv::CAP_PROP_POS_FRAMES) + frames - 1.; // -1 porque read ya suma uno
+  mVideoCapture.set(cv::CAP_PROP_POS_FRAMES, posframe); 
   return read(vf);
 }
 
 bool VideoStream::skipMillisecond(cv::Mat *vf, int ms)
 {
-  double posms = mVideoCapture.get(CV_CAP_PROP_POS_MSEC);
-  mVideoCapture.set(CV_CAP_PROP_POS_MSEC, posms + ms);
-  double posframe = mVideoCapture.get(CV_CAP_PROP_POS_FRAMES) - 1.; // -1 porque read ya suma un
-  mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe);
+  double posms = mVideoCapture.get(cv::CAP_PROP_POS_MSEC);
+  mVideoCapture.set(cv::CAP_PROP_POS_MSEC, posms + ms);
+  double posframe = mVideoCapture.get(cv::CAP_PROP_POS_FRAMES) - 1.; // -1 porque read ya suma un
+  mVideoCapture.set(cv::CAP_PROP_POS_FRAMES, posframe);
   return read(vf);
 }
 
@@ -292,7 +395,6 @@ void VideoStream::init()
 
 void VideoStream::onFinish() {
   msgDebug("Fin captura de video");
-  vs = Status::FINALIZED;
   if (!events.empty()) {
     for (auto ev : events) {
       ev->onFinish();
@@ -312,12 +414,9 @@ void VideoStream::onInitialize() {
 
 void VideoStream::onPause() 
 { 
-  if (vs == Status::RUNNING) {
-    vs = VideoStream::Status::PAUSE;
-    if (!events.empty()) {
-      for (auto ev : events) {
-        ev->onPause();
-      }
+  if (!events.empty()) {
+    for (auto ev : events) {
+      ev->onPause();
     }
   }
 }
@@ -333,8 +432,7 @@ void VideoStream::onPositionChange(double position)
 
 void VideoStream::onRead()
 { 
-  if (!nextFrame(NULL)) vs = Status::FINALIZED;
-  else if (!events.empty()) {
+  if (!events.empty()) {
     for (auto ev : events) {
       ev->onRead(mFrame);
     }
@@ -343,7 +441,6 @@ void VideoStream::onRead()
 
 void VideoStream::onResume() 
 { 
-  if (vs == Status::PAUSE) vs = Status::RUNNING; 
   if (!events.empty()) {
     for (auto ev : events) {
       ev->onResume();
@@ -362,7 +459,6 @@ void VideoStream::onShow()
 
 void VideoStream::onStop()
 { 
-  vs = Status::STOPPED;
   if (!events.empty()) {
     for (auto ev : events) {
       ev->onStop();
@@ -371,6 +467,67 @@ void VideoStream::onStop()
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+void VideoStream::Listener::onFinish()
+{
+  msgDebug("Fin captura de video");
+}
+
+void VideoStream::Listener::onInitialize()
+{
+  msgDebug("Inicio captura video");
+}
+
+void VideoStream::Listener::onPause()
+{
+  msgDebug("Video pausado");
+}
+
+void VideoStream::Listener::onPositionChange(double position) 
+{ 
+  msgDebug("Posición: %i", static_cast<int>(position));
+}
+
+I3D_DISABLE_WARNING(4100)
+void VideoStream::Listener::onRead(cv::Mat &frame) 
+{ 
+
+}
+
+void VideoStream::Listener::onResume() 
+{ 
+
+}
+
+void VideoStream::Listener::onShow(cv::Mat &frame) 
+{ 
+
+}
+I3D_ENABLE_WARNING(4100)
+
+void VideoStream::Listener::onStop()
+{ 
+  msgDebug("Video detenido");
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+ImagesStream::ImagesStream()
+  : /*VideoStream(),*/ 
+    mImages(0),
+    mCurrentFrame(0)
+{
+  init();
+  mfps = 1.;
+}
+
+ImagesStream::ImagesStream(const char *file) 
+  : /*VideoStream(file),*/ mCurrentFrame(0)  
+{
+  init();
+  open(file);
+  mfps = 1.;
+}
 
 bool ImagesStream::open(const char *name)
 {
@@ -455,58 +612,39 @@ bool ImagesStream::setPosFrame(double nframe)
 //  //mVideoCapture.set(CV_CAP_PROP_POS_FRAMES, posframe);
 //  return read(vf);
 //}
-/* ---------------------------------------------------------------------------------- */
 
-// Aunque son funciones virtuales puras defino su cuerpo.
-// En la clase que herede este la definición de los métodos que no se
-// podra llamar a estos métodos de la clase padre si no se quiere modificar el 
-// comportamiento por defecto. Podria parecer mas lógico que no fuese virtual pura
-// y que se sobreescribiesen sólo los métodos que se desee pero al obligar a 
-// implementarlos todos me aseguro un mayor control.
-
-void VideoStreamEvents::onFinish()
-{
-  msgDebug("Fin captura de video");
-}
-
-void VideoStreamEvents::onInitialize()
-{
-  msgDebug("Inicio captura video");
-}
-
-void VideoStreamEvents::onPause()
-{
-  msgDebug("Video pausado");
-}
-
-void VideoStreamEvents::onPositionChange(double position) 
-{ 
-  msgDebug("Posición: %i", static_cast<int>(position));
-}
-
-I3D_DISABLE_WARNING(4100)
-void VideoStreamEvents::onRead(cv::Mat &frame) 
-{ 
-
-}
-
-void VideoStreamEvents::onResume() 
-{ 
-
-}
-
-void VideoStreamEvents::onShow(cv::Mat &frame) 
-{ 
-
-}
-I3D_ENABLE_WARNING(4100)
-
-void VideoStreamEvents::onStop()
-{ 
-  msgDebug("Video detenido");
-}
 
 /* ---------------------------------------------------------------------------------- */
+
+VideoWindow::VideoWindow() 
+  : mWindowName("Video"), 
+    mFlags(1), 
+    bPosTrackBar(true), 
+    mVideoSize(0), 
+    mVideo(0) 
+{
+  cv::namedWindow(mWindowName, mFlags);
+}
+
+VideoWindow::VideoWindow(const char* wname, int flags, bool bPos)
+  : mWindowName(wname), 
+    mFlags(flags), 
+    bPosTrackBar(bPos), 
+    mVideoSize(0), 
+    mVideo(0)
+{
+  cv::namedWindow(mWindowName, mFlags);
+}
+
+VideoWindow::VideoWindow(const VideoWindow &video)
+  : mWindowName(video.mWindowName),
+    mFlags(video.mFlags),
+    bPosTrackBar(video.bPosTrackBar),
+    mVideoSize(video.mVideoSize),
+    mVideo(video.mVideo)
+{
+  cv::namedWindow(mWindowName, mFlags);
+}
 
 VideoWindow::~VideoWindow()
 {
@@ -523,6 +661,59 @@ void VideoWindow::addTrackbar(const char *trackbarname, int* value, int count, c
 {
   cv::createTrackbar(trackbarname, mWindowName, value, count, onChange, userdata);
 }
+
+const std::string &VideoWindow::getName() const 
+{
+  return mWindowName;
+}
+
+void VideoWindow::onFinish()
+{
+  VideoStream::Listener::onFinish(); 
+}
+   
+void VideoWindow::onInitialize()
+{
+  VideoStream::Listener::onInitialize(); 
+  cv::namedWindow(mWindowName, mFlags);
+}
+
+void VideoWindow::onPause()
+{
+  VideoStream::Listener::onPause(); 
+}
+
+void VideoWindow::onRead(cv::Mat &frame) 
+{ 
+  VideoStream::Listener::onRead(frame);
+}
+
+void VideoWindow::onPositionChange(double position)
+{ 
+  VideoStream::Listener::onPositionChange(position);
+
+  //... La posición del trackbar se pasa en entero. para videos muy largos podria desbordarse
+  if ( mVideoSize >= position )
+    cv::setTrackbarPos("Frame", mWindowName, cvRound(position));
+}
+
+void VideoWindow::onResume()
+{
+  VideoStream::Listener::onResume(); 
+}
+
+void VideoWindow::onShow(cv::Mat &frame)
+{ 
+  VideoStream::Listener::onShow(frame);
+  if ( !frame.empty() )
+    cv::imshow(mWindowName, frame);
+}
+
+void VideoWindow::onStop()
+{ 
+  VideoStream::Listener::onStop(); 
+}
+
 
 void VideoWindow::setVideo( VideoStream *vs )
 {
