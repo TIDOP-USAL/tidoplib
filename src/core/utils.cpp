@@ -445,6 +445,30 @@ std::string Path::toString()
   return _path;
 }
 
+std::list<std::string> Path::files(const std::string &wildcard)
+{
+  std::list<std::string> files;
+  fileList(toString().c_str(), &files, wildcard.c_str());
+  return files;
+}
+
+std::list<std::string> Path::dirs()
+{
+  std::list<std::string> dirs;
+  directoryList(toString().c_str(), &dirs);
+  return dirs;
+}
+
+void Path::createDir()
+{
+  createDir(toString());
+}
+
+void Path::deleteDir()
+{
+  deleteDir(toString());
+}
+
 /* ---------------------------------------------------------------------------------- */
 /*          PROCESOS Y BATCH                                                          */
 /* ---------------------------------------------------------------------------------- */
