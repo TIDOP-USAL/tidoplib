@@ -332,7 +332,7 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  //if (scale >= 1.) { // Si interesase hacer el remuetreo posteriormente se haría asi
+  //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
     size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
     size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
     if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
@@ -722,17 +722,17 @@ void RawImage::close()
   mCols = 0;
   mRows = 0;
   mBands = 0;
-  mName = "";
+  mFile = "";
 }
 
 RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
 {
   int  ret;
   
-  mName = file;
+  mFile = file;
 
   char ext[I3D_MAX_EXT];
-  if (getFileExtension(mName.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
   bCanon = isRawExt(ext) == 1;
 
 #ifdef HAVE_EDSDK
@@ -760,7 +760,7 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
       break;
     }
     
-    EdsError err = EdsCreateFileStream(mName.c_str(), eds_create, eds_access, &mInputStream);
+    EdsError err = EdsCreateFileStream(mFile.c_str(), eds_create, eds_access, &mInputStream);
     if (err == EDS_ERR_OK) {
       err = EdsCreateImageRef(mInputStream, &mEdsImage);
       if (err == EDS_ERR_OK) {
@@ -996,7 +996,7 @@ void RawImage::update()
       if (imageInfo.componentDepth == 16) {
         mColorDepth = 8;
         mDataType = imageInfo.componentDepth == 16 ? DataType::I3D_16U : DataType::I3D_8U;
-        msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
+        msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mFile.c_str());
       } else {
         mColorDepth = imageInfo.componentDepth;
         //TODO: completar

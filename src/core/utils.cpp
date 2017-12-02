@@ -686,7 +686,9 @@ Process::Status CmdProcess::run(Progress *progressBar)
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
   if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
-    NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+    NULL, FALSE, 
+    CREATE_NO_WINDOW /*| BELOW_NORMAL_PRIORITY_CLASS*/, // Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+    NULL, NULL, &si, &pi)) {
     printf("CreateProcess failed (%d).\n", GetLastError());
     return Process::Status::FINALIZED_ERROR;
   }
