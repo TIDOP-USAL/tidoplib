@@ -540,7 +540,7 @@ protected:
 #ifdef WIN32
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
-
+  static int sPriority;
 #endif
   std::string mCmd;
 
@@ -550,7 +550,7 @@ public:
   ~CmdProcess();
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
-
+  static void setPriority(int priority);
 private:
 
 };
