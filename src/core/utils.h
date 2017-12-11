@@ -319,8 +319,16 @@ public:
   //TODO: Un path no solo apunta a un directorio con lo cual habría que añadir utilidades para imagenes
   // bool isDirectory();
   // bool isFile();
-  // void listFiles();  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
-  // void createDir();
+  
+  void createDir();
+  void deleteDir();
+
+  /*!
+   * \brief
+   */
+  std::list<std::string> files(const std::string &wildcard);  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
+
+  std::list<std::string> dirs();
 };
 
 
@@ -532,7 +540,7 @@ protected:
 #ifdef WIN32
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
-
+  static int sPriority;
 #endif
   std::string mCmd;
 
@@ -542,7 +550,7 @@ public:
   ~CmdProcess();
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
-
+  static void setPriority(int priority);
 private:
 
 };

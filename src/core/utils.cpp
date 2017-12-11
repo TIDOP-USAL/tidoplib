@@ -463,6 +463,30 @@ std::string Path::toString()
   return _path;
 }
 
+std::list<std::string> Path::files(const std::string &wildcard)
+{
+  std::list<std::string> files;
+  fileList(toString().c_str(), &files, wildcard.c_str());
+  return files;
+}
+
+std::list<std::string> Path::dirs()
+{
+  std::list<std::string> dirs;
+  directoryList(toString().c_str(), &dirs);
+  return dirs;
+}
+
+void Path::createDir()
+{
+  I3D::createDir(toString().c_str());
+}
+
+void Path::deleteDir()
+{
+  I3D::deleteDir(toString().c_str());
+}
+
 /* ---------------------------------------------------------------------------------- */
 /*          PROCESOS Y BATCH                                                          */
 /* ---------------------------------------------------------------------------------- */
@@ -630,6 +654,7 @@ void Process::processCountReset()
 
 /* ---------------------------------------------------------------------------------- */
 
+int CmdProcess::sPriority = 3;
 
 CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
   : Process(parentProcess),
@@ -662,7 +687,9 @@ Process::Status CmdProcess::run(Progress *progressBar)
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
   if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
-    NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+    NULL, FALSE, 
+    CREATE_NO_WINDOW | sPriority, // Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+    NULL, NULL, &si, &pi)) {
     printf("CreateProcess failed (%d).\n", GetLastError());
     return Process::Status::FINALIZED_ERROR;
   }
@@ -678,6 +705,23 @@ Process::Status CmdProcess::run(Progress *progressBar)
 #endif
 }
 I3D_ENABLE_WARNING(4100)
+
+void CmdProcess::setPriority(int priority)
+{
+  if (priority == 0) {
+    sPriority = REALTIME_PRIORITY_CLASS;
+  } else if (priority == 1) {
+    sPriority = HIGH_PRIORITY_CLASS;
+  } else if (priority == 2) {
+    sPriority = ABOVE_NORMAL_PRIORITY_CLASS;
+  } else if (priority == 3) {
+    sPriority = NORMAL_PRIORITY_CLASS;
+  } else if (priority == 4) {
+    sPriority = BELOW_NORMAL_PRIORITY_CLASS;
+  } else if (priority == 5) {
+    sPriority = IDLE_PRIORITY_CLASS;
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -955,7 +999,8 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
       if (*pEnd == 0) {
         vOut.push_back(number);
         token = strtok(NULL, chs);
-      } else throw std::runtime_error("Split string to numbers fail\n");
+      } else 
+        throw std::runtime_error("Split string to numbers fail");
     }
   } catch (std::exception &e) {
     vOut.resize(0);
@@ -982,7 +1027,8 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
       if (*pEnd == 0) {
         vOut.push_back(number);
         token = strtok(NULL, chs);
-      } else throw std::runtime_error("Split string to numbers fail\n");
+      } else 
+        throw std::runtime_error("Split string to numbers fail");
     }
   } catch (std::exception &e) {
     vOut.resize(0);
