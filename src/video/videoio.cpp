@@ -450,7 +450,7 @@ bool VideoOpenCV::_read()
   try {
     if ((bret = mVideoCapture.read(mFrame))){
       double posframe = mVideoCapture.get(cv::CAP_PROP_POS_MSEC);
-      msgInfo("time %.2lf", posframe / 1000.);
+      //msgInfo("time %.2lf", posframe / 1000.);
       if (bGray)
         cv::cvtColor(mFrame, mFrame, CV_BGR2GRAY); 
     } else {
