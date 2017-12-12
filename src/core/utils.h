@@ -535,12 +535,24 @@ protected:
 //TODO: Pendiente para Linux
 class I3D_EXPORT CmdProcess : public Process
 {
+public:
+
+  enum class PRIORITY
+  {
+    REALTIME = REALTIME_PRIORITY_CLASS,
+    HIGH = HIGH_PRIORITY_CLASS,
+    ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
+    NORMAL = NORMAL_PRIORITY_CLASS,
+    BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
+    IDLE = IDLE_PRIORITY_CLASS
+  };
+
 protected:
 
 #ifdef WIN32
   STARTUPINFO si;
   PROCESS_INFORMATION pi;
-  static int sPriority;
+  static DWORD sPriority;
 #endif
   std::string mCmd;
 

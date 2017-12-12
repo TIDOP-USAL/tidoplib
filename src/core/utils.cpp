@@ -654,7 +654,7 @@ void Process::processCountReset()
 
 /* ---------------------------------------------------------------------------------- */
 
-int CmdProcess::sPriority = 3;
+DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
 
 CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
   : Process(parentProcess),
