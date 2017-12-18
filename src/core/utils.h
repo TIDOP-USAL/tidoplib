@@ -50,6 +50,12 @@ I3D_EXPORT const char *getRunfile();
 //bool getAppVersion(std::string *libName, std::string *companyName, std::string *productName,
 //                   std::string *fileVersion, std::string *copyright, std::string *fileDescription);
 
+
+/* ---------------------------------------------------------------------------------- */
+/*                    Operaciones con directorios y archivos                          */
+/* ---------------------------------------------------------------------------------- */
+
+
 /*!
  * \brief Comprueba si existe un directorio
  * \param[in] path Ruta del directorio
@@ -78,6 +84,9 @@ I3D_EXPORT int createDir(const char *path);
  * \return Error
  */
 I3D_EXPORT int deleteDir(const char *path, bool confirm = false);
+
+I3D_EXPORT int move(const char *in, const char *out);
+
 
 /*!
  * \brief Optiene el directorio de un archivo
@@ -384,43 +393,43 @@ public:
      * \brief Evento pausa
      * \param id Identificador del proceso
      */
-    virtual void onPause(unsigned long id) = 0;
+    virtual void onPause(uint64_t id) = 0;
 
     /*!
      * \brief Evento reanudación
      * \param id Identificador del proceso
      */
-    virtual void onResume(unsigned long id) = 0;
+    virtual void onResume(uint64_t id) = 0;
 
     /*!
      * \brief Evento proceso corriendo
      * \param id Identificador del proceso
      */
-    virtual void onRun(unsigned long id) = 0;
+    virtual void onRun(uint64_t id) = 0;
 
     /*!
      * \brief Evento inicio procesos
      * \param id Identificador del proceso
      */
-    virtual void onStart(unsigned long id) = 0;
+    virtual void onStart(uint64_t id) = 0;
 
     /*!
      * \brief Evento detención
      * \param id Identificador del proceso
      */
-    virtual void onStop(unsigned long id) = 0;
+    virtual void onStop(uint64_t id) = 0;
 
     /*!
      * \brief 
      * \param id Identificador del proceso
      */
-    virtual void onEnd(unsigned long id) = 0;
+    virtual void onEnd(uint64_t id) = 0;
 
     /*!
      * \brief 
      * \param id Identificador del proceso
      */
-    virtual void onError(unsigned long id) = 0;
+    virtual void onError(uint64_t id) = 0;
   };
 
 protected:
@@ -537,8 +546,11 @@ class I3D_EXPORT CmdProcess : public Process
 {
 public:
 
+#ifdef WIN32
+  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
   enum class PRIORITY
   {
+
     REALTIME = REALTIME_PRIORITY_CLASS,
     HIGH = HIGH_PRIORITY_CLASS,
     ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
@@ -546,6 +558,7 @@ public:
     BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
     IDLE = IDLE_PRIORITY_CLASS
   };
+#endif
 
 protected:
 
@@ -563,8 +576,12 @@ public:
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
   static void setPriority(int priority);
+
 private:
 
+#ifdef WIN32
+  std::string formatErrorMsg(DWORD errorCode);
+#endif
 };
 
 
@@ -716,13 +733,13 @@ public:
 
 protected:
   
-  virtual void onPause(unsigned long id) override;
-  virtual void onResume(unsigned long id) override;
-  virtual void onRun(unsigned long id) override;
-  virtual void onStart(unsigned long id) override;
-  virtual void onStop(unsigned long id) override;
-  virtual void onEnd(unsigned long id) override;
-  virtual void onError(unsigned long id) override;
+  virtual void onPause(uint64_t id) override;
+  virtual void onResume(uint64_t id) override;
+  virtual void onRun(uint64_t id) override;
+  virtual void onStart(uint64_t id) override;
+  virtual void onStop(uint64_t id) override;
+  virtual void onEnd(uint64_t id) override;
+  virtual void onError(uint64_t id) override;
 };
 
 
@@ -1450,7 +1467,45 @@ private:
 };
 
 
+//I3D_EXPORT void compressFile(const char *file, const char *zip);
 
+
+// Futura clase para compresión de archivos
+//class CompressFile : public File
+//{
+//private:
+//
+//public:
+//
+//  CompressFile();
+//  CompressFile(const char *file, Mode mode = Mode::Update);
+//  CompressFile(const CompressFile &compressFile);
+//  ~CompressFile();
+//
+//  /*!
+//   * \brief Cierra el fichero csv
+//   */
+//  void close() override;
+//
+//  /*!
+//   * \brief Guarda una copia con otro nonbre
+//   */
+//  Status createCopy(const char *fileOut) override;
+//
+//  /*!
+//   * \brief Abre un fichero
+//   * \param[in] file Nombre del fichero
+//   * \param[in] mode Modo de apertura
+//   * \return
+//   * \see Mode
+//   */
+//  Status open(const char *file, Mode mode = Mode::Read) override;
+//
+//  void addFile(const char *file);
+//
+//private:
+//
+//};
 
 
 //TODO: funcion para conversión entre tipos basicos en templates para evitar warnings

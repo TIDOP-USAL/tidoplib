@@ -72,7 +72,21 @@ private:
 //I3D_EXPORT void throw_exception(const char *error, const char *file = NULL, int line = -1, const char *function = NULL);
 I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, int line= -1, const char *function = NULL);
 
-}
+
+
+#ifdef WIN32
+
+/*!
+ * \brief formatWindowsErrorMsg
+ */
+I3D_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
+
+#endif
+
+
+} // fin namespace I3D 
+
+
 
 #ifdef _DEBUG
 #define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
@@ -90,4 +104,6 @@ I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, 
 #define I3D_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { I3D_THROW_ERROR(#EXPRESSION MESSAGE); }
 
 #endif
+
+
 #endif // I3D_EXCEPTION_H
