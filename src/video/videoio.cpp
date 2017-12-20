@@ -109,7 +109,7 @@ void VrtVideo::run()
       onShow();  
     }
     
-    c = (char) cv::waitKey(2/*delay*/);
+    c = (char) cv::waitKey(delay);
     if (c == 27) stop();                // - Tecla esc -> Terminar la ejecución del video.
     //else if (c == 43) skipDown();       // - Tecla + -> Aumenta el salto entre frames.
     //else if (c == 45) skipUp();         // - Tecla - -> Disminuye el salto entre frames.
