@@ -1,5 +1,9 @@
 #include "exception.h"
 
+#if defined WIN32
+#include <atlstr.h>
+#endif
+
 namespace I3D
 {
 
@@ -50,5 +54,29 @@ Exception make_exception(const char *error, const char *file, int line, const ch
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+
+#ifdef WIN32
+std::string formatWindowsErrorMsg(DWORD errorCode)
+{
+  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
+    | FORMAT_MESSAGE_IGNORE_INSERTS
+    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
+  
+  TCHAR errorMessage[1024] = TEXT("");
+
+  FormatMessage(flags,
+                NULL,
+                errorCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                errorMessage,
+                sizeof(errorMessage)/sizeof(TCHAR),
+                NULL);
+
+  std::string strError = CW2A(errorMessage);
+  return strError;
+}
+#endif
+
 
 } // End namespace I3D

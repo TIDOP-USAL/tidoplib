@@ -2,9 +2,11 @@
 
 #include "core/messages.h"
 #include "core/console.h"
+#include "core/exception.h"
 
 #if defined WIN32
 #include <windows.h>
+#include <atlstr.h>
 #endif
 
 #if defined __linux__ || defined __GNUC__
@@ -185,6 +187,34 @@ int deleteDir(const char *path, bool confirm)
     i_ret = -1;
   }
   return i_ret;
+}
+
+int move(const char *in, const char *out)
+{
+#ifdef WIN32
+
+  size_t len = strlen(in) + 1;  
+  wchar_t * w_in = new wchar_t[len];  
+  size_t convertedChars = 0;  
+  mbstowcs_s(&convertedChars, w_in, len, in, _TRUNCATE);
+
+  len = strlen(out) + 1;  
+  wchar_t * w_out = new wchar_t[len];  
+  convertedChars = 0;  
+  mbstowcs_s(&convertedChars, w_out, len, out, _TRUNCATE);
+
+  if (!MoveFileEx(w_in, w_out, MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+    //printf("MoveFileEx failed with error %d\n", GetLastError());
+    msgError("%s", formatWindowsErrorMsg(GetLastError()).c_str());
+    return 1;
+  } else {
+    //tprintf(TEXT("%s has been moved to %s\n"), argv[1], argv[2]);
+    return 0;
+  }
+
+#else
+
+#endif
 }
 
 int getFileDir(const char *path, char *dir, int size)
@@ -654,7 +684,7 @@ void Process::processCountReset()
 
 /* ---------------------------------------------------------------------------------- */
 
-int CmdProcess::sPriority = 3;
+DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
 
 CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
   : Process(parentProcess),
@@ -686,28 +716,51 @@ Process::Status CmdProcess::run(Progress *progressBar)
   std::wstring wCmdLine(len, L'#');
   mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
-    NULL, FALSE, 
-    CREATE_NO_WINDOW | sPriority, // Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
-    NULL, NULL, &si, &pi)) {
-    printf("CreateProcess failed (%d).\n", GetLastError());
+  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
+    cmdLine,                      // Command line
+    NULL,                         // Process handle not inheritable
+    NULL,                         // Thread handle not inheritable
+    FALSE,                        // Set handle inheritance to FALSE
+    CREATE_NO_WINDOW | sPriority, // Flags de creación
+    NULL,                         // Use parent's environment block
+    NULL,                         // Use parent's starting directory 
+    &si,                          // Pointer to STARTUPINFO structure
+    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
+
+    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
     return Process::Status::FINALIZED_ERROR;
   }
 
-  // Wait until child process exits.
-  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED) {
-    msgError("Error al ejecutar el comando: %s", mCmd.c_str());
+  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
+  if (ret == WAIT_FAILED) {
+    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
-  } else {
+  } else if (ret == WAIT_OBJECT_0) {
+    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+    //return Process::Status::FINALIZED;
+  } else if (ret == WAIT_ABANDONED) {
+    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::FINALIZED_ERROR;
+  } else if (ret == WAIT_TIMEOUT) {
+    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::FINALIZED_ERROR;
+  } /*else {
     msgInfo("Comando ejecutado: %s", mCmd.c_str());
     return Process::Status::FINALIZED;
+  }*/
+  DWORD exitCode;
+  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
+    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::FINALIZED_ERROR;
   }
+  return Process::Status::FINALIZED;
 #endif
 }
 I3D_ENABLE_WARNING(4100)
 
 void CmdProcess::setPriority(int priority)
 {
+#ifdef WIN32
   if (priority == 0) {
     sPriority = REALTIME_PRIORITY_CLASS;
   } else if (priority == 1) {
@@ -721,7 +774,30 @@ void CmdProcess::setPriority(int priority)
   } else if (priority == 5) {
     sPriority = IDLE_PRIORITY_CLASS;
   }
+#endif
 }
+
+#ifdef WIN32
+std::string CmdProcess::formatErrorMsg(DWORD errorCode)
+{
+  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
+    | FORMAT_MESSAGE_IGNORE_INSERTS
+    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
+  
+  TCHAR errorMessage[1024] = TEXT("");
+
+  FormatMessage(flags,
+                NULL,
+                errorCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                errorMessage,
+                sizeof(errorMessage)/sizeof(TCHAR),
+                NULL);
+
+  std::string strError = CW2A(errorMessage);
+  return strError;
+}
+#endif
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -946,37 +1022,37 @@ void BatchProcess::stop()
   }
 }
 
-void BatchProcess::onPause(unsigned long id)
+void BatchProcess::onPause(uint64_t id)
 {
   msgInfo("Proceso %i en pausa", id);
 }
 
-void BatchProcess::onResume(unsigned long id)
+void BatchProcess::onResume(uint64_t id)
 {
   msgInfo("Proceso %i reanudado", id);
 }
 
-void BatchProcess::onRun(unsigned long id)
+void BatchProcess::onRun(uint64_t id)
 {
   msgInfo("Proceso %i corriendo", id);
 }
 
-void BatchProcess::onStart(unsigned long id)
+void BatchProcess::onStart(uint64_t id)
 {
   msgInfo("Proceso %i preparado", id);
 }
 
-void BatchProcess::onStop(unsigned long id)
+void BatchProcess::onStop(uint64_t id)
 {
   msgInfo("Proceso %i detenido", id);
 }
 
-void BatchProcess::onEnd(unsigned long id)
+void BatchProcess::onEnd(uint64_t id)
 {
   msgInfo("Proceso %i finalizado", id);
 }
 
-void BatchProcess::onError(unsigned long id)
+void BatchProcess::onError(uint64_t id)
 {
   msgInfo("Proceso %i. Error al procesar", id);
 }
@@ -1615,5 +1691,83 @@ Csv::Status Csv::write(const std::vector<std::string> &_register)
 //
 //  return Status::SUCCESS;
 //}
+
+
+//void compressFile(const char *file, const char *zip)
+//{
+//  std::string cmd;
+//  std::string pto_gen_cmd("/c \"C:\\Desarrollo\\Libs_sources\\lzma1701\\bin\\x64\\7za.exe\" a ");
+//  pto_gen_cmd.append(zip).append(" ").append(file);
+//
+//  CmdProcess process(cmd);
+//  CmdProcess::Status status = process.run();
+//}
+
+
+//CompressFile::CompressFile()
+//  : File()
+//{
+//
+//}
+//
+//CompressFile::CompressFile(const char *file, Mode mode)
+//  : File(file, mode)
+//{
+//  open(file, mode);
+//}
+//
+//CompressFile::CompressFile(const CompressFile &compressFile)
+//  : File(compressFile)
+//{
+//
+//}
+//
+//CompressFile::~CompressFile()
+//{
+//  close();
+//}
+//
+//void CompressFile::close()
+//{
+//
+//}
+//
+//CompressFile::Status CompressFile::createCopy(const char *fileOut)
+//{
+//
+//  return Status::FAILURE;
+//}
+//
+//CompressFile::Status CompressFile::open(const char *file, CompressFile::Mode mode)
+//{
+//  close();
+//  
+//  mFile = file;
+//  mMode = mode;
+//
+//  switch (mMode) {
+//  case Mode::Read:
+//
+//    break;
+//  case Mode::Update:
+//
+//    break;
+//  case Mode::Create:
+//
+//    break;
+//  default:
+//
+//    break;
+//  }
+//
+//  return Status::FAILURE;
+//}
+//
+//void CompressFile::addFile(const char *file)
+//{
+//
+//}
+
+
 
 } // End namespace I3D
