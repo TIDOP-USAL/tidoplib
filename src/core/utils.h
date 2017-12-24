@@ -47,8 +47,8 @@ I3D_EXPORT const char *getRunfile();
 /*!
  * \brief Información de la aplicación
  */
-//bool getAppVersion(std::string *libName, std::string *companyName, std::string *productName,
-//                   std::string *fileVersion, std::string *copyright, std::string *fileDescription);
+I3D_EXPORT bool getAppVersion(const std::string &libName, std::string *companyName, std::string *productName,
+                   std::string *fileVersion, std::string *copyright, std::string *fileDescription);
 
 
 /* ---------------------------------------------------------------------------------- */

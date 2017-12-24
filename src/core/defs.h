@@ -183,9 +183,56 @@
 
 // Desactivar/activar warnings
 #if defined _MSC_VER
+
+/*!
+ * \brief Se suprimen todos los mensajes de advertencia
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * I3D_SUPPRESS_WARNINGS
+ * bool f(int v) {      // warning C4100: 'v' : parámetro formal sin referencia
+ *   int b = 0;         // warning C4189: 'b' : la variable local se ha inicializado pero no se hace referencia a ella
+ *   double d = 1.0;
+ *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
+ *   return true;
+ * }
+ * \endcode
+ */
 #  define I3D_SUPPRESS_WARNINGS __pragma(warning(push, 0))
+
+/*!
+ * \brief Se pone por defecto la configuración de mensajes de advertencia
+ */
 #  define I3D_DEFAULT_WARNINGS __pragma(warning(pop))
+
+/*!
+ * \brief Se activa un mensaje de advertencia especifico
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * I3D_DISABLE_WARNING(4244)
+ * bool f(double d) {
+ *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
+ *   return true;
+ * }
+ * I3D_ENABLE_WARNING(4244)
+ * \endcode
+ */
 #  define I3D_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
+
+/*!
+ * \brief Se desactiva un mensaje de advertencia especifico
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * I3D_DISABLE_WARNING(4244)
+ * bool f(double d) {
+ *   float f = d;       // warning C4244: '=' : conversión de 'double' a 'float'; posible pérdida de datos
+ *   return true;
+ * }
+ * I3D_ENABLE_WARNING(4244)
+ * \endcode
+ */
 #  define I3D_ENABLE_WARNING(warn) __pragma(warning(default : warn))
 #else
 #  define I3D_SUPPRESS_WARNINGS
