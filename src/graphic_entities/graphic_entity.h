@@ -144,6 +144,12 @@ public:
   StylePen();
 
   /*!
+   * \brief Constructora de copia
+   * \param[in] style Clase estilo de pluma que se copia
+   */
+  StylePen(const StylePen &stylePen);
+
+  /*!
    * \brief destructora
    */
   ~StylePen();
@@ -305,6 +311,12 @@ public:
    * \brief Constructora por defecto
    */
   StyleBrush();
+
+  /*!
+   * \brief Constructora de copia
+   * \param[in] 
+   */
+  StyleBrush(const StyleBrush &styleBrush);
 
   /*!
    * \brief Destructora
@@ -471,6 +483,12 @@ public:
    * \brief Constructora por defecto
    */
   StyleSymbol();
+
+  /*!
+   * \brief Constructora de copia
+   * \param[in] styleSymbol Clase Estilo de símbolo que se copia
+   */
+  StyleSymbol(const StyleSymbol &styleSymbol);
 
   /*!
    * \brief Destructora
@@ -700,6 +718,7 @@ protected:
 public:
 
   StyleLabel();
+  StyleLabel(const StyleLabel &styleLabel);
   ~StyleLabel();
 
   /*!
@@ -861,9 +880,12 @@ public:
   /*!
    * \brief Constructora
    */
-  GraphicStyle()
-  {
-  }
+  GraphicStyle();
+
+  /*!
+   * \brief Constructora de copia
+   */
+  GraphicStyle(const GraphicStyle &graphicStyle);
 
   /*!
    * \brief Destructora
@@ -973,6 +995,7 @@ class I3D_EXPORT GraphicEntity : public GraphicStyle, public GData
 public:
 
   GraphicEntity();
+  GraphicEntity(const GraphicEntity &graphicEntity);
   ~GraphicEntity();
 
 #ifdef HAVE_OPENCV
@@ -989,6 +1012,7 @@ public:
   GPoint();
   GPoint(float x, float y);
   GPoint(const Point<float> &pt);
+  GPoint(const GPoint &pt);
   ~GPoint();
 
 #ifdef HAVE_OPENCV
@@ -1005,6 +1029,7 @@ public:
   GPoint3D();
   GPoint3D(float x, float y, float z);
   GPoint3D(const Point3<float> &pt);
+  GPoint3D(const GPoint3D &pt);
   ~GPoint3D();
 
 #ifdef HAVE_OPENCV
@@ -1012,12 +1037,14 @@ public:
 #endif
 };
 
+
 class I3D_EXPORT GLineString : public geometry::LineString<geometry::Point<float>>, public GraphicEntity
 {
 public:
 
   GLineString();
-
+  GLineString(const LineString<geometry::Point<float>> &lineString);
+  GLineString(const GLineString &lineString);
   ~GLineString();
 
 #ifdef HAVE_OPENCV
@@ -1031,7 +1058,8 @@ class I3D_EXPORT GPolygon : public geometry::Polygon<geometry::Point<float>>, pu
 public:
 
   GPolygon();
-
+  GPolygon(const Polygon<geometry::Point<float>> &polygon);
+  GPolygon(const GPolygon &polygon);
   ~GPolygon();
 
 #ifdef HAVE_OPENCV
@@ -1044,7 +1072,8 @@ class I3D_EXPORT GMultiPoint : public geometry::MultiPoint<geometry::Point<float
 public:
 
   GMultiPoint();
-
+  GMultiPoint(const MultiPoint<geometry::Point<float>> &multiPoint);
+  GMultiPoint(const GMultiPoint &multiPoint);
   ~GMultiPoint();
 
 #ifdef HAVE_OPENCV
@@ -1058,7 +1087,8 @@ class I3D_EXPORT GMultiLineString : public geometry::MultiLineString<geometry::P
 public:
 
   GMultiLineString();
-
+  GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString);
+  GMultiLineString(const GMultiLineString &multiLineString);
   ~GMultiLineString();
 
 #ifdef HAVE_OPENCV
@@ -1071,7 +1101,8 @@ class I3D_EXPORT GMultiPolygon : public geometry::MultiPolygon<geometry::Point<f
 public:
 
   GMultiPolygon();
-
+  GMultiPolygon(const MultiPolygon<geometry::Point<float>> &multiPolygon);
+  GMultiPolygon(const GMultiPolygon &multiPolygon);
   ~GMultiPolygon();
 
 #ifdef HAVE_OPENCV
@@ -1098,13 +1129,9 @@ protected:
 
 public:
 
-  GLayer() : mName(""), mEntities(0), mSelectEntity(0)
-  {
-  }
-
-  ~GLayer()
-  {
-  }
+  GLayer();
+  GLayer(const GLayer &gLayer);
+  ~GLayer() {}
 
   const char *getName() const;
 

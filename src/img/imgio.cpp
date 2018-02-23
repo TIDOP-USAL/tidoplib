@@ -1317,11 +1317,11 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode
   }
 #endif 
 
-  if (mImageFormat) {
-    mImageFormat->open(file, mode);
+  if (mImageFormat && mImageFormat->open(file, mode) == Status::OPEN_OK) {
     update();
-  }
-  return File::Status::OPEN_OK;
+    return Status::OPEN_OK;
+  } else 
+    return Status::OPEN_FAIL;
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const

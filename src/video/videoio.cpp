@@ -440,6 +440,7 @@ static std::clock_t start;
 bool VideoOpenCV::_read()
 {
   bool bret = false;
+  double posframe;
   //if (mVideoCapture.get(cv::CAP_PROP_POS_FRAMES) == 0.0) {
   //  start = std::clock();
   //} else {
@@ -449,14 +450,14 @@ bool VideoOpenCV::_read()
   //}
   try {
     if ((bret = mVideoCapture.read(mFrame))){
-      double posframe = mVideoCapture.get(cv::CAP_PROP_POS_MSEC);
+      posframe = mVideoCapture.get(cv::CAP_PROP_POS_MSEC);
       //msgInfo("time %.2lf", posframe / 1000.);
       if (bGray)
         cv::cvtColor(mFrame, mFrame, CV_BGR2GRAY); 
     } else {
       // No ha podido leer el frame. Tratamos de seguir leyendo mientras no lleguemos al final del video.
       if (mFrame.empty() && mVideoCapture.isOpened()) {
-        double posframe = mVideoCapture.get(cv::CAP_PROP_POS_FRAMES);
+        posframe = mVideoCapture.get(cv::CAP_PROP_POS_FRAMES);
         double duration = mVideoCapture.get(cv::CAP_PROP_FRAME_COUNT);
         char c;
           while (duration > posframe && bret == false) {

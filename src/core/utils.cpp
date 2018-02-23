@@ -403,27 +403,77 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 
 Path::Path() 
   : mPos(0), 
-    mPath(0)
+    mPath(0),
+    mFileName(""),
+    mFileExtension(""),
+    bFile(false)
 {
 }
 
 Path::Path(const std::string &path) 
   : mPos(0), 
-    mPath(0)
+    mPath(0),
+    mFileName(""),
+    mFileExtension(""),
+    bFile(false)
 {
   parse(path);
 }
 
 Path::Path(const Path &path) 
   : mPos(path.mPos), 
-    mPath(path.mPath) 
+    mPath(path.mPath),
+    mFileName(path.mFileName),
+    mFileExtension(path.mFileExtension),
+    bFile(path.bFile)
 { 
 }
 
+Path &Path::operator=(const Path &path) 
+{
+  mPos = path.mPos;
+  mPath = path.mPath;
+  mFileName = path.mFileName;
+  mFileExtension = path.mFileExtension;
+  bFile = path.bFile;
+  return *this;
+}
 
 void Path::parse(const std::string &path)
 {
-  split(path, mPath, "/\\");
+//  char name[I3D_MAX_FNAME];
+//  char drive[I3D_MAX_DRIVE];
+//  char dir[I3D_MAX_DIR];
+//  char ext[I3D_MAX_EXT];
+//#ifdef _MSC_VER
+//  int r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, name, I3D_MAX_FNAME, ext, I3D_MAX_EXT);
+//
+//#endif
+
+  // Se comprueba si es un fichero
+  char name[I3D_MAX_FNAME];
+  if (getFileName(path.c_str(), name, I3D_MAX_FNAME) == 0) {
+    mFileName = name;
+    bFile = true;
+  }
+
+  // Extensión
+  char ext[I3D_MAX_EXT];
+  if (getFileExtension(path.c_str(), ext, I3D_MAX_EXT) == 0) {
+    mFileExtension = ext;
+  }
+  
+  char drive[I3D_MAX_DRIVE];
+  if (getFileDrive(path.c_str(), drive, I3D_MAX_DRIVE) == 0) {
+    mDrive = drive;
+  }
+
+  char dir[I3D_MAX_DIR];
+  if (getFileDir(path.c_str(), dir, I3D_MAX_DIR) == 0) {
+    
+  }
+
+  split(dir, mPath, "/\\");
   mPos = static_cast<int>(mPath.size());
   if (mPath.size() == 0) return;
 
@@ -455,11 +505,14 @@ void Path::parse(const std::string &path)
   }
 }
 
-
+#if defined WIN32
 const char *Path::getDrive()
 {
-  return mPath[0].c_str();
+  //TODO: Esto sólo en Windows...
+  //return mPath[0].c_str();
+  return mDrive.c_str();
 }
+#endif
 
 void Path::up()
 {
@@ -507,6 +560,16 @@ std::list<std::string> Path::dirs()
   return dirs;
 }
 
+bool Path::isDirectory()
+{
+  return !bFile;
+}
+
+bool Path::isFile()
+{
+  return bFile;
+}
+
 void Path::createDir()
 {
   I3D::createDir(toString().c_str());
@@ -515,6 +578,11 @@ void Path::createDir()
 void Path::deleteDir()
 {
   I3D::deleteDir(toString().c_str());
+}
+
+Path &Path::append(const std::string &dir)
+{
+  return Path(toString().append("\\").append(dir));
 }
 
 /* ---------------------------------------------------------------------------------- */

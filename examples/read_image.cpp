@@ -31,20 +31,6 @@ int main(int argc, char** argv)
 
 
 
-
-
-
-  //HANDLE hStdout;
-  //CONSOLE_SCREEN_BUFFER_INFO csbiInfo; 
-  // hStdout = GetStdHandle(STD_OUTPUT_HANDLE); 
-
-  //  if (! GetConsoleScreenBufferInfo(hStdout, &csbiInfo)) 
-  //  {
-  //      MessageBox(NULL, TEXT("GetConsoleScreenBufferInfo"), 
-  //          TEXT("Console Error"), MB_OK); 
-  //      return 1;
-  //  }
-
   char name[I3D_MAX_FNAME];
   getFileName(getRunfile(), name, I3D_MAX_FNAME);
 

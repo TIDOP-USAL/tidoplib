@@ -21,16 +21,27 @@ namespace graph
 /* ---------------------------------------------------------------------------------- */
 
 StylePen::StylePen()
+  : mPenColor(0),
+    mPenWidth(1),
+    mPattern(""),
+    mPenName(PenName::SOLID),
+    mPenCap(PenCap::BUTT),
+    mPenJoin(PenJoin::BEVEL),
+    mPerpendicularOffset(0),
+    mPriorityLevel(0)
 {
-  // valores por defecto
-  mPenColor = Color(0);
-  mPenWidth = 1;
-  mPattern = "";
-  mPenName = PenName::SOLID;
-  mPenCap = PenCap::BUTT;
-  mPenJoin = PenJoin::BEVEL;
-  mPerpendicularOffset = 0;
-  mPriorityLevel = 0;
+}
+
+StylePen::StylePen(const StylePen &stylePen)
+  : mPenColor(stylePen.mPenColor),
+    mPenWidth(stylePen.mPenWidth),
+    mPattern(stylePen.mPattern),
+    mPenName(stylePen.mPenName),
+    mPenCap(stylePen.mPenCap),
+    mPenJoin(stylePen.mPenJoin),
+    mPerpendicularOffset(stylePen.mPerpendicularOffset),
+    mPriorityLevel(stylePen.mPriorityLevel)
+{
 }
 
 StylePen::~StylePen()
@@ -120,14 +131,23 @@ void StylePen::setPriorityLevel(uint32_t priorityLevel)
 /* ---------------------------------------------------------------------------------- */
 
 StyleBrush::StyleBrush()
+  : mForeColor(0),
+    mBackColor(0),
+    mBrushName(BrushName::SOLID),
+    mAngle(0.),
+    mScalingFactor(1.),
+    mPriorityLevel(0)
 {
-  // valores por defecto
-  mForeColor = Color(0);
-  mForeColor = Color(0);
-  mBrushName = BrushName::SOLID;
-  mAngle = 0.;
-  mScalingFactor = 1.;
-  mPriorityLevel = 0;
+}
+
+StyleBrush::StyleBrush(const StyleBrush &styleBrush)
+  : mForeColor(styleBrush.mForeColor),
+    mBackColor(styleBrush.mBackColor),
+    mBrushName(styleBrush.mBrushName),
+    mAngle(styleBrush.mAngle),
+    mScalingFactor(styleBrush.mScalingFactor),
+    mPriorityLevel(styleBrush.mPriorityLevel)
+{
 }
 
 StyleBrush::~StyleBrush()
@@ -213,13 +233,23 @@ void StyleBrush::setPriorityLevel(uint32_t priorityLevel)
 /* ---------------------------------------------------------------------------------- */
 
 StyleSymbol::StyleSymbol()
+  : mName(SymbolName::SOLID),
+    mAngle(0.),
+    mColor(0),
+    mOutlineColor(0),
+    mScalingFactor(0.),
+    mPriorityLevel(0)
 {
-  mName = SymbolName::SOLID;
-  mAngle = 0.;
-  mColor = Color(0);
-  mOutlineColor = Color(0);
-  mScalingFactor = 0.;
-  mPriorityLevel = 0;
+}
+
+StyleSymbol::StyleSymbol(const StyleSymbol &styleSymbol)
+  : mName(styleSymbol.mName),
+    mAngle(styleSymbol.mAngle),
+    mColor(styleSymbol.mColor),
+    mOutlineColor(styleSymbol.mOutlineColor),
+    mScalingFactor(styleSymbol.mScalingFactor),
+    mPriorityLevel(styleSymbol.mPriorityLevel)
+{
 }
 
 StyleSymbol::~StyleSymbol()
@@ -303,24 +333,25 @@ void StyleSymbol::setPriorityLevel(uint32_t priorityLevel)
 
 /* ---------------------------------------------------------------------------------- */
 
-StyleLabel::StyleLabel()
+StyleLabel::StyleLabel(const StyleLabel &styleLabel)
+  : mFontName("Arial"),
+    mFontSize(12),
+    mText(""),
+    mAngle(0.),
+    mForegroundColor(0),
+    mBackgroundColor(0),
+    mOutlineColor(0),
+    mShadowColor(0),
+    mStretch(100.),
+    mLabelPlacement(LabelPlacement::p),
+    mAnchorPosition(AnchorPosition::VERTICAL_BASELINE | AnchorPosition::HORIZONTAL_LEFT),
+    mPerpendicularOffset(0),
+    bBold(false),
+    bItalic(false),
+    bUnderline(false),
+    bStrikeout(false),
+    mPriorityLevel(0)
 {
-  mFontName = "Arial";
-  mFontSize = 12;
-  mAngle = 0.;
-  mForegroundColor = Color(0);
-  mBackgroundColor = Color(0);
-  mOutlineColor = Color(0);
-  mShadowColor = Color(0);
-  mStretch = 100.;
-  mLabelPlacement = LabelPlacement::p;
-  mAnchorPosition = AnchorPosition::VERTICAL_BASELINE | AnchorPosition::HORIZONTAL_LEFT;
-  mPerpendicularOffset = 0;
-  bBold = false;
-  bItalic = false;
-  bUnderline = false;
-  bStrikeout = false;
-  mPriorityLevel = 0;
 }
 
 StyleLabel::~StyleLabel()
@@ -425,6 +456,18 @@ void StyleLabel::setOffset(double dx, double dy)
 
 
 /* ---------------------------------------------------------------------------------- */
+
+GraphicStyle::GraphicStyle()
+{
+}
+
+GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
+  : mStylePen(graphicStyle.mStylePen),
+    mStyleBrush(graphicStyle.mStyleBrush),
+    mStyleSymbol(graphicStyle.mStyleSymbol),
+    mStyleLabel(graphicStyle.mStyleLabel)
+{
+}
 
 #ifdef HAVE_GDAL
 bool GraphicStyle::readFromOGR(OGRStyleMgr *ogrStyle)
@@ -559,6 +602,12 @@ GraphicEntity::GraphicEntity()
 {
 }
 
+GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
+  : GraphicStyle(graphicEntity),
+    GData(graphicEntity)
+{
+}
+
 GraphicEntity::~GraphicEntity()
 {
 }
@@ -584,6 +633,12 @@ GPoint::GPoint(const Point<float> &pt)
 {
 }  
 
+GPoint::GPoint(const GPoint &pt) 
+  : Point<float>(pt), 
+    GraphicEntity(pt)
+{
+}  
+
 GPoint::~GPoint()
 {}
 
@@ -598,19 +653,25 @@ void GPoint::draw(cv::Mat &canvas) const
 
 GPoint3D::GPoint3D() 
   : Point3<float>(), 
-  GraphicEntity()
+    GraphicEntity()
 {
 }
 
 GPoint3D::GPoint3D(float x, float y, float z) 
   : Point3<float>(x, y, z), 
-  GraphicEntity()
+    GraphicEntity()
 {
 }
 
 GPoint3D::GPoint3D(const Point3<float> &pt) 
   : Point3<float>(pt), 
-  GraphicEntity()
+    GraphicEntity()
+{
+}
+
+GPoint3D::GPoint3D(const GPoint3D &pt) 
+  : Point3<float>(pt), 
+    GraphicEntity(pt)
 {
 }
 
@@ -633,6 +694,18 @@ GLineString::GLineString()
 {
 }
 
+GLineString::GLineString(const LineString<Point<float>> &lineString) 
+  : LineString<Point<float>>(lineString), 
+    GraphicEntity()
+{
+}
+
+GLineString::GLineString(const GLineString &lineString) 
+  : LineString<Point<float>>(lineString), 
+    GraphicEntity(lineString)
+{
+}
+
 GLineString::~GLineString()
 {
 }
@@ -649,6 +722,18 @@ void GLineString::draw(cv::Mat &canvas) const
 GPolygon::GPolygon() 
   : Polygon<Point<float>>(), 
     GraphicEntity()
+{
+}
+
+GPolygon::GPolygon(const Polygon<Point<float>> &polygon) 
+  : Polygon<Point<float>>(polygon), 
+    GraphicEntity()
+{
+}
+
+GPolygon::GPolygon(const GPolygon &polygon) 
+  : Polygon<Point<float>>(polygon), 
+    GraphicEntity(polygon)
 {
 }
 
@@ -671,6 +756,18 @@ GMultiPoint::GMultiPoint()
 {
 }
 
+GMultiPoint::GMultiPoint(const MultiPoint<Point<float>> &multiPoint)
+  : MultiPoint<Point<float>>(multiPoint), 
+    GraphicEntity()
+{
+}
+
+GMultiPoint::GMultiPoint(const GMultiPoint &multiPoint)
+  : MultiPoint<Point<float>>(multiPoint), 
+    GraphicEntity(multiPoint)
+{
+}
+
 GMultiPoint::~GMultiPoint()
 {
 }
@@ -687,6 +784,18 @@ void GMultiPoint::draw(cv::Mat &canvas) const
 GMultiLineString::GMultiLineString()
   : MultiLineString<Point<float>>(), 
     GraphicEntity()
+{
+}
+
+GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString)
+  : MultiLineString<Point<float>>(multiLineString), 
+    GraphicEntity()
+{
+}
+
+GMultiLineString::GMultiLineString(const GMultiLineString &multiLineString)
+  : MultiLineString<Point<float>>(multiLineString), 
+    GraphicEntity(multiLineString)
 {
 }
 
@@ -709,6 +818,18 @@ GMultiPolygon::GMultiPolygon()
 {
 }
 
+GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<float>> &multiPolygon)
+  : MultiPolygon<Point<float>>(multiPolygon), 
+    GraphicEntity()
+{
+}
+
+GMultiPolygon::GMultiPolygon(const GMultiPolygon &multiPolygon)
+  : MultiPolygon<Point<float>>(multiPolygon), 
+    GraphicEntity(multiPolygon)
+{
+}
+
 GMultiPolygon::~GMultiPolygon()
 {
 }
@@ -721,6 +842,20 @@ void GMultiPolygon::draw(cv::Mat &canvas) const
 #endif
 
 /* ---------------------------------------------------------------------------------- */
+
+GLayer::GLayer() 
+  : mName(""), 
+    mEntities(0), 
+    mSelectEntity(0)
+{
+}
+
+GLayer::GLayer(const GLayer &gLayer) 
+  : mName(gLayer.mName), 
+    mEntities(gLayer.mEntities), 
+    mSelectEntity(gLayer.mSelectEntity)
+{
+}
 
 const char *GLayer::getName() const
 {
