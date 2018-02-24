@@ -53,6 +53,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TrackLines", "apps\TrackLin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InscribedCircle", "examples\InscribedCircle.vcxproj", "{96149890-0D81-4924-8CC8-37BAD999B647}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "crashmap", "crashmap", "{90C42D1E-3ECF-412D-8AB3-14B19E62ED75}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "car_contour", "apps\car_contour\car_contour.vcxproj", "{79F0D5F4-62F2-4BD9-A216-D55705DB912E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug VLD|Mixed Platforms = Debug VLD|Mixed Platforms
@@ -366,6 +370,21 @@ Global
 		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|Win32.ActiveCfg = Release|x64
 		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|x64.ActiveCfg = Release|x64
 		{96149890-0D81-4924-8CC8-37BAD999B647}.Release|x64.Build.0 = Release|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug VLD|Mixed Platforms.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug VLD|Mixed Platforms.Build.0 = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug VLD|Win32.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug VLD|x64.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug VLD|x64.Build.0 = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug|Win32.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug|x64.ActiveCfg = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Debug|x64.Build.0 = Debug|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Release|Mixed Platforms.Build.0 = Release|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Release|Win32.ActiveCfg = Release|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Release|x64.ActiveCfg = Release|x64
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -391,5 +410,7 @@ Global
 		{65D17603-3DB6-4EBE-94CA-5CE7D6AC0756} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
 		{A439A09C-DC30-464B-86E0-54E807539192} = {157BA37A-A4A4-48B5-8514-50D51DD14533}
 		{96149890-0D81-4924-8CC8-37BAD999B647} = {3106C34B-A80E-4AF2-920C-40811BE4AD52}
+		{90C42D1E-3ECF-412D-8AB3-14B19E62ED75} = {D072A721-7741-4E10-8FC6-18DA5DEAE85F}
+		{79F0D5F4-62F2-4BD9-A216-D55705DB912E} = {90C42D1E-3ECF-412D-8AB3-14B19E62ED75}
 	EndGlobalSection
 EndGlobal

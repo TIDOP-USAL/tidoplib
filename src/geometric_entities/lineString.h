@@ -265,30 +265,58 @@ typedef LineString3D<Point3<float>> LineString3dF;
 
 /* ---------------------------------------------------------------------------------- */
 
-template <typename LineString_t>
-class MultiLineString : public Entity, public Entities2D<LineString_t>
+template <typename Point_t>
+class MultiLineString : public Entity, public Entities2D<LineString<Point_t>>
 {
 
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   MultiLineString();
+
+  /*!
+   * \brief Constructor que reserva tamaño para n puntos
+   */
+  MultiLineString(size_type size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiLineString Objeto MultiLineString que se copia
+   */
+  MultiLineString(const MultiLineString &multiLineString);
+
   ~MultiLineString() {}
 
 
 };
 
-template <typename LineString_t>
-MultiLineString<LineString_t>::MultiLineString()
+template <typename Point_t>
+MultiLineString<Point_t>::MultiLineString()
   : Entity(Entity::type::MULTILINE_2D),
-    Entities2D<LineString_t>()
+    Entities2D<LineString<Point_t>>()
 {
 }
 
+template<typename Point_t> inline
+MultiLineString<Point_t>::MultiLineString(size_type size) 
+  : Entity(Entity::type::MULTILINE_2D),
+    Entities2D<LineString<Point_t>>(size) 
+{
+}
+
+template<typename Point_t> inline
+MultiLineString<Point_t>::MultiLineString(const MultiLineString &multiLineString) 
+  : Entity(Entity::type::MULTILINE_2D), 
+    Entities2D<LineString<Point_t>>(multiLineString) 
+{
+}
 
 /* ---------------------------------------------------------------------------------- */
 
-template <typename LineString_t>
-class MultiLineString3D : public Entity, public Entities3D<LineString_t>
+template <typename Point3_t>
+class MultiLineString3D : public Entity, public Entities3D<LineString3D<Point3_t>>
 {
 
 public:
@@ -298,10 +326,10 @@ public:
 
 };
 
-template <typename LineString_t>
-MultiLineString3D<LineString_t>::MultiLineString3D()
+template <typename Point3_t>
+MultiLineString3D<Point3_t>::MultiLineString3D()
   : Entity(Entity::type::MULTILINE_3D),
-    Entities3D<LineString_t>()
+    Entities3D<LineString3D<Point3_t>>()
 {
 }
 

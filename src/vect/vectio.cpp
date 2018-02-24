@@ -194,8 +194,8 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEnt
 
 void GdalVector::readPoint(OGRPoint *ogrPoint, GPoint *gPoint)
 {
-  gPoint->x = ogrPoint->getX();
-  gPoint->y = ogrPoint->getY();
+  gPoint->x = static_cast<float>(ogrPoint->getX());
+  gPoint->y = static_cast<float>(ogrPoint->getY());
 }
 
 void GdalVector::readLineString(OGRLineString *ogrLineString, GLineString *gLineString)
@@ -203,8 +203,9 @@ void GdalVector::readLineString(OGRLineString *ogrLineString, GLineString *gLine
   int n = ogrLineString->getNumPoints();
   gLineString->resize(n);
   for (int i = 0; i < n; i++) {
-    //gLineString->add(PointD(ogrLineString->getX(i), ogrLineString->getY(i)));
-    gLineString->operator[](i) = Point<float>(ogrLineString->getX(i), ogrLineString->getY(i));
+    //gLineString->operator[](i) = Point<float>(ogrLineString->getX(i), ogrLineString->getY(i));
+    (*gLineString)[i].x = static_cast<float>(ogrLineString->getX(i));
+    (*gLineString)[i].y = static_cast<float>(ogrLineString->getY(i));
   }
 }
 
@@ -233,18 +234,24 @@ void GdalVector::readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMult
   gMultiPoint->resize(n);
   for (int i = 0; i < n; i++) {
     OGRPoint *ogrPoint = (OGRPoint *)ogrMultiPoint->getGeometryRef(i);
-    //gMultiPoint[i] = PointD(ogrPoint->getX(), ogrPoint->getY());
-    gMultiPoint->operator[](i) = Point<float>(ogrPoint->getX(), ogrPoint->getY());
+    (*gMultiPoint)[i].x = static_cast<float>(ogrPoint->getX());
+    (*gMultiPoint)[i].y = static_cast<float>(ogrPoint->getY());
   }
 }
 
 void GdalVector::readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMultiLineString *gMultiLineString)
 {
   int n = ogrMultiLineString->getNumGeometries();
-  //gMultiLineString->
-  //for (int i = 0; i < n; i++) {
-  //  readLineString(dynamic_cast<OGRLineString *>(omls->getGeometryRef(i)), spl->PDats(ipl) );
-  //}
+  gMultiLineString->resize(n);
+  for (int i = 0; i < n; i++) {
+    OGRLineString *ogrLineString = (OGRLineString *)ogrMultiLineString->getGeometryRef(i);
+    int np = ogrLineString->getNumPoints();
+    (*gMultiLineString)[i].resize(np);
+    for (int j = 0; i < np; j++) {
+      (*gMultiLineString)[i][j].x = static_cast<float>(ogrLineString->getX(j));
+      (*gMultiLineString)[i][j].y = static_cast<float>(ogrLineString->getY(j));
+    }
+  }
 }
 
 void GdalVector::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygon *gMultiPolygon)
