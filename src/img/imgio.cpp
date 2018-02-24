@@ -850,6 +850,24 @@ RawImage::Status RawImage::read(cv::Mat *image, const WindowI &wLoad, double sca
     EdsStreamRef dstStreamRef;
     err = EdsCreateMemoryStream(0, &dstStreamRef);
     if (err == EDS_ERR_OK) {
+      //EdsUInt32 sharpness = 2;
+      //EdsError err = EdsSetPropertyData(mEdsImage, kEdsPropID_Sharpness, 0, sizeof(sharpness), &sharpness);
+      
+      EdsPictureStyleDesc psDesc;
+      err = EdsGetPropertyData(mEdsImage, kEdsPropID_PictureStyleDesc | kEdsPropID_AtCapture_Flag, 0, sizeof(psDesc), &psDesc);
+      
+      //EdsPictureStyleDesc pictureStyleDesc;
+      //pictureStyleDesc.sharpness = 2;
+      psDesc.sharpThreshold = 0;
+      psDesc.sharpFineness = 0;
+      psDesc.sharpness = 0;
+
+      err = EdsSetPropertyData(mEdsImage, kEdsPropID_PictureStyleDesc, 0, sizeof(psDesc), &psDesc);
+
+      if (err != EDS_ERR_OK) {
+        msgError("EdsSetPropertyData: kEdsPropID_SaveTo");
+        return Status::FAILURE;
+      }
       err = EdsGetImage(mEdsImage, kEdsImageSrc_RAWFullView, kEdsTargetImageType_RGB, rect, eds_size, dstStreamRef);
       if (err == EDS_ERR_OK) {
         EdsVoid* pBuff;
@@ -1056,6 +1074,8 @@ void RasterGraphics::close()
 RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mode mode)
 {
   close();
+
+  if (!(file && strcmp(file, "") != 0)) return Status::OPEN_FAIL;
 
   mFile = file;
   char ext[I3D_MAX_EXT];

@@ -998,11 +998,12 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         return Status::STOPPED;
       } else {
         process->run(progress_bar_partial);
-        //if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
+        if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
         //  return Status::FINALIZED_ERROR;
-        //} else {
+          if (progress_bar_partial) progress_bar_partial->restart();
+        } else {
           if (progress_bar_total) (*progress_bar_total)();
-        //}
+        }
       }
     }
     return (mStatus = Status::FINALIZED);
