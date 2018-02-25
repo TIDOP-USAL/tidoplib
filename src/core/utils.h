@@ -656,6 +656,41 @@ public:
     FINALIZED_ERROR    /*!< Terminado con error */
   };
 
+  /*!
+   * \brief Interfaz que se debe implementar para recibir los eventos del batch
+   *
+   * Las clases que implementen este listener y se subcriban mediante el método 
+   * addListener() recibiran los diferentes eventos que se emitan desde el batch.
+   */
+  class Listener
+  {
+  public:
+
+    /*!
+     * \brief Constructora
+     */
+    Listener()
+    {
+    }
+
+    /*!
+     * \brief destructora
+     */
+    virtual ~Listener()
+    {
+    }
+
+    /*!
+     * \brief 
+     */
+    virtual void onEnd() = 0;
+
+    /*!
+     * \brief 
+     */
+    virtual void onError() = 0;
+  };
+
 protected:
 
   /*!
@@ -667,6 +702,11 @@ protected:
    * \brief Lista de procesos
    */
   std::list<std::shared_ptr<Process>> mProcessList;
+
+  /*!
+   * \brief Lista con los escuchadores subscritos al gestor de eventos
+   */
+  std::list<Listener *> mListeners;
 
   std::thread _thread;
   std::mutex mtx;
@@ -701,6 +741,18 @@ public:
    * \param[in] process Proceso que se añade
    */
   void add(const std::shared_ptr<Process> &process);
+
+  /*!
+   * \brief Añade un escuchador de eventos
+   * \param[in] listener Objeto escuchador
+   */
+  void addListener(Listener *listener);
+
+  /*!
+   * \brief Quita un escuchador de mensajes
+   * \param[in] listener Objeto escuchador
+   */
+  void removeListener(Listener *listener);
 
   /*!
    * \brief Limpia la lista de procesos
@@ -760,6 +812,13 @@ protected:
   virtual void onStop(uint64_t id) override;
   virtual void onEnd(uint64_t id) override;
   virtual void onError(uint64_t id) override;
+
+private:
+
+  // Eventos que se lanzan
+  void endTriggered();
+  void errorTriggered();
+
 };
 
 

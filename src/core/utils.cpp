@@ -452,29 +452,29 @@ void Path::parse(const std::string &path)
 //#endif
 
   // Se comprueba si es un fichero
-  char name[I3D_MAX_FNAME];
-  if (getFileName(path.c_str(), name, I3D_MAX_FNAME) == 0) {
-    mFileName = name;
-    bFile = true;
-  }
+  //char name[I3D_MAX_FNAME];
+  //if (getFileName(path.c_str(), name, I3D_MAX_FNAME) == 0) {
+  //  mFileName = name;
+  //  bFile = true;
+  //}
 
   // Extensión
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(path.c_str(), ext, I3D_MAX_EXT) == 0) {
-    mFileExtension = ext;
-  }
+  //char ext[I3D_MAX_EXT];
+  //if (getFileExtension(path.c_str(), ext, I3D_MAX_EXT) == 0) {
+  //  mFileExtension = ext;
+  //}
   
-  char drive[I3D_MAX_DRIVE];
-  if (getFileDrive(path.c_str(), drive, I3D_MAX_DRIVE) == 0) {
-    mDrive = drive;
-  }
+  //char drive[I3D_MAX_DRIVE];
+  //if (getFileDrive(path.c_str(), drive, I3D_MAX_DRIVE) == 0) {
+  //  mDrive = drive;
+  //}
 
-  char dir[I3D_MAX_DIR];
-  if (getFileDir(path.c_str(), dir, I3D_MAX_DIR) == 0) {
-    
-  }
+  //char dir[I3D_MAX_DIR];
+  //if (getFileDir(path.c_str(), dir, I3D_MAX_DIR) == 0) {
+  //  
+  //}
 
-  split(dir, mPath, "/\\");
+  split(path, mPath, "/\\");
   mPos = static_cast<int>(mPath.size());
   if (mPath.size() == 0) return;
 
@@ -583,7 +583,9 @@ void Path::deleteDir()
 
 Path &Path::append(const std::string &dir)
 {
-  return Path(toString().append("\\").append(dir));
+  //TODO: Si el path es de un fichero no se puede añadir...
+  mPath.push_back(dir);
+  return *this;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -653,6 +655,7 @@ I3D_ENABLE_WARNING(4100)
 
 void Process::stop()
 {
+  //TODO: porque no estoy llamando a stopTriggered()???
   if (mStatus == Status::RUNNING) {
     mStatus = Status::STOPPED;
   } else if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
@@ -923,6 +926,7 @@ std::string CmdProcess::formatErrorMsg(DWORD errorCode)
 BatchProcess::BatchProcess()
   : mStatus(Status::START),
     mProcessList(0),
+    mListeners(0),
     mCurrentProcess(0),
     _thread()
 {}
@@ -930,6 +934,7 @@ BatchProcess::BatchProcess()
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
   : mStatus(Status::START),
     mProcessList(batchProcess.mProcessList),
+    mListeners(batchProcess.mListeners),
     mCurrentProcess(0),
     _thread()
 {
@@ -954,13 +959,25 @@ BatchProcess::~BatchProcess()
   if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
     stop();
   }
-  mStatus = Status::FINALIZED;
+  mStatus = Status::FINALIZED;  
 }
 
 void BatchProcess::add(const std::shared_ptr<Process> &process)
 {
   mProcessList.push_back(process);
   process->addListener(this);
+}
+
+void BatchProcess::addListener(Listener *listener)
+{ 
+  mListeners.push_back(listener);
+}
+
+void BatchProcess::removeListener(Listener *listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
 }
 
 void BatchProcess::clear()
@@ -1065,15 +1082,18 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         // Se fuerza la terminación
         return Status::STOPPED;
       } else {
-        process->run(progress_bar_partial);
+        //process->run(progress_bar_partial);
         if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
         //  return Status::FINALIZED_ERROR;
           if (progress_bar_partial) progress_bar_partial->restart();
-        } else {
-          if (progress_bar_total) (*progress_bar_total)();
+          //TODO: evento de error con el id de proceso
         }
+          
+        if (progress_bar_total) (*progress_bar_total)();
+        
       }
     }
+    endTriggered();
     return (mStatus = Status::FINALIZED);
   };
 
@@ -1125,6 +1145,27 @@ void BatchProcess::onEnd(uint64_t id)
 void BatchProcess::onError(uint64_t id)
 {
   msgInfo("Proceso %i. Error al procesar", id);
+  errorTriggered();
+}
+
+void BatchProcess::endTriggered()
+{
+  mStatus = Status::FINALIZED;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onEnd();
+    }
+  }
+}
+
+void BatchProcess::errorTriggered()
+{
+  mStatus = Status::FINALIZED_ERROR;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onError();
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */
