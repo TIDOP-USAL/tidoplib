@@ -47,7 +47,7 @@ I3D_EXPORT const char *getRunfile();
 /*!
  * \brief Información de la aplicación
  */
-I3D_EXPORT bool getAppVersion(const std::string &libName, std::string *companyName, std::string *productName,
+bool getAppVersion(const std::string &libName, std::string *companyName, std::string *productName,
                    std::string *fileVersion, std::string *copyright, std::string *fileDescription);
 
 
@@ -290,7 +290,7 @@ public:
    * \param path Objeto Path que se copia
    */
   Path(const Path &path);
-  
+
   /*!
    * \brief Operador de asignación
    * \param[in] path Objeto Path que se copia
