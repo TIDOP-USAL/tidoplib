@@ -235,7 +235,10 @@ I3D_EXPORT void fileList(const char *directory, std::list<std::string> *fileList
 //TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
 
 /*!
- * \brief The Path class
+ * \brief Clase para gestionar la ruta de ficheros o directorios
+ * - Se admiten rutas absolutas y relativas
+ * - Como separador admite "/" y "\\".
+ *
  */
 class I3D_EXPORT Path
 {
@@ -251,10 +254,14 @@ private:
    */
   std::vector<std::string> mPath;
 
+  std::string mFileName;
+  std::string mFileExtension;
+
   /*!
    * \brief Directorio o fichero
    */
-  //bool bDir;
+  bool bFile;
+
 
 #if defined WIN32
 
@@ -280,9 +287,15 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param path Ruta
+   * \param path Objeto Path que se copia
    */
   Path(const Path &path);
+
+  /*!
+   * \brief Operador de asignación
+   * \param[in] path Objeto Path que se copia
+   */
+  Path &operator = (const Path& path);
 
   /*!
    * \brief Destructora
@@ -292,16 +305,21 @@ public:
   }
 
   /*!
-   * \brief Parsea una cadena
-   * \param path
+   * \brief Parsea una cadena obteniendo los directorios de la ruta, unidad de disco y nombre si es un fichero
+   * \param path Ruta
+   * 
    */
   void parse(const std::string &path);
+
+#if defined WIN32
 
   /*!
    * \brief getDrive
    * \return
    */
   const char *getDrive();
+
+#endif
 
   /*!
    * \brief Sube una posición en el path
@@ -326,8 +344,8 @@ public:
   std::string toString();
 
   //TODO: Un path no solo apunta a un directorio con lo cual habría que añadir utilidades para imagenes
-  // bool isDirectory();
-  // bool isFile();
+  bool isDirectory();
+  bool isFile();
   
   void createDir();
   void deleteDir();
@@ -338,6 +356,8 @@ public:
   std::list<std::string> files(const std::string &wildcard);  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
 
   std::list<std::string> dirs();
+
+  Path &append(const std::string &dir);
 };
 
 

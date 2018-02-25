@@ -45,8 +45,8 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\props_vs\libs.props" />
-    <Import Project="..\props_vs\OpenCV_debug-3.2.0.props" />
     <Import Project="..\props_vs\GDAL_Debug.props" />
+    <Import Project="..\props_vs\OpenCV_debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug VLD|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -83,7 +83,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;$(LIBS)\proj4\local\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;$(LIBSSRC)\LibRaw-0.18.0\libraw;$(LIBS)\EDSDKv0305W\Windows\EDSDK\Header;$(LIBS)\Eigen\include\eigen3;$(LIBS)\proj4\local\include;D:\Desarrollo\Libs_sources\gdal-2.1.2\bin\x64\Debug;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

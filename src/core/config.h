@@ -17,7 +17,7 @@
 
 // libraw: Lectura de formato raw
 #undef HAVE_LIBRAW
-#define HAVE_EDSDK
+#undef HAVE_EDSDK
 
 // Eigen Lib: Se utiliza para la resolución de sistemas de ecuaciones lineales
 // Es mucho mas rapida que OpenCV

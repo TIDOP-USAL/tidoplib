@@ -10,7 +10,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(LIBS)\$(OPENCV)\x64\vc12\lib;$(LIBS)\$(OPENCV)\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_xfeatures2d$(OPENCV_VERSION)d.lib;opencv_ximgproc$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_xfeatures2d$(OPENCV_VERSION)d.lib;opencv_ximgproc$(OPENCV_VERSION)d.lib;opencv_xphoto$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

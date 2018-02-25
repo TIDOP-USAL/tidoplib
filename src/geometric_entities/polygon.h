@@ -378,8 +378,8 @@ typedef Polygon3D<Point3<float>> Polygon3dF;
 
 /* ---------------------------------------------------------------------------------- */
 
-template <typename Polygon_t>
-class MultiPolygon : public Entity, public Entities2D<Polygon_t>
+template <typename Point_t>
+class MultiPolygon : public Entity, public Entities2D<Polygon<Point_t>>
 {
 
 public:
@@ -390,18 +390,18 @@ public:
 
 };
 
-template <typename Polygon_t>
-MultiPolygon<Polygon_t>::MultiPolygon()
+template <typename Point_t>
+MultiPolygon<Point_t>::MultiPolygon()
   : Entity(Entity::type::MULTIPOLYGON_2D),
-    Entities2D<Polygon_t>()
+    Entities2D<Polygon<Point_t>>()
 {
 }
 
 
 /* ---------------------------------------------------------------------------------- */
 
-template <typename Polygon3D_t>
-class MultiPolygon3D : public Entity, public Entities3D<Polygon3D_t>
+template <typename Point3_t>
+class MultiPolygon3D : public Entity, public Entities3D<Polygon3D<Point3_t>>
 {
 
 public:
@@ -411,10 +411,10 @@ public:
 
 };
 
-template <typename Polygon3D_t>
-MultiPolygon3D<Polygon3D_t>::MultiPolygon3D()
+template <typename Point3_t>
+MultiPolygon3D<Point3_t>::MultiPolygon3D()
   : Entity(Entity::type::MULTIPOLYGON_3D),
-    Entities3D<Polygon3D_t>()
+    Entities3D<Polygon3D<Point3_t>>()
 {
 }
 

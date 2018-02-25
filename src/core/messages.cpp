@@ -259,6 +259,7 @@ void MessageManager::resume()
   sStopHandler = false;
 }
 
+I3D_DISABLE_WARNING(4100)
 void MessageManager::onDebug(const char *msg, const char *date)
 {
 #ifdef _DEBUG
@@ -269,6 +270,7 @@ void MessageManager::onDebug(const char *msg, const char *date)
   }
 #endif
 }
+I3D_ENABLE_WARNING(4100)
 
 void MessageManager::onInfo(const char *msg, const char *date)
 {

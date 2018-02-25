@@ -10,7 +10,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(LIBS)\$(OPENCV)\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_shape$(OPENCV_VERSION)d.lib;opencv_stitching$(OPENCV_VERSION)d.lib;opencv_superres$(OPENCV_VERSION)d.lib;opencv_videostab$(OPENCV_VERSION)d.lib;opencv_objdetect$(OPENCV_VERSION)d.lib;opencv_photo$(OPENCV_VERSION)d.lib;opencv_calib3d$(OPENCV_VERSION)d.lib;opencv_features2d$(OPENCV_VERSION)d.lib;opencv_flann$(OPENCV_VERSION)d.lib;opencv_highgui$(OPENCV_VERSION)d.lib;opencv_ml$(OPENCV_VERSION)d.lib;opencv_videoio$(OPENCV_VERSION)d.lib;opencv_imgcodecs$(OPENCV_VERSION)d.lib;opencv_video$(OPENCV_VERSION)d.lib;opencv_imgproc$(OPENCV_VERSION)d.lib;opencv_core$(OPENCV_VERSION)d.lib;opencv_line_descriptor$(OPENCV_VERSION)d.lib;opencv_optflow$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_shape$(OPENCV_VERSION)d.lib;opencv_stitching$(OPENCV_VERSION)d.lib;opencv_superres$(OPENCV_VERSION)d.lib;opencv_videostab$(OPENCV_VERSION)d.lib;opencv_objdetect$(OPENCV_VERSION)d.lib;opencv_photo$(OPENCV_VERSION)d.lib;opencv_calib3d$(OPENCV_VERSION)d.lib;opencv_features2d$(OPENCV_VERSION)d.lib;opencv_flann$(OPENCV_VERSION)d.lib;opencv_highgui$(OPENCV_VERSION)d.lib;opencv_ml$(OPENCV_VERSION)d.lib;opencv_videoio$(OPENCV_VERSION)d.lib;opencv_imgcodecs$(OPENCV_VERSION)d.lib;opencv_video$(OPENCV_VERSION)d.lib;opencv_imgproc$(OPENCV_VERSION)d.lib;opencv_core$(OPENCV_VERSION)d.lib;opencv_line_descriptor$(OPENCV_VERSION)d.lib;opencv_optflow$(OPENCV_VERSION)d.lib;opencv_tracking$(OPENCV_VERSION)d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />
