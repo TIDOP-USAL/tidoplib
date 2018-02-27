@@ -24,14 +24,14 @@ class OGRStylePen;
 class OGRStyleBrush;
 class OGRStyleSymbol;
 class OGRStyleLabel;
-
+ 
 namespace I3D
 {
 
 // forward declaration
 //template<typename T> class LineString;
 //template<typename T> class Polygon;
-
+template<typename T> class Transform;
 
 /*! \defgroup GraphicEntities Entidades gráficas
  *  Puntos, lineas, ...
@@ -907,6 +907,9 @@ public:
 
   bool write();
 
+
+  std::shared_ptr<StylePen> getStylePen() const;
+
   /*!
    * \brief Establece el estilo de pluma
    * \param[in] stylePen Estilo de pluma
@@ -918,6 +921,8 @@ public:
    * \param[in] styleBrush Estilo de pincel
    */
   void setStyleBrush(std::shared_ptr<StyleBrush> styleBrush);
+
+  std::shared_ptr<StyleSymbol> getStyleSymbol() const;
 
   /*!
    * \brief Establece el estilo de simbolos
@@ -1111,7 +1116,7 @@ public:
 };
 
 /*!
- * Capa. Puede contener elementos de un o varios tipos. Pueden ser entidades gráficas o simples
+ * Capa. Puede contener elementos de uno o varios tipos. Pueden ser entidades gráficas o simples
  */
 class I3D_EXPORT GLayer
 {
@@ -1141,6 +1146,88 @@ public:
   void remove();
 };
 
+class Canvas
+{
+protected:
+
+  int mWidth;
+  int mHeight;
+   
+public:
+
+  Canvas();
+  ~Canvas();
+
+  int getWidth();
+  int getHeight();
+   
+  void setSize(int width, int height);
+  void setBackgroundColor(const Color &color);
+
+  virtual void drawPoint(const GPoint &point) = 0;
+  virtual void drawLineString(const GLineString &lineString) = 0;
+  virtual void drawPolygon(const GPolygon &polygon) = 0;
+
+};
+
+class CanvasCV : public Canvas
+{
+
+private:
+
+  cv::Mat mCanvas;
+
+public:
+
+  CanvasCV();
+  ~CanvasCV();
+
+  virtual void drawPoint(const GPoint &point) override;
+  virtual void drawLineString(const GLineString &lineString) override;
+  virtual void drawPolygon(const GPolygon &polygon) override;
+
+private:
+
+};
+
+
+
+
+class Painter
+{
+protected:
+
+  Transform<geometry::PointF> *mTrf;
+  Canvas *mCanvas;
+
+public:
+
+  Painter();
+  Painter(Canvas *canvas);
+  Painter(const Painter &painter);
+  ~Painter();
+
+  void drawPoint(const GPoint &point);
+  void drawLineString(const GLineString &lineString);
+  void drawPolygon(const GPolygon &polygon);
+  void drawMultiPoint(const GMultiPoint &point);
+  void drawMultiLineString(const GMultiLineString &multiLineString);
+  void drawMultiPolygon(const GMultiPolygon &multiPolygon);
+
+  void setCanvas(Canvas *canvas);
+  //void setPen(const StylePen &pen);
+  //void setBrush(const StyleBrush &brush);
+  //void setSymbol(const StyleSymbol &symbol);
+  //void setStyleLabel(const StyleLabel &styleLabel);
+
+  void setTransform(Transform<geometry::PointF> *trf);
+
+  //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
+  //void drawImage(const RasterGraphics &image, Helmert2D<geometry::PointI> *trf);
+
+private:
+
+};
 
 
 

@@ -9,6 +9,15 @@ I3D_SUPPRESS_WARNINGS
 I3D_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#endif
+
+
+//TODO: los métodos draw creo que se deberian quitar y crear una clase Painter virtual
+//      y unas clases que hereden de esta (para OpenCv, Qt, ...)
 
 namespace I3D
 {
@@ -333,7 +342,7 @@ void StyleSymbol::setPriorityLevel(uint32_t priorityLevel)
 
 /* ---------------------------------------------------------------------------------- */
 
-StyleLabel::StyleLabel(const StyleLabel &styleLabel)
+StyleLabel::StyleLabel()
   : mFontName("Arial"),
     mFontSize(12),
     mText(""),
@@ -351,6 +360,27 @@ StyleLabel::StyleLabel(const StyleLabel &styleLabel)
     bUnderline(false),
     bStrikeout(false),
     mPriorityLevel(0)
+{
+}
+
+StyleLabel::StyleLabel(const StyleLabel &styleLabel)
+  : mFontName(styleLabel.mFontName),
+    mFontSize(styleLabel.mFontSize),
+    mText(styleLabel.mText),
+    mAngle(styleLabel.mAngle),
+    mForegroundColor(styleLabel.mForegroundColor),
+    mBackgroundColor(styleLabel.mBackgroundColor),
+    mOutlineColor(styleLabel.mOutlineColor),
+    mShadowColor(styleLabel.mShadowColor),
+    mStretch(styleLabel.mStretch),
+    mLabelPlacement(styleLabel.mLabelPlacement),
+    mAnchorPosition(styleLabel.mAnchorPosition),
+    mPerpendicularOffset(styleLabel.mPerpendicularOffset),
+    bBold(styleLabel.bBold),
+    bItalic(styleLabel.bItalic),
+    bUnderline(styleLabel.bUnderline),
+    bStrikeout(styleLabel.bStrikeout),
+    mPriorityLevel(styleLabel.mPriorityLevel)
 {
 }
 
@@ -506,6 +536,12 @@ bool GraphicStyle::write()
   return false;
 }
 
+std::shared_ptr<StylePen> GraphicStyle::getStylePen() const
+{
+  return mStylePen;
+}
+
+
 void GraphicStyle::setStylePen(std::shared_ptr<StylePen> stylePen)
 {
   mStylePen = stylePen;
@@ -514,6 +550,11 @@ void GraphicStyle::setStylePen(std::shared_ptr<StylePen> stylePen)
 void GraphicStyle::setStyleBrush(std::shared_ptr<StyleBrush> styleBrush)
 {
   mStyleBrush = styleBrush;
+}
+
+std::shared_ptr<StyleSymbol> GraphicStyle::getStyleSymbol() const
+{
+  return mStyleSymbol;
 }
 
 void GraphicStyle::setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol)
@@ -562,9 +603,9 @@ void GraphicStyle::readStylePen(OGRStylePen *ogrStylePen)
   const char *join = ogrStylePen->Join(bDefault);
   if ( !bDefault ) {
     StylePen::PenJoin penJoin;
-    if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::MITER;
-    else if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::ROUNDED;
-    else if (strcmp(cap, "") == 0) penJoin = StylePen::PenJoin::BEVEL;
+    if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::MITER;
+    else if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::ROUNDED;
+    else if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::BEVEL;
     stylePen->setPenJoin(penJoin);
   }
 
@@ -645,7 +686,8 @@ GPoint::~GPoint()
 #ifdef HAVE_OPENCV
 void GPoint::draw(cv::Mat &canvas) const
 {
-
+  // TODO: Hay que incluir la transformación terreno-pantalla
+  //cv::drawMarker(canvas, ..... );
 }
 #endif
 
@@ -877,6 +919,193 @@ void GLayer::remove()
 {
 
 }
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+Canvas::Canvas()
+  : mWidth(0),
+    mHeight(0)
+{
+}
+
+Canvas::~Canvas()
+{
+}
+
+int Canvas::getWidth()
+{
+  return mWidth;
+}
+
+int Canvas::getHeight()
+{
+  return mHeight;
+}
+ 
+void Canvas::setSize(int width, int height)
+{
+  mWidth = width;
+  mHeight = height;
+}
+
+void Canvas::setBackgroundColor(const Color &color)
+{
+
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+CanvasCV::CanvasCV()
+  : Canvas()
+{
+}
+
+CanvasCV::~CanvasCV()
+{
+}
+
+void CanvasCV::drawPoint(const GPoint &point)
+{
+  cv::Point pt = point;
+  cv::Scalar color = point.getStylePen()->getPenColor().get<cv::Scalar>();
+
+  cv::MarkerTypes markerType;
+
+  switch (point.getStyleSymbol()->getName()) {
+  case I3D::graph::StyleSymbol::SymbolName::SOLID:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
+    markerType = cv::MARKER_TILTED_CROSS;
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::CIRCLE:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::CIRCLE_FILLED:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::SQUARE:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::SQUARE_FILLED:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::TRIANGLE:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::TRIANGLE_FILLED:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::STAR:
+    markerType = cv::MARKER_STAR;
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::STAR_FILLED:
+    break;
+  case I3D::graph::StyleSymbol::SymbolName::VERTICAL_BAR:
+    break;
+  default:
+    break;
+  }
+
+  
+  //TODO: Un poco limitado para todos los casos...
+  cv::drawMarker(mCanvas, pt, color, markerType);
+
+
+}
+
+void CanvasCV::drawLineString(const GLineString &lineString)
+{
+
+}
+
+void CanvasCV::drawPolygon(const GPolygon &polygon)
+{
+
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+Painter::Painter()
+  : mTrf(nullptr),
+    mCanvas(nullptr)
+{
+}
+
+Painter::Painter(Canvas *canvas)
+  : mTrf(nullptr),
+    mCanvas(canvas)
+{
+}
+
+Painter::Painter(const Painter &painter)
+  : mTrf(painter.mTrf),
+    mCanvas(painter.mCanvas)
+{
+}
+
+Painter::~Painter()
+{
+}
+
+void Painter::drawPoint(const GPoint &point) 
+{
+  mCanvas->drawPoint(point);
+}
+
+void Painter::drawLineString(const GLineString &lineString)
+{
+
+}
+
+void Painter::drawPolygon(const GPolygon &polygon)
+{
+
+}
+  
+void Painter::drawMultiPoint(const GMultiPoint &point)
+{
+
+}
+
+void Painter::drawMultiLineString(const GMultiLineString &multiLineString)
+{
+
+}
+
+void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
+{
+
+}
+
+void Painter::setCanvas(Canvas *canvas)
+{
+  mCanvas = canvas;
+}
+
+//void Painter::setPen(const StylePen &pen)
+//{
+//
+//}
+//
+//void Painter::setBrush(const StyleBrush &brush)
+//{
+//
+//}
+//
+//void Painter::setSymbol(const StyleSymbol &symbol)
+//{
+//
+//}
+//
+//void Painter::setStyleLabel(const StyleLabel &styleLabel)
+//{
+//
+//}
+
+//void Painter::setTransform(Transform<geometry::PointF> *trf)
+//{
+//  mTrf = trf;
+//}
+
+
+
 
 } // Fin namespace graph
 

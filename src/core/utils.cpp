@@ -55,48 +55,48 @@ const char *getRunfile()
   return runfile;
 }
 
-bool getAppVersion(const std::string &LibName, std::string *CompanyName, std::string *ProductName, std::string *FileVersion,
-  std::string *Copyright, std::string *FileDescription)
-{
-#if defined WIN32
-
-  DWORD dwHandle, dwLen;
-  UINT BufLen;
-  LPTSTR lpData;
-  unsigned short *LangCharSet;
-  dwLen = GetFileVersionInfoSizeA(LibName.c_str(), &dwHandle);
-  if (!dwLen)   return false;
-  lpData = (LPTSTR)malloc(dwLen);
-  if (!lpData)   return false;
-  if (!GetFileVersionInfoA(LibName.c_str(), dwHandle, dwLen, lpData)) {
-    free(lpData);
-    return false;
-  }
-
-  if (VerQueryValueA(lpData, "\\VarFileInfo\\Translation", (void **)&LangCharSet, &BufLen)) {
-    LPVOID lpBuffer = NULL;
-    char  Prefix[128];
-    sprintf(Prefix, "\\StringFileInfo\\%04x%04x\\", LangCharSet[0], LangCharSet[1]);
-    if (CompanyName && VerQueryValueA(lpData, (Prefix + std::string("CompanyName")).c_str(), &lpBuffer, &BufLen))
-      *CompanyName = (char *)lpBuffer;
-    if (ProductName && VerQueryValueA(lpData, (Prefix + std::string("ProductName")).c_str(), &lpBuffer, &BufLen))
-      *ProductName = (char *)lpBuffer;
-    if (FileVersion && VerQueryValueA(lpData, (Prefix + std::string("FileVersion")).c_str(), &lpBuffer, &BufLen))
-      *FileVersion = (char *)lpBuffer;
-    if (Copyright && VerQueryValueA(lpData, (Prefix + std::string("LegalCopyright")).c_str(), &lpBuffer, &BufLen))
-      *Copyright = (char *)lpBuffer;
-    if (FileDescription && VerQueryValueA(lpData, (Prefix + std::string("FileDescription")).c_str(), &lpBuffer, &BufLen))
-      *FileDescription = (char *)lpBuffer;
-    free(lpData);
-    return true;
-  }
-  free(lpData);
-  return false;
-  
-#else
-  //TODO: ver para Linux
-#endif
-}
+//bool getAppVersion(const std::string &LibName, std::string *CompanyName, std::string *ProductName, std::string *FileVersion,
+//  std::string *Copyright, std::string *FileDescription)
+//{
+//#if defined WIN32
+//
+//  DWORD dwHandle, dwLen;
+//  UINT BufLen;
+//  LPTSTR lpData;
+//  unsigned short *LangCharSet;
+//  dwLen = GetFileVersionInfoSizeA(LibName.c_str(), &dwHandle);
+//  if (!dwLen)   return false;
+//  lpData = (LPTSTR)malloc(dwLen);
+//  if (!lpData)   return false;
+//  if (!GetFileVersionInfoA(LibName.c_str(), dwHandle, dwLen, lpData)) {
+//    free(lpData);
+//    return false;
+//  }
+//
+//  if (VerQueryValueA(lpData, "\\VarFileInfo\\Translation", (void **)&LangCharSet, &BufLen)) {
+//    LPVOID lpBuffer = NULL;
+//    char  Prefix[128];
+//    sprintf(Prefix, "\\StringFileInfo\\%04x%04x\\", LangCharSet[0], LangCharSet[1]);
+//    if (CompanyName && VerQueryValueA(lpData, (Prefix + std::string("CompanyName")).c_str(), &lpBuffer, &BufLen))
+//      *CompanyName = (char *)lpBuffer;
+//    if (ProductName && VerQueryValueA(lpData, (Prefix + std::string("ProductName")).c_str(), &lpBuffer, &BufLen))
+//      *ProductName = (char *)lpBuffer;
+//    if (FileVersion && VerQueryValueA(lpData, (Prefix + std::string("FileVersion")).c_str(), &lpBuffer, &BufLen))
+//      *FileVersion = (char *)lpBuffer;
+//    if (Copyright && VerQueryValueA(lpData, (Prefix + std::string("LegalCopyright")).c_str(), &lpBuffer, &BufLen))
+//      *Copyright = (char *)lpBuffer;
+//    if (FileDescription && VerQueryValueA(lpData, (Prefix + std::string("FileDescription")).c_str(), &lpBuffer, &BufLen))
+//      *FileDescription = (char *)lpBuffer;
+//    free(lpData);
+//    return true;
+//  }
+//  free(lpData);
+//  return false;
+//  
+//#else
+//  //TODO: ver para Linux
+//#endif
+//}
 
 bool isDirectory(const char *path)
 {

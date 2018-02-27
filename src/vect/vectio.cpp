@@ -24,8 +24,8 @@ int VrtVector::getLayersCount() const
 GdalVector::GdalVector() 
   : VrtVector(), 
     pDataset(0), 
-	pDriver(0), 
-	mDriverName("")
+	  pDriver(0), 
+	  mDriverName("")
 {
 
 }
