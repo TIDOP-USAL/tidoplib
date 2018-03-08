@@ -196,19 +196,19 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Color() : mColor(0) {}
+  Color();
   
   /*!
    * \brief Constructora de copia
    * \param[in] color Color como entero
    */
-  Color(const Color &color) : mColor(color.mColor) {}
+  Color(const Color &color);
 
   /*!
    * \brief Constructora
    * \param[in] color Color como entero
    */
-  Color(int color) : mColor(color) {}
+  Color(int color);
   
   /*!
    * \brief Constructora RGBA

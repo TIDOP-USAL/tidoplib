@@ -66,6 +66,21 @@ void adjustRangeHSL(double *hue, double *saturation, double *lightness)
 /*                                     Clase Color                                    */
 /* ---------------------------------------------------------------------------------- */
 
+Color::Color() 
+  : mColor(0)
+{
+}
+
+Color::Color(const Color &color) 
+  : mColor(color.mColor) 
+{
+}
+
+Color::Color(int color) 
+  : mColor(color) 
+{
+}
+
 Color::Color(int red, int green, int blue, int alpha)
 {
   adjustRangeRGBA(&red, &green, &blue, &alpha);

@@ -79,6 +79,21 @@ void CrsCache::get()
   }
 }
 
+std::shared_ptr<Crs> CrsCache::getCrs(const char *epsg)
+{
+	return std::shared_ptr<Crs>();
+}
+
+std::shared_ptr<Crs> CrsCache::findCrs(const char * epsg)
+{
+	return std::shared_ptr<Crs>();
+}
+
+int CrsCache::add(const char * epsg)
+{
+	return 0;
+}
+
 #endif // HAVE_GDAL
 
 } // End namespace I3D

@@ -899,13 +899,12 @@ GLayer::GLayer(const GLayer &gLayer)
 {
 }
 
-const char *GLayer::getName() const
+std::string GLayer::getName() const
 {
-  return mName.c_str();
+	return mName;
 }
 
-
-void GLayer::setName(const char *name)
+void GLayer::setName(const std::string & name)
 {
   mName = name;
 }

@@ -1138,9 +1138,9 @@ public:
   GLayer(const GLayer &gLayer);
   ~GLayer() {}
 
-  const char *getName() const;
+  std::string getName() const;
 
-  void setName(const char *name);
+  void setName(const std::string &name);
 
   void add(std::shared_ptr<GraphicEntity> entity);
   void remove();

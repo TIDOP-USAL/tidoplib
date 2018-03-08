@@ -109,7 +109,7 @@ Console::Console(Console::Mode mode, bool add)
 Console::Console(const Console &console, bool add) 
   : MessageManager::Listener(add),
 #ifdef WIN32
-  h(console.h),
+  mHandle(console.mHandle),
   mOldColorAttrs(console.mOldColorAttrs),
 #else
   mStream(console.mStream),
@@ -154,7 +154,7 @@ void Console::printErrorMessage(const char *msg)
 void Console::reset() 
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(h, mOldColorAttrs);
+  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
 #else
   sprintf(mCommand, "%c[0;m", 0x1B);
   fprintf(mStream, "%s", mCommand);
@@ -339,9 +339,9 @@ I3D_ENABLE_WARNING(4100)
 void Console::init(DWORD handle) 
 {
   setConsoleUnicode();
-  h = GetStdHandle(handle);
+  mHandle = GetStdHandle(handle);
   CONSOLE_SCREEN_BUFFER_INFO info; 
-  if (! GetConsoleScreenBufferInfo(h, &info)) {
+  if (! GetConsoleScreenBufferInfo(mHandle, &info)) {
     mOldColorAttrs = 0x0007;
   } else {
     mOldColorAttrs = info.wAttributes; 
@@ -352,10 +352,10 @@ void Console::init(DWORD handle)
   mBackIntensity = (mOldColorAttrs & 0x0080);
 
   mIniFont.cbSize = sizeof(mIniFont);
-  GetCurrentConsoleFontEx(h, FALSE, &mIniFont);
+  GetCurrentConsoleFontEx(mHandle, FALSE, &mIniFont);
   mCurrentFont.cbSize = sizeof(mCurrentFont);
   mCurrentFont = mIniFont;
-  //COORD fontSize = GetConsoleFontSize(h, mIniFont.nFont);
+  //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
 }
 #else
 void Console::init(FILE *stream)
@@ -372,8 +372,8 @@ void Console::init(FILE *stream)
 void Console::update()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
-  SetCurrentConsoleFontEx(h, FALSE, &mCurrentFont);
+  SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
+  SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
   sprintf(mCommand, "%c[%d,%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
   fprintf(mStream, "%s", mCommand);

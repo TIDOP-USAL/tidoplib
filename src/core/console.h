@@ -83,7 +83,7 @@ private:
   /*!
    * \brief Manejador de la consola
    */
-  HANDLE h;
+  HANDLE mHandle;
   
   /*!
    * \brief Configuración de la consola al iniciar.

@@ -17,6 +17,19 @@ I3D_SUPPRESS_WARNINGS
 I3D_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+class OGRFeature;
+class OGRPoint;
+class OGRLineString;
+class OGRPolygon;
+class OGRMultiPoint;
+class OGRMultiLineString;
+class OGRMultiPolygon;
+class OGRStyleMgr;
+class OGRStylePen;
+class OGRStyleBrush;
+class OGRStyleSymbol;
+class OGRStyleLabel;
+
 namespace I3D
 {
 
@@ -39,24 +52,6 @@ namespace graph
   class GraphicStyle;
   class GData;
 }
-
-}
-
-class OGRFeature;
-class OGRPoint;
-class OGRLineString;
-class OGRPolygon;
-class OGRMultiPoint;
-class OGRMultiLineString;
-class OGRMultiPolygon;
-class OGRStyleMgr;
-class OGRStylePen;
-class OGRStyleBrush;
-class OGRStyleSymbol;
-class OGRStyleLabel;
-
-namespace I3D
-{
 
 enum class Mode
 {
