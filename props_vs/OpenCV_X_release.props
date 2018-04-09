@@ -6,10 +6,10 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalLibraryDirectories>$(LIBS)\$(OPENCV)\x64\vc12\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_xfeatures2d$(OPENCV_VERSION).lib;opencv_ximgproc$(OPENCV_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_xfeatures2d$(OPENCV_VERSION).lib;opencv_ximgproc$(OPENCV_VERSION).lib;opencv_xphoto$(OPENCV_VERSION).lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(LIBS)\$(OPENCV)\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(LIBS)\$(OPENCV)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_NONSTDC_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NDEBUG;_VARIADIC_MAX=10;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
