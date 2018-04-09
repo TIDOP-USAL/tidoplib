@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GtaTestDurations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Executable>C:\Desarrollo\TidopLib\build\test\graphic\Release\test_color_test.exe</Executable>
+  <TestDurations>
+    <TestDuration Test="constructor.Default" Duration="1" />
+    <TestDuration Test="constructor.Copy" Duration="1" />
+    <TestDuration Test="constructor.Int" Duration="1" />
+    <TestDuration Test="constructor.RGBA" Duration="1" />
+    <TestDuration Test="constructor.CMYK" Duration="1" />
+    <TestDuration Test="constructor.HSV" Duration="1" />
+    <TestDuration Test="constructor.Hex" Duration="1" />
+    <TestDuration Test="getBlue.TestBlue" Duration="1" />
+    <TestDuration Test="getGreen.TestGreen" Duration="1" />
+    <TestDuration Test="getRed.TestRed" Duration="1" />
+    <TestDuration Test="getColorsFromInt.TestBlue" Duration="1" />
+    <TestDuration Test="getColorsFromString.TestGreen" Duration="1" />
+    <TestDuration Test="getRedFromRGBA.Test1" Duration="1" />
+    <TestDuration Test="fromHSL.Test1" Duration="1" />
+    <TestDuration Test="rgbToInt.Test1" Duration="1" />
+    <TestDuration Test="convert.toCMYK" Duration="1" />
+    <TestDuration Test="convert.toHSV" Duration="1" />
+    <TestDuration Test="convert.toHSL" Duration="1" />
+  </TestDurations>
+</GtaTestDurations>

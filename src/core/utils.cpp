@@ -1,13 +1,13 @@
-#include "utils.h"
+#include "core/utils.h"
 
 #include "core/messages.h"
 #include "core/console.h"
 #include "core/exception.h"
 
-#if defined WIN32
-#include <windows.h>
-#include <atlstr.h>
-#endif
+//#if defined WIN32
+//#include <windows.h>
+//#include <atlstr.h>
+//#endif
 
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>
@@ -16,39 +16,54 @@
 #include <dirent.h>
 #endif
 
-#include <iostream>
-#include <sstream>
-#include <chrono>
-#include <vector>
-#include <cstring>
-#include <exception>
-#include <functional>
+//#include <iostream>
+//#include <sstream>
+//#include <chrono>
+//#include <vector>
+//#include <cstring>
+//#include <exception>
+//#include <functional>
 
 // Paralelismo
 #if defined HAVE_OMP
 #  include <omp.h>  // OpenMP
 #elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
-#  define I3D_MSVS_CONCURRENCY
+#  define TL_MSVS_CONCURRENCY
 #  include <ppl.h>  // Parallel Patterns Library (PPL)
 #else
 #  include <thread>
 #endif
 
+//TODO: Incluir filesystem. Se simplificarian bastantes cosas
+// filesystem
+#if (__cplusplus >= 201703L)
+//C++17
+//http://en.cppreference.com/w/cpp/filesystem
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+//Boost
+//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
-namespace I3D
+
+
+namespace TL
 {
 
 /* ---------------------------------------------------------------------------------- */
 
 const char *getRunfile()
 {
-  static char runfile[I3D_MAX_PATH];
+  static char runfile[TL_MAX_PATH];
 #if defined WIN32
-  ::GetModuleFileNameA(NULL, runfile, I3D_MAX_PATH);
+  ::GetModuleFileNameA(NULL, runfile, TL_MAX_PATH);
 #else
    char szTmp[32];
    sprintf(runfile, "/proc/%d/exe", getpid());
-   int len = readlink(szTmp, runfile, I3D_MAX_PATH);
+   int len = readlink(szTmp, runfile, TL_MAX_PATH);
    if(len >= 0)
      runfile[len] = '\0';
 #endif
@@ -76,7 +91,7 @@ const char *getRunfile()
 //  if (VerQueryValueA(lpData, "\\VarFileInfo\\Translation", (void **)&LangCharSet, &BufLen)) {
 //    LPVOID lpBuffer = NULL;
 //    char  Prefix[128];
-//    sprintf(Prefix, "\\StringFileInfo\\%04x%04x\\", LangCharSet[0], LangCharSet[1]);
+//    sprintf_s(Prefix, "\\StringFileInfo\\%04x%04x\\", LangCharSet[0], LangCharSet[1]);
 //    if (CompanyName && VerQueryValueA(lpData, (Prefix + std::string("CompanyName")).c_str(), &lpBuffer, &BufLen))
 //      *CompanyName = (char *)lpBuffer;
 //    if (ProductName && VerQueryValueA(lpData, (Prefix + std::string("ProductName")).c_str(), &lpBuffer, &BufLen))
@@ -117,8 +132,9 @@ bool isDirectory(const char *path)
 
 bool isFile(const char *file)
 {
-  FILE *fp = std::fopen(file, "rb");
-  if (!fp) {
+  FILE *fp;
+  errno_t err = fopen_s(&fp, file, "rb");
+  if (err != 0) {
     //msgError("%i: %s", errno, strerror(errno));
     return false;
   } else {
@@ -133,9 +149,9 @@ int createDir(const char *path)
   if (isDirectory(path)) return 1;
 
   std::vector<std::string> splitPath;
-  I3D::split(path, splitPath, "\\");
+  TL::split(path, splitPath, "\\");
   if (splitPath.size() == 1)
-    I3D::split(path, splitPath, "/");
+    TL::split(path, splitPath, "/");
 
   std::string _path = "";
   try {
@@ -267,10 +283,10 @@ int getFileName(const char *path, char *name, int size)
 int getFileDriveDir(const char *path, char *drivedir, int size)
 {
   int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
+  char drive[TL_MAX_DRIVE];
+  char dir[TL_MAX_DIR];
 #ifdef _MSC_VER
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
+  r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, NULL, NULL, NULL, NULL);
   strcpy_s(drivedir, size, drive);
   strcat_s(drivedir, size, dir);
 #else
@@ -284,12 +300,12 @@ int getFileDriveDir(const char *path, char *drivedir, int size)
 int changeFileName(const char *path, const char *newName, char *pathOut, int size)
 {
   int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-  char ext[I3D_MAX_EXT];
+  char drive[TL_MAX_DRIVE];
+  char dir[TL_MAX_DIR];
+  char ext[TL_MAX_EXT];
 #ifdef _MSC_VER
 
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, ext, I3D_MAX_EXT);
+  r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, NULL, NULL, ext, TL_MAX_EXT);
   if (r_err == 0)
     r_err = _makepath_s(pathOut, size, drive, dir, newName, ext);
 #else
@@ -301,12 +317,12 @@ int changeFileName(const char *path, const char *newName, char *pathOut, int siz
 int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size)
 {
   int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
-  char fname[I3D_MAX_FNAME];
+  char drive[TL_MAX_DRIVE];
+  char dir[TL_MAX_DIR];
+  char fname[TL_MAX_FNAME];
 #ifdef _MSC_VER
 
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, fname, I3D_MAX_FNAME, NULL, NULL);
+  r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, fname, TL_MAX_FNAME, NULL, NULL);
   if (r_err == 0)
     r_err = _makepath_s(pathOut, size, drive, dir, fname, newExt);
 #else
@@ -318,11 +334,11 @@ int changeFileExtension(const char *path, const char *newExt, char *pathOut, int
 int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
 {
   int r_err = 0;
-  char drive[I3D_MAX_DRIVE];
-  char dir[I3D_MAX_DIR];
+  char drive[TL_MAX_DRIVE];
+  char dir[TL_MAX_DIR];
 #ifdef _MSC_VER
 
-  r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, NULL, NULL, NULL, NULL);
+  r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, NULL, NULL, NULL, NULL);
   if (r_err == 0) {
     std::vector<std::string> nameext;
     split(newNameExt, nameext, ".");
@@ -340,9 +356,9 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
   WIN32_FIND_DATAA findData;
   HANDLE hFind;
 
-  char dir[I3D_MAX_PATH];
-  strcpy(dir, directory);
-  strcat(dir, "/*");
+  char dir[TL_MAX_PATH];
+  strcpy_s(dir, TL_MAX_PATH, directory);
+  strcat_s(dir, TL_MAX_PATH, "/*");
 
   hFind = FindFirstFileA(dir, &findData);
   if (hFind == INVALID_HANDLE_VALUE) {
@@ -379,12 +395,13 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
   WIN32_FIND_DATAA findData;
   HANDLE hFind;
 
-  char dir[I3D_MAX_PATH];
-  strcpy(dir, directory);
-  strcat(dir, "\\"); // TODO: el tema de las barras aunque a efectos practicos de igual no queda elegante el mezclar los dos tipos de barras...
-  strcat(dir, wildcard);
+  //char dir[TL_MAX_PATH];
+  //strcpy(dir, directory);
+  //strcat(dir, "\\"); // TODO: el tema de las barras aunque a efectos practicos de igual no queda elegante el mezclar los dos tipos de barras...
+  //strcat(dir, wildcard);
 
-  hFind = FindFirstFileA(dir, &findData);
+  hFind = FindFirstFileA(/*dir*/ Path(directory).append(wildcard).toString().c_str(), &findData);
+
   if (hFind == INVALID_HANDLE_VALUE) {
     msgError("FindFirstFile failed (%d)\n", GetLastError());
     return;
@@ -401,6 +418,12 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 }
 
 /* ---------------------------------------------------------------------------------- */
+// TODO: C++17 incluye filesystem que tiene una clase path.
+//       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
+//       no soporta c++17 se utilizaría BOOST
+
+// Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
+TL_DISABLE_WARNING(4996)
 
 Path::Path() 
   : mPos(0), 
@@ -430,6 +453,10 @@ Path::Path(const Path &path)
 { 
 }
 
+Path::~Path()
+{
+}
+
 Path &Path::operator=(const Path &path) 
 {
   mPos = path.mPos;
@@ -442,35 +469,35 @@ Path &Path::operator=(const Path &path)
 
 void Path::parse(const std::string &path)
 {
-//  char name[I3D_MAX_FNAME];
-//  char drive[I3D_MAX_DRIVE];
-//  char dir[I3D_MAX_DIR];
-//  char ext[I3D_MAX_EXT];
+//  char name[TL_MAX_FNAME];
+//  char drive[TL_MAX_DRIVE];
+//  char dir[TL_MAX_DIR];
+//  char ext[TL_MAX_EXT];
 //#ifdef _MSC_VER
-//  int r_err = _splitpath_s(path, drive, I3D_MAX_DRIVE, dir, I3D_MAX_DIR, name, I3D_MAX_FNAME, ext, I3D_MAX_EXT);
+//  int r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, name, TL_MAX_FNAME, ext, TL_MAX_EXT);
 //
 //#endif
 
   // Se comprueba si es un fichero
-  //char name[I3D_MAX_FNAME];
-  //if (getFileName(path.c_str(), name, I3D_MAX_FNAME) == 0) {
+  //char name[TL_MAX_FNAME];
+  //if (getFileName(path.c_str(), name, TL_MAX_FNAME) == 0) {
   //  mFileName = name;
   //  bFile = true;
   //}
 
   // Extensión
-  //char ext[I3D_MAX_EXT];
-  //if (getFileExtension(path.c_str(), ext, I3D_MAX_EXT) == 0) {
+  //char ext[TL_MAX_EXT];
+  //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
   //  mFileExtension = ext;
   //}
   
-  //char drive[I3D_MAX_DRIVE];
-  //if (getFileDrive(path.c_str(), drive, I3D_MAX_DRIVE) == 0) {
+  //char drive[TL_MAX_DRIVE];
+  //if (getFileDrive(path.c_str(), drive, TL_MAX_DRIVE) == 0) {
   //  mDrive = drive;
   //}
 
-  //char dir[I3D_MAX_DIR];
-  //if (getFileDir(path.c_str(), dir, I3D_MAX_DIR) == 0) {
+  //char dir[TL_MAX_DIR];
+  //if (getFileDir(path.c_str(), dir, TL_MAX_DIR) == 0) {
   //  
   //}
 
@@ -480,8 +507,8 @@ void Path::parse(const std::string &path)
 
   // rutas relativas
   if (mPath[0] == std::string("..")) {
-    char dir[I3D_MAX_DIR];
-    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    char dir[TL_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
     //std::string runFilePath = getRunfile();
     Path runPath(dir);
     int i = 0;
@@ -495,8 +522,8 @@ void Path::parse(const std::string &path)
     mPath = current;
     mPos = static_cast<int>(mPath.size());
   } else if (mPath[0] == std::string(".")) {
-    char dir[I3D_MAX_DIR];
-    getFileDriveDir(getRunfile(), dir, I3D_MAX_DIR);
+    char dir[TL_MAX_DIR];
+    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
     Path runPath(dir);
     std::vector<std::string> current = runPath.currentPath();
     for (int j = 1; j < mPath.size(); j++)
@@ -573,12 +600,12 @@ bool Path::isFile()
 
 void Path::createDir()
 {
-  I3D::createDir(toString().c_str());
+  TL::createDir(toString().c_str());
 }
 
 void Path::deleteDir()
 {
-  I3D::deleteDir(toString().c_str());
+  TL::deleteDir(toString().c_str());
 }
 
 Path &Path::append(const std::string &dir)
@@ -588,585 +615,9 @@ Path &Path::append(const std::string &dir)
   return *this;
 }
 
-/* ---------------------------------------------------------------------------------- */
-/*          PROCESOS Y BATCH                                                          */
-/* ---------------------------------------------------------------------------------- */
+TL_ENABLE_WARNING(4996)
 
-unsigned long Process::sProcessCount = 0;
 
-Process::Process(Process *parentProcess) 
-  : mStatus(Status::START),
-    mParentProcess(parentProcess),
-    mListeners(0) 
-{
-  if (mParentProcess == nullptr) {
-    mProcessId = ++sProcessCount;
-  }
-}
-
-Process::~Process()
-{
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    stop();
-  }
-  mStatus = Status::FINALIZED;
-}
-
-void Process::addListener(Listener *listener)
-{ 
-  if (mParentProcess == nullptr) {
-    mListeners.push_back(listener);
-  }
-}
-
-void Process::pause()
-{
-  mStatus = Status::PAUSING;
-}
-
-void Process::removeListener(Listener *listener)
-{
-  if (!mListeners.empty()) {
-    mListeners.remove(listener);
-  }
-}
-
-void Process::reset()
-{
-  mStatus = Status::START;
-}
-
-void Process::resume()
-{
-  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::RUNNING;
-  }
-  resumeTriggered();
-}
-
-I3D_DISABLE_WARNING(4100)
-Process::Status Process::run(Progress *progressBar)
-{
-  if (mStatus != Status::FINALIZED) // Util para saltar procesos ya realizados.
-    runTriggered();
-  return mStatus;
-}
-I3D_ENABLE_WARNING(4100)
-
-void Process::stop()
-{
-  //TODO: porque no estoy llamando a stopTriggered()???
-  if (mStatus == Status::RUNNING) {
-    mStatus = Status::STOPPED;
-  } else if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::STOPPED;
-  }
-}
-
-Process::Status Process::getStatus()
-{
-  return mStatus;
-}
-
-void Process::setStatus(Process::Status status)
-{
-  mStatus = status;
-}
-
-void Process::endTriggered()
-{
-  mStatus = Status::FINALIZED;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onEnd(getProcessId());
-    }
-  }
-}
-
-void Process::pauseTriggered()
-{
-  mStatus = Status::PAUSE;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onPause(getProcessId());
-    }
-  }
-}
-
-void Process::resumeTriggered()
-{
-  mStatus = Status::RUNNING;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onResume(getProcessId());
-    }
-  }
-}
-
-void Process::runTriggered()
-{
-  mStatus = Status::RUNNING;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onRun(getProcessId());
-    }
-  }
-}
-
-void Process::startTriggered()
-{
-  mStatus = Status::START;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onStart(getProcessId());
-    }
-  }
-}
-
-void Process::stopTriggered()
-{
-  mStatus = Status::STOPPED;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onStop(getProcessId());
-    }
-  }
-}
-
-void Process::errorTriggered()
-{
-  mStatus = Status::FINALIZED_ERROR;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onError(getProcessId());
-    }
-  }
-}
-
-
-uint64_t Process::getProcessId() const
-{
-  return mProcessId;
-}
-
-void Process::processCountReset()
-{
-  sProcessCount = 0;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
-
-CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
-  : Process(parentProcess),
-    mCmd(cmd)
-{
-#ifdef WIN32
-  ZeroMemory(&si, sizeof(si));
-  si.cb = sizeof(si);
-  ZeroMemory(&pi, sizeof(pi));
-#endif
-}
-
-CmdProcess::~CmdProcess()
-{
-#ifdef WIN32
-  // Se cierran procesos e hilos 
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-#endif
-}
-
-I3D_DISABLE_WARNING(4100)
-Process::Status CmdProcess::run(Progress *progressBar)
-{
-  Process::run();
-
-#ifdef WIN32
-  size_t len = strlen(mCmd.c_str());
-  std::wstring wCmdLine(len, L'#');
-  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-    cmdLine,                      // Command line
-    NULL,                         // Process handle not inheritable
-    NULL,                         // Thread handle not inheritable
-    FALSE,                        // Set handle inheritance to FALSE
-    CREATE_NO_WINDOW | sPriority, // Flags de creación
-    NULL,                         // Use parent's environment block
-    NULL,                         // Use parent's starting directory 
-    &si,                          // Pointer to STARTUPINFO structure
-    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
-
-    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-    return Process::Status::FINALIZED_ERROR;
-  }
-
-  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
-  if (ret == WAIT_FAILED) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } else if (ret == WAIT_OBJECT_0) {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-    //return Process::Status::FINALIZED;
-  } else if (ret == WAIT_ABANDONED) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } else if (ret == WAIT_TIMEOUT) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } /*else {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-    return Process::Status::FINALIZED;
-  }*/
-  DWORD exitCode;
-  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  }
-  return Process::Status::FINALIZED;
-#endif
-}
-I3D_ENABLE_WARNING(4100)
-
-void CmdProcess::setPriority(int priority)
-{
-#ifdef WIN32
-  if (priority == 0) {
-    sPriority = REALTIME_PRIORITY_CLASS;
-  } else if (priority == 1) {
-    sPriority = HIGH_PRIORITY_CLASS;
-  } else if (priority == 2) {
-    sPriority = ABOVE_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 3) {
-    sPriority = NORMAL_PRIORITY_CLASS;
-  } else if (priority == 4) {
-    sPriority = BELOW_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 5) {
-    sPriority = IDLE_PRIORITY_CLASS;
-  }
-#endif
-}
-
-#ifdef WIN32
-std::string CmdProcess::formatErrorMsg(DWORD errorCode)
-{
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
-    | FORMAT_MESSAGE_IGNORE_INSERTS
-    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
-  
-  TCHAR errorMessage[1024] = TEXT("");
-
-  FormatMessage(flags,
-                NULL,
-                errorCode,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                errorMessage,
-                sizeof(errorMessage)/sizeof(TCHAR),
-                NULL);
-
-  std::string strError = CW2A(errorMessage);
-  return strError;
-}
-#endif
-
-/* ---------------------------------------------------------------------------------- */
-
-
-//FunctionProcess::FunctionProcess(std::function<void()> f) 
-//  : Process(),
-//    f(f)
-//{
-//
-//}
-//
-//FunctionProcess::~FunctionProcess()
-//{
-//  // Se cierran procesos e hilos 
-//  CloseHandle(pi.hProcess);
-//  CloseHandle(pi.hThread);
-//}
-//
-//Process::Status FunctionProcess::run(Progress *progressBar)
-//{
-//  Process::run();
-//  size_t len = strlen(mCmd.c_str());
-//  std::wstring wCmdLine(len, L'#');
-//  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-//  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-//  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe", cmdLine, NULL,
-//    NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
-//    printf("CreateProcess failed (%d).\n", GetLastError());
-//    return Process::Status::FINALIZED_ERROR;
-//  }
-//
-//  // Wait until child process exits.
-//  if (WaitForSingleObject(pi.hProcess, INFINITE) == WAIT_FAILED) {
-//    msgError("Error al ejecutar el comando: %s", mCmd.c_str());
-//    return Process::Status::FINALIZED_ERROR;
-//  } else {
-//    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-//    return Process::Status::FINALIZED;
-//  }
-//
-//  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
-//  try {
-//    f(matIn, matOut);
-//  } catch (cv::Exception &e){
-//    msgError(e.what());
-//    return Process::Status::FINALIZED;
-//  }
-//  return ImgProcessing::Status::OK;
-//}
-//I3D_ENABLE_WARNING(4100)
-
-/* ---------------------------------------------------------------------------------- */
-
-BatchProcess::BatchProcess()
-  : mStatus(Status::START),
-    mProcessList(0),
-    mListeners(0),
-    mCurrentProcess(0),
-    _thread()
-{}
-
-BatchProcess::BatchProcess(const BatchProcess &batchProcess)
-  : mStatus(Status::START),
-    mProcessList(batchProcess.mProcessList),
-    mListeners(batchProcess.mListeners),
-    mCurrentProcess(0),
-    _thread()
-{
-  for (auto process : mProcessList) {
-    process->addListener(this);
-  }
-}
-
-BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
-  : mStatus(Status::START),
-    mProcessList(procList),
-    mCurrentProcess(0),
-    _thread()
-{
-  for (auto process : mProcessList) {
-    process->addListener(this);
-  }
-}
-
-BatchProcess::~BatchProcess()
-{
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    stop();
-  }
-  mStatus = Status::FINALIZED;  
-}
-
-void BatchProcess::add(const std::shared_ptr<Process> &process)
-{
-  mProcessList.push_back(process);
-  process->addListener(this);
-}
-
-void BatchProcess::addListener(Listener *listener)
-{ 
-  mListeners.push_back(listener);
-}
-
-void BatchProcess::removeListener(Listener *listener)
-{
-  if (!mListeners.empty()) {
-    mListeners.remove(listener);
-  }
-}
-
-void BatchProcess::clear()
-{
-  //mProcessList.clear();
-  //mStatus = Status::START;
-  reset();
-}
-
-void BatchProcess::remove(uint64_t id)
-{
-  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
-    if ((*it)->getProcessId() == id) {
-      remove(*it);
-      break;
-    }
-  }
-}
-
-void BatchProcess::remove(const std::shared_ptr<Process> &process)
-{
-  process->removeListener(this);
-  mProcessList.remove(process);
-}
-
-
-bool BatchProcess::isRunning() const
-{
-  return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
-}
-
-void BatchProcess::pause()
-{
-  mStatus = Status::PAUSING;
-  if (mCurrentProcess) {
-    mCurrentProcess->pause();
-  }
-}
-
-void BatchProcess::reset()
-{
-  //TODO: Si esta corriendo no se puede hacer un reset
-  if (mStatus == Status::RUNNING) {
-    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
-  } else {
-    mStatus = Status::START;
-    mProcessList.clear();
-    Process::processCountReset();
-  }
-}
-
-void BatchProcess::resume()
-{
-  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::RUNNING;
-    if (mCurrentProcess) 
-      mCurrentProcess->resume();
-  }
-}
-
-BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
-{
-  mStatus = Status::RUNNING;
-  if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
-  for (const auto process : mProcessList) {
-    if (mStatus == Status::PAUSING) {
-      mStatus = Status::PAUSE;
-      while (mStatus == Status::PAUSE);
-    } else if (mStatus == Status::STOPPED) {
-      // Se fuerza la terminación
-      return Status::STOPPED;
-    } else {
-      //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
-      //  return Status::FINALIZED_ERROR;
-      //} else {
-      //  if (progressBarTotal) (*progressBarTotal)();
-      //}
-      process->run(progressBarPartial);
-      if (progressBarTotal) (*progressBarTotal)();
-    }
-  }
-  return (mStatus = Status::FINALIZED);
-}
-
-BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
-{
-  mStatus = Status::RUNNING;
-
-  auto f_aux = [&](I3D::Progress *progress_bar_total, I3D::Progress *progress_bar_partial) {
-    if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
-    for (const auto process : mProcessList) {
-      if (progress_bar_total) {
-        // Se han añadido nuevos procesos asi que se actualiza
-        progress_bar_total->setMaximun((double)mProcessList.size());
-        progress_bar_total->updateScale();
-      }
-      mCurrentProcess = process.get();
-      if (mStatus == Status::PAUSING) {
-        mStatus = Status::PAUSE;
-        while (mStatus == Status::PAUSE);
-      } else if (mStatus == Status::STOPPED) {
-        // Se fuerza la terminación
-        return Status::STOPPED;
-      } else {
-        //process->run(progress_bar_partial);
-        if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
-        //  return Status::FINALIZED_ERROR;
-          if (progress_bar_partial) progress_bar_partial->restart();
-          //TODO: evento de error con el id de proceso
-        }
-          
-        if (progress_bar_total) (*progress_bar_total)();
-        
-      }
-    }
-    endTriggered();
-    return (mStatus = Status::FINALIZED);
-  };
-
-  _thread = std::thread(f_aux, progressBarTotal, progressBarPartial);
-  _thread.detach();
-
-  return mStatus;
-}
-
-
-void BatchProcess::stop()
-{
-  mStatus = Status::STOPPED;
-  if (mCurrentProcess) {
-    mCurrentProcess->stop();
-  }
-}
-
-void BatchProcess::onPause(uint64_t id)
-{
-  msgInfo("Proceso %i en pausa", id);
-}
-
-void BatchProcess::onResume(uint64_t id)
-{
-  msgInfo("Proceso %i reanudado", id);
-}
-
-void BatchProcess::onRun(uint64_t id)
-{
-  msgInfo("Proceso %i corriendo", id);
-}
-
-void BatchProcess::onStart(uint64_t id)
-{
-  msgInfo("Proceso %i preparado", id);
-}
-
-void BatchProcess::onStop(uint64_t id)
-{
-  msgInfo("Proceso %i detenido", id);
-}
-
-void BatchProcess::onEnd(uint64_t id)
-{
-  msgInfo("Proceso %i finalizado", id);
-}
-
-void BatchProcess::onError(uint64_t id)
-{
-  msgInfo("Proceso %i. Error al procesar", id);
-  errorTriggered();
-}
-
-void BatchProcess::endTriggered()
-{
-  mStatus = Status::FINALIZED;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onEnd();
-    }
-  }
-}
-
-void BatchProcess::errorTriggered()
-{
-  mStatus = Status::FINALIZED_ERROR;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onError();
-    }
-  }
-}
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -1175,17 +626,21 @@ void BatchProcess::errorTriggered()
 int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs)
 {
   int r_err = 0;
-  char *dup = strdup(cad.c_str());
+  char *dup = strdup(cad.c_str()); // -> warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _strdup
+  //char *dup = _strdup(cad.c_str());
   vOut.resize(0);
 
   try {
     char *token = strtok(dup, chs);
+    //char *context = NULL;  
+    //char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       char *pEnd;
       int number = strtol(token, &pEnd, 10);
       if (*pEnd == 0) {
         vOut.push_back(number);
         token = strtok(NULL, chs);
+        //token = strtok_s(dup, chs, &context);
       } else 
         throw std::runtime_error("Split string to numbers fail");
     }
@@ -1203,10 +658,13 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
 {
   int r_err = 0;
   char *dup = strdup(cad.c_str());
+  //char *dup = _strdup(cad.c_str());
   vOut.resize(0);
 
   try {
     char *token = strtok(dup, chs);
+    //char *context = NULL; 
+    //char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       //vOut.push_back(atof(token));
       char *pEnd;
@@ -1214,6 +672,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
       if (*pEnd == 0) {
         vOut.push_back(number);
         token = strtok(NULL, chs);
+        //token = strtok_s(dup, chs, &context);
       } else 
         throw std::runtime_error("Split string to numbers fail");
     }
@@ -1249,13 +708,17 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   if (!s) return 1;
   dup = (char *)memcpy(s, in.c_str(), len);
 #else
-  dup = strdup(in.c_str());
+  //dup = strdup(in.c_str());
+  dup = _strdup(in.c_str());
 #endif
   try {
-    char *token = strtok(dup, chs);
+    //char *token = strtok(dup, chs);
+    char *context = NULL; 
+    char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       out.push_back(std::string(token));
-      token = strtok(NULL, chs);
+      //token = strtok(NULL, chs);
+      token = strtok_s(NULL, chs, &context);
     }
   } catch (std::exception &e) {
     msgError(e.what());
@@ -1265,17 +728,17 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   return r_err;
 }
 
-int stringToInteger(const std::string &text, I3D::Base base)
+int stringToInteger(const std::string &text, TL::Base base)
 {
   std::istringstream ss(text);
   switch (base) {
-  case I3D::Base::OCTAL:
+  case TL::Base::OCTAL:
     ss.setf(std::ios_base::oct, std::ios::basefield);
     break;
-  case I3D::Base::DECIMAL:
+  case TL::Base::DECIMAL:
     ss.setf(std::ios_base::dec, std::ios::basefield);
     break;
-  case I3D::Base::HEXADECIMAL:
+  case TL::Base::HEXADECIMAL:
     ss.setf(std::ios_base::hex, std::ios::basefield);
     break;
   default:
@@ -1366,7 +829,7 @@ uint32_t getOptimalNumberOfThreads()
 #ifdef HAVE_OMP
   //TODO: Sin probar
   return omp_get_max_threads();
-#elif defined I3D_MSVS_CONCURRENCY
+#elif defined TL_MSVS_CONCURRENCY
   return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
 #else
   uint32_t n_threads = std::thread::hardware_concurrency();
@@ -1383,7 +846,7 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
   for (size_t i = ini; i < end; i++) {
     f(i);
   }
-#elif defined I3D_MSVS_CONCURRENCY
+#elif defined TL_MSVS_CONCURRENCY
   Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
   //  Concurrency::parallel_for(ini, end, f);
@@ -1719,9 +1182,9 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
   mFile = file;
   mMode = mode;
 
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
-  if (strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (_strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;
   switch (mMode) {
@@ -1743,8 +1206,8 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
 
   if (fs.is_open()) {
     if (mMode == Mode::Create) {
-      char dir[I3D_MAX_PATH];
-      if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
+      char dir[TL_MAX_PATH];
+      if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
         if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     }
     return Status::OPEN_OK;
@@ -1814,71 +1277,125 @@ Csv::Status Csv::write(const std::vector<std::string> &_register)
 //  CmdProcess::Status status = process.run();
 //}
 
+#ifdef HAVE_MINIZIP
 
-//CompressFile::CompressFile()
-//  : File()
-//{
-//
-//}
-//
-//CompressFile::CompressFile(const char *file, Mode mode)
-//  : File(file, mode)
-//{
-//  open(file, mode);
-//}
-//
-//CompressFile::CompressFile(const CompressFile &compressFile)
-//  : File(compressFile)
-//{
-//
-//}
-//
-//CompressFile::~CompressFile()
-//{
-//  close();
-//}
-//
-//void CompressFile::close()
-//{
-//
-//}
-//
-//CompressFile::Status CompressFile::createCopy(const char *fileOut)
-//{
-//
-//  return Status::FAILURE;
-//}
-//
-//CompressFile::Status CompressFile::open(const char *file, CompressFile::Mode mode)
-//{
-//  close();
-//  
-//  mFile = file;
-//  mMode = mode;
-//
-//  switch (mMode) {
-//  case Mode::Read:
-//
-//    break;
-//  case Mode::Update:
-//
-//    break;
-//  case Mode::Create:
-//
-//    break;
-//  default:
-//
-//    break;
-//  }
-//
-//  return Status::FAILURE;
-//}
-//
-//void CompressFile::addFile(const char *file)
-//{
-//
-//}
+Compression::Compression()
+  : File()
+{
 
+}
 
+Compression::Compression(const char *file, Mode mode)
+  : File(file, mode)
+{
+  open(file, mode);
+}
 
-} // End namespace I3D
+Compression::Compression(const Compression &compression)
+  : File(compression)
+{
+
+}
+
+Compression::~Compression()
+{
+  close();
+}
+
+void Compression::close()
+{
+  if (mZipFile == nullptr)
+    zipClose(mZipFile, nullptr);
+}
+
+Compression::Status Compression::createCopy(const char *fileOut)
+{
+
+  return Status::FAILURE;
+}
+
+Compression::Status Compression::open(const char *file, Compression::Mode mode)
+{
+  close();
+
+  mFile = file;
+  mMode = mode;
+
+  int open_mode{};
+  switch (mMode) {
+  case Mode::Read:
+
+    break;
+  case Mode::Update:
+    open_mode = APPEND_STATUS_ADDINZIP;
+    break;
+  case Mode::Create:
+    open_mode = APPEND_STATUS_CREATE;
+    break;
+  default:
+
+    break;
+  }
+
+  if (mMode == Mode::Read) {
+    mUnZipFile = libkml_unzOpen(mFile.c_str());
+    return Status::OPEN_OK;
+  } else {
+    mZipFile = zipOpen(mFile.c_str(), open_mode);
+    if (mZipFile == nullptr)
+      return Status::OPEN_FAIL;
+    else {
+    
+      if (libkml_unzGetGlobalInfo(mZipFile, &mGlobalInfo) != UNZ_OK) {
+          msgError("could not read file global info");
+          libkml_unzClose(mZipFile);
+          return Status::OPEN_FAIL;
+      }
+
+      return Status::OPEN_OK;
+    }
+  }
+
+}
+
+Compression::Status Compression::compress(const std::string &file, const std::string &directory)
+{
+  // Se comprueba si es un directorio
+  
+  fs::path _path(file);
+  if (is_directory(_path)) {
+    for (auto &p : fs::directory_iterator(_path)) {
+      compress(p.path().string());
+    }
+  } else {
+    file_name = _path.filename().string();
+    std::string _dir = directory;
+    std::fstream fz(file, std::ios::binary | std::ios::in);
+    if (fz.is_open()) {
+      fz.seekg(0, std::ios::end);
+      long size = fz.tellg();
+      fz.seekg(0, std::ios::beg);
+
+      std::vector<char> buffer(size);
+      if (size == 0 || fz.read(&buffer[0], size)) {
+        zip_fileinfo zfi = { 0 };
+
+        if (0 == zipOpenNewFileInZip(mZipFile, _path.filename().string().c_str() , &zfi, NULL, 0, NULL, 0, NULL, Z_DEFLATED, Z_DEFAULT_COMPRESSION)){
+          zipWriteInFileInZip(mZipFile, size == 0 ? "" : &buffer[0], size);
+          zipCloseFileInZip(mZipFile);
+          fz.close();
+        }
+      }
+    }
+  }
+  return Status::SUCCESS;
+}
+
+Compression::Status Compression::decompress()
+{
+  return Status::SUCCESS;
+}
+
+#endif // HAVE_MINIZIP
+
+} // End namespace TL

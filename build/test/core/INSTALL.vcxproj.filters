@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Desarrollo\TidopLib\build\CMakeFiles\56b58881a8605b7ce43b1728bf77fc8e\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{D88EF5D3-3DF7-3857-9D46-F2AF8E55E1BA}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

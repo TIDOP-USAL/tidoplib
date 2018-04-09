@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GtaTestDurations xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Executable>C:\Desarrollo\TidopLib\build\test\core\Release\test_utils_test.exe</Executable>
+  <TestDurations>
+    <TestDuration Test="isDirectoryTest.Expect" Duration="1" />
+    <TestDuration Test="isDirectoryTest.Null" Duration="1" />
+    <TestDuration Test="createDir.ExistDir" Duration="1" />
+    <TestDuration Test="splitToNumbers.NullString" Duration="1" />
+    <TestDuration Test="splitToNumbers.DefaultSeparatorCharacter" Duration="1" />
+    <TestDuration Test="splitToNumbers.CustomSeparatorCharacter" Duration="2" />
+    <TestDuration Test="replaceString.test1" Duration="1" />
+    <TestDuration Test="getFileDir.ValidDir" Duration="1" />
+    <TestDuration Test="getFileDir.InvalidDir" Duration="1" />
+    <TestDuration Test="getFileDrive.ValidDir" Duration="1" />
+    <TestDuration Test="getFileExtension.ValidExtension" Duration="1" />
+    <TestDuration Test="getFileExtension.InvalidExtension" Duration="1" />
+    <TestDuration Test="getFileName.ValidName" Duration="1" />
+    <TestDuration Test="getFileDriveDir.ValidPath" Duration="1" />
+    <TestDuration Test="changeFileName.ValidPath" Duration="1" />
+    <TestDuration Test="changeFileExtension.ValidPath" Duration="1" />
+    <TestDuration Test="changeFileNameAndExtension.ValidPath" Duration="1" />
+    <TestDuration Test="split.NullString" Duration="1" />
+    <TestDuration Test="split.DefaultSeparatorCharacter" Duration="1" />
+    <TestDuration Test="split.CustomSeparatorCharacter" Duration="1" />
+    <TestDuration Test="Path.DefaultConstructor" Duration="1" />
+    <TestDuration Test="Path.Constructor" Duration="1" />
+  </TestDurations>
+</GtaTestDurations>

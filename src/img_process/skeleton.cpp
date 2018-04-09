@@ -1,11 +1,13 @@
 #include "skeleton.h"
 #include "core/utils.h"
 
+#ifdef HAVE_OPENCV
+
 #include "opencv2/imgproc.hpp"
 
 #include <thread>
 
-namespace I3D
+namespace TL
 {
 
 void thinningZhangSuen(cv::Mat &image, cv::Mat &marker, int iter, int ini, int end) {
@@ -122,13 +124,13 @@ ThinningProc::ThinningProc(Thinning type)
 ThinningProc::Status ThinningProc::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   try {
-    I3D_THROW_ASSERT(!matIn.empty() && matIn.channels() == 1, "Incorrect input data");
+    TL_THROW_ASSERT(!matIn.empty() && matIn.channels() == 1, "Incorrect input data");
     thinning(matIn, matOut, mType);
   } catch (cv::Exception &e) {
     msgError(e.what());
     return Status::PROCESS_ERROR;
-  } catch (I3D::Exception &e) {
-    MessageManager::release(e.what(), I3D::MessageLevel::MSG_ERROR);
+  } catch (TL::Exception &e) {
+    MessageManager::release(e.what(), TL::MessageLevel::MSG_ERROR);
     return Status::PROCESS_ERROR;
   }
   return Status::OK;
@@ -142,3 +144,5 @@ void ThinningProc::setParameters(Thinning type)
 /* ---------------------------------------------------------------------------------- */
 
 }
+
+#endif

@@ -9,13 +9,12 @@
 // Cabeceras tidopLib
 #include "core/console.h"
 #include "core/messages.h"
-#include "videostream.h"
 #include "img_process/img_processing.h"
-#include "geometric_entities/window.h"
-#include "stereo/anaglyph.h"
+#include "geometry/entities/window.h"
+#include "img_process/anaglyph.h"
 
 using namespace cv;
-using namespace I3D;
+using namespace TL;
 
 int main(int argc, char** argv)
 {

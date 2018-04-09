@@ -1,7 +1,6 @@
 #include "img_process/img_processing.h"
 
 #include "core/messages.h"
-#include "graphic_entities/color.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
@@ -11,7 +10,7 @@
 #include <cstdio>
 
 
-namespace I3D
+namespace TL
 {
 
 
@@ -42,25 +41,25 @@ ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::
     cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
     switch (type)
     {
-    case I3D::process_type::MORPH_DILATION:
+    case TL::process_type::MORPH_DILATION:
       cv::dilate(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
       break;
-    case I3D::process_type::MORPH_EROTION:
+    case TL::process_type::MORPH_EROTION:
       cv::erode(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
       break;
-    case I3D::process_type::MORPH_OPENING:
+    case TL::process_type::MORPH_OPENING:
       morphologyEx(matIn, *matOut, cv::MORPH_OPEN, element);
       break;
-    case I3D::process_type::MORPH_CLOSING:
+    case TL::process_type::MORPH_CLOSING:
       morphologyEx(matIn, *matOut, cv::MORPH_CLOSE, element);
       break;
-    case I3D::process_type::MORPH_GRADIENT:
+    case TL::process_type::MORPH_GRADIENT:
       morphologyEx(matIn, *matOut, cv::MORPH_GRADIENT, element);
       break;
-    case I3D::process_type::MORPH_TOPHAT:
+    case TL::process_type::MORPH_TOPHAT:
       morphologyEx(matIn, *matOut, cv::MORPH_TOPHAT, element);
       break;
-    case I3D::process_type::MORPH_BLACKHAT:
+    case TL::process_type::MORPH_BLACKHAT:
       morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
       break;
     default:
@@ -83,103 +82,6 @@ void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv:
   mBorderValue = borderValue;
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-
-ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
-
-  if (mWidth == 0 && mScaleX == 0) {
-    msgError("Invalid parameter values");
-    return ImgProcessing::Status::INCORRECT_INPUT_DATA;
-  }
-  try {    
-    if (mScaleX) {
-      cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
-    } else {
-      if (mHeight == 0) {
-        double scale = static_cast<double>(mWidth / matIn.cols);
-        cv::resize(matIn, *matOut, cv::Size(), scale, scale);
-      } else {
-        cv::resize(matIn, *matOut, cv::Size(mWidth, mHeight));
-      }
-    }
-
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
-  }
-  return ImgProcessing::Status::OK;
-}
-
-void Resize::setParameters(int width, int height = 0)
-{
-  mWidth = width;
-  mHeight = height;
-  mScaleX = mScaleY = 0.;
-}
-
-void Resize::setParameters(double scaleX, double scaleY)
-{
-  mWidth = mHeight = 0;
-  mScaleX = scaleX;
-  mScaleY = scaleY ? scaleY : scaleX;
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-
-ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
-  try {
-    cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
-    matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
-    *matOut = aux;
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
-  }
-  return ImgProcessing::Status::OK;
-}
-
-void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
-{
-  mWidth = width;
-  mHeight = height;
-  mPosition = position;
-  mColor = color;
-}
-
-//void ResizeCanvas::update()
-//{
-//  switch (mPosition) {
-//    case I3D::ResizeCanvas::Position::BOTTOM_CENTER:
-//      
-//      break;
-//    case I3D::ResizeCanvas::Position::BOTTOM_LEFT:
-//      break;
-//    case I3D::ResizeCanvas::Position::BOTTOM_RIGHT:
-//      break;
-//    case I3D::ResizeCanvas::Position::CENTER:
-//      break;
-//    case I3D::ResizeCanvas::Position::CENTER_LEFT:
-//      break;
-//    case I3D::ResizeCanvas::Position::CENTER_RIGHT:
-//      break;
-//    case I3D::ResizeCanvas::Position::TOP_CENTER:
-//      break;
-//    case I3D::ResizeCanvas::Position::TOP_LEFT:
-//      mTopLeft = cv::Point(0, 0);
-//      break;
-//    case I3D::ResizeCanvas::Position::TOP_RIGHT:
-//      mTopLeft = cv::Point(0, 0);
-//      break;
-//    default:
-//      break;
-//  }
-//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -264,39 +166,6 @@ ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *ma
 
 /* ---------------------------------------------------------------------------------- */
 
-
-ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *matOut) const
-{
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
-  try {
-    if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSL) {
-      rgbToHSL(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSV) {
-      rgbToHSV(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::CMYK) {
-      rgbToCmyk(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::LUMINANCE) {
-      rgbToLuminance(matIn, matOut);
-    } else {
-      msgWarning("Conversión no disponible")
-    }
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
-  }
-  return ImgProcessing::Status::OK;
-}
-
-//void ColorConversion::setParameters(Model modelIn, Model modelOut)
-//{
-//  mThresh = thresh;
-//  mMaxVal = maxval;
-//  bInverse = inverse;
-//}
-
-/* ---------------------------------------------------------------------------------- */
-
-
-} // End namespace I3D
+} // End namespace TL
 
 #endif // HAVE_OPENCV
