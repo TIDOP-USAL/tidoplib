@@ -1,9 +1,0 @@
-# CMake generation dependency list for this directory.
-C:/Desarrollo/TidopLib/doc/CMakeLists.txt
-C:/Program Files/CMake/share/cmake-3.6/Modules/FindDoxygen.cmake
-C:/Program Files/CMake/share/cmake-3.6/Modules/FindPackageHandleStandardArgs.cmake
-C:/Program Files/CMake/share/cmake-3.6/Modules/FindPackageMessage.cmake
-C:/Program Files/CMake/share/cmake-3.6/Modules/CMakeParseArguments.cmake
-C:/Desarrollo/TidopLib/doc/Doxyfile
-C:/Desarrollo/TidopLib/doc/root.markdown
-C:/Desarrollo/TidopLib/doc/tutorials.markdown
