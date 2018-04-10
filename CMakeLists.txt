@@ -14,11 +14,13 @@ set( CMAKE_DEBUG_POSTFIX d )
 set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 
 # Nivel de warning
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
 
 #/EH (Modelo de control de excepciones)
 #/EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones declaradas como extern "C" jamás inician una excepción de C++.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
@@ -37,19 +39,19 @@ if (BUILD_SHARED_LIBS)
 endif (BUILD_SHARED_LIBS)
 
 # Activación desactivación de los diferentes modulos de la libreria
-OPTION (BUILD_TL_CORE "Include core module in TidopLib build" ON)
-OPTION (BUILD_TL_GEOMETRY "Include geom module in TidopLib build" ON)
-OPTION (BUILD_TL_IMG "Include img module in TidopLib build" ON)
+OPTION (BUILD_TL_CORE        "Include core module in TidopLib build"       ON)
+OPTION (BUILD_TL_GEOMETRY    "Include geom module in TidopLib build"       ON)
+OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
-OPTION (BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON)
-OPTION (BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON)
+OPTION (BUILD_TL_GRAPHIC     "Include graphic module in TidopLib build"    ON)
+OPTION (BUILD_TL_GEOSPATIAL  "Include geospatial module in TidopLib build" ON)
 
-OPTION (BUILD_TEST "Include test" OFF)
-OPTION (BUILD_EXAMPLES "Include examples" OFF)		
+# Activación desactivación de otros componentes de la libreria
+OPTION (BUILD_TEST            "Include test"          OFF)
+OPTION (BUILD_EXAMPLES        "Include examples"      OFF)		
+OPTION (BUILD_DOC             "Build documentation"   OFF)
+
 OPTION (BUILD_Message_handler "Active message handle" ON)
-		
-# Documentación
-OPTION(BUILD_DOC "Build documentation" OFF)
 
 if(BUILD_Message_handler)
   set(TL_MESSAGE_HANDLER YES)
@@ -62,14 +64,14 @@ if(BUILD_TEST)
 endif()
 
 # Librerias externas
-OPTION (WITH_BOOST  "Include Boost support"  ON)
-OPTION (WITH_OPENCV "Include OpenCV support"  OFF)
-OPTION (WITH_EIGEN  "Include eigen support"  OFF)
-OPTION (WITH_GDAL   "Include GDAL Support"   OFF)
-OPTION (WITH_PROJ4  "Include PROJ.4 Support"   OFF)
-OPTION (WITH_LIBRAW "Include LibRaw Support" OFF)
-OPTION (WITH_EDSDK  "Include EDSDK Support"  OFF)
-OPTION (WITH_PPL    "Include PPL Support"    OFF)
+OPTION (WITH_BOOST  "Include Boost support"                   ON)
+OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
+OPTION (WITH_EIGEN  "Include eigen support"                   OFF)
+OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
+OPTION (WITH_PROJ4  "Include PROJ.4 Support"                  OFF)
+OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
+OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
+OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 
 # ----------------------------------------------------------------------------
