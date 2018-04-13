@@ -357,11 +357,31 @@ double kurtosis(const T &data)
 
 TL_EXPORT double computeMedian(const std::vector<double> &input);
 
-TL_EXPORT double computeTempMAD(const std::vector<double> &input, const double median);
+TL_EXPORT double computeTempMAD(const std::vector<double> &input, double median);
 
-TL_EXPORT bool isOutlier(const double temp, const double median, const double mad);
+TL_EXPORT bool isOutlier(double temp, double median, double mad);
 
-
+////TODO: deberian generalizarse para cualquier tipo de contenedor
+//template<typename T> inline 
+//T computeMedian(const std::vector<T> &input)
+//{
+//  size_t size = input.size();
+//  if (size % 2 == 0)
+//    return (input[size / 2 - 1] + input[size / 2]) / 2;
+//  else
+//    return input[size / 2];
+//}
+//
+//template<typename T> inline 
+//T computeTempMAD(const std::vector<T> &input, T median)
+//{
+//  std::vector<T> inp = input;
+//  for (size_t i = 0; i < inp.size(); ++i) {
+//    inp[i] = abs(inp[i] - median);
+//  }
+//  sort(inp.begin(), inp.end());
+//  return computeMedian(inp)*1.4826;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 /*           AJUSTES DE PUNTOS A GEOMETRIAS (LINEAS, PLANOS, ...)                     */

@@ -168,7 +168,7 @@ double computeMedian(const std::vector<double> &input)
     return input[size / 2];
 }
 
-double computeTempMAD(const std::vector<double> &input, const double median)
+double computeTempMAD(const std::vector<double> &input, double median)
 {
   std::vector<double> inp = input;
   for (size_t i = 0; i < inp.size(); ++i) {
@@ -178,7 +178,7 @@ double computeTempMAD(const std::vector<double> &input, const double median)
   return computeMedian(inp)*1.4826;
 }
 
-bool isOutlier(const double temp, const double median, const double mad)
+bool isOutlier(double temp, double median, double mad)
 {
   if ((abs(temp - median) / mad)>2) {
     return true;
