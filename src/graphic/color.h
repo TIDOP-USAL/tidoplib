@@ -405,18 +405,15 @@ public:
    * \param color Color
    * \return Referencia al color
    */
-  Color &operator = (const Color &color)
-  {
-    if (this != &color) {
-      mColor = color.mColor;
-    }
-    return *this;
-  }
+  Color &operator = (const Color &color);
 
   /*! 
    * \brief Genera un color aleatorio 
    */
   static Color randomColor();
+
+  operator unsigned int() const { return mColor; }
+  operator int() const { return mColor; }
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -633,7 +630,7 @@ T Color::get() const
   }
 #endif
   else {
-    throw TL::Exception("Tipo de conversión no permitida");
+    throw TL::Exception("Tipo de conversión no permitida");  
   }
   return color;
 }

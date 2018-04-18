@@ -190,6 +190,14 @@ int Color::toLuminance() const
   return rgbToLuminance(getRed(), getGreen(), getBlue());
 }
 
+Color &Color::operator = (const Color &color)
+{
+  if (this != &color) {
+    mColor = color.mColor;
+  }
+  return *this;
+}
+
 Color Color::randomColor()
 {
   std::random_device rd;

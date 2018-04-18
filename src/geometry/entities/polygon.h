@@ -9,8 +9,6 @@
 
 #include "config_tl.h"
 
-//#include "opencv2/core/core.hpp"
-
 #include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
@@ -104,6 +102,12 @@ public:
    */
   //double perimeter() const;
   double length() const;
+
+  /*!
+   * \brief Operador de asignación
+   */
+  Polygon<Point_t> &operator = (const Polygon<Point_t> &polygon);
+
 };
 
 // Definición de métodos
@@ -124,7 +128,7 @@ Polygon<Point_t>::Polygon(size_type size)
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(const Polygon &polygon) 
-  : Entity(Entity::type::POLYGON_2D), 
+  : Entity(polygon), 
     Entities2D<Point_t>(polygon) 
 {
 }
@@ -267,6 +271,16 @@ double Polygon<Point_t>::area() const
   return area / 2.;
 }
 
+template<typename Point_t> inline
+Polygon<Point_t> &Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon)
+{
+  if (this != &polygon) {
+    Entity::operator = (polygon);
+    Entities2D<Point_t>::operator = (polygon);
+  }
+  return *this;
+}
+
 typedef Polygon<Point<int>> PolygonI;
 typedef Polygon<Point<double>> PolygonD;
 typedef Polygon<Point<float>> PolygonF;
@@ -326,6 +340,12 @@ public:
    */
   //double perimeter() const;
   double length() const;
+
+  /*!
+   * \brief Operador de asignación
+   */
+  Polygon3D<Point3_t> &operator = (const Polygon3D<Point3_t> &polygon);
+
 };
 
 template<typename Point3_t> inline
@@ -344,8 +364,8 @@ Polygon3D<Point3_t>::Polygon3D(size_type size)
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon) 
-  : Entity(Entity::type::POLYGON_3D), 
-    Entities3D<Point3_t>(polygon.mEntities)
+  : Entity(polygon), 
+    Entities3D<Point3_t>(polygon)
 {
 }
 
@@ -373,6 +393,16 @@ double Polygon3D<Point3_t>::length()  const
   return perimeter;
 }
 
+template<typename Point3_t> inline
+Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> &polygon)
+{
+  if (this != &polygon) {
+    Entity::operator = (polygon);
+    Entities3D<Point_t>::operator = (polygon);
+  }
+  return *this;
+}
+
 typedef Polygon3D<Point3<int>> Polygon3dI;
 typedef Polygon3D<Point3<double>> Polygon3dD;
 typedef Polygon3D<Point3<float>> Polygon3dF;
@@ -386,9 +416,32 @@ class MultiPolygon : public Entity, public Entities2D<Polygon<Point_t>>
 
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   MultiPolygon();
+
+  /*!
+   * \brief Constructor que reserva tamaño para n poligonos
+   */
+  MultiPolygon(size_type size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiPolygon Objeto MultiPolygon que se copia
+   */
+  MultiPolygon(const MultiPolygon &multiPolygon);
+
+  /*!
+   * \brief Destructora
+   */
   ~MultiPolygon() {}
 
+  /*!
+   * \brief Operador de asignación
+   * \return lineString Objeto que se asigna
+   */
+  MultiPolygon<Point_t> &operator = (const MultiPolygon &multiPolygon);
 
 };
 
@@ -399,6 +452,29 @@ MultiPolygon<Point_t>::MultiPolygon()
 {
 }
 
+template<typename Point_t> inline
+MultiPolygon<Point_t>::MultiPolygon(size_type size) 
+  : Entity(Entity::type::MULTIPOLYGON_2D),
+    Entities2D<Polygon<Point_t>>(size) 
+{
+}
+
+template<typename Point_t> inline
+MultiPolygon<Point_t>::MultiPolygon(const MultiPolygon &multiPolygon) 
+  : Entity(multiPolygon), 
+    Entities2D<Polygon<Point_t>>(multiPolygon) 
+{
+}
+
+template<typename Point_t> inline
+MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (const MultiPolygon &multiPolygon)
+{
+  if (this != &multiPolygon) {
+    Entity::operator = (multiPolygon);
+    Entities2D<Polygon<Point_t>>::operator = (multiPolygon);
+  }
+  return *this;
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -408,8 +484,32 @@ class MultiPolygon3D : public Entity, public Entities3D<Polygon3D<Point3_t>>
 
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   MultiPolygon3D();
+    
+  /*!
+   * \brief Constructor que reserva tamaño para n poligonos
+   */
+  MultiPolygon3D(size_type size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiPolygon Objeto MultiPolygon que se copia
+   */
+  MultiPolygon3D(const MultiPolygon3D &multiPolygon);
+
+  /*!
+   * \brief Destructora
+   */
   ~MultiPolygon3D() {}
+
+  /*!
+   * \brief Operador de asignación
+   * \return lineString Objeto que se asigna
+   */
+  MultiPolygon3D<Point3_t> &operator = (const MultiPolygon3D &multiPolygon);
 
 };
 
@@ -420,6 +520,29 @@ MultiPolygon3D<Point3_t>::MultiPolygon3D()
 {
 }
 
+template<typename Point3_t> inline
+MultiPolygon3D<Point3_t>::MultiPolygon3D(size_type size) 
+  : Entity(Entity::type::MULTIPOLYGON_3D),
+    Entities3D<Polygon3D<Point3_t>>(size) 
+{
+}
+
+template<typename Point3_t> inline
+MultiPolygon3D<Point3_t>::MultiPolygon3D(const MultiPolygon3D &multiPolygon) 
+  : Entity(multiPolygon), 
+    Entities3D<Polygon3D<Point3_t>>(multiPolygon) 
+{
+}
+
+template<typename Point3_t> inline
+MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (const MultiPolygon3D &multiPolygon)
+{
+  if (this != &multiPolygon) {
+    Entity::operator = (multiPolygon);
+    Entities3D<Polygon<Point3_t>>::operator = (multiPolygon);
+  }
+  return *this;
+}
 
 }
 

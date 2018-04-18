@@ -13,7 +13,6 @@
 #endif // HAVE_OPENCV
 
 #include "geometry/entities/entity.h"
-//#include "geometry/entities/window.h"
 
 namespace TL
 {
@@ -611,6 +610,7 @@ public:
 
   ~MultiPoint() {}
 
+  MultiPoint<Point_t> &operator = (const MultiPoint &multiPoint);
 };
 
 template<typename Point_t> inline
@@ -636,7 +636,7 @@ MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint)
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::type::MULTIPOINT_2D), 
+  : Entity(vPoint), 
     Entities2D<Point_t>(vPoint) 
 {
 }
@@ -646,6 +646,16 @@ MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints)
   : Entity(Entity::type::MULTIPOINT_2D), 
     Entities2D<Point_t>(listPoints)
 {
+}
+
+template<typename Point_t> inline
+MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (const MultiPoint &multiPoint)
+{
+  if (this != multiPoint) {
+    Entity::operator = (vPoint);
+    Entities2D<Point_t>::operator = (vPoint);
+  }
+  return *this;
 }
 
 typedef MultiPoint<Point<int>> MultiPointI;
@@ -703,6 +713,8 @@ public:
 
   ~MultiPoint3D() {}
 
+  MultiPoint3D<Point_t> &operator = (const MultiPoint3D &multiPoint);
+
 };
 
 template<typename Point_t> inline
@@ -721,7 +733,7 @@ MultiPoint3D<Point_t>::MultiPoint3D(size_type size)
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(const MultiPoint3D &multiPoint) 
-  : Entity(Entity::type::MULTIPOINT_3D),
+  : Entity(multiPoint),
     Entities3D<Point_t>(multiPoint) 
 {
 }
@@ -740,6 +752,15 @@ MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints)
 {
 }
 
+template<typename Point_t> inline
+MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
+{
+  if (this != multiPoint) {
+    Entity::operator = (vPoint);
+    Entities3D<Point_t>::operator = (vPoint);
+  }
+  return *this;
+}
 
 typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
 typedef MultiPoint3D<Point3<double>> MultiPoint3dD;

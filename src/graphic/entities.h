@@ -245,6 +245,14 @@ public:
   uint32_t getPriorityLevel();
 
   void setPriorityLevel(uint32_t priorityLevel);
+
+  /*!
+   * \brief operador de asignación
+   * \param style Estilo de pluma
+   * \return Referencia al estilo de pluma
+   */
+  StylePen &operator = (const StylePen &stylePen);
+
 };
 
 
@@ -412,6 +420,13 @@ public:
   uint32_t getPriorityLevel();
 
   void setPriorityLevel(uint32_t priorityLevel);
+
+  /*!
+   * \brief operador de asignación
+   * \param styleBrush Estilo de pincel
+   * \return Referencia al estilo de pluma
+   */
+  StyleBrush &operator = (const StyleBrush &styleBrush);
 };
 
 
@@ -582,6 +597,13 @@ public:
   uint32_t getPriorityLevel();
 
   void setPriorityLevel(uint32_t priorityLevel);
+
+  /*!
+   * \brief operador de asignación
+   * \param styleSymbol Estilo de simbolo
+   * \return Referencia al estilo de simbolo
+   */
+  StyleSymbol &operator = (const StyleSymbol &styleSymbol);
 };
 
 
@@ -842,7 +864,12 @@ public:
    */
   void setOffset(double dx, double dy);
 
-
+  /*!
+   * \brief operador de asignación
+   * \param styleLabel Estilo de etiqueta
+   * \return Referencia al estilo de etiqueta
+   */
+  StyleLabel &operator = (const StyleLabel &styleLabel);
 };
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
@@ -859,22 +886,22 @@ protected:
   /*!
    * \brief Estilo de pluma
    */
-  std::shared_ptr<StylePen>     mStylePen;
+  std::shared_ptr<StylePen> mStylePen;
   
   /*!
    * \brief Estilo de pincel
    */
-  std::shared_ptr<StyleBrush>   mStyleBrush;
+  std::shared_ptr<StyleBrush> mStyleBrush;
   
   /*!
    * \brief Estilo de simbolos
    */  
-  std::shared_ptr<StyleSymbol>  mStyleSymbol;
+  std::shared_ptr<StyleSymbol> mStyleSymbol;
   
   /*!
    * \brief Estilo de etiqueta
    */
-  std::shared_ptr<StyleLabel>   mStyleLabel;
+  std::shared_ptr<StyleLabel> mStyleLabel;
 
 public:
 
@@ -897,6 +924,7 @@ public:
 
 #ifdef HAVE_GDAL
   
+  ///TODO: creo que seria mejor una clase ReaderStyles 
   /*!
    * \brief Lee los estilos de GDAL/OGR
    * \param[in] ogrStyle Estilos ogr
@@ -910,6 +938,7 @@ public:
 
 
   std::shared_ptr<StylePen> getStylePen() const;
+
   /*!
    * \brief Establece el estilo de pluma
    * \param[in] stylePen Estilo de pluma
@@ -934,6 +963,12 @@ public:
    * \param[in] styleLabel Estilo de etiqueta
    */
   void setStyleLabel(std::shared_ptr<StyleLabel> styleLabel);
+
+  /*!
+   * \brief Operador de asignación
+   * \param[in] graphicStyle Estilo
+   */
+  GraphicStyle &operator = (const GraphicStyle &graphicStyle);
 
 private:
 
@@ -974,8 +1009,18 @@ public:
   {
   }
 
+  GData(const GData &gData)
+  {
+  }
+
   ~GData()
   {
+  }
+
+  GData &operator =(const GData &gData)
+  {
+    ///TODO: terminar
+    return *this;
   }
 
 private:
@@ -1001,6 +1046,8 @@ public:
   GraphicEntity();
   GraphicEntity(const GraphicEntity &graphicEntity);
   ~GraphicEntity();
+  
+  GraphicEntity &operator = (const GraphicEntity &graphicEntity);
 
 #ifdef HAVE_OPENCV
   virtual void draw(cv::Mat &canvas) const = 0;
@@ -1019,6 +1066,8 @@ public:
   GPoint(const GPoint &pt);
   ~GPoint();
 
+  GPoint &operator = (const GPoint &gPoint);
+
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1036,6 +1085,8 @@ public:
   GPoint3D(const GPoint3D &pt);
   ~GPoint3D();
 
+  GPoint3D &operator = (const GPoint3D &gPoint);
+
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1051,34 +1102,44 @@ public:
   GLineString(const GLineString &lineString);
   ~GLineString();
 
+  GLineString &operator = (const GLineString &gLineString);
+
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
 
-class TL_EXPORT GPolygon : public geometry::Polygon<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GPolygon 
+  : public geometry::Polygon<geometry::Point<float>>, 
+    public GraphicEntity
 {
 public:
 
   GPolygon();
   GPolygon(const Polygon<geometry::Point<float>> &polygon);
-  GPolygon(const GPolygon &polygon);
+  GPolygon(const GPolygon &gPolygon);
   ~GPolygon();
+
+  GPolygon &operator = (const GPolygon &gPolygon);
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
-class TL_EXPORT GMultiPoint : public geometry::MultiPoint<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GMultiPoint 
+  : public geometry::MultiPoint<geometry::Point<float>>, 
+    public GraphicEntity
 {
 public:
 
   GMultiPoint();
   GMultiPoint(const MultiPoint<geometry::Point<float>> &multiPoint);
-  GMultiPoint(const GMultiPoint &multiPoint);
+  GMultiPoint(const GMultiPoint &gMultiPoint);
   ~GMultiPoint();
+
+  GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
@@ -1086,28 +1147,37 @@ public:
 
 };
 
-class TL_EXPORT GMultiLineString : public geometry::MultiLineString<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GMultiLineString 
+  : public geometry::MultiLineString<geometry::Point<float>>, 
+    public GraphicEntity
 {
 public:
 
   GMultiLineString();
   GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString);
-  GMultiLineString(const GMultiLineString &multiLineString);
+  GMultiLineString(const GMultiLineString &gMultiLineString);
   ~GMultiLineString();
+
+  GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
-class TL_EXPORT GMultiPolygon : public geometry::MultiPolygon<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GMultiPolygon 
+  : public geometry::MultiPolygon<geometry::Point<float>>, 
+    public GraphicEntity
 {
+
 public:
 
   GMultiPolygon();
   GMultiPolygon(const MultiPolygon<geometry::Point<float>> &multiPolygon);
-  GMultiPolygon(const GMultiPolygon &multiPolygon);
+  GMultiPolygon(const GMultiPolygon &gMultiPolygon);
   ~GMultiPolygon();
+
+  GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
 
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;

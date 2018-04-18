@@ -11,7 +11,7 @@
 
 #include "core/defs.h"
 
-//TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
+///TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
 
 
 namespace TL
@@ -321,7 +321,7 @@ private:
 };
 
 /*!
- * \brief Clase que gestiona las opciones del formato TIFF
+ * \brief Clase que gestiona las opciones del formato PNG
  */
 class PngOptions : public RasterOptions
 {
