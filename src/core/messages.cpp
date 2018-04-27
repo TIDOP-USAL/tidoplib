@@ -61,7 +61,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
   } else {
     ml = MessageLevel::MSG_INFO;
   }
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR);
+  MessageManager::release(MessageManager::Message(err_msg).getMessage(), ml);
   return;
 }
 #endif // HAVE_GDAL
@@ -144,6 +144,7 @@ void MessageManager::addListener(Listener *listener)
     mListeners.push_back(listener);
 }
 
+///TODO: esto puede que estuviese mejor fuera
 void MessageManager::initExternalHandlers()
 {
 #ifdef HAVE_OPENCV
