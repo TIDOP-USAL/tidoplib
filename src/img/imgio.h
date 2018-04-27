@@ -1,11 +1,12 @@
-#ifndef I3D_IMG_IO_H
-#define I3D_IMG_IO_H
+#ifndef TL_GRAPHIC_IMG_IO_H
+#define TL_GRAPHIC_IMG_IO_H
+
+#include "config_tl.h"
 
 #include <memory>
 #include <array>
 #include <mutex>
 
-#include "core/config.h"
 #include "core/defs.h"
 #include "core/utils.h" 
 
@@ -14,15 +15,15 @@
 #endif // HAVE_OPENCV
 
 #ifdef HAVE_GDAL
-I3D_SUPPRESS_WARNINGS
+TL_SUPPRESS_WARNINGS
 #include "gdal_priv.h"
 #include "cpl_conv.h"
-I3D_DEFAULT_WARNINGS
+TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
-#include "graphic_entities/color.h"
-#include "geometric_entities/point.h"
-#include "transform.h"
+//#include "graphic_entities/color.h"
+#include "geometry/entities/point.h"
+#include "geometry/transform.h"
 
 #ifdef HAVE_EDSDK
 #include "EDSDK.h"
@@ -32,34 +33,34 @@ I3D_DEFAULT_WARNINGS
 #endif // HAVE_EDSDK
 
 #ifdef HAVE_LIBRAW
-I3D_SUPPRESS_WARNINGS
+TL_SUPPRESS_WARNINGS
 #include "libraw.h"
-I3D_DEFAULT_WARNINGS
+TL_DEFAULT_WARNINGS
 #ifndef HAVE_RAW
 #  define HAVE_RAW
 #endif
 #endif // HAVE_RAW
 
-namespace I3D
+namespace TL
 {
 
 enum class DataType : int8_t
 {
-  I3D_8U,      // Equivalente a CV_8U y GDT_Byte
-  I3D_8S,      // Equivalente a CV_8S
-  I3D_16U,     // Equivalente a CV_16U y GDT_UInt16
-  I3D_16S,     // Equivalente a CV_16S y GDT_Int16
-  I3D_32U,     // Equivalente a GDT_UInt32
-  I3D_32S,     // Equivalente a CV_32S y GDT_Int32
-  I3D_32F,     // Equivalente a CV_32F y GDT_Float32  
-  I3D_64F      // Equivalente a CV_64F y GDT_Float64
+  TL_8U,      // Equivalente a CV_8U y GDT_Byte
+  TL_8S,      // Equivalente a CV_8S
+  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
+  TL_16S,     // Equivalente a CV_16S y GDT_Int16
+  TL_32U,     // Equivalente a GDT_UInt32
+  TL_32S,     // Equivalente a CV_32S y GDT_Int32
+  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
+  TL_64F      // Equivalente a CV_64F y GDT_Float64
 };
 
 
 ////TODO: Añadir flags de opciones de formato
 //
 //
-//class I3D_EXPORT RasterOptions
+//class TL_EXPORT RasterOptions
 //{
 //public:
 //  
@@ -85,7 +86,7 @@ enum class DataType : int8_t
 //};
 //
 //
-//class I3D_EXPORT TiffOptions : RasterOptions
+//class TL_EXPORT TiffOptions : RasterOptions
 //{
 //
 //public:
@@ -97,7 +98,7 @@ enum class DataType : int8_t
 
 
 
-class I3D_EXPORT VrtRaster : public File
+class TL_EXPORT VrtRaster : public File
 {
 
 protected:
@@ -186,7 +187,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual Status read(uchar *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -194,7 +195,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  virtual int write(const uchar *buff, const geometry::WindowI &w) = 0;
+  virtual int write(const unsigned char *buff, const geometry::WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -202,7 +203,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual int write(const uchar *buff, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual int write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
 
 
 #endif
@@ -249,7 +250,7 @@ protected:
  * \brief Clase singleton para registrar los drivers de GDAL
  *
  */
-class I3D_EXPORT RegisterGdal
+class TL_EXPORT RegisterGdal
 {
 private:
 
@@ -278,7 +279,7 @@ public:
 /*!
  * \brief Ficheros imagen que son gestionados por GDAL
  */
-class I3D_EXPORT GdalRaster : public VrtRaster
+class TL_EXPORT GdalRaster : public VrtRaster
 {
 
 protected:
@@ -443,7 +444,7 @@ protected:
 /*!
  * \brief Clase contenedor y de gestión de imagenes raster georeferenciadas
  */
-class I3D_EXPORT GdalGeoRaster : public GdalRaster
+class TL_EXPORT GdalGeoRaster : public GdalRaster
 {
 private:
 
@@ -547,7 +548,7 @@ private:
  * \brief Clase singleton para registrar la API de canon
  *
  */
-class I3D_EXPORT RegisterEDSDK
+class TL_EXPORT RegisterEDSDK
 {
 private:
 
@@ -578,7 +579,7 @@ public:
 
 
 // http://www.libraw.org/node/2165
-class I3D_EXPORT RawImage : public VrtRaster
+class TL_EXPORT RawImage : public VrtRaster
 {
 private:
 
@@ -732,7 +733,7 @@ private:
  * Una vez abierta la imagen se puede cargar la totalidad o parte de una
  * imagen. Se puede cargar a resolución completa o a otra resolución
  */
-class I3D_EXPORT RasterGraphics : public File
+class TL_EXPORT RasterGraphics : public File
 {
 
 protected:
@@ -830,21 +831,21 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(uchar *buff, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
+  Status read(unsigned char *buff, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  Status write(const uchar *buff, const geometry::WindowI &w);
+  Status write(const unsigned char *buff, const geometry::WindowI &w);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
-  Status write(const uchar *buff, Helmert2D<geometry::PointI> *trf = NULL);
+  Status write(const unsigned char *buff, Helmert2D<geometry::PointI> *trf = NULL);
 
 #endif // HAVE_OPENCV
 
@@ -899,7 +900,7 @@ protected:
 /*!
  * \brief Clase contenedor y de gestión de imagenes raster georeferenciadas
  */
-class I3D_EXPORT GeoRasterGraphics : public RasterGraphics
+class TL_EXPORT GeoRasterGraphics : public RasterGraphics
 {
 private:
 
@@ -972,8 +973,8 @@ private:
 
 
 
-} // End namespace I3D
+} // End namespace TL
 
 
 
-#endif // I3D_IMG_IO_H
+#endif // TL_GRAPHIC_IMG_IO_H

@@ -4,7 +4,7 @@
 
 #include "core/messages.h"
 
-namespace I3D
+namespace TL
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -103,6 +103,10 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
+// TODO: eliminar Filter2D
+
+// Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
+TL_DISABLE_WARNING(4996)
 Filter2D::Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
   : ImgProcessing(process_type::FILTER_2D), 
     mDepth(ddepth), 
@@ -134,6 +138,41 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
   mDelta = delta;
   mBorderType = borderType;
 }
+
+TL_ENABLE_WARNING(4996)
+
+Convolution::Convolution(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
+  : ImgProcessing(process_type::CONVOLUTION), 
+    mDepth(ddepth), 
+    mKernel(kernel), 
+    mAnchor(anchor), 
+    mDelta(delta), 
+    mBorderType(borderType) 
+{
+}
+
+
+ImgProcessing::Status Convolution::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+{
+  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  try {
+    cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
+  } catch (cv::Exception &e){
+    msgError(e.what());
+    return ImgProcessing::Status::PROCESS_ERROR;
+  }
+  return ImgProcessing::Status::OK;
+}
+
+void Convolution::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
+{
+  mDepth = ddepth;
+  mKernel = kernel;
+  mAnchor = anchor;
+  mDelta = delta;
+  mBorderType = borderType;
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 

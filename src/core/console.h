@@ -1,5 +1,7 @@
-#ifndef I3D_CONSOLE_H
-#define I3D_CONSOLE_H
+#ifndef TL_CORE_CONSOLE_H
+#define TL_CORE_CONSOLE_H
+
+#include "config_tl.h"
 
 #include <functional>
 #include <map>
@@ -14,7 +16,7 @@
 #include "core/messages.h"
 #include "core/exception.h"
 
-namespace I3D
+namespace TL
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -39,7 +41,10 @@ namespace I3D
  * poner la consola en modo Unicode y cambiar el modo de consola (entrada,
  * salida, error)
  */
-class I3D_EXPORT Console : public MessageManager::Listener
+class TL_EXPORT Console 
+#ifdef TL_MESSAGE_HANDLER
+  : public MessageManager::Listener
+#endif
 {
 public:
 
@@ -83,7 +88,7 @@ private:
   /*!
    * \brief Manejador de la consola
    */
-  HANDLE h;
+  HANDLE mHandle;
   
   /*!
    * \brief Configuración de la consola al iniciar.
@@ -262,6 +267,8 @@ public:
 
 protected:
 
+#ifdef TL_MESSAGE_HANDLER  
+
   /*!
    * \brief onMsgDebug
    * \param msg
@@ -289,6 +296,8 @@ protected:
    * \param date
    */
   void onMsgError(const char *msg, const char *date) override;
+
+#endif // TL_MESSAGE_HANDLER 
 
 private:
 
@@ -340,7 +349,7 @@ private:
 /*!
  * \brief Clase base para la gestión de argumentos en comandos de consola
  */
-class I3D_EXPORT CmdArgument
+class TL_EXPORT CmdArgument
 {
 public:
 
@@ -415,7 +424,7 @@ public:
 /*!
  * \brief Opción de un comando
  */
-class I3D_EXPORT CmdOption : public CmdArgument
+class TL_EXPORT CmdOption : public CmdArgument
 {
 private:
 
@@ -450,9 +459,9 @@ public:
   /*!
    * \brief Establece si esta activada o no
    * \param[in] option
-   * \deprecated Use I3D::CmdOption::setActive en su lugar
+   * \deprecated Use TL::CmdOption::setActive en su lugar
    */
-  I3D_DEPRECATED("CmdOption::setActive(bool active)")
+  TL_DEPRECATED("CmdOption::setActive(bool active)")
   void setOption(bool option) { mValue = option; }
 
   /*!
@@ -465,7 +474,7 @@ public:
 /*!
  * \brief Parametro de un comando de consola
  */
-class I3D_EXPORT CmdParameter : public CmdArgument
+class TL_EXPORT CmdParameter : public CmdArgument
 {
 private:
 
@@ -510,7 +519,7 @@ public:
 /*!
  * \brief Un parametro que toma un valor de una lista predefinida de opciones
  */
-struct I3D_EXPORT CmdParameterOptions : public CmdArgument
+struct TL_EXPORT CmdParameterOptions : public CmdArgument
 {
 
 private:
@@ -600,7 +609,7 @@ public:
  * }
  * \endcode
  */
-class I3D_EXPORT CmdParser
+class TL_EXPORT CmdParser
 {
 public:
 
@@ -745,7 +754,7 @@ public:
           } else if (typeid(T) == typeid(Path)) {
             *(Path *)_value = Path(value);
           } else {
-            I3D_THROW_ERROR("Tipo de dato  no permitido"); 
+            TL_THROW_ERROR("Tipo de dato  no permitido"); 
             //throw std::runtime_error("Tipo de dato  no permitido");
           }
         }
@@ -784,7 +793,7 @@ public:
 /*!
  * \brief Función objeto de progreso
  */
-class I3D_EXPORT Progress
+class TL_EXPORT Progress
 {
 protected:
 
@@ -929,7 +938,7 @@ protected:
 /*!
  * \brief Barra de progreso de consola
  */
-class I3D_EXPORT ProgressBar : public Progress
+class TL_EXPORT ProgressBar : public Progress
 {
 private:
 
@@ -964,7 +973,7 @@ public:
    */
   ~ProgressBar() {}
 
-  //... warning C4512: 'I3D::ProgressBar' : no se pudo generar el operador de asignaciones
+  //... warning C4512: 'TL::ProgressBar' : no se pudo generar el operador de asignaciones
   //    Este warning aparece debido a que mSize es constante. impido la asignación que por
   //    otra parte tampoco me interesa
 
@@ -986,7 +995,7 @@ private:
 /*!
  * \brief Progreso en porcentaje
  */
-class I3D_EXPORT ProgressPercent : public Progress
+class TL_EXPORT ProgressPercent : public Progress
 {
 private:
 
@@ -1033,7 +1042,7 @@ private:
 
 /*! \} */ // end of utilities
 
-} // End namespace I3D
+} // End namespace TL
 
 
-#endif // I3D_CONSOLE_H
+#endif // TL_CORE_CONSOLE_H

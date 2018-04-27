@@ -1,10 +1,10 @@
-#include "exception.h"
+#include "core/exception.h"
 
 #if defined WIN32
 #include <atlstr.h>
 #endif
 
-namespace I3D
+namespace TL
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -79,4 +79,4 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
 #endif
 
 
-} // End namespace I3D
+} // End namespace TL

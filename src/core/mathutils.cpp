@@ -1,4 +1,4 @@
-#include "mathutils.h"
+#include "core/mathutils.h"
 
 #include "core/messages.h"
 
@@ -8,16 +8,16 @@
 #endif
 
 #ifdef HAVE_EIGEN
-I3D_DISABLE_WARNING(4714)
+TL_DISABLE_WARNING(4714)
 #include <Eigen/SVD>
 #include <Eigen/LU>
 #include <Eigen/QR>
-I3D_ENABLE_WARNING(4714)
+TL_ENABLE_WARNING(4714)
 #endif
 
 #include <cmath> 
 
-namespace I3D
+namespace TL
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -168,7 +168,7 @@ double computeMedian(const std::vector<double> &input)
     return input[size / 2];
 }
 
-double computeTempMAD(const std::vector<double> &input, const double median)
+double computeTempMAD(const std::vector<double> &input, double median)
 {
   std::vector<double> inp = input;
   for (size_t i = 0; i < inp.size(); ++i) {
@@ -178,7 +178,7 @@ double computeTempMAD(const std::vector<double> &input, const double median)
   return computeMedian(inp)*1.4826;
 }
 
-bool isOutlier(const double temp, const double median, const double mad)
+bool isOutlier(double temp, double median, double mad)
 {
   if ((abs(temp - median) / mad)>2) {
     return true;
@@ -246,12 +246,12 @@ void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, 
   *degrees = static_cast<int>(decimalDegrees);
   double min = fabs(decimalDegrees - *degrees) * 60.;
   *minutes = static_cast<int>(min);
-  *seconds = I3D_ROUND_TO_INT(fabs(min - *minutes) * 60.);
+  *seconds = TL_ROUND_TO_INT(fabs(min - *minutes) * 60.);
 }
 
 double decimalDegreesToRadians(double decimalDegrees)
 {
-  return decimalDegrees * I3D_DEG_TO_RAD;
+  return decimalDegrees * TL_DEG_TO_RAD;
 }
 
 double decimalDegreesToGradians(double decimalDegrees)
@@ -266,12 +266,12 @@ void radiansToDegrees(double rad, int *degrees, int *minutes, int *seconds)
 
 double radiansToDecimalDegrees(double radians)
 { 
-  return radians * I3D_RAD_TO_DEG;
+  return radians * TL_RAD_TO_DEG;
 }
 
 double radiansToGradians(double radians)
 {
-  return radians * I3D_RAD_TO_GRAD;
+  return radians * TL_RAD_TO_GRAD;
 }
 
 void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds)
@@ -286,7 +286,7 @@ double gradiansToDecimalDegrees(double gradians)
 
 double gradiansToRadians(double gradians)
 {
-  return gradians * I3D_GRAD_TO_RAD;
+  return gradians * TL_GRAD_TO_RAD;
 }
 
 
@@ -492,7 +492,7 @@ void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
   cvMatToVector(C, &v_aux);
   std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-  // O implementar método alternativo o devolver error
+  //TODO: O implementar método alternativo o devolver error
   // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
   //svdcmp(a, nRows, nCols, b, float **v);
 #endif
@@ -518,7 +518,7 @@ void solveQR(int nRows, int nCols, double *a, double *b, double *c)
   cvMatToVector(C, &v_aux);
   std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-
+  //TODO: añadir método alternativo
 #endif
 }
 
@@ -636,7 +636,7 @@ void solveLU(int nRows, int nCols, double *a, double *b, double *c)
   cvMatToVector(C, &v_aux);
   std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-
+  //TODO: añadir método alternativo
 #endif
 }
 
@@ -658,7 +658,7 @@ void solveCholesky(int nRows, int nCols, double *a, double *b, double *c)
   cvMatToVector(C, &v_aux);
   std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-
+  //TODO: añadir método alternativo
 #endif
 }
 
@@ -678,4 +678,4 @@ void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c)
 
 
 
-} // End namespace I3D
+} // End namespace TL

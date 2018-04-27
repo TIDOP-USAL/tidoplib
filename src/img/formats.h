@@ -1,15 +1,20 @@
-#ifndef I3D_IMG_FORMATS_H
-#define I3D_IMG_FORMATS_H
+#ifndef TL_GRAPHIC_IMG_FORMATS_H
+#define TL_GRAPHIC_IMG_FORMATS_H
+
+#include "config_tl.h"
 
 #include <vector>
 
-#include "core/core.h"
+#ifdef HAVE_GDAL
+#include "gdal_priv.h"
+#endif // HAVE_GDAL
+
+#include "core/defs.h"
+
+///TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
 
 
-//TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
-
-
-namespace I3D
+namespace TL
 {
 
 // Las opciones en GDAL se añaden:
@@ -22,14 +27,18 @@ namespace I3D
 
 enum class DataType : int8_t;
 
+/*!
+ * \brief Opciones del formato
+ */
 class RasterOptions
 {
+
 public:
   
   enum class Format
   {
     TIFF,
-    JPG,
+    JPEG,
     JP2000,
     PNG,
     BMP
@@ -41,6 +50,7 @@ protected:
   std::vector<DataType> mDataTypes;
 
 public:
+
   RasterOptions(Format format);
   virtual ~RasterOptions();
 
@@ -99,10 +109,13 @@ public:
   {
     YES,            /*!< Fuerza BigTiff. */
     NO,             /*!< Fuerza tiff normal. */
-    IF_NEEDED,      /*!< . */ 
+    IF_NEEDED,      /*!< BigTiff si es necesario. */ 
     IF_SAFER        /*!< . */
   };
 
+  /*!
+   * \brief Tipo de compresión
+   */
   enum class COMPRESS : uint8_t
   {
     JPEG,
@@ -167,6 +180,10 @@ protected:
   bool bRPB;
 
   bool bRPCTX;
+
+  /*!
+   * \brief Teselado
+   */
   bool bTiled;
 
   /*!
@@ -215,10 +232,6 @@ protected:
   PIXELTYPE mPixelType;
 
   GEOTIFF_KEYS_FLAVOR mGeotiffKeysFlavor;
-
-protected:
-
-  //DataType dataTypes;
 
 public:
 
@@ -308,26 +321,29 @@ private:
 };
 
 /*!
- * \brief Clase que gestiona las opciones del formato TIFF
+ * \brief Clase que gestiona las opciones del formato PNG
  */
 class PngOptions : public RasterOptions
 {
+
 public:
 
-  bool worldFile;
-  std::string title;
-  std::string description;
-  std::string copyright;
-  std::string comment;
+#if GDAL_VERSION_MAJOR >= 2
+  std::string title;         // Title, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
+  std::string description;   // Description, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
+  std::string copyright;     // Copyright, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
+  std::string comment;       // Comment, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
+#endif
 
-  //WORLDFILE=YES: Force the generation of an associated ESRI world file (with the extension .wld). See World File section for details.
+protected:
+
+  // Force the generation of an associated ESRI world file (with the extension .wld). See World File section for details.
+  bool bWorldFile;
+
   //ZLEVEL=n: Set the amount of time to spend on compression. The default is 6. A value of 1 is fast but does no compression, and a value of 9 is slow but does the best compression.
-  //TITLE=value: Title, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
-  //DESCRIPTION=value: Description, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
-  //COPYRIGHT=value: Copyright, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
-  //COMMENT=value: Comment, written in a TEXT or iTXt chunk (GDAL >= 2.0 )
   //WRITE_METADATA_AS_TEXT=YES/NO: Whether to write source dataset metadata in TEXT chunks (GDAL >= 2.0 )
   //NBITS=1/2/4: Force number of output bits (GDAL >= 2.1 )
+
 public:
   
   PngOptions();
@@ -335,6 +351,9 @@ public:
   
   const char *getOptions() override;
 
+  bool isEnableWorldFile() const;
+
+  void setEnableWorldFile(bool enable);
 };
 
 
@@ -343,9 +362,12 @@ public:
  */
 class JpegOptions : public RasterOptions
 {
-public:
-  bool worldFile; //Force the generation of an associated ESRI world file (with the extension .wld).
-//QUALITY=n: By default the quality flag is set to 75, but this option can be used to select other values. Values must be in the range 10-100. Low values result in higher compression ratios, but poorer image quality. Values above 95 are not meaningfully better quality but can but substantially larger.
+
+protected:
+  
+  bool bWorldFile; //Force the generation of an associated ESRI world file (with the extension .wld).
+  int mQuality;    // By default the quality flag is set to 75, but this option can be used to select other values. Values must be in the range 10-100. Low values result in higher compression ratios, but poorer image quality. Values above 95 are not meaningfully better quality but can but substantially larger.
+
 //PROGRESSIVE=ON: Enabled generation of progressive JPEGs. In some cases these will display a reduced resolution image in viewers such as Netscape, and Internet Explorer, before the full file has been downloaded. However, some applications cannot read progressive JPEGs at all. GDAL can read progressive JPEGs, but takes no advantage of their progressive nature.
 //INTERNAL_MASK=YES/NO: By default, if needed, an internal mask in the "zlib compressed mask appended to the file" approach is written to identify pixels that are not valid data. Starting with GDAL 1.10, this can be disabled by setting this option to NO.
 //ARITHMETIC=YES/NO: (Starting with GDAL 1.10) To enable arithmetic coding. Not enabled in all libjpeg builds, because of possible legal restrictions.
@@ -356,12 +378,17 @@ public:
 //EXIF_THUMBNAIL=YES/NO: (Starting with GDAL 2.0). Whether to generate an EXIF thumbnail(overview), itself JPEG compressed. Defaults to NO. If enabled, the maximum dimension of the thumbnail will be 128, if neither THUMBNAIL_WIDTH nor THUMBNAIL_HEIGHT are specified.
 //THUMBNAIL_WIDTH=n: (Starting with GDAL 2.0). Width of thumbnail. Only taken into account if EXIF_THUMBNAIL=YES.
 //THUMBNAIL_HEIGHT=n: (Starting with GDAL 2.0). Height of thumbnail. Only taken into account if EXIF_THUMBNAIL=YES.
+
 public:
   
   JpegOptions();
   ~JpegOptions();
   
   const char *getOptions() override;
+
+  bool isEnableWorldFile() const;
+
+  void setEnableWorldFile(bool enable);
 
 };
 
@@ -370,9 +397,10 @@ public:
  */
 class BmpOptions : public RasterOptions
 {
-public:
 
-  bool worldFile; //Force the generation of an associated ESRI world file(with the extension.wld).
+protected:
+
+  bool bWorldFile; //Force the generation of an associated ESRI world file(with the extension.wld).
 
 public:
   
@@ -381,6 +409,10 @@ public:
   
   const char *getOptions() override;
 
+  bool isEnableWorldFile() const;
+
+  void setEnableWorldFile(bool enable);
+
 };
 
 
@@ -388,4 +420,4 @@ public:
 
 
 
-#endif // I3D_IMG_FORMATS_H
+#endif // TL_GRAPHIC_IMG_FORMATS_H

@@ -3,8 +3,10 @@
   facilitar la inclusión de la librería en otros sistemas.
 */
 
-#ifndef I3D_MESSAGES_H
-#define I3D_MESSAGES_H
+#ifndef TL_CORE_MESSAGES_H
+#define TL_CORE_MESSAGES_H
+
+#include "config_tl.h"
 
 #include <iostream>
 #include <memory>
@@ -16,10 +18,10 @@
 #include "core/utils.h"
 #include "core/flags.h"
 
-namespace I3D
+namespace TL
 {
 
-#ifdef I3D_MESSAGE_HANDLER
+
 
 
 /*! \addtogroup utilities
@@ -46,13 +48,15 @@ enum class MessageLevel : int8_t {
 //Se permiten operaciones a nivel de bit para el enum MessageOutput
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
+#ifdef TL_MESSAGE_HANDLER
+
 /*!
  * \brief Clase para gestionar los mensajes de la librería
  *
  * Proporciona las herramientas necesarias para la impresión de mensajes por
  * consola, en un fichero log y la comunicación con otras librerias o aplicaciones
  */
-class I3D_EXPORT MessageManager
+class TL_EXPORT MessageManager
 {
 
 public:
@@ -370,18 +374,31 @@ protected:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgInfo(...)     I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_INFO, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgWarning(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_WARNING, __FILE__, __LINE__, I3D_FUNCTION);
-#  define msgError(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_ERROR, __FILE__, __LINE__, I3D_FUNCTION);
+#  define msgDebug(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgInfo(...)     TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_INFO, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgWarning(...)  TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_WARNING, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgError(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_ERROR, __FILE__, __LINE__, TL_FUNCTION);
 #else
-#  define msgDebug(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_DEBUG);
-#  define msgInfo(...)     I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_INFO);
-#  define msgWarning(...)  I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_WARNING);
-#  define msgError(...)    I3D::MessageManager::release(I3D::MessageManager::Message(__VA_ARGS__).getMessage(), I3D::MessageLevel::MSG_ERROR);
+#  define msgDebug(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_DEBUG);
+#  define msgInfo(...)     TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_INFO);
+#  define msgWarning(...)  TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_WARNING);
+#  define msgError(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_ERROR);
+#endif
+
+#else  // End TL_MESSAGE_HANDLER
+
+// No se utiliza el manejador de mensajes
+
+#  define msgDebug(...)
+#  define msgInfo(...)
+#  define msgWarning(...)
+#  define msgError(...)
+
 #endif
 
 /*! \} */ // end of Messages
+
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -398,7 +415,10 @@ protected:
  * al gestor de mensajes (MessageManager) recibe automaticamente
  * los mensajes
  */
-class I3D_EXPORT Log : public MessageManager::Listener
+class TL_EXPORT Log 
+#ifdef TL_MESSAGE_HANDLER  
+  : public MessageManager::Listener
+#endif
 {
 
 private:
@@ -493,6 +513,8 @@ public:
 
 protected:
 
+#ifdef TL_MESSAGE_HANDLER  
+
   /*!
    * \brief Mensaje de depuración
    * \param msg Mensaje que se escribe en el log
@@ -528,24 +550,14 @@ protected:
    */
   void _write(const char *msg, const char *date);
 
+#endif // TL_MESSAGE_HANDLER 
 };
 
 /*! \} */ // end of Log
 
 /*! \} */ // end of utilities
 
-#else  // End I3D_MESSAGE_HANDLER
 
-// No se utiliza el manejador de mensajes
+} // End namespace TL
 
-#  define msgDebug(...)
-#  define msgInfo(...)
-#  define msgWarning(...)
-#  define msgError(...)
-
-#endif
-
-
-} // End namespace I3D
-
-#endif // I3D_MESSAGES_H
+#endif // TL_CORE_MESSAGES_H

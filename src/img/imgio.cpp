@@ -1,21 +1,21 @@
 #include "img/imgio.h"
 
-#include "transform.h"
-#include "geometric_entities/window.h"
+#include "geometry/transform.h"
+#include "geometry/entities/window.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // HAVE_OPENCV
 
 #ifdef HAVE_GDAL
-I3D_SUPPRESS_WARNINGS
+TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "cpl_conv.h"
-I3D_DEFAULT_WARNINGS
+TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
-namespace I3D
+namespace TL
 {
 
 using namespace geometry;
@@ -25,7 +25,7 @@ VrtRaster::VrtRaster()
     mRows(0), 
     mCols(0), 
     mBands(0), 
-    mDataType(DataType::I3D_8U), 
+    mDataType(DataType::TL_8U), 
     mColorDepth(0)
 {
 }
@@ -109,28 +109,28 @@ GDALDataType getGdalDataType(DataType dataType)
 { 
   GDALDataType ret = GDT_Unknown;
   switch ( dataType ) {
-  case I3D::DataType::I3D_8U:
+  case TL::DataType::TL_8U:
     ret = GDT_Byte;
     break;
-  case I3D::DataType::I3D_8S:
+  case TL::DataType::TL_8S:
     ret = GDT_Byte;
     break;
-  case I3D::DataType::I3D_16U:
+  case TL::DataType::TL_16U:
     ret = GDT_UInt16;
     break;
-  case I3D::DataType::I3D_16S:
+  case TL::DataType::TL_16S:
     ret = GDT_Int16;
     break;
-  case I3D::DataType::I3D_32U:
+  case TL::DataType::TL_32U:
     ret = GDT_UInt32;
     break;
-  case I3D::DataType::I3D_32S:
+  case TL::DataType::TL_32S:
     ret = GDT_Int32;
     break;
-  case I3D::DataType::I3D_32F:
+  case TL::DataType::TL_32F:
     ret = GDT_Float32;
     break;
-  case I3D::DataType::I3D_64F:
+  case TL::DataType::TL_64F:
     ret = GDT_Float64;
     break;
   default:
@@ -145,28 +145,28 @@ DataType convertDataType(GDALDataType dataType)
   DataType ret;
   switch ( dataType ) {
   case GDT_Byte:
-    ret = I3D::DataType::I3D_8U;
+    ret = TL::DataType::TL_8U;
     break;
   case GDT_UInt16:
-    ret = I3D::DataType::I3D_16U;
+    ret = TL::DataType::TL_16U;
     break;
   case GDT_Int16:
-    ret = I3D::DataType::I3D_16S;
+    ret = TL::DataType::TL_16S;
     break;
   case GDT_UInt32:
-    ret = I3D::DataType::I3D_32U;
+    ret = TL::DataType::TL_32U;
     break;
   case GDT_Int32:
-    ret = I3D::DataType::I3D_32S;
+    ret = TL::DataType::TL_32S;
     break;
   case GDT_Float32:
-    ret = I3D::DataType::I3D_32F;
+    ret = TL::DataType::TL_32F;
     break;
   case GDT_Float64:
-    ret = I3D::DataType::I3D_64F;
+    ret = TL::DataType::TL_64F;
     break;
   default:
-    ret = I3D::DataType::I3D_8U;
+    ret = TL::DataType::TL_8U;
     break;
   }
   return ret;
@@ -212,8 +212,8 @@ GdalRaster::~GdalRaster()
 {
   char **tmp = 0;
   if (bTempFile) {
-    char ext[I3D_MAX_EXT];
-    if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) == 0) {
+    char ext[TL_MAX_EXT];
+    if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) == 0) {
       GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
       GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, NULL, NULL, NULL);
       if (!pTempDataSet) {
@@ -251,8 +251,8 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   close();
 
   mFile = file;
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
   
   const char *driverName = getDriverFromExt(ext);
   if (driverName == nullptr) return Status::OPEN_FAIL;
@@ -282,18 +282,18 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
     if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
       // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
       pDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-      char path[I3D_MAX_PATH];
-      GetTempPathA(I3D_MAX_PATH, path);
-      char name[I3D_MAX_FNAME];
-      getFileName(file, name, I3D_MAX_FNAME);
-      char buffer[I3D_MAX_PATH];
+      char path[TL_MAX_PATH];
+      GetTempPathA(TL_MAX_PATH, path);
+      char name[TL_MAX_FNAME];
+      getFileName(file, name, TL_MAX_FNAME);
+      char buffer[TL_MAX_PATH];
       sprintf_s(buffer, "%s\\%s.tif", path, name);
       bTempFile = true;
       mTempName = buffer;
     }
     // Se crea el directorio si no existe
-    char dir[I3D_MAX_PATH];
-    if ( getFileDriveDir(file, dir, I3D_MAX_PATH) == 0 )
+    char dir[TL_MAX_PATH];
+    if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
       if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     return Status::OPEN_OK; 
   } else {
@@ -333,8 +333,8 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
 
   cv::Size size;
   //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-    size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
-    size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+    size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
+    size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
     if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
   //} else {
   //  size.width = wRead.getWidth();
@@ -423,8 +423,8 @@ GdalRaster::Status GdalRaster::read(uchar *buff, const WindowI &wLoad, double sc
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
-  size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+  size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
+  size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
 
   buff = (uchar *)std::malloc(mRows*mCols*mBands*mColorDepth);
@@ -491,8 +491,8 @@ GdalRaster::Status GdalRaster::write(const uchar *buff, const Helmert2D<PointI> 
 GdalRaster::Status GdalRaster::createCopy(const char *fileOut)
 {
   //TODO: revisar
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) == 0) {
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(fileOut, ext, TL_MAX_EXT) == 0) {
     GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
     GDALDataset *pTempDataSet = driver->CreateCopy(fileOut, pDataset, FALSE, NULL, NULL, NULL);
     if (!pTempDataSet) {
@@ -511,27 +511,27 @@ GdalRaster::Status GdalRaster::createCopy(const char *fileOut)
 const char* GdalRaster::getDriverFromExt(const char *ext)
 {
   const char *format;
-  if      ( strcmpi( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
-  else if ( strcmpi( ext, ".png" ) == 0 )  format = "PNG";          // Portable Network Graphics (.png)
-  else if ( strcmpi( ext, ".jpg" ) == 0 )  format = "JPEG";         // JPEG JFIF (.jpg)
-  else if ( strcmpi( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
-  else if ( strcmpi( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)  
-  else if ( strcmpi( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
-  else if ( strcmpi( ext, ".grd" ) == 0 )  format = "AAIGrid";      // Arc/Info ASCII Grid
-  else if ( strcmpi( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
-  else if ( strcmpi( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
-  else if ( strcmpi( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
-  else if ( strcmpi( ext, ".lan" ) == 0 )  format = "LAN";          // Erdas 7.x .LAN and .GIS
-  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "ENVI";         // ENVI .hdr Labelled Raster
-  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmpi( ext, ".blx" ) == 0 || 
-            strcmpi( ext, ".xlb" ) == 0 )  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
-  else if ( strcmpi( ext, ".map" ) == 0 )  format = "MAP";          // OziExplorer .MAP
-  else if ( strcmpi( ext, ".e00" ) == 0 )  format = "E00GRID";      // Arc/Info Export E00 GRID
-  else if ( strcmpi( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
-  else if ( strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmpi( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
-  else                                     format = 0;
+  if      ( _strcmpi( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
+  else if ( _strcmpi( ext, ".png" ) == 0 )  format = "PNG";          // Portable Network Graphics (.png)
+  else if ( _strcmpi( ext, ".jpg" ) == 0 )  format = "JPEG";         // JPEG JFIF (.jpg)
+  else if ( _strcmpi( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+  else if ( _strcmpi( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)  
+  else if ( _strcmpi( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
+  else if ( _strcmpi( ext, ".grd" ) == 0 )  format = "AAIGrid";      // Arc/Info ASCII Grid
+  else if ( _strcmpi( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
+  else if ( _strcmpi( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
+  else if ( _strcmpi( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
+  else if ( _strcmpi( ext, ".lan" ) == 0 )  format = "LAN";          // Erdas 7.x .LAN and .GIS
+  else if ( _strcmpi( ext, ".hdr" ) == 0 )  format = "ENVI";         // ENVI .hdr Labelled Raster
+  else if ( _strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
+  else if ( _strcmpi( ext, ".blx" ) == 0 || 
+            _strcmpi( ext, ".xlb" ) == 0 )  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
+  else if ( _strcmpi( ext, ".map" ) == 0 )  format = "MAP";          // OziExplorer .MAP
+  else if ( _strcmpi( ext, ".e00" ) == 0 )  format = "E00GRID";      // Arc/Info Export E00 GRID
+  else if ( _strcmpi( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
+  else if ( _strcmpi( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
+  else if ( _strcmpi( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
+  else                                      format = 0;
   return format;
 
   // debería funcionar para GDAL
@@ -731,8 +731,8 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
   
   mFile = file;
 
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(mFile.c_str(), ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
   bCanon = isRawExt(ext) == 1;
 
 #ifdef HAVE_EDSDK
@@ -820,12 +820,12 @@ RawImage::Status RawImage::read(cv::Mat *image, const WindowI &wLoad, double sca
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  size.width = I3D_ROUND_TO_INT(wRead.getWidth() / scale);
-  size.height = I3D_ROUND_TO_INT(wRead.getHeight() / scale);
+  size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
+  size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
   
   //TODO: crear método similar a getGdalDataType
-  //int depth = (mDataType == DataType::I3D_16U) ? CV_16U : CV_8U;
+  //int depth = (mDataType == DataType::TL_16U) ? CV_16U : CV_8U;
   int depth = CV_8U;
   image->create(size, CV_MAKETYPE(depth, mBands));
   
@@ -941,8 +941,8 @@ RawImage::Status RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf
 RawImage::Status RawImage::createCopy(const char *fileOut)
 {
   Status status = Status::SUCCESS;
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(fileOut, ext, I3D_MAX_EXT) != 0) return Status::FAILURE;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(fileOut, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
 #ifdef HAVE_EDSDK
 
   if (bCanon) {
@@ -1013,12 +1013,12 @@ void RawImage::update()
       //
       if (imageInfo.componentDepth == 16) {
         mColorDepth = 8;
-        mDataType = imageInfo.componentDepth == 16 ? DataType::I3D_16U : DataType::I3D_8U;
+        mDataType = imageInfo.componentDepth == 16 ? DataType::TL_16U : DataType::TL_8U;
         msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mFile.c_str());
       } else {
         mColorDepth = imageInfo.componentDepth;
         //TODO: completar
-        mDataType = DataType::I3D_8U;
+        mDataType = DataType::TL_8U;
       }
     }
   } else {
@@ -1029,7 +1029,7 @@ void RawImage::update()
     mBands = mRawProcessor->imgdata.idata.colors; //mProcessedImage->colors;
 
     mColorDepth = mProcessedImage->bits;
-    mDataType = mProcessedImage->bits == 16 ? DataType::I3D_16U : DataType::I3D_8U;
+    mDataType = mProcessedImage->bits == 16 ? DataType::TL_16U : DataType::TL_8U;
 
     //mType = mProcessedImage->type;
     //mData = mProcessedImage->data;
@@ -1056,7 +1056,7 @@ RasterGraphics::RasterGraphics()
     mRows(0), 
     mCols(0), 
     mBands(0), 
-    mDataType(DataType::I3D_8U), 
+    mDataType(DataType::TL_8U), 
     mColorDepth(0) 
 {
 }
@@ -1078,12 +1078,11 @@ RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mo
   if (!(file && strcmp(file, "") != 0)) return Status::OPEN_FAIL;
 
   mFile = file;
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return Status::OPEN_FAIL;
-
-  const char *frtName;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
 
 #ifdef HAVE_GDAL
+  const char *frtName;
   if ((frtName = GdalRaster::getDriverFromExt(ext)) != NULL) { 
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalRaster>();
@@ -1113,7 +1112,7 @@ RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, Dat
 
 RasterGraphics::Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  if (!mImageFormat) return File::Status::FAILURE; //throw I3D_ERROR("No se puede leer imagen");
+  if (!mImageFormat) return File::Status::FAILURE; //throw TL_ERROR("No se puede leer imagen");
   mImageFormat->read(image, wLoad, scale, trf);
   return File::Status::SUCCESS;
 }
@@ -1132,19 +1131,20 @@ RasterGraphics::Status RasterGraphics::write(const cv::Mat &image, Helmert2D<Poi
 
 #else
 
-void RasterGraphics::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+RasterGraphics::Status RasterGraphics::read(unsigned char *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
-  if (!mImageFormat) throw I3D_ERROR("No se puede leer imagen");
+  if (!mImageFormat) return File::Status::FAILURE; //throw TL_ERROR("No se puede leer imagen");
   mImageFormat->read(buff, wLoad, scale, trf);
+  return File::Status::SUCCESS;
 }
 
-RasterGraphics::Status RasterGraphics::write(const uchar *buff, const WindowI &w)
+RasterGraphics::Status RasterGraphics::write(const unsigned char *buff, const WindowI &w)
 {
   if (mImageFormat && mImageFormat->write(buff, w) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
 }
 
-RasterGraphics::Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI> *trf)
+RasterGraphics::Status RasterGraphics::write(const unsigned char *buff, Helmert2D<PointI> *trf)
 {
   if (mImageFormat && mImageFormat->write(buff, trf) == 0) return Status::SUCCESS;
   else return Status::FAILURE;
@@ -1174,8 +1174,8 @@ RasterGraphics::Status RasterGraphics::write(const uchar *buff, Helmert2D<PointI
 // 
 //    //TODO: Imagenes de 16 bits. De momento se convierten a 8 bits
 //    DataType outDataType;
-//    if (mDataType == DataType::I3D_16U) {
-//      outDataType = DataType::I3D_8U;
+//    if (mDataType == DataType::TL_16U) {
+//      outDataType = DataType::TL_8U;
 //      msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mName.c_str());
 //    } else {
 //      outDataType = mDataType;
@@ -1239,8 +1239,8 @@ RasterGraphics::Status RasterGraphics::createCopy(const char *file)
  
     //TODO: Imagenes de 16 bits. De momento se convierten a 8 bits
     DataType outDataType;
-    if (mDataType == DataType::I3D_16U) {
-      outDataType = DataType::I3D_8U;
+    if (mDataType == DataType::TL_16U) {
+      outDataType = DataType::TL_8U;
       msgWarning("Imagen de 16 bits (%s). Se convertirá a profundidad de 8 bits", mFile.c_str());
     } else {
       outDataType = mDataType;
@@ -1250,13 +1250,17 @@ RasterGraphics::Status RasterGraphics::createCopy(const char *file)
     if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
       if (imageOut.create(mRows, mCols, mBands, outDataType) != Status::FAILURE) {
         for (int r = 0; r < mRows - 1; r++) {
-#ifdef HAVE_OPENCV
-          cv::Mat buff; 
-#else
-          uchar *buff;
-#endif
+
           WindowI wrw(PointI(0, r), PointI(mCols, r + 1));
+
+#ifdef HAVE_OPENCV
+          cv::Mat buff;
           mImageFormat->read(&buff, wrw);
+#else
+          unsigned char *buff = nullptr;
+          mImageFormat->read(buff, wrw);
+#endif
+          
           if (imageOut.write(buff, wrw) != Status::FAILURE) {
             return Status::SUCCESS;
           }
@@ -1326,8 +1330,8 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode
   close();
 
   mFile = file;
-  char ext[I3D_MAX_EXT];
-  if (getFileExtension(file, ext, I3D_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
+  char ext[TL_MAX_EXT];
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
 #ifdef HAVE_GDAL
   if (const char *driverName = GdalRaster::getDriverFromExt(ext)) { 
     // Existe un driver de GDAL para el formato de imagen
@@ -1405,4 +1409,4 @@ void GeoRasterGraphics::update()
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End namespace I3D
+} // End namespace TL

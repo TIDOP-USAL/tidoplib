@@ -1,10 +1,10 @@
-#ifndef I3D_MATHUTILS_H
-#define I3D_MATHUTILS_H
+#ifndef TL_CORE_MATH_UTILS_H
+#define TL_CORE_MATH_UTILS_H
+
+#include "config_tl.h"
 
 #include <vector>
 #include <array>
-
-#include "core/config.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -12,9 +12,9 @@
 
 #include "core/defs.h"
 //TODO: Debería sacar todas las entidades geometricas de aqui
-#include "geometric_entities/point.h"
+//#include "geometric_entities/point.h"
 
-namespace I3D
+namespace TL
 {
 
 /*!
@@ -168,7 +168,7 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   Point_t v = vector2D(pt1, pt2);
   if (v.x == 0 && v.y == 0) return azimut;
   azimut = atan2(v.x, v.y);
-  if (azimut < 0.) azimut += I3D_2PI;
+  if (azimut < 0.) azimut += TL_2PI;
   return azimut;
 }
 
@@ -186,11 +186,11 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
  * \param[out] phi Rotación respecto al eje Y en radianes
  * \param[out] kappa Rotación respecto al eje Z en radianes
  */
-I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
 //Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
-//I3D_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+//TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
 //... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
 
@@ -201,7 +201,7 @@ I3D_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, doubl
  * \param[in] rZ Rotación respecto al eje Z en radianes
  * \param[out] R Matriz de rotación
  */
-//I3D_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
+//TL_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
@@ -231,168 +231,7 @@ void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
  * \param[in] kappa Rotación respecto al eje Z en radianes
  * \param[out] R Matriz de rotación
  */
-I3D_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
-
-/*!
- * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
- * Los cuaterniones unitarios proporcionan una notación matemática para representar 
- * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con 
- * los ángulos de Euler, son más simples de componer y evitan el problema del bloqueo 
- * del cardán. Comparados con las matrices de rotación, son más eficientes y más 
- * estables numéricamente.
- *
- * Un cuaternión se representa como:
- * \f[ w+xi+yj+zk \f]
- */
-template<typename T>
-class Quaternion
-{
-public:
-  T x;
-  T y;
-  T z;
-  T w;
-
-public:
-
-  /*!
-   * \brief Constructor por defecto
-   */
-  Quaternion();
-  
-  /*!
-   * \brief Constructor
-   * \param[in] x
-   * \param[in] y
-   * \param[in] z
-   * \param[in] w
-   */
-  Quaternion(T x, T y, T z, T w);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] quaternion Objeto que se copia
-   */
-  Quaternion(const Quaternion<T> &quaternion);
-
-  /*!
-   * \brief Constructor
-   * \param[in] R Matriz de rotación
-   */
-  Quaternion(std::array<std::array<double, 3>, 3> *R);
-
-  /*!
-   * \brief destructora
-   */
-  ~Quaternion();
-
-  /*!
-   * \brief Operador de asignación
-   * \param[in] quat Objeto que se copia
-   */
-  Quaternion& operator = (const Quaternion<T>& quat);
-
-  /*!
-   * \brief Conjugado
-   * \f[ q = w-xi-yj-zk \f]
-   */
-  Quaternion<T> conjugate();
-
-  /*!
-   * \brief Norma
-   * \f[ q = w+xi+yj+zk \f]
-   * \f[ n(q) = sqrt{q.q} = sqrt{w^2+x^2+y^2+z^2} \f]
-   */
-  double norm();
-
-private:
-
-};
-
-template<typename T> inline
-Quaternion<T>::Quaternion()
-  : x(0), y(0), z(0), w(0)
-{
-}
-
-template<typename T> inline
-Quaternion<T>::Quaternion(T x, T y, T z, T w)
-  : x(x), y(y), z(z), w(w)
-{
-}
-
-template<typename T> inline
-Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
-  : x(quaternion.x), 
-    y(quaternion.y), 
-    z(quaternion.z), 
-    w(quaternion.w)
-{
-}
-
-template<typename T> inline
-Quaternion<T>::Quaternion(std::array<std::array<double, 3>, 3> *R)
-{
-
-}
-
-template<typename T> inline
-Quaternion<T>::~Quaternion()
-{}
-
-template<typename T> inline
-Quaternion<T>& Quaternion<T>::operator = (const Quaternion& quaternion)
-{
-  this->x = quaternion.x;
-  this->y = quaternion.y;
-  this->z = quaternion.z;
-  this->w = quaternion.w;
-  return *this;
-}
-
-template<typename T> inline
-Quaternion<T> Quaternion<T>::conjugate()
-{
-  return Quaternion<T>(-x, -y, -z, w);
-}
-
-template<typename T> inline
-double Quaternion<T>::norm()
-{
-  return sqrt(x*x+y*y+z*z+w*w)
-}
-
-// Operaciones entre cuaterniones
-
-/*!
- * \brief Multiplicación de cuaterniones
- * \f[ q1 = w1+x1i+y1j+z1k \f]
- * \f[ q2 = w2+x2i+y2j+z2k \f]
- * \f[ q1.q2 = \f]
- */
-template<typename T> inline
-Quaternion<T> operator *(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
-{
-  return Quaternion<T>(
-    quat1.x*quat2.w + quat1.y*quat2.z - quat1.z*quat2.y + quat1.w*quat2.x,
-    -quat1.x.quat2z + quat1.y*quat2.w + quat1.z*quat2.x + quat1.w*quat2.y,
-    quat1.x*quat2.y - quat1.y*quat2.x + quat1.z*quat2.w + quat1.w*quat2.z,
-    -quat1.x*quat2.x - quat1.y*quat2.y - quat1.z*quat2.z + quat1.w*quat2.w
-  );
-}
-
-/*!
- * \brief Suma de cuaterniones
- * \f[ q1 = w1+x1i+y1j+z1k \f]
- * \f[ q2 = w2+x2i+y2j+z2k \f]
- * \f[ q1 + q2 = \f]
- */
-template<typename T> inline
-Quaternion<T> operator +(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
-{
-  return Quaternion<T>(quat1.x+quat2.x, quat1.y+quat2.y, quat1.z+quat2.z, quat1.w+quat2.w);
-}
-
+TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 /* ---------------------------------------------------------------------------------- */
 /*                                 ESTADISTICA                                        */
@@ -405,7 +244,7 @@ Quaternion<T> operator +(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
  * \param[in] src
  * \return
  */
-I3D_EXPORT double laplacianVariance(const cv::Mat &src);
+TL_EXPORT double laplacianVariance(const cv::Mat &src);
 
 #endif
 
@@ -516,13 +355,33 @@ double kurtosis(const T &data)
   } else return 0.;// "No kurtosis when variance = 0 (in moment)")
 }
 
-I3D_EXPORT double computeMedian(const std::vector<double> &input);
+TL_EXPORT double computeMedian(const std::vector<double> &input);
 
-I3D_EXPORT double computeTempMAD(const std::vector<double> &input, const double median);
+TL_EXPORT double computeTempMAD(const std::vector<double> &input, double median);
 
-I3D_EXPORT bool isOutlier(const double temp, const double median, const double mad);
+TL_EXPORT bool isOutlier(double temp, double median, double mad);
 
-
+////TODO: deberian generalizarse para cualquier tipo de contenedor
+//template<typename T> inline 
+//T computeMedian(const std::vector<T> &input)
+//{
+//  size_t size = input.size();
+//  if (size % 2 == 0)
+//    return (input[size / 2 - 1] + input[size / 2]) / 2;
+//  else
+//    return input[size / 2];
+//}
+//
+//template<typename T> inline 
+//T computeTempMAD(const std::vector<T> &input, T median)
+//{
+//  std::vector<T> inp = input;
+//  for (size_t i = 0; i < inp.size(); ++i) {
+//    inp[i] = abs(inp[i] - median);
+//  }
+//  sort(inp.begin(), inp.end());
+//  return computeMedian(inp)*1.4826;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 /*           AJUSTES DE PUNTOS A GEOMETRIAS (LINEAS, PLANOS, ...)                     */
@@ -548,7 +407,7 @@ I3D_EXPORT bool isOutlier(const double temp, const double median, const double m
  * double corr = regressionLinearYX(pts, &m, &b);
  * \endcode
  */
-//I3D_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//TL_EXPORT double regressionLinearYX(const std::vector<cv::Point2i> &pts, double *m, double *b);
 template<typename Point_t> inline 
 double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
@@ -593,7 +452,7 @@ double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
  * double corr = regressionLinearXY(pts, &m, &b);
  * \endcode
  */
-//I3D_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
+//TL_EXPORT double regressionLinearXY(const std::vector<cv::Point2i> &pts, double *m, double *b);
 template<typename Point_t> inline 
 double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
@@ -713,21 +572,21 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  * \param[out] A 
  * \param[out] r 
  */
-template<typename Point_t> inline 
-void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
-{
-  std::vector<geometry::PointD> ptsLog(pts.size());
-  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
-                 [](Point_t pt) -> geometry::PointD {
-                    return geometry::PointD(pt.x, log10(pt.y)); 
-                  });
-
-  double m = 0.;
-  double b = 0.;
-  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
-  *A = pow(10, b);
-  *r = pow(10, m);
-}
+//template<typename Point_t> inline 
+//void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+//{
+//  std::vector<geometry::PointD> ptsLog(pts.size());
+//  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
+//                 [](Point_t pt) -> geometry::PointD {
+//                    return geometry::PointD(pt.x, log10(pt.y)); 
+//                  });
+//
+//  double m = 0.;
+//  double b = 0.;
+//  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
+//  *A = pow(10, b);
+//  *r = pow(10, m);
+//}
 
 
 /*!
@@ -916,7 +775,7 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
  * \param[out] out
  * \param[out] idx
  */
-I3D_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+TL_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 /*!
  * \brief Ordena los valores de una matriz de mayor a menor por columnas
@@ -924,7 +783,7 @@ I3D_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
  * \param[out] out
  * \param[out] idx
  */
-I3D_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 #endif
 
@@ -956,7 +815,7 @@ inline int isNegative(T t)
  * \param[in] seconds Segundos
  * \return Grados sexagesimales en notación decimal
  */
-I3D_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a radianes
@@ -965,7 +824,7 @@ I3D_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds)
  * \param[in] seconds Segundos
  * \return radianes
  */
-I3D_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a grados centesimales
@@ -974,7 +833,7 @@ I3D_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
  * \param[in] seconds Segundos
  * \return Grados centesimales
  */
-I3D_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
@@ -990,21 +849,21 @@ I3D_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
  * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
  * \endcode
  */
-I3D_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a radianes
  * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Radianes
  */
-I3D_EXPORT double decimalDegreesToRadians(double decimalDegrees);
+TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados centesimales
  * \param[in] decimalDegrees Grados sexagesimales en notación decima
  * \return Grados centesimales
  */
-I3D_EXPORT double decimalDegreesToGradians(double decimalDegrees);
+TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
 
 /*!
  * \brief Conversión de radianes a grados, minutos y segundos
@@ -1013,21 +872,21 @@ I3D_EXPORT double decimalDegreesToGradians(double decimalDegrees);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-I3D_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de radianes a grados sexagesimales en notación decimal
  * \param[in] radians Radianes
  * \return Grados sexagesimales en notación decimal
  */
-I3D_EXPORT double radiansToDecimalDegrees(double radians);
+TL_EXPORT double radiansToDecimalDegrees(double radians);
 
 /*!
  * \brief radiansToGradians
  * \param[in] radians Radianes
  * \return Grados centesimales
  */
-I3D_EXPORT double radiansToGradians(double radians);
+TL_EXPORT double radiansToGradians(double radians);
 
 /*!
  * \brief Conversión de grados centesimales a grados, minutos y segundos
@@ -1036,21 +895,21 @@ I3D_EXPORT double radiansToGradians(double radians);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-I3D_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
 
 /*!
  * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal
  * \param[in] gradians Grados centesimales
  * \return Grados sexagesimales en notación decimal
  */
-I3D_EXPORT double gradiansToDecimalDegrees(double gradians);
+TL_EXPORT double gradiansToDecimalDegrees(double gradians);
 
 /*!
  * \brief Conversión de grados centesimales a radianes
  * \param[in] gradians Grados centesimales
  * \return Radianes
  */
-I3D_EXPORT double gradiansToRadians(double gradians);
+TL_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion
 
@@ -1087,7 +946,7 @@ I3D_EXPORT double gradiansToRadians(double gradians);
  * \param[in] b 
  * \param[out] c 
  */
-I3D_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Factorización QR
@@ -1110,7 +969,7 @@ I3D_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
  * \param[in] b 
  * \param[out] c 
  */
-I3D_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Factorización o descomposición LU 
@@ -1127,7 +986,7 @@ I3D_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
  * \param[in] b 
  * \param[out] c 
  */
-I3D_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
@@ -1146,7 +1005,7 @@ I3D_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
  * \param[in] b 
  * \param[out] c 
  */
-I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
 #ifdef HAVE_EIGEN
 
@@ -1161,12 +1020,12 @@ I3D_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double
  * \param[in] b 
  * \param[out] c 
  */
-I3D_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
 #endif
 
 /*! \} */ // end of mathUtils
 
-} // End namespace I3D
+} // End namespace TL
 
-#endif // I3D_MATHUTILS_H
+#endif // TL_CORE_MATH_UTILS_H

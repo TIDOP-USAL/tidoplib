@@ -1,29 +1,27 @@
-#ifndef I3D_UTILS_H
-#define I3D_UTILS_H
+#ifndef TL_CORE_UTILS_H
+#define TL_CORE_UTILS_H
 
-#include <vector>
-#include <list>
+#include "config_tl.h"
+
 #include <iostream>
 #include <fstream>
 #include <functional>
-#include <memory>
 #include <map>
-#include <thread>
-#include <mutex>
-
-#include "core/config.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // HAVE_OPENCV
 
+#ifdef HAVE_MINIZIP
+#include "minizip/zip.h"
+#include "minizip/unzip.h"
+#endif // HAVE_MINIZIP
+
 #include "core/defs.h"
 #include "core/datamodel.h"
 
-namespace I3D
+namespace TL
 {
-
-class Progress;
 
 /*!
  * \defgroup utilities Utilidades
@@ -42,7 +40,7 @@ class Progress;
  * que esta corriendo
  * \return path de la aplicación
  */
-I3D_EXPORT const char *getRunfile();
+TL_EXPORT const char *getRunfile();
 
 /*!
  * \brief Información de la aplicación
@@ -61,21 +59,21 @@ I3D_EXPORT const char *getRunfile();
  * \param[in] path Ruta del directorio
  * \return true si existe.
  */
-I3D_EXPORT bool isDirectory(const char *path);
+TL_EXPORT bool isDirectory(const char *path);
 
 /*!
  * \brief Comprueba si existe el fichero
  * \param[in] file Fichero
  * \return true si existe.
  */
-I3D_EXPORT bool isFile(const char *file);
+TL_EXPORT bool isFile(const char *file);
 
 /*!
  * \brief Crea un directorio
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1
  */
-I3D_EXPORT int createDir(const char *path);
+TL_EXPORT int createDir(const char *path);
 
 /*!
  * \brief Crea un directorio
@@ -83,9 +81,9 @@ I3D_EXPORT int createDir(const char *path);
  * \param[in] confirm Pide confirmación para borrar el archivo
  * \return Error
  */
-I3D_EXPORT int deleteDir(const char *path, bool confirm = false);
+TL_EXPORT int deleteDir(const char *path, bool confirm = false);
 
-I3D_EXPORT int move(const char *in, const char *out);
+TL_EXPORT int move(const char *in, const char *out);
 
 
 /*!
@@ -97,13 +95,13 @@ I3D_EXPORT int move(const char *in, const char *out);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char dir[I3D_MAX_DIR];
- * if (getFileDir("c:\temp\file.txt", dir, I3D_MAX_DIR) == 0) {
+ * char dir[TL_MAX_DIR];
+ * if (getFileDir("c:\temp\file.txt", dir, TL_MAX_DIR) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDir(const char *path, char *dir, int size);
+TL_EXPORT int getFileDir(const char *path, char *dir, int size);
 
 /*!
  * \brief Optiene la unidad de disco de un archivo
@@ -114,13 +112,13 @@ I3D_EXPORT int getFileDir(const char *path, char *dir, int size);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char drive[I3D_MAX_DRIVE];
- * if (getFileDrive("c:\temp\file.txt", drive, I3D_MAX_DRIVE) == 0) {
+ * char drive[TL_MAX_DRIVE];
+ * if (getFileDrive("c:\temp\file.txt", drive, TL_MAX_DRIVE) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDrive(const char *path, char *drive, int size);
+TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
 
 /*!
  * \brief Optiene la extensión de un archivo
@@ -131,13 +129,13 @@ I3D_EXPORT int getFileDrive(const char *path, char *drive, int size);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char ext[I3D_MAX_EXT];
- * if (getFileExtension("c:\temp\file.txt", ext, I3D_MAX_EXT) == 0) {
+ * char ext[TL_MAX_EXT];
+ * if (getFileExtension("c:\temp\file.txt", ext, TL_MAX_EXT) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileExtension(const char *path, char *ext, int size);
+TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
 
 /*!
  * \brief Optiene el nombre de un archivo
@@ -148,13 +146,13 @@ I3D_EXPORT int getFileExtension(const char *path, char *ext, int size);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char name[I3D_MAX_FNAME];
- * if (getFileName("c:\temp\file.txt", name, I3D_MAX_FNAME) == 0) {
+ * char name[TL_MAX_FNAME];
+ * if (getFileName("c:\temp\file.txt", name, TL_MAX_FNAME) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileName(const char *path, char *name, int size);
+TL_EXPORT int getFileName(const char *path, char *name, int size);
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
@@ -165,13 +163,13 @@ I3D_EXPORT int getFileName(const char *path, char *name, int size);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char driveDir[I3D_MAX_PATH];
- * if (getFileDriveDir("c:\temp\file.txt", driveDir, I3D_MAX_PATH) == 0) {
+ * char driveDir[TL_MAX_PATH];
+ * if (getFileDriveDir("c:\temp\file.txt", driveDir, TL_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
+TL_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
 
 /*!
  * \brief Cambia el nombre de un archivo
@@ -183,13 +181,13 @@ I3D_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
  *
  * <h4>Ejemplo</h4>
  * \code
- * char new_name[I3D_MAX_PATH];
- * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name, I3D_MAX_PATH) == 0) {
+ * char new_name[TL_MAX_PATH];
+ * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name, TL_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
+TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
 
 /*!
  * \brief Cambia la extensión de un archivo
@@ -201,13 +199,13 @@ I3D_EXPORT int changeFileName(const char *path, const char *newName, char *pathO
  *
  * <h4>Ejemplo</h4>
  * \code
- * char logfile[I3D_MAX_PATH];
- * if (changeFileExtension(getRunfile(), "log", logfile, I3D_MAX_PATH) == 0) {
+ * char logfile[TL_MAX_PATH];
+ * if (changeFileExtension(getRunfile(), "log", logfile, TL_MAX_PATH) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
+TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -219,18 +217,18 @@ I3D_EXPORT int changeFileExtension(const char *path, const char *newExt, char *p
  *
  * <h4>Ejemplo</h4>
  * \code
- * char logfile[I3D_MAX_FNAME + I3D_MAX_EXT];
- * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile, I3D_MAX_FNAME + I3D_MAX_EXT) == 0) {
+ * char logfile[TL_MAX_FNAME + TL_MAX_EXT];
+ * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile, TL_MAX_FNAME + TL_MAX_EXT) == 0) {
  * ...
  * }
  * \endcode
  */
-I3D_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
+TL_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
 
 
-I3D_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
+TL_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
 
-I3D_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
+TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
 
 //TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
 
@@ -240,7 +238,7 @@ I3D_EXPORT void fileList(const char *directory, std::list<std::string> *fileList
  * - Como separador admite "/" y "\\".
  *
  */
-class I3D_EXPORT Path
+class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path") Path
 {
 private:
 
@@ -300,9 +298,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~Path()
-  {
-  }
+  ~Path();
 
   /*!
    * \brief Parsea una cadena obteniendo los directorios de la ruta, unidad de disco y nombre si es un fichero
@@ -361,468 +357,6 @@ public:
 };
 
 
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-class I3D_EXPORT Process
-{
-
-public:
-  
-  /*!
-   * \brief Estados del proceso
-   */
-  enum class Status {
-    START,             /*!< Inicio */
-    RUNNING,           /*!< Corriendo */
-    PAUSING,           /*!< Pausando */
-    PAUSE,             /*!< Pausado */
-    STOPPED,           /*!< Detenido por el usuario*/
-    FINALIZED,         /*!< Finalizado */
-    FINALIZED_ERROR    /*!< Terminado con error */
-  };
-
-  /*!
-   * \brief Interfaz que se debe implementar para recibir los eventos del proceso
-   *
-   * Las clases que implementen este listener y se subcriban mediante el método 
-   * addListener() recibiran los diferentes eventos que se emitan desde el proceso.
-   */
-  class Listener
-  {
-  public:
-
-    /*!
-     * \brief Constructora
-     */
-    Listener()
-    {
-    }
-
-    /*!
-     * \brief destructora
-     */
-    virtual ~Listener()
-    {
-    }
-
-    /*!
-     * \brief Evento pausa
-     * \param id Identificador del proceso
-     */
-    virtual void onPause(uint64_t id) = 0;
-
-    /*!
-     * \brief Evento reanudación
-     * \param id Identificador del proceso
-     */
-    virtual void onResume(uint64_t id) = 0;
-
-    /*!
-     * \brief Evento proceso corriendo
-     * \param id Identificador del proceso
-     */
-    virtual void onRun(uint64_t id) = 0;
-
-    /*!
-     * \brief Evento inicio procesos
-     * \param id Identificador del proceso
-     */
-    virtual void onStart(uint64_t id) = 0;
-
-    /*!
-     * \brief Evento detención
-     * \param id Identificador del proceso
-     */
-    virtual void onStop(uint64_t id) = 0;
-
-    /*!
-     * \brief 
-     * \param id Identificador del proceso
-     */
-    virtual void onEnd(uint64_t id) = 0;
-
-    /*!
-     * \brief 
-     * \param id Identificador del proceso
-     */
-    virtual void onError(uint64_t id) = 0;
-  };
-
-protected:
-
-  Status mStatus;
-
-  /*!
-   * \brief Lista con los escuchadores subscritos al gestor de eventos
-   */
-  std::list<Listener *> mListeners;
-
-  /*!
-   * \brief Número de procesos
-   */
-  static unsigned long sProcessCount;
-
-  /*!
-   * \brief Identificador del proceso 
-   */    
-  unsigned long mProcessId;
-
-  Process *mParentProcess;
-
-public:
-
-  /*!
-   * \brief Constructora
-   */
-  Process(Process *parentProcess = nullptr);
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~Process();
-
-  /*!
-   * \brief Añade un escuchador de eventos
-   * \param[in] listener Objeto escuchador
-   */
-  void addListener(Listener *listener);
-
-  /*!
-   * \brief Pausa el proceso
-   */
-  virtual void pause();
-
-  /*!
-   * \brief Quita un escuchador de mensajes
-   * \param[in] listener Objeto escuchador
-   */
-  void removeListener(Listener *listener);
-
-  /*!
-   * \brief Reinicia el proceso
-   */
-  virtual void reset();
-
-  /*!
-   * \brief Continua ejecutando el proceso
-   */
-  virtual void resume();
-
-  /*!
-   * \brief Arranca el proceso
-   * Aunque es virtual pura se define el comportamiento por defecto.
-   * Desde la implementación del método en la clase hija se debe incluir 
-   * Process::run() o establecer directamente mStatus = Status::RUNNING
-   * al inicio del método para establecer que el proceso esta corriendo.
-   */
-  virtual Status run(Progress *progressBar = NULL) = 0;
-
-  /*!
-   * \brief Detiene el proceso
-   */
-  virtual void stop();
-
-  /*!
-   * \brief Devuelve el proceso como una linea de comandos
-   */
-  //virtual std::string toString() = 0;
-
-  /*!
-   * \brief Devuelve el estado actual de la ejecución 
-   */
-  Status getStatus();
-  
-  void setStatus(Status status);
-
-  uint64_t getProcessId() const;
-
-  /*!
-   * \brief Establece el contador de procesos a cero
-   */
-  static void processCountReset();
-
-protected:
-
-  // Eventos que se lanzan
-  void endTriggered();
-  void pauseTriggered();
-  void resumeTriggered();
-  void runTriggered();
-  void startTriggered();
-  void stopTriggered();
-  void errorTriggered();
-};
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-//TODO: Pendiente para Linux
-class I3D_EXPORT CmdProcess : public Process
-{
-public:
-
-#ifdef WIN32
-  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
-  enum class PRIORITY
-  {
-
-    REALTIME = REALTIME_PRIORITY_CLASS,
-    HIGH = HIGH_PRIORITY_CLASS,
-    ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
-    NORMAL = NORMAL_PRIORITY_CLASS,
-    BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
-    IDLE = IDLE_PRIORITY_CLASS
-  };
-#endif
-
-protected:
-
-#ifdef WIN32
-  STARTUPINFO si;
-  PROCESS_INFORMATION pi;
-  static DWORD sPriority;
-#endif
-  std::string mCmd;
-
-public:
-
-  CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
-  ~CmdProcess();
-
-  virtual Process::Status run(Progress *progressBar = NULL) override;
-  static void setPriority(int priority);
-
-private:
-
-#ifdef WIN32
-  std::string formatErrorMsg(DWORD errorCode);
-#endif
-};
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-///*!
-// * \brief Wrapper de una función para ejecutarla como un proceso.
-// * 
-// */
-//class I3D_EXPORT FunctionProcess : public Process
-//{
-//
-//private:
-//
-//  /*!
-//   * \brief Función
-//   */
-//  std::function<void()> f;
-//
-//public:
-//
-//  /*!
-//   * \brief Constructora
-//   * \param[in] f Función de la forma std::function<void(const cv::Mat &,cv::Mat *)>
-//   */
-//  FunctionProcess(std::function<void()> f);
-//
-//  ~FunctionProcess();
-//
-//  virtual Process::Status run(Progress *progressBar = NULL) override;
-//
-//};
-
-
-/* ---------------------------------------------------------------------------------- */
-
-class BatchProcess :  public Process::Listener
-{
-public:
-
-  /*!
-   * \brief Estados de Batch
-   */
-  enum class Status {
-    START,             /*!< Inicio */
-    RUNNING,           /*!< Corriendo */
-    PAUSING,           /*!< Pausando */
-    PAUSE,             /*!< Pausado */
-    STOPPED,           /*!< Detenido */
-    FINALIZED,         /*!< Finalizado */
-    FINALIZED_ERROR    /*!< Terminado con error */
-  };
-
-  /*!
-   * \brief Interfaz que se debe implementar para recibir los eventos del batch
-   *
-   * Las clases que implementen este listener y se subcriban mediante el método 
-   * addListener() recibiran los diferentes eventos que se emitan desde el batch.
-   */
-  class Listener
-  {
-  public:
-
-    /*!
-     * \brief Constructora
-     */
-    Listener()
-    {
-    }
-
-    /*!
-     * \brief destructora
-     */
-    virtual ~Listener()
-    {
-    }
-
-    /*!
-     * \brief 
-     */
-    virtual void onEnd() = 0;
-
-    /*!
-     * \brief 
-     */
-    virtual void onError() = 0;
-  };
-
-protected:
-
-  /*!
-   * \brief Estado del batch
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Lista de procesos
-   */
-  std::list<std::shared_ptr<Process>> mProcessList;
-
-  /*!
-   * \brief Lista con los escuchadores subscritos al gestor de eventos
-   */
-  std::list<Listener *> mListeners;
-
-  std::thread _thread;
-  std::mutex mtx;
-  Process *mCurrentProcess;
-
-public:  
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  BatchProcess();
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] batchProcess Procesos que se copia
-   */
-  BatchProcess(const BatchProcess &batchProcess);
-
-  /*!
-   * \brief Constructor de lista
-   * \param[in] Listado de procesos
-   */
-  BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList);
-
-  /*!
-   * \brief Destructora
-   */
-  ~BatchProcess();
-
-  /*!
-   * \brief Añade un nuevo proceso a la lista
-   * \param[in] process Proceso que se añade
-   */
-  void add(const std::shared_ptr<Process> &process);
-
-  /*!
-   * \brief Añade un escuchador de eventos
-   * \param[in] listener Objeto escuchador
-   */
-  void addListener(Listener *listener);
-
-  /*!
-   * \brief Quita un escuchador de mensajes
-   * \param[in] listener Objeto escuchador
-   */
-  void removeListener(Listener *listener);
-
-  /*!
-   * \brief Limpia la lista de procesos
-   * \deprecated Use reset() en su lugar
-   */
-  I3D_DEPRECATED("BatchProcess::reset()")
-  void clear();
-
-  void remove(uint64_t id);
-  void remove(const std::shared_ptr<Process> &process);
-
-  /*!
-   * \brief Comprueba si esta corriendo
-   */
-  bool isRunning() const;
-
-  /*!
-   * \brief Pausa los procesos
-   */
-  void pause();
-
-  /*!
-   * \brief Reinicio los procesos
-   */
-  void reset();
-
-  /*!
-   * \brief Continua corriendo los procesos
-   */
-  void resume();
-
-  /*!
-   * \brief Corre los procesos
-   * \param[in] progressBarTotal Barra de progreso total
-   * \param[in] progressBarPartial Barra de progreso parcial
-   */
-  Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
-
-  /*!
-   * \brief Corre los procesos en otro hilo de ejecución
-   * \param[in] progressBarTotal Barra de progreso total
-   * \param[in] progressBarPartial Barra de progreso parcial
-   */
-  Status run_async(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
-
-  /*!
-   * \brief Detiene los procesos
-   */
-  void stop();
-
-protected:
-  
-  virtual void onPause(uint64_t id) override;
-  virtual void onResume(uint64_t id) override;
-  virtual void onRun(uint64_t id) override;
-  virtual void onStart(uint64_t id) override;
-  virtual void onStop(uint64_t id) override;
-  virtual void onEnd(uint64_t id) override;
-  virtual void onError(uint64_t id) override;
-
-private:
-
-  // Eventos que se lanzan
-  void endTriggered();
-  void errorTriggered();
-
-};
-
-
-
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
@@ -848,7 +382,7 @@ private:
  * }
  * \endcode
  */
-I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
+TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *chs = ",");
 
 /*!
  * \brief Separa una cadena en un array de dobles
@@ -866,7 +400,7 @@ I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<int> &vOut, co
  * }
  * \endcode
  */
-I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
+TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const  char *chs = ",");
 
 /*!
  * \brief Reemplaza una cadena por otra en un texto.
@@ -880,7 +414,7 @@ I3D_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut,
  * replaceString(str, " ", "_");
  * \endcode
  */
-I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
+TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
 
 /*!
@@ -901,7 +435,7 @@ I3D_EXPORT void replaceString(std::string *str, const std::string &str_old, cons
  * }
  * \endcode
  */
-I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
+TL_EXPORT int split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
 
 /*! \} */ // end of stringOper
 
@@ -911,7 +445,7 @@ I3D_EXPORT int split(const std::string &in, std::vector<std::string> &out, const
  * \return Cadena de texto
  */
 template <typename T> inline
-I3D_DEPRECATED("std::to_string()")
+TL_DEPRECATED("std::to_string()")
 std::string numberToString(T number)
 {
   std::ostringstream ss;
@@ -949,7 +483,7 @@ enum class Base : int8_t
  * \return Número
  * \see Base
  */
-I3D_EXPORT int stringToInteger(const std::string &text, I3D::Base base = I3D::Base::DECIMAL);
+TL_EXPORT int stringToInteger(const std::string &text, TL::Base base = TL::Base::DECIMAL);
 
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
@@ -1106,11 +640,11 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
 
-I3D_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
+TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
 
-I3D_EXPORT int loadBinMat(const char *file, cv::Mat *data);
+TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
 
-I3D_EXPORT int saveBinMat(const char *file, cv::Mat &data);
+TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 
 #endif // HAVE_OPENCV
 
@@ -1122,7 +656,7 @@ I3D_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 /*!
  * \brief número optimo de hilos
  */
-I3D_EXPORT uint32_t getOptimalNumberOfThreads();
+TL_EXPORT uint32_t getOptimalNumberOfThreads();
 
 /*!
  * \brief Ejecuta una función en paralelo
@@ -1130,7 +664,7 @@ I3D_EXPORT uint32_t getOptimalNumberOfThreads();
  * \param[in] end
  * \param[in] f Función o lambda
  */
-I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
+TL_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 
 /*!
  * \brief Ejecuta una función en paralelo
@@ -1143,7 +677,7 @@ I3D_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
 template<typename itIn, typename itOut> inline
 void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, itOut *)> f)
 {
-//#ifdef I3D_MSVS_CONCURRENCY
+//#ifdef TL_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
   //Concurrency::run_with_cancellation_token([ini, end, f]() {
   //  Concurrency::parallel_for(ini, end, f);
@@ -1189,14 +723,14 @@ void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function
  * consolePrintInfo("Time %f", time);
  * \endcode
  */
-I3D_EXPORT uint64_t getTickCount();
+TL_EXPORT uint64_t getTickCount();
 
 /*!
  * \brief Clase para medir tiempos.
  *
  * Su uso esta pensado para medir tiempos en depuración
  */
-class I3D_EXPORT Chrono
+class TL_EXPORT Chrono
 {
 public:
 
@@ -1290,7 +824,7 @@ private:
 /*!
  * \brief Clase virtual para la sustitución de etiquetas en textos, ficheros html o xml.
  */
-class I3D_EXPORT VrtTemplate
+class TL_EXPORT VrtTemplate
 {
 
 protected:
@@ -1350,7 +884,7 @@ public:
 };
 
 
-class I3D_EXPORT HtmlTemplate : public VrtTemplate
+class TL_EXPORT HtmlTemplate : public VrtTemplate
 {
 
 protected:
@@ -1390,7 +924,7 @@ public:
  *
  * Esta clase define la interfaz básica para lectura, creación y escritura de ficheros
  */
-class I3D_EXPORT File
+class TL_EXPORT File
 {
 public:
 
@@ -1463,7 +997,7 @@ public:
 
 //Es un fichero y es un modelo de datos con lo cual tendria que heredar de forma publica tambien de 
 // DataTable
-class I3D_EXPORT Csv : public File/*, private DataTable*/
+class TL_EXPORT Csv : public File/*, private DataTable*/
 {
 private:
 
@@ -1546,49 +1080,59 @@ private:
 };
 
 
-//I3D_EXPORT void compressFile(const char *file, const char *zip);
+//TL_EXPORT void compressFile(const char *file, const char *zip);
+
+#ifdef HAVE_MINIZIP
+
+// Clase para compresión de archivos
+class Compression : public File
+{
+private:
+
+  zipFile mZipFile; 
+  unzFile mUnZipFile;
+  unz_global_info mGlobalInfo;
+
+public:
+
+  Compression();
+  Compression(const char *file, Mode mode = Mode::Update);
+  Compression(const Compression &compression);
+  ~Compression();
+
+  /*!
+   * \brief Cierra el fichero
+   */
+  void close() override;
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  Status createCopy(const char *fileOut) override;
+
+  /*!
+   * \brief Abre un fichero
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura
+   * \return
+   * \see Mode
+   */
+  Status open(const char *file, Mode mode = Mode::Read) override;
+
+  Status compress(const std::string &file, const std::string &directory = {});
+  Status decompress();
+
+private:
+
+};
+
+#endif // HAVE_MINIZIP
 
 
-// Futura clase para compresión de archivos
-//class CompressFile : public File
-//{
-//private:
-//
-//public:
-//
-//  CompressFile();
-//  CompressFile(const char *file, Mode mode = Mode::Update);
-//  CompressFile(const CompressFile &compressFile);
-//  ~CompressFile();
-//
-//  /*!
-//   * \brief Cierra el fichero csv
-//   */
-//  void close() override;
-//
-//  /*!
-//   * \brief Guarda una copia con otro nonbre
-//   */
-//  Status createCopy(const char *fileOut) override;
-//
-//  /*!
-//   * \brief Abre un fichero
-//   * \param[in] file Nombre del fichero
-//   * \param[in] mode Modo de apertura
-//   * \return
-//   * \see Mode
-//   */
-//  Status open(const char *file, Mode mode = Mode::Read) override;
-//
-//  void addFile(const char *file);
-//
-//private:
-//
-//};
-
+/*! \} */ // end of utilities
 
 //TODO: funcion para conversión entre tipos basicos en templates para evitar warnings
 
-} // End namespace I3D
+} // End namespace TL
 
-#endif // I3D_UTILS_H
+#endif // TL_CORE_UTILS_H

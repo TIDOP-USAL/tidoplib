@@ -1,17 +1,16 @@
-#include "messages.h"
+#include "core/messages.h"
 
 #include "core/defs.h"
 #include "core/utils.h"
-//#include "core/console.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/utility.hpp"
 #endif
 
 #ifdef HAVE_GDAL
-I3D_SUPPRESS_WARNINGS
+TL_SUPPRESS_WARNINGS
 #include "gdal_priv.h"
-I3D_DEFAULT_WARNINGS
+TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
 #include <cstdarg>
@@ -27,13 +26,14 @@ I3D_DEFAULT_WARNINGS
 
 #include "core/defs.h"
 
-#ifdef I3D_MESSAGE_HANDLER
 
-namespace I3D
+
+namespace TL
 {
 
+#ifdef TL_MESSAGE_HANDLER
 
-I3D_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(4100)
 
 #ifdef HAVE_OPENCV
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
@@ -66,7 +66,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 }
 #endif // HAVE_GDAL
 
-I3D_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(4100)
 
 
 
@@ -86,16 +86,16 @@ _msgProperties getMessageProperties(MessageLevel msgLevel)
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case I3D::MessageLevel::MSG_DEBUG:
+  case TL::MessageLevel::MSG_DEBUG:
     iLevel = 0;
     break;
-  case I3D::MessageLevel::MSG_INFO:
+  case TL::MessageLevel::MSG_INFO:
     iLevel = 1;
     break;
-  case I3D::MessageLevel::MSG_WARNING:
+  case TL::MessageLevel::MSG_WARNING:
     iLevel = 2;
     break;
-  case I3D::MessageLevel::MSG_ERROR:
+  case TL::MessageLevel::MSG_ERROR:
     iLevel = 3;
     break;
   default:
@@ -171,13 +171,16 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   char date[64];
   std::time_t now = std::time(NULL);
-  std::tm *_tm = std::localtime(&now);
-  
-  if (_tm) {
-    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm); 
-  } else {
-    strcpy(date, "NULL");
-  }
+  //std::tm *_tm = std::localtime(&now);
+  struct tm _tm;
+  localtime_s(&_tm, &now);
+
+  //if (_tm) {
+    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm); 
+  //} else {
+  //  //strcpy(date, "NULL");
+  //  strcpy_s(date, sizeof date, "NULL");
+  //}
 
   char buf[1000];
   #if defined _MSC_VER
@@ -193,16 +196,16 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   #endif
 
   switch (level) {
-  case I3D::MessageLevel::MSG_DEBUG:
+  case TL::MessageLevel::MSG_DEBUG:
     sObjMessage->onDebug(buf, date);
     break;
-  case I3D::MessageLevel::MSG_INFO:
+  case TL::MessageLevel::MSG_INFO:
     sObjMessage->onInfo(buf, date);
     break;
-  case I3D::MessageLevel::MSG_WARNING:
+  case TL::MessageLevel::MSG_WARNING:
     sObjMessage->onWarning(buf, date);
     break;
-  case I3D::MessageLevel::MSG_ERROR:
+  case TL::MessageLevel::MSG_ERROR:
     sObjMessage->onError(buf, date);
     break;
   default:
@@ -231,16 +234,16 @@ void MessageManager::release(const Message &msg)
   }
 
   switch (msg.getLevel()) {
-  case I3D::MessageLevel::MSG_DEBUG:
+  case TL::MessageLevel::MSG_DEBUG:
     sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
     break;
-  case I3D::MessageLevel::MSG_INFO:
+  case TL::MessageLevel::MSG_INFO:
     sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
     break;
-  case I3D::MessageLevel::MSG_WARNING:
+  case TL::MessageLevel::MSG_WARNING:
     sObjMessage->onWarning(msg_out.c_str(), msg.getDate());
     break;
-  case I3D::MessageLevel::MSG_ERROR:
+  case TL::MessageLevel::MSG_ERROR:
     sObjMessage->onError(msg_out.c_str(), msg.getDate());
     break;
   default:
@@ -260,7 +263,7 @@ void MessageManager::resume()
   sStopHandler = false;
 }
 
-I3D_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(4100)
 void MessageManager::onDebug(const char *msg, const char *date)
 {
 #ifdef _DEBUG
@@ -271,7 +274,7 @@ void MessageManager::onDebug(const char *msg, const char *date)
   }
 #endif
 }
-I3D_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(4100)
 
 void MessageManager::onInfo(const char *msg, const char *date)
 {
@@ -311,19 +314,23 @@ MessageManager::Message::Message(const char *msg, ...)
   try {
     char date[64];
     std::time_t now = std::time(NULL);
-    std::tm *_tm = std::localtime(&now);
+    //std::tm *_tm = std::localtime(&now);
+    struct tm _tm;
+    localtime_s(&_tm, &now); //TODO: no es localtime_s de c++ 11. 
 
-    if (_tm) {
-      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, _tm);
-    } else {
-      strcpy(date, "NULL");
-    }
+    //if (_tm) {
+      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, &_tm);
+    //} else {
+    //  //strcpy(date, "NULL");
+    //  strcpy_s(date, sizeof date, "NULL");
+    //}
     mDate = date;
 
     char buf[500];
     memset(buf, 0, sizeof(buf));
     std::string aux(msg);
-    I3D::replaceString(&aux, "% ", "%% ");
+    TL::replaceString(&aux, "% ", "%% ");
+    TL::replaceString(&aux, "%(\s)", "%%");
     va_list args;
     va_start(args, msg);
 #ifdef _MSC_VER
@@ -387,6 +394,8 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
   mFunction = function;
 }
 
+#endif  // TL_MESSAGE_HANDLER
+
 /* ---------------------------------------------------------------------------------- */
 
 std::unique_ptr<Log> Log::sObjLog;
@@ -395,8 +404,10 @@ EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
-Log::Log(bool add) 
+Log::Log(bool add)
+#ifdef TL_MESSAGE_HANDLER  
   : MessageManager::Listener(add)
+#endif
 {
 }
 
@@ -434,18 +445,21 @@ void Log::write(const char *msg)
 
   char date[64];
   std::time_t now = std::time(NULL);
-  std::tm *_tm = std::localtime(&now);
-  if (_tm) {
+  //std::tm *_tm = std::localtime(&now);
+  struct tm _tm;
+  localtime_s(&_tm, &now);
+  //if (_tm) {
     //std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
-    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), _tm);
-  } else {
-    strcpy(date, "NULL");
-  }
+    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), &_tm);
+  //} else {
+  //  //strcpy(date, "NULL");
+  //  strcpy_s(date, sizeof date, "NULL");
+  //}
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[I3D_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
+    char _logfile[TL_MAX_PATH];
+    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
     sLogFile = _logfile;
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
@@ -458,6 +472,8 @@ void Log::write(const char *msg)
     //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
   }
 }
+
+#ifdef TL_MESSAGE_HANDLER  
 
 void Log::onMsgDebug(const char *msg, const char *date)
 {
@@ -492,8 +508,8 @@ void Log::_write(const char *msg, const char *date)
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[I3D_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, I3D_MAX_PATH);
+    char _logfile[TL_MAX_PATH];
+    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
     sLogFile = _logfile;
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
@@ -507,11 +523,8 @@ void Log::_write(const char *msg, const char *date)
   }
 }
 
+#endif // TL_MESSAGE_HANDLER 
 
 
 
-
-} // End mamespace I3D
-
-
-#endif  // I3D_MESSAGE_HANDLER
+} // End mamespace TL

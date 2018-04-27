@@ -1,7 +1,7 @@
-#ifndef I3D_WHITE_BALANCE_H
-#define I3D_WHITE_BALANCE_H
+#ifndef TL_IMGPROCESS_WHITE_BALANCE_H
+#define TL_IMGPROCESS_WHITE_BALANCE_H
 
-#include "core/config.h"
+#include "config_tl.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -9,10 +9,10 @@
 #include "opencv2/xphoto/white_balance.hpp"
 
 #include "core/defs.h"
-#include "graphic_entities/color.h"
+#include "graphic/color.h"
 #include "img_process/img_processing.h"
 
-namespace I3D
+namespace TL
 {
 
 // Balance de blancos
@@ -37,7 +37,7 @@ namespace I3D
 /*!
  * \brief Balance de blancos  Gray World
  */
-class I3D_EXPORT Grayworld : public ImgProcessing
+class TL_EXPORT Grayworld : public ImgProcessing
 {
 private:
 
@@ -96,7 +96,7 @@ public:
  * introduce la luz blanca:
  * (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
  */
-class I3D_EXPORT WhitePatch : public ImgProcessing
+class TL_EXPORT WhitePatch : public ImgProcessing
 {
 private:
 
@@ -132,8 +132,8 @@ public:
 
 /*! \} */ // end of ImgProc
 
-} // End namespace I3D
+} // End namespace TL
 
 #endif // HAVE_OPENCV
 
-#endif // I3D_WHITE_BALANCE_H
+#endif // TL_IMGPROCESS_WHITE_BALANCE_H

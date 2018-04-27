@@ -1,10 +1,14 @@
-#ifndef I3D_SKELETON_H
-#define I3D_SKELETON_H
+#ifndef TL_IMGPROCESS_SKELETON_H
+#define TL_IMGPROCESS_SKELETON_H
+
+#include "config_tl.h"
+
+#ifdef HAVE_OPENCV
 
 #include "opencv2/core/core.hpp"
 #include "img_process/img_processing.h"
 
-namespace I3D
+namespace TL
 {
 
 
@@ -52,7 +56,7 @@ void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin = Thinning::ZHAN
 
 
 
-class I3D_EXPORT ThinningProc : public ImgProcessing
+class TL_EXPORT ThinningProc : public ImgProcessing
 {
 
 private:
@@ -71,6 +75,8 @@ public:
 
 /*! \} */ // end of ImgProc
 
-} // End namespace I3D
+} // End namespace TL
 
-#endif // I3D_SKELETON_H
+#endif // HAVE_OPENCV
+
+#endif // TL_IMGPROCESS_SKELETON_H

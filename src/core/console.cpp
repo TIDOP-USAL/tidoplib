@@ -1,7 +1,8 @@
-#include "console.h"
+#include "core/console.h"
+
+#include "config_tl.h"
 
 #include "core/defs.h"
-#include "core/config.h"
 #include "core/utils.h"
 #include "core/messages.h"
 
@@ -9,10 +10,10 @@
 #include <ctime>
 #include <cstdio>
 
-using namespace I3D;
+using namespace TL;
 using namespace std;
 
-namespace I3D
+namespace TL
 {
 
 struct msgProperties {
@@ -33,16 +34,16 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case I3D::MessageLevel::MSG_DEBUG:
+  case TL::MessageLevel::MSG_DEBUG:
     iLevel = 0;
     break;
-  case I3D::MessageLevel::MSG_INFO:
+  case TL::MessageLevel::MSG_INFO:
     iLevel = 1;
     break;
-  case I3D::MessageLevel::MSG_WARNING:
+  case TL::MessageLevel::MSG_WARNING:
     iLevel = 2;
     break;
-  case I3D::MessageLevel::MSG_ERROR:
+  case TL::MessageLevel::MSG_ERROR:
     iLevel = 3;
     break;
   default:
@@ -57,7 +58,9 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
 
 Console::Console(bool add) 
+#ifdef TL_MESSAGE_HANDLER 
   : MessageManager::Listener(add)
+#endif
 { 
 #ifdef WIN32
   init(STD_OUTPUT_HANDLE);
@@ -67,7 +70,9 @@ Console::Console(bool add)
 }
 
 Console::Console(Console::Mode mode, bool add)
+#ifdef TL_MESSAGE_HANDLER 
   : MessageManager::Listener(add)
+#endif
 { 
 #ifdef WIN32
   DWORD handle;
@@ -106,10 +111,12 @@ Console::Console(Console::Mode mode, bool add)
 #endif
 }
 
-Console::Console(const Console &console, bool add) 
-  : MessageManager::Listener(add),
+Console::Console(const Console &console, bool add) :
+#ifdef TL_MESSAGE_HANDLER 
+  MessageManager::Listener(add),
+#endif
 #ifdef WIN32
-  h(console.h),
+  mHandle(console.mHandle),
   mOldColorAttrs(console.mOldColorAttrs),
 #else
   mStream(console.mStream),
@@ -139,7 +146,7 @@ void Console::printMessage(const char *msg)
   std::cout << "\r";
 
   std::string aux(msg);
-  I3D::replaceString(&aux, "%", "%%");
+  TL::replaceString(&aux, "%", "%%");
   printf_s("%s\n", aux.c_str());
 }
 
@@ -154,7 +161,7 @@ void Console::printErrorMessage(const char *msg)
 void Console::reset() 
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(h, mOldColorAttrs);
+  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
 #else
   sprintf(mCommand, "%c[0;m", 0x1B);
   fprintf(mStream, "%s", mCommand);
@@ -165,28 +172,28 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
 {
 #ifdef WIN32
   switch (backColor) {
-  case I3D::Console::Color::BLACK:
+  case TL::Console::Color::BLACK:
     mBackColor = 0;
     break;
-  case I3D::Console::Color::BLUE:
+  case TL::Console::Color::BLUE:
     mBackColor = BACKGROUND_BLUE;
     break;
-  case I3D::Console::Color::GREEN:
+  case TL::Console::Color::GREEN:
     mBackColor = BACKGROUND_GREEN;
     break;
-  case I3D::Console::Color::CYAN:
+  case TL::Console::Color::CYAN:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
     break;
-  case I3D::Console::Color::RED:
+  case TL::Console::Color::RED:
     mBackColor = BACKGROUND_RED;
     break;
-  case I3D::Console::Color::MAGENTA:
+  case TL::Console::Color::MAGENTA:
     mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
     break;
-  case I3D::Console::Color::YELLOW:
+  case TL::Console::Color::YELLOW:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
     break;
-  case I3D::Console::Color::WHITE:
+  case TL::Console::Color::WHITE:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
     break;
   default:
@@ -208,28 +215,28 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
       {
 #ifdef WIN32
   switch (foreColor) {
-  case I3D::Console::Color::BLACK:
+  case TL::Console::Color::BLACK:
     mForeColor = 0;
     break;
-  case I3D::Console::Color::BLUE:
+  case TL::Console::Color::BLUE:
     mForeColor = FOREGROUND_BLUE;
     break;
-  case I3D::Console::Color::GREEN:
+  case TL::Console::Color::GREEN:
     mForeColor = FOREGROUND_GREEN;
     break;
-  case I3D::Console::Color::CYAN:
+  case TL::Console::Color::CYAN:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
     break;
-  case I3D::Console::Color::RED:
+  case TL::Console::Color::RED:
     mForeColor = FOREGROUND_RED;
     break;
-  case I3D::Console::Color::MAGENTA:
+  case TL::Console::Color::MAGENTA:
     mForeColor = FOREGROUND_RED | FOREGROUND_BLUE;
     break;
-  case I3D::Console::Color::YELLOW:
+  case TL::Console::Color::YELLOW:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_RED;
     break;
-  case I3D::Console::Color::WHITE:
+  case TL::Console::Color::WHITE:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
     break;
   default:
@@ -294,7 +301,9 @@ void Console::setTitle(const char *title)
   SetConsoleTitleA(title);
 }
 
-I3D_DISABLE_WARNING(4100)
+#ifdef TL_MESSAGE_HANDLER 
+
+TL_DISABLE_WARNING(4100)
 
 void Console::onMsgDebug(const char *msg, const char *date)
 {
@@ -333,15 +342,17 @@ void Console::onMsgError(const char *msg, const char *date)
   }
 }
 
-I3D_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(4100)
+
+#endif // TL_MESSAGE_HANDLER 
 
 #ifdef WIN32
 void Console::init(DWORD handle) 
 {
   setConsoleUnicode();
-  h = GetStdHandle(handle);
+  mHandle = GetStdHandle(handle);
   CONSOLE_SCREEN_BUFFER_INFO info; 
-  if (! GetConsoleScreenBufferInfo(h, &info)) {
+  if (! GetConsoleScreenBufferInfo(mHandle, &info)) {
     mOldColorAttrs = 0x0007;
   } else {
     mOldColorAttrs = info.wAttributes; 
@@ -352,10 +363,10 @@ void Console::init(DWORD handle)
   mBackIntensity = (mOldColorAttrs & 0x0080);
 
   mIniFont.cbSize = sizeof(mIniFont);
-  GetCurrentConsoleFontEx(h, FALSE, &mIniFont);
+  GetCurrentConsoleFontEx(mHandle, FALSE, &mIniFont);
   mCurrentFont.cbSize = sizeof(mCurrentFont);
   mCurrentFont = mIniFont;
-  //COORD fontSize = GetConsoleFontSize(h, mIniFont.nFont);
+  //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
 }
 #else
 void Console::init(FILE *stream)
@@ -372,8 +383,8 @@ void Console::init(FILE *stream)
 void Console::update()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(h, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
-  SetCurrentConsoleFontEx(h, FALSE, &mCurrentFont);
+  SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
+  SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
   sprintf(mCommand, "%c[%d,%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
   fprintf(mStream, "%s", mCommand);
@@ -573,13 +584,15 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
           if (val_pos != std::string::npos && name == argName) {
             if (arg->getType() == CmdArgument::Type::PARAMETER) {
               std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              I3D::replaceString(&value, "\"", "\\");
+              TL::replaceString(&value, "\"", "\\");
               dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
               bFind = true;
               break;
             } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
               std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
               dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
+              bFind = true;
+              break;
             }
           }
         }
@@ -691,7 +704,7 @@ bool Progress::operator()(double increment)
   std::lock_guard<std::mutex> lck(Progress::sMutex);
   if (mProgress == 0) initialize();
   mProgress += increment;
-  int percent = I3D_ROUND_TO_INT(mProgress * mScale);
+  int percent = TL_ROUND_TO_INT(mProgress * mScale);
   if (percent > mPercent) {
     mPercent = percent;
     updateProgress();
@@ -787,7 +800,7 @@ void ProgressBar::updateProgress()
     cout << "\r";
 
     Console console(Console::Mode::OUTPUT);
-    int posInBar = I3D_ROUND_TO_INT(mPercent * mSize / 100.);
+    int posInBar = TL_ROUND_TO_INT(mPercent * mSize / 100.);
 
     int ini = mSize / 2 - 2;
     for (int i = 0; i < mSize; i++) {
@@ -876,4 +889,4 @@ void ProgressPercent::terminate()
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End mamespace I3D
+} // End mamespace TL

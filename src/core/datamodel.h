@@ -1,5 +1,7 @@
-#ifndef I3D_DATA_MODEL_H
-#define I3D_DATA_MODEL_H
+#ifndef TL_DATA_MODEL_H
+#define TL_DATA_MODEL_H
+
+#include "config_tl.h"
 
 #include <list>
 #include <vector>
@@ -7,7 +9,7 @@
 
 #include "core/defs.h"
 
-namespace I3D
+namespace TKL
 {
 
 
@@ -15,7 +17,7 @@ namespace I3D
  * \brief Campo de la tabla
  *
  */
-class I3D_EXPORT TableHeaderField
+class TL_EXPORT TableHeaderField
 {
 public:
 
@@ -69,7 +71,7 @@ public:
 /*!
  * \brief Cabecera de la tabla
  */
-class I3D_EXPORT TableHeader
+class TL_EXPORT TableHeader
 {
 private:
 
@@ -118,7 +120,7 @@ private:
 };
 
 
-//class I3D_EXPORT TableRegisterField
+//class TL_EXPORT TableRegisterField
 //{
 //private:
 //
@@ -141,7 +143,7 @@ private:
 /*!
  * \brief Clase que representa un registro de una tabla
  */
-class I3D_EXPORT TableRegister
+class TL_EXPORT TableRegister
 {
 
 protected:
@@ -188,7 +190,7 @@ public:
 /*!
  * \brief Tabla de datos
  */
-class I3D_EXPORT DataTable /*: public std::iterator<std::bidirectional_iterator_tag, int>*/
+class TL_EXPORT DataTable /*: public std::iterator<std::bidirectional_iterator_tag, int>*/
 {
 public:
 
@@ -297,7 +299,7 @@ public:
 /*!
  * \brief The DataModel class
  */
-class I3D_EXPORT DataModel
+class TL_EXPORT DataModel
 {
 
 private:
@@ -364,6 +366,6 @@ public:
 
 
 
-} // End namespace I3D
+} // End namespace TKL
 
-#endif // I3D_CONSOLE_H
+#endif // TL_CONSOLE_H

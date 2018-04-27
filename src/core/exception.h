@@ -1,5 +1,7 @@
-#ifndef I3D_EXCEPTION_H
-#define I3D_EXCEPTION_H
+#ifndef TL_CORE_EXCEPTION_H
+#define TL_CORE_EXCEPTION_H
+
+#include "config_tl.h"
 
 #include <exception>
 #include <string>
@@ -7,13 +9,13 @@
 #include "core/defs.h"
 #include "core/messages.h"
 
-namespace I3D
+namespace TL
 {
 
 /*!
  * Clase para el manejo de excepciones
  */
-class I3D_EXPORT Exception : public std::exception
+class TL_EXPORT Exception : public std::exception
 {
 protected:
 
@@ -69,8 +71,8 @@ private:
   void messagef();
 };
 
-//I3D_EXPORT void throw_exception(const char *error, const char *file = NULL, int line = -1, const char *function = NULL);
-I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, int line= -1, const char *function = NULL);
+//TL_EXPORT void throw_exception(const char *error, const char *file = NULL, int line = -1, const char *function = NULL);
+TL_EXPORT Exception make_exception(const char *error, const char *file = NULL, int line= -1, const char *function = NULL);
 
 
 
@@ -79,31 +81,31 @@ I3D_EXPORT Exception make_exception(const char *error, const char *file = NULL, 
 /*!
  * \brief formatWindowsErrorMsg
  */
-I3D_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
+TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 
 #endif
 
 
-} // fin namespace I3D 
+} // fin namespace TL 
 
 
 
 #ifdef _DEBUG
-#define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
-#define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION)
+#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
-//#define I3D_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, I3D_FUNCTION); }
-#define I3D_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { I3D_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
+//#define TL_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION); }
+#define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
 
 #else
-#define I3D_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
-#define I3D_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
+#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
+#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
-#define I3D_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { I3D_THROW_ERROR(#EXPRESSION MESSAGE); }
+#define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR(#EXPRESSION MESSAGE); }
 
 #endif
 
 
-#endif // I3D_EXCEPTION_H
+#endif // TL_CORE_EXCEPTION_H

@@ -1,9 +1,11 @@
-#ifndef I3D_FLAGS_H
-#define I3D_FLAGS_H
+#ifndef TL_CORE_FLAGS_H
+#define TL_CORE_FLAGS_H
+
+#include "config_tl.h"
 
 #include "core/defs.h"
 
-namespace I3D
+namespace TL
 {
 
 /*!
@@ -378,6 +380,6 @@ typedef Flags<uint32_t> Flags_32;
 typedef Flags<uint64_t> Flags_64;
 
 
-} // End namespace I3D
+} // End namespace TL
 
-#endif // I3D_FLAGS_H
+#endif // TL_CORE_FLAGS_H

@@ -1,7 +1,7 @@
-#ifndef I3D_FILTERS_H
-#define I3D_FILTERS_H
+#ifndef TL_IMGPROCESS_FILTERS_H
+#define TL_IMGPROCESS_FILTERS_H
 
-#include "core/config.h"
+#include "config_tl.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -11,7 +11,7 @@
 //#include "graphic_entities/color.h"
 #include "img_process/img_processing.h"
 
-namespace I3D
+namespace TL
 {
 
 /*! \addtogroup ImgProc
@@ -21,6 +21,36 @@ namespace I3D
 
 /*! \defgroup Filters Filtros de imagen
  *  
+ * Tipos de filtros:
+ * 
+ * - Suavizado
+ * - Realce
+ * - Eliminación de ruido
+ * - Detección de bordes
+ *
+ * <h3>Filtros de paso bajo (suavizado de la imagen)</h3>
+ * 
+ * - Filtro de media: reemplaza cada píxel por el valor medio de sus contiguos
+ * - Mediana: sustituye por el valor de la mediana de los píxeles vecinos (normalmente se comporta mejor que el de promedio).
+ * - Gaussiano: aproximación a la distribución gaussiana.
+ *
+ *
+ * <h3>Filtros de realce de la imagen</h3>
+ *
+ *
+ * <h3>Filtros de eliminación de ruido:</h3>
+ * 
+ * El ruido es la variación aleatoria del brillo o el color en las imágenes digitales producido por el dispositivo de entrada.
+ *
+ * <h4>Tipos de ruido:</h4>
+ *
+ * - Ruido Impulsional o "Sal y Pimienta": los píxeles de la imagen son muy diferentes en color o intensidad a los píxeles circundantes. Generalmente, este tipo de ruido, afectará a una pequeña cantidad de píxeles de la imagen.
+ * - Ruido Gaussiano: En el ruido de tipo gaussiano, todos y cada uno de los píxeles que componen la imagen se ven afectados de acuerdo con una distribución normal o gaussiana.
+ * - Ruido uniforme: Toma valores en un determinado intervalo de forma equiprobable. Se da en un menor número de situaciones reales.
+ *
+ * <h3>Filtros de detección de bordes</h3>
+ *
+ * 
  *  \{
  */
 
@@ -31,7 +61,7 @@ namespace I3D
  * de la imagen es reemplazado por una media ponderada de los valores de intensidad 
  * de los píxeles cercanos.
  */
-class I3D_EXPORT BilateralFilter : public ImgProcessing
+class TL_EXPORT BilateralFilter : public ImgProcessing
 {
 private:
 
@@ -92,7 +122,7 @@ public:
  * \brief Filtro de desenfoque
  * Provoca un suavizado en la imagen resultante
  */
-class I3D_EXPORT Blur : public ImgProcessing
+class TL_EXPORT Blur : public ImgProcessing
 {
 private:
 
@@ -149,7 +179,7 @@ public:
 * \brief Filtro de desenfoque
 * Provoca un suavizado en la imagen resultante
 */
-class I3D_EXPORT BoxFilter : public ImgProcessing
+class TL_EXPORT BoxFilter : public ImgProcessing
 {
 private:
 
@@ -212,7 +242,7 @@ public:
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución
  */
-class I3D_EXPORT Filter2D : public ImgProcessing
+class TL_DEPRECATED("Convolution") TL_EXPORT Filter2D : public ImgProcessing
 {
 private:
 
@@ -248,7 +278,7 @@ public:
   /*!
    * \brief Constructora clase Filter2D
    * \param[in] ddepth Profundidad de la imagen de destino. ddepth=-1: Misma profundidad que la imagen de origen
-   * \param[in] kernel Matriz de convolución
+   * \param[in] kernel Matriz o máscara de convolución
    * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
    * \param[in] delta Valor opcional añadido a los píxeles filtrados
    * \param[in] borderType Método de extrapolación
@@ -275,13 +305,78 @@ public:
   void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
 };
 
+/*!
+ * \brief Aplica un filtrado mediante una matriz de convolución
+ */
+class TL_EXPORT Convolution : public ImgProcessing
+{
+private:
+
+  /*!
+   * \brief Profundidad de la imagen de destino
+   *  ddepth=-1: Misma profundidad que la imagen de origen
+   */
+  int mDepth;
+
+  /*!
+   * \brief kernel Matriz de convolución
+   */
+  cv::Mat mKernel;
+
+  /*!
+   * \brief Punto de anclaje.
+   * Por defecto es el centro del kernel
+   */
+  cv::Point mAnchor;
+
+  /*!
+   * \brief Valor opcional añadido a los píxeles filtrados
+   */
+  double mDelta;
+
+  /*!
+   * \brief Método de extrapolación (cv::BorderTypes)
+   */
+  int mBorderType;
+
+public:
+
+  /*!
+   * \brief Constructora clase Convolution
+   * \param[in] ddepth Profundidad de la imagen de destino. ddepth=-1: Misma profundidad que la imagen de origen
+   * \param[in] kernel Matriz de convolución
+   * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
+   * \param[in] delta Valor opcional añadido a los píxeles filtrados
+   * \param[in] borderType Método de extrapolación
+   */
+  Convolution(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
+   * \see ImgProcessing::Status
+   */
+  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros del filtro de convolución
+   * \param[in] ddepth Profundidad de la imagen de destino. ddepth=-1: Misma profundidad que la imagen de origen
+   * \param[in] kernel Matriz de convolución
+   * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
+   * \param[in] delta Valor opcional añadido a los píxeles filtrados
+   * \param[in] borderType Método de extrapolación
+   */
+  void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
+};
 
 /* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Desenfoque gaussiano
  */
-class I3D_EXPORT GaussianBlur : public ImgProcessing
+class TL_EXPORT GaussianBlur : public ImgProcessing
 {
 private:
 
@@ -342,7 +437,7 @@ public:
  * \brief Laplaciano
  * Calcula el laplaciano de un imagen
  */
-class I3D_EXPORT Laplacian : public ImgProcessing
+class TL_EXPORT Laplacian : public ImgProcessing
 {
 private:
 
@@ -409,9 +504,9 @@ public:
 
 /*!
  * \brief Filtro de media
- * Suaviza una imagen con un filtro de media. 
+ * Suaviza una imagen con un filtro de media 
  */
-class I3D_EXPORT MedianBlur : public ImgProcessing
+class TL_EXPORT MedianBlur : public ImgProcessing
 {
 private:
 
@@ -449,7 +544,7 @@ public:
 /*!
  * \brief Sobel
  */
-class I3D_EXPORT Sobel : public ImgProcessing
+class TL_EXPORT Sobel : public ImgProcessing
 {
 private:
 
@@ -546,7 +641,7 @@ public:
 /*!
  * \brief Detector de bordes canny
  */
-class I3D_EXPORT Canny : public ImgProcessing
+class TL_EXPORT Canny : public ImgProcessing
 {
 private:
 
@@ -593,8 +688,8 @@ public:
 
 /*! \} */ // end of ImgProc
 
-} // End namespace I3D
+} // End namespace TL
 
 #endif // HAVE_OPENCV
 
-#endif // I3D_FILTERS_H
+#endif // TL_IMGPROCESS_FILTERS_H

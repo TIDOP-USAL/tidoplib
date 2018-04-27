@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <thread>
 
-namespace I3D
+namespace TL
 {
 
 
@@ -91,6 +91,6 @@ void WhitePatch::setParameters(const Color &white)
 
 
 
-} // End namespace I3D
+} // End namespace TL
 
 #endif // HAVE_OPENCV

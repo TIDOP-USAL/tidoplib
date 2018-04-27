@@ -1,24 +1,24 @@
-#ifndef I3D_IMG_PROCESSING_H
-#define I3D_IMG_PROCESSING_H
+#ifndef TL_IMGPROCESS_PROCESSING_H
+#define TL_IMGPROCESS_PROCESSING_H
+
+#include "config_tl.h"
 
 #include <list>
 #include <memory>
 #include <functional>
-
-#include "core/config.h"
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "core/defs.h"
-#include "graphic_entities/color.h"
+#include "graphic/color.h"
 
-namespace I3D
+namespace TL
 {
 
 
-/*! \defgroup ImgProc Procesos de imagen
+/*! \defgroup ImgProc Procesado de imagen
  *  Filtrado y preprocesado de imagenes
  *  \{
  */
@@ -30,7 +30,7 @@ enum class ProcessExit
 };
 
 /*!
- * \brief Tipos de procesos de imagen
+ * \brief Tipos de procesado de imagen
  */
 enum class process_type {
   /* Filtros */
@@ -38,6 +38,7 @@ enum class process_type {
   BLUR,               /*!< Filtro desenfoque. */
   BOX_FILTER,         /*!<  */
   FILTER_2D,          /*!<  */
+  CONVOLUTION,        /*!<  Convolución */ 
   GAUSSIAN_BLUR,      /*!< Desenfoque gaussiano. */
   LAPLACIAN,          /*!< Laplaciano de una imagen */
   MEDIAN_BLUR,        /*!<  */
@@ -61,8 +62,9 @@ enum class process_type {
   /* Balance de blancos */
   GRAYWORLD,
   WHITEPATCH,
-  /* Balance de blancos */
-  COLOR_CONVERSION
+  /*  */
+  COLOR_CONVERSION,
+  CORRELATION
 };
 
 /*!
@@ -70,7 +72,7 @@ enum class process_type {
  * Clase que permite tener una interfaz común para aplicar filtros
  * u otros procesos a una imagen.
  */
-class I3D_EXPORT ImgProcessing
+class TL_EXPORT ImgProcessing
 {
 public:
 
@@ -121,16 +123,16 @@ public:
 /*!
  * \brief Contenedor de procesos de imagen que permite su ejecución secuencial.
  * \code
- * I3D::ImgProcessingList imgprolist;
- * imgprolist.add(std::make_shared<I3D::Normalize>(0., 255.));
- * imgprolist.add(std::make_shared<I3D::BilateralFilter>(5, 50., 50.));
- * imgprolist.add(std::make_shared<I3D::Erotion>(1));
- * imgprolist.add(std::make_shared<I3D::Dilate>(1));
+ * TL::ImgProcessingList imgprolist;
+ * imgprolist.add(std::make_shared<TL::Normalize>(0., 255.));
+ * imgprolist.add(std::make_shared<TL::BilateralFilter>(5, 50., 50.));
+ * imgprolist.add(std::make_shared<TL::Erotion>(1));
+ * imgprolist.add(std::make_shared<TL::Dilate>(1));
  * cv::Mat out;
  * imgprolist.execute(in, &out);
  * \endcode
  */
-class I3D_EXPORT ImgProcessingList
+class TL_EXPORT ImgProcessingList
 {
 private:
 
@@ -297,7 +299,7 @@ public:
 /*!
  * \brief Operacion morfologica de dilatación.
  */
-class I3D_EXPORT Dilate : public morphologicalOperation
+class TL_EXPORT Dilate : public morphologicalOperation
 {
 
 public:
@@ -326,7 +328,7 @@ public:
 /*!
  * \brief Operacion morfologica de erosión
  */
-class I3D_EXPORT Erotion : public morphologicalOperation
+class TL_EXPORT Erotion : public morphologicalOperation
 {
 
 public:
@@ -357,7 +359,7 @@ public:
  * Esta operación consite en aplicar una erosion de la imagen
  * seguida de una dilatación
  */
-class I3D_EXPORT Opening : public morphologicalOperation
+class TL_EXPORT Opening : public morphologicalOperation
 {
 public:
 
@@ -387,7 +389,7 @@ public:
  * Esta operación consite en aplicar una dilatación de la imagen
  * seguida de una erosión
  */
-class I3D_EXPORT Closing : public morphologicalOperation
+class TL_EXPORT Closing : public morphologicalOperation
 {
 public:
 
@@ -417,7 +419,7 @@ public:
  * Gradient = dilation - erosion
  * 
  */
-class I3D_EXPORT Gradient : public morphologicalOperation
+class TL_EXPORT Gradient : public morphologicalOperation
 {
 public:
 
@@ -446,7 +448,7 @@ public:
  * Es la diferencia entre una imagen y el resultado de aplicar una operación de 
  * apertura sobre la misma imagen
  */
-class I3D_EXPORT TopHat : public morphologicalOperation
+class TL_EXPORT TopHat : public morphologicalOperation
 {
 public:
 
@@ -476,7 +478,7 @@ public:
  * Esta operación consite en aplicar un cierre a una imagen y restar el resultado por la
  * la imagen original
  */
-class I3D_EXPORT BlackHat : public morphologicalOperation
+class TL_EXPORT BlackHat : public morphologicalOperation
 {
 public:
 
@@ -503,193 +505,13 @@ public:
 
 /*! \} */ // end of Filters
 
-/* ---------------------------------------------------------------------------------- */
-/*             Operaciones que transforman geometricamente la imagen                  */
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup imgTransf Operaciones de transformación de imagenes
- *  
- *  \{
- */
-
-
-/*!
- * \brief Redimensiona una imagen
- */
-class I3D_EXPORT Resize : public ImgProcessing
-{
-private:
-
-  /*!
-   * \brief Ancho
-   */
-  int mWidth;
-
-  /*!
-   * \brief Alto
-   */
-  int mHeight;
-
-  double mScaleX;
-  
-  double mScaleY;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] width
-   * \param[in] height
-   */
-  Resize(int width, int height = 0)
-    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height), 
-      mScaleX(0.), mScaleY(0.) {}
-
-  /*!
-   * \brief Constructora
-   * \param[in] scaleX
-   * \param[in] scaleY
-   */
-  Resize(double scaleX, double scaleY = 0.)
-    : ImgProcessing(process_type::RESIZE), mWidth(0), mHeight(0), 
-      mScaleX(scaleX), mScaleY(scaleY ? scaleY : scaleX) {}
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] width Ancho.
-   * \param[in] height Alto.
-   */
-  void setParameters( int width, int height );
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] scale Escala en porcentaje que se aplica a la imagen
-   */
-  void setParameters( double scaleX, double scaleY = 0. );
-};
-
-/*!
- * \brief Redimensiona el canvas de una imagen
- *
- * Si se amplia se añaden pixeles del color indicado en las 
- * zonas que no haya imagen. Por defecto el color de fondo es el negro.
- * Si se reduce se recorta la imagen.
- */
-class I3D_EXPORT ResizeCanvas : public ImgProcessing
-{
-public:
-  
-  /*!
-   * \brief Posición del canvas
-   */
-  enum class Position {
-    BOTTOM_CENTER,  
-    BOTTOM_LEFT,    
-    BOTTOM_RIGHT,   
-    CENTER,         
-    CENTER_LEFT,    
-    CENTER_RIGHT,   
-    TOP_CENTER,     
-    TOP_LEFT,       
-    TOP_RIGHT       
-  };
-
-private:
-
-  /*!
-   * \brief Ancho
-   */
-  int mWidth;
-
-  /*!
-   * \brief Alto
-   */
-  int mHeight;
-
-  /*!
-   * \brief Coordenadas de la esquina superior izquierda
-   */
-  cv::Point mTopLeft;
-
-  /*!
-   * \brief Color de fondo
-   */
-  Color mColor;
-
-  /*!
-   * \brief Posición
-   */
-  Position mPosition;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] width Nuevo ancho
-   * \param[in] height Nuevo alto
-   * \param[in] color Color
-   * \param[in] position Posición
-   * \see Position
-   */
-  ResizeCanvas(int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT)
-    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mColor(color), mPosition(position) { }
-
-  /*!
-   * \brief Constructora
-   * \param[in] width Nuevo ancho
-   * \param[in] height Nuevo alto
-   * \param[in] point Coordenadas de la esquina superior izquierda
-   * \param[in] color Color
-   * \see Position
-   */
-  ResizeCanvas(int width, int height, const cv::Point &point, const Color &color = Color())
-    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mTopLeft(point), mColor(color) {}
-
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] width Ancho
-   * \param[in] height Alto
-   * \param[in] color Color
-   * \param[in] position Posición
-   * \see Position
-   */
-  void setParameters( int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT);
-
-  //void update();
-};
-
-
-/* ---------------------------------------------------------------------------------- */
-
-/*! \} */ // end of imgTransf
-
-
 
 /* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Clase Normalize
  */
-class I3D_EXPORT Normalize : public ImgProcessing
+class TL_EXPORT Normalize : public ImgProcessing
 {
 private:
 
@@ -736,7 +558,7 @@ public:
  * \brief Clase Binarize
  * Convierte una imagen a binaria
  */
-class I3D_EXPORT Binarize : public ImgProcessing
+class TL_EXPORT Binarize : public ImgProcessing
 {
 private:
   
@@ -804,7 +626,7 @@ public:
  * \brief Ecualización del histograma.
  * Mejora del contraste de la imagen mediante la ecualización del histograma
  */
-class I3D_EXPORT EqualizeHistogram : public ImgProcessing
+class TL_EXPORT EqualizeHistogram : public ImgProcessing
 {
 
 public:
@@ -851,10 +673,10 @@ public:
  * out->convertTo(*out, CV_8U);
  * });
  *
- * I3D::ImgProcessingList imgprolist{ fProcess1, fProcess2 };
+ * TL::ImgProcessingList imgprolist{ fProcess1, fProcess2 };
  * \endcode
  */
-class I3D_EXPORT FunctionProcess : public ImgProcessing
+class TL_EXPORT FunctionProcess : public ImgProcessing
 {
 private:
 
@@ -885,70 +707,12 @@ public:
 
 };
 
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Conversión del modo de color.
- * Conversión entre distintos tipos de modos de color
- */
-class I3D_EXPORT ColorConversion : public ImgProcessing
-{
-public:
-  
-  /*!
-   * Modelos de color
-   */
-  enum class Model
-  {
-    RGB,
-    RGBA,
-    CMYK,
-    HSL,
-    HSV,
-    LUMINANCE,
-    CHROMATICITY,
-  };
-
-private:
-
-  Model mModelIn;
-  
-  Model mModelOut;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase
-   */
-  ColorConversion(Model modelIn, Model modelOut)
-    : ImgProcessing(process_type::COLOR_CONVERSION), mModelIn(modelIn), mModelOut(modelOut) {}
-
-  //~ColorConversion();
-
-  /*!
-   * \brief Ejecuta el proceso.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] modelIn Modelo de color de entrada
-   * \param[in] modelOut Modelo de color de salida
-   */
-  //void setParameters(Model modelIn, Model modelOut);
-};
-
 /* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of ImgProc
 
-} // End namespace I3D
+} // End namespace TL
 
 #endif // HAVE_OPENCV
 
-#endif // I3D_IMG_PROCESSING_H
+#endif // TL_IMGPROCESS_PROCESSING_H

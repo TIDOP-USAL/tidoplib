@@ -1,6 +1,6 @@
 #include "core/datamodel.h"
 
-namespace I3D
+namespace TKL
 {
 
 //TODO: falta todo por hacer...
@@ -221,4 +221,4 @@ void DataModel::addTable(std::shared_ptr<DataTable> table)
 /* ---------------------------------------------------------------------------------- */
 
 
-} // End namespace I3D
+} // End namespace TKL
