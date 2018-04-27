@@ -128,6 +128,11 @@ protected:
    */    
   unsigned long mProcessId;
 
+  /*!
+   * \brief Nombre del proceso 
+   */  
+  std::string mProcessName;
+
 private:
 
   /*!
@@ -201,6 +206,11 @@ public:
   void setStatus(Status status);
 
   uint64_t getProcessId() const;
+
+  /*!
+   * \brief Devuelve el nombre del proceso 
+   */
+  std::string getProcessName() const;
 
   /*!
    * \brief Establece el contador de procesos a cero

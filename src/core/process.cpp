@@ -23,7 +23,8 @@ Process::Process(Process *parentProcess)
   : mStatus(Status::START),
     mParentProcess(parentProcess),
     mListeners(0),
-    mProcessId(0)
+    mProcessId(0),
+    mProcessName("")
 {
   if (mParentProcess == nullptr) {
     mProcessId = ++sProcessCount;
@@ -173,6 +174,11 @@ void Process::errorTriggered()
 uint64_t Process::getProcessId() const
 {
   return mProcessId;
+}
+
+std::string Process::getProcessName() const
+{
+  return mProcessName;
 }
 
 void Process::processCountReset()
