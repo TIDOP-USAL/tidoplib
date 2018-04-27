@@ -16,6 +16,7 @@
 #include "core/defs.h"
 #include "core/flags.h"
 #include "graphic/color.h"
+#include "graphic/font.h"
 #include "geometry/entities/linestring.h"
 #include "geometry/entities/polygon.h"
 
@@ -60,7 +61,8 @@ public:
   /*!
    * \brief Nombres de pluma
    */
-  enum class PenName {
+  enum class PenName : uint8_t
+  {
     SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
     PEN_NULL,          /*!< Pluma nula (invisible) */  
     DASH,              /*!<  */ 
@@ -75,7 +77,8 @@ public:
   /*!
    * \brief Forma de puntos extremos de las líneas.
    */
-  enum class PenCap {
+  enum class PenCap : uint8_t
+  {
     BUTT,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */  
     ROUND,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */  
     PROJECTING      /*!<  Similar a Butt, pero los extremos de la línea se extiende a la mitad de la anchura de la línea más allá de los puntos finales.*/  
@@ -84,7 +87,8 @@ public:
   /*!
    * \brief Forma del punto de unión (vértice) de líneas.
    */
-  enum class PenJoin {
+  enum class PenJoin : uint8_t
+  {
     MITER,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */  
     ROUNDED,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */  
     BEVEL       /*!< Unión biselada */  
@@ -262,7 +266,7 @@ public:
 class TL_EXPORT StyleBrush
 {
 public:
-  enum class BrushName
+  enum class BrushName : uint8_t
   {
     SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
     BRUSH_NULL,        /*!< Pincel nulo (invisible) */  
@@ -440,7 +444,8 @@ public:
 
   enum class SymbolName
   {
-    SOLID,             /*!< + */  
+
+    CROSS,             /*!< + */  
     DIAGONAL_CROSS,    /*!< x */  
     CIRCLE,            /*!< Circulo */ 
     CIRCLE_FILLED,     /*!< Circulo relleno */ 
@@ -614,7 +619,8 @@ class TL_EXPORT StyleLabel
 {
 public:
 
-  enum class LabelPlacement  {
+  enum class LabelPlacement : uint8_t
+  {
     p,     /*!< Etiqueta asociada a un punto o al primer vértice de una polilínea */
     l,     /*!< Etiqueta asociada al último vértice de una polilínea */
     s,     /*!< Estira la cadena de texto a lo largo de la polilínea, con un espaciado igual entre cada carácter */
@@ -627,7 +633,7 @@ public:
   /*!
    * \brief Posición de la etiqueta respecto al punto de inserción
    */
-  enum class AnchorPosition
+  enum class AnchorPosition : uint8_t
   {
     VERTICAL_BASELINE = 1 << 0,   /*!<  */
     VERTICAL_CENTER = 1 << 1,     /*!<  */
@@ -641,15 +647,20 @@ public:
 protected:
 
   /*!
+   * \brief Fuente
+   */
+  Font mFont;
+
+  /*!
    * \brief Nombre de la fuente
    * Puede ser una lista separada por comas de varios tipos de fuentes
    */
-  std::string mFontName;
+  //std::string mFontName;
 
   /*!
    * \brief Tamaño de fuente
    */
-  int mFontSize;
+  //int mFontSize;
 
   /*!
    * \brief Texto de la etiqueta
@@ -716,17 +727,17 @@ protected:
   /*!
    * \brief Negrita
    */
-  bool bBold;
+  //bool bBold;
 
   /*!
    * \brief Cursiva
    */
-  bool bItalic;
+  //bool bItalic;
 
   /*!
    * \brief Subrayado
    */
-  bool bUnderline;
+  //bool bUnderline;
 
   /*!
    * \brief Tachado
@@ -832,7 +843,7 @@ public:
    * \param[in] labelPlacement
    * \see LabelPlacement
    */
-  void setLabelPlacement( LabelPlacement labelPlacement);
+  void setLabelPlacement(LabelPlacement labelPlacement);
 
   /*!
    * \brief Posición de anclaje de la etiqueta
@@ -870,6 +881,8 @@ public:
    * \return Referencia al estilo de etiqueta
    */
   StyleLabel &operator = (const StyleLabel &styleLabel);
+  void setFont(const Font &font);
+  Font getFont() const;
 };
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)

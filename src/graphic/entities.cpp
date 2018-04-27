@@ -267,7 +267,7 @@ StyleBrush &StyleBrush::operator = (const StyleBrush &styleBrush)
 /* ---------------------------------------------------------------------------------- */
 
 StyleSymbol::StyleSymbol()
-  : mName(SymbolName::SOLID),
+  : mName(SymbolName::CROSS),
     mAngle(0.),
     mColor(0),
     mOutlineColor(0),
@@ -381,8 +381,9 @@ StyleSymbol &StyleSymbol::operator = (const StyleSymbol &styleSymbol)
 /* ---------------------------------------------------------------------------------- */
 
 StyleLabel::StyleLabel()
-  : mFontName("Arial"),
-    mFontSize(12),
+  : /*mFontName("Arial"),
+    mFontSize(12),*/
+    mFont(),
     mText(""),
     mAngle(0.),
     mForegroundColor(0),
@@ -393,17 +394,18 @@ StyleLabel::StyleLabel()
     mLabelPlacement(LabelPlacement::p),
     mAnchorPosition(AnchorPosition::VERTICAL_BASELINE | AnchorPosition::HORIZONTAL_LEFT),
     mPerpendicularOffset(0),
-    bBold(false),
+    /*bBold(false),
     bItalic(false),
-    bUnderline(false),
+    bUnderline(false),*/
     bStrikeout(false),
     mPriorityLevel(0)
 {
 }
 
 StyleLabel::StyleLabel(const StyleLabel &styleLabel)
-  : mFontName(styleLabel.mFontName),
-    mFontSize(styleLabel.mFontSize),
+  : /*mFontName(styleLabel.mFontName),
+    mFontSize(styleLabel.mFontSize),*/
+    mFont(styleLabel.mFont),
     mText(styleLabel.mText),
     mAngle(styleLabel.mAngle),
     mForegroundColor(styleLabel.mForegroundColor),
@@ -414,9 +416,9 @@ StyleLabel::StyleLabel(const StyleLabel &styleLabel)
     mLabelPlacement(styleLabel.mLabelPlacement),
     mAnchorPosition(styleLabel.mAnchorPosition),
     mPerpendicularOffset(styleLabel.mPerpendicularOffset),
-    bBold(styleLabel.bBold),
+    /*bBold(styleLabel.bBold),
     bItalic(styleLabel.bItalic),
-    bUnderline(styleLabel.bUnderline),
+    bUnderline(styleLabel.bUnderline),*/
     bStrikeout(styleLabel.bStrikeout),
     mPriorityLevel(styleLabel.mPriorityLevel)
 {
@@ -522,11 +524,22 @@ void StyleLabel::setOffset(double dx, double dy)
   mOffset[1] = dy;
 }
 
+void StyleLabel::setFont(const Font &font)
+{
+  mFont = font;
+}
+
+Font StyleLabel::getFont() const
+{
+  return mFont;
+}
+
 StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
 {
   if (this != &styleLabel) {
-    mFontName = styleLabel.mFontName;
-    mFontSize = styleLabel.mFontSize;
+    /*mFontName = styleLabel.mFontName;
+    mFontSize = styleLabel.mFontSize;*/
+	mFont = styleLabel.mFont;
     mText = styleLabel.mText;
     mAngle = styleLabel.mAngle;
     mForegroundColor = styleLabel.mForegroundColor;
@@ -537,13 +550,12 @@ StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
     mLabelPlacement = styleLabel.mLabelPlacement;
     mAnchorPosition = styleLabel.mAnchorPosition;
     mPerpendicularOffset = styleLabel.mPerpendicularOffset;
-    bBold = styleLabel.bBold;
+    /*bBold = styleLabel.bBold;
     bItalic = styleLabel.bItalic;
-    bUnderline = styleLabel.bUnderline;
+    bUnderline = styleLabel.bUnderline;*/
     bStrikeout = styleLabel.bStrikeout;
     mPriorityLevel = styleLabel.mPriorityLevel;
   }
-  return *this;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -1118,7 +1130,7 @@ void CanvasCV::drawPoint(const GPoint &point)
   cv::MarkerTypes markerType;
 
   switch (point.getStyleSymbol()->getName()) {
-  case TL::graph::StyleSymbol::SymbolName::SOLID:
+  case TL::graph::StyleSymbol::SymbolName::CROSS:
     break;
   case TL::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
     markerType = cv::MARKER_TILTED_CROSS;
