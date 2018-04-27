@@ -144,6 +144,7 @@ void MessageManager::addListener(Listener *listener)
     mListeners.push_back(listener);
 }
 
+///TODO: esto puede que estuviese mejor fuera
 void MessageManager::initExternalHandlers()
 {
 #ifdef HAVE_OPENCV

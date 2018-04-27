@@ -28,7 +28,7 @@ if(BUILD_TEST AND BUILD_TL_CORE)
 	target_link_libraries(${the_target} gtest gtest_main )
 	target_link_libraries(${the_target} tl_core tl_geom)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-    target_link_libraries(${the_target} ${OpenCV_LIBS} )
+    target_link_libraries(${the_target} ${OpenCV_LIBS}  ${GDAL_LIBRARY})
 	
 	# Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/core")
