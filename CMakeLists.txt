@@ -84,16 +84,18 @@ OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 # --- BOOST ---
 if(WITH_BOOST)
 
-    set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-    set(Boost_USE_MULTITHREADED      ON)
-    #set(Boost_USE_STATIC_RUNTIME    OFF)
-    find_package(Boost COMPONENTS filesystem system REQUIRED)
-    if(Boost_FOUND)
-      include_directories(${Boost_INCLUDE_DIRS})
+  find_package(Boost COMPONENTS filesystem system REQUIRED)
+  
+  set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+  set(Boost_USE_MULTITHREADED      ON)
+  #set(Boost_USE_STATIC_RUNTIME    OFF)
+
+  if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
 	  set(HAVE_BOOST YES)
 	else()
 	  set(HAVE_BOOST NO)
-    endif()
+  endif()
 
 endif()
 
@@ -103,10 +105,10 @@ if(WITH_OPENCV)
     find_package(OPENCV QUIET)
 
     if(NOT OPENCV_FOUND)
-        set(HAVE_OPENCV NO)
+      set(HAVE_OPENCV NO)
     else()
-        set(HAVE_OPENCV YES)
-		include_directories(${OpenCV_INCLUDE_DIRS})
+      set(HAVE_OPENCV YES)
+      include_directories(${OpenCV_INCLUDE_DIRS})
 		#include_directories(${OPENCV_INCLUDE_DIR})
     endif()
 endif()

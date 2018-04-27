@@ -84,6 +84,12 @@ public:
    * \param[in] type Tipo de entidad
    */
   Entity(type type) : mEntityType(type) {}
+   
+  /*!
+   * \brief Constructor de copia
+   * \param[in] entity Objeto que se copia
+   */
+  Entity(const Entity &entity) : mEntityType(entity.mEntityType) {}
 
   /*!
    * \brief Destructora
@@ -94,6 +100,18 @@ public:
    * \brief Devuelve el tipo de entidad 
    */
   type getType() const { return mEntityType; }
+
+  /*!
+   * \brief Operador de asignación
+   */
+  Entity &operator = (const Entity &entity)
+  {
+    if (this != &entity) {
+      mEntityType = entity.mEntityType;
+    }
+    return *this;
+  }
+
 };
 
 

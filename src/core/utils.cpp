@@ -919,7 +919,7 @@ uint64_t Chrono::pause()
   if (mStatus == Status::RUNNING) {
     mAccumulated += getTickCount() - mTimeIni;
     mStatus = Status::PAUSE;
-    if (bWriteMsg) msgInfo("Chrono paused");
+    //if (bWriteMsg) msgDebug("Chrono paused");
   }
   return mAccumulated;
 }
@@ -930,7 +930,7 @@ void Chrono::reset()
   mAccumulated = 0;
   mStatus = Status::START;
   mMessage = "";
-  if (bWriteMsg) msgInfo("Chrono reset");
+  //if (bWriteMsg) msgDebug("Chrono reset");
 }
 
 void Chrono::resume()
@@ -938,7 +938,7 @@ void Chrono::resume()
   if (mStatus == Status::PAUSE) {
     mTimeIni = getTickCount();
     mStatus = Status::RUNNING;
-    if (bWriteMsg) msgInfo("Chrono resume");
+    //if (bWriteMsg) msgDebug("Chrono resume");
   }
 }
 
@@ -947,7 +947,7 @@ uint64_t Chrono::run()
   mTimeIni = getTickCount();
   mAccumulated = 0;
   mStatus = Status::RUNNING;
-  if (bWriteMsg) msgInfo("Chrono run");
+  //if (bWriteMsg) msgDebug("Chrono run");
   return mTimeIni;
 }
 
@@ -963,7 +963,7 @@ uint64_t Chrono::stop()
     time = mAccumulated;
   } else
     time = 0;
-  if (bWriteMsg) msgInfo("%s Time %f (seconds)", mMessage.c_str(), time / 1000.);
+  if (bWriteMsg) msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time / 1000.);
   return time;
 }
 

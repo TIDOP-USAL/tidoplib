@@ -234,16 +234,16 @@ Process::Status CmdProcess::run(Progress *progressBar)
 
   DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
   if (ret == WAIT_FAILED) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
   } else if (ret == WAIT_OBJECT_0) {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+    msgInfo("Command executed: %s", mCmd.c_str());
     //return Process::Status::FINALIZED;
   } else if (ret == WAIT_ABANDONED) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
   } else if (ret == WAIT_TIMEOUT) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
   } /*else {
     msgInfo("Comando ejecutado: %s", mCmd.c_str());
@@ -251,7 +251,7 @@ Process::Status CmdProcess::run(Progress *progressBar)
   }*/
   DWORD exitCode;
   if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-    msgError("Error (%d: %s) al ejecutar el comando: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
     return Process::Status::FINALIZED_ERROR;
   }
   return Process::Status::FINALIZED;
@@ -543,37 +543,37 @@ void BatchProcess::stop()
 
 void BatchProcess::onPause(uint64_t id)
 {
-  msgInfo("Proceso %i en pausa", id);
+  msgInfo("Process %i paused", id);
 }
 
 void BatchProcess::onResume(uint64_t id)
 {
-  msgInfo("Proceso %i reanudado", id);
+  msgInfo("Process %i resumed", id);
 }
 
 void BatchProcess::onRun(uint64_t id)
 {
-  msgInfo("Proceso %i corriendo", id);
+  msgInfo("Process %i running", id);
 }
 
 void BatchProcess::onStart(uint64_t id)
 {
-  msgInfo("Proceso %i preparado", id);
+  msgInfo("Process %i ready", id);
 }
 
 void BatchProcess::onStop(uint64_t id)
 {
-  msgInfo("Proceso %i detenido", id);
+  msgInfo("Process %i stopped", id);
 }
 
 void BatchProcess::onEnd(uint64_t id)
 {
-  msgInfo("Proceso %i finalizado", id);
+  msgInfo("Process %i completed", id);
 }
 
 void BatchProcess::onError(uint64_t id)
 {
-  msgInfo("Proceso %i. Error al procesar", id);
+  msgInfo("Process %i. Process error", id);
   errorTriggered();
 }
 

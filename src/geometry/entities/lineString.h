@@ -94,6 +94,10 @@ public:
    */
   double length() const;
 
+  /*!
+   * \brief Operador de asignación
+   */
+  LineString<Point_t> &operator = (const LineString<Point_t> &lineString);
 };
 
 template <typename Point_t> inline
@@ -112,7 +116,7 @@ LineString<Point_t>::LineString(size_type size)
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString(const LineString &lineString)
-  : Entity(Entity::type::LINESTRING_2D), 
+  : Entity(lineString),
     Entities2D<Point_t>(lineString)
 {
 }
@@ -145,6 +149,16 @@ double LineString<Point_t>::length()  const
     length += distance(this->mEntities[i - 1], this->mEntities[i]);
   }
   return length;
+}
+
+template<typename Point_t> inline
+LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> &lineString)
+{
+  if (this != &lineString) {
+    Entity::operator = (lineString);
+    Entities2D<Point_t>::operator = (lineString);
+  }
+  return *this;
 }
 
 typedef LineString<Point<int>> LineStringI;
@@ -210,6 +224,12 @@ public:
    */
   double length() const;
 
+  /*!
+   * \brief Operador de asignación
+   * \return lineString Objeto que se asigna
+   */
+  LineString3D<Point3_t> &operator = (const LineString3D<Point3_t> &lineString);
+
 };
 
 template <typename Point3_t> inline
@@ -228,7 +248,7 @@ LineString3D<Point3_t>::LineString3D(size_type size)
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(const LineString3D &lineString)
-  : Entity(Entity::type::LINESTRING_3D), 
+  : Entity(lineString), 
     Entities3D<Point3_t>(lineString)
 {
 }
@@ -263,6 +283,16 @@ double LineString3D<Point3_t>::length()  const
   return length;
 }
 
+template<typename Point_t> inline
+LineString3D<Point_t> &LineString3D<Point_t>::operator = (const LineString3D &lineString)
+{
+  if (this != &lineString) {
+    Entity::operator = (lineString);
+    Entities3D<Point_t>::operator = (lineString);
+  }
+  return *this;
+}
+
 typedef LineString3D<Point3<int>> LineString3dI;
 typedef LineString3D<Point3<double>> LineString3dD;
 typedef LineString3D<Point3<float>> LineString3dF;
@@ -281,7 +311,7 @@ public:
   MultiLineString();
 
   /*!
-   * \brief Constructor que reserva tamaño para n puntos
+   * \brief Constructor que reserva tamaño para n polilineas
    */
   MultiLineString(size_type size);
 
@@ -293,7 +323,11 @@ public:
 
   ~MultiLineString() {}
 
-
+  /*!
+   * \brief Operador de asignación
+   * \return lineString Objeto que se asigna
+   */
+  MultiLineString<Point_t> &operator = (const MultiLineString<Point_t> &multiLineString);
 };
 
 template <typename Point_t>
@@ -312,9 +346,19 @@ MultiLineString<Point_t>::MultiLineString(size_type size)
 
 template<typename Point_t> inline
 MultiLineString<Point_t>::MultiLineString(const MultiLineString &multiLineString) 
-  : Entity(Entity::type::MULTILINE_2D), 
+  : Entity(multiLineString), 
     Entities2D<LineString<Point_t>>(multiLineString) 
 {
+}
+
+template<typename Point_t> inline
+MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (const MultiLineString &multiLineString)
+{
+  if (this != &multiLineString) {
+    Entity::operator = (multiLineString);
+    Entities2D<LineString<Point_t>>::operator = (multiLineString);
+  }
+  return *this;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -325,8 +369,29 @@ class MultiLineString3D : public Entity, public Entities3D<LineString3D<Point3_t
 
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   MultiLineString3D();
+
+  /*!
+   * \brief Constructor que reserva tamaño para n puntos
+   */
+  MultiLineString3D(size_type size);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] multiLineString Objeto MultiLineString que se copia
+   */
+  MultiLineString3D(const MultiLineString3D &multiLineString);
+
   ~MultiLineString3D() {}
+
+  /*!
+   * \brief Operador de asignación
+   * \return lineString Objeto que se asigna
+   */
+  MultiLineString3D<Point3_t> &operator = (const MultiLineString3D<Point3_t> &multiLineString);
 
 };
 
@@ -335,6 +400,30 @@ MultiLineString3D<Point3_t>::MultiLineString3D()
   : Entity(Entity::type::MULTILINE_3D),
     Entities3D<LineString3D<Point3_t>>()
 {
+}
+
+template<typename Point3_t> inline
+MultiLineString3D<Point3_t>::MultiLineString3D(size_type size) 
+  : Entity(Entity::type::MULTILINE_3D),
+    Entities3D<LineString3D<Point3_t>>(size) 
+{
+}
+
+template<typename Point3_t> inline
+MultiLineString3D<Point3_t>::MultiLineString3D(const MultiLineString3D &multiLineString) 
+  : Entity(multiLineString), 
+    Entities3D<LineString3D<Point3_t>>(multiLineString) 
+{
+}
+
+template<typename Point3_t> inline
+MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const MultiLineString3D &multiLineString)
+{
+  if (this != &multiLineString) {
+    Entity::operator = (multiLineString);
+    Entities3D<LineString3D<Point3_t>>::operator = (multiLineString);
+  }
+  return *this;
 }
 
 
