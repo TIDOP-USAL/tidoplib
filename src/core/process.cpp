@@ -1,4 +1,4 @@
-#include "core/process.h"
+ï»¿#include "core/process.h"
 
 #include "core/messages.h"
 #include "core/console.h"
@@ -186,7 +186,21 @@ void Process::processCountReset()
   sProcessCount = 0;
 }
 
+Process::Status Process::checkStatus()
+{
+  if (mStatus == Status::PAUSING) {
+    pauseTriggered();
+    while (mStatus == Status::PAUSE);
+  } else if (mStatus == Status::STOPPED) {
+    // Se fuerza la terminaciï¿½n
+    stopTriggered();
+  }
+  return mStatus;
+}
+
+
 /* ---------------------------------------------------------------------------------- */
+
 
 DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
 
@@ -228,7 +242,7 @@ Process::Status CmdProcess::run(Progress *progressBar)
     NULL,                         // Process handle not inheritable
     NULL,                         // Thread handle not inheritable
     FALSE,                        // Set handle inheritance to FALSE
-    CREATE_NO_WINDOW | sPriority, // Flags de creación
+    CREATE_NO_WINDOW | sPriority, // Flags de creaciÃ³n
     NULL,                         // Use parent's environment block
     NULL,                         // Use parent's starting directory 
     &si,                          // Pointer to STARTUPINFO structure
@@ -456,7 +470,7 @@ void BatchProcess::reset()
 {
   //TODO: Si esta corriendo no se puede hacer un reset
   if (mStatus == Status::RUNNING) {
-    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
+    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el mÃ©todo stop() para cancelar los procesos");
   } else {
     mStatus = Status::START;
     mProcessList.clear();
@@ -482,7 +496,7 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
       mStatus = Status::PAUSE;
       while (mStatus == Status::PAUSE);
     } else if (mStatus == Status::STOPPED) {
-      // Se fuerza la terminación
+      // Se fuerza la terminaciÃ³n
       return Status::STOPPED;
     } else {
       //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
@@ -505,7 +519,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
     if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
     for (const auto process : mProcessList) {
       if (progress_bar_total) {
-        // Se han añadido nuevos procesos asi que se actualiza
+        // Se han aÃ±adido nuevos procesos asi que se actualiza
         progress_bar_total->setMaximun((double)mProcessList.size());
         progress_bar_total->updateScale();
       }
@@ -514,7 +528,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         mStatus = Status::PAUSE;
         while (mStatus == Status::PAUSE);
       } else if (mStatus == Status::STOPPED) {
-        // Se fuerza la terminación
+        // Se fuerza la terminaciÃ³n
         return Status::STOPPED;
       } else {
         //process->run(progress_bar_partial);
@@ -602,5 +616,35 @@ void BatchProcess::errorTriggered()
     }
   }
 }
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+//ProcessBlock::ProcessBlock(int nBlocks, TL::Progress *progressBar)
+//  : mCount(nBlocks), 
+//    mProgressBar(progressBar)
+//{
+//  if (mProgressBar) {
+//    mProgressBar->init(0, nBlocks);
+//  }
+//}
+//
+//ProcessBlock::~ProcessBlock()
+//{
+//}
+//
+//void ProcessBlock::next()
+//{
+//  if (mProgressBar) (*mProgressBar)();
+//  if (mStatus == Status::PAUSING) {
+//    pauseTriggered();
+//    while (mStatus == Status::PAUSE);
+//  } else if (mStatus == Status::STOPPED) {
+//    // Se fuerza la terminaciï¿½n
+//    stopTriggered();
+//    return Status::STOPPED;
+//  }
+//}
 
 } // End namespace TL

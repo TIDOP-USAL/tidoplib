@@ -7,7 +7,7 @@
 
 #include "core/defs.h"
 #include "geometry/entities/entity.h"
-
+#include "geometry/entities/point.h"
 
 namespace TL
 {
@@ -110,6 +110,25 @@ public:
    * \return Centro del Bbox
    */
   Point3_t getCenter() const;
+
+  /*!
+   * \brief Devuelve el ancho de la caja
+   * \return Ancho
+   */
+  typename Point3_t::value_type getWidth() const;
+
+  /*!
+   * \brief Devuelve el alto de la caja
+   * \return Alto
+   */
+  typename Point3_t::value_type getHeight() const;
+
+  /*!
+   * \brief Devuelve la profundidad de la caja
+   * \return Profundidad
+   */
+  typename Point3_t::value_type getDepth() const;
+
 
   /*!
    * \brief Comprueba si el Bbox esta vacio
@@ -227,11 +246,11 @@ Box<Point3_t>::operator Box<Point3_t2>() const
   if (typeid(typename Point3_t2::value_type) == typeid(int)) {
     Point3_t2 _pt1(TL_ROUND_TO_INT(pt1.x), TL_ROUND_TO_INT(pt1.y), TL_ROUND_TO_INT(pt1.z));
     Point3_t2 _pt2(TL_ROUND_TO_INT(pt2.x), TL_ROUND_TO_INT(pt2.y), TL_ROUND_TO_INT(pt2.z));
-    return Bbox<Point3_t2>(_pt1, _pt2);
+    return Box<Point3_t2>(_pt1, _pt2);
   } else {
     Point3_t2 _pt1 = pt1;
     Point3_t2 _pt2 = pt2;
-    return Bbox<Point3_t2>(_pt1, _pt2);
+    return Box<Point3_t2>(_pt1, _pt2);
   }
 }
 
@@ -247,6 +266,24 @@ Point3_t Box<Point3_t>::getCenter() const
     return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
     TL_ENABLE_WARNING(4244)
   }
+}
+
+template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::getWidth() const 
+{ 
+  return pt2.x - pt1.x; 
+}
+
+template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::getHeight() const 
+{ 
+  return pt2.y - pt1.y; 
+}
+
+template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::getDepth() const 
+{ 
+  return pt2.z - pt1.z; 
 }
 
 template<typename Point3_t> inline

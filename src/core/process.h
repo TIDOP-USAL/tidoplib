@@ -227,6 +227,15 @@ protected:
   void startTriggered();
   void stopTriggered();
   void errorTriggered();
+
+  /*!
+   * \brief Chequeo del estado del proceso
+   * 
+   * Este método puede llamarse para comprobar el estado actual del proceso
+   * y actuar en consecuencia (poner el proceso en pausa, reanudarlo, finalizar)
+   *
+   */
+  virtual Status checkStatus();
 };
 
 
@@ -492,6 +501,40 @@ private:
   void errorTriggered();
 
 };
+
+
+/* ---------------------------------------------------------------------------------- */
+
+/*!
+ * \brief Clase para separar en bloques un proceso
+ *
+ * Por bloque se entiende una tarea particular del proceso que se
+ * ejecuta sin comprobación del estado de ejecución del batch.
+ * Al finalizar un bloque se comprueba el estado del batch poniendolo 
+ * a pausa o obligando a su terminación. Si se indica una barra de proceso
+ * también se avanza una posición
+ *
+ */
+//class ProcessBlock
+//{
+//
+//private:
+//
+//  int mCount;
+//  TL::Progress *mProgressBar;
+//
+//public:
+//
+//  ProcessBlock(int nBlocks, TL::Progress *progressBar = nullptr);
+//  ~ProcessBlock();
+//  
+//  void next();
+//
+//private:
+//
+//};
+
+
 
 /*! \} */ // end of utilities
 
