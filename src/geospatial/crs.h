@@ -575,6 +575,12 @@ void CrsTransform<Point_t>::init()
 
 /* ---------------------------------------------------------------------------------- */
 
+///TODO: Carga de un listado de sistemas de referencia soportados.
+///      Deberian mostrarse los códigos EPSG, tipo de proyección, permitir busqueda por nombre y por zona
+
+
+/* ---------------------------------------------------------------------------------- */
+
 #endif // HAVE_GDAL
 
 } // End namespace TL

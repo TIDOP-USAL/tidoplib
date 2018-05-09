@@ -5,6 +5,8 @@ add_library(tl_graphic ${LIB_TYPE}
   color.h
   entities.cpp
   entities.h
+  font.cpp
+  font.h
   linealgorithms.cpp
   linealgorithms.h)
   

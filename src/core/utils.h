@@ -199,6 +199,7 @@ TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOu
  * }
  * \endcode
  */
+TL_DEPRECATED("filesystem::replace_extension()")
 TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
 
 /*!

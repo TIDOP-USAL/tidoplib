@@ -45,6 +45,7 @@ OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
 OPTION (BUILD_TL_GRAPHIC     "Include graphic module in TidopLib build"    ON)
 OPTION (BUILD_TL_GEOSPATIAL  "Include geospatial module in TidopLib build" ON)
+OPTION (BUILD_TL_VECT        "Include vect module in lib3kl build"       ON)
 
 # Activación desactivación de otros componentes de la libreria
 OPTION (BUILD_TEST            "Include test"          OFF)
@@ -84,11 +85,10 @@ OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 # --- BOOST ---
 if(WITH_BOOST)
 
-  find_package(Boost COMPONENTS filesystem system REQUIRED)
-  
-  set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-  set(Boost_USE_MULTITHREADED      ON)
-  #set(Boost_USE_STATIC_RUNTIME    OFF)
+    set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+    set(Boost_USE_MULTITHREADED      ON)
+    #set(Boost_USE_STATIC_RUNTIME    OFF)
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
 
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
