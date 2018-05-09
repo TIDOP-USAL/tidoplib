@@ -1,3 +1,5 @@
+///TODO: Clase para parsear una cadena de texto (GDAL) como un estilo
+
 #ifndef TL_GRAPHIC_ENTITIES_H
 #define TL_GRAPHIC_ENTITIES_H
 
@@ -256,7 +258,6 @@ public:
    * \return Referencia al estilo de pluma
    */
   StylePen &operator = (const StylePen &stylePen);
-
 };
 
 
@@ -444,7 +445,6 @@ public:
 
   enum class SymbolName
   {
-
     CROSS,             /*!< + */  
     DIAGONAL_CROSS,    /*!< x */  
     CIRCLE,            /*!< Circulo */ 
@@ -554,7 +554,7 @@ public:
    * \param[in] color Color
    * \see Color
    */
-  void setColor(Color &color);
+  void setColor(const Color &color);
 
     /*!
    * \brief Devuelve el color de borde
@@ -568,7 +568,7 @@ public:
    * \param[in] outlinecolor Color de borde
    * \see Color
    */
-  void setOutlineColor(Color &outlinecolor);
+  void setOutlineColor(const Color &outlinecolor);
 
   /*!
    * \brief Devuelve el factor de escala
@@ -951,7 +951,6 @@ public:
 
 
   std::shared_ptr<StylePen> getStylePen() const;
-
   /*!
    * \brief Establece el estilo de pluma
    * \param[in] stylePen Estilo de pluma
@@ -965,6 +964,7 @@ public:
   void setStyleBrush(std::shared_ptr<StyleBrush> styleBrush);
 
   std::shared_ptr<StyleSymbol> getStyleSymbol() const;
+
   /*!
    * \brief Establece el estilo de simbolos
    * \param[in] styleSymbol Estilo simbolos
@@ -982,7 +982,6 @@ public:
    * \param[in] graphicStyle Estilo
    */
   GraphicStyle &operator = (const GraphicStyle &graphicStyle);
-
 private:
 
 #ifdef HAVE_GDAL
@@ -1025,7 +1024,6 @@ public:
   GData(const GData &gData)
   {
   }
-
   ~GData()
   {
   }
@@ -1035,7 +1033,6 @@ public:
     ///TODO: terminar
     return *this;
   }
-
 private:
 
 };
@@ -1069,18 +1066,17 @@ public:
 
 
 
-class TL_EXPORT GPoint : public geometry::Point<float>, public GraphicEntity
+class TL_EXPORT GPoint : public geometry::Point<double>, public GraphicEntity
 {
 public:
 
   GPoint();
-  GPoint(float x, float y);
-  GPoint(const Point<float> &pt);
+  GPoint(double x, double y);
+  GPoint(const Point<double> &pt);
   GPoint(const GPoint &pt);
   ~GPoint();
 
   GPoint &operator = (const GPoint &gPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1088,35 +1084,33 @@ public:
 };
 
 
-class TL_EXPORT GPoint3D : public geometry::Point3<float>, public GraphicEntity
+class TL_EXPORT GPoint3D : public geometry::Point3<double>, public GraphicEntity
 {
 public:
 
   GPoint3D();
-  GPoint3D(float x, float y, float z);
-  GPoint3D(const Point3<float> &pt);
+  GPoint3D(double x, double y, double z);
+  GPoint3D(const Point3<double> &pt);
   GPoint3D(const GPoint3D &pt);
   ~GPoint3D();
 
   GPoint3D &operator = (const GPoint3D &gPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
 
-class TL_EXPORT GLineString : public geometry::LineString<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GLineString : public geometry::LineString<geometry::Point<double>>, public GraphicEntity
 {
 public:
 
   GLineString();
-  GLineString(const LineString<geometry::Point<float>> &lineString);
+  GLineString(const LineString<geometry::Point<double>> &lineString);
   GLineString(const GLineString &lineString);
   ~GLineString();
 
   GLineString &operator = (const GLineString &gLineString);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1124,36 +1118,34 @@ public:
 
 
 class TL_EXPORT GPolygon 
-  : public geometry::Polygon<geometry::Point<float>>, 
+  : public geometry::Polygon<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GPolygon();
-  GPolygon(const Polygon<geometry::Point<float>> &polygon);
+  GPolygon(const Polygon<geometry::Point<double>> &polygon);
   GPolygon(const GPolygon &gPolygon);
   ~GPolygon();
 
   GPolygon &operator = (const GPolygon &gPolygon);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
 class TL_EXPORT GMultiPoint 
-  : public geometry::MultiPoint<geometry::Point<float>>, 
+  : public geometry::MultiPoint<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiPoint();
-  GMultiPoint(const MultiPoint<geometry::Point<float>> &multiPoint);
+  GMultiPoint(const MultiPoint<geometry::Point<double>> &multiPoint);
   GMultiPoint(const GMultiPoint &gMultiPoint);
   ~GMultiPoint();
 
   GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1161,37 +1153,33 @@ public:
 };
 
 class TL_EXPORT GMultiLineString 
-  : public geometry::MultiLineString<geometry::Point<float>>, 
+  : public geometry::MultiLineString<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiLineString();
-  GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString);
+  GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString);
   GMultiLineString(const GMultiLineString &gMultiLineString);
   ~GMultiLineString();
 
   GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
-
 class TL_EXPORT GMultiPolygon 
-  : public geometry::MultiPolygon<geometry::Point<float>>, 
+  : public geometry::MultiPolygon<geometry::Point<double>>, 
     public GraphicEntity
 {
-
 public:
 
   GMultiPolygon();
-  GMultiPolygon(const MultiPolygon<geometry::Point<float>> &multiPolygon);
+  GMultiPolygon(const MultiPolygon<geometry::Point<double>> &multiPolygon);
   GMultiPolygon(const GMultiPolygon &gMultiPolygon);
   ~GMultiPolygon();
 
   GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1228,7 +1216,7 @@ public:
   void remove();
 };
 
-class Canvas
+class TL_EXPORT Canvas
 {
 protected:
 
@@ -1254,7 +1242,7 @@ public:
 
 #ifdef HAVE_OPENCV
 
-class CanvasCV : public Canvas
+class TL_EXPORT CanvasCV : public Canvas
 {
 
 private:
@@ -1280,7 +1268,7 @@ private:
 
 
 
-class Painter
+class TL_EXPORT Painter
 {
 protected:
 

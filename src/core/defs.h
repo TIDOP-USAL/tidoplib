@@ -93,11 +93,13 @@
 #  define TL_MAX_EXT    NAME_MAX
 #endif
 
+#ifdef Tidoplib_EXPORTS
 
-#if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__) && defined TL_API_EXPORTS
-#  define TL_EXPORT __declspec(dllexport)
-//#elif defined __GNUC__ && __GNUC__ >= 4
-//#  define TL_EXPORT __attribute__ ((visibility ("default")))
+#  if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__)
+#    define TL_EXPORT __declspec(dllexport)
+#  elif defined __GNUC__ && __GNUC__ >= 4
+#    define TL_EXPORT __attribute__ ((visibility ("default")))
+#  endif
 #else
 #  define TL_EXPORT
 #endif

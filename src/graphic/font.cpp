@@ -107,6 +107,18 @@ void Font::setStrikethrough(bool active)
   mStrikethrough = active;
 }
 
+Font &Font::operator = (const Font &font)
+{
+  if (this != &font) {
+    this->mName = font.mName;
+    this->mSize = font.mSize;
+    this->mStyle = font.mStyle;
+    this->mUnderline = font.mUnderline;
+    this->mStrikethrough = font.mStrikethrough;
+  }
+  return *this;
+}
+
 } // End namespace graph
 
 } // End namespace TL

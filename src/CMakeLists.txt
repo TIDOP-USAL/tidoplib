@@ -26,7 +26,11 @@ if(BUILD_TL_CORE)
   if(BUILD_TL_GEOSPATIAL)
     add_subdirectory(geospatial)
   endif()
-  
+
+  if(BUILD_TL_VECT)
+    add_subdirectory(vect)
+  endif()
+    
 else()
   # Se deberia mostrar un mensaje de error
 endif()

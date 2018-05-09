@@ -45,6 +45,7 @@ OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
 OPTION (BUILD_TL_GRAPHIC     "Include graphic module in TidopLib build"    ON)
 OPTION (BUILD_TL_GEOSPATIAL  "Include geospatial module in TidopLib build" ON)
+OPTION (BUILD_TL_VECT        "Include vect module in lib3kl build"       ON)
 
 # Activación desactivación de otros componentes de la libreria
 OPTION (BUILD_TEST            "Include test"          OFF)
@@ -84,11 +85,10 @@ OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 # --- BOOST ---
 if(WITH_BOOST)
 
-  find_package(Boost COMPONENTS filesystem system REQUIRED)
-  
-  set(Boost_USE_STATIC_LIBS        ON) # only find static libs
-  set(Boost_USE_MULTITHREADED      ON)
-  #set(Boost_USE_STATIC_RUNTIME    OFF)
+    set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+    set(Boost_USE_MULTITHREADED      ON)
+    #set(Boost_USE_STATIC_RUNTIME    OFF)
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
 
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -165,6 +165,22 @@ if(WITH_LIBRAW)
     endif()
 endif()
 
+# --- EDSDK ---
+if(WITH_EDSDK)
+
+#TODO: Esto no esta bien hecho...
+
+	find_path(EDSDK_INCLUDE_DIR EDSDK.h )
+
+	find_library(EDSDK_LIBRARY NAMES EDSDK )
+			 
+    if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
+        set(HAVE_EDSDK NO)
+    else()
+        set(HAVE_EDSDK YES)
+		include_directories(${EDSDK_INCLUDE_DIR})
+    endif()
+endif()
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
 
