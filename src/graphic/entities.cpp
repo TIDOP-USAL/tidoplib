@@ -524,6 +524,30 @@ void StyleLabel::setOffset(double dx, double dy)
   mOffset[1] = dy;
 }
 
+StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
+{
+  if (this != &styleLabel) {
+    mFontName = styleLabel.mFontName;
+    mFontSize = styleLabel.mFontSize;
+    mText = styleLabel.mText;
+    mAngle = styleLabel.mAngle;
+    mForegroundColor = styleLabel.mForegroundColor;
+    mBackgroundColor = styleLabel.mBackgroundColor;
+    mOutlineColor = styleLabel.mOutlineColor;
+    mShadowColor = styleLabel.mShadowColor;
+    mStretch = styleLabel.mStretch;
+    mLabelPlacement = styleLabel.mLabelPlacement;
+    mAnchorPosition = styleLabel.mAnchorPosition;
+    mPerpendicularOffset = styleLabel.mPerpendicularOffset;
+    bBold = styleLabel.bBold;
+    bItalic = styleLabel.bItalic;
+    bUnderline = styleLabel.bUnderline;
+    bStrikeout = styleLabel.bStrikeout;
+    mPriorityLevel = styleLabel.mPriorityLevel;
+  }
+  return *this;
+}
+
 void StyleLabel::setFont(const Font &font)
 {
   mFont = font;
