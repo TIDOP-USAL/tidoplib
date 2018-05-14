@@ -527,8 +527,9 @@ void StyleLabel::setOffset(double dx, double dy)
 StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
 {
   if (this != &styleLabel) {
-    mFontName = styleLabel.mFontName;
-    mFontSize = styleLabel.mFontSize;
+    //mFontName = styleLabel.mFontName;
+    //mFontSize = styleLabel.mFontSize;
+    mFont = styleLabel.mFont;
     mText = styleLabel.mText;
     mAngle = styleLabel.mAngle;
     mForegroundColor = styleLabel.mForegroundColor;
@@ -539,9 +540,9 @@ StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
     mLabelPlacement = styleLabel.mLabelPlacement;
     mAnchorPosition = styleLabel.mAnchorPosition;
     mPerpendicularOffset = styleLabel.mPerpendicularOffset;
-    bBold = styleLabel.bBold;
-    bItalic = styleLabel.bItalic;
-    bUnderline = styleLabel.bUnderline;
+    //bBold = styleLabel.bBold;
+    //bItalic = styleLabel.bItalic;
+    //bUnderline = styleLabel.bUnderline;
     bStrikeout = styleLabel.bStrikeout;
     mPriorityLevel = styleLabel.mPriorityLevel;
   }
@@ -556,31 +557,6 @@ void StyleLabel::setFont(const Font &font)
 Font StyleLabel::getFont() const
 {
   return mFont;
-}
-
-StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
-{
-  if (this != &styleLabel) {
-    /*mFontName = styleLabel.mFontName;
-    mFontSize = styleLabel.mFontSize;*/
-	  mFont = styleLabel.mFont;
-    mText = styleLabel.mText;
-    mAngle = styleLabel.mAngle;
-    mForegroundColor = styleLabel.mForegroundColor;
-    mBackgroundColor = styleLabel.mBackgroundColor;
-    mOutlineColor = styleLabel.mOutlineColor;
-    mShadowColor = styleLabel.mShadowColor;
-    mStretch = styleLabel.mStretch;
-    mLabelPlacement = styleLabel.mLabelPlacement;
-    mAnchorPosition = styleLabel.mAnchorPosition;
-    mPerpendicularOffset = styleLabel.mPerpendicularOffset;
-    /*bBold = styleLabel.bBold;
-    bItalic = styleLabel.bItalic;
-    bUnderline = styleLabel.bUnderline;*/
-    bStrikeout = styleLabel.bStrikeout;
-    mPriorityLevel = styleLabel.mPriorityLevel;
-  }
-  return *this;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -634,31 +610,42 @@ bool GraphicStyle::write()
   return false;
 }
 
-std::shared_ptr<StylePen> GraphicStyle::getStylePen() const
+StylePen *GraphicStyle::getStylePen() const
 {
-  return mStylePen;
+  return mStylePen.get();
 }
 
-void GraphicStyle::setStylePen(std::shared_ptr<StylePen> stylePen)
+void GraphicStyle::setStylePen(const std::shared_ptr<StylePen> &stylePen)
 {
   mStylePen = stylePen;
 }
 
-void GraphicStyle::setStyleBrush(std::shared_ptr<StyleBrush> styleBrush)
+StyleBrush *GraphicStyle::getStyleBrush() const
+{
+  return mStyleBrush.get();
+}
+
+void GraphicStyle::setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush)
 {
   mStyleBrush = styleBrush;
 }
 
-std::shared_ptr<StyleSymbol> GraphicStyle::getStyleSymbol() const
+StyleSymbol *GraphicStyle::getStyleSymbol() const
 {
-  return mStyleSymbol;
+  return mStyleSymbol.get();
 }
-void GraphicStyle::setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol)
+
+void GraphicStyle::setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol)
 {
   mStyleSymbol = styleSymbol;
 }
 
-void GraphicStyle::setStyleLabel(std::shared_ptr<StyleLabel> styleLabel)
+StyleLabel *GraphicStyle::getStyleLabel() const
+{
+  return mStyleLabel.get();
+}
+
+void GraphicStyle::setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel)
 {
   mStyleLabel = styleLabel;
 }
@@ -1083,9 +1070,9 @@ void GLayer::setName(const std::string & name)
   mName = name;
 }
 
-void GLayer::add(std::shared_ptr<GraphicEntity> entity)
+void GLayer::add(const std::shared_ptr<GraphicEntity> &entity)
 {
-
+  mEntities.push_back(entity);
 }
 
 void GLayer::remove()

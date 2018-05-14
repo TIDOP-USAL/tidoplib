@@ -5,8 +5,8 @@
 #include <list>
 
 #include "config_tl.h"
-
 #include "core/defs.h"
+
 //#ifdef HAVE_OPENCV
 //#include "opencv2/core/core.hpp"
 //#endif // HAVE_OPENCV
@@ -17,6 +17,9 @@ TL_SUPPRESS_WARNINGS
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
+
+
+#include "core/utils.h" 
 
 class OGRFeature;
 class OGRPoint;
@@ -70,15 +73,15 @@ enum class Status
   FAILURE
 };
 
-class VrtVector
+class TL_EXPORT VrtVector : public File
 {
 
 protected:
 
-  /*!
-   * \brief Nombre del fichero
-   */
-  std::string mName;
+  ///*!
+  // * \brief Nombre del fichero
+  // */
+  //std::string mName;
 
   /*!
    * \brief Número de capas
@@ -87,19 +90,28 @@ protected:
 
 public:
 
-  VrtVector() : mName(""), mLayersCount(0) {}
+  /*!
+   * \brief Constructora
+   */
+  VrtVector();
+
+  /*!
+   * \brief Destructora
+   */
   ~VrtVector() {}
 
   /*!
    * \brief Cierra el fichero imagen
    */
-  virtual void close() = 0;
-  virtual int open(const char *file, Mode mode = Mode::Read) = 0;
-  virtual int create() = 0;
+  //virtual void close() = 0;
+  //virtual int open(const char *file, Mode mode = Mode::Read) = 0;
+  //virtual int open(const std::string &file, Mode mode = Mode::Read) = 0;
+  virtual Status create() = 0;
   virtual void read(VectorGraphics *vector) = 0;
   virtual void read(int id, graph::GLayer *layer) = 0;
   virtual void read(const char *name, graph::GLayer *layer) = 0;
-  virtual int write(VectorGraphics *vector) = 0;
+  virtual void read(const std::string &name, graph::GLayer *layer) = 0;
+  virtual Status write(VectorGraphics *vector) = 0;
   int getLayersCount() const;
 
 private:
@@ -109,7 +121,7 @@ private:
 
 #ifdef HAVE_GDAL
 
-class GdalVector : public VrtVector
+class TL_EXPORT GdalVector : public VrtVector
 {
 
 protected:
@@ -145,18 +157,25 @@ public:
    * \return
    * \see Mode
    */
-  int open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief Crea una fichero vectorial
    * \return
    */
-  int create() override;
+  Status create() override;
 
   void read(VectorGraphics *vector) override;
   void read(int id, graph::GLayer *layer) override;
   void read(const char *name, graph::GLayer *layer) override;
-  int write(VectorGraphics *vector) override;
+  void read(const std::string &name, graph::GLayer *layer) override;
+  Status write(VectorGraphics *vector) override;
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  Status createCopy(const char *fileOut) override;
 
   /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -169,7 +188,7 @@ public:
 private:
 
   void read(OGRLayer *pLayer, graph::GLayer *layer);
-  void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<graph::GraphicEntity> gEntity);
+  void readEntity(OGRGeometry *ogrGeometry, graph::GraphicEntity *gEntity);
   void readPoint(OGRPoint *ogrPoint, graph::GPoint *gPoint);
   void readLineString(OGRLineString *ogrLineString, graph::GLineString *gLineString);
   void readPolygon(OGRPolygon *ogrPolygon, graph::GPolygon *gPolygon);
@@ -193,20 +212,16 @@ private:
  *
  * Esta clase permite crear, abrir y guardar un fichero vectorial.
  */
-class VectorGraphics
+class TL_EXPORT VectorGraphics : public File
 {
 protected:
-
-  /*!
-   * \brief Nombre del fichero
-   */
-  std::string mName;
   
   std::list<std::shared_ptr<graph::GLayer>> mLayers;
 
   std::unique_ptr<VrtVector> mVectorFormat;
 
 public:
+
   VectorGraphics();
   ~VectorGraphics();
 
@@ -222,11 +237,16 @@ public:
    * \return Status
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read);
+  Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   Status create();
-  Status createCopy();
+  Status createCopy(const char *fileOut) override;
   Status read();
+  Status read(VectorGraphics *vector);
+  Status read(int layerId, graph::GLayer *layer);
+  Status read(const char *layerName, graph::GLayer *layer);
+  Status read(const std::string &layerName, graph::GLayer *layer);
   Status write();
   int getLayersCount() const;
 

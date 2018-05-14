@@ -950,32 +950,37 @@ public:
   bool write();
 
 
-  std::shared_ptr<StylePen> getStylePen() const;
+  StylePen *getStylePen() const;
+
   /*!
    * \brief Establece el estilo de pluma
    * \param[in] stylePen Estilo de pluma
    */
-  void setStylePen(std::shared_ptr<StylePen> stylePen);
+  void setStylePen(const std::shared_ptr<StylePen> &stylePen);
   
+  StyleBrush *getStyleBrush() const;
+
   /*!
    * \brief Establece el estilo de pincel
    * \param[in] styleBrush Estilo de pincel
    */
-  void setStyleBrush(std::shared_ptr<StyleBrush> styleBrush);
+  void setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush);
 
-  std::shared_ptr<StyleSymbol> getStyleSymbol() const;
+  StyleSymbol *getStyleSymbol() const;
 
   /*!
    * \brief Establece el estilo de simbolos
    * \param[in] styleSymbol Estilo simbolos
    */
-  void setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol);
+  void setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol);
+
+  StyleLabel *getStyleLabel() const;
 
   /*!
    * \brief Establece el estilo de etiqueta
    * \param[in] styleLabel Estilo de etiqueta
    */
-  void setStyleLabel(std::shared_ptr<StyleLabel> styleLabel);
+  void setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel);
 
   /*!
    * \brief Operador de asignación
@@ -1212,7 +1217,7 @@ public:
 
   void setName(const std::string &name);
 
-  void add(std::shared_ptr<GraphicEntity> entity);
+  void add(const std::shared_ptr<GraphicEntity> &entity);
   void remove();
 };
 

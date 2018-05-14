@@ -15,6 +15,12 @@ namespace TL
 using namespace graph;
 using namespace geometry;
 
+
+VrtVector::VrtVector() 
+  : File(), 
+    mLayersCount(0)
+{}
+
 int VrtVector::getLayersCount() const
 {
   return mLayersCount;
@@ -27,27 +33,28 @@ GdalVector::GdalVector()
 	  pDriver(0), 
 	  mDriverName("")
 {
-
+  GDALAllRegister();
+  //RegisterGdal::init();
 }
 
 void GdalVector::close() 
 {
   if (pDataset) GDALClose(pDataset), pDataset = NULL;
-  mName = "";
+  mFile = "";
   mLayersCount = 0;
 }
 
-int GdalVector::open(const char *file, Mode mode)
+GdalVector::Status GdalVector::open(const char *file, Mode mode)
 {
   //TODO: Se puede sacar a una clase de mas bajo nivel esta sección ...
   close();
 
-  mName = file;
+  mFile = file;
   char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return 1;
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
 
   mDriverName = getDriverFromExt(ext);
-  if (mDriverName == NULL) return 1;
+  if (mDriverName == NULL) return Status::FAILURE;
 
   // No parece que se necesite
   //GDALAccess gdal_access;
@@ -69,15 +76,15 @@ int GdalVector::open(const char *file, Mode mode)
 
   if (mode == Mode::Create) {
 
-    return 1;
+    return Status::SUCCESS;
   } else {
     pDataset = (GDALDataset*)GDALOpenEx( file, GDAL_OF_VECTOR, NULL, NULL, NULL ); //GDALOpen( file, gdal_access);
     if (pDataset == NULL) {
-      return 1;
+      return Status::OPEN_FAIL;
     } else {
       pDriver = pDataset->GetDriver();
       update();
-      return 0; 
+      return Status::OPEN_OK; 
     }
   }
 
@@ -85,9 +92,14 @@ int GdalVector::open(const char *file, Mode mode)
 //  else Status::OPEN_OK;
 }
 
-int GdalVector::create() 
+GdalVector::Status GdalVector::open(const std::string &file, Mode mode)
 {
-  return 1;
+  return open(file.c_str(), mode);
+}
+
+GdalVector::Status  GdalVector::create() 
+{
+  return Status::FAILURE;
 }
 
 void GdalVector::read(VectorGraphics *vector) 
@@ -103,6 +115,11 @@ void GdalVector::read(int id, GLayer *layer)
 void GdalVector::read(const char *name, GLayer *layer) 
 {
   read(pDataset->GetLayerByName(name), layer);
+}
+
+void GdalVector::read(const std::string &name, GLayer *layer) 
+{
+  read(pDataset->GetLayerByName(name.c_str()), layer);
 }
 
 void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
@@ -123,7 +140,7 @@ void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
       std::shared_ptr<GraphicEntity> entity;
       OGRStyleMgr *ogrStyleMgr = nullptr;
       try {
-        readEntity(pGeometry, entity);
+        readEntity(pGeometry, entity.get());
         ogrStyleMgr = new OGRStyleMgr();
         ogrStyleMgr->GetStyleString(pFeature);
         readStyles(ogrStyleMgr, entity.get());
@@ -155,7 +172,7 @@ void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
   }
 }
 
-void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEntity> gEntity)
+void GdalVector::readEntity(OGRGeometry *ogrGeometry, GraphicEntity *gEntity)
 {
   OGRwkbGeometryType type;
   if ( wkbHasZ(ogrGeometry->getGeometryType()) )
@@ -164,28 +181,28 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEnt
     type = wkbSetZ(ogrGeometry->getGeometryType());
   switch ( type ) {
   case wkbPoint:
-    gEntity = std::make_shared<GPoint>();
-    readPoint(dynamic_cast<OGRPoint *>(ogrGeometry), dynamic_cast<GPoint *>(gEntity.get()));
+    gEntity = new GPoint();
+    readPoint(static_cast<OGRPoint *>(ogrGeometry), static_cast<GPoint *>(gEntity));
     break;
   case wkbLineString:
-    gEntity = std::make_shared<GLineString>();
-    readLineString(dynamic_cast<OGRLineString *>(ogrGeometry), dynamic_cast<GLineString *>(gEntity.get()));
+    gEntity = new GLineString();
+    readLineString(static_cast<OGRLineString *>(ogrGeometry), static_cast<GLineString *>(gEntity));
     break;
   case wkbPolygon:
-    gEntity = std::make_shared<GPolygon>();
-    readPolygon(dynamic_cast<OGRPolygon *>(ogrGeometry), dynamic_cast<GPolygon *>(gEntity.get()));
+    gEntity = new GPolygon();
+    readPolygon(static_cast<OGRPolygon *>(ogrGeometry), static_cast<GPolygon *>(gEntity));
     break;
   case wkbMultiPoint:
-    gEntity = std::make_shared<GMultiPoint>();
-    readMultiPoint(dynamic_cast<OGRMultiPoint *>(ogrGeometry), dynamic_cast<GMultiPoint *>(gEntity.get()));
+    gEntity = new GMultiPoint();
+    readMultiPoint(static_cast<OGRMultiPoint *>(ogrGeometry), static_cast<GMultiPoint *>(gEntity));
     break;
   case wkbMultiLineString:
-    gEntity = std::make_shared<GMultiLineString>();
-    readMultiLineString(dynamic_cast<OGRMultiLineString *>(ogrGeometry), dynamic_cast<GMultiLineString *>(gEntity.get()));
+    gEntity = new GMultiLineString();
+    readMultiLineString(static_cast<OGRMultiLineString *>(ogrGeometry), static_cast<GMultiLineString *>(gEntity));
     break;
   case wkbMultiPolygon:
-    gEntity = std::make_shared<GMultiPolygon>();
-    readMultiPolygon(dynamic_cast<OGRMultiPolygon *>(ogrGeometry), dynamic_cast<GMultiPolygon *>(gEntity.get()));
+    gEntity = new GMultiPolygon();
+    readMultiPolygon(static_cast<OGRMultiPolygon *>(ogrGeometry), static_cast<GMultiPolygon *>(gEntity));
     break;
   default:
     break;
@@ -674,17 +691,17 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gSty
     font.setName(fontName);
   }
 
-  bool bold = ogrStyleLabel->Bold(bDefault);
+  bool bold = ogrStyleLabel->Bold(bDefault) == 1;
   if (!bDefault) {
     font.setBold(bold);
   }
 
-  bool italic = ogrStyleLabel->Italic(bDefault);
+  bool italic = ogrStyleLabel->Italic(bDefault) == 1;
   if (!bDefault) {
     font.setItalic(italic);
   }
   
-  bool underline = ogrStyleLabel->Underline(bDefault);
+  bool underline = ogrStyleLabel->Underline(bDefault) == 1;
   if (!bDefault) {
     font.setUnderline(underline);
   }
@@ -719,15 +736,20 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gSty
 
   styleLabel->setFont(font);
 
-  bool strikeout = ogrStyleLabel->Strikeout(bDefault);
+  bool strikeout = ogrStyleLabel->Strikeout(bDefault) == 1;
 
   gStyle->setStyleLabel(styleLabel);
 }
 
 
-int GdalVector::write(VectorGraphics *vector) 
+VectorGraphics::Status GdalVector::write(VectorGraphics *vector) 
 {
-  return 1;
+  return Status::FAILURE;
+}
+
+VectorGraphics::Status GdalVector::createCopy(const char *fileOut)
+{
+  return Status::FAILURE;
 }
 
 const char *GdalVector::getDriverFromExt(const char *ext)
@@ -759,9 +781,9 @@ void GdalVector::update()
 
 
 
-VectorGraphics::VectorGraphics() : 
-  mName(""), 
-  mLayers(0)
+VectorGraphics::VectorGraphics() 
+  : File(),
+    mLayers(0)
 {
 }
 
@@ -774,13 +796,13 @@ void VectorGraphics::close()
   if (mVectorFormat) mVectorFormat->close();
 }
 
-Status VectorGraphics::open(const char *file, Mode mode)
+VectorGraphics::Status VectorGraphics::open(const char *file, Mode mode)
 {
   close();
 
-  mName = file;
+  mFile = file;
   char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
 
   const char *frtName;
 
@@ -789,7 +811,7 @@ Status VectorGraphics::open(const char *file, Mode mode)
     // Existe un driver de GDAL para el formato vectorial
     mVectorFormat = std::make_unique<GdalVector>();
   } else {
-    return Status::OPEN_FAIL;
+    return Status::FAILURE;
   }
 #endif
 
@@ -800,17 +822,23 @@ Status VectorGraphics::open(const char *file, Mode mode)
   } else return Status::OPEN_FAIL;
 }
 
-Status VectorGraphics::create()
+VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode)
+{
+  return open(file.c_str(), mode);
+}
+
+VectorGraphics::Status VectorGraphics::create()
 {
   return Status::FAILURE;
 }
 
-Status VectorGraphics::createCopy()
+VectorGraphics::Status VectorGraphics::createCopy(const char *fileOut)
 {
   return Status::FAILURE;
 }
 
-Status VectorGraphics::read()
+///TODO: Por ahora leo todo pero habría que poder filtrar por ventana.
+VectorGraphics::Status VectorGraphics::read()
 {
   int n = mVectorFormat->getLayersCount();
   for ( int il = 0; il < n; il++ ) {
@@ -819,10 +847,34 @@ Status VectorGraphics::read()
     //TODO: devolver error y comprobar
     mLayers.push_back(gLayer);
   }
-  return Status::FAILURE;
+  return Status::SUCCESS;
 }
 
-Status VectorGraphics::write()
+VectorGraphics::Status VectorGraphics::read(VectorGraphics *vector)
+{
+  mVectorFormat->read(vector);
+  return Status::SUCCESS;
+}
+
+VectorGraphics::Status VectorGraphics::read(int layerId, graph::GLayer *layer)
+{
+  mVectorFormat->read(layerId, layer);
+  return Status::SUCCESS;
+}
+
+VectorGraphics::Status VectorGraphics::read(const char *layerName, graph::GLayer *layer)
+{
+  mVectorFormat->read(layerName, layer);
+  return Status::SUCCESS;
+}
+
+VectorGraphics::Status VectorGraphics::read(const std::string &layerName, graph::GLayer *layer)
+{
+  mVectorFormat->read(layerName, layer);
+  return Status::SUCCESS;
+}
+
+VectorGraphics::Status VectorGraphics::write()
 {
   return Status::FAILURE;
 }

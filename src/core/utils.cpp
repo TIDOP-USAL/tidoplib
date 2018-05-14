@@ -1162,7 +1162,10 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
   }
 }
 
-
+Csv::Status Csv::open(const std::string &file, Csv::Mode mode)
+{
+  return open(file.c_str(), mode);
+}
 
 //TableRegister *Csv::read(int id)
 //{

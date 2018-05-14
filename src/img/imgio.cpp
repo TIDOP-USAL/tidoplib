@@ -307,6 +307,11 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   }
 }
 
+GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mode)
+{
+  return open(file.c_str(), mode);
+}
+
 GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) 
 {
   if (pDriver == nullptr) { 
@@ -413,7 +418,7 @@ GdalRaster::Status GdalRaster::write(const cv::Mat &image, const Helmert2D<Point
 
 #else
 
-GdalRaster::Status GdalRaster::read(uchar *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::read(unsigned char *buff, const WindowI &wLoad, double scale, Helmert2D<PointI> *trf)
 {
   WindowI wRead;
   PointI offset;
@@ -442,7 +447,7 @@ GdalRaster::Status GdalRaster::read(uchar *buff, const WindowI &wLoad, double sc
   else return Status::FAILURE;
 }
 
-GdalRaster::Status GdalRaster::write(const uchar *buff, const WindowI &w)
+GdalRaster::Status GdalRaster::write(const unsigned char *buff, const WindowI &w)
 {
   if (pDataset == NULL) return Status::FAILURE;
   size_t nPixelSpace = mBands;
@@ -460,7 +465,7 @@ GdalRaster::Status GdalRaster::write(const uchar *buff, const WindowI &w)
   else return Status::FAILURE;
 }
 
-GdalRaster::Status GdalRaster::write(const uchar *buff, const Helmert2D<PointI> *trf)
+GdalRaster::Status GdalRaster::write(const unsigned char *buff, const Helmert2D<PointI> *trf)
 {
   //if (pDataset == NULL) return 1;
   ////if (!image.isContinuous()) image = image.clone();
@@ -483,7 +488,7 @@ GdalRaster::Status GdalRaster::write(const uchar *buff, const Helmert2D<PointI> 
 
   //if ( cerr ) return 1;
   //else 
-    return 0;
+    return Status::FAILURE;
 }
 
 #endif // HAVE_OPENCV
@@ -803,6 +808,11 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
   return Status::OPEN_OK;
 }
 
+RawImage::Status RawImage::open(const std::string &file, RawImage::Mode mode)
+{
+  return open(file.c_str(), mode);
+}
+
 RawImage::Status RawImage::create(int rows, int cols, int bands, DataType type)
 {
   return Status::FAILURE;
@@ -1103,6 +1113,11 @@ RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mo
   } else return Status::OPEN_FAIL;
 }
 
+RasterGraphics::Status RasterGraphics::open(const std::string &file, RasterGraphics::Mode mode)
+{
+  return open(file.c_str(), mode);
+}
+
 RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
   if ( mImageFormat && mImageFormat->create(rows, cols, bands, type) == Status::SUCCESS) return File::Status::SUCCESS;
   else return File::Status::FAILURE;
@@ -1346,6 +1361,11 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode
     return Status::OPEN_OK;
   } else 
     return Status::OPEN_FAIL;
+}
+
+RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mode mode)
+{
+  return open(file, mode);
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const
