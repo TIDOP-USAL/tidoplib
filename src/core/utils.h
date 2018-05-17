@@ -7,6 +7,7 @@
 #include <fstream>
 #include <functional>
 #include <map>
+#include <regex>
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -229,7 +230,31 @@ TL_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameEx
 
 TL_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
 
+TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)")
 TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
+
+/*!
+ * \brief Devuelve el listado de archivos de un directorio
+ * \param[in] directory Directorio que se quiere listar
+ * \param[out] fileList Listado de archivos
+ * \param[in] filter Filtro de busqueda
+ */
+TL_EXPORT void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter);
+
+/*!
+ * \brief Devuelve el listado de archivos de un directorio filtrando por un tipo de archivo
+ * \param[in] directory Directorio que se quiere listar
+ * \param[out] fileList Listado de archivos
+ * \param[in] ext Extensión de archivo (incluyendo el punto)
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * std::list<std::string> fileList;
+ * fileListByExt("D:\\dir", &fileList, ".ext"); 
+ * \endcode
+ */
+TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext);
+
 
 //TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
 
