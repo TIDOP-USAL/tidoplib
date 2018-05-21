@@ -431,7 +431,8 @@ bool Window<Point_t>::isEmpty() const
 template<typename Point_t> template<typename Point_t2> inline
 bool Window<Point_t>::containsPoint(const Point_t2 &pt) const
 {
-  Point<typename Point_t::value_type> _pt = pt;
+  //Point<typename Point_t::value_type> _pt = pt;
+  Point_t _pt(pt.x, pt.y);
   return ((pt2.x >= _pt.x) && (pt2.y >= _pt.y) &&
     (pt1.x <= _pt.x) && (pt1.y <= _pt.y));
 }

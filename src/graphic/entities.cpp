@@ -730,15 +730,17 @@ void GraphicStyle::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
 /* ---------------------------------------------------------------------------------- */
 
 
-GraphicEntity::GraphicEntity()
+GraphicEntity::GraphicEntity(Type type)
   : GraphicStyle(),
-    GData()
+    GData(),
+    mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
   : GraphicStyle(graphicEntity),
-    GData(graphicEntity)
+    GData(graphicEntity),
+    mEntityType(graphicEntity.mEntityType)
 {
 }
 
@@ -751,6 +753,7 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
   if (this != &graphicEntity) {
     GraphicStyle::operator=(graphicEntity);
     GData::operator=(graphicEntity);
+    mEntityType = graphicEntity.mEntityType;
   }
   return *this;
 }
@@ -759,19 +762,19 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
 
 GPoint::GPoint() 
   : Point<double>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_2D)
 {
 }
 
 GPoint::GPoint(double x, double y) 
   : Point<double>(x, y), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_2D)
 {
 }
 
 GPoint::GPoint(const Point<double> &pt) 
   : Point<double>(pt), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_2D)
 {
 }  
 
@@ -805,19 +808,19 @@ void GPoint::draw(cv::Mat &canvas) const
 
 GPoint3D::GPoint3D() 
   : Point3<double>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_3D)
 {
 }
 
 GPoint3D::GPoint3D(double x, double y, double z) 
   : Point3<double>(x, y, z), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_3D)
 {
 }
 
 GPoint3D::GPoint3D(const Point3<double> &pt) 
   : Point3<double>(pt), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POINT_3D)
 {
 }
 
@@ -850,13 +853,13 @@ void GPoint3D::draw(cv::Mat &canvas) const
 
 GLineString::GLineString() 
   : LineString<Point<double>>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::LINESTRING_2D)
 {
 }
 
 GLineString::GLineString(const LineString<Point<double>> &lineString) 
   : LineString<Point<double>>(lineString), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::LINESTRING_2D)
 {
 }
 
@@ -890,13 +893,13 @@ void GLineString::draw(cv::Mat &canvas) const
 
 GPolygon::GPolygon() 
   : Polygon<Point<double>>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POLYGON_2D)
 {
 }
 
 GPolygon::GPolygon(const Polygon<Point<double>> &polygon) 
   : Polygon<Point<double>>(polygon), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::POLYGON_2D)
 {
 }
 
@@ -930,13 +933,13 @@ void GPolygon::draw(cv::Mat &canvas) const
 
 GMultiPoint::GMultiPoint()
   : MultiPoint<Point<double>>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTIPOINT_2D)
 {
 }
 
 GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
   : MultiPoint<Point<double>>(multiPoint), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTIPOINT_2D)
 {
 }
 
@@ -970,13 +973,13 @@ void GMultiPoint::draw(cv::Mat &canvas) const
 
 GMultiLineString::GMultiLineString()
   : MultiLineString<Point<double>>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTILINE_2D)
 {
 }
 
 GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString)
   : MultiLineString<Point<double>>(multiLineString), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTILINE_2D)
 {
 }
 
@@ -1009,13 +1012,13 @@ void GMultiLineString::draw(cv::Mat &canvas) const
 
 GMultiPolygon::GMultiPolygon()
   : MultiPolygon<Point<double>>(), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_2D)
 {
 }
 
 GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon)
   : MultiPolygon<Point<double>>(multiPolygon), 
-    GraphicEntity()
+    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_2D)
 {
 }
 
@@ -1060,6 +1063,61 @@ GLayer::GLayer(const GLayer &gLayer)
 {
 }
 
+GLayer::iterator GLayer::begin() 
+{
+  return mEntities.begin();
+}
+
+GLayer::const_iterator GLayer::begin() const 
+{
+  return mEntities.cbegin();
+}
+
+GLayer::iterator GLayer::end()
+{
+  return mEntities.end();
+}
+
+GLayer::const_iterator GLayer::end() const 
+{
+  return mEntities.cend();
+}
+
+void GLayer::add(const std::shared_ptr<GraphicEntity> &entity)
+{
+  mEntities.push_back(entity);
+}
+
+void GLayer::push_back(const std::shared_ptr<GraphicEntity> &entity)
+{
+  mEntities.push_back(entity);
+}
+
+void GLayer::clear() 
+{ 
+  mEntities.clear();
+}
+
+bool GLayer::empty() const
+{
+  return mEntities.empty();
+}
+
+void GLayer::resize(size_type count)
+{
+  mEntities.resize(count);
+}
+
+void GLayer::resize(size_type count, const std::shared_ptr<GraphicEntity> &value)
+{
+  mEntities.resize(count, value);
+}
+
+GLayer::size_type GLayer::size() const
+{ 
+  return mEntities.size();
+}
+
 std::string GLayer::getName() const
 {
 	return mName;
@@ -1070,15 +1128,9 @@ void GLayer::setName(const std::string & name)
   mName = name;
 }
 
-void GLayer::add(const std::shared_ptr<GraphicEntity> &entity)
-{
-  mEntities.push_back(entity);
-}
 
-void GLayer::remove()
-{
 
-}
+
 
 
 /* ---------------------------------------------------------------------------------- */

@@ -86,7 +86,7 @@ protected:
   /*!
    * \brief Número de capas
    */
-  int mLayersCount;
+  //int mLayersCount;
 
 public:
 
@@ -107,12 +107,48 @@ public:
   //virtual int open(const char *file, Mode mode = Mode::Read) = 0;
   //virtual int open(const std::string &file, Mode mode = Mode::Read) = 0;
   virtual Status create() = 0;
-  virtual void read(VectorGraphics *vector) = 0;
+  //virtual void read(VectorGraphics *vector) = 0;
+
+  ///TODO: renombrar como readLayer
   virtual void read(int id, graph::GLayer *layer) = 0;
   virtual void read(const char *name, graph::GLayer *layer) = 0;
   virtual void read(const std::string &name, graph::GLayer *layer) = 0;
-  virtual Status write(VectorGraphics *vector) = 0;
-  int getLayersCount() const;
+
+  virtual int getLayersCount() const = 0;
+
+  virtual Status createLayer(const char *layerName) = 0;
+  virtual Status createLayer(const std::string &layerName) = 0;
+  virtual Status createLayer(const graph::GLayer &layer) = 0;
+
+  //virtual Status write(VectorGraphics *vector) = 0;
+  virtual Status writeLayer(int id, const graph::GLayer &layer) = 0;
+  virtual Status writeLayer(const char *name, const graph::GLayer &layer) = 0;
+  virtual Status writeLayer(const std::string &name, const graph::GLayer &layer) = 0;
+  virtual Status writePoint(int id, const graph::GPoint &gPoint) = 0;
+  virtual Status writePoint(const char *name, const graph::GPoint &gPoint) = 0;
+  virtual Status writePoint(const std::string &name, const graph::GPoint &gPoint) = 0;
+  virtual Status writeLineString(int id, const graph::GLineString &gLineString) = 0;
+  virtual Status writeLineString(const char *name, const graph::GLineString &gLineString) = 0;
+  virtual Status writeLineString(const std::string &name, const graph::GLineString &gLineString) = 0;
+  virtual Status writePolygon(int id, const graph::GPolygon &gPolygon) = 0;
+  virtual Status writePolygon(const char *name, const graph::GPolygon &gPolygon) = 0;
+  virtual Status writePolygon(const std::string &name, const graph::GPolygon &gPolygon) = 0;
+  virtual Status writeMultiPoint(int id, const graph::GMultiPoint *gMultiPoint) = 0;
+  virtual Status writeMultiPoint(const char *name, const graph::GMultiPoint *gMultiPoint) = 0;
+  virtual Status writeMultiPoint(const std::string &name, const graph::GMultiPoint *gMultiPoint) = 0;
+  virtual Status writeMultiLineString(int id, const graph::GMultiLineString *gMultiLineString) = 0;
+  virtual Status writeMultiLineString(const char *name, const graph::GMultiLineString *gMultiLineString) = 0;
+  virtual Status writeMultiLineString(const std::string &name, const graph::GMultiLineString *gMultiLineString) = 0;
+  virtual Status writeMultiPolygon(int id,  const graph::GMultiPolygon *gMultiPolygon) = 0;
+  virtual Status writeMultiPolygon(const char *name, const graph::GMultiPolygon *gMultiPolygon) = 0;
+  virtual Status writeMultiPolygon(const std::string &name, const graph::GMultiPolygon *gMultiPolygon) = 0;
+  
+
+  //virtual Status writeStyles(OGRStyleMgr *ogrStyle, const graph::GraphicStyle *gStyle) = 0;
+  //virtual Status writeStylePen(OGRStylePen *ogrStylePen, const graph::GraphicStyle *gStyle) = 0;
+  //virtual Status writeStyleBrush(OGRStyleBrush *ogrStyleBrush, const graph::GraphicStyle *gStyle) = 0;
+  //virtual Status writeStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, const graph::GraphicStyle *gStyle) = 0;
+  //virtual Status writeStyleLabel(OGRStyleLabel *ogrStyleLabel, const graph::GraphicStyle *gStyle) = 0;
 
 private:
 
@@ -165,17 +201,23 @@ public:
    * \return
    */
   Status create() override;
+  
+  int getLayersCount() const override;
 
-  void read(VectorGraphics *vector) override;
+  //void read(VectorGraphics *vector) override;
   void read(int id, graph::GLayer *layer) override;
   void read(const char *name, graph::GLayer *layer) override;
   void read(const std::string &name, graph::GLayer *layer) override;
-  Status write(VectorGraphics *vector) override;
+  
 
   /*!
    * \brief Guarda una copia con otro nonbre
    */
   Status createCopy(const char *fileOut) override;
+
+  Status createLayer(const char *layerName) override;
+  Status createLayer(const std::string &layerName) override;
+  Status createLayer(const graph::GLayer &layer) override;
 
   /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -184,6 +226,29 @@ public:
    * \return Nombre del Driver de GDAL
    */
   static const char *getDriverFromExt(const char *ext);
+
+  //Status write(VectorGraphics *vector) override;
+  Status writeLayer(int id, const graph::GLayer &layer) override;
+  Status writeLayer(const char *name, const graph::GLayer &layer) override;
+  Status writeLayer(const std::string &name, const graph::GLayer &layer) override;
+  Status writePoint(int id, const graph::GPoint &gPoint) override;
+  Status writePoint(const char *name, const graph::GPoint &gPoint) override;
+  Status writePoint(const std::string &name, const graph::GPoint &gPoint) override;
+  Status writeLineString(int id, const graph::GLineString &gLineString) override;
+  Status writeLineString(const char *name, const graph::GLineString &gLineString) override;
+  Status writeLineString(const std::string &name, const graph::GLineString &gLineString) override;
+  Status writePolygon(int id, const graph::GPolygon &gPolygon) override;
+  Status writePolygon(const char *name, const graph::GPolygon &gPolygon) override;
+  Status writePolygon(const std::string &name, const graph::GPolygon &gPolygon) override;
+  Status writeMultiPoint(int id, const graph::GMultiPoint *gMultiPoint) override;
+  Status writeMultiPoint(const char *name, const graph::GMultiPoint *gMultiPoint) override;
+  Status writeMultiPoint(const std::string &name, const graph::GMultiPoint *gMultiPoint) override;
+  Status writeMultiLineString(int id, const graph::GMultiLineString *gMultiLineString) override;
+  Status writeMultiLineString(const char *name, const graph::GMultiLineString *gMultiLineString) override;
+  Status writeMultiLineString(const std::string &name, const graph::GMultiLineString *gMultiLineString) override;
+  Status writeMultiPolygon(int id,  const graph::GMultiPolygon *gMultiPolygon) override;
+  Status writeMultiPolygon(const char *name, const graph::GMultiPolygon *gMultiPolygon) override;
+  Status writeMultiPolygon(const std::string &name, const graph::GMultiPolygon *gMultiPolygon) override;
 
 private:
 
@@ -201,6 +266,15 @@ private:
   void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, graph::GraphicStyle *gStyle);
   void readStyleLabel(OGRStyleLabel *ogrStyleLabel, graph::GraphicStyle *gStyle);
   //void readData();
+
+  Status writeLayer(OGRLayer *pLayer, const graph::GLayer &layer);
+  Status writePoint(OGRLayer *pLayer, const graph::GPoint &gPoint);
+  Status writeLineString(OGRLayer *pLayer, const graph::GLineString &gPoint);
+  Status writePolygon(OGRLayer *pLayer, const graph::GPolygon &gPolygon);
+  Status writeMultiPoint(OGRLayer *pLayer, const graph::GMultiPoint *gMultiPoint);
+  Status writeMultiLineString(OGRLayer *pLayer, const graph::GMultiLineString *gMultiLineString);
+  Status writeMultiPolygon(OGRLayer *pLayer, const graph::GMultiPolygon *gMultiPolygon);
+
   void update();
 
 };
@@ -247,10 +321,18 @@ public:
   Status read(int layerId, graph::GLayer *layer);
   Status read(const char *layerName, graph::GLayer *layer);
   Status read(const std::string &layerName, graph::GLayer *layer);
-  Status write();
+
+  //Status write(VectorGraphics *vector);
+
   int getLayersCount() const;
 
-  void createLayer();
+  Status createLayer(const char *layerName);
+  Status createLayer(const std::string &layerName);
+  Status createLayer(const graph::GLayer &layer);
+
+  Status writeLayer(int id, const graph::GLayer &layer);
+  Status writeLayer(const char *layerName, const graph::GLayer &layer);
+  Status writeLayer(const std::string &layerName, const graph::GLayer &layer);
 
 private:
 

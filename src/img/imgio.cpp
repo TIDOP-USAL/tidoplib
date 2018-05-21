@@ -320,7 +320,10 @@ GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType ty
   }
   if (pDataset) GDALClose(pDataset), pDataset = nullptr;
   pDataset = pDriver->Create(bTempFile ? mTempName.c_str() : mFile.c_str(), cols, rows, bands, getGdalDataType(type), nullptr/*gdalOpt*/);
-  if (!pDataset) return Status::FAILURE;
+  if (pDataset == nullptr) {
+    msgError("Creation of output file failed.");
+    return Status::FAILURE;
+  }
   update();
   return Status::SUCCESS;
 }

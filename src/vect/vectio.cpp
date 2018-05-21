@@ -17,14 +17,14 @@ using namespace geometry;
 
 
 VrtVector::VrtVector() 
-  : File(), 
-    mLayersCount(0)
+  : File()/*, 
+    mLayersCount(0)*/
 {}
 
-int VrtVector::getLayersCount() const
-{
-  return mLayersCount;
-}
+//int VrtVector::getLayersCount() const
+//{
+//  return mLayersCount;
+//}
 
 #ifdef HAVE_GDAL
 GdalVector::GdalVector() 
@@ -41,7 +41,7 @@ void GdalVector::close()
 {
   if (pDataset) GDALClose(pDataset), pDataset = NULL;
   mFile = "";
-  mLayersCount = 0;
+  //mLayersCount = 0;
 }
 
 GdalVector::Status GdalVector::open(const char *file, Mode mode)
@@ -51,10 +51,10 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode)
 
   mFile = file;
   char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
+  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
 
   mDriverName = getDriverFromExt(ext);
-  if (mDriverName == NULL) return Status::FAILURE;
+  if (mDriverName == NULL) return Status::OPEN_FAIL;
 
   // No parece que se necesite
   //GDALAccess gdal_access;
@@ -76,8 +76,16 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode)
 
   if (mode == Mode::Create) {
 
-    return Status::SUCCESS;
+    pDriver = GetGDALDriverManager()->GetDriverByName(mDriverName);
+    if (pDriver == nullptr) return Status::OPEN_FAIL;
+        
+    // Se crea el directorio si no existe
+    char dir[TL_MAX_PATH];
+    if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
+      if ( createDir(dir) == -1) return Status::OPEN_FAIL;
+    return Status::OPEN_OK; 
   } else {
+
     pDataset = (GDALDataset*)GDALOpenEx( file, GDAL_OF_VECTOR, NULL, NULL, NULL ); //GDALOpen( file, gdal_access);
     if (pDataset == NULL) {
       return Status::OPEN_FAIL;
@@ -86,10 +94,8 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode)
       update();
       return Status::OPEN_OK; 
     }
-  }
 
-//  if (poDataset == NULL) return Status::OPEN_ERROR;
-//  else Status::OPEN_OK;
+  }
 }
 
 GdalVector::Status GdalVector::open(const std::string &file, Mode mode)
@@ -97,15 +103,36 @@ GdalVector::Status GdalVector::open(const std::string &file, Mode mode)
   return open(file.c_str(), mode);
 }
 
+///TODO: ver opciones de creación: 2D, 3D, ...
 GdalVector::Status  GdalVector::create() 
 {
-  return Status::FAILURE;
+  if (pDriver == nullptr) {
+    msgError("Utilice el modo Create para abrir el archivo");
+    return Status::FAILURE;
+  }
+
+  if (pDataset) GDALClose(pDataset), pDataset = nullptr;
+  pDataset = pDriver->Create(mFile.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
+  
+  if (pDataset == nullptr) {
+    msgError("Creation of output file failed.");
+    return Status::FAILURE;
+  }
+
+  update();
+
+  return Status::SUCCESS;
 }
 
-void GdalVector::read(VectorGraphics *vector) 
+int GdalVector::getLayersCount() const
 {
-  OGRLayer  *pLayer;
+  return pDataset->GetLayerCount();
 }
+
+//void GdalVector::read(VectorGraphics *vector) 
+//{
+//  OGRLayer  *pLayer;
+//}
 
 void GdalVector::read(int id, GLayer *layer) 
 {
@@ -122,6 +149,159 @@ void GdalVector::read(const std::string &name, GLayer *layer)
   read(pDataset->GetLayerByName(name.c_str()), layer);
 }
 
+GdalVector::Status GdalVector::createCopy(const char *fileOut)
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::createLayer(const char *layerName)
+{
+  OGRLayer *layer = pDataset->CreateLayer(layerName, NULL, wkbPoint, NULL );
+  if (layer == NULL) {
+    msgError("Layer creation failed.");
+    return Status::FAILURE;
+  } else {
+    
+  }
+}
+
+GdalVector::Status GdalVector::createLayer(const std::string &layerName)
+{
+  return createLayer(layerName.c_str());
+}
+
+GdalVector::Status GdalVector::createLayer(const graph::GLayer &layer) 
+{
+  return createLayer(layer.getName());
+}
+
+const char *GdalVector::getDriverFromExt(const char *ext)
+{
+  char *format;
+  if      ( strcmpi( ext, ".dxf" ) == 0 )  format = "DXF";
+  else if ( strcmpi( ext, ".dwg" ) == 0 )  format = "DWG";
+  else if ( strcmpi( ext, ".dgn" ) == 0 )  format = "DGN";
+  else if ( strcmpi( ext, ".shp" ) == 0 )  format = "ESRI Shapefile";
+  else if ( strcmpi( ext, ".gml" ) == 0 )  format = "GML";
+  else if ( strcmpi( ext, ".kml" ) == 0 )  format = "LIBKML";
+  else if ( strcmpi( ext, ".kmz" ) == 0 )  format = "LIBKML";
+  else if ( strcmpi( ext, ".json") == 0 )  format = "GeoJSON";
+  else if ( strcmpi( ext, ".osm" ) == 0 )  format = "OSM";
+  else                                     format = 0;
+  return( format );
+}
+
+//GdalVector::Status GdalVector::write(VectorGraphics *vector) 
+//{
+//  return Status::FAILURE;
+//}
+
+GdalVector::Status GdalVector::writeLayer(int id, const graph::GLayer &layer)
+{
+  return writeLayer(pDataset->GetLayer(id), layer);
+}
+
+GdalVector::Status GdalVector::writeLayer(const char *name, const graph::GLayer &layer)
+{
+  return writeLayer(pDataset->GetLayerByName(name), layer);
+}
+
+GdalVector::Status GdalVector::writeLayer(const std::string &name, const graph::GLayer &layer)
+{
+  return writeLayer(pDataset->GetLayerByName(name.c_str()), layer);
+}
+
+GdalVector::Status GdalVector::writePoint(int id, const graph::GPoint &gPoint)
+{
+  return writePoint(pDataset->GetLayer(id), gPoint);
+}
+
+GdalVector::Status GdalVector::writePoint(const char *name, const graph::GPoint &gPoint)
+{
+  return writePoint(pDataset->GetLayerByName(name), gPoint);
+}
+
+GdalVector::Status GdalVector::writePoint(const std::string &name, const graph::GPoint &gPoint)
+{
+  return writePoint(pDataset->GetLayerByName(name.c_str()), gPoint);
+}
+
+GdalVector::Status GdalVector::writeLineString(int id, const graph::GLineString &gLineString)
+{
+  return writeLineString(pDataset->GetLayer(id), gLineString);
+}
+
+GdalVector::Status GdalVector::writeLineString(const char *name, const graph::GLineString &gLineString)
+{
+  return writeLineString(pDataset->GetLayerByName(name), gLineString);
+}
+
+GdalVector::Status GdalVector::writeLineString(const std::string &name, const graph::GLineString &gLineString)
+{
+  return writeLineString(pDataset->GetLayerByName(name.c_str()), gLineString);
+}
+
+GdalVector::Status GdalVector::writePolygon(int id, const graph::GPolygon &gPolygon)
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writePolygon(const char *name, const graph::GPolygon &gPolygon) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writePolygon(const std::string &name, const graph::GPolygon &gPolygon) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPoint(int id, const graph::GMultiPoint *gMultiPoint) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPoint(const char *name, const graph::GMultiPoint *gMultiPoint) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPoint(const std::string &name, const graph::GMultiPoint *gMultiPoint) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiLineString(int id, const graph::GMultiLineString *gMultiLineString) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiLineString(const char *name, const graph::GMultiLineString *gMultiLineString) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiLineString(const std::string &name, const graph::GMultiLineString *gMultiLineString) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPolygon(int id,  const graph::GMultiPolygon *gMultiPolygon) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPolygon(const char *name, const graph::GMultiPolygon *gMultiPolygon) 
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPolygon(const std::string &name, const graph::GMultiPolygon *gMultiPolygon) 
+{
+  return Status::FAILURE;
+}
+
+/* private */
 void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
 {
   OGRFeature *pFeature;
@@ -741,36 +921,97 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gSty
   gStyle->setStyleLabel(styleLabel);
 }
 
+GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer &layer)
+{
+  Status err = Status::SUCCESS;
+  for (auto &entity : layer) {
+    GraphicEntity::Type type = entity->getType();
+    switch (type) {
+    case TL::graph::GraphicEntity::Type::POINT_2D:
+      //TODO: muy artificioso....
+      writePoint(pLayer, *static_cast<GPoint *>(entity.get()));
+      break;
+    case TL::graph::GraphicEntity::Type::POINT_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::LINESTRING_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::LINESTRING_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::POLYGON_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::POLYGON_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::SEGMENT_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::SEGMENT_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::WINDOW:
+      break;
+    case TL::graph::GraphicEntity::Type::BOX:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTIPOINT_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTIPOINT_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTILINE_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTILINE_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
+      break;
+    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
+      break;
+    case TL::graph::GraphicEntity::Type::CIRCLE:
+      break;
+    case TL::graph::GraphicEntity::Type::ELLIPSE:
+      break;
+    default:
+      break;
+    }
+  }
+  return Status::FAILURE;
+}
 
-VectorGraphics::Status GdalVector::write(VectorGraphics *vector) 
+GdalVector::Status GdalVector::writePoint(OGRLayer *pLayer, const graph::GPoint &gPoint)
+{
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pLayer->GetLayerDefn());
+  OGRPoint ogrPoint;
+  ogrPoint.setX(gPoint.x);
+  ogrPoint.setY(gPoint.y);
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPoint))
+    return Status::FAILURE;
+  else 
+    return Status::SUCCESS;
+}
+
+GdalVector::Status GdalVector::writeLineString(OGRLayer *pLayer, const graph::GLineString &gPoint)
 {
   return Status::FAILURE;
 }
 
-VectorGraphics::Status GdalVector::createCopy(const char *fileOut)
+GdalVector::Status GdalVector::writePolygon(OGRLayer *pLayer, const graph::GPolygon &gPolygon)
 {
   return Status::FAILURE;
 }
 
-const char *GdalVector::getDriverFromExt(const char *ext)
+GdalVector::Status GdalVector::writeMultiPoint(OGRLayer *pLayer, const graph::GMultiPoint *gMultiPoint)
 {
-  char *format;
-  if      ( strcmpi( ext, ".dxf" ) == 0 )  format = "DXF";
-  else if ( strcmpi( ext, ".dwg" ) == 0 )  format = "DWG";
-  else if ( strcmpi( ext, ".dgn" ) == 0 )  format = "DGN";
-  else if ( strcmpi( ext, ".shp" ) == 0 )  format = "ESRI Shapefile";
-  else if ( strcmpi( ext, ".gml" ) == 0 )  format = "GML";
-  else if ( strcmpi( ext, ".kml" ) == 0 )  format = "LIBKML";
-  else if ( strcmpi( ext, ".kmz" ) == 0 )  format = "LIBKML";
-  else if ( strcmpi( ext, ".json") == 0 )  format = "GeoJSON";
-  else if ( strcmpi( ext, ".osm" ) == 0 )  format = "OSM";
-  else                                     format = 0;
-  return( format );
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiLineString(OGRLayer *pLayer, const graph::GMultiLineString *gMultiLineString)
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPolygon(OGRLayer *pLayer, const graph::GMultiPolygon *gMultiPolygon)
+{
+  return Status::FAILURE;
 }
 
 void GdalVector::update() 
 {
-  mLayersCount = pDataset->GetLayerCount();
+  //mLayersCount = pDataset->GetLayerCount();
 }
 
 #endif // HAVE_GDAL
@@ -829,7 +1070,7 @@ VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode)
 
 VectorGraphics::Status VectorGraphics::create()
 {
-  return Status::FAILURE;
+  return mVectorFormat->create();
 }
 
 VectorGraphics::Status VectorGraphics::createCopy(const char *fileOut)
@@ -852,7 +1093,7 @@ VectorGraphics::Status VectorGraphics::read()
 
 VectorGraphics::Status VectorGraphics::read(VectorGraphics *vector)
 {
-  mVectorFormat->read(vector);
+  //mVectorFormat->read(vector);
   return Status::SUCCESS;
 }
 
@@ -874,14 +1115,44 @@ VectorGraphics::Status VectorGraphics::read(const std::string &layerName, graph:
   return Status::SUCCESS;
 }
 
-VectorGraphics::Status VectorGraphics::write()
+//VectorGraphics::Status VectorGraphics::write(VectorGraphics *vector)
+//{
+//  return Status::FAILURE;
+//}
+
+VectorGraphics::Status VectorGraphics::writeLayer(int id, const graph::GLayer &layer)
 {
-  return Status::FAILURE;
+  return mVectorFormat->writeLayer(id, layer);
+}
+
+VectorGraphics::Status VectorGraphics::writeLayer(const char *layerName, const graph::GLayer &layer)
+{
+  return mVectorFormat->writeLayer(layerName, layer);
+}
+
+VectorGraphics::Status VectorGraphics::writeLayer(const std::string &layerName, const graph::GLayer &layer)
+{
+  return mVectorFormat->writeLayer(layerName.c_str(), layer);
 }
 
 int VectorGraphics::getLayersCount() const
 {
   return mVectorFormat->getLayersCount();
+}
+
+VectorGraphics::Status VectorGraphics::createLayer(const char *layerName)
+{
+  return mVectorFormat->createLayer(layerName);
+}
+
+VectorGraphics::Status VectorGraphics::createLayer(const std::string &layerName)
+{
+  return mVectorFormat->createLayer(layerName);
+}
+
+VectorGraphics::Status VectorGraphics::createLayer(const graph::GLayer &layer)
+{
+  return mVectorFormat->createLayer(layer);
 }
 
 void VectorGraphics::update()

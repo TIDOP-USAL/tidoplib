@@ -198,31 +198,31 @@ public:
 
   /*!
    * \brief Constructora
-   * \param[int] Tamaño que se reserva para el contenedor
+   * \param[in] Tamaño que se reserva para el contenedor
    */
   EntityContainer(size_type size);
 
   /*!
    * \brief Constructor de copia
-   * \param[int] entity Objeto que se copia
+   * \param[in] entity Objeto que se copia
    */
   EntityContainer(const EntityContainer &entity);
 
   /*!
    * \brief Constructor de movimiento
-   * \param[int] entity Objeto que se copia
+   * \param[in] entity Objeto que se copia
    */
   EntityContainer(EntityContainer &&entity);
 
   /*!
    * \brief Constructor
-   * \param[int] entities
+   * \param[in] entities
    */
   EntityContainer(const std::vector<Entity_t> &entities);
 
   /*!
    * \brief Constructora de lista
-   * \param[int] entities listado de entidades
+   * \param[in] entities listado de entidades
    */
   EntityContainer(std::initializer_list<Entity_t> entities);
 
@@ -289,7 +289,7 @@ public:
 
   /*!
    * \brief Establece el tamaño del contenedor
-   * \param[int] size
+   * \param[in] size
    */
   void reserve(size_type size);
 
@@ -297,7 +297,7 @@ public:
    * \brief Modifica el tamaño del contenedor
    * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual 
    * es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[int] count Nuevo tamaño del contenedor
+   * \param[in] count Nuevo tamaño del contenedor
    */
   void resize(size_type count);
 
@@ -305,8 +305,8 @@ public:
    * \brief Modifica el tamaño del contenedor
    * Si el tamaño actual es menor que count, se añaden elementos adicionales y se inicializan con value.
    * Si el tamaño actual es mayor que count el contenedor se trunca al número de elementos indicados.
-   * \param[int] count Nuevo tamaño del contenedor
-   * \param[int] value Valor que se asigna a los nuevos elementos
+   * \param[in] count Nuevo tamaño del contenedor
+   * \param[in] value Valor que se asigna a los nuevos elementos
    */
   void resize(size_type count, const Entity_t &value);
 

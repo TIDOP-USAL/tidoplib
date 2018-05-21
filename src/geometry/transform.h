@@ -3095,7 +3095,7 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
     
-    rmse = _rootMeanSquareError(pts1, pts2, error);
+    //rmse = _rootMeanSquareError(pts1, pts2, error);
   } catch (std::exception &e) {
     msgError(e.what());
     status = transform_status::FAILURE;

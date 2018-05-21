@@ -22,7 +22,9 @@ add_library(tl_imgprocess ${LIB_TYPE}
   skeleton.cpp
   skeleton.h
   white_balance.cpp
-  white_balance.h)
+  white_balance.h
+  matching.cpp
+  matching.h)
   
 # Creates folder "libraries" and adds target project (math.vcproj)
 set_property(TARGET tl_imgprocess PROPERTY FOLDER "modules")
