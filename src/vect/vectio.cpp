@@ -994,7 +994,23 @@ GdalVector::Status GdalVector::writePolygon(OGRLayer *pLayer, const graph::GPoly
   return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writeMultiPoint(OGRLayer *pLayer, const graph::GMultiPoint *gMultiPoint)
+VectorGraphics::Status GdalVector::createLayer(const char *layerName)
+{
+  OGRLayer *layer = pDataset->CreateLayer(layerName, NULL, wkbPoint, NULL );
+  if (layer == NULL) {
+    msgError("Layer creation failed.");
+    return Status::FAILURE;
+  } else {
+    
+  }
+}
+
+VectorGraphics::Status GdalVector::createLayer(const std::string &layerName)
+{
+  return createLayer(layerName.c_str());
+}
+
+const char *GdalVector::getDriverFromExt(const char *ext)
 {
   return Status::FAILURE;
 }

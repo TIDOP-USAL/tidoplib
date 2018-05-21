@@ -22,6 +22,7 @@
 #  include <thread>
 #endif
 
+
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
 #if (__cplusplus >= 201703L)
@@ -344,7 +345,10 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
   //strcpy(dir, directory);
   //strcat(dir, "\\"); // TODO: el tema de las barras aunque a efectos practicos de igual no queda elegante el mezclar los dos tipos de barras...
   //strcat(dir, wildcard);
-
+  Path _path(directory);
+  msgInfo(_path.toString().c_str());
+  _path.append(wildcard);
+  msgInfo(_path.toString().c_str());
   hFind = FindFirstFileA(/*dir*/ Path(directory).append(wildcard).toString().c_str(), &findData);
 
   if (hFind == INVALID_HANDLE_VALUE) {
@@ -360,6 +364,47 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 #else
 
 #endif
+}
+
+/// https://stackoverflow.com/questions/1257721/can-i-use-a-mask-to-iterate-files-in-a-directory-with-boost
+void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
+{
+
+  fs::directory_iterator itr_end;
+  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
+    // Skip if not a file
+    if (!fs::is_regular_file(it->status())) continue;
+
+    std::smatch what;
+
+    if (!std::regex_match(it->path().filename().string(), what, filter)) continue;
+
+    // File matches, store it
+    if (fileList) 
+      fileList->push_back(it->path().filename().string());
+  }
+
+}
+
+void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext)
+{
+
+  fs::directory_iterator itr_end;
+  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
+    // Skip if not a file
+    if (!fs::is_regular_file(it->status())) continue;
+    
+    fs::path _path = it->path();
+
+    std::string _ext = it->path().extension().string();
+
+    if (it->path().extension().compare(ext) == 0) {
+      // File matches, store it
+      if (fileList) 
+        fileList->push_back(it->path().filename().string());
+    }
+  }
+
 }
 
 /* ---------------------------------------------------------------------------------- */
