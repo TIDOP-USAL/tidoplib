@@ -352,6 +352,7 @@ public:
    * \see Mode
    */
   Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief Crea una imagen
@@ -399,7 +400,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(uchar *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -407,7 +408,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  Status write(const uchar *buff, const geometry::WindowI &w) override;
+  Status write(const unsigned char *buff, const geometry::WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -415,7 +416,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const uchar *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
 
 
 #endif
@@ -630,6 +631,7 @@ public:
    * \see Mode
    */
   Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief Crea una imagen raw
@@ -786,7 +788,8 @@ public:
    * \return Status
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief Crea una imagen
@@ -925,6 +928,7 @@ public:
    * \return
    */
   File::Status open(const char *file, Mode mode = Mode::Read) override;
+  File::Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief georeference

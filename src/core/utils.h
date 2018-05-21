@@ -43,12 +43,6 @@ namespace TL
  */
 TL_EXPORT const char *getRunfile();
 
-/*!
- * \brief Información de la aplicación
- */
-//bool getAppVersion(const std::string &libName, std::string *companyName, std::string *productName,
-//                   std::string *fileVersion, std::string *copyright, std::string *fileDescription);
-
 
 /* ---------------------------------------------------------------------------------- */
 /*                    Operaciones con directorios y archivos                          */
@@ -994,6 +988,7 @@ public:
   File() : mFile("") {}
 
   File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
+  File(const std::string &file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
 
   /*!
    * \brief Destructora
@@ -1013,6 +1008,7 @@ public:
    * \see Mode
    */
   virtual Status open(const char *file, Mode mode = Mode::Update) = 0;
+  virtual Status open(const std::string &file, Mode mode = Mode::Update) = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1073,6 +1069,7 @@ public:
    * \see Mode
    */
   Status open(const char *file, Mode mode = Mode::Read) override;
+  Status open(const std::string &file, Mode mode = Mode::Read) override;
 
   /*!
    * \brief Lee un registro de la tabla

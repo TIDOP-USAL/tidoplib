@@ -45,6 +45,7 @@ OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
 OPTION (BUILD_TL_GRAPHIC     "Include graphic module in TidopLib build"    ON)
 OPTION (BUILD_TL_GEOSPATIAL  "Include geospatial module in TidopLib build" ON)
+OPTION (BUILD_TL_VECT        "Include vect module in lib3kl build"       ON)
 
 # Activación desactivación de otros componentes de la libreria
 OPTION (BUILD_TEST            "Include test"          OFF)
@@ -148,6 +149,7 @@ if(WITH_GDAL)
     endif()
 endif()
 
+# --- PROJ4 (optional) ---
 if(WITH_PROJ4)
   find_package(PROJ4 QUIET)
   
@@ -160,7 +162,7 @@ if(WITH_PROJ4)
     endif()
 endif()
 
-# --- LibRaw ---
+# --- LibRaw (optional) ---
 if(WITH_LIBRAW)
     find_package(LIBRAW QUIET)
 
@@ -172,6 +174,22 @@ if(WITH_LIBRAW)
     endif()
 endif()
 
+# --- EDSDK ---
+if(WITH_EDSDK)
+
+#TODO: Esto no esta bien hecho...
+
+	find_path(EDSDK_INCLUDE_DIR EDSDK.h )
+
+	find_library(EDSDK_LIBRARY NAMES EDSDK )
+			 
+    if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
+        set(HAVE_EDSDK NO)
+    else()
+        set(HAVE_EDSDK YES)
+		include_directories(${EDSDK_INCLUDE_DIR})
+    endif()
+endif()
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
 

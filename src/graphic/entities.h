@@ -1,3 +1,5 @@
+///TODO: Clase para parsear una cadena de texto (GDAL) como un estilo
+
 #ifndef TL_GRAPHIC_ENTITIES_H
 #define TL_GRAPHIC_ENTITIES_H
 
@@ -16,6 +18,7 @@
 #include "core/defs.h"
 #include "core/flags.h"
 #include "graphic/color.h"
+#include "graphic/font.h"
 #include "geometry/entities/linestring.h"
 #include "geometry/entities/polygon.h"
 
@@ -60,7 +63,8 @@ public:
   /*!
    * \brief Nombres de pluma
    */
-  enum class PenName {
+  enum class PenName : uint8_t
+  {
     SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
     PEN_NULL,          /*!< Pluma nula (invisible) */  
     DASH,              /*!<  */ 
@@ -75,7 +79,8 @@ public:
   /*!
    * \brief Forma de puntos extremos de las líneas.
    */
-  enum class PenCap {
+  enum class PenCap : uint8_t
+  {
     BUTT,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */  
     ROUND,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */  
     PROJECTING      /*!<  Similar a Butt, pero los extremos de la línea se extiende a la mitad de la anchura de la línea más allá de los puntos finales.*/  
@@ -84,7 +89,8 @@ public:
   /*!
    * \brief Forma del punto de unión (vértice) de líneas.
    */
-  enum class PenJoin {
+  enum class PenJoin : uint8_t
+  {
     MITER,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */  
     ROUNDED,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */  
     BEVEL       /*!< Unión biselada */  
@@ -252,7 +258,6 @@ public:
    * \return Referencia al estilo de pluma
    */
   StylePen &operator = (const StylePen &stylePen);
-
 };
 
 
@@ -262,7 +267,7 @@ public:
 class TL_EXPORT StyleBrush
 {
 public:
-  enum class BrushName
+  enum class BrushName : uint8_t
   {
     SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
     BRUSH_NULL,        /*!< Pincel nulo (invisible) */  
@@ -440,7 +445,7 @@ public:
 
   enum class SymbolName
   {
-    SOLID,             /*!< + */  
+    CROSS,             /*!< + */  
     DIAGONAL_CROSS,    /*!< x */  
     CIRCLE,            /*!< Circulo */ 
     CIRCLE_FILLED,     /*!< Circulo relleno */ 
@@ -549,7 +554,7 @@ public:
    * \param[in] color Color
    * \see Color
    */
-  void setColor(Color &color);
+  void setColor(const Color &color);
 
     /*!
    * \brief Devuelve el color de borde
@@ -563,7 +568,7 @@ public:
    * \param[in] outlinecolor Color de borde
    * \see Color
    */
-  void setOutlineColor(Color &outlinecolor);
+  void setOutlineColor(const Color &outlinecolor);
 
   /*!
    * \brief Devuelve el factor de escala
@@ -614,7 +619,8 @@ class TL_EXPORT StyleLabel
 {
 public:
 
-  enum class LabelPlacement  {
+  enum class LabelPlacement : uint8_t
+  {
     p,     /*!< Etiqueta asociada a un punto o al primer vértice de una polilínea */
     l,     /*!< Etiqueta asociada al último vértice de una polilínea */
     s,     /*!< Estira la cadena de texto a lo largo de la polilínea, con un espaciado igual entre cada carácter */
@@ -627,7 +633,7 @@ public:
   /*!
    * \brief Posición de la etiqueta respecto al punto de inserción
    */
-  enum class AnchorPosition
+  enum class AnchorPosition : uint8_t
   {
     VERTICAL_BASELINE = 1 << 0,   /*!<  */
     VERTICAL_CENTER = 1 << 1,     /*!<  */
@@ -641,15 +647,20 @@ public:
 protected:
 
   /*!
+   * \brief Fuente
+   */
+  Font mFont;
+
+  /*!
    * \brief Nombre de la fuente
    * Puede ser una lista separada por comas de varios tipos de fuentes
    */
-  std::string mFontName;
+  //std::string mFontName;
 
   /*!
    * \brief Tamaño de fuente
    */
-  int mFontSize;
+  //int mFontSize;
 
   /*!
    * \brief Texto de la etiqueta
@@ -716,17 +727,17 @@ protected:
   /*!
    * \brief Negrita
    */
-  bool bBold;
+  //bool bBold;
 
   /*!
    * \brief Cursiva
    */
-  bool bItalic;
+  //bool bItalic;
 
   /*!
    * \brief Subrayado
    */
-  bool bUnderline;
+  //bool bUnderline;
 
   /*!
    * \brief Tachado
@@ -832,7 +843,7 @@ public:
    * \param[in] labelPlacement
    * \see LabelPlacement
    */
-  void setLabelPlacement( LabelPlacement labelPlacement);
+  void setLabelPlacement(LabelPlacement labelPlacement);
 
   /*!
    * \brief Posición de anclaje de la etiqueta
@@ -870,6 +881,8 @@ public:
    * \return Referencia al estilo de etiqueta
    */
   StyleLabel &operator = (const StyleLabel &styleLabel);
+  void setFont(const Font &font);
+  Font getFont() const;
 };
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
@@ -937,39 +950,43 @@ public:
   bool write();
 
 
-  std::shared_ptr<StylePen> getStylePen() const;
+  StylePen *getStylePen() const;
 
   /*!
    * \brief Establece el estilo de pluma
    * \param[in] stylePen Estilo de pluma
    */
-  void setStylePen(std::shared_ptr<StylePen> stylePen);
+  void setStylePen(const std::shared_ptr<StylePen> &stylePen);
   
+  StyleBrush *getStyleBrush() const;
+
   /*!
    * \brief Establece el estilo de pincel
    * \param[in] styleBrush Estilo de pincel
    */
-  void setStyleBrush(std::shared_ptr<StyleBrush> styleBrush);
+  void setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush);
 
-  std::shared_ptr<StyleSymbol> getStyleSymbol() const;
+  StyleSymbol *getStyleSymbol() const;
+
   /*!
    * \brief Establece el estilo de simbolos
    * \param[in] styleSymbol Estilo simbolos
    */
-  void setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol);
+  void setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol);
+
+  StyleLabel *getStyleLabel() const;
 
   /*!
    * \brief Establece el estilo de etiqueta
    * \param[in] styleLabel Estilo de etiqueta
    */
-  void setStyleLabel(std::shared_ptr<StyleLabel> styleLabel);
+  void setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel);
 
   /*!
    * \brief Operador de asignación
    * \param[in] graphicStyle Estilo
    */
   GraphicStyle &operator = (const GraphicStyle &graphicStyle);
-
 private:
 
 #ifdef HAVE_GDAL
@@ -1012,7 +1029,6 @@ public:
   GData(const GData &gData)
   {
   }
-
   ~GData()
   {
   }
@@ -1022,7 +1038,6 @@ public:
     ///TODO: terminar
     return *this;
   }
-
 private:
 
 };
@@ -1056,18 +1071,17 @@ public:
 
 
 
-class TL_EXPORT GPoint : public geometry::Point<float>, public GraphicEntity
+class TL_EXPORT GPoint : public geometry::Point<double>, public GraphicEntity
 {
 public:
 
   GPoint();
-  GPoint(float x, float y);
-  GPoint(const Point<float> &pt);
+  GPoint(double x, double y);
+  GPoint(const Point<double> &pt);
   GPoint(const GPoint &pt);
   ~GPoint();
 
   GPoint &operator = (const GPoint &gPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1075,35 +1089,33 @@ public:
 };
 
 
-class TL_EXPORT GPoint3D : public geometry::Point3<float>, public GraphicEntity
+class TL_EXPORT GPoint3D : public geometry::Point3<double>, public GraphicEntity
 {
 public:
 
   GPoint3D();
-  GPoint3D(float x, float y, float z);
-  GPoint3D(const Point3<float> &pt);
+  GPoint3D(double x, double y, double z);
+  GPoint3D(const Point3<double> &pt);
   GPoint3D(const GPoint3D &pt);
   ~GPoint3D();
 
   GPoint3D &operator = (const GPoint3D &gPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
 
-class TL_EXPORT GLineString : public geometry::LineString<geometry::Point<float>>, public GraphicEntity
+class TL_EXPORT GLineString : public geometry::LineString<geometry::Point<double>>, public GraphicEntity
 {
 public:
 
   GLineString();
-  GLineString(const LineString<geometry::Point<float>> &lineString);
+  GLineString(const LineString<geometry::Point<double>> &lineString);
   GLineString(const GLineString &lineString);
   ~GLineString();
 
   GLineString &operator = (const GLineString &gLineString);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1111,36 +1123,34 @@ public:
 
 
 class TL_EXPORT GPolygon 
-  : public geometry::Polygon<geometry::Point<float>>, 
+  : public geometry::Polygon<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GPolygon();
-  GPolygon(const Polygon<geometry::Point<float>> &polygon);
+  GPolygon(const Polygon<geometry::Point<double>> &polygon);
   GPolygon(const GPolygon &gPolygon);
   ~GPolygon();
 
   GPolygon &operator = (const GPolygon &gPolygon);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
 
 class TL_EXPORT GMultiPoint 
-  : public geometry::MultiPoint<geometry::Point<float>>, 
+  : public geometry::MultiPoint<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiPoint();
-  GMultiPoint(const MultiPoint<geometry::Point<float>> &multiPoint);
+  GMultiPoint(const MultiPoint<geometry::Point<double>> &multiPoint);
   GMultiPoint(const GMultiPoint &gMultiPoint);
   ~GMultiPoint();
 
   GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1148,37 +1158,33 @@ public:
 };
 
 class TL_EXPORT GMultiLineString 
-  : public geometry::MultiLineString<geometry::Point<float>>, 
+  : public geometry::MultiLineString<geometry::Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiLineString();
-  GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString);
+  GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString);
   GMultiLineString(const GMultiLineString &gMultiLineString);
   ~GMultiLineString();
 
   GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
 };
-
 class TL_EXPORT GMultiPolygon 
-  : public geometry::MultiPolygon<geometry::Point<float>>, 
+  : public geometry::MultiPolygon<geometry::Point<double>>, 
     public GraphicEntity
 {
-
 public:
 
   GMultiPolygon();
-  GMultiPolygon(const MultiPolygon<geometry::Point<float>> &multiPolygon);
+  GMultiPolygon(const MultiPolygon<geometry::Point<double>> &multiPolygon);
   GMultiPolygon(const GMultiPolygon &gMultiPolygon);
   ~GMultiPolygon();
 
   GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
-
 #ifdef HAVE_OPENCV
   void draw(cv::Mat &canvas) const override;
 #endif
@@ -1211,11 +1217,11 @@ public:
 
   void setName(const std::string &name);
 
-  void add(std::shared_ptr<GraphicEntity> entity);
+  void add(const std::shared_ptr<GraphicEntity> &entity);
   void remove();
 };
 
-class Canvas
+class TL_EXPORT Canvas
 {
 protected:
 
@@ -1241,7 +1247,7 @@ public:
 
 #ifdef HAVE_OPENCV
 
-class CanvasCV : public Canvas
+class TL_EXPORT CanvasCV : public Canvas
 {
 
 private:
@@ -1267,7 +1273,7 @@ private:
 
 
 
-class Painter
+class TL_EXPORT Painter
 {
 protected:
 

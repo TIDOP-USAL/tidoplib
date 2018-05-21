@@ -755,7 +755,7 @@ MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints)
 template<typename Point_t> inline
 MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
 {
-  if (this != multiPoint) {
+  if (this != &multiPoint) {
     Entity::operator = (vPoint);
     Entities3D<Point_t>::operator = (vPoint);
   }

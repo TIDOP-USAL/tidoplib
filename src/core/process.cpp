@@ -487,6 +487,11 @@ void BatchProcess::resume()
   }
 }
 
+void BatchProcess::initCounter()
+{
+  Process::processCountReset();
+}
+
 BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
 {
   mStatus = Status::RUNNING;

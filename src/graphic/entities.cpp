@@ -172,6 +172,7 @@ StyleBrush::StyleBrush(const StyleBrush &styleBrush)
     mPriorityLevel(styleBrush.mPriorityLevel)
 {
 }
+
 StyleBrush::~StyleBrush()
 {
 }
@@ -267,7 +268,7 @@ StyleBrush &StyleBrush::operator = (const StyleBrush &styleBrush)
 /* ---------------------------------------------------------------------------------- */
 
 StyleSymbol::StyleSymbol()
-  : mName(SymbolName::SOLID),
+  : mName(SymbolName::CROSS),
     mAngle(0.),
     mColor(0),
     mOutlineColor(0),
@@ -315,7 +316,7 @@ Color StyleSymbol::getColor()
   return mColor;
 }
 
-void StyleSymbol::setColor(Color &color) 
+void StyleSymbol::setColor(const Color &color) 
 {
   mColor = color;
 }
@@ -325,7 +326,7 @@ Color StyleSymbol::getOutlineColor()
   return mOutlineColor;
 }
 
-void StyleSymbol::setOutlineColor(Color &outlinecolor) 
+void StyleSymbol::setOutlineColor(const Color &outlinecolor) 
 {
   mOutlineColor = outlinecolor;
 }
@@ -377,12 +378,12 @@ StyleSymbol &StyleSymbol::operator = (const StyleSymbol &styleSymbol)
   }
   return *this;
 }
-
 /* ---------------------------------------------------------------------------------- */
 
 StyleLabel::StyleLabel()
-  : mFontName("Arial"),
-    mFontSize(12),
+  : /*mFontName("Arial"),
+    mFontSize(12),*/
+    mFont(),
     mText(""),
     mAngle(0.),
     mForegroundColor(0),
@@ -393,17 +394,18 @@ StyleLabel::StyleLabel()
     mLabelPlacement(LabelPlacement::p),
     mAnchorPosition(AnchorPosition::VERTICAL_BASELINE | AnchorPosition::HORIZONTAL_LEFT),
     mPerpendicularOffset(0),
-    bBold(false),
+    /*bBold(false),
     bItalic(false),
-    bUnderline(false),
+    bUnderline(false),*/
     bStrikeout(false),
     mPriorityLevel(0)
 {
 }
 
 StyleLabel::StyleLabel(const StyleLabel &styleLabel)
-  : mFontName(styleLabel.mFontName),
-    mFontSize(styleLabel.mFontSize),
+  : /*mFontName(styleLabel.mFontName),
+    mFontSize(styleLabel.mFontSize),*/
+    mFont(styleLabel.mFont),
     mText(styleLabel.mText),
     mAngle(styleLabel.mAngle),
     mForegroundColor(styleLabel.mForegroundColor),
@@ -414,9 +416,9 @@ StyleLabel::StyleLabel(const StyleLabel &styleLabel)
     mLabelPlacement(styleLabel.mLabelPlacement),
     mAnchorPosition(styleLabel.mAnchorPosition),
     mPerpendicularOffset(styleLabel.mPerpendicularOffset),
-    bBold(styleLabel.bBold),
+    /*bBold(styleLabel.bBold),
     bItalic(styleLabel.bItalic),
-    bUnderline(styleLabel.bUnderline),
+    bUnderline(styleLabel.bUnderline),*/
     bStrikeout(styleLabel.bStrikeout),
     mPriorityLevel(styleLabel.mPriorityLevel)
 {
@@ -525,8 +527,9 @@ void StyleLabel::setOffset(double dx, double dy)
 StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
 {
   if (this != &styleLabel) {
-    mFontName = styleLabel.mFontName;
-    mFontSize = styleLabel.mFontSize;
+    //mFontName = styleLabel.mFontName;
+    //mFontSize = styleLabel.mFontSize;
+    mFont = styleLabel.mFont;
     mText = styleLabel.mText;
     mAngle = styleLabel.mAngle;
     mForegroundColor = styleLabel.mForegroundColor;
@@ -537,13 +540,23 @@ StyleLabel &StyleLabel::operator = (const StyleLabel &styleLabel)
     mLabelPlacement = styleLabel.mLabelPlacement;
     mAnchorPosition = styleLabel.mAnchorPosition;
     mPerpendicularOffset = styleLabel.mPerpendicularOffset;
-    bBold = styleLabel.bBold;
-    bItalic = styleLabel.bItalic;
-    bUnderline = styleLabel.bUnderline;
+    //bBold = styleLabel.bBold;
+    //bItalic = styleLabel.bItalic;
+    //bUnderline = styleLabel.bUnderline;
     bStrikeout = styleLabel.bStrikeout;
     mPriorityLevel = styleLabel.mPriorityLevel;
   }
   return *this;
+}
+
+void StyleLabel::setFont(const Font &font)
+{
+  mFont = font;
+}
+
+Font StyleLabel::getFont() const
+{
+  return mFont;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -597,31 +610,42 @@ bool GraphicStyle::write()
   return false;
 }
 
-std::shared_ptr<StylePen> GraphicStyle::getStylePen() const
+StylePen *GraphicStyle::getStylePen() const
 {
-  return mStylePen;
+  return mStylePen.get();
 }
 
-void GraphicStyle::setStylePen(std::shared_ptr<StylePen> stylePen)
+void GraphicStyle::setStylePen(const std::shared_ptr<StylePen> &stylePen)
 {
   mStylePen = stylePen;
 }
 
-void GraphicStyle::setStyleBrush(std::shared_ptr<StyleBrush> styleBrush)
+StyleBrush *GraphicStyle::getStyleBrush() const
+{
+  return mStyleBrush.get();
+}
+
+void GraphicStyle::setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush)
 {
   mStyleBrush = styleBrush;
 }
 
-std::shared_ptr<StyleSymbol> GraphicStyle::getStyleSymbol() const
+StyleSymbol *GraphicStyle::getStyleSymbol() const
 {
-  return mStyleSymbol;
+  return mStyleSymbol.get();
 }
-void GraphicStyle::setStyleSymbol(std::shared_ptr<StyleSymbol> styleSymbol)
+
+void GraphicStyle::setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol)
 {
   mStyleSymbol = styleSymbol;
 }
 
-void GraphicStyle::setStyleLabel(std::shared_ptr<StyleLabel> styleLabel)
+StyleLabel *GraphicStyle::getStyleLabel() const
+{
+  return mStyleLabel.get();
+}
+
+void GraphicStyle::setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel)
 {
   mStyleLabel = styleLabel;
 }
@@ -636,7 +660,6 @@ GraphicStyle &GraphicStyle::operator = (const GraphicStyle &graphicStyle)
   }
   return *this;
 }
-
 #ifdef HAVE_GDAL
 
 void GraphicStyle::readStylePen(OGRStylePen *ogrStylePen)
@@ -735,25 +758,25 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
 /* ---------------------------------------------------------------------------------- */
 
 GPoint::GPoint() 
-  : Point<float>(), 
+  : Point<double>(), 
     GraphicEntity()
 {
 }
 
-GPoint::GPoint(float x, float y) 
-  : Point<float>(x, y), 
+GPoint::GPoint(double x, double y) 
+  : Point<double>(x, y), 
     GraphicEntity()
 {
 }
 
-GPoint::GPoint(const Point<float> &pt) 
-  : Point<float>(pt), 
+GPoint::GPoint(const Point<double> &pt) 
+  : Point<double>(pt), 
     GraphicEntity()
 {
 }  
 
 GPoint::GPoint(const GPoint &pt) 
-  : Point<float>(pt), 
+  : Point<double>(pt), 
     GraphicEntity(pt)
 {
 }  
@@ -764,12 +787,11 @@ GPoint::~GPoint()
 GPoint &GPoint::operator = (const GPoint &gPoint)
 {
   if (this != &gPoint) {
-    Point<float>::operator=(gPoint);
+    Point<double>::operator=(gPoint);
     GraphicEntity::operator=(gPoint);
   }
   return *this;
 }
-
 #ifdef HAVE_OPENCV
 void GPoint::draw(cv::Mat &canvas) const
 {
@@ -782,25 +804,25 @@ void GPoint::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GPoint3D::GPoint3D() 
-  : Point3<float>(), 
+  : Point3<double>(), 
     GraphicEntity()
 {
 }
 
-GPoint3D::GPoint3D(float x, float y, float z) 
-  : Point3<float>(x, y, z), 
+GPoint3D::GPoint3D(double x, double y, double z) 
+  : Point3<double>(x, y, z), 
     GraphicEntity()
 {
 }
 
-GPoint3D::GPoint3D(const Point3<float> &pt) 
-  : Point3<float>(pt), 
+GPoint3D::GPoint3D(const Point3<double> &pt) 
+  : Point3<double>(pt), 
     GraphicEntity()
 {
 }
 
 GPoint3D::GPoint3D(const GPoint3D &pt) 
-  : Point3<float>(pt), 
+  : Point3<double>(pt), 
     GraphicEntity(pt)
 {
 }
@@ -812,12 +834,11 @@ GPoint3D::~GPoint3D()
 GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
 {
   if (this != &gPoint) {
-    Point3<float>::operator=(gPoint);
+    Point3<double>::operator=(gPoint);
     GraphicEntity::operator=(gPoint);
   }
   return *this;
 }
-
 #ifdef HAVE_OPENCV
 void GPoint3D::draw(cv::Mat &canvas) const
 {
@@ -828,19 +849,19 @@ void GPoint3D::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GLineString::GLineString() 
-  : LineString<Point<float>>(), 
+  : LineString<Point<double>>(), 
     GraphicEntity()
 {
 }
 
-GLineString::GLineString(const LineString<Point<float>> &lineString) 
-  : LineString<Point<float>>(lineString), 
+GLineString::GLineString(const LineString<Point<double>> &lineString) 
+  : LineString<Point<double>>(lineString), 
     GraphicEntity()
 {
 }
 
 GLineString::GLineString(const GLineString &lineString) 
-  : LineString<Point<float>>(lineString), 
+  : LineString<Point<double>>(lineString), 
     GraphicEntity(lineString)
 {
 }
@@ -852,7 +873,7 @@ GLineString::~GLineString()
 GLineString &GLineString::operator = (const GLineString &gLineString)
 {
   if (this != &gLineString) {
-    LineStringF::operator=(gLineString);
+    LineString<Point<double>>::operator=(gLineString);
     GraphicEntity::operator=(gLineString);
   }
   return *this;
@@ -868,19 +889,19 @@ void GLineString::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GPolygon::GPolygon() 
-  : Polygon<Point<float>>(), 
+  : Polygon<Point<double>>(), 
     GraphicEntity()
 {
 }
 
-GPolygon::GPolygon(const Polygon<Point<float>> &polygon) 
-  : Polygon<Point<float>>(polygon), 
+GPolygon::GPolygon(const Polygon<Point<double>> &polygon) 
+  : Polygon<Point<double>>(polygon), 
     GraphicEntity()
 {
 }
 
 GPolygon::GPolygon(const GPolygon &gPolygon) 
-  : Polygon<Point<float>>(gPolygon), 
+  : Polygon<Point<double>>(gPolygon), 
     GraphicEntity(gPolygon)
 {
 }
@@ -892,12 +913,11 @@ GPolygon::~GPolygon()
 GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
 {
   if (this != &gPolygon) {
-    Polygon<Point<float>>::operator=(gPolygon);
+    Polygon<Point<double>>::operator=(gPolygon);
     GraphicEntity::operator=(gPolygon);
   }
   return *this;
 }
-
 
 #ifdef HAVE_OPENCV
 void GPolygon::draw(cv::Mat &canvas) const
@@ -909,19 +929,19 @@ void GPolygon::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiPoint::GMultiPoint()
-  : MultiPoint<Point<float>>(), 
+  : MultiPoint<Point<double>>(), 
     GraphicEntity()
 {
 }
 
-GMultiPoint::GMultiPoint(const MultiPoint<Point<float>> &multiPoint)
-  : MultiPoint<Point<float>>(multiPoint), 
+GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
+  : MultiPoint<Point<double>>(multiPoint), 
     GraphicEntity()
 {
 }
 
 GMultiPoint::GMultiPoint(const GMultiPoint &gMultiPoint)
-  : MultiPoint<Point<float>>(gMultiPoint), 
+  : MultiPoint<Point<double>>(gMultiPoint), 
     GraphicEntity(gMultiPoint)
 {
 }
@@ -933,7 +953,7 @@ GMultiPoint::~GMultiPoint()
 GMultiPoint &GMultiPoint::operator = (const GMultiPoint &gMultiPoint)
 {
   if (this != &gMultiPoint) {
-    MultiPoint<Point<float>>::operator=(gMultiPoint);
+    MultiPoint<Point<double>>::operator=(gMultiPoint);
     GraphicEntity::operator=(gMultiPoint);
   }
   return *this;
@@ -949,19 +969,19 @@ void GMultiPoint::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString::GMultiLineString()
-  : MultiLineString<Point<float>>(), 
+  : MultiLineString<Point<double>>(), 
     GraphicEntity()
 {
 }
 
-GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<float>> &multiLineString)
-  : MultiLineString<Point<float>>(multiLineString), 
+GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString)
+  : MultiLineString<Point<double>>(multiLineString), 
     GraphicEntity()
 {
 }
 
 GMultiLineString::GMultiLineString(const GMultiLineString &gMultiLineString)
-  : MultiLineString<Point<float>>(gMultiLineString), 
+  : MultiLineString<Point<double>>(gMultiLineString), 
     GraphicEntity(gMultiLineString)
 {
 }
@@ -973,12 +993,11 @@ GMultiLineString::~GMultiLineString()
 GMultiLineString &GMultiLineString::operator = (const GMultiLineString &gMultiLineString)
 {
   if (this != &gMultiLineString) {
-    MultiLineString<Point<float>>::operator=(gMultiLineString);
+    MultiLineString<Point<double>>::operator=(gMultiLineString);
     GraphicEntity::operator=(gMultiLineString);
   }
   return *this;
 }
-
 #ifdef HAVE_OPENCV
 void GMultiLineString::draw(cv::Mat &canvas) const
 {
@@ -989,19 +1008,19 @@ void GMultiLineString::draw(cv::Mat &canvas) const
 /* ---------------------------------------------------------------------------------- */
 
 GMultiPolygon::GMultiPolygon()
-  : MultiPolygon<Point<float>>(), 
+  : MultiPolygon<Point<double>>(), 
     GraphicEntity()
 {
 }
 
-GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<float>> &multiPolygon)
-  : MultiPolygon<Point<float>>(multiPolygon), 
+GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon)
+  : MultiPolygon<Point<double>>(multiPolygon), 
     GraphicEntity()
 {
 }
 
 GMultiPolygon::GMultiPolygon(const GMultiPolygon &gMultiPolygon)
-  : MultiPolygon<Point<float>>(gMultiPolygon), 
+  : MultiPolygon<Point<double>>(gMultiPolygon), 
     GraphicEntity(gMultiPolygon)
 {
 }
@@ -1013,12 +1032,11 @@ GMultiPolygon::~GMultiPolygon()
 GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
 {
   if (this != &gMultiPolygon) {
-    MultiPolygon<Point<float>>::operator=(gMultiPolygon);
+    MultiPolygon<Point<double>>::operator=(gMultiPolygon);
     GraphicEntity::operator=(gMultiPolygon);
   }
   return *this;
 }
-
 #ifdef HAVE_OPENCV
 void GMultiPolygon::draw(cv::Mat &canvas) const
 {
@@ -1052,9 +1070,9 @@ void GLayer::setName(const std::string & name)
   mName = name;
 }
 
-void GLayer::add(std::shared_ptr<GraphicEntity> entity)
+void GLayer::add(const std::shared_ptr<GraphicEntity> &entity)
 {
-
+  mEntities.push_back(entity);
 }
 
 void GLayer::remove()
@@ -1118,7 +1136,7 @@ void CanvasCV::drawPoint(const GPoint &point)
   cv::MarkerTypes markerType;
 
   switch (point.getStyleSymbol()->getName()) {
-  case TL::graph::StyleSymbol::SymbolName::SOLID:
+  case TL::graph::StyleSymbol::SymbolName::CROSS:
     break;
   case TL::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
     markerType = cv::MARKER_TILTED_CROSS;

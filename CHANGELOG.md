@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed: para correcciones y bugs.
 - Security: para invitar a los usuarios a actualizar, en el caso de que haya vulnerabilidades.
 
-## [1.0.1] - 
+## [1.0.1] - 2018-05-09
 
 ### Added
 
@@ -19,14 +19,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Se añaden los test
 - Se añade el modulo geospatial. Por ahora incluye las clases relaccionadas con los sistema de referencia que se han extraido de transform.
 - Añadido modulo vect
+- En la clase Font se añade el operador de asignación
 
 ### Changed
+
+- Los métodos miembro de setColor y setOutlineColor de la clase StyleSymbol ahora reciben un objeto constante como parámetro.
+- Las entidades gráficas ahora son puntos doubles en lugar de float
+- En la clase Process se ponen los mensajes en inglés
 
 ### Removed
 
 ### Fixed
 
 - La clase CanvasCV no debería estar activa cuando no se añade OpenCV como dependencia de la libreria. Se comprueba si esta definida con #ifdef HAVE_OPENCV desactivando el bloque de código encerrado en caso contrario.
+- Solucionado bug en operador de asignación de la clase MultiPoint
 
 ## [1.0.0] - 2018-03-04
 

@@ -484,6 +484,8 @@ public:
    */
   void stop();
 
+  void initCounter(); 
+
 protected:
   
   virtual void onPause(uint64_t id) override;

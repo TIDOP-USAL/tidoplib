@@ -1,7 +1,7 @@
 # Ejemplos
 #TODO: http://www.jamesebutler.com/setting-the-visual-studio-debugger-path-using-cmake/
 
-if(BUILD_EXAMPLES AND BUILD_TIDOPLIB_CORE)
+if(BUILD_EXAMPLES)
 
   project(examples)
 
@@ -29,7 +29,8 @@ if(BUILD_EXAMPLES AND BUILD_TIDOPLIB_CORE)
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
     #ocv_target_link_libraries(${the_target} ${OPENCV_LINKER_LIBS} ${OPENCV_CPP_SAMPLES_REQUIRED_DEPS})
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY} ${Boost_FILESYSTEM_LIBRARY})
+    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
+	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 	
 	# Añade el proyecto de ejmplo a la carpeta 'examples'
     set_property(TARGET ${the_target} PROPERTY FOLDER "examples")
