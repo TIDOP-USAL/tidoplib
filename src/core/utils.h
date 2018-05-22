@@ -940,6 +940,19 @@ public:
 /* ---------------------------------------------------------------------------------- */
 
 /*!
+ * \brief Opciones del formato
+ */
+class FileOptions
+{
+public:
+
+  FileOptions();
+  virtual ~FileOptions();
+
+  virtual const char *getOptions() = 0;
+};
+
+/*!
  * \brief Clase base para manejo de ficheros.
  *
  * Esta clase define la interfaz básica para lectura, creación y escritura de ficheros
@@ -1001,14 +1014,15 @@ public:
   virtual void close() = 0;
 
   /*!
-   * \brief Abre un fichero
+   * \brief Abre un fichero especificando las opciones del formato
    * \param[in] file Fichero
    * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
    * \return
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Update) = 0;
-  virtual Status open(const std::string &file, Mode mode = Mode::Update) = 0;
+  virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
+  virtual Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1062,14 +1076,15 @@ public:
   Status createCopy(const char *fileOut) override;
 
   /*!
-   * \brief Abre un fichero csv
-   * \param[in] file Nombre del fichero
+   * \brief Abre un fichero especificando las opciones del formato
+   * \param[in] file Fichero
    * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-  Status open(const std::string &file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Lee un registro de la tabla

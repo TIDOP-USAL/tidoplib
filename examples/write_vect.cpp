@@ -4,7 +4,6 @@
 #include "core/console.h"
 #include "core/messages.h"
 #include "vect/vectio.h"
-#include "graphic/entities.h"
 
 using namespace TL;
 using namespace TL::graph;
@@ -43,14 +42,19 @@ int main(int argc, char** argv)
   getFileName(vect.c_str(), file_name, TL_MAX_FNAME);
 
   GLayer layer;
+  layer.setName(file_name);
+  std::shared_ptr<GPolygon> polygon = std::make_shared<GPolygon>();
+  polygon->push_back(geometry::PointD(10.2, 63.2));
+  layer.push_back(polygon);
 
   VectorGraphics vector;
   if (VectorGraphics::Status::OPEN_OK == vector.open(vect, VectorGraphics::Mode::Create)) {
     msgInfo("Create file: %s", vect.c_str());
-    vector.create();
+    vector.create(); ///TODO: Create tiene que tener las propiedades del fichero. Crear un objeto de propiedades de formato como en las imagenes
     // Se añade una capa
     vector.createLayer(file_name);
     vector.writeLayer(std::string(file_name), layer);
+
     vector.close();
   }
 

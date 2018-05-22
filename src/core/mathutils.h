@@ -11,8 +11,6 @@
 #endif
 
 #include "core/defs.h"
-//TODO: Debería sacar todas las entidades geometricas de aqui
-//#include "geometric_entities/point.h"
 
 namespace TL
 {

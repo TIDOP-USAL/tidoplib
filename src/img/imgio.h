@@ -44,6 +44,8 @@ TL_DEFAULT_WARNINGS
 namespace TL
 {
 
+class RasterOptions;
+
 enum class DataType : int8_t
 {
   TL_8U,      // Equivalente a CV_8U y GDT_Byte
@@ -55,47 +57,6 @@ enum class DataType : int8_t
   TL_32F,     // Equivalente a CV_32F y GDT_Float32  
   TL_64F      // Equivalente a CV_64F y GDT_Float64
 };
-
-
-////TODO: Añadir flags de opciones de formato
-//
-//
-//class TL_EXPORT RasterOptions
-//{
-//public:
-//  
-//  enum class Format
-//  {
-//    TIFF,
-//    JPG,
-//    JP2000,
-//    PNG,
-//    BMP
-//  };
-//
-//protected:
-//
-//  Format mFormat;
-//
-//public:
-//
-//  RasterOptions(Format format) : mFormat(format) {}
-//  virtual ~RasterOptions() {}
-//
-//
-//};
-//
-//
-//class TL_EXPORT TiffOptions : RasterOptions
-//{
-//
-//public:
-//  TiffOptions() : RasterOptions(Format::TIFF) {}
-//  ~TiffOptions() {}
-//
-//};
-
-
 
 
 class TL_EXPORT VrtRaster : public File
@@ -345,14 +306,15 @@ public:
   void close() override;
 
   /*!
-   * \brief Abre un fichero imagen
-   * \param[in] file Nombre del fichero
+   * \brief Abre un fichero imagen especificando las opciones del formato
+   * \param[in] file Fichero
    * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-  Status open(const std::string &file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una imagen
@@ -630,8 +592,8 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-  Status open(const std::string &file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Read, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::Read, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una imagen raw
@@ -782,14 +744,15 @@ public:
   virtual void close() override;
 
   /*!
-   * \brief Abre un archivo imagen
-   * \param file Nombre del fichero
-   * \param mode Modo de apertura del fichero
-   * \return Status
+   * \brief Abre un archivo imagen especificando las opciones del formato
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura   
+   * \param[in] options Opciones del formato
+   * \return Error
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-  Status open(const std::string &file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una imagen
@@ -922,13 +885,15 @@ public:
   ~GeoRasterGraphics() {}
 
   /*!
-   * \brief open
-   * \param file
-   * \param mode
+   * \brief Abre un fichero imagen especificando las opciones del formato
+   * \param[in] file Fichero
+   * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
    * \return
+   * \see Mode
    */
-  File::Status open(const char *file, Mode mode = Mode::Read) override;
-  File::Status open(const std::string &file, Mode mode = Mode::Read) override;
+  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief georeference

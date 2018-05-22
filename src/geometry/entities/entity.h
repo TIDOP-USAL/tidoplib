@@ -261,8 +261,11 @@ public:
   /*!
    * \brief Agrega un elemento al final del contenedor
    */
+  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
   void add(const Entity_t &entity);
+  void push_back(const Entity_t &entity);
   //TODO Añadir add con movimiento
+  void push_back(Entity_t &&entity);
 
   /*!
    * \brief Devuelve una referencia constante al elemento de la posición indicada
@@ -333,12 +336,12 @@ public:
   /*!
    * \brief Asignación de copia
    */
-  EntityContainer<Entity_t>& operator=(const EntityContainer<Entity_t>& entity);
+  EntityContainer<Entity_t>& operator=(const EntityContainer<Entity_t> &entity);
 
   /*!
    * \brief Asignación de movimiento
    */
-  EntityContainer<Entity_t>& operator=(EntityContainer<Entity_t>&& entity);
+  EntityContainer<Entity_t>& operator=(EntityContainer<Entity_t> &&entity);
 
   /*!
    * \brief Elimina el intervalo
@@ -414,6 +417,18 @@ template<typename Entity_t> inline
 void EntityContainer<Entity_t>::add(const Entity_t &entity)
 {
   mEntities.push_back(entity);
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
+{
+  mEntities.push_back(entity);
+}
+
+template<typename Entity_t> inline
+void EntityContainer<Entity_t>::push_back(Entity_t &&entity)
+{
+  mEntities.push_back(std::forward<Entity_t>(entity));
 }
 
 template<typename Entity_t> inline
