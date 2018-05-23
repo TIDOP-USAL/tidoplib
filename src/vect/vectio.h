@@ -394,12 +394,18 @@ private:
   //void readData();
 
   Status writeLayer(OGRLayer *pLayer, const graph::GLayer &layer);
-  Status writePoint(OGRLayer *pLayer, const std::shared_ptr<graph::GPoint> &gPoint);
-  Status writeLineString(OGRLayer *pLayer, const std::shared_ptr<graph::GLineString> &gLineString);
-  Status writePolygon(OGRLayer *pLayer, const std::shared_ptr<graph::GPolygon> &gPolygon);
-  Status writeMultiPoint(OGRLayer *pLayer, const std::shared_ptr<graph::GMultiPoint> &gMultiPoint);
-  Status writeMultiLineString(OGRLayer *pLayer, const std::shared_ptr<graph::GMultiLineString> &gMultiLineString);
-  Status writeMultiPolygon(OGRLayer *pLayer, const std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon);
+  Status writePoint(OGRFeature *ogrFeature, const std::shared_ptr<graph::GPoint> &gPoint);
+  Status writePoint(OGRFeature *ogrFeature, const std::shared_ptr<graph::GPoint3D> &gPoint3D);
+  Status writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<graph::GLineString> &gLineString);
+  Status writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<graph::GLineString3D> &gLineString);
+  Status writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<graph::GPolygon> &gPolygon);
+  Status writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<graph::GPolygon3D> &gPolygon3D);
+  Status writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiPoint> &gMultiPoint);
+  Status writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiPoint3D> &gMultiPoint3D);
+  Status writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiLineString> &gMultiLineString);
+  Status writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiLineString3D> &gMultiLineString3D);
+  Status writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon);
+  Status writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<graph::GMultiPolygon3D> &gMultiPolygon3D);
 
   void update();
 

@@ -34,6 +34,20 @@ public:
 #endif
 };
 
+class TL_EXPORT GLineString3D : public geometry::LineString<geometry::Point3<double>>, public GraphicEntity
+{
+public:
+
+  GLineString3D();
+  GLineString3D(const LineString<geometry::Point3<double>> &lineString);
+  GLineString3D(const GLineString3D &lineString);
+  ~GLineString3D();
+
+  GLineString3D &operator = (const GLineString3D &gLineString);
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
 
 class TL_EXPORT GMultiLineString 
   : public geometry::MultiLineString<geometry::Point<double>>, 
@@ -52,6 +66,22 @@ public:
 #endif
 };
 
+class TL_EXPORT GMultiLineString3D 
+  : public geometry::MultiLineString<geometry::Point3<double>>, 
+    public GraphicEntity
+{
+public:
+
+  GMultiLineString3D();
+  GMultiLineString3D(const MultiLineString<geometry::Point3<double>> &multiLineString);
+  GMultiLineString3D(const GMultiLineString3D &gMultiLineString);
+  ~GMultiLineString3D();
+
+  GMultiLineString3D &operator = (const GMultiLineString3D &gMultiLineString);
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
 
 } // Fin namespace graph
 

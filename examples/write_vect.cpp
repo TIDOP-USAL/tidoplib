@@ -44,7 +44,11 @@ int main(int argc, char** argv)
   GLayer layer;
   layer.setName(file_name);
   std::shared_ptr<GPolygon> polygon = std::make_shared<GPolygon>();
-  polygon->push_back(geometry::PointD(10.2, 63.2));
+  polygon->push_back(geometry::PointD(641.148132, 720.013672));
+  polygon->push_back(geometry::PointD(643.571106, 719.713989));
+  polygon->push_back(geometry::PointD(645.182739, 719.514648));
+  polygon->push_back(geometry::PointD(638.723450, 720.313599)); 
+
   layer.push_back(polygon);
 
   VectorGraphics vector;

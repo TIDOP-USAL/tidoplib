@@ -99,6 +99,7 @@ void GPoint3D::draw(cv::Mat &canvas) const
 }
 #endif
 
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -139,6 +140,52 @@ void GMultiPoint::draw(cv::Mat &canvas) const
 
 }
 #endif
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+GMultiPoint3D::GMultiPoint3D()
+  : MultiPoint<Point3<double>>(), 
+    GraphicEntity(GraphicEntity::Type::MULTIPOINT_3D)
+{
+}
+
+GMultiPoint3D::GMultiPoint3D(const MultiPoint<Point3<double>> &multiPoint)
+  : MultiPoint<Point3<double>>(multiPoint), 
+    GraphicEntity(GraphicEntity::Type::MULTIPOINT_3D)
+{
+}
+
+GMultiPoint3D::GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D)
+  : MultiPoint<Point3<double>>(gMultiPoint3D), 
+    GraphicEntity(gMultiPoint3D)
+{
+}
+
+GMultiPoint3D::~GMultiPoint3D()
+{
+}
+
+GMultiPoint3D &GMultiPoint3D::operator = (const GMultiPoint3D &gMultiPoint3D)
+{
+  if (this != &gMultiPoint3D) {
+    MultiPoint<Point3<double>>::operator=(gMultiPoint3D);
+    GraphicEntity::operator=(gMultiPoint3D);
+  }
+  return *this;
+}
+
+#ifdef HAVE_OPENCV
+void GMultiPoint3D::draw(cv::Mat &canvas) const
+{
+
+}
+#endif
+
+
+/* ---------------------------------------------------------------------------------- */
+
 
 } // Fin namespace graph
 

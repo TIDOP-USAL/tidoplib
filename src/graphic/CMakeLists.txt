@@ -23,7 +23,8 @@ add_library(tl_graphic ${LIB_TYPE}
   entities/polygon.h
   entities/linestring.cpp
   entities/linestring.h)
-  
+ 
+ 
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_graphic PROPERTY FOLDER "modules")
 

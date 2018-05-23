@@ -37,6 +37,24 @@ public:
 };
 
 
+class TL_EXPORT GPolygon3D 
+  : public geometry::Polygon<geometry::Point3<double>>, 
+    public GraphicEntity
+{
+public:
+
+  GPolygon3D();
+  GPolygon3D(const Polygon<geometry::Point3<double>> &polygon);
+  GPolygon3D(const GPolygon3D &gPolygon3D);
+  ~GPolygon3D();
+
+  GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
+
+
 class TL_EXPORT GMultiPolygon 
   : public geometry::MultiPolygon<geometry::Point<double>>, 
     public GraphicEntity
@@ -53,6 +71,26 @@ public:
   void draw(cv::Mat &canvas) const override;
 #endif
 };
+
+
+class TL_EXPORT GMultiPolygon3D 
+  : public geometry::MultiPolygon<geometry::Point3<double>>, 
+    public GraphicEntity
+{
+public:
+
+  GMultiPolygon3D();
+  GMultiPolygon3D(const MultiPolygon<geometry::Point3<double>> &multiPolygon);
+  GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D);
+  ~GMultiPolygon3D();
+
+  GMultiPolygon3D &operator = (const GMultiPolygon3D &gMultiPolygon3D);
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+};
+
+
 
 } // Fin namespace graph
 

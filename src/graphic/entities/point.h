@@ -72,6 +72,24 @@ public:
 };
 
 
+class TL_EXPORT GMultiPoint3D 
+  : public geometry::MultiPoint<geometry::Point3<double>>, 
+    public GraphicEntity
+{
+public:
+
+  GMultiPoint3D();
+  GMultiPoint3D(const MultiPoint<geometry::Point3<double>> &multiPoint);
+  GMultiPoint3D(const GMultiPoint3D &gMultiPoint);
+  ~GMultiPoint3D();
+
+  GMultiPoint3D &operator = (const GMultiPoint3D &gMultiPoint);
+#ifdef HAVE_OPENCV
+  void draw(cv::Mat &canvas) const override;
+#endif
+
+};
+
 } // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
