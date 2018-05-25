@@ -78,6 +78,30 @@ TEST(BoxD, CopyConstructorDiff)
   EXPECT_EQ(105, box2.pt2.z);
 }
 
+//constructor punto central y dimensiones
+
+TEST(Box, ConstructorCenterDim)
+{
+  const BoxD box(Point3D(0.5, 0.4, 1.9), 50.);
+  EXPECT_EQ(-24.5, box.pt1.x);
+  EXPECT_EQ(-24.6, box.pt1.y);
+  EXPECT_EQ(-23.1, box.pt1.z);
+  EXPECT_EQ(25.5, box.pt2.x);
+  EXPECT_EQ(25.4, box.pt2.y);
+  EXPECT_EQ(26.9, box.pt2.z);
+}
+
+TEST(Box, ConstructorCenterDimWHD)
+{
+  const BoxD box(Point3D(0.5, 0.4, 1.9), 50., 50., 50.);
+  EXPECT_EQ(-24.5, box.pt1.x);
+  EXPECT_EQ(-24.6, box.pt1.y);
+  EXPECT_EQ(-23.1, box.pt1.z);
+  EXPECT_EQ(25.5, box.pt2.x);
+  EXPECT_EQ(25.4, box.pt2.y);
+  EXPECT_EQ(26.9, box.pt2.z);
+}
+
 // Comprobación de que redondea bien con ventanas de enteros
 
 TEST(Box, Round)
@@ -117,4 +141,37 @@ TEST(Box, Round)
   EXPECT_NEAR(100.34f, box4.getWidth(), 0.01);
   EXPECT_NEAR(254.23f, box4.getHeight(), 0.01);
   EXPECT_NEAR(123.34f, box4.getDepth(), 0.01);
+}
+
+/* Operador de asignación */
+
+TEST(Box, assing_operator)
+{
+  const BoxD box(Point3D(0., 0., 0.), Point3D(100., 100., 100.));
+  BoxD box2 = box;
+  EXPECT_EQ(box.pt1, box2.pt1);
+  EXPECT_EQ(box.pt2, box2.pt2);
+}
+
+TEST(Box, isEmpty)
+{
+  BoxI box;
+  EXPECT_TRUE(box.isEmpty());
+}
+
+
+TEST(Box, containsPoint)
+{
+  BoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
+  EXPECT_TRUE(box.containsPoint(Point3I(50, 50, 50)));
+  EXPECT_FALSE(box.containsPoint(Point3I(150, 50, 50)));
+  EXPECT_TRUE(box.containsPoint(Point3I(0, 0, 0)));
+  EXPECT_TRUE(box.containsPoint(Point3I(100, 100, 100)));
+}
+
+TEST(Box, containsBbox)
+{
+  BoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
+  EXPECT_TRUE(box.containsBbox(BoxI(Point3I(50, 50, 50), 50)));
+  EXPECT_FALSE(box.containsBbox(BoxI(Point3I(200, 50, 50), 50)));
 }

@@ -83,16 +83,10 @@ public:
   ~LineString() {}
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
-   */
-  //void add(const Point_t &point) override;
-
-  /*!
    * \brief Longitud de la polilínea
    * \return Longitud
    */
-  double length() const;
+  size_t length() const;
 
   /*!
    * \brief Operador de asignación
@@ -142,9 +136,9 @@ LineString<Point_t>::LineString(std::initializer_list<Point_t> listPoints)
 //}
 
 template<typename Point_t> inline
-double LineString<Point_t>::length()  const
+size_t LineString<Point_t>::length()  const
 {
-  double length = 0.;
+  size_t length = 0.;
   for (size_t i = 1; i < this->mEntities.size(); i++) {
     length += distance(this->mEntities[i - 1], this->mEntities[i]);
   }
