@@ -352,7 +352,7 @@ public:
    * \param[in] matches
    * \param[out] symMatches 
    */
-  void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches, std::vector<std::vector<cv::DMatch>> *symMatches );
+  void symmetryTest( const std::vector<std::vector<cv::DMatch> >& matches, std::vector<cv::DMatch> *symMatches );
 
   /*!
    * \brief Matching robusto
