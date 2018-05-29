@@ -141,12 +141,14 @@ public:
    * \param[in] pt Punto
    * \return true si el punto esta dentro del Bbox
    */
-  template<typename Point3_t2> bool containsPoint(const Point3_t2 &pt) const;
+  //template<typename Point3_t2> bool containsPoint(const Point3_t2 &pt) const;
+  bool containsPoint(const Point3_t &pt) const;
 
   /*!
    * \brief La ventana contiene la ventana
    */
-  template<typename Point3_t2> bool containsBbox(const Box<Point3_t2> &box) const;
+  //template<typename Point3_t2> bool containsBbox(const Box<Point3_t2> &box) const;
+  bool containsBbox(const Box<Point3_t> &box) const;
 };
 
 // Definición de métodos
@@ -254,19 +256,20 @@ Box<Point3_t>::operator Box<Point3_t2>() const
   }
 }
 
+TL_DISABLE_WARNING(4244)
 template<typename Point3_t> inline
 Point3_t Box<Point3_t>::getCenter() const
 {
+
   if (typeid(typename Point3_t::value_type) == typeid(int)) {
     return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2), 
                     TL_ROUND_TO_INT((pt1.y + pt2.y) / 2), 
                     TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));
   } else {
-    TL_DISABLE_WARNING(4244)
     return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
-    TL_ENABLE_WARNING(4244)
   }
 }
+TL_ENABLE_WARNING(4244)
 
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getWidth() const 
@@ -297,15 +300,29 @@ bool Box<Point3_t>::isEmpty() const
           && pt2.z == -std::numeric_limits<typename Point3_t::value_type>().max()); 
 }
 
-template<typename Point3_t> template<typename Point3_t2> inline
-bool Box<Point3_t>::containsPoint(const Point3_t2 &pt) const
+//template<typename Point3_t> template<typename Point3_t2> inline
+//bool Box<Point3_t>::containsPoint(const Point3_t2 &pt) const
+//{
+//  return ((pt2.x >= pt.x) && (pt2.y >= pt.y) && (pt2.z >= pt.z)
+//       && (pt1.x <= pt.x) && (pt1.y <= pt.y) && (pt1.z <= pt.z));
+//}
+//
+//template<typename Point3_t> template<typename Point3_t2> inline
+//bool Box<Point3_t>::containsBbox(const Box<Point3_t2> &box) const
+//{
+//  return (pt1.x <= box.pt1.x && pt1.y <= box.pt1.y && pt1.z <= box.pt1.z &&
+//          pt2.x >= box.pt2.x && pt2.y >= box.pt2.y && pt2.z >= box.pt2.z);
+//}
+
+template<typename Point3_t> inline
+bool Box<Point3_t>::containsPoint(const Point3_t &pt) const
 {
   return ((pt2.x >= pt.x) && (pt2.y >= pt.y) && (pt2.z >= pt.z)
        && (pt1.x <= pt.x) && (pt1.y <= pt.y) && (pt1.z <= pt.z));
 }
 
-template<typename Point3_t> template<typename Point3_t2> inline
-bool Box<Point3_t>::containsBbox(const Box<Point3_t2> &box) const
+template<typename Point3_t> inline
+bool Box<Point3_t>::containsBbox(const Box<Point3_t> &box) const
 {
   return (pt1.x <= box.pt1.x && pt1.y <= box.pt1.y && pt1.z <= box.pt1.z &&
           pt2.x >= box.pt2.x && pt2.y >= box.pt2.y && pt2.z >= box.pt2.z);

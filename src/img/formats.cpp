@@ -9,7 +9,8 @@ namespace TL
 {
 
 RasterOptions::RasterOptions(Format format) 
-  : mFormat(format)
+  : FileOptions(),
+    mFormat(format)
 {}
 
 RasterOptions::~RasterOptions()

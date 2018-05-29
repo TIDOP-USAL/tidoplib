@@ -2,14 +2,17 @@
 #define TL_GRAPHIC_IMG_FORMATS_H
 
 #include "config_tl.h"
+#include "core/defs.h"
 
 #include <vector>
 
 #ifdef HAVE_GDAL
+TL_DISABLE_WARNING(4251)
 #include "gdal_priv.h"
+TL_ENABLE_WARNING(4251)
 #endif // HAVE_GDAL
 
-#include "core/defs.h"
+#include "core/utils.h" 
 
 ///TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
 
@@ -30,7 +33,7 @@ enum class DataType : int8_t;
 /*!
  * \brief Opciones del formato
  */
-class RasterOptions
+class TL_EXPORT RasterOptions : public FileOptions
 {
 
 public:
@@ -55,16 +58,14 @@ public:
   virtual ~RasterOptions();
 
   Format getFormat();
+    
   virtual const char *getOptions() = 0;
-
-private:
-
 };
 
 /*!
  * \brief Clase que gestiona las opciones del formato TIFF
  */
-class TiffOptions : public RasterOptions
+class TL_EXPORT TiffOptions : public RasterOptions
 {
 
 public:
@@ -323,7 +324,7 @@ private:
 /*!
  * \brief Clase que gestiona las opciones del formato PNG
  */
-class PngOptions : public RasterOptions
+class TL_EXPORT PngOptions : public RasterOptions
 {
 
 public:
@@ -360,7 +361,7 @@ public:
 /*!
  * \brief Clase que gestiona las opciones del formato Jpeg
  */
-class JpegOptions : public RasterOptions
+class TL_EXPORT JpegOptions : public RasterOptions
 {
 
 protected:
@@ -395,7 +396,7 @@ public:
 /*!
  * \brief Clase que gestiona las opciones del formato bmp
  */
-class BmpOptions : public RasterOptions
+class TL_EXPORT BmpOptions : public RasterOptions
 {
 
 protected:

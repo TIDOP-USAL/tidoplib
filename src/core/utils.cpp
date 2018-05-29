@@ -1165,7 +1165,7 @@ Csv::Status Csv::createCopy(const char *fileOut)
   return Status::FAILURE;
 }
 
-Csv::Status Csv::open(const char *file, Csv::Mode mode)
+Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
 {
   close();
   
@@ -1207,10 +1207,11 @@ Csv::Status Csv::open(const char *file, Csv::Mode mode)
   }
 }
 
-Csv::Status Csv::open(const std::string &file, Csv::Mode mode)
+Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
+
 
 //TableRegister *Csv::read(int id)
 //{

@@ -15,7 +15,7 @@ Crs::Crs(const std::string &epsg, const std::string &grid, const std::string &ge
   : mEpsg(epsg), 
     mGrid(grid), 
     mGeoid(geoid),
-    pCrs()
+    mCrs()
 {
   init();
 }
@@ -33,29 +33,29 @@ const char *Crs::getEPSG()
 
 bool Crs::isGeocentric()
 {
-  return pCrs.IsGeocentric() != 0;
+  return mCrs.IsGeocentric() != 0;
 }
 
 bool Crs::isGeographic()
 {
-  return pCrs.IsGeographic()!= 0;
+  return mCrs.IsGeographic()!= 0;
 }
 
 void Crs::init()
 {
-  pCrs.importFromEPSG(std::stoi(mEpsg.substr(5)));
+  mCrs.importFromEPSG(std::stoi(mEpsg.substr(5)));
   if (mGrid.empty() == false) {
     char *cprj = nullptr;
-    pCrs.exportToProj4(&cprj);
+    mCrs.exportToProj4(&cprj);
     std::string crs_prj4 = std::string(cprj) + "+nadgrids=" + mGrid;
-    pCrs.importFromProj4(crs_prj4.c_str());
+    mCrs.importFromProj4(crs_prj4.c_str());
     CPLFree(cprj);
   }
   if (mGeoid.empty() == false) {
     char *prjin = nullptr;
-    pCrs.exportToProj4(&prjin);
+    mCrs.exportToProj4(&prjin);
     std::string crs_prj4 = std::string(prjin) + "+geoidgrids=" + mGeoid;
-    pCrs.importFromProj4(crs_prj4.c_str());
+    mCrs.importFromProj4(crs_prj4.c_str());
     CPLFree(prjin);
   }
 }

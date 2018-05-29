@@ -2,7 +2,9 @@
 
 add_library(tl_vect ${LIB_TYPE}
   vectio.cpp
-  vectio.h)
+  vectio.h
+  formats.cpp
+  formats.h)
   
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_vect PROPERTY FOLDER "modules")

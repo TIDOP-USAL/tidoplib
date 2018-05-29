@@ -191,7 +191,7 @@ GdalRaster::GdalRaster()
     pRasterBand(0), 
     mGdalDataType(GDT_Unknown), 
     mTempName(""),
-    pDriver(0)
+    pDriver(nullptr)
 {
   RegisterGdal::init();
 }
@@ -203,7 +203,7 @@ GdalRaster::GdalRaster(const GdalRaster &gdalRaster)
     pRasterBand(gdalRaster.pRasterBand), 
     mGdalDataType(gdalRaster.mGdalDataType), 
     mTempName(gdalRaster.mTempName),
-    pDriver(0)
+    pDriver(nullptr)
 {
   RegisterGdal::init();
 }
@@ -246,7 +246,7 @@ void GdalRaster::close()
   mFile = "";
 }
 
-GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
+GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, FileOptions *options)
 {
   close();
 
@@ -307,9 +307,9 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode)
   }
 }
 
-GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mode)
+GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
 
 GdalRaster::Status GdalRaster::create(int rows, int cols, int bands, DataType type) 
@@ -733,7 +733,7 @@ void RawImage::close()
   mFile = "";
 }
 
-RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
+RawImage::Status RawImage::open(const char *file, RawImage::Mode mode, FileOptions *options)
 {
   int  ret;
   
@@ -811,9 +811,9 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode)
   return Status::OPEN_OK;
 }
 
-RawImage::Status RawImage::open(const std::string &file, RawImage::Mode mode)
+RawImage::Status RawImage::open(const std::string &file, RawImage::Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
 
 RawImage::Status RawImage::create(int rows, int cols, int bands, DataType type)
@@ -1084,7 +1084,7 @@ void RasterGraphics::close()
   if (mImageFormat) mImageFormat->close();
 }
 
-RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mode mode)
+RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mode mode, FileOptions *options)
 {
   close();
 
@@ -1116,9 +1116,9 @@ RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mo
   } else return Status::OPEN_FAIL;
 }
 
-RasterGraphics::Status RasterGraphics::open(const std::string &file, RasterGraphics::Mode mode)
+RasterGraphics::Status RasterGraphics::open(const std::string &file, RasterGraphics::Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
 
 RasterGraphics::Status RasterGraphics::create(int rows, int cols, int bands, DataType type) {
@@ -1343,7 +1343,7 @@ void RasterGraphics::update()
 /* ---------------------------------------------------------------------------------- */
 
 
-RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode)
+RasterGraphics::Status GeoRasterGraphics::open(const char *file, RasterGraphics::Mode mode, FileOptions *options)
 {
   close();
 
@@ -1366,9 +1366,9 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, File::Mode mode
     return Status::OPEN_FAIL;
 }
 
-RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mode mode)
+RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mode mode, FileOptions *options)
 {
-  return open(file, mode);
+  return open(file, mode, options);
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const

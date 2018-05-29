@@ -57,8 +57,11 @@ TEST(LineString, CopyConstructor) {
 	}
 }
 
-GTEST_API_ int main(int argc, char **argv) {
-  printf("Running main() from gtest_main.cc\n");
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+
+TEST(LineString, length)
+{
+  LineStringI  line(ptsIn);
+
+  EXPECT_NEAR(193128, line.length(), 0.1);
+
 }

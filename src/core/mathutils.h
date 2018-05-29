@@ -11,8 +11,6 @@
 #endif
 
 #include "core/defs.h"
-//TODO: Debería sacar todas las entidades geometricas de aqui
-//#include "geometric_entities/point.h"
 
 namespace TL
 {
@@ -92,9 +90,10 @@ Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
  * \return Producto escalar de los dos vectores
  */
 template<typename Point_t> inline 
-double dotProduct(const Point_t &pt1, const Point_t &pt2)
+size_t dotProduct(const Point_t &pt1, const Point_t &pt2)
 {
-  return static_cast<double>(pt1.x*pt2.x + pt1.y*pt2.y);
+  return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) + 
+         static_cast<double>(pt1.y)*static_cast<double>(pt2.y);
 }
 
 /*!
@@ -104,9 +103,11 @@ double dotProduct(const Point_t &pt1, const Point_t &pt2)
  * \return Producto escalar de los dos vectores
  */
 template<typename Point3_t> inline 
-double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+size_t dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
-  return static_cast<double>(pt1.x*pt2.x + pt1.y*pt2.y + pt1.z*pt2.z);
+  return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) + 
+    static_cast<double>(pt1.y)*static_cast<double>(pt2.y) + 
+    static_cast<double>(pt1.z)*static_cast<double>(pt2.z);
 }
 
 /*!
@@ -114,7 +115,7 @@ double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
  * \param[in] v Vector 
  */
 template<typename Point_t> inline 
-double module(const Point_t &v)
+size_t module(const Point_t &v)
 {
   return sqrt(dotProduct(v, v));
 }
@@ -124,7 +125,7 @@ double module(const Point_t &v)
  * \param[in] v Vector
  */
 template<typename Point3_t> inline 
-double module3D(const Point3_t &v)
+size_t module3D(const Point3_t &v)
 {
   return sqrt(dotProduct3D(v, v));
 }

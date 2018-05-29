@@ -7,13 +7,16 @@
 #include <memory>
 #include <mutex>
 
+#include "core/defs.h"
+
 #ifdef HAVE_GDAL
+TL_DISABLE_WARNING(4251)
 #include "ogr_spatialref.h"
 #include "ogr_p.h"
 #include "ogr_api.h"
+TL_ENABLE_WARNING(4251)
 #endif
 
-#include "core/defs.h"
 #include "core/messages.h"
 #include "core/exception.h"
 #include "geometry/transform.h"
@@ -43,7 +46,7 @@ private:
 
   // TODO: como puntero no hay manera. No hay manera de destruirlo sin que de un error...
   //OGRSpatialReference *pCrs;
-  OGRSpatialReference pCrs;
+  OGRSpatialReference mCrs;
 
 public:
 
@@ -60,7 +63,7 @@ public:
 protected:
 
   //const OGRSpatialReference *getOGRSpatialReference( ) const { return pCrs; };
-  OGRSpatialReference *getOGRSpatialReference( ) { return &pCrs; };
+  OGRSpatialReference *getOGRSpatialReference( ) { return &mCrs; };
 
   template<typename Point_t> friend class CrsTransform;
 

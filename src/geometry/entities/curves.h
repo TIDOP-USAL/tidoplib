@@ -149,13 +149,13 @@ Circle<T>::operator Circle<T2>() const
 template<typename T> inline
 double Circle<T>::area() const
 {
-  return TL_2PI * radius * radius;
+  return TL_PI * radius * radius;
 }
 
 template<typename T> inline
 double Circle<T>::length() const
 {
-  return 2. * TL_PI * radius;
+  return TL_2PI * radius;
 }
 
 
@@ -255,6 +255,11 @@ Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
     a(a),
     b(b)
 {
+  if (b > a) {
+    T aux = b;
+    b = a;
+    a = aux;
+  }
 }
 
 template<typename T> inline
@@ -292,7 +297,7 @@ Ellipse<T>::operator Ellipse<T2>() const
 template<typename T> inline
 double Ellipse<T>::area() const
 {
-  return TL_2PI * a * b;
+  return TL_PI * a * b;
 }
 
 template<typename T> inline

@@ -16,36 +16,37 @@ namespace TL
  *
  * Ejemplo de uso:
  * \code
- * enum class ePrueba2 : int8_t {
- *  flag01 = (1 << 0),
- *  flag02 = (1 << 1),
- *  flag03 = (1 << 2),
- *  flag04 = (1 << 3),
- *  flag05 = (1 << 4),
- *  flag06 = (1 << 5),
- *  flag07 = (1 << 6)
+ * enum class ePrueba : int8_t {
+ *  flag_0 = (0 << 0),
+ *  flag_1 = (1 << 0),
+ *  flag_2 = (1 << 1),
+ *  flag_3 = (1 << 2),
+ *  flag_4 = (1 << 3),
+ *  flag_5 = (1 << 4),
+ *  flag_6 = (1 << 5),
+ *  flag_7 = (1 << 6)
  * };
  *
  * int main(int argc, char *argv[])
  * {
  *
- *   EnumFlags<ePrueba2> flag(ePrueba2::flag01);
+ *   EnumFlags<ePrueba> flag(ePrueba::flag_1);
  *
  *   // Comprueba si el flag esta activo
- *   bool bActive = flag.isActive(ePrueba2::flag01);
+ *   bool bActive = flag.isActive(ePrueba::flag_1);
  *
  *   // Activa un flag
- *   flag2.flagOn(ePrueba3::flag03);
+ *   flag2.flagOn(ePrueba::flag_3);
  *
  *   // Desactiva un flag
- *   flag2.flagOff(ePrueba3::flag01);
+ *   flag2.flagOff(ePrueba::flag_1);
  *
  *   // Invierte un flag
- *   flag2.switchFlag(ePrueba3::flag15);
+ *   flag2.switchFlag(ePrueba::flag_5);
  *
  *   // Pueden combinarse los enums
- *   EnumFlags<ePrueba2> flag2;
- *   flag2 = ePrueba2::flag03 | ePrueba2::flag04;
+ *   EnumFlags<ePrueba> flag2;
+ *   flag2 = ePrueba::flag_3 | ePrueba::flag_4;
  *
  *   return 0;
  * }
@@ -75,13 +76,19 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  EnumFlags() : mFlag(0) {}
+  EnumFlags();
+
+  /*!
+   * \brief Constructora de copia
+   * \param[in] flag
+   */
+  EnumFlags(const EnumFlags<T> &flag);
 
   /*!
    * \brief Constructora
-   * \param flag
+   * \param[in] flag
    */
-  EnumFlags(const T &flag) : mFlag(static_cast<Type>(flag)) {}
+  EnumFlags(T flag);
 
   /*!
    * \brief Destructora
@@ -90,42 +97,49 @@ public:
 
   /*!
    * \brief Operador asignación
-   * \param flag enumeracion o unión de ellas
+   * \param[in] flag Objeto EnumFlags
    * \return Referencia al objeto EnumFlags
    */
-  EnumFlags &operator = (const T flag);
+  EnumFlags<T> &operator = (const EnumFlags<T> &flag);
+
+  /*!
+   * \brief Operador asignación enumeración
+   * \param[in] flag enumeracion o unión de ellas
+   * \return Referencia al objeto EnumFlags
+   */
+  EnumFlags<T> &operator = (T flag);
 
   /*!
    * \brief Comprueba si el flag esta activo
-   * \param flag Flag que se comprueba
+   * \param[in] flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
    */
-  bool isActive(const T flag) const;
+  bool isActive(T flag) const;
 
   /*!
    * \brief Activa un flag
-   * \param flag Flag que se activa
+   * \param[in] flag Flag que se activa
    */
-  void flagOn(const T flag);
+  void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
-   * \param flag Flag que se desactiva
+   * \param[in] flag Flag que se desactiva
    */
-  void flagOff(const T flag);
+  void flagOff(T flag);
 
   /*!
    * \brief Activa o desactiva un flag
-   * \param flag Flag que se desactiva
-   * \param active Verdadero para activar el flag
+   * \param[in] flag Flag que se desactiva
+   * \param[in] active Verdadero para activar el flag
    */
-  void activeFlag(const T flag, bool active);
+  void activeFlag(T flag, bool active);
 
   /*!
    * \brief Invierte un flag
-   * \param flag Flag que se invierte
+   * \param[in] flag Flag que se invierte
    */
-  void switchFlag(const T flag);
+  void switchFlag(T flag);
 
   /*!
    * \brief Pone a cero todos los flags
@@ -140,6 +154,24 @@ public:
 
 };
 
+template<typename T> inline
+EnumFlags<T>::EnumFlags() 
+  : mFlag(0) 
+{
+}
+
+template<typename T> inline
+EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
+  : mFlag(flag.mFlag) 
+{
+
+}
+
+template<typename T> inline
+EnumFlags<T>::EnumFlags(T flag) 
+  : mFlag(static_cast<Type>(flag))
+{
+}
 
 template<typename T> inline
 EnumFlags<T>::~EnumFlags()
@@ -147,39 +179,48 @@ EnumFlags<T>::~EnumFlags()
 }
 
 template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (const T flag)
+EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
+{
+  if (this != &flag) {
+    this->mFlag = flag.mFlag;
+  }
+  return *this;
+}
+
+template<typename T> inline
+EnumFlags<T> &EnumFlags<T>::operator = (T flag)
 {
   mFlag = static_cast<Type>(flag);
   return *this;
 }
 
 template<typename T> inline
-bool EnumFlags<T>::isActive(const T flag) const
+bool EnumFlags<T>::isActive(T flag) const
 {
   return 0 != (mFlag & static_cast<Type>(flag) );
 }
 
 template<typename T> inline
-void EnumFlags<T>::flagOn(const T flag)
+void EnumFlags<T>::flagOn(T flag)
 {
   mFlag |= static_cast<Type>(flag);
 }
 
 template<typename T> inline
-void EnumFlags<T>::flagOff(const T flag)
+void EnumFlags<T>::flagOff(T flag)
 {
   mFlag &= ~static_cast<Type>(flag);
 }
 
 template<typename T> inline
-void EnumFlags<T>::activeFlag(const T flag, bool active)
+void EnumFlags<T>::activeFlag(T flag, bool active)
 {
   if (active) flagOn(flag);
   else flagOff(flag);
 }
 
 template<typename T> inline
-void EnumFlags<T>::switchFlag(const T flag)
+void EnumFlags<T>::switchFlag(T flag)
 {
   if ( isActive(flag) ) flagOff(flag);
   else flagOn(flag);
@@ -203,7 +244,7 @@ T EnumFlags<T>::getFlags() const
  * Debe añadirse debajo de la declaración del enum
  *
  * \code
- * enum class ePrueba2 : int8_t {
+ * enum class ePrueba : int8_t {
  *  flag01 = (1 << 0),
  *  flag02 = (1 << 1),
  *  flag03 = (1 << 2),
@@ -213,12 +254,12 @@ T EnumFlags<T>::getFlags() const
  *  flag07 = (1 << 6)
  * };
  *
- * ALLOW_BITWISE_FLAG_OPERATIONS(ePrueba2)
+ * ALLOW_BITWISE_FLAG_OPERATIONS(ePrueba)
  *
  * \endcode
  */
 #define ALLOW_BITWISE_FLAG_OPERATIONS(T_FLAG)                       \
-inline T_FLAG operator | (const T_FLAG flag1, const T_FLAG flag2)   \
+inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)   \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) |        \
@@ -226,7 +267,7 @@ inline T_FLAG operator | (const T_FLAG flag1, const T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator & (const T_FLAG flag1, const T_FLAG flag2)   \
+inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)   \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) &        \
@@ -234,7 +275,7 @@ inline T_FLAG operator & (const T_FLAG flag1, const T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ^ (const T_FLAG flag1, const T_FLAG flag2)   \
+inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)   \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) ^        \
@@ -242,7 +283,7 @@ inline T_FLAG operator ^ (const T_FLAG flag1, const T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ~ (const T_FLAG flag)                        \
+inline T_FLAG operator ~ (T_FLAG flag)                        \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
@@ -276,6 +317,17 @@ public:
   Flags() : mFlag(0) {}
 
   /*!
+   * \brief Constructora de copia
+   */
+  Flags(const Flags &flag);
+
+  /*!
+   * \brief Constructora de lista
+   * \param[in] flags listado de flags activos
+   */
+  Flags(std::initializer_list<int> flags);
+
+  /*!
    * \brief Destructora
    */
   ~Flags();
@@ -285,7 +337,7 @@ public:
    * \param flag enumeracion o unión de ellas
    * \return Referencia al objeto EnumFlags
    */
-  Flags &operator = (const Flags<T> flag);
+  Flags &operator = (const Flags<T> &flag);
 
   /*!
    * \brief Comprueba si el flag esta activo
@@ -325,15 +377,32 @@ public:
 
 };
 
+
+template<typename T> inline
+Flags<T>::Flags(const Flags &flag) 
+  : mFlag(flag.mFlag)
+{
+}
+
+template<typename T> inline
+Flags<T>::Flags(std::initializer_list<int> flags)
+{
+  for (auto flg : flags) {
+    mFlag |= static_cast<Type>(1 << flg);
+  }
+}
+
 template<typename T> inline
 Flags<T>::~Flags()
 {
 }
 
 template<typename T> inline
-Flags<T> &Flags<T>::operator = (const Flags<T> flag)
+Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
 {
-  mFlag = flag.mFlag;
+  if (this != &flag) {
+    mFlag = flag.mFlag;
+  }
   return *this;
 }
 

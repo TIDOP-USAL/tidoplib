@@ -1,7 +1,6 @@
 #include "vect/vectio.h"
 
 #include "core/utils.h"
-#include "graphic/entities.h"
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -29,12 +28,19 @@ VrtVector::VrtVector()
 #ifdef HAVE_GDAL
 GdalVector::GdalVector() 
   : VrtVector(), 
-    pDataset(0), 
-	  pDriver(0), 
+    pDataset(nullptr), 
+	  pDriver(nullptr),
+    mSpatialReference(),
 	  mDriverName("")
 {
   GDALAllRegister();
   //RegisterGdal::init();
+}
+
+GdalVector::~GdalVector() 
+{
+  if (pDataset) GDALClose(pDataset), pDataset = nullptr;
+
 }
 
 void GdalVector::close() 
@@ -44,7 +50,7 @@ void GdalVector::close()
   //mLayersCount = 0;
 }
 
-GdalVector::Status GdalVector::open(const char *file, Mode mode)
+GdalVector::Status GdalVector::open(const char *file, Mode mode, FileOptions *options)
 {
   //TODO: Se puede sacar a una clase de mas bajo nivel esta sección ...
   close();
@@ -86,7 +92,7 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode)
     return Status::OPEN_OK; 
   } else {
 
-    pDataset = (GDALDataset*)GDALOpenEx( file, GDAL_OF_VECTOR, NULL, NULL, NULL ); //GDALOpen( file, gdal_access);
+    pDataset = (GDALDataset*)GDALOpenEx( file, GDAL_OF_VECTOR, NULL, NULL/*options->getOptions()*/, NULL ); //GDALOpen( file, gdal_access);
     if (pDataset == NULL) {
       return Status::OPEN_FAIL;
     } else {
@@ -98,9 +104,9 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode)
   }
 }
 
-GdalVector::Status GdalVector::open(const std::string &file, Mode mode)
+GdalVector::Status GdalVector::open(const std::string &file, Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
 
 ///TODO: ver opciones de creación: 2D, 3D, ...
@@ -156,12 +162,27 @@ GdalVector::Status GdalVector::createCopy(const char *fileOut)
 
 GdalVector::Status GdalVector::createLayer(const char *layerName)
 {
-  OGRLayer *layer = pDataset->CreateLayer(layerName, NULL, wkbPoint, NULL );
+  char **encoding = nullptr;
+  encoding = CSLAddString(encoding,"ENCODING=UTF-8");
+
+  OGRLayer *layer = nullptr; 
+  if (strcmp(mDriverName, "DXF") == 0 || strcmp(mDriverName, "DGN") == 0) {
+    if (pDataset->GetLayerCount() == 0) {
+      /// Sólo soportan la creación de una capa con lo cual se añadirá siempre a la capa "0"
+      layer = pDataset->CreateLayer("0", &mSpatialReference /*poOutputSRS*/, (OGRwkbGeometryType)wkbUnknown, encoding);
+    }
+  } else if (strcmp(mDriverName, "SHP") == 0) {
+    layer = pDataset->CreateLayer(layerName, &mSpatialReference, (OGRwkbGeometryType)wkbUnknown, encoding);
+  } else {
+    layer = pDataset->CreateLayer(layerName, &mSpatialReference, (OGRwkbGeometryType)wkbUnknown, encoding);
+  }
+
   if (layer == NULL) {
     msgError("Layer creation failed.");
     return Status::FAILURE;
   } else {
-    
+
+    return Status::SUCCESS;
   }
 }
 
@@ -211,121 +232,140 @@ GdalVector::Status GdalVector::writeLayer(const std::string &name, const graph::
   return writeLayer(pDataset->GetLayerByName(name.c_str()), layer);
 }
 
-GdalVector::Status GdalVector::writePoint(int id, const graph::GPoint &gPoint)
+GdalVector::Status GdalVector::writePoint(int id, const std::shared_ptr<GPoint> &gPoint)
 {
-  return writePoint(pDataset->GetLayer(id), gPoint);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writePoint(ogrFeature, gPoint);
 }
 
-GdalVector::Status GdalVector::writePoint(const char *name, const graph::GPoint &gPoint)
+GdalVector::Status GdalVector::writePoint(const char *name, const std::shared_ptr<GPoint> &gPoint)
 {
-  return writePoint(pDataset->GetLayerByName(name), gPoint);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writePoint(ogrFeature, gPoint);
 }
 
-GdalVector::Status GdalVector::writePoint(const std::string &name, const graph::GPoint &gPoint)
+GdalVector::Status GdalVector::writePoint(const std::string &name, const std::shared_ptr<GPoint> &gPoint)
 {
-  return writePoint(pDataset->GetLayerByName(name.c_str()), gPoint);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writePoint(ogrFeature, gPoint);
 }
 
-GdalVector::Status GdalVector::writeLineString(int id, const graph::GLineString &gLineString)
+GdalVector::Status GdalVector::writeLineString(int id, const std::shared_ptr<GLineString> &gLineString)
 {
-  return writeLineString(pDataset->GetLayer(id), gLineString);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writeLineString(ogrFeature, gLineString);
 }
 
-GdalVector::Status GdalVector::writeLineString(const char *name, const graph::GLineString &gLineString)
+GdalVector::Status GdalVector::writeLineString(const char *name, const std::shared_ptr<GLineString> &gLineString)
 {
-  return writeLineString(pDataset->GetLayerByName(name), gLineString);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writeLineString(ogrFeature, gLineString);
 }
 
-GdalVector::Status GdalVector::writeLineString(const std::string &name, const graph::GLineString &gLineString)
+GdalVector::Status GdalVector::writeLineString(const std::string &name, const std::shared_ptr<GLineString> &gLineString)
 {
-  return writeLineString(pDataset->GetLayerByName(name.c_str()), gLineString);
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writeLineString(ogrFeature, gLineString);
 }
 
-GdalVector::Status GdalVector::writePolygon(int id, const graph::GPolygon &gPolygon)
+GdalVector::Status GdalVector::writePolygon(int id, const std::shared_ptr<GPolygon> &gPolygon)
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writePolygon(ogrFeature, gPolygon);
 }
 
-GdalVector::Status GdalVector::writePolygon(const char *name, const graph::GPolygon &gPolygon) 
+GdalVector::Status GdalVector::writePolygon(const char *name, const std::shared_ptr<GPolygon> &gPolygon) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writePolygon(ogrFeature, gPolygon);
 }
 
-GdalVector::Status GdalVector::writePolygon(const std::string &name, const graph::GPolygon &gPolygon) 
+GdalVector::Status GdalVector::writePolygon(const std::string &name, const std::shared_ptr<GPolygon> &gPolygon) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writePolygon(ogrFeature, gPolygon);
 }
 
-GdalVector::Status GdalVector::writeMultiPoint(int id, const graph::GMultiPoint *gMultiPoint) 
+GdalVector::Status GdalVector::writeMultiPoint(int id, const std::shared_ptr<GMultiPoint> &gMultiPoint) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writeMultiPoint(ogrFeature, gMultiPoint);
 }
 
-GdalVector::Status GdalVector::writeMultiPoint(const char *name, const graph::GMultiPoint *gMultiPoint) 
+GdalVector::Status GdalVector::writeMultiPoint(const char *name, const std::shared_ptr<GMultiPoint> &gMultiPoint) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writeMultiPoint(ogrFeature, gMultiPoint);
 }
 
-GdalVector::Status GdalVector::writeMultiPoint(const std::string &name, const graph::GMultiPoint *gMultiPoint) 
+GdalVector::Status GdalVector::writeMultiPoint(const std::string &name, const std::shared_ptr<GMultiPoint> &gMultiPoint) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writeMultiPoint(ogrFeature, gMultiPoint);
 }
 
-GdalVector::Status GdalVector::writeMultiLineString(int id, const graph::GMultiLineString *gMultiLineString) 
+GdalVector::Status GdalVector::writeMultiLineString(int id, const std::shared_ptr<GMultiLineString> &gMultiLineString) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writeMultiLineString(ogrFeature, gMultiLineString);
 }
 
-GdalVector::Status GdalVector::writeMultiLineString(const char *name, const graph::GMultiLineString *gMultiLineString) 
+GdalVector::Status GdalVector::writeMultiLineString(const char *name, const std::shared_ptr<GMultiLineString> &gMultiLineString) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writeMultiLineString(ogrFeature, gMultiLineString);
 }
 
-GdalVector::Status GdalVector::writeMultiLineString(const std::string &name, const graph::GMultiLineString *gMultiLineString) 
+GdalVector::Status GdalVector::writeMultiLineString(const std::string &name, const std::shared_ptr<GMultiLineString> &gMultiLineString) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writeMultiLineString(ogrFeature, gMultiLineString);
 }
 
-GdalVector::Status GdalVector::writeMultiPolygon(int id,  const graph::GMultiPolygon *gMultiPolygon) 
+GdalVector::Status GdalVector::writeMultiPolygon(int id,  const std::shared_ptr<GMultiPolygon> &gMultiPolygon) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayer(id)->GetLayerDefn());
+  return writeMultiPolygon(ogrFeature, gMultiPolygon);
 }
 
-GdalVector::Status GdalVector::writeMultiPolygon(const char *name, const graph::GMultiPolygon *gMultiPolygon) 
+GdalVector::Status GdalVector::writeMultiPolygon(const char *name, const std::shared_ptr<GMultiPolygon> &gMultiPolygon) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name)->GetLayerDefn());
+  return writeMultiPolygon(ogrFeature, gMultiPolygon);
 }
 
-GdalVector::Status GdalVector::writeMultiPolygon(const std::string &name, const graph::GMultiPolygon *gMultiPolygon) 
+GdalVector::Status GdalVector::writeMultiPolygon(const std::string &name, const std::shared_ptr<GMultiPolygon> &gMultiPolygon) 
 {
-  return Status::FAILURE;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pDataset->GetLayerByName(name.c_str())->GetLayerDefn());
+  return writeMultiPolygon(ogrFeature, gMultiPolygon);
 }
 
 /* private */
 void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
 {
-  OGRFeature *pFeature;
-  while ( (pFeature = pLayer->GetNextFeature()) != NULL ) {
+  OGRFeature *ogrFeature;
+  while ( (ogrFeature = pLayer->GetNextFeature()) != NULL ) {
 
     const char *layerName = NULL;
     if (strcmp(mDriverName , "DXF") == 0) {
-      layerName = pFeature->GetFieldAsString(0);
+      layerName = ogrFeature->GetFieldAsString(0);
     } else if ( strcmp(mDriverName , "DGN" ) == 0 ) {
-      layerName = pFeature->GetFieldAsString(1);
+      layerName = ogrFeature->GetFieldAsString(1);
     } else {
       layerName = pLayer->GetName();
     }
+
     layer->setName(layerName);
-    if (OGRGeometry *pGeometry = pFeature->GetGeometryRef()) {
+    if (OGRGeometry *pGeometry = ogrFeature->GetGeometryRef()) {
       std::shared_ptr<GraphicEntity> entity;
       OGRStyleMgr *ogrStyleMgr = nullptr;
       try {
-        readEntity(pGeometry, entity.get());
+        readEntity(pGeometry, entity);
         ogrStyleMgr = new OGRStyleMgr();
-        ogrStyleMgr->GetStyleString(pFeature);
-        readStyles(ogrStyleMgr, entity.get());
+        ogrStyleMgr->GetStyleString(ogrFeature);
+        readStyles(ogrStyleMgr, std::dynamic_pointer_cast<GraphicStyle>(entity));
         //readData()
-        layer->add(entity);
+        layer->push_back(entity);
 
       } catch (std::exception &e) {
         msgError(e.what());
@@ -348,11 +388,11 @@ void GdalVector::read(OGRLayer *pLayer, GLayer *layer)
           //  // Salida a fichero log con errores.  GDAL en OpenCv lo envía a cout
           //}
         }
-    OGRFeature::DestroyFeature( pFeature );
+    OGRFeature::DestroyFeature(ogrFeature);
   }
 }
 
-void GdalVector::readEntity(OGRGeometry *ogrGeometry, GraphicEntity *gEntity)
+void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEntity> &gEntity)
 {
   OGRwkbGeometryType type;
   if ( wkbHasZ(ogrGeometry->getGeometryType()) )
@@ -361,41 +401,41 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, GraphicEntity *gEntity)
     type = wkbSetZ(ogrGeometry->getGeometryType());
   switch ( type ) {
   case wkbPoint:
-    gEntity = new GPoint();
-    readPoint(static_cast<OGRPoint *>(ogrGeometry), static_cast<GPoint *>(gEntity));
+    gEntity = std::make_shared<GPoint>();
+    readPoint(static_cast<OGRPoint *>(ogrGeometry), std::dynamic_pointer_cast<GPoint>(gEntity));
     break;
   case wkbLineString:
-    gEntity = new GLineString();
-    readLineString(static_cast<OGRLineString *>(ogrGeometry), static_cast<GLineString *>(gEntity));
+    gEntity = std::make_shared<GLineString>();
+    readLineString(static_cast<OGRLineString *>(ogrGeometry), std::dynamic_pointer_cast<GLineString>(gEntity));
     break;
   case wkbPolygon:
-    gEntity = new GPolygon();
-    readPolygon(static_cast<OGRPolygon *>(ogrGeometry), static_cast<GPolygon *>(gEntity));
+    gEntity = std::make_shared<GPolygon>();
+    readPolygon(static_cast<OGRPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GPolygon>(gEntity));
     break;
   case wkbMultiPoint:
-    gEntity = new GMultiPoint();
-    readMultiPoint(static_cast<OGRMultiPoint *>(ogrGeometry), static_cast<GMultiPoint *>(gEntity));
+    gEntity = std::make_shared<GMultiPoint>();
+    readMultiPoint(static_cast<OGRMultiPoint *>(ogrGeometry), std::dynamic_pointer_cast<GMultiPoint>(gEntity));
     break;
   case wkbMultiLineString:
-    gEntity = new GMultiLineString();
-    readMultiLineString(static_cast<OGRMultiLineString *>(ogrGeometry), static_cast<GMultiLineString *>(gEntity));
+    gEntity = std::make_shared<GMultiLineString>();
+    readMultiLineString(static_cast<OGRMultiLineString *>(ogrGeometry), std::dynamic_pointer_cast<GMultiLineString>(gEntity));
     break;
   case wkbMultiPolygon:
-    gEntity = new GMultiPolygon();
-    readMultiPolygon(static_cast<OGRMultiPolygon *>(ogrGeometry), static_cast<GMultiPolygon *>(gEntity));
+    gEntity = std::make_shared<GMultiPolygon>();
+    readMultiPolygon(static_cast<OGRMultiPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GMultiPolygon>(gEntity));
     break;
   default:
     break;
   }
 }
 
-void GdalVector::readPoint(OGRPoint *ogrPoint, GPoint *gPoint)
+void GdalVector::readPoint(OGRPoint *ogrPoint, std::shared_ptr<GPoint> &gPoint)
 {
   gPoint->x = ogrPoint->getX();
   gPoint->y = ogrPoint->getY();
 }
 
-void GdalVector::readLineString(OGRLineString *ogrLineString, GLineString *gLineString)
+void GdalVector::readLineString(OGRLineString *ogrLineString, std::shared_ptr<GLineString> &gLineString)
 {
   int n = ogrLineString->getNumPoints();
   gLineString->resize(n);
@@ -406,13 +446,18 @@ void GdalVector::readLineString(OGRLineString *ogrLineString, GLineString *gLine
   }
 }
 
-void GdalVector::readPolygon(OGRPolygon *ogrPolygon, GPolygon *gPolygon)
+void GdalVector::readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<GPolygon> &gPolygon)
 {
   // Contorno exterior
   OGRLinearRing *ogrLinearRing = ogrPolygon->getExteriorRing();
   int n = ogrLinearRing->getNumPoints();
+  gPolygon->resize(n);
   for (int i = 0; i < n; i++) {
-    gPolygon->add(PointD(ogrLinearRing->getX(i), ogrLinearRing->getY(i)));
+    ///TODO: Es mas rapida la asignación con movimiento
+    (*gPolygon)[i] = PointD(ogrLinearRing->getX(i), ogrLinearRing->getY(i));
+    /// o asignar directamente
+    //(*gPolygon)[i].x = ogrLinearRing->getX(i);
+    //(*gPolygon)[i].y = ogrLinearRing->getY(i);
   }
   //TODO: modificar la clase Polygon para permitir Islas
   //n = ogrPolygon->getNumInteriorRings();
@@ -425,7 +470,7 @@ void GdalVector::readPolygon(OGRPolygon *ogrPolygon, GPolygon *gPolygon)
   //}
 }
 
-void GdalVector::readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMultiPoint)
+void GdalVector::readMultiPoint(OGRMultiPoint *ogrMultiPoint, std::shared_ptr<GMultiPoint> &gMultiPoint)
 {
   int n = ogrMultiPoint->getNumGeometries();
   gMultiPoint->resize(n);
@@ -436,7 +481,7 @@ void GdalVector::readMultiPoint(OGRMultiPoint *ogrMultiPoint, GMultiPoint *gMult
   }
 }
 
-void GdalVector::readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMultiLineString *gMultiLineString)
+void GdalVector::readMultiLineString(OGRMultiLineString *ogrMultiLineString, std::shared_ptr<GMultiLineString> &gMultiLineString)
 {
   int n = ogrMultiLineString->getNumGeometries();
   gMultiLineString->resize(n);
@@ -451,7 +496,7 @@ void GdalVector::readMultiLineString(OGRMultiLineString *ogrMultiLineString, GMu
   }
 }
 
-void GdalVector::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygon *gMultiPolygon)
+void GdalVector::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, std::shared_ptr<GMultiPolygon> &gMultiPolygon)
 {
   int n = ogrMultiPolygon->getNumGeometries();
   gMultiPolygon->resize(n);
@@ -469,7 +514,7 @@ void GdalVector::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, GMultiPolygo
   }
 }
 
-void GdalVector::readStyles(OGRStyleMgr *ogrStyle, GraphicStyle *gStyle)
+void GdalVector::readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<GraphicStyle> &gStyle)
 {
   OGRStyleTool *ogrStyleTool = nullptr;
   for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
@@ -498,7 +543,7 @@ void GdalVector::readStyles(OGRStyleMgr *ogrStyle, GraphicStyle *gStyle)
   }
 }
 
-void GdalVector::readStylePen(OGRStylePen *ogrStylePen, GraphicStyle *gStyle)
+void GdalVector::readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<GraphicStyle> &gStyle)
 {
   GBool bDefault = false;
   std::shared_ptr<StylePen> stylePen = std::make_shared<StylePen>();
@@ -611,7 +656,7 @@ void GdalVector::readStylePen(OGRStylePen *ogrStylePen, GraphicStyle *gStyle)
   gStyle->setStylePen(stylePen);
 }
 
-void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, GraphicStyle *gStyle)
+void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<GraphicStyle> &gStyle)
 {
   GBool bDefault = false;
   std::shared_ptr<StyleBrush> styleBrush = std::make_shared<StyleBrush>();
@@ -682,7 +727,7 @@ void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, GraphicStyle *gSty
   gStyle->setStyleBrush(styleBrush);
 }
 
-void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, GraphicStyle *gStyle)
+void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol,std::shared_ptr<GraphicStyle> &gStyle)
 {
   GBool bDefault = false;
   std::shared_ptr<StyleSymbol> styleSymbol = std::make_shared<StyleSymbol>();
@@ -760,7 +805,7 @@ void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, GraphicStyle *g
   gStyle->setStyleSymbol(styleSymbol);
 }
 
-void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gStyle)
+void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<GraphicStyle> &gStyle)
 {
   GBool bDefault = false;
   std::shared_ptr<StyleLabel> styleLabel = std::make_shared<StyleLabel>();
@@ -924,22 +969,27 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, GraphicStyle *gSty
 GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer &layer)
 {
   Status err = Status::SUCCESS;
+  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pLayer->GetLayerDefn());
   for (auto &entity : layer) {
     GraphicEntity::Type type = entity->getType();
     switch (type) {
     case TL::graph::GraphicEntity::Type::POINT_2D:
-      //TODO: muy artificioso....
-      writePoint(pLayer, *static_cast<GPoint *>(entity.get()));
+      err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint>(entity));
       break;
     case TL::graph::GraphicEntity::Type::POINT_3D:
+      err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::LINESTRING_2D:
+      err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString>(entity));
       break;
     case TL::graph::GraphicEntity::Type::LINESTRING_3D:
+      err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::POLYGON_2D:
+      err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon>(entity));
       break;
     case TL::graph::GraphicEntity::Type::POLYGON_3D:
+      err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::SEGMENT_2D:
       break;
@@ -950,16 +1000,22 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
     case TL::graph::GraphicEntity::Type::BOX:
       break;
     case TL::graph::GraphicEntity::Type::MULTIPOINT_2D:
+      err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint>(entity));
       break;
     case TL::graph::GraphicEntity::Type::MULTIPOINT_3D:
+      err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::MULTILINE_2D:
+      err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString>(entity));
       break;
     case TL::graph::GraphicEntity::Type::MULTILINE_3D:
+      err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
+      err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon>(entity));
       break;
     case TL::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
+      err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon3D>(entity));
       break;
     case TL::graph::GraphicEntity::Type::CIRCLE:
       break;
@@ -969,42 +1025,121 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
       break;
     }
   }
-  return Status::FAILURE;
+          
+  if (pLayer->CreateFeature(ogrFeature) != OGRERR_NONE) {
+    err = Status::FAILURE;
+  }
+
+  OGRFeature::DestroyFeature(ogrFeature);
+  return err;
 }
 
-GdalVector::Status GdalVector::writePoint(OGRLayer *pLayer, const graph::GPoint &gPoint)
+GdalVector::Status GdalVector::writePoint(OGRFeature *ogrFeature, const std::shared_ptr<GPoint> &gPoint)
 {
-  OGRFeature *ogrFeature = OGRFeature::CreateFeature(pLayer->GetLayerDefn());
   OGRPoint ogrPoint;
-  ogrPoint.setX(gPoint.x);
-  ogrPoint.setY(gPoint.y);
+  ogrPoint.setX(gPoint->x);
+  ogrPoint.setY(gPoint->y);
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPoint))
+    return Status::SUCCESS;
+  else 
+    return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writePoint(OGRFeature *ogrFeature, const std::shared_ptr<GPoint3D> &gPoint3D)
+{
+  OGRPoint ogrPoint;
+  ogrPoint.setX(gPoint3D->x);
+  ogrPoint.setY(gPoint3D->y);
+  ogrPoint.setZ(gPoint3D->z);
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPoint))
+    return Status::SUCCESS;
+  else 
+    return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<GLineString> &gLineString)
+{
+  OGRLineString ogrLineString;
+  for (int i = 0; i < gLineString->size(); i++) {
+    ogrLineString.addPoint(&OGRPoint((*gLineString)[i].x, (*gLineString)[i].y));
+  }
+
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrLineString))
+    return Status::SUCCESS;
+  else 
+    return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<GLineString3D> &gLineString3D)
+{
+  OGRLineString ogrLineString;
+  for (int i = 0; i < gLineString3D->size(); i++) {
+    ogrLineString.addPoint(&OGRPoint((*gLineString3D)[i].x, (*gLineString3D)[i].y, (*gLineString3D)[i].z));
+  }
+
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrLineString))
+    return Status::SUCCESS;
+  else 
+    return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<GPolygon> &gPolygon)
+{
+  OGRPolygon ogrPolygon;
+  OGRLinearRing ogrLinearRing;
+  for (int i = 0; i < gPolygon->size(); i++) {
+    ogrLinearRing.addPoint(&OGRPoint((*gPolygon)[i].x, (*gPolygon)[i].y));
+  }
+  ogrPolygon.addRing(&ogrLinearRing);
+
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPolygon))
+    return Status::SUCCESS;
+  else 
+    return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<GPolygon3D> &gPolygon3D)
+{
+  OGRPolygon ogrPolygon;
+  OGRLinearRing ogrLinearRing;
+  for (int i = 0; i < gPolygon3D->size(); i++) {
+    ogrLinearRing.addPoint(&OGRPoint((*gPolygon3D)[i].x, (*gPolygon3D)[i].y, (*gPolygon3D)[i].z));
+  }
+  ogrPolygon.addRing(&ogrLinearRing);
+
+  if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPolygon))
     return Status::FAILURE;
   else 
     return Status::SUCCESS;
+  return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writeLineString(OGRLayer *pLayer, const graph::GLineString &gPoint)
+GdalVector::Status GdalVector::writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPoint> &gMultiPoint)
 {
   return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writePolygon(OGRLayer *pLayer, const graph::GPolygon &gPolygon)
+GdalVector::Status GdalVector::writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPoint3D> &gMultiPoint3D)
 {
   return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writeMultiPoint(OGRLayer *pLayer, const graph::GMultiPoint *gMultiPoint)
+GdalVector::Status GdalVector::writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<GMultiLineString> &gMultiLineString)
 {
   return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writeMultiLineString(OGRLayer *pLayer, const graph::GMultiLineString *gMultiLineString)
+GdalVector::Status GdalVector::writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<GMultiLineString3D> &gMultiLineString3D)
 {
   return Status::FAILURE;
 }
 
-GdalVector::Status GdalVector::writeMultiPolygon(OGRLayer *pLayer, const graph::GMultiPolygon *gMultiPolygon)
+GdalVector::Status GdalVector::writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPolygon> &gMultiPolygon)
+{
+  return Status::FAILURE;
+}
+
+GdalVector::Status GdalVector::writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPolygon3D> &gMultiPolygon3D)
 {
   return Status::FAILURE;
 }
@@ -1037,7 +1172,7 @@ void VectorGraphics::close()
   if (mVectorFormat) mVectorFormat->close();
 }
 
-VectorGraphics::Status VectorGraphics::open(const char *file, Mode mode)
+VectorGraphics::Status VectorGraphics::open(const char *file, Mode mode, FileOptions *options)
 {
   close();
 
@@ -1057,15 +1192,15 @@ VectorGraphics::Status VectorGraphics::open(const char *file, Mode mode)
 #endif
 
   if (mVectorFormat) {
-    mVectorFormat->open(file, mode);
+    mVectorFormat->open(file, mode, options);
     update();
     return Status::OPEN_OK;
   } else return Status::OPEN_FAIL;
 }
 
-VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode)
+VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode, FileOptions *options)
 {
-  return open(file.c_str(), mode);
+  return open(file.c_str(), mode, options);
 }
 
 VectorGraphics::Status VectorGraphics::create()
@@ -1091,12 +1226,6 @@ VectorGraphics::Status VectorGraphics::read()
   return Status::SUCCESS;
 }
 
-VectorGraphics::Status VectorGraphics::read(VectorGraphics *vector)
-{
-  //mVectorFormat->read(vector);
-  return Status::SUCCESS;
-}
-
 VectorGraphics::Status VectorGraphics::read(int layerId, graph::GLayer *layer)
 {
   mVectorFormat->read(layerId, layer);
@@ -1114,11 +1243,6 @@ VectorGraphics::Status VectorGraphics::read(const std::string &layerName, graph:
   mVectorFormat->read(layerName, layer);
   return Status::SUCCESS;
 }
-
-//VectorGraphics::Status VectorGraphics::write(VectorGraphics *vector)
-//{
-//  return Status::FAILURE;
-//}
 
 VectorGraphics::Status VectorGraphics::writeLayer(int id, const graph::GLayer &layer)
 {
