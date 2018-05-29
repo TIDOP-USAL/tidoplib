@@ -383,6 +383,7 @@ private:
   void readPoint(OGRPoint *ogrPoint, std::shared_ptr<graph::GPoint> &gPoint);
   void readLineString(OGRLineString *ogrLineString, std::shared_ptr<graph::GLineString> &gLineString);
   void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GPolygon> &gPolygon);
+  void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GPolygon3D> &gPolygon);
   void readMultiPoint(OGRMultiPoint *ogrMultiPoint, std::shared_ptr<graph::GMultiPoint> &gMultiPoint);
   void readMultiLineString(OGRMultiLineString *ogrMultiLineString, std::shared_ptr<graph::GMultiLineString> &gMultiLineString);
   void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon);
