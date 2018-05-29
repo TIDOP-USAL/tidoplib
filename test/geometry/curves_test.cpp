@@ -6,7 +6,7 @@ using namespace TL::geometry;
 
 /* Circle */
 
-// Constructor por defecto
+/* Constructor por defecto */
 
 TEST(CircleI, DefaultConstructor)
 {
@@ -46,7 +46,8 @@ TEST(CircleD, CopyConstructor) {
   EXPECT_DOUBLE_EQ(25., circle2.radius);
 }
 
-// Operador de asignación
+/* Operador de asignación */
+
 TEST(CircleD, assignment)
 {
   const CircleD circle(PointD(50.5, 32.65), 25.);
@@ -56,6 +57,8 @@ TEST(CircleD, assignment)
   EXPECT_DOUBLE_EQ(32.65, circle2.center.y);
   EXPECT_DOUBLE_EQ(25., circle2.radius);
 }
+
+/* Conversión a un tipo diferente */
 
 TEST(CircleD, conversion)
 {

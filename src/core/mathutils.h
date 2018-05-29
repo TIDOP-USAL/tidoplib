@@ -90,7 +90,7 @@ Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
  * \return Producto escalar de los dos vectores
  */
 template<typename Point_t> inline 
-size_t dotProduct(const Point_t &pt1, const Point_t &pt2)
+double dotProduct(const Point_t &pt1, const Point_t &pt2)
 {
   return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) + 
          static_cast<double>(pt1.y)*static_cast<double>(pt2.y);
@@ -103,7 +103,7 @@ size_t dotProduct(const Point_t &pt1, const Point_t &pt2)
  * \return Producto escalar de los dos vectores
  */
 template<typename Point3_t> inline 
-size_t dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
   return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) + 
     static_cast<double>(pt1.y)*static_cast<double>(pt2.y) + 
@@ -115,7 +115,7 @@ size_t dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
  * \param[in] v Vector 
  */
 template<typename Point_t> inline 
-size_t module(const Point_t &v)
+double module(const Point_t &v)
 {
   return sqrt(dotProduct(v, v));
 }
@@ -125,7 +125,7 @@ size_t module(const Point_t &v)
  * \param[in] v Vector
  */
 template<typename Point3_t> inline 
-size_t module3D(const Point3_t &v)
+double module3D(const Point3_t &v)
 {
   return sqrt(dotProduct3D(v, v));
 }
