@@ -392,7 +392,7 @@ transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &pt
                                       std::vector<Point_t> *ptsOut, 
                                       transform_order trfOrder) const
 {
-  formatVectorOut(ptsIn, ptsOut);
+  this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     // TODO: Debería ser mas rapido hacer:
     // size_t n = ptsIn.size();

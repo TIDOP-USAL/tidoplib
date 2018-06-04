@@ -21,8 +21,8 @@
 
 #include <thread>
 
-namespace TL
-{
+using namespace TL;
+
 
 struct MatrixLR {
   cv::Matx33d imgLeft;
@@ -86,7 +86,7 @@ struct MatrixLR AnaglyphMatrix[] = {
   }
 };
 
-int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode)
+int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode)
 {
 
   if (left.size() != right.size()) return -1;
@@ -160,7 +160,5 @@ int getStereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, 
     return 1;
   }
 }
-
-} // End namespace TL
 
 #endif

@@ -10,8 +10,9 @@
 #endif
 
 #include "core/defs.h"
+#include "core/mathutils.h"
 #include "geometry/entities/point.h"
-#include "geometry/entities/polygon.h"
+//#include "geometry/entities/polygon.h"
 #include "geometry/entities/window.h"
 #include "geometry/entities/bbox.h"
 
@@ -149,7 +150,7 @@ int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Poi
   }
   Point3D v1 = pt - ln.pt1;
   Point3D v2 = ln.vector();
-  double daux = v1.ddot(v2);
+  double daux = dotProduct3D(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -305,8 +306,8 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
         pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
         pt->y = TL_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
       } else {
-        pt->x += static_cast<Point_t::value_type>(ln1.pt1.x + t * vs1.x);
-        pt->y += static_cast<Point_t::value_type>(ln1.pt1.y + t * vs1.y);
+        pt->x += static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
+        pt->y += static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
       }
       iret = 1;
     }
@@ -459,7 +460,7 @@ double distPointToPolygon(const Point_t &pt, Polygon_it_t it_begin, Polygon_it_t
   Polygon_it_t it = it_begin;
   Point_t prev = *(it_end-1);
   while (it != it_end) {
-    dist = distPointToSegment3D(prev, *it, center3D);
+    dist = distPointToSegment3D(prev, *it, pt);
     if (dist < max_dist) max_dist = dist;
     prev = *it++;
   }
@@ -545,8 +546,8 @@ TL_EXPORT inline void projectPolygonToPlane(const Polygon3D<Point_t> &polygon, c
 {
   for (int i = 0; i < polygon.getSize(); i++) {
     Point_t pt;
-    projectPointToPlane(polygon3d[i], plane, &pt);
-    projectPolygon->add();
+    projectPointToPlane(polygon[i], plane, &pt);
+    projectPolygon->push_back(pt);
   }
 }
 
@@ -1028,8 +1029,8 @@ inline int intersectSegments(const Point_t &segment1_pt1, const Point_t &segment
         pt->x = TL_ROUND_TO_INT(segment1_pt1.x + t * vs1[0]);
         pt->y = TL_ROUND_TO_INT(segment1_pt1.y + t * vs1[1]);
       } else {
-        pt->x += static_cast<Point_t::value_type>(segment1_pt1.x + t * vs1[0]);
-        pt->y += static_cast<Point_t::value_type>(segment1_pt1.y + t * vs1[1]);
+        pt->x += static_cast<typename Point_t::value_type>(segment1_pt1.x + t * vs1[0]);
+        pt->y += static_cast<typename Point_t::value_type>(segment1_pt1.y + t * vs1[1]);
       }
       iret = 1;
     }
@@ -1242,7 +1243,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
 	double max_distance = 0.;
 
 	int i, j;
-  double tmp_distance = std::numeric_limits<double>().max();
+    double tmp_distance = std::numeric_limits<double>().max();
 	for (i = 0; i <= nCells; i++) {
 
 		pt_tmp.x = bounds[0].x + i * increment_x;
@@ -1266,6 +1267,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
           temp++;
         }
 
+        Point_t prev;
         if (isInner == false) {
             
           Point_t pth1 = pt_tmp;
@@ -1276,7 +1278,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
           std::vector<int> vertex_id;
 
           temp = in_first;
-          Point_t prev = *(in_last -1);
+          prev = *(in_last -1);
           int i = 0;
           while (temp != in_last) {
             //if (collinearPoints(prev, temp, pt_tmp, 0.005)) {
@@ -1506,7 +1508,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
     poligon_z.push_back(point_2d_temp<typename Point_t::value_type>(pt.x, pt.y));
   }
 
-  typedef typename point_2d_temp<typename Point_t::value_type> point2d_t;
+  typedef point_2d_temp<typename Point_t::value_type> point2d_t;
 
   // Ventana envolvente del poligono 
   std::array<point2d_t, 2> w_pol;

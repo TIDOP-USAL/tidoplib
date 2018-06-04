@@ -11,6 +11,7 @@
 #endif
 
 #include "core/defs.h"
+#include "core/messages.h"
 
 namespace TL
 {
@@ -234,6 +235,120 @@ void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
  */
 TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
+/* ---------------------------------------------------------------------------------- */
+
+// La resolución de sistemas lineales con OpenCV es muy lenta:
+// http://www.patrikhuber.ch/blog/5-solving-linear-systems-with-eigen
+// Se usa Eigen en caso de que este presente la libreria.
+
+/*!
+ * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
+ *
+ * En álgebra lineal, la descomposición en valores singulares de una matriz real
+ * o compleja es una factorización de la misma con muchas aplicaciones, entre ellas
+ * la resolución de sistemas lineales.
+ *
+ * Dada una matriz real A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
+ * y una matriz diagonal Σ (de tamaño m×n) tales que:
+ *
+ * \f[ A = UΣV^T  \f]
+ *
+ * Esta factorización de A se llama descomposición en valores singulares de A.
+ *
+ *
+ * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
+ * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a
+ * \param[in] b
+ * \param[out] c
+ */
+TL_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Factorización QR
+ *
+ * La descomposición o factorización QR de una matriz es una descomposición de
+ * la misma como producto de una matriz ortogonal por una triangular superior.
+ *
+ * La descomposición QR de una matriz cuadrada real A es:
+ *
+ * \f[ A = QR \f]
+ *
+ * donde Q es una matriz ortogonal:
+ *
+ * \f[ Q^TQ = I \f]
+ *
+ * y R es una matriz triangular superior.
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a
+ * \param[in] b
+ * \param[out] c
+ */
+TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Factorización o descomposición LU
+ *
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ *
+ * \f[ A=LU \f]
+ *
+ * donde L y U son matrices inferiores y superiores triangulares respectivamente.
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a
+ * \param[in] b
+ * \param[out] c
+ */
+TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
+
+/*!
+ * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky
+ *
+ * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto
+ * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe
+ * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva,
+ * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama
+ * la descomposición o factorización de Cholesky.
+ *
+ * La matriz A tiene que ser simétrica y definida positiva.
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a
+ * \param[in] b
+ * \param[out] c
+ */
+TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
+
+#ifdef HAVE_EIGEN
+
+/*!
+ * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky
+ *
+ * Resolución por Cholesky para el caso de matrices semidefinidas positivas o negativas
+ *
+ * \param[in] nRows Número de filas
+ * \param[in] nCols Número de columnas
+ * \param[in] a
+ * \param[in] b
+ * \param[out] c
+ */
+TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
+
+#endif
+
+
+
+
 /* ---------------------------------------------------------------------------------- */
 /*                                 ESTADISTICA                                        */
 /* ---------------------------------------------------------------------------------- */
@@ -255,7 +370,7 @@ double mean(const T &data)
   size_t n = data.size();
   if (n <= 1) return 0.0; //TODO: Mensaje de error
   //TODO: Comprobar que es un contenedor con tipos numéricos
-  T::value_type sum = 0.0;
+  typename T::value_type sum = 0.0;
   for (auto &t : data) {
     sum += t;
   }
@@ -315,6 +430,7 @@ double skewness(const T &data)
   double aux = 0.;
   double aux2 = 0.;
   double skew = 0.;
+  double sum = 0.;
   for (auto &t : data) {
     aux = t - _mean;
     ep += aux;
@@ -340,12 +456,14 @@ double kurtosis(const T &data)
   double ep = 0.;
   double aux = 0.;
   double _kurtosis = 0.;
+  double aux2 = 0.;
+  double sum = 0.;
 
   for (auto &t : data) {
     aux = t - _mean;
     ep += aux;
-    aux *= aux;
-    _kurtosis += aux*aux; 
+    sum += (aux2 = aux*aux);
+    _kurtosis += aux2;
   }
 
   double variance = (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
@@ -534,7 +652,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
       *pa++ = 1;
       *pb++ = YX ? sy : sx;
     }
-    
+
     solveSVD(_m, _n, _a, _b, _c);
     *m = _c[0];
     *b = _c[1];
@@ -914,116 +1032,6 @@ TL_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion
 
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
-/* ---------------------------------------------------------------------------------- */
-
-// La resolución de sistemas lineales con OpenCV es muy lenta: 
-// http://www.patrikhuber.ch/blog/5-solving-linear-systems-with-eigen
-// Se usa Eigen en caso de que este presente la libreria.
-
-/*!
- * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
- * 
- * En álgebra lineal, la descomposición en valores singulares de una matriz real 
- * o compleja es una factorización de la misma con muchas aplicaciones, entre ellas 
- * la resolución de sistemas lineales.
- *
- * Dada una matriz real A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n) 
- * y una matriz diagonal Σ (de tamaño m×n) tales que:
- *
- * \f[ A = UΣV^T  \f]
- *
- * Esta factorización de A se llama descomposición en valores singulares de A.
- *
- *
- * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
- * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a 
- * \param[in] b 
- * \param[out] c 
- */
-TL_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Factorización QR
- *
- * La descomposición o factorización QR de una matriz es una descomposición de 
- * la misma como producto de una matriz ortogonal por una triangular superior.
- *
- * La descomposición QR de una matriz cuadrada real A es:
- * 
- * \f[ A = QR \f]
- *
- * donde Q es una matriz ortogonal:
- *
- * \f[ Q^TQ = I \f]
- *
- * y R es una matriz triangular superior.
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a 
- * \param[in] b 
- * \param[out] c 
- */
-TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Factorización o descomposición LU 
- *
- * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
- *
- * \f[ A=LU \f]
- *
- * donde L y U son matrices inferiores y superiores triangulares respectivamente.
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a 
- * \param[in] b 
- * \param[out] c 
- */
-TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
- *
- * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto 
- * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe 
- * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva, 
- * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama 
- * la descomposición o factorización de Cholesky.
- *
- * La matriz A tiene que ser simétrica y definida positiva.
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a 
- * \param[in] b 
- * \param[out] c 
- */
-TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
-
-#ifdef HAVE_EIGEN
-
-/*!
- * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky 
- *
- * Resolución por Cholesky para el caso de matrices semidefinidas positivas o negativas
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a 
- * \param[in] b 
- * \param[out] c 
- */
-TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
-
-#endif
 
 /*! \} */ // end of mathUtils
 

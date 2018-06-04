@@ -13,12 +13,16 @@ set( CMAKE_DEBUG_POSTFIX d )
 # Tipos de configuración
 set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 
-# Nivel de warning
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+if(MSVC)
 
-#/EH (Modelo de control de excepciones)
-#/EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones declaradas como extern "C" jamás inician una excepción de C++.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+  # Nivel de warning
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+
+  #/EH (Modelo de control de excepciones)
+  #/EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones declaradas como extern "C" jamás inician una excepción de C++.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+
+endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
@@ -27,7 +31,22 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
 
 #set_target_properties(PROPERTIES RUNTIME_OUTPUT_DIRECTORY)
-	
+
+if (UNIX)
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+##establece el soporte de c++11
+#include(CheckCXXCompilerFlag)
+#CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+#if(COMPILER_SUPPORTS_CXX11)
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+#else()
+#     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+#endif()
+
 # Se permite elegir entre libreria estatica o dinamica
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 
@@ -110,7 +129,7 @@ endif()
 
 # --- OpenCV ---
 if(WITH_OPENCV)
-    find_package(OPENCV QUIET)
+    find_package(OpenCV QUIET)
 
     if(NOT OPENCV_FOUND)
       set(HAVE_OPENCV NO)

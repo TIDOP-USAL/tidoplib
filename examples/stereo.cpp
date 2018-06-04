@@ -14,7 +14,6 @@
 #include "img_process/anaglyph.h"
 
 using namespace cv;
-using namespace TL;
 
 int main(int argc, char** argv)
 {
@@ -22,18 +21,18 @@ int main(int argc, char** argv)
   cv::Mat left = cv::imread("D:\\Desarrollo\\tidop\\examples\\data\\left.png");
   cv::Mat right = cv::imread("D:\\Desarrollo\\tidop\\examples\\data\\right.png");
   cv::Mat stereoDUBOIS;
-  getStereoImage(left, right, &stereoDUBOIS, StereoMode::DUBOIS);
+  TL::stereoImage(left, right, &stereoDUBOIS, TL::StereoMode::DUBOIS);
   cv::Mat stereoGRAY;
-  getStereoImage(left, right, &stereoGRAY, StereoMode::GRAY);
+  TL::stereoImage(left, right, &stereoGRAY, TL::StereoMode::GRAY);
   cv::Mat stereoHALFCOLOR;
-  getStereoImage(left, right, &stereoHALFCOLOR, StereoMode::HALFCOLOR);
+  TL::stereoImage(left, right, &stereoHALFCOLOR, TL::StereoMode::HALFCOLOR);
   cv::Mat stereoNORMAL;
-  getStereoImage(left, right, &stereoNORMAL, StereoMode::NORMAL);
+  TL::stereoImage(left, right, &stereoNORMAL, TL::StereoMode::NORMAL);
   cv::Mat stereoOPTIMIZED;
-  getStereoImage(left, right, &stereoOPTIMIZED, StereoMode::OPTIMIZED);
+  TL::stereoImage(left, right, &stereoOPTIMIZED, TL::StereoMode::OPTIMIZED);
   cv::Mat stereoREDBLUE;
-  getStereoImage(left, right, &stereoREDBLUE, StereoMode::REDBLUE);
+  TL::stereoImage(left, right, &stereoREDBLUE, TL::StereoMode::REDBLUE);
   cv::Mat stereoSIDEBYSIDE;
-  getStereoImage(left, right, &stereoSIDEBYSIDE, StereoMode::SIDEBYSIDE);
+  TL::stereoImage(left, right, &stereoSIDEBYSIDE, TL::StereoMode::SIDEBYSIDE);
   return 0;
 }

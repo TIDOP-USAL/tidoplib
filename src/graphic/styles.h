@@ -759,7 +759,7 @@ public:
    * \param[in] color
    * \see Color
    */
-  void setForegroundColor(Color &color);
+  void setForegroundColor(const Color &color);
 
   /*!
    * \brief Color de fondo
@@ -772,7 +772,7 @@ public:
    * \param[in] color
    * \see Color
    */
-  void setBackgroundColor(Color &color);
+  void setBackgroundColor(const Color &color);
 
   /*!
    * \brief Color de contorno
@@ -785,7 +785,7 @@ public:
    * \param[in] color
    * \see Color
    */
-  void setOutlineColor(Color &color);
+  void setOutlineColor(const Color &color);
 
   /*!
    * \brief Color de la sombra
@@ -798,7 +798,7 @@ public:
    * \param[in] color
    * \see Color
    */
-  void setShadowColor(Color &color);
+  void setShadowColor(const Color &color);
  
   /*!
    * \brief Escalado en tanto por ciento

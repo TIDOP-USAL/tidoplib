@@ -11,11 +11,13 @@
 
 #include "core/defs.h"
 #include "core/utils.h"
-#include "core/mathutils.h"
+
 #include "geometry/entities/entity.h"
 #include "geometry/entities/window.h"
 #include "geometry/entities/point.h"
+#include "geometry/entities/segment.h"
 #include "geometry/operations.h"
+#include "core/mathutils.h"
 
 namespace TL
 {
@@ -57,7 +59,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon(size_type size);
+  Polygon(typename Polygon<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -120,7 +122,7 @@ Polygon<Point_t>::Polygon()
 }
 
 template<typename Point_t> inline
-Polygon<Point_t>::Polygon(size_type size) 
+Polygon<Point_t>::Polygon(typename Polygon<Point_t>::size_type size)
   : Entity(Entity::type::POLYGON_2D), 
     Entities2D<Point_t>(size) 
 {
@@ -150,14 +152,14 @@ Polygon<Point_t>::Polygon(std::initializer_list<Point_t> listPoints)
 template<typename Point_t> inline
 bool Polygon<Point_t>::isInner(const Point_t &point) const
 {
-  Window<Point_t> w = getWindow();
+  Window<Point_t> w = this->getWindow();
   // Comprueba si esta dentro de la ventana envolvente.
   if (w.containsPoint(point) == false) return false;
 
   // Se comprueba si el punto es uno de los vertices
-  for (int i = 0; i < mEntities.size(); i++) {
+  for (int i = 0; i < this->mEntities.size(); i++) {
     // Por ahora se devuelve true. Lo suyo sería indicar que es un vertice.
-    if (mEntities[i] == point) return true;
+    if (this->mEntities[i] == point) return true;
   }
 
   Segment<Point_t> sPointH(point, Point_t(w.pt2.x, point.y));
@@ -172,11 +174,11 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
   bool bVertex = false;
   std::vector<int> vertex_id;
 
-  for (size_t i = 0, j = 1; i < mEntities.size(); i++, j++) {
-    if (j == mEntities.size()) j = 0;
+  for (size_t i = 0, j = 1; i < this->mEntities.size(); i++, j++) {
+    if (j == this->mEntities.size()) j = 0;
 
 
-    Segment<Point_t> segment(mEntities[i], mEntities[j]);
+    Segment<Point_t> segment(this->mEntities[i], this->mEntities[j]);
     
     // El punto es colineal con el segmento y esta dentro del mismo.
     if (distPointToSegment(point, segment) == 0) return true;
@@ -208,25 +210,25 @@ bool Polygon<Point_t>::isInner(const Point_t &point) const
     int vertex_next = 0;
     for (int i = 0; i < vertex_id.size(); i++) {
       // Se comprueban los puntos anterior y siguiente
-      if (vertex_id[i] == 0) vertex_prev = static_cast<int>(mEntities.size()) - 1;
+      if (vertex_id[i] == 0) vertex_prev = static_cast<int>(this->mEntities.size()) - 1;
       else vertex_prev = vertex_id[i] - 1;
 
-      if (vertex_id[i] == mEntities.size() - 1) vertex_next = 0;
+      if (vertex_id[i] == this->mEntities.size() - 1) vertex_next = 0;
       else vertex_next = vertex_id[i] + 1;
 
-      if (mEntities[vertex_prev].y == sPointH.pt1.y) {
+      if (this->mEntities[vertex_prev].y == sPointH.pt1.y) {
         continue;
       } else {
-        if (mEntities[vertex_next].y == sPointH.pt1.y) {
-          int prev = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_prev]);
-          if (vertex_next == mEntities.size() - 1) vertex_next = 0;
+        if (this->mEntities[vertex_next].y == sPointH.pt1.y) {
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_prev]);
+          if (vertex_next == this->mEntities.size() - 1) vertex_next = 0;
           else vertex_next = vertex_next + 1;
-          int next = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_next]);
+          int next = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_next]);
           if (prev == next) nIntersection -= 2;
           else nIntersection--;
         } else {
-          int prev = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_prev]);
-          int next = isLeft(sPointH.pt1, sPointH.pt2, mEntities[vertex_next]);
+          int prev = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_prev]);
+          int next = isLeft(sPointH.pt1, sPointH.pt2, this->mEntities[vertex_next]);
           if (prev == next) nIntersection -= 2;
           else nIntersection--;
         }
@@ -254,8 +256,8 @@ template<typename Point_t> inline
 double Polygon<Point_t>::length()  const
 {
   double perimeter = 0.;
-  for (size_t i = 1; i < mEntities.size(); i++) {
-    perimeter += distance(mEntities[i-1], mEntities[i]);
+  for (size_t i = 1; i < this->mEntities.size(); i++) {
+    perimeter += distance(this->mEntities[i-1], this->mEntities[i]);
   }
   return perimeter;
 }
@@ -265,8 +267,8 @@ double Polygon<Point_t>::area() const
 {
   //TODO: Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo
   double area = 0.;
-  for (size_t i = 1; i < mEntities.size(); i++) {
-    area += crossProduct(mEntities[i-1], mEntities[i]);
+  for (size_t i = 1; i < this->mEntities.size(); i++) {
+    area += crossProduct(this->mEntities[i-1], this->mEntities[i]);
   }
   return area / 2.;
 }
@@ -314,7 +316,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño del poligono
    */
-  Polygon3D(size_type size);
+  Polygon3D(typename Polygon3D<Point3_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -356,7 +358,7 @@ Polygon3D<Point3_t>::Polygon3D()
 }
 
 template<typename Point3_t> inline
-Polygon3D<Point3_t>::Polygon3D(size_type size) 
+Polygon3D<Point3_t>::Polygon3D(typename Polygon3D<Point3_t>::size_type size)
   : Entity(Entity::type::POLYGON_3D), 
     Entities3D<Point3_t>(size) 
 {
@@ -372,7 +374,7 @@ Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon)
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const std::vector<Point3_t> &points) 
   : Entity(Entity::type::POLYGON_3D), 
-    Entities3D<Point3_t>(vPoint) 
+    Entities3D<Point3_t>(points)
 {
 }
 
@@ -387,8 +389,8 @@ template<typename Point3_t> inline
 double Polygon3D<Point3_t>::length()  const
 {
   double perimeter = 0.;
-  for (size_t i = 1; i < mEntities.size(); i++) {
-    perimeter += distance(mEntities[i-1], mEntities[i]);
+  for (size_t i = 1; i < this->mEntities.size(); i++) {
+    perimeter += distance(this->mEntities[i-1], this->mEntities[i]);
   }
   return perimeter;
 }
@@ -398,7 +400,7 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> 
 {
   if (this != &polygon) {
     Entity::operator = (polygon);
-    Entities3D<Point_t>::operator = (polygon);
+    Entities3D<Point3_t>::operator = (polygon);
   }
   return *this;
 }
@@ -424,7 +426,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n poligonos
    */
-  MultiPolygon(size_type size);
+  MultiPolygon(typename MultiPolygon<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -453,7 +455,7 @@ MultiPolygon<Point_t>::MultiPolygon()
 }
 
 template<typename Point_t> inline
-MultiPolygon<Point_t>::MultiPolygon(size_type size) 
+MultiPolygon<Point_t>::MultiPolygon(typename MultiPolygon<Point_t>::size_type size)
   : Entity(Entity::type::MULTIPOLYGON_2D),
     Entities2D<Polygon<Point_t>>(size) 
 {
@@ -492,7 +494,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n poligonos
    */
-  MultiPolygon3D(size_type size);
+  MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -521,7 +523,7 @@ MultiPolygon3D<Point3_t>::MultiPolygon3D()
 }
 
 template<typename Point3_t> inline
-MultiPolygon3D<Point3_t>::MultiPolygon3D(size_type size) 
+MultiPolygon3D<Point3_t>::MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size)
   : Entity(Entity::type::MULTIPOLYGON_3D),
     Entities3D<Polygon3D<Point3_t>>(size) 
 {

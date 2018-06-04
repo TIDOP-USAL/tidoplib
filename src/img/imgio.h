@@ -428,16 +428,7 @@ public:
   /*!
    * \brief Constructora GdalGeoRaster
    */
-  GdalGeoRaster() : GdalRaster() 
-  { 
-    mGeoTransform[0] = 0.;
-    mGeoTransform[1] = 1.;
-    mGeoTransform[2] = 0.;
-    mGeoTransform[3] = 0.;
-    mGeoTransform[4] = 0.;
-    mGeoTransform[5] = -1.;
-    mTrfAffine = std::make_unique<Affine<geometry::PointD>>();
-  }
+  GdalGeoRaster();
 
   /*!
    * \brief Destructora
