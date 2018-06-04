@@ -400,7 +400,14 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEnt
     type = wkbFlatten(ogrGeometry->getGeometryType());
   else
     type = wkbSetZ(ogrGeometry->getGeometryType());
+
+  OGRwkbGeometryType::wkbLineString25D;
+  OGRwkbGeometryType::wkbLineStringM;
+  OGRwkbGeometryType::wkbLineStringZM;
+  int dim = ogrGeometry->getCoordinateDimension();
   switch ( type ) {
+  case wkbUnknown:
+    break;
   case wkbPoint:
     gEntity = std::make_shared<GPoint>();
     readPoint(static_cast<OGRPoint *>(ogrGeometry), gEntity);
@@ -424,6 +431,117 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEnt
   case wkbMultiPolygon:
     gEntity = std::make_shared<GMultiPolygon>();
     readMultiPolygon(static_cast<OGRMultiPolygon *>(ogrGeometry), gEntity);
+    break;
+  case wkbGeometryCollection:
+    break;
+#if  GDAL_VERSION_MAJOR >= 2
+  case wkbCircularString:
+    break;
+  case wkbCompoundCurve:
+    break;
+  case wkbCurvePolygon:
+    break;
+  case wkbMultiCurve:
+    break;
+  case wkbMultiSurface:
+    break;
+#if GDAL_VERSION_MINOR >= 1
+  case wkbCurve:
+    break;
+  case wkbSurface:
+    break;
+#endif
+  case wkbCircularStringZ:
+    break;
+  case wkbCompoundCurveZ:
+    break;
+  case wkbCurvePolygonZ:
+    break;
+  case wkbMultiCurveZ:
+    break;
+  case wkbMultiSurfaceZ:
+    break;
+#if GDAL_VERSION_MINOR >= 1
+  case wkbCurveZ:
+    break;
+  case wkbSurfaceZ:
+    break;
+  case wkbPointM:
+    break;
+  case wkbLineStringM:
+    break;
+  case wkbPolygonM:
+    break;
+  case wkbMultiPointM:
+    break;
+  case wkbMultiLineStringM:
+    break;
+  case wkbMultiPolygonM: 	
+    break;
+  case wkbGeometryCollectionM: 	
+    break;
+  case wkbCircularStringM:
+    break;
+  case wkbCompoundCurveM: 	
+    break;
+  case wkbCurvePolygonM:
+    break;
+  case wkbMultiCurveM:
+    break;
+  case wkbMultiSurfaceM:
+    break;
+  case wkbCurveM: 	
+    break;
+  case wkbSurfaceM: 
+    break;
+  case wkbPointZM: 
+    break;
+  case wkbLineStringZM: 
+    break;
+  case wkbPolygonZM: 
+    break;
+  case wkbMultiPointZM: 
+    break;
+  case wkbMultiLineStringZM: 
+    break;
+  case wkbMultiPolygonZM: 
+    break;
+  case wkbGeometryCollectionZM: 
+    break;
+  case wkbCircularStringZM: 
+    break;
+  case wkbCompoundCurveZM: 
+    break;
+  case wkbCurvePolygonZM: 
+    break;
+  case wkbMultiCurveZM: 
+    break;
+  case wkbMultiSurfaceZM: 
+    break;
+  case wkbCurveZM: 
+    break;
+  case wkbSurfaceZM: 
+    break;
+#endif
+#endif
+  case wkbPoint25D:
+    break;
+  case wkbLineString25D:
+    break;
+  case wkbPolygon25D:
+    gEntity = std::make_shared<GPolygon3D>();
+    if (dim == 2)
+      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GPolygon>(gEntity));
+    else 
+      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GPolygon3D>(gEntity));
+    break;
+  case wkbMultiPoint25D:
+    break;
+  case wkbMultiLineString25D:
+    break;
+  case wkbMultiPolygon25D:
+    break;
+  case wkbGeometryCollection25D:
     break;
   default:
     break;
@@ -1216,7 +1334,11 @@ VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode, 
 
 VectorGraphics::Status VectorGraphics::create()
 {
-  return mVectorFormat->create();
+  if (mVectorFormat) {
+    return mVectorFormat->create();
+  } else {
+    return Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::createCopy(const char *fileOut)
@@ -1227,67 +1349,112 @@ VectorGraphics::Status VectorGraphics::createCopy(const char *fileOut)
 ///TODO: Por ahora leo todo pero habría que poder filtrar por ventana.
 VectorGraphics::Status VectorGraphics::read()
 {
-  int n = mVectorFormat->getLayersCount();
-  for ( int il = 0; il < n; il++ ) {
-    std::shared_ptr<GLayer> gLayer = std::make_shared<GLayer>();
-    mVectorFormat->read(il, gLayer.get());
-    //TODO: devolver error y comprobar
-    mLayers.push_back(gLayer);
+  if (mVectorFormat) {
+    int n = mVectorFormat->getLayersCount();
+    for (int il = 0; il < n; il++) {
+      std::shared_ptr<GLayer> gLayer = std::make_shared<GLayer>();
+      mVectorFormat->read(il, gLayer.get());
+      //TODO: devolver error y comprobar
+      mLayers.push_back(gLayer);
+    }
+    return Status::SUCCESS;
+  } else {
+    return VectorGraphics::Status::FAILURE;
   }
-  return Status::SUCCESS;
 }
 
 VectorGraphics::Status VectorGraphics::read(int layerId, graph::GLayer *layer)
 {
-  mVectorFormat->read(layerId, layer);
-  return Status::SUCCESS;
+  if (mVectorFormat) {
+    mVectorFormat->read(layerId, layer);
+    return Status::SUCCESS;
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::read(const char *layerName, graph::GLayer *layer)
 {
-  mVectorFormat->read(layerName, layer);
-  return Status::SUCCESS;
+  if (mVectorFormat) {
+    mVectorFormat->read(layerName, layer);
+    return Status::SUCCESS;
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::read(const std::string &layerName, graph::GLayer *layer)
 {
-  mVectorFormat->read(layerName, layer);
-  return Status::SUCCESS;
+  if (mVectorFormat) {
+    mVectorFormat->read(layerName, layer);
+    return Status::SUCCESS;
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::writeLayer(int id, const graph::GLayer &layer)
 {
-  return mVectorFormat->writeLayer(id, layer);
+  if (mVectorFormat) { 
+    return mVectorFormat->writeLayer(id, layer);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::writeLayer(const char *layerName, const graph::GLayer &layer)
 {
-  return mVectorFormat->writeLayer(layerName, layer);
+  if (mVectorFormat) {
+    return mVectorFormat->writeLayer(layerName, layer);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::writeLayer(const std::string &layerName, const graph::GLayer &layer)
 {
-  return mVectorFormat->writeLayer(layerName.c_str(), layer);
+  if (mVectorFormat) {
+    return mVectorFormat->writeLayer(layerName.c_str(), layer);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 int VectorGraphics::getLayersCount() const
 {
-  return mVectorFormat->getLayersCount();
+  if (mVectorFormat) {
+    return mVectorFormat->getLayersCount();
+  } else {
+    msgError("No open document");
+    return -1;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::createLayer(const char *layerName)
 {
-  return mVectorFormat->createLayer(layerName);
+  if (mVectorFormat) {
+    return mVectorFormat->createLayer(layerName);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::createLayer(const std::string &layerName)
 {
-  return mVectorFormat->createLayer(layerName);
+  if (mVectorFormat) {
+    return mVectorFormat->createLayer(layerName);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 VectorGraphics::Status VectorGraphics::createLayer(const graph::GLayer &layer)
 {
-  return mVectorFormat->createLayer(layer);
+  if (mVectorFormat) {
+    return mVectorFormat->createLayer(layer);
+  } else {
+    return VectorGraphics::Status::FAILURE;
+  }
 }
 
 void VectorGraphics::update()

@@ -41,7 +41,7 @@ class GroupLines;
  */
 template<typename Point_t> inline
 TL_DEPRECATED("double module(const Point_t &v)")
-size_t length(const Point_t &v)
+double length(const Point_t &v)
 {
   return sqrt(v.x*v.x + v.y*v.y);
 }
@@ -53,7 +53,7 @@ size_t length(const Point_t &v)
  * \return Distancia
  */
 template<typename Point_t> inline
-size_t distance(const Point_t &pt1, const Point_t &pt2)
+double distance(const Point_t &pt1, const Point_t &pt2)
 {
   Point_t v;
   v.x = pt2.x - pt1.x;
@@ -62,7 +62,7 @@ size_t distance(const Point_t &pt1, const Point_t &pt2)
 }
 
 template<typename Point3_t> inline
-size_t distance3D(const Point3_t &pt1, const Point3_t &pt2)
+double distance3D(const Point3_t &pt1, const Point3_t &pt2)
 {
   Point3_t v;
   v.x = pt2.x - pt1.x;

@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed: para correcciones y bugs.
 - Security: para invitar a los usuarios a actualizar, en el caso de que haya vulnerabilidades.
 
+## [1.0.2] - 
+
+### Added
+### Changed
+### Removed
+### Fixed
+
 ## [1.0.1] - 2018-05-09
 
 ### Added

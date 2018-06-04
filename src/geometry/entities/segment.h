@@ -249,21 +249,17 @@ template<typename Point_t> template<typename Point_t2> inline
 Segment<Point_t>::operator Segment<Point_t2>() const
 {
   Segment<Point_t2> s;
-  s.pt1 = pt1;
-  s.pt2 = pt2;
-  //typedef typename Segment<Point_t2>::value_type point_type;
-  //typedef typename point_type::value_type type;
-  //if (typeid(type) == typeid(int)) {
-  //  s.pt1.x = TL_ROUND_TO_INT(pt1.x);
-  //  s.pt1.y = TL_ROUND_TO_INT(pt1.y);
-  //  s.pt2.x = TL_ROUND_TO_INT(pt2.x);
-  //  s.pt2.y = TL_ROUND_TO_INT(pt2.y);
-  //} else {
-  //  s.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
-  //  s.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
-  //  s.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
-  //  s.pt2.y = static_cast<typename Point_t2::value_type>(pt1.y);
-  //}
+  if (typeid(typename Point_t2::value_type) == typeid(int)) {
+    s.pt1.x = TL_ROUND_TO_INT(pt1.x);
+    s.pt1.y = TL_ROUND_TO_INT(pt1.y);
+    s.pt2.x = TL_ROUND_TO_INT(pt2.x);
+    s.pt2.y = TL_ROUND_TO_INT(pt2.y);
+  } else {
+    s.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
+    s.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
+    s.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
+    s.pt2.y = static_cast<typename Point_t2::value_type>(pt1.y);
+  }
   return s;
 }
 

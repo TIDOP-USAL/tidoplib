@@ -392,6 +392,7 @@ private:
   void readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<graph::GraphicEntity> &gStyle);
   void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, std::shared_ptr<graph::GraphicEntity> &gStyle);
   void readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<graph::GraphicEntity> &gStyle);
+
   //void readData();
 
   Status writeLayer(OGRLayer *pLayer, const graph::GLayer &layer);

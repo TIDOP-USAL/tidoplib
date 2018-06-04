@@ -36,13 +36,14 @@ int main(int argc, char** argv)
   Console console;
   console.setTitle(name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
-  console.setConsoleUnicode();
-  console.setFontHeight(14);
   
   msgInfo("Open file: %s", vect.c_str());
   VectorGraphics vector;
-  vector.open(vect);
+  if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;
+
   msgInfo("Layers: %i", vector.getLayersCount());
-  vector.read();
+
+  graph::GLayer layer;
+  vector.read(0, &layer);
   return 0;
 }
