@@ -230,16 +230,22 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
     //    la forma de ver la convergencia de la solución
     TrfPerspective<cv::Point2f> trfPerps;
     std::vector<double> err;
+    int it = 0;
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
-    while ( rmse > 0.5 ) {
-      for (size_t i = 0, j = 0; i < pts1.size(); i++) {
+    if (rmse == TL_DOUBLE_MAX) return;
+    while ( rmse > 0.5 && it < 30) {
+      for (size_t i = 0, j = 0; i < nPoints; i++) {
         if (sqrt(err[i]) > 2*rmse) {
           pts1.erase(pts1.begin() + j);
           pts2.erase(pts2.begin() + j);
           gm->erase(gm->begin() + j);
         } else j++;
       }
+      if (nPoints == pts1.size()) return;
+      else nPoints = pts1.size();
       rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);
+      if (rmse == TL_DOUBLE_MAX) return;
+      it++;
     }
   }
 }
@@ -249,7 +255,7 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
 {
   if (!mMatches.empty() && gm) {
     // Para hacer un primer filtrado
-    getGoodMatches(gm, distance);
+    getGoodMatches(gm, 0.05);
     if (gm && gm->empty()) *gm = mMatches;
     size_t nPoints = gm->size();
     std::vector<cv::Point2f> pts1(nPoints);
@@ -424,16 +430,16 @@ void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> >& m
 #endif
 }
 
-void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> > &matches, std::vector<std::vector<cv::DMatch>> *symMatches)
+void RobustMatching::symmetryTest(const std::vector<std::vector<cv::DMatch> > &matches, std::vector<cv::DMatch> *symMatches)
 {
   if (symMatches && !matches.empty()) {
     //int max_track_number = 0;
     for (size_t i = 0; i < matches.size(); i++) {
       float distance0 = matches[i][0].distance;
       float distance1 = matches[i][1].distance;
-      if (distance0 < /*fRatio*/0.8f * distance1) {
+      if (distance0 < /*fRatio*/0.5f * distance1) {
         //... Creo que es lo mismo
-        symMatches->push_back(matches[i]);
+        symMatches->push_back(matches[i][0]);
         //matches.Insert(0, max_track_number, &m_ViewData[images[i]].features[i]);
         //matches.Insert(1, max_track_number, &m_ViewData[images[j]].features[matchesA[i][0].trainIdx]);
         //++max_track_number;
@@ -448,7 +454,7 @@ void RobustMatching::robustMatch(const cv::Mat &descriptor1, const cv::Mat &desc
   std::vector<std::vector<cv::DMatch> > matches12, matches21;
 
   mDescriptorMatcher->knnMatch(descriptor1, descriptor2, matches12, 2); // return 2 nearest neighbours
-  if (pMatches21) *pMatches12 = matches12;
+  if (pMatches12) *pMatches12 = matches12;
 
   mDescriptorMatcher->knnMatch(descriptor2, descriptor1, matches21, 2); // return 2 nearest neighbours
   if (pMatches21) *pMatches21 = matches21;
@@ -466,7 +472,7 @@ void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &
   };
 
   std::vector<std::vector<cv::DMatch> > matches;
-  mDescriptorMatcher->knnMatch(descriptor1, descriptor2, matches, 2);
+  //mDescriptorMatcher->knnMatch(descriptor1, descriptor2, matches, 2);
   try {
     if (mDescriptorMatcher) mDescriptorMatcher->knnMatch(getAppropriateFormat( descriptor1), getAppropriateFormat( descriptor2 ), matches, 2);
   } catch (cv::Exception &e) {

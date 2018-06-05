@@ -531,9 +531,9 @@ void GdalVector::readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<GraphicEnt
   case wkbPolygon25D:
     gEntity = std::make_shared<GPolygon3D>();
     if (dim == 2)
-      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GPolygon>(gEntity));
+      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), gEntity);
     else 
-      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), std::dynamic_pointer_cast<GPolygon3D>(gEntity));
+      readPolygon(static_cast<OGRPolygon *>(ogrGeometry), gEntity);
     break;
   case wkbMultiPoint25D:
     break;

@@ -299,7 +299,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, Fil
       fs::path path = fs::temp_directory_path();
       fs::path file_path(file);
 
-      mTempName = path.native();
+      mTempName = path.string(); //native() da error en VS
       mTempName.append(file_path.stem().string());
       mTempName.append(".tif");
     }

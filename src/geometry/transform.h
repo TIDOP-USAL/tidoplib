@@ -313,7 +313,7 @@ double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn
     if (error) *error = err;
     return sqrt(sumErr/(mDimensions * (n - mMinPoint)));
   }
-  return 0.;
+  return TL_DOUBLE_MAX;
 }
 
 template<typename Point_t> template<typename T2> inline
@@ -791,7 +791,11 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
     //cv::Mat H1 = cv::findHomography(pts1, pts2, cv::LMEDS);
     //cv::Mat H2 = cv::findHomography(pts1, pts2);
     //... determinar error
-    TL_THROW_ASSERT(!H.empty(), "Error al calcular los parámetros de la transformación");
+    //TL_THROW_ASSERT(!H.empty(), "Error al calcular los parámetros de la transformación");
+    if (H.empty()) { 
+      msgError("Error al calcular los parámetros de la transformación"); 
+      return transform_status::FAILURE;
+    }
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
