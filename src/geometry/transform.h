@@ -235,7 +235,7 @@ public:
    */
   double rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                              const std::vector<Point_t> &ptsOut, 
-                             std::vector<double> *error = NULL);
+                             std::vector<double> *error = nullptr);
 
 protected:
 
@@ -261,12 +261,13 @@ protected:
    */
   double _rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                               const std::vector<Point_t> &ptsOut, 
-                              std::vector<double> *error = NULL);
+                              std::vector<double> *error = nullptr);
 };
 
 template<typename Point_t> inline
-transform_status Transform<Point_t>::transform(const geometry::EntityContainer<Point_t> &ptsIn, geometry::EntityContainer<Point_t> *ptsOut,
-                                               transform_order trfOrder = transform_order::DIRECT) const
+transform_status Transform<Point_t>::transform(const geometry::EntityContainer<Point_t> &ptsIn,
+                                               geometry::EntityContainer<Point_t> *ptsOut,
+                                               transform_order trfOrder) const
 {
   //this->formatVectorOut(ptsIn, ptsOut);
   transform_status r_status = transform_status::SUCCESS;
@@ -279,7 +280,7 @@ transform_status Transform<Point_t>::transform(const geometry::EntityContainer<P
 
 template<typename Point_t> inline
 transform_status Transform<Point_t>::transformParallel( const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                                                        transform_order trfOrder = transform_order::DIRECT) const
+                                                        transform_order trfOrder) const
 {
   formatVectorOut(ptsIn, ptsOut);
   transform_status r_status;
@@ -294,7 +295,7 @@ transform_status Transform<Point_t>::transformParallel( const std::vector<Point_
 template<typename Point_t> inline
 double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                                                const std::vector<Point_t> &ptsOut, 
-                                               std::vector<double> *error = NULL)
+                                               std::vector<double> *error)
 {
   size_t n = ptsIn.size();
   std::vector<Point_t> pts_out(n);
@@ -326,7 +327,7 @@ void Transform<Point_t>::formatVectorOut(const std::vector<T2> &ptsIn, std::vect
 template<typename Point_t> inline
 double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                                                 const std::vector<Point_t> &ptsOut, 
-                                                std::vector<double> *error = NULL)
+                                                std::vector<double> *error)
 {
   size_t n = ptsIn.size();
   std::vector<Point_t> pts_out(n);
@@ -1037,7 +1038,7 @@ Point_t Translate<Point_t>::transform(const Point_t &ptIn, transform_order trfOr
 template<typename Point_t> inline
 Translate<Point_t>::operator Helmert2D<Point_t>() const
 {
-  return Helmert2D<T>(tx, ty, 1., 0.);
+  return Helmert2D<Point_t>(tx, ty, 1., 0.);
 }
   
 template<typename Point_t> inline
@@ -1316,7 +1317,7 @@ Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, transform_order trfOr
 template<typename Point_t> inline
 Rotation<Point_t>::operator Helmert2D<Point_t>() const
 {
-  return Helmert2D<T>(0., 0., 1., mAngle);
+  return Helmert2D<Point_t>(0., 0., 1., mAngle);
 }
   
 template<typename Point_t> inline

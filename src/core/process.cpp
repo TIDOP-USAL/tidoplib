@@ -201,8 +201,9 @@ Process::Status Process::checkStatus()
 
 /* ---------------------------------------------------------------------------------- */
 
-
+#ifdef WIN32
 DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
+#endif
 
 CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
   : Process(parentProcess),

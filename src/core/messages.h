@@ -50,6 +50,12 @@ ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
 #ifdef TL_MESSAGE_HANDLER
 
+struct _msgProperties {
+  const char *normal;
+  const char *extend;
+};
+
+
 /*!
  * \brief Clase para gestionar los mensajes de la librería
  *
@@ -370,6 +376,10 @@ protected:
   void onInfo(const char *msg, const char *date);
   void onWarning(const char *msg, const char *date);
   void onError(const char *msg, const char *date);
+
+private:
+
+  static _msgProperties messageProperties(MessageLevel msgLevel);
 
 };
 

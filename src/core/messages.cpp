@@ -69,12 +69,6 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 TL_ENABLE_WARNING(4100)
 
 
-
-struct _msgProperties {
-  const char *normal;
-  const char *extend;
-};
-
 struct _msgProperties _msgTemplate[] = {   
   { "Debug: %s",   "Debug: %s (%s:%u, %s)"},
   { "Info: %s",    "Info: %s (%s:%u, %s)"},
@@ -82,28 +76,6 @@ struct _msgProperties _msgTemplate[] = {
   { "Error: %s",   "Error: %s (%s:%u, %s)"}
 };
 
-_msgProperties getMessageProperties(MessageLevel msgLevel) 
-{
-  int iLevel = 0;
-  switch (msgLevel) {
-  case TL::MessageLevel::MSG_DEBUG:
-    iLevel = 0;
-    break;
-  case TL::MessageLevel::MSG_INFO:
-    iLevel = 1;
-    break;
-  case TL::MessageLevel::MSG_WARNING:
-    iLevel = 2;
-    break;
-  case TL::MessageLevel::MSG_ERROR:
-    iLevel = 3;
-    break;
-  default:
-    iLevel = 3;
-    break;
-  }
-  return _msgTemplate[iLevel];
-}
 
 std::unique_ptr<MessageManager> MessageManager::sObjMessage;
 bool MessageManager::sStopHandler = false;
@@ -169,44 +141,50 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
   // Bloqueo aqui para evitar problemas entre hilos
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-  char date[64];
-  std::time_t now = std::time(NULL);
-  //std::tm *_tm = std::localtime(&now);
-  struct tm _tm;
-  localtime_s(&_tm, &now);
+//  char date[64];
+//  struct tm _tm;
+//  std::time_t now = std::time(NULL);
+//#ifdef __STDC_LIB_EXT1__
+//  _tm = *std::localtime_s(&now, &_tm);
+//#else
+//  _tm = *std::localtime(&now);
+//#endif
 
-  //if (_tm) {
-    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm); 
-  //} else {
-  //  //strcpy(date, "NULL");
-  //  strcpy_s(date, sizeof date, "NULL");
-  //}
+//  //localtime_s(&_tm, &now);
+
+//  //if (_tm) {
+//    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm);
+//  //} else {
+//  //  //strcpy(date, "NULL");
+//  //  strcpy_s(date, sizeof date, "NULL");
+//  //}
+  std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
   char buf[1000];
   #if defined _MSC_VER
     if (line == -1)
-      sprintf_s(buf, 1000, getMessageProperties(level).normal, msg, file, line, function);
+      sprintf_s(buf, 1000, messageProperties(level).normal, msg, file, line, function);
     else
-      sprintf_s(buf, 1000, getMessageProperties(level).extend, msg, file, line, function);
+      sprintf_s(buf, 1000, messageProperties(level).extend, msg, file, line, function);
   #else
     if (line == -1)
-      snprintf(buf, 1000, getMessageProperties(level).normal, msg, file, line, function);
+      snprintf(buf, 1000, messageProperties(level).normal, msg, file, line, function);
     else
-      snprintf(buf, 1000, getMessageProperties(level).extend, msg, file, line, function);
+      snprintf(buf, 1000, messageProperties(level).extend, msg, file, line, function);
   #endif
 
   switch (level) {
   case TL::MessageLevel::MSG_DEBUG:
-    sObjMessage->onDebug(buf, date);
+    sObjMessage->onDebug(buf, date.c_str());
     break;
   case TL::MessageLevel::MSG_INFO:
-    sObjMessage->onInfo(buf, date);
+    sObjMessage->onInfo(buf, date.c_str());
     break;
   case TL::MessageLevel::MSG_WARNING:
-    sObjMessage->onWarning(buf, date);
+    sObjMessage->onWarning(buf, date.c_str());
     break;
   case TL::MessageLevel::MSG_ERROR:
-    sObjMessage->onError(buf, date);
+    sObjMessage->onError(buf, date.c_str());
     break;
   default:
     break;
@@ -303,6 +281,29 @@ void MessageManager::onError(const char *msg, const char *date)
   }
 }
 
+_msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
+{
+  int iLevel = 0;
+  switch (msgLevel) {
+  case TL::MessageLevel::MSG_DEBUG:
+    iLevel = 0;
+    break;
+  case TL::MessageLevel::MSG_INFO:
+    iLevel = 1;
+    break;
+  case TL::MessageLevel::MSG_WARNING:
+    iLevel = 2;
+    break;
+  case TL::MessageLevel::MSG_ERROR:
+    iLevel = 3;
+    break;
+  default:
+    iLevel = 3;
+    break;
+  }
+  return _msgTemplate[iLevel];
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 MessageManager::Message::Message(const char *msg, ...)
@@ -312,19 +313,20 @@ MessageManager::Message::Message(const char *msg, ...)
     mFunction("")
 {
   try {
-    char date[64];
-    std::time_t now = std::time(NULL);
-    //std::tm *_tm = std::localtime(&now);
-    struct tm _tm;
-    localtime_s(&_tm, &now); //TODO: no es localtime_s de c++ 11. 
+//    char date[64];
+//    std::time_t now = std::time(NULL);
+//    //std::tm *_tm = std::localtime(&now);
+//    struct tm _tm;
+//    localtime_s(&_tm, &now); //TODO: no es localtime_s de c++ 11.
 
-    //if (_tm) {
-      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, &_tm);
-    //} else {
-    //  //strcpy(date, "NULL");
-    //  strcpy_s(date, sizeof date, "NULL");
-    //}
-    mDate = date;
+//    //if (_tm) {
+//      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, &_tm);
+//    //} else {
+//    //  //strcpy(date, "NULL");
+//    //  strcpy_s(date, sizeof date, "NULL");
+//    //}
+//    mDate = date;
+    mDate = TL::formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     char buf[500];
     memset(buf, 0, sizeof(buf));
@@ -443,18 +445,19 @@ void Log::setLogLevel(MessageLevel level)
 void Log::write(const char *msg)
 {
 
-  char date[64];
-  std::time_t now = std::time(NULL);
-  //std::tm *_tm = std::localtime(&now);
-  struct tm _tm;
-  localtime_s(&_tm, &now);
-  //if (_tm) {
-    //std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
-    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), &_tm);
-  //} else {
-  //  //strcpy(date, "NULL");
-  //  strcpy_s(date, sizeof date, "NULL");
-  //}
+//  char date[64];
+//  std::time_t now = std::time(NULL);
+//  //std::tm *_tm = std::localtime(&now);
+//  struct tm _tm;
+//  localtime_s(&_tm, &now);
+//  //if (_tm) {
+//    //std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
+//    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), &_tm);
+//  //} else {
+//  //  //strcpy(date, "NULL");
+//  //  strcpy_s(date, sizeof date, "NULL");
+//  //}
+  std::string date = TL::formatTimeToString("%d/%b/%Y %H:%M:%S");
 
   if (sLogFile.empty()) {
     // Log por defecto

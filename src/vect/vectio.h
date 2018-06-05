@@ -380,18 +380,19 @@ private:
 
   void read(OGRLayer *pLayer, graph::GLayer *layer);
   void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<graph::GraphicEntity> &gEntity);
-  void readPoint(OGRPoint *ogrPoint, std::shared_ptr<graph::GPoint> &gPoint);
-  void readLineString(OGRLineString *ogrLineString, std::shared_ptr<graph::GLineString> &gLineString);
-  void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GPolygon> &gPolygon);
-  void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GPolygon3D> &gPolygon);
-  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, std::shared_ptr<graph::GMultiPoint> &gMultiPoint);
-  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, std::shared_ptr<graph::GMultiLineString> &gMultiLineString);
-  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon);
-  void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicStyle> &gStyle);
-  void readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<graph::GraphicStyle> &gStyle);
-  void readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<graph::GraphicStyle> &gStyle);
-  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, std::shared_ptr<graph::GraphicStyle> &gStyle);
-  void readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<graph::GraphicStyle> &gStyle);
+  void readPoint(OGRPoint *ogrPoint, std::shared_ptr<graph::GraphicEntity> &gPoint);
+  void readLineString(OGRLineString *ogrLineString, std::shared_ptr<graph::GraphicEntity> &gLineString);
+  void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GraphicEntity> &gPolygon);
+  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, std::shared_ptr<graph::GraphicEntity> &gMultiPoint);
+  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, std::shared_ptr<graph::GraphicEntity> &gMultiLineString);
+  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, std::shared_ptr<graph::GraphicEntity> &gMultiPolygon);
+//  void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicStyle> &gStyle);
+  void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicEntity> &gStyle);
+  void readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<graph::GraphicEntity> &gStyle);
+  void readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<graph::GraphicEntity> &gStyle);
+  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol, std::shared_ptr<graph::GraphicEntity> &gStyle);
+  void readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<graph::GraphicEntity> &gStyle);
+
   //void readData();
 
   Status writeLayer(OGRLayer *pLayer, const graph::GLayer &layer);

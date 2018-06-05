@@ -534,20 +534,26 @@ struct colores_pruebas color_type[] = {
 /*                                   Constructores                                    */
 /* ---------------------------------------------------------------------------------- */
 
-TEST(constructor, Default)
+/* Contructor por defecto */
+
+TEST(Color, DefaultConstructor)
 {
   Color _color;
   EXPECT_EQ(color[0], _color.get<int>());
 }
 
-TEST(constructor, Copy)
+/* Contructor de copia */
+
+TEST(Color, CopyConstructor)
 {
   Color _color(color[1]);
   Color _colorCpy(_color);
   EXPECT_EQ(color[1], _colorCpy.get<int>());
 }
 
-TEST(constructor, Int)
+/* Contructor por número entero */
+
+TEST(Color, ConstructorInt)
 {
   for (int i = 0; i < color.size(); i++) {
     Color _color(color[i]);
@@ -555,11 +561,10 @@ TEST(constructor, Int)
   }
 }
 
-TEST(constructor, RGBA)
+/* Contructor RGBA */
+
+TEST(Color, ConstructorRGBA)
 {
-  //for (int i = 0; i < color.size(); i++) {
-  //  EXPECT_EQ(color[i], Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<int>());
-  //}
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     int i_color = Color(color_type[i].rgb[0], color_type[i].rgb[1], color_type[i].rgb[2]).get<int>();
     EXPECT_EQ(color_type[i].color_int, i_color);
@@ -567,95 +572,107 @@ TEST(constructor, RGBA)
 
 }
 
-TEST(constructor, CMYK)
+/* Contructor CMYK */
+
+TEST(Color, ConstructorCMYK)
 {
-  //for (int i = 0; i < color.size(); i++) {
-  //  EXPECT_EQ(color[i], Color(cmyk[i][0],cmyk[i][1],cmyk[i][2],cmyk[i][3]).get<int>());
-  //}
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     int i_color = Color(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]).get<int>();
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
 
-TEST(constructor, HSV)
+/* Contructor HSV */
+
+TEST(Color, ConstructorHSV)
 {
-  //for (int i = 0; i < color.size(); i++) {
-  //  EXPECT_EQ(color[i], Color(hsv[i][0],hsv[i][1],hsv[i][2]).get<int>());
-  //}
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     int i_color = Color(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100).get<int>();
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
 
-TEST(constructor, Hex)
+/* Contructor Hex */
+
+TEST(Color, ConstructorHex)
 {
-  //for (int i = 0; i < color.size(); i++) {
-  //  EXPECT_EQ(color[i], Color(_hex[i]).get<int>());
-  //}
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     int i_color = Color(color_type[i].hex).get<int>();
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
 
+/* Constructora nombre del color */
 
-/* ---------------------------------------------------------------------------------- */
-/*                                Conversión de color                                 */
-/* ---------------------------------------------------------------------------------- */
-
-
-
-TEST(getBlue, TestBlue)
+TEST(Color, ConstructorName)
 {
-  for (int i = 0; i < color.size(); i++) {
-    Color _color(color[i]);
-    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
-  }
+  int i_color = Color(Color::NAME::Black).get<int>();
+  EXPECT_EQ(0, i_color);
+  i_color = Color(Color::NAME::Navy).get<int>();
+  EXPECT_EQ(128, i_color);
+  i_color = Color(Color::NAME::DarkBlue).get<int>();
+  EXPECT_EQ(139, i_color);
 }
 
-TEST(getGreen, TestGreen)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
-  }
-}
+/* getBlue */
 
-TEST(getRed, TestRed)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][0], getRed(color[i]));
-  }
-}
-
-TEST(getColorsFromInt, TestBlue)
+TEST(Color, getBlue)
 {
   for (int i = 0; i < color.size(); i++) {
     EXPECT_EQ(rbga[i][2], Color(color[i]).getBlue());
+  }
+}
+
+/* getGreen */
+
+TEST(Color, getGreen)
+{
+  for (int i = 0; i < color.size(); i++) {
     EXPECT_EQ(rbga[i][1], Color(color[i]).getGreen());
+  }
+}
+
+/* getRed */
+
+TEST(Color, getRed)
+{
+  for (int i = 0; i < color.size(); i++) {
     EXPECT_EQ(rbga[i][0], Color(color[i]).getRed());
   }
 }
 
-TEST(getColorsFromString, TestGreen)
+/* getAlpha */
+
+TEST(Color, getAlpha)
 {
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][2], Color(_hex[i]).getBlue());
-    EXPECT_EQ(rbga[i][1], Color(_hex[i]).getGreen());
-    EXPECT_EQ(rbga[i][0], Color(_hex[i]).getRed());
+  EXPECT_EQ(50, Color(100, 100, 100, 50).getAlpha());
+}
+
+/* color a partir de sus valores CMYK */
+
+TEST(Color, fromCMYK)
+{
+  Color c;
+  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
+    c.fromCMYK(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]);
+    EXPECT_EQ(color_type[i].color_int, c.get<int>());
   }
 }
 
-TEST(getRedFromRGBA, Test1)
+/* color a partir de sus valores HSV */
+
+TEST(Color, fromHSV)
 {
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(color[i], Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<int>());
-    ASSERT_STRCASEEQ(_hex[i].c_str(), Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<std::string>().c_str());
+  Color c;
+  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
+    c.fromHSV(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100);
+    EXPECT_EQ(color_type[i].color_int, c.get<int>());
   }
 }
 
-TEST(fromHSL, Test1)
+/* color a partir de sus valores HSL */
+
+TEST(Color, fromHSL)
 {
   Color c;
   for (int i = 0; i < color.size(); i++) {
@@ -664,14 +681,21 @@ TEST(fromHSL, Test1)
   }
 }
 
-TEST(rgbToInt, Test1)
+//fromXYZ
+//fromLuv
+//fromLab
+//toRGB
+//toLuminance
+
+TEST(Color, get_string)
 {
   for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(color[i], rgbToInt(rbga[i][0], rbga[i][1], rbga[i][2]));
+    EXPECT_EQ(color[i], Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<int>());
+    ASSERT_STRCASEEQ(_hex[i].c_str(), Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<std::string>().c_str());
   }
 }
 
-TEST(convert, toCMYK)
+TEST(Color, toCMYK)
 {
   for (int i = 0; i < color.size(); i++) {
     Color c(color[i]);
@@ -684,7 +708,7 @@ TEST(convert, toCMYK)
   }
 }
 
-TEST(convert, toHSV)
+TEST(Color, toHSV)
 {
   for (int i = 0; i < color.size(); i++) {
     Color c(color[i]);
@@ -696,7 +720,7 @@ TEST(convert, toHSV)
   }
 }
 
-TEST(convert, toHSL)
+TEST(Color, toHSL)
 {
   for (int i = 0; i < color.size(); i++) {
     Color c(color[i]);
@@ -707,3 +731,126 @@ TEST(convert, toHSL)
     EXPECT_NEAR(hsl[i][2], lightness, 0.001);
   }
 }
+
+TEST(Color, toRGB)
+{
+  int red, green, blue;
+  for (int i = 0; i < color.size(); i++) {
+    Color c(color[i]);
+    c.toRGB(&red, &green, &blue);
+    EXPECT_EQ(rbga[i][0], red);
+    EXPECT_EQ(rbga[i][1], green);
+    EXPECT_EQ(rbga[i][2], blue);
+  }
+}
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+/*                                Conversión de color                                 */
+/* ---------------------------------------------------------------------------------- */
+
+
+
+TEST(Test_, getBlue)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
+  }
+}
+
+TEST(Test_, getGreen)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
+  }
+}
+
+TEST(Test_, getRed)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(rbga[i][0], getRed(color[i]));
+  }
+}
+
+TEST(Test_, getAlpha)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(rbga[i][3], getAlpha(color[i]));
+  }
+}
+
+TEST(Test_, intToRGB)
+{
+  int red, green, blue;
+  for (int i = 0; i < color.size(); i++) {
+    intToRGB(color[i], &red, &green, &blue);
+    EXPECT_EQ(rbga[i][0], red);
+    EXPECT_EQ(rbga[i][1], green);
+    EXPECT_EQ(rbga[i][2], blue);
+  }
+}
+
+TEST(Test_, rgbToInt)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(color[i], rgbToInt(rbga[i][0], rbga[i][1], rbga[i][2]));
+  }
+}
+
+TEST(Test_, rgbaToInt)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(color[i], rgbaToInt(rbga[i][0], rbga[i][1], rbga[i][2], rbga[i][3]));
+  }
+}
+
+TEST(Test_, hexToInt)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(color[i], hexToInt(_hex[i]));
+  }
+}
+
+TEST(Test_, intToHex)
+{
+  for (int i = 0; i < color.size(); i++) {
+    EXPECT_EQ(_hex[i], intToHex(color[i]));
+  }
+}
+
+TEST(Test_, rgbToCmyk)
+{
+  for (int i = 0; i < color.size(); i++) {
+    double cyan, magenta, yellow, key;
+    rgbToCmyk(rbga[i][0], rbga[i][1], rbga[i][2], &cyan, &magenta, &yellow, &key);
+    EXPECT_NEAR(cmyk[i][0], cyan, 0.001);
+    EXPECT_NEAR(cmyk[i][1], magenta, 0.001);
+    EXPECT_NEAR(cmyk[i][2], yellow, 0.001);
+    EXPECT_NEAR(cmyk[i][3], key, 0.001);
+  }
+}
+
+
+TEST(Test_, cmykToRgb)
+{
+  for (int i = 0; i < color.size(); i++) {
+    int r, g, b;
+    cmykToRgb(cmyk[i][0], cmyk[i][1], cmyk[i][2], cmyk[i][3], &r, &g, &b);
+    EXPECT_EQ(rbga[i][0], r);
+    EXPECT_EQ(rbga[i][1], g);
+    EXPECT_EQ(rbga[i][2], b);
+  }
+}
+
+
+// rgbToHSL
+// hslToRgb
+// rgbToHSV
+// hsvToRgb
+// rgbToLuminance
+// chromaticityCoordinates

@@ -321,7 +321,7 @@ public:
   void fromHSV(double hue, double saturation, double value);
 
   /*!
-   * \brief Obtiene un color a partir de sus valores HSV
+   * \brief Obtiene un color a partir de sus valores HSL
    * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
    * \param[in] saturation Saturación
    * \param[in] lightness Luminosidad
@@ -415,6 +415,28 @@ public:
   operator unsigned int() const { return mColor; }
   operator int() const { return mColor; }
 };
+
+template<typename T> inline
+T Color::get() const
+{
+  T color = T();
+  void *_color = (void *)&color;
+
+  if (typeid(T) == typeid(std::string)) {
+    *(std::string *)_color = TL::intToHex(mColor);
+  } else if (typeid(T) == typeid(int)) {
+    color = mColor;
+  }
+#ifdef HAVE_OPENCV
+  else if (typeid(T) == typeid(cv::Scalar)) {
+    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
+  }
+#endif
+  else {
+    throw TL::Exception("Tipo de conversión no permitida");  
+  }
+  return color;
+}
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
@@ -611,29 +633,6 @@ TL_EXPORT int rgbToLuminance(int red, int green, int blue);
  * \param[out] b Componente azul en coordenadas cromáticas
  */
 TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, double *g, double *b);
-
-
-template<typename T> inline
-T Color::get() const
-{
-  T color = T();
-  void *_color = (void *)&color;
-
-  if (typeid(T) == typeid(std::string)) {
-    *(std::string *)_color = TL::intToHex(mColor);
-  } else if (typeid(T) == typeid(int)) {
-    color = mColor;
-  }
-#ifdef HAVE_OPENCV
-  else if (typeid(T) == typeid(cv::Scalar)) {
-    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
-  }
-#endif
-  else {
-    throw TL::Exception("Tipo de conversión no permitida");  
-  }
-  return color;
-}
 
 
 /*! \} */ // end of colorConversion

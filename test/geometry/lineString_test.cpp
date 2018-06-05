@@ -62,6 +62,6 @@ TEST(LineString, length)
 {
   LineStringI  line(ptsIn);
 
-  EXPECT_NEAR(193128, line.length(), 0.1);
+  EXPECT_NEAR(193131.6182, line.length(), 0.01);
 
 }
