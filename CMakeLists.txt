@@ -90,7 +90,7 @@ if(WITH_BOOST)
   set(Boost_USE_STATIC_RUNTIME    OFF)
   
 #TODO: Debería establecer la versión mínima de Boost en find_package
-  find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
+  find_package(Boost 1.60.0 COMPONENTS filesystem system REQUIRED)
 
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})

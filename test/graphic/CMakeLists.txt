@@ -16,7 +16,7 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
     #include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	include_directories(${GTEST_INCLUDE_DIRS})
+	  include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)
@@ -24,13 +24,13 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
     
-	#target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
-	target_link_libraries(${the_target} gtest_main)
+    #target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
+	  target_link_libraries(${the_target} gtest_main)
     target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess)
-	target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} )
-	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-	
-	# Añade el proyecto de test a la carpeta 'test/core'
+	  target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} )
+	  target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	  
+	  # Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/graphic")
 
     set_target_properties(${the_target} PROPERTIES
@@ -62,29 +62,12 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
   file(GLOB_RECURSE cpp_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
-#  if(NOT HAVE_OPENGL)
-#    ocv_list_filterout(cpp_samples Qt_sample)
-#  endif()
-#
-#  if(NOT HAVE_opencv_cudaarithm OR NOT HAVE_opencv_cudafilters)
-#    ocv_list_filterout(cpp_samples "/gpu/")
-#  endif()
-#
-#  if(NOT TARGET opencv_viz)
-#    ocv_list_filterout(cpp_samples "/viz/")
-#  endif()
-#
-#  if(NOT HAVE_IPP_A)
-#    ocv_list_filterout(cpp_samples "/ippasync/")
-#  endif()
-
-  
 
   foreach(test_filename ${cpp_test})
-    if(NOT "${sample_filename}" MATCHES "real_time_pose_estimation/")
+    #if(NOT "${sample_filename}" MATCHES "real_time_pose_estimation/")
         get_filename_component(test ${test_filename} NAME_WE)
         DEFINE_TEST(${test}  ${test_filename})
-    endif()
+    #endif()
   endforeach()
 
 
