@@ -8,6 +8,7 @@
 #include <functional>
 #include <map>
 #include <regex>
+#include <thread>
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -55,6 +56,7 @@ TL_EXPORT const char *getRunfile();
  * \return true si existe.
  */
 TL_EXPORT bool isDirectory(const char *path);
+TL_EXPORT bool isDirectory(const std::string &path);
 
 /*!
  * \brief Comprueba si existe el fichero
@@ -62,6 +64,7 @@ TL_EXPORT bool isDirectory(const char *path);
  * \return true si existe.
  */
 TL_EXPORT bool isFile(const char *file);
+TL_EXPORT bool isFile(const std::string &file);
 
 /*!
  * \brief Crea un directorio
@@ -706,7 +709,7 @@ void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function
 //#else
 
   auto f_aux = [&](itIn ini, itIn end, itOut *out) {
-    while (in_first != in_last) {
+    while (ini != end) {
       f(ini, end, out);
     }
   };
@@ -729,8 +732,10 @@ void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function
 
 
 /* ---------------------------------------------------------------------------------- */
-/*                                Medición de tiempo                                  */
+/*                                   Tiempo                                           */
 /* ---------------------------------------------------------------------------------- */
+
+TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H:%M:%S");
 
 /*!
  * \brief tiempo actual

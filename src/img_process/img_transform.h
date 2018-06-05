@@ -256,7 +256,7 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     else
       cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
     break;
-  case TL::transform_type::Affine:
+  case TL::transform_type::AFFINE:
     Affine<Point_t> affineTrf = dynamic_cast<Affine<Point_t>>(trf);
     double r00, r10, r01, r11;
     affineTrf.getParameters(&r00, &r10, &r01, &r11);

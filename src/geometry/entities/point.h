@@ -588,7 +588,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiPoint(size_type size);
+  MultiPoint(typename MultiPoint<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -621,7 +621,7 @@ MultiPoint<Point_t>::MultiPoint()
 }
 
 template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(size_type size) 
+MultiPoint<Point_t>::MultiPoint(typename MultiPoint<Point_t>::size_type size)
   : Entity(Entity::type::MULTIPOINT_2D),
     Entities2D<Point_t>(size) 
 {
@@ -691,7 +691,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiPoint3D(size_type size);
+  MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -725,7 +725,7 @@ MultiPoint3D<Point_t>::MultiPoint3D()
 }
 
 template<typename Point_t> inline
-MultiPoint3D<Point_t>::MultiPoint3D(size_type size) 
+MultiPoint3D<Point_t>::MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size)
   : Entity(Entity::type::MULTIPOINT_3D),
     Entities3D<Point_t>(size) 
 {
@@ -756,8 +756,8 @@ template<typename Point_t> inline
 MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
 {
   if (this != &multiPoint) {
-    Entity::operator = (vPoint);
-    Entities3D<Point_t>::operator = (vPoint);
+    Entity::operator = (multiPoint);
+    Entities3D<Point_t>::operator = (multiPoint);
   }
   return *this;
 }

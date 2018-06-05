@@ -432,7 +432,7 @@ Color StyleLabel::getForegroundColor()
   return mForegroundColor;
 }
 
-void StyleLabel::setForegroundColor(Color &color)
+void StyleLabel::setForegroundColor(const Color &color)
 {
   mForegroundColor = color;
 }
@@ -442,7 +442,7 @@ Color StyleLabel::getBackgroundColor()
   return mBackgroundColor;
 }
 
-void StyleLabel::setBackgroundColor(Color &color)
+void StyleLabel::setBackgroundColor(const Color &color)
 {
   mBackgroundColor = color;
 }
@@ -452,7 +452,7 @@ Color StyleLabel::getOutlineColor()
   return mOutlineColor;
 }
 
-void StyleLabel::setOutlineColor(Color &color)
+void StyleLabel::setOutlineColor(const Color &color)
 {
   mOutlineColor = color;
 }
@@ -462,7 +462,7 @@ Color StyleLabel::getShadowColor()
   return mShadowColor;
 }
 
-void StyleLabel::setShadowColor(Color &color)
+void StyleLabel::setShadowColor(const Color &color)
 {
   mShadowColor = color;
 }

@@ -57,7 +57,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño de la polilínea
    */
-  LineString(size_type size);
+  LineString(typename LineString<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -102,7 +102,7 @@ LineString<Point_t>::LineString()
 }
 
 template<typename Point_t> inline
-LineString<Point_t>::LineString(size_type size)
+LineString<Point_t>::LineString(typename LineString<Point_t>::size_type size)
   : Entity(Entity::type::LINESTRING_2D), 
     Entities2D<Point_t>(size) 
 {
@@ -181,7 +181,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño de la polilínea
    */
-  LineString3D(size_type size);
+  LineString3D(typename LineString3D<Point3_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -234,7 +234,7 @@ LineString3D<Point3_t>::LineString3D()
 }
 
 template<typename Point3_t> inline
-LineString3D<Point3_t>::LineString3D(size_type size)
+LineString3D<Point3_t>::LineString3D(typename LineString3D<Point3_t>::size_type size)
   : Entity(Entity::type::LINESTRING_3D), 
     Entities3D<Point3_t>(size) 
 {
@@ -307,7 +307,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n polilineas
    */
-  MultiLineString(size_type size);
+  MultiLineString(typename MultiLineString<Point_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -332,7 +332,7 @@ MultiLineString<Point_t>::MultiLineString()
 }
 
 template<typename Point_t> inline
-MultiLineString<Point_t>::MultiLineString(size_type size) 
+MultiLineString<Point_t>::MultiLineString(typename MultiLineString<Point_t>::size_type size)
   : Entity(Entity::type::MULTILINE_2D),
     Entities2D<LineString<Point_t>>(size) 
 {
@@ -371,7 +371,7 @@ public:
   /*!
    * \brief Constructor que reserva tamaño para n puntos
    */
-  MultiLineString3D(size_type size);
+  MultiLineString3D(typename MultiLineString3D<Point3_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -397,7 +397,7 @@ MultiLineString3D<Point3_t>::MultiLineString3D()
 }
 
 template<typename Point3_t> inline
-MultiLineString3D<Point3_t>::MultiLineString3D(size_type size) 
+MultiLineString3D<Point3_t>::MultiLineString3D(typename MultiLineString3D<Point3_t>::size_type size)
   : Entity(Entity::type::MULTILINE_3D),
     Entities3D<LineString3D<Point3_t>>(size) 
 {

@@ -118,15 +118,19 @@ Console::Console(const Console &console, bool add) :
 #ifdef WIN32
   mHandle(console.mHandle),
   mOldColorAttrs(console.mOldColorAttrs),
-#else
-  mStream(console.mStream),
-  mCommand(0),
-  mBold(console.mBold),
-#endif
   mForeIntensity(console.mForeIntensity),
   mForeColor(console.mForeColor),
   mBackIntensity(console.mBackIntensity),
   mBackColor(console.mBackColor)
+#else
+  mStream(console.mStream),
+  /*mCommand(0),*/
+  mBold(console.mBold),
+  mForeIntensity(console.mForeIntensity),
+  mForeColor(console.mForeColor),
+  mBackIntensity(console.mBackIntensity),
+  mBackColor(console.mBackColor)
+#endif
 {
 }
 
@@ -298,7 +302,9 @@ void Console::setLogLevel(MessageLevel level)
 
 void Console::setTitle(const char *title)
 {
+#ifdef WIN32
   SetConsoleTitleA(title);
+#endif
 }
 
 #ifdef TL_MESSAGE_HANDLER 

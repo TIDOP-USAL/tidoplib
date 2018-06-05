@@ -538,7 +538,7 @@ public:
    * \brief Constructor que reserva tamaño para n puntos
    * \param[in] size Tamaños que se reserva
    */
-  Entities2D(size_type size);
+  Entities2D(typename Entities2D<Entity_t>::size_type  size);
 
   /*!
    * \brief Constructor de copia
@@ -591,7 +591,7 @@ Entities2D<Entity_t>::Entities2D()
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t>::Entities2D(size_type size) 
+Entities2D<Entity_t>::Entities2D(typename Entities2D<Entity_t>::size_type size)
   : EntityContainer<Entity_t>(size) 
 {
 }
@@ -626,11 +626,11 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
 {
-  std::vector<Entity_t> r_points(mEntities.size());
+  std::vector<Entity_t> r_points(this->mEntities.size());
   size_t j = 0;
-  for (size_t i = 0; i < mEntities.size(); i++) {
-    if (w.containsPoint(mEntities[i])) {
-      r_points[i] = mEntities[i];
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.containsPoint(this->mEntities[i])) {
+      r_points[i] = this->mEntities[i];
       j++;
     }
   }
@@ -642,11 +642,11 @@ template<typename Entity_t> inline
 Window<Entity_t> Entities2D<Entity_t>::getWindow() const
 {
   Window<Entity_t> w;
-  for (size_t i = 0; i < mEntities.size(); i++) {
-    if (w.pt1.x > mEntities[i].x) w.pt1.x = mEntities[i].x;
-    if (w.pt1.y > mEntities[i].y) w.pt1.y = mEntities[i].y;
-    if (w.pt2.x < mEntities[i].x) w.pt2.x = mEntities[i].x;
-    if (w.pt2.y < mEntities[i].y) w.pt2.y = mEntities[i].y;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
   }
   return w;
 }
@@ -672,7 +672,7 @@ public:
    * \param[in] size Tamaño que se reserva
    * \see entity_type
    */
-  Entities3D(size_type size);
+  Entities3D(typename EntityContainer<Entity_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
@@ -718,7 +718,7 @@ Entities3D<Entity_t>::Entities3D()
 }
 
 template<typename Entity_t> inline
-Entities3D<Entity_t>::Entities3D(size_type size) 
+Entities3D<Entity_t>::Entities3D(typename EntityContainer<Entity_t>::size_type size)
   : EntityContainer<Entity_t>(size) 
 {
 }
@@ -754,13 +754,13 @@ template<typename Entity_t> inline
 Box<Entity_t> Entities3D<Entity_t>::getBox() const
 {
   Box<Entity_t> box;
-  for (size_t i = 0; i < mEntities.size(); i++) {
-    if (box.pt1.x > mEntities[i].x) box.pt1.x = mEntities[i].x;
-    if (box.pt1.y > mEntities[i].y) box.pt1.y = mEntities[i].y;
-    if (box.pt1.z > mEntities[i].z) box.pt1.z = mEntities[i].z;
-    if (box.pt2.x < mEntities[i].x) box.pt2.x = mEntities[i].x;
-    if (box.pt2.y < mEntities[i].y) box.pt2.y = mEntities[i].y;
-    if (box.pt2.z < mEntities[i].z) box.pt2.z = mEntities[i].z;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
   }
   return box;
 }
@@ -768,11 +768,11 @@ Box<Entity_t> Entities3D<Entity_t>::getBox() const
 template<typename Entity_t> inline
 std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
 {
-  std::vector<Entity_t> r_points(mEntities.size());
+  std::vector<Entity_t> r_points(this->mEntities.size());
   size_t j = 0;
-  for (size_t i = 0; i < mEntities.size(); i++) {
-    if (box.containsPoint(mEntities[i])) {
-      r_points[i] = mEntities[i];
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.containsPoint(this->mEntities[i])) {
+      r_points[i] = this->mEntities[i];
       j++;
     }
   }

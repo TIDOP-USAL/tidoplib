@@ -11,6 +11,8 @@
 #include <dirent.h>
 #endif
 
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <ctime>
 
 // Paralelismo
 #if defined HAVE_OMP
@@ -37,7 +39,8 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-
+#define __STDC_WANT_LIB_EXT1__ 1
+#include <string.h>
 
 namespace TL
 {
@@ -47,7 +50,7 @@ namespace TL
 const char *getRunfile()
 {
   static char runfile[TL_MAX_PATH];
-#if defined WIN32
+#ifdef WIN32
   ::GetModuleFileNameA(NULL, runfile, TL_MAX_PATH);
 #else
    char szTmp[32];
@@ -61,7 +64,7 @@ const char *getRunfile()
 
 bool isDirectory(const char *path)
 {
-#if defined WIN32
+#ifdef WIN32
   DWORD ftyp = GetFileAttributesA(path);
   if (ftyp == INVALID_FILE_ATTRIBUTES)
     return false;
@@ -75,18 +78,30 @@ bool isDirectory(const char *path)
 #endif
   return false;
 }
+bool isDirectory(const std::string &path)
+{
+  return isDirectory(path.c_str());
+}
 
 bool isFile(const char *file)
 {
+#ifdef WIN32
   FILE *fp;
   errno_t err = fopen_s(&fp, file, "rb");
   if (err != 0) {
-    //msgError("%i: %s", errno, strerror(errno));
     return false;
   } else {
     std::fclose(fp);
     return true;
-  } 
+  }
+#else
+  struct stat buffer;
+  return (stat(file, &buffer) == 0);
+#endif
+}
+bool isFile(const std::string &file)
+{
+  return isFile(file.c_str());
 }
 
 int createDir(const char *path)
@@ -156,14 +171,14 @@ int move(const char *in, const char *out)
 {
 #ifdef WIN32
 
-  size_t len = strlen(in) + 1;  
-  wchar_t * w_in = new wchar_t[len];  
-  size_t convertedChars = 0;  
+  size_t len = strlen(in) + 1;
+  wchar_t * w_in = new wchar_t[len];
+  size_t convertedChars = 0;
   mbstowcs_s(&convertedChars, w_in, len, in, _TRUNCATE);
 
-  len = strlen(out) + 1;  
-  wchar_t * w_out = new wchar_t[len];  
-  convertedChars = 0;  
+  len = strlen(out) + 1;
+  wchar_t * w_out = new wchar_t[len];
+  convertedChars = 0;
   mbstowcs_s(&convertedChars, w_out, len, out, _TRUNCATE);
 
   if (!MoveFileEx(w_in, w_out, MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
@@ -179,7 +194,7 @@ int move(const char *in, const char *out)
   delete w_out;
 
 #else
-
+  ///TODO: Completar
 #endif
 }
 
@@ -200,7 +215,7 @@ int getFileDrive(const char *path, char *drive, int size)
 #ifdef _MSC_VER
   r_err = _splitpath_s(path, drive, size, NULL, NULL, NULL, NULL, NULL, NULL);
 #else
-
+  ///TODO: Completar
 #endif
   return r_err;
 }
@@ -211,7 +226,7 @@ int getFileExtension(const char *path, char *ext, int size)
 #ifdef _MSC_VER
   r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, size);
 #else
-
+  ///TODO: Completar
 #endif
   return r_err;
 }
@@ -221,7 +236,7 @@ int getFileName(const char *path, char *name, int size)
 #ifdef _MSC_VER
   return _splitpath_s(path, NULL, NULL, NULL, NULL, name, size, NULL, NULL);
 #elif defined __GNUC__
-
+  ///TODO: Completar
 #else
   char *basec = (char *)malloc(size);
   if (basec) name = basename(basec);
@@ -258,7 +273,7 @@ int changeFileName(const char *path, const char *newName, char *pathOut, int siz
   if (r_err == 0)
     r_err = _makepath_s(pathOut, size, drive, dir, newName, ext);
 #else
-
+  ///TODO: Completar
 #endif
   return r_err;
 }
@@ -275,7 +290,7 @@ int changeFileExtension(const char *path, const char *newExt, char *pathOut, int
   if (r_err == 0)
     r_err = _makepath_s(pathOut, size, drive, dir, fname, newExt);
 #else
-
+  ///TODO: Completar
 #endif
   return r_err;
 }
@@ -294,7 +309,7 @@ int changeFileNameAndExtension(const char *path, const char *newNameExt, char *p
     r_err = _makepath_s(pathOut, size, drive, dir, nameext[0].c_str(), nameext[1].c_str());
   }
 #else
-
+  ///TODO: Completar
 #endif
   return r_err;
 }
@@ -313,7 +328,7 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
   if (hFind == INVALID_HANDLE_VALUE) {
     msgError("FindFirstFile failed (%d)\n", GetLastError());
     return;
-  } else { 
+  } else {
     while (FindNextFileA(hFind, &findData) != 0) {
       if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
         if (strcmp(findData.cFileName, "..") == 0) continue;
@@ -331,7 +346,7 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
   while (entry != NULL) {
     if (entry->d_type == DT_DIR)
       dirList->push_back(entry->d_name);
-      
+
     entry = readdir(dir);
   }
   closedir(dir);
@@ -357,7 +372,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
   if (hFind == INVALID_HANDLE_VALUE) {
     msgError("FindFirstFile failed (%d)\n", GetLastError());
     return;
-  } else { 
+  } else {
     fileList->push_back(findData.cFileName);
     while (FindNextFileA(hFind, &findData) != 0) {
       fileList->push_back(findData.cFileName);
@@ -365,7 +380,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
     FindClose(hFind);
   }
 #else
-
+   ///TODO: Completar
 #endif
 }
 
@@ -383,7 +398,7 @@ void fileList(const std::string &directory, std::list<std::string> *fileList, co
     if (!std::regex_match(it->path().filename().string(), what, filter)) continue;
 
     // File matches, store it
-    if (fileList) 
+    if (fileList)
       fileList->push_back(it->path().filename().string());
   }
 
@@ -396,14 +411,14 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
   for (fs::directory_iterator it(directory); it != itr_end; ++it) {
     // Skip if not a file
     if (!fs::is_regular_file(it->status())) continue;
-    
+
     fs::path _path = it->path();
 
     std::string _ext = it->path().extension().string();
 
     if (it->path().extension().compare(ext) == 0) {
       // File matches, store it
-      if (fileList) 
+      if (fileList)
         fileList->push_back(it->path().filename().string());
     }
   }
@@ -418,8 +433,8 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 // Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
 TL_DISABLE_WARNING(4996)
 
-Path::Path() 
-  : mPos(0), 
+Path::Path()
+  : mPos(0),
     mPath(0),
     mFileName(""),
     mFileExtension(""),
@@ -427,8 +442,8 @@ Path::Path()
 {
 }
 
-Path::Path(const std::string &path) 
-  : mPos(0), 
+Path::Path(const std::string &path)
+  : mPos(0),
     mPath(0),
     mFileName(""),
     mFileExtension(""),
@@ -437,20 +452,20 @@ Path::Path(const std::string &path)
   parse(path);
 }
 
-Path::Path(const Path &path) 
-  : mPos(path.mPos), 
+Path::Path(const Path &path)
+  : mPos(path.mPos),
     mPath(path.mPath),
     mFileName(path.mFileName),
     mFileExtension(path.mFileExtension),
     bFile(path.bFile)
-{ 
+{
 }
 
 Path::~Path()
 {
 }
 
-Path &Path::operator=(const Path &path) 
+Path &Path::operator=(const Path &path)
 {
   mPos = path.mPos;
   mPath = path.mPath;
@@ -483,7 +498,7 @@ void Path::parse(const std::string &path)
   //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
   //  mFileExtension = ext;
   //}
-  
+
   //char drive[TL_MAX_DRIVE];
   //if (getFileDrive(path.c_str(), drive, TL_MAX_DRIVE) == 0) {
   //  mDrive = drive;
@@ -491,7 +506,7 @@ void Path::parse(const std::string &path)
 
   //char dir[TL_MAX_DIR];
   //if (getFileDir(path.c_str(), dir, TL_MAX_DIR) == 0) {
-  //  
+  //
   //}
 
   split(path, mPath, "/\\");
@@ -625,7 +640,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
 
   try {
     char *token = strtok(dup, chs);
-    //char *context = NULL;  
+    //char *context = NULL;
     //char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       char *pEnd;
@@ -634,7 +649,7 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
         vOut.push_back(number);
         token = strtok(NULL, chs);
         //token = strtok_s(dup, chs, &context);
-      } else 
+      } else
         throw std::runtime_error("Split string to numbers fail");
     }
   } catch (std::exception &e) {
@@ -656,7 +671,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
 
   try {
     char *token = strtok(dup, chs);
-    //char *context = NULL; 
+    //char *context = NULL;
     //char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       //vOut.push_back(atof(token));
@@ -666,7 +681,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
         vOut.push_back(number);
         token = strtok(NULL, chs);
         //token = strtok_s(dup, chs, &context);
-      } else 
+      } else
         throw std::runtime_error("Split string to numbers fail");
     }
   } catch (std::exception &e) {
@@ -705,14 +720,21 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   dup = _strdup(in.c_str());
 #endif
   try {
-    //char *token = strtok(dup, chs);
-    char *context = NULL; 
+#ifdef __STDC_LIB_EXT1__
+    char *context = NULL;
     char *token = strtok_s(dup, chs, &context);
     while (token != NULL) {
       out.push_back(std::string(token));
       //token = strtok(NULL, chs);
       token = strtok_s(NULL, chs, &context);
     }
+#else
+    char *token = strtok(dup, chs);
+    while (token != NULL) {
+      out.push_back(std::string(token));
+      token = strtok(NULL, chs);
+    }
+#endif
   } catch (std::exception &e) {
     msgError(e.what());
     r_err = 1;
@@ -878,6 +900,33 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
 /* ---------------------------------------------------------------------------------- */
 /*                                 Medición de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
+
+std::string formatTimeToString(const std::string &templ)
+{
+  std::string time_format;
+  char *date;
+  int n = templ.size();
+  try{
+    date = new char(n);
+    struct tm _tm;
+    std::time_t now = std::time(NULL);
+    #ifdef __STDC_LIB_EXT1__
+      _tm = *std::localtime_s(&now, &_tm);
+    #else
+      _tm = *std::localtime(&now);
+    #endif
+
+    std::strftime(date, sizeof(date), templ.c_str(), &_tm);
+    time_format = std::string(date);
+  } catch (std::exception &e){
+
+  }
+
+  if (date) delete date;
+
+  return time_format;
+}
+
 
 uint64_t getTickCount()
 {
@@ -1067,7 +1116,7 @@ Csv::~Csv()
 
 void Csv::close()
 {
-  if (fs.is_open()) 
+  if (fs.is_open())
     fs.close();
 }
 
@@ -1075,14 +1124,14 @@ void Csv::close()
 //{
 //  if (!fs.is_open()) {
 //    msgError("No se ha abierto el archivo");
-//    return Status::FAILURE; 
+//    return Status::FAILURE;
 //  }
 //
-//  if (mMode != Mode::Create) { 
+//  if (mMode != Mode::Create) {
 //    msgError("Utilice el modo 'Create' para abrir el archivo");
-//    return Status::FAILURE; 
+//    return Status::FAILURE;
 //  }
-//  
+//
 //  setName(File::mName.c_str());
 //  setTableHeader(tableHeader);
 //
@@ -1100,16 +1149,16 @@ Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
     msgError("No se ha abierto el archivo %s", mFile.c_str());
-    return Status::FAILURE; 
+    return Status::FAILURE;
   }
 
-  if (mMode != Mode::Create) { 
+  if (mMode != Mode::Create) {
     msgError("Utilice el modo 'Create' al abrir el archivo");
-    return Status::FAILURE; 
+    return Status::FAILURE;
   }
-  
+
   //setName(File::mName.c_str());
-  
+
 
   std::vector<std::string> out;
   if (split(header, out, ";") == 0) {
@@ -1120,20 +1169,20 @@ Csv::Status Csv::create(const std::string &header)
     }
     fs << std::endl;
     return Status::SUCCESS;
-  } else 
-    return Status::FAILURE; 
+  } else
+    return Status::FAILURE;
 }
 
 //Csv::Status Csv::create(const DataTable &dataTable)
 //{
 //  if (!fs.is_open()) {
 //    msgError("No se ha abierto el archivo");
-//    return Status::FAILURE; 
+//    return Status::FAILURE;
 //  }
 //
-//  if (mMode != Mode::Create) { 
+//  if (mMode != Mode::Create) {
 //    msgError("Utilice el modo 'Create' para abrir el archivo");
-//    return Status::FAILURE; 
+//    return Status::FAILURE;
 //  }
 //
 //  size_t size = dataTable.getFieldCount();
@@ -1171,14 +1220,17 @@ Csv::Status Csv::createCopy(const char *fileOut)
 Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
 {
   close();
-  
+
   mFile = file;
   mMode = mode;
 
   char ext[TL_MAX_EXT];
   if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+#ifdef _MSC_VER
   if (_strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
-
+#else
+  if (strcmp(ext, ".csv") != 0 || strcmp(ext, ".CSV") != 0 ) return Status::OPEN_FAIL;
+#endif
   std::ios_base::openmode _mode;
   switch (mMode) {
   case Mode::Read:
@@ -1342,7 +1394,7 @@ Compression::Status Compression::open(const char *file, Compression::Mode mode)
     if (mZipFile == nullptr)
       return Status::OPEN_FAIL;
     else {
-    
+
       if (libkml_unzGetGlobalInfo(mZipFile, &mGlobalInfo) != UNZ_OK) {
           msgError("could not read file global info");
           libkml_unzClose(mZipFile);
@@ -1358,7 +1410,7 @@ Compression::Status Compression::open(const char *file, Compression::Mode mode)
 Compression::Status Compression::compress(const std::string &file, const std::string &directory)
 {
   // Se comprueba si es un directorio
-  
+
   fs::path _path(file);
   if (is_directory(_path)) {
     for (auto &p : fs::directory_iterator(_path)) {
