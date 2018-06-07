@@ -5,6 +5,7 @@
 
 #include <limits>
 #include <numeric>
+#include <array>
 
 #include "core/defs.h"
 
@@ -89,6 +90,13 @@ public:
   Point(const Point<T> &point);
 
   /*!
+   * \brief Constructor
+   * \param[in] v Objeto Point que se copia
+   */
+  Point(const std::array<T, 2> &v);
+
+
+  /*!
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
@@ -98,6 +106,11 @@ public:
    * \brief Conversión de tipo
    */
   template<typename T2> operator Point<T2>() const;
+
+  /*!
+   * \brief Conversión de tipo
+   */
+  template<typename T2> operator Point3<T2>() const;
 
 #ifdef HAVE_OPENCV
   /*!
@@ -138,6 +151,15 @@ Point<T>::Point(const Point& pt)
 }
 
 template<typename T> inline
+Point<T>::Point(const std::array<T, 2> &v)
+  : Entity(Entity::type::POINT_2D), 
+    x(v[0]), 
+    y(v[1]) 
+{
+
+}
+
+template<typename T> inline
 Point<T>& Point<T>::operator = (const Point& pt)
 {
   this->x = pt.x;
@@ -149,19 +171,36 @@ TL_DISABLE_WARNING(4244)
 template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
-  if (typeid(T2) == typeid(int)) {
-    return Point<T2>(TL_ROUND_TO_INT(this->x), TL_ROUND_TO_INT(this->y));
+  if (std::is_integral<T2>::value) {
+    return Point<T2>(static_cast<T2>(std::nearbyint(this->x)), 
+                     static_cast<T2>(std::nearbyint(this->y)));
   } else {
     return Point<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
   }
 }
 
+template<typename T> template<typename T2> inline
+Point<T>::operator Point3<T2>() const
+{
+  if (std::is_integral<T2>::value) {
+    return Point3<T2>(static_cast<T2>(std::nearbyint(this->x)), 
+                      static_cast<T2>(std::nearbyint(this->y)),
+                      0);
+  } else {
+    return Point3<T2>(static_cast<T2>(this->x), 
+                      static_cast<T2>(this->y), 
+                      0);
+  }
+}
+
+
 #ifdef HAVE_OPENCV
 template<typename T> template<typename T2> inline
 Point<T>::operator cv::Point_<T2>() const
 {
-  if (typeid(T2) == typeid(int)) {
-    return cv::Point_<T2>(TL_ROUND_TO_INT(this->x), TL_ROUND_TO_INT(this->y));
+  if (std::is_integral<T2>::value) {
+    return cv::Point_<T2>(static_cast<T2>(std::nearbyint(this->x)), 
+                          static_cast<T2>(std::nearbyint(this->y)));
   } else {
     return cv::Point_<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
   }
@@ -169,38 +208,42 @@ Point<T>::operator cv::Point_<T2>() const
 #endif
 TL_ENABLE_WARNING(4244)
 
+template<typename T> static inline
+Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
+{
+  pt1.x += pt2.x;
+  pt1.y += pt2.y;
+  return pt1;
+}
+
 template<typename T1, typename T2> static inline
 Point<T1>& operator += (Point<T1> &pt1, const Point<T2> &pt2)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt1.x += TL_ROUND_TO_INT(pt2.x);
-    pt1.y += TL_ROUND_TO_INT(pt2.y);
-  } else {
-    pt1.x += static_cast<T1>(pt2.x);
-    pt1.y += static_cast<T1>(pt2.y);
-  }
+  pt1 += static_cast<Point<T1>>(pt2);
+  return pt1;
+}
+
+template<typename T> static inline
+Point<T>& operator -= (Point<T> &pt1, const Point<T> &pt2)
+{
+  pt1.x -= pt2.x;
+  pt1.y -= pt2.y;
   return pt1;
 }
 
 template<typename T1, typename T2> static inline
 Point<T1>& operator -= (Point<T1> &pt1, const Point<T2> &pt2)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt1.x -= TL_ROUND_TO_INT(pt2.x);
-    pt1.y -= TL_ROUND_TO_INT(pt2.y);
-  } else {
-    pt1.x -= static_cast<T1>(pt2.x);
-    pt1.y -= static_cast<T1>(pt2.y);
-  }
+  pt1 -= static_cast<Point<T1>>(pt2);
   return pt1;
 }
 
 template<typename T1, typename T2> static inline
 Point<T1>& operator *= (Point<T1>& pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt.x = TL_ROUND_TO_INT(pt.x * b);
-    pt.y = TL_ROUND_TO_INT(pt.y * b);
+  if (std::is_integral<T1>::value) {
+    pt.x = static_cast<T1>(std::nearbyint(pt.x * b));
+    pt.y = static_cast<T1>(std::nearbyint(pt.y * b));
   } else {
     pt.x = static_cast<T1>(pt.x * b);
     pt.y = static_cast<T1>(pt.y * b);
@@ -211,9 +254,9 @@ Point<T1>& operator *= (Point<T1>& pt, T2 b)
 template<typename T1, typename T2> static inline
 Point<T1> &operator /= (Point<T1> &pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt.x = TL_ROUND_TO_INT(pt.x / b);
-    pt.y = TL_ROUND_TO_INT(pt.y / b);
+  if (std::is_integral<T1>::value) {
+    pt.x = static_cast<T1>(std::nearbyint(pt.x / (double)b));
+    pt.y = static_cast<T1>(std::nearbyint(pt.y / (double)b));
   } else {
     pt.x = static_cast<T1>(pt.x / b);
     pt.y = static_cast<T1>(pt.y / b);
@@ -254,8 +297,9 @@ Point<T> operator - (const Point<T> &pt1)
 template<typename T1, typename T2> static inline
 Point<T1> operator * (const Point<T1> &pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    return Point<T1>(TL_ROUND_TO_INT(pt.x*b), TL_ROUND_TO_INT(pt.y*b));
+  if (std::is_integral<T1>::value) {
+    return Point<T1>(static_cast<T1>(std::nearbyint(pt.x*b)), 
+                     static_cast<T1>(std::nearbyint(pt.y*b)));
   } else {
     return Point<T1>(static_cast<T1>(pt.x*b), static_cast<T1>(pt.y*b));
   }
@@ -264,8 +308,9 @@ Point<T1> operator * (const Point<T1> &pt, T2 b)
 template<typename T1, typename T2> static inline
 Point<T2> operator * (T1 a, const Point<T2> &b)
 {
-  if (typeid(T2) == typeid(int)) {
-    return Point<T2>(TL_ROUND_TO_INT(b.x*a), TL_ROUND_TO_INT(b.y*a));
+  if (std::is_integral<T2>::value) {
+    return Point<T2>(static_cast<T2>(std::nearbyint(b.x*a)), 
+                     static_cast<T2>(std::nearbyint(b.y*a)));
   } else {
     return Point<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a));
   }
@@ -275,20 +320,11 @@ Point<T2> operator * (T1 a, const Point<T2> &b)
 template<typename T1, typename T2> static inline
 Point<T1> operator / (const Point<T1> &pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    return Point<T1>(TL_ROUND_TO_INT(pt.x/b), TL_ROUND_TO_INT(pt.y/b));
+  if (std::is_integral<T1>::value) {
+    return Point<T1>(static_cast<T1>(std::nearbyint(pt.x / (double)b)),
+                     static_cast<T1>(std::nearbyint(pt.y / (double)b)));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x/b), static_cast<T1>(pt.y/b));
-  }
-}
-
-template<typename T1, typename T2> static inline
-Point<T2> operator / (T1 a, const Point<T2> &b)
-{
-  if (typeid(T2) == typeid(int)) {
-    return Point<T2>(TL_ROUND_TO_INT(b.x/a), TL_ROUND_TO_INT(b.y/a));
-  } else {
-    return Point<T2>(static_cast<T2>(b.x/a), static_cast<T2>(b.y/a));
+    return Point<T1>(static_cast<T1>(pt.x / b), static_cast<T1>(pt.y / b));
   }
 }
 
@@ -345,6 +381,12 @@ public:
   Point3(const Point3<T> &point);
 
   /*!
+   * \brief Constructor vector
+   * \param[in] v Vector de coordenadas
+   */
+  Point3(const std::array<T, 3> &v);
+
+  /*!
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
@@ -354,7 +396,7 @@ public:
    * \brief Conversión de tipo
    */
   template<typename T2> operator Point3<T2>() const;
-
+  template<typename T2> operator Point<T2>() const;
 };
 
 typedef Point3<int> Point3I;
@@ -377,7 +419,8 @@ Point3<T>::Point3(T x, T y, T z)
     x(x), 
     y(y), 
     z(z)
-{}
+{
+}
 
 template<typename T> inline
 Point3<T>::Point3(const Point3 &pt)
@@ -385,7 +428,17 @@ Point3<T>::Point3(const Point3 &pt)
     x(pt.x), 
     y(pt.y), 
     z(pt.z)
-{}
+{
+}
+
+template<typename T> inline
+Point3<T>::Point3(const std::array<T, 3> &v)
+  : Entity(Entity::type::POINT_3D), 
+    x(v[0]), 
+    y(v[1]),
+    z(v[2])
+{
+}
 
 template<typename T> inline
 Point3<T>& Point3<T>::operator = (const Point3& pt)
@@ -400,55 +453,69 @@ TL_DISABLE_WARNING(4244)
 template<typename T> template<typename T2> inline
 Point3<T>::operator Point3<T2>() const
 {
-  if (typeid(T2) == typeid(int)) {
-    return Point3<T2>(TL_ROUND_TO_INT(this->x), 
-                      TL_ROUND_TO_INT(this->y), 
-                      TL_ROUND_TO_INT(this->z));
+  if (std::is_integral<T2>::value) {
+    return Point3<T2>(static_cast<T2>(std::nearbyint(this->x)), 
+                      static_cast<T2>(std::nearbyint(this->y)), 
+                      static_cast<T2>(std::nearbyint(this->z)));
   } else {
     return Point3<T2>(static_cast<T2>(this->x), 
                       static_cast<T2>(this->y), 
                       static_cast<T2>(this->z));
   }
 }
+
+template<typename T> template<typename T2> inline
+Point3<T>::operator Point<T2>() const
+{
+  if (std::is_integral<T2>::value) {
+    return Point<T2>(static_cast<T2>(std::nearbyint(this->x)), 
+                     static_cast<T2>(std::nearbyint(this->y)));
+  } else {
+    return Point<T2>(static_cast<T2>(this->x), 
+                     static_cast<T2>(this->y));
+  }
+}
 TL_ENABLE_WARNING(4244)
+
+template<typename T> static inline
+Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)
+{
+  pt1.x += pt2.x;
+  pt1.y += pt2.y;
+  pt1.z += pt2.z;
+  return pt1;
+}
 
 template<typename T1, typename T2> static inline
 Point3<T1>& operator += (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt1.x += TL_ROUND_TO_INT(pt2.x);
-    pt1.y += TL_ROUND_TO_INT(pt2.y);
-    pt1.z += TL_ROUND_TO_INT(pt2.z);
-  } else {
-    pt1.x += static_cast<T1>(pt2.x);
-    pt1.y += static_cast<T1>(pt2.y);
-    pt1.z += static_cast<T1>(pt2.z);
-  }
+  pt1 += static_cast<Point3<T1>(pt2);
+  return pt1;
+}
+
+template<typename T> static inline
+Point3<T>& operator -= (Point3<T>& pt1, const Point3<T>& pt2)
+{
+  pt1.x -= pt2.x;
+  pt1.y -= pt2.y;
+  pt1.z -= pt2.z;
   return pt1;
 }
 
 template<typename T1, typename T2> static inline
 Point3<T1>& operator -= (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt1.x -= TL_ROUND_TO_INT(pt2.x);
-    pt1.y -= TL_ROUND_TO_INT(pt2.y);
-    pt1.z -= TL_ROUND_TO_INT(pt2.z);
-  } else {
-    pt1.x -= static_cast<T1>(pt2.x);
-    pt1.y -= static_cast<T1>(pt2.y);
-    pt1.z -= static_cast<T1>(pt2.z);
-  }
+  pt1 -= static_cast<Point3<T1>(pt2);
   return pt1;
 }
 
 template<typename T1, typename T2> static inline
 Point3<T1>& operator *= (Point3<T1>& pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt.x = TL_ROUND_TO_INT(pt.x * b);
-    pt.y = TL_ROUND_TO_INT(pt.y * b);
-    pt.z = TL_ROUND_TO_INT(pt.z * b);
+  if (std::is_integral<T1>::value) {
+    pt.x = static_cast<T1>(std::nearbyint(pt.x * b));
+    pt.y = static_cast<T1>(std::nearbyint(pt.y * b));
+    pt.z = static_cast<T1>(std::nearbyint(pt.z * b));
   } else {
     pt.x = static_cast<T1>(pt.x * b);
     pt.y = static_cast<T1>(pt.y * b);
@@ -460,14 +527,14 @@ Point3<T1>& operator *= (Point3<T1>& pt, T2 b)
 template<typename T1, typename T2> static inline
 Point3<T1>& operator /= (Point3<T1>& pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    pt.x = TL_ROUND_TO_INT(pt.x / b);
-    pt.y = TL_ROUND_TO_INT(pt.y / b);
-    pt.z = TL_ROUND_TO_INT(pt.z / b);
+  if (std::is_integral<T1>::value) {
+    pt.x = static_cast<T1>(std::nearbyint(pt.x / (double)b));
+    pt.y = static_cast<T1>(std::nearbyint(pt.y / (double)b));
+    pt.z = static_cast<T1>(std::nearbyint(pt.z / (double)b));
   } else {
-    pt.x = static_cast<T1>(pt.x / b);
-    pt.y = static_cast<T1>(pt.y / b);
-    pt.z = static_cast<T1>(pt.z / b);
+    pt.x = static_cast<T1>(pt.x / (double)b);
+    pt.y = static_cast<T1>(pt.y / (double)b);
+    pt.z = static_cast<T1>(pt.z / (double)b);
   }
   return pt;
 }
@@ -505,10 +572,10 @@ Point3<T> operator - (const Point3<T>& pt1)
 template<typename T1, typename T2> static inline
 Point3<T1> operator * (const Point3<T1>& pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    return Point3<T1>(TL_ROUND_TO_INT(pt.x*b), 
-                      TL_ROUND_TO_INT(pt.y*b), 
-                      TL_ROUND_TO_INT(pt.z*b));
+  if (std::is_integral<T1>::value) {
+    return Point3<T1>(static_cast<T1>(std::nearbyint(pt.x*b)), 
+                      static_cast<T1>(std::nearbyint(pt.y*b)), 
+                      static_cast<T1>(std::nearbyint(pt.z*b)));
   } else {
     return Point3<T1>(static_cast<T1>(pt.x*b), 
                       static_cast<T1>(pt.y*b), 
@@ -519,10 +586,10 @@ Point3<T1> operator * (const Point3<T1>& pt, T2 b)
 template<typename T1, typename T2> static inline
 Point3<T2> operator * (T1 a, const Point3<T2>& pt)
 {
-  if (typeid(T2) == typeid(int)) {
-    return Point3<T2>(TL_ROUND_TO_INT(pt.x*a), 
-                      TL_ROUND_TO_INT(pt.y*a), 
-                      TL_ROUND_TO_INT(pt.z*a));
+  if (std::is_integral<T2>::value) {
+    return Point3<T2>(static_cast<T2>(std::nearbyint(pt.x*a)), 
+                      static_cast<T2>(std::nearbyint(pt.y*a)), 
+                      static_cast<T2>(std::nearbyint(pt.z*a)));
   } else {
     return Point3<T2>(static_cast<T2>(pt.x*a), 
                       static_cast<T2>(pt.y*a), 
@@ -533,10 +600,10 @@ Point3<T2> operator * (T1 a, const Point3<T2>& pt)
 template<typename T1, typename T2> static inline
 Point3<T1> operator / (const Point3<T1>& pt, T2 b)
 {
-  if (typeid(T1) == typeid(int)) {
-    return Point3<T1>(TL_ROUND_TO_INT(pt.x/b), 
-                      TL_ROUND_TO_INT(pt.y/b), 
-                      TL_ROUND_TO_INT(pt.z/b));
+  if (std::is_integral<T1>::value) {
+    return Point3<T1>(static_cast<T1>(std::nearbyint(pt.x/b)), 
+                      static_cast<T1>(std::nearbyint(pt.y/b)), 
+                      static_cast<T1>(std::nearbyint(pt.z/b)));
   } else {
     return Point3<T1>(static_cast<T1>(pt.x/b), 
                       static_cast<T1>(pt.y/b), 
@@ -544,19 +611,6 @@ Point3<T1> operator / (const Point3<T1>& pt, T2 b)
   }
 }
 
-template<typename T1, typename T2> static inline
-Point3<T2> operator / (T1 a, const Point3<T2>& pt)
-{
-  if (typeid(T2) == typeid(int)) {
-    return Point3<T2>(TL_ROUND_TO_INT(pt.x/a), 
-                      TL_ROUND_TO_INT(pt.y/a), 
-                      TL_ROUND_TO_INT(pt.z/a));
-  } else {
-    return Point3<T2>(static_cast<T2>(pt.x/a), 
-                      static_cast<T2>(pt.y/a), 
-                      static_cast<T2>(pt.z/a));
-  }
-}
 
 
 /* ---------------------------------------------------------------------------------- */

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "graphic/color.h"
-//#include "opencv2/imgcodecs.hpp"
+
 
 using namespace TL;
 using namespace std;
@@ -534,12 +534,12 @@ struct colores_pruebas color_type[] = {
 /*                                   Constructores                                    */
 /* ---------------------------------------------------------------------------------- */
 
-/* Contructor por defecto */
+///* Contructor por defecto */
 
 TEST(Color, DefaultConstructor)
 {
   Color _color;
-  EXPECT_EQ(color[0], _color.get<int>());
+  EXPECT_EQ(color[0], static_cast<int>(_color));
 }
 
 /* Contructor de copia */
@@ -548,7 +548,7 @@ TEST(Color, CopyConstructor)
 {
   Color _color(color[1]);
   Color _colorCpy(_color);
-  EXPECT_EQ(color[1], _colorCpy.get<int>());
+  EXPECT_EQ(color[1], static_cast<int>(_colorCpy));
 }
 
 /* Contructor por número entero */
@@ -557,7 +557,7 @@ TEST(Color, ConstructorInt)
 {
   for (int i = 0; i < color.size(); i++) {
     Color _color(color[i]);
-    EXPECT_EQ(color[i], _color.get<int>());
+    EXPECT_EQ(color[i], static_cast<int>(_color));
   }
 }
 
@@ -566,10 +566,9 @@ TEST(Color, ConstructorInt)
 TEST(Color, ConstructorRGBA)
 {
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
-    int i_color = Color(color_type[i].rgb[0], color_type[i].rgb[1], color_type[i].rgb[2]).get<int>();
+    int i_color = static_cast<int>(Color(color_type[i].rgb[0], color_type[i].rgb[1], color_type[i].rgb[2]));
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
-
 }
 
 /* Contructor CMYK */
@@ -577,7 +576,7 @@ TEST(Color, ConstructorRGBA)
 TEST(Color, ConstructorCMYK)
 {
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
-    int i_color = Color(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]).get<int>();
+    int i_color = static_cast<int>(Color(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]));
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
@@ -587,7 +586,7 @@ TEST(Color, ConstructorCMYK)
 TEST(Color, ConstructorHSV)
 {
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
-    int i_color = Color(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100).get<int>();
+    int i_color = static_cast<int>(Color(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100));
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
@@ -597,7 +596,7 @@ TEST(Color, ConstructorHSV)
 TEST(Color, ConstructorHex)
 {
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
-    int i_color = Color(color_type[i].hex).get<int>();
+    int i_color = static_cast<int>(Color(color_type[i].hex));
     EXPECT_EQ(color_type[i].color_int, i_color);
   }
 }
@@ -606,11 +605,11 @@ TEST(Color, ConstructorHex)
 
 TEST(Color, ConstructorName)
 {
-  int i_color = Color(Color::NAME::Black).get<int>();
+  int i_color = static_cast<int>(Color(Color::NAME::Black));
   EXPECT_EQ(0, i_color);
-  i_color = Color(Color::NAME::Navy).get<int>();
+  i_color = static_cast<int>(Color(Color::NAME::Navy));
   EXPECT_EQ(128, i_color);
-  i_color = Color(Color::NAME::DarkBlue).get<int>();
+  i_color = static_cast<int>(Color(Color::NAME::DarkBlue));
   EXPECT_EQ(139, i_color);
 }
 
@@ -655,7 +654,7 @@ TEST(Color, fromCMYK)
   Color c;
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     c.fromCMYK(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]);
-    EXPECT_EQ(color_type[i].color_int, c.get<int>());
+    EXPECT_EQ(color_type[i].color_int, static_cast<int>(c));
   }
 }
 
@@ -666,7 +665,7 @@ TEST(Color, fromHSV)
   Color c;
   for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
     c.fromHSV(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100);
-    EXPECT_EQ(color_type[i].color_int, c.get<int>());
+    EXPECT_EQ(color_type[i].color_int, static_cast<int>(c));
   }
 }
 
@@ -677,21 +676,42 @@ TEST(Color, fromHSL)
   Color c;
   for (int i = 0; i < color.size(); i++) {
     c.fromHSL(hsl[i][0], hsl[i][1], hsl[i][2]);
-    EXPECT_EQ(color[i], c.get<int>());
+    EXPECT_EQ(color[i], static_cast<int>(c));
   }
 }
 
-//fromXYZ
-//fromLuv
-//fromLab
-//toRGB
-//toLuminance
+/* color a partir de sus valores XYZ */
+
+//TEST(Color, fromXYZ)
+//{
+//  Color c;
+//}
+
+//TEST(Color, fromLuv)
+//{
+//  Color c;
+//}
+
+//TEST(Color, fromLab)
+//{
+//  Color c;
+//}
+
+//TEST(Color, toRGB)
+//{
+//  Color c;
+//}
+
+//TEST(Color, toLuminance)
+//{
+//  Color c;
+//}
 
 TEST(Color, get_string)
 {
   for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(color[i], Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<int>());
-    ASSERT_STRCASEEQ(_hex[i].c_str(), Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).get<std::string>().c_str());
+    EXPECT_EQ(color[i], static_cast<int>(Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3])));
+    ASSERT_STRCASEEQ(_hex[i].c_str(), Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).toHex().c_str());
   }
 }
 
@@ -816,12 +836,12 @@ TEST(Test_, hexToInt)
   }
 }
 
-TEST(Test_, intToHex)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(_hex[i], intToHex(color[i]));
-  }
-}
+//TEST(Test_, intToHex)
+//{
+//  for (int i = 0; i < color.size(); i++) {
+//    EXPECT_EQ(_hex[i], intToHex(color[i]));
+//  }
+//}
 
 TEST(Test_, rgbToCmyk)
 {
