@@ -64,7 +64,7 @@ void CanvasCV::drawPoint(const GPoint &point)
 {
   cv::Point pt = point;
   //cv::Scalar color = point.getStylePen()->getPenColor().get<cv::Scalar>();
-  cv::Scalar color = static_cast<cv::Scalar>(point.getStylePen()->getPenColor());
+  cv::Scalar color = point.getStylePen()->getPenColor().toCvScalar();
 
   cv::MarkerTypes markerType;
 

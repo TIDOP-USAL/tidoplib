@@ -123,7 +123,7 @@
  * TL_DEPRECATED("newFunc(int a, float b)")
  * void oldFunc(int a, float b);
  *
- * En el caso de una clase completa se debe añadir entre class y el nombre de la clase:
+ * En el caso de una clase o un enum se debe añadir entre class y el nombre de la clase:
  *
  * class TL_DEPRECATED(NewClass) OldClass
  * { ...
@@ -134,18 +134,18 @@
  * TL_DEPRECATED("void newFunc(T a, T b)")
  * void oldFunc(T a, T b);
  */
-#if __cplusplus >= 201402L // c++ 14
-#  define TL_DEPRECATED(msg)  [[deprecated("Deprecated: use " msg " instead")]]
-#else
+//#if __cplusplus >= 201402L // c++ 14
+//#  define TL_DEPRECATED(msg)  [[deprecated("Use " msg " instead")]]
+//#else
 #  ifdef __GNUC__
-#    define TL_DEPRECATED(msg) __attribute__((deprecated("Deprecated: use " msg " instead")))
+#    define TL_DEPRECATED(msg) __attribute__((deprecated("Use " msg " instead")))
 #  elif defined _MSC_VER
 #    define TL_DEPRECATED(msg) __declspec(deprecated("Deprecated: use " msg " instead"))
 #  else
 #    pragma message("WARNING: You need to implement DEPRECATED for this compiler")
 #    define TL_DEPRECATED(msg)
 #  endif
-#endif
+//#endif
 
 
 

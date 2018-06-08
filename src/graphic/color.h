@@ -422,7 +422,8 @@ public:
   operator int() const { return mColor; }
 
 #ifdef HAVE_OPENCV
-  operator cv::Scalar() const { return cv::Scalar(getBlue(), getGreen(), getRed()); }
+  cv::Scalar toCvScalar() { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
+  //operator cv::Scalar() const { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
 #endif
 
 };

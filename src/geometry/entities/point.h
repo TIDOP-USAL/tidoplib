@@ -489,7 +489,7 @@ Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)
 template<typename T1, typename T2> static inline
 Point3<T1>& operator += (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
-  pt1 += static_cast<Point3<T1>(pt2);
+  pt1 += static_cast<Point3<T1>>(pt2);
   return pt1;
 }
 
@@ -505,7 +505,7 @@ Point3<T>& operator -= (Point3<T>& pt1, const Point3<T>& pt2)
 template<typename T1, typename T2> static inline
 Point3<T1>& operator -= (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
-  pt1 -= static_cast<Point3<T1>(pt2);
+  pt1 -= static_cast<Point3<T1>>(pt2);
   return pt1;
 }
 
