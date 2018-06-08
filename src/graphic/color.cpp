@@ -99,7 +99,9 @@ Color::Color(double hue, double saturation, double value) : mColor(0)
 
 Color::Color(const std::string &color)
 {
-  mColor = stringToInteger(color, TL::Base::HEXADECIMAL);//std::stoi(color,nullptr,16);
+  ///TODO: error inprevisto en test
+  //mColor = stringToInteger(color, TL::Base::HEXADECIMAL);
+  mColor = std::stoi(color, nullptr, 16);
 }
 
 Color::Color(const Color::NAME &color)
@@ -108,10 +110,10 @@ Color::Color(const Color::NAME &color)
 }
 
 #ifdef HAVE_OPENCV
-Color::Color(const cv::Scalar &color)
-{
-  mColor = rgbToInt(TL_ROUND_TO_INT(color[2]), TL_ROUND_TO_INT(color[1]), TL_ROUND_TO_INT(color[0]));
-}
+//Color::Color(const cv::Scalar &color)
+//{
+//  //mColor = rgbToInt(TL_ROUND_TO_INT(color[2]), TL_ROUND_TO_INT(color[1]), TL_ROUND_TO_INT(color[0]));
+//}
 #endif
 
 int Color::getBlue() const
@@ -161,6 +163,20 @@ void Color::fromHSL(double hue, double saturation, double lightness)
          | ((red << 16) & 0xFF0000);
 }
 
+//void Color::fromXYZ(double X, double Y, double Z)
+//{
+//
+//}
+
+//void Color::fromLuv(double L, double u, double v)
+//{
+//
+//}
+
+//void Color::fromLab(double L, double a, double b)
+//{
+//
+//}
 
 void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  const
 {
@@ -188,6 +204,11 @@ void Color::toRGB(int *red, int *green, int *blue, int *alpha) const
 int Color::toLuminance() const
 {
   return rgbToLuminance(getRed(), getGreen(), getBlue());
+}
+
+std::string Color::toHex() const
+{
+  return intToHex(mColor);
 }
 
 Color &Color::operator = (const Color &color)
@@ -240,21 +261,22 @@ void intToRGB(int color, int *red, int *green, int *blue)
 
 int rgbToInt(int red, int green, int blue)
 {
-  return Color(red, green, blue).get<int>();
+  return static_cast<int>(Color(red, green, blue));
 }
 
 int rgbaToInt(int red, int green, int blue, int alpha)
 {
-  return Color(red, green, blue, alpha).get<int>();
+  return static_cast<int>(Color(red, green, blue, alpha));
 }
 
 int hexToInt(const std::string &colorhex)
 {
-  return Color(colorhex).get<int>();
+  return static_cast<int>(Color(colorhex));
 }
 
 std::string intToHex(int color)
 {
+  ///TODO: Da problemas con Google Test
   std::stringstream stream;
   stream << std::hex << color;
   return std::string(stream.str());

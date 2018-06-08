@@ -262,9 +262,9 @@ public:
    * \brief Constructora
    * \param[in] color Color como cv::Scalar de OpenCV
    */
-#ifdef HAVE_OPENCV
-  Color(const cv::Scalar &color);
-#endif
+//#ifdef HAVE_OPENCV
+//  Color(const cv::Scalar &color);
+//#endif
 
   /*!
    * \brief Destructora
@@ -274,8 +274,8 @@ public:
   /*!
    * \brief Devuelve el valor de color para el tipo indicado
    */
-  template<typename T>
-  T get() const;
+  //template<typename T>
+  //T get() const;
 
   /*!
    * \brief Devuelve la componente azul
@@ -401,6 +401,12 @@ public:
   int toLuminance() const;
 
   /*!
+   * \brief Convierte un color a hexadecimal
+   * \return Cadena con el valor hexadecimal del color
+   */
+  std::string toHex() const;
+
+  /*!
    * \brief operador de asignación
    * \param color Color
    * \return Referencia al color
@@ -414,29 +420,35 @@ public:
 
   operator unsigned int() const { return mColor; }
   operator int() const { return mColor; }
+
+#ifdef HAVE_OPENCV
+  cv::Scalar toCvScalar() { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
+  //operator cv::Scalar() const { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
+#endif
+
 };
 
-template<typename T> inline
-T Color::get() const
-{
-  T color = T();
-  void *_color = (void *)&color;
-
-  if (typeid(T) == typeid(std::string)) {
-    *(std::string *)_color = TL::intToHex(mColor);
-  } else if (typeid(T) == typeid(int)) {
-    color = mColor;
-  }
-#ifdef HAVE_OPENCV
-  else if (typeid(T) == typeid(cv::Scalar)) {
-    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
-  }
-#endif
-  else {
-    throw TL::Exception("Tipo de conversión no permitida");  
-  }
-  return color;
-}
+//template<typename T> inline
+//T Color::get() const
+//{
+//  T color = T();
+//  void *_color = (void *)&color;
+//
+//  if (typeid(T) == typeid(std::string)) {
+//    *(std::string *)_color = TL::intToHex(mColor);
+//  } else if (typeid(T) == typeid(int)) {
+//    color = mColor;
+//  }
+//#ifdef HAVE_OPENCV
+//  else if (typeid(T) == typeid(cv::Scalar)) {
+//    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
+//  }
+//#endif
+//  else {
+//    throw TL::Exception("Tipo de conversión no permitida");  
+//  }
+//  return color;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
@@ -455,6 +467,7 @@ T Color::get() const
  * \param[in] color Color representado como un entero
  * \return Componente azul
  */
+TL_DEPRECATED("Color(color).getBlue()")
 TL_EXPORT int getBlue(int color);
 
 /*!
@@ -462,6 +475,7 @@ TL_EXPORT int getBlue(int color);
  * \param[in] color Color representado como un entero
  * \return Componente verde
  */
+TL_DEPRECATED("Color(color).getGreen()")
 TL_EXPORT int getGreen(int color);
 
 /*!
@@ -469,6 +483,7 @@ TL_EXPORT int getGreen(int color);
  * \param[in] color Color representado como un entero
  * \return Componente roja
  */
+TL_DEPRECATED("Color(color).getRed()")
 TL_EXPORT int getRed(int color);
 
 /*!
@@ -476,6 +491,7 @@ TL_EXPORT int getRed(int color);
  * \param[in] color Color representado como un entero
  * \return Canal alfa
  */
+TL_DEPRECATED("Color(color).getAlpha()")
 TL_EXPORT int getAlpha(int color);
 
 /*!
