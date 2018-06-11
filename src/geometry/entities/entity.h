@@ -580,7 +580,7 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-  Window<Entity_t> getWindow() const;
+  //virtual Window<Entity_t> getWindow() const;
 };
 
 
@@ -638,18 +638,18 @@ std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &
   return r_points;
 }
 
-template<typename Entity_t> inline
-Window<Entity_t> Entities2D<Entity_t>::getWindow() const
-{
-  Window<Entity_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
-  }
-  return w;
-}
+//template<typename Entity_t> inline
+//Window<Entity_t> Entities2D<Entity_t>::getWindow() const
+//{
+//  Window<Entity_t> w;
+//  for (size_t i = 0; i < this->mEntities.size(); i++) {
+//    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+//    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+//    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+//    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+//  }
+//  return w;
+//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -699,7 +699,7 @@ public:
    * \brief Caja envolvente
    * \return Caja envolvente de los puntos
    */
-  Box<Entity_t> getBox() const;
+  //virtual Box<Entity_t> getBox() const;
   
   /*!
    * \brief Devuelve los puntos que esta dentro de una caja
@@ -750,20 +750,20 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 //  return *this;
 //}
 
-template<typename Entity_t> inline
-Box<Entity_t> Entities3D<Entity_t>::getBox() const
-{
-  Box<Entity_t> box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
-  }
-  return box;
-}
+//template<typename Entity_t> inline
+//Box<Entity_t> Entities3D<Entity_t>::getBox() const
+//{
+//  Box<Entity_t> box;
+//  for (size_t i = 0; i < this->mEntities.size(); i++) {
+//    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+//    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+//    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+//    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+//    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+//    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+//  }
+//  return box;
+//}
 
 template<typename Entity_t> inline
 std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const

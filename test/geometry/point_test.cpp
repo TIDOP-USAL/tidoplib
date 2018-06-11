@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "geometry/entities/point.h"
+#include "geometry/entities/window.h"
+#include "geometry/entities/bbox.h"
 #include "core/utils.h"
 
 using namespace TL;
@@ -14,6 +16,7 @@ TEST(Point, DefaultConstructor)
 
   EXPECT_EQ(0, pt_int.x);
   EXPECT_EQ(0, pt_int.y);
+  EXPECT_TRUE(pt_int.getType() == Entity::type::POINT_2D);
 
   PointD pt_double;
     
@@ -166,6 +169,8 @@ TEST(Point3, DefaultConstructor)
   EXPECT_EQ(0, pt_int.x);
   EXPECT_EQ(0, pt_int.y);
   EXPECT_EQ(0, pt_int.z);
+
+  EXPECT_TRUE(pt_int.getType() == Entity::type::POINT_3D);
 
   Point3D pt_double;
     
@@ -570,4 +575,266 @@ TEST(Point, division2)
   PointI pt2_1 = pt2 / s2;
   EXPECT_EQ(7, pt2_1.x);
   EXPECT_EQ(20, pt2_1.y);
+}
+
+/* MultiPoint */
+
+/* Constructor por defecto */
+
+TEST(MultiPoint, DefaultConstructor) 
+{
+  
+  MultiPointI multiPointI;
+
+  EXPECT_EQ(0, multiPointI.size());
+  EXPECT_TRUE(multiPointI.getType() == Entity::type::MULTIPOINT_2D);
+
+  MultiPointD multiPointD;
+  WindowD w = multiPointD.getWindow();
+
+  EXPECT_EQ(0, multiPointD.size());
+  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.x);
+  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
+  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
+  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.y);
+
+  MultiPointF multiPointF;
+    
+  EXPECT_EQ(0, multiPointF.size());
+
+  MultiPoint<uint16_t> multiPoint16;
+    
+  EXPECT_EQ(0, multiPoint16.size());
+  
+}
+
+/* Constructor reserve */
+
+TEST(MultiPoint, ConstructorReserve)
+{
+  MultiPointD multiPointD(10);
+  WindowD w = multiPointD.getWindow();
+
+  EXPECT_EQ(10, multiPointD.size());
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(0., w.pt1.x);
+  EXPECT_EQ(0., w.pt1.y);
+  EXPECT_EQ(0., w.pt2.x);
+  EXPECT_EQ(0., w.pt2.y);
+
+}
+
+/* Constructor de copia */
+
+TEST(MultiPoint, CopyConstructor) 
+{
+  MultiPointD multiPointD;
+  multiPointD.push_back(PointD(23.6, 94.4));
+  multiPointD.push_back(PointD(75.36, 246.33));
+  multiPointD.push_back(PointD(256.6, 619.3));
+  multiPointD.push_back(PointD(62.36, 6.60));
+
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(4, multiPointD.size());
+
+  MultiPointD multiPointD_c(multiPointD);
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
+}
+
+/* Constructor a partir de un vector de puntos */
+
+TEST(MultiPoint, Vector) 
+{
+  std::vector<PointD> multiPointD{ PointD(23.6, 94.4),
+                                   PointD(75.36, 246.33),
+                                   PointD(256.6, 619.3),
+                                   PointD(62.36, 6.60) };
+
+  MultiPointD multiPointD_c(multiPointD);
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
+}
+
+/* Constructor lista de inicializadores */
+
+TEST(MultiPoint, InitializerList) 
+{
+  MultiPointD multiPointD{ PointD(23.6, 94.4),
+                           PointD(75.36, 246.33),
+                           PointD(256.6, 619.3),
+                           PointD(62.36, 6.60) };
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(4, multiPointD.size());
+
+}
+
+
+/* Operador de asignación */
+
+TEST(MultiPoint, assing_operator)
+{
+  MultiPointD multiPointD{ PointD(23.6, 94.4),
+                           PointD(75.36, 246.33),
+                           PointD(256.6, 619.3),
+                           PointD(62.36, 6.60) };
+
+  MultiPointD multiPointD_c = multiPointD;
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_2D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
+}
+
+/* MultiPoint3D */
+
+/* Constructor por defecto */
+
+TEST(MultiPoint3D, DefaultConstructor) 
+{
+  
+  MultiPoint3dI multiPointI;
+
+  EXPECT_EQ(0, multiPointI.size());
+  EXPECT_TRUE(multiPointI.getType() == Entity::type::MULTIPOINT_3D);
+
+  MultiPoint3dD multiPointD;
+  BoxD box = multiPointD.getBox();
+
+  EXPECT_EQ(0, multiPointD.size());
+  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
+  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
+  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
+  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.x);
+  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.y);
+  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.z);
+
+  MultiPoint3dF multiPointF;
+    
+  EXPECT_EQ(0, multiPointF.size());
+
+  MultiPoint3D<uint16_t> multiPoint16;
+    
+  EXPECT_EQ(0, multiPoint16.size());
+  
+}
+
+/* Constructor reserve */
+
+TEST(MultiPoint3D, ConstructorReserve)
+{
+  MultiPoint3dD multiPointD(10);
+  BoxD box = multiPointD.getBox();
+
+  EXPECT_EQ(10, multiPointD.size());
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(0., box.pt1.x);
+  EXPECT_EQ(0., box.pt1.y);
+  EXPECT_EQ(0., box.pt1.z);
+  EXPECT_EQ(0., box.pt2.x);
+  EXPECT_EQ(0., box.pt2.y);
+  EXPECT_EQ(0., box.pt2.z);
+
+}
+
+/* Constructor de copia */
+
+TEST(MultiPoint3D, CopyConstructor) 
+{
+  MultiPoint3dD multiPointD;
+  multiPointD.push_back(Point3D(23.6, 94.4, 2.3));
+  multiPointD.push_back(Point3D(75.36, 246.33, 36.36));
+  multiPointD.push_back(Point3D(256.6, 619.3, 56.12));
+  multiPointD.push_back(Point3D(62.36, 6.60, 24.63));
+
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(4, multiPointD.size());
+
+  MultiPoint3dD multiPointD_c(multiPointD);
+  BoxD box = multiPointD_c.getBox();
+  EXPECT_EQ(23.6, box.pt1.x);
+  EXPECT_EQ(6.60, box.pt1.y);
+  EXPECT_EQ(2.3, box.pt1.z);
+  EXPECT_EQ(256.6, box.pt2.x);
+  EXPECT_EQ(619.3, box.pt2.y);
+  EXPECT_EQ(56.12, box.pt2.z);
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
+}
+
+/* Constructor a partir de un vector de puntos */
+
+TEST(MultiPoint3D, Vector) 
+{
+  std::vector<Point3D> multiPointD{ Point3D(23.6, 94.4, 0.36),
+                                    Point3D(75.36, 246.33, 454.3),
+                                    Point3D(256.6, 619.3, 26.21),
+                                    Point3D(62.36, 6.60, 62.61) };
+
+  MultiPoint3dD multiPointD_c(multiPointD);
+  BoxD box = multiPointD_c.getBox();
+  EXPECT_EQ(23.6, box.pt1.x);
+  EXPECT_EQ(6.60, box.pt1.y);
+  EXPECT_EQ(0.36, box.pt1.z);
+  EXPECT_EQ(256.6, box.pt2.x);
+  EXPECT_EQ(619.3, box.pt2.y);
+  EXPECT_EQ(454.3, box.pt2.z);
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
+}
+
+/* Constructor lista de inicializadores */
+
+TEST(MultiPoint3D, InitializerList) 
+{
+  MultiPoint3dD multiPointD{ Point3D(23.6, 94.4, 0.36),
+                             Point3D(75.36, 246.33, 454.3),
+                             Point3D(256.6, 619.3, 26.21),
+                             Point3D(62.36, 6.60, 62.61) };
+  EXPECT_TRUE(multiPointD.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(4, multiPointD.size());
+
+}
+
+
+/* Operador de asignación */
+
+TEST(MultiPoint3D, assing_operator)
+{
+  MultiPoint3dD multiPointD{ Point3D(23.6, 94.4, 0.36),
+                             Point3D(75.36, 246.33, 454.3),
+                             Point3D(256.6, 619.3, 26.21),
+                             Point3D(62.36, 6.60, 62.61) };
+
+  MultiPoint3dD multiPointD_c = multiPointD;
+
+  EXPECT_TRUE(multiPointD_c.getType() == Entity::type::MULTIPOINT_3D);
+  EXPECT_EQ(4, multiPointD_c.size());
+
+  for (int i = 0; i < multiPointD_c.size(); i++) {
+    EXPECT_TRUE(multiPointD_c[i] == multiPointD[i]);
+  }
 }

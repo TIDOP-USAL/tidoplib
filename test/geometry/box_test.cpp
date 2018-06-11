@@ -15,6 +15,8 @@ TEST(BoxI, DefaultConstructor)
   EXPECT_EQ(TL_INT_MIN, box.pt2.x);
   EXPECT_EQ(TL_INT_MIN, box.pt2.y);
   EXPECT_EQ(TL_INT_MIN, box.pt2.z);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
+
 }
 
 TEST(BoxD, DefaultConstructor)
@@ -26,6 +28,7 @@ TEST(BoxD, DefaultConstructor)
   EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.x);
   EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.y);
   EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.z);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
 }
 
 TEST(BoxF, DefaultConstructor)
@@ -37,6 +40,7 @@ TEST(BoxF, DefaultConstructor)
   EXPECT_EQ(TL_FLOAT_MIN, box.pt2.x);
   EXPECT_EQ(TL_FLOAT_MIN, box.pt2.y);
   EXPECT_EQ(TL_FLOAT_MIN, box.pt2.z);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
 }
 
 // Constructor de copia
@@ -46,6 +50,8 @@ TEST(BoxI, CopyConstructor) {
   BoxI box2(box);
   EXPECT_EQ( box.pt1, box2.pt1);
   EXPECT_EQ( box.pt2, box2.pt2);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box2.getType() == Entity::type::BOX);
 }
 
 TEST(BoxF, CopyConstructor)
@@ -54,6 +60,8 @@ TEST(BoxF, CopyConstructor)
   BoxF box2(box);
   EXPECT_EQ(box.pt1, box2.pt1);
   EXPECT_EQ(box.pt2, box2.pt2);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box2.getType() == Entity::type::BOX);
 }
 
 TEST(BoxD, CopyConstructor)
@@ -62,6 +70,8 @@ TEST(BoxD, CopyConstructor)
   BoxD box2(box);
   EXPECT_EQ(box.pt1, box2.pt1);
   EXPECT_EQ(box.pt2, box2.pt2);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box2.getType() == Entity::type::BOX);
 }
 
 //constructor de copia tipos diferentes
@@ -76,6 +86,9 @@ TEST(BoxD, CopyConstructorDiff)
   EXPECT_EQ(101, box2.pt2.x);
   EXPECT_EQ(100, box2.pt2.y);
   EXPECT_EQ(105, box2.pt2.z);
+
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box2.getType() == Entity::type::BOX);
 }
 
 //constructor punto central y dimensiones
@@ -89,6 +102,7 @@ TEST(Box, ConstructorCenterDim)
   EXPECT_EQ(25.5, box.pt2.x);
   EXPECT_EQ(25.4, box.pt2.y);
   EXPECT_EQ(26.9, box.pt2.z);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
 }
 
 TEST(Box, ConstructorCenterDimWHD)
@@ -100,6 +114,7 @@ TEST(Box, ConstructorCenterDimWHD)
   EXPECT_EQ(25.5, box.pt2.x);
   EXPECT_EQ(25.4, box.pt2.y);
   EXPECT_EQ(26.9, box.pt2.z);
+  EXPECT_TRUE(box.getType() == Entity::type::BOX);
 }
 
 // Comprobación de que redondea bien con ventanas de enteros
