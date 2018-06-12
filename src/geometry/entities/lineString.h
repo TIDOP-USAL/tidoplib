@@ -42,9 +42,6 @@ namespace geometry
 template <typename Point_t>
 class LineString : public Entity, public Entities2D<Point_t>
 {
-//public:
-//
-//  typedef Point_t value_type;
 
 public:
 
@@ -92,6 +89,12 @@ public:
    * \brief Operador de asignación
    */
   LineString<Point_t> &operator = (const LineString<Point_t> &lineString);
+
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   */
+  Window<Point_t> getWindow() const;
 };
 
 template <typename Point_t> inline
@@ -153,6 +156,19 @@ LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> 
     Entities2D<Point_t>::operator = (lineString);
   }
   return *this;
+}
+
+template<typename Point_t> inline
+Window<Point_t> LineString<Point_t>::getWindow() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  }
+  return w;
 }
 
 typedef LineString<Point<int>> LineStringI;
@@ -224,6 +240,11 @@ public:
    */
   LineString3D<Point3_t> &operator = (const LineString3D<Point3_t> &lineString);
 
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de los puntos
+   */
+  Box<Point3_t> getBox() const;
 };
 
 template <typename Point3_t> inline
@@ -261,12 +282,6 @@ LineString3D<Point3_t>::LineString3D(std::initializer_list<Point3_t> listPoints)
 {
 }
 
-//template<typename Point3_t> inline
-//void LineString3D<Point3_t>::add(const Point3_t &point)
-//{
-//  this->mPoints.push_back(point);
-//}
-
 template<typename Point3_t> inline
 double LineString3D<Point3_t>::length()  const
 {
@@ -277,14 +292,29 @@ double LineString3D<Point3_t>::length()  const
   return length;
 }
 
-template<typename Point_t> inline
-LineString3D<Point_t> &LineString3D<Point_t>::operator = (const LineString3D &lineString)
+template<typename Point3_t> inline
+LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (const LineString3D &lineString)
 {
   if (this != &lineString) {
     Entity::operator = (lineString);
-    Entities3D<Point_t>::operator = (lineString);
+    Entities3D<Point3_t>::operator = (lineString);
   }
   return *this;
+}
+
+template<typename Point3_t> inline
+Box<Point3_t> LineString3D<Point3_t>::getBox() const
+{
+  Box<Point3_t> box;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+  }
+  return box;
 }
 
 typedef LineString3D<Point3<int>> LineString3dI;
@@ -322,6 +352,13 @@ public:
    * \return lineString Objeto que se asigna
    */
   MultiLineString<Point_t> &operator = (const MultiLineString<Point_t> &multiLineString);
+
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   */
+  Window<Point_t> getWindow() const;
+
 };
 
 template <typename Point_t>
@@ -353,6 +390,16 @@ MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (const MultiLineS
     Entities2D<LineString<Point_t>>::operator = (multiLineString);
   }
   return *this;
+}
+
+template<typename Point_t> inline
+Window<Point_t> MultiLineString<Point_t>::getWindow() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    w = joinWindow(w, this->mEntities[i].getWindow());
+  }
+  return w;
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -387,6 +434,11 @@ public:
    */
   MultiLineString3D<Point3_t> &operator = (const MultiLineString3D<Point3_t> &multiLineString);
 
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de los puntos
+   */
+  Box<Point3_t> getBox() const;
 };
 
 template <typename Point3_t>
@@ -420,6 +472,21 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const Mult
   return *this;
 }
 
+template<typename Point3_t> inline
+Box<Point3_t> MultiLineString3D<Point3_t>::getBox() const
+{
+  Box<Point3_t> box;
+  //for (size_t i = 0; i < this->mEntities.size(); i++) {
+  //  Box<Point3_t> box2 = this->mEntities[i].getBox();
+  //  if (box.pt1.x > box2.pt1.x) box.pt1.x = box2.pt1.x;
+  //  if (box.pt1.y > box2.pt1.y) box.pt1.y = box2.pt1.y;
+  //  if (box.pt1.z > box2.pt1.z) box.pt1.z = box2.pt1.z;
+  //  if (box.pt2.x < box2.pt2.x) box.pt2.x = box2.pt2.x;
+  //  if (box.pt2.y < box2.pt2.y) box.pt2.y = box2.pt2.y;
+  //  if (box.pt2.z < box2.pt2.z) box.pt2.z = box2.pt2.z;
+  //}
+  return box;
+}
 
 } // Fin namespace Geometry
 

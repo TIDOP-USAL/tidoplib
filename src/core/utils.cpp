@@ -190,6 +190,9 @@ int move(const char *in, const char *out)
     return 0;
   }
 
+  delete w_in;
+  delete w_out;
+
 #else
   ///TODO: Completar
 #endif

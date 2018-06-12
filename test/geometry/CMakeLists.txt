@@ -58,23 +58,6 @@ if(BUILD_TEST AND BUILD_TL_CORE)
   ENDMACRO()
 
   file(GLOB_RECURSE cpp_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
-
-#  if(NOT HAVE_OPENGL)
-#    ocv_list_filterout(cpp_samples Qt_sample)
-#  endif()
-#
-#  if(NOT HAVE_opencv_cudaarithm OR NOT HAVE_opencv_cudafilters)
-#    ocv_list_filterout(cpp_samples "/gpu/")
-#  endif()
-#
-#  if(NOT TARGET opencv_viz)
-#    ocv_list_filterout(cpp_samples "/viz/")
-#  endif()
-#
-#  if(NOT HAVE_IPP_A)
-#    ocv_list_filterout(cpp_samples "/ippasync/")
-#  endif()
-
   
 
   foreach(test_filename ${cpp_test})

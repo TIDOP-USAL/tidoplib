@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <typeinfo>
+#include <cmath>
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -387,17 +388,12 @@ bool Window<Point_t>::operator == (const Window &w) const
 template<typename Point_t> template<typename Point_t2> inline
 Window<Point_t>::operator Window<Point_t2>() const
 {
-  // El saturate_cast de OpenCV al hacer cast a int parece que no funciona muy bien.
-  // 0.5 lo convierte a 0. 2.5 lo convierte a 2. Sin embargo 1.5 lo convierte a 2...
-  //Point<T2> _pt1 = pt1;
-  //Point<T2> _pt2 = pt2;
-  //return Window<T2>(_pt1, _pt2);
   Window<Point_t2> w;
-  if (typeid(typename Point_t2::value_type) == typeid(int)) {
-    w.pt1.x = TL_ROUND_TO_INT(pt1.x);
-    w.pt1.y = TL_ROUND_TO_INT(pt1.y);
-    w.pt2.x = TL_ROUND_TO_INT(pt2.x);
-    w.pt2.y = TL_ROUND_TO_INT(pt2.y);
+  if (std::is_integral<typename Point_t2::value_type>::value) {
+    w.pt1.x = static_cast<typename Point_t2::value_type>(std::round(pt1.x));
+    w.pt1.y = static_cast<typename Point_t2::value_type>(std::round(pt1.y));
+    w.pt2.x = static_cast<typename Point_t2::value_type>(std::round(pt2.x));
+    w.pt2.y = static_cast<typename Point_t2::value_type>(std::round(pt2.y));
   } else {
     w.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
     w.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
@@ -410,8 +406,9 @@ Window<Point_t>::operator Window<Point_t2>() const
 template<typename Point_t> inline
 Point_t Window<Point_t>::getCenter() const
 {
-  if (typeid(typename Point_t::value_type) == typeid(int)) {
-    return Point_t(static_cast<int>(std::floor((pt1.x + pt2.x) / 2)), static_cast<int>(std::floor((pt1.y + pt2.y) / 2)));
+  if (std::is_integral<typename Point_t::value_type>::value) {
+    return Point_t(static_cast<typename Point_t::value_type>(std::round((pt1.x + pt2.x) / 2)), 
+                   static_cast<typename Point_t::value_type>(std::round((pt1.y + pt2.y) / 2)));
   } else {
     TL_DISABLE_WARNING(4244)
     return Point_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
