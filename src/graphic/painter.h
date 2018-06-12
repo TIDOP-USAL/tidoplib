@@ -15,8 +15,7 @@ namespace TL
 template<typename T> class Transform;
 
 
-/*! \defgroup GraphicEntities Entidades gráficas
- *  Puntos, lineas, ...
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
@@ -24,6 +23,7 @@ namespace graph
 {
 
 class Canvas;
+class GraphicStyle;
 
 class TL_EXPORT Painter
 {
@@ -31,6 +31,7 @@ protected:
 
   Transform<geometry::PointF> *mTrf;
   Canvas *mCanvas;
+  GraphicStyle *mGraphicStyle;
 
 public:
 
@@ -47,10 +48,10 @@ public:
   void drawMultiPolygon(const GMultiPolygon &multiPolygon);
 
   void setCanvas(Canvas *canvas);
-  //void setPen(const StylePen &pen);
-  //void setBrush(const StyleBrush &brush);
-  //void setSymbol(const StyleSymbol &symbol);
-  //void setStyleLabel(const StyleLabel &styleLabel);
+  void setPen(const std::shared_ptr<StylePen> &pen);
+  void setBrush(const std::shared_ptr<StyleBrush> &brush);
+  void setSymbol(const std::shared_ptr<StyleSymbol> &symbol);
+  void setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel);
 
   void setTransform(Transform<geometry::PointF> *trf);
 

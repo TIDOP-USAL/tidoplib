@@ -541,7 +541,7 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (const MultiPolyg
 {
   if (this != &multiPolygon) {
     Entity::operator = (multiPolygon);
-    Entities3D<Polygon<Point3_t>>::operator = (multiPolygon);
+    Entities3D<Polygon3D<Point3_t>>::operator = (multiPolygon);
   }
   return *this;
 }

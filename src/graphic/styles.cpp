@@ -46,7 +46,7 @@ StylePen::~StylePen()
 {
 }
 
-Color StylePen::getPenColor() 
+Color StylePen::getPenColor() const
 {
   return mPenColor;
 }
@@ -56,7 +56,7 @@ void StylePen::setPenColor(Color pencolor)
   mPenColor = pencolor;
 }
 
-uint8_t StylePen::getPenWidth() 
+uint8_t StylePen::getPenWidth() const
 {
   return mPenWidth;
 }
@@ -66,7 +66,7 @@ void StylePen::setPenWidth(uint8_t penwidth)
   mPenWidth = penwidth;
 }
 
-std::string StylePen::getPattern() 
+std::string StylePen::getPattern() const
 {
   return mPattern;
 }
@@ -76,7 +76,7 @@ void StylePen::setPattern(std::string pattern)
   mPattern = pattern;
 }
 
-StylePen::PenName StylePen::getPenName() 
+StylePen::PenName StylePen::getPenName() const
 {
   return mPenName;
 }
@@ -86,7 +86,7 @@ void StylePen::setPenName(PenName penname)
   mPenName = penname;
 }
 
-StylePen::PenCap StylePen::getPenCap() 
+StylePen::PenCap StylePen::getPenCap() const
 {
   return mPenCap;
 }
@@ -96,7 +96,7 @@ void StylePen::setPenCap(PenCap pencap)
   mPenCap = pencap;
 }
 
-StylePen::PenJoin StylePen::getPenJoin()
+StylePen::PenJoin StylePen::getPenJoin() const
 {
   return mPenJoin;
 }
@@ -106,7 +106,7 @@ void StylePen::setPenJoin(PenJoin penjoin)
   mPenJoin = penjoin;
 }
 
-int32_t StylePen::getPerpendicularOffset()
+int32_t StylePen::getPerpendicularOffset() const
 {
   return mPerpendicularOffset;
 }
@@ -116,7 +116,7 @@ void StylePen::setPerpendicularOffset(int32_t perpendicularoffset)
   mPerpendicularOffset = perpendicularoffset;
 }
 
-uint32_t StylePen::getPriorityLevel() 
+uint32_t StylePen::getPriorityLevel() const
 {
   return mPriorityLevel;
 }
@@ -169,7 +169,7 @@ StyleBrush::~StyleBrush()
 {
 }
 
-Color StyleBrush::getForeColor()
+Color StyleBrush::getForeColor() const
 {
   return mForeColor;
 }
@@ -179,7 +179,7 @@ void StyleBrush::setForeColor(Color forecolor)
   mForeColor = forecolor;
 }
 
-Color StyleBrush::getBackColor() 
+Color StyleBrush::getBackColor() const
 {
   return mBackColor;
 }
@@ -189,7 +189,7 @@ void StyleBrush::setBackColor(Color backcolor)
   mBackColor = backcolor;
 }
 
-StyleBrush::BrushName StyleBrush::getBrushName() 
+StyleBrush::BrushName StyleBrush::getBrushName() const
 {
   return mBrushName;
 }
@@ -199,7 +199,7 @@ void StyleBrush::setBrushName(BrushName brushname)
   mBrushName = brushname;
 }
 
-double StyleBrush::getAngle() 
+double StyleBrush::getAngle() const
 {
   return mAngle;
 }
@@ -209,7 +209,7 @@ void StyleBrush::setAngle(double angle)
   mAngle = angle;
 }
 
-double StyleBrush::getScalingFactor() 
+double StyleBrush::getScalingFactor() const
 {
   return mScalingFactor;
 }
@@ -219,12 +219,12 @@ void StyleBrush::setScalingFactor(double scalingFactor)
   mScalingFactor = scalingFactor;
 }
 
-double StyleBrush::getSpacingX() 
+double StyleBrush::getSpacingX() const
 {
   return mSpacing[0];
 }
 
-double StyleBrush::getSpacingY() 
+double StyleBrush::getSpacingY() const
 {
   return mSpacing[1];
 }
@@ -234,7 +234,7 @@ void StyleBrush::setSpacing(double spacingX, double spacingY )
     mSpacing[0] = spacingX; mSpacing[1] = spacingY;
 }
 
-uint32_t StyleBrush::getPriorityLevel() 
+uint32_t StyleBrush::getPriorityLevel() const
 {
   return mPriorityLevel;
 }
@@ -285,7 +285,7 @@ StyleSymbol::~StyleSymbol()
 {
 }
 
-double StyleSymbol::getAngle() 
+double StyleSymbol::getAngle() const
 {
   return mAngle;
 }
@@ -295,7 +295,7 @@ void StyleSymbol::setAngle(double angle)
   mAngle = angle;
 }
 
-StyleSymbol::SymbolName StyleSymbol::getName() 
+StyleSymbol::SymbolName StyleSymbol::getName() const
 {
   return mName;
 }
@@ -305,7 +305,7 @@ void StyleSymbol::setName(SymbolName name)
   mName = name;
 }
 
-Color StyleSymbol::getColor()
+Color StyleSymbol::getColor() const
 {
   return mColor;
 }
@@ -315,7 +315,7 @@ void StyleSymbol::setColor(const Color &color)
   mColor = color;
 }
 
-Color StyleSymbol::getOutlineColor() 
+Color StyleSymbol::getOutlineColor() const
 {
   return mOutlineColor;
 }
@@ -325,7 +325,7 @@ void StyleSymbol::setOutlineColor(const Color &outlinecolor)
   mOutlineColor = outlinecolor;
 }
 
-double StyleSymbol::getScalingFactor() 
+double StyleSymbol::getScalingFactor() const
 {
   return mScalingFactor;
 }
@@ -335,12 +335,12 @@ void StyleSymbol::setScalingFactor(double scalingFactor)
   mScalingFactor = scalingFactor;
 }
 
-double StyleSymbol::getOffsetX()
+double StyleSymbol::getOffsetX() const
 {
   return mOffset[0];
 }
 
-double StyleSymbol::getOffsetY()
+double StyleSymbol::getOffsetY() const
 {
   return mOffset[1];
 }
@@ -350,7 +350,7 @@ void StyleSymbol::setOffset(double dx, double dy)
   mOffset[0] = dx; mOffset[1] = dy;
 }
 
-uint32_t StyleSymbol::getPriorityLevel() 
+uint32_t StyleSymbol::getPriorityLevel() const
 {
   return mPriorityLevel;
 }
@@ -417,7 +417,17 @@ StyleLabel::~StyleLabel()
 {
 }
 
-double StyleLabel::getAngle() 
+std::string StyleLabel::getText() const
+{
+  return mText;
+}
+
+void StyleLabel::setText(double text)
+{
+  mText = text;
+}
+
+double StyleLabel::getAngle() const
 {
   return mAngle;
 }
@@ -427,7 +437,7 @@ void StyleLabel::setAngle(double angle)
   mAngle = angle;
 }
 
-Color StyleLabel::getForegroundColor()
+Color StyleLabel::getForegroundColor() const
 {
   return mForegroundColor;
 }
@@ -437,7 +447,7 @@ void StyleLabel::setForegroundColor(const Color &color)
   mForegroundColor = color;
 }
 
-Color StyleLabel::getBackgroundColor() 
+Color StyleLabel::getBackgroundColor() const
 {
   return mBackgroundColor;
 }
@@ -447,7 +457,7 @@ void StyleLabel::setBackgroundColor(const Color &color)
   mBackgroundColor = color;
 }
 
-Color StyleLabel::getOutlineColor() 
+Color StyleLabel::getOutlineColor() const
 {
   return mOutlineColor;
 }
@@ -457,7 +467,7 @@ void StyleLabel::setOutlineColor(const Color &color)
   mOutlineColor = color;
 }
 
-Color StyleLabel::getShadowColor() 
+Color StyleLabel::getShadowColor() const
 {
   return mShadowColor;
 }
@@ -467,7 +477,7 @@ void StyleLabel::setShadowColor(const Color &color)
   mShadowColor = color;
 }
 
-double StyleLabel::getStretch()
+double StyleLabel::getStretch() const
 {
   return mStretch;
 }
@@ -477,7 +487,7 @@ void StyleLabel::setStretch(double stretch)
   mStretch = stretch;
 }
 
-StyleLabel::LabelPlacement StyleLabel::getLabelPlacement()
+StyleLabel::LabelPlacement StyleLabel::getLabelPlacement() const
 {
   return mLabelPlacement;
 }
@@ -487,7 +497,7 @@ void StyleLabel::setLabelPlacement(LabelPlacement labelPlacement)
   mLabelPlacement = labelPlacement;
 }
 
-StyleLabel::AnchorPosition StyleLabel::getAnchorPosition() 
+StyleLabel::AnchorPosition StyleLabel::getAnchorPosition() const
 {
   return mAnchorPosition;
 }
@@ -497,12 +507,12 @@ void StyleLabel::setAnchorPosition(AnchorPosition anchorPosition)
   mAnchorPosition = anchorPosition;
 }
 
-double StyleLabel::getOffsetX()
+double StyleLabel::getOffsetX() const
 {
   return mOffset[0];
 }
 
-double StyleLabel::getOffsetY()
+double StyleLabel::getOffsetY() const
 {
   return mOffset[1];
 }

@@ -12,6 +12,8 @@
 #include "geometry/entities/point.h"
 #include "geospatial/crs.h" 
 
+
+
 using namespace TL;
 using namespace TL::geometry;
 
@@ -23,7 +25,7 @@ enum class options {
 
 int main(int argc, char** argv)
 {
-
+#ifdef HAVE_GDAL
   char name[TL_MAX_FNAME];
   getFileName(getRunfile(), name, TL_MAX_FNAME);
 
@@ -57,6 +59,9 @@ int main(int argc, char** argv)
   Point3D pt_utm(350000., 4800000., 0.);
   Point3D pt_geo;
   crs.transform(pt_utm, &pt_geo);
+#endif
 
   return 0;
 }
+
+

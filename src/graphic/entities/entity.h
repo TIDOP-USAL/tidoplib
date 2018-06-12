@@ -31,7 +31,10 @@ template<typename T> class Transform;
 namespace graph
 {
 
-//datos que pueden ir asociados a una entidad.
+
+/*!
+ * \brief Datos que pueden ir asociados a una entidad.
+ */
 class TL_EXPORT GData
 {
 public:
@@ -65,7 +68,7 @@ private:
 
 /*!
  * \brief Clase base para las entidades gráficas
- *
+ * \see GraphicStyle, GData
  */
 class TL_EXPORT GraphicEntity : public GraphicStyle, public GData
 {
@@ -73,7 +76,7 @@ class TL_EXPORT GraphicEntity : public GraphicStyle, public GData
 public:
 
   /*!
-   * \brief tipos de entidades gráficas
+   * \brief Tipos de entidades gráficas
    */
   enum class Type {
     POINT_2D,                   /*!< Punto 2D */
@@ -100,15 +103,25 @@ protected:
 
   /*!
    * \brief Tipo de entidad
-   * \see type
+   * \see Type
    */
   Type mEntityType;
 
 public:
 
+  /*!
+   * \brief GraphicEntity
+   * \param type
+   */
   GraphicEntity(Type type);
+
+  /*!
+   * \brief Constructor de copia
+   * \param graphicEntity Entidad gráfica que se copia
+   */
   GraphicEntity(const GraphicEntity &graphicEntity);
-  ~GraphicEntity();
+
+  virtual ~GraphicEntity();
   
   GraphicEntity &operator = (const GraphicEntity &graphicEntity);
 
@@ -117,10 +130,10 @@ public:
    */
   Type getType() const { return mEntityType; }
 
-  ///TODO: Tiene que ser virtual...
-#ifdef HAVE_OPENCV
-  virtual void draw(cv::Mat &canvas) const = 0;
-#endif
+//  ///TODO: Tiene que ser virtual...
+//#ifdef HAVE_OPENCV
+//  virtual void draw(cv::Mat &canvas) const = 0;
+//#endif
 };
 
 
@@ -189,9 +202,15 @@ protected:
    */
   std::string mName;
 
+  /*!
+   * \brief Entidades de la capa
+   */
   std::list<std::shared_ptr<GraphicEntity>> mEntities;
 
-  std::shared_ptr<GraphicEntity> mSelectEntity;
+  /*!
+   * \brief Entidad seleccionada
+   */
+  std::shared_ptr<GraphicEntity> mSelectEntity; ///TODO: ¿Selección multiple?
 
 public:
 

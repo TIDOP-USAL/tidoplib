@@ -145,7 +145,7 @@ public:
    * \return Color de pluma
    * \see Color
    */
-  Color getPenColor();
+  Color getPenColor() const;
 
   /*!
    * \brief Establece el color de Pluma
@@ -158,7 +158,7 @@ public:
    * \brief Devuelve el ancho de pluma
    * \return Ancho de pluma
    */
-  uint8_t getPenWidth();
+  uint8_t getPenWidth() const;
 
   /*!
    * \brief Establece el ancho de pluma
@@ -170,7 +170,7 @@ public:
    * \brief Devuelve el patrón de pluma
    * \return Patrón de pluma
    */
-  std::string getPattern();
+  std::string getPattern() const;
 
   /*!
    * \brief Establece el patrón de pluma
@@ -182,7 +182,7 @@ public:
    * \brief Devuelve el nombre o id de pluma
    * \return Nombre o id de pluma
    */
-  PenName getPenName();
+  PenName getPenName() const;
 
   /*!
    * \brief Establece el nombre o id de pluma
@@ -194,7 +194,7 @@ public:
    * \brief Devuelve la forma de puntos extremos de las líneas
    * \return Forma de puntos extremos de las líneas
    */
-  PenCap getPenCap();
+  PenCap getPenCap() const;
 
   /*!
    * \brief Establece la forma de puntos extremos de las líneas
@@ -206,7 +206,7 @@ public:
    * \brief Devuelve la forma del punto de unión (vértice) de líneas
    * \return Forma del punto de unión (vértice) de líneas
    */
-   PenJoin getPenJoin();
+   PenJoin getPenJoin() const;
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
@@ -218,7 +218,7 @@ public:
    * \brief Devuelve el desplazamiento desde el centro de la línea.
    * \return Desplazamiento desde el centro de la línea.
    */
-  int32_t getPerpendicularOffset();
+  int32_t getPerpendicularOffset() const;
 
   /*!
    * \brief Establece el desplazamiento desde el centro de la línea.
@@ -227,7 +227,7 @@ public:
    */
   void setPerpendicularOffset(int32_t perpendicularoffset);
 
-  uint32_t getPriorityLevel();
+  uint32_t getPriorityLevel() const;
 
   void setPriorityLevel(uint32_t priorityLevel);
 
@@ -321,7 +321,7 @@ public:
    * \return Color
    * \see Color
    */
-  Color getForeColor();
+  Color getForeColor() const;
 
   /*!
    * \brief Establece el color
@@ -335,7 +335,7 @@ public:
    * \return Color de fondo
    * \see Color
    */
-  Color getBackColor();
+  Color getBackColor() const;
 
   /*!
    * \brief Establece el color de fondo
@@ -348,7 +348,7 @@ public:
    * \brief Devuelve el nombre o id de pincel
    * \return Nombre o id de pincel
    */
-  BrushName getBrushName();
+  BrushName getBrushName() const;
 
   /*!
    * \brief Establece el nombre o id de pincel
@@ -361,7 +361,7 @@ public:
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle();
+  double getAngle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -374,7 +374,7 @@ public:
    * \brief Devuelve el factor de escala
    * \return Factor de escala
    */
-  double getScalingFactor();
+  double getScalingFactor() const;
 
   /*!
    * \brief Establece el factor de escala
@@ -386,13 +386,13 @@ public:
    * \brief Devuelve el espaciado en X
    * \return Espaciado en X
    */
-  double getSpacingX();
+  double getSpacingX() const;
 
   /*!
    * \brief Devuelve el espaciado en Y
    * \return Espaciado en Y
    */
-  double getSpacingY();
+  double getSpacingY() const;
 
   /*!
    * \brief Establece el espaciado en x e y
@@ -401,7 +401,7 @@ public:
    */
   void setSpacing(double spacingX, double spacingY);
 
-  uint32_t getPriorityLevel();
+  uint32_t getPriorityLevel() const;
 
   void setPriorityLevel(uint32_t priorityLevel);
 
@@ -500,7 +500,7 @@ public:
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle();
+  double getAngle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -513,7 +513,7 @@ public:
    * \brief Devuelve el nombre o id del simbolo
    * \return Nombre o id del simbolo
    */
-  SymbolName getName();
+  SymbolName getName() const;
 
   /*!
    * \brief Establece el nombre o id del simbolo
@@ -526,7 +526,7 @@ public:
    * \return Color
    * \see Color
    */
-  Color getColor();
+  Color getColor() const;
 
   /*!
    * \brief Establece el color
@@ -540,7 +540,7 @@ public:
    * \return Color de borde
    * \see Color
    */
-  Color getOutlineColor();
+  Color getOutlineColor() const;
 
   /*!
    * \brief Establece el color de borde
@@ -553,7 +553,7 @@ public:
    * \brief Devuelve el factor de escala
    * \return Factor de escala
    */
-  double getScalingFactor();
+  double getScalingFactor() const;
 
   /*!
    * \brief Establece el factor de escala
@@ -564,12 +564,12 @@ public:
   /*!
    * \brief Desplazamiento X del punto de inserción del símbolo.
    */
-  double getOffsetX();
+  double getOffsetX() const;
 
   /*!
    * \brief Desplazamiento Y del punto de inserción del símbolo.
    */
-  double getOffsetY();
+  double getOffsetY() const;
 
   /*!
    * \brief Establece el desplazamiento (Offset) del punto de inserción del simbolo
@@ -578,7 +578,7 @@ public:
    */
   void setOffset(double dx, double dy);
   
-  uint32_t getPriorityLevel();
+  uint32_t getPriorityLevel() const;
 
   void setPriorityLevel(uint32_t priorityLevel);
 
@@ -735,11 +735,22 @@ public:
   ~StyleLabel();
 
   /*!
+   * \brief Devuelve el texto de la etiqueta
+   */
+  std::string getText() const;
+
+  /*!
+   * \brief Establece el texto de la etiqueta
+   * \param[in] text Texto de la etiqueta
+   */
+  void setText(double text);
+
+  /*!
    * \brief Devuelve el ángulo de rotación
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle();
+  double getAngle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -752,7 +763,7 @@ public:
    * \brief Color de primer plano
    * \see Color
    */
-  Color getForegroundColor();
+  Color getForegroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
@@ -765,7 +776,7 @@ public:
    * \brief Color de fondo
    * \see Color
    */
-  Color getBackgroundColor();
+  Color getBackgroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
@@ -778,7 +789,7 @@ public:
    * \brief Color de contorno
    * \see Color
    */
-  Color getOutlineColor();
+  Color getOutlineColor() const;
 
   /*!
    * \brief Establece el color de contorno
@@ -791,7 +802,7 @@ public:
    * \brief Color de la sombra
    * \see Color
    */
-  Color getShadowColor();
+  Color getShadowColor() const;
 
   /*!
    * \brief Establece el color de la sombra
@@ -803,7 +814,7 @@ public:
   /*!
    * \brief Escalado en tanto por ciento
    */
-  double getStretch();
+  double getStretch() const;
 
   /*!
    * \brief Escalado en tanto por ciento
@@ -815,7 +826,7 @@ public:
    * \brief Modo de colocación de la etiqueta en las entidades
    * \see LabelPlacement
    */
-  LabelPlacement getLabelPlacement();
+  LabelPlacement getLabelPlacement() const;
 
   /*!
    * \brief Modo de colocación de la etiqueta en las entidades
@@ -828,7 +839,7 @@ public:
    * \brief Posición de anclaje de la etiqueta
    * \see AnchorPosition
    */
-  AnchorPosition getAnchorPosition();
+  AnchorPosition getAnchorPosition() const;
 
   /*!
    * \brief Posición de anclaje de la etiqueta
@@ -840,12 +851,12 @@ public:
   /*!
    * \brief Desplazamiento X del punto de inserción de la etiqueta.
    */
-  double getOffsetX();
+  double getOffsetX() const;
 
   /*!
    * \brief Desplazamiento Y del punto de inserción de la etiqueta
    */
-  double getOffsetY();
+  double getOffsetY() const;
 
   /*!
    * \brief Establece el desplazamiento (Offset) del punto de inserción de la etiqueta
@@ -966,6 +977,7 @@ public:
    * \param[in] graphicStyle Estilo
    */
   GraphicStyle &operator = (const GraphicStyle &graphicStyle);
+
 private:
 
 #ifdef HAVE_GDAL

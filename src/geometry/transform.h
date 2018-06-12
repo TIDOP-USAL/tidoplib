@@ -17,12 +17,6 @@
 #include "opencv2/imgproc.hpp"
 #endif
 
-//#ifdef HAVE_GDAL
-//#include "ogr_spatialref.h"
-//#include "ogr_p.h"
-//#include "ogr_api.h"
-//#endif
-
 #include "core/defs.h"
 #include "core/messages.h"
 #include "core/exception.h"
@@ -3200,12 +3194,17 @@ template<typename Point_t> inline
 void Helmert3D<Point_t>::update()
 {
   rotationMatrix(mOmega, mPhi, mKappa, &mR);
+#ifdef HAVE_OPENCV
   cv::Mat inv = cv::Mat(3, 3, CV_64F, mR.data()).inv();
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
       mRinv[i][j] = inv.at<double>(i, j);
     }
   }
+#elif HAVE_EIGEN
+  Eigen::Map<Matrix<double, 3, 3, RowMajor> > mat(mR.data());
+  mat = mat.inverse();
+#endif
 }
 
 template<typename Point_t> inline
