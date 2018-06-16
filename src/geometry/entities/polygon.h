@@ -110,6 +110,11 @@ public:
    */
   Polygon<Point_t> &operator = (const Polygon<Point_t> &polygon);
 
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   */
+  Window<Point_t> getWindow() const;
 };
 
 // Definición de métodos
@@ -281,6 +286,19 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon)
     Entities2D<Point_t>::operator = (polygon);
   }
   return *this;
+}
+
+template<typename Point_t> inline
+Window<Point_t> Polygon<Point_t>::getWindow() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  }
+  return w;
 }
 
 typedef Polygon<Point<int>> PolygonI;
