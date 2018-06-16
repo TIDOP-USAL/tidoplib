@@ -42,6 +42,16 @@ GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
   return *this;
 }
 
+bool GPolygon::isMultiEntity() const
+{
+  return false;
+}
+
+bool GPolygon::isSimpleEntity() const
+{
+  return true;
+}
+
 //#ifdef HAVE_OPENCV
 //void GPolygon::draw(cv::Mat &canvas) const
 //{
@@ -84,6 +94,16 @@ GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
   return *this;
 }
 
+bool GPolygon3D::isMultiEntity() const
+{
+  return false;
+}
+
+bool GPolygon3D::isSimpleEntity() const
+{
+  return true;
+}
+
 //#ifdef HAVE_OPENCV
 //void GPolygon3D::draw(cv::Mat &canvas) const
 //{
@@ -124,6 +144,17 @@ GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
   }
   return *this;
 }
+
+bool GMultiPolygon::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiPolygon::isSimpleEntity() const
+{
+  return false;
+}
+
 //#ifdef HAVE_OPENCV
 //void GMultiPolygon::draw(cv::Mat &canvas) const
 //{
@@ -165,6 +196,17 @@ GMultiPolygon3D &GMultiPolygon3D::operator = (const GMultiPolygon3D &gMultiPolyg
   }
   return *this;
 }
+
+bool GMultiPolygon3D::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiPolygon3D::isSimpleEntity() const
+{
+  return false;
+}
+
 //#ifdef HAVE_OPENCV
 //void GMultiPolygon3D::draw(cv::Mat &canvas) const
 //{

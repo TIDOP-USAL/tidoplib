@@ -46,6 +46,16 @@ GPoint &GPoint::operator = (const GPoint &gPoint)
   return *this;
 }
 
+bool GPoint::isMultiEntity() const
+{
+  return false;
+}
+
+bool GPoint::isSimpleEntity() const
+{
+  return true;
+}
+
 //#ifdef HAVE_OPENCV
 //void GPoint::draw(cv::Mat &canvas) const
 //{
@@ -94,6 +104,16 @@ GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
   return *this;
 }
 
+bool GPoint3D::isMultiEntity() const
+{
+  return false;
+}
+
+bool GPoint3D::isSimpleEntity() const
+{
+  return true;
+}
+
 //#ifdef HAVE_OPENCV
 //void GPoint3D::draw(cv::Mat &canvas) const
 //{
@@ -136,6 +156,16 @@ GMultiPoint &GMultiPoint::operator = (const GMultiPoint &gMultiPoint)
   return *this;
 }
 
+bool GMultiPoint::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiPoint::isSimpleEntity() const
+{
+  return false;
+}
+
 //#ifdef HAVE_OPENCV
 //void GMultiPoint::draw(cv::Mat &canvas) const
 //{
@@ -176,6 +206,16 @@ GMultiPoint3D &GMultiPoint3D::operator = (const GMultiPoint3D &gMultiPoint3D)
     GraphicEntity::operator=(gMultiPoint3D);
   }
   return *this;
+}
+
+bool GMultiPoint3D::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiPoint3D::isSimpleEntity() const
+{
+  return false;
 }
 
 //#ifdef HAVE_OPENCV

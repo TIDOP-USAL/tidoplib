@@ -394,7 +394,8 @@ void Console::update()
   SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
-  sprintf(mCommand, "%c[%d,%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
+  //sprintf(mCommand, "%c[%d;%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
+  sprintf(mCommand, "\x1B[%i;%i;%im", mBold, mForeIntensity, mForeColor);
   fprintf(mStream, "%s", mCommand);
 #endif
 }

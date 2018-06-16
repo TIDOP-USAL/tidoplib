@@ -428,7 +428,7 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 /* ---------------------------------------------------------------------------------- */
 // TODO: C++17 incluye filesystem que tiene una clase path.
 //       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
-//       no soporta c++17 se utilizaría BOOST
+//       no soporta c++17 se utilizar?a BOOST
 
 // Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
 TL_DISABLE_WARNING(4996)
@@ -493,7 +493,7 @@ void Path::parse(const std::string &path)
   //  bFile = true;
   //}
 
-  // Extensión
+  // Extensi?n
   //char ext[TL_MAX_EXT];
   //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
   //  mFileExtension = ext;
@@ -544,7 +544,7 @@ void Path::parse(const std::string &path)
 #if defined WIN32
 const char *Path::getDrive()
 {
-  //TODO: Esto sólo en Windows...
+  //TODO: Esto s?lo en Windows...
   //return mPath[0].c_str();
   return mDrive.c_str();
 }
@@ -618,7 +618,7 @@ void Path::deleteDir()
 
 Path &Path::append(const std::string &dir)
 {
-  //TODO: Si el path es de un fichero no se puede añadir...
+  //TODO: Si el path es de un fichero no se puede a?adir...
   mPath.push_back(dir);
   return *this;
 }
@@ -837,7 +837,7 @@ int saveBinMat(const char *file, cv::Mat &data)
 /*                         Concurrencia, hilos y multiproceso                         */
 /* ---------------------------------------------------------------------------------- */
 
-// Añadir cancelación para poder detener los procesos en caso de error
+// A?adir cancelaci?n para poder detener los procesos en caso de error
 
 uint32_t getOptimalNumberOfThreads()
 {
@@ -893,21 +893,20 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
 }
 
 
-// Añadir método para ejecutar código de forma asincrona
+// A?adir m?todo para ejecutar c?digo de forma asincrona
 // std::async
 // Concurrency::task<T> (PPL)
 
 /* ---------------------------------------------------------------------------------- */
-/*                                 Medición de tiempos                                */
+/*                                 Medici?n de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
 
 std::string formatTimeToString(const std::string &templ)
 {
   std::string time_format;
   char *date;
-  int n = templ.size();
   try{
-    date = new char(n);
+    date = new char(30);
     struct tm _tm;
     std::time_t now = std::time(NULL);
     #ifdef __STDC_LIB_EXT1__
@@ -916,7 +915,7 @@ std::string formatTimeToString(const std::string &templ)
       _tm = *std::localtime(&now);
     #endif
 
-    std::strftime(date, sizeof(date), templ.c_str(), &_tm);
+    std::strftime(date, 30, templ.c_str(), &_tm);
     time_format = std::string(date);
   } catch (std::exception &e){
 

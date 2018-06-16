@@ -62,8 +62,8 @@ int main(int argc, char** argv)
   // Consola
   Console console;
   console.setTitle(name);                         // Titulo de la ventana de consola
-  console.setConsoleUnicode();
-  console.setFontHeight(24);                      // Se establece el tamaño de fuente
+  //console.setConsoleUnicode();
+  //console.setFontHeight(24);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
   
   // Se muestra un mensaje por consola

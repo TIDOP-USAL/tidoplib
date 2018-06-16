@@ -26,6 +26,9 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
+# MACRO PARA DEPURACION
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
+
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
 #set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
@@ -109,7 +112,7 @@ if(WITH_BOOST)
   set(Boost_USE_STATIC_RUNTIME    OFF)
   
 #TODO: Debería establecer la versión mínima de Boost en find_package
-  find_package(Boost 1.60.0 COMPONENTS filesystem system REQUIRED)
+  find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
 
   if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})

@@ -41,6 +41,17 @@ GLineString &GLineString::operator = (const GLineString &gLineString)
   return *this;
 }
 
+bool GLineString::isMultiEntity() const
+{
+  return true;
+}
+
+bool GLineString::isSimpleEntity() const
+{
+  return false;
+}
+
+
 //#ifdef HAVE_OPENCV
 //void GLineString::draw(cv::Mat &canvas) const
 //{
@@ -79,6 +90,16 @@ GLineString3D &GLineString3D::operator = (const GLineString3D &gLineString3D)
     GraphicEntity::operator=(gLineString3D);
   }
   return *this;
+}
+
+bool GLineString3D::isMultiEntity() const
+{
+  return false;
+}
+
+bool GLineString3D::isSimpleEntity() const
+{
+  return true;
 }
 
 //#ifdef HAVE_OPENCV
@@ -121,6 +142,17 @@ GMultiLineString &GMultiLineString::operator = (const GMultiLineString &gMultiLi
   }
   return *this;
 }
+
+bool GMultiLineString::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiLineString::isSimpleEntity() const
+{
+  return false;
+}
+
 //#ifdef HAVE_OPENCV
 //void GMultiLineString::draw(cv::Mat &canvas) const
 //{
@@ -161,6 +193,17 @@ GMultiLineString3D &GMultiLineString3D::operator = (const GMultiLineString3D &gM
   }
   return *this;
 }
+
+bool GMultiLineString3D::isMultiEntity() const
+{
+  return true;
+}
+
+bool GMultiLineString3D::isSimpleEntity() const
+{
+  return false;
+}
+
 //#ifdef HAVE_OPENCV
 //void GMultiLineString3D::draw(cv::Mat &canvas) const
 //{

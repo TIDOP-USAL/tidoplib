@@ -20,6 +20,7 @@
 #include "core/defs.h"
 #include "core/messages.h"
 #include "core/exception.h"
+#include "core/mathutils.h"
 #include "geometry/entities/entity.h"
 #include "geometry/entities/segment.h"
 #include "geometry/entities/bbox.h"
@@ -1970,7 +1971,7 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
       *pb++ = pts2[i].y;
     }
 
-    solveSVD(m, n, A, B, C);
+    TL::solveSVD(m, n, A, B, C);
 
     a = C[0];
     b = C[1];

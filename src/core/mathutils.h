@@ -2,6 +2,7 @@
 #define TL_CORE_MATH_UTILS_H
 
 #include "config_tl.h"
+#include "core/defs.h"
 
 #include <vector>
 #include <array>
@@ -10,7 +11,13 @@
 #include "opencv2/core/core.hpp"
 #endif
 
-#include "core/defs.h"
+#ifdef HAVE_EIGEN
+TL_DISABLE_WARNING(4714)
+#include <Eigen/SVD>
+TL_ENABLE_WARNING(4714)
+#endif
+
+
 #include "core/messages.h"
 
 namespace TL
@@ -268,7 +275,29 @@ TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveSVD(int nRows, int nCols, double *a, double *b, double *c);
+TL_EXPORT /*void solveSVD(int nRows, int nCols, double *a, double *b, double *c);*/
+inline void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
+{
+#ifdef HAVE_EIGEN
+  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+  Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  std::memcpy(c, C.data(), nCols*sizeof(double));
+#elif defined( HAVE_OPENCV)
+  cv::Mat A(nRows, nCols, CV_64F, a);
+  cv::Mat B(nRows, 1, CV_64F, b);
+  cv::Mat C(nCols, 1, CV_64F);
+  cv::solve(A, B, C, cv::DECOMP_SVD);
+  std::vector<double> v_aux;
+  cvMatToVector(C, &v_aux);
+  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+#else
+  //TODO: O implementar método alternativo o devolver error
+  // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
+  //svdcmp(a, nRows, nCols, b, float **v);
+#endif
+}
 
 /*!
  * \brief Factorización QR

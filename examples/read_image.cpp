@@ -4,6 +4,7 @@
 
 #include "core/console.h"
 #include "core/messages.h"
+#include "core/mathutils.h"
 #include "img/imgio.h"
 
 using namespace TL;

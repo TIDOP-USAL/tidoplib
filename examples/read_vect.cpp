@@ -4,7 +4,7 @@
 #include "core/console.h"
 #include "core/messages.h"
 #include "vect/vectio.h"
-
+#include "graphic/layer.h"
 
 using namespace TL;
 using namespace TL::graph;
@@ -45,5 +45,6 @@ int main(int argc, char** argv)
 
   graph::GLayer layer;
   vector.read(0, &layer);
+
   return 0;
 }

@@ -475,28 +475,28 @@ double gradiansToRadians(double gradians)
 ////  free_vector(rv1, 1, n);
 //}
 
-void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
-  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
-  Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
-  cv::solve(A, B, C, cv::DECOMP_SVD);
-  std::vector<double> v_aux;
-  cvMatToVector(C, &v_aux);
-  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
-#else
-  //TODO: O implementar método alternativo o devolver error
-  // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
-  //svdcmp(a, nRows, nCols, b, float **v);
-#endif
-}
+//void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
+//{
+//#ifdef HAVE_EIGEN
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+//  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+//  Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(nRows, nCols, CV_64F, a);
+//  cv::Mat B(nRows, 1, CV_64F, b);
+//  cv::Mat C(nCols, 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_SVD);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#else
+//  //TODO: O implementar método alternativo o devolver error
+//  // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
+//  //svdcmp(a, nRows, nCols, b, float **v);
+//#endif
+//}
 
 void solveQR(int nRows, int nCols, double *a, double *b, double *c)
 {

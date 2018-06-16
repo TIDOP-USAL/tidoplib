@@ -9,6 +9,8 @@ add_library(tl_vect ${LIB_TYPE}
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_vect PROPERTY FOLDER "modules")
 
+target_link_libraries(tl_vect tl_graphic)
+
 #instalación
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_vect

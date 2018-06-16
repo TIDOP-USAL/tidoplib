@@ -32,7 +32,7 @@ if(BUILD_EXAMPLES)
     target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (UNIX)
-      target_link_libraries(${the_target} -lpthread)
+      target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
     # Añade el proyecto de ejmplo a la carpeta 'examples'

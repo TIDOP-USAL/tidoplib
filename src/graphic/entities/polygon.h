@@ -58,6 +58,9 @@ public:
 //#ifdef HAVE_OPENCV
 //  void draw(cv::Mat &canvas) const override;
 //#endif
+
+  bool isMultiEntity() const override;
+  bool isSimpleEntity() const override;
 };
 
 /*!
@@ -100,6 +103,9 @@ public:
 //#ifdef HAVE_OPENCV
 //  void draw(cv::Mat &canvas) const override;
 //#endif
+
+  bool isMultiEntity() const override;
+  bool isSimpleEntity() const override;
 };
 
 
@@ -143,6 +149,9 @@ public:
 //#ifdef HAVE_OPENCV
 //  void draw(cv::Mat &canvas) const override;
 //#endif
+
+  bool isMultiEntity() const override;
+  bool isSimpleEntity() const override;
 };
 
 
@@ -186,6 +195,9 @@ public:
 //#ifdef HAVE_OPENCV
 //  void draw(cv::Mat &canvas) const override;
 //#endif
+
+  bool isMultiEntity() const override;
+  bool isSimpleEntity() const override;
 };
 
 

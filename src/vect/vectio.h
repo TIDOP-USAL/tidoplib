@@ -17,9 +17,6 @@ TL_DEFAULT_WARNINGS
 
 
 #include "core/utils.h"
-#include "graphic/entities/point.h"
-#include "graphic/entities/linestring.h"
-#include "graphic/entities/polygon.h"
 #include "geospatial/crs.h"
 
 class OGRFeature;
@@ -41,6 +38,23 @@ namespace TL
 class VectorGraphics;
 class VectorOptions;
 
+namespace graph
+{
+class GraphicEntity;
+class GPoint;
+class GLineString;
+class GPolygon;
+class GMultiPoint;
+class GMultiLineString;
+class GMultiPolygon;
+class GLayer;
+class GPoint3D;
+class GLineString3D;
+class GPolygon3D;
+class GMultiPoint3D;
+class GMultiLineString3D;
+class GMultiPolygon3D;
+}
 
 enum class Mode
 {
