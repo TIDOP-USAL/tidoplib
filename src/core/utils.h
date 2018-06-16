@@ -735,6 +735,9 @@ void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function
 /*                                   Tiempo                                           */
 /* ---------------------------------------------------------------------------------- */
 
+/*!
+ * \brief Genera una cadena con el tiempo actual en el formato especificado
+ */
 TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H:%M:%S");
 
 /*!
@@ -745,7 +748,7 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  * uint64_t time_ini = getTickCount();
  * ...
  * double time = (getTickCount() - time_ini) / 1000.;
- * consolePrintInfo("Time %f", time);
+ * msgInfo("Time %f", time);
  * \endcode
  */
 TL_EXPORT uint64_t getTickCount();

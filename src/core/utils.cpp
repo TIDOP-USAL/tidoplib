@@ -493,7 +493,7 @@ void Path::parse(const std::string &path)
   //  bFile = true;
   //}
 
-  // Extensi?n
+  // Extensión
   //char ext[TL_MAX_EXT];
   //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
   //  mFileExtension = ext;
@@ -893,35 +893,28 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
 }
 
 
-// A?adir m?todo para ejecutar c?digo de forma asincrona
+///TODO: Añadir método para ejecutar código de forma asincrona
 // std::async
 // Concurrency::task<T> (PPL)
 
 /* ---------------------------------------------------------------------------------- */
-/*                                 Medici?n de tiempos                                */
+/*                                 Medición de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
 
 std::string formatTimeToString(const std::string &templ)
 {
   std::string time_format;
-  char *date;
-  try{
-    date = new char(30);
-    struct tm _tm;
-    std::time_t now = std::time(NULL);
-    #ifdef __STDC_LIB_EXT1__
-      _tm = *std::localtime_s(&now, &_tm);
-    #else
-      _tm = *std::localtime(&now);
-    #endif
+  char date[80];
+  struct tm _tm;
+  std::time_t now = std::time(NULL);
+#ifdef __STDC_LIB_EXT1__
+    _tm = *std::localtime_s(&now, &_tm);
+#else
+    _tm = *std::localtime(&now);
+#endif
 
-    std::strftime(date, 30, templ.c_str(), &_tm);
-    time_format = std::string(date);
-  } catch (std::exception &e){
-
-  }
-
-  if (date) delete date;
+  std::strftime(date, 80, templ.c_str(), &_tm);
+  time_format = std::string(date);
 
   return time_format;
 }
