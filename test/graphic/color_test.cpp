@@ -676,7 +676,7 @@ TEST(Color, fromHSL)
   Color c;
   for (int i = 0; i < color.size(); i++) {
     c.fromHSL(hsl[i][0], hsl[i][1], hsl[i][2]);
-    EXPECT_EQ(color[i], static_cast<int>(c));
+    EXPECT_EQ(color[i], static_cast<unsigned int>(c));
   }
 }
 

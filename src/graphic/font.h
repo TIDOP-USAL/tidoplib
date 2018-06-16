@@ -12,17 +12,24 @@
 namespace TL
 {
 
+/*! \addtogroup GraphicEntities
+ *  \{
+ */
+
 namespace graph
 {
 
 /*!
- * \brief 
+ * \brief Clase Fuente
  */
 class TL_EXPORT Font
 {
 
 public:
 
+  /*!
+   * \brief Estilo de fuente
+   */
   enum class Style : uint8_t
   {
     DEFAULT = 0 << 0,
@@ -139,6 +146,11 @@ public:
   void setUnderline(bool active);
   void setStrikethrough(bool active);
 
+  /*!
+   * \brief Operador de asignacion
+   * \param font Fuente
+   * \return
+   */
   Font &operator = (const Font &font);
 };
 
@@ -146,6 +158,7 @@ ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)
 
 } // End namespace graph
 
+/*! \} */ // end of GraphicEntities
 
 } // End namespace TL
 

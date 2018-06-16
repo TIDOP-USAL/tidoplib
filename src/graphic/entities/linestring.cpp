@@ -41,29 +41,29 @@ GLineString &GLineString::operator = (const GLineString &gLineString)
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GLineString::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GLineString::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 /* ---------------------------------------------------------------------------------- */
 
 GLineString3D::GLineString3D() 
-  : LineString<Point3<double>>(), 
+  : LineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::LINESTRING_3D)
 {
 }
 
-GLineString3D::GLineString3D(const LineString<Point3<double>> &lineString) 
-  : LineString<Point3<double>>(lineString), 
+GLineString3D::GLineString3D(const LineString3D<Point3<double>> &lineString)
+  : LineString3D<Point3<double>>(lineString),
     GraphicEntity(GraphicEntity::Type::LINESTRING_3D)
 {
 }
 
 GLineString3D::GLineString3D(const GLineString3D &lineString) 
-  : LineString<Point3<double>>(lineString), 
+  : LineString3D<Point3<double>>(lineString),
     GraphicEntity(lineString)
 {
 }
@@ -75,18 +75,18 @@ GLineString3D::~GLineString3D()
 GLineString3D &GLineString3D::operator = (const GLineString3D &gLineString3D)
 {
   if (this != &gLineString3D) {
-    LineString<Point3<double>>::operator=(gLineString3D);
+    LineString3D<Point3<double>>::operator=(gLineString3D);
     GraphicEntity::operator=(gLineString3D);
   }
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GLineString3D::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GLineString3D::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -121,30 +121,30 @@ GMultiLineString &GMultiLineString::operator = (const GMultiLineString &gMultiLi
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GMultiLineString::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiLineString::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
 
 GMultiLineString3D::GMultiLineString3D()
-  : MultiLineString<Point3<double>>(), 
+  : MultiLineString3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::MULTILINE_3D)
 {
 }
 
-GMultiLineString3D::GMultiLineString3D(const MultiLineString<geometry::Point3<double>> &multiLineString)
-  : MultiLineString<Point3<double>>(multiLineString), 
+GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<geometry::Point3<double>> &multiLineString)
+  : MultiLineString3D<Point3<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::MULTILINE_3D)
 {
 }
 
 GMultiLineString3D::GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D)
-  : MultiLineString<Point3<double>>(gMultiLineString3D), 
+  : MultiLineString3D<Point3<double>>(gMultiLineString3D),
     GraphicEntity(gMultiLineString3D)
 {
 }
@@ -156,17 +156,17 @@ GMultiLineString3D::~GMultiLineString3D()
 GMultiLineString3D &GMultiLineString3D::operator = (const GMultiLineString3D &gMultiLineString3D)
 {
   if (this != &gMultiLineString3D) {
-    MultiLineString<Point3<double>>::operator=(gMultiLineString3D);
+    MultiLineString3D<Point3<double>>::operator=(gMultiLineString3D);
     GraphicEntity::operator=(gMultiLineString3D);
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GMultiLineString3D::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiLineString3D::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 /* ---------------------------------------------------------------------------------- */
 

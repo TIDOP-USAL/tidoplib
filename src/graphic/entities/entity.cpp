@@ -16,9 +16,6 @@ TL_DEFAULT_WARNINGS
 #endif
 
 
-//TODO: los métodos draw creo que se deberian quitar y crear una clase Painter virtual
-//      y unas clases que hereden de esta (para OpenCv, Qt, ...)
-
 namespace TL
 {
 

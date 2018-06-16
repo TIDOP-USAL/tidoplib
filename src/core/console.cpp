@@ -304,6 +304,8 @@ void Console::setTitle(const char *title)
 {
 #ifdef WIN32
   SetConsoleTitleA(title);
+#else
+  //printf("%c]0;%s%c", '\033', title, '\007');
 #endif
 }
 

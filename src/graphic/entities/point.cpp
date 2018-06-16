@@ -45,14 +45,15 @@ GPoint &GPoint::operator = (const GPoint &gPoint)
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GPoint::draw(cv::Mat &canvas) const
-{
 
-  // TODO: Hay que incluir la transformación terreno-pantalla
-  //cv::drawMarker(canvas, ..... );
-}
-#endif
+//#ifdef HAVE_OPENCV
+//void GPoint::draw(cv::Mat &canvas) const
+//{
+
+//  // TODO: Hay que incluir la transformación terreno-pantalla
+//  //cv::drawMarker(canvas, ..... );
+//}
+//#endif
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -92,12 +93,13 @@ GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GPoint3D::draw(cv::Mat &canvas) const
-{
 
-}
-#endif
+//#ifdef HAVE_OPENCV
+//void GPoint3D::draw(cv::Mat &canvas) const
+//{
+
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -134,12 +136,12 @@ GMultiPoint &GMultiPoint::operator = (const GMultiPoint &gMultiPoint)
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GMultiPoint::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiPoint::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -176,12 +178,12 @@ GMultiPoint3D &GMultiPoint3D::operator = (const GMultiPoint3D &gMultiPoint3D)
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GMultiPoint3D::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiPoint3D::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */

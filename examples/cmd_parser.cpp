@@ -29,9 +29,9 @@ enum class options {
 int main(int argc, char** argv)
 {
 
-  char name[TL_MAX_FNAME];
-  getFileName(getRunfile(), name, TL_MAX_FNAME);
-
+//  char name[TL_MAX_FNAME];
+//  getFileName(getRunfile(), name, TL_MAX_FNAME);
+  const char *name = "Consola";
   // Se definen los parámetros y opciones
   CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
   cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");
@@ -68,6 +68,7 @@ int main(int argc, char** argv)
   
   // Se muestra un mensaje por consola
   msgInfo("prueba");
+  msgWarning("Warning");
 
   return 0;
 }

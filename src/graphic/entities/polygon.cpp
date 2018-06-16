@@ -42,31 +42,31 @@ GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GPolygon::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GPolygon::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
 
 
 GPolygon3D::GPolygon3D() 
-  : Polygon<Point3<double>>(), 
+  : Polygon3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::POLYGON_3D)
 {
 }
 
-GPolygon3D::GPolygon3D(const Polygon<Point3<double>> &polygon) 
-  : Polygon<Point3<double>>(polygon), 
+GPolygon3D::GPolygon3D(const Polygon3D<Point3<double>> &polygon)
+  : Polygon3D<Point3<double>>(polygon),
     GraphicEntity(GraphicEntity::Type::POLYGON_3D)
 {
 }
 
 GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D) 
-  : Polygon<Point3<double>>(gPolygon3D), 
+  : Polygon3D<Point3<double>>(gPolygon3D),
     GraphicEntity(gPolygon3D)
 {
 }
@@ -78,18 +78,18 @@ GPolygon3D::~GPolygon3D()
 GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
 {
   if (this != &gPolygon3D) {
-    Polygon<Point3<double>>::operator=(gPolygon3D);
+    Polygon3D<Point3<double>>::operator=(gPolygon3D);
     GraphicEntity::operator=(gPolygon3D);
   }
   return *this;
 }
 
-#ifdef HAVE_OPENCV
-void GPolygon3D::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GPolygon3D::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -124,31 +124,31 @@ GMultiPolygon &GMultiPolygon::operator = (const GMultiPolygon &gMultiPolygon)
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GMultiPolygon::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiPolygon::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
 
 
 GMultiPolygon3D::GMultiPolygon3D()
-  : MultiPolygon<Point3<double>>(), 
+  : MultiPolygon3D<Point3<double>>(),
     GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_3D)
 {
 }
 
-GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon<Point3<double>> &multiPolygon)
-  : MultiPolygon<Point3<double>>(multiPolygon), 
+GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon)
+  : MultiPolygon3D<Point3<double>>(multiPolygon),
     GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_3D)
 {
 }
 
 GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D)
-  : MultiPolygon<Point3<double>>(gMultiPolygon3D), 
+  : MultiPolygon3D<Point3<double>>(gMultiPolygon3D),
     GraphicEntity(gMultiPolygon3D)
 {
 }
@@ -160,17 +160,17 @@ GMultiPolygon3D::~GMultiPolygon3D()
 GMultiPolygon3D &GMultiPolygon3D::operator = (const GMultiPolygon3D &gMultiPolygon3D)
 {
   if (this != &gMultiPolygon3D) {
-    MultiPolygon<Point3<double>>::operator=(gMultiPolygon3D);
+    MultiPolygon3D<Point3<double>>::operator=(gMultiPolygon3D);
     GraphicEntity::operator=(gMultiPolygon3D);
   }
   return *this;
 }
-#ifdef HAVE_OPENCV
-void GMultiPolygon3D::draw(cv::Mat &canvas) const
-{
+//#ifdef HAVE_OPENCV
+//void GMultiPolygon3D::draw(cv::Mat &canvas) const
+//{
 
-}
-#endif
+//}
+//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
