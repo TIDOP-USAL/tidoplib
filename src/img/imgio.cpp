@@ -1262,12 +1262,12 @@ RasterGraphics::Status RasterGraphics::write(const unsigned char *buff, Helmert2
 //  return File::Status::SUCCESS;
 //}
 
-RasterGraphics::Status RasterGraphics::createCopy(const char *file) 
+RasterGraphics::Status RasterGraphics::createCopy(const char *fileOut)
 {
   //TODO: Comprobar si se puede convertir directamente entre formatos. 
   if (!mImageFormat) return Status::FAILURE;
   MessageManager::pause();
-  Status status = mImageFormat->createCopy(file);
+  Status status = mImageFormat->createCopy(fileOut);
   MessageManager::resume();
   if (status == Status::FAILURE) {
     // No se puede hacer directamente la copia
@@ -1292,7 +1292,7 @@ RasterGraphics::Status RasterGraphics::createCopy(const char *file)
     }
 
     RasterGraphics imageOut;
-    if (imageOut.open(file, Mode::Create) != Status::OPEN_FAIL) {
+    if (imageOut.open(fileOut, Mode::Create) != Status::OPEN_FAIL) {
       if (imageOut.create(mRows, mCols, mBands, outDataType) != Status::FAILURE) {
         for (int r = 0; r < mRows - 1; r++) {
 

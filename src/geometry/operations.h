@@ -449,7 +449,8 @@ double distPointToPolygon(const Point_t &pt, const Polygon3D<Point_t> &polygon)
  * \brief Calcula la distancia de un punto a un poligono 3d mediante iteradores
  *
  * \param[in] pt Punto
- * \param[in] polygon Poligono
+ * \param[in] it_begin Iterador al principio del poligono
+ * \param[in] it_end Iterador al final del poligono
  * \return Distancia de un punto a un poligono
  */
 template<typename Point_t, typename Polygon_it_t> inline 
@@ -538,8 +539,8 @@ bool projectPointToPlane(const Point_t &point, const std::array<double, 4> &plan
  * \brief Proyecta un poligono en un plano
  *
  * \param[in] polygon Puntos que definen el plano
- * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] projectPolygon Poligono proyectado
+ * \param[in] plane Parametros de la ecuación general del plano (A, B, C, D)
+ * \param[out] projectPolygon Poligono proyectado
  */
 template<typename Point_t>
 TL_EXPORT inline void projectPolygonToPlane(const Polygon3D<Point_t> &polygon, const std::array<double, 4> &plane, Polygon3D<Point_t> *projectPolygon)
@@ -961,8 +962,9 @@ int projectPointInSegment3D(const Point_t &segment_pt1, const Point_t &segment_p
 
 /*!
  * \brief Calcula la distancia de un punto a un segmento de linea.
+ * \param[in] segment_pt1 Primer punto del segmento
+ * \param[in] segment_pt2 Segundo punto del segmento
  * \param[in] pt Punto
- * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
 template<typename Point_t> inline
@@ -978,8 +980,9 @@ double distPointToSegment(const Point_t &segment_pt1, const Point_t &segment_pt2
 
 /*!
  * \brief Calcula la distancia de un punto a un segmento de linea 3D.
+ * \param[in] segment_pt1 Primer punto del segmento
+ * \param[in] segment_pt2 Segundo punto del segmento
  * \param[in] pt Punto
- * \param[in] ln Linea
  * \return Distancia de un punto a una segmento de linea
  */
 template<typename Point_t> inline
@@ -1001,14 +1004,18 @@ bool collinearPoints(const Point_t &segment_pt1, const Point_t &segment_pt2, con
 }
 
 /*!
- * \brief Intersect de dos segmentos de línea
- * \param ln1 Primer segmento
- * \param ln2 Segundo segmento
- * \param pt Punto de intersección
+ * \brief Intersección de dos segmentos de línea
+ * \param[in] segment1_pt1 Primer punto del segmento 1
+ * \param[in] segment1_pt2 Segundo punto del segmento 1
+ * \param[in] segment2_pt1 Primer punto del segmento 2
+ * \param[in] segment2_pt2 Segundo punto del segmento 2
+ * \param[out] pt Punto de intersección
  * \return
  */
 template <typename Point_t>
-inline int intersectSegments(const Point_t &segment1_pt1, const Point_t &segment1_pt2, const Point_t &segment2_pt1, const Point_t &segment2_pt2, Point_t *pt)
+inline int intersectSegments(const Point_t &segment1_pt1, const Point_t &segment1_pt2,
+                             const Point_t &segment2_pt1, const Point_t &segment2_pt2,
+                             Point_t *pt)
 {
   int iret = 0;
   std::array<double, 2> vs1;

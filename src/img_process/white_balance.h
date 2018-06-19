@@ -106,7 +106,7 @@ public:
 
   /*!
    * \brief Constructora WhitePatch
-   * \param[in] color Luz blanca. Por defecto (255, 255, 255)
+   * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
   WhitePatch(const Color &white = Color(Color::NAME::White))
     : ImgProcessing(process_type::WHITEPATCH), mWhite(white) { }
@@ -122,7 +122,7 @@ public:
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] color Luz blanca. Por defecto (255, 255, 255)
+   * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
   void setParameters(const Color &white = Color(Color::NAME::White));
 

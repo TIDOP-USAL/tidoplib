@@ -237,14 +237,6 @@ public:
   Color(double hue, double saturation, double value);
 
   /*!
-   * \brief Constructora HSL (Hue, Saturation, Lightness) o HSI (Hue, Saturation, Intensity)
-   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
-   * \param[in] saturation Saturación
-   * \param[in] lightness Luminosidad
-   */
-  //Color(double hue, double saturation, double lightness);
-
-  /*!
    * \brief Constructora
    * \param[in] color Color como cadena (hexadecimal)
    */
@@ -258,23 +250,9 @@ public:
   Color(const Color::NAME &color);
 
   /*!
-   * \brief Constructora
-   * \param[in] color Color como cv::Scalar de OpenCV
-   */
-//#ifdef HAVE_OPENCV
-//  Color(const cv::Scalar &color);
-//#endif
-
-  /*!
    * \brief Destructora
    */
   ~Color() {}
-  
-  /*!
-   * \brief Devuelve el valor de color para el tipo indicado
-   */
-  //template<typename T>
-  //T get() const;
 
   /*!
    * \brief Devuelve la componente azul
@@ -341,7 +319,7 @@ public:
    * \param[in] Y Y
    * \param[in] Z Z
    */
-  //void fromXYZ(double X, double Y, double Z);
+  void fromXYZ(double X, double Y, double Z);
 
   /*!
    * \brief Obtiene un color a partir de sus valores CIE Luv
@@ -349,7 +327,7 @@ public:
    * \param[in] u Información del color
    * \param[in] v Información del color
    */
-  //void fromLuv(double L, double u, double v);
+  void fromLuv(double L, double u, double v);
 
   /*!
    * \brief Obtiene un color a partir de sus valores CIE Lab
@@ -357,7 +335,7 @@ public:
    * \param[in] a Referencia respecto a la relación rojo/verde
    * \param[in] b Relación amarillo/azul
    */
-  //void fromLab(double L, double a, double b);
+  void fromLab(double L, double a, double b);
 
   /*!
    * \brief Convierte un color a CMYK
@@ -469,12 +447,14 @@ public:
 TL_DEPRECATED("Color(color).getBlue()")
 TL_EXPORT int getBlue(int color);
 
+
+TL_DEPRECATED("Color(color).getGreen()")
 /*!
  * \brief Obtiene la componente verde de un color
  * \param[in] color Color representado como un entero
  * \return Componente verde
+ * \deprecated Use en su lugar Color::getGreen()
  */
-TL_DEPRECATED("Color(color).getGreen()")
 TL_EXPORT int getGreen(int color);
 
 /*!

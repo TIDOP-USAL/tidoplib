@@ -163,20 +163,20 @@ void Color::fromHSL(double hue, double saturation, double lightness)
          | ((red << 16) & 0xFF0000);
 }
 
-//void Color::fromXYZ(double X, double Y, double Z)
-//{
-//
-//}
+void Color::fromXYZ(double X, double Y, double Z)
+{
 
-//void Color::fromLuv(double L, double u, double v)
-//{
-//
-//}
+}
 
-//void Color::fromLab(double L, double a, double b)
-//{
-//
-//}
+void Color::fromLuv(double L, double u, double v)
+{
+
+}
+
+void Color::fromLab(double L, double a, double b)
+{
+
+}
 
 void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  const
 {

@@ -858,9 +858,9 @@ public:
 
   /*!
    * \brief Constructora de la clase Progress
-   * \param[min] min Valor mínimo
-   * \param[min] max Valor máximo
-   * \param[min] msg Mensaje opcional con información del proceso.
+   * \param[in] min Valor mínimo
+   * \param[in] max Valor máximo
+   * \param[in] msg Mensaje opcional con información del proceso.
    */
   Progress(double min, double max, const std::string &msg = "");
 

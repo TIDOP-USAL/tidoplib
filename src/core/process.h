@@ -408,7 +408,7 @@ public:
 
   /*!
    * \brief Constructor de lista
-   * \param[in] Listado de procesos
+   * \param[in] procList Listado de procesos
    */
   BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList);
 

@@ -43,7 +43,8 @@ enum class Thinning
  * http://agcggs680.pbworks.com/f/Zhan-Suen_algorithm.pdf
  * https://web.archive.org/web/20160322113207/http://opencv-code.com/quick-tips/implementation-of-thinning-algorithm-in-opencv/
  * https://web.archive.org/web/20160314104646/http://opencv-code.com/quick-tips/implementation-of-guo-hall-thinning-algorithm/
- * \param image Imagen binaria
+ * \param[in] image Imagen de entrada.
+ * \param[out] out Imagen de salida
  * \param thin Método utilizado. Puede ser ZHANG_SUEN o GUO_HALL
  * \see Thinning
  */

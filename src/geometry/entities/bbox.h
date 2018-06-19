@@ -88,14 +88,14 @@ public:
 
   /*!
    * \brief Sobrecarga del operador  de asignación
-   * \param[in] bbox Bbox que se asigna
+   * \param[in] box Bbox que se asigna
    * \return Referencia al Bbox
    */
   Box &operator = (const Box &box);
 
   /*!
    * \brief Sobrecarga del operador 'igual que'
-   * \param[in] bbox bbox con el que se compara
+   * \param[in] box bbox con el que se compara
    * \return true si ambos bbox son iguales
    */
   bool operator == (const Box &box) const;

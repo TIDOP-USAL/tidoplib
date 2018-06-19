@@ -245,7 +245,7 @@ public:
 
   /*!
    * \brief Establece el tamaño de la cache de sistemas de referencia
-   * \param[int] size
+   * \param[in] size
    */
   void reserve(size_type size);
 
@@ -253,7 +253,7 @@ public:
    * \brief Modifica el tamaño del cache de sistemas de referencia
    * Si el tamaño actual es menor que count, se añaden elementos adicionales. Si el tamaño actual 
    * es mayor que count el cache de sistemas de referencia se trunca al número de elementos indicados.
-   * \param[int] count Nuevo tamaño de la cache de sistemas de referencia
+   * \param[in] count Nuevo tamaño de la cache de sistemas de referencia
    */
   void resize(size_type count);
 

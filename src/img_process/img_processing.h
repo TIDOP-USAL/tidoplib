@@ -114,7 +114,7 @@ public:
    * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
    * \see ImgProcessing::Status
    */
-  virtual ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const = 0 ;
+  virtual ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const = 0;
 
 };
 
@@ -156,7 +156,7 @@ public:
 
   /*!
    * \brief Constructor de lista
-   * \param[in] Listado de procesos
+   * \param[in] imgProcList Listado de procesos
    */
   ImgProcessingList(std::initializer_list<std::shared_ptr<ImgProcessing>> imgProcList) : mProcessList(imgProcList) {}
 
@@ -288,8 +288,9 @@ public:
    * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
    * \param[in] iterations
    * \param[in] borderType Método de extrapolación
+   * \param[in] borderValue
    */
-  void setParameters(int size, cv::MorphShapes shapes = cv::MORPH_RECT, 
+  void setParameters(int size, cv::MorphShapes type = cv::MORPH_RECT,
     cv::Point anchor = cv::Point(-1, -1), int iterations = 1, 
     int borderType = cv::BORDER_CONSTANT, const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue());
 
@@ -313,12 +314,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue 
    */
-  Dilate(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1), 
+  Dilate(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
          int iterations = 1, int borderType = cv::BORDER_CONSTANT, 
          const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_DILATION)
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue );
+    setParameters(size, type, anchor, iterations, borderType, borderValue );
   }
 
 };
@@ -342,12 +343,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue
    */
-  Erotion(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1), 
+  Erotion(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_EROTION) 
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue);
+    setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
 
 };
@@ -372,12 +373,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue
    */
-  Opening(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
+  Opening(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_OPENING)
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue);
+    setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
 
 };
@@ -402,12 +403,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue
    */
-  Closing(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
+  Closing(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_CLOSING)
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue);
+    setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
 
 };
@@ -432,12 +433,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue
    */
-  Gradient(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
+  Gradient(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_GRADIENT)
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue);
+    setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
 };
 
@@ -461,12 +462,12 @@ public:
    * \param[in] borderType Método de extrapolación
    * \param[in] borderValue
    */
-  TopHat(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
+  TopHat(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
     : morphologicalOperation(process_type::MORPH_TOPHAT)
   {
-    setParameters(size, shapes, anchor, iterations, borderType, borderValue);
+    setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
 
 };
@@ -485,7 +486,7 @@ public:
   /*!
    * \brief Constructora clase Closing
    * \param[in] size
-   * \param[in] type
+   * \param[in] shapes
    * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
    * \param[in] iterations
    * \param[in] borderType Método de extrapolación

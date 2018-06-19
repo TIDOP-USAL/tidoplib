@@ -106,6 +106,9 @@ public:
   //typedef uint8_t JPEGQUALITY;
   //typedef uint8_t ZLEVEL;
 
+  /*!
+   * \brief Propiedades de BIGTIFF
+   */
   enum class BIGTIFF : uint8_t
   {
     YES,            /*!< Fuerza BigTiff. */

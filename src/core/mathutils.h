@@ -201,17 +201,6 @@ TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
-//... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
-
-/*!
- * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
- * \param[in] rX Rotación respecto al eje X en radianes
- * \param[in] rY Rotación respecto al eje Y en radianes
- * \param[in] rZ Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-//TL_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
-
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
  * \param[in] rX Rotación respecto al eje X en radianes
@@ -643,7 +632,7 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
- * \param[int] YX Si es true (valor por defecto) se cálcula la recta de regresión de Y sobre X. En caso contrario se calcula la recta de X sobre Y.
+ * \param[in] YX Si es true (valor por defecto) se cálcula la recta de regresión de Y sobre X. En caso contrario se calcula la recta de X sobre Y.
  * \return Coeficiente de correlacción. Valor entre -1 (pendiente negativa) y 1 (pendiente positiva). Valores próximos a cero suponen un mal ajuste
  *
  * <h4>Ejemplo de determinación de la recta de mejor ajuste</h4>
@@ -717,8 +706,8 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  * \f$ A = 10^b \f$<BR>
  *
  * \param[in] pts Puntos
- * \param[out] A 
- * \param[out] r 
+ * \param[out] A
+ * \param[out] r
  */
 //template<typename Point_t> inline 
 //void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
@@ -744,7 +733,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  *
  * \param[in] points Puntos que definen el plano
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \param[in] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
 template<typename T> inline 
@@ -778,7 +767,7 @@ double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &p
  *
  * \param[in] points Puntos que definen el plano
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \param[in] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
 template<typename Point_t> inline 

@@ -8,7 +8,6 @@
 #include "opencv2/imgproc/imgproc.hpp"
 
 #include "core/defs.h"
-//#include "graphic_entities/color.h"
 #include "img_process/img_processing.h"
 
 namespace TL
@@ -303,6 +302,7 @@ public:
    * \param[in] borderType Método de extrapolación
    */
   void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
+
 };
 
 /*!
