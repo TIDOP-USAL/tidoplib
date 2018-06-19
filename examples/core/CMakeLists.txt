@@ -1,3 +1,4 @@
+# Ejemplos módulo Core
 
 if(BUILD_TL_CORE)
 
@@ -9,7 +10,7 @@ if(BUILD_TL_CORE)
   endif()
 
   
-  # -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
   MACRO(DEFINE_EXAMPLE name srcs)
 
@@ -28,15 +29,15 @@ if(BUILD_TL_CORE)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejmplo a la carpeta 'examples'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "examples")
+    # Añade el proyecto de ejmplo a la carpeta 'examples/core'
+    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/core")
 
     set_target_properties(${the_target} PROPERTIES
-      OUTPUT_NAME "cpp-${sample_kind}-${name}"
+      OUTPUT_NAME "${sample_kind}-${name}"
       PROJECT_LABEL "(${sample_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "examples")
+      set_target_properties(${the_target} PROPERTIES FOLDER "examples/core")
     endif()
 
     if(WIN32)

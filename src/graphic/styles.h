@@ -925,19 +925,19 @@ public:
   {
   }
 
-#ifdef HAVE_GDAL
-  
-  ///TODO: creo que seria mejor una clase ReaderStyles 
-  /*!
-   * \brief Lee los estilos de GDAL/OGR
-   * \param[in] ogrStyle Estilos ogr
-   * \return
-   */
-  bool readFromOGR(OGRStyleMgr *ogrStyle);
-
-#endif 
-
-  bool write();
+//#ifdef HAVE_GDAL
+//  
+//  ///TODO: creo que seria mejor una clase ReaderStyles 
+//  /*!
+//   * \brief Lee los estilos de GDAL/OGR
+//   * \param[in] ogrStyle Estilos ogr
+//   * \return
+//   */
+//  bool readFromOGR(OGRStyleMgr *ogrStyle);
+//
+//#endif 
+//
+//  bool write();
 
 
   StylePen *getStylePen() const;
@@ -980,33 +980,33 @@ public:
 
 private:
 
-#ifdef HAVE_GDAL
-
-  /*!
-   * \brief Lee el estilo de pincel
-   * \param[in] ogrStylePen Estilo pincel GDAL
-   */
-  void readStylePen(OGRStylePen *ogrStylePen);
-
-  /*!
-   * \brief Lee el estilo de pluma
-   * \param[in] ogrStylePen Estilo pluma GDAL
-   */
-  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
-
-  /*!
-   * \brief Lee el estilo símbolo
-   * \param[in] ogrStylePen Estilo símbolo GDAL
-   */
-  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
-
-  /*!
-   * \brief Lee el estilo etiqueta
-   * \param[in] ogrStylePen Estilo etiqueta GDAL
-   */
-  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
-
-#endif
+//#ifdef HAVE_GDAL
+//
+//  /*!
+//   * \brief Lee el estilo de pincel
+//   * \param[in] ogrStylePen Estilo pincel GDAL
+//   */
+//  void readStylePen(OGRStylePen *ogrStylePen);
+//
+//  /*!
+//   * \brief Lee el estilo de pluma
+//   * \param[in] ogrStylePen Estilo pluma GDAL
+//   */
+//  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
+//
+//  /*!
+//   * \brief Lee el estilo símbolo
+//   * \param[in] ogrStylePen Estilo símbolo GDAL
+//   */
+//  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
+//
+//  /*!
+//   * \brief Lee el estilo etiqueta
+//   * \param[in] ogrStylePen Estilo etiqueta GDAL
+//   */
+//  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+//
+//#endif
 };
 
 

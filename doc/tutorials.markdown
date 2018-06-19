@@ -13,6 +13,9 @@ Guía de estilo
 Guía de desarrollo
 ------------------
 
+- @ref macros
+
+
 Guía de instalación de librerías externas
 -----------------------------------------
 

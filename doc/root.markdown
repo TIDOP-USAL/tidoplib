@@ -20,8 +20,7 @@ El proyecto se estructura actualmente en los siguientes directorios:
 - test: Proyectos de test
 - third_party: librerías (siempre que su tamaño lo recomiende) y código de terceros.
 
-Modulos
--------
+### Modulos
 
 - @ref angleConversion
 - @ref utilities
@@ -30,12 +29,10 @@ Modulos
 - @ref ImgProc
 - @ref trfGroup
 
-Test unitarios
---------------
+### Test unitarios
 
 Test unitarios mediante Google C++ test framework
 
 Tutoriales
-----------
 
 @ref tutorials

@@ -52,13 +52,6 @@ bool GPolygon::isSimpleEntity() const
   return true;
 }
 
-//#ifdef HAVE_OPENCV
-//void GPolygon::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -104,13 +97,6 @@ bool GPolygon3D::isSimpleEntity() const
   return true;
 }
 
-//#ifdef HAVE_OPENCV
-//void GPolygon3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -154,13 +140,6 @@ bool GMultiPolygon::isSimpleEntity() const
 {
   return false;
 }
-
-//#ifdef HAVE_OPENCV
-//void GMultiPolygon::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -206,13 +185,6 @@ bool GMultiPolygon3D::isSimpleEntity() const
 {
   return false;
 }
-
-//#ifdef HAVE_OPENCV
-//void GMultiPolygon3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */

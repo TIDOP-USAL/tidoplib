@@ -22,7 +22,8 @@ namespace graph
 class GraphicEntity;
 
 /*!
- * Capa. Puede contener elementos de uno o varios tipos. Pueden ser entidades gráficas o simples
+ * Capa. Puede contener elementos de uno o varios tipos. Pueden 
+ * ser entidades gráficas o simples
  */
 class TL_EXPORT GLayer
 {

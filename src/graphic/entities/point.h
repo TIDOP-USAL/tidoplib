@@ -28,9 +28,6 @@ public:
   ~GPoint();
 
   GPoint &operator = (const GPoint &gPoint);
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -48,9 +45,6 @@ public:
   ~GPoint3D();
 
   GPoint3D &operator = (const GPoint3D &gPoint);
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -69,9 +63,6 @@ public:
   ~GMultiPoint();
 
   GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -90,9 +81,6 @@ public:
   ~GMultiPoint3D();
 
   GMultiPoint3D &operator = (const GMultiPoint3D &gMultiPoint);
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

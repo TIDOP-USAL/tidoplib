@@ -56,15 +56,6 @@ bool GPoint::isSimpleEntity() const
   return true;
 }
 
-//#ifdef HAVE_OPENCV
-//void GPoint::draw(cv::Mat &canvas) const
-//{
-
-//  // TODO: Hay que incluir la transformación terreno-pantalla
-//  //cv::drawMarker(canvas, ..... );
-//}
-//#endif
-
 /* ---------------------------------------------------------------------------------- */
 
 GPoint3D::GPoint3D() 
@@ -114,14 +105,6 @@ bool GPoint3D::isSimpleEntity() const
   return true;
 }
 
-//#ifdef HAVE_OPENCV
-//void GPoint3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
-
-
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -165,13 +148,6 @@ bool GMultiPoint::isSimpleEntity() const
 {
   return false;
 }
-
-//#ifdef HAVE_OPENCV
-//void GMultiPoint::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -217,13 +193,6 @@ bool GMultiPoint3D::isSimpleEntity() const
 {
   return false;
 }
-
-//#ifdef HAVE_OPENCV
-//void GMultiPoint3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */

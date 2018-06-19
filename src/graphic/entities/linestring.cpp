@@ -52,13 +52,6 @@ bool GLineString::isSimpleEntity() const
 }
 
 
-//#ifdef HAVE_OPENCV
-//void GLineString::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
-
 /* ---------------------------------------------------------------------------------- */
 
 GLineString3D::GLineString3D() 
@@ -102,12 +95,6 @@ bool GLineString3D::isSimpleEntity() const
   return true;
 }
 
-//#ifdef HAVE_OPENCV
-//void GLineString3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -153,13 +140,6 @@ bool GMultiLineString::isSimpleEntity() const
   return false;
 }
 
-//#ifdef HAVE_OPENCV
-//void GMultiLineString::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -204,12 +184,6 @@ bool GMultiLineString3D::isSimpleEntity() const
   return false;
 }
 
-//#ifdef HAVE_OPENCV
-//void GMultiLineString3D::draw(cv::Mat &canvas) const
-//{
-
-//}
-//#endif
 
 /* ---------------------------------------------------------------------------------- */
 
