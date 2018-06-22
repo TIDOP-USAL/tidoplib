@@ -1,12 +1,15 @@
-#ifndef TL_GEOM_QUATERNION_H
-#define TL_GEOM_QUATERNION_H
+#ifndef TL_MATH_QUATERNION_H
+#define TL_MATH_QUATERNION_H
 
 #include "config_tl.h"
 
 #include <vector>
 #include <array>
 
-namespace TKL
+namespace TL
+{
+
+namespace math
 {
 
 /*!
@@ -175,6 +178,8 @@ Quaternion<T> operator +(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
   return Quaternion<T>(quat1.x+quat2.x, quat1.y+quat2.y, quat1.z+quat2.z, quat1.w+quat2.w);
 }
 
-} // End namespace TKL
+} // Fin namespace math
 
-#endif // TL_GEOM_QUATERNION_H
+} // End namespace TL
+
+#endif // TL_MATH_QUATERNION_H

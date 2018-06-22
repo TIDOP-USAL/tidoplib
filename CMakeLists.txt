@@ -65,6 +65,7 @@ endif (BUILD_SHARED_LIBS)
 
 # Activación desactivación de los diferentes modulos de la libreria
 OPTION (BUILD_TL_CORE        "Include core module in TidopLib build"       ON)
+OPTION (BUILD_TL_MATH        "Include math module in TidopLib build"       ON)
 OPTION (BUILD_TL_GEOMETRY    "Include geom module in TidopLib build"       ON)
 OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
