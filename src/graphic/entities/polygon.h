@@ -55,10 +55,6 @@ public:
    */
   GPolygon &operator = (const GPolygon &gPolygon);
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
@@ -99,10 +95,6 @@ public:
    * \return Referencia al objeto
    */
   GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -146,10 +138,6 @@ public:
    */
   GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
@@ -191,10 +179,6 @@ public:
    * \return Referencia al objeto
    */
   GMultiPolygon3D &operator = (const GMultiPolygon3D &gMultiPolygon3D);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

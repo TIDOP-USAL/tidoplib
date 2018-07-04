@@ -102,7 +102,6 @@ public:
    * \brief Perimetro del poligono
    * \return Perimetro del poligono
    */
-  //double perimeter() const;
   double length() const;
 
   /*!
@@ -358,7 +357,6 @@ public:
    * \brief Perimetro del poligono
    * \return Perimetro del poligono
    */
-  //double perimeter() const;
   double length() const;
 
   /*!

@@ -9,5 +9,6 @@ if(BUILD_EXAMPLES)
   #add_subdirectory(graphic)
   add_subdirectory(img)
   add_subdirectory(vect)
+  add_subdirectory(math)
 
 endif()

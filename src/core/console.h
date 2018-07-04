@@ -464,7 +464,7 @@ public:
    * \param[in] option
    * \deprecated Use TL::CmdOption::setActive en su lugar
    */
-  TL_DEPRECATED("CmdOption::setActive(bool active)")
+  TL_DEPRECATED("CmdOption::setActive")
   void setOption(bool option) { mValue = option; }
 
   /*!

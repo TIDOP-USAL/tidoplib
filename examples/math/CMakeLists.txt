@@ -1,6 +1,5 @@
-# Ejemplos módulo Core
 
-if(BUILD_TL_CORE)
+if(BUILD_TL_CORE AND BUILD_TL_MATH)
 
   project(examples)
 
@@ -19,6 +18,7 @@ if(BUILD_TL_CORE)
 	
     set(sample_kind example)
     set(sample_KIND EXAMPLE)
+    #set(sample_subfolder "cpp")
 
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
@@ -29,15 +29,15 @@ if(BUILD_TL_CORE)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejmplo a la carpeta 'examples/core'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/core")
+    # Añade el proyecto de ejmplo a la carpeta 'examples'
+    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/math")
 
     set_target_properties(${the_target} PROPERTIES
-      OUTPUT_NAME "${sample_kind}-${name}"
+      OUTPUT_NAME "cpp-${sample_kind}-${name}"
       PROJECT_LABEL "(${sample_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "examples/core")
+      set_target_properties(${the_target} PROPERTIES FOLDER "examples/math")
     endif()
 
     if(WIN32)

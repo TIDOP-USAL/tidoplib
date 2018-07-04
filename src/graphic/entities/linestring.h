@@ -58,10 +58,6 @@ public:
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
 };
 
 
@@ -101,10 +97,6 @@ public:
    * \return Referencia al objeto
    */
   GLineString3D &operator = (const GLineString3D &gLineString);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -148,10 +140,6 @@ public:
    */
   GMultiLineString &operator = (const GMultiLineString &gMultiLineString);
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
@@ -192,10 +180,6 @@ public:
    * \return Referencia al objeto
    */
   GMultiLineString3D &operator = (const GMultiLineString3D &gMultiLineString);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

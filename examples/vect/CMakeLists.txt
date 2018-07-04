@@ -30,14 +30,14 @@ if(BUILD_TL_CORE AND BUILD_TL_VECT)
     endif()
 
     # Añade el proyecto de ejmplo a la carpeta 'examples'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "examples")
+    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/vect")
 
     set_target_properties(${the_target} PROPERTIES
       OUTPUT_NAME "cpp-${sample_kind}-${name}"
       PROJECT_LABEL "(${sample_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "examples")
+      set_target_properties(${the_target} PROPERTIES FOLDER "examples/vect")
     endif()
 
     if(WIN32)

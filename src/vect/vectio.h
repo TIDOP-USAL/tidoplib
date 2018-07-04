@@ -499,7 +499,9 @@ private:
 
 #endif // HAVE_GDAL
 
-
+///TODO: Separar en una clase vector y otra clase VectorHandler. 
+/// La clase VectorHandler seria una virtual y se extenderia para los ficheros que se lean con GDAL 
+/// o de otra forma.
 
 /*!
  * \brief Clase contenedor y de gestión de gráficos vectoriales

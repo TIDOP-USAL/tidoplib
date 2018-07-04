@@ -142,10 +142,6 @@ public:
    */
   virtual bool isSimpleEntity() const = 0;
 
-//  ///TODO: Tiene que ser virtual...
-//#ifdef HAVE_OPENCV
-//  virtual void draw(cv::Mat &canvas) const = 0;
-//#endif
 };
 
 

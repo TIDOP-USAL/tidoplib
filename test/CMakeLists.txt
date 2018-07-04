@@ -34,11 +34,7 @@ if(BUILD_TEST)
     include_directories("${gtest_SOURCE_DIR}/include")
   endif()
   
-  # Now simply link against gtest or gtest_main as needed. Eg
-  #add_executable(example example.cpp)
-  #target_link_libraries(example gtest_main)
-  #add_test(NAME example_test COMMAND example)
-  
+  # Test de cada módulo
   add_subdirectory(core)
   add_subdirectory(geometry)
   add_subdirectory(graphic)  
