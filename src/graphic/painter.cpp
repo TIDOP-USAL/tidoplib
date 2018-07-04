@@ -79,7 +79,7 @@ void Painter::drawPolygon(const GPolygon &polygon)
   }
 }
   
-void Painter::drawMultiPoint(const GMultiPoint &point)
+void Painter::drawMultiPoint(const GMultiPoint &multipoint)
 {
 
 }

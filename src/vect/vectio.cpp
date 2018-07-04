@@ -206,7 +206,7 @@ GdalVector::Status GdalVector::createLayer(const graph::GLayer &layer)
 
 const char *GdalVector::getDriverFromExt(const char *ext)
 {
-  char *format;
+  const char *format;
   if      ( strcmp( ext, ".dxf" ) == 0 )  format = "DXF";
   else if ( strcmp( ext, ".dwg" ) == 0 )  format = "DWG";
   else if ( strcmp( ext, ".dgn" ) == 0 )  format = "DGN";
@@ -216,8 +216,8 @@ const char *GdalVector::getDriverFromExt(const char *ext)
   else if ( strcmp( ext, ".kmz" ) == 0 )  format = "LIBKML";
   else if ( strcmp( ext, ".json") == 0 )  format = "GeoJSON";
   else if ( strcmp( ext, ".osm" ) == 0 )  format = "OSM";
-  else                                     format = 0;
-  return( format );
+  else                                    format = 0;
+  return format;
 }
 
 //GdalVector::Status GdalVector::write(VectorGraphics *vector)

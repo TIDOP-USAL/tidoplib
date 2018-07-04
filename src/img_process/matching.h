@@ -51,8 +51,8 @@ public:
   /*!
    * \brief Constructora Features2D
    * Se le pasan como parametro un detector de caracteristicas y un extractor de descriptores
-   * \param[in] _fd Detector de caracteristicas
-   * \param[in] _de Extractor de descriptores
+   * \param[in] fd Detector de caracteristicas
+   * \param[in] de Extractor de descriptores
    *
    * Detectores soportados:
    * - cv::AgastFeatureDetector::create()

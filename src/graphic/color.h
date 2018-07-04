@@ -444,17 +444,16 @@ public:
  * \param[in] color Color representado como un entero
  * \return Componente azul
  */
-TL_DEPRECATED("Color(color).getBlue()")
+TL_DEPRECATED("Color::getBlue()")
 TL_EXPORT int getBlue(int color);
 
-
-TL_DEPRECATED("Color(color).getGreen()")
 /*!
  * \brief Obtiene la componente verde de un color
  * \param[in] color Color representado como un entero
  * \return Componente verde
  * \deprecated Use en su lugar Color::getGreen()
  */
+TL_DEPRECATED("Color::getGreen()")
 TL_EXPORT int getGreen(int color);
 
 /*!
@@ -462,7 +461,7 @@ TL_EXPORT int getGreen(int color);
  * \param[in] color Color representado como un entero
  * \return Componente roja
  */
-TL_DEPRECATED("Color(color).getRed()")
+TL_DEPRECATED("Color::getRed()")
 TL_EXPORT int getRed(int color);
 
 /*!
@@ -470,7 +469,7 @@ TL_EXPORT int getRed(int color);
  * \param[in] color Color representado como un entero
  * \return Canal alfa
  */
-TL_DEPRECATED("Color(color).getAlpha()")
+TL_DEPRECATED("Color::getAlpha()")
 TL_EXPORT int getAlpha(int color);
 
 /*!

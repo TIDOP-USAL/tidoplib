@@ -173,19 +173,22 @@ public:
 
   /*!
    * \brief Constructora por defecto
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    */
   Console(bool add = true);
 
   /*!
    * \brief Constructor
    * \param[in] mode Modo de consola
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    * \see Mode
    */
   Console(Console::Mode mode, bool add = true);
 
   /*!
    * \brief Constructor de copia
-   * \param[in] mode Modo de consola
+   * \param[in] console Consola
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    * \see Mode
    */
   Console(const Console &console, bool add = true);
@@ -466,7 +469,7 @@ public:
 
   /*!
    * \brief Establece si esta activada o no
-   * \param[in] option
+   * \param[in] active
    */
   void setActive(bool active);
 };

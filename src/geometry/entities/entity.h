@@ -198,7 +198,7 @@ public:
 
   /*!
    * \brief Constructora
-   * \param[in] Tamaño que se reserva para el contenedor
+   * \param[in] size Tamaño que se reserva para el contenedor
    */
   EntityContainer(size_type size);
 
@@ -542,7 +542,7 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] entityPoints Objeto Entities2D que se copia
+   * \param[in] entity Objeto Entities2D que se copia
    */
   Entities2D(const Entities2D &entity);
 
@@ -558,15 +558,6 @@ public:
    */
   Entities2D(std::initializer_list<Entity_t> entities);
 
-  //~Entities2D();
-
-  /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] entityPoints EntityPoints que se asigna
-   * \return Referencia al EntityPoints
-   */
-  //Entities2D &operator = (const Entities2D &entity);
-
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
    * \param[in] w Ventana
@@ -575,12 +566,6 @@ public:
   template<typename Window_t>
   std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
 
-
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente de los puntos
-   */
-  //virtual Window<Entity_t> getWindow() const;
 };
 
 
@@ -676,7 +661,7 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] entity3DPoints Entidad que se copia
+   * \param[in] entity Entidad que se copia
    * \see entity_type
    */
   Entities3D(const Entities3D &entity);
@@ -684,22 +669,6 @@ public:
   Entities3D(const std::vector<Entity_t> &entities);
 
   Entities3D(std::initializer_list<Entity_t> entities);
-
-  //~Entity3DPoints();
-
-  /*!
-   * \brief Sobrecarga del operador de asignación
-   * \param[in] entityPoints EntityPoints que se asigna
-   * \return Referencia al EntityPoints
-   */
-  //Entities3D &operator = (const Entities3D &entities);
-
-
-  /*!
-   * \brief Caja envolvente
-   * \return Caja envolvente de los puntos
-   */
-  //virtual Box<Entity_t> getBox() const;
   
   /*!
    * \brief Devuelve los puntos que esta dentro de una caja

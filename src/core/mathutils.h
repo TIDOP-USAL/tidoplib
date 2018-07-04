@@ -709,9 +709,9 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  * \param[out] A
  * \param[out] r
  */
-//template<typename Point_t> inline 
-//void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
-//{
+template<typename Point_t> inline
+void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+{
 //  std::vector<geometry::PointD> ptsLog(pts.size());
 //  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
 //                 [](Point_t pt) -> geometry::PointD {
@@ -723,7 +723,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
 //  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
 //  *A = pow(10, b);
 //  *r = pow(10, m);
-//}
+}
 
 
 /*!

@@ -86,8 +86,14 @@ protected:
    */
   std::string mName;
 
+  /*!
+   * \brief Listado de entidades
+   */
   std::list<std::shared_ptr<GraphicEntity>> mEntities;
 
+  /*!
+   * \brief Entidades seleccionadas
+   */
   std::shared_ptr<GraphicEntity> mSelectEntity;
 
 public:
@@ -149,10 +155,21 @@ public:
 
   /*!
    * \brief Agrega un elemento al final del contenedor
+   * \deprecated Use push_back en su lugar
    */
   TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
   void add(const std::shared_ptr<GraphicEntity> &entity);
+
+  /*!
+   * \brief Agrega una entidad mediante copia al final del contenedor
+   * \param[in] entity Entidad que se añade
+   */
   void push_back(const std::shared_ptr<GraphicEntity> &entity);
+
+  /*!
+   * \brief Agrega una entidad mediante movimiento al final del contenedor
+   * \param[in] entity Entidad que se añade
+   */
   void push_back(std::shared_ptr<GraphicEntity> &&entity);
 
   /*!
@@ -202,10 +219,18 @@ public:
   /*!
    * \brief Elimina el intervalo
    */
-  //iterator erase(const_iterator first, const_iterator last);
+  iterator erase(const_iterator first, const_iterator last);
 
-
+  /*!
+   * \brief Devuelve el nombre de la capa
+   * \return Nombre de la capa
+   */
   std::string getName() const;
+
+  /*!
+   * \brief Establece el nombre de la capa
+   * \param[in] name Nombre de la capa
+   */
   void setName(const std::string &name);
 
 };

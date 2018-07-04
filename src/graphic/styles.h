@@ -131,7 +131,7 @@ public:
 
   /*!
    * \brief Constructora de copia
-   * \param[in] style Clase estilo de pluma que se copia
+   * \param[in] stylePen Clase estilo de pluma que se copia
    */
   StylePen(const StylePen &stylePen);
 
@@ -227,13 +227,21 @@ public:
    */
   void setPerpendicularOffset(int32_t perpendicularoffset);
 
+  /*!
+   * \brief getPriorityLevel
+   * \return
+   */
   uint32_t getPriorityLevel() const;
 
+  /*!
+   * \brief setPriorityLevel
+   * \param priorityLevel
+   */
   void setPriorityLevel(uint32_t priorityLevel);
 
   /*!
    * \brief operador de asignación
-   * \param style Estilo de pluma
+   * \param stylePen Estilo de pluma
    * \return Referencia al estilo de pluma
    */
   StylePen &operator = (const StylePen &stylePen);
@@ -307,7 +315,7 @@ public:
 
   /*!
    * \brief Constructora de copia
-   * \param[in] 
+   * \param[in] styleBrush Objeto StyleBrush que se copia
    */
   StyleBrush(const StyleBrush &styleBrush);
 
@@ -517,7 +525,7 @@ public:
 
   /*!
    * \brief Establece el nombre o id del simbolo
-   * \param[in] symbolname Nombre o id del simbolo
+   * \param[in] name Nombre o id del simbolo
    */
   void setName(SymbolName name);
 

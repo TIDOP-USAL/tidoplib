@@ -198,6 +198,7 @@ public:
 
   /*!
    * \brief Constructor
+   * \param[in] center Centro de la elipse
    * \param[in] a Semieje mayor
    * \param[in] b Semieje menor
    */

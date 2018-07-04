@@ -203,8 +203,16 @@ public:
    */
   Status getStatus();
   
+  /*!
+   * \brief Establece el estado
+   * \param[in] status
+   */
   void setStatus(Status status);
 
+  /*!
+   * \brief Devuelve el identificador del proceso
+   * \return
+   */
   uint64_t getProcessId() const;
 
   /*!
@@ -276,6 +284,11 @@ public:
   ~CmdProcess();
 
   virtual Process::Status run(Progress *progressBar = NULL) override;
+
+  /*!
+   * \brief Establece la prioridad del proceso
+   * \param[in] priority
+   */
   static void setPriority(int priority);
 
 private:
@@ -442,7 +455,16 @@ public:
   TL_DEPRECATED("BatchProcess::reset()")
   void clear();
 
+  /*!
+   * \brief Elimina el proceso
+   * \param[in] id Identificador del proceso que se quiere eliminar
+   */
   void remove(uint64_t id);
+
+  /*!
+   * \brief Elimina el proceso
+   * \param[in] process Proceso que se va a eliminar
+   */
   void remove(const std::shared_ptr<Process> &process);
 
   /*!
@@ -484,6 +506,9 @@ public:
    */
   void stop();
 
+  /*!
+   * \brief Inicia el contador
+   */
   void initCounter(); 
 
 protected:

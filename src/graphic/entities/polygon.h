@@ -126,7 +126,7 @@ public:
   /*!
    * \brief Constructora a partir de un multi-polígono
    * Representa un multi-polígono sin estilo
-   * \param polygon Objeto de la clase MultiPolygon
+   * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
   GMultiPolygon(const geometry::MultiPolygon<geometry::Point<double>> &multiPolygon);
@@ -172,7 +172,7 @@ public:
   /*!
    * \brief Constructora a partir de un multi-polígono 3D
    * Representa un multi-polígono 3D sin estilo
-   * \param polygon Objeto de la clase MultiPolygon
+   * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
   GMultiPolygon3D(const geometry::MultiPolygon3D<geometry::Point3<double>> &multiPolygon);

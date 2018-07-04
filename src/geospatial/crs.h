@@ -33,42 +33,72 @@ template<typename Point_t> class Transform3D;
 
 #ifdef HAVE_GDAL
 
-// Clase sistema de referencia
+
+/*!
+ * \brief Clase sistema de referencia
+ */
 class TL_EXPORT Crs
 {
+
 private:
   
+  /*!
+   * \brief Código EPSG del sistema de referencia
+   */
   std::string mEpsg;
 
+  /*!
+   * \brief Rejilla de transformación de sistema de coordenadas
+   */
   std::string mGrid;
 
+  /*!
+   * \brief Geoide
+   */
   std::string mGeoid;
 
   // TODO: como puntero no hay manera. No hay manera de destruirlo sin que de un error...
   //OGRSpatialReference *pCrs;
+
+  /*!
+   * \brief Objeto OGRSpatialReference de Gdal
+   */
   OGRSpatialReference mCrs;
 
 public:
 
+  /*!
+   * \brief Constructor
+   * \param[in] epsg Sistema de referencia como código EPSG
+   * \param[in] grid Rejilla de transformación de sistema de coordenadas
+   * \param[in] geoid Fichero de ondulación del geoide
+   */
   Crs(const std::string &epsg, const std::string &grid = "", const std::string &geoid = "");
 
   ~Crs();
 
-  const char *getEPSG();
+  /*!
+   * \brief Devuelve el código EPSG del sistema de referencia
+   * \return
+   */
+  std::string getEPSG() const;
 
-  bool isGeocentric();
+  bool isGeocentric() const;
 
-  bool isGeographic();
+  bool isGeographic() const;
 
 protected:
 
   //const OGRSpatialReference *getOGRSpatialReference( ) const { return pCrs; };
-  OGRSpatialReference *getOGRSpatialReference( ) { return &mCrs; };
+  OGRSpatialReference *getOGRSpatialReference( ) const;
 
   template<typename Point_t> friend class CrsTransform;
 
 private:
 
+  /*!
+   * \brief inicializador de la clase
+   */
   void init();
 
 };
@@ -76,9 +106,9 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-
-//... Cache de sistemas de referencia
-// Tiene que ser un singleton
+/*!
+ * \brief Clase cache de sistemas de referencia
+ */
 class CrsCache
 {
 public:
@@ -153,10 +183,14 @@ public:
 
   ~CrsCache() {}
 
-  // Se impide la copia y asignación
+  /// Se impide la copia y asignación
   CrsCache(CrsCache const&) = delete;
   void operator=(CrsCache const&) = delete;
   
+  /*!
+   * \brief Singleton
+   * \return
+   */
   static CrsCache &getInstance();
 
   /*!
@@ -170,9 +204,9 @@ public:
   void add(const std::shared_ptr<Crs> &crs);
 
   /*!
-   * \brief Añade un sistema de referencia al listado
+   * \brief Añade un sistema de referencia al listado mediante movimiento
    */
-  //void add(Crs &&crs);
+  void add(std::shared_ptr<Crs> &&crs);
 
   /*!
    * \brief Devuelve el tamaño reservado para la cache
@@ -261,6 +295,9 @@ public:
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
+/*!
+ * \brief transformación entre sistemas de referencia
+ */
 template<typename Point_t>
 class CrsTransform : public Transform3D<Point_t>
 {

@@ -32,7 +32,11 @@ class TL_EXPORT Canvas
 
 public:
 
+  /*!
+   * \brief Constructora canvas
+   */
   Canvas();
+
   virtual ~Canvas();
 
   /*!
@@ -107,7 +111,17 @@ private:
 
 public:
 
+  /*!
+   * \brief CanvasCV
+   */
   CanvasCV();
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] canvas Objeto canvas que se copia
+   */
+  CanvasCV(const CanvasCV &canvas);
+
   ~CanvasCV();
 
   int getWidth() const override;
@@ -119,6 +133,13 @@ public:
   void drawPoint(const GPoint &point) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
+
+  /*!
+   * \brief operador asignación
+   * \param[in] canvas Objeto canvas que se copia por asignación
+   * \return
+   */
+  CanvasCV &operator =(const CanvasCV &canvas);
 
 private:
 

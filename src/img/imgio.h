@@ -915,7 +915,7 @@ public:
   /*!
    * \brief Carga el trozo de imagen correspondiente a una ventana
    * \param[out] image
-   * \param[in] wRead Ventana en coordenadas terreno de la imagen que se quiere cargar
+   * \param[in] wLoad Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
   Status read(cv::Mat *image, const geometry::WindowD &wLoad, double scale = 1.);
