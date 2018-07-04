@@ -632,6 +632,30 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 
 /*! \} */ // end of colorConversion
 
+
+///Nueva clase espacio de color
+//class ColorSpace
+//{
+//public:
+//
+//  ColorSpace();
+//  ~ColorSpace();
+//
+//private:
+//
+//};
+//
+//ColorSpace::ColorSpace()
+//{
+//}
+//
+//ColorSpace::~ColorSpace()
+//{
+//}
+
+
+
+
 /*! \} */ // end of GraphicEntities
 
 } // End namespace TL

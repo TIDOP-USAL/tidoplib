@@ -2,6 +2,7 @@
 #define TL_MATH_ROTATION_MATRIX_H
 
 #include "config_tl.h"
+#include "math/matrix.h"
 
 #include <vector>
 #include <array>
@@ -15,13 +16,9 @@ namespace math
 /*!
  * \brief Matriz de rotación
  */
-template<typename T>
-class RotationMatrix
+template<int dim, typename T = double>
+class RotationMatrix : public Matrix<dim, dim, T>
 {
-
-public:
-
-  std::array<std::array<T, 3>, 3> mMatrix;
   
 public:
 
@@ -31,24 +28,16 @@ public:
   RotationMatrix();
   
   /*!
-   *\brief 
-   * \param[in] omega Rotación respecto al eje X en radianes
-   * \param[in] phi Rotación respecto al eje Y en radianes
-   * \param[in] kappa Rotación respecto al eje Z en radianes
-   */
-  RotationMatrix(T omega, T phi, T kappa);
-
-  /*!
    * \brief Constructor de copia
    * \param[in] rot Matriz de rotación
    */
-  RotationMatrix(const RotationMatrix<T> &rot);
+  RotationMatrix(const RotationMatrix<dim, dim, T> &rot);
 
   /*!
    * \brief Constructor
    * \param[in] rot Matriz de rotación
    */
-  RotationMatrix(const std::array<std::array<T, 3>, 3> &rot);
+  RotationMatrix(const std::array<std::array<T, dim>, dim> &rot);
 
   /*!
    * \brief destructora
@@ -59,60 +48,46 @@ public:
    * \brief Operador de asignación
    * \param[in] eulerAngles Objeto que se copia
    */
-  RotationMatrix& operator = (const RotationMatrix<T> &mat);
-  
-  T at(int r, int c) const;
+  RotationMatrix& operator = (const RotationMatrix<dim, T> &mat);
 
+  RotationMatrix<dim, T> inverse() const;
+
+private:
+
+  RotationMatrix<dim, T> inverse_2x2() const;
+  RotationMatrix<dim, T> inverse_3x3() const;
+  RotationMatrix<dim, T> inverse_4x4() const;
+  RotationMatrix<dim, T> inverse_nxn() const;
 };
 
-template<typename T> inline
-RotationMatrix<T>::RotationMatrix()
+template<int dim, typename T> inline
+RotationMatrix<dim, T>::RotationMatrix()
+  : Matrix<dim, dim, T>()
 {
   mMatrix[0][0] = 1.;
   mMatrix[1][1] = 1.;
   mMatrix[2][2] = 1.;
 }
 
-template<typename T> inline
-RotationMatrix<T>::RotationMatrix(T omega, T phi, T kappa)
-{
-  double sinOmega = sin(omega);
-  double cosOmega = cos(omega);
-  double sinPhi = sin(phi);
-  double cosPhi = cos(phi);
-  double sinKappa = sin(kappa);
-  double cosKappa = cos(kappa);
-
-  mMatrix[0][0] = cosPhi * cosKappa;
-  mMatrix[0][1] = sinOmega * sinPhi * cosKappa + cosOmega * sinKappa;
-  mMatrix[0][2] = sinOmega * sinKappa - cosOmega * sinPhi * cosKappa;
-  mMatrix[1][0] = -cosPhi * sinKappa;
-  mMatrix[1][1] = cosOmega * cosKappa - sinOmega * sinPhi * sinKappa;
-  mMatrix[1][2] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
-  mMatrix[2][0] = sinPhi;
-  mMatrix[2][1] = -sinOmega * cosPhi;
-  mMatrix[2][2] = cosOmega * cosPhi;
-}
-
-template<typename T> inline
-RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
-  : mMatrix(rot.mMatrix)
+template<int dim, typename T> inline
+RotationMatrix<dim, T>::RotationMatrix(const RotationMatrix<dim, T> &rot)
+  : Matrix<dim, dim, T>(rot)
 {
 }
 
-template<typename T> inline
-RotationMatrix<T>::RotationMatrix(const std::array<std::array<T, 3>, 3> &rot)
-  : mMatrix(rot)
+template<int dim, typename T> inline
+RotationMatrix<dim, T>::RotationMatrix(const std::array<std::array<T, dim>, dim> &rot)
+  : Matrix<dim, dim, T>(rot)
 {
 }
 
-template<typename T> inline
-RotationMatrix<T>::~RotationMatrix()
+template<int dim, typename T> inline
+RotationMatrix<dim, T>::~RotationMatrix()
 {
 }
 
-template<typename T> inline
-RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix& rot)
+template<int dim, typename T> inline
+RotationMatrix<dim, T> &RotationMatrix<dim, T>::operator = (const RotationMatrix& rot)
 {
   if (this != &rot) {
     this->mMatrix = rot.mMatrix;
@@ -120,11 +95,56 @@ RotationMatrix<T> &RotationMatrix<T>::operator = (const RotationMatrix& rot)
   return *this;
 }
 
-template<typename T> inline
-T RotationMatrix<T>::at(int r, int c) const
+template<int dim, typename T> inline
+RotationMatrix<dim, T>  RotationMatrix<dim, T>::inverse() const
 {
-  return mMatrix[r][c];
+  RotationMatrix<dim, T> inverse;
+  if (mMatrix.size() == 2) {
+    inverse = inverse_2x2();
+  } else if (mMatrix.size() == 3) {
+    inverse = inverse_3x3();
+  } else if (mMatrix.size() == 4) {
+    inverse = inverse_4x4();
+  } else {
+    inverse = inverse_nxn();
+  }
+  return inverse;
 }
+
+template<int dim, typename T> inline
+RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_2x2() const
+{
+  RotationMatrix<dim, T> inverse;
+  T det = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
+  if (det != static_cast<T>(0)) {
+    inverse.at(0, 0) = mMatrix[1][1] / det;
+    inverse.at(0, 1) = -mMatrix[0][1] / det;
+    inverse.at(1, 0) = -mMatrix[1][0] / det;
+    inverse.at(1, 1) = mMatrix[0][0] / det;
+  } else {
+    ///No invertible
+  }
+  return inverse;
+}
+
+template<int dim, typename T> inline
+RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_3x3() const
+{
+  return RotationMatrix<dim, T>();
+}
+
+template<int dim, typename T> inline
+RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_4x4() const
+{
+  return RotationMatrix<dim, T>();
+}
+
+template<int dim, typename T> inline
+RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_nxn() const
+{
+  return RotationMatrix<dim, T>();
+}
+
 
 } // Fin namespace math
 
