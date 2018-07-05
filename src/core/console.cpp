@@ -53,8 +53,6 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
   return msgTemplate[iLevel];
 }
 
-
-
 EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
 
 Console::Console(bool add) 

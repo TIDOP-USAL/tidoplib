@@ -297,4 +297,11 @@
 #define sprintf_s(dest, len, format, ...) snprintf(dest, len, format, __VA_ARGS__) 
 #endif
 
+#if _MSC_VER
+#  define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#else
+#define DO_PRAGMA(x) _Pragma (#x)
+#define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
+#endif
+
 #endif // TL_CORE_DEFS_H

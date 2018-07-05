@@ -7,9 +7,9 @@
 #include "math/matrix.h"
 
 #ifdef HAVE_EIGEN
-TL_DISABLE_WARNING(4714)
+TL_SUPPRESS_WARNINGS
 #include <Eigen/Geometry>
-TL_ENABLE_WARNING(4714)
+TL_DEFAULT_WARNINGS
 #endif
 
 using namespace TL;
@@ -59,9 +59,9 @@ int main(int argc, char** argv)
 
   // Paso de matriz de rotación a ángulos de Euler
   Matrix3f m;
-  m = AngleAxisf(0.25*TL_PI, Vector3f::UnitX()) *
-      AngleAxisf(0.5*TL_PI, Vector3f::UnitY()) *
-      AngleAxisf(0.33*TL_PI, Vector3f::UnitZ());
+  m = AngleAxisf(static_cast<float>(0.25*TL_PI), Vector3f::UnitX()) *
+      AngleAxisf(static_cast<float>(0.5*TL_PI), Vector3f::UnitY()) *
+      AngleAxisf(static_cast<float>(0.33*TL_PI), Vector3f::UnitZ());
 
   std::cout << "original rotation:" << std::endl;
   std::cout << m << std::endl << std::endl;

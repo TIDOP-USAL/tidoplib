@@ -7,9 +7,9 @@
 #include <vector>
 
 #ifdef HAVE_GDAL
-TL_DISABLE_WARNING(4251)
+TL_SUPPRESS_WARNINGS
 #include "gdal_priv.h"
-TL_ENABLE_WARNING(4251)
+TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
 #include "core/utils.h" 

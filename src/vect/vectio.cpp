@@ -750,7 +750,7 @@ void GdalVector::readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<GraphicE
   /* Pen Width */
   double width = ogrStylePen->Width(bDefault);
   if (!bDefault) {
-    uint8_t penWidth;
+    double penWidth;
     OGRSTUnitId ud = ogrStylePen->GetUnit();
     switch (ud) {
     case OGRSTUGround:
@@ -770,7 +770,7 @@ void GdalVector::readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<GraphicE
       break;
     }
 
-    stylePen->setPenWidth(penWidth);
+    stylePen->setPenWidth(static_cast<uint8_t>(penWidth));
   }
 
   /* Pen Perpendicular Offset */

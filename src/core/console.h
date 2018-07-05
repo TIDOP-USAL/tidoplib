@@ -643,8 +643,6 @@ private:
    */
   std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
 
-  //TODO: Seria conveniente tener un mensaje de help y otro de copyright
-
 public:
 
   /*!
@@ -754,9 +752,9 @@ public:
             strm_value >> *(double *)_value;
           } else if (typeid(T) == typeid(float)) {
             strm_value >> *(float *)_value;
-          } else if (typeid(T) == typeid(Path)) {
+          } /*else if (typeid(T) == typeid(Path)) {
             *(Path *)_value = Path(value);
-          } else {
+          }*/ else {
             TL_THROW_ERROR("Tipo de dato  no permitido"); 
             //throw std::runtime_error("Tipo de dato  no permitido");
           }

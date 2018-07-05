@@ -23,9 +23,17 @@ TL_DEFAULT_WARNINGS
 #include <cstdio>
 #include <iostream>
 #include <fstream>
-
-#include "core/defs.h"
-
+#if (__cplusplus >= 201703L)
+//C++17
+//http://en.cppreference.com/w/cpp/filesystem
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+//Boost
+//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
 
 namespace TL
@@ -406,9 +414,9 @@ EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
-Log::Log(bool add)
+Log::Log()
 #ifdef TL_MESSAGE_HANDLER  
-  : MessageManager::Listener(add)
+  : MessageManager::Listener(false)
 #endif
 {
 }
@@ -461,9 +469,9 @@ void Log::write(const char *msg)
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[TL_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
-    sLogFile = _logfile;
+    fs::path logPath(getRunfile());
+    logPath.replace_extension(".log");
+    sLogFile = logPath.string();
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {
@@ -511,9 +519,9 @@ void Log::_write(const char *msg, const char *date)
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[TL_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
-    sLogFile = _logfile;
+    fs::path logPath(getRunfile());
+    logPath.replace_extension(".log");
+    sLogFile = logPath.string();
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {

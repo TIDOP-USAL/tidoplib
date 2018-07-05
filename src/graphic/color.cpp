@@ -276,7 +276,7 @@ int hexToInt(const std::string &colorhex)
 
 std::string intToHex(int color)
 {
-  ///TODO: Da problemas con Google Test
+  TL_TODO("Da problemas con Google Test")
   std::stringstream stream;
   stream << std::hex << color;
   return std::string(stream.str());

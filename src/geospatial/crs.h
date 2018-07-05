@@ -10,11 +10,11 @@
 #include "core/defs.h"
 
 #ifdef HAVE_GDAL
-TL_DISABLE_WARNING(4251)
+TL_SUPPRESS_WARNINGS
 #include "ogr_spatialref.h"
 #include "ogr_p.h"
 #include "ogr_api.h"
-TL_ENABLE_WARNING(4251)
+TL_DEFAULT_WARNINGS
 #endif
 
 #include "core/messages.h"
@@ -411,7 +411,7 @@ CrsTransform<Point_t>::~CrsTransform()
   OSRCleanup();
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 template<typename Point_t> inline
 transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                       const std::vector<Point_t> &pts2, 
@@ -422,7 +422,7 @@ transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1
   //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
   return transform_status::FAILURE;
 }
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 template<typename Point_t> inline
 transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
