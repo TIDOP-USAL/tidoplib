@@ -743,7 +743,7 @@ public:
    * \brief Establece el texto de la etiqueta
    * \param[in] text Texto de la etiqueta
    */
-  void setText(double text);
+  void setText(const std::string &text);
 
   /*!
    * \brief Devuelve el ángulo de rotación

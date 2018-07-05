@@ -422,7 +422,7 @@ std::string StyleLabel::getText() const
   return mText;
 }
 
-void StyleLabel::setText(double text)
+void StyleLabel::setText(const std::string &text)
 {
   mText = text;
 }

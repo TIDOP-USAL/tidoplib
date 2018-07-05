@@ -353,6 +353,7 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
 #endif
 }
 
+TL_DISABLE_WARNING(4996)
 void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard)
 {
 #ifdef _MSC_VER
@@ -383,6 +384,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
    ///TODO: Completar
 #endif
 }
+TL_ENABLE_WARNING(4996)
 
 /// https://stackoverflow.com/questions/1257721/can-i-use-a-mask-to-iterate-files-in-a-directory-with-boost
 void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
