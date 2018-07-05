@@ -254,7 +254,7 @@ TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string
 
 
 //TODO: Incluir lo anterior en la clase Path para darle un acceso de mas alto nivel a las funciones anteriores
-
+TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 /*!
  * \brief Clase para gestionar la ruta de ficheros o directorios
  * - Se admiten rutas absolutas y relativas
@@ -378,7 +378,7 @@ public:
 
   Path &append(const std::string &dir);
 };
-
+TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */

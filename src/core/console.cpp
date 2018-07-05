@@ -311,7 +311,7 @@ void Console::setTitle(const char *title)
 
 #ifdef TL_MESSAGE_HANDLER 
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void Console::onMsgDebug(const char *msg, const char *date)
 {
@@ -350,7 +350,7 @@ void Console::onMsgError(const char *msg, const char *date)
   }
 }
 
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 #endif // TL_MESSAGE_HANDLER 
 

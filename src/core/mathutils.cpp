@@ -8,11 +8,11 @@
 #endif
 
 #ifdef HAVE_EIGEN
-TL_DISABLE_WARNING(4714)
+TL_SUPPRESS_WARNINGS
 #include <Eigen/SVD>
 #include <Eigen/LU>
 #include <Eigen/QR>
-TL_ENABLE_WARNING(4714)
+TL_DEFAULT_WARNINGS
 #endif
 
 #include <cmath> 

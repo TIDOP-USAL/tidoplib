@@ -199,10 +199,10 @@ Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz)
     pt2 = Point3_t(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy, _pt.z + szz_2 + dz);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
-    TL_DISABLE_WARNING(4244)
+    TL_DISABLE_WARNING(TL_WARNING_C4244)
     pt1 = Point3_t(_pt.x - sxx / 2., _pt.y - szy / 2., _pt.z - szz / 2.);
     pt2 = Point3_t(_pt.x + sxx / 2., _pt.y + szy / 2., _pt.z + szz / 2.);
-    TL_ENABLE_WARNING(4244)
+    TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
 
@@ -217,11 +217,11 @@ Box<Point3_t>::Box(const Point3_t &_pt, T sz)
     pt2 = Point3_t(_pt.x + sz_2 + dxyz, _pt.y + sz_2 + dxyz, _pt.z + sz_2 + dxyz);
   } else {
     // Quito el warning que da cuando es una ventana de enteros. En ese caso nunca pasara por aqui.
-    TL_DISABLE_WARNING(4244)
+    TL_DISABLE_WARNING(TL_WARNING_C4244)
     int sz_2 = sz / 2.;
     pt1 = Point3_t(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
     pt2 = Point3_t(_pt.x + sz_2, _pt.y + sz_2, _pt.z + sz_2);
-    TL_ENABLE_WARNING(4244)
+    TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
 
@@ -256,7 +256,7 @@ Box<Point3_t>::operator Box<Point3_t2>() const
   }
 }
 
-TL_DISABLE_WARNING(4244)
+TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename Point3_t> inline
 Point3_t Box<Point3_t>::getCenter() const
 {
@@ -269,7 +269,7 @@ Point3_t Box<Point3_t>::getCenter() const
     return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
   }
 }
-TL_ENABLE_WARNING(4244)
+TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getWidth() const 

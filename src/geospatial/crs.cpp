@@ -39,7 +39,7 @@ bool Crs::isGeographic() const
   return mCrs.IsGeographic()!= 0;
 }
 
-OGRSpatialReference *Crs::getOGRSpatialReference() const
+OGRSpatialReference *Crs::getOGRSpatialReference()
 {
   return &mCrs;
 }

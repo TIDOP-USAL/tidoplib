@@ -1,5 +1,7 @@
 #include "angles.h"
 
+#include <cmath>
+
 namespace TL
 {
 

@@ -90,7 +90,7 @@ public:
 protected:
 
   //const OGRSpatialReference *getOGRSpatialReference( ) const { return pCrs; };
-  OGRSpatialReference *getOGRSpatialReference( ) const;
+  OGRSpatialReference *getOGRSpatialReference( );
 
   template<typename Point_t> friend class CrsTransform;
 

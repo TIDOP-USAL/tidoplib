@@ -279,7 +279,7 @@ double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &
   return *std::min_element(dist, dist + 4);
 }
 
-TL_DISABLE_WARNING(4244)
+TL_DISABLE_WARNING(TL_WARNING_C4244)
 
 /*!
  * \brief Intersect de dos segmentos de línea
@@ -346,7 +346,7 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
   return(iret);
 }
 
-TL_ENABLE_WARNING(4244)
+TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point_t>
 bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Point_t> &ln, Point_t *intersect)
@@ -604,7 +604,7 @@ double angleBetweenPlanes(const Vect_t &plane1, const Vect_t &plane2)
   return det ? acos(dot / det) : 0.;
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 
@@ -1710,7 +1710,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 
 
 
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 } // Fin namespacegeometry
 

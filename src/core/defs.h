@@ -182,9 +182,25 @@
 //__FUNCSIG__
 
 
+/*-----------------------------------------------------------------------------------*/
+/*                                       WARNIGS                                     */
+/*-----------------------------------------------------------------------------------*/
 
-// Desactivar/activar warnings
-#if defined _MSC_VER
+#ifdef _MSC_VER
+#  define TL_WARNING_DEPRECATED 4996
+#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
+#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
+#  define TL_WARNING_C4244 4244
+#  define TL_FORCEINLINE_NOT_INLINED 4714
+#else
+#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
+#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
+#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
+#  define TL_WARNING_C4244 "-W"
+#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
+#endif
+
+
 
 /*!
  * \brief Se suprimen todos los mensajes de advertencia
@@ -200,12 +216,24 @@
  * }
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
+#endif
 
 /*!
  * \brief Se pone por defecto la configuración de mensajes de advertencia
  */
+#ifdef _MSC_VER
 #  define TL_DEFAULT_WARNINGS __pragma(warning(pop))
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_DEFAULT_WARNINGS DIAG_PRAGMA(pop)
+#endif
 
 /*!
  * \brief Se activa un mensaje de advertencia especifico
@@ -220,7 +248,15 @@
  * TL_ENABLE_WARNING(4244)
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
+//#  define TL_DISABLE_WARNING(warn) _Pragma GCC diagnostic push \
+//   _Pragma GCC diagnostic ignored warn
+#endif
 
 /*!
  * \brief Se desactiva un mensaje de advertencia especifico
@@ -235,17 +271,17 @@
  * TL_ENABLE_WARNING(4244)
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_ENABLE_WARNING(warn) __pragma(warning(default : warn))
 #else
-#  define TL_SUPPRESS_WARNINGS
-#  define TL_DEFAULT_WARNINGS
-#  define TL_DISABLE_WARNING(warn)
-#  define TL_ENABLE_WARNING(warn)
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
 #endif
 
-
-
-// MACROS
+/*-----------------------------------------------------------------------------------*/
+/*                                       MACROS                                      */
+/*-----------------------------------------------------------------------------------*/
 
 /*!
  * \brief Redondea un doble o float y ademas convierte a entero

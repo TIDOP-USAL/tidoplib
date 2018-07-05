@@ -13,6 +13,7 @@
 
 #define __STDC_WANT_LIB_EXT1__ 1
 #include <ctime>
+#include <cstring>
 
 // Paralelismo
 #if defined HAVE_OMP
@@ -38,9 +39,6 @@ namespace fs = std::filesystem;
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #endif
-
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <string.h>
 
 namespace TL
 {
@@ -132,8 +130,8 @@ int createDir(const char *path)
         std::string mkdir = "mkdir \"";
         mkdir.append(_path);
         mkdir.append("\"");
-        system(mkdir.c_str());
-
+        if(system(mkdir.c_str())==0)
+          i_ret = -1;
 #endif
       }
     }
@@ -155,8 +153,9 @@ int deleteDir(const char *path, bool confirm)
       std::string str = path;
       replaceString(&str, "/", "\\");
       delDir += str;
-      system(delDir.c_str());
-      i_ret = 0;
+      if(system(delDir.c_str()))
+        i_ret = 0;
+      else i_ret = 1;
     } else {
       i_ret = 1;
     }
@@ -431,8 +430,8 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 //       no soporta c++17 se utilizar?a BOOST
 
 // Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
-TL_DISABLE_WARNING(4996)
-
+//TL_DISABLE_WARNING(4996)
+TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 Path::Path()
   : mPos(0),
     mPath(0),
@@ -623,7 +622,7 @@ Path &Path::append(const std::string &dir)
   return *this;
 }
 
-TL_ENABLE_WARNING(4996)
+TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
 
 
@@ -791,12 +790,16 @@ int loadBinMat(const char *file, cv::Mat *data)
   int32_t cols;
   int32_t type;
   try {
-    std::fread(&rows, sizeof(int32_t), 1, fp);
-    std::fread(&cols, sizeof(int32_t), 1, fp);
-    std::fread(&type, sizeof(int32_t), 1, fp);
+    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
+    TL_THROW_ASSERT(err != 1, "Reading error")
+    err = std::fread(&cols, sizeof(int32_t), 1, fp);
+    TL_THROW_ASSERT(err != 1, "Reading error")
+    err = std::fread(&type, sizeof(int32_t), 1, fp);
+    TL_THROW_ASSERT(err != 1, "Reading error")
     //Cuerpo
     cv::Mat aux(rows, cols, type);
-    std::fread(aux.data, sizeof(float), rows*cols, fp);
+    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
+    TL_THROW_ASSERT(err != rows*cols, "Reading error")
     aux.copyTo(*data);
   } catch (std::exception &e) {
     msgError(e.what());

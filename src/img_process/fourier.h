@@ -2,12 +2,14 @@
 #define TL_IMGPROCESS_FOURIER_H
 
 #include "config_tl.h"
+#include "core/defs.h"
 
 #ifdef HAVE_OPENCV
+TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
+TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
-#include "core/defs.h"
 
 namespace TL
 {

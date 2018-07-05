@@ -33,7 +33,7 @@ namespace TL
 
 #ifdef TL_MESSAGE_HANDLER
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 #ifdef HAVE_OPENCV
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
@@ -66,7 +66,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 }
 #endif // HAVE_GDAL
 
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 struct _msgProperties _msgTemplate[] = {   
@@ -204,9 +204,9 @@ void MessageManager::release(const Message &msg)
   } else {
     char buf[1000];
 #if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
 #else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
 #endif
     msg_out =  std::string(buf);
   }
@@ -241,7 +241,7 @@ void MessageManager::resume()
   sStopHandler = false;
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void MessageManager::onDebug(const char *msg, const char *date)
 {
 #ifdef _DEBUG
@@ -252,7 +252,7 @@ void MessageManager::onDebug(const char *msg, const char *date)
   }
 #endif
 }
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void MessageManager::onInfo(const char *msg, const char *date)
 {

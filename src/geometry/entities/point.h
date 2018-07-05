@@ -159,7 +159,7 @@ Point<T>& Point<T>::operator = (const Point& pt)
   return *this;
 }
 
-TL_DISABLE_WARNING(4244)
+TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
@@ -198,7 +198,7 @@ Point<T>::operator cv::Point_<T2>() const
   }
 }
 #endif
-TL_ENABLE_WARNING(4244)
+TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename T> static inline
 Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
@@ -441,7 +441,7 @@ Point3<T>& Point3<T>::operator = (const Point3& pt)
   return *this;
 }
 
-TL_DISABLE_WARNING(4244)
+TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename T> template<typename T2> inline
 Point3<T>::operator Point3<T2>() const
 {
@@ -467,7 +467,7 @@ Point3<T>::operator Point<T2>() const
                      static_cast<T2>(this->y));
   }
 }
-TL_ENABLE_WARNING(4244)
+TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename T> static inline
 Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)
