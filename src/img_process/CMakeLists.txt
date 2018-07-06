@@ -5,7 +5,6 @@ add_library(tl_imgprocess ${LIB_TYPE}
   anaglyph.h
   color_convert.cpp
   color_convert.h
-  correlation.cpp
   correlation.h
   filters.cpp
   filters.h

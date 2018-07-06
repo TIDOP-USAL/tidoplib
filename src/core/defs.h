@@ -34,18 +34,6 @@
   #include <cstdint>
 #endif
 
-// Definición de constantes de tipo general
-#define TL_PI_2 1.5707963267948966192313216916398
-#define TL_PI   3.1415926535897932384626433832795
-#define TL_2PI  6.283185307179586476925286766559
-
-#define TL_RAD_TO_DEG	57.295779513082320876798154814105
-#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
-#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
-#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
-
-
-
 #if defined WIN32
 // Para que no den problemas std::numeric_limits<T>().max()
 #  ifndef NOMINMAX
@@ -57,6 +45,20 @@
 #  include <windows.h>
 #endif
 
+/* Definición de constantes de tipo general */
+
+#define TL_PI_2 1.5707963267948966192313216916398
+#define TL_PI   3.1415926535897932384626433832795
+#define TL_2PI  6.283185307179586476925286766559
+
+/* Conversión de ángulos */
+
+#define TL_RAD_TO_DEG	57.295779513082320876798154814105
+#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
+#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
+#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
+
+/* Límites maximos y minimos de tipos numéricos */
 #define TL_INT_MAX std::numeric_limits<int>().max()
 #define TL_INT_MIN -std::numeric_limits<int>().max()
 #define TL_DOUBLE_MAX std::numeric_limits<double>().max()
@@ -93,8 +95,9 @@
 #  define TL_MAX_EXT    NAME_MAX
 #endif
 
-#ifdef Tidoplib_EXPORTS
 
+
+#ifdef Tidoplib_EXPORTS
 #  if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__)
 #    define TL_EXPORT __declspec(dllexport)
 #  elif defined __GNUC__ && __GNUC__ >= 4
@@ -154,6 +157,10 @@
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 
+#ifdef __GNUC__
+#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
+#endif
+
 #if _MSC_VER
 #  define TL_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
@@ -165,7 +172,8 @@
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
 // Por ahora no hace nada...
-#  define TL_COMPILER_WARNING(msg) //_Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
+#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 
@@ -219,8 +227,6 @@
 #ifdef _MSC_VER
 #  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
 #else
-#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
-#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
 #  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
 #endif
 

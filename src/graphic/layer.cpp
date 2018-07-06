@@ -122,7 +122,7 @@ GLayer& GLayer::operator=(GLayer&& entity)
 
 GLayer::iterator GLayer::erase(GLayer::const_iterator first, GLayer::const_iterator last)
 {
-  mEntities.erase(first, last);
+  return mEntities.erase(first, last);
 }
 
 std::string GLayer::getName() const

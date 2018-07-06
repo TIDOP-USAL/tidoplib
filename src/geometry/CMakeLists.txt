@@ -3,7 +3,6 @@
 add_library(tl_geom ${LIB_TYPE}
   operations.cpp
   operations.h
-  transform.cpp
   transform.h
   entities/bbox.h
   entities/curves.h
