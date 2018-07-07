@@ -57,13 +57,13 @@ int main(int argc, char** argv)
 
 
   //// Fichero de log
-  //Log &log = Log::getInstance();
+  Log &log = Log::getInstance();
   ////Configuración de log y mensajes por consola
   //char logfile[TL_MAX_PATH];
   //if (changeFileExtension(getRunfile(), "log", logfile, TL_MAX_PATH) == 0) {
   //  log.setLogFile(logfile);
   //}
-  //log.setLogLevel(MessageLevel::MSG_VERBOSE);
+  log.setLogLevel(MessageLevel::MSG_VERBOSE);
 
   // Consola
   Console console;
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   //console.setFontBold(true);
   //console.setFontHeight(10);
-  
+  msgInfo("Prueba")
   ////Configuración de mensajes
   //MessageManager &msg_h = MessageManager::getInstance();
   //msg_h.addListener(&log);
@@ -391,12 +391,12 @@ int main(int argc, char** argv)
   };
 
   geometry::MultiPolygon<cv::Point2f> mask;
-  mask.add(pol1);
-  mask.add(pol1);
-  mask.add(pol1);
-  mask.add(pol1);
-  mask.add(pol1);
-  mask.add(pol1);
+  mask.push_back(pol1);
+  mask.push_back(pol1);
+  mask.push_back(pol1);
+  mask.push_back(pol1);
+  mask.push_back(pol1);
+  mask.push_back(pol1);
 
   struct match_hugin
   {
@@ -498,16 +498,16 @@ int main(int argc, char** argv)
       double width = w_inter.getWidth();
       double height = w_inter.getHeight();
 
-      WindowD w_inter_t2;
-      TL::transform(w_inter, &w_inter_t2, &(trfs[i][j]));
-      cv::Mat img_match;
-      img2.read(&img_match, w_inter_t2);
+      //WindowD w_search;
+      //TL::transform(w_inter, &w_search, &(trfs[i][j]));
+      //cv::Mat img_match;
+      //img2.read(&img_match, w_search);
 
       if (width > height) {
         // Unión vertical
         int ratio = width / height;
-        int r = 2;
-        int c = 2 * ratio;
+        int r = 4;
+        int c = 4 * ratio;
         double dh = height / r;
         double dw = width / c;
         double size = 100.; // height / 4;
@@ -515,7 +515,8 @@ int main(int argc, char** argv)
         cv::Mat img_templ;
         for (int i_r = 0; i_r < r; i_r++) {
           for (int i_c = 0; i_c < c; i_c++) {
-            WindowD w_templ(PointD(w_inter.pt1.x + i_c * dw + dw / 2., w_inter.pt1.y + i_r * dh + dh / 2.), size);
+            PointD pt_img1(w_inter.pt1.x + i_c * dw + dw / 2., w_inter.pt1.y + i_r * dh + dh / 2.);
+            WindowD w_templ(pt_img1, size);
             img1.read(&img_templ, w_templ);
             if (channels == 2) {
               // Quito la capa de transparencia
@@ -525,9 +526,24 @@ int main(int argc, char** argv)
             } else if (channels >= 3) {
               cv::cvtColor(img_templ, img_templ, CV_RGB2GRAY);
             }
+            cv::resize(img_templ, img_templ, cv::Size(), 2.f, 2.f, cv::INTER_CUBIC);
 
+            PointD pt_img2;
+            trfs[i][j].transform(pt_img1, &pt_img2);
+            WindowD w_search(pt_img2, size * 2);
+            cv::Mat img_match;
+            img2.read(&img_match, w_search);
+            if (channels == 2) {
+              // Quito la capa de transparencia
+              cv::Mat mat_split[2];
+              cv::split(img_match, mat_split);
+              img_match = mat_split[0].clone();
+            } else if (channels >= 3) {
+              cv::cvtColor(img_match, img_match, CV_RGB2GRAY);
+            }
+            cv::resize(img_match, img_match, cv::Size(), 2.f, 2.f, cv::INTER_CUBIC);
 
-            cv::Mat result(height - img_templ.rows + 1, width - img_templ.cols + 1, CV_32FC1);
+            cv::Mat result(img_match.rows - img_templ.rows + 1, img_match.cols - img_templ.cols + 1, CV_32FC1);
             cv::matchTemplate(img_match, img_templ, result, cv::TM_CCOEFF_NORMED);
             double minVal; double maxVal;
             cv::Point minLoc;
@@ -541,10 +557,10 @@ int main(int argc, char** argv)
             matchLoc = maxLoc;
             //}
 
-            if (maxVal > 0.75) {
+            if (maxVal > 0.90) {
               match_hugin match;
               match.pt1 = PointD(w_inter.pt1.x + i_c * dw + dw / 2., w_inter.pt1.y + i_r * dh + dh / 2.);
-              match.pt2 = PointD(matchLoc.x + size / 2. + w_inter_t2.pt1.x, matchLoc.y + size / 2. + w_inter_t2.pt1.y);
+              match.pt2 = PointD(matchLoc.x /2. + size / 2. + w_search.pt1.x, matchLoc.y / 2. + size / 2. + w_search.pt1.y);
               points_template_matching[i][j].push_back(match);
             }
           }
@@ -569,7 +585,7 @@ int main(int argc, char** argv)
         while (rmse_tm > 0.25) {
           size_t n_pts = points1_tm.size();
           for (size_t k = 0, l = 0; k < n_pts; k++) {
-            if (sqrt(error_tm[k]) > rmse_tm * mult_rmse) {
+            if (/*sqrt(*/error_tm[k]/*)*/ > 1/*rmse_tm * mult_rmse*/) {
               points1_tm.erase(points1_tm.begin() + l);
               points2_tm.erase(points2_tm.begin() + l);
             } else l++;

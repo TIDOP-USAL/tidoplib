@@ -202,6 +202,7 @@ TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOu
  * ...
  * }
  * \endcode
+ * \deprecated Usar en su lugar boost::filesystem::replace_extension() o std::filesystem::replace_extension()
  */
 TL_DEPRECATED("filesystem::replace_extension()")
 TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
@@ -745,12 +746,27 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  *
  * <h4>Ejemplo</h4>
  * \code
+ * uint64_t time_ini = tickCount();
+ * ...
+ * double time = (tickCount() - time_ini) / 1000.;
+ * msgInfo("Time %f", time);
+ * \endcode
+ */
+TL_EXPORT uint64_t tickCount();
+
+/*!
+ * \brief tiempo actual
+ *
+ * <h4>Ejemplo</h4>
+ * \code
  * uint64_t time_ini = getTickCount();
  * ...
  * double time = (getTickCount() - time_ini) / 1000.;
  * msgInfo("Time %f", time);
  * \endcode
+ * \deprecated Se cambia el nombre del método a tickCount()
  */
+TL_DEPRECATED("tickCount()") 
 TL_EXPORT uint64_t getTickCount();
 
 /*!
