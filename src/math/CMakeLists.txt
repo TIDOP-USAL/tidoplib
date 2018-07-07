@@ -1,0 +1,26 @@
+#Modulo Math de la librería
+
+add_library(tl_math ${LIB_TYPE}
+  angles.cpp
+  angles.h
+  algebra/quaternion.h
+  algebra/euler_angles.h
+  algebra/rotations.h
+  algebra/rotation_matrix)
+  
+# Añade el proyecto a la carpeta 'modules'
+set_property(TARGET tl_math PROPERTY FOLDER "modules")
+
+#instalación
+if(BUILD_SHARED_LIBS)
+  install(TARGETS tl_math
+          RUNTIME DESTINATION bin
+		  LIBRARY DESTINATION lib) 
+else()
+  install(TARGETS tl_math 
+          LIBRARY DESTINATION lib 
+          ARCHIVE DESTINATION lib)
+endif()
+
+install(DIRECTORY . DESTINATION include/math
+        FILES_MATCHING PATTERN "*.h")

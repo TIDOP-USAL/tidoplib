@@ -81,9 +81,11 @@ public:
   /*!
    * \brief Constructora
    * \param[in] name Nombre de la fuente
+   * \param[in] size Tamaño de la fuente
    * \param[in] style Estilo de la fuente
-   * \param[in] underline Subrayado
-   * \param[in] strikethrough Tachado
+   * \param[in] underline Subrayado. Por defecto desactivado
+   * \param[in] strikethrough Tachado. Por defecto desactivado
+   * \see Style
    */
   Font(const std::string name, int size = 10, Style style = Style::DEFAULT, bool underline = false, bool strikethrough = false);
 
@@ -140,15 +142,39 @@ public:
    */
   void setSize(int size);
 
+  /*!
+   * \brief setStyle
+   * \param[in] style
+   */
   void setStyle(Style style);
+
+  /*!
+   * \brief Fuente en negrita
+   * \param[in] active Activa opcion
+   */
   void setBold(bool active);
+
+  /*!
+   * \brief Fuente cursiva
+   * \param[in] active Activa opcion
+   */
   void setItalic(bool active);
+
+  /*!
+   * \brief Fuente con subrayado
+   * \param[in] active Activa opcion
+   */
   void setUnderline(bool active);
+
+  /*!
+   * \brief setStrikethrough
+   * \param[in] active Activa opcion
+   */
   void setStrikethrough(bool active);
 
   /*!
    * \brief Operador de asignacion
-   * \param font Fuente
+   * \param[in] font Fuente
    * \return
    */
   Font &operator = (const Font &font);

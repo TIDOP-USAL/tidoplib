@@ -7,13 +7,12 @@
 #define TL_CORE_MESSAGES_H
 
 #include "config_tl.h"
+#include "core/defs.h"
 
 #include <iostream>
 #include <memory>
 #include <list>
 #include <mutex>
-
-#include "core/defs.h"
 
 #include "core/utils.h"
 #include "core/flags.h"
@@ -41,7 +40,7 @@ enum class MessageLevel : int8_t {
   MSG_DEBUG =   1 << 0,    /*!< Información extra para depuración. */
   MSG_ERROR =   1 << 1,    /*!< Sólo errores. */
   MSG_WARNING = 1 << 2,    /*!< Warnings */
-  MSG_INFO =    1 << 3,    /*!< Warnings, errores y otra información. */
+  MSG_INFO =    1 << 3,    /*!< Otra información. */
   MSG_VERBOSE = MSG_ERROR | MSG_WARNING | MSG_INFO    /*!< Todos los mensajes. */
 };
 
@@ -471,7 +470,7 @@ private:
   /*!
    * \brief Constructora privada
    */
-  Log(bool add = true);
+  Log();
 
 public:
 
@@ -480,6 +479,7 @@ public:
    */
   ~Log();
 
+  /* Se impide la copia y la asignación al ser un singleton */
   Log(Log const&) = delete;
   void operator=(Log const&) = delete;
 

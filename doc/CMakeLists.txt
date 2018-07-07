@@ -1,39 +1,43 @@
 if(BUILD_DOC)
 
-find_package(Doxygen)
+  find_package(Doxygen
+               OPTIONAL_COMPONENTS dot mscgen dia)
 
-if(DOXYGEN_FOUND)
+  if(DOXYGEN_FOUND)
 
-  message(STATUS "DOXYGEN_FOUND ${DOXYGEN_FOUND}")
+    message(STATUS "DOXYGEN_FOUND ${DOXYGEN_FOUND}")
 
-  #set(doxyfile  "${PROJECT_SOURCE_DIR}/doc/Doxyfile")
-  set(rootfile  "${PROJECT_SOURCE_DIR}/doc/root.markdown")
-  set(tutorials "${PROJECT_SOURCE_DIR}/doc/tutorials.markdown")
-  #set(path_out  "${CMAKE_CURRENT_BINARY_DIR}/doc")
-  set(doxyfile  "${CMAKE_CURRENT_BINARY_DIR}/doxyfile")
-  
-  configure_file(doxyfile ${path_out} @ONLY)
-  configure_file(root.markdown ${path_out} @ONLY)
-  configure_file(tutorials.markdown ${path_out} @ONLY)
-  
-  #add_custom_target(doxygen
-  #  COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-  #  DEPENDS ${doxyfile} ${rootfile} ${tutorials}
-  #)
-  #
-  #install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html
-  #  DESTINATION "${TIDOP_DOC_INSTALL_PATH}"
-  #  COMPONENT "docs" OPTIONAL
-  #)
+    #set(DOXYGEN_GENERATE_HTML YES)
 
-  add_custom_target( doc ALL
-        COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM )
-        
-else (DOXYGEN_FOUND)
-  message("Doxygen need to be installed to generate the doxygen documentation")  
-endif(DOXYGEN_FOUND)
+    set(DOXYFILE  ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+    set(ROOTFILE  ${CMAKE_CURRENT_SOURCE_DIR}/root.markdown)
+    set(TUTORIALS ${CMAKE_CURRENT_SOURCE_DIR}/tutorials.markdown)
+    set(DOC_OUT   ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+
+    configure_file(${DOXYFILE}  ${DOC_OUT} @ONLY)
+    #configure_file(${ROOTFILE}  ${DOC_OUT} @ONLY)
+    #configure_file(${TUTORIALS} ${DOC_OUT} @ONLY)
+
+    message("Doxygen build started.")
+
+    #add_custom_target(doxygen
+    #  COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
+    #  DEPENDS ${doxyfile} ${rootfile} ${tutorials}
+    #)
+    #
+    #install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html
+    #  DESTINATION "${TIDOP_DOC_INSTALL_PATH}"
+    #  COMPONENT "docs" OPTIONAL
+    #)
+
+    add_custom_target( doc ALL
+          COMMAND ${DOXYGEN_EXECUTABLE} ${DOC_OUT}
+          WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          COMMENT "Generating API documentation with Doxygen"
+          VERBATIM )
+
+  else (DOXYGEN_FOUND)
+    message("Doxygen need to be installed to generate the doxygen documentation")
+  endif(DOXYGEN_FOUND)
 
 endif(BUILD_DOC)

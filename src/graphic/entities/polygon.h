@@ -55,10 +55,6 @@ public:
    */
   GPolygon &operator = (const GPolygon &gPolygon);
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
@@ -100,10 +96,6 @@ public:
    */
   GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
 
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
-
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
@@ -126,7 +118,7 @@ public:
   /*!
    * \brief Constructora a partir de un multi-polígono
    * Representa un multi-polígono sin estilo
-   * \param polygon Objeto de la clase MultiPolygon
+   * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
   GMultiPolygon(const geometry::MultiPolygon<geometry::Point<double>> &multiPolygon);
@@ -145,10 +137,6 @@ public:
    * \return Referencia al objeto
    */
   GMultiPolygon &operator = (const GMultiPolygon &gMultiPolygon);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
@@ -172,7 +160,7 @@ public:
   /*!
    * \brief Constructora a partir de un multi-polígono 3D
    * Representa un multi-polígono 3D sin estilo
-   * \param polygon Objeto de la clase MultiPolygon
+   * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
   GMultiPolygon3D(const geometry::MultiPolygon3D<geometry::Point3<double>> &multiPolygon);
@@ -191,10 +179,6 @@ public:
    * \return Referencia al objeto
    */
   GMultiPolygon3D &operator = (const GMultiPolygon3D &gMultiPolygon3D);
-
-//#ifdef HAVE_OPENCV
-//  void draw(cv::Mat &canvas) const override;
-//#endif
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

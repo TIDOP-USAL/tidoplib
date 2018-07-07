@@ -34,6 +34,15 @@ CanvasCV::CanvasCV()
   update();
 }
 
+CanvasCV::CanvasCV(const CanvasCV &canvas)
+  : Canvas(),
+    mWidth(canvas.mWidth),
+    mHeight(canvas.mHeight),
+    mBgColor(canvas.mBgColor)
+{
+  update();
+}
+
 CanvasCV::~CanvasCV()
 {
 }
@@ -153,10 +162,21 @@ void CanvasCV::drawPolygon(const GPolygon &polygon)
 
 }
 
+CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
+{
+  if (this != &canvas){
+    mWidth = canvas.mWidth;
+    mHeight = canvas.mHeight;
+    mBgColor = canvas.mBgColor;
+  }
+  return *this;
+}
+
 void CanvasCV::update()
 {
   mCanvas = cv::Mat(mHeight, mWidth, CV_MAKETYPE(CV_8U, 3), mBgColor.toCvScalar());
 }
+
 
 #endif // HAVE_OPENCV
 

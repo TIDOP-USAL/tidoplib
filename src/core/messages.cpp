@@ -23,9 +23,17 @@ TL_DEFAULT_WARNINGS
 #include <cstdio>
 #include <iostream>
 #include <fstream>
-
-#include "core/defs.h"
-
+#if (__cplusplus >= 201703L)
+//C++17
+//http://en.cppreference.com/w/cpp/filesystem
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+//Boost
+//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
 
 namespace TL
@@ -33,7 +41,7 @@ namespace TL
 
 #ifdef TL_MESSAGE_HANDLER
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 #ifdef HAVE_OPENCV
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
@@ -66,7 +74,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 }
 #endif // HAVE_GDAL
 
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 struct _msgProperties _msgTemplate[] = {   
@@ -204,9 +212,9 @@ void MessageManager::release(const Message &msg)
   } else {
     char buf[1000];
 #if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
 #else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getLine(), msg.getLine(), msg.getFunction());
+    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
 #endif
     msg_out =  std::string(buf);
   }
@@ -241,7 +249,7 @@ void MessageManager::resume()
   sStopHandler = false;
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void MessageManager::onDebug(const char *msg, const char *date)
 {
 #ifdef _DEBUG
@@ -252,7 +260,7 @@ void MessageManager::onDebug(const char *msg, const char *date)
   }
 #endif
 }
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void MessageManager::onInfo(const char *msg, const char *date)
 {
@@ -406,9 +414,9 @@ EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
-Log::Log(bool add)
+Log::Log()
 #ifdef TL_MESSAGE_HANDLER  
-  : MessageManager::Listener(add)
+  : MessageManager::Listener(false)
 #endif
 {
 }
@@ -461,9 +469,9 @@ void Log::write(const char *msg)
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[TL_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
-    sLogFile = _logfile;
+    fs::path logPath(getRunfile());
+    logPath.replace_extension(".log");
+    sLogFile = logPath.string();
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {
@@ -511,9 +519,9 @@ void Log::_write(const char *msg, const char *date)
 
   if (sLogFile.empty()) {
     // Log por defecto
-    char _logfile[TL_MAX_PATH];
-    changeFileExtension(getRunfile(), "log", _logfile, TL_MAX_PATH);
-    sLogFile = _logfile;
+    fs::path logPath(getRunfile());
+    logPath.replace_extension(".log");
+    sLogFile = logPath.string();
   }
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {

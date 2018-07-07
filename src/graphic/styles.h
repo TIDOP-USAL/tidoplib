@@ -131,7 +131,7 @@ public:
 
   /*!
    * \brief Constructora de copia
-   * \param[in] style Clase estilo de pluma que se copia
+   * \param[in] stylePen Clase estilo de pluma que se copia
    */
   StylePen(const StylePen &stylePen);
 
@@ -227,13 +227,21 @@ public:
    */
   void setPerpendicularOffset(int32_t perpendicularoffset);
 
+  /*!
+   * \brief getPriorityLevel
+   * \return
+   */
   uint32_t getPriorityLevel() const;
 
+  /*!
+   * \brief setPriorityLevel
+   * \param priorityLevel
+   */
   void setPriorityLevel(uint32_t priorityLevel);
 
   /*!
    * \brief operador de asignación
-   * \param style Estilo de pluma
+   * \param stylePen Estilo de pluma
    * \return Referencia al estilo de pluma
    */
   StylePen &operator = (const StylePen &stylePen);
@@ -307,7 +315,7 @@ public:
 
   /*!
    * \brief Constructora de copia
-   * \param[in] 
+   * \param[in] styleBrush Objeto StyleBrush que se copia
    */
   StyleBrush(const StyleBrush &styleBrush);
 
@@ -517,7 +525,7 @@ public:
 
   /*!
    * \brief Establece el nombre o id del simbolo
-   * \param[in] symbolname Nombre o id del simbolo
+   * \param[in] name Nombre o id del simbolo
    */
   void setName(SymbolName name);
 
@@ -743,7 +751,7 @@ public:
    * \brief Establece el texto de la etiqueta
    * \param[in] text Texto de la etiqueta
    */
-  void setText(double text);
+  void setText(const std::string &text);
 
   /*!
    * \brief Devuelve el ángulo de rotación
@@ -925,19 +933,19 @@ public:
   {
   }
 
-#ifdef HAVE_GDAL
-  
-  ///TODO: creo que seria mejor una clase ReaderStyles 
-  /*!
-   * \brief Lee los estilos de GDAL/OGR
-   * \param[in] ogrStyle Estilos ogr
-   * \return
-   */
-  bool readFromOGR(OGRStyleMgr *ogrStyle);
-
-#endif 
-
-  bool write();
+//#ifdef HAVE_GDAL
+//  
+//  ///TODO: creo que seria mejor una clase ReaderStyles 
+//  /*!
+//   * \brief Lee los estilos de GDAL/OGR
+//   * \param[in] ogrStyle Estilos ogr
+//   * \return
+//   */
+//  bool readFromOGR(OGRStyleMgr *ogrStyle);
+//
+//#endif 
+//
+//  bool write();
 
 
   StylePen *getStylePen() const;
@@ -980,33 +988,33 @@ public:
 
 private:
 
-#ifdef HAVE_GDAL
-
-  /*!
-   * \brief Lee el estilo de pincel
-   * \param[in] ogrStylePen Estilo pincel GDAL
-   */
-  void readStylePen(OGRStylePen *ogrStylePen);
-
-  /*!
-   * \brief Lee el estilo de pluma
-   * \param[in] ogrStylePen Estilo pluma GDAL
-   */
-  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
-
-  /*!
-   * \brief Lee el estilo símbolo
-   * \param[in] ogrStylePen Estilo símbolo GDAL
-   */
-  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
-
-  /*!
-   * \brief Lee el estilo etiqueta
-   * \param[in] ogrStylePen Estilo etiqueta GDAL
-   */
-  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
-
-#endif
+//#ifdef HAVE_GDAL
+//
+//  /*!
+//   * \brief Lee el estilo de pincel
+//   * \param[in] ogrStylePen Estilo pincel GDAL
+//   */
+//  void readStylePen(OGRStylePen *ogrStylePen);
+//
+//  /*!
+//   * \brief Lee el estilo de pluma
+//   * \param[in] ogrStylePen Estilo pluma GDAL
+//   */
+//  void readStyleBrush(OGRStyleBrush *ogrStyleBrush);
+//
+//  /*!
+//   * \brief Lee el estilo símbolo
+//   * \param[in] ogrStylePen Estilo símbolo GDAL
+//   */
+//  void readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
+//
+//  /*!
+//   * \brief Lee el estilo etiqueta
+//   * \param[in] ogrStylePen Estilo etiqueta GDAL
+//   */
+//  void readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+//
+//#endif
 };
 
 

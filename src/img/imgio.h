@@ -104,8 +104,8 @@ public:
 
   /*!
    * \brief Crea una imagen
-   * \param[in] row Número de filas de la imagen
-   * \param[in] col Número de columnas de la imagen
+   * \param[in] rows Número de filas de la imagen
+   * \param[in] cols Número de columnas de la imagen
    * \param[in] bands Número de bandas de la imagen
    * \param[in] type
    * \return
@@ -117,7 +117,7 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] wLoad Ventana de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
@@ -318,8 +318,8 @@ public:
 
   /*!
    * \brief Crea una imagen
-   * \param[in] row Número de filas de la imagen
-   * \param[in] col Número de columnas de la imagen
+   * \param[in] rows Número de filas de la imagen
+   * \param[in] cols Número de columnas de la imagen
    * \param[in] bands Número de bandas de la imagen
    * \param[in] type
    * \return
@@ -331,7 +331,7 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] wLoad Ventana de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
@@ -747,8 +747,8 @@ public:
 
   /*!
    * \brief Crea una imagen
-   * \param[in] row Número de filas de la imagen
-   * \param[in] col Número de columnas de la imagen
+   * \param[in] rows Número de filas de la imagen
+   * \param[in] cols Número de columnas de la imagen
    * \param[in] bands Número de bandas de la imagen
    * \param[in] type Tipo de datos
    */
@@ -759,7 +759,7 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] wLoad Ventana de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
@@ -808,7 +808,7 @@ public:
 
   /*!
    * \brief Guarda una imagen con otro nombre o con otro formato
-   * \param[in] file Nombre con el que se guarda el fichero
+   * \param[in] fileOut Nombre con el que se guarda el fichero
    * \return
    */
   virtual Status createCopy(const char *fileOut) override;
@@ -915,7 +915,7 @@ public:
   /*!
    * \brief Carga el trozo de imagen correspondiente a una ventana
    * \param[out] image
-   * \param[in] wRead Ventana en coordenadas terreno de la imagen que se quiere cargar
+   * \param[in] wLoad Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
   Status read(cv::Mat *image, const geometry::WindowD &wLoad, double scale = 1.);

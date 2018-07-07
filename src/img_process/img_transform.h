@@ -87,7 +87,8 @@ public:
 
   /*!
    * \brief Establece los parámetros
-   * \param[in] scale Escala en porcentaje que se aplica a la imagen
+   * \param scaleX Escala en el eje X
+   * \param scaleY Escala en el eje Y. Si se omite se toma la mista escala del eje X
    */
   void setParameters( double scaleX, double scaleY = 0. );
 };

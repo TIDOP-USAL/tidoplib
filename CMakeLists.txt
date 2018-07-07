@@ -13,6 +13,8 @@ set( CMAKE_DEBUG_POSTFIX d )
 # Tipos de configuración
 set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 
+
+# Configuracion especifica de Visual Studio
 if(MSVC)
 
   # Nivel de warning
@@ -23,6 +25,7 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 
 endif()
+
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
@@ -62,6 +65,7 @@ endif (BUILD_SHARED_LIBS)
 
 # Activación desactivación de los diferentes modulos de la libreria
 OPTION (BUILD_TL_CORE        "Include core module in TidopLib build"       ON)
+OPTION (BUILD_TL_MATH        "Include math module in TidopLib build"       ON)
 OPTION (BUILD_TL_GEOMETRY    "Include geom module in TidopLib build"       ON)
 OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
 OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
@@ -248,5 +252,6 @@ if(BUILD_EXAMPLES)
 		
 endif()	
 
+#fichero de configuracion de TidopLib
 install(FILES ${PROJECT_BINARY_DIR}/config_tl.h DESTINATION include)
 

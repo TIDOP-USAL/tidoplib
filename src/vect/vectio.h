@@ -211,6 +211,15 @@ public:
    * \see Mode
    */
   Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+
+  /*!
+   * \brief Abre un fichero vectorial especificando las opciones del formato
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
+   * \return Error
+   * \see Mode
+   */
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
@@ -238,6 +247,12 @@ public:
    * \param[out] layer Objeto GLayer que corresponde a la capa
    */
   void read(const char *name, graph::GLayer *layer) override;
+
+  /*!
+   * \brief read
+   * \param[in] name Nombre de la capa
+   * \param[out] layer Objeto GLayer que corresponde a la capa
+   */
   void read(const std::string &name, graph::GLayer *layer) override;
   
 
@@ -254,6 +269,12 @@ public:
    * \return Error
    */
   Status createLayer(const char *layerName) override;
+
+  /*!
+   * \brief Crea una capa nueva
+   * \param[in] layerName Nombre de la capa
+   * \return Error
+   */
   Status createLayer(const std::string &layerName) override;
 
   /*!
@@ -286,6 +307,13 @@ public:
    * \return
    */
   Status writeLayer(const char *name, const graph::GLayer &layer) override;
+
+  /*!
+   * \brief Escribe una capa
+   * \param[in] name Nombre de la capa
+   * \param[in] layer Capa
+   * \return
+   */
   Status writeLayer(const std::string &name, const graph::GLayer &layer) override;
 
   /*!
@@ -303,6 +331,13 @@ public:
    * \return Error
    */
   Status writePoint(const char *name, const std::shared_ptr<graph::GPoint> &gPoint) override;
+
+  /*!
+   * \brief Escribe un punto en una capa
+   * \param[in] name Nombre de la capa
+   * \param[in] gPoint Punto
+   * \return Error
+   */
   Status writePoint(const std::string &name, const std::shared_ptr<graph::GPoint> &gPoint) override;
 
   /*!
@@ -312,14 +347,21 @@ public:
    * \return Error
    */
   Status writeLineString(int id, const std::shared_ptr<graph::GLineString> &gLineString) override;
-  /*!
 
+  /*!
    * \brief Escribe una polilinea en una capa
    * \param[in] name Nombre de la capa
    * \param[in] gLineString Polilinea
    * \return Error
    */
   Status writeLineString(const char *name, const std::shared_ptr<graph::GLineString> &gLineString) override;
+
+  /*!
+   * \brief Escribe una polilinea en una capa
+   * \param[in] name Nombre de la capa
+   * \param[in] gLineString Polilinea
+   * \return Error
+   */
   Status writeLineString(const std::string &name, const std::shared_ptr<graph::GLineString> &gLineString) override;
 
   /*!
@@ -337,6 +379,13 @@ public:
    * \return Error
    */
   Status writePolygon(const char *name, const std::shared_ptr<graph::GPolygon> &gPolygon) override;
+
+  /*!
+   * \brief Escribe un poligono en una capa
+   * \param[in] name Identificador de la capa
+   * \param[in] gPolygon Poligono
+   * \return Error
+   */
   Status writePolygon(const std::string &name, const std::shared_ptr<graph::GPolygon> &gPolygon) override;
 
   /*!
@@ -354,6 +403,13 @@ public:
    * \return Error
    */
   Status writeMultiPoint(const char *name, const std::shared_ptr<graph::GMultiPoint> &gMultiPoint) override;
+
+  /*!
+   * \brief Escribe una entidad multi-polilinea en una capa
+   * \param[in] name Identificador de la capa
+   * \param[in] gMultiPoint Multi-polilinea
+   * \return Error
+   */
   Status writeMultiPoint(const std::string &name, const std::shared_ptr<graph::GMultiPoint> &gMultiPoint) override;
 
   /*!
@@ -371,6 +427,13 @@ public:
    * \return Error
    */
   Status writeMultiLineString(const char *name, const std::shared_ptr<graph::GMultiLineString> &gMultiLineString) override;
+
+  /*!
+   * \brief Escribe una entidad multi-polilinea en una capa
+   * \param[in] name Nombre de la capa
+   * \param[in] gMultiLineString Multi-polilinea
+   * \return Error
+   */
   Status writeMultiLineString(const std::string &name, const std::shared_ptr<graph::GMultiLineString> &gMultiLineString) override;
 
   /*!
@@ -388,6 +451,13 @@ public:
    * \return Error
    */
   Status writeMultiPolygon(const char *name, const std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon) override;
+
+  /*!
+   * \brief Escribe una entidad multi-poligono en una capa
+   * \param[in] name Nombre de la capa
+   * \param[in] gMultiPolygon Multi-poligono
+   * \return Error
+   */
   Status writeMultiPolygon(const std::string &name, const std::shared_ptr<graph::GMultiPolygon> &gMultiPolygon) override;
 
 private:
@@ -429,7 +499,9 @@ private:
 
 #endif // HAVE_GDAL
 
-
+///TODO: Separar en una clase vector y otra clase VectorHandler. 
+/// La clase VectorHandler seria una virtual y se extenderia para los ficheros que se lean con GDAL 
+/// o de otra forma.
 
 /*!
  * \brief Clase contenedor y de gestión de gráficos vectoriales

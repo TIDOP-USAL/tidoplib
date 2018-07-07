@@ -85,16 +85,6 @@ public:
    */
   Segment(const Point_t &_pt1, const Point_t &_pt2);
 
-//#ifdef HAVE_OPENCV
-//
-//  /*!
-//   * \brief Constructor segment
-//   * \param[in] lvect
-//   */
-//  Segment(const cv::Vec<T, 4> &lvect);
-//
-//#endif
-
   /*!
    * \brief Constructor segment
    * \param[in] pt Coordenadas del punto central o inicial (según el valor de bCenter)
@@ -540,16 +530,21 @@ private:
   WindowI bbox;
 
 public:
+
   /*!
    * \brief Constructora GroupLines
    */
   GroupLines();
 
+  /*!
+   * \brief GroupLines
+   * \param[in] lines Vector de lineas
+   */
   GroupLines(const std::vector<Line> &lines);
 
   /*!
    * \brief Añade una línea
-   * \param[in] Line Linea
+   * \param[in] line Linea
    */
   void add(const Line &line);
 

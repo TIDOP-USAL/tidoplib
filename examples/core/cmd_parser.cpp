@@ -17,7 +17,6 @@
 #include "core/console.h"
 #include "core/messages.h"
 
-
 using namespace TL;
 
 enum class options {
@@ -29,9 +28,8 @@ enum class options {
 int main(int argc, char** argv)
 {
 
-//  char name[TL_MAX_FNAME];
-//  getFileName(getRunfile(), name, TL_MAX_FNAME);
   const char *name = "Consola";
+
   // Se definen los parámetros y opciones
   CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
   cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");
@@ -48,9 +46,8 @@ int main(int argc, char** argv)
   }
 
   // Recuperación de los valores de los argumentos
-  // file es un fichero con lo cual se recomienda utilizar la clase Path para 
-  // evitar problemas en el caso de que se introduzca una ruta relativa
-  std::string file = cmdParser.getValue<Path>("file").toString();
+  std::string file = cmdParser.getValue<std::string>("file");
+
   // Este parametro tiene un valor por defecto con lo cual puede ser omitido
   std::string param2 = cmdParser.getValue<std::string>("param2");
   // Se comprueba si existe la opción

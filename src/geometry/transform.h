@@ -105,7 +105,7 @@ public:
   /*!
    * \brief Constructor
    * \param[in] trfType Tipo de transformación
-   * \param[in] n_min Número mínimo de puntos necesario para la transformación
+   * \param[in] nMin Número mínimo de puntos necesario para la transformación
    */
   Transform(transform_type trfType, int nMin = 0)
     : mTrfType(trfType), mMinPoint(nMin) {}
@@ -540,7 +540,8 @@ public:
 
   /*!
    * \brief Transform2D
-   * \param n_min Número mínimo de puntos necesario para la transformación
+   * \param[in] trfType Tipo de transformación
+   * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
   Transform2D(transform_type trfType, int n_min = 0)
     : Transform<Point_t>(trfType, n_min)
@@ -632,8 +633,6 @@ public:
 
   /*!
    * \brief Constructor
-   * \param[in] trfType Tipo de transformación
-   * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
   TrfPerspective()
     : Transform2D<Point_t>(transform_type::PERSPECTIVE, 4) {}
@@ -2133,10 +2132,10 @@ void Affine<Point_t>::updateInv()
     bi = -b / det;
     ci = -c / det;
     di = a / det;
-    TL_DISABLE_WARNING(4244)
+    TL_DISABLE_WARNING(TL_WARNING_C4244)
     this->txi = (-d * tx + b * ty) / det;
     this->tyi = (-a * ty + c * tx) / det;
-    TL_ENABLE_WARNING(4244)
+    TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
 /* ---------------------------------------------------------------------------------- */
@@ -2994,7 +2993,7 @@ public:
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
-  double getScale() const { return mScale; };
+  double getScale() const { return mScale; }
 
   /*!
    * \brief Establece los parámetros
@@ -3007,12 +3006,6 @@ public:
    * \param[in] kappa Rotación respecto al eje Z
    */
   void setParameters(double tx, double ty, double tz, double scale, double omega, double phi, double kappa);
-
-  ///*!
-  // * \brief Establece la rotación de la transformación
-  // * \param Ángulo de rotación en radianes
-  // */
-  //void setRotation(double rotation);
 
   /*!
    * \brief Establece la escala de la transformación
@@ -3234,78 +3227,31 @@ Helmert3D<Point_t> operator*(Helmert3D<Point_t> &trf1, Helmert3D<Point_t> &trf2)
 
 /* ---------------------------------------------------------------------------------- */
 
-/*!
- * \brief Aplica una traslación a un conjunto de segmentos
- * \param[in] lines_in
- * \param[out] lines_out
- * \param[in] dx
- * \param[in] dy
- * \deprecated{ Reemplazada por TL::Translate::transform }
- */
-//TL_DEPRECATED("transform(const Entity<T> &in, Entity<T> *out, Transform<Point_t> *trf, transform_order trfOrder)")
-//TL_EXPORT void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy);
 
 /*!
- * \brief Aplica una transformación a una entidad
- * \param[in] in Entidad de entrada
- * \param[out] out Entidad de salida
- * \param[in] trf Transformación que se aplica a la entidad
+ * \brief Aplica una transformación a una ventana
+ * \param[in] in Ventana de entrada
+ * \param[out] out Ventana de salida
+ * \param[in] trf Transformación que se aplica
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
-//template<typename T, typename Point_t> inline
-//void transform(const Entity<T> &in, Entity<T> *out, 
-//                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
-//{
-//  if (in.getType() == entity_type::WINDOW) {
-//    Window<T> *w = dynamic_cast<Window<T> *>(out);
-//    trf->transform(dynamic_cast<const Window<T> &>(in).pt1, &w->pt1, trfOrder);
-//    trf->transform(dynamic_cast<const Window<T> &>(in).pt2, &w->pt2, trfOrder);
-//  } else if ( in.getType() == entity_type::SEGMENT_2D) {
-//    Segment<T> *s = dynamic_cast<Segment<T> *>(out);
-//    trf->transform(dynamic_cast<const Segment<T> &>(in).pt1, &s->pt1, trfOrder);
-//    trf->transform(dynamic_cast<const Segment<T> &>(in).pt2, &s->pt2, trfOrder);
-//  } else if (in.getType() == entity_type::LINESTRING_2D ||
-//             in.getType() == entity_type::MULTIPOINT_2D ||
-//             in.getType() == entity_type::POLYGON_2D) {
-//    const EntityPoints<T> &_in = dynamic_cast<const EntityPoints<T> &>(in);
-//    dynamic_cast<EntityPoints<T> *>(out)->resize(_in.getSize());
-//    typename std::vector<Point<T>>::iterator it_out = dynamic_cast<EntityPoints<T> *>(out)->begin();
-//    for (typename std::vector<Point<T>>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-//      trf->transform(*it, &(*it_out), trfOrder);
-//    }
-//  } else {
-//    //tipo no soportado
-//    return;
-//  }
-//}
-
-//template<typename Point_t> inline
-//void transform(const geometry::EntityPoints<Point_t> &in, geometry::EntityPoints<Point_t> *out, 
-//                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
-//{
-//  if (in.getType() == geometry::Entity::type::LINESTRING_2D ||
-//      in.getType() == geometry::Entity::type::MULTIPOINT_2D ||
-//      in.getType() == geometry::Entity::type::POLYGON_2D) {
-//    //const EntityPoints<Point_t> &_in = dynamic_cast<const EntityPoints<Point_t> &>(in);
-//    out->resize(in.getSize());
-//    typename std::vector<Point_t>::iterator it_out = out->begin();
-//    for (typename std::vector<Point_t>::const_iterator it = _in.begin(); it != _in.end(); it++, it_out++) {
-//      trf->transform(*it, &(*it_out), trfOrder);
-//    }
-//  } else {
-//    //tipo no soportado
-//    return;
-//  }
-//}
-
 template<typename Point_t> inline
-void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out, 
+void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out,
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
   trf->transform(in.pt1, &out->pt1, trfOrder);
   trf->transform(in.pt2, &out->pt2, trfOrder);
 }
 
+
+
+/*!
+ * \brief Aplica una transformación a un segmento
+ * \param[in] in Segmento de entrada
+ * \param[out] out Segmento de salida
+ * \param[in] trf Transformación que se aplica
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
 template<typename Point_t> inline
 void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
@@ -3314,6 +3260,13 @@ void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> 
   trf->transform(in.pt2, &out->pt2, trfOrder);
 }
 
+/*!
+ * \brief Aplica una transformación a un contenedor de entidades de los tipos Polygon, LinesString, etc
+ * \param[in] ptsIn Contenedor de entrada
+ * \param[out] ptsOut Contenedor de salida
+ * \param[in] trf Transformación que se aplica
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
 template<typename Point_t> inline
 transform_status transform(const geometry::EntityContainer<Point_t> &ptsIn, geometry::EntityContainer<Point_t> *ptsOut,
                Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
@@ -3359,7 +3312,14 @@ void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *o
   });
 }
 
-// Forma mas genérica
+/*!
+ * \brief Aplica una transformación a un conjunto de entidades
+ * \param[in] in_first Iterador al primer elemento de entrada
+ * \param[in] in_last  Iterador al último elemento de entrada
+ * \param[out] out_first Iterador al primer elemento de salida
+ * \param[in] trf Transformación que se aplica a la entidad
+ * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
+ */
 template<typename itIn, typename itOut, typename trf_t> inline
 void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transform_order trfOrder = transform_order::DIRECT)
 {

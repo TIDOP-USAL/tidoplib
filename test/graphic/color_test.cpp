@@ -776,33 +776,33 @@ TEST(Color, toRGB)
 
 
 
-TEST(Test_, getBlue)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
-  }
-}
+//TEST(Test_, getBlue)
+//{
+//  for (int i = 0; i < color.size(); i++) {
+//    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
+//  }
+//}
 
-TEST(Test_, getGreen)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
-  }
-}
+//TEST(Test_, getGreen)
+//{
+//  for (int i = 0; i < color.size(); i++) {
+//    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
+//  }
+//}
 
-TEST(Test_, getRed)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][0], getRed(color[i]));
-  }
-}
+//TEST(Test_, getRed)
+//{
+//  for (int i = 0; i < color.size(); i++) {
+//    EXPECT_EQ(rbga[i][0], getRed(color[i]));
+//  }
+//}
 
-TEST(Test_, getAlpha)
-{
-  for (int i = 0; i < color.size(); i++) {
-    EXPECT_EQ(rbga[i][3], getAlpha(color[i]));
-  }
-}
+//TEST(Test_, getAlpha)
+//{
+//  for (int i = 0; i < color.size(); i++) {
+//    EXPECT_EQ(rbga[i][3], getAlpha(color[i]));
+//  }
+//}
 
 TEST(Test_, intToRGB)
 {

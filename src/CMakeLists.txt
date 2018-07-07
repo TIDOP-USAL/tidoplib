@@ -5,13 +5,15 @@ if(BUILD_TL_CORE)
   #directorio con el módulo 'Core' de la librería
   add_subdirectory(core)
   
+  if(BUILD_TL_MATH)
+    add_subdirectory(math)
+  endif()
+  
   if(BUILD_TL_GEOMETRY)
     add_subdirectory(geometry)
   endif()
   
-  # Depende de core asi que si este no está activo no se carga
   if(BUILD_TL_IMG)
-    #directorio con el módulo 'img' de la librería
     add_subdirectory(img)
   endif()
   

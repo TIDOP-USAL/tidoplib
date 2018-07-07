@@ -34,18 +34,6 @@
   #include <cstdint>
 #endif
 
-// Definición de constantes de tipo general
-#define TL_PI_2 1.5707963267948966192313216916398
-#define TL_PI   3.1415926535897932384626433832795
-#define TL_2PI  6.283185307179586476925286766559
-
-#define TL_RAD_TO_DEG	57.295779513082320876798154814105
-#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
-#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
-#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
-
-
-
 #if defined WIN32
 // Para que no den problemas std::numeric_limits<T>().max()
 #  ifndef NOMINMAX
@@ -57,6 +45,20 @@
 #  include <windows.h>
 #endif
 
+/* Definición de constantes de tipo general */
+
+#define TL_PI_2 1.5707963267948966192313216916398
+#define TL_PI   3.1415926535897932384626433832795
+#define TL_2PI  6.283185307179586476925286766559
+
+/* Conversión de ángulos */
+
+#define TL_RAD_TO_DEG	57.295779513082320876798154814105
+#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
+#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
+#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
+
+/* Límites maximos y minimos de tipos numéricos */
 #define TL_INT_MAX std::numeric_limits<int>().max()
 #define TL_INT_MIN -std::numeric_limits<int>().max()
 #define TL_DOUBLE_MAX std::numeric_limits<double>().max()
@@ -93,8 +95,9 @@
 #  define TL_MAX_EXT    NAME_MAX
 #endif
 
-#ifdef Tidoplib_EXPORTS
 
+
+#ifdef Tidoplib_EXPORTS
 #  if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__)
 #    define TL_EXPORT __declspec(dllexport)
 #  elif defined __GNUC__ && __GNUC__ >= 4
@@ -154,6 +157,10 @@
 #define STRING2(x) #x
 #define STRING(x) STRING2(x)
 
+#ifdef __GNUC__
+#define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
+#endif
+
 #if _MSC_VER
 #  define TL_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
@@ -165,7 +172,8 @@
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 //                                                                                                                   ^
 // Por ahora no hace nada...
-#  define TL_COMPILER_WARNING(msg) //_Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
+#  define LINUX_PRAGMA(x) MAKE_LINUX_PRAGMA(x)
+#  define TL_COMPILER_WARNING(msg) LINUX_PRAGMA(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #endif
 
 
@@ -182,9 +190,25 @@
 //__FUNCSIG__
 
 
+/*-----------------------------------------------------------------------------------*/
+/*                                       WARNIGS                                     */
+/*-----------------------------------------------------------------------------------*/
 
-// Desactivar/activar warnings
-#if defined _MSC_VER
+#ifdef _MSC_VER
+#  define TL_WARNING_DEPRECATED 4996
+#  define TL_UNREFERENCED_FORMAL_PARAMETER 4100
+#  define TL_UNREFERENCED_LOCAL_VARIABLE 4101
+#  define TL_WARNING_C4244 4244
+#  define TL_FORCEINLINE_NOT_INLINED 4714
+#else
+#  define TL_WARNING_DEPRECATED "-Wdeprecated-declarations"
+#  define TL_UNREFERENCED_FORMAL_PARAMETER "-Wunused-variable"
+#  define TL_UNREFERENCED_LOCAL_VARIABLE "-Wunused-variable"
+#  define TL_WARNING_C4244 "-W"
+#  define TL_FORCEINLINE_NOT_INLINED 4714 "-W"
+#endif
+
+
 
 /*!
  * \brief Se suprimen todos los mensajes de advertencia
@@ -200,12 +224,22 @@
  * }
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_SUPPRESS_WARNINGS __pragma(warning(push, 0))
+#else
+#  define TL_SUPPRESS_WARNINGS DIAG_PRAGMA(push) DIAG_PRAGMA(ignored "-Wall")
+#endif
 
 /*!
  * \brief Se pone por defecto la configuración de mensajes de advertencia
  */
+#ifdef _MSC_VER
 #  define TL_DEFAULT_WARNINGS __pragma(warning(pop))
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_DEFAULT_WARNINGS DIAG_PRAGMA(pop)
+#endif
 
 /*!
  * \brief Se activa un mensaje de advertencia especifico
@@ -220,7 +254,15 @@
  * TL_ENABLE_WARNING(4244)
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_DISABLE_WARNING(warn) __pragma(warning(disable : warn))
+#else
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_DISABLE_WARNING(warn) DIAG_PRAGMA(push) DIAG_PRAGMA(ignored warn)
+//#  define TL_DISABLE_WARNING(warn) _Pragma GCC diagnostic push \
+//   _Pragma GCC diagnostic ignored warn
+#endif
 
 /*!
  * \brief Se desactiva un mensaje de advertencia especifico
@@ -235,17 +277,17 @@
  * TL_ENABLE_WARNING(4244)
  * \endcode
  */
+#ifdef _MSC_VER
 #  define TL_ENABLE_WARNING(warn) __pragma(warning(default : warn))
 #else
-#  define TL_SUPPRESS_WARNINGS
-#  define TL_DEFAULT_WARNINGS
-#  define TL_DISABLE_WARNING(warn)
-#  define TL_ENABLE_WARNING(warn)
+#  define DIAG_DO_PRAGMA(x) _Pragma (#x)
+#  define DIAG_PRAGMA(x) DIAG_DO_PRAGMA(GCC diagnostic x)
+#  define TL_ENABLE_WARNING(warn) DIAG_PRAGMA(pop)
 #endif
 
-
-
-// MACROS
+/*-----------------------------------------------------------------------------------*/
+/*                                       MACROS                                      */
+/*-----------------------------------------------------------------------------------*/
 
 /*!
  * \brief Redondea un doble o float y ademas convierte a entero
@@ -259,6 +301,13 @@
 // De momento lo hago asi...
 #define printf_s(...) printf( __VA_ARGS__)
 #define sprintf_s(dest, len, format, ...) snprintf(dest, len, format, __VA_ARGS__) 
+#endif
+
+#if _MSC_VER
+#  define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
+#else
+#define DO_PRAGMA(x) _Pragma (#x)
+#define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
 #endif
 
 #endif // TL_CORE_DEFS_H

@@ -237,14 +237,6 @@ public:
   Color(double hue, double saturation, double value);
 
   /*!
-   * \brief Constructora HSL (Hue, Saturation, Lightness) o HSI (Hue, Saturation, Intensity)
-   * \param[in] hue Matiz, tono o tinte de un color. Es el grado en el cual un estímulo puede ser descrito como similar o diferente de los estímulos como rojo, amarillo y azul
-   * \param[in] saturation Saturación
-   * \param[in] lightness Luminosidad
-   */
-  //Color(double hue, double saturation, double lightness);
-
-  /*!
    * \brief Constructora
    * \param[in] color Color como cadena (hexadecimal)
    */
@@ -258,23 +250,9 @@ public:
   Color(const Color::NAME &color);
 
   /*!
-   * \brief Constructora
-   * \param[in] color Color como cv::Scalar de OpenCV
-   */
-//#ifdef HAVE_OPENCV
-//  Color(const cv::Scalar &color);
-//#endif
-
-  /*!
    * \brief Destructora
    */
   ~Color() {}
-  
-  /*!
-   * \brief Devuelve el valor de color para el tipo indicado
-   */
-  //template<typename T>
-  //T get() const;
 
   /*!
    * \brief Devuelve la componente azul
@@ -341,7 +319,7 @@ public:
    * \param[in] Y Y
    * \param[in] Z Z
    */
-  //void fromXYZ(double X, double Y, double Z);
+  void fromXYZ(double X, double Y, double Z);
 
   /*!
    * \brief Obtiene un color a partir de sus valores CIE Luv
@@ -349,7 +327,7 @@ public:
    * \param[in] u Información del color
    * \param[in] v Información del color
    */
-  //void fromLuv(double L, double u, double v);
+  void fromLuv(double L, double u, double v);
 
   /*!
    * \brief Obtiene un color a partir de sus valores CIE Lab
@@ -357,7 +335,7 @@ public:
    * \param[in] a Referencia respecto a la relación rojo/verde
    * \param[in] b Relación amarillo/azul
    */
-  //void fromLab(double L, double a, double b);
+  void fromLab(double L, double a, double b);
 
   /*!
    * \brief Convierte un color a CMYK
@@ -466,15 +444,16 @@ public:
  * \param[in] color Color representado como un entero
  * \return Componente azul
  */
-TL_DEPRECATED("Color(color).getBlue()")
+TL_DEPRECATED("Color::getBlue()")
 TL_EXPORT int getBlue(int color);
 
 /*!
  * \brief Obtiene la componente verde de un color
  * \param[in] color Color representado como un entero
  * \return Componente verde
+ * \deprecated Use en su lugar Color::getGreen()
  */
-TL_DEPRECATED("Color(color).getGreen()")
+TL_DEPRECATED("Color::getGreen()")
 TL_EXPORT int getGreen(int color);
 
 /*!
@@ -482,7 +461,7 @@ TL_EXPORT int getGreen(int color);
  * \param[in] color Color representado como un entero
  * \return Componente roja
  */
-TL_DEPRECATED("Color(color).getRed()")
+TL_DEPRECATED("Color::getRed()")
 TL_EXPORT int getRed(int color);
 
 /*!
@@ -490,7 +469,7 @@ TL_EXPORT int getRed(int color);
  * \param[in] color Color representado como un entero
  * \return Canal alfa
  */
-TL_DEPRECATED("Color(color).getAlpha()")
+TL_DEPRECATED("Color::getAlpha()")
 TL_EXPORT int getAlpha(int color);
 
 /*!
@@ -651,6 +630,79 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 
 
 /*! \} */ // end of colorConversion
+
+
+///Nueva clase espacio de color
+//class ColorSpace
+//{
+//public:
+//
+//  ColorSpace();
+//  ~ColorSpace();
+//
+//private:
+//
+//};
+
+
+//class ColorModel
+//{
+//public:
+//
+//  enum class Model
+//  {
+//    RGB,
+//    CMYQ,
+//    HSL,
+//    HSV
+//  };
+//
+//public:
+//
+//  ColorModel();
+//  ~ColorModel();
+//
+//  ColorModel &create(Model model);
+//
+//private:
+//
+//};
+
+//class ColorRGB : public ColorModel
+//{
+//public:
+//
+//  int mRed;
+//  int mGreen;
+//  int mBlue;
+//
+//public:
+//
+//  ColorRGB();
+//  ColorRGB(int red, int green, int blue);
+//  ~ColorRGB();
+//
+//  int red();
+//  int green();
+//  int blue();
+//
+//private:
+//
+//};
+//
+//ColorRGB::ColorRGB()
+//{}
+//
+//ColorRGB(int red, int green, int blue)
+//  : mRed(red),
+//    mGreen(green),
+//    mBlue(blue)
+//{
+//}
+//
+//ColorRGB::~ColorRGB()
+//{}
+
 
 /*! \} */ // end of GraphicEntities
 

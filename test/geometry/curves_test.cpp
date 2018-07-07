@@ -78,13 +78,13 @@ TEST(CircleD, conversion)
 
 TEST(CircleD, area)
 {
-  CircleD circle(PointI(50., 50.), 25.);
+  CircleD circle(PointD(50., 50.), 25.);
   EXPECT_NEAR(1963.495, circle.area(), 0.1);
 }
 
 TEST(CircleD, length)
 {
-  CircleD circle(PointI(50., 50.), 25.);
+  CircleD circle(PointD(50., 50.), 25.);
   EXPECT_NEAR(157.0796, circle.length(), 0.01);
 }
 
@@ -173,13 +173,13 @@ TEST(EllipseD, conversion)
 
 TEST(EllipseD, area)
 {
-  EllipseD ellipse(PointI(50., 50.), 3., 2.);
+  EllipseD ellipse(PointD(50., 50.), 3., 2.);
   EXPECT_NEAR(18.85, ellipse.area(), 0.01);
 }
 
 TEST(EllipseD, length)
 {
-  EllipseD ellipse(PointI(50., 50.), 3., 2.);
+  EllipseD ellipse(PointD(50., 50.), 3., 2.);
   EXPECT_NEAR(15.87, ellipse.length(), 0.1);
 }
 

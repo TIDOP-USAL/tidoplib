@@ -173,19 +173,22 @@ public:
 
   /*!
    * \brief Constructora por defecto
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    */
   Console(bool add = true);
 
   /*!
    * \brief Constructor
    * \param[in] mode Modo de consola
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    * \see Mode
    */
   Console(Console::Mode mode, bool add = true);
 
   /*!
    * \brief Constructor de copia
-   * \param[in] mode Modo de consola
+   * \param[in] console Consola
+   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    * \see Mode
    */
   Console(const Console &console, bool add = true);
@@ -461,12 +464,12 @@ public:
    * \param[in] option
    * \deprecated Use TL::CmdOption::setActive en su lugar
    */
-  TL_DEPRECATED("CmdOption::setActive(bool active)")
+  TL_DEPRECATED("CmdOption::setActive")
   void setOption(bool option) { mValue = option; }
 
   /*!
    * \brief Establece si esta activada o no
-   * \param[in] option
+   * \param[in] active
    */
   void setActive(bool active);
 };
@@ -640,8 +643,6 @@ private:
    */
   std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
 
-  //TODO: Seria conveniente tener un mensaje de help y otro de copyright
-
 public:
 
   /*!
@@ -751,9 +752,9 @@ public:
             strm_value >> *(double *)_value;
           } else if (typeid(T) == typeid(float)) {
             strm_value >> *(float *)_value;
-          } else if (typeid(T) == typeid(Path)) {
+          } /*else if (typeid(T) == typeid(Path)) {
             *(Path *)_value = Path(value);
-          } else {
+          }*/ else {
             TL_THROW_ERROR("Tipo de dato  no permitido"); 
             //throw std::runtime_error("Tipo de dato  no permitido");
           }
@@ -858,9 +859,9 @@ public:
 
   /*!
    * \brief Constructora de la clase Progress
-   * \param[min] min Valor mínimo
-   * \param[min] max Valor máximo
-   * \param[min] msg Mensaje opcional con información del proceso.
+   * \param[in] min Valor mínimo
+   * \param[in] max Valor máximo
+   * \param[in] msg Mensaje opcional con información del proceso.
    */
   Progress(double min, double max, const std::string &msg = "");
 

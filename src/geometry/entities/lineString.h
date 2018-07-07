@@ -58,7 +58,7 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] linestring
+   * \param[in] lineString Objeto LineString que se copia
    */
   LineString(const LineString &lineString);
 
@@ -201,7 +201,7 @@ public:
 
   /*!
    * \brief Constructor de copia
-   * \param[in] linestring
+   * \param[in] lineString Objeto LineString3D que se copia
    */
   LineString3D(const LineString3D &lineString);
 

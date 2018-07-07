@@ -12,9 +12,9 @@
 #endif
 
 #ifdef HAVE_EIGEN
-TL_DISABLE_WARNING(4714)
+TL_SUPPRESS_WARNINGS
 #include <Eigen/SVD>
-TL_ENABLE_WARNING(4714)
+TL_DEFAULT_WARNINGS
 #endif
 
 
@@ -200,17 +200,6 @@ TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double
 //Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
-
-//... Esto hace lo mismo que rotationMatrix (transform.h) para el caso de orden xyz
-
-/*!
- * \brief Cálculo de la matriz de rotación a partir de los angulos de euler
- * \param[in] rX Rotación respecto al eje X en radianes
- * \param[in] rY Rotación respecto al eje Y en radianes
- * \param[in] rZ Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-//TL_EXPORT void eulerAnglesToRotationMatrix(double rX, double rY, double rZ, std::array<std::array<double, 3>, 3> *R);
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
@@ -643,7 +632,7 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
  * \param[in] pts Puntos
  * \param[out] m Pendiente de la recta
  * \param[out] b Ordenada
- * \param[int] YX Si es true (valor por defecto) se cálcula la recta de regresión de Y sobre X. En caso contrario se calcula la recta de X sobre Y.
+ * \param[in] YX Si es true (valor por defecto) se cálcula la recta de regresión de Y sobre X. En caso contrario se calcula la recta de X sobre Y.
  * \return Coeficiente de correlacción. Valor entre -1 (pendiente negativa) y 1 (pendiente positiva). Valores próximos a cero suponen un mal ajuste
  *
  * <h4>Ejemplo de determinación de la recta de mejor ajuste</h4>
@@ -717,12 +706,12 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  * \f$ A = 10^b \f$<BR>
  *
  * \param[in] pts Puntos
- * \param[out] A 
- * \param[out] r 
+ * \param[out] A
+ * \param[out] r
  */
-//template<typename Point_t> inline 
-//void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
-//{
+template<typename Point_t> inline
+void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+{
 //  std::vector<geometry::PointD> ptsLog(pts.size());
 //  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
 //                 [](Point_t pt) -> geometry::PointD {
@@ -734,7 +723,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
 //  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
 //  *A = pow(10, b);
 //  *r = pow(10, m);
-//}
+}
 
 
 /*!
@@ -744,7 +733,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  *
  * \param[in] points Puntos que definen el plano
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \param[in] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
 template<typename T> inline 
@@ -778,7 +767,7 @@ double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &p
  *
  * \param[in] points Puntos que definen el plano
  * \param[out] plane Parametros de la ecuación general del plano (A, B, C, D)
- * \param[int] normalize Si es verdadero normaliza la ecuación del plano
+ * \param[in] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
 template<typename Point_t> inline 
@@ -912,9 +901,6 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-/* ---------------------------------------------------------------------------------- */
-
-
 #ifdef HAVE_OPENCV
 
 /*!
@@ -934,132 +920,6 @@ TL_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 
 #endif
-
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                               Conversión de ángulos                                */
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup angleConversion Conversión de ángulos
- *  
- * Conversiones entre los diferentes formatos ángulares. 
- * - grados sexagesimales.
- * - grados centesimales
- * - radianes
- * \{
- */
-
-template<typename T>
-inline int isNegative(T t) 
-{
-  return t < 0 ? -1 : 1;
-}
-
-/*!
- * \brief Conversión de grados sexagesimales a grados sexagesimales en notación decimal
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return Grados sexagesimales en notación decimal
- */
-TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
-
-/*!
- * \brief Conversión de grados sexagesimales a radianes
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return radianes
- */
-TL_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
-
-/*!
- * \brief Conversión de grados sexagesimales a grados centesimales
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return Grados centesimales
- */
-TL_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
-
-/*!
- * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
- *
- *
- * <h4>Ejemplo</h4>
- * \code
- * int degrees, minutes, seconds;
- * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
- * \endcode
- */
-TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
-
-/*!
- * \brief Conversión de grados sexagesimales en notación decimal a radianes
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
- * \return Radianes
- */
-TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
-
-/*!
- * \brief Conversión de grados sexagesimales en notación decimal a grados centesimales
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
- * \return Grados centesimales
- */
-TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
-
-/*!
- * \brief Conversión de radianes a grados, minutos y segundos
- * \param[in] radians Radianes
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
- */
-TL_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
-
-/*!
- * \brief Conversión de radianes a grados sexagesimales en notación decimal
- * \param[in] radians Radianes
- * \return Grados sexagesimales en notación decimal
- */
-TL_EXPORT double radiansToDecimalDegrees(double radians);
-
-/*!
- * \brief radiansToGradians
- * \param[in] radians Radianes
- * \return Grados centesimales
- */
-TL_EXPORT double radiansToGradians(double radians);
-
-/*!
- * \brief Conversión de grados centesimales a grados, minutos y segundos
- * \param[in] gradians Grados centesimales
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
- */
-TL_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
-
-/*!
- * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal
- * \param[in] gradians Grados centesimales
- * \return Grados sexagesimales en notación decimal
- */
-TL_EXPORT double gradiansToDecimalDegrees(double gradians);
-
-/*!
- * \brief Conversión de grados centesimales a radianes
- * \param[in] gradians Grados centesimales
- * \return Radianes
- */
-TL_EXPORT double gradiansToRadians(double gradians);
-
-/*! \} */ // end of angleConversion
 
 
 /*! \} */ // end of mathUtils

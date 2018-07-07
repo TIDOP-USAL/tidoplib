@@ -9,7 +9,7 @@
 
 #include "core/defs.h"
 
-namespace TKL
+namespace TL
 {
 
 
@@ -47,7 +47,8 @@ public:
 
   /*!
    * \brief Constructor
-   * \param name Nombre del campo
+   * \param[in] name Nombre del campo
+   * \param[in] type Tipo
    */
   TableHeaderField(const std::string &name, Type type);
 
@@ -161,16 +162,13 @@ public:
    */
   TableRegister();
   TableRegister(int size);
+
   /*!
    * \brief Constructor de copia
-   * \param[in] tableRegister
+   * \param[in] _register Objeto que se copia
    */
   TableRegister(const TableRegister &_register);
   
-  /*!
-   * \brief Constructor de lista
-   * \param[in] registerFields
-   */
   //TableRegister(std::initializer_list<std::shared_ptr<TableRegisterField>> registerFields);
 
   /*!
@@ -326,7 +324,7 @@ public:
   /*!
    * \brief Crea una tabla nueva en el modelo de datos
    * \param[in] tableName Nombre de la tabla
-   * \param[in] tableFields Campos de la tabla
+   * \param[in] tableHeader Cabecera de la tabla
    * \see TableField
    */
   void createTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader);
@@ -366,6 +364,6 @@ public:
 
 
 
-} // End namespace TKL
+} // End namespace TL
 
 #endif // TL_CONSOLE_H

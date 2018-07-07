@@ -5,7 +5,8 @@
 
 using namespace TL;
 
-TEST(Message, Default) {
+TEST(Message, Default) 
+{
 
   // Valores por defecto
 //  //EXPECT_EQ(static_cast<int>(MessageLevel::MSG_ERROR),static_cast<int>(Message::get().getMessageLevel()));

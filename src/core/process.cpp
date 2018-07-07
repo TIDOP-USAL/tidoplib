@@ -71,14 +71,14 @@ void Process::resume()
   resumeTriggered();
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 Process::Status Process::run(Progress *progressBar)
 {
   if (mStatus != Status::FINALIZED) // Util para saltar procesos ya realizados.
     runTriggered();
   return mStatus;
 }
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void Process::stop()
 {
@@ -225,7 +225,7 @@ CmdProcess::~CmdProcess()
 #endif
 }
 
-TL_DISABLE_WARNING(4100)
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 Process::Status CmdProcess::run(Progress *progressBar)
 {
   Process::run();
@@ -278,7 +278,7 @@ Process::Status CmdProcess::run(Progress *progressBar)
   return Process::Status::FINALIZED;
 #endif
 }
-TL_ENABLE_WARNING(4100)
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void CmdProcess::setPriority(int priority)
 {

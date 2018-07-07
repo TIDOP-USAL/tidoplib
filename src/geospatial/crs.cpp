@@ -22,23 +22,26 @@ Crs::Crs(const std::string &epsg, const std::string &grid, const std::string &ge
 
 Crs::~Crs()
 {
-//  if (pCrs)
-//    OGRSpatialReference::DestroySpatialReference(pCrs);
 }
 
-const char *Crs::getEPSG() 
+std::string Crs::getEPSG() const
 { 
-  return mEpsg.c_str(); 
+  return mEpsg;
 };
 
-bool Crs::isGeocentric()
+bool Crs::isGeocentric() const
 {
   return mCrs.IsGeocentric() != 0;
 }
 
-bool Crs::isGeographic()
+bool Crs::isGeographic() const
 {
   return mCrs.IsGeographic()!= 0;
+}
+
+OGRSpatialReference *Crs::getOGRSpatialReference()
+{
+  return &mCrs;
 }
 
 void Crs::init()
@@ -99,14 +102,16 @@ void CrsCache::add(const std::shared_ptr<Crs> &crs)
 }
 
 
-//void CrsCache::add(Crs &&crs)
-//{
-//  if (isCacheFull()) {
-//
-//  } else {
-//    sCrsCache
-//  }  
-//}
+void CrsCache::add(std::shared_ptr<Crs> &&crs)
+{
+  if (isCacheFull()) {
+    if (mCacheIdx >= mCrs.capacity()) mCacheIdx = 0;
+    mCrs[mCacheIdx++] = crs;
+  } else {
+    mCrs.push_back(crs);
+    mCacheIdx++;
+  }
+}
 
 size_t CrsCache::capacity() const
 {

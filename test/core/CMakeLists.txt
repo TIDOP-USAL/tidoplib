@@ -1,4 +1,4 @@
-# Test
+# Test modulo Core
 
 if(BUILD_TEST AND BUILD_TL_CORE)
 
@@ -9,14 +9,12 @@ if(BUILD_TEST AND BUILD_TL_CORE)
   #  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-missing-declarations")
   #endif()
   
-  # ---------------------------------------------
-  #      Define executable targets
-  # ---------------------------------------------
+# -----------------------------------------------------------------------------
+
   MACRO(DEFINE_TEST name srcs)
 
-    #include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	include_directories(${GTEST_INCLUDE_DIRS})
+	  include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)
@@ -24,13 +22,13 @@ if(BUILD_TEST AND BUILD_TL_CORE)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
     
-	##target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
-	target_link_libraries(${the_target} gtest gtest_main )
-	target_link_libraries(${the_target} tl_core tl_geom)
+	  ##target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
+	  target_link_libraries(${the_target} gtest gtest_main )
+	  target_link_libraries(${the_target} tl_core tl_geom)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     target_link_libraries(${the_target} ${OpenCV_LIBS}  ${GDAL_LIBRARY})
 	
-	# Añade el proyecto de test a la carpeta 'test/core'
+	  # Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/core")
     
     set_target_properties(${the_target} PROPERTIES
@@ -59,6 +57,8 @@ if(BUILD_TEST AND BUILD_TL_CORE)
     add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
 	
   ENDMACRO()
+
+# -----------------------------------------------------------------------------
 
   file(GLOB_RECURSE cpp_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 

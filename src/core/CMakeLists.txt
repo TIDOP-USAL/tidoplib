@@ -24,7 +24,7 @@ set_property(TARGET tl_core PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
-  install(TARGETS tl_core tl_core
+  install(TARGETS tl_core
           RUNTIME DESTINATION bin
 		  LIBRARY DESTINATION lib) 
 else()
