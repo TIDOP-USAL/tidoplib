@@ -216,6 +216,8 @@ if(WITH_EDSDK)
 		include_directories(${EDSDK_INCLUDE_DIR})
     endif()
 endif()
+
+
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
 
