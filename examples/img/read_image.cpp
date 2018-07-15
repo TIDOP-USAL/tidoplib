@@ -4,6 +4,7 @@
 #include "core/console.h"
 #include "core/messages.h"
 #include "img/imgio.h"
+#include "img/metadata.h"
 
 using namespace TL;
 
@@ -46,6 +47,7 @@ int main(int argc, char** argv)
   } else {
     msgError("Error al abrir la imagen: %s", img.c_str());
   }
+
 
   return 0;
 }

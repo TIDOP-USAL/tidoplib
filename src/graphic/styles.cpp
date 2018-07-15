@@ -46,12 +46,12 @@ StylePen::~StylePen()
 {
 }
 
-Color StylePen::getPenColor() const
+TL::Color StylePen::getPenColor() const
 {
   return mPenColor;
 }
 
-void StylePen::setPenColor(Color pencolor) 
+void StylePen::setPenColor(TL::Color pencolor)
 {
   mPenColor = pencolor;
 }
@@ -169,22 +169,22 @@ StyleBrush::~StyleBrush()
 {
 }
 
-Color StyleBrush::getForeColor() const
+TL::Color StyleBrush::getForeColor() const
 {
   return mForeColor;
 }
 
-void StyleBrush::setForeColor(Color forecolor) 
+void StyleBrush::setForeColor(TL::Color forecolor)
 {
   mForeColor = forecolor;
 }
 
-Color StyleBrush::getBackColor() const
+TL::Color StyleBrush::getBackColor() const
 {
   return mBackColor;
 }
 
-void StyleBrush::setBackColor(Color backcolor) 
+void StyleBrush::setBackColor(TL::Color backcolor)
 { 
   mBackColor = backcolor;
 }
@@ -305,22 +305,22 @@ void StyleSymbol::setName(SymbolName name)
   mName = name;
 }
 
-Color StyleSymbol::getColor() const
+TL::Color StyleSymbol::getColor() const
 {
   return mColor;
 }
 
-void StyleSymbol::setColor(const Color &color) 
+void StyleSymbol::setColor(const TL::Color &color)
 {
   mColor = color;
 }
 
-Color StyleSymbol::getOutlineColor() const
+TL::Color StyleSymbol::getOutlineColor() const
 {
   return mOutlineColor;
 }
 
-void StyleSymbol::setOutlineColor(const Color &outlinecolor) 
+void StyleSymbol::setOutlineColor(const TL::Color &outlinecolor)
 {
   mOutlineColor = outlinecolor;
 }
@@ -437,42 +437,42 @@ void StyleLabel::setAngle(double angle)
   mAngle = angle;
 }
 
-Color StyleLabel::getForegroundColor() const
+TL::Color StyleLabel::getForegroundColor() const
 {
   return mForegroundColor;
 }
 
-void StyleLabel::setForegroundColor(const Color &color)
+void StyleLabel::setForegroundColor(const TL::Color &color)
 {
   mForegroundColor = color;
 }
 
-Color StyleLabel::getBackgroundColor() const
+TL::Color StyleLabel::getBackgroundColor() const
 {
   return mBackgroundColor;
 }
 
-void StyleLabel::setBackgroundColor(const Color &color)
+void StyleLabel::setBackgroundColor(const TL::Color &color)
 {
   mBackgroundColor = color;
 }
 
-Color StyleLabel::getOutlineColor() const
+TL::Color StyleLabel::getOutlineColor() const
 {
   return mOutlineColor;
 }
 
-void StyleLabel::setOutlineColor(const Color &color)
+void StyleLabel::setOutlineColor(const TL::Color &color)
 {
   mOutlineColor = color;
 }
 
-Color StyleLabel::getShadowColor() const
+TL::Color StyleLabel::getShadowColor() const
 {
   return mShadowColor;
 }
 
-void StyleLabel::setShadowColor(const Color &color)
+void StyleLabel::setShadowColor(const TL::Color &color)
 {
   mShadowColor = color;
 }

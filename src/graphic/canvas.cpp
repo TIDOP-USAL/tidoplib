@@ -29,7 +29,7 @@ CanvasCV::CanvasCV()
   : Canvas(),
     mWidth(100),
     mHeight(100),
-    mBgColor(Color::NAME::White)
+    mBgColor(TL::Color::NAME::White)
 {
   update();
 }
@@ -77,7 +77,7 @@ void CanvasCV::setSize(int width, int height)
   update();
 }
 
-void CanvasCV::setBackgroundColor(const Color &color)
+void CanvasCV::setBackgroundColor(const TL::Color &color)
 {
   mBgColor = color;
   update();

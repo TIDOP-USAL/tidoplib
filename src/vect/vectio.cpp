@@ -684,7 +684,7 @@ void GdalVector::readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<GraphicE
   /* Pen Color */
   const char *hexColor = ogrStylePen->Color(bDefault);
   if (!bDefault) {
-    stylePen->setPenColor(Color(hexColor));
+    stylePen->setPenColor(TL::Color(hexColor));
   }
 
   /* Pen Cap */
@@ -803,13 +803,13 @@ void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<Gr
   /* Back Color */
   const char *hexColor = ogrStyleBrush->BackColor(bDefault);
   if (!bDefault) {
-    styleBrush->setBackColor(Color(hexColor));
+    styleBrush->setBackColor(TL::Color(hexColor));
   }
 
   /* Fore Color */
   hexColor = ogrStyleBrush->ForeColor(bDefault);
   if (!bDefault) {
-    styleBrush->setForeColor(Color(hexColor));
+    styleBrush->setForeColor(TL::Color(hexColor));
   }
 
   /* Brush Name */
@@ -874,7 +874,7 @@ void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol,std::shared_ptr<
   /* Color */
   const char *hexColor = ogrStyleSymbol->Color(bDefault);
   if (!bDefault) {
-    styleSymbol->setColor(Color(hexColor));
+    styleSymbol->setColor(TL::Color(hexColor));
   }
 
   /* Name */
@@ -920,7 +920,7 @@ void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol,std::shared_ptr<
   /* Outline Color */
   hexColor = ogrStyleSymbol->OColor(bDefault);
   if (!bDefault) {
-    styleSymbol->setOutlineColor(Color(hexColor));
+    styleSymbol->setOutlineColor(TL::Color(hexColor));
   }
 
   /* Priority Level */
@@ -984,25 +984,25 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<Gr
   /* Background Color */
   const char *hexColor = ogrStyleLabel->BackColor(bDefault);
   if (!bDefault) {
-    styleLabel->setBackgroundColor(Color(hexColor));
+    styleLabel->setBackgroundColor(TL::Color(hexColor));
   }
 
   /* Foreground Color */
   hexColor = ogrStyleLabel->ForeColor(bDefault);
   if (!bDefault) {
-    styleLabel->setForegroundColor(Color(hexColor));
+    styleLabel->setForegroundColor(TL::Color(hexColor));
   }
 
   /* Outline Color */
   hexColor = ogrStyleLabel->OutlineColor(bDefault);
   if (!bDefault) {
-    styleLabel->setOutlineColor(Color(hexColor));
+    styleLabel->setOutlineColor(TL::Color(hexColor));
   }
 
   /* Shadow Color */
   hexColor = ogrStyleLabel->ShadowColor(bDefault);
   if (!bDefault) {
-    styleLabel->setShadowColor(Color(hexColor));
+    styleLabel->setShadowColor(TL::Color(hexColor));
   }
 
   /* Label Placement */
