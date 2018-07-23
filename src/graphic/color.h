@@ -1320,7 +1320,7 @@ public:
    * \param color
    * \return
    */
-  ColorHSV operator =(const ColorHSV &color);
+  ColorHSV &operator =(const ColorHSV &color);
 
   Color toColor() const override;
   void fromColor(const Color &color) override;
@@ -1395,7 +1395,7 @@ public:
   double lightness() const;
   void setLightness(double lightness);
 
-  ColorHSL operator =(const ColorHSL &color);
+  ColorHSL &operator =(const ColorHSL &color);
 
   Color toColor() const override;
   void fromColor(const Color &color) override;

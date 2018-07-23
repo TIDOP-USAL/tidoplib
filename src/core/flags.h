@@ -83,6 +83,12 @@ public:
    * \param[in] flag
    */
   EnumFlags(const EnumFlags<T> &flag);
+ 
+  /*!
+   * \brief Constructora de movimiento
+   * \param[in] flag
+   */
+  EnumFlags(EnumFlags<T> &&flag);
 
   /*!
    * \brief Constructora
@@ -101,6 +107,13 @@ public:
    * \return Referencia al objeto EnumFlags
    */
   EnumFlags<T> &operator = (const EnumFlags<T> &flag);
+
+  /*!
+   * \brief Operador asignación de movimiento
+   * \param[in] flag Objeto EnumFlags
+   * \return Referencia al objeto EnumFlags
+   */
+  EnumFlags<T> &operator = (EnumFlags<T> &&flag);
 
   /*!
    * \brief Operador asignación enumeración
@@ -168,6 +181,14 @@ EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
 }
 
 template<typename T> inline
+EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag)
+  : mFlag(std::move(flag.mFlag)) 
+{
+
+}
+
+
+template<typename T> inline
 EnumFlags<T>::EnumFlags(T flag) 
   : mFlag(static_cast<Type>(flag))
 {
@@ -183,6 +204,15 @@ EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
 {
   if (this != &flag) {
     this->mFlag = flag.mFlag;
+  }
+  return *this;
+}
+
+template<typename T> inline
+EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag)
+{
+  if (this != &flag) {
+    this->mFlag = std::move(flag.mFlag);
   }
   return *this;
 }

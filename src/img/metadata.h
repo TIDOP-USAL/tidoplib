@@ -29,11 +29,13 @@ public:
   std::string name() const;
 
   T value() const;
+  
   void setValue(const T &value);
   
   bool active() const;
   bool required() const;
 
+  std::string string() const;
 };
 
 template<typename T, bool required, bool active> inline
@@ -349,7 +351,8 @@ public:
   JpegMetadata();
   ~JpegMetadata();
 
-  value()
+  //value();
+
 private:
 
 };
