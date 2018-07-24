@@ -571,6 +571,11 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
   return( format );*/
 }
 
+ImgMetadata GdalRaster::metadata() const
+{
+
+}
+
 std::vector<int> GdalRaster::panBandMap()
 {
   std::vector<int> panBandMap;
@@ -1354,6 +1359,11 @@ DataType RasterGraphics::getDataType() const
 int RasterGraphics::getColorDepth() const
 {
   return mColorDepth;
+}
+
+ImgMetadata RasterGraphics::metadata() const
+{
+  return mImageFormat->metadata();
 }
 
 void RasterGraphics::update()

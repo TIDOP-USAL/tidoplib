@@ -8,7 +8,7 @@
 namespace TL
 {
 
-template<typename T, bool required = false, bool active = false>
+template<typename T>
 class Data
 {
 private:
@@ -16,7 +16,7 @@ private:
   std::string mName;
   T mValue;
   T mDefValue;
-
+  typedef T type;
 
 public:
 
@@ -30,79 +30,123 @@ public:
 
   T value() const;
   void setValue(const T &value);
-  
-  bool active() const;
-  bool required() const;
+  void reset();
+  Data<T> &operator = (const T &value);
+  operator const T&() const;
+//  T &operator()();
+//  T const &operator()() const;
+//  bool active() const;
+//  bool required() const;
 
 };
 
-template<typename T, bool required, bool active> inline
-Data<T, required, active>::Data(const std::string &name, const T defValue)
+template<typename T> inline
+Data<T>::Data(const std::string &name, const T defValue)
   : mName(name),
-    mValue(defValue), 
-    mDefValue(defValue) 
+    mValue(defValue),
+    mDefValue(defValue)
 {
 }
 
-template<typename T, bool required, bool active> inline
-Data<T, required, active>::Data(const std::string &name, const T &value, const T defValue)
+template<typename T> inline
+Data<T>::Data(const std::string &name, const T &value, const T defValue)
   : mName(name),
-    mValue(value), 
-    mDefValue(defValue) 
+    mValue(value),
+    mDefValue(defValue)
 {
 }
 
-template<typename T, bool required, bool active> inline
-std::string Data<T, required, active>::name() const
+template<typename T> inline
+std::string Data<T>::name() const
 {
   return mName;
 }
 
-template<typename T, bool required, bool active> inline
-T Data<T, required, active>::value() const
+template<typename T> inline
+T Data<T>::value() const
 {
   return mValue;
 }
 
-template<typename T, bool required, bool active> inline
-void Data<T, required, active>::setValue(const T &value)
+template<typename T> inline
+void Data<T>::setValue(const T &value)
 {
   mValue = value;
 }
 
-template<typename T, bool required, bool active> inline
-bool Data<T, required, active>::active() const
+template<typename T>
+void Data<T>::reset()
 {
-  return active;
+  mValue = mDefValue;
 }
 
-template<typename T, bool required, bool active> inline
-bool Data<T, required, active>::required() const
+template<typename T>
+Data<T> &Data<T>::operator =(const T &value)
 {
-  return required;
+  mValue = value;
 }
 
-class TL_EXPORT Metadata
+template<typename T>
+TL::T &Data::operator()()
 {
+  return mValue;
+}
+
+//template<typename T>
+//const TL::T &Data::operator()() const
+//{
+//  return mValue;
+//}
+
+//template<typename T>
+//Data<T>::operator const T &() const
+//{
+//  return mValue;
+//}
+
+//template<typename T> inline
+//bool Data<T>::active() const
+//{
+//  return bActive;
+//}
+
+//template<typename T> inline
+//bool Data<T>::required() const
+//{
+//  return bRequired;
+//}
+
+
+class TL_EXPORT ImgMetadata
+{
+
+public:
+
+  enum class Format
+  {
+    TIFF,
+    JPEG,
+    JP2000,
+    PNG,
+    BMP
+  };
 
 private:
 
 public:
-  Metadata();
-  virtual ~Metadata();
+
+  ImgMetadata(){}
+  virtual ~ImgMetadata(){}
+
+//  void read(const RasterGraphics &image);
+//  void save(RasterGraphics &image);
 
 private:
 
 };
 
-Metadata::Metadata()
-{}
 
-Metadata::~Metadata()
-{}
-
-
-class TL_EXPORT JpegMetadata : public Metadata
+class TL_EXPORT JpegMetadata : public ImgMetadata
 {
 public:
 
@@ -203,40 +247,41 @@ public:
 
 private:
 
-  std::unique_ptr<Data<std::string>> mExifDocumentName;
-  std::unique_ptr<Data<std::string>> mExifImageDescription;
-  std::unique_ptr<Data<std::string>> mExifMake;
-  std::unique_ptr<Data<std::string>> mExifModel;
-  std::unique_ptr<Data<unsigned short>> mExifOrientation;
-  std::unique_ptr<Data<double>> mExifXResolution;
-  std::unique_ptr<Data<double>> mExifYResolution;
-  std::unique_ptr<Data<unsigned short>> mExifResolutionUnit;
-  std::unique_ptr<Data<unsigned short>> mExifTransferFunction;
-  std::unique_ptr<Data<std::string>> mEXIF_Software;
-  std::unique_ptr<Data<std::string>> mEXIF_DateTime;
-  std::unique_ptr<Data<std::string>> mExifArtist;
+//  std::string mExifDocumentName;
+//  std::string mExifImageDescription;
+//  std::string mExifMake;
+//  std::string mExifModel;
+//  unsigned short mExifOrientation;
+//  double mExifXResolution;
+//  double mExifYResolution;
+//  unsigned short mExifResolutionUnit;
+//  unsigned short mExifTransferFunction;
+//  std::string mEXIF_Software;
+//  std::string mEXIF_DateTime;
+//  std::string mExifArtist;
+
 //  //EXIF_WhitePoint	0x013E	RATIONAL	2	Optional
 //  //EXIF_PrimaryChromaticities	0x013F	RATIONAL	6	Optional
 //  //EXIF_YCbCrCoefficients	0x0211	RATIONAL	3	Optional
 //  //EXIF_YCbCrPositioning	0x0213	SHORT	1	Mandatory
 //  //EXIF_ReferenceBlackWhite	0x0214	RATIONAL	6	Optional
-  std::unique_ptr<Data<std::string>> mExifCopyright;
-  std::unique_ptr<Data<double>> mEXIF_ExposureTime;
-  std::unique_ptr<Data<double>> mEXIF_FNumber;
+//  std::string mExifCopyright;
+//  double mEXIF_ExposureTime;
+//  double mEXIF_FNumber;
 
-  /*!
-   * Optional
-   * 0: Not defined
-   * 1: Manual
-   * 2: Normal program
-   * 3: Aperture priority
-   * 4: Shutter priority
-   * 5: Creative program
-   * 6: Action program
-   * 7: Portrait mode
-   * 8: Landscape mode
-   */
-  std::unique_ptr<Data<unsigned short>> mExifExposureProgram;
+//  /*!
+//   * Optional
+//   * 0: Not defined
+//   * 1: Manual
+//   * 2: Normal program
+//   * 3: Aperture priority
+//   * 4: Shutter priority
+//   * 5: Creative program
+//   * 6: Action program
+//   * 7: Portrait mode
+//   * 8: Landscape mode
+//   */
+//  unsigned short mExifExposureProgram;
 
   //EXIF_SpectralSensitivity	0x8824	ASCII	variable	Optional
   
@@ -244,7 +289,7 @@ private:
    * \brief Velocidad ISO
    * Optional
    */
-  std::unique_ptr<Data<unsigned short>> mExifISOSpeedRatings;
+  unsigned short mExifISOSpeedRatings;
 
   //EXIF_OECF	0x8828	UNDEFINED	variable	Optional
   //EXIF_SensitivityType	0x8830	SHORT	1	Optional
@@ -254,8 +299,8 @@ private:
   //EXIF_ISOSpeedLatitudeyyy	0x8834	LONG	1	Optional
   //EXIF_ISOSpeedLatitudezzz	0x8835	LONG	1	Optional
   //EXIF_ExifVersion	0x9000	UNDEFINED	4	Mandatory
-  std::unique_ptr<Data<std::string>> mEXIF_DateTimeOriginal;
-  std::unique_ptr<Data<std::string>> mEXIF_DateTimeDigitized;
+  std::string mEXIF_DateTimeOriginal;
+  std::string mEXIF_DateTimeDigitized;
   //EXIF_OffsetTime	0x9010	ASCII	7	Optional
   //EXIF_OffsetTimeOriginal	0x9011	ASCII	7	Optional
   //EXIF_OffsetTimeDigitized	0x9012	ASCII	7	Optional
@@ -266,7 +311,7 @@ private:
    * \brief Shutter speed (reciprocal of exposure time)
    * Optional
    */
-  std::unique_ptr<Data<double>> mExifShutterSpeedValue;
+  double mExifShutterSpeedValue;
 
   //EXIF_ApertureValue	0x9202	RATIONAL	1	Optional
   //EXIF_BrightnessValue	0x9203	SRATIONAL	1	Optional
@@ -275,7 +320,7 @@ private:
    * \brief Exposure bias value in EV
    * Optional
    */
-  std::unique_ptr<Data<double>> mExifExposureBiasValue;
+  double mExifExposureBiasValue;
   
 //  //EXIF_MaxApertureValue	0x9205	RATIONAL	1	Optional
 //  std::string mEXIF_SubjectDistance; //	0x9206	RATIONAL	1	Optional
@@ -346,19 +391,50 @@ private:
 //  //EXIF_LensSerialNumber	0xA435	ASCII	variable	Optional
 
 public:
+
   JpegMetadata();
   ~JpegMetadata();
 
-  value()
+  Data<std::string> ExifDocumentName;
+  Data<std::string> ExifImageDescription;
+  Data<std::string> ExifMake;
+  Data<std::string> ExifModel;
+  Data<unsigned short> ExifOrientation;
+  Data<double> ExifXResolution;
+  Data<double> ExifYResolution;
+  Data<unsigned short> ExifResolutionUnit;
+  Data<unsigned short> ExifTransferFunction;
+  Data<std::string> ExifSoftware;
+  Data<std::string> ExifDateTime;
+  Data<std::string> ExifArtist;
+  //  //EXIF_WhitePoint	0x013E	RATIONAL	2	Optional
+  //  //EXIF_PrimaryChromaticities	0x013F	RATIONAL	6	Optional
+  //  //EXIF_YCbCrCoefficients	0x0211	RATIONAL	3	Optional
+  //  //EXIF_YCbCrPositioning	0x0213	SHORT	1	Mandatory
+  //  //EXIF_ReferenceBlackWhite	0x0214	RATIONAL	6	Optional
+  Data<std::string> ExifCopyright;
+  Data<double> ExifExposureTime;
+  Data<double> ExifFNumber;
+
+  /*!
+   * Optional
+   * 0: Not defined
+   * 1: Manual
+   * 2: Normal program
+   * 3: Aperture priority
+   * 4: Shutter priority
+   * 5: Creative program
+   * 6: Action program
+   * 7: Portrait mode
+   * 8: Landscape mode
+   */
+  Data<unsigned short> ExifExposureProgram;
+
 private:
 
 };
 
-JpegMetadata::JpegMetadata()
-{}
 
-JpegMetadata::~JpegMetadata()
-{}
 
 
 
