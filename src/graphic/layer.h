@@ -114,7 +114,7 @@ public:
    * \brief Constructor de movimiento
    * \param[in] gLayer Objeto que se copia
    */
-  GLayer(GLayer &&gLayer);
+  GLayer(GLayer &&gLayer) TL_NOEXCEPT;
 
 
   /*!
@@ -171,7 +171,7 @@ public:
    * \brief Agrega una entidad mediante movimiento al final del contenedor
    * \param[in] entity Entidad que se añade
    */
-  void push_back(std::shared_ptr<GraphicEntity> &&entity);
+  void push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina los elementos del recipiente
@@ -215,7 +215,7 @@ public:
   /*!
    * \brief Asignación de movimiento
    */
-  GLayer& operator=(GLayer&& entity);
+  GLayer& operator=(GLayer&& entity) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina el intervalo

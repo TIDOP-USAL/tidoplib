@@ -34,6 +34,7 @@ namespace graph
 class TL_EXPORT GData
 {
 public:
+
   GData()
   {
   }
@@ -41,6 +42,7 @@ public:
   GData(const GData &gData)
   {
   }
+
   ~GData()
   {
   }
@@ -57,16 +59,13 @@ private:
 
 
 
-// clase base para las entidades gráficas. Una entidad punto
-// que se dibuje heredará de GraphicEntity y de Point.
-// Point, LineString, etc definen la geometría, GraphicEntity
-// las propiedades generales y GPoint, GLineString, ... las especificas
-
 /*!
  * \brief Clase base para las entidades gráficas
  * \see GraphicStyle, GData
  */
-class TL_EXPORT GraphicEntity : public GraphicStyle, public GData
+class TL_EXPORT GraphicEntity 
+  : public GraphicStyle, 
+    public GData
 {
 
 public:
@@ -117,9 +116,25 @@ public:
    */
   GraphicEntity(const GraphicEntity &graphicEntity);
 
+  /*!
+   * \brief Constructor de movimiento
+   * \param graphicEntity Entidad gráfica que se mueve
+   */
+  GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
+
   virtual ~GraphicEntity();
   
+  /*!
+   * \brief Operador de asignación
+   * \param graphicEntity Entidad gráfica que se asigna
+   */
   GraphicEntity &operator = (const GraphicEntity &graphicEntity);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param graphicEntity Entidad gráfica que se mueve
+   */
+  GraphicEntity &operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el tipo de entidad 
