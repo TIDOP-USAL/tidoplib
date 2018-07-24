@@ -990,7 +990,7 @@ void ColorHSV::setValue(double value)
   this->adjustRangeValue();
 }
 
-ColorHSV ColorHSV::operator =(const ColorHSV &color)
+ColorHSV &ColorHSV::operator =(const ColorHSV &color)
 {
   if (this != &color){
     this->mHue = color.mHue;
@@ -1001,6 +1001,7 @@ ColorHSV ColorHSV::operator =(const ColorHSV &color)
     this->mRangeMin = color.mRangeMin;
     this->mRangeMax = color.mRangeMax;
   }
+  return *this;
 }
 
 Color ColorHSV::toColor() const
@@ -1165,7 +1166,7 @@ void ColorHSL::setLightness(double lightness)
   this->adjustRangeLightness();
 }
 
-ColorHSL ColorHSL::operator =(const ColorHSL &color)
+ColorHSL &ColorHSL::operator =(const ColorHSL &color)
 {
   if (this != &color){
     this->mHue = color.mHue;
@@ -1176,6 +1177,7 @@ ColorHSL ColorHSL::operator =(const ColorHSL &color)
     this->mRangeMin = color.mRangeMin;
     this->mRangeMax = color.mRangeMax;
   }
+  return *this;
 }
 
 Color ColorHSL::toColor() const

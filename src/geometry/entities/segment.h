@@ -18,11 +18,7 @@
 namespace TL
 {
 
-// forward declaration
-//template<typename T> class Window;
-
-/*! \defgroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -77,7 +73,11 @@ public:
    * \brief Constructor de copia
    */
   Segment(const Segment &segment);
-
+    
+  /*!
+   * \brief Constructor de movimiento
+   */
+  Segment(Segment &&segment);
   /*!
    * \brief Constructor segment
    * \param[in] _pt1 Punto inicial del segmento
@@ -100,6 +100,13 @@ public:
    * \return Referencia al segmento
    */
   Segment &operator = (const Segment &segment);
+    
+  /*!
+   * \brief Sobrecarga del operador de asignación de movimiento
+   * \param[in] segment Segmento que se mueve
+   * \return Referencia al segmento
+   */
+  Segment &operator = (Segment &&segment);
 
   /*!
    * \brief Conversión a un segmento de un tipo diferente
@@ -179,6 +186,14 @@ Segment<Point_t>::Segment(const Segment &segment)
 }
 
 template<typename Point_t> inline
+Segment<Point_t>::Segment(Segment &&segment)
+  : Entity(std::forward<Entity>(segment)), 
+    pt1(segment.pt1), 
+    pt2(segment.pt2) 
+{
+}
+
+template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
   : Entity(Entity::type::SEGMENT_2D), 
     pt1(_pt1), 
@@ -228,9 +243,20 @@ template<typename Point_t> inline
 Segment<Point_t> &Segment<Point_t>::operator = (const Segment &segment)
 {
   if (this != &segment) {
+    this->mEntityType = segment.mEntityType;
     this->pt1 = segment.pt1;
     this->pt2 = segment.pt2;
-    this->mEntityType = segment.mEntityType;
+  }
+  return *this;
+}
+
+template<typename Point_t> inline
+Segment<Point_t> &Segment<Point_t>::operator = (Segment &&segment)
+{
+  if (this != &segment) {
+    this->mEntityType = std::move(segment.mEntityType);
+    this->pt1 = std::move(segment.pt1);
+    this->pt2 = std::move(segment.pt2);
   }
   return *this;
 }
@@ -366,6 +392,12 @@ public:
   Segment3D(const Segment3D &segment);
 
   /*!
+   * \brief Constructor de movimiento
+   * \param[in] segment Segmento que se mueve
+   */
+  Segment3D(Segment3D &&segment);
+
+  /*!
    * \brief Constructor segment
    * \param[in] _pt1 Punto 1
    * \param[in] _pt2 Punto 2
@@ -378,6 +410,13 @@ public:
    * \return Referencia a la ventana
    */
   Segment3D &operator = (const Segment3D &segment);
+
+  /*!
+   * \brief Sobrecarga del operador de asignación de movimiento
+   * \param[in] segment Segmento que se mueve
+   * \return Referencia a la ventana
+   */
+  Segment3D &operator = (Segment3D &&segment);
 
   /*!
    * \brief Conversión a un segmento de un tipo diferente
@@ -421,10 +460,18 @@ Segment3D<Point3_t>::Segment3D()
 }
 
 template<typename T> inline
-Segment3D<T>::Segment3D(const Segment3D &Segment)
-: Entity(Entity::type::SEGMENT_3D), 
-  pt1(Segment.pt1), 
-  pt2(Segment.pt2) 
+Segment3D<T>::Segment3D(const Segment3D &segment)
+: Entity(segment), 
+  pt1(segment.pt1), 
+  pt2(segment.pt2) 
+{
+}
+
+template<typename T> inline
+Segment3D<T>::Segment3D(Segment3D &&segment)
+: Entity(std::forward<Entity>(segment)), 
+  pt1(segment.pt1), 
+  pt2(segment.pt2) 
 {
 }
 
@@ -440,9 +487,20 @@ template<typename Point3_t> inline
 Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (const Segment3D &segment)
 {
   if (this != &segment) {
+    this->mEntityType = segment.mEntityType;
     this->pt1 = segment.pt1;
     this->pt2 = segment.pt2;
-    this->mEntityType = segment.mEntityType;
+  }
+  return *this;
+}
+
+template<typename Point3_t> inline
+Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (Segment3D &&segment)
+{
+  if (this != &segment) {
+    this->mEntityType = std::move(segment.mEntityType);
+    this->pt1 = std::move(segment.pt1);
+    this->pt2 = std::move(segment.pt2);
   }
   return *this;
 }

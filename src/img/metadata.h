@@ -29,6 +29,7 @@ public:
   std::string name() const;
 
   T value() const;
+  
   void setValue(const T &value);
   void reset();
   Data<T> &operator = (const T &value);
@@ -38,6 +39,7 @@ public:
 //  bool active() const;
 //  bool required() const;
 
+  std::string string() const;
 };
 
 template<typename T> inline
