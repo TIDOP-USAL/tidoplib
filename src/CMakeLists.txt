@@ -32,7 +32,11 @@ if(BUILD_TL_CORE)
   if(BUILD_TL_VECT)
     add_subdirectory(vect)
   endif()
-    
+   
+  if(BUILD_TL_EXPERIMENTAL)
+    add_subdirectory(experimental)
+  endif()
+     
 else()
   # Se deberia mostrar un mensaje de error
 endif()

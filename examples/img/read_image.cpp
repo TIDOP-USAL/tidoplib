@@ -48,6 +48,8 @@ int main(int argc, char** argv)
     msgError("Error al abrir la imagen: %s", img.c_str());
   }
 
-
+  TL::ImgMetadata *metadata = new TL::JpegMetadata();
+  TL::JpegMetadata *metadata2 = new TL::JpegMetadata();
+  std::string prueba = metadata2->ExifDocumentName;
   return 0;
 }
