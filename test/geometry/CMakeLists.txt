@@ -1,11 +1,11 @@
-if(BUILD_TEST AND BUILD_TL_CORE)
+if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
   project(test)
 
-  if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-  endif()
+  #if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
+  #  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
+  #  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-missing-declarations")
+  #endif()
 
   
   # ---------------------------------------------
@@ -24,7 +24,7 @@ if(BUILD_TEST AND BUILD_TL_CORE)
     add_executable(${the_target} ${srcs})
 	
 	target_link_libraries(${the_target} gtest_main)
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess)
+    target_link_libraries(${the_target} tl_core tl_geom)
 	target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY})
 	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 	

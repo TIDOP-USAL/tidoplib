@@ -66,7 +66,9 @@ private:
  * \brief Clase base para las entidades gráficas
  * \see GraphicStyle, GData
  */
-class TL_EXPORT GraphicEntity : public GraphicStyle, public GData
+class TL_EXPORT GraphicEntity 
+  : public GraphicStyle, 
+    public GData
 {
 
 public:

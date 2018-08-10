@@ -632,6 +632,10 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 
 /*! \} */ // end of colorConversion
 
+
+TL_EXPORT bool operator == (const Color &color1, const Color &color2);
+TL_EXPORT bool operator != (const Color &color1, const Color &color2);
+
 namespace graph
 {
 
@@ -940,7 +944,8 @@ public:
  * colores primarios, es decir del rojo, el verde y el azul.
  *
  */
-class TL_EXPORT ColorRGB : public IColorModel
+class TL_EXPORT ColorRGB 
+  : public IColorModel
 {
 protected:
 
@@ -1054,7 +1059,8 @@ protected:
  * colores primarios, es decir del rojo, el verde y el azul.
  * El canal alfa representa la opacidad.
  */
-class TL_EXPORT ColorRGBA : public ColorRGB
+class TL_EXPORT ColorRGBA 
+  : public ColorRGB
 {
 protected:
 
@@ -1113,7 +1119,8 @@ protected:
  * El modelo CMYK (Cyan, Magenta, Yellow y Key) es un modelo de color sustractivo.
  * Los valores de las componentes CMYK varían entre 0 y 100 y representan porcentajes.
  */
-class TL_EXPORT ColorCMYK : public IColorModel
+class TL_EXPORT ColorCMYK 
+  : public IColorModel
 {
 
 protected:
@@ -1227,7 +1234,8 @@ protected:
  * El espacio de color HSV (Hue/Matiz, Saturation/Saturación, Value/Valor) se basa en el modo de percibir
  * los colores que tenemos los humanos. Se denomina también HSB (Brightness).
  */
-class TL_EXPORT ColorHSV : public IColorModel
+class TL_EXPORT ColorHSV
+  : public IColorModel
 {
 
 private:
@@ -1337,7 +1345,8 @@ protected:
 /*!
  * \brief The ColorHSL class
  */
-class TL_EXPORT ColorHSL : public IColorModel
+class TL_EXPORT ColorHSL 
+  : public IColorModel
 {
 private:
 

@@ -470,6 +470,17 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
   *b = blue / sum;
 }
 
+
+bool operator == (const Color &color1, const Color &color2)
+{
+  return static_cast<int>(color1) == static_cast<int>(color2);
+}
+
+bool operator != (const Color &color1, const Color &color2)
+{
+  return static_cast<int>(color1) != static_cast<int>(color2);
+}
+
 namespace graph
 {
 

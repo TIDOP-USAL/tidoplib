@@ -3,10 +3,6 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif 
-
 #include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
@@ -180,7 +176,7 @@ LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&line
 {
   if (this != &lineString) {
     this->mEntityType = std::move(lineString.mEntityType);
-    Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>(lineString));
+    Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>>(lineString));
   }
   return *this;
 }
@@ -497,7 +493,9 @@ Window<Point_t> MultiLineString<Point_t>::getWindow() const
 /* ---------------------------------------------------------------------------------- */
 
 template <typename Point3_t>
-class MultiLineString3D : public Entity, public Entities3D<LineString3D<Point3_t>>
+class MultiLineString3D 
+  : public Entity, 
+    public Entities3D<LineString3D<Point3_t>>
 {
 
 public:
@@ -592,26 +590,19 @@ template<typename Point3_t> inline
 MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineString3D &&multiLineString)
 {
   if (this != &multiLineString) {
-    this->mEntityType = std::move(multiLineString);
-    Entities3D<LineString3D<Point3_t>>::operator = (std::forward<MultiLineString<Point_t>>(multiLineString));
+    this->mEntityType = std::move(multiLineString.mEntityType);
+	Entities3D<LineString3D<Point3_t>>::operator = (std::forward<MultiLineString3D<Point3_t>>(multiLineString));
   }
   return *this;
 }
 
-TL_TODO("Terminar MultiLineString3D<Point3_t>::getBox()")
 template<typename Point3_t> inline
 Box<Point3_t> MultiLineString3D<Point3_t>::getBox() const
 {
   Box<Point3_t> box;
-  //for (size_t i = 0; i < this->mEntities.size(); i++) {
-  //  Box<Point3_t> box2 = this->mEntities[i].getBox();
-  //  if (box.pt1.x > box2.pt1.x) box.pt1.x = box2.pt1.x;
-  //  if (box.pt1.y > box2.pt1.y) box.pt1.y = box2.pt1.y;
-  //  if (box.pt1.z > box2.pt1.z) box.pt1.z = box2.pt1.z;
-  //  if (box.pt2.x < box2.pt2.x) box.pt2.x = box2.pt2.x;
-  //  if (box.pt2.y < box2.pt2.y) box.pt2.y = box2.pt2.y;
-  //  if (box.pt2.z < box2.pt2.z) box.pt2.z = box2.pt2.z;
-  //}
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    box = joinBox(box, this->mEntities[i].getBox());
+  }
   return box;
 }
 

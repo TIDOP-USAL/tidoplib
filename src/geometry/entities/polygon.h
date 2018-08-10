@@ -628,7 +628,9 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPo
 /* ---------------------------------------------------------------------------------- */
 
 template <typename Point3_t>
-class MultiPolygon3D : public Entity, public Entities3D<Polygon3D<Point3_t>>
+class MultiPolygon3D 
+  : public Entity, 
+    public Entities3D<Polygon3D<Point3_t>>
 {
 
 public:

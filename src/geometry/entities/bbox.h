@@ -19,6 +19,24 @@ namespace TL
 namespace geometry
 {
 
+/*!
+ * \brief Unión de caja
+ * \param[in] b1 Caja 1
+ * \param[in] b2 Caja 2
+ * \return Caja unión
+ */
+template<typename T> inline
+T joinBox(const T &b1, const T &b2)
+{
+  T box;
+  box.pt1.x = std::min(b1.pt1.x, b2.pt1.x);
+  box.pt1.y = std::min(b1.pt1.y, b2.pt1.y);
+  box.pt1.z = std::min(b1.pt1.z, b2.pt1.z);
+  box.pt2.x = std::max(b1.pt2.x, b2.pt2.x);
+  box.pt2.y = std::max(b1.pt2.y, b2.pt2.y);
+  box.pt2.z = std::max(b1.pt2.z, b2.pt2.z);
+  return box;
+}
 
 /* ---------------------------------------------------------------------------------- */
 

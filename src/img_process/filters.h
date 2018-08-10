@@ -60,7 +60,8 @@ namespace TL
  * de la imagen es reemplazado por una media ponderada de los valores de intensidad 
  * de los píxeles cercanos.
  */
-class TL_EXPORT BilateralFilter : public ImgProcessing
+class TL_EXPORT BilateralFilter 
+  : public ImgProcessing
 {
 private:
 
@@ -121,7 +122,8 @@ public:
  * \brief Filtro de desenfoque
  * Provoca un suavizado en la imagen resultante
  */
-class TL_EXPORT Blur : public ImgProcessing
+class TL_EXPORT Blur 
+  : public ImgProcessing
 {
 private:
 
@@ -178,7 +180,8 @@ public:
 * \brief Filtro de desenfoque
 * Provoca un suavizado en la imagen resultante
 */
-class TL_EXPORT BoxFilter : public ImgProcessing
+class TL_EXPORT BoxFilter 
+  : public ImgProcessing
 {
 private:
 
@@ -241,7 +244,8 @@ public:
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución
  */
-class TL_DEPRECATED("Convolution") TL_EXPORT Filter2D : public ImgProcessing
+class TL_DEPRECATED("Convolution") TL_EXPORT Filter2D 
+  : public ImgProcessing
 {
 private:
 
@@ -308,7 +312,8 @@ public:
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución
  */
-class TL_EXPORT Convolution : public ImgProcessing
+class TL_EXPORT Convolution 
+  : public ImgProcessing
 {
 private:
 
@@ -376,7 +381,8 @@ public:
 /*!
  * \brief Desenfoque gaussiano
  */
-class TL_EXPORT GaussianBlur : public ImgProcessing
+class TL_EXPORT GaussianBlur 
+  : public ImgProcessing
 {
 private:
 
@@ -437,7 +443,8 @@ public:
  * \brief Laplaciano
  * Calcula el laplaciano de un imagen
  */
-class TL_EXPORT Laplacian : public ImgProcessing
+class TL_EXPORT Laplacian 
+  : public ImgProcessing
 {
 private:
 
@@ -506,7 +513,8 @@ public:
  * \brief Filtro de media
  * Suaviza una imagen con un filtro de media 
  */
-class TL_EXPORT MedianBlur : public ImgProcessing
+class TL_EXPORT MedianBlur
+  : public ImgProcessing
 {
 private:
 
@@ -544,7 +552,8 @@ public:
 /*!
  * \brief Sobel
  */
-class TL_EXPORT Sobel : public ImgProcessing
+class TL_EXPORT Sobel
+  : public ImgProcessing
 {
 private:
 
@@ -641,7 +650,8 @@ public:
 /*!
  * \brief Detector de bordes canny
  */
-class TL_EXPORT Canny : public ImgProcessing
+class TL_EXPORT Canny 
+  : public ImgProcessing
 {
 private:
 

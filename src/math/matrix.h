@@ -15,14 +15,17 @@ namespace math
 /*!
  * \brief Matriz de rotación
  */
-template<int rows, int cols, typename T = double>
+template<size_t _rows, size_t _cols, typename T = double>
 class Matrix
 {
 
 protected:
 
-  std::array<std::array<T, cols>, rows> mMatrix;
-  
+  std::array<std::array<T, _cols>, _rows> mMatrix;
+  //std::array<Matrix<1, _cols, T>, _rows> mMatrix;
+  size_t mRows;
+  size_t mCols;
+
 public:
 
   /*!
@@ -34,13 +37,13 @@ public:
    * \brief Constructor de copia
    * \param[in] mat Matri
    */
-  Matrix(const Matrix<rows, cols, T> &mat);
+  Matrix(const Matrix<_rows, _cols, T> &mat);
 
   /*!
    * \brief Constructor
    * \param[in] mat Matriz
    */
-  Matrix(const std::array<std::array<T, cols>, rows> &mat);
+  Matrix(const std::array<std::array<T, _cols>, _rows> &mat);
 
   /*!
    * \brief destructora
@@ -51,36 +54,46 @@ public:
    * \brief Operador de asignación
    * \param[in] mat Objeto que se copia
    */
-  Matrix& operator = (const Matrix<rows, cols, T> &mat);
+  Matrix& operator = (const Matrix<_rows, _cols, T> &mat);
   
-  T &at(int r, int c);
-  const T &at(int r, int c) const;
+  T &at(size_t r, size_t c);
+  const T &at(size_t r, size_t c) const;
+
+  size_t rows() const;
+  size_t cols() const;
 };
 
-template<int rows, int cols, typename T> inline
-Matrix<rows, cols, T>::Matrix()
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T>::Matrix()
+  : mMatrix(),
+    mRows(_rows),
+    mCols(_cols)
 {
 }
 
-template<int rows, int cols, typename T> inline
-Matrix<rows, cols, T>::Matrix(const Matrix<rows, cols, T> &rot)
-  : mMatrix(rot.mMatrix)
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T>::Matrix(const Matrix<_rows, _cols, T> &rot)
+: mMatrix(rot.mMatrix),
+  mRows(_rows),
+  mCols(_cols)
 {
 }
 
-template<int rows, int cols, typename T> inline
-Matrix<rows, cols, T>::Matrix(const std::array<std::array<T, cols>, rows> &rot)
-  : mMatrix(rot)
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T>::Matrix(const std::array<std::array<T, _cols>, _rows> &rot)
+  : mMatrix(rot),
+    mRows(_rows),
+    mCols(_cols)
 {
 }
 
-template<int rows, int cols, typename T> inline
-Matrix<rows, cols, T>::~Matrix()
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T>::~Matrix()
 {
 }
 
-template<int rows, int cols, typename T> inline
-Matrix<rows, cols, T> &Matrix<rows, cols, T>::operator = (const Matrix& rot)
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (const Matrix& rot)
 {
   if (this != &rot) {
     this->mMatrix = rot.mMatrix;
@@ -88,16 +101,28 @@ Matrix<rows, cols, T> &Matrix<rows, cols, T>::operator = (const Matrix& rot)
   return *this;
 }
 
-template<int rows, int cols, typename T> inline
-T &Matrix<rows, cols, T>::at(int r, int c)
+template<size_t _rows, size_t _cols, typename T> inline
+T &Matrix<_rows, _cols, T>::at(size_t r, size_t c)
 {
   return mMatrix[r][c];
 }
 
-template<int rows, int cols, typename T> inline
-const T &Matrix<rows, cols, T>::at(int r, int c) const
+template<size_t _rows, size_t _cols, typename T> inline
+const T &Matrix<_rows, _cols, T>::at(size_t r, size_t c) const
 {
   return mMatrix[r][c];
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+size_t Matrix<_rows, _cols, T>::rows() const
+{
+  return mRows;
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+size_t Matrix<_rows, _cols, T>::cols() const
+{
+  return mCols;
 }
 
 } // Fin namespace math

@@ -22,8 +22,8 @@ namespace graph
  * \brief Clase gráfica polilínea
  */
 class TL_EXPORT GLineString
-   : public geometry::LineString<geometry::Point<double>>,
-     public GraphicEntity
+  : public geometry::LineString<geometry::Point<double>>,
+    public GraphicEntity
 {
 public:
 

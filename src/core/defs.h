@@ -97,7 +97,7 @@
 
 
 
-#ifdef Tidoplib_EXPORTS
+#ifdef TIDOPLIB_EXPORTS
 #  if (defined WIN32 || defined _WIN32 || defined WINCE || defined __CYGWIN__)
 #    define TL_EXPORT __declspec(dllexport)
 #  elif defined __GNUC__ && __GNUC__ >= 4

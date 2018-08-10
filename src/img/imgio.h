@@ -25,7 +25,7 @@ TL_DEFAULT_WARNINGS
 //#include "graphic_entities/color.h"
 #include "geometry/entities/point.h"
 #include "geometry/transform.h"
-#include "img/metadata.h"
+//#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
 #include "EDSDK.h"
@@ -205,7 +205,7 @@ public:
    * \brief Devuelve los metadatos de la imagen
    * \return Metadatos de la imagen
    */
-  virtual ImgMetadata metadata() const = 0;
+  //virtual ImgMetadata metadata() const = 0;
 
 protected:
   
@@ -404,7 +404,7 @@ public:
    */
   static const char *getDriverFromExt(const char *ext);
 
-  ImgMetadata metadata() const override;
+  //ImgMetadata metadata() const override;
 
 protected:
 
@@ -857,7 +857,7 @@ public:
 
   // Dataset Information
 
-  ImgMetadata metadata() const;
+  //ImgMetadata metadata() const;
 
 protected:
 

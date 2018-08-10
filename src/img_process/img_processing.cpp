@@ -106,6 +106,13 @@ void Normalize::setParameters(double _lowRange, double _upRange)
 
 /* ---------------------------------------------------------------------------------- */
 
+Binarize::Binarize(double thresh, double maxVal, bool bInverse)
+  : ImgProcessing(process_type::BINARIZE),
+    mThresh(thresh),
+    mMaxVal(maxVal),
+    bInverse(bInverse) 
+{
+}
 
 ImgProcessing::Status Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
@@ -133,8 +140,22 @@ void Binarize::setParameters(double thresh, double maxval, bool inverse)
   bInverse = inverse;
 }
 
+void Binarize::setInverse(bool inverse) 
+{ 
+  bInverse = inverse; 
+}
+
+bool Binarize::getInverse() const 
+{ 
+  return bInverse; 
+}
+
 /* ---------------------------------------------------------------------------------- */
 
+EqualizeHistogram::EqualizeHistogram()
+  : ImgProcessing(process_type::EQUALIZE_HIST) 
+{
+}
 
 ImgProcessing::Status EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {

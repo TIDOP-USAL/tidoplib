@@ -1,12 +1,14 @@
 #Modulo Math de la librería
 
 add_library(tl_math ${LIB_TYPE}
-  angles.cpp
-  angles.h
-  algebra/quaternion.h
-  algebra/euler_angles.h
-  algebra/rotations.h
-  algebra/rotation_matrix)
+            angles.cpp
+            angles.h
+            matrix.h
+            algebra/quaternion.h
+            algebra/euler_angles.h
+            algebra/rotations.h
+            algebra/rotation_matrix
+)
   
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_math PROPERTY FOLDER "modules")
