@@ -224,6 +224,7 @@ class TL_EXPORT RegisterGdal
 private:
 
   static std::unique_ptr<RegisterGdal> sRegisterGdal;
+  static std::mutex sMutex;
 
   /*!
    * \brief Constructor privado

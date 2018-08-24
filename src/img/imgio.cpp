@@ -58,12 +58,16 @@ void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset)
 /* ---------------------------------------------------------------------------------- */
 
 std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
+std::mutex RegisterGdal::sMutex;
 
 void RegisterGdal::init()
 {
-  if (sRegisterGdal.get() == 0) {
-    sRegisterGdal.reset(new RegisterGdal());
-    GDALAllRegister();
+  if (sRegisterGdal.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
+    if (sRegisterGdal.get() == nullptr) {
+      sRegisterGdal.reset(new RegisterGdal());
+      GDALAllRegister();
+    }
   }
 }
 
