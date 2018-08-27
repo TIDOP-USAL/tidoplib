@@ -8,6 +8,7 @@ if(BUILD_EXAMPLES)
   add_subdirectory(geospatial)
   #add_subdirectory(graphic)
   add_subdirectory(img)
+  add_subdirectory(imgproces)
   add_subdirectory(vect)
   add_subdirectory(math)
 

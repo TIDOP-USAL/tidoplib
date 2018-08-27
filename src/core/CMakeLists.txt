@@ -26,12 +26,13 @@ set_property(TARGET tl_core PROPERTY FOLDER "modules")
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_core
           RUNTIME DESTINATION bin
-		  LIBRARY DESTINATION lib) 
+          LIBRARY DESTINATION lib) 
 else()
   install(TARGETS tl_core 
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/core
+install(DIRECTORY . 
+        DESTINATION include/core
         FILES_MATCHING PATTERN "*.h")

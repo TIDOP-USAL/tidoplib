@@ -232,25 +232,16 @@ add_subdirectory(src)
 #directorio con la documentación
 add_subdirectory(doc)
 
-#Se incluyen los ejemplos
+#Se incluye el directorio con los ejemplos
 add_subdirectory(examples)
 
-#Se incluyen los test
+#Se incluye el directorio con los test
 add_subdirectory(test)
 
 
 ###############################################################################################################
 #                                                Instalación                                                  #
 ###############################################################################################################
-
-
-
-#ejemplos
-if(BUILD_EXAMPLES)
-
-	#install(TARGETS  RUNTIME DESTINATION bin)
-		
-endif()	
 
 #fichero de configuracion de TidopLib
 install(FILES ${PROJECT_BINARY_DIR}/config_tl.h DESTINATION include)

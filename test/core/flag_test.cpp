@@ -49,7 +49,8 @@ ALLOW_BITWISE_FLAG_OPERATIONS(ePrueba3)
 
 
 // Constructor EnumFlags
-TEST(EnumFlags, Constructor) {
+TEST(EnumFlags, Constructor) 
+{
 
   // Constructor vacio
   EnumFlags<ePrueba2> flagEmpty;
@@ -66,7 +67,8 @@ TEST(EnumFlags, Constructor) {
   EXPECT_FALSE(flag.isActive(ePrueba2::flag04));
 }
 
-TEST(EnumFlags, Assign) {
+TEST(EnumFlags, Assign) 
+{
 
   EnumFlags<ePrueba2> flagEmpty;
   flagEmpty = ePrueba2::flag01;
@@ -85,7 +87,8 @@ TEST(EnumFlags, Assign) {
   EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag03));
 }
 
-TEST(EnumFlags, Clear) {
+TEST(EnumFlags, Clear)
+{
 
   EnumFlags<ePrueba2> flag(ePrueba2::flag02 | ePrueba2::flag03);
   EXPECT_TRUE(flag.isActive(ePrueba2::flag02));
@@ -96,7 +99,8 @@ TEST(EnumFlags, Clear) {
 
 }
 
-TEST(EnumFlags, flagOnOff) {
+TEST(EnumFlags, flagOnOff) 
+{
 
   EnumFlags<ePrueba3> flag2(ePrueba3::flag15);
 
@@ -116,7 +120,8 @@ TEST(EnumFlags, flagOnOff) {
   EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
 }
 
-TEST(EnumFlags, switchFlag) {
+TEST(EnumFlags, switchFlag)
+{
 
   EnumFlags<ePrueba3> flag2(ePrueba3::flag15 | ePrueba3::flag06 );
   EXPECT_TRUE(flag2.isActive(ePrueba3::flag15));
@@ -139,7 +144,8 @@ TEST(EnumFlags, switchFlag) {
 
 
 // Constructor Flags
-TEST(Flags, Constructor) {
+TEST(Flags, Constructor)
+{
 
   // Constructor vacio
   Flags_8 flag8;
@@ -172,7 +178,8 @@ TEST(Flags, Constructor) {
   EXPECT_TRUE(flag_list.isActive(4));
 }
 
-TEST(Flags, Assign) {
+TEST(Flags, Assign)
+{
 
   Flags_8 flag1;
   flag1.flagOn(1);
@@ -197,7 +204,8 @@ TEST(Flags, Clear) {
 
 }
 
-TEST(Flags, flagOnOff) {
+TEST(Flags, flagOnOff)
+{
 
   Flags_64 flag2;
   flag2.flagOn(15);
@@ -216,7 +224,8 @@ TEST(Flags, flagOnOff) {
   EXPECT_TRUE(flag2.isActive(3));
 }
 
-TEST(Flags, switchFlag) {
+TEST(Flags, switchFlag) 
+{
 
   Flags_16 flag_16;
   flag_16.switchFlag(15);

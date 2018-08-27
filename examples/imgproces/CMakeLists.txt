@@ -1,8 +1,8 @@
-# Ejemplos módulo Core
 
-if(BUILD_TL_CORE)
+if(BUILD_TL_CORE AND BUILD_TL_IMG_PROCESS)
 
   project(examples)
+
 
   if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
@@ -10,7 +10,7 @@ if(BUILD_TL_CORE)
   endif()
 
   
-# -----------------------------------------------------------------------------
+ # -----------------------------------------------------------------------------
 
   MACRO(DEFINE_EXAMPLE name srcs)
 
@@ -19,6 +19,7 @@ if(BUILD_TL_CORE)
 	
     set(sample_kind example)
     set(sample_KIND EXAMPLE)
+    #set(sample_subfolder "cpp")
 
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
@@ -29,30 +30,27 @@ if(BUILD_TL_CORE)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejmplo a la carpeta 'examples/core'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/core")
+    # Añade el proyecto de ejmplo a la carpeta 'examples'
+    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/imgprocess")
 
     set_target_properties(${the_target} PROPERTIES
-      OUTPUT_NAME "${sample_kind}-${name}"
+      OUTPUT_NAME "cpp-${sample_kind}-${name}"
       PROJECT_LABEL "(${sample_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "examples/core")
+      set_target_properties(${the_target} PROPERTIES FOLDER "examples/imgprocess")
     endif()
 
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
-        set_target_properties(${the_target} PROPERTIES 
-                              LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+        set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
       install(TARGETS ${the_target}
-              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" 
-              COMPONENT samples)
+              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" COMPONENT samples)
     endif()
   ENDMACRO()
 
 # -----------------------------------------------------------------------------
-
 
   file(GLOB_RECURSE cpp_samples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
   
