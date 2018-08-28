@@ -187,7 +187,7 @@ Box<Point3_t>::Box(const Box &box)
 }
 
 template<typename Point3_t> inline
-Box<Point3_t>::Box(Box &&box) 
+Box<Point3_t>::Box(Box &&box) TL_NOEXCEPT
   : Entity(std::forward<Entity>(box)), 
     pt1(std::move(box.pt1)), 
     pt2(std::move(box.pt2)) 
@@ -259,7 +259,7 @@ Box<Point3_t> &Box<Point3_t>::operator = (const Box &box)
 }
 
 template<typename Point3_t> inline
-Box<Point3_t> &Box<Point3_t>::operator = (Box &&box)
+Box<Point3_t> &Box<Point3_t>::operator = (Box &&box) TL_NOEXCEPT
 {
   if (this != &box) {
     this->mEntityType = std::move(box.mEntityType);

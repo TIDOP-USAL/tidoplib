@@ -39,7 +39,7 @@ GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
 {
 }
 
-GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity)
+GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
   : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
     GData(std::forward<GData>(graphicEntity)),
     mEntityType(std::move(graphicEntity.mEntityType))
@@ -60,7 +60,7 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
   return *this;
 }
 
-GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity)
+GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEXCEPT
 { 
   if (this != &graphicEntity) {
     GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));

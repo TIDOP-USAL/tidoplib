@@ -14,7 +14,7 @@ namespace graph
 GLayer::GLayer() 
   : mName(""), 
     mEntities(0), 
-    mSelectEntity(0)
+    mSelectEntity(nullptr)
 {
 }
 
@@ -25,7 +25,7 @@ GLayer::GLayer(const GLayer &gLayer)
 {
 }
 
-GLayer::GLayer(GLayer &&gLayer) 
+GLayer::GLayer(GLayer &&gLayer) TL_NOEXCEPT
   : mName(std::move(gLayer.mName)), 
     mEntities(std::move(gLayer.mEntities)), 
     mSelectEntity(std::move(gLayer.mSelectEntity))
@@ -35,7 +35,7 @@ GLayer::GLayer(GLayer &&gLayer)
 GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities) 
   : mName(""), 
     mEntities(entities), 
-    mSelectEntity(0)
+    mSelectEntity(nullptr)
 {
 }
 
@@ -69,7 +69,7 @@ void GLayer::push_back(const std::shared_ptr<GraphicEntity> &entity)
   mEntities.push_back(entity);
 }
 
-void GLayer::push_back(std::shared_ptr<GraphicEntity> &&entity)
+void GLayer::push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT
 {
   mEntities.push_back(std::forward<std::shared_ptr<GraphicEntity>>(entity));
 }
@@ -109,7 +109,7 @@ GLayer &GLayer::operator=(const GLayer& entity)
   return (*this);
 }
 
-GLayer& GLayer::operator=(GLayer&& entity) 
+GLayer& GLayer::operator=(GLayer&& entity) TL_NOEXCEPT
 {
   if (this != &entity) {
     this->mName = std::move(entity.mName);

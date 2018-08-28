@@ -32,7 +32,7 @@ Font::Font(const Font &font)
 {
 }
 
-Font::Font(Font &&font) 
+Font::Font(Font &&font) TL_NOEXCEPT
   : mName(std::move(font.mName)),
     mSize(std::move(font.mSize)),
     mStyle(std::move(font.mStyle)),
@@ -128,7 +128,7 @@ Font &Font::operator = (const Font &font)
   return *this;
 }
 
-Font &Font::operator = (Font &&font)
+Font &Font::operator = (Font &&font) TL_NOEXCEPT
 {
   if (this != &font) {
     this->mName = std::move(font.mName);
