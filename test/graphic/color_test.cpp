@@ -874,3 +874,62 @@ TEST(Test_, cmykToRgb)
 // hsvToRgb
 // rgbToLuminance
 // chromaticityCoordinates
+
+
+
+
+class ColorTest
+  : public testing::Test
+{
+public:
+
+protected:
+
+  virtual void SetUp() override
+  {
+    color2 = new graph::Color(graph::Color::NAME::Azure);
+    rgb2 = new graph::ColorRGB(10, 25, 30);
+  }
+
+  virtual void TearDown() override
+  {
+    if (color2) delete color2, color2 = nullptr;
+    if (rgb2) delete rgb2, rgb2 = nullptr;
+  }
+
+  graph::Color color1;
+  graph::Color *color2;
+  graph::ColorRGB rgb1;
+  graph::ColorRGB *rgb2;
+};
+
+
+TEST_F(ColorTest, DefaultConstructor)
+{
+  EXPECT_EQ(0, static_cast<int>(color1));
+}
+
+TEST_F(ColorTest, NameConstructor)
+{
+  EXPECT_EQ(15794175, static_cast<int>(*color2));
+}
+
+TEST_F(ColorTest, DefaultConstructorColorRGB)
+{
+  EXPECT_EQ(0, rgb1.red());
+  EXPECT_EQ(0, rgb1.green());
+  EXPECT_EQ(0, rgb1.blue());
+}
+
+TEST_F(ColorTest, ConstructorColorRGB)
+{
+  EXPECT_EQ(10, rgb2->red());
+  EXPECT_EQ(25, rgb2->green());
+  EXPECT_EQ(30, rgb2->blue());
+}
+
+TEST_F(ColorTest, ColorFromColorRGB)
+{
+  graph::Color color(rgb2);
+  EXPECT_EQ(661790, static_cast<int>(color));
+}

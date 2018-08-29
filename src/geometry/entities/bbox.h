@@ -41,10 +41,11 @@ T joinBox(const T &b1, const T &b2)
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief The Window class
+ * \brief Clase caja
  */
 template<typename Point3_t>
-class Box : public Entity
+class Box 
+  : public Entity
 {
 public:
 

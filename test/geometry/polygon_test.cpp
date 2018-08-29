@@ -50,7 +50,6 @@ TEST_F(PolygonTest, DefaultConstructor)
   
   /*Comprobamos si se ha creado con el contructor por defecto*/
   EXPECT_EQ(0, pol_1.size());
-  EXPECT_TRUE(pol_1.getType() == Entity::type::POLYGON_2D);
   EXPECT_EQ(TL_INT_MAX, w.pt1.x);
   EXPECT_EQ(TL_INT_MAX, w.pt1.y);
   EXPECT_EQ(TL_INT_MIN, w.pt2.x);
@@ -65,7 +64,6 @@ TEST_F(PolygonTest, ConstructorReserve)
   WindowD w = pol_3->getWindow();
 
   EXPECT_EQ(10, pol_3->size());
-  EXPECT_TRUE(pol_3->getType() == Entity::type::POLYGON_2D);
   EXPECT_EQ(0., w.pt1.x);
   EXPECT_EQ(0., w.pt1.y);
   EXPECT_EQ(0., w.pt2.x);
@@ -77,84 +75,42 @@ TEST_F(PolygonTest, ConstructorReserve)
 
 TEST_F(PolygonTest, CopyConstructor)
 {
-	//LineStringI  line(ptsIn); //Creamos el primer vector, iniciándolo con la lista iniciadora
-	//LineStringI copia(line);  //Creamos el segundo vectro como copia del primero
- // WindowI w = line.getWindow();
+  PolygonD pol_c(*pol_3);
+  EXPECT_EQ(10, pol_c.size());
 
- // EXPECT_TRUE(copia.getType() == Entity::type::LINESTRING_2D);
-	//EXPECT_EQ(line.size(), copia.size());
- // EXPECT_EQ(4137012, w.pt1.x);
- // EXPECT_EQ(642997, w.pt1.y);
- // EXPECT_EQ(4177148, w.pt2.x);
- // EXPECT_EQ(702670, w.pt2.y);
-	//int j = 0;
-	///*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
-	//creadoes igual a cada uno de los puntos de la lista de iniciación*/
-	//for (auto i : ptsIn) {
-	//	EXPECT_EQ(i.x, copia[j].x);
-	//	EXPECT_EQ(i.y, copia[j].y);
-	//	j++;
-	//}
+  auto w = pol_c.getWindow();
+  EXPECT_EQ(0., w.pt1.x);
+  EXPECT_EQ(0., w.pt1.y);
+  EXPECT_EQ(0., w.pt2.x);
+  EXPECT_EQ(0., w.pt2.y);
+
+  EXPECT_EQ(0., pol_c.length());
+
 }
-
-/* Constructor a partir de un vector de puntos */
-
-//TEST(LineString, Vector) 
-//{
-//  std::vector<PointI> pts_in{
-//	  PointI(4157222, 664789),
-//	  PointI(4149043, 688836),
-//	  PointI(4172803, 690340),
-//	  PointI(4177148, 642997),
-//	  PointI(4137012, 671808),
-//	  PointI(4146292, 666953),
-//	  PointI(4138759, 702670) };
-//
-//  LineStringI line(pts_in);
-//  WindowI w = line.getWindow();
-//  
-//  EXPECT_EQ(7, line.size());
-//
-//  EXPECT_TRUE(line.getType() == Entity::type::LINESTRING_2D);
-//    
-//  EXPECT_EQ(4137012, w.pt1.x);
-//  EXPECT_EQ(642997, w.pt1.y);
-//  EXPECT_EQ(4177148, w.pt2.x);
-//  EXPECT_EQ(702670, w.pt2.y);
-//
-//  int j = 0;
-//  for (auto i : ptsIn) {
-//	  EXPECT_EQ(i.x, line[j].x);
-//	  EXPECT_EQ(i.y, line[j].y);
-//	  j++;
-//  }
-//}
 
 
 /* Constructor lista de inicializadores */
 
-//TEST(LineString, ConstructorList) 
-//{
-//  LineStringI  line(ptsIn); //Creamos el vector, iniciándolo con la lista iniciadora
-//
-//  WindowI w = line.getWindow();
-//
-//  EXPECT_TRUE(line.getType() == Entity::type::LINESTRING_2D);
-//    
-//  EXPECT_EQ(4137012, w.pt1.x);
-//  EXPECT_EQ(642997, w.pt1.y);
-//  EXPECT_EQ(4177148, w.pt2.x);
-//  EXPECT_EQ(702670, w.pt2.y);
-//
-//  int j = 0;
-//  /*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
-//  creadoes igual a cada uno de los puntos de la lista de iniciación*/
-//  for (auto i : ptsIn) {
-//	  EXPECT_EQ(i.x, line[j].x);
-//	  EXPECT_EQ(i.y, line[j].y);
-//	  j++;
-//  }
-//}
+TEST_F(PolygonTest, ConstructorList)
+{
+  EXPECT_EQ(7, pol_2->size());
+
+  WindowI w = pol_2->getWindow();
+
+  EXPECT_EQ(4137012, w.pt1.x);
+  EXPECT_EQ(642997, w.pt1.y);
+  EXPECT_EQ(4177148, w.pt2.x);
+  EXPECT_EQ(702670, w.pt2.y);
+
+  EXPECT_NEAR(193131.62, pol_2->length(), 0.01);
+}
+
+TEST_F(PolygonTest, getType)
+{
+  EXPECT_TRUE(pol_1.getType() == Entity::type::POLYGON_2D);
+  EXPECT_TRUE(pol_2->getType() == Entity::type::POLYGON_2D);
+  EXPECT_TRUE(pol_3->getType() == Entity::type::POLYGON_2D);
+}
 
 /* Operador de asignación */
 
@@ -174,14 +130,12 @@ TEST_F(PolygonTest, CopyConstructor)
 //    EXPECT_TRUE(lineString_c[i] == lineString[i]);
 //  }
 //}
-//
-//TEST(LineString, length)
-//{
-//  LineStringI  line(ptsIn);
-//
-//  EXPECT_NEAR(193131.6182, line.length(), 0.01);
-//
-//}
+
+TEST_F(PolygonTest, area)
+{
+  EXPECT_NEAR(0, pol_1.area(), 0.01);
+  EXPECT_NEAR(2059476079.5, pol_2->area(), 0.01);
+}
 
 /* MultiPoint3D */
 

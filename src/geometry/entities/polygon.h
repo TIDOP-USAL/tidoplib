@@ -332,7 +332,7 @@ double Polygon<Point_t>::area() const
   for (size_t i = 1; i < this->mEntities.size(); i++) {
     area += crossProduct(this->mEntities[i-1], this->mEntities[i]);
   }
-  return area / 2.;
+  return abs(area / 2.);
 }
 
 template<typename Point_t> inline

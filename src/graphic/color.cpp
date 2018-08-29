@@ -527,9 +527,9 @@ Color::Color(const Color::NAME &color)
   mColor = static_cast<uint32_t>(color);
 }
 
-Color::Color(const IColorModel &colorModel)
+Color::Color(const IColorModel *colorModel)
 {
-  *this = colorModel.toColor();
+  *this = colorModel->toColor();
 }
 
 Color::~Color()

@@ -855,7 +855,7 @@ public:
    */
   Color(const Color::NAME &color);
 
-  Color(const IColorModel &colorModel);
+  Color(const IColorModel *colorModel);
 
   ~Color();
 
