@@ -79,6 +79,12 @@ public:
   Font(const Font &font);
 
   /*!
+   * \brief Constructora de movimiento
+   * \param[in] font Fuente
+   */
+  Font(Font &&font) TL_NOEXCEPT;
+
+  /*!
    * \brief Constructora
    * \param[in] name Nombre de la fuente
    * \param[in] size Tamaño de la fuente
@@ -174,10 +180,17 @@ public:
 
   /*!
    * \brief Operador de asignacion
-   * \param[in] font Fuente
+   * \param[in] font Objeto Font que se asigna
    * \return
    */
   Font &operator = (const Font &font);
+
+  /*!
+   * \brief Operador de asignacion de movimiento
+   * \param[in] font Objeto Font que se mueve
+   * \return
+   */
+  Font &operator = (Font &&font) TL_NOEXCEPT;
 };
 
 ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)

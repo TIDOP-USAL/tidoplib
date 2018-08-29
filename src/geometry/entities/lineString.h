@@ -35,7 +35,9 @@ namespace geometry
  * \endcode
  */
 template <typename Point_t>
-class LineString : public Entity, public Entities2D<Point_t>
+class LineString
+  : public Entity,
+    public Entities2D<Point_t>
 {
 
 public:
@@ -125,7 +127,7 @@ LineString<Point_t>::LineString(const LineString &lineString)
 }
 
 template <typename Point_t> inline
-LineString<Point_t>::LineString(LineString &&lineString)
+LineString<Point_t>::LineString(LineString &&lineString) TL_NOEXCEPT
   : Entity(std::forward<Entity>(lineString)),
     Entities2D<Point_t>(std::forward<LineString<Point_t>>(lineString))
 {
@@ -165,18 +167,21 @@ template<typename Point_t> inline
 LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> &lineString)
 {
   if (this != &lineString) {
-    Entity::operator = (lineString);
-    Entities2D<Point_t>::operator = (lineString);
+    //Entity::operator = (lineString);
+    //Entities2D<Point_t>::operator = (lineString);
+    this->mEntityType = lineString.mEntityType;
+    this->mEntities = lineString.mEntities;
   }
   return *this;
 }
 
 template<typename Point_t> inline
-LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&lineString)
+LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&lineString) TL_NOEXCEPT
 {
   if (this != &lineString) {
     this->mEntityType = std::move(lineString.mEntityType);
-    Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>>(lineString));
+    //Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>>(lineString));
+    this->mEntities = std::move(lineString.mEntities);
   }
   return *this;
 }
@@ -206,7 +211,9 @@ typedef LineString<Point<double>> LineStringD;
  *
  */
 template <typename Point3_t>
-class LineString3D : public Entity, public Entities3D<Point3_t>
+class LineString3D
+  : public Entity,
+    public Entities3D<Point3_t>
 {
 
 public:
@@ -306,9 +313,9 @@ LineString3D<Point3_t>::LineString3D(const LineString3D &lineString)
 }
 
 template <typename Point3_t> inline
-LineString3D<Point3_t>::LineString3D(LineString3D &&lineString)
+LineString3D<Point3_t>::LineString3D(LineString3D &&lineString) TL_NOEXCEPT
   : Entity(std::forward<Entity>(lineString)), 
-    Entities3D<Point3_t>(std::forward<LineString3D<Point3_t>>(lineString))
+    Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(lineString))
 {
 }
 
@@ -341,17 +348,19 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (const LineString3D &
 {
   if (this != &lineString) {
     Entity::operator = (lineString);
-    Entities3D<Point3_t>::operator = (lineString);
+    this->mEntities = lineString.mEntities;
+    //Entities3D<Point3_t>::operator = (lineString);
   }
   return *this;
 }
 
 template<typename Point3_t> inline
-LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineString)
+LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineString) TL_NOEXCEPT
 {
   if (this != &lineString) {
     this->mEntityType = std::move(lineString.mEntityType);
-    Entities3D<Point3_t>::operator = (lineString);
+    //Entities3D<Point3_t>::operator = (lineString);
+    this->mEntities = std::move(lineString.mEntities);
   }
   return *this;
 }
@@ -378,7 +387,9 @@ typedef LineString3D<Point3<float>> LineString3dF;
 /* ---------------------------------------------------------------------------------- */
 
 template <typename Point_t>
-class MultiLineString : public Entity, public Entities2D<LineString<Point_t>>
+class MultiLineString
+  : public Entity,
+    public Entities2D<LineString<Point_t>>
 {
 
 public:
@@ -454,7 +465,7 @@ MultiLineString<Point_t>::MultiLineString(const MultiLineString &multiLineString
 }
 
 template<typename Point_t> inline
-MultiLineString<Point_t>::MultiLineString(MultiLineString &&multiLineString) 
+MultiLineString<Point_t>::MultiLineString(MultiLineString &&multiLineString) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiLineString)), 
     Entities2D<LineString<Point_t>>(std::forward<MultiLineString<Point_t>>(multiLineString)) 
 {
@@ -465,17 +476,19 @@ MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (const MultiLineS
 {
   if (this != &multiLineString) {
     Entity::operator = (multiLineString);
-    Entities2D<LineString<Point_t>>::operator = (multiLineString);
+    //Entities2D<LineString<Point_t>>::operator = (multiLineString);
+    this->mEntities = multiLineString.mEntities;
   }
   return *this;
 }
 
 template<typename Point_t> inline
-MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString &&multiLineString)
+MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString &&multiLineString) TL_NOEXCEPT
 {
   if (this != &multiLineString) {
     this->mEntityType = std::move(multiLineString.mEntityType);
-    Entities2D<LineString<Point_t>>::operator = (std::forward<MultiLineString<Point_t>>(multiLineString));
+    //Entities2D<LineString<Point_t>>::operator = (std::forward<MultiLineString<Point_t>>(multiLineString));
+    this->mEntities = std::move(multiLineString.mEntities);
   }
   return *this;
 }
@@ -493,8 +506,8 @@ Window<Point_t> MultiLineString<Point_t>::getWindow() const
 /* ---------------------------------------------------------------------------------- */
 
 template <typename Point3_t>
-class MultiLineString3D 
-  : public Entity, 
+class MultiLineString3D
+  : public Entity,
     public Entities3D<LineString3D<Point3_t>>
 {
 
@@ -570,7 +583,7 @@ MultiLineString3D<Point3_t>::MultiLineString3D(const MultiLineString3D &multiLin
 }
 
 template<typename Point3_t> inline
-MultiLineString3D<Point3_t>::MultiLineString3D(MultiLineString3D &&multiLineString) 
+MultiLineString3D<Point3_t>::MultiLineString3D(MultiLineString3D &&multiLineString) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiLineString)), 
     Entities3D<LineString3D<Point3_t>>(std::forward<MultiLineString3D<Point3_t>>(multiLineString)) 
 {
@@ -581,17 +594,19 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const Mult
 {
   if (this != &multiLineString) {
     Entity::operator = (multiLineString);
-    Entities3D<LineString3D<Point3_t>>::operator = (multiLineString);
+    //Entities3D<LineString3D<Point3_t>>::operator = (multiLineString);
+    this->mEntities = multiLineString.mEntities;
   }
   return *this;
 }
 
 template<typename Point3_t> inline
-MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineString3D &&multiLineString)
+MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineString3D &&multiLineString) TL_NOEXCEPT
 {
   if (this != &multiLineString) {
     this->mEntityType = std::move(multiLineString.mEntityType);
-	Entities3D<LineString3D<Point3_t>>::operator = (std::forward<MultiLineString3D<Point3_t>>(multiLineString));
+    //Entities3D<LineString3D<Point3_t>>::operator = (std::forward<Entities3D<LineString3D<Point3_t>>>(multiLineString));
+    this->mEntities = std::move(multiLineString.mEntities);
   }
   return *this;
 }

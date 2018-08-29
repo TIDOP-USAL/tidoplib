@@ -32,6 +32,15 @@ Font::Font(const Font &font)
 {
 }
 
+Font::Font(Font &&font) TL_NOEXCEPT
+  : mName(std::move(font.mName)),
+    mSize(std::move(font.mSize)),
+    mStyle(std::move(font.mStyle)),
+    mUnderline(std::move(font.mUnderline)),
+    mStrikethrough(std::move(font.mStrikethrough))
+{
+}
+
 Font::Font(const std::string name, int size, Style style, bool underline, bool strikethrough)
   : mName(name),
     mSize(size),
@@ -115,6 +124,18 @@ Font &Font::operator = (const Font &font)
     this->mStyle = font.mStyle;
     this->mUnderline = font.mUnderline;
     this->mStrikethrough = font.mStrikethrough;
+  }
+  return *this;
+}
+
+Font &Font::operator = (Font &&font) TL_NOEXCEPT
+{
+  if (this != &font) {
+    this->mName = std::move(font.mName);
+    this->mSize = std::move(font.mSize);
+    this->mStyle = std::move(font.mStyle);
+    this->mUnderline = std::move(font.mUnderline);
+    this->mStrikethrough = std::move(font.mStrikethrough);
   }
   return *this;
 }
