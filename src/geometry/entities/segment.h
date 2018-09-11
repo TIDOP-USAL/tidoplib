@@ -42,7 +42,8 @@ namespace geometry {
  * \endcode
  */
 template<typename Point_t>
-class Segment : public Entity
+class Segment
+  : public Entity
 {
 
 public:
@@ -362,7 +363,8 @@ typedef SegmentI Line;
  *
  */
 template<typename Point3_t>
-class Segment3D : public Entity
+class Segment3D
+  : public Entity
 {
 public:
 

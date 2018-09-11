@@ -132,7 +132,7 @@ void MessageManager::initExternalHandlers()
 #endif // HAVE_OPENCV
 
 #ifdef HAVE_GDAL
-  CPLPushErrorHandler((CPLErrorHandler)handleErrorGDAL);
+  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
 #endif // HAVE_GDAL
 }
 

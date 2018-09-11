@@ -22,5 +22,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/img
+install(DIRECTORY . DESTINATION include/tidop/img
         FILES_MATCHING PATTERN "*.h")

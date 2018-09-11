@@ -10,6 +10,9 @@
 #include <memory>
 #include <iostream>
 #include <sstream>
+#if defined (__clang__) || defined (__GNUG__)
+#include <cxxabi.h>
+#endif
 
 #include "core/defs.h"
 #include "core/utils.h"
@@ -197,7 +200,7 @@ public:
    * Destructora
    * Se recuperan las opciones por defecto de la consola
    */
-  ~Console();
+  ~Console() override;
 
   /*!
    * \brief Niveles de mensaje activados
@@ -330,18 +333,464 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
+
+
+
+
+class TL_EXPORT Argument
+{
+
+protected:
+
+  /*!
+   * \brief Nombre del argumento
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del argumento
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Nombre corto del argumento (Opcional)
+   * Es un único caracter
+   */
+  char mShortName;
+
+public:
+
+  Argument(const std::string &name, const std::string &description);
+  Argument(const char &shortName, const std::string &description);
+  Argument(const std::string &name, const char &shortName, const std::string &description);
+
+  virtual ~Argument(){}
+
+  std::string name() const;
+  void setName(const std::string &name);
+
+  std::string description() const;
+  void setDescription(const std::string &description);
+
+  char shortName() const;
+  void setShortName(const char &shortName);
+
+  virtual std::string typeName() const = 0;
+  virtual bool isRequired() const = 0;
+
+  /*!
+   * \brief Convierte el argumento a cadena de texto
+   * \return
+   */
+  virtual std::string toString() const = 0;
+
+  virtual void fromString(const std::string &value) = 0;
+};
+
+
+template <typename T, bool required = true>
+class Argument_
+  : public Argument
+{
+
+protected:
+
+  T *mValue;
+
+public:
+
+  Argument_(const std::string &name, const std::string &description, T *value)
+    : Argument(name, description),
+      mValue(value)
+  {
+
+  }
+  Argument_(const char &shortName, const std::string &description, T *value)
+    : Argument(shortName, description),
+      mValue(value)
+  {
+
+  }
+  Argument_(const std::string &name, const char &shortName, const std::string &description, T *value)
+    : Argument(name, shortName, description),
+      mValue(value)
+  {
+
+  }
+
+  std::string typeName() const override;
+  bool isRequired() const override;
+  T value() const;
+  void setValue(const T &value);
+
+  std::string toString() const override;
+  void fromString(const std::string &value) override;
+
+};
+
+
+typedef Argument_<int, true> ArgumentIntegerRequired;
+typedef Argument_<int, false> ArgumentIntegerOptional;
+typedef Argument_<double, true> ArgumentDoubleRequired;
+typedef Argument_<double, false> ArgumentDoubleOptional;
+typedef Argument_<float, true> ArgumentFloatRequired;
+typedef Argument_<float, false> ArgumentFloatOptional;
+typedef Argument_<bool, true> ArgumentBooleanRequired;
+typedef Argument_<bool, false> ArgumentBooleanOptional;
+typedef Argument_<std::string, true> ArgumentStringRequired;
+typedef Argument_<std::string, false> ArgumentStringOptional;
+
+
+/*  */
+
+
+template<typename T, bool required> inline
+std::string Argument_<T, required>::typeName() const
+{
+  /// https://ideone.com/sqFWir
+  std::string type_name = typeid(T).name();
+#if defined (__clang__) || defined (__GNUG__)
+  int status;
+  char *demangled_name = abi::__cxa_demangle(type_name.c_str(), nullptr, nullptr, &status);
+  if (status == 0){
+    type_name = demangled_name;
+    std::free(demangled_name);
+  }
+#endif
+  return type_name;
+}
+
+template<typename T, bool required> inline
+bool Argument_<T, required>::isRequired() const
+{
+  return required;
+}
+
+template<typename T, bool required> inline
+T Argument_<T, required>::value() const
+{
+    return *mValue;
+}
+
+template<typename T, bool required> inline
+void Argument_<T, required>::setValue(const T &value)
+{
+    *mValue = value;
+}
+
+template<typename T, bool required> inline
+std::string Argument_<T, required>::toString() const
+{
+  std::string val;
+  if(typeid(T) == typeid(bool)) {
+    val = *mValue ? "true" : "false";
+  } else if (std::is_integral<T>::value) {
+    val = std::to_string(*mValue);
+  } else if (std::is_floating_point<T>::value){
+    val = std::to_string(*mValue);
+  } else if(typeid(T) == typeid(std::string)) {
+    val = *mValue;
+  }
+  return val;
+}
+
+template<> inline
+std::string Argument_<std::string, true>::toString() const
+{
+  return *mValue;
+}
+
+template<> inline
+std::string Argument_<std::string, false>::toString() const
+{
+  return *mValue;
+}
+
+template<typename T, bool required> inline
+void Argument_<T, required>::fromString(const std::string &value)
+{
+  if(typeid(T) == typeid(bool)) {
+    if (value == "true" || value == "1")
+      *mValue = true;
+  } else if (std::is_integral<T>::value) {
+    *mValue = stringToInteger(value);
+  } else if (std::is_floating_point<T>::value) {
+    *mValue = std::stod(value);
+  }
+}
+
+///TODO: especialización de plantilla para salir del paso...
+template<> inline
+void Argument_<std::string, true>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
+template<> inline
+void Argument_<std::string, false>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
+
+
+
+
+
+class TL_EXPORT Command
+{
+
+public:
+
+  /*!
+   * \brief Estado de salida del parseo del comando
+   */
+  enum class Status
+  {
+    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP,      /*!< Se pasa como parametro: help */
+    SHOW_VERSION,
+    SHOW_LICENCE
+  };
+
+  /*!
+   * \brief Allocator
+   */
+  typedef std::list<std::shared_ptr<Argument>>::allocator_type allocator_type;
+
+  /*!
+   * \brief value_type
+   */
+  typedef std::list<std::shared_ptr<Argument>>::value_type value_type;
+
+  /*!
+   * \brief Tipo entero sin signo (por lo general size_t)
+   */
+  typedef std::list<std::shared_ptr<Argument>>::size_type size_type;
+
+  /*!
+   * \brief Tipo entero con signo (por lo general ptrdiff_t)
+   */
+  typedef std::list<std::shared_ptr<Argument>>::difference_type difference_type;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::pointer
+   */
+  typedef std::list<std::shared_ptr<Argument>>::pointer pointer;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::const_pointer
+   */
+  typedef std::list<std::shared_ptr<Argument>>::const_pointer const_pointer;
+
+  /*!
+   * \brief value_type&
+   */
+  typedef std::list<std::shared_ptr<Argument>>::reference reference;
+
+  /*!
+   * \brief const value_type&
+   */
+  typedef std::list<std::shared_ptr<Argument>>::const_reference const_reference;
+
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
+  typedef std::list<std::shared_ptr<Argument>>::iterator iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
+  typedef std::list<std::shared_ptr<Argument>>::const_iterator const_iterator;
+
+
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Argument>> mCmdArgs;
+
+  /*!
+   * \brief Listado de los argumentos por defecto comando
+   * Comandos como ayuda [-h | --help] o versión [-v | --version]
+   */
+  std::list<std::shared_ptr<Argument>> mDefaultArgs;
+
+public:
+
+  /*!
+   * \brief Constructora por defecto
+   */
+  Command();
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] command Objeto que se copia
+   */
+  Command(const Command &command);
+
+  /*!
+   * \brief Constructor comando tipo POSIX
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   */
+  Command(const std::string &name, const std::string &description);
+
+  /*!
+   * \brief Constructora de lista
+   * \param[in] arguments listado de argumentos
+   */
+  //Command(std::initializer_list<std::shared_ptr<Argument>> arguments);
+
+  /*!
+   * \brief name
+   * \return
+   */
+  std::string name() const;
+
+  /*!
+   * \brief setName
+   * \param name
+   */
+  void setName(const std::string &name);
+
+  /*!
+   * \brief description
+   * \return
+   */
+  std::string description() const;
+
+  /*!
+   * \brief setDescription
+   * \param description
+   */
+  void setDescription(const std::string &description);
+
+  /*!
+   * \brief parsea los argumentos de entrada
+   * \param[in] argc
+   * \param[in] argv
+   * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
+   * \see CmdParser::Status
+   */
+  Status parse(int argc, const char* const argv[]);
+
+  /*!
+   * \brief Devuelve un iterador al inicio
+   * \return Iterador al primer elemento
+   */
+  virtual iterator begin();
+
+  /*!
+   * \brief Devuelve un iterador constante al inicio
+   * \return Iterador al primer elemento
+   */
+  virtual const_iterator begin() const;
+
+  /*!
+   * \brief Devuelve un iterador al siguiente elemento después del último argumento
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del último argumento
+   */
+  virtual iterator end();
+
+  /*!
+   * \brief Devuelve un iterador constante al siguiente elemento después del último argumento
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del último argumento
+   */
+  virtual const_iterator end() const;
+
+  /*!
+   * \brief Agrega un argumento mediante copia al final
+   * \param[in] arg Argumento que se añade
+   */
+  void push_back(const std::shared_ptr<Argument> &arg);
+
+  /*!
+   * \brief Agrega un argumento mediante movimiento al final
+   * \param[in] arg Argumento que se añade
+   */
+  void push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT;
+
+  /*!
+   * \brief Elimina los argumentos
+   */
+  void clear();
+
+  /*!
+   * \brief Comprueba si no hay argumentos
+   * \return true si el contenedor está vacío y false en caso contrario
+   */
+  bool empty() const;
+
+  /*!
+   * \brief Devuelve el tamaño del contenedor
+   * \return Tamaño
+   */
+  size_type size() const;
+
+  /*!
+   * \brief Asignación de copia
+   */
+  Command& operator=(const Command& command);
+
+  /*!
+   * \brief Asignación de movimiento
+   */
+  Command& operator=(Command &&command) TL_NOEXCEPT;
+
+  /*!
+   * \brief Elimina el intervalo
+   */
+  iterator erase(const_iterator first, const_iterator last);
+
+protected:
+
+  void init();
+
+};
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+
 // http://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html#Argument-Syntax
 
 // POSIX
 // Los argumentos son opciones si comienzan con un guión (‘-’).
-// Múltiples opciones pueden seguir un delimitador de guión en un único token si las opciones no tienen argumentos. Asi '-abc' es equivalente a '-a -b -c'.
+// Múltiples opciones pueden seguir un delimitador de guión en un único token si las opciones no tienen argumentos.
+// Asi '-abc' es equivalente a '-a -b -c'.
 // Option names are single alphanumeric characters (as for isalnum; see Classification of Characters).
-// Ciertas opciones requieren un argumento. Por ejemplo, el '-o' comando del comando ld requiere un argumento nombre-archivo de salida.
-// Una opción y su argumento pueden o no pueden aparecer como fichas separadas. (En otras palabras, el espacio en blanco que los separa es opcional.) Por lo tanto, '-o foo' y '-ofoo' son equivalentes.
+// Ciertas opciones requieren un argumento. Por ejemplo, el '-o' comando del comando ld requiere un argumento
+// nombre-archivo de salida.
+// Una opción y su argumento pueden o no pueden aparecer como fichas separadas. (En otras palabras, el espacio en
+// blanco que los separa es opcional.) Por lo tanto, '-o foo' y '-ofoo' son equivalentes.
 //
-//GNU añade opciones de larga duración a estas convenciones. Las opciones largas consisten en '-' seguido de un nombre hecho de caracteres alfanuméricos y guiones. Los nombres de opciones son por lo general de una a tres palabras de largo, con guiones para separar las palabras. Los usuarios pueden abreviar los nombres de las opciones, siempre y cuando las abreviaturas son únicos.
+// GNU añade opciones de larga duración a estas convenciones. Las opciones largas consisten en '-' seguido de un
+// nombre hecho de caracteres alfanuméricos y guiones. Los nombres de opciones son por lo general de una a tres
+// palabras de largo, con guiones para separar las palabras. Los usuarios pueden abreviar los nombres de las opciones,
+// siempre y cuando las abreviaturas son únicos.
 //
-//Para especificar un argumento para una larga, debe escribirse '--name = valor'. Esta sintaxis permite una opción a largo para aceptar un argumento que es en sí opcional.
+// Para especificar un argumento para una larga, debe escribirse '--name = valor'. Esta sintaxis permite una opción a
+// largo para aceptar un argumento que es en sí opcional.
 
 //enum class ArgType : int8_t {
 //  OPTION,
@@ -788,6 +1237,21 @@ public:
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -972,7 +1436,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~ProgressBar() {}
+  ~ProgressBar() override {}
 
   //... warning C4512: 'TL::ProgressBar' : no se pudo generar el operador de asignaciones
   //    Este warning aparece debido a que mSize es constante. impido la asignación que por
@@ -1024,7 +1488,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~ProgressPercent() {}
+  ~ProgressPercent() override {}
 
 private:
 
@@ -1042,6 +1506,11 @@ private:
 /*! \} */ // end of Console
 
 /*! \} */ // end of utilities
+
+
+/* Deprecated class */
+
+/* End deprecated class */
 
 } // End namespace TL
 

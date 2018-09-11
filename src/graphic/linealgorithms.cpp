@@ -254,10 +254,10 @@ PointI DDA::position(int id)
 void DDA::init()
 {
   if (dx > dy) {
-    m = (float)dy / (float)dx;
+    m = dy / static_cast<float>(dx);
     b = mPt1.y - m * mPt1.x;
   } else {
-    m = (float)dx / (float)dy;
+    m = dx / static_cast<float>(dy);
     b = mPt1.x - m * mPt1.y;
   }
 

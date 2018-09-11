@@ -16,7 +16,7 @@
 namespace TL
 {
 
-void adjustRangeRGBA(int *red, int *green, int *blue, int *alpha = NULL)
+void adjustRangeRGBA(int *red, int *green, int *blue, int *alpha = nullptr)
 {
   if (*red < 0) *red = 0;
   else if (*red > 255) *red = 255;
@@ -76,8 +76,8 @@ Color::Color(const Color &color)
 {
 }
 
-Color::Color(int color) 
-  : mColor(color) 
+Color::Color(int color)
+  : mColor(static_cast<uint32_t>(color))
 {
 }
 

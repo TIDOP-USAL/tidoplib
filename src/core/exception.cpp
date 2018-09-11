@@ -21,7 +21,7 @@ Exception::Exception(const char *error, const char *file, int line, const char *
   messagef();
 }
 
-const char *Exception::what() const throw ()
+const char *Exception::what() const TL_NOEXCEPT
 {
   return mMessage.c_str();
 }

@@ -228,7 +228,9 @@ private:
  * coordenada y se determina los valores enteros correspondientes mas
  * próximos a la trayectoria de la línea para la otra coordenada.
  */
-class TL_EXPORT DDA : public LineAlgorithms, public std::iterator<std::bidirectional_iterator_tag, int>
+class TL_EXPORT DDA
+  : public LineAlgorithms,
+    public std::iterator<std::bidirectional_iterator_tag, int>
 {
 
 private:
@@ -256,7 +258,7 @@ public:
     init();
   }
 
-  ~DDA() {}
+  ~DDA() override {}
 
   /*!
    * \brief Punto actual

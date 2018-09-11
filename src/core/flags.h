@@ -5,6 +5,9 @@
 
 #include "core/defs.h"
 
+#include <type_traits>
+#include <utility>
+
 namespace TL
 {
 
@@ -407,6 +410,13 @@ public:
 
 };
 
+/* Definición de tipos */
+
+typedef Flags<uint8_t> Flags_8;
+typedef Flags<uint16_t> Flags_16;
+typedef Flags<uint32_t> Flags_32;
+typedef Flags<uint64_t> Flags_64;
+
 
 template<typename T> inline
 Flags<T>::Flags(const Flags &flag) 
@@ -472,11 +482,6 @@ T Flags<T>::getFlags() const
 {
   return static_cast<T> (mFlag);
 }
-
-typedef Flags<uint8_t> Flags_8;
-typedef Flags<uint16_t> Flags_16;
-typedef Flags<uint32_t> Flags_32;
-typedef Flags<uint64_t> Flags_64;
 
 
 } // End namespace TL

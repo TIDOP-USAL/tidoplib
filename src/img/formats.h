@@ -65,7 +65,8 @@ public:
 /*!
  * \brief Clase que gestiona las opciones del formato TIFF
  */
-class TL_EXPORT TiffOptions : public RasterOptions
+class TL_EXPORT TiffOptions
+  : public RasterOptions
 {
 
 public:
@@ -240,7 +241,7 @@ protected:
 public:
 
   TiffOptions();
-  ~TiffOptions();
+  ~TiffOptions() override;
 
   const char *getOptions() override;
 
@@ -327,7 +328,8 @@ private:
 /*!
  * \brief Clase que gestiona las opciones del formato PNG
  */
-class TL_EXPORT PngOptions : public RasterOptions
+class TL_EXPORT PngOptions
+  : public RasterOptions
 {
 
 public:
@@ -351,7 +353,7 @@ protected:
 public:
   
   PngOptions();
-  ~PngOptions();
+  ~PngOptions() override;
   
   const char *getOptions() override;
 
@@ -386,7 +388,7 @@ protected:
 public:
   
   JpegOptions();
-  ~JpegOptions();
+  ~JpegOptions() override;
   
   const char *getOptions() override;
 
@@ -399,7 +401,8 @@ public:
 /*!
  * \brief Clase que gestiona las opciones del formato bmp
  */
-class TL_EXPORT BmpOptions : public RasterOptions
+class TL_EXPORT BmpOptions
+  : public RasterOptions
 {
 
 protected:
@@ -409,7 +412,7 @@ protected:
 public:
   
   BmpOptions();
-  ~BmpOptions();
+  ~BmpOptions() override;
   
   const char *getOptions() override;
 

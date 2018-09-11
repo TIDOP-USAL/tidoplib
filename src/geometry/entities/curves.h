@@ -33,7 +33,8 @@ namespace geometry
  *
  */
 template<typename T>
-class Circle : public Entity
+class Circle
+  : public Entity
 {
 
 public:
@@ -140,7 +141,7 @@ Circle<T>::Circle(const Circle<T> &circle)
 }
 
 template<typename T> inline
-Circle<T>::Circle(Circle<T> &&circle)
+Circle<T>::Circle(Circle<T> &&circle) TL_NOEXCEPT
   : Entity(std::forward<Entity>(circle)),
     center(std::move(circle.center)),
     radius(std::move(circle.radius))
@@ -159,7 +160,7 @@ Circle<T> &Circle<T>::operator = (const Circle &circle)
 }
 
 template<typename T> inline
-Circle<T> &Circle<T>::operator = (Circle &&circle)
+Circle<T> &Circle<T>::operator = (Circle &&circle) TL_NOEXCEPT
 {
   if (this != &circle) {
     this->mEntityType = std::move(circle.mEntityType);
@@ -198,7 +199,8 @@ double Circle<T>::length() const
  *
  */
 template<typename T>
-class Ellipse : public Entity
+class Ellipse
+  : public Entity
 {
 
 public:
@@ -319,7 +321,7 @@ Ellipse<T>::Ellipse(const Ellipse<T> &ellipse)
 }
 
 template<typename T> inline
-Ellipse<T>::Ellipse(Ellipse<T> &&ellipse)
+Ellipse<T>::Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT
   : Entity(std::forward<Entity>(ellipse)),
     center(ellipse.center),
     a(ellipse.a),
@@ -340,7 +342,7 @@ Ellipse<T> &Ellipse<T>::operator = (const Ellipse &ellipse)
 }
 
 template<typename T> inline
-Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse)
+Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse) TL_NOEXCEPT
 {
   if (this != &ellipse) {
     this->mEntityType = std::move(ellipse.mEntityType);

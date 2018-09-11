@@ -197,14 +197,14 @@ int  GdalRaster::GTiff[] = {  GDT_Byte, GDT_UInt16, GDT_Int16, GDT_UInt32, GDT_I
 int  GdalRaster::GTX[] = {  GDT_Float32 };
 int  GdalRaster::NTv2[] = {  GDT_Float32 };
 int  GdalRaster::LAN[] = {  GDT_Byte, GDT_Int16 };
-char **GdalRaster::gdalOpt = 0;//CSLSetNameValue( SGD_ImgFileGDAL::gdalOpt, "QUALITY", "70" );
+char **GdalRaster::gdalOpt = nullptr; //CSLSetNameValue( SGD_ImgFileGDAL::gdalOpt, "QUALITY", "70" );
 
 
 GdalRaster::GdalRaster() 
   : VrtRaster(), 
     bTempFile(false), 
-    pDataset(0), 
-    pRasterBand(0), 
+    pDataset(nullptr),
+    pRasterBand(nullptr),
     mGdalDataType(GDT_Unknown), 
     mTempName(""),
     pDriver(nullptr)
@@ -226,25 +226,26 @@ GdalRaster::GdalRaster(const GdalRaster &gdalRaster)
 
 GdalRaster::~GdalRaster()
 {
-  char **tmp = 0;
+  char **tmp = nullptr;
   if (bTempFile) {
-    char ext[TL_MAX_EXT];
-    if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) == 0) {
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
-      GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, NULL, NULL, NULL);
+    //char ext[TL_MAX_EXT];
+    //if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) == 0) {
+    std::string ext = fs::extension(mFile);
+      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
+      GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, nullptr, nullptr, nullptr);
       if (!pTempDataSet) {
         msgError("No se pudo crear la imagen");
       } else {
         GDALClose((GDALDatasetH)pTempDataSet);
       }
       tmp = pDataset->GetFileList();
-    } else msgError("No se pudo crear la imagen");
+    //} else msgError("No se pudo crear la imagen");
   }
 
   if (pDataset) GDALClose(pDataset), pDataset = nullptr; 
 
   if (bTempFile) {
-    for (int i = 0; i < sizeof(**tmp); i++)
+    for (size_t i = 0; i < sizeof(**tmp); i++)
       remove(tmp[i]);
   }
 }
@@ -267,10 +268,11 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, Fil
   close();
 
   mFile = file;
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
-  
-  const char *driverName = getDriverFromExt(ext);
+  //char ext[TL_MAX_EXT];
+  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
+  std::string ext = fs::extension(file);
+
+  const char *driverName = getDriverFromExt(ext.c_str());
   if (driverName == nullptr) return Status::OPEN_FAIL;
 
   GDALAccess gdal_access;
@@ -313,8 +315,8 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, Fil
       if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     return Status::OPEN_OK; 
   } else {
-    pDataset = (GDALDataset*)GDALOpen( file, gdal_access);
-    if (pDataset == NULL) {
+    pDataset = static_cast<GDALDataset *>(GDALOpen(file, gdal_access));
+    if (pDataset == nullptr) {
       return Status::OPEN_FAIL;
     } else {
       update();
@@ -371,15 +373,15 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
   if ( image->empty() ) return Status::FAILURE;
 
   uchar *buff = image->ptr();
-  size_t nPixelSpace = image->elemSize();
-  size_t nLineSpace = image->elemSize() * image->cols;
-  size_t nBandSpace = image->elemSize1();
+  int nPixelSpace = static_cast<int>(image->elemSize());
+  int nLineSpace = nPixelSpace * image->cols;
+  int nBandSpace = static_cast<int>(image->elemSize1());
 
   CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
                                     wRead.getWidth(), wRead.getHeight(),
                                     buff, size.width, size.height, mGdalDataType,
-                                    mBands, panBandMap().data(), (int)nPixelSpace,
-                                    (int)nLineSpace, (int)nBandSpace );
+                                    mBands, panBandMap().data(), nPixelSpace,
+                                    nLineSpace, nBandSpace );
 
   if (cerr == 0) return Status::SUCCESS;
   else return Status::FAILURE;
@@ -387,20 +389,20 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
 
 GdalRaster::Status GdalRaster::write(const cv::Mat &image, const WindowI &w)
 {
-  if (pDataset == NULL) return Status::FAILURE;
+  if (pDataset == nullptr) return Status::FAILURE;
   //if (!image.isContinuous()) image = image.clone();
   //uchar *buff = image.ptr();
   uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
-  size_t nPixelSpace = image.elemSize();
-  size_t nLineSpace = image.elemSize() * image.cols;
-  size_t nBandSpace = image.elemSize1();
+  int nPixelSpace = static_cast<int>(image.elemSize());
+  int nLineSpace = nPixelSpace * image.cols;
+  int nBandSpace = static_cast<int>(image.elemSize1());
 
   CPLErr cerr = pDataset->RasterIO(GF_Write, w.pt1.x, w.pt1.y, 
                                    image.cols, image.rows, buff, 
                                    image.cols, image.rows, 
                                    openCvToGdal(image.depth()), mBands, 
-                                   panBandMap().data(), (int)nPixelSpace, 
-                                   (int)nLineSpace, (int)nBandSpace);
+                                   panBandMap().data(), nPixelSpace,
+                                   nLineSpace, nBandSpace);
 
   if (cerr == 0) return Status::SUCCESS;
   else return Status::FAILURE;
@@ -411,14 +413,14 @@ GdalRaster::Status GdalRaster::write(const cv::Mat &image, const Helmert2D<Point
   //TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
   //anteriormente a create y asignar los valores correctos.
   // De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
-  if (pDataset == NULL) return Status::FAILURE;
+  if (pDataset == nullptr) return Status::FAILURE;
   //if (!image.isContinuous()) image = image.clone();
   //uchar *buff = image.ptr();
   uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
   
-  size_t nPixelSpace = image.elemSize();
-  size_t nLineSpace = image.elemSize() * image.cols;
-  size_t nBandSpace = image.elemSize1();
+  int nPixelSpace = static_cast<int>(image.elemSize());
+  int nLineSpace = nPixelSpace * image.cols;
+  int nBandSpace = static_cast<int>(image.elemSize1());
 
   Helmert2D<PointI> _trf;
   if (trf) _trf = *trf;
@@ -428,8 +430,8 @@ GdalRaster::Status GdalRaster::write(const cv::Mat &image, const Helmert2D<Point
                                    image.cols, image.rows, buff, 
                                    image.cols, image.rows, 
                                    openCvToGdal(image.depth()), mBands, 
-                                   panBandMap().data(), (int)nPixelSpace, 
-                                   (int)nLineSpace, (int)nBandSpace);
+                                   panBandMap().data(), nPixelSpace,
+                                   nLineSpace, nBandSpace);
 
   if (cerr == 0) return Status::SUCCESS;
   else return Status::FAILURE;
@@ -515,10 +517,11 @@ GdalRaster::Status GdalRaster::write(const unsigned char *buff, const Helmert2D<
 GdalRaster::Status GdalRaster::createCopy(const char *fileOut)
 {
   //TODO: revisar
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(fileOut, ext, TL_MAX_EXT) == 0) {
-    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext));
-    GDALDataset *pTempDataSet = driver->CreateCopy(fileOut, pDataset, FALSE, NULL, NULL, NULL);
+  //char ext[TL_MAX_EXT];
+  //if (getFileExtension(fileOut, ext, TL_MAX_EXT) == 0) {
+    std::string ext = fs::extension(fileOut);
+    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
+    GDALDataset *pTempDataSet = driver->CreateCopy(fileOut, pDataset, FALSE, nullptr, nullptr, nullptr);
     if (!pTempDataSet) {
       msgError("No se pudo crear la imagen");
       return Status::FAILURE;
@@ -526,10 +529,10 @@ GdalRaster::Status GdalRaster::createCopy(const char *fileOut)
       GDALClose((GDALDatasetH)pTempDataSet);
       return Status::SUCCESS;
     }
-  } else {
-    msgError("No se pudo crear la imagen");
-    return Status::FAILURE;
-  }
+//  } else {
+//    msgError("No se pudo crear la imagen");
+//    return Status::FAILURE;
+//  }
 }
 
 const char* GdalRaster::getDriverFromExt(const char *ext)
@@ -542,7 +545,8 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
   else if ( strcmp( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
   else if ( strcmp( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)
   else if ( strcmp( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
-  else if ( strcmp( ext, ".grd" ) == 0 )  format = "AAIGrid";      // Arc/Info ASCII Grid
+  else if ( strcmp( ext, ".grd" ) == 0 ||
+            strcmp( ext, ".asc" ) == 0)  format = "AAIGrid";      // Arc/Info ASCII Grid
   else if ( strcmp( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
   else if ( strcmp( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
   else if ( strcmp( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
@@ -556,7 +560,7 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
   else if ( strcmp( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
   else if ( strcmp( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
   else if ( strcmp( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
-  else                                      format = 0;
+  else                                      format = nullptr;
   return format;
 
   // debería funcionar para GDAL
@@ -573,6 +577,11 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
       format = driver->GetDescription();
   }
   return( format );*/
+}
+
+char GdalRaster::get(const PointI &pt)
+{
+  return uchar{};
 }
 
 //ImgMetadata GdalRaster::metadata() const
@@ -643,6 +652,40 @@ void GdalGeoRaster::setProjection(const char *proj)
   mProjection = proj;
 }
 
+char GdalGeoRaster::get(const PointD &pt)
+{
+//  // Se transforma la ventana a coordenadas imagen
+//  cv::Mat mat;
+//  WindowD wTerrain(pt, 1*mTrfAffine->getScaleX());
+//  WindowD wLoad;
+//  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
+
+//  WindowI wRead(wLoad);
+//  Helmert2D<PointI> trf;
+//  cv::Mat image;
+//  GdalRaster::read(&image, wRead, 1, &trf);
+//  float f;
+//  f = image.at<float>(0, 0);
+//  return image.at<char>(0, 0);
+  return uchar{};
+}
+
+float GdalGeoRaster::getZ(const PointD &pt)
+{
+  // Se transforma la ventana a coordenadas imagen
+  cv::Mat mat;
+  WindowD wTerrain(pt, 1*mTrfAffine->getScaleX());
+  WindowD wLoad;
+  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
+
+  WindowI wRead(wLoad);
+  Helmert2D<PointI> trf;
+  cv::Mat image;
+  GdalRaster::read(&image, wRead, 1, &trf);
+  float f;
+  f = image.at<float>(0, 0);
+}
+
 void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
 {
   mGeoTransform = georef;
@@ -676,7 +719,7 @@ void GdalGeoRaster::update()
   }
 
   const char *prj = pDataset->GetProjectionRef();
-  if (prj != NULL) {
+  if (prj != nullptr) {
     mProjection = prj;
   }
 
@@ -1127,18 +1170,19 @@ RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mo
   if (!(file && strcmp(file, "") != 0)) return Status::OPEN_FAIL;
 
   mFile = file;
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+//  char ext[TL_MAX_EXT];
+//  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  std::string ext = fs::extension(file);
 
 #ifdef HAVE_GDAL
   const char *frtName;
-  if ((frtName = GdalRaster::getDriverFromExt(ext)) != NULL) { 
+  if ((frtName = GdalRaster::getDriverFromExt(ext.c_str())) != nullptr) {
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalRaster>();
   } else 
 #endif
 #ifdef HAVE_RAW
-  if (RawImage::isRawExt(ext)) {
+  if (RawImage::isRawExt(ext.c_str())) {
     mImageFormat = std::make_unique<RawImage>();
   } else 
 #endif  
@@ -1365,6 +1409,11 @@ int RasterGraphics::getColorDepth() const
   return mColorDepth;
 }
 
+char RasterGraphics::get(const PointI &pt) const
+{
+  return mImageFormat->get(pt);
+}
+
 //ImgMetadata RasterGraphics::metadata() const
 //{
 //  return mImageFormat->metadata();
@@ -1389,10 +1438,11 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, RasterGraphics:
   close();
 
   mFile = file;
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
+  //char ext[TL_MAX_EXT];
+  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
+  std::string ext = fs::extension(file);
 #ifdef HAVE_GDAL
-  if (const char *driverName = GdalRaster::getDriverFromExt(ext)) { 
+  if (const char *driverName = GdalRaster::getDriverFromExt(ext.c_str())) {
     // Existe un driver de GDAL para el formato de imagen
     mImageFormat = std::make_unique<GdalGeoRaster>();
   } else {
@@ -1409,7 +1459,7 @@ RasterGraphics::Status GeoRasterGraphics::open(const char *file, RasterGraphics:
 
 RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mode mode, FileOptions *options)
 {
-  return open(file, mode, options);
+  return open(file.c_str(), mode, options);
 }
 
 std::array<double, 6> GeoRasterGraphics::georeference() const
@@ -1430,7 +1480,7 @@ const char *GeoRasterGraphics::projection() const
     return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->projection();
   else
 #endif
-  return NULL;
+  return nullptr;
 
 }
 
@@ -1463,11 +1513,31 @@ GeoRasterGraphics::Status GeoRasterGraphics::read(cv::Mat *image, const WindowD 
   return Status::FAILURE;
 #endif
 }
+
+
 #endif // HAVE_OPENCV
+
+char GeoRasterGraphics::get(const PointD &pt) const
+{
+  return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->get(pt);
+}
 
 void GeoRasterGraphics::update()
 {
   RasterGraphics::update();
+}
+
+
+
+
+float Mdt::getZ(const PointD &pt) const
+{
+  cv::Mat mat;
+  WindowD w(pt, 1);
+  GdalGeoRaster *geoRaster = dynamic_cast<GdalGeoRaster *>(mImageFormat.get());
+  //geoRaster->read(&mat, w, 1);
+  //return mat.at<float>(0, 0);
+  return geoRaster->getZ(pt);
 }
 
 

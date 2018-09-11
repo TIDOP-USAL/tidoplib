@@ -24,7 +24,7 @@ public:
   double omega;
   double phi;
   double kappa;
-  int 
+
 public:
 
   /*!

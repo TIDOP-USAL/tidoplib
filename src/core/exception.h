@@ -15,7 +15,8 @@ namespace TL
 /*!
  * Clase para el manejo de excepciones
  */
-class TL_EXPORT Exception : public std::exception
+class TL_EXPORT Exception
+  : public std::exception
 {
 protected:
 
@@ -59,20 +60,20 @@ public:
   /*!
    * \brief destructor
    */
-  virtual ~Exception() throw () {}
+  virtual ~Exception() TL_NOEXCEPT {}
 
   /*!
    * \brief Descripción del error
    */
-  virtual const char *what() const throw ();
+  virtual const char *what() const TL_NOEXCEPT;
 
 private:
 
   void messagef();
 };
 
-//TL_EXPORT void throw_exception(const char *error, const char *file = NULL, int line = -1, const char *function = NULL);
-TL_EXPORT Exception make_exception(const char *error, const char *file = NULL, int line= -1, const char *function = NULL);
+//TL_EXPORT void throw_exception(const char *error, const char *file = nullptr, int line = -1, const char *function = nullptr);
+TL_EXPORT Exception make_exception(const char *error, const char *file = nullptr, int line= -1, const char *function = nullptr);
 
 
 

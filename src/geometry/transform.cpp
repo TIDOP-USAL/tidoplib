@@ -5,6 +5,16 @@
 namespace TL
 {
 
+double Helmert3D::getOmega() const
+{
+  return mOmega;
+}
+
+void Helmert3D::setOmega(double omega)
+{
+  mOmega = omega;
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 //void translate(const std::vector<Line> &lines_in, std::vector<Line> *lines_out, int dx, int dy)

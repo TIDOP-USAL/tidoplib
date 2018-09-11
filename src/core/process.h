@@ -186,7 +186,7 @@ public:
    * Process::run() o establecer directamente mStatus = Status::RUNNING
    * al inicio del método para establecer que el proceso esta corriendo.
    */
-  virtual Status run(Progress *progressBar = NULL) = 0;
+  virtual Status run(Progress *progressBar = nullptr) = 0;
 
   /*!
    * \brief Detiene el proceso
@@ -281,9 +281,9 @@ protected:
 public:
 
   CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
-  ~CmdProcess();
+  ~CmdProcess() override;
 
-  virtual Process::Status run(Progress *progressBar = NULL) override;
+  virtual Process::Status run(Progress *progressBar = nullptr) override;
 
   /*!
    * \brief Establece la prioridad del proceso
@@ -428,7 +428,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~BatchProcess();
+  ~BatchProcess() override;
 
   /*!
    * \brief Añade un nuevo proceso a la lista
@@ -492,14 +492,14 @@ public:
    * \param[in] progressBarTotal Barra de progreso total
    * \param[in] progressBarPartial Barra de progreso parcial
    */
-  Status run(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
+  Status run(Progress *progressBarTotal = nullptr, Progress *progressBarPartial = nullptr);
 
   /*!
    * \brief Corre los procesos en otro hilo de ejecución
    * \param[in] progressBarTotal Barra de progreso total
    * \param[in] progressBarPartial Barra de progreso parcial
    */
-  Status run_async(Progress *progressBarTotal = NULL, Progress *progressBarPartial = NULL);
+  Status run_async(Progress *progressBarTotal = nullptr, Progress *progressBarPartial = nullptr);
 
   /*!
    * \brief Detiene los procesos

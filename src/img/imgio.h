@@ -61,7 +61,8 @@ enum class DataType : int8_t
 };
 
 
-class TL_EXPORT VrtRaster : public File
+class TL_EXPORT VrtRaster
+  : public File
 {
 
 protected:
@@ -207,6 +208,13 @@ public:
    */
   //virtual ImgMetadata metadata() const = 0;
 
+  /*!
+   * \brief Valor del punto
+   * \param[in] pt
+   * \return
+   */
+  virtual char get(const geometry::PointI &pt) = 0;
+
 protected:
   
   void windowRead(const geometry::WindowI &wLoad, geometry::WindowI *wRead, geometry::PointI *offset) const;
@@ -344,7 +352,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = nullptr) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -407,6 +415,8 @@ public:
 
   //ImgMetadata metadata() const override;
 
+  char get(const geometry::PointI &pt) override;
+
 protected:
 
   virtual void update();
@@ -418,9 +428,10 @@ protected:
 /*!
  * \brief Clase contenedor y de gestión de imagenes raster georeferenciadas
  */
-class TL_EXPORT GdalGeoRaster : public GdalRaster
+class TL_EXPORT GdalGeoRaster
+  : public GdalRaster
 {
-private:
+protected:
 
   std::array<double, 6> mGeoTransform;
 
@@ -495,11 +506,17 @@ public:
 
 #endif // HAVE_OPENCV
 
+  char get(const geometry::PointD &pt);
+
+  float getZ(const geometry::PointD &pt);
+
 private:
 
   void update() override;
 
 };
+
+
 
 
 #endif // HAVE_GDAL
@@ -679,6 +696,8 @@ public:
 
   ImgMetadata metadata() const override;
 
+  uchar get(const geometry::PointI &pt) const override;
+
 private:
 
   void update();
@@ -701,7 +720,8 @@ private:
  * Una vez abierta la imagen se puede cargar la totalidad o parte de una
  * imagen. Se puede cargar a resolución completa o a otra resolución
  */
-class TL_EXPORT RasterGraphics : public File
+class TL_EXPORT RasterGraphics
+  : public File
 {
 
 protected:
@@ -860,6 +880,8 @@ public:
 
   //ImgMetadata metadata() const;
 
+  char get(const geometry::PointI &pt) const;
+
 protected:
 
   virtual void update();
@@ -870,7 +892,8 @@ protected:
 /*!
  * \brief Clase contenedor y de gestión de imagenes raster georeferenciadas
  */
-class TL_EXPORT GeoRasterGraphics : public RasterGraphics
+class TL_EXPORT GeoRasterGraphics
+  : public RasterGraphics
 {
 private:
 
@@ -935,6 +958,8 @@ public:
 
 #endif // HAVE_OPENCV
 
+  char get(const geometry::PointD &pt) const;
+
 private:
 
   void update() override;
@@ -942,7 +967,14 @@ private:
 };
 
 
+class TL_EXPORT Mdt
+  : public GeoRasterGraphics
+{
+public:
+  Mdt() {}
 
+  float getZ(const geometry::PointD &pt) const;
+};
 
 
 

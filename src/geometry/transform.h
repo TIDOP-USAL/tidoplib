@@ -50,6 +50,7 @@ enum class transform_type {
   PROJECTIVE,      /*!< Projectiva */
   HELMERT_3D,      /*!< Helmert 3D */
   POLYNOMIAL,      /*!< Transformación polinómica*/
+  DIFFRECTIFICATION,
   // tipos especiales
   MULTIPLE,
   CRS
@@ -126,8 +127,8 @@ public:
    */
   virtual transform_status compute(const std::vector<Point_t> &pts1, 
                                    const std::vector<Point_t> &pts2, 
-                                   std::vector<double> *error = NULL, 
-                                   double *rmse = NULL) = 0;
+                                   std::vector<double> *error = nullptr,
+                                   double *rmse = nullptr) = 0;
 
   /*!
    * \brief Determina si el numero de puntos son suficientes para calcular la transformación
@@ -329,7 +330,7 @@ double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsI
   std::vector<double> err(n);
   double sumErr = 0.;
 
-  for (int i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++) {
     transform(ptsIn[i], &pts_out[i]);
     pts_out[i] -= ptsOut[i];
     err[i] = static_cast<double>(pts_out[i].x * pts_out[i].x + pts_out[i].y * pts_out[i].y);
@@ -350,7 +351,8 @@ double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsI
  * forma que se ejecutan a la vez (consecutivamente).
  */
 template<typename Point_t>
-class TrfMultiple : public Transform<Point_t>
+class TrfMultiple
+  : public Transform<Point_t>
 {
 
 private:
@@ -417,8 +419,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL, 
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -564,7 +566,7 @@ public:
    * \see transform_status
    */
   virtual transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, 
-                                   std::vector<double> *error = NULL, double *rmse = NULL) override = 0;
+                                   std::vector<double> *error = nullptr, double *rmse = nullptr) override = 0;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -607,7 +609,8 @@ public:
  * \brief Transformación perspectiva
  */
 template<typename Point_t>
-class TrfPerspective : public Transform2D<Point_t>
+class TrfPerspective
+  : public Transform2D<Point_t>
 {
 
 public:
@@ -652,7 +655,7 @@ public:
    * \see transform_status
    */
   transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL, double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr, double *rmse = nullptr) override;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
@@ -695,7 +698,7 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
   size_t n = ptsIn.size();
   std::vector<cv::Point_<sub_type>> in(n);
   std::vector<cv::Point_<sub_type>> out;
-  for ( int i = 0; i < n; i++ ) {
+  for ( size_t i = 0; i < n; i++ ) {
     in[i] = ptsIn[i];
   }
 
@@ -710,7 +713,7 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
     return transform_status::FAILURE; 
   }
   ptsOut->resize(n);
-  for ( int i = 0; i < n; i++ ) {
+  for (size_t i = 0; i < n; i++) {
     (*ptsOut)[i].x = out[i].x;
     (*ptsOut)[i].y = out[i].y;
   }
@@ -813,7 +816,8 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
  * Transformación que aplica una traslación en el plano a un conjunto de puntos
  */
 template<typename Point_t>
-class Translate : public Transform2D<Point_t>
+class Translate
+  : public Transform2D<Point_t>
 {
 
 public:
@@ -870,8 +874,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL, 
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una traslación
@@ -931,7 +935,7 @@ transform_status Translate<Point_t>::compute(const std::vector<Point_t> &pts1,
   }
 
   transform_status status = transform_status::SUCCESS;
-  int m = n1 * this->mDimensions, n = 4;
+  size_t m = n1 * this->mDimensions, n = 4;
   double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
   double *c = new double[n];
   try {
@@ -1049,7 +1053,8 @@ Translate<Point_t>::operator Affine<Point_t>() const
  * Transformación que aplica una rotación en el plano a un conjunto de puntos 
  */
 template<typename Point_t> 
-class Rotation : public Transform2D<Point_t>
+class Rotation
+  : public Transform2D<Point_t>
 {
 private:
 
@@ -1121,8 +1126,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL, 
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Devuelve el ángulo de la rotación
@@ -1212,7 +1217,7 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   }
 
   transform_status status = transform_status::SUCCESS;
-  int m = n1 * this->mDimensions, n = 2;
+  size_t m = n1 * this->mDimensions, n = 2;
   double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
   double *c = new double[n];
 
@@ -1345,7 +1350,8 @@ void Rotation<Point_t>::update()
  * \f$ y' = a * y - b * x + Y0\f$
  */
 template<typename Point_t>
-class Helmert2D : public Transform2D<Point_t>
+class Helmert2D
+  : public Transform2D<Point_t>
 {
 private:
 
@@ -1480,13 +1486,13 @@ public:
    * \brief Devuelve el giro
    * \return[in] Ángulo de rotación en radianes
    */
-  double getRotation() const { return mRotation; };
+  double getRotation() const { return mRotation; }
 
   /*!
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
-  double getScale() const { return mScale;  };
+  double getScale() const { return mScale;  }
 
   /*!
    * \brief Establece los parámetros
@@ -1540,7 +1546,7 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
   }
     
   transform_status status = transform_status::SUCCESS;
-  int m = n1 * this->mDimensions, n = 4;
+  size_t m = n1 * this->mDimensions, n = 4;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
   double *c = new double[n];
   try {
@@ -1676,7 +1682,7 @@ void Helmert2D<Point_t>::update()
 /* ---------------------------------------------------------------------------------- */
 
 /*!
- * \brief Transformación Affine
+ * \brief Transformación afín
  *
  * La Transformación Afín expresa la relación que existe (o la transformación que es 
  * preciso realizar) entre dos sistemas cartesianos que discrepan en la situación del 
@@ -1693,7 +1699,8 @@ void Helmert2D<Point_t>::update()
  * \f[ y' = c * x + d * y + y0\f]
  */
 template<typename Point_t>
-class Affine : public Transform2D<Point_t>
+class Affine
+  : public Transform2D<Point_t>
 {
 public:
 
@@ -1811,8 +1818,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL,
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una transformación afín
@@ -1861,19 +1868,19 @@ public:
    * \brief Devuelve el giro
    * \return Ángulo de rotación en radianes
    */
-  double getRotation() const { return mRotation; };
+  double getRotation() const { return mRotation; }
 
   /*!
    * \brief Devuelve la escala correspondiente al eje X
    * \return Escala eje X
    */
-  double getScaleX() const { return mScaleX; };
+  double getScaleX() const { return mScaleX; }
 
   /*!
    * \brief Devuelve la escala correspondiente al eje Y
    * \return Escala eje Y
    */
-  double getScaleY() const { return mScaleY; };
+  double getScaleY() const { return mScaleY; }
 
   /*!
    * \brief Establece los parámetros
@@ -1949,7 +1956,7 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   transform_status status = transform_status::SUCCESS;
 
-  int m = n1 * this->mDimensions, n = 6;
+  size_t m = n1 * this->mDimensions, n = 6;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
   double *C = new double[n];
   try {
@@ -2125,7 +2132,7 @@ void Affine<Point_t>::updateInv()
 {
   // Transformación inversa
   double det = a * d - c * b;
-  if (!det) {
+  if (det == 0.) {
     msgError("determinant null");
   } else {
     ai = d / det;
@@ -2151,7 +2158,8 @@ void Affine<Point_t>::updateInv()
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class Projective : public Transform2D<Point_t>
+class Projective
+  : public Transform2D<Point_t>
 {
 private:
 
@@ -2287,8 +2295,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL,
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una 
@@ -2373,7 +2381,7 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   transform_status status = transform_status::SUCCESS;
 
-  int m = n1 * this->mDimensions, n = 8;
+  size_t m = n1 * this->mDimensions, n = 8;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
   double *C = new double[n];
   try {
@@ -2516,7 +2524,7 @@ void Projective<Point_t>::update()
 {
   // Transformación inversa
   double aux = a * e - b * d;
-  if (!aux) {
+  if (aux == 0.) {
     msgError("Division by zero");
   } else {
     ai = (e - f * h) / aux;
@@ -2543,7 +2551,8 @@ void Projective<Point_t>::update()
  *
  */
 template<typename Point_t>
-class polynomialTransform : public Transform2D<Point_t>
+class polynomialTransform
+  : public Transform2D<Point_t>
 {
 private:
 
@@ -2581,8 +2590,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL, 
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una transformación polinómica
@@ -2649,8 +2658,8 @@ transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t
     if ( ptoi.y > ymax ) ymax = ptoi.y;
     if ( ptoi.y < ymin ) ymin = ptoi.y;
   }
-  double xc = (xmax + xmin) / 2;
-  double yc = (ymax + ymin) / 2;
+  double xc = (xmax + xmin) / 2.;
+  double yc = (ymax + ymin) / 2.;
 
   //...
   
@@ -2713,7 +2722,8 @@ Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, transform_o
 /* ---------------------------------------------------------------------------------- */
 
 template<typename Point_t>
-class Transform3D : public Transform<Point_t>
+class Transform3D
+  : public Transform<Point_t>
 {
 private:
 
@@ -2754,8 +2764,8 @@ public:
    */
   virtual transform_status compute(const std::vector<Point_t> &pts1, 
                                    const std::vector<Point_t> &pts2, 
-                                   std::vector<double> *error = NULL,
-                                   double *rmse = NULL) override = 0;
+                                   std::vector<double> *error = nullptr,
+                                   double *rmse = nullptr) override = 0;
 
   /*!
    * \brief Aplica la transformación
@@ -2833,7 +2843,8 @@ public:
  * </BLOCKQUOTE>
  */
 template<typename Point_t>
-class Helmert3D : public Transform3D<Point_t>
+class Helmert3D
+  : public Transform3D<Point_t>
 {
 public:
 
@@ -2899,11 +2910,7 @@ public:
   /*!
    * \brief Constructor por defecto
    */
-  Helmert3D()
-    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(0.), ty(0.), tz(0.), mScale(1.), mOmega(0.), mPhi(0.), mKappa(0.)
-  {
-    update();
-  }
+  Helmert3D();
 
   /*!
    * \brief Constructor
@@ -2915,11 +2922,7 @@ public:
    * \param[in] phi Rotación respecto al eje Y
    * \param[in] kappa Rotación respecto al eje Z
    */
-  Helmert3D(double tx, double ty, double tz, double scale, double omega, double phi, double kappa) 
-    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(tx), ty(ty), tz(tz), mScale(scale), mOmega(omega), mPhi(phi), mKappa(kappa)
-  {
-    update();
-  }
+  Helmert3D(double tx, double ty, double tz, double scale, double omega, double phi, double kappa);
 
   /*!
    * \brief Constructor
@@ -2929,14 +2932,10 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Matriz de rotación
    */
-  Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation) 
-    : Transform3D<Point_t>(transform_type::HELMERT_3D, 3), tx(tx), ty(ty), tz(tz), mScale(scale), mR(rotation)
-  {
-    eulerAngles(mR, &mOmega, &mPhi, &mKappa);
-    update();
-  }
+  Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation);
 
-  //~Helmert3D();
+  TL_TODO("Falta un constructor de copia")
+  ~Helmert3D() override {}
 
   /*!
    * \brief Calcula la transformación Helmert 3D entre dos sistemas
@@ -2950,8 +2949,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL,
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Devuelve una referencia a la matriz de rotación
@@ -3022,9 +3021,53 @@ private:
 
 };
 
+
+
+
+template<typename Point_t> inline
+Helmert3D<Point_t>::Helmert3D()
+  : Transform3D<Point_t>(transform_type::HELMERT_3D, 3),
+    tx(0.),
+    ty(0.),
+    tz(0.),
+    mScale(1.),
+    mOmega(0.),
+    mPhi(0.),
+    mKappa(0.)
+{
+  update();
+}
+
+template<typename Point_t> inline
+Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, double omega, double phi, double kappa)
+  : Transform3D<Point_t>(transform_type::HELMERT_3D, 3),
+    tx(tx),
+    ty(ty),
+    tz(tz),
+    mScale(scale),
+    mOmega(omega),
+    mPhi(phi),
+    mKappa(kappa)
+{
+  update();
+}
+
+template<typename Point_t> inline
+Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation)
+  : Transform3D<Point_t>(transform_type::HELMERT_3D, 3),
+    tx(tx),
+    ty(ty),
+    tz(tz),
+    mScale(scale),
+    mR(rotation)
+{
+  eulerAngles(mR, &mOmega, &mPhi, &mKappa);
+  update();
+}
+
 template<typename Point_t> inline
 transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, 
-                                             const std::vector<Point_t> &pts2, 
+                                             const std::vector<Point_t> &pts2,
                                              std::vector<double> *error,
                                              double *rmse)
 {
@@ -3043,7 +3086,7 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   transform_status status = transform_status::SUCCESS;
 
-  int m = n1 * this->mDimensions, n = 7;
+  size_t m = n1 * this->mDimensions, n = 7;
   double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
   double *C = new double[n];
   try {
@@ -3239,8 +3282,11 @@ template<typename Point_t> inline
 void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out,
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::DIRECT)
 {
-  trf->transform(in.pt1, &out->pt1, trfOrder);
-  trf->transform(in.pt2, &out->pt2, trfOrder);
+  Point_t pt1;
+  Point_t pt2;
+  trf->transform(in.pt1, &pt1, trfOrder);
+  trf->transform(in.pt2, &pt2, trfOrder);
+  *out = geometry::Window<Point_t>(pt1, pt2);
 }
 
 

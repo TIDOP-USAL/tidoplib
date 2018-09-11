@@ -32,12 +32,12 @@ set_property(TARGET tl_graphic PROPERTY FOLDER "modules")
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_graphic
           RUNTIME DESTINATION bin
-		  LIBRARY DESTINATION lib) 
+          LIBRARY DESTINATION lib) 
 else()
   install(TARGETS tl_graphic 
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/graphic
+install(DIRECTORY . DESTINATION include/tidop/graphic
         FILES_MATCHING PATTERN "*.h")

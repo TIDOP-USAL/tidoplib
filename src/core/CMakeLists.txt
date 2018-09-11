@@ -33,5 +33,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/core
+install(DIRECTORY . DESTINATION include/tidop/core
         FILES_MATCHING PATTERN "*.h")

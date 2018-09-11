@@ -350,7 +350,7 @@ public:
    * \param[in] line
    * \param[in] function
    */
-  static void release(const char *msg, const MessageLevel &level, const char *file = NULL, int line = -1, const char *function = NULL);
+  static void release(const char *msg, const MessageLevel &level, const char *file = nullptr, int line = -1, const char *function = nullptr);
 
   /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
@@ -477,7 +477,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~Log();
+  ~Log() override;
 
   /* Se impide la copia y la asignación al ser un singleton */
   Log(Log const&) = delete;

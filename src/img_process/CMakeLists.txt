@@ -39,5 +39,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/imgprocess
+install(DIRECTORY . DESTINATION include/tidop/imgprocess
         FILES_MATCHING PATTERN "*.h")

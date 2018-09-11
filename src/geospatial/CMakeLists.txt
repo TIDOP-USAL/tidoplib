@@ -18,5 +18,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/geospatial
+install(DIRECTORY . DESTINATION include/tidop/geospatial
         FILES_MATCHING PATTERN "*.h")

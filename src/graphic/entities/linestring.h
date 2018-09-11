@@ -52,7 +52,7 @@ public:
    */
   GLineString(const GLineString &lineString);
 
-  ~GLineString();
+  ~GLineString() override;
 
   /*!
    * \brief Operador de asignación
@@ -108,7 +108,7 @@ public:
    */
   GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT;
 
-  ~GLineString3D();
+  ~GLineString3D() override;
 
   /*!
    * \brief Operador de asignación
@@ -163,7 +163,7 @@ public:
    */
   GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
 
-  ~GMultiLineString();
+  ~GMultiLineString() override;
 
   /*!
    * \brief Operador de asignación
@@ -217,7 +217,7 @@ public:
    */   
   GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
 
-  ~GMultiLineString3D();
+  ~GMultiLineString3D() override;
 
   /*!
    * \brief Operador de asignación

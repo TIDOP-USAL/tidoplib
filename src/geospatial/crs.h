@@ -181,7 +181,7 @@ private:
 
 public:
 
-  ~CrsCache() {}
+  virtual ~CrsCache() {}
 
   /// Se impide la copia y asignación
   CrsCache(CrsCache const&) = delete;
@@ -341,8 +341,8 @@ public:
    */
   transform_status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = NULL,
-                           double *rmse = NULL) override;
+                           std::vector<double> *error = nullptr,
+                           double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos a otro sistema de referencia
@@ -384,8 +384,8 @@ CrsTransform<Point_t>::CrsTransform(const std::shared_ptr<Crs> &epsgIn, const st
   : Transform3D<Point_t>(transform_type::CRS), 
     mEpsgIn(epsgIn), 
     mEpsgOut(epsgOut), 
-    pCoordinateTransformation(0), 
-    pCoordinateTransformationInv(0) 
+    pCoordinateTransformation(nullptr),
+    pCoordinateTransformationInv(nullptr)
 {
   init();
 }

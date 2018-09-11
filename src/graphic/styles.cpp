@@ -378,9 +378,7 @@ StyleSymbol &StyleSymbol::operator = (const StyleSymbol &styleSymbol)
 
 
 StyleLabel::StyleLabel()
-  : /*mFontName("Arial"),
-    mFontSize(12),*/
-    mFont(),
+  : mFont(),
     mText(""),
     mAngle(0.),
     mForegroundColor(0),

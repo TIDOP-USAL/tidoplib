@@ -72,7 +72,8 @@ enum class Status
   FAILURE
 };
 
-class TL_EXPORT VrtVector : public File
+class TL_EXPORT VrtVector
+  : public File
 {
 
 protected:
@@ -159,7 +160,8 @@ private:
 /*!
  * \brief Clase para la lectura/escritura de ficheros vectoriales con GDAL
  */
-class TL_EXPORT GdalVector : public VrtVector
+class TL_EXPORT GdalVector
+  : public VrtVector
 {
 
 protected:
@@ -195,7 +197,7 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~GdalVector();
+  virtual ~GdalVector() override;
 
   /*!
    * \brief Cierra el fichero vectorial
@@ -526,12 +528,12 @@ public:
   /*!
    * \brief Destructora
    */
-  ~VectorGraphics();
+  ~VectorGraphics() override;
 
   /*!
    * \brief Cierra el archivo
    */
-  void close();
+  void close() override;
 
   /*!
    * \brief Abre un fichero vectorial especificando las opciones del formato

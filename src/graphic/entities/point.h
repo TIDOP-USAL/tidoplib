@@ -56,7 +56,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~GPoint();
+  ~GPoint() override;
 
   /*!
    * \brief Operador de asignación
@@ -87,7 +87,7 @@ public:
   GPoint3D(double x, double y, double z);
   GPoint3D(const Point3<double> &pt);
   GPoint3D(const GPoint3D &pt);
-  ~GPoint3D();
+  ~GPoint3D() override;
 
   GPoint3D &operator = (const GPoint3D &gPoint);
 
@@ -105,7 +105,7 @@ public:
   GMultiPoint();
   GMultiPoint(const MultiPoint<geometry::Point<double>> &multiPoint);
   GMultiPoint(const GMultiPoint &gMultiPoint);
-  ~GMultiPoint();
+  ~GMultiPoint() override;
 
   GMultiPoint &operator = (const GMultiPoint &gMultiPoint);
 
@@ -123,7 +123,7 @@ public:
   GMultiPoint3D();
   GMultiPoint3D(const MultiPoint<geometry::Point3<double>> &multiPoint);
   GMultiPoint3D(const GMultiPoint3D &gMultiPoint);
-  ~GMultiPoint3D();
+  ~GMultiPoint3D() override;
 
   GMultiPoint3D &operator = (const GMultiPoint3D &gMultiPoint);
 

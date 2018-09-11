@@ -44,7 +44,7 @@ TiffOptions::~TiffOptions()
 
 const char *TiffOptions::getOptions()
 {
-  return NULL;
+  return nullptr;
 }
 
 
@@ -216,7 +216,7 @@ PngOptions::~PngOptions()
 
 const char *PngOptions::getOptions()
 {
-  return NULL;
+  return nullptr;
 }
 
 bool PngOptions::isEnableWorldFile() const
@@ -241,7 +241,7 @@ JpegOptions::~JpegOptions()
 
 const char *JpegOptions::getOptions()
 {
-  return NULL;
+  return nullptr;
 }
 
 bool JpegOptions::isEnableWorldFile() const
@@ -267,7 +267,7 @@ BmpOptions::~BmpOptions()
 
 const char *BmpOptions::getOptions()
 {
-  return NULL;
+  return nullptr;
 }
 
 bool BmpOptions::isEnableWorldFile() const

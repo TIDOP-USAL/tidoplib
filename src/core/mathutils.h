@@ -265,11 +265,11 @@ TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array
  * \param[out] c
  */
 TL_EXPORT /*void solveSVD(int nRows, int nCols, double *a, double *b, double *c);*/
-inline void solveSVD(int nRows, int nCols, double *a, double *b, double *c)
+inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
 {
 #ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
+  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
   //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
   Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));

@@ -122,7 +122,7 @@ public:
    */
   CanvasCV(const CanvasCV &canvas);
 
-  ~CanvasCV();
+  ~CanvasCV() override;
 
   int getWidth() const override;
   int getHeight() const override;

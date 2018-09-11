@@ -141,7 +141,7 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 {
   size_t n = lineString.size();
   std::vector<std::vector<cv::Point>> pts(1,std::vector<cv::Point>(n));
-  for (int i = 0; i < n; i++){
+  for (size_t i = 0; i < n; i++){
     pts[0][i] = lineString[i];
   }
 

@@ -17,7 +17,8 @@ namespace math
  * \brief Matriz de rotación
  */
 template<int dim, typename T = double>
-class RotationMatrix : public Matrix<dim, dim, T>
+class RotationMatrix
+  : public Matrix<dim, dim, T>
 {
   
 public:

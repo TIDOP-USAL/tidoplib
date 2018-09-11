@@ -46,7 +46,7 @@ public:
    */
   GPolygon(const GPolygon &gPolygon);
 
-  ~GPolygon();
+  ~GPolygon() override;
 
   /*!
    * \brief Operador de asignación
@@ -87,7 +87,7 @@ public:
    */
   GPolygon3D(const GPolygon3D &gPolygon3D);
 
-  ~GPolygon3D();
+  ~GPolygon3D() override;
 
   /*!
    * \brief Operador de asignación
@@ -129,7 +129,7 @@ public:
    */
   GMultiPolygon(const GMultiPolygon &gMultiPolygon);
 
-  ~GMultiPolygon();
+  ~GMultiPolygon() override;
 
   /*!
    * \brief Operador de asignación
@@ -171,7 +171,7 @@ public:
    */
   GMultiPolygon3D(const GMultiPolygon3D &gMultiPolygon3D);
 
-  ~GMultiPolygon3D();
+  ~GMultiPolygon3D() override;
 
   /*!
    * \brief Operador de asignación

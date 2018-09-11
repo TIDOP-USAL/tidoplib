@@ -377,16 +377,16 @@ BatchProcess::BatchProcess()
   : mStatus(Status::START),
     mProcessList(0),
     mListeners(0),
-    mCurrentProcess(0),
-    _thread()
+    _thread(),
+    mCurrentProcess(nullptr)
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
   : mStatus(Status::START),
     mProcessList(batchProcess.mProcessList),
     mListeners(batchProcess.mListeners),
-    mCurrentProcess(0),
-    _thread()
+    _thread(),
+    mCurrentProcess(nullptr)
 {
   for (auto process : mProcessList) {
     process->addListener(this);
@@ -396,8 +396,8 @@ BatchProcess::BatchProcess(const BatchProcess &batchProcess)
 BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
   : mStatus(Status::START),
     mProcessList(procList),
-    mCurrentProcess(0),
-    _thread()
+    _thread(),
+    mCurrentProcess(nullptr)
 {
   for (auto process : mProcessList) {
     process->addListener(this);
@@ -496,8 +496,8 @@ void BatchProcess::initCounter()
 BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
 {
   mStatus = Status::RUNNING;
-  if (progressBarTotal) progressBarTotal->init(0., (double)mProcessList.size());
-  for (const auto process : mProcessList) {
+  if (progressBarTotal) progressBarTotal->init(0., static_cast<double>(mProcessList.size()));
+  for (const auto &process : mProcessList) {
     if (mStatus == Status::PAUSING) {
       mStatus = Status::PAUSE;
       while (mStatus == Status::PAUSE);
@@ -522,11 +522,11 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
   mStatus = Status::RUNNING;
 
   auto f_aux = [&](TL::Progress *progress_bar_total, TL::Progress *progress_bar_partial) {
-    if (progress_bar_total) progress_bar_total->init(0., (double)mProcessList.size());
-    for (const auto process : mProcessList) {
+    if (progress_bar_total) progress_bar_total->init(0., static_cast<double>(mProcessList.size()));
+    for (const auto &process : mProcessList) {
       if (progress_bar_total) {
         // Se han añadido nuevos procesos asi que se actualiza
-        progress_bar_total->setMaximun((double)mProcessList.size());
+        progress_bar_total->setMaximun(static_cast<double>(mProcessList.size()));
         progress_bar_total->updateScale();
       }
       mCurrentProcess = process.get();

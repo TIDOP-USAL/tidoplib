@@ -132,27 +132,27 @@ public:
    * \brief Devuelve un iterador al inicio de la capa
    * \return Iterador al primer elemento
    */
-  virtual iterator begin();
+  iterator begin();
 
   /*!
    * \brief Devuelve un iterador constante al inicio de la capa
    * \return Iterador al primer elemento
    */
-  virtual const_iterator begin() const;
+  const_iterator begin() const;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  virtual iterator end();
+  iterator end();
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  virtual const_iterator end() const;
+  const_iterator end() const;
 
   /*!
    * \brief Agrega un elemento al final del contenedor

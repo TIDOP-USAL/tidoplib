@@ -36,10 +36,10 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb)
     int red, green, blue;
     for (int c = 0; c < cmyk.cols; c++) {
       cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
-      cmykToRgb(v_cmyk[0], v_cmyk[1], v_cmyk[2], v_cmyk[3], &red, &green, &blue);
-      _rgb.at<cv::Vec3b>(r, c)[0] = (uchar)blue;
-      _rgb.at<cv::Vec3b>(r, c)[1] = (uchar)green;
-      _rgb.at<cv::Vec3b>(r, c)[2] = (uchar)red;
+      cmykToRgb(static_cast<double>(v_cmyk[0]), static_cast<double>(v_cmyk[1]), static_cast<double>(v_cmyk[2]), static_cast<double>(v_cmyk[3]), &red, &green, &blue);
+      _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
+      _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
+      _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
     }
   });
 }
@@ -72,10 +72,10 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb)
     int red, green, blue;
     for (int c = 0; c < hsl.cols; c++) {
       cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
-      hslToRgb(v_hsl[0], v_hsl[1], v_hsl[2], &red, &green, &blue);
-      _rgb.at<cv::Vec3b>(r, c)[0] = (uchar)blue;
-      _rgb.at<cv::Vec3b>(r, c)[1] = (uchar)green;
-      _rgb.at<cv::Vec3b>(r, c)[2] = (uchar)red;
+      hslToRgb(static_cast<double>(v_hsl[0]), static_cast<double>(v_hsl[1]), static_cast<double>(v_hsl[2]), &red, &green, &blue);
+      _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
+      _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
+      _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
     }
   });
 }

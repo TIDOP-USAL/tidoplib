@@ -370,7 +370,7 @@ public:
    * \param[out] blue Componente azul
    * \param[out] alpha Canal alfa. Opcional
    */
-  void toRGB(int *red, int *green, int *blue, int *alpha = NULL) const;
+  void toRGB(int *red, int *green, int *blue, int *alpha = nullptr) const;
 
   /*!
    * \brief Convierte un color a luminancia

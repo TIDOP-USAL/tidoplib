@@ -494,7 +494,7 @@ void Path::parse(const std::string &path)
   //  bFile = true;
   //}
 
-  // Extensión
+  // Extensi?n
   //char ext[TL_MAX_EXT];
   //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
   //  mFileExtension = ext;
@@ -898,12 +898,12 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
 }
 
 
-///TODO: Añadir método para ejecutar código de forma asincrona
+///TODO: A?adir m?todo para ejecutar c?digo de forma asincrona
 // std::async
 // Concurrency::task<T> (PPL)
 
 /* ---------------------------------------------------------------------------------- */
-/*                                 Medición de tiempos                                */
+/*                                 Medici?n de tiempos                                */
 /* ---------------------------------------------------------------------------------- */
 
 std::string formatTimeToString(const std::string &templ)

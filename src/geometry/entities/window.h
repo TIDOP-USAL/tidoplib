@@ -124,7 +124,8 @@ Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
 * \brief The Window class
 */
 template<typename Point_t>
-class Window : public Entity
+class Window
+  : public Entity
 {
 public:
 

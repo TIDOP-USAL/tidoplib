@@ -26,7 +26,8 @@ namespace geometry
  * \brief The Window class
  */
 template<typename Point3_t>
-class Box : public Entity
+class Box
+  : public Entity
 {
 public:
 

@@ -1,4 +1,4 @@
-#include "core/console.h"
+﻿#include "core/console.h"
 
 #include "config_tl.h"
 
@@ -123,11 +123,11 @@ Console::Console(const Console &console, bool add) :
 #else
   mStream(console.mStream),
   /*mCommand(0),*/
-  mBold(console.mBold),
   mForeIntensity(console.mForeIntensity),
   mForeColor(console.mForeColor),
   mBackIntensity(console.mBackIntensity),
-  mBackColor(console.mBackColor)
+  mBackColor(console.mBackColor),
+  mBold(console.mBold)
 #endif
 {
 }
@@ -399,6 +399,357 @@ void Console::update()
 }
 
 
+
+
+/* ---------------------------------------------------------------------------------- */
+
+Argument::Argument(const string &name, const string &description)
+  : mName(name),
+    mDescription(description),
+    mShortName()
+{
+
+}
+
+Argument::Argument(const char &shortName, const string &description)
+  : mName(""),
+    mDescription(description),
+    mShortName(shortName)
+{
+}
+
+Argument::Argument(const string &name, const char &shortName, const string &description)
+  : mName(name),
+    mDescription(description),
+    mShortName(shortName)
+{
+}
+
+std::string Argument::description() const
+{
+  return mDescription;
+}
+
+void Argument::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+std::string Argument::name() const
+{
+  return mName;
+}
+
+void Argument::setName(const std::string &name)
+{
+  mName = name;
+}
+
+char Argument::shortName() const
+{
+  return mShortName;
+}
+
+void Argument::setShortName(const char &shortName)
+{
+  mShortName = shortName;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+Command::Command()
+  : mName(""),
+    mDescription("")
+{
+  init();
+}
+
+Command::Command(const Command &command)
+  : mName(command.mName),
+    mDescription(command.mDescription)
+{
+
+}
+
+Command::Command(const string &name, const string &description)
+  : mName(name),
+    mDescription(description)
+{
+  init();
+}
+
+//Command::Command(std::initializer_list<std::shared_ptr<Argument> > arguments)
+//{
+
+//}
+
+std::string Command::name() const
+{
+  return mName;
+}
+
+void Command::setName(const std::string &name)
+{
+  mName = name;
+}
+
+std::string Command::description() const
+{
+  return mDescription;
+}
+
+void Command::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+Command::Status Command::parse(int argc, const char * const argv[])
+{
+  /// TODO: argv se tendría que pasar a un std::vector.
+  /// Asi sería mas facil buscar y eliminar los parámetros ya cargados.
+
+  std::map<std::string, std::string> cmd_in;
+
+  for (int i = 1; i < argc; ++i) {
+    std::string arg_cmd_name = std::string(argv[i]);
+    std::size_t found_name = arg_cmd_name.find("--");
+    std::size_t found_short_name = arg_cmd_name.find("-");
+
+    if (found_name != std::string::npos) {
+      arg_cmd_name = (argv[i])+2;
+    } else if (found_short_name != std::string::npos) {
+      ///TODO: Si viene mas de un caracter es que se combinan varias opciones
+      arg_cmd_name = (argv[i])+1;
+      if (arg_cmd_name.size() > 1) {
+        for (size_t j = 0; j < arg_cmd_name.size(); j++){
+          std::string s = &arg_cmd_name[j];
+          cmd_in[s] = "true";
+        }
+        continue;
+      }
+    } else {
+      continue;
+    }
+
+    std::string value;
+
+    if(i+1 < argc) {
+      /// Se comprueba si el elemento siguiente es un valor
+      std::string arg_value = std::string(argv[i+1]);
+      std::size_t found_next_name = arg_value.find("--");
+      std::size_t found_next_short_name = arg_value.find("-");
+      if (found_next_name != std::string::npos && found_next_short_name != std::string::npos){
+        value = "true";
+      } else {
+        value = arg_value;
+        i++;
+      }
+    } else {
+      value = "true";
+    }
+
+    cmd_in[arg_cmd_name] = value;
+
+  }
+
+  std::map<std::string, std::string>::iterator it;
+  if (cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()){
+    return Command::Status::SHOW_HELP;
+  }
+
+  if (cmd_in.find("version") != cmd_in.end()){
+    return Command::Status::SHOW_VERSION;
+  }
+
+  if (cmd_in.find("licence") != cmd_in.end()){
+    return Command::Status::SHOW_LICENCE;
+  }
+
+
+  for (auto &arg : mCmdArgs) {
+    bool bOptional = !arg->isRequired();
+    bool bFind = false;
+
+    stringstream ss;
+    string short_name;
+    ss << arg->shortName();
+    ss >> short_name;
+    if (cmd_in.find(short_name) != cmd_in.end()){
+      arg->fromString(cmd_in.find(short_name)->second);
+      bFind = true;
+    } else if (cmd_in.find(arg->name()) != cmd_in.end()){
+      arg->fromString(cmd_in.find(arg->name())->second);
+      bFind = true;
+    } else {
+      bFind = false;
+    }
+
+    if (bFind == false && bOptional == false) {
+      msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
+      //printHelp();
+      return Command::Status::PARSE_ERROR;
+    }
+  }
+
+
+  /// Comandos por defecto
+//  for (int i = 1; i < argc; ++i) {
+//    if (argc > 1){
+//      if (strcmp(argv[i], "-h") == 0 ||
+//          strcmp(argv[i], "--help") == 0) {
+//        //showHelp();
+//        return Command::Status::SHOW_HELP;
+//      } else if (strcmp(argv[i], "--version") == 0){
+//        //showVersion();
+//        return Command::Status::SHOW_VERSION;
+//      } else if (strcmp(argv[i], "--licence") == 0){
+//        //showLicence();
+//        return Command::Status::SHOW_LICENCE;
+//      }
+//    }
+//  }
+
+
+//  for (auto &arg : mCmdArgs) {
+//    bool bOptional = !arg->isRequired();
+//    bool bFind = false;
+
+//    for (int i = 1; i < argc; ++i) {
+//      std::string arg_name = std::string(argv[i]);
+//      std::size_t found_name = arg_name.find("--");
+//      std::size_t found_short_name = arg_name.find("-");
+//      if (found_name != std::string::npos) {
+//        //std::size_t val_pos = arg_name.find("=", found);
+//        arg_name = (argv[i])+2;
+////        stringstream ss;
+////        string s;
+////        ss << arg->name();
+////        ss >> s;
+//        if (arg->name() == arg_name) {
+//          if(i+1 < argc) {
+//            std::string arg_value = std::string(argv[i+1]);
+//            arg->fromString(arg_value);
+//            i++;
+//            bFind = true;
+//            break;
+//          }
+//        }
+//      } else if (found_short_name != std::string::npos) {
+//        ///Puede venir mas de un argumento corto
+//        /// Por ahora sólo el primero
+//        std::string opt = arg_name.substr(found_short_name+1, found_short_name+2);
+//        stringstream ss;
+//        string s;
+//        ss << arg->shortName();
+//        ss >> s;
+//        if (s == opt) {
+//          ///TODO: buscar la cadena siguiente si no se usa [=] para párametros
+//          if(i+1 < argc) {
+//            std::string arg_value = std::string(argv[i+1]);
+//            std::size_t found_next_name = arg_name.find("--");
+//            std::size_t found_next_short_name = arg_name.find("-");
+//            if (found_next_name != std::string::npos && found_next_short_name != std::string::npos){
+//              arg->fromString("true");
+//            } else {
+//              arg->fromString(arg_value);
+//              i++;
+//            }
+//          } else{
+//            arg->fromString("true");
+//          }
+//          bFind = true;
+//          break;
+//        }
+//      }
+//    }
+
+//    if (bFind == false && bOptional == false) {
+//      msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
+//      //printHelp();
+//      return Command::Status::PARSE_ERROR;
+//    }
+//  }
+
+  return Command::Status::PARSE_SUCCESS;
+}
+
+Command::iterator Command::begin()
+{
+  return mCmdArgs.begin();
+}
+
+Command::const_iterator Command::begin() const
+{
+  return mCmdArgs.cbegin();
+}
+
+Command::iterator Command::end()
+{
+  return mCmdArgs.end();
+}
+
+Command::const_iterator Command::end() const
+{
+  return mCmdArgs.cend();
+}
+
+void Command::push_back(const std::shared_ptr<Argument> &arg)
+{
+  mCmdArgs.push_back(arg);
+}
+
+void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
+{
+  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
+}
+
+void Command::clear()
+{
+  mCmdArgs.clear();
+}
+
+bool Command::empty() const
+{
+  return mCmdArgs.empty();
+}
+
+Command &Command::operator=(const Command &command)
+{
+  if (this != &command) {
+    this->mName = command.mName;
+    this->mDescription = command.mDescription;
+    this->mCmdArgs = command.mCmdArgs;
+    this->mDefaultArgs = command.mDefaultArgs;
+  }
+  return (*this);
+}
+
+Command &Command::operator=(Command &&command) TL_NOEXCEPT
+{
+  if (this != &command) {
+    this->mName = command.mName;
+    this->mDescription = command.mDescription;
+    this->mCmdArgs = std::move(command.mCmdArgs);
+    this->mDefaultArgs = std::move(command.mDefaultArgs);
+  }
+  return (*this);
+}
+
+Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
+{
+  return mCmdArgs.erase(first, last);
+}
+
+size_t Command::size() const
+{
+  return mCmdArgs.size();
+}
+
+
+void Command::init()
+{
+
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -675,6 +1026,8 @@ bool CmdParser::hasOption(const std::string &option) const
   return false;
 }
 
+
+
 /* ---------------------------------------------------------------------------------- */
 
 //std::mutex mtx_prgs; //Mejor añadirlo a la clase como dato miembro estático
@@ -686,9 +1039,9 @@ Progress::Progress()
     mMaximun(100.), 
     mPercent(-1), 
     mMsg(""),
-    onProgress(0),
-    onInitialize(0),
-    onTerminate(0)
+    onProgress(nullptr),
+    onInitialize(nullptr),
+    onTerminate(nullptr)
 {
   updateScale();
 }
@@ -699,9 +1052,9 @@ Progress::Progress(double min, double max, const std::string &msg)
     mMaximun(max), 
     mPercent(-1), 
     mMsg(msg),
-    onProgress(0),
-    onInitialize(0),
-    onTerminate(0)
+    onProgress(nullptr),
+    onInitialize(nullptr),
+    onTerminate(nullptr)
 {
   updateScale();
 }
@@ -709,7 +1062,7 @@ Progress::Progress(double min, double max, const std::string &msg)
 bool Progress::operator()(double increment) 
 { 
   std::lock_guard<std::mutex> lck(Progress::sMutex);
-  if (mProgress == 0) initialize();
+  if (mProgress == 0.) initialize();
   mProgress += increment;
   int percent = TL_ROUND_TO_INT(mProgress * mScale);
   if (percent > mPercent) {
@@ -857,7 +1210,7 @@ void ProgressBar::updateProgress()
 
 void ProgressBar::terminate()
 {
-  if (onTerminate == NULL)
+  if (onTerminate == nullptr)
     printf("\n");
   else 
     (*onTerminate)();
@@ -879,7 +1232,7 @@ ProgressPercent::ProgressPercent(double min, double max, bool customConsole)
 
 void ProgressPercent::updateProgress() 
 {
-  if (onProgress == NULL) {
+  if (onProgress == nullptr) {
     cout << "\r";
     cout << " " << mPercent << "%  completed" << flush;
   } else
@@ -888,11 +1241,13 @@ void ProgressPercent::updateProgress()
 
 void ProgressPercent::terminate()
 {
-  if (onTerminate == NULL)
+  if (onTerminate == nullptr)
     printf("\n");
   else 
     (*onTerminate)();
 }
+
+
 
 /* ---------------------------------------------------------------------------------- */
 

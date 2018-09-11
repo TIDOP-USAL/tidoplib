@@ -21,12 +21,12 @@ set_property(TARGET tl_geom PROPERTY FOLDER "modules")
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_geom
           RUNTIME DESTINATION bin
-		  LIBRARY DESTINATION lib) 
+          LIBRARY DESTINATION lib) 
 else()
   install(TARGETS tl_geom 
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/geometry
+install(DIRECTORY . DESTINATION include/tidop/geometry
         FILES_MATCHING PATTERN "*.h")

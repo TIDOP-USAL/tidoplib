@@ -22,5 +22,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/math
+install(DIRECTORY . DESTINATION include/tidop/math
         FILES_MATCHING PATTERN "*.h")
