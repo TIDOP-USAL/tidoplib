@@ -559,7 +559,8 @@ public:
  * \brief Clase Binarize
  * Convierte una imagen a binaria
  */
-class TL_EXPORT Binarize : public ImgProcessing
+class TL_EXPORT Binarize 
+  : public ImgProcessing
 {
 private:
   
@@ -587,8 +588,7 @@ public:
    * \param maxVal Valor máximo
    * \param bInverse Binarización inversa
    */
-  Binarize(double thresh = 0., double maxVal = 0., bool bInverse = false)
-    : ImgProcessing(process_type::BINARIZE), mThresh(thresh), mMaxVal(maxVal), bInverse(bInverse) {}
+  Binarize(double thresh = 0., double maxVal = 0., bool bInverse = false);
 
   /*!
    * \brief Ejecuta el proceso
@@ -611,13 +611,13 @@ public:
    * \brief Binarización inversa
    * \param[in] inverse
    */
-  void setInverse(bool inverse = true) { bInverse = inverse; }
+  void setInverse(bool inverse = true);
 
   /*!
    * \brief GetInverse
    * \return
    */
-  bool getInverse() const { return bInverse; }
+  bool getInverse() const;
 
 };
 
@@ -627,7 +627,8 @@ public:
  * \brief Ecualización del histograma.
  * Mejora del contraste de la imagen mediante la ecualización del histograma
  */
-class TL_EXPORT EqualizeHistogram : public ImgProcessing
+class TL_EXPORT EqualizeHistogram 
+  : public ImgProcessing
 {
 
 public:
@@ -635,8 +636,7 @@ public:
   /*!
    * \brief Constructora de la clase
    */
-  EqualizeHistogram()
-    : ImgProcessing(process_type::EQUALIZE_HIST) {}
+  EqualizeHistogram();
 
   //~EqualizeHistogram();
 

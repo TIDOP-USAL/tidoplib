@@ -25,7 +25,7 @@ TL_DEFAULT_WARNINGS
 //#include "graphic_entities/color.h"
 #include "geometry/entities/point.h"
 #include "geometry/transform.h"
-#include "img/metadata.h"
+//#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
 #include "EDSDK.h"
@@ -909,7 +909,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~GeoRasterGraphics() {}
+  ~GeoRasterGraphics() override {}
 
   /*!
    * \brief Abre un fichero imagen especificando las opciones del formato

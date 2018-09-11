@@ -30,56 +30,57 @@ int main(int argc, char** argv)
 {
   const char *name = "Consola";
 
-  std::string file;
-  std::string param2;
-  bool bOpt;
-  int val = 10;
+  if (1){ /// Nueva gestión de argumentos por consola
+    std::string file;
+    bool bOpt;
+    int val;
+    double val_d = 0.5;
 
-  Command cmd(name, "Ejemplo de aplicación de consola");
-//  Option arg1({"opt", "o"}, "opción");
-  cmd.push_back(std::make_shared<Argument_<int, true>>("int", 'i', "integer", &val));
-  cmd.push_back(std::make_shared<Argument_<bool, false>>("bool", 'b', "boolean", &bOpt));
-  ///Command::Status err = cmd.parse(argc, argv);
-  std::array<char const*, 4> _argv{"" , "--int", "2", "-b"};
-  cmd.parse(_argv.size(), _argv.data());
+    Command cmd(name, "Ejemplo de aplicación de consola");
+    cmd.push_back(std::make_shared<ArgumentStringRequired>("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero.", &file));
+    cmd.push_back(std::make_shared<ArgumentIntegerRequired>("int", 'i', "Valor entero obligatorio", &val));
+    cmd.push_back(std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &bOpt));
+    cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble opcional. Si se omite se toma el valor por defecto", &val_d));
 
-//  double val_d = 2.5;
-//  std::shared_ptr<Argument> arg_double = std::make_shared<Argument_<double, false>>("double", 'd', "double", &val_d);
-//  arg_double->fromString("2.3");
-//  std::string type_name = arg_double->typeName();
-//  //  cmd.push_back(Option({"opt", "o"}, "opción"));
+    // Parseo de los argumentos y comprobación de los mismos
+    Command::Status status = cmd.parse(argc, argv);
+    if (status == Command::Status::PARSE_ERROR ) {
+      return 1;
+    } else if (status == Command::Status::SHOW_HELP) {
+      return 0;
+    } else if (status == Command::Status::SHOW_LICENCE) {
+      return 0;
+    } else if (status == Command::Status::SHOW_VERSION) {
+      return 0;
+    }
 
+  } else {
+    // Se definen los parámetros y opciones
+    CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
+    cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");
+    cmdParser.addParameter("param2", "Parámetro opcional", true, "valor_opcional");
+    cmdParser.addOption("opt", "Opción");
+    cmdParser.addParameterOption("list_opt", "opt1,opt2,opt3", "Listado de opciones. Elegir una de las disponibles");
 
+    // Parseo de los argumentos y comprobación de los mismos
+    CmdParser::Status status = cmdParser.parse(argc, argv);
+    if (status == CmdParser::Status::PARSE_ERROR ) {
+      return 1;
+    } else if (status == CmdParser::Status::PARSE_HELP) {
+      return 0;
+    }
 
+    // Recuperación de los valores de los argumentos
+    std::string file = cmdParser.getValue<std::string>("file");
 
-//  std::shared_ptr<ImgProcessingList> imgprolist = std::make_shared<ImgProcessingList>();
-//  imgprolist->add(std::make_shared<Normalize>(0., 255.));
-
-//  // Se definen los parámetros y opciones
-//  CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
-//  cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");
-//  cmdParser.addParameter("param2", "Parámetro opcional", true, "valor_opcional");
-//  cmdParser.addOption("opt", "Opción");
-//  cmdParser.addParameterOption("list_opt", "opt1,opt2,opt3", "Listado de opciones. Elegir una de las disponibles");
-  
-//  // Parseo de los argumentos y comprobación de los mismos
-//  CmdParser::Status status = cmdParser.parse(argc, argv);
-//  if (status == CmdParser::Status::PARSE_ERROR ) {
-//    return 1;
-//  } else if (status == CmdParser::Status::PARSE_HELP) {
-//    return 0;
-//  }
-
-//  // Recuperación de los valores de los argumentos
-//  std::string file = cmdParser.getValue<std::string>("file");
-
-//  // Este parametro tiene un valor por defecto con lo cual puede ser omitido
-//  std::string param2 = cmdParser.getValue<std::string>("param2");
-//  // Se comprueba si existe la opción
-//  bool bOpt = cmdParser.hasOption("opt");
-//  // Devuelve la opción. Se puede utilizar un enum o un int
-//  options opt = cmdParser.getParameterOptionIndex<options>("list_opt");
-//  int opt_i = cmdParser.getParameterOptionIndex<int>("list_opt");
+    // Este parametro tiene un valor por defecto con lo cual puede ser omitido
+    std::string param2 = cmdParser.getValue<std::string>("param2");
+    // Se comprueba si existe la opción
+    bool bOpt = cmdParser.hasOption("opt");
+    // Devuelve la opción. Se puede utilizar un enum o un int
+    options opt = cmdParser.getParameterOptionIndex<options>("list_opt");
+    int opt_i = cmdParser.getParameterOptionIndex<int>("list_opt");
+  }
 
   // Consola
   Console console;
@@ -87,7 +88,7 @@ int main(int argc, char** argv)
   //console.setConsoleUnicode();
   //console.setFontHeight(24);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
-  
+
   // Se muestra un mensaje por consola
   msgInfo("prueba");
   msgWarning("Warning");

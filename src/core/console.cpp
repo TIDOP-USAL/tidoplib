@@ -1,4 +1,4 @@
-﻿#include "core/console.h"
+#include "core/console.h"
 
 #include "config_tl.h"
 
@@ -554,14 +554,17 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
   std::map<std::string, std::string>::iterator it;
   if (cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()){
+    showHelp();
     return Command::Status::SHOW_HELP;
   }
 
   if (cmd_in.find("version") != cmd_in.end()){
+    showVersion();
     return Command::Status::SHOW_VERSION;
   }
 
   if (cmd_in.find("licence") != cmd_in.end()){
+    showLicence();
     return Command::Status::SHOW_LICENCE;
   }
 
@@ -738,6 +741,46 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
 Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
 {
   return mCmdArgs.erase(first, last);
+}
+
+void Command::showHelp() const
+{
+  Console console(Console::Mode::OUTPUT, false);
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+
+  printf("%s: %s \n\n", mName.c_str(), mDescription.c_str());
+
+  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
+  console.setFontBold(false);
+
+  printf_s("\nUse:\n\n");
+  printf_s("%s", mName.c_str());
+  for (auto arg : mCmdArgs) {
+    printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
+  }
+  printf_s("\n\n");
+
+  printf("Listado de parámetros: \n\n");
+
+  for (auto arg : mCmdArgs) {
+     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
+  }
+
+}
+
+void Command::showVersion() const
+{
+  Console console(Console::Mode::OUTPUT, false);
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+}
+
+void Command::showLicence() const
+{
+  Console console(Console::Mode::OUTPUT, false);
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
 }
 
 size_t Command::size() const
@@ -980,7 +1023,7 @@ void CmdParser::printHelp()
   console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
   console.setFontBold(false);
 
-  printf("Listado de parámetros: \n\n", mCmdName.c_str(), mCmdDescription.c_str());
+  printf("Listado de parámetros: \n\n");
 
   //TODO: Añadir automaticamente el valor por defecto
   for (auto arg : mCmdArgs) {

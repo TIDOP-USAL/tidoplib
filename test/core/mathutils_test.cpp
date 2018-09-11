@@ -16,6 +16,22 @@ using namespace TL::geometry;
 /*                                    Vectores                                        */
 /* ---------------------------------------------------------------------------------- */
 
+//TEST(vector2D, Test)
+//{
+//  PointI v1 = vector2D(PointI(150, 100), PointI(10, 10));
+//
+//  EXPECT_EQ(140, v1.x);
+//  EXPECT_EQ(90, v1.y);
+//}
+//
+//TEST(vector3D, Test)
+//{
+//  Point3I v1 = vector3D(Point3I(150, 100, 20), Point3I(10, 10, 30));
+//
+//  EXPECT_EQ(140, v1.x);
+//  EXPECT_EQ(90, v1.y);
+//  EXPECT_EQ(-10, v1.z);
+//}
 
 #ifdef HAVE_OPENCV
 TEST(vectorAngle, TestCvPoint)
@@ -147,46 +163,46 @@ TEST(threePointsPlane, testPointDouble)
 
 //Datos para los test
 
-class VectorTest : public testing::Test
-{
-public:
-  
-  std::vector<double> decimalDegrees;
-  std::vector<std::vector<int>> dms;
-  std::vector<double> radians;
-  std::vector<double> gradians;
-
-  virtual void SetUp()
-  {
-    decimalDegrees.push_back(0.);
-    decimalDegrees.push_back(0.5);
-    decimalDegrees.push_back(135.5742);
-    decimalDegrees.push_back(86.9997);
-    decimalDegrees.push_back(-269.385);
-    
-    dms.push_back({ 0, 0, 0 });
-    dms.push_back({ 0, 30, 0 });
-    dms.push_back({ 135, 34, 27 });
-    dms.push_back({ 86, 59, 59 });
-    dms.push_back({ -269, 23, 6 });
-    
-    radians.push_back(0.);
-    radians.push_back(0.00872664626);
-    radians.push_back(2.3662161708);
-    radians.push_back(1.518431213);
-    radians.push_back(-4.7016552055);
-
-    gradians.push_back(0.);
-    gradians.push_back(0.555556);
-    gradians.push_back(150.63800);
-    gradians.push_back(96.666335);
-    gradians.push_back(-299.3166718);
-  }
- 
-  virtual void TearDown()
-  {
-  }
-};
+//class VectorTest : public testing::Test
+//{
+//public:
+//  
+//  std::vector<double> decimalDegrees;
+//  std::vector<std::vector<int>> dms;
+//  std::vector<double> radians;
+//  std::vector<double> gradians;
+//
+//  virtual void SetUp()
+//  {
+//    decimalDegrees.push_back(0.);
+//    decimalDegrees.push_back(0.5);
+//    decimalDegrees.push_back(135.5742);
+//    decimalDegrees.push_back(86.9997);
+//    decimalDegrees.push_back(-269.385);
+//    
+//    dms.push_back({ 0, 0, 0 });
+//    dms.push_back({ 0, 30, 0 });
+//    dms.push_back({ 135, 34, 27 });
+//    dms.push_back({ 86, 59, 59 });
+//    dms.push_back({ -269, 23, 6 });
+//    
+//    radians.push_back(0.);
+//    radians.push_back(0.00872664626);
+//    radians.push_back(2.3662161708);
+//    radians.push_back(1.518431213);
+//    radians.push_back(-4.7016552055);
+//
+//    gradians.push_back(0.);
+//    gradians.push_back(0.555556);
+//    gradians.push_back(150.63800);
+//    gradians.push_back(96.666335);
+//    gradians.push_back(-299.3166718);
+//  }
+// 
+//  virtual void TearDown()
+//  {
+//  }
+//};
 
 //std::vector<double> decimalDegrees = { 0., 0.5, 135.5742, 86.9997, -269.385 };
 //std::vector<std::vector<int>> dms{ { 0, 0, 0 }, { 0, 30, 0 }, { 135, 34, 27 }, { 86, 59, 59 }, { -269, 23, 6 } };

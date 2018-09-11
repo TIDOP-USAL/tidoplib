@@ -1,3 +1,4 @@
+
 # Ejemplos módulo Core
 
 if(BUILD_TL_CORE)
@@ -23,7 +24,7 @@ if(BUILD_TL_CORE)
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
+    target_link_libraries(${the_target} tl_core ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
@@ -42,10 +43,12 @@ if(BUILD_TL_CORE)
 
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
-        set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+        set_target_properties(${the_target} PROPERTIES 
+                              LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
       install(TARGETS ${the_target}
-              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" COMPONENT samples)
+              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" 
+              COMPONENT samples)
     endif()
   ENDMACRO()
 

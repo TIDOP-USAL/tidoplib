@@ -21,7 +21,7 @@ if(BUILD_TL_CORE)
     add_subdirectory(img_process)
   endif()
   
-  if(BUILD_TL_GRAPHIC)
+  if(BUILD_TL_GRAPHIC AND BUILD_TL_GEOMETRY)
     add_subdirectory(graphic)
   endif()
   

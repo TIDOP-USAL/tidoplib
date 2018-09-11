@@ -117,7 +117,9 @@ public:
  * El algoritmo busca cual de dos pixeles es el que esta mas cerca según la
  * trayectoria de la línea.
  */
-class TL_EXPORT BresenhamLine : public LineAlgorithms, public std::iterator<std::bidirectional_iterator_tag, int>
+class TL_EXPORT BresenhamLine 
+  : public LineAlgorithms, 
+    public std::iterator<std::bidirectional_iterator_tag, int>
 {
 private:
 
@@ -141,7 +143,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~BresenhamLine() {}
+  ~BresenhamLine() override {}
 
   /*!
    * \brief Punto actual

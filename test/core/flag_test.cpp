@@ -87,7 +87,7 @@ TEST(EnumFlags, Assign)
   EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag03));
 }
 
-TEST(EnumFlags, Clear) 
+TEST(EnumFlags, Clear)
 {
 
   EnumFlags<ePrueba2> flag(ePrueba2::flag02 | ePrueba2::flag03);
@@ -120,7 +120,7 @@ TEST(EnumFlags, flagOnOff)
   EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
 }
 
-TEST(EnumFlags, switchFlag) 
+TEST(EnumFlags, switchFlag)
 {
 
   EnumFlags<ePrueba3> flag2(ePrueba3::flag15 | ePrueba3::flag06 );
@@ -144,7 +144,7 @@ TEST(EnumFlags, switchFlag)
 
 
 // Constructor Flags
-TEST(Flags, Constructor) 
+TEST(Flags, Constructor)
 {
 
   // Constructor vacio
@@ -205,7 +205,7 @@ TEST(Flags, Clear)
 
 }
 
-TEST(Flags, flagOnOff) 
+TEST(Flags, flagOnOff)
 {
 
   Flags_64 flag2;
@@ -225,7 +225,7 @@ TEST(Flags, flagOnOff)
   EXPECT_TRUE(flag2.isActive(3));
 }
 
-TEST(Flags, switchFlag)
+TEST(Flags, switchFlag) 
 {
 
   Flags_16 flag_16;

@@ -40,7 +40,8 @@ namespace geometry
  * \endcode
  */
 template<typename T>
-class Point : public Entity
+class Point 
+  : public Entity
 {
 
 public:
@@ -369,7 +370,8 @@ Point<T1> operator / (const Point<T1> &pt, T2 b)
  * \endcode
  */
 template<typename T>
-class Point3 : public Entity
+class Point3 
+  : public Entity
 {
 
 public:
@@ -973,8 +975,8 @@ template<typename Point_t> inline
 MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
 {
   if (this != &multiPoint) {
-    Entity::operator = (multiPoint);
-    Entities3D<Point_t>::operator = (multiPoint);
+    this->mEntityType = multiPoint.mEntityType;
+    this->mEntities = multiPoint.mEntities;
   }
   return *this;
 }

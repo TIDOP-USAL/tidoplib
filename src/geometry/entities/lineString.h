@@ -3,10 +3,6 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif 
-
 #include "core/defs.h"
 #include "core/utils.h"
 #include "core/mathutils.h"
@@ -615,20 +611,13 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineS
   return *this;
 }
 
-TL_TODO("Terminar MultiLineString3D<Point3_t>::getBox()")
 template<typename Point3_t> inline
 Box<Point3_t> MultiLineString3D<Point3_t>::getBox() const
 {
   Box<Point3_t> box;
-  //for (size_t i = 0; i < this->mEntities.size(); i++) {
-  //  Box<Point3_t> box2 = this->mEntities[i].getBox();
-  //  if (box.pt1.x > box2.pt1.x) box.pt1.x = box2.pt1.x;
-  //  if (box.pt1.y > box2.pt1.y) box.pt1.y = box2.pt1.y;
-  //  if (box.pt1.z > box2.pt1.z) box.pt1.z = box2.pt1.z;
-  //  if (box.pt2.x < box2.pt2.x) box.pt2.x = box2.pt2.x;
-  //  if (box.pt2.y < box2.pt2.y) box.pt2.y = box2.pt2.y;
-  //  if (box.pt2.z < box2.pt2.z) box.pt2.z = box2.pt2.z;
-  //}
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    box = joinBox(box, this->mEntities[i].getBox());
+  }
   return box;
 }
 

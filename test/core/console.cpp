@@ -47,6 +47,7 @@ public:
     val_f = 0.567f;
     arg_float = std::make_shared<Argument_<float, false>>("float", 'f', "coma flotante", &val_f);
 
+    arg_string = std::make_shared<ArgumentStringOptional>("string", 's', "Cadena de texto", &val_string);
 ////    arg2 = new Parameter({"par","p"}, "Parámetro");
 ////    arg3 = new ParameterList({"par_list", "l"}, "Lista de párametros", {"v1", "v2", "v3"}, 1);
   }
@@ -66,6 +67,9 @@ public:
 
   float val_f;
   std::shared_ptr<Argument> arg_float;
+  std::string val_string;
+  std::shared_ptr<Argument> arg_string;
+
 };
 
 
@@ -98,6 +102,7 @@ TEST_F(ArgumentTest, isRequired)
 {
   EXPECT_EQ(true, arg_int->isRequired());
   EXPECT_EQ(false, arg_double->isRequired());
+  EXPECT_EQ(false, arg_string->isRequired());
 }
 
 TEST(ArgumentInt, setGetValue)
@@ -115,6 +120,7 @@ TEST_F(ArgumentTest, typeName)
   EXPECT_EQ("int", arg_int->typeName());
   EXPECT_EQ("double", arg_double->typeName());
   EXPECT_EQ("float", arg_float->typeName());
+  EXPECT_EQ("std::string", arg_string->typeName());
 }
 
 TEST_F(ArgumentTest, fromString)
@@ -134,13 +140,6 @@ TEST_F(ArgumentTest, toString)
   arg_int->fromString("2");
   EXPECT_EQ("2", arg_int->toString());
 }
-
-//TEST_F(ArgumentTest, type)
-//{
-//  EXPECT_EQ(Argument::Type::OPTION, arg1->type());
-//  EXPECT_EQ(Argument::Type::PARAMETER, arg2->type());
-//  EXPECT_EQ(Argument::Type::PARAMETER_LIST, arg3->type());
-//}
 
 class CommandTest : public testing::Test
 {

@@ -33,9 +33,6 @@ namespace TL
  *  \{
  */
 
-//TODO: ¿Debería ser un singleton???
-// Hay ciertos casos que interesa que no sea un singleton para que en la destructora recupere las
-// opciones por defecto. Siempre se podria obligar a llamar a la función reset()
 
 /*!
  * \brief Clase para gestionar la configuración de la ventana de comandos
@@ -54,7 +51,8 @@ public:
   /*!
    * \brief Valores de intensidad de color
    */
-  enum class Intensity : int8_t{
+  enum class Intensity : int8_t
+  {
     NORMAL,  /*!< Normal */
     BRIGHT   /*!< Brillante */
   };
@@ -62,7 +60,8 @@ public:
   /*!
    * \brief Tipos de color de fondo y caracter.
    */
-  enum class Color : int8_t {
+  enum class Color : int8_t 
+  {
     BLACK,    /*!< Negro */
     RED,      /*!< Rojo */
     GREEN,    /*!< Verde */
@@ -76,7 +75,8 @@ public:
   /*!
    * \brief Modo de consola
    */
-  enum class Mode : int8_t {
+  enum class Mode : int8_t 
+  {
     INPUT,          /*!< Consola en modo entrada */
     OUTPUT,         /*!< Consola en modo salida */
     OUTPUT_ERROR    /*!< Consola en modo salida de errores */
@@ -460,6 +460,17 @@ std::string Argument_<T, required>::typeName() const
   return type_name;
 }
 
+template<> inline
+std::string Argument_<std::string, true>::typeName() const
+{
+  return "std::string";
+}
+template<> inline
+std::string Argument_<std::string, false>::typeName() const
+{
+  return "std::string";
+}
+
 template<typename T, bool required> inline
 bool Argument_<T, required>::isRequired() const
 {
@@ -756,6 +767,21 @@ public:
    * \brief Elimina el intervalo
    */
   iterator erase(const_iterator first, const_iterator last);
+
+  /*!
+   * \brief Muestra la ayuda en la consola
+   */
+  void showHelp() const;
+
+  /*!
+   * \brief Muestra la versión en la consola
+   */
+  void showVersion() const;
+
+  /*!
+   * \brief Muestra la licencia en la consola
+   */
+  void showLicence() const;
 
 protected:
 
@@ -1403,7 +1429,8 @@ protected:
 /*!
  * \brief Barra de progreso de consola
  */
-class TL_EXPORT ProgressBar : public Progress
+class TL_EXPORT ProgressBar 
+  : public Progress
 {
 private:
 
@@ -1460,7 +1487,8 @@ private:
 /*!
  * \brief Progreso en porcentaje
  */
-class TL_EXPORT ProgressPercent : public Progress
+class TL_EXPORT ProgressPercent 
+  : public Progress
 {
 private:
 

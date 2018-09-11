@@ -152,7 +152,8 @@ ColorConversion::ColorConversion(Model modelIn, Model modelOut)
 {
 }
 
-
+TL_TODO("Crear una clase para cada conversión (Factoria de clases) que herede de ColorConversion")
+TL_TODO("Crear una clase para crear las factorias")
 ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;

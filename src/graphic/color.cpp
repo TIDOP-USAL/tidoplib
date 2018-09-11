@@ -470,6 +470,17 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
   *b = blue / sum;
 }
 
+
+bool operator == (const Color &color1, const Color &color2)
+{
+  return static_cast<int>(color1) == static_cast<int>(color2);
+}
+
+bool operator != (const Color &color1, const Color &color2)
+{
+  return static_cast<int>(color1) != static_cast<int>(color2);
+}
+
 namespace graph
 {
 
@@ -516,9 +527,9 @@ Color::Color(const Color::NAME &color)
   mColor = static_cast<uint32_t>(color);
 }
 
-Color::Color(const IColorModel &colorModel)
+Color::Color(const IColorModel *colorModel)
 {
-  *this = colorModel.toColor();
+  *this = colorModel->toColor();
 }
 
 Color::~Color()

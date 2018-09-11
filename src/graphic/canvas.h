@@ -35,9 +35,9 @@ public:
   /*!
    * \brief Constructora canvas
    */
-  Canvas();
+  Canvas(){}
 
-  virtual ~Canvas();
+  virtual ~Canvas(){}
 
   /*!
    * \brief Ancho del canvas

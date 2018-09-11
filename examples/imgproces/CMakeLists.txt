@@ -1,5 +1,5 @@
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
+if(BUILD_TL_CORE AND BUILD_TL_IMG_PROCESS)
 
   project(examples)
 
@@ -10,8 +10,7 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
   endif()
 
   
-
-  # -----------------------------------------------------------------------------
+ # -----------------------------------------------------------------------------
 
   MACRO(DEFINE_EXAMPLE name srcs)
 
@@ -20,28 +19,26 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
 	
     set(sample_kind example)
     set(sample_KIND EXAMPLE)
+    #set(sample_subfolder "cpp")
 
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_geospatial tl_img ${OpenCV_LIBS})
-    if(HAVE_GDAL)
-	    target_link_libraries(${the_target} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
-    endif(HAVE_GDAL)
+    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejemplo a la carpeta 'examples'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/geospatial")
+    # Añade el proyecto de ejmplo a la carpeta 'examples'
+    set_property(TARGET ${the_target} PROPERTY FOLDER "examples/imgprocess")
 
     set_target_properties(${the_target} PROPERTIES
       OUTPUT_NAME "cpp-${sample_kind}-${name}"
       PROJECT_LABEL "(${sample_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "examples/geospatial")
+      set_target_properties(${the_target} PROPERTIES FOLDER "examples/imgprocess")
     endif()
 
     if(WIN32)
