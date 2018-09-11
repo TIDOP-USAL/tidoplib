@@ -12,8 +12,7 @@
 namespace TL
 {
 
-/*! \defgroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -55,8 +54,15 @@ public:
 
   /*!
    * \brief Constructor de copia
+   * \param[in] box Objeto que se copia
    */
   Box(const Box &box);
+    
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] box Objeto que se mueve
+   */
+  Box(Box &&box) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor
@@ -88,10 +94,17 @@ public:
 
   /*!
    * \brief Sobrecarga del operador  de asignación
-   * \param[in] box Bbox que se asigna
+   * \param[in] box Box que se asigna
    * \return Referencia al Bbox
    */
   Box &operator = (const Box &box);
+
+  /*!
+   * \brief Sobrecarga del operador de asignación de movimiento
+   * \param[in] box Box que se mueve
+   * \return Referencia al Bbox
+   */
+  Box &operator = (Box &&box) TL_NOEXCEPT;
 
   /*!
    * \brief Sobrecarga del operador 'igual que'
@@ -168,7 +181,16 @@ Box<Point3_t>::Box()
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Box &box) 
   : Entity(Entity::type::BOX), 
-    pt1(box.pt1), pt2(box.pt2) 
+    pt1(box.pt1), 
+    pt2(box.pt2) 
+{
+}
+
+template<typename Point3_t> inline
+Box<Point3_t>::Box(Box &&box) 
+  : Entity(std::forward<Entity>(box)), 
+    pt1(std::move(box.pt1)), 
+    pt2(std::move(box.pt2)) 
 {
 }
 
@@ -188,7 +210,7 @@ template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz) 
   : Entity(Entity::type::BOX)
 { 
-  if (typeid(typename Point3_t::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point3_t::value_type>::value) {
     int sxx_2 = TL_ROUND_TO_INT(sxx / 2);
     int szy_2 = TL_ROUND_TO_INT(szy / 2);
     int szz_2 = TL_ROUND_TO_INT(szz / 2);
@@ -210,7 +232,7 @@ template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sz) 
   : Entity(Entity::type::BOX) 
 {
-  if (typeid(typename Point3_t::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point3_t::value_type>::value) {
     int sz_2 = TL_ROUND_TO_INT(sz / 2);
     int dxyz = static_cast<int>(sz) % 2;
     pt1 = Point3_t(_pt.x - sz_2, _pt.y - sz_2, _pt.z - sz_2);
@@ -229,9 +251,20 @@ template<typename Point3_t> inline
 Box<Point3_t> &Box<Point3_t>::operator = (const Box &box)
 {
   if (this != &box) {
+    this->mEntityType = box.mEntityType;
     this->pt1 = box.pt1;
     this->pt2 = box.pt2;
-    this->mEntityType = box.mEntityType;
+  }
+  return *this;
+}
+
+template<typename Point3_t> inline
+Box<Point3_t> &Box<Point3_t>::operator = (Box &&box)
+{
+  if (this != &box) {
+    this->mEntityType = std::move(box.mEntityType);
+    this->pt1 = std::move(box.pt1);
+    this->pt2 = std::move(box.pt2);
   }
   return *this;
 }
@@ -245,23 +278,23 @@ bool Box<Point3_t>::operator == (const Box &box) const
 template<typename Point3_t> template<typename Point3_t2> inline
 Box<Point3_t>::operator Box<Point3_t2>() const
 {
-  if (typeid(typename Point3_t2::value_type) == typeid(int)) {
-    Point3_t2 _pt1(TL_ROUND_TO_INT(pt1.x), TL_ROUND_TO_INT(pt1.y), TL_ROUND_TO_INT(pt1.z));
-    Point3_t2 _pt2(TL_ROUND_TO_INT(pt2.x), TL_ROUND_TO_INT(pt2.y), TL_ROUND_TO_INT(pt2.z));
-    return Box<Point3_t2>(_pt1, _pt2);
-  } else {
-    Point3_t2 _pt1 = pt1;
-    Point3_t2 _pt2 = pt2;
-    return Box<Point3_t2>(_pt1, _pt2);
-  }
+  //if (std::is_integral<typename Point3_t2::value_type>::value) {
+  //  Point3_t2 _pt1(TL_ROUND_TO_INT(pt1.x), TL_ROUND_TO_INT(pt1.y), TL_ROUND_TO_INT(pt1.z));
+  //  Point3_t2 _pt2(TL_ROUND_TO_INT(pt2.x), TL_ROUND_TO_INT(pt2.y), TL_ROUND_TO_INT(pt2.z));
+  //  return Box<Point3_t2>(_pt1, _pt2);
+  //} else {
+  //  Point3_t2 _pt1 = pt1;
+  //  Point3_t2 _pt2 = pt2;
+  //  return Box<Point3_t2>(_pt1, _pt2);
+  //}
+  return Box<Point3_t2>(static_cast<Point3_t2>(pt1), static_cast<Point3_t2>(pt2));
 }
 
 TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename Point3_t> inline
 Point3_t Box<Point3_t>::getCenter() const
 {
-
-  if (typeid(typename Point3_t::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point3_t::value_type>::value) {
     return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2), 
                     TL_ROUND_TO_INT((pt1.y + pt2.y) / 2), 
                     TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));

@@ -64,14 +64,15 @@ if (BUILD_SHARED_LIBS)
 endif (BUILD_SHARED_LIBS)
 
 # Activación desactivación de los diferentes modulos de la libreria
-OPTION (BUILD_TL_CORE        "Include core module in TidopLib build"       ON)
-OPTION (BUILD_TL_MATH        "Include math module in TidopLib build"       ON)
-OPTION (BUILD_TL_GEOMETRY    "Include geom module in TidopLib build"       ON)
-OPTION (BUILD_TL_IMG         "Include img module in TidopLib build"        ON)
-OPTION (BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON)
-OPTION (BUILD_TL_GRAPHIC     "Include graphic module in TidopLib build"    ON)
-OPTION (BUILD_TL_GEOSPATIAL  "Include geospatial module in TidopLib build" ON)
-OPTION (BUILD_TL_VECT        "Include vect module in lib3kl build"       ON)
+OPTION (BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
+OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON )
+OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
+OPTION (BUILD_TL_IMG          "Include img module in TidopLib build"          ON )
+OPTION (BUILD_TL_IMG_PROCESS  "Include imgprocess module in TidopLib build"   ON )
+OPTION (BUILD_TL_GRAPHIC      "Include graphic module in TidopLib build"      ON )
+OPTION (BUILD_TL_GEOSPATIAL   "Include geospatial module in TidopLib build"   ON )
+OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON )
+OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF)
 
 # Activación desactivación de otros componentes de la libreria
 OPTION (BUILD_TEST            "Include test"          OFF)
@@ -216,6 +217,8 @@ if(WITH_EDSDK)
 		include_directories(${EDSDK_INCLUDE_DIR})
     endif()
 endif()
+
+
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
 

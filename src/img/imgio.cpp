@@ -58,12 +58,16 @@ void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset)
 /* ---------------------------------------------------------------------------------- */
 
 std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
+std::mutex RegisterGdal::sMutex;
 
 void RegisterGdal::init()
 {
-  if (sRegisterGdal.get() == 0) {
-    sRegisterGdal.reset(new RegisterGdal());
-    GDALAllRegister();
+  if (sRegisterGdal.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
+    if (sRegisterGdal.get() == nullptr) {
+      sRegisterGdal.reset(new RegisterGdal());
+      GDALAllRegister();
+    }
   }
 }
 
@@ -570,6 +574,11 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
   }
   return( format );*/
 }
+
+//ImgMetadata GdalRaster::metadata() const
+//{
+//
+//}
 
 std::vector<int> GdalRaster::panBandMap()
 {
@@ -1355,6 +1364,11 @@ int RasterGraphics::getColorDepth() const
 {
   return mColorDepth;
 }
+
+//ImgMetadata RasterGraphics::metadata() const
+//{
+//  return mImageFormat->metadata();
+//}
 
 void RasterGraphics::update()
 {

@@ -191,7 +191,8 @@ TEST(Flags, Assign)
   EXPECT_FALSE(flag2.isActive(2));
 }
 
-TEST(Flags, Clear) {
+TEST(Flags, Clear)
+{
 
   Flags_32 flag;
   flag.flagOn(2);

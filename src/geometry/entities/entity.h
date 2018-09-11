@@ -13,6 +13,7 @@
 #endif
 
 #include "core/defs.h"
+#include "core/flags.h"
 
 namespace TL
 {
@@ -48,25 +49,63 @@ public:
   /*!
    * \brief tipos de entidades geométricas
    */
-  enum class type {
-    POINT_2D,                   /*!< Punto 2D */
-    POINT_3D,                   /*!< Punto 3D */
-    LINESTRING_2D,              /*!< Polilinea 2D */
-    LINESTRING_3D,              /*!< Polilinea 3D */
-    POLYGON_2D,                 /*!< Poligono 2D */
-    POLYGON_3D,                 /*!< Poligono 3D */
-    SEGMENT_2D,                 /*!< Segmento 2D */
-    SEGMENT_3D,                 /*!< Segmento 3D */
-    WINDOW,                     /*!< Ventana */
-    BOX,                        /*!< Caja */
-    MULTIPOINT_2D,              /*!< Multipunto 2D */
-    MULTIPOINT_3D,              /*!< Multipunto 3D */
-    MULTILINE_2D,               /*!< Multi-línea 2D */
-    MULTILINE_3D,               /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D,            /*!< Multi-polígono 2D */
-    MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
-    CIRCLE,                     /*!< Circulo */
-    ELLIPSE                     /*!< Elipse */
+  //enum class type {
+  //  POINT_2D,                   /*!< Punto 2D */
+  //  POINT_3D,                   /*!< Punto 3D */
+  //  LINESTRING_2D,              /*!< Polilinea 2D */
+  //  LINESTRING_3D,              /*!< Polilinea 3D */
+  //  POLYGON_2D,                 /*!< Poligono 2D */
+  //  POLYGON_3D,                 /*!< Poligono 3D */
+  //  SEGMENT_2D,                 /*!< Segmento 2D */
+  //  SEGMENT_3D,                 /*!< Segmento 3D */
+  //  WINDOW,                     /*!< Ventana */
+  //  BOX,                        /*!< Caja */
+  //  MULTIPOINT_2D,              /*!< Multipunto 2D */
+  //  MULTIPOINT_3D,              /*!< Multipunto 3D */
+  //  MULTILINE_2D,               /*!< Multi-línea 2D */
+  //  MULTILINE_3D,               /*!< Multi-línea 3D */
+  //  MULTIPOLYGON_2D,            /*!< Multi-polígono 2D */
+  //  MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
+  //  CIRCLE,                     /*!< Circulo */
+  //  ELLIPSE                     /*!< Elipse */
+  //};
+    
+  enum class type 
+  {
+    /* Dimensión */
+    GEOM2D     = (0 << 0), 
+    GEOM3D     = (1 << 0), 
+    GEOM4D     = (1 << 1), 
+
+    /* multientidad */
+    MULTI_ENTITY  = (1 << 2), 
+
+    /* Entidades 2D */
+    POINT_2D      = (1 << 3),              /*!< Punto */
+    LINESTRING_2D = (1 << 4),              /*!< Polilinea */
+    POLYGON_2D    = (1 << 5),              /*!< Poligono */
+    SEGMENT_2D    = (1 << 6),              /*!< Segmento */
+    CIRCLE        = (1 << 7),              /*!< Circulo */
+    ELLIPSE       = (1 << 8),              /*!< Elipse */    
+
+    /* Entidades 3D*/
+    POINT_3D = POINT_2D | GEOM3D,            /*!< Punto 3D */
+    LINESTRING_3D = LINESTRING_2D | GEOM3D,  /*!< Polilinea 3D */
+    POLYGON_3D = POLYGON_2D | GEOM3D,        /*!< Poligono 3D */
+    SEGMENT_3D = SEGMENT_2D | GEOM3D,        /*!< Segmento 3D */
+
+    /* multientidades */
+    MULTIPOINT_2D = POINT_2D | MULTI_ENTITY,         /*!< Multipunto 2D */
+    MULTIPOINT_3D = POINT_3D | MULTI_ENTITY,      /*!< Multipunto 3D */
+    MULTILINE_2D = LINESTRING_2D | MULTI_ENTITY,     /*!< Multi-línea 2D */
+    MULTILINE_3D = LINESTRING_3D | MULTI_ENTITY,  /*!< Multi-línea 3D */
+    MULTIPOLYGON_2D = POLYGON_2D | MULTI_ENTITY,     /*!< Multi-polígono 2D */
+    MULTIPOLYGON_3D = POLYGON_3D | MULTI_ENTITY,  /*!< Multi-polígono 3D */
+
+    /* Tipos especiales */
+    ENVELOPE = (1 << 10),     /*!< Envolvente */
+    WINDOW = ENVELOPE,        /*!< Ventana */
+    BOX = ENVELOPE | GEOM3D,  /*!< Caja */
   };
 
 protected:
@@ -75,7 +114,8 @@ protected:
    * \brief Tipo de entidad
    * \see type
    */
-  type mEntityType;
+  //type mEntityType;
+  EnumFlags<type> mEntityType;
 
 public:
 
@@ -83,13 +123,25 @@ public:
    * \brief Constructora
    * \param[in] type Tipo de entidad
    */
-  Entity(type type) : mEntityType(type) {}
+  Entity(type type) 
+    : mEntityType(type)
+  {}
    
   /*!
    * \brief Constructor de copia
    * \param[in] entity Objeto que se copia
    */
-  Entity(const Entity &entity) : mEntityType(entity.mEntityType) {}
+  Entity(const Entity &entity) 
+    : mEntityType(entity.mEntityType)
+  {}
+  
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] entity Objeto que se copia
+   */
+  Entity(Entity &&entity) TL_NOEXCEPT 
+    : mEntityType(std::move(entity.mEntityType))
+  {}
 
   /*!
    * \brief Destructora
@@ -99,12 +151,12 @@ public:
   /*!
    * \brief Devuelve el tipo de entidad 
    */
-  type getType() const { return mEntityType; }
+  type getType() const { return mEntityType.getFlags(); }
 
   /*!
    * \brief Operador de asignación
    */
-  Entity &operator = (const Entity &entity)
+  Entity &operator = (const Entity &entity) 
   {
     if (this != &entity) {
       mEntityType = entity.mEntityType;
@@ -112,8 +164,49 @@ public:
     return *this;
   }
 
-};
+  /*!
+   * \brief Operador de asignación de movimiento
+   */
+  Entity &operator = (Entity &&entity) TL_NOEXCEPT
+  {
+    if (this != &entity) {
+      mEntityType = std::move(entity.mEntityType);
+    }
+    return *this;
+  }
 
+  /*!
+   * \brief La dimensión inherente del objeto geométrico
+   * Debe ser menor o igual a la dimensión de coordenadas.
+   */
+  //virtual size_t dimension() const = 0;
+
+  //virtual size_t coordinateDimension() const = 0;
+  //virtual size_t spatialDimension() const = 0;
+
+  /*!
+   * \brief Comprueba si una entidad geométrica esta vacía.
+   * \return Devuelve true si la entidad geométrica esta vacía.
+   */
+  //virtual bool isEmpty() const = 0;
+
+  /*!
+   * \brief Devuelve verdadero si la entidad geométrica no presenta una geométria anómala 
+   * como auto-intersección.
+   */
+  //virtual bool isSimple() const = 0;
+
+  /*!
+   * \brief Comprueba si una entidad es 3D
+   * \return Verdadero si es una entidad 3D
+   */
+  bool is3D() const
+  {
+    return mEntityType.isActive(type::GEOM3D);
+  }
+
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(Entity::type)
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -210,9 +303,9 @@ public:
 
   /*!
    * \brief Constructor de movimiento
-   * \param[in] entity Objeto que se copia
+   * \param[in] entity Objeto que se mueve
    */
-  EntityContainer(EntityContainer &&entity);
+  EntityContainer(EntityContainer &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor
@@ -265,7 +358,7 @@ public:
   void add(const Entity_t &entity);
   void push_back(const Entity_t &entity);
   //TODO Añadir add con movimiento
-  void push_back(Entity_t &&entity);
+  void push_back(Entity_t &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve una referencia constante al elemento de la posición indicada
@@ -341,7 +434,7 @@ public:
   /*!
    * \brief Asignación de movimiento
    */
-  EntityContainer<Entity_t>& operator=(EntityContainer<Entity_t> &&entity);
+  EntityContainer<Entity_t>& operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina el intervalo
@@ -373,7 +466,7 @@ EntityContainer<Entity_t>::EntityContainer(const EntityContainer &entity)
 
 template<typename Entity_t> inline
 EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity)
-  : mEntities(std::forward<Entity_t>(entity.mEntities))
+  : mEntities(std::move(entity.mEntities))
 {
 }
 
@@ -492,7 +585,7 @@ typename EntityContainer<Entity_t>::reference EntityContainer<Entity_t>::operato
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t>& EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t>& entity) 
+EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(const EntityContainer<Entity_t> &entity) 
 {
   if (this != &entity) {
     this->mEntities = entity.mEntities;
@@ -501,7 +594,7 @@ EntityContainer<Entity_t>& EntityContainer<Entity_t>::operator=(const EntityCont
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t>& EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t>&& entity) 
+EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) 
 {
   if (this != &entity) {
     this->mEntities.clear();
@@ -538,13 +631,19 @@ public:
    * \brief Constructor que reserva tamaño para n puntos
    * \param[in] size Tamaños que se reserva
    */
-  Entities2D(typename Entities2D<Entity_t>::size_type  size);
+  Entities2D(typename Entities2D<Entity_t>::size_type size);
 
   /*!
    * \brief Constructor de copia
    * \param[in] entity Objeto Entities2D que se copia
    */
   Entities2D(const Entities2D &entity);
+
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] entity Objeto Entities2D que se copia
+   */
+  Entities2D(Entities2D &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor
@@ -588,6 +687,12 @@ Entities2D<Entity_t>::Entities2D(const Entities2D &entities)
 }
 
 template<typename Entity_t> inline
+Entities2D<Entity_t>::Entities2D(Entities2D &&entities) 
+  : EntityContainer<Entity_t>(std::forward<Entities2D<Entity_t>>(entities)) 
+{
+}
+
+template<typename Entity_t> inline
 Entities2D<Entity_t>::Entities2D(const std::vector<Entity_t> &entities)
   : EntityContainer<Entity_t>(entities)
 {
@@ -598,15 +703,6 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
-
-//template<typename Entity_t> inline
-//Entities2D<Entity_t> &Entities2D<Entity_t>::operator = (const Entities2D &entities)
-//{
-//  if (this != &entities) {
-//    this->mEntities = entities.mEntities;
-//  }
-//  return *this;
-//}
 
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
@@ -665,6 +761,13 @@ public:
    * \see entity_type
    */
   Entities3D(const Entities3D &entity);
+  
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] entity Entidad que se copia
+   * \see entity_type
+   */
+  Entities3D(Entities3D &&entity);
 
   Entities3D(const std::vector<Entity_t> &entities);
 
@@ -699,6 +802,12 @@ Entities3D<Entity_t>::Entities3D(const Entities3D &entities)
 }
 
 template<typename Entity_t> inline
+Entities3D<Entity_t>::Entities3D(Entities3D &&entities) TL_NOEXCEPT
+  : EntityContainer<Entity_t>(std::forward<Entities3D<Entity_t>>(entities))
+{
+}
+
+template<typename Entity_t> inline
 Entities3D<Entity_t>::Entities3D(const std::vector<Entity_t> &entities)
   : EntityContainer<Entity_t>(entities)
 {
@@ -709,30 +818,6 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
-
-//template<typename Entity_t> inline
-//Entities3D<Entity_t> &Entities3D<Entity_t>::operator = (const Entities3D &entities)
-//{
-//  if (this != &entities) {
-//    this->mEntities = entities.mEntities;
-//  }
-//  return *this;
-//}
-
-//template<typename Entity_t> inline
-//Box<Entity_t> Entities3D<Entity_t>::getBox() const
-//{
-//  Box<Entity_t> box;
-//  for (size_t i = 0; i < this->mEntities.size(); i++) {
-//    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-//    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-//    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-//    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-//    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-//    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
-//  }
-//  return box;
-//}
 
 template<typename Entity_t> inline
 std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const

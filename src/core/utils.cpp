@@ -925,7 +925,7 @@ std::string formatTimeToString(const std::string &templ)
 }
 
 
-uint64_t getTickCount()
+uint64_t tickCount()
 {
 #if defined _MSC_VER
   return GetTickCount64();
@@ -933,7 +933,10 @@ uint64_t getTickCount()
   return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 #endif
 }
-
+uint64_t getTickCount()
+{
+  return tickCount();
+}
 
 Chrono::Chrono(const char *msg, bool writeMsg)
   : mTimeIni(0),
@@ -956,7 +959,7 @@ Chrono::~Chrono()
 uint64_t Chrono::pause()
 {
   if (mStatus == Status::RUNNING) {
-    mAccumulated += getTickCount() - mTimeIni;
+    mAccumulated += tickCount() - mTimeIni;
     mStatus = Status::PAUSE;
     //if (bWriteMsg) msgDebug("Chrono paused");
   }
@@ -975,7 +978,7 @@ void Chrono::reset()
 void Chrono::resume()
 {
   if (mStatus == Status::PAUSE) {
-    mTimeIni = getTickCount();
+    mTimeIni = tickCount();
     mStatus = Status::RUNNING;
     //if (bWriteMsg) msgDebug("Chrono resume");
   }
@@ -983,7 +986,7 @@ void Chrono::resume()
 
 uint64_t Chrono::run()
 {
-  mTimeIni = getTickCount();
+  mTimeIni = tickCount();
   mAccumulated = 0;
   mStatus = Status::RUNNING;
   //if (bWriteMsg) msgDebug("Chrono run");
@@ -994,7 +997,7 @@ uint64_t Chrono::stop()
 {
   uint64_t time;
   if (mStatus == Status::RUNNING) {
-    time = getTickCount() - mTimeIni + mAccumulated;
+    time = tickCount() - mTimeIni + mAccumulated;
     mStatus = Status::STOPPED;
   } else if (mStatus == Status::PAUSE) {
     // Puede estar pausado y querer terminar

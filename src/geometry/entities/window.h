@@ -18,15 +18,15 @@
 namespace TL
 {
 
-/*! \defgroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
 namespace geometry
 {
 
-// Operaciones con ventanas
+/* Operaciones con ventanas */
+
 /*!
  * \brief Comprueba si dos ventanas intersectan
  * \param[in] w1 Ventana 1
@@ -152,13 +152,14 @@ public:
 
   /*!
    * \brief Constructor de copia
+   * \param[in] w Objeto Window que se copia
    */
   Window(const Window &w);
 
   /*!
    * \brief Constructor de movimiento Window
    */
-  //Window(Window &&w);
+  Window(Window &&w);
 
   /*!
    * \brief Constructor Window
@@ -205,6 +206,13 @@ public:
    * \return Referencia a la ventana
    */
   Window &operator = (const Window &w);
+
+  /*!
+   * \brief Sobrecarga del operador de asignación de movimiento
+   * \param[in] w Ventana que se mueve
+   * \return Referencia a la ventana
+   */
+  Window &operator = (Window &&w);
 
   /*!
    * \brief Sobrecarga del operador 'igual que'
@@ -269,6 +277,14 @@ Window<Point_t>::Window()
 template<typename Point_t> inline
 Window<Point_t>::Window(const Window &w) 
   : Entity(Entity::type::WINDOW), 
+    pt1(w.pt1), 
+    pt2(w.pt2) 
+{
+}
+
+template<typename Point_t> inline
+Window<Point_t>::Window(Window &&w) 
+  : Entity(std::forward<Entity>(w)), 
     pt1(w.pt1), 
     pt2(w.pt2) 
 {
@@ -373,9 +389,20 @@ template<typename Point_t> inline
 Window<Point_t> &Window<Point_t>::operator = (const Window &w)
 {
   if (this != &w) {
+    this->mEntityType = w.mEntityType;
     this->pt1 = w.pt1;
     this->pt2 = w.pt2;
-    this->mEntityType = w.mEntityType;
+  }
+  return *this;
+}
+
+template<typename Point_t> inline
+Window<Point_t> &Window<Point_t>::operator = (Window &&w)
+{
+  if (this != &w) {
+    this->mEntityType = std::move(w.mEntityType);
+    this->pt1 = std::move(w.pt1);
+    this->pt2 = std::move(w.pt2);
   }
   return *this;
 }

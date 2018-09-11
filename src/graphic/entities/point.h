@@ -2,7 +2,6 @@
 #define TL_GRAPHIC_ENTITIES_POINT_H
 
 #include "config_tl.h"
-#include "core/defs.h"
 
 #include "geometry/entities/point.h"
 #include "graphic/entities/entity.h"
@@ -17,24 +16,70 @@ namespace TL
 namespace graph
 {
 
-class TL_EXPORT GPoint : public geometry::Point<double>, public GraphicEntity
+class TL_EXPORT GPoint
+  : public geometry::Point<double>,
+    public GraphicEntity
 {
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   GPoint();
+
+  /*!
+   * \brief Constructora
+   * \param[in] x Coordenada x
+   * \param[in] y Coordenada y
+   */
   GPoint(double x, double y);
+
+  /*!
+   * \brief Constructor a partir de un punto
+   * \param[in] pt Punto
+   * \see Point
+   */
   GPoint(const Point<double> &pt);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] pt Objeto GPoint que se copia
+   */
   GPoint(const GPoint &pt);
+
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] pt Objeto GPoint que se mueve
+   */
+  GPoint(GPoint &&pt) TL_NOEXCEPT;
+
+  /*!
+   * \brief Destructora
+   */
   ~GPoint();
 
+  /*!
+   * \brief Operador de asignación
+   * \param gPoint Objeto GPoint que se asigna
+   * \return Referencia al objeto
+   */
   GPoint &operator = (const GPoint &gPoint);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param gPoint Objeto GPoint que se mueve
+   * \return Referencia al objeto
+   */
+  GPoint &operator = (GPoint &&gPoint) TL_NOEXCEPT;
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
 
 
-class TL_EXPORT GPoint3D : public geometry::Point3<double>, public GraphicEntity
+class TL_EXPORT GPoint3D 
+  : public geometry::Point3<double>, 
+    public GraphicEntity
 {
 public:
 

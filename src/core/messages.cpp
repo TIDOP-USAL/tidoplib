@@ -421,7 +421,8 @@ Log::Log()
 {
 }
 
-Log::~Log() {
+Log::~Log() 
+{
 }
 
 Log &Log::getInstance()

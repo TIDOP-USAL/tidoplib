@@ -18,8 +18,7 @@
 namespace TL
 {
 
-/*! \defgroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -63,6 +62,12 @@ public:
   LineString(const LineString &lineString);
 
   /*!
+   * \brief Constructor de movimiento
+   * \param[in] lineString Objeto LineString que se mueve
+   */
+  LineString(LineString &&lineString) TL_NOEXCEPT;
+
+  /*!
    * \brief Constructor vector de puntos
    * \param[in] points
    */
@@ -89,6 +94,11 @@ public:
    * \brief Operador de asignación
    */
   LineString<Point_t> &operator = (const LineString<Point_t> &lineString);
+  
+  /*!
+   * \brief Operador de asignación de movimiento
+   */
+  LineString<Point_t> &operator = (LineString<Point_t> &&lineString) TL_NOEXCEPT;
 
   /*!
    * \brief Ventana envolvente
@@ -115,6 +125,13 @@ template <typename Point_t> inline
 LineString<Point_t>::LineString(const LineString &lineString)
   : Entity(lineString),
     Entities2D<Point_t>(lineString)
+{
+}
+
+template <typename Point_t> inline
+LineString<Point_t>::LineString(LineString &&lineString)
+  : Entity(std::forward<Entity>(lineString)),
+    Entities2D<Point_t>(std::forward<LineString<Point_t>>(lineString))
 {
 }
 
@@ -154,6 +171,16 @@ LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> 
   if (this != &lineString) {
     Entity::operator = (lineString);
     Entities2D<Point_t>::operator = (lineString);
+  }
+  return *this;
+}
+
+template<typename Point_t> inline
+LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&lineString)
+{
+  if (this != &lineString) {
+    this->mEntityType = std::move(lineString.mEntityType);
+    Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>>(lineString));
   }
   return *this;
 }
@@ -206,8 +233,14 @@ public:
   LineString3D(const LineString3D &lineString);
 
   /*!
+   * \brief Constructor de movimiento
+   * \param[in] lineString Objeto LineString3D que se mueve
+   */
+  LineString3D(LineString3D &&lineString) TL_NOEXCEPT;
+
+  /*!
    * \brief Constructor vector de puntos
-   * \param[in] points
+   * \param[in] points Vector con los puntos de la polilinea
    */
   LineString3D(const std::vector<Point3_t> &points);
 
@@ -236,9 +269,17 @@ public:
 
   /*!
    * \brief Operador de asignación
+   * \param[in] lineString Objeto que se asigna
    * \return lineString Objeto que se asigna
    */
   LineString3D<Point3_t> &operator = (const LineString3D<Point3_t> &lineString);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] lineString Objeto que se mueve
+   * \return
+   */
+  LineString3D<Point3_t> &operator = (LineString3D<Point3_t> &&lineString) TL_NOEXCEPT;
 
   /*!
    * \brief Caja envolvente
@@ -265,6 +306,13 @@ template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(const LineString3D &lineString)
   : Entity(lineString), 
     Entities3D<Point3_t>(lineString)
+{
+}
+
+template <typename Point3_t> inline
+LineString3D<Point3_t>::LineString3D(LineString3D &&lineString)
+  : Entity(std::forward<Entity>(lineString)), 
+    Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(lineString))
 {
 }
 
@@ -297,6 +345,16 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (const LineString3D &
 {
   if (this != &lineString) {
     Entity::operator = (lineString);
+    Entities3D<Point3_t>::operator = (lineString);
+  }
+  return *this;
+}
+
+template<typename Point3_t> inline
+LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineString)
+{
+  if (this != &lineString) {
+    this->mEntityType = std::move(lineString.mEntityType);
     Entities3D<Point3_t>::operator = (lineString);
   }
   return *this;
@@ -345,13 +403,30 @@ public:
    */
   MultiLineString(const MultiLineString &multiLineString);
 
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] multiLineString Objeto MultiLineString que se mueve
+   */
+  MultiLineString( MultiLineString &&multiLineString) TL_NOEXCEPT;
+
+  /*!
+   * \brief Destructora
+   */
   ~MultiLineString() {}
 
   /*!
    * \brief Operador de asignación
-   * \return lineString Objeto que se asigna
+   * \param[in] multiLineString Objeto que se asigna
+   * \return Referencia al objeto 
    */
   MultiLineString<Point_t> &operator = (const MultiLineString<Point_t> &multiLineString);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] multiLineString Objeto que se mueve
+   * \return Referencia al objeto
+   */
+  MultiLineString<Point_t> &operator = (MultiLineString<Point_t> &&multiLineString) TL_NOEXCEPT;
 
   /*!
    * \brief Ventana envolvente
@@ -383,11 +458,28 @@ MultiLineString<Point_t>::MultiLineString(const MultiLineString &multiLineString
 }
 
 template<typename Point_t> inline
+MultiLineString<Point_t>::MultiLineString(MultiLineString &&multiLineString) 
+  : Entity(std::forward<Entity>(multiLineString)), 
+    Entities2D<LineString<Point_t>>(std::forward<MultiLineString<Point_t>>(multiLineString)) 
+{
+}
+
+template<typename Point_t> inline
 MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (const MultiLineString &multiLineString)
 {
   if (this != &multiLineString) {
     Entity::operator = (multiLineString);
     Entities2D<LineString<Point_t>>::operator = (multiLineString);
+  }
+  return *this;
+}
+
+template<typename Point_t> inline
+MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString &&multiLineString)
+{
+  if (this != &multiLineString) {
+    this->mEntityType = std::move(multiLineString.mEntityType);
+    Entities2D<LineString<Point_t>>::operator = (std::forward<MultiLineString<Point_t>>(multiLineString));
   }
   return *this;
 }
@@ -425,14 +517,31 @@ public:
    * \param[in] multiLineString Objeto MultiLineString que se copia
    */
   MultiLineString3D(const MultiLineString3D &multiLineString);
-
+  
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] multiLineString Objeto MultiLineString que se mueve
+   */
+  MultiLineString3D(MultiLineString3D &&multiLineString) TL_NOEXCEPT;
+   
+  /*!
+   * \brief Destructora
+   */
   ~MultiLineString3D() {}
 
   /*!
    * \brief Operador de asignación
-   * \return lineString Objeto que se asigna
+   * \param[in] multiLineString Objeto que se asigna
+   * \return Referencia al objeto
    */
   MultiLineString3D<Point3_t> &operator = (const MultiLineString3D<Point3_t> &multiLineString);
+  
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] multiLineString Objeto que se mueve
+   * \return Referencia al objeto
+   */
+  MultiLineString3D<Point3_t> &operator = (MultiLineString3D<Point3_t> &&multiLineString) TL_NOEXCEPT;
 
   /*!
    * \brief Caja envolvente
@@ -463,6 +572,13 @@ MultiLineString3D<Point3_t>::MultiLineString3D(const MultiLineString3D &multiLin
 }
 
 template<typename Point3_t> inline
+MultiLineString3D<Point3_t>::MultiLineString3D(MultiLineString3D &&multiLineString) 
+  : Entity(std::forward<Entity>(multiLineString)), 
+    Entities3D<LineString3D<Point3_t>>(std::forward<MultiLineString3D<Point3_t>>(multiLineString)) 
+{
+}
+
+template<typename Point3_t> inline
 MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const MultiLineString3D &multiLineString)
 {
   if (this != &multiLineString) {
@@ -472,6 +588,17 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (const Mult
   return *this;
 }
 
+template<typename Point3_t> inline
+MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineString3D &&multiLineString)
+{
+  if (this != &multiLineString) {
+    this->mEntityType = std::move(multiLineString.mEntityType);
+    Entities3D<LineString3D<Point3_t>>::operator = (std::forward<Entities3D<LineString3D<Point3_t>>>(multiLineString));
+  }
+  return *this;
+}
+
+TL_TODO("Terminar MultiLineString3D<Point3_t>::getBox()")
 template<typename Point3_t> inline
 Box<Point3_t> MultiLineString3D<Point3_t>::getBox() const
 {

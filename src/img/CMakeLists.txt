@@ -4,7 +4,9 @@ add_library(tl_img ${LIB_TYPE}
   imgio.cpp
   imgio.h
   formats.cpp
-  formats.h)
+  formats.h
+  metadata.h
+  metadata.cpp)
   
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_img PROPERTY FOLDER "modules")

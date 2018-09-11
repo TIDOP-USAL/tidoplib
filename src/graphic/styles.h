@@ -81,7 +81,7 @@ protected:
    * \brief Color de Pluma
    * \see Color
    */
-  Color mPenColor;
+  TL::Color mPenColor;
 
   /*!
    * \brief Ancho de pluma
@@ -145,14 +145,14 @@ public:
    * \return Color de pluma
    * \see Color
    */
-  Color getPenColor() const;
+  TL::Color getPenColor() const;
 
   /*!
    * \brief Establece el color de Pluma
    * \param[in] pencolor Color de Pluma
    * \see Color
    */
-  void setPenColor(Color pencolor);
+  void setPenColor(TL::Color pencolor);
 
   /*!
    * \brief Devuelve el ancho de pluma
@@ -272,13 +272,13 @@ protected:
    * \brief Color de primer plano
    * \see Color
    */
-  Color mForeColor;
+  TL::Color mForeColor;
   
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  Color mBackColor;
+  TL::Color mBackColor;
 
   /*!
    * \brief Nombre de pincel
@@ -329,28 +329,28 @@ public:
    * \return Color
    * \see Color
    */
-  Color getForeColor() const;
+  TL::Color getForeColor() const;
 
   /*!
    * \brief Establece el color
    * \param[in] forecolor Color
    * \see Color
    */
-  void setForeColor(Color forecolor);
+  void setForeColor(TL::Color forecolor);
 
     /*!
    * \brief Devuelve el color de fondo
    * \return Color de fondo
    * \see Color
    */
-  Color getBackColor() const;
+  TL::Color getBackColor() const;
 
   /*!
    * \brief Establece el color de fondo
    * \param[in] backcolor Color de fondo
    * \see Color
    */
-  void setBackColor(Color backcolor);
+  void setBackColor(TL::Color backcolor);
 
   /*!
    * \brief Devuelve el nombre o id de pincel
@@ -462,13 +462,13 @@ protected:
    * \brief Color
    * \see Color
    */
-  Color mColor;
+  TL::Color mColor;
   
   /*!
    * \brief Color de borde
    * \see Color
    */
-  Color mOutlineColor;
+  TL::Color mOutlineColor;
 
   /*!
    * \brief Factor de escala
@@ -529,33 +529,33 @@ public:
    */
   void setName(SymbolName name);
 
-    /*!
+  /*!
    * \brief Devuelve el color
    * \return Color
    * \see Color
    */
-  Color getColor() const;
+  TL::Color getColor() const;
 
   /*!
    * \brief Establece el color
    * \param[in] color Color
    * \see Color
    */
-  void setColor(const Color &color);
+  void setColor(const TL::Color &color);
 
     /*!
    * \brief Devuelve el color de borde
    * \return Color de borde
    * \see Color
    */
-  Color getOutlineColor() const;
+  TL::Color getOutlineColor() const;
 
   /*!
    * \brief Establece el color de borde
    * \param[in] outlinecolor Color de borde
    * \see Color
    */
-  void setOutlineColor(const Color &outlinecolor);
+  void setOutlineColor(const TL::Color &outlinecolor);
 
   /*!
    * \brief Devuelve el factor de escala
@@ -664,25 +664,25 @@ protected:
    * \brief Color de primer plano
    * \see Color
    */
-  Color mForegroundColor;
+  TL::Color mForegroundColor;
   
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  Color mBackgroundColor;
+  TL::Color mBackgroundColor;
 
   /*!
    * \brief Color de contorno
    * \see Color
    */
-  Color mOutlineColor;
+  TL::Color mOutlineColor;
 
   /*!
    * \brief Color de la sombra
    * \see Color
    */
-  Color mShadowColor;
+  TL::Color mShadowColor;
  
   /*!
    * \brief Escalado en tanto por ciento
@@ -771,53 +771,53 @@ public:
    * \brief Color de primer plano
    * \see Color
    */
-  Color getForegroundColor() const;
+  TL::Color getForegroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
    * \param[in] color
    * \see Color
    */
-  void setForegroundColor(const Color &color);
+  void setForegroundColor(const TL::Color &color);
 
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  Color getBackgroundColor() const;
+  TL::Color getBackgroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
    * \param[in] color
    * \see Color
    */
-  void setBackgroundColor(const Color &color);
+  void setBackgroundColor(const TL::Color &color);
 
   /*!
    * \brief Color de contorno
    * \see Color
    */
-  Color getOutlineColor() const;
+  TL::Color getOutlineColor() const;
 
   /*!
    * \brief Establece el color de contorno
    * \param[in] color
    * \see Color
    */
-  void setOutlineColor(const Color &color);
+  void setOutlineColor(const TL::Color &color);
 
   /*!
    * \brief Color de la sombra
    * \see Color
    */
-  Color getShadowColor() const;
+  TL::Color getShadowColor() const;
 
   /*!
    * \brief Establece el color de la sombra
    * \param[in] color
    * \see Color
    */
-  void setShadowColor(const Color &color);
+  void setShadowColor(const TL::Color &color);
  
   /*!
    * \brief Escalado en tanto por ciento

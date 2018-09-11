@@ -18,8 +18,7 @@
 namespace TL
 {
 
-/*! \defgroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup GeometricEntities
  *  \{
  */
 
@@ -73,12 +72,24 @@ public:
    * \param[in] circle Objeto circulo que se copia
    */
   Circle(const Circle<T> &circle);
+   
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] circle Objeto circulo que se mueve
+   */
+  Circle(Circle<T> &&circle) TL_NOEXCEPT;
 
   /*!
    * \brief Operador de asignación
    * \param[in] circle Objeto Point que se copia
    */
-  Circle<T>& operator = (const Circle<T>& circle);
+  Circle<T> &operator = (const Circle<T> &circle);
+    
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] circle Objeto Point que se mueve
+   */
+  Circle<T>& operator = (Circle<T> &&circle) TL_NOEXCEPT;
 
   /*!
    * \brief Conversión de tipo
@@ -129,18 +140,41 @@ Circle<T>::Circle(const Circle<T> &circle)
 }
 
 template<typename T> inline
-Circle<T>& Circle<T>::operator = (const Circle& circle)
+Circle<T>::Circle(Circle<T> &&circle)
+  : Entity(std::forward<Entity>(circle)),
+    center(std::move(circle.center)),
+    radius(std::move(circle.radius))
 {
-  this->center = circle.center;
-  this->radius = circle.radius;
+}
+
+template<typename T> inline
+Circle<T> &Circle<T>::operator = (const Circle &circle)
+{
+  if (this != &circle) {
+    this->mEntityType = circle.mEntityType;
+    this->center = circle.center;
+    this->radius = circle.radius;
+  }
+  return *this;
+}
+
+template<typename T> inline
+Circle<T> &Circle<T>::operator = (Circle &&circle)
+{
+  if (this != &circle) {
+    this->mEntityType = std::move(circle.mEntityType);
+    this->center = std::move(circle.center);
+    this->radius = std::move(circle.radius);
+  }
   return *this;
 }
 
 template<typename T> template<typename T2> inline
 Circle<T>::operator Circle<T2>() const
 {
-  if (typeid(T2) == typeid(int)) {
-    return Circle<T2>(Point<T2>(this->center), TL_ROUND_TO_INT(this->radius));
+  if (std::is_integral<T2>::value) {
+    return Circle<T2>(static_cast<Point<T2>>(this->center), 
+                      static_cast<T2>(std::round(this->radius)));
   } else {
     return Circle<T2>(Point<T2>(center), static_cast<T2>(this->radius));
   }
@@ -209,12 +243,24 @@ public:
    * \param[in] ellipse Objeto circulo que se copia
    */
   Ellipse(const Ellipse<T> &ellipse);
+   
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] ellipse Objeto circulo que se mueve
+   */
+  Ellipse(Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
   /*!
    * \brief Operador de asignación
    * \param[in] ellipse Objeto Elipse que se copia
    */
-  Ellipse<T>& operator = (const Ellipse<T>& ellipse);
+  Ellipse<T> &operator = (const Ellipse<T> &ellipse);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] ellipse Objeto Elipse que se mueve
+   */
+  Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
   /*!
    * \brief Conversión de tipo
@@ -265,7 +311,7 @@ Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
 
 template<typename T> inline
 Ellipse<T>::Ellipse(const Ellipse<T> &ellipse)
-  : Entity(Entity::type::ELLIPSE),
+  : Entity(ellipse),
     center(ellipse.center),
     a(ellipse.a),
     b(ellipse.b)
@@ -273,23 +319,47 @@ Ellipse<T>::Ellipse(const Ellipse<T> &ellipse)
 }
 
 template<typename T> inline
-Ellipse<T>& Ellipse<T>::operator = (const Ellipse& ellipse)
+Ellipse<T>::Ellipse(Ellipse<T> &&ellipse)
+  : Entity(std::forward<Entity>(ellipse)),
+    center(ellipse.center),
+    a(ellipse.a),
+    b(ellipse.b)
 {
-  this->center = ellipse.center;
-  this->a = ellipse.a;
-  this->b = ellipse.b;
+}
+
+template<typename T> inline
+Ellipse<T> &Ellipse<T>::operator = (const Ellipse &ellipse)
+{
+  if (this != &ellipse) {
+    this->mEntityType = ellipse.mEntityType;
+    this->center = ellipse.center;
+    this->a = ellipse.a;
+    this->b = ellipse.b;
+  }
+  return *this;
+}
+
+template<typename T> inline
+Ellipse<T> &Ellipse<T>::operator = (Ellipse &&ellipse)
+{
+  if (this != &ellipse) {
+    this->mEntityType = std::move(ellipse.mEntityType);
+    this->center = std::move(ellipse.center);
+    this->a = std::move(ellipse.a);
+    this->b = std::move(ellipse.b);
+  }
   return *this;
 }
 
 template<typename T> template<typename T2> inline
 Ellipse<T>::operator Ellipse<T2>() const
 {
-  if (typeid(T2) == typeid(int)) {
-    return Ellipse<T2>(Point<T2>(this->center), 
-                       TL_ROUND_TO_INT(this->a), 
-                       TL_ROUND_TO_INT(this->b));
+  if (std::is_integral<T2>::value) {
+    return Ellipse<T2>(static_cast<Point<T2>>(this->center), 
+                       static_cast<T2>(std::round(this->a)), 
+                       static_cast<T2>(std::round(this->b)));
   } else {
-    return Ellipse<T2>(Point<T2>(center), 
+    return Ellipse<T2>(static_cast<Point<T2>>(this->center), 
                        static_cast<T2>(this->a), 
                        static_cast<T2>(this->b));
   }

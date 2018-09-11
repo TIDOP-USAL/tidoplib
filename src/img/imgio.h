@@ -8,7 +8,7 @@
 #include <mutex>
 
 #include "core/defs.h"
-#include "core/utils.h" 
+
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -21,9 +21,11 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+#include "core/utils.h"
 //#include "graphic_entities/color.h"
 #include "geometry/entities/point.h"
 #include "geometry/transform.h"
+#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
 #include "EDSDK.h"
@@ -194,10 +196,16 @@ public:
   virtual DataType getDataType() const { return mDataType; }
 
   /*!
-   * \brief Devuelve la profundidad de color o bits por pixel de una imangen
+   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
    * \return Profundidad de color
    */
   virtual int getColorDepth() const { return mColorDepth; }
+
+  /*!
+   * \brief Devuelve los metadatos de la imagen
+   * \return Metadatos de la imagen
+   */
+  //virtual ImgMetadata metadata() const = 0;
 
 protected:
   
@@ -216,6 +224,7 @@ class TL_EXPORT RegisterGdal
 private:
 
   static std::unique_ptr<RegisterGdal> sRegisterGdal;
+  static std::mutex sMutex;
 
   /*!
    * \brief Constructor privado
@@ -395,6 +404,8 @@ public:
    * \return Nombre del Driver de GDAL
    */
   static const char *getDriverFromExt(const char *ext);
+
+  //ImgMetadata metadata() const override;
 
 protected:
 
@@ -666,6 +677,8 @@ public:
    */
   static int isRawExt(const char *ext);
 
+  ImgMetadata metadata() const override;
+
 private:
 
   void update();
@@ -845,7 +858,7 @@ public:
 
   // Dataset Information
 
-  //Status readMetadata();
+  //ImgMetadata metadata() const;
 
 protected:
 
