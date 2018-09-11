@@ -11,5 +11,6 @@ if(BUILD_EXAMPLES)
   add_subdirectory(imgproces)
   add_subdirectory(vect)
   add_subdirectory(math)
+  add_subdirectory(experimental)
 
 endif()

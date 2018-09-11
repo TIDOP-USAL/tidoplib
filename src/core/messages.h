@@ -74,7 +74,7 @@ public:
    * mensajes mediante el método addListener() recibiran los diferentes 
    * mensajes (Depuración, error, etc) que se emitan desde la librería.
    */
-  class Listener
+	class TL_EXPORT Listener
   {
   protected:
 
@@ -141,7 +141,7 @@ public:
   /*!
    * \brief Clase que representa un mensaje individual
    */
-  class Message
+  class TL_EXPORT Message
   {
   private:
 

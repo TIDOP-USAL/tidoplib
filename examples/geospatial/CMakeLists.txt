@@ -1,5 +1,5 @@
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND HAVE_GDAL)
+if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
 
   project(examples)
 
@@ -24,7 +24,10 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND HAVE_GDAL)
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
+    target_link_libraries(${the_target} tl_core tl_geom tl_geospatial ${OpenCV_LIBS})
+	if(HAVE_GDAL)
+	    target_link_libraries(${the_target} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
+	endif(HAVE_GDAL)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)

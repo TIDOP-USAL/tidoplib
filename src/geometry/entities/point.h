@@ -40,7 +40,8 @@ namespace geometry
  * \endcode
  */
 template<typename T>
-class Point : public Entity
+class Point 
+  : public Entity
 {
 
 public:
@@ -154,7 +155,7 @@ Point<T>::Point(const Point &pt)
 }
 
 template<typename T> inline
-Point<T>::Point(Point &&pt)
+Point<T>::Point(Point &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)), 
     x(std::move(pt.x)), 
     y(std::move(pt.y)) 
@@ -182,7 +183,7 @@ Point<T>& Point<T>::operator = (const Point &pt)
 
 
 template<typename T> inline
-Point<T>& Point<T>::operator = (Point &&pt)
+Point<T>& Point<T>::operator = (Point &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     this->mEntityType = std::move(pt.mEntityType);
@@ -369,7 +370,8 @@ Point<T1> operator / (const Point<T1> &pt, T2 b)
  * \endcode
  */
 template<typename T>
-class Point3 : public Entity
+class Point3 
+  : public Entity
 {
 
 public:
@@ -479,7 +481,7 @@ Point3<T>::Point3(const Point3 &pt)
 }
 
 template<typename T> inline
-Point3<T>::Point3(Point3 &&pt)
+Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)),
     x(std::move(pt.x)), 
     y(std::move(pt.y)), 
@@ -508,7 +510,7 @@ Point3<T> &Point3<T>::operator = (const Point3 &pt)
 }
 
 template<typename T> inline
-Point3<T> &Point3<T>::operator = (Point3 &&pt) 
+Point3<T> &Point3<T>::operator = (Point3 &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     Entity::operator = (std::forward<Entity>(pt));
@@ -786,7 +788,7 @@ MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint)
 }
 
 template<typename Point_t> inline
-MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) 
+MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiPoint)), 
     Entities2D<Point_t>(std::forward<MultiPoint<Point_t>>(multiPoint)) 
 {
@@ -811,13 +813,14 @@ MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (const MultiPoint &multiPoi
 {
   if (this != &multiPoint) {
     this->mEntityType = multiPoint.mEntityType;
-    Entities2D<Point_t>::operator = (multiPoint);
+    //Entities2D<Point_t>::operator = (multiPoint);
+    this->mEntities = multiPoint.mEntities;
   }
   return *this;
 }
 
 template<typename Point_t> inline
-MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (MultiPoint &&multiPoint)
+MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (MultiPoint &&multiPoint) TL_NOEXCEPT
 {
   if (this != &multiPoint) {
     this->mEntityType = std::move(multiPoint.mEntityType);
@@ -860,7 +863,9 @@ typedef MultiPoint<Point<float>> MultiPointF;
  * \endcode
  */
 template<typename Point_t>
-class MultiPoint3D : public Entity, public Entities3D<Point_t>
+class MultiPoint3D
+  : public Entity,
+    public Entities3D<Point_t>
 {
   
 public:
@@ -946,7 +951,7 @@ MultiPoint3D<Point_t>::MultiPoint3D(const MultiPoint3D &multiPoint)
 }
 
 template<typename Point_t> inline
-MultiPoint3D<Point_t>::MultiPoint3D(MultiPoint3D &&multiPoint) 
+MultiPoint3D<Point_t>::MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiPoint)),
     Entities3D<Point_t>(std::forward<MultiPoint3D<Point_t>>(multiPoint)) 
 {
@@ -977,7 +982,7 @@ MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &mu
 }
 
 template<typename Point_t> inline
-MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPoint)
+MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT
 {
   if (this != &multiPoint) {
     this->mEntityType = std::move(multiPoint.mEntityType);

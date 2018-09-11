@@ -30,9 +30,6 @@ namespace TL
  *  \{
  */
 
-//TODO: ¿Debería ser un singleton???
-// Hay ciertos casos que interesa que no sea un singleton para que en la destructora recupere las
-// opciones por defecto. Siempre se podria obligar a llamar a la función reset()
 
 /*!
  * \brief Clase para gestionar la configuración de la ventana de comandos
@@ -51,7 +48,8 @@ public:
   /*!
    * \brief Valores de intensidad de color
    */
-  enum class Intensity : int8_t{
+  enum class Intensity : int8_t
+  {
     NORMAL,  /*!< Normal */
     BRIGHT   /*!< Brillante */
   };
@@ -59,7 +57,8 @@ public:
   /*!
    * \brief Tipos de color de fondo y caracter.
    */
-  enum class Color : int8_t {
+  enum class Color : int8_t 
+  {
     BLACK,    /*!< Negro */
     RED,      /*!< Rojo */
     GREEN,    /*!< Verde */
@@ -73,7 +72,8 @@ public:
   /*!
    * \brief Modo de consola
    */
-  enum class Mode : int8_t {
+  enum class Mode : int8_t 
+  {
     INPUT,          /*!< Consola en modo entrada */
     OUTPUT,         /*!< Consola en modo salida */
     OUTPUT_ERROR    /*!< Consola en modo salida de errores */
@@ -939,7 +939,8 @@ protected:
 /*!
  * \brief Barra de progreso de consola
  */
-class TL_EXPORT ProgressBar : public Progress
+class TL_EXPORT ProgressBar 
+  : public Progress
 {
 private:
 
@@ -996,7 +997,8 @@ private:
 /*!
  * \brief Progreso en porcentaje
  */
-class TL_EXPORT ProgressPercent : public Progress
+class TL_EXPORT ProgressPercent 
+  : public Progress
 {
 private:
 

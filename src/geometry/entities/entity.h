@@ -465,7 +465,7 @@ EntityContainer<Entity_t>::EntityContainer(const EntityContainer &entity)
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity)
+EntityContainer<Entity_t>::EntityContainer(EntityContainer &&entity) TL_NOEXCEPT
   : mEntities(std::move(entity.mEntities))
 {
 }
@@ -519,7 +519,7 @@ void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
 }
 
 template<typename Entity_t> inline
-void EntityContainer<Entity_t>::push_back(Entity_t &&entity)
+void EntityContainer<Entity_t>::push_back(Entity_t &&entity) TL_NOEXCEPT
 {
   mEntities.push_back(std::forward<Entity_t>(entity));
 }
@@ -594,7 +594,7 @@ EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(const EntityCont
 }
 
 template<typename Entity_t> inline
-EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) 
+EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<Entity_t> &&entity) TL_NOEXCEPT
 {
   if (this != &entity) {
     this->mEntities.clear();
@@ -617,7 +617,8 @@ typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::erase(co
  * \brief Entidades 2D
  */
 template<typename Entity_t>
-class Entities2D : public EntityContainer<Entity_t>
+class Entities2D
+  : public EntityContainer<Entity_t>
 {
 
 public:
@@ -687,7 +688,7 @@ Entities2D<Entity_t>::Entities2D(const Entities2D &entities)
 }
 
 template<typename Entity_t> inline
-Entities2D<Entity_t>::Entities2D(Entities2D &&entities) 
+Entities2D<Entity_t>::Entities2D(Entities2D &&entities) TL_NOEXCEPT
   : EntityContainer<Entity_t>(std::forward<Entities2D<Entity_t>>(entities)) 
 {
 }
@@ -738,7 +739,8 @@ std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &
  * \brief Entidades 3D
  */
 template<typename Entity_t>
-class Entities3D : public EntityContainer<Entity_t>
+class Entities3D
+  : public EntityContainer<Entity_t>
 {
 
 public:
@@ -767,7 +769,7 @@ public:
    * \param[in] entity Entidad que se copia
    * \see entity_type
    */
-  Entities3D(Entities3D &&entity);
+  Entities3D(Entities3D &&entity) TL_NOEXCEPT;
 
   Entities3D(const std::vector<Entity_t> &entities);
 
@@ -778,7 +780,7 @@ public:
    * \param[in] box Caja
    * \return Puntos que entran dentro de la caja
    */
-  std::vector<Entity_t> getEntitiesInBox(const Box<Entity_t> &box) const;
+  //std::vector<Entity_t> getEntitiesInBox(const Box<Entity_t> &box) const;
 
 };
 
@@ -819,20 +821,21 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 {
 }
 
-template<typename Entity_t> inline
-std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
-{
-  std::vector<Entity_t> r_points(this->mEntities.size());
-  size_t j = 0;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.containsPoint(this->mEntities[i])) {
-      r_points[i] = this->mEntities[i];
-      j++;
-    }
-  }
-  r_points.resize(j);
-  return r_points;
-}
+//template<typename Entity_t> inline
+//std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
+//{
+//  std::vector<Entity_t> r_points(this->mEntities.size());
+//  size_t j = 0;
+//  for (size_t i = 0; i < this->mEntities.size(); i++) {
+//    TODO("terminar")
+//      //if (box.containsPoint(this->mEntities[i])) {
+//      //  r_points[i] = this->mEntities[i];
+//      //  j++;
+//      //}
+//  }
+//  r_points.resize(j);
+//  return r_points;
+//}
 
 
 

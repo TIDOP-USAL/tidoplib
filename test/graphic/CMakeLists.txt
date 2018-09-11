@@ -1,6 +1,6 @@
 # Test
 
-if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
+if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)
 
   project(test)
 
@@ -25,20 +25,20 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
     add_executable(${the_target} ${srcs})
     
     #target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
-	  target_link_libraries(${the_target} gtest_main)
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess)
-	  target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} )
-	  target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	target_link_libraries(${the_target} gtest_main)
+    target_link_libraries(${the_target} tl_core tl_geom tl_graphic)
+	target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} )
+	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 	  
-	  # Añade el proyecto de test a la carpeta 'test/core'
+	# Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/graphic")
 
     set_target_properties(${the_target} PROPERTIES
-      OUTPUT_NAME ${the_target}
-      PROJECT_LABEL "(${test_KIND}) ${name}")
+                          OUTPUT_NAME ${the_target}
+                          PROJECT_LABEL "(${test_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "test/graphic")
+        set_target_properties(${the_target} PROPERTIES FOLDER "test/graphic")
     endif()
 
     #if(WIN32)

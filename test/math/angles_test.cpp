@@ -12,14 +12,14 @@ using namespace TL::math;
 
 class VectorTest : public testing::Test
 {
-public:
+protected:
   
   std::vector<double> decimalDegrees;
   std::vector<std::vector<int>> dms;
   std::vector<double> radians;
   std::vector<double> gradians;
 
-  virtual void SetUp()
+  virtual void SetUp() override
   {
     decimalDegrees.push_back(0.);
     decimalDegrees.push_back(0.5);
@@ -46,7 +46,7 @@ public:
     gradians.push_back(-299.3166718);
   }
  
-  virtual void TearDown()
+  virtual void TearDown() override
   {
   }
 };

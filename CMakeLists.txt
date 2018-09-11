@@ -56,11 +56,17 @@ endif()
 # Se permite elegir entre libreria estatica o dinamica
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 
-# Set the LIB_TYPE variable to STATIC
+# Por defecto se establece el tipo de librería estática
 set (LIB_TYPE STATIC)
+
 if (BUILD_SHARED_LIBS)
-  # User wants to build Dynamic Libraries, so change the LIB_TYPE variable to CMake keyword 'SHARED'
+  # Se configura como libreria estática
   set (LIB_TYPE SHARED)
+  
+  if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+  endif(MSVC)
+  
 endif (BUILD_SHARED_LIBS)
 
 # Activación desactivación de los diferentes modulos de la libreria
@@ -111,26 +117,27 @@ OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 
 # --- BOOST ---
 if(WITH_BOOST)
-
-  set(Boost_USE_STATIC_LIBS        ON ) # only find static libs
-  set(Boost_USE_MULTITHREADED      ON)
-  set(Boost_USE_STATIC_RUNTIME    OFF)
-  
+    #unset(Boost_LIBRARIES)
+    #set(Boost_USE_STATIC             ON)
+    set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+    set(Boost_USE_MULTITHREADED      ON)
+    set(Boost_USE_STATIC_RUNTIME     OFF)
+ 	
 #TODO: Debería establecer la versión mínima de Boost en find_package
-  find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
+    #find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
+    find_package(Boost COMPONENTS filesystem system REQUIRED)
+    if(Boost_FOUND)
+        include_directories(${Boost_INCLUDE_DIRS})
+	    set(HAVE_BOOST YES)
 
-  if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-	  set(HAVE_BOOST YES)
-##TODO: Comprobar esto
-#    if (WIN32)
-#
-#      add_definitions(-DBOOST_ALL_NO_LIB)
-#      add_definitions(-DBOOST_ALL_DYN_LINK)
-#    endif()
+		#if (WIN32)
+        #    add_definitions(-DBOOST_ALL_NO_LIB)
+        #    add_definitions(-DBOOST_ALL_DYN_LINK)
+        #endif()
+		
 	else()
-	  set(HAVE_BOOST NO)
-  endif()
+	    set(HAVE_BOOST NO)
+    endif()
 
 endif()
 
