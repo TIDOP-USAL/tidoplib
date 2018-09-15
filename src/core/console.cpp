@@ -425,6 +425,17 @@ Argument::Argument(const string &name, const char &shortName, const string &desc
 {
 }
 
+Argument::Argument(const Argument &argument)
+  : mName(argument.mName),
+    mDescription(argument.mDescription),
+    mShortName(argument.mShortName)
+{
+}
+
+Argument::~Argument()
+{
+}
+
 std::string Argument::description() const
 {
   return mDescription;
@@ -466,7 +477,8 @@ Command::Command()
 
 Command::Command(const Command &command)
   : mName(command.mName),
-    mDescription(command.mDescription)
+    mDescription(command.mDescription),
+    mCmdArgs(command.mCmdArgs)
 {
 
 }
@@ -478,10 +490,13 @@ Command::Command(const string &name, const string &description)
   init();
 }
 
-//Command::Command(std::initializer_list<std::shared_ptr<Argument> > arguments)
-//{
-
-//}
+Command::Command(const string &name, const string &description,
+                 std::initializer_list<std::shared_ptr<Argument> > arguments)
+  : mName(name),
+    mDescription(description),
+    mCmdArgs(arguments)
+{
+}
 
 std::string Command::name() const
 {
@@ -722,7 +737,7 @@ Command &Command::operator=(const Command &command)
     this->mName = command.mName;
     this->mDescription = command.mDescription;
     this->mCmdArgs = command.mCmdArgs;
-    this->mDefaultArgs = command.mDefaultArgs;
+    //this->mDefaultArgs = command.mDefaultArgs;
   }
   return (*this);
 }
@@ -733,7 +748,7 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
     this->mName = command.mName;
     this->mDescription = command.mDescription;
     this->mCmdArgs = std::move(command.mCmdArgs);
-    this->mDefaultArgs = std::move(command.mDefaultArgs);
+    //this->mDefaultArgs = std::move(command.mDefaultArgs);
   }
   return (*this);
 }
@@ -794,286 +809,10 @@ void Command::init()
 
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-CmdArgument::CmdArgument(const char *name, const char *description, bool optional)
-  : mName(name), 
-    mDescription(description), 
-    bOptional(optional) 
-{
-}
-
-const char *CmdArgument::getDescription() const 
-{ 
-  return mDescription.c_str(); 
-}
-
-const char *CmdArgument::getName() const 
-{ 
-  return mName.c_str(); 
-}
-
-bool CmdArgument::isOptional() const 
-{ 
-  return bOptional; 
-}
-
 
 /* ---------------------------------------------------------------------------------- */
 
-CmdOption::CmdOption(const char *name, const char *description)
-  : CmdArgument(name, description, true), mValue(false) 
-{
-}
 
-CmdArgument::Type CmdOption::getType() const 
-{ 
-  return CmdArgument::Type::OPTION; 
-}
-
-bool CmdOption::isActive() const 
-{ 
-  return mValue; 
-}
-
-void CmdOption::setActive(bool active)
-{ 
-  mValue = active; 
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParameter::CmdParameter(const char *name, const char *description, bool optional, const char *defValue)
-  : CmdArgument(name, description, optional), mValue(defValue)
-{
-}
-
-CmdArgument::Type CmdParameter::getType() const 
-{ 
-  return CmdArgument::Type::PARAMETER; 
-}
-
-const char *CmdParameter::getValue() const 
-{ 
-  return mValue.c_str(); 
-}
-
-void CmdParameter::setValue(const std::string &value) 
-{
-  mValue = value; 
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParameterOptions::CmdParameterOptions(const char *name, const char *options, const char *description, bool optional, const char *defValue)
-  : CmdArgument(name, description, optional), mValue(defValue)
-{
-  split(options, mOptions, ",");
-}
-
-int CmdParameterOptions::getIndex() const
-{
-  for ( size_t i = 0; i < mOptions.size(); i++ ) {
-    if (mOptions[i] == mValue) {
-      return static_cast<int>(i);
-      break;
-    }
-  }
-  return 0;
-}
-
-int CmdParameterOptions::getIndex(const std::string &value) const
-{
-  for ( size_t i = 0; i < mOptions.size(); i++ ) {
-    if (mOptions[i] == value) {
-      return static_cast<int>(i);
-      break;
-    }
-  }
-  return 0;
-}
-
-std::vector<std::string> CmdParameterOptions::getOptions() const
-{ 
-  return mOptions; 
-}
-
-CmdArgument::Type CmdParameterOptions::getType() const
-{ 
-  return CmdArgument::Type::PARAMETER_OPTIONS; 
-}
-
-const char *CmdParameterOptions::getValue() const 
-{ 
-  return mValue.c_str(); 
-}
-
-void CmdParameterOptions::setValue(const std::string &value) 
-{
-  for (auto opt : mOptions) {
-    if (value == opt) {
-      mValue = value;
-      break;
-    }
-  }
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParser::CmdParser()
-  : mCmdName(""), 
-    mCmdDescription(""),
-    mCmdArgs(0)
-{
-}
-
-CmdParser::CmdParser(const char *name, const char *description)
-  : mCmdName(name), 
-    mCmdDescription(description),
-    mCmdArgs(0)
-{
-}
-
-CmdParser::CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
-  : mCmdName(name), 
-    mCmdDescription(description), 
-    mCmdArgs(cmd_args)
-{
-}
-
-void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
-{
-  mCmdArgs.push_back(std::make_shared<CmdParameter>(name, description, optional, defValue));
-}
-
-
-void CmdParser::addParameterOption(const char *name, const char *options, const char *description, bool optional, const char *defValue)
-{
-  mCmdArgs.push_back(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
-}
-
-
-void CmdParser::addOption(const char *name, const char *description)
-{
-  mCmdArgs.push_back(std::make_shared<CmdOption>(name, description));
-}
-
-CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
-{
-  for (auto arg : mCmdArgs) {
-    // Comando de ayuda
-    if (argc > 1 && strcmp(argv[1], "-help") == 0) {
-      printHelp();
-      return CmdParser::Status::PARSE_HELP;
-    }
-    bool bOptional = arg->isOptional();
-    std::string argName = (arg->getType() == CmdArgument::Type::OPTION) ? "-" : "--";
-    argName += arg->getName();
-    bool bFind = false;
-    for (int i = 1; i < argc; ++i) {
-      std::string arg_name = std::string(argv[i]);
-      std::size_t found = arg_name.find(argName);
-      if (found != std::string::npos) {
-        if (arg_name == argName && arg->getType() == CmdArgument::Type::OPTION) {
-          dynamic_cast<CmdOption *>(arg.get())->setActive(true);
-          break;
-        } else {
-          std::size_t val_pos = arg_name.find("=",found);
-          std::string name = arg_name.substr(0, val_pos);
-          if (val_pos != std::string::npos && name == argName) {
-            if (arg->getType() == CmdArgument::Type::PARAMETER) {
-              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              TL::replaceString(&value, "\"", "\\");
-              dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
-              bFind = true;
-              break;
-            } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
-              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
-              bFind = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-    // Ver si no es opcional y devolver un error si no existe
-    if (bFind == false && bOptional == false) {
-      msgError("Falta %s. Parámetro obligatorio ", arg->getName());
-      printHelp();
-      return CmdParser::Status::PARSE_ERROR;
-    }
-  }
-  return CmdParser::Status::PARSE_SUCCESS;
-}
-
-void CmdParser::printHelp()
-{
-
-  Console console(Console::Mode::OUTPUT, false);
-
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
-  console.setFontBold(true);
-  //TODO: Solución rapida. modificar
-  printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
-  //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
-
-  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
-  console.setFontBold(false);
-
-  printf("Listado de parámetros: \n\n");
-
-  //TODO: Añadir automaticamente el valor por defecto
-  for (auto arg : mCmdArgs) {
-    std::string s_type, s_description;
-    if (arg->getType() == CmdArgument::Type::OPTION) {
-      s_type = "Opción";
-      s_description = arg->getDescription();
-    } else if (arg->getType() == CmdArgument::Type::PARAMETER) {
-      s_type = "Parámetro";
-      s_description = arg->getDescription();
-    } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
-      s_type = "Lista de opciones";
-      s_description = arg->getDescription();
-      s_description = ". Los valores posibles son: ";
-      for (auto opt : dynamic_cast<CmdParameterOptions *>(arg.get())->getOptions()) {
-        s_description += " ";
-        s_description += opt;
-      }
-    } else continue;
-     printf_s("- %s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
-    //printf_s("%s [%s | %s]: %s \n", arg->getName(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
-  }
-  printf_s("\nUso:\n\n");
-  printf_s("%s", mCmdName.c_str());
-  for (auto arg : mCmdArgs) {
-    printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"), 
-             arg->getName(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
-  }
-  printf_s("\n\n");
-  //printf_s("\n\nPulse intro para continuar");
-  //getchar();
-}
-
-bool CmdParser::hasOption(const std::string &option) const
-{
-  for (auto arg : mCmdArgs) {
-    if (arg->getType() == CmdArgument::Type::OPTION) {
-      if (arg->getName() == option) {
-        return dynamic_cast<CmdOption *>(arg.get())->isActive();
-      }
-    }
-  }
-  return false;
-}
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-//std::mutex mtx_prgs; //Mejor añadirlo a la clase como dato miembro estático
 std::mutex Progress::sMutex;
 
 Progress::Progress() 
@@ -1291,6 +1030,290 @@ void ProgressPercent::terminate()
 }
 
 
+
+
+/* ---------------------------------------------------------------------------------- */
+
+#ifdef TL_SHOW_DEPRECATED
+
+/* Deprecated class */
+
+CmdArgument::CmdArgument(const char *name, const char *description, bool optional)
+  : mName(name),
+    mDescription(description),
+    bOptional(optional)
+{
+}
+
+const char *CmdArgument::getDescription() const
+{
+  return mDescription.c_str();
+}
+
+const char *CmdArgument::getName() const
+{
+  return mName.c_str();
+}
+
+bool CmdArgument::isOptional() const
+{
+  return bOptional;
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdOption::CmdOption(const char *name, const char *description)
+  : CmdArgument(name, description, true), mValue(false)
+{
+}
+
+CmdArgument::Type CmdOption::getType() const
+{
+  return CmdArgument::Type::OPTION;
+}
+
+bool CmdOption::isActive() const
+{
+  return mValue;
+}
+
+void CmdOption::setActive(bool active)
+{
+  mValue = active;
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdParameter::CmdParameter(const char *name, const char *description, bool optional, const char *defValue)
+  : CmdArgument(name, description, optional), mValue(defValue)
+{
+}
+
+CmdArgument::Type CmdParameter::getType() const
+{
+  return CmdArgument::Type::PARAMETER;
+}
+
+const char *CmdParameter::getValue() const
+{
+  return mValue.c_str();
+}
+
+void CmdParameter::setValue(const std::string &value)
+{
+  mValue = value;
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdParameterOptions::CmdParameterOptions(const char *name, const char *options, const char *description, bool optional, const char *defValue)
+  : CmdArgument(name, description, optional), mValue(defValue)
+{
+  split(options, mOptions, ",");
+}
+
+int CmdParameterOptions::getIndex() const
+{
+  for ( size_t i = 0; i < mOptions.size(); i++ ) {
+    if (mOptions[i] == mValue) {
+      return static_cast<int>(i);
+      break;
+    }
+  }
+  return 0;
+}
+
+int CmdParameterOptions::getIndex(const std::string &value) const
+{
+  for ( size_t i = 0; i < mOptions.size(); i++ ) {
+    if (mOptions[i] == value) {
+      return static_cast<int>(i);
+      break;
+    }
+  }
+  return 0;
+}
+
+std::vector<std::string> CmdParameterOptions::getOptions() const
+{
+  return mOptions;
+}
+
+CmdArgument::Type CmdParameterOptions::getType() const
+{
+  return CmdArgument::Type::PARAMETER_OPTIONS;
+}
+
+const char *CmdParameterOptions::getValue() const
+{
+  return mValue.c_str();
+}
+
+void CmdParameterOptions::setValue(const std::string &value)
+{
+  for (auto opt : mOptions) {
+    if (value == opt) {
+      mValue = value;
+      break;
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+CmdParser::CmdParser()
+  : mCmdName(""),
+    mCmdDescription(""),
+    mCmdArgs(0)
+{
+}
+
+CmdParser::CmdParser(const char *name, const char *description)
+  : mCmdName(name),
+    mCmdDescription(description),
+    mCmdArgs(0)
+{
+}
+
+CmdParser::CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
+  : mCmdName(name),
+    mCmdDescription(description),
+    mCmdArgs(cmd_args)
+{
+}
+
+void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
+{
+  mCmdArgs.push_back(std::make_shared<CmdParameter>(name, description, optional, defValue));
+}
+
+
+void CmdParser::addParameterOption(const char *name, const char *options, const char *description, bool optional, const char *defValue)
+{
+  mCmdArgs.push_back(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
+}
+
+
+void CmdParser::addOption(const char *name, const char *description)
+{
+  mCmdArgs.push_back(std::make_shared<CmdOption>(name, description));
+}
+
+CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
+{
+  for (auto arg : mCmdArgs) {
+    // Comando de ayuda
+    if (argc > 1 && strcmp(argv[1], "-help") == 0) {
+      printHelp();
+      return CmdParser::Status::PARSE_HELP;
+    }
+    bool bOptional = arg->isOptional();
+    std::string argName = (arg->getType() == CmdArgument::Type::OPTION) ? "-" : "--";
+    argName += arg->getName();
+    bool bFind = false;
+    for (int i = 1; i < argc; ++i) {
+      std::string arg_name = std::string(argv[i]);
+      std::size_t found = arg_name.find(argName);
+      if (found != std::string::npos) {
+        if (arg_name == argName && arg->getType() == CmdArgument::Type::OPTION) {
+          dynamic_cast<CmdOption *>(arg.get())->setActive(true);
+          break;
+        } else {
+          std::size_t val_pos = arg_name.find("=",found);
+          std::string name = arg_name.substr(0, val_pos);
+          if (val_pos != std::string::npos && name == argName) {
+            if (arg->getType() == CmdArgument::Type::PARAMETER) {
+              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+              TL::replaceString(&value, "\"", "\\");
+              dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
+              bFind = true;
+              break;
+            } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
+              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
+              dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
+              bFind = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    // Ver si no es opcional y devolver un error si no existe
+    if (bFind == false && bOptional == false) {
+      msgError("Falta %s. Parámetro obligatorio ", arg->getName());
+      printHelp();
+      return CmdParser::Status::PARSE_ERROR;
+    }
+  }
+  return CmdParser::Status::PARSE_SUCCESS;
+}
+
+void CmdParser::printHelp()
+{
+
+  Console console(Console::Mode::OUTPUT, false);
+
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+  //TODO: Solución rapida. modificar
+  printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
+  //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
+
+  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
+  console.setFontBold(false);
+
+  printf("Listado de parámetros: \n\n");
+
+  //TODO: Añadir automaticamente el valor por defecto
+  for (auto arg : mCmdArgs) {
+    std::string s_type, s_description;
+    if (arg->getType() == CmdArgument::Type::OPTION) {
+      s_type = "Opción";
+      s_description = arg->getDescription();
+    } else if (arg->getType() == CmdArgument::Type::PARAMETER) {
+      s_type = "Parámetro";
+      s_description = arg->getDescription();
+    } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
+      s_type = "Lista de opciones";
+      s_description = arg->getDescription();
+      s_description = ". Los valores posibles son: ";
+      for (auto opt : dynamic_cast<CmdParameterOptions *>(arg.get())->getOptions()) {
+        s_description += " ";
+        s_description += opt;
+      }
+    } else continue;
+     printf_s("- %s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
+    //printf_s("%s [%s | %s]: %s \n", arg->getName(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
+  }
+  printf_s("\nUso:\n\n");
+  printf_s("%s", mCmdName.c_str());
+  for (auto arg : mCmdArgs) {
+    printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"),
+             arg->getName(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
+  }
+  printf_s("\n\n");
+  //printf_s("\n\nPulse intro para continuar");
+  //getchar();
+}
+
+bool CmdParser::hasOption(const std::string &option) const
+{
+  for (auto arg : mCmdArgs) {
+    if (arg->getType() == CmdArgument::Type::OPTION) {
+      if (arg->getName() == option) {
+        return dynamic_cast<CmdOption *>(arg.get())->isActive();
+      }
+    }
+  }
+  return false;
+}
+
+/* End deprecated class */
+
+#endif // TL_SHOW_DEPRECATED
 
 /* ---------------------------------------------------------------------------------- */
 

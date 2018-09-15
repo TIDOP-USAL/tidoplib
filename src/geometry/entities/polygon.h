@@ -17,7 +17,7 @@
 #include "geometry/entities/point.h"
 #include "geometry/entities/segment.h"
 #include "geometry/operations.h"
-#include "core/mathutils.h"
+#include "math/algebra/vectors.h"
 
 namespace TL
 {
@@ -330,7 +330,7 @@ double Polygon<Point_t>::area() const
   //TODO: Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo
   double area = 0.;
   for (size_t i = 1; i < this->mEntities.size(); i++) {
-    area += crossProduct(this->mEntities[i-1], this->mEntities[i]);
+    area += math::crossProduct(this->mEntities[i-1], this->mEntities[i]);
   }
   return std::abs(area / 2.);
 }

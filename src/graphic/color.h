@@ -397,10 +397,10 @@ public:
   static Color randomColor();
 
   operator unsigned int() const { return mColor; }
-  operator int() const { return mColor; }
+  operator int() const { return static_cast<int>(mColor); }
 
 #ifdef HAVE_OPENCV
-  cv::Scalar toCvScalar() { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
+  cv::Scalar toCvScalar();
   //operator cv::Scalar() const { return cv::Scalar((double)getBlue(), (double)getGreen(), (double)getRed()); }
 #endif
 

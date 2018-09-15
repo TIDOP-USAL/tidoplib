@@ -29,24 +29,27 @@ int main(int argc, char** argv)
   char name[TL_MAX_FNAME];
   getFileName(getRunfile(), name, TL_MAX_FNAME);
 
+  std::string epsg_in;
+  std::string epsg_out;
+  std::string coord;
+
   // Se definen los parámetros y opciones
-  CmdParser cmdParser(name, "Ejemplo de transformación de coordenadas");
-  cmdParser.addParameter("epsg_in", "Sistema de referencia de entrada");
-  cmdParser.addParameter("epsg_out", "Sistema de referencia de salida");
-  cmdParser.addParameter("c", "Coordenadas a transformar");
-  
+  Command cmd(name, "Ejemplo de transformación de coordenadas");
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_out", 'o', "Sistema de referencia de salida", &epsg_out));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("coord", 'c', "Coordenadas a transformar", &coord));
+
   // Parseo de los argumentos y comprobación de los mismos
-  CmdParser::Status status = cmdParser.parse(argc, argv);
-  if (status == CmdParser::Status::PARSE_ERROR ) {
+  Command::Status status = cmd.parse(argc, argv);
+  if (status == Command::Status::PARSE_ERROR ) {
     return 1;
-  } else if (status == CmdParser::Status::PARSE_HELP) {
+  } else if (status == Command::Status::SHOW_HELP) {
+    return 0;
+  } else if (status == Command::Status::SHOW_LICENCE) {
+    return 0;
+  } else if (status == Command::Status::SHOW_VERSION) {
     return 0;
   }
-
-  std::string epsg_in = cmdParser.getValue<std::string>("epsg_in");
-  std::string epsg_out = cmdParser.getValue<std::string>("epsg_out");
-  std::string coord = cmdParser.getValue<std::string>("c");
-
 
   // Consola
   Console console;

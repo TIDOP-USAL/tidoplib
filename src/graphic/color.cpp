@@ -227,6 +227,15 @@ Color Color::randomColor()
   return Color(dis(gen));
 }
 
+#ifdef HAVE_OPENCV
+cv::Scalar Color::toCvScalar()
+{
+  return cv::Scalar(static_cast<double>(getBlue()),
+                    static_cast<double>(getGreen()),
+                    static_cast<double>(getRed()));
+}
+#endif
+
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */

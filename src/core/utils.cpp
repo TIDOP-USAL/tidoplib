@@ -427,6 +427,9 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 }
 
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef TL_SHOW_DEPRECATED
+
 // TODO: C++17 incluye filesystem que tiene una clase path.
 //       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
 //       no soporta c++17 se utilizar?a BOOST
@@ -626,7 +629,7 @@ Path &Path::append(const std::string &dir)
 
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
-
+#endif // TL_SHOW_DEPRECATED
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -643,12 +646,12 @@ int splitToNumbers(const std::string &cad, std::vector<int> &vOut, const char *c
     char *token = strtok(dup, chs);
     //char *context = NULL;
     //char *token = strtok_s(dup, chs, &context);
-    while (token != NULL) {
+    while (token != nullptr) {
       char *pEnd;
       int number = strtol(token, &pEnd, 10);
       if (*pEnd == 0) {
         vOut.push_back(number);
-        token = strtok(NULL, chs);
+        token = strtok(nullptr, chs);
         //token = strtok_s(dup, chs, &context);
       } else
         throw std::runtime_error("Split string to numbers fail");
@@ -680,7 +683,7 @@ int splitToNumbers(const std::string &cad, std::vector<double> &vOut, const char
       double number = strtod(token, &pEnd);
       if (*pEnd == 0) {
         vOut.push_back(number);
-        token = strtok(NULL, chs);
+        token = strtok(nullptr, chs);
         //token = strtok_s(dup, chs, &context);
       } else
         throw std::runtime_error("Split string to numbers fail");

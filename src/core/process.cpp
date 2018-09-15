@@ -199,6 +199,16 @@ Process::Status Process::checkStatus()
 }
 
 
+
+Process::Listener::Listener()
+{
+}
+
+Process::Listener::~Listener()
+{
+}
+
+
 /* ---------------------------------------------------------------------------------- */
 
 #ifdef WIN32
@@ -430,12 +440,16 @@ void BatchProcess::removeListener(Listener *listener)
   }
 }
 
+#ifdef TL_SHOW_DEPRECATED
+
 void BatchProcess::clear()
 {
   //mProcessList.clear();
   //mStatus = Status::START;
   reset();
 }
+
+#endif // TL_SHOW_DEPRECATED
 
 void BatchProcess::remove(uint64_t id)
 {
@@ -621,6 +635,14 @@ void BatchProcess::errorTriggered()
       lst->onError();
     }
   }
+}
+
+BatchProcess::Listener::Listener()
+{
+}
+
+BatchProcess::Listener::~Listener()
+{
 }
 
 

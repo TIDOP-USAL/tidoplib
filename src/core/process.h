@@ -59,16 +59,12 @@ public:
     /*!
      * \brief Constructora
      */
-    Listener()
-    {
-    }
+    Listener();
 
     /*!
      * \brief destructora
      */
-    virtual ~Listener()
-    {
-    }
+    virtual ~Listener() = 0;
 
     /*!
      * \brief Evento pausa
@@ -251,7 +247,8 @@ protected:
 /* ---------------------------------------------------------------------------------- */
 
 //TODO: Pendiente para Linux
-class TL_EXPORT CmdProcess : public Process
+class TL_EXPORT CmdProcess
+  : public Process
 {
 public:
 
@@ -333,7 +330,8 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-class BatchProcess :  public Process::Listener
+class BatchProcess
+  :  public Process::Listener
 {
 public:
 
@@ -363,16 +361,12 @@ public:
     /*!
      * \brief Constructora
      */
-    Listener()
-    {
-    }
+    Listener();
 
     /*!
      * \brief destructora
      */
-    virtual ~Listener()
-    {
-    }
+    virtual ~Listener();
 
     /*!
      * \brief 
@@ -448,12 +442,16 @@ public:
    */
   void removeListener(Listener *listener);
 
+#ifdef TL_SHOW_DEPRECATED
+
   /*!
    * \brief Limpia la lista de procesos
    * \deprecated Use reset() en su lugar
    */
   TL_DEPRECATED("BatchProcess::reset()")
   void clear();
+
+#endif // TL_SHOW_DEPRECATED
 
   /*!
    * \brief Elimina el proceso
