@@ -22,5 +22,5 @@ else()
           ARCHIVE DESTINATION lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/vect
+install(DIRECTORY . DESTINATION include/tidop/vect
         FILES_MATCHING PATTERN "*.h")

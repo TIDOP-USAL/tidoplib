@@ -1117,7 +1117,8 @@ protected:
 /*!
  * \brief Modelo de color CMYK
  * El modelo CMYK (Cyan, Magenta, Yellow y Key) es un modelo de color sustractivo.
- * Los valores de las componentes CMYK varían entre 0 y 100 y representan porcentajes.
+ * Los valores de las componentes CMYK varían por defecto entre 0 y 1 y representan 
+ * porcentajes.
  */
 class TL_EXPORT ColorCMYK 
   : public IColorModel
@@ -1125,12 +1126,12 @@ class TL_EXPORT ColorCMYK
 
 protected:
 
-  int mCyan;
-  int mMagenta;
-  int mYellow;
-  int mKey;
-  int mRangeMin;
-  int mRangeMax;
+  double mCyan;
+  double mMagenta;
+  double mYellow;
+  double mKey;
+  double mRangeMin;
+  double mRangeMax;
 
 public:
 

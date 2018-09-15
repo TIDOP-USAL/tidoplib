@@ -791,7 +791,7 @@ ColorCMYK::ColorCMYK()
     mMagenta(0.),
     mYellow(0.),
     mKey(0.),
-    mRangeMin(0.),
+    mRangeMin(0.), /// TODO: tiene sentido pasar como parametro el rango minimo???
     mRangeMax(1.)
 {
 
@@ -887,6 +887,7 @@ void ColorCMYK::setRange(double min, double max)
 
 Color ColorCMYK::toColor() const
 {
+  ///TODO: Tener en cuenta que se puede modificar el rango a 0-100. Hay que normalizar en función de esto
   double aux = (1 - mKey) * 255;
   int red = TL_ROUND_TO_INT((1 - mCyan) * aux);
   int green = TL_ROUND_TO_INT((1 - mMagenta) * aux);
@@ -899,6 +900,7 @@ Color ColorCMYK::toColor() const
 
 void ColorCMYK::fromColor(const Color &color)
 {
+  ///TODO: Tener en cuenta que se puede modificar el rango a 0-100. Hay que normalizar en función de esto
   double rgb[3] = { color.red() / 255., color.green() / 255., color.blue() / 255. };
   double max = *std::max_element(rgb, rgb + 3);
   mKey = 1. - max;

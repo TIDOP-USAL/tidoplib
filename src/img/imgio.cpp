@@ -682,8 +682,7 @@ float GdalGeoRaster::getZ(const PointD &pt)
   Helmert2D<PointI> trf;
   cv::Mat image;
   GdalRaster::read(&image, wRead, 1, &trf);
-  float f;
-  f = image.at<float>(0, 0);
+  return image.at<float>(0, 0);
 }
 
 void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
