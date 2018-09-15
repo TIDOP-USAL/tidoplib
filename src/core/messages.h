@@ -86,20 +86,12 @@ public:
      * \brief Constructora
      * \param[in] add Si add es true se añade directamente al gestor de mensajes
      */
-    Listener(bool add = true)
-    {
-      if (add) {
-        MessageManager::getInstance().addListener(this);
-      }
-    }
+    Listener(bool add = true);
 
     /*!
      * \brief destructora
      */
-    virtual ~Listener()
-    {
-      MessageManager::getInstance().removeListener(this);
-    }
+    virtual ~Listener() = 0;
 
     /*!
      * \brief Mensaje de depuración

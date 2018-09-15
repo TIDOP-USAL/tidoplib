@@ -161,7 +161,7 @@
 #define MAKE_LINUX_PRAGMA(x) _Pragma (#x)
 #endif
 
-#if _MSC_VER
+#ifdef _MSC_VER
 #  define TL_COMPILER_WARNING(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )
 #else
 // Ver si funciona _Pragma()... Da los errores:

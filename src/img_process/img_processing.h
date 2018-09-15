@@ -152,13 +152,15 @@ public:
    * \brief Constructor de copia
    * \param[in] imgProcList ImgProcessingList que se copia
    */
-  ImgProcessingList(const ImgProcessingList &imgProcList) : mProcessList(imgProcList.mProcessList) {}
+  ImgProcessingList(const ImgProcessingList &imgProcList)
+    : mProcessList(imgProcList.mProcessList) {}
 
   /*!
    * \brief Constructor de lista
    * \param[in] imgProcList Listado de procesos
    */
-  ImgProcessingList(std::initializer_list<std::shared_ptr<ImgProcessing>> imgProcList) : mProcessList(imgProcList) {}
+  ImgProcessingList(std::initializer_list<std::shared_ptr<ImgProcessing>> imgProcList)
+    : mProcessList(imgProcList) {}
 
   /*!
    * \brief Destructora

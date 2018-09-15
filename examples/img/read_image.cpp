@@ -21,17 +21,22 @@ using namespace TL;
 int main(int argc, char** argv)
 {
 
-  CmdParser cmdParser("Read Image", "Lectura de una imagen");
-  cmdParser.addParameter("img", "Imagen");
-  CmdParser::Status status = cmdParser.parse(argc, argv);
-  if (status == CmdParser::Status::PARSE_ERROR ) {
+  std::string img;
+
+  Command cmd("Read Image", "Lectura de una imagen");
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
+
+  // Parseo de los argumentos y comprobación de los mismos
+  Command::Status status = cmd.parse(argc, argv);
+  if (status == Command::Status::PARSE_ERROR ) {
     return 1;
-  } else if (status == CmdParser::Status::PARSE_HELP) {
+  } else if (status == Command::Status::SHOW_HELP) {
+    return 0;
+  } else if (status == Command::Status::SHOW_LICENCE) {
+    return 0;
+  } else if (status == Command::Status::SHOW_VERSION) {
     return 0;
   }
-
-  std::string img = cmdParser.getValue<std::string>("img");
-
 
   // Consola
   Console console;

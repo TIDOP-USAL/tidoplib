@@ -55,6 +55,7 @@ int main(int argc, char** argv)
     }
 
   } else {
+#ifdef TL_SHOW_DEPRECATED
     // Se definen los parámetros y opciones
     CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
     cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");
@@ -80,6 +81,7 @@ int main(int argc, char** argv)
     // Devuelve la opción. Se puede utilizar un enum o un int
     options opt = cmdParser.getParameterOptionIndex<options>("list_opt");
     int opt_i = cmdParser.getParameterOptionIndex<int>("list_opt");
+#endif
   }
 
   // Consola

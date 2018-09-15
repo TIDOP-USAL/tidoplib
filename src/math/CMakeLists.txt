@@ -7,7 +7,8 @@ add_library(tl_math ${LIB_TYPE}
             algebra/quaternion.h
             algebra/euler_angles.h
             algebra/rotations.h
-            algebra/rotation_matrix
+            algebra/rotation_matrix.h
+            algebra/vectors.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

@@ -14,6 +14,7 @@
 #include "geometry/entities/entity.h"
 #include "geometry/entities/window.h"
 #include "geometry/operations.h"
+#include "math/algebra/vectors.h"
 
 namespace TL
 {
@@ -285,7 +286,7 @@ double Segment<Point_t>::angleOX() const
 {
   double angle = 0.0;
   if (pt1 != pt2) {
-    angle = vectorAngleOX(vector());
+    angle = math::vectorAngleOX(vector());
   }
   return angle;
 
@@ -296,7 +297,7 @@ double Segment<Point_t>::angleOY() const
 {
   double angle = 0.0;
   if (pt1 != pt2) {
-    angle = vectorAngleOY(vector());
+    angle = math::vectorAngleOY(vector());
   }
   return angle;
 }

@@ -86,11 +86,18 @@ OPTION (BUILD_EXAMPLES        "Include examples"      OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
 
 OPTION (BUILD_Message_handler "Active message handle" ON)
+OPTION (SHOW_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
 if(BUILD_Message_handler)
   set(TL_MESSAGE_HANDLER YES)
 else()
   set(TL_MESSAGE_HANDLER NO)
+endif()
+
+if(SHOW_DEPRECATED_METHODS)
+  set(TL_SHOW_DEPRECATED YES)
+else()
+  set(TL_SHOW_DEPRECATED NO)
 endif()
 
 if(BUILD_TEST)

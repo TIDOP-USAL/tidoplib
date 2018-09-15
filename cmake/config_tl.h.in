@@ -3,6 +3,21 @@
 
 /* Cabecera para configuración */
 
+// Manejo de errores como log y/o mensajes de consola
+
+#cmakedefine TL_MESSAGE_HANDLER
+
+/// Mensajes por consola
+#cmakedefine TL_ENABLE_CONSOLE
+
+//#if defined(TL_MESSAGE_HANDLER) && defined(TL_ENABLE_CONSOLE)
+
+//#endif
+
+/* Muestra las clases y funciones marcados como deprecados */
+#cmakedefine TL_SHOW_DEPRECATED
+
+
 #cmakedefine HAVE_OPENCV
 
 //#ifdef HAVE_OPENCV
@@ -29,17 +44,6 @@
 // Parallel Patterns Library
 // https://msdn.microsoft.com/es-es/library/dd492418.aspx
 #cmakedefine HAVE_PPL
-
-// Manejo de errores como log y/o mensajes de consola
-
-#cmakedefine TL_MESSAGE_HANDLER
-
-// Mensajes por consola
-#cmakedefine TL_ENABLE_CONSOLE
-
-//#if defined(TL_MESSAGE_HANDLER) && defined(TL_ENABLE_CONSOLE)
-
-//#endif
 
 // Visual Leak Detector
 #cmakedefine HAVE_VLD

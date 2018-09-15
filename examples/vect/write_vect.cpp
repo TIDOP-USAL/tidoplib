@@ -22,16 +22,23 @@ int main(int argc, char** argv)
   char name[TL_MAX_FNAME];
   getFileName(getRunfile(), name, TL_MAX_FNAME);
 
-  CmdParser cmdParser(name, "");
-  cmdParser.addParameter("vect", "Fichero vectorial de salida");
-  CmdParser::Status status = cmdParser.parse(argc, argv);
-  if (status == CmdParser::Status::PARSE_ERROR ) {
+  std::string vect;
+
+  Command cmd(name, "Escritura de un vector");
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("vect", 'v', "Fichero vectorial de salida", &vect));
+
+  // Parseo de los argumentos y comprobación de los mismos
+  Command::Status status = cmd.parse(argc, argv);
+  if (status == Command::Status::PARSE_ERROR ) {
     return 1;
-  } else if (status == CmdParser::Status::PARSE_HELP) {
+  } else if (status == Command::Status::SHOW_HELP) {
+    return 0;
+  } else if (status == Command::Status::SHOW_LICENCE) {
+    return 0;
+  } else if (status == Command::Status::SHOW_VERSION) {
     return 0;
   }
 
-  std::string vect = cmdParser.getValue<std::string>("vect");
 
   // Consola
   Console console;

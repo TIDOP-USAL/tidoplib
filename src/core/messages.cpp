@@ -314,6 +314,21 @@ _msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
 
 /* ---------------------------------------------------------------------------------- */
 
+MessageManager::Listener::Listener(bool add)
+{
+  if (add) {
+    MessageManager::getInstance().addListener(this);
+  }
+}
+
+MessageManager::Listener::~Listener()
+{
+  MessageManager::getInstance().removeListener(this);
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
 MessageManager::Message::Message(const char *msg, ...)
   : mLevel(MessageLevel::MSG_ERROR),
     mFile(""), 
@@ -534,6 +549,7 @@ void Log::_write(const char *msg, const char *date)
     //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
   }
 }
+
 
 #endif // TL_MESSAGE_HANDLER 
 

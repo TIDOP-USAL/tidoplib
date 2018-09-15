@@ -15,6 +15,7 @@
 //#include "geometry/entities/polygon.h"
 #include "geometry/entities/window.h"
 #include "geometry/entities/bbox.h"
+#include "math/algebra/vectors.h"
 
 namespace TL
 {
@@ -58,7 +59,7 @@ double distance(const Point_t &pt1, const Point_t &pt2)
   Point_t v;
   v.x = pt2.x - pt1.x;
   v.y = pt2.y - pt1.y;
-  return module(v);
+  return math::module(v);
 }
 
 template<typename Point3_t> inline
@@ -68,7 +69,7 @@ double distance3D(const Point3_t &pt1, const Point3_t &pt2)
   v.x = pt2.x - pt1.x;
   v.y = pt2.y - pt1.y;
   v.z = pt2.z - pt1.z;
-  return module3D(v);
+  return math::module3D(v);
 }
 
 // Comprueba si un punto esta a la derecha o izquierda de una linea
@@ -121,7 +122,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   }
   Point_t v1 = pt - ln.pt1;
   Point_t v2 = ln.vector();
-  double daux = dotProduct(v1, v2);
+  double daux = math::dotProduct(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -150,7 +151,7 @@ int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Poi
   }
   Point3D v1 = pt - ln.pt1;
   Point3D v2 = ln.vector();
-  double daux = dotProduct3D(v1, v2);
+  double daux = math::dotProduct3D(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -180,7 +181,7 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
   }
   Point3D v1 = pt - ln.pt1;
   Point3D v2 = ln.vector();
-  double daux = dotProduct3D(v1, v2);
+  double daux = math::dotProduct3D(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
