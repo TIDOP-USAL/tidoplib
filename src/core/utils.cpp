@@ -363,11 +363,12 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
   //strcpy(dir, directory);
   //strcat(dir, "\\"); // TODO: el tema de las barras aunque a efectos practicos de igual no queda elegante el mezclar los dos tipos de barras...
   //strcat(dir, wildcard);
-  Path _path(directory);
-  msgInfo(_path.toString().c_str());
+  //Path _path(directory);
+  fs::path _path(directory);
+  msgInfo(_path.string().c_str());
   _path.append(wildcard);
-  msgInfo(_path.toString().c_str());
-  hFind = FindFirstFileA(/*dir*/ Path(directory).append(wildcard).toString().c_str(), &findData);
+  msgInfo(_path.string().c_str());
+  hFind = FindFirstFileA(/*dir*/ fs::path(directory).append(wildcard).string().c_str(), &findData);
 
   if (hFind == INVALID_HANDLE_VALUE) {
     msgError("FindFirstFile failed (%d)\n", GetLastError());

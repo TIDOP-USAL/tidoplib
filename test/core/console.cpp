@@ -4,6 +4,7 @@
 #include "core/defs.h"
 
 #include <memory>
+#include <array>
 
 using namespace TL;
 
