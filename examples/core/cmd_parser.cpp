@@ -29,6 +29,13 @@ enum class options {
 int main(int argc, char** argv)
 {
   const char *name = "Consola";
+   
+  // Consola
+  Console console;
+  console.setTitle(name);                           // Titulo de la ventana de consola
+  //console.setConsoleUnicode();
+  //console.setFontHeight(24);                      // Se establece el tamaño de fuente
+  console.setLogLevel(MessageLevel::MSG_VERBOSE);   // Se muestran todos los mensajes por consola
 
   if (1){ /// Nueva gestión de argumentos por consola
     std::string file;
@@ -53,6 +60,11 @@ int main(int argc, char** argv)
     } else if (status == Command::Status::SHOW_VERSION) {
       return 0;
     }
+
+    msgInfo("file: %s", file.c_str());
+    msgInfo("int: %i", val);
+    msgInfo("bool: %s", bOpt ? "true" : "false");
+    msgInfo("double: %f", val_d);
 
   } else {
 #ifdef TL_SHOW_DEPRECATED
@@ -84,12 +96,6 @@ int main(int argc, char** argv)
 #endif
   }
 
-  // Consola
-  Console console;
-  console.setTitle(name);                         // Titulo de la ventana de consola
-  //console.setConsoleUnicode();
-  //console.setFontHeight(24);                      // Se establece el tamaño de fuente
-  console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
 
   // Se muestra un mensaje por consola
   msgInfo("prueba");

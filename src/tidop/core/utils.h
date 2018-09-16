@@ -152,7 +152,9 @@ TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
  * ...
  * }
  * \endcode
+ * \deprecated Usar en su lugar boost::filesystem::extension()
  */
+TL_DEPRECATED("boost::filesystem::filename()")
 TL_EXPORT int getFileName(const char *path, char *name, int size);
 
 /*!
