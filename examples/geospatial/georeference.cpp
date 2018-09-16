@@ -1,12 +1,12 @@
 
 /* Cabeceras TidopLib */
-#include "core/console.h"
-#include "core/messages.h"
-#include "geometry/entities/point.h"
-#include "geospatial/crs.h"
-#include "geometry/transform.h"
-#include "img/imgio.h"
-#include "math/angles.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/geometry/entities/point.h>
+#include <tidop/geospatial/crs.h>
+#include <tidop/geometry/transform.h>
+#include <tidop/img/imgio.h>
+#include <tidop/math/angles.h>
 
 // filesystem
 #if (__cplusplus >= 201703L)

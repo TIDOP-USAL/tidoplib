@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/bbox.h"
+#include <tidop/geometry/entities/bbox.h>
 
 using namespace TL;
 using namespace TL::geometry;

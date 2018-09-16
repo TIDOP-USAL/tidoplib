@@ -24,7 +24,7 @@ Para la instalación de la libreria se hara uso de la herramienta [CMake](https:
 
 #### Instalación en Windows
 
-Se clona el repositorio o bien utilizando algún cliente como [TortoiseGit](https://tortoisegit.org) o [SourceTree](www.sourcetreeapp.com) o directamente desde la consola. Para utilzar algún cliente se selecciona la opción de clonar el repositorio indicando la url del repositorio:
+Se clona el repositorio o bien utilizando algún cliente como [TortoiseGit](https://tortoisegit.org) o [SourceTree](www.sourcetreeapp.com) o directamente desde la consola. Para utilizar algún cliente se selecciona la opción de clonar el repositorio indicando la url del repositorio:
 
 ```
 https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git

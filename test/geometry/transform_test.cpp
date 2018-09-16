@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "geometry/transform.h"
-#include "core/utils.h"
-#include "core/exception.h"
+#include <tidop/geometry/transform.h>
+#include <tidop/core/utils.h>
+#include <tidop/core/exception.h>
 
 
 using namespace TL;

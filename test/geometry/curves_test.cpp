@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/curves.h"
+#include <tidop/geometry/entities/curves.h>
 
 using namespace TL;
 using namespace TL::geometry;

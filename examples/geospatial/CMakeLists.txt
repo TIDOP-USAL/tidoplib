@@ -24,7 +24,7 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_geospatial tl_img ${OpenCV_LIBS})
+    target_link_libraries(${the_target} tl_core tl_math tl_geom tl_geospatial tl_img ${OpenCV_LIBS})
     if(HAVE_GDAL)
 	    target_link_libraries(${the_target} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     endif(HAVE_GDAL)

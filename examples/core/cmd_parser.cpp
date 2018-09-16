@@ -14,9 +14,9 @@
 #include <stdio.h>
 
 // Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "img_process/img_processing.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/img_process/img_processing.h>
 
 using namespace TL;
 

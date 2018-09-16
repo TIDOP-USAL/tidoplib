@@ -3,38 +3,38 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if(BUILD_TL_CORE)
   #directorio con el módulo 'Core' de la librería
-  add_subdirectory(core)
+  add_subdirectory(tidop/core)
   
   if(BUILD_TL_MATH)
-    add_subdirectory(math)
+    add_subdirectory(tidop/math)
   endif()
   
   if(BUILD_TL_GEOMETRY)
-    add_subdirectory(geometry)
+    add_subdirectory(tidop/geometry)
   endif()
   
   if(BUILD_TL_IMG)
-    add_subdirectory(img)
+    add_subdirectory(tidop/img)
   endif()
   
   if(BUILD_TL_IMG_PROCESS)
-    add_subdirectory(img_process)
+    add_subdirectory(tidop/img_process)
   endif()
   
   if(BUILD_TL_GRAPHIC AND BUILD_TL_GEOMETRY)
-    add_subdirectory(graphic)
+    add_subdirectory(tidop/graphic)
   endif()
   
   if(BUILD_TL_GEOSPATIAL)
-    add_subdirectory(geospatial)
+    add_subdirectory(tidop/geospatial)
   endif()
 
   if(BUILD_TL_VECT)
-    add_subdirectory(vect)
+    add_subdirectory(tidop/vect)
   endif()
    
   if(BUILD_TL_EXPERIMENTAL)
-    add_subdirectory(experimental)
+    add_subdirectory(tidop/experimental)
   endif()
      
 else()

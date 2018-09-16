@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 // Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "vect/vectio.h"
-#include "graphic/layer.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/vect/vectio.h>
+#include <tidop/graphic/layer.h>
 
 using namespace TL;
 using namespace TL::graph;

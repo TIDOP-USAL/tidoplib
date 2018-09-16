@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "math/matrix.h"
+#include <tidop/math/matrix.h>
 
 using namespace TL::math;
 

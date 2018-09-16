@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/polygon.h"
-#include "geometry/entities/window.h"
-#include "geometry/entities/bbox.h"
+#include <tidop/geometry/entities/polygon.h>
+#include <tidop/geometry/entities/window.h>
+#include <tidop/geometry/entities/bbox.h>
 
 
 using namespace TL;

@@ -7,11 +7,11 @@
 #include "opencv2/highgui/highgui.hpp"
 
 // Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "img_process/img_processing.h"
-#include "geometry/entities/window.h"
-#include "img_process/anaglyph.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/img_process/img_processing.h>
+#include <tidop/geometry/entities/window.h>
+#include <tidop/img_process/anaglyph.h>
 
 using namespace cv;
 

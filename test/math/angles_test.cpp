@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "math/angles.h"
+#include <tidop/math/angles.h>
 
 using namespace TL::math;
 

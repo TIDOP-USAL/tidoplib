@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "graphic/color.h"
+#include <tidop/graphic/color.h>
 
 
 using namespace TL;

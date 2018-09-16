@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/segment.h"
-#include "core/utils.h"
+#include <tidop/geometry/entities/segment.h>
+#include <tidop/core/utils.h>
 
 using namespace TL;
 using namespace TL::geometry;

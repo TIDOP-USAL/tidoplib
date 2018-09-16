@@ -7,10 +7,10 @@
 #include <memory>
 
 // Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "geometry/entities/point.h"
-#include "geospatial/crs.h" 
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/geometry/entities/point.h>
+#include <tidop/geospatial/crs.h>
 
 
 

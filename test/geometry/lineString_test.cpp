@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/lineString.h"
-#include "geometry/entities/window.h"
-#include "geometry/entities/bbox.h"
-#include "core/utils.h"
+#include <tidop/geometry/entities/lineString.h>
+#include <tidop/geometry/entities/window.h>
+#include <tidop/geometry/entities/bbox.h>
+#include <tidop/core/utils.h>
 
 using namespace TL;
 using namespace TL::geometry;

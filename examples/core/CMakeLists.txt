@@ -1,5 +1,5 @@
 
-# Ejemplos módulo Core
+# Ejemplos mÃ³dulo Core
 
 if(BUILD_TL_CORE)
 
@@ -30,7 +30,7 @@ if(BUILD_TL_CORE)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejmplo a la carpeta 'examples/core'
+    # AÃ±ade el proyecto de ejmplo a la carpeta 'examples/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "examples/core")
 
     set_target_properties(${the_target} PROPERTIES
