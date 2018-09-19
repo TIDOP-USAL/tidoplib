@@ -45,7 +45,7 @@ if(BUILD_TL_CORE AND BUILD_TL_MATH)
         set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
       install(TARGETS ${the_target}
-              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" COMPONENT samples)
+              RUNTIME DESTINATION bin COMPONENT samples)
     endif()
   ENDMACRO()
 
