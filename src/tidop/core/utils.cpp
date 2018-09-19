@@ -208,27 +208,21 @@ int getFileDir(const char *path, char *dir, int size)
 #endif
 }
 
+#ifdef _MSC_VER
 int getFileDrive(const char *path, char *drive, int size)
 {
   int r_err = 0;
-#ifdef _MSC_VER
   r_err = _splitpath_s(path, drive, size, NULL, NULL, NULL, NULL, NULL, NULL);
-#else
-  ///TODO: Completar
-#endif
   return r_err;
 }
 
 int getFileExtension(const char *path, char *ext, int size)
 {
   int r_err = 0;
-#ifdef _MSC_VER
   r_err = _splitpath_s(path, NULL, NULL, NULL, NULL, NULL, NULL, ext, size);
-#else
-  ///TODO: Completar
-#endif
   return r_err;
 }
+#endif
 
 int getFileName(const char *path, char *name, int size)
 {
@@ -1228,13 +1222,10 @@ Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
   mFile = file;
   mMode = mode;
 
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
-#ifdef _MSC_VER
-  if (_strcmpi(ext, ".csv") != 0) return Status::OPEN_FAIL;
-#else
-  if (strcmp(ext, ".csv") != 0 || strcmp(ext, ".CSV") != 0 ) return Status::OPEN_FAIL;
-#endif
+  fs::path _path(file);
+  fs::path ext = _path.extension().string();
+  if (ext.compare(".csv") != 0 || ext.compare(".CSV") != 0 ) return Status::OPEN_FAIL;
+
   std::ios_base::openmode _mode;
   switch (mMode) {
   case Mode::Read:

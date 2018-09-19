@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <tidop/geometry/entities/lineString.h>
+#include <tidop/geometry/entities/linestring.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
 #include <tidop/core/utils.h>
@@ -55,7 +55,7 @@ TEST(LineString, ConstructorReserve)
 
 TEST(LineString, CopyConstructor) 
 {
-	LineStringI  line(ptsIn); //Creamos el primer vector, inici醤dolo con la lista iniciadora
+	LineStringI  line(ptsIn); //Creamos el primer vector, inici谩ndolo con la lista iniciadora
 	LineStringI copia(line);  //Creamos el segundo vectro como copia del primero
   WindowI w = line.getWindow();
 
@@ -67,7 +67,7 @@ TEST(LineString, CopyConstructor)
   EXPECT_EQ(702670, w.pt2.y);
 	int j = 0;
 	/*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
-	creadoes igual a cada uno de los puntos de la lista de iniciaci髇*/
+	creadoes igual a cada uno de los puntos de la lista de iniciaci贸n*/
 	for (auto i : ptsIn) {
 		EXPECT_EQ(i.x, copia[j].x);
 		EXPECT_EQ(i.y, copia[j].y);
@@ -113,7 +113,7 @@ TEST(LineString, Vector)
 
 TEST(LineString, ConstructorList) 
 {
-  LineStringI  line(ptsIn); //Creamos el vector, inici醤dolo con la lista iniciadora
+  LineStringI  line(ptsIn); //Creamos el vector, inici谩ndolo con la lista iniciadora
 
   WindowI w = line.getWindow();
 
@@ -126,7 +126,7 @@ TEST(LineString, ConstructorList)
 
   int j = 0;
   /*Entramos en un bucle para comprobar que las coordenadas x e y de cada punto del vector de vertices
-  creadoes igual a cada uno de los puntos de la lista de iniciaci髇*/
+  creadoes igual a cada uno de los puntos de la lista de iniciaci贸n*/
   for (auto i : ptsIn) {
 	  EXPECT_EQ(i.x, line[j].x);
 	  EXPECT_EQ(i.y, line[j].y);
@@ -134,7 +134,7 @@ TEST(LineString, ConstructorList)
   }
 }
 
-/* Operador de asignaci髇 */
+/* Operador de asignaci贸n */
 
 TEST(LineString, assing_operator)
 {
@@ -270,7 +270,7 @@ TEST(LineString3D, ConstructorList)
   EXPECT_EQ(454.3, box.pt2.z);
 }
 
-/* Operador de asignaci髇 */
+/* Operador de asignaci贸n */
 
 TEST(LineString3D, assing_operator)
 {

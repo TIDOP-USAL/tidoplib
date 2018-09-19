@@ -7,7 +7,7 @@ add_library(tl_geom ${LIB_TYPE}
             entities/bbox.h
             entities/curves.h
             entities/entity.h
-            entities/lineString.h
+            entities/linestring.h
             entities/point.h
             entities/polygon.h
             entities/segment.cpp

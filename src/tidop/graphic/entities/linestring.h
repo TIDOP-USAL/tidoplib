@@ -5,7 +5,7 @@
 #include "tidop/core/defs.h"
 
 #include "tidop/geometry/entities/point.h"
-#include "tidop/geometry/entities/lineString.h"
+#include "tidop/geometry/entities/linestring.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace TL

@@ -101,7 +101,7 @@ Color::Color(const std::string &color)
 {
   ///TODO: error inprevisto en test
   //mColor = stringToInteger(color, TL::Base::HEXADECIMAL);
-  mColor = std::stoi(color, nullptr, 16);
+  mColor = static_cast<uint32_t>(std::stoi(color, nullptr, 16));
 }
 
 Color::Color(const Color::NAME &color)
@@ -598,6 +598,10 @@ Color &Color::operator =(const Color &color)
 /* ---------------------------------------------------------------------------------- */
 
 
+IColorModel::IColorModel() {}
+IColorModel::~IColorModel() {}
+
+
 ColorRGB::ColorRGB()
   : mRed(0),
     mGreen(0),
@@ -664,11 +668,11 @@ void ColorRGB::setBlue(int blue)
   this->adjustRangeBlue();
 }
 
-void ColorRGB::setRange(int min, int max)
-{
-  mRangeMin = min;
-  mRangeMax = max;
-}
+//void ColorRGB::setRange(int min, int max)
+//{
+//  mRangeMin = min;
+//  mRangeMax = max;
+//}
 
 ColorRGB &ColorRGB::operator =(const ColorRGB &color)
 {
@@ -916,13 +920,13 @@ void ColorCMYK::fromColor(const Color &color)
 void ColorCMYK::adjustRangeCyan()
 {
   if (mCyan < mRangeMin) mCyan = mRangeMin;
-  else if (mCyan > 1.) mCyan = 1.;
+  else if (mCyan > mRangeMax) mCyan = mRangeMax;
 }
 
 void ColorCMYK::adjustRangeMagenta()
 {
   if (mMagenta < mRangeMin) mMagenta = mRangeMin;
-  else if (mMagenta > 1.) mMagenta = 1.;
+  else if (mMagenta > mRangeMax) mMagenta = mRangeMax;
 }
 
 void ColorCMYK::adjustRangeYellow()
@@ -946,7 +950,7 @@ ColorHSV::ColorHSV()
     mSaturation(0.),
     mValue(0.),
     mRangeMinHue(0.),
-    mRangeMaxHue(255.),
+    mRangeMaxHue(360.),
     mRangeMin(0.),
     mRangeMax(100.)
 {
@@ -958,7 +962,7 @@ ColorHSV::ColorHSV(double hue, double saturation, double value)
     mSaturation(saturation),
     mValue(value),
     mRangeMinHue(0.),
-    mRangeMaxHue(255.),
+    mRangeMaxHue(360.),
     mRangeMin(0.),
     mRangeMax(100.)
 {
@@ -1097,20 +1101,20 @@ void ColorHSV::fromColor(const Color &color)
 
 void ColorHSV::adjustRangeHue()
 {
-  if (mHue < 0.) mHue = 0.;
-  else if (mHue >= 360.) mHue = 359.;
+  if (mHue < mRangeMinHue) mHue = mRangeMinHue;
+  else if (mHue >= mRangeMaxHue) mHue = mRangeMaxHue;
 }
 
 void ColorHSV::adjustRangeSaturation()
 {
-  if (mSaturation < 0.) mSaturation = 0.;
-  else if (mSaturation > 100.) mSaturation = 100.;
+  if (mSaturation < mRangeMin) mSaturation = mRangeMin;
+  else if (mSaturation > mRangeMax) mSaturation = mRangeMax;
 }
 
 void ColorHSV::adjustRangeValue()
 {
-  if (mValue < 0.) mValue = 0.;
-  else if (mValue > 100.) mValue = 100.;
+  if (mValue < mRangeMin) mValue = mRangeMin;
+  else if (mValue > mRangeMax) mValue = mRangeMax;
 }
 
 
@@ -1122,7 +1126,7 @@ ColorHSL::ColorHSL()
     mSaturation(0.),
     mLightness(0.),
     mRangeMinHue(0.),
-    mRangeMaxHue(255.),
+    mRangeMaxHue(360.),
     mRangeMin(0.),
     mRangeMax(100.)
 {
@@ -1134,7 +1138,7 @@ ColorHSL::ColorHSL(double hue, double saturation, double value)
     mSaturation(saturation),
     mLightness(lightness()),
     mRangeMinHue(0.),
-    mRangeMaxHue(255.),
+    mRangeMaxHue(360.),
     mRangeMin(0.),
     mRangeMax(100.)
 {
@@ -1277,20 +1281,20 @@ void ColorHSL::fromColor(const Color &color)
 
 void ColorHSL::adjustRangeHue()
 {
-  if (mHue < 0.) mHue = 0.;
-  else if (mHue >= 360.) mHue = 359.;
+  if (mHue < mRangeMinHue) mHue = mRangeMinHue;
+  else if (mHue >= mRangeMaxHue) mHue = mRangeMaxHue;
 }
 
 void ColorHSL::adjustRangeSaturation()
 {
-  if (mSaturation < 0.) mSaturation = 0.;
-  else if (mSaturation > 100.) mSaturation = 100.;
+  if (mSaturation < mRangeMin) mSaturation = mRangeMin;
+  else if (mSaturation > mRangeMax) mSaturation = mRangeMax;
 }
 
 void ColorHSL::adjustRangeLightness()
 {
-  if (mLightness < 0.) mLightness = 0.;
-  else if (mLightness > 100.) mLightness = 100.;
+  if (mLightness < mRangeMin) mLightness = mRangeMin;
+  else if (mLightness > mRangeMax) mLightness = mRangeMax;
 }
 
 /* ---------------------------------------------------------------------------------- */

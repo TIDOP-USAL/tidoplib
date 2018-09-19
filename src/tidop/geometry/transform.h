@@ -2992,7 +2992,24 @@ public:
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
+  TL_DEPRECATED("scale()")
   double getScale() const { return mScale; }
+  double scale() const { return mScale; }
+
+  /*!
+   * \brief Establece la escala de la transformación
+   * \param[in] scale Escala de la transformación
+   */
+  void setScale(double scale);
+
+  double omega() const;
+  void setOmega(double omega);
+
+  double phi() const;
+  void setPhi(double phi);
+
+  double kappa() const;
+  void setKappa(double kappa);
 
   /*!
    * \brief Establece los parámetros
@@ -3006,11 +3023,6 @@ public:
    */
   void setParameters(double tx, double ty, double tz, double scale, double omega, double phi, double kappa);
 
-  /*!
-   * \brief Establece la escala de la transformación
-   * \param[in] scale Escala de la transformación
-   */
-  void setScale(double scale);
 
 private:
 
@@ -3020,7 +3032,6 @@ private:
   void update();
 
 };
-
 
 
 
@@ -3225,6 +3236,47 @@ template<typename Point_t> inline
 void Helmert3D<Point_t>::setScale(double scale)
 {
   mScale = scale;
+}
+
+
+
+template<typename Point_t> inline
+double Helmert3D<Point_t>::omega() const
+{
+return mOmega;
+}
+
+template<typename Point_t> inline
+void Helmert3D<Point_t>::setOmega(double omega)
+{
+  mOmega = omega;
+  update();
+}
+
+template<typename Point_t> inline
+double Helmert3D<Point_t>::phi() const
+{
+return mPhi;
+}
+
+template<typename Point_t> inline
+void Helmert3D<Point_t>::setPhi(double phi)
+{
+  mPhi = phi;
+  update();
+}
+
+template<typename Point_t> inline
+double Helmert3D<Point_t>::kappa() const
+{
+return mKappa;
+}
+
+template<typename Point_t> inline
+void Helmert3D<Point_t>::setKappa(double kappa)
+{
+  mKappa = kappa;
+  update();
 }
 
 template<typename Point_t> inline

@@ -901,7 +901,7 @@ public:
   static Color randomColor();
 
   operator unsigned int() const { return mColor; }
-  operator int() const { return mColor; }
+  operator int() const { return static_cast<int>(mColor); }
 
   /*!
    * \brief operador de asignación
@@ -923,7 +923,9 @@ class TL_EXPORT IColorModel
 
 public:
 
-  IColorModel() {}
+  IColorModel();
+
+  virtual ~IColorModel();
 
   /*!
    * \brief toColor
@@ -937,6 +939,8 @@ public:
    */
   virtual void fromColor(const Color &color) = 0;
 };
+
+
 
 /*!
  * \brief Modelo de color RGB
@@ -1038,7 +1042,8 @@ public:
    * \param[in] min Valor minimo (por defecto 0)
    * \param[in] max Valor máximo (por defecto 255)
    */
-  void setRange(int min, int max);
+  ///TODO: Por ahora lo desactivo
+  //void setRange(int min, int max);
 
   ColorRGB &operator =(const ColorRGB &color);
 
@@ -1470,6 +1475,12 @@ TrfColorModel<T1, T2>::TrfColorModel()
   mTrf = [](T1 &in, T2 &out){
     out.fromColor(in.toColor());
   };
+}
+
+template<typename T1, typename T2>
+void TrfColorModel<T1, T2>::aply()
+{
+
 }
 
 } // fin namespace graph

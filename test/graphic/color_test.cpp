@@ -551,7 +551,7 @@ using namespace TL;
 //  EXPECT_EQ(color[1], static_cast<int>(_colorCpy));
 //}
 
-///* Contructor por número entero */
+///* Contructor por n\FAmero entero */
 
 //TEST(Color, ConstructorInt)
 //{
@@ -771,7 +771,7 @@ using namespace TL;
 
 
 ///* ---------------------------------------------------------------------------------- */
-///*                                Conversión de color                                 */
+///*                                Conversi\F3n de color                                 */
 ///* ---------------------------------------------------------------------------------- */
 
 
@@ -918,8 +918,14 @@ protected:
 
   virtual void TearDown() override
   {
-    if (color2) delete color2, color2 = nullptr;
-    if (rgb2) delete rgb2, rgb2 = nullptr;
+    if (color2) {
+      delete color2;
+      color2 = nullptr;
+    }
+    if (rgb2) {
+      delete rgb2;
+      rgb2 = nullptr;
+    }
   }
 
   graph::Color color1;
@@ -959,3 +965,291 @@ TEST_F(ColorTest, ColorFromColorRGB)
   EXPECT_EQ(661790, static_cast<int>(color));
 }
 
+TEST(ColorRGB, setRed)
+{
+  graph::ColorRGB rgb;
+  rgb.setRed(45);
+  EXPECT_EQ(45, rgb.red());
+}
+
+TEST(ColorRGB, setRedOutRange)
+{
+  graph::ColorRGB rgb;
+  rgb.setRed(300);
+  EXPECT_EQ(255, rgb.red());
+  rgb.setRed(-4);
+  EXPECT_EQ(0, rgb.red());
+}
+
+TEST(ColorRGB, setGreen)
+{
+  graph::ColorRGB rgb;
+  rgb.setGreen(45);
+  EXPECT_EQ(45, rgb.green());
+}
+
+TEST(ColorRGB, setGreenOutRange)
+{
+  graph::ColorRGB rgb;
+  rgb.setGreen(300);
+  EXPECT_EQ(255, rgb.green());
+  rgb.setGreen(-4);
+  EXPECT_EQ(0, rgb.green());
+}
+
+TEST(ColorRGB, setBlue)
+{
+  graph::ColorRGB rgb;
+  rgb.setBlue(45);
+  EXPECT_EQ(45, rgb.blue());
+}
+
+TEST(ColorRGB, setBlueOutRange)
+{
+  graph::ColorRGB rgb;
+  rgb.setBlue(300);
+  EXPECT_EQ(255, rgb.blue());
+  rgb.setBlue(-4);
+  EXPECT_EQ(0, rgb.blue());
+}
+
+/// toColor
+/// fromColor
+
+TEST(ColorRGBA, setAlpha)
+{
+  graph::ColorRGBA rgba;
+  rgba.setAlpha(45);
+  EXPECT_EQ(45, rgba.alpha());
+}
+
+TEST(ColorRGBA, setAlphaOutRange)
+{
+  graph::ColorRGBA rgba;
+  rgba.setAlpha(300);
+  EXPECT_EQ(255, rgba.alpha());
+  rgba.setAlpha(-4);
+  EXPECT_EQ(0, rgba.alpha());
+}
+
+
+TEST(ColorCMYK, SetGetCyan)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setCyan(0.5);
+  EXPECT_EQ(0.5, cmyk.cyan());
+}
+
+TEST(ColorCMYK, SetCyanOutRange)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setCyan(1.1);
+  EXPECT_EQ(1.0, cmyk.cyan());
+  cmyk.setCyan(-0.1);
+  EXPECT_EQ(0.0, cmyk.cyan());
+}
+
+TEST(ColorCMYK, SetGetGreen)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setMagenta(0.3);
+  EXPECT_EQ(0.3, cmyk.magenta());
+}
+
+TEST(ColorCMYK, SetMagentaOutRange)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setMagenta(1.1);
+  EXPECT_EQ(1.0, cmyk.magenta());
+  cmyk.setMagenta(-0.1);
+  EXPECT_EQ(0.0, cmyk.magenta());
+}
+
+TEST(ColorCMYK, SetGetYellow)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setYellow(0.6);
+  EXPECT_EQ(0.6, cmyk.yellow());
+}
+
+TEST(ColorCMYK, setYellowOutRange)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setYellow(1.1);
+  EXPECT_EQ(1.0, cmyk.yellow());
+  cmyk.setYellow(-0.1);
+  EXPECT_EQ(0.0, cmyk.yellow());
+}
+
+TEST(ColorCMYK, SetGetKey)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setKey(0.6);
+  EXPECT_EQ(0.6, cmyk.key());
+}
+
+TEST(ColorCMYK, setKeyOutRange)
+{
+  graph::ColorCMYK cmyk;
+  cmyk.setKey(1.2);
+  EXPECT_EQ(1.0, cmyk.key());
+  cmyk.setKey(-0.1);
+  EXPECT_EQ(0.0, cmyk.key());
+}
+
+/* ColorHSV */
+
+TEST(ColorHSV, setHue)
+{
+  graph::ColorHSV hsv;
+  hsv.setHue(45);
+  EXPECT_EQ(45, hsv.hue());
+}
+
+TEST(ColorHSV, setHueOutRange)
+{
+  graph::ColorHSV hsv;
+  hsv.setHue(400);
+  EXPECT_EQ(360., hsv.hue());
+  hsv.setHue(-4);
+  EXPECT_EQ(0, hsv.hue());
+}
+
+TEST(ColorHSV, setSaturation)
+{
+  graph::ColorHSV hsv;
+  hsv.setSaturation(45);
+  EXPECT_EQ(45, hsv.saturation());
+}
+
+TEST(ColorHSV, setSaturationOutRange)
+{
+  graph::ColorHSV hsv;
+  hsv.setSaturation(300);
+  EXPECT_EQ(100, hsv.saturation());
+  hsv.setSaturation(-4);
+  EXPECT_EQ(0, hsv.saturation());
+}
+
+TEST(ColorHSV, setValue)
+{
+  graph::ColorHSV hsv;
+  hsv.setValue(45);
+  EXPECT_EQ(45, hsv.value());
+}
+
+TEST(ColorHSV, setValueOutRange)
+{
+  graph::ColorHSV hsv;
+  hsv.setValue(400);
+  EXPECT_EQ(100, hsv.value());
+  hsv.setValue(-4);
+  EXPECT_EQ(0, hsv.value());
+}
+
+/* ColorHSL */
+
+TEST(ColorHSL, setHue)
+{
+  graph::ColorHSL hsl;
+  hsl.setHue(45);
+  EXPECT_EQ(45, hsl.hue());
+}
+
+TEST(ColorHSL, setHueOutRange)
+{
+  graph::ColorHSL hsl;
+  hsl.setHue(400);
+  EXPECT_EQ(360., hsl.hue());
+  hsl.setHue(-4);
+  EXPECT_EQ(0, hsl.hue());
+}
+
+TEST(ColorHSL, setSaturation)
+{
+  graph::ColorHSL hsl;
+  hsl.setSaturation(45);
+  EXPECT_EQ(45, hsl.saturation());
+}
+
+TEST(ColorHSL, setSaturationOutRange)
+{
+  graph::ColorHSL hsl;
+  hsl.setSaturation(300);
+  EXPECT_EQ(100, hsl.saturation());
+  hsl.setSaturation(-4);
+  EXPECT_EQ(0, hsl.saturation());
+}
+
+TEST(ColorHSL, setValue)
+{
+  graph::ColorHSL hsl;
+  hsl.setLightness(45);
+  EXPECT_EQ(45, hsl.lightness());
+}
+
+TEST(ColorHSL, setValueOutRange)
+{
+  graph::ColorHSL hsl;
+  hsl.setLightness(300);
+  EXPECT_EQ(100, hsl.lightness());
+  hsl.setLightness(-4);
+  EXPECT_EQ(0, hsl.lightness());
+}
+
+
+
+class TrfColorModel
+  : public testing::Test
+{
+public:
+
+protected:
+
+  virtual void SetUp() override
+  {
+    //std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 }  };
+    //std::vector<std::string> _hex{ "0", "FF0000", "FF00", "FF", "FFFFFF", "342455", "F3377B" };
+    //std::vector<int> color{ 0, 16711680, 65280, 255, 16777215, 3417173, 15939451 };
+    //std::vector<std::vector<double>> cmyk{ { 0, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 }, { 1, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0.388, 0.576, 0, 0.667 }, { 0, 0.774, 0.494, 0.047 } };
+    //std::vector<std::vector<double>> hsv{ { 0., 0., 0.}, { 0., 100., 100.}, { 120., 100., 100.}, { 240., 100., 100.}, { 0., 0., 100.}, { 259.592, 57.647, 33.333}, { 338.298, 77.366, 95.294} };
+    //std::vector<std::vector<double>> hsl{ { 0., 0., 0.}, { 0., 100., 50.}, { 120., 100., 50.}, { 240., 100., 50.}, { 0., 0., 100.}, { 259.592, 40.495, 23.725}, { 338.298, 88.679, 58.431} };
+    rgb = new graph::ColorRGB(0, 255, 0);
+    cmyk = new graph::ColorCMYK(1, 1, 0, 0);
+    hsl = new graph::ColorHSL(338.298, 88.679, 58.431);
+    hsv = new graph::ColorHSV(259.592, 57.647, 33.333);
+  }
+
+  virtual void TearDown() override
+  {
+    if (rgb) {
+      delete rgb;
+      rgb = nullptr;
+    }
+    if (cmyk) {
+      delete cmyk;
+      cmyk = nullptr;
+    }
+    if (hsl) {
+      delete hsl;
+      hsl = nullptr;
+    }
+    if (hsv) {
+      delete hsv;
+      hsv = nullptr;
+    }
+  }
+
+  graph::Color color1;
+  graph::ColorRGB *rgb;
+  graph::ColorCMYK *cmyk;
+  graph::ColorHSL *hsl;
+  graph::ColorHSV *hsv;
+
+};
+
+//TEST_F(TrfColorModel, rgbToCMYK)
+//{
+//  TrfColorModel<graph::ColorRGB, graph::ColorCMYK> rgbToCmyk;
+//  rgbToCmyk
+//}

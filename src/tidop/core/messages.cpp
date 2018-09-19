@@ -458,6 +458,8 @@ EnumFlags<MessageLevel> Log::getLogLevel() const
 
 void Log::setLogFile(const char* file)
 {
+  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
+  TL_TODO("Comprobar si tiene permisos de escritura")
   sLogFile = file;
 }
 
@@ -532,7 +534,7 @@ void Log::onMsgError(const char *msg, const char *date)
 
 void Log::_write(const char *msg, const char *date)
 {
-
+  TL_TODO("Permitir que se pueda pausar la escritura de los mensajes en el log")
   if (sLogFile.empty()) {
     // Log por defecto
     fs::path logPath(getRunfile());
