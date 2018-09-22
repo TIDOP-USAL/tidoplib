@@ -1,4 +1,4 @@
-#include "tidop/core/console.h"
+﻿#include "tidop/core/console.h"
 
 #include "config_tl.h"
 
@@ -9,6 +9,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdio>
+#include <vector>
 
 using namespace TL;
 using namespace std;
@@ -23,11 +24,11 @@ struct msgProperties {
   Console::Intensity intensity;
 };
 
-struct msgProperties msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)",   Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Info: %s",    "Info: %s (%s:%u, %s)",    Console::Color::WHITE, Console::Intensity::BRIGHT},
+static struct msgProperties msgTemplate[] = {   
+  { "Debug:   %s", "Debug:   %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
+  { "Info:    %s", "Info:    %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
   { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
-  { "Error: %s",   "Error: %s (%s:%u, %s)",   Console::Color::RED, Console::Intensity::BRIGHT}
+  { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
 };
 
 msgProperties getMessageProperties( MessageLevel msgLevel ) 
@@ -101,9 +102,6 @@ Console::Console(Console::Mode mode, bool add)
     case Console::Mode::OUTPUT_ERROR:
       stream = stderr;
       break;
-    default:
-      stream = stdout;
-      break;
     }
     init(stream);
 #endif
@@ -122,10 +120,7 @@ Console::Console(const Console &console, bool add) :
   mBackColor(console.mBackColor)
 #else
   mStream(console.mStream),
-  /*mCommand(0),*/
-  mForeIntensity(console.mForeIntensity),
   mForeColor(console.mForeColor),
-  mBackIntensity(console.mBackIntensity),
   mBackColor(console.mBackColor),
   mBold(console.mBold)
 #endif
@@ -207,8 +202,7 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
   else
       mBackIntensity = BACKGROUND_INTENSITY;
 #else
-  mBackColor = static_cast<int>(backColor) + 40;
-  mBackIntensity = static_cast<int>(intensity);
+  mBackColor = static_cast<int>(backColor) + 40 + static_cast<int>(intensity) * 60;
 #endif
   update();
 }
@@ -251,8 +245,7 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
   else
       mForeIntensity = FOREGROUND_INTENSITY;
 #else
-  mForeColor = static_cast<int>(foreColor) + 30;
-  mForeIntensity = static_cast<int>(intensity);
+  mForeColor = static_cast<int>(foreColor) + 30 + static_cast<int>(intensity) * 60;
 #endif
 
   update();
@@ -379,9 +372,7 @@ void Console::init(FILE *stream)
 {
   mStream = stream;
   mForeColor = 0;
-  mForeIntensity = 0;
   mBackColor = 0;
-  mBackIntensity = 0;
   mBold = 21;
 }
 #endif
@@ -392,9 +383,14 @@ void Console::update()
   SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
-  //sprintf(mCommand, "%c[%d;%d;%d;%dm", 0x1B, mBold, mForeIntensity, mForeColor, mBackColor);
-  sprintf(mCommand, "\x1B[%i;%i;%im", mBold, mForeIntensity, mForeColor);
-  fprintf(mStream, "%s", mCommand);
+  stringstream ss;
+  ss << "\x1B[" << mBold;
+  if (mForeColor != 0)
+    ss << ";" << mForeColor;
+  if (mBackColor != 0)
+    ss << ";" << mBackColor;
+  ss << "m";
+  fprintf(mStream, "%s", ss.str().c_str());
 #endif
 }
 
@@ -532,13 +528,32 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
     if (found_name != std::string::npos) {
       arg_cmd_name = (argv[i])+2;
+      /// argumento-valor separado por =
+//      std::size_t val_pos = arg_cmd_name.find("=");
+//      if (val_pos != std::string::npos) {
+        std::vector<std::string> v;
+        TL::split(arg_cmd_name, v, "=");
+        if(v.size() == 2){
+          cmd_in[v[0]] = v[1];
+          continue;
+        }
+//      }
     } else if (found_short_name != std::string::npos) {
-      ///TODO: Si viene mas de un caracter es que se combinan varias opciones
       arg_cmd_name = (argv[i])+1;
       if (arg_cmd_name.size() > 1) {
-        for (size_t j = 0; j < arg_cmd_name.size(); j++){
-          std::string s = &arg_cmd_name[j];
-          cmd_in[s] = "true";
+        std::vector<std::string> v;
+        TL::split(arg_cmd_name, v, "=");
+        if(v.size() == 2){
+          cmd_in[v[0]] = v[1];
+        } else {
+          /// Se da el caso de combinación de multiples opciones
+          for (auto &opt : arg_cmd_name){
+            stringstream ss;
+            string short_name;
+            ss << opt;
+            ss >> short_name;
+            cmd_in[short_name] = "true";
+          }
         }
         continue;
       }
@@ -548,12 +563,20 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
     std::string value;
 
-    if(i+1 < argc) {
+    /// argumento-valor separado por =
+    std::vector<std::string> v;
+    TL::split(arg_cmd_name, v, "=");
+    if(v.size() == 2){
+      cmd_in[v[0]] = v[1];
+      continue;
+    }
+
+    if (i+1 < argc) {
       /// Se comprueba si el elemento siguiente es un valor
       std::string arg_value = std::string(argv[i+1]);
       std::size_t found_next_name = arg_value.find("--");
       std::size_t found_next_short_name = arg_value.find("-");
-      if (found_next_name != std::string::npos && found_next_short_name != std::string::npos){
+      if (found_next_name != std::string::npos || found_next_short_name != std::string::npos){
         value = "true";
       } else {
         value = arg_value;
@@ -760,28 +783,65 @@ Command::iterator Command::erase(Command::const_iterator first, Command::const_i
 
 void Command::showHelp() const
 {
+//  Console console(Console::Mode::OUTPUT, false);
+//  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+//  console.setFontBold(true);
+
+//  printf("%s \n", mName.c_str());
+
+//  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
+//  console.setFontBold(false);
+
+//  printf("%s \n\n", mDescription.c_str());
+
+//  printf_s("\nUsage:\n\n");
+//  printf_s("%s", mName.c_str());
+//  for (auto arg : mCmdArgs) {
+//    printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
+//  }
+//  printf_s("\n\n");
+
+//  printf("Options: \n\n");
+
+//  for (auto arg : mCmdArgs) {
+//     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
+//  }
+
+
+
+  /// Sintaxis Windows
   Console console(Console::Mode::OUTPUT, false);
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
 
-  printf("%s: %s \n\n", mName.c_str(), mDescription.c_str());
+  /// Nombre del comando
+  printf("%s \n\n", mName.c_str());
 
   console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
   console.setFontBold(false);
 
-  printf_s("\nUse:\n\n");
+  /// Descripción del comando
+  printf("%s \n\n", mDescription.c_str());
+
+  /// Sintaxis
+  console.setFontBold(true);
+  printf_s("\nSyntax:\n\n");
+  console.setFontBold(false);
+
   printf_s("%s", mName.c_str());
   for (auto arg : mCmdArgs) {
-    printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
+     printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
   }
   printf_s("\n\n");
 
-  printf("Listado de parámetros: \n\n");
+  /// Parámetros
+  console.setFontBold(true);
+  printf_s("Parameters:\n\n");
+  console.setFontBold(false);
 
   for (auto arg : mCmdArgs) {
      printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
   }
-
 }
 
 void Command::showVersion() const

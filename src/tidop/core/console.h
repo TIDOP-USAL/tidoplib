@@ -141,19 +141,9 @@ private:
   char mCommand[13];
 
   /*!
-   * \brief Intensidad de caracter
-   */
-  int mForeIntensity;
-
-  /*!
    * \brief Color de caracteres
    */
   int mForeColor;
-
-  /*!
-   * \brief Intensidad de fondo
-   */
-  int mBackIntensity;
 
   /*!
    * \brief Color de fondo

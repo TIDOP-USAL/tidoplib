@@ -16,6 +16,15 @@ TL_DEFAULT_WARNINGS
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/font.h"
 
+// filesystem
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+
 namespace TL
 {
 
@@ -64,10 +73,11 @@ GdalVector::Status GdalVector::open(const char *file, Mode mode, FileOptions *op
   close();
 
   mFile = file;
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+//  char ext[TL_MAX_EXT];
+//  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
+  std::string ext = fs::extension(mFile);
 
-  mDriverName = getDriverFromExt(ext);
+  mDriverName = getDriverFromExt(ext.c_str());
   if (mDriverName == nullptr) return Status::OPEN_FAIL;
 
   // No parece que se necesite
@@ -1314,13 +1324,14 @@ VectorGraphics::Status VectorGraphics::open(const char *file, Mode mode, FileOpt
   close();
 
   mFile = file;
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
+//  char ext[TL_MAX_EXT];
+//  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
+  std::string ext = fs::extension(mFile);
 
   const char *frtName;
 
 #ifdef HAVE_GDAL
-  if ((frtName = GdalVector::getDriverFromExt(ext)) != NULL) {
+  if ((frtName = GdalVector::getDriverFromExt(ext.c_str())) != nullptr) {
     // Existe un driver de GDAL para el formato vectorial
     mVectorFormat = std::make_unique<GdalVector>();
   } else {
