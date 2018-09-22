@@ -26,6 +26,7 @@ namespace fs = std::filesystem;
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #endif
+#include <boost/algorithm/string.hpp>
 
 namespace TL
 {
@@ -228,18 +229,15 @@ GdalRaster::~GdalRaster()
 {
   char **tmp = nullptr;
   if (bTempFile) {
-    //char ext[TL_MAX_EXT];
-    //if (getFileExtension(mFile.c_str(), ext, TL_MAX_EXT) == 0) {
     std::string ext = fs::extension(mFile);
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
-      GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, nullptr, nullptr, nullptr);
-      if (!pTempDataSet) {
-        msgError("No se pudo crear la imagen");
-      } else {
-        GDALClose((GDALDatasetH)pTempDataSet);
-      }
-      tmp = pDataset->GetFileList();
-    //} else msgError("No se pudo crear la imagen");
+    GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
+    GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, nullptr, nullptr, nullptr);
+    if (!pTempDataSet) {
+      msgError("No se pudo crear la imagen");
+    } else {
+      GDALClose((GDALDatasetH)pTempDataSet);
+    }
+    tmp = pDataset->GetFileList();
   }
 
   if (pDataset) GDALClose(pDataset), pDataset = nullptr; 
@@ -539,28 +537,28 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
 {
   ///TODO: Lo de comparar por extensión hay que mejorarlo para evitar errores por mayusculas / minusculas
   const char *format;
-  if      ( strcmp( ext, ".bmp" ) == 0 )  format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
-  else if ( strcmp( ext, ".png" ) == 0 )  format = "PNG";          // Portable Network Graphics (.png)
-  else if ( strcmp( ext, ".jpg" ) == 0 )  format = "JPEG";         // JPEG JFIF (.jpg)
-  else if ( strcmp( ext, ".tif" ) == 0 )  format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
-  else if ( strcmp( ext, ".gif" ) == 0 )  format = "GIF";          // Graphics Interchange Format (.gif)
-  else if ( strcmp( ext, ".gtx" ) == 0 )  format = "GTX";          // NOAA .gtx vertical datum shift
-  else if ( strcmp( ext, ".grd" ) == 0 ||
-            strcmp( ext, ".asc" ) == 0)  format = "AAIGrid";      // Arc/Info ASCII Grid
-  else if ( strcmp( ext, ".gsb" ) == 0 )  format = "NTv2";         // NTv2 Datum Grid Shift
-  else if ( strcmp( ext, ".ecw" ) == 0 )  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
-  else if ( strcmp( ext, ".jp2" ) == 0 )  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
-  else if ( strcmp( ext, ".lan" ) == 0 )  format = "LAN";          // Erdas 7.x .LAN and .GIS
-  else if ( strcmp( ext, ".hdr" ) == 0 )  format = "ENVI";         // ENVI .hdr Labelled Raster
-  else if ( strcmp( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmp( ext, ".blx" ) == 0 ||
-            strcmp( ext, ".xlb" ) == 0 )  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
-  else if ( strcmp( ext, ".map" ) == 0 )  format = "MAP";          // OziExplorer .MAP
-  else if ( strcmp( ext, ".e00" ) == 0 )  format = "E00GRID";      // Arc/Info Export E00 GRID
-  else if ( strcmp( ext, ".hdr" ) == 0 )  format = "MFF";          // Vexcel MFF
-  else if ( strcmp( ext, ".img" ) == 0 )  format = "HFA";          // Erdas Imagine (.img)
-  else if ( strcmp( ext, ".wms" ) == 0 )  format = "WMS";          // WMS
-  else                                      format = nullptr;
+  if      (boost::iequals(ext, ".bmp")) format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
+  else if (boost::iequals(ext, ".png")) format = "PNG";          // Portable Network Graphics (.png)
+  else if (boost::iequals(ext, ".jpg")) format = "JPEG";         // JPEG JFIF (.jpg)
+  else if (boost::iequals(ext, ".tif")) format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+  else if (boost::iequals(ext, ".gif")) format = "GIF";          // Graphics Interchange Format (.gif)
+  else if (boost::iequals(ext, ".gtx")) format = "GTX";          // NOAA .gtx vertical datum shift
+  else if (boost::iequals(ext, ".grd") ||
+           boost::iequals(ext, ".asc" ))  format = "AAIGrid";      // Arc/Info ASCII Grid
+  else if (boost::iequals(ext, ".gsb" ))  format = "NTv2";         // NTv2 Datum Grid Shift
+  else if (boost::iequals(ext, ".ecw" ))  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
+  else if (boost::iequals(ext, ".jp2" ))  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
+  else if (boost::iequals(ext, ".lan" ))  format = "LAN";          // Erdas 7.x .LAN and .GIS
+  else if (boost::iequals(ext, ".hdr" ))  format = "ENVI";         // ENVI .hdr Labelled Raster
+  else if (boost::iequals(ext, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
+  else if (boost::iequals(ext, ".blx" ) ||
+           boost::iequals(ext, ".xlb" ))  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
+  else if (boost::iequals(ext, ".map" ))  format = "MAP";          // OziExplorer .MAP
+  else if (boost::iequals(ext, ".e00" ))  format = "E00GRID";      // Arc/Info Export E00 GRID
+  else if (boost::iequals(ext, ".hdr" ))  format = "MFF";          // Vexcel MFF
+  else if (boost::iequals(ext, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
+  else if (boost::iequals(ext, ".wms" ))  format = "WMS";          // WMS
+  else                                    format = nullptr;
   return format;
 
   // debería funcionar para GDAL

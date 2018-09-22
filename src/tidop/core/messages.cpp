@@ -77,11 +77,11 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
-struct _msgProperties _msgTemplate[] = {   
-  { "Debug: %s",   "Debug: %s (%s:%u, %s)"},
-  { "Info: %s",    "Info: %s (%s:%u, %s)"},
+static struct _msgProperties _msgTemplate[] = {   
+  { "Debug:   %s", "Debug:   %s (%s:%u, %s)"},
+  { "Info:    %s", "Info:    %s (%s:%u, %s)"},
   { "Warning: %s", "Warning: %s (%s:%u, %s)"},
-  { "Error: %s",   "Error: %s (%s:%u, %s)"}
+  { "Error:   %s", "Error:   %s (%s:%u, %s)"}
 };
 
 

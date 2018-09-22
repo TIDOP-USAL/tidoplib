@@ -9,7 +9,17 @@
 #include "opencv2/xfeatures2d.hpp"
 #include "opencv2/imgproc.hpp"
 
-
+#if (__cplusplus >= 201703L)
+//C++17
+//http://en.cppreference.com/w/cpp/filesystem
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+//Boost
+//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
 
 namespace TL
@@ -54,22 +64,19 @@ void Features2D::save( const char *fname ) const
 {
   //... Habria que guardarlo como binario mejor o dar las dos opciones
   // Salva descriptores
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(fname, ext, TL_MAX_EXT)) {
-    return;
-  }
+  std::string ext = fs::extension(fname);
   int flags = 0;
-  if (strcmp(ext, ".xml") == 0) {
+  if (strcmp(ext.c_str(), ".xml") == 0) {
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (strcmp(ext, ".yml") == 0) {
+  } else if (strcmp(ext.c_str(), ".yml") == 0) {
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
-  } else if (strcmp(ext, ".bin") == 0) {
+  } else if (strcmp(ext.c_str(), ".bin") == 0) {
     
   } else {
-    msgError("Extensión de archivo '%s' no valida", ext);
+    msgError("Extensión de archivo '%s' no valida", ext.c_str());
     return;
   }
-  if (strcmp(ext, ".bin") == 0) {
+  if (strcmp(ext.c_str(), ".bin") == 0) {
     FILE* fp = std::fopen(fname, "wb");
     if (fp) {
       // Cabecera
@@ -114,9 +121,9 @@ void Features2D::save( const char *fname ) const
 
 void Features2D::read( const char *fname )
 {
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(fname, ext, TL_MAX_EXT) == 0) {
-    if (strcmp(ext, ".bin") == 0) {
+  std::string ext = fs::extension(fname);
+  if (ext.empty() == false) {
+    if (strcmp(ext.c_str(), ".bin") == 0) {
       if (FILE* fp = std::fopen(fname, "rb")) {
         //cabecera
         char h[24];
@@ -148,7 +155,7 @@ void Features2D::read( const char *fname )
         std::fclose(fp);
       } else
         msgError("No pudo leer archivo %s", fname);
-    } else if (strcmp(ext, ".xml") == 0 || strcmp(ext, ".yml") == 0) {
+    } else if (strcmp(ext.c_str(), ".xml") == 0 || strcmp(ext.c_str(), ".yml") == 0) {
       cv::FileStorage fs(fname, cv::FileStorage::READ);
       if (fs.isOpened()) {
         mKeyPoints.resize(0);
@@ -308,12 +315,12 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
 
 void Matching::save(const char *fname ) const
 {
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(fname, ext, TL_MAX_EXT)) {
+  std::string ext = fs::extension(fname);
+  if (ext.empty() == false) {
     msgError("Fichero no valido: %s", fname);
     return;
   }
-  if (strcmp(ext, ".bin") == 0) {
+  if (strcmp(ext.c_str(), ".bin") == 0) {
     FILE* fp = std::fopen(fname, "wb");
     if (fp) {
       // Cabecera
@@ -338,9 +345,9 @@ void Matching::save(const char *fname ) const
 
 void Matching::load( const char *fname )
 {
-  char ext[TL_MAX_EXT];
-  if (getFileExtension(fname, ext, TL_MAX_EXT) == 0) {
-    if (strcmp(ext, ".bin") == 0) {
+  std::string ext = fs::extension(fname);
+  if (ext.empty() == false) {
+    if (strcmp(ext.c_str(), ".bin") == 0) {
       if (FILE* fp = std::fopen(fname, "rb")) {
         //cabecera
         char h[22];

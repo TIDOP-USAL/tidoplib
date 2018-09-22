@@ -37,17 +37,18 @@ int main(int argc, char** argv)
   //console.setFontHeight(24);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE);   // Se muestran todos los mensajes por consola
 
-  if (1){ /// Nueva gestión de argumentos por consola
+  if (1) { /// Nueva gestión de argumentos por consola
     std::string file;
-    bool bOpt;
+    bool bOpt, bOpt2;
     int val;
     double val_d = 0.5;
 
     Command cmd(name, "Ejemplo de aplicación de consola");
     cmd.push_back(std::make_shared<ArgumentStringRequired>("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero.", &file));
-    cmd.push_back(std::make_shared<ArgumentIntegerRequired>("int", 'i', "Valor entero obligatorio", &val));
+    cmd.push_back(std::make_shared<ArgumentIntegerRequired>("int", 'i', "Valor entero", &val));
     cmd.push_back(std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &bOpt));
-    cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble opcional. Si se omite se toma el valor por defecto", &val_d));
+    cmd.push_back(std::make_shared<ArgumentBooleanOptional>("opt", 'o', "boolean2", &bOpt2));
+    cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble. Si se omite se toma el valor por defecto", &val_d));
 
     // Parseo de los argumentos y comprobación de los mismos
     Command::Status status = cmd.parse(argc, argv);
@@ -95,11 +96,6 @@ int main(int argc, char** argv)
     int opt_i = cmdParser.getParameterOptionIndex<int>("list_opt");
 #endif
   }
-
-
-  // Se muestra un mensaje por consola
-  msgInfo("prueba");
-  msgWarning("Warning");
 
   return 0;
 }

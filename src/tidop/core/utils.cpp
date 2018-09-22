@@ -715,23 +715,21 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   if (!s) return 1;
   dup = (char *)memcpy(s, in.c_str(), len);
 #else
-  //dup = strdup(in.c_str());
   dup = _strdup(in.c_str());
 #endif
   try {
 #ifdef __STDC_LIB_EXT1__
-    char *context = NULL;
+    char *context = nullptr;
     char *token = strtok_s(dup, chs, &context);
-    while (token != NULL) {
+    while (token != nullptr) {
       out.push_back(std::string(token));
-      //token = strtok(NULL, chs);
-      token = strtok_s(NULL, chs, &context);
+      token = strtok_s(nullptr, chs, &context);
     }
 #else
     char *token = strtok(dup, chs);
-    while (token != NULL) {
+    while (token != nullptr) {
       out.push_back(std::string(token));
-      token = strtok(NULL, chs);
+      token = strtok(nullptr, chs);
     }
 #endif
   } catch (std::exception &e) {

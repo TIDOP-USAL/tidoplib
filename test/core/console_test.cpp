@@ -37,6 +37,8 @@ public:
 
 //}
 
+
+
 /* ArgumentTest */
 
 class ArgumentTest : public testing::Test
@@ -52,6 +54,10 @@ public:
     arg_float = std::make_shared<Argument_<float, false>>("float", 'f', "coma flotante", &val_f);
 
     arg_string = std::make_shared<ArgumentStringOptional>("string", 's', "Cadena de texto", &val_string);
+
+    val_b;
+    opt = std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &val_b);
+
 ////    arg2 = new Parameter({"par","p"}, "Parámetro");
 ////    arg3 = new ParameterList({"par_list", "l"}, "Lista de párametros", {"v1", "v2", "v3"}, 1);
   }
@@ -74,6 +80,8 @@ public:
   std::string val_string;
   std::shared_ptr<Argument> arg_string;
 
+  bool val_b;
+  std::shared_ptr<Argument> opt;
 };
 
 
@@ -107,6 +115,7 @@ TEST_F(ArgumentTest, isRequired)
   EXPECT_EQ(true, arg_int->isRequired());
   EXPECT_EQ(false, arg_double->isRequired());
   EXPECT_EQ(false, arg_string->isRequired());
+  EXPECT_EQ(false, opt->isRequired());
 }
 
 TEST(ArgumentInt, setGetValue)
@@ -125,6 +134,7 @@ TEST_F(ArgumentTest, typeName)
   EXPECT_EQ("double", arg_double->typeName());
   EXPECT_EQ("float", arg_float->typeName());
   EXPECT_EQ("std::string", arg_string->typeName());
+  EXPECT_EQ("bool", opt->typeName());
 }
 
 TEST_F(ArgumentTest, fromString)
@@ -145,6 +155,9 @@ TEST_F(ArgumentTest, toString)
   EXPECT_EQ("2", arg_int->toString());
 }
 
+
+/* Command Test */
+
 class CommandTest : public testing::Test
 {
 public:
@@ -156,6 +169,7 @@ public:
   double val3;
   float val_f;
   bool val_b;
+  bool opt;
 
   virtual void SetUp()
   {
@@ -168,6 +182,7 @@ public:
     val_f = 2.23f;
     cmd_arg_posix2->push_back(std::make_shared<Argument_<float, false>>("float", 'f', "Parámetro float", &val_f));
     cmd_arg_posix2->push_back(std::make_shared<Argument_<bool, false>>("bool", 'b', "boolean", &val_b));
+    cmd_arg_posix2->push_back(std::make_shared<Argument_<bool, false>>("option", 'o', "Option", &opt));
     //cmd_arg_posix2->push_back(ParameterList({"par_list", "l"}, "Lista de párametros", {"v1", "v2", "v3"}, 1));
   }
 
@@ -227,17 +242,40 @@ TEST_F(CommandTest, parse_option_ok)
 {
   std::array<char const*, 4> argv{"" , "-i", "2", "-b"};
   EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_EQ(2, val2);
+  EXPECT_TRUE(val_b);
+  EXPECT_FALSE(opt);
 
   std::array<char const*, 4> argv_large{"" , "--int", "2", "-b"};
   EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::PARSE_SUCCESS);
-
+  EXPECT_EQ(2, val2);
+  EXPECT_TRUE(val_b);
+  EXPECT_FALSE(opt);
 }
 
-//TEST_F(CommandTest, parse_option_ok_equal)
-//{
-//  std::array<char const*, 3> argv{"" , "-i=2", "-b"};
-//  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
-//}
+TEST_F(CommandTest, parse_option_ok_equal)
+{
+  std::array<char const*, 3> argv{"" , "-i=2", "-b"};
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_EQ(2, val2);
+  EXPECT_TRUE(val_b);
+  EXPECT_FALSE(opt);
+
+  std::array<char const*, 3> argv_large{"" , "--int=2", "-b"};
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_EQ(2, val2);
+  EXPECT_TRUE(val_b);
+  EXPECT_FALSE(opt);
+}
+
+TEST_F(CommandTest, parseMultipleOptions)
+{
+  std::array<char const*, 4> argv{"" , "-i", "2", "-bo"};
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_EQ(2, val2);
+  EXPECT_TRUE(val_b);
+  EXPECT_TRUE(opt);
+}
 
 TEST_F(CommandTest, parseERROR)
 {
@@ -245,11 +283,10 @@ TEST_F(CommandTest, parseERROR)
   EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_ERROR);
 }
 
-
 TEST_F(CommandTest, size)
 {
   EXPECT_EQ(0, cmd_arg_posix->size());
-  EXPECT_EQ(4, cmd_arg_posix2->size());
+  EXPECT_EQ(5, cmd_arg_posix2->size());
 }
 
 TEST_F(CommandTest, clear)
