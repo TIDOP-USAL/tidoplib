@@ -25,22 +25,6 @@
 #  include <thread>
 #endif
 
-
-//TODO: Incluir filesystem. Se simplificarian bastantes cosas
-// filesystem
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#include <boost/algorithm/string.hpp>
-
 namespace TL
 {
 
