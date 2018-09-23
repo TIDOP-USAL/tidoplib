@@ -52,11 +52,12 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);                         // Titulo de la ventana de consola
   console.setConsoleUnicode();
-  console.setFontHeight(24);                      // Se establece el tamaño de fuente
+  console.setFontHeight(14);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
+  MessageManager::getInstance().addListener(&console);
 
   CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
   Point3D pt_utm(350000., 4800000., 0.);

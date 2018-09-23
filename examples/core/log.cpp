@@ -39,10 +39,11 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);                         // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
-  
+  MessageManager::getInstance().addListener(&console);
+
   // Se obtiene una instancia unica de la clase Log
   Log &log = Log::getInstance();
 

@@ -41,12 +41,13 @@ int main(int argc, char** argv)
 
 
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
   console.setConsoleUnicode();
   console.setFontHeight(14);
-  
+  MessageManager::getInstance().addListener(&console);
+
   char file_name[TL_MAX_FNAME];
   getFileName(vect.c_str(), file_name, TL_MAX_FNAME);
 

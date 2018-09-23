@@ -28,6 +28,7 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
+
   if (status == Command::Status::PARSE_ERROR ) {
     return 1;
   } else if (status == Command::Status::SHOW_HELP) {
@@ -40,10 +41,11 @@ int main(int argc, char** argv)
 
 
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
-  
+  MessageManager::getInstance().addListener(&console);
+
   msgInfo("Open file: %s", vect.c_str());
   VectorGraphics vector;
   if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;

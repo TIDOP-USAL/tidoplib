@@ -54,11 +54,15 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
   return msgTemplate[iLevel];
 }
 
-EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
 
-Console::Console(bool add) 
+
+EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
+std::unique_ptr<Console> Console::sObjConsole;
+std::mutex Console::mtx;
+
+Console::Console()
 #ifdef TL_MESSAGE_HANDLER 
-  : MessageManager::Listener(add)
+  : MessageManager::Listener(false)
 #endif
 { 
 #ifdef WIN32
@@ -68,68 +72,20 @@ Console::Console(bool add)
 #endif
 }
 
-Console::Console(Console::Mode mode, bool add)
-#ifdef TL_MESSAGE_HANDLER 
-  : MessageManager::Listener(add)
-#endif
-{ 
-#ifdef WIN32
-  DWORD handle;
-  switch (mode) {
-  case Console::Mode::INPUT:
-    handle = STD_INPUT_HANDLE;
-    break;
-  case Console::Mode::OUTPUT:
-    handle = STD_OUTPUT_HANDLE;
-    break;
-  case Console::Mode::OUTPUT_ERROR:
-    handle = STD_ERROR_HANDLE;
-    break;
-  default:
-    handle = STD_OUTPUT_HANDLE;
-    break;
-  }
-  init(handle);
-#else
-  FILE *stream;
-    switch (mode) {
-    case Console::Mode::INPUT:
-      stream = stdin;
-      break;
-    case Console::Mode::OUTPUT:
-      stream = stdout;
-      break;
-    case Console::Mode::OUTPUT_ERROR:
-      stream = stderr;
-      break;
-    }
-    init(stream);
-#endif
-}
-
-Console::Console(const Console &console, bool add) :
-#ifdef TL_MESSAGE_HANDLER 
-  MessageManager::Listener(add),
-#endif
-#ifdef WIN32
-  mHandle(console.mHandle),
-  mOldColorAttrs(console.mOldColorAttrs),
-  mForeIntensity(console.mForeIntensity),
-  mForeColor(console.mForeColor),
-  mBackIntensity(console.mBackIntensity),
-  mBackColor(console.mBackColor)
-#else
-  mStream(console.mStream),
-  mForeColor(console.mForeColor),
-  mBackColor(console.mBackColor),
-  mBold(console.mBold)
-#endif
-{
-}
-
 Console::~Console() 
 {
   reset();
+}
+
+Console &Console::getInstance()
+{
+  if (sObjConsole.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(Console::mtx);
+    if (sObjConsole.get() == nullptr) {
+      sObjConsole.reset(new Console());
+    }
+  }
+  return *sObjConsole;
 }
 
 EnumFlags<MessageLevel> Console::getMessageLevel() const
@@ -810,7 +766,7 @@ void Command::showHelp() const
 
 
   /// Sintaxis Windows
-  Console console(Console::Mode::OUTPUT, false);
+  Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
 
@@ -846,14 +802,14 @@ void Command::showHelp() const
 
 void Command::showVersion() const
 {
-  Console console(Console::Mode::OUTPUT, false);
+  Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
 }
 
 void Command::showLicence() const
 {
-  Console console(Console::Mode::OUTPUT, false);
+  Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
 }
@@ -1001,7 +957,7 @@ void ProgressBar::updateProgress()
     
     cout << "\r";
 
-    Console console(Console::Mode::OUTPUT);
+    Console &console = Console::getInstance();
     int posInBar = TL_ROUND_TO_INT(mPercent * mSize / 100.);
 
     int ini = mSize / 2 - 2;

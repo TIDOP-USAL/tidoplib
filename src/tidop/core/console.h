@@ -14,6 +14,15 @@
 #include <cxxabi.h>
 #endif
 
+// filesystem
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
@@ -83,6 +92,7 @@ public:
   };
 
 private:
+
 
 #ifdef WIN32
 
@@ -162,35 +172,35 @@ private:
    */
   static EnumFlags<MessageLevel> sLevel;
 
-public:
+  /*!
+   * \brief Objeto unico para la consola
+   */
+  static std::unique_ptr<Console> sObjConsole;
+
+  static std::mutex mtx;
+
+private:
 
   /*!
    * \brief Constructora por defecto
-   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
    */
-  Console(bool add = true);
+  Console();
 
-  /*!
-   * \brief Constructor
-   * \param[in] mode Modo de consola
-   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
-   * \see Mode
-   */
-  Console(Console::Mode mode, bool add = true);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] console Consola
-   * \param[in] add Añade la consola al manejador de mensajes. Por defecto se añade.
-   * \see Mode
-   */
-  Console(const Console &console, bool add = true);
+public:
 
   /*!
    * Destructora
    * Se recuperan las opciones por defecto de la consola
    */
   ~Console() override;
+
+  Console(Console const&) = delete;
+  void operator=(Console const&) = delete;
+
+  /*!
+   * \brief Singleton que devuelve una referencia unica de un objeto Console
+   */
+  static Console &getInstance();
 
   /*!
    * \brief Niveles de mensaje activados
@@ -549,6 +559,8 @@ typedef Argument_<bool, true> ArgumentBooleanRequired;
 typedef Argument_<bool, false> ArgumentBooleanOptional;
 typedef Argument_<std::string, true> ArgumentStringRequired;
 typedef Argument_<std::string, false> ArgumentStringOptional;
+typedef Argument_<fs::path, true> ArgumentPathRequired;
+typedef Argument_<fs::path, false> ArgumentPathOptional;
 
 
 /* Implementación */
@@ -608,6 +620,17 @@ std::string Argument_<std::string, false>::typeName() const
   return "std::string";
 }
 
+template<> inline
+std::string Argument_<fs::path, true>::typeName() const
+{
+  return "path";
+}
+template<> inline
+std::string Argument_<fs::path, false>::typeName() const
+{
+  return "path";
+}
+
 template<typename T, bool required> inline
 bool Argument_<T, required>::isRequired() const
 {
@@ -642,6 +665,30 @@ std::string Argument_<std::string, false>::toString() const
   return *mValue;
 }
 
+template<> inline
+std::string Argument_<fs::path, true>::toString() const
+{
+  return mValue->string();
+}
+
+template<> inline
+std::string Argument_<fs::path, false>::toString() const
+{
+  return mValue->string();
+}
+
+template<> inline
+void Argument_<fs::path, true>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
+template<> inline
+void Argument_<fs::path, false>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
 {
@@ -667,6 +714,7 @@ void Argument_<std::string, false>::fromString(const std::string &value)
 {
   *mValue = value;
 }
+
 
 template<typename T, bool required> inline
 T Argument_<T, required>::value() const

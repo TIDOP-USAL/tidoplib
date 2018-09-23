@@ -16,26 +16,24 @@ TL_SUPPRESS_WARNINGS
 
 /* Datos para los test */
 
-class ConsoleTest : public testing::Test
+
+TEST(ConsoleTest, Constructor)
 {
-public:
+  Console &console = Console::getInstance();
+  EnumFlags<MessageLevel> flag = console.getMessageLevel();
+  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
+  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_INFO));
+  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_WARNING));
+  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
 
-  virtual void SetUp()
-  {
-
-  }
-
-  virtual void TearDown()
-  {
-  }
-
-  Console console;
-};
-
-//TEST_F(ConsoleTest, Constructor)
-//{
-
-//}
+  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  flag = console.getMessageLevel();
+  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
+  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_INFO));
+  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_WARNING));
+  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_VERBOSE));
+  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
+}
 
 
 

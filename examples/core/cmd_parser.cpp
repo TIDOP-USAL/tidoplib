@@ -31,11 +31,12 @@ int main(int argc, char** argv)
   const char *name = "Consola";
    
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);                           // Titulo de la ventana de consola
   //console.setConsoleUnicode();
   //console.setFontHeight(24);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE);   // Se muestran todos los mensajes por consola
+  MessageManager::getInstance().addListener(&console);
 
   if (1) { /// Nueva gestión de argumentos por consola
     std::string file;
