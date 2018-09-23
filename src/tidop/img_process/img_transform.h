@@ -208,26 +208,24 @@ template<typename Point_t> inline
 void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
   transform_type type = trf->getTransformType();
-  switch (type) {
-  case TL::transform_type::TRANSLATE:
-    Translate<Point_t> transTrf = dynamic_cast<Translate<Point_t>>(trf);
-    cv::Mat translateMat( 2, 3, CV_32FC1 );
+  if (type == TL::transform_type::TRANSLATE) {
+    Translate<Point_t> *transTrf = dynamic_cast<Translate<Point_t> *>(trf);
+    cv::Mat translateMat(2, 3, CV_32FC1);
     translateMat.at<float>(0, 0) = 1.f;
     translateMat.at<float>(0, 1) = 0.f;
-    translateMat.at<float>(0, 2) = transTrf.getTranslationX();
+    translateMat.at<float>(0, 2) = transTrf->tx;
     translateMat.at<float>(1, 0) = 0.f;
     translateMat.at<float>(1, 1) = 1.f;
-    translateMat.at<float>(1, 2) = transTrf.getTranslationY();
+    translateMat.at<float>(1, 2) = transTrf->ty;
     if (trfOrder == transform_order::DIRECT)
       cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, translateMat.inv(), in.size(), cv::INTER_LINEAR);
-    break;
-  case TL::transform_type::ROTATION:
-    Rotation<Point_t> rotTrf = dynamic_cast<Rotation<Point_t>>(trf);
-    cv::Mat rotMat( 2, 3, CV_32FC1 );
-    double r1 = cos(rotTrf.getAngle());
-    double r2 = sin(rotTrf.getAngle());
+  } else if (type == TL::transform_type::ROTATION) {
+    Rotation<Point_t> *rotTrf = dynamic_cast<Rotation<Point_t> *>(trf);
+    cv::Mat rotMat(2, 3, CV_32FC1);
+    double r1 = cos(rotTrf->getAngle());
+    double r2 = sin(rotTrf->getAngle());
     rotMat.at<float>(0, 0) = r1;
     rotMat.at<float>(0, 1) = r2;
     rotMat.at<float>(0, 2) = 0.f;
@@ -238,54 +236,44 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
       cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, rotMat.inv(), in.size(), cv::INTER_LINEAR);
-    break;
-  case TL::transform_type::HELMERT_2D:
-    Helmert2D<Point_t> h2dTrf = dynamic_cast<Helmert2D<Point_t>>(trf);
-    cv::Mat h2DMat( 2, 3, CV_32FC1 );
-    double rotation = h2dTrf.getRotation();
-    double scale = h2dTrf.getScale();
+  } else if (type == TL::transform_type::HELMERT_2D) {
+    Helmert2D<Point_t> *h2dTrf = dynamic_cast<Helmert2D<Point_t> *>(trf);
+    cv::Mat h2DMat(2, 3, CV_32FC1);
+    double rotation = h2dTrf->getRotation();
+    double scale = h2dTrf->getScale();
     double a = scale * cos(rotation);
     double b = scale * sin(rotation);
     h2DMat.at<float>(0, 0) = a;
     h2DMat.at<float>(0, 1) = b;
-    h2DMat.at<float>(0, 2) = h2dTrf.x0;
+    h2DMat.at<float>(0, 2) = h2dTrf->tx;
     h2DMat.at<float>(1, 0) = b;
     h2DMat.at<float>(1, 1) = a;
-    h2DMat.at<float>(1, 2) = h2dTrf.y0;
+    h2DMat.at<float>(1, 2) = h2dTrf->ty;
     if (trfOrder == transform_order::DIRECT)
       cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
-    break;
-  case TL::transform_type::AFFINE:
-    Affine<Point_t> affineTrf = dynamic_cast<Affine<Point_t>>(trf);
+  } else if (type == TL::transform_type::AFFINE) {
+    Affine<Point_t> *affineTrf = dynamic_cast<Affine<Point_t> *>(trf);
     double r00, r10, r01, r11;
-    affineTrf.getParameters(&r00, &r10, &r01, &r11);
-    cv::Mat affMat( 2, 3, CV_32FC1 );
+    affineTrf->getParameters(&r00, &r10, &r01, &r11);
+    cv::Mat affMat(2, 3, CV_32FC1);
     affMat.at<float>(0, 0) = r00;
     affMat.at<float>(0, 1) = r10;
-    affMat.at<float>(0, 2) = affineTrf.x0;
+    affMat.at<float>(0, 2) = affineTrf->tx;
     affMat.at<float>(1, 0) = r01;
     affMat.at<float>(1, 1) = r11;
-    affMat.at<float>(1, 2) = affineTrf.y0;
+    affMat.at<float>(1, 2) = affineTrf->ty;
     if (trfOrder == transform_order::DIRECT)
       cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
-    break;
-  case TL::transform_type::PERSPECTIVE:
-    TrfPerspective<Point_t> perspTrf = dynamic_cast<TrfPerspective<Point_t>>(trf);
+  } else if (type == TL::transform_type::PERSPECTIVE) {
+    TrfPerspective<Point_t> *perspTrf = dynamic_cast<TrfPerspective<Point_t> *>(trf);
     if (trfOrder == transform_order::DIRECT)
-      cv::warpPerspective(in, out, perspTrf.H, in.size(), cv::INTER_LINEAR);
+      cv::warpPerspective(in, out, perspTrf->H, in.size(), cv::INTER_LINEAR);
     else
-      cv::warpPerspective(in, out, perspTrf.H.inv(), in.size(), cv::INTER_LINEAR);
-    break;
-  case TL::transform_type::PROJECTIVE:
-    break;
-  case TL::transform_type::POLYNOMIAL:
-    break;
-  default:
-    break;
+      cv::warpPerspective(in, out, perspTrf->H.inv(), in.size(), cv::INTER_LINEAR);
   }
 }
 

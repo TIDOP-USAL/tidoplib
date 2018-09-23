@@ -482,7 +482,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
     std::size_t found_name = arg_cmd_name.find("--");
     std::size_t found_short_name = arg_cmd_name.find("-");
 
-    if (found_name != std::string::npos) {
+    if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
 //      std::size_t val_pos = arg_cmd_name.find("=");
@@ -494,7 +494,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
           continue;
         }
 //      }
-    } else if (found_short_name != std::string::npos) {
+    } else if (found_short_name != std::string::npos && found_short_name == 0) {
       arg_cmd_name = (argv[i])+1;
       if (arg_cmd_name.size() > 1) {
         std::vector<std::string> v;
@@ -519,20 +519,13 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
     std::string value;
 
-    /// argumento-valor separado por =
-    std::vector<std::string> v;
-    TL::split(arg_cmd_name, v, "=");
-    if(v.size() == 2){
-      cmd_in[v[0]] = v[1];
-      continue;
-    }
-
     if (i+1 < argc) {
       /// Se comprueba si el elemento siguiente es un valor
       std::string arg_value = std::string(argv[i+1]);
       std::size_t found_next_name = arg_value.find("--");
       std::size_t found_next_short_name = arg_value.find("-");
-      if (found_next_name != std::string::npos || found_next_short_name != std::string::npos){
+      if (found_next_name != std::string::npos  && found_next_name == 0 || 
+          found_next_short_name != std::string::npos && found_next_short_name == 0){
         value = "true";
       } else {
         value = arg_value;
