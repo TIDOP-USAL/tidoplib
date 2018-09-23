@@ -74,17 +74,19 @@ int main(int argc, char** argv)
   chrono.run();
   Features2D feat1(cv::xfeatures2d::SIFT::create(), cv::xfeatures2d::SIFT::create());
   feat1.detectKeyPoints(mat_1);
-  msgInfo("%i", feat1.getKeyPoints().size());
+  msgInfo("KeyPoints image 1: %i", feat1.getKeyPoints().size());
   chrono.stop();
 
   chrono.run();
   Features2D feat2(cv::xfeatures2d::SIFT::create(), cv::xfeatures2d::SIFT::create());
   feat2.detectKeyPoints(mat_2);
+  msgInfo("KeyPoints image 2: %i", feat2.getKeyPoints().size());
   chrono.stop();
 
   chrono.run();
   Matching match;
   match.match(feat1.getDescriptors(), feat2.getDescriptors());
+  msgInfo("Matching %i", match.getMatches()->size());
   chrono.stop();
 
   return 0;

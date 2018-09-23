@@ -33,12 +33,13 @@
 //http://en.cppreference.com/w/cpp/filesystem
 #include <filesystem>
 namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
+#else
 //Boost
 //http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
 namespace fs = boost::filesystem;
 #endif
+#include <boost/algorithm/string.hpp>
 
 namespace TL
 {
@@ -410,6 +411,7 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 
     fs::path _path = it->path();
 
+    TL_TODO("Compare es case sensitive");
     std::string _ext = it->path().extension().string();
 
     if (it->path().extension().compare(ext) == 0) {
@@ -1220,9 +1222,9 @@ Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
   mFile = file;
   mMode = mode;
 
-  fs::path _path(file);
-  fs::path ext = _path.extension().string();
-  if (ext.compare(".csv") != 0 || ext.compare(".CSV") != 0 ) return Status::OPEN_FAIL;
+  //fs::path _path(file);
+  //fs::path ext = _path.extension().string();
+  if (boost::iequals(fs::extension(file), ".csv") == false) return Status::OPEN_FAIL;
 
   std::ios_base::openmode _mode;
   switch (mMode) {
