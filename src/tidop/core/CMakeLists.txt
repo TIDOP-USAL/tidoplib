@@ -13,6 +13,8 @@ add_library(tl_core ${LIB_TYPE}
             utils.h
             process.cpp
             process.h
+            licence.cpp
+            licence.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

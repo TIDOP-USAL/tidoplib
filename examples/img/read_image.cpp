@@ -39,10 +39,11 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle("Read Image");
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
   console.setConsoleUnicode();
+  MessageManager::getInstance().addListener(&console);
 
   TL::RasterGraphics image;
   if (image.open(img) == TL::RasterGraphics::Status::OPEN_OK) {

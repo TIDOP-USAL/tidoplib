@@ -170,7 +170,7 @@ TEST(Flags, Constructor)
   EXPECT_TRUE(flag_copy.isActive(3));
   EXPECT_FALSE(flag_copy.isActive(4));
 
-  // Construcción con inicialización de lista
+  // ConstrucciÃ³n con inicializaciÃ³n de lista
   Flags_32 flag_list{ 0, 3, 7, 4 };
   EXPECT_TRUE(flag_list.isActive(0));
   EXPECT_TRUE(flag_list.isActive(3));
