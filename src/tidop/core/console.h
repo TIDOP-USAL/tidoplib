@@ -884,7 +884,7 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
+  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<TL::Argument>> arguments);
 
   /*!
    * \brief Devuelve el nombre del comando

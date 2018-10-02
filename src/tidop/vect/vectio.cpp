@@ -217,16 +217,16 @@ GdalVector::Status GdalVector::createLayer(const graph::GLayer &layer)
 const char *GdalVector::getDriverFromExt(const char *ext)
 {
   const char *format;
-  if      ( strcmp( ext, ".dxf" ) == 0 )  format = "DXF";
-  else if ( strcmp( ext, ".dwg" ) == 0 )  format = "DWG";
-  else if ( strcmp( ext, ".dgn" ) == 0 )  format = "DGN";
-  else if ( strcmp( ext, ".shp" ) == 0 )  format = "ESRI Shapefile";
-  else if ( strcmp( ext, ".gml" ) == 0 )  format = "GML";
-  else if ( strcmp( ext, ".kml" ) == 0 )  format = "LIBKML";
-  else if ( strcmp( ext, ".kmz" ) == 0 )  format = "LIBKML";
-  else if ( strcmp( ext, ".json") == 0 )  format = "GeoJSON";
-  else if ( strcmp( ext, ".osm" ) == 0 )  format = "OSM";
-  else                                    format = nullptr;
+  if      (boost::iequals( ext, ".dxf" ))  format = "DXF";
+  else if (boost::iequals( ext, ".dwg" ))  format = "DWG";
+  else if (boost::iequals( ext, ".dgn" ))  format = "DGN";
+  else if (boost::iequals( ext, ".shp" ))  format = "ESRI Shapefile";
+  else if (boost::iequals( ext, ".gml" ))  format = "GML";
+  else if (boost::iequals( ext, ".kml" ))  format = "LIBKML";
+  else if (boost::iequals( ext, ".kmz" ))  format = "LIBKML";
+  else if (boost::iequals( ext, ".json"))  format = "GeoJSON";
+  else if (boost::iequals( ext, ".osm" ))  format = "OSM";
+  else format = nullptr;
   return format;
 }
 
