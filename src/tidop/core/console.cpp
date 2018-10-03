@@ -12,7 +12,6 @@
 #include <vector>
 
 using namespace TL;
-using namespace std;
 
 namespace TL
 {
@@ -355,7 +354,7 @@ void Console::update()
 
 /* ---------------------------------------------------------------------------------- */
 
-Argument::Argument(const string &name, const string &description)
+Argument::Argument(const std::string &name, const std::string &description)
   : mName(name),
     mDescription(description),
     mShortName()
@@ -363,14 +362,14 @@ Argument::Argument(const string &name, const string &description)
 
 }
 
-Argument::Argument(const char &shortName, const string &description)
+Argument::Argument(const char &shortName, const std::string &description)
   : mName(""),
     mDescription(description),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const string &name, const char &shortName, const string &description)
+Argument::Argument(const std::string &name, const char &shortName, const std::string &description)
   : mName(name),
     mDescription(description),
     mShortName(shortName)
@@ -438,7 +437,7 @@ Command::Command(const Command &command)
 
 }
 
-Command::Command(const string &name, const string &description)
+Command::Command(const std::string &name, const std::string &description)
   : mName(name),
     mDescription(description),
     mCmdArgs(0),
@@ -446,9 +445,9 @@ Command::Command(const string &name, const string &description)
 {
   init();
 }
-
-Command::Command(const string &name, const string &description,
-                 std::initializer_list<std::shared_ptr<Argument> > arguments)
+  
+Command::Command(const std::string &name, const std::string &description,
+                 std::initializer_list<std::shared_ptr<TL::Argument>> arguments)
   : mName(name),
     mDescription(description),
     mCmdArgs(arguments),
@@ -531,8 +530,8 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
         if (check_combined){
           for (auto &opt : arg_cmd_name){
-            stringstream ss;
-            string short_name;
+            std::stringstream ss;
+            std::string short_name;
             ss << opt;
             ss >> short_name;
             cmd_in[short_name] = "true";
@@ -591,8 +590,8 @@ Command::Status Command::parse(int argc, const char * const argv[])
     bool bOptional = !arg->isRequired();
     bool bFind = false;
 
-    stringstream ss;
-    string short_name;
+    std::stringstream ss;
+    std::string short_name;
     ss << arg->shortName();
     ss >> short_name;
     if (cmd_in.find(short_name) != cmd_in.end()){
@@ -933,7 +932,7 @@ void ProgressBar::updateProgress()
 {
   if (onProgress == nullptr) {
     
-    cout << "\r";
+    std::cout << "\r";
 
     Console &console = Console::getInstance();
     int posInBar = TL_ROUND_TO_INT(mPercent * mSize / 100.);
@@ -944,32 +943,32 @@ void ProgressBar::updateProgress()
         if (bCustomConsole) {
           console.setConsoleBackgroundColor(Console::Color::GREEN);
         } else {
-          cout << "#";
+          std::cout << "#";
         }
       } else {
         if (bCustomConsole) {
           console.setConsoleBackgroundColor(Console::Color::YELLOW);
         } else {
-          cout << "-";
+          std::cout << "-";
         }
       }
       if (bCustomConsole) {
         int n;
         if (i == ini) {
           n = mPercent / 100 % 10;
-          if ( n > 0 ) cout << n;
-          else cout << " ";
+          if ( n > 0 ) std::cout << n;
+          else std::cout << " ";
         } else if (i == ini + 1) {
           n = mPercent / 10 % 10;
-          if ( n > 0 || mPercent >= 10) cout << n;
-          else cout << " ";
+          if ( n > 0 || mPercent >= 10) std::cout << n;
+          else std::cout << " ";
         } else if (i == ini + 2) {
           n = mPercent % 10;
-          cout << n;
+          std::cout << n;
         } else if (i == ini + 3) {
-          cout << "%";
+          std::cout << "%";
         } else {
-          cout << " ";
+          std::cout << " ";
         }
       }
     }
@@ -977,7 +976,7 @@ void ProgressBar::updateProgress()
     if (bCustomConsole) {
       console.reset();
     } else {
-      cout << " " << mPercent << "%  completed" << flush;
+      std::cout << " " << mPercent << "%  completed" << std::flush;
     }
   } else {
     (*onProgress)(mPercent);
@@ -1009,8 +1008,8 @@ ProgressPercent::ProgressPercent(double min, double max, bool customConsole)
 void ProgressPercent::updateProgress() 
 {
   if (onProgress == nullptr) {
-    cout << "\r";
-    cout << " " << mPercent << "%  completed" << flush;
+    std::cout << "\r";
+    std::cout << " " << mPercent << "%  completed" << std::flush;
   } else
     (*onProgress)(mPercent);
 }
