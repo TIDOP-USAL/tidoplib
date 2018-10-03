@@ -1,3 +1,16 @@
+﻿/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *  
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
 #ifndef TL_CORE_CONSOLE_H
 #define TL_CORE_CONSOLE_H
 
@@ -507,7 +520,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~Argument_() override {}
+  virtual ~Argument_() override {}
 
   /*!
    * \brief Devuelve una cadena de texto con el tipo del argumento
@@ -543,7 +556,7 @@ public:
    * \brief Establece el valor del argumento
    * \param[in] value Valor del argumento
    */
-  void setValue(const T &value);
+  virtual void setValue(const T &value);
 };
 
 
@@ -566,21 +579,28 @@ typedef Argument_<fs::path, false> ArgumentPathOptional;
 /* Implementación */
 
 template<typename T, bool required> inline
-Argument_<T, required>::Argument_(const std::string &name, const std::string &description, T *value)
+Argument_<T, required>::Argument_(const std::string &name,
+                                  const std::string &description,
+                                  T *value)
   : Argument(name, description),
     mValue(value)
 {
 }
 
 template<typename T, bool required> inline
-Argument_<T, required>::Argument_(const char &shortName, const std::string &description, T *value)
+Argument_<T, required>::Argument_(const char &shortName,
+                                  const std::string &description,
+                                  T *value)
   : Argument(shortName, description),
     mValue(value)
 {
 }
 
 template<typename T, bool required> inline
-Argument_<T, required>::Argument_(const std::string &name, const char &shortName, const std::string &description, T *value)
+Argument_<T, required>::Argument_(const std::string &name,
+                                  const char &shortName,
+                                  const std::string &description,
+                                  T *value)
   : Argument(name, shortName, description),
     mValue(value)
 {
@@ -677,18 +697,6 @@ std::string Argument_<fs::path, false>::toString() const
   return mValue->string();
 }
 
-template<> inline
-void Argument_<fs::path, true>::fromString(const std::string &value)
-{
-  *mValue = value;
-}
-
-template<> inline
-void Argument_<fs::path, false>::fromString(const std::string &value)
-{
-  *mValue = value;
-}
-
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
 {
@@ -715,6 +723,18 @@ void Argument_<std::string, false>::fromString(const std::string &value)
   *mValue = value;
 }
 
+template<> inline
+void Argument_<fs::path, true>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
+template<> inline
+void Argument_<fs::path, false>::fromString(const std::string &value)
+{
+  *mValue = value;
+}
+
 
 template<typename T, bool required> inline
 T Argument_<T, required>::value() const
@@ -729,6 +749,214 @@ void Argument_<T, required>::setValue(const T &value)
 }
 
 
+/*!
+ * \brief Argumento lista de opciones
+ */
+template <typename T, bool required = true>
+class ArgumentList_
+  : public Argument_<T, required>
+{
+
+protected:
+
+  std::vector<T> mValues;
+  size_t *mIdx;
+
+public:
+
+  /*!
+   * \brief Constructora argumento lista de opciones
+   * \param[in] name Nombre del argumento
+   * \param[in] description Descripción del argumento
+   * \param[in] values Vector con los posibles valores que puede tomar el argumento
+   * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
+   */
+  ArgumentList_(const std::string &name, const std::string &description, std::vector<T> &values, size_t *idx);
+
+  /*!
+   * \brief Constructora argumento lista de opciones
+   * \param[in] shortName Nombre corto del argumento
+   * \param[in] description Descripción del argumento
+   * \param[in] values Vector con los posibles valores que puede tomar el argumento
+   * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
+   */
+  ArgumentList_(const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+
+  /*!
+   * \brief Constructora argumento lista de opciones
+   * \param[in] name Nombre del argumento
+   * \param[in] shortName Nombre corto del argumento
+   * \param[in] description Descripción del argumento
+   * \param[in] values Vector con los posibles valores que puede tomar el argumento
+   * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
+   */
+  ArgumentList_(const std::string &name, const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+
+  /*!
+   * \brief Constructora de copia
+   * \param[in] argument Objeto que se copia
+   */
+  //ArgumentList_(const ArgumentList_ &argumentList);
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~ArgumentList_() override {}
+
+  void fromString(const std::string &value) override;
+
+  void setValue(const T &value) override;
+};
+
+
+/* Definición de unos alias para los tipos mas frecuentes */
+
+typedef ArgumentList_<int, true> ArgumentListIntegerRequired;
+typedef ArgumentList_<int, false> ArgumentListIntegerOptional;
+typedef ArgumentList_<double, true> ArgumentListDoubleRequired;
+typedef ArgumentList_<double, false> ArgumentListDoubleOptional;
+typedef ArgumentList_<float, true> ArgumentListFloatRequired;
+typedef ArgumentList_<float, false> ArgumentListFloatOptional;
+typedef ArgumentList_<bool, true> ArgumentListBooleanRequired;
+typedef ArgumentList_<bool, false> ArgumentListBooleanOptional;
+typedef ArgumentList_<std::string, true> ArgumentListStringRequired;
+typedef ArgumentList_<std::string, false> ArgumentListStringOptional;
+typedef ArgumentList_<fs::path, true> ArgumentListPathRequired;
+typedef ArgumentList_<fs::path, false> ArgumentListPathOptional;
+
+
+/* Implementación */
+
+//template<typename T, bool required> inline
+//ArgumentList_<T, required>::ArgumentList_(const std::string &name,
+//                                          const std::string &description,
+//                                          const std::vector<T> &values, /// Si values esta vacio...
+//                                          size_t *idx)
+//  : Argument_<T, required>(name, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
+//    mValues(values),
+//    mIdx(idx)
+//{
+//  this->setName(name);
+//  this->setDescription(description);
+//}
+
+template<typename T, bool required> inline
+ArgumentList_<T, required>::ArgumentList_(const std::string &name,
+                                          const std::string &description,
+                                          std::vector<T> &values,
+                                          size_t *idx)
+  : Argument_<T, required>(name, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
+    mValues(values),
+    mIdx(idx)
+{
+}
+
+template<typename T, bool required> inline
+ArgumentList_<T, required>::ArgumentList_(const char &shortName,
+                                          const std::string &description,
+                                          std::vector<T> &values,
+                                          size_t *idx)
+  : Argument_<T, required>(shortName, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
+    mValues(values),
+    mIdx(idx)
+{
+}
+
+template<typename T, bool required> inline
+ArgumentList_<T, required>::ArgumentList_(const std::string &name,
+                                          const char &shortName,
+                                          const std::string &description,
+                                          std::vector<T> &values,
+                                          size_t *idx)
+  : Argument_<T, required>(name, shortName, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
+    mValues(values),
+    mIdx(idx)
+{
+}
+
+template<typename T, bool required> inline
+void ArgumentList_<T, required>::fromString(const std::string &value)
+{
+  T prev_value = this->value();
+  Argument_<T, required>::fromString(value);
+  T curr_value = this->value();
+  size_t idx = 0;
+  bool bFind = false;
+  for(auto &_value : mValues){
+    if (curr_value == _value){
+      bFind = true;
+      break;
+    }
+    idx++;
+  }
+  if (bFind){
+    *mIdx = idx;
+  } else {
+    Argument_<T, required>::setValue(prev_value);
+  }
+}
+
+template<typename T, bool required> inline
+void ArgumentList_<T, required>::setValue(const T &value)
+{
+  for(auto &_value : mValues){
+    if (value == _value){
+      Argument_<T, required>::setValue(value);
+      return;
+    }
+  }
+}
+
+
+//class ArgumentValidator
+//{
+//public:
+//
+//  ArgumentValidator() {}
+//
+//  virtual bool validate() = 0;
+//};
+
+template <typename T, typename Enable = void>
+class ArgumentValidator;
+
+template <typename T>
+class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value && typeid(T) != typeid(bool)>::type>
+{
+private:
+
+  T mMin;
+  T mMax;
+
+public:
+
+  ArgumentValidator()
+    : mMin(),
+      mMax(std::numeric_limits<T>().max())
+  {}
+
+  bool validate(T value)
+  {
+    if (value > mMin && value < mMax)
+      return true;
+  }
+
+  void setRange(T min, T max)
+  {
+    mMin = min;
+    mMax = max;
+  }
+
+  T min() const
+  {
+    return mMin;
+  }
+
+  T max() const
+  {
+    return mMax;
+  }
+};
 
 
 /*!
@@ -854,9 +1082,14 @@ private:
 
   /*!
    * \brief Listado de los argumentos por defecto comando
-   * Comandos como ayuda [-h | --help] o versión [-v | --version]
+   * Comandos como ayuda [-h | --help] o versión [--version]
    */
   //std::list<std::shared_ptr<Argument>> mDefaultArgs;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
 
 public:
 
@@ -909,6 +1142,18 @@ public:
    * \param[in] description Descripción del comando
    */
   void setDescription(const std::string &description);
+
+  /*!
+   * \brief Versión del programa
+   * \return
+   */
+  std::string version() const;
+
+  /*!
+   * \brief Establece la versión del programa
+   * \param[in] version Versión del programa
+   */
+  void setVersion(const std::string &version);
 
   /*!
    * \brief parsea los argumentos de entrada

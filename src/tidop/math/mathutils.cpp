@@ -25,6 +25,7 @@ namespace TL
 //https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
 void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa)
 {
+  //-sinOmega * cosPhi, cosOmega * cosPhi
   if (omega) *omega = atan2(R[1][2], R[2][2]);
   if (phi) *phi = atan2(-R[0][2], sqrt(R[0][0] * R[0][0] + R[0][1] * R[0][1]));
   double s1 = sin(*omega);
@@ -106,13 +107,13 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
   double cosKappa = cos(kappa);
 
   (*R)[0][0] = cosPhi * cosKappa;
-  (*R)[0][1] = sinOmega * sinPhi * cosKappa + cosOmega * sinKappa;
-  (*R)[0][2] = sinOmega * sinKappa - cosOmega * sinPhi * cosKappa;
-  (*R)[1][0] = -cosPhi * sinKappa;
+  (*R)[0][1] = -cosPhi * sinKappa;
+  (*R)[0][2] = sinPhi;
+  (*R)[1][0] = sinOmega * sinPhi * cosKappa + cosOmega * sinKappa;
   (*R)[1][1] = cosOmega * cosKappa - sinOmega * sinPhi * sinKappa;
-  (*R)[1][2] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
-  (*R)[2][0] = sinPhi;
-  (*R)[2][1] = -sinOmega * cosPhi;
+  (*R)[1][2] = -sinOmega * cosPhi;
+  (*R)[2][0] = sinOmega * sinKappa - cosOmega * sinPhi * cosKappa;
+  (*R)[2][1] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
   (*R)[2][2] = cosOmega * cosPhi;
 }
 

@@ -2,7 +2,7 @@
 if(BUILD_TEST)
   
   
-  ## Download and unpack googletest at configure time
+  # Download and unpack googletest at configure time
   #configure_file("${PROJECT_SOURCE_DIR}/cmake/CMakeLists.txt.in" ${CMAKE_BINARY_DIR}/googletest-download/CMakeLists.txt)
   #execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
   #  RESULT_VARIABLE result

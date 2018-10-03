@@ -471,18 +471,6 @@ void Log::setLogLevel(MessageLevel level)
 void Log::write(const char *msg)
 {
 
-//  char date[64];
-//  std::time_t now = std::time(NULL);
-//  //std::tm *_tm = std::localtime(&now);
-//  struct tm _tm;
-//  localtime_s(&_tm, &now);
-//  //if (_tm) {
-//    //std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", _tm);
-//    std::strftime(date, sizeof(date), sTimeLogFormat.c_str(), &_tm);
-//  //} else {
-//  //  //strcpy(date, "NULL");
-//  //  strcpy_s(date, sizeof date, "NULL");
-//  //}
   std::string date = TL::formatTimeToString("%d/%b/%Y %H:%M:%S");
 
   if (sLogFile.empty()) {
@@ -497,8 +485,7 @@ void Log::write(const char *msg)
     hLog << date << " - " << msg << "\n";
     hLog.close();
   } else {
-    //Error al abrir/crear archivo. Se saca el error por consola
-    //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
+    msgError("Permission denied: %s", sLogFile.c_str());
   }
 }
 
@@ -548,7 +535,7 @@ void Log::_write(const char *msg, const char *date)
     hLog.close();
   } else {
     //Error al abrir/crear archivo. Se saca el error por consola
-    //Message::message("The file %s was not opened\n", sLogFile.c_str()).print(MessageLevel::MSG_ERROR, MessageOutput::MSG_CONSOLE);
+    printf("The file %s was not opened\n", sLogFile.c_str());
   }
 }
 

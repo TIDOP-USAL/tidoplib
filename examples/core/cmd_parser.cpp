@@ -51,6 +51,7 @@ int main(int argc, char** argv)
     cmd.push_back(std::make_shared<ArgumentBooleanOptional>("opt", 'o', "boolean2", &bOpt2));
     cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble. Si se omite se toma el valor por defecto", &val_d));
 
+
     // Parseo de los argumentos y comprobación de los mismos
     Command::Status status = cmd.parse(argc, argv);
     if (status == Command::Status::PARSE_ERROR ) {

@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 
 #include <tidop/core/console.h>
 #include <tidop/core/defs.h>
@@ -15,6 +15,7 @@ using namespace TL;
 TL_SUPPRESS_WARNINGS
 
 /* Datos para los test */
+
 
 
 TEST(ConsoleTest, Constructor)
@@ -53,11 +54,16 @@ public:
 
     arg_string = std::make_shared<ArgumentStringOptional>("string", 's', "Cadena de texto", &val_string);
 
-    val_b;
     opt = std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &val_b);
 
-////    arg2 = new Parameter({"par","p"}, "Parámetro");
-////    arg3 = new ParameterList({"par_list", "l"}, "Lista de párametros", {"v1", "v2", "v3"}, 1);
+    idx = 1;
+    list.push_back(0);
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+    list.push_back(4);
+    arg_list = std::make_shared<ArgumentList_<int, false>>("list", "lista de argumentos", list, &idx);
+
   }
 
   virtual void TearDown()
@@ -80,6 +86,10 @@ public:
 
   bool val_b;
   std::shared_ptr<Argument> opt;
+
+  std::vector<int> list;
+  size_t idx;
+  std::shared_ptr<Argument> arg_list;
 };
 
 
@@ -114,6 +124,7 @@ TEST_F(ArgumentTest, isRequired)
   EXPECT_EQ(false, arg_double->isRequired());
   EXPECT_EQ(false, arg_string->isRequired());
   EXPECT_EQ(false, opt->isRequired());
+  EXPECT_EQ(false, arg_string->isRequired());
 }
 
 TEST(ArgumentInt, setGetValue)
@@ -126,6 +137,25 @@ TEST(ArgumentInt, setGetValue)
   EXPECT_EQ(15, arg_int.value());
 }
 
+TEST(ArgumentList, setGetValue)
+{
+  size_t idx = 1;
+  std::vector<int> list;
+  list.push_back(0);
+  list.push_back(10);
+  list.push_back(20);
+  list.push_back(30);
+  list.push_back(40);
+  ArgumentList_<int, true> arg_list("list", "lista de argumentos", list, &idx);
+  EXPECT_EQ(10, arg_list.value());
+
+  arg_list.setValue(15);
+  EXPECT_EQ(10, arg_list.value());
+
+  arg_list.setValue(20);
+  EXPECT_EQ(20, arg_list.value());
+}
+
 TEST_F(ArgumentTest, typeName)
 {
   EXPECT_EQ("int", arg_int->typeName());
@@ -133,6 +163,7 @@ TEST_F(ArgumentTest, typeName)
   EXPECT_EQ("float", arg_float->typeName());
   EXPECT_EQ("std::string", arg_string->typeName());
   EXPECT_EQ("bool", opt->typeName());
+  EXPECT_EQ("int", arg_list->typeName());
 }
 
 TEST_F(ArgumentTest, fromString)
@@ -144,7 +175,10 @@ TEST_F(ArgumentTest, fromString)
   EXPECT_NEAR(2.3, val_d, 0.1);
 
   arg_float->fromString("0.3536");
-  EXPECT_NEAR(0.3536, val_f, 0.001);
+  EXPECT_FLOAT_EQ(0.3536f, val_f);
+
+  arg_list->fromString("4");
+  EXPECT_EQ(4, list[idx]);
 }
 
 TEST_F(ArgumentTest, toString)
@@ -154,6 +188,30 @@ TEST_F(ArgumentTest, toString)
 }
 
 
+/* ArgumentValidator */
+
+
+//class ArgumentValidatorTest : public testing::Test
+//{
+//  void SetUp() override
+//  {
+
+//  }
+
+//  void TearDown() override
+//  {
+
+//  }
+
+//  ArgumentValidator *validator;
+
+//};
+
+//TEST_F(ArgumentValidatorTest, Constructor)
+//{
+
+//}
+
 /* Command Test */
 
 class CommandTest : public testing::Test
@@ -162,14 +220,20 @@ public:
 
   Command *cmd_arg_posix;
   Command *cmd_arg_posix2;
+  Command *cmd_arg_posix3;
+  Command *cmd_arg_list;
   std::string cmd_help;
   int val2;
   double val3;
   float val_f;
   bool val_b;
   bool opt;
+  std::string file;
 
-  virtual void SetUp()
+  size_t idx;
+  std::vector<std::string> options;
+
+  virtual void SetUp() override
   {
     cmd_help = "-h"; // Muestra la ayuda
     cmd_arg_posix = new Command;
@@ -182,12 +246,28 @@ public:
     cmd_arg_posix2->push_back(std::make_shared<Argument_<bool, false>>("bool", 'b', "boolean", &val_b));
     cmd_arg_posix2->push_back(std::make_shared<Argument_<bool, false>>("option", 'o', "Option", &opt));
     //cmd_arg_posix2->push_back(ParameterList({"par_list", "l"}, "Lista de párametros", {"v1", "v2", "v3"}, 1));
+
+
+    cmd_arg_posix3 = new Command("name", "Lista de inicializadores",{
+                                   std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file)
+                                 });
+    cmd_arg_list = new Command;
+    idx = 3;
+    options.push_back("OPT0");
+    options.push_back("OPT1");
+    options.push_back("OPT2");
+    options.push_back("OPT3");
+    options.push_back("OPT4");
+
+    cmd_arg_list->push_back(std::make_shared<ArgumentList_<std::string, false>>("options", "lista de opciones", options, &idx));
   }
 
-  virtual void TearDown()
+  virtual void TearDown() override
   {
     if (cmd_arg_posix) delete cmd_arg_posix;
     if (cmd_arg_posix2) delete cmd_arg_posix2;
+    if (cmd_arg_posix3) delete cmd_arg_posix3;
+    if (cmd_arg_list) delete cmd_arg_list;
   }
 };
 
@@ -251,14 +331,17 @@ TEST_F(CommandTest, parse_option_ok)
   EXPECT_FALSE(opt);
 }
 
-TEST_F(CommandTest, parse_option_ok_equal)
+TEST_F(CommandTest, parse_option_short)
 {
-  std::array<char const*, 3> argv{"" , "-i=2", "-b"};
+  std::array<char const*, 3> argv{"" , "-i2", "-b"};
   EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
   EXPECT_EQ(2, val2);
   EXPECT_TRUE(val_b);
   EXPECT_FALSE(opt);
+}
 
+TEST_F(CommandTest, parse_option_ok_equal)
+{
   std::array<char const*, 3> argv_large{"" , "--int=2", "-b"};
   EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::PARSE_SUCCESS);
   EXPECT_EQ(2, val2);
@@ -268,17 +351,22 @@ TEST_F(CommandTest, parse_option_ok_equal)
 
 TEST_F(CommandTest, parseMultipleOptions)
 {
-  std::array<char const*, 4> argv{"" , "-i", "2", "-bo"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
-  EXPECT_EQ(2, val2);
-  EXPECT_TRUE(val_b);
-  EXPECT_TRUE(opt);
+  std::array<char const*, 2> argv{"" , "-b"};
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_ERROR);
 }
 
 TEST_F(CommandTest, parseERROR)
 {
   std::array<char const*, 2> argv{"" , "-b"};
   EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_ERROR);
+}
+
+
+TEST_F(CommandTest, parseOptionsParameter)
+{
+  std::array<char const*, 3> argv{"" , "--options", "OPT3"};
+  EXPECT_TRUE(cmd_arg_list->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_EQ(3, idx);
 }
 
 TEST_F(CommandTest, size)
@@ -298,6 +386,13 @@ TEST_F(CommandTest, empty)
   EXPECT_TRUE(cmd_arg_posix->empty());
   EXPECT_FALSE(cmd_arg_posix2->empty());
 }
+
+TEST_F(CommandTest, parseTextWithHyphen)
+{
+  std::array<char const*, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
+  EXPECT_TRUE(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+}
+
 
 TL_DEFAULT_WARNINGS
 

@@ -422,22 +422,27 @@ void Argument::setShortName(const char &shortName)
 
 Command::Command()
   : mName(""),
-    mDescription("")
+    mDescription(""),
+    mCmdArgs(0),
+    mVersion("0.0.0")
 {
-  init();
+    init();
 }
 
 Command::Command(const Command &command)
   : mName(command.mName),
     mDescription(command.mDescription),
-    mCmdArgs(command.mCmdArgs)
+    mCmdArgs(command.mCmdArgs),
+    mVersion(command.mVersion)
 {
 
 }
 
 Command::Command(const string &name, const string &description)
   : mName(name),
-    mDescription(description)
+    mDescription(description),
+    mCmdArgs(0),
+    mVersion("0.0.0")
 {
   init();
 }
@@ -446,7 +451,8 @@ Command::Command(const string &name, const string &description,
                  std::initializer_list<std::shared_ptr<Argument> > arguments)
   : mName(name),
     mDescription(description),
-    mCmdArgs(arguments)
+    mCmdArgs(arguments),
+    mVersion("0.0.0")
 {
 }
 
@@ -470,10 +476,18 @@ void Command::setDescription(const std::string &description)
   mDescription = description;
 }
 
+std::string Command::version() const
+{
+    return mVersion;
+}
+
+void Command::setVersion(const std::string &version)
+{
+    mVersion = version;
+}
+
 Command::Status Command::parse(int argc, const char * const argv[])
 {
-  /// TODO: argv se tendría que pasar a un std::vector.
-  /// Asi sería mas facil buscar y eliminar los parámetros ya cargados.
 
   std::map<std::string, std::string> cmd_in;
 
@@ -485,24 +499,37 @@ Command::Status Command::parse(int argc, const char * const argv[])
     if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
-//      std::size_t val_pos = arg_cmd_name.find("=");
-//      if (val_pos != std::string::npos) {
-        std::vector<std::string> v;
-        TL::split(arg_cmd_name, v, "=");
-        if(v.size() == 2){
-          cmd_in[v[0]] = v[1];
-          continue;
-        }
-//      }
+      std::vector<std::string> v;
+      TL::split(arg_cmd_name, v, "=");
+      if(v.size() == 2){
+        cmd_in[v[0]] = v[1];
+        continue;
+      }
     } else if (found_short_name != std::string::npos && found_short_name == 0) {
       arg_cmd_name = (argv[i])+1;
       if (arg_cmd_name.size() > 1) {
-        std::vector<std::string> v;
-        TL::split(arg_cmd_name, v, "=");
-        if(v.size() == 2){
-          cmd_in[v[0]] = v[1];
-        } else {
-          /// Se da el caso de combinación de multiples opciones
+        /// Se da el caso de combinación de multiples opciones o
+        /// parametro corto seguido de argumento
+        /// Habría que ver si lo que sigue son todo nombres cortos
+        bool check_combined = true;
+        for (auto &opt : arg_cmd_name){
+          bool bFind = false;
+          for (auto &arg : mCmdArgs) {
+            if (arg->shortName()){
+              if (arg->shortName() == opt){
+                bFind = true;
+                break;
+              }
+            }
+          }
+          if (bFind == false) {
+            /// Si no encuentra no es opción
+            check_combined = false;
+            break;
+          }
+        }
+
+        if (check_combined){
           for (auto &opt : arg_cmd_name){
             stringstream ss;
             string short_name;
@@ -510,6 +537,10 @@ Command::Status Command::parse(int argc, const char * const argv[])
             ss >> short_name;
             cmd_in[short_name] = "true";
           }
+        } else {
+          string short_name = arg_cmd_name.substr(0, 1);
+          std::string arg_value = arg_cmd_name.substr(1, arg_cmd_name.size()-1);
+          cmd_in[short_name] = arg_value;
         }
         continue;
       }
@@ -524,8 +555,8 @@ Command::Status Command::parse(int argc, const char * const argv[])
       std::string arg_value = std::string(argv[i+1]);
       std::size_t found_next_name = arg_value.find("--");
       std::size_t found_next_short_name = arg_value.find("-");
-      if (found_next_name != std::string::npos  && found_next_name == 0 || 
-          found_next_short_name != std::string::npos && found_next_short_name == 0){
+      if ((found_next_name != std::string::npos  && found_next_name == 0) ||
+          (found_next_short_name != std::string::npos && found_next_short_name == 0)){
         value = "true";
       } else {
         value = arg_value;
@@ -581,85 +612,6 @@ Command::Status Command::parse(int argc, const char * const argv[])
     }
   }
 
-
-  /// Comandos por defecto
-//  for (int i = 1; i < argc; ++i) {
-//    if (argc > 1){
-//      if (strcmp(argv[i], "-h") == 0 ||
-//          strcmp(argv[i], "--help") == 0) {
-//        //showHelp();
-//        return Command::Status::SHOW_HELP;
-//      } else if (strcmp(argv[i], "--version") == 0){
-//        //showVersion();
-//        return Command::Status::SHOW_VERSION;
-//      } else if (strcmp(argv[i], "--licence") == 0){
-//        //showLicence();
-//        return Command::Status::SHOW_LICENCE;
-//      }
-//    }
-//  }
-
-
-//  for (auto &arg : mCmdArgs) {
-//    bool bOptional = !arg->isRequired();
-//    bool bFind = false;
-
-//    for (int i = 1; i < argc; ++i) {
-//      std::string arg_name = std::string(argv[i]);
-//      std::size_t found_name = arg_name.find("--");
-//      std::size_t found_short_name = arg_name.find("-");
-//      if (found_name != std::string::npos) {
-//        //std::size_t val_pos = arg_name.find("=", found);
-//        arg_name = (argv[i])+2;
-////        stringstream ss;
-////        string s;
-////        ss << arg->name();
-////        ss >> s;
-//        if (arg->name() == arg_name) {
-//          if(i+1 < argc) {
-//            std::string arg_value = std::string(argv[i+1]);
-//            arg->fromString(arg_value);
-//            i++;
-//            bFind = true;
-//            break;
-//          }
-//        }
-//      } else if (found_short_name != std::string::npos) {
-//        ///Puede venir mas de un argumento corto
-//        /// Por ahora sólo el primero
-//        std::string opt = arg_name.substr(found_short_name+1, found_short_name+2);
-//        stringstream ss;
-//        string s;
-//        ss << arg->shortName();
-//        ss >> s;
-//        if (s == opt) {
-//          ///TODO: buscar la cadena siguiente si no se usa [=] para párametros
-//          if(i+1 < argc) {
-//            std::string arg_value = std::string(argv[i+1]);
-//            std::size_t found_next_name = arg_name.find("--");
-//            std::size_t found_next_short_name = arg_name.find("-");
-//            if (found_next_name != std::string::npos && found_next_short_name != std::string::npos){
-//              arg->fromString("true");
-//            } else {
-//              arg->fromString(arg_value);
-//              i++;
-//            }
-//          } else{
-//            arg->fromString("true");
-//          }
-//          bFind = true;
-//          break;
-//        }
-//      }
-//    }
-
-//    if (bFind == false && bOptional == false) {
-//      msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
-//      //printHelp();
-//      return Command::Status::PARSE_ERROR;
-//    }
-//  }
-
   return Command::Status::PARSE_SUCCESS;
 }
 
@@ -709,7 +661,7 @@ Command &Command::operator=(const Command &command)
     this->mName = command.mName;
     this->mDescription = command.mDescription;
     this->mCmdArgs = command.mCmdArgs;
-    //this->mDefaultArgs = command.mDefaultArgs;
+    this->mVersion = command.mVersion;
   }
   return (*this);
 }
@@ -717,10 +669,10 @@ Command &Command::operator=(const Command &command)
 Command &Command::operator=(Command &&command) TL_NOEXCEPT
 {
   if (this != &command) {
-    this->mName = command.mName;
-    this->mDescription = command.mDescription;
+    this->mName = std::move(command.mName);
+    this->mDescription = std::move(command.mDescription);
     this->mCmdArgs = std::move(command.mCmdArgs);
-    //this->mDefaultArgs = std::move(command.mDefaultArgs);
+    this->mVersion = std::move(command.mVersion);
   }
   return (*this);
 }
@@ -732,65 +684,94 @@ Command::iterator Command::erase(Command::const_iterator first, Command::const_i
 
 void Command::showHelp() const
 {
-//  Console console(Console::Mode::OUTPUT, false);
+
+
+//  Console &console = Console::getInstance();
 //  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
 //  console.setFontBold(true);
 
-//  printf("%s \n", mName.c_str());
+//  /// Nombre del comando
+//  printf("%s \n\n", mName.c_str());
 
 //  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
 //  console.setFontBold(false);
 
+//  /// Descripción del comando
 //  printf("%s \n\n", mDescription.c_str());
 
-//  printf_s("\nUsage:\n\n");
+//  /// Sintaxis
+//  console.setFontBold(true);
+//  printf_s("\nSyntax:\n\n");
+//  console.setFontBold(false);
+
 //  printf_s("%s", mName.c_str());
 //  for (auto arg : mCmdArgs) {
-//    printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
+//     printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
 //  }
 //  printf_s("\n\n");
 
-//  printf("Options: \n\n");
+//  /// Parámetros
+//  console.setFontBold(true);
+//  printf_s("Parameters:\n\n");
+//  console.setFontBold(false);
 
 //  for (auto arg : mCmdArgs) {
 //     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
 //  }
 
+  /// Linux syntax
+  TL_TODO("Solucion rapida. revisar")
 
-
-  /// Sintaxis Windows
+  /// Uso
   Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
-
-  /// Nombre del comando
-  printf("%s \n\n", mName.c_str());
-
-  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
-  console.setFontBold(false);
+  printf("Usage: %s [OPTION...] \n\n", mName.c_str());
+  console.reset();
 
   /// Descripción del comando
   printf("%s \n\n", mDescription.c_str());
 
-  /// Sintaxis
-  console.setFontBold(true);
-  printf_s("\nSyntax:\n\n");
-  console.setFontBold(false);
-
-  printf_s("%s", mName.c_str());
+  size_t max_name_size = 7;
   for (auto arg : mCmdArgs) {
-     printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
+    max_name_size = std::max(max_name_size, arg->name().size());
+  }
+  std::string name_tmpl = std::string("%s%-").append(std::to_string(max_name_size)).append("s %s");
+  printf_s( "  -h, ");
+  printf_s(name_tmpl.c_str(), "--", "help", "Display this help and exit\n");
+  printf_s( "    , ");
+  printf_s(name_tmpl.c_str(), "--", "version", "Output version information and exit\n");
+
+  for (auto arg : mCmdArgs) {
+    if (arg->shortName()){
+      printf_s( "  -%c, ", arg->shortName());
+    } else {
+      printf_s( "    , ");
+    }
+    if (!arg->name().empty()){
+      printf_s(name_tmpl.c_str(), "--", arg->name().c_str(), arg->description().c_str());
+    } else {
+      printf_s(name_tmpl.c_str(), "  ", "", arg->description().c_str());
+    }
+    printf_s("\n");
   }
   printf_s("\n\n");
 
-  /// Parámetros
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
-  printf_s("Parameters:\n\n");
-  console.setFontBold(false);
+  printf("Argument Syntax Conventions\n\n");
+  console.reset();
 
-  for (auto arg : mCmdArgs) {
-     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
-  }
+  printf_s("  - Arguments are options if they begin with a hyphen delimiter (-).\n");
+  printf_s("  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. ‘-abc’ is equivalent to ‘-a -b -c’.\n");
+  printf_s("  - Option names are single alphanumeric characters.\n");
+  printf_s("  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n");
+  printf_s("  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n");
+
+
+//  for (auto arg : mCmdArgs) {
+//     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
+//  }
 }
 
 void Command::showVersion() const
@@ -798,6 +779,10 @@ void Command::showVersion() const
   Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
+
+  printf_s("Version: %s", mVersion.c_str());
+
+  console.reset();
 }
 
 void Command::showLicence() const
@@ -946,7 +931,7 @@ ProgressBar::ProgressBar(double min, double max, bool customConsole)
 
 void ProgressBar::updateProgress() 
 {
-  if (onProgress == NULL) {
+  if (onProgress == nullptr) {
     
     cout << "\r";
 

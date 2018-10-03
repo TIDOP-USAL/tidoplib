@@ -14,17 +14,18 @@ if(BUILD_TEST AND BUILD_TL_CORE)
   MACRO(DEFINE_TEST name srcs)
 
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	include_directories(${GTEST_INCLUDE_DIRS})
-	
+    include_directories(${GTEST_INCLUDE_DIRS})
+    include_directories(${GMOCK_INCLUDE_DIRS})
+
     set(test_kind test)
     set(test_KIND TEST)
     
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
     
-	##target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
-	target_link_libraries(${the_target} gtest gtest_main )
-	target_link_libraries(${the_target} tl_core)
+    ##target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
+    target_link_libraries(${the_target} gtest gtest_main gmock )
+    target_link_libraries(${the_target} tl_core)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     target_link_libraries(${the_target} ${OpenCV_LIBS}  ${GDAL_LIBRARY})
 	
