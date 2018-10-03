@@ -102,6 +102,12 @@ endif()
 
 if(BUILD_TEST)
   enable_testing() #CMake predefined targets
+  if (BUILD_GTEST)
+    set(HAVE_GTEST YES)
+  endif()
+  if (BUILD_GMOCK)
+    set(HAVE_GMOCK YES)
+  endif()
 endif()
 
 # Librerias externas
@@ -232,6 +238,33 @@ if(WITH_EDSDK)
     endif()
 endif()
 
+# --- VLD ---
+### TODO: Revisar. por ahora sólo 64 bits
+#if(WITH_VLD AND MSVC)
+#  message("Enabling Visual Leak Detector")
+#  find_library(VLD_LIBRARY vld
+#    HINTS "c:/Program Files (x86)/Visual Leak Detector/lib/Win64" "c:/Program Files/Visual Leak Detector/lib/Win64")
+#  find_file(VLD_H vld.h
+#    HINTS "c:/Program Files (x86)/Visual Leak Detector/include" "c:/Program Files/Visual Leak Detector/include")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FIwinsock2.h")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \"/FI${VLD_H}\"")
+#  get_filename_component(VLD_LIBRARY_DIR "${VLD}" PATH)
+#  link_directories("${VLD_LIBRARY_DIR}")
+#
+#  IF(VLD_INCLUDE_DIR)
+#   IF (VLD_LIBRARY_VLD OR VLD_LIBRARY_VLDMT OR VLD_LIBRARY_VLDMTDLL)
+#     ## do NOT add LIBRARIES because dependencies are handled through pragmas.
+#     SET(VLD_FOUND TRUE)
+#     MESSAGE("found VLD.")
+#   ENDIF (VLD_LIBRARY_VLD OR VLD_LIBRARY_VLDMT OR VLD_LIBRARY_VLDMTDLL)
+#  ENDIF(VLD_INCLUDE_DIR)
+#
+#  if(NOT VLD_FOUND)
+#    set(HAVE_VLD NO)
+#  else()
+#    set(HAVE_VLD YES)
+#  endif()  
+#endif()
 
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})

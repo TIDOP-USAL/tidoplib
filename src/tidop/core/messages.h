@@ -1,7 +1,16 @@
-/* 
-  Hay que añadir la posibilidad de añadir un handler personalizado para 
-  facilitar la inclusión de la librería en otros sistemas.
-*/
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
 
 #ifndef TL_CORE_MESSAGES_H
 #define TL_CORE_MESSAGES_H

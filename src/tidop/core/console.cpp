@@ -1,4 +1,18 @@
-﻿#include "tidop/core/console.h"
+﻿/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+#include "tidop/core/console.h"
 
 #include "config_tl.h"
 
@@ -74,6 +88,7 @@ Console::Console()
 Console::~Console() 
 {
   reset();
+  sObjConsole.release();
 }
 
 Console &Console::getInstance()
@@ -537,7 +552,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
             cmd_in[short_name] = "true";
           }
         } else {
-          string short_name = arg_cmd_name.substr(0, 1);
+          std::string short_name = arg_cmd_name.substr(0, 1);
           std::string arg_value = arg_cmd_name.substr(1, arg_cmd_name.size()-1);
           cmd_in[short_name] = arg_value;
         }
@@ -779,7 +794,7 @@ void Command::showVersion() const
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
 
-  printf_s("Version: %s", mVersion.c_str());
+  printf_s("Version: %s\n", mVersion.c_str());
 
   console.reset();
 }

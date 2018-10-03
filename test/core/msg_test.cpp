@@ -1,11 +1,15 @@
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include "config_tl.h"
 
+#include <gtest/gtest.h>
+#ifdef HAVE_GMOCK
+#include <gmock/gmock.h>
+#endif
 #include <tidop/core/messages.h>
 
-using ::testing::_;
-
 using namespace TL;
+
+#ifdef HAVE_GMOCK
+using ::testing::_;
 
 class MockMessageManagerListener : public MessageManager::Listener
 {
@@ -38,3 +42,4 @@ TEST(MessageManager, addListener)
 
 }
 
+#endif

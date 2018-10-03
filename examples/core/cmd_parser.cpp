@@ -18,6 +18,8 @@
 #include <tidop/core/messages.h>
 #include <tidop/img_process/img_processing.h>
 
+#include <vld.h>
+
 using namespace TL;
 
 enum class options {

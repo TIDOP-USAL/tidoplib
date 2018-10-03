@@ -1,3 +1,17 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
 #include "tidop/core/messages.h"
 
 #include "tidop/core/defs.h"
@@ -91,12 +105,14 @@ std::mutex MessageManager::sMutex;
 
 std::string MessageManager::Message::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 
-MessageManager::MessageManager() : mListeners(0)
+MessageManager::MessageManager() 
+  : mListeners(0)
 {
 }
 
 MessageManager::~MessageManager()
 {
+  sObjMessage.release();
 }
 
 MessageManager &MessageManager::getInstance()
@@ -438,6 +454,7 @@ Log::Log()
 
 Log::~Log() 
 {
+  sObjLog.release();
 }
 
 Log &Log::getInstance()

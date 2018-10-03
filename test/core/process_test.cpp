@@ -1,9 +1,12 @@
+#include "config_tl.h"
+
 #include <gtest/gtest.h>
+#ifdef HAVE_GMOCK
 #include <gmock/gmock.h>
+using ::testing::_;
+#endif
 
 #include <tidop/core/process.h>
-
-using ::testing::_;
 
 using namespace TL;
 
@@ -23,7 +26,7 @@ public:
 public:
   Status run(Progress *progressBar) override
   {
-    Process::run(progressBar);
+    return Process::run(progressBar);
   }
 };
 
@@ -63,6 +66,7 @@ TEST(Process, reset)
 
 
 
+#ifdef HAVE_GMOCK
 
 class MockProcess : public Process
 {
@@ -99,3 +103,5 @@ TEST(BatchProcess, add)
   EXPECT_CALL(mock_process, run(_))
   //          .Times(1);
 }
+
+#endif

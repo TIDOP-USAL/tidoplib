@@ -1,3 +1,17 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
 /* Archivo para definir macros y constantes de tipo general */
 
 #ifndef TL_CORE_DEFS_H
@@ -51,6 +65,7 @@
 #define TL_PI   3.1415926535897932384626433832795
 #define TL_2PI  6.283185307179586476925286766559
 
+
 /* Conversión de ángulos */
 
 #define TL_RAD_TO_DEG	57.295779513082320876798154814105
@@ -58,7 +73,9 @@
 #define TL_RAD_TO_GRAD	63.661977236758134307553505349006
 #define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
 
+
 /* Límites maximos y minimos de tipos numéricos */
+
 #define TL_INT_MAX std::numeric_limits<int>().max()
 #define TL_INT_MIN -std::numeric_limits<int>().max()
 #define TL_DOUBLE_MAX std::numeric_limits<double>().max()

@@ -54,4 +54,8 @@
 // boost
 #cmakedefine HAVE_BOOST
 
+// Google Test
+#cmakedefine HAVE_GTEST
+#cmakedefine HAVE_GMOCK
+
 #endif // TL_CONFIG_H

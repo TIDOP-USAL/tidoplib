@@ -12,6 +12,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
+#include <vld.h>
 
 using namespace TL;
 
