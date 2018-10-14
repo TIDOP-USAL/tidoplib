@@ -32,6 +32,7 @@ set_property(TARGET tl_graphic PROPERTY FOLDER "modules")
 #instalación
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_graphic
+           EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)
@@ -43,6 +44,7 @@ if(BUILD_SHARED_LIBS)
 	                      tl_core tl_geom)
 else()
   install(TARGETS tl_graphic 
+    EXPORT "${TARGETS_EXPORT_NAME}"
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()

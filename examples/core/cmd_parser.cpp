@@ -18,8 +18,6 @@
 #include <tidop/core/messages.h>
 #include <tidop/img_process/img_processing.h>
 
-#include <vld.h>
-
 using namespace TL;
 
 enum class options {
@@ -30,11 +28,12 @@ enum class options {
 
 int main(int argc, char** argv)
 {
-  const char *name = "Consola";
-   
+  fs::path app_path = argv[0];
+  std::string cmd_name = app_path.stem().string();
+
   // Consola
   Console &console = Console::getInstance();
-  console.setTitle(name);                           // Titulo de la ventana de consola
+  console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
   //console.setConsoleUnicode();
   //console.setFontHeight(24);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::MSG_VERBOSE);   // Se muestran todos los mensajes por consola
@@ -45,14 +44,24 @@ int main(int argc, char** argv)
     bool bOpt, bOpt2;
     int val;
     double val_d = 0.5;
+    size_t idx = 0;
+    std::vector<std::string> options;
+    options.push_back("OPT0");
+    options.push_back("OPT1");
+    options.push_back("OPT2");
+    options.push_back("OPT3");
+    options.push_back("OPT4");
 
-    Command cmd(name, "Ejemplo de aplicación de consola");
+    Command cmd(cmd_name, "Ejemplo de aplicación de consola");
     cmd.push_back(std::make_shared<ArgumentStringRequired>("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero.", &file));
     cmd.push_back(std::make_shared<ArgumentIntegerRequired>("int", 'i', "Valor entero", &val));
     cmd.push_back(std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &bOpt));
     cmd.push_back(std::make_shared<ArgumentBooleanOptional>("opt", 'o', "boolean2", &bOpt2));
     cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble. Si se omite se toma el valor por defecto", &val_d));
+    cmd.push_back(std::make_shared<ArgumentList_<std::string, false>>("options", "lista de opciones", options, &idx));
 
+    cmd.addExample(std::string(cmd_name).append(" --file c:/path/file.txt --int 30 -b"));
+    cmd.addExample(std::string(cmd_name).append(" -fc:/path/file.txt -i30 -b"));
 
     // Parseo de los argumentos y comprobación de los mismos
     Command::Status status = cmd.parse(argc, argv);

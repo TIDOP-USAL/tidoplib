@@ -21,14 +21,14 @@ TL_SUPPRESS_WARNINGS
 TEST(ConsoleTest, Constructor)
 {
   Console &console = Console::getInstance();
-  EnumFlags<MessageLevel> flag = console.getMessageLevel();
+  EnumFlags<MessageLevel> flag = console.messageLevel();
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_INFO));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_WARNING));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
 
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
-  flag = console.getMessageLevel();
+  flag = console.messageLevel();
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_INFO));
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_WARNING));
@@ -154,6 +154,34 @@ TEST(ArgumentList, setGetValue)
 
   arg_list.setValue(20);
   EXPECT_EQ(20, arg_list.value());
+
+  arg_list.setValue(50);
+
+}
+
+TEST(ArgumentList, isValid)
+{
+  size_t idx = 1;
+  std::vector<int> list;
+  list.push_back(0);
+  list.push_back(10);
+  list.push_back(20);
+  list.push_back(30);
+  list.push_back(40);
+  ArgumentList_<int, true> arg_list("list", "lista de argumentos", list, &idx);
+  EXPECT_EQ(10, arg_list.value());
+
+  arg_list.setValue(15);
+  EXPECT_EQ(10, arg_list.value());
+  EXPECT_FALSE(arg_list.isValid());
+
+  arg_list.setValue(20);
+  EXPECT_EQ(20, arg_list.value());
+  EXPECT_TRUE(arg_list.isValid());
+
+  arg_list.setValue(50);
+  EXPECT_FALSE(arg_list.isValid());
+
 }
 
 TEST_F(ArgumentTest, typeName)
@@ -191,26 +219,35 @@ TEST_F(ArgumentTest, toString)
 /* ArgumentValidator */
 
 
-//class ArgumentValidatorTest : public testing::Test
-//{
-//  void SetUp() override
-//  {
+class ArgumentValidatorTest : public testing::Test
+{
+  void SetUp() override
+  {
+    validator = new ArgumentValidator<int>();
+  }
 
-//  }
+  void TearDown() override
+  {
+    if (validator) delete validator;
+  }
 
-//  void TearDown() override
-//  {
+public:
 
-//  }
+  ArgumentValidator<int> *validator;
+  ArgumentValidator<double> validator_double;
 
-//  ArgumentValidator *validator;
+};
 
-//};
+TEST_F(ArgumentValidatorTest, Constructor)
+{
+  validator->setRange(0, 150);
+  EXPECT_TRUE(validator->validate(56));
+  EXPECT_FALSE(validator->validate(200));
 
-//TEST_F(ArgumentValidatorTest, Constructor)
-//{
-
-//}
+  validator_double.setRange(3.4, 34.6);
+  EXPECT_TRUE(validator_double.validate(34));
+  EXPECT_FALSE(validator_double.validate(0.));
+}
 
 /* Command Test */
 
@@ -235,7 +272,7 @@ public:
 
   virtual void SetUp() override
   {
-    cmd_help = "-h"; // Muestra la ayuda
+
     cmd_arg_posix = new Command;
     cmd_arg_posix2 = new Command("cmd_name", "cmd description");
     cmd_arg_posix2->push_back(std::make_shared<Argument_<int, true>>("int", 'i', "integer", &val2));
@@ -367,6 +404,9 @@ TEST_F(CommandTest, parseOptionsParameter)
   std::array<char const*, 3> argv{"" , "--options", "OPT3"};
   EXPECT_TRUE(cmd_arg_list->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
   EXPECT_EQ(3, idx);
+
+  std::array<char const*, 3> argv2{"" , "--options", "OPT_ERROR"};
+  EXPECT_TRUE(cmd_arg_list->parse(argv2.size(), argv2.data()) == Command::Status::PARSE_ERROR);
 }
 
 TEST_F(CommandTest, size)

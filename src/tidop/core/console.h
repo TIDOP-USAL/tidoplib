@@ -221,7 +221,9 @@ public:
    * \return Flag con los niveles de mensajes aceptados por la consola
    * \see EnumFlags
    */
+  TL_DEPRECATED("messageLevel")
   EnumFlags<MessageLevel> getMessageLevel() const;
+  EnumFlags<MessageLevel> messageLevel() const;
 
   /*!
    * \brief Imprime un mensaje en la consola
@@ -467,6 +469,12 @@ public:
    * \param[in] value Valor del argumento como cadena de texto
    */
   virtual void fromString(const std::string &value) = 0;
+
+  /*!
+   * \brief Comprueba si el valor pasado al argumento es valido
+   * \return
+   */
+  virtual bool isValid() = 0;
 };
 
 
@@ -484,6 +492,8 @@ protected:
    * \brief Valor del argumento
    */
   T *mValue;
+
+  bool bValid;
 
 public:
 
@@ -558,6 +568,8 @@ public:
    * \param[in] value Valor del argumento
    */
   virtual void setValue(const T &value);
+
+  bool isValid() override;
 };
 
 
@@ -584,7 +596,8 @@ Argument_<T, required>::Argument_(const std::string &name,
                                   const std::string &description,
                                   T *value)
   : Argument(name, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
@@ -593,7 +606,8 @@ Argument_<T, required>::Argument_(const char &shortName,
                                   const std::string &description,
                                   T *value)
   : Argument(shortName, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
@@ -603,14 +617,16 @@ Argument_<T, required>::Argument_(const std::string &name,
                                   const std::string &description,
                                   T *value)
   : Argument(name, shortName, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
 template<typename T, bool required> inline
 Argument_<T, required>::Argument_(const Argument_ &argument)
   : Argument(argument),
-    mValue(argument.mValue)
+    mValue(argument.mValue),
+    bValid(argument.bValid)
 {
 }
 
@@ -708,6 +724,9 @@ void Argument_<T, required>::fromString(const std::string &value)
     *mValue = stringToInteger(value);
   } else if (std::is_floating_point<T>::value) {
     *mValue = std::stod(value);
+  } else {
+    /// No se ha podido obtener el valor
+    bValid = false;
   }
 }
 
@@ -716,37 +735,49 @@ template<> inline
 void Argument_<std::string, true>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<std::string, false>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<fs::path, true>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<fs::path, false>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 
 template<typename T, bool required> inline
 T Argument_<T, required>::value() const
 {
-    return *mValue;
+  return *mValue;
 }
 
 template<typename T, bool required> inline
 void Argument_<T, required>::setValue(const T &value)
 {
-    *mValue = value;
+  *mValue = value;
+  bValid = true;
+}
+
+template<typename T, bool required> inline
+bool Argument_<T, required>::isValid()
+{
+  ///TODO: Incluir clase ArgumentValidator
+  return bValid;
 }
 
 
@@ -807,6 +838,7 @@ public:
   void fromString(const std::string &value) override;
 
   void setValue(const T &value) override;
+
 };
 
 
@@ -892,8 +924,11 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
   }
   if (bFind){
     *mIdx = idx;
+    this->bValid = true;
   } else {
-    Argument_<T, required>::setValue(prev_value);
+    //Argument_<T, required>::setValue(prev_value);
+    //*mIdx = -1;
+    this->bValid = false;
   }
 }
 
@@ -903,9 +938,11 @@ void ArgumentList_<T, required>::setValue(const T &value)
   for(auto &_value : mValues){
     if (value == _value){
       Argument_<T, required>::setValue(value);
+      this->bValid = true;
       return;
     }
   }
+  this->bValid = false;
 }
 
 
@@ -922,7 +959,7 @@ template <typename T, typename Enable = void>
 class ArgumentValidator;
 
 template <typename T>
-class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value && typeid(T) != typeid(bool)>::type>
+class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value /*&& typeid(T) != typeid(bool)*/>::type>
 {
 private:
 
@@ -1092,6 +1129,8 @@ private:
    */
   std::string mVersion;
 
+  std::list<std::string> mExamples;
+
 public:
 
   /*!
@@ -1249,6 +1288,11 @@ public:
    * \brief Muestra la licencia en la consola
    */
   void showLicence() const;
+
+  /*!
+   * \brief Añade un ejemplo de uso
+   */
+  void addExample(const std::string &example);
 
 protected:
 
