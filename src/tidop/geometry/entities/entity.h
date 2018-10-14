@@ -664,7 +664,16 @@ public:
    * \return Entidades seleccionadas
    */
   template<typename Window_t>
+  TL_DEPRECATED("entitiesInWindow(const Window_t &w)")
   std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
+
+  /*!
+   * \brief Devuelve las entidades que están dentro de una ventana
+   * \param[in] w Ventana
+   * \return Entidades seleccionadas
+   */
+  template<typename Window_t>
+  std::vector<Entity_t> entitiesInWindow(const Window_t &w) const;
 
 };
 
@@ -720,18 +729,20 @@ std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &
   return r_points;
 }
 
-//template<typename Entity_t> inline
-//Window<Entity_t> Entities2D<Entity_t>::getWindow() const
-//{
-//  Window<Entity_t> w;
-//  for (size_t i = 0; i < this->mEntities.size(); i++) {
-//    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-//    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-//    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-//    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
-//  }
-//  return w;
-//}
+template<typename Entity_t> template<typename Window_t> inline
+std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &w) const
+{
+  std::vector<Entity_t> r_points(this->mEntities.size());
+  size_t j = 0;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.containsPoint(this->mEntities[i])) {
+      r_points[i] = this->mEntities[i];
+      j++;
+    }
+  }
+  r_points.resize(j);
+  return r_points;
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -780,7 +791,7 @@ public:
    * \param[in] box Caja
    * \return Puntos que entran dentro de la caja
    */
-  //std::vector<Entity_t> getEntitiesInBox(const Box<Entity_t> &box) const;
+  std::vector<Entity_t> entitiesInBox(const Box<Entity_t> &box) const;
 
 };
 
@@ -821,21 +832,20 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 {
 }
 
-//template<typename Entity_t> inline
-//std::vector<Entity_t> Entities3D<Entity_t>::getEntitiesInBox(const Box<Entity_t> &box) const
-//{
-//  std::vector<Entity_t> r_points(this->mEntities.size());
-//  size_t j = 0;
-//  for (size_t i = 0; i < this->mEntities.size(); i++) {
-//    TODO("terminar")
-//      //if (box.containsPoint(this->mEntities[i])) {
-//      //  r_points[i] = this->mEntities[i];
-//      //  j++;
-//      //}
-//  }
-//  r_points.resize(j);
-//  return r_points;
-//}
+template<typename Entity_t> inline
+std::vector<Entity_t> Entities3D<Entity_t>::entitiesInBox(const Box<Entity_t> &box) const
+{
+  std::vector<Entity_t> r_points(this->mEntities.size());
+  size_t j = 0;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.containsPoint(this->mEntities[i])) {
+      r_points[i] = this->mEntities[i];
+      j++;
+    }
+  }
+  r_points.resize(j);
+  return r_points;
+}
 
 
 

@@ -141,26 +141,33 @@ public:
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox
    */
+  TL_DEPRECATED("center()")
   Point3_t getCenter() const;
+  Point3_t center() const;
 
   /*!
    * \brief Devuelve el ancho de la caja
    * \return Ancho
    */
+  TL_DEPRECATED("width()")
   typename Point3_t::value_type getWidth() const;
+  typename Point3_t::value_type width() const;
 
   /*!
    * \brief Devuelve el alto de la caja
    * \return Alto
    */
+  TL_DEPRECATED("height()")
   typename Point3_t::value_type getHeight() const;
+  typename Point3_t::value_type height() const;
 
   /*!
    * \brief Devuelve la profundidad de la caja
    * \return Profundidad
    */
+  TL_DEPRECATED("depth()")
   typename Point3_t::value_type getDepth() const;
-
+  typename Point3_t::value_type depth() const;
 
   /*!
    * \brief Comprueba si el Bbox esta vacio
@@ -297,15 +304,6 @@ bool Box<Point3_t>::operator == (const Box &box) const
 template<typename Point3_t> template<typename Point3_t2> inline
 Box<Point3_t>::operator Box<Point3_t2>() const
 {
-  //if (std::is_integral<typename Point3_t2::value_type>::value) {
-  //  Point3_t2 _pt1(TL_ROUND_TO_INT(pt1.x), TL_ROUND_TO_INT(pt1.y), TL_ROUND_TO_INT(pt1.z));
-  //  Point3_t2 _pt2(TL_ROUND_TO_INT(pt2.x), TL_ROUND_TO_INT(pt2.y), TL_ROUND_TO_INT(pt2.z));
-  //  return Box<Point3_t2>(_pt1, _pt2);
-  //} else {
-  //  Point3_t2 _pt1 = pt1;
-  //  Point3_t2 _pt2 = pt2;
-  //  return Box<Point3_t2>(_pt1, _pt2);
-  //}
   return Box<Point3_t2>(static_cast<Point3_t2>(pt1), static_cast<Point3_t2>(pt2));
 }
 
@@ -321,6 +319,17 @@ Point3_t Box<Point3_t>::getCenter() const
     return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
   }
 }
+template<typename Point3_t> inline
+Point3_t Box<Point3_t>::center() const
+{
+  if (std::is_integral<typename Point3_t::value_type>::value) {
+    return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2),
+                    TL_ROUND_TO_INT((pt1.y + pt2.y) / 2),
+                    TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));
+  } else {
+    return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
+  }
+}
 TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point3_t> inline
@@ -330,15 +339,33 @@ typename Point3_t::value_type Box<Point3_t>::getWidth() const
 }
 
 template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::width() const
+{
+  return pt2.x - pt1.x;
+}
+
+template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getHeight() const 
 { 
   return pt2.y - pt1.y; 
 }
 
 template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::height() const
+{
+  return pt2.y - pt1.y;
+}
+
+template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getDepth() const 
 { 
   return pt2.z - pt1.z; 
+}
+
+template<typename Point3_t> inline
+typename Point3_t::value_type Box<Point3_t>::depth() const
+{
+  return pt2.z - pt1.z;
 }
 
 template<typename Point3_t> inline

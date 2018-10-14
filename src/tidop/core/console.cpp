@@ -107,6 +107,11 @@ EnumFlags<MessageLevel> Console::getMessageLevel() const
   return sLevel;
 }
 
+EnumFlags<MessageLevel> Console::messageLevel() const
+{
+  return sLevel;
+}
+
 void Console::printMessage(const char *msg)
 {
   // Por si esta corriendo la barra de progreso
@@ -353,7 +358,7 @@ void Console::update()
   SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
-  stringstream ss;
+  std::stringstream ss;
   ss << "\x1B[" << mBold;
   if (mForeColor != 0)
     ss << ";" << mForeColor;
@@ -438,7 +443,8 @@ Command::Command()
   : mName(""),
     mDescription(""),
     mCmdArgs(0),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mExamples()
 {
     init();
 }
@@ -447,7 +453,8 @@ Command::Command(const Command &command)
   : mName(command.mName),
     mDescription(command.mDescription),
     mCmdArgs(command.mCmdArgs),
-    mVersion(command.mVersion)
+    mVersion(command.mVersion),
+    mExamples(command.mExamples)
 {
 
 }
@@ -456,7 +463,8 @@ Command::Command(const std::string &name, const std::string &description)
   : mName(name),
     mDescription(description),
     mCmdArgs(0),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mExamples()
 {
   init();
 }
@@ -466,7 +474,8 @@ Command::Command(const std::string &name, const std::string &description,
   : mName(name),
     mDescription(description),
     mCmdArgs(arguments),
-    mVersion("0.0.0")
+    mVersion("0.0.0"),
+    mExamples()
 {
 }
 
@@ -623,6 +632,9 @@ Command::Status Command::parse(int argc, const char * const argv[])
       msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
       //printHelp();
       return Command::Status::PARSE_ERROR;
+    } else if (!arg->isValid()){
+      msgError("Valor de argumento %s no valido", arg->name().c_str());
+      return Command::Status::PARSE_ERROR;
     }
   }
 
@@ -662,6 +674,7 @@ void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
 void Command::clear()
 {
   mCmdArgs.clear();
+  mExamples.clear();
 }
 
 bool Command::empty() const
@@ -740,7 +753,7 @@ void Command::showHelp() const
   Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
-  printf("Usage: %s [OPTION...] \n\n", mName.c_str());
+  printf("\nUsage: %s [OPTION...] \n\n", mName.c_str());
   console.reset();
 
   /// Descripción del comando
@@ -750,26 +763,30 @@ void Command::showHelp() const
   for (auto arg : mCmdArgs) {
     max_name_size = std::max(max_name_size, arg->name().size());
   }
-  std::string name_tmpl = std::string("%s%-").append(std::to_string(max_name_size)).append("s %s");
-  printf_s( "  -h, ");
-  printf_s(name_tmpl.c_str(), "--", "help", "Display this help and exit\n");
-  printf_s( "    , ");
-  printf_s(name_tmpl.c_str(), "--", "version", "Output version information and exit\n");
+  std::string name_tmpl = std::string("%s%-").append(std::to_string(max_name_size)).append("s %s %s");
+  printf( "  -h, ");
+  printf(name_tmpl.c_str(), "--", "help", "   ", "Display this help and exit\n");
+  printf( "    , ");
+  printf(name_tmpl.c_str(), "--", "version", "   ", "Output version information and exit\n");
 
   for (auto arg : mCmdArgs) {
     if (arg->shortName()){
-      printf_s( "  -%c, ", arg->shortName());
+      printf( "  -%c, ", arg->shortName());
     } else {
-      printf_s( "    , ");
+      printf( "    , ");
     }
     if (!arg->name().empty()){
-      printf_s(name_tmpl.c_str(), "--", arg->name().c_str(), arg->description().c_str());
+      printf(name_tmpl.c_str(), "--", arg->name().c_str(), (arg->isRequired() ? "[R]" : "[O]"), arg->description().c_str());
     } else {
-      printf_s(name_tmpl.c_str(), "  ", "", arg->description().c_str());
+      printf(name_tmpl.c_str(), "  ", "", (arg->isRequired() ? "[R]" : "[O]"), arg->description().c_str());
     }
-    printf_s("\n");
+    printf("\n");
   }
-  printf_s("\n\n");
+  printf("\n\n");
+
+  printf("R: Required argument\n");
+  printf("O: Optional argument\n\n");
+
 
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
@@ -782,10 +799,16 @@ void Command::showHelp() const
   printf_s("  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n");
   printf_s("  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n");
 
+  if (!mExamples.empty()){
+    console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+    console.setFontBold(true);
+    printf("Examples\n\n");
+    console.reset();
 
-//  for (auto arg : mCmdArgs) {
-//     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
-//  }
+    for (auto &example : mExamples){
+      printf_s("  %s\n", example.c_str());
+    }
+  }
 }
 
 void Command::showVersion() const
@@ -804,6 +827,11 @@ void Command::showLicence() const
   Console &console = Console::getInstance();
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);
+}
+
+void Command::addExample(const std::string &example)
+{
+  mExamples.push_back(example);
 }
 
 size_t Command::size() const
@@ -1326,3 +1354,5 @@ bool CmdParser::hasOption(const std::string &option) const
 /* ---------------------------------------------------------------------------------- */
 
 } // End mamespace TL
+
+

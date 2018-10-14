@@ -1516,7 +1516,11 @@ GeoRasterGraphics::Status GeoRasterGraphics::read(cv::Mat *image, const WindowD 
 
 char GeoRasterGraphics::get(const PointD &pt) const
 {
+#ifdef HAVE_GDAL
   return dynamic_cast<GdalGeoRaster *>(mImageFormat.get())->get(pt);
+#else
+  return char{};
+#endif
 }
 
 void GeoRasterGraphics::update()
@@ -1529,12 +1533,16 @@ void GeoRasterGraphics::update()
 
 float Mdt::getZ(const PointD &pt) const
 {
+#ifdef HAVE_GDAL
   cv::Mat mat;
   WindowD w(pt, 1);
   GdalGeoRaster *geoRaster = dynamic_cast<GdalGeoRaster *>(mImageFormat.get());
   //geoRaster->read(&mat, w, 1);
   //return mat.at<float>(0, 0);
   return geoRaster->getZ(pt);
+#else
+  return TL_FLOAT_MIN;
+#endif
 }
 
 
