@@ -206,7 +206,11 @@ public:
    * Destructora
    * Se recuperan las opciones por defecto de la consola
    */
+#ifdef TL_MESSAGE_HANDLER
   ~Console() override;
+#else
+  ~Console();
+#endif
 
   Console(Console const&) = delete;
   void operator=(Console const&) = delete;

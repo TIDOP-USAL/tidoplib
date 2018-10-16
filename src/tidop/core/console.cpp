@@ -620,8 +620,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
     }
 
     if (bFind == false && bOptional == false) {
-      msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
-      //printHelp();
+      msgError("Missing mandatory parameter: %s", arg->name().c_str());
       return Command::Status::PARSE_ERROR;
     }
   }
@@ -782,7 +781,7 @@ void Command::showHelp() const
   printf_s("  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n");
   printf_s("  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n");
 
-
+  TL_TODO("Añadir ejemplos de uso")
 //  for (auto arg : mCmdArgs) {
 //     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
 //  }
