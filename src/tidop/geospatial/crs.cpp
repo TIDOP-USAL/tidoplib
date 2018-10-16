@@ -24,7 +24,7 @@ Crs::~Crs()
 {
 }
 
-std::string Crs::getEPSG() const
+std::string Crs::epsgCode() const
 { 
   return mEpsg;
 };
@@ -37,6 +37,20 @@ bool Crs::isGeocentric() const
 bool Crs::isGeographic() const
 {
   return mCrs.IsGeographic()!= 0;
+}
+
+std::string Crs::exportToProj() const
+{
+  char *cprj = nullptr;
+  mCrs.exportToProj4(&cprj);
+  return std::string(cprj);
+}
+
+std::string Crs::exportToWkt() const
+{
+  char *cprj = nullptr;
+  mCrs.exportToWkt(&cprj);
+  return std::string(cprj);
 }
 
 OGRSpatialReference *Crs::getOGRSpatialReference()

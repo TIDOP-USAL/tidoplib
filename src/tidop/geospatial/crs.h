@@ -81,11 +81,14 @@ public:
    * \brief Devuelve el código EPSG del sistema de referencia
    * \return
    */
-  std::string getEPSG() const;
+  std::string epsgCode() const;
 
   bool isGeocentric() const;
 
   bool isGeographic() const;
+
+  std::string exportToProj() const;
+  std::string exportToWkt() const;
 
 protected:
 

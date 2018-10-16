@@ -112,7 +112,7 @@ EnumFlags<MessageLevel> Console::messageLevel() const
   return sLevel;
 }
 
-void Console::printMessage(const char *msg)
+void Console::printMessage(const std::string &msg)
 {
   // Por si esta corriendo la barra de progreso
   std::cout << "\r";
@@ -122,7 +122,7 @@ void Console::printMessage(const char *msg)
   printf_s("%s\n", aux.c_str());
 }
 
-void Console::printErrorMessage(const char *msg)
+void Console::printErrorMessage(const std::string &msg)
 {
   setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, 
                             getMessageProperties(MessageLevel::MSG_ERROR).intensity);
@@ -266,7 +266,7 @@ void Console::setLogLevel(MessageLevel level)
   sLevel = level;
 }
 
-void Console::setTitle(const char *title)
+void Console::setTitle(const std::string &title)
 {
 #ifdef WIN32
   SetConsoleTitleA(title);

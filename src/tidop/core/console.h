@@ -229,13 +229,13 @@ public:
    * \brief Imprime un mensaje en la consola
    * \param[in] msg Mensaje
    */
-  void printMessage(const char *msg);
+  void printMessage(const std::string &msg);
 
   /*!
    * \brief Imprime un mensaje de error en la consola
    * \param[in] msg Mensaje
    */
-  void printErrorMessage(const char *msg);
+  void printErrorMessage(const std::string &msg);
 
   /*!
    * \brief Recupera los valores iniciales
@@ -285,7 +285,7 @@ public:
    * \brief Establece el título de la consola
    * \param[in] title Titulo de la consola
    */
-  void setTitle(const char *title);
+  void setTitle(const std::string &title);
 
 protected:
 
