@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_OPERATIONS_H
 #define TL_GEOM_OPERATIONS_H
 
@@ -139,7 +154,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   return iret;
 }
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 TL_DEPRECATED("int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)")
 int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
@@ -171,7 +186,7 @@ int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Poi
   return iret;
 }
 
-#endif  // TL_SHOW_DEPRECATED
+#endif  // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point_t> inline
 int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
@@ -219,7 +234,7 @@ double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
   return distance(pt, ptp);
 }
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline 
 TL_DEPRECATED("double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)")
 double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
@@ -231,7 +246,7 @@ double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
   else if (ipr == 1) ptp = ln.pt2;
   return distance(pt, ptp);
 }
-#endif  // TL_SHOW_DEPRECATED
+#endif  // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point3_t> inline
 double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)

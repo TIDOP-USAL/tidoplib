@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_ENTITY_H
 #define TL_GEOM_ENTITY_H
 
@@ -49,57 +64,36 @@ public:
   /*!
    * \brief tipos de entidades geométricas
    */
-  //enum class type {
-  //  POINT_2D,                   /*!< Punto 2D */
-  //  POINT_3D,                   /*!< Punto 3D */
-  //  LINESTRING_2D,              /*!< Polilinea 2D */
-  //  LINESTRING_3D,              /*!< Polilinea 3D */
-  //  POLYGON_2D,                 /*!< Poligono 2D */
-  //  POLYGON_3D,                 /*!< Poligono 3D */
-  //  SEGMENT_2D,                 /*!< Segmento 2D */
-  //  SEGMENT_3D,                 /*!< Segmento 3D */
-  //  WINDOW,                     /*!< Ventana */
-  //  BOX,                        /*!< Caja */
-  //  MULTIPOINT_2D,              /*!< Multipunto 2D */
-  //  MULTIPOINT_3D,              /*!< Multipunto 3D */
-  //  MULTILINE_2D,               /*!< Multi-línea 2D */
-  //  MULTILINE_3D,               /*!< Multi-línea 3D */
-  //  MULTIPOLYGON_2D,            /*!< Multi-polígono 2D */
-  //  MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
-  //  CIRCLE,                     /*!< Circulo */
-  //  ELLIPSE                     /*!< Elipse */
-  //};
-    
-  enum class type 
+  enum class Type
   {
     /* Dimensión */
-    GEOM2D     = (0 << 0), 
-    GEOM3D     = (1 << 0), 
-    GEOM4D     = (1 << 1), 
+    GEOM2D     = (0 << 0),                        /*!< Geometría 2D */
+    GEOM3D     = (1 << 0),                        /*!< Geometría 3D */
+    GEOM4D     = (1 << 1),                        /*!< Geometría 4D */
 
     /* multientidad */
-    MULTI_ENTITY  = (1 << 2), 
+    MULTI_ENTITY  = (1 << 2),                     /*!< Multientidad */
 
     /* Entidades 2D */
-    POINT_2D      = (1 << 3),              /*!< Punto */
-    LINESTRING_2D = (1 << 4),              /*!< Polilinea */
-    POLYGON_2D    = (1 << 5),              /*!< Poligono */
-    SEGMENT_2D    = (1 << 6),              /*!< Segmento */
-    CIRCLE        = (1 << 7),              /*!< Circulo */
-    ELLIPSE       = (1 << 8),              /*!< Elipse */    
+    POINT_2D      = (1 << 3),                     /*!< Punto */
+    LINESTRING_2D = (1 << 4),                     /*!< Polilinea */
+    POLYGON_2D    = (1 << 5),                     /*!< Poligono */
+    SEGMENT_2D    = (1 << 6),                     /*!< Segmento */
+    CIRCLE        = (1 << 7),                     /*!< Circulo */
+    ELLIPSE       = (1 << 8),                     /*!< Elipse */
 
     /* Entidades 3D*/
-    POINT_3D = POINT_2D | GEOM3D,            /*!< Punto 3D */
-    LINESTRING_3D = LINESTRING_2D | GEOM3D,  /*!< Polilinea 3D */
-    POLYGON_3D = POLYGON_2D | GEOM3D,        /*!< Poligono 3D */
-    SEGMENT_3D = SEGMENT_2D | GEOM3D,        /*!< Segmento 3D */
+    POINT_3D = POINT_2D | GEOM3D,                 /*!< Punto 3D */
+    LINESTRING_3D = LINESTRING_2D | GEOM3D,       /*!< Polilinea 3D */
+    POLYGON_3D = POLYGON_2D | GEOM3D,             /*!< Poligono 3D */
+    SEGMENT_3D = SEGMENT_2D | GEOM3D,             /*!< Segmento 3D */
 
     /* multientidades */
-    MULTIPOINT_2D = POINT_2D | MULTI_ENTITY,         /*!< Multipunto 2D */
+    MULTIPOINT_2D = POINT_2D | MULTI_ENTITY,      /*!< Multipunto 2D */
     MULTIPOINT_3D = POINT_3D | MULTI_ENTITY,      /*!< Multipunto 3D */
-    MULTILINE_2D = LINESTRING_2D | MULTI_ENTITY,     /*!< Multi-línea 2D */
+    MULTILINE_2D = LINESTRING_2D | MULTI_ENTITY,  /*!< Multi-línea 2D */
     MULTILINE_3D = LINESTRING_3D | MULTI_ENTITY,  /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D = POLYGON_2D | MULTI_ENTITY,     /*!< Multi-polígono 2D */
+    MULTIPOLYGON_2D = POLYGON_2D | MULTI_ENTITY,  /*!< Multi-polígono 2D */
     MULTIPOLYGON_3D = POLYGON_3D | MULTI_ENTITY,  /*!< Multi-polígono 3D */
 
     /* Tipos especiales */
@@ -115,7 +109,7 @@ protected:
    * \see type
    */
   //type mEntityType;
-  EnumFlags<type> mEntityType;
+  EnumFlags<Type> mEntityType;
 
 public:
 
@@ -123,7 +117,7 @@ public:
    * \brief Constructora
    * \param[in] type Tipo de entidad
    */
-  Entity(type type) 
+  Entity(Type type)
     : mEntityType(type)
   {}
    
@@ -146,12 +140,16 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~Entity() {}
+  virtual ~Entity() = default;
 
   /*!
    * \brief Devuelve el tipo de entidad 
    */
-  type getType() const { return mEntityType.getFlags(); }
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("type()")
+  Type getType() const { return mEntityType.getFlags(); }
+#endif
+  Type type() const { return mEntityType.getFlags(); }
 
   /*!
    * \brief Operador de asignación
@@ -202,16 +200,15 @@ public:
    */
   bool is3D() const
   {
-    return mEntityType.isActive(type::GEOM3D);
+    return mEntityType.isActive(Type::GEOM3D);
   }
 
 };
-ALLOW_BITWISE_FLAG_OPERATIONS(Entity::type)
+ALLOW_BITWISE_FLAG_OPERATIONS(Entity::Type)
 
 /* ---------------------------------------------------------------------------------- */
 
 //TODO: Añadir constructor a partir de iteradores first end
-//TODO: Añadir constructor de movimiento y asignación con movimiento
 
 /*!
  * \brief Contenedor para entidades geométricas
@@ -322,7 +319,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~EntityContainer() {}
+  ~EntityContainer() = default;
 
 
   /*!
@@ -354,10 +351,12 @@ public:
   /*!
    * \brief Agrega un elemento al final del contenedor
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
   void add(const Entity_t &entity);
+#endif
   void push_back(const Entity_t &entity);
-  //TODO Añadir add con movimiento
+
   void push_back(Entity_t &&entity) TL_NOEXCEPT;
 
   /*!
@@ -506,11 +505,13 @@ typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::en
   return mEntities.cend();
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Entity_t> inline
 void EntityContainer<Entity_t>::add(const Entity_t &entity)
 {
   mEntities.push_back(entity);
 }
+#endif
 
 template<typename Entity_t> inline
 void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
@@ -663,9 +664,11 @@ public:
    * \param[in] w Ventana
    * \return Entidades seleccionadas
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   template<typename Window_t>
   TL_DEPRECATED("entitiesInWindow(const Window_t &w)")
   std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
+#endif
 
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
@@ -714,6 +717,7 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
 {
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
 {
@@ -728,6 +732,7 @@ std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &
   r_points.resize(j);
   return r_points;
 }
+#endif
 
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &w) const
@@ -782,8 +787,16 @@ public:
    */
   Entities3D(Entities3D &&entity) TL_NOEXCEPT;
 
+  /*!
+   * \brief Constructor a partir de un vector de entidades
+   * \param[in] entities Vector de entidades
+   */
   Entities3D(const std::vector<Entity_t> &entities);
 
+  /*!
+   * \brief Constructor lista de inicialización
+   * \param[in] entities Entidades
+   */
   Entities3D(std::initializer_list<Entity_t> entities);
   
   /*!
@@ -793,6 +806,11 @@ public:
    */
   std::vector<Entity_t> entitiesInBox(const Box<Entity_t> &box) const;
 
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de los puntos
+   */
+  //virtual Box<Entity_t> box() const;
 };
 
 
@@ -846,6 +864,21 @@ std::vector<Entity_t> Entities3D<Entity_t>::entitiesInBox(const Box<Entity_t> &b
   r_points.resize(j);
   return r_points;
 }
+
+//template<typename Entity_t> inline
+//Box<Entity_t> Entities3D<Entity_t>::box() const
+//{
+//  Box<Entity_t> box;
+//  for (size_t i = 0; i < this->mEntities.size(); i++) {
+//    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+//    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+//    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+//    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+//    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+//    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+//  }
+//  return box;
+//}
 
 
 

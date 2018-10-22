@@ -1563,7 +1563,7 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 /* Deprecated class */
 
@@ -2042,7 +2042,7 @@ public:
 
 /* End deprecated class */
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /* ---------------------------------------------------------------------------------- */

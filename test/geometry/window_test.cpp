@@ -67,7 +67,7 @@ TEST(WindowI, DefaultConstructor)
   EXPECT_EQ(TL_INT_MAX, w.pt1.y);
   EXPECT_EQ(TL_INT_MIN, w.pt2.x);
   EXPECT_EQ(TL_INT_MIN, w.pt2.y);
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 }
 
 TEST(WindowD, DefaultConstructor)
@@ -77,7 +77,7 @@ TEST(WindowD, DefaultConstructor)
   EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
   EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
   EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.y);
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 }
 
 TEST(WindowF, DefaultConstructor)
@@ -87,7 +87,7 @@ TEST(WindowF, DefaultConstructor)
   EXPECT_EQ(TL_FLOAT_MAX, w.pt1.y);
   EXPECT_EQ(TL_FLOAT_MIN, w.pt2.x);
   EXPECT_EQ(TL_FLOAT_MIN, w.pt2.y);
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 }
 
 // Constructor de copia
@@ -97,7 +97,7 @@ TEST(WindowI, CopyConstructor) {
   WindowI w2(w);
   EXPECT_EQ( w.pt1, w2.pt1);
   EXPECT_EQ( w.pt2, w2.pt2);
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 }
 
 TEST(WindowD, CopyConstructor)
@@ -106,7 +106,7 @@ TEST(WindowD, CopyConstructor)
   WindowD w2(w);
   EXPECT_EQ(w.pt1, w2.pt1);
   EXPECT_EQ(w.pt2, w2.pt2);
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 }
 
 
@@ -118,7 +118,7 @@ TEST(WindowI, ConstructorVect)
   EXPECT_EQ(2, w.pt1.y);
   EXPECT_EQ(4, w.pt2.x);
   EXPECT_EQ(4, w.pt2.y);
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 
   std::vector<PointD> v2{ PointD(-0.5, -1.5), PointD(-3.6, -4.4) };
   WindowI w2(v2);
@@ -126,7 +126,7 @@ TEST(WindowI, ConstructorVect)
   EXPECT_EQ(-4, w2.pt1.y);
   EXPECT_EQ(-1, w2.pt2.x);
   EXPECT_EQ(-2, w2.pt2.y);
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 }
 
 //constructor de copia tipos diferentes
@@ -139,81 +139,81 @@ TEST(WindowD, CopyConstructorDiff)
   EXPECT_EQ(0, w2.pt1.y);
   EXPECT_EQ(101, w2.pt2.x);
   EXPECT_EQ(100, w2.pt2.y);
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 }
 
-// Comprobación de que redondea bien con ventanas de enteros
+// ComprobaciÃ³n de que redondea bien con ventanas de enteros
 
 TEST(WindowI, ConstructorCentroAnchoAlto)
 {
-  // Tamaño par
+  // TamaÃ±o par
   PointI ptc(50, 50);
   WindowI w(ptc, 50, 50);
   EXPECT_EQ(50, w.getWidth());
   EXPECT_EQ(50, w.getHeight());
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 
-  //Tamaño impar
+  //TamaÃ±o impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51, 51);
   EXPECT_EQ(51, w2.getWidth());
   EXPECT_EQ(51, w2.getHeight());
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 
   // Ventana double
   PointD ptc3(50.67, 50.76);
   WindowD w3(ptc3, 100.32, 254.25);
   EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
   EXPECT_NEAR(254.25, w3.getHeight(), 0.01);
-  EXPECT_TRUE(w3.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w3.type() == Entity::Type::WINDOW);
 
   // Ventana float
   PointF ptc4(50.67f, 50.76f);
   WindowF w4(ptc4, 100.34f, 254.23f);
   EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
   EXPECT_NEAR(254.23f, w4.getHeight(), 0.01);
-  EXPECT_TRUE(w4.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w4.type() == Entity::Type::WINDOW);
 }
 
 TEST(WindowI, ConstructorCenterSize)
 {
-  // Tamaño par
+  // TamaÃ±o par
   PointI ptc(50, 50);
   WindowI w(ptc, 50);
   EXPECT_EQ(50, w.getWidth());
   EXPECT_EQ(50, w.getHeight());
-  EXPECT_TRUE(w.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w.type() == Entity::Type::WINDOW);
 
-  //Tamaño impar
+  //TamaÃ±o impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51);
   EXPECT_EQ(51, w2.getWidth());
   EXPECT_EQ(51, w2.getHeight());
-  EXPECT_TRUE(w2.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w2.type() == Entity::Type::WINDOW);
 
   // Ventana double
   PointD ptc3(50.67, 50.76);
   WindowD w3(ptc3, 100.32);
   EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
   EXPECT_NEAR(100.32, w3.getHeight(), 0.01);
-  EXPECT_TRUE(w3.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w3.type() == Entity::Type::WINDOW);
 
   // Ventana float
   PointF ptc4(50.67f, 50.76f);
   WindowF w4(ptc4, 100.34f);
   EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
   EXPECT_NEAR(100.34f, w4.getHeight(), 0.01);
-  EXPECT_TRUE(w4.getType() == Entity::type::WINDOW);
+  EXPECT_TRUE(w4.type() == Entity::Type::WINDOW);
 }
 
 TEST(getCenter, WindowCenter)
 {
-  // Tamaño par
+  // TamaÃ±o par
   PointI ptc(50, 50);
   WindowI w(ptc, 50);
   EXPECT_EQ(ptc, w.getCenter());
 
-  //Tamaño impar
+  //TamaÃ±o impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51);
   EXPECT_EQ(ptc2, w2.getCenter());

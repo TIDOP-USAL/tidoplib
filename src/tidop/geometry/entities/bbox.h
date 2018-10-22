@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_BBOX_H
 #define TL_GEOM_BBOX_H
 
@@ -141,32 +156,40 @@ public:
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("center()")
   Point3_t getCenter() const;
+#endif
   Point3_t center() const;
 
   /*!
    * \brief Devuelve el ancho de la caja
    * \return Ancho
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("width()")
   typename Point3_t::value_type getWidth() const;
+#endif
   typename Point3_t::value_type width() const;
 
   /*!
    * \brief Devuelve el alto de la caja
    * \return Alto
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("height()")
   typename Point3_t::value_type getHeight() const;
+#endif
   typename Point3_t::value_type height() const;
 
   /*!
    * \brief Devuelve la profundidad de la caja
    * \return Profundidad
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("depth()")
   typename Point3_t::value_type getDepth() const;
+#endif
   typename Point3_t::value_type depth() const;
 
   /*!
@@ -187,14 +210,14 @@ public:
    * \brief La ventana contiene la ventana
    */
   //template<typename Point3_t2> bool containsBbox(const Box<Point3_t2> &box) const;
-  bool containsBbox(const Box<Point3_t> &box) const;
+  bool containsBox(const Box<Point3_t> &box) const;
 };
 
 // Definición de métodos
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box() 
-  : Entity(Entity::type::BOX), 
+  : Entity(Entity::Type::BOX), 
     pt1(std::numeric_limits<typename Point3_t::value_type>().max(), 
         std::numeric_limits<typename Point3_t::value_type>().max(), 
         std::numeric_limits<typename Point3_t::value_type>().max()), 
@@ -206,7 +229,7 @@ Box<Point3_t>::Box()
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Box &box) 
-  : Entity(Entity::type::BOX), 
+  : Entity(Entity::Type::BOX), 
     pt1(box.pt1), 
     pt2(box.pt2) 
 {
@@ -222,7 +245,7 @@ Box<Point3_t>::Box(Box &&box) TL_NOEXCEPT
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Point3_t &_pt1, const Point3_t &_pt2) 
-  : Entity(Entity::type::BOX)
+  : Entity(Entity::Type::BOX)
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -234,7 +257,7 @@ Box<Point3_t>::Box(const Point3_t &_pt1, const Point3_t &_pt2)
 
 template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz) 
-  : Entity(Entity::type::BOX)
+  : Entity(Entity::Type::BOX)
 { 
   if (std::is_integral<typename Point3_t::value_type>::value) {
     int sxx_2 = TL_ROUND_TO_INT(sxx / 2);
@@ -256,7 +279,7 @@ Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz)
 
 template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sz) 
-  : Entity(Entity::type::BOX) 
+  : Entity(Entity::Type::BOX) 
 {
   if (std::is_integral<typename Point3_t::value_type>::value) {
     int sz_2 = TL_ROUND_TO_INT(sz / 2);
@@ -308,6 +331,7 @@ Box<Point3_t>::operator Box<Point3_t2>() const
 }
 
 TL_DISABLE_WARNING(TL_WARNING_C4244)
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 Point3_t Box<Point3_t>::getCenter() const
 {
@@ -319,6 +343,8 @@ Point3_t Box<Point3_t>::getCenter() const
     return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
   }
 }
+#endif
+
 template<typename Point3_t> inline
 Point3_t Box<Point3_t>::center() const
 {
@@ -332,11 +358,13 @@ Point3_t Box<Point3_t>::center() const
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getWidth() const 
 { 
   return pt2.x - pt1.x; 
 }
+#endif
 
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::width() const
@@ -344,11 +372,13 @@ typename Point3_t::value_type Box<Point3_t>::width() const
   return pt2.x - pt1.x;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getHeight() const 
 { 
   return pt2.y - pt1.y; 
 }
+#endif
 
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::height() const
@@ -356,11 +386,13 @@ typename Point3_t::value_type Box<Point3_t>::height() const
   return pt2.y - pt1.y;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::getDepth() const 
 { 
   return pt2.z - pt1.z; 
 }
+#endif
 
 template<typename Point3_t> inline
 typename Point3_t::value_type Box<Point3_t>::depth() const
@@ -401,7 +433,7 @@ bool Box<Point3_t>::containsPoint(const Point3_t &pt) const
 }
 
 template<typename Point3_t> inline
-bool Box<Point3_t>::containsBbox(const Box<Point3_t> &box) const
+bool Box<Point3_t>::containsBox(const Box<Point3_t> &box) const
 {
   return (pt1.x <= box.pt1.x && pt1.y <= box.pt1.y && pt1.z <= box.pt1.z &&
           pt2.x >= box.pt2.x && pt2.y >= box.pt2.y && pt2.z >= box.pt2.z);

@@ -29,7 +29,12 @@ namespace TL
 
 template<typename Point_t> class Transform3D;
 
+
 /* ---------------------------------------------------------------------------------- */
+
+namespace geospatial
+{
+
 
 #ifdef HAVE_GDAL
 
@@ -625,6 +630,8 @@ void CrsTransform<Point_t>::init()
 /* ---------------------------------------------------------------------------------- */
 
 #endif // HAVE_GDAL
+
+} // End namespace geospatial
 
 } // End namespace TL
 

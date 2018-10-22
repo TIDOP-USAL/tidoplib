@@ -24,19 +24,22 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     add_executable(${the_target} ${srcs})
 	
     target_link_libraries(${the_target} gtest_main)
-    target_link_libraries(${the_target} tl_core tl_geom)
-    target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY})
+    target_link_libraries(${the_target} tl_core tl_geom tl_geospatial)
+    target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-	
-    # Añade el proyecto de ejmplo a la carpeta 'test/core'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "test/geometry")
+    if (UNIX)
+      target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
+    endif()
+
+    # Añade el proyecto de ejemplo a la carpeta 'test/core'
+    set_property(TARGET ${the_target} PROPERTY FOLDER "test/geospatial")
 
     set_target_properties(${the_target} PROPERTIES
       OUTPUT_NAME "cpp-${test_kind}-${name}"
       PROJECT_LABEL "(${test_KIND}) ${name}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "test/geometry")
+      set_target_properties(${the_target} PROPERTIES FOLDER "test/geospatial")
     endif()
 
     #if(WIN32)
@@ -53,7 +56,7 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     #    COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
     #endif()
 	
-    add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
+	add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
 	
   ENDMACRO()
 

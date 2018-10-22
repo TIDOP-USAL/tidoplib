@@ -333,7 +333,7 @@ namespace TL
 ////  char mEXIF_Flash;
 ////  
 ////  /*!
-////   * \brief Distancia focal de la lente en milímetros
+////   * \brief Distancia focal de la lente en milÃ­metros
 ////   * Opcional
 ////   */
 ////  double mExifFocalLength;
@@ -366,7 +366,7 @@ namespace TL
 ////  //EXIF_DigitalZoomRatio	0xA404	RATIONAL	1	Optional
 ////   
 ////  /*!
-////   * \brief Distancia focal en película de 35 mm
+////   * \brief Distancia focal en pelÃ­cula de 35 mm
 ////   * Opcional
 ////   */
 ////  double mExifFocalLengthIn35mmFilm;

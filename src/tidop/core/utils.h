@@ -289,7 +289,7 @@ TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string
 
 
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 /*!
@@ -417,7 +417,7 @@ public:
 };
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -727,7 +727,7 @@ TL_EXPORT uint32_t getOptimalNumberOfThreads();
  * \param[in] end
  * \param[in] f Función o lambda
  */
-TL_EXPORT void parallel_for(int ini, int end, std::function<void(int)> f);
+TL_EXPORT void parallel_for(size_t ini, size_t end, std::function<void(int)> f);
 
 /*!
  * \brief Ejecuta una función en paralelo
@@ -1116,7 +1116,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~Csv();
+  ~Csv() override;
 
   /*!
    * \brief Cierra el fichero csv

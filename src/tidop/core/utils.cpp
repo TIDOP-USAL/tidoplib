@@ -423,7 +423,7 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 // TODO: C++17 incluye filesystem que tiene una clase path.
 //       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
@@ -624,7 +624,7 @@ Path &Path::append(const std::string &dir)
 
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -853,7 +853,7 @@ uint32_t getOptimalNumberOfThreads()
 #endif
 }
 
-void parallel_for(int ini, int end, std::function<void(int)> f)
+void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
 {
   //uint64_t time_ini = getTickCount();
 #ifdef HAVE_OMP
@@ -876,13 +876,13 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
     }
   };
 
-  int num_threads = getOptimalNumberOfThreads();
+  size_t num_threads = getOptimalNumberOfThreads();
   std::vector<std::thread> threads(num_threads);
 
-  int size = (end - ini) / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int _ini = i * size + ini;
-    int _end = _ini + size;
+  size_t size = (end - ini) / num_threads;
+  for (size_t i = 0; i < num_threads; i++) {
+    size_t _ini = i * size + ini;
+    size_t _end = _ini + size;
     if (i == num_threads -1) _end = end;
     threads[i] = std::thread(f_aux, _ini, _end);
   }

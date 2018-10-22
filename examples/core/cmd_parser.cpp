@@ -81,7 +81,7 @@ int main(int argc, char** argv)
     msgInfo("double: %f", val_d);
 
   } else {
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
     // Se definen los parámetros y opciones
     CmdParser cmdParser(name, "Ejemplo de aplicación de consola");
     cmdParser.addParameter("file", "Ejemplo de parámetro obligatorio. Ruta de un fichero.");

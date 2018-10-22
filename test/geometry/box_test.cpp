@@ -102,30 +102,30 @@ TEST(Box, ConstructorCenterDimWHD)
   EXPECT_EQ(26.9, box.pt2.z);
 }
 
-TEST(Box, getType)
+TEST(Box, type)
 {
   const BoxI box1;
-  EXPECT_TRUE(box1.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box1.type() == Entity::Type::BOX);
 
   const BoxI box2(Point3I(0, 0, 0), Point3I(100, 100, 100));
   BoxI box3(box2);
   EXPECT_EQ(box2.pt1, box3.pt1);
   EXPECT_EQ(box2.pt2, box3.pt2);
-  EXPECT_TRUE(box2.getType() == Entity::type::BOX);
-  EXPECT_TRUE(box3.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box2.type() == Entity::Type::BOX);
+  EXPECT_TRUE(box3.type() == Entity::Type::BOX);
 
   const BoxD box5(Point3D(0.5, 0.4, 1.9), 50.);
-  EXPECT_TRUE(box5.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box5.type() == Entity::Type::BOX);
 
   const BoxD box6(Point3D(0.5, 0.4, 1.9), 50., 50., 50.);
-  EXPECT_TRUE(box6.getType() == Entity::type::BOX);
+  EXPECT_TRUE(box6.type() == Entity::Type::BOX);
 }
 
-// Comprobación de que redondea bien con ventanas de enteros
+// ComprobaciÃ³n de que redondea bien con ventanas de enteros
 
 TEST(Box, Round)
 {
-  // Tamaño par
+  // TamaÃ±o par
   Point3I ptc(50, 50, 50);
   BoxI box(ptc, 50, 50, 50);
   EXPECT_EQ(ptc, box.center());
@@ -133,7 +133,7 @@ TEST(Box, Round)
   EXPECT_EQ(50, box.height());
   EXPECT_EQ(50, box.depth());
 
-  //Tamaño impar
+  //TamaÃ±o impar
   Point3I ptc2(50, 50, 50);
   BoxI box2(ptc2, 51, 51, 51);
   EXPECT_EQ(ptc2, box2.center());
@@ -162,7 +162,7 @@ TEST(Box, Round)
   EXPECT_NEAR(123.34f, box4.depth(), 0.01);
 }
 
-/* Operador de asignación */
+/* Operador de asignaciÃ³n */
 
 TEST(Box, assing_operator)
 {
@@ -191,6 +191,6 @@ TEST(Box, containsPoint)
 TEST(Box, containsBbox)
 {
   BoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
-  EXPECT_TRUE(box.containsBbox(BoxI(Point3I(50, 50, 50), 50)));
-  EXPECT_FALSE(box.containsBbox(BoxI(Point3I(200, 50, 50), 50)));
+  EXPECT_TRUE(box.containsBox(BoxI(Point3I(50, 50, 50), 50)));
+  EXPECT_FALSE(box.containsBox(BoxI(Point3I(200, 50, 50), 50)));
 }

@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_TRANSFORM_H
 #define TL_GEOM_TRANSFORM_H
 
@@ -2934,7 +2949,13 @@ public:
    */
   Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation);
 
-  TL_TODO("Falta un constructor de copia")
+  /*!
+   * \brief Constructor de copia Helmert3D
+   * \param[in] trf Objeto Helmert3D que se copia
+   */
+  Helmert3D(const Helmert3D &trf);
+
+
   ~Helmert3D() override {}
 
   /*!
@@ -3074,6 +3095,22 @@ Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, con
 {
   eulerAngles(mR, &mOmega, &mPhi, &mKappa);
   update();
+}
+
+template<typename Point_t>
+Helmert3D<Point_t>::Helmert3D(const Helmert3D &trf)
+  : Transform3D<Point_t>(transform_type::HELMERT_3D, 3),
+    tx(trf.tx),
+    ty(trf.ty),
+    tz(trf.tz),
+    mScale(trf.mScale),
+    mOmega(trf.mOmega),
+    mPhi(trf.mPhi),
+    mKappa(trf.mKappa),
+    mR(trf.mR),
+    mRinv(trf.mRinv)
+{
+
 }
 
 template<typename Point_t> inline

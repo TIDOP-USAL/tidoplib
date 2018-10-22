@@ -5,6 +5,9 @@
 namespace TL
 {
 
+namespace geospatial
+{
+
 
 #ifdef HAVE_GDAL
 
@@ -60,6 +63,7 @@ OGRSpatialReference *Crs::getOGRSpatialReference()
 
 void Crs::init()
 {
+  ///
   mCrs.importFromEPSG(std::stoi(mEpsg.substr(5)));
   if (mGrid.empty() == false) {
     char *cprj = nullptr;
@@ -216,5 +220,7 @@ void CrsCache::resize(size_type count)
 
 
 #endif // HAVE_GDAL
+
+} // End namespace  geospatial
 
 } // End namespace TL

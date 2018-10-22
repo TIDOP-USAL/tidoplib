@@ -12,10 +12,18 @@
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/crs.h>
 
-
+// filesystem
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
 using namespace TL;
 using namespace TL::geometry;
+using namespace TL::geospatial;
 
 enum class options {
   opt1,

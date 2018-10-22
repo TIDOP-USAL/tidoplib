@@ -31,8 +31,8 @@ using namespace TL::geometry;
 int main(int argc, char** argv)
 {
 
-  char name[TL_MAX_FNAME];
-  getFileName(getRunfile(), name, TL_MAX_FNAME);
+  fs::path app_path(argv[0]);
+  std::string cmd_name = app_path.stem().string();
 
 
   std::string img_file;
@@ -45,7 +45,7 @@ int main(int argc, char** argv)
   double kappa;
   double scale = 1.;
 
-  Command cmd(name, "Generación de fichero de georeferencia TFW");
+  Command cmd(cmd_name, "Generación de fichero de georeferencia TFW");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("file", "Fichero que se va a georeferenciar", &img_file));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("dtm",  "Modelo digital del terreno", &dtm_file));
   cmd.push_back(std::make_shared<ArgumentDoubleRequired>("x0", 'x', "X0", &x0));

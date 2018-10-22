@@ -19,15 +19,15 @@ using namespace TL::graph;
 int main(int argc, char** argv)
 {
 
-  char name[TL_MAX_FNAME];
-  getFileName(getRunfile(), name, TL_MAX_FNAME);
+  fs::path app_path(argv[0]);
+  std::string cmd_name = app_path.stem().string();
 
   std::string vect;
 
-  Command cmd(name, "Escritura de un vector");
+  Command cmd(cmd_name, "Escritura de un vector");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("vect", 'v', "Fichero vectorial de salida", &vect));
 
-  // Parseo de los argumentos y comprobación de los mismos
+  // Parseo de los argumentos y comprobaciÃ³n de los mismos
   Command::Status status = cmd.parse(argc, argv);
   if (status == Command::Status::PARSE_ERROR ) {
     return 1;
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
   // Consola
   Console &console = Console::getInstance();
-  console.setTitle(name);
+  console.setTitle(cmd_name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
   console.setConsoleUnicode();
   console.setFontHeight(14);
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
   if (VectorGraphics::Status::OPEN_OK == vector.open(vect, VectorGraphics::Mode::Create)) {
     msgInfo("Create file: %s", vect.c_str());
     vector.create(); ///TODO: Create tiene que tener las propiedades del fichero. Crear un objeto de propiedades de formato como en las imagenes
-    // Se añade una capa
+    // Se aÃ±ade una capa
     vector.createLayer(file_name);
     vector.writeLayer(std::string(file_name), layer);
 

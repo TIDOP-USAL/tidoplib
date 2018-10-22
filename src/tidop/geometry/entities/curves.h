@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_CURVES_H
 #define TL_GEOM_CURVES_H
 
@@ -118,7 +133,7 @@ typedef Circle<float> CircleF;
 
 template<typename T> inline
 Circle<T>::Circle()
-  : Entity(Entity::type::CIRCLE),
+  : Entity(Entity::Type::CIRCLE),
     center(Point<T>()),
     radius(static_cast<T>(1))
 {
@@ -126,7 +141,7 @@ Circle<T>::Circle()
 
 template<typename T> inline
 Circle<T>::Circle(const Point<T> &center, T radius)
-  : Entity(Entity::type::CIRCLE),
+  : Entity(Entity::Type::CIRCLE),
     center(center),
     radius(radius)
 {
@@ -134,7 +149,7 @@ Circle<T>::Circle(const Point<T> &center, T radius)
 
 template<typename T> inline
 Circle<T>::Circle(const Circle<T> &circle)
-  : Entity(Entity::type::CIRCLE),
+  : Entity(Entity::Type::CIRCLE),
     center(circle.center),
     radius(circle.radius)
 {
@@ -290,7 +305,7 @@ typedef Ellipse<float> EllipseF;
 
 template<typename T> inline
 Ellipse<T>::Ellipse()
-  : Entity(Entity::type::ELLIPSE),
+  : Entity(Entity::Type::ELLIPSE),
     center(Point<T>()),
     a(static_cast<T>(1)),
     b(static_cast<T>(1))
@@ -299,7 +314,7 @@ Ellipse<T>::Ellipse()
 
 template<typename T> inline
 Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
-  : Entity(Entity::type::ELLIPSE),
+  : Entity(Entity::Type::ELLIPSE),
     center(center),
     a(a),
     b(b)
