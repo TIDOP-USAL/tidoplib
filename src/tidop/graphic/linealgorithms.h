@@ -7,7 +7,7 @@
 
 #include "tidop/geometry/entities/point.h"
 
-namespace TL 
+namespace tl 
 {
 
 /* ---------------------------------------------------------------------------------- */

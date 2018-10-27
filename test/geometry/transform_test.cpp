@@ -4,8 +4,8 @@
 #include <tidop/core/exception.h>
 
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace geometry;
 
 // Pendiente
 // - TrfMultiple
@@ -86,7 +86,7 @@ using namespace TL::geometry;
 //  //EXPECT_THROW({
 //  //      try
 //  //      {
-//  //        // Distinto número de puntos
+//  //        // Distinto nÃºmero de puntos
 //  //        trf.compute(ptsIn2, ptsOut);
 //  //      } catch( TL::Exception &e ) {
 //  //          EXPECT_STREQ( "Sets of points with different size", e.what() );
@@ -297,7 +297,7 @@ using namespace TL::geometry;
 //  EXPECT_EQ(transform_type::PROJECTIVE, trfProjective.getTransformType());
 //}
 //
-//// Pendiente test de transformación de entidades
+//// Pendiente test de transformaciÃ³n de entidades
 //TEST(transform, Entities)
 //{
 //  WindowI wi(PointI(2, 3), PointI(100, 369));
@@ -312,8 +312,8 @@ using namespace TL::geometry;
 //  EXPECT_EQ(444, wi_out.pt2.y);
 //}
 //
-//// Pendiente test de transformación de imagenes
-//// Pendiente test transformación multiple
+//// Pendiente test de transformaciÃ³n de imagenes
+//// Pendiente test transformaciÃ³n multiple
 //TEST(TrfMultiple, DefaultConstructor)
 //{
 //  TrfMultiple<PointD> trfMul;

@@ -10,7 +10,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-using namespace TL;
+using namespace tl;
 
 int main(int argc, char** argv)
 {

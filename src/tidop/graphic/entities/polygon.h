@@ -8,7 +8,7 @@
 #include "tidop/geometry/entities/polygon.h"
 #include "tidop/graphic/entities/entity.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GraphicEntities

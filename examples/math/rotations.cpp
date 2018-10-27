@@ -13,7 +13,7 @@ TL_DEFAULT_WARNINGS
 using namespace Eigen;
 #endif
 
-using namespace TL;
+using namespace tl;
 
 
 
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
   std::cout << "Quaternion:" << std::endl;
   std::cout << q.x() << ";" << q.y() << ";" << q.z() << ";" << q.w() << std::endl;
 
-  TL::math::Matrix<3, 3, double> mat;
+  math::Matrix<3, 3, double> mat;
   mat.at(0, 0) = 1.1;
 #endif
   return 0;

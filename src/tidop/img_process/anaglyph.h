@@ -9,7 +9,7 @@
 
 #include "tidop/core/defs.h"
 
-namespace TL
+namespace tl
 {
 
 enum class StereoMode {

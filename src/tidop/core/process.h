@@ -26,7 +26,7 @@
 #include "tidop/core/defs.h"
 
 
-namespace TL
+namespace tl
 {
 
 class Progress;
@@ -581,6 +581,6 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_PROCESS_H

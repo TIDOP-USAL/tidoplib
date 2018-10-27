@@ -25,9 +25,7 @@
 #include <cstdio>
 #include <vector>
 
-using namespace TL;
-
-namespace TL
+namespace tl
 {
 
 struct msgProperties {
@@ -38,26 +36,26 @@ struct msgProperties {
 };
 
 static struct msgProperties msgTemplate[] = {   
-  { "Debug:   %s", "Debug:   %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::NORMAL},
-  { "Info:    %s", "Info:    %s (%s:%u, %s)", Console::Color::WHITE, Console::Intensity::BRIGHT},
-  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::MAGENTA, Console::Intensity::BRIGHT},
-  { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::RED, Console::Intensity::BRIGHT}
+  { "Debug:   %s", "Debug:   %s (%s:%u, %s)", Console::Color::white, Console::Intensity::normal},
+  { "Info:    %s", "Info:    %s (%s:%u, %s)", Console::Color::white, Console::Intensity::bright},
+  { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::magenta, Console::Intensity::bright},
+  { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::red, Console::Intensity::bright}
 };
 
 msgProperties getMessageProperties( MessageLevel msgLevel ) 
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case TL::MessageLevel::MSG_DEBUG:
+  case MessageLevel::MSG_DEBUG:
     iLevel = 0;
     break;
-  case TL::MessageLevel::MSG_INFO:
+  case MessageLevel::MSG_INFO:
     iLevel = 1;
     break;
-  case TL::MessageLevel::MSG_WARNING:
+  case MessageLevel::MSG_WARNING:
     iLevel = 2;
     break;
-  case TL::MessageLevel::MSG_ERROR:
+  case MessageLevel::MSG_ERROR:
     iLevel = 3;
     break;
   default:
@@ -118,7 +116,7 @@ void Console::printMessage(const std::string &msg)
   std::cout << "\r";
 
   std::string aux(msg);
-  TL::replaceString(&aux, "%", "%%");
+  replaceString(&aux, "%", "%%");
   printf_s("%s\n", aux.c_str());
 }
 
@@ -470,7 +468,7 @@ Command::Command(const std::string &name, const std::string &description)
 }
   
 Command::Command(const std::string &name, const std::string &description,
-                 std::initializer_list<std::shared_ptr<TL::Argument>> arguments)
+                 std::initializer_list<std::shared_ptr<Argument>> arguments)
   : mName(name),
     mDescription(description),
     mCmdArgs(arguments),
@@ -523,7 +521,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
       std::vector<std::string> v;
-      TL::split(arg_cmd_name, v, "=");
+      split(arg_cmd_name, v, "=");
       if(v.size() == 2){
         cmd_in[v[0]] = v[1];
         continue;
@@ -596,17 +594,17 @@ Command::Status Command::parse(int argc, const char * const argv[])
   std::map<std::string, std::string>::iterator it;
   if (cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()){
     showHelp();
-    return Command::Status::SHOW_HELP;
+    return Command::Status::show_help;
   }
 
   if (cmd_in.find("version") != cmd_in.end()){
     showVersion();
-    return Command::Status::SHOW_VERSION;
+    return Command::Status::show_version;
   }
 
   if (cmd_in.find("licence") != cmd_in.end()){
     showLicence();
-    return Command::Status::SHOW_LICENCE;
+    return Command::Status::show_licence;
   }
 
 
@@ -631,14 +629,14 @@ Command::Status Command::parse(int argc, const char * const argv[])
     if (bFind == false && bOptional == false) {
       msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
       //printHelp();
-      return Command::Status::PARSE_ERROR;
+      return Command::Status::parse_error;
     } else if (!arg->isValid()){
       msgError("Valor de argumento %s no valido", arg->name().c_str());
-      return Command::Status::PARSE_ERROR;
+      return Command::Status::parse_error;
     }
   }
 
-  return Command::Status::PARSE_SUCCESS;
+  return Command::Status::parse_success;
 }
 
 Command::iterator Command::begin()
@@ -751,7 +749,7 @@ void Command::showHelp() const
 
   /// Uso
   Console &console = Console::getInstance();
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   printf("\nUsage: %s [OPTION...] \n\n", mName.c_str());
   console.reset();
@@ -788,7 +786,7 @@ void Command::showHelp() const
   printf("O: Optional argument\n\n");
 
 
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   printf("Argument Syntax Conventions\n\n");
   console.reset();
@@ -800,7 +798,7 @@ void Command::showHelp() const
   printf_s("  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n");
 
   if (!mExamples.empty()){
-    console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+    console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
     printf("Examples\n\n");
     console.reset();
@@ -814,7 +812,7 @@ void Command::showHelp() const
 void Command::showVersion() const
 {
   Console &console = Console::getInstance();
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
   printf_s("Version: %s\n", mVersion.c_str());
@@ -825,7 +823,7 @@ void Command::showVersion() const
 void Command::showLicence() const
 {
   Console &console = Console::getInstance();
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 }
 
@@ -984,13 +982,13 @@ void ProgressBar::updateProgress()
     for (int i = 0; i < mSize; i++) {
       if (i < posInBar) {
         if (bCustomConsole) {
-          console.setConsoleBackgroundColor(Console::Color::GREEN);
+          console.setConsoleBackgroundColor(Console::Color::green);
         } else {
           std::cout << "#";
         }
       } else {
         if (bCustomConsole) {
-          console.setConsoleBackgroundColor(Console::Color::YELLOW);
+          console.setConsoleBackgroundColor(Console::Color::yellow);
         } else {
           std::cout << "-";
         }
@@ -1353,6 +1351,6 @@ bool CmdParser::hasOption(const std::string &option) const
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End mamespace TL
+} // End mamespace tl
 
 

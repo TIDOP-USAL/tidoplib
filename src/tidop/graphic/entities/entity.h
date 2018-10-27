@@ -13,7 +13,7 @@
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;

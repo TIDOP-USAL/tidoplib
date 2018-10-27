@@ -1,6 +1,6 @@
 #include "tidop/graphic/entities/linestring.h"
 
-namespace TL
+namespace tl
 {
 
 using namespace geometry;

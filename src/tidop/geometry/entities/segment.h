@@ -31,7 +31,7 @@
 #include "tidop/geometry/operations.h"
 #include "tidop/math/algebra/vectors.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GeometricEntities

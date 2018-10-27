@@ -30,7 +30,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/flags.h"
 
-namespace TL
+namespace tl
 {
 
 

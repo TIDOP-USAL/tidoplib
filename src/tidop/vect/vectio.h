@@ -32,7 +32,7 @@ class OGRStyleBrush;
 class OGRStyleSymbol;
 class OGRStyleLabel;
 
-namespace TL
+namespace tl
 {
 
 class VectorGraphics;

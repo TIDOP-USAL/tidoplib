@@ -8,7 +8,7 @@ using ::testing::_;
 
 #include <tidop/core/process.h>
 
-using namespace TL;
+using namespace tl;
 
 class FakeProcess
   : public Process

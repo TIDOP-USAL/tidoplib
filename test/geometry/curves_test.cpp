@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 #include <tidop/geometry/entities/curves.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace tl::geometry;
 
 /* Circle */
 

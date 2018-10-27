@@ -31,10 +31,8 @@
 // filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
-namespace fs = std::filesystem;
 #else
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
 #endif
 
 #include "tidop/core/defs.h"
@@ -42,7 +40,7 @@ namespace fs = boost::filesystem;
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -76,8 +74,13 @@ public:
    */
   enum class Intensity : int8_t
   {
-    NORMAL,  /*!< Normal */
-    BRIGHT   /*!< Brillante */
+    normal,            /*!< Normal */
+    bright             /*!< Brillante */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    NORMAL = normal,
+    BRIGHT = bright
+#endif
   };
 
   /*!
@@ -85,14 +88,25 @@ public:
    */
   enum class Color : int8_t 
   {
-    BLACK,    /*!< Negro */
-    RED,      /*!< Rojo */
-    GREEN,    /*!< Verde */
-    YELLOW,   /*!< Amarillo */
-    BLUE,     /*!< Azul */
-    MAGENTA,  /*!< Magenta */
-    CYAN,     /*!< Cian */
-    WHITE     /*!< Blanco */
+    black,    /*!< Negro */
+    red,      /*!< Rojo */
+    green,    /*!< Verde */
+    yellow,   /*!< Amarillo */
+    blue,     /*!< Azul */
+    magenta,  /*!< Magenta */
+    cyan,     /*!< Cian */
+    white     /*!< Blanco */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    BLACK   = black,    /*!< Negro */
+    RED     = red,      /*!< Rojo */
+    GREEN   = green,    /*!< Verde */
+    YELLOW  = yellow,   /*!< Amarillo */
+    BLUE    = blue,     /*!< Azul */
+    MAGENTA = magenta,  /*!< Magenta */
+    CYAN    = cyan,     /*!< Cian */
+    WHITE   = white     /*!< Blanco */
+#endif
   };
 
   /*!
@@ -100,9 +114,15 @@ public:
    */
   enum class Mode : int8_t 
   {
-    INPUT,          /*!< Consola en modo entrada */
-    OUTPUT,         /*!< Consola en modo salida */
-    OUTPUT_ERROR    /*!< Consola en modo salida de errores */
+    input,          /*!< Consola en modo entrada */
+    output,         /*!< Consola en modo salida */
+    output_error    /*!< Consola en modo salida de errores */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    INPUT        = input,          /*!< Consola en modo entrada */
+    OUTPUT       = output,         /*!< Consola en modo salida */
+    OUTPUT_ERROR = output_error    /*!< Consola en modo salida de errores */
+#endif
   };
 
 private:
@@ -247,7 +267,7 @@ public:
    * \param[in] backColor Color de fondo
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
-  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece el color de caracter
@@ -255,7 +275,7 @@ public:
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    * \see Console::Color, Console::Intensity
    */
-  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece la consola como modo Unicode
@@ -585,9 +605,14 @@ typedef Argument_<bool, true> ArgumentBooleanRequired;
 typedef Argument_<bool, false> ArgumentBooleanOptional;
 typedef Argument_<std::string, true> ArgumentStringRequired;
 typedef Argument_<std::string, false> ArgumentStringOptional;
-typedef Argument_<fs::path, true> ArgumentPathRequired;
-typedef Argument_<fs::path, false> ArgumentPathOptional;
 
+#if (__cplusplus >= 201703L)
+typedef Argument_<std::filesystem::path, true> ArgumentPathRequired;
+typedef Argument_<std::filesystem::path, false> ArgumentPathOptional;
+#else
+typedef Argument_<boost::filesystem::path, true> ArgumentPathRequired;
+typedef Argument_<boost::filesystem::path, false> ArgumentPathOptional;
+#endif
 
 /* Implementación */
 
@@ -657,16 +682,30 @@ std::string Argument_<std::string, false>::typeName() const
   return "std::string";
 }
 
+#if (__cplusplus >= 201703L)
 template<> inline
-std::string Argument_<fs::path, true>::typeName() const
+std::string Argument_<std::filesystem::path, true>::typeName() const
 {
   return "path";
 }
 template<> inline
-std::string Argument_<fs::path, false>::typeName() const
+std::string Argument_<std::filesystem::path, false>::typeName() const
 {
   return "path";
 }
+#else
+template<> inline
+std::string Argument_<boost::filesystem::path, true>::typeName() const
+{
+  return "path";
+}
+template<> inline
+std::string Argument_<boost::filesystem::path, false>::typeName() const
+{
+  return "path";
+}
+#endif
+
 
 template<typename T, bool required> inline
 bool Argument_<T, required>::isRequired() const
@@ -702,17 +741,32 @@ std::string Argument_<std::string, false>::toString() const
   return *mValue;
 }
 
+
+#if (__cplusplus >= 201703L)
 template<> inline
-std::string Argument_<fs::path, true>::toString() const
+std::string Argument_<std::filesystem::path, true>::toString() const
 {
   return mValue->string();
 }
 
 template<> inline
-std::string Argument_<fs::path, false>::toString() const
+std::string Argument_<std::filesystem::path, false>::toString() const
 {
   return mValue->string();
 }
+#else
+template<> inline
+std::string Argument_<boost::filesystem::path, true>::toString() const
+{
+  return mValue->string();
+}
+
+template<> inline
+std::string Argument_<boost::filesystem::path, false>::toString() const
+{
+  return mValue->string();
+}
+#endif
 
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
@@ -745,19 +799,36 @@ void Argument_<std::string, false>::fromString(const std::string &value)
   bValid = true;
 }
 
+#if (__cplusplus >= 201703L)
 template<> inline
-void Argument_<fs::path, true>::fromString(const std::string &value)
+void Argument_<std::filesystem::path, true>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
 
 template<> inline
-void Argument_<fs::path, false>::fromString(const std::string &value)
+void Argument_<std::filesystem::path, false>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
+#else
+template<> inline
+void Argument_<boost::filesystem::path, true>::fromString(const std::string &value)
+{
+  *mValue = value;
+  bValid = true;
+}
+
+template<> inline
+void Argument_<boost::filesystem::path, false>::fromString(const std::string &value)
+{
+  *mValue = value;
+  bValid = true;
+}
+#endif
+
 
 
 template<typename T, bool required> inline
@@ -854,8 +925,13 @@ typedef ArgumentList_<bool, true> ArgumentListBooleanRequired;
 typedef ArgumentList_<bool, false> ArgumentListBooleanOptional;
 typedef ArgumentList_<std::string, true> ArgumentListStringRequired;
 typedef ArgumentList_<std::string, false> ArgumentListStringOptional;
-typedef ArgumentList_<fs::path, true> ArgumentListPathRequired;
-typedef ArgumentList_<fs::path, false> ArgumentListPathOptional;
+#if (__cplusplus >= 201703L)
+typedef ArgumentList_<std::filesystem::path, true> ArgumentListPathRequired;
+typedef ArgumentList_<std::filesystem::path, false> ArgumentListPathOptional;
+#else
+typedef ArgumentList_<boost::filesystem::path, true> ArgumentListPathRequired;
+typedef ArgumentList_<boost::filesystem::path, false> ArgumentListPathOptional;
+#endif
 
 
 /* Implementación */
@@ -1022,13 +1098,13 @@ public:
  *
  *  // Parseo de los argumentos y comprobación de los mismos
  *  Command::Status status = cmd.parse(argc, argv);
- *  if (status == Command::Status::PARSE_ERROR ) {
+ *  if (status == Command::Status::parse_error ) {
  *    return 1;
- *  } else if (status == Command::Status::SHOW_HELP) {
+ *  } else if (status == Command::Status::show_help) {
  *    return 0;
- *  } else if (status == Command::Status::SHOW_LICENCE) {
+ *  } else if (status == Command::Status::show_licence) {
  *    return 0;
- *  } else if (status == Command::Status::SHOW_VERSION) {
+ *  } else if (status == Command::Status::show_version) {
  *    return 0;
  *  }
  * \endcode
@@ -1043,11 +1119,19 @@ public:
    */
   enum class Status
   {
-    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+    parse_success,  /*!< El parseo se ejecuto correctamente */
+    parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR   = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP     = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    SHOW_VERSION  = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    SHOW_LICENCE  = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#endif
   };
 
   /*!
@@ -1157,7 +1241,7 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<TL::Argument>> arguments);
+  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
 
   /*!
    * \brief Devuelve el nombre del comando
@@ -1199,7 +1283,7 @@ public:
    * \brief parsea los argumentos de entrada
    * \param[in] argc
    * \param[in] argv
-   * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
+   * \return Devuelve el estado. 'parse_error' en caso de error y 'parse_success' cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
   Status parse(int argc, const char* const argv[]);
@@ -2054,7 +2138,7 @@ public:
 /*! \} */ // end of utilities
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_CORE_CONSOLE_H

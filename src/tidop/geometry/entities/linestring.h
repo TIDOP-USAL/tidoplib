@@ -25,7 +25,7 @@
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/operations.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GeometricEntities

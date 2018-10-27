@@ -21,8 +21,8 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace geometry;
 
 
 
@@ -57,24 +57,24 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentDoubleOptional>("scale", 's', "Escala", &scale));
 
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
-  TL::Mdt mdt;
-  if (mdt.open(dtm_file) != TL::Mdt::Status::OPEN_OK) return 1;
+  Mdt mdt;
+  if (mdt.open(dtm_file) != Mdt::Status::OPEN_OK) return 1;
   PointD pt(x0, y0);
   float z = mdt.getZ(pt);
   float dz = static_cast<float>(z0) - z;
 
-  TL::GeoRasterGraphics image;
-  if (image.open(img_file) == TL::RasterGraphics::Status::OPEN_OK) {
+  GeoRasterGraphics image;
+  if (image.open(img_file) == RasterGraphics::Status::OPEN_OK) {
 
     Helmert3D<Point3D> helmert3d(x0, y0, z0, scale, omega, phi, kappa);
 

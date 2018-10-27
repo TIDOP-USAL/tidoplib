@@ -17,7 +17,7 @@ TL_DEFAULT_WARNINGS
 
 #include <cmath> 
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */

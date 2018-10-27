@@ -5,7 +5,7 @@
 #ifdef HAVE_OPENCV
 #include "opencv2/highgui/highgui.hpp"
 
-namespace TL
+namespace tl
 {
 
 void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk)

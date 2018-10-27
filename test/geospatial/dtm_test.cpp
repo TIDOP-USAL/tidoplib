@@ -2,7 +2,7 @@
 
 #include <tidop/geospatial/dtm.h>
 
-using namespace TL;
+using namespace tl;
 using namespace geospatial;
 
 //class DtmTest

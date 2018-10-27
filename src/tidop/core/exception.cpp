@@ -26,7 +26,7 @@
 //https://github.com/GPMueller/mwe-cpp-exception
 //https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -101,4 +101,4 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
 #endif
 
 
-} // End namespace TL
+} // End namespace tl

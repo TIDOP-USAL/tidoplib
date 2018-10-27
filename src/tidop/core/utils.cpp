@@ -39,7 +39,13 @@
 #  include <thread>
 #endif
 
-namespace TL
+#if (__cplusplus >= 201703L)
+namespace fs = std::filesystem;
+#else
+namespace fs = boost::filesystem;
+#endif
+
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -107,9 +113,9 @@ int createDir(const char *path)
   if (isDirectory(path)) return 1;
 
   std::vector<std::string> splitPath;
-  TL::split(path, splitPath, "\\");
+  split(path, splitPath, "\\");
   if (splitPath.size() == 1)
-    TL::split(path, splitPath, "/");
+    split(path, splitPath, "/");
 
   std::string _path = "";
   try {
@@ -740,17 +746,17 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   return r_err;
 }
 
-int stringToInteger(const std::string &text, TL::Base base)
+int stringToInteger(const std::string &text, Base base)
 {
   std::istringstream ss(text);
   switch (base) {
-  case TL::Base::OCTAL:
+  case Base::OCTAL:
     ss.setf(std::ios_base::oct, std::ios::basefield);
     break;
-  case TL::Base::DECIMAL:
+  case Base::DECIMAL:
     ss.setf(std::ios_base::dec, std::ios::basefield);
     break;
-  case TL::Base::HEXADECIMAL:
+  case Base::HEXADECIMAL:
     ss.setf(std::ios_base::hex, std::ios::basefield);
     break;
   default:
@@ -1440,4 +1446,4 @@ Compression::Status Compression::decompress()
 
 #endif // HAVE_MINIZIP
 
-} // End namespace TL
+} // End namespace tl

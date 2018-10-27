@@ -13,7 +13,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/geometry/entities/segment.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \defgroup FeatDetection Feature detection

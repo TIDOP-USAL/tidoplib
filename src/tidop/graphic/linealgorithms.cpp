@@ -1,7 +1,7 @@
 #include "linealgorithms.h"
 
 
-namespace TL 
+namespace tl 
 {
 
 using namespace geometry;

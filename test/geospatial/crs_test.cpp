@@ -2,8 +2,8 @@
 
 #include <tidop/geospatial/crs.h>
 
-using namespace TL;
-using namespace TL::geospatial;
+using namespace tl;
+using namespace tl::geospatial;
 
 /* CrsTest */
 

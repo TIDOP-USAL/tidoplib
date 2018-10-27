@@ -2,7 +2,7 @@
 
 #include <tidop/math/angles.h>
 
-using namespace TL::math;
+using namespace tl::math;
 
 /* ---------------------------------------------------------------------------------- */
 /*                          Test conversión de ángulos                                */

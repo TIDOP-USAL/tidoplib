@@ -17,7 +17,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/exception.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GraphicEntities

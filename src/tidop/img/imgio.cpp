@@ -28,7 +28,7 @@ namespace fs = boost::filesystem;
 #endif
 #include <boost/algorithm/string.hpp>
 
-namespace TL
+namespace tl
 {
 
 using namespace geometry;
@@ -126,28 +126,28 @@ GDALDataType getGdalDataType(DataType dataType)
 { 
   GDALDataType ret = GDT_Unknown;
   switch ( dataType ) {
-  case TL::DataType::TL_8U:
+  case tl::DataType::TL_8U:
     ret = GDT_Byte;
     break;
-  case TL::DataType::TL_8S:
+  case tl::DataType::TL_8S:
     ret = GDT_Byte;
     break;
-  case TL::DataType::TL_16U:
+  case tl::DataType::TL_16U:
     ret = GDT_UInt16;
     break;
-  case TL::DataType::TL_16S:
+  case tl::DataType::TL_16S:
     ret = GDT_Int16;
     break;
-  case TL::DataType::TL_32U:
+  case tl::DataType::TL_32U:
     ret = GDT_UInt32;
     break;
-  case TL::DataType::TL_32S:
+  case tl::DataType::TL_32S:
     ret = GDT_Int32;
     break;
-  case TL::DataType::TL_32F:
+  case tl::DataType::TL_32F:
     ret = GDT_Float32;
     break;
-  case TL::DataType::TL_64F:
+  case tl::DataType::TL_64F:
     ret = GDT_Float64;
     break;
   default:
@@ -162,28 +162,28 @@ DataType convertDataType(GDALDataType dataType)
   DataType ret;
   switch ( dataType ) {
   case GDT_Byte:
-    ret = TL::DataType::TL_8U;
+    ret = tl::DataType::TL_8U;
     break;
   case GDT_UInt16:
-    ret = TL::DataType::TL_16U;
+    ret = tl::DataType::TL_16U;
     break;
   case GDT_Int16:
-    ret = TL::DataType::TL_16S;
+    ret = tl::DataType::TL_16S;
     break;
   case GDT_UInt32:
-    ret = TL::DataType::TL_32U;
+    ret = tl::DataType::TL_32U;
     break;
   case GDT_Int32:
-    ret = TL::DataType::TL_32S;
+    ret = tl::DataType::TL_32S;
     break;
   case GDT_Float32:
-    ret = TL::DataType::TL_32F;
+    ret = tl::DataType::TL_32F;
     break;
   case GDT_Float64:
-    ret = TL::DataType::TL_64F;
+    ret = tl::DataType::TL_64F;
     break;
   default:
-    ret = TL::DataType::TL_8U;
+    ret = tl::DataType::TL_8U;
     break;
   }
   return ret;

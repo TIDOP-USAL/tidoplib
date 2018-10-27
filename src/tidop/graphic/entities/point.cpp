@@ -1,6 +1,6 @@
 #include "tidop/graphic/entities/point.h"
 
-namespace TL
+namespace tl
 {
 
 using namespace geometry;

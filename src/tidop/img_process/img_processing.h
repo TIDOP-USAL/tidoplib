@@ -14,7 +14,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 
-namespace TL
+namespace tl
 {
 
 

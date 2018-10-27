@@ -5,7 +5,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #endif
 
-namespace TL
+namespace tl
 {
 
 namespace math

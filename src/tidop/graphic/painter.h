@@ -9,7 +9,7 @@
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;

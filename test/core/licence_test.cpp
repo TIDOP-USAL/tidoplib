@@ -2,7 +2,7 @@
 
 #include <tidop/core/licence.h>
 
-using namespace TL;
+using namespace tl;
 
 class LicenceTest : public testing::Test
 {

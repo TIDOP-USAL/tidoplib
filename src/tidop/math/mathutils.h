@@ -20,7 +20,7 @@ TL_DEFAULT_WARNINGS
 
 #include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /*!

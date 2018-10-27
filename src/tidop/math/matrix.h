@@ -6,14 +6,14 @@
 #include <vector>
 #include <array>
 
-namespace TL
+namespace tl
 {
 
 namespace math
 {
 
 /*!
- * \brief Matriz de rotación
+ * \brief Matriz de rotaciÃ³n
  */
 template<size_t _rows, size_t _cols, typename T = double>
 class Matrix
@@ -51,7 +51,7 @@ public:
   ~Matrix();
 
   /*!
-   * \brief Operador de asignación
+   * \brief Operador de asignaciÃ³n
    * \param[in] mat Objeto que se copia
    */
   Matrix& operator = (const Matrix<_rows, _cols, T> &mat);
@@ -127,6 +127,6 @@ size_t Matrix<_rows, _cols, T>::cols() const
 
 } // Fin namespace math
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_MATH_MATRIX_H

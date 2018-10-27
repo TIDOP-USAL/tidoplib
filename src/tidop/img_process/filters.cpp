@@ -4,7 +4,7 @@
 
 #include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -287,7 +287,7 @@ ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
   cv::Mat abs_grad_x, abs_grad_y;
   try {
     cv::Sobel(matIn, grad_x, mDepth, mDx, mDy, mKernelSize, mScale, mDelta, mBorderType);
-    //TODO: No tiene mucho sentido añadir esto dentro del filtro Sobel
+    //TODO: No tiene mucho sentido aÃ±adir esto dentro del filtro Sobel
     convertScaleAbs(grad_x, abs_grad_x);
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){

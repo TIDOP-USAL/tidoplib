@@ -17,7 +17,7 @@ TL_DEFAULT_WARNINGS
 
 #include "tidop/graphic/canvas.h"
 
-namespace TL
+namespace tl
 {
 
 namespace graph

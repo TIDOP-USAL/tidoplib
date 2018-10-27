@@ -8,7 +8,7 @@
 #include "opencv2/core/core.hpp"
 #endif
 
-namespace TL
+namespace tl
 {
 
 namespace math

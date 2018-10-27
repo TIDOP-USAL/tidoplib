@@ -12,7 +12,7 @@
 #include "tidop/graphic/color.h"
 #include "tidop/img_process/img_processing.h"
 
-namespace TL
+namespace tl
 {
 
 // Balance de blancos

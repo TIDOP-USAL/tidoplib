@@ -9,7 +9,7 @@
 #include "tidop/core/exception.h"
 #include "tidop/core/flags.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GraphicEntities

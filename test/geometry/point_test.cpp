@@ -4,8 +4,8 @@
 #include <tidop/geometry/entities/bbox.h>
 #include <tidop/core/utils.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace tl::geometry;
 
 /* Constructor por defecto */
 

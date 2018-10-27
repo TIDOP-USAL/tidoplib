@@ -31,12 +31,10 @@
 //C++17
 //http://en.cppreference.com/w/cpp/filesystem
 #include <filesystem>
-namespace fs = std::filesystem;
 #else
 //Boost
 //http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
 #endif
 #include <boost/algorithm/string.hpp>
 
@@ -52,7 +50,7 @@ namespace fs = boost::filesystem;
 #include "tidop/core/defs.h"
 //#include "core/datamodel.h"
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -546,7 +544,7 @@ enum class Base : int8_t
  * \return Número
  * \see Base
  */
-TL_EXPORT int stringToInteger(const std::string &text, TL::Base base = TL::Base::DECIMAL);
+TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::DECIMAL);
 
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
@@ -1234,6 +1232,6 @@ private:
 
 //TODO: funcion para conversión entre tipos basicos en templates para evitar warnings
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_UTILS_H

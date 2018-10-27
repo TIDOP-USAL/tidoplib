@@ -4,8 +4,8 @@
 #include <tidop/geometry/entities/bbox.h>
 
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace tl::geometry;
 
 
 class PolygonTest

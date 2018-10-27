@@ -6,7 +6,7 @@
 #include <memory>
 #include <array>
 
-using namespace TL;
+using namespace tl;
 
 /// Google test con visual studio da algunas excepciones que a priori no tienen mucho sentido.
 /// Si se ejecuta el mismo código por separado no da ningén error. En Linux el test corre sin problemas.
@@ -334,35 +334,35 @@ TEST_F(CommandTest, setGetDescription)
 TEST_F(CommandTest, parseHelp)
 {
   std::array<char const*, 2> argv{"" , "-h"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::SHOW_HELP);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::show_help);
 
   std::array<char const*, 2> argv2{"" , "--help"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::SHOW_HELP);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::show_help);
 }
 
 TEST_F(CommandTest, parseVersion)
 {
   std::array<char const*, 2> argv2{"" , "--version"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::SHOW_VERSION);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::show_version);
 }
 
 TEST_F(CommandTest, parseLicence)
 {
   std::array<char const*, 2> argv2{"" , "--licence"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::SHOW_LICENCE);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv2.size(), argv2.data()) == Command::Status::show_licence);
 }
 
 
 TEST_F(CommandTest, parse_option_ok)
 {
   std::array<char const*, 4> argv{"" , "-i", "2", "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::parse_success);
   EXPECT_EQ(2, val2);
   EXPECT_TRUE(val_b);
   EXPECT_FALSE(opt);
 
   std::array<char const*, 4> argv_large{"" , "--int", "2", "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::parse_success);
   EXPECT_EQ(2, val2);
   EXPECT_TRUE(val_b);
   EXPECT_FALSE(opt);
@@ -371,7 +371,7 @@ TEST_F(CommandTest, parse_option_ok)
 TEST_F(CommandTest, parse_option_short)
 {
   std::array<char const*, 3> argv{"" , "-i2", "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::parse_success);
   EXPECT_EQ(2, val2);
   EXPECT_TRUE(val_b);
   EXPECT_FALSE(opt);
@@ -380,7 +380,7 @@ TEST_F(CommandTest, parse_option_short)
 TEST_F(CommandTest, parse_option_ok_equal)
 {
   std::array<char const*, 3> argv_large{"" , "--int=2", "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv_large.size(), argv_large.data()) == Command::Status::parse_success);
   EXPECT_EQ(2, val2);
   EXPECT_TRUE(val_b);
   EXPECT_FALSE(opt);
@@ -389,24 +389,24 @@ TEST_F(CommandTest, parse_option_ok_equal)
 TEST_F(CommandTest, parseMultipleOptions)
 {
   std::array<char const*, 2> argv{"" , "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_ERROR);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::parse_error);
 }
 
 TEST_F(CommandTest, parseERROR)
 {
   std::array<char const*, 2> argv{"" , "-b"};
-  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::PARSE_ERROR);
+  EXPECT_TRUE(cmd_arg_posix2->parse(argv.size(), argv.data()) == Command::Status::parse_error);
 }
 
 
 TEST_F(CommandTest, parseOptionsParameter)
 {
   std::array<char const*, 3> argv{"" , "--options", "OPT3"};
-  EXPECT_TRUE(cmd_arg_list->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_list->parse(argv.size(), argv.data()) == Command::Status::parse_success);
   EXPECT_EQ(3, idx);
 
   std::array<char const*, 3> argv2{"" , "--options", "OPT_ERROR"};
-  EXPECT_TRUE(cmd_arg_list->parse(argv2.size(), argv2.data()) == Command::Status::PARSE_ERROR);
+  EXPECT_TRUE(cmd_arg_list->parse(argv2.size(), argv2.data()) == Command::Status::parse_error);
 }
 
 TEST_F(CommandTest, size)
@@ -430,7 +430,7 @@ TEST_F(CommandTest, empty)
 TEST_F(CommandTest, parseTextWithHyphen)
 {
   std::array<char const*, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
-  EXPECT_TRUE(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
+  EXPECT_TRUE(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::parse_success);
 }
 
 

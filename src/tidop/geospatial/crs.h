@@ -22,7 +22,7 @@ TL_DEFAULT_WARNINGS
 #include "tidop/geometry/transform.h"
 
 
-namespace TL
+namespace tl
 {
 
 // forward declaration

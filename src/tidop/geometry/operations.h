@@ -32,7 +32,7 @@
 #include "tidop/geometry/entities/bbox.h"
 #include "tidop/math/algebra/vectors.h"
 
-namespace TL
+namespace tl
 {
 
 namespace geometry

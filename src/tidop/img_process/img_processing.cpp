@@ -10,7 +10,7 @@
 #include <cstdio>
 
 
-namespace TL
+namespace tl
 {
 
 
@@ -41,25 +41,25 @@ ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::
     cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
     switch (type)
     {
-    case TL::process_type::MORPH_DILATION:
+    case tl::process_type::MORPH_DILATION:
       cv::dilate(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
       break;
-    case TL::process_type::MORPH_EROTION:
+    case tl::process_type::MORPH_EROTION:
       cv::erode(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
       break;
-    case TL::process_type::MORPH_OPENING:
+    case tl::process_type::MORPH_OPENING:
       morphologyEx(matIn, *matOut, cv::MORPH_OPEN, element);
       break;
-    case TL::process_type::MORPH_CLOSING:
+    case tl::process_type::MORPH_CLOSING:
       morphologyEx(matIn, *matOut, cv::MORPH_CLOSE, element);
       break;
-    case TL::process_type::MORPH_GRADIENT:
+    case tl::process_type::MORPH_GRADIENT:
       morphologyEx(matIn, *matOut, cv::MORPH_GRADIENT, element);
       break;
-    case TL::process_type::MORPH_TOPHAT:
+    case tl::process_type::MORPH_TOPHAT:
       morphologyEx(matIn, *matOut, cv::MORPH_TOPHAT, element);
       break;
-    case TL::process_type::MORPH_BLACKHAT:
+    case tl::process_type::MORPH_BLACKHAT:
       morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
       break;
     default:

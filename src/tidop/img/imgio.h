@@ -43,7 +43,7 @@ TL_DEFAULT_WARNINGS
 #endif
 #endif // HAVE_RAW
 
-namespace TL
+namespace tl
 {
 
 class RasterOptions;

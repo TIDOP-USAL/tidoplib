@@ -17,7 +17,7 @@ namespace fs = boost::filesystem;
 #endif
 
 
-using namespace TL;
+using namespace tl;
 using namespace geospatial;
 using namespace geometry;
 
@@ -49,13 +49,13 @@ int main(int argc, char** argv)
 
 
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
@@ -165,11 +165,11 @@ int main(int argc, char** argv)
 
   chrono.stop();
 
-  TL::RasterGraphics dtm;
+  RasterGraphics dtm;
   dtm.open(dtm_path.string().c_str(), RasterGraphics::Mode::Create);
   dtm.create(height_px, width_px, 1, DataType::TL_32F);
 
-  TL::Affine<PointD> trf(box.pt1.x, box.pt1.y, resolution, resolution, 0.0);
+  Affine<PointD> trf(box.pt1.x, box.pt1.y, resolution, resolution, 0.0);
 
   PointD pt_dtm;
   PointD pt_cloud;

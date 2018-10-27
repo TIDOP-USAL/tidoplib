@@ -5,7 +5,7 @@
 
 
 
-namespace TL
+namespace tl
 {
 
 RasterOptions::RasterOptions(Format format) 

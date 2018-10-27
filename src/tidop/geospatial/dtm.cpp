@@ -2,7 +2,7 @@
 
 #include "tidop/core/utils.h"
 
-namespace TL
+namespace tl
 {
 
 namespace geospatial

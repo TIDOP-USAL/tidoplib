@@ -7,7 +7,7 @@
 #include "opencv2/core/core.hpp"
 
 
-namespace TL
+namespace tl
 {
 
 /*! \defgroup FeatDetection Feature detection

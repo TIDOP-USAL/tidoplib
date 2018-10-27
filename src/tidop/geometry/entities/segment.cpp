@@ -20,7 +20,7 @@
 #include "tidop/geometry/operations.h"
 
 
-namespace TL
+namespace tl
 {
 
 namespace geometry

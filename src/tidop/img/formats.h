@@ -17,7 +17,7 @@ TL_DEFAULT_WARNINGS
 ///TODO: Comprobar que se este usando GDAL y la versión para ciertas opciones (> 2.0) 
 
 
-namespace TL
+namespace tl
 {
 
 // Las opciones en GDAL se añaden:

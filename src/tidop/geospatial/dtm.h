@@ -13,7 +13,7 @@
 #include "tidop/geometry/entities/window.h"
 
 
-namespace TL
+namespace tl
 {
 
 

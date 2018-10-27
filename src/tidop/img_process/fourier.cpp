@@ -5,7 +5,7 @@
 
 #ifdef HAVE_OPENCV
 
-namespace TL
+namespace tl
 {
 
 
@@ -72,7 +72,7 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
   cv::merge(planes, 2, complexI);
 
   // Generación de la transformada de Fourier.
-  TL::DiscreteFourierTrf ft;
+  tl::DiscreteFourierTrf ft;
   ft.forward(complexI, &complexI);
   ft.shift(complexI);
 

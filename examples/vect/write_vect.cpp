@@ -7,8 +7,16 @@
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
 
-using namespace TL;
-using namespace TL::graph;
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+
+using namespace tl;
+using namespace graph;
 
 /*!
  * read_vect: 
@@ -29,13 +37,13 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 

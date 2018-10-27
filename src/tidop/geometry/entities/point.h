@@ -30,7 +30,7 @@
 
 #include "tidop/geometry/entities/entity.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GeometricEntities

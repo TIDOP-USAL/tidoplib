@@ -5,8 +5,8 @@
 #include <tidop/math/mathutils.h>
 #include <tidop/geometry/entities/point.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace tl::geometry;
 
 // Para testear angulos de euler
 //http://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm

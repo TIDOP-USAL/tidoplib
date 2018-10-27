@@ -4,7 +4,7 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
-namespace TL
+namespace tl
 {
 
 namespace math

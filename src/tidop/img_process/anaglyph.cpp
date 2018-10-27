@@ -21,7 +21,7 @@
 
 #include <thread>
 
-using namespace TL;
+using namespace tl;
 
 
 struct MatrixLR {

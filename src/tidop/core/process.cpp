@@ -28,7 +28,7 @@
 /* ---------------------------------------------------------------------------------- */
 
 
-namespace TL
+namespace tl
 {
 
 unsigned long Process::sProcessCount = 0;
@@ -549,7 +549,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
 {
   mStatus = Status::RUNNING;
 
-  auto f_aux = [&](TL::Progress *progress_bar_total, TL::Progress *progress_bar_partial) {
+  auto f_aux = [&](Progress *progress_bar_total, Progress *progress_bar_partial) {
     if (progress_bar_total) progress_bar_total->init(0., static_cast<double>(mProcessList.size()));
     for (const auto &process : mProcessList) {
       if (progress_bar_total) {
@@ -689,4 +689,4 @@ BatchProcess::Listener::~Listener()
 //  }
 //}
 
-} // End namespace TL
+} // End namespace tl

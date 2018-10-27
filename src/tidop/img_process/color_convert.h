@@ -11,7 +11,7 @@
 #include "tidop/img_process/img_processing.h"
 #include "tidop/graphic/color.h"
 
-namespace TL
+namespace tl
 {
 
 

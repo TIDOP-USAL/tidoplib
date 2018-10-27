@@ -6,7 +6,7 @@
 #include <tidop/img/imgio.h>
 #include <tidop/img_process/matching.h>
 
-using namespace TL;
+using namespace tl;
 
 #ifdef HAVE_VLD
 #include <vld.h>
@@ -30,13 +30,13 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
@@ -47,9 +47,9 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::getInstance().addListener(&console);
 
-  TL::RasterGraphics image1;
+  RasterGraphics image1;
   cv::Mat mat_1;
-  if (image1.open(img1, TL::RasterGraphics::Mode::Read) == TL::RasterGraphics::Status::OPEN_OK) {
+  if (image1.open(img1, RasterGraphics::Mode::Read) == RasterGraphics::Status::OPEN_OK) {
     msgInfo("Numero de bandas: %i", image1.getBands());
     msgInfo("Profundidad de color: %i", image1.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image1.getCols(), image1.getRows());
@@ -58,9 +58,9 @@ int main(int argc, char** argv)
     msgError("Error al abrir la imagen: %s", img1.c_str());
   }
 
-  TL::RasterGraphics image2;
+  RasterGraphics image2;
   cv::Mat mat_2;
-  if (image2.open(img2, TL::RasterGraphics::Mode::Read) == TL::RasterGraphics::Status::OPEN_OK) {
+  if (image2.open(img2, RasterGraphics::Mode::Read) == RasterGraphics::Status::OPEN_OK) {
     msgInfo("Numero de bandas: %i", image2.getBands());
     msgInfo("Profundidad de color: %i", image2.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image2.getCols(), image2.getRows());

@@ -5,7 +5,7 @@
 #include <tidop/math/algebra/vectors.h>
 #include <tidop/geometry/entities/point.h>
 
-using namespace TL;
+using namespace tl;
 using namespace geometry;
 using namespace math;
 

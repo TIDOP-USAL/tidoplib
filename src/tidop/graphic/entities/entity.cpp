@@ -16,7 +16,7 @@ TL_DEFAULT_WARNINGS
 #endif
 
 
-namespace TL
+namespace tl
 {
 
 namespace graph

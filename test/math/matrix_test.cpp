@@ -2,7 +2,7 @@
 
 #include <tidop/math/matrix.h>
 
-using namespace TL::math;
+using namespace tl::math;
 
 
 class MatrixTest 

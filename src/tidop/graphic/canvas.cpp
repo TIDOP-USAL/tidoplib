@@ -9,7 +9,7 @@
 #endif
 
 
-namespace TL
+namespace tl
 {
 
 using namespace geometry;
@@ -29,7 +29,7 @@ CanvasCV::CanvasCV()
   : Canvas(),
     mWidth(100),
     mHeight(100),
-    mBgColor(TL::Color::NAME::White)
+    mBgColor(tl::Color::NAME::White)
 {
   update();
 }
@@ -77,7 +77,7 @@ void CanvasCV::setSize(int width, int height)
   update();
 }
 
-void CanvasCV::setBackgroundColor(const TL::Color &color)
+void CanvasCV::setBackgroundColor(const tl::Color &color)
 {
   mBgColor = color;
   update();
@@ -91,37 +91,37 @@ void CanvasCV::drawPoint(const GPoint &point)
   cv::Point pt = point + pt_offset;
 
   switch (point.getStyleSymbol()->getName()) {
-  case TL::graph::StyleSymbol::SymbolName::CROSS:
+  case tl::graph::StyleSymbol::SymbolName::CROSS:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_CROSS, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
+  case tl::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TILTED_CROSS, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::CIRCLE:
+  case tl::graph::StyleSymbol::SymbolName::CIRCLE:
     cv::circle(mCanvas, pt, 10, color, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::CIRCLE_FILLED:
+  case tl::graph::StyleSymbol::SymbolName::CIRCLE_FILLED:
     cv::circle(mCanvas, pt, 10, color, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::SQUARE:
+  case tl::graph::StyleSymbol::SymbolName::SQUARE:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::SQUARE_FILLED:
+  case tl::graph::StyleSymbol::SymbolName::SQUARE_FILLED:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::TRIANGLE:
+  case tl::graph::StyleSymbol::SymbolName::TRIANGLE:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::TRIANGLE_FILLED:
+  case tl::graph::StyleSymbol::SymbolName::TRIANGLE_FILLED:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::STAR:
+  case tl::graph::StyleSymbol::SymbolName::STAR:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::STAR_FILLED:
+  case tl::graph::StyleSymbol::SymbolName::STAR_FILLED:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::VERTICAL_BAR:
+  case tl::graph::StyleSymbol::SymbolName::VERTICAL_BAR:
     break;
   default:
     cv::line(mCanvas, pt, pt, color, point.getStylePen()->getPenWidth());

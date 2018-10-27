@@ -6,7 +6,7 @@
 #endif
 #include <tidop/core/messages.h>
 
-using namespace TL;
+using namespace tl;
 
 #ifdef HAVE_GMOCK
 using ::testing::_;

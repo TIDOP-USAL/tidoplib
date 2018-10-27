@@ -1,6 +1,6 @@
 #include "tidop/graphic/entities/polygon.h"
 
-namespace TL
+namespace tl
 {
 
 using namespace geometry;

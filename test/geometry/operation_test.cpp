@@ -4,8 +4,8 @@
 #include <tidop/geometry/entities/linestring.h>
 #include <tidop/geometry/entities/segment.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
+using namespace tl::geometry;
 
 
 class OperationsGeometriesTest : public testing::Test

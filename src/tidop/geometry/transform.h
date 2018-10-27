@@ -41,7 +41,7 @@
 #include "tidop/geometry/entities/bbox.h"
 #include "tidop/geometry/entities/window.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename Point_t> class Helmert2D;
@@ -814,7 +814,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
 
   } catch (std::exception &e) {
     //msgError(e.what());
-    TL::MessageManager::release(e.what(), TL::MessageLevel::MSG_ERROR);
+    tl::MessageManager::release(e.what(), tl::MessageLevel::MSG_ERROR);
     status = transform_status::FAILURE;
   }
 
@@ -1633,7 +1633,7 @@ transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
       ptOut->x = static_cast<sub_type>((a*(x_aux - tx) + b*(ptIn.y - ty)) / det);
       ptOut->y = static_cast<sub_type>((-b*(x_aux - tx) + a*(ptIn.y - ty)) / det);
     }
-  } catch (TL::Exception &e ) {
+  } catch (tl::Exception &e ) {
     msgError("Helmert 2D transformation error: %s", e.what());
     r_status = transform_status::FAILURE;
   }
@@ -1992,7 +1992,7 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
       *pb++ = pts2[i].y;
     }
 
-    TL::solveSVD(m, n, A, B, C);
+    tl::solveSVD(m, n, A, B, C);
 
     a = C[0];
     b = C[1];

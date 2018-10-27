@@ -9,6 +9,8 @@ add_library(tl_core ${LIB_TYPE}
             flags.h
             messages.cpp
             messages.h
+            log.cpp
+            log.h
             utils.cpp
             utils.h
             process.cpp

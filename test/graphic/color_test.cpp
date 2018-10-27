@@ -2,7 +2,7 @@
 #include <tidop/graphic/color.h>
 
 
-using namespace TL;
+using namespace tl;
 //using namespace std;
 
 ////Datos para los test

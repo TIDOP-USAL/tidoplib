@@ -10,7 +10,7 @@
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;
@@ -75,7 +75,7 @@ public:
    * \param color Color
    * \see Color
    */
-  virtual void setBackgroundColor(const TL::Color &color) = 0;
+  virtual void setBackgroundColor(const tl::Color &color) = 0;
 
   /*!
    * \brief Dibuja un punto en el canvas
@@ -106,7 +106,7 @@ private:
 
   int mWidth;
   int mHeight;
-  TL::Color mBgColor;
+  tl::Color mBgColor;
   cv::Mat mCanvas;
 
 public:
@@ -129,7 +129,7 @@ public:
   void setWidth(int width) override;
   void setHeight(int height) override;
   void setSize(int width, int height) override;
-  void setBackgroundColor(const TL::Color &color) override;
+  void setBackgroundColor(const tl::Color &color) override;
   void drawPoint(const GPoint &point) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;

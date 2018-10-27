@@ -13,7 +13,7 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #endif // HAVE_OPENCV
 
-namespace TL
+namespace tl
 {
 
 void adjustRangeRGBA(int *red, int *green, int *blue, int *alpha = nullptr)

@@ -1,7 +1,7 @@
 #include "tidop/graphic/layer.h"
 
 
-namespace TL
+namespace tl
 {
 
 namespace graph

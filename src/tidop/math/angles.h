@@ -4,7 +4,7 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
-namespace TL
+namespace tl
 {
 
 namespace math
@@ -132,6 +132,6 @@ TL_EXPORT double gradiansToRadians(double gradians);
   
 } // Fin namespace math
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_MATH_ANGLES_H 

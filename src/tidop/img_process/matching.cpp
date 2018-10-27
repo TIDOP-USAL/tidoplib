@@ -22,7 +22,7 @@ namespace fs = boost::filesystem;
 #endif
 
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */

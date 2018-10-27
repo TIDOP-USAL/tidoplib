@@ -14,7 +14,7 @@ TL_DEFAULT_WARNINGS
 
 #include "tidop/core/utils.h"
 
-namespace TL
+namespace tl
 {
 
 
@@ -56,7 +56,7 @@ class TL_EXPORT ShapeOptions : public VectorOptions
 public:
 
   /*!
-   * \brief Modos de ajuste de geometría
+   * \brief Modos de ajuste de geometrÃ­a
    */
   enum class ADJUST_GEOM_TYPE : uint8_t
   { 
@@ -68,12 +68,12 @@ public:
 protected:
 
   /*!
-   * \brief Codificación
+   * \brief CodificaciÃ³n
    */
   std::string mEncoding;
 
   /*!
-   * \brief Fecha de modificación para escribir en el encabezado DBF con el formato año-mes-día. 
+   * \brief Fecha de modificaciÃ³n para escribir en el encabezado DBF con el formato aÃ±o-mes-dÃ­a. 
    * Si no se especifica, se usa la fecha actual.
    */
   std::string mDbfDateLastUpdate;
@@ -85,8 +85,8 @@ protected:
   bool bAdjustType;
 
   /*!
-   * \brief Ajuste del tipo de geometría
-   * Define cómo se calcula el tipo de geometría de capa, en particular para distinguir shapefiles que tienen formas con valores significativos en la dimensión M desde los que los valores M se establecen en el valor nodata
+   * \brief Ajuste del tipo de geometrÃ­a
+   * Define cÃ³mo se calcula el tipo de geometrÃ­a de capa, en particular para distinguir shapefiles que tienen formas con valores significativos en la dimensiÃ³n M desde los que los valores M se establecen en el valor nodata
    * El valor por defecto es FIRST_SHAPE
    * \see ADJUST_GEOM_TYPE
    */
@@ -105,7 +105,7 @@ protected:
 public:
 
   ShapeOptions();
-  ~ShapeOptions();
+  ~ShapeOptions() override;
 
   const char *getOptions() override;
 

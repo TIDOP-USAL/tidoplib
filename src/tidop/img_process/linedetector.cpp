@@ -10,9 +10,9 @@
 #include "tidop/core/exception.h"
 
 using namespace std;
-using namespace TL::geometry;
+using namespace tl::geometry;
 
-namespace TL
+namespace tl
 {
 
 
@@ -136,7 +136,7 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
       //logPrintError("Failed to find local maximums on FHT image");
       TL_THROW_ERROR("Failed to find local maximums on FHT image");
     }
-  } catch (TL::Exception &e) {
+  } catch (tl::Exception &e) {
     msgError(e.what());
     return LineDetector::Exit::FAILURE;
   }

@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <thread>
 
-namespace TL
+namespace tl
 {
 
 
@@ -46,15 +46,15 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
   try {
     if ( matIn.channels() != 3 ) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
 
-    // Buscar m·ximo R, G, B
+    // Buscar m√°ximo R, G, B
     double sr, sg, sb;
     {
       double r, g, b;
       std::vector<cv::Mat> bgr(3);
       cv::split(matIn, bgr);
-      cv::minMaxLoc(bgr[2], NULL, &r);
-      cv::minMaxLoc(bgr[1], NULL, &g);
-      cv::minMaxLoc(bgr[0], NULL, &b);
+      cv::minMaxLoc(bgr[2], nullptr, &r);
+      cv::minMaxLoc(bgr[1], nullptr, &g);
+      cv::minMaxLoc(bgr[0], nullptr, &b);
       sr = mWhite.getRed() / r;
       sg = mWhite.getGreen() / g;
       sb = mWhite.getBlue() / b;
@@ -66,12 +66,12 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
     matOut->create( matIn.size(), CV_8UC3);
     //cv::Mat wp = *matOut;
 
-    parallel_for(0, matIn.rows, [&](int r) {
+    parallel_for(0, static_cast<size_t>(matIn.rows), [&](int r) {
       const uchar *rgb_ptr = matIn.ptr<uchar>(r);
       for (int c = 0; c < matIn.cols; c++) {
-        matOut->at<cv::Vec3b>(r,c)[0] = (uchar)(rgb_ptr[3*c] * sr);
-        matOut->at<cv::Vec3b>(r,c)[1] = (uchar)(rgb_ptr[3*c+1] * sg);
-        matOut->at<cv::Vec3b>(r,c)[2] = (uchar)(rgb_ptr[3*c+2] * sb);
+        matOut->at<cv::Vec3b>(r,c)[0] = static_cast<uchar>(rgb_ptr[3*c] * sr);
+        matOut->at<cv::Vec3b>(r,c)[1] = static_cast<uchar>(rgb_ptr[3*c+1] * sg);
+        matOut->at<cv::Vec3b>(r,c)[2] = static_cast<uchar>(rgb_ptr[3*c+2] * sb);
       }
     });
 
@@ -91,6 +91,6 @@ void WhitePatch::setParameters(const Color &white)
 
 
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV

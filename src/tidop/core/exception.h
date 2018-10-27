@@ -23,7 +23,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -101,7 +101,7 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 #endif
 
 
-} // fin namespace TL 
+} // fin namespace tl
 
 
 

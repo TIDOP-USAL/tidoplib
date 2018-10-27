@@ -7,7 +7,7 @@
 
 #include <thread>
 
-namespace TL
+namespace tl
 {
 
 void thinningZhangSuen(cv::Mat &image, cv::Mat &marker, int iter, int ini, int end) {
@@ -129,8 +129,8 @@ ThinningProc::Status ThinningProc::execute(const cv::Mat &matIn, cv::Mat *matOut
   } catch (cv::Exception &e) {
     msgError(e.what());
     return Status::PROCESS_ERROR;
-  } catch (TL::Exception &e) {
-    MessageManager::release(e.what(), TL::MessageLevel::MSG_ERROR);
+  } catch (tl::Exception &e) {
+    MessageManager::release(e.what(), tl::MessageLevel::MSG_ERROR);
     return Status::PROCESS_ERROR;
   }
   return Status::OK;

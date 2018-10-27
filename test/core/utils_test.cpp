@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <tidop/core/utils.h>
 
-using namespace TL;
+using namespace tl;
 
 
 //TEST(isDirectoryTest, Expect)

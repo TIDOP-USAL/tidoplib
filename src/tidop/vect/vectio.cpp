@@ -25,7 +25,7 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-namespace TL
+namespace tl
 {
 
 using namespace graph;
@@ -694,7 +694,7 @@ void GdalVector::readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<GraphicE
   /* Pen Color */
   const char *hexColor = ogrStylePen->Color(bDefault);
   if (!bDefault) {
-    stylePen->setPenColor(TL::Color(hexColor));
+    stylePen->setPenColor(tl::Color(hexColor));
   }
 
   /* Pen Cap */
@@ -813,13 +813,13 @@ void GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBrush, std::shared_ptr<Gr
   /* Back Color */
   const char *hexColor = ogrStyleBrush->BackColor(bDefault);
   if (!bDefault) {
-    styleBrush->setBackColor(TL::Color(hexColor));
+    styleBrush->setBackColor(tl::Color(hexColor));
   }
 
   /* Fore Color */
   hexColor = ogrStyleBrush->ForeColor(bDefault);
   if (!bDefault) {
-    styleBrush->setForeColor(TL::Color(hexColor));
+    styleBrush->setForeColor(tl::Color(hexColor));
   }
 
   /* Brush Name */
@@ -884,7 +884,7 @@ void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol,std::shared_ptr<
   /* Color */
   const char *hexColor = ogrStyleSymbol->Color(bDefault);
   if (!bDefault) {
-    styleSymbol->setColor(TL::Color(hexColor));
+    styleSymbol->setColor(tl::Color(hexColor));
   }
 
   /* Name */
@@ -930,7 +930,7 @@ void GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol,std::shared_ptr<
   /* Outline Color */
   hexColor = ogrStyleSymbol->OColor(bDefault);
   if (!bDefault) {
-    styleSymbol->setOutlineColor(TL::Color(hexColor));
+    styleSymbol->setOutlineColor(tl::Color(hexColor));
   }
 
   /* Priority Level */
@@ -994,25 +994,25 @@ void GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLabel, std::shared_ptr<Gr
   /* Background Color */
   const char *hexColor = ogrStyleLabel->BackColor(bDefault);
   if (!bDefault) {
-    styleLabel->setBackgroundColor(TL::Color(hexColor));
+    styleLabel->setBackgroundColor(tl::Color(hexColor));
   }
 
   /* Foreground Color */
   hexColor = ogrStyleLabel->ForeColor(bDefault);
   if (!bDefault) {
-    styleLabel->setForegroundColor(TL::Color(hexColor));
+    styleLabel->setForegroundColor(tl::Color(hexColor));
   }
 
   /* Outline Color */
   hexColor = ogrStyleLabel->OutlineColor(bDefault);
   if (!bDefault) {
-    styleLabel->setOutlineColor(TL::Color(hexColor));
+    styleLabel->setOutlineColor(tl::Color(hexColor));
   }
 
   /* Shadow Color */
   hexColor = ogrStyleLabel->ShadowColor(bDefault);
   if (!bDefault) {
-    styleLabel->setShadowColor(TL::Color(hexColor));
+    styleLabel->setShadowColor(tl::Color(hexColor));
   }
 
   /* Label Placement */
@@ -1116,53 +1116,53 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
   for (auto &entity : layer) {
     GraphicEntity::Type type = entity->getType();
     switch (type) {
-    case TL::graph::GraphicEntity::Type::POINT_2D:
+    case tl::graph::GraphicEntity::Type::POINT_2D:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POINT_3D:
+    case tl::graph::GraphicEntity::Type::POINT_3D:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::LINESTRING_2D:
+    case tl::graph::GraphicEntity::Type::LINESTRING_2D:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::LINESTRING_3D:
+    case tl::graph::GraphicEntity::Type::LINESTRING_3D:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POLYGON_2D:
+    case tl::graph::GraphicEntity::Type::POLYGON_2D:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POLYGON_3D:
+    case tl::graph::GraphicEntity::Type::POLYGON_3D:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::SEGMENT_2D:
+    case tl::graph::GraphicEntity::Type::SEGMENT_2D:
       break;
-    case TL::graph::GraphicEntity::Type::SEGMENT_3D:
+    case tl::graph::GraphicEntity::Type::SEGMENT_3D:
       break;
-    case TL::graph::GraphicEntity::Type::WINDOW:
+    case tl::graph::GraphicEntity::Type::WINDOW:
       break;
-    case TL::graph::GraphicEntity::Type::BOX:
+    case tl::graph::GraphicEntity::Type::BOX:
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOINT_2D:
+    case tl::graph::GraphicEntity::Type::MULTIPOINT_2D:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOINT_3D:
+    case tl::graph::GraphicEntity::Type::MULTIPOINT_3D:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTILINE_2D:
+    case tl::graph::GraphicEntity::Type::MULTILINE_2D:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTILINE_3D:
+    case tl::graph::GraphicEntity::Type::MULTILINE_3D:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
+    case tl::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
+    case tl::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::CIRCLE:
+    case tl::graph::GraphicEntity::Type::CIRCLE:
       break;
-    case TL::graph::GraphicEntity::Type::ELLIPSE:
+    case tl::graph::GraphicEntity::Type::ELLIPSE:
       break;
     default:
       break;

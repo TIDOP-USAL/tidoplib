@@ -6,7 +6,7 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/graphic/entities/entity.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GraphicEntities

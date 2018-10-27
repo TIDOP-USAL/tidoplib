@@ -26,10 +26,8 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/flags.h"
 
-namespace TL
+namespace tl
 {
-
-
 
 
 /*! \addtogroup utilities
@@ -384,15 +382,15 @@ private:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgInfo(...)     TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_INFO, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgWarning(...)  TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_WARNING, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgError(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_ERROR, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_INFO, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_WARNING, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_ERROR, __FILE__, __LINE__, TL_FUNCTION);
 #else
-#  define msgDebug(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_DEBUG);
-#  define msgInfo(...)     TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_INFO);
-#  define msgWarning(...)  TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_WARNING);
-#  define msgError(...)    TL::MessageManager::release(TL::MessageManager::Message(__VA_ARGS__).getMessage(), TL::MessageLevel::MSG_ERROR);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_DEBUG);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_INFO);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_WARNING);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_ERROR);
 #endif
 
 #else  // End TL_MESSAGE_HANDLER
@@ -409,166 +407,9 @@ private:
 /*! \} */ // end of Messages
 
 
-
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup Log Fichero log
- *
- *  \{
- */
-
-
-/*!
- * \brief Clase para gestionar ficheros log
- *
- * Esta clase puede funcionar individualmente o si se subscribe a
- * al gestor de mensajes (MessageManager) recibe automaticamente
- * los mensajes
- */
-class TL_EXPORT Log 
-#ifdef TL_MESSAGE_HANDLER  
-  : public MessageManager::Listener
-#endif
-{
-
-private:
-
-  /*!
-   * \brief sObjMessage
-   */
-  static std::unique_ptr<Log> sObjLog;
-
-  /*!
-   * \brief Fichero log
-   */
-  static std::string sLogFile;
-
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto MSG_ERROR
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
-
-  //std::string mMessage;
-
-  /*!
-   * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
-   *
-   * Por defecto la plantilla es:
-   * \code
-   * std::string MessageManager::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
-   * \endcode
-   * \see setTimeLogFormat
-   */
-  static std::string sTimeLogFormat;
-
-  static std::mutex mtx;
-
-private:
-
-  /*!
-   * \brief Constructora privada
-   */
-  Log();
-
-public:
-
-  /*!
-   * \brief Destructora
-   */
-  ~Log() override;
-
-  /* Se impide la copia y la asignación al ser un singleton */
-  Log(Log const&) = delete;
-  void operator=(Log const&) = delete;
-
-  /*!
-   * \brief Singleton para obtener una referencia única
-   */
-  static Log &getInstance();
-  
-  /*!
-   * \brief Niveles de log activados
-   * \return Flag con los niveles de mensajes aceptados por el log
-   * \see EnumFlags
-   */
-  EnumFlags<MessageLevel> getLogLevel() const;
-  
-  /*!
-   * \brief Establece el nombre del fichero log
-   * \param[in] file fichero log
-   */
-  void setLogFile(const char* file);
-
-  /*!
-   * \brief Establece el nivel de log
-   *
-   * Se pueden combinar varios niveles de log:
-   *
-   * \code
-   * Log log;
-   * log.setLogLevel(MessageLevel::MSG_WARNING | MessageLevel::MSG_ERROR);
-   * \endcode
-   *
-   * \param[in] level Niveles de log.
-   */
-  void setLogLevel(MessageLevel level);
-
-  /*!
-   * \brief Escribe una linea en el log
-   * \param[in] msg Mensaje que se escribe en el log
-   */
-  void write(const char *msg);
-
-protected:
-
-#ifdef TL_MESSAGE_HANDLER  
-
-  /*!
-   * \brief Mensaje de depuración
-   * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-  void onMsgDebug(const char *msg, const char *date) override;
-
-  /*!
-   * \brief Mensaje de información
-   * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-  void onMsgInfo(const char *msg, const char *date) override;
-
-  /*!
-   * \brief Mensaje de advertencia
-   * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-  void onMsgWarning(const char *msg, const char *date) override;
-
-  /*!
-   * \brief Mensaje de error
-   * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-  void onMsgError(const char *msg, const char *date) override;
-
-  /*!
-   * \brief Escribe una linea en el log
-   * \param msg Mensaje que se escribe en el log
-   * \param date Fecha y hora del mensaje
-   */
-  void _write(const char *msg, const char *date);
-
-#endif // TL_MESSAGE_HANDLER 
-};
-
-/*! \} */ // end of Log
-
 /*! \} */ // end of utilities
 
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_MESSAGES_H

@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -498,6 +498,6 @@ T Flags<T>::getFlags() const
 }
 
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_FLAGS_H

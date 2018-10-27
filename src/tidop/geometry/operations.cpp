@@ -17,7 +17,7 @@
 
 #include "tidop/geometry/entities/segment.h"
 
-namespace TL
+namespace tl
 {
 
 namespace geometry
