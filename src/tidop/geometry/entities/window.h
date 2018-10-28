@@ -284,7 +284,7 @@ public:
 
 template<typename Point_t> inline
 Window<Point_t>::Window() 
-  : Entity(Entity::Type::WINDOW), 
+  : Entity(Entity::Type::window), 
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), -std::numeric_limits<typename Point_t::value_type>().max()) 
 {
@@ -292,7 +292,7 @@ Window<Point_t>::Window()
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const Window &w) 
-  : Entity(Entity::Type::WINDOW), 
+  : Entity(Entity::Type::window), 
     pt1(w.pt1), 
     pt2(w.pt2) 
 {
@@ -308,7 +308,7 @@ Window<Point_t>::Window(Window &&w)
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2) 
-  : Entity(Entity::Type::WINDOW) 
+  : Entity(Entity::Type::window) 
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -318,7 +318,7 @@ Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2)
 
 template<typename Point_t> template<typename T> inline
 Window<Point_t>::Window(const Point_t &_pt, T sxx, T szy) 
-  : Entity(Entity::Type::WINDOW)
+  : Entity(Entity::Type::window)
 { 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
     // Prefiero hacer la conversión a entero para evitar que OpenCV 
@@ -340,7 +340,7 @@ Window<Point_t>::Window(const Point_t &_pt, T sxx, T szy)
 
 template<typename Point_t> template<typename T> inline
 Window<Point_t>::Window(const Point_t &_pt, T sz) 
-  : Entity(Entity::Type::WINDOW)
+  : Entity(Entity::Type::window)
 { 
   if (std::is_integral<typename Point_t::value_type>::value) {
   //if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -360,7 +360,7 @@ Window<Point_t>::Window(const Point_t &_pt, T sz)
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const std::vector<Point_t> &v)
-  : Entity(Entity::Type::WINDOW),
+  : Entity(Entity::Type::window),
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), 
     std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), 
@@ -378,7 +378,7 @@ Window<Point_t>::Window(const std::vector<Point_t> &v)
 
 template<typename Point_t> template<typename Point_t2> inline
 Window<Point_t>::Window(const std::vector<Point_t2> &v)
-  : Entity(Entity::Type::WINDOW),
+  : Entity(Entity::Type::window),
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), 
     std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), 

@@ -43,13 +43,13 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle("Read Image");
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   MessageManager::getInstance().addListener(&console);
 
   RasterGraphics image1;
   cv::Mat mat_1;
-  if (image1.open(img1, RasterGraphics::Mode::Read) == RasterGraphics::Status::OPEN_OK) {
+  if (image1.open(img1, RasterGraphics::Mode::read) == RasterGraphics::Status::open_ok) {
     msgInfo("Numero de bandas: %i", image1.getBands());
     msgInfo("Profundidad de color: %i", image1.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image1.getCols(), image1.getRows());
@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 
   RasterGraphics image2;
   cv::Mat mat_2;
-  if (image2.open(img2, RasterGraphics::Mode::Read) == RasterGraphics::Status::OPEN_OK) {
+  if (image2.open(img2, RasterGraphics::Mode::read) == RasterGraphics::Status::open_ok) {
     msgInfo("Numero de bandas: %i", image2.getBands());
     msgInfo("Profundidad de color: %i", image2.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image2.getCols(), image2.getRows());

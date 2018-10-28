@@ -16,7 +16,7 @@ TEST(Point, DefaultConstructor)
 
   EXPECT_EQ(0, pt_int.x);
   EXPECT_EQ(0, pt_int.y);
-  EXPECT_TRUE(pt_int.type() == Entity::Type::POINT_2D);
+  EXPECT_TRUE(pt_int.type() == Entity::Type::point2d);
 
   PointD pt_double;
     
@@ -170,7 +170,7 @@ TEST(Point3, DefaultConstructor)
   EXPECT_EQ(0, pt_int.y);
   EXPECT_EQ(0, pt_int.z);
 
-  EXPECT_TRUE(pt_int.type() == Entity::Type::POINT_3D);
+  EXPECT_TRUE(pt_int.type() == Entity::Type::point3d);
 
   Point3D pt_double;
     
@@ -587,7 +587,7 @@ TEST(MultiPoint, DefaultConstructor)
   MultiPointI multiPointI;
 
   EXPECT_EQ(0, multiPointI.size());
-  EXPECT_TRUE(multiPointI.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointI.type() == Entity::Type::multipoint2d);
 
   MultiPointD multiPointD;
   WindowD w = multiPointD.window();
@@ -616,7 +616,7 @@ TEST(MultiPoint, ConstructorReserve)
   WindowD w = multiPointD.window();
 
   EXPECT_EQ(10, multiPointD.size());
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(0., w.pt1.x);
   EXPECT_EQ(0., w.pt1.y);
   EXPECT_EQ(0., w.pt2.x);
@@ -634,12 +634,12 @@ TEST(MultiPoint, CopyConstructor)
   multiPointD.push_back(PointD(256.6, 619.3));
   multiPointD.push_back(PointD(62.36, 6.60));
 
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(4, multiPointD.size());
 
   MultiPointD multiPointD_c(multiPointD);
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (int i = 0; i < multiPointD_c.size(); i++) {
@@ -658,7 +658,7 @@ TEST(MultiPoint, Vector)
 
   MultiPointD multiPointD_c(multiPointD);
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (int i = 0; i < multiPointD_c.size(); i++) {
@@ -674,7 +674,7 @@ TEST(MultiPoint, InitializerList)
                            PointD(75.36, 246.33),
                            PointD(256.6, 619.3),
                            PointD(62.36, 6.60) };
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(4, multiPointD.size());
 
 }
@@ -691,7 +691,7 @@ TEST(MultiPoint, assing_operator)
 
   MultiPointD multiPointD_c = multiPointD;
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_2D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint2d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (size_t i = 0; i < multiPointD_c.size(); i++) {
@@ -709,7 +709,7 @@ TEST(MultiPoint3D, DefaultConstructor)
   MultiPoint3dI multiPointI;
 
   EXPECT_EQ(0, multiPointI.size());
-  EXPECT_TRUE(multiPointI.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointI.type() == Entity::Type::multipoint3d);
 
   MultiPoint3dD multiPointD;
   BoxD box = multiPointD.box();
@@ -740,7 +740,7 @@ TEST(MultiPoint3D, ConstructorReserve)
   BoxD box = multiPointD.box();
 
   EXPECT_EQ(10, multiPointD.size());
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(0., box.pt1.x);
   EXPECT_EQ(0., box.pt1.y);
   EXPECT_EQ(0., box.pt1.z);
@@ -760,7 +760,7 @@ TEST(MultiPoint3D, CopyConstructor)
   multiPointD.push_back(Point3D(256.6, 619.3, 56.12));
   multiPointD.push_back(Point3D(62.36, 6.60, 24.63));
 
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(4, multiPointD.size());
 
   MultiPoint3dD multiPointD_c(multiPointD);
@@ -772,7 +772,7 @@ TEST(MultiPoint3D, CopyConstructor)
   EXPECT_EQ(619.3, box.pt2.y);
   EXPECT_EQ(56.12, box.pt2.z);
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (size_t i = 0; i < multiPointD_c.size(); i++) {
@@ -798,7 +798,7 @@ TEST(MultiPoint3D, Vector)
   EXPECT_EQ(619.3, box.pt2.y);
   EXPECT_EQ(454.3, box.pt2.z);
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (size_t i = 0; i < multiPointD_c.size(); i++) {
@@ -814,7 +814,7 @@ TEST(MultiPoint3D, InitializerList)
                              Point3D(75.36, 246.33, 454.3),
                              Point3D(256.6, 619.3, 26.21),
                              Point3D(62.36, 6.60, 62.61) };
-  EXPECT_TRUE(multiPointD.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(4, multiPointD.size());
 
 }
@@ -831,7 +831,7 @@ TEST(MultiPoint3D, assing_operator)
 
   MultiPoint3dD multiPointD_c = multiPointD;
 
-  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::MULTIPOINT_3D);
+  EXPECT_TRUE(multiPointD_c.type() == Entity::Type::multipoint3d);
   EXPECT_EQ(4, multiPointD_c.size());
 
   for (size_t i = 0; i < multiPointD_c.size(); i++) {

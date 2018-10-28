@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   MessageManager::getInstance().addListener(&console);
 
 
@@ -166,7 +166,7 @@ int main(int argc, char** argv)
   chrono.stop();
 
   RasterGraphics dtm;
-  dtm.open(dtm_path.string().c_str(), RasterGraphics::Mode::Create);
+  dtm.open(dtm_path.string().c_str(), RasterGraphics::Mode::create);
   dtm.create(height_px, width_px, 1, DataType::TL_32F);
 
   Affine<PointD> trf(box.pt1.x, box.pt1.y, resolution, resolution, 0.0);

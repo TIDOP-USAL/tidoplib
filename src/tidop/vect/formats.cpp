@@ -29,7 +29,7 @@ VectorOptions::Format VectorOptions::getFormat()
 
 
 ShapeOptions::ShapeOptions() 
-  : VectorOptions(VectorOptions::Format::SHP),
+  : VectorOptions(VectorOptions::Format::shp),
     mEncoding(""),
     mDbfDateLastUpdate(""),
     bAdjustType(false),

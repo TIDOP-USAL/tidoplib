@@ -34,7 +34,7 @@ public:
 TEST(Process, Constructor)
 {
   FakeProcess process;
-  EXPECT_EQ(FakeProcess::Status::START, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::start, process.getStatus());
   EXPECT_EQ(1, process.getProcessId());
   EXPECT_EQ("Fake process", process.getProcessName());
 }
@@ -43,16 +43,16 @@ TEST(Process, control)
 {
   FakeProcess process;
   process.run(nullptr);
-  EXPECT_EQ(FakeProcess::Status::RUNNING, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::running, process.getStatus());
 
   process.pause();
-  EXPECT_EQ(FakeProcess::Status::PAUSING, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::pausing, process.getStatus());
 
   process.resume();
-  EXPECT_EQ(FakeProcess::Status::RUNNING, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::running, process.getStatus());
 
   process.stop();
-  EXPECT_EQ(FakeProcess::Status::STOPPED, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::stopped, process.getStatus());
 
 }
 
@@ -61,7 +61,7 @@ TEST(Process, reset)
   FakeProcess process;
   process.run(nullptr);
   process.reset();
-  EXPECT_EQ(FakeProcess::Status::START, process.getStatus());
+  EXPECT_EQ(FakeProcess::Status::start, process.getStatus());
 }
 
 

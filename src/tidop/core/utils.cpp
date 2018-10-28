@@ -750,13 +750,13 @@ int stringToInteger(const std::string &text, Base base)
 {
   std::istringstream ss(text);
   switch (base) {
-  case Base::OCTAL:
+  case Base::octal:
     ss.setf(std::ios_base::oct, std::ios::basefield);
     break;
-  case Base::DECIMAL:
+  case Base::decimal:
     ss.setf(std::ios_base::dec, std::ios::basefield);
     break;
-  case Base::HEXADECIMAL:
+  case Base::hexadecimal:
     ss.setf(std::ios_base::hex, std::ios::basefield);
     break;
   default:
@@ -943,7 +943,7 @@ uint64_t getTickCount()
 Chrono::Chrono(const char *msg, bool writeMsg)
   : mTimeIni(0),
     mAccumulated(0),
-    mStatus(Chrono::Status::START),
+    mStatus(Chrono::Status::start),
     mMessage(msg),
     bWriteMsg(writeMsg)
 {
@@ -952,17 +952,17 @@ Chrono::Chrono(const char *msg, bool writeMsg)
 
 Chrono::~Chrono()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+  if (mStatus == Status::running || mStatus == Status::pause) {
     stop();
   }
-  mStatus = Status::FINALIZED;
+  mStatus = Status::finalized;
 }
 
 uint64_t Chrono::pause()
 {
-  if (mStatus == Status::RUNNING) {
+  if (mStatus == Status::running) {
     mAccumulated += tickCount() - mTimeIni;
-    mStatus = Status::PAUSE;
+    mStatus = Status::pause;
     //if (bWriteMsg) msgDebug("Chrono paused");
   }
   return mAccumulated;
@@ -972,16 +972,16 @@ void Chrono::reset()
 {
   mTimeIni = 0;
   mAccumulated = 0;
-  mStatus = Status::START;
+  mStatus = Status::start;
   mMessage = "";
   //if (bWriteMsg) msgDebug("Chrono reset");
 }
 
 void Chrono::resume()
 {
-  if (mStatus == Status::PAUSE) {
+  if (mStatus == Status::pause) {
     mTimeIni = tickCount();
-    mStatus = Status::RUNNING;
+    mStatus = Status::running;
     //if (bWriteMsg) msgDebug("Chrono resume");
   }
 }
@@ -990,7 +990,7 @@ uint64_t Chrono::run()
 {
   mTimeIni = tickCount();
   mAccumulated = 0;
-  mStatus = Status::RUNNING;
+  mStatus = Status::running;
   //if (bWriteMsg) msgDebug("Chrono run");
   return mTimeIni;
 }
@@ -998,12 +998,12 @@ uint64_t Chrono::run()
 uint64_t Chrono::stop()
 {
   uint64_t time;
-  if (mStatus == Status::RUNNING) {
+  if (mStatus == Status::running) {
     time = tickCount() - mTimeIni + mAccumulated;
-    mStatus = Status::STOPPED;
-  } else if (mStatus == Status::PAUSE) {
+    mStatus = Status::stopped;
+  } else if (mStatus == Status::pause) {
     // Puede estar pausado y querer terminar
-    mStatus = Status::STOPPED;
+    mStatus = Status::stopped;
     time = mAccumulated;
   } else
     time = 0;
@@ -1151,12 +1151,12 @@ Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
     msgError("No se ha abierto el archivo %s", mFile.c_str());
-    return Status::FAILURE;
+    return Status::failure;
   }
 
-  if (mMode != Mode::Create) {
+  if (mMode != Mode::create) {
     msgError("Utilice el modo 'Create' al abrir el archivo");
-    return Status::FAILURE;
+    return Status::failure;
   }
 
   //setName(File::mName.c_str());
@@ -1170,9 +1170,9 @@ Csv::Status Csv::create(const std::string &header)
       if (i != size - 1) fs << ";";
     }
     fs << std::endl;
-    return Status::SUCCESS;
+    return Status::success;
   } else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 //Csv::Status Csv::create(const DataTable &dataTable)
@@ -1214,9 +1214,9 @@ Csv::Status Csv::create(const std::string &header)
 Csv::Status Csv::createCopy(const char *fileOut)
 {
   Csv csv;
-  csv.open(fileOut, Mode::Create);
+  csv.open(fileOut, Mode::create);
   //csv.create(std::make_shared<TableHeader>(getTableHeader()));
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
@@ -1228,36 +1228,33 @@ Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
 
   //fs::path _path(file);
   //fs::path ext = _path.extension().string();
-  if (boost::iequals(fs::extension(file), ".csv") == false) return Status::OPEN_FAIL;
+  if (boost::iequals(fs::extension(file), ".csv") == false) return Status::open_fail;
 
   std::ios_base::openmode _mode;
   switch (mMode) {
-  case Mode::Read:
+  case Mode::read:
     _mode = std::fstream::in;
     break;
-  case Mode::Update:
+  case Mode::update:
     _mode = std::fstream::in | std::fstream::out | std::fstream::app;
     break;
-  case Mode::Create:
+  case Mode::create:
     _mode = std::fstream::out | std::fstream::trunc;
-    break;
-  default:
-    _mode = std::fstream::in | std::fstream::out;
     break;
   }
 
   fs.open(file, _mode);
 
   if (fs.is_open()) {
-    if (mMode == Mode::Create) {
+    if (mMode == Mode::create) {
       char dir[TL_MAX_PATH];
       if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
-        if ( createDir(dir) == -1) return Status::OPEN_FAIL;
+        if ( createDir(dir) == -1) return Status::open_fail;
     }
-    return Status::OPEN_OK;
+    return Status::open_ok;
   } else {
     msgError("File open failed: %s", std::strerror(errno));
-    return Status::OPEN_FAIL;
+    return Status::open_fail;
   }
 }
 
@@ -1299,7 +1296,7 @@ Csv::Status Csv::write(const std::vector<std::string> &_register)
     if (i != size -1) fs << ";";
   }
   fs << std::endl;
-  return Status::SUCCESS;
+  return Status::success;
 }
 
 //Csv::Status Csv::load(std::shared_ptr<TableRegister> _register)

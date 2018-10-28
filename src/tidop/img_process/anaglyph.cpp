@@ -96,7 +96,7 @@ int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, Ste
   int width = left.cols;
   int type = left.type();
 
-  if (mode == StereoMode::NORMAL) {
+  if (mode == StereoMode::normal) {
     stimage->create(height, width, type);
     // Se puede hacer con la matriz Normal
     cv::Mat in[] = { left, right };
@@ -104,7 +104,7 @@ int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, Ste
     int from_to[] = { 2, 2, left.channels() + 1, 1, left.channels(), 0 };
     cv::mixChannels(in, 2, out, 1, from_to, 3);
     return 1;
-  } else if (mode == StereoMode::SIDEBYSIDE) {
+  } else if (mode == StereoMode::side_by_side) {
     stimage->create(height, 2 * width, type);
     cv::Size sz( width * 2, height );
     cv::resize(*stimage,*stimage,sz);
@@ -114,7 +114,7 @@ int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, Ste
     left.copyTo(*stimage);
     stimage->adjustROI(0, 0, width, 0);
     return 1;
-  } else if (mode == StereoMode::NONE) {
+  } else if (mode == StereoMode::none) {
     return -1;
   } else {
     stimage->create(height, width, type);

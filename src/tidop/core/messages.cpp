@@ -51,7 +51,7 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
 {
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR, file_name, line, func_name);
+  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::msg_error, file_name, line, func_name);
   return 0;
 }
 
@@ -63,15 +63,15 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
 {
   MessageLevel ml;
   if (err == CE_Debug) {
-    ml = MessageLevel::MSG_DEBUG;
+    ml = MessageLevel::msg_debug;
   } else if (err == CE_Warning) {
-    ml = MessageLevel::MSG_WARNING;
+    ml = MessageLevel::msg_warning;
   } else if (err == CE_Failure) {
-    ml = MessageLevel::MSG_ERROR;
+    ml = MessageLevel::msg_error;
   } else if (err == CE_Fatal) {
-    ml = MessageLevel::MSG_ERROR;
+    ml = MessageLevel::msg_error;
   } else {
-    ml = MessageLevel::MSG_INFO;
+    ml = MessageLevel::msg_info;
   }
   MessageManager::release(MessageManager::Message(err_msg).getMessage(), ml);
   return;
@@ -188,16 +188,16 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   #endif
 
   switch (level) {
-  case MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     sObjMessage->onDebug(buf, date.c_str());
     break;
-  case MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     sObjMessage->onInfo(buf, date.c_str());
     break;
-  case MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     sObjMessage->onWarning(buf, date.c_str());
     break;
-  case MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     sObjMessage->onError(buf, date.c_str());
     break;
   default:
@@ -226,16 +226,16 @@ void MessageManager::release(const Message &msg)
   }
 
   switch (msg.getLevel()) {
-  case MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
     break;
-  case MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
     break;
-  case MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     sObjMessage->onWarning(msg_out.c_str(), msg.getDate());
     break;
-  case MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     sObjMessage->onError(msg_out.c_str(), msg.getDate());
     break;
   default:
@@ -299,16 +299,16 @@ _msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     iLevel = 0;
     break;
-  case MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     iLevel = 1;
     break;
-  case MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     iLevel = 2;
     break;
-  case MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     iLevel = 3;
     break;
   default:
@@ -336,7 +336,7 @@ MessageManager::Listener::~Listener()
 
 
 MessageManager::Message::Message(const char *msg, ...)
-  : mLevel(MessageLevel::MSG_ERROR),
+  : mLevel(MessageLevel::msg_error),
     mFile(""), 
     mLine(-1),
     mFunction("")

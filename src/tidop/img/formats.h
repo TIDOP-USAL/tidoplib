@@ -40,11 +40,11 @@ public:
   
   enum class Format
   {
-    TIFF,
-    JPEG,
-    JP2000,
-    PNG,
-    BMP
+    tiff,
+    jpeg,
+    jp2000,
+    png,
+    bmp
   };
 
 protected:

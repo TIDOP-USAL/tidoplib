@@ -33,7 +33,7 @@ Dtm::Interpolation Dtm::interpolation() const
 
 
 DtmLinear::DtmLinear(double radius)
-  : Dtm(Dtm::Interpolation::LINEAR),
+  : Dtm(Dtm::Interpolation::linear),
     mRadius(radius)
 {
 
@@ -59,7 +59,7 @@ void DtmLinear::setResolution(double res)
 
 
 DtmNearest::DtmNearest(double radius1, double radius2, double angle)
-  : Dtm(Dtm::Interpolation::NEAREST),
+  : Dtm(Dtm::Interpolation::nearest),
     mRadius1(radius1),
     mRadius2(radius2),
     mAngle(angle)

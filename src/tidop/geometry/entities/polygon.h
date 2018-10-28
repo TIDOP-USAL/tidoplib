@@ -177,7 +177,7 @@ public:
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon() 
-  : Entity(Entity::Type::POLYGON_2D),
+  : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>()/*,
     mRings(0)*/
 {
@@ -185,7 +185,7 @@ Polygon<Point_t>::Polygon()
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(typename Polygon<Point_t>::size_type size)
-  : Entity(Entity::Type::POLYGON_2D),
+  : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(size)/*,
     mRings(0) */
 {
@@ -210,7 +210,7 @@ Polygon<Point_t>::Polygon(Polygon &&polygon) TL_NOEXCEPT
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(const std::vector<Point_t> &points) 
-  : Entity(Entity::Type::POLYGON_2D),
+  : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(points)/*,
     mRings(0) */
 {
@@ -218,7 +218,7 @@ Polygon<Point_t>::Polygon(const std::vector<Point_t> &points)
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::POLYGON_2D),
+  : Entity(Entity::Type::polygon2d),
     Entities2D<Point_t>(listPoints)/*,
     mRings(0) */
 {
@@ -489,14 +489,14 @@ public:
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D() 
-  : Entity(Entity::Type::POLYGON_3D),
+  : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>() 
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(typename Polygon3D<Point3_t>::size_type size)
-  : Entity(Entity::Type::POLYGON_3D),
+  : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(size) 
 {
 }
@@ -517,14 +517,14 @@ Polygon3D<Point3_t>::Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const std::vector<Point3_t> &points) 
-  : Entity(Entity::Type::POLYGON_3D),
+  : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(points)
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(std::initializer_list<Point3_t> listPoints) 
-  : Entity(Entity::Type::POLYGON_3D),
+  : Entity(Entity::Type::polygon3d),
     Entities3D<Point3_t>(listPoints) 
 {
 }
@@ -634,14 +634,14 @@ public:
 
 template <typename Point_t>
 MultiPolygon<Point_t>::MultiPolygon()
-  : Entity(Entity::Type::MULTIPOLYGON_2D),
+  : Entity(Entity::Type::multipolygon2d),
     Entities2D<Polygon<Point_t>>()
 {
 }
 
 template<typename Point_t> inline
 MultiPolygon<Point_t>::MultiPolygon(typename MultiPolygon<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOLYGON_2D),
+  : Entity(Entity::Type::multipolygon2d),
     Entities2D<Polygon<Point_t>>(size) 
 {
 }
@@ -749,14 +749,14 @@ public:
 
 template <typename Point3_t>
 MultiPolygon3D<Point3_t>::MultiPolygon3D()
-  : Entity(Entity::Type::MULTIPOLYGON_3D),
+  : Entity(Entity::Type::multipoygon3d),
     Entities3D<Polygon3D<Point3_t>>()
 {
 }
 
 template<typename Point3_t> inline
 MultiPolygon3D<Point3_t>::MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOLYGON_3D),
+  : Entity(Entity::Type::multipoygon3d),
     Entities3D<Polygon3D<Point3_t>>(size) 
 {
 }

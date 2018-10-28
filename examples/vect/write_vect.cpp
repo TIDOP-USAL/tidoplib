@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle(cmd_name);
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   console.setFontHeight(14);
   MessageManager::getInstance().addListener(&console);
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   layer.push_back(polygon);
 
   VectorGraphics vector;
-  if (VectorGraphics::Status::OPEN_OK == vector.open(vect, VectorGraphics::Mode::Create)) {
+  if (VectorGraphics::Status::open_ok == vector.open(vect, VectorGraphics::Mode::create)) {
     msgInfo("Create file: %s", vect.c_str());
     vector.create(); ///TODO: Create tiene que tener las propiedades del fichero. Crear un objeto de propiedades de formato como en las imagenes
     // Se añade una capa

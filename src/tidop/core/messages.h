@@ -44,11 +44,19 @@ namespace tl
  * \brief Niveles de información de los mensajes
  */
 enum class MessageLevel : int8_t {
-  MSG_DEBUG =   1 << 0,    /*!< Información extra para depuración. */
-  MSG_ERROR =   1 << 1,    /*!< Sólo errores. */
-  MSG_WARNING = 1 << 2,    /*!< Warnings */
-  MSG_INFO =    1 << 3,    /*!< Otra información. */
-  MSG_VERBOSE = MSG_ERROR | MSG_WARNING | MSG_INFO    /*!< Todos los mensajes. */
+  msg_debug   = 1 << 0,                               /*!< Información extra para depuración. */
+  msg_error   = 1 << 1,                               /*!< Sólo errores. */
+  msg_warning = 1 << 2,                               /*!< Warnings */
+  msg_info    = 1 << 3,                               /*!< Otra información. */
+  msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  ,
+  MSG_DEBUG   = msg_debug,                            /*!< Información extra para depuración. */
+  MSG_ERROR   = msg_error,                            /*!< Sólo errores. */
+  MSG_WARNING = msg_warning,                          /*!< Warnings */
+  MSG_INFO    = msg_info,                             /*!< Otra información. */
+  MSG_VERBOSE = msg_verbose                           /*!< Todos los mensajes. */
+#endif
 };
 
 //Se permiten operaciones a nivel de bit para el enum MessageOutput
@@ -382,15 +390,15 @@ private:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_DEBUG, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_INFO, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_WARNING, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_ERROR, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_debug, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_info, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_warning, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_error, __FILE__, __LINE__, TL_FUNCTION);
 #else
-#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_DEBUG);
-#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_INFO);
-#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_WARNING);
-#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::MSG_ERROR);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_debug);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_info);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_warning);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_error);
 #endif
 
 #else  // End TL_MESSAGE_HANDLER

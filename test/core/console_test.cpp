@@ -22,18 +22,18 @@ TEST(ConsoleTest, Constructor)
 {
   Console &console = Console::getInstance();
   EnumFlags<MessageLevel> flag = console.messageLevel();
-  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
-  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_INFO));
-  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_WARNING));
-  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
+  EXPECT_TRUE(flag.isActive(MessageLevel::msg_error));
+  EXPECT_FALSE(flag.isActive(MessageLevel::msg_info));
+  EXPECT_FALSE(flag.isActive(MessageLevel::msg_warning));
+  EXPECT_FALSE(flag.isActive(MessageLevel::msg_debug));
 
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   flag = console.messageLevel();
-  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
-  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_INFO));
-  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_WARNING));
-  EXPECT_TRUE(flag.isActive(MessageLevel::MSG_VERBOSE));
-  EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
+  EXPECT_TRUE(flag.isActive(MessageLevel::msg_error));
+  EXPECT_TRUE(flag.isActive(MessageLevel::msg_info));
+  EXPECT_TRUE(flag.isActive(MessageLevel::msg_warning));
+  EXPECT_TRUE(flag.isActive(MessageLevel::msg_verbose));
+  EXPECT_FALSE(flag.isActive(MessageLevel::msg_debug));
 }
 
 

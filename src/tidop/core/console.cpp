@@ -46,16 +46,16 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     iLevel = 0;
     break;
-  case MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     iLevel = 1;
     break;
-  case MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     iLevel = 2;
     break;
-  case MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     iLevel = 3;
     break;
   default:
@@ -67,7 +67,7 @@ msgProperties getMessageProperties( MessageLevel msgLevel )
 
 
 
-EnumFlags<MessageLevel> Console::sLevel = MessageLevel::MSG_ERROR;
+EnumFlags<MessageLevel> Console::sLevel = MessageLevel::msg_error;
 std::unique_ptr<Console> Console::sObjConsole;
 std::mutex Console::mtx;
 
@@ -122,8 +122,8 @@ void Console::printMessage(const std::string &msg)
 
 void Console::printErrorMessage(const std::string &msg)
 {
-  setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_ERROR).foreColor, 
-                            getMessageProperties(MessageLevel::MSG_ERROR).intensity);
+  setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_error).foreColor,
+                            getMessageProperties(MessageLevel::msg_error).intensity);
   printMessage(msg);
   reset();
 }
@@ -279,9 +279,9 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void Console::onMsgDebug(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_DEBUG).foreColor, 
-                              getMessageProperties(MessageLevel::MSG_DEBUG).intensity);
+  if (sLevel.isActive(MessageLevel::msg_debug)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_debug).foreColor,
+                              getMessageProperties(MessageLevel::msg_debug).intensity);
     printMessage(msg);
     reset();
   }
@@ -289,9 +289,9 @@ void Console::onMsgDebug(const char *msg, const char *date)
 
 void Console::onMsgInfo(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_INFO)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_INFO).foreColor, 
-                              getMessageProperties(MessageLevel::MSG_INFO).intensity);
+  if (sLevel.isActive(MessageLevel::msg_info)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_info).foreColor,
+                              getMessageProperties(MessageLevel::msg_info).intensity);
     printMessage(msg);
     reset();
   }
@@ -299,9 +299,9 @@ void Console::onMsgInfo(const char *msg, const char *date)
 
 void Console::onMsgWarning(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::MSG_WARNING).foreColor, 
-                              getMessageProperties(MessageLevel::MSG_WARNING).intensity);
+  if (sLevel.isActive(MessageLevel::msg_warning)) {
+    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_warning).foreColor,
+                              getMessageProperties(MessageLevel::msg_warning).intensity);
     printMessage(msg);
     reset();
   }
@@ -309,7 +309,7 @@ void Console::onMsgWarning(const char *msg, const char *date)
 
 void Console::onMsgError(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_ERROR)) {
+  if (sLevel.isActive(MessageLevel::msg_error)) {
     printErrorMessage(msg);
   }
 }

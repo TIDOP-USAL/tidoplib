@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle(name);                         // Titulo de la ventana de consola
-  console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
+  console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
   MessageManager::getInstance().addListener(&console);
 
   // Se obtiene una instancia unica de la clase Log
@@ -60,18 +60,18 @@ int main(int argc, char** argv)
   /*
   Se establece el nivel de mensajes en el log. Los valores posibles son:
   
-   - MSG_DEBUG:   Información extra para depuración.
-   - MSG_ERROR:   Sólo errores.
-   - MSG_WARNING: Warnings.
-   - MSG_INFO:    Información.
-   - MSG_VERBOSE: Todos los mensajes.
+   - msg_debug:   Información extra para depuración.
+   - msg_error:   Sólo errores.
+   - msg_warning: Warnings.
+   - msg_info:    Información.
+   - msg_verbose: Todos los mensajes.
    
    Se pueden combinar varios niveles de log:
 
-     log.setLogLevel(MessageLevel::MSG_WARNING | MessageLevel::MSG_ERROR);
+     log.setLogLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
 
   */
-  log.setLogLevel(MessageLevel::MSG_VERBOSE); 
+  log.setLogLevel(MessageLevel::msg_verbose);
   
   // Si se ha pasado por comando el fichero log se establece. En caso contrario se escribe en la ruta del ejecutable con su mismo nombre
   if (log_file.empty() == false)

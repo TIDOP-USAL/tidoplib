@@ -28,9 +28,9 @@ public:
   
   enum class Format
   {
-    SHP,
-    DXF,
-    DGN
+    shp,
+    dxf,
+    dgn
   };
 
 protected:

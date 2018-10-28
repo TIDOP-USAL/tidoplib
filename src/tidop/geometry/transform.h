@@ -52,7 +52,6 @@ template<typename Point_t> class Affine;
  *  \{
  */
 
-
 /*!
  * \brief Tipos de transformaciones
  */
@@ -814,7 +813,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
 
   } catch (std::exception &e) {
     //msgError(e.what());
-    tl::MessageManager::release(e.what(), tl::MessageLevel::MSG_ERROR);
+    tl::MessageManager::release(e.what(), tl::MessageLevel::msg_error);
     status = transform_status::FAILURE;
   }
 

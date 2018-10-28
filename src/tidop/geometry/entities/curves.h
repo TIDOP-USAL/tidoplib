@@ -133,7 +133,7 @@ typedef Circle<float> CircleF;
 
 template<typename T> inline
 Circle<T>::Circle()
-  : Entity(Entity::Type::CIRCLE),
+  : Entity(Entity::Type::circle),
     center(Point<T>()),
     radius(static_cast<T>(1))
 {
@@ -141,7 +141,7 @@ Circle<T>::Circle()
 
 template<typename T> inline
 Circle<T>::Circle(const Point<T> &center, T radius)
-  : Entity(Entity::Type::CIRCLE),
+  : Entity(Entity::Type::circle),
     center(center),
     radius(radius)
 {
@@ -149,7 +149,7 @@ Circle<T>::Circle(const Point<T> &center, T radius)
 
 template<typename T> inline
 Circle<T>::Circle(const Circle<T> &circle)
-  : Entity(Entity::Type::CIRCLE),
+  : Entity(Entity::Type::circle),
     center(circle.center),
     radius(circle.radius)
 {
@@ -305,7 +305,7 @@ typedef Ellipse<float> EllipseF;
 
 template<typename T> inline
 Ellipse<T>::Ellipse()
-  : Entity(Entity::Type::ELLIPSE),
+  : Entity(Entity::Type::ellipse),
     center(Point<T>()),
     a(static_cast<T>(1)),
     b(static_cast<T>(1))
@@ -314,7 +314,7 @@ Ellipse<T>::Ellipse()
 
 template<typename T> inline
 Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)
-  : Entity(Entity::Type::ELLIPSE),
+  : Entity(Entity::Type::ellipse),
     center(center),
     a(a),
     b(b)

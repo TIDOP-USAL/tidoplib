@@ -530,9 +530,15 @@ T stringToNumber(const std::string &text)
 
 enum class Base : int8_t
 {
+  octal       =  8,
+  decimal     = 10,
+  hexadecimal = 16
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  ,
   OCTAL       =  8,
   DECIMAL     = 10,
   HEXADECIMAL = 16
+#endif
 };
 
 /*!
@@ -544,7 +550,7 @@ enum class Base : int8_t
  * \return Número
  * \see Base
  */
-TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::DECIMAL);
+TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal);
 
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
@@ -819,11 +825,19 @@ public:
    * \brief Posibles estados del cronómetro
    */
   enum class Status {
-    START,      /*!< Inicio */
-    RUNNING,    /*!< Corriendo */
-    PAUSE,      /*!< Pausado */
-    STOPPED,    /*!< Detenido */
-    FINALIZED   /*!< Finalizado */
+    start,      /*!< Inicio */
+    running,    /*!< Corriendo */
+    pause,      /*!< Pausado */
+    stopped,    /*!< Detenido */
+    finalized   /*!< Finalizado */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    START     = start,      /*!< Inicio */
+    RUNNING   = running,    /*!< Corriendo */
+    PAUSE     = pause,      /*!< Pausado */
+    STOPPED   = stopped,    /*!< Detenido */
+    FINALIZED = finalized   /*!< Finalizado */
+#endif
   };
 
 private:
@@ -1028,9 +1042,15 @@ public:
    */
   enum class Mode : int8_t
   {
-    Read,      /*!< Lectura */
-    Update,    /*!< Lectura y escritura. */
-    Create     /*!< Creación */
+    read,      /*!< Lectura */
+    update,    /*!< Lectura y escritura. */
+    create     /*!< Creación */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    Read   = read,     /*!< Lectura */
+    Update = update,   /*!< Lectura y escritura. */
+    Create = create    /*!< Creación */
+ #endif
   };
 
   /*!
@@ -1038,11 +1058,19 @@ public:
    */
   enum class Status : int8_t
   {
-    OPEN_OK,
-    OPEN_FAIL,
-    SAVE_OK,
-    SUCCESS,
-    FAILURE
+    open_ok,
+    open_fail,
+    save_ok,
+    success,
+    failure
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    OPEN_OK   = open_ok,
+    OPEN_FAIL = open_fail,
+    SAVE_OK   = save_ok,
+    SUCCESS   = success,
+    FAILURE   = failure
+#endif
   };
 
 protected:
@@ -1061,8 +1089,8 @@ public:
    */
   File() : mFile("") {}
 
-  File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
-  File(const std::string &file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
+  File(const char *file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
+  File(const std::string &file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
 
   /*!
    * \brief Destructora
@@ -1082,8 +1110,8 @@ public:
    * \return
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
-  virtual Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
+  virtual Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
+  virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1107,7 +1135,7 @@ public:
    */
   Csv();
 
-  Csv(const char *file, Mode mode = Mode::Update);
+  Csv(const char *file, Mode mode = Mode::update);
 
   Csv(const Csv &csv);
 
@@ -1144,8 +1172,8 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Lee un registro de la tabla

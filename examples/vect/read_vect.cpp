@@ -51,12 +51,12 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle(cmd_name);
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   MessageManager::getInstance().addListener(&console);
 
   msgInfo("Open file: %s", vect.c_str());
   VectorGraphics vector;
-  if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;
+  if (VectorGraphics::Status::open_fail == vector.open(vect)) return 1;
 
   msgInfo("Layers: %i", vector.getLayersCount());
 

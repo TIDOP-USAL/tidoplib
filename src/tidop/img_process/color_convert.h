@@ -105,13 +105,23 @@ public:
    */
   enum class Model
   {
-    RGB,
-    RGBA,
-    CMYK,
-    HSL,
-    HSV,
-    LUMINANCE,
-    CHROMATICITY,
+    rgb,
+    rgba,
+    cmyk,
+    hsl,
+    hsv,
+    luminance,
+    chromaticity
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    RGB = rgb,
+    RGBA = rgba,
+    CMYK = cmyk,
+    HSL = hsl,
+    HSV = hsv,
+    LUMINANCE = luminance,
+    CHROMATICITY = chromaticity
+#endif
   };
 
 private:

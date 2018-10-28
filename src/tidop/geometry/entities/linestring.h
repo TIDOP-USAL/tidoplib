@@ -125,14 +125,14 @@ public:
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString()
-  : Entity(Entity::Type::LINESTRING_2D), 
+  : Entity(Entity::Type::linestring2d), 
     Entities2D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 LineString<Point_t>::LineString(typename LineString<Point_t>::size_type size)
-  : Entity(Entity::Type::LINESTRING_2D), 
+  : Entity(Entity::Type::linestring2d), 
     Entities2D<Point_t>(size) 
 {
 }
@@ -153,14 +153,14 @@ LineString<Point_t>::LineString(LineString &&lineString) TL_NOEXCEPT
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString(const std::vector<Point_t> &points)
-  : Entity(Entity::Type::LINESTRING_2D), 
+  : Entity(Entity::Type::linestring2d), 
     Entities2D<Point_t>(points) 
 {
 }
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString(std::initializer_list<Point_t> listPoints)
-  : Entity(Entity::Type::LINESTRING_2D), 
+  : Entity(Entity::Type::linestring2d), 
     Entities2D<Point_t>(listPoints) 
 {
 }
@@ -325,14 +325,14 @@ public:
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D()
-  : Entity(Entity::Type::LINESTRING_3D), 
+  : Entity(Entity::Type::linestring3d), 
     Entities3D<Point3_t>() 
 {
 }
 
 template<typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(typename LineString3D<Point3_t>::size_type size)
-  : Entity(Entity::Type::LINESTRING_3D), 
+  : Entity(Entity::Type::linestring3d), 
     Entities3D<Point3_t>(size) 
 {
 }
@@ -353,14 +353,14 @@ LineString3D<Point3_t>::LineString3D(LineString3D &&lineString) TL_NOEXCEPT
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(const std::vector<Point3_t> &points)
-  : Entity(Entity::Type::LINESTRING_3D), 
+  : Entity(Entity::Type::linestring3d), 
     Entities3D<Point3_t>(points) 
 {
 }
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(std::initializer_list<Point3_t> listPoints)
-  : Entity(Entity::Type::LINESTRING_3D), 
+  : Entity(Entity::Type::linestring3d), 
     Entities3D<Point3_t>(listPoints) 
 {
 }
@@ -499,14 +499,14 @@ public:
 
 template <typename Point_t>
 MultiLineString<Point_t>::MultiLineString()
-  : Entity(Entity::Type::MULTILINE_2D),
+  : Entity(Entity::Type::multiline2d),
     Entities2D<LineString<Point_t>>()
 {
 }
 
 template<typename Point_t> inline
 MultiLineString<Point_t>::MultiLineString(typename MultiLineString<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTILINE_2D),
+  : Entity(Entity::Type::multiline2d),
     Entities2D<LineString<Point_t>>(size) 
 {
 }
@@ -629,14 +629,14 @@ public:
 
 template <typename Point3_t>
 MultiLineString3D<Point3_t>::MultiLineString3D()
-  : Entity(Entity::Type::MULTILINE_3D),
+  : Entity(Entity::Type::multiline3d),
     Entities3D<LineString3D<Point3_t>>()
 {
 }
 
 template<typename Point3_t> inline
 MultiLineString3D<Point3_t>::MultiLineString3D(typename MultiLineString3D<Point3_t>::size_type size)
-  : Entity(Entity::Type::MULTILINE_3D),
+  : Entity(Entity::Type::multiline3d),
     Entities3D<LineString3D<Point3_t>>(size) 
 {
 }

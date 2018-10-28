@@ -148,7 +148,7 @@ typedef Point<float> PointF;
 
 template<typename T> inline
 Point<T>::Point()
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(static_cast<T>(0)), 
     y(static_cast<T>(0)) 
 {
@@ -156,7 +156,7 @@ Point<T>::Point()
 
 template<typename T> inline
 Point<T>::Point(T x, T y)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(x), 
     y(y) 
 {
@@ -164,7 +164,7 @@ Point<T>::Point(T x, T y)
 
 template<typename T> inline
 Point<T>::Point(const Point &pt)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(pt.x), 
     y(pt.y) 
 {
@@ -180,7 +180,7 @@ Point<T>::Point(Point &&pt) TL_NOEXCEPT
 
 template<typename T> inline
 Point<T>::Point(const std::array<T, 2> &v)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(v[0]), 
     y(v[1]) 
 {
@@ -473,7 +473,7 @@ typedef Point3<float> Point3F;
 
 template<typename T> inline
 Point3<T>::Point3()
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(0), 
     y(0), 
     z(0)
@@ -482,7 +482,7 @@ Point3<T>::Point3()
 
 template<typename T> inline
 Point3<T>::Point3(T x, T y, T z)
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(x), 
     y(y), 
     z(z)
@@ -509,7 +509,7 @@ Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
 
 template<typename T> inline
 Point3<T>::Point3(const std::array<T, 3> &v)
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(v[0]), 
     y(v[1]),
     z(v[2])
@@ -790,21 +790,21 @@ public:
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint() 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(typename MultiPoint<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(size) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(multiPoint) 
 {
 }
@@ -818,14 +818,14 @@ MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(vPoint) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(listPoints)
 {
 }
@@ -971,14 +971,14 @@ public:
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D() 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(size) 
 {
 }
@@ -999,14 +999,14 @@ MultiPoint3D<Point_t>::MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(vPoint) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(listPoints)
 {
 }

@@ -67,39 +67,76 @@ public:
   enum class Type
   {
     /* Dimensión */
-    GEOM2D     = (0 << 0),                        /*!< Geometría 2D */
-    GEOM3D     = (1 << 0),                        /*!< Geometría 3D */
-    GEOM4D     = (1 << 1),                        /*!< Geometría 4D */
+    geom2d    = (0 << 0),                        /*!< Geometría 2D */
+    geom3d    = (1 << 0),                        /*!< Geometría 3D */
+    geom4d    = (1 << 1),                        /*!< Geometría 4D */
 
     /* multientidad */
-    MULTI_ENTITY  = (1 << 2),                     /*!< Multientidad */
+    multi_entity = (1 << 2),                     /*!< Multientidad */
 
     /* Entidades 2D */
-    POINT_2D      = (1 << 3),                     /*!< Punto */
-    LINESTRING_2D = (1 << 4),                     /*!< Polilinea */
-    POLYGON_2D    = (1 << 5),                     /*!< Poligono */
-    SEGMENT_2D    = (1 << 6),                     /*!< Segmento */
-    CIRCLE        = (1 << 7),                     /*!< Circulo */
-    ELLIPSE       = (1 << 8),                     /*!< Elipse */
+    point2d      = (1 << 3),                     /*!< Punto */
+    linestring2d = (1 << 4),                     /*!< Polilinea */
+    polygon2d    = (1 << 5),                     /*!< Poligono */
+    segment2d    = (1 << 6),                     /*!< Segmento */
+    circle       = (1 << 7),                     /*!< Circulo */
+    ellipse      = (1 << 8),                     /*!< Elipse */
 
     /* Entidades 3D*/
-    POINT_3D = POINT_2D | GEOM3D,                 /*!< Punto 3D */
-    LINESTRING_3D = LINESTRING_2D | GEOM3D,       /*!< Polilinea 3D */
-    POLYGON_3D = POLYGON_2D | GEOM3D,             /*!< Poligono 3D */
-    SEGMENT_3D = SEGMENT_2D | GEOM3D,             /*!< Segmento 3D */
+    point3d      = point2d | geom3d,             /*!< Punto 3D */
+    linestring3d = linestring2d | geom3d,        /*!< Polilinea 3D */
+    polygon3d    = polygon2d | geom3d,           /*!< Poligono 3D */
+    segment3d    = segment2d | geom3d,           /*!< Segmento 3D */
 
     /* multientidades */
-    MULTIPOINT_2D = POINT_2D | MULTI_ENTITY,      /*!< Multipunto 2D */
-    MULTIPOINT_3D = POINT_3D | MULTI_ENTITY,      /*!< Multipunto 3D */
-    MULTILINE_2D = LINESTRING_2D | MULTI_ENTITY,  /*!< Multi-línea 2D */
-    MULTILINE_3D = LINESTRING_3D | MULTI_ENTITY,  /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D = POLYGON_2D | MULTI_ENTITY,  /*!< Multi-polígono 2D */
-    MULTIPOLYGON_3D = POLYGON_3D | MULTI_ENTITY,  /*!< Multi-polígono 3D */
+    multipoint2d   = point2d | multi_entity,      /*!< Multipunto 2D */
+    multipoint3d   = point3d | multi_entity,      /*!< Multipunto 3D */
+    multiline2d    = linestring2d | multi_entity, /*!< Multi-línea 2D */
+    multiline3d    = linestring3d | multi_entity, /*!< Multi-línea 3D */
+    multipolygon2d = polygon2d | multi_entity,    /*!< Multi-polígono 2D */
+    multipoygon3d  = polygon3d | multi_entity,    /*!< Multi-polígono 3D */
 
     /* Tipos especiales */
-    ENVELOPE = (1 << 10),     /*!< Envolvente */
-    WINDOW = ENVELOPE,        /*!< Ventana */
-    BOX = ENVELOPE | GEOM3D,  /*!< Caja */
+    envelope = (1 << 10),                         /*!< Envolvente */
+    window   = envelope,                          /*!< Ventana */
+    box      = envelope | geom3d,                 /*!< Caja */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    /* Dimensión */
+    GEOM2D     = geom2d,                        /*!< Geometría 2D */
+    GEOM3D     = geom3d,                        /*!< Geometría 3D */
+    GEOM4D     = geom4d,                        /*!< Geometría 4D */
+
+    /* multientidad */
+    MULTI_ENTITY  = multi_entity,               /*!< Multientidad */
+
+    /* Entidades 2D */
+    POINT_2D      = point2d,                    /*!< Punto */
+    LINESTRING_2D = linestring2d,               /*!< Polilinea */
+    POLYGON_2D    = polygon2d,                  /*!< Poligono */
+    SEGMENT_2D    = segment2d,                  /*!< Segmento */
+    CIRCLE        = circle,                     /*!< Circulo */
+    ELLIPSE       = ellipse,                    /*!< Elipse */
+
+    /* Entidades 3D*/
+    POINT_3D      = point3d,                    /*!< Punto 3D */
+    LINESTRING_3D = linestring3d,               /*!< Polilinea 3D */
+    POLYGON_3D    = polygon3d,                  /*!< Poligono 3D */
+    SEGMENT_3D    = segment3d,                  /*!< Segmento 3D */
+
+    /* multientidades */
+    MULTIPOINT_2D   = multipoint2d,             /*!< Multipunto 2D */
+    MULTIPOINT_3D   = multipoint3d,             /*!< Multipunto 3D */
+    MULTILINE_2D    = multiline2d,              /*!< Multi-línea 2D */
+    MULTILINE_3D    = multiline3d,              /*!< Multi-línea 3D */
+    MULTIPOLYGON_2D = multipolygon2d,           /*!< Multi-polígono 2D */
+    MULTIPOLYGON_3D = multipoygon3d,            /*!< Multi-polígono 3D */
+
+    /* Tipos especiales */
+    ENVELOPE = envelope,                        /*!< Envolvente */
+    WINDOW   = window,                          /*!< Ventana */
+    BOX      = box,                             /*!< Caja */
+#endif
   };
 
 protected:
@@ -200,7 +237,7 @@ public:
    */
   bool is3D() const
   {
-    return mEntityType.isActive(Type::GEOM3D);
+    return mEntityType.isActive(Type::geom3d);
   }
 
 };

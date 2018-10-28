@@ -330,8 +330,8 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una imagen
@@ -775,8 +775,8 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una imagen
@@ -919,8 +919,8 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief georeference

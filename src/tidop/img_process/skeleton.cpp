@@ -130,7 +130,7 @@ ThinningProc::Status ThinningProc::execute(const cv::Mat &matIn, cv::Mat *matOut
     msgError(e.what());
     return Status::PROCESS_ERROR;
   } catch (tl::Exception &e) {
-    MessageManager::release(e.what(), tl::MessageLevel::MSG_ERROR);
+    MessageManager::release(e.what(), tl::MessageLevel::msg_error);
     return Status::PROCESS_ERROR;
   }
   return Status::OK;

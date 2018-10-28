@@ -51,13 +51,23 @@ public:
    * \brief Estados del proceso
    */
   enum class Status {
-    START,             /*!< Inicio */
-    RUNNING,           /*!< Corriendo */
-    PAUSING,           /*!< Pausando */
-    PAUSE,             /*!< Pausado */
-    STOPPED,           /*!< Detenido por el usuario*/
-    FINALIZED,         /*!< Finalizado */
-    FINALIZED_ERROR    /*!< Terminado con error */
+    start,             /*!< Inicio */
+    running,           /*!< Corriendo */
+    pausing,           /*!< Pausando */
+    pause,             /*!< Pausado */
+    stopped,           /*!< Detenido por el usuario*/
+    finalized,         /*!< Finalizado */
+    error              /*!< Terminado con error */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    START           = start,             /*!< Inicio */
+    RUNNING         = running,           /*!< Corriendo */
+    PAUSING         = pausing,           /*!< Pausando */
+    PAUSE           = pause,             /*!< Pausado */
+    STOPPED         = stopped,           /*!< Detenido por el usuario*/
+    FINALIZED       = finalized,         /*!< Finalizado */
+    FINALIZED_ERROR = error              /*!< Terminado con error */
+#endif
   };
 
   /*!
@@ -268,9 +278,18 @@ public:
 
 #ifdef WIN32
   //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+  enum class Priority
+  {
+    realtime = REALTIME_PRIORITY_CLASS,
+    high = HIGH_PRIORITY_CLASS,
+    above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
+    normal = NORMAL_PRIORITY_CLASS,
+    below_normal = BELOW_NORMAL_PRIORITY_CLASS,
+    idle = IDLE_PRIORITY_CLASS
+  };
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   enum class PRIORITY
   {
-
     REALTIME = REALTIME_PRIORITY_CLASS,
     HIGH = HIGH_PRIORITY_CLASS,
     ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
@@ -278,6 +297,7 @@ public:
     BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
     IDLE = IDLE_PRIORITY_CLASS
   };
+#endif
 #endif
 
 protected:
@@ -353,13 +373,23 @@ public:
    * \brief Estados de Batch
    */
   enum class Status {
-    START,             /*!< Inicio */
-    RUNNING,           /*!< Corriendo */
-    PAUSING,           /*!< Pausando */
-    PAUSE,             /*!< Pausado */
-    STOPPED,           /*!< Detenido */
-    FINALIZED,         /*!< Finalizado */
-    FINALIZED_ERROR    /*!< Terminado con error */
+    start,             /*!< Inicio */
+    running,           /*!< Corriendo */
+    pausing,           /*!< Pausando */
+    pause,             /*!< Pausado */
+    stopped,           /*!< Detenido por el usuario*/
+    finalized,         /*!< Finalizado */
+    error              /*!< Terminado con error */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    START           = start,             /*!< Inicio */
+    RUNNING         = running,           /*!< Corriendo */
+    PAUSING         = pausing,           /*!< Pausando */
+    PAUSE           = pause,             /*!< Pausado */
+    STOPPED         = stopped,           /*!< Detenido por el usuario*/
+    FINALIZED       = finalized,         /*!< Finalizado */
+    FINALIZED_ERROR = error              /*!< Terminado con error */
+#endif
   };
 
   /*!

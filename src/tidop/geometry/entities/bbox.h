@@ -217,7 +217,7 @@ public:
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box() 
-  : Entity(Entity::Type::BOX), 
+  : Entity(Entity::Type::box), 
     pt1(std::numeric_limits<typename Point3_t::value_type>().max(), 
         std::numeric_limits<typename Point3_t::value_type>().max(), 
         std::numeric_limits<typename Point3_t::value_type>().max()), 
@@ -229,7 +229,7 @@ Box<Point3_t>::Box()
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Box &box) 
-  : Entity(Entity::Type::BOX), 
+  : Entity(Entity::Type::box), 
     pt1(box.pt1), 
     pt2(box.pt2) 
 {
@@ -245,7 +245,7 @@ Box<Point3_t>::Box(Box &&box) TL_NOEXCEPT
 
 template<typename Point3_t> inline
 Box<Point3_t>::Box(const Point3_t &_pt1, const Point3_t &_pt2) 
-  : Entity(Entity::Type::BOX)
+  : Entity(Entity::Type::box)
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -257,7 +257,7 @@ Box<Point3_t>::Box(const Point3_t &_pt1, const Point3_t &_pt2)
 
 template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz) 
-  : Entity(Entity::Type::BOX)
+  : Entity(Entity::Type::box)
 { 
   if (std::is_integral<typename Point3_t::value_type>::value) {
     int sxx_2 = TL_ROUND_TO_INT(sxx / 2);
@@ -279,7 +279,7 @@ Box<Point3_t>::Box(const Point3_t &_pt, T sxx, T szy, T szz)
 
 template<typename Point3_t> template<typename T> inline
 Box<Point3_t>::Box(const Point3_t &_pt, T sz) 
-  : Entity(Entity::Type::BOX) 
+  : Entity(Entity::Type::box) 
 {
   if (std::is_integral<typename Point3_t::value_type>::value) {
     int sz_2 = TL_ROUND_TO_INT(sz / 2);

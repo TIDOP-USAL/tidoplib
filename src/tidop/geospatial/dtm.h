@@ -30,9 +30,10 @@ public:
 
   enum class Interpolation : uint8_t
   {
-    LINEAR,
-    NEAREST
+    linear,
+    nearest
   };
+
 protected:
 
   Interpolation mInterpolation;

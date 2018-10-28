@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 /*!
  * Ejemplo de aplicación de consola:
  *
@@ -44,7 +59,7 @@ int main(int argc, char** argv)
   console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
   //console.setConsoleUnicode();
   //console.setFontHeight(24);                      // Se establece el tamaño de fuente
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);   // Se muestran todos los mensajes por consola
+  console.setLogLevel(MessageLevel::msg_verbose);   // Se muestran todos los mensajes por consola
   MessageManager::getInstance().addListener(&console);
 
   if (1) { /// Nueva gestión de argumentos por consola

@@ -26,7 +26,7 @@ TEST(LineString, DefaultConstructor)
   
   /*Comprobamos si se ha creado con el contructor por defecto*/
   EXPECT_EQ(0, ls.size());
-  EXPECT_TRUE(ls.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(ls.type() == Entity::Type::linestring2d);
   EXPECT_EQ(TL_INT_MAX, w.pt1.x);
   EXPECT_EQ(TL_INT_MAX, w.pt1.y);
   EXPECT_EQ(TL_INT_MIN, w.pt2.x);
@@ -43,7 +43,7 @@ TEST(LineString, ConstructorReserve)
   WindowD w = ls.window();
   
   EXPECT_EQ(10, ls.size());
-  EXPECT_TRUE(ls.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(ls.type() == Entity::Type::linestring2d);
   EXPECT_EQ(0., w.pt1.x);
   EXPECT_EQ(0., w.pt1.y);
   EXPECT_EQ(0., w.pt2.x);
@@ -59,7 +59,7 @@ TEST(LineString, CopyConstructor)
 	LineStringI copia(line);  //Creamos el segundo vectro como copia del primero
   WindowI w = line.window();
 
-  EXPECT_TRUE(copia.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(copia.type() == Entity::Type::linestring2d);
 	EXPECT_EQ(line.size(), copia.size());
   EXPECT_EQ(4137012, w.pt1.x);
   EXPECT_EQ(642997, w.pt1.y);
@@ -93,7 +93,7 @@ TEST(LineString, Vector)
   
   EXPECT_EQ(7, line.size());
 
-  EXPECT_TRUE(line.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(line.type() == Entity::Type::linestring2d);
     
   EXPECT_EQ(4137012, w.pt1.x);
   EXPECT_EQ(642997, w.pt1.y);
@@ -117,7 +117,7 @@ TEST(LineString, ConstructorList)
 
   WindowI w = line.window();
 
-  EXPECT_TRUE(line.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(line.type() == Entity::Type::linestring2d);
     
   EXPECT_EQ(4137012, w.pt1.x);
   EXPECT_EQ(642997, w.pt1.y);
@@ -145,7 +145,7 @@ TEST(LineString, assing_operator)
 
   LineStringD lineString_c = lineString;
 
-  EXPECT_TRUE(lineString_c.type() == Entity::Type::LINESTRING_2D);
+  EXPECT_TRUE(lineString_c.type() == Entity::Type::linestring2d);
   EXPECT_EQ(4, lineString_c.size());
 
   for (int i = 0; i < lineString_c.size(); i++) {
@@ -171,7 +171,7 @@ TEST(LineString3D, DefaultConstructor)
   BoxD box = ls.box();
   
   EXPECT_EQ(0, ls.size());
-  EXPECT_TRUE(ls.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(ls.type() == Entity::Type::linestring3d);
   EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
   EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
   EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
@@ -189,7 +189,7 @@ TEST(LineString3D, ConstructorReserve)
   BoxD box = ls.box();
   
   EXPECT_EQ(10, ls.size());
-  EXPECT_TRUE(ls.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(ls.type() == Entity::Type::linestring3d);
   EXPECT_EQ(0., box.pt1.x);
   EXPECT_EQ(0., box.pt1.y);
   EXPECT_EQ(0., box.pt1.z);
@@ -209,12 +209,12 @@ TEST(LineString3D, CopyConstructor)
   line.push_back(Point3D(256.6, 619.3, 56.12));
   line.push_back(Point3D(62.36, 6.60, 24.63));
 
-  EXPECT_TRUE(line.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(line.type() == Entity::Type::linestring3d);
   EXPECT_EQ(4, line.size());
 
   LineString3dD line_c(line);
 
-  EXPECT_TRUE(line_c.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(line_c.type() == Entity::Type::linestring3d);
 	EXPECT_EQ(4, line_c.size());
   BoxD box = line_c.box();
   EXPECT_EQ(23.6, box.pt1.x);
@@ -237,7 +237,7 @@ TEST(LineString3D, Vector)
 
   LineString3dD line_c(lineString);
 
-  EXPECT_TRUE(line_c.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(line_c.type() == Entity::Type::linestring3d);
 	EXPECT_EQ(4, line_c.size());
   BoxD box = line_c.box();
   EXPECT_EQ(23.6, box.pt1.x);
@@ -259,7 +259,7 @@ TEST(LineString3D, ConstructorList)
                       Point3D(256.6, 619.3, 26.21),
                       Point3D(62.36, 6.60, 62.61) };
 
-  EXPECT_TRUE(line.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(line.type() == Entity::Type::linestring3d);
 	EXPECT_EQ(4, line.size());
   BoxD box = line.box();
   EXPECT_EQ(23.6, box.pt1.x);
@@ -282,7 +282,7 @@ TEST(LineString3D, assing_operator)
 
   LineString3dD line_c = line;
 
-  EXPECT_TRUE(line_c.type() == Entity::Type::LINESTRING_3D);
+  EXPECT_TRUE(line_c.type() == Entity::Type::linestring3d);
 	EXPECT_EQ(4, line_c.size());
   BoxD box = line_c.box();
   EXPECT_EQ(23.6, box.pt1.x);

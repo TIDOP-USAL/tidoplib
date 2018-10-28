@@ -105,20 +105,20 @@ TEST(Box, ConstructorCenterDimWHD)
 TEST(Box, type)
 {
   const BoxI box1;
-  EXPECT_TRUE(box1.type() == Entity::Type::BOX);
+  EXPECT_TRUE(box1.type() == Entity::Type::box);
 
   const BoxI box2(Point3I(0, 0, 0), Point3I(100, 100, 100));
   BoxI box3(box2);
   EXPECT_EQ(box2.pt1, box3.pt1);
   EXPECT_EQ(box2.pt2, box3.pt2);
-  EXPECT_TRUE(box2.type() == Entity::Type::BOX);
-  EXPECT_TRUE(box3.type() == Entity::Type::BOX);
+  EXPECT_TRUE(box2.type() == Entity::Type::box);
+  EXPECT_TRUE(box3.type() == Entity::Type::box);
 
   const BoxD box5(Point3D(0.5, 0.4, 1.9), 50.);
-  EXPECT_TRUE(box5.type() == Entity::Type::BOX);
+  EXPECT_TRUE(box5.type() == Entity::Type::box);
 
   const BoxD box6(Point3D(0.5, 0.4, 1.9), 50., 50., 50.);
-  EXPECT_TRUE(box6.type() == Entity::Type::BOX);
+  EXPECT_TRUE(box6.type() == Entity::Type::box);
 }
 
 // Comprobación de que redondea bien con ventanas de enteros

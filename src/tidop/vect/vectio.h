@@ -212,7 +212,7 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Abre un fichero vectorial especificando las opciones del formato
@@ -222,7 +222,7 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una fichero vectorial
@@ -543,8 +543,8 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea un fichero

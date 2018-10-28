@@ -35,7 +35,7 @@ namespace tl
 
 std::unique_ptr<Log> Log::sObjLog;
 std::string Log::sLogFile = "";
-EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
+EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
 
@@ -104,28 +104,28 @@ void Log::write(const char *msg)
 
 void Log::onMsgDebug(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
+  if (sLevel.isActive(MessageLevel::msg_debug)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgInfo(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_INFO)) {
+  if (sLevel.isActive(MessageLevel::msg_info)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgWarning(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
+  if (sLevel.isActive(MessageLevel::msg_warning)) {
     _write(msg, date);
   }
 }
 
 void Log::onMsgError(const char *msg, const char *date)
 {
-  if (sLevel.isActive(MessageLevel::MSG_ERROR)) {
+  if (sLevel.isActive(MessageLevel::msg_error)) {
     _write(msg, date);
   }
 }

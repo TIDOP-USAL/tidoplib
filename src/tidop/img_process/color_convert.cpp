@@ -158,19 +158,19 @@ ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *ma
 {
   if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
   try {
-    if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSL) {
+    if (mModelIn == ColorConversion::Model::rgb && mModelOut == ColorConversion::Model::hsl) {
       rgbToHSL(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::HSL && mModelOut == ColorConversion::Model::RGB) {
+    } else if (mModelIn == ColorConversion::Model::hsl && mModelOut == ColorConversion::Model::rgb) {
       rgbToHSL(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::HSV) {
+    } else if (mModelIn == ColorConversion::Model::rgb && mModelOut == ColorConversion::Model::hsv) {
       rgbToHSV(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::HSV && mModelOut == ColorConversion::Model::RGB) {
+    } else if (mModelIn == ColorConversion::Model::hsv && mModelOut == ColorConversion::Model::rgb) {
       hsvToRgb(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::CMYK) {
+    } else if (mModelIn == ColorConversion::Model::rgb && mModelOut == ColorConversion::Model::cmyk) {
       rgbToCmyk(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::CMYK && mModelOut == ColorConversion::Model::RGB) {
+    } else if (mModelIn == ColorConversion::Model::cmyk && mModelOut == ColorConversion::Model::rgb) {
       cmykToRgb(matIn, matOut);
-    } else if (mModelIn == ColorConversion::Model::RGB && mModelOut == ColorConversion::Model::LUMINANCE) {
+    } else if (mModelIn == ColorConversion::Model::rgb && mModelOut == ColorConversion::Model::luminance) {
       rgbToLuminance(matIn, matOut);
     } else {
       msgWarning("Conversión no disponible")

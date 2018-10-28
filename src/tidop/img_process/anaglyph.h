@@ -13,14 +13,14 @@ namespace tl
 {
 
 enum class StereoMode {
-  NONE,
-  NORMAL,
-  GRAY,
-  DUBOIS,
-  HALFCOLOR,
-  OPTIMIZED,
-  REDBLUE,
-  SIDEBYSIDE
+  none,
+  normal,
+  gray,
+  dubois,
+  half_color,
+  optimized,
+  red_blue,
+  side_by_side
 };
 
 /*!
@@ -32,7 +32,7 @@ enum class StereoMode {
  * \param[in] mode Modo de visualización
  * \see StereoMode
  */
-TL_EXPORT int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::NORMAL);
+TL_EXPORT int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::normal);
 
 } // End namespace TL
 

@@ -107,9 +107,9 @@ TEST_F(PolygonTest, ConstructorList)
 
 TEST_F(PolygonTest, type)
 {
-  EXPECT_TRUE(pol_1.type() == Entity::Type::POLYGON_2D);
-  EXPECT_TRUE(pol_2->type() == Entity::Type::POLYGON_2D);
-  EXPECT_TRUE(pol_3->type() == Entity::Type::POLYGON_2D);
+  EXPECT_TRUE(pol_1.type() == Entity::Type::polygon2d);
+  EXPECT_TRUE(pol_2->type() == Entity::Type::polygon2d);
+  EXPECT_TRUE(pol_3->type() == Entity::Type::polygon2d);
 }
 
 /* Operador de asignación */

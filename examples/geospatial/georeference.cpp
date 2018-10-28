@@ -68,13 +68,13 @@ int main(int argc, char** argv)
   }
 
   Mdt mdt;
-  if (mdt.open(dtm_file) != Mdt::Status::OPEN_OK) return 1;
+  if (mdt.open(dtm_file) != Mdt::Status::open_ok) return 1;
   PointD pt(x0, y0);
   float z = mdt.getZ(pt);
   float dz = static_cast<float>(z0) - z;
 
   GeoRasterGraphics image;
-  if (image.open(img_file) == RasterGraphics::Status::OPEN_OK) {
+  if (image.open(img_file) == RasterGraphics::Status::open_ok) {
 
     Helmert3D<Point3D> helmert3d(x0, y0, z0, scale, omega, phi, kappa);
 

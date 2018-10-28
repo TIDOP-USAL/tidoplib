@@ -192,7 +192,7 @@ public:
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment()
-  : Entity(Entity::Type::SEGMENT_2D),
+  : Entity(Entity::Type::segment2d),
     pt1(), 
     pt2()
 {
@@ -200,7 +200,7 @@ Segment<Point_t>::Segment()
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Segment &segment)
-  : Entity(Entity::Type::SEGMENT_2D),
+  : Entity(Entity::Type::segment2d),
     pt1(segment.pt1), 
     pt2(segment.pt2) 
 {
@@ -216,7 +216,7 @@ Segment<Point_t>::Segment(Segment &&segment)
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
-  : Entity(Entity::Type::SEGMENT_2D),
+  : Entity(Entity::Type::segment2d),
     pt1(_pt1), 
     pt2(_pt2)
 {
@@ -238,7 +238,7 @@ Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool bCenter)
-  : Entity(Entity::Type::SEGMENT_2D)
+  : Entity(Entity::Type::segment2d)
 {
   double a = cos(angle), b = sin(angle);
   double l1 = 0;
@@ -487,7 +487,7 @@ public:
 
 template<typename Point3_t> inline
 Segment3D<Point3_t>::Segment3D()
-  : Entity(Entity::Type::SEGMENT_3D),
+  : Entity(Entity::Type::segment3d),
     pt1(Point3_t()), 
     pt2(Point3_t()) 
 {
@@ -511,7 +511,7 @@ Segment3D<T>::Segment3D(Segment3D &&segment)
 
 template<typename Point3_t> inline
 Segment3D<Point3_t>::Segment3D(const Point3_t &_pt1, const Point3_t &_pt2)
-  : Entity(Entity::Type::SEGMENT_3D),
+  : Entity(Entity::Type::segment3d),
     pt1(_pt1), 
     pt2(_pt2) 
 {

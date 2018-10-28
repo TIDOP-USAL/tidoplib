@@ -65,7 +65,7 @@ int main(int argc, char** argv)
   console.setTitle(cmd_name);                         // Titulo de la ventana de consola
   console.setConsoleUnicode();
   console.setFontHeight(14);                      // Se establece el tamaño de fuente
-  console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
+  console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
   MessageManager::getInstance().addListener(&console);
 
   CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));

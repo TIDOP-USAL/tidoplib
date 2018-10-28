@@ -40,12 +40,12 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::getInstance();
   console.setTitle("Read Image");
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   MessageManager::getInstance().addListener(&console);
 
   RasterGraphics image;
-  if (image.open(img) == RasterGraphics::Status::OPEN_OK) {
+  if (image.open(img) == RasterGraphics::Status::open_ok) {
     msgInfo("Numero de bandas: %i", image.getBands());
     msgInfo("Profundidad de color: %i", image.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image.getCols(), image.getRows());

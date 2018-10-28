@@ -34,7 +34,7 @@ namespace tl
 unsigned long Process::sProcessCount = 0;
 
 Process::Process(Process *parentProcess) 
-  : mStatus(Status::START),
+  : mStatus(Status::start),
     mParentProcess(parentProcess),
     mListeners(0),
     mProcessId(0),
@@ -47,10 +47,10 @@ Process::Process(Process *parentProcess)
 
 Process::~Process()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
+  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
     stop();
   }
-  mStatus = Status::FINALIZED;
+  mStatus = Status::finalized;
 }
 
 void Process::addListener(Listener *listener)
@@ -62,7 +62,7 @@ void Process::addListener(Listener *listener)
 
 void Process::pause()
 {
-  mStatus = Status::PAUSING;
+  mStatus = Status::pausing;
 }
 
 void Process::removeListener(Listener *listener)
@@ -74,13 +74,13 @@ void Process::removeListener(Listener *listener)
 
 void Process::reset()
 {
-  mStatus = Status::START;
+  mStatus = Status::start;
 }
 
 void Process::resume()
 {
-  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::RUNNING;
+  if (mStatus == Status::pause || mStatus == Status::pausing) {
+    mStatus = Status::running;
   }
   resumeTriggered();
 }
@@ -88,7 +88,7 @@ void Process::resume()
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 Process::Status Process::run(Progress *progressBar)
 {
-  if (mStatus != Status::FINALIZED) // Util para saltar procesos ya realizados.
+  if (mStatus != Status::finalized) // Util para saltar procesos ya realizados.
     runTriggered();
   return mStatus;
 }
@@ -97,10 +97,10 @@ TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void Process::stop()
 {
   //TODO: porque no estoy llamando a stopTriggered()???
-  if (mStatus == Status::RUNNING) {
-    mStatus = Status::STOPPED;
-  } else if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::STOPPED;
+  if (mStatus == Status::running) {
+    mStatus = Status::stopped;
+  } else if (mStatus == Status::pause || mStatus == Status::pausing) {
+    mStatus = Status::stopped;
   }
 }
 
@@ -116,7 +116,7 @@ void Process::setStatus(Process::Status status)
 
 void Process::endTriggered()
 {
-  mStatus = Status::FINALIZED;
+  mStatus = Status::finalized;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onEnd(getProcessId());
@@ -126,7 +126,7 @@ void Process::endTriggered()
 
 void Process::pauseTriggered()
 {
-  mStatus = Status::PAUSE;
+  mStatus = Status::pause;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onPause(getProcessId());
@@ -136,7 +136,7 @@ void Process::pauseTriggered()
 
 void Process::resumeTriggered()
 {
-  mStatus = Status::RUNNING;
+  mStatus = Status::running;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onResume(getProcessId());
@@ -146,7 +146,7 @@ void Process::resumeTriggered()
 
 void Process::runTriggered()
 {
-  mStatus = Status::RUNNING;
+  mStatus = Status::running;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onRun(getProcessId());
@@ -156,7 +156,7 @@ void Process::runTriggered()
 
 void Process::startTriggered()
 {
-  mStatus = Status::START;
+  mStatus = Status::start;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onStart(getProcessId());
@@ -166,7 +166,7 @@ void Process::startTriggered()
 
 void Process::stopTriggered()
 {
-  mStatus = Status::STOPPED;
+  mStatus = Status::stopped;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onStop(getProcessId());
@@ -176,7 +176,7 @@ void Process::stopTriggered()
 
 void Process::errorTriggered()
 {
-  mStatus = Status::FINALIZED_ERROR;
+  mStatus = Status::error;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onError(getProcessId());
@@ -202,11 +202,11 @@ void Process::processCountReset()
 
 Process::Status Process::checkStatus()
 {
-  if (mStatus == Status::PAUSING) {
+  if (mStatus == Status::pausing) {
     pauseTriggered();
-    while (mStatus == Status::PAUSE);
-  } else if (mStatus == Status::STOPPED) {
-    // Se fuerza la terminaci�n
+    while (mStatus == Status::pause);
+  } else if (mStatus == Status::stopped) {
+    // Se fuerza la terminación
     stopTriggered();
   }
   return mStatus;
@@ -398,7 +398,7 @@ std::string CmdProcess::formatErrorMsg(DWORD errorCode)
 /* ---------------------------------------------------------------------------------- */
 
 BatchProcess::BatchProcess()
-  : mStatus(Status::START),
+  : mStatus(Status::start),
     mProcessList(0),
     mListeners(0),
     _thread(),
@@ -406,7 +406,7 @@ BatchProcess::BatchProcess()
 {}
 
 BatchProcess::BatchProcess(const BatchProcess &batchProcess)
-  : mStatus(Status::START),
+  : mStatus(Status::start),
     mProcessList(batchProcess.mProcessList),
     mListeners(batchProcess.mListeners),
     _thread(),
@@ -418,7 +418,7 @@ BatchProcess::BatchProcess(const BatchProcess &batchProcess)
 }
 
 BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procList)
-  : mStatus(Status::START),
+  : mStatus(Status::start),
     mProcessList(procList),
     _thread(),
     mCurrentProcess(nullptr)
@@ -430,10 +430,10 @@ BatchProcess::BatchProcess(std::initializer_list<std::shared_ptr<Process>> procL
 
 BatchProcess::~BatchProcess()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
+  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
     stop();
   }
-  mStatus = Status::FINALIZED;  
+  mStatus = Status::finalized;
 }
 
 void BatchProcess::add(const std::shared_ptr<Process> &process)
@@ -484,12 +484,12 @@ void BatchProcess::remove(const std::shared_ptr<Process> &process)
 
 bool BatchProcess::isRunning() const
 {
-  return (mStatus == Status::RUNNING || mStatus == Status::PAUSING || mStatus == Status::PAUSE);
+  return (mStatus == Status::running || mStatus == Status::pausing || mStatus == Status::pause);
 }
 
 void BatchProcess::pause()
 {
-  mStatus = Status::PAUSING;
+  mStatus = Status::pausing;
   if (mCurrentProcess) {
     mCurrentProcess->pause();
   }
@@ -498,10 +498,10 @@ void BatchProcess::pause()
 void BatchProcess::reset()
 {
   //TODO: Si esta corriendo no se puede hacer un reset
-  if (mStatus == Status::RUNNING) {
+  if (mStatus == Status::running) {
     msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
   } else {
-    mStatus = Status::START;
+    mStatus = Status::start;
     mProcessList.clear();
     Process::processCountReset();
   }
@@ -509,8 +509,8 @@ void BatchProcess::reset()
 
 void BatchProcess::resume()
 {
-  if (mStatus == Status::PAUSE || mStatus == Status::PAUSING) {
-    mStatus = Status::RUNNING;
+  if (mStatus == Status::pause || mStatus == Status::pausing) {
+    mStatus = Status::running;
     if (mCurrentProcess) 
       mCurrentProcess->resume();
   }
@@ -523,15 +523,15 @@ void BatchProcess::initCounter()
 
 BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *progressBarPartial)
 {
-  mStatus = Status::RUNNING;
+  mStatus = Status::running;
   if (progressBarTotal) progressBarTotal->init(0., static_cast<double>(mProcessList.size()));
   for (const auto &process : mProcessList) {
-    if (mStatus == Status::PAUSING) {
-      mStatus = Status::PAUSE;
-      while (mStatus == Status::PAUSE);
-    } else if (mStatus == Status::STOPPED) {
+    if (mStatus == Status::pausing) {
+      mStatus = Status::pause;
+      while (mStatus == Status::pause);
+    } else if (mStatus == Status::stopped) {
       // Se fuerza la terminación
-      return Status::STOPPED;
+      return Status::stopped;
     } else {
       //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
       //  return Status::FINALIZED_ERROR;
@@ -542,12 +542,12 @@ BatchProcess::Status BatchProcess::run(Progress *progressBarTotal, Progress *pro
       if (progressBarTotal) (*progressBarTotal)();
     }
   }
-  return (mStatus = Status::FINALIZED);
+  return (mStatus = Status::finalized);
 }
 
 BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progress *progressBarPartial)
 {
-  mStatus = Status::RUNNING;
+  mStatus = Status::running;
 
   auto f_aux = [&](Progress *progress_bar_total, Progress *progress_bar_partial) {
     if (progress_bar_total) progress_bar_total->init(0., static_cast<double>(mProcessList.size()));
@@ -558,15 +558,15 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
         progress_bar_total->updateScale();
       }
       mCurrentProcess = process.get();
-      if (mStatus == Status::PAUSING) {
-        mStatus = Status::PAUSE;
-        while (mStatus == Status::PAUSE);
-      } else if (mStatus == Status::STOPPED) {
+      if (mStatus == Status::pausing) {
+        mStatus = Status::pause;
+        while (mStatus == Status::pause);
+      } else if (mStatus == Status::stopped) {
         // Se fuerza la terminación
-        return Status::STOPPED;
+        return Status::stopped;
       } else {
         //process->run(progress_bar_partial);
-        if (process->run(progress_bar_partial) == Process::Status::FINALIZED_ERROR) {
+        if (process->run(progress_bar_partial) == Process::Status::error) {
         //  return Status::FINALIZED_ERROR;
           if (progress_bar_partial) progress_bar_partial->restart();
           //TODO: evento de error con el id de proceso
@@ -577,7 +577,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
       }
     }
     endTriggered();
-    return (mStatus = Status::FINALIZED);
+    return (mStatus = Status::finalized);
   };
 
   _thread = std::thread(f_aux, progressBarTotal, progressBarPartial);
@@ -589,7 +589,7 @@ BatchProcess::Status BatchProcess::run_async(Progress *progressBarTotal, Progres
 
 void BatchProcess::stop()
 {
-  mStatus = Status::STOPPED;
+  mStatus = Status::stopped;
   if (mCurrentProcess) {
     mCurrentProcess->stop();
   }
@@ -633,7 +633,7 @@ void BatchProcess::onError(uint64_t id)
 
 void BatchProcess::endTriggered()
 {
-  mStatus = Status::FINALIZED;
+  mStatus = Status::finalized;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onEnd();
@@ -643,7 +643,7 @@ void BatchProcess::endTriggered()
 
 void BatchProcess::errorTriggered()
 {
-  mStatus = Status::FINALIZED_ERROR;
+  mStatus = Status::error;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
       lst->onError();
