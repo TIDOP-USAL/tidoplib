@@ -314,6 +314,7 @@ GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, Fil
     return Status::OPEN_OK; 
   } else {
     pDataset = static_cast<GDALDataset *>(GDALOpen(file, gdal_access));
+    pDataset->GetMetadataDomainList();
     if (pDataset == nullptr) {
       return Status::OPEN_FAIL;
     } else {

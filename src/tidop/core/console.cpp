@@ -682,6 +682,11 @@ bool Command::empty() const
   return mCmdArgs.empty();
 }
 
+size_t Command::size() const
+{
+  return mCmdArgs.size();
+}
+
 Command &Command::operator=(const Command &command)
 {
   if (this != &command) {
@@ -834,15 +839,198 @@ void Command::addExample(const std::string &example)
   mExamples.push_back(example);
 }
 
-size_t Command::size() const
-{
-  return mCmdArgs.size();
-}
-
-
 void Command::init()
 {
 
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+CommandList::CommandList()
+  : mVersion("0.0.0")
+{
+}
+
+CommandList::CommandList(const std::string &name, const std::string &description)
+  : mName(name),
+    mDescription(description),
+    mVersion("0.0.0")
+{
+}
+
+CommandList::CommandList(const CommandList &commandList)
+  : mName(commandList.mName),
+    mDescription(commandList.mDescription),
+    mCommands(commandList.mCommands),
+    mVersion(commandList.mVersion)
+{
+}
+
+CommandList::CommandList(const std::string &name, const std::string &description,
+                 std::initializer_list<std::shared_ptr<Command>> commands)
+  : mName(name),
+    mDescription(description),
+    mCommands(commands),
+    mVersion("0.0.0")
+{
+}
+
+std::string CommandList::name() const
+{
+  return mName;
+}
+
+void CommandList::setName(const std::string &name)
+{
+  mName = name;
+}
+
+std::string CommandList::description() const
+{
+  return mDescription;
+}
+
+void CommandList::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+std::string CommandList::version() const
+{
+  return mVersion;
+}
+
+void CommandList::setVersion(const std::string &version)
+{
+  mVersion = version;
+}
+
+CommandList::Status CommandList::parse(int argc, const char * const argv[])
+{
+  for (auto &command : mCommands){
+
+  }
+
+  return Status::PARSE_SUCCESS;
+}
+
+CommandList::iterator CommandList::begin()
+{
+  return mCommands.begin();
+}
+
+CommandList::const_iterator CommandList::begin() const
+{
+  return mCommands.cbegin();
+}
+
+CommandList::iterator CommandList::end()
+{
+  return mCommands.end();
+}
+
+CommandList::const_iterator CommandList::end() const
+{
+  return mCommands.cend();
+}
+
+void CommandList::push_back(const std::shared_ptr<Command> &cmd)
+{
+  mCommands.push_back(cmd);
+}
+
+void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
+}
+
+void CommandList::clear()
+{
+  mCommands.clear();
+}
+
+bool CommandList::empty() const
+{
+  return mCommands.empty();
+}
+
+CommandList::size_type CommandList::size() const
+{
+  return mCommands.size();
+}
+
+CommandList &CommandList::operator=(const CommandList &cmdList)
+{
+  if (this != &cmdList) {
+    this->mName = cmdList.mName;
+    this->mDescription = cmdList.mDescription;
+    this->mCommands = cmdList.mCommands;
+    this->mVersion = cmdList.mVersion;
+  }
+  return (*this);
+}
+
+CommandList &CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT
+{
+  if (this != &cmdList) {
+    this->mName = std::move(cmdList.mName);
+    this->mDescription = std::move(cmdList.mDescription);
+    this->mCommands = std::move(cmdList.mCommands);
+    this->mVersion = std::move(cmdList.mVersion);
+  }
+  return (*this);
+}
+
+CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
+{
+  return mCommands.erase(first, last);
+}
+
+void CommandList::showHelp() const
+{
+
+  Console &console = Console::getInstance();
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+  printf("\nUsage: %s <command> [<args>] \n\n", mName.c_str());
+  console.reset();
+
+  printf("%s \n\n", mDescription.c_str());
+
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+  printf("Command list: \n\n");
+  console.reset();
+
+  size_t max_name_size = 7;
+  for (auto &arg : mCommands) {
+    max_name_size = std::max(max_name_size, arg->name().size());
+  }
+  std::string name_tmpl = std::string("%-").append(std::to_string(max_name_size)).append("s %s\n");
+
+  for (auto &arg : mCommands) {
+    printf(name_tmpl.c_str(), arg->name().c_str(), arg->description().c_str());
+  }
+
+}
+
+void CommandList::showVersion() const
+{
+  Console &console = Console::getInstance();
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
+
+  printf_s("Version: %s\n", mVersion.c_str());
+
+  console.reset();
+}
+
+void CommandList::showLicence() const
+{
+  Console &console = Console::getInstance();
+  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
+  console.setFontBold(true);
 }
 
 
