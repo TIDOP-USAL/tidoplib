@@ -678,6 +678,16 @@ public:
   template<typename Window_t>
   std::vector<Entity_t> entitiesInWindow(const Window_t &w) const;
 
+  /*!
+   * \brief Asignación de copia
+   */
+  Entities2D<Entity_t>& operator=(const Entities2D<Entity_t> &entity);
+
+  /*!
+   * \brief Asignación de movimiento
+   */
+  Entities2D<Entity_t>& operator=(Entities2D<Entity_t> &&entity) TL_NOEXCEPT;
+
 };
 
 
@@ -701,7 +711,7 @@ Entities2D<Entity_t>::Entities2D(const Entities2D &entities)
 
 template<typename Entity_t> inline
 Entities2D<Entity_t>::Entities2D(Entities2D &&entities) TL_NOEXCEPT
-  : EntityContainer<Entity_t>(std::forward<Entities2D<Entity_t>>(entities)) 
+  : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 
@@ -747,6 +757,28 @@ std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &w) 
   }
   r_points.resize(j);
   return r_points;
+}
+
+template<typename Entity_t> inline
+Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entity)
+{
+  if (this != &entity) {
+    //this->mEntities = entity.mEntities;
+    EntityContainer<Entity_t>::operator=(entity);
+  }
+  return (*this);
+}
+
+template<typename Entity_t> inline
+Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&entity) TL_NOEXCEPT
+{
+  if (this != &entity) {
+    EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entity));
+    //this->mEntities.clear();
+    //this->mEntities = std::move(entity.mEntities);
+    //entity = 0; ///TODO: Si hago move esto debería ser nulo
+  }
+  return (*this);
 }
 
 /* ---------------------------------------------------------------------------------- */

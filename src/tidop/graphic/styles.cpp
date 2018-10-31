@@ -46,7 +46,7 @@ StylePen::~StylePen()
 {
 }
 
-TL::Color StylePen::getPenColor() const
+TL::Color StylePen::penColor() const
 {
   return mPenColor;
 }
@@ -56,7 +56,7 @@ void StylePen::setPenColor(TL::Color pencolor)
   mPenColor = pencolor;
 }
 
-uint8_t StylePen::getPenWidth() const
+uint8_t StylePen::penWidth() const
 {
   return mPenWidth;
 }
@@ -66,7 +66,7 @@ void StylePen::setPenWidth(uint8_t penwidth)
   mPenWidth = penwidth;
 }
 
-std::string StylePen::getPattern() const
+std::string StylePen::pattern() const
 {
   return mPattern;
 }
@@ -76,7 +76,7 @@ void StylePen::setPattern(std::string pattern)
   mPattern = pattern;
 }
 
-StylePen::PenName StylePen::getPenName() const
+StylePen::PenName StylePen::penName() const
 {
   return mPenName;
 }
@@ -86,7 +86,7 @@ void StylePen::setPenName(PenName penname)
   mPenName = penname;
 }
 
-StylePen::PenCap StylePen::getPenCap() const
+StylePen::PenCap StylePen::penCap() const
 {
   return mPenCap;
 }
@@ -96,7 +96,7 @@ void StylePen::setPenCap(PenCap pencap)
   mPenCap = pencap;
 }
 
-StylePen::PenJoin StylePen::getPenJoin() const
+StylePen::PenJoin StylePen::penJoin() const
 {
   return mPenJoin;
 }
@@ -106,7 +106,7 @@ void StylePen::setPenJoin(PenJoin penjoin)
   mPenJoin = penjoin;
 }
 
-int32_t StylePen::getPerpendicularOffset() const
+int32_t StylePen::perpendicularOffset() const
 {
   return mPerpendicularOffset;
 }
@@ -116,7 +116,7 @@ void StylePen::setPerpendicularOffset(int32_t perpendicularoffset)
   mPerpendicularOffset = perpendicularoffset;
 }
 
-uint32_t StylePen::getPriorityLevel() const
+uint32_t StylePen::priorityLevel() const
 {
   return mPriorityLevel;
 }

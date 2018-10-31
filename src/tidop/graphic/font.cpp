@@ -50,12 +50,12 @@ Font::Font(const std::string name, int size, Style style, bool underline, bool s
 {
 }
 
-std::string Font::getName() const
+std::string Font::name() const
 {
   return mName;
 }
 
-int Font::getSize() const
+int Font::size() const
 {
   return mSize;
 }

@@ -43,13 +43,13 @@ public:
    * \brief Ancho del canvas
    * \return Ancho en pixeles
    */
-  virtual int getWidth() const = 0;
+  virtual int width() const = 0;
 
   /*!
    * \brief Alto del canvas
    * \return Alto del canvas en pixeles
    */
-  virtual int getHeight() const = 0;
+  virtual int height() const = 0;
    
   /*!
    * \brief Establece el ancho del canvas
@@ -99,7 +99,8 @@ public:
 
 #ifdef HAVE_OPENCV
 
-class TL_EXPORT CanvasCV : public Canvas
+class TL_EXPORT CanvasCV
+  : public Canvas
 {
 
 private:
@@ -124,8 +125,8 @@ public:
 
   ~CanvasCV() override;
 
-  int getWidth() const override;
-  int getHeight() const override;
+  int width() const override;
+  int height() const override;
   void setWidth(int width) override;
   void setHeight(int height) override;
   void setSize(int width, int height) override;

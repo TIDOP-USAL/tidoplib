@@ -580,13 +580,13 @@ Command::Status Command::parse(int argc, const char * const argv[])
       std::size_t found_next_short_name = arg_value.find("-");
       if ((found_next_name != std::string::npos  && found_next_name == 0) ||
           (found_next_short_name != std::string::npos && found_next_short_name == 0)){
-        value = "true";
+        //value = "true";
       } else {
         value = arg_value;
         i++;
       }
     } else {
-      value = "true";
+      //value = "true";
     }
 
     cmd_in[arg_cmd_name] = value;
@@ -613,27 +613,54 @@ Command::Status Command::parse(int argc, const char * const argv[])
   for (auto &arg : mCmdArgs) {
     bool bOptional = !arg->isRequired();
     bool bFind = false;
+    bool bFindValue = false;
 
     std::stringstream ss;
     std::string short_name;
     ss << arg->shortName();
     ss >> short_name;
     if (cmd_in.find(short_name) != cmd_in.end()){
-      arg->fromString(cmd_in.find(short_name)->second);
       bFind = true;
+      std::string value = cmd_in.find(short_name)->second;
+      if (value.empty()){
+        if (arg->typeName() == "bool"){
+          value = "true";
+          bFindValue = true;
+        }
+      } else {
+        bFindValue = true;
+      }
+
+      if (bFindValue)
+        arg->fromString(value);
+
     } else if (cmd_in.find(arg->name()) != cmd_in.end()){
-      arg->fromString(cmd_in.find(arg->name())->second);
       bFind = true;
+      std::string value = cmd_in.find(arg->name())->second;
+      if (value.empty()){
+        if (arg->typeName() == "bool"){
+          value = "true";
+          bFindValue = true;
+        }
+      } else {
+        bFindValue = true;
+      }
+
+      if (bFindValue)
+        arg->fromString(value);
+
     } else {
       bFind = false;
     }
 
     if (bFind == false && bOptional == false) {
-      msgError("Falta %s. Parámetro obligatorio ", arg->name().c_str());
-      //printHelp();
+      msgError("Missing mandatory argument: %s", arg->name().c_str());
+      return Command::Status::PARSE_ERROR;
+    } else if (bFind == true && bFindValue == false) {
+      msgError("Missing value for argument: %s", arg->name().c_str());
       return Command::Status::PARSE_ERROR;
     } else if (!arg->isValid()){
-      msgError("Valor de argumento %s no valido", arg->name().c_str());
+      msgError("Invalid argument (%s) value", arg->name().c_str());
       return Command::Status::PARSE_ERROR;
     }
   }

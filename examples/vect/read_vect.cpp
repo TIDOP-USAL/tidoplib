@@ -50,7 +50,7 @@ int main(int argc, char** argv)
   VectorGraphics vector;
   if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;
 
-  msgInfo("Layers: %i", vector.getLayersCount());
+  msgInfo("Layers: %i", vector.layersCount());
 
   graph::GLayer layer;
   vector.read(0, &layer);

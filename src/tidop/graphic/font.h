@@ -104,13 +104,13 @@ public:
    * \brief Devuelve el nombre de la fuente
    * \return Nombre de la fuente
    */
-  std::string getName() const;
+  std::string name() const;
 
   /*!
    * \brief Devuelve el tamaño de la fuente
    * \return Tamaño de la fuente
    */
-  int getSize() const;
+  int size() const;
 
   /*!
    * \brief Fuente en negrita

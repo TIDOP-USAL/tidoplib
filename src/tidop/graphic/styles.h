@@ -145,7 +145,7 @@ public:
    * \return Color de pluma
    * \see Color
    */
-  TL::Color getPenColor() const;
+  TL::Color penColor() const;
 
   /*!
    * \brief Establece el color de Pluma
@@ -158,7 +158,7 @@ public:
    * \brief Devuelve el ancho de pluma
    * \return Ancho de pluma
    */
-  uint8_t getPenWidth() const;
+  uint8_t penWidth() const;
 
   /*!
    * \brief Establece el ancho de pluma
@@ -170,7 +170,7 @@ public:
    * \brief Devuelve el patrón de pluma
    * \return Patrón de pluma
    */
-  std::string getPattern() const;
+  std::string pattern() const;
 
   /*!
    * \brief Establece el patrón de pluma
@@ -182,7 +182,7 @@ public:
    * \brief Devuelve el nombre o id de pluma
    * \return Nombre o id de pluma
    */
-  PenName getPenName() const;
+  PenName penName() const;
 
   /*!
    * \brief Establece el nombre o id de pluma
@@ -194,7 +194,7 @@ public:
    * \brief Devuelve la forma de puntos extremos de las líneas
    * \return Forma de puntos extremos de las líneas
    */
-  PenCap getPenCap() const;
+  PenCap penCap() const;
 
   /*!
    * \brief Establece la forma de puntos extremos de las líneas
@@ -206,7 +206,7 @@ public:
    * \brief Devuelve la forma del punto de unión (vértice) de líneas
    * \return Forma del punto de unión (vértice) de líneas
    */
-   PenJoin getPenJoin() const;
+   PenJoin penJoin() const;
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
@@ -218,7 +218,7 @@ public:
    * \brief Devuelve el desplazamiento desde el centro de la línea.
    * \return Desplazamiento desde el centro de la línea.
    */
-  int32_t getPerpendicularOffset() const;
+  int32_t perpendicularOffset() const;
 
   /*!
    * \brief Establece el desplazamiento desde el centro de la línea.
@@ -231,7 +231,7 @@ public:
    * \brief getPriorityLevel
    * \return
    */
-  uint32_t getPriorityLevel() const;
+  uint32_t priorityLevel() const;
 
   /*!
    * \brief setPriorityLevel

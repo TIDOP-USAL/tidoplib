@@ -466,12 +466,18 @@ private:
 
   void read(OGRLayer *pLayer, graph::GLayer *layer);
   void readEntity(OGRGeometry *ogrGeometry, std::shared_ptr<graph::GraphicEntity> &gEntity);
-  void readPoint(OGRPoint *ogrPoint, std::shared_ptr<graph::GraphicEntity> &gPoint);
-  void readLineString(OGRLineString *ogrLineString, std::shared_ptr<graph::GraphicEntity> &gLineString);
-  void readPolygon(OGRPolygon *ogrPolygon, std::shared_ptr<graph::GraphicEntity> &gPolygon);
-  void readMultiPoint(OGRMultiPoint *ogrMultiPoint, std::shared_ptr<graph::GraphicEntity> &gMultiPoint);
-  void readMultiLineString(OGRMultiLineString *ogrMultiLineString, std::shared_ptr<graph::GraphicEntity> &gMultiLineString);
-  void readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon, std::shared_ptr<graph::GraphicEntity> &gMultiPolygon);
+  std::shared_ptr<graph::GPoint> readPoint(OGRPoint *ogrPoint);
+  std::shared_ptr<graph::GPoint3D> readPoint3D(OGRPoint *ogrPoint);
+  std::shared_ptr<graph::GLineString> readLineString(OGRLineString *ogrLineString);
+  std::shared_ptr<graph::GLineString3D> readLineString3D(OGRLineString *ogrLineString);
+  std::shared_ptr<graph::GPolygon> readPolygon(OGRPolygon *ogrPolygon);
+  std::shared_ptr<graph::GPolygon3D> readPolygon3D(OGRPolygon *ogrPolygon);
+  std::shared_ptr<graph::GMultiPoint> readMultiPoint(OGRMultiPoint *ogrMultiPoint);
+  std::shared_ptr<graph::GMultiPoint3D> readMultiPoint3D(OGRMultiPoint *ogrMultiPoint);
+  std::shared_ptr<graph::GMultiLineString> readMultiLineString(OGRMultiLineString *ogrMultiLineString);
+  std::shared_ptr<graph::GMultiLineString3D> readMultiLineString3D(OGRMultiLineString *ogrMultiLineString);
+  std::shared_ptr<graph::GMultiPolygon> readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon);
+  std::shared_ptr<graph::GMultiPolygon3D> readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon);
 //  void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicStyle> &gStyle);
   void readStyles(OGRStyleMgr *ogrStyle, std::shared_ptr<graph::GraphicEntity> &gStyle);
   void readStylePen(OGRStylePen *ogrStylePen, std::shared_ptr<graph::GraphicEntity> &gStyle);
@@ -586,7 +592,7 @@ public:
    * \brief Devuelve el número de capas
    * \return Número de capas
    */
-  int getLayersCount() const;
+  int layersCount() const;
 
   /*!
    * \brief Crea una capa vacia

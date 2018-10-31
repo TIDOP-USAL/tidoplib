@@ -47,12 +47,12 @@ CanvasCV::~CanvasCV()
 {
 }
 
-int CanvasCV::getWidth() const
+int CanvasCV::width() const
 {
   return mCanvas.cols;
 }
 
-int CanvasCV::getHeight() const
+int CanvasCV::height() const
 {
   return mCanvas.rows;
 }
@@ -86,7 +86,7 @@ void CanvasCV::setBackgroundColor(const TL::Color &color)
 void CanvasCV::drawPoint(const GPoint &point)
 {
   //cv::Scalar color = point.getStylePen()->getPenColor().get<cv::Scalar>();
-  cv::Scalar color = point.getStylePen()->getPenColor().toCvScalar();
+  cv::Scalar color = point.getStylePen()->penColor().toCvScalar();
   PointD pt_offset(point.getStyleSymbol()->getOffsetX(), point.getStyleSymbol()->getOffsetY());
   cv::Point pt = point + pt_offset;
 
@@ -124,13 +124,13 @@ void CanvasCV::drawPoint(const GPoint &point)
   case TL::graph::StyleSymbol::SymbolName::VERTICAL_BAR:
     break;
   default:
-    cv::line(mCanvas, pt, pt, color, point.getStylePen()->getPenWidth());
+    cv::line(mCanvas, pt, pt, color, point.getStylePen()->penWidth());
     break;
   }
 
   StyleLabel *style_label = point.getStyleLabel();
   Font font = style_label->getFont();
-  cv::QtFont qt_font = cv::fontQt(font.getName(),font.getSize(),
+  cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
                                   style_label->getForegroundColor().toCvScalar(),
                                   font.isBold() ? CV_FONT_BOLD : CV_FONT_NORMAL,
                                   font.isItalic() ? CV_STYLE_ITALIC : CV_STYLE_NORMAL);
@@ -149,11 +149,11 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 //  int npts = cv::Mat(pts).rows;
 
   StylePen *stylePen = lineString.getStylePen();
-  if (stylePen->getPattern().empty()){
+  if (stylePen->pattern().empty()){
     ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
   } else {
     //cv::polylines(mCanvas, &cpts, &npts, 1, false, stylePen->getPenColor().toCvScalar(), stylePen->getPenWidth());
-    cv::polylines(mCanvas, pts, false, stylePen->getPenColor().toCvScalar(), stylePen->getPenWidth());
+    cv::polylines(mCanvas, pts, false, stylePen->penColor().toCvScalar(), stylePen->penWidth());
   }
 }
 

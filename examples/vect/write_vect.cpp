@@ -22,10 +22,10 @@ int main(int argc, char** argv)
   fs::path app_path(argv[0]);
   std::string cmd_name = app_path.stem().string();
 
-  std::string vect;
+  fs::path vect;
 
   Command cmd(cmd_name, "Escritura de un vector");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("vect", 'v', "Fichero vectorial de salida", &vect));
+  cmd.push_back(std::make_shared<ArgumentPathRequired>("vect", 'v', "Fichero vectorial de salida", &vect));
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
@@ -48,8 +48,7 @@ int main(int argc, char** argv)
   console.setFontHeight(14);
   MessageManager::getInstance().addListener(&console);
 
-  char file_name[TL_MAX_FNAME];
-  getFileName(vect.c_str(), file_name, TL_MAX_FNAME);
+  std::string file_name = vect.filename().string();
 
   GLayer layer;
   layer.setName(file_name);
@@ -62,12 +61,12 @@ int main(int argc, char** argv)
   layer.push_back(polygon);
 
   VectorGraphics vector;
-  if (VectorGraphics::Status::OPEN_OK == vector.open(vect, VectorGraphics::Mode::Create)) {
+  if (VectorGraphics::Status::OPEN_OK == vector.open(vect.string(), VectorGraphics::Mode::Create)) {
     msgInfo("Create file: %s", vect.c_str());
     vector.create(); ///TODO: Create tiene que tener las propiedades del fichero. Crear un objeto de propiedades de formato como en las imagenes
     // Se añade una capa
     vector.createLayer(file_name);
-    vector.writeLayer(std::string(file_name), layer);
+    vector.writeLayer(file_name, layer);
 
     vector.close();
   }

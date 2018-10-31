@@ -29,6 +29,12 @@ GPolygon::GPolygon(const GPolygon &gPolygon)
 {
 }
 
+GPolygon::GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT
+  : Polygon<Point<double>>(std::forward<Polygon<Point<double>>>(gPolygon)),
+    GraphicEntity(gPolygon)
+{
+}
+
 GPolygon::~GPolygon()
 {
 }
@@ -38,6 +44,15 @@ GPolygon &GPolygon::operator = (const GPolygon &gPolygon)
   if (this != &gPolygon) {
     Polygon<Point<double>>::operator=(gPolygon);
     GraphicEntity::operator=(gPolygon);
+  }
+  return *this;
+}
+
+GPolygon &GPolygon::operator = (GPolygon &&gPolygon) TL_NOEXCEPT
+{
+  if (this != &gPolygon) {
+    Polygon<Point<double>>::operator=(std::forward<Polygon<Point<double>>>(gPolygon));
+    GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon));
   }
   return *this;
 }
