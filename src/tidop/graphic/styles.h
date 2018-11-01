@@ -44,15 +44,15 @@ public:
    */
   enum class PenName : uint8_t
   {
-    SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
-    PEN_NULL,          /*!< Pluma nula (invisible) */  
-    DASH,              /*!<  */ 
-    SHORT_DASH,        /*!<  */  
-    LONG_DASH,         /*!<  */ 
-    DOT_LINE,          /*!< Línea de puntos */  
-    DASH_DOT_LINE,     /*!< Línea de puntos y trazos */  
-    DASH_DOT_DOT_LINE, /*!< Línea de puntos y rayas y puntos */ 
-    ALTERNATE_LINE     /*!< Línea alterna */ 
+    solid,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */
+    null,              /*!< Pluma nula (invisible) */
+    dash,              /*!<  */
+    short_dash,        /*!<  */
+    long_dash,         /*!<  */
+    dot_line,          /*!< Línea de puntos */
+    dash_dot_line,     /*!< Línea de puntos y trazos */
+    dash_dot_dot_line, /*!< Línea de puntos y rayas y puntos */
+    alternate_line     /*!< Línea alterna */
   };
 
   /*!
@@ -60,9 +60,9 @@ public:
    */
   enum class PenCap : uint8_t
   {
-    BUTT,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */  
-    ROUND,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */  
-    PROJECTING      /*!<  Similar a Butt, pero los extremos de la línea se extiende a la mitad de la anchura de la línea más allá de los puntos finales.*/  
+    butt,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */
+    round,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */
+    projective      /*!<  Similar a Butt, pero los extremos de la línea se extiende a la mitad de la anchura de la línea más allá de los puntos finales.*/
   };
 
   /*!
@@ -70,9 +70,9 @@ public:
    */
   enum class PenJoin : uint8_t
   {
-    MITER,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */  
-    ROUNDED,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */  
-    BEVEL       /*!< Unión biselada */  
+    miter,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */
+    rounded,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */
+    bevel       /*!< Unión biselada */
   };
 
 protected:
@@ -622,13 +622,13 @@ public:
    */
   enum class AnchorPosition : uint8_t
   {
-    VERTICAL_BASELINE = 1 << 0,   /*!<  */
-    VERTICAL_CENTER = 1 << 1,     /*!<  */
-    VERTICAL_TOP = 1 << 2,        /*!<  */
-    VERTICAL_BOTTOM = 1 << 3,     /*!<  */
-    HORIZONTAL_LEFT = 1 << 4,     /*!<  */
-    HORIZONTAL_CENTER = 1 << 5,   /*!<  */
-    HORIZONTAL_RIGHT = 1 << 6     /*!<  */
+    vertical_baseline = 1 << 0,   /*!<  */
+    vertical_center = 1 << 1,     /*!<  */
+    vertical_top = 1 << 2,        /*!<  */
+    vertical_bottom = 1 << 3,     /*!<  */
+    horizontal_left = 1 << 4,     /*!<  */
+    horizontal_center = 1 << 5,   /*!<  */
+    horizontal_right = 1 << 6     /*!<  */
   };
 
 protected:

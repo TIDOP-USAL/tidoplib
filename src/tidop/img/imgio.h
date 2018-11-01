@@ -5,7 +5,7 @@
 
 #include <memory>
 #include <array>
-#include <mutex>
+//#include <mutex>
 
 #include "tidop/core/defs.h"
 
@@ -227,32 +227,32 @@ protected:
  * \brief Clase singleton para registrar los drivers de GDAL
  *
  */
-class TL_EXPORT RegisterGdal
-{
-private:
+//class TL_EXPORT RegisterGdal
+//{
+//private:
 
-  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-  static std::mutex sMutex;
+//  static std::unique_ptr<RegisterGdal> sRegisterGdal;
+//  static std::mutex sMutex;
 
-  /*!
-   * \brief Constructor privado
-   */
-  RegisterGdal() {}
+//  /*!
+//   * \brief Constructor privado
+//   */
+//  RegisterGdal() {}
 
-public:
+//public:
 
-  ~RegisterGdal() {}
+//  ~RegisterGdal() {}
 
-  // Se impide la copia y asignación
-  RegisterGdal(RegisterGdal const&) = delete;
-  void operator=(RegisterGdal const&) = delete;
+//  // Se impide la copia y asignación
+//  RegisterGdal(RegisterGdal const&) = delete;
+//  void operator=(RegisterGdal const&) = delete;
 
-  /*!
-   * \brief Método para iniciar GDAL una unica vez
-   */
-  static void init();
+//  /*!
+//   * \brief Método para iniciar GDAL una unica vez
+//   */
+//  static void init();
 
-};
+//};
 
 /*!
  * \brief Ficheros imagen que son gestionados por GDAL
@@ -330,7 +330,6 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
@@ -403,7 +402,7 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  Status createCopy(const char *fileOut) override;
+  Status createCopy(const std::string &fileOut) override;
 
   /*!
    * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -775,7 +774,7 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  //Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
@@ -844,7 +843,7 @@ public:
    * \param[in] fileOut Nombre con el que se guarda el fichero
    * \return
    */
-  virtual Status createCopy(const char *fileOut) override;
+  virtual Status createCopy(const std::string &fileOut) override;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -919,7 +918,7 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  //Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!

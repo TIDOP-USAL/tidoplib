@@ -100,7 +100,7 @@ Color::Color(double hue, double saturation, double value) : mColor(0)
 Color::Color(const std::string &color)
 {
   ///TODO: error inprevisto en test
-  //mColor = stringToInteger(color, TL::Base::HEXADECIMAL);
+  //mColor = static_cast<uint32_t>(stringToInteger(color, TL::Base::HEXADECIMAL));
   mColor = static_cast<uint32_t>(std::stoi(color, nullptr, 16));
 }
 

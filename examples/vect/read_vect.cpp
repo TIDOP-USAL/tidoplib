@@ -54,6 +54,7 @@ int main(int argc, char** argv)
 
   graph::GLayer layer;
   vector.read(0, &layer);
+  vector.close();
 
   return 0;
 }

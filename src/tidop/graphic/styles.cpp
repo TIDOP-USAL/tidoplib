@@ -22,9 +22,9 @@ StylePen::StylePen()
   : mPenColor(0),
     mPenWidth(1),
     mPattern(""),
-    mPenName(PenName::SOLID),
-    mPenCap(PenCap::BUTT),
-    mPenJoin(PenJoin::BEVEL),
+    mPenName(PenName::solid),
+    mPenCap(PenCap::butt),
+    mPenJoin(PenJoin::bevel),
     mPerpendicularOffset(0),
     mPriorityLevel(0)
 {
@@ -387,7 +387,7 @@ StyleLabel::StyleLabel()
     mShadowColor(0),
     mStretch(100.),
     mLabelPlacement(LabelPlacement::p),
-    mAnchorPosition(AnchorPosition::VERTICAL_BASELINE | AnchorPosition::HORIZONTAL_LEFT),
+    mAnchorPosition(AnchorPosition::vertical_baseline | AnchorPosition::horizontal_left),
     mPerpendicularOffset(0),
     bStrikeout(false),
     mPriorityLevel(0)
