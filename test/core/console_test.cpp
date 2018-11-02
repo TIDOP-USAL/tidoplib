@@ -21,14 +21,14 @@ TL_SUPPRESS_WARNINGS
 TEST(ConsoleTest, Constructor)
 {
   Console &console = Console::getInstance();
-  EnumFlags<MessageLevel> flag = console.getMessageLevel();
+  EnumFlags<MessageLevel> flag = console.messageLevel();
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_INFO));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_WARNING));
   EXPECT_FALSE(flag.isActive(MessageLevel::MSG_DEBUG));
 
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
-  flag = console.getMessageLevel();
+  flag = console.messageLevel();
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_ERROR));
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_INFO));
   EXPECT_TRUE(flag.isActive(MessageLevel::MSG_WARNING));
@@ -154,6 +154,34 @@ TEST(ArgumentList, setGetValue)
 
   arg_list.setValue(20);
   EXPECT_EQ(20, arg_list.value());
+
+  arg_list.setValue(50);
+
+}
+
+TEST(ArgumentList, isValid)
+{
+  size_t idx = 1;
+  std::vector<int> list;
+  list.push_back(0);
+  list.push_back(10);
+  list.push_back(20);
+  list.push_back(30);
+  list.push_back(40);
+  ArgumentList_<int, true> arg_list("list", "lista de argumentos", list, &idx);
+  EXPECT_EQ(10, arg_list.value());
+
+  arg_list.setValue(15);
+  EXPECT_EQ(10, arg_list.value());
+  EXPECT_FALSE(arg_list.isValid());
+
+  arg_list.setValue(20);
+  EXPECT_EQ(20, arg_list.value());
+  EXPECT_TRUE(arg_list.isValid());
+
+  arg_list.setValue(50);
+  EXPECT_FALSE(arg_list.isValid());
+
 }
 
 TEST_F(ArgumentTest, typeName)
@@ -191,26 +219,35 @@ TEST_F(ArgumentTest, toString)
 /* ArgumentValidator */
 
 
-//class ArgumentValidatorTest : public testing::Test
-//{
-//  void SetUp() override
-//  {
+class ArgumentValidatorTest : public testing::Test
+{
+  void SetUp() override
+  {
+    validator = new ArgumentValidator<int>();
+  }
 
-//  }
+  void TearDown() override
+  {
+    if (validator) delete validator;
+  }
 
-//  void TearDown() override
-//  {
+public:
 
-//  }
+  ArgumentValidator<int> *validator;
+  ArgumentValidator<double> validator_double;
 
-//  ArgumentValidator *validator;
+};
 
-//};
+TEST_F(ArgumentValidatorTest, Constructor)
+{
+  validator->setRange(0, 150);
+  EXPECT_TRUE(validator->validate(56));
+  EXPECT_FALSE(validator->validate(200));
 
-//TEST_F(ArgumentValidatorTest, Constructor)
-//{
-
-//}
+  validator_double.setRange(3.4, 34.6);
+  EXPECT_TRUE(validator_double.validate(34));
+  EXPECT_FALSE(validator_double.validate(0.));
+}
 
 /* Command Test */
 
@@ -235,7 +272,7 @@ public:
 
   virtual void SetUp() override
   {
-    cmd_help = "-h"; // Muestra la ayuda
+
     cmd_arg_posix = new Command;
     cmd_arg_posix2 = new Command("cmd_name", "cmd description");
     cmd_arg_posix2->push_back(std::make_shared<Argument_<int, true>>("int", 'i', "integer", &val2));
@@ -274,6 +311,9 @@ public:
 TEST_F(CommandTest, DefaultConstructor)
 {
   EXPECT_TRUE(cmd_arg_posix->name().empty());
+  EXPECT_TRUE(cmd_arg_posix->description().empty());
+  EXPECT_STREQ("0.0.0", cmd_arg_posix->version().c_str());
+  EXPECT_TRUE(cmd_arg_posix->empty());
 }
 
 TEST_F(CommandTest, Constructor)
@@ -292,6 +332,12 @@ TEST_F(CommandTest, setGetDescription)
 {
   cmd_arg_posix2->setDescription("New description");
   EXPECT_STREQ("New description", cmd_arg_posix2->description().c_str());
+}
+
+TEST_F(CommandTest, setGetVersion)
+{
+  cmd_arg_posix2->setVersion("1.0.0");
+  EXPECT_STREQ("1.0.0", cmd_arg_posix2->version().c_str());
 }
 
 TEST_F(CommandTest, parseHelp)
@@ -367,6 +413,9 @@ TEST_F(CommandTest, parseOptionsParameter)
   std::array<char const*, 3> argv{"" , "--options", "OPT3"};
   EXPECT_TRUE(cmd_arg_list->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
   EXPECT_EQ(3, idx);
+
+  std::array<char const*, 3> argv2{"" , "--options", "OPT_ERROR"};
+  EXPECT_TRUE(cmd_arg_list->parse(argv2.size(), argv2.data()) == Command::Status::PARSE_ERROR);
 }
 
 TEST_F(CommandTest, size)
@@ -392,6 +441,104 @@ TEST_F(CommandTest, parseTextWithHyphen)
   std::array<char const*, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
   EXPECT_TRUE(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::PARSE_SUCCESS);
 }
+
+
+
+/* CommandList Test */
+
+class CommandListTest : public testing::Test
+{
+public:
+
+  CommandList *cmd_list;
+  CommandList *cmd_list2;
+
+  virtual void SetUp() override
+  {
+    cmd_list = new CommandList;
+
+    std::string file;
+    std::string output;
+    //std::shared_ptr<ArgumentStringRequired> arg = std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file);
+    cmd_list2 = new CommandList("cmd_list", "Lista de comandos");
+
+    std::shared_ptr<Command> cmd(new Command("cmd1","comando 1", {
+                                               std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file)
+                                             }));
+    cmd_list2->push_back(cmd);
+
+    std::shared_ptr<Command> cmd2(new Command("cmd2","comando 2", {
+                                                std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file),
+                                                std::make_shared<ArgumentStringRequired>("output", 'o', "Fichero de salida", &output)
+                                              }));
+    cmd_list2->push_back(cmd2);
+  }
+
+  virtual void TearDown() override
+  {
+    if (cmd_list) delete cmd_list;
+    if (cmd_list2) delete cmd_list2;
+  }
+};
+
+
+TEST_F(CommandListTest, DefaultConstructor)
+{
+  EXPECT_TRUE(cmd_list->name().empty());
+  EXPECT_TRUE(cmd_list->description().empty());
+  EXPECT_STREQ("0.0.0", cmd_list->version().c_str());
+  EXPECT_TRUE(cmd_list->empty());
+  int size = 0;
+  EXPECT_EQ(size, cmd_list->size());
+}
+
+TEST_F(CommandListTest, Constructor)
+{
+  EXPECT_STREQ("cmd_list", cmd_list2->name().c_str());
+  EXPECT_STREQ("Lista de comandos", cmd_list2->description().c_str());
+  EXPECT_STREQ("0.0.0", cmd_list2->version().c_str());
+  EXPECT_FALSE(cmd_list2->empty());
+  EXPECT_EQ(2, cmd_list2->size());
+}
+
+TEST_F(CommandListTest, setGetName)
+{
+  cmd_list->setName("new_name");
+  EXPECT_STREQ("new_name", cmd_list->name().c_str());
+}
+
+TEST_F(CommandListTest, setGetDescription)
+{
+  cmd_list->setDescription("New description");
+  EXPECT_STREQ("New description", cmd_list->description().c_str());
+}
+
+TEST_F(CommandListTest, setGetVersion)
+{
+  cmd_list->setVersion("1.0.0");
+  EXPECT_STREQ("1.0.0", cmd_list->version().c_str());
+}
+
+//TEST_F(CommandListTest, parseHelp)
+//{
+//  std::array<char const*, 2> argv{"" , "-h"};
+//  EXPECT_TRUE(cmd_list2->parse(argv.size(), argv.data()) == CommandList::Status::SHOW_HELP);
+//
+//  std::array<char const*, 2> argv2{"" , "--help"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_HELP);
+//}
+//
+//TEST_F(CommandListTest, parseVersion)
+//{
+//  std::array<char const*, 2> argv2{"" , "--version"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_VERSION);
+//}
+//
+//TEST_F(CommandListTest, parseLicence)
+//{
+//  std::array<char const*, 2> argv2{"" , "--licence"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_LICENCE);
+//}
 
 
 TL_DEFAULT_WARNINGS

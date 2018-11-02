@@ -155,13 +155,6 @@ public:
   const_iterator end() const;
 
   /*!
-   * \brief Agrega un elemento al final del contenedor
-   * \deprecated Use push_back en su lugar
-   */
-  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
-  void add(const std::shared_ptr<GraphicEntity> &entity);
-
-  /*!
    * \brief Agrega una entidad mediante copia al final del contenedor
    * \param[in] entity Entidad que se añade
    */
@@ -226,7 +219,7 @@ public:
    * \brief Devuelve el nombre de la capa
    * \return Nombre de la capa
    */
-  std::string getName() const;
+  std::string name() const;
 
   /*!
    * \brief Establece el nombre de la capa

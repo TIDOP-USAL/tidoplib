@@ -106,7 +106,7 @@ public:
 
 #ifdef HAVE_OPENCV
 
-class TL_EXPORT CanvasCV 
+class TL_EXPORT CanvasCV
   : public Canvas
 {
 

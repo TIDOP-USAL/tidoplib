@@ -10,11 +10,12 @@
 TL_SUPPRESS_WARNINGS
 #include <Eigen/Geometry>
 TL_DEFAULT_WARNINGS
+using namespace Eigen;
 #endif
 
 using namespace TL;
 
-using namespace Eigen;
+
 
 /*!
  * Transformación entre distintas representaciones de una rotatación en el espacio 
@@ -46,17 +47,8 @@ int main(int argc, char** argv)
 //  Console console;
 //  console.setTitle(name);
 //  console.setLogLevel(MessageLevel::MSG_VERBOSE);
-//  
-//  msgInfo("Open file: %s", vect.c_str());
-//  VectorGraphics vector;
-//  if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;
-//
-//  msgInfo("Layers: %i", vector.getLayersCount());
-//
-//  graph::GLayer layer;
-//  vector.read(0, &layer);
 
-
+#ifdef HAVE_EIGEN
   // Paso de matriz de rotación a ángulos de Euler
   Matrix3f m;
   m = AngleAxisf(static_cast<float>(0.25*TL_PI), Vector3f::UnitX()) *
@@ -87,6 +79,6 @@ int main(int argc, char** argv)
 
   TL::math::Matrix<3, 3, double> mat;
   mat.at(0, 0) = 1.1;
-
+#endif
   return 0;
 }

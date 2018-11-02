@@ -14,10 +14,12 @@ target_link_libraries(tl_vect tl_graphic)
 #instalación
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_vect
+    EXPORT "${TARGETS_EXPORT_NAME}"
           RUNTIME DESTINATION bin
 		  LIBRARY DESTINATION lib) 
 else()
   install(TARGETS tl_vect 
+    EXPORT "${TARGETS_EXPORT_NAME}"
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()

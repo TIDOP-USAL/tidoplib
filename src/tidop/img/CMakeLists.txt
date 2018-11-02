@@ -15,6 +15,7 @@ set_property(TARGET tl_img PROPERTY FOLDER "modules")
 #instalación
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_img
+    EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION bin
 		    LIBRARY DESTINATION lib
 			ARCHIVE DESTINATION lib)
@@ -26,6 +27,7 @@ if(BUILD_SHARED_LIBS)
 	                      tl_core tl_geom tl_geospatial ${GDAL_LIBRARY} )
 else()
   install(TARGETS tl_img 
+    EXPORT "${TARGETS_EXPORT_NAME}"
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()

@@ -225,19 +225,21 @@ public:
    * \return Flag con los niveles de mensajes aceptados por la consola
    * \see EnumFlags
    */
+  TL_DEPRECATED("messageLevel")
   EnumFlags<MessageLevel> getMessageLevel() const;
+  EnumFlags<MessageLevel> messageLevel() const;
 
   /*!
    * \brief Imprime un mensaje en la consola
    * \param[in] msg Mensaje
    */
-  void printMessage(const char *msg);
+  void printMessage(const std::string &msg);
 
   /*!
    * \brief Imprime un mensaje de error en la consola
    * \param[in] msg Mensaje
    */
-  void printErrorMessage(const char *msg);
+  void printErrorMessage(const std::string &msg);
 
   /*!
    * \brief Recupera los valores iniciales
@@ -287,7 +289,7 @@ public:
    * \brief Establece el título de la consola
    * \param[in] title Titulo de la consola
    */
-  void setTitle(const char *title);
+  void setTitle(const std::string &title);
 
 protected:
 
@@ -471,6 +473,12 @@ public:
    * \param[in] value Valor del argumento como cadena de texto
    */
   virtual void fromString(const std::string &value) = 0;
+
+  /*!
+   * \brief Comprueba si el valor pasado al argumento es valido
+   * \return
+   */
+  virtual bool isValid() = 0;
 };
 
 
@@ -488,6 +496,8 @@ protected:
    * \brief Valor del argumento
    */
   T *mValue;
+
+  bool bValid;
 
 public:
 
@@ -562,6 +572,8 @@ public:
    * \param[in] value Valor del argumento
    */
   virtual void setValue(const T &value);
+
+  bool isValid() override;
 };
 
 
@@ -588,7 +600,8 @@ Argument_<T, required>::Argument_(const std::string &name,
                                   const std::string &description,
                                   T *value)
   : Argument(name, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
@@ -597,7 +610,8 @@ Argument_<T, required>::Argument_(const char &shortName,
                                   const std::string &description,
                                   T *value)
   : Argument(shortName, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
@@ -607,14 +621,16 @@ Argument_<T, required>::Argument_(const std::string &name,
                                   const std::string &description,
                                   T *value)
   : Argument(name, shortName, description),
-    mValue(value)
+    mValue(value),
+    bValid(true)
 {
 }
 
 template<typename T, bool required> inline
 Argument_<T, required>::Argument_(const Argument_ &argument)
   : Argument(argument),
-    mValue(argument.mValue)
+    mValue(argument.mValue),
+    bValid(argument.bValid)
 {
 }
 
@@ -712,6 +728,9 @@ void Argument_<T, required>::fromString(const std::string &value)
     *mValue = stringToInteger(value);
   } else if (std::is_floating_point<T>::value) {
     *mValue = std::stod(value);
+  } else {
+    /// No se ha podido obtener el valor
+    bValid = false;
   }
 }
 
@@ -720,37 +739,49 @@ template<> inline
 void Argument_<std::string, true>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<std::string, false>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<fs::path, true>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 template<> inline
 void Argument_<fs::path, false>::fromString(const std::string &value)
 {
   *mValue = value;
+  bValid = true;
 }
 
 
 template<typename T, bool required> inline
 T Argument_<T, required>::value() const
 {
-    return *mValue;
+  return *mValue;
 }
 
 template<typename T, bool required> inline
 void Argument_<T, required>::setValue(const T &value)
 {
-    *mValue = value;
+  *mValue = value;
+  bValid = true;
+}
+
+template<typename T, bool required> inline
+bool Argument_<T, required>::isValid()
+{
+  ///TODO: Incluir clase ArgumentValidator
+  return bValid;
 }
 
 
@@ -811,6 +842,7 @@ public:
   void fromString(const std::string &value) override;
 
   void setValue(const T &value) override;
+
 };
 
 
@@ -896,8 +928,11 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
   }
   if (bFind){
     *mIdx = idx;
+    this->bValid = true;
   } else {
-    Argument_<T, required>::setValue(prev_value);
+    //Argument_<T, required>::setValue(prev_value);
+    //*mIdx = -1;
+    this->bValid = false;
   }
 }
 
@@ -907,9 +942,11 @@ void ArgumentList_<T, required>::setValue(const T &value)
   for(auto &_value : mValues){
     if (value == _value){
       Argument_<T, required>::setValue(value);
+      this->bValid = true;
       return;
     }
   }
+  this->bValid = false;
 }
 
 
@@ -926,7 +963,7 @@ template <typename T, typename Enable = void>
 class ArgumentValidator;
 
 template <typename T>
-class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value && typeid(T) != typeid(bool)>::type>
+class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value /*&& typeid(T) != typeid(bool)*/>::type>
 {
 private:
 
@@ -1096,6 +1133,8 @@ private:
    */
   std::string mVersion;
 
+  std::list<std::string> mExamples;
+
 public:
 
   /*!
@@ -1254,6 +1293,11 @@ public:
    */
   void showLicence() const;
 
+  /*!
+   * \brief Añade un ejemplo de uso
+   */
+  void addExample(const std::string &example);
+
 protected:
 
   void init();
@@ -1262,6 +1306,250 @@ protected:
 
 
 /* ---------------------------------------------------------------------------------- */
+
+
+class TL_EXPORT CommandList
+{
+
+public:
+
+  /*!
+   * \brief Estado de salida del parseo del comando
+   */
+  enum class Status
+  {
+    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    SHOW_VERSION,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    SHOW_LICENCE    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+  };
+
+  /*!
+   * \brief Allocator
+   */
+  typedef std::list<std::shared_ptr<Command>>::allocator_type allocator_type;
+
+  /*!
+   * \brief value_type
+   */
+  typedef std::list<std::shared_ptr<Command>>::value_type value_type;
+
+  /*!
+   * \brief Tipo entero sin signo (por lo general size_t)
+   */
+  typedef std::list<std::shared_ptr<Command>>::size_type size_type;
+
+  /*!
+   * \brief Tipo entero con signo (por lo general ptrdiff_t)
+   */
+  typedef std::list<std::shared_ptr<Command>>::difference_type difference_type;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::pointer
+   */
+  typedef std::list<std::shared_ptr<Command>>::pointer pointer;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::const_pointer
+   */
+  typedef std::list<std::shared_ptr<Command>>::const_pointer const_pointer;
+
+  /*!
+   * \brief value_type&
+   */
+  typedef std::list<std::shared_ptr<Command>>::reference reference;
+
+  /*!
+   * \brief const value_type&
+   */
+  typedef std::list<std::shared_ptr<Command>>::const_reference const_reference;
+
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
+  typedef std::list<std::shared_ptr<Command>>::iterator iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
+  typedef std::list<std::shared_ptr<Command>>::const_iterator const_iterator;
+
+
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Command>> mCommands;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
+public:
+
+  CommandList();
+
+  CommandList(const std::string &name, const std::string &description);
+
+  CommandList(const CommandList &commandList);
+
+  /*!
+   * \brief Constructora de lista
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   * \param[in] arguments listado de comandos
+   */
+  CommandList(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Command>> commands);
+
+
+  /*!
+   * \brief Devuelve el nombre del programa
+   * \return Nombre del programa
+   */
+  std::string name() const;
+
+  /*!
+   * \brief Establece el nombre del programa
+   * \param[in] name Nombre del programa
+   */
+  void setName(const std::string &name);
+
+  /*!
+   * \brief Devuelve la descripción del comando
+   * \return Descripción del comando
+   */
+  std::string description() const;
+
+  /*!
+   * \brief Establece la descripción del comando
+   * \param[in] description Descripción del comando
+   */
+  void setDescription(const std::string &description);
+
+  /*!
+   * \brief Versión del programa
+   * \return
+   */
+  std::string version() const;
+
+  /*!
+   * \brief Establece la versión del programa
+   * \param[in] version Versión del programa
+   */
+  void setVersion(const std::string &version);
+
+  /*!
+   * \brief parsea los argumentos de entrada
+   * \param[in] argc
+   * \param[in] argv
+   * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
+   * \see CmdParser::Status
+   */
+  Status parse(int argc, const char* const argv[]);
+
+  /*!
+   * \brief Devuelve un iterador al inicio
+   * \return Iterador al primer elemento
+   */
+  iterator begin();
+
+  /*!
+   * \brief Devuelve un iterador constante al inicio
+   * \return Iterador al primer elemento
+   */
+  const_iterator begin() const;
+
+  /*!
+   * \brief Devuelve un iterador al siguiente elemento después del último comando
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del último comando
+   */
+  iterator end();
+
+  /*!
+   * \brief Devuelve un iterador constante al siguiente elemento después del último comando
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del último comando
+   */
+  const_iterator end() const;
+
+  /*!
+   * \brief Agrega un comando mediante copia al final
+   * \param[in] cmd Comando que se añade
+   */
+  void push_back(const std::shared_ptr<Command> &cmd);
+
+  /*!
+   * \brief Agrega un comando mediante movimiento al final
+   * \param[in] cmd Comando que se añade
+   */
+  void push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT;
+
+  /*!
+   * \brief Elimina los comandos
+   */
+  void clear();
+
+  /*!
+   * \brief Comprueba si no hay comandos
+   * \return true si el contenedor está vacío y false en caso contrario
+   */
+  bool empty() const;
+
+  /*!
+   * \brief Devuelve el número de comandos
+   * \return Número de comandos
+   */
+  size_type size() const;
+
+  /*!
+   * \brief Asignación de copia
+   */
+  CommandList& operator=(const CommandList& cmdList);
+
+  /*!
+   * \brief Asignación de movimiento
+   */
+  CommandList& operator=(CommandList &&cmdList) TL_NOEXCEPT;
+
+  /*!
+   * \brief Elimina el intervalo
+   */
+  iterator erase(const_iterator first, const_iterator last);
+
+  /*!
+   * \brief Muestra la ayuda en la consola
+   */
+  void showHelp() const;
+
+  /*!
+   * \brief Muestra la versión en la consola
+   */
+  void showVersion() const;
+
+  /*!
+   * \brief Muestra la licencia en la consola
+   */
+  void showLicence() const;
+
+};
+
+
+/* ---------------------------------------------------------------------------------- */
+
 
 
 /*!
@@ -1523,7 +1811,7 @@ private:
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 /* Deprecated class */
 
@@ -2002,7 +2290,7 @@ public:
 
 /* End deprecated class */
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /* ---------------------------------------------------------------------------------- */

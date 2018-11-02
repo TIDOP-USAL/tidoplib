@@ -15,7 +15,7 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
     include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	include_directories(${GTEST_INCLUDE_DIRS})
+    include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)
@@ -23,12 +23,12 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
 	
-	target_link_libraries(${the_target} gtest_main)
+    target_link_libraries(${the_target} gtest_main)
     target_link_libraries(${the_target} tl_core tl_geom)
-	target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY})
-	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+    target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY})
+    target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
 	
-	# Añade el proyecto de ejmplo a la carpeta 'test/core'
+    # Añade el proyecto de ejmplo a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/geometry")
 
     set_target_properties(${the_target} PROPERTIES
@@ -53,7 +53,7 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     #    COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
     #endif()
 	
-	add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
+    add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
 	
   ENDMACRO()
 

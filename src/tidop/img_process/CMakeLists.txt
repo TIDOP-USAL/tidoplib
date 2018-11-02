@@ -31,10 +31,12 @@ set_property(TARGET tl_imgprocess PROPERTY FOLDER "modules")
 #instalación
 if(BUILD_SHARED_LIBS)
   install(TARGETS tl_imgprocess
+    EXPORT "${TARGETS_EXPORT_NAME}"
           RUNTIME DESTINATION bin
 		  LIBRARY DESTINATION lib) 
 else()
   install(TARGETS tl_imgprocess 
+    EXPORT "${TARGETS_EXPORT_NAME}"
           LIBRARY DESTINATION lib 
           ARCHIVE DESTINATION lib)
 endif()

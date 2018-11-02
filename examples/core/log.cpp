@@ -12,7 +12,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-#include <vld.h>
+//#include <vld.h>
 
 using namespace TL;
 
@@ -20,11 +20,13 @@ int main(int argc, char** argv)
 {
 
   const char *name = "Escritura de log";
+  fs::path app_path = argv[0];
+  std::string cmd_name = app_path.stem().string();
 
   std::string log_file;
 
   // Se definen los parámetros y opciones
-  Command cmd(name, "Ejemplo de escritura de un fichero log");
+  Command cmd(cmd_name, "Ejemplo de escritura de un fichero log");
   cmd.push_back(std::make_shared<ArgumentStringOptional>("log", "Fichero log. Por defecto se toma el nombre de la aplicación con la extensión .log", &log_file));
 
   // Parseo de los argumentos y comprobación de los mismos

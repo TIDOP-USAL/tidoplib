@@ -46,6 +46,12 @@ public:
    */
   GPolygon(const GPolygon &gPolygon);
 
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] gPolygon Objeto Polygon que se mueve
+   */
+  GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT;
+
   ~GPolygon() override;
 
   /*!
@@ -54,6 +60,12 @@ public:
    * \return Referencia al objeto
    */
   GPolygon &operator = (const GPolygon &gPolygon);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] gPolygon Objeto Polygon que se mueve
+   */
+  GPolygon &operator = (GPolygon &&gPolygon) TL_NOEXCEPT;
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

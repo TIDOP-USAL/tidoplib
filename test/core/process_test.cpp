@@ -100,8 +100,8 @@ TEST(BatchProcess, add)
   EXPECT_FALSE(batch.isRunning());
   batch.run(nullptr, nullptr);
 
-  EXPECT_CALL(mock_process, run(_))
-  //          .Times(1);
+//  EXPECT_CALL(mock_process, run(_))
+//            .Times(1);
 }
 
 #endif
