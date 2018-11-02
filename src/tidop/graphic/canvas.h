@@ -52,6 +52,12 @@ public:
   virtual int height() const = 0;
    
   /*!
+   * \brief Color de fondo del canvas
+   * \return Color de fondo
+   */
+  virtual Color backgroundColor() const = 0;
+
+  /*!
    * \brief Establece el ancho del canvas
    * \param width Ancho del canvas
    */
@@ -75,13 +81,14 @@ public:
    * \param color Color
    * \see Color
    */
-  virtual void setBackgroundColor(const TL::Color &color) = 0;
+  virtual void setBackgroundColor(const Color &color) = 0;
 
   /*!
    * \brief Dibuja un punto en el canvas
    * \param point Punto
    */
   virtual void drawPoint(const GPoint &point) = 0;
+  virtual void drawPoint(const geometry::PointD &point, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja una polilinea en el canvas
@@ -107,7 +114,7 @@ private:
 
   int mWidth;
   int mHeight;
-  TL::Color mBgColor;
+  Color mBgColor;
   cv::Mat mCanvas;
 
 public:
@@ -127,11 +134,13 @@ public:
 
   int width() const override;
   int height() const override;
+  Color backgroundColor() const override;
   void setWidth(int width) override;
   void setHeight(int height) override;
   void setSize(int width, int height) override;
-  void setBackgroundColor(const TL::Color &color) override;
+  void setBackgroundColor(const Color &color) override;
   void drawPoint(const GPoint &point) override;
+  void drawPoint(const geometry::PointD &point, const GraphicStyle &style) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
 

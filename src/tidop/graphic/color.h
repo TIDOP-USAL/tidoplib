@@ -915,6 +915,11 @@ protected:
   //friend class IColorModel;
 };
 
+inline bool operator == (const Color &color1, const Color &color2)
+{
+  return (static_cast<int>(color1) == static_cast<int>(color2));
+}
+
 /*!
  * \brief Interfaz modelo de color
  */
