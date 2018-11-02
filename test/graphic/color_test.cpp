@@ -945,6 +945,12 @@ TEST_F(ColorTest, NameConstructor)
   EXPECT_EQ(15794175, static_cast<int>(*color2));
 }
 
+TEST_F(ColorTest, equal)
+{
+  graph::Color azure(graph::Color::NAME::Azure);
+  EXPECT_TRUE(azure == *color2);
+}
+
 TEST_F(ColorTest, DefaultConstructorColorRGB)
 {
   EXPECT_EQ(0, rgb1.red());

@@ -25,6 +25,10 @@ namespace graph
 class Canvas;
 class GraphicStyle;
 
+/// TODO: Painter virtual
+/// setStyle y push_style /pop_style (patron status)
+
+
 class TL_EXPORT Painter
 {
 protected:
@@ -62,6 +66,7 @@ public:
    * \param[in] point Punto
    */
   void drawPoint(const GPoint &point);
+  void drawPoint(const geometry::PointD &point);
 
   /*!
    * \brief Dibuja una polilinea
