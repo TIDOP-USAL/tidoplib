@@ -43,6 +43,31 @@ VrtRaster::VrtRaster()
 {
 }
 
+int VrtRaster::getRows() const
+{
+  return mRows;
+}
+
+int VrtRaster::getCols() const
+{
+  return mCols;
+}
+
+int VrtRaster::getBands() const
+{
+  return mBands;
+}
+
+DataType VrtRaster::getDataType() const
+{
+  return mDataType;
+}
+
+int VrtRaster::getColorDepth() const
+{
+  return mColorDepth;
+}
+
 void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const
 {
   WindowI wAll(PointI(0, 0), PointI(this->mCols, this->mRows));   // Ventana total de imagen
@@ -55,22 +80,6 @@ void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset)
 }
 
 #ifdef HAVE_GDAL
-
-/* ---------------------------------------------------------------------------------- */
-
-//std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
-//std::mutex RegisterGdal::sMutex;
-
-//void RegisterGdal::init()
-//{
-//  if (sRegisterGdal.get() == nullptr) {
-//    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
-//    if (sRegisterGdal.get() == nullptr) {
-//      sRegisterGdal.reset(new RegisterGdal());
-//      GDALAllRegister();
-//    }
-//  }
-//}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -235,12 +244,15 @@ GdalRaster::~GdalRaster()
     if (!pTempDataSet) {
       msgError("No se pudo crear la imagen");
     } else {
-      GDALClose((GDALDatasetH)pTempDataSet);
+      GDALClose(static_cast<GDALDatasetH>(pTempDataSet));
     }
     tmp = pDataset->GetFileList();
   }
 
-  if (pDataset) GDALClose(pDataset), pDataset = nullptr; 
+  if (pDataset) {
+    GDALClose(static_cast<GDALDatasetH>(pDataset));
+    pDataset = nullptr;
+  }
 
   if (bTempFile) {
     for (size_t i = 0; i < sizeof(**tmp); i++)
@@ -261,76 +273,11 @@ void GdalRaster::close()
   mFile = "";
 }
 
-//GdalRaster::Status GdalRaster::open(const char *file, GdalRaster::Mode mode, FileOptions *options)
-//{
-//  close();
-
-//  mFile = file;
-//  //char ext[TL_MAX_EXT];
-//  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
-//  std::string ext = fs::extension(file);
-
-//  const char *driverName = getDriverFromExt(ext.c_str());
-//  if (driverName == nullptr) return Status::OPEN_FAIL;
-
-//  GDALAccess gdal_access;
-//  switch (mode) {
-//  case Mode::Read:
-//    gdal_access = GA_ReadOnly;
-//    break;
-//  case Mode::Update:
-//    gdal_access = GA_Update;
-//    break;
-//  case Mode::Create:
-//    gdal_access = GA_Update;
-//    break;
-//  default:
-//    gdal_access = GA_ReadOnly;
-//    break;
-//  }
-
-//  bTempFile = false;
-
-//  if (mode == Mode::Create) {
-//    pDriver = GetGDALDriverManager()->GetDriverByName(driverName);
-//    if (pDriver == nullptr) return Status::OPEN_FAIL;
-//    char **gdalMetadata = pDriver->GetMetadata();
-//    if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
-//      // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
-//      pDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-
-//      bTempFile = true;
-//      fs::path path = fs::temp_directory_path();
-//      fs::path file_path(file);
-
-//      mTempName = path.string(); //native() da error en VS
-//      mTempName.append(file_path.stem().string());
-//      mTempName.append(".tif");
-//    }
-//    // Se crea el directorio si no existe
-//    char dir[TL_MAX_PATH];
-//    if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
-//      if ( createDir(dir) == -1) return Status::OPEN_FAIL;
-//    return Status::OPEN_OK;
-//  } else {
-//    pDataset = static_cast<GDALDataset *>(GDALOpen(file, gdal_access));
-//    pDataset->GetMetadataDomainList();
-//    if (pDataset == nullptr) {
-//      return Status::OPEN_FAIL;
-//    } else {
-//      update();
-//      return Status::OPEN_OK;
-//    }
-//  }
-//}
-
 GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mode, FileOptions *options)
 {
   close();
 
   mFile = file;
-  //char ext[TL_MAX_EXT];
-  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
   std::string ext = fs::extension(file);
 
   const char *driverName = getDriverFromExt(ext.c_str());
@@ -366,7 +313,7 @@ GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mo
       fs::path path = fs::temp_directory_path();
       fs::path file_path(file);
 
-      mTempName = path.string(); //native() da error en VS
+      mTempName = path.string();
       mTempName.append(file_path.stem().string());
       mTempName.append(".tif");
     }
@@ -868,7 +815,7 @@ void RawImage::close()
   mFile = "";
 }
 
-RawImage::Status RawImage::open(const char *file, RawImage::Mode mode, FileOptions *options)
+RawImage::Status RawImage::open(const std::string &file, RawImage::Mode mode, FileOptions *options)
 {
   int  ret;
   
@@ -916,24 +863,24 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode, FileOptio
 #endif
 #ifdef HAVE_LIBRAW
   
-    if ( (ret = mRawProcessor->open_file(file)) != LIBRAW_SUCCESS) {
-      msgError("Cannot open_file %s: %s", file, libraw_strerror(ret));
+    if ( (ret = mRawProcessor->open_file(mFile.c_str())) != LIBRAW_SUCCESS) {
+      msgError("Cannot open_file %s: %s", mFile.c_str(), libraw_strerror(ret));
       return Status::OPEN_FAIL;
     }
 
     if ((ret = mRawProcessor->unpack()) != LIBRAW_SUCCESS) {
-      msgError("Cannot unpack %s: %s", file, libraw_strerror(ret));
+      msgError("Cannot unpack %s: %s", mFile.c_str(), libraw_strerror(ret));
       return Status::OPEN_FAIL;
     }
 
     // .... esto se deberia mover de aqui?
     if ((ret = mRawProcessor->dcraw_process()) != LIBRAW_SUCCESS) {
-      msgError("Cannot do postpocessing on %s: %s", file, libraw_strerror(ret));
+      msgError("Cannot do postpocessing on %s: %s", mFile.c_str(), libraw_strerror(ret));
       return Status::OPEN_FAIL;
     }
 
     if ((mProcessedImage = mRawProcessor->dcraw_make_mem_image(&ret)) == NULL) {
-      msgError("Cannot unpack %s to memory buffer: %s" , file, libraw_strerror(ret));
+      msgError("Cannot unpack %s to memory buffer: %s" , mFile.c_str(), libraw_strerror(ret));
       return Status::OPEN_FAIL;
     } else  
       update();
@@ -944,11 +891,6 @@ RawImage::Status RawImage::open(const char *file, RawImage::Mode mode, FileOptio
 #endif
 
   return Status::OPEN_OK;
-}
-
-RawImage::Status RawImage::open(const std::string &file, RawImage::Mode mode, FileOptions *options)
-{
-  return open(file.c_str(), mode, options);
 }
 
 RawImage::Status RawImage::create(int rows, int cols, int bands, DataType type)
@@ -1086,11 +1028,11 @@ RawImage::Status RawImage::write(const uchar *buff, const Helmert2D<PointI> *trf
 
 #endif // HAVE_OPENCV
 
-RawImage::Status RawImage::createCopy(const char *fileOut)
+RawImage::Status RawImage::createCopy(const std::string &fileOut)
 {
   Status status = Status::SUCCESS;
   char ext[TL_MAX_EXT];
-  if (getFileExtension(fileOut, ext, TL_MAX_EXT) != 0) return Status::FAILURE;
+  if (getFileExtension(fileOut.c_str(), ext, TL_MAX_EXT) != 0) return Status::FAILURE;
 #ifdef HAVE_EDSDK
 
   if (bCanon) {
@@ -1106,7 +1048,7 @@ RawImage::Status RawImage::createCopy(const char *fileOut)
 
     EdsError err;
     EdsStreamRef output_stream;
-    err = EdsCreateFileStream(fileOut, kEdsFileCreateDisposition_CreateAlways, kEdsAccess_Write, &output_stream);
+    err = EdsCreateFileStream(fileOut.c_str(), kEdsFileCreateDisposition_CreateAlways, kEdsAccess_Write, &output_stream);
     if (err == EDS_ERR_OK) {
       EdsImageRef input_image;
       err = EdsCreateImageRef(mInputStream, &input_image);
@@ -1218,39 +1160,6 @@ void RasterGraphics::close()
 {
   if (mImageFormat) mImageFormat->close();
 }
-
-//RasterGraphics::Status RasterGraphics::open(const char *file, RasterGraphics::Mode mode, FileOptions *options)
-//{
-//  close();
-
-//  if (!(file && strcmp(file, "") != 0)) return Status::OPEN_FAIL;
-
-//  mFile = file;
-////  char ext[TL_MAX_EXT];
-////  if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return Status::OPEN_FAIL;
-//  std::string ext = fs::extension(file);
-
-//#ifdef HAVE_GDAL
-//  const char *frtName;
-//  if ((frtName = GdalRaster::getDriverFromExt(ext.c_str())) != nullptr) {
-//    // Existe un driver de GDAL para el formato de imagen
-//    mImageFormat = std::make_unique<GdalRaster>();
-//  } else
-//#endif
-//#ifdef HAVE_RAW
-//  if (RawImage::isRawExt(ext.c_str())) {
-//    mImageFormat = std::make_unique<RawImage>();
-//  } else
-//#endif
-//  {
-//    // Otros formatos
-//  }
-
-//  if (mImageFormat && mImageFormat->open(file, mode) == Status::OPEN_OK) {
-//    update();
-//    return Status::OPEN_OK;
-//  } else return Status::OPEN_FAIL;
-//}
 
 RasterGraphics::Status RasterGraphics::open(const std::string &file, RasterGraphics::Mode mode, FileOptions *options)
 {
@@ -1516,37 +1425,11 @@ void RasterGraphics::update()
 /* ---------------------------------------------------------------------------------- */
 
 
-//RasterGraphics::Status GeoRasterGraphics::open(const char *file, RasterGraphics::Mode mode, FileOptions *options)
-//{
-//  close();
-
-//  mFile = file;
-//  //char ext[TL_MAX_EXT];
-//  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
-//  std::string ext = fs::extension(file);
-//#ifdef HAVE_GDAL
-//  if (const char *driverName = GdalRaster::getDriverFromExt(ext.c_str())) {
-//    // Existe un driver de GDAL para el formato de imagen
-//    mImageFormat = std::make_unique<GdalGeoRaster>();
-//  } else {
-//    // Otros formatos
-//  }
-//#endif
-
-//  if (mImageFormat && mImageFormat->open(file, mode) == Status::OPEN_OK) {
-//    update();
-//    return Status::OPEN_OK;
-//  } else
-//    return Status::OPEN_FAIL;
-//}
-
 RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mode mode, FileOptions *options)
 {
   close();
 
   mFile = file;
-  //char ext[TL_MAX_EXT];
-  //if (getFileExtension(file, ext, TL_MAX_EXT) != 0) return File::Status::OPEN_FAIL;
   std::string ext = fs::extension(file);
 #ifdef HAVE_GDAL
   if (const char *driverName = GdalRaster::getDriverFromExt(ext.c_str())) {
