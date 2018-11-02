@@ -746,21 +746,21 @@ std::shared_ptr<StylePen> GdalVector::readStylePen(OGRStylePen *ogrStylePen)
     /* Pen Color */
     const char *hexColor = ogrStylePen->Color(bDefault);
     if (!bDefault) {
-      stylePen->setPenColor(TL::Color(hexColor+1));
+      stylePen->setColor(TL::Color(hexColor+1));
     }
 
     /* Pen Cap */
     const char *cap = ogrStylePen->Cap(bDefault);
     if (!bDefault) {
-      StylePen::PenCap penCap;
+      StylePen::Cap penCap;
       if (strcmp(cap, "cap:r") == 0) {
-        penCap = StylePen::PenCap::round;
+        penCap = StylePen::Cap::round;
       } else if (strcmp(cap, "cap:p") == 0) {
-        penCap = StylePen::PenCap::projective;
+        penCap = StylePen::Cap::projective;
       } else {
-        penCap = StylePen::PenCap::butt;
+        penCap = StylePen::Cap::butt;
       }
-      stylePen->setPenCap(penCap);
+      stylePen->setCap(penCap);
     }
 
     /* Pattern */
@@ -772,41 +772,41 @@ std::shared_ptr<StylePen> GdalVector::readStylePen(OGRStylePen *ogrStylePen)
     /* PenJoin */
     const char *join = ogrStylePen->Join(bDefault);
     if (!bDefault) {
-      StylePen::PenJoin penJoin;
+      StylePen::Join penJoin;
       if (strcmp(join, "j:r") == 0) {
-        penJoin = StylePen::PenJoin::rounded;
+        penJoin = StylePen::Join::rounded;
       } else if (strcmp(join, "j:b") == 0) {
-        penJoin = StylePen::PenJoin::bevel;
+        penJoin = StylePen::Join::bevel;
       } else {
-        penJoin = StylePen::PenJoin::miter;
+        penJoin = StylePen::Join::miter;
       }
-      stylePen->setPenJoin(penJoin);
+      stylePen->setJoin(penJoin);
     }
 
     /* Pen Name or ID */
     const char *name = ogrStylePen->Id(bDefault);
     if (!bDefault) {
-      StylePen::PenName penName;
+      StylePen::Name penName;
       if (strcmp(name, "ogr-pen-1") == 0) {
-        penName = StylePen::PenName::null;
+        penName = StylePen::Name::null;
       } else if (strcmp(name, "ogr-pen-2") == 0) {
-        penName = StylePen::PenName::dash;
+        penName = StylePen::Name::dash;
       } else if (strcmp(name, "ogr-pen-3") == 0) {
-        penName = StylePen::PenName::short_dash;
+        penName = StylePen::Name::short_dash;
       } else if (strcmp(name, "ogr-pen-4") == 0) {
-        penName = StylePen::PenName::long_dash;
+        penName = StylePen::Name::long_dash;
       } else if (strcmp(name, "ogr-pen-5") == 0) {
-        penName = StylePen::PenName::dot_line;
+        penName = StylePen::Name::dot_line;
       } else if (strcmp(name, "ogr-pen-6") == 0) {
-        penName = StylePen::PenName::dash_dot_line;
+        penName = StylePen::Name::dash_dot_line;
       } else if (strcmp(name, "ogr-pen-7") == 0) {
-        penName = StylePen::PenName::dash_dot_dot_line;
+        penName = StylePen::Name::dash_dot_dot_line;
       } else if (strcmp(name, "ogr-pen-8") == 0) {
-        penName = StylePen::PenName::alternate_line;
+        penName = StylePen::Name::alternate_line;
       } else {
-        penName = StylePen::PenName::solid;
+        penName = StylePen::Name::solid;
       }
-      stylePen->setPenName(penName);
+      stylePen->setName(penName);
     }
 
     /* Pen Width */
@@ -831,7 +831,7 @@ std::shared_ptr<StylePen> GdalVector::readStylePen(OGRStylePen *ogrStylePen)
         penWidth = width;
         break;
       }
-      stylePen->setPenWidth(static_cast<uint8_t>(penWidth));
+      stylePen->setWidth(static_cast<uint8_t>(penWidth));
     }
 
     /* Pen Perpendicular Offset */

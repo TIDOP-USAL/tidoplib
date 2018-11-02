@@ -22,9 +22,9 @@ StylePen::StylePen()
   : mPenColor(0),
     mPenWidth(1),
     mPattern(""),
-    mPenName(PenName::solid),
-    mPenCap(PenCap::butt),
-    mPenJoin(PenJoin::bevel),
+    mPenName(Name::solid),
+    mPenCap(Cap::butt),
+    mPenJoin(Join::bevel),
     mPerpendicularOffset(0),
     mPriorityLevel(0)
 {
@@ -46,22 +46,22 @@ StylePen::~StylePen()
 {
 }
 
-TL::Color StylePen::penColor() const
+TL::Color StylePen::color() const
 {
   return mPenColor;
 }
 
-void StylePen::setPenColor(TL::Color pencolor)
+void StylePen::setColor(TL::Color pencolor)
 {
   mPenColor = pencolor;
 }
 
-uint8_t StylePen::penWidth() const
+uint8_t StylePen::width() const
 {
   return mPenWidth;
 }
 
-void StylePen::setPenWidth(uint8_t penwidth) 
+void StylePen::setWidth(uint8_t penwidth) 
 {
   mPenWidth = penwidth;
 }
@@ -76,34 +76,34 @@ void StylePen::setPattern(std::string pattern)
   mPattern = pattern;
 }
 
-StylePen::PenName StylePen::penName() const
+StylePen::Name StylePen::name() const
 {
   return mPenName;
 }
 
-void StylePen::setPenName(PenName penname) 
+void StylePen::setName(Name name) 
 {
-  mPenName = penname;
+  mPenName = name;
 }
 
-StylePen::PenCap StylePen::penCap() const
+StylePen::Cap StylePen::cap() const
 {
   return mPenCap;
 }
 
-void StylePen::setPenCap(PenCap pencap) 
+void StylePen::setCap(Cap cap) 
 {
-  mPenCap = pencap;
+  mPenCap = cap;
 }
 
-StylePen::PenJoin StylePen::penJoin() const
+StylePen::Join StylePen::join() const
 {
   return mPenJoin;
 }
 
-void StylePen::setPenJoin(PenJoin penjoin) 
+void StylePen::setJoin(Join join) 
 {
-  mPenJoin = penjoin;
+  mPenJoin = join;
 }
 
 int32_t StylePen::perpendicularOffset() const
@@ -169,7 +169,7 @@ StyleBrush::~StyleBrush()
 {
 }
 
-TL::Color StyleBrush::getForeColor() const
+TL::Color StyleBrush::foreColor() const
 {
   return mForeColor;
 }
@@ -179,7 +179,7 @@ void StyleBrush::setForeColor(TL::Color forecolor)
   mForeColor = forecolor;
 }
 
-TL::Color StyleBrush::getBackColor() const
+TL::Color StyleBrush::backColor() const
 {
   return mBackColor;
 }
@@ -189,7 +189,7 @@ void StyleBrush::setBackColor(TL::Color backcolor)
   mBackColor = backcolor;
 }
 
-StyleBrush::BrushName StyleBrush::getBrushName() const
+StyleBrush::BrushName StyleBrush::brushName() const
 {
   return mBrushName;
 }
@@ -199,7 +199,7 @@ void StyleBrush::setBrushName(BrushName brushname)
   mBrushName = brushname;
 }
 
-double StyleBrush::getAngle() const
+double StyleBrush::angle() const
 {
   return mAngle;
 }
@@ -209,7 +209,7 @@ void StyleBrush::setAngle(double angle)
   mAngle = angle;
 }
 
-double StyleBrush::getScalingFactor() const
+double StyleBrush::scalingFactor() const
 {
   return mScalingFactor;
 }
@@ -219,12 +219,12 @@ void StyleBrush::setScalingFactor(double scalingFactor)
   mScalingFactor = scalingFactor;
 }
 
-double StyleBrush::getSpacingX() const
+double StyleBrush::spacingX() const
 {
   return mSpacing[0];
 }
 
-double StyleBrush::getSpacingY() const
+double StyleBrush::spacingY() const
 {
   return mSpacing[1];
 }
@@ -234,7 +234,7 @@ void StyleBrush::setSpacing(double spacingX, double spacingY )
     mSpacing[0] = spacingX; mSpacing[1] = spacingY;
 }
 
-uint32_t StyleBrush::getPriorityLevel() const
+uint32_t StyleBrush::priorityLevel() const
 {
   return mPriorityLevel;
 }
@@ -609,12 +609,22 @@ StylePen *GraphicStyle::getStylePen() const
   return mStylePen.get();
 }
 
+StylePen *GraphicStyle::stylePen() const
+{
+  return mStylePen.get();
+}
+
 void GraphicStyle::setStylePen(const std::shared_ptr<StylePen> &stylePen)
 {
   mStylePen = stylePen;
 }
 
 StyleBrush *GraphicStyle::getStyleBrush() const
+{
+  return mStyleBrush.get();
+}
+
+StyleBrush *GraphicStyle::styleBrush() const
 {
   return mStyleBrush.get();
 }
@@ -629,12 +639,22 @@ StyleSymbol *GraphicStyle::getStyleSymbol() const
   return mStyleSymbol.get();
 }
 
+StyleSymbol *GraphicStyle::styleSymbol() const
+{
+  return mStyleSymbol.get();
+}
+
 void GraphicStyle::setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol)
 {
   mStyleSymbol = styleSymbol;
 }
 
 StyleLabel *GraphicStyle::getStyleLabel() const
+{
+  return mStyleLabel.get();
+}
+
+StyleLabel *GraphicStyle::styleLabel() const
 {
   return mStyleLabel.get();
 }

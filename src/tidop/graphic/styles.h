@@ -42,7 +42,7 @@ public:
   /*!
    * \brief Nombres de pluma
    */
-  enum class PenName : uint8_t
+  enum class Name : uint8_t
   {
     solid,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */
     null,              /*!< Pluma nula (invisible) */
@@ -58,7 +58,7 @@ public:
   /*!
    * \brief Forma de puntos extremos de las líneas.
    */
-  enum class PenCap : uint8_t
+  enum class Cap : uint8_t
   {
     butt,           /*!< Los extremos de la línea no se extienden más allá de los puntos finales. Este es el valor predeterminado. */
     round,          /*!< Terminar líneas con un círculo cuyo diámetro es igual a la anchura de la línea. */
@@ -68,7 +68,7 @@ public:
   /*!
    * \brief Forma del punto de unión (vértice) de líneas.
    */
-  enum class PenJoin : uint8_t
+  enum class Join : uint8_t
   {
     miter,      /*!< Extender el borde exterior de las líneas hasta que se toquen. Este es el valor predeterminado */
     rounded,    /*!< Une la líneas con un arco cuyo centro está en el punto de unión y cuyo diámetro es igual a la anchura de la línea */
@@ -97,19 +97,19 @@ protected:
    * \brief Nombre o id de pluma
    * \see PenName
    */
-  PenName mPenName;
+  Name mPenName;
 
   /*!
    * \brief Forma de puntos extremos de las líneas
    * \see PenCap
    */
-  PenCap mPenCap;
+  Cap mPenCap;
 
   /*!
    * \brief Forma del punto de unión (vértice) de líneas
    * \see PenJoin
    */
-  PenJoin mPenJoin;
+  Join mPenJoin;
 
   /*!
    * \brief Desplazamiento desde el centro de la línea.
@@ -145,26 +145,26 @@ public:
    * \return Color de pluma
    * \see Color
    */
-  TL::Color penColor() const;
+  TL::Color color() const;
 
   /*!
    * \brief Establece el color de Pluma
    * \param[in] pencolor Color de Pluma
    * \see Color
    */
-  void setPenColor(TL::Color pencolor);
+  void setColor(TL::Color pencolor);
 
   /*!
    * \brief Devuelve el ancho de pluma
    * \return Ancho de pluma
    */
-  uint8_t penWidth() const;
+  uint8_t width() const;
 
   /*!
    * \brief Establece el ancho de pluma
    * \param[in] penwidth Ancho de pluma
    */
-  void setPenWidth(uint8_t penwidth);
+  void setWidth(uint8_t penwidth);
 
   /*!
    * \brief Devuelve el patrón de pluma
@@ -182,37 +182,37 @@ public:
    * \brief Devuelve el nombre o id de pluma
    * \return Nombre o id de pluma
    */
-  PenName penName() const;
+  Name name() const;
 
   /*!
    * \brief Establece el nombre o id de pluma
    * \param[in] penname Nombre o id de pluma
    */
-  void setPenName(PenName penname);
+  void setName(Name name);
 
   /*!
    * \brief Devuelve la forma de puntos extremos de las líneas
    * \return Forma de puntos extremos de las líneas
    */
-  PenCap penCap() const;
+  Cap cap() const;
 
   /*!
    * \brief Establece la forma de puntos extremos de las líneas
    * \param[in] pencap Forma de puntos extremos de las líneas
    */
-  void setPenCap(PenCap pencap);
+  void setCap(Cap pencap);
 
   /*!
    * \brief Devuelve la forma del punto de unión (vértice) de líneas
    * \return Forma del punto de unión (vértice) de líneas
    */
-   PenJoin penJoin() const;
+   Join join() const;
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
    * \param[in] penjoin Forma del punto de unión (vértice) de líneas
    */
-   void setPenJoin(PenJoin penjoin);
+   void setJoin(Join join);
 
   /*!
    * \brief Devuelve el desplazamiento desde el centro de la línea.
@@ -329,7 +329,7 @@ public:
    * \return Color
    * \see Color
    */
-  TL::Color getForeColor() const;
+  TL::Color foreColor() const;
 
   /*!
    * \brief Establece el color
@@ -343,7 +343,7 @@ public:
    * \return Color de fondo
    * \see Color
    */
-  TL::Color getBackColor() const;
+  TL::Color backColor() const;
 
   /*!
    * \brief Establece el color de fondo
@@ -356,7 +356,7 @@ public:
    * \brief Devuelve el nombre o id de pincel
    * \return Nombre o id de pincel
    */
-  BrushName getBrushName() const;
+  BrushName brushName() const;
 
   /*!
    * \brief Establece el nombre o id de pincel
@@ -369,7 +369,7 @@ public:
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle() const;
+  double angle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -382,7 +382,7 @@ public:
    * \brief Devuelve el factor de escala
    * \return Factor de escala
    */
-  double getScalingFactor() const;
+  double scalingFactor() const;
 
   /*!
    * \brief Establece el factor de escala
@@ -394,13 +394,13 @@ public:
    * \brief Devuelve el espaciado en X
    * \return Espaciado en X
    */
-  double getSpacingX() const;
+  double spacingX() const;
 
   /*!
    * \brief Devuelve el espaciado en Y
    * \return Espaciado en Y
    */
-  double getSpacingY() const;
+  double spacingY() const;
 
   /*!
    * \brief Establece el espaciado en x e y
@@ -409,7 +409,7 @@ public:
    */
   void setSpacing(double spacingX, double spacingY);
 
-  uint32_t getPriorityLevel() const;
+  uint32_t priorityLevel() const;
 
   void setPriorityLevel(uint32_t priorityLevel);
 
@@ -947,8 +947,9 @@ public:
 //
 //  bool write();
 
-
+  TL_DEPRECATED("stylePen()")
   StylePen *getStylePen() const;
+  StylePen *stylePen() const;
 
   /*!
    * \brief Establece el estilo de pluma
@@ -956,7 +957,9 @@ public:
    */
   void setStylePen(const std::shared_ptr<StylePen> &stylePen);
   
+  TL_DEPRECATED("styleBrush()")
   StyleBrush *getStyleBrush() const;
+  StyleBrush *styleBrush() const;
 
   /*!
    * \brief Establece el estilo de pincel
@@ -964,7 +967,9 @@ public:
    */
   void setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush);
 
+  TL_DEPRECATED("styleSymbol()")
   StyleSymbol *getStyleSymbol() const;
+  StyleSymbol *styleSymbol() const;
 
   /*!
    * \brief Establece el estilo de simbolos
@@ -972,7 +977,9 @@ public:
    */
   void setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol);
 
+  TL_DEPRECATED("styleLabel()")
   StyleLabel *getStyleLabel() const;
+  StyleLabel *styleLabel() const;
 
   /*!
    * \brief Establece el estilo de etiqueta
