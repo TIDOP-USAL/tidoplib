@@ -139,7 +139,7 @@ public:
   /*!
    * \brief Devuelve el tipo de entidad 
    */
-  Type getType() const { return mEntityType; }
+  Type type() const;
 
   /*!
    * \brief Multi-entidad

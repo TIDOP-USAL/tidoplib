@@ -31,7 +31,7 @@ GPolygon::GPolygon(const GPolygon &gPolygon)
 
 GPolygon::GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT
   : Polygon<Point<double>>(std::forward<Polygon<Point<double>>>(gPolygon)),
-    GraphicEntity(gPolygon)
+    GraphicEntity(std::forward<GraphicEntity>(gPolygon))
 {
 }
 
@@ -89,6 +89,12 @@ GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D)
 {
 }
 
+GPolygon3D::GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT
+  : Polygon3D<Point3<double>>(std::forward<Polygon3D<Point3<double>>>(gPolygon3D)),
+    GraphicEntity(std::forward<GraphicEntity>(gPolygon3D))
+{
+}
+
 GPolygon3D::~GPolygon3D()
 {
 }
@@ -98,6 +104,15 @@ GPolygon3D &GPolygon3D::operator = (const GPolygon3D &gPolygon3D)
   if (this != &gPolygon3D) {
     Polygon3D<Point3<double>>::operator=(gPolygon3D);
     GraphicEntity::operator=(gPolygon3D);
+  }
+  return *this;
+}
+
+GPolygon3D &GPolygon3D::operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT
+{
+  if (this != &gPolygon3D) {
+    Polygon3D<Point3<double>>::operator=(std::forward<Polygon3D<Point3<double>>>(gPolygon3D));
+    GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
   }
   return *this;
 }
