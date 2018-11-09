@@ -353,8 +353,6 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (const Polygon<Point_t> &polygon)
 {
   if (this != &polygon) {
     this->mEntityType = polygon.mEntityType;
-    //this->mRings = polygon.mRings;
-    //Entities2D<Point_t>::operator = (polygon);
     this->mEntities = polygon.mEntities;
   }
   return *this;
@@ -365,7 +363,6 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_N
 {
   if (this != &polygon) {
     this->mEntityType = std::move(polygon.mEntityType);
-    //this->mRings = std::move(polygon.mRings);
     Entities2D<Point_t>::operator = (std::forward<Polygon<Point_t>>(polygon));
   }
   return *this;
@@ -511,7 +508,7 @@ Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon)
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT
   : Entity(std::forward<Entity>(polygon)), 
-    Entities3D<Point3_t>(std::forward<Polygon3D<Point3_t>>(polygon))
+    Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(polygon))
 {
 }
 
@@ -544,7 +541,6 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (const Polygon3D<Point3_t> 
 {
   if (this != &polygon) {
     this->mEntityType = polygon.mEntityType;
-    //Entities3D<Point3_t>::operator = (polygon);
     this->mEntities = polygon.mEntities;
   }
   return *this;
@@ -555,7 +551,7 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&poly
 {
   if (this != &polygon) {
     this->mEntityType = std::move(polygon.mEntityType);
-    Entities3D<Point3_t>::operator = (std::forward<Polygon3D<Point3_t>>(polygon));
+    Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
   }
   return *this;
 }

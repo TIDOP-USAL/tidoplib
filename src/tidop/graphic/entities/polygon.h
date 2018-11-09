@@ -46,6 +46,12 @@ public:
    */
   GPolygon(const GPolygon &gPolygon);
 
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] gPolygon Objeto Polygon que se mueve
+   */
+  GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT;
+
   ~GPolygon() override;
 
   /*!
@@ -55,9 +61,16 @@ public:
    */
   GPolygon &operator = (const GPolygon &gPolygon);
 
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] gPolygon Objeto GPolygon que se mueve
+   */
+  GPolygon &operator = (GPolygon &&gPolygon) TL_NOEXCEPT;
+
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;
 };
+
 
 /*!
  * \brief Clase gráfica polígono 3D
@@ -87,6 +100,12 @@ public:
    */
   GPolygon3D(const GPolygon3D &gPolygon3D);
 
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] gPolygon3D Objeto que se mueve
+   */
+  GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
+
   ~GPolygon3D() override;
 
   /*!
@@ -95,6 +114,12 @@ public:
    * \return Referencia al objeto
    */
   GPolygon3D &operator = (const GPolygon3D &gPolygon3D);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] gPolygon3D Objeto que se mueve
+   */
+  GPolygon3D &operator = (GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

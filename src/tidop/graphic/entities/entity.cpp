@@ -70,6 +70,11 @@ GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEX
   return *this;
 }
 
+GraphicEntity::Type GraphicEntity::type() const
+{
+  return mEntityType;
+}
+
 
 
 

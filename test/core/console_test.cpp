@@ -311,6 +311,9 @@ public:
 TEST_F(CommandTest, DefaultConstructor)
 {
   EXPECT_TRUE(cmd_arg_posix->name().empty());
+  EXPECT_TRUE(cmd_arg_posix->description().empty());
+  EXPECT_STREQ("0.0.0", cmd_arg_posix->version().c_str());
+  EXPECT_TRUE(cmd_arg_posix->empty());
 }
 
 TEST_F(CommandTest, Constructor)
@@ -329,6 +332,12 @@ TEST_F(CommandTest, setGetDescription)
 {
   cmd_arg_posix2->setDescription("New description");
   EXPECT_STREQ("New description", cmd_arg_posix2->description().c_str());
+}
+
+TEST_F(CommandTest, setGetVersion)
+{
+  cmd_arg_posix2->setVersion("1.0.0");
+  EXPECT_STREQ("1.0.0", cmd_arg_posix2->version().c_str());
 }
 
 TEST_F(CommandTest, parseHelp)
@@ -432,6 +441,104 @@ TEST_F(CommandTest, parseTextWithHyphen)
   std::array<char const*, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
   EXPECT_TRUE(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::parse_success);
 }
+
+
+
+/* CommandList Test */
+
+class CommandListTest : public testing::Test
+{
+public:
+
+  CommandList *cmd_list;
+  CommandList *cmd_list2;
+
+  virtual void SetUp() override
+  {
+    cmd_list = new CommandList;
+
+    std::string file;
+    std::string output;
+    //std::shared_ptr<ArgumentStringRequired> arg = std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file);
+    cmd_list2 = new CommandList("cmd_list", "Lista de comandos");
+
+    std::shared_ptr<Command> cmd(new Command("cmd1","comando 1", {
+                                               std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file)
+                                             }));
+    cmd_list2->push_back(cmd);
+
+    std::shared_ptr<Command> cmd2(new Command("cmd2","comando 2", {
+                                                std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file),
+                                                std::make_shared<ArgumentStringRequired>("output", 'o', "Fichero de salida", &output)
+                                              }));
+    cmd_list2->push_back(cmd2);
+  }
+
+  virtual void TearDown() override
+  {
+    if (cmd_list) delete cmd_list;
+    if (cmd_list2) delete cmd_list2;
+  }
+};
+
+
+TEST_F(CommandListTest, DefaultConstructor)
+{
+  EXPECT_TRUE(cmd_list->name().empty());
+  EXPECT_TRUE(cmd_list->description().empty());
+  EXPECT_STREQ("0.0.0", cmd_list->version().c_str());
+  EXPECT_TRUE(cmd_list->empty());
+  int size = 0;
+  EXPECT_EQ(size, cmd_list->size());
+}
+
+TEST_F(CommandListTest, Constructor)
+{
+  EXPECT_STREQ("cmd_list", cmd_list2->name().c_str());
+  EXPECT_STREQ("Lista de comandos", cmd_list2->description().c_str());
+  EXPECT_STREQ("0.0.0", cmd_list2->version().c_str());
+  EXPECT_FALSE(cmd_list2->empty());
+  EXPECT_EQ(2, cmd_list2->size());
+}
+
+TEST_F(CommandListTest, setGetName)
+{
+  cmd_list->setName("new_name");
+  EXPECT_STREQ("new_name", cmd_list->name().c_str());
+}
+
+TEST_F(CommandListTest, setGetDescription)
+{
+  cmd_list->setDescription("New description");
+  EXPECT_STREQ("New description", cmd_list->description().c_str());
+}
+
+TEST_F(CommandListTest, setGetVersion)
+{
+  cmd_list->setVersion("1.0.0");
+  EXPECT_STREQ("1.0.0", cmd_list->version().c_str());
+}
+
+//TEST_F(CommandListTest, parseHelp)
+//{
+//  std::array<char const*, 2> argv{"" , "-h"};
+//  EXPECT_TRUE(cmd_list2->parse(argv.size(), argv.data()) == CommandList::Status::SHOW_HELP);
+//
+//  std::array<char const*, 2> argv2{"" , "--help"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_HELP);
+//}
+//
+//TEST_F(CommandListTest, parseVersion)
+//{
+//  std::array<char const*, 2> argv2{"" , "--version"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_VERSION);
+//}
+//
+//TEST_F(CommandListTest, parseLicence)
+//{
+//  std::array<char const*, 2> argv2{"" , "--licence"};
+//  EXPECT_TRUE(cmd_list2->parse(argv2.size(), argv2.data()) == CommandList::Status::SHOW_LICENCE);
+//}
 
 
 TL_DEFAULT_WARNINGS

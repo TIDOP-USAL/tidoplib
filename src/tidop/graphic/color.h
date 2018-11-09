@@ -633,8 +633,8 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 /*! \} */ // end of colorConversion
 
 
-TL_EXPORT bool operator == (const Color &color1, const Color &color2);
-TL_EXPORT bool operator != (const Color &color1, const Color &color2);
+//TL_EXPORT bool operator == (const Color &color1, const Color &color2);
+//TL_EXPORT bool operator != (const Color &color1, const Color &color2);
 
 namespace graph
 {
@@ -853,7 +853,7 @@ public:
    * \param[in] color Nombre del color
    * \see NAME
    */
-  Color(const Color::NAME &color);
+  Color(const Color::Name &color);
 
   Color(const IColorModel *colorModel);
 
@@ -914,6 +914,9 @@ protected:
 
   //friend class IColorModel;
 };
+
+TL_EXPORT bool operator == (const tl::graph::Color &color1, const tl::graph::Color &color2);
+TL_EXPORT bool operator != (const tl::graph::Color &color1, const tl::graph::Color &color2);
 
 /*!
  * \brief Interfaz modelo de color

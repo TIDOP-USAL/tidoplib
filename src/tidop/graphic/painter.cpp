@@ -61,6 +61,15 @@ void Painter::drawPoint(const GPoint &point)
   }
 }
 
+void Painter::drawPoint(const geometry::PointD &point)
+{
+  if (mCanvas){
+    mCanvas->drawPoint(point, *mGraphicStyle);
+  } else {
+     msgError("Canvas not defined");
+  }
+}
+
 void Painter::drawLineString(const GLineString &lineString)
 {
   if (mCanvas){

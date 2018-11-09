@@ -31,7 +31,10 @@ if(BUILD_TEST AND BUILD_GTEST AND BUILD_TL_CORE)
     target_link_libraries(${the_target} tl_core)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     target_link_libraries(${the_target} ${OpenCV_LIBS}  ${GDAL_LIBRARY})
-	
+    if (UNIX)
+      target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
+    endif()
+
 	  # Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/core")
     

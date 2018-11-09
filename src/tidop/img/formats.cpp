@@ -33,7 +33,7 @@ RasterOptions::Format RasterOptions::getFormat()
 //DataType TiffOptions::dataTypes[] = { TL_8U, TL_16U, TL_16S, TL_32U, TL_32S, TL_32F, TL_64F };
 
 TiffOptions::TiffOptions() 
-  : RasterOptions(RasterOptions::Format::TIFF)
+  : RasterOptions(RasterOptions::Format::tiff)
 
 {
   mDataTypes = { DataType::TL_8U, DataType::TL_16U, DataType::TL_16S, DataType::TL_32U, DataType::TL_32S, DataType::TL_32F, DataType::TL_64F };
@@ -199,7 +199,7 @@ void TiffOptions::setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor)
 
 
 PngOptions::PngOptions() 
-  : RasterOptions(RasterOptions::Format::PNG),
+  : RasterOptions(RasterOptions::Format::png),
 #if GDAL_VERSION_MAJOR >= 2
     title(),
     description(),
@@ -230,7 +230,7 @@ void PngOptions::setEnableWorldFile(bool enable)
 }
 
 JpegOptions::JpegOptions() 
-  : RasterOptions(RasterOptions::Format::JPEG),
+  : RasterOptions(RasterOptions::Format::jpeg),
     bWorldFile(false)
 {
   mDataTypes = { DataType::TL_8U };
@@ -256,7 +256,7 @@ void JpegOptions::setEnableWorldFile(bool enable)
 
 
 BmpOptions::BmpOptions() 
-  : RasterOptions(RasterOptions::Format::JPEG),
+  : RasterOptions(RasterOptions::Format::jpeg),
     bWorldFile(false)
 {
   mDataTypes = { DataType::TL_8U };

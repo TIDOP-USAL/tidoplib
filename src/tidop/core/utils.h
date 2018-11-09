@@ -24,6 +24,7 @@
 #include <regex>
 #include <thread>
 #include <list>
+#include <mutex>
 
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
@@ -1089,7 +1090,7 @@ public:
    */
   File() : mFile("") {}
 
-  File(const char *file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
+  //File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
   File(const std::string &file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
 
   /*!
@@ -1110,14 +1111,14 @@ public:
    * \return
    * \see Mode
    */
-  virtual Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
+  //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
   virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  virtual Status createCopy(const char *fileOut) = 0;
-
+  //virtual Status createCopy(const char *fileOut) = 0;
+  virtual Status createCopy(const std::string &fileOut) = 0;
 };
 
 //Es un fichero y es un modelo de datos con lo cual tendria que heredar de forma publica tambien de 
@@ -1162,7 +1163,7 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  Status createCopy(const char *fileOut) override;
+  Status createCopy(const std::string &fileOut) override;
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -1172,7 +1173,6 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
@@ -1258,7 +1258,43 @@ private:
 
 /*! \} */ // end of utilities
 
-//TODO: funcion para conversión entre tipos basicos en templates para evitar warnings
+
+#ifdef HAVE_GDAL
+
+/*!
+ * \brief Clase singleton para registrar los drivers de GDAL
+ *
+ */
+class TL_EXPORT RegisterGdal
+{
+private:
+
+  static std::unique_ptr<RegisterGdal> sRegisterGdal;
+  static std::mutex sMutex;
+
+  /*!
+   * \brief Constructor privado
+   */
+  RegisterGdal() {}
+
+public:
+
+  ~RegisterGdal() {}
+
+  // Se impide la copia y asignación
+  RegisterGdal(RegisterGdal const&) = delete;
+  void operator=(RegisterGdal const&) = delete;
+
+  /*!
+   * \brief Método para iniciar GDAL una unica vez
+   */
+  static void init();
+
+};
+
+#endif // HAVE_GDAL
+
+
 
 } // End namespace tl
 

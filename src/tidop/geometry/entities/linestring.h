@@ -185,8 +185,6 @@ template<typename Point_t> inline
 LineString<Point_t> &LineString<Point_t>::operator = (const LineString<Point_t> &lineString)
 {
   if (this != &lineString) {
-    //Entity::operator = (lineString);
-    //Entities2D<Point_t>::operator = (lineString);
     this->mEntityType = lineString.mEntityType;
     this->mEntities = lineString.mEntities;
   }
@@ -198,7 +196,6 @@ LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&line
 {
   if (this != &lineString) {
     this->mEntityType = std::move(lineString.mEntityType);
-    //Entities2D<Point_t>::operator = (std::forward<LineString<Point_t>>(lineString));
     this->mEntities = std::move(lineString.mEntities);
   }
   return *this;
