@@ -763,7 +763,6 @@ template<typename Entity_t> inline
 Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(const Entities2D<Entity_t> &entity)
 {
   if (this != &entity) {
-    //this->mEntities = entity.mEntities;
     EntityContainer<Entity_t>::operator=(entity);
   }
   return (*this);
@@ -774,9 +773,6 @@ Entities2D<Entity_t> &Entities2D<Entity_t>::operator=(Entities2D<Entity_t> &&ent
 {
   if (this != &entity) {
     EntityContainer<Entity_t>::operator =(std::forward<EntityContainer<Entity_t>>(entity));
-    //this->mEntities.clear();
-    //this->mEntities = std::move(entity.mEntities);
-    //entity = 0; ///TODO: Si hago move esto debería ser nulo
   }
   return (*this);
 }

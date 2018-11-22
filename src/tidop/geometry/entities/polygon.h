@@ -555,7 +555,8 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&poly
 {
   if (this != &polygon) {
     this->mEntityType = std::move(polygon.mEntityType);
-    Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
+    //Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
+    EntityContainer<Point3_t>::operator =(std::forward<EntityContainer<Point3_t>>(polygon));
   }
   return *this;
 }
