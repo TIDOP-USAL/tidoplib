@@ -1,13 +1,14 @@
 /*!
- * Ejemplo de medici髇 de tiempos con la clase Chrono:
+ * Ejemplo de medici贸n de tiempos con la clase Chrono:
  *
- * La clase Chrono permite la medici髇 de tiempos en la aplicaci髇. 
+ * La clase Chrono permite la medici贸n de tiempos en la aplicaci贸n. 
  * 
  */
 
 /* Cabeceras tidopLib */
-#include "core/console.h"
-#include "core/messages.h"
+
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
 
 using namespace TL;
 
@@ -17,19 +18,19 @@ int main(int argc, char** argv)
   /* */
   Chrono chrono;
   chrono.run();  // Se inicia el cronometro
-  //c骴igo que se quiere medir
+  //c贸digo que se quiere medir
   chrono.stop(); // Se detiene el cronometro
 
   chrono.reset(); // Se reinicia el cronometro
-  chrono.setMessage("Tiempo 2: "); // Se a馻de un mensaje para mostrar junto con el tiempo medido
+  chrono.setMessage("Tiempo 2: "); // Se a帽ade un mensaje para mostrar junto con el tiempo medido
 
   chrono.stop();
 
-  /* Medici髇 de tiempos en un bloque de c骴igo */
+  /* Medici贸n de tiempos en un bloque de c贸digo */
   {
-    Chrono chrono2("Medici髇 de tiempos en un bloque");
+    Chrono chrono2("Medici贸n de tiempos en un bloque");
 
-    // Al salir del bloque y destruirse el objeto se llama al m閠odo stop()
+    // Al salir del bloque y destruirse el objeto se llama al m茅todo stop()
   }
 
 }

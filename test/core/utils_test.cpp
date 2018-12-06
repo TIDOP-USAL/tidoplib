@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "core/utils.h"
+#include <tidop/core/utils.h>
 
 using namespace TL;
 
@@ -57,12 +57,13 @@ using namespace TL;
 ////TEST(DeleteDir, NoDir){
 ////  EXPECT_EQ(1,deleteDir("D:\\Desarrollo\\tidop\\test\\create_dir"));
 ////}
-//
-///* ---------------------------------------------------------------------------------- */
-///*                        Test Operaciones con cadenas                                */
-///* ---------------------------------------------------------------------------------- */
-//
-//TEST(splitToNumbers, NullString){
+
+/* ---------------------------------------------------------------------------------- */
+/*                        Test Operaciones con cadenas                                */
+/* ---------------------------------------------------------------------------------- */
+
+//TEST(splitToNumbers, NullString)
+//{
 //  std::vector<int> vOut;
 //  EXPECT_EQ(0, splitToNumbers("", vOut));
 //  EXPECT_EQ(0, vOut.size());
@@ -70,8 +71,8 @@ using namespace TL;
 //  EXPECT_EQ(0, splitToNumbers("", vOutD));
 //  EXPECT_EQ(0, vOutD.size());
 //}
-//
-//
+
+
 //TEST(splitToNumbers, DefaultSeparatorCharacter)
 //{
 //  std::vector<int> vOut;

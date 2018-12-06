@@ -1,17 +1,41 @@
-# versi髇 m韓ima soportada
-cmake_minimum_required(VERSION 3.6.0 FATAL_ERROR)
+############################################################################
+#                                                                          #
+#  This file is part of TidopLib and can not be copied and/or distributed  #
+#  without the express permision of ITOS3D ENGINEERING S.L                 #
+#                                                                          #
+#  Contact: http://www.itos3d.com                                          #
+#           http://tidop.usal.es                                           #
+#                                                                          #
+#--------------------------------------------------------------------------#
+#                                                                          #
+#  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        #
+#                                                                          #
+############################################################################
 
-# Nombre del proyecto
-project(TidopLib CXX)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+# Versi贸n m铆nima soportada de CMake
+cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
+
+# Nombre del projecto y versi贸n
+project(TidopLib
+        VERSION 1.1.0
+        LANGUAGES CXX)
 
 
-# Sufijo para librerias de debug
-set( CMAKE_DEBUG_POSTFIX d )
+# Se activa el uso de carpetas para una mejor organizaci贸n en Visual Studio
+set_property(GLOBAL
+             PROPERTY USE_FOLDERS ON)
 
-# Tipos de configuraci髇
+
+# Establece un sufijo para las librerias de debug. De esta forma se pueden
+# instalar en el mismo directorio
+set(CMAKE_DEBUG_POSTFIX d)
+
+# Tipos de configuraci贸n de compilaci贸n disponibles
 set(CMAKE_CONFIGURATION_TYPES Release;Debug)
+
+# Macro para depuraci贸n
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 
 # Configuracion especifica de Visual Studio
@@ -20,23 +44,18 @@ if(MSVC)
   # Nivel de warning
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
 
-  #/EH (Modelo de control de excepciones)
-  #/EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones declaradas como extern "C" jam醩 inician una excepci髇 de C++.
+  # /EH (Modelo de control de excepciones)
+  # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
+  # declaradas como extern "C" jam谩s inician una excepci贸n de C++.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+
+  # Las llamadas a los m茅todos potencialmente no seguros en la biblioteca est谩ndar de C++ dan lugar
+  # a una Advertencia del compilador (nivel 3) C4996.
+  # Para deshabilitar esta advertencia se debe definir la macro _SCL_SECURE_NO_WARNINGS
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
 endif()
 
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
-
-# MACRO PARA DEPURACION
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
-
-#set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
-#set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
-#set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
-
-#set_target_properties(PROPERTIES RUNTIME_OUTPUT_DIRECTORY)
 
 if (UNIX)
   set(CMAKE_CXX_STANDARD 14)
@@ -44,32 +63,27 @@ if (UNIX)
   set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
-##establece el soporte de c++11
-#include(CheckCXXCompilerFlag)
-#CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-#if(COMPILER_SUPPORTS_CXX11)
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-#else()
-#     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-#endif()
+# Directivas del preprocesador
+add_definitions(-DUNICODE)
 
-# Se permite elegir entre libreria estatica o dinamica
+# Se permite elegir entre libreria estatica o
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 
-# Por defecto se establece el tipo de librer韆 est醫ica
+# Por defecto se establece el tipo de librer铆a est谩tica
 set (LIB_TYPE STATIC)
 
 if (BUILD_SHARED_LIBS)
-  # Se configura como libreria est醫ica
+  # Se configura como libreria est谩tica
   set (LIB_TYPE SHARED)
-  
+
   if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
   endif(MSVC)
-  
+
 endif (BUILD_SHARED_LIBS)
 
-# Activaci髇 desactivaci髇 de los diferentes modulos de la libreria
+
+# Activaci贸n/desactivaci贸n de los diferentes modulos de la libreria
 OPTION (BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
 OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON )
 OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
@@ -80,24 +94,47 @@ OPTION (BUILD_TL_GEOSPATIAL   "Include geospatial module in TidopLib build"   ON
 OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON )
 OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF)
 
-# Activaci髇 desactivaci髇 de otros componentes de la libreria
+# Activaci贸n/desactivaci贸n de otros componentes de la libreria
 OPTION (BUILD_TEST            "Include test"          OFF)
-OPTION (BUILD_EXAMPLES        "Include examples"      OFF)		
+OPTION (BUILD_EXAMPLES        "Include examples"      OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
 
+# Activa el gestor de mensajes. Si se desactiva no se mostrar谩n los mensajes del la librer铆a
+# por consola ni se escribir谩n en el log
 OPTION (BUILD_Message_handler "Active message handle" ON)
+
+# Si se activa esta opci贸n se pueden utilizar los m茅todos marcados como obsoletos (deprecated)
+OPTION (ENABLE_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
 if(BUILD_Message_handler)
   set(TL_MESSAGE_HANDLER YES)
+  message("[TidopLib] Message manager enabled")
 else()
   set(TL_MESSAGE_HANDLER NO)
+  message(WARNING "[TidopLib] Message manager disabled")
 endif()
 
+if(ENABLE_DEPRECATED_METHODS)
+  set(TL_ENABLE_DEPRECATED_METHODS YES)
+  message(WARNING "[TidopLib] Enable deprecated methods and class")
+else()
+  set(TL_ENABLE_DEPRECATED_METHODS NO)
+endif()
+
+# Test
 if(BUILD_TEST)
   enable_testing() #CMake predefined targets
+  if (BUILD_GTEST)
+    set(HAVE_GTEST YES)
+  endif()
+  if (BUILD_GMOCK)
+    set(HAVE_GMOCK YES)
+  endif()
 endif()
 
-# Librerias externas
+# Librerias externas:
+# - S贸lo es obligatoria Boost
+# - Seg煤n las dependencias incluidas las funcionalidades de la librer铆a variar谩n
 OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_EIGEN  "Include eigen support"                   OFF)
@@ -112,38 +149,41 @@ OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 #  Detect 3rd-party libraries
 # ----------------------------------------------------------------------------
 
-#... OpenCV lo hace en este archivo. Lo copio aqui debajo
-#include(cmake/OpenCVFindLibsPerf.cmake)
-
-# --- BOOST ---
+# ----------------------------------------------------------------------------
+# BOOST
+# ----------------------------------------------------------------------------
 if(WITH_BOOST)
     #unset(Boost_LIBRARIES)
     #set(Boost_USE_STATIC             ON)
     set(Boost_USE_STATIC_LIBS        ON) # only find static libs
     set(Boost_USE_MULTITHREADED      ON)
     set(Boost_USE_STATIC_RUNTIME     OFF)
- 	
-#TODO: Deber韆 establecer la versi髇 m韓ima de Boost en find_package
+
+#TODO: Deber?a establecer la versi?n m?nima de Boost en find_package
     #find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
     find_package(Boost COMPONENTS filesystem system REQUIRED)
     if(Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
-	    set(HAVE_BOOST YES)
+      set(HAVE_BOOST YES)
 
-		#if (WIN32)
+    #if (WIN32)
         #    add_definitions(-DBOOST_ALL_NO_LIB)
         #    add_definitions(-DBOOST_ALL_DYN_LINK)
         #endif()
-		
-	else()
-	    set(HAVE_BOOST NO)
+
+  else()
+      set(HAVE_BOOST NO)
     endif()
 
 endif()
+# ----------------------------------------------------------------------------
 
 
-# --- OpenCV ---
+# ----------------------------------------------------------------------------
+# OpenCV  (optional)
+# ----------------------------------------------------------------------------
 if(WITH_OPENCV)
+
     find_package(OpenCV QUIET)
 
     if(NOT OPENCV_FOUND)
@@ -151,11 +191,15 @@ if(WITH_OPENCV)
     else()
       set(HAVE_OPENCV YES)
       include_directories(${OpenCV_INCLUDE_DIRS})
-		#include_directories(${OPENCV_INCLUDE_DIR})
     endif()
-endif()
 
-# --- Eigen ---
+endif(WITH_OPENCV)
+# ----------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------
+# Eigen  (optional)
+# ----------------------------------------------------------------------------
 if(WITH_EIGEN)
   find_path(EIGEN_INCLUDE_PATH "Eigen/Core"
             PATHS /usr/local /opt /usr $ENV{EIGEN_ROOT}/include ENV ProgramFiles ENV ProgramW6432
@@ -165,103 +209,181 @@ if(WITH_EIGEN)
 
   if(EIGEN_INCLUDE_PATH)
     include_directories(${EIGEN_INCLUDE_PATH})
-    #ocv_parse_header("${EIGEN_INCLUDE_PATH}/Eigen/src/Core/util/Macros.h" EIGEN_VERSION_LINES EIGEN_WORLD_VERSION EIGEN_MAJOR_VERSION EIGEN_MINOR_VERSION)
-    set(HAVE_EIGEN 1)
+    set(HAVE_EIGEN YES)
+  else()
+    set(HAVE_EIGEN NO)
   endif()
+
 endif(WITH_EIGEN)
+# ----------------------------------------------------------------------------
 
-# --- GDAL (optional) ---
+
+# ----------------------------------------------------------------------------
+# GDAL (optional)
+# ----------------------------------------------------------------------------
 if(WITH_GDAL)
-    find_package(GDAL QUIET)
+  find_package(GDAL QUIET)
 
-    if(NOT GDAL_FOUND)
-        #ocv_clear_vars(GDAL_LIBRARY GDAL_INCLUDE_DIR)
-        set(HAVE_GDAL NO)
-    else()
-        set(HAVE_GDAL YES)
-		include_directories(${GDAL_INCLUDE_DIR})
-    endif()
+  if(NOT GDAL_FOUND)
+    set(HAVE_GDAL NO)
+  else()
+    set(HAVE_GDAL YES)
+    include_directories(${GDAL_INCLUDE_DIR})
+  endif()
 endif()
+# ----------------------------------------------------------------------------
 
-# --- PROJ4 (optional) ---
+
+# ----------------------------------------------------------------------------
+# PROJ4 (optional)
+# ----------------------------------------------------------------------------
 if(WITH_PROJ4)
   find_package(PROJ4 QUIET)
-  
-    if(NOT PROJ4_FOUND)
-        set(HAVE_PROJ4 NO)
-    else()
-        set(HAVE_PROJ4 YES)
-		include_directories(${PROJ4_INCLUDE})
-		#include_directories(${PROJ4_INCLUDE_DIRS})
-    endif()
-endif()
 
-# --- LibRaw (optional) ---
+  if(NOT PROJ4_FOUND)
+    set(HAVE_PROJ4 NO)
+  else()
+    set(HAVE_PROJ4 YES)
+    include_directories(${PROJ4_INCLUDE})
+  endif()
+endif()
+# ----------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------
+# LibRaw (optional)
+# ----------------------------------------------------------------------------
 if(WITH_LIBRAW)
-    find_package(LIBRAW QUIET)
 
-    if(NOT LIBRAW_FOUND)
-        set(HAVE_LIBRAW NO)
-    else()
-        set(HAVE_LIBRAW YES)
-		include_directories(${LIBRAW_INCLUDE_DIR})
-    endif()
+  find_package(LIBRAW QUIET)
+
+  if(NOT LIBRAW_FOUND)
+    set(HAVE_LIBRAW NO)
+  else()
+    set(HAVE_LIBRAW YES)
+    include_directories(${LIBRAW_INCLUDE_DIR})
+  endif()
+
 endif()
+# ----------------------------------------------------------------------------
 
-# --- EDSDK ---
+
+# ----------------------------------------------------------------------------
+# EDSDK (optional)
+# ----------------------------------------------------------------------------
 if(WITH_EDSDK)
 
 #TODO: Esto no esta bien hecho...
 
-	find_path(EDSDK_INCLUDE_DIR EDSDK.h )
+  find_path(EDSDK_INCLUDE_DIR EDSDK.h )
 
-	find_library(EDSDK_LIBRARY NAMES EDSDK )
-			 
+  find_library(EDSDK_LIBRARY NAMES EDSDK )
+
     if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
         set(HAVE_EDSDK NO)
     else()
         set(HAVE_EDSDK YES)
-		include_directories(${EDSDK_INCLUDE_DIR})
+    include_directories(${EDSDK_INCLUDE_DIR})
     endif()
 endif()
+# ----------------------------------------------------------------------------
+
+# --- VLD ---
+### TODO: Revisar. por ahora s?lo 64 bits
+#if(WITH_VLD AND MSVC)
+#  message("Enabling Visual Leak Detector")
+#  find_library(VLD_LIBRARY vld
+#    HINTS "c:/Program Files (x86)/Visual Leak Detector/lib/Win64" "c:/Program Files/Visual Leak Detector/lib/Win64")
+#  find_file(VLD_H vld.h
+#    HINTS "c:/Program Files (x86)/Visual Leak Detector/include" "c:/Program Files/Visual Leak Detector/include")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FIwinsock2.h")
+#  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} \"/FI${VLD_H}\"")
+#  get_filename_component(VLD_LIBRARY_DIR "${VLD}" PATH)
+#  link_directories("${VLD_LIBRARY_DIR}")
+#
+#  IF(VLD_INCLUDE_DIR)
+#   IF (VLD_LIBRARY_VLD OR VLD_LIBRARY_VLDMT OR VLD_LIBRARY_VLDMTDLL)
+#     ## do NOT add LIBRARIES because dependencies are handled through pragmas.
+#     SET(VLD_FOUND TRUE)
+#     MESSAGE("found VLD.")
+#   ENDIF (VLD_LIBRARY_VLD OR VLD_LIBRARY_VLDMT OR VLD_LIBRARY_VLDMTDLL)
+#  ENDIF(VLD_INCLUDE_DIR)
+#
+#  if(NOT VLD_FOUND)
+#    set(HAVE_VLD NO)
+#  else()
+#    set(HAVE_VLD YES)
+#  endif()
+#endif()
+
+
+
 
 
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
 
-# Directivas del preprocesador
-add_definitions(-DUNICODE)
 
-#cabecera con la configuraci髇
+
+#cabecera con la configuraci贸n
 configure_file("${PROJECT_SOURCE_DIR}/cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
 include_directories("${PROJECT_BINARY_DIR}")
 
-#directorio con el c骴igo fuente de los diferentes modulos
+set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
+set(TidopLib_LIBRARIES)
+
+# Directorio con el c贸digo fuente de los diferentes modulos
 add_subdirectory(src)
 
-#directorio con la documentaci髇
+# Directorio con la documentaci贸n
 add_subdirectory(doc)
 
-#Se incluyen los ejemplos
+# Se incluye el directorio con los ejemplos
 add_subdirectory(examples)
 
-#Se incluyen los test
+# Se incluye el directorio con los test
 add_subdirectory(test)
 
 
 ###############################################################################################################
-#                                                Instalaci髇                                                  #
+#                                                Instalaci贸n                                                  #
 ###############################################################################################################
 
-
-
-#ejemplos
-if(BUILD_EXAMPLES)
-
-	#install(TARGETS  RUNTIME DESTINATION bin)
-		
-endif()	
-
-#fichero de configuracion de TidopLib
+# Fichero de configuracion de TidopLib
 install(FILES ${PROJECT_BINARY_DIR}/config_tl.h DESTINATION include)
 
+include(GNUInstallDirs)
+
+
+set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set(TIDOP_CONFIG_VERSION_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
+set(TIDOP_CONFIG_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/TidopLibConfig.cmake")
+set(TIDOP_NAMESPACE "${PROJECT_NAME}::")
+set(INCLUDE_DIRS_TIDOP "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
+
+# Include module with fuction 'write_basic_package_version_file'
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+  ${TIDOP_CONFIG_VERSION_CMAKE_PATH}
+  VERSION ${TidopLib_VERSION}
+  COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(
+    "cmake/TidopLibConfig.cmake.in"
+    ${TIDOP_CONFIG_CMAKE_PATH}
+    INSTALL_DESTINATION "${TIDOP_CONFIG_CMAKE_INSTALL_DIR}"
+)
+
+
+install(
+    FILES "${TIDOP_CONFIG_CMAKE_PATH}" "${TIDOP_CONFIG_VERSION_CMAKE_PATH}"
+    DESTINATION "${TIDOP_CONFIG_CMAKE_INSTALL_DIR}"
+)
+
+install(
+    EXPORT "${TARGETS_EXPORT_NAME}"
+    NAMESPACE "${TIDOP_NAMESPACE}"
+    DESTINATION "${TIDOP_CONFIG_CMAKE_INSTALL_DIR}"
+)

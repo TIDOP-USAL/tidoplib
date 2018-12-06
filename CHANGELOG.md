@@ -11,12 +11,35 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed: para correcciones y bugs.
 - Security: para invitar a los usuarios a actualizar, en el caso de que haya vulnerabilidades.
 
-## [1.0.2] - 
+## [1.1.0] - 2018-09-16
 
 ### Added
+
+- El código de los modulos se cambia a una carpeta tidop quedando como src/tidop/[modulo]. De esta forma los include incluiran tidop/[modulo]/[...].h
+- Operador de asignación StyleLabel
+- Añadido ejemplo chrono.cpp
+- Generación automatica de la documentación del programa con Doxygen
+- Macro TL_TODO para sacar en los mensajes del compilador los mensajes TODO
+- Macro para controlar Warnings tambien en Linux
+- Añadido método tickCount para reemplazar a getTickCount
+- Test conversión de angulos
+- Añadida macro TL_NOEXCEPT
+- Constructores de movimento y sobrecarga del operador asignación de movimiento en las clases de entidades geométricas.
+
 ### Changed
+  
+- mathutils se saca del modulo core y su contenido se mueve al modulo math en diferentes ficheros.
+- Restructuración del modulo de entidades gráficas. Se divide en ficheros independientes
+- Lectura y escritura de ficheros vectoriales
+- Nuevas clases para el parseo de argumentos de comandos por consola.
+
 ### Removed
+
+- Se elimina getAppVersion
+
 ### Fixed
+
+- Se añade un bloqueo a la clase RegisterGdal para que sólo haga el registro una vez y no de error al acceder varias veces.
 
 ## [1.0.1] - 2018-05-09
 

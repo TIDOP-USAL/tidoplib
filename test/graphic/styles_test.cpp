@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
-#include "graphic/styles.h"
+#include <tidop/graphic/styles.h>
+
 
 using namespace TL;
-using namespace TL::graph;
-
+using namespace graph;
 
 class StylePenTest
   : public testing::Test
@@ -14,51 +14,354 @@ protected:
 
   virtual void SetUp() override
   {
-    pen_2.setPattern("-");
-    pen_2.setPenCap(StylePen::PenCap::ROUND);
-    pen_2.setPenColor(TL::Color(TL::Color::NAME::Aquamarine));
-    pen_2.setPenJoin(StylePen::PenJoin::ROUNDED);
-    pen_2.setPenName(StylePen::PenName::PEN_NULL);
-    pen_2.setPenWidth(2);
-    pen_2.setPerpendicularOffset(10);
-    pen_2.setPriorityLevel(3);
+    style = new graph::StylePen;
   }
 
   virtual void TearDown() override
   {
-
+    if (style) {
+      delete style;
+      style = nullptr;
+    }
   }
 
-  StylePen pen_1;
-  StylePen pen_2;
+  graph::StylePen def_style;
+  graph::StylePen *style;
+};
+
+TEST_F(StylePenTest, DefaultConstructor)
+{
+  graph::Color color;
+  EXPECT_TRUE(color == def_style.color());
+  EXPECT_EQ(1, def_style.width());
+  EXPECT_STREQ("", def_style.pattern().c_str());
+  EXPECT_EQ(StylePen::Name::solid, def_style.name());
+  EXPECT_EQ(StylePen::Cap::butt, def_style.cap());
+  EXPECT_EQ(StylePen::Join::bevel, def_style.join());
+  EXPECT_EQ(0, def_style.perpendicularOffset());
+  EXPECT_EQ(0, def_style.priorityLevel());
+}
+
+TEST_F(StylePenTest, setColor)
+{
+  graph::Color color(graph::Color::Name::Beige);
+  style->setColor(color);
+  EXPECT_TRUE(color == style->color());
+}
+
+TEST_F(StylePenTest, setWidth)
+{
+  style->setWidth(5);
+  EXPECT_EQ(5, style->width());
+}
+
+TEST_F(StylePenTest, setPattern)
+{
+  style->setPattern("4px 5px");
+  EXPECT_STREQ("4px 5px", style->pattern().c_str());
+}
+
+TEST_F(StylePenTest, setName)
+{
+  style->setName(StylePen::Name::dash_dot_line);
+  EXPECT_EQ(StylePen::Name::dash_dot_line, style->name());
+}
+
+TEST_F(StylePenTest, setCap)
+{
+  style->setCap(StylePen::Cap::projective);
+  EXPECT_EQ(StylePen::Cap::projective, style->cap());
+}
+
+TEST_F(StylePenTest, setJoin)
+{
+  style->setJoin(StylePen::Join::rounded);
+  EXPECT_EQ(StylePen::Join::rounded, style->join());
+}
+
+TEST_F(StylePenTest, setPerpendicularOffset)
+{
+  style->setPerpendicularOffset(25);
+  EXPECT_EQ(25, style->perpendicularOffset());
+}
+
+TEST_F(StylePenTest, setPriorityLevel)
+{
+  style->setPriorityLevel(15);
+  EXPECT_EQ(15, style->priorityLevel());
+}
+
+
+
+
+
+class StyleBrushTest
+  : public testing::Test
+{
+public:
+
+protected:
+
+  virtual void SetUp() override
+  {
+  }
+
+  virtual void TearDown() override
+  {
+  }
+
+  StyleBrush def_style;
 };
 
 
-/* Constructor por defecto */
+TEST_F(StyleBrushTest, DefaultConstructor)
+{
+  graph::Color color;
+  EXPECT_TRUE(color == def_style.foreColor());
+  EXPECT_TRUE(color == def_style.backColor());
+  EXPECT_EQ(StyleBrush::Name::solid, def_style.brushName());
+  EXPECT_EQ(0., def_style.angle());
+  EXPECT_EQ(1., def_style.scalingFactor());
+  EXPECT_EQ(0., def_style.spacingX());
+  EXPECT_EQ(0., def_style.spacingY());
+  EXPECT_EQ(0, def_style.priorityLevel());
+}
 
-//TEST_F(StylePenTest, DefaultConstructor)
-//{
-  //EXPECT_STREQ("", pen_1.getPattern().c_str());
-  //EXPECT_TRUE(pen_1.getPenCap() == StylePen::PenCap::BUTT);
-  //EXPECT_TRUE(pen_1.getPenColor() == TL::Color());
-  //EXPECT_TRUE(pen_1.getPenJoin() == StylePen::PenJoin::BEVEL);
-  //EXPECT_TRUE(pen_1.getPenName() == StylePen::PenName::SOLID);
-  //EXPECT_EQ(1, pen_1.getPenWidth());
-  //EXPECT_EQ(0, pen_1.getPerpendicularOffset());
-  //EXPECT_EQ(0, pen_1.getPriorityLevel());
-//}
+TEST_F(StyleBrushTest, setForeColor)
+{
+  graph::Color color(graph::Color::Name::Indigo);
+  def_style.setForeColor(color);
+  EXPECT_TRUE(color == def_style.foreColor());
+}
 
-/* Constructor de copia */
+TEST_F(StyleBrushTest, setBackColor)
+{
+  graph::Color color(graph::Color::Name::Indigo);
+  def_style.setBackColor(color);
+  EXPECT_TRUE(color == def_style.backColor());
+}
 
-//TEST_F(StylePenTest, CopyConstructor)
-//{
-//  StylePen style_pen(pen_2);
-//  EXPECT_STREQ(pen_2.getPattern().c_str(), style_pen.getPattern().c_str());
-//  EXPECT_TRUE(style_pen.getPenCap() == pen_2.getPenCap());
-//  EXPECT_TRUE(style_pen.getPenColor() == pen_2.getPenColor());
-//  EXPECT_TRUE(style_pen.getPenJoin() == pen_2.getPenJoin());
-//  EXPECT_TRUE(style_pen.getPenName() == pen_2.getPenName());
-//  EXPECT_EQ(pen_2.getPenWidth(), style_pen.getPenWidth());
-//  EXPECT_EQ(pen_2.getPerpendicularOffset(), style_pen.getPerpendicularOffset());
-//  EXPECT_EQ(pen_2.getPriorityLevel(), style_pen.getPriorityLevel());
-//}
+TEST_F(StyleBrushTest, setBrushName)
+{
+  def_style.setBrushName(StyleBrush::Name::null);
+  EXPECT_EQ(StyleBrush::Name::null, def_style.brushName());
+}
+
+TEST_F(StyleBrushTest, setAngle)
+{
+  def_style.setAngle(.45);
+  EXPECT_EQ(0.45, def_style.angle());
+}
+
+TEST_F(StyleBrushTest, setScalingFactor)
+{
+  def_style.setScalingFactor(2.);
+  EXPECT_EQ(2., def_style.scalingFactor());
+}
+
+TEST_F(StyleBrushTest, setSpacing)
+{
+  def_style.setSpacing(2., 5.);
+  EXPECT_EQ(2., def_style.spacingX());
+  EXPECT_EQ(5., def_style.spacingY());
+}
+
+
+
+
+
+
+
+
+class StyleSymbolTest
+  : public testing::Test
+{
+public:
+
+protected:
+
+  virtual void SetUp() override
+  {
+    style = new StyleSymbol;
+  }
+
+  virtual void TearDown() override
+  {
+    if (style) {
+      delete style;
+      style = nullptr;
+    }
+  }
+
+  StyleSymbol def_style;
+  StyleSymbol *style;
+};
+
+
+TEST_F(StyleSymbolTest, DefaultConstructor)
+{
+  EXPECT_EQ(0., def_style.angle());
+  EXPECT_EQ(StyleSymbol::Name::cross, def_style.name());
+  graph::Color color;
+  EXPECT_TRUE(color == def_style.color());
+  EXPECT_TRUE(color == def_style.outlineColor());
+  EXPECT_EQ(1., def_style.scalingFactor());
+  EXPECT_EQ(0., def_style.offsetX());
+  EXPECT_EQ(0., def_style.offsetY());
+  EXPECT_EQ(0, def_style.priorityLevel());
+}
+
+TEST_F(StyleSymbolTest, setAngle)
+{
+  style->setAngle(0.26);
+  EXPECT_EQ(0.26, style->angle());
+}
+
+TEST_F(StyleSymbolTest, setName)
+{
+  style->setName(StyleSymbol::Name::circle);
+  EXPECT_EQ(StyleSymbol::Name::circle, style->name());
+}
+
+TEST_F(StyleSymbolTest, setColor)
+{
+  graph::Color color(graph::Color::Name::Gainsboro);
+  style->setColor(color);
+  EXPECT_TRUE(color == style->color());
+}
+
+TEST_F(StyleSymbolTest, setOutlineColor)
+{
+  graph::Color color(graph::Color::Name::DarkSlateGray);
+  style->setOutlineColor(color);
+  EXPECT_TRUE(color == style->outlineColor());
+}
+
+TEST_F(StyleSymbolTest, setScalingFactor)
+{
+  style->setScalingFactor(2.);
+  EXPECT_EQ(2., style->scalingFactor());
+}
+
+TEST_F(StyleSymbolTest, setOffset)
+{
+  style->setOffset(5., 2.);
+  EXPECT_EQ(5., style->offsetX());
+  EXPECT_EQ(2., style->offsetY());
+}
+
+
+
+class StyleLabelTest
+  : public testing::Test
+{
+public:
+
+protected:
+
+  virtual void SetUp() override
+  {
+    style = new StyleLabel;
+  }
+
+  virtual void TearDown() override
+  {
+    if (style) {
+      delete style;
+      style = nullptr;
+    }
+  }
+
+  StyleLabel def_style;
+  StyleLabel *style;
+};
+
+
+TEST_F(StyleLabelTest, DefaultConstructor)
+{
+  EXPECT_STREQ("", def_style.text().c_str());
+  EXPECT_EQ(0., def_style.angle());
+  graph::Color color;
+  EXPECT_TRUE(color == def_style.foregroundColor());
+  EXPECT_TRUE(color == def_style.backgroundColor());
+  EXPECT_TRUE(color == def_style.outlineColor());
+  EXPECT_TRUE(color == def_style.shadowColor());
+  EXPECT_EQ(100., def_style.stretch());
+  EXPECT_EQ(StyleLabel::LabelPlacement::p, def_style.labelPlacement());
+  EXPECT_EQ(StyleLabel::AnchorPosition::vertical_baseline | StyleLabel::AnchorPosition::horizontal_left,
+            def_style.anchorPosition());
+  EXPECT_EQ(0., def_style.offsetX());
+  EXPECT_EQ(0., def_style.offsetY());
+  EXPECT_EQ(0., def_style.perpendicularOffset());
+}
+
+TEST_F(StyleLabelTest, setText)
+{
+  style->setText("label");
+  EXPECT_STREQ("label", style->text().c_str());
+}
+
+TEST_F(StyleLabelTest, setAngle)
+{
+  style->setAngle(25.5);
+  EXPECT_EQ(25.5, style->angle());
+}
+
+TEST_F(StyleLabelTest, setForegroundColor)
+{
+  graph::Color color(graph::Color::Name::FireBrick);
+  style->setForegroundColor(color);
+  EXPECT_TRUE(color == style->foregroundColor());
+}
+
+TEST_F(StyleLabelTest, setBackgroundColor)
+{
+  graph::Color color(graph::Color::Name::Indigo);
+  style->setBackgroundColor(color);
+  EXPECT_TRUE(color == style->backgroundColor());
+}
+
+TEST_F(StyleLabelTest, setOutlineColor)
+{
+  graph::Color color(graph::Color::Name::SaddleBrown);
+  style->setOutlineColor(color);
+  EXPECT_TRUE(color == style->outlineColor());
+}
+
+TEST_F(StyleLabelTest, setShadowColor)
+{
+  graph::Color color(graph::Color::Name::Azure);
+  style->setShadowColor(color);
+  EXPECT_TRUE(color == style->shadowColor());
+}
+
+TEST_F(StyleLabelTest, setStretch)
+{
+  style->setStretch(25.);
+  EXPECT_EQ(25., style->stretch());
+}
+
+TEST_F(StyleLabelTest, setLabelPlacement)
+{
+  style->setLabelPlacement(StyleLabel::LabelPlacement::l);
+  EXPECT_EQ(StyleLabel::LabelPlacement::l, style->labelPlacement());
+}
+
+TEST_F(StyleLabelTest, setAnchorPosition)
+{
+  style->setAnchorPosition(StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left);
+  EXPECT_EQ(StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left, style->anchorPosition());
+}
+
+TEST_F(StyleLabelTest, setOffset)
+{
+  style->setOffset(5., 2.);
+  EXPECT_EQ(5., style->offsetX());
+  EXPECT_EQ(2., style->offsetY());
+}
+
+TEST_F(StyleLabelTest, setPerpendicularOffset)
+{
+  style->setPerpendicularOffset(10.);
+  EXPECT_EQ(10., style->perpendicularOffset());
+}

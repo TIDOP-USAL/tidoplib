@@ -9,9 +9,10 @@
 #include <stdio.h>
 
 /* Cabeceras tidopLib */
-#include "core/console.h"
-#include "core/messages.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
 
+//#include <vld.h>
 
 using namespace TL;
 
@@ -19,26 +20,33 @@ int main(int argc, char** argv)
 {
 
   const char *name = "Escritura de log";
+  fs::path app_path = argv[0];
+  std::string cmd_name = app_path.stem().string();
+
+  std::string log_file;
 
   // Se definen los parámetros y opciones
-  CmdParser cmdParser(name, "Ejemplo de escritura de un fichero log");
-  cmdParser.addParameter("log", "Fichero log. Por defecto se toma el nombre de la aplicación con la extensión .log", true);
+  Command cmd(cmd_name, "Ejemplo de escritura de un fichero log");
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("log", "Fichero log. Por defecto se toma el nombre de la aplicación con la extensión .log", &log_file));
 
   // Parseo de los argumentos y comprobación de los mismos
-  CmdParser::Status status = cmdParser.parse(argc, argv);
-  if (status == CmdParser::Status::PARSE_ERROR ) {
+  Command::Status status = cmd.parse(argc, argv);
+  if (status == Command::Status::PARSE_ERROR ) {
     return 1;
-  } else if (status == CmdParser::Status::PARSE_HELP) {
+  } else if (status == Command::Status::SHOW_HELP) {
+    return 0;
+  } else if (status == Command::Status::SHOW_LICENCE) {
+    return 0;
+  } else if (status == Command::Status::SHOW_VERSION) {
     return 0;
   }
 
-  std::string log_file = cmdParser.getValue<std::string>("log");
-
   // Consola
-  Console console;
+  Console &console = Console::getInstance();
   console.setTitle(name);                         // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
-  
+  MessageManager::getInstance().addListener(&console);
+
   // Se obtiene una instancia unica de la clase Log
   Log &log = Log::getInstance();
 

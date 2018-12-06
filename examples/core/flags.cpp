@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 // Cabeceras tidopLib
-#include "core/console.h"
-#include "core/messages.h"
-#include "core/flags.h"
+#include <tidop/core/console.h>
+#include <tidop/core/messages.h>
+#include <tidop/core/flags.h>
 
 using namespace TL;
 

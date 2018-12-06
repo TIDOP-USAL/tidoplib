@@ -1,5 +1,5 @@
 
-# Ejemplos módulo Core
+# Ejemplos mÃ³dulo Core
 
 if(BUILD_TL_CORE)
 
@@ -26,11 +26,12 @@ if(BUILD_TL_CORE)
 
     target_link_libraries(${the_target} tl_core ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
 
-    # Añade el proyecto de ejmplo a la carpeta 'examples/core'
+    # AÃ±ade el proyecto de ejmplo a la carpeta 'examples/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "examples/core")
 
     set_target_properties(${the_target} PROPERTIES
@@ -43,10 +44,12 @@ if(BUILD_TL_CORE)
 
     if(WIN32)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
-        set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+        set_target_properties(${the_target} PROPERTIES 
+                              LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
       install(TARGETS ${the_target}
-              RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" COMPONENT samples)
+              RUNTIME DESTINATION bin
+              COMPONENT samples)
     endif()
   ENDMACRO()
 

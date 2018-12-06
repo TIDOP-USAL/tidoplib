@@ -1,8 +1,0 @@
-#include "geometry/entities/entity.h"
-#include "geometry/entities/bbox.h"
-#include "geometry/entities/curves.h"
-#include "geometry/entities/lineString.h"
-#include "geometry/entities/point.h"
-#include "geometry/entities/polygon.h"
-#include "geometry/entities/segment.h"
-#include "geometry/entities/window.h"

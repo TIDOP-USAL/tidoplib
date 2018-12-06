@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/polygon.h"
-#include "geometry/entities/window.h"
-#include "geometry/entities/bbox.h"
+#include <tidop/geometry/entities/polygon.h>
+#include <tidop/geometry/entities/window.h>
+#include <tidop/geometry/entities/bbox.h>
 
 
 using namespace TL;
@@ -46,7 +46,7 @@ protected:
 TEST_F(PolygonTest, DefaultConstructor)
 {
 
-  WindowI w = pol_1.getWindow();
+  WindowI w = pol_1.window();
   
   /*Comprobamos si se ha creado con el contructor por defecto*/
   EXPECT_EQ(0, pol_1.size());
@@ -61,7 +61,7 @@ TEST_F(PolygonTest, DefaultConstructor)
 
 TEST_F(PolygonTest, ConstructorReserve)
 {
-  WindowD w = pol_3->getWindow();
+  WindowD w = pol_3->window();
 
   EXPECT_EQ(10, pol_3->size());
   EXPECT_EQ(0., w.pt1.x);
@@ -78,7 +78,7 @@ TEST_F(PolygonTest, CopyConstructor)
   PolygonD pol_c(*pol_3);
   EXPECT_EQ(10, pol_c.size());
 
-  auto w = pol_c.getWindow();
+  auto w = pol_c.window();
   EXPECT_EQ(0., w.pt1.x);
   EXPECT_EQ(0., w.pt1.y);
   EXPECT_EQ(0., w.pt2.x);
@@ -95,7 +95,7 @@ TEST_F(PolygonTest, ConstructorList)
 {
   EXPECT_EQ(7, pol_2->size());
 
-  WindowI w = pol_2->getWindow();
+  WindowI w = pol_2->window();
 
   EXPECT_EQ(4137012, w.pt1.x);
   EXPECT_EQ(642997, w.pt1.y);
@@ -105,14 +105,14 @@ TEST_F(PolygonTest, ConstructorList)
   EXPECT_NEAR(193131.62, pol_2->length(), 0.01);
 }
 
-TEST_F(PolygonTest, getType)
+TEST_F(PolygonTest, type)
 {
-  EXPECT_TRUE(pol_1.getType() == Entity::type::POLYGON_2D);
-  EXPECT_TRUE(pol_2->getType() == Entity::type::POLYGON_2D);
-  EXPECT_TRUE(pol_3->getType() == Entity::type::POLYGON_2D);
+  EXPECT_TRUE(pol_1.type() == Entity::Type::POLYGON_2D);
+  EXPECT_TRUE(pol_2->type() == Entity::Type::POLYGON_2D);
+  EXPECT_TRUE(pol_3->type() == Entity::Type::POLYGON_2D);
 }
 
-/* Operador de asignación */
+/* Operador de asignaciÃ³n */
 
 //TEST(LineString, assing_operator)
 //{
@@ -123,7 +123,7 @@ TEST_F(PolygonTest, getType)
 //
 //  LineStringD lineString_c = lineString;
 //
-//  EXPECT_TRUE(lineString_c.getType() == Entity::type::LINESTRING_2D);
+//  EXPECT_TRUE(lineString_c.type() == Entity::type::LINESTRING_2D);
 //  EXPECT_EQ(4, lineString_c.size());
 //
 //  for (int i = 0; i < lineString_c.size(); i++) {
@@ -147,7 +147,7 @@ TEST_F(PolygonTest, area)
 //  BoxD box = ls.getBox();
 //  
 //  EXPECT_EQ(0, ls.size());
-//  EXPECT_TRUE(ls.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(ls.type() == Entity::type::LINESTRING_3D);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
@@ -165,7 +165,7 @@ TEST_F(PolygonTest, area)
 //  BoxD box = ls.getBox();
 //  
 //  EXPECT_EQ(10, ls.size());
-//  EXPECT_TRUE(ls.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(ls.type() == Entity::type::LINESTRING_3D);
 //  EXPECT_EQ(0., box.pt1.x);
 //  EXPECT_EQ(0., box.pt1.y);
 //  EXPECT_EQ(0., box.pt1.z);
@@ -185,12 +185,12 @@ TEST_F(PolygonTest, area)
 //  line.push_back(Point3D(256.6, 619.3, 56.12));
 //  line.push_back(Point3D(62.36, 6.60, 24.63));
 //
-//  EXPECT_TRUE(line.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(line.type() == Entity::type::LINESTRING_3D);
 //  EXPECT_EQ(4, line.size());
 //
 //  LineString3dD line_c(line);
 //
-//  EXPECT_TRUE(line_c.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
 //	EXPECT_EQ(4, line_c.size());
 //  BoxD box = line_c.getBox();
 //  EXPECT_EQ(23.6, box.pt1.x);
@@ -213,7 +213,7 @@ TEST_F(PolygonTest, area)
 //
 //  LineString3dD line_c(lineString);
 //
-//  EXPECT_TRUE(line_c.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
 //	EXPECT_EQ(4, line_c.size());
 //  BoxD box = line_c.getBox();
 //  EXPECT_EQ(23.6, box.pt1.x);
@@ -235,7 +235,7 @@ TEST_F(PolygonTest, area)
 //                      Point3D(256.6, 619.3, 26.21),
 //                      Point3D(62.36, 6.60, 62.61) };
 //
-//  EXPECT_TRUE(line.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(line.type() == Entity::type::LINESTRING_3D);
 //	EXPECT_EQ(4, line.size());
 //  BoxD box = line.getBox();
 //  EXPECT_EQ(23.6, box.pt1.x);
@@ -246,7 +246,7 @@ TEST_F(PolygonTest, area)
 //  EXPECT_EQ(454.3, box.pt2.z);
 //}
 
-/* Operador de asignación */
+/* Operador de asignaciÃ³n */
 
 //TEST(LineString3D, assing_operator)
 //{
@@ -258,7 +258,7 @@ TEST_F(PolygonTest, area)
 //
 //  LineString3dD line_c = line;
 //
-//  EXPECT_TRUE(line_c.getType() == Entity::type::LINESTRING_3D);
+//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
 //	EXPECT_EQ(4, line_c.size());
 //  BoxD box = line_c.getBox();
 //  EXPECT_EQ(23.6, box.pt1.x);
@@ -290,7 +290,7 @@ TEST_F(PolygonTest, area)
 //  WindowD w = ml.getWindow();
 //  
 //  EXPECT_EQ(0, ml.size());
-//  EXPECT_TRUE(ml.getType() == Entity::type::MULTILINE_2D);
+//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_2D);
 //  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.x);
 //  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
 //  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
@@ -305,7 +305,7 @@ TEST_F(PolygonTest, area)
 //  WindowD w = ml.getWindow();
 // 
 //  EXPECT_EQ(10, ml.size());
-//  EXPECT_TRUE(ml.getType() == Entity::type::MULTILINE_2D);
+//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_2D);
 //  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.x);
 //  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
 //  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
@@ -322,7 +322,7 @@ TEST_F(PolygonTest, area)
 //  BoxD box = ml.getBox();
 //  
 //  EXPECT_EQ(0, ml.size());
-//  EXPECT_TRUE(ml.getType() == Entity::type::MULTILINE_3D);
+//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_3D);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
 //  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
@@ -339,7 +339,7 @@ TEST_F(PolygonTest, area)
 //  BoxD box = ml.getBox();
 //  
 //  EXPECT_EQ(10, ml.size());
-//  EXPECT_TRUE(ml.getType() == Entity::type::MULTILINE_3D);
+//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_3D);
 //  EXPECT_EQ(0., box.pt1.x);
 //  EXPECT_EQ(0., box.pt1.y);
 //  EXPECT_EQ(0., box.pt1.z);

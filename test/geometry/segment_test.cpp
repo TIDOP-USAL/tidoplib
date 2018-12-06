@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/segment.h"
-#include "core/utils.h"
+#include <tidop/geometry/entities/segment.h>
+#include <tidop/core/utils.h>
 
 using namespace TL;
 using namespace TL::geometry;
@@ -39,7 +39,7 @@ TEST(Segment, CopyConstructor)
   EXPECT_EQ(654.4, segment_c.pt2.y);
 }
 
-/* Operador de asignación */
+/* Operador de asignaciÃ³n */
 
 TEST(Segment, assignment)
 {
@@ -53,7 +53,7 @@ TEST(Segment, assignment)
   EXPECT_EQ(654.4, segment_a.pt2.y);
 }
 
-/* Conversión a un tipo diferente */
+/* ConversiÃ³n a un tipo diferente */
 
 TEST(Segment, conversion)
 {
@@ -85,7 +85,7 @@ TEST(Segment, angleOY)
 TEST(Segment, getWindow)
 {
   Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
-  WindowD w_s = segment.getWindow();
+  WindowD w_s = segment.window();
   WindowD w(PointD(56.23, 34.4), PointD(96.2, 123.5));
   EXPECT_EQ(w.pt1.x, w_s.pt1.x);
   EXPECT_EQ(w.pt1.y, w_s.pt1.y);

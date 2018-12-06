@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "geometry/entities/curves.h"
+#include <tidop/geometry/entities/curves.h>
 
 using namespace TL;
 using namespace TL::geometry;
@@ -14,7 +14,7 @@ TEST(CircleI, DefaultConstructor)
   EXPECT_EQ(0, circle.center.x);
   EXPECT_EQ(0, circle.center.y);
   EXPECT_EQ(1, circle.radius);
-  EXPECT_TRUE(circle.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle.type() == Entity::Type::CIRCLE);
 }
 
 TEST(CircleD, DefaultConstructor)
@@ -23,7 +23,7 @@ TEST(CircleD, DefaultConstructor)
   EXPECT_DOUBLE_EQ(0., circle.center.x);
   EXPECT_DOUBLE_EQ(0., circle.center.y);
   EXPECT_DOUBLE_EQ(1., circle.radius);
-  EXPECT_TRUE(circle.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle.Entity::type() == Entity::Type::CIRCLE);
 }
 
 TEST(CircleF, DefaultConstructor)
@@ -32,7 +32,7 @@ TEST(CircleF, DefaultConstructor)
   EXPECT_FLOAT_EQ(0.f, circle.center.x);
   EXPECT_FLOAT_EQ(0.f, circle.center.y);
   EXPECT_FLOAT_EQ(1.f, circle.radius);
-  EXPECT_TRUE(circle.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle.type() == Entity::Type::CIRCLE);
 }
 
 // Constructor Centro y radio, y constructor de copia
@@ -42,16 +42,16 @@ TEST(CircleD, CopyConstructor) {
   EXPECT_DOUBLE_EQ(50.5, circle.center.x);
   EXPECT_DOUBLE_EQ(32.65, circle.center.y);
   EXPECT_DOUBLE_EQ(25., circle.radius);
-  EXPECT_TRUE(circle.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle.type() == Entity::Type::CIRCLE);
 
   CircleD circle2(circle);
   EXPECT_DOUBLE_EQ(50.5, circle2.center.x);
   EXPECT_DOUBLE_EQ(32.65, circle2.center.y);
   EXPECT_DOUBLE_EQ(25., circle2.radius);
-  EXPECT_TRUE(circle2.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle2.type() == Entity::Type::CIRCLE);
 }
 
-/* Operador de asignación */
+/* Operador de asignaciÃ³n */
 
 TEST(CircleD, assignment)
 {
@@ -61,10 +61,10 @@ TEST(CircleD, assignment)
   EXPECT_DOUBLE_EQ(50.5, circle2.center.x);
   EXPECT_DOUBLE_EQ(32.65, circle2.center.y);
   EXPECT_DOUBLE_EQ(25., circle2.radius);
-  EXPECT_TRUE(circle2.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle2.type() == Entity::Type::CIRCLE);
 }
 
-/* Conversión a un tipo diferente */
+/* ConversiÃ³n a un tipo diferente */
 
 TEST(CircleD, conversion)
 {
@@ -73,7 +73,7 @@ TEST(CircleD, conversion)
   EXPECT_DOUBLE_EQ(50., circle2.center.x);
   EXPECT_DOUBLE_EQ(32., circle2.center.y);
   EXPECT_DOUBLE_EQ(25., circle2.radius);
-  EXPECT_TRUE(circle2.getType() == Entity::type::CIRCLE);
+  EXPECT_TRUE(circle2.type() == Entity::Type::CIRCLE);
 }
 
 TEST(CircleD, area)
@@ -100,7 +100,7 @@ TEST(EllipseI, DefaultConstructor)
   EXPECT_EQ(0, ellipse.center.y);
   EXPECT_EQ(1, ellipse.a);
   EXPECT_EQ(1, ellipse.b);
-  EXPECT_TRUE(ellipse.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse.type() == Entity::Type::ELLIPSE);
 }
 
 TEST(EllipseD, DefaultConstructor)
@@ -110,7 +110,7 @@ TEST(EllipseD, DefaultConstructor)
   EXPECT_EQ(0., ellipse.center.y);
   EXPECT_EQ(1., ellipse.a);
   EXPECT_EQ(1., ellipse.b);
-  EXPECT_TRUE(ellipse.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse.type() == Entity::Type::ELLIPSE);
 }
 
 TEST(EllipseF, DefaultConstructor)
@@ -120,7 +120,7 @@ TEST(EllipseF, DefaultConstructor)
   EXPECT_FLOAT_EQ(0.f, ellipse.center.y);
   EXPECT_FLOAT_EQ(1.f, ellipse.a);
   EXPECT_FLOAT_EQ(1.f, ellipse.b);
-  EXPECT_TRUE(ellipse.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse.type() == Entity::Type::ELLIPSE);
 }
 
 // Constructor Centro y semiejes
@@ -131,7 +131,7 @@ TEST(EllipseD, Constructor) {
   EXPECT_DOUBLE_EQ(32.65, ellipse.center.y);
   EXPECT_DOUBLE_EQ(25., ellipse.a);
   EXPECT_DOUBLE_EQ(10., ellipse.b);
-  EXPECT_TRUE(ellipse.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse.type() == Entity::Type::ELLIPSE);
 }
 
 // Constructor de copia
@@ -144,10 +144,10 @@ TEST(EllipseD, CopyConstructor) {
   EXPECT_DOUBLE_EQ(32.65, ellipse2.center.y);
   EXPECT_DOUBLE_EQ(25., ellipse2.a);
   EXPECT_DOUBLE_EQ(10., ellipse2.b);
-  EXPECT_TRUE(ellipse2.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse2.type() == Entity::Type::ELLIPSE);
 }
 
-// Operador de asignación
+// Operador de asignaciÃ³n
 TEST(EllipseD, assignment)
 {
   const EllipseD ellipse(PointD(50.5, 32.65), 25., 10.);
@@ -157,7 +157,7 @@ TEST(EllipseD, assignment)
   EXPECT_DOUBLE_EQ(32.65, ellipse2.center.y);
   EXPECT_DOUBLE_EQ(25., ellipse2.a);
   EXPECT_DOUBLE_EQ(10., ellipse2.b);
-  EXPECT_TRUE(ellipse2.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse2.type() == Entity::Type::ELLIPSE);
 }
 
 TEST(EllipseD, conversion)
@@ -168,7 +168,7 @@ TEST(EllipseD, conversion)
   EXPECT_DOUBLE_EQ(32., ellipse2.center.y);
   EXPECT_DOUBLE_EQ(25., ellipse2.a);
   EXPECT_DOUBLE_EQ(10., ellipse2.b);
-  EXPECT_TRUE(ellipse2.getType() == Entity::type::ELLIPSE);
+  EXPECT_TRUE(ellipse2.type() == Entity::Type::ELLIPSE);
 }
 
 TEST(EllipseD, area)
