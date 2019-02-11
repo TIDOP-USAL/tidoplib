@@ -206,7 +206,7 @@ Process::Status Process::checkStatus()
     pauseTriggered();
     while (mStatus == Status::PAUSE);
   } else if (mStatus == Status::STOPPED) {
-    // Se fuerza la terminaci�n
+    // Se fuerza la terminación
     stopTriggered();
   }
   return mStatus;

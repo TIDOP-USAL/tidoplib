@@ -75,12 +75,14 @@ int main(int argc, char** argv)
   chrono.run();
   Features2D feat1(cv::xfeatures2d::SIFT::create(), cv::xfeatures2d::SIFT::create());
   feat1.detectKeyPoints(mat_1);
+  feat1.save("C:\\Colmap\\images\\11Set00179.xml");
   msgInfo("KeyPoints image 1: %i", feat1.getKeyPoints().size());
   chrono.stop();
 
   chrono.run();
   Features2D feat2(cv::xfeatures2d::SIFT::create(), cv::xfeatures2d::SIFT::create());
   feat2.detectKeyPoints(mat_2);
+  feat2.save("C:\\Colmap\\images\\12Set00194.xml");
   msgInfo("KeyPoints image 2: %i", feat2.getKeyPoints().size());
   chrono.stop();
 
