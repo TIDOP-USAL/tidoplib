@@ -145,6 +145,7 @@ public:
   /*!
    * \brief Ventana envolvente
    * \return Ventana envolvente del segmento
+   * \deprecated Use 'Segment::window()'  en su lugar
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("window()")
@@ -455,6 +456,7 @@ public:
 
   /*!
    * \brief Caja envolvente del segmento
+   * \deprecated Use 'Segment3D::box()' en su lugar
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("box()")
@@ -666,24 +668,37 @@ public:
 
   void deleteLine(int id);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Ventana envolvente del grupo de lineas
    * \return
+   * \deprecated Use 'GroupLines::window()' en su lugar
    */
-  TL_DEPRECATED("getWindow()")
+  TL_DEPRECATED("window()")
   WindowI getBbox() const { return bbox; }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Ventana envolvente del grupo de lineas
    * \return
    */
-  WindowI getWindow() const { return bbox; }
+  WindowI window() const { return bbox; }
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Número de líneas
+   * \return
+   * \deprecated Use 'GroupLines::size()' en su lugar
+   */
+  TL_DEPRECATED("size()")
+  size_t getSize() const { return linesgroup.size(); }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Número de líneas
    * \return
    */
-  size_t getSize() const { return linesgroup.size(); }
+  size_t size() const { return linesgroup.size(); }
 
   /*!
    * \brief Operador de indexación sobrecargado

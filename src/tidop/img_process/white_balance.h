@@ -52,7 +52,7 @@ public:
    * \brief Constructora Gray World
    */
   Grayworld()
-    : ImgProcessing(process_type::GRAYWORLD)
+    : ImgProcessing(process_type::grayworld)
   {
     wb = cv::xphoto::createGrayworldWB();
   }
@@ -100,7 +100,7 @@ class TL_EXPORT WhitePatch : public ImgProcessing
 {
 private:
 
-  Color mWhite;
+  graph::Color mWhite;
 
 public:
 
@@ -108,8 +108,9 @@ public:
    * \brief Constructora WhitePatch
    * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
-  WhitePatch(const Color &white = Color(Color::NAME::White))
-    : ImgProcessing(process_type::WHITEPATCH), mWhite(white) { }
+  WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white))
+    : ImgProcessing(process_type::whitepatch), 
+      mWhite(white) { }
 
   /*!
    * \brief Ejecuta el proceso
@@ -124,7 +125,7 @@ public:
    * \brief Establece los parámetros
    * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
-  void setParameters(const Color &white = Color(Color::NAME::White));
+  void setParameters(const graph::Color &white = graph::Color(graph::Color::Name::white));
 
 };
 

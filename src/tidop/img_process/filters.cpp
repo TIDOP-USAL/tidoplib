@@ -10,7 +10,7 @@ namespace tl
 /* ---------------------------------------------------------------------------------- */
 
 BilateralFilter::BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType)
-  : ImgProcessing(process_type::BILATERAL), 
+  : ImgProcessing(process_type::bilateral), 
     mDiameter(diameter), 
     mSigmaColor(sigmaColor), 
     mSigmaSpace(sigmaSpace), 
@@ -26,9 +26,9 @@ ImgProcessing::Status BilateralFilter::execute(const cv::Mat &matIn, cv::Mat *ma
     mat_aux.copyTo(*matOut);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigmaSpace, int borderType)
@@ -42,7 +42,7 @@ void BilateralFilter::setParameters(int diameter, double sigmaColor, double sigm
 /* ---------------------------------------------------------------------------------- */
 
 Blur::Blur(cv::Size ksize, cv::Point anchor, int borderType)
-  : ImgProcessing(process_type::BLUR), 
+  : ImgProcessing(process_type::blur), 
     mKernelSize(ksize), 
     mAnchor(anchor), 
     mBorderType(borderType) 
@@ -51,14 +51,14 @@ Blur::Blur(cv::Size ksize, cv::Point anchor, int borderType)
 
 ImgProcessing::Status Blur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     blur(matIn, *matOut, mKernelSize, mAnchor, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
@@ -71,7 +71,7 @@ void Blur::setParameters(cv::Size ksize, cv::Point anchor, int borderType)
 /* ---------------------------------------------------------------------------------- */
 
 BoxFilter::BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
-  : ImgProcessing(process_type::BOX_FILTER), 
+  : ImgProcessing(process_type::box_filter), 
     mDepth(ddepth), 
     mKernelSize(ksize), 
     mAnchor(anchor), 
@@ -82,14 +82,14 @@ BoxFilter::BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor, bool normaliz
 
 ImgProcessing::Status BoxFilter::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     boxFilter(matIn, *matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool normalize, int borderType)
@@ -108,7 +108,7 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 // Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 Filter2D::Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
-  : ImgProcessing(process_type::FILTER_2D), 
+  : ImgProcessing(process_type::filter_2d), 
     mDepth(ddepth), 
     mKernel(kernel), 
     mAnchor(anchor), 
@@ -120,14 +120,14 @@ Filter2D::Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, i
 
 ImgProcessing::Status Filter2D::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
@@ -142,7 +142,7 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
 Convolution::Convolution(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
-  : ImgProcessing(process_type::CONVOLUTION), 
+  : ImgProcessing(process_type::convolution), 
     mDepth(ddepth), 
     mKernel(kernel), 
     mAnchor(anchor), 
@@ -154,14 +154,14 @@ Convolution::Convolution(int ddepth, cv::Mat kernel, cv::Point anchor, double de
 
 ImgProcessing::Status Convolution::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::filter2D(matIn, *matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Convolution::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
@@ -177,7 +177,7 @@ void Convolution::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, do
 /* ---------------------------------------------------------------------------------- */
 
 GaussianBlur::GaussianBlur(cv::Size size, double sigmaX, double sigmaY, int borderType)
-  : ImgProcessing(process_type::GAUSSIAN_BLUR), 
+  : ImgProcessing(process_type::gaussian_blur), 
     mKernelSize(size), 
     mSigmaX(sigmaX), 
     mSigmaY(sigmaY), 
@@ -187,14 +187,14 @@ GaussianBlur::GaussianBlur(cv::Size size, double sigmaX, double sigmaY, int bord
 
 ImgProcessing::Status GaussianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::GaussianBlur(matIn, *matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, int bordertype)
@@ -208,7 +208,7 @@ void GaussianBlur::setParameters(cv::Size size, double sigmax, double sigmay, in
 /* ---------------------------------------------------------------------------------- */
 
 Laplacian::Laplacian(int ddepth, int ksize, double scale , double delta, int bordertype)
-  : ImgProcessing(process_type::LAPLACIAN), 
+  : ImgProcessing(process_type::laplacian), 
     mDepth(ddepth), 
     mKernelsize(ksize), 
     mScale(scale), 
@@ -219,14 +219,14 @@ Laplacian::Laplacian(int ddepth, int ksize, double scale , double delta, int bor
 
 ImgProcessing::Status Laplacian::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::Laplacian(matIn, *matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
   } catch (cv::Exception &e) {
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta, int borderType)
@@ -241,21 +241,21 @@ void Laplacian::setParameters(int ddepth, int ksize, double scale, double delta,
 /* ---------------------------------------------------------------------------------- */
 
 MedianBlur::MedianBlur(int ksize)
-  : ImgProcessing(process_type::MEDIAN_BLUR), 
+  : ImgProcessing(process_type::median_blur), 
     mKernelSize(ksize) 
 {
 }
 
 ImgProcessing::Status MedianBlur::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::medianBlur(matIn, *matOut, mKernelSize);
   } catch (cv::Exception &e) {
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void MedianBlur::setParameters(int ksize)
@@ -267,7 +267,7 @@ void MedianBlur::setParameters(int ksize)
 
 Sobel::Sobel(int dx, int dy, int ksize, double scale, double delta,
              int ddepth, double thresh, double maxval, int bordertype)
-  : ImgProcessing(process_type::SOBEL),
+  : ImgProcessing(process_type::sobel),
     mDx(dx), 
     mDy(dy), 
     mKernelSize(ksize), 
@@ -282,7 +282,7 @@ Sobel::Sobel(int dx, int dy, int ksize, double scale, double delta,
 
 ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   cv::Mat grad_x, grad_y;
   cv::Mat abs_grad_x, abs_grad_y;
   try {
@@ -292,9 +292,9 @@ ImgProcessing::Status Sobel::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     threshold(abs_grad_x, *matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
@@ -313,7 +313,7 @@ void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta,
 /* ---------------------------------------------------------------------------------- */
 
 Canny::Canny(double threshold1, double threshold2)
-  : ImgProcessing(process_type::CANNY), 
+  : ImgProcessing(process_type::canny), 
     mThreshold1(threshold1), 
     mThreshold2(threshold2) 
 {
@@ -321,7 +321,7 @@ Canny::Canny(double threshold1, double threshold2)
 
 ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   double th1 = mThreshold1, th2 = mThreshold2;
   try {
     if (th1 == 0.0 && th2 == 0.0) {
@@ -333,9 +333,9 @@ ImgProcessing::Status Canny::execute(const cv::Mat &matIn, cv::Mat *matOut) cons
     cv::Canny(matIn, *matOut, th1, th2, 3);
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Canny::setParameters(double threshold1, double threshold2)

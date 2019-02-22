@@ -141,10 +141,15 @@ public:
 
 };
 
+
+/* Definición de alias Point */
+
 typedef Point<int> PointI;
 typedef Point<double> PointD;
 typedef Point<float> PointF;
 
+
+/* Implementación Point */
 
 template<typename T> inline
 Point<T>::Point()
@@ -1071,6 +1076,9 @@ typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
 
 }
 
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 //TODO: revisar y ver si se puede hacer mejor
 
 template<typename Point_t> static inline 
@@ -1114,6 +1122,8 @@ Point_t point_cast(const geometry::Point3<float> &pt)
 { 
   return Point_t(pt.x, pt.y, pt.z); 
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 #ifdef HAVE_OPENCV
 

@@ -174,9 +174,9 @@ int main(int argc, char** argv)
   PointD pt_dtm;
   PointD pt_cloud;
   for(size_t r = 0; r < static_cast<size_t>(height_px); r++){
-    pt_dtm.y = r;
+    pt_dtm.y = static_cast<double>(r);
     for(size_t c = 0; c <static_cast<size_t>(width_px); c++){
-      pt_dtm.x = c;
+      pt_dtm.x = static_cast<double>(c);
       trf.transform(pt_dtm, &pt_cloud);
 
       if (mWindow[r][c].containsPoint(pt_cloud)){

@@ -100,10 +100,12 @@ Console &Console::getInstance()
   return *sObjConsole;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 EnumFlags<MessageLevel> Console::getMessageLevel() const
 {
   return sLevel;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 EnumFlags<MessageLevel> Console::messageLevel() const
 {
@@ -142,35 +144,35 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
 {
 #ifdef WIN32
   switch (backColor) {
-  case TL::Console::Color::BLACK:
+  case tl::Console::Color::black:
     mBackColor = 0;
     break;
-  case TL::Console::Color::BLUE:
+  case tl::Console::Color::blue:
     mBackColor = BACKGROUND_BLUE;
     break;
-  case TL::Console::Color::GREEN:
+  case tl::Console::Color::green:
     mBackColor = BACKGROUND_GREEN;
     break;
-  case TL::Console::Color::CYAN:
+  case tl::Console::Color::cyan:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
     break;
-  case TL::Console::Color::RED:
+  case tl::Console::Color::red:
     mBackColor = BACKGROUND_RED;
     break;
-  case TL::Console::Color::MAGENTA:
+  case tl::Console::Color::magenta:
     mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
     break;
-  case TL::Console::Color::YELLOW:
+  case tl::Console::Color::yellow:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
     break;
-  case TL::Console::Color::WHITE:
+  case tl::Console::Color::white:
     mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
     break;
   default:
     mBackColor = 0;
     break;
   }
-  if(intensity == Console::Intensity::NORMAL)
+  if(intensity == Console::Intensity::normal)
       mBackIntensity = 0;
   else
       mBackIntensity = BACKGROUND_INTENSITY;
@@ -184,28 +186,28 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
       {
 #ifdef WIN32
   switch (foreColor) {
-  case TL::Console::Color::BLACK:
+  case tl::Console::Color::black:
     mForeColor = 0;
     break;
-  case TL::Console::Color::BLUE:
+  case tl::Console::Color::blue:
     mForeColor = FOREGROUND_BLUE;
     break;
-  case TL::Console::Color::GREEN:
+  case tl::Console::Color::green:
     mForeColor = FOREGROUND_GREEN;
     break;
-  case TL::Console::Color::CYAN:
+  case tl::Console::Color::cyan:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
     break;
-  case TL::Console::Color::RED:
+  case tl::Console::Color::red:
     mForeColor = FOREGROUND_RED;
     break;
-  case TL::Console::Color::MAGENTA:
+  case tl::Console::Color::magenta:
     mForeColor = FOREGROUND_RED | FOREGROUND_BLUE;
     break;
-  case TL::Console::Color::YELLOW:
+  case tl::Console::Color::yellow:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_RED;
     break;
-  case TL::Console::Color::WHITE:
+  case tl::Console::Color::white:
     mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
     break;
   default:
@@ -213,7 +215,7 @@ void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Inten
     break;
   }
 
-  if(intensity == Console::Intensity::NORMAL)
+  if(intensity == Console::Intensity::normal)
       mForeIntensity = 0;
   else
       mForeIntensity = FOREGROUND_INTENSITY;
@@ -742,40 +744,6 @@ Command::iterator Command::erase(Command::const_iterator first, Command::const_i
 void Command::showHelp() const
 {
 
-
-//  Console &console = Console::getInstance();
-//  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
-//  console.setFontBold(true);
-
-//  /// Nombre del comando
-//  printf("%s \n\n", mName.c_str());
-
-//  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
-//  console.setFontBold(false);
-
-//  /// Descripción del comando
-//  printf("%s \n\n", mDescription.c_str());
-
-//  /// Sintaxis
-//  console.setFontBold(true);
-//  printf_s("\nSyntax:\n\n");
-//  console.setFontBold(false);
-
-//  printf_s("%s", mName.c_str());
-//  for (auto arg : mCmdArgs) {
-//     printf_s( " [--%s|-%c] [value]", arg->name().c_str(), arg->shortName());
-//  }
-//  printf_s("\n\n");
-
-//  /// Parámetros
-//  console.setFontBold(true);
-//  printf_s("Parameters:\n\n");
-//  console.setFontBold(false);
-
-//  for (auto arg : mCmdArgs) {
-//     printf_s("- [%s|%c] %s (%s)\n", arg->name().c_str(), arg->shortName(), arg->description().c_str(), (arg->isRequired() ? "Required" : "Optional"));
-//  }
-
   /// Linux syntax
   TL_TODO("Solucion rapida. revisar")
 
@@ -937,7 +905,7 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
 
   }
 
-  return Status::PARSE_SUCCESS;
+  return Status::parse_success;
 }
 
 CommandList::iterator CommandList::begin()
@@ -1476,7 +1444,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
           if (val_pos != std::string::npos && name == argName) {
             if (arg->getType() == CmdArgument::Type::PARAMETER) {
               std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              TL::replaceString(&value, "\"", "\\");
+              tl::replaceString(&value, "\"", "\\");
               dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
               bFind = true;
               break;

@@ -8,6 +8,7 @@ add_library(tl_math ${LIB_TYPE}
             statistics.h
             mathutils.cpp
             mathutils.h
+            numericalmethods.h
             algebra/quaternion.h
             algebra/euler_angles.h
             algebra/rotations.h

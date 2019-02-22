@@ -50,6 +50,10 @@ namespace tl
  */
 
 /*! \defgroup Console Utilidades de consola
+ *  
+ * Utilidades para aplicaciones en modo consola que comprenden la apariencia de 
+ * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso 
+ * para procesos
  *
  *  \{
  */
@@ -80,7 +84,7 @@ public:
     ,
     NORMAL = normal,
     BRIGHT = bright
-#endif
+#endif // TL_ENABLE_DEPRECATED_METHODS
   };
 
   /*!
@@ -201,13 +205,13 @@ private:
   /*!
    * \brief Nivel de información de los mensajes
    *
-   * Por defecto MSG_ERROR
+   * Por defecto MessageLevel::msg_error
    * \see MessageLevel
    */
   static EnumFlags<MessageLevel> sLevel;
 
   /*!
-   * \brief Objeto unico para la consola
+   * \brief Objeto único para la consola
    */
   static std::unique_ptr<Console> sObjConsole;
 
@@ -240,24 +244,33 @@ public:
    */
   static Console &getInstance();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Niveles de mensaje activados
+   * \return Flag con los niveles de mensajes aceptados por la consola
+   * \see EnumFlags
+   * \deprecated Use 'messageLevel()'  en su lugar
+   */
+  TL_DEPRECATED("Console::messageLevel")
+  EnumFlags<MessageLevel> getMessageLevel() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief Niveles de mensaje activados
    * \return Flag con los niveles de mensajes aceptados por la consola
    * \see EnumFlags
    */
-  TL_DEPRECATED("messageLevel")
-  EnumFlags<MessageLevel> getMessageLevel() const;
   EnumFlags<MessageLevel> messageLevel() const;
 
   /*!
    * \brief Imprime un mensaje en la consola
-   * \param[in] msg Mensaje
+   * \param[in] msg Mensaje que se muestra por consola
    */
   void printMessage(const std::string &msg);
 
   /*!
    * \brief Imprime un mensaje de error en la consola
-   * \param[in] msg Mensaje
+   * \param[in] msg Mensaje que se muestra por consola
    */
   void printErrorMessage(const std::string &msg);
 
@@ -1402,11 +1415,19 @@ public:
    */
   enum class Status
   {
-    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+    parse_success,  /*!< El parseo se ejecuto correctamente */
+    parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    SHOW_VERSION = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    SHOW_LICENCE = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#endif
   };
 
   /*!
@@ -1484,10 +1505,22 @@ private:
 
 public:
 
+  /*!
+   * \brief Constructora
+   */
   CommandList();
 
+  /*!
+   * \brief Constructora
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   */
   CommandList(const std::string &name, const std::string &description);
-
+  
+  /*!
+   * \brief Constructor de copia
+   * \param[in] commandList Objeto CommandList que se copia
+   */
   CommandList(const CommandList &commandList);
 
   /*!

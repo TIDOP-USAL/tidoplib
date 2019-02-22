@@ -95,11 +95,11 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
       // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
       // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
       int parity = (((e.axis[2] | (e.axis[1] << 2)) >> e.axis[0]) & 1);
-      Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
+      T const sgn = (parity & 1 ? (T)-1 : (T)+1);
 
-      if (r(e.axis[2], e.axis[0]) < (Real)1)
+      if (r(e.axis[2], e.axis[0]) < (T)1)
       {
-        if (r(e.axis[2], e.axis[0]) > (Real)-1)
+        if (r(e.axis[2], e.axis[0]) > (T)-1)
         {
           e.angle[2] = atan2(sgn*r(e.axis[1], e.axis[0]),
                              r(e.axis[0], e.axis[0]));
@@ -110,8 +110,8 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
         }
         else
         {
-          e.angle[2] = (Real)0;
-          e.angle[1] = sgn*(Real)GTE_C_HALF_PI;
+          e.angle[2] = (T)0;
+          e.angle[1] = sgn*(T)GTE_C_HALF_PI;
           e.angle[0] = atan2(-sgn*r(e.axis[1], e.axis[2]),
                              r(e.axis[1], e.axis[1]));
           e.result = ER_NOT_UNIQUE_DIF;
@@ -119,8 +119,8 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
       }
       else
       {
-        e.angle[2] = (Real)0;
-        e.angle[1] = -sgn*(Real)GTE_C_HALF_PI;
+        e.angle[2] = (T)0;
+        e.angle[1] = -sgn*(T)GTE_C_HALF_PI;
         e.angle[0] = atan2(-sgn*r(e.axis[1], e.axis[2]),
                            r(e.axis[1], e.axis[1]));
         e.result = ER_NOT_UNIQUE_SUM;
@@ -129,10 +129,10 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
 //      // Map (0,1,2), (1,2,0), and (2,0,1) to +1.
 //      // Map (0,2,1), (2,1,0), and (1,0,2) to -1.
 //      int parity = (((e.axis[0] | (e.axis[1] << 2)) >> e.axis[2]) & 1);
-//      Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
+//      T const sgn = (parity & 1 ? (T)+1 : (T)-1);
 //
-//      if (r(e.axis[0], e.axis[2]) < (Real)1) {
-//        if (r(e.axis[0], e.axis[2]) > (Real)-1) {
+//      if (r(e.axis[0], e.axis[2]) < (T)1) {
+//        if (r(e.axis[0], e.axis[2]) > (T)-1) {
 //          e.angle[0] = atan2(sgn*r(e.axis[1], e.axis[2]),
 //                             r(e.axis[2], e.axis[2]));
 //          e.angle[1] = asin(-sgn*r(e.axis[0], e.axis[2]));
@@ -140,15 +140,15 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
 //                             r(e.axis[0], e.axis[0]));
 //          e.result = ER_UNIQUE;
 //        } else {
-//          e.angle[0] = (Real)0;
-//          e.angle[1] = sgn*(Real)GTE_C_HALF_PI;
+//          e.angle[0] = (T)0;
+//          e.angle[1] = sgn*(T)GTE_C_HALF_PI;
 //          e.angle[2] = atan2(-sgn*r(e.axis[1], e.axis[0]),
 //                             r(e.axis[1], e.axis[1]));
 //          e.result = ER_NOT_UNIQUE_DIF;
 //        }
 //      } else {
-//        e.angle[0] = (Real)0;
-//        e.angle[1] = -sgn*(Real)GTE_C_HALF_PI;
+//        e.angle[0] = (T)0;
+//        e.angle[1] = -sgn*(T)GTE_C_HALF_PI;
 //        e.angle[2] = atan2(-sgn*r(e.axis[1], e.axis[0]),
 //                           r(e.axis[1], e.axis[1]));
 //        e.result = ER_NOT_UNIQUE_SUM;
@@ -160,11 +160,11 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
       // Map (0,1,0), (1,2,1), and (2,0,2) to -1.
       int b0 = 3 - e.axis[1] - e.axis[2];
       int parity = (((b0 | (e.axis[1] << 2)) >> e.axis[2]) & 1);
-      Real const sgn = (parity & 1 ? (Real)+1 : (Real)-1);
+      T const sgn = (parity & 1 ? (T)+1 : (T)-1);
 
-      if (r(e.axis[2], e.axis[2]) < (Real)1)
+      if (r(e.axis[2], e.axis[2]) < (T)1)
       {
-        if (r(e.axis[2], e.axis[2]) > (Real)-1)
+        if (r(e.axis[2], e.axis[2]) > (T)-1)
         {
           e.angle[2] = atan2(r(e.axis[1], e.axis[2]),
                              sgn*r(b0, e.axis[2]));
@@ -175,8 +175,8 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
         }
         else
         {
-          e.angle[2] = (Real)0;
-          e.angle[1] = (Real)GTE_C_PI;
+          e.angle[2] = (T)0;
+          e.angle[1] = (T)GTE_C_PI;
           e.angle[0] = atan2(sgn*r(e.axis[1], b0),
                              r(e.axis[1], e.axis[1]));
           e.result = ER_NOT_UNIQUE_DIF;
@@ -184,8 +184,8 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
       }
       else
       {
-        e.angle[2] = (Real)0;
-        e.angle[1] = (Real)0;
+        e.angle[2] = (T)0;
+        e.angle[1] = (T)0;
         e.angle[0] = atan2(sgn*r(e.axis[1], b0),
                            r(e.axis[1], e.axis[1]));
         e.result = ER_NOT_UNIQUE_SUM;
@@ -195,10 +195,10 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
 //      // Map (0,1,0), (1,2,1), and (2,0,2) to +1.
 //      int b2 = 3 - e.axis[0] - e.axis[1];
 //      int parity = (((b2 | (e.axis[1] << 2)) >> e.axis[0]) & 1);
-//      Real const sgn = (parity & 1 ? (Real)-1 : (Real)+1);
+//      T const sgn = (parity & 1 ? (T)-1 : (T)+1);
 //
-//      if (r(e.axis[0], e.axis[0]) < (Real)1) {
-//        if (r(e.axis[0], e.axis[0]) > (Real)-1) {
+//      if (r(e.axis[0], e.axis[0]) < (T)1) {
+//        if (r(e.axis[0], e.axis[0]) > (T)-1) {
 //          e.angle[0] = atan2(r(e.axis[1], e.axis[0]),
 //                             sgn*r(b2, e.axis[0]));
 //          e.angle[1] = acos(r(e.axis[0], e.axis[0]));
@@ -206,15 +206,15 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
 //                             -sgn*r(e.axis[0], b2));
 //          e.result = ER_UNIQUE;
 //        } else {
-//          e.angle[0] = (Real)0;
-//          e.angle[1] = (Real)GTE_C_PI;
+//          e.angle[0] = (T)0;
+//          e.angle[1] = (T)GTE_C_PI;
 //          e.angle[2] = atan2(sgn*r(e.axis[1], b2),
 //                             r(e.axis[1], e.axis[1]));
 //          e.result = ER_NOT_UNIQUE_DIF;
 //        }
 //      } else {
-//        e.angle[0] = (Real)0;
-//        e.angle[1] = (Real)0;
+//        e.angle[0] = (T)0;
+//        e.angle[1] = (T)0;
 //        e.angle[2] = atan2(sgn*r(e.axis[1], b2),
 //                           r(e.axis[1], e.axis[1]));
 //        e.result = ER_NOT_UNIQUE_SUM;
@@ -223,9 +223,9 @@ void Rotation<T>::convert(const RotationMatrix<T> &rotMatrix, EulerAngles<T> &eu
     }
   } else {
     // Invalid angles.
-    e.angle[0] = (Real)0;
-    e.angle[1] = (Real)0;
-    e.angle[2] = (Real)0;
+    e.angle[0] = (T)0;
+    e.angle[1] = (T)0;
+    e.angle[2] = (T)0;
     e.result = ER_INVALID;
   }
 }

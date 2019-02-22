@@ -152,44 +152,65 @@ public:
    */
   template<typename Point_t2> operator Box<Point_t2>() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve centro del Bbox
+   * \return Centro del Bbox
+   * \deprecated Use 'center()' en su lugar
+   */
+  TL_DEPRECATED("center()")
+  Point3_t getCenter() const;
+#endif
   /*!
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("center()")
-  Point3_t getCenter() const;
-#endif
   Point3_t center() const;
 
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve el ancho de la caja
+   * \return Ancho
+   * \deprecated Use 'width()' en su lugar
+   */
+  TL_DEPRECATED("width()")
+  typename Point3_t::value_type getWidth() const;
+#endif
   /*!
    * \brief Devuelve el ancho de la caja
    * \return Ancho
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("width()")
-  typename Point3_t::value_type getWidth() const;
-#endif
   typename Point3_t::value_type width() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve el alto de la caja
+   * \return Alto
+   * \deprecated Use 'height()' en su lugar
+   */
+  TL_DEPRECATED("height()")
+  typename Point3_t::value_type getHeight() const;
+#endif
   /*!
    * \brief Devuelve el alto de la caja
    * \return Alto
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("height()")
-  typename Point3_t::value_type getHeight() const;
-#endif
   typename Point3_t::value_type height() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve la profundidad de la caja
+   * \return Profundidad
+   * \deprecated Use 'depth()' en su lugar
+   */
+  TL_DEPRECATED("depth()")
+  typename Point3_t::value_type getDepth() const;
+#endif
   /*!
    * \brief Devuelve la profundidad de la caja
    * \return Profundidad
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("depth()")
-  typename Point3_t::value_type getDepth() const;
-#endif
   typename Point3_t::value_type depth() const;
 
   /*!

@@ -221,8 +221,12 @@ public:
   /*!
    * \brief Devuelve el estado actual de la ejecución 
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("status")
   Status getStatus();
-  
+#endif // TL_ENABLE_DEPRECATED_METHODS
+  Status status();
+
   /*!
    * \brief Establece el estado
    * \param[in] status
@@ -233,12 +237,20 @@ public:
    * \brief Devuelve el identificador del proceso
    * \return
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("id")
   uint64_t getProcessId() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+  uint64_t id() const;
 
   /*!
    * \brief Devuelve el nombre del proceso 
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("processName")
   std::string getProcessName() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+  std::string name() const;
 
   /*!
    * \brief Establece el contador de procesos a cero

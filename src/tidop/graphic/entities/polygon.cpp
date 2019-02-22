@@ -13,13 +13,13 @@ namespace graph
 
 GPolygon::GPolygon() 
   : Polygon<Point<double>>(), 
-    GraphicEntity(GraphicEntity::Type::POLYGON_2D)
+    GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
 GPolygon::GPolygon(const Polygon<Point<double>> &polygon) 
   : Polygon<Point<double>>(polygon), 
-    GraphicEntity(GraphicEntity::Type::POLYGON_2D)
+    GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
@@ -73,13 +73,13 @@ bool GPolygon::isSimpleEntity() const
 
 GPolygon3D::GPolygon3D() 
   : Polygon3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::POLYGON_3D)
+    GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
 GPolygon3D::GPolygon3D(const Polygon3D<Point3<double>> &polygon)
   : Polygon3D<Point3<double>>(polygon),
-    GraphicEntity(GraphicEntity::Type::POLYGON_3D)
+    GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
@@ -132,13 +132,13 @@ bool GPolygon3D::isSimpleEntity() const
 
 GMultiPolygon::GMultiPolygon()
   : MultiPolygon<Point<double>>(), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_2D)
+    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
 GMultiPolygon::GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon)
   : MultiPolygon<Point<double>>(multiPolygon), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_2D)
+    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
@@ -177,13 +177,13 @@ bool GMultiPolygon::isSimpleEntity() const
 
 GMultiPolygon3D::GMultiPolygon3D()
   : MultiPolygon3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_3D)
+    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 
 GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon)
   : MultiPolygon3D<Point3<double>>(multiPolygon),
-    GraphicEntity(GraphicEntity::Type::MULTIPOLYGON_3D)
+    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 

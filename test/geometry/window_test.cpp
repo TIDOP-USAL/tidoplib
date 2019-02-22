@@ -211,12 +211,12 @@ TEST(getCenter, WindowCenter)
   // Tamaño par
   PointI ptc(50, 50);
   WindowI w(ptc, 50);
-  EXPECT_EQ(ptc, w.getCenter());
+  EXPECT_EQ(ptc, w.center());
 
   //Tamaño impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51);
-  EXPECT_EQ(ptc2, w2.getCenter());
+  EXPECT_EQ(ptc2, w2.center());
 
   //// Ventana double
   //PointD ptc3(50.67, 50.76);

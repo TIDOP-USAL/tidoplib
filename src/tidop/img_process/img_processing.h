@@ -25,8 +25,13 @@ namespace tl
 
 enum class ProcessExit
 {
-  SUCCESS,
-  FAILURE
+  success,
+  failure
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+  SUCCESS = success,
+  FAILURE = failure
+#endif // TL_ENABLE_DEPRECATED_METHODS
 };
 
 /*!
@@ -34,37 +39,67 @@ enum class ProcessExit
  */
 enum class process_type {
   /* Filtros */
-  BILATERAL,          /*!< Filtro bilateral. */
-  BLUR,               /*!< Filtro desenfoque. */
-  BOX_FILTER,         /*!<  */
-  FILTER_2D,          /*!<  */
-  CONVOLUTION,        /*!<  Convolución */ 
-  GAUSSIAN_BLUR,      /*!< Desenfoque gaussiano. */
-  LAPLACIAN,          /*!< Laplaciano de una imagen */
-  MEDIAN_BLUR,        /*!<  */
-  SOBEL,              /*!< Operador Sobel. */
-  CANNY,              /*!< Detector de bordes canny. */
+  bilateral,          /*!< Filtro bilateral. */
+  blur,               /*!< Filtro desenfoque. */
+  box_filter,         /*!<  */
+  filter_2d,          /*!<  */
+  convolution,        /*!<  Convolución */ 
+  gaussian_blur,      /*!< Desenfoque gaussiano. */
+  laplacian,          /*!< Laplaciano de una imagen */
+  median_blur,        /*!<  */
+  sobel,              /*!< Operador Sobel. */
+  canny,              /*!< Detector de bordes canny. */
   /* Operaciones morfológicas */
-  MORPH_DILATION,     /*!< Operacion morfologica de dilatación. */
-  MORPH_EROTION,      /*!< Operacion morfologica de erosión. */
-  MORPH_OPENING,      /*!< Operacion morfologica de apertura. */
-  MORPH_CLOSING,      /*!< Operacion morfologica de cierre. */
-  MORPH_GRADIENT,     /*!< Operacion morfologica  */
-  MORPH_TOPHAT,       /*!< Operacion morfologica  */
-  MORPH_BLACKHAT,     /*!< Operacion morfologica  */
+  morph_dilation,     /*!< Operacion morfologica de dilatación. */
+  morph_erotion,      /*!< Operacion morfologica de erosión. */
+  morph_opening,      /*!< Operacion morfologica de apertura. */
+  morph_closing,      /*!< Operacion morfologica de cierre. */
+  morph_gradient,     /*!< Operacion morfologica  */
+  morph_tophat,       /*!< Operacion morfologica  */
+  morph_blackhat,     /*!< Operacion morfologica  */
   /* Transformación de imagen */
-  RESIZE,             /*!< Redimensiona la imagen */
-  RESIZE_CANVAS,
-  NORMALIZE,          /*!< Normalización. */
-  BINARIZE,           /*!< Binarización. */
-  EQUALIZE_HIST,      /*!< Equalización del histograma. */
-  FUNCTION_PROCESS,   /*!< Proceso que ejecuta una función */
+  resize,             /*!< Redimensiona la imagen */
+  resize_canvas,
+  normalize,          /*!< Normalización. */
+  binarize,           /*!< Binarización. */
+  equalize_hist,      /*!< Equalización del histograma. */
+  function_process,   /*!< Proceso que ejecuta una función */
   /* Balance de blancos */
-  GRAYWORLD,
-  WHITEPATCH,
+  grayworld,
+  whitepatch,
   /*  */
-  COLOR_CONVERSION,
-  CORRELATION
+  color_conversion,
+  correlation
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+  BILATERAL = bilateral,
+  BLUR = blur,
+  BOX_FILTER = box_filter,
+  FILTER_2D = filter_2d,
+  CONVOLUTION = convolution,
+  GAUSSIAN_BLUR = gaussian_blur,
+  LAPLACIAN = laplacian,
+  MEDIAN_BLUR = median_blur,
+  SOBEL = sobel,
+  CANNY = canny,
+  MORPH_DILATION = morph_dilation,
+  MORPH_EROTION = morph_erotion,
+  MORPH_OPENING = morph_opening,
+  MORPH_CLOSING = morph_closing,
+  MORPH_GRADIENT = morph_gradient,
+  MORPH_TOPHAT = morph_tophat,
+  MORPH_BLACKHAT = morph_blackhat,
+  RESIZE = resize,
+  RESIZE_CANVAS = resize_canvas,
+  NORMALIZE = normalize,
+  BINARIZE = binarize,
+  EQUALIZE_HIST = equalize_hist,
+  FUNCTION_PROCESS = function_process,
+  GRAYWORLD = grayworld,
+  WHITEPATCH = whitepatch,
+  COLOR_CONVERSION = color_conversion,
+  CORRELATION = correlation
+#endif // TL_ENABLE_DEPRECATED_METHODS
 };
 
 /*!
@@ -87,9 +122,15 @@ public:
    */
   enum class Status
   {
-    OK,                       // El proceso se ha ejecutado correctamente
-    INCORRECT_INPUT_DATA,     // Error de los datos de entrada
-    PROCESS_ERROR             // Error durante el proceso.
+    ok,                       // El proceso se ha ejecutado correctamente
+    incorrect_input_data,     // Error de los datos de entrada
+    process_error             // Error durante el proceso.
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    OK = ok,
+    INCORRECT_INPUT_DATA = incorrect_input_data,
+    PROCESS_ERROR = process_error
+#endif // TL_ENABLE_DEPRECATED_METHODS
   };
 
 public:
@@ -223,7 +264,8 @@ public:
  * \li TopHat = src - apertura(src)
  * \li BlackHat = cierre(src) - src
  */
-class morphologicalOperation : public ImgProcessing
+class morphologicalOperation 
+  : public ImgProcessing
 {
 protected:
 
@@ -319,7 +361,7 @@ public:
   Dilate(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
          int iterations = 1, int borderType = cv::BORDER_CONSTANT, 
          const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_DILATION)
+    : morphologicalOperation(process_type::morph_dilation)
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue );
   }
@@ -348,7 +390,7 @@ public:
   Erotion(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_EROTION) 
+    : morphologicalOperation(process_type::morph_erotion) 
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
@@ -378,7 +420,7 @@ public:
   Opening(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_OPENING)
+    : morphologicalOperation(process_type::morph_opening)
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
@@ -408,7 +450,7 @@ public:
   Closing(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_CLOSING)
+    : morphologicalOperation(process_type::morph_closing)
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
@@ -438,7 +480,7 @@ public:
   Gradient(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_GRADIENT)
+    : morphologicalOperation(process_type::morph_gradient)
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
@@ -467,7 +509,7 @@ public:
   TopHat(int size, cv::MorphShapes type = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_TOPHAT)
+    : morphologicalOperation(process_type::morph_tophat)
   {
     setParameters(size, type, anchor, iterations, borderType, borderValue);
   }
@@ -497,7 +539,7 @@ public:
   BlackHat(int size, cv::MorphShapes shapes = cv::MORPH_RECT, cv::Point anchor = cv::Point(-1, -1),
     int iterations = 1, int borderType = cv::BORDER_CONSTANT,
     const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue())
-    : morphologicalOperation(process_type::MORPH_BLACKHAT)
+    : morphologicalOperation(process_type::morph_blackhat)
   {
     setParameters(size, shapes, anchor, iterations, borderType, borderValue);
   }
@@ -536,7 +578,7 @@ public:
    * \param upRange
    */
   Normalize(double lowRange, double upRange)
-    : ImgProcessing(process_type::NORMALIZE), mLowRange(lowRange), mUpRange(upRange) {}
+    : ImgProcessing(process_type::normalize), mLowRange(lowRange), mUpRange(upRange) {}
 
   /*!
    * \brief Ejecuta el proceso
@@ -695,7 +737,7 @@ public:
    * \param[in] f Función de la forma std::function<void(const cv::Mat &,cv::Mat *)>
    */
   FunctionProcess(std::function<void(const cv::Mat &, cv::Mat *)> f)
-    : ImgProcessing(process_type::FUNCTION_PROCESS), f(f) {}
+    : ImgProcessing(process_type::function_process), f(f) {}
 
   //~FunctionProcess();
 

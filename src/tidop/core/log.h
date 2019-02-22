@@ -70,12 +70,10 @@ private:
   /*!
    * \brief Nivel de información de los mensajes
    *
-   * Por defecto MSG_ERROR
+   * Por defecto msg_error
    * \see MessageLevel
    */
   static EnumFlags<MessageLevel> sLevel;
-
-  //std::string mMessage;
 
   /*!
    * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
@@ -113,12 +111,23 @@ public:
    */
   static Log &getInstance();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Niveles de log activados
+   * \return Flag con los niveles de mensajes aceptados por el log
+   * \see EnumFlags
+   * \deprecated Use 'logLevel' en su lugar
+   */
+  TL_DEPRECATED("logLevel")
+  EnumFlags<MessageLevel> getLogLevel() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief Niveles de log activados
    * \return Flag con los niveles de mensajes aceptados por el log
    * \see EnumFlags
    */
-  EnumFlags<MessageLevel> getLogLevel() const;
+  EnumFlags<MessageLevel> logLevel() const;
 
   /*!
    * \brief Establece el nombre del fichero log

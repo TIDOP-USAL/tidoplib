@@ -203,12 +203,12 @@ public:
   /*!
    * \brief Asignación de copia
    */
-  GLayer& operator=(const GLayer& entity);
+  GLayer &operator=(const GLayer& entity);
 
   /*!
    * \brief Asignación de movimiento
    */
-  GLayer& operator=(GLayer&& entity) TL_NOEXCEPT;
+  GLayer &operator=(GLayer&& entity) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina el intervalo

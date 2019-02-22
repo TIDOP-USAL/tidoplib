@@ -59,7 +59,7 @@ enum class MessageLevel : int8_t {
 #endif
 };
 
-//Se permiten operaciones a nivel de bit para el enum MessageOutput
+/// Se permiten operaciones a nivel de bit para el enum MessageOutput
 ALLOW_BITWISE_FLAG_OPERATIONS(MessageLevel);
 
 #ifdef TL_MESSAGE_HANDLER
@@ -91,9 +91,6 @@ public:
    */
 	class TL_EXPORT Listener
   {
-  protected:
-
-    //std::shared_ptr<MessageManager> mMessage;
 
   public:
 
@@ -114,13 +111,6 @@ public:
      * \param date Fecha y hora en la que se emite el mensaje
      */
     virtual void onMsgDebug(const char *msg, const char *date) = 0;
-
-    /*!
-     * \brief Mensaje verbose
-     * \param msg Mensaje que recibe el escuchador
-     * \param date Fecha y hora en la que se emite el mensaje
-     */
-    //virtual void onMsgVerbose(const char *msg, const char *date) = 0;
 
     /*!
      * \brief Mensaje de información
@@ -217,41 +207,102 @@ public:
      */
     ~Message() { }
 
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    /*!
+     * \brief Devuelve la fecha y hora del mensaje
+     * \return Fecha y hora del mensaje
+     * \deprecated Use 'MessageManager::Message::date()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::date()")
+    const char *getDate() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
     /*!
      * \brief Devuelve la fecha y hora del mensaje
      * \return Fecha y hora del mensaje
      */
-    const char *getDate() const;
+    const char *date() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
     /*!
      * \brief getFile
      * \return
+     * \deprecated Use 'MessageManager::Message::file()' en su lugar 
      */
+    TL_DEPRECATED("MessageManager::Message::file()")
     const char *getFile() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+    /*!
+     * \brief file
+     * \return
+     */
+    const char *file() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
     /*!
      * \brief getFunction
      * \return
+     * \deprecated Use 'MessageManager::Message::function()' en su lugar 
      */
+    TL_DEPRECATED("MessageManager::Message::function()")
     const char *getFunction() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+    /*!
+     * \brief function
+     * \return
+     */
+    const char *function() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    /*!
+     * \brief Nivel del mensaje
+     * \return Devuelve el nivel de mensaje establecido
+     * \deprecated Use 'MessageManager::Message::level()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::level()")
+    MessageLevel getLevel() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+    
     /*!
      * \brief Nivel del mensaje
      * \return Devuelve el nivel de mensaje establecido
      */
-    MessageLevel getLevel() const;
+    MessageLevel level() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    /*!
+     * \brief getLine
+     * \return
+     * \deprecated Use 'MessageManager::Message::line()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::line()")
+    int getLine() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+    
     /*!
      * \brief getLine
      * \return
      */
-    int getLine() const;
+    int line() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    /*!
+     * \brief Devuelve el mensaje como cadena de texto
+     * \return Mensaje
+     * \deprecated Use 'MessageManager::Message::message()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::message()")
+    const char *getMessage() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
     /*!
      * \brief Devuelve el mensaje como cadena de texto
      * \return Mensaje
      */
-    const char *getMessage() const;
+    const char *message() const;
 
     /*!
      * \brief setTimeLogFormat
@@ -274,25 +325,6 @@ public:
      */
     void setMessageProperties(const MessageLevel &level, const char *file, int line, const char *function);
   
-private:
-
-    /*!
-     * \brief messageOutput
-     * \param msgLevel
-     * \return
-     */
-    //std::string messageOutput(const MessageLevel &msgLevel);
-
-    /*!
-     * \brief messageOutput
-     * \param msgLevel
-     * \param file
-     * \param line
-     * \param function
-     * \return
-     */
-    //std::string messageOutput(const MessageLevel &msgLevel, const char *file, int line, const char *function);
-
   };
 
 private:
@@ -352,10 +384,10 @@ public:
   /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
    * \param[in] msg Mensaje que se lanza
-   * \param[in] level
-   * \param[in] file 
-   * \param[in] line
-   * \param[in] function
+   * \param[in] level Nivel de log
+   * \param[in] file Fichero
+   * \param[in] line Linea
+   * \param[in] function Función
    */
   static void release(const char *msg, const MessageLevel &level, const char *file = nullptr, int line = -1, const char *function = nullptr);
 
@@ -390,20 +422,20 @@ private:
 };
 
 #ifdef _DEBUG
-#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_debug, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_info, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_warning, __FILE__, __LINE__, TL_FUNCTION);
-#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_error, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_debug, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_info, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_warning, __FILE__, __LINE__, TL_FUNCTION);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_error, __FILE__, __LINE__, TL_FUNCTION);
 #else
-#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_debug);
-#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_info);
-#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_warning);
-#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).getMessage(), tl::MessageLevel::msg_error);
+#  define msgDebug(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_debug);
+#  define msgInfo(...)     tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_info);
+#  define msgWarning(...)  tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_warning);
+#  define msgError(...)    tl::MessageManager::release(tl::MessageManager::Message(__VA_ARGS__).message(), tl::MessageLevel::msg_error);
 #endif
 
 #else  // End TL_MESSAGE_HANDLER
 
-// No se utiliza el manejador de mensajes
+/// No se utiliza el manejador de mensajes
 
 #  define msgDebug(...)
 #  define msgInfo(...)

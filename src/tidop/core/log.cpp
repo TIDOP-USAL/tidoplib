@@ -62,7 +62,14 @@ Log &Log::getInstance()
   return *sObjLog;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 EnumFlags<MessageLevel> Log::getLogLevel() const
+{
+  return sLevel;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+EnumFlags<MessageLevel> Log::logLevel() const
 {
   return sLevel;
 }

@@ -104,7 +104,14 @@ void Process::stop()
   }
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 Process::Status Process::getStatus()
+{
+  return mStatus;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+Process::Status Process::status()
 {
   return mStatus;
 }
@@ -119,7 +126,7 @@ void Process::endTriggered()
   mStatus = Status::finalized;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onEnd(getProcessId());
+      lst->onEnd(id());
     }
   }
 }
@@ -129,7 +136,7 @@ void Process::pauseTriggered()
   mStatus = Status::pause;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onPause(getProcessId());
+      lst->onPause(id());
     }
   }
 }
@@ -139,7 +146,7 @@ void Process::resumeTriggered()
   mStatus = Status::running;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onResume(getProcessId());
+      lst->onResume(id());
     }
   }
 }
@@ -149,7 +156,7 @@ void Process::runTriggered()
   mStatus = Status::running;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onRun(getProcessId());
+      lst->onRun(id());
     }
   }
 }
@@ -159,7 +166,7 @@ void Process::startTriggered()
   mStatus = Status::start;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStart(getProcessId());
+      lst->onStart(id());
     }
   }
 }
@@ -169,7 +176,7 @@ void Process::stopTriggered()
   mStatus = Status::stopped;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onStop(getProcessId());
+      lst->onStop(id());
     }
   }
 }
@@ -179,18 +186,31 @@ void Process::errorTriggered()
   mStatus = Status::error;
   if (!mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onError(getProcessId());
+      lst->onError(id());
     }
   }
 }
 
-
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 uint64_t Process::getProcessId() const
 {
   return mProcessId;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+uint64_t Process::id() const
+{
+  return mProcessId;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 std::string Process::getProcessName() const
+{
+  return mProcessName;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+std::string Process::name() const
 {
   return mProcessName;
 }
@@ -274,22 +294,22 @@ Process::Status CmdProcess::run(Progress *progressBar)
     &pi)) {                       // Pointer to PROCESS_INFORMATION structure
 
     msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-    return Process::Status::FINALIZED_ERROR;
+    return Process::Status::error;
   }
 
   DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
   if (ret == WAIT_FAILED) {
     msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
+    return Process::Status::error;
   } else if (ret == WAIT_OBJECT_0) {
     msgInfo("Command executed: %s", mCmd.c_str());
     //return Process::Status::FINALIZED;
   } else if (ret == WAIT_ABANDONED) {
     msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
+    return Process::Status::error;
   } else if (ret == WAIT_TIMEOUT) {
     msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
+    return Process::Status::error;
   } /*else {
     msgInfo("Comando ejecutado: %s", mCmd.c_str());
     return Process::Status::FINALIZED;
@@ -297,9 +317,9 @@ Process::Status CmdProcess::run(Progress *progressBar)
   DWORD exitCode;
   if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
     msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
+    return Process::Status::error;
   }
-  return Process::Status::FINALIZED;
+  return Process::Status::finalized;
 #endif
 }
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
@@ -468,7 +488,7 @@ void BatchProcess::clear()
 void BatchProcess::remove(uint64_t id)
 {
   for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
-    if ((*it)->getProcessId() == id) {
+    if ((*it)->id() == id) {
       remove(*it);
       break;
     }

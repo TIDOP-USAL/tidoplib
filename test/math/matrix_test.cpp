@@ -75,18 +75,18 @@ TEST_F(MatrixTest, DefaultConstructor)
 
 }
 
-TEST_F(MatrixTest, isEmpty)
-{
-  //EXPECT_TRUE(_mat_4x4_f.isEmpty());
-  //EXPECT_FALSE(_mat_3x3_d.isEmpty());
-}
+//TEST_F(MatrixTest, isEmpty)
+//{
+//  //EXPECT_TRUE(_mat_4x4_f.isEmpty());
+//  //EXPECT_FALSE(_mat_3x3_d.isEmpty());
+//}
 
-TEST_F(MatrixTest, isDiag)
-{
-
-}
-
-TEST_F(MatrixTest, isSquared)
-{
-
-}
+//TEST_F(MatrixTest, isDiag)
+//{
+//
+//}
+//
+//TEST_F(MatrixTest, isSquared)
+//{
+//
+//}

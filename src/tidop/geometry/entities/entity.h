@@ -179,14 +179,19 @@ public:
    */
   virtual ~Entity() = default;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Devuelve el tipo de entidad 
+   * \deprecated Use 'type' en su lugar
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("type()")
   Type getType() const { return mEntityType.getFlags(); }
 #endif
-  Type type() const { return mEntityType.getFlags(); }
+
+  /*!
+   * \brief Devuelve el tipo de entidad 
+   */
+  Type type() const { return mEntityType.flags(); }
 
   /*!
    * \brief Operador de asignación
@@ -385,15 +390,26 @@ public:
    */
   virtual const_iterator end() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Agrega un elemento al final del contenedor
+   * \param[in] entity Entidad que se añade
+   * \deprecated Use 'push_back' en su lugar
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
   TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
   void add(const Entity_t &entity);
 #endif
+
+  /*!
+   * \brief Agrega un elemento al final del contenedor
+   * \param[in] entity Entidad que se añade
+   */
   void push_back(const Entity_t &entity);
 
+  /*!
+   * \brief Agrega un elemento mediante movimiento al final del contenedor
+   * \param[in] entity Entidad que se añade
+   */
   void push_back(Entity_t &&entity) TL_NOEXCEPT;
 
   /*!
@@ -696,12 +712,13 @@ public:
    */
   Entities2D(std::initializer_list<Entity_t> entities);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
    * \param[in] w Ventana
    * \return Entidades seleccionadas
+   * \deprecated Use 'entitiesInWindow(const Window_t &w)' en su lugar
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
   template<typename Window_t>
   TL_DEPRECATED("entitiesInWindow(const Window_t &w)")
   std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;

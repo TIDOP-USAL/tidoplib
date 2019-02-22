@@ -165,6 +165,6 @@ private:
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_GRAPHIC_CANVAS_H

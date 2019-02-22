@@ -5,6 +5,8 @@
 #include <tidop/core/messages.h>
 
 #include <tidop/math/matrix.h>
+#include <tidop/math/algebra/quaternion.h>
+
 
 #ifdef HAVE_EIGEN
 TL_SUPPRESS_WARNINGS
@@ -50,35 +52,59 @@ int main(int argc, char** argv)
 
 #ifdef HAVE_EIGEN
   // Paso de matriz de rotación a ángulos de Euler
-  Matrix3f m;
-  m = AngleAxisf(static_cast<float>(0.25*TL_PI), Vector3f::UnitX()) *
-      AngleAxisf(static_cast<float>(0.5*TL_PI), Vector3f::UnitY()) *
-      AngleAxisf(static_cast<float>(0.33*TL_PI), Vector3f::UnitZ());
+  Eigen::Matrix3f m;
+  m = Eigen::AngleAxisf(static_cast<float>(0.25*TL_PI), Eigen::Vector3f::UnitX()) *
+      Eigen::AngleAxisf(static_cast<float>(0.5*TL_PI),  Eigen::Vector3f::UnitY()) *
+      Eigen::AngleAxisf(static_cast<float>(0.33*TL_PI), Eigen::Vector3f::UnitZ());
 
   std::cout << "original rotation:" << std::endl;
   std::cout << m << std::endl << std::endl;
 
-  Vector3f ea = m.eulerAngles(0, 1, 2); 
+  Eigen::Vector3f ea = m.eulerAngles(0, 1, 2); 
   std::cout << "to Euler angles:" << std::endl;
   std::cout << ea << std::endl << std::endl;
 
   //Paso de ángulos de Euler a matriz de rotación
-  Matrix3f n;
-  n = AngleAxisf(ea[0], Vector3f::UnitX()) *
-      AngleAxisf(ea[1], Vector3f::UnitY()) *
-      AngleAxisf(ea[2], Vector3f::UnitZ());
+  Eigen::Matrix3f n;
+  n = Eigen::AngleAxisf(ea[0], Eigen::Vector3f::UnitX()) *
+      Eigen::AngleAxisf(ea[1], Eigen::Vector3f::UnitY()) *
+      Eigen::AngleAxisf(ea[2], Eigen::Vector3f::UnitZ());
   std::cout << "recalc original rotation:" << std::endl;
   std::cout << n << std::endl;
 
 
-  Quaternionf q; 
+  Eigen::Quaternionf q; 
+  float kk = q.x();
   q = m; //AngleAxisf(ea[0], Vector3f::UnitX()) * AngleAxisf(ea[1], Vector3f::UnitY()) * AngleAxisf(ea[2], Vector3f::UnitZ());
-  
+
+  Eigen::Quaterniond qd(2, 0, 1, -3); 
+  Eigen::Quaterniond q2(1.f, 1.f, 3.f, -5.f);
+  Eigen::Quaterniond q_multi = qd * q2;
+
   std::cout << "Quaternion:" << std::endl;
   std::cout << q.x() << ";" << q.y() << ";" << q.z() << ";" << q.w() << std::endl;
 
   math::Matrix<3, 3, double> mat;
+  //= math::Matrix<3, 3, double>::identity();
   mat.at(0, 0) = 1.1;
+  mat.determinant();
+  math::Matrix<3, 3, double> inv = mat.inverse();
+
+
+
 #endif
+
+  //math::Quaternionf q_uninitialized ;
+  //math::Quaternionf q_cero = math::Quaternionf::zero();
+  //math::Quaternionf q_identity = math::Quaternionf::identity();
+  //math::Quaternionf q_i = math::Quaternionf::i();
+  //math::Quaternionf q_j = math::Quaternionf::j();
+  //math::Quaternionf q_k = math::Quaternionf::k();
+
+  //math::Quaternionf c = q2.conjugate();
+  math::Quaternionf dasdasd(0.f, 1.f, -3.f, 2.f);
+  dasdasd.normalize();
+
+
   return 0;
 }

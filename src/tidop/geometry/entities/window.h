@@ -254,11 +254,21 @@ public:
    */
   typename Point_t::value_type getHeight() const { return pt2.y - pt1.y; }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve centro de la ventana
+   * \return Centro de la ventana
+   * \deprecated Use 'center' en su lugar
+   */
+  TL_DEPRECATED("center")
+  Point_t getCenter() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief Devuelve centro de la ventana
    * \return Centro de la ventana
    */
-  Point_t getCenter() const;
+  Point_t center() const;
 
   /*!
    * \brief Comprueba si la ventana esta vacia
@@ -447,8 +457,23 @@ Window<Point_t>::operator Window<Point_t2>() const
   return w;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 Point_t Window<Point_t>::getCenter() const
+{
+  if (std::is_integral<typename Point_t::value_type>::value) {
+    return Point_t(static_cast<typename Point_t::value_type>(std::round((pt1.x + pt2.x) / 2)), 
+                   static_cast<typename Point_t::value_type>(std::round((pt1.y + pt2.y) / 2)));
+  } else {
+    TL_DISABLE_WARNING(TL_WARNING_C4244)
+    return Point_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
+    TL_ENABLE_WARNING(TL_WARNING_C4244)
+  }
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+template<typename Point_t> inline
+Point_t Window<Point_t>::center() const
 {
   if (std::is_integral<typename Point_t::value_type>::value) {
     return Point_t(static_cast<typename Point_t::value_type>(std::round((pt1.x + pt2.x) / 2)), 

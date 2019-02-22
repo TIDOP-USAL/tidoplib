@@ -33,7 +33,8 @@ enum class DataType : int8_t;
 /*!
  * \brief Opciones del formato
  */
-class TL_EXPORT RasterOptions : public FileOptions
+class TL_EXPORT RasterOptions 
+  : public FileOptions
 {
 
 public:

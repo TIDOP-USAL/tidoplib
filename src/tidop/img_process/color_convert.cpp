@@ -146,7 +146,7 @@ void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb)
 /* ---------------------------------------------------------------------------------- */
 
 ColorConversion::ColorConversion(Model modelIn, Model modelOut)
-  : ImgProcessing(process_type::COLOR_CONVERSION), 
+  : ImgProcessing(process_type::color_conversion), 
     mModelIn(modelIn), 
     mModelOut(modelOut) 
 {
@@ -156,7 +156,7 @@ TL_TODO("Crear una clase para cada conversión (Factoria de clases) que herede d
 TL_TODO("Crear una clase para crear las factorias")
 ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     if (mModelIn == ColorConversion::Model::rgb && mModelOut == ColorConversion::Model::hsl) {
       rgbToHSL(matIn, matOut);
@@ -177,9 +177,9 @@ ImgProcessing::Status ColorConversion::execute(const cv::Mat &matIn, cv::Mat *ma
     }
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void ColorConversion::setParameters(Model modelIn, Model modelOut)

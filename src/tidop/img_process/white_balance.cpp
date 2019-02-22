@@ -21,14 +21,14 @@ namespace tl
 ImgProcessing::Status Grayworld::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
   // Tiene que ser imagen con tres canales 
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     wb->balanceWhite(matIn, *matOut);
   } catch (cv::Exception &e) {
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Grayworld::setParameters()
@@ -42,9 +42,9 @@ void Grayworld::setParameters()
 
 ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
-    if ( matIn.channels() != 3 ) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+    if ( matIn.channels() != 3 ) return ImgProcessing::Status::incorrect_input_data;
 
     // Buscar máximo R, G, B
     double sr, sg, sb;
@@ -55,9 +55,9 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
       cv::minMaxLoc(bgr[2], nullptr, &r);
       cv::minMaxLoc(bgr[1], nullptr, &g);
       cv::minMaxLoc(bgr[0], nullptr, &b);
-      sr = mWhite.getRed() / r;
-      sg = mWhite.getGreen() / g;
-      sb = mWhite.getBlue() / b;
+      sr = mWhite.red() / r;
+      sg = mWhite.green() / g;
+      sb = mWhite.blue() / b;
     }
 
     // Recorrer la imagen y calcular el nuevo valor
@@ -77,12 +77,12 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
 
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
-void WhitePatch::setParameters(const Color &white)
+void WhitePatch::setParameters(const graph::Color &white)
 {
   mWhite = white;
 }

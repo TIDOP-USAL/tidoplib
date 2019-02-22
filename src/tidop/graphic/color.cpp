@@ -62,6 +62,8 @@ void adjustRangeHSL(double *hue, double *saturation, double *lightness)
   if (*lightness > 100.) *lightness = 100.;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 /* ---------------------------------------------------------------------------------- */
 /*                                     Clase Color                                    */
 /* ---------------------------------------------------------------------------------- */
@@ -236,9 +238,14 @@ cv::Scalar Color::toCvScalar()
 }
 #endif
 
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 int getBlue(int color)
 {
@@ -268,19 +275,25 @@ void intToRGB(int color, int *red, int *green, int *blue)
   *blue = _color.getBlue();
 }
 
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 int rgbToInt(int red, int green, int blue)
 {
-  return static_cast<int>(Color(red, green, blue));
+  adjustRangeRGBA(&red, &green, &blue);
+  return (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000);
 }
 
 int rgbaToInt(int red, int green, int blue, int alpha)
 {
-  return static_cast<int>(Color(red, green, blue, alpha));
+  adjustRangeRGBA(&red, &green, &blue, &alpha);
+  return (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
 }
 
 int hexToInt(const std::string &colorhex)
 {
-  return static_cast<int>(Color(colorhex));
+  ///TODO: error inprevisto en test
+  //mColor = static_cast<uint32_t>(stringToInteger(color, TL::Base::HEXADECIMAL));
+  return std::stoi(colorhex, nullptr, 16);
 }
 
 std::string intToHex(int color)

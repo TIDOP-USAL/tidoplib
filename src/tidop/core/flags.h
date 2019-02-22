@@ -176,12 +176,21 @@ public:
    */
   void clear();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve los flags
+   * \return
+   * \deprecated Use 'flags()' en su lugar 
+   */
+  TL_DEPRECATED("EnumFlags::flags")
+  T getFlags() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+   
   /*!
    * \brief Devuelve los flags
    * \return
    */
-  T getFlags() const;
-
+  T flags() const;
 };
 
 template<typename T> inline
@@ -279,11 +288,21 @@ void EnumFlags<T>::clear()
   mFlag = static_cast<Type>(0);
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename T> inline
 T EnumFlags<T>::getFlags() const
 {
   return static_cast<T> (mFlag);
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+template<typename T> inline
+T EnumFlags<T>::flags() const
+{
+  return static_cast<T> (mFlag);
+}
+
+
 
 /*!
  * \brief Permite operaciones a nivel de bit con un 'enum class'
@@ -416,12 +435,21 @@ public:
    */
   void clear();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve los flags
+   * \return
+   * \deprecated Use 'flags()' en su lugar 
+   */
+  TL_DEPRECATED("Flags::flags")
+  T getFlags() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+   
   /*!
    * \brief Devuelve los flags
    * \return
    */
-  T getFlags() const;
-
+  T flags() const;
 };
 
 /* Definición de tipos */
@@ -491,12 +519,19 @@ void Flags<T>::clear()
   mFlag = static_cast<Type>(0);
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename T> inline
 T Flags<T>::getFlags() const
 {
   return static_cast<T> (mFlag);
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+template<typename T> inline
+T Flags<T>::flags() const
+{
+  return static_cast<T> (mFlag);
+}
 
 } // End namespace tl
 

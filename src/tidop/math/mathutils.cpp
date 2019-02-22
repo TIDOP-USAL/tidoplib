@@ -47,7 +47,7 @@ void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, d
 //  }
 //}
 
-void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
+void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
 {
   double sinOmega = sin(rX);
   double cosOmega = cos(rX);
@@ -63,7 +63,7 @@ void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
   (*RX)[2][2] = cosOmega;
 }
 
-void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
+void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
 {
   double sinPhi = sin(rY);
   double cosPhi = cos(rY);
@@ -80,7 +80,7 @@ void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
 }
 
 
-void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
+void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
 {
   double sinKappa = sin(rZ);
   double cosKappa = cos(rZ);

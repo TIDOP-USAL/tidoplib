@@ -12,7 +12,6 @@
  *                                                                          *
  ****************************************************************************/
 
-
 #ifndef TL_GEOM_POLYGON_H
 #define TL_GEOM_POLYGON_H
 
@@ -162,14 +161,20 @@ public:
    */
   Polygon<Point_t> &operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   * \deprecated Use 'window()'  en su lugar
+   */
+  TL_DEPRECATED("window()")
+  Window<Point_t> getWindow() const;
+#endif
+
   /*!
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
-  Window<Point_t> getWindow() const;
-#endif
   Window<Point_t> window() const;
 };
 

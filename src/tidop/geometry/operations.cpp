@@ -33,7 +33,7 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
     std::vector<PointI> pts;
     int xmin = TL_INT_MAX;
     int xmax = TL_INT_MIN;
-    for (int il = 0; il < linesGrops[ilg].getSize(); il++) {
+    for (int il = 0; il < linesGrops[ilg].size(); il++) {
       pts.push_back(linesGrops[ilg][il].pt1);
       xmin = std::min(xmin, linesGrops[ilg][il].pt1.x);
       xmax = std::max(xmax, linesGrops[ilg][il].pt1.x);
@@ -62,7 +62,7 @@ void groupParallelLines(std::vector<Line> linesaux, std::vector<GroupLines> *cur
     lg.add(linesaux[0]);
     linesaux.erase(linesaux.begin());
 
-    for (int ilg = 0; ilg < lg.getSize(); ilg++) {
+    for (int ilg = 0; ilg < lg.size(); ilg++) {
       for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isParallel(linesaux[i], angTol)) {
           lg.add(linesaux[i]);
@@ -86,7 +86,7 @@ void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<GroupLines> 
     lg.add(linesaux[0]);
     linesaux.erase(linesaux.begin());
 
-    for (int ilg = 0; ilg < lg.getSize(); ilg++) {
+    for (int ilg = 0; ilg < lg.size(); ilg++) {
       for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isNear(linesaux[i], dist)) {
           lg.add(linesaux[i]);
@@ -101,7 +101,7 @@ void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<GroupLines> 
 
 void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size)
 {
-  vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](GroupLines &gl) -> bool { return (gl.getSize() < size); }), vlg->end());
+  vlg->erase(std::remove_if(vlg->begin(), vlg->end(), [size](GroupLines &gl) -> bool { return (gl.size() < size); }), vlg->end());
 }
 
 //double distPointToLine(const PointI &pt, const Line &ln)

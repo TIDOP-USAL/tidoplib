@@ -309,14 +309,21 @@ public:
    */
   LineString3D<Point3_t> &operator = (LineString3D<Point3_t> &&lineString) TL_NOEXCEPT;
 
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de la polilinea
+   * \deprecated Use 'box()' en su lugar
+   */
+  TL_DEPRECATED("box()")
+  Box<Point3_t> getBox() const;
+#endif
+
   /*!
    * \brief Caja envolvente
    * \return Caja envolvente de la polilinea
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("box()")
-  Box<Point3_t> getBox() const;
-#endif
   Box<Point3_t> box() const;
 };
 
@@ -482,14 +489,20 @@ public:
    */
   MultiLineString<Point_t> &operator = (MultiLineString<Point_t> &&multiLineString) TL_NOEXCEPT;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente de los puntos
+   * \deprecated Use 'window()' en su lugar
+   */
+  TL_DEPRECATED("window()")
+  Window<Point_t> getWindow() const;
+#endif
+
   /*!
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
-  Window<Point_t> getWindow() const;
-#endif
   Window<Point_t> window() const;
 
 };

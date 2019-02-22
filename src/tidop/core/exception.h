@@ -106,16 +106,16 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 
 
 #ifdef _DEBUG
-#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
-#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 //#define TL_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION); }
 #define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
 
 #else
-#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
-#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
+#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).message())
+#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).message())
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 #define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR(#EXPRESSION MESSAGE); }

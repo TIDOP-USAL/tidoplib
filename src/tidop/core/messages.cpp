@@ -51,7 +51,7 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 // manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
 int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
 {
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::msg_error, file_name, line, func_name);
+  MessageManager::release(MessageManager::Message(err_msg).message(), MessageLevel::msg_error, file_name, line, func_name);
   return 0;
 }
 
@@ -73,7 +73,7 @@ void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg)
   } else {
     ml = MessageLevel::msg_info;
   }
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), ml);
+  MessageManager::release(MessageManager::Message(err_msg).message(), ml);
   return;
 }
 #endif // HAVE_GDAL
@@ -155,23 +155,7 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
   // Bloqueo aqui para evitar problemas entre hilos
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-//  char date[64];
-//  struct tm _tm;
-//  std::time_t now = std::time(NULL);
-//#ifdef __STDC_LIB_EXT1__
-//  _tm = *std::localtime_s(&now, &_tm);
-//#else
-//  _tm = *std::localtime(&now);
-//#endif
 
-//  //localtime_s(&_tm, &now);
-
-//  //if (_tm) {
-//    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm);
-//  //} else {
-//  //  //strcpy(date, "NULL");
-//  //  strcpy_s(date, sizeof date, "NULL");
-//  //}
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
   char buf[1000];
@@ -213,30 +197,30 @@ void MessageManager::release(const Message &msg)
 
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   std::string msg_out;
-  if (msg.getLine() == -1 && strcmp(msg.getFile(), "") == 0 && strcmp(msg.getFunction(), "") == 0) {
-    msg_out = msg.getMessage();
+  if (msg.line() == -1 && strcmp(msg.file(), "") == 0 && strcmp(msg.function(), "") == 0) {
+    msg_out = msg.message();
   } else {
     char buf[1000];
 #if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
 #else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
+    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
 #endif
     msg_out =  std::string(buf);
   }
 
-  switch (msg.getLevel()) {
+  switch (msg.level()) {
   case MessageLevel::msg_debug:
-    sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
+    sObjMessage->onDebug(msg_out.c_str(), msg.date());
     break;
   case MessageLevel::msg_info:
-    sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
+    sObjMessage->onInfo(msg_out.c_str(), msg.date());
     break;
   case MessageLevel::msg_warning:
-    sObjMessage->onWarning(msg_out.c_str(), msg.getDate());
+    sObjMessage->onWarning(msg_out.c_str(), msg.date());
     break;
   case MessageLevel::msg_error:
-    sObjMessage->onError(msg_out.c_str(), msg.getDate());
+    sObjMessage->onError(msg_out.c_str(), msg.date());
     break;
   default:
     break;
@@ -342,19 +326,7 @@ MessageManager::Message::Message(const char *msg, ...)
     mFunction("")
 {
   try {
-//    char date[64];
-//    std::time_t now = std::time(NULL);
-//    //std::tm *_tm = std::localtime(&now);
-//    struct tm _tm;
-//    localtime_s(&_tm, &now); //TODO: no es localtime_s de c++ 11.
 
-//    //if (_tm) {
-//      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, &_tm);
-//    //} else {
-//    //  //strcpy(date, "NULL");
-//    //  strcpy_s(date, sizeof date, "NULL");
-//    //}
-//    mDate = date;
     mDate = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     char buf[500];
@@ -377,36 +349,78 @@ MessageManager::Message::Message(const char *msg, ...)
   }
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 const char *MessageManager::Message::getDate() const
 {
   return mDate.c_str();
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+const char *MessageManager::Message::date() const
+{
+  return mDate.c_str();
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 const char *MessageManager::Message::getFile() const
 {
   return mFile.c_str();
 }
-    
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+const char *MessageManager::Message::file() const
+{
+  return mFile.c_str();
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 const char *MessageManager::Message::getFunction() const
 {
   return mFunction.c_str();
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+const char *MessageManager::Message::function() const
+{
+  return mFunction.c_str();
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 MessageLevel MessageManager::Message::getLevel() const
 {
   return mLevel;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
+MessageLevel MessageManager::Message::level() const
+{
+  return mLevel;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 int MessageManager::Message::getLine() const
 {
   return mLine;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
-const char *MessageManager::Message::getMessage() const
+int MessageManager::Message::line() const
+{
+  return mLine;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+const char *MessageManager::Message::message() const
 {
   return mMessage.c_str();
 }
-    
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+const char *MessageManager::Message::message() const
+{
+  return mMessage.c_str();
+}
+
 void MessageManager::Message::setTimeLogFormat( const char *timeTemplate)
 {
   sTimeLogFormat = timeTemplate;

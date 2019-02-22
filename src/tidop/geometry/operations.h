@@ -49,6 +49,7 @@ class GroupLines;
 /*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Longitud o modulo de un vector 2D
  * \param[in] v vector
@@ -61,6 +62,7 @@ double length(const Point_t &v)
 {
   return sqrt(v.x*v.x + v.y*v.y);
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Distancia entre dos puntos

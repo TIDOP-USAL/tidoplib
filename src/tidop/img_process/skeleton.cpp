@@ -116,7 +116,7 @@ void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin)
 /* ---------------------------------------------------------------------------------- */
 
 ThinningProc::ThinningProc(Thinning type)
-  : ImgProcessing(process_type::BILATERAL), 
+  : ImgProcessing(process_type::bilateral), 
     mType(type)
 {
 }
@@ -128,12 +128,12 @@ ThinningProc::Status ThinningProc::execute(const cv::Mat &matIn, cv::Mat *matOut
     thinning(matIn, matOut, mType);
   } catch (cv::Exception &e) {
     msgError(e.what());
-    return Status::PROCESS_ERROR;
+    return Status::process_error;
   } catch (tl::Exception &e) {
     MessageManager::release(e.what(), tl::MessageLevel::msg_error);
-    return Status::PROCESS_ERROR;
+    return Status::process_error;
   }
-  return Status::OK;
+  return Status::ok;
 }
 
 void ThinningProc::setParameters(Thinning type)

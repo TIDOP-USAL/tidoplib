@@ -12,19 +12,19 @@ namespace graph
 
 GPoint::GPoint() 
   : Point<double>(), 
-    GraphicEntity(GraphicEntity::Type::POINT_2D)
+    GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(double x, double y) 
   : Point<double>(x, y), 
-    GraphicEntity(GraphicEntity::Type::POINT_2D)
+    GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }
 
 GPoint::GPoint(const Point<double> &pt) 
   : Point<double>(pt), 
-    GraphicEntity(GraphicEntity::Type::POINT_2D)
+    GraphicEntity(GraphicEntity::Type::point_2d)
 {
 }  
 
@@ -75,19 +75,19 @@ bool GPoint::isSimpleEntity() const
 
 GPoint3D::GPoint3D() 
   : Point3<double>(), 
-    GraphicEntity(GraphicEntity::Type::POINT_3D)
+    GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(double x, double y, double z) 
   : Point3<double>(x, y, z), 
-    GraphicEntity(GraphicEntity::Type::POINT_3D)
+    GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
 GPoint3D::GPoint3D(const Point3<double> &pt) 
   : Point3<double>(pt), 
-    GraphicEntity(GraphicEntity::Type::POINT_3D)
+    GraphicEntity(GraphicEntity::Type::point_3d)
 {
 }
 
@@ -140,13 +140,13 @@ bool GPoint3D::isSimpleEntity() const
 
 GMultiPoint::GMultiPoint()
   : MultiPoint<Point<double>>(), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOINT_2D)
+    GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
 GMultiPoint::GMultiPoint(const MultiPoint<Point<double>> &multiPoint)
   : MultiPoint<Point<double>>(multiPoint), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOINT_2D)
+    GraphicEntity(GraphicEntity::Type::multipoint_2d)
 {
 }
 
@@ -185,13 +185,13 @@ bool GMultiPoint::isSimpleEntity() const
 
 GMultiPoint3D::GMultiPoint3D()
   : MultiPoint3D<Point3<double>>(), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOINT_3D)
+    GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 
 GMultiPoint3D::GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint)
   : MultiPoint3D<Point3<double>>(multiPoint), 
-    GraphicEntity(GraphicEntity::Type::MULTIPOINT_3D)
+    GraphicEntity(GraphicEntity::Type::multipoint_3d)
 {
 }
 

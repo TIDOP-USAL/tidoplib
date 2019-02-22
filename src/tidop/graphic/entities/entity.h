@@ -74,6 +74,26 @@ public:
    * \brief Tipos de entidades gráficas
    */
   enum class Type {
+    point_2d,                   /*!< Punto 2D */
+    point_3d,                   /*!< Punto 3D */
+    linestring_2d,              /*!< Polilinea 2D */
+    linestring_3d,              /*!< Polilinea 3D */
+    polygon_2d,                 /*!< Poligono 2D */
+    polygon_3d,                 /*!< Poligono 3D */
+    segment_2d,                 /*!< Segmento 2D */
+    segment_3d,                 /*!< Segmento 3D */
+    window,                     /*!< Ventana */
+    box,                        /*!< Caja */
+    multipoint_2d,              /*!< Multipunto 2D */
+    multipoint_3d,              /*!< Multipunto 3D */
+    multiline_2d,               /*!< Multi-línea 2D */
+    multiline_3d,               /*!< Multi-línea 3D */
+    multipolygon_2d,            /*!< Multi-polígono 2D */
+    multipolygon_3d,            /*!< Multi-polígono 3D */
+    circle,                     /*!< Circulo */
+    ellipse                     /*!< Elipse */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
     POINT_2D,                   /*!< Punto 2D */
     POINT_3D,                   /*!< Punto 3D */
     LINESTRING_2D,              /*!< Polilinea 2D */
@@ -92,6 +112,7 @@ public:
     MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
     CIRCLE,                     /*!< Circulo */
     ELLIPSE                     /*!< Elipse */
+#endif
   };
 
 protected:
@@ -160,6 +181,6 @@ public:
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_GRAPHIC_ENTITY_H

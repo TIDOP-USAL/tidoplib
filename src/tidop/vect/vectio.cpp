@@ -1203,53 +1203,53 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
   for (auto &entity : layer) {
     GraphicEntity::Type type = entity->type();
     switch (type) {
-    case tl::graph::GraphicEntity::Type::POINT_2D:
+    case tl::graph::GraphicEntity::Type::point_2d:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::POINT_3D:
+    case tl::graph::GraphicEntity::Type::point_3d:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::LINESTRING_2D:
+    case tl::graph::GraphicEntity::Type::linestring_2d:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::LINESTRING_3D:
+    case tl::graph::GraphicEntity::Type::linestring_3d:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::POLYGON_2D:
+    case tl::graph::GraphicEntity::Type::polygon_2d:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::POLYGON_3D:
+    case tl::graph::GraphicEntity::Type::polygon_3d:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::SEGMENT_2D:
+    case tl::graph::GraphicEntity::Type::segment_2d:
       break;
-    case tl::graph::GraphicEntity::Type::SEGMENT_3D:
+    case tl::graph::GraphicEntity::Type::segment_3d:
       break;
-    case tl::graph::GraphicEntity::Type::WINDOW:
+    case tl::graph::GraphicEntity::Type::window:
       break;
-    case tl::graph::GraphicEntity::Type::BOX:
+    case tl::graph::GraphicEntity::Type::box:
       break;
-    case tl::graph::GraphicEntity::Type::MULTIPOINT_2D:
+    case tl::graph::GraphicEntity::Type::multipoint_2d:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::MULTIPOINT_3D:
+    case tl::graph::GraphicEntity::Type::multipoint_3d:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::MULTILINE_2D:
+    case tl::graph::GraphicEntity::Type::multiline_2d:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::MULTILINE_3D:
+    case tl::graph::GraphicEntity::Type::multiline_3d:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
+    case tl::graph::GraphicEntity::Type::multipolygon_2d:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
+    case tl::graph::GraphicEntity::Type::multipolygon_3d:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon3D>(entity));
       break;
-    case tl::graph::GraphicEntity::Type::CIRCLE:
+    case tl::graph::GraphicEntity::Type::circle:
       break;
-    case tl::graph::GraphicEntity::Type::ELLIPSE:
+    case tl::graph::GraphicEntity::Type::ellipse:
       break;
     default:
       break;

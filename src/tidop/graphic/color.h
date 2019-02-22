@@ -24,6 +24,7 @@ namespace tl
  *  \{
  */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief La clase Color permite trabajar con diferentes modelos de color
@@ -406,6 +407,8 @@ public:
 
 };
 
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 //template<typename T> inline
 //T Color::get() const
 //{
@@ -440,38 +443,45 @@ public:
  * \{
  */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 /*!
  * \brief Obtiene la componente azul de un color
  * \param[in] color Color representado como un entero
  * \return Componente azul
+ * \deprecated Use 'graph::Color::blue()'  en su lugar
  */
-TL_DEPRECATED("Color::getBlue()")
+TL_DEPRECATED("graph::Color::blue()")
 TL_EXPORT int getBlue(int color);
 
 /*!
  * \brief Obtiene la componente verde de un color
  * \param[in] color Color representado como un entero
  * \return Componente verde
- * \deprecated Use en su lugar Color::getGreen()
+ * \deprecated Use en su lugar graph::Color::green()
  */
-TL_DEPRECATED("Color::getGreen()")
+TL_DEPRECATED("graph::Color::green()")
 TL_EXPORT int getGreen(int color);
 
 /*!
  * \brief Obtiene la componente roja de un color
  * \param[in] color Color representado como un entero
  * \return Componente roja
+ * \deprecated Use 'graph::Color::red()'  en su lugar
  */
-TL_DEPRECATED("Color::getRed()")
+TL_DEPRECATED("graph::Color::red()")
 TL_EXPORT int getRed(int color);
 
 /*!
  * \brief Obtiene el canal alfa de un color
  * \param[in] color Color representado como un entero
  * \return Canal alfa
+ * \deprecated Use 'graph::Color::alpha()'  en su lugar
  */
-TL_DEPRECATED("Color::getAlpha()")
+TL_DEPRECATED("graph::Color::alpha()")
 TL_EXPORT int getAlpha(int color);
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Convierte un color entero a RGB
@@ -481,6 +491,7 @@ TL_EXPORT int getAlpha(int color);
  * \param[out] blue Componente azul
  */
 TL_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
+
 
 /*!
  * \brief Convierte un color RGB a entero

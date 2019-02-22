@@ -57,7 +57,7 @@ public:
    * \param[in] height
    */
   Resize(int width, int height = 0)
-    : ImgProcessing(process_type::RESIZE), mWidth(width), mHeight(height), 
+    : ImgProcessing(process_type::resize), mWidth(width), mHeight(height), 
       mScaleX(0.), mScaleY(0.) {}
 
   /*!
@@ -66,7 +66,7 @@ public:
    * \param[in] scaleY
    */
   Resize(double scaleX, double scaleY = 0.)
-    : ImgProcessing(process_type::RESIZE), mWidth(0), mHeight(0), 
+    : ImgProcessing(process_type::resize), mWidth(0), mHeight(0), 
       mScaleX(scaleX), mScaleY(scaleY ? scaleY : scaleX) {}
 
   /*!
@@ -100,7 +100,8 @@ public:
  * zonas que no haya imagen. Por defecto el color de fondo es el negro.
  * Si se reduce se recorta la imagen.
  */
-class TL_EXPORT ResizeCanvas : public ImgProcessing
+class TL_EXPORT ResizeCanvas 
+  : public ImgProcessing
 {
 public:
   
@@ -139,7 +140,7 @@ private:
   /*!
    * \brief Color de fondo
    */
-  Color mColor;
+  graph::Color mColor;
 
   /*!
    * \brief Posición
@@ -156,8 +157,8 @@ public:
    * \param[in] position Posición
    * \see Position
    */
-  ResizeCanvas(int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT)
-    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mColor(color), mPosition(position) { }
+  ResizeCanvas(int width, int height, const graph::Color &color = graph::Color(), const Position &position = Position::TOP_LEFT)
+    : ImgProcessing(process_type::resize_canvas), mWidth(width), mHeight(height), mColor(color), mPosition(position) { }
 
   /*!
    * \brief Constructora
@@ -167,8 +168,8 @@ public:
    * \param[in] color Color
    * \see Position
    */
-  ResizeCanvas(int width, int height, const cv::Point &point, const Color &color = Color())
-    : ImgProcessing(process_type::RESIZE_CANVAS), mWidth(width), mHeight(height), mTopLeft(point), mColor(color) {}
+  ResizeCanvas(int width, int height, const cv::Point &point, const graph::Color &color = graph::Color())
+    : ImgProcessing(process_type::resize_canvas), mWidth(width), mHeight(height), mTopLeft(point), mColor(color) {}
 
 
   /*!
@@ -188,7 +189,7 @@ public:
    * \param[in] position Posición
    * \see Position
    */
-  void setParameters( int width, int height, const Color &color = Color(), const Position &position = Position::TOP_LEFT);
+  void setParameters( int width, int height, const graph::Color &color = graph::Color(), const Position &position = Position::TOP_LEFT);
 
   //void update();
 };

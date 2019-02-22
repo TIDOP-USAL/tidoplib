@@ -11,11 +11,11 @@ namespace tl
 
 ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
 
   if (mWidth == 0 && mScaleX == 0) {
     msgError("Invalid parameter values");
-    return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+    return ImgProcessing::Status::incorrect_input_data;
   }
   try {    
     if (mScaleX) {
@@ -31,9 +31,9 @@ ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) con
 
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
 void Resize::setParameters(int width, int height = 0)
@@ -55,19 +55,19 @@ void Resize::setParameters(double scaleX, double scaleY)
 
 ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::INCORRECT_INPUT_DATA;
+  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
   try {
     cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
     matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
     *matOut = aux;
   } catch (cv::Exception &e){
     msgError(e.what());
-    return ImgProcessing::Status::PROCESS_ERROR;
+    return ImgProcessing::Status::process_error;
   }
-  return ImgProcessing::Status::OK;
+  return ImgProcessing::Status::ok;
 }
 
-void ResizeCanvas::setParameters(int width, int height, const Color &color, const Position &position)
+void ResizeCanvas::setParameters(int width, int height, const graph::Color &color, const Position &position)
 {
   mWidth = width;
   mHeight = height;

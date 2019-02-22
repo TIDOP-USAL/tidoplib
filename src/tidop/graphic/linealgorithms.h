@@ -24,9 +24,14 @@ public:
 
   enum class Type
   {
+    bresenham,
+    dda
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
     BRESENHAM,
     DDA
     //XiaolinWu
+#endif
   };
 
   /*!
@@ -100,11 +105,23 @@ public:
    * \return Posición actual
    */
   virtual geometry::PointI position(int id = -1) = 0;
+ 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   * \deprecated Use 'points()' en su lugar
+   */
+  TL_DEPRECATED("LineAlgorithms::points()")
+  virtual std::vector<geometry::PointI> getPoints() = 0;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  virtual std::vector<geometry::PointI> getPoints() = 0;
+  virtual std::vector<geometry::PointI> points() = 0;
+
 };
 
 /*!
@@ -135,7 +152,7 @@ public:
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
   BresenhamLine(const geometry::PointI &pt1, const geometry::PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2)
+    : LineAlgorithms(LineAlgorithms::Type::bresenham, pt1, pt2)
   {
     init();
   }
@@ -203,10 +220,19 @@ public:
    */
   int size() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
   std::vector<geometry::PointI> getPoints() override;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<geometry::PointI> points() override;
 
 private:
 
@@ -255,7 +281,7 @@ public:
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
   DDA(const geometry::PointI &pt1, const geometry::PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
+    : LineAlgorithms(LineAlgorithms::Type::dda, pt1, pt2)
   {
     init();
   }
@@ -320,10 +346,19 @@ public:
    */
   int size() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
   std::vector<geometry::PointI> getPoints() override;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<geometry::PointI> points() override;
 
 private:
 
