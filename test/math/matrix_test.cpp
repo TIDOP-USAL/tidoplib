@@ -26,7 +26,15 @@ protected:
     _mat_3x3_d.at(2, 1) = 2.6;
     _mat_3x3_d.at(2, 2) = 0.3;
 
-    //_mat_2x2_f = FactoryMatrix::create(FactoryMatrix::Diag);
+    _mat_4x4_d = new Matrix<4, 4>();
+    _mat_4x4_d->at(0, 0) = 4.5;    _mat_4x4_d->at(0, 1) = 2.7;  _mat_4x4_d->at(0, 2) = 5.5;  _mat_4x4_d->at(0, 3) = 4.98;
+    _mat_4x4_d->at(1, 0) = 1.36;   _mat_4x4_d->at(1, 1) = 7.62;	_mat_4x4_d->at(1, 2) = 78.3; _mat_4x4_d->at(1, 3) = 45.5;
+    _mat_4x4_d->at(2, 0) = 14.3;   _mat_4x4_d->at(2, 1) = 45.3;	_mat_4x4_d->at(2, 2) = 5.;   _mat_4x4_d->at(2, 3) = 45.;
+    _mat_4x4_d->at(3, 0) = 12.374; _mat_4x4_d->at(3, 1) = 41.6;	_mat_4x4_d->at(3, 2) = 1.3;  _mat_4x4_d->at(3, 3) = 12.7;
+
+    mat_zero = Matrix<3, 3>::zero();
+    mat_ones = Matrix<3, 3>::ones();
+    mat_identity = Matrix<3, 3>::identity();
   }
  
   virtual void TearDown() override
@@ -40,21 +48,34 @@ protected:
   Matrix<2, 2, float> _mat_2x2_f;
   Matrix<3, 3, float> _mat_3x3_f;
   Matrix<4, 4, float> _mat_4x4_f;
+
+  Matrix<3, 3> mat_zero;
+  Matrix<3, 3> mat_ones;
+  Matrix<3, 3> mat_identity;
+
 };
 
 
 TEST_F(MatrixTest, DefaultConstructor)
 {
-  EXPECT_EQ(2, _mat_2x2_d.rows());
-  EXPECT_EQ(2, _mat_2x2_d.cols());
+  double ini_value = -std::numeric_limits<double>().max();
+
   for (size_t r = 0; r < _mat_2x2_d.rows(); r++){
     for (size_t c = 0; c < _mat_2x2_d.cols(); c++){
-      EXPECT_EQ(0, _mat_2x2_d.at(r, c));
+      EXPECT_EQ(ini_value, _mat_2x2_d.at(r, c));
     }
   }
 
-  EXPECT_EQ(3, _mat_3x3_d.rows());
-  EXPECT_EQ(3, _mat_3x3_d.cols());
+  //for (size_t r = 0; r < _mat_3x3_f.rows(); r++){
+  //  for (size_t c = 0; c < _mat_3x3_f.cols(); c++){
+  //    EXPECT_EQ(0.f, _mat_3x3_f.at(r, c));
+  //  }
+  //}
+
+}
+
+TEST_F(MatrixTest, at)
+{
   EXPECT_EQ(1.5, _mat_3x3_d.at(0, 0));
   EXPECT_EQ(0.0, _mat_3x3_d.at(0, 1));
   EXPECT_EQ(2.5, _mat_3x3_d.at(0, 2));
@@ -64,29 +85,150 @@ TEST_F(MatrixTest, DefaultConstructor)
   EXPECT_EQ(1.3, _mat_3x3_d.at(2, 0));
   EXPECT_EQ(2.6, _mat_3x3_d.at(2, 1));
   EXPECT_EQ(0.3, _mat_3x3_d.at(2, 2));
-  
+}
+
+TEST_F(MatrixTest, rows)
+{
+  EXPECT_EQ(2, _mat_2x2_d.rows());
+  EXPECT_EQ(3, _mat_3x3_d.rows());
   EXPECT_EQ(3, _mat_3x3_f.rows());
+}
+
+TEST_F(MatrixTest, cols)
+{
+  EXPECT_EQ(2, _mat_2x2_d.cols());
+  EXPECT_EQ(3, _mat_3x3_d.cols());
   EXPECT_EQ(3, _mat_3x3_f.cols());
-  for (size_t r = 0; r < _mat_3x3_f.rows(); r++){
-    for (size_t c = 0; c < _mat_3x3_f.cols(); c++){
-      EXPECT_EQ(0.f, _mat_3x3_f.at(r, c));
-    }
-  }
+}
+
+TEST_F(MatrixTest, inverse2x2)
+{
+  Matrix<2, 2> _mat_2x2;
+  _mat_2x2.at(0, 0) = 2;
+  _mat_2x2.at(0, 1) = 3;
+  _mat_2x2.at(1, 0) = 1;
+  _mat_2x2.at(1, 1) = 4;
+  bool invertible;
+  Matrix<2, 2> inv_mat = _mat_2x2.inverse(&invertible);
+  EXPECT_TRUE(invertible);
+  EXPECT_NEAR(0.8, inv_mat.at(0, 0), 0.001);
+  EXPECT_NEAR(-0.6, inv_mat.at(0, 1), 0.001);
+  EXPECT_NEAR(-0.2, inv_mat.at(1, 0), 0.001);
+  EXPECT_NEAR(0.4, inv_mat.at(1, 1), 0.001);
+}
+
+TEST_F(MatrixTest, inverse3x3)
+{
+  bool invertible;
+  Matrix<3, 3> inv_mat = _mat_3x3_d.inverse(&invertible);
+  EXPECT_TRUE(invertible);
+  EXPECT_NEAR( 2.877551, inv_mat.at(0, 0), 0.00001);
+  EXPECT_NEAR(-6.632653, inv_mat.at(0, 1), 0.00001);
+  EXPECT_NEAR( 2.551020, inv_mat.at(0, 2), 0.00001);
+  EXPECT_NEAR(-1.285714, inv_mat.at(1, 0), 0.00001);
+  EXPECT_NEAR( 2.857143, inv_mat.at(1, 1), 0.00001);
+  EXPECT_NEAR(-0.714286, inv_mat.at(1, 2), 0.00001);
+  EXPECT_NEAR(-1.326531, inv_mat.at(2, 0), 0.00001);
+  EXPECT_NEAR( 3.979592, inv_mat.at(2, 1), 0.00001);
+  EXPECT_NEAR(-1.530612, inv_mat.at(2, 2), 0.00001);
+}
+
+TEST_F(MatrixTest, inverse4x4)
+{
+  bool invertible;
+  Matrix<4, 4> inv_mat = _mat_4x4_d->inverse(&invertible);
+  EXPECT_TRUE(invertible);
+  EXPECT_NEAR( 0.268435, inv_mat.at(0, 0), 0.01);
+  EXPECT_NEAR(-0.018133, inv_mat.at(0, 1), 0.01);
+  EXPECT_NEAR(-0.010673, inv_mat.at(0, 2), 0.01);
+  EXPECT_NEAR(-0.002479, inv_mat.at(0, 3), 0.01);
+  EXPECT_NEAR(-0.077647, inv_mat.at(1, 0), 0.01);
+  EXPECT_NEAR( 0.005298, inv_mat.at(1, 1), 0.01);
+  EXPECT_NEAR(-0.006780, inv_mat.at(1, 2), 0.01);
+  EXPECT_NEAR( 0.035491, inv_mat.at(1, 3), 0.01);
+  EXPECT_NEAR( 0.007528, inv_mat.at(2, 0), 0.01);
+  EXPECT_NEAR( 0.013172, inv_mat.at(2, 1), 0.01);
+  EXPECT_NEAR(-0.019248, inv_mat.at(2, 2), 0.01);
+  EXPECT_NEAR( 0.018059, inv_mat.at(2, 3), 0.01);
+  EXPECT_NEAR(-0.007974, inv_mat.at(3, 0), 0.01);
+  EXPECT_NEAR(-0.001035, inv_mat.at(3, 1), 0.01);
+  EXPECT_NEAR( 0.034578, inv_mat.at(3, 2), 0.01);	
+  EXPECT_NEAR(-0.036946, inv_mat.at(3, 3), 0.01);
+}
+
+TEST_F(MatrixTest, inverse)
+{
 
 }
 
-//TEST_F(MatrixTest, isEmpty)
-//{
-//  //EXPECT_TRUE(_mat_4x4_f.isEmpty());
-//  //EXPECT_FALSE(_mat_3x3_d.isEmpty());
-//}
+TEST_F(MatrixTest, transpose)
+{
+  Matrix<3, 3> transp_mat = _mat_3x3_d.transpose();
 
-//TEST_F(MatrixTest, isDiag)
-//{
-//
-//}
-//
-//TEST_F(MatrixTest, isSquared)
-//{
-//
-//}
+  EXPECT_EQ(1.5, transp_mat.at(0, 0));
+  EXPECT_EQ(1, transp_mat.at(0, 1));
+  EXPECT_EQ(1.3, transp_mat.at(0, 2));
+  EXPECT_EQ(0, transp_mat.at(1, 0));
+  EXPECT_EQ(1, transp_mat.at(1, 1));
+  EXPECT_EQ(2.6, transp_mat.at(1, 2));
+  EXPECT_EQ(2.5, transp_mat.at(2, 0));
+  EXPECT_EQ(1.2, transp_mat.at(2, 1));
+  EXPECT_EQ(0.3, transp_mat.at(2, 2));
+}
+
+TEST_F(MatrixTest, determinant2x2)
+{
+  Matrix<2, 2> _mat_2x2;
+  _mat_2x2.at(0, 0) = 2;
+  _mat_2x2.at(0, 1) = 3;
+  _mat_2x2.at(1, 0) = 1;
+  _mat_2x2.at(1, 1) = 4;
+  EXPECT_EQ(5, _mat_2x2.determinant());
+}
+
+TEST_F(MatrixTest, determinant3x3)
+{
+  EXPECT_NEAR(-0.98, _mat_3x3_d.determinant(),0.01);
+}
+
+TEST_F(MatrixTest, determinant4x4)
+{
+
+}
+
+TEST_F(MatrixTest, determinantnxn)
+{
+
+}
+
+TEST_F(MatrixTest, zero)
+{
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(0, mat_zero.at(r, c));
+    }
+  }
+}
+
+TEST_F(MatrixTest, ones)
+{
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(1, mat_ones.at(r, c));
+    }
+  }
+}
+
+TEST_F(MatrixTest, identity)
+{
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      if (r == c) {
+        EXPECT_EQ(1, mat_identity.at(r, c));
+      } else {
+        EXPECT_EQ(0, mat_identity.at(r, c));
+      }
+    }
+  }
+}
+

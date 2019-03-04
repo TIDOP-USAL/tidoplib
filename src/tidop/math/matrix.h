@@ -184,6 +184,12 @@ Matrix<_rows, _cols, T>::Matrix()
   : mRows(_rows),
     mCols(_cols)
 {
+  T ini_val = -std::numeric_limits<double>().max();
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t c = 0; c < _cols; c++) {
+      this->mMatrix[r][c] = ini_val;
+    }
+  }
 }
 
 template<size_t _rows, size_t _cols, typename T>
@@ -296,7 +302,7 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::transpose() const
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
-      matrix.at(r, c) = mMatrix[r][c];
+      matrix.at(c, r) = mMatrix[r][c];
     }
   }
   return matrix;

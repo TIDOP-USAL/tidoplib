@@ -232,9 +232,9 @@ Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
       this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
       this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
 //#if defined(GTE_USE_MAT_VEC)
-//      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
+      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
 //#else
-      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
+//      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
 //#endif
     } else {
       T fourYSqr = omr22 + dif10;
@@ -243,9 +243,9 @@ Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
       this->y = fourYSqr*inv4y;
       this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
 //#if defined(GTE_USE_MAT_VEC)
-//      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
+      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
 //#else
-      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
+//      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
 //#endif
     }
   } else {
@@ -258,21 +258,21 @@ Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
       this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
       this->z = fourZSqr*inv4z;
 //#if defined(GTE_USE_MAT_VEC)
-//      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
+      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
 //#else
-      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
+//      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
 //#endif
     } else {
       T fourWSqr = opr22 + sum10;
       T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
 //#if defined(GTE_USE_MAT_VEC)
-//      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
-//      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
-//      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
+      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
+      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
+      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
 //#else
-      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
-      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
-      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
+//      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
+//      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
+//      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
 //#endif
       this->w = fourWSqr*inv4w;
     }

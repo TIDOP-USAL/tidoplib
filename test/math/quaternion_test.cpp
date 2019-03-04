@@ -26,25 +26,25 @@ protected:
     q2 = Quaternionf(1.f, 3.f, -5.f, 1.f);
 
     RotationMatrix<3, float> rot;
-    //rot.at(0, 0) = -0.8888889f;
-    //rot.at(0, 1) = 0.4444444f;
-    //rot.at(0, 2) = -0.1111111f;
-    //rot.at(1, 0) = -0.1111111f;
-    //rot.at(1, 1) = -0.4444444f;
-    //rot.at(1, 2) = -0.8888889f;
-    //rot.at(2, 0) = -0.4444444f;
-    //rot.at(2, 1) = -0.7777778f;
-    //rot.at(2, 2) =  0.4444444f;
+    rot.at(0, 0) = -0.8888889f;
+    rot.at(0, 1) = 0.4444444f;
+    rot.at(0, 2) = -0.1111111f;
+    rot.at(1, 0) = -0.1111111f;
+    rot.at(1, 1) = -0.4444444f;
+    rot.at(1, 2) = -0.8888889f;
+    rot.at(2, 0) = -0.4444444f;
+    rot.at(2, 1) = -0.7777778f;
+    rot.at(2, 2) =  0.4444444f;
     
-    rot.at(0, 0) = 1.19209e-007;
-    rot.at(0, 1) = 0.f;
-    rot.at(0, 2) = 1.f;
-    rot.at(1, 0) = 0.968583f;
-    rot.at(1, 2) = -0.24869f;
-    rot.at(1, 2) = 0.f;
-    rot.at(2, 0) = 0.24869f;
-    rot.at(2, 1) = 0.968583f;
-    rot.at(2, 2) = 1.19209e-007;
+    //rot.at(0, 0) = 1.19209e-007;
+    //rot.at(0, 1) = 0.f;
+    //rot.at(0, 2) = 1.f;
+    //rot.at(1, 0) = 0.968583f;
+    //rot.at(1, 2) = -0.24869f;
+    //rot.at(1, 2) = 0.f;
+    //rot.at(2, 0) = 0.24869f;
+    //rot.at(2, 1) = 0.968583f;
+    //rot.at(2, 2) = 1.19209e-007;
 
     q_rot = new Quaternionf(rot);
   }
@@ -80,10 +80,10 @@ TEST_F(QuaternionTest, DefaultConstructor)
 
 TEST_F(QuaternionTest, RotationMatrixConstructor)
 {
-  EXPECT_EQ(0.558723927f, q_rot->x);
-	EXPECT_EQ(0.433390737f, q_rot->y);
-	EXPECT_EQ(0.558723867f, q_rot->z);
-	EXPECT_EQ(0.433390737f, q_rot->w);
+  EXPECT_NEAR(-0.1666667f, q_rot->x, 0.0001);
+	EXPECT_NEAR(-0.5f, q_rot->y, 0.0001);
+	EXPECT_NEAR(0.8333333f, q_rot->z, 0.0001);
+	EXPECT_NEAR(-0.1666667f, q_rot->w, 0.0001);
 }
 
 TEST_F(QuaternionTest, cero)
@@ -189,15 +189,15 @@ TEST_F(QuaternionTest, multiplication)
   EXPECT_EQ(-16.f, multi.w);
 }
 
-//TEST_F(QuaternionTest, sum)
-//{
-//  Quaternionf sum = q + q2;
-//  EXPECT_EQ(  6.f, sum.x);
-//  EXPECT_EQ(  4.f, sum.y);
-//  EXPECT_EQ(-14.f, sum.z);
-//  EXPECT_EQ(-16.f, sum.w);
-//}
-//
+TEST_F(QuaternionTest, sum)
+{
+  Quaternionf sum = q + q2;
+  EXPECT_EQ( 1.f, sum.x);
+  EXPECT_EQ( 4.f, sum.y);
+  EXPECT_EQ(-8.f, sum.z);
+  EXPECT_EQ( 3.f, sum.w);
+}
+
 //TEST_F(QuaternionTest, subtraction)
 //{
 //  Quaternionf subtraction = q - q2;
@@ -206,3 +206,13 @@ TEST_F(QuaternionTest, multiplication)
 //  EXPECT_EQ(-14.f, subtraction.z);
 //  EXPECT_EQ(-16.f, subtraction.w);
 //}
+
+
+//Quaternion<T> operator*(const Quaternion<T> &quaternion, T scalar)
+//Quaternion<T> operator*(T scalar, const Quaternion<T> &quaternion)
+//Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
+//Quaternion<T> &operator += (Quaternion<T> &quat1, const Quaternion<T> &quat2)
+//Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
+//Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
+//Quaternion<T> &operator /= (Quaternion<T> &quaternion, T scalar)
+//T dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
