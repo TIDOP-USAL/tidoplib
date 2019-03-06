@@ -35,6 +35,33 @@ protected:
     mat_zero = Matrix<3, 3>::zero();
     mat_ones = Matrix<3, 3>::ones();
     mat_identity = Matrix<3, 3>::identity();
+
+    _mat_5x5_d.at(0, 0) = 6;
+    _mat_5x5_d.at(0, 1) = 8;
+    _mat_5x5_d.at(0, 2) = 6;
+    _mat_5x5_d.at(0, 3) = 7;
+    _mat_5x5_d.at(0, 4) = 3;
+    _mat_5x5_d.at(1, 0) = 9;
+    _mat_5x5_d.at(1, 1) = 6;
+    _mat_5x5_d.at(1, 2) = 2;
+    _mat_5x5_d.at(1, 3) = 3;
+    _mat_5x5_d.at(1, 4) = 3;
+    _mat_5x5_d.at(2, 0) = 8;
+    _mat_5x5_d.at(2, 1) = 3;
+    _mat_5x5_d.at(2, 2) = 2;
+    _mat_5x5_d.at(2, 3) = 3;
+    _mat_5x5_d.at(2, 4) = 3;
+    _mat_5x5_d.at(3, 0) = 5;
+    _mat_5x5_d.at(3, 1) = 3;
+    _mat_5x5_d.at(3, 2) = 3;
+    _mat_5x5_d.at(3, 3) = 7;
+    _mat_5x5_d.at(3, 4) = 6;
+    _mat_5x5_d.at(4, 0) = 5;
+    _mat_5x5_d.at(4, 1) = 5;
+    _mat_5x5_d.at(4, 2) = 7;
+    _mat_5x5_d.at(4, 3) = 4;
+    _mat_5x5_d.at(4, 4) = 7;
+
   }
  
   virtual void TearDown() override
@@ -48,6 +75,7 @@ protected:
   Matrix<2, 2, float> _mat_2x2_f;
   Matrix<3, 3, float> _mat_3x3_f;
   Matrix<4, 4, float> _mat_4x4_f;
+  Matrix<5, 5> _mat_5x5_d;
 
   Matrix<3, 3> mat_zero;
   Matrix<3, 3> mat_ones;
@@ -176,6 +204,8 @@ TEST_F(MatrixTest, transpose)
   EXPECT_EQ(0.3, transp_mat.at(2, 2));
 }
 
+///TODO: transpuesta de matriz no cuadrada
+
 TEST_F(MatrixTest, determinant2x2)
 {
   Matrix<2, 2> _mat_2x2;
@@ -193,12 +223,12 @@ TEST_F(MatrixTest, determinant3x3)
 
 TEST_F(MatrixTest, determinant4x4)
 {
-
+  EXPECT_NEAR(353100.53, _mat_4x4_d->determinant(), 0.01);
 }
 
 TEST_F(MatrixTest, determinantnxn)
 {
-
+  EXPECT_NEAR(-2877.99, _mat_5x5_d.determinant(), 0.01);
 }
 
 TEST_F(MatrixTest, zero)

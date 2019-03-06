@@ -150,7 +150,7 @@ public:
   /*!
    * \brief Conversión a una ventana de un tipo diferente
    */
-  template<typename Point_t2> operator Box<Point_t2>() const;
+  template<typename Point3_t2> operator Box<Point3_t2>() const;
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!

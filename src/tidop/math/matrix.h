@@ -125,11 +125,47 @@ public:
   Matrix transpose() const;
 
   /*!
+   * \brief Calcula la matriz adjunta
+   * \return Matriz adjunta
+   */
+  Matrix adjoint() const;  // ¿adjoint o Adjugate??
+
+  /*!
+   * \brief Calcula la matriz cofactor
+   * \return Matriz cofactor
+   */
+  Matrix cofactorMatrix() const;
+
+  /*!
    * \brief Determinante de la matriz
    * \return Determinante
    */
   template<typename Enable= typename std::enable_if<_rows == _cols>::type>
   T determinant() const;
+
+  /*!
+   * \brief Cofactor
+   * El determinante obtenido al eliminar la fila y la columna de un elemento dado de una matriz o determinante. 
+   * El cofactor está precedido por un signo + o - dependiendo de si el elemento está en una posición + o -.
+   * (-)^(r+j)
+   * \return cofactor
+   */
+  T cofactor(int r, int c) const;
+
+  /*!
+   * \brief Primero menor
+   * Un menor de una matriz cuadrada A es el determinante de alguna de las 
+   * submatrices obtenidas a partir de la eliminación de una filas y una columna.
+   * Se utilizan para el cálculo de la matriz de cofactores.
+   *      |a1 a2 a3|
+   *  A = |a4 a5 a6| 
+   *      |a7 a8 a9|
+   *
+   * M23 = a8*a1-a2*a7
+   *
+   * \return Primero menor
+   */
+  T firstMinor(int r, int c) const;
 
   /*!
    * \brief Construye una matriz con ceros
@@ -299,13 +335,79 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) co
 template<size_t _rows, size_t _cols, typename T> 
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::transpose() const
 {
-  Matrix<_rows, _cols, T> matrix;
+  Matrix<_cols, _rows, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       matrix.at(c, r) = mMatrix[r][c];
     }
   }
   return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T>
+template<typename Enable>
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint() const
+{
+  Matrix<_rows, _cols, T> matrix;
+
+  if (this->mCols == 1) { 
+    matrix[0][0] = static_cast<T>(1);
+    return matrix; 
+  }
+
+  for (int r = 0; r < _rows; r++) {
+    for (int c = 0; c < _cols; c++) {
+      // Get cofactor of A[i][j] 
+      //getCofactor(A, temp, i, j, N);
+      //void getCofactor(int A[N][N], int temp[N][N], int p, int q, int n) 
+      int i = 0, j = 0; 
+  
+    // Looping for each element of the matrix 
+    for (int row = 0; row < n; row++) 
+    { 
+        for (int col = 0; col < n; col++) 
+        { 
+            //  Copying into temporary matrix only those element 
+            //  which are not in given row and column 
+            if (row != p && col != q) 
+            { 
+                temp[i][j++] = A[row][col]; 
+  
+                // Row is filled, so increase row index and 
+                // reset col index 
+                if (j == n - 1) 
+                { 
+                    j = 0; 
+                    i++; 
+                } 
+            } 
+        } 
+    }
+
+
+
+      // sign of adj[j][i] positive if sum of row 
+      // and column indexes is even. 
+      sign = ((i + j) % 2 == 0) ? 1 : -1;
+
+      // Interchanging rows and columns to get the 
+      // transpose of the cofactor matrix 
+      adj[j][i] = (sign)*(determinant(temp, N - 1));
+    }
+  }
+
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+template<typename Enable>
+T Matrix<_rows, _cols, T>::cofactorMatrix() const
+{
+  T d = static_cast<T>(1);
+ 
+  cofactor
+
+  return d;
 }
 
 template<size_t _rows, size_t _cols, typename T> 
@@ -325,6 +427,34 @@ T Matrix<_rows, _cols, T>::determinant() const
   }
 
   return d;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+template<typename Enable>
+T Matrix<_rows, _cols, T>::cofactor(int r, int c) const
+{
+  int sign = ((r + c) % 2 == 0) ? 1 : -1;
+  return sign * this->cofactor(r, c);
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+template<typename Enable>
+T Matrix<_rows, _cols, T>::firstMinor(int r, int c) const
+{
+  int i = 0, j = 0; 
+  Matrix<_rows-1, _cols-1, T> matrix;
+  for (int row = 0; row < _rows; row++) {
+    for (int col = 0; col < _cols; col++) {
+      if (row != r && col != c) {
+        matrix.at(i, j++) = this->mMatrix[row][col];
+        if (j == n - 1) {
+          j = 0;
+          i++;
+        }
+      }
+    }
+  }
+  return matrix.determinant();
 }
 
 template<size_t _rows, size_t _cols, typename T>
@@ -399,7 +529,7 @@ T Matrix<_rows, _cols, T>::determinant4x4() const
   T b2 = mMatrix[2][0] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][0];
   T b3 = mMatrix[2][1] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][1];
   T b4 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][1];
-  T b5 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][2];
+  T b5 = mMatrix[2][2] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][2];
   T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
   return det;
 }
@@ -540,6 +670,12 @@ template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inversenxn(bool *invertibility) const
 {
   Matrix<_rows, _cols, T> matrix;
+  T det = determinantnxn(); 
+  if (det == static_cast<T>(0)) { 
+    // Singular matrix, can't find its inverse; 
+    return matrix; 
+  }
+
 
   return matrix;
 }
