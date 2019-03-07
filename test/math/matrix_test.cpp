@@ -62,6 +62,24 @@ protected:
     _mat_5x5_d.at(4, 3) = 4;
     _mat_5x5_d.at(4, 4) = 7;
 
+
+    _mat_2x3_i.at(0, 0) = 6;
+    _mat_2x3_i.at(0, 1) = 8;
+    _mat_2x3_i.at(0, 2) = 6;
+    _mat_2x3_i.at(1, 0) = 9;
+    _mat_2x3_i.at(1, 1) = 6;
+    _mat_2x3_i.at(1, 2) = 2;
+
+    
+    _cofactor_matrix.at(0, 0) = 1;
+    _cofactor_matrix.at(0, 1) = 2;
+    _cofactor_matrix.at(0, 2) = 3;
+    _cofactor_matrix.at(1, 0) = 0;
+    _cofactor_matrix.at(1, 1) = 4;
+    _cofactor_matrix.at(1, 2) = 5;
+    _cofactor_matrix.at(2, 0) = 1;
+    _cofactor_matrix.at(2, 1) = 0;
+    _cofactor_matrix.at(2, 2) = 6;
   }
  
   virtual void TearDown() override
@@ -76,7 +94,8 @@ protected:
   Matrix<3, 3, float> _mat_3x3_f;
   Matrix<4, 4, float> _mat_4x4_f;
   Matrix<5, 5> _mat_5x5_d;
-
+  Matrix<2, 3, int> _mat_2x3_i;
+  Matrix3x3i _cofactor_matrix;
   Matrix<3, 3> mat_zero;
   Matrix<3, 3> mat_ones;
   Matrix<3, 3> mat_identity;
@@ -189,7 +208,7 @@ TEST_F(MatrixTest, inverse)
 
 }
 
-TEST_F(MatrixTest, transpose)
+TEST_F(MatrixTest, transposeSquared)
 {
   Matrix<3, 3> transp_mat = _mat_3x3_d.transpose();
 
@@ -204,7 +223,26 @@ TEST_F(MatrixTest, transpose)
   EXPECT_EQ(0.3, transp_mat.at(2, 2));
 }
 
-///TODO: transpuesta de matriz no cuadrada
+
+/// Transpuesta de matriz no cuadrada
+TEST_F(MatrixTest, transpose)
+{
+  Matrix<3, 2, int> transp_mat = _mat_2x3_i.transpose();
+
+  _mat_2x3_i.at(0, 0) = 6;
+  _mat_2x3_i.at(0, 1) = 8;
+  _mat_2x3_i.at(0, 2) = 6;
+  _mat_2x3_i.at(1, 0) = 9;
+  _mat_2x3_i.at(1, 1) = 6;
+  _mat_2x3_i.at(1, 2) = 2;
+
+  EXPECT_EQ(6, transp_mat.at(0, 0));
+  EXPECT_EQ(9, transp_mat.at(0, 1));
+  EXPECT_EQ(8, transp_mat.at(1, 0));
+  EXPECT_EQ(6, transp_mat.at(1, 1));
+  EXPECT_EQ(6, transp_mat.at(2, 0));
+  EXPECT_EQ(2, transp_mat.at(2, 1));
+}
 
 TEST_F(MatrixTest, determinant2x2)
 {
@@ -229,6 +267,44 @@ TEST_F(MatrixTest, determinant4x4)
 TEST_F(MatrixTest, determinantnxn)
 {
   EXPECT_NEAR(-2877.99, _mat_5x5_d.determinant(), 0.01);
+}
+
+/// http://www.mathwords.com/c/cofactor_matrix.htm
+TEST_F(MatrixTest, cofactorMatrix)
+{
+  Matrix3x3i cofactor_matrix = _cofactor_matrix.cofactorMatrix();
+
+  EXPECT_EQ( 24, cofactor_matrix.at(0, 0));
+  EXPECT_EQ(  5, cofactor_matrix.at(0, 1));
+  EXPECT_EQ( -4, cofactor_matrix.at(0, 2));
+  EXPECT_EQ(-12, cofactor_matrix.at(1, 0));
+  EXPECT_EQ(  3, cofactor_matrix.at(1, 1));
+  EXPECT_EQ(  2, cofactor_matrix.at(1, 2));
+  EXPECT_EQ( -2, cofactor_matrix.at(2, 0));
+  EXPECT_EQ( -5, cofactor_matrix.at(2, 1));
+  EXPECT_EQ(  4, cofactor_matrix.at(2, 2));
+}
+
+TEST_F(MatrixTest, firstMinor)
+{
+  int first_minor = _cofactor_matrix.firstMinor(1, 1);
+
+  EXPECT_EQ(3, first_minor);
+
+  first_minor = _cofactor_matrix.firstMinor(0, 1);
+
+  EXPECT_EQ(-5, first_minor);
+}
+
+TEST_F(MatrixTest, cofactor)
+{
+  int cofactor = _cofactor_matrix.cofactor(1,1);
+
+  EXPECT_EQ(3, cofactor);
+
+  cofactor = _cofactor_matrix.cofactor(0, 1);
+
+  EXPECT_EQ(5, cofactor);
 }
 
 TEST_F(MatrixTest, zero)

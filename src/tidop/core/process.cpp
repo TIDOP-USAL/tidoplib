@@ -20,8 +20,11 @@
 
 #if defined WIN32
 #include <windows.h>
-#include <atlstr.h>
+//#include <atlstr.h>
 #endif
+
+#include <locale>
+#include <codecvt>
 
 /* ---------------------------------------------------------------------------------- */
 /*          PROCESOS Y BATCH                                                          */
@@ -360,7 +363,9 @@ std::string CmdProcess::formatErrorMsg(DWORD errorCode)
                 sizeof(errorMessage)/sizeof(TCHAR),
                 NULL);
 
-  std::string strError = CW2A(errorMessage);
+  //std::string strError = CW2A(errorMessage);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::string strError = converter.to_bytes(errorMessage);
   return strError;
 }
 #endif

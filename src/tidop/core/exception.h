@@ -61,25 +61,45 @@ protected:
 
 public:
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Constructor
+   * \deprecated Usar Exception(const std::string &error)
    */
+  TL_DEPRECATED("Exception::Exception(const std::string &error)")
   explicit Exception(const char *error);
 
   /*!
    * \brief Constructor
    */
+  TL_DEPRECATED("Exception::Exception(const std::string &error)")
   explicit Exception(const char *error, const char *file, int line, const char *function);
+
+#endif
+
+  /*!
+   * \brief Constructor
+   */
+  explicit Exception(const std::string &error);
+
+  /*!
+   * \brief Constructor
+   */
+  explicit Exception(const std::string &error, const std::string &file, int line, const std::string &function);
 
   /*!
    * \brief destructor
    */
-  virtual ~Exception() TL_NOEXCEPT {}
+  virtual ~Exception() TL_NOEXCEPT override {}
 
   /*!
    * \brief Descripción del error
    */
-  virtual const char *what() const TL_NOEXCEPT;
+  virtual const char *what() const TL_NOEXCEPT override;
+
+  std::string file() const;
+  std::string function() const;
+  int line() const;
 
 private:
 

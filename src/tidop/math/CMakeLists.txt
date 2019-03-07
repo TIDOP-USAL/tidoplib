@@ -8,7 +8,7 @@ add_library(tl_math ${LIB_TYPE}
             statistics.h
             mathutils.cpp
             mathutils.h
-            numericalmethods.h
+            #numericalmethods.h
             algebra/quaternion.h
             algebra/euler_angles.h
             algebra/rotations.h
@@ -21,15 +21,15 @@ set_property(TARGET tl_math PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
-  install(TARGETS tl_math
-    EXPORT "${TARGETS_EXPORT_NAME}"
-          RUNTIME DESTINATION bin
-      LIBRARY DESTINATION lib)
+	install(TARGETS tl_math
+			EXPORT "${TARGETS_EXPORT_NAME}"
+			RUNTIME DESTINATION bin
+			LIBRARY DESTINATION lib)
 else()
   install(TARGETS tl_math
-    EXPORT "${TARGETS_EXPORT_NAME}"
-          LIBRARY DESTINATION lib
-          ARCHIVE DESTINATION lib)
+			EXPORT "${TARGETS_EXPORT_NAME}"
+			LIBRARY DESTINATION lib
+			ARCHIVE DESTINATION lib)
 endif()
 
 install(DIRECTORY . DESTINATION include/tidop/math

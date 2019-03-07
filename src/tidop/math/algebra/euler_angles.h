@@ -127,6 +127,7 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
     omega = eulerAngles.omega;
     phi = eulerAngles.phi;
     kappa = eulerAngles.kappa;
+    axes = eulerAngles.axes;
   }
   return *this;
 }

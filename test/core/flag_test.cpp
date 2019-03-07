@@ -54,11 +54,11 @@ TEST(EnumFlags, Constructor)
 
   // Constructor vacio
   EnumFlags<ePrueba2> flagEmpty;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flagEmpty.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flagEmpty.flags()));
 
   // Constructor copia
   EnumFlags<ePrueba2> flag_copy(flagEmpty);
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag_copy.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag_copy.flags()));
 
   // Constructor por enun
   EnumFlags<ePrueba2> flag(ePrueba2::flag01);
@@ -114,9 +114,9 @@ TEST(EnumFlags, flagOnOff)
   EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
 
   //Prueba a activar un flag ya activo
-  ePrueba3 ef = flag2.getFlags();
+  ePrueba3 ef = flag2.flags();
   flag2.flagOn(ePrueba3::flag03);
-  ePrueba3 ef2 = flag2.getFlags();
+  ePrueba3 ef2 = flag2.flags();
   EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
 }
 
@@ -149,19 +149,19 @@ TEST(Flags, Constructor)
 
   // Constructor vacio
   Flags_8 flag8;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag8.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag8.flags()));
   EXPECT_FALSE(flag8.isActive(3));
 
   Flags_16 flag16;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag16.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag16.flags()));
   EXPECT_FALSE(flag16.isActive(10));
 
   Flags_32 flag32;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag32.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag32.flags()));
   EXPECT_FALSE(flag32.isActive(25));
 
   Flags_64 flag64;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag64.getFlags()));
+  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag64.flags()));
   EXPECT_FALSE(flag64.isActive(45));
 
   // Constructor copia

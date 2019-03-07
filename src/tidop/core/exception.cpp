@@ -14,10 +14,11 @@
 
 #include "tidop/core/exception.h"
 
-#if defined WIN32
-#include <atlstr.h>
-#endif
-
+//#if defined WIN32
+//#include <atlstr.h>
+//#endif
+#include <locale>
+#include <codecvt>
 
 //TODO: mirar
 //https://en.cppreference.com/w/cpp/error/nested_exception
@@ -31,14 +32,36 @@ namespace tl
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 Exception::Exception(const char *error)
-  : mError(error), mFile(""), mLine(-1), mFunction("")
+  : mError(error), 
+    mFile(""), 
+    mLine(-1), 
+    mFunction("")
 {
   messagef();
 }
 
-Exception::Exception(const char *error, const char *file, int line, const char *function )
+Exception::Exception(const char *error, const char *file, int line, const char *function)
   : mError(error), mFile(file), mLine(line), mFunction(function)
+{
+  messagef();
+}
+#endif
+
+Exception::Exception(const std::string & error)
+  : mError(error),
+    mFile(""),
+    mLine(-1),
+    mFunction("")
+{
+}
+
+Exception::Exception(const std::string &error, const std::string &file, int line, const std::string &function )
+  : mError(error), 
+    mFile(file), 
+    mLine(line), 
+    mFunction(function)
 {
   messagef();
 }
@@ -46,6 +69,21 @@ Exception::Exception(const char *error, const char *file, int line, const char *
 const char *Exception::what() const TL_NOEXCEPT
 {
   return mMessage.c_str();
+}
+
+std::string tl::Exception::file() const
+{
+  return mFile;
+}
+
+std::string tl::Exception::function() const
+{
+  return mFunction;
+}
+
+int tl::Exception::line() const
+{
+  return mLine;
 }
 
 void Exception::messagef()
@@ -95,7 +133,10 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
                 sizeof(errorMessage)/sizeof(TCHAR),
                 NULL);
 
-  std::string strError = CW2A(errorMessage);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::string strError = converter.to_bytes(errorMessage);
+
+  //std::string strError = CW2A(errorMessage);
   return strError;
 }
 #endif

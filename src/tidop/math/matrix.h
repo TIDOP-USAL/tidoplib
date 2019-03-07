@@ -122,18 +122,20 @@ public:
    * \brief Calcula la matriz transpuesta
    * \return Matriz transpuesta
    */
-  Matrix transpose() const;
+  Matrix<_cols, _rows, T> transpose() const;
 
   /*!
    * \brief Calcula la matriz adjunta
    * \return Matriz adjunta
    */
+  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   Matrix adjoint() const;  // ¿adjoint o Adjugate??
 
   /*!
    * \brief Calcula la matriz cofactor
    * \return Matriz cofactor
    */
+  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   Matrix cofactorMatrix() const;
 
   /*!
@@ -150,6 +152,7 @@ public:
    * (-)^(r+j)
    * \return cofactor
    */
+  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   T cofactor(int r, int c) const;
 
   /*!
@@ -165,6 +168,7 @@ public:
    *
    * \return Primero menor
    */
+  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   T firstMinor(int r, int c) const;
 
   /*!
@@ -333,7 +337,7 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) co
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::transpose() const
+Matrix<_cols, _rows, T> Matrix<_rows, _cols, T>::transpose() const
 {
   Matrix<_cols, _rows, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
@@ -350,64 +354,66 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint() const
 {
   Matrix<_rows, _cols, T> matrix;
 
-  if (this->mCols == 1) { 
-    matrix[0][0] = static_cast<T>(1);
-    return matrix; 
-  }
+  //if (this->mCols == 1) { 
+  //  matrix[0][0] = static_cast<T>(1);
+  //  return matrix; 
+  //}
 
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      // Get cofactor of A[i][j] 
-      //getCofactor(A, temp, i, j, N);
-      //void getCofactor(int A[N][N], int temp[N][N], int p, int q, int n) 
-      int i = 0, j = 0; 
-  
-    // Looping for each element of the matrix 
-    for (int row = 0; row < n; row++) 
-    { 
-        for (int col = 0; col < n; col++) 
-        { 
-            //  Copying into temporary matrix only those element 
-            //  which are not in given row and column 
-            if (row != p && col != q) 
-            { 
-                temp[i][j++] = A[row][col]; 
-  
-                // Row is filled, so increase row index and 
-                // reset col index 
-                if (j == n - 1) 
-                { 
-                    j = 0; 
-                    i++; 
-                } 
-            } 
-        } 
-    }
+  //for (int r = 0; r < _rows; r++) {
+  //  for (int c = 0; c < _cols; c++) {
+  //    // Get cofactor of A[i][j] 
+  //    //getCofactor(A, temp, i, j, N);
+  //    //void getCofactor(int A[N][N], int temp[N][N], int p, int q, int n) 
+  //    int i = 0, j = 0; 
+  //
+  //  // Looping for each element of the matrix 
+  //  for (int row = 0; row < n; row++) 
+  //  { 
+  //      for (int col = 0; col < n; col++) 
+  //      { 
+  //          //  Copying into temporary matrix only those element 
+  //          //  which are not in given row and column 
+  //          if (row != p && col != q) 
+  //          { 
+  //              temp[i][j++] = A[row][col]; 
+  //
+  //              // Row is filled, so increase row index and 
+  //              // reset col index 
+  //              if (j == n - 1) 
+  //              { 
+  //                  j = 0; 
+  //                  i++; 
+  //              } 
+  //          } 
+  //      } 
+  //  }
 
 
 
-      // sign of adj[j][i] positive if sum of row 
-      // and column indexes is even. 
-      sign = ((i + j) % 2 == 0) ? 1 : -1;
+  //    // sign of adj[j][i] positive if sum of row 
+  //    // and column indexes is even. 
+  //    sign = ((i + j) % 2 == 0) ? 1 : -1;
 
-      // Interchanging rows and columns to get the 
-      // transpose of the cofactor matrix 
-      adj[j][i] = (sign)*(determinant(temp, N - 1));
-    }
-  }
+  //    // Interchanging rows and columns to get the 
+  //    // transpose of the cofactor matrix 
+  //    adj[j][i] = (sign)*(determinant(temp, N - 1));
+  //  }
+  //}
 
   return matrix;
 }
 
 template<size_t _rows, size_t _cols, typename T> 
 template<typename Enable>
-T Matrix<_rows, _cols, T>::cofactorMatrix() const
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 {
-  T d = static_cast<T>(1);
- 
-  cofactor
-
-  return d;
+  Matrix<_rows, _cols, T> matrix;
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t c = 0; c < _cols; c++) {
+      matrix.at(r, c) = cofactor(r, c);
+    }
+  }
+  return matrix;
 }
 
 template<size_t _rows, size_t _cols, typename T> 
@@ -434,7 +440,7 @@ template<typename Enable>
 T Matrix<_rows, _cols, T>::cofactor(int r, int c) const
 {
   int sign = ((r + c) % 2 == 0) ? 1 : -1;
-  return sign * this->cofactor(r, c);
+  return sign * this->firstMinor(r, c);
 }
 
 template<size_t _rows, size_t _cols, typename T> 
@@ -447,7 +453,7 @@ T Matrix<_rows, _cols, T>::firstMinor(int r, int c) const
     for (int col = 0; col < _cols; col++) {
       if (row != r && col != c) {
         matrix.at(i, j++) = this->mMatrix[row][col];
-        if (j == n - 1) {
+        if (j == _rows - 1) {
           j = 0;
           i++;
         }
@@ -577,10 +583,10 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse2x2(bool *invertibility)
   Matrix<_rows, _cols, T> matrix;
   T det = determinant2x2();
   if (det != static_cast<T>(0)) {
-    matrix.at(0, 0) = mMatrix[1][1] / det;
+    matrix.at(0, 0) =  mMatrix[1][1] / det;
     matrix.at(0, 1) = -mMatrix[0][1] / det;
     matrix.at(1, 0) = -mMatrix[1][0] / det;
-    matrix.at(1, 1) = mMatrix[0][0] / det;
+    matrix.at(1, 1) =  mMatrix[0][0] / det;
     if (invertibility) *invertibility = true;
   } else {
     matrix = Matrix<_rows, _cols, T>::zero();
