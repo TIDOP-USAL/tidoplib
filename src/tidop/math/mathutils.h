@@ -24,9 +24,9 @@ namespace tl
 {
 
 /*!
- * \defgroup mathUtils Utilidades matemáticas
+ * \defgroup Math Utilidades matemáticas
  *
- * Utilidades para operaciones entre vectores (tanto en el plano como en espacio),
+ * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
  * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
  * de sistemas de ecuaciones lineales.
  *
@@ -621,7 +621,7 @@ TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 #endif
 
 
-/*! \} */ // end of mathUtils
+/*! \} */ // end of Math
 
 } // End namespace TL
 

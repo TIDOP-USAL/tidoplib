@@ -11,17 +11,9 @@ namespace math
 {
 
 /*!
- * \defgroup math Utilidades matemáticas
- *
- * Utilidades para operaciones entre vectores (tanto en el plano como en espacio),
- * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
- * de sistemas de ecuaciones lineales.
- *
- * Se utilizan contenedores y un tipo de punto generico (con métodos miembro x, y, z).
- *
+ * \addtogroup Math
  * \{
  */
-
 
 
 /* ---------------------------------------------------------------------------------- */

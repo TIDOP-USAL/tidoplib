@@ -35,16 +35,6 @@ protected:
     rot.at(2, 0) = -0.4444444f;
     rot.at(2, 1) = -0.7777778f;
     rot.at(2, 2) =  0.4444444f;
-    
-    //rot.at(0, 0) = 1.19209e-007;
-    //rot.at(0, 1) = 0.f;
-    //rot.at(0, 2) = 1.f;
-    //rot.at(1, 0) = 0.968583f;
-    //rot.at(1, 2) = -0.24869f;
-    //rot.at(1, 2) = 0.f;
-    //rot.at(2, 0) = 0.24869f;
-    //rot.at(2, 1) = 0.968583f;
-    //rot.at(2, 2) = 1.19209e-007;
 
     q_rot = new Quaternionf(rot);
   }

@@ -113,12 +113,6 @@ TEST_F(MatrixTest, DefaultConstructor)
     }
   }
 
-  //for (size_t r = 0; r < _mat_3x3_f.rows(); r++){
-  //  for (size_t c = 0; c < _mat_3x3_f.cols(); c++){
-  //    EXPECT_EQ(0.f, _mat_3x3_f.at(r, c));
-  //  }
-  //}
-
 }
 
 TEST_F(MatrixTest, at)

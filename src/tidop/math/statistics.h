@@ -14,6 +14,9 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
 
 /* ---------------------------------------------------------------------------------- */
 /*                                 ESTADISTICA                                        */
@@ -146,6 +149,7 @@ TL_EXPORT double computeTempMAD(const std::vector<double> &input, double median)
 
 TL_EXPORT bool isOutlier(double temp, double median, double mad);
 
+/*! \} */ // end of Math
 
 } // Fin namespace math
 

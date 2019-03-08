@@ -24,6 +24,10 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
+
 /*! \defgroup angleConversion Conversión de ángulos
  *  
  * Conversiones entre los diferentes formatos ángulares. 
@@ -144,6 +148,8 @@ TL_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion  
   
+/*! \} */ // end of Math
+
 } // Fin namespace math
 
 } // Fin namespace tl

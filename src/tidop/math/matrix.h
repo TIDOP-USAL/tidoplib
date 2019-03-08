@@ -28,8 +28,25 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
+
+
+/*! \defgroup Algebra
+ *  
+ * Algebra
+ *
+ *  \{
+ */
+
+
+/*!
+ * \brief Clase matriz 
+ *
+ */
 template<size_t _rows, size_t _cols, typename T = double>
-class Matrix/*<_rows, _cols, T, typename std::enable_if<std::is_arithmetic<T>::value>::type>*/
+class Matrix
 {
 
 protected:
@@ -125,11 +142,12 @@ public:
   Matrix<_cols, _rows, T> transpose() const;
 
   /*!
-   * \brief Calcula la matriz adjunta
-   * \return Matriz adjunta
+   * \brief Calcula la matriz de adjuntos
+   * \f[ adj(A) = C^T \f]
+   * \return Matriz de adjuntos
    */
   template<typename Enable = typename std::enable_if<_rows == _cols>::type>
-  Matrix adjoint() const;  // ¿adjoint o Adjugate??
+  Matrix adjugate() const; 
 
   /*!
    * \brief Calcula la matriz cofactor
@@ -149,7 +167,7 @@ public:
    * \brief Cofactor
    * El determinante obtenido al eliminar la fila y la columna de un elemento dado de una matriz o determinante. 
    * El cofactor está precedido por un signo + o - dependiendo de si el elemento está en una posición + o -.
-   * (-)^(r+j)
+   * \f[ (-)^{r+j} \f]
    * \return cofactor
    */
   template<typename Enable = typename std::enable_if<_rows == _cols>::type>
@@ -160,11 +178,16 @@ public:
    * Un menor de una matriz cuadrada A es el determinante de alguna de las 
    * submatrices obtenidas a partir de la eliminación de una filas y una columna.
    * Se utilizan para el cálculo de la matriz de cofactores.
-   *      |a1 a2 a3|
-   *  A = |a4 a5 a6| 
-   *      |a7 a8 a9|
    *
-   * M23 = a8*a1-a2*a7
+   * \f[
+   * A=\begin{bmatrix}
+   * a1 & a2 & a3 \\
+   * a4 & a5 & a6 \\
+   * a7 & a8 & a9 \\
+   * \end{bmatrix}
+   * \f]
+   *
+   * \f[ M_{23} = a8*a1-a2*a7 \f]
    *
    * \return Primero menor
    */
@@ -350,57 +373,10 @@ Matrix<_cols, _rows, T> Matrix<_rows, _cols, T>::transpose() const
 
 template<size_t _rows, size_t _cols, typename T>
 template<typename Enable>
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint() const
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjugate() const
 {
-  Matrix<_rows, _cols, T> matrix;
-
-  //if (this->mCols == 1) { 
-  //  matrix[0][0] = static_cast<T>(1);
-  //  return matrix; 
-  //}
-
-  //for (int r = 0; r < _rows; r++) {
-  //  for (int c = 0; c < _cols; c++) {
-  //    // Get cofactor of A[i][j] 
-  //    //getCofactor(A, temp, i, j, N);
-  //    //void getCofactor(int A[N][N], int temp[N][N], int p, int q, int n) 
-  //    int i = 0, j = 0; 
-  //
-  //  // Looping for each element of the matrix 
-  //  for (int row = 0; row < n; row++) 
-  //  { 
-  //      for (int col = 0; col < n; col++) 
-  //      { 
-  //          //  Copying into temporary matrix only those element 
-  //          //  which are not in given row and column 
-  //          if (row != p && col != q) 
-  //          { 
-  //              temp[i][j++] = A[row][col]; 
-  //
-  //              // Row is filled, so increase row index and 
-  //              // reset col index 
-  //              if (j == n - 1) 
-  //              { 
-  //                  j = 0; 
-  //                  i++; 
-  //              } 
-  //          } 
-  //      } 
-  //  }
-
-
-
-  //    // sign of adj[j][i] positive if sum of row 
-  //    // and column indexes is even. 
-  //    sign = ((i + j) % 2 == 0) ? 1 : -1;
-
-  //    // Interchanging rows and columns to get the 
-  //    // transpose of the cofactor matrix 
-  //    adj[j][i] = (sign)*(determinant(temp, N - 1));
-  //  }
-  //}
-
-  return matrix;
+  Matrix<_rows, _cols, T> matrix = this.cofactorMatrix();
+  return matrix.transpose();
 }
 
 template<size_t _rows, size_t _cols, typename T> 
@@ -589,7 +565,7 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse2x2(bool *invertibility)
     matrix.at(1, 1) =  mMatrix[0][0] / det;
     if (invertibility) *invertibility = true;
   } else {
-    matrix = Matrix<_rows, _cols, T>::zero();
+    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
   return matrix;
@@ -618,7 +594,7 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse3x3(bool *invertibility)
     matrix.at(2, 2) = (mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0]) / det;
     if (invertibility) *invertibility = true;
   } else {
-    matrix = Matrix<_rows, _cols, T>::zero();
+    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
 
@@ -665,7 +641,7 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse4x4(bool *invertibility)
 
     if (invertibility) *invertibility = true;
   } else {
-    matrix = Matrix<_rows, _cols, T>::zero();
+    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
 
@@ -678,7 +654,8 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inversenxn(bool *invertibility)
   Matrix<_rows, _cols, T> matrix;
   T det = determinantnxn(); 
   if (det == static_cast<T>(0)) { 
-    // Singular matrix, can't find its inverse; 
+    // Matriz singular, no se puede encontrar la inversa;
+    if (invertibility != nullptr) *invertibility = false;
     return matrix; 
   }
 
@@ -710,10 +687,50 @@ Matrix<_rows, _cols, T> operator - (const Matrix<_rows, _cols, T> &matrix)
   return _m;
 }
 
-/* Operaciones entre matrices */
+/* Operaciones binarias entre matrices */
 
 /*!
- * \brief Suma de dos matrices 
+ * \brief Suma o adición de matrices 
+ * 
+ * \f[ C = A + B \f]
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * a1 & a2 & a3 \\
+ * a4 & a5 & a6 \\
+ * a7 & a8 & a9 \\
+ * \end{bmatrix}
+ *
+ * B=\begin{bmatrix}
+ * b1 & b2 & b3 \\
+ * b4 & b5 & b6 \\
+ * b7 & b8 & b9 \\
+ * \end{bmatrix}
+ *
+ * C=\begin{bmatrix}
+ * a1+b1 & a2+b2 & a3+b3 \\
+ * a4+b4 & a5+b5 & a6+b6 \\
+ * a7+b7 & a8+b8 & a9+b9 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * Matrix2x2i A;
+ * Matrix2x2i B;
+ *
+ * A.at(0, 0) = 1;
+ * A.at(0, 1) = 4;
+ * A.at(1, 0) = 3;
+ * A.at(1, 1) = 2;
+ *
+ * B.at(0, 0) = 4;
+ * B.at(0, 1) = 5;
+ * B.at(1, 0) = 2;
+ * B.at(1, 1) = 8;
+ *
+ * Matrix2x2i C = A + B;
+ * \endcode
  */
 template<size_t _rows, size_t _cols, typename T> static
 Matrix<_rows, _cols, T> operator + (const Matrix<_rows, _cols, T> &matrix1,
@@ -723,8 +740,49 @@ Matrix<_rows, _cols, T> operator + (const Matrix<_rows, _cols, T> &matrix1,
   return matrix += matrix2;
 }
 
+
 /*!
- * \brief Resta de dos matrices 
+ * \brief Resta de matrices 
+ * 
+ * \f[ C = A - B \f]
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * a1 & a2 & a3 \\
+ * a4 & a5 & a6 \\
+ * a7 & a8 & a9 \\
+ * \end{bmatrix}
+ *
+ * B=\begin{bmatrix}
+ * b1 & b2 & b3 \\
+ * b4 & b5 & b6 \\
+ * b7 & b8 & b9 \\
+ * \end{bmatrix}
+ *
+ * C=\begin{bmatrix}
+ * a1-b1 & a2-b2 & a3-b3 \\
+ * a4-b4 & a5-b5 & a6-b6 \\
+ * a7-b7 & a8-b8 & a9-b9 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * Matrix2x2i A;
+ * Matrix2x2i B;
+ *
+ * A.at(0, 0) = 1;
+ * A.at(0, 1) = 4;
+ * A.at(1, 0) = 3;
+ * A.at(1, 1) = 2;
+ *
+ * B.at(0, 0) = 4;
+ * B.at(0, 1) = 5;
+ * B.at(1, 0) = 2;
+ * B.at(1, 1) = 8;
+ *
+ * Matrix2x2i C = A - B;
+ * \endcode
  */
 template<size_t _rows, size_t _cols, typename T> static
 Matrix<_rows, _cols, T> operator - (const Matrix<_rows, _cols, T> &matrix1,
@@ -850,8 +908,12 @@ T lInfinityNorm(const Matrix<_rows, _cols, T> &matrix)
   return maxAbsElement;
 }
 
+/*! \} */ // end of Algebra
+
+/*! \} */ // end of Math
 
 } // Fin namespace math
+
 
 } // End namespace tl
 
