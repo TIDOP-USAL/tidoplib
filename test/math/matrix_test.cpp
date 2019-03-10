@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <tidop/math/matrix.h>
+#include <tidop/math/algebra/matrix.h>
 
 using namespace tl::math;
 
@@ -199,7 +199,7 @@ TEST_F(MatrixTest, inverse4x4)
 
 TEST_F(MatrixTest, inverse)
 {
-
+  ///TODO: Terminar método inverse
 }
 
 TEST_F(MatrixTest, transposeSquared)
@@ -331,4 +331,28 @@ TEST_F(MatrixTest, identity)
     }
   }
 }
+
+/* Operaciones unarias */
+
+TEST_F(MatrixTest, plus)
+{
+  Matrix3x3d mat = +_mat_3x3_d;
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(mat.at(r,c), _mat_3x3_d.at(r, c));
+    }
+  }
+}
+
+TEST_F(MatrixTest, minus)
+{
+  Matrix3x3d mat = -_mat_3x3_d;
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(-mat.at(r, c), _mat_3x3_d.at(r, c));
+    }
+  }
+}
+
+/* Operaciones binarias entre matrices */
 

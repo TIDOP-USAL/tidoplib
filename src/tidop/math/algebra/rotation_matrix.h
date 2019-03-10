@@ -2,7 +2,7 @@
 #define TL_MATH_ROTATION_MATRIX_H
 
 #include "config_tl.h"
-#include "tidop/math/matrix.h"
+#include "tidop/math/algebra/matrix.h"
 
 #include <vector>
 #include <array>

@@ -28,7 +28,7 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math Matem醫icas
+/*! \addtogroup Math Matem谩ticas
  *  \{
  */
 
@@ -41,14 +41,14 @@ namespace math
  */
 
 /*!
- * \brief Clase cuaterni髇 para la representaci髇 de orientaciones y rotaciones en el espacio
- * Los cuaterniones unitarios proporcionan una notaci髇 matem醫ica para representar 
+ * \brief Clase cuaterni贸n para la representaci贸n de orientaciones y rotaciones en el espacio
+ * Los cuaterniones unitarios proporcionan una notaci贸n matem谩tica para representar 
  * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con 
- * los 醤gulos de Euler, son m醩 simples de componer y evitan el problema del bloqueo 
- * del card醤. Comparados con las matrices de rotaci髇, son m醩 eficientes y m醩 
- * estables num閞icamente.
+ * los 谩ngulos de Euler, son m谩s simples de componer y evitan el problema del bloqueo 
+ * del card谩n. Comparados con las matrices de rotaci贸n, son m谩s eficientes y m谩s 
+ * estables num茅ricamente.
  *
- * Un cuaterni髇 se representa como:
+ * Un cuaterni贸n se representa como:
  * \f[ w+xi+yj+zk \f]
  */
 template<typename T>
@@ -85,8 +85,8 @@ public:
   Quaternion(const Quaternion<T> &quaternion);
 
   /*!
-   * \brief Constructor a partir de una matriz de rotaci髇
-   * Inicializa los cuaterniones con una matriz de rotaci髇
+   * \brief Constructor a partir de una matriz de rotaci贸n
+   * Inicializa los cuaterniones con una matriz de rotaci贸n
    * 
    * \f[ x^2 = (+r00 - r11 - r22 + 1)/4  \f]
    * \f[ y^2 = (-r00 + r11 - r22 + 1)/4  \f]
@@ -118,7 +118,7 @@ public:
    * The code extracts the row of maximum length, normalizing it to obtain
    * the result q.
    *
-   * \param[in] rot Matriz de rotaci髇
+   * \param[in] rot Matriz de rotaci贸n
    */
   Quaternion(const RotationMatrix<3, T> &rot);
 
@@ -128,15 +128,15 @@ public:
   ~Quaternion();
 
   /*!
-   * \brief Operador de asignaci髇
+   * \brief Operador de asignaci贸n
    * \param[in] quat Objeto que se copia
    */
   Quaternion &operator = (const Quaternion<T> &quaternion);
 
   /*!
-   * \brief Conjugado de un cuaterni髇
-   * El conjugado de cuaterni髇 invierte el signo de los componentes 
-   * "agregados" del cuaterni髇:
+   * \brief Conjugado de un cuaterni贸n
+   * El conjugado de cuaterni贸n invierte el signo de los componentes 
+   * "agregados" del cuaterni贸n:
    * \f[ q = w-xi-yj-zk \f]
    */
   Quaternion<T> conjugate() const;
@@ -149,7 +149,7 @@ public:
   T norm() const;
 
   /*!
-   * \brief Normaliza el cuaterni髇
+   * \brief Normaliza el cuaterni贸n
    */
   void normalize();
 
@@ -194,7 +194,7 @@ private:
 
 };
 
-/* Definici髇 de alias Matrix */
+/* Definici贸n de alias Matrix */
 
 typedef Quaternion<float>   Quaternionf;
 typedef Quaternion<double>  Quaterniond;
@@ -400,7 +400,7 @@ Quaternion<T> operator - (const Quaternion<T> &quaternion)
 /* Operaciones entre cuaterniones */
 
 /*!
- * \brief Multiplicaci髇 de cuaterniones
+ * \brief Multiplicaci贸n de cuaterniones
  * \f[ q1 = w1+x1*i+y1*j+z1*k \f]
  * \f[ q2 = w2+x2*i+y2*j+z2*k \f]
  * \f[ q1.q2 = \f]

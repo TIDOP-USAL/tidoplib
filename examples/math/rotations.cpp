@@ -4,7 +4,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-#include <tidop/math/matrix.h>
+#include <tidop/math/algebra/matrix.h>
 #include <tidop/math/algebra/quaternion.h>
 
 
