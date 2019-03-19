@@ -28,12 +28,12 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math Matemáticas
+/*! \addtogroup Math
  *  \{
  */
 
 
-/*! \addtogroup Algebra Algebra
+/*! \addtogroup Algebra
  *  
  * Algebra
  *
@@ -99,14 +99,10 @@ public:
    * \f[ x*y = (r01 + r10)/4 \f]
    * \f[ x*z = (r02 + r20)/4 \f]
    * \f[ y*z = (r12 + r21)/4 \f]
-   * [GTE_USE_MAT_VEC]
+   * 
    *   x*w = (r21 - r12)/4
    *   y*w = (r02 - r20)/4
    *   z*w = (r10 - r01)/4
-   * [GTE_USE_VEC_MAT]
-   *   x*w = (r12 - r21)/4
-   *   y*w = (r20 - r02)/4
-   *   z*w = (r01 - r10)/4
    * 
    * If Q is the 4x1 column vector (x,y,z,w), the previous equations give us
    *         +-                  -+
@@ -231,7 +227,6 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 template<typename T>
 Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
 {
-  //static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
 
   T r22 = rot.at(2,2);
   if (r22 <= static_cast<T>(0)) {
@@ -243,22 +238,14 @@ Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
       this->x = fourXSqr*inv4x;
       this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
       this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
-//#if defined(GTE_USE_MAT_VEC)
       this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
-//#else
-//      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
-//#endif
     } else {
       T fourYSqr = omr22 + dif10;
       T inv4y = static_cast<T>(0.5) / std::sqrt(fourYSqr);
       this->x = (rot.at(0, 1) + rot.at(1, 0))*inv4y;
       this->y = fourYSqr*inv4y;
       this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
-//#if defined(GTE_USE_MAT_VEC)
       this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
-//#else
-//      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
-//#endif
     }
   } else {
     T sum10 = rot.at(1, 1) + rot.at(0, 0);
@@ -269,23 +256,13 @@ Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
       this->x = (rot.at(0, 2) + rot.at(2, 0))*inv4z;
       this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
       this->z = fourZSqr*inv4z;
-//#if defined(GTE_USE_MAT_VEC)
       this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
-//#else
-//      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
-//#endif
     } else {
       T fourWSqr = opr22 + sum10;
       T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
-//#if defined(GTE_USE_MAT_VEC)
       this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
       this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
       this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
-//#else
-//      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
-//      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
-//      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
-//#endif
       this->w = fourWSqr*inv4w;
     }
   }

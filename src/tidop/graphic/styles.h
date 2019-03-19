@@ -186,7 +186,7 @@ public:
 
   /*!
    * \brief Establece el nombre o id de pluma
-   * \param[in] penname Nombre o id de pluma
+   * \param[in] name Nombre o id de pluma
    */
   void setName(Name name);
 

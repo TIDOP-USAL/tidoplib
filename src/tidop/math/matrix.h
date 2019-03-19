@@ -40,6 +40,12 @@ namespace math
  *  \{
  */
 
+//template <size_t _rows, size_t _cols, typename T = double, typename Enable = void>
+//class Matrix;
+//
+//template <size_t _rows, size_t _cols, typename T>
+//class Matrix<_rows, _cols, T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
+//{
 
 /*!
  * \brief Clase matriz 
@@ -171,7 +177,7 @@ public:
    * \return cofactor
    */
   template<typename Enable = typename std::enable_if<_rows == _cols>::type>
-  T cofactor(int r, int c) const;
+  T cofactor(size_t r, size_t c) const;
 
   /*!
    * \brief Primero menor
@@ -192,7 +198,7 @@ public:
    * \return Primero menor
    */
   template<typename Enable = typename std::enable_if<_rows == _cols>::type>
-  T firstMinor(int r, int c) const;
+  T firstMinor(size_t r, size_t c) const;
 
   /*!
    * \brief Construye una matriz con ceros
@@ -247,7 +253,7 @@ Matrix<_rows, _cols, T>::Matrix()
   : mRows(_rows),
     mCols(_cols)
 {
-  T ini_val = -std::numeric_limits<double>().max();
+  T ini_val = -std::numeric_limits<T>().max();
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       this->mMatrix[r][c] = ini_val;
@@ -413,7 +419,7 @@ T Matrix<_rows, _cols, T>::determinant() const
 
 template<size_t _rows, size_t _cols, typename T> 
 template<typename Enable>
-T Matrix<_rows, _cols, T>::cofactor(int r, int c) const
+T Matrix<_rows, _cols, T>::cofactor(size_t r, size_t c) const
 {
   int sign = ((r + c) % 2 == 0) ? 1 : -1;
   return sign * this->firstMinor(r, c);
@@ -421,7 +427,7 @@ T Matrix<_rows, _cols, T>::cofactor(int r, int c) const
 
 template<size_t _rows, size_t _cols, typename T> 
 template<typename Enable>
-T Matrix<_rows, _cols, T>::firstMinor(int r, int c) const
+T Matrix<_rows, _cols, T>::firstMinor(size_t r, size_t c) const
 {
   int i = 0, j = 0; 
   Matrix<_rows-1, _cols-1, T> matrix;

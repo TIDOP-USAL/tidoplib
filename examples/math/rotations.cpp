@@ -90,8 +90,6 @@ int main(int argc, char** argv)
   mat.determinant();
   math::Matrix<3, 3, double> inv = mat.inverse();
 
-
-
 #endif
 
   //math::Quaternionf q_uninitialized ;
