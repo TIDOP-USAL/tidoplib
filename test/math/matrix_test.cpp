@@ -115,6 +115,70 @@ TEST_F(MatrixTest, DefaultConstructor)
 
 }
 
+TEST_F(MatrixTest, iteratorList)
+{
+
+  Matrix<2, 2, int> it_list2 {{
+    {
+      {0, 1},
+      {2, 3}
+    }
+  }};
+
+  EXPECT_EQ(0, it_list2.at(0, 0));
+  EXPECT_EQ(1, it_list2.at(0, 1));
+  EXPECT_EQ(2, it_list2.at(1, 0));
+  EXPECT_EQ(3, it_list2.at(1, 1));
+
+  Matrix<2, 2, int> it_list3 = {
+    {
+      { 0, 1 },
+      {2, 3}
+    }
+  };
+
+  EXPECT_EQ(0, it_list3.at(0, 0));
+  EXPECT_EQ(1, it_list3.at(0, 1));
+  EXPECT_EQ(2, it_list3.at(1, 0));
+  EXPECT_EQ(3, it_list3.at(1, 1));
+
+  Matrix<2, 3, int> it_list2x3 = {
+    {
+      {0, 1, 2},
+      {3, 4, 5}
+    }
+  };
+
+  EXPECT_EQ(0, it_list2x3.at(0, 0));
+  EXPECT_EQ(1, it_list2x3.at(0, 1));
+  EXPECT_EQ(2, it_list2x3.at(0, 2));
+  EXPECT_EQ(3, it_list2x3.at(1, 0));
+  EXPECT_EQ(4, it_list2x3.at(1, 1));
+  EXPECT_EQ(5, it_list2x3.at(1, 2));
+
+  Matrix<3, 3, int> it_list3x3 = {
+    {
+      {0, 1, 2},
+      {3, 4, 5},
+      {6, 7, 8}
+    }
+  };
+
+  EXPECT_EQ(0, it_list3x3.at(0, 0));
+  EXPECT_EQ(1, it_list3x3.at(0, 1));
+  EXPECT_EQ(2, it_list3x3.at(0, 2));
+
+  //Matrix<5, 5, int> it_list5 = {
+  //  {
+  //    {6, 8,6,7,3},
+  //    {9,6,2,3,3},
+  //    {8,3,2,3,3},
+  //    {5,3,3,7,6},
+  //    {5,5,7,4,7}
+  //  }
+  //};
+}
+
 TEST_F(MatrixTest, at)
 {
   EXPECT_EQ(1.5, _mat_3x3_d.at(0, 0));

@@ -14,6 +14,7 @@ add_library(tl_math ${LIB_TYPE}
             algebra/rotation_matrix.h
             algebra/vectors.h
 			algebra/matrix.h
+			algebra/vector.h
 )
 
 # Añade el proyecto a la carpeta 'modules'

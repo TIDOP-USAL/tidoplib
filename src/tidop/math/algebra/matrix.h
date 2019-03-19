@@ -80,7 +80,7 @@ public:
    */
   Matrix(const std::array<std::array<T, _cols>, _rows> &mat);
   
-  //Matrix(std::initializer_list<std::initializer_list<T>> mat);
+  Matrix(std::initializer_list<std::initializer_list<T>> mat);
 
   /*!
    * \brief destructora
@@ -319,6 +319,34 @@ Matrix<_rows, _cols, T>::Matrix(const std::array<std::array<T, _cols>, _rows> &m
     mRows(_rows),
     mCols(_cols)
 {
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> mat)
+  : mRows(_rows),
+    mCols(_cols)
+{
+  TL_TODO("ver por que peta con mas de 3 filas")
+  size_t n_rows = mat.size();
+  auto it_row = mat.begin();
+  for (size_t r = 0; r < mRows; r++) {
+    if (r <= n_rows){
+      auto it_col = it_row->begin();
+      for (size_t c = 0; c < mCols; c++) {
+        if (r <= n_rows){
+          this->mMatrix[r][c] = *it_col++;
+        } else{
+          this->mMatrix[r][c] = T{0};
+        }
+      }
+      it_row++;
+    } else{
+      for (size_t c = 0; c < mCols; c++) {
+        this->mMatrix[r][c] = T{0};
+      }
+    }
+  }
+
 }
 
 //template<size_t _rows, size_t _cols, typename T> inline
