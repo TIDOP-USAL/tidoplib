@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <array>
+#include <valarray>
 
 namespace tl
 {
@@ -51,6 +52,7 @@ class Matrix
 
 protected:
 
+  /// std::valarray???
   std::array<std::array<T, _cols>, _rows> mMatrix;
   size_t mRows;
   size_t mCols;
@@ -152,7 +154,6 @@ public:
    * Matrix<2, 2> inv_mat = mat_2x2.inverse(&invertible);
    * \endcode
    */
-  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   Matrix inverse(bool *invertibility = nullptr) const;
 
   /*!
@@ -166,21 +167,18 @@ public:
    * \f[ adj(A) = C^T \f]
    * \return Matriz de adjuntos
    */
-  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
-  Matrix adjugate() const; 
+  Matrix adjugate() const;
 
   /*!
    * \brief Calcula la matriz cofactor
    * \return Matriz cofactor
    */
-  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   Matrix cofactorMatrix() const;
 
   /*!
    * \brief Determinante de la matriz
    * \return Determinante
    */
-  template<typename Enable= typename std::enable_if<_rows == _cols>::type>
   T determinant() const;
 
   /*!
@@ -190,7 +188,6 @@ public:
    * \f[ (-)^{r+j} \f]
    * \return cofactor
    */
-  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   T cofactor(int r, int c) const;
 
   /*!
@@ -211,7 +208,6 @@ public:
    *
    * \return Primero menor
    */
-  template<typename Enable = typename std::enable_if<_rows == _cols>::type>
   T firstMinor(int r, int c) const;
 
   /*!
@@ -288,7 +284,7 @@ Matrix<_rows, _cols, T>::Matrix()
   : mRows(_rows),
     mCols(_cols)
 {
-  T ini_val = -std::numeric_limits<double>().max();
+  T ini_val = -std::numeric_limits<T>().max();
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       this->mMatrix[r][c] = ini_val;
@@ -382,9 +378,9 @@ size_t Matrix<_rows, _cols, T>::cols() const
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-template<typename Enable>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) const
 {
+  static_assert(_rows == _cols, "Non-Square Matrix");
   Matrix<_rows, _cols, T> matrix;
 
   if (mMatrix.size() == 2) {
@@ -413,17 +409,17 @@ Matrix<_cols, _rows, T> Matrix<_rows, _cols, T>::transpose() const
 }
 
 template<size_t _rows, size_t _cols, typename T>
-template<typename Enable>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjugate() const
 {
-  Matrix<_rows, _cols, T> matrix = this.cofactorMatrix();
+  static_assert(_rows == _cols, "Non-Square Matrix");
+  Matrix<_rows, _cols, T> matrix = this->cofactorMatrix();
   return matrix.transpose();
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-template<typename Enable>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 {
+  static_assert(_rows == _cols, "Non-Square Matrix");
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
@@ -434,9 +430,10 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-template<typename Enable>
 T Matrix<_rows, _cols, T>::determinant() const
 {
+  static_assert(_rows == _cols, "Non-Square Matrix");
+
   T d = static_cast<T>(1);
  
   if (mMatrix.size() == 2) {
@@ -453,17 +450,18 @@ T Matrix<_rows, _cols, T>::determinant() const
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-template<typename Enable>
 T Matrix<_rows, _cols, T>::cofactor(int r, int c) const
 {
+  static_assert(_rows == _cols, "Non-Square Matrix");
   int sign = ((r + c) % 2 == 0) ? 1 : -1;
   return sign * this->firstMinor(r, c);
 }
 
 template<size_t _rows, size_t _cols, typename T> 
-template<typename Enable>
 T Matrix<_rows, _cols, T>::firstMinor(int r, int c) const
 {
+  static_assert(_rows == _cols, "Non-Square Matrix");
+
   int i = 0, j = 0; 
   Matrix<_rows-1, _cols-1, T> matrix;
   for (size_t row = 0; row < _rows; row++) {
@@ -508,7 +506,6 @@ template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::identity()
 {
   Matrix<_rows, _cols, T> matrix;
-  int min = _rows <= _cols ? _rows : _cols;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       if (r == c) {
@@ -606,7 +603,6 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse2x2(bool *invertibility)
     matrix.at(1, 1) =  mMatrix[0][0] / det;
     if (invertibility) *invertibility = true;
   } else {
-    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
   return matrix;
@@ -635,7 +631,6 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse3x3(bool *invertibility)
     matrix.at(2, 2) = (mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0]) / det;
     if (invertibility) *invertibility = true;
   } else {
-    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
 
@@ -682,7 +677,6 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse4x4(bool *invertibility)
 
     if (invertibility) *invertibility = true;
   } else {
-    //matrix = Matrix<_rows, _cols, T>::zero();
     if (invertibility) *invertibility = false;
   }
 
@@ -781,6 +775,17 @@ Matrix<_rows, _cols, T> operator + (const Matrix<_rows, _cols, T> &matrix1,
   return matrix += matrix2;
 }
 
+template<size_t _rows, size_t _cols, typename T> static
+Matrix<_rows, _cols, T> &operator += (Matrix<_rows, _cols, T> &matrix1,
+                                      const Matrix<_rows, _cols, T> &matrix2)
+{
+  for (int r = 0; r < _rows; r++) {
+    for (int c = 0; c < _cols; c++) {
+      matrix1.at(r, c) += matrix2.at(r, c);
+    }
+  }
+  return matrix1;
+}
 
 /*!
  * \brief Resta de matrices 
@@ -831,6 +836,73 @@ Matrix<_rows, _cols, T> operator - (const Matrix<_rows, _cols, T> &matrix1,
 {
   Matrix<_rows, _cols, T> matrix = matrix1;
   return matrix -= matrix2;
+}
+
+template<size_t _rows, size_t _cols, typename T> static
+Matrix<_rows, _cols, T> &operator -= (Matrix<_rows, _cols, T> &matrix1,
+                                      const Matrix<_rows, _cols, T> &matrix2)
+{
+  for (int r = 0; r < _rows; r++) {
+    for (int c = 0; c < _cols; c++) {
+      matrix1.at(r, c) -= matrix2.at(r, c);
+    }
+  }
+  return matrix1;
+}
+
+/*!
+ * \brief Multiplicación de matrices
+ *
+ * \f[ C = A * B \f]
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * a1 & a2  \\
+ * a3 & a4  \\
+ * \end{bmatrix}
+ *
+ * B=\begin{bmatrix}
+ * b1 & b2 & b3 \\
+ * b4 & b5 & b6 \\
+ * \end{bmatrix}
+ *
+ * C=\begin{bmatrix}
+ * a1*b1+a2*b4 & a1*b2+a2*b5 & a1*b3+a2*b6 \\
+ * a3*b1+a4*b4 & a3*b2+a4*b5 & a3*b3+a4*b6 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * Matrix2x2i A;
+ * Matrix2x2i B;
+ *
+ * A.at(0, 0) = 1;
+ * A.at(0, 1) = 4;
+ * A.at(1, 0) = 3;
+ * A.at(1, 1) = 2;
+ *
+ * B.at(0, 0) = 4;
+ * B.at(0, 1) = 5;
+ * B.at(1, 0) = 2;
+ * B.at(1, 1) = 8;
+ *
+ * Matrix2x2i C = A * B;
+ * \endcode
+ */
+template<size_t _rows, size_t _dim, size_t _cols, typename T>  static
+Matrix<_rows, _cols, T> operator * (const Matrix<_rows, _dim, T> &matrix1,
+                                    const Matrix<_dim, _cols, T> &matrix2)
+{
+  Matrix<_rows, _cols, T> matrix = Matrix<_rows, _cols, T>::zero();
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t c = 0; c < _cols; c++) {
+      for (size_t i = 0; i < _dim; i++) {
+        matrix.at(r, c) += matrix1.at(r, i) * matrix2.at(i, c);
+      }
+    }
+  }
+  return matrix;
 }
 
 /*!
@@ -912,6 +984,17 @@ Matrix<_rows, _cols, T> operator * (T scalar, const Matrix<_rows, _cols, T> &mat
   return _matrix *= scalar;
 }
 
+template<size_t _rows, size_t _cols, typename T> static
+Matrix<_rows, _cols, T> &operator *= (Matrix<_rows, _cols, T> &matrix, T scalar)
+{
+  for (int r = 0; r < _rows; r++) {
+    for (int c = 0; c < _cols; c++) {
+      matrix.at(r, c) *= scalar;
+    }
+  }
+  return matrix;
+}
+
 /*!
  * \brief División de una matriz por un escalar
  *
@@ -951,97 +1034,6 @@ Matrix<_rows, _cols, T> operator / (const Matrix<_rows, _cols, T> &matrix, T sca
   return _matrix /= scalar;
 }
 
-/*!
- * \brief Multiplicación de matrices
- * 
- * \f[ C = A * B \f]
- *
- * \f[
- * A=\begin{bmatrix}
- * a1 & a2  \\
- * a3 & a4  \\
- * \end{bmatrix}
- *
- * B=\begin{bmatrix}
- * b1 & b2 & b3 \\
- * b4 & b5 & b6 \\
- * \end{bmatrix}
- *
- * C=\begin{bmatrix}
- * a1*b1+a2*b4 & a1*b2+a2*b5 & a1*b3+a2*b6 \\
- * a3*b1+a4*b4 & a3*b2+a4*b5 & a3*b3+a4*b6 \\
- * \end{bmatrix}
- * \f]
- *
- * <h4>Ejemplo</h4>
- * \code
- * Matrix2x2i A;
- * Matrix2x2i B;
- *
- * A.at(0, 0) = 1;
- * A.at(0, 1) = 4;
- * A.at(1, 0) = 3;
- * A.at(1, 1) = 2;
- *
- * B.at(0, 0) = 4;
- * B.at(0, 1) = 5;
- * B.at(1, 0) = 2;
- * B.at(1, 1) = 8;
- *
- * Matrix2x2i C = A * B;
- * \endcode
- */
-template<size_t _rows, size_t _dim, size_t _cols, typename T>  static
-Matrix<_rows, _cols, T> operator * (const Matrix<_rows, _dim, T> &matrix1,
-                                    const Matrix<_dim, _cols, T> &matrix2)
-{
-  Matrix<_rows, _cols, T> matrix = Matrix<_rows, _cols, T>::zeros();
-  for (size_t r = 0; r < _rows; r++) {
-    for (size_t c = 0; c < _cols; c++) {
-      for (size_t i = 0; i < _dim; i++) {
-        matrix.at(r, c) += matrix1.at(r, i) * matrix2.at(i, c);
-      }
-    }
-  }
-  return matrix;
-}
-
-
-template<size_t _rows, size_t _cols, typename T> static
-Matrix<_rows, _cols, T> &operator += (Matrix<_rows, _cols, T> &matrix1,
-                                      const Matrix<_rows, _cols, T> &matrix2)
-{
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      matrix1.at(r, c) += matrix2.at(r, c);
-    }
-  }
-  return matrix1;
-}
-
-template<size_t _rows, size_t _cols, typename T> static
-Matrix<_rows, _cols, T> &operator -= (Matrix<_rows, _cols, T> &matrix1,
-                                      const Matrix<_rows, _cols, T> &matrix2)
-{
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      matrix1.at(r, c) -= matrix2.at(r, c);
-    }
-  }
-  return matrix1;
-}
-
-template<size_t _rows, size_t _cols, typename T> static
-Matrix<_rows, _cols, T> &operator *= (Matrix<_rows, _cols, T> &matrix, T scalar)
-{
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      matrix.at(r, c) *= scalar;
-    }
-  }
-  return matrix;
-}
-
 template<size_t _rows, size_t _cols, typename T> static
 Matrix<_rows, _cols, T> &operator /= (Matrix<_rows, _cols, T> &matrix, T scalar)
 {
@@ -1052,51 +1044,11 @@ Matrix<_rows, _cols, T> &operator /= (Matrix<_rows, _cols, T> &matrix, T scalar)
       }
     }
   } else {
-    matrix = Matrix::zeros();
+    matrix = Matrix<_rows, _cols, T>::zero();
   }
   return matrix;
 }
 
-// Geometric operations.
-
-template<size_t _rows, size_t _cols, typename T>
-T l1Norm(const Matrix<_rows, _cols, T> &matrix)
-{
-  T sum{};
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      sum += std::abs(matrix.at(r, c));
-    }
-  }
-  return sum;
-}
-
-template<size_t _rows, size_t _cols, typename T>
-T l2Norm(const Matrix<_rows, _cols, T> &matrix)
-{
-  T sum{};
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      sum += matrix.at(r, c) * matrix.at(r, c);
-    }
-  }
-  return std::sqrt(sum);
-}
-
-template<size_t _rows, size_t _cols, typename T>
-T lInfinityNorm(const Matrix<_rows, _cols, T> &matrix)
-{
-  T maxAbsElement{};
-  for (int r = 0; r < _rows; r++) {
-    for (int c = 0; c < _cols; c++) {
-      T absElement = std::abs(matrix.at(r, c));
-      if (absElement > maxAbsElement) {
-        maxAbsElement = absElement;
-      }
-    }
-  }
-  return maxAbsElement;
-}
 
 /*! \} */ // end of Algebra
 
