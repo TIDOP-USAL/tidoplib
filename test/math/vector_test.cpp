@@ -87,3 +87,12 @@ TEST_F(VectorTest, value_at)
   EXPECT_EQ(1.1, _vect_2_d[0]);
   EXPECT_EQ(3.5, _vect_2_d[1]);
 }
+
+TEST_F(VectorTest, zero)
+{
+  Vector<3, int> _zero = Vector<3, int>::zero();
+
+  EXPECT_EQ(0, _zero[0]);
+  EXPECT_EQ(0, _zero[1]);
+  EXPECT_EQ(0, _zero[2]);
+}

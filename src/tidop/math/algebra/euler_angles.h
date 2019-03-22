@@ -20,14 +20,14 @@
 #include <vector>
 #include <array>
 
-namespace TL
+namespace tl
 {
 
 namespace math
 {
 
 /*!
- * \brief ¡ngulos de Euler
+ * \brief √Ångulos de Euler
  */
 template<typename T>
 class EulerAngles
@@ -35,28 +35,28 @@ class EulerAngles
 
 public:
 
-  double omega;
-  double phi;
-  double kappa;
-  double axes;
-
   enum class Axes
   {
     //Euler angles
-    zxz, 
+    zxz,
     xyx,
     yzy,
     zyz,
     xzx,
     yxy,
-    //TaitñBryan angles 
-    xyz, 
+    //Tait¬ñBryan angles
+    xyz,
     yzx,
     zxy,
     xzy,
     zyx,
     yxz
   };
+
+  double omega;
+  double phi;
+  double kappa;
+  Axes axes;
 
 public:
 
@@ -82,7 +82,7 @@ public:
   ~EulerAngles();
 
   /*!
-   * \brief Operador de asignaciÛn
+   * \brief Operador de asignaci√≥n
    * \param[in] eulerAngles Objeto que se copia
    */
   EulerAngles &operator = (const EulerAngles<T> &eulerAngles);
@@ -134,6 +134,6 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
 
 } // Fin namespace math
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_MATH_EULER_ANGLES_H
