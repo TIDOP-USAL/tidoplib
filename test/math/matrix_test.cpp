@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <tidop/math/matrix.h>
+#include <tidop/math/algebra/matrix.h>
 
 using namespace tl::math;
 
@@ -115,6 +115,70 @@ TEST_F(MatrixTest, DefaultConstructor)
 
 }
 
+TEST_F(MatrixTest, iteratorList)
+{
+
+  Matrix<2, 2, int> it_list2 {{
+    {
+      {0, 1},
+      {2, 3}
+    }
+  }};
+
+  EXPECT_EQ(0, it_list2.at(0, 0));
+  EXPECT_EQ(1, it_list2.at(0, 1));
+  EXPECT_EQ(2, it_list2.at(1, 0));
+  EXPECT_EQ(3, it_list2.at(1, 1));
+
+  Matrix<2, 2, int> it_list3 = {
+    {
+      { 0, 1 },
+      {2, 3}
+    }
+  };
+
+  EXPECT_EQ(0, it_list3.at(0, 0));
+  EXPECT_EQ(1, it_list3.at(0, 1));
+  EXPECT_EQ(2, it_list3.at(1, 0));
+  EXPECT_EQ(3, it_list3.at(1, 1));
+
+  Matrix<2, 3, int> it_list2x3 = {
+    {
+      {0, 1, 2},
+      {3, 4, 5}
+    }
+  };
+
+  EXPECT_EQ(0, it_list2x3.at(0, 0));
+  EXPECT_EQ(1, it_list2x3.at(0, 1));
+  EXPECT_EQ(2, it_list2x3.at(0, 2));
+  EXPECT_EQ(3, it_list2x3.at(1, 0));
+  EXPECT_EQ(4, it_list2x3.at(1, 1));
+  EXPECT_EQ(5, it_list2x3.at(1, 2));
+
+  //Matrix<3, 3, int> it_list3x3 = {
+  //  {
+  //    {0, 1, 2},
+  //    {3, 4, 5},
+  //    {6, 7, 8}
+  //  }
+  //};
+
+  //EXPECT_EQ(0, it_list3x3.at(0, 0));
+  //EXPECT_EQ(1, it_list3x3.at(0, 1));
+  //EXPECT_EQ(2, it_list3x3.at(0, 2));
+
+  //Matrix<5, 5, int> it_list5 = {
+  //  {
+  //    {6, 8,6,7,3},
+  //    {9,6,2,3,3},
+  //    {8,3,2,3,3},
+  //    {5,3,3,7,6},
+  //    {5,5,7,4,7}
+  //  }
+  //};
+}
+
 TEST_F(MatrixTest, at)
 {
   EXPECT_EQ(1.5, _mat_3x3_d.at(0, 0));
@@ -193,13 +257,13 @@ TEST_F(MatrixTest, inverse4x4)
   EXPECT_NEAR( 0.018059, inv_mat.at(2, 3), 0.01);
   EXPECT_NEAR(-0.007974, inv_mat.at(3, 0), 0.01);
   EXPECT_NEAR(-0.001035, inv_mat.at(3, 1), 0.01);
-  EXPECT_NEAR( 0.034578, inv_mat.at(3, 2), 0.01);	
+  EXPECT_NEAR( 0.034578, inv_mat.at(3, 2), 0.01);
   EXPECT_NEAR(-0.036946, inv_mat.at(3, 3), 0.01);
 }
 
 TEST_F(MatrixTest, inverse)
 {
-
+  ///TODO: Terminar método inverse
 }
 
 TEST_F(MatrixTest, transposeSquared)
@@ -332,3 +396,163 @@ TEST_F(MatrixTest, identity)
   }
 }
 
+/* Operaciones unarias */
+
+TEST_F(MatrixTest, plus)
+{
+  Matrix3x3d mat = +_mat_3x3_d;
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(mat.at(r,c), _mat_3x3_d.at(r, c));
+    }
+  }
+}
+
+TEST_F(MatrixTest, minus)
+{
+  Matrix3x3d mat = -_mat_3x3_d;
+  for (size_t r = 0; r < mat_identity.rows(); r++){
+    for (size_t c = 0; c < mat_identity.cols(); c++){
+      EXPECT_EQ(-mat.at(r, c), _mat_3x3_d.at(r, c));
+    }
+  }
+}
+
+/* Operaciones binarias entre matrices */
+
+/// Suma o adición de matrices
+
+TEST_F(MatrixTest, addition)
+{
+  Matrix3x3d mat = mat_ones + _mat_3x3_d;
+
+  EXPECT_EQ(2.5, mat.at(0, 0));
+  EXPECT_EQ(1.0, mat.at(0, 1));
+  EXPECT_EQ(3.5, mat.at(0, 2));
+  EXPECT_EQ(2.0, mat.at(1, 0));
+  EXPECT_EQ(2.0, mat.at(1, 1));
+  EXPECT_EQ(2.2, mat.at(1, 2));
+  EXPECT_EQ(2.3, mat.at(2, 0));
+  EXPECT_EQ(3.6, mat.at(2, 1));
+  EXPECT_EQ(1.3, mat.at(2, 2));
+
+  mat_ones += _mat_3x3_d;
+
+  EXPECT_EQ(2.5, mat_ones.at(0, 0));
+  EXPECT_EQ(1.0, mat_ones.at(0, 1));
+  EXPECT_EQ(3.5, mat_ones.at(0, 2));
+  EXPECT_EQ(2.0, mat_ones.at(1, 0));
+  EXPECT_EQ(2.0, mat_ones.at(1, 1));
+  EXPECT_EQ(2.2, mat_ones.at(1, 2));
+  EXPECT_EQ(2.3, mat_ones.at(2, 0));
+  EXPECT_EQ(3.6, mat_ones.at(2, 1));
+  EXPECT_EQ(1.3, mat_ones.at(2, 2));
+}
+
+/// Resta de matrices
+
+TEST_F(MatrixTest, subtraction)
+{
+  Matrix3x3d mat = mat_identity - _mat_3x3_d;
+
+  EXPECT_EQ(-0.5, mat.at(0, 0));
+  EXPECT_EQ( 0.0, mat.at(0, 1));
+  EXPECT_EQ(-2.5, mat.at(0, 2));
+  EXPECT_EQ(-1.0, mat.at(1, 0));
+  EXPECT_EQ( 0.0, mat.at(1, 1));
+  EXPECT_EQ(-1.2, mat.at(1, 2));
+  EXPECT_EQ(-1.3, mat.at(2, 0));
+  EXPECT_EQ(-2.6, mat.at(2, 1));
+  EXPECT_EQ( 0.7, mat.at(2, 2));
+
+  mat_identity -= _mat_3x3_d;
+
+  EXPECT_EQ(-0.5, mat_identity.at(0, 0));
+  EXPECT_EQ( 0.0, mat_identity.at(0, 1));
+  EXPECT_EQ(-2.5, mat_identity.at(0, 2));
+  EXPECT_EQ(-1.0, mat_identity.at(1, 0));
+  EXPECT_EQ( 0.0, mat_identity.at(1, 1));
+  EXPECT_EQ(-1.2, mat_identity.at(1, 2));
+  EXPECT_EQ(-1.3, mat_identity.at(2, 0));
+  EXPECT_EQ(-2.6, mat_identity.at(2, 1));
+  EXPECT_EQ( 0.7, mat_identity.at(2, 2));
+}
+
+/// Multiplicación de matrices
+
+TEST_F(MatrixTest, multiplication)
+{
+  Matrix<2,3,int> mat = _mat_2x3_i * _cofactor_matrix;
+
+  EXPECT_EQ(12, mat.at(0, 0));
+  EXPECT_EQ(44, mat.at(0, 1));
+  EXPECT_EQ(94, mat.at(0, 2));
+  EXPECT_EQ(11, mat.at(1, 0));
+  EXPECT_EQ(42, mat.at(1, 1));
+  EXPECT_EQ(69, mat.at(1, 2));
+
+}
+
+/// Multiplicación de una matriz por un escalar
+
+TEST_F(MatrixTest, MatrixScalar)
+{
+  Matrix<2,3,int> mat = _mat_2x3_i * 10;
+
+  EXPECT_EQ(60, mat.at(0, 0));
+  EXPECT_EQ(80, mat.at(0, 1));
+  EXPECT_EQ(60, mat.at(0, 2));
+  EXPECT_EQ(90, mat.at(1, 0));
+  EXPECT_EQ(60, mat.at(1, 1));
+  EXPECT_EQ(20, mat.at(1, 2));
+
+  _mat_2x3_i *= 10;
+
+  EXPECT_EQ(60, _mat_2x3_i.at(0, 0));
+  EXPECT_EQ(80, _mat_2x3_i.at(0, 1));
+  EXPECT_EQ(60, _mat_2x3_i.at(0, 2));
+  EXPECT_EQ(90, _mat_2x3_i.at(1, 0));
+  EXPECT_EQ(60, _mat_2x3_i.at(1, 1));
+  EXPECT_EQ(20, _mat_2x3_i.at(1, 2));
+}
+
+/// Multiplicación de un escalar por una matriz
+
+TEST_F(MatrixTest, ScalarMatrix)
+{
+  Matrix<2,3,int> mat = 10 * _mat_2x3_i;
+
+  EXPECT_EQ(60, mat.at(0, 0));
+  EXPECT_EQ(80, mat.at(0, 1));
+  EXPECT_EQ(60, mat.at(0, 2));
+  EXPECT_EQ(90, mat.at(1, 0));
+  EXPECT_EQ(60, mat.at(1, 1));
+  EXPECT_EQ(20, mat.at(1, 2));
+}
+
+// División de una matriz por un escalar
+
+TEST_F(MatrixTest, DivMatrixScalar)
+{
+  Matrix<3,3,double> mat = _mat_3x3_d / 10.;
+
+  _mat_3x3_d.at(0, 0) = 1.5;
+  _mat_3x3_d.at(0, 1) = 0.0;
+  _mat_3x3_d.at(0, 2) = 2.5;
+  _mat_3x3_d.at(1, 0) = 1.0;
+  _mat_3x3_d.at(1, 1) = 1.0;
+  _mat_3x3_d.at(1, 2) = 1.2;
+  _mat_3x3_d.at(2, 0) = 1.3;
+  _mat_3x3_d.at(2, 1) = 2.6;
+  _mat_3x3_d.at(2, 2) = 0.3;
+
+  EXPECT_EQ(.15, mat.at(0, 0));
+  EXPECT_EQ(.0, mat.at(0, 1));
+  EXPECT_EQ(.25, mat.at(0, 2));
+  EXPECT_EQ(.10, mat.at(1, 0));
+  EXPECT_EQ(.10, mat.at(1, 1));
+  EXPECT_EQ(.12, mat.at(1, 2));
+  EXPECT_EQ(.13, mat.at(2, 0));
+  EXPECT_EQ(.26, mat.at(2, 1));
+  EXPECT_EQ(.03, mat.at(2, 2));
+}

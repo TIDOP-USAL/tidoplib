@@ -398,6 +398,6 @@ double Ellipse<T>::length() const
 
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GEOM_CURVES_H

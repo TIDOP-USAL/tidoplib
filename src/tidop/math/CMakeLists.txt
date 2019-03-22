@@ -3,7 +3,6 @@
 add_library(tl_math ${LIB_TYPE}
             angles.cpp
             angles.h
-            matrix.h
             statistics.cpp
             statistics.h
             mathutils.cpp
@@ -14,6 +13,8 @@ add_library(tl_math ${LIB_TYPE}
             algebra/rotations.h
             algebra/rotation_matrix.h
             algebra/vectors.h
+            algebra/matrix.h
+			algebra/vector.h
 )
 
 # Añade el proyecto a la carpeta 'modules'

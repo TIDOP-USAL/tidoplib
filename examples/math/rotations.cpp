@@ -4,7 +4,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-#include <tidop/math/matrix.h>
+#include <tidop/math/algebra/matrix.h>
 #include <tidop/math/algebra/quaternion.h>
 
 
@@ -103,7 +103,7 @@ int main(int argc, char** argv)
   math::Quaternionf dasdasd(0.f, 1.f, -3.f, 2.f);
   dasdasd.normalize();
 
-  math::Matrix3x3i _cofactor_matrix;
+  math::Matrix<3,3,int> _cofactor_matrix;
   _cofactor_matrix.at(0, 0) = 1;
   _cofactor_matrix.at(0, 1) = 2;
   _cofactor_matrix.at(0, 2) = 3;
@@ -113,6 +113,8 @@ int main(int argc, char** argv)
   _cofactor_matrix.at(2, 0) = 1;
   _cofactor_matrix.at(2, 1) = 0;
   _cofactor_matrix.at(2, 2) = 6;
+
+
 
   int fm = _cofactor_matrix.firstMinor(1, 1);
 

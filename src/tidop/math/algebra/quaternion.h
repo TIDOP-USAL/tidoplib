@@ -41,14 +41,14 @@ namespace math
  */
 
 /*!
- * \brief Clase cuaterni髇 para la representaci髇 de orientaciones y rotaciones en el espacio
- * Los cuaterniones unitarios proporcionan una notaci髇 matem醫ica para representar 
+ * \brief Clase cuaterni贸n para la representaci贸n de orientaciones y rotaciones en el espacio
+ * Los cuaterniones unitarios proporcionan una notaci贸n matem谩tica para representar 
  * las orientaciones y las rotaciones de objetos en tres dimensiones. Comparados con 
- * los 醤gulos de Euler, son m醩 simples de componer y evitan el problema del bloqueo 
- * del card醤. Comparados con las matrices de rotaci髇, son m醩 eficientes y m醩 
- * estables num閞icamente.
+ * los 谩ngulos de Euler, son m谩s simples de componer y evitan el problema del bloqueo 
+ * del card谩n. Comparados con las matrices de rotaci贸n, son m谩s eficientes y m谩s 
+ * estables num茅ricamente.
  *
- * Un cuaterni髇 se representa como:
+ * Un cuaterni贸n se representa como:
  * \f[ w+xi+yj+zk \f]
  */
 template<typename T>
@@ -85,8 +85,8 @@ public:
   Quaternion(const Quaternion<T> &quaternion);
 
   /*!
-   * \brief Constructor a partir de una matriz de rotaci髇
-   * Inicializa los cuaterniones con una matriz de rotaci髇
+   * \brief Constructor a partir de una matriz de rotaci贸n
+   * Inicializa los cuaterniones con una matriz de rotaci贸n
    * 
    * \f[ x^2 = (+r00 - r11 - r22 + 1)/4  \f]
    * \f[ y^2 = (-r00 + r11 - r22 + 1)/4  \f]
@@ -114,9 +114,9 @@ public:
    * The code extracts the row of maximum length, normalizing it to obtain
    * the result q.
    *
-   * \param[in] rot Matriz de rotaci髇
+   * \param[in] rot Matriz de rotaci贸n
    */
-  Quaternion(const RotationMatrix<3, T> &rot);
+  //Quaternion(const RotationMatrix<T> &rot);
 
   /*!
    * \brief destructora
@@ -124,15 +124,15 @@ public:
   ~Quaternion();
 
   /*!
-   * \brief Operador de asignaci髇
+   * \brief Operador de asignaci贸n
    * \param[in] quat Objeto que se copia
    */
   Quaternion &operator = (const Quaternion<T> &quaternion);
 
   /*!
-   * \brief Conjugado de un cuaterni髇
-   * El conjugado de cuaterni髇 invierte el signo de los componentes 
-   * "agregados" del cuaterni髇:
+   * \brief Conjugado de un cuaterni贸n
+   * El conjugado de cuaterni贸n invierte el signo de los componentes 
+   * "agregados" del cuaterni贸n:
    * \f[ q = w-xi-yj-zk \f]
    */
   Quaternion<T> conjugate() const;
@@ -145,7 +145,7 @@ public:
   T norm() const;
 
   /*!
-   * \brief Normaliza el cuaterni髇
+   * \brief Normaliza el cuaterni贸n
    */
   void normalize();
 
@@ -190,7 +190,7 @@ private:
 
 };
 
-/* Definici髇 de alias Matrix */
+/* Definici贸n de alias Matrix */
 
 typedef Quaternion<float>   Quaternionf;
 typedef Quaternion<double>  Quaterniond;
@@ -224,49 +224,68 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 }
 
 // https://www.geometrictools.com/GTEngine/Include/Mathematics/GteRotation.h
-template<typename T>
-Quaternion<T>::Quaternion(const RotationMatrix<3, T> &rot)
-{
-
-  T r22 = rot.at(2,2);
-  if (r22 <= static_cast<T>(0)) {
-    T dif10 = rot.at(1, 1) - rot.at(0, 0);
-    T omr22 = static_cast<T>(1) - r22;
-    if (dif10 <= static_cast<T>(0)) {
-      T fourXSqr = omr22 - dif10;
-      T inv4x = static_cast<T>(0.5) / std::sqrt(fourXSqr);
-      this->x = fourXSqr*inv4x;
-      this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
-      this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
-      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
-    } else {
-      T fourYSqr = omr22 + dif10;
-      T inv4y = static_cast<T>(0.5) / std::sqrt(fourYSqr);
-      this->x = (rot.at(0, 1) + rot.at(1, 0))*inv4y;
-      this->y = fourYSqr*inv4y;
-      this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
-      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
-    }
-  } else {
-    T sum10 = rot.at(1, 1) + rot.at(0, 0);
-    T opr22 = static_cast<T>(1) + r22;
-    if (sum10 <= static_cast<T>(0)) {
-      T fourZSqr = opr22 - sum10;
-      T inv4z = (static_cast<T>(0.5)) / std::sqrt(fourZSqr);
-      this->x = (rot.at(0, 2) + rot.at(2, 0))*inv4z;
-      this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
-      this->z = fourZSqr*inv4z;
-      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
-    } else {
-      T fourWSqr = opr22 + sum10;
-      T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
-      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
-      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
-      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
-      this->w = fourWSqr*inv4w;
-    }
-  }
-}
+//template<typename T>
+//Quaternion<T>::Quaternion(const RotationMatrix<T> &rot)
+//{
+//  //static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
+//
+//  T r22 = rot.at(2,2);
+//  if (r22 <= static_cast<T>(0)) {
+//    T dif10 = rot.at(1, 1) - rot.at(0, 0);
+//    T omr22 = static_cast<T>(1) - r22;
+//    if (dif10 <= static_cast<T>(0)) {
+//      T fourXSqr = omr22 - dif10;
+//      T inv4x = static_cast<T>(0.5) / sqrt(fourXSqr);
+//      this->x = fourXSqr*inv4x;
+//      this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
+//      this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
+////#if defined(GTE_USE_MAT_VEC)
+//      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
+////#else
+////      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
+////#endif
+//    } else {
+//      T fourYSqr = omr22 + dif10;
+//      T inv4y = static_cast<T>(0.5) / std::sqrt(fourYSqr);
+//      this->x = (rot.at(0, 1) + rot.at(1, 0))*inv4y;
+//      this->y = fourYSqr*inv4y;
+//      this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
+////#if defined(GTE_USE_MAT_VEC)
+//      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
+////#else
+////      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
+////#endif
+//    }
+//  } else {
+//    T sum10 = rot.at(1, 1) + rot.at(0, 0);
+//    T opr22 = static_cast<T>(1) + r22;
+//    if (sum10 <= static_cast<T>(0)) {
+//      T fourZSqr = opr22 - sum10;
+//      T inv4z = (static_cast<T>(0.5)) / std::sqrt(fourZSqr);
+//      this->x = (rot.at(0, 2) + rot.at(2, 0))*inv4z;
+//      this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
+//      this->z = fourZSqr*inv4z;
+////#if defined(GTE_USE_MAT_VEC)
+//      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
+////#else
+////      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
+////#endif
+//    } else {
+//      T fourWSqr = opr22 + sum10;
+//      T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
+////#if defined(GTE_USE_MAT_VEC)
+//      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
+//      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
+//      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
+////#else
+////      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
+////      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
+////      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
+////#endif
+//      this->w = fourWSqr*inv4w;
+//    }
+//  }
+//}
 
 template<typename T>
 Quaternion<T>::~Quaternion()
@@ -377,7 +396,7 @@ Quaternion<T> operator - (const Quaternion<T> &quaternion)
 /* Operaciones entre cuaterniones */
 
 /*!
- * \brief Multiplicaci髇 de cuaterniones
+ * \brief Multiplicaci贸n de cuaterniones
  * \f[ q1 = w1+x1*i+y1*j+z1*k \f]
  * \f[ q2 = w2+x2*i+y2*j+z2*k \f]
  * \f[ q1.q2 = \f]
@@ -421,7 +440,7 @@ Quaternion<T> operator - (const Quaternion<T> &quat1,
 }
 
 template<typename T>
-Quaternion<T> operator*(const Quaternion<T> &quaternion, T scalar)
+Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
 {
   Quaternion<T> q = quaternion;
   return q *= scalar;

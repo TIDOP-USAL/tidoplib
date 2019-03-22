@@ -13,6 +13,7 @@ add_library(tl_geom ${LIB_TYPE}
             entities/segment.cpp
             entities/segment.h
             entities/window.h
+            entities/shapes.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

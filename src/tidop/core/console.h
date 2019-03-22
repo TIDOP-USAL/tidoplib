@@ -1052,7 +1052,7 @@ template <typename T, typename Enable = void>
 class ArgumentValidator;
 
 template <typename T>
-class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value /*&& typeid(T) != typeid(bool)*/>::type>
+class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
 private:
 
