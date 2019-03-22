@@ -71,11 +71,9 @@ if(BUILD_TEST AND BUILD_GTEST AND BUILD_TL_CORE)
 
   
   foreach(test_filename ${cpp_test})
-    if(NOT "${sample_filename}" MATCHES "real_time_pose_estimation/")
-        get_filename_component(test ${test_filename} NAME_WE)
-        DEFINE_TEST(${test}  ${test_filename})
-    endif()
+    get_filename_component(test ${test_filename} NAME_WE)
+    DEFINE_TEST(${test}  ${test_filename})
   endforeach()
 
-
+  
 endif()
