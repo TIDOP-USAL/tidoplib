@@ -123,7 +123,8 @@ public:
    * \param[in] nMin Número mínimo de puntos necesario para la transformación
    */
   Transform(transform_type trfType, int nMin = 0)
-    : mTrfType(trfType), mMinPoint(nMin) {}
+    : mTrfType(trfType), 
+      mMinPoint(nMin) {}
 
   /*!
    * \brief Destructora
@@ -171,7 +172,8 @@ public:
    * \return transform_status
    * \see transform_order, transform_status
    */
-  virtual transform_status transform(const geometry::EntityContainer<Point_t> &ptsIn, geometry::EntityContainer<Point_t> *ptsOut, 
+  virtual transform_status transform(const geometry::EntityContainer<Point_t> &ptsIn, 
+                                     geometry::EntityContainer<Point_t> *ptsOut, 
                                      transform_order trfOrder = transform_order::DIRECT) const;
 
   /*!
@@ -183,7 +185,8 @@ public:
    * \see transform_order, transform_status
    */
   //TL_DEPRECATED("transform")
-  virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+  virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn, 
+                                             std::vector<Point_t> *ptsOut, 
                                              transform_order trfOrder = transform_order::DIRECT) const;
   
   //template<typename T1, typename T2> 

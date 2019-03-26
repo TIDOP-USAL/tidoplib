@@ -401,8 +401,8 @@ void fileList(const std::string &directory, std::list<std::string> *fileList, co
     if (!fs::is_regular_file(it->status())) continue;
 
     std::smatch what;
-
-    if (!std::regex_match(it->path().filename().string(), what, filter)) continue;
+    std::string fname = it->path().filename().string();
+    if (!std::regex_match(fname, what, filter)) continue;
 
     // File matches, store it
     if (fileList)

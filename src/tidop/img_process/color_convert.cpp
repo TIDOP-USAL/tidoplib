@@ -121,7 +121,7 @@ void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb)
 
 void rgbToLuminance(const cv::Mat &rgb, cv::Mat *gray)
 {
-  cvtColor(rgb, *gray, CV_BGR2GRAY);
+  cvtColor(rgb, *gray, cv::COLOR_BGR2GRAY);
 }
 
 

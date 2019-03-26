@@ -176,7 +176,7 @@ int Matching::match(const cv::Mat &descriptor1, const cv::Mat &descriptor2, std:
   auto getAppropriateFormat = [](const cv::Mat &descIn) -> cv::Mat {
     cv::Mat descOut;
     descIn.copyTo(descOut);
-    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
+    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, cv::COLOR_BGR2GRAY);
     if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
     return descOut;
   };
@@ -274,7 +274,7 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
     }
 
     std::vector<uchar> inliers(nPoints, 0);
-    cv::Mat fundamental = cv::findFundamentalMat(cv::Mat(pts1), cv::Mat(pts2), inliers, CV_FM_RANSAC, distance, confidence);
+    cv::Mat fundamental = cv::findFundamentalMat(cv::Mat(pts1), cv::Mat(pts2), inliers, cv::FM_RANSAC, distance, confidence);
 
     std::vector<uchar>::const_iterator itIn = inliers.begin();
 
@@ -473,7 +473,7 @@ void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &
   auto getAppropriateFormat = [](const cv::Mat &descIn) -> cv::Mat {
     cv::Mat descOut;
     descIn.copyTo(descOut);
-    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, CV_BGR2GRAY);
+    if (descOut.channels() != 1) cv::cvtColor(descOut, descOut, cv::COLOR_BGR2GRAY);
     if (descOut.type() != CV_32F) descOut.convertTo(descOut, CV_32FC1);
     return descOut;
   };

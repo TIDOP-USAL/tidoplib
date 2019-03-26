@@ -95,7 +95,7 @@ void thinningIteration(cv::Mat &image, int iter, Thinning thin)
 void thinning(const cv::Mat &image, cv::Mat *out, Thinning thin)
 {
   image.copyTo(*out);
-  if (out->channels() != 1) cv::cvtColor(*out, *out, CV_BGR2GRAY);
+  if (out->channels() != 1) cv::cvtColor(*out, *out, cv::COLOR_BGR2GRAY);
   (*out) /= 255;
 
   cv::Mat prev = cv::Mat::zeros(image.size(), CV_8UC1);
