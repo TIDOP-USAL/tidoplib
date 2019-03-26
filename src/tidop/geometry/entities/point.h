@@ -787,7 +787,7 @@ public:
    * \return Ventana envolvente de los puntos
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   Window<Point_t> getWindow() const;
 #endif
   Window<Point_t> window() const;
@@ -968,7 +968,7 @@ public:
    * \return Caja envolvente de los puntos
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("box()")
+  TL_DEPRECATED("box()", "2.0")
   Box<Point_t> getBox() const;
 #endif
   Box<Point_t> box() const;
@@ -1082,42 +1082,42 @@ typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
 //TODO: revisar y ver si se puede hacer mejor
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point<int> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point<double> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point<float> &pt)    
 { 
   return Point_t(pt.x, pt.y); 
 }
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point3<int> &pt)    
 { 
   return Point_t(pt.x, pt.y, pt.z); 
 }
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point3<double> &pt)    
 { 
   return Point_t(pt.x, pt.y, pt.z); 
 }
 
 template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
+TL_DEPRECATED("static_cast<Point_t>()", "2.0")
 Point_t point_cast(const geometry::Point3<float> &pt)    
 { 
   return Point_t(pt.x, pt.y, pt.z); 

@@ -142,15 +142,20 @@ public:
    */
   double angleOY() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Ventana envolvente
    * \return Ventana envolvente del segmento
    * \deprecated Use 'Segment::window()'  en su lugar
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   Window<Point_t> getWindow() const;
 #endif
+
+  /*!
+   * \brief Ventana envolvente
+   * \return Ventana envolvente del segmento
+   */
   Window<Point_t> window() const;
 
   /*!
@@ -454,14 +459,18 @@ public:
    */
   template<typename Point3_t2> operator Segment3D<Point3_t2>() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Caja envolvente del segmento
    * \deprecated Use 'Segment3D::box()' en su lugar
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("box()")
+  TL_DEPRECATED("box()", "2.0")
   Box<Point3_t> getBox() const;
 #endif
+
+  /*!
+   * \brief Caja envolvente del segmento
+   */
   Box<Point3_t> box() const;
 
   /*!
@@ -674,7 +683,7 @@ public:
    * \return
    * \deprecated Use 'GroupLines::window()' en su lugar
    */
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   WindowI getBbox() const { return bbox; }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -690,7 +699,7 @@ public:
    * \return
    * \deprecated Use 'GroupLines::size()' en su lugar
    */
-  TL_DEPRECATED("size()")
+  TL_DEPRECATED("size()", "2.0")
   size_t getSize() const { return linesgroup.size(); }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

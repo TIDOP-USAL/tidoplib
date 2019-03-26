@@ -147,6 +147,7 @@ TL_EXPORT int getFileDir(const char *path, char *dir, int size);
  */
 TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Optiene la extensión de un archivo
  * \param[in] path Ruta del archivo
@@ -163,7 +164,7 @@ TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::extension()
  */
-TL_DEPRECATED("boost::filesystem::extension()")
+TL_DEPRECATED("boost::filesystem::extension()", "2.0")
 TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
 
 /*!
@@ -182,8 +183,9 @@ TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::extension()
  */
-TL_DEPRECATED("boost::filesystem::filename()")
+TL_DEPRECATED("boost::filesystem::filename()", "2.0")
 TL_EXPORT int getFileName(const char *path, char *name, int size);
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
@@ -220,6 +222,7 @@ TL_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
  */
 TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Cambia la extensión de un archivo
  * \param[in] path Ruta del archivo
@@ -237,8 +240,9 @@ TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOu
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::replace_extension() o std::filesystem::replace_extension()
  */
-TL_DEPRECATED("filesystem::replace_extension()")
+TL_DEPRECATED("filesystem::replace_extension()", "2.0")
 TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -261,8 +265,10 @@ TL_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameEx
 
 TL_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
 
-TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)")
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)", "2.0")
 TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Devuelve el listado de archivos de un directorio
@@ -297,7 +303,7 @@ TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
  * - Como separador admite "/" y "\\".
  *
  */
-class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path") Path
+class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path", "2.0") Path
 {
 private:
 
@@ -501,20 +507,21 @@ TL_EXPORT int split(const std::string &in, std::vector<std::string> &out, const 
 
 /*! \} */ // end of stringOper
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Convierte un número a una cadena de texto
  * \param[in] number Numero
  * \return Cadena de texto
  */
 template <typename T> inline
-TL_DEPRECATED("std::to_string()")
+TL_DEPRECATED("std::to_string()", "2.0")
 std::string numberToString(T number)
 {
   std::ostringstream ss;
   ss << number;
   return ss.str();
 }
-
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*!
@@ -798,6 +805,7 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  */
 TL_EXPORT uint64_t tickCount();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief tiempo actual
  *
@@ -810,8 +818,9 @@ TL_EXPORT uint64_t tickCount();
  * \endcode
  * \deprecated Se cambia el nombre del método a tickCount()
  */
-TL_DEPRECATED("tickCount()") 
+TL_DEPRECATED("tickCount()", "2.0") 
 TL_EXPORT uint64_t getTickCount();
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Clase para medir tiempos.

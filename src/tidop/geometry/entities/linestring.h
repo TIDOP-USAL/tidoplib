@@ -117,7 +117,7 @@ public:
    * \return Ventana envolvente de los puntos
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   Window<Point_t> getWindow() const;
 #endif
   Window<Point_t> window() const;
@@ -316,7 +316,7 @@ public:
    * \return Caja envolvente de la polilinea
    * \deprecated Use 'box()' en su lugar
    */
-  TL_DEPRECATED("box()")
+  TL_DEPRECATED("box()", "2.0")
   Box<Point3_t> getBox() const;
 #endif
 
@@ -495,7 +495,7 @@ public:
    * \return Ventana envolvente de los puntos
    * \deprecated Use 'window()' en su lugar
    */
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   Window<Point_t> getWindow() const;
 #endif
 

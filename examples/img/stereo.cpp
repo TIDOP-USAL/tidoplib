@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   cv::Mat left = cv::imread("D:\\Desarrollo\\tidop\\examples\\data\\left.png");
   cv::Mat right = cv::imread("D:\\Desarrollo\\tidop\\examples\\data\\right.png");
   cv::Mat stereoDUBOIS;
-  //TL::stereoImage(left, right, &stereoDUBOIS, TL::StereoMode::DUBOIS);
+  //tl::stereoImage(left, right, &stereoDUBOIS, TL::StereoMode::DUBOIS);
   //cv::Mat stereoGRAY;
   //TL::stereoImage(left, right, &stereoGRAY, TL::StereoMode::GRAY);
   //cv::Mat stereoHALFCOLOR;

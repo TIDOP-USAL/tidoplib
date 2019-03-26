@@ -182,7 +182,7 @@ public:
    * \return
    * \deprecated Use 'flags()' en su lugar 
    */
-  TL_DEPRECATED("EnumFlags::flags")
+  TL_DEPRECATED("EnumFlags::flags", "2.0")
   T getFlags() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
    
@@ -441,7 +441,7 @@ public:
    * \return
    * \deprecated Use 'flags()' en su lugar 
    */
-  TL_DEPRECATED("Flags::flags")
+  TL_DEPRECATED("Flags::flags", "2.0")
   T getFlags() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
    

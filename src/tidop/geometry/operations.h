@@ -57,7 +57,7 @@ class GroupLines;
  * \deprecated { Reemplazada por TL::math::module(const Point_t &v) }
  */
 template<typename Point_t> inline
-TL_DEPRECATED("double math::module(const Point_t &v)")
+TL_DEPRECATED("double math::module(const Point_t &v)", "2.0")
 double length(const Point_t &v)
 {
   return sqrt(v.x*v.x + v.y*v.y);
@@ -158,7 +158,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
-TL_DEPRECATED("int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)")
+TL_DEPRECATED("int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)", "2.0")
 int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 {
   int iret = 0;
@@ -238,7 +238,7 @@ double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline 
-TL_DEPRECATED("double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)")
+TL_DEPRECATED("double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)", "2.0")
 double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
 {
   Point3_t ptp;

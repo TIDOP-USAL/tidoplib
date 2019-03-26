@@ -3008,12 +3008,19 @@ public:
    */
   Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::DIRECT) const override;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Devuelve la escala de la transformación
    * \return Escala de la transformación
    */
-  TL_DEPRECATED("scale()")
+  TL_DEPRECATED("scale()", "2.0")
   double getScale() const { return mScale; }
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve la escala de la transformación
+   * \return Escala de la transformación
+   */
   double scale() const { return mScale; }
 
   /*!

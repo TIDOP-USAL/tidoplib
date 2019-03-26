@@ -38,7 +38,7 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle("Read Image");
   console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
@@ -53,8 +53,8 @@ int main(int argc, char** argv)
     msgError("Error al abrir la imagen: %s", img.c_str());
   }
 
-  //TL::ImgMetadata *metadata = new TL::JpegMetadata();
-  //TL::JpegMetadata *metadata2 = new TL::JpegMetadata();
+  //tl::ImgMetadata *metadata = new tl::JpegMetadata();
+  //tl::JpegMetadata *metadata2 = new tl::JpegMetadata();
   //std::string prueba = metadata2->ExifDocumentName;
   return 0;
 }

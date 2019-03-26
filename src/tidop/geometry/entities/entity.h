@@ -101,7 +101,6 @@ public:
     window   = envelope,                          /*!< Ventana */
     box      = envelope | geom3d,                 /*!< Caja */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
     /* Dimensión */
     GEOM2D     = geom2d,                        /*!< Geometría 2D */
     GEOM3D     = geom3d,                        /*!< Geometría 3D */
@@ -135,7 +134,7 @@ public:
     /* Tipos especiales */
     ENVELOPE = envelope,                        /*!< Envolvente */
     WINDOW   = window,                          /*!< Ventana */
-    BOX      = box,                             /*!< Caja */
+    BOX      = box                              /*!< Caja */
 #endif
   };
 
@@ -184,7 +183,7 @@ public:
    * \brief Devuelve el tipo de entidad 
    * \deprecated Use 'type' en su lugar
    */
-  TL_DEPRECATED("type()")
+  TL_DEPRECATED("type()", "2.0")
   Type getType() const { return mEntityType.getFlags(); }
 #endif
 
@@ -396,7 +395,7 @@ public:
    * \param[in] entity Entidad que se añade
    * \deprecated Use 'push_back' en su lugar
    */
-  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)")
+  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)", "2.0")
   void add(const Entity_t &entity);
 #endif
 
@@ -720,7 +719,7 @@ public:
    * \deprecated Use 'entitiesInWindow(const Window_t &w)' en su lugar
    */
   template<typename Window_t>
-  TL_DEPRECATED("entitiesInWindow(const Window_t &w)")
+  TL_DEPRECATED("entitiesInWindow(const Window_t &w)", "2.0")
   std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
 #endif
 
@@ -1004,6 +1003,6 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&ent
 
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GEOM_ENTITY_H

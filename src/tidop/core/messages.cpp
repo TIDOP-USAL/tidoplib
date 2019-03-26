@@ -410,7 +410,7 @@ int MessageManager::Message::line() const
 }
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-const char *MessageManager::Message::message() const
+const char *MessageManager::Message::getMessage() const
 {
   return mMessage.c_str();
 }

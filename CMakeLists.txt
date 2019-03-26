@@ -101,24 +101,25 @@ OPTION (BUILD_DOC             "Build documentation"   OFF)
 
 # Activa el gestor de mensajes. Si se desactiva no se mostrarán los mensajes del la librería
 # por consola ni se escribirán en el log
-OPTION (BUILD_Message_handler "Active message handle" ON)
+OPTION (BUILD_MESSAGE_HANDLER "Active message handle" ON)
 
 # Si se activa esta opción se pueden utilizar los métodos marcados como obsoletos (deprecated)
-OPTION (ENABLE_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
+OPTION (BUILD_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
-if(BUILD_Message_handler)
+if(BUILD_MESSAGE_HANDLER)
   set(TL_MESSAGE_HANDLER YES)
-  message("[TidopLib] Message manager enabled")
+  message(STATUS "[TidopLib] Message manager enabled")
 else()
   set(TL_MESSAGE_HANDLER NO)
-  message(WARNING "[TidopLib] Message manager disabled")
+  message(STATUS "[TidopLib] Message manager disabled")
 endif()
 
-if(ENABLE_DEPRECATED_METHODS)
+if(BUILD_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
   message(WARNING "[TidopLib] Enable deprecated methods and class")
 else()
   set(TL_ENABLE_DEPRECATED_METHODS NO)
+  message(STATUS "[TidopLib] Disable deprecated methods and class")
 endif()
 
 # Test

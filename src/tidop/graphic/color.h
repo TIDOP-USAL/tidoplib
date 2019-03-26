@@ -451,7 +451,7 @@ public:
  * \return Componente azul
  * \deprecated Use 'graph::Color::blue()'  en su lugar
  */
-TL_DEPRECATED("graph::Color::blue()")
+TL_DEPRECATED("graph::Color::blue()", "2.0")
 TL_EXPORT int getBlue(int color);
 
 /*!
@@ -460,7 +460,7 @@ TL_EXPORT int getBlue(int color);
  * \return Componente verde
  * \deprecated Use en su lugar graph::Color::green()
  */
-TL_DEPRECATED("graph::Color::green()")
+TL_DEPRECATED("graph::Color::green()", "2.0")
 TL_EXPORT int getGreen(int color);
 
 /*!
@@ -469,7 +469,7 @@ TL_EXPORT int getGreen(int color);
  * \return Componente roja
  * \deprecated Use 'graph::Color::red()'  en su lugar
  */
-TL_DEPRECATED("graph::Color::red()")
+TL_DEPRECATED("graph::Color::red()", "2.0")
 TL_EXPORT int getRed(int color);
 
 /*!
@@ -478,7 +478,7 @@ TL_EXPORT int getRed(int color);
  * \return Canal alfa
  * \deprecated Use 'graph::Color::alpha()'  en su lugar
  */
-TL_DEPRECATED("graph::Color::alpha()")
+TL_DEPRECATED("graph::Color::alpha()", "2.0")
 TL_EXPORT int getAlpha(int color);
 
 #endif // TL_ENABLE_DEPRECATED_METHODS

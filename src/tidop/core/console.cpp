@@ -89,7 +89,20 @@ Console::~Console()
   sObjConsole.release();
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 Console &Console::getInstance()
+{
+  if (sObjConsole.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(Console::mtx);
+    if (sObjConsole.get() == nullptr) {
+      sObjConsole.reset(new Console());
+    }
+  }
+  return *sObjConsole;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+Console &Console::instance()
 {
   if (sObjConsole.get() == nullptr) {
     std::lock_guard<std::mutex> lck(Console::mtx);
@@ -748,7 +761,7 @@ void Command::showHelp() const
   TL_TODO("Solucion rapida. revisar")
 
   /// Uso
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   printf("\nUsage: %s [OPTION...] \n\n", mName.c_str());
@@ -811,7 +824,7 @@ void Command::showHelp() const
 
 void Command::showVersion() const
 {
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
@@ -822,7 +835,7 @@ void Command::showVersion() const
 
 void Command::showLicence() const
 {
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 }
@@ -983,7 +996,7 @@ CommandList::iterator CommandList::erase(CommandList::const_iterator first, Comm
 void CommandList::showHelp() const
 {
 
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
   printf("\nUsage: %s <command> [<args>] \n\n", mName.c_str());
@@ -1010,7 +1023,7 @@ void CommandList::showHelp() const
 
 void CommandList::showVersion() const
 {
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
@@ -1021,7 +1034,7 @@ void CommandList::showVersion() const
 
 void CommandList::showLicence() const
 {
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 }
@@ -1158,7 +1171,7 @@ void ProgressBar::updateProgress()
     
     std::cout << "\r";
 
-    Console &console = Console::getInstance();
+    Console &console = Console::instance();
     int posInBar = TL_ROUND_TO_INT(mPercent * mSize / 100.);
 
     int ini = mSize / 2 - 2;
@@ -1471,7 +1484,7 @@ CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
 void CmdParser::printHelp()
 {
 
-  Console console(Console::Mode::OUTPUT, false);
+  Console &console = Console::instance();
 
   console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
   console.setFontBold(true);

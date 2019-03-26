@@ -619,12 +619,12 @@ bool Path::isFile()
 
 void Path::createDir()
 {
-  TL::createDir(toString().c_str());
+  tl::createDir(toString().c_str());
 }
 
 void Path::deleteDir()
 {
-  TL::deleteDir(toString().c_str());
+  tl::deleteDir(toString().c_str());
 }
 
 Path &Path::append(const std::string &dir)
