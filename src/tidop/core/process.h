@@ -20,6 +20,7 @@
 #include <memory>
 #include <thread>
 #include <mutex>
+#include <vector>
 
 #include "config_tl.h"
 
@@ -341,6 +342,29 @@ private:
 #endif
 };
 
+
+/* ---------------------------------------------------------------------------------- */
+
+class TL_EXPORT ExternalProcess
+  : public Process
+{
+
+protected:
+
+  std::string mProcess;
+  std::vector<std::string> mArg;
+
+public:
+
+  ExternalProcess(const std::string &process, const std::vector<std::string> &arg);
+  ~ExternalProcess() override {}
+
+// Process interface
+
+public:
+
+  Status run(Progress *progressBar) override;
+};
 
 /* ---------------------------------------------------------------------------------- */
 

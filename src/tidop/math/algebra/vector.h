@@ -134,8 +134,8 @@ public:
   ~Vector() = default;
 
   /*!
-   * \brief Devuelve el tamaño del vector
-   * \return Tamaño del vector
+   * \brief Devuelve el tamaÃ±o del vector
+   * \return TamaÃ±o del vector
    */
   size_t size() TL_NOEXCEPT;
 
@@ -157,16 +157,16 @@ public:
   const_iterator begin() const TL_NOEXCEPT;
 
   /*!
-   * \brief Devuelve un iterador al siguiente elemento después del final del vector
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-   * \return Iterador al siguiente elemento después del final del vector
+   * \brief Devuelve un iterador al siguiente elemento despuÃ©s del final del vector
+   * Este elemento actÃºa como un marcador de posiciÃ³n, intentar acceder a Ã©l resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento despuÃ©s del final del vector
    */
   iterator end() TL_NOEXCEPT;
 
   /*!
-   * \brief Devuelve un iterador constante al siguiente elemento después del final del contenedor
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
-   * \return Iterador al siguiente elemento después del final del contenedor
+   * \brief Devuelve un iterador constante al siguiente elemento despuÃ©s del final del contenedor
+   * Este elemento actÃºa como un marcador de posiciÃ³n, intentar acceder a Ã©l resulta en un comportamiento no definido 
+   * \return Iterador al siguiente elemento despuÃ©s del final del contenedor
    */
   const_iterator end() const TL_NOEXCEPT;
 
@@ -177,26 +177,26 @@ public:
   const_reverse_iterator rend() const TL_NOEXCEPT;
 
   /*!
-   * \brief Devuelve una referencia constante al elemento de la posición indicada
+   * \brief Devuelve una referencia constante al elemento de la posiciÃ³n indicada
    * return Referencia constante al elemento
    */
   const_reference at(size_type position) const;
 
   /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
+   * \brief Devuelve una referencia al elemento de la posiciÃ³n indicada
    * return Referencia al elemento
    */
   reference at(size_type position);
 
   /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
+   * \brief Devuelve una referencia al elemento de la posiciÃ³n indicada
    * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
    * return Referencia constante al elemento
    */
   const_reference operator[](size_t position) const;
 
   /*!
-   * \brief Devuelve una referencia al elemento de la posición indicada
+   * \brief Devuelve una referencia al elemento de la posiciÃ³n indicada
    * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
    * return Referencia al elemento
    */
@@ -204,19 +204,19 @@ public:
 
   /*!
    * \brief Comprueba si el contenedor esta vacio
-   * \return true si el contenedor está vacío y false en caso contrario
+   * \return true si el contenedor estÃ¡ vacÃ­o y false en caso contrario
    */
   //bool empty() const;
 
   void fill(T value);
 
   /*!
-   * \brief Asignación de copia
+   * \brief AsignaciÃ³n de copia
    */
   Vector &operator=(const Vector &entity);
 
   /*!
-   * \brief Asignación de movimiento
+   * \brief AsignaciÃ³n de movimiento
    */
   Vector &operator=(Vector &&entity) TL_NOEXCEPT;
 
@@ -246,7 +246,7 @@ private:
 
 
 
-/* Definición de alias Vector */
+/* DefiniciÃ³n de alias Vector */
 
 
 typedef Vector<2, int>    Vector2i;
@@ -257,7 +257,7 @@ typedef Vector<3, double> Vector3d;
 typedef Vector<3, float>  Vector3f;
 
 
-/* Implementación Vector */
+/* ImplementaciÃ³n Vector */
 
 template<size_t _size, typename T> inline 
 Vector<_size, T>::Vector()
@@ -418,7 +418,7 @@ Vector<_size, T> &Vector<_size, T>::operator=(const Vector<_size, T> &vector)
 }
 
 template<size_t _size, typename T> inline
-Vector<_size, T> &Vector<_size, T>::operator=(Vector<_size, T> &&entity) TL_NOEXCEPT
+Vector<_size, T> &Vector<_size, T>::operator=(Vector<_size, T> &&vector) TL_NOEXCEPT
 {
   if (this != &vector) {
     this->mVector = std::forward<std::array<T, _size>>(vector.mVector);
@@ -429,13 +429,13 @@ Vector<_size, T> &Vector<_size, T>::operator=(Vector<_size, T> &&entity) TL_NOEX
 template<size_t _size, typename T> inline
 double Vector<_size, T>::module() const
 {
-  return sqrt(dotProduct(v, v));
+  return sqrt(dotProduct(this, this));
 }
 
 template<size_t _size, typename T> inline
 void Vector<_size, T>::normalize() const
 {
-  T length = static_cast<T>(lenght());
+  T length = static_cast<T>(this->module());
   if (length > static_cast<T>(0)) {
     this /= length;
   } else {
