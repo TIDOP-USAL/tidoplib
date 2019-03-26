@@ -118,7 +118,7 @@ public:
    * \see EnumFlags
    * \deprecated Use 'logLevel' en su lugar
    */
-  TL_DEPRECATED("logLevel")
+  TL_DEPRECATED("logLevel", "2.0")
   EnumFlags<MessageLevel> getLogLevel() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

@@ -61,7 +61,7 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(cmd_name);                         // Titulo de la ventana de consola
   console.setConsoleUnicode();
   console.setFontHeight(14);                      // Se establece el tamaño de fuente

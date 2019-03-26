@@ -158,7 +158,7 @@ public:
    * \return Centro del Bbox
    * \deprecated Use 'center()' en su lugar
    */
-  TL_DEPRECATED("center()")
+  TL_DEPRECATED("center()", "2.0")
   Point3_t getCenter() const;
 #endif
   /*!
@@ -174,7 +174,7 @@ public:
    * \return Ancho
    * \deprecated Use 'width()' en su lugar
    */
-  TL_DEPRECATED("width()")
+  TL_DEPRECATED("width()", "2.0")
   typename Point3_t::value_type getWidth() const;
 #endif
   /*!
@@ -189,7 +189,7 @@ public:
    * \return Alto
    * \deprecated Use 'height()' en su lugar
    */
-  TL_DEPRECATED("height()")
+  TL_DEPRECATED("height()", "2.0")
   typename Point3_t::value_type getHeight() const;
 #endif
   /*!
@@ -204,7 +204,7 @@ public:
    * \return Profundidad
    * \deprecated Use 'depth()' en su lugar
    */
-  TL_DEPRECATED("depth()")
+  TL_DEPRECATED("depth()", "2.0")
   typename Point3_t::value_type getDepth() const;
 #endif
   /*!
@@ -469,6 +469,6 @@ typedef Box<Point3<float>> BoxF;
 
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GEOM_BBOX_H

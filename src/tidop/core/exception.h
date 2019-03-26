@@ -66,13 +66,13 @@ public:
    * \brief Constructor
    * \deprecated Usar Exception(const std::string &error)
    */
-  TL_DEPRECATED("Exception::Exception(const std::string &error)")
+  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
   explicit Exception(const char *error);
 
   /*!
    * \brief Constructor
    */
-  TL_DEPRECATED("Exception::Exception(const std::string &error)")
+  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
   explicit Exception(const char *error, const char *file, int line, const char *function);
 
 #endif

@@ -167,7 +167,7 @@ public:
    * \return Ventana envolvente de los puntos
    * \deprecated Use 'window()'  en su lugar
    */
-  TL_DEPRECATED("window()")
+  TL_DEPRECATED("window()", "2.0")
   Window<Point_t> getWindow() const;
 #endif
 

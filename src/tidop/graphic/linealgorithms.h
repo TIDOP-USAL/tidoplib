@@ -112,7 +112,7 @@ public:
    * \brief devuelve un vector con los puntos de la recta
    * \deprecated Use 'points()' en su lugar
    */
-  TL_DEPRECATED("LineAlgorithms::points()")
+  TL_DEPRECATED("LineAlgorithms::points()", "2.0")
   virtual std::vector<geometry::PointI> getPoints() = 0;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
@@ -148,7 +148,7 @@ public:
 
   /*!
    * \brief Constructora
-   * TL::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+   * tl::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
   BresenhamLine(const geometry::PointI &pt1, const geometry::PointI &pt2)
@@ -277,7 +277,7 @@ public:
 
   /*!
    *
-   * TL::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
+   * tl::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
   DDA(const geometry::PointI &pt1, const geometry::PointI &pt2)
@@ -368,6 +368,6 @@ private:
 };
 
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GRAPHIC_LINE_ALGORITHMS_H

@@ -127,8 +127,8 @@ int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
   int iret = 1;
   if (in.empty() || in.channels() != 1) iret = -1;
   try {
-    cv::sortIdx(in, *idx, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
-    cv::sort(in, *out, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
+    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
+    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
   } catch (std::exception &e) {
     msgError("%s", e.what());
     iret = -1;
@@ -141,8 +141,8 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
   int iret = 1;
   if (in.empty() || in.channels() != 1) iret = -1;
   try {
-    cv::sortIdx(in, *idx, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
-    cv::sort(in, *out, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
+    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
+    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
   } catch (std::exception &e) {
     msgError("%s", e.what());
     iret = -1;

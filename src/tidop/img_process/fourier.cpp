@@ -85,7 +85,7 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
 
   logScale(magI, &magI);
 
-  cv::normalize(magI, magI, 0, 1, CV_MINMAX);
+  cv::normalize(magI, magI, 0, 1, cv::NormTypes::NORM_MINMAX);
   double r_angle = 0.0;
   // Buscamos los máximos
   // Linea por angulo
@@ -116,7 +116,7 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
 
     std::vector<cv::Point> pMax;
     cv::Mat idx;
-    cv::sortIdx(magIcrop, idx, CV_SORT_EVERY_ROW + CV_SORT_DESCENDING);
+    cv::sortIdx(magIcrop, idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_DESCENDING);
     for (int ir = 0; ir < magIcrop.rows; ir++) {
       int id;
       for (int ic = 0; ic < 2; ic++) {
@@ -154,7 +154,7 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
   ft.shift(complexI);
   ft.inverse(complexI, &imageOut);
 
-  normalize(imageOut, imageOut, 0, 1, CV_MINMAX);
+  normalize(imageOut, imageOut, 0, 1, cv::NORM_MINMAX);
 
   float prevVar = 0.f, curVar = 0.f;
   int prevBinVar = 0, curBinVar = 0;

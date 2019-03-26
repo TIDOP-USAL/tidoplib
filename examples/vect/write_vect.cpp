@@ -52,7 +52,7 @@ int main(int argc, char** argv)
 
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(cmd_name);
   console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();

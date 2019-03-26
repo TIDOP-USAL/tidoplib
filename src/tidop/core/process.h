@@ -223,7 +223,7 @@ public:
    * \brief Devuelve el estado actual de la ejecución 
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("status")
+  TL_DEPRECATED("status", "2.0")
   Status getStatus();
 #endif // TL_ENABLE_DEPRECATED_METHODS
   Status status();
@@ -239,7 +239,7 @@ public:
    * \return
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("id")
+  TL_DEPRECATED("id", "2.0")
   uint64_t getProcessId() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
   uint64_t id() const;
@@ -248,7 +248,7 @@ public:
    * \brief Devuelve el nombre del proceso 
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("processName")
+  TL_DEPRECATED("processName", "2.0")
   std::string getProcessName() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
   std::string name() const;
@@ -528,7 +528,7 @@ public:
    * \brief Limpia la lista de procesos
    * \deprecated Use reset() en su lugar
    */
-  TL_DEPRECATED("BatchProcess::reset()")
+  TL_DEPRECATED("BatchProcess::reset()", "2.0")
   void clear();
 
 #endif // TL_ENABLE_DEPRECATED_METHODS

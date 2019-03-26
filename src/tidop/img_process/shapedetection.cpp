@@ -74,7 +74,7 @@ void GeneralizedHough::createTemplate(const char *file, const char *templ)
 	cv::Mat src_gray;
 	cv::Mat detected_edges;
 	src_gray.create( cv::Size(input_img.cols, input_img.rows), CV_8UC1);
-	cv::cvtColor(input_img, src_gray, CV_BGR2GRAY); 
+	cv::cvtColor(input_img, src_gray, cv::COLOR_BGR2GRAY); 
 	cv::blur( src_gray, detected_edges, cv::Size(3,3) );
 	cv::Canny( detected_edges, detected_edges, 1, 100, 3 );
 	imwrite(templ, detected_edges);
@@ -94,7 +94,7 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 	// transform image to grayscale:
 	cv::Mat src_gray;
 	src_gray.create( cv::Size(input_img.cols, input_img.rows), CV_8UC1);
-	cvtColor(input_img, src_gray, CV_BGR2GRAY); 
+	cvtColor(input_img, src_gray, cv::COLOR_BGR2GRAY); 
 	// reduce noise with a kernel 3x3 and get cannyedge image:
 	cv::Mat detected_edges;
 	blur( src_gray, detected_edges, cv::Size(3,3) );
@@ -103,16 +103,17 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 	// get Scharr matrices from image to obtain contour gradients
 	cv::Mat dx;
 	dx.create( cv::Size(input_img.cols, input_img.rows), CV_16SC1);
-	cv::Sobel(src_gray, dx, CV_16S, 1, 0, CV_SCHARR);
+  int ksize = -1; // CV_SCHARR, cv::FILTER_SCHARR (v > 4.0 ??)
+	cv::Sobel(src_gray, dx, CV_16S, 1, 0, ksize /*cv::FILTER_SCHARR*/);
 	cv::Mat dy;
 	dy.create( cv::Size(input_img.cols, input_img.rows), CV_16SC1);
-	cv::Sobel(src_gray, dy, CV_16S, 0, 1, CV_SCHARR);
+	cv::Sobel(src_gray, dy, CV_16S, 0, 1, ksize /*cv::FILTER_SCHARR*/);
 	// load all points from image all image contours on vector pts2
 	int nl= detected_edges.rows;
 	int nc= detected_edges.cols; 
-  float deltaphi = TL_PI / (float)intervals;
-  float inv_deltaphi = (float)intervals / TL_PI;
-	float inv_rangeXY = (float)1/rangeXY;
+  float deltaphi = TL_PI / static_cast<float>(intervals);
+  float inv_deltaphi = static_cast<float>(intervals) / TL_PI;
+	float inv_rangeXY = 1.f / static_cast<float>(rangeXY);
   float pi_half = TL_PI * 0.5f;
 	std::vector<Rpoint2> pts2;
 	for (int j=0; j<nl; ++j) {
@@ -255,7 +256,7 @@ void GeneralizedHough::readPoints(const char *originalImg, const char *templatei
    if ( original_img.empty() ) return; //... devolver error
 	cv::Mat input_img_gray;
 	input_img_gray.create( cv::Size(original_img.cols, original_img.rows), CV_8UC1);
-	cvtColor(original_img, input_img_gray, CV_BGR2GRAY); 
+	cvtColor(original_img, input_img_gray, cv::COLOR_BGR2GRAY);
   cv::Mat template_img = cv::imread(templateimg, 1);
    if ( original_img.empty() ) return; //... devolver error
 	// find reference point inside contour image and save it in variable refPoint
@@ -272,10 +273,10 @@ void GeneralizedHough::readPoints(const char *originalImg, const char *templatei
 	// get Scharr matrices from original template image to obtain contour gradients
 	cv::Mat dx;
 	dx.create( cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-	cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, CV_SCHARR);
+	cv::Sobel(input_img_gray, dx, CV_16S, 1, 0, -1);
 	cv::Mat dy;
 	dy.create( cv::Size(original_img.cols, original_img.rows), CV_16SC1);
-	cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, CV_SCHARR);
+	cv::Sobel(input_img_gray, dy, CV_16S, 0, 1, -1);
 	// load points on vector
 	pts.clear();
 	int mindx = INT_MAX;

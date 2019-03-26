@@ -214,7 +214,7 @@ public:
      * \return Fecha y hora del mensaje
      * \deprecated Use 'MessageManager::Message::date()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::date()")
+    TL_DEPRECATED("MessageManager::Message::date()", "2.0")
     const char *getDate() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -230,7 +230,7 @@ public:
      * \return
      * \deprecated Use 'MessageManager::Message::file()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::file()")
+    TL_DEPRECATED("MessageManager::Message::file()", "2.0")
     const char *getFile() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -246,7 +246,7 @@ public:
      * \return
      * \deprecated Use 'MessageManager::Message::function()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::function()")
+    TL_DEPRECATED("MessageManager::Message::function()", "2.0")
     const char *getFunction() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -262,7 +262,7 @@ public:
      * \return Devuelve el nivel de mensaje establecido
      * \deprecated Use 'MessageManager::Message::level()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::level()")
+    TL_DEPRECATED("MessageManager::Message::level()", "2.0")
     MessageLevel getLevel() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
     
@@ -278,7 +278,7 @@ public:
      * \return
      * \deprecated Use 'MessageManager::Message::line()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::line()")
+    TL_DEPRECATED("MessageManager::Message::line()", "2.0")
     int getLine() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
     
@@ -294,7 +294,7 @@ public:
      * \return Mensaje
      * \deprecated Use 'MessageManager::Message::message()' en su lugar 
      */
-    TL_DEPRECATED("MessageManager::Message::message()")
+    TL_DEPRECATED("MessageManager::Message::message()", "2.0")
     const char *getMessage() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

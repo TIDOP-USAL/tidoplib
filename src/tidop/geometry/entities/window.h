@@ -260,7 +260,7 @@ public:
    * \return Centro de la ventana
    * \deprecated Use 'center' en su lugar
    */
-  TL_DEPRECATED("center")
+  TL_DEPRECATED("center", "2.0")
   Point_t getCenter() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 

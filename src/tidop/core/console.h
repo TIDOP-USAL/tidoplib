@@ -219,9 +219,7 @@ private:
 
 private:
 
-  /*!
-   * \brief Constructora por defecto
-   */
+  /// Constructora privada ya que es un Singleton
   Console();
 
 public:
@@ -236,13 +234,25 @@ public:
   ~Console();
 #endif
 
-  Console(Console const&) = delete;
-  void operator=(Console const&) = delete;
+  /// Se invalida la copia y la asignación
+  Console(const Console &) = delete;
+  Console(Console &&) = delete;
+  Console &operator = (const Console &) = delete;
+  Console &operator = (Console &&) = delete;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Singleton que devuelve una referencia unica de un objeto Console
+   * \deprecated Use 'instance()'  en su lugar
+   */
+  TL_DEPRECATED("Console::instance", "2.0")
+  static Console &getInstance();
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Singleton que devuelve una referencia unica de un objeto Console
    */
-  static Console &getInstance();
+  static Console &instance();
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
@@ -251,7 +261,7 @@ public:
    * \see EnumFlags
    * \deprecated Use 'messageLevel()'  en su lugar
    */
-  TL_DEPRECATED("Console::messageLevel")
+  TL_DEPRECATED("Console::messageLevel", "2.0")
   EnumFlags<MessageLevel> getMessageLevel() const;
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
@@ -1964,7 +1974,7 @@ private:
  * \brief Clase base para la gestión de argumentos en comandos de consola
  * \deprecated
  */
-class TL_EXPORT TL_DEPRECATED("Argument") CmdArgument
+class TL_EXPORT TL_DEPRECATED("Argument", "2.0") CmdArgument
 {
 public:
 
@@ -2077,7 +2087,7 @@ public:
    * \param[in] option
    * \deprecated Use TL::CmdOption::setActive en su lugar
    */
-  TL_DEPRECATED("CmdOption::setActive")
+  TL_DEPRECATED("CmdOption::setActive", "2.0")
   void setOption(bool option) { mValue = option; }
 
   /*!
@@ -2228,7 +2238,7 @@ public:
  * \endcode
  * \deprecated
  */
-class TL_EXPORT TL_DEPRECATED("Command") CmdParser
+class TL_EXPORT TL_DEPRECATED("Command", "2.0") CmdParser
 {
 public:
 

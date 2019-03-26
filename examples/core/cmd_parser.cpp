@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   std::string cmd_name = app_path.stem().string();
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::msg_verbose);   // Se muestran todos los mensajes por consola
   MessageManager::getInstance().addListener(&console);

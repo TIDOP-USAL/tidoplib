@@ -49,7 +49,7 @@ int main(int argc, char** argv)
   }
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(name);                         // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
   MessageManager::getInstance().addListener(&console);

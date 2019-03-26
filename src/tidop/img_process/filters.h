@@ -241,10 +241,11 @@ public:
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución
  */
-class TL_DEPRECATED("Convolution") TL_EXPORT Filter2D 
+class TL_DEPRECATED("Convolution", "2.0") TL_EXPORT Filter2D 
   : public ImgProcessing
 {
 private:
@@ -308,6 +309,8 @@ public:
   void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
 
 };
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución

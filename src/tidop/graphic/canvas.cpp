@@ -138,8 +138,8 @@ void CanvasCV::drawPoint(const GPoint &point)
   Font font = style_label->font();
   Color foreColor = style_label->foregroundColor();
   cv::QtFont qt_font = cv::fontQt(font.name(),font.size(), colorToCvScalar(foreColor),
-                                  font.isBold() ? CV_FONT_BOLD : CV_FONT_NORMAL,
-                                  font.isItalic() ? CV_STYLE_ITALIC : CV_STYLE_NORMAL);
+                                  font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
+                                  font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
   cv::addText(mCanvas, style_label->text(), pt, qt_font);
 }
 
@@ -195,8 +195,8 @@ void CanvasCV::drawPoint(const geometry::PointD &point, const GraphicStyle &styl
   Color foreColor = style_label->foregroundColor();
   cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
                                   colorToCvScalar(foreColor),
-                                  font.isBold() ? CV_FONT_BOLD : CV_FONT_NORMAL,
-                                  font.isItalic() ? CV_STYLE_ITALIC : CV_STYLE_NORMAL);
+                                  font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
+                                  font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
   cv::addText(mCanvas, style_label->text(), pt, qt_font);
 }
 

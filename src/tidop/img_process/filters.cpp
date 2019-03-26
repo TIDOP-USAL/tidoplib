@@ -103,7 +103,7 @@ void BoxFilter::setParameters(int ddepth, cv::Size ksize, cv::Point anchor, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-// TODO: eliminar Filter2D
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 // Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
@@ -140,6 +140,7 @@ void Filter2D::setParameters(int ddepth, cv::Mat kernel, cv::Point anchor, doubl
 }
 
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 Convolution::Convolution(int ddepth, cv::Mat kernel, cv::Point anchor, double delta, int borderType)
   : ImgProcessing(process_type::convolution), 
