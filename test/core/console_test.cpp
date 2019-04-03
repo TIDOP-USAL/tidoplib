@@ -20,7 +20,7 @@ TL_SUPPRESS_WARNINGS
 
 TEST(ConsoleTest, Constructor)
 {
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   EnumFlags<MessageLevel> flag = console.messageLevel();
   EXPECT_TRUE(flag.isActive(MessageLevel::msg_error));
   EXPECT_FALSE(flag.isActive(MessageLevel::msg_info));

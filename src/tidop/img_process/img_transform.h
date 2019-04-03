@@ -209,8 +209,8 @@ template<typename Point_t> inline
 void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
   transform_type type = trf->getTransformType();
-  if (type == tl::transform_type::TRANSLATE) {
-    Translate<Point_t> *transTrf = dynamic_cast<Translate<Point_t> *>(trf);
+  if (type == tl::transform_type::translation) {
+    Translation<Point_t> *transTrf = dynamic_cast<Translation<Point_t> *>(trf);
     cv::Mat translateMat(2, 3, CV_32FC1);
     translateMat.at<float>(0, 0) = 1.f;
     translateMat.at<float>(0, 1) = 0.f;
@@ -218,11 +218,11 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     translateMat.at<float>(1, 0) = 0.f;
     translateMat.at<float>(1, 1) = 1.f;
     translateMat.at<float>(1, 2) = transTrf->ty;
-    if (trfOrder == transform_order::DIRECT)
+    if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, translateMat.inv(), in.size(), cv::INTER_LINEAR);
-  } else if (type == tl::transform_type::ROTATION) {
+  } else if (type == tl::transform_type::rotation) {
     Rotation<Point_t> *rotTrf = dynamic_cast<Rotation<Point_t> *>(trf);
     cv::Mat rotMat(2, 3, CV_32FC1);
     double r1 = cos(rotTrf->getAngle());
@@ -233,11 +233,11 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     rotMat.at<float>(1, 0) = r2;
     rotMat.at<float>(1, 1) = r1;
     rotMat.at<float>(1, 2) = 0.f;
-    if (trfOrder == transform_order::DIRECT)
+    if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, rotMat.inv(), in.size(), cv::INTER_LINEAR);
-  } else if (type == tl::transform_type::HELMERT_2D) {
+  } else if (type == tl::transform_type::helmert_2d) {
     Helmert2D<Point_t> *h2dTrf = dynamic_cast<Helmert2D<Point_t> *>(trf);
     cv::Mat h2DMat(2, 3, CV_32FC1);
     double rotation = h2dTrf->getRotation();
@@ -250,11 +250,11 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     h2DMat.at<float>(1, 0) = b;
     h2DMat.at<float>(1, 1) = a;
     h2DMat.at<float>(1, 2) = h2dTrf->ty;
-    if (trfOrder == transform_order::DIRECT)
+    if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, h2DMat.inv(), in.size(), cv::INTER_LINEAR);
-  } else if (type == tl::transform_type::AFFINE) {
+  } else if (type == tl::transform_type::affine) {
     Affine<Point_t> *affineTrf = dynamic_cast<Affine<Point_t> *>(trf);
     double r00, r10, r01, r11;
     affineTrf->getParameters(&r00, &r10, &r01, &r11);
@@ -265,13 +265,13 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     affMat.at<float>(1, 0) = r01;
     affMat.at<float>(1, 1) = r11;
     affMat.at<float>(1, 2) = affineTrf->ty;
-    if (trfOrder == transform_order::DIRECT)
+    if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
     else
       cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
-  } else if (type == tl::transform_type::PERSPECTIVE) {
+  } else if (type == tl::transform_type::perspective) {
     TrfPerspective<Point_t> *perspTrf = dynamic_cast<TrfPerspective<Point_t> *>(trf);
-    if (trfOrder == transform_order::DIRECT)
+    if (trfOrder == transform_order::direct)
       cv::warpPerspective(in, out, perspTrf->H, in.size(), cv::INTER_LINEAR);
     else
       cv::warpPerspective(in, out, perspTrf->H.inv(), in.size(), cv::INTER_LINEAR);

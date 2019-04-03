@@ -45,7 +45,7 @@ int main(int argc, char** argv)
   console.setTitle("Read Image");
   console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   RasterGraphics image1;
   cv::Mat mat_1;

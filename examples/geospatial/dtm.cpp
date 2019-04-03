@@ -31,7 +31,7 @@ int main(int argc, char** argv)
   Console &console = Console::instance();
   console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::msg_verbose);
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
 
   fs::path cloud_path;

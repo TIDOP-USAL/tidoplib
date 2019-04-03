@@ -110,7 +110,7 @@ int main(int argc, char** argv)
     double b;
     double c;
     double d;
-    affine.getParameters(&a, &b, &c, &d);
+    affine.parameters(&a, &b, &c, &d, nullptr, nullptr);
 
     fs::path _path(img_file);
     _path.replace_extension(".tfw");

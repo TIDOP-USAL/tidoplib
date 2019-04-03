@@ -360,10 +360,19 @@ public:
   MessageManager(MessageManager const&) = delete;
   void operator=(MessageManager const&) = delete;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
-   * \brief Singleton para obtener una referencia única
+   * \brief Singleton para obtener una referencia
+   * \deprecated Use 'instance()'  en su lugar
    */
+  TL_DEPRECATED("MessageManager::instance", "2.0")
   static MessageManager &getInstance();
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Singleton para obtener una referencia
+   */
+  static MessageManager &instance();
 
   /*!
    * \brief Añade un escuchador de mensajes

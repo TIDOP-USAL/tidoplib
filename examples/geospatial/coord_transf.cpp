@@ -66,7 +66,7 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   console.setFontHeight(14);                      // Se establece el tamaño de fuente
   console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
   Point3D pt_utm(350000., 4800000., 0.);

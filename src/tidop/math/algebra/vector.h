@@ -47,7 +47,7 @@ public:
   /*!
    * \brief value_type
    */
-  typedef typename std::array<T, _size>::value_type value_type;
+  typedef T value_type;
 
   /*!
    * \brief Tipo entero sin signo (por lo general size_t)

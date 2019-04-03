@@ -107,8 +107,8 @@ TEST_F(MatrixTest, DefaultConstructor)
 {
   double ini_value = -std::numeric_limits<double>().max();
 
-  for (size_t r = 0; r < _mat_2x2_d.rows(); r++){
-    for (size_t c = 0; c < _mat_2x2_d.cols(); c++){
+  for (size_t r = 0; r < _mat_2x2_d.rows; r++){
+    for (size_t c = 0; c < _mat_2x2_d.cols; c++){
       EXPECT_EQ(ini_value, _mat_2x2_d.at(r, c));
     }
   }
@@ -194,16 +194,16 @@ TEST_F(MatrixTest, at)
 
 TEST_F(MatrixTest, rows)
 {
-  EXPECT_EQ(2, _mat_2x2_d.rows());
-  EXPECT_EQ(3, _mat_3x3_d.rows());
-  EXPECT_EQ(3, _mat_3x3_f.rows());
+  EXPECT_EQ(2, _mat_2x2_d.rows);
+  EXPECT_EQ(3, _mat_3x3_d.rows);
+  EXPECT_EQ(3, _mat_3x3_f.rows);
 }
 
 TEST_F(MatrixTest, cols)
 {
-  EXPECT_EQ(2, _mat_2x2_d.cols());
-  EXPECT_EQ(3, _mat_3x3_d.cols());
-  EXPECT_EQ(3, _mat_3x3_f.cols());
+  EXPECT_EQ(2, _mat_2x2_d.cols);
+  EXPECT_EQ(3, _mat_3x3_d.cols);
+  EXPECT_EQ(3, _mat_3x3_f.cols);
 }
 
 TEST_F(MatrixTest, inverse2x2)
@@ -367,8 +367,8 @@ TEST_F(MatrixTest, cofactor)
 
 TEST_F(MatrixTest, zero)
 {
-  for (size_t r = 0; r < mat_identity.rows(); r++){
-    for (size_t c = 0; c < mat_identity.cols(); c++){
+  for (size_t r = 0; r < mat_identity.rows; r++){
+    for (size_t c = 0; c < mat_identity.cols; c++){
       EXPECT_EQ(0, mat_zero.at(r, c));
     }
   }
@@ -376,8 +376,8 @@ TEST_F(MatrixTest, zero)
 
 TEST_F(MatrixTest, ones)
 {
-  for (size_t r = 0; r < mat_identity.rows(); r++){
-    for (size_t c = 0; c < mat_identity.cols(); c++){
+  for (size_t r = 0; r < mat_identity.rows; r++){
+    for (size_t c = 0; c < mat_identity.cols; c++){
       EXPECT_EQ(1, mat_ones.at(r, c));
     }
   }
@@ -385,8 +385,8 @@ TEST_F(MatrixTest, ones)
 
 TEST_F(MatrixTest, identity)
 {
-  for (size_t r = 0; r < mat_identity.rows(); r++){
-    for (size_t c = 0; c < mat_identity.cols(); c++){
+  for (size_t r = 0; r < mat_identity.rows; r++){
+    for (size_t c = 0; c < mat_identity.cols; c++){
       if (r == c) {
         EXPECT_EQ(1, mat_identity.at(r, c));
       } else {
@@ -401,8 +401,8 @@ TEST_F(MatrixTest, identity)
 TEST_F(MatrixTest, plus)
 {
   Matrix3x3d mat = +_mat_3x3_d;
-  for (size_t r = 0; r < mat_identity.rows(); r++){
-    for (size_t c = 0; c < mat_identity.cols(); c++){
+  for (size_t r = 0; r < mat_identity.rows; r++){
+    for (size_t c = 0; c < mat_identity.cols; c++){
       EXPECT_EQ(mat.at(r,c), _mat_3x3_d.at(r, c));
     }
   }
@@ -411,8 +411,8 @@ TEST_F(MatrixTest, plus)
 TEST_F(MatrixTest, minus)
 {
   Matrix3x3d mat = -_mat_3x3_d;
-  for (size_t r = 0; r < mat_identity.rows(); r++){
-    for (size_t c = 0; c < mat_identity.cols(); c++){
+  for (size_t r = 0; r < mat_identity.rows; r++){
+    for (size_t c = 0; c < mat_identity.cols; c++){
       EXPECT_EQ(-mat.at(r, c), _mat_3x3_d.at(r, c));
     }
   }

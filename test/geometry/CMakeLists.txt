@@ -27,7 +27,10 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     target_link_libraries(${the_target} tl_core tl_geom)
     target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-	
+    if (UNIX)
+      target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
+    endif()
+
     # Añade el proyecto de ejmplo a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/geometry")
 

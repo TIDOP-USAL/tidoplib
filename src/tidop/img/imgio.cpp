@@ -680,9 +680,9 @@ float GdalGeoRaster::getZ(const PointD &pt)
 {
   // Se transforma la ventana a coordenadas imagen
   cv::Mat mat;
-  WindowD wTerrain(pt, 1*mTrfAffine->getScaleX());
+  WindowD wTerrain(pt, 1*mTrfAffine->scaleX());
   WindowD wLoad;
-  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
+  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::inverse);
 
   WindowI wRead(wLoad);
   Helmert2D<PointI> trf;
@@ -703,7 +703,7 @@ GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const Window<PointD> &
 
   // Se transforma la ventana a coordenadas imagen
   Window<PointD> wLoad;
-  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
+  transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::inverse);
 
   WindowI wRead(wLoad);
   Helmert2D<PointI> trf;

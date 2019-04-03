@@ -6,10 +6,7 @@
 #include <tidop/img/imgio.h>
 
 using namespace tl;
-
-#ifdef HAVE_VLD
-#include <vld.h>
-#endif
+using namespace geometry;
 
 /*!
  * read_image: 
@@ -22,8 +19,8 @@ int main(int argc, char** argv)
 
   std::string img;
 
-  Command cmd("Read Image", "Lectura de una imagen");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
+  Command cmd("Read Image", "Lectura de una imagen con georeferencia");
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Imagen georeferenciada", &img));
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
@@ -44,17 +41,26 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  RasterGraphics image;
-  if (image.open(img) == RasterGraphics::Status::open_ok) {
-    msgInfo("Numero de bandas: %i", image.getBands());
-    msgInfo("Profundidad de color: %i", image.getColorDepth());
-    msgInfo("Dimensiones de la imagen: %ix%i", image.getCols(), image.getRows());
+  GeoRasterGraphics geo_image;
+  if (geo_image.open(img) == GeoRasterGraphics::Status::open_ok) {
+    msgInfo("Numero de bandas: %i", geo_image.getBands());
+    msgInfo("Profundidad de color: %i", geo_image.getColorDepth());
+    msgInfo("Dimensiones de la imagen: %ix%i", geo_image.getCols(), geo_image.getRows());
   } else {
     msgError("Error al abrir la imagen: %s", img.c_str());
   }
 
-  //tl::ImgMetadata *metadata = new tl::JpegMetadata();
-  //tl::JpegMetadata *metadata2 = new tl::JpegMetadata();
-  //std::string prueba = metadata2->ExifDocumentName;
+  std::array<double, 6> geoTransform = geo_image.georeference();
+
+  Affine<cv::Point2d> affine;
+  affine.setParameters(geoTransform[1],
+                       geoTransform[2],
+                       geoTransform[4],
+                       geoTransform[5],
+                       geoTransform[0],
+                       geoTransform[3]);
+
+  geo_image.close();
+
   return 0;
 }

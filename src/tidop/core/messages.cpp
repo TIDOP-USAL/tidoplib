@@ -105,7 +105,20 @@ MessageManager::~MessageManager()
   sObjMessage.release();
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 MessageManager &MessageManager::getInstance()
+{
+  if (sObjMessage.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
+    if (sObjMessage.get() == nullptr) {
+      sObjMessage.reset(new MessageManager());
+    }
+  }
+  return *sObjMessage;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+MessageManager &MessageManager::instance()
 {
   if (sObjMessage.get() == nullptr) {
     std::lock_guard<std::mutex> lck(MessageManager::sMutex);
@@ -149,7 +162,7 @@ void MessageManager::pause()
 
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
-  getInstance();
+  MessageManager::instance();
 
   if (sStopHandler) return;
 
@@ -191,7 +204,7 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
 void MessageManager::release(const Message &msg)
 {
-  getInstance();
+  MessageManager::instance();
   
   if (sStopHandler) return;
 
@@ -307,13 +320,13 @@ _msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
 MessageManager::Listener::Listener(bool add)
 {
   if (add) {
-    MessageManager::getInstance().addListener(this);
+    MessageManager::instance().addListener(this);
   }
 }
 
 MessageManager::Listener::~Listener()
 {
-  MessageManager::getInstance().removeListener(this);
+  MessageManager::instance().removeListener(this);
 }
 
 /* ---------------------------------------------------------------------------------- */

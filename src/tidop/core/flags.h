@@ -105,7 +105,7 @@ public:
    * \brief Constructora de movimiento
    * \param[in] flag
    */
-  EnumFlags(EnumFlags<T> &&flag);
+  EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Constructora
@@ -130,7 +130,7 @@ public:
    * \param[in] flag Objeto EnumFlags
    * \return Referencia al objeto EnumFlags
    */
-  EnumFlags<T> &operator = (EnumFlags<T> &&flag);
+  EnumFlags<T> &operator = (EnumFlags<T> &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Operador asignación enumeración
@@ -207,7 +207,7 @@ EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
 }
 
 template<typename T> inline
-EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag)
+EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT
   : mFlag(std::move(flag.mFlag)) 
 {
 
@@ -235,7 +235,7 @@ EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
 }
 
 template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag)
+EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag) TL_NOEXCEPT
 {
   if (this != &flag) {
     this->mFlag = std::move(flag.mFlag);

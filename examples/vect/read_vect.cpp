@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   Console &console = Console::instance();
   console.setTitle(cmd_name);
   console.setLogLevel(MessageLevel::msg_verbose);
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   msgInfo("Open file: %s", vect.c_str());
   VectorGraphics vector;

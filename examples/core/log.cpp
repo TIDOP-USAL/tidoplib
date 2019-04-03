@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   Console &console = Console::instance();
   console.setTitle(name);                         // Titulo de la ventana de consola
   console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   // Se obtiene una instancia unica de la clase Log
   Log &log = Log::getInstance();
@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   log.write("Prueba de escritura");
 
   // Se suscribe la clase log al gestor de mensajes
-  MessageManager::getInstance().addListener(&log);
+  MessageManager::instance().addListener(&log);
 
   // Se muestra un mensaje por consola y se escribe en el log
   msgInfo("prueba");

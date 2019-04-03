@@ -56,6 +56,12 @@ template<size_t _rows, size_t _cols, typename T = double>
 class Matrix
 {
 
+public:
+
+  typedef T value_type;
+  size_t rows = _rows;
+  size_t cols = _cols;
+
 protected:
 
   std::array<std::array<T, _cols>, _rows> mMatrix;
@@ -136,13 +142,13 @@ public:
    * \brief Número de filas de la matriz
    * \return Número de filas
    */
-  size_t rows() const;
+  //size_t rows() const;
 
   /*!
    * \brief Número de columnas de la matriz
    * \return Número de columnas
    */
-  size_t cols() const;
+  //size_t cols() const;
 
   /*!
    * \brief Matriz inversa
@@ -286,8 +292,8 @@ typedef Matrix<4,4,double> Matrix4x4d;
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix()
-  : mRows(_rows),
-    mCols(_cols)
+  : rows(_rows),
+    cols(_cols)
 {
   T ini_val = -std::numeric_limits<T>().max();
   for (size_t r = 0; r < _rows; r++) {
@@ -300,16 +306,16 @@ Matrix<_rows, _cols, T>::Matrix()
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(const Matrix &mat)
   : mMatrix(mat.mMatrix),
-    mRows(_rows),
-    mCols(_cols)
+    rows(_rows),
+    cols(_cols)
 {
 }
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(Matrix &&mat) TL_NOEXCEPT
   : mMatrix(std::forward<std::array<std::array<T, _cols>, _rows>>(mat.mMatrix)),
-    mRows(std::move(mat.mRows)),
-    mCols(std::move(mat.mCols))
+    rows(std::move(mat.rows)),
+    cols(std::move(mat.cols))
 {
 }
 
@@ -317,23 +323,23 @@ Matrix<_rows, _cols, T>::Matrix(Matrix &&mat) TL_NOEXCEPT
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(const std::array<std::array<T, _cols>, _rows> &mat)
   : mMatrix(mat),
-    mRows(_rows),
-    mCols(_cols)
+    rows(_rows),
+    cols(_cols)
 {
 }
 
 template<size_t _rows, size_t _cols, typename T> inline
 Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> mat)
-  : mRows(_rows),
-    mCols(_cols)
+  : rows(_rows),
+    cols(_cols)
 {
   TL_TODO("ver por que peta con mas de 3 filas")
   size_t n_rows = mat.size();
   auto it_row = mat.begin();
-  for (size_t r = 0; r < mRows; r++) {
+  for (size_t r = 0; r < this->rows; r++) {
     if (r <= n_rows){
       auto it_col = it_row->begin();
-      for (size_t c = 0; c < mCols; c++) {
+      for (size_t c = 0; c < this->cols; c++) {
         if (r <= n_rows){
           this->mMatrix[r][c] = *it_col++;
         } else{
@@ -342,7 +348,7 @@ Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> 
       }
       it_row++;
     } else{
-      for (size_t c = 0; c < mCols; c++) {
+      for (size_t c = 0; c < this->cols; c++) {
         this->mMatrix[r][c] = T{0};
       }
     }
@@ -369,8 +375,8 @@ Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (const Matrix& rot)
 {
   if (this != &rot) {
     this->mMatrix = rot.mMatrix;
-    this->mRows = rot.mRows;
-    this->mCols = rot.mCols;
+    this->rows = rot.rows;
+    this->cols = rot.cols;
   }
   return *this;
 }
@@ -380,8 +386,8 @@ Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (Matrix &&rot) TL_N
 {
   if (this != &rot) {
     this->mMatrix = std::forward<std::array<std::array<T, _cols>, _rows>>(rot.mMatrix);
-    this->mRows = std::move(rot.mRows);
-    this->mCols = std::move(rot.mCols);
+    this->rows = std::move(rot.rows);
+    this->cols = std::move(rot.cols);
   }
   return *this;
 }
@@ -398,17 +404,17 @@ const T &Matrix<_rows, _cols, T>::at(size_t r, size_t c) const
   return mMatrix[r][c];
 }
 
-template<size_t _rows, size_t _cols, typename T>
-size_t Matrix<_rows, _cols, T>::rows() const
-{
-  return mRows;
-}
+//template<size_t _rows, size_t _cols, typename T>
+//size_t Matrix<_rows, _cols, T>::rows() const
+//{
+//  return mRows;
+//}
 
-template<size_t _rows, size_t _cols, typename T>
-size_t Matrix<_rows, _cols, T>::cols() const
-{
-  return mCols;
-}
+//template<size_t _rows, size_t _cols, typename T>
+//size_t Matrix<_rows, _cols, T>::cols() const
+//{
+//  return mCols;
+//}
 
 template<size_t _rows, size_t _cols, typename T> 
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) const

@@ -57,7 +57,7 @@ int main(int argc, char** argv)
   console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   console.setFontHeight(14);
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   std::string file_in = vect_in.string();
   std::string file_out = vect_out.string();

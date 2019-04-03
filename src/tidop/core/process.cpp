@@ -464,7 +464,7 @@ Process::Status ExternalProcess::run(Progress *progressBar)
 #else
   pid_t pid;
   char *cmd = nullptr;
-  strcpy(cmd, mCmd.c_str());
+  strcpy(cmd, mProcess.c_str());
   char *argv[] = {"sh", "-c", cmd, nullptr};
   int status;
   //printf("Run command: %s\n", cmd);
@@ -480,7 +480,7 @@ Process::Status ExternalProcess::run(Progress *progressBar)
       }
   } else {
       printf("posix_spawn: %s\n", strerror(status));
-      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
+      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mProcess.c_str());
       return Process::Status::error;
   }
 //  int posix_spawn(pid_t *pid, const char *path,

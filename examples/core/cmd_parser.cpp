@@ -57,8 +57,8 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::instance();
   console.setTitle(cmd_name.c_str());                           // Titulo de la ventana de consola
-  console.setLogLevel(MessageLevel::msg_verbose);   // Se muestran todos los mensajes por consola
-  MessageManager::getInstance().addListener(&console);
+  console.setLogLevel(MessageLevel::msg_verbose);               // Se muestran todos los mensajes por consola
+  MessageManager::instance().addListener(&console);          // Se añade un escuchador de los mensajes emitidos por la aplicación
 
   std::string file;
   bool bOpt, bOpt2;
@@ -80,6 +80,7 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble. Si se omite se toma el valor por defecto", &val_d));
   cmd.push_back(std::make_shared<ArgumentList_<std::string, false>>("options", "lista de opciones", options, &idx));
 
+  /// Definición de ejemplos de la aplicación
   cmd.addExample(std::string(cmd_name).append(" --file c:/path/file.txt --int 30 -b"));
   cmd.addExample(std::string(cmd_name).append(" -fc:/path/file.txt -i30 -b"));
 
