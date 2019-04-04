@@ -199,7 +199,12 @@ public:
    * \see transform_order
    */
   virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const = 0;
-
+    
+  /*!
+   * \brief Aplica la transformación a un punto
+   * \param[in] ptIn Punto de entrada
+   * \return Punto de salida
+   */
   virtual Point_t operator() (const Point_t &ptIn) const;
 
   /*!
@@ -752,7 +757,7 @@ transform_status TrfMultiple<Point_t>::transform(const Point_t &ptIn, Point_t *p
 {
   *ptOut = ptIn;
   transform_status r_status;
-  for (auto trf : mTransf) {
+  for (auto &trf : mTransf) {
     r_status = trf->transform(*ptOut, ptOut, trfOrder);
     if ( r_status == transform_status::failure ) break;
   }
@@ -763,7 +768,7 @@ template<typename Point_t> inline
 Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
 {
   Point_t out = ptIn;
-  for (auto trf : mTransf) {
+  for (auto &trf : mTransf) {
     out = trf->transform(out, trfOrder);
   }
   return out;
@@ -776,7 +781,7 @@ transform_status TrfMultiple<Point_t>::transform(const std::vector<Point_t> &pts
 {
   *ptsOut = ptsIn;
   transform_status r_status;
-  for (auto trf : mTransf) {
+  for (auto &trf : mTransf) {
     r_status = trf->transform(*ptsOut, ptsOut, trfOrder);
     if ( r_status == transform_status::failure ) break;
   }
@@ -1137,6 +1142,12 @@ public:
   Translation(double tx, double ty);
 
   /*!
+   * \brief Constructor de copia
+   * \param[in] translation Objeto que se copia
+   */
+  Translation(const Translation &translation);
+
+  /*!
    * \brief Cálculo de la traslación
    *
    * Calcula la traslación entre dos sistemas diferentes a partir
@@ -1187,10 +1198,17 @@ public:
                              std::vector<Point_t> *ptsOut,
                              transform_order trfOrder = transform_order::direct) const override;
 
-  // conversión a otras transformaciones
+  Translation inverse() const;
 
-  explicit operator Helmert2D<Point_t>() const;
-  explicit operator Affine<Point_t>() const;
+  // conversión a otras transformaciones
+  template <typename Point_t2>
+  explicit operator Translation<Point_t2>() const;
+
+  template <typename Point_t2>
+  explicit operator Helmert2D<Point_t2>() const;
+
+  template <typename Point_t2>
+  explicit operator Affine<Point_t2>() const;
 };
 
 
@@ -1209,6 +1227,14 @@ Translation<Point_t>::Translation(double tx, double ty)
   : Transform2D<Point_t>(transform_type::translation, 1),
     tx(tx),
     ty(ty)
+{
+}
+
+template<typename Point_t>
+inline Translation<Point_t>::Translation(const Translation &translation)
+  : Transform2D<Point_t>(transform_type::translation, 1),
+    tx(translation.tx),
+    ty(translation.ty)
 {
 }
 
@@ -1279,7 +1305,7 @@ transform_status Translation<Point_t>::transform(const Point_t &ptIn,
 {
   transform_status r_status = transform_status::success;
   Point_t pt_aux;
-  if (typeid(Point_t) == typeid(int)) {
+  if (/*std::is_integral<sub_type>::value*/ typeid(Point_t) == typeid(int)) {
     pt_aux.x = TL_ROUND_TO_INT(tx);
     pt_aux.y = TL_ROUND_TO_INT(ty);
   } else {
@@ -1314,15 +1340,27 @@ transform_status Translation<Point_t>::transform(const std::vector<Point_t> &pts
 }
 
 template<typename Point_t> inline
-Translation<Point_t>::operator Helmert2D<Point_t>() const
+Translation<Point_t> Translation<Point_t>::inverse() const
 {
-  return Helmert2D<Point_t>(tx, ty, 1., 0.);
+  return Translation<Point_t>(-this->tx, -this->ty);
+}
+
+template<typename Point_t> template<typename Point_t2> inline
+Translation<Point_t>::operator Translation<Point_t2>() const
+{
+  return Translation<Point_t2>(this->tx, this->ty);
+}
+
+template<typename Point_t> template<typename Point_t2> inline
+Translation<Point_t>::operator Helmert2D<Point_t2>() const
+{
+  return Helmert2D<Point_t2>(tx, ty, 1., 0.);
 }
   
-template<typename Point_t> inline
-Translation<Point_t>::operator Affine<Point_t>() const
+template<typename Point_t> template<typename Point_t2> inline
+Translation<Point_t>::operator Affine<Point_t2>() const
 {
-  return Affine<Point_t>(tx, ty, 1., 1., 0.);
+  return Affine<Point_t2>(tx, ty, 1., 1., 0.);
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -1378,7 +1416,13 @@ public:
    * \param[in] angle Ángulo en radianes
    */
   Rotation(double angle);
-  
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] rotation Objeto Rotation que se copia
+   */
+  Rotation(const Rotation &rotation);
+
   /*!
    * \brief Calculo del ángulo de rotación
    *
@@ -1470,8 +1514,16 @@ public:
                              std::vector<Point_t> *ptsOut,
                              transform_order trfOrder = transform_order::direct) const override;
 
-  explicit operator Helmert2D<Point_t>() const;
-  explicit operator Affine<Point_t>() const;
+  Rotation inverse() const;
+
+  template<typename Point_t2>
+  explicit operator Rotation<Point_t2>() const;
+
+  template<typename Point_t2>
+  explicit operator Helmert2D<Point_t2>() const;
+
+  template<typename Point_t2>
+  explicit operator Affine<Point_t2>() const;
 
 private:
 
@@ -1495,6 +1547,13 @@ Rotation<Point_t>::Rotation(double angle)
     mAngle(angle)
 {
   update();
+}
+
+template<typename Point_t>
+inline Rotation<Point_t>::Rotation(const Rotation &rotation)
+  : Transform2D<Point_t>(transform_type::rotation, 1),
+    mAngle(rotation.mAngle)
+{
 }
 
 template<typename Point_t> inline
@@ -1578,8 +1637,7 @@ transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *pts
 {
   transform_status r_status = transform_status::success;
   if (ptsOut){
-  sub_type x_aux = ptsIn.x;
-  //try {
+    sub_type x_aux = ptsIn.x;
     if (trfOrder == transform_order::direct) {
       ptsOut->x = static_cast<sub_type>(x_aux*r1 - ptsIn.y*r2);
       ptsOut->y = static_cast<sub_type>(x_aux*r2 + ptsIn.y*r1);
@@ -1587,12 +1645,6 @@ transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *pts
       ptsOut->x = static_cast<sub_type>(x_aux*r1 + ptsIn.y*r2);
       ptsOut->y = static_cast<sub_type>(ptsIn.y*r1 - x_aux*r2);
     }
-//  } catch (std::exception &e ) {
-//    MessageManager::release(
-//          MessageManager::Message("Error applying rotation: %s", e.what()).message(),
-//          tl::MessageLevel::msg_error);
-//    r_status = transform_status::failure;
-//  }
   } else
     r_status = transform_status::failure;
   return r_status; 
@@ -1627,15 +1679,27 @@ transform_status Rotation<Point_t>::transform(const std::vector<Point_t> &in,
 }
 
 template<typename Point_t> inline
-Rotation<Point_t>::operator Helmert2D<Point_t>() const
+Rotation<Point_t> Rotation<Point_t>::inverse() const
 {
-  return Helmert2D<Point_t>(0., 0., 1., mAngle);
+
+}
+
+template<typename Point_t> template<typename Point_t2> inline
+Rotation<Point_t>::operator Rotation<Point_t2>() const
+{
+  return Rotation<Point_t2>(mAngle);
+}
+
+template<typename Point_t> template<typename Point_t2> inline
+Rotation<Point_t>::operator Helmert2D<Point_t2>() const
+{
+  return Helmert2D<Point_t2>(0., 0., 1., mAngle);
 }
   
-template<typename Point_t> inline
-Rotation<Point_t>::operator Affine<Point_t>() const
+template<typename Point_t> template<typename Point_t2>  inline
+Rotation<Point_t>::operator Affine<Point_t2>() const
 {
-  return Affine<Point_t>(0., 0., 1., 1., mAngle);
+  return Affine<Point_t2>(0., 0., 1., 1., mAngle);
 }
 
 template<typename Point_t> inline
@@ -2679,6 +2743,7 @@ void Affine<Point_t>::updateInv()
     TL_ENABLE_WARNING(TL_WARNING_C4244)
   }
 }
+
 /* ---------------------------------------------------------------------------------- */
 
 /*!

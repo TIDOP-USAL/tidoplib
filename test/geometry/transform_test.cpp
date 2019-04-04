@@ -171,6 +171,32 @@ TEST_F(TranslationTest, isNumberOfPointsValid)
   EXPECT_FALSE(trf_pointer->isNumberOfPointsValid(0));
 }
 
+TEST_F(TranslationTest, casting)
+{
+  //// cast a Translation float
+  //Translation<Point<float>> trf_float = static_cast<Translation<Point<float>>>(trf);
+  //EXPECT_EQ(0.f, trf_float.tx);
+  //EXPECT_EQ(0.f, trf_float.ty);
+
+  //// cast a Helmert2D
+  //Helmert2D<PointD> trf_h2d = static_cast<Helmert2D<PointD>>(trf);
+  //EXPECT_EQ(0.0, trf_h2d.rotation());
+  //EXPECT_EQ(1., trf_h2d.scale());
+  //EXPECT_EQ(0., trf_h2d.tx);
+  //EXPECT_EQ(0., trf_h2d.ty);
+  //EXPECT_EQ(2, trf_h2d.minNumberOfPoints());
+
+  //// cast a afín
+  //Affine<PointD> trf_affine = static_cast<Affine<PointD>>(trf);
+  //EXPECT_EQ(0.0, trf_affine.rotation());
+  //EXPECT_EQ(1., trf_affine.scaleX());
+  //EXPECT_EQ(1., trf_affine.scaleY());
+  //EXPECT_EQ(0., trf_affine.tx);
+  //EXPECT_EQ(0., trf_affine.ty);
+  //EXPECT_EQ(3, trf_affine.minNumberOfPoints());
+
+  //Affine<PointD> *trf_affine_ptr = static_cast<Affine<PointD>*>(trf_pointer);
+}
 
 
 /// Rotation

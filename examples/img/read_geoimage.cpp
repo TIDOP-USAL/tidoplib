@@ -53,13 +53,16 @@ int main(int argc, char** argv)
   std::array<double, 6> geoTransform = geo_image.georeference();
 
   Affine<cv::Point2d> affine;
-  affine.setParameters(geoTransform[1],
+  affine.setParameters(-geoTransform[1],
                        geoTransform[2],
                        geoTransform[4],
                        geoTransform[5],
                        geoTransform[0],
                        geoTransform[3]);
 
+  cv::Point2d pt_out = affine.transform(cv::Point2d(376711.5, 4808209.5));
+
+  cv::Point2d pt_out2 = affine.transform(cv::Point2d(100, 100), transform_order::inverse);
   geo_image.close();
 
   return 0;

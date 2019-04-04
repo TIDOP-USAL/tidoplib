@@ -728,7 +728,7 @@ void GdalGeoRaster::update()
     mProjection = prj;
   }
 
-  mTrfAffine->setParameters(mGeoTransform[1], 
+  mTrfAffine->setParameters(-mGeoTransform[1], 
                           mGeoTransform[2], 
                           mGeoTransform[4], 
                           mGeoTransform[5], 
