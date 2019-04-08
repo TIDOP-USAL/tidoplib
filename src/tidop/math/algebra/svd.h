@@ -29,16 +29,237 @@ public:
 
 protected:
 
-  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> u;
+  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mA;
+  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mU;
+  Matrix<Matrix_t::cols, Matrix_t::cols, value_type> mV;
+  Vector<Matrix_t::cols, value_type> mW;
+
+  //mutable std::vector<Real> mUVector;  // M elements
+  //mutable std::vector<Real> mVVector;  // N elements
+  //mutable std::vector<Real> mWVector;  // max(M,N) elements
 
 public:
 
   SingularValueDecomposition();
+
+  // A = U ·W · V^t
+  void solve(const Matrix<Matrix_t::rows, Matrix_t::cols, value_type> &a);
+
+private:
+
+  double sign(double a, double b){
+    return ((b) >= 0.0 ? fabs(a) : -fabs(a));
+  }
 };
 
 template<typename Matrix_t>
 SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 {
+}
+
+template<typename Matrix_t>
+void SingularValueDecomposition<Matrix_t>::solve(const Matrix<Matrix_t::rows, Matrix_t::cols, value_type> &a)
+{
+  this->mA = a;
+  this->mU = a;
+  Vector<Matrix_t::rows, value_type> rv1;
+  //float pythag(float a, float b);//???
+  size_t j, k, l;
+  double anorm, f, g, h, s, scale;
+  g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
+
+  for (size_t i = 1; i <= Matrix_t::rows; i++) {
+    l = i + 1;
+    rv1[i] = scale*g;
+    g = s = scale = 0.0;
+    if (i <= Matrix_t::cols) {
+      for (k = i; k <= Matrix_t::cols; k++) scale += fabs(mU.at(k,i));
+      if (scale != 0.) {
+        for (k = i; k <= Matrix_t::cols; k++) {
+          mU.at(k,i) /= scale;
+          s += mU.at(k,i) * mU.at(k,i);
+        }
+        f = mU.at(i,i);
+        g = -sign(sqrt(s), f);
+        h = f*g - s;
+        mU.at(i,i) = f - g;
+        for (j = l; j <= Matrix_t::rows; j++) {
+          for (s = 0.0, k = i; k <= Matrix_t::cols; k++)
+            s += mU.at(k,i) * mU.at(k,j);
+          f = s / h;
+          for (k = i; k <= Matrix_t::cols; k++)
+            mU.at(k,j) += f*mU.at(k,i);
+        }
+        for (k = i; k <= Matrix_t::cols; k++)
+          mU.at(k,i) *= scale;
+      }
+    }
+    mW[i] = scale *g;
+    g = s = scale = 0.0;
+    if (i <= Matrix_t::cols && i != Matrix_t::rows) {
+      for (k = l; k <= Matrix_t::rows; k++) scale += fabs(mU.at(i,k));
+      if (scale != 0.) {
+        for (k = l; k <= Matrix_t::rows; k++) {
+          mU.at(i,k) /= scale;
+          s += mU.at(i,k) * mU.at(i,k);
+        }
+        f = mU.at(i,l);
+        g = -sign(sqrt(s), f);
+        h = f*g - s;
+        mU.at(i,l) = f - g;
+
+        for (k = l; k <= Matrix_t::rows; k++)
+          rv1[k] = mU.at(i,k) / h;
+
+        for (j = l; j <= Matrix_t::cols; j++) {
+          for (s = 0.0, k = l; k <= Matrix_t::rows; k++)
+            s += mU.at(j,k) * mU.at(i,k);
+          for (k = l; k <= Matrix_t::rows; k++)
+            mU.at(j,k) += s*rv1[k];
+        }
+
+        for (k = l; k <= Matrix_t::rows; k++)
+          mU.at(i,k) *= scale;
+      }
+    }
+    anorm = std::max(anorm, (fabs(mW[i]) + fabs(rv1[i])));
+  }
+
+
+  for (size_t i = Matrix_t::rows; i >= 1; i--) { //Accumulation of right-hand transformations.
+    if (i < Matrix_t::rows) {
+      if (g != 0.) {
+        for (j = l; j <= Matrix_t::rows; j++) //Double division to avoid possible underflow.
+          mV.at(j,i) = (mU.at(i,j) / mU.at(i,l)) / g;
+        for (j = l; j <= Matrix_t::rows; j++) {
+          for (s = 0.0, k = l; k <= Matrix_t::rows; k++)
+            s += mU.at(i,k) * mV.at(k,j);
+          for (k = l; k <= Matrix_t::rows; k++)
+            mV.at(k,j) += s*mV.at(k,i);
+        }
+      }
+
+      for (j = l; j <= Matrix_t::rows; j++)
+        mV.at(i,j) = mV.at(j,i) = 0.0;
+    }
+    mV.at(i,i) = 1.0;
+    g = rv1[i];
+    l = i;
+  }
+
+  for (size_t i = std::min(Matrix_t::cols, Matrix_t::rows); i >= 1; i--) { //Accumulation of left-hand transformations.
+    l = i + 1;
+    g = mW[i];
+    for (j = l; j <= Matrix_t::rows; j++) a[i][j] = 0.0;
+    if (g != 0.) {
+      g = 1.0 / g;
+      for (j = l; j <= Matrix_t::rows; j++) {
+        for (s = 0.0, k = l; k <= Matrix_t::cols; k++) s += a[k][i] * a[k][j];
+        f = (s / a[i][i])*g;
+        for (k = i; k <= Matrix_t::cols; k++) mV.at(k,j) += f*mV.at(k,i);
+      }
+      for (j = i; j <= Matrix_t::cols; j++)
+        mV.at(j,i) *= g;
+    } else {
+      for (j = i; j <= Matrix_t::cols; j++)
+        mV.at(j,i) = 0.0;
+    }
+    ++mV.at(i,i);  //++a[i][j] TODO: ver esto
+  }
+
+  int flag, its, nm;
+  double c, x, y, z;
+  for (k = Matrix_t::rows; k >= 1; k--) { //Diagonalization of the bidiagonal form: Loop over
+    for (its = 1; its <= 30; its++) { // singular values, and over allowed iterations.
+        flag = 1;
+      for (l = k; l >= 1; l--) { //Test for splitting.
+        nm = l - 1; //Note that rv1[1] is always zero.
+        if ((float)(fabs(rv1[l]) + anorm) == anorm) {
+          flag = 0;
+          break;
+        }
+        if ((float)(fabs(mW[nm]) + anorm) == anorm) break;
+      }
+      if (flag) {
+        c = 0.0; //Cancellation of rv1[l], if l > 1.
+        s = 1.0;
+        for (size_t i = l; i <= k; i++) {
+          f = s*rv1[i];
+          rv1[i] = c*rv1[i];
+          if ((float)(fabs(f) + anorm) == anorm) break;
+          g = mW[i];
+          h = pythag(f, g);
+          mW[i] = h;
+          h = 1.0 / h;
+          c = g*h;
+          s = -f*h;
+          for (j = 1; j <= Matrix_t::cols; j++) {
+            y = a[j][nm];
+            z = a[j][i];
+            a[j][nm] = y*c + z*s;
+            a[j][i] = z*c - y*s;
+          }
+        }
+      }
+      z = w[k];
+      if (l == k) { //Convergence.
+        if (z < 0.0) { //Singular value is made nonnegative.
+          w[k] = -z;
+          for (j = 1; j <= Matrix_t::rows; j++) v[j][k] = -v[j][k];
+        }
+        break;
+      }
+      if (its == 30) msgError("no convergence in 30 svdcmp iterations");
+      x = w[l]; //Shift from bottom 2-by-2 minor.
+      nm = k - 1;
+      y = w[nm];
+      g = rv1[nm];
+      h = rv1[k];
+      f = ((y - z)*(y + z) + (g - h)*(g + h)) / (2.0*h*y);
+      g = pythag(f, 1.0);
+      f = ((x - z)*(x + z) + h*((y / (f + sign(g, f))) - h)) / x;
+      c = s = 1.0; //Next QR transformation:
+      for (j = l; j <= nm; j++) {
+        i = j + 1;
+        g = rv1[i];
+        y = w[i];
+        h = s*g;
+        g = c*g;
+        z = pythag(f, h);
+        rv1[j] = z;
+        c = f / z;
+        s = h / z;
+        f = x*c + g*s;
+        g = g*c - x*s;
+        h = y*s;
+        y *= c;
+        for (size_t jj = 1; jj <= Matrix_t::rows; jj++) {
+          x = v[jj][j];
+          z = v[jj][i];
+          v[jj][j] = x*c + z*s;
+          v[jj][i] = z*c - x*s;
+        }
+        z = pythag(f, h);
+        w[j] = z; //Rotation can be arbitrary if z = 0.
+        if (z) {
+          z = 1.0 / z;
+          c = f*z;
+          s = h*z;
+        }
+        f = c*g + s*y;
+        x = c*y - s*g;
+        for (size_t jj = 1; jj <= Matrix_t::cols; jj++) {
+          y = a[jj][j];
+          z = a[jj][i];
+          a[jj][j] = y*c + z*s;
+          a[jj][i] = z*c - y*s;
+        }
+      }
+      rv1[l] = 0.0;
+      rv1[k] = f;
+      w[k] = x;
+    }
+  }
 }
 
 
@@ -55,7 +276,7 @@ SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 //////  rv1 = vector(1, _rows);
 //  Vector<_rows, T> rv1;
 //  g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
-//
+
 //  for (size_t i = 1; i <= _rows; i++) {
 //    l = i + 1;
 //    rv1[i] = scale*g;
@@ -95,24 +316,24 @@ SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 //        g = -SIGN(sqrt(s), f);
 //        h = f*g - s;
 //        a.at(i,l) = f - g;
-//
+
 //        for (k = l; k <= _rows; k++)
 //          rv1[k] = a.at(i,k) / h;
-//
+
 //        for (j = l; j <= _cols; j++) {
 //          for (s = 0.0, k = l; k <= _rows; k++)
 //            s += a.at(j,k) * a.at(i,k);
 //          for (k = l; k <= _rows; k++)
 //            a.at(j,k) += s*rv1[k];
 //        }
-//
+
 //        for (k = l; k <= _rows; k++)
 //          a.at(i,k) *= scale;
 //      }
 //    }
 //    anorm = std::max(anorm, (fabs(w[i]) + fabs(rv1[i])));
 //  }
-//
+
 //  for (size_t i = _rows; i >= 1; i--) { //Accumulation of right-hand transformations.
 //    if (i < _rows) {
 //      if (g) {
@@ -123,7 +344,7 @@ SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 //          for (k = l; k <= _rows; k++) v[k][j] += s*v[k][i];
 //        }
 //      }
-//
+
 //      for (j = l; j <= _rows; j++)
 //        v[i][j] = v[j][i] = 0.0;
 //    }
@@ -131,7 +352,7 @@ SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 //    g = rv1[i];
 //    l = i;
 //  }
-//
+
 //  for (size_t i = std::min(_cols, _rows); i >= 1; i--) { //Accumulation of left-hand transformations.
 //    l = i + 1;
 //    g = w[i];
@@ -147,7 +368,7 @@ SingularValueDecomposition<Matrix_t>::SingularValueDecomposition()
 //    } else for (j = i; j <= _cols; j++) a[j][i] = 0.0;
 //    ++a[i][i];
 //  }
-//
+
 //  int flag, its, nm;
 //  double c, x, y, z;
 //  for (k = _rows; k >= 1; k--) { //Diagonalization of the bidiagonal form: Loop over
