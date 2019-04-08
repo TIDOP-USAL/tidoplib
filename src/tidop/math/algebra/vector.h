@@ -646,9 +646,6 @@ double dotProduct(const Vector<_size, T> &v1,
   return dot;
 }
 
-// Producto escalar
-// Producto vectorial
-
 
 
 /*! \} */ // end of Algebra

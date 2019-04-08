@@ -84,12 +84,12 @@ public:
     /*!
      * \brief Constructora
      */
-    Listener();
+    Listener(){}
 
     /*!
      * \brief destructora
      */
-    virtual ~Listener() = 0;
+    virtual ~Listener() = default;
 
     /*!
      * \brief Evento pausa
@@ -215,17 +215,8 @@ public:
   virtual void stop();
 
   /*!
-   * \brief Devuelve el proceso como una linea de comandos
+   * \brief Devuelve el estado actual de la ejecución
    */
-  //virtual std::string toString() = 0;
-
-  /*!
-   * \brief Devuelve el estado actual de la ejecución 
-   */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("status", "2.0")
-  Status getStatus();
-#endif // TL_ENABLE_DEPRECATED_METHODS
   Status status();
 
   /*!
@@ -238,19 +229,11 @@ public:
    * \brief Devuelve el identificador del proceso
    * \return
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("id", "2.0")
-  uint64_t getProcessId() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
   uint64_t id() const;
 
   /*!
-   * \brief Devuelve el nombre del proceso 
+   * \brief Devuelve el nombre del proceso
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("processName", "2.0")
-  std::string getProcessName() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
   std::string name() const;
 
   /*!
@@ -277,6 +260,34 @@ protected:
    *
    */
   virtual Status checkStatus();
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  
+public:
+
+  /*!
+   * \brief Devuelve el estado actual de la ejecución
+   * \deprecated Use 'status()'  en su lugar
+   */
+  TL_DEPRECATED("status", "2.0")
+  Status getStatus();
+  
+  /*!
+   * \brief Devuelve el identificador del proceso
+   * \return
+   * \deprecated Use 'status()'  en su lugar
+   */
+  TL_DEPRECATED("id", "2.0")
+  uint64_t getProcessId() const;
+
+  /*!
+   * \brief Devuelve el nombre del proceso 
+   * \deprecated Use 'processName()'  en su lugar
+   */
+  TL_DEPRECATED("processName", "2.0")
+  std::string getProcessName() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 };
 
 
@@ -349,10 +360,28 @@ private:
 //  : public Process
 //{
 //
+//#ifdef WIN32
+//  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+//  enum class Priority
+//  {
+//    realtime = REALTIME_PRIORITY_CLASS,
+//    high = HIGH_PRIORITY_CLASS,
+//    above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
+//    normal = NORMAL_PRIORITY_CLASS,
+//    below_normal = BELOW_NORMAL_PRIORITY_CLASS,
+//    idle = IDLE_PRIORITY_CLASS
+//  };
+//#endif
+//
 //protected:
 //
 //  std::string mProcess;
 //  std::vector<std::string> mArg;
+//#ifdef WIN32
+//  STARTUPINFO si;
+//  PROCESS_INFORMATION pi;
+//  static DWORD sPriority;
+//#endif
 //
 //public:
 //

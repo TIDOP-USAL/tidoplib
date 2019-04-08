@@ -6,7 +6,6 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
-#include "tidop/core/exception.h"
 #include "tidop/core/flags.h"
 
 namespace tl

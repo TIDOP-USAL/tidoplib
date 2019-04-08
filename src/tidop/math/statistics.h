@@ -22,6 +22,18 @@ namespace math
 /*                                 ESTADISTICA                                        */
 /* ---------------------------------------------------------------------------------- */
 
+template<typename itIn, typename itOut> inline
+double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
+{
+  double rms = 0.;
+  while (in_first != in_last) {
+  //  rms
+  //  trf->transform(*in_first++, &(*out_first++), trfOrder);
+  }
+  return rms;
+}
+
+
 #ifdef HAVE_OPENCV
 
 /*!

@@ -207,32 +207,11 @@ public:
      */
     ~Message() { }
 
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /*!
-     * \brief Devuelve la fecha y hora del mensaje
-     * \return Fecha y hora del mensaje
-     * \deprecated Use 'MessageManager::Message::date()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::date()", "2.0")
-    const char *getDate() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
     /*!
      * \brief Devuelve la fecha y hora del mensaje
      * \return Fecha y hora del mensaje
      */
     const char *date() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /*!
-     * \brief getFile
-     * \return
-     * \deprecated Use 'MessageManager::Message::file()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::file()", "2.0")
-    const char *getFile() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
     /*!
      * \brief file
@@ -240,31 +219,11 @@ public:
      */
     const char *file() const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /*!
-     * \brief getFunction
-     * \return
-     * \deprecated Use 'MessageManager::Message::function()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::function()", "2.0")
-    const char *getFunction() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
     /*!
      * \brief function
      * \return
      */
     const char *function() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /*!
-     * \brief Nivel del mensaje
-     * \return Devuelve el nivel de mensaje establecido
-     * \deprecated Use 'MessageManager::Message::level()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::level()", "2.0")
-    MessageLevel getLevel() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
     
     /*!
      * \brief Nivel del mensaje
@@ -273,6 +232,38 @@ public:
     MessageLevel level() const;
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
+     
+    /*!
+     * \brief Devuelve la fecha y hora del mensaje
+     * \return Fecha y hora del mensaje
+     * \deprecated Use 'MessageManager::Message::date()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::date()", "2.0")
+    const char *getDate() const;
+
+    /*!
+     * \brief getFile
+     * \return
+     * \deprecated Use 'MessageManager::Message::file()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::file()", "2.0")
+    const char *getFile() const;
+
+    /*!
+     * \brief getFunction
+     * \return
+     * \deprecated Use 'MessageManager::Message::function()' en su lugar 
+     */
+    TL_DEPRECATED("MessageManager::Message::function()", "2.0")
+    const char *getFunction() const;
+    /*!
+     * \brief Nivel del mensaje
+     * \return Devuelve el nivel de mensaje establecido
+     * \deprecated Use 'MessageManager::Message::level()' en su lugar
+     */
+    TL_DEPRECATED("MessageManager::Message::level()", "2.0")
+      MessageLevel getLevel() const;
+
     /*!
      * \brief getLine
      * \return
@@ -280,6 +271,15 @@ public:
      */
     TL_DEPRECATED("MessageManager::Message::line()", "2.0")
     int getLine() const;
+
+    /*!
+     * \brief Devuelve el mensaje como cadena de texto
+     * \return Mensaje
+     * \deprecated Use 'MessageManager::Message::message()' en su lugar
+     */
+    TL_DEPRECATED("MessageManager::Message::message()", "2.0")
+      const char *getMessage() const;
+
 #endif // TL_ENABLE_DEPRECATED_METHODS
     
     /*!
@@ -287,16 +287,6 @@ public:
      * \return
      */
     int line() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /*!
-     * \brief Devuelve el mensaje como cadena de texto
-     * \return Mensaje
-     * \deprecated Use 'MessageManager::Message::message()' en su lugar 
-     */
-    TL_DEPRECATED("MessageManager::Message::message()", "2.0")
-    const char *getMessage() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
     /*!
      * \brief Devuelve el mensaje como cadena de texto
@@ -360,15 +350,6 @@ public:
   MessageManager(MessageManager const&) = delete;
   void operator=(MessageManager const&) = delete;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Singleton para obtener una referencia
-   * \deprecated Use 'instance()'  en su lugar
-   */
-  TL_DEPRECATED("MessageManager::instance", "2.0")
-  static MessageManager &getInstance();
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
   /*!
    * \brief Singleton para obtener una referencia
    */
@@ -428,6 +409,17 @@ private:
 
   static _msgProperties messageProperties(MessageLevel msgLevel);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+public:
+
+  /*!
+   * \brief Singleton para obtener una referencia
+   * \deprecated Use 'instance()'  en su lugar
+   */
+  TL_DEPRECATED("MessageManager::instance", "2.0")
+    static MessageManager &getInstance();
+#endif // TL_ENABLE_DEPRECATED_METHODS
 };
 
 #ifdef _DEBUG

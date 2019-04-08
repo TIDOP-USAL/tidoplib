@@ -88,6 +88,10 @@ private:
 
   static std::mutex mtx;
 
+#ifdef TL_MESSAGE_HANDLER
+  static bool sPauseListener;
+#endif
+
 private:
 
   /*!
@@ -109,18 +113,7 @@ public:
   /*!
    * \brief Singleton para obtener una referencia única
    */
-  static Log &getInstance();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Niveles de log activados
-   * \return Flag con los niveles de mensajes aceptados por el log
-   * \see EnumFlags
-   * \deprecated Use 'logLevel' en su lugar
-   */
-  TL_DEPRECATED("logLevel", "2.0")
-  EnumFlags<MessageLevel> getLogLevel() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
+  static Log &instance();
 
   /*!
    * \brief Niveles de log activados
@@ -155,9 +148,13 @@ public:
    */
   void write(const char *msg);
 
+#ifdef TL_MESSAGE_HANDLER
+
+  static void pauseListener();
+  static void resumeListener();
+
 protected:
 
-#ifdef TL_MESSAGE_HANDLER
 
   /*!
    * \brief Mensaje de depuración
@@ -195,6 +192,30 @@ protected:
   void _write(const char *msg, const char *date);
 
 #endif // TL_MESSAGE_HANDLER
+
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+public:
+
+  /*!
+   * \brief Singleton para obtener una referencia única
+   * \deprecated Use 'instance' en su lugar
+   */
+  TL_DEPRECATED("instance", "2.0")
+  static Log &getInstance();
+
+  /*!
+  * \brief Niveles de log activados
+  * \return Flag con los niveles de mensajes aceptados por el log
+  * \see EnumFlags
+  * \deprecated Use 'logLevel' en su lugar
+  */
+  TL_DEPRECATED("logLevel", "2.0")
+  EnumFlags<MessageLevel> getLogLevel() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 };
 
 /*! \} */ // end of Log

@@ -193,6 +193,20 @@ public:
   T determinant() const;
 
   /*!
+   * \brief Comprueba si la matrix es invertible
+   * \return Verdadero si la matriz es invertible
+   */
+  bool invertible();
+
+  /*!
+   * \brief Comprueba si la matrix es singular
+   * Una matriz cuadrada que no tiene inversa es singular. El 
+   * determinante de una matriz singular es 0
+   * \return Verdadero si la matriz es singular
+   */
+  bool singular();
+
+  /*!
    * \brief Cofactor
    * El determinante obtenido al eliminar la fila y la columna de un elemento dado de una matriz o determinante. 
    * El cofactor está precedido por un signo + o - dependiendo de si el elemento está en una posición + o -.
@@ -486,6 +500,22 @@ T Matrix<_rows, _cols, T>::determinant() const
   }
 
   return d;
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+bool tl::math::Matrix<_rows, _cols, T>::invertible()
+{
+  T det = determinant();
+  if (det == static_cast<T>(0)) return false;
+  else return true;
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+bool tl::math::Matrix<_rows, _cols, T>::singular()
+{
+  T det = determinant();
+  if (det == static_cast<T>(0)) return true;
+  else return false;
 }
 
 template<size_t _rows, size_t _cols, typename T> 
