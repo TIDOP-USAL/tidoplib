@@ -29,6 +29,7 @@
 #endif // HAVE_OPENCV
 
 #include "tidop/geometry/entities/entity.h"
+#include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
@@ -101,6 +102,12 @@ public:
    * \param[in] point Objeto Point que se mueve
    */
   Point(Point<T> &&point) TL_NOEXCEPT;
+
+  /*!
+   * \brief Constructor a partir de un vector
+   * \param[in] vector Vector
+   */
+  Point(const math::Vector<2, T> &vector);
 
   /*!
    * \brief Constructor
@@ -184,16 +191,23 @@ Point<T>::Point(Point &&pt) TL_NOEXCEPT
 }
 
 template<typename T> inline
+Point<T>::Point(const math::Vector<2, T> &vector)
+  : Entity(Entity::Type::point2d),
+    x(vector[0]),
+    y(vector[1])
+{
+}
+
+template<typename T> inline
 Point<T>::Point(const std::array<T, 2> &v)
   : Entity(Entity::Type::point2d),
     x(v[0]), 
     y(v[1]) 
 {
-
 }
 
 template<typename T> inline
-Point<T>& Point<T>::operator = (const Point &pt)
+Point<T> &Point<T>::operator = (const Point &pt)
 {
   if (this != &pt) {
     this->x = pt.x;
@@ -204,7 +218,7 @@ Point<T>& Point<T>::operator = (const Point &pt)
 
 
 template<typename T> inline
-Point<T>& Point<T>::operator = (Point &&pt) TL_NOEXCEPT
+Point<T> &Point<T>::operator = (Point &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     this->mEntityType = std::move(pt.mEntityType);
@@ -446,6 +460,12 @@ public:
 
   /*!
    * \brief Constructor vector
+   * \param[in] vector Vector
+   */
+  Point3(const math::Vector<3, T> &vector);
+
+  /*!
+   * \brief Constructor vector
    * \param[in] v Vector de coordenadas
    */
   Point3(const std::array<T, 3> &v);
@@ -509,6 +529,15 @@ Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
     x(std::move(pt.x)), 
     y(std::move(pt.y)), 
     z(std::move(pt.z))
+{
+}
+
+template<typename T> inline 
+Point3<T>::Point3(const math::Vector<3, T> &vector)
+  : Entity(Entity::Type::point3d),
+    x(vector[0]),
+    y(vector[1]),
+    z(vector[2])
 {
 }
 

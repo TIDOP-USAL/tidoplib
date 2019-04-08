@@ -110,13 +110,6 @@ void Process::stop()
   }
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-Process::Status Process::getStatus()
-{
-  return mStatus;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 Process::Status Process::status()
 {
   return mStatus;
@@ -197,24 +190,10 @@ void Process::errorTriggered()
   }
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-uint64_t Process::getProcessId() const
-{
-  return mProcessId;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 uint64_t Process::id() const
 {
   return mProcessId;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-std::string Process::getProcessName() const
-{
-  return mProcessName;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 std::string Process::name() const
 {
@@ -239,14 +218,24 @@ Process::Status Process::checkStatus()
 }
 
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
-Process::Listener::Listener()
+Process::Status Process::getStatus()
 {
+  return mStatus;
 }
 
-Process::Listener::~Listener()
+uint64_t Process::getProcessId() const
 {
+  return mProcessId;
 }
+
+std::string Process::getProcessName() const
+{
+  return mProcessName;
+}
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -403,7 +392,7 @@ std::string CmdProcess::formatErrorMsg(DWORD errorCode)
 
 
 /* ---------------------------------------------------------------------------------- */
-
+//
 //ExternalProcess::ExternalProcess(const std::string &process, const std::vector<std::string> &arg)
 //  : Process(),
 //    mProcess(process),

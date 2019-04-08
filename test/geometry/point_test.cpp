@@ -3,6 +3,7 @@
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
 #include <tidop/core/utils.h>
+#include <tidop/math/algebra/vector.h>
 
 using namespace tl;
 using namespace tl::geometry;
@@ -81,6 +82,30 @@ TEST(Point, CopyConstructor)
   EXPECT_NEAR(564.26f, pt_float_c.x, 0.05);
   EXPECT_NEAR(646.65f, pt_float_c.y, 0.05);
 }
+
+/* Constructor a partir de un vector */
+
+TEST(Point, Vector)
+{
+  math::Vector2i pt_int{{23, 67}};
+  PointI pt_int_c(pt_int);
+
+  EXPECT_EQ(23, pt_int_c.x);
+  EXPECT_EQ(67, pt_int_c.y);
+
+  math::Vector2d pt_double{{253.56, 562.94}};
+  PointD pt_double_c(pt_double);
+
+  EXPECT_NEAR(253.56, pt_double_c.x, 0.01);
+  EXPECT_NEAR(562.94, pt_double_c.y, 0.01);
+
+  math::Vector2f pt_float{{564.26f, 646.65f}};
+  PointF pt_float_c(pt_float);
+
+  EXPECT_NEAR(564.26f, pt_float_c.x, 0.05);
+  EXPECT_NEAR(646.65f, pt_float_c.y, 0.05);
+}
+
 
 /* Constructor a partir de un array de coordenadas */
 
@@ -246,7 +271,33 @@ TEST(Point3, CopyConstructor)
   EXPECT_NEAR(56.21f, pt_float_c.z, 0.05);
 }
 
-/* Constructor a partir de un vector de coordenadas */
+/* Constructor a partir de un vector */
+
+TEST(Point3, VectConstructor)
+{
+  math::Vector3i pt_int{{23, 67, 23}};
+  Point3I pt_int_c(pt_int);
+
+  EXPECT_EQ(23, pt_int_c.x);
+  EXPECT_EQ(67, pt_int_c.y);
+  EXPECT_EQ(23, pt_int_c.z);
+
+  math::Vector3d pt_double{{253.56, 562.94, 234.67}};
+  Point3D pt_double_c(pt_double);
+
+  EXPECT_NEAR(253.56, pt_double_c.x, 0.01);
+  EXPECT_NEAR(562.94, pt_double_c.y, 0.01);
+  EXPECT_NEAR(234.67, pt_double_c.z, 0.01);
+
+  math::Vector3f pt_float{{564.26f, 646.65f, 56.21f}};
+  Point3F pt_float_c(pt_float);
+
+  EXPECT_NEAR(564.26f, pt_float_c.x, 0.05);
+  EXPECT_NEAR(646.65f, pt_float_c.y, 0.05);
+  EXPECT_NEAR(56.21f, pt_float_c.z, 0.05);
+}
+
+/* Constructor a partir de un array */
 
 TEST(Point3, VectConstructor) 
 {

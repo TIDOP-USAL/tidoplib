@@ -240,30 +240,10 @@ public:
   Console &operator = (const Console &) = delete;
   Console &operator = (Console &&) = delete;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Singleton que devuelve una referencia unica de un objeto Console
-   * \deprecated Use 'instance()'  en su lugar
-   */
-  TL_DEPRECATED("Console::instance", "2.0")
-  static Console &getInstance();
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
   /*!
    * \brief Singleton que devuelve una referencia unica de un objeto Console
    */
   static Console &instance();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Niveles de mensaje activados
-   * \return Flag con los niveles de mensajes aceptados por la consola
-   * \see EnumFlags
-   * \deprecated Use 'messageLevel()'  en su lugar
-   */
-  TL_DEPRECATED("Console::messageLevel", "2.0")
-  EnumFlags<MessageLevel> getMessageLevel() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Niveles de mensaje activados
@@ -392,6 +372,28 @@ private:
    */
   void update();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+public:
+
+  /*!
+  * \brief Singleton que devuelve una referencia unica de un objeto Console
+  * \deprecated Use 'instance()'  en su lugar
+  */
+  TL_DEPRECATED("Console::instance", "2.0")
+    static Console &getInstance();
+
+  /*!
+  * \brief Niveles de mensaje activados
+  * \return Flag con los niveles de mensajes aceptados por la consola
+  * \see EnumFlags
+  * \deprecated Use 'messageLevel()'  en su lugar
+  */
+  TL_DEPRECATED("Console::messageLevel", "2.0")
+    EnumFlags<MessageLevel> getMessageLevel() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 };
 
 
@@ -453,9 +455,18 @@ public:
   Argument(const Argument &argument);
 
   /*!
+   * \brief Constructora de movimiento
+   * \param[in] argument Objeto que se mueve
+   */
+  Argument(Argument &&argument) TL_NOEXCEPT;
+
+  /*!
    * \brief Destructora
    */
   virtual ~Argument() = 0;
+
+  Argument &operator = (const Argument &arg);
+  Argument &operator = (Argument &&arg) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el nombre del argumento
@@ -576,9 +587,18 @@ public:
   Argument_(const Argument_ &argument);
 
   /*!
+   * \brief Constructora de movimiento
+   * \param[in] argument Objeto que se mueve
+   */
+  Argument_(Argument_ &&argument) TL_NOEXCEPT;
+
+  /*!
    * \brief Destructora
    */
   virtual ~Argument_() override {}
+
+  Argument_ &operator = (const Argument_ &argument);
+  Argument_ &operator = (Argument_ &&arg) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve una cadena de texto con el tipo del argumento
@@ -680,6 +700,36 @@ Argument_<T, required>::Argument_(const Argument_ &argument)
     mValue(argument.mValue),
     bValid(argument.bValid)
 {
+}
+
+template<typename T, bool required> inline
+Argument_<T, required>::Argument_(Argument_ &&argument) TL_NOEXCEPT
+  : Argument(std::forward<Argument>(argument)),
+    mValue(std::move(argument.mValue)),
+    bValid(std::move(argument.bValid))
+{
+}
+
+template<typename T, bool required> inline
+Argument_<T, required> &Argument_<T, required>::operator=(const Argument_ &argument)
+{
+  if (this != &argument){
+    Argument::operator=(argument);
+    this->mValue = argument.mValue;
+    this->bValid = argument.bValid;
+  }
+  return this;
+}
+
+template<typename T, bool required> inline
+Argument_<T, required> &Argument_<T, required>::operator=(Argument_ &&argument) TL_NOEXCEPT
+{
+  if (this != &argument){
+    Argument::operator=(std::forward<Argument>(argument));
+    this->mValue = std::move(argument.mValue);
+    this->bValid = std::move(argument.bValid);
+  }
+  return this;
 }
 
 template<typename T, bool required> inline
@@ -926,7 +976,7 @@ public:
    * \brief Constructora de copia
    * \param[in] argument Objeto que se copia
    */
-  //ArgumentList_(const ArgumentList_ &argumentList);
+  ArgumentList_(const ArgumentList_ &argumentList);
 
   /*!
    * \brief Destructora
@@ -1007,6 +1057,14 @@ ArgumentList_<T, required>::ArgumentList_(const std::string &name,
   : Argument_<T, required>(name, shortName, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
     mValues(values),
     mIdx(idx)
+{
+}
+
+template<typename T, bool required> inline
+ArgumentList_<T, required>::ArgumentList_(const ArgumentList_ &argumentList)
+  : Argument_<T, required>(argumentList),
+    mValues(argumentList.mValues),
+    mIdx(argumentList.mIdx)
 {
 }
 
@@ -1319,27 +1377,27 @@ public:
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega un argumento mediante copia al final
@@ -1356,19 +1414,19 @@ public:
   /*!
    * \brief Elimina los argumentos
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
 
   /*!
    * \brief Comprueba si no hay argumentos
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el tamaño del contenedor
    * \return Tamaño
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia
@@ -1534,13 +1592,18 @@ public:
   CommandList(const CommandList &commandList);
 
   /*!
+   * \brief Constructor de movimiento
+   * \param[in] commandList Objeto CommandList que se mueve
+   */
+  CommandList(CommandList &&commandList) TL_NOEXCEPT;
+
+  /*!
    * \brief Constructora de lista
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de comandos
    */
   CommandList(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Command>> commands);
-
 
   /*!
    * \brief Devuelve el nombre del programa
@@ -1591,27 +1654,27 @@ public:
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega un comando mediante copia al final
@@ -1628,19 +1691,19 @@ public:
   /*!
    * \brief Elimina los comandos
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
 
   /*!
    * \brief Comprueba si no hay comandos
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el número de comandos
    * \return Número de comandos
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia

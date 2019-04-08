@@ -105,19 +105,6 @@ MessageManager::~MessageManager()
   sObjMessage.release();
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-MessageManager &MessageManager::getInstance()
-{
-  if (sObjMessage.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-    if (sObjMessage.get() == nullptr) {
-      sObjMessage.reset(new MessageManager());
-    }
-  }
-  return *sObjMessage;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 MessageManager &MessageManager::instance()
 {
   if (sObjMessage.get() == nullptr) {
@@ -362,72 +349,30 @@ MessageManager::Message::Message(const char *msg, ...)
   }
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-const char *MessageManager::Message::getDate() const
-{
-  return mDate.c_str();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 const char *MessageManager::Message::date() const
 {
   return mDate.c_str();
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-const char *MessageManager::Message::getFile() const
-{
-  return mFile.c_str();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 const char *MessageManager::Message::file() const
 {
   return mFile.c_str();
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-const char *MessageManager::Message::getFunction() const
-{
-  return mFunction.c_str();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 const char *MessageManager::Message::function() const
 {
   return mFunction.c_str();
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-MessageLevel MessageManager::Message::getLevel() const
-{
-  return mLevel;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 MessageLevel MessageManager::Message::level() const
 {
   return mLevel;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-int MessageManager::Message::getLine() const
-{
-  return mLine;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 int MessageManager::Message::line() const
 {
   return mLine;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-const char *MessageManager::Message::getMessage() const
-{
-  return mMessage.c_str();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 const char *MessageManager::Message::message() const
 {
@@ -454,5 +399,48 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
 
 #endif  // TL_MESSAGE_HANDLER
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+MessageManager &MessageManager::getInstance()
+{
+  if (sObjMessage.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
+    if (sObjMessage.get() == nullptr) {
+      sObjMessage.reset(new MessageManager());
+    }
+  }
+  return *sObjMessage;
+}
+
+const char *MessageManager::Message::getDate() const
+{
+  return mDate.c_str();
+}
+
+const char *MessageManager::Message::getFile() const
+{
+  return mFile.c_str();
+}
+
+const char *MessageManager::Message::getFunction() const
+{
+  return mFunction.c_str();
+}
+
+MessageLevel MessageManager::Message::getLevel() const
+{
+  return mLevel;
+}
+
+int MessageManager::Message::getLine() const
+{
+  return mLine;
+}
+
+const char *MessageManager::Message::getMessage() const
+{
+  return mMessage.c_str();
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 } // End mamespace tl

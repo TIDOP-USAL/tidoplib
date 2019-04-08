@@ -1,9 +1,5 @@
 #include "tidop/graphic/font.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/imgproc/imgproc.hpp"
-#endif // HAVE_OPENCV
-
 namespace tl
 {
 

@@ -38,6 +38,9 @@ std::string Log::sLogFile = "";
 EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
+#ifdef TL_MESSAGE_HANDLER
+bool Log::sPauseListener = false;
+#endif
 
 Log::Log()
 #ifdef TL_MESSAGE_HANDLER
@@ -51,7 +54,7 @@ Log::~Log()
   sObjLog.release();
 }
 
-Log &Log::getInstance()
+Log &Log::instance()
 {
   if (sObjLog.get() == nullptr) {
     std::lock_guard<std::mutex> lck(Log::mtx);
@@ -61,13 +64,6 @@ Log &Log::getInstance()
   }
   return *sObjLog;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-EnumFlags<MessageLevel> Log::getLogLevel() const
-{
-  return sLevel;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 EnumFlags<MessageLevel> Log::logLevel() const
 {
@@ -109,6 +105,16 @@ void Log::write(const char *msg)
 
 #ifdef TL_MESSAGE_HANDLER
 
+void Log::pauseListener()
+{
+  sPauseListener = true;
+}
+
+void Log::resumeListener()
+{
+  sPauseListener = false;
+}
+
 void Log::onMsgDebug(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
@@ -139,7 +145,6 @@ void Log::onMsgError(const char *msg, const char *date)
 
 void Log::_write(const char *msg, const char *date)
 {
-  TL_TODO("Permitir que se pueda pausar la escritura de los mensajes en el log")
   if (sLogFile.empty()) {
     // Log por defecto
     fs::path logPath(getRunfile());
@@ -159,5 +164,23 @@ void Log::_write(const char *msg, const char *date)
 
 
 #endif // TL_MESSAGE_HANDLER
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+Log &Log::getInstance()
+{
+  if (sObjLog.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(Log::mtx);
+    if (sObjLog.get() == nullptr) {
+      sObjLog.reset(new Log());
+    }
+  }
+  return *sObjLog;
+}
+
+EnumFlags<MessageLevel> Log::getLogLevel() const
+{
+  return sLevel;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 } // End mamespace tl

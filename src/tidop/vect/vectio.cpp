@@ -1181,7 +1181,7 @@ std::shared_ptr<StyleLabel> GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLa
       font.setSize(static_cast<int>(size));
     }
 
-    bool strikeout = ogrStyleLabel->Strikeout(bDefault);
+    bool strikeout = ogrStyleLabel->Strikeout(bDefault) == 1;
     if (!bDefault) {
       font.setStrikethrough(strikeout);
     }

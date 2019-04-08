@@ -89,19 +89,6 @@ Console::~Console()
   sObjConsole.release();
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-Console &Console::getInstance()
-{
-  if (sObjConsole.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(Console::mtx);
-    if (sObjConsole.get() == nullptr) {
-      sObjConsole.reset(new Console());
-    }
-  }
-  return *sObjConsole;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 Console &Console::instance()
 {
   if (sObjConsole.get() == nullptr) {
@@ -112,13 +99,6 @@ Console &Console::instance()
   }
   return *sObjConsole;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-EnumFlags<MessageLevel> Console::getMessageLevel() const
-{
-  return sLevel;
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 EnumFlags<MessageLevel> Console::messageLevel() const
 {
@@ -382,7 +362,23 @@ void Console::update()
 #endif
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+Console &Console::getInstance()
+{
+  if (sObjConsole.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(Console::mtx);
+    if (sObjConsole.get() == nullptr) {
+      sObjConsole.reset(new Console());
+    }
+  }
+  return *sObjConsole;
+}
 
+EnumFlags<MessageLevel> Console::getMessageLevel() const
+{
+  return sLevel;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -416,8 +412,35 @@ Argument::Argument(const Argument &argument)
 {
 }
 
+Argument::Argument(Argument &&argument) TL_NOEXCEPT
+  : mName(std::move(argument.mName)),
+    mDescription(std::move(argument.mDescription)),
+    mShortName(std::move(argument.mShortName))
+{
+}
+
 Argument::~Argument()
 {
+}
+
+Argument &Argument::operator=(const Argument &arg)
+{
+  if (this != &arg){
+    this->mName = arg.mName;
+    this->mDescription = arg.mName;
+    this->mShortName = arg.mShortName;
+  }
+  return *this;
+}
+
+Argument &Argument::operator = (Argument &&arg) TL_NOEXCEPT
+{
+  if (this != &arg){
+    this->mName = std::move(arg.mName);
+    this->mDescription = std::move(arg.mName);
+    this->mShortName = std::move(arg.mShortName);
+  }
+  return *this;
 }
 
 std::string Argument::description() const
@@ -681,22 +704,22 @@ Command::Status Command::parse(int argc, const char * const argv[])
   return Command::Status::parse_success;
 }
 
-Command::iterator Command::begin()
+Command::iterator Command::begin() TL_NOEXCEPT
 {
   return mCmdArgs.begin();
 }
 
-Command::const_iterator Command::begin() const
+Command::const_iterator Command::begin() const TL_NOEXCEPT
 {
   return mCmdArgs.cbegin();
 }
 
-Command::iterator Command::end()
+Command::iterator Command::end() TL_NOEXCEPT
 {
   return mCmdArgs.end();
 }
 
-Command::const_iterator Command::end() const
+Command::const_iterator Command::end() const TL_NOEXCEPT
 {
   return mCmdArgs.cend();
 }
@@ -711,18 +734,18 @@ void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
   mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
 }
 
-void Command::clear()
+void Command::clear() TL_NOEXCEPT
 {
   mCmdArgs.clear();
   mExamples.clear();
 }
 
-bool Command::empty() const
+bool Command::empty() const TL_NOEXCEPT
 {
   return mCmdArgs.empty();
 }
 
-size_t Command::size() const
+size_t Command::size() const TL_NOEXCEPT
 {
   return mCmdArgs.size();
 }
@@ -873,6 +896,14 @@ CommandList::CommandList(const CommandList &commandList)
 {
 }
 
+CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
+  : mName(std::move(commandList.mName)),
+    mDescription(std::move(commandList.mDescription)),
+    mCommands(std::move(commandList.mCommands)),
+    mVersion(std::move(commandList.mVersion))
+{
+}
+
 CommandList::CommandList(const std::string &name, const std::string &description,
                  std::initializer_list<std::shared_ptr<Command>> commands)
   : mName(name),
@@ -921,22 +952,22 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
   return Status::parse_success;
 }
 
-CommandList::iterator CommandList::begin()
+CommandList::iterator CommandList::begin() TL_NOEXCEPT
 {
   return mCommands.begin();
 }
 
-CommandList::const_iterator CommandList::begin() const
+CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
 {
   return mCommands.cbegin();
 }
 
-CommandList::iterator CommandList::end()
+CommandList::iterator CommandList::end() TL_NOEXCEPT
 {
   return mCommands.end();
 }
 
-CommandList::const_iterator CommandList::end() const
+CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
 {
   return mCommands.cend();
 }
@@ -951,17 +982,17 @@ void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
   mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
 }
 
-void CommandList::clear()
+void CommandList::clear() TL_NOEXCEPT
 {
   mCommands.clear();
 }
 
-bool CommandList::empty() const
+bool CommandList::empty() const TL_NOEXCEPT
 {
   return mCommands.empty();
 }
 
-CommandList::size_type CommandList::size() const
+CommandList::size_type CommandList::size() const TL_NOEXCEPT
 {
   return mCommands.size();
 }

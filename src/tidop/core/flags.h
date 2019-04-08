@@ -325,7 +325,7 @@ T EnumFlags<T>::flags() const
  * \endcode
  */
 #define ALLOW_BITWISE_FLAG_OPERATIONS(T_FLAG)                       \
-inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) |        \
@@ -333,7 +333,7 @@ inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) &        \
@@ -341,7 +341,7 @@ inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) ^        \
@@ -349,7 +349,7 @@ inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ~ (T_FLAG flag)                        \
+inline T_FLAG operator ~ (T_FLAG flag)                              \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
