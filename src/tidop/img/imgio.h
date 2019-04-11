@@ -159,7 +159,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  virtual int write(const unsigned char *buff, const geometry::WindowI &w) = 0;
+  virtual Status write(const unsigned char *buff, const geometry::WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -167,7 +167,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual int write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
 
 
 #endif
@@ -366,7 +366,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override;
 
 
 #endif

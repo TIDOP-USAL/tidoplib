@@ -40,8 +40,8 @@ if(BUILD_SHARED_LIBS)
 else()
   install(TARGETS tl_core
           EXPORT "${TARGETS_EXPORT_NAME}"
-          LIBRARY DESTINATION lib 
-          ARCHIVE DESTINATION lib)
+          LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+          ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
 #target_include_directories(

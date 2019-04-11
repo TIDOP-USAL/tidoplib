@@ -5,6 +5,8 @@
 #include "opencv2/imgproc/imgproc.hpp"
 #endif
 
+#include <algorithm>
+
 namespace tl
 {
 

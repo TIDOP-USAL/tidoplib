@@ -112,6 +112,7 @@ int gdalToOpenCv(GDALDataType gdalType, int channels)
   return( CV_MAKETYPE(depth,channels) );
 }
 
+
 /*!
  * \brief Pasa del tipo (profundidad de bits) de OpenCV a GDAL
  * \param cvdt Profundidad de bits
@@ -130,6 +131,7 @@ GDALDataType openCvToGdal(int cvdt)
   else                        ret = GDT_Unknown;   //                  GDT_Unknown == 0
   return( ret );
 }
+#endif // HAVE_OPENCV
 
 GDALDataType getGdalDataType(DataType dataType)
 { 
@@ -197,8 +199,6 @@ DataType convertDataType(GDALDataType dataType)
   }
   return ret;
 }
-
-#endif // HAVE_OPENCV
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -454,19 +454,18 @@ GdalRaster::Status GdalRaster::read(unsigned char *buff, const WindowI &wLoad, d
   
   offset /= scale; // Corregido por la escala
 
-  cv::Size size;
-  size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-  size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+  int width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
+  int height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
 
-  buff = (uchar *)std::malloc(mRows*mCols*mBands*mColorDepth);
+  buff = (unsigned char *)std::malloc(mRows*mCols*mBands*mColorDepth);
   size_t nPixelSpace = mBands*mColorDepth;
   size_t nLineSpace = mBands*mColorDepth * mCols;
   size_t nBandSpace = mBands*mColorDepth*mCols;
 
   CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
                                     wRead.getWidth(), wRead.getHeight(),
-                                    buff, size.width, size.height, mGdalDataType,
+                                    buff, width, height, mGdalDataType,
                                     mBands, panBandMap().data(), (int)nPixelSpace,
                                     (int)nLineSpace, (int)nBandSpace );
 
@@ -480,7 +479,7 @@ GdalRaster::Status GdalRaster::write(const unsigned char *buff, const WindowI &w
   size_t nPixelSpace = mBands;
   size_t nLineSpace = mBands * w.getWidth();
   size_t nBandSpace = 1;
-  uchar *_buff = const_cast<uchar *>(buff);
+  unsigned char *_buff = const_cast<unsigned char *>(buff);
   CPLErr cerr = pDataset->RasterIO(GF_Write, w.pt1.x, w.pt1.y, 
                                    w.getWidth(), w.getHeight(), _buff, 
                                    w.getWidth(), w.getHeight(), 
@@ -587,7 +586,7 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
 
 char GdalRaster::get(const PointI &pt)
 {
-  return uchar{};
+  return unsigned char{};
 }
 
 //ImgMetadata GdalRaster::metadata() const
@@ -673,11 +672,13 @@ char GdalGeoRaster::get(const PointD &pt)
 //  float f;
 //  f = image.at<float>(0, 0);
 //  return image.at<char>(0, 0);
-  return uchar{};
+  return unsigned char{};
 }
 
+  
 float GdalGeoRaster::getZ(const PointD &pt)
 {
+#ifdef HAVE_OPENCV
   // Se transforma la ventana a coordenadas imagen
   cv::Mat mat;
   WindowD wTerrain(pt, 1*mTrfAffine->scaleX());
@@ -689,7 +690,10 @@ float GdalGeoRaster::getZ(const PointD &pt)
   cv::Mat image;
   GdalRaster::read(&image, wRead, 1, &trf);
   return image.at<float>(0, 0);
+#endif // HAVE_OPENCV
+  return 0.f;
 }
+  
 
 void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
 {
@@ -697,7 +701,7 @@ void GdalGeoRaster::setGeoreference(const std::array<double, 6> &georef)
   update();
 }
 
-
+#ifdef HAVE_OPENCV
 GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const Window<PointD> &wTerrain, double scale)
 {
 
@@ -709,6 +713,7 @@ GdalGeoRaster::Status GdalGeoRaster::read(cv::Mat *image, const Window<PointD> &
   Helmert2D<PointI> trf;
   return GdalRaster::read(image, wRead, scale, &trf);
 }
+#endif // HAVE_OPENCV 
 
 void GdalGeoRaster::update()
 {
@@ -1232,13 +1237,13 @@ RasterGraphics::Status RasterGraphics::read(unsigned char *buff, const WindowI &
 
 RasterGraphics::Status RasterGraphics::write(const unsigned char *buff, const WindowI &w)
 {
-  if (mImageFormat && mImageFormat->write(buff, w) == 0) return Status::success;
+  if (mImageFormat && mImageFormat->write(buff, w) == Status::success) return Status::success;
   else return Status::failure;
 }
 
 RasterGraphics::Status RasterGraphics::write(const unsigned char *buff, Helmert2D<PointI> *trf)
 {
-  if (mImageFormat && mImageFormat->write(buff, trf) == 0) return Status::success;
+  if (mImageFormat && mImageFormat->write(buff, trf) == Status::success) return Status::success;
   else return Status::failure;
 }
 
@@ -1524,7 +1529,7 @@ void GeoRasterGraphics::update()
 float Mdt::getZ(const PointD &pt) const
 {
 #ifdef HAVE_GDAL
-  cv::Mat mat;
+  //cv::Mat mat;
   WindowD w(pt, 1);
   GdalGeoRaster *geoRaster = dynamic_cast<GdalGeoRaster *>(mImageFormat.get());
   //geoRaster->read(&mat, w, 1);
