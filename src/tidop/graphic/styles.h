@@ -210,7 +210,7 @@ public:
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
-   * \param[in] penjoin Forma del punto de unión (vértice) de líneas
+   * \param[in] join Forma del punto de unión (vértice) de líneas
    */
    void setJoin(Join join);
 

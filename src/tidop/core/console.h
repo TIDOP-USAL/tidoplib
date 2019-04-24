@@ -1601,7 +1601,7 @@ public:
    * \brief Constructora de lista
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
-   * \param[in] arguments listado de comandos
+   * \param[in] commands listado de comandos
    */
   CommandList(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Command>> commands);
 

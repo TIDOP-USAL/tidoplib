@@ -125,7 +125,7 @@ public:
 
   /*!
    * \brief Operador de asignación
-   * \param[in] quat Objeto que se copia
+   * \param[in] quaternion Objeto que se copia
    */
   Quaternion &operator = (const Quaternion<T> &quaternion);
 

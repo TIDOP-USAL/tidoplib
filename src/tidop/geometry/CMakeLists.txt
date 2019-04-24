@@ -1,4 +1,4 @@
-#Modulo geom de la librería
+#Modulo geometry de la librería
 
 add_library(tl_geom ${LIB_TYPE}
             operations.cpp
@@ -17,16 +17,17 @@ add_library(tl_geom ${LIB_TYPE}
 )
   
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_geom PROPERTY FOLDER "modules")
+set_property(TARGET tl_geom 
+             PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
 
     install(TARGETS tl_geom
             EXPORT "${TARGETS_EXPORT_NAME}"
-            RUNTIME DESTINATION bin
-            LIBRARY DESTINATION lib
-            ARCHIVE DESTINATION lib)
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
     set_target_properties(tl_geom PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
@@ -36,9 +37,9 @@ if(BUILD_SHARED_LIBS)
 else()
 
     install(TARGETS tl_geom 
-      EXPORT "${TARGETS_EXPORT_NAME}"
-          LIBRARY DESTINATION lib 
-          ARCHIVE DESTINATION lib)
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 		  
 endif()
 

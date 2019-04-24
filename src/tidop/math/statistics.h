@@ -8,6 +8,8 @@
 #include "opencv2/core/core.hpp"
 #endif
 
+#include <vector>
+
 namespace tl
 {
 

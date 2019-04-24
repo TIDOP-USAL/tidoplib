@@ -6,7 +6,9 @@
 #include <tidop/geometry/entities/point.h>
 
 //// Borrar
+#ifdef HAVE_EIGEN
 #include <Eigen/Geometry>
+#endif
 //// Borrar
 
 
@@ -55,6 +57,7 @@ int main(int argc, char** argv)
   Affine<PointD> affine(150.0, 75.0, 0.25, 0.30, 35 * TL_DEG_TO_RAD);
   affine.transform(pts_in, &pts_out);
 
+#ifdef HAVE_EIGEN
   Eigen::Rotation2D<double> rotation(35 * TL_DEG_TO_RAD);
   Eigen::Affine2d t = Eigen::Translation2d(150.0, 75.0) * rotation * Eigen::Scaling(0.25, 0.3);
 
@@ -73,6 +76,7 @@ int main(int argc, char** argv)
   for (auto v : pts_in_eigen){
     pts_out_eigen.push_back(Eigen::Scaling(0.25) * v);
   }
+#endif 
 
 
   std::vector<PointD>pts_out_svd = {
