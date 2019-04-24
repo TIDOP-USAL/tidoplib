@@ -1,4 +1,4 @@
-#Modulo Core de la librería
+#Modulo Experimental de la librería
 
 add_library(tl_experimental ${LIB_TYPE}
             desingpatterns.cpp
@@ -9,14 +9,24 @@ set_property(TARGET tl_experimental PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
-  install(TARGETS tl_experimental
-          RUNTIME DESTINATION bin
-		  LIBRARY DESTINATION lib) 
+    install(TARGETS tl_experimental
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+    	  	ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib) 
+		  
+    set_target_properties(tl_experimental PROPERTIES
+                          DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+						
+    target_link_libraries(tl_experimental tl_core)	
+						
 else()
   install(TARGETS tl_experimental 
-          LIBRARY DESTINATION lib 
-          ARCHIVE DESTINATION lib)
+          EXPORT "${TARGETS_EXPORT_NAME}"
+          LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+          ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/experimental
+install(DIRECTORY . 
+        DESTINATION include/experimental
         FILES_MATCHING PATTERN "*.h")

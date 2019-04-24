@@ -2350,8 +2350,8 @@ public:
    * \param[out] b Coeficiente b
    * \param[out] c Coeficiente c
    * \param[out] d Coeficiente d
-   * \param[out] tx Traslación en x
-   * \param[out] ty Traslación en y
+   * \param[out] x0 Traslación en x
+   * \param[out] y0 Traslación en y
    */
   void parameters(double *a, double *b, double *c, double *d, double *x0, double *y0) const;
 

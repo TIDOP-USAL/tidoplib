@@ -7,6 +7,8 @@ using namespace tl::geospatial;
 
 /* CrsTest */
 
+#ifdef HAVE_GDAL
+
 class CrsTest : public testing::Test
 {
 public:
@@ -46,3 +48,5 @@ TEST_F(CrsTest, isGeographic)
   EXPECT_FALSE(epsg25830->isGeographic());
   EXPECT_TRUE(epsg4258->isGeographic());
 }
+
+#endif // HAVE_GDAL

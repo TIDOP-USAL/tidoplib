@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   MessageManager::instance().addListener(&console);
 
   // Se obtiene una instancia unica de la clase Log
-  Log &log = Log::getInstance();
+  Log &log = Log::instance();
 
   /*
   Se establece el nivel de mensajes en el log. Los valores posibles son:

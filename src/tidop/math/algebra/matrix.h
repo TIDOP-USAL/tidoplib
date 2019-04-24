@@ -34,7 +34,7 @@ namespace math
  */
 
 
-/*! \defgroup Algebra
+/*! \defgroup Algebra Algebra
  *  
  * Algebra
  *

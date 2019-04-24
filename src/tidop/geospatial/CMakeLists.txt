@@ -14,19 +14,24 @@ set_property(TARGET tl_geospatial PROPERTY FOLDER "modules")
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_geospatial
       EXPORT "${TARGETS_EXPORT_NAME}"
-            RUNTIME DESTINATION bin
-		    LIBRARY DESTINATION lib
-			ARCHIVE DESTINATION lib)
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+		    LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
 	set_target_properties(tl_geospatial PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 	
-	target_link_libraries(tl_geospatial tl_core tl_geom ${GDAL_LIBRARY})
+	target_link_libraries(tl_geospatial tl_core tl_geom)
+	
+	if (HAVE_GDAL)
+        target_link_libraries(tl_geospatial ${GDAL_LIBRARY})
+    endif(HAVE_GDAL)
+	
 else()
   install(TARGETS tl_geospatial 
     EXPORT "${TARGETS_EXPORT_NAME}"
-          LIBRARY DESTINATION lib 
-          ARCHIVE DESTINATION lib)
+          LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+          ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
 install(DIRECTORY . DESTINATION include/tidop/geospatial

@@ -48,8 +48,8 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
         set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
-      install(TARGETS ${the_target}
-              RUNTIME DESTINATION bin COMPONENT samples)
+      #install(TARGETS ${the_target}
+      #        RUNTIME DESTINATION bin COMPONENT samples)
     endif()
   ENDMACRO()
 
