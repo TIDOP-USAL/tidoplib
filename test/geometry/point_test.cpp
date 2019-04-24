@@ -273,7 +273,7 @@ TEST(Point3, CopyConstructor)
 
 /* Constructor a partir de un vector */
 
-TEST(Point3, VectConstructor)
+TEST(Point3, VectorConstructor)
 {
   math::Vector3i pt_int{{23, 67, 23}};
   Point3I pt_int_c(pt_int);

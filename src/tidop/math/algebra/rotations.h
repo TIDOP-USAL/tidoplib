@@ -60,46 +60,72 @@ private:
 
 };
 
+// x^2 = (+r00 - r11 - r22 + 1)/4
+// y^2 = (-r00 + r11 - r22 + 1)/4
+// z^2 = (-r00 - r11 + r22 + 1)/4
+// w^2 = (+r00 + r11 + r22 + 1)/4
+// x^2 + y^2 = (1 - r22)/2
+// z^2 + w^2 = (1 + r22)/2
+// y^2 - x^2 = (r11 - r00)/2
+// w^2 - z^2 = (r11 + r00)/2
+// x*y = (r01 + r10)/4
+// x*z = (r02 + r20)/4
+// y*z = (r12 + r21)/4
+// [GTE_USE_MAT_VEC]
+//   x*w = (r21 - r12)/4
+//   y*w = (r02 - r20)/4
+//   z*w = (r10 - r01)/4
+// [GTE_USE_VEC_MAT]
+//   x*w = (r12 - r21)/4
+//   y*w = (r20 - r02)/4
+//   z*w = (r01 - r10)/4
+//
+// If Q is the 4x1 column vector (x,y,z,w), the previous equations give us
+//         +-                  -+
+//         | x*x  x*y  x*z  x*w |
+// Q*Q^T = | y*x  y*y  y*z  y*w |
+//         | z*x  z*y  z*z  z*w |
+//         | w*x  w*y  w*z  w*w |
+//         +-                  -+
+
 template<typename T>
 void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, Quaternion<T> &quaternion)
 {
-  T r22 = rotationMatrix.at(2,2);
+  T r22 = rotationMatrix.at(2, 2);
   if (r22 <= static_cast<T>(0)) {
-    T dif10 = rotationMatrix.at(1, 1) - rotationMatrix.at(0, 0);
-    T omr22 = static_cast<T>(1) - r22;
-    if (dif10 <= static_cast<T>(0)) {
-      T fourXSqr = omr22 - dif10;
-      T inv4x = static_cast<T>(0.5) / sqrt(fourXSqr);
-      quaternion.x = fourXSqr*inv4x;
-      quaternion.y = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0)) * inv4x;
-      quaternion.z = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0)) * inv4x;
-      quaternion.w = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2)) * inv4x;
+
+    T r11_r00 = rotationMatrix.at(1, 1) - rotationMatrix.at(0, 0);
+    if (r11_r00 <= static_cast<T>(0)) {
+      quaternion.x = sqrt((static_cast<T>(1) - r22 - r11_r00) / static_cast<T>(4));
+      T qx4 = quaternion.x * 4;
+      quaternion.y = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0)) / qx4;
+      quaternion.z = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0)) / qx4;
+      quaternion.w = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2)) / qx4;
     } else {
-      T fourYSqr = omr22 + dif10;
-      T inv4y = static_cast<T>(0.5) / sqrt(fourYSqr);
-      quaternion.x = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0))*inv4y;
-      quaternion.y = fourYSqr*inv4y;
-      quaternion.z = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1))*inv4y;
-      quaternion.w = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0))*inv4y;
+      quaternion.y = sqrt((static_cast<T>(1) - r22 + r11_r00) / static_cast<T>(4));
+      T qy4 = quaternion.y * 4;
+      quaternion.x = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0)) / qy4;
+      quaternion.z = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1)) / qy4;
+      quaternion.w = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0)) / qy4;
     }
+
   } else {
-    T sum10 = rotationMatrix.at(1, 1) + rotationMatrix.at(0, 0);
-    T opr22 = static_cast<T>(1) + r22;
-    if (sum10 <= static_cast<T>(0)) {
-      T fourZSqr = opr22 - sum10;
-      T inv4z = (static_cast<T>(0.5)) / sqrt(fourZSqr);
-      quaternion.x = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0))*inv4z;
-      quaternion.y = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1))*inv4z;
-      quaternion.z = fourZSqr*inv4z;
-      quaternion.w = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1))*inv4z;
+
+    T r11_r00 = rotationMatrix.at(1, 1) + rotationMatrix.at(0, 0);
+    if (r11_r00 <= static_cast<T>(0)) {
+      quaternion.z = sqrt((static_cast<T>(1) + r22 - r11_r00) / static_cast<T>(4));
+      T qz4 = quaternion.z * 4;
+      quaternion.x = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0)) / qz4;
+      quaternion.y = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1)) / qz4;
+      quaternion.w = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1)) / qz4;
     } else {
-      T fourWSqr = opr22 + sum10;
-      T inv4w = static_cast<T>(0.5) / sqrt(fourWSqr);
-      quaternion.x = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2))*inv4w;
-      quaternion.y = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0))*inv4w;
-      quaternion.z = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1))*inv4w;
-      quaternion.w = fourWSqr*inv4w;
+      quaternion.w = sqrt((static_cast<T>(1) + r22 + r11_r00) / static_cast<T>(4));
+      T qw4 = quaternion.w * 4;
+      quaternion.x = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2)) / qw4;
+      quaternion.y = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0)) / qw4;
+      quaternion.z = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1)) / qw4;
     }
+
   }
 }
 
