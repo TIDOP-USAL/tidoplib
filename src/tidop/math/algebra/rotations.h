@@ -228,6 +228,11 @@ void RotationConverter<T>::convert(const Quaternion<T> &quaternion, RotationMatr
 }
 
 template<typename T>
+inline void RotationConverter<T>::convert(const Quaternion<T> &quaternion, EulerAngles<T> &eulerAngles)
+{
+}
+
+template<typename T>
 void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion<T> &quaternion)
 {
   //RotationMatrix<T> rot_mat;

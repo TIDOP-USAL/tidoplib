@@ -214,7 +214,7 @@ if(WITH_BOOST)
     find_package(Boost COMPONENTS filesystem system REQUIRED)
     if(Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
-      set(HAVE_BOOST YES)
+        set(HAVE_BOOST YES)
 
     #if (WIN32)
         #    add_definitions(-DBOOST_ALL_NO_LIB)
