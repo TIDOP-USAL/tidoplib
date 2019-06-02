@@ -57,6 +57,8 @@ int main(int argc, char** argv)
       Eigen::AngleAxisf(static_cast<float>(0.5*TL_PI),  Eigen::Vector3f::UnitY()) *
       Eigen::AngleAxisf(static_cast<float>(0.33*TL_PI), Eigen::Vector3f::UnitZ());
 
+
+
   std::cout << "original rotation:" << std::endl;
   std::cout << m << std::endl << std::endl;
 
@@ -89,6 +91,44 @@ int main(int argc, char** argv)
   mat.at(0, 0) = 1.1;
   mat.determinant();
   math::Matrix<3, 3, double> inv = mat.inverse();
+
+  Eigen::Quaterniond q_normal(0.5345225, 0, 0.2672612, -0.8017837);
+  Eigen::Quaterniond q_(2, 0, 1, -3);
+
+  Eigen::Matrix3d m_n = q_normal.toRotationMatrix();
+  Eigen::Matrix3d m_ = q_.toRotationMatrix();
+
+  Eigen::Matrix3d m_zero = Eigen::Matrix3d::Zero();
+  Eigen::Quaterniond q_mat(m_zero);
+
+  Eigen::Matrix3d m_ones = Eigen::Matrix3d::Ones();
+  Eigen::Quaterniond q_mat_ones(m_ones);
+  Eigen::Vector3d ea_ones = m_ones.eulerAngles(0, 1, 2);
+
+
+
+  m_ << -0.8888889, 0.4444444, -0.1111111,
+        -0.1111111, -0.4444444, -0.8888889,
+        -0.4444444, -0.7777778, 0.4444444;
+  Eigen::Vector3d ea_xyz = m_.eulerAngles(0, 1, 2);
+  Eigen::Vector3d ea_zxz = m_.eulerAngles(2, 0, 2);
+  Eigen::Vector3d ea_xyx = m_.eulerAngles(0, 1, 0);
+  Eigen::Vector3d ea_yzy = m_.eulerAngles(1, 2, 1);
+  Eigen::Vector3d ea_zyz = m_.eulerAngles(2, 1, 2);
+  Eigen::Vector3d ea_xzx = m_.eulerAngles(0, 2, 0);
+  Eigen::Vector3d ea_yxy = m_.eulerAngles(1, 0, 1);
+
+
+  Eigen::AngleAxisd aa;
+  aa.fromRotationMatrix(m_);
+  aa.fromRotationMatrix(Eigen::Matrix3d::Zero());
+  aa.fromRotationMatrix(Eigen::Matrix3d::Ones());
+  aa.fromRotationMatrix(Eigen::Matrix3d::Identity());
+
+  aa = qd;
+  Eigen::Quaterniond q_x(0,0,0,0);
+  aa = q_x;
+
 
 #endif
 

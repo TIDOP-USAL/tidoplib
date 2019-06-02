@@ -222,7 +222,8 @@ public:
 
   double module() const;
 
-  void normalize() const;
+  void normalize();
+  //Vector normalize() const;
 
   bool operator == (const Vector &vector) const;
   bool operator != (const Vector &vector) const;
@@ -429,21 +430,36 @@ Vector<_size, T> &Vector<_size, T>::operator=(Vector<_size, T> &&vector) TL_NOEX
 template<size_t _size, typename T> inline
 double Vector<_size, T>::module() const
 {
-  return sqrt(dotProduct(this, this));
+  return sqrt(dotProduct(*this, *this));
 }
 
 template<size_t _size, typename T> inline
-void Vector<_size, T>::normalize() const
+void Vector<_size, T>::normalize()
 {
   T length = static_cast<T>(this->module());
   if (length > static_cast<T>(0)) {
-    this /= length;
+    *this /= length;
   } else {
     for (size_t i = 0; i < _size; i++) {
       this->mVector[i] = static_cast<T>(0);
     }
   }
 }
+
+//template<size_t _size, typename T> inline
+//Vector<_size, T> Vector<_size, T>::normalize() const
+//{
+//  Vector<_size, T> v = *this;
+//  T length = static_cast<T>(v.module());
+//  if (length > static_cast<T>(0)) {
+//    v /= length;
+//  } else {
+//    for (size_t i = 0; i < _size; i++) {
+//      v.at(i) = static_cast<T>(0);
+//    }
+//  }
+//  return v;
+//}
 
 template<size_t _size, typename T> inline
 bool Vector<_size, T>::operator == (const Vector &vector) const
@@ -639,7 +655,7 @@ template<size_t _size, typename T> inline
 double dotProduct(const Vector<_size, T> &v1,
                   const Vector<_size, T> &v2)
 {
-  double dot = static_cast<double>(v1.at[0]) * static_cast<double>(v2[0]);
+  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
   for (size_t i = 1; i < _size; i++) {
     dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
   }

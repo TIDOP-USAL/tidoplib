@@ -299,7 +299,7 @@ TEST(Point3, VectorConstructor)
 
 /* Constructor a partir de un array */
 
-TEST(Point3, VectorConstructor) 
+TEST(Point3, ArrayConstructor)
 {
   std::array<int, 3> pt_int{ { 23, 67, 23 } };
   Point3I pt_int_c(pt_int);
