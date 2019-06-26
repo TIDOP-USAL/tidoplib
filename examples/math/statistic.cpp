@@ -37,5 +37,14 @@ int main(int argc, char** argv)
   vi.push_back(1);
   int _mode = mode(vi.begin(), vi.end());
 
+
+  std::list<double> x = { 0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
+  std::list<double> y = { 92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
+
+  double cov = covariance(x.begin(), x.end(), y.begin(), y.end());
+  double sx = standarDeviation(x.begin(), x.end());
+  double sy = standarDeviation(y.begin(), y.end());
+  double c = pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end());
+
   return 0;
 }
