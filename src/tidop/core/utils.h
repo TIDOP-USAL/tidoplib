@@ -1304,7 +1304,6 @@ public:
 #endif // HAVE_GDAL
 
 
-
 } // End namespace tl
 
 #endif // TL_CORE_UTILS_H

@@ -114,8 +114,8 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     message(STATUS "Can't detect runtime and/or arch")
     set(TL_INSTALL_BINARIES_PREFIX "")
   endif()
-else()
-  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
+#else()
+#  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
 endif()
 
 # Se permite elegir entre libreria estatica o

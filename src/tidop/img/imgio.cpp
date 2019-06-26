@@ -586,7 +586,7 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
 
 char GdalRaster::get(const PointI &pt)
 {
-  return unsigned char{};
+  return char{};
 }
 
 //ImgMetadata GdalRaster::metadata() const
@@ -672,7 +672,7 @@ char GdalGeoRaster::get(const PointD &pt)
 //  float f;
 //  f = image.at<float>(0, 0);
 //  return image.at<char>(0, 0);
-  return unsigned char{};
+  return char{};
 }
 
   

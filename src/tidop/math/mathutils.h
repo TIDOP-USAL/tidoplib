@@ -621,6 +621,13 @@ TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 #endif
 
 
+
+//template<typename T>
+//T clamp(const T &value, const T &_min, const T &_max)
+//{
+//  return std::max(_min, std::min(_max, value));
+//};
+
 /*! \} */ // end of Math
 
 } // End namespace TL
