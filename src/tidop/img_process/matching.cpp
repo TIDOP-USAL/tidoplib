@@ -5,9 +5,8 @@
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform.h"
 
-#include "opencv2/calib3d.hpp"
-#include "opencv2/xfeatures2d.hpp"
-#include "opencv2/imgproc.hpp"
+#include <opencv2/calib3d.hpp>
+#include <opencv2/imgproc.hpp>
 
 #if (__cplusplus >= 201703L)
 //C++17
@@ -64,7 +63,7 @@ void Features2D::save( const char *fname ) const
 {
   //... Habria que guardarlo como binario mejor o dar las dos opciones
   // Salva descriptores
-  std::string ext = fs::extension(fname);
+  std::string ext = fs::path(fname).extension().string();
   int flags = 0;
   if (strcmp(ext.c_str(), ".xml") == 0) {
     flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
@@ -121,7 +120,7 @@ void Features2D::save( const char *fname ) const
 
 void Features2D::read( const char *fname )
 {
-  std::string ext = fs::extension(fname);
+  std::string ext = fs::path(fname).extension().string();
   if (ext.empty() == false) {
     if (strcmp(ext.c_str(), ".bin") == 0) {
       if (FILE* fp = std::fopen(fname, "rb")) {
@@ -315,7 +314,7 @@ void Matching::getGoodMatches(const Features2D &feat1, const Features2D &feat2, 
 
 void Matching::save(const char *fname ) const
 {
-  std::string ext = fs::extension(fname);
+  std::string ext = fs::path(fname).extension().string();
   if (ext.empty() == false) {
     msgError("Fichero no valido: %s", fname);
     return;
@@ -345,7 +344,7 @@ void Matching::save(const char *fname ) const
 
 void Matching::load( const char *fname )
 {
-  std::string ext = fs::extension(fname);
+  std::string ext = fs::path(fname).extension().string();
   if (ext.empty() == false) {
     if (strcmp(ext.c_str(), ".bin") == 0) {
       if (FILE* fp = std::fopen(fname, "rb")) {

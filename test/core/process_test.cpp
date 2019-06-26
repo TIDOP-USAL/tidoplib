@@ -10,6 +10,10 @@ using ::testing::_;
 
 using namespace tl;
 
+#ifndef TL_OLD_PROCESS
+
+#else
+
 class FakeProcess
   : public Process
 {
@@ -103,5 +107,7 @@ TEST(BatchProcess, add)
 //  EXPECT_CALL(mock_process, run(_))
 //            .Times(1);
 }
+
+#endif
 
 #endif

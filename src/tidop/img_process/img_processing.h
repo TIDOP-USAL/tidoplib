@@ -8,8 +8,8 @@
 #include <functional>
 
 #ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
@@ -22,6 +22,53 @@ namespace tl
  *  Filtrado y preprocesado de imagenes
  *  \{
  */
+
+//  Dialnet - TecnicasYAlgoritmosBasicosDeVisionArtificial - 338314.pdf
+//- Preprocesado:
+//  - Operaciones básicas:
+//    - Inversion
+//    - Operaciones aritmeticas
+//    - Operaciones lógicas
+//    - Transformaciones no lineales
+//    - Slicing
+//    - Clipping
+//    - Umbralización
+//    - Binarización
+//  - Transformaciones geométricas de imágenes
+//    - Traslaccion
+//    - giro
+//    - escalado
+//    - espejado
+//    - ....
+//  - Generadores de ruido
+//    - Geneardores de ruido dependientes de la señal 
+//    - Generadores de ruido aleatorio
+//  - Filtrado
+//    - Frecuencia
+//    - Espacio
+//  - Operaciones basadas en histograma
+//    - Transformaciones del histograma
+//    - Ecualización del histograma
+//- Segmentación
+//  - Transformaciones morfologicas
+//    - Dilatación
+//    - Erosión
+//    - Apertura
+//    - cierre
+//    - Esqueletos
+//  - 
+ 
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
 
 enum class ProcessExit
 {

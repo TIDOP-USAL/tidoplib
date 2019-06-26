@@ -3,7 +3,7 @@
 #include "tidop/core/messages.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/highgui.hpp>
 
 #include <cstdarg>
 #include <cstdio>

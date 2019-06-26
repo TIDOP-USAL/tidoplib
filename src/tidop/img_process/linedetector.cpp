@@ -1,9 +1,7 @@
-#include "tidop/img_process/linedetector.h"
+#include "linedetector.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#include "opencv2/ximgproc.hpp"
+#include <opencv2/ximgproc.hpp>
 
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"

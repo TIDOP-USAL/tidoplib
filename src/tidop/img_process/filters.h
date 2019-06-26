@@ -4,8 +4,8 @@
 #include "config_tl.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "tidop/core/defs.h"
 #include "tidop/img_process/img_processing.h"

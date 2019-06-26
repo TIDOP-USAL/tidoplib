@@ -1,9 +1,10 @@
 #include "skeleton.h"
+
 #include "tidop/core/utils.h"
 
 #ifdef HAVE_OPENCV
 
-#include "opencv2/imgproc.hpp"
+#include <opencv2/imgproc.hpp>
 
 #include <thread>
 
