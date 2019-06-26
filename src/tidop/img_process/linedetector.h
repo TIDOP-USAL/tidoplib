@@ -4,8 +4,8 @@
 #include "config_tl.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 #if defined( USE_LSWMS )
 #include "LSWMS.h"
 #endif

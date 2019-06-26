@@ -4,8 +4,8 @@
 #include "config_tl.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/features2d.hpp"
-#include "opencv2/xfeatures2d.hpp"
+#include <opencv2/features2d.hpp>
+#include <opencv2/xfeatures2d.hpp>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"

@@ -4,7 +4,7 @@
 #include "config_tl.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
+#include <opencv2/core.hpp>
 
 
 namespace tl

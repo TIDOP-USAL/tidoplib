@@ -7,7 +7,6 @@
 #include <tidop/math/algebra/matrix.h>
 #include <tidop/math/algebra/quaternion.h>
 
-
 #ifdef HAVE_EIGEN
 TL_SUPPRESS_WARNINGS
 #include <Eigen/Geometry>
