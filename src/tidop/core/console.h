@@ -1208,8 +1208,7 @@ public:
 
   bool validate(T value)
   {
-    if (value > mMin && value < mMax)
-      return true;
+    return (value > mMin && value < mMax);
   }
 
   void setRange(T min, T max)
