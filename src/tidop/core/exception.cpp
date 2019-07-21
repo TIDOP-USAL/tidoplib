@@ -14,10 +14,11 @@
 
 #include "tidop/core/exception.h"
 
-#if defined WIN32
-#include <atlstr.h>
-#endif
-
+//#if defined WIN32
+//#include <atlstr.h>
+//#endif
+#include <locale>
+#include <codecvt>
 
 //TODO: mirar
 //https://en.cppreference.com/w/cpp/error/nested_exception
@@ -95,7 +96,9 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
                 sizeof(errorMessage)/sizeof(TCHAR),
                 NULL);
 
-  std::string strError = CW2A(errorMessage);
+  //std::string strError = CW2A(errorMessage);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::string strError = converter.to_bytes(errorMessage);
   return strError;
 }
 #endif
