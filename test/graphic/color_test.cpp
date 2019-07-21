@@ -912,7 +912,7 @@ protected:
 
   virtual void SetUp() override
   {
-    color2 = new graph::Color(graph::Color::NAME::Azure);
+    color2 = new graph::Color(graph::Color::Name::Azure);
     rgb2 = new graph::ColorRGB(10, 25, 30);
   }
 
@@ -943,6 +943,12 @@ TEST_F(ColorTest, DefaultConstructor)
 TEST_F(ColorTest, NameConstructor)
 {
   EXPECT_EQ(15794175, static_cast<int>(*color2));
+}
+
+TEST_F(ColorTest, equal)
+{
+  graph::Color azure(graph::Color::Name::Azure);
+  EXPECT_TRUE(azure == *color2);
 }
 
 TEST_F(ColorTest, DefaultConstructorColorRGB)

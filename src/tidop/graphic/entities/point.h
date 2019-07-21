@@ -83,13 +83,55 @@ class TL_EXPORT GPoint3D
 {
 public:
 
+  /*!
+   * \brief Constructora por defecto
+   */
   GPoint3D();
+
+  /*!
+   * \brief Constructora
+   * \param[in] x Coordenada x
+   * \param[in] y Coordenada y
+   * \param[in] z Coordenada z
+   */
   GPoint3D(double x, double y, double z);
+
+  /*!
+   * \brief Constructor a partir de un punto
+   * \param[in] pt Punto
+   * \see Point3
+   */
   GPoint3D(const Point3<double> &pt);
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] pt Objeto GPoint3D que se copia
+   */
   GPoint3D(const GPoint3D &pt);
+
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] pt Objeto GPoint3D que se mueve
+   */
+  GPoint3D(GPoint &&pt) TL_NOEXCEPT;
+
+  /*!
+   * \brief Destructora
+   */
   ~GPoint3D() override;
 
+  /*!
+   * \brief Operador de asignación
+   * \param gPoint Objeto GPoint3D que se copia
+   * \return Referencia al objeto
+   */
   GPoint3D &operator = (const GPoint3D &gPoint);
+
+  /*!
+   * \brief Operador de asignación de movimiento
+   * \param[in] gPoint Objeto GPoint3D que se mueve
+   */
+  GPoint3D &operator = (GPoint3D &&gPoint) TL_NOEXCEPT;
 
   bool isMultiEntity() const override;
   bool isSimpleEntity() const override;

@@ -29,7 +29,7 @@ CanvasCV::CanvasCV()
   : Canvas(),
     mWidth(100),
     mHeight(100),
-    mBgColor(TL::Color::NAME::White)
+    mBgColor(Color::Name::White)
 {
   update();
 }
@@ -47,16 +47,20 @@ CanvasCV::~CanvasCV()
 {
 }
 
-int CanvasCV::getWidth() const
+int CanvasCV::width() const
 {
   return mCanvas.cols;
 }
 
-int CanvasCV::getHeight() const
+int CanvasCV::height() const
 {
   return mCanvas.rows;
 }
 
+Color CanvasCV::backgroundColor() const
+{
+  return mBgColor;
+}
 
 void CanvasCV::setWidth(int width)
 {
@@ -77,7 +81,7 @@ void CanvasCV::setSize(int width, int height)
   update();
 }
 
-void CanvasCV::setBackgroundColor(const TL::Color &color)
+void CanvasCV::setBackgroundColor(const Color &color)
 {
   mBgColor = color;
   update();
@@ -85,56 +89,115 @@ void CanvasCV::setBackgroundColor(const TL::Color &color)
 
 void CanvasCV::drawPoint(const GPoint &point)
 {
-  //cv::Scalar color = point.getStylePen()->getPenColor().get<cv::Scalar>();
-  cv::Scalar color = point.getStylePen()->getPenColor().toCvScalar();
-  PointD pt_offset(point.getStyleSymbol()->getOffsetX(), point.getStyleSymbol()->getOffsetY());
+  StyleSymbol *style_symbol = point.styleSymbol();
+  StylePen *style_pen = point.stylePen();
+  Color c = style_pen->color();
+  cv::Scalar color = colorToCvScalar(c);
+  PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
   cv::Point pt = point + pt_offset;
 
-  switch (point.getStyleSymbol()->getName()) {
-  case TL::graph::StyleSymbol::SymbolName::CROSS:
+  switch (style_symbol->name()) {
+  case TL::graph::StyleSymbol::Name::cross:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_CROSS, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::DIAGONAL_CROSS:
+  case TL::graph::StyleSymbol::Name::diagonal_cross:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TILTED_CROSS, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::CIRCLE:
+  case TL::graph::StyleSymbol::Name::circle:
     cv::circle(mCanvas, pt, 10, color, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::CIRCLE_FILLED:
+  case TL::graph::StyleSymbol::Name::circle_filled:
     cv::circle(mCanvas, pt, 10, color, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::SQUARE:
+  case TL::graph::StyleSymbol::Name::square:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::SQUARE_FILLED:
+  case TL::graph::StyleSymbol::Name::square_filled:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::TRIANGLE:
+  case TL::graph::StyleSymbol::Name::triangle:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::TRIANGLE_FILLED:
+  case TL::graph::StyleSymbol::Name::triangle_filled:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::STAR:
+  case TL::graph::StyleSymbol::Name::star:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, 1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::STAR_FILLED:
+  case TL::graph::StyleSymbol::Name::star_filled:
     cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, -1);
     break;
-  case TL::graph::StyleSymbol::SymbolName::VERTICAL_BAR:
+  case TL::graph::StyleSymbol::Name::vertical_bar:
     break;
   default:
-    cv::line(mCanvas, pt, pt, color, point.getStylePen()->getPenWidth());
+    cv::line(mCanvas, pt, pt, color, style_pen->width());
     break;
   }
 
-  StyleLabel *style_label = point.getStyleLabel();
-  Font font = style_label->getFont();
-  cv::QtFont qt_font = cv::fontQt(font.getName(),font.getSize(),
-                                  style_label->getForegroundColor().toCvScalar(),
+  StyleLabel *style_label = point.styleLabel();
+  Font font = style_label->font();
+  Color foreColor = style_label->foregroundColor();
+  cv::QtFont qt_font = cv::fontQt(font.name(),font.size(), colorToCvScalar(foreColor),
                                   font.isBold() ? CV_FONT_BOLD : CV_FONT_NORMAL,
                                   font.isItalic() ? CV_STYLE_ITALIC : CV_STYLE_NORMAL);
-  cv::addText(mCanvas, style_label->getText(), pt, qt_font);
+  cv::addText(mCanvas, style_label->text(), pt, qt_font);
+}
+
+void CanvasCV::drawPoint(const geometry::PointD &point, const GraphicStyle &style)
+{
+  StyleSymbol *style_symbol = style.styleSymbol();
+  StylePen *style_pen = style.stylePen();
+  Color c = style_pen->color();
+  cv::Scalar color = colorToCvScalar(c);
+  PointD pt_offset(style_symbol->offsetX(), style_symbol->offsetY());
+  cv::Point pt = point + pt_offset;
+
+  switch (style_symbol->name()) {
+  case TL::graph::StyleSymbol::Name::cross:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_CROSS, 10, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::diagonal_cross:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_TILTED_CROSS, 10, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::circle:
+    cv::circle(mCanvas, pt, 10, color, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::circle_filled:
+    cv::circle(mCanvas, pt, 10, color, -1);
+    break;
+  case TL::graph::StyleSymbol::Name::square:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::square_filled:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_SQUARE, 10, -1);
+    break;
+  case TL::graph::StyleSymbol::Name::triangle:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::triangle_filled:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_TRIANGLE_UP, 10, -1);
+    break;
+  case TL::graph::StyleSymbol::Name::star:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, 1);
+    break;
+  case TL::graph::StyleSymbol::Name::star_filled:
+    cv::drawMarker(mCanvas, pt, color, cv::MARKER_STAR, 10, -1);
+    break;
+  case TL::graph::StyleSymbol::Name::vertical_bar:
+    break;
+  default:
+    cv::line(mCanvas, pt, pt, color, style_pen->width());
+    break;
+  }
+
+  StyleLabel *style_label = style.styleLabel();
+  Font font = style_label->font();
+  Color foreColor = style_label->foregroundColor();
+  cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
+                                  colorToCvScalar(foreColor),
+                                  font.isBold() ? CV_FONT_BOLD : CV_FONT_NORMAL,
+                                  font.isItalic() ? CV_STYLE_ITALIC : CV_STYLE_NORMAL);
+  cv::addText(mCanvas, style_label->text(), pt, qt_font);
 }
 
 void CanvasCV::drawLineString(const GLineString &lineString)
@@ -148,12 +211,12 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 //  const cv::Point *cpts = (const cv::Point*) cv::Mat(pts).data;
 //  int npts = cv::Mat(pts).rows;
 
-  StylePen *stylePen = lineString.getStylePen();
-  if (stylePen->getPattern().empty()){
+  StylePen *style_pen = lineString.stylePen();
+  if (style_pen->pattern().empty()){
     ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
   } else {
-    //cv::polylines(mCanvas, &cpts, &npts, 1, false, stylePen->getPenColor().toCvScalar(), stylePen->getPenWidth());
-    cv::polylines(mCanvas, pts, false, stylePen->getPenColor().toCvScalar(), stylePen->getPenWidth());
+    Color color = style_pen->color();
+    cv::polylines(mCanvas, pts, false, colorToCvScalar(color), style_pen->width());
   }
 }
 
@@ -174,7 +237,14 @@ CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
 
 void CanvasCV::update()
 {
-  mCanvas = cv::Mat(mHeight, mWidth, CV_MAKETYPE(CV_8U, 3), mBgColor.toCvScalar());
+  mCanvas = cv::Mat(mHeight, mWidth, CV_MAKETYPE(CV_8U, 3), colorToCvScalar(mBgColor));
+}
+
+cv::Scalar CanvasCV::colorToCvScalar(const Color &color)
+{
+  return cv::Scalar(static_cast<double>(color.blue()),
+                    static_cast<double>(color.green()),
+                    static_cast<double>(color.red()));
 }
 
 

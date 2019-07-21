@@ -5,6 +5,9 @@
 namespace TL
 {
 
+namespace geospatial
+{
+
 
 #ifdef HAVE_GDAL
 
@@ -24,7 +27,7 @@ Crs::~Crs()
 {
 }
 
-std::string Crs::getEPSG() const
+std::string Crs::epsgCode() const
 { 
   return mEpsg;
 };
@@ -39,6 +42,20 @@ bool Crs::isGeographic() const
   return mCrs.IsGeographic()!= 0;
 }
 
+std::string Crs::exportToProj() const
+{
+  char *cprj = nullptr;
+  mCrs.exportToProj4(&cprj);
+  return std::string(cprj);
+}
+
+std::string Crs::exportToWkt() const
+{
+  char *cprj = nullptr;
+  mCrs.exportToWkt(&cprj);
+  return std::string(cprj);
+}
+
 OGRSpatialReference *Crs::getOGRSpatialReference()
 {
   return &mCrs;
@@ -46,6 +63,7 @@ OGRSpatialReference *Crs::getOGRSpatialReference()
 
 void Crs::init()
 {
+  ///
   mCrs.importFromEPSG(std::stoi(mEpsg.substr(5)));
   if (mGrid.empty() == false) {
     char *cprj = nullptr;
@@ -202,5 +220,7 @@ void CrsCache::resize(size_type count)
 
 
 #endif // HAVE_GDAL
+
+} // End namespace  geospatial
 
 } // End namespace TL

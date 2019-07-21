@@ -24,7 +24,7 @@ if(BUILD_TEST AND BUILD_TL_MATH)
     
 	  ##target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
 	  target_link_libraries(${the_target} gtest gtest_main )
-	  target_link_libraries(${the_target} tl_core tl_math)
+    target_link_libraries(${the_target} tl_core tl_geom tl_math)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     target_link_libraries(${the_target} ${OpenCV_LIBS}  ${GDAL_LIBRARY})
 	

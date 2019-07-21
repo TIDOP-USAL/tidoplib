@@ -32,9 +32,9 @@ public:
    */
   enum class Style : uint8_t
   {
-    DEFAULT = 0 << 0,
-    BOLD = 1 << 0,
-    ITALIC = 1 << 1
+    normal        = 0 << 0,
+    bold          = 1 << 0,
+    italic        = 1 << 1
   };
 
 private:
@@ -93,7 +93,7 @@ public:
    * \param[in] strikethrough Tachado. Por defecto desactivado
    * \see Style
    */
-  Font(const std::string name, int size = 10, Style style = Style::DEFAULT, bool underline = false, bool strikethrough = false);
+  Font(const std::string name, int size = 10, Style style = Style::normal, bool underline = false, bool strikethrough = false);
 
   /*!
    * \brief Destructora
@@ -104,37 +104,7 @@ public:
    * \brief Devuelve el nombre de la fuente
    * \return Nombre de la fuente
    */
-  std::string getName() const;
-
-  /*!
-   * \brief Devuelve el tamaño de la fuente
-   * \return Tamaño de la fuente
-   */
-  int getSize() const;
-
-  /*!
-   * \brief Fuente en negrita
-   * \return Verdadero si la fuente está en negrita
-   */
-  bool isBold() const;
-
-  /*!
-   * \brief Fuente en cursiva
-   * \return Verdadero si la fuente está en cursiva
-   */
-  bool isItalic() const;
-
-  /*!
-   * \brief Fuente con subrayado
-   * \return Verdadero si la fuente subrayada
-   */
-  bool isUnderline() const;
-
-  /*!
-   * \brief Fuente tachada
-   * \return Verdadero si la fuente está tachada
-   */
-  bool isStrikethrough() const;
+  std::string name() const;
 
   /*!
    * \brief Establece el nombre de la fuente
@@ -143,22 +113,34 @@ public:
   void setName(const std::string &name);
 
   /*!
+   * \brief Devuelve el tamaño de la fuente
+   * \return Tamaño de la fuente
+   */
+  int size() const;
+
+  /*!
    * \brief Establece el tamaño de la fuente
    * \param[in] size Tamaño de la fuente
    */
   void setSize(int size);
 
   /*!
-   * \brief setStyle
-   * \param[in] style
+   * \brief Fuente en negrita
+   * \return Verdadero si la fuente está en negrita
    */
-  void setStyle(Style style);
+  bool isBold() const;
 
   /*!
    * \brief Fuente en negrita
    * \param[in] active Activa opcion
    */
   void setBold(bool active);
+
+  /*!
+   * \brief Fuente en cursiva
+   * \return Verdadero si la fuente está en cursiva
+   */
+  bool isItalic() const;
 
   /*!
    * \brief Fuente cursiva
@@ -168,15 +150,33 @@ public:
 
   /*!
    * \brief Fuente con subrayado
+   * \return Verdadero si la fuente subrayada
+   */
+  bool isUnderline() const;
+
+  /*!
+   * \brief Fuente con subrayado
    * \param[in] active Activa opcion
    */
   void setUnderline(bool active);
+
+  /*!
+   * \brief Fuente tachada
+   * \return Verdadero si la fuente está tachada
+   */
+  bool isStrikethrough() const;
 
   /*!
    * \brief setStrikethrough
    * \param[in] active Activa opcion
    */
   void setStrikethrough(bool active);
+
+  /*!
+   * \brief setStyle
+   * \param[in] style
+   */
+  void setStyle(Style style);
 
   /*!
    * \brief Operador de asignacion

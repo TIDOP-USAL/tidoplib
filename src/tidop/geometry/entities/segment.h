@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_SEGMENT_H
 #define TL_GEOM_SEGMENT_H
 
@@ -131,7 +146,11 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente del segmento
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("window()")
   Window<Point_t> getWindow() const;
+#endif
+  Window<Point_t> window() const;
 
   /*!
    * \brief Comprueba si el segmento esta vacio pt1 = (0, 0) ; pt2 = (0, 0)
@@ -173,7 +192,7 @@ public:
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment()
-  : Entity(Entity::type::SEGMENT_2D), 
+  : Entity(Entity::Type::SEGMENT_2D),
     pt1(), 
     pt2()
 {
@@ -181,7 +200,7 @@ Segment<Point_t>::Segment()
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Segment &segment)
-  : Entity(Entity::type::SEGMENT_2D), 
+  : Entity(Entity::Type::SEGMENT_2D),
     pt1(segment.pt1), 
     pt2(segment.pt2) 
 {
@@ -197,7 +216,7 @@ Segment<Point_t>::Segment(Segment &&segment)
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
-  : Entity(Entity::type::SEGMENT_2D), 
+  : Entity(Entity::Type::SEGMENT_2D),
     pt1(_pt1), 
     pt2(_pt2)
 {
@@ -219,7 +238,7 @@ Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
 
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool bCenter)
-  : Entity(Entity::type::SEGMENT_2D)
+  : Entity(Entity::Type::SEGMENT_2D)
 {
   double a = cos(angle), b = sin(angle);
   double l1 = 0;
@@ -302,8 +321,16 @@ double Segment<Point_t>::angleOY() const
   return angle;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 Window<Point_t> Segment<Point_t>::getWindow() const
+{
+  return Window<Point_t>(pt1, pt2);
+}
+#endif
+
+template<typename Point_t> inline
+Window<Point_t> Segment<Point_t>::window() const
 {
   return Window<Point_t>(pt1, pt2);
 }
@@ -369,7 +396,7 @@ class Segment3D
 {
 public:
 
-  typedef Point3_t type;
+  typedef Point3_t value_type;
 
   /*!
    * \brief Punto 1
@@ -429,7 +456,11 @@ public:
   /*!
    * \brief Caja envolvente del segmento
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("box()")
   Box<Point3_t> getBox() const;
+#endif
+  Box<Point3_t> box() const;
 
   /*!
    * \brief Comprueba si el segmento esta vacio pt1 = (0, 0, 0) ; pt2 = (0, 0, 0)
@@ -456,7 +487,7 @@ public:
 
 template<typename Point3_t> inline
 Segment3D<Point3_t>::Segment3D()
-  : Entity(Entity::type::SEGMENT_3D), 
+  : Entity(Entity::Type::SEGMENT_3D),
     pt1(Point3_t()), 
     pt2(Point3_t()) 
 {
@@ -480,7 +511,7 @@ Segment3D<T>::Segment3D(Segment3D &&segment)
 
 template<typename Point3_t> inline
 Segment3D<Point3_t>::Segment3D(const Point3_t &_pt1, const Point3_t &_pt2)
-  : Entity(Entity::type::SEGMENT_3D), 
+  : Entity(Entity::Type::SEGMENT_3D),
     pt1(_pt1), 
     pt2(_pt2) 
 {
@@ -533,8 +564,16 @@ Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
   return s;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 Box<Point3_t> Segment3D<Point3_t>::getBox() const
+{
+  return Box<Point3_t>(pt1, pt2);
+}
+#endif
+
+template<typename Point3_t> inline
+Box<Point3_t> Segment3D<Point3_t>::box() const
 {
   return Box<Point3_t>(pt1, pt2);
 }

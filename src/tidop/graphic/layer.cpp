@@ -59,11 +59,6 @@ GLayer::const_iterator GLayer::end() const
   return mEntities.cend();
 }
 
-void GLayer::add(const std::shared_ptr<GraphicEntity> &entity)
-{
-  mEntities.push_back(entity);
-}
-
 void GLayer::push_back(const std::shared_ptr<GraphicEntity> &entity)
 {
   mEntities.push_back(entity);
@@ -125,7 +120,7 @@ GLayer::iterator GLayer::erase(GLayer::const_iterator first, GLayer::const_itera
   return mEntities.erase(first, last);
 }
 
-std::string GLayer::getName() const
+std::string GLayer::name() const
 {
   return mName;
 }

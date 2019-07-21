@@ -18,6 +18,12 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
+#ifdef HAVE_GDAL
+TL_SUPPRESS_WARNINGS
+#include "gdal.h"
+TL_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
+
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>
 #include <sys/stat.h>
@@ -423,7 +429,7 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 // TODO: C++17 incluye filesystem que tiene una clase path.
 //       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
@@ -624,7 +630,7 @@ Path &Path::append(const std::string &dir)
 
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -853,7 +859,7 @@ uint32_t getOptimalNumberOfThreads()
 #endif
 }
 
-void parallel_for(int ini, int end, std::function<void(int)> f)
+void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
 {
   //uint64_t time_ini = getTickCount();
 #ifdef HAVE_OMP
@@ -876,13 +882,13 @@ void parallel_for(int ini, int end, std::function<void(int)> f)
     }
   };
 
-  int num_threads = getOptimalNumberOfThreads();
+  size_t num_threads = getOptimalNumberOfThreads();
   std::vector<std::thread> threads(num_threads);
 
-  int size = (end - ini) / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    int _ini = i * size + ini;
-    int _end = _ini + size;
+  size_t size = (end - ini) / num_threads;
+  for (size_t i = 0; i < num_threads; i++) {
+    size_t _ini = i * size + ini;
+    size_t _end = _ini + size;
     if (i == num_threads -1) _end = end;
     threads[i] = std::thread(f_aux, _ini, _end);
   }
@@ -1205,7 +1211,7 @@ Csv::Status Csv::create(const std::string &header)
 //  return Status::SUCCESS;
 //}
 
-Csv::Status Csv::createCopy(const char *fileOut)
+Csv::Status Csv::createCopy(const std::string &fileOut)
 {
   Csv csv;
   csv.open(fileOut, Mode::Create);
@@ -1213,7 +1219,7 @@ Csv::Status Csv::createCopy(const char *fileOut)
   return Status::FAILURE;
 }
 
-Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
+Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
 {
   close();
 
@@ -1245,7 +1251,7 @@ Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
   if (fs.is_open()) {
     if (mMode == Mode::Create) {
       char dir[TL_MAX_PATH];
-      if ( getFileDriveDir(file, dir, TL_MAX_PATH) == 0 )
+      if ( getFileDriveDir(file.c_str(), dir, TL_MAX_PATH) == 0 )
         if ( createDir(dir) == -1) return Status::OPEN_FAIL;
     }
     return Status::OPEN_OK;
@@ -1254,12 +1260,6 @@ Csv::Status Csv::open(const char *file, Mode mode, FileOptions *options)
     return Status::OPEN_FAIL;
   }
 }
-
-Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
-{
-  return open(file.c_str(), mode, options);
-}
-
 
 //TableRegister *Csv::read(int id)
 //{
@@ -1439,5 +1439,28 @@ Compression::Status Compression::decompress()
 }
 
 #endif // HAVE_MINIZIP
+
+
+
+#ifdef HAVE_GDAL
+
+/* ---------------------------------------------------------------------------------- */
+
+std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
+std::mutex RegisterGdal::sMutex;
+
+void RegisterGdal::init()
+{
+  if (sRegisterGdal.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
+    if (sRegisterGdal.get() == nullptr) {
+      sRegisterGdal.reset(new RegisterGdal());
+      GDALAllRegister();
+    }
+  }
+}
+
+#endif
+
 
 } // End namespace TL

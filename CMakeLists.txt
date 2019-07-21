@@ -104,7 +104,7 @@ OPTION (BUILD_DOC             "Build documentation"   OFF)
 OPTION (BUILD_Message_handler "Active message handle" ON)
 
 # Si se activa esta opción se pueden utilizar los métodos marcados como obsoletos (deprecated)
-OPTION (SHOW_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
+OPTION (ENABLE_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
 if(BUILD_Message_handler)
   set(TL_MESSAGE_HANDLER YES)
@@ -114,11 +114,11 @@ else()
   message(WARNING "[TidopLib] Message manager disabled")
 endif()
 
-if(SHOW_DEPRECATED_METHODS)
-  set(TL_SHOW_DEPRECATED YES)
+if(ENABLE_DEPRECATED_METHODS)
+  set(TL_ENABLE_DEPRECATED_METHODS YES)
   message(WARNING "[TidopLib] Enable deprecated methods and class")
 else()
-  set(TL_SHOW_DEPRECATED NO)
+  set(TL_ENABLE_DEPRECATED_METHODS NO)
 endif()
 
 # Test

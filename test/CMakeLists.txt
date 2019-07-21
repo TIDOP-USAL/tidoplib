@@ -37,6 +37,7 @@ if(BUILD_TEST)
   # Test de cada módulo
   add_subdirectory(core)
   add_subdirectory(geometry)
+  add_subdirectory(geospatial)
   add_subdirectory(graphic)  
   add_subdirectory(math)  
   

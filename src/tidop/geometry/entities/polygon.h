@@ -1,8 +1,17 @@
-/*
- La ventana o bbox se tendria que recalcular cada vez que se modifica
- para no tener que recorrer todos los puntos si queremos obtener las dimensiones
- del elemento.
-*/
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
 
 #ifndef TL_GEOM_POLYGON_H
 #define TL_GEOM_POLYGON_H
@@ -157,14 +166,18 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("window()")
   Window<Point_t> getWindow() const;
+#endif
+  Window<Point_t> window() const;
 };
 
 // Definición de métodos
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon() 
-  : Entity(Entity::type::POLYGON_2D), 
+  : Entity(Entity::Type::POLYGON_2D),
     Entities2D<Point_t>()/*,
     mRings(0)*/
 {
@@ -172,7 +185,7 @@ Polygon<Point_t>::Polygon()
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(typename Polygon<Point_t>::size_type size)
-  : Entity(Entity::type::POLYGON_2D), 
+  : Entity(Entity::Type::POLYGON_2D),
     Entities2D<Point_t>(size)/*,
     mRings(0) */
 {
@@ -197,7 +210,7 @@ Polygon<Point_t>::Polygon(Polygon &&polygon) TL_NOEXCEPT
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(const std::vector<Point_t> &points) 
-  : Entity(Entity::type::POLYGON_2D), 
+  : Entity(Entity::Type::POLYGON_2D),
     Entities2D<Point_t>(points)/*,
     mRings(0) */
 {
@@ -205,7 +218,7 @@ Polygon<Point_t>::Polygon(const std::vector<Point_t> &points)
 
 template<typename Point_t> inline
 Polygon<Point_t>::Polygon(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::type::POLYGON_2D), 
+  : Entity(Entity::Type::POLYGON_2D),
     Entities2D<Point_t>(listPoints)/*,
     mRings(0) */
 {
@@ -358,6 +371,7 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_N
   return *this;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 Window<Point_t> Polygon<Point_t>::getWindow() const
 {
@@ -370,6 +384,21 @@ Window<Point_t> Polygon<Point_t>::getWindow() const
   }
   return w;
 }
+#endif
+
+template<typename Point_t> inline
+Window<Point_t> Polygon<Point_t>::window() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  }
+  return w;
+}
+
 
 typedef Polygon<Point<int>> PolygonI;
 typedef Polygon<Point<double>> PolygonD;
@@ -450,18 +479,24 @@ public:
    */
   Polygon3D<Point3_t> &operator = (Polygon3D<Point3_t> &&polygon) TL_NOEXCEPT;
 
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente del polígono
+   */
+  Box<Point3_t> box() const;
+
 };
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D() 
-  : Entity(Entity::type::POLYGON_3D), 
+  : Entity(Entity::Type::POLYGON_3D),
     Entities3D<Point3_t>() 
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(typename Polygon3D<Point3_t>::size_type size)
-  : Entity(Entity::type::POLYGON_3D), 
+  : Entity(Entity::Type::POLYGON_3D),
     Entities3D<Point3_t>(size) 
 {
 }
@@ -476,20 +511,20 @@ Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon)
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT
   : Entity(std::forward<Entity>(polygon)), 
-    Entities3D<Point3_t>(std::forward<Polygon3D<Point3_t>>(polygon))
+    Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(polygon))
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(const std::vector<Point3_t> &points) 
-  : Entity(Entity::type::POLYGON_3D), 
+  : Entity(Entity::Type::POLYGON_3D),
     Entities3D<Point3_t>(points)
 {
 }
 
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(std::initializer_list<Point3_t> listPoints) 
-  : Entity(Entity::type::POLYGON_3D), 
+  : Entity(Entity::Type::POLYGON_3D),
     Entities3D<Point3_t>(listPoints) 
 {
 }
@@ -520,9 +555,24 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&poly
 {
   if (this != &polygon) {
     this->mEntityType = std::move(polygon.mEntityType);
-    Entities3D<Point3_t>::operator = (std::forward<Polygon3D<Point3_t>>(polygon));
+    Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
   }
   return *this;
+}
+
+template<typename Point3_t> inline
+Box<Point3_t> Polygon3D<Point3_t>::box() const
+{
+  Box<Point3_t> box;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+  }
+  return box;
 }
 
 typedef Polygon3D<Point3<int>> Polygon3dI;
@@ -578,18 +628,20 @@ public:
    * \return lineString Objeto que se mueve
    */
   MultiPolygon<Point_t> &operator = (MultiPolygon &&multiPolygon) TL_NOEXCEPT;
+
+  Window<Point_t> window() const;
 };
 
 template <typename Point_t>
 MultiPolygon<Point_t>::MultiPolygon()
-  : Entity(Entity::type::MULTIPOLYGON_2D),
+  : Entity(Entity::Type::MULTIPOLYGON_2D),
     Entities2D<Polygon<Point_t>>()
 {
 }
 
 template<typename Point_t> inline
 MultiPolygon<Point_t>::MultiPolygon(typename MultiPolygon<Point_t>::size_type size)
-  : Entity(Entity::type::MULTIPOLYGON_2D),
+  : Entity(Entity::Type::MULTIPOLYGON_2D),
     Entities2D<Polygon<Point_t>>(size) 
 {
 }
@@ -629,6 +681,15 @@ MultiPolygon<Point_t> &MultiPolygon<Point_t>::operator = (MultiPolygon &&multiPo
   return *this;
 }
 
+template<typename Point_t> inline
+Window<Point_t> MultiPolygon<Point_t>::window() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    w = joinWindow(w, this->mEntities[i].getWindow());
+  }
+  return w;
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -679,18 +740,23 @@ public:
    */
   MultiPolygon3D<Point3_t> &operator = (MultiPolygon3D &&multiPolygon) TL_NOEXCEPT;
 
+  /*!
+   * \brief Caja envolvente
+   * \return Caja envolvente de los poligonos
+   */
+  Box<Point3_t> box() const;
 };
 
 template <typename Point3_t>
 MultiPolygon3D<Point3_t>::MultiPolygon3D()
-  : Entity(Entity::type::MULTIPOLYGON_3D),
+  : Entity(Entity::Type::MULTIPOLYGON_3D),
     Entities3D<Polygon3D<Point3_t>>()
 {
 }
 
 template<typename Point3_t> inline
 MultiPolygon3D<Point3_t>::MultiPolygon3D(typename MultiPolygon3D<Point3_t>::size_type size)
-  : Entity(Entity::type::MULTIPOLYGON_3D),
+  : Entity(Entity::Type::MULTIPOLYGON_3D),
     Entities3D<Polygon3D<Point3_t>>(size) 
 {
 }
@@ -728,6 +794,17 @@ MultiPolygon3D<Point3_t> &MultiPolygon3D<Point3_t>::operator = (MultiPolygon3D &
     Entities3D<Polygon3D<Point3_t>>::operator = (std::forward<MultiPolygon3D<Point3_t>>(multiPolygon));
   }
   return *this;
+}
+
+
+template<typename Point3_t> inline
+Box<Point3_t> MultiPolygon3D<Point3_t>::box() const
+{
+  Box<Point3_t> box;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    box = joinBox(box, this->mEntities[i].getBox());
+  }
+  return box;
 }
 
 

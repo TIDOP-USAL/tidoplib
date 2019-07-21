@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_LINESTRING_H
 #define TL_GEOM_LINESTRING_H
 
@@ -101,19 +116,23 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("window()")
   Window<Point_t> getWindow() const;
+#endif
+  Window<Point_t> window() const;
 };
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString()
-  : Entity(Entity::type::LINESTRING_2D), 
+  : Entity(Entity::Type::LINESTRING_2D), 
     Entities2D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 LineString<Point_t>::LineString(typename LineString<Point_t>::size_type size)
-  : Entity(Entity::type::LINESTRING_2D), 
+  : Entity(Entity::Type::LINESTRING_2D), 
     Entities2D<Point_t>(size) 
 {
 }
@@ -134,14 +153,14 @@ LineString<Point_t>::LineString(LineString &&lineString) TL_NOEXCEPT
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString(const std::vector<Point_t> &points)
-  : Entity(Entity::type::LINESTRING_2D), 
+  : Entity(Entity::Type::LINESTRING_2D), 
     Entities2D<Point_t>(points) 
 {
 }
 
 template <typename Point_t> inline
 LineString<Point_t>::LineString(std::initializer_list<Point_t> listPoints)
-  : Entity(Entity::type::LINESTRING_2D), 
+  : Entity(Entity::Type::LINESTRING_2D), 
     Entities2D<Point_t>(listPoints) 
 {
 }
@@ -185,6 +204,7 @@ LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&line
   return *this;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 Window<Point_t> LineString<Point_t>::getWindow() const
 {
@@ -197,6 +217,21 @@ Window<Point_t> LineString<Point_t>::getWindow() const
   }
   return w;
 }
+#endif
+
+template<typename Point_t> inline
+Window<Point_t> LineString<Point_t>::window() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
+    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
+    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
+    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
+  }
+  return w;
+}
+
 
 typedef LineString<Point<int>> LineStringI;
 typedef LineString<Point<float>> LineStringF;
@@ -258,12 +293,6 @@ public:
   ~LineString3D() {}
 
   /*!
-   * \brief Añade un punto a la colección
-   * \param[in] point Punto que se añade
-   */
-  //void add(const Point3_t &point) override;
-
-  /*!
    * \brief Longitud de la polilínea
    * \return Longitud
    */
@@ -285,21 +314,25 @@ public:
 
   /*!
    * \brief Caja envolvente
-   * \return Caja envolvente de los puntos
+   * \return Caja envolvente de la polilinea
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("box()")
   Box<Point3_t> getBox() const;
+#endif
+  Box<Point3_t> box() const;
 };
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D()
-  : Entity(Entity::type::LINESTRING_3D), 
+  : Entity(Entity::Type::LINESTRING_3D), 
     Entities3D<Point3_t>() 
 {
 }
 
 template<typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(typename LineString3D<Point3_t>::size_type size)
-  : Entity(Entity::type::LINESTRING_3D), 
+  : Entity(Entity::Type::LINESTRING_3D), 
     Entities3D<Point3_t>(size) 
 {
 }
@@ -320,14 +353,14 @@ LineString3D<Point3_t>::LineString3D(LineString3D &&lineString) TL_NOEXCEPT
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(const std::vector<Point3_t> &points)
-  : Entity(Entity::type::LINESTRING_3D), 
+  : Entity(Entity::Type::LINESTRING_3D), 
     Entities3D<Point3_t>(points) 
 {
 }
 
 template <typename Point3_t> inline
 LineString3D<Point3_t>::LineString3D(std::initializer_list<Point3_t> listPoints)
-  : Entity(Entity::type::LINESTRING_3D), 
+  : Entity(Entity::Type::LINESTRING_3D), 
     Entities3D<Point3_t>(listPoints) 
 {
 }
@@ -364,6 +397,7 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineS
   return *this;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
 Box<Point3_t> LineString3D<Point3_t>::getBox() const
 {
@@ -378,6 +412,23 @@ Box<Point3_t> LineString3D<Point3_t>::getBox() const
   }
   return box;
 }
+#endif
+
+template<typename Point3_t> inline
+Box<Point3_t> LineString3D<Point3_t>::box() const
+{
+  Box<Point3_t> box;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
+    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
+    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
+    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
+    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
+    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+  }
+  return box;
+}
+
 
 typedef LineString3D<Point3<int>> LineString3dI;
 typedef LineString3D<Point3<double>> LineString3dD;
@@ -438,20 +489,24 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  TL_DEPRECATED("window()")
   Window<Point_t> getWindow() const;
+#endif
+  Window<Point_t> window() const;
 
 };
 
 template <typename Point_t>
 MultiLineString<Point_t>::MultiLineString()
-  : Entity(Entity::type::MULTILINE_2D),
+  : Entity(Entity::Type::MULTILINE_2D),
     Entities2D<LineString<Point_t>>()
 {
 }
 
 template<typename Point_t> inline
 MultiLineString<Point_t>::MultiLineString(typename MultiLineString<Point_t>::size_type size)
-  : Entity(Entity::type::MULTILINE_2D),
+  : Entity(Entity::Type::MULTILINE_2D),
     Entities2D<LineString<Point_t>>(size) 
 {
 }
@@ -492,8 +547,20 @@ MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString 
   return *this;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
 Window<Point_t> MultiLineString<Point_t>::getWindow() const
+{
+  Window<Point_t> w;
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    w = joinWindow(w, this->mEntities[i].getWindow());
+  }
+  return w;
+}
+#endif
+
+template<typename Point_t> inline
+Window<Point_t> MultiLineString<Point_t>::window() const
 {
   Window<Point_t> w;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
@@ -555,21 +622,21 @@ public:
 
   /*!
    * \brief Caja envolvente
-   * \return Caja envolvente de los puntos
+   * \return Caja envolvente de las polilineas
    */
-  Box<Point3_t> getBox() const;
+  Box<Point3_t> box() const;
 };
 
 template <typename Point3_t>
 MultiLineString3D<Point3_t>::MultiLineString3D()
-  : Entity(Entity::type::MULTILINE_3D),
+  : Entity(Entity::Type::MULTILINE_3D),
     Entities3D<LineString3D<Point3_t>>()
 {
 }
 
 template<typename Point3_t> inline
 MultiLineString3D<Point3_t>::MultiLineString3D(typename MultiLineString3D<Point3_t>::size_type size)
-  : Entity(Entity::type::MULTILINE_3D),
+  : Entity(Entity::Type::MULTILINE_3D),
     Entities3D<LineString3D<Point3_t>>(size) 
 {
 }
@@ -611,7 +678,7 @@ MultiLineString3D<Point3_t> &MultiLineString3D<Point3_t>::operator = (MultiLineS
 }
 
 template<typename Point3_t> inline
-Box<Point3_t> MultiLineString3D<Point3_t>::getBox() const
+Box<Point3_t> MultiLineString3D<Point3_t>::box() const
 {
   Box<Point3_t> box;
   for (size_t i = 0; i < this->mEntities.size(); i++) {

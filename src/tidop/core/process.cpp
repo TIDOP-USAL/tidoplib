@@ -459,7 +459,7 @@ void BatchProcess::removeListener(Listener *listener)
   }
 }
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 void BatchProcess::clear()
 {
@@ -468,7 +468,7 @@ void BatchProcess::clear()
   reset();
 }
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 void BatchProcess::remove(uint64_t id)
 {

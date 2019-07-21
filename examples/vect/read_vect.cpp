@@ -18,12 +18,12 @@ using namespace TL::graph;
 int main(int argc, char** argv)
 {
 
-  char name[TL_MAX_FNAME];
-  getFileName(getRunfile(), name, TL_MAX_FNAME);
+  fs::path app_path(argv[0]);
+  std::string cmd_name = app_path.stem().string();
 
   std::string vect;
 
-  Command cmd("Read vector", "Lectura de un vector");
+  Command cmd(cmd_name, "Lectura de un vector");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("vect", 'v', "Lectura de un vector", &vect));
 
   // Parseo de los argumentos y comprobación de los mismos
@@ -42,7 +42,7 @@ int main(int argc, char** argv)
 
   // Consola
   Console &console = Console::getInstance();
-  console.setTitle(name);
+  console.setTitle(cmd_name);
   console.setLogLevel(MessageLevel::MSG_VERBOSE);
   MessageManager::getInstance().addListener(&console);
 
@@ -50,10 +50,11 @@ int main(int argc, char** argv)
   VectorGraphics vector;
   if (VectorGraphics::Status::OPEN_FAIL == vector.open(vect)) return 1;
 
-  msgInfo("Layers: %i", vector.getLayersCount());
+  msgInfo("Layers: %i", vector.layersCount());
 
   graph::GLayer layer;
   vector.read(0, &layer);
+  vector.close();
 
   return 0;
 }

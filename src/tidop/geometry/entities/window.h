@@ -1,3 +1,18 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
+
 #ifndef TL_GEOM_WINDOW_H
 #define TL_GEOM_WINDOW_H
 
@@ -269,7 +284,7 @@ public:
 
 template<typename Point_t> inline
 Window<Point_t>::Window() 
-  : Entity(Entity::type::WINDOW), 
+  : Entity(Entity::Type::WINDOW), 
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), -std::numeric_limits<typename Point_t::value_type>().max()) 
 {
@@ -277,7 +292,7 @@ Window<Point_t>::Window()
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const Window &w) 
-  : Entity(Entity::type::WINDOW), 
+  : Entity(Entity::Type::WINDOW), 
     pt1(w.pt1), 
     pt2(w.pt2) 
 {
@@ -293,7 +308,7 @@ Window<Point_t>::Window(Window &&w)
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2) 
-  : Entity(Entity::type::WINDOW) 
+  : Entity(Entity::Type::WINDOW) 
 {
   pt1.x = std::min(_pt1.x, _pt2.x);
   pt1.y = std::min(_pt1.y, _pt2.y);
@@ -303,7 +318,7 @@ Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2)
 
 template<typename Point_t> template<typename T> inline
 Window<Point_t>::Window(const Point_t &_pt, T sxx, T szy) 
-  : Entity(Entity::type::WINDOW)
+  : Entity(Entity::Type::WINDOW)
 { 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
     // Prefiero hacer la conversión a entero para evitar que OpenCV 
@@ -325,7 +340,7 @@ Window<Point_t>::Window(const Point_t &_pt, T sxx, T szy)
 
 template<typename Point_t> template<typename T> inline
 Window<Point_t>::Window(const Point_t &_pt, T sz) 
-  : Entity(Entity::type::WINDOW)
+  : Entity(Entity::Type::WINDOW)
 { 
   if (std::is_integral<typename Point_t::value_type>::value) {
   //if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -345,7 +360,7 @@ Window<Point_t>::Window(const Point_t &_pt, T sz)
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const std::vector<Point_t> &v)
-  : Entity(Entity::type::WINDOW),
+  : Entity(Entity::Type::WINDOW),
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), 
     std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), 
@@ -363,7 +378,7 @@ Window<Point_t>::Window(const std::vector<Point_t> &v)
 
 template<typename Point_t> template<typename Point_t2> inline
 Window<Point_t>::Window(const std::vector<Point_t2> &v)
-  : Entity(Entity::type::WINDOW),
+  : Entity(Entity::Type::WINDOW),
     pt1(std::numeric_limits<typename Point_t::value_type>().max(), 
     std::numeric_limits<typename Point_t::value_type>().max()), 
     pt2(-std::numeric_limits<typename Point_t::value_type>().max(), 

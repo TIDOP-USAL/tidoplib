@@ -456,7 +456,7 @@ public:
    */
   void removeListener(Listener *listener);
 
-#ifdef TL_SHOW_DEPRECATED
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Limpia la lista de procesos
@@ -465,7 +465,7 @@ public:
   TL_DEPRECATED("BatchProcess::reset()")
   void clear();
 
-#endif // TL_SHOW_DEPRECATED
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Elimina el proceso

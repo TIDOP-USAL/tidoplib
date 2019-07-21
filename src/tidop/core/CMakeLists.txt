@@ -29,7 +29,7 @@ if(BUILD_SHARED_LIBS)
             LIBRARY DESTINATION lib
             ARCHIVE DESTINATION lib)
 	
-    set_target_properties(tl_core PROPERTIES
+  set_target_properties(tl_core PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
     target_link_libraries(tl_core ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (HAVE_GDAL)
