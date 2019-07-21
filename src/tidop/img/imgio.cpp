@@ -558,6 +558,7 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
   else if (boost::iequals(ext, ".hdr" ))  format = "MFF";          // Vexcel MFF
   else if (boost::iequals(ext, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
   else if (boost::iequals(ext, ".wms" ))  format = "WMS";          // WMS
+  else if (boost::iequals(ext, ".vrt" ))  format = "VRT";
   else                                    format = nullptr;
   return format;
 
@@ -677,6 +678,17 @@ float GdalGeoRaster::getZ(const PointD &pt)
   transform(wTerrain, &wLoad, mTrfAffine.get(), transform_order::INVERSE);
 
   WindowI wRead(wLoad);
+  Helmert2D<PointI> trf;
+  cv::Mat image;
+  GdalRaster::read(&image, wRead, 1, &trf);
+  return image.at<float>(0, 0);
+}
+
+float GdalGeoRaster::getZ(const PointI &pt)
+{
+  // Se transforma la ventana a coordenadas imagen
+  cv::Mat mat;
+  WindowI wRead(pt, 1);
   Helmert2D<PointI> trf;
   cv::Mat image;
   GdalRaster::read(&image, wRead, 1, &trf);
@@ -1545,6 +1557,15 @@ float Mdt::getZ(const PointD &pt) const
 #endif
 }
 
+float Mdt::getZ(const PointI &pt) const
+{
+#ifdef HAVE_GDAL
+  GdalGeoRaster *geoRaster = dynamic_cast<GdalGeoRaster *>(mImageFormat.get());
+  return geoRaster->getZ(pt);
+#else
+  return TL_FLOAT_MIN;
+#endif
+}
 
 /* ---------------------------------------------------------------------------------- */
 

@@ -509,6 +509,7 @@ public:
   char get(const geometry::PointD &pt);
 
   float getZ(const geometry::PointD &pt);
+  float getZ(const geometry::PointI &pt);
 
 private:
 
@@ -974,6 +975,7 @@ public:
   Mdt() {}
 
   float getZ(const geometry::PointD &pt) const;
+  float getZ(const geometry::PointI &pt) const;
 };
 
 
