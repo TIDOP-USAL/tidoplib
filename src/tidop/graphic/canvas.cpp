@@ -47,46 +47,6 @@ CanvasCV::~CanvasCV()
 {
 }
 
-int CanvasCV::width() const
-{
-  return mCanvas.cols;
-}
-
-int CanvasCV::height() const
-{
-  return mCanvas.rows;
-}
-
-Color CanvasCV::backgroundColor() const
-{
-  return mBgColor;
-}
-
-void CanvasCV::setWidth(int width)
-{
-  mWidth = width;
-  update();
-}
-
-void CanvasCV::setHeight(int height)
-{
-  mHeight = height;
-  update();
-}
-
-void CanvasCV::setSize(int width, int height)
-{
-  mWidth = width;
-  mHeight = height;
-  update();
-}
-
-void CanvasCV::setBackgroundColor(const Color &color)
-{
-  mBgColor = color;
-  update();
-}
-
 void CanvasCV::drawPoint(const GPoint &point)
 {
   StyleSymbol *style_symbol = point.styleSymbol();

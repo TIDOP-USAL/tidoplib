@@ -41,7 +41,7 @@ class ProcessExample
 {
 public:
   ProcessExample();
-  ~ProcessExample();
+  ~ProcessExample() override;
 
 private:
 
@@ -57,6 +57,7 @@ private:
 };
 
 ProcessExample::ProcessExample()
+  : Process()
 {
 }
 

@@ -106,9 +106,11 @@ public:
    */
   ~Log() override;
 
-  /* Se impide la copia y la asignación al ser un singleton */
-  Log(Log const&) = delete;
-  void operator=(Log const&) = delete;
+  /// Se invalida la copia y la asignación
+  Log(const Log &) = delete;
+  Log(Log &&) = delete;
+  void operator=(const Log &) = delete;
+  void operator=(Log &&) = delete;
 
   /*!
    * \brief Singleton para obtener una referencia única
@@ -154,7 +156,6 @@ public:
   static void resumeListener();
 
 protected:
-
 
   /*!
    * \brief Mensaje de depuración
@@ -217,6 +218,40 @@ public:
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 };
+
+
+/* Definición de métodos inline de la clase Console */
+
+inline EnumFlags<MessageLevel> Log::logLevel() const
+{
+  return sLevel;
+}
+
+inline void Log::setLogFile(const char *file)
+{
+  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
+  TL_TODO("Comprobar si tiene permisos de escritura")
+  sLogFile = file;
+}
+
+inline void Log::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+#ifdef TL_MESSAGE_HANDLER
+
+inline void Log::pauseListener()
+{
+  sPauseListener = true;
+}
+
+inline void Log::resumeListener()
+{
+  sPauseListener = false;
+}
+
+#endif // TL_MESSAGE_HANDLER
 
 /*! \} */ // end of Log
 

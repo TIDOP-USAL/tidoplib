@@ -1,4 +1,4 @@
-# Modulo Core de la librería
+# Modulo Core de la librería TIDOP
 
 add_library(tl_core ${LIB_TYPE}
             console.cpp
