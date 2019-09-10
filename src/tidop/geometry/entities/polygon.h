@@ -232,7 +232,7 @@ Polygon<Point_t>::Polygon(std::initializer_list<Point_t> listPoints)
 template<typename Point_t> inline
 bool Polygon<Point_t>::isInner(const Point_t &point) const
 {
-  Window<Point_t> w = this->getWindow();
+  Window<Point_t> w = this->window();
   // Comprueba si esta dentro de la ventana envolvente.
   if (w.containsPoint(point) == false) return false;
 

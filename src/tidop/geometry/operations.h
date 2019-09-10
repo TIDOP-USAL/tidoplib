@@ -314,10 +314,10 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  if (double cross_product = math::crossProduct(vs1, vs2)) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
-    double u = crossProduct(v11_12, vs1) / cross_product;
+    double t = math::crossProduct(v11_12, vs2) / cross_product;
+    double u = math::crossProduct(v11_12, vs1) / cross_product;
     if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
       if (typeid(typename Point_t::value_type) == typeid(int)) {
         pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
@@ -348,9 +348,9 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  if (double cross_product = math::crossProduct(vs1, vs2)) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
+    double t = math::crossProduct(v11_12, vs2) / cross_product;
     if (typeid(typename Point_t::value_type) == typeid(int)) {
       pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
       pt->y = TL_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
