@@ -141,6 +141,7 @@ OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON
 OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
 OPTION (BUILD_TL_IMG          "Include img module in TidopLib build"          ON )
 OPTION (BUILD_TL_IMG_PROCESS  "Include imgprocess module in TidopLib build"   ON )
+OPTION (BUILD_TL_FEAT_MATCH   "Include featmatch module in TidopLib build"    ON )
 OPTION (BUILD_TL_GRAPHIC      "Include graphic module in TidopLib build"      ON )
 OPTION (BUILD_TL_GEOSPATIAL   "Include geospatial module in TidopLib build"   ON )
 OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON )
