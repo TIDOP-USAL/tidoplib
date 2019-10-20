@@ -37,26 +37,6 @@ set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 # Macro para depuración
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
-
-# Configuracion especifica de Visual Studio
-if(MSVC)
-
-  # Nivel de warning
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
-
-  # /EH (Modelo de control de excepciones)
-  # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
-  # declaradas como extern "C" jamás inician una excepción de C++.
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-
-  # Las llamadas a los métodos potencialmente no seguros en la biblioteca estándar de C++ dan lugar
-  # a una Advertencia del compilador (nivel 3) C4996.
-  # Para deshabilitar esta advertencia se debe definir la macro _SCL_SECURE_NO_WARNINGS
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
-
-endif()
-
-
 if (UNIX)
   set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -89,6 +69,7 @@ if(MSVC)
     set(TL_RUNTIME vc14)
   elseif(MSVC_VERSION MATCHES "^191[0-9]$")
     set(TL_RUNTIME vc15)
+
   elseif(MSVC_VERSION MATCHES "^192[0-9]$")
     set(TL_RUNTIME vc16)
   else()
@@ -104,6 +85,28 @@ elseif(MINGW)
   endif()
 endif()
 
+# Configuracion especifica de Visual Studio
+if(MSVC)
+
+  # Nivel de warning
+  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+
+  # /EH (Modelo de control de excepciones)
+  # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
+  # declaradas como extern "C" jamás inician una excepción de C++.
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+
+  # Las llamadas a los métodos potencialmente no seguros en la biblioteca estándar de C++ dan lugar
+  # a una Advertencia del compilador (nivel 3) C4996.
+  # Para deshabilitar esta advertencia se debe definir la macro _SCL_SECURE_NO_WARNINGS
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
+
+  # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
+
+endif()
+
+
 if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
   if(DEFINED TL_RUNTIME AND DEFINED TL_ARCH)
     set(TL_INSTALL_BINARIES_PREFIX "${TL_ARCH}/${TL_RUNTIME}/")
@@ -111,8 +114,8 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     message(STATUS "Can't detect runtime and/or arch")
     set(TL_INSTALL_BINARIES_PREFIX "")
   endif()
-else()
-  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
+#else()
+#  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
 endif()
 
 # Se permite elegir entre libreria estatica o

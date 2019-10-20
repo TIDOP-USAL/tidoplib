@@ -101,14 +101,14 @@ TEST_F(VectorTest, value_at)
   EXPECT_EQ(3.5, _vect_2_d.at(1));
 }
 
-TEST_F(VectorTest, lenght)
+TEST_F(VectorTest, module)
 {
-
+  ///TODO
 }
 
 TEST_F(VectorTest, normalize)
 {
-
+  ///TODO
 }
 
 TEST_F(VectorTest, zero)
@@ -227,5 +227,10 @@ TEST_F(VectorTest, ScalarVector)
   EXPECT_EQ(10, v2[0]);
   EXPECT_EQ( 0, v2[1]);
   EXPECT_EQ(30, v2[2]);
+
+}
+
+TEST_F(VectorTest, dotProduct)
+{
 
 }

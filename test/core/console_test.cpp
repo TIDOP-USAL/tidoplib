@@ -9,7 +9,7 @@
 using namespace tl;
 
 /// Google test con visual studio da algunas excepciones que a priori no tienen mucho sentido.
-/// Si se ejecuta el mismo código por separado no da ningén error. En Linux el test corre sin problemas.
+/// Si se ejecuta el mismo código por separado no da ningún error. En Linux el test corre sin problemas.
 #ifndef _MSC_VER
 
 TL_SUPPRESS_WARNINGS

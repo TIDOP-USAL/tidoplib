@@ -14,8 +14,6 @@
 
 #include "tidop/core/console.h"
 
-#include "config_tl.h"
-
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
@@ -100,10 +98,7 @@ Console &Console::instance()
   return *sObjConsole;
 }
 
-EnumFlags<MessageLevel> Console::messageLevel() const
-{
-  return sLevel;
-}
+
 
 void Console::printMessage(const std::string &msg)
 {
@@ -123,15 +118,7 @@ void Console::printErrorMessage(const std::string &msg)
   reset();
 }
 
-void Console::reset() 
-{
-#ifdef WIN32
-  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
-#else
-  sprintf(mCommand, "%c[0;m", 0x1B);
-  fprintf(mStream, "%s", mCommand);
-#endif
-}
+
 
 void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
 {
@@ -246,27 +233,7 @@ void Console::setFontBold(bool bBold)
   update();
 }
 
-void Console::setFontHeight(int16_t size)
-{
-#ifdef WIN32
-  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(size);
-#endif
-  update();
-}
 
-void Console::setLogLevel(MessageLevel level)
-{
-  sLevel = level;
-}
-
-void Console::setTitle(const std::string &title)
-{
-#ifdef WIN32
-  SetConsoleTitleA(title.c_str());
-#else
-  //printf("%c]0;%s%c", '\033', title, '\007');
-#endif
-}
 
 #ifdef TL_MESSAGE_HANDLER 
 
@@ -443,36 +410,6 @@ Argument &Argument::operator = (Argument &&arg) TL_NOEXCEPT
   return *this;
 }
 
-std::string Argument::description() const
-{
-  return mDescription;
-}
-
-void Argument::setDescription(const std::string &description)
-{
-  mDescription = description;
-}
-
-std::string Argument::name() const
-{
-  return mName;
-}
-
-void Argument::setName(const std::string &name)
-{
-  mName = name;
-}
-
-char Argument::shortName() const
-{
-  return mShortName;
-}
-
-void Argument::setShortName(const char &shortName)
-{
-  mShortName = shortName;
-}
-
 /* ---------------------------------------------------------------------------------- */
 
 Command::Command()
@@ -513,36 +450,6 @@ Command::Command(const std::string &name, const std::string &description,
     mVersion("0.0.0"),
     mExamples()
 {
-}
-
-std::string Command::name() const
-{
-  return mName;
-}
-
-void Command::setName(const std::string &name)
-{
-  mName = name;
-}
-
-std::string Command::description() const
-{
-  return mDescription;
-}
-
-void Command::setDescription(const std::string &description)
-{
-  mDescription = description;
-}
-
-std::string Command::version() const
-{
-    return mVersion;
-}
-
-void Command::setVersion(const std::string &version)
-{
-    mVersion = version;
 }
 
 Command::Status Command::parse(int argc, const char * const argv[])
@@ -704,52 +611,6 @@ Command::Status Command::parse(int argc, const char * const argv[])
   return Command::Status::parse_success;
 }
 
-Command::iterator Command::begin() TL_NOEXCEPT
-{
-  return mCmdArgs.begin();
-}
-
-Command::const_iterator Command::begin() const TL_NOEXCEPT
-{
-  return mCmdArgs.cbegin();
-}
-
-Command::iterator Command::end() TL_NOEXCEPT
-{
-  return mCmdArgs.end();
-}
-
-Command::const_iterator Command::end() const TL_NOEXCEPT
-{
-  return mCmdArgs.cend();
-}
-
-void Command::push_back(const std::shared_ptr<Argument> &arg)
-{
-  mCmdArgs.push_back(arg);
-}
-
-void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
-{
-  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
-}
-
-void Command::clear() TL_NOEXCEPT
-{
-  mCmdArgs.clear();
-  mExamples.clear();
-}
-
-bool Command::empty() const TL_NOEXCEPT
-{
-  return mCmdArgs.empty();
-}
-
-size_t Command::size() const TL_NOEXCEPT
-{
-  return mCmdArgs.size();
-}
-
 Command &Command::operator=(const Command &command)
 {
   if (this != &command) {
@@ -770,11 +631,6 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
     this->mVersion = std::move(command.mVersion);
   }
   return (*this);
-}
-
-Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
-{
-  return mCmdArgs.erase(first, last);
 }
 
 void Command::showHelp() const
@@ -863,10 +719,7 @@ void Command::showLicence() const
   console.setFontBold(true);
 }
 
-void Command::addExample(const std::string &example)
-{
-  mExamples.push_back(example);
-}
+
 
 void Command::init()
 {
@@ -913,88 +766,75 @@ CommandList::CommandList(const std::string &name, const std::string &description
 {
 }
 
-std::string CommandList::name() const
-{
-  return mName;
-}
-
-void CommandList::setName(const std::string &name)
-{
-  mName = name;
-}
-
-std::string CommandList::description() const
-{
-  return mDescription;
-}
-
-void CommandList::setDescription(const std::string &description)
-{
-  mDescription = description;
-}
-
-std::string CommandList::version() const
-{
-  return mVersion;
-}
-
-void CommandList::setVersion(const std::string &version)
-{
-  mVersion = version;
-}
-
 CommandList::Status CommandList::parse(int argc, const char * const argv[])
 {
-  for (auto &command : mCommands){
+  if (argc < 1) return Status::parse_error;
 
+  std::string arg_cmd_name = std::string(argv[1]);
+  std::size_t found_name = arg_cmd_name.find("--");
+  std::size_t found_short_name = arg_cmd_name.find("-");
+  if (found_name != std::string::npos && found_name == 0) {
+    arg_cmd_name = (argv[1])+2;
+  } else if (found_short_name != std::string::npos && found_short_name == 0) {
+    arg_cmd_name = (argv[1])+1;
   }
 
-  return Status::parse_success;
-}
+  if (arg_cmd_name.compare("h") == 0 || arg_cmd_name.compare("help") == 0){
+    showHelp();
+    return Status::show_help;
+  }
 
-CommandList::iterator CommandList::begin() TL_NOEXCEPT
-{
-  return mCommands.begin();
-}
+  if (arg_cmd_name.compare("version") == 0){
+    showVersion();
+    return Status::show_version;
+  }
 
-CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
-{
-  return mCommands.cbegin();
-}
+  if (arg_cmd_name.compare("licence") == 0){
+    showLicence();
+    return Status::show_licence;
+  }
 
-CommandList::iterator CommandList::end() TL_NOEXCEPT
-{
-  return mCommands.end();
-}
+  for (auto &command : mCommands){
+    if(command->name().compare(arg_cmd_name) == 0){
+      std::vector<char const*> cmd_argv;
+      for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
+        if (i != 1)
+          cmd_argv.push_back(argv[i]);
+      }
+      Command::Status status = command->parse(argc-1, cmd_argv.data());
+      if (status == Command::Status::parse_error) {
+        return Status::parse_error;
+      } else if (status == Command::Status::show_help) {
+        return Status::show_help;
+      } else if (status == Command::Status::show_licence) {
+        return Status::show_licence;
+      } else if (status == Command::Status::show_version) {
+        return Status::show_version;
+      }
+    }
+  }
 
-CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
-{
-  return mCommands.cend();
-}
+  for (auto &command : mCommands){
+    if(command->name().compare(arg_cmd_name) == 0){
+      std::vector<char const*> cmd_argv;
+      for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
+        if (i != 1)
+          cmd_argv.push_back(argv[i]);
+      }
+      Command::Status status = command->parse(argc-1, cmd_argv.data());
+      if (status == Command::Status::parse_error) {
+        return Status::parse_error;
+      } else if (status == Command::Status::show_help) {
+        return Status::show_help;
+      } else if (status == Command::Status::show_licence) {
+        return Status::show_licence;
+      } else if (status == Command::Status::show_version) {
+        return Status::show_version;
+      }
+    }
+  }
 
-void CommandList::push_back(const std::shared_ptr<Command> &cmd)
-{
-  mCommands.push_back(cmd);
-}
-
-void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
-{
-  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
-}
-
-void CommandList::clear() TL_NOEXCEPT
-{
-  mCommands.clear();
-}
-
-bool CommandList::empty() const TL_NOEXCEPT
-{
-  return mCommands.empty();
-}
-
-CommandList::size_type CommandList::size() const TL_NOEXCEPT
-{
-  return mCommands.size();
+  return Status::parse_error;
 }
 
 CommandList &CommandList::operator=(const CommandList &cmdList)
@@ -1019,18 +859,13 @@ CommandList &CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT
   return (*this);
 }
 
-CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
-{
-  return mCommands.erase(first, last);
-}
-
 void CommandList::showHelp() const
 {
 
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("\nUsage: %s <command> [<args>] \n\n", mName.c_str());
+  printf("\nUsage: %s [--version] [-h | --help] [--licence] <command> [<args>] \n\n", mName.c_str());
   console.reset();
 
   printf("%s \n\n", mDescription.c_str());

@@ -6,8 +6,8 @@
 
 #ifdef HAVE_OPENCV
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 
 

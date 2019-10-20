@@ -5,7 +5,8 @@
 
 #ifdef HAVE_OPENCV
 
-#include "opencv2/core/core.hpp"
+#include <opencv2/core.hpp>
+
 #include "tidop/img_process/img_processing.h"
 
 namespace tl

@@ -397,6 +397,45 @@ public:
 };
 
 
+/* Definición de métodos inline de la clase Console */
+
+inline EnumFlags<MessageLevel> Console::messageLevel() const
+{
+  return sLevel;
+}
+
+inline void Console::setFontHeight(int16_t size)
+{
+#ifdef WIN32
+  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(size);
+#endif
+  update();
+}
+
+inline void Console::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+inline void Console::setTitle(const std::string &title)
+{
+#ifdef WIN32
+  SetConsoleTitleA(title.c_str());
+#else
+  //printf("%c]0;%s%c", '\033', title, '\007');
+#endif
+}
+
+inline void Console::reset()
+{
+#ifdef WIN32
+  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
+#else
+  sprintf(mCommand, "%c[0;m", 0x1B);
+  fprintf(mStream, "%s", mCommand);
+#endif
+}
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -534,6 +573,39 @@ public:
    */
   virtual bool isValid() = 0;
 };
+
+
+/*  Definición de métodos inline de la clase Argument */
+
+inline std::string Argument::name() const
+{
+  return mName;
+}
+
+inline void Argument::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string Argument::description() const
+{
+  return mDescription;
+}
+
+inline void Argument::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline char Argument::shortName() const
+{
+  return mShortName;
+}
+
+inline void Argument::setShortName(const char &shortName)
+{
+  mShortName = shortName;
+}
 
 
 /*!
@@ -1136,8 +1208,7 @@ public:
 
   bool validate(T value)
   {
-    if (value > mMin && value < mMax)
-      return true;
+    return (value > mMin && value < mMax);
   }
 
   void setRange(T min, T max)
@@ -1470,6 +1541,95 @@ protected:
 };
 
 
+/* Definición de métodos inline de la clase Command */
+
+inline std::string Command::name() const
+{
+  return mName;
+}
+
+inline void Command::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string Command::description() const
+{
+  return mDescription;
+}
+
+inline void Command::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline std::string Command::version() const
+{
+  return mVersion;
+}
+
+inline void Command::setVersion(const std::string &version)
+{
+  mVersion = version;
+}
+
+inline Command::iterator Command::begin() TL_NOEXCEPT
+{
+  return mCmdArgs.begin();
+}
+
+inline Command::const_iterator Command::begin() const TL_NOEXCEPT
+{
+  return mCmdArgs.cbegin();
+}
+
+inline Command::iterator Command::end() TL_NOEXCEPT
+{
+  return mCmdArgs.end();
+}
+
+inline Command::const_iterator Command::end() const TL_NOEXCEPT
+{
+  return mCmdArgs.cend();
+}
+
+inline void Command::push_back(const std::shared_ptr<Argument> &arg)
+{
+  mCmdArgs.push_back(arg);
+}
+
+inline void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
+{
+  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
+}
+
+inline void Command::clear() TL_NOEXCEPT
+{
+  mCmdArgs.clear();
+  mExamples.clear();
+}
+
+inline bool Command::empty() const TL_NOEXCEPT
+{
+  return mCmdArgs.empty();
+}
+
+inline size_t Command::size() const TL_NOEXCEPT
+{
+  return mCmdArgs.size();
+}
+
+inline Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
+{
+  return mCmdArgs.erase(first, last);
+}
+
+inline void Command::addExample(const std::string &example)
+{
+  mExamples.push_back(example);
+}
+
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -1736,6 +1896,89 @@ public:
   void showLicence() const;
 
 };
+
+
+/* Definición de métodos inline de la clase CommandList */
+
+inline std::string CommandList::name() const
+{
+  return mName;
+}
+
+inline void CommandList::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string CommandList::description() const
+{
+  return mDescription;
+}
+
+inline void CommandList::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline std::string CommandList::version() const
+{
+  return mVersion;
+}
+
+inline void CommandList::setVersion(const std::string &version)
+{
+  mVersion = version;
+}
+
+inline CommandList::iterator CommandList::begin() TL_NOEXCEPT
+{
+  return mCommands.begin();
+}
+
+inline CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
+{
+  return mCommands.cbegin();
+}
+
+inline CommandList::iterator CommandList::end() TL_NOEXCEPT
+{
+  return mCommands.end();
+}
+
+inline CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
+{
+  return mCommands.cend();
+}
+
+inline void CommandList::push_back(const std::shared_ptr<Command> &cmd)
+{
+  mCommands.push_back(cmd);
+}
+
+inline void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
+}
+
+inline void CommandList::clear() TL_NOEXCEPT
+{
+  mCommands.clear();
+}
+
+inline bool CommandList::empty() const TL_NOEXCEPT
+{
+  return mCommands.empty();
+}
+
+inline CommandList::size_type CommandList::size() const TL_NOEXCEPT
+{
+  return mCommands.size();
+}
+
+inline CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
+{
+  return mCommands.erase(first, last);
+}
 
 
 /* ---------------------------------------------------------------------------------- */

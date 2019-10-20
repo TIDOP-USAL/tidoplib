@@ -12,6 +12,8 @@
  *                                                                          *
  ****************************************************************************/
 
+/// https://github.com/eidheim/tiny-process-library
+
 #include "tidop/core/process.h"
 
 #include "tidop/core/messages.h"
@@ -36,6 +38,407 @@
 
 namespace tl
 {
+
+#ifndef TL_OLD_PROCESS
+
+unsigned long Process::sProcessCount = 0;
+
+Process::Process(Process *parent)
+  : mStatus(Status::start),
+    mParent(parent),
+    mListeners(0),
+    mProcessId(0),
+    mProcessName("")
+{
+  if (mParent == nullptr) {
+    mProcessId = ++sProcessCount;
+  }
+}
+
+Process::~Process()
+{
+  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
+    stop();
+  }
+  mStatus = Status::finalized;
+}
+
+Process::Status Process::run(Progress *progressBar)
+{
+  if (mStatus != Status::finalized) { // Para saltar procesos ya realizados.
+    runTriggered();
+    mStatus = Status::running;
+    //this->execute(progressBar);
+    mThread = std::move(std::thread(&Process::execute, this, progressBar));
+    mThread.join();
+  }
+
+  return mStatus;
+}
+
+void Process::pause()
+{
+  mStatus = Status::pausing;
+  while (mStatus != Status::pause);
+  pauseTriggered();
+}
+
+void Process::reset()
+{
+  TL_TODO("Si esta arrancado el proceso se tiene que detener antes")
+  mStatus = Status::start; 
+}
+
+void Process::resume()
+{
+  if (mStatus == Status::pause || mStatus == Status::pausing) {
+    mStatus = Status::running;
+    resumeTriggered();
+  }
+}
+
+void Process::stop()
+{
+  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
+    TL_TODO("Estado Stopping")
+    mStatus = Status::stopped;
+    stopTriggered();
+  }
+}
+
+Process::Status Process::status()
+{
+  return mStatus;
+}
+
+uint64_t Process::id() const
+{
+  return mProcessId;
+}
+
+std::string Process::name() const
+{
+  return mProcessName;
+}
+
+void Process::addListener(Listener *listener)
+{
+  if (mParent == nullptr) {
+    mListeners.push_back(listener);
+  }
+}
+
+void Process::removeListener(Listener *listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
+}
+
+void Process::processCountReset()
+{
+  sProcessCount = 0;
+}
+
+void Process::endTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onEnd(id());
+    }
+  }
+}
+
+void Process::pauseTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onPause(id());
+    }
+  }
+}
+
+void Process::resumeTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onResume(id());
+    }
+  }
+}
+
+void Process::runTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onRun(id());
+    }
+  }
+}
+
+void Process::stopTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onStop(id());
+    }
+  }
+}
+
+void Process::errorTriggered()
+{
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onError(id());
+    }
+  }
+}
+
+
+/* ---------------------------------------------------------------------------------- */
+
+BatchProcessing::BatchProcessing()
+  : mStatus(Status::start),
+    mProcessList(0),
+    mListeners(0),
+    mThread(),
+    mCurrentProcess(nullptr)
+{
+}
+
+BatchProcessing::BatchProcessing(const BatchProcessing &batchProcess)
+  : mStatus(Status::start),
+    mProcessList(batchProcess.mProcessList),
+    mListeners(batchProcess.mListeners),
+    mThread(),
+    mCurrentProcess(nullptr)
+{
+  for (auto process : mProcessList) {
+    process->addListener(this);
+  }
+}
+
+BatchProcessing::BatchProcessing(std::initializer_list<std::shared_ptr<Process>> procList)
+  : mStatus(Status::start),
+    mProcessList(procList),
+    mThread(),
+    mCurrentProcess(nullptr)
+{
+  for (auto process : mProcessList) {
+    process->addListener(this);
+  }
+}
+
+BatchProcessing::~BatchProcessing()
+{
+  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
+    stop();
+  }
+  mStatus = Status::finalized;
+}
+
+BatchProcessing::Status BatchProcessing::run(Progress * progressBarTotal, Progress * progressBarPartial)
+{
+  mStatus = Status::running;
+  if (progressBarTotal) progressBarTotal->init(0., static_cast<double>(mProcessList.size()));
+  for (const auto &process : mProcessList) {
+    if (mStatus == Status::pausing) {
+      mStatus = Status::pause;
+      while (mStatus == Status::pause);
+    } else if (mStatus == Status::stopped) {
+      // Se fuerza la terminación
+      return Status::stopped;
+    } else {
+      //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
+      //  return Status::FINALIZED_ERROR;
+      //} else {
+      //  if (progressBarTotal) (*progressBarTotal)();
+      //}
+      process->run(progressBarPartial);
+      if (progressBarTotal) (*progressBarTotal)();
+    }
+  }
+  return (mStatus = Status::finalized);
+}
+
+BatchProcessing::Status BatchProcessing::run_async(Progress * progressBarTotal, Progress * progressBarPartial)
+{
+  mStatus = Status::running;
+
+  auto f_aux = [&](Progress *progress_bar_total, Progress *progress_bar_partial) {
+    if (progress_bar_total) progress_bar_total->init(0., static_cast<double>(mProcessList.size()));
+    for (const auto &process : mProcessList) {
+      if (progress_bar_total) {
+        // Se han añadido nuevos procesos asi que se actualiza
+        progress_bar_total->setMaximun(static_cast<double>(mProcessList.size()));
+        progress_bar_total->updateScale();
+      }
+      mCurrentProcess = process.get();
+      if (mStatus == Status::pausing) {
+        mStatus = Status::pause;
+        while (mStatus == Status::pause);
+      } else if (mStatus == Status::stopped) {
+        // Se fuerza la terminación
+        return Status::stopped;
+      } else {
+        //process->run(progress_bar_partial);
+        if (process->run(progress_bar_partial) == Process::Status::error) {
+        //  return Status::FINALIZED_ERROR;
+          if (progress_bar_partial) progress_bar_partial->restart();
+          //TODO: evento de error con el id de proceso
+        }
+          
+        if (progress_bar_total) (*progress_bar_total)();
+        
+      }
+    }
+    endTriggered();
+    return (mStatus = Status::finalized);
+  };
+
+  mThread = std::thread(f_aux, progressBarTotal, progressBarPartial);
+  mThread.detach();
+
+  return mStatus;
+}
+
+void BatchProcessing::push_back(const std::shared_ptr<Process> &process)
+{
+  mProcessList.push_back(process);
+  process->addListener(this);
+}
+
+void BatchProcessing::addListener(Listener * listener)
+{
+  mListeners.push_back(listener);
+}
+
+void BatchProcessing::removeListener(Listener * listener)
+{
+  if (!mListeners.empty()) {
+    mListeners.remove(listener);
+  }
+}
+
+void BatchProcessing::remove(uint64_t id)
+{
+  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
+    if ((*it)->id() == id) {
+      remove(*it);
+      break;
+    }
+  }
+}
+
+void BatchProcessing::remove(const std::shared_ptr<Process> &process)
+{
+  process->removeListener(this);
+  mProcessList.remove(process);
+}
+
+bool BatchProcessing::isRunning() const
+{
+  return (mStatus == Status::running || mStatus == Status::pausing || mStatus == Status::pause);
+}
+
+void BatchProcessing::pause()
+{
+  mStatus = Status::pausing;
+  if (mCurrentProcess) {
+    mCurrentProcess->pause();
+  }
+}
+
+void BatchProcessing::reset()
+{
+  //TODO: Si esta corriendo no se puede hacer un reset
+  if (mStatus == Status::running) {
+    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
+  } else {
+    mStatus = Status::start;
+    mProcessList.clear();
+    Process::processCountReset();
+  }
+}
+
+void BatchProcessing::resume()
+{
+  if (mStatus == Status::pause || mStatus == Status::pausing) {
+    mStatus = Status::running;
+    if (mCurrentProcess) 
+      mCurrentProcess->resume();
+  }
+}
+
+void BatchProcessing::stop()
+{
+  mStatus = Status::stopped;
+  if (mCurrentProcess) {
+    mCurrentProcess->stop();
+  }
+}
+
+void BatchProcessing::initCounter()
+{
+  Process::processCountReset();
+}
+
+void BatchProcessing::onPause(uint64_t id)
+{
+  msgInfo("Process %i paused", id);
+}
+
+void BatchProcessing::onResume(uint64_t id)
+{
+  msgInfo("Process %i resumed", id);
+}
+
+void BatchProcessing::onRun(uint64_t id)
+{
+  msgInfo("Process %i running", id);
+}
+
+void BatchProcessing::onStop(uint64_t id)
+{
+  msgInfo("Process %i stopped", id);
+}
+
+void BatchProcessing::onEnd(uint64_t id)
+{
+  msgInfo("Process %i completed", id);
+}
+
+void BatchProcessing::onError(uint64_t id)
+{
+  msgInfo("Process %i. Process error", id);
+  errorTriggered();
+}
+
+void BatchProcessing::endTriggered()
+{
+  mStatus = Status::finalized;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onEnd();
+    }
+  }
+}
+
+void BatchProcessing::errorTriggered()
+{
+  mStatus = Status::error;
+  if (!mListeners.empty()) {
+    for (auto &lst : mListeners) {
+      lst->onError();
+    }
+  }
+}
+
+
+
+#else 
+
+/* ---------------------------------------------------------------------------------- */
 
 unsigned long Process::sProcessCount = 0;
 
@@ -796,6 +1199,8 @@ BatchProcess::Listener::~Listener()
 {
 }
 
+#endif
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -825,6 +1230,9 @@ BatchProcess::Listener::~Listener()
 //    return Status::STOPPED;
 //  }
 //}
+
+
+
 
 } // End namespace tl
 

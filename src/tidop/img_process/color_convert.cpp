@@ -3,7 +3,7 @@
 #include "tidop/graphic/color.h"
 
 #ifdef HAVE_OPENCV
-#include "opencv2/highgui/highgui.hpp"
+#include <opencv2/highgui.hpp>
 
 namespace tl
 {

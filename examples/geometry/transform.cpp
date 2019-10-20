@@ -45,13 +45,13 @@ int main(int argc, char** argv)
   std::vector<PointD> pts_out2(pts_in.size());
   std::transform(pts_in.begin(), pts_in.end(), pts_out2.begin(), rot);
   // Alternativa sin reservar tamaño en pts_out2:
-  //std::vector<PointD> pts_out2;
-  //std::transform(pts_in.begin(), pts_in.end(), std::back_inserter(pts_out2), rot);
+  std::vector<PointD> pts_out3;
+  std::transform(pts_in.begin(), pts_in.end(), std::back_inserter(pts_out3), rot);
 
   /// Helmert 2D
   Helmert2D<PointD> helmert_2d(150.0, 75.0, 0.25, 35 * TL_DEG_TO_RAD);
   helmert_2d.transform(pts_in, &pts_out);
-
+  Helmert2D<PointD> helmert_2d_inverse = helmert_2d.inverse();
 
   /// Affine
   Affine<PointD> affine(150.0, 75.0, 0.25, 0.30, 35 * TL_DEG_TO_RAD);
@@ -74,9 +74,20 @@ int main(int argc, char** argv)
 
   std::vector<Eigen::Vector2d> pts_out_eigen;
   for (auto v : pts_in_eigen){
-    pts_out_eigen.push_back(t * v);
+    pts_out_eigen.push_back(Eigen::Scaling(0.25) * v);
   }
 #endif 
+
+
+  std::vector<PointD>pts_out_svd = {
+    PointD(756172.466,	732337.103),
+    PointD(751049.245,	736088.818),
+    PointD(755699.431,	739803.813),
+    PointD(763377.835,	730731.677),
+    PointD(751027.184,  730876.407),
+    PointD(753623.926,	731212.907),
+    PointD(746959.564,	737447.332) };
+
 
   return 0;
 }

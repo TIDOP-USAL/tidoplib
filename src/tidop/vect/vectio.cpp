@@ -70,7 +70,7 @@ GdalVector::Status GdalVector::open(const std::string &file, Mode mode, FileOpti
   close();
 
   mFile = file;
-  std::string ext = fs::extension(mFile);
+  std::string ext = fs::path(mFile).extension().string();
   mDriverName = driverFromExt(ext.c_str());
   if (mDriverName == nullptr) return Status::open_fail;
 
@@ -1412,7 +1412,7 @@ VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode, 
 
   mFile = file;
 
-  std::string ext = fs::extension(mFile);
+  std::string ext = fs::path(mFile).extension().string();
 
   const char *frtName;
 

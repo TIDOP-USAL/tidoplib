@@ -238,7 +238,7 @@ GdalRaster::~GdalRaster()
 {
   char **tmp = nullptr;
   if (bTempFile) {
-    std::string ext = fs::extension(mFile);
+    std::string ext = fs::path(mFile).extension().string();
     GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
     GDALDataset *pTempDataSet = driver->CreateCopy(mFile.c_str(), pDataset, FALSE, nullptr, nullptr, nullptr);
     if (!pTempDataSet) {
@@ -278,7 +278,7 @@ GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mo
   close();
 
   mFile = file;
-  std::string ext = fs::extension(file);
+  std::string ext = fs::path(mFile).extension().string();
 
   const char *driverName = getDriverFromExt(ext.c_str());
   if (driverName == nullptr) return Status::open_fail;
@@ -524,7 +524,7 @@ GdalRaster::Status GdalRaster::createCopy(const std::string &fileOut)
   //TODO: revisar
   //char ext[TL_MAX_EXT];
   //if (getFileExtension(fileOut, ext, TL_MAX_EXT) == 0) {
-    std::string ext = fs::extension(fileOut);
+    std::string ext = fs::path(fileOut).extension().string();
     GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(getDriverFromExt(ext.c_str()));
     GDALDataset *pTempDataSet = driver->CreateCopy(fileOut.c_str(), pDataset, FALSE, nullptr, nullptr, nullptr);
     if (!pTempDataSet) {
@@ -586,7 +586,7 @@ const char* GdalRaster::getDriverFromExt(const char *ext)
 
 char GdalRaster::get(const PointI &pt)
 {
-  return unsigned char{};
+  return char{};
 }
 
 //ImgMetadata GdalRaster::metadata() const
@@ -672,7 +672,7 @@ char GdalGeoRaster::get(const PointD &pt)
 //  float f;
 //  f = image.at<float>(0, 0);
 //  return image.at<char>(0, 0);
-  return unsigned char{};
+  return char{};
 }
 
   
@@ -1176,7 +1176,7 @@ RasterGraphics::Status RasterGraphics::open(const std::string &file, RasterGraph
 
   mFile = file;
 
-  std::string ext = fs::extension(file);
+  std::string ext = fs::path(file).extension().string();
 
 #ifdef HAVE_GDAL
   const char *frtName;
@@ -1437,7 +1437,7 @@ RasterGraphics::Status GeoRasterGraphics::open(const std::string &file, File::Mo
   close();
 
   mFile = file;
-  std::string ext = fs::extension(file);
+  std::string ext = fs::path(file).extension().string();
 #ifdef HAVE_GDAL
   if (const char *driverName = GdalRaster::getDriverFromExt(ext.c_str())) {
     // Existe un driver de GDAL para el formato de imagen

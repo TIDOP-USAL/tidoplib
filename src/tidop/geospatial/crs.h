@@ -111,6 +111,26 @@ private:
 
 };
 
+inline std::string Crs::epsgCode() const
+{
+  return mEpsg;
+}
+
+inline bool Crs::isGeocentric() const
+{
+  return mCrs.IsGeocentric() != 0;
+}
+
+inline bool Crs::isGeographic() const
+{
+  return mCrs.IsGeographic()!= 0;
+}
+
+inline OGRSpatialReference *Crs::getOGRSpatialReference()
+{
+  return &mCrs;
+}
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -192,14 +212,16 @@ public:
   virtual ~CrsCache() {}
 
   /// Se impide la copia y asignación
-  CrsCache(CrsCache const&) = delete;
-  void operator=(CrsCache const&) = delete;
-  
+  CrsCache(const CrsCache &) = delete;
+  CrsCache(CrsCache &&) = delete;
+  void operator=(const CrsCache &) = delete;
+  void operator=(CrsCache &&) = delete;
+
   /*!
    * \brief Singleton
    * \return
    */
-  static CrsCache &getInstance();
+  static CrsCache &instance();
 
   /*!
    * \brief Añade un sistema de referencia al listado

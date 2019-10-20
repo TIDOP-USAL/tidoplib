@@ -15,9 +15,7 @@ namespace tl
 {
 
 
-/*! \defgroup ImgProc Procesado de imagen
- *  Filtrado y preprocesado de imagenes
- *  \{
+/*! \addtogroup ImgProc 
  */
 
 

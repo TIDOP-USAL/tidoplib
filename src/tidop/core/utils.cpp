@@ -1234,7 +1234,8 @@ Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
 
   //fs::path _path(file);
   //fs::path ext = _path.extension().string();
-  if (boost::iequals(fs::extension(file), ".csv") == false) return Status::open_fail;
+  
+  if (boost::iequals(fs::path(file).extension().string(), ".csv") == false) return Status::open_fail;
 
   std::ios_base::openmode _mode;
   switch (mMode) {

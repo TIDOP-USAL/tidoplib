@@ -132,27 +132,27 @@ public:
    * \brief Devuelve un iterador al inicio de la capa
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio de la capa
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega una entidad mediante copia al final del contenedor
@@ -169,13 +169,13 @@ public:
   /*!
    * \brief Elimina los elementos del recipiente
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
     
   /*!
    * \brief Comprueba si el contenedor esta vacio
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Modifica el tamaño del contenedor
@@ -198,7 +198,7 @@ public:
    * \brief Devuelve el tamaño del contenedor
    * \return Tamaño
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia

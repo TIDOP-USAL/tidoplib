@@ -124,7 +124,7 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 } // fin namespace tl
 
 
-
+#ifdef TL_MESSAGE_HANDLER
 #ifdef _DEBUG
 #define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 #define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
@@ -141,6 +141,12 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 #define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR(#EXPRESSION MESSAGE); }
 
 #endif
+#else  // End TL_MESSAGE_HANDLER
 
+#define TL_ERROR(...)
+#define TL_THROW_ERROR(...)
+#define TL_THROW_ASSERT(EXPRESSION, MESSAGE)
+
+#endif
 
 #endif // TL_CORE_EXCEPTION_H

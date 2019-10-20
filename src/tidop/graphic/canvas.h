@@ -1,4 +1,4 @@
-#ifndef TL_GRAPHIC_CANVAS_H
+﻿#ifndef TL_GRAPHIC_CANVAS_H
 #define TL_GRAPHIC_CANVAS_H
 
 #include "config_tl.h"
@@ -158,6 +158,48 @@ private:
   cv::Scalar colorToCvScalar(const Color &color);
 
 };
+
+/// Definición de métodos inline
+
+inline int CanvasCV::width() const
+{
+  return mCanvas.cols;
+}
+
+inline int CanvasCV::height() const
+{
+  return mCanvas.rows;
+}
+
+inline Color CanvasCV::backgroundColor() const
+{
+  return mBgColor;
+}
+
+inline void CanvasCV::setWidth(int width)
+{
+  mWidth = width;
+  update();
+}
+
+inline void CanvasCV::setHeight(int height)
+{
+  mHeight = height;
+  update();
+}
+
+inline void CanvasCV::setSize(int width, int height)
+{
+  mWidth = width;
+  mHeight = height;
+  update();
+}
+
+inline void CanvasCV::setBackgroundColor(const Color &color)
+{
+  mBgColor = color;
+  update();
+}
 
 #endif // HAVE_OPENCV
 

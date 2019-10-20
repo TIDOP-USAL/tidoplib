@@ -52,7 +52,8 @@ int main(int argc, char** argv)
   } else {
     msgError("Error al abrir la imagen: %s", img.c_str());
   }
-
+  cv::Mat bmp;
+  image.read(&bmp, geometry::WindowI());
   //tl::ImgMetadata *metadata = new tl::JpegMetadata();
   //tl::JpegMetadata *metadata2 = new tl::JpegMetadata();
   //std::string prueba = metadata2->ExifDocumentName;
