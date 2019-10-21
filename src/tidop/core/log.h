@@ -128,7 +128,7 @@ public:
    * \brief Establece el nombre del fichero log
    * \param[in] file fichero log
    */
-  void setLogFile(const char* file);
+  void setLogFile(const std::string &file);
 
   /*!
    * \brief Establece el nivel de log
@@ -148,7 +148,7 @@ public:
    * \brief Escribe una linea en el log
    * \param[in] msg Mensaje que se escribe en el log
    */
-  void write(const char *msg);
+  void write(const std::string &msg);
 
 #ifdef TL_MESSAGE_HANDLER
 
@@ -227,7 +227,7 @@ inline EnumFlags<MessageLevel> Log::logLevel() const
   return sLevel;
 }
 
-inline void Log::setLogFile(const char *file)
+inline void Log::setLogFile(const std::string &file)
 {
   TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
   TL_TODO("Comprobar si tiene permisos de escritura")

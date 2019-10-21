@@ -65,7 +65,7 @@ Log &Log::instance()
   return *sObjLog;
 }
 
-void Log::write(const char *msg)
+void Log::write(const std::string &msg)
 {
 
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
