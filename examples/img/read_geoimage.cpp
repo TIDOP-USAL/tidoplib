@@ -43,9 +43,9 @@ int main(int argc, char** argv)
 
   GeoRasterGraphics geo_image;
   if (geo_image.open(img) == GeoRasterGraphics::Status::open_ok) {
-    msgInfo("Numero de bandas: %i", geo_image.getBands());
-    msgInfo("Profundidad de color: %i", geo_image.getColorDepth());
-    msgInfo("Dimensiones de la imagen: %ix%i", geo_image.getCols(), geo_image.getRows());
+    msgInfo("Numero de bandas: %i", geo_image.channels());
+    msgInfo("Profundidad de color: %i", geo_image.depth());
+    msgInfo("Dimensiones de la imagen: %ix%i", geo_image.cols(), geo_image.rows());
   } else {
     msgError("Error al abrir la imagen: %s", img.c_str());
   }

@@ -140,48 +140,6 @@ public:
    */
   class TL_EXPORT Message
   {
-  private:
-
-    /*!
-     * \brief Mensaje
-     */
-    std::string mMessage;
-
-    /*!
-     * \brief Fecha y hora en la que se emitio el mensaje
-     */
-    std::string mDate;
-
-    /*!
-     * \brief Nivel del mensaje
-     */
-    MessageLevel mLevel;
-
-    /*!
-     * \brief Fichero en el cual se genera el mensaje
-     */
-    std::string mFile;
-
-    /*!
-     * \brief Número de línea donde se ha generado el mensaje
-     */
-    int mLine;
-
-    /*!
-     * \brief Nombre de la función donde se genera el mensaje
-     */
-    std::string mFunction;
-
-    /*!
-     * \brief Plantilla para el formateo de fecha y hora de los mensajes.
-     *
-     * Por defecto la plantilla es:
-     * \code
-     * std::string Message::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
-     * \endcode
-     * \see setTimeLogFormat
-     */
-    static std::string sTimeLogFormat;
 
   public:
     
@@ -314,24 +272,51 @@ public:
      * \param[in] function Nombre de la función desde la que se lanza el mensaje
      */
     void setMessageProperties(const MessageLevel &level, const char *file, int line, const char *function);
-  
+    
+  private:
+
+    /*!
+     * \brief Mensaje
+     */
+    std::string mMessage;
+
+    /*!
+     * \brief Fecha y hora en la que se emitio el mensaje
+     */
+    std::string mDate;
+
+    /*!
+     * \brief Nivel del mensaje
+     */
+    MessageLevel mLevel;
+
+    /*!
+     * \brief Fichero en el cual se genera el mensaje
+     */
+    std::string mFile;
+
+    /*!
+     * \brief Número de línea donde se ha generado el mensaje
+     */
+    int mLine;
+
+    /*!
+     * \brief Nombre de la función donde se genera el mensaje
+     */
+    std::string mFunction;
+
+    /*!
+     * \brief Plantilla para el formateo de fecha y hora de los mensajes.
+     *
+     * Por defecto la plantilla es:
+     * \code
+     * std::string Message::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
+     * \endcode
+     * \see setTimeLogFormat
+     */
+    static std::string sTimeLogFormat;
+
   };
-
-private:
-
-  /*!
-   * \brief sObjMessage
-   */
-  static std::unique_ptr<MessageManager> sObjMessage;
-
-  /*!
-   * \brief Lista con los escuchadores subscritos al gestor de mensajes
-   */
-  std::list<Listener *> mListeners;
-
-  static bool sStopHandler;
-
-  static std::mutex sMutex;
 
 private:
 
@@ -420,6 +405,23 @@ public:
   TL_DEPRECATED("MessageManager::instance", "2.0")
     static MessageManager &getInstance();
 #endif // TL_ENABLE_DEPRECATED_METHODS
+
+private:
+
+  /*!
+   * \brief sObjMessage
+   */
+  static std::unique_ptr<MessageManager> sObjMessage;
+
+  /*!
+   * \brief Lista con los escuchadores subscritos al gestor de mensajes
+   */
+  std::list<Listener *> mListeners;
+
+  static bool sStopHandler;
+
+  static std::mutex sMutex;
+
 };
 
 #ifdef _DEBUG

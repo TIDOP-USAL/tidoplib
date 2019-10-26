@@ -65,34 +65,6 @@ class TL_EXPORT VrtRaster
   : public File
 {
 
-protected:
-  
-  /*!
-   * \brief Número de filas de la imagen
-   */
-  int mRows;
-
-  /*!
-   * \brief Número de columnas de la imagen
-   */
-  int mCols;
-
-  /*!
-   * \brief Número de bandas o canales de la imagen
-   */
-  int mBands;
-
-  /*!
-   * \brief Tipo de datos
-   * \see DataType
-   */
-  DataType mDataType;
-
-  /*!
-   * \brief Profundidad de color o número de bits por pixel
-   */
-  int mColorDepth;
-
 public:
 
   /*!
@@ -176,31 +148,76 @@ public:
    * \brief Devuelve el número de filas de la imagen
    * \return Número de filas de la imagen
    */
-  virtual int getRows() const;
+  virtual int rows() const;
 
   /*!
    * \brief Devuelve el número de columnas de la imagen
    * \return Número de columnas de la imagen
    */
-  virtual int getCols() const;
+  virtual int cols() const;
 
   /*!
    * \brief Devuelve el número de canales o bandas de la imagen
    * \return Número de bandas de la imagen
    */
-  virtual int getBands() const;
+  virtual int channels() const;
 
   /*!
    * \brief Devuelve el tipo de dato
    * \return 
    */
-  virtual DataType getDataType() const;
+  virtual DataType dataType() const;
 
   /*!
    * \brief Devuelve la profundidad de color o bits por pixel de una imagen
    * \return Profundidad de color
    */
+  virtual int depth() const;
+
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve el número de filas de la imagen
+   * \return Número de filas de la imagen
+   * \deprecated Use 'rows' en su lugar
+   */
+  TL_DEPRECATED("rows", "2.0")
+  virtual int getRows() const;
+
+  /*!
+   * \brief Devuelve el número de columnas de la imagen
+   * \return Número de columnas de la imagen
+   * \deprecated Use 'cols' en su lugar
+   */
+  TL_DEPRECATED("cols", "2.0")
+  virtual int getCols() const;
+
+  /*!
+   * \brief Devuelve el número de canales o bandas de la imagen
+   * \return Número de bandas de la imagen
+   * \deprecated Use 'channels' en su lugar
+   */
+  TL_DEPRECATED("channels", "2.0")
+  virtual int getBands() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return 
+   * \deprecated Use 'dataType' en su lugar
+   */
+  TL_DEPRECATED("dataType", "2.0")
+  virtual DataType getDataType() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
+   * \return Profundidad de color
+   * \deprecated Use 'depth' en su lugar
+   */
+  TL_DEPRECATED("depth", "2.0")
   virtual int getColorDepth() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Devuelve los metadatos de la imagen
@@ -218,6 +235,35 @@ public:
 protected:
   
   void windowRead(const geometry::WindowI &wLoad, geometry::WindowI *wRead, geometry::PointI *offset) const;
+
+protected:
+  
+  /*!
+   * \brief Número de filas de la imagen
+   */
+  int mRows;
+
+  /*!
+   * \brief Número de columnas de la imagen
+   */
+  int mCols;
+
+  /*!
+   * \brief Número de bandas o canales de la imagen
+   */
+  int mBands;
+
+  /*!
+   * \brief Tipo de datos
+   * \see DataType
+   */
+  DataType mDataType;
+
+  /*!
+   * \brief Profundidad de color o número de bits por pixel
+   */
+  int mColorDepth;
+
 };
 
 
@@ -231,45 +277,6 @@ protected:
 class TL_EXPORT GdalRaster
   : public VrtRaster
 {
-
-protected:
-
-  /*!
-   * \brief Crea fichero temporal
-   */
-  bool bTempFile;
-
-  /*!
-   * \brief Dataset de GDAL
-   */
-  GDALDataset *pDataset;
-
-  /*!
-   * \brief pRasterBand
-   */
-  GDALRasterBand  *pRasterBand;
-
-  /*!
-   * \brief mDataType
-   */
-  GDALDataType mGdalDataType;
-
-  /*!
-   * \brief Nombre del fichero temporal
-   */
-  std::string mTempName;
-
-  /*!
-   * \brief Driver GDAL
-   */
-  GDALDriver *pDriver;
-
-  static char **gdalOpt;
-  static int BMP[];
-  static int GTiff[];
-  static int GTX[];
-  static int NTv2[];
-  static int LAN[];
 
 public:
 
@@ -393,6 +400,46 @@ protected:
   virtual void update();
 
   std::vector<int> panBandMap();
+
+protected:
+
+  /*!
+   * \brief Crea fichero temporal
+   */
+  bool bTempFile;
+
+  /*!
+   * \brief Dataset de GDAL
+   */
+  GDALDataset *pDataset;
+
+  /*!
+   * \brief pRasterBand
+   */
+  GDALRasterBand  *pRasterBand;
+
+  /*!
+   * \brief mDataType
+   */
+  GDALDataType mGdalDataType;
+
+  /*!
+   * \brief Nombre del fichero temporal
+   */
+  std::string mTempName;
+
+  /*!
+   * \brief Driver GDAL
+   */
+  GDALDriver *pDriver;
+
+  static char **gdalOpt;
+  static int BMP[];
+  static int GTiff[];
+  static int GTX[];
+  static int NTv2[];
+  static int LAN[];
+
 };
 
 
@@ -402,19 +449,6 @@ protected:
 class TL_EXPORT GdalGeoRaster
   : public GdalRaster
 {
-protected:
-
-  std::array<double, 6> mGeoTransform;
-
-  /*!
-   * \brief Transformación afin que relacción las coordenadas terreno con las pixel
-   */
-  std::unique_ptr<Affine<geometry::PointD>> mTrfAffine;
-
-  /*!
-   * \brief Proyección
-   */
-  std::string mProjection;
 
 public:
 
@@ -451,7 +485,19 @@ public:
    * \brief Ventana envolvente de la imagen
    * \return Ventana
    */
+  geometry::WindowD window() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Ventana envolvente de la imagen
+   * \return Ventana
+   * \deprecated Use 'window' en su lugar
+   */
+  TL_DEPRECATED("window", "2.0")
   geometry::WindowD getWindow() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Establece la georeferencia de la imagen
@@ -485,6 +531,20 @@ private:
 
   void update() override;
 
+protected:
+
+  std::array<double, 6> mGeoTransform;
+
+  /*!
+   * \brief Transformación afin que relacción las coordenadas terreno con las pixel
+   */
+  std::unique_ptr<Affine<geometry::PointD>> mTrfAffine;
+
+  /*!
+   * \brief Proyección
+   */
+  std::string mProjection;
+
 };
 
 
@@ -503,11 +563,8 @@ private:
  */
 class TL_EXPORT RegisterEDSDK
 {
-private:
 
-  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
-    
-  static std::mutex sMutex;
+private:
 
   /*!
    * \brief Constructor privado
@@ -526,37 +583,20 @@ public:
    */
   static void init();
 
+private:
+
+  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+    
+  static std::mutex sMutex;
 };
 
 #endif \\ HAVE_EDSDK 
 
 
 // http://www.libraw.org/node/2165
-class TL_EXPORT RawImage : public VrtRaster
+class TL_EXPORT RawImage
+  : public VrtRaster
 {
-private:
-
-#ifdef HAVE_LIBRAW 
-  std::unique_ptr<LibRaw> mRawProcessor;
-
-  libraw_processed_image_t *mProcessedImage;
-#endif //HAVE_LIBRAW
-
-#ifdef HAVE_EDSDK
-  EdsStreamRef mInputStream;
-  EdsImageRef mEdsImage;
-#endif 
-
-  //unsigned short mBits;
-  //LibRaw_image_formats mType;
-  //unsigned char *mData;
-  unsigned int mSize;
-
-  /*!
-   * \brief Formato raw especifico de canon.
-   * Se lee con el EDSDK
-   */
-  bool bCanon;
 
 public:
 
@@ -672,6 +712,30 @@ private:
 
   void update();
 
+private:
+
+#ifdef HAVE_LIBRAW 
+  std::unique_ptr<LibRaw> mRawProcessor;
+
+  libraw_processed_image_t *mProcessedImage;
+#endif //HAVE_LIBRAW
+
+#ifdef HAVE_EDSDK
+  EdsStreamRef mInputStream;
+  EdsImageRef mEdsImage;
+#endif 
+
+  //unsigned short mBits;
+  //LibRaw_image_formats mType;
+  //unsigned char *mData;
+  unsigned int mSize;
+
+  /*!
+   * \brief Formato raw especifico de canon.
+   * Se lee con el EDSDK
+   */
+  bool bCanon;
+
 };
 
 #endif // HAVE_RAW
@@ -693,32 +757,6 @@ private:
 class TL_EXPORT RasterGraphics
   : public File
 {
-
-protected:
-
-  /*!
-   * \brief Número de filas de la imagen
-   */
-  int mRows;
-
-  /*!
-   * \brief Número de columnas de la imagen
-   */
-  int mCols;
-
-  /*!
-   * \brief Número de bandas o canales de la imagen
-   */
-  int mBands;
-
-  DataType mDataType;
-
-  /*!
-   * \brief Profundidad de color o número de bits por pixel
-   */
-  int mColorDepth;
-
-  std::unique_ptr<VrtRaster> mImageFormat;
 
 public:
 
@@ -819,31 +857,76 @@ public:
    * \brief Devuelve el número de filas de la imagen
    * \return Número de filas de la imagen
    */
-  int getRows() const;
+  virtual int rows() const;
 
   /*!
    * \brief Devuelve el número de columnas de la imagen
    * \return Número de columnas de la imagen
    */
-  int getCols() const;
+  virtual int cols() const;
 
   /*!
    * \brief Devuelve el número de canales o bandas de la imagen
    * \return Número de bandas de la imagen
    */
+  virtual int channels() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return 
+   */
+  virtual DataType dataType() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
+   * \return Profundidad de color
+   */
+  virtual int depth() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve el número de filas de la imagen
+   * \return Número de filas de la imagen
+   * \deprecated Use 'rows' en su lugar
+   */
+  TL_DEPRECATED("rows", "2.0")
+  int getRows() const;
+
+  /*!
+   * \brief Devuelve el número de columnas de la imagen
+   * \return Número de columnas de la imagen
+   * \deprecated Use 'cols' en su lugar
+   */
+  TL_DEPRECATED("cols", "2.0")
+  int getCols() const;
+
+  /*!
+   * \brief Devuelve el número de canales o bandas de la imagen
+   * \return Número de bandas de la imagen
+   * \deprecated Use 'channels' en su lugar
+   */
+  TL_DEPRECATED("channels", "2.0")
   int getBands() const;
 
   /*!
    * \brief Devuelve el tipo de dato
    * \return
+   * \deprecated Use 'dataType' en su lugar
    */
+  TL_DEPRECATED("dataType", "2.0")
+
   DataType getDataType() const;
 
   /*!
    * \brief Devuelve la profundidad de color
    * \return Profundidad de color
+   * \deprecated Use 'depth' en su lugar
    */
+  TL_DEPRECATED("depth", "2.0")
   int getColorDepth() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   // Dataset Information
 
@@ -855,6 +938,32 @@ protected:
 
   virtual void update();
 
+protected:
+
+  /*!
+   * \brief Número de filas de la imagen
+   */
+  int mRows;
+
+  /*!
+   * \brief Número de columnas de la imagen
+   */
+  int mCols;
+
+  /*!
+   * \brief Número de bandas o canales de la imagen
+   */
+  int mBands;
+
+  DataType mDataType;
+
+  /*!
+   * \brief Profundidad de color o número de bits por pixel
+   */
+  int mColorDepth;
+
+  std::unique_ptr<VrtRaster> mImageFormat;
+
 };
 
 
@@ -864,7 +973,6 @@ protected:
 class TL_EXPORT GeoRasterGraphics
   : public RasterGraphics
 {
-private:
 
 public:
 
@@ -939,6 +1047,7 @@ class TL_EXPORT Mdt
   : public GeoRasterGraphics
 {
 public:
+
   Mdt() {}
 
   float getZ(const geometry::PointD &pt) const;

@@ -62,6 +62,7 @@ template<typename Point3_t>
 class Box 
   : public Entity
 {
+
 public:
 
   /*!

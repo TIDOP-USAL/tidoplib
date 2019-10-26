@@ -81,13 +81,6 @@ public:
    */
   typedef typename std::underlying_type<T>::type Type; 
 
-private:
-
-  /*!
-   * \brief mFlag
-   */
-  Type mFlag;
-
 public:
 
   /*!
@@ -191,6 +184,14 @@ public:
    * \return
    */
   T flags() const;
+
+private:
+
+  /*!
+   * \brief mFlag
+   */
+  Type mFlag;
+
 };
 
 template<typename T> inline
@@ -368,13 +369,6 @@ public:
    */
   typedef T Type; 
 
-private:
-
-  /*!
-   * \brief mFlag
-   */
-  Type mFlag;
-
 public:
 
   /*!
@@ -450,6 +444,14 @@ public:
    * \return
    */
   T flags() const;
+
+private:
+
+  /*!
+   * \brief mFlag
+   */
+  Type mFlag;
+
 };
 
 /* Definición de tipos */

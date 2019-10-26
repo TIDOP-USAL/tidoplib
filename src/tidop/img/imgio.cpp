@@ -43,6 +43,33 @@ VrtRaster::VrtRaster()
 {
 }
 
+int VrtRaster::rows() const
+{
+  return mRows;
+}
+
+int VrtRaster::cols() const
+{
+  return mCols;
+}
+
+int VrtRaster::channels() const
+{
+  return mBands;
+}
+
+DataType VrtRaster::dataType() const
+{
+  return mDataType;
+}
+
+int VrtRaster::depth() const
+{
+  return mColorDepth;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 int VrtRaster::getRows() const
 {
   return mRows;
@@ -67,6 +94,8 @@ int VrtRaster::getColorDepth() const
 {
   return mColorDepth;
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 void VrtRaster::windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const
 {
@@ -365,12 +394,12 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
 
   cv::Size size;
   //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-    size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-    size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+    size.width = TL_ROUND_TO_INT(wRead.width() / scale);
+    size.height = TL_ROUND_TO_INT(wRead.height() / scale);
     if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
   //} else {
-  //  size.width = wRead.getWidth();
-  //  size.height = wRead.getHeight();
+  //  size.width = wRead.width();
+  //  size.height = wRead.height();
   //  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
   //}
 
@@ -384,7 +413,7 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
   int nBandSpace = static_cast<int>(image->elemSize1());
 
   CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                    wRead.getWidth(), wRead.getHeight(),
+                                    wRead.width(), wRead.height(),
                                     buff, size.width, size.height, mGdalDataType,
                                     mBands, panBandMap().data(), nPixelSpace,
                                     nLineSpace, nBandSpace );
@@ -454,8 +483,8 @@ GdalRaster::Status GdalRaster::read(unsigned char *buff, const WindowI &wLoad, d
   
   offset /= scale; // Corregido por la escala
 
-  int width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-  int height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+  int width = TL_ROUND_TO_INT(wRead.width() / scale);
+  int height = TL_ROUND_TO_INT(wRead.height() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
 
   buff = (unsigned char *)std::malloc(mRows*mCols*mBands*mColorDepth);
@@ -464,7 +493,7 @@ GdalRaster::Status GdalRaster::read(unsigned char *buff, const WindowI &wLoad, d
   size_t nBandSpace = mBands*mColorDepth*mCols;
 
   CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                    wRead.getWidth(), wRead.getHeight(),
+                                    wRead.width(), wRead.height(),
                                     buff, width, height, mGdalDataType,
                                     mBands, panBandMap().data(), (int)nPixelSpace,
                                     (int)nLineSpace, (int)nBandSpace );
@@ -477,12 +506,12 @@ GdalRaster::Status GdalRaster::write(const unsigned char *buff, const WindowI &w
 {
   if (pDataset == NULL) return Status::failure;
   size_t nPixelSpace = mBands;
-  size_t nLineSpace = mBands * w.getWidth();
+  size_t nLineSpace = mBands * w.width();
   size_t nBandSpace = 1;
   unsigned char *_buff = const_cast<unsigned char *>(buff);
   CPLErr cerr = pDataset->RasterIO(GF_Write, w.pt1.x, w.pt1.y, 
-                                   w.getWidth(), w.getHeight(), _buff, 
-                                   w.getWidth(), w.getHeight(), 
+                                   w.width(), w.height(), _buff, 
+                                   w.width(), w.height(), 
                                    mGdalDataType, mBands, 
                                    panBandMap().data(), (int)nPixelSpace, 
                                    (int)nLineSpace, (int)nBandSpace);
@@ -646,11 +675,21 @@ const char *GdalGeoRaster::projection() const
   return mProjection.c_str();
 }
 
+WindowD GdalGeoRaster::window() const
+{
+  return WindowD(PointD(mGeoTransform[0], mGeoTransform[3]), 
+                 PointD(mCols*mGeoTransform[1], mRows*mGeoTransform[5]));
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 WindowD GdalGeoRaster::getWindow() const
 {
   return WindowD(PointD(mGeoTransform[0], mGeoTransform[3]), 
                  PointD(mCols*mGeoTransform[1], mRows*mGeoTransform[5]));
 }
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 void GdalGeoRaster::setProjection(const char *proj)
 {
@@ -917,8 +956,8 @@ RawImage::Status RawImage::read(cv::Mat *image, const WindowI &wLoad, double sca
   offset /= scale; // Corregido por la escala
 
   cv::Size size;
-  size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-  size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+  size.width = TL_ROUND_TO_INT(wRead.width() / scale);
+  size.height = TL_ROUND_TO_INT(wRead.height() / scale);
   if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
   
   //TODO: crear método similar a getGdalDataType
@@ -936,8 +975,8 @@ RawImage::Status RawImage::read(cv::Mat *image, const WindowI &wLoad, double sca
   	EdsRect rect;
 	  rect.point.x	= wRead.pt1.x;
 	  rect.point.y	= wRead.pt1.y;
-	  rect.size.width	= wRead.getWidth();
-	  rect.size.height = wRead.getHeight();
+	  rect.size.width	= wRead.width();
+	  rect.size.height = wRead.height();
 
     EdsSize eds_size;
 	  eds_size.width = size.width;
@@ -1214,6 +1253,7 @@ RasterGraphics::Status RasterGraphics::read(cv::Mat *image, const WindowI &wLoad
   return File::Status::success;
 }
 
+
 RasterGraphics::Status RasterGraphics::write(const cv::Mat &image, const WindowI &w)
 {
   if (mImageFormat && mImageFormat->write(image, w) == Status::success) return Status::success;
@@ -1383,6 +1423,33 @@ RasterGraphics::Status RasterGraphics::createCopy(const std::string &fileOut)
   return status;
 }
 
+int RasterGraphics::rows() const
+{
+  return mRows;
+}
+
+int RasterGraphics::cols() const
+{
+  return mCols;
+}
+
+int RasterGraphics::channels() const
+{
+  return mBands;
+}
+
+DataType RasterGraphics::dataType() const
+{
+  return mDataType;
+}
+
+int RasterGraphics::depth() const
+{
+  return mColorDepth;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 int RasterGraphics::getRows() const
 {
   return mRows;
@@ -1408,6 +1475,8 @@ int RasterGraphics::getColorDepth() const
   return mColorDepth;
 }
 
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
 char RasterGraphics::get(const PointI &pt) const
 {
   return mImageFormat->get(pt);
@@ -1421,11 +1490,11 @@ char RasterGraphics::get(const PointI &pt) const
 void RasterGraphics::update()
 {
   if (mImageFormat) {
-    mCols = mImageFormat->getCols();
-    mRows = mImageFormat->getRows();
-    mBands = mImageFormat->getBands();
-    mDataType = mImageFormat->getDataType();
-    mColorDepth = mImageFormat->getColorDepth();
+    mCols = mImageFormat->cols();
+    mRows = mImageFormat->rows();
+    mBands = mImageFormat->channels();
+    mDataType = mImageFormat->dataType();
+    mColorDepth = mImageFormat->depth();
   }
 }
 

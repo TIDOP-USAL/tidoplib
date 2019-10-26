@@ -149,29 +149,29 @@ TEST(WindowI, ConstructorCentroAnchoAlto)
   // Tamaño par
   PointI ptc(50, 50);
   WindowI w(ptc, 50, 50);
-  EXPECT_EQ(50, w.getWidth());
-  EXPECT_EQ(50, w.getHeight());
+  EXPECT_EQ(50, w.width());
+  EXPECT_EQ(50, w.height());
   EXPECT_TRUE(w.type() == Entity::Type::window);
 
   //Tamaño impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51, 51);
-  EXPECT_EQ(51, w2.getWidth());
-  EXPECT_EQ(51, w2.getHeight());
+  EXPECT_EQ(51, w2.width());
+  EXPECT_EQ(51, w2.height());
   EXPECT_TRUE(w2.type() == Entity::Type::window);
 
   // Ventana double
   PointD ptc3(50.67, 50.76);
   WindowD w3(ptc3, 100.32, 254.25);
-  EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
-  EXPECT_NEAR(254.25, w3.getHeight(), 0.01);
+  EXPECT_NEAR(100.32, w3.width(), 0.01);
+  EXPECT_NEAR(254.25, w3.height(), 0.01);
   EXPECT_TRUE(w3.type() == Entity::Type::window);
 
   // Ventana float
   PointF ptc4(50.67f, 50.76f);
   WindowF w4(ptc4, 100.34f, 254.23f);
-  EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
-  EXPECT_NEAR(254.23f, w4.getHeight(), 0.01);
+  EXPECT_NEAR(100.34f, w4.width(), 0.01);
+  EXPECT_NEAR(254.23f, w4.height(), 0.01);
   EXPECT_TRUE(w4.type() == Entity::Type::window);
 }
 
@@ -180,29 +180,29 @@ TEST(WindowI, ConstructorCenterSize)
   // Tamaño par
   PointI ptc(50, 50);
   WindowI w(ptc, 50);
-  EXPECT_EQ(50, w.getWidth());
-  EXPECT_EQ(50, w.getHeight());
+  EXPECT_EQ(50, w.width());
+  EXPECT_EQ(50, w.height());
   EXPECT_TRUE(w.type() == Entity::Type::window);
 
   //Tamaño impar
   PointI ptc2(50, 50);
   WindowI w2(ptc2, 51);
-  EXPECT_EQ(51, w2.getWidth());
-  EXPECT_EQ(51, w2.getHeight());
+  EXPECT_EQ(51, w2.width());
+  EXPECT_EQ(51, w2.height());
   EXPECT_TRUE(w2.type() == Entity::Type::window);
 
   // Ventana double
   PointD ptc3(50.67, 50.76);
   WindowD w3(ptc3, 100.32);
-  EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
-  EXPECT_NEAR(100.32, w3.getHeight(), 0.01);
+  EXPECT_NEAR(100.32, w3.width(), 0.01);
+  EXPECT_NEAR(100.32, w3.height(), 0.01);
   EXPECT_TRUE(w3.type() == Entity::Type::window);
 
   // Ventana float
   PointF ptc4(50.67f, 50.76f);
   WindowF w4(ptc4, 100.34f);
-  EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
-  EXPECT_NEAR(100.34f, w4.getHeight(), 0.01);
+  EXPECT_NEAR(100.34f, w4.width(), 0.01);
+  EXPECT_NEAR(100.34f, w4.height(), 0.01);
   EXPECT_TRUE(w4.type() == Entity::Type::window);
 }
 
@@ -221,13 +221,13 @@ TEST(getCenter, WindowCenter)
   //// Ventana double
   //PointD ptc3(50.67, 50.76);
   //WindowD w3(ptc3, 100.32);
-  //EXPECT_NEAR(100.32, w3.getWidth(), 0.01);
-  //EXPECT_NEAR(100.32, w3.getHeight(), 0.01);
+  //EXPECT_NEAR(100.32, w3.width(), 0.01);
+  //EXPECT_NEAR(100.32, w3.height(), 0.01);
 
   //// Ventana float
   //PointF ptc4(50.67f, 50.76f);
   //WindowF w4(ptc4, 100.34f);
-  //EXPECT_NEAR(100.34f, w4.getWidth(), 0.01);
-  //EXPECT_NEAR(100.34f, w4.getHeight(), 0.01);
+  //EXPECT_NEAR(100.34f, w4.width(), 0.01);
+  //EXPECT_NEAR(100.34f, w4.height(), 0.01);
 
 }

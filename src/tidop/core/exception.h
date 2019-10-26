@@ -32,32 +32,6 @@ namespace tl
 class TL_EXPORT Exception
   : public std::exception
 {
-protected:
-
-  /*!
-   * \brief Error
-   */
-  std::string mError;
-
-  /*!
-   * \brief Fichero en el cual se ha producido el error
-   */
-  std::string mFile;
-
-  /*!
-   * \brief Número de línea donde se ha producido el error
-   */
-  int mLine;
-
-  /*!
-   * \brief Nombre de la función donde se ha producido el error
-   */
-  std::string mFunction;
-
-  /*!
-   * \brief Mensaje de error
-   */
-  std::string mMessage;
 
 public:
 
@@ -104,6 +78,33 @@ public:
 private:
 
   void messagef();
+
+protected:
+
+  /*!
+   * \brief Error
+   */
+  std::string mError;
+
+  /*!
+   * \brief Fichero en el cual se ha producido el error
+   */
+  std::string mFile;
+
+  /*!
+   * \brief Número de línea donde se ha producido el error
+   */
+  int mLine;
+
+  /*!
+   * \brief Nombre de la función donde se ha producido el error
+   */
+  std::string mFunction;
+
+  /*!
+   * \brief Mensaje de error
+   */
+  std::string mMessage;
 };
 
 //TL_EXPORT void throw_exception(const char *error, const char *file = nullptr, int line = -1, const char *function = nullptr);

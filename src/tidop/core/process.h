@@ -121,35 +121,6 @@ public:
     virtual void onError(uint64_t id) = 0;
   };
 
-protected:
-
-  /*!
-   * \brief Estado del proceso
-   */
-  Status mStatus;
-
-  /*!
-   * \brief proceso padre
-   */
-  Process *mParent;
-
-  /*!
-   * \brief Lista con los escuchadores subscritos al gestor de eventos
-   */
-  std::list<Listener *> mListeners;
-
-  /*!
-   * \brief Identificador del proceso
-   */
-  unsigned long mProcessId;
-
-  /*!
-   * \brief Nombre del proceso
-   */
-  std::string mProcessName;
-
-  std::thread mThread;
-
 private:
 
   /*!
@@ -241,6 +212,36 @@ protected:
   void runTriggered();
   void stopTriggered();
   void errorTriggered();
+
+protected:
+
+  /*!
+   * \brief Estado del proceso
+   */
+  Status mStatus;
+
+  /*!
+   * \brief proceso padre
+   */
+  Process *mParent;
+
+  /*!
+   * \brief Lista con los escuchadores subscritos al gestor de eventos
+   */
+  std::list<Listener *> mListeners;
+
+  /*!
+   * \brief Identificador del proceso
+   */
+  unsigned long mProcessId;
+
+  /*!
+   * \brief Nombre del proceso
+   */
+  std::string mProcessName;
+
+  std::thread mThread;
+
 };
 
 
@@ -298,27 +299,6 @@ public:
      */
     virtual void onError() = 0;
   };
-
-protected:
-
-  /*!
-   * \brief Estado del batch
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Lista de procesos
-   */
-  std::list<std::shared_ptr<Process>> mProcessList;
-
-  /*!
-   * \brief Lista con los escuchadores subscritos al gestor de eventos
-   */
-  std::list<Listener *> mListeners;
-
-  std::thread mThread;
-  std::mutex mMutex;
-  Process *mCurrentProcess;
 
 public:
 
@@ -434,6 +414,29 @@ private:
   // Eventos que se lanzan
   void endTriggered();
   void errorTriggered();
+
+
+protected:
+
+  /*!
+   * \brief Estado del batch
+   */
+  Status mStatus;
+
+  /*!
+   * \brief Lista de procesos
+   */
+  std::list<std::shared_ptr<Process>> mProcessList;
+
+  /*!
+   * \brief Lista con los escuchadores subscritos al gestor de eventos
+   */
+  std::list<Listener *> mListeners;
+
+  std::thread mThread;
+  std::mutex mMutex;
+  Process *mCurrentProcess;
+
 };
 
 

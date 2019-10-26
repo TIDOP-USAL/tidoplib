@@ -46,9 +46,9 @@ int main(int argc, char** argv)
 
   RasterGraphics image;
   if (image.open(img) == RasterGraphics::Status::open_ok) {
-    msgInfo("Numero de bandas: %i", image.getBands());
-    msgInfo("Profundidad de color: %i", image.getColorDepth());
-    msgInfo("Dimensiones de la imagen: %ix%i", image.getCols(), image.getRows());
+    msgInfo("Numero de bandas: %i", image.channels());
+    msgInfo("Profundidad de color: %i", image.depth());
+    msgInfo("Dimensiones de la imagen: %ix%i", image.cols(), image.rows());
   } else {
     msgError("Error al abrir la imagen: %s", img.c_str());
   }

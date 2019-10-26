@@ -58,43 +58,6 @@ class TL_EXPORT Log
 private:
 
   /*!
-   * \brief sObjMessage
-   */
-  static std::unique_ptr<Log> sObjLog;
-
-  /*!
-   * \brief Fichero log
-   */
-  static std::string sLogFile;
-
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto msg_error
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
-
-  /*!
-   * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
-   *
-   * Por defecto la plantilla es:
-   * \code
-   * std::string MessageManager::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
-   * \endcode
-   * \see setTimeLogFormat
-   */
-  static std::string sTimeLogFormat;
-
-  static std::mutex mtx;
-
-#ifdef TL_MESSAGE_HANDLER
-  static bool sPauseListener;
-#endif
-
-private:
-
-  /*!
    * \brief Constructora privada
    */
   Log();
@@ -216,6 +179,43 @@ public:
   EnumFlags<MessageLevel> getLogLevel() const;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
+
+private:
+
+  /*!
+   * \brief sObjMessage
+   */
+  static std::unique_ptr<Log> sObjLog;
+
+  /*!
+   * \brief Fichero log
+   */
+  static std::string sLogFile;
+
+  /*!
+   * \brief Nivel de información de los mensajes
+   *
+   * Por defecto msg_error
+   * \see MessageLevel
+   */
+  static EnumFlags<MessageLevel> sLevel;
+
+  /*!
+   * \brief Plantilla para el formateo de fecha y hora de los mensajes del log.
+   *
+   * Por defecto la plantilla es:
+   * \code
+   * std::string MessageManager::timeLogTemplate = "%d/%b/%Y %H:%M:%S";
+   * \endcode
+   * \see setTimeLogFormat
+   */
+  static std::string sTimeLogFormat;
+
+  static std::mutex mtx;
+
+#ifdef TL_MESSAGE_HANDLER
+  static bool sPauseListener;
+#endif
 
 };
 

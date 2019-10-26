@@ -81,26 +81,26 @@ int main(int argc, char** argv)
     std::vector<PointD> pti;
     std::vector<PointD> ptw(4);    // Coordenadas imagen y mundo
     pti.push_back(PointD(0., 0.));
-    pti.push_back(PointD(image.getCols(), 0.));
-    pti.push_back(PointD(image.getCols(), image.getRows()));
-    pti.push_back(PointD(0., image.getRows()));
+    pti.push_back(PointD(image.cols(), 0.));
+    pti.push_back(PointD(image.cols(), image.rows()));
+    pti.push_back(PointD(0., image.rows()));
 
     ///TODO: Se calcula la transformación foto terreno sobre el plano con la z del fotocentro.
     /// Se genera el tfw aproximado
     float focal = 14497.f;
     double s = static_cast<double>(dz / focal);
 
-    ptw[0].x = pt.x - (image.getCols()/2.)*s;
-    ptw[0].y = pt.y + (image.getRows()/2.)*s;
+    ptw[0].x = pt.x - (image.cols()/2.)*s;
+    ptw[0].y = pt.y + (image.rows()/2.)*s;
 
-    ptw[1].x = pt.x + (image.getCols()/2.)*s;
-    ptw[1].y = pt.y + (image.getRows()/2.)*s;
+    ptw[1].x = pt.x + (image.cols()/2.)*s;
+    ptw[1].y = pt.y + (image.rows()/2.)*s;
 
-    ptw[2].x = pt.x + (image.getCols()/2.)*s;
-    ptw[2].y = pt.y - (image.getRows()/2.)*s;
+    ptw[2].x = pt.x + (image.cols()/2.)*s;
+    ptw[2].y = pt.y - (image.rows()/2.)*s;
 
-    ptw[3].x = pt.x - (image.getCols()/2.)*s;
-    ptw[3].y = pt.y - (image.getRows()/2.)*s;
+    ptw[3].x = pt.x - (image.cols()/2.)*s;
+    ptw[3].y = pt.y - (image.rows()/2.)*s;
 
     Affine<PointD> affine;
     std::vector<double> error;

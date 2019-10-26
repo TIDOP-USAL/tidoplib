@@ -142,6 +142,7 @@ template<typename Point_t>
 class Window
   : public Entity
 {
+
 public:
 
   /*!
@@ -246,15 +247,40 @@ public:
    * \brief Devuelve el ancho de la ventana
    * \return Ancho
    */
-  typename Point_t::value_type getWidth() const { return pt2.x - pt1.x; }
+  typename Point_t::value_type width() const { return pt2.x - pt1.x; }
 
   /*!
    * \brief Devuelve el alto de la ventana
    * \return Alto
    */
-  typename Point_t::value_type getHeight() const { return pt2.y - pt1.y; }
+  typename Point_t::value_type height() const { return pt2.y - pt1.y; }
+
+  /*!
+   * \brief Devuelve centro de la ventana
+   * \return Centro de la ventana
+   */
+  Point_t center() const;
+
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve el ancho de la ventana
+   * \return Ancho
+   * \deprecated Use 'width' en su lugar
+   */
+  TL_DEPRECATED("width", "2.0")
+  typename Point_t::value_type getWidth() const { return pt2.x - pt1.x; }
+
+  /*!
+   * \brief Devuelve el alto de la ventana
+   * \return Alto
+   * \deprecated Use 'height' en su lugar
+   */
+  TL_DEPRECATED("height", "2.0")
+  typename Point_t::value_type getHeight() const { return pt2.y - pt1.y; }
+
+
   /*!
    * \brief Devuelve centro de la ventana
    * \return Centro de la ventana
@@ -262,13 +288,8 @@ public:
    */
   TL_DEPRECATED("center", "2.0")
   Point_t getCenter() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
-  /*!
-   * \brief Devuelve centro de la ventana
-   * \return Centro de la ventana
-   */
-  Point_t center() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Comprueba si la ventana esta vacia

@@ -71,6 +71,7 @@ class TL_EXPORT Console
   : public MessageManager::Listener
 #endif
 {
+
 public:
 
   /*!
@@ -128,94 +129,6 @@ public:
     OUTPUT_ERROR = output_error    /*!< Consola en modo salida de errores */
 #endif
   };
-
-private:
-
-
-#ifdef WIN32
-
-  // Consola de Windows
-
-  /*!
-   * \brief Manejador de la consola
-   */
-  HANDLE mHandle;
-  
-  /*!
-   * \brief Configuración de la consola al iniciar.
-   *
-   * La configuración inicial se recupera al salir o
-   * con el método reset
-   */
-  WORD mOldColorAttrs;
-
-  /*!
-   * \brief Intensidad de caracter
-   */
-  WORD mForeIntensity;
-
-  /*!
-   * \brief Color de caracteres
-   */
-  WORD mForeColor;
-
-  /*!
-   * \brief Intensidad de fondo
-   */
-  WORD mBackIntensity;
-
-  /*!
-   * \brief Color de fondo
-   */
-  WORD mBackColor;
-
-  //TODO: Por terminar
-  CONSOLE_FONT_INFOEX mIniFont;
-
-  CONSOLE_FONT_INFOEX mCurrentFont;
-
-#else
-
-  // Consola Linux
-
-  /*!
-   * \brief mStream
-   */
-  FILE *mStream;
-
-  /*!
-   * \brief mCommand
-   */
-  char mCommand[13];
-
-  /*!
-   * \brief Color de caracteres
-   */
-  int mForeColor;
-
-  /*!
-   * \brief Color de fondo
-   */
-  int mBackColor;
-
-  int mBold;
-
-#endif
-  
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto MessageLevel::msg_error
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
-
-  /*!
-   * \brief Objeto único para la consola
-   */
-  static std::unique_ptr<Console> sObjConsole;
-
-  static std::mutex mtx;
 
 private:
 
@@ -394,6 +307,93 @@ public:
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
+private:
+
+
+#ifdef WIN32
+
+  // Consola de Windows
+
+  /*!
+   * \brief Manejador de la consola
+   */
+  HANDLE mHandle;
+  
+  /*!
+   * \brief Configuración de la consola al iniciar.
+   *
+   * La configuración inicial se recupera al salir o
+   * con el método reset
+   */
+  WORD mOldColorAttrs;
+
+  /*!
+   * \brief Intensidad de caracter
+   */
+  WORD mForeIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  WORD mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  WORD mBackIntensity;
+
+  /*!
+   * \brief Color de fondo
+   */
+  WORD mBackColor;
+
+  //TODO: Por terminar
+  CONSOLE_FONT_INFOEX mIniFont;
+
+  CONSOLE_FONT_INFOEX mCurrentFont;
+
+#else
+
+  // Consola Linux
+
+  /*!
+   * \brief mStream
+   */
+  FILE *mStream;
+
+  /*!
+   * \brief mCommand
+   */
+  char mCommand[13];
+
+  /*!
+   * \brief Color de caracteres
+   */
+  int mForeColor;
+
+  /*!
+   * \brief Color de fondo
+   */
+  int mBackColor;
+
+  int mBold;
+
+#endif
+  
+  /*!
+   * \brief Nivel de información de los mensajes
+   *
+   * Por defecto MessageLevel::msg_error
+   * \see MessageLevel
+   */
+  static EnumFlags<MessageLevel> sLevel;
+
+  /*!
+   * \brief Objeto único para la consola
+   */
+  static std::unique_ptr<Console> sObjConsole;
+
+  static std::mutex mtx;
 };
 
 
@@ -444,24 +444,6 @@ inline void Console::reset()
  */
 class TL_EXPORT Argument
 {
-
-protected:
-
-  /*!
-   * \brief Nombre del argumento
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del argumento
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Nombre corto del argumento (Opcional)
-   * Es un único caracter
-   */
-  char mShortName;
 
 public:
 
@@ -572,6 +554,24 @@ public:
    * \return
    */
   virtual bool isValid() = 0;
+
+protected:
+
+  /*!
+   * \brief Nombre del argumento
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del argumento
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Nombre corto del argumento (Opcional)
+   * Es un único caracter
+   */
+  char mShortName;
 };
 
 
@@ -615,15 +615,6 @@ template <typename T, bool required = true>
 class Argument_
   : public Argument
 {
-
-protected:
-
-  /*!
-   * \brief Valor del argumento
-   */
-  T *mValue;
-
-  bool bValid;
 
 public:
 
@@ -709,6 +700,16 @@ public:
   virtual void setValue(const T &value);
 
   bool isValid() override;
+
+protected:
+
+  /*!
+   * \brief Valor del argumento
+   */
+  T *mValue;
+
+  bool bValid;
+
 };
 
 
@@ -1009,11 +1010,6 @@ class ArgumentList_
   : public Argument_<T, required>
 {
 
-protected:
-
-  std::vector<T> mValues;
-  size_t *mIdx;
-
 public:
 
   /*!
@@ -1059,6 +1055,10 @@ public:
 
   void setValue(const T &value) override;
 
+protected:
+
+  std::vector<T> mValues;
+  size_t *mIdx;
 };
 
 
@@ -1194,10 +1194,6 @@ class ArgumentValidator;
 template <typename T>
 class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
-private:
-
-  T mMin;
-  T mMax;
 
 public:
 
@@ -1226,6 +1222,11 @@ public:
   {
     return mMax;
   }
+
+private:
+
+  T mMin;
+  T mMax;
 };
 
 
@@ -1339,37 +1340,6 @@ public:
    * \brief Iterador constante de acceso aleatorio
    */
   typedef std::list<std::shared_ptr<Argument>>::const_iterator const_iterator;
-
-
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Argument>> mCmdArgs;
-
-  /*!
-   * \brief Listado de los argumentos por defecto comando
-   * Comandos como ayuda [-h | --help] o versión [--version]
-   */
-  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
-
-  std::list<std::string> mExamples;
 
 public:
 
@@ -1538,6 +1508,35 @@ protected:
 
   void init();
 
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Argument>> mCmdArgs;
+
+  /*!
+   * \brief Listado de los argumentos por defecto comando
+   * Comandos como ayuda [-h | --help] o versión [--version]
+   */
+  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
+  std::list<std::string> mExamples;
 };
 
 
@@ -1708,29 +1707,6 @@ public:
    */
   typedef std::list<std::shared_ptr<Command>>::const_iterator const_iterator;
 
-
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Command>> mCommands;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
-
 public:
 
   /*!
@@ -1894,6 +1870,28 @@ public:
    * \brief Muestra la licencia en la consola
    */
   void showLicence() const;
+  
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Command>> mCommands;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
 
 };
 
@@ -1990,58 +1988,6 @@ inline CommandList::iterator CommandList::erase(CommandList::const_iterator firs
  */
 class TL_EXPORT Progress
 {
-protected:
-
-  /*!
-   * \brief Valor actual
-   */
-  double mProgress;
-
-  /*!
-   * \brief Valor mínimo
-   */
-  double mMinimun;
-
-  /*!
-   * \brief Valor máximo
-   */
-  double mMaximun;
-
-  /*!
-   * \brief Valor actual en tanto por ciento
-   */
-  int mPercent;
-
-  /*!
-   * \brief Mensaje que se puede añadir con información del proceso.
-   */
-  std::string mMsg;
-
-  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
-  //      crear una clase hija si hace falta
-
-  /*!
-   * \brief Manejador del evento que se produce cada vez que se
-   * avanza una posición en la función de progreso
-   */
-  std::function<void(double)> *onProgress;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al inicializar
-   */
-  std::function<void(void)> *onInitialize;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al terminar
-   */
-  std::function<void(void)> *onTerminate;
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
-
-  static std::mutex sMutex;
 
 public:
 
@@ -2127,6 +2073,59 @@ protected:
    * \brief terminate
    */
   virtual void terminate() = 0;
+
+protected:
+
+  /*!
+   * \brief Valor actual
+   */
+  double mProgress;
+
+  /*!
+   * \brief Valor mínimo
+   */
+  double mMinimun;
+
+  /*!
+   * \brief Valor máximo
+   */
+  double mMaximun;
+
+  /*!
+   * \brief Valor actual en tanto por ciento
+   */
+  int mPercent;
+
+  /*!
+   * \brief Mensaje que se puede añadir con información del proceso.
+   */
+  std::string mMsg;
+
+  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
+  //      crear una clase hija si hace falta
+
+  /*!
+   * \brief Manejador del evento que se produce cada vez que se
+   * avanza una posición en la función de progreso
+   */
+  std::function<void(double)> *onProgress;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al inicializar
+   */
+  std::function<void(void)> *onInitialize;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al terminar
+   */
+  std::function<void(void)> *onTerminate;
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
+
+  static std::mutex sMutex;
 };
 
 
@@ -2136,17 +2135,6 @@ protected:
 class TL_EXPORT ProgressBar 
   : public Progress
 {
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
-
-  /*!
-   * \brief Longitud de la barra de progreso
-   */
-  const int mSize = 50;
 
 public:
 
@@ -2186,6 +2174,18 @@ private:
    * \brief terminate
    */
   void terminate() override;
+
+private:
+
+  /*!
+   * \brief bCustomConsole
+   */
+  bool bCustomConsole;
+
+  /*!
+   * \brief Longitud de la barra de progreso
+   */
+  const int mSize = 50;
 };
 
 /*!
@@ -2194,12 +2194,6 @@ private:
 class TL_EXPORT ProgressPercent 
   : public Progress
 {
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
 
 public:
 
@@ -2233,6 +2227,13 @@ private:
    * \brief terminate
    */
   void terminate() override;
+
+private:
+
+  /*!
+   * \brief bCustomConsole
+   */
+  bool bCustomConsole;
 };
 
 
