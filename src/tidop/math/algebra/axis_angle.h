@@ -36,6 +36,7 @@ class AxisAngle
 {
 
 public:
+
   enum class Axis{
     x,
     y,
@@ -54,7 +55,7 @@ public:
   AxisAngle();
 
   AxisAngle(T angle, const Vector<3, T> &axis);
-  AxisAngle(T angle, Axis axis);
+  //AxisAngle(T angle, Axis axis);
 
   /*!
    * \brief destructora
@@ -81,24 +82,24 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<3, T> &axis)
 
 }
 
-template<typename T>
-AxisAngle<T>::AxisAngle(T angle, AxisAngle::Axis axis)
-  : angle(angle)
-{
-  if (axis == AxisAngle<T>::Axis::x){
-    axis.at(0) = static_cast<T>(1);
-    axis.at(1) = static_cast<T>(0);
-    axis.at(2) = static_cast<T>(0);
-  } else if (axis == AxisAngle<T>::Axis::y){
-    axis.at(0) = static_cast<T>(0);
-    axis.at(1) = static_cast<T>(1);
-    axis.at(2) = static_cast<T>(0);
-  } else if (axis == AxisAngle<T>::Axis::z){
-    axis.at(0) = static_cast<T>(0);
-    axis.at(1) = static_cast<T>(0);
-    axis.at(2) = static_cast<T>(1);
-  }
-}
+//template<typename T>
+//AxisAngle<T>::AxisAngle(T angle, AxisAngle::Axis axis)
+//  : angle(angle)
+//{
+//  if (axis == AxisAngle<T>::Axis::x){
+//    axis.at(0) = static_cast<T>(1);
+//    axis.at(1) = static_cast<T>(0);
+//    axis.at(2) = static_cast<T>(0);
+//  } else if (axis == AxisAngle<T>::Axis::y){
+//    axis.at(0) = static_cast<T>(0);
+//    axis.at(1) = static_cast<T>(1);
+//    axis.at(2) = static_cast<T>(0);
+//  } else if (axis == AxisAngle<T>::Axis::z){
+//    axis.at(0) = static_cast<T>(0);
+//    axis.at(1) = static_cast<T>(0);
+//    axis.at(2) = static_cast<T>(1);
+//  }
+//}
 
 template<typename T>
 AxisAngle<T>::~AxisAngle()

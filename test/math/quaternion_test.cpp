@@ -25,18 +25,18 @@ protected:
     q = Quaternionf(0.f, 1.f, -3.f, 2.f);
     q2 = Quaternionf(1.f, 3.f, -5.f, 1.f);
 
-//    RotationMatrix<float> rot;
-//    rot.at(0, 0) = -0.8888889f;
-//    rot.at(0, 1) = 0.4444444f;
-//    rot.at(0, 2) = -0.1111111f;
-//    rot.at(1, 0) = -0.1111111f;
-//    rot.at(1, 1) = -0.4444444f;
-//    rot.at(1, 2) = -0.8888889f;
-//    rot.at(2, 0) = -0.4444444f;
-//    rot.at(2, 1) = -0.7777778f;
-//    rot.at(2, 2) =  0.4444444f;
+    //RotationMatrix<float> rot;
+    //rot.at(0, 0) = -0.8888889f;
+    //rot.at(0, 1) = 0.4444444f;
+    //rot.at(0, 2) = -0.1111111f;
+    //rot.at(1, 0) = -0.1111111f;
+    //rot.at(1, 1) = -0.4444444f;
+    //rot.at(1, 2) = -0.8888889f;
+    //rot.at(2, 0) = -0.4444444f;
+    //rot.at(2, 1) = -0.7777778f;
+    //rot.at(2, 2) =  0.4444444f;
 
-//    q_rot = new Quaternionf(rot);
+    //q_rot = new Quaternionf(rot);
   }
  
   virtual void TearDown() override

@@ -5,9 +5,9 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 
-namespace TL
-{
-
+//namespace TL
+//{
+//
 //template<typename T>
 //class Data
 //{
@@ -93,32 +93,32 @@ namespace TL
 //{
 //  return mValue;
 //}
-//
-////template<typename T>
-////const TL::T &Data::operator()() const
-////{
-////  return mValue;
-////}
-//
-////template<typename T>
-////Data<T>::operator const T &() const
-////{
-////  return mValue;
-////}
-//
-////template<typename T> inline
-////bool Data<T>::active() const
-////{
-////  return bActive;
-////}
-//
-////template<typename T> inline
-////bool Data<T>::required() const
-////{
-////  return bRequired;
-////}
-//
-//
+
+//template<typename T>
+//const TL::T &Data::operator()() const
+//{
+//  return mValue;
+//}
+
+//template<typename T>
+//Data<T>::operator const T &() const
+//{
+//  return mValue;
+//}
+
+//template<typename T> inline
+//bool Data<T>::active() const
+//{
+//  return bActive;
+//}
+
+//template<typename T> inline
+//bool Data<T>::required() const
+//{
+//  return bRequired;
+//}
+
+
 //class TL_EXPORT ImgMetadata
 //{
 //
@@ -440,6 +440,6 @@ namespace TL
 
 
 
-}
+//}
 
 #endif // TL_GRAPHIC_IMG_METADATA_H

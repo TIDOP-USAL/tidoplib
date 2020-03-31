@@ -1,8 +1,8 @@
 #include "metadata.h"
 
-namespace TL
-{
-
+//namespace TL
+//{
+//
 
 //JpegMetadata::JpegMetadata()
 //  : ExifDocumentName("ExifDocumentName", ""),
@@ -22,4 +22,4 @@ namespace TL
 //JpegMetadata::~JpegMetadata()
 //{}
 
-}
+//}

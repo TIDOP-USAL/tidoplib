@@ -803,7 +803,7 @@ public:
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV
 

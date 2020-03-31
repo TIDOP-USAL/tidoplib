@@ -223,76 +223,61 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 {
 }
 
-// https://www.geometrictools.com/GTEngine/Include/Mathematics/GteRotation.h
 //template<typename T>
 //Quaternion<T>::Quaternion(const RotationMatrix<T> &rot)
 //{
-//  //static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
+//  T r22 = rot.at(2, 2);
 //
-//  T r22 = rot.at(2,2);
 //  if (r22 <= static_cast<T>(0)) {
+//
 //    T dif10 = rot.at(1, 1) - rot.at(0, 0);
 //    T omr22 = static_cast<T>(1) - r22;
 //    if (dif10 <= static_cast<T>(0)) {
 //      T fourXSqr = omr22 - dif10;
 //      T inv4x = static_cast<T>(0.5) / sqrt(fourXSqr);
 //      this->x = fourXSqr*inv4x;
-//      this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
-//      this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
-////#if defined(GTE_USE_MAT_VEC)
-//      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
-////#else
-////      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
-////#endif
+//      this->y = (rot.at(0, 1) + rot.at(1, 0)) * inv4x;
+//      this->z = (rot.at(0, 2) + rot.at(2, 0)) * inv4x;
+//      this->w = (rot.at(2, 1) - rot.at(1, 2)) * inv4x;
 //    } else {
 //      T fourYSqr = omr22 + dif10;
-//      T inv4y = static_cast<T>(0.5) / std::sqrt(fourYSqr);
+//      T inv4y = static_cast<T>(0.5) / sqrt(fourYSqr);
 //      this->x = (rot.at(0, 1) + rot.at(1, 0))*inv4y;
 //      this->y = fourYSqr*inv4y;
 //      this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
-////#if defined(GTE_USE_MAT_VEC)
 //      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
-////#else
-////      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
-////#endif
 //    }
+//
 //  } else {
+//
 //    T sum10 = rot.at(1, 1) + rot.at(0, 0);
 //    T opr22 = static_cast<T>(1) + r22;
 //    if (sum10 <= static_cast<T>(0)) {
 //      T fourZSqr = opr22 - sum10;
-//      T inv4z = (static_cast<T>(0.5)) / std::sqrt(fourZSqr);
+//      T inv4z = (static_cast<T>(0.5)) / sqrt(fourZSqr);
 //      this->x = (rot.at(0, 2) + rot.at(2, 0))*inv4z;
 //      this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
 //      this->z = fourZSqr*inv4z;
-////#if defined(GTE_USE_MAT_VEC)
 //      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
-////#else
-////      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
-////#endif
 //    } else {
 //      T fourWSqr = opr22 + sum10;
-//      T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
-////#if defined(GTE_USE_MAT_VEC)
+//      T inv4w = static_cast<T>(0.5) / sqrt(fourWSqr);
 //      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
 //      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
 //      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
-////#else
-////      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
-////      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
-////      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
-////#endif
 //      this->w = fourWSqr*inv4w;
 //    }
+//
 //  }
 //}
+
 
 template<typename T>
 Quaternion<T>::~Quaternion()
 {}
 
 template<typename T>
-Quaternion<T>& Quaternion<T>::operator = (const Quaternion& quaternion)
+Quaternion<T>& Quaternion<T>::operator = (const Quaternion &quaternion)
 {
   this->x = quaternion.x;
   this->y = quaternion.y;
