@@ -1107,10 +1107,7 @@ public:
    */
   virtual ~File(){}
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -1122,6 +1119,11 @@ public:
    */
   //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
   virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
+ 
+  /*!
+   * \brief Cierra el fichero
+   */
+  virtual void close() = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre

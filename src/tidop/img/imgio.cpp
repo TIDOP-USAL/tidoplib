@@ -326,7 +326,6 @@ GdalRaster::Status GdalRaster::open(const std::string &file, GdalRaster::Mode mo
 
   } else {
     pDataset = static_cast<GDALDataset *>(GDALOpen(file.c_str(), gdal_access));
-    pDataset->GetMetadataDomainList();
     if (pDataset == nullptr) {
       return Status::open_fail;
     } else {
@@ -542,7 +541,6 @@ GdalRaster::Status GdalRaster::createCopy(const std::string &fileOut)
 
 const char* GdalRaster::getDriverFromExt(const char *ext)
 {
-  ///TODO: Lo de comparar por extensión hay que mejorarlo para evitar errores por mayusculas / minusculas
   const char *format;
   if      (boost::iequals(ext, ".bmp")) format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
   else if (boost::iequals(ext, ".png")) format = "PNG";          // Portable Network Graphics (.png)
@@ -1543,4 +1541,4 @@ float Mdt::getZ(const PointD &pt) const
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End namespace TL
+} // End namespace tl

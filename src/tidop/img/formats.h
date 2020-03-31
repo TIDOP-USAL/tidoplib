@@ -33,7 +33,7 @@ enum class DataType : int8_t;
 /*!
  * \brief Opciones del formato
  */
-class TL_EXPORT RasterOptions 
+class TL_EXPORT ImageOptions 
   : public FileOptions
 {
 
@@ -48,26 +48,27 @@ public:
     bmp
   };
 
+public:
+
+  ImageOptions(Format format);
+  virtual ~ImageOptions();
+
+  Format format();
+    
+  virtual const char *options() = 0;
+
 protected:
 
   Format mFormat;
   std::vector<DataType> mDataTypes;
 
-public:
-
-  RasterOptions(Format format);
-  virtual ~RasterOptions();
-
-  Format getFormat();
-    
-  virtual const char *getOptions() = 0;
 };
 
 /*!
  * \brief Clase que gestiona las opciones del formato TIFF
  */
 class TL_EXPORT TiffOptions
-  : public RasterOptions
+  : public ImageOptions
 {
 
 public:
@@ -80,24 +81,24 @@ public:
   //  TILED  = 0x03          /*!<  By default stripped TIFF files are created. This option can be used to force creation of tiled TIFF files. */
   //};
 
-  //enum
-  //{
-  //  TFW,
-  //  RPB,
-  //  RPCTXT,
-  //  TILED,
-  //  BLOCKXSIZE,
-  //  BLOCKYSIZE,
-  //  JPEGQUALITY,
-  //  ZLEVEL,
-  //  BIGTIFF,
-  //  COMPRESS,
-  //  PHOTOMETRIC,
-  //  ALPHA,
-  //  PROFILE,
-  //  PIXELTYPE,
-  //  GEOTIFF_KEYS_FLAVOR
-  //};
+  enum Active
+  {
+    tfw         = 0x00,
+    rpb         = 0x01,
+    rpctxt      = 0x02,
+    tiled       = 0x03,
+    blockxsize  = 0x04,
+    blockysize  = 0x05,
+    jpegquality = 0x06,
+    zlevel      = 0x07,
+    bigtiff     = 0x08,
+    compress    = 0x09,
+    photometric = 0x10,
+    alpha       = 0x11,
+    profile     = 0x12,
+    pixeltype   = 0x13,
+    geotiff_keys_flavor
+  };
 
   //typedef bool TFW;
   //typedef bool RPB;
@@ -173,6 +174,59 @@ public:
     ESRI_PE 
   };
 
+public:
+
+  TiffOptions();
+  ~TiffOptions() override;
+
+  const char *options() override;
+
+  void enableTFW(bool value = true);
+  bool isEnableTFW() const;
+
+  void enableRPB(bool value = true);
+  bool isEnableRPB() const;
+
+  void enableRPCTX(bool value = true);
+  bool isEnableRPCTX() const;
+
+  void enableTiled(bool value = true);
+  bool isEnableTiled() const;
+
+  void setBlockXSize(int blockXSize);
+  int blockXSize() const;
+
+  int blockYSize() const;
+  void setBlockYSize(int blockYSize);
+
+  /*!
+   * \brief Número de bits
+   */
+  int nBits() const;
+  void setNBits(int nBits);
+
+  uint8_t jpegQuality() const;
+  uint8_t zLevel() const;
+  BIGTIFF bigTiff() const;
+  COMPRESS compress() const;
+  PHOTOMETRIC photometric() const;
+  ALPHA alpha() const;
+  PROFILE profile() const;
+  PIXELTYPE pixelType() const;
+  GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor() const;
+
+  
+  
+  void setJpegQuality(uint8_t jpegQuality);
+  void setZLevel(uint8_t zLevel);
+  void setBigTiff(BIGTIFF bigTiff);
+  void setCompress(COMPRESS compress);
+  void setPhotometric(PHOTOMETRIC photometric);
+  void setAlpha(ALPHA alpha);
+  void setProfile(PROFILE profile);
+  void setPixelType(PIXELTYPE pixelType);
+  void setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor);
+
 protected:
 
   /*!
@@ -181,10 +235,14 @@ protected:
   bool bTFW;
 
   /*!
-   * \brief Force the generation of an associated .RPB file to describe RPC (Rational Polynomial Coefficients), if RPC information is available.
+   * \brief Force the generation of an associated .RPB file to describe 
+   * RPC (Rational Polynomial Coefficients), if RPC information is available.
    */
   bool bRPB;
 
+  /*!
+   * \brief Force the generation of an associated _RPC.TXT file to describe RPC (Rational Polynomial Coefficients), if RPC information is available
+   */
   bool bRPCTX;
 
   /*!
@@ -203,6 +261,11 @@ protected:
    * Por defecto el alto de tesela es de 256
    */
   int mBlockYSize;
+
+  /*!
+   * \brief Número de bits
+   */
+  int mNBits;
 
   /*!
    * \brief Calidad de compresión jpeg
@@ -239,90 +302,6 @@ protected:
 
   GEOTIFF_KEYS_FLAVOR mGeotiffKeysFlavor;
 
-public:
-
-  TiffOptions();
-  ~TiffOptions() override;
-
-  const char *getOptions() override;
-
-  void enableTFW(bool value = true);
-  void enableRPB(bool value = true);
-  void enableRPCTX(bool value = true);
-  void enableTiled(bool value = true);
-
-  int getBlockXSize();
-  int getBlockYSize();
-  uint8_t getJpegQuality();
-  uint8_t getZLevel();
-  BIGTIFF getBigTiff();
-  COMPRESS getCompress();
-  PHOTOMETRIC getPhotometric();
-  ALPHA getAlpha();
-  PROFILE getProfile();
-  PIXELTYPE getPixelType();
-  GEOTIFF_KEYS_FLAVOR getGeotiffKeysFlavor();
-
-  bool isEnableTFW();
-  bool isEnableRPB();
-  bool isEnableRPCTX();
-  bool isEnableTiled();
-
-  void setBlockXSize(int blockXSize);
-  void setBlockYSize(int blockYSize);
-  void setJpegQuality(uint8_t jpegQuality);
-  void setZLevel(uint8_t zLevel);
-  void setBigTiff(BIGTIFF bigTiff);
-  void setCompress(COMPRESS compress);
-  void setPhotometric(PHOTOMETRIC photometric);
-  void setAlpha(ALPHA alpha);
-  void setProfile(PROFILE profile);
-  void setPixelType(PIXELTYPE pixelType);
-  void setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor);
-
-
-  //template <typename Opt_t>
-  //void setOption(Opt_t value)
-  //{
-  //  Opt_t t = Opt_t();
-  //  printf(typeid(Opt_t).name());
-  //  /*if (strcmp(typeid(Opt_t).name(), typeid(TFW).name()) == 0) {
-  //    bTFW = value;
-  //  } else if (typeid(Opt_t) == typeid(RPB)) {
-  //    bRPB = value;
-  //  } else if (typeid(Opt_t) == typeid(RPCTX)) {
-  //    bRPCTX = value;
-  //  } else if (typeid(Opt_t) == typeid(TILED)) {
-  //    bTiled = value;
-  //  } else if (typeid(Opt_t) == typeid(BLOCKXSIZE)) {
-  //    mBlockXSize = value;
-  //  } else if (typeid(Opt_t) == typeid(BLOCKYSIZE)) {
-  //    mBlockYSize = value;
-  //  } else if (typeid(Opt_t) == typeid(JPEGQUALITY)) {
-  //    mJpegQuality = value;
-  //  } else if (typeid(Opt_t) == typeid(ZLEVEL)) {
-  //    mZLevel = value;
-  //  } else*/ if (typeid(Opt_t) == typeid(BIGTIFF)) {
-  //    mBigTiff = static_cast<BIGTIFF>(value);
-  //  } else if (typeid(Opt_t) == typeid(COMPRESS)) {
-  //    mCompress = static_cast<COMPRESS>(value);
-  //  } else if (typeid(Opt_t) == typeid(PHOTOMETRIC)) {
-  //    mPhotometric = static_cast<PHOTOMETRIC>(value);
-  //  } else if (typeid(Opt_t) == typeid(ALPHA)) {
-  //    mAlpha = static_cast<ALPHA>(value);
-  //  } else if (typeid(Opt_t) == typeid(PROFILE)) {
-  //    mProfile = static_cast<PROFILE>(value);
-  //  } else if (typeid(Opt_t) == typeid(PIXELTYPE)) {
-  //    mPixelType = static_cast<PIXELTYPE>(value);
-  //  } else if (typeid(Opt_t) == typeid(GEOTIFF_KEYS_FLAVOR)) {
-  //    mGeotiffKeysFlavor = static_cast<GEOTIFF_KEYS_FLAVOR>(value);
-  //  } else {
-  //    msgWarning("Opción");
-  //  } 
-  //}
-
-
-private:
 
 };
 
@@ -330,7 +309,7 @@ private:
  * \brief Clase que gestiona las opciones del formato PNG
  */
 class TL_EXPORT PngOptions
-  : public RasterOptions
+  : public ImageOptions
 {
 
 public:
@@ -356,7 +335,7 @@ public:
   PngOptions();
   ~PngOptions() override;
   
-  const char *getOptions() override;
+  const char *options() override;
 
   bool isEnableWorldFile() const;
 
@@ -367,8 +346,20 @@ public:
 /*!
  * \brief Clase que gestiona las opciones del formato Jpeg
  */
-class TL_EXPORT JpegOptions : public RasterOptions
+class TL_EXPORT JpegOptions 
+  : public ImageOptions
 {
+
+public:
+  
+  JpegOptions();
+  ~JpegOptions() override;
+  
+  const char *options() override;
+
+  bool isEnableWorldFile() const;
+
+  void setEnableWorldFile(bool enable);
 
 protected:
   
@@ -386,24 +377,13 @@ protected:
 //THUMBNAIL_WIDTH=n: (Starting with GDAL 2.0). Width of thumbnail. Only taken into account if EXIF_THUMBNAIL=YES.
 //THUMBNAIL_HEIGHT=n: (Starting with GDAL 2.0). Height of thumbnail. Only taken into account if EXIF_THUMBNAIL=YES.
 
-public:
-  
-  JpegOptions();
-  ~JpegOptions() override;
-  
-  const char *getOptions() override;
-
-  bool isEnableWorldFile() const;
-
-  void setEnableWorldFile(bool enable);
-
 };
 
 /*!
  * \brief Clase que gestiona las opciones del formato bmp
  */
 class TL_EXPORT BmpOptions
-  : public RasterOptions
+  : public ImageOptions
 {
 
 protected:
@@ -415,7 +395,7 @@ public:
   BmpOptions();
   ~BmpOptions() override;
   
-  const char *getOptions() override;
+  const char *options() override;
 
   bool isEnableWorldFile() const;
 

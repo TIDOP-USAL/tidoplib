@@ -1,6 +1,9 @@
 #Modulo img de la librería
 
 add_library(tl_img ${LIB_TYPE}
+            img.h
+            imghandler.cpp
+            imghandler.h
             imgio.cpp
             imgio.h
             formats.cpp

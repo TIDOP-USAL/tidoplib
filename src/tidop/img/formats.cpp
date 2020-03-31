@@ -8,15 +8,15 @@
 namespace tl
 {
 
-RasterOptions::RasterOptions(Format format) 
+ImageOptions::ImageOptions(Format format) 
   : FileOptions(),
     mFormat(format)
 {}
 
-RasterOptions::~RasterOptions()
+ImageOptions::~ImageOptions()
 {}
 
-RasterOptions::Format RasterOptions::getFormat()
+ImageOptions::Format ImageOptions::format()
 {
   return mFormat;
 }
@@ -33,16 +33,30 @@ RasterOptions::Format RasterOptions::getFormat()
 //DataType TiffOptions::dataTypes[] = { TL_8U, TL_16U, TL_16S, TL_32U, TL_32S, TL_32F, TL_64F };
 
 TiffOptions::TiffOptions() 
-  : RasterOptions(RasterOptions::Format::tiff)
-
+  : ImageOptions(Format::tiff),
+    bTFW(true),
+    bRPB(true),
+    bRPCTX(true),
+    bTiled(true),
+    mBlockXSize(256),
+    mBlockYSize(256),
+    mNBits()
 {
-  mDataTypes = { DataType::TL_8U, DataType::TL_16U, DataType::TL_16S, DataType::TL_32U, DataType::TL_32S, DataType::TL_32F, DataType::TL_64F };
+  mDataTypes = { 
+    DataType::TL_8U, 
+    DataType::TL_16U, 
+    DataType::TL_16S, 
+    DataType::TL_32U, 
+    DataType::TL_32S, 
+    DataType::TL_32F, 
+    DataType::TL_64F 
+  };
 }
 
 TiffOptions::~TiffOptions()
 {}
 
-const char *TiffOptions::getOptions()
+const char *TiffOptions::options()
 {
   return nullptr;
 }
@@ -53,92 +67,50 @@ void TiffOptions::enableTFW(bool value)
   bTFW = value;
 }
 
+bool TiffOptions::isEnableTFW() const
+{
+  return bTFW;
+}
+
 void TiffOptions::enableRPB(bool value)
 {
   bRPB = value;
 }
+
+bool TiffOptions::isEnableRPB() const
+{
+  return bRPB;
+}
+
 void TiffOptions::enableRPCTX(bool value)
 {
+#if GDAL_VERSION_MAJOR < 2
+  TL_COMPILER_WARNING("Option 'RPCTX' not supported for this version of GDAL");
+#endif
   bRPCTX = value;
 }
+
+bool TiffOptions::isEnableRPCTX() const
+{
+#if GDAL_VERSION_MAJOR < 2
+  TL_COMPILER_WARNING("Option 'RPCTX' not supported for this version of GDAL");
+#endif
+  return bRPCTX;
+}
+
 void TiffOptions::enableTiled(bool value)
 {
   bTiled = value;
 }
 
-int TiffOptions::getBlockXSize()
-{
-  return mBlockXSize;
-}
-
-int TiffOptions::getBlockYSize()
-{
-  return mBlockYSize;
-}
-
-uint8_t TiffOptions::getJpegQuality()
-{
-  return mJpegQuality;
-}
-
-uint8_t TiffOptions::getZLevel()
-{
-  return mZLevel;
-}
-
-TiffOptions::BIGTIFF TiffOptions::getBigTiff()
-{
-  return mBigTiff;
-}
-
-TiffOptions::COMPRESS TiffOptions::getCompress()
-{
-  return mCompress;
-}
-
-TiffOptions::PHOTOMETRIC TiffOptions::getPhotometric()
-{
-  return mPhotometric;
-}
-
-TiffOptions::ALPHA TiffOptions::getAlpha()
-{
-  return mAlpha;
-}
-
-TiffOptions::PROFILE TiffOptions::getProfile()
-{
-  return mProfile;
-}
-
-TiffOptions::PIXELTYPE TiffOptions::getPixelType()
-{
-  return mPixelType;
-}
-
-TiffOptions::GEOTIFF_KEYS_FLAVOR TiffOptions::getGeotiffKeysFlavor()
-{
-  return mGeotiffKeysFlavor;
-}
-
-bool TiffOptions::isEnableTFW()
-{
-  return bTFW;
-}
-
-bool TiffOptions::isEnableRPB()
-{
-  return bRPB;
-}
-
-bool TiffOptions::isEnableRPCTX()
-{
-  return bRPCTX;
-}
-
-bool TiffOptions::isEnableTiled()
+bool TiffOptions::isEnableTiled() const
 {
   return bTiled;
+}
+
+int TiffOptions::blockXSize() const
+{
+  return mBlockXSize;
 }
 
 void TiffOptions::setBlockXSize(int blockXSize)
@@ -146,9 +118,29 @@ void TiffOptions::setBlockXSize(int blockXSize)
   mBlockXSize = blockXSize;
 }
 
+int TiffOptions::blockYSize()  const
+{
+  return mBlockYSize;
+}
+
 void TiffOptions::setBlockYSize(int blockYSize)
 {
   mBlockYSize = blockYSize;
+}
+
+int TiffOptions::nBits() const
+{
+  return mNBits;
+}
+
+void TiffOptions::setNBits(int nBits)
+{
+  mNBits = nBits;
+}
+
+uint8_t TiffOptions::jpegQuality() const
+{
+  return mJpegQuality;
 }
 
 void TiffOptions::setJpegQuality(uint8_t jpegQuality)
@@ -156,9 +148,19 @@ void TiffOptions::setJpegQuality(uint8_t jpegQuality)
   mJpegQuality = jpegQuality;
 }
 
+uint8_t TiffOptions::zLevel() const
+{
+  return mZLevel;
+}
+
 void TiffOptions::setZLevel(uint8_t zLevel)
 {
   mZLevel = zLevel;
+}
+
+TiffOptions::BIGTIFF TiffOptions::bigTiff() const
+{
+  return mBigTiff;
 }
 
 void TiffOptions::setBigTiff(BIGTIFF bigTiff)
@@ -166,9 +168,19 @@ void TiffOptions::setBigTiff(BIGTIFF bigTiff)
   mBigTiff = bigTiff;
 }
 
+TiffOptions::COMPRESS TiffOptions::compress() const
+{
+  return mCompress;
+}
+
 void TiffOptions::setCompress(COMPRESS compress)
 {
   mCompress = compress;
+}
+
+TiffOptions::PHOTOMETRIC TiffOptions::photometric() const
+{
+  return mPhotometric;
 }
 
 void TiffOptions::setPhotometric(PHOTOMETRIC photometric)
@@ -176,9 +188,19 @@ void TiffOptions::setPhotometric(PHOTOMETRIC photometric)
   mPhotometric = photometric;
 }
 
+TiffOptions::ALPHA TiffOptions::alpha() const
+{
+  return mAlpha;
+}
+
 void TiffOptions::setAlpha(ALPHA alpha)
 {
   mAlpha = alpha;
+}
+
+TiffOptions::PROFILE TiffOptions::profile() const
+{
+  return mProfile;
 }
 
 void TiffOptions::setProfile(PROFILE profile)
@@ -186,9 +208,19 @@ void TiffOptions::setProfile(PROFILE profile)
   mProfile = profile;
 }
 
+TiffOptions::PIXELTYPE TiffOptions::pixelType() const
+{
+  return mPixelType;
+}
+
 void TiffOptions::setPixelType(PIXELTYPE pixelType)
 {
   mPixelType = pixelType;
+}
+
+TiffOptions::GEOTIFF_KEYS_FLAVOR TiffOptions::geotiffKeysFlavor() const
+{
+  return mGeotiffKeysFlavor;
 }
 
 void TiffOptions::setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor)
@@ -199,7 +231,7 @@ void TiffOptions::setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor)
 
 
 PngOptions::PngOptions() 
-  : RasterOptions(RasterOptions::Format::png),
+  : ImageOptions(Format::png),
 #if GDAL_VERSION_MAJOR >= 2
     title(),
     description(),
@@ -214,7 +246,7 @@ PngOptions::PngOptions()
 PngOptions::~PngOptions()
 {}
 
-const char *PngOptions::getOptions()
+const char *PngOptions::options()
 {
   return nullptr;
 }
@@ -230,7 +262,7 @@ void PngOptions::setEnableWorldFile(bool enable)
 }
 
 JpegOptions::JpegOptions() 
-  : RasterOptions(RasterOptions::Format::jpeg),
+  : ImageOptions(Format::jpeg),
     bWorldFile(false)
 {
   mDataTypes = { DataType::TL_8U };
@@ -239,7 +271,7 @@ JpegOptions::JpegOptions()
 JpegOptions::~JpegOptions()
 {}
 
-const char *JpegOptions::getOptions()
+const char *JpegOptions::options()
 {
   return nullptr;
 }
@@ -256,7 +288,7 @@ void JpegOptions::setEnableWorldFile(bool enable)
 
 
 BmpOptions::BmpOptions() 
-  : RasterOptions(RasterOptions::Format::jpeg),
+  : ImageOptions(Format::jpeg),
     bWorldFile(false)
 {
   mDataTypes = { DataType::TL_8U };
@@ -265,7 +297,7 @@ BmpOptions::BmpOptions()
 BmpOptions::~BmpOptions()
 {}
 
-const char *BmpOptions::getOptions()
+const char *BmpOptions::options()
 {
   return nullptr;
 }

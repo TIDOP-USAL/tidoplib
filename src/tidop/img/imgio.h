@@ -25,6 +25,7 @@ TL_DEFAULT_WARNINGS
 //#include "graphic_entities/color.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/img/img.h"
 //#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
@@ -48,17 +49,17 @@ namespace tl
 
 class RasterOptions;
 
-enum class DataType : int8_t
-{
-  TL_8U,      // Equivalente a CV_8U y GDT_Byte
-  TL_8S,      // Equivalente a CV_8S
-  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
-  TL_16S,     // Equivalente a CV_16S y GDT_Int16
-  TL_32U,     // Equivalente a GDT_UInt32
-  TL_32S,     // Equivalente a CV_32S y GDT_Int32
-  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
-  TL_64F      // Equivalente a CV_64F y GDT_Float64
-};
+//enum class DataType : int8_t
+//{
+//  TL_8U,      // Equivalente a CV_8U y GDT_Byte
+//  TL_8S,      // Equivalente a CV_8S
+//  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
+//  TL_16S,     // Equivalente a CV_16S y GDT_Int16
+//  TL_32U,     // Equivalente a GDT_UInt32
+//  TL_32S,     // Equivalente a CV_32S y GDT_Int32
+//  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
+//  TL_64F      // Equivalente a CV_64F y GDT_Float64
+//};
 
 
 class TL_EXPORT VrtRaster
