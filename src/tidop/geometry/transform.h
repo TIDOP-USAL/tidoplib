@@ -323,7 +323,7 @@ transform_status Transform<Point_t>::transformParallel( const std::vector<Point_
 {
   formatVectorOut(ptsIn, ptsOut);
   transform_status r_status;
-  parallel_for(0, static_cast<int>(ptsIn.size()), [&](int i) {
+  parallel_for(0, ptsIn.size(), [&](size_t i) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
     if ( r_status == transform_status::failure ) return;
   });

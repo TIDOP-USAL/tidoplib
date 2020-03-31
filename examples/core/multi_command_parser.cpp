@@ -62,8 +62,8 @@ int main(int argc, char** argv)
 
   std::string file;
   std::string output;
-  bool bOpt, bOpt2;
-  int val;
+  //bool bOpt, bOpt2;
+  //int val;
   double val_d = 0.5;
   size_t idx = 0;
   std::vector<std::string> options;
