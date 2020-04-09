@@ -1,6 +1,6 @@
 #include "metadata.h"
 
-#include "tidop/img/imghandler.h"
+//#include "tidop/img/imghandler.h"
 
 namespace tl
 {
