@@ -27,8 +27,6 @@
 #if defined (__clang__) || defined (__GNUG__)
 #include <cxxabi.h>
 #endif
-
-// filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
 #else
@@ -131,103 +129,11 @@ public:
 
 private:
 
-
-#ifdef WIN32
-
-  // Consola de Windows
-
-  /*!
-   * \brief Manejador de la consola
-   */
-  HANDLE mHandle;
-  
-  /*!
-   * \brief Configuración de la consola al iniciar.
-   *
-   * La configuración inicial se recupera al salir o
-   * con el método reset
-   */
-  WORD mOldColorAttrs;
-
-  /*!
-   * \brief Intensidad de caracter
-   */
-  WORD mForeIntensity;
-
-  /*!
-   * \brief Color de caracteres
-   */
-  WORD mForeColor;
-
-  /*!
-   * \brief Intensidad de fondo
-   */
-  WORD mBackIntensity;
-
-  /*!
-   * \brief Color de fondo
-   */
-  WORD mBackColor;
-
-  //TODO: Por terminar
-  CONSOLE_FONT_INFOEX mIniFont;
-
-  CONSOLE_FONT_INFOEX mCurrentFont;
-
-#else
-
-  // Consola Linux
-
-  /*!
-   * \brief mStream
-   */
-  FILE *mStream;
-
-  /*!
-   * \brief mCommand
-   */
-  char mCommand[13];
-
-  /*!
-   * \brief Color de caracteres
-   */
-  int mForeColor;
-
-  /*!
-   * \brief Color de fondo
-   */
-  int mBackColor;
-
-  int mBold;
-
-#endif
-  
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto MessageLevel::msg_error
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
-
-  /*!
-   * \brief Objeto único para la consola
-   */
-  static std::unique_ptr<Console> sObjConsole;
-
-  static std::mutex mtx;
-
-private:
-
   /// Constructora privada ya que es un Singleton
   Console();
 
 public:
 
-  /*!
-   * Destructora
-   * Se recuperan las opciones por defecto de la consola
-   */
 #ifdef TL_MESSAGE_HANDLER
   ~Console() override;
 #else
@@ -274,7 +180,8 @@ public:
    * \param[in] backColor Color de fondo
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
-  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::normal);
+  void setConsoleBackgroundColor(Console::Color backColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece el color de caracter
@@ -282,7 +189,8 @@ public:
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    * \see Console::Color, Console::Intensity
    */
-  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::normal);
+  void setConsoleForegroundColor(Console::Color foreColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece la consola como modo Unicode
@@ -356,7 +264,7 @@ private:
    * \brief Inicializa la consola guardando la configuración  actual.
    * \param handle
    */
-  void init( DWORD handle );
+  void init(DWORD handle);
 
 #else
 
@@ -393,6 +301,80 @@ public:
     EnumFlags<MessageLevel> getMessageLevel() const;
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
+
+private:
+
+#ifdef WIN32
+
+  /* Consola de Windows */
+
+  /*!
+   * \brief Manejador de la consola
+   */
+  HANDLE mHandle;
+  
+  /*!
+   * \brief Configuración de la consola al iniciar.
+   *
+   * La configuración inicial se recupera al salir o
+   * con el método reset
+   */
+  WORD mOldColorAttrs;
+
+  /*!
+   * \brief Intensidad de caracter
+   */
+  WORD mForeIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  WORD mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  WORD mBackIntensity;
+
+  /*!
+   * \brief Color de fondo
+   */
+  WORD mBackgroundColor;
+
+  //TODO: Por terminar
+  CONSOLE_FONT_INFOEX mIniFont;
+  CONSOLE_FONT_INFOEX mCurrentFont;
+
+#else
+
+  /* Consola Linux */
+
+  /*!
+   * \brief mStream
+   */
+  FILE *mStream;
+
+  /*!
+   * \brief mCommand
+   */
+  char mCommand[13];
+
+  /*!
+   * \brief Color de caracteres
+   */
+  int mForeColor;
+
+  /*!
+   * \brief Color de fondo
+   */
+  int mBackgroundColor;
+  int mBold;
+
+#endif
+  
+  static EnumFlags<MessageLevel> sLevel;
+  static std::unique_ptr<Console> sObjConsole;
+  static std::mutex mtx;
 
 };
 
@@ -444,24 +426,6 @@ inline void Console::reset()
  */
 class TL_EXPORT Argument
 {
-
-protected:
-
-  /*!
-   * \brief Nombre del argumento
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del argumento
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Nombre corto del argumento (Opcional)
-   * Es un único caracter
-   */
-  char mShortName;
 
 public:
 
@@ -559,7 +523,8 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  virtual std::string toString() const = 0;
+  ///TODO: si el valor no esta inicializado puede provocar un comportamiento inexperado
+  //virtual std::string toString() const = 0;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -572,6 +537,25 @@ public:
    * \return
    */
   virtual bool isValid() = 0;
+
+protected:
+
+  /*!
+   * \brief Nombre del argumento
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del argumento
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Nombre corto del argumento (Opcional)
+   * Es un único caracter
+   */
+  char mShortName;
+
 };
 
 
@@ -615,15 +599,6 @@ template <typename T, bool required = true>
 class Argument_
   : public Argument
 {
-
-protected:
-
-  /*!
-   * \brief Valor del argumento
-   */
-  T *mValue;
-
-  bool bValid;
 
 public:
 
@@ -688,7 +663,7 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  std::string toString() const override;
+  //std::string toString() const override;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -709,6 +684,11 @@ public:
   virtual void setValue(const T &value);
 
   bool isValid() override;
+
+protected:
+
+  T *mValue;
+  bool bValid;
 };
 
 
@@ -862,60 +842,60 @@ bool Argument_<T, required>::isRequired() const
   return required;
 }
 
-template<typename T, bool required> inline
-std::string Argument_<T, required>::toString() const
-{
-  std::string val;
-  if(typeid(T) == typeid(bool)) {
-    val = *mValue ? "true" : "false";
-  } else if (std::is_integral<T>::value) {
-    val = std::to_string(*mValue);
-  } else if (std::is_floating_point<T>::value){
-    val = std::to_string(*mValue);
-  } else if(typeid(T) == typeid(std::string)) {
-    val = *mValue;
-  }
-  return val;
-}
-
-template<> inline
-std::string Argument_<std::string, true>::toString() const
-{
-  return *mValue;
-}
-
-template<> inline
-std::string Argument_<std::string, false>::toString() const
-{
-  return *mValue;
-}
-
-
-#if (__cplusplus >= 201703L)
-template<> inline
-std::string Argument_<std::filesystem::path, true>::toString() const
-{
-  return mValue->string();
-}
-
-template<> inline
-std::string Argument_<std::filesystem::path, false>::toString() const
-{
-  return mValue->string();
-}
-#else
-template<> inline
-std::string Argument_<boost::filesystem::path, true>::toString() const
-{
-  return mValue->string();
-}
-
-template<> inline
-std::string Argument_<boost::filesystem::path, false>::toString() const
-{
-  return mValue->string();
-}
-#endif
+//template<typename T, bool required> inline
+//std::string Argument_<T, required>::toString() const
+//{
+//  std::string val;
+//  if(typeid(T) == typeid(bool)) {
+//    val = *mValue ? "true" : "false";
+//  } else if (std::is_integral<T>::value) {
+//    val = std::to_string(*mValue);
+//  } else if (std::is_floating_point<T>::value){
+//    val = std::to_string(*mValue);
+//  } else if(typeid(T) == typeid(std::string)) {
+//    val = *mValue;
+//  }
+//  return val;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, true>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, false>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//
+//#if (__cplusplus >= 201703L)
+//template<> inline
+//std::string Argument_<std::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<std::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#else
+//template<> inline
+//std::string Argument_<boost::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<boost::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#endif
 
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
@@ -923,6 +903,8 @@ void Argument_<T, required>::fromString(const std::string &value)
   if(typeid(T) == typeid(bool)) {
     if (value == "true" || value == "1")
       *mValue = true;
+    else
+      *mValue = false;
   } else if (std::is_integral<T>::value) {
     *mValue = stringToInteger(value);
   } else if (std::is_floating_point<T>::value) {
@@ -1159,8 +1141,7 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
     *mIdx = idx;
     this->bValid = true;
   } else {
-    //Argument_<T, required>::setValue(prev_value);
-    //*mIdx = -1;
+    Argument_<T, required>::setValue(prev_value);
     this->bValid = false;
   }
 }
@@ -1168,14 +1149,22 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
 template<typename T, bool required> inline
 void ArgumentList_<T, required>::setValue(const T &value)
 {
+  bool bFind = false;
+  size_t idx = 0;
   for(auto &_value : mValues){
     if (value == _value){
       Argument_<T, required>::setValue(value);
-      this->bValid = true;
-      return;
+      bFind = true;
+      break;
     }
+    idx++;
   }
-  this->bValid = false;
+  if (bFind) {
+    *mIdx = idx;
+    this->bValid = true;
+  } else {
+    this->bValid = false;
+  }
 }
 
 

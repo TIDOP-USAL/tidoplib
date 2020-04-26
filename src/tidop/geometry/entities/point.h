@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_POINT_H
-#define TL_GEOM_POINT_H
+#ifndef TL_GEOMETRY_POINT_H
+#define TL_GEOMETRY_POINT_H
 
 #include "config_tl.h"
 
@@ -115,7 +115,7 @@ public:
    */
   Point(const std::array<T, 2> &v);
 
-  ~Point() = default;
+  ~Point() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -185,8 +185,8 @@ Point<T>::Point(const Point &pt)
 template<typename T> inline
 Point<T>::Point(Point &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)), 
-    x(std::move(pt.x)), 
-    y(std::move(pt.y)) 
+    x(pt.x), 
+    y(pt.y) 
 {
 }
 
@@ -210,6 +210,7 @@ template<typename T> inline
 Point<T> &Point<T>::operator = (const Point &pt)
 {
   if (this != &pt) {
+    Entity::operator = (pt);
     this->x = pt.x;
     this->y = pt.y;
   }
@@ -221,9 +222,9 @@ template<typename T> inline
 Point<T> &Point<T>::operator = (Point &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
-    this->mEntityType = std::move(pt.mEntityType);
-    this->x = std::move(pt.x);
-    this->y = std::move(pt.y);
+    Entity::operator = (std::forward<Entity>(pt));
+    this->x = pt.x;
+    this->y = pt.y;
   }
   return *this;
 }
@@ -470,7 +471,7 @@ public:
    */
   Point3(const std::array<T, 3> &v);
 
-  ~Point3() = default;
+  ~Point3() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -797,7 +798,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPoint() = default;
+  ~MultiPoint() override = default;
 
   /*!
    * \brief Operador asignación
@@ -978,7 +979,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPoint3D() = default;
+  ~MultiPoint3D() override = default;
 
   /*!
    * \brief Operador asignación
@@ -997,10 +998,10 @@ public:
    * \return Caja envolvente de los puntos
    */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("box()", "2.0")
-  Box<Point_t> getBox() const;
+  TL_DEPRECATED("boundingBox()", "2.0")
+  BoundingBox<Point_t> getBox() const;
 #endif
-  Box<Point_t> box() const;
+  BoundingBox<Point_t> boundingBox() const;
 };
 
 template<typename Point_t> inline
@@ -1067,34 +1068,34 @@ MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPo
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
-Box<Point_t> MultiPoint3D<Point_t>::getBox() const
+BoundingBox<Point_t> MultiPoint3D<Point_t>::getBox() const
 {
-  Box<Point_t> box;
+  BoundingBox<Point_t> bounding_box;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
+    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
+    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
+    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
+    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
+    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
   }
-  return box;
+  return bounding_box;
 }
 #endif
 
 template<typename Point_t> inline
-Box<Point_t> MultiPoint3D<Point_t>::box() const
+BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
 {
-  Box<Point_t> box;
+  BoundingBox<Point_t> bounding_box;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
+    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
+    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
+    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
+    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
+    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
   }
-  return box;
+  return bounding_box;
 }
 
 typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
@@ -1181,4 +1182,4 @@ Point_t point_cast(const cv::Point_<float> &pt)
 
 } // End namespace TL
 
-#endif // TL_GEOM_POINT_H
+#endif // TL_GEOMETRY_POINT_H

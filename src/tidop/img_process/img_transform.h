@@ -208,16 +208,16 @@ public:
 template<typename Point_t> inline
 void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
-  transform_type type = trf->getTransformType();
+  transform_type type = trf->transformType();
   if (type == tl::transform_type::translation) {
     Translation<Point_t> *transTrf = dynamic_cast<Translation<Point_t> *>(trf);
     cv::Mat translateMat(2, 3, CV_32FC1);
     translateMat.at<float>(0, 0) = 1.f;
     translateMat.at<float>(0, 1) = 0.f;
-    translateMat.at<float>(0, 2) = transTrf->tx;
+    translateMat.at<float>(0, 2) = static_cast<float>(transTrf->tx);
     translateMat.at<float>(1, 0) = 0.f;
     translateMat.at<float>(1, 1) = 1.f;
-    translateMat.at<float>(1, 2) = transTrf->ty;
+    translateMat.at<float>(1, 2) = static_cast<float>(transTrf->ty);
     if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, translateMat, in.size(), cv::INTER_LINEAR);
     else
@@ -225,13 +225,13 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
   } else if (type == tl::transform_type::rotation) {
     Rotation<Point_t> *rotTrf = dynamic_cast<Rotation<Point_t> *>(trf);
     cv::Mat rotMat(2, 3, CV_32FC1);
-    double r1 = cos(rotTrf->getAngle());
-    double r2 = sin(rotTrf->getAngle());
-    rotMat.at<float>(0, 0) = r1;
-    rotMat.at<float>(0, 1) = r2;
+    double r1 = cos(rotTrf->angle());
+    double r2 = sin(rotTrf->angle());
+    rotMat.at<float>(0, 0) = static_cast<float>(r1);
+    rotMat.at<float>(0, 1) = static_cast<float>(r2);
     rotMat.at<float>(0, 2) = 0.f;
-    rotMat.at<float>(1, 0) = r2;
-    rotMat.at<float>(1, 1) = r1;
+    rotMat.at<float>(1, 0) = static_cast<float>(r2);
+    rotMat.at<float>(1, 1) = static_cast<float>(r1);
     rotMat.at<float>(1, 2) = 0.f;
     if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, rotMat, in.size(), cv::INTER_LINEAR);
@@ -240,16 +240,16 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
   } else if (type == tl::transform_type::helmert_2d) {
     Helmert2D<Point_t> *h2dTrf = dynamic_cast<Helmert2D<Point_t> *>(trf);
     cv::Mat h2DMat(2, 3, CV_32FC1);
-    double rotation = h2dTrf->getRotation();
-    double scale = h2dTrf->getScale();
+    double rotation = h2dTrf->rotation();
+    double scale = h2dTrf->scale();
     double a = scale * cos(rotation);
     double b = scale * sin(rotation);
-    h2DMat.at<float>(0, 0) = a;
-    h2DMat.at<float>(0, 1) = b;
-    h2DMat.at<float>(0, 2) = h2dTrf->tx;
-    h2DMat.at<float>(1, 0) = b;
-    h2DMat.at<float>(1, 1) = a;
-    h2DMat.at<float>(1, 2) = h2dTrf->ty;
+    h2DMat.at<float>(0, 0) = static_cast<float>(a);
+    h2DMat.at<float>(0, 1) = static_cast<float>(b);
+    h2DMat.at<float>(0, 2) = static_cast<float>(h2dTrf->tx);
+    h2DMat.at<float>(1, 0) = static_cast<float>(b);
+    h2DMat.at<float>(1, 1) = static_cast<float>(a);
+    h2DMat.at<float>(1, 2) = static_cast<float>(h2dTrf->ty);
     if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, h2DMat, in.size(), cv::INTER_LINEAR);
     else
@@ -257,14 +257,14 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
   } else if (type == tl::transform_type::affine) {
     Affine<Point_t> *affineTrf = dynamic_cast<Affine<Point_t> *>(trf);
     double r00, r10, r01, r11;
-    affineTrf->getParameters(&r00, &r10, &r01, &r11);
+    affineTrf->parameters(&r00, &r10, &r01, &r11, nullptr, nullptr);
     cv::Mat affMat(2, 3, CV_32FC1);
-    affMat.at<float>(0, 0) = r00;
-    affMat.at<float>(0, 1) = r10;
-    affMat.at<float>(0, 2) = affineTrf->tx;
-    affMat.at<float>(1, 0) = r01;
-    affMat.at<float>(1, 1) = r11;
-    affMat.at<float>(1, 2) = affineTrf->ty;
+    affMat.at<float>(0, 0) = static_cast<float>(r00);
+    affMat.at<float>(0, 1) = static_cast<float>(r10);
+    affMat.at<float>(0, 2) = static_cast<float>(affineTrf->tx);
+    affMat.at<float>(1, 0) = static_cast<float>(r01);
+    affMat.at<float>(1, 1) = static_cast<float>(r11);
+    affMat.at<float>(1, 2) = static_cast<float>(affineTrf->ty);
     if (trfOrder == transform_order::direct)
       cv::warpAffine(in, out, affMat, in.size(), cv::INTER_LINEAR);
     else

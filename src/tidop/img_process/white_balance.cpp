@@ -66,12 +66,12 @@ ImgProcessing::Status WhitePatch::execute(const cv::Mat &matIn, cv::Mat *matOut)
     matOut->create( matIn.size(), CV_8UC3);
     //cv::Mat wp = *matOut;
 
-    parallel_for(0, static_cast<size_t>(matIn.rows), [&](int r) {
-      const uchar *rgb_ptr = matIn.ptr<uchar>(r);
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(matIn.rows), [&](size_t r) {
+      const uchar *rgb_ptr = matIn.ptr<uchar>(static_cast<int>(r));
       for (int c = 0; c < matIn.cols; c++) {
-        matOut->at<cv::Vec3b>(r,c)[0] = static_cast<uchar>(rgb_ptr[3*c] * sr);
-        matOut->at<cv::Vec3b>(r,c)[1] = static_cast<uchar>(rgb_ptr[3*c+1] * sg);
-        matOut->at<cv::Vec3b>(r,c)[2] = static_cast<uchar>(rgb_ptr[3*c+2] * sb);
+        matOut->at<cv::Vec3b>(static_cast<int>(r),c)[0] = static_cast<uchar>(rgb_ptr[3*c] * sr);
+        matOut->at<cv::Vec3b>(static_cast<int>(r),c)[1] = static_cast<uchar>(rgb_ptr[3*c+1] * sg);
+        matOut->at<cv::Vec3b>(static_cast<int>(r),c)[2] = static_cast<uchar>(rgb_ptr[3*c+2] * sb);
       }
     });
 

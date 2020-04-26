@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_OPERATIONS_H
-#define TL_GEOM_OPERATIONS_H
+#ifndef TL_GEOMETRY_OPERATIONS_H
+#define TL_GEOMETRY_OPERATIONS_H
 
 #include "config_tl.h"
 
@@ -759,7 +759,7 @@ void poleOfInaccessibility(const Polygon<Point_t> &polygon, Point_t *pole, doubl
 
 
 template<typename Point3_t> inline
-Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const Box<Point3_t> bounds, double xCells, double yCells, double zCells) 
+Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const BoundingBox<Point3_t> bounds, double xCells, double yCells, double zCells) 
 {
   Point3_t pia = bounds.getCenter();
   Point3_t tmp;
@@ -852,7 +852,7 @@ template<typename Point3_t> inline
 void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, double xCells = 20., double yCells = 20., double zCells = 20.) 
 {
   if (pole == NULL) return;
-  Box<Point3_t> box = polygon.getBox();
+  BoundingBox<Point3_t> bounding_box = polygon.getBox();
 
 	Point3_t point_tmp;
 
@@ -860,7 +860,7 @@ void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, d
 	while (count++) {
 
 		/*if (method == METHOD_SEQUENTIAL) {*/
-			point_tmp =	findInscribedCircleSequential(polygon, box, xCells, yCells, zCells);
+			point_tmp =	findInscribedCircleSequential(polygon, bounding_box, xCells, yCells, zCells);
 		/*} else if (method == METHOD_RANDOMIZED) {
 			point_tmp = findInscribedCircleRandomized(polygon, w);
 		}*/
@@ -870,14 +870,14 @@ void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, d
     pole->z = point_tmp.z;
 
     Point3_t aux;
-    aux.x = (box.pt2.x - box.pt1.x) / (sqrt(2.) * 2.);
-		aux.y = (box.pt2.y - box.pt1.y) / (sqrt(2.) * 2.);
-    aux.z = (box.pt2.z - box.pt1.z) / (sqrt(2.) * 2.);
+    aux.x = (bounding_box.pt2.x - bounding_box.pt1.x) / (sqrt(2.) * 2.);
+		aux.y = (bounding_box.pt2.y - bounding_box.pt1.y) / (sqrt(2.) * 2.);
+    aux.z = (bounding_box.pt2.z - bounding_box.pt1.z) / (sqrt(2.) * 2.);
 
-    box.pt1 = *pole - aux;
-    box.pt2 = *pole + aux;
+    bounding_box.pt1 = *pole - aux;
+    bounding_box.pt2 = *pole + aux;
 
-		if (box.pt2.x - box.pt1.x < 0.01 || box.pt2.y - box.pt1.y < 0.01 || box.pt2.z - box.pt1.z < 0.01 ) break;
+		if (bounding_box.pt2.x - bounding_box.pt1.x < 0.01 || bounding_box.pt2.y - bounding_box.pt1.y < 0.01 || bounding_box.pt2.z - bounding_box.pt1.z < 0.01 ) break;
 
 	}
 }
@@ -1474,16 +1474,16 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 
   T it = in_first;
   
-  std::array<Point_t, 2> box;
-  box[0].x = box[0].y = box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
-  box[1].x = box[1].y = box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
+  std::array<Point_t, 2> bounding_box;
+  bounding_box[0].x = bounding_box[0].y = bounding_box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
+  bounding_box[1].x = bounding_box[1].y = bounding_box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
   while (it != in_last) {
-    if (box[0].x > it->x) box[0].x = it->x;
-    if (box[0].y > it->y) box[0].y = it->y;
-    if (box[0].z > it->z) box[0].z = it->z;
-    if (box[1].x < it->x) box[1].x = it->x;
-    if (box[1].y < it->y) box[1].y = it->y;
-    if (box[1].z < it->z) box[1].z = it->z;
+    if (bounding_box[0].x > it->x) bounding_box[0].x = it->x;
+    if (bounding_box[0].y > it->y) bounding_box[0].y = it->y;
+    if (bounding_box[0].z > it->z) bounding_box[0].z = it->z;
+    if (bounding_box[1].x < it->x) bounding_box[1].x = it->x;
+    if (bounding_box[1].y < it->y) bounding_box[1].y = it->y;
+    if (bounding_box[1].z < it->z) bounding_box[1].z = it->z;
     *it++;
   }
  
@@ -1514,7 +1514,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
   }
 
   // Punto central
-  Point_t pc((box[0].x + box[1].x) / 2., (box[0].y + box[1].y) / 2., (box[0].z + box[1].z) / 2.);
+  Point_t pc((bounding_box[0].x + bounding_box[1].x) / 2., (bounding_box[0].y + bounding_box[1].y) / 2., (bounding_box[0].z + bounding_box[1].z) / 2.);
 
   // Plano horizontal (1,1,0)
   std::array<double, 4> plane_z;
@@ -1734,4 +1734,4 @@ TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 } // End namespace TL
 
-#endif // TL_GEOM_OPERATIONS_H
+#endif // TL_GEOMETRY_OPERATIONS_H

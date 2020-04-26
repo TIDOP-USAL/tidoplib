@@ -45,10 +45,10 @@ unsigned long Process::sProcessCount = 0;
 
 Process::Process(Process *parent)
   : mStatus(Status::start),
-    mParent(parent),
-    mListeners(0),
-    mProcessId(0),
-    mProcessName("")
+  mParent(parent),
+  mListeners(0),
+  mProcessId(0),
+  mProcessName("")
 {
   if (mParent == nullptr) {
     mProcessId = ++sProcessCount;
@@ -86,7 +86,7 @@ void Process::pause()
 void Process::reset()
 {
   TL_TODO("Si esta arrancado el proceso se tiene que detener antes")
-  mStatus = Status::start; 
+  mStatus = Status::start;
 }
 
 void Process::resume()
@@ -193,6 +193,245 @@ void Process::errorTriggered()
     }
   }
 }
+
+
+/* ---------------------------------------------------------------------------------- */
+
+
+#ifdef WIN32
+DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
+#endif
+
+CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess)
+  : Process(parentProcess),
+  mCmd(cmd)
+{
+#ifdef WIN32
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  ZeroMemory(&pi, sizeof(pi));
+#endif
+}
+
+CmdProcess::~CmdProcess()
+{
+#ifdef WIN32
+  // Se cierran procesos e hilos 
+  CloseHandle(pi.hProcess);
+  CloseHandle(pi.hThread);
+#endif
+}
+
+TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+Process::Status CmdProcess::run(Progress *progressBar)
+{
+  Process::run();
+  return this->execute(progressBar);
+}
+
+Process::Status CmdProcess::execute(Progress *progressBar)
+{
+
+#ifdef WIN32
+  size_t len = strlen(mCmd.c_str());
+  std::wstring wCmdLine(len, L'#');
+  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+  //size_t outSize;
+  //mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
+
+  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
+    cmdLine,                      // Command line
+    NULL,                         // Process handle not inheritable
+    NULL,                         // Thread handle not inheritable
+    FALSE,                        // Set handle inheritance to FALSE
+    CREATE_NO_WINDOW | sPriority, // Flags de creación
+    NULL,                         // Use parent's environment block
+    NULL,                         // Use parent's starting directory 
+    &si,                          // Pointer to STARTUPINFO structure
+    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
+
+    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+    return Process::Status::error;
+  }
+
+  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
+  if (ret == WAIT_FAILED) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::error;
+  } else if (ret == WAIT_OBJECT_0) {
+    msgInfo("Command executed: %s", mCmd.c_str());
+    //return Process::Status::FINALIZED;
+  } else if (ret == WAIT_ABANDONED) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::error;
+  } else if (ret == WAIT_TIMEOUT) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::error;
+  } /*else {
+    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+    return Process::Status::FINALIZED;
+  }*/
+  DWORD exitCode;
+  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+    return Process::Status::error;
+  }
+  return Process::Status::finalized;
+#else
+  pid_t pid;
+  char *cmd = nullptr;
+  strcpy(cmd, mCmd.c_str());
+  char *argv[] = {"sh", "-c", cmd, nullptr};
+  int status;
+  //printf("Run command: %s\n", cmd);
+  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
+  if (status == 0) {
+      //printf("Child pid: %i\n", pid);
+      if (waitpid(pid, &status, 0) != -1) {
+          //printf("Child exited with status %i\n", status);
+        return Process::Status::finalized;
+      } else {
+        return Process::Status::error;
+      }
+  } else {
+      printf("posix_spawn: %s\n", strerror(status));
+      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
+      return Process::Status::error;
+  }
+//  int posix_spawn(pid_t *pid, const char *path,
+//                  const posix_spawn_file_actions_t *file_actions,
+//                  const posix_spawnattr_t *attrp,
+//                  char *const argv[], char *const envp[]);
+  /// Para escribir en un log la salida
+  /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+
+#endif
+}
+//Process::Status CmdProcess::run(Progress *progressBar)
+//{
+//  Process::run();
+//
+//#ifdef WIN32
+//  size_t len = strlen(mCmd.c_str());
+//  std::wstring wCmdLine(len, L'#');
+//  //mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+//  size_t outSize;
+//  mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
+//
+//  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+//  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
+//    cmdLine,                      // Command line
+//    NULL,                         // Process handle not inheritable
+//    NULL,                         // Thread handle not inheritable
+//    FALSE,                        // Set handle inheritance to FALSE
+//    CREATE_NO_WINDOW | sPriority, // Flags de creación
+//    NULL,                         // Use parent's environment block
+//    NULL,                         // Use parent's starting directory 
+//    &si,                          // Pointer to STARTUPINFO structure
+//    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
+//
+//    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+//    return Process::Status::error;
+//  }
+//
+//  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
+//  if (ret == WAIT_FAILED) {
+//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+//    return Process::Status::error;
+//  } else if (ret == WAIT_OBJECT_0) {
+//    msgInfo("Command executed: %s", mCmd.c_str());
+//    //return Process::Status::FINALIZED;
+//  } else if (ret == WAIT_ABANDONED) {
+//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+//    return Process::Status::error;
+//  } else if (ret == WAIT_TIMEOUT) {
+//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+//    return Process::Status::error;
+//  } /*else {
+//    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+//    return Process::Status::FINALIZED;
+//  }*/
+//  DWORD exitCode;
+//  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
+//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+//    return Process::Status::error;
+//  }
+//  return Process::Status::finalized;
+//#else
+//  pid_t pid;
+//  char *cmd = nullptr;
+//  strcpy(cmd, mCmd.c_str());
+//  char *argv[] = {"sh", "-c", cmd, nullptr};
+//  int status;
+//  //printf("Run command: %s\n", cmd);
+//  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
+//  if (status == 0) {
+//      //printf("Child pid: %i\n", pid);
+//      if (waitpid(pid, &status, 0) != -1) {
+//          //printf("Child exited with status %i\n", status);
+//        return Process::Status::finalized;
+//      } else {
+//        return Process::Status::error;
+//      }
+//  } else {
+//      printf("posix_spawn: %s\n", strerror(status));
+//      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
+//      return Process::Status::error;
+//  }
+////  int posix_spawn(pid_t *pid, const char *path,
+////                  const posix_spawn_file_actions_t *file_actions,
+////                  const posix_spawnattr_t *attrp,
+////                  char *const argv[], char *const envp[]);
+//  /// Para escribir en un log la salida
+//  /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+//
+//#endif
+//}
+TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+
+void CmdProcess::setPriority(int priority)
+{
+#ifdef WIN32
+  if (priority == 0) {
+    sPriority = REALTIME_PRIORITY_CLASS;
+  } else if (priority == 1) {
+    sPriority = HIGH_PRIORITY_CLASS;
+  } else if (priority == 2) {
+    sPriority = ABOVE_NORMAL_PRIORITY_CLASS;
+  } else if (priority == 3) {
+    sPriority = NORMAL_PRIORITY_CLASS;
+  } else if (priority == 4) {
+    sPriority = BELOW_NORMAL_PRIORITY_CLASS;
+  } else if (priority == 5) {
+    sPriority = IDLE_PRIORITY_CLASS;
+  }
+#endif
+}
+
+#ifdef WIN32
+std::string CmdProcess::formatErrorMsg(DWORD errorCode)
+{
+  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
+    | FORMAT_MESSAGE_IGNORE_INSERTS
+    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
+  
+  TCHAR errorMessage[1024] = TEXT("");
+
+  FormatMessage(flags,
+                NULL,
+                errorCode,
+                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                errorMessage,
+                sizeof(errorMessage)/sizeof(TCHAR),
+                NULL);
+
+  //std::string strError = CW2A(errorMessage);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::string strError = converter.to_bytes(errorMessage);
+  return strError;
+}
+#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -639,160 +878,6 @@ std::string Process::getProcessName() const
 }
 
 #endif // TL_ENABLE_DEPRECATED_METHODS
-
-
-/* ---------------------------------------------------------------------------------- */
-
-#ifdef WIN32
-DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
-#endif
-
-CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess) 
-  : Process(parentProcess),
-    mCmd(cmd)
-{
-#ifdef WIN32
-  ZeroMemory(&si, sizeof(si));
-  si.cb = sizeof(si);
-  ZeroMemory(&pi, sizeof(pi));
-#endif
-}
-
-CmdProcess::~CmdProcess()
-{
-#ifdef WIN32
-  // Se cierran procesos e hilos 
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-#endif
-}
-
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-Process::Status CmdProcess::run(Progress *progressBar)
-{
-  Process::run();
-
-#ifdef WIN32
-  size_t len = strlen(mCmd.c_str());
-  std::wstring wCmdLine(len, L'#');
-  //mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-  size_t outSize;
-  mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
-
-  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-    cmdLine,                      // Command line
-    NULL,                         // Process handle not inheritable
-    NULL,                         // Thread handle not inheritable
-    FALSE,                        // Set handle inheritance to FALSE
-    CREATE_NO_WINDOW | sPriority, // Flags de creación
-    NULL,                         // Use parent's environment block
-    NULL,                         // Use parent's starting directory 
-    &si,                          // Pointer to STARTUPINFO structure
-    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
-
-    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-    return Process::Status::error;
-  }
-
-  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
-  if (ret == WAIT_FAILED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::error;
-  } else if (ret == WAIT_OBJECT_0) {
-    msgInfo("Command executed: %s", mCmd.c_str());
-    //return Process::Status::FINALIZED;
-  } else if (ret == WAIT_ABANDONED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::error;
-  } else if (ret == WAIT_TIMEOUT) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::error;
-  } /*else {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-    return Process::Status::FINALIZED;
-  }*/
-  DWORD exitCode;
-  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::error;
-  }
-  return Process::Status::finalized;
-#else
-  pid_t pid;
-  char *cmd = nullptr;
-  strcpy(cmd, mCmd.c_str());
-  char *argv[] = {"sh", "-c", cmd, nullptr};
-  int status;
-  //printf("Run command: %s\n", cmd);
-  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
-  if (status == 0) {
-      //printf("Child pid: %i\n", pid);
-      if (waitpid(pid, &status, 0) != -1) {
-          //printf("Child exited with status %i\n", status);
-        return Process::Status::finalized;
-      } else {
-        return Process::Status::error;
-      }
-  } else {
-      printf("posix_spawn: %s\n", strerror(status));
-      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
-      return Process::Status::error;
-  }
-//  int posix_spawn(pid_t *pid, const char *path,
-//                  const posix_spawn_file_actions_t *file_actions,
-//                  const posix_spawnattr_t *attrp,
-//                  char *const argv[], char *const envp[]);
-  /// Para escribir en un log la salida
-  /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
-
-#endif
-}
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-
-void CmdProcess::setPriority(int priority)
-{
-#ifdef WIN32
-  if (priority == 0) {
-    sPriority = REALTIME_PRIORITY_CLASS;
-  } else if (priority == 1) {
-    sPriority = HIGH_PRIORITY_CLASS;
-  } else if (priority == 2) {
-    sPriority = ABOVE_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 3) {
-    sPriority = NORMAL_PRIORITY_CLASS;
-  } else if (priority == 4) {
-    sPriority = BELOW_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 5) {
-    sPriority = IDLE_PRIORITY_CLASS;
-  }
-#endif
-}
-
-#ifdef WIN32
-std::string CmdProcess::formatErrorMsg(DWORD errorCode)
-{
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
-    | FORMAT_MESSAGE_IGNORE_INSERTS
-    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
-  
-  TCHAR errorMessage[1024] = TEXT("");
-
-  FormatMessage(flags,
-                NULL,
-                errorCode,
-                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                errorMessage,
-                sizeof(errorMessage)/sizeof(TCHAR),
-                NULL);
-
-  //std::string strError = CW2A(errorMessage);
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-  std::string strError = converter.to_bytes(errorMessage);
-  return strError;
-}
-#endif
-
 
 /* ---------------------------------------------------------------------------------- */
 //

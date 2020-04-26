@@ -146,13 +146,13 @@ int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, Ste
 
     //for (auto &_thread : threads) _thread.join();
 
-    parallel_for(0, height, [&](int r) {
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(height), [&](size_t r) {
       cv::Vec3b bgrPxL, bgrPxR;
       int imode = static_cast<int>(mode) - 1;
       for ( int c = 0; c < width; c++ ) {
-        bgrPxL = left.at<cv::Vec3b>(r, c);
-        bgrPxR = right.at<cv::Vec3b>(r, c);
-        cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(r, c);
+        bgrPxL = left.at<cv::Vec3b>(static_cast<int>(r), c);
+        bgrPxR = right.at<cv::Vec3b>(static_cast<int>(r), c);
+        cv::Vec3b &bgrSt = stimage->at<cv::Vec3b>(static_cast<int>(r), c);
         bgrSt = AnaglyphMatrix[imode].imgRight*bgrPxR + AnaglyphMatrix[imode].imgLeft*bgrPxL;
       }
     });

@@ -5,7 +5,6 @@ add_library(tl_geom ${LIB_TYPE}
             operations.h
             transform.h
             entities/bbox.h
-            entities/curves.h
             entities/entity.h
             entities/linestring.h
             entities/point.h

@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop geospatial dtm test
+#include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/dtm.h>
 
 using namespace tl;

@@ -31,6 +31,7 @@ class RotationMatrix
 public:
   
   RotationMatrix();
+  RotationMatrix(const Matrix<3, 3, T> &rot);
   //RotationMatrix(const Quaternion<T> &quaternion);
   ~RotationMatrix() {}
 
@@ -44,6 +45,13 @@ RotationMatrix<T>::RotationMatrix()
   : Matrix<3, 3, T>()
 {
 }
+
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix(const Matrix<3, 3, T> &rot)
+  : Matrix<3, 3, T>(rot)
+{
+}
+
 
 //template<typename T> inline
 //RotationMatrix<T>::RotationMatrix(const Quaternion<T> &quaternion)

@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_TRANSFORM_H
-#define TL_GEOM_TRANSFORM_H
+#ifndef TL_GEOMETRY_TRANSFORM_H
+#define TL_GEOMETRY_TRANSFORM_H
 
 #include "config_tl.h"
 
@@ -323,7 +323,7 @@ transform_status Transform<Point_t>::transformParallel( const std::vector<Point_
 {
   formatVectorOut(ptsIn, ptsOut);
   transform_status r_status;
-  parallel_for(0, static_cast<int>(ptsIn.size()), [&](int i) {
+  parallel_for(0, ptsIn.size(), [&](size_t i) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
     if ( r_status == transform_status::failure ) return;
   });
@@ -4736,4 +4736,4 @@ void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transfo
 
 } // End namespace tl
 
-#endif // TL_GEOM_TRANSFORM_H
+#endif // TL_GEOMETRY_TRANSFORM_H
