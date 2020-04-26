@@ -1,6 +1,5 @@
-#include <gtest/gtest.h>
-
-#include "config_tl.h"
+#define BOOST_TEST_MODULE Tidop statistic test
+#include <boost/test/unit_test.hpp>
 
 #include <tidop/math/statistics.h>
 
@@ -9,16 +8,16 @@
 
 using namespace tl::math;
 
-class StatisticsTest
-  : public testing::Test
+
+BOOST_AUTO_TEST_SUITE(StatisticsTestSuite)
+
+struct StatisticsTest
 {
-public:
 
   StatisticsTest() {}
+  ~StatisticsTest() {}
 
-protected:
-
-  virtual void SetUp() override
+  void setup()
   {
     vd.push_back(8.0);
     vd.push_back(8.5);
@@ -51,7 +50,7 @@ protected:
     y = { 92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
   }
 
-  virtual void TearDown() override
+  void teardown()
   {
 
   }
@@ -68,65 +67,66 @@ protected:
   std::list<double> y;
 };
 
-TEST_F(StatisticsTest, mean)
+BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
 {
-  EXPECT_NEAR(7.695, mean(vd.begin(), vd.end()), 0.01);
-  EXPECT_NEAR(7.695, mean(vd), 0.01);
+  BOOST_CHECK_CLOSE(7.695, tl::math::mean(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(7.695, tl::math::mean(vd), 0.1);
 
-  EXPECT_NEAR(1.142857143, mean(vi.begin(), vi.end()), 0.001);
-  EXPECT_NEAR(1.142857143, mean(vi), 0.001);
+  BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi.begin(), vi.end()), 0.1);
+  BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi), 0.1);
 }
 
-TEST_F(StatisticsTest, median)
+BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)
 {
-  EXPECT_NEAR(8, median(vd.begin(), vd.end()), 0.01);
-  EXPECT_NEAR(8, median(vd), 0.01);
-  EXPECT_NEAR(4.5, median(l.begin(), l.end()), 0.01);
-  EXPECT_NEAR(4.5, median(l), 0.01);
+  BOOST_CHECK_CLOSE(8, tl::math::median(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(8, tl::math::median(vd), 0.01);
+  BOOST_CHECK_CLOSE(4.5, tl::math::median(l.begin(), l.end()), 0.1);
+  BOOST_CHECK_CLOSE(4.5, tl::math::median(l), 0.01);
 }
 
-TEST_F(StatisticsTest, mode)
+BOOST_FIXTURE_TEST_CASE(mode, StatisticsTest)
 {
-  EXPECT_EQ(1, mode(vi.begin(), vi.end()));
-  EXPECT_EQ(1, mode(vi));
+  BOOST_CHECK_EQUAL(1, tl::math::mode(vi.begin(), vi.end()));
+  BOOST_CHECK_EQUAL(1, tl::math::mode(vi));
   /// TODO: si hay mas de un valor mas repetido???
 }
 
-TEST_F(StatisticsTest, range)
+BOOST_FIXTURE_TEST_CASE(range, StatisticsTest)
 {
-  EXPECT_NEAR(3.5, range(vd.begin(), vd.end()), 0.01);
-  EXPECT_NEAR(3.5, range(vd), 0.01);
+  BOOST_CHECK_CLOSE(3.5, tl::math::range(vd.begin(), vd.end()), 0.1);
+  BOOST_CHECK_CLOSE(3.5, tl::math::range(vd), 0.01);
 }
 
-TEST_F(StatisticsTest, variance)
+BOOST_FIXTURE_TEST_CASE(variance, StatisticsTest)
 {
-  EXPECT_NEAR(33.2, variance(vi2.begin(), vi2.end()), 0.01);
-  EXPECT_NEAR(33.2, variance(vi2), 0.01);
+  BOOST_CHECK_CLOSE(33.2, tl::math::variance(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(33.2, tl::math::variance(vi2), 0.1);
 }
 
-TEST_F(StatisticsTest, standarDeviation)
+BOOST_FIXTURE_TEST_CASE(standarDeviation, StatisticsTest)
 {
-  EXPECT_NEAR(5.76, standarDeviation(vi2.begin(), vi2.end()), 0.01);
-  EXPECT_NEAR(5.76, standarDeviation(vi2), 0.01);
+  BOOST_CHECK_CLOSE(5.76, tl::math::standarDeviation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(5.76, tl::math::standarDeviation(vi2), 0.1);
 }
 
-TEST_F(StatisticsTest, coefficientOfVariation)
+BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, StatisticsTest)
 {
-  EXPECT_NEAR(0.411, coefficientOfVariation(vi2.begin(), vi2.end()), 0.001);
-  EXPECT_NEAR(0.411, coefficientOfVariation(vi2), 0.001);
+  BOOST_CHECK_CLOSE(0.411567, tl::math::coefficientOfVariation(vi2.begin(), vi2.end()), 0.1);
+  BOOST_CHECK_CLOSE(0.411567, tl::math::coefficientOfVariation(vi2), 0.1);
 }
 
-TEST_F(StatisticsTest, covariance)
+BOOST_FIXTURE_TEST_CASE(covariance, StatisticsTest)
 {
-  EXPECT_NEAR(-33.06, covariance(x.begin(), x.end(), y.begin(), y.end()), 0.01);
-  EXPECT_NEAR(-33.06, covariance(x, y), 0.01);
+  BOOST_CHECK_CLOSE(-33.06, tl::math::covariance(x.begin(), x.end(), y.begin(), y.end()), 0.1);
+  BOOST_CHECK_CLOSE(-33.06, tl::math::covariance(x, y), 0.1);
 }
 
 //Pearson correlation coefficient
 
-TEST_F(StatisticsTest, pearsonCorrelationCoefficient)
+BOOST_FIXTURE_TEST_CASE(pearsonCorrelationCoefficient, StatisticsTest)
 {
-  EXPECT_NEAR(-0.85, pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.01);
-  EXPECT_NEAR(-0.85, pearsonCorrelationCoefficient(x, y), 0.01);
+  BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.1);
+  BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x, y), 0.1);
 }
 
+BOOST_AUTO_TEST_SUITE_END()

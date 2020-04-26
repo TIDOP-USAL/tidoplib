@@ -1,23 +1,19 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop graphic styles test
+#include <boost/test/unit_test.hpp>
 #include <tidop/graphic/styles.h>
 
 
 using namespace tl;
 using namespace graph;
 
-class StylePenTest
-  : public testing::Test
+struct StylePenTest
 {
-public:
-
-protected:
-
-  virtual void SetUp() override
+  StylePenTest()
   {
     style = new graph::StylePen;
   }
-
-  virtual void TearDown() override
+    
+  ~StylePenTest()
   {
     if (style) {
       delete style;
@@ -25,88 +21,99 @@ protected:
     }
   }
 
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
   graph::StylePen def_style;
   graph::StylePen *style;
 };
 
-TEST_F(StylePenTest, DefaultConstructor)
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, StylePenTest)
 {
   graph::Color color;
-  EXPECT_TRUE(color == def_style.color());
-  EXPECT_EQ(1, def_style.width());
-  EXPECT_STREQ("", def_style.pattern().c_str());
-  EXPECT_EQ(StylePen::Name::solid, def_style.name());
-  EXPECT_EQ(StylePen::Cap::butt, def_style.cap());
-  EXPECT_EQ(StylePen::Join::bevel, def_style.join());
-  EXPECT_EQ(0, def_style.perpendicularOffset());
-  EXPECT_EQ(0, def_style.priorityLevel());
+  BOOST_CHECK(color == def_style.color());
+  BOOST_CHECK_EQUAL(1, def_style.width());
+  BOOST_CHECK_EQUAL("", def_style.pattern());
+  BOOST_CHECK(StylePen::Name::solid == def_style.name());
+  BOOST_CHECK(StylePen::Cap::butt == def_style.cap());
+  BOOST_CHECK(StylePen::Join::bevel == def_style.join());
+  BOOST_CHECK_EQUAL(0, def_style.perpendicularOffset());
+  BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
 
-TEST_F(StylePenTest, setColor)
+BOOST_FIXTURE_TEST_CASE(setColor, StylePenTest)
 {
   graph::Color color(graph::Color::Name::beige);
   style->setColor(color);
-  EXPECT_TRUE(color == style->color());
+  BOOST_CHECK(color == style->color());
 }
 
-TEST_F(StylePenTest, setWidth)
+BOOST_FIXTURE_TEST_CASE(setWidth, StylePenTest)
 {
   style->setWidth(5);
-  EXPECT_EQ(5, style->width());
+  BOOST_CHECK_EQUAL(5, style->width());
 }
 
-TEST_F(StylePenTest, setPattern)
+BOOST_FIXTURE_TEST_CASE(setPattern, StylePenTest)
 {
   style->setPattern("4px 5px");
-  EXPECT_STREQ("4px 5px", style->pattern().c_str());
+  BOOST_CHECK_EQUAL("4px 5px", style->pattern());
 }
 
-TEST_F(StylePenTest, setName)
+BOOST_FIXTURE_TEST_CASE(setName, StylePenTest)
 {
   style->setName(StylePen::Name::dash_dot_line);
-  EXPECT_EQ(StylePen::Name::dash_dot_line, style->name());
+  BOOST_CHECK(StylePen::Name::dash_dot_line == style->name());
 }
 
-TEST_F(StylePenTest, setCap)
+BOOST_FIXTURE_TEST_CASE(setCap, StylePenTest)
 {
   style->setCap(StylePen::Cap::projective);
-  EXPECT_EQ(StylePen::Cap::projective, style->cap());
+  BOOST_CHECK(StylePen::Cap::projective == style->cap());
 }
 
-TEST_F(StylePenTest, setJoin)
+BOOST_FIXTURE_TEST_CASE(setJoin, StylePenTest)
 {
   style->setJoin(StylePen::Join::rounded);
-  EXPECT_EQ(StylePen::Join::rounded, style->join());
+  BOOST_CHECK(StylePen::Join::rounded == style->join());
 }
 
-TEST_F(StylePenTest, setPerpendicularOffset)
+BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StylePenTest)
 {
   style->setPerpendicularOffset(25);
-  EXPECT_EQ(25, style->perpendicularOffset());
+  BOOST_CHECK_EQUAL(25, style->perpendicularOffset());
 }
 
-TEST_F(StylePenTest, setPriorityLevel)
+BOOST_FIXTURE_TEST_CASE(setPriorityLevel, StylePenTest)
 {
   style->setPriorityLevel(15);
-  EXPECT_EQ(15, style->priorityLevel());
+  BOOST_CHECK_EQUAL(15, style->priorityLevel());
 }
 
 
 
+BOOST_AUTO_TEST_SUITE(StyleBrushTestSuite)
 
-
-class StyleBrushTest
-  : public testing::Test
+struct StyleBrushTest
 {
-public:
+  StyleBrushTest()
+  {}
 
-protected:
-
-  virtual void SetUp() override
+  ~StyleBrushTest()
+  {
+  }
+  
+  void setup()
   {
   }
 
-  virtual void TearDown() override
+  void teardown()
   {
   }
 
@@ -114,83 +121,87 @@ protected:
 };
 
 
-TEST_F(StyleBrushTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
 {
   graph::Color color;
-  EXPECT_TRUE(color == def_style.foreColor());
-  EXPECT_TRUE(color == def_style.backColor());
-  EXPECT_EQ(StyleBrush::Name::solid, def_style.brushName());
-  EXPECT_EQ(0., def_style.angle());
-  EXPECT_EQ(1., def_style.scalingFactor());
-  EXPECT_EQ(0., def_style.spacingX());
-  EXPECT_EQ(0., def_style.spacingY());
-  EXPECT_EQ(0, def_style.priorityLevel());
+  BOOST_CHECK(color == def_style.foreColor());
+  BOOST_CHECK(color == def_style.backColor());
+  BOOST_CHECK(StyleBrush::Name::solid == def_style.brushName());
+  BOOST_CHECK_EQUAL(0., def_style.angle());
+  BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
+  BOOST_CHECK_EQUAL(0., def_style.spacingX());
+  BOOST_CHECK_EQUAL(0., def_style.spacingY());
+  BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
 
-TEST_F(StyleBrushTest, setForeColor)
+BOOST_FIXTURE_TEST_CASE(setForeColor, StyleBrushTest)
 {
   graph::Color color(graph::Color::Name::indigo);
   def_style.setForeColor(color);
-  EXPECT_TRUE(color == def_style.foreColor());
+  BOOST_CHECK(color == def_style.foreColor());
 }
 
-TEST_F(StyleBrushTest, setBackColor)
+BOOST_FIXTURE_TEST_CASE(setBackColor, StyleBrushTest)
 {
   graph::Color color(graph::Color::Name::indigo);
   def_style.setBackColor(color);
-  EXPECT_TRUE(color == def_style.backColor());
+  BOOST_CHECK(color == def_style.backColor());
 }
 
-TEST_F(StyleBrushTest, setBrushName)
+BOOST_FIXTURE_TEST_CASE(setBrushName, StyleBrushTest)
 {
   def_style.setBrushName(StyleBrush::Name::null);
-  EXPECT_EQ(StyleBrush::Name::null, def_style.brushName());
+  BOOST_CHECK(StyleBrush::Name::null == def_style.brushName());
 }
 
-TEST_F(StyleBrushTest, setAngle)
+BOOST_FIXTURE_TEST_CASE(setAngle, StyleBrushTest)
 {
   def_style.setAngle(.45);
-  EXPECT_EQ(0.45, def_style.angle());
+  BOOST_CHECK_EQUAL(0.45, def_style.angle());
 }
 
-TEST_F(StyleBrushTest, setScalingFactor)
+BOOST_FIXTURE_TEST_CASE(setScalingFactor, StyleBrushTest)
 {
   def_style.setScalingFactor(2.);
-  EXPECT_EQ(2., def_style.scalingFactor());
+  BOOST_CHECK_EQUAL(2., def_style.scalingFactor());
 }
 
-TEST_F(StyleBrushTest, setSpacing)
+BOOST_FIXTURE_TEST_CASE(setSpacing, StyleBrushTest)
 {
   def_style.setSpacing(2., 5.);
-  EXPECT_EQ(2., def_style.spacingX());
-  EXPECT_EQ(5., def_style.spacingY());
+  BOOST_CHECK_EQUAL(2., def_style.spacingX());
+  BOOST_CHECK_EQUAL(5., def_style.spacingY());
 }
 
+BOOST_AUTO_TEST_SUITE_END()
 
 
 
+BOOST_AUTO_TEST_SUITE(StyleSymbolTestSuite)
 
 
-
-
-class StyleSymbolTest
-  : public testing::Test
+struct StyleSymbolTest
 {
-public:
+  StyleSymbolTest()
+    : style(new StyleSymbol)
+  {}
 
-protected:
-
-  virtual void SetUp() override
-  {
-    style = new StyleSymbol;
-  }
-
-  virtual void TearDown() override
+  ~StyleSymbolTest()
   {
     if (style) {
       delete style;
       style = nullptr;
     }
+  }
+
+  void setup()
+  {
+    
+  }
+
+  void teardown()
+  {
+
   }
 
   StyleSymbol def_style;
@@ -198,73 +209,70 @@ protected:
 };
 
 
-TEST_F(StyleSymbolTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, StyleSymbolTest)
 {
-  EXPECT_EQ(0., def_style.angle());
-  EXPECT_EQ(StyleSymbol::Name::cross, def_style.name());
+  BOOST_CHECK_EQUAL(0., def_style.angle());
+  BOOST_CHECK(StyleSymbol::Name::cross == def_style.name());
   graph::Color color;
-  EXPECT_TRUE(color == def_style.color());
-  EXPECT_TRUE(color == def_style.outlineColor());
-  EXPECT_EQ(1., def_style.scalingFactor());
-  EXPECT_EQ(0., def_style.offsetX());
-  EXPECT_EQ(0., def_style.offsetY());
-  EXPECT_EQ(0, def_style.priorityLevel());
+  BOOST_CHECK(color == def_style.color());
+  BOOST_CHECK(color == def_style.outlineColor());
+  BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
+  BOOST_CHECK_EQUAL(0., def_style.offsetX());
+  BOOST_CHECK_EQUAL(0., def_style.offsetY());
+  BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
 
-TEST_F(StyleSymbolTest, setAngle)
+BOOST_FIXTURE_TEST_CASE(setAngle, StyleSymbolTest)
 {
   style->setAngle(0.26);
-  EXPECT_EQ(0.26, style->angle());
+  BOOST_CHECK_EQUAL(0.26, style->angle());
 }
 
-TEST_F(StyleSymbolTest, setName)
+BOOST_FIXTURE_TEST_CASE(setName, StyleSymbolTest)
 {
   style->setName(StyleSymbol::Name::circle);
-  EXPECT_EQ(StyleSymbol::Name::circle, style->name());
+  BOOST_CHECK(StyleSymbol::Name::circle == style->name());
 }
 
-TEST_F(StyleSymbolTest, setColor)
+BOOST_FIXTURE_TEST_CASE(setColor, StyleSymbolTest)
 {
   graph::Color color(graph::Color::Name::gainsboro);
   style->setColor(color);
-  EXPECT_TRUE(color == style->color());
+  BOOST_CHECK(color == style->color());
 }
 
-TEST_F(StyleSymbolTest, setOutlineColor)
+BOOST_FIXTURE_TEST_CASE(setOutlineColor, StyleSymbolTest)
 {
   graph::Color color(graph::Color::Name::dark_slate_gray);
   style->setOutlineColor(color);
-  EXPECT_TRUE(color == style->outlineColor());
+  BOOST_CHECK(color == style->outlineColor());
 }
 
-TEST_F(StyleSymbolTest, setScalingFactor)
+BOOST_FIXTURE_TEST_CASE(setScalingFactor, StyleSymbolTest)
 {
   style->setScalingFactor(2.);
-  EXPECT_EQ(2., style->scalingFactor());
+  BOOST_CHECK_EQUAL(2., style->scalingFactor());
 }
 
-TEST_F(StyleSymbolTest, setOffset)
+BOOST_FIXTURE_TEST_CASE(setOffset, StyleSymbolTest)
 {
   style->setOffset(5., 2.);
-  EXPECT_EQ(5., style->offsetX());
-  EXPECT_EQ(2., style->offsetY());
+  BOOST_CHECK_EQUAL(5., style->offsetX());
+  BOOST_CHECK_EQUAL(2., style->offsetY());
 }
 
+BOOST_AUTO_TEST_SUITE_END()
 
 
-class StyleLabelTest
-  : public testing::Test
+BOOST_AUTO_TEST_SUITE(StyleLabelTestSuite)
+
+struct StyleLabelTest
 {
-public:
+  StyleLabelTest()
+    : style(new StyleLabel)
+  {}
 
-protected:
-
-  virtual void SetUp() override
-  {
-    style = new StyleLabel;
-  }
-
-  virtual void TearDown() override
+  ~StyleLabelTest()
   {
     if (style) {
       delete style;
@@ -272,96 +280,107 @@ protected:
     }
   }
 
+  void setup()
+  {
+
+  }
+
+  void teardown()
+  {
+  }
+
   StyleLabel def_style;
   StyleLabel *style;
 };
 
 
-TEST_F(StyleLabelTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
 {
-  EXPECT_STREQ("", def_style.text().c_str());
-  EXPECT_EQ(0., def_style.angle());
+  BOOST_CHECK_EQUAL("", def_style.text());
+  BOOST_CHECK_EQUAL(0., def_style.angle());
   graph::Color color;
-  EXPECT_TRUE(color == def_style.foregroundColor());
-  EXPECT_TRUE(color == def_style.backgroundColor());
-  EXPECT_TRUE(color == def_style.outlineColor());
-  EXPECT_TRUE(color == def_style.shadowColor());
-  EXPECT_EQ(100., def_style.stretch());
-  EXPECT_EQ(StyleLabel::LabelPlacement::p, def_style.labelPlacement());
-  EXPECT_EQ(StyleLabel::AnchorPosition::vertical_baseline | StyleLabel::AnchorPosition::horizontal_left,
+  BOOST_CHECK(color == def_style.foregroundColor());
+  BOOST_CHECK(color == def_style.backgroundColor());
+  BOOST_CHECK(color == def_style.outlineColor());
+  BOOST_CHECK(color == def_style.shadowColor());
+  BOOST_CHECK_EQUAL(100., def_style.stretch());
+  BOOST_CHECK(StyleLabel::LabelPlacement::p == def_style.labelPlacement());
+  BOOST_CHECK((StyleLabel::AnchorPosition::vertical_baseline | StyleLabel::AnchorPosition::horizontal_left) ==
             def_style.anchorPosition());
-  EXPECT_EQ(0., def_style.offsetX());
-  EXPECT_EQ(0., def_style.offsetY());
-  EXPECT_EQ(0., def_style.perpendicularOffset());
+  BOOST_CHECK_EQUAL(0., def_style.offsetX());
+  BOOST_CHECK_EQUAL(0., def_style.offsetY());
+  BOOST_CHECK_EQUAL(0., def_style.perpendicularOffset());
 }
 
-TEST_F(StyleLabelTest, setText)
+BOOST_FIXTURE_TEST_CASE(setText, StyleLabelTest)
 {
   style->setText("label");
-  EXPECT_STREQ("label", style->text().c_str());
+  BOOST_CHECK_EQUAL("label", style->text());
 }
 
-TEST_F(StyleLabelTest, setAngle)
+BOOST_FIXTURE_TEST_CASE(setAngle, StyleLabelTest)
 {
   style->setAngle(25.5);
-  EXPECT_EQ(25.5, style->angle());
+  BOOST_CHECK_EQUAL(25.5, style->angle());
 }
 
-TEST_F(StyleLabelTest, setForegroundColor)
+BOOST_FIXTURE_TEST_CASE(setForegroundColor, StyleLabelTest)
 {
   graph::Color color(graph::Color::Name::fire_brick);
   style->setForegroundColor(color);
-  EXPECT_TRUE(color == style->foregroundColor());
+  BOOST_CHECK(color == style->foregroundColor());
 }
 
-TEST_F(StyleLabelTest, setBackgroundColor)
+BOOST_FIXTURE_TEST_CASE(setBackgroundColor, StyleLabelTest)
 {
   graph::Color color(graph::Color::Name::indigo);
   style->setBackgroundColor(color);
-  EXPECT_TRUE(color == style->backgroundColor());
+  BOOST_CHECK(color == style->backgroundColor());
 }
 
-TEST_F(StyleLabelTest, setOutlineColor)
+BOOST_FIXTURE_TEST_CASE(setOutlineColor, StyleLabelTest)
 {
   graph::Color color(graph::Color::Name::saddle_brown);
   style->setOutlineColor(color);
-  EXPECT_TRUE(color == style->outlineColor());
+  BOOST_CHECK(color == style->outlineColor());
 }
 
-TEST_F(StyleLabelTest, setShadowColor)
+BOOST_FIXTURE_TEST_CASE(setShadowColor, StyleLabelTest)
 {
   graph::Color color(graph::Color::Name::azure);
   style->setShadowColor(color);
-  EXPECT_TRUE(color == style->shadowColor());
+  BOOST_CHECK(color == style->shadowColor());
 }
 
-TEST_F(StyleLabelTest, setStretch)
+BOOST_FIXTURE_TEST_CASE(setStretch, StyleLabelTest)
 {
   style->setStretch(25.);
-  EXPECT_EQ(25., style->stretch());
+  BOOST_CHECK_EQUAL(25., style->stretch());
 }
 
-TEST_F(StyleLabelTest, setLabelPlacement)
+BOOST_FIXTURE_TEST_CASE(setLabelPlacement, StyleLabelTest)
 {
   style->setLabelPlacement(StyleLabel::LabelPlacement::l);
-  EXPECT_EQ(StyleLabel::LabelPlacement::l, style->labelPlacement());
+  BOOST_CHECK(StyleLabel::LabelPlacement::l == style->labelPlacement());
 }
 
-TEST_F(StyleLabelTest, setAnchorPosition)
+BOOST_FIXTURE_TEST_CASE(setAnchorPosition, StyleLabelTest)
 {
   style->setAnchorPosition(StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left);
-  EXPECT_EQ(StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left, style->anchorPosition());
+  BOOST_CHECK((StyleLabel::AnchorPosition::vertical_center | StyleLabel::AnchorPosition::horizontal_left) == style->anchorPosition());
 }
 
-TEST_F(StyleLabelTest, setOffset)
+BOOST_FIXTURE_TEST_CASE(setOffset, StyleLabelTest)
 {
   style->setOffset(5., 2.);
-  EXPECT_EQ(5., style->offsetX());
-  EXPECT_EQ(2., style->offsetY());
+  BOOST_CHECK_EQUAL(5., style->offsetX());
+  BOOST_CHECK_EQUAL(2., style->offsetY());
 }
 
-TEST_F(StyleLabelTest, setPerpendicularOffset)
+BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StyleLabelTest)
 {
   style->setPerpendicularOffset(10.);
-  EXPECT_EQ(10., style->perpendicularOffset());
+  BOOST_CHECK_EQUAL(10., style->perpendicularOffset());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

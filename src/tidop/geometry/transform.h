@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_TRANSFORM_H
-#define TL_GEOM_TRANSFORM_H
+#ifndef TL_GEOMETRY_TRANSFORM_H
+#define TL_GEOMETRY_TRANSFORM_H
 
 #include "config_tl.h"
 
@@ -4736,4 +4736,4 @@ void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transfo
 
 } // End namespace tl
 
-#endif // TL_GEOM_TRANSFORM_H
+#endif // TL_GEOMETRY_TRANSFORM_H

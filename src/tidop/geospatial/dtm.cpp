@@ -75,8 +75,8 @@ DtmNearest::~DtmNearest()
 void DtmNearest::compute()
 {
   /// Se divide la ventana en trozos mas pequeños
-  mLimits.getHeight();
-  mLimits.getWidth();
+  mLimits.height();
+  mLimits.width();
 
   /// Se crean las subventanas
   //std::vector<std::vector<TL::geometry::PointF>> mGrid;

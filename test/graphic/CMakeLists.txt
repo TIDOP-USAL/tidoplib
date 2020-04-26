@@ -1,22 +1,13 @@
 # Test
 
-if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)
+if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)
 
   project(test)
 
-  #if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
-  #  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-  #  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-  #endif()
-  
-  # ---------------------------------------------
-  #      Define executable targets
-  # ---------------------------------------------
   MACRO(DEFINE_TEST name srcs)
 
-    #include_directories(${CMAKE_BUILD_DIR})
+    include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	  include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)
@@ -24,12 +15,15 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
     
-    #target_link_libraries(${the_target} ${GTEST_BOTH_LIBRARIES})
-	target_link_libraries(${the_target} gtest_main)
     target_link_libraries(${the_target} tl_core tl_geom tl_graphic)
-	target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} )
-	target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
-	  
+	    target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    if(HAVE_GDAL)
+      target_link_libraries(${the_target} ${GDAL_LIBRARY})
+	endif(HAVE_GDAL)
+	if(HAVE_OPENCV)
+      target_link_libraries(${the_target} ${OpenCV_LIBS})
+	endif(HAVE_OPENCV)
+	
 	# Añade el proyecto de test a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/graphic")
 

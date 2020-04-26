@@ -1309,7 +1309,7 @@ private:
 #ifdef HAVE_GDAL
 
 /*!
- * \brief Clase singleton para registrar los drivers de GDAL
+ * \brief Clase para registrar los drivers de GDAL
  *
  */
 class TL_EXPORT RegisterGdal

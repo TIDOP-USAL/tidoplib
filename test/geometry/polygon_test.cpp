@@ -1,4 +1,5 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop Plygon test
+#include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/polygon.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
@@ -7,15 +8,12 @@
 using namespace tl;
 using namespace tl::geometry;
 
+BOOST_AUTO_TEST_SUITE(PolygonTestSuite)
 
-class PolygonTest
-  : public testing::Test
+
+struct PolygonTest
 {
-public:
-
-protected:
-
-  virtual void SetUp() override
+  PolygonTest()
   {
     pol_2 = new geometry::Polygon<Point<int>>{
       PointI(4157222, 664789),
@@ -25,14 +23,22 @@ protected:
       PointI(4137012, 671808),
       PointI(4146292, 666953),
       PointI(4138759, 702670) };
-
+             
     pol_3 = new geometry::PolygonD(10);
   }
-
-  virtual void TearDown() override
+  ~PolygonTest()
   {
     if (pol_2) delete pol_2, pol_2 = nullptr;
     if (pol_3) delete pol_3, pol_3 = nullptr;
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+
   }
 
   geometry::Polygon<Point<int>> pol_1;
@@ -43,307 +49,466 @@ protected:
 
 /* Constructor por defecto */
 
-TEST_F(PolygonTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, PolygonTest)
 {
 
   WindowI w = pol_1.window();
   
   /*Comprobamos si se ha creado con el contructor por defecto*/
-  EXPECT_EQ(0, pol_1.size());
-  EXPECT_EQ(TL_INT_MAX, w.pt1.x);
-  EXPECT_EQ(TL_INT_MAX, w.pt1.y);
-  EXPECT_EQ(TL_INT_MIN, w.pt2.x);
-  EXPECT_EQ(TL_INT_MIN, w.pt2.y);
-  EXPECT_EQ(0., pol_1.length());
+  BOOST_CHECK_EQUAL(0, pol_1.size());
+  BOOST_CHECK(pol_1.type() == Entity::Type::polygon2d);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+  BOOST_CHECK_EQUAL(0., pol_1.length());
+  BOOST_CHECK(false == pol_1.is3D());
 }
 
 /* Constructor reserve */
 
-TEST_F(PolygonTest, ConstructorReserve)
+BOOST_FIXTURE_TEST_CASE(constructor_reserve, PolygonTest)
 {
   WindowD w = pol_3->window();
 
-  EXPECT_EQ(10, pol_3->size());
-  EXPECT_EQ(0., w.pt1.x);
-  EXPECT_EQ(0., w.pt1.y);
-  EXPECT_EQ(0., w.pt2.x);
-  EXPECT_EQ(0., w.pt2.y);
-  EXPECT_EQ(0., pol_3->length());
+  BOOST_CHECK_EQUAL(10, pol_3->size());
+  BOOST_CHECK(pol_3->type() == Entity::Type::polygon2d);
+  BOOST_CHECK_EQUAL(0., w.pt1.x);
+  BOOST_CHECK_EQUAL(0., w.pt1.y);
+  BOOST_CHECK_EQUAL(0., w.pt2.x);
+  BOOST_CHECK_EQUAL(0., w.pt2.y);
+  BOOST_CHECK_EQUAL(0., pol_3->length());
 }
 
 /*Constructor de copia*/
 
-TEST_F(PolygonTest, CopyConstructor)
+BOOST_FIXTURE_TEST_CASE(copy_constructor, PolygonTest)
 {
   PolygonD pol_c(*pol_3);
-  EXPECT_EQ(10, pol_c.size());
-
+  BOOST_CHECK_EQUAL(10, pol_c.size());
+  BOOST_CHECK(pol_c.type() == Entity::Type::polygon2d);
   auto w = pol_c.window();
-  EXPECT_EQ(0., w.pt1.x);
-  EXPECT_EQ(0., w.pt1.y);
-  EXPECT_EQ(0., w.pt2.x);
-  EXPECT_EQ(0., w.pt2.y);
+  BOOST_CHECK_EQUAL(0., w.pt1.x);
+  BOOST_CHECK_EQUAL(0., w.pt1.y);
+  BOOST_CHECK_EQUAL(0., w.pt2.x);
+  BOOST_CHECK_EQUAL(0., w.pt2.y);
 
-  EXPECT_EQ(0., pol_c.length());
+  BOOST_CHECK_EQUAL(0., pol_c.length());
 
 }
 
 
 /* Constructor lista de inicializadores */
 
-TEST_F(PolygonTest, ConstructorList)
+BOOST_FIXTURE_TEST_CASE(constructor_list, PolygonTest)
 {
-  EXPECT_EQ(7, pol_2->size());
-
+  BOOST_CHECK_EQUAL(7, pol_2->size());
+  BOOST_CHECK(pol_2->type() == Entity::Type::polygon2d);
   WindowI w = pol_2->window();
 
-  EXPECT_EQ(4137012, w.pt1.x);
-  EXPECT_EQ(642997, w.pt1.y);
-  EXPECT_EQ(4177148, w.pt2.x);
-  EXPECT_EQ(702670, w.pt2.y);
+  BOOST_CHECK_EQUAL(4137012, w.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w.pt2.y);
 
-  EXPECT_NEAR(193131.62, pol_2->length(), 0.01);
+  BOOST_CHECK_CLOSE(193131.62, pol_2->length(), 0.01);
 }
 
-TEST_F(PolygonTest, type)
+BOOST_FIXTURE_TEST_CASE(type, PolygonTest)
 {
-  EXPECT_TRUE(pol_1.type() == Entity::Type::polygon2d);
-  EXPECT_TRUE(pol_2->type() == Entity::Type::polygon2d);
-  EXPECT_TRUE(pol_3->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(pol_1.type() == Entity::Type::polygon2d);
+  BOOST_CHECK(pol_2->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(pol_3->type() == Entity::Type::polygon2d);
 }
 
 /* Operador de asignación */
 
-//TEST(LineString, assing_operator)
-//{
-//  LineStringD lineString{ PointD(23.6, 94.4),
-//                          PointD(75.36, 246.33),
-//                          PointD(256.6, 619.3),
-//                          PointD(62.36, 6.60) };
-//
-//  LineStringD lineString_c = lineString;
-//
-//  EXPECT_TRUE(lineString_c.type() == Entity::type::LINESTRING_2D);
-//  EXPECT_EQ(4, lineString_c.size());
-//
-//  for (int i = 0; i < lineString_c.size(); i++) {
-//    EXPECT_TRUE(lineString_c[i] == lineString[i]);
-//  }
-//}
-
-TEST_F(PolygonTest, area)
+BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 {
-  EXPECT_NEAR(0, pol_1.area(), 0.01);
-  EXPECT_NEAR(2059476079.5, pol_2->area(), 0.01);
+  PolygonI polygon = *pol_2;
+
+  BOOST_CHECK_EQUAL(7, polygon.size());
+
+  WindowI w = polygon.window();
+
+  BOOST_CHECK_EQUAL(4137012, w.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w.pt2.y);
+
+  BOOST_CHECK_CLOSE(193131.62, polygon.length(), 0.01);
 }
 
-/* MultiPoint3D */
+BOOST_FIXTURE_TEST_CASE(area, PolygonTest)
+{
+  BOOST_CHECK_CLOSE(0, pol_1.area(), 0.01);
+  BOOST_CHECK_CLOSE(2059476079.5, pol_2->area(), 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(isInner, PolygonTest)
+{
+  BOOST_CHECK(false == pol_2->isInner(PointI(0,0)));
+  BOOST_CHECK(pol_2->isInner(PointI(4160000, 675000)));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* Polygon3D */
+
+BOOST_AUTO_TEST_SUITE(Polygon3DTestSuite)
+
+
+struct Polygon3DTest
+{
+  Polygon3DTest()
+  {
+    pol_2 = new Polygon3dI {
+      Point3I(4157222, 664789, 10),
+      Point3I(4149043, 688836, 20),
+      Point3I(4172803, 690340, 30),
+      Point3I(4177148, 642997, 25),
+      Point3I(4137012, 671808, 20),
+      Point3I(4146292, 666953, 15),
+      Point3I(4138759, 702670, 10) };
+             
+    pol_3 = new Polygon3dD(10);
+  }
+  ~Polygon3DTest()
+  {
+    if (pol_2) delete pol_2, pol_2 = nullptr;
+    if (pol_3) delete pol_3, pol_3 = nullptr;
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+
+  }
+
+  Polygon3dI  pol_1;
+  Polygon3dI *pol_2;
+  Polygon3dD *pol_3;
+};
+
 
 /* Constructor por defecto */
 
-//TEST(LineString3D, DefaultConstructor) 
-//{
-//  LineString3dD ls;
-//  BoxD box = ls.getBox();
-//  
-//  EXPECT_EQ(0, ls.size());
-//  EXPECT_TRUE(ls.type() == Entity::type::LINESTRING_3D);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.x);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.y);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.z);
-//  EXPECT_EQ(0., ls.length());
-//}
+BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
+{
+  BoundingBoxI bbox = pol_1.boundingBox();
+  
+  BOOST_CHECK_EQUAL(0, pol_1.size());
+  BOOST_CHECK(pol_1.type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.z);
+  BOOST_CHECK_EQUAL(0., pol_1.length());
+  BOOST_CHECK(pol_1.is3D());
+}
 
 /* Constructor reserve */
 
-//TEST(LineString3D, ConstructorReserve) 
-//{
-//  LineString3dD ls(10);
-//  BoxD box = ls.getBox();
-//  
-//  EXPECT_EQ(10, ls.size());
-//  EXPECT_TRUE(ls.type() == Entity::type::LINESTRING_3D);
-//  EXPECT_EQ(0., box.pt1.x);
-//  EXPECT_EQ(0., box.pt1.y);
-//  EXPECT_EQ(0., box.pt1.z);
-//  EXPECT_EQ(0., box.pt2.x);
-//  EXPECT_EQ(0., box.pt2.y);
-//  EXPECT_EQ(0., box.pt2.z);
-//  EXPECT_EQ(0., ls.length());
-//}
+BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
+{
+  BoundingBoxD bbox = pol_3->boundingBox();
+
+  BOOST_CHECK_EQUAL(10, pol_3->size());
+  BOOST_CHECK(pol_3->type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.x);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.y);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.z);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.x);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.y);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.z);
+  BOOST_CHECK_EQUAL(0., pol_3->length());
+}
 
 /*Constructor de copia*/
 
-//TEST(LineString3D, CopyConstructor) 
-//{
-//  LineString3dD line;
-//  line.push_back(Point3D(23.6, 94.4, 2.3));
-//  line.push_back(Point3D(75.36, 246.33, 36.36));
-//  line.push_back(Point3D(256.6, 619.3, 56.12));
-//  line.push_back(Point3D(62.36, 6.60, 24.63));
-//
-//  EXPECT_TRUE(line.type() == Entity::type::LINESTRING_3D);
-//  EXPECT_EQ(4, line.size());
-//
-//  LineString3dD line_c(line);
-//
-//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
-//	EXPECT_EQ(4, line_c.size());
-//  BoxD box = line_c.getBox();
-//  EXPECT_EQ(23.6, box.pt1.x);
-//  EXPECT_EQ(6.60, box.pt1.y);
-//  EXPECT_EQ(2.3, box.pt1.z);
-//  EXPECT_EQ(256.6, box.pt2.x);
-//  EXPECT_EQ(619.3, box.pt2.y);
-//  EXPECT_EQ(56.12, box.pt2.z);
-//
-//}
+BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
+{
+  Polygon3dD pol_c(*pol_3);
+  BOOST_CHECK_EQUAL(10, pol_c.size());
 
-/* Constructor a partir de un vector de puntos */
+  BoundingBoxD bbox = pol_c.boundingBox();
+  BOOST_CHECK(pol_c.type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.x);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.y);
+  BOOST_CHECK_EQUAL(0., bbox.pt1.z);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.x);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.y);
+  BOOST_CHECK_EQUAL(0., bbox.pt2.z);
 
-//TEST(LineString3D, Vector) 
-//{
-//  std::vector<Point3D> lineString{ Point3D(23.6, 94.4, 0.36),
-//                                    Point3D(75.36, 246.33, 454.3),
-//                                    Point3D(256.6, 619.3, 26.21),
-//                                    Point3D(62.36, 6.60, 62.61) };
-//
-//  LineString3dD line_c(lineString);
-//
-//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
-//	EXPECT_EQ(4, line_c.size());
-//  BoxD box = line_c.getBox();
-//  EXPECT_EQ(23.6, box.pt1.x);
-//  EXPECT_EQ(6.60, box.pt1.y);
-//  EXPECT_EQ(0.36, box.pt1.z);
-//  EXPECT_EQ(256.6, box.pt2.x);
-//  EXPECT_EQ(619.3, box.pt2.y);
-//  EXPECT_EQ(454.3, box.pt2.z);
-//
-//}
+  BOOST_CHECK_EQUAL(0., pol_c.length());
+
+}
 
 
 /* Constructor lista de inicializadores */
 
-//TEST(LineString3D, ConstructorList) 
-//{
-//  LineString3dD line{ Point3D(23.6, 94.4, 0.36),
-//                      Point3D(75.36, 246.33, 454.3),
-//                      Point3D(256.6, 619.3, 26.21),
-//                      Point3D(62.36, 6.60, 62.61) };
-//
-//  EXPECT_TRUE(line.type() == Entity::type::LINESTRING_3D);
-//	EXPECT_EQ(4, line.size());
-//  BoxD box = line.getBox();
-//  EXPECT_EQ(23.6, box.pt1.x);
-//  EXPECT_EQ(6.60, box.pt1.y);
-//  EXPECT_EQ(0.36, box.pt1.z);
-//  EXPECT_EQ(256.6, box.pt2.x);
-//  EXPECT_EQ(619.3, box.pt2.y);
-//  EXPECT_EQ(454.3, box.pt2.z);
-//}
+BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
+{
+  BOOST_CHECK_EQUAL(7, pol_2->size());
+
+  BoundingBoxD bbox = pol_2->boundingBox();
+
+  BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(4177148, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+
+  BOOST_CHECK_CLOSE(193131.62, pol_2->length(), 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(type, Polygon3DTest)
+{
+  BOOST_CHECK(pol_1.type() == Entity::Type::polygon3d);
+  BOOST_CHECK(pol_2->type() == Entity::Type::polygon3d);
+  BOOST_CHECK(pol_3->type() == Entity::Type::polygon3d);
+}
 
 /* Operador de asignación */
 
-//TEST(LineString3D, assing_operator)
-//{
-//  LineString3dD line;
-//  line.push_back(Point3D(23.6, 94.4, 2.3));
-//  line.push_back(Point3D(75.36, 246.33, 36.36));
-//  line.push_back(Point3D(256.6, 619.3, 56.12));
-//  line.push_back(Point3D(62.36, 6.60, 24.63));
-//
-//  LineString3dD line_c = line;
-//
-//  EXPECT_TRUE(line_c.type() == Entity::type::LINESTRING_3D);
-//	EXPECT_EQ(4, line_c.size());
-//  BoxD box = line_c.getBox();
-//  EXPECT_EQ(23.6, box.pt1.x);
-//  EXPECT_EQ(6.60, box.pt1.y);
-//  EXPECT_EQ(2.3, box.pt1.z);
-//  EXPECT_EQ(256.6, box.pt2.x);
-//  EXPECT_EQ(619.3, box.pt2.y);
-//  EXPECT_EQ(56.12, box.pt2.z);
-//
-//}
-//
-//TEST(LineString3D, length)
-//{
-//  //LineStringI  line(ptsIn);
-//
-//  //EXPECT_NEAR(193131.6182, line.length(), 0.01);
-//
-//}
+BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
+{
+  Polygon3dI polygon = *pol_2;
 
-///TODO: revisar todas las multientidades...
+  BOOST_CHECK_EQUAL(7, polygon.size());
 
-///* MultiLineString  */
-//
-///* Constructor por defecto */
-//
-//TEST(MultiLineString, DefaultConstructor) 
-//{
-//  MultiLineString<PointD> ml;
-//  WindowD w = ml.getWindow();
-//  
-//  EXPECT_EQ(0, ml.size());
-//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_2D);
-//  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.x);
-//  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
-//  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
-//  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.y);
-//}
-//
-///* Constructor reserve */
-//
-//TEST(MultiLineString, ConstructorReserve) 
-//{
-//  MultiLineString<PointD> ml(10);
-//  WindowD w = ml.getWindow();
-// 
-//  EXPECT_EQ(10, ml.size());
-//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_2D);
-//  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.x);
-//  EXPECT_EQ(TL_DOUBLE_MAX, w.pt1.y);
-//  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.x);
-//  EXPECT_EQ(TL_DOUBLE_MIN, w.pt2.y);
-//}
-//
-///* MultiLineString3D */
-//
-///* Constructor por defecto */
-//
-//TEST(MultiLineString3D, DefaultConstructor) 
-//{
-//  MultiLineString3D<PointD> ml;
-//  BoxD box = ml.getBox();
-//  
-//  EXPECT_EQ(0, ml.size());
-//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_3D);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.x);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.y);
-//  EXPECT_EQ(TL_DOUBLE_MAX, box.pt1.z);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.x);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.y);
-//  EXPECT_EQ(TL_DOUBLE_MIN, box.pt2.z);
-//}
-//
-///* Constructor reserve */
-//
-//TEST(MultiLineString3D, ConstructorReserve) 
-//{
-//  MultiLineString3D<PointD> ml(10);
-//  BoxD box = ml.getBox();
-//  
-//  EXPECT_EQ(10, ml.size());
-//  EXPECT_TRUE(ml.type() == Entity::type::MULTILINE_3D);
-//  EXPECT_EQ(0., box.pt1.x);
-//  EXPECT_EQ(0., box.pt1.y);
-//  EXPECT_EQ(0., box.pt1.z);
-//  EXPECT_EQ(0., box.pt2.x);
-//  EXPECT_EQ(0., box.pt2.y);
-//  EXPECT_EQ(0., box.pt2.z);
-//}
+  BoundingBoxD bbox = pol_2->boundingBox();
+
+  BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(4177148, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+}
+
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+
+/* MultiPolygon  */
+
+BOOST_AUTO_TEST_SUITE(MultiPolygonTestSuite)
+
+
+struct MultiPolygonTest
+{
+  MultiPolygonTest()
+  {
+
+  }
+
+  ~MultiPolygonTest()
+  {
+  }
+
+  void setup()
+  {
+    PolygonI polygon {
+      PointI(4157222, 664789),
+      PointI(4149043, 688836),
+      PointI(4172803, 690340),
+      PointI(4177148, 642997),
+      PointI(4137012, 671808),
+      PointI(4146292, 666953),
+      PointI(4138759, 702670) 
+    };
+
+    multipolygon2.push_back(polygon);
+  }
+
+  void teardown()
+  {
+
+  }
+
+  MultiPolygon<PointI> multipolygon1;
+  MultiPolygon<PointI> multipolygon2;
+
+};
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygonTest) 
+{
+  BOOST_CHECK_EQUAL(0, multipolygon1.size());
+  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipolygon2d);
+  BOOST_CHECK(false == multipolygon1.is3D());
+  WindowI w = multipolygon1.window();
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+}
+
+/* Constructor reserve */
+
+BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygonTest) 
+{
+  MultiPolygon<PointI> multipolygon(10);
+
+  BOOST_CHECK_EQUAL(10, multipolygon.size());
+  BOOST_CHECK(multipolygon.type() == Entity::Type::multipolygon2d);
+  BOOST_CHECK(false == multipolygon.is3D());
+  WindowI w = multipolygon.window();
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
+}
+
+/*Constructor de copia*/
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygonTest)
+{
+	MultiPolygon<PointI> multipolygon_copy(multipolygon2);
+  BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
+  BOOST_CHECK(false == multipolygon_copy.is3D());
+  WindowI w = multipolygon_copy.window();
+  BOOST_CHECK_EQUAL(4137012, w.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w.pt2.y);
+}
+
+/* Operador de asignación */
+
+BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygonTest)
+{
+	MultiPolygon<PointI> multipolygon_copy = multipolygon2;
+  BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipolygon2d);
+  BOOST_CHECK(false == multipolygon_copy.is3D());
+  WindowI w = multipolygon_copy.window();
+  BOOST_CHECK_EQUAL(4137012, w.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w.pt2.y);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* MultiPolygon3D */
+
+BOOST_AUTO_TEST_SUITE(MultiPolygon3DTestSuite)
+
+
+struct MultiPolygon3DTest
+{
+  MultiPolygon3DTest()
+  {
+
+  }
+  ~MultiPolygon3DTest()
+  {
+  }
+
+  void setup()
+  {
+    Polygon3dI pol_2{
+      Point3I(4157222, 664789, 10),
+      Point3I(4149043, 688836, 20),
+      Point3I(4172803, 690340, 30),
+      Point3I(4177148, 642997, 25),
+      Point3I(4137012, 671808, 20),
+      Point3I(4146292, 666953, 15),
+      Point3I(4138759, 702670, 10) 
+    };
+    multipolygon2.push_back(pol_2);
+  }
+
+  void teardown()
+  {
+
+  }
+
+  MultiPolygon3D<Point3I> multipolygon1;
+  MultiPolygon3D<Point3I> multipolygon2;
+};
+
+/* Constructor por defecto */
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, MultiPolygon3DTest) 
+{
+
+  BoundingBoxI box = multipolygon1.boundingBox();
+  BOOST_CHECK_EQUAL(0, multipolygon1.size());
+  BOOST_CHECK(multipolygon1.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon1.is3D());
+  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, box.pt1.z);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, box.pt2.z);
+}
+
+/* Constructor reserve */
+
+BOOST_FIXTURE_TEST_CASE(constructor_reserve, MultiPolygon3DTest) 
+{
+  MultiPolygon3D<Point3D> multipolygon(10);
+  BoundingBoxD box = multipolygon.boundingBox();
+  
+  BOOST_CHECK_EQUAL(10, multipolygon.size());
+  BOOST_CHECK(multipolygon.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, box.pt1.z);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, box.pt2.z);
+}
+
+/*Constructor de copia*/
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, MultiPolygon3DTest) 
+{
+  MultiPolygon3D<Point3I> multipolygon_copy(multipolygon2);
+  
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon_copy.is3D());
+	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
+  BoundingBoxD bbox = multipolygon_copy.boundingBox();
+  BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(4177148, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+}
+
+/* Operador de asignación */
+
+BOOST_FIXTURE_TEST_CASE(assing_operator, MultiPolygon3DTest)
+{
+  MultiPolygon3D<Point3I> multipolygon_copy = multipolygon2;
+  
+  BOOST_CHECK(multipolygon_copy.type() == Entity::Type::multipoygon3d);
+  BOOST_CHECK(multipolygon_copy.is3D());
+
+	BOOST_CHECK_EQUAL(1, multipolygon_copy.size());
+  BoundingBoxD bbox = multipolygon_copy.boundingBox();
+  BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
+  BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
+  BOOST_CHECK_EQUAL(10, bbox.pt1.z);
+  BOOST_CHECK_EQUAL(4177148, bbox.pt2.x);
+  BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
+  BOOST_CHECK_EQUAL(30, bbox.pt2.z);
+}
+
+BOOST_AUTO_TEST_SUITE_END()

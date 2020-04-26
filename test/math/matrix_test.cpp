@@ -1,20 +1,22 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop matrix test
+#include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/matrix.h>
 
 using namespace tl::math;
 
+BOOST_AUTO_TEST_SUITE(MatrixTestSuite)
 
-class MatrixTest 
-  : public testing::Test
+struct MatrixTest 
 {
-public:
-
-  MatrixTest() : _mat_4x4_d(nullptr){}
-
-protected:
-
-  virtual void SetUp() override
+  MatrixTest() 
+    : _mat_4x4_d(new Matrix<4, 4>())
+  {}
+  ~MatrixTest()
+  { 
+    if (_mat_4x4_d) delete _mat_4x4_d, _mat_4x4_d = nullptr;
+  }
+  
+  void setup()
   {
     _mat_3x3_d.at(0, 0) = 1.5;
     _mat_3x3_d.at(0, 1) = 0.0;
@@ -26,7 +28,7 @@ protected:
     _mat_3x3_d.at(2, 1) = 2.6;
     _mat_3x3_d.at(2, 2) = 0.3;
 
-    _mat_4x4_d = new Matrix<4, 4>();
+    
     _mat_4x4_d->at(0, 0) = 4.5;    _mat_4x4_d->at(0, 1) = 2.7;  _mat_4x4_d->at(0, 2) = 5.5;  _mat_4x4_d->at(0, 3) = 4.98;
     _mat_4x4_d->at(1, 0) = 1.36;   _mat_4x4_d->at(1, 1) = 7.62;	_mat_4x4_d->at(1, 2) = 78.3; _mat_4x4_d->at(1, 3) = 45.5;
     _mat_4x4_d->at(2, 0) = 14.3;   _mat_4x4_d->at(2, 1) = 45.3;	_mat_4x4_d->at(2, 2) = 5.;   _mat_4x4_d->at(2, 3) = 45.;
@@ -82,9 +84,9 @@ protected:
     _cofactor_matrix.at(2, 2) = 6;
   }
  
-  virtual void TearDown() override
+  void teardown()
   {
-    if (_mat_4x4_d) delete _mat_4x4_d, _mat_4x4_d = nullptr;
+
   }
 
   Matrix<2, 2> _mat_2x2_d;
@@ -103,19 +105,19 @@ protected:
 };
 
 
-TEST_F(MatrixTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixTest)
 {
   double ini_value = -std::numeric_limits<double>().max();
 
   for (size_t r = 0; r < _mat_2x2_d.rows; r++){
     for (size_t c = 0; c < _mat_2x2_d.cols; c++){
-      EXPECT_EQ(ini_value, _mat_2x2_d.at(r, c));
+      BOOST_CHECK_EQUAL(ini_value, _mat_2x2_d.at(r, c));
     }
   }
 
 }
 
-TEST_F(MatrixTest, iteratorList)
+BOOST_FIXTURE_TEST_CASE(iterator_list_constructor, MatrixTest)
 {
 
   Matrix<2, 2, int> it_list2 {{
@@ -125,10 +127,10 @@ TEST_F(MatrixTest, iteratorList)
     }
   }};
 
-  EXPECT_EQ(0, it_list2.at(0, 0));
-  EXPECT_EQ(1, it_list2.at(0, 1));
-  EXPECT_EQ(2, it_list2.at(1, 0));
-  EXPECT_EQ(3, it_list2.at(1, 1));
+  BOOST_CHECK_EQUAL(0, it_list2.at(0, 0));
+  BOOST_CHECK_EQUAL(1, it_list2.at(0, 1));
+  BOOST_CHECK_EQUAL(2, it_list2.at(1, 0));
+  BOOST_CHECK_EQUAL(3, it_list2.at(1, 1));
 
   Matrix<2, 2, int> it_list3 = {
     {
@@ -137,10 +139,10 @@ TEST_F(MatrixTest, iteratorList)
     }
   };
 
-  EXPECT_EQ(0, it_list3.at(0, 0));
-  EXPECT_EQ(1, it_list3.at(0, 1));
-  EXPECT_EQ(2, it_list3.at(1, 0));
-  EXPECT_EQ(3, it_list3.at(1, 1));
+  BOOST_CHECK_EQUAL(0, it_list3.at(0, 0));
+  BOOST_CHECK_EQUAL(1, it_list3.at(0, 1));
+  BOOST_CHECK_EQUAL(2, it_list3.at(1, 0));
+  BOOST_CHECK_EQUAL(3, it_list3.at(1, 1));
 
   Matrix<2, 3, int> it_list2x3 = {
     {
@@ -149,12 +151,12 @@ TEST_F(MatrixTest, iteratorList)
     }
   };
 
-  EXPECT_EQ(0, it_list2x3.at(0, 0));
-  EXPECT_EQ(1, it_list2x3.at(0, 1));
-  EXPECT_EQ(2, it_list2x3.at(0, 2));
-  EXPECT_EQ(3, it_list2x3.at(1, 0));
-  EXPECT_EQ(4, it_list2x3.at(1, 1));
-  EXPECT_EQ(5, it_list2x3.at(1, 2));
+  BOOST_CHECK_EQUAL(0, it_list2x3.at(0, 0));
+  BOOST_CHECK_EQUAL(1, it_list2x3.at(0, 1));
+  BOOST_CHECK_EQUAL(2, it_list2x3.at(0, 2));
+  BOOST_CHECK_EQUAL(3, it_list2x3.at(1, 0));
+  BOOST_CHECK_EQUAL(4, it_list2x3.at(1, 1));
+  BOOST_CHECK_EQUAL(5, it_list2x3.at(1, 2));
 
   //Matrix<3, 3, int> it_list3x3 = {
   //  {
@@ -164,9 +166,9 @@ TEST_F(MatrixTest, iteratorList)
   //  }
   //};
 
-  //EXPECT_EQ(0, it_list3x3.at(0, 0));
-  //EXPECT_EQ(1, it_list3x3.at(0, 1));
-  //EXPECT_EQ(2, it_list3x3.at(0, 2));
+  //BOOST_CHECK_EQUAL(0, it_list3x3.at(0, 0));
+  //BOOST_CHECK_EQUAL(1, it_list3x3.at(0, 1));
+  //BOOST_CHECK_EQUAL(2, it_list3x3.at(0, 2));
 
   //Matrix<5, 5, int> it_list5 = {
   //  {
@@ -179,34 +181,34 @@ TEST_F(MatrixTest, iteratorList)
   //};
 }
 
-TEST_F(MatrixTest, at)
+BOOST_FIXTURE_TEST_CASE(at, MatrixTest)
 {
-  EXPECT_EQ(1.5, _mat_3x3_d.at(0, 0));
-  EXPECT_EQ(0.0, _mat_3x3_d.at(0, 1));
-  EXPECT_EQ(2.5, _mat_3x3_d.at(0, 2));
-  EXPECT_EQ(1.0, _mat_3x3_d.at(1, 0));
-  EXPECT_EQ(1.0, _mat_3x3_d.at(1, 1));
-  EXPECT_EQ(1.2, _mat_3x3_d.at(1, 2));
-  EXPECT_EQ(1.3, _mat_3x3_d.at(2, 0));
-  EXPECT_EQ(2.6, _mat_3x3_d.at(2, 1));
-  EXPECT_EQ(0.3, _mat_3x3_d.at(2, 2));
+  BOOST_CHECK_EQUAL(1.5, _mat_3x3_d.at(0, 0));
+  BOOST_CHECK_EQUAL(0.0, _mat_3x3_d.at(0, 1));
+  BOOST_CHECK_EQUAL(2.5, _mat_3x3_d.at(0, 2));
+  BOOST_CHECK_EQUAL(1.0, _mat_3x3_d.at(1, 0));
+  BOOST_CHECK_EQUAL(1.0, _mat_3x3_d.at(1, 1));
+  BOOST_CHECK_EQUAL(1.2, _mat_3x3_d.at(1, 2));
+  BOOST_CHECK_EQUAL(1.3, _mat_3x3_d.at(2, 0));
+  BOOST_CHECK_EQUAL(2.6, _mat_3x3_d.at(2, 1));
+  BOOST_CHECK_EQUAL(0.3, _mat_3x3_d.at(2, 2));
 }
 
-TEST_F(MatrixTest, rows)
+BOOST_FIXTURE_TEST_CASE(rows, MatrixTest)
 {
-  EXPECT_EQ(2, _mat_2x2_d.rows);
-  EXPECT_EQ(3, _mat_3x3_d.rows);
-  EXPECT_EQ(3, _mat_3x3_f.rows);
+  BOOST_CHECK_EQUAL(2, _mat_2x2_d.rows);
+  BOOST_CHECK_EQUAL(3, _mat_3x3_d.rows);
+  BOOST_CHECK_EQUAL(3, _mat_3x3_f.rows);
 }
 
-TEST_F(MatrixTest, cols)
+BOOST_FIXTURE_TEST_CASE(cols, MatrixTest)
 {
-  EXPECT_EQ(2, _mat_2x2_d.cols);
-  EXPECT_EQ(3, _mat_3x3_d.cols);
-  EXPECT_EQ(3, _mat_3x3_f.cols);
+  BOOST_CHECK_EQUAL(2, _mat_2x2_d.cols);
+  BOOST_CHECK_EQUAL(3, _mat_3x3_d.cols);
+  BOOST_CHECK_EQUAL(3, _mat_3x3_f.cols);
 }
 
-TEST_F(MatrixTest, inverse2x2)
+BOOST_FIXTURE_TEST_CASE(inverse2x2, MatrixTest)
 {
   Matrix<2, 2> _mat_2x2;
   _mat_2x2.at(0, 0) = 2;
@@ -215,75 +217,75 @@ TEST_F(MatrixTest, inverse2x2)
   _mat_2x2.at(1, 1) = 4;
   bool invertible;
   Matrix<2, 2> inv_mat = _mat_2x2.inverse(&invertible);
-  EXPECT_TRUE(invertible);
-  EXPECT_NEAR(0.8, inv_mat.at(0, 0), 0.001);
-  EXPECT_NEAR(-0.6, inv_mat.at(0, 1), 0.001);
-  EXPECT_NEAR(-0.2, inv_mat.at(1, 0), 0.001);
-  EXPECT_NEAR(0.4, inv_mat.at(1, 1), 0.001);
+  BOOST_CHECK(invertible);
+  BOOST_CHECK_CLOSE(0.8, inv_mat.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.6, inv_mat.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.2, inv_mat.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.4, inv_mat.at(1, 1), 0.1);
 }
 
-TEST_F(MatrixTest, inverse3x3)
+BOOST_FIXTURE_TEST_CASE(inverse3x3, MatrixTest)
 {
   bool invertible;
   Matrix<3, 3> inv_mat = _mat_3x3_d.inverse(&invertible);
-  EXPECT_TRUE(invertible);
-  EXPECT_NEAR( 2.877551, inv_mat.at(0, 0), 0.00001);
-  EXPECT_NEAR(-6.632653, inv_mat.at(0, 1), 0.00001);
-  EXPECT_NEAR( 2.551020, inv_mat.at(0, 2), 0.00001);
-  EXPECT_NEAR(-1.285714, inv_mat.at(1, 0), 0.00001);
-  EXPECT_NEAR( 2.857143, inv_mat.at(1, 1), 0.00001);
-  EXPECT_NEAR(-0.714286, inv_mat.at(1, 2), 0.00001);
-  EXPECT_NEAR(-1.326531, inv_mat.at(2, 0), 0.00001);
-  EXPECT_NEAR( 3.979592, inv_mat.at(2, 1), 0.00001);
-  EXPECT_NEAR(-1.530612, inv_mat.at(2, 2), 0.00001);
+  BOOST_CHECK(invertible);
+  BOOST_CHECK_CLOSE( 2.877551, inv_mat.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-6.632653, inv_mat.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE( 2.551020, inv_mat.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-1.285714, inv_mat.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE( 2.857143, inv_mat.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.714286, inv_mat.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(-1.326531, inv_mat.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE( 3.979592, inv_mat.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-1.530612, inv_mat.at(2, 2), 0.1);
 }
 
-TEST_F(MatrixTest, inverse4x4)
+BOOST_FIXTURE_TEST_CASE(inverse4x4, MatrixTest)
 {
   bool invertible;
   Matrix<4, 4> inv_mat = _mat_4x4_d->inverse(&invertible);
-  EXPECT_TRUE(invertible);
-  EXPECT_NEAR( 0.268435, inv_mat.at(0, 0), 0.01);
-  EXPECT_NEAR(-0.018133, inv_mat.at(0, 1), 0.01);
-  EXPECT_NEAR(-0.010673, inv_mat.at(0, 2), 0.01);
-  EXPECT_NEAR(-0.002479, inv_mat.at(0, 3), 0.01);
-  EXPECT_NEAR(-0.077647, inv_mat.at(1, 0), 0.01);
-  EXPECT_NEAR( 0.005298, inv_mat.at(1, 1), 0.01);
-  EXPECT_NEAR(-0.006780, inv_mat.at(1, 2), 0.01);
-  EXPECT_NEAR( 0.035491, inv_mat.at(1, 3), 0.01);
-  EXPECT_NEAR( 0.007528, inv_mat.at(2, 0), 0.01);
-  EXPECT_NEAR( 0.013172, inv_mat.at(2, 1), 0.01);
-  EXPECT_NEAR(-0.019248, inv_mat.at(2, 2), 0.01);
-  EXPECT_NEAR( 0.018059, inv_mat.at(2, 3), 0.01);
-  EXPECT_NEAR(-0.007974, inv_mat.at(3, 0), 0.01);
-  EXPECT_NEAR(-0.001035, inv_mat.at(3, 1), 0.01);
-  EXPECT_NEAR( 0.034578, inv_mat.at(3, 2), 0.01);
-  EXPECT_NEAR(-0.036946, inv_mat.at(3, 3), 0.01);
+  BOOST_CHECK(invertible);
+  BOOST_CHECK_SMALL( 0.268435, inv_mat.at(0, 0));
+  BOOST_CHECK_SMALL(-0.018133, inv_mat.at(0, 1));
+  BOOST_CHECK_SMALL(-0.010673, inv_mat.at(0, 2));
+  BOOST_CHECK_SMALL(-0.002479, inv_mat.at(0, 3));
+  BOOST_CHECK_SMALL(-0.077647, inv_mat.at(1, 0));
+  BOOST_CHECK_SMALL( 0.005298, inv_mat.at(1, 1));
+  BOOST_CHECK_SMALL(-0.006780, inv_mat.at(1, 2));
+  BOOST_CHECK_SMALL( 0.035491, inv_mat.at(1, 3));
+  BOOST_CHECK_SMALL( 0.007528, inv_mat.at(2, 0));
+  BOOST_CHECK_SMALL( 0.013172, inv_mat.at(2, 1));
+  BOOST_CHECK_SMALL(-0.019248, inv_mat.at(2, 2));
+  BOOST_CHECK_SMALL( 0.018059, inv_mat.at(2, 3));
+  BOOST_CHECK_SMALL(-0.007974, inv_mat.at(3, 0));
+  BOOST_CHECK_SMALL(-0.001035, inv_mat.at(3, 1));
+  BOOST_CHECK_SMALL( 0.034578, inv_mat.at(3, 2));
+  BOOST_CHECK_SMALL(-0.036946, inv_mat.at(3, 3));
 }
 
-TEST_F(MatrixTest, inverse)
+BOOST_FIXTURE_TEST_CASE(inverse, MatrixTest)
 {
   ///TODO: Terminar método inverse
 }
 
-TEST_F(MatrixTest, transposeSquared)
+BOOST_FIXTURE_TEST_CASE(transpose_squared, MatrixTest)
 {
   Matrix<3, 3> transp_mat = _mat_3x3_d.transpose();
 
-  EXPECT_EQ(1.5, transp_mat.at(0, 0));
-  EXPECT_EQ(1, transp_mat.at(0, 1));
-  EXPECT_EQ(1.3, transp_mat.at(0, 2));
-  EXPECT_EQ(0, transp_mat.at(1, 0));
-  EXPECT_EQ(1, transp_mat.at(1, 1));
-  EXPECT_EQ(2.6, transp_mat.at(1, 2));
-  EXPECT_EQ(2.5, transp_mat.at(2, 0));
-  EXPECT_EQ(1.2, transp_mat.at(2, 1));
-  EXPECT_EQ(0.3, transp_mat.at(2, 2));
+  BOOST_CHECK_EQUAL(1.5, transp_mat.at(0, 0));
+  BOOST_CHECK_EQUAL(1, transp_mat.at(0, 1));
+  BOOST_CHECK_EQUAL(1.3, transp_mat.at(0, 2));
+  BOOST_CHECK_EQUAL(0, transp_mat.at(1, 0));
+  BOOST_CHECK_EQUAL(1, transp_mat.at(1, 1));
+  BOOST_CHECK_EQUAL(2.6, transp_mat.at(1, 2));
+  BOOST_CHECK_EQUAL(2.5, transp_mat.at(2, 0));
+  BOOST_CHECK_EQUAL(1.2, transp_mat.at(2, 1));
+  BOOST_CHECK_EQUAL(0.3, transp_mat.at(2, 2));
 }
 
 
 /// Transpuesta de matriz no cuadrada
-TEST_F(MatrixTest, transpose)
+BOOST_FIXTURE_TEST_CASE(transpose, MatrixTest)
 {
   Matrix<3, 2, int> transp_mat = _mat_2x3_i.transpose();
 
@@ -294,103 +296,103 @@ TEST_F(MatrixTest, transpose)
   _mat_2x3_i.at(1, 1) = 6;
   _mat_2x3_i.at(1, 2) = 2;
 
-  EXPECT_EQ(6, transp_mat.at(0, 0));
-  EXPECT_EQ(9, transp_mat.at(0, 1));
-  EXPECT_EQ(8, transp_mat.at(1, 0));
-  EXPECT_EQ(6, transp_mat.at(1, 1));
-  EXPECT_EQ(6, transp_mat.at(2, 0));
-  EXPECT_EQ(2, transp_mat.at(2, 1));
+  BOOST_CHECK_EQUAL(6, transp_mat.at(0, 0));
+  BOOST_CHECK_EQUAL(9, transp_mat.at(0, 1));
+  BOOST_CHECK_EQUAL(8, transp_mat.at(1, 0));
+  BOOST_CHECK_EQUAL(6, transp_mat.at(1, 1));
+  BOOST_CHECK_EQUAL(6, transp_mat.at(2, 0));
+  BOOST_CHECK_EQUAL(2, transp_mat.at(2, 1));
 }
 
-TEST_F(MatrixTest, determinant2x2)
+BOOST_FIXTURE_TEST_CASE(determinant2x2, MatrixTest)
 {
   Matrix<2, 2> _mat_2x2;
   _mat_2x2.at(0, 0) = 2;
   _mat_2x2.at(0, 1) = 3;
   _mat_2x2.at(1, 0) = 1;
   _mat_2x2.at(1, 1) = 4;
-  EXPECT_EQ(5, _mat_2x2.determinant());
+  BOOST_CHECK_EQUAL(5, _mat_2x2.determinant());
 }
 
-TEST_F(MatrixTest, determinant3x3)
+BOOST_FIXTURE_TEST_CASE(determinant3x3, MatrixTest)
 {
-  EXPECT_NEAR(-0.98, _mat_3x3_d.determinant(),0.01);
+  BOOST_CHECK_CLOSE(-0.98, _mat_3x3_d.determinant(),0.1);
 }
 
-TEST_F(MatrixTest, determinant4x4)
+BOOST_FIXTURE_TEST_CASE(determinant4x4, MatrixTest)
 {
-  EXPECT_NEAR(353100.53, _mat_4x4_d->determinant(), 0.01);
+  BOOST_CHECK_CLOSE(353100.53, _mat_4x4_d->determinant(), 0.1);
 }
 
-TEST_F(MatrixTest, determinantnxn)
+BOOST_FIXTURE_TEST_CASE(determinantnxn, MatrixTest)
 {
-  EXPECT_NEAR(-2877.99, _mat_5x5_d.determinant(), 0.01);
+  BOOST_CHECK_CLOSE(-2877.99, _mat_5x5_d.determinant(), 0.1);
 }
 
 /// http://www.mathwords.com/c/cofactor_matrix.htm
-TEST_F(MatrixTest, cofactorMatrix)
+BOOST_FIXTURE_TEST_CASE(cofactor_matrix, MatrixTest)
 {
   Matrix3x3i cofactor_matrix = _cofactor_matrix.cofactorMatrix();
 
-  EXPECT_EQ( 24, cofactor_matrix.at(0, 0));
-  EXPECT_EQ(  5, cofactor_matrix.at(0, 1));
-  EXPECT_EQ( -4, cofactor_matrix.at(0, 2));
-  EXPECT_EQ(-12, cofactor_matrix.at(1, 0));
-  EXPECT_EQ(  3, cofactor_matrix.at(1, 1));
-  EXPECT_EQ(  2, cofactor_matrix.at(1, 2));
-  EXPECT_EQ( -2, cofactor_matrix.at(2, 0));
-  EXPECT_EQ( -5, cofactor_matrix.at(2, 1));
-  EXPECT_EQ(  4, cofactor_matrix.at(2, 2));
+  BOOST_CHECK_EQUAL( 24, cofactor_matrix.at(0, 0));
+  BOOST_CHECK_EQUAL(  5, cofactor_matrix.at(0, 1));
+  BOOST_CHECK_EQUAL( -4, cofactor_matrix.at(0, 2));
+  BOOST_CHECK_EQUAL(-12, cofactor_matrix.at(1, 0));
+  BOOST_CHECK_EQUAL(  3, cofactor_matrix.at(1, 1));
+  BOOST_CHECK_EQUAL(  2, cofactor_matrix.at(1, 2));
+  BOOST_CHECK_EQUAL( -2, cofactor_matrix.at(2, 0));
+  BOOST_CHECK_EQUAL( -5, cofactor_matrix.at(2, 1));
+  BOOST_CHECK_EQUAL(  4, cofactor_matrix.at(2, 2));
 }
 
-TEST_F(MatrixTest, firstMinor)
+BOOST_FIXTURE_TEST_CASE(first_minor, MatrixTest)
 {
   int first_minor = _cofactor_matrix.firstMinor(1, 1);
 
-  EXPECT_EQ(3, first_minor);
+  BOOST_CHECK_EQUAL(3, first_minor);
 
   first_minor = _cofactor_matrix.firstMinor(0, 1);
 
-  EXPECT_EQ(-5, first_minor);
+  BOOST_CHECK_EQUAL(-5, first_minor);
 }
 
-TEST_F(MatrixTest, cofactor)
+BOOST_FIXTURE_TEST_CASE(cofactor, MatrixTest)
 {
   int cofactor = _cofactor_matrix.cofactor(1,1);
 
-  EXPECT_EQ(3, cofactor);
+  BOOST_CHECK_EQUAL(3, cofactor);
 
   cofactor = _cofactor_matrix.cofactor(0, 1);
 
-  EXPECT_EQ(5, cofactor);
+  BOOST_CHECK_EQUAL(5, cofactor);
 }
 
-TEST_F(MatrixTest, zero)
+BOOST_FIXTURE_TEST_CASE(zero, MatrixTest)
 {
   for (size_t r = 0; r < mat_identity.rows; r++){
     for (size_t c = 0; c < mat_identity.cols; c++){
-      EXPECT_EQ(0, mat_zero.at(r, c));
+      BOOST_CHECK_EQUAL(0, mat_zero.at(r, c));
     }
   }
 }
 
-TEST_F(MatrixTest, ones)
+BOOST_FIXTURE_TEST_CASE(ones, MatrixTest)
 {
   for (size_t r = 0; r < mat_identity.rows; r++){
     for (size_t c = 0; c < mat_identity.cols; c++){
-      EXPECT_EQ(1, mat_ones.at(r, c));
+      BOOST_CHECK_EQUAL(1, mat_ones.at(r, c));
     }
   }
 }
 
-TEST_F(MatrixTest, identity)
+BOOST_FIXTURE_TEST_CASE(identity, MatrixTest)
 {
   for (size_t r = 0; r < mat_identity.rows; r++){
     for (size_t c = 0; c < mat_identity.cols; c++){
       if (r == c) {
-        EXPECT_EQ(1, mat_identity.at(r, c));
+        BOOST_CHECK_EQUAL(1, mat_identity.at(r, c));
       } else {
-        EXPECT_EQ(0, mat_identity.at(r, c));
+        BOOST_CHECK_EQUAL(0, mat_identity.at(r, c));
       }
     }
   }
@@ -398,22 +400,22 @@ TEST_F(MatrixTest, identity)
 
 /* Operaciones unarias */
 
-TEST_F(MatrixTest, plus)
+BOOST_FIXTURE_TEST_CASE(plus, MatrixTest)
 {
   Matrix3x3d mat = +_mat_3x3_d;
   for (size_t r = 0; r < mat_identity.rows; r++){
     for (size_t c = 0; c < mat_identity.cols; c++){
-      EXPECT_EQ(mat.at(r,c), _mat_3x3_d.at(r, c));
+      BOOST_CHECK_EQUAL(mat.at(r,c), _mat_3x3_d.at(r, c));
     }
   }
 }
 
-TEST_F(MatrixTest, minus)
+BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
 {
   Matrix3x3d mat = -_mat_3x3_d;
   for (size_t r = 0; r < mat_identity.rows; r++){
     for (size_t c = 0; c < mat_identity.cols; c++){
-      EXPECT_EQ(-mat.at(r, c), _mat_3x3_d.at(r, c));
+      BOOST_CHECK_EQUAL(-mat.at(r, c), _mat_3x3_d.at(r, c));
     }
   }
 }
@@ -422,117 +424,117 @@ TEST_F(MatrixTest, minus)
 
 /// Suma o adición de matrices
 
-TEST_F(MatrixTest, addition)
+BOOST_FIXTURE_TEST_CASE(addition, MatrixTest)
 {
   Matrix3x3d mat = mat_ones + _mat_3x3_d;
 
-  EXPECT_EQ(2.5, mat.at(0, 0));
-  EXPECT_EQ(1.0, mat.at(0, 1));
-  EXPECT_EQ(3.5, mat.at(0, 2));
-  EXPECT_EQ(2.0, mat.at(1, 0));
-  EXPECT_EQ(2.0, mat.at(1, 1));
-  EXPECT_EQ(2.2, mat.at(1, 2));
-  EXPECT_EQ(2.3, mat.at(2, 0));
-  EXPECT_EQ(3.6, mat.at(2, 1));
-  EXPECT_EQ(1.3, mat.at(2, 2));
+  BOOST_CHECK_EQUAL(2.5, mat.at(0, 0));
+  BOOST_CHECK_EQUAL(1.0, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(3.5, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(2.0, mat.at(1, 0));
+  BOOST_CHECK_EQUAL(2.0, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(2.2, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(2.3, mat.at(2, 0));
+  BOOST_CHECK_EQUAL(3.6, mat.at(2, 1));
+  BOOST_CHECK_EQUAL(1.3, mat.at(2, 2));
 
   mat_ones += _mat_3x3_d;
 
-  EXPECT_EQ(2.5, mat_ones.at(0, 0));
-  EXPECT_EQ(1.0, mat_ones.at(0, 1));
-  EXPECT_EQ(3.5, mat_ones.at(0, 2));
-  EXPECT_EQ(2.0, mat_ones.at(1, 0));
-  EXPECT_EQ(2.0, mat_ones.at(1, 1));
-  EXPECT_EQ(2.2, mat_ones.at(1, 2));
-  EXPECT_EQ(2.3, mat_ones.at(2, 0));
-  EXPECT_EQ(3.6, mat_ones.at(2, 1));
-  EXPECT_EQ(1.3, mat_ones.at(2, 2));
+  BOOST_CHECK_EQUAL(2.5, mat_ones.at(0, 0));
+  BOOST_CHECK_EQUAL(1.0, mat_ones.at(0, 1));
+  BOOST_CHECK_EQUAL(3.5, mat_ones.at(0, 2));
+  BOOST_CHECK_EQUAL(2.0, mat_ones.at(1, 0));
+  BOOST_CHECK_EQUAL(2.0, mat_ones.at(1, 1));
+  BOOST_CHECK_EQUAL(2.2, mat_ones.at(1, 2));
+  BOOST_CHECK_EQUAL(2.3, mat_ones.at(2, 0));
+  BOOST_CHECK_EQUAL(3.6, mat_ones.at(2, 1));
+  BOOST_CHECK_EQUAL(1.3, mat_ones.at(2, 2));
 }
 
 /// Resta de matrices
 
-TEST_F(MatrixTest, subtraction)
+BOOST_FIXTURE_TEST_CASE(subtraction, MatrixTest)
 {
   Matrix3x3d mat = mat_identity - _mat_3x3_d;
 
-  EXPECT_EQ(-0.5, mat.at(0, 0));
-  EXPECT_EQ( 0.0, mat.at(0, 1));
-  EXPECT_EQ(-2.5, mat.at(0, 2));
-  EXPECT_EQ(-1.0, mat.at(1, 0));
-  EXPECT_EQ( 0.0, mat.at(1, 1));
-  EXPECT_EQ(-1.2, mat.at(1, 2));
-  EXPECT_EQ(-1.3, mat.at(2, 0));
-  EXPECT_EQ(-2.6, mat.at(2, 1));
-  EXPECT_EQ( 0.7, mat.at(2, 2));
+  BOOST_CHECK_EQUAL(-0.5, mat.at(0, 0));
+  BOOST_CHECK_EQUAL( 0.0, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(-2.5, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(-1.0, mat.at(1, 0));
+  BOOST_CHECK_EQUAL( 0.0, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(-1.2, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(-1.3, mat.at(2, 0));
+  BOOST_CHECK_EQUAL(-2.6, mat.at(2, 1));
+  BOOST_CHECK_EQUAL( 0.7, mat.at(2, 2));
 
   mat_identity -= _mat_3x3_d;
 
-  EXPECT_EQ(-0.5, mat_identity.at(0, 0));
-  EXPECT_EQ( 0.0, mat_identity.at(0, 1));
-  EXPECT_EQ(-2.5, mat_identity.at(0, 2));
-  EXPECT_EQ(-1.0, mat_identity.at(1, 0));
-  EXPECT_EQ( 0.0, mat_identity.at(1, 1));
-  EXPECT_EQ(-1.2, mat_identity.at(1, 2));
-  EXPECT_EQ(-1.3, mat_identity.at(2, 0));
-  EXPECT_EQ(-2.6, mat_identity.at(2, 1));
-  EXPECT_EQ( 0.7, mat_identity.at(2, 2));
+  BOOST_CHECK_EQUAL(-0.5, mat_identity.at(0, 0));
+  BOOST_CHECK_EQUAL( 0.0, mat_identity.at(0, 1));
+  BOOST_CHECK_EQUAL(-2.5, mat_identity.at(0, 2));
+  BOOST_CHECK_EQUAL(-1.0, mat_identity.at(1, 0));
+  BOOST_CHECK_EQUAL( 0.0, mat_identity.at(1, 1));
+  BOOST_CHECK_EQUAL(-1.2, mat_identity.at(1, 2));
+  BOOST_CHECK_EQUAL(-1.3, mat_identity.at(2, 0));
+  BOOST_CHECK_EQUAL(-2.6, mat_identity.at(2, 1));
+  BOOST_CHECK_EQUAL( 0.7, mat_identity.at(2, 2));
 }
 
 /// Multiplicación de matrices
 
-TEST_F(MatrixTest, multiplication)
+BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
 {
   Matrix<2,3,int> mat = _mat_2x3_i * _cofactor_matrix;
 
-  EXPECT_EQ(12, mat.at(0, 0));
-  EXPECT_EQ(44, mat.at(0, 1));
-  EXPECT_EQ(94, mat.at(0, 2));
-  EXPECT_EQ(11, mat.at(1, 0));
-  EXPECT_EQ(42, mat.at(1, 1));
-  EXPECT_EQ(69, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(12, mat.at(0, 0));
+  BOOST_CHECK_EQUAL(44, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(94, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(11, mat.at(1, 0));
+  BOOST_CHECK_EQUAL(42, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(69, mat.at(1, 2));
 
 }
 
 /// Multiplicación de una matriz por un escalar
 
-TEST_F(MatrixTest, MatrixScalar)
+BOOST_FIXTURE_TEST_CASE(MatrixScalar, MatrixTest)
 {
   Matrix<2,3,int> mat = _mat_2x3_i * 10;
 
-  EXPECT_EQ(60, mat.at(0, 0));
-  EXPECT_EQ(80, mat.at(0, 1));
-  EXPECT_EQ(60, mat.at(0, 2));
-  EXPECT_EQ(90, mat.at(1, 0));
-  EXPECT_EQ(60, mat.at(1, 1));
-  EXPECT_EQ(20, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(60, mat.at(0, 0));
+  BOOST_CHECK_EQUAL(80, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(60, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(90, mat.at(1, 0));
+  BOOST_CHECK_EQUAL(60, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(20, mat.at(1, 2));
 
   _mat_2x3_i *= 10;
 
-  EXPECT_EQ(60, _mat_2x3_i.at(0, 0));
-  EXPECT_EQ(80, _mat_2x3_i.at(0, 1));
-  EXPECT_EQ(60, _mat_2x3_i.at(0, 2));
-  EXPECT_EQ(90, _mat_2x3_i.at(1, 0));
-  EXPECT_EQ(60, _mat_2x3_i.at(1, 1));
-  EXPECT_EQ(20, _mat_2x3_i.at(1, 2));
+  BOOST_CHECK_EQUAL(60, _mat_2x3_i.at(0, 0));
+  BOOST_CHECK_EQUAL(80, _mat_2x3_i.at(0, 1));
+  BOOST_CHECK_EQUAL(60, _mat_2x3_i.at(0, 2));
+  BOOST_CHECK_EQUAL(90, _mat_2x3_i.at(1, 0));
+  BOOST_CHECK_EQUAL(60, _mat_2x3_i.at(1, 1));
+  BOOST_CHECK_EQUAL(20, _mat_2x3_i.at(1, 2));
 }
 
 /// Multiplicación de un escalar por una matriz
 
-TEST_F(MatrixTest, ScalarMatrix)
+BOOST_FIXTURE_TEST_CASE(scalar_matrix, MatrixTest)
 {
   Matrix<2,3,int> mat = 10 * _mat_2x3_i;
 
-  EXPECT_EQ(60, mat.at(0, 0));
-  EXPECT_EQ(80, mat.at(0, 1));
-  EXPECT_EQ(60, mat.at(0, 2));
-  EXPECT_EQ(90, mat.at(1, 0));
-  EXPECT_EQ(60, mat.at(1, 1));
-  EXPECT_EQ(20, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(60, mat.at(0, 0));
+  BOOST_CHECK_EQUAL(80, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(60, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(90, mat.at(1, 0));
+  BOOST_CHECK_EQUAL(60, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(20, mat.at(1, 2));
 }
 
 // División de una matriz por un escalar
 
-TEST_F(MatrixTest, DivMatrixScalar)
+BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
 {
   Matrix<3,3,double> mat = _mat_3x3_d / 10.;
 
@@ -546,13 +548,15 @@ TEST_F(MatrixTest, DivMatrixScalar)
   _mat_3x3_d.at(2, 1) = 2.6;
   _mat_3x3_d.at(2, 2) = 0.3;
 
-  EXPECT_EQ(.15, mat.at(0, 0));
-  EXPECT_EQ(.0, mat.at(0, 1));
-  EXPECT_EQ(.25, mat.at(0, 2));
-  EXPECT_EQ(.10, mat.at(1, 0));
-  EXPECT_EQ(.10, mat.at(1, 1));
-  EXPECT_EQ(.12, mat.at(1, 2));
-  EXPECT_EQ(.13, mat.at(2, 0));
-  EXPECT_EQ(.26, mat.at(2, 1));
-  EXPECT_EQ(.03, mat.at(2, 2));
+  BOOST_CHECK_EQUAL(.15, mat.at(0, 0));
+  BOOST_CHECK_EQUAL(.0, mat.at(0, 1));
+  BOOST_CHECK_EQUAL(.25, mat.at(0, 2));
+  BOOST_CHECK_EQUAL(.10, mat.at(1, 0));
+  BOOST_CHECK_EQUAL(.10, mat.at(1, 1));
+  BOOST_CHECK_EQUAL(.12, mat.at(1, 2));
+  BOOST_CHECK_EQUAL(.13, mat.at(2, 0));
+  BOOST_CHECK_EQUAL(.26, mat.at(2, 1));
+  BOOST_CHECK_EQUAL(.03, mat.at(2, 2));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -365,8 +365,8 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
 
   cv::Size size;
   //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-    size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-    size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+    size.width = TL_ROUND_TO_INT(wRead.width() / scale);
+    size.height = TL_ROUND_TO_INT(wRead.height() / scale);
     if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
   //} else {
   //  size.width = wRead.getWidth();
@@ -384,7 +384,7 @@ GdalRaster::Status GdalRaster::read(cv::Mat *image, const WindowI &wLoad, double
   int nBandSpace = static_cast<int>(image->elemSize1());
 
   CPLErr cerr = pDataset->RasterIO( GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                    wRead.getWidth(), wRead.getHeight(),
+                                    wRead.width(), wRead.height(),
                                     buff, size.width, size.height, mGdalDataType,
                                     mBands, panBandMap().data(), nPixelSpace,
                                     nLineSpace, nBandSpace );

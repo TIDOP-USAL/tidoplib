@@ -1,5 +1,7 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop utils test
+#include <boost/test/unit_test.hpp>
 #include <tidop/core/utils.h>
+
 
 using namespace tl;
 
@@ -317,5 +319,9 @@ using namespace tl;
 //TEST(Path, parse){
 //
 //}
+
+
+
+
 
 

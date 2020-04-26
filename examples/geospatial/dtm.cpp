@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   /// Se divide la ventana en trozos mas pequeños
 
   double resolution = 0.02; /// Resolución 2 micras
-  Box<Point3D> box = cloud_point.box();
+  BoundingBox<Point3D> box = cloud_point.boundingBox();
   double width_mm = box.width();
   double height_mm = box.height();
   //double depth_mm = box.depth();
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
   for(size_t r = 0; r < block_rows; r++){
     for(size_t c = 0; c < block_cols; c++){
-      Box<Point3D> box2;
+      BoundingBox<Point3D> box2;
       box2.pt1.x = box.pt1.x + c * scale_lineal;
       box2.pt1.y = box.pt1.y + r * scale_lineal;
       box2.pt1.z = box.pt1.z;

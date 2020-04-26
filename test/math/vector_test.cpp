@@ -1,20 +1,18 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop vector test
+#include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/vector.h>
 
 using namespace tl::math;
 
+BOOST_AUTO_TEST_SUITE(VectorTestSuite)
 
-class VectorTest
-  : public testing::Test
+struct VectorTest
 {
-public:
 
   VectorTest() {}
+  ~VectorTest() {}
 
-protected:
-
-  virtual void SetUp() override
+  void setup()
   {
     _vect_2_d[0] = 1.1;
     _vect_2_d[1] = 3.5;
@@ -30,7 +28,7 @@ protected:
 
   }
 
-  virtual void TearDown() override
+  void teardown()
   {
     
   }
@@ -42,195 +40,197 @@ protected:
 };
 
 
-TEST_F(VectorTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, VectorTest)
 {
   double ini_value = -std::numeric_limits<double>().max();
 
   for (size_t i = 0; i < _vect_def.size(); i++){
-    EXPECT_EQ(ini_value, _vect_def[i]);
+    BOOST_CHECK_EQUAL(ini_value, _vect_def[i]);
   }
 }
 
-TEST_F(VectorTest, CopyConstructor)
+BOOST_FIXTURE_TEST_CASE(copy_constructor, VectorTest)
 {
   Vector<3, double> copy(_vect_3_d);
   for (size_t i = 0; i < _vect_def.size(); i++){
-    EXPECT_EQ(_vect_3_d[i], copy[i]);
+    BOOST_CHECK_EQUAL(_vect_3_d[i], copy[i]);
   }
 }
 
-TEST_F(VectorTest, MoveConstructor)
+BOOST_FIXTURE_TEST_CASE(move_cnstructor, VectorTest)
 {
   Vector<3, double> move(Vector<3, double>({1.,2.,3.}));
-  EXPECT_EQ(1., move[0]);
-  EXPECT_EQ(2., move[1]);
-  EXPECT_EQ(3., move[2]);
+  BOOST_CHECK_EQUAL(1., move[0]);
+  BOOST_CHECK_EQUAL(2., move[1]);
+  BOOST_CHECK_EQUAL(3., move[2]);
 }
 
-TEST_F(VectorTest, initializer_list)
+BOOST_FIXTURE_TEST_CASE(initializer_list, VectorTest)
 {
   Vector<4, double> vect{{1.,2.,3.,4.}};
-  EXPECT_EQ(1., vect[0]);
-  EXPECT_EQ(2., vect[1]);
-  EXPECT_EQ(3., vect[2]);
-  EXPECT_EQ(4., vect[3]);
+  BOOST_CHECK_EQUAL(1., vect[0]);
+  BOOST_CHECK_EQUAL(2., vect[1]);
+  BOOST_CHECK_EQUAL(3., vect[2]);
+  BOOST_CHECK_EQUAL(4., vect[3]);
 }
 
-TEST_F(VectorTest, size)
+BOOST_FIXTURE_TEST_CASE(size, VectorTest)
 {
-  EXPECT_EQ(3, _vect_def.size());
-  EXPECT_EQ(2, _vect_2_d.size());
+  BOOST_CHECK_EQUAL(3, _vect_def.size());
+  BOOST_CHECK_EQUAL(2, _vect_2_d.size());
 }
 
-TEST_F(VectorTest, iterator)
+BOOST_FIXTURE_TEST_CASE(iterator, VectorTest)
 {
   Vector<4>::iterator it = _vect_4_d.begin();
-  EXPECT_EQ( 3.4, *it++);
-  EXPECT_EQ( 5.7, *it++);
-  EXPECT_EQ(-3.4, *it++);
-  EXPECT_EQ( 5.4, *it++);
-  EXPECT_TRUE(it == _vect_4_d.end());
+  BOOST_CHECK_EQUAL( 3.4, *it++);
+  BOOST_CHECK_EQUAL( 5.7, *it++);
+  BOOST_CHECK_EQUAL(-3.4, *it++);
+  BOOST_CHECK_EQUAL( 5.4, *it++);
+  BOOST_CHECK(it == _vect_4_d.end());
 }
 
-TEST_F(VectorTest, value_at)
+BOOST_FIXTURE_TEST_CASE(value_at, VectorTest)
 {
-  EXPECT_EQ(1.1, _vect_2_d[0]);
-  EXPECT_EQ(3.5, _vect_2_d[1]);
+  BOOST_CHECK_EQUAL(1.1, _vect_2_d[0]);
+  BOOST_CHECK_EQUAL(3.5, _vect_2_d[1]);
 
-  EXPECT_EQ(1.1, _vect_2_d.at(0));
-  EXPECT_EQ(3.5, _vect_2_d.at(1));
+  BOOST_CHECK_EQUAL(1.1, _vect_2_d.at(0));
+  BOOST_CHECK_EQUAL(3.5, _vect_2_d.at(1));
 }
 
-TEST_F(VectorTest, module)
-{
-  ///TODO
-}
-
-TEST_F(VectorTest, normalize)
+BOOST_FIXTURE_TEST_CASE(module, VectorTest)
 {
   ///TODO
 }
 
-TEST_F(VectorTest, zero)
+BOOST_FIXTURE_TEST_CASE(normalize, VectorTest)
+{
+  ///TODO
+}
+
+BOOST_FIXTURE_TEST_CASE(zero, VectorTest)
 {
   Vector<3, int> _zero = Vector<3, int>::zero();
 
-  EXPECT_EQ(0, _zero[0]);
-  EXPECT_EQ(0, _zero[1]);
-  EXPECT_EQ(0, _zero[2]);
+  BOOST_CHECK_EQUAL(0, _zero[0]);
+  BOOST_CHECK_EQUAL(0, _zero[1]);
+  BOOST_CHECK_EQUAL(0, _zero[2]);
 }
 
 
 /* Operaciones unarias */
 
-TEST_F(VectorTest, plus)
+BOOST_FIXTURE_TEST_CASE(plus, VectorTest)
 {
   Vector<4> v4 = +_vect_4_d;
 
-  EXPECT_EQ( 3.4, v4[0]);
-  EXPECT_EQ( 5.7, v4[1]);
-  EXPECT_EQ(-3.4, v4[2]);
-  EXPECT_EQ( 5.4, v4[3]);
+  BOOST_CHECK_EQUAL( 3.4, v4[0]);
+  BOOST_CHECK_EQUAL( 5.7, v4[1]);
+  BOOST_CHECK_EQUAL(-3.4, v4[2]);
+  BOOST_CHECK_EQUAL( 5.4, v4[3]);
 }
 
-TEST_F(VectorTest, minus)
+BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
 {
   Vector<4> v4 = -_vect_4_d;
 
-  EXPECT_EQ(-3.4, v4[0]);
-  EXPECT_EQ(-5.7, v4[1]);
-  EXPECT_EQ( 3.4, v4[2]);
-  EXPECT_EQ(-5.4, v4[3]);
+  BOOST_CHECK_EQUAL(-3.4, v4[0]);
+  BOOST_CHECK_EQUAL(-5.7, v4[1]);
+  BOOST_CHECK_EQUAL( 3.4, v4[2]);
+  BOOST_CHECK_EQUAL(-5.4, v4[3]);
 }
 
 /* Operaciones binarias entre vectores */
 
 /// Suma de vectores
 
-TEST_F(VectorTest, addition)
+BOOST_FIXTURE_TEST_CASE(addition, VectorTest)
 {
   Vector<3, int> v1 = {1, 0, 3};
   Vector<3, int> v2 = {-1, 4, 2};
   Vector<3, int> v3 = v1 + v2;
 
-  EXPECT_EQ(0, v3[0]);
-  EXPECT_EQ(4, v3[1]);
-  EXPECT_EQ(5, v3[2]);
+  BOOST_CHECK_EQUAL(0, v3[0]);
+  BOOST_CHECK_EQUAL(4, v3[1]);
+  BOOST_CHECK_EQUAL(5, v3[2]);
 
   v1 += v2;
 
-  EXPECT_EQ(0, v1[0]);
-  EXPECT_EQ(4, v1[1]);
-  EXPECT_EQ(5, v1[2]);
+  BOOST_CHECK_EQUAL(0, v1[0]);
+  BOOST_CHECK_EQUAL(4, v1[1]);
+  BOOST_CHECK_EQUAL(5, v1[2]);
 }
 
-TEST_F(VectorTest, subtraction)
+BOOST_FIXTURE_TEST_CASE(subtraction, VectorTest)
 {
   Vector<3, int> v1 = {1, 0, 3};
   Vector<3, int> v2 = {-1, 4, 2};
   Vector<3, int> v3 = v1 - v2;
 
-  EXPECT_EQ( 2, v3[0]);
-  EXPECT_EQ(-4, v3[1]);
-  EXPECT_EQ( 1, v3[2]);
+  BOOST_CHECK_EQUAL( 2, v3[0]);
+  BOOST_CHECK_EQUAL(-4, v3[1]);
+  BOOST_CHECK_EQUAL( 1, v3[2]);
 
   v1 -= v2;
 
-  EXPECT_EQ( 2, v1[0]);
-  EXPECT_EQ(-4, v1[1]);
-  EXPECT_EQ( 1, v1[2]);
+  BOOST_CHECK_EQUAL( 2, v1[0]);
+  BOOST_CHECK_EQUAL(-4, v1[1]);
+  BOOST_CHECK_EQUAL( 1, v1[2]);
 }
 
 /// Producto
 
-TEST_F(VectorTest, multiplication)
+BOOST_FIXTURE_TEST_CASE(multiplication, VectorTest)
 {
   Vector<3, int> v1 = {1, 0, 3};
   Vector<3, int> v2 = {-1, 4, 2};
   Vector<3, int> v3 = v1 * v2;
 
-  EXPECT_EQ(-1, v3[0]);
-  EXPECT_EQ( 0, v3[1]);
-  EXPECT_EQ( 6, v3[2]);
+  BOOST_CHECK_EQUAL(-1, v3[0]);
+  BOOST_CHECK_EQUAL( 0, v3[1]);
+  BOOST_CHECK_EQUAL( 6, v3[2]);
 
   v1 *= v2;
 
-  EXPECT_EQ(-1, v1[0]);
-  EXPECT_EQ( 0, v1[1]);
-  EXPECT_EQ( 6, v1[2]);
+  BOOST_CHECK_EQUAL(-1, v1[0]);
+  BOOST_CHECK_EQUAL( 0, v1[1]);
+  BOOST_CHECK_EQUAL( 6, v1[2]);
 
 }
 
 
-TEST_F(VectorTest, VectorScalar)
+BOOST_FIXTURE_TEST_CASE(VectorScalar, VectorTest)
 {
   Vector<3, int> v1 = {1, 0, 3};
   Vector<3, int> v2 = v1 * 10;
 
-  EXPECT_EQ(10, v2[0]);
-  EXPECT_EQ( 0, v2[1]);
-  EXPECT_EQ(30, v2[2]);
+  BOOST_CHECK_EQUAL(10, v2[0]);
+  BOOST_CHECK_EQUAL( 0, v2[1]);
+  BOOST_CHECK_EQUAL(30, v2[2]);
 
   v1 *= 10;
 
-  EXPECT_EQ(10, v1[0]);
-  EXPECT_EQ( 0, v1[1]);
-  EXPECT_EQ(30, v1[2]);
+  BOOST_CHECK_EQUAL(10, v1[0]);
+  BOOST_CHECK_EQUAL( 0, v1[1]);
+  BOOST_CHECK_EQUAL(30, v1[2]);
 }
 
 
-TEST_F(VectorTest, ScalarVector)
+BOOST_FIXTURE_TEST_CASE(ScalarVector, VectorTest)
 {
   Vector<3, int> v1 = {1, 0, 3};
   Vector<3, int> v2 = 10 * v1;
 
-  EXPECT_EQ(10, v2[0]);
-  EXPECT_EQ( 0, v2[1]);
-  EXPECT_EQ(30, v2[2]);
+  BOOST_CHECK_EQUAL(10, v2[0]);
+  BOOST_CHECK_EQUAL( 0, v2[1]);
+  BOOST_CHECK_EQUAL(30, v2[2]);
 
 }
 
-TEST_F(VectorTest, dotProduct)
+BOOST_FIXTURE_TEST_CASE(dotProduct, VectorTest)
 {
 
 }
+
+BOOST_AUTO_TEST_SUITE_END()
