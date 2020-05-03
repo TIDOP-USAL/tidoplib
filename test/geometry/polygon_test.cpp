@@ -6,7 +6,6 @@
 
 
 using namespace tl;
-using namespace tl::geometry;
 
 BOOST_AUTO_TEST_SUITE(PolygonTestSuite)
 
@@ -15,7 +14,7 @@ struct PolygonTest
 {
   PolygonTest()
   {
-    pol_2 = new geometry::Polygon<Point<int>>{
+    pol_2 = new PolygonI{
       PointI(4157222, 664789),
       PointI(4149043, 688836),
       PointI(4172803, 690340),
@@ -24,7 +23,7 @@ struct PolygonTest
       PointI(4146292, 666953),
       PointI(4138759, 702670) };
              
-    pol_3 = new geometry::PolygonD(10);
+    pol_3 = new PolygonD(10);
   }
   ~PolygonTest()
   {
@@ -41,9 +40,9 @@ struct PolygonTest
 
   }
 
-  geometry::Polygon<Point<int>> pol_1;
-  geometry::Polygon<Point<int>> *pol_2;
-  geometry::Polygon<Point<double>> *pol_3;
+  PolygonI pol_1;
+  PolygonI *pol_2;
+  PolygonD *pol_3;
 };
 
 

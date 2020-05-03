@@ -6,7 +6,6 @@
 #include <tidop/math/algebra/vector.h>
 
 using namespace tl;
-using namespace geometry;
 
 BOOST_AUTO_TEST_SUITE(TranslationTestSuite)
 

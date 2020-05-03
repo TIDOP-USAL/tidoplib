@@ -3,7 +3,6 @@
 #include <tidop/geometry/entities/window.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 /* ---------------------------------------------------------------------------------- */
 /*                        Test Operaciones con ventanas                                */

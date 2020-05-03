@@ -89,7 +89,7 @@ protected:
   /*!
    * \brief Lineas detectadas
    */
-  std::vector<geometry::SegmentI> mLines;
+  std::vector<SegmentI> mLines;
 
 public:
 
@@ -150,7 +150,7 @@ public:
    * \brief Devuelve una referencia a las líneas detectadas
    * \return Lineas
    */
-  const std::vector<geometry::SegmentI> &getLines() const { return mLines; }
+  const std::vector<SegmentI> &getLines() const { return mLines; }
 
   /*!
    * \brief Establece rango angular en el cual se buscarán las líneas

@@ -3,8 +3,6 @@
 namespace tl
 {
 
-using namespace geometry;
-
 namespace graph
 { 
 
@@ -135,7 +133,7 @@ GMultiLineString::GMultiLineString()
 {
 }
 
-GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString)
+GMultiLineString::GMultiLineString(const MultiLineString<Point<double>> &multiLineString)
   : MultiLineString<Point<double>>(multiLineString), 
     GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
@@ -194,7 +192,7 @@ GMultiLineString3D::GMultiLineString3D()
 {
 }
 
-GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<geometry::Point3<double>> &multiLineString)
+GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &multiLineString)
   : MultiLineString3D<Point3<double>>(multiLineString),
     GraphicEntity(GraphicEntity::Type::multiline_3d)
 {

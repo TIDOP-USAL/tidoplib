@@ -25,7 +25,6 @@ namespace fs = boost::filesystem;
 namespace tl
 {
 
-using namespace geometry;
 
 ImageWriter::ImageWriter(const std::string &fileName)
   : mFileName(fileName)
@@ -33,6 +32,18 @@ ImageWriter::ImageWriter(const std::string &fileName)
 
 }
 
+void ImageWriter::windowWrite(const WindowI &window, 
+                              WindowI *windowWrite, 
+                              PointI *offset) const
+{
+  WindowI window_all(PointI(0, 0), PointI(this->cols(), this->rows()));   // Ventana total de imagen
+  if ( window.isEmpty() ) {
+    *windowWrite = window_all;  // Se lee toda la ventana
+  } else {
+    *windowWrite = windowIntersection(window_all, window);
+    *offset = windowWrite->pt1 - window.pt1;
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -56,23 +67,23 @@ public:
 
   ~ImageWriterGdal()
   {
-    char **tmp = nullptr;
-    if (bTempFile) {
-      std::string ext = fs::path(mFileName).extension().string();
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
-      GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, nullptr, nullptr, nullptr);
-      if (!tempDataSet) {
-        msgError("No se pudo crear la imagen");
-      } else {
-        GDALClose(static_cast<GDALDatasetH>(tempDataSet));
-      }
-      tmp = mDataset->GetFileList();
-    }
+    //char **tmp = nullptr;
+    //if (bTempFile) {
+    //  std::string ext = fs::path(mFileName).extension().string();
+    //  GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
+    //  GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, nullptr, nullptr, nullptr);
+    //  if (!tempDataSet) {
+    //    msgError("No se pudo crear la imagen");
+    //  } else {
+    //    GDALClose(static_cast<GDALDatasetH>(tempDataSet));
+    //  }
+    //  tmp = mDataset->GetFileList();
+    ////}
 
-    if (bTempFile) {
-      for (size_t i = 0; i < sizeof(**tmp); i++)
-        remove(tmp[i]);
-    }
+    ////if (bTempFile) {
+    //  for (size_t i = 0; i < sizeof(**tmp); i++)
+    //    remove(tmp[i]);
+    //}
 
     close();
   }
@@ -84,11 +95,11 @@ public:
     close();
 
     std::string extension = fs::path(mFileName).extension().string();
-    const char *driverName = gdalDriverFromExtension(extension).c_str();
+    std::string driver_name = gdalDriverFromExtension(extension);
    
-    if (driverName == nullptr) throw std::runtime_error("Image open fail. Driver not found");
+    if (driver_name.empty()) throw std::runtime_error("Image open fail. Driver not found");
 
-    mDriver = GetGDALDriverManager()->GetDriverByName(driverName); 
+    mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str()); 
 
     if (mDriver == nullptr) throw std::runtime_error("Image open fail");
 
@@ -102,7 +113,7 @@ public:
       fs::path file_path(mFileName);
 
       mTempName = path.string();
-      mTempName.append(file_path.stem().string());
+      mTempName.append("\\").append(file_path.stem().string());
       mTempName.append(".tif");
     }
   }
@@ -114,6 +125,22 @@ public:
 
   void close() override
   {
+    char **tmp = nullptr;
+    if (bTempFile) {
+      std::string ext = fs::path(mFileName).extension().string();
+      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
+      GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, nullptr, nullptr, nullptr);
+      if (!tempDataSet) {
+        msgError("No se pudo crear la imagen");
+      } else {
+        GDALClose(static_cast<GDALDatasetH>(tempDataSet));
+      }
+      tmp = mDataset->GetFileList();
+
+      for (size_t i = 0; i < sizeof(**tmp); i++)
+        remove(tmp[i]);
+    }
+
     if (mDataset) {
       GDALClose(mDataset);
       mDataset = nullptr;
@@ -140,10 +167,14 @@ public:
 
 #ifdef HAVE_OPENCV
 
-  void write(const cv::Mat &image, const geometry::WindowI &window = WindowI()) override
+  void write(const cv::Mat &image, const WindowI &window = WindowI()) override
   {
-    if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
+    if (mDataset == nullptr) throw std::runtime_error("Can't write the image");
     
+    WindowI window_write;
+    PointI offset;
+    windowWrite(window, &window_write, &offset);
+
     ///// TODO: chequeos sobre el objeto cv::Mat. Las dimensiones tienen que coincidir con Window
     ///// Sustituir por Assert. 
     GDALDataType gdal_data_type = openCvToGdal(image.depth());
@@ -158,8 +189,8 @@ public:
     int nLineSpace = nPixelSpace * image.cols;
     int nBandSpace = static_cast<int>(image.elemSize1());
 
-    CPLErr cerr = mDataset->RasterIO(GF_Write, window.pt1.x, window.pt1.y, 
-                                     image.cols, image.rows, buff, 
+    CPLErr cerr = mDataset->RasterIO(GF_Write, window_write.pt1.x, window_write.pt1.y, 
+                                     window_write.width(), window_write.height(), buff, 
                                      image.cols, image.rows, 
                                      gdal_data_type, image.channels(), 
                                      gdalBandOrder(image.channels()).data(), nPixelSpace,
@@ -170,7 +201,7 @@ public:
     }
   }
 
-  void write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = nullptr) override
+  void write(const cv::Mat &image, const Helmert2D<PointI> *trf = nullptr) override
   {
     if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
 
@@ -209,13 +240,13 @@ public:
     if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
 
     int nPixelSpace = this->channels() * this->depth();
-    int nLineSpace = nPixelSpace * window.getWidth();
+    int nLineSpace = nPixelSpace * window.width();
     int nBandSpace = 1; ///TODO: comprobar...
 
     unsigned char *_buff = const_cast<unsigned char *>(buff);
     CPLErr cerr = mDataset->RasterIO(GF_Write, window.pt1.x, window.pt1.y, 
-                                     window.getWidth(), window.getHeight(), _buff, 
-                                     window.getWidth(), window.getHeight(), 
+                                     window.width(), window.height(), _buff, 
+                                     window.width(), window.height(), 
                                      dataTypeToGdalDataType(this->dataType()), this->channels(), 
                                      gdalBandOrder(this->channels()).data(), nPixelSpace,
                                      nLineSpace, nBandSpace);

@@ -88,7 +88,7 @@ public:
    * \param point Punto
    */
   virtual void drawPoint(const GPoint &point) = 0;
-  virtual void drawPoint(const geometry::PointD &point, const GraphicStyle &style) = 0;
+  virtual void drawPoint(const PointD &point, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja una polilinea en el canvas
@@ -140,7 +140,7 @@ public:
   void setSize(int width, int height) override;
   void setBackgroundColor(const Color &color) override;
   void drawPoint(const GPoint &point) override;
-  void drawPoint(const geometry::PointD &point, const GraphicStyle &style) override;
+  void drawPoint(const PointD &point, const GraphicStyle &style) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
 

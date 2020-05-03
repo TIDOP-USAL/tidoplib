@@ -7,7 +7,6 @@
 #include <tidop/math/algebra/vector.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 /* Constructor por defecto */
 

@@ -17,7 +17,7 @@ namespace graph
 {
 
 class TL_EXPORT GPoint
-  : public geometry::Point<double>,
+  : public Point<double>,
     public GraphicEntity
 {
 public:
@@ -78,7 +78,7 @@ public:
 
 
 class TL_EXPORT GPoint3D 
-  : public geometry::Point3<double>, 
+  : public Point3<double>, 
     public GraphicEntity
 {
 public:
@@ -139,13 +139,13 @@ public:
 
 
 class TL_EXPORT GMultiPoint 
-  : public geometry::MultiPoint<geometry::Point<double>>, 
+  : public MultiPoint<Point<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiPoint();
-  GMultiPoint(const MultiPoint<geometry::Point<double>> &multiPoint);
+  GMultiPoint(const MultiPoint<Point<double>> &multiPoint);
   GMultiPoint(const GMultiPoint &gMultiPoint);
   ~GMultiPoint() override;
 
@@ -157,13 +157,13 @@ public:
 
 
 class TL_EXPORT GMultiPoint3D 
-  : public geometry::MultiPoint3D<geometry::Point3<double>>, 
+  : public MultiPoint3D<Point3<double>>, 
     public GraphicEntity
 {
 public:
 
   GMultiPoint3D();
-  GMultiPoint3D(const MultiPoint3D<geometry::Point3<double>> &multiPoint);
+  GMultiPoint3D(const MultiPoint3D<Point3<double>> &multiPoint);
   GMultiPoint3D(const GMultiPoint3D &gMultiPoint);
   ~GMultiPoint3D() override;
 

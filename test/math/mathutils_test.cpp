@@ -4,9 +4,8 @@
 #include <tidop/geometry/entities/point.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
-// Para BOOST_AUTO_TEST_CASEear angulos de euler
+// Para testear angulos de euler
 //http://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm
 //http://euclideanspace.com/maths/geometry/rotations/conversions/index.htm
 

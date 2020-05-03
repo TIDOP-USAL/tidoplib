@@ -12,8 +12,6 @@
 namespace tl
 {
 
-using namespace geometry;
-
 namespace graph
 { 
 
@@ -103,7 +101,7 @@ void CanvasCV::drawPoint(const GPoint &point)
   cv::addText(mCanvas, style_label->text(), pt, qt_font);
 }
 
-void CanvasCV::drawPoint(const geometry::PointD &point, const GraphicStyle &style)
+void CanvasCV::drawPoint(const PointD &point, const GraphicStyle &style)
 {
   StyleSymbol *style_symbol = style.styleSymbol();
   StylePen *style_pen = style.stylePen();

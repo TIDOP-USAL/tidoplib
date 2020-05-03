@@ -3,7 +3,6 @@
 #include <tidop/geometry/entities/shapes.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 /* Circle */
 

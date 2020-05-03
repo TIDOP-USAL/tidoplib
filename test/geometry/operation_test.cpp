@@ -6,7 +6,6 @@
 #include <tidop/geometry/entities/segment.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 
 BOOST_AUTO_TEST_SUITE(GeometricOperationsTestSuite)
@@ -53,19 +52,19 @@ struct GeometricOperations
 
 BOOST_FIXTURE_TEST_CASE(distance, GeometricOperations)
 {
-  BOOST_CHECK_CLOSE(213.378, tl::geometry::distance(pt1, pt2), 0.001);
-  BOOST_CHECK_CLOSE(213.378, tl::geometry::distance(pt2, pt1), 0.001);
+  BOOST_CHECK_CLOSE(213.378, tl::distance(pt1, pt2), 0.001);
+  BOOST_CHECK_CLOSE(213.378, tl::distance(pt2, pt1), 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(distance3D, GeometricOperations)
 {
-  BOOST_CHECK_CLOSE(2191.961, tl::geometry::distance3D(pt1d, pt2d), 0.001);
-  BOOST_CHECK_CLOSE(2191.961, tl::geometry::distance3D(pt2d, pt1d), 0.001);
+  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt1d, pt2d), 0.001);
+  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt2d, pt1d), 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(isLeft, GeometricOperations)
 {
-  BOOST_CHECK_EQUAL(1, tl::geometry::isLeft(segment.pt1, segment.pt2, pt_int));
+  BOOST_CHECK_EQUAL(1, tl::isLeft(segment.pt1, segment.pt2, pt_int));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

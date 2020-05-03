@@ -37,9 +37,6 @@ namespace tl
  *  \{
  */
 
-namespace geometry
-{
-
 
 /*!
 * \brief The Window class
@@ -184,30 +181,6 @@ public:
    */
   template<typename Point_t2> bool containsWindow(const Window<Point_t2> &w) const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief Devuelve el ancho de la ventana
-   * \return Ancho
-   */
-  TL_DEPRECATED("width", "2.0")
-  typename Point_t::value_type getWidth() const { return pt2.x - pt1.x; }
-
-  /*!
-   * \brief Devuelve el alto de la ventana
-   * \return Alto
-   */
-  TL_DEPRECATED("height", "2.0")
-  typename Point_t::value_type getHeight() const { return pt2.y - pt1.y; }
-
-  /*!
-   * \brief Devuelve centro de la ventana
-   * \return Centro de la ventana
-   * \deprecated Use 'center' en su lugar
-   */
-  TL_DEPRECATED("center", "2.0")
-  Point_t getCenter() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 };
 
 // Definición de métodos
@@ -373,21 +346,6 @@ Window<Point_t>::operator Window<Point_t2>() const
   return w;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Point_t Window<Point_t>::getCenter() const
-{
-  if (std::is_integral<typename Point_t::value_type>::value) {
-    return Point_t(static_cast<typename Point_t::value_type>(std::round((pt1.x + pt2.x) / 2)), 
-                   static_cast<typename Point_t::value_type>(std::round((pt1.y + pt2.y) / 2)));
-  } else {
-    TL_DISABLE_WARNING(TL_WARNING_C4244)
-    return Point_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
-    TL_ENABLE_WARNING(TL_WARNING_C4244)
-  }
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename Point_t> inline
 Point_t Window<Point_t>::center() const
@@ -437,7 +395,6 @@ typedef Window<Point<float>> WindowF;
  * \param[in] w Ventana
  * \return cv::Rect
  */
-//TL_EXPORT cv::Rect windowToCvRect(WindowI w);
 template<typename T> inline
 cv::Rect_<T> windowToCvRect(const Window<Point<T>> &w)
 {
@@ -449,7 +406,6 @@ cv::Rect_<T> windowToCvRect(const Window<Point<T>> &w)
  * \param[in] rect cv::Rect
  * \return Ventana
  */
-//TL_EXPORT WindowI cvRectToWindow(cv::Rect rect);
 template<typename T> inline
 Window<T> cvRectToWindow(const cv::Rect_<T> &rect)
 {
@@ -553,8 +509,19 @@ Window<Point_t> moveWindow(const Window<Point_t> &w, T dx, T dy)
   return w_return;
 }
 
-} // End namespace geometry
+template<typename Point_t> static inline
+bool operator == (const Window<Point_t> &window1, const Window<Point_t> &window2)
+{
+  return (window1.pt1 == window2.pt1 && 
+          window1.pt2 == window2.pt2);
+}
 
+template<typename Point_t> static inline
+bool operator != (const Window<Point_t> &rect1, const Window<Point_t> &rect2)
+{
+  return (window1.pt1 != window2.pt1 || 
+          window1.pt2 != window2.pt2);
+}
 
 /*! \} */ // end of GeometricEntities
 

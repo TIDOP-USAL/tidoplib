@@ -8,7 +8,6 @@
 #include "tidop/core/exception.h"
 
 using namespace std;
-using namespace tl::geometry;
 
 namespace tl
 {

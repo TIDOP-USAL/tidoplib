@@ -32,11 +32,6 @@ namespace tl
  *  \{
  */
 
-namespace geometry
-{
-
-/* ---------------------------------------------------------------------------------- */
-
 
 /*!
  * \brief Clase polilínea 2D
@@ -117,11 +112,6 @@ public:
    * \return Ventana envolvente de los puntos
    */
   Window<Point_t> window() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()", "2.0")
-  Window<Point_t> getWindow() const;
-#endif
   
 };
 
@@ -196,21 +186,6 @@ LineString<Point_t> &LineString<Point_t>::operator = (LineString<Point_t> &&line
   }
   return *this;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Window<Point_t> LineString<Point_t>::getWindow() const
-{
-  Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
-  }
-  return w;
-}
-#endif
 
 template<typename Point_t> inline
 Window<Point_t> LineString<Point_t>::window() const
@@ -305,17 +280,6 @@ public:
    */
   LineString3D<Point3_t> &operator = (LineString3D<Point3_t> &&lineString) TL_NOEXCEPT;
 
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Caja envolvente
-   * \return Caja envolvente de la polilinea
-   * \deprecated Use 'boundingBox()' en su lugar
-   */
-  TL_DEPRECATED("boundingBox()", "2.0")
-  BoundingBox<Point3_t> getBox() const;
-#endif
-
   /*!
    * \brief Caja envolvente
    * \return Caja envolvente de la polilinea
@@ -395,23 +359,6 @@ LineString3D<Point3_t> &LineString3D<Point3_t>::operator = (LineString3D &&lineS
   return *this;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline
-BoundingBox<Point3_t> LineString3D<Point3_t>::getBox() const
-{
-  BoundingBox<Point3_t> bounding_box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
-    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
-    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
-    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
-    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
-    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
-  }
-  return bounding_box;
-}
-#endif
-
 template<typename Point3_t> inline
 BoundingBox<Point3_t> LineString3D<Point3_t>::boundingBox() const
 {
@@ -483,16 +430,6 @@ public:
    */
   MultiLineString<Point_t> &operator = (MultiLineString<Point_t> &&multiLineString) TL_NOEXCEPT;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente de los puntos
-   * \deprecated Use 'window()' en su lugar
-   */
-  TL_DEPRECATED("window()", "2.0")
-  Window<Point_t> getWindow() const;
-#endif
-
   /*!
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
@@ -548,18 +485,6 @@ MultiLineString<Point_t> &MultiLineString<Point_t>::operator = (MultiLineString 
   }
   return *this;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Window<Point_t> MultiLineString<Point_t>::getWindow() const
-{
-  Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    w = joinWindow(w, this->mEntities[i].getWindow());
-  }
-  return w;
-}
-#endif
 
 template<typename Point_t> inline
 Window<Point_t> MultiLineString<Point_t>::window() const
@@ -687,10 +612,8 @@ BoundingBox<Point3_t> MultiLineString3D<Point3_t>::boundingBox() const
   return bounding_box;
 }
 
-} // Fin namespace Geometry
-
 /*! \} */ // end of GeometricEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif  // TL_GEOMETRY_LINESTRING_H

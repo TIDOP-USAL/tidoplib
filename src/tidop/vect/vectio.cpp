@@ -29,7 +29,6 @@ namespace tl
 {
 
 using namespace graph;
-using namespace geometry;
 
 
 VrtVector::VrtVector()

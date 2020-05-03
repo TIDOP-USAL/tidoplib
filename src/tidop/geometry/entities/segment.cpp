@@ -23,9 +23,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-
 GroupLines::GroupLines()
 {
   bbox = WindowI();
@@ -79,8 +76,5 @@ void GroupLines::deleteLine(int id)
 {
   linesgroup.erase(linesgroup.begin() + id);
 }
-
-}
-
 
 } // End namespace TL

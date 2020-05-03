@@ -6,7 +6,6 @@
 #include <tidop/geometry/entities/point.h>
 
 using namespace tl;
-using namespace geometry;
 using namespace math;
 
 /* ---------------------------------------------------------------------------------- */

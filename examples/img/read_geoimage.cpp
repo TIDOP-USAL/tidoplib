@@ -6,7 +6,7 @@
 #include <tidop/img/imgio.h>
 
 using namespace tl;
-using namespace geometry;
+
 
 /*!
  * read_image: 

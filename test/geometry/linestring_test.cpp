@@ -6,7 +6,6 @@
 #include <tidop/core/utils.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 std::initializer_list<PointI> ptsIn{
 	PointI(4157222, 664789),

@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 
   std::string img;
 
-  Command cmd("Read Image", "Lectura de una imagen");
+  Command cmd("read_image", "Lectura de una imagen");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
 
   // Parseo de los argumentos y comprobación de los mismos
@@ -54,6 +54,9 @@ int main(int argc, char** argv)
       msgInfo("Profundidad de color: %i", imageReader->depth());
       msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
       
+      cv::Mat bmp;
+      imageReader->read(bmp);
+
       imageReader->close();
     } else {
       msgError("Error al abrir la imagen: %s", img.c_str());
@@ -61,20 +64,6 @@ int main(int argc, char** argv)
   } catch (const std::exception &e) {
     msgError(e.what());
   }
-
-  //cv::Mat bmp;
-  //image.read(&bmp, geometry::WindowI());
-
-  //JpegMetadata metadata(&image);
-  //std::string document_name = metadata.exifDocumentName();
-  //std::string description = metadata.exifImageDescription();
-  //std::string make = metadata.exifMake();
-  //std::string model = metadata.exifModel();
-
-  //msgInfo("Document Name: %s", document_name.c_str());
-  //msgInfo("Image Description: %s", description.c_str());
-  //msgInfo("Make: %s", make.c_str());
-  //msgInfo("Model: %s", model.c_str());
 
   return 0;
 }

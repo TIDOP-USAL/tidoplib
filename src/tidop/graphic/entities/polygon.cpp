@@ -3,8 +3,6 @@
 namespace tl
 {
 
-using namespace geometry;
-
 namespace graph
 { 
 

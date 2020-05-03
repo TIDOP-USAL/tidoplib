@@ -19,7 +19,7 @@ namespace fs = boost::filesystem;
 
 using namespace tl;
 using namespace geospatial;
-using namespace geometry;
+
 
 int main(int argc, char** argv)
 {

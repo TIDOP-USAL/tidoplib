@@ -4635,14 +4635,14 @@ TL_TODO("Marcar los métodos 'transform' como obsoletos y usar std::transform co
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
  */
 template<typename Point_t> inline
-void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *out,
+void transform(const Window<Point_t> &in, Window<Point_t> *out,
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
 {
   Point_t pt1;
   Point_t pt2;
   trf->transform(in.pt1, &pt1, trfOrder);
   trf->transform(in.pt2, &pt2, trfOrder);
-  *out = geometry::Window<Point_t>(pt1, pt2);
+  *out = Window<Point_t>(pt1, pt2);
 }
 
 
@@ -4655,7 +4655,7 @@ void transform(const geometry::Window<Point_t> &in, geometry::Window<Point_t> *o
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
  */
 template<typename Point_t> inline
-void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> *out, 
+void transform(const Segment<Point_t> &in, Segment<Point_t> *out, 
                           Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
 {
   trf->transform(in.pt1, &out->pt1, trfOrder);
@@ -4670,7 +4670,7 @@ void transform(const geometry::Segment<Point_t> &in, geometry::Segment<Point_t> 
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
  */
 template<typename Point_t> inline
-transform_status transform(const geometry::EntityContainer<Point_t> &ptsIn, geometry::EntityContainer<Point_t> *ptsOut,
+transform_status transform(const EntityContainer<Point_t> &ptsIn, EntityContainer<Point_t> *ptsOut,
                Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
 {
   transform_status r_status = transform_status::success;

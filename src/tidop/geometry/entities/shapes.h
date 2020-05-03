@@ -37,10 +37,6 @@ namespace tl
  *  \{
  */
 
-
-namespace geometry
-{
-
 class Shape
 {
 
@@ -640,8 +636,6 @@ double Rectangle<T>::area() const
   return 0;
 }
 
- 
-} // End namespace geometry
 
 /*! \} */ // end of GeometricEntities
 

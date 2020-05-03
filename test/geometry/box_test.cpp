@@ -3,7 +3,6 @@
 #include <tidop/geometry/entities/bbox.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 // Constructor por defecto
 

@@ -158,7 +158,7 @@ public:
    * \param[out] _descriptor Si existe este parametro se devuelve una copia de los descriptores
    */
   template<typename T> 
-  void filter(const cv::Mat &in, const geometry::Window<T> &w, cv::Mat *out, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor) {
+  void filter(const cv::Mat &in, const Window<T> &w, cv::Mat *out, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor) {
     geometry::Window<T> waux = w;
     geometry::PointF pt_aux;
     for (int j = 0; j < mKeyPoints.size(); j++) {

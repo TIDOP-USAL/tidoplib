@@ -24,7 +24,6 @@ namespace fs = boost::filesystem;
 namespace tl
 {
 
-using namespace geometry;
 
 ImageReader::ImageReader(const std::string &fileName)
   : mFileName(fileName)
@@ -92,25 +91,24 @@ public:
 
 #ifdef HAVE_OPENCV
 
-  void read(cv::Mat *image, 
-            const geometry::WindowI &wLoad = geometry::WindowI(), 
+  void read(cv::Mat &image, 
+            const WindowI &wLoad = WindowI(), 
             double scale = 1., 
-            Helmert2D<geometry::PointI> *trf = nullptr) override
+            Helmert2D<PointI> *trf = nullptr) override
   {
 
-    if (mDataset != nullptr) throw std::runtime_error("Can't read the image");
+    if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
     WindowI wRead;
     PointI offset;
     windowRead(wLoad, &wRead, &offset);
-    WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));   // Ventana total de imagen
-  
+
     offset /= scale; // Corregido por la escala
 
     cv::Size size;
     //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-      size.width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-      size.height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
+      size.width = TL_ROUND_TO_INT(wRead.width() / scale);
+      size.height = TL_ROUND_TO_INT(wRead.height() / scale);
       if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
     //} else {
     //  size.width = wRead.getWidth();
@@ -118,17 +116,17 @@ public:
     //  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
     //}
 
-    image->create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image->empty())
+    image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
+    if (image.empty())
       return;// Status::failure;
 
-    uchar *buff = image->ptr();
-    int nPixelSpace = static_cast<int>(image->elemSize());
-    int nLineSpace = nPixelSpace * image->cols;
-    int nBandSpace = static_cast<int>(image->elemSize1());
+    uchar *buff = image.ptr();
+    int nPixelSpace = static_cast<int>(image.elemSize());
+    int nLineSpace = nPixelSpace * image.cols;
+    int nBandSpace = static_cast<int>(image.elemSize1());
 
     CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                     wRead.getWidth(), wRead.getHeight(),
+                                     wRead.width(), wRead.height(),
                                      buff, size.width, size.height, this->gdalDataType(),
                                      this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
                                      nLineSpace, nBandSpace);
@@ -140,37 +138,37 @@ public:
   }
 #endif // HAVE_OPENCV
 
-  void read(unsigned char *buff, 
-            const geometry::WindowI &wLoad = geometry::WindowI(), 
-            double scale = 1., 
-            Helmert2D<geometry::PointI>* trf = nullptr) override
-  {
-    WindowI wRead;
-    PointI offset;
-    windowRead(wLoad, &wRead, &offset);
-    WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));
-  
-    offset /= scale; // Corregido por la escala
+  //void read(unsigned char *&buff, 
+  //          const WindowI &wLoad = WindowI(), 
+  //          double scale = 1., 
+  //          Helmert2D<PointI>* trf = nullptr) override
+  //{
+  //  WindowI wRead;
+  //  PointI offset;
+  //  windowRead(wLoad, &wRead, &offset);
+  //  WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));
+  //
+  //  offset /= scale; // Corregido por la escala
 
-    int width = TL_ROUND_TO_INT(wRead.getWidth() / scale);
-    int height = TL_ROUND_TO_INT(wRead.getHeight() / scale);
-    if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
+  //  int width = TL_ROUND_TO_INT(wRead.width() / scale);
+  //  int height = TL_ROUND_TO_INT(wRead.height() / scale);
+  //  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
 
-    buff = (unsigned char *)std::malloc(this->rows() * this->cols() * this->channels() * this->depth());
-    size_t nPixelSpace = this->channels() * this->depth();
-    size_t nLineSpace = this->channels() * this->depth() * this->cols();
-    size_t nBandSpace = this->channels() * this->depth() * this->cols(); ///TODO: comprobar
+  //  buff = (unsigned char *)std::malloc(this->rows() * this->cols() * this->channels() * this->depth());
+  //  size_t nPixelSpace = this->channels() ;
+  //  size_t nLineSpace = this->channels() * this->cols();
+  //  size_t nBandSpace = 1;
 
-    CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                     wRead.getWidth(), wRead.getHeight(),
-                                     buff, width, height, this->gdalDataType(),
-                                     this->channels(), gdalBandOrder(this->channels()).data(), (int)nPixelSpace,
-                                     (int)nLineSpace, (int)nBandSpace );
+  //  CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
+  //                                   wRead.width(), wRead.height(),
+  //                                   buff, width, height, this->gdalDataType(),
+  //                                   this->channels(), gdalBandOrder(this->channels()).data(), (int)nPixelSpace,
+  //                                   (int)nLineSpace, (int)nBandSpace );
 
-    if (cerr != 0) {
-      throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-    }
-  }
+  //  if (cerr != 0) {
+  //    throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+  //  }
+  //}
 
   int rows() const override
   {
@@ -255,7 +253,7 @@ public:
 
 #ifdef HAVE_OPENCV
 
-  void read(cv::Mat *image, 
+  void read(cv::Mat &image, 
                     const geometry::WindowI &wLoad = geometry::WindowI(), 
                     double scale = 1., 
                     Helmert2D<geometry::PointI> *trf = nullptr) override

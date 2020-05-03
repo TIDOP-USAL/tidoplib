@@ -62,16 +62,18 @@ public:
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    */
-  virtual void write(const cv::Mat &image, const geometry::WindowI &w = geometry::WindowI()) = 0;
+  virtual void write(const cv::Mat &image, 
+                     const WindowI &window = WindowI()) = 0;
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    */
-  virtual void write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+  virtual void write(const cv::Mat &image, 
+                     const Helmert2D<PointI> *trf = nullptr) = 0;
 
 #endif
 
@@ -80,7 +82,8 @@ public:
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  virtual void write(const unsigned char *buff, const geometry::WindowI &w) = 0;
+  virtual void write(const unsigned char *buff, 
+                     const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -119,6 +122,11 @@ public:
    */
   virtual int depth() const = 0;
 
+protected:
+  
+  void windowWrite(const WindowI &window, 
+                   WindowI *windowWrite, 
+                   PointI *offset) const;
 protected:
 
   std::string mFileName;

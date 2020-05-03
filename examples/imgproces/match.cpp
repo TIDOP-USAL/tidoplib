@@ -53,7 +53,7 @@ int main(int argc, char** argv)
     msgInfo("Numero de bandas: %i", image1.getBands());
     msgInfo("Profundidad de color: %i", image1.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image1.getCols(), image1.getRows());
-    image1.read(&mat_1, geometry::WindowI());
+    image1.read(&mat_1, WindowI());
   } else {
     msgError("Error al abrir la imagen: %s", img1.c_str());
   }
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     msgInfo("Numero de bandas: %i", image2.getBands());
     msgInfo("Profundidad de color: %i", image2.getColorDepth());
     msgInfo("Dimensiones de la imagen: %ix%i", image2.getCols(), image2.getRows());
-    image2.read(&mat_2, geometry::WindowI());
+    image2.read(&mat_2, WindowI());
   } else {
     msgError("Error al abrir la imagen: %s", img2.c_str());
   }

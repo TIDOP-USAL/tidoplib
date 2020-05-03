@@ -35,9 +35,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-
 // forward declaration
 template<typename T> class Segment;
 template<typename T> class Segment3D;
@@ -49,20 +46,6 @@ class GroupLines;
 /*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief Longitud o modulo de un vector 2D
- * \param[in] v vector
- * \return Longitud
- * \deprecated { Reemplazada por TL::math::module(const Point_t &v) }
- */
-template<typename Point_t> inline
-TL_DEPRECATED("double math::module(const Point_t &v)", "2.0")
-double length(const Point_t &v)
-{
-  return sqrt(v.x*v.x + v.y*v.y);
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Distancia entre dos puntos
@@ -156,40 +139,6 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   return iret;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-TL_DEPRECATED("int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)", "2.0")
-int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
-{
-  int iret = 0;
-  if (pt == ln.pt1 || pt == ln.pt2) {
-    *ptp = pt;
-    return 2;
-  }
-  Point3D v1 = pt - ln.pt1;
-  Point3D v2 = ln.vector();
-  double daux = math::dotProduct3D(v1, v2);
-  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
-
-  if (typeid(typename Point_t::value_type) == typeid(int)) {
-    ptp->x = ln.pt1.x + TL_ROUND_TO_INT(v2.x * r);
-    ptp->y = ln.pt1.y + TL_ROUND_TO_INT(v2.y * r);
-    ptp->z = ln.pt1.z + TL_ROUND_TO_INT(v2.z * r);
-  } else {
-    ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
-    ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
-    ptp->z = ln.pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
-  }
-  //*ptp = ln.pt1 + v2 * r;
-
-  if (daux <= 0) iret = -1;
-  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
-  return iret;
-}
-
-#endif  // TL_ENABLE_DEPRECATED_METHODS
-
 template<typename Point_t> inline
 int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 {
@@ -235,20 +184,6 @@ double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
   else if (ipr == 1) ptp = ln.pt2;
   return distance(pt, ptp);
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline 
-TL_DEPRECATED("double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)", "2.0")
-double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
-{
-  Point3_t ptp;
-  int ipr = projectPointInSegment(ln, pt, &ptp);
-
-  if (ipr == -1) ptp = ln.pt1;
-  else if (ipr == 1) ptp = ln.pt2;
-  return distance(pt, ptp);
-}
-#endif  // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point3_t> inline
 double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)
@@ -1728,8 +1663,6 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 
 
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-
-} // Fin namespacegeometry
 
 
 } // End namespace TL

@@ -4,7 +4,6 @@
 #include <tidop/core/utils.h>
 
 using namespace tl;
-using namespace tl::geometry;
 
 /* Segment */
 

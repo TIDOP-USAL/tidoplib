@@ -39,11 +39,6 @@ namespace tl
  *  \{
  */
 
-/* ---------------------------------------------------------------------------------- */
-
-
-namespace geometry
-{
 
 // forward declaration
 
@@ -100,43 +95,7 @@ public:
     /* Tipos especiales */
     envelope = (1 << 20),                         /*!< Envolvente */
     window   = envelope,                          /*!< Ventana */
-    bounding_box = envelope | geom3d,             /*!< Cuadro delimitador */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /* Dimensión */
-    GEOM2D     = geom2d,                        /*!< Geometría 2D */
-    GEOM3D     = geom3d,                        /*!< Geometría 3D */
-    GEOM4D     = geom4d,                        /*!< Geometría 4D */
-
-    /* multientidad */
-    MULTI_ENTITY  = multi_entity,               /*!< Multientidad */
-
-    /* Entidades 2D */
-    POINT_2D      = point2d,                    /*!< Punto */
-    LINESTRING_2D = linestring2d,               /*!< Polilinea */
-    POLYGON_2D    = polygon2d,                  /*!< Poligono */
-    SEGMENT_2D    = segment2d,                  /*!< Segmento */
-    CIRCLE        = circle,                     /*!< Circulo */
-    ELLIPSE       = ellipse,                    /*!< Elipse */
-
-    /* Entidades 3D*/
-    POINT_3D      = point3d,                    /*!< Punto 3D */
-    LINESTRING_3D = linestring3d,               /*!< Polilinea 3D */
-    POLYGON_3D    = polygon3d,                  /*!< Poligono 3D */
-    SEGMENT_3D    = segment3d,                  /*!< Segmento 3D */
-
-    /* multientidades */
-    MULTIPOINT_2D   = multipoint2d,             /*!< Multipunto 2D */
-    MULTIPOINT_3D   = multipoint3d,             /*!< Multipunto 3D */
-    MULTILINE_2D    = multiline2d,              /*!< Multi-línea 2D */
-    MULTILINE_3D    = multiline3d,              /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D = multipolygon2d,           /*!< Multi-polígono 2D */
-    MULTIPOLYGON_3D = multipoygon3d,            /*!< Multi-polígono 3D */
-
-    /* Tipos especiales */
-    ENVELOPE = envelope,                        /*!< Envolvente */
-    WINDOW   = window,                          /*!< Ventana */
-    BOX      = bounding_box                              /*!< Caja */
-#endif
+    bounding_box = envelope | geom3d              /*!< Cuadro delimitador */
   };
 
 public:
@@ -169,15 +128,6 @@ public:
    * \brief Destructora
    */
   virtual ~Entity() = default;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve el tipo de entidad 
-   * \deprecated Use 'type' en su lugar
-   */
-  TL_DEPRECATED("type()", "2.0")
-  Type getType() const { return mEntityType.getFlags(); }
-#endif
 
   /*!
    * \brief Devuelve el tipo de entidad 
@@ -382,16 +332,6 @@ public:
    */
   virtual const_iterator end() const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Agrega un elemento al final del contenedor
-   * \param[in] entity Entidad que se añade
-   * \deprecated Use 'push_back' en su lugar
-   */
-  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)", "2.0")
-  void add(const Entity_t &entity);
-#endif
-
   /*!
    * \brief Agrega un elemento al final del contenedor
    * \param[in] entity Entidad que se añade
@@ -558,14 +498,6 @@ typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::en
   return mEntities.cend();
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Entity_t> inline
-void EntityContainer<Entity_t>::add(const Entity_t &entity)
-{
-  mEntities.push_back(entity);
-}
-#endif
-
 template<typename Entity_t> inline
 void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
 {
@@ -712,18 +644,6 @@ public:
    */
   Entities2D(std::initializer_list<Entity_t> entities);
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve las entidades que están dentro de una ventana
-   * \param[in] w Ventana
-   * \return Entidades seleccionadas
-   * \deprecated Use 'entitiesInWindow(const Window_t &w)' en su lugar
-   */
-  template<typename Window_t>
-  TL_DEPRECATED("entitiesInWindow(const Window_t &w)", "2.0")
-  std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
-#endif
-
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
    * \param[in] window Ventana
@@ -780,23 +700,6 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
   : EntityContainer<Entity_t>(entities)
 {
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Entity_t> template<typename Window_t> inline
-std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
-{
-  std::vector<Entity_t> r_points(this->mEntities.size());
-  size_t j = 0;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.containsPoint(this->mEntities[i])) {
-      r_points[i] = this->mEntities[i];
-      j++;
-    }
-  }
-  r_points.resize(j);
-  return r_points;
-}
-#endif
 
 template<typename Entity_t> template<typename Window_t> inline
 std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &window) const
@@ -991,16 +894,6 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&ent
   return (*this);
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-
-
-
-
-
-} // End namespace geometry
-
-/* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of GeometricEntities
 

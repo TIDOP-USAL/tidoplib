@@ -31,12 +31,6 @@ namespace tl
  *  \{
  */
 
-//#ifdef TL_ENABLE_DEPRECATED_METHODS
-namespace geometry
-{
-//#endif
-
-/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Clase cuadro delimitador (bounding bbox)
@@ -135,32 +129,11 @@ public:
    */
   template<typename Point3_t2> operator BoundingBox<Point3_t2>() const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve centro del Bbox
-   * \return Centro del Bbox
-   * \deprecated Use 'center()' en su lugar
-   */
-  TL_DEPRECATED("center()", "2.0")
-  Point3_t getCenter() const;
-#endif
-
   /*!
    * \brief Devuelve centro del Bbox
    * \return Centro del Bbox
    */
   Point3_t center() const;
-
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve el ancho de la caja
-   * \return Ancho
-   * \deprecated Use 'width()' en su lugar
-   */
-  TL_DEPRECATED("width()", "2.0")
-  typename Point3_t::value_type getWidth() const;
-#endif
 
   /*!
    * \brief Devuelve el ancho del cuadro envolvente
@@ -168,31 +141,11 @@ public:
    */
   typename Point3_t::value_type width() const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve el alto de la caja
-   * \return Alto
-   * \deprecated Use 'height()' en su lugar
-   */
-  TL_DEPRECATED("height()", "2.0")
-  typename Point3_t::value_type getHeight() const;
-#endif
-
   /*!
    * \brief Devuelve el alto de la caja
    * \return Alto
    */
   typename Point3_t::value_type height() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve la profundidad de la caja
-   * \return Profundidad
-   * \deprecated Use 'depth()' en su lugar
-   */
-  TL_DEPRECATED("depth()", "2.0")
-  typename Point3_t::value_type getDepth() const;
-#endif
 
   /*!
    * \brief Devuelve la profundidad del cuadro delimitador
@@ -333,21 +286,6 @@ BoundingBox<Point3_t>::operator BoundingBox<Point3_t2>() const
                                 static_cast<Point3_t2>(pt2));
 }
 
-TL_DISABLE_WARNING(TL_WARNING_C4244)
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline
-Point3_t BoundingBox<Point3_t>::getCenter() const
-{
-  if (std::is_integral<typename Point3_t::value_type>::value) {
-    return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2), 
-                    TL_ROUND_TO_INT((pt1.y + pt2.y) / 2), 
-                    TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));
-  } else {
-    return Point3_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2., (pt1.z + pt2.z) / 2.);
-  }
-}
-#endif
-
 template<typename Point3_t> inline
 Point3_t BoundingBox<Point3_t>::center() const
 {
@@ -363,41 +301,17 @@ Point3_t BoundingBox<Point3_t>::center() const
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline
-typename Point3_t::value_type BoundingBox<Point3_t>::getWidth() const 
-{ 
-  return pt2.x - pt1.x; 
-}
-#endif
-
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::width() const
 {
   return pt2.x - pt1.x;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline
-typename Point3_t::value_type BoundingBox<Point3_t>::getHeight() const 
-{ 
-  return pt2.y - pt1.y; 
-}
-#endif
-
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::height() const
 {
   return pt2.y - pt1.y;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline
-typename Point3_t::value_type BoundingBox<Point3_t>::getDepth() const 
-{ 
-  return pt2.z - pt1.z; 
-}
-#endif
 
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::depth() const
@@ -473,8 +387,6 @@ T intersectBoundingBoxes(const T &b1, const T &b2)
   bounding_box.pt2.z = std::min(b1.pt2.z, b2.pt2.z);
   return bounding_box;
 }
-
-} // End namespace geom
 
 
 /*! \} */ // end of GeometricEntities

@@ -55,7 +55,10 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+  virtual void read(cv::Mat &image, 
+                    const WindowI &wLoad = WindowI(), 
+                    double scale = 1., 
+                    Helmert2D<PointI> *trf = nullptr) = 0;
 
 #endif
 
@@ -66,7 +69,10 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+  //virtual void read(unsigned char *&buff, 
+  //                  const WindowI &wLoad = WindowI(), 
+  //                  double scale = 1., 
+  //                  Helmert2D<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -100,9 +106,9 @@ public:
 
 protected:
   
-  void windowRead(const geometry::WindowI &wLoad, 
-                  geometry::WindowI *wRead, 
-                  geometry::PointI *offset) const;
+  void windowRead(const WindowI &wLoad, 
+                  WindowI *wRead, 
+                  PointI *offset) const;
 
 protected:
 

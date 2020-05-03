@@ -35,10 +35,6 @@ namespace tl
  */
 
 
-namespace geometry
-{
-
-
 //template<typename Point_t>
 //class Ring
 //  : public Entities2D<Point_t>
@@ -154,16 +150,6 @@ public:
    * \param[in] polygon Objeto Polygon que se mueve
    */
   Polygon<Point_t> &operator = (Polygon<Point_t> &&polygon) TL_NOEXCEPT;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente de los puntos
-   * \deprecated Use 'window()'  en su lugar
-   */
-  TL_DEPRECATED("window()", "2.0")
-  Window<Point_t> getWindow() const;
-#endif
 
   /*!
    * \brief Ventana envolvente
@@ -374,21 +360,6 @@ Polygon<Point_t> &Polygon<Point_t>::operator = (Polygon<Point_t> &&polygon) TL_N
   }
   return *this;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Window<Point_t> Polygon<Point_t>::getWindow() const
-{
-  Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
-  }
-  return w;
-}
-#endif
 
 template<typename Point_t> inline
 Window<Point_t> Polygon<Point_t>::window() const
@@ -809,10 +780,8 @@ BoundingBox<Point3_t> MultiPolygon3D<Point3_t>::boundingBox() const
 }
 
 
-}
-
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GEOMETRY_POLYGON_H
