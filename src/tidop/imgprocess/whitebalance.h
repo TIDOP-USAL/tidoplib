@@ -10,7 +10,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
-#include "tidop/img_process/img_processing.h"
+#include "tidop/imgprocess/imgprocess.h"
 
 namespace tl
 {

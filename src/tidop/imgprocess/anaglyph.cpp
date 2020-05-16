@@ -10,7 +10,7 @@
 
 
 
-#include "tidop/img_process/anaglyph.h"
+#include "tidop/imgprocess/anaglyph.h"
 #include "tidop/core/utils.h"
 
 #ifdef HAVE_OPENCV

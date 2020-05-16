@@ -1,29 +1,29 @@
-#Modulo Core de la librería
+# Modulo de procesamiento de imágenes
 
 add_library(tl_imgprocess ${LIB_TYPE}
-  anaglyph.cpp
-  anaglyph.h
-  color_convert.cpp
-  color_convert.h
-  correlation.h
-  filters.cpp
-  filters.h
-  fourier.cpp
-  fourier.h
-  img_processing.cpp
-  img_processing.h
-  img_transform.cpp
-  img_transform.h
-  linedetector.cpp
-  linedetector.h
-  shapedetection.cpp
-  shapedetection.h
-  skeleton.cpp
-  skeleton.h
-  white_balance.cpp
-  white_balance.h
-  matching.cpp
-  matching.h)
+            anaglyph.cpp
+            anaglyph.h
+            colorconvert.cpp
+            colorconvert.h
+            correlation.h
+            filters.cpp
+            filters.h
+            fourier.cpp
+            fourier.h
+            imgprocess.cpp
+            imgprocess.h
+            imgtransform.cpp
+            imgtransform.h
+            linedetector.cpp
+            linedetector.h
+            shapedetection.cpp
+            shapedetection.h
+            skeleton.cpp
+            skeleton.h
+            whitebalance.cpp
+            whitebalance.h
+            matching.cpp
+            matching.h)
   
 # Creates folder "libraries" and adds target project (math.vcproj)
 set_property(TARGET tl_imgprocess PROPERTY FOLDER "modules")

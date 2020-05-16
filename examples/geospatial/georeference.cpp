@@ -22,7 +22,6 @@ namespace fs = boost::filesystem;
 #endif
 
 using namespace tl;
-using namespace geometry;
 
 
 
@@ -31,111 +30,111 @@ using namespace geometry;
 int main(int argc, char** argv)
 {
 
-  fs::path app_path(argv[0]);
-  std::string cmd_name = app_path.stem().string();
+  //fs::path app_path(argv[0]);
+  //std::string cmd_name = app_path.stem().string();
 
 
-  std::string img_file;
-  std::string dtm_file;
-  double x0;
-  double y0;
-  double z0;
-  double omega;
-  double phi;
-  double kappa;
-  double scale = 1.;
+  //std::string img_file;
+  //std::string dtm_file;
+  //double x0;
+  //double y0;
+  //double z0;
+  //double omega;
+  //double phi;
+  //double kappa;
+  //double scale = 1.;
 
-  Command cmd(cmd_name, "Generación de fichero de georeferencia TFW");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("file", "Fichero que se va a georeferenciar", &img_file));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("dtm",  "Modelo digital del terreno", &dtm_file));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("x0", 'x', "X0", &x0));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("y0", 'y', "Y0", &y0));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("z0", 'z', "Z0", &z0));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("omega", 'o', "Ángulo omega", &omega));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("phi", 'p', "Ángulo omega", &phi));
-  cmd.push_back(std::make_shared<ArgumentDoubleRequired>("kappa", 'k', "Ángulo omega", &kappa));
-  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("scale", 's', "Escala", &scale));
+  //Command cmd(cmd_name, "Generación de fichero de georeferencia TFW");
+  //cmd.push_back(std::make_shared<ArgumentStringRequired>("file", "Fichero que se va a georeferenciar", &img_file));
+  //cmd.push_back(std::make_shared<ArgumentStringRequired>("dtm",  "Modelo digital del terreno", &dtm_file));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("x0", 'x', "X0", &x0));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("y0", 'y', "Y0", &y0));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("z0", 'z', "Z0", &z0));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("omega", 'o', "Ángulo omega", &omega));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("phi", 'p', "Ángulo omega", &phi));
+  //cmd.push_back(std::make_shared<ArgumentDoubleRequired>("kappa", 'k', "Ángulo omega", &kappa));
+  //cmd.push_back(std::make_shared<ArgumentDoubleOptional>("scale", 's', "Escala", &scale));
 
-  Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::parse_error ) {
-    return 1;
-  } else if (status == Command::Status::show_help) {
-    return 0;
-  } else if (status == Command::Status::show_licence) {
-    return 0;
-  } else if (status == Command::Status::show_version) {
-    return 0;
-  }
+  //Command::Status status = cmd.parse(argc, argv);
+  //if (status == Command::Status::parse_error ) {
+  //  return 1;
+  //} else if (status == Command::Status::show_help) {
+  //  return 0;
+  //} else if (status == Command::Status::show_licence) {
+  //  return 0;
+  //} else if (status == Command::Status::show_version) {
+  //  return 0;
+  //}
 
-  Mdt mdt;
-  if (mdt.open(dtm_file) != Mdt::Status::open_ok) return 1;
-  PointD pt(x0, y0);
-  float z = mdt.getZ(pt);
-  float dz = static_cast<float>(z0) - z;
+  //Mdt mdt;
+  //if (mdt.open(dtm_file) != Mdt::Status::open_ok) return 1;
+  //PointD pt(x0, y0);
+  //float z = mdt.getZ(pt);
+  //float dz = static_cast<float>(z0) - z;
 
-  GeoRasterGraphics image;
-  if (image.open(img_file) == RasterGraphics::Status::open_ok) {
+  //GeoRasterGraphics image;
+  //if (image.open(img_file) == RasterGraphics::Status::open_ok) {
 
-    Helmert3D<Point3D> helmert3d(x0, y0, z0, scale, omega, phi, kappa);
+  //  Helmert3D<Point3D> helmert3d(x0, y0, z0, scale, omega, phi, kappa);
 
-    std::vector<PointD> pti;
-    std::vector<PointD> ptw(4);    // Coordenadas imagen y mundo
-    pti.push_back(PointD(0., 0.));
-    pti.push_back(PointD(image.getCols(), 0.));
-    pti.push_back(PointD(image.getCols(), image.getRows()));
-    pti.push_back(PointD(0., image.getRows()));
+  //  std::vector<PointD> pti;
+  //  std::vector<PointD> ptw(4);    // Coordenadas imagen y mundo
+  //  pti.push_back(PointD(0., 0.));
+  //  pti.push_back(PointD(image.getCols(), 0.));
+  //  pti.push_back(PointD(image.getCols(), image.getRows()));
+  //  pti.push_back(PointD(0., image.getRows()));
 
-    ///TODO: Se calcula la transformación foto terreno sobre el plano con la z del fotocentro.
-    /// Se genera el tfw aproximado
-    float focal = 14497.f;
-    double s = static_cast<double>(dz / focal);
+  //  ///TODO: Se calcula la transformación foto terreno sobre el plano con la z del fotocentro.
+  //  /// Se genera el tfw aproximado
+  //  float focal = 14497.f;
+  //  double s = static_cast<double>(dz / focal);
 
-    ptw[0].x = pt.x - (image.getCols()/2.)*s;
-    ptw[0].y = pt.y + (image.getRows()/2.)*s;
+  //  ptw[0].x = pt.x - (image.getCols()/2.)*s;
+  //  ptw[0].y = pt.y + (image.getRows()/2.)*s;
 
-    ptw[1].x = pt.x + (image.getCols()/2.)*s;
-    ptw[1].y = pt.y + (image.getRows()/2.)*s;
+  //  ptw[1].x = pt.x + (image.getCols()/2.)*s;
+  //  ptw[1].y = pt.y + (image.getRows()/2.)*s;
 
-    ptw[2].x = pt.x + (image.getCols()/2.)*s;
-    ptw[2].y = pt.y - (image.getRows()/2.)*s;
+  //  ptw[2].x = pt.x + (image.getCols()/2.)*s;
+  //  ptw[2].y = pt.y - (image.getRows()/2.)*s;
 
-    ptw[3].x = pt.x - (image.getCols()/2.)*s;
-    ptw[3].y = pt.y - (image.getRows()/2.)*s;
+  //  ptw[3].x = pt.x - (image.getCols()/2.)*s;
+  //  ptw[3].y = pt.y - (image.getRows()/2.)*s;
 
-    Affine<PointD> affine;
-    std::vector<double> error;
-    double rmse;
-    affine.compute(pti, ptw, &error, &rmse);
-    double a;
-    double b;
-    double c;
-    double d;
-    affine.parameters(&a, &b, &c, &d, nullptr, nullptr);
+  //  Affine<PointD> affine;
+  //  std::vector<double> error;
+  //  double rmse;
+  //  affine.compute(pti, ptw, &error, &rmse);
+  //  double a;
+  //  double b;
+  //  double c;
+  //  double d;
+  //  affine.parameters(&a, &b, &c, &d, nullptr, nullptr);
 
-    fs::path _path(img_file);
-    _path.replace_extension(".tfw");
+  //  fs::path _path(img_file);
+  //  _path.replace_extension(".tfw");
 
-    std::fstream fs;
-    fs.open(_path.string(), std::fstream::out | std::fstream::trunc);
-    if (fs.is_open()) {
-      fs << a << std::endl;
-      fs << c << std::endl;
-      fs << b << std::endl;
-      fs << d << std::endl;
-      fs << affine.tx << std::endl;
-      fs << affine.ty << std::endl;
-      fs.close();
-    }
+  //  std::fstream fs;
+  //  fs.open(_path.string(), std::fstream::out | std::fstream::trunc);
+  //  if (fs.is_open()) {
+  //    fs << a << std::endl;
+  //    fs << c << std::endl;
+  //    fs << b << std::endl;
+  //    fs << d << std::endl;
+  //    fs << affine.tx << std::endl;
+  //    fs << affine.ty << std::endl;
+  //    fs.close();
+  //  }
 
 
-    //for( int ic = 0; ic < 4; ic++ ) {
-      //tor->ExecuteInverse( pti[ic], ptw[ic] );
-    //}
+  //  //for( int ic = 0; ic < 4; ic++ ) {
+  //    //tor->ExecuteInverse( pti[ic], ptw[ic] );
+  //  //}
 
-  } else {
-    msgError("Error al abrir la imagen: %s", img_file.c_str());
-    return 1;
-  }
+  //} else {
+  //  msgError("Error al abrir la imagen: %s", img_file.c_str());
+  //  return 1;
+  //}
 
   return 0;
 }

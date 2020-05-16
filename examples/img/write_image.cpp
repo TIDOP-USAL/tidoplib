@@ -66,7 +66,6 @@ int main(int argc, char** argv)
       double high = +500.0;
       cv::randu(bmp, cv::Scalar(low), cv::Scalar(high));
       imageWriter->write(bmp, WindowI(PointI(20,20), PointI(70,70)));
-      cv::Rect
       imageWriter->close();
     } else {
       msgError("Error al escribir la imagen: %s", img.c_str());

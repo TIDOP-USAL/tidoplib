@@ -3,6 +3,8 @@
 add_library(tl_img ${LIB_TYPE}
             img.h
 			      img.cpp
+            image.h
+			      image.cpp
             imgreader.cpp
             imgreader.h
             imgwriter.cpp

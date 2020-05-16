@@ -1,4 +1,4 @@
-#include "white_balance.h"
+#include "whitebalance.h"
 
 #include "tidop/core/messages.h"
 

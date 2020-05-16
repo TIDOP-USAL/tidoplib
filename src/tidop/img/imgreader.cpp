@@ -36,7 +36,7 @@ void ImageReader::windowRead(const WindowI &wLoad,
                              PointI *offset) const
 {
   WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));   // Ventana total de imagen
-  if ( wLoad.isEmpty() ) {
+  if (wLoad.isEmpty()) {
     *wRead = wAll;  // Se lee toda la ventana
   } else {
     *wRead = windowIntersection(wAll, wLoad);
@@ -90,25 +90,30 @@ public:
   }
 
 #ifdef HAVE_OPENCV
-
+  
   void read(cv::Mat &image, 
-            const WindowI &wLoad = WindowI(), 
-            double scale = 1., 
-            Helmert2D<PointI> *trf = nullptr) override
+            const RectI &rect, 
+            double scale, 
+            Helmert2D<PointI> *trf) override
   {
-
     if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
-    WindowI wRead;
+    RectI rect_to_read;
     PointI offset;
-    windowRead(wLoad, &wRead, &offset);
+    RectI rect_full_image(0, 0, this->cols(), this->rows());
+    if (rect.isEmpty()) {
+      rect_to_read = rect_full_image;
+    } else {
+      rect_to_read = intersect(rect_full_image, rect);
+      offset = rect_to_read.topLeft() - rect.topLeft();
+    }
 
     offset /= scale; // Corregido por la escala
 
     cv::Size size;
     //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-      size.width = TL_ROUND_TO_INT(wRead.width() / scale);
-      size.height = TL_ROUND_TO_INT(wRead.height() / scale);
+      size.width = TL_ROUND_TO_INT(rect_to_read.width / scale);
+      size.height = TL_ROUND_TO_INT(rect_to_read.height / scale);
       if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
     //} else {
     //  size.width = wRead.getWidth();
@@ -125,8 +130,8 @@ public:
     int nLineSpace = nPixelSpace * image.cols;
     int nBandSpace = static_cast<int>(image.elemSize1());
 
-    CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
-                                     wRead.width(), wRead.height(),
+    CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
+                                     rect_to_read.width, rect_to_read.height,
                                      buff, size.width, size.height, this->gdalDataType(),
                                      this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
                                      nLineSpace, nBandSpace);
@@ -135,6 +140,52 @@ public:
     if (cerr != 0) {
       throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
     }
+  }
+
+  void read(cv::Mat &image, 
+            const WindowI &window, 
+            double scale, 
+            Helmert2D<PointI> *trf) override
+  {
+    read(image, RectI(window.pt1, window.pt2), scale, trf);
+
+    //if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
+
+    //WindowI wRead;
+    //PointI offset;
+    //windowRead(window, &wRead, &offset);
+
+    //offset /= scale; // Corregido por la escala
+    //cv::Size size;
+    ////if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
+    //  size.width = TL_ROUND_TO_INT(wRead.width() / scale);
+    //  size.height = TL_ROUND_TO_INT(wRead.height() / scale);
+    //  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
+    ////} else {
+    ////  size.width = wRead.getWidth();
+    ////  size.height = wRead.getHeight();
+    ////  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
+    ////}
+
+    //image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
+    //if (image.empty())
+    //  return;// Status::failure;
+
+    //uchar *buff = image.ptr();
+    //int nPixelSpace = static_cast<int>(image.elemSize());
+    //int nLineSpace = nPixelSpace * image.cols;
+    //int nBandSpace = static_cast<int>(image.elemSize1());
+
+    //CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
+    //                                 wRead.width(), wRead.height(),
+    //                                 buff, size.width, size.height, this->gdalDataType(),
+    //                                 this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
+    //                                 nLineSpace, nBandSpace);
+    //
+    /////TODO: Mejorar el control de errores
+    //if (cerr != 0) {
+    //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+    //}
   }
 #endif // HAVE_OPENCV
 

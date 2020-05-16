@@ -7,7 +7,7 @@
 
 #include <opencv2/core.hpp>
 
-#include "tidop/img_process/img_processing.h"
+#include "tidop/imgprocess/imgprocess.h"
 
 namespace tl
 {

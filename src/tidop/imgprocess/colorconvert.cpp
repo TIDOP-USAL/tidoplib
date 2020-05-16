@@ -1,4 +1,4 @@
-#include "tidop/img_process/color_convert.h"
+#include "tidop/imgprocess/colorconvert.h"
 
 #include "tidop/graphic/color.h"
 

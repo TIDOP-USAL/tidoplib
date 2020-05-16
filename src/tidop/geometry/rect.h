@@ -38,6 +38,9 @@ public:
 
   Rect();
   Rect(T x, T y, T width, T height);
+  Rect(const Point<T> &topLeft, const Point<T> &bottomRight);
+  Rect(const Point<T> &topLeft, const Size<T> &size);
+  Rect(const Point<T> &topLeft, T width, T height);
   Rect(const Rect &rect);
   Rect(Rect &&rect) TL_NOEXCEPT;
 
@@ -49,6 +52,7 @@ public:
   Size<T> size() const;
   bool isEmpty() const;
   bool contains(const Point<T> &pt) const;
+  Window<Point<T>> window() const;
 
   /*!
    * \brief Conversión de tipo
@@ -84,6 +88,33 @@ template<typename T> inline
 Rect<T>::Rect(T x, T y, T width, T height)
   : x(x), 
     y(y), 
+    width(width), 
+    height(height)
+{
+}
+
+template<typename T> inline 
+Rect<T>::Rect(const Point<T> &topLeft, const Point<T> &bottomRight)
+  : x(topLeft.x), 
+    y(topLeft.y), 
+    width(bottomRight.x - topLeft.x), 
+    height(bottomRight.y - topLeft.y)
+{
+}
+
+template<typename T> inline
+Rect<T>::Rect(const Point<T> &topLeft, const Size<T> &size)
+  : x(topLeft.x), 
+    y(topLeft.y), 
+    width(size.width), 
+    height(size.height)
+{
+}
+
+template<typename T> inline
+Rect<T>::Rect(const Point<T> &topLeft, T width, T height)
+  : x(topLeft.x), 
+    y(topLeft.y), 
     width(width), 
     height(height)
 {
@@ -164,6 +195,13 @@ inline bool Rect<T>::contains(const Point<T>& pt) const
           pt.y < this->y + this->height);
 }
 
+template<typename T> inline
+Window<Point<T>> Rect<T>::window() const
+{
+  return Window<Point<T>>(Point<T>(this->x, this->y), 
+                          Point<T>(this->x + this->width, this->y + this->height));
+}
+
 template<typename T> template<typename T2> inline 
 Rect<T>::operator Rect<T2>() const
 {
@@ -199,6 +237,20 @@ bool operator != (const Rect<T> &rect1, const Rect<T> &rect2)
           rect1.width != rect2.width || 
           rect1.height != rect2.height);
 }
+
+template<typename T> static inline
+Rect<T> intersect(const Rect<T> &rect1, const Rect<T> &rect2)
+{
+  Rect<T> rect;
+  rect.x = std::max(rect1.x, rect2.x);
+  rect.y = std::max(rect1.y, rect2.y);
+  Point<T> bottomRight1 = rect1.bottomRight();
+  Point<T> bottomRight2 = rect2.bottomRight();
+  rect.width = std::min(bottomRight1.x, bottomRight2.x) - rect.x;
+  rect.height = std::min(bottomRight1.y, bottomRight2.y) - rect.y;
+  return rect;
+}
+
 
 } // End namespace tl
 

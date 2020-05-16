@@ -22,7 +22,6 @@ namespace fs = boost::filesystem;
 #endif
 
 using namespace tl;
-using namespace geometry;
 using namespace geospatial;
 
 enum class options {

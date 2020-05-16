@@ -1,10 +1,9 @@
-#include "tidop/img_process/img_processing.h"
+#include "tidop/imgprocess/imgprocess.h"
 
 #include "tidop/core/messages.h"
 
 #ifdef HAVE_OPENCV
 #include <opencv2/highgui.hpp>
-#include <opencv2/xphoto/white_balance.hpp>
 
 #include <cstdarg>
 #include <cstdio>

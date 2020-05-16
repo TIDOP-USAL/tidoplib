@@ -14,6 +14,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
 
 namespace tl
@@ -51,12 +52,24 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
-   * \param[in] wLoad Ventana de la imagen que se quiere cargar
+   * \param[in] rect Región de la imagen que se carga
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
   virtual void read(cv::Mat &image, 
-                    const WindowI &wLoad = WindowI(), 
+                    const RectI &rect = RectI(), 
+                    double scale = 1., 
+                    Helmert2D<PointI> *trf = nullptr) = 0;
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] window Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  virtual void read(cv::Mat &image, 
+                    const WindowI &window, 
                     double scale = 1., 
                     Helmert2D<PointI> *trf = nullptr) = 0;
 
@@ -69,7 +82,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  //virtual void read(unsigned char *&buff, 
+  //virtual void read(Image &image, 
   //                  const WindowI &wLoad = WindowI(), 
   //                  double scale = 1., 
   //                  Helmert2D<PointI> *trf = nullptr) = 0;
