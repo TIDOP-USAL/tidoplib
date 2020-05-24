@@ -8,31 +8,42 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT KazeProperties
-  : public IKaze
+  : public Kaze
 {
 public:
 
   KazeProperties();
-  ~KazeProperties() override;
+  KazeProperties(const KazeProperties &kazeProperties);
+  ~KazeProperties() override = default;
 
-// IKaze interface
+// Kaze interface
 
 public:
 
-  virtual bool extendedDescriptor() const override;
-  virtual bool upright() const override;
-  virtual double threshold() const override;
-  virtual int octaves() const override;
-  virtual int octaveLayers() const override;
-  virtual std::string diffusivity() const override;
-  virtual void setExtendedDescriptor(bool extended) override;
-  virtual void setUpright(bool upright) override;
-  virtual void setThreshold(double threshold) override;
-  virtual void setOctaves(int octaves) override;
-  virtual void setOctaveLayers(int octaveLayers) override;
-  virtual void setDiffusivity(const std::string &diffusivity) override;
+  bool extendedDescriptor() const override;
+  bool uprightDescriptor() const override;
+  double threshold() const override;
+  int octaves() const override;
+  int octaveLayers() const override;
+  std::string diffusivity() const override;
+  void setExtendedDescriptor(bool extended) override;
+  void setUprightDescriptor(bool uprightDescriptor) override;
+  void setThreshold(double threshold) override;
+  void setOctaves(int octaves) override;
+  void setOctaveLayers(int octaveLayers) override;
+  void setDiffusivity(const std::string &diffusivity) override;
 
 // Feature interface
 
@@ -65,14 +76,23 @@ class TL_EXPORT KazeDetectorDescriptor
 public:
 
   KazeDetectorDescriptor();
+  KazeDetectorDescriptor(const KazeDetectorDescriptor &kazeDetectorDescriptor);
   KazeDetectorDescriptor(bool extendedDescriptor,
-                         bool upright,
+                         bool uprightDescriptor,
                          double threshold,
                          int octaves,
                          int octaveLayers,
-                         std::string diffusivity);
+                         const std::string &diffusivity);
+  ~KazeDetectorDescriptor() override = default;
 
-  ~KazeDetectorDescriptor() override;
+private:
+
+#if CV_VERSION_MAJOR >= 4
+  cv::KAZE::DiffusivityType convertDiffusivity(const std::string &diffusivity);
+#else
+  int convertDiffusivity(const std::string &diffusivity);
+#endif
+  void updateCvKaze();
 
 // KeypointDetector interface
 
@@ -90,12 +110,12 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// IKaze interface
+// Kaze interface
 
 public:
 
   void setExtendedDescriptor(bool extended) override;
-  void setUpright(bool upright) override;
+  void setUprightDescriptor(bool uprightDescriptor) override;
   void setThreshold(double threshold) override;
   void setOctaves(int octaves) override;
   void setOctaveLayers(int octaveLayers) override;
@@ -111,6 +131,10 @@ protected:
 
   cv::Ptr<cv::KAZE> mKaze;
 };
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

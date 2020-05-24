@@ -7,8 +7,7 @@ namespace tl
 
 
 MserProperties::MserProperties()
-  : IMser(),
-    mDelta(5),
+  : mDelta(5),
     mMinArea(60),
     mMaxArea(14400),
     mMaxVariation(0.25),
@@ -17,12 +16,23 @@ MserProperties::MserProperties()
     mAreaThreshold(1.01),
     mMinMargin(0.003),
     mEdgeBlurSize(5)
-{}
-
-MserProperties::~MserProperties()
 {
-
 }
+
+MserProperties::MserProperties(const MserProperties &mserProperties)
+  : Mser(mserProperties),
+    mDelta(mserProperties.mDelta),
+    mMinArea(mserProperties.minArea()),
+    mMaxArea(mserProperties.mMaxArea),
+    mMaxVariation(mserProperties.mMaxVariation),
+    mMinDiversity(mserProperties.mMinDiversity),
+    mMaxEvolution(mserProperties.mMaxEvolution),
+    mAreaThreshold(mserProperties.mAreaThreshold),
+    mMinMargin(mserProperties.mMinMargin),
+    mEdgeBlurSize(mserProperties.mEdgeBlurSize)
+{
+}
+
 
 int MserProperties::delta() const
 {
@@ -137,8 +147,13 @@ std::string MserProperties::name() const
 
 
 MserDetector::MserDetector()
-  : MserProperties(),
-    KeypointDetector()
+{
+  update();
+}
+
+MserDetector::MserDetector(const MserDetector &mserDetector)
+  : MserProperties(mserDetector),
+    KeypointDetector(mserDetector)
 {
   update();
 }
@@ -152,8 +167,6 @@ MserDetector::MserDetector(int delta,
                            double areaThreshold,
                            double minMargin,
                            int edgeBlurSize)
-  : MserProperties(),
-    KeypointDetector()
 {
   MserProperties::setDelta(delta);
   MserProperties::setMinArea(minArea);
@@ -165,11 +178,6 @@ MserDetector::MserDetector(int delta,
   MserProperties::setMinMargin(minMargin);
   MserProperties::setEdgeBlurSize(edgeBlurSize);
   update();
-}
-
-MserDetector::~MserDetector()
-{
-
 }
 
 void MserDetector::update()

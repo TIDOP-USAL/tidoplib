@@ -10,26 +10,36 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
 
 
 class TL_EXPORT LatchProperties
-  : public ILatch
+  : public Latch
 {
 public:
 
   LatchProperties();
-  ~LatchProperties() override;
+  LatchProperties(const LatchProperties &latchProperties);
+  ~LatchProperties() override = default;
 
-// ILatch interface
+// Latch interface
 
 public:
 
-  virtual std::string bytes() const override;
-  virtual bool rotationInvariance() const override;
-  virtual int halfSsdSize() const override;
-  virtual void setBytes(const std::string &bytes) override;
-  virtual void setRotationInvariance(bool rotationInvariance) override;
-  virtual void setHalfSsdSize(int halfSsdSize) override;
+  std::string bytes() const override;
+  bool rotationInvariance() const override;
+  int halfSsdSize() const override;
+  void setBytes(const std::string &bytes) override;
+  void setRotationInvariance(bool rotationInvariance) override;
+  void setHalfSsdSize(int halfSsdSize) override;
 
 // Feature interface
 
@@ -56,11 +66,11 @@ class TL_EXPORT LatchDescriptor
 public:
 
   LatchDescriptor();
-  LatchDescriptor(std::string bytes,
+  LatchDescriptor(const LatchDescriptor &latchDescriptor);
+  LatchDescriptor(const std::string &bytes,
                   bool rotationInvariance,
                   int halfSsdSize);
-
-  ~LatchDescriptor() override;
+  ~LatchDescriptor() override = default;
 
 private:
 
@@ -75,7 +85,7 @@ public:
                cv::Mat &descriptors) override;
 
 
-// IBrief interface
+// Latch interface
 
 public:
 
@@ -94,7 +104,9 @@ protected:
   cv::Ptr<cv::xfeatures2d::LATCH> mLATCH;
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
 
+/*! \} */ // end of Features
 
 } // namespace tl
 

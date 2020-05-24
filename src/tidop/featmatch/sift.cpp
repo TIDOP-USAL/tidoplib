@@ -8,15 +8,24 @@ namespace tl
 
 
 SiftProperties::SiftProperties()
-  : ISift(),
+  : Sift(),
     mFeaturesNumber(5000),
     mOctaveLayers(3),
     mContrastThreshold(0.04),
     mEdgeThreshold(10.),
     mSigma(1.6)
-{}
+{
+}
 
-SiftProperties::~SiftProperties() {}
+SiftProperties::SiftProperties(const SiftProperties &siftProperties)
+  : Sift(siftProperties),
+    mFeaturesNumber(siftProperties.mFeaturesNumber),
+    mOctaveLayers(siftProperties.mOctaveLayers),
+    mContrastThreshold(siftProperties.mContrastThreshold),
+    mEdgeThreshold(siftProperties.mEdgeThreshold),
+    mSigma(siftProperties.mSigma)
+{
+}
 
 int SiftProperties::featuresNumber() const
 {
@@ -88,10 +97,15 @@ std::string SiftProperties::name() const
 #ifdef OPENCV_ENABLE_NONFREE
 
 SiftDetectorDescriptor::SiftDetectorDescriptor()
-  : SiftProperties(),
-    KeypointDetector(),
-    DescriptorExtractor()
 { 
+  update();
+}
+
+SiftDetectorDescriptor::SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor)
+  : SiftProperties(siftDetectorDescriptor),
+    KeypointDetector(siftDetectorDescriptor),
+    DescriptorExtractor(siftDetectorDescriptor)
+{
   update();
 }
 
@@ -100,9 +114,6 @@ SiftDetectorDescriptor::SiftDetectorDescriptor(int featuresNumber,
                                                double contrastThreshold,
                                                double edgeThreshold,
                                                double sigma)
-  : SiftProperties(),
-    KeypointDetector(),
-    DescriptorExtractor()
 {
   SiftProperties::setFeaturesNumber(featuresNumber);
   SiftProperties::setOctaveLayers(octaveLayers);
@@ -110,11 +121,6 @@ SiftDetectorDescriptor::SiftDetectorDescriptor(int featuresNumber,
   SiftProperties::setEdgeThreshold(edgeThreshold);
   SiftProperties::setSigma(sigma);
   update();
-}
-
-SiftDetectorDescriptor::~SiftDetectorDescriptor()
-{
-
 }
 
 void SiftDetectorDescriptor::update()

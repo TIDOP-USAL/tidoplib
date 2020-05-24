@@ -7,15 +7,18 @@ namespace tl
 {
 
 LatchProperties::LatchProperties()
-  : ILatch(),
-    mBytes("32"),
+  : mBytes("32"),
     mRotationInvariance(true),
     mHalfSsdSize(3)
-{}
-
-LatchProperties::~LatchProperties()
 {
+}
 
+LatchProperties::LatchProperties(const LatchProperties &latchProperties)
+  : Latch(latchProperties),
+    mBytes(latchProperties.mBytes),
+    mRotationInvariance(latchProperties.mRotationInvariance),
+    mHalfSsdSize(latchProperties.mHalfSsdSize)
+{
 }
 
 std::string LatchProperties::bytes() const
@@ -73,13 +76,18 @@ std::string LatchProperties::name() const
 
 
 LatchDescriptor::LatchDescriptor()
-  : LatchProperties(),
-    DescriptorExtractor()
 {
   update();
 }
 
-LatchDescriptor::LatchDescriptor(std::string bytes,
+LatchDescriptor::LatchDescriptor(const LatchDescriptor &latchDescriptor)
+  : LatchProperties(latchDescriptor),
+    DescriptorExtractor(latchDescriptor)
+{
+  update();
+}
+
+LatchDescriptor::LatchDescriptor(const std::string &bytes,
                                  bool rotationInvariance,
                                  int halfSsdSize)
   : LatchProperties(),
@@ -89,11 +97,6 @@ LatchDescriptor::LatchDescriptor(std::string bytes,
   LatchProperties::setRotationInvariance(rotationInvariance);
   LatchProperties::setHalfSsdSize(halfSsdSize);
   update();
-}
-
-LatchDescriptor::~LatchDescriptor()
-{
-
 }
 
 void LatchDescriptor::update()

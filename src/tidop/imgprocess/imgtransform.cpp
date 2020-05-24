@@ -6,44 +6,65 @@
 namespace tl
 {
 
-/* ---------------------------------------------------------------------------------- */
-
-
-ImgProcessing::Status Resize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+Resize::Resize(const Size<int> &size)
+  : ImageProcess(ProcessType::resize),
+    mWidth(size.width), 
+    mHeight(size.height),
+    mScaleX(0.), 
+    mScaleY(0.)
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-
-  if (mWidth == 0 && mScaleX == 0) {
-    msgError("Invalid parameter values");
-    return ImgProcessing::Status::incorrect_input_data;
-  }
-  try {    
-    if (mScaleX) {
-      cv::resize(matIn, *matOut, cv::Size(), mScaleX/100., mScaleY/100.);
-    } else {
-      if (mHeight == 0) {
-        double scale = static_cast<double>(mWidth / matIn.cols);
-        cv::resize(matIn, *matOut, cv::Size(), scale, scale);
-      } else {
-        cv::resize(matIn, *matOut, cv::Size(mWidth, mHeight));
-      }
-    }
-
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
 }
 
-void Resize::setParameters(int width, int height = 0)
+Resize::Resize(int width, int height)
+  : ImageProcess(ProcessType::resize),
+    mWidth(width), 
+    mHeight(height),
+    mScaleX(0.), 
+    mScaleY(0.)
+{
+}
+
+Resize::Resize(double scaleX, double scaleY)
+  : ImageProcess(ProcessType::resize), 
+    mWidth(0), 
+    mHeight(0),
+    mScaleX(scaleX), 
+    mScaleY(scaleY ? scaleY : scaleX)
+{
+}
+
+void Resize::run(const cv::Mat &matIn, cv::Mat &matOut) const
+{
+  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  TL_ASSERT(mWidth > 0 || mScaleX != 0, "Invalid parameter value")
+
+  if (mScaleX) {
+    cv::resize(matIn, matOut, cv::Size(), mScaleX, mScaleY);
+  } else {
+    if (mHeight == 0) {
+      double scale = static_cast<double>(mWidth / matIn.cols);
+      cv::resize(matIn, matOut, cv::Size(), scale, scale);
+    } else {
+      cv::resize(matIn, matOut, cv::Size(mWidth, mHeight));
+    }
+  }
+}
+
+void Resize::setSize(const Size<int> &size)
+{
+  mWidth = size.width;
+  mHeight = size.height;
+  mScaleX = mScaleY = 0.;
+}
+
+void Resize::setSize(int width, int height = 0)
 {
   mWidth = width;
   mHeight = height;
   mScaleX = mScaleY = 0.;
 }
 
-void Resize::setParameters(double scaleX, double scaleY)
+void Resize::setScale(double scaleX, double scaleY)
 {
   mWidth = mHeight = 0;
   mScaleX = scaleX;
@@ -53,18 +74,40 @@ void Resize::setParameters(double scaleX, double scaleY)
 /* ---------------------------------------------------------------------------------- */
 
 
-ImgProcessing::Status ResizeCanvas::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ResizeCanvas::ResizeCanvas(int width, 
+                           int height, 
+                           const graph::Color &color,
+                           const Position &position)
+  : ImageProcess(ProcessType::resize_canvas), 
+    mWidth(width), 
+    mHeight(height), 
+    mColor(color),
+    mPosition(position)
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-  try {
-    cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth,mHeight),matIn.type());
-    matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
-    *matOut = aux;
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
+}
+
+
+
+ResizeCanvas::ResizeCanvas(int width, 
+                           int height,
+                           const cv::Point &point, 
+                           const graph::Color &color)
+  : ImageProcess(ProcessType::resize_canvas), 
+    mWidth(width), 
+    mHeight(height), 
+    mTopLeft(point),
+    mColor(color)
+{
+}
+
+void ResizeCanvas::run(const cv::Mat &matIn, cv::Mat &matOut) const
+{
+  TL_ASSERT(matIn.empty(), "Incorrect input data")
+
+  TL_TODO("No esta terminada")
+  cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth, mHeight), matIn.type());
+  matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
+  matOut = aux;
 }
 
 void ResizeCanvas::setParameters(int width, int height, const graph::Color &color, const Position &position)
@@ -75,37 +118,37 @@ void ResizeCanvas::setParameters(int width, int height, const graph::Color &colo
   mColor = color;
 }
 
-//void ResizeCanvas::update()
-//{
-//  switch (mPosition) {
-//    case TL::ResizeCanvas::Position::BOTTOM_CENTER:
-//      
-//      break;
-//    case TL::ResizeCanvas::Position::BOTTOM_LEFT:
-//      break;
-//    case TL::ResizeCanvas::Position::BOTTOM_RIGHT:
-//      break;
-//    case TL::ResizeCanvas::Position::CENTER:
-//      break;
-//    case TL::ResizeCanvas::Position::CENTER_LEFT:
-//      break;
-//    case TL::ResizeCanvas::Position::CENTER_RIGHT:
-//      break;
-//    case TL::ResizeCanvas::Position::TOP_CENTER:
-//      break;
-//    case TL::ResizeCanvas::Position::TOP_LEFT:
-//      mTopLeft = cv::Point(0, 0);
-//      break;
-//    case TL::ResizeCanvas::Position::TOP_RIGHT:
-//      mTopLeft = cv::Point(0, 0);
-//      break;
-//    default:
-//      break;
-//  }
-//}
+void ResizeCanvas::update()
+{
+  switch (mPosition) {
+    case ResizeCanvas::Position::bottom_center:
+      
+      break;
+    case ResizeCanvas::Position::bottom_left:
+      break;
+    case ResizeCanvas::Position::bottom_right:
+      break;
+    case ResizeCanvas::Position::center:
+      break;
+    case ResizeCanvas::Position::center_left:
+      break;
+    case ResizeCanvas::Position::center_right:
+      break;
+    case ResizeCanvas::Position::top_center:
+      break;
+    case ResizeCanvas::Position::top_left:
+      mTopLeft = cv::Point(0, 0);
+      break;
+    case ResizeCanvas::Position::top_right:
+      mTopLeft = cv::Point(0, 0);
+      break;
+    default:
+      break;
+  }
+}
 
 /* ---------------------------------------------------------------------------------- */
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV

@@ -10,29 +10,39 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT LucidProperties
-  : public ILucid
+  : public Lucid
 {
 public:
 
   LucidProperties();
-  ~LucidProperties() override;
+  ~LucidProperties() override = default;
 
-// ILucid interface
+// Lucid interface
 
 public:
 
-  virtual int lucidKernel() const override;
-  virtual int blurKernel() const override;
-  virtual void setLucidKernel(int lucidKernel) override;
-  virtual void setBlurKernel(int blurKernel) override;
+  int lucidKernel() const override;
+  int blurKernel() const override;
+  void setLucidKernel(int lucidKernel) override;
+  void setBlurKernel(int blurKernel) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -54,8 +64,7 @@ public:
 
   LucidDescriptor();
   LucidDescriptor(int lucidKernel, int blurKernel);
-
-  ~LucidDescriptor() override;
+  ~LucidDescriptor() override = default;
 
 private:
 
@@ -70,7 +79,7 @@ public:
                cv::Mat &descriptors) override;
 
 
-// ILucid interface
+// Lucid interface
 
 public:
 
@@ -88,6 +97,9 @@ protected:
   cv::Ptr<cv::xfeatures2d::LUCID> mLUCID;
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

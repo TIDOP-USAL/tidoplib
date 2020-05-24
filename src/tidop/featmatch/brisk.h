@@ -8,25 +8,36 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT BriskProperties
-  : public IBrisk
+  : public Brisk
 {
 public:
 
   BriskProperties();
-  ~BriskProperties() override;
+  BriskProperties(const BriskProperties &briskProperties);
+  ~BriskProperties() override = default;
 
-// IBrisk interface
+// Brisk interface
 
 public:
 
-  virtual int threshold() const override;
-  virtual int octaves() const override;
-  virtual double patternScale() const override;
-  virtual void setThreshold(int threshold) override;
-  virtual void setOctaves(int octaves) override;
-  virtual void setPatternScale(double patternScale) override;
+  int threshold() const override;
+  int octaves() const override;
+  double patternScale() const override;
+  void setThreshold(int threshold) override;
+  void setOctaves(int octaves) override;
+  void setPatternScale(double patternScale) override;
 
 // Feature interface
 
@@ -55,11 +66,11 @@ class TL_EXPORT BriskDetectorDescriptor
 public:
 
   BriskDetectorDescriptor();
+  BriskDetectorDescriptor(const BriskDetectorDescriptor &briskDetectorDescriptor);
   BriskDetectorDescriptor(int threshold,
                           int octaves,
                           double patternScale);
-
-  ~BriskDetectorDescriptor() override;
+  ~BriskDetectorDescriptor() override = default;
 
 protected:
 
@@ -82,7 +93,7 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// IAkaze interface
+// Brisk interface
 
 public:
 
@@ -102,6 +113,9 @@ protected:
 
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

@@ -135,6 +135,12 @@ BOOST_FIXTURE_TEST_CASE(normalize, QuaternionTest)
   BOOST_CHECK_CLOSE(0.2672612f, q.y, 0.1);
   BOOST_CHECK_CLOSE(-0.8017837f, q.z, 0.1);
   BOOST_CHECK_CLOSE(0.5345225f, q.w, 0.1);
+
+  q_cero.normalize();
+  BOOST_CHECK_EQUAL(0.f, q_cero.w);
+  BOOST_CHECK_EQUAL(0.f, q_cero.x);
+  BOOST_CHECK_EQUAL(0.f, q_cero.y);
+  BOOST_CHECK_EQUAL(0.f, q_cero.z);
 }
 
 BOOST_FIXTURE_TEST_CASE(conjugate, QuaternionTest)
@@ -159,6 +165,13 @@ BOOST_FIXTURE_TEST_CASE(inverse, QuaternionTest)
   BOOST_CHECK_CLOSE(-0.0714285714f, inverse.y, 0.1);
   BOOST_CHECK_CLOSE( 0.2142857142f, inverse.z, 0.1);
   BOOST_CHECK_CLOSE( 0.1428571428f, inverse.w, 0.1);
+
+  Quaternionf quaternion_inverse = q_cero.inverse();
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.x, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.y, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.z, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.w, 0.1);
+
 }
 
 /* Operaciones unarias */

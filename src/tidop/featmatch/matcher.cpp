@@ -22,8 +22,7 @@ namespace tl
 
 
 FlannMatcherProperties::FlannMatcherProperties()
-  : IFlannMatcher(),
-    mIndex(FlannMatcherProperties::Index::kdtree)
+  : mIndex(FlannMatcherProperties::Index::kdtree)
 {
 }
 
@@ -41,12 +40,12 @@ std::string FlannMatcherProperties::name() const
   return std::string("Flann Based Matching");
 }
 
-IFlannMatcher::Index FlannMatcherProperties::index() const
+FlannMatcher::Index FlannMatcherProperties::index() const
 {
   return mIndex;
 }
 
-void FlannMatcherProperties::setIndex(IFlannMatcher::Index index)
+void FlannMatcherProperties::setIndex(FlannMatcher::Index index)
 {
   mIndex = index;
 }
@@ -54,27 +53,18 @@ void FlannMatcherProperties::setIndex(IFlannMatcher::Index index)
 /*----------------------------------------------------------------*/
 
 
-FlannMatcher::FlannMatcher()
-  : FlannMatcherProperties(),
-    DescriptorMatcher()
+FlannMatcherImp::FlannMatcherImp()
 {
   update();
 }
 
-FlannMatcher::FlannMatcher(Index index)
-  : FlannMatcherProperties(),
-    DescriptorMatcher()
+FlannMatcherImp::FlannMatcherImp(Index index)
 {
   FlannMatcherProperties::setIndex(index);
   update();
 }
 
-FlannMatcher::~FlannMatcher()
-{
-
-}
-
-void FlannMatcher::update()
+void FlannMatcherImp::update()
 {
   cv::Ptr<cv::flann::IndexParams> indexParams;
   if (FlannMatcherProperties::index() == FlannMatcherProperties::Index::kdtree){
@@ -85,7 +75,21 @@ void FlannMatcher::update()
   mFlannBasedMatcher = cv::Ptr<cv::FlannBasedMatcher>(new cv::FlannBasedMatcher(indexParams));
 }
 
-bool FlannMatcher::match(cv::InputArray &queryDescriptors,
+bool FlannMatcherImp::match(cv::InputArray &queryDescriptors,
+                         cv::InputArray &trainDescriptors,
+                         std::vector<cv::DMatch> &matches,
+                         cv::InputArray mask)
+{
+  try {
+    mFlannBasedMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
+  } catch (cv::Exception &e) {
+    msgError("Flann Based Matcher error: %s", e.what());
+    return true;
+  }
+  return false;
+}
+
+bool FlannMatcherImp::match(cv::InputArray &queryDescriptors,
                          cv::InputArray &trainDescriptors,
                          std::vector<std::vector<cv::DMatch>> &matches,
                          cv::InputArray mask)
@@ -99,14 +103,15 @@ bool FlannMatcher::match(cv::InputArray &queryDescriptors,
   return false;
 }
 
-void FlannMatcher::reset()
+void FlannMatcherImp::reset()
 {
   FlannMatcherProperties::reset();
   update();
 }
 
-void FlannMatcher::setIndex(IFlannMatcher::Index index)
+void FlannMatcherImp::setIndex(FlannMatcher::Index index)
 {
+  FlannMatcherProperties::setIndex(index);
 }
 
 /*----------------------------------------------------------------*/
@@ -114,12 +119,7 @@ void FlannMatcher::setIndex(IFlannMatcher::Index index)
 
 
 BruteForceMatcherProperties::BruteForceMatcherProperties()
-  : IBruteForceMatcher(),
-    mNormType(BruteForceMatcherProperties::Norm::l2)
-{
-}
-
-BruteForceMatcherProperties::~BruteForceMatcherProperties()
+  : mNormType(BruteForceMatcherProperties::Norm::l2)
 {
 }
 
@@ -138,7 +138,7 @@ BruteForceMatcherProperties::Norm BruteForceMatcherProperties::normType() const
   return mNormType;
 }
 
-void BruteForceMatcherProperties::setNormType(IBruteForceMatcher::Norm normType)
+void BruteForceMatcherProperties::setNormType(BruteForceMatcher::Norm normType)
 {
   mNormType = normType;
 }
@@ -146,22 +146,18 @@ void BruteForceMatcherProperties::setNormType(IBruteForceMatcher::Norm normType)
 /*----------------------------------------------------------------*/
 
 
-BruteForceMatcher::BruteForceMatcher()
-  : BruteForceMatcherProperties(),
-    DescriptorMatcher()
+BruteForceMatcherImp::BruteForceMatcherImp()
 {
   update();
 }
 
-BruteForceMatcher::BruteForceMatcher(IBruteForceMatcher::Norm normType)
-  : BruteForceMatcherProperties(),
-    DescriptorMatcher()
+BruteForceMatcherImp::BruteForceMatcherImp(BruteForceMatcher::Norm normType)
 {
   BruteForceMatcherProperties::setNormType(normType);
   update();
 }
 
-void BruteForceMatcher::update()
+void BruteForceMatcherImp::update()
 {
   int norm = cv::NORM_L2;
   BruteForceMatcherProperties::Norm norm_type = BruteForceMatcherProperties::normType();
@@ -175,13 +171,31 @@ void BruteForceMatcher::update()
     norm = cv::NORM_HAMMING2;
   }
 
-  mBFMatcher = cv::BFMatcher::create(norm);
+  try {
+    mBFMatcher = cv::BFMatcher::create(norm);
+  } catch (cv::Exception &e) {
+    msgError("Brute-force Matcher error: %s", e.what());
+  }
 }
 
-bool BruteForceMatcher::match(cv::InputArray &queryDescriptors,
-                              cv::InputArray &trainDescriptors,
-                              std::vector<std::vector<cv::DMatch>> &matches,
-                              cv::InputArray mask)
+bool BruteForceMatcherImp::match(cv::InputArray &queryDescriptors,
+                                 cv::InputArray &trainDescriptors,
+                                 std::vector<cv::DMatch> &matches,
+                                 cv::InputArray mask)
+{
+  try {
+    mBFMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
+  } catch (cv::Exception &e) {
+    msgError("Brute-force Matcher error: %s", e.what());
+    return true;
+  }
+  return false;
+}
+
+bool BruteForceMatcherImp::match(cv::InputArray &queryDescriptors,
+                                 cv::InputArray &trainDescriptors,
+                                 std::vector<std::vector<cv::DMatch>> &matches,
+                                 cv::InputArray mask)
 {
   try {
     mBFMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
@@ -192,13 +206,13 @@ bool BruteForceMatcher::match(cv::InputArray &queryDescriptors,
   return false;
 }
 
-void BruteForceMatcher::reset()
+void BruteForceMatcherImp::reset()
 {
   BruteForceMatcherProperties::reset();
   update();
 }
 
-void BruteForceMatcher::setNormType(IBruteForceMatcher::Norm normType)
+void BruteForceMatcherImp::setNormType(BruteForceMatcher::Norm normType)
 {
   BruteForceMatcherProperties::setNormType(normType);
   update();
@@ -206,18 +220,14 @@ void BruteForceMatcher::setNormType(IBruteForceMatcher::Norm normType)
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 BruteForceMatcherCuda::BruteForceMatcherCuda()
-  : BruteForceMatcherProperties(),
-    DescriptorMatcher()
 {
   update();
 }
 
-BruteForceMatcherCuda::BruteForceMatcherCuda(IBruteForceMatcher::Norm normType)
-  : BruteForceMatcherProperties(),
-    DescriptorMatcher()
+BruteForceMatcherCuda::BruteForceMatcherCuda(BruteForceMatcher::Norm normType)
 {
   BruteForceMatcherProperties::setNormType(normType);
   update();
@@ -233,20 +243,46 @@ void BruteForceMatcherCuda::update()
     norm = cv::NORM_L2;
   } else if (norm_type == BruteForceMatcherProperties::Norm::hamming) {
     norm = cv::NORM_HAMMING;
-  } else if (norm_type == BruteForceMatcherProperties::Norm::hamming2) {
-    norm = cv::NORM_HAMMING2;
   }
+  ///La implementación de BFMatcher con Cuda no incluye NORM_HAMMING2
+  /*else if (norm_type == BruteForceMatcherProperties::Norm::hamming2) {
+    norm = cv::NORM_HAMMING2;
+  }*/
 
-  mBFMatcher = cv::cuda::DescriptorMatcher::createBFMatcher(norm);
+  try {
+    mBFMatcher = cv::cuda::DescriptorMatcher::createBFMatcher(norm);
+  } catch (cv::Exception &e) {
+    msgError("Brute-force Matcher error: %s", e.what());
+  }
 }
 
 bool BruteForceMatcherCuda::match(cv::InputArray &queryDescriptors,
-                              cv::InputArray &trainDescriptors,
-                              std::vector<std::vector<cv::DMatch>> &matches,
-                              cv::InputArray mask)
+                                  cv::InputArray &trainDescriptors,
+                                  std::vector<cv::DMatch> &matches,
+                                  cv::InputArray mask)
 {
   try {
-    mBFMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
+    cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
+    cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
+    cv::cuda::GpuMat gMask(mask);
+    mBFMatcher->match(gQueryDescriptors, gTrainDescriptors, matches, gMask);
+  } catch (cv::Exception &e) {
+    msgError("Brute-force Matcher error: %s", e.what());
+    return true;
+  }
+  return false;
+}
+
+bool BruteForceMatcherCuda::match(cv::InputArray &queryDescriptors,
+                                  cv::InputArray &trainDescriptors,
+                                  std::vector<std::vector<cv::DMatch>> &matches,
+                                  cv::InputArray mask)
+{
+  try {
+    cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
+    cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
+    cv::cuda::GpuMat gMask(mask);
+    mBFMatcher->knnMatch(gQueryDescriptors, gTrainDescriptors, matches, 2, gMask);
   } catch (cv::Exception &e) {
     msgError("Brute-force Matcher error: %s", e.what());
     return true;
@@ -260,21 +296,20 @@ void BruteForceMatcherCuda::reset()
   update();
 }
 
-void BruteForceMatcherCuda::setNormType(IBruteForceMatcher::Norm normType)
+void BruteForceMatcherCuda::setNormType(BruteForceMatcher::Norm normType)
 {
   BruteForceMatcherProperties::setNormType(normType);
   update();
 }
 
-#endif // HAVE_CUDA
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 /*----------------------------------------------------------------*/
 
-RobustMatcherProperties::RobustMatcherProperties()
-  : IRobustMatcherRefinement(),
-    mRatio(0.8),
+RobustMatchingProperties::RobustMatchingProperties()
+  : mRatio(0.8),
     mCrossCheck(true),
-    mGeometricTest(GeometricTest::homography),
+    mGeometricTest(GeometricTest::fundamental),
     mHomographyComputeMethod(HomographyComputeMethod::ransac),
     mFundamentalComputeMethod(FundamentalComputeMethod::ransac),
     mEssentialComputeMethod(EssentialComputeMethod::ransac),
@@ -284,101 +319,101 @@ RobustMatcherProperties::RobustMatcherProperties()
 {
 }
 
-double RobustMatcherProperties::ratio() const
+double RobustMatchingProperties::ratio() const
 {
   return mRatio;
 }
 
-void RobustMatcherProperties::setRatio(double ratio)
+void RobustMatchingProperties::setRatio(double ratio)
 {
   mRatio = ratio;
 }
 
-bool RobustMatcherProperties::crossCheck() const
+bool RobustMatchingProperties::crossCheck() const
 {
   return mCrossCheck;
 }
 
-void RobustMatcherProperties::setCrossCheck(bool crossCheck)
+void RobustMatchingProperties::setCrossCheck(bool crossCheck)
 {
   mCrossCheck = crossCheck;
 }
 
-IRobustMatcherRefinement::GeometricTest RobustMatcherProperties::geometricTest() const
+RobustMatcher::GeometricTest RobustMatchingProperties::geometricTest() const
 {
   return mGeometricTest;
 }
 
-void RobustMatcherProperties::setGeometricTest(IRobustMatcherRefinement::GeometricTest geometricTest)
+void RobustMatchingProperties::setGeometricTest(RobustMatcher::GeometricTest geometricTest)
 {
   mGeometricTest = geometricTest;
 }
 
-IRobustMatcherRefinement::HomographyComputeMethod RobustMatcherProperties::homographyComputeMethod() const
+RobustMatcher::HomographyComputeMethod RobustMatchingProperties::homographyComputeMethod() const
 {
   return mHomographyComputeMethod;
 }
 
-void RobustMatcherProperties::setHomographyComputeMethod(IRobustMatcherRefinement::HomographyComputeMethod computeMethod)
+void RobustMatchingProperties::setHomographyComputeMethod(RobustMatcher::HomographyComputeMethod computeMethod)
 {
   mHomographyComputeMethod = computeMethod;
 }
 
-IRobustMatcherRefinement::FundamentalComputeMethod RobustMatcherProperties::fundamentalComputeMethod() const
+RobustMatcher::FundamentalComputeMethod RobustMatchingProperties::fundamentalComputeMethod() const
 {
   return mFundamentalComputeMethod;
 }
 
-void RobustMatcherProperties::setFundamentalComputeMethod(IRobustMatcherRefinement::FundamentalComputeMethod computeMethod)
+void RobustMatchingProperties::setFundamentalComputeMethod(RobustMatcher::FundamentalComputeMethod computeMethod)
 {
   mFundamentalComputeMethod = computeMethod;
 }
 
-IRobustMatcherRefinement::EssentialComputeMethod RobustMatcherProperties::essentialComputeMethod() const
+RobustMatcher::EssentialComputeMethod RobustMatchingProperties::essentialComputeMethod() const
 {
   return mEssentialComputeMethod;
 }
 
-void RobustMatcherProperties::setEssentialComputeMethod(IRobustMatcherRefinement::EssentialComputeMethod computeMethod)
+void RobustMatchingProperties::setEssentialComputeMethod(RobustMatcher::EssentialComputeMethod computeMethod)
 {
   mEssentialComputeMethod = computeMethod;
 }
 
-double RobustMatcherProperties::distance() const
+double RobustMatchingProperties::distance() const
 {
   return mDistance;
 }
 
-void RobustMatcherProperties::setDistance(double distance)
+void RobustMatchingProperties::setDistance(double distance)
 {
   mDistance = distance;
 }
 
-double RobustMatcherProperties::confidence() const
+double RobustMatchingProperties::confidence() const
 {
   return mConfidence;
 }
 
-void RobustMatcherProperties::setConfidence(double confidence)
+void RobustMatchingProperties::setConfidence(double confidence)
 {
   mConfidence = confidence;
 }
 
-int RobustMatcherProperties::maxIter() const
+int RobustMatchingProperties::maxIter() const
 {
   return mMaxIters;
 }
 
-void RobustMatcherProperties::setMaxIters(int maxIter)
+void RobustMatchingProperties::setMaxIters(int maxIter)
 {
   mMaxIters = maxIter;
 }
 
-void RobustMatcherProperties::reset()
+void RobustMatchingProperties::reset()
 {
   mRatio = 0.8;
   mCrossCheck = true;
-  mGeometricTest = GeometricTest::homography;
+  mGeometricTest = GeometricTest::fundamental;
   mHomographyComputeMethod = HomographyComputeMethod::ransac;
   mFundamentalComputeMethod = FundamentalComputeMethod::ransac;
   mEssentialComputeMethod = EssentialComputeMethod::ransac;
@@ -387,30 +422,32 @@ void RobustMatcherProperties::reset()
   mMaxIters = 2000;
 }
 
+std::string RobustMatchingProperties::name() const
+{
+  return std::string("Robust Matcher");
+}
+
 
 /*----------------------------------------------------------------*/
 
 
-RobustMatching::RobustMatching(const std::shared_ptr<DescriptorMatcher> &matcher)
-  : IRobustMatching(),
-    RobustMatcherProperties(),
-    mMatcher(matcher)
+RobustMatchingImp::RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+  : mDescriptorMatcher(descriptorMatcher)
 {
+
 }
 
-RobustMatching::RobustMatching(const std::shared_ptr<DescriptorMatcher> &matcher,
-                               double ratio,
-                               bool crossCheck,
-                               GeometricTest geometricTest,
-                               HomographyComputeMethod homographyComputeMethod,
-                               FundamentalComputeMethod fundamentalComputeMethod,
-                               EssentialComputeMethod essentialComputeMethod,
-                               double distance,
-                               double confidence,
-                               int maxIter)
-  : IRobustMatching(),
-    RobustMatcherProperties(),
-    mMatcher(matcher)
+RobustMatchingImp::RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+                                               double ratio,
+                                               bool crossCheck,
+                                               GeometricTest geometricTest,
+                                               HomographyComputeMethod homographyComputeMethod,
+                                               FundamentalComputeMethod fundamentalComputeMethod,
+                                               EssentialComputeMethod essentialComputeMethod,
+                                               double distance,
+                                               double confidence,
+                                               int maxIter)
+  : mDescriptorMatcher(descriptorMatcher)
 {
   this->setRatio(ratio);
   this->setCrossCheck(crossCheck);
@@ -423,30 +460,12 @@ RobustMatching::RobustMatching(const std::shared_ptr<DescriptorMatcher> &matcher
   this->setMaxIters(maxIter);
 }
 
-RobustMatching::~RobustMatching()
+void RobustMatchingImp::setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
 {
+  mDescriptorMatcher = descriptorMatcher;
 }
 
-void RobustMatching::setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &matcher)
-{
-  mMatcher = matcher;
-}
-
-std::vector<cv::DMatch> RobustMatching::match(const cv::Mat &queryDescriptor,
-                                              const cv::Mat &trainDescriptor,
-                                              std::vector<cv::DMatch> *wrongMatches)
-{
-  if (this->crossCheck()){
-    return this->robustMatch(queryDescriptor, trainDescriptor, wrongMatches);
-  } else {
-    return this->fastRobustMatch(queryDescriptor, trainDescriptor, wrongMatches);
-  }
-}
-
-std::vector<cv::DMatch> RobustMatching::geometricFilter(const std::vector<cv::DMatch> &matches,
-                                                        const std::vector<cv::KeyPoint> &keypoints1,
-                                                        const std::vector<cv::KeyPoint> &keypoints2,
-                                                        std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::geometricFilter(const std::vector<cv::DMatch> &matches, const std::vector<cv::KeyPoint> &keypoints1, const std::vector<cv::KeyPoint> &keypoints2, std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> filter_matches;
 
@@ -459,15 +478,17 @@ std::vector<cv::DMatch> RobustMatching::geometricFilter(const std::vector<cv::DM
     pts2[igm] = keypoints2[static_cast<size_t>(matches[igm].trainIdx)].pt;
   }
 
-  IRobustMatcherRefinement::GeometricTest geometric_test = RobustMatcherProperties::geometricTest();
-  if (geometric_test == IRobustMatcherRefinement::GeometricTest::essential) {
+  ///TODO: Sería mejor 3 clases GeometricTest (GeometricTestHomography, GeometricTestFundamental y GeometricTestEssential)
+  ///      Se crearia una clase GeometricTestFactory que cree la clase adecuada
+  RobustMatcher::GeometricTest geometric_test = RobustMatchingProperties::geometricTest();
+  if (geometric_test == RobustMatcher::GeometricTest::essential) {
 
 
-  } else if (geometric_test == IRobustMatcherRefinement::GeometricTest::homography){
+  } else if (geometric_test == RobustMatcher::GeometricTest::homography){
 
     filter_matches = filterByHomographyMatrix(matches, pts1, pts2, wrongMatches);
 
-  } else if (geometric_test == IRobustMatcherRefinement::GeometricTest::fundamental){
+  } else if (geometric_test == RobustMatcher::GeometricTest::fundamental){
 
     filter_matches = filterByFundamentalMatrix(matches, pts1, pts2, wrongMatches);
 
@@ -476,22 +497,19 @@ std::vector<cv::DMatch> RobustMatching::geometricFilter(const std::vector<cv::DM
   return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatching::filterByHomographyMatrix(const std::vector<cv::DMatch> &matches,
-                                                                 const std::vector<cv::Point2f> &points1,
-                                                                 const std::vector<cv::Point2f> &points2,
-                                                                 std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::filterByHomographyMatrix(const std::vector<cv::DMatch> &matches, const std::vector<cv::Point2f> &points1, const std::vector<cv::Point2f> &points2, std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> filter_matches;
 
   int hcm = cv::RANSAC;
-  IRobustMatcherRefinement::HomographyComputeMethod homographyComputeMethod = this->homographyComputeMethod();
-  if (homographyComputeMethod == IRobustMatcherRefinement::HomographyComputeMethod::all_points){
+  RobustMatcher::HomographyComputeMethod homographyComputeMethod = this->homographyComputeMethod();
+  if (homographyComputeMethod == RobustMatcher::HomographyComputeMethod::all_points){
     hcm = 0;
-  } else if (homographyComputeMethod == IRobustMatcherRefinement::HomographyComputeMethod::ransac){
+  } else if (homographyComputeMethod == RobustMatcher::HomographyComputeMethod::ransac){
     hcm = cv::RANSAC;
-  } else if (homographyComputeMethod == IRobustMatcherRefinement::HomographyComputeMethod::lmeds){
+  } else if (homographyComputeMethod == RobustMatcher::HomographyComputeMethod::lmeds){
     hcm = cv::LMEDS;
-  } else if (homographyComputeMethod == IRobustMatcherRefinement::HomographyComputeMethod::rho){
+  } else if (homographyComputeMethod == RobustMatcher::HomographyComputeMethod::rho){
     hcm = cv::RHO;
   }
 
@@ -516,18 +534,15 @@ std::vector<cv::DMatch> RobustMatching::filterByHomographyMatrix(const std::vect
   return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatching::filterByEssentialMatrix(const std::vector<cv::DMatch> &matches,
-                                                                const std::vector<cv::Point2f> &points1,
-                                                                const std::vector<cv::Point2f> &points2,
-                                                                std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::filterByEssentialMatrix(const std::vector<cv::DMatch> &matches, const std::vector<cv::Point2f> &points1, const std::vector<cv::Point2f> &points2, std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> filter_matches;
 
   int fm = cv::RANSAC;
-  IRobustMatcherRefinement::EssentialComputeMethod essentialComputeMethod = this->essentialComputeMethod();
-  if (essentialComputeMethod == IRobustMatcherRefinement::EssentialComputeMethod::ransac){
+  RobustMatcher::EssentialComputeMethod essentialComputeMethod = this->essentialComputeMethod();
+  if (essentialComputeMethod == RobustMatcher::EssentialComputeMethod::ransac){
     fm = cv::RANSAC;
-  } else if (essentialComputeMethod == IRobustMatcherRefinement::EssentialComputeMethod::lmeds){
+  } else if (essentialComputeMethod == RobustMatcher::EssentialComputeMethod::lmeds){
     fm = cv::LMEDS;
   }
 
@@ -546,23 +561,20 @@ std::vector<cv::DMatch> RobustMatching::filterByEssentialMatrix(const std::vecto
 //  OutputArray 	mask = noArray()
 //  )
 
-  return filter_matches;
+      return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatching::filterByFundamentalMatrix(const std::vector<cv::DMatch> &matches,
-                                                                  const std::vector<cv::Point2f> &points1,
-                                                                  const std::vector<cv::Point2f> &points2,
-                                                                  std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::filterByFundamentalMatrix(const std::vector<cv::DMatch> &matches, const std::vector<cv::Point2f> &points1, const std::vector<cv::Point2f> &points2, std::vector<cv::DMatch> *wrongMatches)
 {
   int fm_method = cv::FM_RANSAC;
-  IRobustMatcherRefinement::FundamentalComputeMethod fundamentalComputeMethod = this->fundamentalComputeMethod();
-  if (fundamentalComputeMethod == IRobustMatcherRefinement::FundamentalComputeMethod::algorithm_7_point){
+  RobustMatcher::FundamentalComputeMethod fundamentalComputeMethod = this->fundamentalComputeMethod();
+  if (fundamentalComputeMethod == RobustMatcher::FundamentalComputeMethod::algorithm_7_point){
     fm_method = cv::FM_7POINT;
-  } else if (fundamentalComputeMethod == IRobustMatcherRefinement::FundamentalComputeMethod::algorithm_8_point){
+  } else if (fundamentalComputeMethod == RobustMatcher::FundamentalComputeMethod::algorithm_8_point){
     fm_method = cv::FM_8POINT;
-  } else if (fundamentalComputeMethod == IRobustMatcherRefinement::FundamentalComputeMethod::ransac){
+  } else if (fundamentalComputeMethod == RobustMatcher::FundamentalComputeMethod::ransac){
     fm_method = cv::FM_RANSAC;
-  } else if (fundamentalComputeMethod == IRobustMatcherRefinement::FundamentalComputeMethod::lmeds){
+  } else if (fundamentalComputeMethod == RobustMatcher::FundamentalComputeMethod::lmeds){
     fm_method = cv::FM_LMEDS;
   }
 
@@ -589,54 +601,57 @@ std::vector<cv::DMatch> RobustMatching::filterByFundamentalMatrix(const std::vec
   return filter_matches;
 }
 
-std::vector<cv::DMatch> RobustMatching::robustMatch(const cv::Mat &queryDescriptor,
-                                                    const cv::Mat &trainDescriptor,
-                                                    std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::match(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
 {
+  if (this->crossCheck()){
+    return this->robustMatch(queryDescriptor, trainDescriptor, wrongMatches);
+  } else {
+    return this->fastRobustMatch(queryDescriptor, trainDescriptor, wrongMatches);
+  }
+}
 
+std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
+{
   std::vector<cv::DMatch> goodMatches;
 
   std::vector<std::vector<cv::DMatch>> matches12;
   std::vector<std::vector<cv::DMatch>> matches21;
 
-  bool err = mMatcher->match(queryDescriptor, trainDescriptor, matches12);
+  bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches12);
   if (err) return goodMatches;
 
-  err = mMatcher->match(trainDescriptor, queryDescriptor, matches21);
+  err = mDescriptorMatcher->match(trainDescriptor, queryDescriptor, matches21);
   if (err) return goodMatches;
 
   std::vector<std::vector<cv::DMatch>> wrong_matches12;
   std::vector<std::vector<cv::DMatch>> wrong_matches21;
-  std::vector<std::vector<cv::DMatch>> good_matches12 = this->ratioTest(matches12, this->ratio(), &wrong_matches12);
-  std::vector<std::vector<cv::DMatch>> good_matches21 = this->ratioTest(matches21, this->ratio(), &wrong_matches21);
+  std::vector<std::vector<cv::DMatch>> good_matches12 = RobustMatchingImp::ratioTest(matches12, this->ratio(), &wrong_matches12);
+  std::vector<std::vector<cv::DMatch>> good_matches21 = RobustMatchingImp::ratioTest(matches21, this->ratio(), &wrong_matches21);
 
   matches12.clear();
   matches21.clear();
 
   if (wrongMatches){
-    for (size_t i = 0; i < wrong_matches12.size(); i++){
-      wrongMatches->push_back(wrong_matches12[i][0]);
+    for (auto &wrong_match : wrong_matches12){
+      wrongMatches->push_back(wrong_match[0]);
     }
   }
 
-
-  goodMatches = this->crossCheckTest(good_matches12, good_matches21, wrongMatches);
+  goodMatches = RobustMatchingImp::crossCheckTest(good_matches12, good_matches21, wrongMatches);
 
   return goodMatches;
 }
 
-std::vector<cv::DMatch> RobustMatching::fastRobustMatch(const cv::Mat &queryDescriptor,
-                                                        const cv::Mat &trainDescriptor,
-                                                        std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> goodMatches;
 
   std::vector<std::vector<cv::DMatch>> matches;
-  bool err = mMatcher->match(queryDescriptor, trainDescriptor, matches);
+  bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
   if (err) return goodMatches;
 
   std::vector<std::vector<cv::DMatch>> ratio_test_wrong_matches;
-  std::vector<std::vector<cv::DMatch>> ratio_test_matches = this->ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
+  std::vector<std::vector<cv::DMatch>> ratio_test_matches = RobustMatchingImp::ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
 
   for (auto &match : ratio_test_matches){
     goodMatches.push_back(match[0]);
@@ -649,7 +664,154 @@ std::vector<cv::DMatch> RobustMatching::fastRobustMatch(const cv::Mat &queryDesc
   }
 
   return goodMatches;
+}
 
+bool RobustMatchingImp::compute(const cv::Mat &queryDescriptor,
+                                     const cv::Mat &trainDescriptor,
+                                     const std::vector<cv::KeyPoint> &keypoints1,
+                                     const std::vector<cv::KeyPoint> &keypoints2,
+                                     std::vector<cv::DMatch> *goodMatches,
+                                     std::vector<cv::DMatch> *wrongMatches,
+                                     const cv::Size &queryImageSize,
+                                     const cv::Size &trainImageSize)
+{
+  try {
+    *goodMatches = this->match(queryDescriptor, trainDescriptor, wrongMatches);
+    *goodMatches = this->geometricFilter(*goodMatches, keypoints1, keypoints2, wrongMatches);
+    return false;
+  } catch(std::exception &e){
+    msgError(e.what());
+    return true;
+  }
+}
+
+
+/*----------------------------------------------------------------*/
+
+
+GmsProperties::GmsProperties()
+  : mRotation(true),
+    mScale(true),
+    mThreshold(6.)
+{
+
+}
+
+void GmsProperties::reset()
+{
+  mRotation = true;
+  mScale = true;
+  mThreshold = 6.;
+}
+
+std::string GmsProperties::name() const
+{
+  return std::string("GMS");
+}
+
+bool GmsProperties::rotation() const
+{
+  return mRotation;
+}
+
+void GmsProperties::setRotation(bool rotation)
+{
+  mRotation = rotation;
+}
+
+bool GmsProperties::scale() const
+{
+  return mScale;
+}
+
+void GmsProperties::setScale(bool scale)
+{
+  mScale = scale;
+}
+
+double GmsProperties::threshold() const
+{
+  return mThreshold;
+}
+
+void GmsProperties::setThreshold(double threshold)
+{
+  mThreshold = threshold;
+}
+
+/*----------------------------------------------------------------*/
+
+
+GsmImp::GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+  : GmsProperties(),
+    mDescriptorMatcher(descriptorMatcher)
+{
+}
+
+GsmImp::GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+                         bool rotation,
+                         bool scale,
+                         double threshold)
+  : GmsProperties(),
+    mDescriptorMatcher(descriptorMatcher)
+{
+  this->setRotation(rotation);
+  this->setScale(scale);
+  this->setThreshold(threshold);
+}
+
+bool GsmImp::compute(const cv::Mat &queryDescriptor,
+                     const cv::Mat &trainDescriptor,
+                     const std::vector<cv::KeyPoint> &keypoints1,
+                     const std::vector<cv::KeyPoint> &keypoints2,
+                     std::vector<cv::DMatch> *goodMatches,
+                     std::vector<cv::DMatch> *wrongMatches,
+                     const cv::Size &queryImageSize,
+                     const cv::Size &trainImageSize)
+{
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
+  try {
+
+    if (goodMatches == nullptr) return true;
+
+    std::vector<cv::DMatch> matches;
+    bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
+    if (err) return true;
+
+    cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
+
+    for (size_t i = 0; i < matches.size(); i++) {
+      bool bWrong = true;
+      for (size_t j = 0; j < goodMatches->size(); j++) {
+        if (matches[i].queryIdx == (*goodMatches)[j].queryIdx &&
+            matches[i].trainIdx == (*goodMatches)[j].trainIdx) {
+          bWrong = false;
+          break;
+        }
+      }
+      if (bWrong) {
+        wrongMatches->push_back(matches[i]);
+      }
+    }
+
+    /// TODO: devolver wrongMatches
+
+  } catch(std::exception &e){
+    msgError(e.what());
+    return true;
+  }
+#  else
+  Q_UNUSED(queryDescriptor)
+  Q_UNUSED(trainDescriptor)
+  Q_UNUSED(keypoints1)
+  Q_UNUSED(keypoints2)
+  Q_UNUSED(goodMatches)
+  Q_UNUSED(wrongMatches)
+  Q_UNUSED(queryImageSize)
+  Q_UNUSED(trainImageSize)
+  TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
+#endif
+  return false;
 }
 
 
@@ -657,103 +819,64 @@ std::vector<cv::DMatch> RobustMatching::fastRobustMatch(const cv::Mat &queryDesc
 /*----------------------------------------------------------------*/
 
 
-void matchesWrite(const std::string &fname, const std::vector<cv::DMatch> &matches, const std::vector<cv::DMatch> &wrongMatches)
+
+void passPointsWrite(const std::string &fname,
+                     const std::vector<std::vector<std::pair<std::string, int>>> &pass_points)
 {
+  std::ofstream ofs(fname, std::ofstream::trunc);
+  if (ofs.is_open()){
 
-  std::string ext = fs::path(fname).extension().string();
-  int flags = 0;
-  if (ext.compare("xml") == 0) {
-    flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (ext.compare("yml") == 0) {
-    flags = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
-  } else if (ext.compare("bin") == 0) {
+    for (size_t i = 0; i < pass_points.size(); i++) {
 
-  } else {
-    msgError("file extension '%s' not valid", ext.c_str());
-    return;
-  }
+      ofs << i;
 
-  if (ext.compare("bin") == 0) {
-    FILE* fp = std::fopen(fname.c_str(), "wb");
-    if (fp) {
-      // Cabecera
-      int size = static_cast<int>(matches.size());
-      std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, fp);
-      std::fwrite(&size, sizeof(int32_t), 1, fp);
-      char extraHead[100]; // Reserva de espacio para futuros usos
-      std::fwrite(&extraHead, sizeof(char), 100, fp);
-      //Cuerpo
-      for (size_t i = 0; i < matches.size(); i++) {
-        std::fwrite(&matches[i].queryIdx, sizeof(int32_t), 1, fp);
-        std::fwrite(&matches[i].trainIdx, sizeof(int32_t), 1, fp);
-        std::fwrite(&matches[i].imgIdx, sizeof(int32_t), 1, fp);
-        std::fwrite(&matches[i].distance, sizeof(float), 1, fp);
+      for (size_t j = 0; j < pass_points[i].size(); j++){
+        ofs << ";" << pass_points[i][j].first
+          << ";" << pass_points[i][j].second;
       }
-      std::fclose(fp);
-    } else {
-      //msgError("No pudo escribir archivo %s", matches_file);
+
+      ofs << std::endl;
     }
-  } else {
-    cv::FileStorage fs(fname, flags);
-    if (fs.isOpened()) {
-      if (!matches.empty()) write(fs, "matches", matches);
-      if (!wrongMatches.empty()) write(fs, "wrong_matches", wrongMatches);
-      fs.release();
-    } else {
-      //msgError("No pudo escribir archivo %s", matches_file);
-    }
+
+    ofs.close();
   }
 }
 
-void matchesRead(const std::string &fname, std::vector<cv::DMatch> *matches, std::vector<cv::DMatch> *wrongMatches)
+void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<std::string, int>>> &pass_points)
 {
+  pass_points.resize(0);
+  std::ifstream ifs(fname);
+  std::string line;
+  if (ifs.is_open()) {
 
-  std::string ext = fs::path(fname).extension().string();
-  if (ext.empty() == false) {
-    if (ext.compare("bin") == 0) {
-      if (FILE* fp = std::fopen(fname.c_str(), "rb")) {
-        //cabecera
-        char h[22];
-        int size;
-        char extraHead[100];
-        std::fread(h, sizeof(char), 22, fp);
-        std::fread(&size, sizeof(int32_t), 1, fp);
-        std::fread(&extraHead, sizeof(char), 100, fp);
-        //Cuerpo
-        if (matches){
-          matches->resize(static_cast<size_t>(size));
-          for (auto &match : *matches) {
-            std::fread(&match.queryIdx, sizeof(int32_t), 1, fp);
-            std::fread(&match.trainIdx, sizeof(int32_t), 1, fp);
-            std::fread(&match.imgIdx, sizeof(int32_t), 1, fp);
-            std::fread(&match.distance, sizeof(float), 1, fp);
+    int r = 0;
+    while (std::getline(ifs, line)) {
+
+      std::vector<std::string> list;
+      boost::split(list, line, boost::is_any_of(";"));
+      int size = list.size();
+      if (size >= 1){
+        if (size == 1 || size % 2 == 0){
+          /// deleted point
+          pass_points.push_back(std::vector<std::pair<std::string, int>>());
+        } else {
+          std::vector<std::pair<std::string, int>> pass_point;
+          for(int i = 1; i < size; i++){
+            std::string idImage = list[i];
+            int idx = stringToNumber<int>(list[++i]);
+            pass_point.emplace_back(idImage, idx);
           }
+          pass_points.push_back(pass_point);
         }
-
-        /// TODO: wrong matches
-        /// ....
-        std::fclose(fp);
-      } else
-        msgError("No pudo leer archivo %s", fname.c_str());
-    } else if (ext.compare("xml") == 0 || ext.compare("yml") == 0) {
-
-      cv::FileStorage fs(fname.c_str(), cv::FileStorage::READ);
-      if (fs.isOpened()) {
-        if (matches) {
-          matches->resize(0);
-          fs["matches"] >> *matches;
-        }
-        if (wrongMatches) {
-          wrongMatches->resize(0);
-          fs["wrong_matches"] >> *wrongMatches;
-        }
-        fs.release();
-      } else {
-        msgError("No pudo leer archivo %s", fname.c_str());
       }
+
+      r++;
     }
-  } else msgError("Fichero no valido: %s", fname.c_str());
+
+    ifs.close();
+  }
 }
+
 
 
 } // namespace tl

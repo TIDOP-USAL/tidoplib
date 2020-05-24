@@ -302,23 +302,15 @@ template<typename T>
 void Quaternion<T>::normalize()
 {
   T length = this->norm();
-  if (length > static_cast<T>(0)) {
-    *this /= length;
-  } else {
-    *this = Quaternion<T>::zero();
-  }
+  *this /= length;
 }
 
 template <typename T>
 Quaternion<T> Quaternion<T>::inverse() const
 {
   T _dot = dot(*this, *this);
-  if (_dot > static_cast<T>(0)) {
-    Quaternion<T> inverse = this->conjugate() / _dot;
-    return inverse;
-  } else {
-    return Quaternion<T>::zero();
-  }
+  Quaternion<T> inverse = this->conjugate() / _dot;
+  return inverse;
 }
 
 template<typename T>

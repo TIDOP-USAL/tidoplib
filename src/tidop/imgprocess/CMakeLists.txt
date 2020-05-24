@@ -23,7 +23,9 @@ add_library(tl_imgprocess ${LIB_TYPE}
             whitebalance.cpp
             whitebalance.h
             matching.cpp
-            matching.h)
+            matching.h
+            morphologicaloper.cpp
+            morphologicaloper.h)
   
 # Creates folder "libraries" and adds target project (math.vcproj)
 set_property(TARGET tl_imgprocess PROPERTY FOLDER "modules")

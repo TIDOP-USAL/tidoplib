@@ -7,6 +7,8 @@ add_library(tl_featmatch ${LIB_TYPE}
             agast.h
             akaze.cpp
             akaze.h
+            boost.cpp
+            boost.h
             brief.cpp
             brief.h
             brisk.cpp
@@ -16,8 +18,9 @@ add_library(tl_featmatch ${LIB_TYPE}
             evaluation.h
             fast.cpp
             fast.h
-            features.cpp
             features.h
+            featio.h
+            featio.cpp
             freak.cpp
             freak.h
             gftt.cpp
@@ -34,6 +37,8 @@ add_library(tl_featmatch ${LIB_TYPE}
             lucid.h
             matcher.cpp
             matcher.h
+            matchio.cpp
+            matchio.h
             #msd.cpp
             #msd.h
             mser.cpp
@@ -46,6 +51,8 @@ add_library(tl_featmatch ${LIB_TYPE}
             star.h
             surf.cpp
             surf.h
+            vgg.h
+            vgg.cpp
 )
   
 # Añade el proyecto a la carpeta 'modules'

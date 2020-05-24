@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(Rect_size)
 BOOST_AUTO_TEST_CASE(Rect_isEmpty)
 {
   RectI rect(5, 10, 100, 100);
-  BOOST_CHECK(rect.isEmpty() == false);
+  BOOST_CHECK_EQUAL(false, rect.isEmpty());
 
   RectI rect1;
   BOOST_CHECK(rect1.isEmpty());
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(Rect_contains)
 {
   RectI rect(5, 10, 100, 100);
   BOOST_CHECK(rect.contains(PointI(50, 50)));
-  BOOST_CHECK(false == rect.contains(PointI(0, 0)));
+  BOOST_CHECK_EQUAL(false, rect.contains(PointI(0, 0)));
 }
 
 BOOST_AUTO_TEST_CASE(Rect_convertType)
@@ -116,4 +116,11 @@ BOOST_AUTO_TEST_CASE(Rect_convertType)
   BOOST_CHECK_EQUAL(50., rect_d.y);
   BOOST_CHECK_EQUAL(100., rect_d.width);
   BOOST_CHECK_EQUAL(100., rect_d.height);
+
+  RectD rectd(51.2, 36.5, 96.6, 28.4);
+  RectI recti = static_cast<RectI>(rectd);
+  BOOST_CHECK_EQUAL(51, recti.x);
+  BOOST_CHECK_EQUAL(37, recti.y);
+  BOOST_CHECK_EQUAL(97, recti.width);
+  BOOST_CHECK_EQUAL(28, recti.height);
 }

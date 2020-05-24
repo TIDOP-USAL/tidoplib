@@ -61,8 +61,42 @@ namespace tl
  * de los píxeles cercanos.
  */
 class TL_EXPORT BilateralFilter 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Constructora de la clase BilateralFilter
+   * \param[in] diameter 
+   * \param[in] sigmaColor Núcleo gama para suavizar las diferencias en las intensidades
+   * \param[in] sigmaSpace Núcleo espacial para suavizar las diferencias de coordenadas
+   * \param[in] borderType
+   */
+  BilateralFilter(int diameter, 
+                  double sigmaColor, 
+                  double sigmaSpace, 
+                  int borderType = cv::BORDER_DEFAULT);
+
+  /*!
+   * \brief Aplica el filtro bilateral a una imagen
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros del filtro bilateral
+   * \param[in] diameter
+   * \param[in] sigmaColor Núcleo gama para suavizar las diferencias en las intensidades
+   * \param[in] sigmaSpace Núcleo espacial para suavizar las diferencias de coordenadas
+   * \param[in] borderType
+   */
+  void setParameters(int diameter, 
+                     double sigmaColor, 
+                     double sigmaSpace, 
+                     int borderType = cv::BORDER_DEFAULT);
+
 private:
 
   /*!
@@ -86,34 +120,6 @@ private:
    */
   int mBorderType;
 
-public:
-
-  /*!
-   * \brief Constructora de la clase BilateralFilter
-   * \param[in] diameter
-   * \param[in] sigmaColor Núcleo gama para suavizar las diferencias en las intensidades
-   * \param[in] sigmaSpace Núcleo espacial para suavizar las diferencias de coordenadas
-   * \param[in] borderType
-   */
-  BilateralFilter(int diameter, double sigmaColor, double sigmaSpace, int borderType = cv::BORDER_DEFAULT);
-
-  /*!
-   * \brief Aplica el filtro bilateral a una imagen
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros del filtro bilateral
-   * \param[in] diameter
-   * \param[in] sigmaColor Núcleo gama para suavizar las diferencias en las intensidades
-   * \param[in] sigmaSpace Núcleo espacial para suavizar las diferencias de coordenadas
-   * \param[in] borderType
-   */
-  void setParameters(int diameter, double sigmaColor, double sigmaSpace, int borderType = cv::BORDER_DEFAULT);
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -123,8 +129,38 @@ public:
  * Provoca un suavizado en la imagen resultante
  */
 class TL_EXPORT Blur 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Constructora de la clase
+   * \param[in] ksize Tamaño del kernel
+   * \param[in] anchor Punto de anclaje
+   * \param[in] borderType Tipo de borde
+   */
+  Blur(const cv::Size &ksize, 
+       const cv::Point &anchor = cv::Point(-1, -1), 
+       int borderType = cv::BORDER_DEFAULT);
+
+  /*!
+   * \brief Aplica el filtro de desenfoque.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros del filtro
+   * \param[in] ksize Tamaño del kernel
+   * \param[in] anchor Punto de anclaje 
+   * \param[in] borderType Tipo de borde
+   */
+  void setParameters(const cv::Size ksize, 
+                     const cv::Point &anchor = cv::Point(-1, -1), 
+                     int borderType = cv::BORDER_DEFAULT);
+
 private:
 
   /*!
@@ -143,35 +179,6 @@ private:
    * Tipo de borde cv::BorderTypes
    */
   int mBorderType;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase
-   * \param[in] ksize Tamaño del kernel
-   * \param[in] anchor Punto de anclaje
-   * \param[in] borderType Tipo de borde
-   */
-  Blur(cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), int borderType = cv::BORDER_DEFAULT);
-
-  /*!
-   * \brief Aplica el filtro de desenfoque.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ProcessExit::SUCCESS. 
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros del filtro
-   * \param[in] ksize Tamaño del kernel
-   * \param[in] anchor Punto de anclaje 
-   * \param[in] borderType Tipo de borde
-   */
-  void setParameters(cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), int borderType = cv::BORDER_DEFAULT);
-
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -181,8 +188,46 @@ public:
 * Provoca un suavizado en la imagen resultante
 */
 class TL_EXPORT BoxFilter 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Constructora de la clase
+   * \param[in] ddepth the output image depth (-1 to use src.depth()).
+   * \param[in] ksize Tamaño del kernel
+   * \param[in] anchor Punto de anclaje
+   * \param[in] normalize Normalizar
+   * \param[in] borderType Tipo de borde
+   */
+  BoxFilter(int ddepth, 
+            const cv::Size &ksize, 
+            const cv::Point &anchor = cv::Point(-1, -1), 
+            bool normalize = true, 
+            int borderType = cv::BORDER_DEFAULT);
+
+  /*!
+   * \brief Aplica el filtro de desenfoque.
+   * \param[in] matIn Imagen de entrada.
+   * \param[out] matOut Imagen de salida.
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros del filtro
+   * \param[in] ddepth the output image depth (-1 to use src.depth()).
+   * \param[in] ksize Tamaño del kernel
+   * \param[in] anchor Punto de anclaje
+   * \param[in] normalize 
+   * \param[in] borderType Tipo de borde
+   */
+  void setParameters(int ddepth, 
+                     const cv::Size &ksize, 
+                     const cv::Point &anchor = cv::Point(-1, -1), 
+                     bool normalize = true, 
+                     int borderType = cv::BORDER_DEFAULT);
+
 private:
 
   int mDepth;
@@ -206,146 +251,17 @@ private:
    */
   int mBorderType;
 
-public:
-
-  /*!
-   * \brief Constructora de la clase
-   * \param[in] ddepth the output image depth (-1 to use src.depth()).
-   * \param[in] ksize Tamaño del kernel
-   * \param[in] anchor Punto de anclaje
-   * \param[in] normalize Normalizar
-   * \param[in] borderType Tipo de borde
-   */
-  BoxFilter(int ddepth, cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), bool normalize = true, int borderType = cv::BORDER_DEFAULT);
-
-  /*!
-   * \brief Aplica el filtro de desenfoque.
-   * \param[in] matIn Imagen de entrada.
-   * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros del filtro
-   * \param[in] ddepth the output image depth (-1 to use src.depth()).
-   * \param[in] ksize Tamaño del kernel
-   * \param[in] anchor Punto de anclaje
-   * \param[in] normalize 
-   * \param[in] borderType Tipo de borde
-   */
-  void setParameters(int ddepth, cv::Size ksize, cv::Point anchor = cv::Point(-1, -1), bool normalize = true, int borderType = cv::BORDER_DEFAULT);
 
 };
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief Aplica un filtrado mediante una matriz de convolución
- */
-class TL_DEPRECATED("Convolution", "2.0") TL_EXPORT Filter2D 
-  : public ImgProcessing
-{
-private:
-
-  /*!
-   * \brief Profundidad de la imagen de destino
-   *  ddepth=-1: Misma profundidad que la imagen de origen
-   */
-  int mDepth;
-
-  /*!
-   * \brief kernel Matriz de convolución
-   */
-  cv::Mat mKernel;
-
-  /*!
-   * \brief Punto de anclaje.
-   * Por defecto es el centro del kernel
-   */
-  cv::Point mAnchor;
-
-  /*!
-   * \brief Valor opcional añadido a los píxeles filtrados
-   */
-  double mDelta;
-
-  /*!
-   * \brief Método de extrapolación (cv::BorderTypes)
-   */
-  int mBorderType;
-
-public:
-
-  /*!
-   * \brief Constructora clase Filter2D
-   * \param[in] ddepth Profundidad de la imagen de destino. ddepth=-1: Misma profundidad que la imagen de origen
-   * \param[in] kernel Matriz o máscara de convolución
-   * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
-   * \param[in] delta Valor opcional añadido a los píxeles filtrados
-   * \param[in] borderType Método de extrapolación
-   */
-  Filter2D(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros del filtro de convolución
-   * \param[in] ddepth Profundidad de la imagen de destino. ddepth=-1: Misma profundidad que la imagen de origen
-   * \param[in] kernel Matriz de convolución
-   * \param[in] anchor Punto de anclaje. Por defecto es el centro del kernel
-   * \param[in] delta Valor opcional añadido a los píxeles filtrados
-   * \param[in] borderType Método de extrapolación
-   */
-  void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
-
-};
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
 /*!
  * \brief Aplica un filtrado mediante una matriz de convolución
  */
 class TL_EXPORT Convolution 
-  : public ImgProcessing
+  : public ImageProcess
 {
-private:
-
-  /*!
-   * \brief Profundidad de la imagen de destino
-   *  ddepth=-1: Misma profundidad que la imagen de origen
-   */
-  int mDepth;
-
-  /*!
-   * \brief kernel Matriz de convolución
-   */
-  cv::Mat mKernel;
-
-  /*!
-   * \brief Punto de anclaje.
-   * Por defecto es el centro del kernel
-   */
-  cv::Point mAnchor;
-
-  /*!
-   * \brief Valor opcional añadido a los píxeles filtrados
-   */
-  double mDelta;
-
-  /*!
-   * \brief Método de extrapolación (cv::BorderTypes)
-   */
-  int mBorderType;
 
 public:
 
@@ -357,16 +273,18 @@ public:
    * \param[in] delta Valor opcional añadido a los píxeles filtrados
    * \param[in] borderType Método de extrapolación
    */
-  Convolution(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
+  Convolution(int ddepth, 
+              const cv::Mat &kernel, 
+              const cv::Point &anchor = cv::Point(-1, -1), 
+              double delta = 0, 
+              int borderType = cv::BORDER_CONSTANT);
 
   /*!
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
    * \brief Establece los parámetros del filtro de convolución
@@ -376,7 +294,40 @@ public:
    * \param[in] delta Valor opcional añadido a los píxeles filtrados
    * \param[in] borderType Método de extrapolación
    */
-  void setParameters(int ddepth, cv::Mat kernel, cv::Point anchor = cv::Point(-1, -1), double delta = 0, int borderType = cv::BORDER_CONSTANT);
+  void setParameters(int ddepth, 
+                     const cv::Mat &kernel, 
+                     const cv::Point &anchor = cv::Point(-1, -1), 
+                     double delta = 0, 
+                     int borderType = cv::BORDER_CONSTANT);
+
+private:
+
+  /*!
+   * \brief Profundidad de la imagen de destino
+   *  ddepth=-1: Misma profundidad que la imagen de origen
+   */
+  int mDepth;
+
+  /*!
+   * \brief kernel Matriz de convolución
+   */
+  cv::Mat mKernel;
+
+  /*!
+   * \brief Punto de anclaje.
+   * Por defecto es el centro del kernel
+   */
+  cv::Point mAnchor;
+
+  /*!
+   * \brief Valor opcional añadido a los píxeles filtrados
+   */
+  double mDelta;
+
+  /*!
+   * \brief Método de extrapolación (cv::BorderTypes)
+   */
+  int mBorderType;
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -385,8 +336,42 @@ public:
  * \brief Desenfoque gaussiano
  */
 class TL_EXPORT GaussianBlur 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief GaussianBlur
+   * \param[in] kernelSize Tamaño del kernel
+   * \param[in] sigmaX Desviación estándar del kernel en la dirección X.
+   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y.
+   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
+   */
+  GaussianBlur(const cv::Size &kernelSize, 
+               double sigmaX, 
+               double sigmaY = 0., 
+               int borderType = 4);
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] kernelSize Tamaño del kernel
+   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
+   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
+   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
+   */
+  void setParameters(const cv::Size &kernelSize, 
+                     double sigmaX, 
+                     double sigmaY = 0, 
+                     int borderType = 4);
+
 private:
 
   /*!
@@ -409,35 +394,6 @@ private:
    */
   int mBorderType;
 
-public:
-
-  /*!
-   * \brief GaussianBlur
-   * \param[in] size Tamaño del kernel
-   * \param[in] sigmaX Desviación estándar del kernel en la dirección X.
-   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y.
-   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
-   */
-  GaussianBlur(cv::Size size, double sigmaX, double sigmaY = 0., int borderType = 4);
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] kSize Tamaño del kernel
-   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
-   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
-   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
-   */
-  void setParameters(cv::Size kSize, double sigmaX, double sigmaY = 0, int borderType = 4);
-
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -447,8 +403,46 @@ public:
  * Calcula el laplaciano de un imagen
  */
 class TL_EXPORT Laplacian 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Laplacian
+   * \param[in] ddepth Profundidad deseada de la imagen de destino
+   * \param[in] ksize Apertura del filtro
+   * \param[in] scale Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala.
+   * \param[in] delta Valor opcional añadido a los píxeles filtrados
+   * \param[in] bordertype Método de extrapolación (cv::BorderTypes)
+   */
+  Laplacian(int ddepth, 
+            int ksize, 
+            double scale = 1, 
+            double delta = 0, 
+            int bordertype = cv::BORDER_DEFAULT);
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] ddepth Profundidad deseada de la imagen de destino
+   * \param[in] ksize Apertura del filtro
+   * \param[in] scale Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala.
+   * \param[in] delta Valor opcional añadido a los píxeles filtrados
+   * \param[in] bordertype Método de extrapolación (cv::BorderTypes)
+   */
+  void setParameters(int ddepth, 
+                     int ksize, 
+                     double scale = 1, 
+                     double delta = 0, 
+                     int bordertype = cv::BORDER_DEFAULT);
+
 private:
 
   /*!
@@ -477,37 +471,6 @@ private:
    */
   int mBorderType;
 
-public:
-
-  /*!
-   * \brief Laplacian
-   * \param[in] ddepth Profundidad deseada de la imagen de destino
-   * \param[in] ksize Apertura del filtro
-   * \param[in] scale Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala.
-   * \param[in] delta Valor opcional añadido a los píxeles filtrados
-   * \param[in] bordertype Método de extrapolación (cv::BorderTypes)
-   */
-  Laplacian(int ddepth, int ksize, double scale = 1, double delta = 0, int bordertype = cv::BORDER_DEFAULT);
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] ddepth Profundidad deseada de la imagen de destino
-   * \param[in] ksize Apertura del filtro
-   * \param[in] scale Factor de escala opcional para los valores calculados por el laplaciano. Por defecto no se aplica escala.
-   * \param[in] delta Valor opcional añadido a los píxeles filtrados
-   * \param[in] bordertype Método de extrapolación (cv::BorderTypes)
-   */
-  void setParameters(int ddepth, int ksize, double scale = 1, double delta = 0, int bordertype = cv::BORDER_DEFAULT);
-
 }; 
 
 /* ---------------------------------------------------------------------------------- */
@@ -517,14 +480,8 @@ public:
  * Suaviza una imagen con un filtro de media 
  */
 class TL_EXPORT MedianBlur
-  : public ImgProcessing
+  : public ImageProcess
 {
-private:
-
-  /*!
-   * \brief Apertura del filtro
-   */
-  int mKernelSize;
 
 public:
 
@@ -538,10 +495,8 @@ public:
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -549,6 +504,12 @@ public:
    */
   void setParameters(int ksize);
 
+private:
+
+  /*!
+   * \brief Apertura del filtro
+   */
+  int mKernelSize;
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -556,8 +517,62 @@ public:
  * \brief Sobel
  */
 class TL_EXPORT Sobel
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Constructora
+   * \param[in] dx
+   * \param[in] dy
+   * \param[in] ksize
+   * \param[in] scale
+   * \param[in] delta
+   * \param[in] ddepth
+   * \param[in] thresh
+   * \param[in] maxval
+   * \param[in] bordertype
+   */
+  Sobel(int dx, 
+        int dy, 
+        int ksize = 3, 
+        double scale = 1., 
+        double delta = 0.,
+        int ddepth = CV_16S, 
+        double thresh = 50., 
+        double maxval = 200.,
+        int bordertype = cv::BORDER_DEFAULT);
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros
+   * \param[in] dx Orden de la derivada x
+   * \param[in] dy Orden de la derivada y
+   * \param[in] ksize Tamaño kernel
+   * \param[in] scale Factor de escala opcional para los valores de las derivadas calculadas
+   * \param[in] delta
+   * \param[in] ddepth
+   * \param[in] thresh
+   * \param[in] maxval
+   * \param[in] bordertype
+   */
+  void setParameters(int dx, 
+                     int dy, 
+                     int ksize = 3, 
+                     double scale = 1., 
+                     double delta = 0., 
+                     int ddepth = CV_16S, 
+                     double thresh = 50., 
+                     double maxval = 200., 
+                     int bordertype = cv::BORDER_DEFAULT);
+
 private:
 
   /*!
@@ -605,47 +620,6 @@ private:
    */
   int mBorderType;
 
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] dx
-   * \param[in] dy
-   * \param[in] ksize
-   * \param[in] scale
-   * \param[in] delta
-   * \param[in] ddepth
-   * \param[in] thresh
-   * \param[in] maxval
-   * \param[in] bordertype
-   */
-  Sobel(int dx, int dy, int ksize = 3, double scale = 1., double delta = 0.,
-        int ddepth = CV_16S, double thresh = 50., double maxval = 200.,
-        int bordertype = cv::BORDER_DEFAULT);
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros
-   * \param[in] dx Orden de la derivada x
-   * \param[in] dy Orden de la derivada y
-   * \param[in] ksize Tamaño kernel
-   * \param[in] scale Factor de escala opcional para los valores de las derivadas calculadas
-   * \param[in] delta
-   * \param[in] ddepth
-   * \param[in] thresh
-   * \param[in] maxval
-   * \param[in] bordertype
-   */
-  void setParameters(int dx, int dy, int ksize = 3, double scale = 1., double delta = 0., int ddepth = CV_16S, double thresh = 50., double maxval = 200., int bordertype = cv::BORDER_DEFAULT);
-
 };
 
 /* ---------------------------------------------------------------------------------- */
@@ -654,8 +628,34 @@ public:
  * \brief Detector de bordes canny
  */
 class TL_EXPORT Canny 
-  : public ImgProcessing
+  : public ImageProcess
 {
+
+public:
+
+  /*!
+   * \brief Constructora
+   * \param[in] threshold1
+   * \param[in] threshold2
+   */
+  Canny(double threshold1 = 0.0, 
+        double threshold2 = 0.0);
+
+  /*!
+   * \brief Ejecuta el proceso
+   * \param[in] matIn Imagen de entrada
+   * \param[out] matOut Imagen de salida
+   */
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+  /*!
+   * \brief Establece los parámetros para el detector de bordes canny
+   * \param[in] threshold1 Primer umbral para el procedimiento de histéresis
+   * \param[in] threshold2 Segundo umbral para el procedimiento de histéresis
+   */
+  void setParameters(double threshold1, 
+                     double threshold2);
+
 private:
 
   /*!
@@ -667,31 +667,6 @@ private:
    * \brief Segundo umbral para el procedimiento de histéresis
    */
   double mThreshold2;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] threshold1
-   * \param[in] threshold2
-   */
-  Canny(double threshold1 = 0.0, double threshold2 = 0.0);
-
-  /*!
-   * \brief Ejecuta el proceso
-   * \param[in] matIn Imagen de entrada
-   * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
-   */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
-
-  /*!
-   * \brief Establece los parámetros para el detector de bordes canny
-   * \param[in] threshold1 Primer umbral para el procedimiento de histéresis
-   * \param[in] threshold2 Segundo umbral para el procedimiento de histéresis
-   */
-  void setParameters(double threshold1, double threshold2);
 
 };
 

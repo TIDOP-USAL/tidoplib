@@ -25,7 +25,7 @@ namespace tl
  * \param[in] rgb Imagen cmyk
  * \param[out] cmyk Imagen rgb
  */
-TL_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
+TL_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk);
 
 
 /*!
@@ -33,7 +33,7 @@ TL_EXPORT void rgbToCmyk(const cv::Mat &rgb, cv::Mat *cmyk);
  * \param[in] cmyk Imagen cmyk
  * \param[out] rgb Imagen rgb
  */
-TL_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
+TL_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb);
 
 
 /*!
@@ -41,7 +41,7 @@ TL_EXPORT void cmykToRgb(const cv::Mat &cmyk, cv::Mat *rgb);
  * \param[in] rgb
  * \param[out] hsl
  */
-TL_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
+TL_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl);
 
 
 /*!
@@ -49,7 +49,7 @@ TL_EXPORT void rgbToHSL(const cv::Mat &rgb, cv::Mat *hsl);
  * \param[in] hsl
  * \param[out] rgb
  */
-TL_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
+TL_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb);
 
 
 /*!
@@ -57,7 +57,7 @@ TL_EXPORT void hslToRgb(const cv::Mat &hsl, cv::Mat *rgb);
  * \param[in] rgb
  * \param[out] hsv
  */
-TL_EXPORT void rgbToHSV(const cv::Mat &rgb, cv::Mat *hsv);
+TL_EXPORT void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv);
 
 
 /*!
@@ -65,7 +65,7 @@ TL_EXPORT void rgbToHSV(const cv::Mat &rgb, cv::Mat *hsv);
  * \param[in] hsv
  * \param[out] rgb
  */
-TL_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb);
+TL_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat &rgb);
 
 
 /*!
@@ -73,15 +73,15 @@ TL_EXPORT void hsvToRgb(const cv::Mat &hsv, cv::Mat *rgb);
  * \param[in] rgb
  * \param[out] gray
  */
-TL_EXPORT void rgbToLuminance(const cv::Mat &rgb, cv::Mat *gray);
+TL_EXPORT void rgbToLuminance(const cv::Mat &rgb, cv::Mat &gray);
 
 
 /*!
  * \brief Conversión de una imagen a coordenadas cromáticas
  * \param[in] rgb Imagen RGB
- * \param[out] chroma_rgb Imagen en coordenadas cromaticas
+ * \param[out] chromaCoord Imagen en coordenadas cromaticas
  */
-TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
+TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord);
 
 
 
@@ -94,14 +94,15 @@ TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat *chroma_rgb);
  * \brief Conversión del modo de color.
  * Conversión entre distintos tipos de modos de color
  */
-class TL_EXPORT ColorConversion : public ImgProcessing
+class TL_EXPORT ColorConversion 
+  : public ImageProcess
 {
 public:
   
   /*!
    * Modelos de color
    */
-  enum class Model
+  enum class ColorModel
   {
     rgb,
     rgba,
@@ -110,55 +111,43 @@ public:
     hsv,
     luminance,
     chromaticity
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    RGB = rgb,
-    RGBA = rgba,
-    CMYK = cmyk,
-    HSL = hsl,
-    HSV = hsv,
-    LUMINANCE = luminance,
-    CHROMATICITY = chromaticity
-#endif
   };
-
-private:
-
-  Model mModelIn;
-  
-  Model mModelOut;
 
 public:
 
-  /*!
-   * \brief Constructora de la clase
-   */
-  ColorConversion(Model modelIn, Model modelOut);
-
-  //~ColorConversion();
+  ColorConversion(ColorModel modelIn, ColorModel modelOut);
+  ~ColorConversion() override = default;
 
   /*!
    * \brief Ejecuta el proceso.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
-   * \brief Establece los parámetros
+   * \brief Establece el modelo de color de entrada
    * \param[in] modelIn Modelo de color de entrada
+   */
+  void setInputColorModel(ColorModel modelIn);
+
+  /*!
+   * \brief Establece el modelo de color de salida
    * \param[in] modelOut Modelo de color de salida
    */
-  void setParameters(Model modelIn, Model modelOut);
+  void setOutputColorModel(ColorModel modelOut);
+
+private:
+
+  ColorModel mModelIn;
+  ColorModel mModelOut;
 };
 
 /* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV
 

@@ -10,33 +10,41 @@
 namespace tl
 {
 
-
-/*!
- * \brief SIFT detector/descriptor properties class
+/*! \addtogroup Features
+ * 
+ *  \{
  */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
+
 class TL_EXPORT SiftProperties
-  : public ISift
+  : public Sift
 {
 
 public:
 
   SiftProperties();
-  ~SiftProperties() override;
+  SiftProperties(const SiftProperties &siftProperties);
+  ~SiftProperties() override = default;
 
-// ISift interface
+// Sift interface
 
 public:
 
-  virtual int featuresNumber() const override;
-  virtual int octaveLayers() const override;
-  virtual double contrastThreshold() const override;
-  virtual double edgeThreshold() const override;
-  virtual double sigma() const override;
-  virtual void setFeaturesNumber(int featuresNumber) override;
-  virtual void setOctaveLayers(int octaveLayers) override;
-  virtual void setContrastThreshold(double contrastThreshold) override;
-  virtual void setEdgeThreshold(double edgeThreshold) override;
-  virtual void setSigma(double sigma) override;
+  int featuresNumber() const override;
+  int octaveLayers() const override;
+  double contrastThreshold() const override;
+  double edgeThreshold() const override;
+  double sigma() const override;
+  void setFeaturesNumber(int featuresNumber) override;
+  void setOctaveLayers(int octaveLayers) override;
+  void setContrastThreshold(double contrastThreshold) override;
+  void setEdgeThreshold(double edgeThreshold) override;
+  void setSigma(double sigma) override;
 
 // Feature interface
 
@@ -68,13 +76,13 @@ class TL_EXPORT SiftDetectorDescriptor
 public:
 
   SiftDetectorDescriptor();
+  SiftDetectorDescriptor(const SiftDetectorDescriptor &siftDetectorDescriptor);
   SiftDetectorDescriptor(int featuresNumber,
                          int octaveLayers,
                          double contrastThreshold,
                          double edgeThreshold,
                          double sigma);
-
-  ~SiftDetectorDescriptor() override;
+  ~SiftDetectorDescriptor() override = default;
 
 private:
 
@@ -96,7 +104,7 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// ISift interface
+// Sift interface
 
 public:
 
@@ -118,6 +126,10 @@ protected:
 };
 
 #endif
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

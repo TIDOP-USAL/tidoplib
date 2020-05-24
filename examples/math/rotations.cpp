@@ -235,7 +235,11 @@ int main(int argc, char** argv)
   _cofactor_matrix.at(2, 1) = 0;
   _cofactor_matrix.at(2, 2) = 6;
 
+  Eigen::Quaterniond q__(0, 0, 0, 0);
+  Eigen::Quaterniond q___ = q__.inverse();
 
+  math::Quaternionf q_cero = math::Quaternionf::zero();
+  q_cero.inverse();
 
   int fm = _cofactor_matrix.firstMinor(1, 1);
 

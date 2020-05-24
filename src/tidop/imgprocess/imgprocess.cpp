@@ -13,123 +13,127 @@ namespace tl
 {
 
 
-/* ---------------------------------------------------------------------------------- */
 
-void ImgProcessingList::add(const std::shared_ptr<ImgProcessing> &ip)
+ImagingProcesses::ImagingProcesses()
 {
-  mProcessList.push_back(ip);
 }
 
-ProcessExit ImgProcessingList::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+ImagingProcesses::ImagingProcesses(const ImagingProcesses &imagingProcesses)
+  : mProcessList(imagingProcesses.mProcessList)
 {
-  if (matIn.empty()) return ProcessExit::failure;
-  matIn.copyTo(*matOut);
+}
+
+ImagingProcesses::ImagingProcesses(std::initializer_list<std::shared_ptr<ImageProcess>> processes)
+  : mProcessList(processes)
+{
+}
+
+ImagingProcesses::~ImagingProcesses()
+{
+}
+
+void ImagingProcesses::run(const cv::Mat &matIn, cv::Mat &matOut) const
+{
+  TL_ASSERT(!matIn.empty(), "Incorrect input data")
+
+  //matIn.copyTo(matOut);
   for (const auto &process : mProcessList) {
-    if (process->execute(*matOut, matOut) != ImgProcessing::Status::ok)
-      return ProcessExit::failure;
+    process->run(matIn, matOut);
   }
-  return ProcessExit::success;
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-ImgProcessing::Status morphologicalOperation::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+void ImagingProcesses::push_back(const std::shared_ptr<ImageProcess> &process)
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-  try {
-    cv::Mat element = getStructuringElement(mShapes, cv::Size(2 * mSize + 1, 2 * mSize + 1), cv::Point(mSize, mSize));
-    switch (type)
-    {
-    case tl::process_type::morph_dilation:
-      cv::dilate(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
-      break;
-    case tl::process_type::morph_erotion:
-      cv::erode(matIn, *matOut, element, mAnchor, mIterations, mBorderType);
-      break;
-    case tl::process_type::morph_opening:
-      morphologyEx(matIn, *matOut, cv::MORPH_OPEN, element);
-      break;
-    case tl::process_type::morph_closing:
-      morphologyEx(matIn, *matOut, cv::MORPH_CLOSE, element);
-      break;
-    case tl::process_type::morph_gradient:
-      morphologyEx(matIn, *matOut, cv::MORPH_GRADIENT, element);
-      break;
-    case tl::process_type::morph_tophat:
-      morphologyEx(matIn, *matOut, cv::MORPH_TOPHAT, element);
-      break;
-    case tl::process_type::morph_blackhat:
-      morphologyEx(matIn, *matOut, cv::MORPH_BLACKHAT, element);
-      break;
-    default:
-      return ImgProcessing::Status::incorrect_input_data;
-    }
-  } catch (cv::Exception &e) {
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
+  mProcessList.push_back(process);
 }
 
-void morphologicalOperation::setParameters(int size, cv::MorphShapes shapes, cv::Point anchor, int iterations, int borderType, const cv::Scalar &borderValue)
+void ImagingProcesses::pop_back()
 {
-  mSize = size;
-  mShapes = shapes;
-  mAnchor = anchor;
-  mIterations = iterations;
-  mBorderType = borderType;
-  mBorderValue = borderValue;
+  mProcessList.pop_back();
 }
+
+void ImagingProcesses::clear() TL_NOEXCEPT
+{
+  mProcessList.clear();
+}
+
+bool ImagingProcesses::empty() const TL_NOEXCEPT
+{
+  return mProcessList.empty();
+}
+
+ImagingProcesses::iterator ImagingProcesses::begin() TL_NOEXCEPT
+{
+  return mProcessList.begin();
+}
+
+ImagingProcesses::const_iterator ImagingProcesses::begin() const TL_NOEXCEPT
+{
+  return mProcessList.begin();
+}
+
+ImagingProcesses::iterator ImagingProcesses::end() TL_NOEXCEPT
+{
+  return mProcessList.end();
+}
+
+ImagingProcesses::const_iterator ImagingProcesses::end() const TL_NOEXCEPT
+{
+  return mProcessList.end();
+}
+
 
 
 /* ---------------------------------------------------------------------------------- */
 
 
-ImgProcessing::Status Normalize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+
+Normalize::Normalize(double lowRange, double upRange)
+  : ImageProcess(ProcessType::normalize), 
+    mLowRange(lowRange),
+    mUpRange(upRange)
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-  try {
-    cv::normalize(matIn, *matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
 }
 
-void Normalize::setParameters(double _lowRange, double _upRange)
+void Normalize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  mLowRange = _lowRange;
-  mUpRange = _upRange;
+  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+  cv::normalize(matIn, matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
+}
+
+void Normalize::setLowRange(double lowRange)
+{
+  mLowRange = lowRange;
+}
+
+void Normalize::setUpRange(double upRange)
+{
+  mUpRange = upRange;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 Binarize::Binarize(double thresh, double maxVal, bool bInverse)
-  : ImgProcessing(process_type::binarize),
+  : ImageProcess(ProcessType::binarize),
     mThresh(thresh),
     mMaxVal(maxVal),
     bInverse(bInverse) 
 {
 }
 
-ImgProcessing::Status Binarize::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+void Binarize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
+  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
   double th = mThresh, max = mMaxVal;
-  try {
-    if (th == 0.0 && max == 0.0) {
-      cv::Scalar m, stdv;
-      cv::meanStdDev(matIn, m, stdv);
-      th = m[0] - stdv[0];
-      max = m[0] + stdv[0];
-    }
-    cv::threshold(matIn, *matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
+  if (th == 0.0 && max == 0.0) {
+    cv::Scalar m, stdv;
+    cv::meanStdDev(matIn, m, stdv);
+    th = m[0] - stdv[0];
+    max = m[0] + stdv[0];
   }
-  return ImgProcessing::Status::ok;
+  cv::threshold(matIn, matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
 }
 
 void Binarize::setParameters(double thresh, double maxval, bool inverse)
@@ -144,7 +148,7 @@ void Binarize::setInverse(bool inverse)
   bInverse = inverse; 
 }
 
-bool Binarize::getInverse() const 
+bool Binarize::inverse() const 
 { 
   return bInverse; 
 }
@@ -152,40 +156,35 @@ bool Binarize::getInverse() const
 /* ---------------------------------------------------------------------------------- */
 
 EqualizeHistogram::EqualizeHistogram()
-  : ImgProcessing(process_type::equalize_hist) 
+  : ImageProcess(ProcessType::equalize_hist) 
 {
 }
 
-ImgProcessing::Status EqualizeHistogram::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+void EqualizeHistogram::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-  try {
-    cv::equalizeHist(matIn, *matOut);
-  } catch (cv::Exception &e) {
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
+  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+  cv::equalizeHist(matIn, matOut);
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 
-ImgProcessing::Status FunctionProcess::execute(const cv::Mat &matIn, cv::Mat *matOut) const
+
+FunctionProcess::FunctionProcess(std::function<void(const cv::Mat&, cv::Mat&)> f)
+  : ImageProcess(ProcessType::function_process), 
+    mFunction(f)
 {
-  if (matIn.empty()) return ImgProcessing::Status::incorrect_input_data;
-  try {
-    f(matIn, matOut);
-  } catch (cv::Exception &e){
-    msgError(e.what());
-    return ImgProcessing::Status::process_error;
-  }
-  return ImgProcessing::Status::ok;
+}
+
+void FunctionProcess::run(const cv::Mat &matIn, cv::Mat &matOut) const
+{
+  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+  mFunction(matIn, matOut);
 }
 
 
-/* ---------------------------------------------------------------------------------- */
-
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV

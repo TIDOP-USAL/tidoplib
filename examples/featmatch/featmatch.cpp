@@ -32,7 +32,7 @@ using namespace tl;
 #include <vld.h>
 #endif
 
-struct Akaze
+struct akaze_properties
 {
   std::string descriptorType;
   int descriptorSize;
@@ -91,18 +91,18 @@ int main(int argc, char** argv)
   descriptor_list.push_back("SIFT");
   descriptor_list.push_back("SURF");
 
-  Akaze akaze_properties;
+  akaze_properties akaze;
 
   std::shared_ptr<Command> cmd(new Command("featextract","Feature detection and descriptor extraction", {
                                              std::make_shared<ArgumentList_<std::string, true>>("detector", "Detector: AGAST, AKAZE, BRISK, FAST, GFTT, KAZE, MSER, SIFT, ORB, STAR, SURF", detector_list, &idx_detector_list),
                                              std::make_shared<ArgumentList_<std::string, true>>("descriptor", "Descriptor: AKAZE, BRIEF, BRISK, DAISY, FREAK, HOG, KAZE, LATCH, LUCID, ORB, SIFT, SURF", descriptor_list, &idx_descriptor_list),
-                                             std::make_shared<ArgumentStringOptional>("akaze.descriptor_type", "Akaze descriptor type", &akaze_properties.descriptorType),
-                                             std::make_shared<ArgumentIntegerOptional>("akaze.descriptor_size", "Akaze descriptor size", &akaze_properties.descriptorSize),
-                                             std::make_shared<ArgumentIntegerOptional>("akaze.descriptor_channels", "Akaze descriptor channels", &akaze_properties.descriptorChannels),
-                                             std::make_shared<ArgumentDoubleOptional>("akaze.threshold", "Akaze threshold", &akaze_properties.threshold),
-                                             std::make_shared<ArgumentIntegerOptional>("akaze.octaves", "Akaze octaves", &akaze_properties.octaves),
-                                             std::make_shared<ArgumentIntegerOptional>("akaze.octave_layers", "Akaze octave layers", &akaze_properties.octaveLayers),
-                                             std::make_shared<ArgumentStringOptional>("akaze.diffusivity", "Akaze diffusivity", &akaze_properties.diffusivity)
+                                             std::make_shared<ArgumentStringOptional>("akaze.descriptor_type", "Akaze descriptor type", &akaze.descriptorType),
+                                             std::make_shared<ArgumentIntegerOptional>("akaze.descriptor_size", "Akaze descriptor size", &akaze.descriptorSize),
+                                             std::make_shared<ArgumentIntegerOptional>("akaze.descriptor_channels", "Akaze descriptor channels", &akaze.descriptorChannels),
+                                             std::make_shared<ArgumentDoubleOptional>("akaze.threshold", "Akaze threshold", &akaze.threshold),
+                                             std::make_shared<ArgumentIntegerOptional>("akaze.octaves", "Akaze octaves", &akaze.octaves),
+                                             std::make_shared<ArgumentIntegerOptional>("akaze.octave_layers", "Akaze octave layers", &akaze.octaveLayers),
+                                             std::make_shared<ArgumentStringOptional>("akaze.diffusivity", "Akaze diffusivity", &akaze.diffusivity)
                                            }));
   std::shared_ptr<Command> cmd2(new Command("featmatch","Feature matching", {
                                               std::make_shared<ArgumentStringRequired>("input", 'i', "Fichero de entrada", &file),

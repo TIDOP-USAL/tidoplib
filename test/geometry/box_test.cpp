@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(Box_containsPoint)
 {
   BoundingBoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
   BOOST_CHECK(box.containsPoint(Point3I(50, 50, 50)));
-  BOOST_CHECK(false == box.containsPoint(Point3I(150, 50, 50)));
+  BOOST_CHECK_EQUAL(false, box.containsPoint(Point3I(150, 50, 50)));
   BOOST_CHECK(box.containsPoint(Point3I(0, 0, 0)));
   BOOST_CHECK(box.containsPoint(Point3I(100, 100, 100)));
 }
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(Box_containsBbox)
 {
   BoundingBoxI box(Point3I(0, 0, 0), Point3I(100, 100, 100));
   BOOST_CHECK(box.containsBox(BoundingBoxI(Point3I(50, 50, 50), 50)));
-  BOOST_CHECK(false == box.containsBox(BoundingBoxI(Point3I(200, 50, 50), 50)));
+  BOOST_CHECK_EQUAL(false, box.containsBox(BoundingBoxI(Point3I(200, 50, 50), 50)));
 }
 
 BOOST_AUTO_TEST_CASE(Box_join)

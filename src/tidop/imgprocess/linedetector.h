@@ -16,10 +16,7 @@
 namespace tl
 {
 
-/*! \defgroup FeatDetection Feature detection
- * 
- *  \{
- */
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -466,10 +463,7 @@ public:
 };
 #endif
 
-
-/*! \} */ // end of FeatDetection
-
-} // End namespace TL
+} // End namespace tl
 
 #endif //HAVE_OPENCV
 

@@ -19,11 +19,7 @@ namespace tl
  *  \{
  */
 
-/* ---------------------------------------------------------------------------------- */
-/*             Operaciones que transforman geometricamente la imagen                  */
-/* ---------------------------------------------------------------------------------- */
-
-/*! \defgroup imgTransf Operaciones de transformación de imagenes
+/*! \defgroup imgTransf Operaciones de transformación geométrica de imágenes
  *  
  *  \{
  */
@@ -31,66 +27,68 @@ namespace tl
 /*!
  * \brief Redimensiona una imagen
  */
-class TL_EXPORT Resize : public ImgProcessing
+class TL_EXPORT Resize 
+  : public ImageProcess
 {
-private:
-
-  /*!
-   * \brief Ancho
-   */
-  int mWidth;
-
-  /*!
-   * \brief Alto
-   */
-  int mHeight;
-
-  double mScaleX;
-  
-  double mScaleY;
 
 public:
 
   /*!
    * \brief Constructora
-   * \param[in] width
-   * \param[in] height
+   * \param[in] size Tamaño de la imagen destino
    */
-  Resize(int width, int height = 0)
-    : ImgProcessing(process_type::resize), mWidth(width), mHeight(height), 
-      mScaleX(0.), mScaleY(0.) {}
+  explicit Resize(const Size<int> &size);
 
   /*!
    * \brief Constructora
-   * \param[in] scaleX
-   * \param[in] scaleY
+   * \param[in] width Anchura de la imagen destino
+   * \param[in] height Altura de la imagen destino
    */
-  Resize(double scaleX, double scaleY = 0.)
-    : ImgProcessing(process_type::resize), mWidth(0), mHeight(0), 
-      mScaleX(scaleX), mScaleY(scaleY ? scaleY : scaleX) {}
+  Resize(int width, int height = 0);
+
+  /*!
+   * \brief Constructora
+   * \param[in] scaleX Escala en el eje x
+   * \param[in] scaleY Escala en el eje y
+   */
+  Resize(double scaleX, double scaleY = 0.);
+
+  ~Resize() override = default;
 
   /*!
    * \brief Ejecuta el proceso.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
-   * \brief Establece los parámetros
-   * \param[in] width Ancho.
-   * \param[in] height Alto.
+   * \brief Establece el tamaño de la imagen de salida
+   * \param[in] width Ancho
+   * \param[in] height Alto
    */
-  void setParameters( int width, int height );
+  void setSize(const Size<int> &size);
 
   /*!
-   * \brief Establece los parámetros
+   * \brief Establece las dimensiones la imagen de salida
+   * \param[in] width Ancho de la imagen de salida
+   * \param[in] height Alto de la imagen de salida
+   */
+  void setSize(int width, int height);
+  
+  /*!
+   * \brief Establece la escala
    * \param scaleX Escala en el eje X
    * \param scaleY Escala en el eje Y. Si se omite se toma la mista escala del eje X
    */
-  void setParameters( double scaleX, double scaleY = 0. );
+  void setScale(double scaleX, double scaleY = 0.);
+
+private:
+
+  int mWidth;
+  int mHeight;
+  double mScaleX;
+  double mScaleY;
 };
 
 /*!
@@ -101,7 +99,7 @@ public:
  * Si se reduce se recorta la imagen.
  */
 class TL_EXPORT ResizeCanvas 
-  : public ImgProcessing
+  : public ImageProcess
 {
 public:
   
@@ -109,43 +107,16 @@ public:
    * \brief Posición del canvas
    */
   enum class Position {
-    BOTTOM_CENTER,  
-    BOTTOM_LEFT,    
-    BOTTOM_RIGHT,   
-    CENTER,         
-    CENTER_LEFT,    
-    CENTER_RIGHT,   
-    TOP_CENTER,     
-    TOP_LEFT,       
-    TOP_RIGHT       
+    bottom_center,  
+    bottom_left,    
+    bottom_right,   
+    center,         
+    center_left,    
+    center_right,   
+    top_center,     
+    top_left,       
+    top_right       
   };
-
-private:
-
-  /*!
-   * \brief Ancho
-   */
-  int mWidth;
-
-  /*!
-   * \brief Alto
-   */
-  int mHeight;
-
-  /*!
-   * \brief Coordenadas de la esquina superior izquierda
-   */
-  cv::Point mTopLeft;
-
-  /*!
-   * \brief Color de fondo
-   */
-  graph::Color mColor;
-
-  /*!
-   * \brief Posición
-   */
-  Position mPosition;
 
 public:
 
@@ -157,8 +128,10 @@ public:
    * \param[in] position Posición
    * \see Position
    */
-  ResizeCanvas(int width, int height, const graph::Color &color = graph::Color(), const Position &position = Position::TOP_LEFT)
-    : ImgProcessing(process_type::resize_canvas), mWidth(width), mHeight(height), mColor(color), mPosition(position) { }
+  ResizeCanvas(int width,
+               int height, 
+               const graph::Color &color = graph::Color(), 
+               const Position &position = Position::top_left);
 
   /*!
    * \brief Constructora
@@ -168,18 +141,18 @@ public:
    * \param[in] color Color
    * \see Position
    */
-  ResizeCanvas(int width, int height, const cv::Point &point, const graph::Color &color = graph::Color())
-    : ImgProcessing(process_type::resize_canvas), mWidth(width), mHeight(height), mTopLeft(point), mColor(color) {}
+  ResizeCanvas(int width,
+               int height,
+               const cv::Point &point, 
+               const graph::Color &color = graph::Color());
 
 
   /*!
    * \brief Ejecuta el proceso.
    * \param[in] matIn Imagen de entrada.
    * \param[out] matOut Imagen de salida.
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK. 
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -189,9 +162,22 @@ public:
    * \param[in] position Posición
    * \see Position
    */
-  void setParameters( int width, int height, const graph::Color &color = graph::Color(), const Position &position = Position::TOP_LEFT);
+  void setParameters(int width, 
+                     int height, 
+                     const graph::Color &color = graph::Color(), 
+                     const Position &position = Position::top_left);
+private:
 
-  //void update();
+  void update();
+
+private:
+
+  int mWidth;
+  int mHeight;
+  cv::Point mTopLeft;
+  graph::Color mColor;
+  Position mPosition;
+
 };
 
 
@@ -206,7 +192,7 @@ public:
  * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::DIRECT
  */
 template<typename Point_t> inline
-void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
+void transform(const cv::Mat &in, cv::Mat out, Transform<Point_t> *trf, transform_order trfOrder)
 {
   transform_type type = trf->transformType();
   if (type == tl::transform_type::translation) {
@@ -282,7 +268,7 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
 
 /*! \} */ // end of ImgProc
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // HAVE_OPENCV
 

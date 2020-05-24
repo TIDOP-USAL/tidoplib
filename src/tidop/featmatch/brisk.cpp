@@ -8,16 +8,17 @@ namespace tl
 
 
 BriskProperties::BriskProperties()
-  : IBrisk(),
-    mThreshold(30),
+  : mThreshold(30),
     mOctaves(3),
     mPatternScale(1.0)
 {}
 
-BriskProperties::~BriskProperties()
-{
-
-}
+BriskProperties::BriskProperties(const BriskProperties &briskProperties)
+  : Brisk(briskProperties),
+    mThreshold(briskProperties.mThreshold),
+    mOctaves(briskProperties.mOctaves),
+    mPatternScale(briskProperties.mPatternScale)
+{}
 
 int BriskProperties::threshold() const
 {
@@ -73,6 +74,15 @@ BriskDetectorDescriptor::BriskDetectorDescriptor()
   update();
 }
 
+BriskDetectorDescriptor::BriskDetectorDescriptor(const BriskDetectorDescriptor &briskDetectorDescriptor)
+  : BriskProperties(briskDetectorDescriptor),
+    KeypointDetector(briskDetectorDescriptor),
+    DescriptorExtractor(briskDetectorDescriptor)
+{
+  update();
+}
+
+
 BriskDetectorDescriptor::BriskDetectorDescriptor(int threshold,
                                                  int octaves,
                                                  double patternScale)
@@ -84,11 +94,6 @@ BriskDetectorDescriptor::BriskDetectorDescriptor(int threshold,
   BriskProperties::setOctaves(octaves);
   BriskProperties::setPatternScale(patternScale);
   update();
-}
-
-BriskDetectorDescriptor::~BriskDetectorDescriptor()
-{
-
 }
 
 void BriskDetectorDescriptor::update()

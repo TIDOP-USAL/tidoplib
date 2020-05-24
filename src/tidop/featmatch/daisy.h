@@ -10,38 +10,50 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
+
 class TL_EXPORT DaisyProperties
-  : public IDaisy
+  : public Daisy
 {
 public:
 
   DaisyProperties();
-  ~DaisyProperties() override;
+  DaisyProperties(const DaisyProperties &daisyProperties);
+  ~DaisyProperties() override = default;
 
-// IDaisy interface
+// Daisy interface
 
 public:
 
-  virtual double radius() const override;
-  virtual int qRadius() const override;
-  virtual int qTheta() const override;
-  virtual int qHist() const override;
-  virtual std::string norm() const override;
-  virtual bool interpolation() const override;
-  virtual bool useOrientation() const override;
-  virtual void setRadius(double radius) override;
-  virtual void setQRadius(int qRadius) override;
-  virtual void setQTheta(int qTheta) override;
-  virtual void setQHist(int qHist) override;
-  virtual void setNorm(const std::string &norm) override;
-  virtual void setInterpolation(bool interpolation) override;
-  virtual void setUseOrientation(bool useOrientation) override;
+  double radius() const override;
+  int qRadius() const override;
+  int qTheta() const override;
+  int qHist() const override;
+  std::string norm() const override;
+  bool interpolation() const override;
+  bool useOrientation() const override;
+  void setRadius(double radius) override;
+  void setQRadius(int qRadius) override;
+  void setQTheta(int qTheta) override;
+  void setQHist(int qHist) override;
+  void setNorm(const std::string &norm) override;
+  void setInterpolation(bool interpolation) override;
+  void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -67,15 +79,15 @@ class TL_EXPORT DaisyDescriptor
 public:
 
   DaisyDescriptor();
+  DaisyDescriptor(const DaisyDescriptor &daisyDescriptor);
   DaisyDescriptor(double radius,
                   int qRadius,
                   int qTheta,
                   int qHist,
-                  std::string norm,
+                  const std::string &norm,
                   bool interpolation,
                   bool useOrientation);
-
-  ~DaisyDescriptor() override;
+  ~DaisyDescriptor() override = default;
 
 private:
 
@@ -90,7 +102,7 @@ public:
                cv::Mat &descriptors) override;
 
 
-// IDaisy interface
+// Daisy interface
 
 public:
 
@@ -113,6 +125,9 @@ protected:
   cv::Ptr<cv::xfeatures2d::DAISY> mDAISY;
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

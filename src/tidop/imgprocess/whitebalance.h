@@ -37,44 +37,30 @@ namespace tl
 /*!
  * \brief Balance de blancos  Gray World
  */
-class TL_EXPORT Grayworld : public ImgProcessing
+class TL_EXPORT Grayworld 
+  : public ImageProcess
 {
-private:
-
-  /*!
-   * \brief Tamaño del kernel
-   */
-  cv::Ptr<cv::xphoto::GrayworldWB> wb;
 
 public:
 
   /*!
    * \brief Constructora Gray World
    */
-  Grayworld()
-    : ImgProcessing(process_type::grayworld)
-  {
-    wb = cv::xphoto::createGrayworldWB();
-  }
+  Grayworld();
 
   /*!
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK.
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+
+private:
 
   /*!
-   * \brief Establece los parámetros
-   * \param[in] kSize Tamaño del kernel
-   * \param[in] sigmaX Desviación estándar del kernel en la dirección X
-   * \param[in] sigmaY Desviación estándar del kernel en la dirección Y
-   * \param[in] borderType Método de extrapolación (cv::BorderTypes)
+   * \brief Tamaño del kernel
    */
-  void setParameters();
-
+  cv::Ptr<cv::xphoto::GrayworldWB> mGrayworld;
 };
 
 #  endif // CV_VERSION_MINOR
@@ -96,11 +82,9 @@ public:
  * introduce la luz blanca:
  * (R, G, B) -> ((255/Rmax(I))*R, (255/Gmax(I))*G, (255/Gmax(I))*G)
  */
-class TL_EXPORT WhitePatch : public ImgProcessing
+class TL_EXPORT WhitePatch 
+  : public ImageProcess
 {
-private:
-
-  graph::Color mWhite;
 
 public:
 
@@ -108,25 +92,30 @@ public:
    * \brief Constructora WhitePatch
    * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
-  WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white))
-    : ImgProcessing(process_type::whitepatch), 
-      mWhite(white) { }
+  WhitePatch(const graph::Color &white = graph::Color(graph::Color::Name::white));
 
   /*!
    * \brief Ejecuta el proceso
    * \param[in] matIn Imagen de entrada
    * \param[out] matOut Imagen de salida
-   * \return Si los procesos se ejecutan correctamente devuelve ImgProcessing::Status::OK.
-   * \see ImgProcessing::Status
    */
-  ImgProcessing::Status execute(const cv::Mat &matIn, cv::Mat *matOut) const override;
+  void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
 
   /*!
-   * \brief Establece los parámetros
+   * \brief Establece la luz blanca
    * \param[in] white Luz blanca. Por defecto (255, 255, 255)
    */
-  void setParameters(const graph::Color &white = graph::Color(graph::Color::Name::white));
+  void setWhite(const graph::Color &white = graph::Color(graph::Color::Name::white));
 
+private:
+  
+  double scaleRed(const cv::Mat &red) const;
+  double scaleGreen(const cv::Mat &green) const;
+  double scaleBlue(const cv::Mat &blue) const;
+
+private:
+
+  graph::Color mWhite;
 };
 
 /*! \} */ // end of WhiteBalance

@@ -8,37 +8,48 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT MserProperties
-  : public IMser
+  : public Mser
 {
 public:
 
   MserProperties();
-   ~MserProperties() override;
+  MserProperties(const MserProperties &mserProperties);
+  ~MserProperties() override = default;
 
-// IMser interface
+// Mser interface
 
 public:
 
-  virtual int delta() const override;
-  virtual int minArea() const override;
-  virtual int maxArea() const override;
-  virtual double maxVariation() const override;
-  virtual double minDiversity() const override;
-  virtual int maxEvolution() const override;
-  virtual double areaThreshold() const override;
-  virtual double minMargin() const override;
-  virtual int edgeBlurSize() const override;
-  virtual void setDelta(int delta) override;
-  virtual void setMinArea(int minArea) override;
-  virtual void setMaxArea(int maxArea) override;
-  virtual void setMaxVariation(double maxVariation) override;
-  virtual void setMinDiversity(double minDiversity) override;
-  virtual void setMaxEvolution(int maxEvolution) override;
-  virtual void setAreaThreshold(double areaThreshold) override;
-  virtual void setMinMargin(double minMargin) override;
-  virtual void setEdgeBlurSize(int edgeBlurSize) override;
+  int delta() const override;
+  int minArea() const override;
+  int maxArea() const override;
+  double maxVariation() const override;
+  double minDiversity() const override;
+  int maxEvolution() const override;
+  double areaThreshold() const override;
+  double minMargin() const override;
+  int edgeBlurSize() const override;
+  void setDelta(int delta) override;
+  void setMinArea(int minArea) override;
+  void setMaxArea(int maxArea) override;
+  void setMaxVariation(double maxVariation) override;
+  void setMinDiversity(double minDiversity) override;
+  void setMaxEvolution(int maxEvolution) override;
+  void setAreaThreshold(double areaThreshold) override;
+  void setMinMargin(double minMargin) override;
+  void setEdgeBlurSize(int edgeBlurSize) override;
 
 // Feature interface
 
@@ -64,7 +75,7 @@ private:
 /*----------------------------------------------------------------*/
 
 
-class MserDetector
+class TL_EXPORT MserDetector
   : public MserProperties,
     public KeypointDetector
 {
@@ -72,6 +83,7 @@ class MserDetector
 public:
 
   MserDetector();
+  MserDetector(const MserDetector &mserDetector);
   MserDetector(int delta,
                int minArea,
                int maxArea,
@@ -81,7 +93,7 @@ public:
                double areaThreshold,
                double minMargin,
                int edgeBlurSize);
-  ~MserDetector() override;
+  ~MserDetector() override = default;
 
 private:
 
@@ -95,7 +107,7 @@ public:
               std::vector<cv::KeyPoint> &keyPoints,
               cv::InputArray &mask = cv::noArray()) override;
 
-// IFast interface
+// Mser interface
 
 public:
 
@@ -121,6 +133,9 @@ protected:
 
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 
