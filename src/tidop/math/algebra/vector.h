@@ -99,10 +99,6 @@ public:
    */
   typedef typename std::array<T, _size>::const_reverse_iterator const_reverse_iterator;
 
-protected:
-
-  std::array<T, _size> mVector;
-
 public:
   
   /*!
@@ -241,7 +237,9 @@ public:
 
   //static Vector unit();
 
-private:
+protected:
+
+  std::array<T, _size> mVector;
 
 };
 

@@ -3,11 +3,31 @@
 
 #include "config_tl.h"
 
-//#include "tidop/math/mathutils.h"
 #include "tidop/math/algebra/quaternion.h"
 #include "tidop/math/algebra/euler_angles.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/axis_angle.h"
+
+/// Completado
+/// static void convert(const RotationMatrix<T> &rotationMatrix, Quaternion<T> &quaternion);
+/// static void convert(const Quaternion<T> &quaternion, RotationMatrix<T> &rotationMatrix);
+/// static void convert(const Quaternion<T> &quaternion, AxisAngle<T> &axisAngle);
+/// static void convert(const AxisAngle<T> &axisAngle, Quaternion<T> &quaternion);
+/// static void convert(const RotationMatrix<T> &rotationMatrix, AxisAngle<T> &axisAngle);
+/// static void convert(const AxisAngle<T> &axisAngle, RotationMatrix<T> &rotationMatrix);
+/// static void convert(const EulerAngles<T> &eulerAngles, RotationMatrix<T> &rotationMatrix);
+/// static void convert(const EulerAngles<T> &eulerAngles, Quaternion<T> &quaternion);
+
+/// Por completar
+
+/// Fallan dos test...
+/// static void convert(const EulerAngles<T> &eulerAngles, AxisAngle<T> &axisAngle);
+
+
+/// static void convert(const RotationMatrix<T> &rotationMatrix, EulerAngles<T> &eulerAngles);
+/// static void convert(const Quaternion<T> &quaternion, EulerAngles<T> &eulerAngles);
+
+/// static void convert(const AxisAngle<T> &axisAngle, EulerAngles<T> &eulerAngles);
 
 namespace tl
 {
@@ -21,8 +41,6 @@ namespace math
 template <typename T>
 class RotationConverter
 {
-
-public:
 
 private:
 
@@ -51,7 +69,8 @@ public:
    * \param[in] rotMatrix
    * \param[out] quaternion
    */
-  static void convert(const RotationMatrix<T> &rotationMatrix, Quaternion<T> &quaternion);
+  static void convert(const RotationMatrix<T> &rotationMatrix, 
+                      Quaternion<T> &quaternion);
 
   /*!
    * \brief Convierte una rotación como cuaterniones a matriz de rotación
@@ -69,29 +88,44 @@ public:
    * \param[in] quaternion
    * \param[out] rotationMatrix
    */
-  static void convert(const Quaternion<T> &quaternion, RotationMatrix<T> &rotationMatrix);
+  static void convert(const Quaternion<T> &quaternion, 
+                      RotationMatrix<T> &rotationMatrix);
 
   /*!
    * \brief convert
    * \param[in] quaternion
    * \param[out] axisAngle
    */
-  static void convert(const Quaternion<T> &quaternion, AxisAngle<T> &axisAngle);
-  static void convert(const AxisAngle<T> &axisAngle, Quaternion<T> &quaternion);
+  static void convert(const Quaternion<T> &quaternion, 
+                      AxisAngle<T> &axisAngle);
+  static void convert(const AxisAngle<T> &axisAngle, 
+                      Quaternion<T> &quaternion);
 
   /*!
    * \brief convert
    * \param rotationMatrix
    * \param axisAngle
    */
-  static void convert(const RotationMatrix<T> &rotationMatrix, AxisAngle<T> &axisAngle);
-  static void convert(const AxisAngle<T> &axisAngle, RotationMatrix<T> &rotationMatrix);
+  static void convert(const RotationMatrix<T> &rotationMatrix, 
+                      AxisAngle<T> &axisAngle);
+  static void convert(const AxisAngle<T> &axisAngle, 
+                      RotationMatrix<T> &rotationMatrix);
 
 
-  static void convert(const RotationMatrix<T> &rotationMatrix, EulerAngles<T> &eulerAngles);
-  static void convert(const EulerAngles<T> &eulerAngles, RotationMatrix<T> &rotationMatrix);
+  static void convert(const RotationMatrix<T> &rotationMatrix, 
+                      EulerAngles<T> &eulerAngles);
 
-  static void convert(const Quaternion<T> &quaternion, EulerAngles<T> &eulerAngles);
+  /*!
+   * \brief Convierte una rotación como ángulos de Euler a matriz de rotación
+   * https://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770024290.pdf
+   * \param[in] eulerAngles Rotación como ángulos de euler
+   * \param[out] rotationMatrix Matriz de rotación
+   */
+  static void convert(const EulerAngles<T> &eulerAngles, 
+                      RotationMatrix<T> &rotationMatrix);
+
+  static void convert(const Quaternion<T> &quaternion, 
+                      EulerAngles<T> &eulerAngles);
 
   /*!
    * \brief Convierte una rotación como ángulos de Euler a cuaterniones
@@ -99,18 +133,22 @@ public:
    * \param[in] eulerAngles Rotación como ángulos de euler
    * \param[out] quaternion Rotación como cuaterniones
    */
-  static void convert(const EulerAngles<T> &eulerAngles, Quaternion<T> &quaternion);
+  static void convert(const EulerAngles<T> &eulerAngles, 
+                      Quaternion<T> &quaternion);
 
 
-  static void convert(const EulerAngles<T> &eulerAngles, AxisAngle<T> &axisAngle);
-  static void convert(const AxisAngle<T> &axisAngle, EulerAngles<T> &eulerAngles);
+  static void convert(const EulerAngles<T> &eulerAngles, 
+                      AxisAngle<T> &axisAngle);
+  static void convert(const AxisAngle<T> &axisAngle, 
+                      EulerAngles<T> &eulerAngles);
 
 private:
 
 };
 
 template<typename T>
-void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, Quaternion<T> &quaternion)
+void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, 
+                                   Quaternion<T> &quaternion)
 {
   T r22 = rotationMatrix.at(2, 2);
   if (r22 <= static_cast<T>(0)) {
@@ -152,11 +190,12 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, Quat
 
 
 template<typename T>
-void RotationConverter<T>::convert(const Quaternion<T> &quaternion, RotationMatrix<T> &rotationMatrix)
+void RotationConverter<T>::convert(const Quaternion<T> &quaternion, 
+                                   RotationMatrix<T> &rotationMatrix)
 {
   rotationMatrix = RotationMatrix<T>::identity();
 
-  T two{2};
+  const T two{2};
 
   T _2x = two * quaternion.x;
   T _2y = two * quaternion.y;
@@ -171,7 +210,7 @@ void RotationConverter<T>::convert(const Quaternion<T> &quaternion, RotationMatr
   T _2zz = _2z * quaternion.z;
   T _2zw = _2z * quaternion.w;
 
-  T one{1};
+  const T one{1};
 
   rotationMatrix.at(0, 0) = one - _2yy - _2zz;
   rotationMatrix.at(0, 1) = _2xy + _2zw;
@@ -188,8 +227,8 @@ template<typename T>
 void RotationConverter<T>::convert(const Quaternion<T> &quaternion,
                                    AxisAngle<T> &axisAngle)
 {
-  T one{1};
-  T zero{0};
+  const T one{1};
+  const T zero{0};
 
   T n2 = std::sqrt(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z);
   if (n2 > zero){
@@ -206,9 +245,10 @@ void RotationConverter<T>::convert(const Quaternion<T> &quaternion,
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, Quaternion<T> &quaternion)
+void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, 
+                                   Quaternion<T> &quaternion)
 {
-  T a_2 = axisAngle.angle * T{0.5};
+  T a_2 = axisAngle.angle * static_cast<T>(0.5);
   T sin_a_2 = std::sin(a_2);
   quaternion.x = sin_a_2 * axisAngle.axis[0];
   quaternion.y = sin_a_2 * axisAngle.axis[1];
@@ -217,17 +257,17 @@ void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, Quaternion<T> 
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, AxisAngle<T> &axisAngle)
+void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix, 
+                                   AxisAngle<T> &axisAngle)
 {
   Quaternion<T> quaternion;
   convert(rotationMatrix, quaternion);
   convert(quaternion, axisAngle);
 }
 
-
-
 template<typename T>
-void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, RotationMatrix<T> &rotationMatrix)
+void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, 
+                                   RotationMatrix<T> &rotationMatrix)
 {
   rotationMatrix = RotationMatrix<T>::identity();
 
@@ -252,17 +292,15 @@ void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, RotationMatrix
   rotationMatrix.at(2, 2) = axisAngle.axis[2] * axisAngle.axis[2] *_1mca + ca;
 }
 
-
 template<typename T>
 void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
                                    EulerAngles<T> &eulerAngles)
 {
   /// https://www.geometrictools.com/GTEngine/Include/Mathematics/GteRotation.h
   Vector<3, int> axis;
-  T one{1};
-  T cero{0};
+  const T one{1};
+  const T cero{0};
 
-  // Tait-Bryan angles
   auto clamp = [&](const T& value, const T& _min, const T& _max) {
     return std::max(_min, std::min(_max, value));
   };
@@ -450,7 +488,8 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, RotationMatrix<T> &rotationMatrix)
+void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, 
+                                   RotationMatrix<T> &rotationMatrix)
 {
 //  RotationMatrix<T> r0, r1, r2;
 //  Convert(AxisAngle<N, Real>(Vector<N, Real>::Unit(axis[0]), e.angle[0]), r0);
@@ -458,11 +497,173 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, RotationMa
 //  Convert(AxisAngle<N, Real>(Vector<N, Real>::Unit(axis[2]), e.angle[2]), r2);
 //  r = r2*r1*r0;
 
+  T omega = eulerAngles.omega;
+  T phi = eulerAngles.phi;
+  T kappa = eulerAngles.kappa;
+  typename EulerAngles<T>::Axes axes = eulerAngles.axes;
+
+  T c1 = cos(omega);
+  T c2 = cos(phi);
+  T c3 = cos(kappa);
+
+  T s1 = sin(omega );
+  T s2 = sin(phi);
+  T s3 = sin(kappa);
+
+  // Tait-Bryan angles
+  if (axes == EulerAngles<T>::Axes::xyz) {
+
+    rotationMatrix.at(0, 0) = c2 * c3;
+    rotationMatrix.at(0, 1) = -c2 * s3;
+    rotationMatrix.at(0, 2) = s2;
+    rotationMatrix.at(1, 0) = c1 * s3 + c3 * s1 * s2;
+    rotationMatrix.at(1, 1) = c1 * c3 - s1 * s2 * s3;
+    rotationMatrix.at(1, 2) = -c2 * s1;
+    rotationMatrix.at(2, 0) = s1 * s3 - c1 * c3 * s2;
+    rotationMatrix.at(2, 1) = c3 * s1 + c1 * s2 * s3;
+    rotationMatrix.at(2, 2) = c1 * c2;
+
+  } else if (axes == EulerAngles<T>::Axes::yxz) {
+
+    rotationMatrix.at(0, 0) = c1 * c3 + s1 * s2 *s3;
+    rotationMatrix.at(0, 1) = c3 * s1 * s2 - c1 * s3;
+    rotationMatrix.at(0, 2) = c2 * s1;
+    rotationMatrix.at(1, 0) = c2 * s3;
+    rotationMatrix.at(1, 1) = c2 * c3;
+    rotationMatrix.at(1, 2) = -s2;
+    rotationMatrix.at(2, 0) = c1 * s2 * s3 - c3 * s1;
+    rotationMatrix.at(2, 1) = c1 * c3 * s2 + s1 * s3;
+    rotationMatrix.at(2, 2) = c1 * c2;
+
+  } else if (axes == EulerAngles<T>::Axes::zxy) {
+
+    rotationMatrix.at(0, 0) = c1 * c3 - s1 * s2 * s3;
+    rotationMatrix.at(0, 1) = -s1 * c2;
+    rotationMatrix.at(0, 2) = c1 * s3 + s1 * s2 * c3;
+    rotationMatrix.at(1, 0) = s1 * c3 + c1 * s2 * s3;
+    rotationMatrix.at(1, 1) = c1 * c2;
+    rotationMatrix.at(1, 2) = s1 * s3 - c1 * s2 * c3;
+    rotationMatrix.at(2, 0) = -c2 * s3;
+    rotationMatrix.at(2, 1) = s2;
+    rotationMatrix.at(2, 2) = c2 * c3;
+
+  } else if (axes == EulerAngles<T>::Axes::zyx) {
+
+    rotationMatrix.at(0, 0) = c1 * c2;
+    rotationMatrix.at(0, 1) = c1 * s2 * s3 - c3 * s1;
+    rotationMatrix.at(0, 2) = s1 * s3 + c1 * c3 * s2;
+    rotationMatrix.at(1, 0) = c2 * s1;
+    rotationMatrix.at(1, 1) = c1 * c3 + s1 * s2 * s3;
+    rotationMatrix.at(1, 2) = c3 * s1 * s2 - c1 * s3;
+    rotationMatrix.at(2, 0) = -s2;
+    rotationMatrix.at(2, 1) = c2 * s3;
+    rotationMatrix.at(2, 2) = c2 * c3;
+
+  } else if (axes == EulerAngles<T>::Axes::yzx) {
+
+    rotationMatrix.at(0, 0) = c1 * c2;
+    rotationMatrix.at(0, 1) = s1 * s3 - c1 * s2 * c3;
+    rotationMatrix.at(0, 2) = c1 * s2 * s3 + s1 * c3;
+    rotationMatrix.at(1, 0) = s2;
+    rotationMatrix.at(1, 1) = c2 * c3;
+    rotationMatrix.at(1, 2) = -c2 * s3;
+    rotationMatrix.at(2, 0) = -s1 * c2;
+    rotationMatrix.at(2, 1) = c1 * s3 + s1 * s2 * c3;
+    rotationMatrix.at(2, 2) = c1 * c3 - s1 * s2 * s3;
+
+  } else if (axes == EulerAngles<T>::Axes::xzy) {
+
+    rotationMatrix.at(0, 0) = c2 * c3;
+    rotationMatrix.at(0, 1) = -s2;
+    rotationMatrix.at(0, 2) = c2 * s3;
+    rotationMatrix.at(1, 0) = c1 * s2 * c3 + s1 * s3;
+    rotationMatrix.at(1, 1) = c1 * c2;
+    rotationMatrix.at(1, 2) = c1 * s2 *s3 - s1 * c3;
+    rotationMatrix.at(2, 0) = s1 * s2 * c3 - c1 * s3;
+    rotationMatrix.at(2, 1) = s1 * c2;
+    rotationMatrix.at(2, 2) = s1 * s2 * s3 + c1 * c3;
+
+  }
+  // Euler angles
+  else if (axes == EulerAngles<T>::Axes::xyx) {
+    
+    rotationMatrix.at(0, 0) = c2;
+    rotationMatrix.at(0, 1) = s2 * s3;
+    rotationMatrix.at(0, 2) = s2 * c3;
+    rotationMatrix.at(1, 0) = s1 * s2;
+    rotationMatrix.at(1, 1) = c1 * c3 - s1 * c2 * s3;
+    rotationMatrix.at(1, 2) = -c1 * s3 - s1 * c2 * c3;
+    rotationMatrix.at(2, 0) = -c1 * s2;
+    rotationMatrix.at(2, 1) = s1 * c3 + c1 * c2 * s3;
+    rotationMatrix.at(2, 2) = c1 * c2 * c3 - s1 * s3;
+
+  } else if (axes == EulerAngles<T>::Axes::xzx) {
+
+    rotationMatrix.at(0, 0) = c2;
+    rotationMatrix.at(0, 1) = -c3 * s2;
+    rotationMatrix.at(0, 2) = s2 * s3;
+    rotationMatrix.at(1, 0) = c1 * s2;
+    rotationMatrix.at(1, 1) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix.at(1, 2) = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix.at(2, 0) = s1 * s2;
+    rotationMatrix.at(2, 1) = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix.at(2, 2) = c1 * c3 - c2 * s1 * s3;
+
+  } else if (axes == EulerAngles<T>::Axes::yxy) {
+
+    rotationMatrix.at(0, 0) = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix.at(0, 1) = s1 * s2;
+    rotationMatrix.at(0, 2) = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix.at(1, 0) = s2 * s3;
+    rotationMatrix.at(1, 1) = c2;
+    rotationMatrix.at(1, 2) = -c3 * s2;
+    rotationMatrix.at(2, 0) = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix.at(2, 1) = c1 * s2;
+    rotationMatrix.at(2, 2) = c1 * c2 * c3 - s1 * s3;
+
+  } else if (axes == EulerAngles<T>::Axes::yzy) {
+
+    rotationMatrix.at(0, 0) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix.at(0, 1) = -c1 * s2;
+    rotationMatrix.at(0, 2) = c3 * s1 + c1 * c2 * s3;
+    rotationMatrix.at(1, 0) = c3 * s2;
+    rotationMatrix.at(1, 1) = c2;
+    rotationMatrix.at(1, 2) = s2 * s3;
+    rotationMatrix.at(2, 0) = -c1 * s3 - c2 * c3 * s1;
+    rotationMatrix.at(2, 1) = s1 * s2;
+    rotationMatrix.at(2, 2) = c1 * c3 - c2 * s1 * s3;
+
+  } else if (axes == EulerAngles<T>::Axes::zxz) {
+
+    rotationMatrix.at(0, 0) = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix.at(0, 1) = -c1 * s3 - c2 * c3 * s1;
+    rotationMatrix.at(0, 2) = s1 * s2;
+    rotationMatrix.at(1, 0) = c3 * s1 + c1 * c2 * s3;
+    rotationMatrix.at(1, 1) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix.at(1, 2) = -c1 * s2;
+    rotationMatrix.at(2, 0) = s2 * s3;
+    rotationMatrix.at(2, 1) = c3 * s2;
+    rotationMatrix.at(2, 2) = c2;
+
+  } else if (axes == EulerAngles<T>::Axes::zyz) {
+
+    rotationMatrix.at(0, 0) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix.at(0, 1) = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix.at(0, 2) = c1 * s2;
+    rotationMatrix.at(1, 0) = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix.at(1, 1) = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix.at(1, 2) = s1 * s2;
+    rotationMatrix.at(2, 0) = -c3 * s2;
+    rotationMatrix.at(2, 1) = s2 * s3;
+    rotationMatrix.at(2, 2) = c2;
+
+  }
 }
 
 
 template<typename T>
-void RotationConverter<T>::convert(const Quaternion<T> &quaternion, EulerAngles<T> &eulerAngles)
+void RotationConverter<T>::convert(const Quaternion<T> &quaternion, 
+                                   EulerAngles<T> &eulerAngles)
 {
   RotationMatrix<T> rotationMatrix;
   convert(quaternion, rotationMatrix);
@@ -470,8 +671,12 @@ void RotationConverter<T>::convert(const Quaternion<T> &quaternion, EulerAngles<
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion<T> &quaternion)
+void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, 
+                                   Quaternion<T> &quaternion)
 {
+  //RotationMatrix<T> rotationMatrix;
+  //convert(eulerAngles, rotationMatrix);
+  //convert(rotationMatrix, quaternion);
   T omega = eulerAngles.omega;
   T phi = eulerAngles.phi;
   T kappa = eulerAngles.kappa;
@@ -495,38 +700,38 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion
 
   } else if (axes == EulerAngles<T>::Axes::yxz) {
 
-    quaternion.x = s1 * c2 * c3 + c1 * s2 * s3;
-    quaternion.y = c1 * s2 * c3 - s1 * c2 * s3;
+    quaternion.x = s1 * s3 * c2 + s2 * c1 * c3;
+    quaternion.y = s1 * c2 * c3 - s2 * s3 * c1;
     quaternion.z = c1 * c2 * s3 - s1 * s2 * c3;
     quaternion.w = c1 * c2 * c3 + s1 * s2 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::zxy) {
 
-    quaternion.x = s1 * c2 * c3 - c1 * s2 * s3;
-    quaternion.y = c1 * s2 * c3 + s1 * c2 * s3;
-    quaternion.z = c1 * c2 * s3 + s1 * s2 * c3;
+    quaternion.x = s2 * c1 * c3 - s1 * s3 * c2;
+    quaternion.y = s1 * s2 * c3 + s3 * c1 * c2;
+    quaternion.z = s1 * c2 * c3 + s2 * s3 * c1;
     quaternion.w = c1 * c2 * c3 - s1 * s2 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::zyx) {
 
-    quaternion.x = s1 * c2 * c3 - c1 * s2 * s3;
-    quaternion.y = c1 * s2 * c3 + s1 * c2 * s3;
-    quaternion.z = c1 * c2 * s3 - s1 * s2 * c3;
+    quaternion.x = s3 * c1 * c2 - s1 * s2 * c3;
+    quaternion.y = s1 * s3 * c2 + s2 * c1 * c3;
+    quaternion.z = s1 * c2 * c3 - s2 * s3 * c1;
     quaternion.w = c1 * c2 * c3 + s1 * s2 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::yzx) {
 
-    quaternion.x = s1 * c2 * c3 + c1 * s2 * s3;
-    quaternion.y = c1 * s2 * c3 + s1 * c2 * s3;
-    quaternion.z = c1 * c2 * s3 - s1 * s2 * c3;
+    quaternion.x = s1 * s2 * c3 + s3 * c1 * c2;
+    quaternion.y = s1 * c2 * c3 + s2 * s3 * c1;
+    quaternion.z = s2 * c1 * c3 - s1 * s3 * c2;
     quaternion.w = c1 * c2 * c3 - s1 * s2 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::xzy) {
 
-    quaternion.x = s1 * c2 * c3 - c1 * s2 * s3;
-    quaternion.y = c1 * s2 * c3 - s1 * c2 * s3;
-    quaternion.z = c1 * c2 * s3 + s1 * s2 * c3;
-    quaternion.w = c1 * c2 * c3 + s1 * s2 * s3;
+    quaternion.x = s1 * c2 * c3 - s2 * s3 * c1;
+    quaternion.y = s3 * c1 * c2 - s1 * s2 * c3;
+    quaternion.z = s1 * s3 * c2 + s2 * c1 * c3;
+    quaternion.w = s1 * s2 * s3 + c1 * c2 * c3;
 
   }
   // Euler angles
@@ -546,7 +751,6 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion
 
   } else if (axes == EulerAngles<T>::Axes::yxy) {
 
-
     quaternion.x = s2 * cos((omega-kappa)/2.);
     quaternion.y = c2 * sin((omega+kappa)/2.);
     quaternion.z = -s2 * sin((omega-kappa)/2.);
@@ -563,7 +767,7 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion
 
     quaternion.x = s2 * cos((omega-kappa)/2.);
     quaternion.y = s2 * sin((omega-kappa)/2.);
-    quaternion.z = c2 * cos((omega+kappa)/2.);
+    quaternion.z = c2 * sin((omega+kappa)/2.);
     quaternion.w = c2 * cos((omega+kappa)/2.);
 
   } else if (axes == EulerAngles<T>::Axes::zyz) {
@@ -577,7 +781,8 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, Quaternion
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, AxisAngle<T> &axisAngle)
+void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, 
+                                   AxisAngle<T> &axisAngle)
 {
   Quaternion<T> quaternion;
   convert(eulerAngles, quaternion);
@@ -585,7 +790,8 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles, AxisAngle<
 }
 
 template<typename T>
-void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, EulerAngles<T> &eulerAngles)
+void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, 
+                                   EulerAngles<T> &eulerAngles)
 {
   Quaternion<T> quaternion;
   convert(axisAngle, quaternion);

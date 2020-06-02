@@ -830,7 +830,7 @@ Entities3D<Entity_t>::Entities3D(const Entities3D &entities)
 
 template<typename Entity_t> inline
 Entities3D<Entity_t>::Entities3D(Entities3D &&entities) TL_NOEXCEPT
-  : EntityContainer<Entity_t>(std::forward<Entities3D<Entity_t>>(entities))
+  : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 

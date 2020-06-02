@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(LineString_default_constructor)
   BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
   BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
   BOOST_CHECK_EQUAL(0., ls.length());
-  BOOST_CHECK(false == ls.is3D());
+  BOOST_CHECK_EQUAL(false, ls.is3D());
 }
 
 /* Constructor reserve */
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE(MultiLineString_default_constructor)
   
   BOOST_CHECK_EQUAL(0, multiline.size());
   BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
-  BOOST_CHECK(false == multiline.is3D());
+  BOOST_CHECK_EQUAL(false, multiline.is3D());
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
@@ -331,7 +331,7 @@ BOOST_AUTO_TEST_CASE(MultiLineString_constructor_reserve)
  
   BOOST_CHECK_EQUAL(10, multiline.size());
   BOOST_CHECK(multiline.type() == Entity::Type::multiline2d);
-  BOOST_CHECK(false == multiline.is3D());
+  BOOST_CHECK_EQUAL(false, multiline.is3D());
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
   BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(MultiLineString_copy_constructor)
   WindowI w = multiline_copy.window();
 
   BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline2d);
-  BOOST_CHECK(false == multiline_copy.is3D());
+  BOOST_CHECK_EQUAL(false, multiline_copy.is3D());
 
 	BOOST_CHECK_EQUAL(2, multiline_copy.size());
   BOOST_CHECK_EQUAL(4120568, w.pt1.x);
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(MultiLineString_assing_operator)
   WindowI w = multiline_copy.window();
 
   BOOST_CHECK(multiline_copy.type() == Entity::Type::multiline2d);
-  BOOST_CHECK(false == multiline_copy.is3D());
+  BOOST_CHECK_EQUAL(false, multiline_copy.is3D());
 	BOOST_CHECK_EQUAL(2, multiline_copy.size());
   BOOST_CHECK_EQUAL(4120568, w.pt1.x);
   BOOST_CHECK_EQUAL(636996, w.pt1.y);

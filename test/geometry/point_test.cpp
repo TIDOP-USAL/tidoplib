@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(PointI_default_constructor)
   BOOST_CHECK_EQUAL(0, pt_int.x);
   BOOST_CHECK_EQUAL(0, pt_int.y);
   BOOST_CHECK(pt_int.type() == Entity::Type::point2d);
-  BOOST_CHECK(false == pt_int.is3D());
+  BOOST_CHECK_EQUAL(false, pt_int.is3D());
 }
 
 BOOST_AUTO_TEST_CASE(PointD_default_constructor) 
@@ -537,6 +537,13 @@ BOOST_AUTO_TEST_CASE(Point_equal)
   PointD pt3(234.323, 234.36);
   BOOST_CHECK(pt1 == pt2);
   BOOST_CHECK(pt1 != pt3);
+
+
+  Point3D pt1_3d(256.26, 2526.36, 10.6);
+  Point3D pt2_3d(256.26, 2526.36, 10.6);
+  Point3D pt3_3d(234.323, 234.36, 25.3);
+  BOOST_CHECK(pt1_3d == pt2_3d);
+  BOOST_CHECK(pt1_3d != pt3_3d);
 }
 
 /* Diferencia != */
@@ -650,7 +657,7 @@ BOOST_AUTO_TEST_CASE(MultiPoint_default_constructor)
 
   BOOST_CHECK_EQUAL(0, multiPointI.size());
   BOOST_CHECK(multiPointI.type() == Entity::Type::multipoint2d);
-  BOOST_CHECK(false == multiPointI.is3D());
+  BOOST_CHECK_EQUAL(false, multiPointI.is3D());
 
   MultiPointD multiPointD;
   WindowD w = multiPointD.window();

@@ -53,11 +53,6 @@ public:
     yxz
   };
 
-  double omega;
-  double phi;
-  double kappa;
-  Axes axes;
-
 public:
 
   /*!
@@ -87,6 +82,13 @@ public:
    */
   EulerAngles &operator = (const EulerAngles<T> &eulerAngles);
 
+public:
+
+  double omega;
+  double phi;
+  double kappa;
+  Axes axes;
+
 };
 
 template<typename T>
@@ -99,7 +101,10 @@ EulerAngles<T>::EulerAngles()
 }
 
 template<typename T>
-EulerAngles<T>::EulerAngles(double omega, double phi, double kappa, Axes axes)
+EulerAngles<T>::EulerAngles(double omega, 
+                            double phi, 
+                            double kappa, 
+                            Axes axes)
   : omega(omega),
     phi(phi),
     kappa(kappa),

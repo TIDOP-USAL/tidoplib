@@ -402,39 +402,8 @@ template<typename T>
 Quaternion<T> operator + (const Quaternion<T> &quat1, 
                           const Quaternion<T> &quat2)
 {
-  return Quaternion<T>(quat1.x + quat2.x, 
-                       quat1.y + quat2.y, 
-                       quat1.z + quat2.z, 
-                       quat1.w + quat2.w);
-}
-
-template<typename T>
-Quaternion<T> operator - (const Quaternion<T> &quat1, 
-                          const Quaternion<T> &quat2)
-{
   Quaternion<T> q = quat1;
-  return q -= quat2;
-}
-
-template<typename T>
-Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
-{
-  Quaternion<T> q = quaternion;
-  return q *= scalar;
-}
-
-template<typename T>
-Quaternion<T> operator*(T scalar, const Quaternion<T> &quaternion)
-{
-  Quaternion<T> q = quaternion;
-  return q *= scalar;
-}
-
-template<typename T>
-Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
-{
-  Quaternion<T> q = quaternion;
-  return q /= scalar;
+  return q += quat2;
 }
 
 template<typename T>
@@ -448,6 +417,14 @@ Quaternion<T> &operator += (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 }
 
 template<typename T>
+Quaternion<T> operator - (const Quaternion<T> &quat1, 
+                          const Quaternion<T> &quat2)
+{
+  Quaternion<T> q = quat1;
+  return q -= quat2;
+}
+
+template<typename T>
 Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 {
   quat1.x -= quat2.x;
@@ -458,6 +435,20 @@ Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 }
 
 template<typename T>
+Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
+{
+  Quaternion<T> q = quaternion;
+  return q *= scalar;
+}
+
+template<typename T>
+Quaternion<T> operator * (T scalar, const Quaternion<T> &quaternion)
+{
+  Quaternion<T> q = quaternion;
+  return q *= scalar;
+}
+
+template<typename T>
 Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
 {
   quaternion.x *= scalar;
@@ -465,6 +456,20 @@ Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
   quaternion.z *= scalar;
   quaternion.w *= scalar;
   return quaternion;
+}
+
+template<typename T>
+Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
+{
+  Quaternion<T> q = quaternion;
+  return q /= scalar;
+}
+
+template<typename T>
+Quaternion<T> operator / (T scalar, const Quaternion<T> &quaternion)
+{
+  Quaternion<T> q = quaternion;
+  return q /= scalar;
 }
 
 template<typename T>
