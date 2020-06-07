@@ -35,6 +35,20 @@ namespace tl
  * \{
  */
 
+namespace math
+{
+
+
+template<typename T> inline
+T clamp(const T &value, const T &_min, const T &_max)
+{
+  return std::max(_min, std::min(_max, value));
+}
+
+
+} // End namespace math
+
+
 /*!
  * \brief ángulos de Euler
  *

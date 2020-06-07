@@ -164,6 +164,11 @@ public:
    */
   Process(Process *parent = nullptr);
 
+  Process(const Process &) = delete;
+  Process(Process &&) = delete;
+  void operator=(const Process &) = delete;
+  void operator=(Process &&) = delete;
+
   /*!
    * \brief Destructora
    */
@@ -173,7 +178,12 @@ public:
    * \brief Arranca el proceso
    */
   virtual Status run(Progress *progressBar = nullptr);
-
+  
+  /*!
+   * \brief Arranca el proceso asincronamente
+   */
+  virtual void runAsync(Progress *progressBar = nullptr);
+  
   /*!
    * \brief Pausa el proceso
    */
@@ -232,7 +242,7 @@ protected:
   /*!
    * \brief Ejecuta el proceso
    */
-  virtual Status execute(Progress *progressBar = nullptr) = 0;
+  virtual void execute(Progress *progressBar = nullptr) = 0;
 
   // Eventos que se lanzan
   void endTriggered();
@@ -289,7 +299,7 @@ public:
   CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
   ~CmdProcess() override;
 
-  virtual Process::Status run(Progress *progressBar = nullptr) override;
+  //virtual Process::Status run(Progress *progressBar = nullptr) override;
 
   /*!
   * \brief Establece la prioridad del proceso
@@ -302,7 +312,7 @@ protected:
   /*!
    * \brief Ejecuta el proceso
    */
-  Status execute(Progress *progressBar = nullptr) override;
+  void execute(Progress *progressBar = nullptr) override;
 
 private:
 
