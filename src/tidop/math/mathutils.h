@@ -48,6 +48,9 @@ T clamp(const T &value, const T &_min, const T &_max)
 
 } // End namespace math
 
+TL_TODO("Limpiar a partir de aqui")
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief ángulos de Euler
@@ -68,6 +71,7 @@ TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double
 //Otra posible solución. Tizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
@@ -100,6 +104,7 @@ void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 
+#endif TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */

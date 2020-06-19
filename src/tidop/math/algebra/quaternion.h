@@ -57,13 +57,6 @@ class Quaternion
 
 public:
 
-  T x;
-  T y;
-  T z;
-  T w;
-
-public:
-
   /*!
    * \brief Constructor por defecto
    */
@@ -83,40 +76,6 @@ public:
    * \param[in] quaternion Objeto Quaternion que se copia
    */
   Quaternion(const Quaternion<T> &quaternion);
-
-  /*!
-   * \brief Constructor a partir de una matriz de rotación
-   * Inicializa los cuaterniones con una matriz de rotación
-   * 
-   * \f[ x^2 = (+r00 - r11 - r22 + 1)/4  \f]
-   * \f[ y^2 = (-r00 + r11 - r22 + 1)/4  \f]
-   * \f[ z^2 = (-r00 - r11 + r22 + 1)/4  \f]
-   * \f[ w^2 = (+r00 + r11 + r22 + 1)/4  \f]
-   * \f[ x^2 + y^2 = (1 - r22)/2 \f]
-   * \f[ z^2 + w^2 = (1 + r22)/2 \f]
-   * \f[ y^2 - x^2 = (r11 - r00)/2 \f]
-   * \f[ w^2 - z^2 = (r11 + r00)/2 \f]
-   * \f[ x*y = (r01 + r10)/4 \f]
-   * \f[ x*z = (r02 + r20)/4 \f]
-   * \f[ y*z = (r12 + r21)/4 \f]
-   * 
-   *   x*w = (r21 - r12)/4
-   *   y*w = (r02 - r20)/4
-   *   z*w = (r10 - r01)/4
-   * 
-   * If Q is the 4x1 column vector (x,y,z,w), the previous equations give us
-   *         +-                  -+
-   *         | x*x  x*y  x*z  x*w |
-   * Q*Q^T = | y*x  y*y  y*z  y*w |
-   *         | z*x  z*y  z*z  z*w |
-   *         | w*x  w*y  w*z  w*w |
-   *         +-                  -+
-   * The code extracts the row of maximum length, normalizing it to obtain
-   * the result q.
-   *
-   * \param[in] rot Matriz de rotación
-   */
-  //Quaternion(const RotationMatrix<T> &rot);
 
   /*!
    * \brief destructora
@@ -186,7 +145,13 @@ public:
    */
   static Quaternion identity();
 
-private:
+
+public:
+
+  T x;
+  T y;
+  T z;
+  T w;
 
 };
 

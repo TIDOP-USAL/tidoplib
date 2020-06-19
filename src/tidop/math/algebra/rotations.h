@@ -15,6 +15,19 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
+
+
+ /*! \addtogroup Algebra
+  *
+  * Algebra
+  *
+  *  \{
+  */
+
+
 /*!
  * \brief Clase para convertir entre diferentes sistemas de rotación
  */
@@ -951,6 +964,11 @@ void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle,
   convert(axisAngle, quaternion);
   convert(quaternion, eulerAngles);
 }
+
+
+/*! \} */ // end of Algebra
+
+/*! \} */ // end of Math
 
 
 } // Fin namespace math

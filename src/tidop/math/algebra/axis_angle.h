@@ -28,6 +28,18 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
+
+
+ /*! \addtogroup Algebra
+  *
+  * Algebra
+  *
+  *  \{
+  */
+
 /*!
  * \brief Ángulos de Euler
  */
@@ -37,24 +49,14 @@ class AxisAngle
 
 public:
 
-  T angle;
-  Vector<3, T> axis;
+  AxisAngle();
+  AxisAngle(T angle, const Vector<3, T> &axis);
+  ~AxisAngle();
 
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  AxisAngle();
-
-  AxisAngle(T angle, const Vector<3, T> &axis);
-
-  /*!
-   * \brief destructora
-   */
-  ~AxisAngle();
-
-
+  T angle;
+  Vector<3, T> axis;
 };
 
 template<typename T>
@@ -80,7 +82,9 @@ AxisAngle<T>::~AxisAngle()
 
 }
 
+/*! \} */ // end of Algebra
 
+/*! \} */ // end of Math
 
 } // Fin namespace math
 

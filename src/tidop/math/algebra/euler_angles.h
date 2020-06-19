@@ -26,6 +26,20 @@ namespace tl
 namespace math
 {
 
+
+/*! \addtogroup Math
+ *  \{
+ */
+
+
+/*! \addtogroup Algebra
+ *  
+ * Algebra
+ *
+ *  \{
+ */
+
+
 /*!
  * \brief Ángulos de Euler
  */
@@ -55,25 +69,9 @@ public:
 
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
   EulerAngles();
-
-  /*!
-   * \brief Constructor
-   */
   EulerAngles(double omega, double phi, double kappa, Axes axes);
-
-  /*!
-   * \brief Constructor de copia
-   * \param[in] eulerAngles Objeto que se copia
-   */
   EulerAngles(const EulerAngles<T> &eulerAngles);
-
-  /*!
-   * \brief destructora
-   */
   ~EulerAngles();
 
   /*!
@@ -93,9 +91,9 @@ public:
 
 template<typename T>
 EulerAngles<T>::EulerAngles()
-  : omega(0.),
-    phi(0.),
-    kappa(0.),
+  : omega{0},
+    phi{0},
+    kappa{0},
     axes(Axes::xyz)
 {
 }
@@ -136,6 +134,10 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
   }
   return *this;
 }
+
+/*! \} */ // end of Algebra
+
+/*! \} */ // end of Math
 
 } // Fin namespace math
 

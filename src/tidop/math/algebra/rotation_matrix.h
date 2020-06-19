@@ -3,7 +3,6 @@
 
 #include "config_tl.h"
 #include "tidop/math/algebra/matrix.h"
-//#include "tidop/math/algebra/quaternion.h"
 
 #include <vector>
 #include <array>
@@ -14,11 +13,18 @@ namespace tl
 namespace math
 {
 
-/*!
- * \brief Matriz de rotación
+/*! \addtogroup Math
+ *  \{
  */
-//template <typename T>
-//using RotationMatrix = Matrix<3, 3, T>;
+
+
+ /*! \addtogroup Algebra
+  *
+  * Algebra
+  *
+  *  \{
+  */
+
 
 /*!
  * \brief Matriz de rotación
@@ -32,8 +38,13 @@ public:
   
   RotationMatrix();
   RotationMatrix(const Matrix<3, 3, T> &rot);
-  //RotationMatrix(const Quaternion<T> &quaternion);
   ~RotationMatrix() {}
+
+  TL_TODO("constructoras a partir de angulo y eje")
+  // mathutils
+  //void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
+  //void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
+  //void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
 private:
 
@@ -53,37 +64,9 @@ RotationMatrix<T>::RotationMatrix(const Matrix<3, 3, T> &rot)
 }
 
 
-//template<typename T> inline
-//RotationMatrix<T>::RotationMatrix(const Quaternion<T> &quaternion)
-//  : Matrix<3, 3, T>()
-//{
-//  T _2{ 2 };
-//
-//  T _2x = _2 * quaternion.x;
-//  T _2y = _2 * quaternion.y;
-//  T _2z = _2 * quaternion.z;
-//  T _2xx = _2x * quaternion.x;
-//  T _2xy = _2x * quaternion.y;
-//  T _2xz = _2x * quaternion.z;
-//  T _2xw = _2x * quaternion.w;
-//  T _2yy = _2y * quaternion.y;
-//  T _2yz = _2y * quaternion.z;
-//  T _2yw = _2y * quaternion.w;
-//  T _2zz = _2z * quaternion.z;
-//  T _2zw = _2z * quaternion.w;
-//
-//  T _1{ 1 };
-//
-//  this->at(0, 0) = _1 - _2yy - _2zz;
-//  this->at(0, 1) = _2xy - _2zw;
-//  this->at(0, 2) = _2xz + _2yw;
-//  this->at(1, 0) = _2xy + _2zw;
-//  this->at(1, 1) = _1 - _2xx - _2zz;
-//  this->at(1, 2) = _2yz - _2xw;
-//  this->at(2, 0) = _2xz - _2yw;
-//  this->at(2, 1) = _2yz + _2xw;
-//  this->at(2, 2) = _1 - _2xx - _2yy;
-//}
+/*! \} */ // end of Algebra
+
+/*! \} */ // end of Math
 
 } // Fin namespace math
 
