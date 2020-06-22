@@ -69,7 +69,6 @@ if(MSVC)
     set(TL_RUNTIME vc14)
   elseif(MSVC_VERSION MATCHES "^191[0-9]$")
     set(TL_RUNTIME vc15)
-
   elseif(MSVC_VERSION MATCHES "^192[0-9]$")
     set(TL_RUNTIME vc16)
   else()
