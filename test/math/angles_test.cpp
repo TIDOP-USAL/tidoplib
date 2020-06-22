@@ -1,5 +1,5 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop angle convertion test
+#include <boost/test/unit_test.hpp>
 #include <tidop/math/angles.h>
 
 using namespace tl::math;
@@ -8,18 +8,22 @@ using namespace tl::math;
 /*                          Test conversión de ángulos                                */
 /* ---------------------------------------------------------------------------------- */
 
-//Datos para los test
+BOOST_AUTO_TEST_SUITE(AngleConvertionTestSuite)
 
-class VectorTest : public testing::Test
+struct AngleConvertion
 {
-protected:
-  
-  std::vector<double> decimalDegrees;
-  std::vector<std::vector<int>> dms;
-  std::vector<double> radians;
-  std::vector<double> gradians;
 
-  virtual void SetUp() override
+  AngleConvertion()
+  {
+
+  }
+
+  ~AngleConvertion()
+  {
+
+  }
+
+  void setup()
   {
     decimalDegrees.push_back(0.);
     decimalDegrees.push_back(0.5);
@@ -46,9 +50,14 @@ protected:
     gradians.push_back(-299.3166718);
   }
  
-  virtual void TearDown() override
+  void teardown()
   {
   }
+
+  std::vector<double> decimalDegrees;
+  std::vector<std::vector<int>> dms;
+  std::vector<double> radians;
+  std::vector<double> gradians;
 };
 
 std::vector<double> decimalDegrees = { 0., 0.5, 135.5742, 86.9997, -269.385 };
@@ -56,94 +65,95 @@ std::vector<std::vector<int>> dms{ { 0, 0, 0 }, { 0, 30, 0 }, { 135, 34, 27 }, {
 std::vector<double> radians{ 0.,0.00872664626,2.3662161708,1.518431213, -4.7016552055 };
 std::vector<double> gradians{ 0., 0.555556, 150.63800, 96.666335, -299.3166718 };
 
-TEST_F(VectorTest, degreesToDecimalDegrees) 
+BOOST_FIXTURE_TEST_CASE(degrees_to_decimal_degrees, AngleConvertion) 
 {
   for (int i = 0; i < dms.size(); i++) {
-    EXPECT_NEAR(decimalDegrees[i], degreesToDecimalDegrees(dms[i][0], dms[i][1], dms[i][2]), 0.001);
+    BOOST_CHECK_CLOSE(decimalDegrees[i], degreesToDecimalDegrees(dms[i][0], dms[i][1], dms[i][2]), 0.1);
   }
 }
 
-TEST_F(VectorTest, degreesToRadians) 
+BOOST_FIXTURE_TEST_CASE(degrees_to_radians, AngleConvertion) 
 {
   for (int i = 0; i < dms.size(); i++) {
-    EXPECT_NEAR(radians[i], degreesToRadians(dms[i][0], dms[i][1], dms[i][2]), 0.000001);
+    BOOST_CHECK_CLOSE(radians[i], degreesToRadians(dms[i][0], dms[i][1], dms[i][2]), 0.1);
   }
 }
 
-TEST(degreesToGradians, Test1)
+BOOST_FIXTURE_TEST_CASE(degrees_to_gradians, AngleConvertion)
 {
   for (int i = 0; i < dms.size(); i++) {
-    EXPECT_NEAR(gradians[i], degreesToGradians(dms[i][0], dms[i][1], dms[i][2]), 0.0001);
+    BOOST_CHECK_CLOSE(gradians[i], degreesToGradians(dms[i][0], dms[i][1], dms[i][2]), 0.1);
   }
 }
 
   
-TEST(decimalDegreesToDegrees, Test1) 
+BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_degrees, AngleConvertion) 
 {
   int degrees, minutes, seconds;
   for (int i = 0; i < decimalDegrees.size(); i++) {
     decimalDegreesToDegrees(decimalDegrees[i], &degrees, &minutes, &seconds);
-    EXPECT_EQ(dms[i][0], degrees);
-    EXPECT_EQ(dms[i][1], minutes);
-    EXPECT_EQ(dms[i][2], seconds);
+    BOOST_CHECK_EQUAL(dms[i][0], degrees);
+    BOOST_CHECK_EQUAL(dms[i][1], minutes);
+    BOOST_CHECK_EQUAL(dms[i][2], seconds);
   }
 }
 
-TEST_F(VectorTest, decimalDegreesToRadians)
+BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_radians, AngleConvertion)
 {
   for (int i = 0; i < decimalDegrees.size(); i++) {
-    EXPECT_NEAR(radians[i], decimalDegreesToRadians(decimalDegrees[i]), 0.000001);
+    BOOST_CHECK_CLOSE(radians[i], decimalDegreesToRadians(decimalDegrees[i]), 0.1);
   }
 }
 
-TEST(decimalDegreesToGradians, Test1) {
+BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_gradians, AngleConvertion) {
   for (int i = 0; i < decimalDegrees.size(); i++) {
-    EXPECT_NEAR(gradians[i], decimalDegreesToGradians(decimalDegrees[i]), 0.0001);
+    BOOST_CHECK_CLOSE(gradians[i], decimalDegreesToGradians(decimalDegrees[i]), 0.1);
   }
 }
 
-TEST(radiansToDegrees, Test1) {
+BOOST_FIXTURE_TEST_CASE(radians_to_degrees, AngleConvertion) {
   int degrees, minutes, seconds;
   for (int i = 0; i < radians.size(); i++) {
     radiansToDegrees(radians[i], &degrees, &minutes, &seconds);
-    EXPECT_EQ(dms[i][0], degrees);
-    EXPECT_EQ(dms[i][1], minutes);
-    EXPECT_EQ(dms[i][2], seconds);
+    BOOST_CHECK_EQUAL(dms[i][0], degrees);
+    BOOST_CHECK_EQUAL(dms[i][1], minutes);
+    BOOST_CHECK_EQUAL(dms[i][2], seconds);
   }
 }
 
-TEST(radiansToDecimalDegrees, Test1) {
+BOOST_FIXTURE_TEST_CASE(radians_to_decimal_degrees, AngleConvertion) {
   for (int i = 0; i < radians.size(); i++) {
-    EXPECT_NEAR(decimalDegrees[i], radiansToDecimalDegrees(radians[i]), 0.0001);
+    BOOST_CHECK_CLOSE(decimalDegrees[i], radiansToDecimalDegrees(radians[i]), 0.1);
   }
 }
 
-TEST(radiansToGradians, Test1) {
+BOOST_FIXTURE_TEST_CASE(radians_to_gradians, AngleConvertion) {
   for (int i = 0; i < radians.size(); i++) {
-    EXPECT_NEAR(gradians[i], radiansToGradians(radians[i]), 0.0001);
+    BOOST_CHECK_CLOSE(gradians[i], radiansToGradians(radians[i]), 0.1);
   }
 }
 
 
-TEST(gradiansToDegrees, Test1) {
+BOOST_FIXTURE_TEST_CASE(gradians_to_degrees, AngleConvertion) {
   int degrees, minutes, seconds;
   for (int i = 0; i < gradians.size(); i++) {
     gradiansToDegrees(gradians[i], &degrees, &minutes, &seconds);
-    EXPECT_EQ(dms[i][0], degrees);
-    EXPECT_EQ(dms[i][1], minutes);
-    EXPECT_EQ(dms[i][2], seconds);
+    BOOST_CHECK_EQUAL(dms[i][0], degrees);
+    BOOST_CHECK_EQUAL(dms[i][1], minutes);
+    BOOST_CHECK_EQUAL(dms[i][2], seconds);
   }
 }
 
-TEST(gradiansToDecimalDegrees, Test1) {
+BOOST_FIXTURE_TEST_CASE(gradians_to_decimalDegrees, AngleConvertion) {
   for (int i = 0; i < gradians.size(); i++) {
-    EXPECT_NEAR(decimalDegrees[i], gradiansToDecimalDegrees(gradians[i]), 0.0001);
+    BOOST_CHECK_CLOSE(decimalDegrees[i], gradiansToDecimalDegrees(gradians[i]), 0.1);
   }
 }
 
-TEST(gradiansToRadians, Test1) {
+BOOST_FIXTURE_TEST_CASE(gradians_to_radians, AngleConvertion) {
   for (int i = 0; i < gradians.size(); i++) {
-    EXPECT_NEAR(radians[i], gradiansToRadians(gradians[i]), 0.00001);
+    BOOST_CHECK_CLOSE(radians[i], gradiansToRadians(gradians[i]), 0.1);
   }
 }
 
+BOOST_AUTO_TEST_SUITE_END()

@@ -41,12 +41,6 @@ namespace math
  *  \{
  */
 
-//template <size_t _rows, size_t _cols, typename T = double, typename Enable = void>
-//class Matrix;
-//
-//template <size_t _rows, size_t _cols, typename T>
-//class Matrix<_rows, _cols, T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
-//{
 
 /*!
  * \brief Clase matriz 
@@ -59,15 +53,7 @@ class Matrix
 public:
 
   typedef T value_type;
-  size_t rows = _rows;
-  size_t cols = _cols;
 
-protected:
-
-  std::array<std::array<T, _cols>, _rows> mMatrix;
-  size_t mRows;
-  size_t mCols;
-  
 public:
 
   /*!
@@ -284,6 +270,17 @@ private:
   Matrix inverse3x3(bool *invertibility) const;
   Matrix inverse4x4(bool *invertibility) const;
   Matrix inversenxn(bool *invertibility) const;
+
+public:
+
+  size_t rows = _rows;
+  size_t cols = _cols;
+
+protected:
+
+  std::array<std::array<T, _cols>, _rows> mMatrix;
+ // size_t mRows;
+ // size_t mCols;
 };
 
 
@@ -328,8 +325,8 @@ Matrix<_rows, _cols, T>::Matrix(const Matrix &mat)
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(Matrix &&mat) TL_NOEXCEPT
   : mMatrix(std::forward<std::array<std::array<T, _cols>, _rows>>(mat.mMatrix)),
-    rows(std::move(mat.rows)),
-    cols(std::move(mat.cols))
+    rows(mat.rows),
+    cols(mat.cols)
 {
 }
 
@@ -350,6 +347,7 @@ Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> 
   TL_TODO("ver por que peta con mas de 3 filas")
   size_t n_rows = mat.size();
   auto it_row = mat.begin();
+  const T zero{0};
   for (size_t r = 0; r < this->rows; r++) {
     if (r <= n_rows){
       auto it_col = it_row->begin();
@@ -357,13 +355,13 @@ Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> 
         if (r <= n_rows){
           this->mMatrix[r][c] = *it_col++;
         } else{
-          this->mMatrix[r][c] = T{0};
+          this->mMatrix[r][c] = zero;
         }
       }
       it_row++;
     } else{
       for (size_t c = 0; c < this->cols; c++) {
-        this->mMatrix[r][c] = T{0};
+        this->mMatrix[r][c] = zero;
       }
     }
   }
@@ -400,8 +398,8 @@ Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (Matrix &&rot) TL_N
 {
   if (this != &rot) {
     this->mMatrix = std::forward<std::array<std::array<T, _cols>, _rows>>(rot.mMatrix);
-    this->rows = std::move(rot.rows);
-    this->cols = std::move(rot.cols);
+    this->rows = rot.rows;
+    this->cols = rot.cols;
   }
   return *this;
 }
@@ -551,10 +549,11 @@ T Matrix<_rows, _cols, T>::firstMinor(size_t r, size_t c) const
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::zero()
 {
+  const T zero{0};
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
-      matrix.at(r, c) = static_cast<T>(0);
+      matrix.at(r, c) = zero;
     }
   }
   return matrix;
@@ -563,10 +562,11 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::zero()
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::ones()
 {
+  const T one{1};
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
-      matrix.at(r, c) = static_cast<T>(1);
+      matrix.at(r, c) = one;
     }
   }
   return matrix;
@@ -575,13 +575,15 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::ones()
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::identity()
 {
+  const T zero{0}; 
+  const T one{1};
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       if (r == c) {
-        matrix.at(r, c) = static_cast<T>(1);
+        matrix.at(r, c) = one;
       } else {
-        matrix.at(r, c) = static_cast<T>(0);
+        matrix.at(r, c) = zero;
       }
     }
   }
@@ -627,7 +629,9 @@ T Matrix<_rows, _cols, T>::determinant4x4() const
 template<size_t _rows, size_t _cols, typename T> 
 T Matrix<_rows, _cols, T>::determinantnxn() const
 {
-  T d = static_cast<T>(1);
+  const T zero{0};
+  const T one{1};
+  T d = one;
   size_t n = mMatrix.size();
   std::array<std::array<T, _cols>, _rows> matrix(mMatrix);
 
@@ -641,13 +645,13 @@ T Matrix<_rows, _cols, T>::determinantnxn() const
       }
     }
 
-    if (pivotElement == static_cast<T>(0)) {
-      return static_cast<T>(0);
+    if (pivotElement == zero) {
+      return zero;
     }
 
     if (pivotRow != i) {
       matrix[i].swap(matrix[pivotRow]);
-      d *= static_cast<T>(-1);
+      d *= -one;
     }
 
     d *= pivotElement;
@@ -712,38 +716,55 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse4x4(bool *invertibility)
 {
   Matrix<_rows, _cols, T> matrix;
 
-  T a0 = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
-  T a1 = mMatrix[0][0] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][0];
-  T a2 = mMatrix[0][0] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][0];
-  T a3 = mMatrix[0][1] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][1];
-  T a4 = mMatrix[0][1] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][1];
-  T a5 = mMatrix[0][2] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][2];
-  T b0 = mMatrix[2][0] * mMatrix[3][1] - mMatrix[2][1] * mMatrix[3][0];
-  T b1 = mMatrix[2][0] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][0];
-  T b2 = mMatrix[2][0] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][0];
-  T b3 = mMatrix[2][1] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][1];
-  T b4 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][1];
-  T b5 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][2];
+  T m00 = mMatrix[0][0];
+  T m01 = mMatrix[0][1];
+  T m02 = mMatrix[0][2];
+  T m03 = mMatrix[0][3];
+  T m10 = mMatrix[1][0];
+  T m11 = mMatrix[1][1];
+  T m12 = mMatrix[1][2];
+  T m13 = mMatrix[1][3];
+  T m20 = mMatrix[2][0];
+  T m21 = mMatrix[2][1];
+  T m22 = mMatrix[2][2];
+  T m23 = mMatrix[2][3];
+  T m30 = mMatrix[3][0];
+  T m31 = mMatrix[3][1];
+  T m32 = mMatrix[3][2];
+  T m33 = mMatrix[3][3];
+
+  T a0 = m00 * m11 - m01 * m10;
+  T a1 = m00 * m12 - m02 * m10;
+  T a2 = m00 * m13 - m03 * m10;
+  T a3 = m01 * m12 - m02 * m11;
+  T a4 = m01 * m13 - m03 * m11;
+  T a5 = m02 * m13 - m03 * m12;
+  T b0 = m20 * m31 - m21 * m30;
+  T b1 = m20 * m32 - m22 * m30;
+  T b2 = m20 * m33 - m23 * m30;
+  T b3 = m21 * m32 - m22 * m31;
+  T b4 = m21 * m33 - m23 * m31;
+  T b5 = m21 * m33 - m23 * m32;
   T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
 
   if (det != static_cast<T>(0)) {
     
-    matrix.at(0, 0) = ( mMatrix[1][1] * b5 - mMatrix[1][2] * b4 + mMatrix[1][3] * b3) / det;
-    matrix.at(0, 1) = (-mMatrix[0][1] * b5 + mMatrix[0][2] * b4 - mMatrix[0][3] * b3) / det;
-    matrix.at(0, 2) = ( mMatrix[3][1] * a5 - mMatrix[3][2] * a4 + mMatrix[3][3] * a3) / det;
-    matrix.at(0, 3) = (-mMatrix[2][1] * a5 + mMatrix[2][2] * a4 - mMatrix[2][3] * a3) / det;
-    matrix.at(1, 0) = (-mMatrix[1][0] * b5 + mMatrix[1][2] * b2 - mMatrix[1][3] * b1) / det;
-    matrix.at(1, 1) = ( mMatrix[0][0] * b5 - mMatrix[0][2] * b2 + mMatrix[0][3] * b1) / det;
-    matrix.at(1, 2) = (-mMatrix[3][0] * a5 + mMatrix[3][2] * a2 - mMatrix[3][3] * a1) / det;
-    matrix.at(1, 3) = ( mMatrix[2][0] * a5 - mMatrix[2][2] * a2 + mMatrix[2][3] * a1) / det;
-    matrix.at(2, 0) = ( mMatrix[1][0] * b4 - mMatrix[1][1] * b2 + mMatrix[1][3] * b0) / det;
-    matrix.at(2, 1) = (-mMatrix[0][0] * b4 + mMatrix[0][1] * b2 - mMatrix[0][3] * b0) / det;
-    matrix.at(2, 2) = ( mMatrix[3][0] * a4 - mMatrix[3][1] * a2 + mMatrix[3][3] * a0) / det;
-    matrix.at(2, 3) = (-mMatrix[2][0] * a4 + mMatrix[2][1] * a2 - mMatrix[2][3] * a0) / det;
-    matrix.at(3, 0) = (-mMatrix[1][0] * b3 + mMatrix[1][1] * b1 - mMatrix[1][2] * b0) / det;
-    matrix.at(3, 1) = ( mMatrix[0][0] * b3 - mMatrix[0][1] * b1 + mMatrix[0][2] * b0) / det;
-    matrix.at(3, 2) = (-mMatrix[3][0] * a3 + mMatrix[3][1] * a1 - mMatrix[3][2] * a0) / det;
-    matrix.at(3, 3) = ( mMatrix[2][0] * a3 - mMatrix[2][1] * a1 + mMatrix[2][2] * a0) / det;
+    matrix.at(0, 0) = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
+    matrix.at(0, 1) = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
+    matrix.at(0, 2) = ( m31 * a5 - m32 * a4 + m33 * a3) / det;
+    matrix.at(0, 3) = (-m21 * a5 + m22 * a4 - m23 * a3) / det;
+    matrix.at(1, 0) = (-m10 * b5 + m12 * b2 - m13 * b1) / det;
+    matrix.at(1, 1) = ( m00 * b5 - m02 * b2 + m03 * b1) / det;
+    matrix.at(1, 2) = (-m30 * a5 + m32 * a2 - m33 * a1) / det;
+    matrix.at(1, 3) = ( m20 * a5 - m22 * a2 + m23 * a1) / det;
+    matrix.at(2, 0) = ( m10 * b4 - m11 * b2 + m13 * b0) / det;
+    matrix.at(2, 1) = (-m00 * b4 + m01 * b2 - m03 * b0) / det;
+    matrix.at(2, 2) = ( m30 * a4 - m31 * a2 + m33 * a0) / det;
+    matrix.at(2, 3) = (-m20 * a4 + m21 * a2 - m23 * a0) / det;
+    matrix.at(3, 0) = (-m10 * b3 + m11 * b1 - m12 * b0) / det;
+    matrix.at(3, 1) = ( m00 * b3 - m01 * b1 + m02 * b0) / det;
+    matrix.at(3, 2) = (-m30 * a3 + m31 * a1 - m32 * a0) / det;
+    matrix.at(3, 3) = ( m20 * a3 - m21 * a1 + m22 * a0) / det;
 
     if (invertibility) *invertibility = true;
   } else {

@@ -6,9 +6,9 @@
 #include <memory>
 
 #include <opencv2/xfeatures2d.hpp>
-#ifdef HAVE_CUDA
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
-#endif // HAVE_CUDA
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 #include "tidop/core/flags.h"
 
@@ -16,8 +16,17 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
 
-class TL_EXPORT Match
+/*! \defgroup FeatureMatching Correspondencia de caracteristicas (Feature Matching)
+ * 
+ *  \{
+ */
+
+class TL_EXPORT MatchingMethod
 {
 
 public:
@@ -30,15 +39,24 @@ public:
 
 public:
 
-  Match(Type type) : mMatchType(type) {}
-  virtual ~Match() = default;
+  MatchingMethod(Type type) : mMatchType(type) {}
+  virtual ~MatchingMethod() = default;
 
   /*!
    * \brief Recover the default values
    */
   virtual void reset() = 0;
 
+  /*!
+   * \brief Type of match method (flann or brute force)
+   * \return
+   */
   Type type() const { return mMatchType.flags(); }
+
+  /*!
+   * \brief Name of match method
+   * \return
+   */
   virtual std::string name() const = 0;
 
 protected:
@@ -46,7 +64,7 @@ protected:
   tl::EnumFlags<Type> mMatchType;
 
 };
-ALLOW_BITWISE_FLAG_OPERATIONS(Match::Type)
+ALLOW_BITWISE_FLAG_OPERATIONS(MatchingMethod::Type)
 
 
 /*----------------------------------------------------------------*/
@@ -66,7 +84,20 @@ public:
    * \brief Compute matching
    * \param[in] queryDescriptors Query descriptors
    * \param[in] trainDescriptors Train descriptors
-   * \param[out] matches
+   * \param[out] matches Matches 1 to 2
+   * \param[in] mask
+   * \return
+   */
+  virtual bool match(cv::InputArray &queryDescriptors,
+                     cv::InputArray &trainDescriptors,
+                     std::vector<cv::DMatch> &matches,
+                     cv::InputArray mask = cv::noArray()) = 0;
+
+  /*!
+   * \brief Compute matching
+   * \param[in] queryDescriptors Query descriptors
+   * \param[in] trainDescriptors Train descriptors
+   * \param[out] matches Matches 1 to 2 and 2 to 1
    * \param[in] mask
    * \return true if error
    */
@@ -81,8 +112,8 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IFlannMatcher
-  : public Match
+class TL_EXPORT FlannMatcher
+  : public MatchingMethod
 {
 
 public:
@@ -97,8 +128,8 @@ public:
 
 public:
 
-  IFlannMatcher() : Match(Match::Type::flann) {}
-  virtual ~IFlannMatcher() override = default;
+  FlannMatcher() : MatchingMethod(MatchingMethod::Type::flann) {}
+  ~FlannMatcher() override = default;
 
   virtual Index index() const = 0;
   virtual void setIndex(Index index) = 0;
@@ -108,26 +139,26 @@ public:
 /*----------------------------------------------------------------*/
 
 class TL_EXPORT FlannMatcherProperties
-  : public IFlannMatcher
+  : public FlannMatcher
 {
 
 public:
 
   FlannMatcherProperties();
-  virtual ~FlannMatcherProperties() override;
+  ~FlannMatcherProperties() override;
 
 // Match interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 // IFlannMatcher interface
 
 public:
 
-  virtual Index index() const override;
+  Index index() const override;
   virtual void setIndex(Index index) override;
 
 private:
@@ -137,16 +168,16 @@ private:
 
 /*----------------------------------------------------------------*/
 
-class TL_EXPORT FlannMatcher
+class TL_EXPORT FlannMatcherImp
   : public FlannMatcherProperties,
     public DescriptorMatcher
 {
 
 public:
 
-  FlannMatcher();
-  FlannMatcher(IFlannMatcher::Index index);
-  ~FlannMatcher() override;
+  FlannMatcherImp();
+  explicit FlannMatcherImp(FlannMatcher::Index index);
+  ~FlannMatcherImp() override = default;
 
 private:
 
@@ -155,6 +186,11 @@ private:
 // DescriptorMatcher interface
 
 public:
+
+  bool match(cv::InputArray &queryDescriptors,
+             cv::InputArray &trainDescriptors,
+             std::vector<cv::DMatch> &matches,
+             cv::InputArray mask = cv::noArray()) override;
 
   bool match(cv::InputArray &queryDescriptors,
              cv::InputArray &trainDescriptors,
@@ -182,8 +218,8 @@ protected:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IBruteForceMatcher
-  : public Match
+class TL_EXPORT BruteForceMatcher
+  : public MatchingMethod
 {
 public:
 
@@ -197,8 +233,8 @@ public:
 
 public:
 
-  IBruteForceMatcher() : Match(Match::Type::brute_force) {}
-  virtual ~IBruteForceMatcher() override = default;
+  BruteForceMatcher() : MatchingMethod(MatchingMethod::Type::brute_force) {}
+  ~BruteForceMatcher() override = default;
 
   virtual Norm normType() const = 0;
   virtual void setNormType(Norm normType) = 0;
@@ -208,27 +244,27 @@ public:
 /*----------------------------------------------------------------*/
 
 class TL_EXPORT BruteForceMatcherProperties
-  : public IBruteForceMatcher
+  : public BruteForceMatcher
 {
 
 public:
 
   BruteForceMatcherProperties();
-  ~BruteForceMatcherProperties() override;
+  ~BruteForceMatcherProperties() override = default;
 
 // Match interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 // IBruteForceMatcher interface
 
 public:
 
-  virtual Norm normType() const override;
-  virtual void setNormType(Norm normType) override;
+  Norm normType() const override;
+  void setNormType(Norm normType) override;
 
 private:
 
@@ -238,16 +274,16 @@ private:
 
 /*----------------------------------------------------------------*/
 
-class TL_EXPORT BruteForceMatcher
+class TL_EXPORT BruteForceMatcherImp
   : public BruteForceMatcherProperties,
     public DescriptorMatcher
 {
 
 public:
 
-  BruteForceMatcher();
-  BruteForceMatcher(Norm normType);
-  ~BruteForceMatcher() override {}
+  BruteForceMatcherImp();
+  explicit BruteForceMatcherImp(Norm normType);
+  ~BruteForceMatcherImp() override = default;
 
 private:
 
@@ -256,6 +292,11 @@ private:
 // DescriptorMatcher interface
 
 public:
+
+  bool match(cv::InputArray &queryDescriptors,
+             cv::InputArray &trainDescriptors,
+             std::vector<cv::DMatch> &matches,
+             cv::InputArray mask = cv::noArray()) override;
 
   bool match(cv::InputArray &queryDescriptors,
              cv::InputArray &trainDescriptors,
@@ -281,7 +322,7 @@ protected:
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 class TL_EXPORT BruteForceMatcherCuda
   : public BruteForceMatcherProperties,
@@ -291,8 +332,8 @@ class TL_EXPORT BruteForceMatcherCuda
 public:
 
   BruteForceMatcherCuda();
-  BruteForceMatcherCuda(Norm normType);
-  ~BruteForceMatcherCuda() override {}
+  explicit BruteForceMatcherCuda(Norm normType);
+  ~BruteForceMatcherCuda() override = default;
 
 private:
 
@@ -301,6 +342,11 @@ private:
 // DescriptorMatcher interface
 
 public:
+
+  bool match(cv::InputArray &queryDescriptors,
+             cv::InputArray &trainDescriptors,
+             std::vector<cv::DMatch> &matches,
+             cv::InputArray mask = cv::noArray()) override;
 
   bool match(cv::InputArray &queryDescriptors,
              cv::InputArray &trainDescriptors,
@@ -324,12 +370,78 @@ protected:
   cv::Ptr<cv::cuda::DescriptorMatcher> mBFMatcher;
 };
 
-#endif // HAVE_CUDA
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
+
 
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IRobustMatcherRefinement
+class TL_EXPORT MatchingStrategy
+{
+public:
+
+  enum class Strategy
+  {
+    robust_matching,
+    gms
+  };
+
+public:
+
+  MatchingStrategy(Strategy strategy) : mStrategy(strategy) {}
+  virtual ~MatchingStrategy() = default;
+
+  /*!
+   * \brief Recover the default values
+   */
+  virtual void reset() = 0;
+
+  Strategy strategy() const { return mStrategy.flags(); }
+  virtual std::string name() const = 0;
+
+protected:
+
+  tl::EnumFlags<Strategy> mStrategy;
+
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(MatchingStrategy::Strategy)
+
+
+/*----------------------------------------------------------------*/
+
+
+class TL_EXPORT MatchingAlgorithm
+{
+
+public:
+
+  MatchingAlgorithm() {}
+  virtual ~MatchingAlgorithm() = default;
+
+  virtual bool compute(const cv::Mat &queryDescriptor,
+                       const cv::Mat &trainDescriptor,
+                       const std::vector<cv::KeyPoint> &keypoints1,
+                       const std::vector<cv::KeyPoint> &keypoints2,
+                       std::vector<cv::DMatch> *goodMatches,
+                       std::vector<cv::DMatch> *wrongMatches = nullptr,
+                       const cv::Size &queryImageSize = cv::Size(),
+                       const cv::Size &trainImageSize = cv::Size()) = 0;
+};
+
+
+/*----------------------------------------------------------------*/
+
+
+/*!
+ * \brief The IRobustMatcherRefinement class
+ *
+ * Robust Matching:
+ *
+ * http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
+ */
+class TL_EXPORT RobustMatcher
+  : public MatchingStrategy
 {
 
 public:
@@ -365,8 +477,9 @@ public:
 
 public:
 
-  IRobustMatcherRefinement() {}
-  virtual ~IRobustMatcherRefinement() = default;
+  RobustMatcher()
+    : MatchingStrategy(MatchingStrategy::Strategy::robust_matching) {}
+  ~RobustMatcher() override = default;
 
   virtual double ratio() const = 0;
   virtual void setRatio(double ratio) = 0;
@@ -398,21 +511,21 @@ public:
   /*!
    * \brief Recover the default values
    */
-  virtual void reset() = 0;
+  //virtual void reset() = 0;
 
 };
 
 
 /*----------------------------------------------------------------*/
 
-class TL_EXPORT RobustMatcherProperties
-  : public IRobustMatcherRefinement
+class TL_EXPORT RobustMatchingProperties
+  : public RobustMatcher
 {
 
 public:
 
-  RobustMatcherProperties();
-  ~RobustMatcherProperties() override = default;
+  RobustMatchingProperties();
+  ~RobustMatchingProperties() override = default;
 
 // IRobustMatcherRefinement interface
 
@@ -436,7 +549,13 @@ public:
   void setConfidence(double confidence) override;
   int maxIter() const override;
   void setMaxIters(int maxIter) override;
+
+// MatchingStrategy interface
+
+public:
+
   void reset() override;
+  std::string name() const override;
 
 private:
 
@@ -454,33 +573,32 @@ private:
 
 /*----------------------------------------------------------------*/
 
-/*!
- * \brief Matching robusto
- *
- * Basado en:
- *
- * http://docs.opencv.org/3.1.0/dc/d2c/tutorial_real_time_pose.html
- */
-class TL_EXPORT IRobustMatching
+class TL_EXPORT RobustMatchingImp
+  : public RobustMatchingProperties,
+    public MatchingAlgorithm
 {
 
 public:
 
-  IRobustMatching() {}
-  virtual ~IRobustMatching() = default;
-
-public:
+  explicit RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+  RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+                    double ratio,
+                    bool crossCheck,
+                    GeometricTest geometricTest,
+                    HomographyComputeMethod homographyComputeMethod,
+                    FundamentalComputeMethod fundamentalComputeMethod,
+                    EssentialComputeMethod essentialComputeMethod,
+                    double distance,
+                    double confidence,
+                    int maxIter);
+  ~RobustMatchingImp() override = default;
 
   /*!
    * \brief Establece el metodo de matching
    * \param[in] matcher
    */
-  virtual void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &matcher) = 0;
+  void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
 
-  /*!
-   * \brief Test de ratio
-   * \param[in] matches
-   */
   /*!
    * \brief Ratio test
    * \param[in] matches
@@ -554,23 +672,23 @@ public:
     return goodMatches;
   }
 
-  virtual std::vector<cv::DMatch> geometricFilter(const std::vector<cv::DMatch> &matches,
-                                                  const std::vector<cv::KeyPoint>& keypoints1,
-                                                  const std::vector<cv::KeyPoint>& keypoints2,
-                                                  std::vector<cv::DMatch> *wrongMatches = nullptr) = 0;
+  std::vector<cv::DMatch> geometricFilter(const std::vector<cv::DMatch> &matches,
+                                          const std::vector<cv::KeyPoint>& keypoints1,
+                                          const std::vector<cv::KeyPoint>& keypoints2,
+                                          std::vector<cv::DMatch> *wrongMatches = nullptr);
 
-  virtual std::vector<cv::DMatch> filterByHomographyMatrix(const std::vector<cv::DMatch> &matches,
-                                                           const std::vector<cv::Point2f>& points1,
-                                                           const std::vector<cv::Point2f>& points2,
-                                                           std::vector<cv::DMatch> *wrongMatches = nullptr) = 0;
-  virtual std::vector<cv::DMatch> filterByEssentialMatrix(const std::vector<cv::DMatch> &matches,
-                                                          const std::vector<cv::Point2f>& points1,
-                                                          const std::vector<cv::Point2f>& points2,
-                                                          std::vector<cv::DMatch> *wrongMatches = nullptr) = 0;
-  virtual std::vector<cv::DMatch> filterByFundamentalMatrix(const std::vector<cv::DMatch> &matches,
-                                                            const std::vector<cv::Point2f>& points1,
-                                                            const std::vector<cv::Point2f>& points2,
-                                                            std::vector<cv::DMatch> *wrongMatches = nullptr) = 0;
+  std::vector<cv::DMatch> filterByHomographyMatrix(const std::vector<cv::DMatch> &matches,
+                                                   const std::vector<cv::Point2f>& points1,
+                                                   const std::vector<cv::Point2f>& points2,
+                                                   std::vector<cv::DMatch> *wrongMatches = nullptr);
+  std::vector<cv::DMatch> filterByEssentialMatrix(const std::vector<cv::DMatch> &matches,
+                                                  const std::vector<cv::Point2f>& points1,
+                                                  const std::vector<cv::Point2f>& points2,
+                                                  std::vector<cv::DMatch> *wrongMatches = nullptr);
+  std::vector<cv::DMatch> filterByFundamentalMatrix(const std::vector<cv::DMatch> &matches,
+                                                    const std::vector<cv::Point2f>& points1,
+                                                    const std::vector<cv::Point2f>& points2,
+                                                    std::vector<cv::DMatch> *wrongMatches = nullptr);
 
   /*!
    * \brief Matching
@@ -579,9 +697,9 @@ public:
    * \param[out] wrongMatches Wrong matches
    * \return Good matches
    */
-  virtual std::vector<cv::DMatch> match(const cv::Mat &queryDescriptor,
-                                        const cv::Mat &trainDescriptor,
-                                        std::vector<cv::DMatch> *wrongMatches = nullptr) = 0;
+  std::vector<cv::DMatch> match(const cv::Mat &queryDescriptor,
+                                const cv::Mat &trainDescriptor,
+                                std::vector<cv::DMatch> *wrongMatches = nullptr);
 
 private:
 
@@ -593,9 +711,9 @@ private:
    * \param[out] wrongMatches Wrong matches
    * \return Good matches
    */
-  virtual std::vector<cv::DMatch> robustMatch(const cv::Mat &queryDescriptor,
-                                              const cv::Mat &trainDescriptor,
-                                              std::vector<cv::DMatch> *wrongMatches) = 0;
+  std::vector<cv::DMatch> robustMatch(const cv::Mat &queryDescriptor,
+                                      const cv::Mat &trainDescriptor,
+                                      std::vector<cv::DMatch> *wrongMatches);
 
   /*!
    * \brief Robust matching
@@ -605,98 +723,152 @@ private:
    * \param[out] wrongMatches Wrong matches
    * \return Good matches
    */
-  virtual std::vector<cv::DMatch> fastRobustMatch(const cv::Mat &queryDescriptor,
-                                                  const cv::Mat &trainDescriptor,
-                                                  std::vector<cv::DMatch> *wrongMatches) = 0;
-};
+  std::vector<cv::DMatch> fastRobustMatch(const cv::Mat &queryDescriptor,
+                                          const cv::Mat &trainDescriptor,
+                                          std::vector<cv::DMatch> *wrongMatches);
 
+
+// MatchingAlgorithm interface
+
+public:
+
+  bool compute(const cv::Mat &queryDescriptor,
+               const cv::Mat &trainDescriptor,
+               const std::vector<cv::KeyPoint> &keypoints1,
+               const std::vector<cv::KeyPoint> &keypoints2,
+               std::vector<cv::DMatch> *goodMatches,
+               std::vector<cv::DMatch> *wrongMatches = nullptr,
+               const cv::Size &queryImageSize = cv::Size(),
+               const cv::Size &trainImageSize = cv::Size()) override;
+
+protected:
+
+  std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+
+};
 
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT RobustMatching
-  : public IRobustMatching,
-    public RobustMatcherProperties
+class TL_EXPORT Gms
+  : public MatchingStrategy
 {
 
 public:
 
-  RobustMatching(const std::shared_ptr<DescriptorMatcher> &matcher);
-  RobustMatching(const std::shared_ptr<DescriptorMatcher> &matcher,
-                 double ratio,
-                 bool crossCheck,
-                 GeometricTest geometricTest,
-                 HomographyComputeMethod homographyComputeMethod,
-                 FundamentalComputeMethod fundamentalComputeMethod,
-                 EssentialComputeMethod essentialComputeMethod,
-                 double distance,
-                 double confidence,
-                 int maxIter);
-  ~RobustMatching() override;
+  Gms() : MatchingStrategy(MatchingStrategy::Strategy::gms) {}
+  ~Gms() override = default;
 
-// IRobustMatching interface
+  virtual bool rotation() const = 0;
+  virtual void setRotation(bool rotation) = 0;
+
+  virtual bool scale() const  = 0;
+  virtual void setScale(bool scale) = 0;
+
+  virtual double threshold() const = 0;
+  virtual void setThreshold(double threshold) = 0;
+};
+
+
+/*----------------------------------------------------------------*/
+
+
+class TL_EXPORT GmsProperties
+  : public Gms
+{
 
 public:
 
-  void setDescriptorMatcher(const std::shared_ptr<DescriptorMatcher> &matcher) override;
+  GmsProperties();
+  ~GmsProperties() override = default;
 
-  std::vector<cv::DMatch> match(const cv::Mat &queryDescriptor,
-                                const cv::Mat &trainDescriptor,
-                                std::vector<cv::DMatch> *wrongMatches = nullptr) override;
 
-  std::vector<cv::DMatch> geometricFilter(const std::vector<cv::DMatch> &matches,
-                                          const std::vector<cv::KeyPoint>& keypoints1,
-                                          const std::vector<cv::KeyPoint>& keypoints2,
-                                          std::vector<cv::DMatch> *wrongMatches = nullptr) override;
+// MatchingStrategy interface
 
-  std::vector<cv::DMatch> filterByHomographyMatrix(const std::vector<cv::DMatch> &matches,
-                                                   const std::vector<cv::Point2f>& points1,
-                                                   const std::vector<cv::Point2f>& points2,
-                                                   std::vector<cv::DMatch> *wrongMatches = nullptr) override;
-  std::vector<cv::DMatch> filterByEssentialMatrix(const std::vector<cv::DMatch> &matches,
-                                                  const std::vector<cv::Point2f>& points1,
-                                                  const std::vector<cv::Point2f>& points2,
-                                                  std::vector<cv::DMatch> *wrongMatches = nullptr) override;
-  std::vector<cv::DMatch> filterByFundamentalMatrix(const std::vector<cv::DMatch> &matches,
-                                                    const std::vector<cv::Point2f>& points1,
-                                                    const std::vector<cv::Point2f>& points2,
-                                                    std::vector<cv::DMatch> *wrongMatches = nullptr) override;
+public:
 
-private:
+  void reset() override;
+  std::string name() const override;
 
-  std::vector<cv::DMatch> robustMatch(const cv::Mat &queryDescriptor,
-                                      const cv::Mat &trainDescriptor,
-                                      std::vector<cv::DMatch> *wrongMatches) override;
-  std::vector<cv::DMatch> fastRobustMatch(const cv::Mat &queryDescriptor,
-                                          const cv::Mat &trainDescriptor,
-                                          std::vector<cv::DMatch> *wrongMatches) override;
+// IGms interface
+
+public:
+
+  bool rotation() const override;
+  void setRotation(bool rotation) override;
+  bool scale() const override;
+  void setScale(bool scale) override;
+  double threshold() const override;
+  void setThreshold(double threshold) override;
 
 protected:
 
-  std::shared_ptr<DescriptorMatcher> mMatcher;
+  bool mRotation;
+  bool mScale;
+  double mThreshold;
 };
 
-/*----------------------------------------------------------------*/
-
-/*!
- * \brief Matches write
- * \param[in] fname File name
- * \param[in] matches Correct matches
- * \param[in] wrongMatches Wrong matches
- */
-TL_EXPORT void matchesWrite(const std::string &fname, const std::vector<cv::DMatch> &matches, const std::vector<cv::DMatch> &wrongMatches = std::vector<cv::DMatch>());
-
-/*!
- * \brief Matches read
- * \param[in] fname File name
- * \param[out] matches Correct matches
- * \param[out] wrongMatches Wrong matches
- */
-TL_EXPORT void matchesRead(const std::string &fname, std::vector<cv::DMatch> *matches, std::vector<cv::DMatch> *wrongMatches = nullptr);
-
 
 /*----------------------------------------------------------------*/
 
+
+class TL_EXPORT GsmImp
+  : public GmsProperties,
+    public MatchingAlgorithm
+{
+
+public:
+
+  explicit GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+  GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+         bool rotation,
+         bool scale,
+         double threshold);
+  ~GsmImp() override = default;
+
+// MatchingAlgorithm interface
+
+public:
+
+  bool compute(const cv::Mat &queryDescriptor,
+               const cv::Mat &trainDescriptor,
+               const std::vector<cv::KeyPoint> &keypoints1,
+               const std::vector<cv::KeyPoint> &keypoints2,
+               std::vector<cv::DMatch> *goodMatches,
+               std::vector<cv::DMatch> *wrongMatches = nullptr,
+               const cv::Size &queryImageSize = cv::Size(),
+               const cv::Size &trainImageSize = cv::Size()) override;
+
+protected:
+
+  std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
+
+};
+
+
+/*----------------------------------------------------------------*/
+
+
+/*!
+ * \brief Pass Points write
+ * \param[in] fname File name
+ * \param[in] pass_points Pass Points
+ */
+TL_EXPORT void passPointsWrite(const std::string &fname,
+                                       const std::vector<std::vector<std::pair<std::string,int>>> &pass_points);
+
+/*!
+ * \brief Pass Points read
+ * \param[in] fname File name
+ * \param[out] pass_points Pass Points
+ */
+TL_EXPORT void passPointsRead(const std::string &fname,
+                                      std::vector<std::vector<std::pair<std::string,int>>> &pass_points);
+
+
+/*! \} */ // end of FeatureMatching
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

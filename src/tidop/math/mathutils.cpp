@@ -21,7 +21,7 @@ namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
-
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 //https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
 void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa)
 {
@@ -116,7 +116,7 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
   (*R)[2][1] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
   (*R)[2][2] = cosOmega * cosPhi;
 }
-
+#endif TL_ENABLE_DEPRECATED_METHODS
 /* ---------------------------------------------------------------------------------- */
 
 

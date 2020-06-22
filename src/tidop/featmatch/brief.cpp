@@ -8,15 +8,16 @@ namespace tl
 
 
 BriefProperties::BriefProperties()
-  : IBrief(),
-    mBytes("32"),
+  : mBytes("32"),
     mUseOrientation(false)
 {
 }
 
-BriefProperties::~BriefProperties()
+BriefProperties::BriefProperties(const BriefProperties & briefProperties)
+  : Brief(briefProperties),
+    mBytes(briefProperties.mBytes),
+    mUseOrientation(briefProperties.mUseOrientation)
 {
-
 }
 
 std::string BriefProperties::bytes() const
@@ -65,6 +66,13 @@ BriefDescriptor::BriefDescriptor()
   update();
 }
 
+BriefDescriptor::BriefDescriptor(const BriefDescriptor &briefDescriptor)
+  : BriefProperties(briefDescriptor),
+    DescriptorExtractor(briefDescriptor)
+{
+  update();
+}
+
 BriefDescriptor::BriefDescriptor(std::string bytes, bool useOrientation)
   : BriefProperties(),
     DescriptorExtractor()
@@ -72,11 +80,6 @@ BriefDescriptor::BriefDescriptor(std::string bytes, bool useOrientation)
   BriefProperties::setBytes(bytes);
   BriefProperties::setUseOrientation(useOrientation);
   update();
-}
-
-BriefDescriptor::~BriefDescriptor()
-{
-
 }
 
 void BriefDescriptor::update()

@@ -30,6 +30,7 @@ El proyecto se estructura actualmente en los siguientes directorios:
 - @ref GeometricEntities
 - @ref ImgProc
 - @ref trfGroup
+- @ref math
 
 ### Tutoriales
 

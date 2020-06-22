@@ -31,7 +31,7 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img_process/img_processing.h>
+#include <tidop/imgprocess/imgprocess.h>
 
 #if (__cplusplus >= 201703L)
 #include <filesystem>

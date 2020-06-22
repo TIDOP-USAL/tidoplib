@@ -10,34 +10,45 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT FreakProperties
-  : public IFreak
+  : public Freak
 {
 
 public:
 
   FreakProperties();
-  ~FreakProperties() override;
+  FreakProperties(const FreakProperties &freakProperties);
+  ~FreakProperties() override = default;
 
-// IFreak interface
+// Freak interface
 
 public:
 
-  virtual bool orientationNormalized() const override;
-  virtual bool scaleNormalized() const override;
-  virtual double patternScale() const override;
-  virtual int octaves() const override;
-  virtual void setOrientationNormalized(bool orientationNormalized) override;
-  virtual void setScaleNormalized(bool scaleNormalized) override;
-  virtual void setPatternScale(double patternScale) override;
-  virtual void setOctaves(int octaves) override;
+  bool orientationNormalized() const override;
+  bool scaleNormalized() const override;
+  double patternScale() const override;
+  int octaves() const override;
+  void setOrientationNormalized(bool orientationNormalized) override;
+  void setScaleNormalized(bool scaleNormalized) override;
+  void setPatternScale(double patternScale) override;
+  void setOctaves(int octaves) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -60,12 +71,12 @@ class TL_EXPORT FreakDescriptor
 public:
 
   FreakDescriptor();
+  FreakDescriptor(const FreakDescriptor &freakDescriptor);
   FreakDescriptor(bool orientationNormalized,
                   bool scaleNormalized,
                   double patternScale,
                   int octaves);
-
-  ~FreakDescriptor() override;
+  ~FreakDescriptor() override = default;
 
 private:
 
@@ -79,7 +90,7 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// IFreak interface
+// Freak interface
 
 public:
 
@@ -99,6 +110,9 @@ protected:
   cv::Ptr<cv::xfeatures2d::FREAK> mFREAK;
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

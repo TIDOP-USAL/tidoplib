@@ -30,14 +30,6 @@ public:
 
   typedef typename Matrix_t::value_type value_type;
 
-protected:
-
-  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mA;
-  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mU;
-  Matrix<Matrix_t::cols, Matrix_t::cols, value_type> mV;
-  Vector<Matrix_t::cols, value_type> mW;
-  int mIterationMax;
-
 public:
 
   SingularValueDecomposition();
@@ -57,6 +49,14 @@ private:
   double sign(double a, double b){
     return ((b) >= 0.0 ? fabs(a) : -fabs(a));
   }
+
+protected:
+
+  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mA;
+  Matrix<Matrix_t::rows, Matrix_t::cols, value_type> mU;
+  Matrix<Matrix_t::cols, Matrix_t::cols, value_type> mV;
+  Vector<Matrix_t::cols, value_type> mW;
+  int mIterationMax;
 };
 
 

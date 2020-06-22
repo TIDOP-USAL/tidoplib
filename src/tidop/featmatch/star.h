@@ -10,35 +10,46 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT StarProperties
-  : public IStar
+  : public Star
 {
 public:
 
   StarProperties();
-  ~StarProperties() override;
+  StarProperties(const StarProperties &starProperties);
+  ~StarProperties() override = default;
 
-// IStar interface
+// Star interface
 
 public:
 
-  virtual int maxSize() const override;
-  virtual int responseThreshold() const override;
-  virtual int lineThresholdProjected() const override;
-  virtual int lineThresholdBinarized() const override;
-  virtual int suppressNonmaxSize() const override;
-  virtual void setMaxSize(int maxSize) override;
-  virtual void setResponseThreshold(int responseThreshold) override;
-  virtual void setLineThresholdProjected(int lineThresholdProjected) override;
-  virtual void setLineThresholdBinarized(int lineThresholdBinarized) override;
-  virtual void setSuppressNonmaxSize(int suppressNonmaxSize) override;
+  int maxSize() const override;
+  int responseThreshold() const override;
+  int lineThresholdProjected() const override;
+  int lineThresholdBinarized() const override;
+  int suppressNonmaxSize() const override;
+  void setMaxSize(int maxSize) override;
+  void setResponseThreshold(int responseThreshold) override;
+  void setLineThresholdProjected(int lineThresholdProjected) override;
+  void setLineThresholdBinarized(int lineThresholdBinarized) override;
+  void setSuppressNonmaxSize(int suppressNonmaxSize) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -55,7 +66,7 @@ private:
 /*----------------------------------------------------------------*/
 
 
-class StarDetector
+class TL_EXPORT StarDetector
   : public StarProperties,
     public KeypointDetector
 {
@@ -63,12 +74,13 @@ class StarDetector
 public:
 
   StarDetector();
+  StarDetector(const StarDetector &starDetector);
   StarDetector(int maxSize,
                int responseThreshold,
                int lineThresholdProjected,
                int lineThresholdBinarized,
                int suppressNonmaxSize);
-  ~StarDetector() override;
+  ~StarDetector() override = default;
 
 private:
 
@@ -82,7 +94,7 @@ public:
               std::vector<cv::KeyPoint> &keyPoints,
               cv::InputArray &mask = cv::noArray()) override;
 
-// IStar interface
+// Star interface
 
 public:
 
@@ -104,6 +116,10 @@ protected:
 
 };
 
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

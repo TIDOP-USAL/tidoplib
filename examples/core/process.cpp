@@ -47,11 +47,11 @@ private:
 
 
   // Heredado vía Process
-  virtual Status execute(Progress *progressBar = nullptr) override
+  virtual void execute(Progress *progressBar = nullptr) override
   {
 
 
-    return Status::finalized;
+    return;
   }
 
 };

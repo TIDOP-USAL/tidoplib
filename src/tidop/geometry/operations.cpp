@@ -20,9 +20,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-  
 
 void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesOut, int dist)
 {
@@ -113,7 +110,5 @@ void delLinesGroupBySize(std::vector<GroupLines> *vlg, int size)
 //  return distance(pt, pt2);
 //}
 
-}
 
-
-} // End namespace TL
+} // End namespace tl

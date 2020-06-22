@@ -1,12 +1,20 @@
 #Modulo img de la librería
 
 add_library(tl_img ${LIB_TYPE}
-            imgio.cpp
-            imgio.h
-            formats.cpp
-            formats.h
-            metadata.h
-            metadata.cpp
+            img.h
+			      img.cpp
+            image.h
+			      image.cpp
+            imgreader.cpp
+            imgreader.h
+            imgwriter.cpp
+            imgwriter.h
+            #imgio.cpp
+            #imgio.h
+            #formats.cpp
+            #formats.h
+            #metadata.h
+            #metadata.cpp
 )
   
 # Añade el proyecto a la carpeta 'modules'

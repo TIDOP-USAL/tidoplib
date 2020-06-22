@@ -8,43 +8,51 @@
 namespace tl
 {
 
-
-/*!
- * \brief AKAZE detector/descriptor properties class
+/*! \addtogroup Features
+ * 
+ *  \{
  */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
+
 class TL_EXPORT AkazeProperties
-  : public IAkaze
+  : public Akaze
 {
 
 public:
 
   AkazeProperties();
-  ~AkazeProperties() override;
+  AkazeProperties(const AkazeProperties &akazeProperties);
+  ~AkazeProperties() override = default;
 
-// IAkaze interface
+// Akaze interface
 
 public:
 
-  virtual std::string descriptorType() const override;
-  virtual int descriptorSize() const override;
-  virtual int descriptorChannels() const override;
-  virtual double threshold() const override;
-  virtual int octaves() const override;
-  virtual int octaveLayers() const override;
-  virtual std::string diffusivity() const override;
-  virtual void setDescriptorType(const std::string &descriptorType) override;
-  virtual void setDescriptorSize(int descriptorSize) override;
-  virtual void setDescriptorChannels(int channels) override;
-  virtual void setThreshold(double threshold) override;
-  virtual void setOctaves(int octaves) override;
-  virtual void setOctaveLayers(int octaveLayers) override;
-  virtual void setDiffusivity(const std::string &diffusivity) override;
+  std::string descriptorType() const override;
+  int descriptorSize() const override;
+  int descriptorChannels() const override;
+  double threshold() const override;
+  int octaves() const override;
+  int octaveLayers() const override;
+  std::string diffusivity() const override;
+  void setDescriptorType(const std::string &descriptorType) override;
+  void setDescriptorSize(int descriptorSize) override;
+  void setDescriptorChannels(int channels) override;
+  void setThreshold(double threshold) override;
+  void setOctaves(int octaves) override;
+  void setOctaveLayers(int octaveLayers) override;
+  void setDiffusivity(const std::string &diffusivity) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -72,15 +80,26 @@ class TL_EXPORT AkazeDetectorDescriptor
 public:
 
   AkazeDetectorDescriptor();
+  AkazeDetectorDescriptor(const AkazeDetectorDescriptor &akazeDetectorDescriptor);
   AkazeDetectorDescriptor(const std::string &descriptorType,
                           int descriptorSize,
                           int descriptorChannels,
                           double threshold,
                           int octaves,
                           int octaveLayers,
-                          std::string diffusivity);
+                          const std::string &diffusivity);
 
-  ~AkazeDetectorDescriptor() override;
+  ~AkazeDetectorDescriptor() override = default;
+
+private:
+
+#if CV_VERSION_MAJOR >= 4
+  cv::AKAZE::DescriptorType convertDescriptorType(const std::string &descriptorType);
+  cv::KAZE::DiffusivityType convertDiffusivity(const std::string &descriptorType);
+#else
+  int convertDescriptorType(const std::string &descriptorType);
+  int convertDiffusivity(const std::string &diffusivity);
+#endif
 
 // KeypointDetector interface
 
@@ -99,7 +118,7 @@ public:
                cv::Mat &descriptors) override;
 
 
-// IAkaze interface
+// Akaze interface
 
 public:
 
@@ -122,6 +141,10 @@ protected:
   cv::Ptr<cv::AKAZE> mAkaze;
 
 };
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_OPERATIONS_H
-#define TL_GEOM_OPERATIONS_H
+#ifndef TL_GEOMETRY_OPERATIONS_H
+#define TL_GEOMETRY_OPERATIONS_H
 
 #include "config_tl.h"
 
@@ -35,9 +35,6 @@
 namespace tl
 {
 
-namespace geometry
-{
-
 // forward declaration
 template<typename T> class Segment;
 template<typename T> class Segment3D;
@@ -49,20 +46,6 @@ class GroupLines;
 /*             TEMPLATES PARA OPERACIONES ENTRE ENTIDADES GEOMÉTRICAS                 */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief Longitud o modulo de un vector 2D
- * \param[in] v vector
- * \return Longitud
- * \deprecated { Reemplazada por TL::math::module(const Point_t &v) }
- */
-template<typename Point_t> inline
-TL_DEPRECATED("double math::module(const Point_t &v)", "2.0")
-double length(const Point_t &v)
-{
-  return sqrt(v.x*v.x + v.y*v.y);
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Distancia entre dos puntos
@@ -156,40 +139,6 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   return iret;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-TL_DEPRECATED("int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)", "2.0")
-int projectPointInSegment3D(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
-{
-  int iret = 0;
-  if (pt == ln.pt1 || pt == ln.pt2) {
-    *ptp = pt;
-    return 2;
-  }
-  Point3D v1 = pt - ln.pt1;
-  Point3D v2 = ln.vector();
-  double daux = math::dotProduct3D(v1, v2);
-  double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
-
-  if (typeid(typename Point_t::value_type) == typeid(int)) {
-    ptp->x = ln.pt1.x + TL_ROUND_TO_INT(v2.x * r);
-    ptp->y = ln.pt1.y + TL_ROUND_TO_INT(v2.y * r);
-    ptp->z = ln.pt1.z + TL_ROUND_TO_INT(v2.z * r);
-  } else {
-    ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
-    ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
-    ptp->z = ln.pt1.z + static_cast<typename Point_t::value_type>(v2.z * r);
-  }
-  //*ptp = ln.pt1 + v2 * r;
-
-  if (daux <= 0) iret = -1;
-  else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
-  return iret;
-}
-
-#endif  // TL_ENABLE_DEPRECATED_METHODS
-
 template<typename Point_t> inline
 int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point_t *ptp)
 {
@@ -235,20 +184,6 @@ double distPointToSegment(const Point_t &pt, const Segment<Point_t> &ln)
   else if (ipr == 1) ptp = ln.pt2;
   return distance(pt, ptp);
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point3_t> inline 
-TL_DEPRECATED("double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)", "2.0")
-double distPointToSegment3D(const Point3_t &pt, const Segment3D<Point3_t> &ln)
-{
-  Point3_t ptp;
-  int ipr = projectPointInSegment(ln, pt, &ptp);
-
-  if (ipr == -1) ptp = ln.pt1;
-  else if (ipr == 1) ptp = ln.pt2;
-  return distance(pt, ptp);
-}
-#endif  // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point3_t> inline
 double distPointToSegment(const Point3_t &pt, const Segment3D<Point3_t> &ln)
@@ -314,10 +249,10 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  if (double cross_product = math::crossProduct(vs1, vs2)) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
-    double u = crossProduct(v11_12, vs1) / cross_product;
+    double t = math::crossProduct(v11_12, vs2) / cross_product;
+    double u = math::crossProduct(v11_12, vs1) / cross_product;
     if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
       if (typeid(typename Point_t::value_type) == typeid(int)) {
         pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
@@ -348,9 +283,9 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  if (double cross_product = math::crossProduct(vs1, vs2)) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = crossProduct(v11_12, vs2) / cross_product;
+    double t = math::crossProduct(v11_12, vs2) / cross_product;
     if (typeid(typename Point_t::value_type) == typeid(int)) {
       pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
       pt->y = TL_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
@@ -759,7 +694,7 @@ void poleOfInaccessibility(const Polygon<Point_t> &polygon, Point_t *pole, doubl
 
 
 template<typename Point3_t> inline
-Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const Box<Point3_t> bounds, double xCells, double yCells, double zCells) 
+Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const BoundingBox<Point3_t> bounds, double xCells, double yCells, double zCells) 
 {
   Point3_t pia = bounds.getCenter();
   Point3_t tmp;
@@ -852,7 +787,7 @@ template<typename Point3_t> inline
 void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, double xCells = 20., double yCells = 20., double zCells = 20.) 
 {
   if (pole == NULL) return;
-  Box<Point3_t> box = polygon.getBox();
+  BoundingBox<Point3_t> bounding_box = polygon.getBox();
 
 	Point3_t point_tmp;
 
@@ -860,7 +795,7 @@ void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, d
 	while (count++) {
 
 		/*if (method == METHOD_SEQUENTIAL) {*/
-			point_tmp =	findInscribedCircleSequential(polygon, box, xCells, yCells, zCells);
+			point_tmp =	findInscribedCircleSequential(polygon, bounding_box, xCells, yCells, zCells);
 		/*} else if (method == METHOD_RANDOMIZED) {
 			point_tmp = findInscribedCircleRandomized(polygon, w);
 		}*/
@@ -870,14 +805,14 @@ void poleOfInaccessibility(const Polygon3D<Point3_t> &polygon, Point3_t *pole, d
     pole->z = point_tmp.z;
 
     Point3_t aux;
-    aux.x = (box.pt2.x - box.pt1.x) / (sqrt(2.) * 2.);
-		aux.y = (box.pt2.y - box.pt1.y) / (sqrt(2.) * 2.);
-    aux.z = (box.pt2.z - box.pt1.z) / (sqrt(2.) * 2.);
+    aux.x = (bounding_box.pt2.x - bounding_box.pt1.x) / (sqrt(2.) * 2.);
+		aux.y = (bounding_box.pt2.y - bounding_box.pt1.y) / (sqrt(2.) * 2.);
+    aux.z = (bounding_box.pt2.z - bounding_box.pt1.z) / (sqrt(2.) * 2.);
 
-    box.pt1 = *pole - aux;
-    box.pt2 = *pole + aux;
+    bounding_box.pt1 = *pole - aux;
+    bounding_box.pt2 = *pole + aux;
 
-		if (box.pt2.x - box.pt1.x < 0.01 || box.pt2.y - box.pt1.y < 0.01 || box.pt2.z - box.pt1.z < 0.01 ) break;
+		if (bounding_box.pt2.x - bounding_box.pt1.x < 0.01 || bounding_box.pt2.y - bounding_box.pt1.y < 0.01 || bounding_box.pt2.z - bounding_box.pt1.z < 0.01 ) break;
 
 	}
 }
@@ -1474,16 +1409,16 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 
   T it = in_first;
   
-  std::array<Point_t, 2> box;
-  box[0].x = box[0].y = box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
-  box[1].x = box[1].y = box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
+  std::array<Point_t, 2> bounding_box;
+  bounding_box[0].x = bounding_box[0].y = bounding_box[0].z = std::numeric_limits<typename Point_t::value_type>().max();
+  bounding_box[1].x = bounding_box[1].y = bounding_box[1].z = -std::numeric_limits<typename Point_t::value_type>().max();
   while (it != in_last) {
-    if (box[0].x > it->x) box[0].x = it->x;
-    if (box[0].y > it->y) box[0].y = it->y;
-    if (box[0].z > it->z) box[0].z = it->z;
-    if (box[1].x < it->x) box[1].x = it->x;
-    if (box[1].y < it->y) box[1].y = it->y;
-    if (box[1].z < it->z) box[1].z = it->z;
+    if (bounding_box[0].x > it->x) bounding_box[0].x = it->x;
+    if (bounding_box[0].y > it->y) bounding_box[0].y = it->y;
+    if (bounding_box[0].z > it->z) bounding_box[0].z = it->z;
+    if (bounding_box[1].x < it->x) bounding_box[1].x = it->x;
+    if (bounding_box[1].y < it->y) bounding_box[1].y = it->y;
+    if (bounding_box[1].z < it->z) bounding_box[1].z = it->z;
     *it++;
   }
  
@@ -1514,7 +1449,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
   }
 
   // Punto central
-  Point_t pc((box[0].x + box[1].x) / 2., (box[0].y + box[1].y) / 2., (box[0].z + box[1].z) / 2.);
+  Point_t pc((bounding_box[0].x + bounding_box[1].x) / 2., (bounding_box[0].y + bounding_box[1].y) / 2., (bounding_box[0].z + bounding_box[1].z) / 2.);
 
   // Plano horizontal (1,1,0)
   std::array<double, 4> plane_z;
@@ -1729,9 +1664,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-} // Fin namespacegeometry
-
 
 } // End namespace TL
 
-#endif // TL_GEOM_OPERATIONS_H
+#endif // TL_GEOMETRY_OPERATIONS_H

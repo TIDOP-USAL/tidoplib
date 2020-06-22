@@ -135,6 +135,11 @@ public:
    */
   Process(Process *parent = nullptr);
 
+  Process(const Process &) = delete;
+  Process(Process &&) = delete;
+  void operator=(const Process &) = delete;
+  void operator=(Process &&) = delete;
+
   /*!
    * \brief Destructora
    */
@@ -144,7 +149,12 @@ public:
    * \brief Arranca el proceso
    */
   virtual Status run(Progress *progressBar = nullptr);
-
+  
+  /*!
+   * \brief Arranca el proceso asincronamente
+   */
+  virtual void runAsync(Progress *progressBar = nullptr);
+  
   /*!
    * \brief Pausa el proceso
    */
@@ -203,7 +213,7 @@ protected:
   /*!
    * \brief Ejecuta el proceso
    */
-  virtual Status execute(Progress *progressBar = nullptr) = 0;
+  virtual void execute(Progress *progressBar = nullptr) = 0;
 
   // Eventos que se lanzan
   void endTriggered();
@@ -242,6 +252,74 @@ protected:
 
   std::thread mThread;
 
+};
+
+/* ---------------------------------------------------------------------------------- */
+
+//TODO: Pendiente para Linux
+class TL_EXPORT CmdProcess
+  : public Process
+{
+public:
+
+#ifdef WIN32
+  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+  enum class Priority
+  {
+    realtime = REALTIME_PRIORITY_CLASS,
+    high = HIGH_PRIORITY_CLASS,
+    above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
+    normal = NORMAL_PRIORITY_CLASS,
+    below_normal = BELOW_NORMAL_PRIORITY_CLASS,
+    idle = IDLE_PRIORITY_CLASS
+  };
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  enum class PRIORITY
+  {
+    REALTIME = REALTIME_PRIORITY_CLASS,
+    HIGH = HIGH_PRIORITY_CLASS,
+    ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
+    NORMAL = NORMAL_PRIORITY_CLASS,
+    BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
+    IDLE = IDLE_PRIORITY_CLASS
+  };
+#endif
+#endif
+
+protected:
+
+#ifdef WIN32
+  STARTUPINFO si;
+  PROCESS_INFORMATION pi;
+  static DWORD sPriority;
+#endif
+  std::string mCmd;
+
+public:
+
+  CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
+  ~CmdProcess() override;
+
+  //virtual Process::Status run(Progress *progressBar = nullptr) override;
+
+  /*!
+  * \brief Establece la prioridad del proceso
+  * \param[in] priority
+  */
+  static void setPriority(int priority);
+
+protected:
+
+  /*!
+   * \brief Ejecuta el proceso
+   */
+  void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+#ifdef WIN32
+  std::string formatErrorMsg(DWORD errorCode);
+#endif
 };
 
 
@@ -690,69 +768,6 @@ public:
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 };
-
-
-/* ---------------------------------------------------------------------------------- */
-
-//TODO: Pendiente para Linux
-class TL_EXPORT CmdProcess
-  : public Process
-{
-public:
-
-#ifdef WIN32
-  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
-  enum class Priority
-  {
-    realtime = REALTIME_PRIORITY_CLASS,
-    high = HIGH_PRIORITY_CLASS,
-    above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
-    normal = NORMAL_PRIORITY_CLASS,
-    below_normal = BELOW_NORMAL_PRIORITY_CLASS,
-    idle = IDLE_PRIORITY_CLASS
-  };
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  enum class PRIORITY
-  {
-    REALTIME = REALTIME_PRIORITY_CLASS,
-    HIGH = HIGH_PRIORITY_CLASS,
-    ABOVE_NORMAL = ABOVE_NORMAL_PRIORITY_CLASS,
-    NORMAL = NORMAL_PRIORITY_CLASS,
-    BELOW_NORMAL = BELOW_NORMAL_PRIORITY_CLASS,
-    IDLE = IDLE_PRIORITY_CLASS
-  };
-#endif
-#endif
-
-protected:
-
-#ifdef WIN32
-  STARTUPINFO si;
-  PROCESS_INFORMATION pi;
-  static DWORD sPriority;
-#endif
-  std::string mCmd;
-
-public:
-
-  CmdProcess(const std::string &cmd, Process *parentProcess = nullptr);
-  ~CmdProcess() override;
-
-  virtual Process::Status run(Progress *progressBar = nullptr) override;
-
-  /*!
-  * \brief Establece la prioridad del proceso
-  * \param[in] priority
-  */
-  static void setPriority(int priority);
-
-private:
-
-#ifdef WIN32
-  std::string formatErrorMsg(DWORD errorCode);
-#endif
-};
-
 
 /* ---------------------------------------------------------------------------------- */
 

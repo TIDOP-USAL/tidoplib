@@ -117,7 +117,7 @@ protected:
     * \brief Región de recorte del video
     */
     //cv::Rect rframe;
-  geometry::WindowI mWindow;
+  WindowI mWindow;
 
   /*!
    * \brief Mantiene la proporción al redimensionar una imagen

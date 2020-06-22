@@ -7,7 +7,7 @@ namespace tl
 {
 
 DaisyProperties::DaisyProperties()
-  : IDaisy(),
+  : Daisy(),
     mRadius(15.),
     mQRadius(3),
     mQTheta(8),
@@ -17,7 +17,15 @@ DaisyProperties::DaisyProperties()
     mUseOrientation(false)
 {}
 
-DaisyProperties::~DaisyProperties()
+DaisyProperties::DaisyProperties(const DaisyProperties &daisyProperties)
+  : Daisy(daisyProperties),
+    mRadius(daisyProperties.mRadius),
+    mQRadius(daisyProperties.mQRadius),
+    mQTheta(daisyProperties.mQTheta),
+    mQHist(daisyProperties.mQHist),
+    mNorm(daisyProperties.mNorm),
+    mInterpolation(daisyProperties.mInterpolation),
+    mUseOrientation(daisyProperties.mUseOrientation)
 {
 
 }
@@ -113,8 +121,13 @@ std::string DaisyProperties::name() const
 
 
 DaisyDescriptor::DaisyDescriptor()
-  : DaisyProperties(),
-    DescriptorExtractor()
+{
+  update();
+}
+
+DaisyDescriptor::DaisyDescriptor(const DaisyDescriptor &daisyDescriptor)
+  : DaisyProperties(daisyDescriptor),
+    DescriptorExtractor(daisyDescriptor)
 {
   update();
 }
@@ -123,11 +136,9 @@ DaisyDescriptor::DaisyDescriptor(double radius,
                                  int qRadius,
                                  int qTheta,
                                  int qHist,
-                                 std::string norm,
+                                 const std::string &norm,
                                  bool interpolation,
                                  bool useOrientation)
-  : DaisyProperties(),
-    DescriptorExtractor()
 {
   DaisyProperties::setRadius(radius);
   DaisyProperties::setQRadius(qRadius);
@@ -137,11 +148,6 @@ DaisyDescriptor::DaisyDescriptor(double radius,
   DaisyProperties::setInterpolation(interpolation);
   DaisyProperties::setUseOrientation(useOrientation);
   update();
-}
-
-DaisyDescriptor::~DaisyDescriptor()
-{
-
 }
 
 void DaisyDescriptor::update()

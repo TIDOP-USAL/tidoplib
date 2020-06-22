@@ -25,6 +25,7 @@ TL_DEFAULT_WARNINGS
 //#include "graphic_entities/color.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/img/img.h"
 //#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
@@ -48,17 +49,17 @@ namespace tl
 
 class RasterOptions;
 
-enum class DataType : int8_t
-{
-  TL_8U,      // Equivalente a CV_8U y GDT_Byte
-  TL_8S,      // Equivalente a CV_8S
-  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
-  TL_16S,     // Equivalente a CV_16S y GDT_Int16
-  TL_32U,     // Equivalente a GDT_UInt32
-  TL_32S,     // Equivalente a CV_32S y GDT_Int32
-  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
-  TL_64F      // Equivalente a CV_64F y GDT_Float64
-};
+//enum class DataType : int8_t
+//{
+//  TL_8U,      // Equivalente a CV_8U y GDT_Byte
+//  TL_8S,      // Equivalente a CV_8S
+//  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
+//  TL_16S,     // Equivalente a CV_16S y GDT_Int16
+//  TL_32U,     // Equivalente a GDT_UInt32
+//  TL_32S,     // Equivalente a CV_32S y GDT_Int32
+//  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
+//  TL_64F      // Equivalente a CV_64F y GDT_Float64
+//};
 
 
 class TL_EXPORT VrtRaster
@@ -96,7 +97,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -104,7 +105,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  virtual Status write(const cv::Mat &image, const geometry::WindowI &w = geometry::WindowI()) = 0;
+  virtual Status write(const cv::Mat &image, const WindowI &w = WindowI()) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -112,7 +113,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) = 0;
 
 #else
 
@@ -123,7 +124,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status read(unsigned char *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -131,7 +132,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  virtual Status write(const unsigned char *buff, const geometry::WindowI &w) = 0;
+  virtual Status write(const unsigned char *buff, const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -139,7 +140,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) = 0;
+  virtual Status write(const unsigned char *buff, const Helmert2D<PointI> *trf = nullptr) = 0;
 
 
 #endif
@@ -230,11 +231,11 @@ public:
    * \param[in] pt
    * \return
    */
-  virtual char get(const geometry::PointI &pt) = 0;
+  virtual char get(const PointI &pt) = 0;
 
 protected:
   
-  void windowRead(const geometry::WindowI &wLoad, geometry::WindowI *wRead, geometry::PointI *offset) const;
+  void windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const;
 
 protected:
   
@@ -330,7 +331,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = nullptr) override;
+  Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = nullptr) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -338,7 +339,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  Status write(const cv::Mat &image, const geometry::WindowI &w = geometry::WindowI()) override;
+  Status write(const cv::Mat &image, const WindowI &w = WindowI()) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -346,7 +347,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
 
 #else
 
@@ -357,7 +358,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(unsigned char *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -365,7 +366,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  Status write(const unsigned char *buff, const geometry::WindowI &w) override;
+  Status write(const unsigned char *buff, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -373,7 +374,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override;
+  Status write(const unsigned char *buff, const Helmert2D<PointI> *trf = nullptr) override;
 
 
 #endif
@@ -393,7 +394,7 @@ public:
 
   //ImgMetadata metadata() const override;
 
-  char get(const geometry::PointI &pt) override;
+  char get(const PointI &pt) override;
 
 protected:
 
@@ -449,6 +450,18 @@ protected:
 class TL_EXPORT GdalGeoRaster
   : public GdalRaster
 {
+
+  std::array<double, 6> mGeoTransform;
+
+  /*!
+   * \brief Transformación afin que relacción las coordenadas terreno con las pixel
+   */
+  std::unique_ptr<Affine<PointD>> mTrfAffine;
+
+  /*!
+   * \brief Proyección
+   */
+  std::string mProjection;
 
 public:
 
@@ -519,13 +532,13 @@ public:
    * \param[in] wTerrain Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
-  Status read(cv::Mat *image, const geometry::Window<geometry::Point<double>> &wTerrain, double scale = 1.);
+  Status read(cv::Mat *image, const Window<Point<double>> &wTerrain, double scale = 1.);
 
 #endif // HAVE_OPENCV
 
-  char get(const geometry::PointD &pt);
+  char get(const PointD &pt);
 
-  float getZ(const geometry::PointD &pt);
+  float getZ(const PointD &pt);
 
 private:
 
@@ -643,7 +656,7 @@ public:
     * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
     * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
     */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -651,7 +664,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  Status write(const cv::Mat &image, const geometry::WindowI &w) override;
+  Status write(const cv::Mat &image, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -659,7 +672,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
 
 #else
 
@@ -670,7 +683,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(uchar *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -678,7 +691,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  Status write(const uchar *buff, const geometry::WindowI &w) override;
+  Status write(const uchar *buff, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -686,7 +699,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const uchar *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
 
 
 #endif
@@ -706,7 +719,7 @@ public:
 
   ImgMetadata metadata() const override;
 
-  uchar get(const geometry::PointI &pt) const override;
+  uchar get(const PointI &pt) const override;
 
 private:
 
@@ -803,21 +816,21 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
+  Status read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  Status write(const cv::Mat &image, const geometry::WindowI &w);
+  Status write(const cv::Mat &image, const WindowI &w);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
-  Status write(const cv::Mat &image, Helmert2D<geometry::PointI> *trf = NULL);
+  Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
 
 #else
 
@@ -828,21 +841,21 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(unsigned char *buff, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
+  Status read(unsigned char *buff, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  Status write(const unsigned char *buff, const geometry::WindowI &w);
+  Status write(const unsigned char *buff, const WindowI &w);
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
    */
-  Status write(const unsigned char *buff, Helmert2D<geometry::PointI> *trf = NULL);
+  Status write(const unsigned char *buff, Helmert2D<PointI> *trf = NULL);
 
 #endif // HAVE_OPENCV
 
@@ -932,7 +945,7 @@ public:
 
   //ImgMetadata metadata() const;
 
-  char get(const geometry::PointI &pt) const;
+  char get(const PointI &pt) const;
 
 protected:
 
@@ -1030,11 +1043,11 @@ public:
    * \param[in] wLoad Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
-  Status read(cv::Mat *image, const geometry::WindowD &wLoad, double scale = 1.);
+  Status read(cv::Mat *image, const WindowD &wLoad, double scale = 1.);
 
 #endif // HAVE_OPENCV
 
-  char get(const geometry::PointD &pt) const;
+  char get(const PointD &pt) const;
 
 private:
 
@@ -1050,7 +1063,7 @@ public:
 
   Mdt() {}
 
-  float getZ(const geometry::PointD &pt) const;
+  float getZ(const PointD &pt) const;
 };
 
 

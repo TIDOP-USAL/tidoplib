@@ -22,7 +22,7 @@ namespace graph
  * \brief Clase gráfica polilínea
  */
 class TL_EXPORT GLineString
-  : public geometry::LineString<geometry::Point<double>>,
+  : public LineString<Point<double>>,
     public GraphicEntity
 {
 public:
@@ -38,7 +38,7 @@ public:
    * \param[in] lineString Objeto de la clase LineString
    * \see LineString
    */
-  GLineString(const LineString<geometry::Point<double>> &lineString);
+  GLineString(const LineString<Point<double>> &lineString);
 
   /*!
    * \brief Constructor de movimiento
@@ -78,7 +78,7 @@ public:
  * \brief Clase gráfica polilinea 3D
  */
 class TL_EXPORT GLineString3D
-  : public geometry::LineString3D<geometry::Point3<double>>,
+  : public LineString3D<Point3<double>>,
     public GraphicEntity
 {
 public:
@@ -94,7 +94,7 @@ public:
    * \param[in] gLineString3D Objeto de la clase LineString3D
    * \see LineString3D
    */
-  GLineString3D(const geometry::LineString3D<geometry::Point3<double>> &gLineString3D);
+  GLineString3D(const LineString3D<Point3<double>> &gLineString3D);
 
   /*!
    * \brief Constructor de copia
@@ -133,7 +133,7 @@ public:
  * \brief Clase gráfica multi-polilinea
  */
 class TL_EXPORT GMultiLineString 
-  : public geometry::MultiLineString<geometry::Point<double>>, 
+  : public MultiLineString<Point<double>>, 
     public GraphicEntity
 {
 public:
@@ -149,7 +149,7 @@ public:
    * \param[in] multiLineString Objeto de la clase MultiLineString
    * \see MultiLineString
    */
-  GMultiLineString(const geometry::MultiLineString<geometry::Point<double>> &multiLineString);
+  GMultiLineString(const MultiLineString<Point<double>> &multiLineString);
 
   /*!
    * \brief Constructor de copia
@@ -187,7 +187,7 @@ public:
  * \brief Clase gráfica multi-polilinea 3D
  */
 class TL_EXPORT GMultiLineString3D 
-  : public geometry::MultiLineString3D<geometry::Point3<double>>,
+  : public MultiLineString3D<Point3<double>>,
     public GraphicEntity
 {
 public:
@@ -203,7 +203,7 @@ public:
    * \param[in] gMultiLineString3D Objeto de la clase MultiLineString3D
    * \see MultiLineString3D
    */
-  GMultiLineString3D(const geometry::MultiLineString3D<geometry::Point3<double>> &gMultiLineString3D);
+  GMultiLineString3D(const MultiLineString3D<Point3<double>> &gMultiLineString3D);
 
   /*!
    * \brief Constructor de copia

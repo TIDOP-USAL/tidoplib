@@ -6,48 +6,56 @@
 #include "tidop/featmatch/features.h"
 
 #include <opencv2/xfeatures2d.hpp>
-#ifdef HAVE_CUDA
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
-#include "opencv2/xfeatures2d/cuda.hpp"
-#endif // HAVE_CUDA
+#include <opencv2/xfeatures2d/cuda.hpp>
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 
 namespace tl
 {
 
-
-/*!
- * \brief SURF detector/descriptor properties class
+/*! \addtogroup Features
+ * 
+ *  \{
  */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
+
 class TL_EXPORT SurfProperties
-  : public ISurf
+  : public Surf
 {
 
 public:
 
   SurfProperties();
-  ~SurfProperties() override;
+  SurfProperties(const SurfProperties &surfProperties);
+  ~SurfProperties() override = default;
 
-  // ISurf interface
+  // Surf interface
 
 public:
 
-  virtual double hessianThreshold() const override;
-  virtual int octaves() const override;
-  virtual int octaveLayers() const override;
-  virtual bool extendedDescriptor() const override;
-  virtual bool rotatedFeatures() const override;
-  virtual void setHessianThreshold(double hessianThreshold) override;
-  virtual void setOctaves(int octaves) override;
-  virtual void setOctaveLayers(int octaveLayers) override;
-  virtual void setExtendedDescriptor(bool extendedDescriptor) override;
-  virtual void setRotatedFeatures(bool rotatedFeatures) override;
+  double hessianThreshold() const override;
+  int octaves() const override;
+  int octaveLayers() const override;
+  bool extendedDescriptor() const override;
+  bool upright() const override;
+  void setHessianThreshold(double hessianThreshold) override;
+  void setOctaves(int octaves) override;
+  void setOctaveLayers(int octaveLayers) override;
+  void setExtendedDescriptor(bool extendedDescriptor) override;
+  void setUpright(bool upright) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -56,7 +64,7 @@ private:
   int mOctaves;
   int mOctaveLayers;
   bool mExtendedDescriptor;
-  bool mRotatedFeatures;
+  bool mUpright;
 };
 
 
@@ -73,13 +81,14 @@ class TL_EXPORT SurfDetectorDescriptor
 public:
 
   SurfDetectorDescriptor();
+  SurfDetectorDescriptor(const SurfDetectorDescriptor &surfDetectorDescriptor);
   SurfDetectorDescriptor(double hessianThreshold,
                          int octaves,
                          int octaveLayers,
                          bool extendedDescriptor,
-                         bool rotatedFeatures);
+                         bool upright);
 
-  ~SurfDetectorDescriptor() override;
+  ~SurfDetectorDescriptor() override = default;
 
 // KeypointDetector interface
 
@@ -97,7 +106,7 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// ISurf interface
+// Surf interface
 
 public:
 
@@ -105,7 +114,7 @@ public:
   void setOctaves(int octaves) override;
   void setOctaveLayers(int octaveLayers) override;
   void setExtendedDescriptor(bool extendedDescriptor) override;
-  void setRotatedFeatures(bool rotatedFeatures) override;
+  void setUpright(bool upright) override;
 
 // Feature interface
 
@@ -121,7 +130,7 @@ protected:
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_CUDA
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 class TL_EXPORT SurfCudaDetectorDescriptor
   : public SurfProperties,
@@ -132,13 +141,13 @@ class TL_EXPORT SurfCudaDetectorDescriptor
 public:
 
   SurfCudaDetectorDescriptor();
+  SurfCudaDetectorDescriptor(const SurfCudaDetectorDescriptor &surfDetectorDescriptor);
   SurfCudaDetectorDescriptor(double hessianThreshold,
                              int octaves,
                              int octaveLayers,
                              bool extendedDescriptor,
-                             bool rotatedFeatures);
-                             
-  ~SurfCudaDetectorDescriptor() override;
+                             bool upright);
+  ~SurfCudaDetectorDescriptor() override = default;
 
 // KeypointDetector interface
 
@@ -156,7 +165,7 @@ public:
                std::vector<cv::KeyPoint> &keyPoints,
                cv::Mat &descriptors) override;
 
-// ISurf interface
+// Surf interface
 
 public:
 
@@ -164,7 +173,7 @@ public:
   void setOctaves(int octaves) override;
   void setOctaveLayers(int octaveLayers) override;
   void setExtendedDescriptor(bool extendedDescriptor) override;
-  void setRotatedFeatures(bool rotatedFeatures) override;
+  void setUpright(bool upright) override;
 
 // Feature interface
 
@@ -178,10 +187,14 @@ protected:
 };
 
 
-#endif // HAVE_CUDA
-
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 #endif // OPENCV_ENABLE_NONFREE
+
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

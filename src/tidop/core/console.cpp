@@ -40,7 +40,7 @@ static struct msgProperties msgTemplate[] = {
   { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::red, Console::Intensity::bright}
 };
 
-msgProperties getMessageProperties( MessageLevel msgLevel ) 
+msgProperties getMessageProperties(MessageLevel msgLevel) 
 {
   int iLevel = 0;
   switch (msgLevel) {
@@ -120,36 +120,37 @@ void Console::printErrorMessage(const std::string &msg)
 
 
 
-void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity)
+void Console::setConsoleBackgroundColor(Console::Color backColor,
+                                        Console::Intensity intensity)
 {
 #ifdef WIN32
   switch (backColor) {
   case tl::Console::Color::black:
-    mBackColor = 0;
+    mBackgroundColor = 0;
     break;
   case tl::Console::Color::blue:
-    mBackColor = BACKGROUND_BLUE;
+    mBackgroundColor = BACKGROUND_BLUE;
     break;
   case tl::Console::Color::green:
-    mBackColor = BACKGROUND_GREEN;
+    mBackgroundColor = BACKGROUND_GREEN;
     break;
   case tl::Console::Color::cyan:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
+    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE;
     break;
   case tl::Console::Color::red:
-    mBackColor = BACKGROUND_RED;
+    mBackgroundColor = BACKGROUND_RED;
     break;
   case tl::Console::Color::magenta:
-    mBackColor = BACKGROUND_RED | BACKGROUND_BLUE;
+    mBackgroundColor = BACKGROUND_RED | BACKGROUND_BLUE;
     break;
   case tl::Console::Color::yellow:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_RED;
+    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_RED;
     break;
   case tl::Console::Color::white:
-    mBackColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
+    mBackgroundColor = BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_RED;
     break;
   default:
-    mBackColor = 0;
+    mBackgroundColor = 0;
     break;
   }
   if(intensity == Console::Intensity::normal)
@@ -157,13 +158,14 @@ void Console::setConsoleBackgroundColor(Console::Color backColor, Console::Inten
   else
       mBackIntensity = BACKGROUND_INTENSITY;
 #else
-  mBackColor = static_cast<int>(backColor) + 40 + static_cast<int>(intensity) * 60;
+  mBackgroundColor = static_cast<int>(backColor) + 40 + static_cast<int>(intensity) * 60;
 #endif
   update();
 }
 
-void Console::setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity)
-      {
+void Console::setConsoleForegroundColor(Console::Color foreColor, 
+                                        Console::Intensity intensity)
+{
 #ifdef WIN32
   switch (foreColor) {
   case tl::Console::Color::black:
@@ -293,7 +295,7 @@ void Console::init(DWORD handle)
   }
   mForeColor = (mOldColorAttrs & 0x0007);
   mForeIntensity = (mOldColorAttrs & 0x0008);
-  mBackColor = (mOldColorAttrs & 0x0070);
+  mBackgroundColor = (mOldColorAttrs & 0x0070);
   mBackIntensity = (mOldColorAttrs & 0x0080);
 
   mIniFont.cbSize = sizeof(mIniFont);
@@ -307,7 +309,7 @@ void Console::init(FILE *stream)
 {
   mStream = stream;
   mForeColor = 0;
-  mBackColor = 0;
+  mBackgroundColor = 0;
   mBold = 21;
 }
 #endif
@@ -315,15 +317,15 @@ void Console::init(FILE *stream)
 void Console::update()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(mHandle, mForeColor | mBackColor | mForeIntensity | mBackIntensity);
+  SetConsoleTextAttribute(mHandle, mForeColor | mBackgroundColor | mForeIntensity | mBackIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
   std::stringstream ss;
   ss << "\x1B[" << mBold;
   if (mForeColor != 0)
     ss << ";" << mForeColor;
-  if (mBackColor != 0)
-    ss << ";" << mBackColor;
+  if (mBackgroundColor != 0)
+    ss << ";" << mBackgroundColor;
   ss << "m";
   fprintf(mStream, "%s", ss.str().c_str());
 #endif

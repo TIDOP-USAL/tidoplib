@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_SEGMENT_H
-#define TL_GEOM_SEGMENT_H
+#ifndef TL_GEOMETRY_SEGMENT_H
+#define TL_GEOMETRY_SEGMENT_H
 
 #include "config_tl.h"
 
@@ -38,10 +38,6 @@ namespace tl
  *  \{
  */
 
-namespace geometry {
-
-
-/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Clase segmento 2D
@@ -94,7 +90,8 @@ public:
   /*!
    * \brief Constructor de movimiento
    */
-  Segment(Segment &&segment);
+  Segment(Segment &&segment) TL_NOEXCEPT;
+
   /*!
    * \brief Constructor segment
    * \param[in] _pt1 Punto inicial del segmento
@@ -123,7 +120,7 @@ public:
    * \param[in] segment Segmento que se mueve
    * \return Referencia al segmento
    */
-  Segment &operator = (Segment &&segment);
+  Segment &operator = (Segment &&segment) TL_NOEXCEPT;
 
   /*!
    * \brief Conversión a un segmento de un tipo diferente
@@ -141,16 +138,6 @@ public:
    * \return Ángulo en radianes
    */
   double angleOY() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Ventana envolvente
-   * \return Ventana envolvente del segmento
-   * \deprecated Use 'Segment::window()'  en su lugar
-   */
-  TL_DEPRECATED("window()", "2.0")
-  Window<Point_t> getWindow() const;
-#endif
 
   /*!
    * \brief Ventana envolvente
@@ -213,10 +200,10 @@ Segment<Point_t>::Segment(const Segment &segment)
 }
 
 template<typename Point_t> inline
-Segment<Point_t>::Segment(Segment &&segment)
+Segment<Point_t>::Segment(Segment &&segment) TL_NOEXCEPT
   : Entity(std::forward<Entity>(segment)), 
-    pt1(segment.pt1), 
-    pt2(segment.pt2) 
+    pt1(std::move(segment.pt1)), 
+    pt2(std::move(segment.pt2)) 
 {
 }
 
@@ -228,20 +215,6 @@ Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
 {
 }
 
-//#ifdef HAVE_OPENCV
-//
-//template<typename T> inline
-//Segment<T>::Segment(const cv::Vec<T, 4> &lvect)
-//: Entity(Entity::type::SEGMENT_2D)
-//{
-//  pt1.x = lvect[0];
-//  pt1.y = lvect[1];
-//  pt2.x = lvect[2];
-//  pt2.y = lvect[3];
-//}
-//
-//#endif
-
 template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool bCenter)
   : Entity(Entity::Type::segment2d)
@@ -252,7 +225,7 @@ Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool b
   if (bCenter) {
     l1 = l2 = length / 2;
   }
-  if (typeid(typename Point_t::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point_t::value_type>::value) {
     pt1.x = TL_ROUND_TO_INT(pt.x - l1 * -b);
     pt1.y = TL_ROUND_TO_INT(pt.y - l1 * a);
     pt2.x = TL_ROUND_TO_INT(pt.x + l2 * -b);
@@ -270,7 +243,7 @@ template<typename Point_t> inline
 Segment<Point_t> &Segment<Point_t>::operator = (const Segment &segment)
 {
   if (this != &segment) {
-    this->mEntityType = segment.mEntityType;
+    Entity::operator = (segment);
     this->pt1 = segment.pt1;
     this->pt2 = segment.pt2;
   }
@@ -278,10 +251,10 @@ Segment<Point_t> &Segment<Point_t>::operator = (const Segment &segment)
 }
 
 template<typename Point_t> inline
-Segment<Point_t> &Segment<Point_t>::operator = (Segment &&segment)
+Segment<Point_t> &Segment<Point_t>::operator = (Segment &&segment) TL_NOEXCEPT
 {
   if (this != &segment) {
-    this->mEntityType = std::move(segment.mEntityType);
+    Entity::operator = (std::forward<Entity>(segment));
     this->pt1 = std::move(segment.pt1);
     this->pt2 = std::move(segment.pt2);
   }
@@ -292,7 +265,7 @@ template<typename Point_t> template<typename Point_t2> inline
 Segment<Point_t>::operator Segment<Point_t2>() const
 {
   Segment<Point_t2> s;
-  if (typeid(typename Point_t2::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point_t2::value_type>::value) {
     s.pt1.x = TL_ROUND_TO_INT(pt1.x);
     s.pt1.y = TL_ROUND_TO_INT(pt1.y);
     s.pt2.x = TL_ROUND_TO_INT(pt2.x);
@@ -327,14 +300,6 @@ double Segment<Point_t>::angleOY() const
   return angle;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Window<Point_t> Segment<Point_t>::getWindow() const
-{
-  return Window<Point_t>(pt1, pt2);
-}
-#endif
-
 template<typename Point_t> inline
 Window<Point_t> Segment<Point_t>::window() const
 {
@@ -344,10 +309,10 @@ Window<Point_t> Segment<Point_t>::window() const
 template<typename Point_t> inline
 bool Segment<Point_t>::isEmpty() const
 {
-  return (   pt1.x == static_cast<typename Point_t::value_type>(0)
-          && pt1.y == static_cast<typename Point_t::value_type>(0)
-          && pt2.x == static_cast<typename Point_t::value_type>(0) 
-          && pt2.y == static_cast<typename Point_t::value_type>(0)); 
+  return (pt1.x == static_cast<typename Point_t::value_type>(0) && 
+          pt1.y == static_cast<typename Point_t::value_type>(0) && 
+          pt2.x == static_cast<typename Point_t::value_type>(0) && 
+          pt2.y == static_cast<typename Point_t::value_type>(0)); 
 }
 
 template<typename Point_t> inline
@@ -358,7 +323,8 @@ bool Segment<Point_t>::isNear(const Segment<Point_t> &l2, double dist) const
 }
 
 template<typename Point_t> inline
-bool Segment<Point_t>::isParallel(const Segment<Point_t> &l2, double tol) const
+bool Segment<Point_t>::isParallel(const Segment<Point_t> &l2, 
+                                  double tol) const
 {
   return (abs(angleOX() - l2.angleOX()) < tol);
 }
@@ -431,7 +397,7 @@ public:
    * \brief Constructor de movimiento
    * \param[in] segment Segmento que se mueve
    */
-  Segment3D(Segment3D &&segment);
+  Segment3D(Segment3D &&segment) TL_NOEXCEPT;
 
   /*!
    * \brief Constructor segment
@@ -452,26 +418,17 @@ public:
    * \param[in] segment Segmento que se mueve
    * \return Referencia a la ventana
    */
-  Segment3D &operator = (Segment3D &&segment);
+  Segment3D &operator = (Segment3D &&segment) TL_NOEXCEPT;
 
   /*!
    * \brief Conversión a un segmento de un tipo diferente
    */
   template<typename Point3_t2> operator Segment3D<Point3_t2>() const;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Caja envolvente del segmento
-   * \deprecated Use 'Segment3D::box()' en su lugar
-   */
-  TL_DEPRECATED("box()", "2.0")
-  Box<Point3_t> getBox() const;
-#endif
-
   /*!
    * \brief Caja envolvente del segmento
    */
-  Box<Point3_t> box() const;
+  BoundingBox<Point3_t> boundingBox() const;
 
   /*!
    * \brief Comprueba si el segmento esta vacio pt1 = (0, 0, 0) ; pt2 = (0, 0, 0)
@@ -513,10 +470,10 @@ Segment3D<T>::Segment3D(const Segment3D &segment)
 }
 
 template<typename T> inline
-Segment3D<T>::Segment3D(Segment3D &&segment)
+Segment3D<T>::Segment3D(Segment3D &&segment) TL_NOEXCEPT
 : Entity(std::forward<Entity>(segment)), 
-  pt1(segment.pt1), 
-  pt2(segment.pt2) 
+  pt1(std::move(segment.pt1)), 
+  pt2(std::move(segment.pt2)) 
 {
 }
 
@@ -532,7 +489,7 @@ template<typename Point3_t> inline
 Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (const Segment3D &segment)
 {
   if (this != &segment) {
-    this->mEntityType = segment.mEntityType;
+    Entity::operator=(segment);
     this->pt1 = segment.pt1;
     this->pt2 = segment.pt2;
   }
@@ -540,10 +497,10 @@ Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (const Segment3D &segment)
 }
 
 template<typename Point3_t> inline
-Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (Segment3D &&segment)
+Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (Segment3D &&segment) TL_NOEXCEPT
 {
   if (this != &segment) {
-    this->mEntityType = std::move(segment.mEntityType);
+    Entity::operator=(std::forward<Entity>(segment));
     this->pt1 = std::move(segment.pt1);
     this->pt2 = std::move(segment.pt2);
   }
@@ -553,11 +510,8 @@ Segment3D<Point3_t> &Segment3D<Point3_t>::operator = (Segment3D &&segment)
 template<typename Point3_t> template<typename Point3_t2> inline
 Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
 {
-  //Point3_t2 _pt1 = pt1;
-  //Point3_t2 _pt2 = pt2;
-  //return Segment3D<Point3_t2>(_pt1, _pt2);
   Segment3D<Point3_t2> s;
-  if (typeid(typename Point3_t2::value_type) == typeid(int)) {
+  if (std::is_integral<typename Point3_t2::value_type>::value) {
     s.pt1.x = TL_ROUND_TO_INT(pt1.x);
     s.pt1.y = TL_ROUND_TO_INT(pt1.y);
     s.pt1.z = TL_ROUND_TO_INT(pt1.z);
@@ -575,27 +529,19 @@ Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
   return s;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point3_t> inline
-Box<Point3_t> Segment3D<Point3_t>::getBox() const
+BoundingBox<Point3_t> Segment3D<Point3_t>::boundingBox() const
 {
-  return Box<Point3_t>(pt1, pt2);
-}
-#endif
-
-template<typename Point3_t> inline
-Box<Point3_t> Segment3D<Point3_t>::box() const
-{
-  return Box<Point3_t>(pt1, pt2);
+  return BoundingBox<Point3_t>(pt1, pt2);
 }
 
 template<typename Point3_t> inline
 bool Segment3D<Point3_t>::isEmpty() const
 {
-  return (   pt1.x == static_cast<typename Point3_t::value_type>(0)
-          && pt1.y == static_cast<typename Point3_t::value_type>(0)
-          && pt2.x == static_cast<typename Point3_t::value_type>(0) 
-          && pt2.y == static_cast<typename Point3_t::value_type>(0)); 
+  return (pt1.x == static_cast<typename Point3_t::value_type>(0)  && 
+          pt1.y == static_cast<typename Point3_t::value_type>(0)  && 
+          pt2.x == static_cast<typename Point3_t::value_type>(0)  && 
+          pt2.y == static_cast<typename Point3_t::value_type>(0)); 
 }
 
 //template<typename T> inline
@@ -677,31 +623,11 @@ public:
 
   void deleteLine(int id);
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Ventana envolvente del grupo de lineas
-   * \return
-   * \deprecated Use 'GroupLines::window()' en su lugar
-   */
-  TL_DEPRECATED("window()", "2.0")
-  WindowI getBbox() const { return bbox; }
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
   /*!
    * \brief Ventana envolvente del grupo de lineas
    * \return
    */
   WindowI window() const { return bbox; }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Número de líneas
-   * \return
-   * \deprecated Use 'GroupLines::size()' en su lugar
-   */
-  TL_DEPRECATED("size()", "2.0")
-  size_t getSize() const { return linesgroup.size(); }
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Número de líneas
@@ -721,12 +647,9 @@ public:
 
 };
 
-}
-
-
 
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
-#endif // TL_GEOM_SEGMENT_H
+#endif // TL_GEOMETRY_SEGMENT_H

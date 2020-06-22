@@ -57,13 +57,6 @@ class Quaternion
 
 public:
 
-  T x;
-  T y;
-  T z;
-  T w;
-
-public:
-
   /*!
    * \brief Constructor por defecto
    */
@@ -83,40 +76,6 @@ public:
    * \param[in] quaternion Objeto Quaternion que se copia
    */
   Quaternion(const Quaternion<T> &quaternion);
-
-  /*!
-   * \brief Constructor a partir de una matriz de rotación
-   * Inicializa los cuaterniones con una matriz de rotación
-   * 
-   * \f[ x^2 = (+r00 - r11 - r22 + 1)/4  \f]
-   * \f[ y^2 = (-r00 + r11 - r22 + 1)/4  \f]
-   * \f[ z^2 = (-r00 - r11 + r22 + 1)/4  \f]
-   * \f[ w^2 = (+r00 + r11 + r22 + 1)/4  \f]
-   * \f[ x^2 + y^2 = (1 - r22)/2 \f]
-   * \f[ z^2 + w^2 = (1 + r22)/2 \f]
-   * \f[ y^2 - x^2 = (r11 - r00)/2 \f]
-   * \f[ w^2 - z^2 = (r11 + r00)/2 \f]
-   * \f[ x*y = (r01 + r10)/4 \f]
-   * \f[ x*z = (r02 + r20)/4 \f]
-   * \f[ y*z = (r12 + r21)/4 \f]
-   * 
-   *   x*w = (r21 - r12)/4
-   *   y*w = (r02 - r20)/4
-   *   z*w = (r10 - r01)/4
-   * 
-   * If Q is the 4x1 column vector (x,y,z,w), the previous equations give us
-   *         +-                  -+
-   *         | x*x  x*y  x*z  x*w |
-   * Q*Q^T = | y*x  y*y  y*z  y*w |
-   *         | z*x  z*y  z*z  z*w |
-   *         | w*x  w*y  w*z  w*w |
-   *         +-                  -+
-   * The code extracts the row of maximum length, normalizing it to obtain
-   * the result q.
-   *
-   * \param[in] rot Matriz de rotación
-   */
-  //Quaternion(const RotationMatrix<T> &rot);
 
   /*!
    * \brief destructora
@@ -186,7 +145,13 @@ public:
    */
   static Quaternion identity();
 
-private:
+
+public:
+
+  T x;
+  T y;
+  T z;
+  T w;
 
 };
 
@@ -223,76 +188,61 @@ Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
 {
 }
 
-// https://www.geometrictools.com/GTEngine/Include/Mathematics/GteRotation.h
 //template<typename T>
 //Quaternion<T>::Quaternion(const RotationMatrix<T> &rot)
 //{
-//  //static_assert(N == 3 || N == 4, "Dimension must be 3 or 4.");
+//  T r22 = rot.at(2, 2);
 //
-//  T r22 = rot.at(2,2);
 //  if (r22 <= static_cast<T>(0)) {
+//
 //    T dif10 = rot.at(1, 1) - rot.at(0, 0);
 //    T omr22 = static_cast<T>(1) - r22;
 //    if (dif10 <= static_cast<T>(0)) {
 //      T fourXSqr = omr22 - dif10;
 //      T inv4x = static_cast<T>(0.5) / sqrt(fourXSqr);
 //      this->x = fourXSqr*inv4x;
-//      this->y = (rot.at(0, 1) + rot.at(1, 0))*inv4x;
-//      this->z = (rot.at(0, 2) + rot.at(2, 0))*inv4x;
-////#if defined(GTE_USE_MAT_VEC)
-//      this->w = (rot.at(2, 1) - rot.at(1, 2))*inv4x;
-////#else
-////      this->w = (rot.at(1, 2) - rot.at(2, 1))*inv4x;
-////#endif
+//      this->y = (rot.at(0, 1) + rot.at(1, 0)) * inv4x;
+//      this->z = (rot.at(0, 2) + rot.at(2, 0)) * inv4x;
+//      this->w = (rot.at(2, 1) - rot.at(1, 2)) * inv4x;
 //    } else {
 //      T fourYSqr = omr22 + dif10;
-//      T inv4y = static_cast<T>(0.5) / std::sqrt(fourYSqr);
+//      T inv4y = static_cast<T>(0.5) / sqrt(fourYSqr);
 //      this->x = (rot.at(0, 1) + rot.at(1, 0))*inv4y;
 //      this->y = fourYSqr*inv4y;
 //      this->z = (rot.at(1, 2) + rot.at(2, 1))*inv4y;
-////#if defined(GTE_USE_MAT_VEC)
 //      this->w = (rot.at(0, 2) - rot.at(2, 0))*inv4y;
-////#else
-////      this->w = (rot.at(2, 0) - rot.at(0, 2))*inv4y;
-////#endif
 //    }
+//
 //  } else {
+//
 //    T sum10 = rot.at(1, 1) + rot.at(0, 0);
 //    T opr22 = static_cast<T>(1) + r22;
 //    if (sum10 <= static_cast<T>(0)) {
 //      T fourZSqr = opr22 - sum10;
-//      T inv4z = (static_cast<T>(0.5)) / std::sqrt(fourZSqr);
+//      T inv4z = (static_cast<T>(0.5)) / sqrt(fourZSqr);
 //      this->x = (rot.at(0, 2) + rot.at(2, 0))*inv4z;
 //      this->y = (rot.at(1, 2) + rot.at(2, 1))*inv4z;
 //      this->z = fourZSqr*inv4z;
-////#if defined(GTE_USE_MAT_VEC)
 //      this->w = (rot.at(1, 0) - rot.at(0, 1))*inv4z;
-////#else
-////      this->w = (rot.at(0, 1) - rot.at(1, 0))*inv4z;
-////#endif
 //    } else {
 //      T fourWSqr = opr22 + sum10;
-//      T inv4w = static_cast<T>(0.5) / std::sqrt(fourWSqr);
-////#if defined(GTE_USE_MAT_VEC)
+//      T inv4w = static_cast<T>(0.5) / sqrt(fourWSqr);
 //      this->x = (rot.at(2, 1) - rot.at(1, 2))*inv4w;
 //      this->y = (rot.at(0, 2) - rot.at(2, 0))*inv4w;
 //      this->z = (rot.at(1, 0) - rot.at(0, 1))*inv4w;
-////#else
-////      this->x = (rot.at(1, 2) - rot.at(2, 1))*inv4w;
-////      this->y = (rot.at(2, 0) - rot.at(0, 2))*inv4w;
-////      this->z = (rot.at(0, 1) - rot.at(1, 0))*inv4w;
-////#endif
 //      this->w = fourWSqr*inv4w;
 //    }
+//
 //  }
 //}
+
 
 template<typename T>
 Quaternion<T>::~Quaternion()
 {}
 
 template<typename T>
-Quaternion<T>& Quaternion<T>::operator = (const Quaternion& quaternion)
+Quaternion<T>& Quaternion<T>::operator = (const Quaternion &quaternion)
 {
   this->x = quaternion.x;
   this->y = quaternion.y;
@@ -317,23 +267,15 @@ template<typename T>
 void Quaternion<T>::normalize()
 {
   T length = this->norm();
-  if (length > static_cast<T>(0)) {
-    *this /= length;
-  } else {
-    *this = Quaternion<T>::zero();
-  }
+  *this /= length;
 }
 
 template <typename T>
 Quaternion<T> Quaternion<T>::inverse() const
 {
   T _dot = dot(*this, *this);
-  if (_dot > static_cast<T>(0)) {
-    Quaternion<T> inverse = this->conjugate() / _dot;
-    return inverse;
-  } else {
-    return Quaternion<T>::zero();
-  }
+  Quaternion<T> inverse = this->conjugate() / _dot;
+  return inverse;
 }
 
 template<typename T>
@@ -425,39 +367,8 @@ template<typename T>
 Quaternion<T> operator + (const Quaternion<T> &quat1, 
                           const Quaternion<T> &quat2)
 {
-  return Quaternion<T>(quat1.x + quat2.x, 
-                       quat1.y + quat2.y, 
-                       quat1.z + quat2.z, 
-                       quat1.w + quat2.w);
-}
-
-template<typename T>
-Quaternion<T> operator - (const Quaternion<T> &quat1, 
-                          const Quaternion<T> &quat2)
-{
   Quaternion<T> q = quat1;
-  return q -= quat2;
-}
-
-template<typename T>
-Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
-{
-  Quaternion<T> q = quaternion;
-  return q *= scalar;
-}
-
-template<typename T>
-Quaternion<T> operator*(T scalar, const Quaternion<T> &quaternion)
-{
-  Quaternion<T> q = quaternion;
-  return q *= scalar;
-}
-
-template<typename T>
-Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
-{
-  Quaternion<T> q = quaternion;
-  return q /= scalar;
+  return q += quat2;
 }
 
 template<typename T>
@@ -471,6 +382,14 @@ Quaternion<T> &operator += (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 }
 
 template<typename T>
+Quaternion<T> operator - (const Quaternion<T> &quat1, 
+                          const Quaternion<T> &quat2)
+{
+  Quaternion<T> q = quat1;
+  return q -= quat2;
+}
+
+template<typename T>
 Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 {
   quat1.x -= quat2.x;
@@ -481,6 +400,20 @@ Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
 }
 
 template<typename T>
+Quaternion<T> operator * (const Quaternion<T> &quaternion, T scalar)
+{
+  Quaternion<T> q = quaternion;
+  return q *= scalar;
+}
+
+template<typename T>
+Quaternion<T> operator * (T scalar, const Quaternion<T> &quaternion)
+{
+  Quaternion<T> q = quaternion;
+  return q *= scalar;
+}
+
+template<typename T>
 Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
 {
   quaternion.x *= scalar;
@@ -488,6 +421,20 @@ Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
   quaternion.z *= scalar;
   quaternion.w *= scalar;
   return quaternion;
+}
+
+template<typename T>
+Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
+{
+  Quaternion<T> q = quaternion;
+  return q /= scalar;
+}
+
+template<typename T>
+Quaternion<T> operator / (T scalar, const Quaternion<T> &quaternion)
+{
+  Quaternion<T> q = quaternion;
+  return q /= scalar;
 }
 
 template<typename T>

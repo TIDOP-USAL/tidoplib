@@ -35,6 +35,23 @@ namespace tl
  * \{
  */
 
+namespace math
+{
+
+
+template<typename T> inline
+T clamp(const T &value, const T &_min, const T &_max)
+{
+  return std::max(_min, std::min(_max, value));
+}
+
+
+} // End namespace math
+
+TL_TODO("Limpiar a partir de aqui")
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 /*!
  * \brief ángulos de Euler
  *
@@ -54,6 +71,7 @@ TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double
 //Otra posible solución. Tizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
@@ -86,6 +104,7 @@ void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 
+#endif TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
@@ -128,9 +147,9 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
   Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
 #elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
+  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
+  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
+  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
   cv::solve(A, B, C, cv::DECOMP_SVD);
   std::vector<double> v_aux;
   cvMatToVector(C, &v_aux);

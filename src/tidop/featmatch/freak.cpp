@@ -8,16 +8,20 @@ namespace tl
 
 
 FreakProperties::FreakProperties()
-  : IFreak(),
-    mOrientationNormalized(true),
+  : mOrientationNormalized(true),
     mScaleNormalized(true),
     mPatternScale(22.),
     mOctaves(4)
-{}
-
-FreakProperties::~FreakProperties()
 {
+}
 
+FreakProperties::FreakProperties(const FreakProperties &freakProperties)
+  : Freak(freakProperties),
+    mOrientationNormalized(freakProperties.mOrientationNormalized),
+    mScaleNormalized(freakProperties.mScaleNormalized),
+    mPatternScale(freakProperties.mPatternScale),
+    mOctaves(freakProperties.mOctaves)
+{
 }
 
 bool FreakProperties::orientationNormalized() const
@@ -78,8 +82,13 @@ std::string FreakProperties::name() const
 
 
 FreakDescriptor::FreakDescriptor()
-  : FreakProperties(),
-    DescriptorExtractor()
+{
+  update();
+}
+
+FreakDescriptor::FreakDescriptor(const FreakDescriptor &freakDescriptor)
+  : FreakProperties(freakDescriptor),
+    DescriptorExtractor(freakDescriptor)
 {
   update();
 }
@@ -88,19 +97,12 @@ FreakDescriptor::FreakDescriptor(bool orientationNormalized,
                                  bool scaleNormalized,
                                  double patternScale,
                                  int octaves)
-  : FreakProperties(),
-    DescriptorExtractor()
 {
   FreakProperties::setOrientationNormalized(orientationNormalized);
   FreakProperties::setScaleNormalized(scaleNormalized);
   FreakProperties::setPatternScale(patternScale);
   FreakProperties::setOctaves(octaves);
   update();
-}
-
-FreakDescriptor::~FreakDescriptor()
-{
-
 }
 
 void FreakDescriptor::update()

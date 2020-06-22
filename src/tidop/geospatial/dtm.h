@@ -38,7 +38,7 @@ protected:
 
   Interpolation mInterpolation;
   double mResolution;
-  geometry::WindowD mLimits;
+  WindowD mLimits;
 
 public:
 

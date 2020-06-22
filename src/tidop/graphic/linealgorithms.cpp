@@ -4,8 +4,6 @@
 namespace tl 
 {
 
-using namespace geometry;
-
 
 /* ---------------------------------------------------------------------------------- */
 /*                        Algoritmos de trazado de lineas                             */

@@ -1,23 +1,22 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop graphic font test
+#include <boost/test/unit_test.hpp>
 #include <tidop/graphic/font.h>
 
 
 using namespace tl;
 using namespace graph;
 
-class FontTest
-  : public testing::Test
+BOOST_AUTO_TEST_SUITE(FontTestSuite)
+
+struct FontTest
 {
-public:
 
-protected:
-
-  virtual void SetUp() override
+  FontTest()
   {
     font = new Font;
   }
 
-  virtual void TearDown() override
+  ~FontTest()
   {
     if (font) {
       delete font;
@@ -29,67 +28,69 @@ protected:
   Font *font;
 };
 
-TEST_F(FontTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, FontTest)
 {
-  EXPECT_STREQ("Arial", defFont.name().c_str());
-  EXPECT_EQ(10, defFont.size());
-  EXPECT_EQ(false, defFont.isBold());
-  EXPECT_EQ(false, defFont.isItalic());
-  EXPECT_EQ(false, defFont.isUnderline());
-  EXPECT_EQ(false, defFont.isStrikethrough());
+  BOOST_CHECK_EQUAL("Arial", defFont.name());
+  BOOST_CHECK_EQUAL(10, defFont.size());
+  BOOST_CHECK_EQUAL(false, defFont.isBold());
+  BOOST_CHECK_EQUAL(false, defFont.isItalic());
+  BOOST_CHECK_EQUAL(false, defFont.isUnderline());
+  BOOST_CHECK_EQUAL(false, defFont.isStrikethrough());
 }
 
-TEST_F(FontTest, setName)
+BOOST_FIXTURE_TEST_CASE(setName, FontTest)
 {
   font->setName("Times New Roman");
-  EXPECT_STREQ("Times New Roman", font->name().c_str());
+  BOOST_CHECK_EQUAL("Times New Roman", font->name());
 }
 
-TEST_F(FontTest, setSize)
+BOOST_FIXTURE_TEST_CASE(setSize, FontTest)
 {
   font->setSize(14);
-  EXPECT_EQ(14, font->size());
+  BOOST_CHECK_EQUAL(14, font->size());
 }
 
-TEST_F(FontTest, setBold)
+BOOST_FIXTURE_TEST_CASE(setBold, FontTest)
 {
   font->setBold(true);
-  EXPECT_EQ(true, font->isBold());
+  BOOST_CHECK_EQUAL(true, font->isBold());
 }
 
-TEST_F(FontTest, setItalic)
+BOOST_FIXTURE_TEST_CASE(setItalic, FontTest)
 {
   font->setItalic(true);
-  EXPECT_EQ(true, font->isItalic());
+  BOOST_CHECK_EQUAL(true, font->isItalic());
 }
 
-TEST_F(FontTest, setUnderline)
+BOOST_FIXTURE_TEST_CASE(setUnderline, FontTest)
 {
   font->setUnderline(true);
-  EXPECT_EQ(true, font->isUnderline());
+  BOOST_CHECK_EQUAL(true, font->isUnderline());
 }
 
-TEST_F(FontTest, setStrikethrough)
+BOOST_FIXTURE_TEST_CASE(setStrikethrough, FontTest)
 {
   font->setStrikethrough(true);
-  EXPECT_EQ(true, font->isStrikethrough());
+  BOOST_CHECK_EQUAL(true, font->isStrikethrough());
 }
 
-TEST_F(FontTest, setStyle)
+BOOST_FIXTURE_TEST_CASE(setStyle, FontTest)
 {
   font->setStyle(Font::Style::bold);
-  EXPECT_EQ(true, font->isBold());
-  EXPECT_EQ(false, font->isItalic());
+  BOOST_CHECK_EQUAL(true, font->isBold());
+  BOOST_CHECK_EQUAL(false, font->isItalic());
 
   font->setStyle(Font::Style::italic);
-  EXPECT_EQ(false, font->isBold());
-  EXPECT_EQ(true, font->isItalic());
+  BOOST_CHECK_EQUAL(false, font->isBold());
+  BOOST_CHECK_EQUAL(true, font->isItalic());
 
   font->setStyle(Font::Style::normal);
-  EXPECT_EQ(false, font->isBold());
-  EXPECT_EQ(false, font->isItalic());
+  BOOST_CHECK_EQUAL(false, font->isBold());
+  BOOST_CHECK_EQUAL(false, font->isItalic());
 
   font->setStyle(Font::Style::bold | Font::Style::italic);
-  EXPECT_EQ(true, font->isBold());
-  EXPECT_EQ(true, font->isItalic());
+  BOOST_CHECK_EQUAL(true, font->isBold());
+  BOOST_CHECK_EQUAL(true, font->isItalic());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

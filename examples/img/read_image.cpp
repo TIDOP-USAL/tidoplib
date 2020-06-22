@@ -3,7 +3,8 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img/imgio.h>
+#include <tidop/img/imgreader.h>
+#include <tidop/img/metadata.h>
 
 using namespace tl;
 
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
 
   std::string img;
 
-  Command cmd("Read Image", "Lectura de una imagen");
+  Command cmd("read_image", "Lectura de una imagen");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
 
   // Parseo de los argumentos y comprobación de los mismos
@@ -44,18 +45,25 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  RasterGraphics image;
-  if (image.open(img) == RasterGraphics::Status::open_ok) {
-    msgInfo("Numero de bandas: %i", image.channels());
-    msgInfo("Profundidad de color: %i", image.depth());
-    msgInfo("Dimensiones de la imagen: %ix%i", image.cols(), image.rows());
-  } else {
-    msgError("Error al abrir la imagen: %s", img.c_str());
+  try {
+    std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::createReader(img);
+    imageReader->open();
+    if (imageReader->isOpen()) {
+
+      msgInfo("Numero de bandas: %i", imageReader->channels());
+      msgInfo("Profundidad de color: %i", imageReader->depth());
+      msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
+      
+      cv::Mat bmp;
+      imageReader->read(bmp);
+
+      imageReader->close();
+    } else {
+      msgError("Error al abrir la imagen: %s", img.c_str());
+    }
+  } catch (const std::exception &e) {
+    msgError(e.what());
   }
-  cv::Mat bmp;
-  image.read(&bmp, geometry::WindowI());
-  //tl::ImgMetadata *metadata = new tl::JpegMetadata();
-  //tl::JpegMetadata *metadata2 = new tl::JpegMetadata();
-  //std::string prueba = metadata2->ExifDocumentName;
+
   return 0;
 }

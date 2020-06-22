@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_ENTITY_H
-#define TL_GEOM_ENTITY_H
+#ifndef TL_GEOMETRY_ENTITY_H
+#define TL_GEOMETRY_ENTITY_H
 
 #include "config_tl.h"
 
@@ -39,18 +39,13 @@ namespace tl
  *  \{
  */
 
-/* ---------------------------------------------------------------------------------- */
-
-
-namespace geometry
-{
 
 // forward declaration
 
 template<typename T> class Point;
 template<typename T> class Point3;
 template<typename T> class Window;
-template<typename T> class Box;
+template<typename T> class BoundingBox;
 
 
 /*!
@@ -81,6 +76,7 @@ public:
     segment2d    = (1 << 6),                     /*!< Segmento */
     circle       = (1 << 7),                     /*!< Circulo */
     ellipse      = (1 << 8),                     /*!< Elipse */
+    triangle     = (1 << 9),                     /*!< Triangle */
 
     /* Entidades 3D*/
     point3d      = point2d | geom3d,             /*!< Punto 3D */
@@ -97,55 +93,10 @@ public:
     multipoygon3d  = polygon3d | multi_entity,    /*!< Multi-polígono 3D */
 
     /* Tipos especiales */
-    envelope = (1 << 10),                         /*!< Envolvente */
+    envelope = (1 << 20),                         /*!< Envolvente */
     window   = envelope,                          /*!< Ventana */
-    box      = envelope | geom3d,                 /*!< Caja */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    /* Dimensión */
-    GEOM2D     = geom2d,                        /*!< Geometría 2D */
-    GEOM3D     = geom3d,                        /*!< Geometría 3D */
-    GEOM4D     = geom4d,                        /*!< Geometría 4D */
-
-    /* multientidad */
-    MULTI_ENTITY  = multi_entity,               /*!< Multientidad */
-
-    /* Entidades 2D */
-    POINT_2D      = point2d,                    /*!< Punto */
-    LINESTRING_2D = linestring2d,               /*!< Polilinea */
-    POLYGON_2D    = polygon2d,                  /*!< Poligono */
-    SEGMENT_2D    = segment2d,                  /*!< Segmento */
-    CIRCLE        = circle,                     /*!< Circulo */
-    ELLIPSE       = ellipse,                    /*!< Elipse */
-
-    /* Entidades 3D*/
-    POINT_3D      = point3d,                    /*!< Punto 3D */
-    LINESTRING_3D = linestring3d,               /*!< Polilinea 3D */
-    POLYGON_3D    = polygon3d,                  /*!< Poligono 3D */
-    SEGMENT_3D    = segment3d,                  /*!< Segmento 3D */
-
-    /* multientidades */
-    MULTIPOINT_2D   = multipoint2d,             /*!< Multipunto 2D */
-    MULTIPOINT_3D   = multipoint3d,             /*!< Multipunto 3D */
-    MULTILINE_2D    = multiline2d,              /*!< Multi-línea 2D */
-    MULTILINE_3D    = multiline3d,              /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D = multipolygon2d,           /*!< Multi-polígono 2D */
-    MULTIPOLYGON_3D = multipoygon3d,            /*!< Multi-polígono 3D */
-
-    /* Tipos especiales */
-    ENVELOPE = envelope,                        /*!< Envolvente */
-    WINDOW   = window,                          /*!< Ventana */
-    BOX      = box                              /*!< Caja */
-#endif
+    bounding_box = envelope | geom3d              /*!< Cuadro delimitador */
   };
-
-protected:
-
-  /*!
-   * \brief Tipo de entidad
-   * \see type
-   */
-  //type mEntityType;
-  EnumFlags<Type> mEntityType;
 
 public:
 
@@ -177,15 +128,6 @@ public:
    * \brief Destructora
    */
   virtual ~Entity() = default;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve el tipo de entidad 
-   * \deprecated Use 'type' en su lugar
-   */
-  TL_DEPRECATED("type()", "2.0")
-  Type getType() const { return mEntityType.getFlags(); }
-#endif
 
   /*!
    * \brief Devuelve el tipo de entidad 
@@ -243,6 +185,14 @@ public:
   {
     return mEntityType.isActive(Type::geom3d);
   }
+
+protected:
+
+  /*!
+   * \brief Tipo de entidad
+   * \see type
+   */
+  EnumFlags<Type> mEntityType;
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Entity::Type)
@@ -313,13 +263,6 @@ public:
    */
   typedef typename std::vector<Entity_t>::const_iterator const_iterator;
 
-protected:
-
-  /*!
-   * \brief Conjunto de puntos
-   */
-  std::vector<Entity_t> mEntities;
-
 public:
   
   /*!
@@ -388,16 +331,6 @@ public:
    * \return Iterador al siguiente elemento después del final del contenedor
    */
   virtual const_iterator end() const;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Agrega un elemento al final del contenedor
-   * \param[in] entity Entidad que se añade
-   * \deprecated Use 'push_back' en su lugar
-   */
-  TL_DEPRECATED("push_back(const std::shared_ptr<GraphicEntity> &entity)", "2.0")
-  void add(const Entity_t &entity);
-#endif
 
   /*!
    * \brief Agrega un elemento al final del contenedor
@@ -493,6 +426,14 @@ public:
   iterator erase(const_iterator first, const_iterator last);
 
   //TODO: insert (para insertar nuevos valores en una posición)
+
+protected:
+
+  /*!
+   * \brief Conjunto de puntos
+   */
+  std::vector<Entity_t> mEntities;
+
 };
 
 // Implementación EntityContainer
@@ -556,14 +497,6 @@ typename EntityContainer<Entity_t>::const_iterator EntityContainer<Entity_t>::en
 {
   return mEntities.cend();
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Entity_t> inline
-void EntityContainer<Entity_t>::add(const Entity_t &entity)
-{
-  mEntities.push_back(entity);
-}
-#endif
 
 template<typename Entity_t> inline
 void EntityContainer<Entity_t>::push_back(const Entity_t &entity)
@@ -711,25 +644,13 @@ public:
    */
   Entities2D(std::initializer_list<Entity_t> entities);
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Devuelve las entidades que están dentro de una ventana
-   * \param[in] w Ventana
-   * \return Entidades seleccionadas
-   * \deprecated Use 'entitiesInWindow(const Window_t &w)' en su lugar
-   */
-  template<typename Window_t>
-  TL_DEPRECATED("entitiesInWindow(const Window_t &w)", "2.0")
-  std::vector<Entity_t> getEntitiesInWindow(const Window_t &w) const;
-#endif
-
-  /*!
-   * \brief Devuelve las entidades que están dentro de una ventana
-   * \param[in] w Ventana
+   * \param[in] window Ventana
    * \return Entidades seleccionadas
    */
   template<typename Window_t>
-  std::vector<Entity_t> entitiesInWindow(const Window_t &w) const;
+  std::vector<Entity_t> entitiesInWindow(const Window_t &window) const;
 
   /*!
    * \brief Asignación de copia
@@ -780,30 +701,13 @@ Entities2D<Entity_t>::Entities2D(std::initializer_list<Entity_t> entities)
 {
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Entity_t> template<typename Window_t> inline
-std::vector<Entity_t> Entities2D<Entity_t>::getEntitiesInWindow(const Window_t &w) const
+std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &window) const
 {
   std::vector<Entity_t> r_points(this->mEntities.size());
   size_t j = 0;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.containsPoint(this->mEntities[i])) {
-      r_points[i] = this->mEntities[i];
-      j++;
-    }
-  }
-  r_points.resize(j);
-  return r_points;
-}
-#endif
-
-template<typename Entity_t> template<typename Window_t> inline
-std::vector<Entity_t> Entities2D<Entity_t>::entitiesInWindow(const Window_t &w) const
-{
-  std::vector<Entity_t> r_points(this->mEntities.size());
-  size_t j = 0;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.containsPoint(this->mEntities[i])) {
+    if (window.containsPoint(this->mEntities[i])) {
       r_points[i] = this->mEntities[i];
       j++;
     }
@@ -881,17 +785,17 @@ public:
   Entities3D(std::initializer_list<Entity_t> entities);
   
   /*!
-   * \brief Devuelve los puntos que esta dentro de una caja
-   * \param[in] box Caja
+   * \brief Devuelve los puntos que esta dentro de un cuadro delimitador
+   * \param[in] bbox Cuadro delimitador
    * \return Puntos que entran dentro de la caja
    */
-  std::vector<Entity_t> entitiesInBox(const Box<Entity_t> &box) const;
+  std::vector<Entity_t> entitiesInBoundingBox(const BoundingBox<Entity_t> &bbox) const;
 
   /*!
    * \brief Caja envolvente
    * \return Caja envolvente de los puntos
    */
-  //virtual Box<Entity_t> box() const;
+  //virtual BoundingBox<Entity_t> boundingBox() const;
 
   /*!
    * \brief Asignación de copia
@@ -926,7 +830,7 @@ Entities3D<Entity_t>::Entities3D(const Entities3D &entities)
 
 template<typename Entity_t> inline
 Entities3D<Entity_t>::Entities3D(Entities3D &&entities) TL_NOEXCEPT
-  : EntityContainer<Entity_t>(std::forward<Entities3D<Entity_t>>(entities))
+  : EntityContainer<Entity_t>(std::forward<EntityContainer<Entity_t>>(entities))
 {
 }
 
@@ -943,12 +847,12 @@ Entities3D<Entity_t>::Entities3D(std::initializer_list<Entity_t> entities)
 }
 
 template<typename Entity_t> inline
-std::vector<Entity_t> Entities3D<Entity_t>::entitiesInBox(const Box<Entity_t> &box) const
+std::vector<Entity_t> Entities3D<Entity_t>::entitiesInBoundingBox(const BoundingBox<Entity_t> &bbox) const
 {
   std::vector<Entity_t> r_points(this->mEntities.size());
   size_t j = 0;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.containsPoint(this->mEntities[i])) {
+    if (bbox.containsPoint(this->mEntities[i])) {
       r_points[i] = this->mEntities[i];
       j++;
     }
@@ -958,18 +862,18 @@ std::vector<Entity_t> Entities3D<Entity_t>::entitiesInBox(const Box<Entity_t> &b
 }
 
 //template<typename Entity_t> inline
-//Box<Entity_t> Entities3D<Entity_t>::box() const
+//BoundingBox<Entity_t> Entities3D<Entity_t>::boundingBox() const
 //{
-//  Box<Entity_t> box;
+//  BoundingBox<Entity_t> bounding_box;
 //  for (size_t i = 0; i < this->mEntities.size(); i++) {
-//    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-//    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-//    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-//    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-//    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-//    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+//    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
+//    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
+//    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
+//    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
+//    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
+//    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
 //  }
-//  return box;
+//  return bounding_box;
 //}
 
 template<typename Entity_t> inline
@@ -990,19 +894,9 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&ent
   return (*this);
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-
-
-
-
-
-} // End namespace geometry
-
-/* ---------------------------------------------------------------------------------- */
 
 /*! \} */ // end of GeometricEntities
 
 } // End namespace tl
 
-#endif // TL_GEOM_ENTITY_H
+#endif // TL_GEOMETRY_ENTITY_H

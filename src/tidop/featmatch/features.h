@@ -7,9 +7,21 @@
 #include <opencv2/features2d.hpp>
 
 #include "tidop/core/flags.h"
+#include "tidop/geometry/size.h"
 
 namespace tl
 {
+
+/*! \defgroup Features Caracteristicas (Features)
+ * 
+ *  \{
+ */
+
+
+/*! \defgroup FeatureDetectorAndDescriptor Detección y extracción de caracteristicas
+ * 
+ *  \{
+ */
 
 
 class TL_EXPORT Feature
@@ -21,6 +33,7 @@ public:
   {
     agast,
     akaze,
+    boost,
     brief,
     brisk,
     daisy,
@@ -37,7 +50,8 @@ public:
     orb,
     sift,
     star,
-    surf
+    surf,
+    vgg
   };
   
 ///TODO: GLOH -> https://www.robots.ox.ac.uk/~vgg/research/affine/det_eval_files/mikolajczyk_pami2004.pdf
@@ -62,8 +76,14 @@ protected:
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Feature::Type)
 
+
+
 /*----------------------------------------------------------------*/
 
+
+/*!
+ * \brief Keypoint Detector class
+ */
 class TL_EXPORT KeypointDetector
 {
 
@@ -85,8 +105,14 @@ public:
 
 };
 
+
+
 /*----------------------------------------------------------------*/
 
+
+/*!
+ * \brief Descriptor Extractor class
+ */
 class TL_EXPORT DescriptorExtractor
 {
 
@@ -112,14 +138,24 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IAgast
+/*!
+ * \brief Agast Interface
+ * AGAST: Adaptive and Generic Corner Detection Based on the Accelerated Segment Test
+ *
+ * Mair E., Hager G.D., Burschka D., Suppa M., Hirzinger G. (2010) Adaptive and Generic
+ * Corner Detection Based on the Accelerated Segment Test. In: Daniilidis K., Maragos P.,
+ * Paragios N. (eds) Computer Vision – ECCV 2010. ECCV 2010.
+ * Lecture Notes in Computer Science, vol 6312. Springer, Berlin, Heidelberg
+ * https://mediatum.ub.tum.de/doc/1287456/1287456.pdf
+ */
+class TL_EXPORT Agast
   : public Feature
 {
 
 public:
 
-  IAgast() : Feature(Feature::Type::agast) {}
-  virtual ~IAgast() = default;
+  Agast() : Feature(Feature::Type::agast) {}
+  virtual ~Agast() = default;
 
   /*!
    * \brief threshold
@@ -180,14 +216,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IAkaze
+class TL_EXPORT Akaze
   : public Feature
 {
 
 public:
 
-  IAkaze() : Feature(Feature::Type::akaze) {}
-  virtual ~IAkaze() = default;
+  Akaze() : Feature(Feature::Type::akaze) {}
+  virtual ~Akaze() = default;
 
   /*!
    * \brief Type of the extracted descriptor
@@ -280,6 +316,65 @@ public:
 
 
 /*!
+ * \brief The Boost class
+ */
+class TL_EXPORT Boost
+  : public Feature
+{
+
+public:
+
+  Boost() : Feature(Feature::Type::boost){}
+  ~Boost() override = default;
+
+  /*!
+   * \brief Type of descriptor used
+   * Available types are BINBOOST_256 (default), BGM, BGM_HARD,
+   * BGM_BILINEAR, LBGM, BINBOOST_64, BINBOOST_128, BINBOOST_256
+   * \return Descriptor type
+   */
+  virtual std::string descriptorType() const = 0;
+
+  /*!
+   * \brief Sample patterns using keypoints orientation
+   * \return true if use keypoints orientation
+   */
+  virtual bool useOrientation() const = 0;
+
+  /*!
+   * \brief Scale factor for adjust the sampling window of detected keypoints
+   * \return Scale factor
+   */
+  virtual double scaleFactor() const = 0;
+
+  /*!
+   * \brief Set the type of descriptor to use
+   * Available types are BINBOOST_256 (default), BGM, BGM_HARD,
+   * BGM_BILINEAR, LBGM, BINBOOST_64, BINBOOST_128, BINBOOST_256
+   * \param[in] descriptorType Type of descriptor to use.
+   */
+  virtual void setDescriptorType(const std::string &descriptorType) = 0;
+
+  /*!
+   * \brief Sample patterns using keypoints orientation
+   * \param[in] useOrientation true for use keypoints orientation
+   */
+  virtual void setUseOrientation(bool useOrientation) = 0;
+
+  /*!
+   * \brief Adjust the sampling window of detected keypoints
+   * \param[in] scaleFactor Scale factor
+   */
+  virtual void setScaleFactor(double scaleFactor) = 0;
+};
+
+
+
+/*----------------------------------------------------------------*/
+
+
+
+/*!
  * \brief Interface for BRIEF
  *
  * Michael Calonder, Vincent Lepetit, Christoph Strecha, and Pascal Fua.
@@ -287,14 +382,14 @@ public:
  * Vision–ECCV 2010, pages 778–792. Springer, 2010
  * https://www.cs.ubc.ca/~lowe/525/papers/calonder_eccv10.pdf
  */
-class TL_EXPORT IBrief
+class TL_EXPORT Brief
   : public Feature
 {
 
 public:
 
-  IBrief() : Feature(Feature::Type::brief) {}
-  virtual ~IBrief() = default;
+  Brief() : Feature(Feature::Type::brief) {}
+  virtual ~Brief() = default;
 
   /*!
    * \brief Legth of the descriptor in bytes
@@ -335,14 +430,14 @@ public:
  * 2548–2555. IEEE, 2011
  * http://margaritachli.com/papers/ICCV2011paper.pdf
  */
-class TL_EXPORT IBrisk
+class TL_EXPORT Brisk
   : public Feature
 {
 
 public:
 
-  IBrisk() : Feature(Feature::Type::brisk) {}
-  virtual ~IBrisk() = default;
+  Brisk() : Feature(Feature::Type::brisk) {}
+  virtual ~Brisk() = default;
 
   /*!
    * \brief AGAST detection threshold score (Default=30)
@@ -393,14 +488,14 @@ public:
  * Stereo. IEEE Transactions on Pattern Analysis and Machine
  * Intelligence, 32(5):815–830, May 2010.
  */
-class TL_EXPORT IDaisy
+class TL_EXPORT Daisy
   : public Feature
 {
 
 public:
 
-  IDaisy() : Feature(Feature::Type::daisy) {}
-  virtual ~IDaisy() = default;
+  Daisy() : Feature(Feature::Type::daisy) {}
+  virtual ~Daisy() = default;
 
   /*!
    * \brief Radius of the descriptor at the initial scale (Default=15.)
@@ -506,16 +601,18 @@ public:
 
 /*!
  * \brief Interface for FAST class
- *
+ * Rosten E., Drummond T. (2006) Machine Learning for High-Speed Corner Detection.
+ * In: Leonardis A., Bischof H., Pinz A. (eds) Computer Vision – ECCV 2006. ECCV 2006.
+ * Lecture Notes in Computer Science, vol 3951. Springer, Berlin, Heidelberg
  */
-class TL_EXPORT IFast
+class TL_EXPORT Fast
   : public Feature
 {
 
 public:
 
-  IFast() : Feature(Feature::Type::fast) {}
-  virtual ~IFast() = default;
+  Fast() : Feature(Feature::Type::fast) {}
+  virtual ~Fast() = default;
 
   /*!
    * \brief threshold (Default=10)
@@ -559,7 +656,7 @@ public:
    *
    * \param[in] detectorType Detector Type
    */
-  virtual void setDetectorType(std::string detectorType) = 0;
+  virtual void setDetectorType(const std::string &detectorType) = 0;
 
 };
 
@@ -573,14 +670,14 @@ public:
  * Freak: Fast retina keypoint. In Computer Vision and Pattern
  * Recognition (CVPR), 2012 IEEE Conference on, pages 510–517. Ieee, 2012.
  */
-class TL_EXPORT IFreak
+class TL_EXPORT Freak
   : public Feature
 {
 
 public:
 
-  IFreak() : Feature(Feature::Type::freak) {}
-  virtual ~IFreak() = default;
+  Freak() : Feature(Feature::Type::freak) {}
+  virtual ~Freak() = default;
 
   /*!
    * \brief Orientation normalization (Default=true)
@@ -636,14 +733,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IGftt
+class TL_EXPORT Gftt
   : public Feature
 {
 
 public:
 
-  IGftt() : Feature(Feature::Type::gftt) {}
-  virtual ~IGftt() = default;
+  Gftt() : Feature(Feature::Type::gftt) {}
+  virtual ~Gftt() = default;
 
   virtual int maxFeatures() const = 0;
   virtual double qualityLevel() const = 0;
@@ -669,19 +766,19 @@ public:
  * \brief HOG (Histogram of Oriented Gradients)
  * Navneet Dalal and Bill Triggs @cite Dalal2005
  */
-class TL_EXPORT IHog
+class TL_EXPORT Hog
   : public Feature
 {
 
 public:
 
-  IHog() : Feature(Feature::Type::hog) {}
-  virtual ~IHog() = default;
+  Hog() : Feature(Feature::Type::hog) {}
+  virtual ~Hog() = default;
 
-  virtual cv::Size winSize() const = 0;
-  virtual cv::Size blockSize() const = 0;
-  virtual cv::Size blockStride() const = 0;
-  virtual cv::Size cellSize() const = 0;
+  virtual Size<int> winSize() const = 0;
+  virtual Size<int> blockSize() const = 0;
+  virtual Size<int> blockStride() const = 0;
+  virtual Size<int> cellSize() const = 0;
   virtual int nbins() const = 0;
   virtual int derivAperture() const = 0;
 //  virtual double winSigma() const = 0;
@@ -692,10 +789,10 @@ public:
 //  virtual int nlevels() const = 0;
 //  virtual bool signedGradient() const = 0;
 
-  virtual void setWinSize(const cv::Size &winSize) = 0;
-  virtual void setBlockSize(const cv::Size &blockSize) = 0;
-  virtual void setBlockStride(const cv::Size &blockStride) = 0;
-  virtual void setCellSize(const cv::Size &cellSize) = 0;
+  virtual void setWinSize(const Size<int> &winSize) = 0;
+  virtual void setBlockSize(const Size<int> &blockSize) = 0;
+  virtual void setBlockStride(const Size<int> &blockStride) = 0;
+  virtual void setCellSize(const Size<int> &cellSize) = 0;
   virtual void setNbins(int nbins) = 0;
   virtual void setDerivAperture(int derivAperture) = 0;
 //  virtual void setWinSigma(double winSigma) = 0;
@@ -713,7 +810,7 @@ public:
 
 
 /*!
- * \brief The IKaze class
+ * \brief Kaze Interface
  *
  * Multiscale 2D feature detection and description algorithm in nonlinear scale spaces.
  *
@@ -724,14 +821,14 @@ public:
  *
  * https://www.doc.ic.ac.uk/~ajd/Publications/alcantarilla_etal_eccv2012.pdf
  */
-class TL_EXPORT IKaze
+class TL_EXPORT Kaze
   : public Feature
 {
 
 public:
 
-  IKaze() : Feature(Feature::Type::kaze) {}
-  virtual ~IKaze() = default;
+  Kaze() : Feature(Feature::Type::kaze) {}
+  virtual ~Kaze() = default;
 
   /*!
    * \brief Extended descriptor
@@ -743,7 +840,7 @@ public:
    * \brief Use of upright descriptors (non rotation-invariant)
    * \return true if use upright descriptors (Default=false)
    */
-  virtual bool upright() const = 0;
+  virtual bool uprightDescriptor() const = 0;
 
   /*!
    * \brief Detector response threshold to accept point
@@ -779,7 +876,7 @@ public:
    * \brief Set to enable use of upright descriptors (non rotation-invariant)
    * \param[in] upright
    */
-  virtual void setUpright(bool upright) = 0;
+  virtual void setUprightDescriptor(bool uprightDescriptor) = 0;
 
   /*!
    * \brief Set the detector response threshold to accept point
@@ -811,14 +908,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT ILatch
+class TL_EXPORT Latch
   : public Feature
 {
 
 public:
 
-  ILatch() : Feature(Feature::Type::latch) {}
-  virtual ~ILatch() = default;
+  Latch() : Feature(Feature::Type::latch) {}
+  virtual ~Latch() = default;
 
   virtual std::string bytes() const = 0;
   virtual bool rotationInvariance() const = 0;
@@ -835,17 +932,17 @@ public:
 
 
 /*!
- * \brief Interface for LUCID class
+ * \brief LUCID Interface
  * Eric Christiansen David Kriegman Ziegler, Andrew and Serge J. Belongie.
  * Locally uniform comparison image descriptor
  */
-class TL_EXPORT ILucid
+class TL_EXPORT Lucid
   : public Feature
 {
 public:
 
-  ILucid() : Feature(Feature::Type::lucid) {}
-  virtual ~ILucid() = default;
+  Lucid() : Feature(Feature::Type::lucid) {}
+  virtual ~Lucid() = default;
 
   /*!
    * \brief kernel for descriptor construction
@@ -879,14 +976,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT ILss
+class TL_EXPORT Lss
   : public Feature
 {
 
 public:
 
-  ILss() : Feature(Feature::Type::lss) {}
-  virtual ~ILss() = default;
+  Lss() : Feature(Feature::Type::lss) {}
+  virtual ~Lss() = default;
 
 };
 
@@ -894,14 +991,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IMsd
+class TL_EXPORT Msd
   : public Feature
 {
 
 public:
 
-  IMsd() : Feature(Feature::Type::msd) {}
-  virtual ~IMsd() = default;
+  Msd() : Feature(Feature::Type::msd) {}
+  virtual ~Msd() = default;
 
   virtual double thresholdSaliency() const = 0;
   virtual int patchRadius() const = 0;
@@ -933,14 +1030,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IMser
+class TL_EXPORT Mser
   : public Feature
 {
 
 public:
 
-  IMser() : Feature(Feature::Type::mser) {}
-  virtual ~IMser() = default;
+  Mser() : Feature(Feature::Type::mser) {}
+  virtual ~Mser() = default;
 
   virtual int delta() const = 0;
   virtual int minArea() const = 0;
@@ -971,31 +1068,131 @@ public:
 /*!
  * \brief Interface ORB
  */
-class TL_EXPORT IOrb
+class TL_EXPORT Orb
   : public Feature
 {
 
 public:
 
-  IOrb() : Feature(Feature::Type::orb)  {}
-  virtual ~IOrb() = default;
+  Orb() : Feature(Feature::Type::orb)  {}
+  virtual ~Orb() = default;
 
+  /*!
+   * \brief The maximum number of features to retain
+   * \return Number of features to retain
+   */
   virtual int featuresNumber() const = 0;
+
+  /*!
+   * \brief Pyramid decimation ratio
+   * ScaleFactor==2 means the classical pyramid, where each next
+   * level has 4x less pixels than the previous, but such a big
+   * scale factor will degrade feature matching scores dramatically.
+   * On the other hand, too close to 1 scale factor will mean that to
+   * cover certain scale range you will need more pyramid levels and
+   * so the speed will suffer.
+   * \return
+   */
   virtual double scaleFactor() const = 0;
+
+  /*!
+   * \brief Returns the number of pyramid levels
+   * The smallest level will have linear size equal to
+   * input_image_linear_size/pow(scaleFactor, nlevels - firstLevel)
+   * \return
+   */
   virtual int levelsNumber() const = 0;
+
+  /*!
+   * \brief Size of the border where the features are not detected
+   * \return
+   */
   virtual int edgeThreshold() const = 0;
+
+  /*!
+   * \brief The level of pyramid to put source image to
+   * \return
+   */
+  virtual int firstLevel() const = 0;
+
+  /*!
+   * \brief The number of points that produce each element of the oriented BRIEF descriptor
+   * \return
+   */
   virtual int wta_k() const = 0;
+
+  /*!
+   * \brief scoreType
+   * \return
+   */
   virtual std::string scoreType() const = 0;
+
+  /*!
+   * \brief Size of the patch used by the oriented BRIEF descriptor
+   * \return
+   */
   virtual int patchSize() const = 0;
+
+  /*!
+   * \brief Returns the fast threshold
+   * \return
+   */
   virtual int fastThreshold() const = 0;
 
+  /*!
+   * \brief setScaleFactor
+   * \param[in] scaleFactor
+   */
   virtual void setScaleFactor(double scaleFactor) = 0;
+
+  /*!
+   * \brief setFeaturesNumber
+   * \param[in] featuresNumber
+   */
   virtual void setFeaturesNumber(int featuresNumber) = 0;
+
+  /*!
+   * \brief Set the number of pyramid levels
+   * \param[in] levelsNumber Number of pyramid levels
+   */
   virtual void setLevelsNumber(int levelsNumber) = 0;
+
+  /*!
+   * \brief setEdgeThreshold
+   * \param[in] edgeThreshold
+   */
   virtual void setEdgeThreshold(int edgeThreshold) = 0;
+
+  /*!
+   * \brief Set the first level of pyramid
+   * \param[in] firstLevel First level
+   */
+  virtual void setFirstLevel (int firstLevel) = 0;
+
+  /*!
+   * \brief Set the number of points that produce each element of the oriented BRIEF descriptor
+   * The default value 2 means the BRIEF where we take a random point pair and compare their
+   * brightnesses, so we get 0/1 response. Other possible values are 3 and 4.
+   * \param[in] WTA_K
+   */
   virtual void setWTA_K(int WTA_K) = 0;
+
+  /*!
+   * \brief Set HARRIS_SCORE (Harris algorithm) or FAST_SCORE
+   * \param[in] scoreType
+   */
   virtual void setScoreType(const std::string &scoreType) = 0;
+
+  /*!
+   * \brief Set the size of the patch used by the oriented BRIEF descriptor.
+   * \param[in] patchSize
+   */
   virtual void setPatchSize(int patchSize) = 0;
+
+  /*!
+   * \brief Set the fast threshold
+   * \param[in] fastThreshold
+   */
   virtual void setFastThreshold(int fastThreshold) = 0;
 
 };
@@ -1004,58 +1201,66 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT ISift
+class TL_EXPORT Sift
   : public Feature
 {
 public:
-  ISift() : Feature(Feature::Type::sift)  {}
-  virtual ~ISift() = default;
+  Sift() : Feature(Feature::Type::sift)  {}
+  virtual ~Sift() = default;
 
   /*!
-   * \brief featuresNumber
+   * \brief The number of best features to retain
+   * The features are ranked by their scores (measured in
+   * SIFT algorithm as the local contrast)
    * \return
    */
   virtual int featuresNumber() const = 0;
 
   /*!
-   * \brief octaveLayers
+   * \brief The number of layers in each octave.
+   * 3 is the value used in D. Lowe paper. The number of octaves
+   * is computed automatically from the image resolution.
    * \return
    */
   virtual int octaveLayers() const = 0;
 
   /*!
-   * \brief contrastThreshold
+   * \brief The contrast threshold used to filter out weak features in semi-uniform (low-contrast) regions.
+   * The larger the threshold, the less features are produced by the detector.
    * \return
    */
   virtual double contrastThreshold() const = 0;
 
   /*!
-   * \brief edgeThreshold
+   * \brief The threshold used to filter out edge-like features
+   * Note that the its meaning is different from the contrastThreshold, i.e. the larger
+   * the edgeThreshold, the less features are filtered out (more features are retained).
    * \return
    */
   virtual double edgeThreshold() const = 0;
 
   /*!
-   * \brief sigma
+   * \brief The sigma of the Gaussian applied to the input image at the octave 0.
+   * If your image is captured with a weak camera with soft lenses, you might want to reduce the number.
    * \return
    */
   virtual double sigma() const = 0;
 
   /*!
-   * \brief setFeaturesNumber
-   * \param featuresNumber
+   * \brief Set the number of best features to retain
+   * \param[in] featuresNumber Number of features
    */
   virtual void setFeaturesNumber(int featuresNumber) = 0;
 
   /*!
-   * \brief setOctaveLayers
-   * \param octaveLayers
+   * \brief Set the number of layers in each octave
+   * \param[in] octaveLayers The number of layers in each octave (3 by default)
    */
   virtual void setOctaveLayers(int octaveLayers) = 0;
 
   /*!
-   * \brief setContrastThreshold
-   * \param contrastThreshold
+   * \brief Set the contrast threshold
+   * \param[in] contrastThreshold Contrast threshold
    */
   virtual void setContrastThreshold(double contrastThreshold) = 0;
 
@@ -1066,8 +1271,8 @@ public:
   virtual void setEdgeThreshold(double edgeThreshold) = 0;
 
   /*!
-   * \brief setSigma
-   * \param sigma
+   * \brief Set sigma of the Gaussian
+   * \param[in] sigma Sigma of the Gaussian
    */
   virtual void setSigma(double sigma) = 0;
 
@@ -1077,14 +1282,14 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT IStar
+class TL_EXPORT Star
   : public Feature
 {
 
 public:
 
-  IStar() : Feature(Feature::Type::star) {}
-  virtual ~IStar() = default;
+  Star() : Feature(Feature::Type::star) {}
+  virtual ~Star() = default;
 
   virtual int maxSize() const  = 0;
   virtual int responseThreshold() const  = 0;
@@ -1104,35 +1309,37 @@ public:
 /*----------------------------------------------------------------*/
 
 
-class TL_EXPORT ISurf
+class TL_EXPORT Surf
   : public Feature
 {
 public:
 
-  ISurf() : Feature(Feature::Type::surf) {}
-  virtual ~ISurf() = default;
+  Surf() : Feature(Feature::Type::surf) {}
+  virtual ~Surf() = default;
 
   /*!
    * \brief Threshold for hessian keypoint detector used in SURF
-   * \return
+   * \return Threshold
    */
   virtual double hessianThreshold() const = 0;
 
   /*!
    * \brief Threshold for hessian keypoint detector used in SURF
-   * \param[in] hessianThreshold
+   * \param[in] hessianThreshold Threshold for hessian keypoint detector
    */
   virtual void setHessianThreshold(double hessianThreshold) = 0;
 
   /*!
-   * \brief Number of pyramid octaves the keypoint detector will use.
-   * \return
+   * \brief Number of a gaussian pyramid octaves that the detector uses.
+   * \return Number of octaves
    */
   virtual int octaves() const = 0;
 
   /*!
-   * \brief Set the number of pyramid octaves
-   * \param[in] octaves Number of pyramid octaves the keypoint detector will use.
+   * \brief Set the number of a gaussian pyramid octaves that the detector uses.
+   * It is set to 4 by default. If you want to get very large features, use the
+   * larger value. If you want just small features, decrease it.
+   * \param[in] octaves The number of a gaussian pyramid octaves that the detector uses.
    */
   virtual void setOctaves(int octaves) = 0;
 
@@ -1164,25 +1371,78 @@ public:
    * \brief Up-right or rotated features
    * \return true (do not compute orientation of features) or false (compute orientation)
    */
-  virtual bool rotatedFeatures() const = 0;
+  virtual bool upright() const = 0;
 
   /*!
    * \brief compute orientation of features
    * \param[in] rotatedFeatures false for compute orientation
    */
-  virtual void setRotatedFeatures(bool rotatedFeatures) = 0;
+  virtual void setUpright(bool upright) = 0;
 
 };
 
 
 /*----------------------------------------------------------------*/
 
-TL_EXPORT void featuresWrite(const std::string &fname, const std::vector<cv::KeyPoint> &keyPoints, const cv::Mat &descriptors);
-TL_EXPORT void featuresRead(const std::string &fname, std::vector<cv::KeyPoint> &keyPoints, cv::Mat &descriptors);
-
-/*----------------------------------------------------------------*/
 
 
+/*!
+ * \brief Vgg interface
+ * K. Simonyan, A. Vedaldi, and A. Zisserman. Learning local feature
+ * descriptors using convex optimisation. IEEE Transactions on Pattern
+ * Analysis and Machine Intelligence, 2014.
+ */
+class TL_EXPORT Vgg
+  : public Feature
+{
+public:
+
+  Vgg() : Feature(Feature::Type::vgg) {}
+  ~Vgg() override = default;
+
+  /*!
+   * \brief Type of descriptor to use
+   * Available types are VGG_120 (default), VGG_80, VGG_64, VGG_48
+   * \return Type of descriptor
+   */
+  virtual std::string descriptorType() const = 0;
+
+  /*!
+   * \brief Set the type of descriptor to use
+   * Available types are VGG_120 (default), VGG_80, VGG_64, VGG_48
+   * \param[in] descriptorType Type of descriptor to use.
+   */
+  virtual void setDescriptorType(const std::string &descriptorType) = 0;
+
+  virtual double scaleFactor() const = 0;
+  virtual void 	setScaleFactor(double scaleFactor) = 0;
+
+  /*!
+   * \brief Gaussian kernel value for image blur
+   * \return Gaussian kernel value
+   */
+  virtual double sigma() const = 0;
+
+  /*!
+   * \brief Set gaussian kernel value for image blur (default is 1.4f)
+   * \param[in] sigma
+   */
+  virtual void 	setSigma(double sigma) = 0;
+
+  virtual bool 	useNormalizeDescriptor() const = 0;
+  virtual void 	setUseNormalizeDescriptor(bool useNormalizeDescriptor) = 0;
+
+  virtual bool 	useNormalizeImage() const = 0;
+  virtual void 	setUseNormalizeImage(bool useNormalizeImage) = 0;
+
+  virtual bool 	useScaleOrientation() const = 0;
+  virtual void 	setUseScaleOrientation(bool useScaleOrientation) = 0;
+};
+
+
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

@@ -1,8 +1,6 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop flags test
+#include <boost/test/unit_test.hpp>
 #include <tidop/core/flags.h>
-
-#include <cstdint>
 
 using namespace tl;
 
@@ -48,211 +46,270 @@ enum class ePrueba3 : int16_t {
 ALLOW_BITWISE_FLAG_OPERATIONS(ePrueba3)
 
 
-// Constructor EnumFlags
-TEST(EnumFlags, Constructor) 
+BOOST_AUTO_TEST_CASE(EnumFlags_constructors)
 {
-
   // Constructor vacio
   EnumFlags<ePrueba2> flagEmpty;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flagEmpty.flags()));
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flagEmpty.flags()));
 
-  // Constructor copia
+   // Constructor copia
   EnumFlags<ePrueba2> flag_copy(flagEmpty);
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag_copy.flags()));
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag_copy.flags()));
 
   // Constructor por enun
   EnumFlags<ePrueba2> flag(ePrueba2::flag01);
 
-  EXPECT_TRUE(flag.isActive(ePrueba2::flag01));
-  EXPECT_FALSE(flag.isActive(ePrueba2::flag04));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag00));
+  BOOST_CHECK(flag.isActive(ePrueba2::flag01));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag02));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag03));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag04));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag05));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag06));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag07));
 }
 
-TEST(EnumFlags, Assign) 
+BOOST_AUTO_TEST_CASE(EnumFlags_assign) 
 {
-
   EnumFlags<ePrueba2> flagEmpty;
   flagEmpty = ePrueba2::flag01;
 
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag01));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag01));
 
   flagEmpty = ePrueba2::flag02 | ePrueba2::flag03;
 
-  EXPECT_FALSE(flagEmpty.isActive(ePrueba2::flag01));
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag02));
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag03));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag01));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag02));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag03));
 
   flagEmpty = ePrueba2::flag02 | ePrueba2::flag03 | ePrueba2::flag01;
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag01));
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag02));
-  EXPECT_TRUE(flagEmpty.isActive(ePrueba2::flag03));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag00));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag01));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag02));
+  BOOST_CHECK(flagEmpty.isActive(ePrueba2::flag03));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag04));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag05));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag06));
+  BOOST_CHECK_EQUAL(false, flagEmpty.isActive(ePrueba2::flag07));
 }
 
-TEST(EnumFlags, Clear)
+BOOST_AUTO_TEST_CASE(EnumFlags_clear)
 {
-
   EnumFlags<ePrueba2> flag(ePrueba2::flag02 | ePrueba2::flag03);
-  EXPECT_TRUE(flag.isActive(ePrueba2::flag02));
-  EXPECT_TRUE(flag.isActive(ePrueba2::flag03));
-  flag.clear();
-  EXPECT_FALSE(flag.isActive(ePrueba2::flag02));
-  EXPECT_FALSE(flag.isActive(ePrueba2::flag03));
+  BOOST_CHECK(flag.isActive(ePrueba2::flag02));
+  BOOST_CHECK(flag.isActive(ePrueba2::flag03));
 
+  flag.clear();
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag02));
+  BOOST_CHECK_EQUAL(false, flag.isActive(ePrueba2::flag03));
 }
 
-TEST(EnumFlags, flagOnOff) 
+BOOST_AUTO_TEST_CASE(EnumFlags_flagOn) 
 {
+  EnumFlags<ePrueba3> flag2;
 
-  EnumFlags<ePrueba3> flag2(ePrueba3::flag15);
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag03));
 
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag15));
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag03));
-
-  flag2.flagOff(ePrueba3::flag15);
   flag2.flagOn(ePrueba3::flag03);
 
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag15));
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag03));
 
   //Prueba a activar un flag ya activo
-  ePrueba3 ef = flag2.flags();
   flag2.flagOn(ePrueba3::flag03);
-  ePrueba3 ef2 = flag2.flags();
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag03));
 }
 
-TEST(EnumFlags, switchFlag)
+BOOST_AUTO_TEST_CASE(EnumFlags_flagOff) 
 {
+  EnumFlags<ePrueba3> flag2(ePrueba3::flag15);
 
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag15));
+
+  flag2.flagOff(ePrueba3::flag15);
+
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag15));
+
+  //Prueba a desactivar un flag ya desactivado
+  flag2.flagOff(ePrueba3::flag15);
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag15));
+}
+
+BOOST_AUTO_TEST_CASE(EnumFlags_switchFlag)
+{
   EnumFlags<ePrueba3> flag2(ePrueba3::flag15 | ePrueba3::flag06 );
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag15));
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag06));
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag01));
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag03));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag15));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag06));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag01));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag03));
 
   flag2.switchFlag(ePrueba3::flag15);
   flag2.switchFlag(ePrueba3::flag06);
   flag2.switchFlag(ePrueba3::flag01);
   flag2.switchFlag(ePrueba3::flag03);
 
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag15));
-  EXPECT_FALSE(flag2.isActive(ePrueba3::flag06));
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag01));
-  EXPECT_TRUE(flag2.isActive(ePrueba3::flag03));
-
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag15));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(ePrueba3::flag06));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag01));
+  BOOST_CHECK(flag2.isActive(ePrueba3::flag03));
 }
 
 
+// Flags<T>
 
-// Constructor Flags
-TEST(Flags, Constructor)
+// Constructor Flags_8
+BOOST_AUTO_TEST_CASE(Flags_8_constructor)
 {
-
-  // Constructor vacio
   Flags_8 flag8;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag8.flags()));
-  EXPECT_FALSE(flag8.isActive(3));
-
-  Flags_16 flag16;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag16.flags()));
-  EXPECT_FALSE(flag16.isActive(10));
-
-  Flags_32 flag32;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag32.flags()));
-  EXPECT_FALSE(flag32.isActive(25));
-
-  Flags_64 flag64;
-  EXPECT_EQ(0, static_cast<EnumFlags<ePrueba2>::Type>(flag64.flags()));
-  EXPECT_FALSE(flag64.isActive(45));
-
-  // Constructor copia
-  flag16.flagOn(3);
-  Flags<uint16_t> flag_copy(flag16);
-  EXPECT_TRUE(flag_copy.isActive(3));
-  EXPECT_FALSE(flag_copy.isActive(4));
-
-  // Construcción con inicialización de lista
-  Flags_32 flag_list{ 0, 3, 7, 4 };
-  EXPECT_TRUE(flag_list.isActive(0));
-  EXPECT_TRUE(flag_list.isActive(3));
-  EXPECT_TRUE(flag_list.isActive(7));
-  EXPECT_TRUE(flag_list.isActive(4));
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag8.flags()));
+  for (int i = 0; i < 8; i++)
+    BOOST_CHECK_EQUAL(false, flag8.isActive(i));
 }
 
-TEST(Flags, Assign)
+// Constructor Flags_16
+BOOST_AUTO_TEST_CASE(Flags_16_constructor)
 {
+  Flags_16 flag16;
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag16.flags()));
+  for (int i = 0; i < 16; i++)
+    BOOST_CHECK_EQUAL(false, flag16.isActive(i));
+}
 
+// Constructor Flags_32
+BOOST_AUTO_TEST_CASE(Flags_32_constructor)
+{
+  Flags_32 flag32;
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag32.flags()));
+  for (int i = 0; i < 32; i++)
+    BOOST_CHECK_EQUAL(false, flag32.isActive(i));
+}
+
+// Constructor Flags_64
+BOOST_AUTO_TEST_CASE(Flags_64_constructor)
+{
+  Flags_64 flag64;
+  BOOST_CHECK_EQUAL(0, static_cast<EnumFlags<ePrueba2>::Type>(flag64.flags()));
+  for (int i = 0; i < 64; i++)
+    BOOST_CHECK_EQUAL(false, flag64.isActive(i));
+}
+
+// Constructor copia
+BOOST_AUTO_TEST_CASE(Flags_copy_constructor)
+{
+  Flags_16 flag16;
+  flag16.flagOn(3);
+
+  Flags<uint16_t> flag_copy(flag16);
+  for (int i = 0; i < 16; i++) {
+    if (i == 3)
+      BOOST_CHECK(flag_copy.isActive(i));
+    else 
+      BOOST_CHECK_EQUAL(false, flag_copy.isActive(i));
+  }
+}
+
+// Construcción con inicialización de lista
+BOOST_AUTO_TEST_CASE(Flags_initializer_list_constructor)
+{
+  Flags_32 flag_list{ 0, 3, 7, 4 };
+  BOOST_CHECK(flag_list.isActive(0));
+  BOOST_CHECK_EQUAL(false, flag_list.isActive(1));
+  BOOST_CHECK_EQUAL(false, flag_list.isActive(2));
+  BOOST_CHECK(flag_list.isActive(3));
+  BOOST_CHECK(flag_list.isActive(4));
+  BOOST_CHECK_EQUAL(false, flag_list.isActive(5));
+  BOOST_CHECK_EQUAL(false, flag_list.isActive(6));
+  BOOST_CHECK(flag_list.isActive(7));
+  
+}
+
+BOOST_AUTO_TEST_CASE(Flags_assign)
+{
   Flags_8 flag1;
   flag1.flagOn(1);
 
   Flags_8 flag2 = flag1;
 
-  EXPECT_TRUE(flag2.isActive(1));
-  EXPECT_FALSE(flag2.isActive(0));
-  EXPECT_FALSE(flag2.isActive(2));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(0));
+  BOOST_CHECK(flag2.isActive(1));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(2));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(3));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(4));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(5));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(6));
+  BOOST_CHECK_EQUAL(false, flag2.isActive(7));
 }
 
-TEST(Flags, Clear)
+BOOST_AUTO_TEST_CASE(Flags_clear)
 {
-
   Flags_32 flag;
   flag.flagOn(2);
   flag.switchFlag(3);
-  EXPECT_TRUE(flag.isActive(2));
-  EXPECT_TRUE(flag.isActive(3));
-  flag.clear();
-  EXPECT_FALSE(flag.isActive(2));
-  EXPECT_FALSE(flag.isActive(3));
 
+  BOOST_CHECK(flag.isActive(2));
+  BOOST_CHECK(flag.isActive(3));
+
+  flag.clear();
+
+  BOOST_CHECK_EQUAL(false, flag.isActive(2));
+  BOOST_CHECK_EQUAL(false, flag.isActive(3));
 }
 
-TEST(Flags, flagOnOff)
+BOOST_AUTO_TEST_CASE(Flags_flagOn)
 {
-
   Flags_64 flag2;
+  BOOST_CHECK_EQUAL(false, flag2.isActive(15));
+  
   flag2.flagOn(15);
 
-  EXPECT_TRUE(flag2.isActive(15));
-  EXPECT_FALSE(flag2.isActive(3));
-
-  flag2.flagOff(15);
-  flag2.flagOn(3);
-
-  EXPECT_FALSE(flag2.isActive(15));
-  EXPECT_TRUE(flag2.isActive(3));
+  BOOST_CHECK(flag2.isActive(15));
 
   //Prueba a activar un flag ya activo
   flag2.flagOn(3);
-  EXPECT_TRUE(flag2.isActive(3));
+  BOOST_CHECK(flag2.isActive(3));
 }
 
-TEST(Flags, switchFlag) 
+BOOST_AUTO_TEST_CASE(Flags_flagOff)
 {
+  Flags_64 flag2{15};
 
+  BOOST_CHECK(flag2.isActive(15));
+
+  flag2.flagOff(15);
+
+  BOOST_CHECK_EQUAL(false, flag2.isActive(15));
+
+  //Prueba a desactivar un flag ya desactivado
+  flag2.flagOff(15);
+  BOOST_CHECK_EQUAL(false, flag2.isActive(15));
+}
+
+BOOST_AUTO_TEST_CASE(Flags_switchFlag) 
+{
   Flags_16 flag_16;
   flag_16.switchFlag(15);
   flag_16.switchFlag(6);
-  EXPECT_TRUE(flag_16.isActive(15));
-  EXPECT_TRUE(flag_16.isActive(6));
-  EXPECT_FALSE(flag_16.isActive(1));
-  EXPECT_FALSE(flag_16.isActive(3));
+  BOOST_CHECK(flag_16.isActive(15));
+  BOOST_CHECK(flag_16.isActive(6));
+  BOOST_CHECK_EQUAL(false, flag_16.isActive(1));
+  BOOST_CHECK_EQUAL(false, flag_16.isActive(3));
 
   flag_16.switchFlag(15);
   flag_16.switchFlag(6);
   flag_16.switchFlag(1);
   flag_16.switchFlag(3);
 
-  EXPECT_FALSE(flag_16.isActive(15));
-  EXPECT_FALSE(flag_16.isActive(6));
-  EXPECT_TRUE(flag_16.isActive(1));
-  EXPECT_TRUE(flag_16.isActive(3));
-
+  BOOST_CHECK_EQUAL(false, flag_16.isActive(15));
+  BOOST_CHECK_EQUAL(false, flag_16.isActive(6));
+  BOOST_CHECK(flag_16.isActive(1));
+  BOOST_CHECK(flag_16.isActive(3));
 }
 
-TEST(Flags, bad_data)
+BOOST_AUTO_TEST_CASE(Flags_bad_data)
 {
   Flags_16 flag_16;
   flag_16.flagOn(5);
   flag_16.flagOn(25); // Se asigna un valor fuera de rango
-  EXPECT_FALSE(flag_16.isActive(25));
-  EXPECT_TRUE(flag_16.isActive(5));
+  BOOST_CHECK_EQUAL(false, flag_16.isActive(25));
+  BOOST_CHECK(flag_16.isActive(5));
 }
+

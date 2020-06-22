@@ -31,7 +31,7 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img_process/img_processing.h>
+#include <tidop/imgprocess/imgprocess.h>
 
 #if (__cplusplus >= 201703L)
 #include <filesystem>
@@ -62,8 +62,8 @@ int main(int argc, char** argv)
 
   std::string file;
   std::string output;
-  bool bOpt, bOpt2;
-  int val;
+  //bool bOpt, bOpt2;
+  //int val;
   double val_d = 0.5;
   size_t idx = 0;
   std::vector<std::string> options;

@@ -28,6 +28,18 @@ namespace tl
 namespace math
 {
 
+/*! \addtogroup Math
+ *  \{
+ */
+
+
+ /*! \addtogroup Algebra
+  *
+  * Algebra
+  *
+  *  \{
+  */
+
 /*!
  * \brief Ángulos de Euler
  */
@@ -37,32 +49,14 @@ class AxisAngle
 
 public:
 
-  enum class Axis{
-    x,
-    y,
-    z
-  };
-
-
-  T angle;
-  Vector<3, T> axis;
+  AxisAngle();
+  AxisAngle(T angle, const Vector<3, T> &axis);
+  ~AxisAngle();
 
 public:
 
-  /*!
-   * \brief Constructor por defecto
-   */
-  AxisAngle();
-
-  AxisAngle(T angle, const Vector<3, T> &axis);
-  //AxisAngle(T angle, Axis axis);
-
-  /*!
-   * \brief destructora
-   */
-  ~AxisAngle();
-
-
+  T angle;
+  Vector<3, T> axis;
 };
 
 template<typename T>
@@ -79,27 +73,8 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<3, T> &axis)
   : angle(angle),
     axis(axis)
 {
-
+  TL_TODO("normalizar vector")
 }
-
-//template<typename T>
-//AxisAngle<T>::AxisAngle(T angle, AxisAngle::Axis axis)
-//  : angle(angle)
-//{
-//  if (axis == AxisAngle<T>::Axis::x){
-//    axis.at(0) = static_cast<T>(1);
-//    axis.at(1) = static_cast<T>(0);
-//    axis.at(2) = static_cast<T>(0);
-//  } else if (axis == AxisAngle<T>::Axis::y){
-//    axis.at(0) = static_cast<T>(0);
-//    axis.at(1) = static_cast<T>(1);
-//    axis.at(2) = static_cast<T>(0);
-//  } else if (axis == AxisAngle<T>::Axis::z){
-//    axis.at(0) = static_cast<T>(0);
-//    axis.at(1) = static_cast<T>(0);
-//    axis.at(2) = static_cast<T>(1);
-//  }
-//}
 
 template<typename T>
 AxisAngle<T>::~AxisAngle()
@@ -107,7 +82,9 @@ AxisAngle<T>::~AxisAngle()
 
 }
 
+/*! \} */ // end of Algebra
 
+/*! \} */ // end of Math
 
 } // Fin namespace math
 

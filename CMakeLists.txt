@@ -218,16 +218,17 @@ if(WITH_BOOST)
 #TODO: Deber?a establecer la versi?n m?nima de Boost en find_package
     #find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
     find_package(Boost COMPONENTS filesystem system REQUIRED)
+    find_package(Boost COMPONENTS filesystem system unit_test_framework REQUIRED)
     if(Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
-      set(HAVE_BOOST YES)
+        set(HAVE_BOOST YES)
 
     #if (WIN32)
         #    add_definitions(-DBOOST_ALL_NO_LIB)
         #    add_definitions(-DBOOST_ALL_DYN_LINK)
         #endif()
 
-  else()
+    else()
       set(HAVE_BOOST NO)
     endif()
 

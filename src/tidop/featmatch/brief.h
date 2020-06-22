@@ -10,16 +10,27 @@
 namespace tl
 {
 
+/*! \addtogroup Features
+ * 
+ *  \{
+ */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
 
 class TL_EXPORT BriefProperties
-  : public IBrief
+  : public Brief
 {
 public:
 
   BriefProperties();
-  ~BriefProperties() override;
+  BriefProperties(const BriefProperties &briefProperties);
+  ~BriefProperties() override = default;
 
-// IBrief interface
+// Brief interface
 
 public:
 
@@ -53,10 +64,10 @@ class TL_EXPORT BriefDescriptor
 public:
 
   BriefDescriptor();
+  BriefDescriptor(const BriefDescriptor &briefDescriptor);
   BriefDescriptor(std::string bytes,
                   bool useOrientation);
-
-  ~BriefDescriptor() override;
+  ~BriefDescriptor() override = default;
 
 private:
 
@@ -71,7 +82,7 @@ public:
                cv::Mat &descriptors) override;
 
 
-// IBrief interface
+// Brief interface
 
 public:
 
@@ -89,6 +100,9 @@ protected:
   cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> mBrief;
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

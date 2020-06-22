@@ -254,7 +254,7 @@ EnumFlags<T> &EnumFlags<T>::operator = (T flag)
 template<typename T> inline
 bool EnumFlags<T>::isActive(T flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(flag) );
+  return 0 != (mFlag & static_cast<Type>(flag));
 }
 
 template<typename T> inline
@@ -272,15 +272,19 @@ void EnumFlags<T>::flagOff(T flag)
 template<typename T> inline
 void EnumFlags<T>::activeFlag(T flag, bool active)
 {
-  if (active) flagOn(flag);
-  else flagOff(flag);
+  if (active) 
+    flagOn(flag);
+  else 
+    flagOff(flag);
 }
 
 template<typename T> inline
 void EnumFlags<T>::switchFlag(T flag)
 {
-  if ( isActive(flag) ) flagOff(flag);
-  else flagOn(flag);
+  if (isActive(flag)) 
+    flagOff(flag);
+  else 
+    flagOn(flag);
 }
 
 template<typename T> inline
@@ -300,7 +304,7 @@ T EnumFlags<T>::getFlags() const
 template<typename T> inline
 T EnumFlags<T>::flags() const
 {
-  return static_cast<T> (mFlag);
+  return static_cast<T>(mFlag);
 }
 
 
@@ -355,7 +359,20 @@ inline T_FLAG operator ~ (T_FLAG flag)                              \
   return static_cast<T_FLAG> (                                      \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
   );                                                                \
-}
+}                                                                   \
+                                                                    
+//inline bool operator == (T_FLAG flag1, T_FLAG flag2)                \
+//{                                                                   \
+//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) == \
+//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
+//}                                                                   \
+//                                                                    \
+//inline bool operator != (T_FLAG flag1, T_FLAG flag2)                \
+//{                                                                   \
+//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) != \
+//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
+//}                                                                   \
+
 
 
 template<typename T>
@@ -470,9 +487,10 @@ Flags<T>::Flags(const Flags &flag)
 
 template<typename T> inline
 Flags<T>::Flags(std::initializer_list<int> flags)
+  : mFlag(0)
 {
   for (auto flg : flags) {
-    mFlag |= static_cast<Type>(1 << flg);
+    this->flagOn(flg);
   }
 }
 
@@ -493,7 +511,7 @@ Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
 template<typename T> inline
 bool Flags<T>::isActive(int flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(1 << flag) );
+  return 0 != (mFlag & static_cast<Type>(1 << flag));
 }
 
 template<typename T> inline
@@ -511,8 +529,10 @@ void Flags<T>::flagOff(int flag)
 template<typename T> inline
 void Flags<T>::switchFlag(int flag)
 {
-  if ( isActive(flag) ) flagOff(flag);
-  else flagOn(flag);
+  if (isActive(flag)) 
+    flagOff(flag);
+  else 
+    flagOn(flag);
 }
 
 template<typename T> inline
@@ -525,14 +545,14 @@ void Flags<T>::clear()
 template<typename T> inline
 T Flags<T>::getFlags() const
 {
-  return static_cast<T> (mFlag);
+  return static_cast<T>(mFlag);
 }
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename T> inline
 T Flags<T>::flags() const
 {
-  return static_cast<T> (mFlag);
+  return static_cast<T>(mFlag);
 }
 
 } // End namespace tl

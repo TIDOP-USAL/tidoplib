@@ -13,7 +13,6 @@
 
 
 using namespace tl;
-using namespace geometry;
 
 int main(int argc, char** argv)
 {

@@ -282,6 +282,7 @@ int changeFileName(const char *path, const char *newName, char *pathOut, int siz
   return r_err;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size)
 {
   int r_err = 0;
@@ -298,6 +299,7 @@ int changeFileExtension(const char *path, const char *newExt, char *pathOut, int
 #endif
   return r_err;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
 {
@@ -357,6 +359,7 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
 #endif
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard)
 {
@@ -390,6 +393,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 #endif
 }
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /// https://stackoverflow.com/questions/1257721/can-i-use-a-mask-to-iterate-files-in-a-directory-with-boost
 void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
@@ -801,15 +805,15 @@ int loadBinMat(const char *file, cv::Mat *data)
   int32_t type;
   try {
     size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
+    TL_ASSERT(err != 1, "Reading error")
     err = std::fread(&cols, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
+    TL_ASSERT(err != 1, "Reading error")
     err = std::fread(&type, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
+    TL_ASSERT(err != 1, "Reading error")
     //Cuerpo
     cv::Mat aux(rows, cols, type);
     err = std::fread(aux.data, sizeof(float), rows*cols, fp);
-    TL_THROW_ASSERT(err != rows*cols, "Reading error")
+    TL_ASSERT(err != rows*cols, "Reading error")
     aux.copyTo(*data);
   } catch (std::exception &e) {
     msgError(e.what());
@@ -865,8 +869,9 @@ uint32_t getOptimalNumberOfThreads()
 #endif
 }
 
-void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
+void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f)
 {
+  TL_TODO("Tiene que ser una plantilla")
   //uint64_t time_ini = getTickCount();
 #ifdef HAVE_OMP
   //TODO: Sin probar
@@ -882,8 +887,8 @@ void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
   Concurrency::parallel_for(ini, end, f);
 #else
 
-  auto f_aux = [&](int ini, int end) {
-    for (int r = ini; r < end; r++) {
+  auto f_aux = [&](size_t ini, size_t end) {
+    for (size_t r = ini; r < end; r++) {
       f(r);
     }
   };

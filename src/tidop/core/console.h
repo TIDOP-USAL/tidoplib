@@ -27,8 +27,6 @@
 #if defined (__clang__) || defined (__GNUG__)
 #include <cxxabi.h>
 #endif
-
-// filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
 #else
@@ -71,7 +69,6 @@ class TL_EXPORT Console
   : public MessageManager::Listener
 #endif
 {
-
 public:
 
   /*!
@@ -137,10 +134,6 @@ private:
 
 public:
 
-  /*!
-   * Destructora
-   * Se recuperan las opciones por defecto de la consola
-   */
 #ifdef TL_MESSAGE_HANDLER
   ~Console() override;
 #else
@@ -187,7 +180,8 @@ public:
    * \param[in] backColor Color de fondo
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
-  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::normal);
+  void setConsoleBackgroundColor(Console::Color backColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece el color de caracter
@@ -195,7 +189,8 @@ public:
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    * \see Console::Color, Console::Intensity
    */
-  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::normal);
+  void setConsoleForegroundColor(Console::Color foreColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece la consola como modo Unicode
@@ -269,7 +264,7 @@ private:
    * \brief Inicializa la consola guardando la configuración  actual.
    * \param handle
    */
-  void init( DWORD handle );
+  void init(DWORD handle);
 
 #else
 
@@ -309,10 +304,9 @@ public:
 
 private:
 
-
 #ifdef WIN32
 
-  // Consola de Windows
+  /* Consola de Windows */
 
   /*!
    * \brief Manejador de la consola
@@ -345,16 +339,15 @@ private:
   /*!
    * \brief Color de fondo
    */
-  WORD mBackColor;
+  WORD mBackgroundColor;
 
   //TODO: Por terminar
   CONSOLE_FONT_INFOEX mIniFont;
-
   CONSOLE_FONT_INFOEX mCurrentFont;
 
 #else
 
-  // Consola Linux
+  /* Consola Linux */
 
   /*!
    * \brief mStream
@@ -374,26 +367,15 @@ private:
   /*!
    * \brief Color de fondo
    */
-  int mBackColor;
-
+  int mBackgroundColor;
   int mBold;
 
 #endif
   
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto MessageLevel::msg_error
-   * \see MessageLevel
-   */
   static EnumFlags<MessageLevel> sLevel;
-
-  /*!
-   * \brief Objeto único para la consola
-   */
   static std::unique_ptr<Console> sObjConsole;
-
   static std::mutex mtx;
+
 };
 
 
@@ -541,7 +523,8 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  virtual std::string toString() const = 0;
+  ///TODO: si el valor no esta inicializado puede provocar un comportamiento inexperado
+  //virtual std::string toString() const = 0;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -572,6 +555,7 @@ protected:
    * Es un único caracter
    */
   char mShortName;
+
 };
 
 
@@ -679,7 +663,7 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  std::string toString() const override;
+  //std::string toString() const override;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -703,13 +687,8 @@ public:
 
 protected:
 
-  /*!
-   * \brief Valor del argumento
-   */
   T *mValue;
-
   bool bValid;
-
 };
 
 
@@ -863,60 +842,60 @@ bool Argument_<T, required>::isRequired() const
   return required;
 }
 
-template<typename T, bool required> inline
-std::string Argument_<T, required>::toString() const
-{
-  std::string val;
-  if(typeid(T) == typeid(bool)) {
-    val = *mValue ? "true" : "false";
-  } else if (std::is_integral<T>::value) {
-    val = std::to_string(*mValue);
-  } else if (std::is_floating_point<T>::value){
-    val = std::to_string(*mValue);
-  } else if(typeid(T) == typeid(std::string)) {
-    val = *mValue;
-  }
-  return val;
-}
-
-template<> inline
-std::string Argument_<std::string, true>::toString() const
-{
-  return *mValue;
-}
-
-template<> inline
-std::string Argument_<std::string, false>::toString() const
-{
-  return *mValue;
-}
-
-
-#if (__cplusplus >= 201703L)
-template<> inline
-std::string Argument_<std::filesystem::path, true>::toString() const
-{
-  return mValue->string();
-}
-
-template<> inline
-std::string Argument_<std::filesystem::path, false>::toString() const
-{
-  return mValue->string();
-}
-#else
-template<> inline
-std::string Argument_<boost::filesystem::path, true>::toString() const
-{
-  return mValue->string();
-}
-
-template<> inline
-std::string Argument_<boost::filesystem::path, false>::toString() const
-{
-  return mValue->string();
-}
-#endif
+//template<typename T, bool required> inline
+//std::string Argument_<T, required>::toString() const
+//{
+//  std::string val;
+//  if(typeid(T) == typeid(bool)) {
+//    val = *mValue ? "true" : "false";
+//  } else if (std::is_integral<T>::value) {
+//    val = std::to_string(*mValue);
+//  } else if (std::is_floating_point<T>::value){
+//    val = std::to_string(*mValue);
+//  } else if(typeid(T) == typeid(std::string)) {
+//    val = *mValue;
+//  }
+//  return val;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, true>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, false>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//
+//#if (__cplusplus >= 201703L)
+//template<> inline
+//std::string Argument_<std::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<std::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#else
+//template<> inline
+//std::string Argument_<boost::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<boost::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#endif
 
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
@@ -924,6 +903,8 @@ void Argument_<T, required>::fromString(const std::string &value)
   if(typeid(T) == typeid(bool)) {
     if (value == "true" || value == "1")
       *mValue = true;
+    else
+      *mValue = false;
   } else if (std::is_integral<T>::value) {
     *mValue = stringToInteger(value);
   } else if (std::is_floating_point<T>::value) {
@@ -1010,6 +991,11 @@ class ArgumentList_
   : public Argument_<T, required>
 {
 
+protected:
+
+  std::vector<T> mValues;
+  size_t *mIdx;
+
 public:
 
   /*!
@@ -1055,10 +1041,6 @@ public:
 
   void setValue(const T &value) override;
 
-protected:
-
-  std::vector<T> mValues;
-  size_t *mIdx;
 };
 
 
@@ -1159,8 +1141,7 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
     *mIdx = idx;
     this->bValid = true;
   } else {
-    //Argument_<T, required>::setValue(prev_value);
-    //*mIdx = -1;
+    Argument_<T, required>::setValue(prev_value);
     this->bValid = false;
   }
 }
@@ -1168,14 +1149,22 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
 template<typename T, bool required> inline
 void ArgumentList_<T, required>::setValue(const T &value)
 {
+  bool bFind = false;
+  size_t idx = 0;
   for(auto &_value : mValues){
     if (value == _value){
       Argument_<T, required>::setValue(value);
-      this->bValid = true;
-      return;
+      bFind = true;
+      break;
     }
+    idx++;
   }
-  this->bValid = false;
+  if (bFind) {
+    *mIdx = idx;
+    this->bValid = true;
+  } else {
+    this->bValid = false;
+  }
 }
 
 
@@ -1194,6 +1183,10 @@ class ArgumentValidator;
 template <typename T>
 class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
+private:
+
+  T mMin;
+  T mMax;
 
 public:
 
@@ -1222,11 +1215,6 @@ public:
   {
     return mMax;
   }
-
-private:
-
-  T mMin;
-  T mMax;
 };
 
 
@@ -1340,6 +1328,37 @@ public:
    * \brief Iterador constante de acceso aleatorio
    */
   typedef std::list<std::shared_ptr<Argument>>::const_iterator const_iterator;
+
+
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Argument>> mCmdArgs;
+
+  /*!
+   * \brief Listado de los argumentos por defecto comando
+   * Comandos como ayuda [-h | --help] o versión [--version]
+   */
+  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
+  std::list<std::string> mExamples;
 
 public:
 
@@ -1508,35 +1527,6 @@ protected:
 
   void init();
 
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Argument>> mCmdArgs;
-
-  /*!
-   * \brief Listado de los argumentos por defecto comando
-   * Comandos como ayuda [-h | --help] o versión [--version]
-   */
-  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
-
-  std::list<std::string> mExamples;
 };
 
 
@@ -1707,6 +1697,29 @@ public:
    */
   typedef std::list<std::shared_ptr<Command>>::const_iterator const_iterator;
 
+
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Command>> mCommands;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
 public:
 
   /*!
@@ -1870,28 +1883,6 @@ public:
    * \brief Muestra la licencia en la consola
    */
   void showLicence() const;
-  
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Command>> mCommands;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
 
 };
 
@@ -1988,6 +1979,58 @@ inline CommandList::iterator CommandList::erase(CommandList::const_iterator firs
  */
 class TL_EXPORT Progress
 {
+protected:
+
+  /*!
+   * \brief Valor actual
+   */
+  double mProgress;
+
+  /*!
+   * \brief Valor mínimo
+   */
+  double mMinimun;
+
+  /*!
+   * \brief Valor máximo
+   */
+  double mMaximun;
+
+  /*!
+   * \brief Valor actual en tanto por ciento
+   */
+  int mPercent;
+
+  /*!
+   * \brief Mensaje que se puede añadir con información del proceso.
+   */
+  std::string mMsg;
+
+  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
+  //      crear una clase hija si hace falta
+
+  /*!
+   * \brief Manejador del evento que se produce cada vez que se
+   * avanza una posición en la función de progreso
+   */
+  std::function<void(double)> *onProgress;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al inicializar
+   */
+  std::function<void(void)> *onInitialize;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al terminar
+   */
+  std::function<void(void)> *onTerminate;
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
+
+  static std::mutex sMutex;
 
 public:
 
@@ -2073,59 +2116,6 @@ protected:
    * \brief terminate
    */
   virtual void terminate() = 0;
-
-protected:
-
-  /*!
-   * \brief Valor actual
-   */
-  double mProgress;
-
-  /*!
-   * \brief Valor mínimo
-   */
-  double mMinimun;
-
-  /*!
-   * \brief Valor máximo
-   */
-  double mMaximun;
-
-  /*!
-   * \brief Valor actual en tanto por ciento
-   */
-  int mPercent;
-
-  /*!
-   * \brief Mensaje que se puede añadir con información del proceso.
-   */
-  std::string mMsg;
-
-  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
-  //      crear una clase hija si hace falta
-
-  /*!
-   * \brief Manejador del evento que se produce cada vez que se
-   * avanza una posición en la función de progreso
-   */
-  std::function<void(double)> *onProgress;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al inicializar
-   */
-  std::function<void(void)> *onInitialize;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al terminar
-   */
-  std::function<void(void)> *onTerminate;
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
-
-  static std::mutex sMutex;
 };
 
 
@@ -2135,6 +2125,17 @@ protected:
 class TL_EXPORT ProgressBar 
   : public Progress
 {
+private:
+
+  /*!
+   * \brief bCustomConsole
+   */
+  bool bCustomConsole;
+
+  /*!
+   * \brief Longitud de la barra de progreso
+   */
+  const int mSize = 50;
 
 public:
 
@@ -2174,18 +2175,6 @@ private:
    * \brief terminate
    */
   void terminate() override;
-
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
-
-  /*!
-   * \brief Longitud de la barra de progreso
-   */
-  const int mSize = 50;
 };
 
 /*!
@@ -2194,6 +2183,12 @@ private:
 class TL_EXPORT ProgressPercent 
   : public Progress
 {
+private:
+
+  /*!
+   * \brief bCustomConsole
+   */
+  bool bCustomConsole;
 
 public:
 
@@ -2227,13 +2222,6 @@ private:
    * \brief terminate
    */
   void terminate() override;
-
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
 };
 
 

@@ -22,7 +22,7 @@ namespace graph
  * \brief Clase gráfica polígono
  */
 class TL_EXPORT GPolygon 
-  : public geometry::Polygon<geometry::Point<double>>, 
+  : public Polygon<Point<double>>, 
     public GraphicEntity
 {
 public:
@@ -38,7 +38,7 @@ public:
    * \param polygon Objeto de la clase Polygon
    * \see Polygon
    */
-  GPolygon(const geometry::Polygon<geometry::Point<double>> &polygon);
+  GPolygon(const Polygon<Point<double>> &polygon);
 
   /*!
    * \brief Constructor de copia
@@ -76,7 +76,7 @@ public:
  * \brief Clase gráfica polígono 3D
  */
 class TL_EXPORT GPolygon3D 
-  : public geometry::Polygon3D<geometry::Point3<double>>,
+  : public Polygon3D<Point3<double>>,
     public GraphicEntity
 {
 public:
@@ -92,7 +92,7 @@ public:
    * \param polygon Objeto de la clase Polygon
    * \see Polygon
    */
-  GPolygon3D(const geometry::Polygon3D<geometry::Point3<double>> &polygon);
+  GPolygon3D(const Polygon3D<Point3<double>> &polygon);
 
   /*!
    * \brief Constructor de copia
@@ -130,7 +130,7 @@ public:
  * \brief Clase gráfica multi-polígono
  */
 class TL_EXPORT GMultiPolygon 
-  : public geometry::MultiPolygon<geometry::Point<double>>, 
+  : public MultiPolygon<Point<double>>, 
     public GraphicEntity
 {
 public:
@@ -146,7 +146,7 @@ public:
    * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
-  GMultiPolygon(const geometry::MultiPolygon<geometry::Point<double>> &multiPolygon);
+  GMultiPolygon(const MultiPolygon<Point<double>> &multiPolygon);
 
   /*!
    * \brief Constructor de copia
@@ -172,7 +172,7 @@ public:
  * \brief Clase gráfica multi-polígono 3D
  */
 class TL_EXPORT GMultiPolygon3D 
-  : public geometry::MultiPolygon3D<geometry::Point3<double>>,
+  : public MultiPolygon3D<Point3<double>>,
     public GraphicEntity
 {
 public:
@@ -188,7 +188,7 @@ public:
    * \param multiPolygon Objeto de la clase MultiPolygon
    * \see MultiPolygon
    */
-  GMultiPolygon3D(const geometry::MultiPolygon3D<geometry::Point3<double>> &multiPolygon);
+  GMultiPolygon3D(const MultiPolygon3D<Point3<double>> &multiPolygon);
 
   /*!
    * \brief Constructor de copia

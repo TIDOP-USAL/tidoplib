@@ -8,35 +8,47 @@
 namespace tl
 {
 
-
-/*!
- * \brief AGAST detector properties class
+/*! \addtogroup Features
+ * 
+ *  \{
  */
+
+/*! \addtogroup FeatureDetectorAndDescriptor
+ * 
+ *  \{
+ */
+
+
 class TL_EXPORT AgastProperties
-  : public IAgast
+  : public Agast
 {
 
 public:
 
   AgastProperties();
-  ~AgastProperties() override;
+  AgastProperties(const AgastProperties &agast);
+  AgastProperties(AgastProperties &&agast) noexcept;
+  ~AgastProperties() override = default;
 
-// IAgast interface
+  AgastProperties &operator =(const AgastProperties &agast);
+  AgastProperties &operator =(AgastProperties &&agast) noexcept;
+
+// Agast interface
 
 public:
 
-  virtual int threshold() const override;
-  virtual bool nonmaxSuppression() const override;
-  virtual std::string detectorType() const override;
-  virtual void setThreshold(int threshold) override;
-  virtual void setNonmaxSuppression(bool nonmaxSuppression) override;
-  virtual void setDetectorType(const std::string &detectorType) override;
+  int threshold() const override;
+  bool nonmaxSuppression() const override;
+  std::string detectorType() const override;
+  void setThreshold(int threshold) override;
+  void setNonmaxSuppression(bool nonmaxSuppression) override;
+  void setDetectorType(const std::string &detectorType) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -59,8 +71,24 @@ class TL_EXPORT AgastDetector
 public:
 
   AgastDetector();
-  AgastDetector(int threshold, bool nonmaxSuppression, std::string detectorType);
-  ~AgastDetector() override;
+  AgastDetector(const AgastDetector &agastDetector);
+  AgastDetector(AgastDetector &&agastDetector) noexcept;
+  AgastDetector(int threshold, 
+                bool nonmaxSuppression, 
+                const std::string &detectorType);
+  ~AgastDetector() override = default;
+  AgastDetector &operator =(const AgastDetector &agastDetector);
+  AgastDetector &operator =(AgastDetector &&agastDetector) noexcept;
+
+private:
+
+#if CV_VERSION_MAJOR >= 4
+  cv::AgastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
+#else
+  int convertDetectorType(const std::string &detectorType);
+#endif
+
+  void initAgastFromProperties();
 
 // KeypointDetector interface
 
@@ -70,7 +98,7 @@ public:
               std::vector<cv::KeyPoint> &keyPoints,
               cv::InputArray &mask = cv::noArray()) override;
 
-// IAgast interface
+// Agast interface
 
 public:
 
@@ -90,6 +118,9 @@ protected:
 
 };
 
+/*! \} */ // end of FeatureDetectorAndDescriptor
+
+/*! \} */ // end of Features
 
 } // namespace tl
 

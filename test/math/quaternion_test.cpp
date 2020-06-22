@@ -1,21 +1,23 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop quaternion test
+#include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/quaternion.h>
 #include <tidop/math/algebra/rotation_matrix.h>
 
 using namespace tl::math;
 
+BOOST_AUTO_TEST_SUITE(QuaternionTestSuite)
 
-class QuaternionTest 
-  : public testing::Test
+struct QuaternionTest 
 {
-public:
 
-  QuaternionTest(){}
+  QuaternionTest()
+  {}
+   
+  ~QuaternionTest()
+  {
+  }
 
-protected:
-
-  virtual void SetUp() override
+  void setup()
   {
     q_cero = Quaternionf::zero();
     q_identity = Quaternionf::identity();
@@ -25,29 +27,16 @@ protected:
     q = Quaternionf(0.f, 1.f, -3.f, 2.f);
     q2 = Quaternionf(1.f, 3.f, -5.f, 1.f);
 
-//    RotationMatrix<float> rot;
-//    rot.at(0, 0) = -0.8888889f;
-//    rot.at(0, 1) = 0.4444444f;
-//    rot.at(0, 2) = -0.1111111f;
-//    rot.at(1, 0) = -0.1111111f;
-//    rot.at(1, 1) = -0.4444444f;
-//    rot.at(1, 2) = -0.8888889f;
-//    rot.at(2, 0) = -0.4444444f;
-//    rot.at(2, 1) = -0.7777778f;
-//    rot.at(2, 2) =  0.4444444f;
-
-//    q_rot = new Quaternionf(rot);
+    q_d = Quaterniond(1., 3., -5., 1.);
   }
  
-  virtual void TearDown() override
+  void teardown()
   {
-    if (q_rot) {
-      delete q_rot;
-      q_rot = nullptr;
-    }
+
   }
 
   Quaternionf q_uninitialized;
+  Quaterniond q_d_uninitialized;
   Quaternionf q_cero;
   Quaternionf q_identity;
   Quaternionf q_i;
@@ -56,153 +45,231 @@ protected:
   Quaternionf q;
   Quaternionf q2;
   Quaternionf *q_rot;
+  Quaterniond q_d;
 };
 
 /* Clase Quaternion */
 
-TEST_F(QuaternionTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, QuaternionTest)
 {
-  EXPECT_EQ(-std::numeric_limits<float>().max(), q_uninitialized.w);
-  EXPECT_EQ(-std::numeric_limits<float>().max(), q_uninitialized.x);
-  EXPECT_EQ(-std::numeric_limits<float>().max(), q_uninitialized.y);
-  EXPECT_EQ(-std::numeric_limits<float>().max(), q_uninitialized.z);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<float>().max(), q_uninitialized.w);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<float>().max(), q_uninitialized.x);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<float>().max(), q_uninitialized.y);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<float>().max(), q_uninitialized.z);
+
+  BOOST_CHECK_EQUAL(-std::numeric_limits<double>().max(), q_d_uninitialized.w);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<double>().max(), q_d_uninitialized.x);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<double>().max(), q_d_uninitialized.y);
+  BOOST_CHECK_EQUAL(-std::numeric_limits<double>().max(), q_d_uninitialized.z);
 }
 
-//TEST_F(QuaternionTest, RotationMatrixConstructor)
-//{
-//  EXPECT_NEAR(-0.1666667f, q_rot->x, 0.0001);
-//	EXPECT_NEAR(-0.5f, q_rot->y, 0.0001);
-//	EXPECT_NEAR(0.8333333f, q_rot->z, 0.0001);
-//	EXPECT_NEAR(-0.1666667f, q_rot->w, 0.0001);
-//}
-
-TEST_F(QuaternionTest, cero)
+BOOST_FIXTURE_TEST_CASE(cero, QuaternionTest)
 {
-  EXPECT_EQ(0.f, q_cero.w);
-  EXPECT_EQ(0.f, q_cero.x);
-  EXPECT_EQ(0.f, q_cero.y);
-  EXPECT_EQ(0.f, q_cero.z);
+  BOOST_CHECK_EQUAL(0.f, q_cero.w);
+  BOOST_CHECK_EQUAL(0.f, q_cero.x);
+  BOOST_CHECK_EQUAL(0.f, q_cero.y);
+  BOOST_CHECK_EQUAL(0.f, q_cero.z);
 }
 
-TEST_F(QuaternionTest, identity)
+BOOST_FIXTURE_TEST_CASE(identity, QuaternionTest)
 {
-  EXPECT_EQ(1.f, q_identity.w);
-  EXPECT_EQ(0.f, q_identity.x);
-  EXPECT_EQ(0.f, q_identity.y);
-  EXPECT_EQ(0.f, q_identity.z);
+  BOOST_CHECK_EQUAL(1.f, q_identity.w);
+  BOOST_CHECK_EQUAL(0.f, q_identity.x);
+  BOOST_CHECK_EQUAL(0.f, q_identity.y);
+  BOOST_CHECK_EQUAL(0.f, q_identity.z);
 }
 
-TEST_F(QuaternionTest, i)
+BOOST_FIXTURE_TEST_CASE(i, QuaternionTest)
 {
-  EXPECT_EQ(0.f, q_i.w);
-  EXPECT_EQ(1.f, q_i.x);
-  EXPECT_EQ(0.f, q_i.y);
-  EXPECT_EQ(0.f, q_i.z);
+  BOOST_CHECK_EQUAL(0.f, q_i.w);
+  BOOST_CHECK_EQUAL(1.f, q_i.x);
+  BOOST_CHECK_EQUAL(0.f, q_i.y);
+  BOOST_CHECK_EQUAL(0.f, q_i.z);
 }
 
-TEST_F(QuaternionTest, j)
+BOOST_FIXTURE_TEST_CASE(j, QuaternionTest)
 {
-  EXPECT_EQ(0.f, q_j.w);
-  EXPECT_EQ(0.f, q_j.x);
-  EXPECT_EQ(1.f, q_j.y);
-  EXPECT_EQ(0.f, q_j.z);
+  BOOST_CHECK_EQUAL(0.f, q_j.w);
+  BOOST_CHECK_EQUAL(0.f, q_j.x);
+  BOOST_CHECK_EQUAL(1.f, q_j.y);
+  BOOST_CHECK_EQUAL(0.f, q_j.z);
 }
 
-TEST_F(QuaternionTest, k)
+BOOST_FIXTURE_TEST_CASE(k, QuaternionTest)
 {
-  EXPECT_EQ(0.f, q_k.w);
-  EXPECT_EQ(0.f, q_k.x);
-  EXPECT_EQ(0.f, q_k.y);
-  EXPECT_EQ(1.f, q_k.z);
+  BOOST_CHECK_EQUAL(0.f, q_k.w);
+  BOOST_CHECK_EQUAL(0.f, q_k.x);
+  BOOST_CHECK_EQUAL(0.f, q_k.y);
+  BOOST_CHECK_EQUAL(1.f, q_k.z);
 }
 
-TEST_F(QuaternionTest, parameters)
+BOOST_FIXTURE_TEST_CASE(parameters, QuaternionTest)
 {
-  EXPECT_EQ(2.f, q.w);
-  EXPECT_EQ(0.f, q.x);
-  EXPECT_EQ(1.f, q.y);
-  EXPECT_EQ(-3.f, q.z);
+  BOOST_CHECK_EQUAL(2.f, q.w);
+  BOOST_CHECK_EQUAL(0.f, q.x);
+  BOOST_CHECK_EQUAL(1.f, q.y);
+  BOOST_CHECK_EQUAL(-3.f, q.z);
 }
 
-TEST_F(QuaternionTest, normalize)
+BOOST_FIXTURE_TEST_CASE(normalize, QuaternionTest)
 {
   q.normalize();
-  EXPECT_NEAR(0.0f, q.x, 0.001);
-  EXPECT_NEAR(0.2672612f, q.y, 0.001);
-  EXPECT_NEAR(-0.8017837f, q.z, 0.001);
-  EXPECT_NEAR(0.5345225f, q.w, 0.001);
+  BOOST_CHECK_CLOSE(0.0f, q.x, 0.1);
+  BOOST_CHECK_CLOSE(0.2672612f, q.y, 0.1);
+  BOOST_CHECK_CLOSE(-0.8017837f, q.z, 0.1);
+  BOOST_CHECK_CLOSE(0.5345225f, q.w, 0.1);
+
+  q_cero.normalize();
+  BOOST_CHECK_EQUAL(0.f, q_cero.w);
+  BOOST_CHECK_EQUAL(0.f, q_cero.x);
+  BOOST_CHECK_EQUAL(0.f, q_cero.y);
+  BOOST_CHECK_EQUAL(0.f, q_cero.z);
 }
 
-TEST_F(QuaternionTest, conjugate)
+BOOST_FIXTURE_TEST_CASE(conjugate, QuaternionTest)
 {
   Quaternionf conjugate = q.conjugate();
-  EXPECT_EQ(2.f, conjugate.w);
-  EXPECT_EQ(0.f, conjugate.x);
-  EXPECT_EQ(-1.f, conjugate.y);
-  EXPECT_EQ(3.f, conjugate.z);
+  BOOST_CHECK_EQUAL(2.f, conjugate.w);
+  BOOST_CHECK_EQUAL(0.f, conjugate.x);
+  BOOST_CHECK_EQUAL(-1.f, conjugate.y);
+  BOOST_CHECK_EQUAL(3.f, conjugate.z);
 }
 
-TEST_F(QuaternionTest, norm)
+BOOST_FIXTURE_TEST_CASE(norm, QuaternionTest)
 {
   float norm = q.norm();
-  EXPECT_NEAR(3.741657f, norm, 0.001);
+  BOOST_CHECK_CLOSE(3.741657f, norm, 0.1);
 }
 
-TEST_F(QuaternionTest, inverse)
+BOOST_FIXTURE_TEST_CASE(inverse, QuaternionTest)
 {
   Quaternionf inverse = q.inverse();
-  EXPECT_NEAR( 0.0f,          inverse.x, 0.001);
-  EXPECT_NEAR(-0.0714285714f, inverse.y, 0.001);
-  EXPECT_NEAR( 0.2142857142f, inverse.z, 0.001);
-  EXPECT_NEAR( 0.1428571428f, inverse.w, 0.001);
+  BOOST_CHECK_CLOSE( 0.0f,          inverse.x, 0.1);
+  BOOST_CHECK_CLOSE(-0.0714285714f, inverse.y, 0.1);
+  BOOST_CHECK_CLOSE( 0.2142857142f, inverse.z, 0.1);
+  BOOST_CHECK_CLOSE( 0.1428571428f, inverse.w, 0.1);
+
+  Quaternionf quaternion_inverse = q_cero.inverse();
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.x, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.y, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.z, 0.1);
+  BOOST_CHECK_CLOSE(0.0f, quaternion_inverse.w, 0.1);
+
 }
 
 /* Operaciones unarias */
 
-TEST_F(QuaternionTest, neg)
+BOOST_FIXTURE_TEST_CASE(neg, QuaternionTest)
 {
   Quaternionf neg = -q;
-  EXPECT_EQ( 0.f, neg.x);
-  EXPECT_EQ(-1.f, neg.y);
-  EXPECT_EQ( 3.f, neg.z);
-  EXPECT_EQ(-2.f, neg.w);
+  BOOST_CHECK_EQUAL( 0.f, neg.x);
+  BOOST_CHECK_EQUAL(-1.f, neg.y);
+  BOOST_CHECK_EQUAL( 3.f, neg.z);
+  BOOST_CHECK_EQUAL(-2.f, neg.w);
+
+  Quaterniond neg_d = -q_d;
+  BOOST_CHECK_EQUAL(-1., neg_d.x);
+  BOOST_CHECK_EQUAL(-3., neg_d.y);
+  BOOST_CHECK_EQUAL(5., neg_d.z);
+  BOOST_CHECK_EQUAL(-1., neg_d.w);
 }
 
 /* */
 
-TEST_F(QuaternionTest, multiplication)
+BOOST_FIXTURE_TEST_CASE(multiplication, QuaternionTest)
 {
   Quaternionf multi = q * q2;
-  EXPECT_EQ(  6.f, multi.x);
-  EXPECT_EQ(  4.f, multi.y);
-  EXPECT_EQ(-14.f, multi.z);
-  EXPECT_EQ(-16.f, multi.w);
+  BOOST_CHECK_EQUAL(  6.f, multi.x);
+  BOOST_CHECK_EQUAL(  4.f, multi.y);
+  BOOST_CHECK_EQUAL(-14.f, multi.z);
+  BOOST_CHECK_EQUAL(-16.f, multi.w);
 }
-
-TEST_F(QuaternionTest, sum)
+BOOST_FIXTURE_TEST_CASE(sum, QuaternionTest)
 {
   Quaternionf sum = q + q2;
-  EXPECT_EQ( 1.f, sum.x);
-  EXPECT_EQ( 4.f, sum.y);
-  EXPECT_EQ(-8.f, sum.z);
-  EXPECT_EQ( 3.f, sum.w);
+  BOOST_CHECK_EQUAL( 1.f, sum.x);
+  BOOST_CHECK_EQUAL( 4.f, sum.y);
+  BOOST_CHECK_EQUAL(-8.f, sum.z);
+  BOOST_CHECK_EQUAL( 3.f, sum.w);
+}
+BOOST_FIXTURE_TEST_CASE(sum2, QuaternionTest)
+{
+  Quaternionf sum = q;
+  sum += q2;
+  BOOST_CHECK_EQUAL(1.f, sum.x);
+  BOOST_CHECK_EQUAL(4.f, sum.y);
+  BOOST_CHECK_EQUAL(-8.f, sum.z);
+  BOOST_CHECK_EQUAL(3.f, sum.w);
+
+}
+BOOST_FIXTURE_TEST_CASE(subtraction, QuaternionTest)
+{
+  Quaternionf subtraction = q - q2;
+  BOOST_CHECK_EQUAL(-1.f, subtraction.x);
+  BOOST_CHECK_EQUAL(-2.f, subtraction.y);
+  BOOST_CHECK_EQUAL(2.f, subtraction.z);
+  BOOST_CHECK_EQUAL(1.f, subtraction.w);
+}
+BOOST_FIXTURE_TEST_CASE(subtraction2, QuaternionTest)
+{
+  Quaternionf subtraction = q;
+  subtraction -= q2;
+  BOOST_CHECK_EQUAL(-1.f, subtraction.x);
+  BOOST_CHECK_EQUAL(-2.f, subtraction.y);
+  BOOST_CHECK_EQUAL(2.f, subtraction.z);
+  BOOST_CHECK_EQUAL(1.f, subtraction.w);
+
+}
+BOOST_FIXTURE_TEST_CASE(quaternion_by_scalar, QuaternionTest)
+{
+  Quaternionf multi = q * 2.f;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(2.f, multi.y);
+  BOOST_CHECK_EQUAL(-6.f, multi.z);
+  BOOST_CHECK_EQUAL(4.f, multi.w);
 }
 
-//TEST_F(QuaternionTest, subtraction)
-//{
-//  Quaternionf subtraction = q - q2;
-//  EXPECT_EQ(  6.f, subtraction.x);
-//  EXPECT_EQ(  4.f, subtraction.y);
-//  EXPECT_EQ(-14.f, subtraction.z);
-//  EXPECT_EQ(-16.f, subtraction.w);
-//}
+BOOST_FIXTURE_TEST_CASE(scalar_by_quaternion, QuaternionTest)
+{
+  Quaternionf multi = 2.f * q;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(2.f, multi.y);
+  BOOST_CHECK_EQUAL(-6.f, multi.z);
+  BOOST_CHECK_EQUAL(4.f, multi.w);
+}
+
+BOOST_FIXTURE_TEST_CASE(quaternion_divided_by_scalar, QuaternionTest)
+{
+  Quaternionf multi = q / 2.f;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(0.5f, multi.y);
+  BOOST_CHECK_EQUAL(-1.5f, multi.z);
+  BOOST_CHECK_EQUAL(1.f, multi.w);
+
+  multi = q / 0.f;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(0.f, multi.y);
+  BOOST_CHECK_EQUAL(0.f, multi.z);
+  BOOST_CHECK_EQUAL(0.f, multi.w);
+}
+
+BOOST_FIXTURE_TEST_CASE(scalar_divided_by_quaternion, QuaternionTest)
+{
+  Quaternionf multi = 2.f / q;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(0.5f, multi.y);
+  BOOST_CHECK_EQUAL(-1.5f, multi.z);
+  BOOST_CHECK_EQUAL(1.f, multi.w);
+
+  multi = 0.f / q;
+  BOOST_CHECK_EQUAL(0.f, multi.x);
+  BOOST_CHECK_EQUAL(0.f, multi.y);
+  BOOST_CHECK_EQUAL(0.f, multi.z);
+  BOOST_CHECK_EQUAL(0.f, multi.w);
+}
 
 
-//Quaternion<T> operator*(const Quaternion<T> &quaternion, T scalar)
-//Quaternion<T> operator*(T scalar, const Quaternion<T> &quaternion)
-//Quaternion<T> operator / (const Quaternion<T> &quaternion, T scalar)
-//Quaternion<T> &operator += (Quaternion<T> &quat1, const Quaternion<T> &quat2)
-//Quaternion<T> &operator -= (Quaternion<T> &quat1, const Quaternion<T> &quat2)
-//Quaternion<T> &operator *= (Quaternion<T> &quaternion, T scalar)
-//Quaternion<T> &operator /= (Quaternion<T> &quaternion, T scalar)
 //T dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
+
+
+BOOST_AUTO_TEST_SUITE_END()

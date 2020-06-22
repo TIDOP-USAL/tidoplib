@@ -1,17 +1,11 @@
 #include <stdio.h>
 
-//#include "opencv2/core/core.hpp"
-//#include "opencv2/core/utility.hpp"
-//#include "opencv2/imgproc/imgproc.hpp"
-//#include "opencv2/imgcodecs.hpp"
-//#include "opencv2/highgui/highgui.hpp"
-
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img_process/img_processing.h>
+#include <tidop/imgprocess/imgprocess.h>
 #include <tidop/geometry/entities/window.h>
-#include <tidop/img_process/anaglyph.h>
+#include <tidop/imgprocess/anaglyph.h>
 
 //using namespace cv;
 

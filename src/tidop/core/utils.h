@@ -739,7 +739,45 @@ TL_EXPORT uint32_t getOptimalNumberOfThreads();
  * \param[in] end
  * \param[in] f Función o lambda
  */
-TL_EXPORT void parallel_for(size_t ini, size_t end, std::function<void(int)> f);
+TL_EXPORT void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f);
+
+//template<typename T> inline
+//void parallel_for(T ini, T end, const std::function<void(T)> &f)
+//{
+//  #ifdef HAVE_OMP
+//  //TODO: Sin probar
+//  #pragma omp parallel for
+//  for (T i = ini; i < end; i++) {
+//    f(i);
+//  }
+//#elif defined TL_MSVS_CONCURRENCY
+//  Concurrency::cancellation_token_source cts;
+//  //Concurrency::run_with_cancellation_token([ini, end, f]() {
+//  //  Concurrency::parallel_for(ini, end, f);
+//  //},cts.get_token());
+//  Concurrency::parallel_for(ini, end, f);
+//#else
+//
+//  auto f_aux = [&](T ini, T end) {
+//    for (T r = ini; r < end; r++) {
+//      f(r);
+//    }
+//  };
+//
+//  T num_threads = getOptimalNumberOfThreads();
+//  std::vector<std::thread> threads(num_threads);
+//
+//  T size = (end - ini) / num_threads;
+//  for (T i = 0; i < num_threads; i++) {
+//    T _ini = i * size + ini;
+//    T _end = _ini + size;
+//    if (i == num_threads -1) _end = end;
+//    threads[i] = std::thread(f_aux, _ini, _end);
+//  }
+//
+//  for (auto &_thread : threads) _thread.join();
+//#endif
+//}
 
 /*!
  * \brief Ejecuta una función en paralelo
@@ -750,7 +788,7 @@ TL_EXPORT void parallel_for(size_t ini, size_t end, std::function<void(int)> f);
  * \param[in] f Función o lambda
  */
 template<typename itIn, typename itOut> inline
-void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, itOut *)> f)
+void parallel_for(itIn it_begin, itIn it_end, itOut &it_out_begin, std::function<void(itIn, itIn, itOut &)> f)
 {
 //#ifdef TL_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
@@ -1107,10 +1145,7 @@ public:
    */
   virtual ~File(){}
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -1122,6 +1157,11 @@ public:
    */
   //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
   virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
+ 
+  /*!
+   * \brief Cierra el fichero
+   */
+  virtual void close() = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1271,7 +1311,7 @@ private:
 #ifdef HAVE_GDAL
 
 /*!
- * \brief Clase singleton para registrar los drivers de GDAL
+ * \brief Clase para registrar los drivers de GDAL
  *
  */
 class TL_EXPORT RegisterGdal
