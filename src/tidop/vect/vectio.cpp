@@ -746,7 +746,7 @@ std::shared_ptr<StylePen> GdalVector::readStylePen(OGRStylePen *ogrStylePen)
     /* Pen Color */
     const char *hexColor = ogrStylePen->Color(bDefault);
     if (!bDefault) {
-      stylePen->setColor(TL::Color(hexColor+1));
+      stylePen->setColor(TL::graph::Color(hexColor+1));
     }
 
     /* Pen Cap */
@@ -869,35 +869,35 @@ std::shared_ptr<StyleBrush> GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBr
     /* Back Color */
     const char *hexColor = ogrStyleBrush->BackColor(bDefault);
     if (!bDefault) {
-      styleBrush->setBackColor(TL::Color(hexColor+1));
+      styleBrush->setBackColor(TL::graph::Color(hexColor+1));
     }
 
     /* Fore Color */
     hexColor = ogrStyleBrush->ForeColor(bDefault);
     if (!bDefault) {
-      styleBrush->setForeColor(TL::Color(hexColor+1));
+      styleBrush->setForeColor(TL::graph::Color(hexColor+1));
     }
 
     /* Brush Name */
     const char *brush_name = ogrStyleBrush->Id(bDefault);
     if (!bDefault) {
-      StyleBrush::BrushName brushName;
+      StyleBrush::Name brushName;
       if (strcmp(brush_name, "ogr-pen-1") == 0) {
-        brushName = StyleBrush::BrushName::BRUSH_NULL;
+        brushName = StyleBrush::Name::null;
       } else if (strcmp(brush_name, "ogr-pen-2") == 0) {
-        brushName = StyleBrush::BrushName::HORIZONTAL_HATCH;
+        brushName = StyleBrush::Name::horizontal_hatch;
       } else if (strcmp(brush_name, "ogr-pen-3") == 0) {
-        brushName = StyleBrush::BrushName::VERTICAL_HATCH;
+        brushName = StyleBrush::Name::vertical_hatch;
       } else if (strcmp(brush_name, "ogr-pen-4") == 0) {
-        brushName = StyleBrush::BrushName::FDIAGONAL_HATCH;
+        brushName = StyleBrush::Name::fdiagonal_hatch;
       } else if (strcmp(brush_name, "ogr-pen-5") == 0) {
-        brushName = StyleBrush::BrushName::BDIAGONAL_HATCH;
+        brushName = StyleBrush::Name::bdiagonal_hatch;
       } else if (strcmp(brush_name, "ogr-pen-6") == 0) {
-        brushName = StyleBrush::BrushName::CROSS_HATCH;
+        brushName = StyleBrush::Name::cross_hatch;
       } else if (strcmp(brush_name, "ogr-pen-7") == 0) {
-        brushName = StyleBrush::BrushName::DIAGCROSS_HATCH;
+        brushName = StyleBrush::Name::diagcross_hatch;
       } else {
-        brushName = StyleBrush::BrushName::SOLID;
+        brushName = StyleBrush::Name::solid;
       }
       styleBrush->setBrushName(brushName);
     }
@@ -946,35 +946,35 @@ std::shared_ptr<StyleSymbol> GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyl
     /* Color */
     const char *hexColor = ogrStyleSymbol->Color(bDefault);
     if (!bDefault) {
-      styleSymbol->setColor(TL::Color(hexColor+1));
+      styleSymbol->setColor(TL::graph::Color(hexColor+1));
     }
 
     /* Name */
     const char *name = ogrStyleSymbol->Id(bDefault);
     if (!bDefault) {
-      StyleSymbol::SymbolName symbolName = StyleSymbol::SymbolName::CROSS;
+      StyleSymbol::Name symbolName = StyleSymbol::Name::cross;
       if (strcmp(name, "ogr-sym-0") == 0) {
-        symbolName = StyleSymbol::SymbolName::CROSS;
+        symbolName = StyleSymbol::Name::cross;
       } else if (strcmp(name, "ogr-sym-1") == 0) {
-        symbolName = StyleSymbol::SymbolName::DIAGONAL_CROSS;
+        symbolName = StyleSymbol::Name::diagonal_cross;
       } else if (strcmp(name, "ogr-sym-2") == 0) {
-        symbolName = StyleSymbol::SymbolName::CIRCLE;
+        symbolName = StyleSymbol::Name::circle;
       } else if (strcmp(name, "ogr-sym-3") == 0) {
-        symbolName = StyleSymbol::SymbolName::CIRCLE_FILLED;
+        symbolName = StyleSymbol::Name::circle_filled;
       } else if (strcmp(name, "ogr-sym-4") == 0) {
-        symbolName = StyleSymbol::SymbolName::SQUARE;
+        symbolName = StyleSymbol::Name::square;
       } else if (strcmp(name, "ogr-sym-5") == 0) {
-        symbolName = StyleSymbol::SymbolName::SQUARE_FILLED;
+        symbolName = StyleSymbol::Name::square_filled;
       } else if (strcmp(name, "ogr-sym-6") == 0) {
-        symbolName = StyleSymbol::SymbolName::TRIANGLE;
+        symbolName = StyleSymbol::Name::triangle;
       } else if (strcmp(name, "ogr-sym-7") == 0) {
-        symbolName = StyleSymbol::SymbolName::TRIANGLE_FILLED;
+        symbolName = StyleSymbol::Name::triangle_filled;
       } else if (strcmp(name, "ogr-sym-8") == 0) {
-        symbolName = StyleSymbol::SymbolName::STAR;
+        symbolName = StyleSymbol::Name::star;
       } else if (strcmp(name, "ogr-sym-9") == 0) {
-        symbolName = StyleSymbol::SymbolName::STAR_FILLED;
+        symbolName = StyleSymbol::Name::star_filled;
       } else if (strcmp(name, "ogr-sym-10") == 0) {
-        symbolName = StyleSymbol::SymbolName::VERTICAL_BAR;
+        symbolName = StyleSymbol::Name::vertical_bar;
       } else {
         ///TODO: Bitmap...
       }
@@ -992,7 +992,7 @@ std::shared_ptr<StyleSymbol> GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyl
     /* Outline Color */
     hexColor = ogrStyleSymbol->OColor(bDefault);
     if (!bDefault) {
-      styleSymbol->setOutlineColor(TL::Color(hexColor+1));
+      styleSymbol->setOutlineColor(TL::graph::Color(hexColor+1));
     }
 
     /* Priority Level */
@@ -1073,25 +1073,25 @@ std::shared_ptr<StyleLabel> GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLa
     /* Background Color */
     const char *hexColor = ogrStyleLabel->BackColor(bDefault);
     if (!bDefault) {
-      styleLabel->setBackgroundColor(TL::Color(hexColor+1));
+      styleLabel->setBackgroundColor(TL::graph::Color(hexColor+1));
     }
 
     /* Foreground Color */
     hexColor = ogrStyleLabel->ForeColor(bDefault);
     if (!bDefault) {
-      styleLabel->setForegroundColor(TL::Color(hexColor+1));
+      styleLabel->setForegroundColor(TL::graph::Color(hexColor+1));
     }
 
     /* Outline Color */
     hexColor = ogrStyleLabel->OutlineColor(bDefault);
     if (!bDefault) {
-      styleLabel->setOutlineColor(TL::Color(hexColor+1));
+      styleLabel->setOutlineColor(TL::graph::Color(hexColor+1));
     }
 
     /* Shadow Color */
     hexColor = ogrStyleLabel->ShadowColor(bDefault);
     if (!bDefault) {
-      styleLabel->setShadowColor(TL::Color(hexColor+1));
+      styleLabel->setShadowColor(TL::graph::Color(hexColor+1));
     }
 
     /* Label Placement */
@@ -1201,7 +1201,7 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
   Status err = Status::SUCCESS;
   OGRFeature *ogrFeature = OGRFeature::CreateFeature(pLayer->GetLayerDefn());
   for (auto &entity : layer) {
-    GraphicEntity::Type type = entity->getType();
+    GraphicEntity::Type type = entity->type();
     switch (type) {
     case TL::graph::GraphicEntity::Type::POINT_2D:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint>(entity));

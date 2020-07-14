@@ -511,7 +511,7 @@ Polygon3D<Point3_t>::Polygon3D(const Polygon3D &polygon)
 template<typename Point3_t> inline
 Polygon3D<Point3_t>::Polygon3D(Polygon3D &&polygon) TL_NOEXCEPT
   : Entity(std::forward<Entity>(polygon)), 
-    Entities3D<Point3_t>(std::forward<Polygon3D<Point3_t>>(polygon))
+    Entities3D<Point3_t>(std::forward<Entities3D<Point3_t>>(polygon))
 {
 }
 
@@ -555,7 +555,7 @@ Polygon3D<Point3_t> &Polygon3D<Point3_t>::operator = (Polygon3D<Point3_t> &&poly
 {
   if (this != &polygon) {
     this->mEntityType = std::move(polygon.mEntityType);
-    Entities3D<Point3_t>::operator = (std::forward<Polygon3D<Point3_t>>(polygon));
+    Entities3D<Point3_t>::operator = (std::forward<Entities3D<Point3_t>>(polygon));
   }
   return *this;
 }

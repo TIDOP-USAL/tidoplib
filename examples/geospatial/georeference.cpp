@@ -75,7 +75,6 @@ int main(int argc, char** argv)
 
   TL::GeoRasterGraphics image;
   if (image.open(img_file) == TL::RasterGraphics::Status::OPEN_OK) {
-
     Helmert3D<Point3D> helmert3d(x0, y0, z0, scale, omega, phi, kappa);
 
     std::vector<PointD> pti;

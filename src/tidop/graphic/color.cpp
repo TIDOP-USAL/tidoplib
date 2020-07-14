@@ -480,15 +480,15 @@ void chromaticityCoordinates(int red, int green, int blue, double *r, double *g,
 }
 
 
-bool operator == (const Color &color1, const Color &color2)
-{
-  return static_cast<int>(color1) == static_cast<int>(color2);
-}
+//bool operator == (const Color &color1, const Color &color2)
+//{
+//  return static_cast<int>(color1) == static_cast<int>(color2);
+//}
 
-bool operator != (const Color &color1, const Color &color2)
-{
-  return static_cast<int>(color1) != static_cast<int>(color2);
-}
+//bool operator != (const Color &color1, const Color &color2)
+//{
+//  return static_cast<int>(color1) != static_cast<int>(color2);
+//}
 
 namespace graph
 {
@@ -531,7 +531,7 @@ Color::Color(const std::string &color)
   mColor = std::stoi(color, nullptr, 16);
 }
 
-Color::Color(const Color::NAME &color)
+Color::Color(const Color::Name &color)
 {
   mColor = static_cast<uint32_t>(color);
 }
@@ -593,7 +593,15 @@ Color &Color::operator =(const Color &color)
   return *this;
 }
 
+bool operator == (const TL::graph::Color &color1, const TL::graph::Color &color2)
+{
+  return static_cast<int>(color1) == static_cast<int>(color2);
+}
 
+bool operator != (const TL::graph::Color &color1, const TL::graph::Color &color2)
+{
+  return static_cast<int>(color1) != static_cast<int>(color2);
+}
 
 /* ---------------------------------------------------------------------------------- */
 

@@ -227,7 +227,7 @@ void transform(cv::Mat in, cv::Mat out, Transform<Point_t> *trf, transform_order
     double r1 = cos(rotTrf->getAngle());
     double r2 = sin(rotTrf->getAngle());
     rotMat.at<float>(0, 0) = r1;
-    rotMat.at<float>(0, 1) = r2;
+    rotMat.at<float>(0, 1) = -r2;
     rotMat.at<float>(0, 2) = 0.f;
     rotMat.at<float>(1, 0) = r2;
     rotMat.at<float>(1, 1) = r1;

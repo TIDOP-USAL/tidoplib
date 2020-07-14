@@ -176,31 +176,31 @@ public:
    * \brief Devuelve el número de filas de la imagen
    * \return Número de filas de la imagen
    */
-  virtual int getRows() const { return mRows; }
+  virtual int getRows() const;
 
   /*!
    * \brief Devuelve el número de columnas de la imagen
    * \return Número de columnas de la imagen
    */
-  virtual int getCols() const { return mCols; }
+  virtual int getCols() const;
 
   /*!
    * \brief Devuelve el número de canales o bandas de la imagen
    * \return Número de bandas de la imagen
    */
-  virtual int getBands() const { return mBands; }
+  virtual int getBands() const;
 
   /*!
    * \brief Devuelve el tipo de dato
    * \return 
    */
-  virtual DataType getDataType() const { return mDataType; }
+  virtual DataType getDataType() const;
 
   /*!
    * \brief Devuelve la profundidad de color o bits por pixel de una imagen
    * \return Profundidad de color
    */
-  virtual int getColorDepth() const { return mColorDepth; }
+  virtual int getColorDepth() const;
 
   /*!
    * \brief Devuelve los metadatos de la imagen
@@ -221,43 +221,15 @@ protected:
 };
 
 
+
+
 #ifdef HAVE_GDAL
-
-/*!
- * \brief Clase singleton para registrar los drivers de GDAL
- *
- */
-//class TL_EXPORT RegisterGdal
-//{
-//private:
-
-//  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-//  static std::mutex sMutex;
-
-//  /*!
-//   * \brief Constructor privado
-//   */
-//  RegisterGdal() {}
-
-//public:
-
-//  ~RegisterGdal() {}
-
-//  // Se impide la copia y asignación
-//  RegisterGdal(RegisterGdal const&) = delete;
-//  void operator=(RegisterGdal const&) = delete;
-
-//  /*!
-//   * \brief Método para iniciar GDAL una unica vez
-//   */
-//  static void init();
-
-//};
 
 /*!
  * \brief Ficheros imagen que son gestionados por GDAL
  */
-class TL_EXPORT GdalRaster : public VrtRaster
+class TL_EXPORT GdalRaster
+  : public VrtRaster
 {
 
 protected:
@@ -454,7 +426,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~GdalGeoRaster() {}
+  ~GdalGeoRaster() override {}
 
   /*!
    * \brief Georeferencia de la imagen
@@ -508,6 +480,7 @@ public:
   char get(const geometry::PointD &pt);
 
   float getZ(const geometry::PointD &pt);
+  float getZ(const geometry::PointI &pt);
 
 private:
 
@@ -610,7 +583,6 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const char *file, Mode mode = Mode::Read, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Read, FileOptions *options = nullptr) override;
 
   /*!
@@ -683,7 +655,7 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  Status createCopy(const char *fileOut) override;
+  Status createCopy(const std::string &fileOut) override;
 
   /*!
    * \brief Comprueba si una extensión de archivo se corresponde con una del formato RAW
@@ -774,7 +746,6 @@ public:
    * \return Error
    * \see Mode
    */
-  //Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
@@ -918,7 +889,6 @@ public:
    * \return
    * \see Mode
    */
-  //Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
   Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
 
   /*!
@@ -973,6 +943,7 @@ public:
   Mdt() {}
 
   float getZ(const geometry::PointD &pt) const;
+  float getZ(const geometry::PointI &pt) const;
 };
 
 

@@ -154,6 +154,9 @@ public:
 private:
 
   void update();
+
+  cv::Scalar colorToCvScalar(const Color &color);
+
 };
 
 #endif // HAVE_OPENCV

@@ -32,7 +32,13 @@ GPoint::GPoint(const GPoint &pt)
   : Point<double>(pt), 
     GraphicEntity(pt)
 {
-}  
+}
+
+GPoint::GPoint(GPoint &&pt) TL_NOEXCEPT
+  : Point<double>(std::forward<Point<double>>(pt)),
+    GraphicEntity(std::forward<GraphicEntity>(pt))
+{
+}
 
 GPoint::~GPoint()
 {}
@@ -42,6 +48,15 @@ GPoint &GPoint::operator = (const GPoint &gPoint)
   if (this != &gPoint) {
     Point<double>::operator=(gPoint);
     GraphicEntity::operator=(gPoint);
+  }
+  return *this;
+}
+
+GPoint &GPoint::operator =(GPoint &&gPoint) TL_NOEXCEPT
+{
+  if (this != &gPoint) {
+    Point<double>::operator=(std::forward<Point<double>>(gPoint));
+    GraphicEntity::operator=(std::forward<GraphicEntity>(gPoint));
   }
   return *this;
 }
@@ -82,6 +97,12 @@ GPoint3D::GPoint3D(const GPoint3D &pt)
 {
 }
 
+GPoint3D::GPoint3D(GPoint &&pt) TL_NOEXCEPT
+  : Point3<double>(std::forward<Point3<double>>(pt)),
+    GraphicEntity(std::forward<GraphicEntity>(pt))
+{
+}
+
 GPoint3D::~GPoint3D()
 {
 }
@@ -91,6 +112,15 @@ GPoint3D &GPoint3D::operator = (const GPoint3D &gPoint)
   if (this != &gPoint) {
     Point3<double>::operator=(gPoint);
     GraphicEntity::operator=(gPoint);
+  }
+  return *this;
+}
+
+GPoint3D &GPoint3D::operator =(GPoint3D &&gPoint) TL_NOEXCEPT
+{
+  if (this != &gPoint) {
+    Point3<double>::operator=(std::forward<Point3<double>>(gPoint));
+    GraphicEntity::operator=(std::forward<GraphicEntity>(gPoint));
   }
   return *this;
 }

@@ -255,48 +255,53 @@ Process::Status CmdProcess::run(Progress *progressBar)
   Process::run();
 
 #ifdef WIN32
-  size_t len = strlen(mCmd.c_str());
-  std::wstring wCmdLine(len, L'#');
-  //mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-  size_t outSize;
-  mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
 
-  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-    cmdLine,                      // Command line
-    NULL,                         // Process handle not inheritable
-    NULL,                         // Thread handle not inheritable
-    FALSE,                        // Set handle inheritance to FALSE
-    CREATE_NO_WINDOW | sPriority, // Flags de creación
-    NULL,                         // Use parent's environment block
-    NULL,                         // Use parent's starting directory 
-    &si,                          // Pointer to STARTUPINFO structure
-    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
+  try {
+    size_t len = strlen(mCmd.c_str());
+    std::wstring wCmdLine(len, L'#');
+    mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
+    //size_t outSize;
+    //mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
 
-    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-    return Process::Status::FINALIZED_ERROR;
-  }
+    LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+    if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
+      cmdLine,                      // Command line
+      NULL,                         // Process handle not inheritable
+      NULL,                         // Thread handle not inheritable
+      FALSE,                        // Set handle inheritance to FALSE
+      CREATE_NO_WINDOW | sPriority, // Flags de creación
+      NULL,                         // Use parent's environment block
+      NULL,                         // Use parent's starting directory 
+      &si,                          // Pointer to STARTUPINFO structure
+      &pi)) {                       // Pointer to PROCESS_INFORMATION structure
 
-  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
-  if (ret == WAIT_FAILED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } else if (ret == WAIT_OBJECT_0) {
-    msgInfo("Command executed: %s", mCmd.c_str());
-    //return Process::Status::FINALIZED;
-  } else if (ret == WAIT_ABANDONED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } else if (ret == WAIT_TIMEOUT) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    return Process::Status::FINALIZED_ERROR;
-  } /*else {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-    return Process::Status::FINALIZED;
-  }*/
-  DWORD exitCode;
-  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+      msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+      return Process::Status::FINALIZED_ERROR;
+    }
+
+    DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
+    if (ret == WAIT_FAILED) {
+      msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+      return Process::Status::FINALIZED_ERROR;
+    } else if (ret == WAIT_OBJECT_0) {
+      msgInfo("Command executed: %s", mCmd.c_str());
+      //return Process::Status::FINALIZED;
+    } else if (ret == WAIT_ABANDONED) {
+      msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+      return Process::Status::FINALIZED_ERROR;
+    } else if (ret == WAIT_TIMEOUT) {
+      msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+      return Process::Status::FINALIZED_ERROR;
+    } /*else {
+      msgInfo("Comando ejecutado: %s", mCmd.c_str());
+      return Process::Status::FINALIZED;
+    }*/
+    DWORD exitCode;
+    if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
+      msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
+      return Process::Status::FINALIZED_ERROR;
+    }
+  } catch (std::exception &e) {
     return Process::Status::FINALIZED_ERROR;
   }
   return Process::Status::FINALIZED;

@@ -1,5 +1,7 @@
 #include "statistics.h"
 
+#include <algorithm>
+
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"

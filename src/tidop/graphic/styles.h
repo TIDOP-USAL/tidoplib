@@ -81,7 +81,7 @@ protected:
    * \brief Color de Pluma
    * \see Color
    */
-  TL::Color mPenColor;
+  Color mPenColor;
 
   /*!
    * \brief Ancho de pluma
@@ -145,14 +145,14 @@ public:
    * \return Color de pluma
    * \see Color
    */
-  TL::Color color() const;
+  Color color() const;
 
   /*!
    * \brief Establece el color de Pluma
    * \param[in] pencolor Color de Pluma
    * \see Color
    */
-  void setColor(TL::Color pencolor);
+  void setColor(const Color &pencolor);
 
   /*!
    * \brief Devuelve el ancho de pluma
@@ -254,16 +254,17 @@ public:
 class TL_EXPORT StyleBrush
 {
 public:
-  enum class BrushName : uint8_t
+
+  enum class Name : uint8_t
   {
-    SOLID,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */  
-    BRUSH_NULL,        /*!< Pincel nulo (invisible) */  
-    HORIZONTAL_HATCH,  /*!<  ------ */   
-    VERTICAL_HATCH,    /*!< ||||||  */   
-    FDIAGONAL_HATCH,   /*!< \\\\\\  */   
-    BDIAGONAL_HATCH,   /*!< ////// */   
-    CROSS_HATCH,       /*!<  ++++++*/   
-    DIAGCROSS_HATCH    /*!<  xxxxxx*/    
+    solid,             /*!< Sólido (el valor por defecto cuando no se proporciona ningún id) */
+    null,        /*!< Pincel nulo (invisible) */
+    horizontal_hatch,  /*!<  ------ */
+    vertical_hatch,    /*!< ||||||  */
+    fdiagonal_hatch,   /*!< \\\\\\  */
+    bdiagonal_hatch,   /*!< ////// */
+    cross_hatch,       /*!<  ++++++*/
+    diagcross_hatch    /*!<  xxxxxx*/
   };
 
 protected:
@@ -272,18 +273,18 @@ protected:
    * \brief Color de primer plano
    * \see Color
    */
-  TL::Color mForeColor;
+  Color mForeColor;
   
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  TL::Color mBackColor;
+  Color mBackColor;
 
   /*!
    * \brief Nombre de pincel
    */
-  BrushName mBrushName;
+  Name mBrushName;
 
   /*!
    * \brief Ángulo de rotación en grados sexagesimales en notación decimal
@@ -329,40 +330,40 @@ public:
    * \return Color
    * \see Color
    */
-  TL::Color foreColor() const;
+  Color foreColor() const;
 
   /*!
    * \brief Establece el color
    * \param[in] forecolor Color
    * \see Color
    */
-  void setForeColor(TL::Color forecolor);
+  void setForeColor(Color forecolor);
 
     /*!
    * \brief Devuelve el color de fondo
    * \return Color de fondo
    * \see Color
    */
-  TL::Color backColor() const;
+  Color backColor() const;
 
   /*!
    * \brief Establece el color de fondo
    * \param[in] backcolor Color de fondo
    * \see Color
    */
-  void setBackColor(TL::Color backcolor);
+  void setBackColor(Color backcolor);
 
   /*!
    * \brief Devuelve el nombre o id de pincel
    * \return Nombre o id de pincel
    */
-  BrushName brushName() const;
+  Name brushName() const;
 
   /*!
    * \brief Establece el nombre o id de pincel
    * \param[in] brushname Nombre o id de pincel
    */
-  void setBrushName(BrushName brushname);
+  void setBrushName(Name brushname);
 
   /*!
    * \brief Devuelve el ángulo de rotación
@@ -430,19 +431,19 @@ class TL_EXPORT StyleSymbol
 
 public:
 
-  enum class SymbolName
+  enum class Name
   {
-    CROSS,             /*!< + */  
-    DIAGONAL_CROSS,    /*!< x */  
-    CIRCLE,            /*!< Circulo */ 
-    CIRCLE_FILLED,     /*!< Circulo relleno */ 
-    SQUARE,            /*!< Cuadrado */ 
-    SQUARE_FILLED,     /*!< Cuadrado relleno */ 
-    TRIANGLE,          /*!< Triangulo */ 
-    TRIANGLE_FILLED,   /*!< Triangulo relleno */ 
-    STAR,              /*!< Estrella */ 
-    STAR_FILLED,       /*!< Estrella rellena */ 
-    VERTICAL_BAR       /*!< | */ 
+    cross,             /*!< + */
+    diagonal_cross,    /*!< x */
+    circle,            /*!< Circulo */
+    circle_filled,     /*!< Circulo relleno */
+    square,            /*!< Cuadrado */
+    square_filled,     /*!< Cuadrado relleno */
+    triangle,          /*!< Triangulo */
+    triangle_filled,   /*!< Triangulo relleno */
+    star,              /*!< Estrella */
+    star_filled,       /*!< Estrella rellena */
+    vertical_bar       /*!< | */
   };
 
 protected:
@@ -450,7 +451,7 @@ protected:
   /*!
    * \brief Nombre o identificador del simbolo
    */
-  SymbolName mName;
+  Name mName;
 
   /*!
    * \brief Ángulo de rotación en grados sexagesimales en notación decimal
@@ -462,13 +463,13 @@ protected:
    * \brief Color
    * \see Color
    */
-  TL::Color mColor;
+  Color mColor;
   
   /*!
    * \brief Color de borde
    * \see Color
    */
-  TL::Color mOutlineColor;
+  Color mOutlineColor;
 
   /*!
    * \brief Factor de escala
@@ -508,7 +509,7 @@ public:
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle() const;
+  double angle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -521,47 +522,47 @@ public:
    * \brief Devuelve el nombre o id del simbolo
    * \return Nombre o id del simbolo
    */
-  SymbolName getName() const;
+  Name name() const;
 
   /*!
    * \brief Establece el nombre o id del simbolo
    * \param[in] name Nombre o id del simbolo
    */
-  void setName(SymbolName name);
+  void setName(Name name);
 
   /*!
    * \brief Devuelve el color
    * \return Color
    * \see Color
    */
-  TL::Color getColor() const;
+  Color color() const;
 
   /*!
    * \brief Establece el color
    * \param[in] color Color
    * \see Color
    */
-  void setColor(const TL::Color &color);
+  void setColor(const Color &color);
 
     /*!
    * \brief Devuelve el color de borde
    * \return Color de borde
    * \see Color
    */
-  TL::Color getOutlineColor() const;
+  Color outlineColor() const;
 
   /*!
    * \brief Establece el color de borde
    * \param[in] outlinecolor Color de borde
    * \see Color
    */
-  void setOutlineColor(const TL::Color &outlinecolor);
+  void setOutlineColor(const Color &outlinecolor);
 
   /*!
    * \brief Devuelve el factor de escala
    * \return Factor de escala
    */
-  double getScalingFactor() const;
+  double scalingFactor() const;
 
   /*!
    * \brief Establece el factor de escala
@@ -572,12 +573,12 @@ public:
   /*!
    * \brief Desplazamiento X del punto de inserción del símbolo.
    */
-  double getOffsetX() const;
+  double offsetX() const;
 
   /*!
    * \brief Desplazamiento Y del punto de inserción del símbolo.
    */
-  double getOffsetY() const;
+  double offsetY() const;
 
   /*!
    * \brief Establece el desplazamiento (Offset) del punto de inserción del simbolo
@@ -586,7 +587,7 @@ public:
    */
   void setOffset(double dx, double dy);
   
-  uint32_t getPriorityLevel() const;
+  uint32_t priorityLevel() const;
 
   void setPriorityLevel(uint32_t priorityLevel);
 
@@ -639,17 +640,6 @@ protected:
   Font mFont;
 
   /*!
-   * \brief Nombre de la fuente
-   * Puede ser una lista separada por comas de varios tipos de fuentes
-   */
-  //std::string mFontName;
-
-  /*!
-   * \brief Tamaño de fuente
-   */
-  //int mFontSize;
-
-  /*!
    * \brief Texto de la etiqueta
    */
   std::string mText;
@@ -664,25 +654,25 @@ protected:
    * \brief Color de primer plano
    * \see Color
    */
-  TL::Color mForegroundColor;
+  Color mForegroundColor;
   
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  TL::Color mBackgroundColor;
+  Color mBackgroundColor;
 
   /*!
    * \brief Color de contorno
    * \see Color
    */
-  TL::Color mOutlineColor;
+  Color mOutlineColor;
 
   /*!
    * \brief Color de la sombra
    * \see Color
    */
-  TL::Color mShadowColor;
+  Color mShadowColor;
  
   /*!
    * \brief Escalado en tanto por ciento
@@ -712,21 +702,6 @@ protected:
   int mPerpendicularOffset;
 
   /*!
-   * \brief Negrita
-   */
-  //bool bBold;
-
-  /*!
-   * \brief Cursiva
-   */
-  //bool bItalic;
-
-  /*!
-   * \brief Subrayado
-   */
-  //bool bUnderline;
-
-  /*!
    * \brief Tachado
    */
   bool bStrikeout;
@@ -745,7 +720,7 @@ public:
   /*!
    * \brief Devuelve el texto de la etiqueta
    */
-  std::string getText() const;
+  std::string text() const;
 
   /*!
    * \brief Establece el texto de la etiqueta
@@ -758,7 +733,7 @@ public:
    * \return Ángulo de rotación en grados sexagesimales en notación decimal
    * \see angleConversion
    */
-  double getAngle() const;
+  double angle() const;
 
   /*!
    * \brief Establece el ángulo de rotación
@@ -771,58 +746,58 @@ public:
    * \brief Color de primer plano
    * \see Color
    */
-  TL::Color getForegroundColor() const;
+  Color foregroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
    * \param[in] color
    * \see Color
    */
-  void setForegroundColor(const TL::Color &color);
+  void setForegroundColor(const Color &color);
 
   /*!
    * \brief Color de fondo
    * \see Color
    */
-  TL::Color getBackgroundColor() const;
+  Color backgroundColor() const;
 
   /*!
    * \brief Establece el color de primer plano
    * \param[in] color
    * \see Color
    */
-  void setBackgroundColor(const TL::Color &color);
+  void setBackgroundColor(const Color &color);
 
   /*!
    * \brief Color de contorno
    * \see Color
    */
-  TL::Color getOutlineColor() const;
+  Color outlineColor() const;
 
   /*!
    * \brief Establece el color de contorno
    * \param[in] color
    * \see Color
    */
-  void setOutlineColor(const TL::Color &color);
+  void setOutlineColor(const Color &color);
 
   /*!
    * \brief Color de la sombra
    * \see Color
    */
-  TL::Color getShadowColor() const;
+  Color shadowColor() const;
 
   /*!
    * \brief Establece el color de la sombra
    * \param[in] color
    * \see Color
    */
-  void setShadowColor(const TL::Color &color);
+  void setShadowColor(const Color &color);
  
   /*!
    * \brief Escalado en tanto por ciento
    */
-  double getStretch() const;
+  double stretch() const;
 
   /*!
    * \brief Escalado en tanto por ciento
@@ -834,7 +809,7 @@ public:
    * \brief Modo de colocación de la etiqueta en las entidades
    * \see LabelPlacement
    */
-  LabelPlacement getLabelPlacement() const;
+  LabelPlacement labelPlacement() const;
 
   /*!
    * \brief Modo de colocación de la etiqueta en las entidades
@@ -847,7 +822,7 @@ public:
    * \brief Posición de anclaje de la etiqueta
    * \see AnchorPosition
    */
-  AnchorPosition getAnchorPosition() const;
+  AnchorPosition anchorPosition() const;
 
   /*!
    * \brief Posición de anclaje de la etiqueta
@@ -859,12 +834,12 @@ public:
   /*!
    * \brief Desplazamiento X del punto de inserción de la etiqueta.
    */
-  double getOffsetX() const;
+  double offsetX() const;
 
   /*!
    * \brief Desplazamiento Y del punto de inserción de la etiqueta
    */
-  double getOffsetY() const;
+  double offsetY() const;
 
   /*!
    * \brief Establece el desplazamiento (Offset) del punto de inserción de la etiqueta
@@ -880,7 +855,9 @@ public:
    */
   StyleLabel &operator = (const StyleLabel &styleLabel);
   void setFont(const Font &font);
-  Font getFont() const;
+  Font font() const;
+  int perpendicularOffset() const;
+  void setPerpendicularOffset(int perpendicularOffset);
 };
 
 ALLOW_BITWISE_FLAG_OPERATIONS(StyleLabel::AnchorPosition)
@@ -947,8 +924,10 @@ public:
 //
 //  bool write();
 
-  TL_DEPRECATED("stylePen()")
-  StylePen *getStylePen() const;
+  /*!
+   * \brief Estilo de pluma
+   * \return
+   */
   StylePen *stylePen() const;
 
   /*!
@@ -956,9 +935,11 @@ public:
    * \param[in] stylePen Estilo de pluma
    */
   void setStylePen(const std::shared_ptr<StylePen> &stylePen);
-  
-  TL_DEPRECATED("styleBrush()")
-  StyleBrush *getStyleBrush() const;
+
+  /*!
+   * \brief Estilo de pincel
+   * \return
+   */
   StyleBrush *styleBrush() const;
 
   /*!
@@ -967,8 +948,10 @@ public:
    */
   void setStyleBrush(const std::shared_ptr<StyleBrush> &styleBrush);
 
-  TL_DEPRECATED("styleSymbol()")
-  StyleSymbol *getStyleSymbol() const;
+  /*!
+   * \brief Estilo simbolo
+   * \return
+   */
   StyleSymbol *styleSymbol() const;
 
   /*!
@@ -977,8 +960,10 @@ public:
    */
   void setStyleSymbol(const std::shared_ptr<StyleSymbol> &styleSymbol);
 
-  TL_DEPRECATED("styleLabel()")
-  StyleLabel *getStyleLabel() const;
+  /*!
+   * \brief Estilo etiqueta
+   * \return
+   */
   StyleLabel *styleLabel() const;
 
   /*!

@@ -4,6 +4,8 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
+#include <vector>
+
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif

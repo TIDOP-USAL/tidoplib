@@ -15,9 +15,9 @@ namespace graph
 /* ---------------------------------------------------------------------------------- */
 
 Font::Font() 
-  : mName(),
+  : mName("Arial"),
     mSize(10),
-    mStyle(Style::DEFAULT),
+    mStyle(Style::normal),
     mUnderline(false),
     mStrikethrough(false)
 {
@@ -55,35 +55,14 @@ std::string Font::name() const
   return mName;
 }
 
-int Font::size() const
-{
-  return mSize;
-}
-
-
-bool Font::isBold() const
-{
-  return mStyle.isActive(Style::BOLD);
-}
-
-bool Font::isItalic() const
-{
-  return mStyle.isActive(Style::ITALIC);
-}
-
-bool Font::isUnderline() const
-{
-  return mUnderline;
-}
-
-bool Font::isStrikethrough() const
-{
-  return mStrikethrough;
-}
-
 void Font::setName(const std::string &name)
 {
   mName = name;
+}
+
+int Font::size() const
+{
+  return mSize;
 }
 
 void Font::setSize(int size)
@@ -91,19 +70,29 @@ void Font::setSize(int size)
   mSize = size;
 }
 
-void Font::setStyle(Style style)
+bool Font::isBold() const
 {
-  mStyle = style;
+  return mStyle.isActive(Style::bold);
 }
 
 void Font::setBold(bool active)
 {
-  mStyle.activeFlag(Style::BOLD, active);
+  mStyle.activeFlag(Style::bold, active);
+}
+
+bool Font::isItalic() const
+{
+  return mStyle.isActive(Style::italic);
 }
 
 void Font::setItalic(bool active)
 {
-  mStyle.activeFlag(Style::ITALIC, active);
+  mStyle.activeFlag(Style::italic, active);
+}
+
+bool Font::isUnderline() const
+{
+  return mUnderline;
 }
 
 void Font::setUnderline(bool active)
@@ -111,9 +100,19 @@ void Font::setUnderline(bool active)
   mUnderline = active;
 }
 
+bool Font::isStrikethrough() const
+{
+  return mStrikethrough;
+}
+
 void Font::setStrikethrough(bool active)
 {
   mStrikethrough = active;
+}
+
+void Font::setStyle(Style style)
+{
+  mStyle = style;
 }
 
 Font &Font::operator = (const Font &font)

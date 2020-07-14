@@ -128,9 +128,9 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
   Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
 #elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
+  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
+  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
+  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
   cv::solve(A, B, C, cv::DECOMP_SVD);
   std::vector<double> v_aux;
   cvMatToVector(C, &v_aux);
