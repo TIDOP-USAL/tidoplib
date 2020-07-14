@@ -32,7 +32,7 @@ class OGRStyleBrush;
 class OGRStyleSymbol;
 class OGRStyleLabel;
 
-namespace TL
+namespace tl
 {
 
 class VectorGraphics;
@@ -187,7 +187,7 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea una fichero vectorial
@@ -443,7 +443,7 @@ public:
    * \return Error
    * \see Mode
    */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Crea un fichero

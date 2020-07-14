@@ -5,7 +5,7 @@
 #include <tidop/core/messages.h>
 #include <tidop/core/flags.h>
 
-using namespace TL;
+using namespace tl;
 
 
 enum class ePrueba : int8_t {

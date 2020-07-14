@@ -22,7 +22,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -81,13 +81,6 @@ public:
    */
   typedef typename std::underlying_type<T>::type Type; 
 
-private:
-
-  /*!
-   * \brief mFlag
-   */
-  Type mFlag;
-
 public:
 
   /*!
@@ -105,7 +98,7 @@ public:
    * \brief Constructora de movimiento
    * \param[in] flag
    */
-  EnumFlags(EnumFlags<T> &&flag);
+  EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Constructora
@@ -130,7 +123,7 @@ public:
    * \param[in] flag Objeto EnumFlags
    * \return Referencia al objeto EnumFlags
    */
-  EnumFlags<T> &operator = (EnumFlags<T> &&flag);
+  EnumFlags<T> &operator = (EnumFlags<T> &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Operador asignación enumeración
@@ -176,11 +169,28 @@ public:
    */
   void clear();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve los flags
+   * \return
+   * \deprecated Use 'flags()' en su lugar 
+   */
+  TL_DEPRECATED("EnumFlags::flags", "2.0")
+  T getFlags() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+   
   /*!
    * \brief Devuelve los flags
    * \return
    */
-  T getFlags() const;
+  T flags() const;
+
+private:
+
+  /*!
+   * \brief mFlag
+   */
+  Type mFlag;
 
 };
 
@@ -198,7 +208,7 @@ EnumFlags<T>::EnumFlags(const EnumFlags<T> &flag)
 }
 
 template<typename T> inline
-EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag)
+EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT
   : mFlag(std::move(flag.mFlag)) 
 {
 
@@ -226,7 +236,7 @@ EnumFlags<T> &EnumFlags<T>::operator = (const EnumFlags<T> &flag)
 }
 
 template<typename T> inline
-EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag)
+EnumFlags<T> &EnumFlags<T>::operator = (EnumFlags<T> &&flag) TL_NOEXCEPT
 {
   if (this != &flag) {
     this->mFlag = std::move(flag.mFlag);
@@ -244,7 +254,7 @@ EnumFlags<T> &EnumFlags<T>::operator = (T flag)
 template<typename T> inline
 bool EnumFlags<T>::isActive(T flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(flag) );
+  return 0 != (mFlag & static_cast<Type>(flag));
 }
 
 template<typename T> inline
@@ -262,15 +272,19 @@ void EnumFlags<T>::flagOff(T flag)
 template<typename T> inline
 void EnumFlags<T>::activeFlag(T flag, bool active)
 {
-  if (active) flagOn(flag);
-  else flagOff(flag);
+  if (active) 
+    flagOn(flag);
+  else 
+    flagOff(flag);
 }
 
 template<typename T> inline
 void EnumFlags<T>::switchFlag(T flag)
 {
-  if ( isActive(flag) ) flagOff(flag);
-  else flagOn(flag);
+  if (isActive(flag)) 
+    flagOff(flag);
+  else 
+    flagOn(flag);
 }
 
 template<typename T> inline
@@ -279,11 +293,21 @@ void EnumFlags<T>::clear()
   mFlag = static_cast<Type>(0);
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename T> inline
 T EnumFlags<T>::getFlags() const
 {
   return static_cast<T> (mFlag);
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+template<typename T> inline
+T EnumFlags<T>::flags() const
+{
+  return static_cast<T>(mFlag);
+}
+
+
 
 /*!
  * \brief Permite operaciones a nivel de bit con un 'enum class'
@@ -306,7 +330,7 @@ T EnumFlags<T>::getFlags() const
  * \endcode
  */
 #define ALLOW_BITWISE_FLAG_OPERATIONS(T_FLAG)                       \
-inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) |        \
@@ -314,7 +338,7 @@ inline T_FLAG operator | (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) &        \
@@ -322,7 +346,7 @@ inline T_FLAG operator & (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)   \
+inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)               \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     static_cast<std::underlying_type<T_FLAG>::type>(flag1) ^        \
@@ -330,12 +354,25 @@ inline T_FLAG operator ^ (T_FLAG flag1, T_FLAG flag2)   \
   );                                                                \
 }                                                                   \
                                                                     \
-inline T_FLAG operator ~ (T_FLAG flag)                        \
+inline T_FLAG operator ~ (T_FLAG flag)                              \
 {                                                                   \
   return static_cast<T_FLAG> (                                      \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
   );                                                                \
-}
+}                                                                   \
+                                                                    
+//inline bool operator == (T_FLAG flag1, T_FLAG flag2)                \
+//{                                                                   \
+//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) == \
+//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
+//}                                                                   \
+//                                                                    \
+//inline bool operator != (T_FLAG flag1, T_FLAG flag2)                \
+//{                                                                   \
+//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) != \
+//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
+//}                                                                   \
+
 
 
 template<typename T>
@@ -348,13 +385,6 @@ public:
    * \brief Tipo del flag
    */
   typedef T Type; 
-
-private:
-
-  /*!
-   * \brief mFlag
-   */
-  Type mFlag;
 
 public:
 
@@ -416,11 +446,28 @@ public:
    */
   void clear();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Devuelve los flags
+   * \return
+   * \deprecated Use 'flags()' en su lugar 
+   */
+  TL_DEPRECATED("Flags::flags", "2.0")
+  T getFlags() const;
+#endif // TL_ENABLE_DEPRECATED_METHODS
+   
   /*!
    * \brief Devuelve los flags
    * \return
    */
-  T getFlags() const;
+  T flags() const;
+
+private:
+
+  /*!
+   * \brief mFlag
+   */
+  Type mFlag;
 
 };
 
@@ -440,9 +487,10 @@ Flags<T>::Flags(const Flags &flag)
 
 template<typename T> inline
 Flags<T>::Flags(std::initializer_list<int> flags)
+  : mFlag(0)
 {
   for (auto flg : flags) {
-    mFlag |= static_cast<Type>(1 << flg);
+    this->flagOn(flg);
   }
 }
 
@@ -463,7 +511,7 @@ Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
 template<typename T> inline
 bool Flags<T>::isActive(int flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(1 << flag) );
+  return 0 != (mFlag & static_cast<Type>(1 << flag));
 }
 
 template<typename T> inline
@@ -481,8 +529,10 @@ void Flags<T>::flagOff(int flag)
 template<typename T> inline
 void Flags<T>::switchFlag(int flag)
 {
-  if ( isActive(flag) ) flagOff(flag);
-  else flagOn(flag);
+  if (isActive(flag)) 
+    flagOff(flag);
+  else 
+    flagOn(flag);
 }
 
 template<typename T> inline
@@ -491,13 +541,20 @@ void Flags<T>::clear()
   mFlag = static_cast<Type>(0);
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename T> inline
 T Flags<T>::getFlags() const
 {
-  return static_cast<T> (mFlag);
+  return static_cast<T>(mFlag);
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+template<typename T> inline
+T Flags<T>::flags() const
+{
+  return static_cast<T>(mFlag);
 }
 
-
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_FLAGS_H

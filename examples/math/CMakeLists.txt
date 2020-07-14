@@ -23,7 +23,7 @@ if(BUILD_TL_CORE AND BUILD_TL_MATH)
     set(the_target "${sample_kind}_${name}")
     add_executable(${the_target} ${srcs})
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
+    target_link_libraries(${the_target} tl_core tl_geom tl_graphic tl_img tl_imgprocess tl_geospatial tl_vect tl_math ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
@@ -44,8 +44,8 @@ if(BUILD_TL_CORE AND BUILD_TL_MATH)
       if (MSVC AND NOT BUILD_SHARED_LIBS)
         set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
       endif()
-      install(TARGETS ${the_target}
-              RUNTIME DESTINATION bin COMPONENT samples)
+      #install(TARGETS ${the_target}
+      #        RUNTIME DESTINATION bin COMPONENT samples)
     endif()
   ENDMACRO()
 

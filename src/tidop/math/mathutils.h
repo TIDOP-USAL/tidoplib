@@ -20,13 +20,13 @@ TL_DEFAULT_WARNINGS
 
 #include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /*!
- * \defgroup mathUtils Utilidades matemáticas
+ * \defgroup Math Utilidades matemáticas
  *
- * Utilidades para operaciones entre vectores (tanto en el plano como en espacio),
+ * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
  * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
  * de sistemas de ecuaciones lineales.
  *
@@ -34,6 +34,23 @@ namespace TL
  *
  * \{
  */
+
+namespace math
+{
+
+
+template<typename T> inline
+T clamp(const T &value, const T &_min, const T &_max)
+{
+  return std::max(_min, std::min(_max, value));
+}
+
+
+} // End namespace math
+
+TL_TODO("Limpiar a partir de aqui")
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief ángulos de Euler
@@ -51,30 +68,31 @@ namespace TL
  */
 TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
 
-//Otra posible solución. Realizar un test en condiciones y ver cual es mejor 
+//Otra posible solución. Tizar un test en condiciones y ver cual es mejor 
 //https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
 //TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
+
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje X
  * \param[in] rX Rotación respecto al eje X en radianes
  * \param[out] RX Matriz de rotación
  */
-void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
+void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje Y
  * \param[in] rY Rotación respecto al eje Y en radianes
  * \param[out] RY Matriz de rotación
  */
-void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
+void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
 
 /*!
  * \brief Cálculo de la matriz de rotación respecto al eje Z
  * \param[in] rZ Rotación respecto al eje Z en radianes
  * \param[out] RZ Matriz de rotación
  */
-void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
+void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
 /*!
  * \brief Cálculo de la matriz de rotación
@@ -86,6 +104,7 @@ void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
 
 
+#endif TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
@@ -98,11 +117,11 @@ TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array
 /*!
  * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
  *
- * En álgebra lineal, la descomposición en valores singulares de una matriz real
+ * En álgebra lineal, la descomposición en valores singulares de una matriz T
  * o compleja es una factorización de la misma con muchas aplicaciones, entre ellas
  * la resolución de sistemas lineales.
  *
- * Dada una matriz real A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
+ * Dada una matriz T A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
  * y una matriz diagonal Σ (de tamaño m×n) tales que:
  *
  * \f[ A = UΣV^T  \f]
@@ -128,9 +147,9 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
   Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
 #elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
+  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
+  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
+  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
   cv::solve(A, B, C, cv::DECOMP_SVD);
   std::vector<double> v_aux;
   cvMatToVector(C, &v_aux);
@@ -148,7 +167,7 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
  * La descomposición o factorización QR de una matriz es una descomposición de
  * la misma como producto de una matriz ortogonal por una triangular superior.
  *
- * La descomposición QR de una matriz cuadrada real A es:
+ * La descomposición QR de una matriz cuadrada T A es:
  *
  * \f[ A = QR \f]
  *
@@ -218,30 +237,6 @@ TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, d
 
 #endif
 
-
-
-
-////TODO: deberian generalizarse para cualquier tipo de contenedor
-//template<typename T> inline 
-//T computeMedian(const std::vector<T> &input)
-//{
-//  size_t size = input.size();
-//  if (size % 2 == 0)
-//    return (input[size / 2 - 1] + input[size / 2]) / 2;
-//  else
-//    return input[size / 2];
-//}
-//
-//template<typename T> inline 
-//T computeTempMAD(const std::vector<T> &input, T median)
-//{
-//  std::vector<T> inp = input;
-//  for (size_t i = 0; i < inp.size(); ++i) {
-//    inp[i] = abs(inp[i] - median);
-//  }
-//  sort(inp.begin(), inp.end());
-//  return computeMedian(inp)*1.4826;
-//}
 
 /* ---------------------------------------------------------------------------------- */
 /*           AJUSTES DE PUNTOS A GEOMETRIAS (LINEAS, PLANOS, ...)                     */
@@ -645,7 +640,14 @@ TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
 #endif
 
 
-/*! \} */ // end of mathUtils
+
+//template<typename T>
+//T clamp(const T &value, const T &_min, const T &_max)
+//{
+//  return std::max(_min, std::min(_max, value));
+//};
+
+/*! \} */ // end of Math
 
 } // End namespace TL
 

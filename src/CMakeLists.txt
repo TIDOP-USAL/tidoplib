@@ -18,8 +18,12 @@ if(BUILD_TL_CORE)
   endif()
   
   if(BUILD_TL_IMG_PROCESS)
-    add_subdirectory(tidop/img_process)
+    add_subdirectory(tidop/imgprocess)
   endif()
+  
+  if(BUILD_TL_FEAT_MATCH)
+    add_subdirectory(tidop/featmatch)
+  endif(BUILD_TL_FEAT_MATCH)
   
   if(BUILD_TL_GRAPHIC AND BUILD_TL_GEOMETRY)
     add_subdirectory(tidop/graphic)

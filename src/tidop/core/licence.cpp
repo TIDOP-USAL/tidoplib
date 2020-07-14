@@ -14,7 +14,7 @@
 
 #include "licence.h"
 
-namespace TL
+namespace tl
 {
 
 
@@ -100,4 +100,4 @@ const std::list<Licence> *AppLicence::thirdPartyLicences() const
 }
 
 
-} // End namespace TL
+} // End namespace tl

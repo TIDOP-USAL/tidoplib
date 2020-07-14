@@ -18,7 +18,7 @@ class OGRStyleBrush;
 class OGRStyleSymbol;
 class OGRStyleLabel;
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;
@@ -186,7 +186,7 @@ public:
 
   /*!
    * \brief Establece el nombre o id de pluma
-   * \param[in] penname Nombre o id de pluma
+   * \param[in] name Nombre o id de pluma
    */
   void setName(Name name);
 
@@ -210,7 +210,7 @@ public:
 
   /*!
    * \brief Establece la forma del punto de unión (vértice) de líneas
-   * \param[in] penjoin Forma del punto de unión (vértice) de líneas
+   * \param[in] join Forma del punto de unión (vértice) de líneas
    */
    void setJoin(Join join);
 
@@ -655,7 +655,7 @@ protected:
    * \see Color
    */
   Color mForegroundColor;
-  
+
   /*!
    * \brief Color de fondo
    * \see Color
@@ -673,7 +673,7 @@ protected:
    * \see Color
    */
   Color mShadowColor;
- 
+
   /*!
    * \brief Escalado en tanto por ciento
    */
@@ -793,7 +793,7 @@ public:
    * \see Color
    */
   void setShadowColor(const Color &color);
- 
+
   /*!
    * \brief Escalado en tanto por ciento
    */

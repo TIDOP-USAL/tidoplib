@@ -7,8 +7,16 @@
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
 
-using namespace TL;
-using namespace TL::graph;
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
+
+using namespace tl;
+using namespace graph;
 
 /*!
  * read_vect: 
@@ -32,24 +40,24 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(cmd_name);
-  console.setLogLevel(MessageLevel::MSG_VERBOSE);
+  console.setLogLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   console.setFontHeight(14);
-  MessageManager::getInstance().addListener(&console);
+  MessageManager::instance().addListener(&console);
 
   std::string file_in = vect_in.string();
   std::string file_out = vect_out.string();
@@ -67,9 +75,9 @@ int main(int argc, char** argv)
 
   VectorGraphics vector;
   vect_in.string();
-  if (VectorGraphics::Status::OPEN_FAIL == vector.open(file_in)) return 1;
+  if (VectorGraphics::Status::open_fail == vector.open(file_in)) return 1;
   VectorGraphics vector_out;
-  if (VectorGraphics::Status::OPEN_FAIL == vector_out.open(file_out, VectorGraphics::Mode::Create)) return 1;
+  if (VectorGraphics::Status::open_fail == vector_out.open(file_out, VectorGraphics::Mode::create)) return 1;
 
   vector_out.create();  //
 

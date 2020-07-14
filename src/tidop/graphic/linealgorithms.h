@@ -7,7 +7,7 @@
 
 #include "tidop/geometry/entities/point.h"
 
-namespace TL 
+namespace tl 
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -24,9 +24,14 @@ public:
 
   enum class Type
   {
+    bresenham,
+    dda
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
     BRESENHAM,
     DDA
     //XiaolinWu
+#endif
   };
 
   /*!
@@ -39,12 +44,12 @@ protected:
   /*!
    * \brief Punto inicial
    */
-  geometry::PointI mPt1;
+  PointI mPt1;
 
   /*!
    * \brief Punto final
    */
-  geometry::PointI mPt2;
+  PointI mPt2;
 
   /*!
    * \brief Paso en X
@@ -59,7 +64,7 @@ protected:
   /*!
    * \brief Posición actual
    */
-  geometry::PointI mPos;
+  PointI mPos;
 
   /*!
    * \brief Incremento en X
@@ -81,7 +86,7 @@ public:
   /*!
    * \brief Constructora
    */
-  LineAlgorithms(Type type, const geometry::PointI &pt1, const geometry::PointI &pt2)
+  LineAlgorithms(Type type, const PointI &pt1, const PointI &pt2)
     : mType(type), mPt1(pt1), mPt2(pt2)
   {
     dx = pt2.x - pt1.x;
@@ -99,12 +104,24 @@ public:
    * \param[in] id Identificador de la posición
    * \return Posición actual
    */
-  virtual geometry::PointI position(int id = -1) = 0;
+  virtual PointI position(int id = -1) = 0;
+ 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   * \deprecated Use 'points()' en su lugar
+   */
+  TL_DEPRECATED("LineAlgorithms::points()", "2.0")
+  virtual std::vector<geometry::PointI> getPoints() = 0;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
-  virtual std::vector<geometry::PointI> getPoints() = 0;
+  virtual std::vector<PointI> points() = 0;
+
 };
 
 /*!
@@ -131,11 +148,11 @@ public:
 
   /*!
    * \brief Constructora
-   * TL::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+   * tl::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
-  BresenhamLine(const geometry::PointI &pt1, const geometry::PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::BRESENHAM, pt1, pt2)
+  BresenhamLine(const PointI &pt1, const PointI &pt2)
+    : LineAlgorithms(LineAlgorithms::Type::bresenham, pt1, pt2)
   {
     init();
   }
@@ -148,7 +165,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  geometry::PointI &operator*();
+  PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -196,17 +213,26 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  geometry::PointI position(int id = -1) override;
+  PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
    */
   int size() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
   std::vector<geometry::PointI> getPoints() override;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<PointI> points() override;
 
 private:
 
@@ -251,11 +277,11 @@ public:
 
   /*!
    *
-   * TL::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
+   * tl::EXPERIMENTAL::DDA lineIter2(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v2 = lineIter2.getPoints();
    */
-  DDA(const geometry::PointI &pt1, const geometry::PointI &pt2)
-    : LineAlgorithms(LineAlgorithms::Type::DDA, pt1, pt2)
+  DDA(const PointI &pt1, const PointI &pt2)
+    : LineAlgorithms(LineAlgorithms::Type::dda, pt1, pt2)
   {
     init();
   }
@@ -265,7 +291,7 @@ public:
   /*!
    * \brief Punto actual
    */
-  geometry::PointI &operator*();
+  PointI &operator*();
 
   /*!
    * \brief Incrementa una posición
@@ -313,17 +339,26 @@ public:
    * \param[in] id Indice del punto
    * \return Posición actual
    */
-  geometry::PointI position(int id = -1) override;
+  PointI position(int id = -1) override;
 
   /*!
    * \brief Tamaño de la linea
    */
   int size() const;
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
   /*!
    * \brief devuelve un vector con los puntos de la recta
    */
   std::vector<geometry::PointI> getPoints() override;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief devuelve un vector con los puntos de la recta
+   */
+  std::vector<PointI> points() override;
 
 private:
 
@@ -333,6 +368,6 @@ private:
 };
 
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_GRAPHIC_LINE_ALGORITHMS_H

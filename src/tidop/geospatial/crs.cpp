@@ -2,7 +2,7 @@
 
 #include "tidop/core/utils.h"
 
-namespace TL
+namespace tl
 {
 
 namespace geospatial
@@ -27,21 +27,6 @@ Crs::~Crs()
 {
 }
 
-std::string Crs::epsgCode() const
-{ 
-  return mEpsg;
-};
-
-bool Crs::isGeocentric() const
-{
-  return mCrs.IsGeocentric() != 0;
-}
-
-bool Crs::isGeographic() const
-{
-  return mCrs.IsGeographic()!= 0;
-}
-
 std::string Crs::exportToProj() const
 {
   char *cprj = nullptr;
@@ -54,11 +39,6 @@ std::string Crs::exportToWkt() const
   char *cprj = nullptr;
   mCrs.exportToWkt(&cprj);
   return std::string(cprj);
-}
-
-OGRSpatialReference *Crs::getOGRSpatialReference()
-{
-  return &mCrs;
 }
 
 void Crs::init()
@@ -92,7 +72,7 @@ CrsCache::CrsCache()
   mCrs.reserve(100); // Tamaño reservado por defecto
 }
 
-CrsCache &CrsCache::getInstance()
+CrsCache &CrsCache::instance()
 {
   if (sCrsCache.get() == nullptr) {
     std::lock_guard<std::mutex> lck(CrsCache::sMutex);

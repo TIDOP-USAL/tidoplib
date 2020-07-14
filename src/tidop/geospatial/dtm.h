@@ -13,7 +13,7 @@
 #include "tidop/geometry/entities/window.h"
 
 
-namespace TL
+namespace tl
 {
 
 
@@ -30,14 +30,15 @@ public:
 
   enum class Interpolation : uint8_t
   {
-    LINEAR,
-    NEAREST
+    linear,
+    nearest
   };
+
 protected:
 
   Interpolation mInterpolation;
   double mResolution;
-  geometry::WindowD mLimits;
+  WindowD mLimits;
 
 public:
 

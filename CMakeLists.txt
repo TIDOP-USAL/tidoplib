@@ -37,6 +37,55 @@ set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 # Macro para depuración
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
+if (UNIX)
+  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
+# Directivas del preprocesador
+add_definitions(-DUNICODE)
+
+
+if(MSVC)
+  if(CMAKE_CL_64)
+    set(TL_ARCH x64)
+  elseif((CMAKE_GENERATOR MATCHES "ARM") OR ("${arch_hint}" STREQUAL "ARM") OR (CMAKE_VS_EFFECTIVE_PLATFORMS MATCHES "ARM|arm"))
+    set(TL_ARCH ARM)
+  else()
+    set(TL_ARCH x86)
+  endif()
+  if(MSVC_VERSION EQUAL 1400)
+    set(TL_RUNTIME vc8)
+  elseif(MSVC_VERSION EQUAL 1500)
+    set(TL_RUNTIME vc9)
+  elseif(MSVC_VERSION EQUAL 1600)
+    set(TL_RUNTIME vc10)
+  elseif(MSVC_VERSION EQUAL 1700)
+    set(TL_RUNTIME vc11)
+  elseif(MSVC_VERSION EQUAL 1800)
+    set(TL_RUNTIME vc12)
+  elseif(MSVC_VERSION EQUAL 1900)
+    set(TL_RUNTIME vc14)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+  elseif(MSVC_VERSION MATCHES "^191[0-9]$")
+    set(TL_RUNTIME vc15)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+  elseif(MSVC_VERSION MATCHES "^192[0-9]$")
+    set(TL_RUNTIME vc16)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+  else()
+    message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
+  endif()
+elseif(MINGW)
+  set(TL_RUNTIME mingw)
+
+  if(MINGW64)
+    set(TL_ARCH x64)
+  else()
+    set(TL_ARCH x86)
+  endif()
+endif()
 
 # Configuracion especifica de Visual Studio
 if(MSVC)
@@ -54,17 +103,22 @@ if(MSVC)
   # Para deshabilitar esta advertencia se debe definir la macro _SCL_SECURE_NO_WARNINGS
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE")
 
+  # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
+  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
+
 endif()
 
 
-if (UNIX)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
+if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+  if(DEFINED TL_RUNTIME AND DEFINED TL_ARCH)
+    set(TL_INSTALL_BINARIES_PREFIX "${TL_ARCH}/${TL_RUNTIME}/")
+  else()
+    message(STATUS "Can't detect runtime and/or arch")
+    set(TL_INSTALL_BINARIES_PREFIX "")
+  endif()
+#else()
+#  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
 endif()
-
-# Directivas del preprocesador
-add_definitions(-DUNICODE)
 
 # Se permite elegir entre libreria estatica o
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
@@ -89,6 +143,7 @@ OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON
 OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
 OPTION (BUILD_TL_IMG          "Include img module in TidopLib build"          ON )
 OPTION (BUILD_TL_IMG_PROCESS  "Include imgprocess module in TidopLib build"   ON )
+OPTION (BUILD_TL_FEAT_MATCH   "Include featmatch module in TidopLib build"    ON )
 OPTION (BUILD_TL_GRAPHIC      "Include graphic module in TidopLib build"      ON )
 OPTION (BUILD_TL_GEOSPATIAL   "Include geospatial module in TidopLib build"   ON )
 OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON )
@@ -101,24 +156,25 @@ OPTION (BUILD_DOC             "Build documentation"   OFF)
 
 # Activa el gestor de mensajes. Si se desactiva no se mostrarán los mensajes del la librería
 # por consola ni se escribirán en el log
-OPTION (BUILD_Message_handler "Active message handle" ON)
+OPTION (BUILD_MESSAGE_HANDLER "Active message handle" ON)
 
 # Si se activa esta opción se pueden utilizar los métodos marcados como obsoletos (deprecated)
-OPTION (ENABLE_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
+OPTION (BUILD_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
-if(BUILD_Message_handler)
+if(BUILD_MESSAGE_HANDLER)
   set(TL_MESSAGE_HANDLER YES)
-  message("[TidopLib] Message manager enabled")
+  message(STATUS "[TidopLib] Message manager enabled")
 else()
   set(TL_MESSAGE_HANDLER NO)
-  message(WARNING "[TidopLib] Message manager disabled")
+  message(STATUS "[TidopLib] Message manager disabled")
 endif()
 
-if(ENABLE_DEPRECATED_METHODS)
+if(BUILD_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
   message(WARNING "[TidopLib] Enable deprecated methods and class")
 else()
   set(TL_ENABLE_DEPRECATED_METHODS NO)
+  message(STATUS "[TidopLib] Disable deprecated methods and class")
 endif()
 
 # Test
@@ -162,16 +218,17 @@ if(WITH_BOOST)
 #TODO: Deber?a establecer la versi?n m?nima de Boost en find_package
     #find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
     find_package(Boost COMPONENTS filesystem system REQUIRED)
+    find_package(Boost COMPONENTS filesystem system unit_test_framework REQUIRED)
     if(Boost_FOUND)
         include_directories(${Boost_INCLUDE_DIRS})
-      set(HAVE_BOOST YES)
+        set(HAVE_BOOST YES)
 
     #if (WIN32)
         #    add_definitions(-DBOOST_ALL_NO_LIB)
         #    add_definitions(-DBOOST_ALL_DYN_LINK)
         #endif()
 
-  else()
+    else()
       set(HAVE_BOOST NO)
     endif()
 
@@ -355,7 +412,8 @@ install(FILES ${PROJECT_BINARY_DIR}/config_tl.h DESTINATION include)
 include(GNUInstallDirs)
 
 
-set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+#set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")
+set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${TL_INSTALL_BINARIES_PREFIX}/lib/cmake/${PROJECT_NAME}")
 set(TIDOP_CONFIG_VERSION_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
 set(TIDOP_CONFIG_CMAKE_PATH "${CMAKE_CURRENT_BINARY_DIR}/TidopLibConfig.cmake")
 set(TIDOP_NAMESPACE "${PROJECT_NAME}::")

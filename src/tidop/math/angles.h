@@ -1,14 +1,32 @@
+/****************************************************************************
+ *                                                                          *
+ *  This file is part of TidopLib and can not be copied and/or distributed  *
+ *  without the express permision of ITOS3D ENGINEERING S.L                 *
+ *                                                                          *
+ *  Contact: http://www.itos3d.com                                          *
+ *           http://tidop.usal.es                                           *
+ *                                                                          *
+ *--------------------------------------------------------------------------*
+ *                                                                          *
+ *  Copyright (C) 2018, ITOS3D ENGINEERING S.L - All rights reserved        *
+ *                                                                          *
+ ****************************************************************************/
+
 #ifndef TL_MATH_ANGLES_H
 #define TL_MATH_ANGLES_H
 
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
-namespace TL
+namespace tl
 {
 
 namespace math
 {
+
+/*! \addtogroup Math
+ *  \{
+ */
 
 /*! \defgroup angleConversion Conversión de ángulos
  *  
@@ -130,8 +148,10 @@ TL_EXPORT double gradiansToRadians(double gradians);
 
 /*! \} */ // end of angleConversion  
   
+/*! \} */ // end of Math
+
 } // Fin namespace math
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_MATH_ANGLES_H 

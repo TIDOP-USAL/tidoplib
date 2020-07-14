@@ -21,9 +21,8 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-using namespace TL;
-using namespace TL::geometry;
-using namespace TL::geospatial;
+using namespace tl;
+using namespace geospatial;
 
 enum class options {
   opt1,
@@ -50,23 +49,23 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(cmd_name);                         // Titulo de la ventana de consola
   console.setConsoleUnicode();
   console.setFontHeight(14);                      // Se establece el tamaño de fuente
-  console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
-  MessageManager::getInstance().addListener(&console);
+  console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
+  MessageManager::instance().addListener(&console);
 
   CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
   Point3D pt_utm(350000., 4800000., 0.);

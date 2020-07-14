@@ -9,12 +9,19 @@
 #include <stdio.h>
 
 /* Cabeceras tidopLib */
+#include <tidop/core/log.h>
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-//#include <vld.h>
+#if (__cplusplus >= 201703L)
+#include <filesystem>
+namespace fs = std::filesystem;
+#elif defined HAVE_BOOST
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
+#endif
 
-using namespace TL;
+using namespace tl;
 
 int main(int argc, char** argv)
 {
@@ -31,40 +38,40 @@ int main(int argc, char** argv)
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
-  if (status == Command::Status::PARSE_ERROR ) {
+  if (status == Command::Status::parse_error ) {
     return 1;
-  } else if (status == Command::Status::SHOW_HELP) {
+  } else if (status == Command::Status::show_help) {
     return 0;
-  } else if (status == Command::Status::SHOW_LICENCE) {
+  } else if (status == Command::Status::show_licence) {
     return 0;
-  } else if (status == Command::Status::SHOW_VERSION) {
+  } else if (status == Command::Status::show_version) {
     return 0;
   }
 
   // Consola
-  Console &console = Console::getInstance();
+  Console &console = Console::instance();
   console.setTitle(name);                         // Titulo de la ventana de consola
-  console.setLogLevel(MessageLevel::MSG_VERBOSE); // Se muestran todos los mensajes por consola
-  MessageManager::getInstance().addListener(&console);
+  console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
+  MessageManager::instance().addListener(&console);
 
   // Se obtiene una instancia unica de la clase Log
-  Log &log = Log::getInstance();
+  Log &log = Log::instance();
 
   /*
   Se establece el nivel de mensajes en el log. Los valores posibles son:
   
-   - MSG_DEBUG:   Información extra para depuración.
-   - MSG_ERROR:   Sólo errores.
-   - MSG_WARNING: Warnings.
-   - MSG_INFO:    Información.
-   - MSG_VERBOSE: Todos los mensajes.
+   - msg_debug:   Información extra para depuración.
+   - msg_error:   Sólo errores.
+   - msg_warning: Warnings.
+   - msg_info:    Información.
+   - msg_verbose: Todos los mensajes.
    
    Se pueden combinar varios niveles de log:
 
-     log.setLogLevel(MessageLevel::MSG_WARNING | MessageLevel::MSG_ERROR);
+     log.setLogLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
 
   */
-  log.setLogLevel(MessageLevel::MSG_VERBOSE); 
+  log.setLogLevel(MessageLevel::msg_verbose);
   
   // Si se ha pasado por comando el fichero log se establece. En caso contrario se escribe en la ruta del ejecutable con su mismo nombre
   if (log_file.empty() == false)
@@ -74,7 +81,7 @@ int main(int argc, char** argv)
   log.write("Prueba de escritura");
 
   // Se suscribe la clase log al gestor de mensajes
-  MessageManager::getInstance().addListener(&log);
+  MessageManager::instance().addListener(&log);
 
   // Se muestra un mensaje por consola y se escribe en el log
   msgInfo("prueba");

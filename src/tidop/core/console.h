@@ -27,14 +27,10 @@
 #if defined (__clang__) || defined (__GNUG__)
 #include <cxxabi.h>
 #endif
-
-// filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
-namespace fs = std::filesystem;
 #else
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
 #endif
 
 #include "tidop/core/defs.h"
@@ -42,7 +38,7 @@ namespace fs = boost::filesystem;
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -52,6 +48,10 @@ namespace TL
  */
 
 /*! \defgroup Console Utilidades de consola
+ *  
+ * Utilidades para aplicaciones en modo consola que comprenden la apariencia de 
+ * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso 
+ * para procesos
  *
  *  \{
  */
@@ -76,8 +76,13 @@ public:
    */
   enum class Intensity : int8_t
   {
-    NORMAL,  /*!< Normal */
-    BRIGHT   /*!< Brillante */
+    normal,            /*!< Normal */
+    bright             /*!< Brillante */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    NORMAL = normal,
+    BRIGHT = bright
+#endif // TL_ENABLE_DEPRECATED_METHODS
   };
 
   /*!
@@ -85,14 +90,25 @@ public:
    */
   enum class Color : int8_t 
   {
-    BLACK,    /*!< Negro */
-    RED,      /*!< Rojo */
-    GREEN,    /*!< Verde */
-    YELLOW,   /*!< Amarillo */
-    BLUE,     /*!< Azul */
-    MAGENTA,  /*!< Magenta */
-    CYAN,     /*!< Cian */
-    WHITE     /*!< Blanco */
+    black,    /*!< Negro */
+    red,      /*!< Rojo */
+    green,    /*!< Verde */
+    yellow,   /*!< Amarillo */
+    blue,     /*!< Azul */
+    magenta,  /*!< Magenta */
+    cyan,     /*!< Cian */
+    white     /*!< Blanco */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    BLACK   = black,    /*!< Negro */
+    RED     = red,      /*!< Rojo */
+    GREEN   = green,    /*!< Verde */
+    YELLOW  = yellow,   /*!< Amarillo */
+    BLUE    = blue,     /*!< Azul */
+    MAGENTA = magenta,  /*!< Magenta */
+    CYAN    = cyan,     /*!< Cian */
+    WHITE   = white     /*!< Blanco */
+#endif
   };
 
   /*!
@@ -100,144 +116,57 @@ public:
    */
   enum class Mode : int8_t 
   {
-    INPUT,          /*!< Consola en modo entrada */
-    OUTPUT,         /*!< Consola en modo salida */
-    OUTPUT_ERROR    /*!< Consola en modo salida de errores */
+    input,          /*!< Consola en modo entrada */
+    output,         /*!< Consola en modo salida */
+    output_error    /*!< Consola en modo salida de errores */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    INPUT        = input,          /*!< Consola en modo entrada */
+    OUTPUT       = output,         /*!< Consola en modo salida */
+    OUTPUT_ERROR = output_error    /*!< Consola en modo salida de errores */
+#endif
   };
 
 private:
 
-
-#ifdef WIN32
-
-  // Consola de Windows
-
-  /*!
-   * \brief Manejador de la consola
-   */
-  HANDLE mHandle;
-  
-  /*!
-   * \brief Configuración de la consola al iniciar.
-   *
-   * La configuración inicial se recupera al salir o
-   * con el método reset
-   */
-  WORD mOldColorAttrs;
-
-  /*!
-   * \brief Intensidad de caracter
-   */
-  WORD mForeIntensity;
-
-  /*!
-   * \brief Color de caracteres
-   */
-  WORD mForeColor;
-
-  /*!
-   * \brief Intensidad de fondo
-   */
-  WORD mBackIntensity;
-
-  /*!
-   * \brief Color de fondo
-   */
-  WORD mBackColor;
-
-  //TODO: Por terminar
-  CONSOLE_FONT_INFOEX mIniFont;
-
-  CONSOLE_FONT_INFOEX mCurrentFont;
-
-#else
-
-  // Consola Linux
-
-  /*!
-   * \brief mStream
-   */
-  FILE *mStream;
-
-  /*!
-   * \brief mCommand
-   */
-  char mCommand[13];
-
-  /*!
-   * \brief Color de caracteres
-   */
-  int mForeColor;
-
-  /*!
-   * \brief Color de fondo
-   */
-  int mBackColor;
-
-  int mBold;
-
-#endif
-  
-  /*!
-   * \brief Nivel de información de los mensajes
-   *
-   * Por defecto MSG_ERROR
-   * \see MessageLevel
-   */
-  static EnumFlags<MessageLevel> sLevel;
-
-  /*!
-   * \brief Objeto unico para la consola
-   */
-  static std::unique_ptr<Console> sObjConsole;
-
-  static std::mutex mtx;
-
-private:
-
-  /*!
-   * \brief Constructora por defecto
-   */
+  /// Constructora privada ya que es un Singleton
   Console();
 
 public:
 
-  /*!
-   * Destructora
-   * Se recuperan las opciones por defecto de la consola
-   */
 #ifdef TL_MESSAGE_HANDLER
   ~Console() override;
 #else
   ~Console();
 #endif
 
-  Console(Console const&) = delete;
-  void operator=(Console const&) = delete;
+  /// Se invalida la copia y la asignación
+  Console(const Console &) = delete;
+  Console(Console &&) = delete;
+  Console &operator = (const Console &) = delete;
+  Console &operator = (Console &&) = delete;
 
   /*!
    * \brief Singleton que devuelve una referencia unica de un objeto Console
    */
-  static Console &getInstance();
+  static Console &instance();
 
   /*!
    * \brief Niveles de mensaje activados
    * \return Flag con los niveles de mensajes aceptados por la consola
    * \see EnumFlags
    */
-  TL_DEPRECATED("messageLevel")
-  EnumFlags<MessageLevel> getMessageLevel() const;
   EnumFlags<MessageLevel> messageLevel() const;
 
   /*!
    * \brief Imprime un mensaje en la consola
-   * \param[in] msg Mensaje
+   * \param[in] msg Mensaje que se muestra por consola
    */
   void printMessage(const std::string &msg);
 
   /*!
    * \brief Imprime un mensaje de error en la consola
-   * \param[in] msg Mensaje
+   * \param[in] msg Mensaje que se muestra por consola
    */
   void printErrorMessage(const std::string &msg);
 
@@ -251,7 +180,8 @@ public:
    * \param[in] backColor Color de fondo
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
-  void setConsoleBackgroundColor(Console::Color backColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+  void setConsoleBackgroundColor(Console::Color backColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece el color de caracter
@@ -259,7 +189,8 @@ public:
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    * \see Console::Color, Console::Intensity
    */
-  void setConsoleForegroundColor(Console::Color foreColor, Console::Intensity intensity = Console::Intensity::NORMAL);
+  void setConsoleForegroundColor(Console::Color foreColor, 
+                                 Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece la consola como modo Unicode
@@ -333,7 +264,7 @@ private:
    * \brief Inicializa la consola guardando la configuración  actual.
    * \param handle
    */
-  void init( DWORD handle );
+  void init(DWORD handle);
 
 #else
 
@@ -349,8 +280,143 @@ private:
    */
   void update();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+public:
+
+  /*!
+  * \brief Singleton que devuelve una referencia unica de un objeto Console
+  * \deprecated Use 'instance()'  en su lugar
+  */
+  TL_DEPRECATED("Console::instance", "2.0")
+    static Console &getInstance();
+
+  /*!
+  * \brief Niveles de mensaje activados
+  * \return Flag con los niveles de mensajes aceptados por la consola
+  * \see EnumFlags
+  * \deprecated Use 'messageLevel()'  en su lugar
+  */
+  TL_DEPRECATED("Console::messageLevel", "2.0")
+    EnumFlags<MessageLevel> getMessageLevel() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+private:
+
+#ifdef WIN32
+
+  /* Consola de Windows */
+
+  /*!
+   * \brief Manejador de la consola
+   */
+  HANDLE mHandle;
+  
+  /*!
+   * \brief Configuración de la consola al iniciar.
+   *
+   * La configuración inicial se recupera al salir o
+   * con el método reset
+   */
+  WORD mOldColorAttrs;
+
+  /*!
+   * \brief Intensidad de caracter
+   */
+  WORD mForeIntensity;
+
+  /*!
+   * \brief Color de caracteres
+   */
+  WORD mForeColor;
+
+  /*!
+   * \brief Intensidad de fondo
+   */
+  WORD mBackIntensity;
+
+  /*!
+   * \brief Color de fondo
+   */
+  WORD mBackgroundColor;
+
+  //TODO: Por terminar
+  CONSOLE_FONT_INFOEX mIniFont;
+  CONSOLE_FONT_INFOEX mCurrentFont;
+
+#else
+
+  /* Consola Linux */
+
+  /*!
+   * \brief mStream
+   */
+  FILE *mStream;
+
+  /*!
+   * \brief mCommand
+   */
+  char mCommand[13];
+
+  /*!
+   * \brief Color de caracteres
+   */
+  int mForeColor;
+
+  /*!
+   * \brief Color de fondo
+   */
+  int mBackgroundColor;
+  int mBold;
+
+#endif
+  
+  static EnumFlags<MessageLevel> sLevel;
+  static std::unique_ptr<Console> sObjConsole;
+  static std::mutex mtx;
+
 };
 
+
+/* Definición de métodos inline de la clase Console */
+
+inline EnumFlags<MessageLevel> Console::messageLevel() const
+{
+  return sLevel;
+}
+
+inline void Console::setFontHeight(int16_t size)
+{
+#ifdef WIN32
+  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(size);
+#endif
+  update();
+}
+
+inline void Console::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+inline void Console::setTitle(const std::string &title)
+{
+#ifdef WIN32
+  SetConsoleTitleA(title.c_str());
+#else
+  //printf("%c]0;%s%c", '\033', title, '\007');
+#endif
+}
+
+inline void Console::reset()
+{
+#ifdef WIN32
+  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
+#else
+  sprintf(mCommand, "%c[0;m", 0x1B);
+  fprintf(mStream, "%s", mCommand);
+#endif
+}
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -360,24 +426,6 @@ private:
  */
 class TL_EXPORT Argument
 {
-
-protected:
-
-  /*!
-   * \brief Nombre del argumento
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del argumento
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Nombre corto del argumento (Opcional)
-   * Es un único caracter
-   */
-  char mShortName;
 
 public:
 
@@ -410,9 +458,18 @@ public:
   Argument(const Argument &argument);
 
   /*!
+   * \brief Constructora de movimiento
+   * \param[in] argument Objeto que se mueve
+   */
+  Argument(Argument &&argument) TL_NOEXCEPT;
+
+  /*!
    * \brief Destructora
    */
   virtual ~Argument() = 0;
+
+  Argument &operator = (const Argument &arg);
+  Argument &operator = (Argument &&arg) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el nombre del argumento
@@ -466,7 +523,8 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  virtual std::string toString() const = 0;
+  ///TODO: si el valor no esta inicializado puede provocar un comportamiento inexperado
+  //virtual std::string toString() const = 0;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -479,7 +537,59 @@ public:
    * \return
    */
   virtual bool isValid() = 0;
+
+protected:
+
+  /*!
+   * \brief Nombre del argumento
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del argumento
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Nombre corto del argumento (Opcional)
+   * Es un único caracter
+   */
+  char mShortName;
+
 };
+
+
+/*  Definición de métodos inline de la clase Argument */
+
+inline std::string Argument::name() const
+{
+  return mName;
+}
+
+inline void Argument::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string Argument::description() const
+{
+  return mDescription;
+}
+
+inline void Argument::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline char Argument::shortName() const
+{
+  return mShortName;
+}
+
+inline void Argument::setShortName(const char &shortName)
+{
+  mShortName = shortName;
+}
 
 
 /*!
@@ -489,15 +599,6 @@ template <typename T, bool required = true>
 class Argument_
   : public Argument
 {
-
-protected:
-
-  /*!
-   * \brief Valor del argumento
-   */
-  T *mValue;
-
-  bool bValid;
 
 public:
 
@@ -533,9 +634,18 @@ public:
   Argument_(const Argument_ &argument);
 
   /*!
+   * \brief Constructora de movimiento
+   * \param[in] argument Objeto que se mueve
+   */
+  Argument_(Argument_ &&argument) TL_NOEXCEPT;
+
+  /*!
    * \brief Destructora
    */
   virtual ~Argument_() override {}
+
+  Argument_ &operator = (const Argument_ &argument);
+  Argument_ &operator = (Argument_ &&arg) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve una cadena de texto con el tipo del argumento
@@ -553,7 +663,7 @@ public:
    * \brief Convierte el valor del argumento a cadena de texto
    * \return Cadena de texto con el valor del argumento
    */
-  std::string toString() const override;
+  //std::string toString() const override;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -574,6 +684,11 @@ public:
   virtual void setValue(const T &value);
 
   bool isValid() override;
+
+protected:
+
+  T *mValue;
+  bool bValid;
 };
 
 
@@ -589,9 +704,14 @@ typedef Argument_<bool, true> ArgumentBooleanRequired;
 typedef Argument_<bool, false> ArgumentBooleanOptional;
 typedef Argument_<std::string, true> ArgumentStringRequired;
 typedef Argument_<std::string, false> ArgumentStringOptional;
-typedef Argument_<fs::path, true> ArgumentPathRequired;
-typedef Argument_<fs::path, false> ArgumentPathOptional;
 
+#if (__cplusplus >= 201703L)
+typedef Argument_<std::filesystem::path, true> ArgumentPathRequired;
+typedef Argument_<std::filesystem::path, false> ArgumentPathOptional;
+#else
+typedef Argument_<boost::filesystem::path, true> ArgumentPathRequired;
+typedef Argument_<boost::filesystem::path, false> ArgumentPathOptional;
+#endif
 
 /* Implementación */
 
@@ -635,6 +755,36 @@ Argument_<T, required>::Argument_(const Argument_ &argument)
 }
 
 template<typename T, bool required> inline
+Argument_<T, required>::Argument_(Argument_ &&argument) TL_NOEXCEPT
+  : Argument(std::forward<Argument>(argument)),
+    mValue(std::move(argument.mValue)),
+    bValid(std::move(argument.bValid))
+{
+}
+
+template<typename T, bool required> inline
+Argument_<T, required> &Argument_<T, required>::operator=(const Argument_ &argument)
+{
+  if (this != &argument){
+    Argument::operator=(argument);
+    this->mValue = argument.mValue;
+    this->bValid = argument.bValid;
+  }
+  return this;
+}
+
+template<typename T, bool required> inline
+Argument_<T, required> &Argument_<T, required>::operator=(Argument_ &&argument) TL_NOEXCEPT
+{
+  if (this != &argument){
+    Argument::operator=(std::forward<Argument>(argument));
+    this->mValue = std::move(argument.mValue);
+    this->bValid = std::move(argument.bValid);
+  }
+  return this;
+}
+
+template<typename T, bool required> inline
 std::string Argument_<T, required>::typeName() const
 {
   /// https://ideone.com/sqFWir
@@ -661,16 +811,30 @@ std::string Argument_<std::string, false>::typeName() const
   return "std::string";
 }
 
+#if (__cplusplus >= 201703L)
 template<> inline
-std::string Argument_<fs::path, true>::typeName() const
+std::string Argument_<std::filesystem::path, true>::typeName() const
 {
   return "path";
 }
 template<> inline
-std::string Argument_<fs::path, false>::typeName() const
+std::string Argument_<std::filesystem::path, false>::typeName() const
 {
   return "path";
 }
+#else
+template<> inline
+std::string Argument_<boost::filesystem::path, true>::typeName() const
+{
+  return "path";
+}
+template<> inline
+std::string Argument_<boost::filesystem::path, false>::typeName() const
+{
+  return "path";
+}
+#endif
+
 
 template<typename T, bool required> inline
 bool Argument_<T, required>::isRequired() const
@@ -678,45 +842,60 @@ bool Argument_<T, required>::isRequired() const
   return required;
 }
 
-template<typename T, bool required> inline
-std::string Argument_<T, required>::toString() const
-{
-  std::string val;
-  if(typeid(T) == typeid(bool)) {
-    val = *mValue ? "true" : "false";
-  } else if (std::is_integral<T>::value) {
-    val = std::to_string(*mValue);
-  } else if (std::is_floating_point<T>::value){
-    val = std::to_string(*mValue);
-  } else if(typeid(T) == typeid(std::string)) {
-    val = *mValue;
-  }
-  return val;
-}
-
-template<> inline
-std::string Argument_<std::string, true>::toString() const
-{
-  return *mValue;
-}
-
-template<> inline
-std::string Argument_<std::string, false>::toString() const
-{
-  return *mValue;
-}
-
-template<> inline
-std::string Argument_<fs::path, true>::toString() const
-{
-  return mValue->string();
-}
-
-template<> inline
-std::string Argument_<fs::path, false>::toString() const
-{
-  return mValue->string();
-}
+//template<typename T, bool required> inline
+//std::string Argument_<T, required>::toString() const
+//{
+//  std::string val;
+//  if(typeid(T) == typeid(bool)) {
+//    val = *mValue ? "true" : "false";
+//  } else if (std::is_integral<T>::value) {
+//    val = std::to_string(*mValue);
+//  } else if (std::is_floating_point<T>::value){
+//    val = std::to_string(*mValue);
+//  } else if(typeid(T) == typeid(std::string)) {
+//    val = *mValue;
+//  }
+//  return val;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, true>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//template<> inline
+//std::string Argument_<std::string, false>::toString() const
+//{
+//  return *mValue;
+//}
+//
+//
+//#if (__cplusplus >= 201703L)
+//template<> inline
+//std::string Argument_<std::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<std::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#else
+//template<> inline
+//std::string Argument_<boost::filesystem::path, true>::toString() const
+//{
+//  return mValue->string();
+//}
+//
+//template<> inline
+//std::string Argument_<boost::filesystem::path, false>::toString() const
+//{
+//  return mValue->string();
+//}
+//#endif
 
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
@@ -724,6 +903,8 @@ void Argument_<T, required>::fromString(const std::string &value)
   if(typeid(T) == typeid(bool)) {
     if (value == "true" || value == "1")
       *mValue = true;
+    else
+      *mValue = false;
   } else if (std::is_integral<T>::value) {
     *mValue = stringToInteger(value);
   } else if (std::is_floating_point<T>::value) {
@@ -749,19 +930,36 @@ void Argument_<std::string, false>::fromString(const std::string &value)
   bValid = true;
 }
 
+#if (__cplusplus >= 201703L)
 template<> inline
-void Argument_<fs::path, true>::fromString(const std::string &value)
+void Argument_<std::filesystem::path, true>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
 
 template<> inline
-void Argument_<fs::path, false>::fromString(const std::string &value)
+void Argument_<std::filesystem::path, false>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
+#else
+template<> inline
+void Argument_<boost::filesystem::path, true>::fromString(const std::string &value)
+{
+  *mValue = value;
+  bValid = true;
+}
+
+template<> inline
+void Argument_<boost::filesystem::path, false>::fromString(const std::string &value)
+{
+  *mValue = value;
+  bValid = true;
+}
+#endif
+
 
 
 template<typename T, bool required> inline
@@ -832,7 +1030,7 @@ public:
    * \brief Constructora de copia
    * \param[in] argument Objeto que se copia
    */
-  //ArgumentList_(const ArgumentList_ &argumentList);
+  ArgumentList_(const ArgumentList_ &argumentList);
 
   /*!
    * \brief Destructora
@@ -858,8 +1056,13 @@ typedef ArgumentList_<bool, true> ArgumentListBooleanRequired;
 typedef ArgumentList_<bool, false> ArgumentListBooleanOptional;
 typedef ArgumentList_<std::string, true> ArgumentListStringRequired;
 typedef ArgumentList_<std::string, false> ArgumentListStringOptional;
-typedef ArgumentList_<fs::path, true> ArgumentListPathRequired;
-typedef ArgumentList_<fs::path, false> ArgumentListPathOptional;
+#if (__cplusplus >= 201703L)
+typedef ArgumentList_<std::filesystem::path, true> ArgumentListPathRequired;
+typedef ArgumentList_<std::filesystem::path, false> ArgumentListPathOptional;
+#else
+typedef ArgumentList_<boost::filesystem::path, true> ArgumentListPathRequired;
+typedef ArgumentList_<boost::filesystem::path, false> ArgumentListPathOptional;
+#endif
 
 
 /* Implementación */
@@ -912,6 +1115,14 @@ ArgumentList_<T, required>::ArgumentList_(const std::string &name,
 }
 
 template<typename T, bool required> inline
+ArgumentList_<T, required>::ArgumentList_(const ArgumentList_ &argumentList)
+  : Argument_<T, required>(argumentList),
+    mValues(argumentList.mValues),
+    mIdx(argumentList.mIdx)
+{
+}
+
+template<typename T, bool required> inline
 void ArgumentList_<T, required>::fromString(const std::string &value)
 {
   T prev_value = this->value();
@@ -930,8 +1141,7 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
     *mIdx = idx;
     this->bValid = true;
   } else {
-    //Argument_<T, required>::setValue(prev_value);
-    //*mIdx = -1;
+    Argument_<T, required>::setValue(prev_value);
     this->bValid = false;
   }
 }
@@ -939,14 +1149,22 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
 template<typename T, bool required> inline
 void ArgumentList_<T, required>::setValue(const T &value)
 {
+  bool bFind = false;
+  size_t idx = 0;
   for(auto &_value : mValues){
     if (value == _value){
       Argument_<T, required>::setValue(value);
-      this->bValid = true;
-      return;
+      bFind = true;
+      break;
     }
+    idx++;
   }
-  this->bValid = false;
+  if (bFind) {
+    *mIdx = idx;
+    this->bValid = true;
+  } else {
+    this->bValid = false;
+  }
 }
 
 
@@ -963,7 +1181,7 @@ template <typename T, typename Enable = void>
 class ArgumentValidator;
 
 template <typename T>
-class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value /*&& typeid(T) != typeid(bool)*/>::type>
+class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
 private:
 
@@ -979,8 +1197,7 @@ public:
 
   bool validate(T value)
   {
-    if (value > mMin && value < mMax)
-      return true;
+    return (value > mMin && value < mMax);
   }
 
   void setRange(T min, T max)
@@ -1026,13 +1243,13 @@ public:
  *
  *  // Parseo de los argumentos y comprobación de los mismos
  *  Command::Status status = cmd.parse(argc, argv);
- *  if (status == Command::Status::PARSE_ERROR ) {
+ *  if (status == Command::Status::parse_error ) {
  *    return 1;
- *  } else if (status == Command::Status::SHOW_HELP) {
+ *  } else if (status == Command::Status::show_help) {
  *    return 0;
- *  } else if (status == Command::Status::SHOW_LICENCE) {
+ *  } else if (status == Command::Status::show_licence) {
  *    return 0;
- *  } else if (status == Command::Status::SHOW_VERSION) {
+ *  } else if (status == Command::Status::show_version) {
  *    return 0;
  *  }
  * \endcode
@@ -1047,11 +1264,19 @@ public:
    */
   enum class Status
   {
-    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+    parse_success,  /*!< El parseo se ejecuto correctamente */
+    parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR   = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP     = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    SHOW_VERSION  = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    SHOW_LICENCE  = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#endif
   };
 
   /*!
@@ -1161,7 +1386,7 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<TL::Argument>> arguments);
+  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
 
   /*!
    * \brief Devuelve el nombre del comando
@@ -1203,7 +1428,7 @@ public:
    * \brief parsea los argumentos de entrada
    * \param[in] argc
    * \param[in] argv
-   * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
+   * \return Devuelve el estado. 'parse_error' en caso de error y 'parse_success' cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
   Status parse(int argc, const char* const argv[]);
@@ -1212,27 +1437,27 @@ public:
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último argumento
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último argumento
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega un argumento mediante copia al final
@@ -1249,19 +1474,19 @@ public:
   /*!
    * \brief Elimina los argumentos
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
 
   /*!
    * \brief Comprueba si no hay argumentos
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el tamaño del contenedor
    * \return Tamaño
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia
@@ -1305,6 +1530,95 @@ protected:
 };
 
 
+/* Definición de métodos inline de la clase Command */
+
+inline std::string Command::name() const
+{
+  return mName;
+}
+
+inline void Command::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string Command::description() const
+{
+  return mDescription;
+}
+
+inline void Command::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline std::string Command::version() const
+{
+  return mVersion;
+}
+
+inline void Command::setVersion(const std::string &version)
+{
+  mVersion = version;
+}
+
+inline Command::iterator Command::begin() TL_NOEXCEPT
+{
+  return mCmdArgs.begin();
+}
+
+inline Command::const_iterator Command::begin() const TL_NOEXCEPT
+{
+  return mCmdArgs.cbegin();
+}
+
+inline Command::iterator Command::end() TL_NOEXCEPT
+{
+  return mCmdArgs.end();
+}
+
+inline Command::const_iterator Command::end() const TL_NOEXCEPT
+{
+  return mCmdArgs.cend();
+}
+
+inline void Command::push_back(const std::shared_ptr<Argument> &arg)
+{
+  mCmdArgs.push_back(arg);
+}
+
+inline void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
+{
+  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
+}
+
+inline void Command::clear() TL_NOEXCEPT
+{
+  mCmdArgs.clear();
+  mExamples.clear();
+}
+
+inline bool Command::empty() const TL_NOEXCEPT
+{
+  return mCmdArgs.empty();
+}
+
+inline size_t Command::size() const TL_NOEXCEPT
+{
+  return mCmdArgs.size();
+}
+
+inline Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
+{
+  return mCmdArgs.erase(first, last);
+}
+
+inline void Command::addExample(const std::string &example)
+{
+  mExamples.push_back(example);
+}
+
+
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -1318,11 +1632,19 @@ public:
    */
   enum class Status
   {
-    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
-    SHOW_HELP,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    SHOW_VERSION,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    SHOW_LICENCE    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+    parse_success,  /*!< El parseo se ejecuto correctamente */
+    parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */
+    PARSE_ERROR = parse_error,    /*!< Ocurrio un error al ejecutar el comando */
+    SHOW_HELP = show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
+    SHOW_VERSION = show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
+    SHOW_LICENCE = show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+#endif
   };
 
   /*!
@@ -1400,20 +1722,37 @@ private:
 
 public:
 
+  /*!
+   * \brief Constructora
+   */
   CommandList();
 
+  /*!
+   * \brief Constructora
+   * \param[in] name Nombre del comando
+   * \param[in] description Descripción del comando
+   */
   CommandList(const std::string &name, const std::string &description);
-
+  
+  /*!
+   * \brief Constructor de copia
+   * \param[in] commandList Objeto CommandList que se copia
+   */
   CommandList(const CommandList &commandList);
+
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] commandList Objeto CommandList que se mueve
+   */
+  CommandList(CommandList &&commandList) TL_NOEXCEPT;
 
   /*!
    * \brief Constructora de lista
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
-   * \param[in] arguments listado de comandos
+   * \param[in] commands listado de comandos
    */
   CommandList(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Command>> commands);
-
 
   /*!
    * \brief Devuelve el nombre del programa
@@ -1464,27 +1803,27 @@ public:
    * \brief Devuelve un iterador al inicio
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después del último comando
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después del último comando
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega un comando mediante copia al final
@@ -1501,19 +1840,19 @@ public:
   /*!
    * \brief Elimina los comandos
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
 
   /*!
    * \brief Comprueba si no hay comandos
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el número de comandos
    * \return Número de comandos
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia
@@ -1546,6 +1885,89 @@ public:
   void showLicence() const;
 
 };
+
+
+/* Definición de métodos inline de la clase CommandList */
+
+inline std::string CommandList::name() const
+{
+  return mName;
+}
+
+inline void CommandList::setName(const std::string &name)
+{
+  mName = name;
+}
+
+inline std::string CommandList::description() const
+{
+  return mDescription;
+}
+
+inline void CommandList::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+inline std::string CommandList::version() const
+{
+  return mVersion;
+}
+
+inline void CommandList::setVersion(const std::string &version)
+{
+  mVersion = version;
+}
+
+inline CommandList::iterator CommandList::begin() TL_NOEXCEPT
+{
+  return mCommands.begin();
+}
+
+inline CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
+{
+  return mCommands.cbegin();
+}
+
+inline CommandList::iterator CommandList::end() TL_NOEXCEPT
+{
+  return mCommands.end();
+}
+
+inline CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
+{
+  return mCommands.cend();
+}
+
+inline void CommandList::push_back(const std::shared_ptr<Command> &cmd)
+{
+  mCommands.push_back(cmd);
+}
+
+inline void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
+}
+
+inline void CommandList::clear() TL_NOEXCEPT
+{
+  mCommands.clear();
+}
+
+inline bool CommandList::empty() const TL_NOEXCEPT
+{
+  return mCommands.empty();
+}
+
+inline CommandList::size_type CommandList::size() const TL_NOEXCEPT
+{
+  return mCommands.size();
+}
+
+inline CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
+{
+  return mCommands.erase(first, last);
+}
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -1847,7 +2269,7 @@ private:
  * \brief Clase base para la gestión de argumentos en comandos de consola
  * \deprecated
  */
-class TL_EXPORT TL_DEPRECATED("Argument") CmdArgument
+class TL_EXPORT TL_DEPRECATED("Argument", "2.0") CmdArgument
 {
 public:
 
@@ -1960,7 +2382,7 @@ public:
    * \param[in] option
    * \deprecated Use TL::CmdOption::setActive en su lugar
    */
-  TL_DEPRECATED("CmdOption::setActive")
+  TL_DEPRECATED("CmdOption::setActive", "2.0")
   void setOption(bool option) { mValue = option; }
 
   /*!
@@ -2111,7 +2533,7 @@ public:
  * \endcode
  * \deprecated
  */
-class TL_EXPORT TL_DEPRECATED("Command") CmdParser
+class TL_EXPORT TL_DEPRECATED("Command", "2.0") CmdParser
 {
 public:
 
@@ -2302,7 +2724,7 @@ public:
 /*! \} */ // end of utilities
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_CORE_CONSOLE_H

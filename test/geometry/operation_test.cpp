@@ -1,18 +1,28 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop operations test
+#include <boost/test/unit_test.hpp>
 #include <tidop/geometry/operations.h>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geometry/entities/linestring.h>
 #include <tidop/geometry/entities/segment.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
 
 
-class OperationsGeometriesTest : public testing::Test
+BOOST_AUTO_TEST_SUITE(GeometricOperationsTestSuite)
+
+struct GeometricOperations
 {
-public:
+  GeometricOperations()
+  {
 
-  virtual void SetUp()
+  }
+
+  ~GeometricOperations()
+  {
+
+  }
+
+  void setup()
   {
     pt_int = PointI(10, 50);
 
@@ -25,7 +35,7 @@ public:
     segment = Segment<PointI>(PointI(0, 0), PointI(50, 50));
   }
 
-  virtual void TearDown()
+  void teardown()
   {
 
   }
@@ -35,27 +45,26 @@ public:
   PointD pt2;
   Point3D pt1d;
   Point3D pt2d;
-
   Segment<PointI> segment;
-
   LineStringI line;
-  
 };
 
 
-TEST_F(OperationsGeometriesTest, distance)
+BOOST_FIXTURE_TEST_CASE(distance, GeometricOperations)
 {
-  EXPECT_NEAR(213.378, distance(pt1, pt2), 0.001);
-  EXPECT_NEAR(213.378, distance(pt2, pt1), 0.001);
+  BOOST_CHECK_CLOSE(213.378, tl::distance(pt1, pt2), 0.001);
+  BOOST_CHECK_CLOSE(213.378, tl::distance(pt2, pt1), 0.001);
 }
 
-TEST_F(OperationsGeometriesTest, distance3D)
+BOOST_FIXTURE_TEST_CASE(distance3D, GeometricOperations)
 {
-  EXPECT_NEAR(2191.961, distance3D(pt1d, pt2d), 0.001);
-  EXPECT_NEAR(2191.961, distance3D(pt2d, pt1d), 0.001);
+  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt1d, pt2d), 0.001);
+  BOOST_CHECK_CLOSE(2191.961, tl::distance3D(pt2d, pt1d), 0.001);
 }
 
-TEST_F(OperationsGeometriesTest, isLeft)
+BOOST_FIXTURE_TEST_CASE(isLeft, GeometricOperations)
 {
-  EXPECT_EQ(1, isLeft(segment.pt1, segment.pt2, pt_int));
+  BOOST_CHECK_EQUAL(1, tl::isLeft(segment.pt1, segment.pt2, pt_int));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

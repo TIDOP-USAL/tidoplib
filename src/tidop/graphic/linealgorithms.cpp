@@ -1,10 +1,8 @@
 #include "linealgorithms.h"
 
 
-namespace TL 
+namespace tl 
 {
-
-using namespace geometry;
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -174,7 +172,19 @@ int BresenhamLine::size() const
   return mCount;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 std::vector<PointI> BresenhamLine::getPoints()
+{
+  std::vector<PointI> pts;
+  while ( mPos != mPt2) {
+    this->operator++();
+    pts.push_back(mPos);
+  }
+  return pts;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+std::vector<PointI> BresenhamLine::points()
 {
   std::vector<PointI> pts;
   while ( mPos != mPt2) {
@@ -290,7 +300,19 @@ int DDA::size() const
   return mCount;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 std::vector<PointI> DDA::getPoints()
+{
+  std::vector<PointI> pts;
+  while ( mPos != mPt2) {
+    this->operator++();
+    pts.push_back(mPos);
+  }
+  return pts;
+}
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+std::vector<PointI> DDA::points()
 {
   std::vector<PointI> pts;
   while ( mPos != mPt2) {
