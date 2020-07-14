@@ -1,19 +1,16 @@
-#include <gtest/gtest.h>
-
-#include "config_tl.h"
-
+#define BOOST_TEST_MODULE Tidop math utils test
+#include <boost/test/unit_test.hpp>
 #include <tidop/math/mathutils.h>
 #include <tidop/geometry/entities/point.h>
 
-using namespace TL;
-using namespace TL::geometry;
+using namespace tl;
 
 // Para testear angulos de euler
 //http://www.euclideanspace.com/maths/algebra/matrix/transforms/examples/index.htm
 //http://euclideanspace.com/maths/geometry/rotations/conversions/index.htm
 
 
-TEST(regressionLinear, YX)
+BOOST_AUTO_TEST_CASE(regressionLinear_YX)
 {
   std::vector<PointI> pts{
     PointI(160, 126),
@@ -29,13 +26,13 @@ TEST(regressionLinear, YX)
   double b = 0.;
   double coef = regressionLinearYX(pts, &m, &b);
 
-  EXPECT_NEAR(-0.7929, m, 0.0001);
-  EXPECT_NEAR(249.9, b, 0.1);
+  BOOST_CHECK_CLOSE(-0.7929, m, 0.1);
+  BOOST_CHECK_CLOSE(249.9, b, 0.1);
 
 }
 
 
-//TEST(expRegression, test1){
+//BOOST_AUTO_TEST_CASE(expRegression, BOOST_AUTO_TEST_CASE1){
 //  std::vector<cv::Point> pts{
 //    cv::Point(0, 3),
 //    cv::Point(2, 4),
@@ -46,15 +43,15 @@ TEST(regressionLinear, YX)
 //  double r = 0.;
 //  expRegression<cv::Point>(pts, &A, &r);
 //
-//  EXPECT_NEAR(1.3774, r, 0.0001);
-//  EXPECT_NEAR(2.6770, A, 0.0001);
+//  BOOST_CHECK_CLOSE(1.3774, r, 0.0001);
+//  BOOST_CHECK_CLOSE(2.6770, A, 0.0001);
 //
 //}
 
-//Para los calculos del test:
+//Para los calculos del BOOST_AUTO_TEST_CASE:
 //http://keisan.casio.com/exec/system/1223596129
 //http://onlinemschool.com/math/assistance/cartesian_coordinate/plane/
-TEST(threePointsPlane, testPointInt)
+BOOST_AUTO_TEST_CASE(threePointsPlane_PointInt)
 {
   std::array<Point3I, 3> pts = {
     Point3I(1, 2, -2),
@@ -66,15 +63,15 @@ TEST(threePointsPlane, testPointInt)
   //Sin normalizar
   threePointsPlane(pts, plane, false);
 
-  EXPECT_EQ(11, plane[0]);
-  EXPECT_EQ(16, plane[1]);
-  EXPECT_EQ(14, plane[2]);
-  EXPECT_EQ(-15, plane[3]);
+  BOOST_CHECK_EQUAL(11, plane[0]);
+  BOOST_CHECK_EQUAL(16, plane[1]);
+  BOOST_CHECK_EQUAL(14, plane[2]);
+  BOOST_CHECK_EQUAL(-15, plane[3]);
 
 }
 
 
-TEST(threePointsPlane, testPointDouble)
+BOOST_AUTO_TEST_CASE(threePointsPlane_PointDouble)
 {
   std::array<Point3D, 3> pts = {
     Point3D(34.34, 234.56, 158.65),
@@ -86,9 +83,9 @@ TEST(threePointsPlane, testPointDouble)
   //Sin normalizar
   threePointsPlane(pts, plane, false);
 
-  EXPECT_NEAR(151655.5378, plane[0], 0.001);
-  EXPECT_NEAR(-612.1588, plane[1], 0.001);
-  EXPECT_NEAR(-4168.0555, plane[2], 0.001);
-  EXPECT_NEAR(-4403001.195, plane[3], 0.001);
+  BOOST_CHECK_CLOSE(151655.5378, plane[0], 0.001);
+  BOOST_CHECK_CLOSE(-612.1588, plane[1], 0.001);
+  BOOST_CHECK_CLOSE(-4168.0555, plane[2], 0.001);
+  BOOST_CHECK_CLOSE(-4403001.195, plane[3], 0.001);
 
 }

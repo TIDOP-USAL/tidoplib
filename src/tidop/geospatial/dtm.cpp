@@ -2,7 +2,7 @@
 
 #include "tidop/core/utils.h"
 
-namespace TL
+namespace tl
 {
 
 namespace geospatial
@@ -33,7 +33,7 @@ Dtm::Interpolation Dtm::interpolation() const
 
 
 DtmLinear::DtmLinear(double radius)
-  : Dtm(Dtm::Interpolation::LINEAR),
+  : Dtm(Dtm::Interpolation::linear),
     mRadius(radius)
 {
 
@@ -59,7 +59,7 @@ void DtmLinear::setResolution(double res)
 
 
 DtmNearest::DtmNearest(double radius1, double radius2, double angle)
-  : Dtm(Dtm::Interpolation::NEAREST),
+  : Dtm(Dtm::Interpolation::nearest),
     mRadius1(radius1),
     mRadius2(radius2),
     mAngle(angle)
@@ -75,8 +75,8 @@ DtmNearest::~DtmNearest()
 void DtmNearest::compute()
 {
   /// Se divide la ventana en trozos mas pequeños
-  mLimits.getHeight();
-  mLimits.getWidth();
+  mLimits.height();
+  mLimits.width();
 
   /// Se crean las subventanas
   //std::vector<std::vector<TL::geometry::PointF>> mGrid;

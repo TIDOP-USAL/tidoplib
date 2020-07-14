@@ -39,7 +39,7 @@
 //    $license = new EDD_License( __FILE__, 'Product Name', '1.0.0', 'Author Name', 1, 'http://example.org' );
 //}
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -104,7 +104,7 @@ public:
 
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_CORE_LICENCE_H

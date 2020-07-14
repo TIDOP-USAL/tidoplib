@@ -1,23 +1,25 @@
-#include <gtest/gtest.h>
-
+#define BOOST_TEST_MODULE Tidop geospatial crs test
+#include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/crs.h>
 
-using namespace TL;
-using namespace TL::geospatial;
+using namespace tl;
+using namespace tl::geospatial;
 
 /* CrsTest */
 
-class CrsTest : public testing::Test
-{
-public:
+#ifdef HAVE_GDAL
 
-  virtual void SetUp()
+BOOST_AUTO_TEST_SUITE(CrsTestSuite)
+
+struct CrsTest
+{
+  CrsTest()
   {
     epsg25830 = new Crs("EPSG:25830");
     epsg4258 = new Crs("EPSG:4258");
   }
 
-  virtual void TearDown()
+  ~CrsTest()
   {
     if (epsg25830){
       delete epsg25830;
@@ -30,19 +32,35 @@ public:
     }
   }
 
+
+  virtual void SetUp()
+  {
+
+  }
+
+  virtual void TearDown()
+  {
+
+  }
+
   Crs *epsg25830;
   Crs *epsg4258;
 };
 
 
-TEST_F(CrsTest, isGeocentric)
+BOOST_FIXTURE_TEST_CASE(isGeocentric, CrsTest)
 {
-  EXPECT_FALSE(epsg25830->isGeocentric());
-  EXPECT_FALSE(epsg4258->isGeocentric());
+  BOOST_CHECK(false == epsg25830->isGeocentric());
+  BOOST_CHECK(false == epsg4258->isGeocentric());
 }
 
-TEST_F(CrsTest, isGeographic)
+BOOST_FIXTURE_TEST_CASE(isGeographic, CrsTest)
 {
-  EXPECT_FALSE(epsg25830->isGeographic());
-  EXPECT_TRUE(epsg4258->isGeographic());
+  BOOST_CHECK(false ==epsg25830->isGeographic());
+  BOOST_CHECK(epsg4258->isGeographic());
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+#endif // HAVE_GDAL

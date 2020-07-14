@@ -17,11 +17,11 @@ TL_DEFAULT_WARNINGS
 
 #include <cmath> 
 
-namespace TL
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
-
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 //https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
 void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa)
 {
@@ -47,7 +47,7 @@ void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, d
 //  }
 //}
 
-void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
+void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
 {
   double sinOmega = sin(rX);
   double cosOmega = cos(rX);
@@ -63,7 +63,7 @@ void RotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
   (*RX)[2][2] = cosOmega;
 }
 
-void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
+void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
 {
   double sinPhi = sin(rY);
   double cosPhi = cos(rY);
@@ -80,7 +80,7 @@ void RotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
 }
 
 
-void RotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
+void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
 {
   double sinKappa = sin(rZ);
   double cosKappa = cos(rZ);
@@ -116,7 +116,7 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
   (*R)[2][1] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
   (*R)[2][2] = cosOmega * cosPhi;
 }
-
+#endif TL_ENABLE_DEPRECATED_METHODS
 /* ---------------------------------------------------------------------------------- */
 
 
@@ -127,8 +127,8 @@ int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
   int iret = 1;
   if (in.empty() || in.channels() != 1) iret = -1;
   try {
-    cv::sortIdx(in, *idx, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
-    cv::sort(in, *out, CV_SORT_EVERY_ROW + CV_SORT_ASCENDING);
+    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
+    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
   } catch (std::exception &e) {
     msgError("%s", e.what());
     iret = -1;
@@ -141,8 +141,8 @@ int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
   int iret = 1;
   if (in.empty() || in.channels() != 1) iret = -1;
   try {
-    cv::sortIdx(in, *idx, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
-    cv::sort(in, *out, CV_SORT_EVERY_COLUMN + CV_SORT_ASCENDING);
+    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
+    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
   } catch (std::exception &e) {
     msgError("%s", e.what());
     iret = -1;

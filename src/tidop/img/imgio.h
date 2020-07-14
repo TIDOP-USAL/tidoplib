@@ -25,6 +25,7 @@ TL_DEFAULT_WARNINGS
 //#include "graphic_entities/color.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/img/img.h"
 //#include "img/metadata.h"
 
 #ifdef HAVE_EDSDK
@@ -43,55 +44,27 @@ TL_DEFAULT_WARNINGS
 #endif
 #endif // HAVE_RAW
 
-namespace TL
+namespace tl
 {
 
 class RasterOptions;
 
-enum class DataType : int8_t
-{
-  TL_8U,      // Equivalente a CV_8U y GDT_Byte
-  TL_8S,      // Equivalente a CV_8S
-  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
-  TL_16S,     // Equivalente a CV_16S y GDT_Int16
-  TL_32U,     // Equivalente a GDT_UInt32
-  TL_32S,     // Equivalente a CV_32S y GDT_Int32
-  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
-  TL_64F      // Equivalente a CV_64F y GDT_Float64
-};
+//enum class DataType : int8_t
+//{
+//  TL_8U,      // Equivalente a CV_8U y GDT_Byte
+//  TL_8S,      // Equivalente a CV_8S
+//  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
+//  TL_16S,     // Equivalente a CV_16S y GDT_Int16
+//  TL_32U,     // Equivalente a GDT_UInt32
+//  TL_32S,     // Equivalente a CV_32S y GDT_Int32
+//  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
+//  TL_64F      // Equivalente a CV_64F y GDT_Float64
+//};
 
 
 class TL_EXPORT VrtRaster
   : public File
 {
-
-protected:
-  
-  /*!
-   * \brief Número de filas de la imagen
-   */
-  int mRows;
-
-  /*!
-   * \brief Número de columnas de la imagen
-   */
-  int mCols;
-
-  /*!
-   * \brief Número de bandas o canales de la imagen
-   */
-  int mBands;
-
-  /*!
-   * \brief Tipo de datos
-   * \see DataType
-   */
-  DataType mDataType;
-
-  /*!
-   * \brief Profundidad de color o número de bits por pixel
-   */
-  int mColorDepth;
 
 public:
 
@@ -124,7 +97,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -132,7 +105,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  virtual Status write(const cv::Mat &image, const geometry::WindowI &w = geometry::WindowI()) = 0;
+  virtual Status write(const cv::Mat &image, const WindowI &w = WindowI()) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -140,7 +113,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) = 0;
 
 #else
 
@@ -151,7 +124,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status read(unsigned char *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -159,7 +132,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe
    * \return
    */
-  virtual int write(const unsigned char *buff, const geometry::WindowI &w) = 0;
+  virtual Status write(const unsigned char *buff, const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -167,7 +140,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  virtual int write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) = 0;
+  virtual Status write(const unsigned char *buff, const Helmert2D<PointI> *trf = nullptr) = 0;
 
 
 #endif
@@ -176,31 +149,76 @@ public:
    * \brief Devuelve el número de filas de la imagen
    * \return Número de filas de la imagen
    */
-  virtual int getRows() const;
+  virtual int rows() const;
 
   /*!
    * \brief Devuelve el número de columnas de la imagen
    * \return Número de columnas de la imagen
    */
-  virtual int getCols() const;
+  virtual int cols() const;
 
   /*!
    * \brief Devuelve el número de canales o bandas de la imagen
    * \return Número de bandas de la imagen
    */
-  virtual int getBands() const;
+  virtual int channels() const;
 
   /*!
    * \brief Devuelve el tipo de dato
    * \return 
    */
-  virtual DataType getDataType() const;
+  virtual DataType dataType() const;
 
   /*!
    * \brief Devuelve la profundidad de color o bits por pixel de una imagen
    * \return Profundidad de color
    */
+  virtual int depth() const;
+
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve el número de filas de la imagen
+   * \return Número de filas de la imagen
+   * \deprecated Use 'rows' en su lugar
+   */
+  TL_DEPRECATED("rows", "2.0")
+  virtual int getRows() const;
+
+  /*!
+   * \brief Devuelve el número de columnas de la imagen
+   * \return Número de columnas de la imagen
+   * \deprecated Use 'cols' en su lugar
+   */
+  TL_DEPRECATED("cols", "2.0")
+  virtual int getCols() const;
+
+  /*!
+   * \brief Devuelve el número de canales o bandas de la imagen
+   * \return Número de bandas de la imagen
+   * \deprecated Use 'channels' en su lugar
+   */
+  TL_DEPRECATED("channels", "2.0")
+  virtual int getBands() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return 
+   * \deprecated Use 'dataType' en su lugar
+   */
+  TL_DEPRECATED("dataType", "2.0")
+  virtual DataType getDataType() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
+   * \return Profundidad de color
+   * \deprecated Use 'depth' en su lugar
+   */
+  TL_DEPRECATED("depth", "2.0")
   virtual int getColorDepth() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Devuelve los metadatos de la imagen
@@ -213,11 +231,40 @@ public:
    * \param[in] pt
    * \return
    */
-  virtual char get(const geometry::PointI &pt) = 0;
+  virtual char get(const PointI &pt) = 0;
 
 protected:
   
-  void windowRead(const geometry::WindowI &wLoad, geometry::WindowI *wRead, geometry::PointI *offset) const;
+  void windowRead(const WindowI &wLoad, WindowI *wRead, PointI *offset) const;
+
+protected:
+  
+  /*!
+   * \brief Número de filas de la imagen
+   */
+  int mRows;
+
+  /*!
+   * \brief Número de columnas de la imagen
+   */
+  int mCols;
+
+  /*!
+   * \brief Número de bandas o canales de la imagen
+   */
+  int mBands;
+
+  /*!
+   * \brief Tipo de datos
+   * \see DataType
+   */
+  DataType mDataType;
+
+  /*!
+   * \brief Profundidad de color o número de bits por pixel
+   */
+  int mColorDepth;
+
 };
 
 
@@ -231,6 +278,129 @@ protected:
 class TL_EXPORT GdalRaster
   : public VrtRaster
 {
+
+public:
+
+  /*!
+   * \brief Constructora
+   */
+  GdalRaster();
+
+  /*!
+   * \brief Constructor de copia
+   * \param gdalRaster Objeto GdalRaster
+   */
+  GdalRaster(const GdalRaster &gdalRaster);
+
+  /*!
+   * \brief Destructora
+   */
+  virtual ~GdalRaster();
+
+  /*!
+   * \brief Cierra el fichero imagen
+   */
+  void close() override;
+
+  /*!
+   * \brief Abre un fichero imagen especificando las opciones del formato
+   * \param[in] file Fichero
+   * \param[in] mode Modo de apertura
+   * \param[in] options Opciones del formato
+   * \return
+   * \see Mode
+   */
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+
+  /*!
+   * \brief Crea una imagen
+   * \param[in] rows Número de filas de la imagen
+   * \param[in] cols Número de columnas de la imagen
+   * \param[in] bands Número de bandas de la imagen
+   * \param[in] type
+   * \return
+   */
+  Status create(int rows, int cols, int bands, DataType type) override;
+
+#ifdef HAVE_OPENCV  
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wLoad Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = nullptr) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
+   * \return
+   */
+  Status write(const cv::Mat &image, const WindowI &w = WindowI()) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
+
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  Status read(unsigned char *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   * \return
+   */
+  Status write(const unsigned char *buff, const WindowI &w) override;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \return
+   */
+  Status write(const unsigned char *buff, const Helmert2D<PointI> *trf = nullptr) override;
+
+
+#endif
+
+  /*!
+   * \brief Guarda una copia con otro nonbre
+   */
+  Status createCopy(const std::string &fileOut) override;
+
+  /*!
+   * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
+   * Si la extensión no se correspondo con un driver disponible devuelve nulo.
+   * \param ext Extensión del archivo
+   * \return Nombre del Driver de GDAL
+   */
+  static const char *getDriverFromExt(const char *ext);
+
+  //ImgMetadata metadata() const override;
+
+  char get(const PointI &pt) override;
+
+protected:
+
+  virtual void update();
+
+  std::vector<int> panBandMap();
 
 protected:
 
@@ -271,128 +441,6 @@ protected:
   static int NTv2[];
   static int LAN[];
 
-public:
-
-  /*!
-   * \brief Constructora
-   */
-  GdalRaster();
-
-  /*!
-   * \brief Constructor de copia
-   * \param gdalRaster Objeto GdalRaster
-   */
-  GdalRaster(const GdalRaster &gdalRaster);
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~GdalRaster();
-
-  /*!
-   * \brief Cierra el fichero imagen
-   */
-  void close() override;
-
-  /*!
-   * \brief Abre un fichero imagen especificando las opciones del formato
-   * \param[in] file Fichero
-   * \param[in] mode Modo de apertura
-   * \param[in] options Opciones del formato
-   * \return
-   * \see Mode
-   */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-
-  /*!
-   * \brief Crea una imagen
-   * \param[in] rows Número de filas de la imagen
-   * \param[in] cols Número de columnas de la imagen
-   * \param[in] bands Número de bandas de la imagen
-   * \param[in] type
-   * \return
-   */
-  Status create(int rows, int cols, int bands, DataType type) override;
-
-#ifdef HAVE_OPENCV  
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wLoad Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = nullptr) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
-   * \return
-   */
-  Status write(const cv::Mat &image, const geometry::WindowI &w = geometry::WindowI()) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
-   * \return
-   */
-  Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) override;
-
-#else
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  Status read(unsigned char *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   * \return
-   */
-  Status write(const unsigned char *buff, const geometry::WindowI &w) override;
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
-   * \return
-   */
-  Status write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
-
-
-#endif
-
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  Status createCopy(const std::string &fileOut) override;
-
-  /*!
-   * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
-   * Si la extensión no se correspondo con un driver disponible devuelve nulo.
-   * \param ext Extensión del archivo
-   * \return Nombre del Driver de GDAL
-   */
-  static const char *getDriverFromExt(const char *ext);
-
-  //ImgMetadata metadata() const override;
-
-  char get(const geometry::PointI &pt) override;
-
-protected:
-
-  virtual void update();
-
-  std::vector<int> panBandMap();
 };
 
 
@@ -402,14 +450,13 @@ protected:
 class TL_EXPORT GdalGeoRaster
   : public GdalRaster
 {
-protected:
 
   std::array<double, 6> mGeoTransform;
 
   /*!
    * \brief Transformación afin que relacción las coordenadas terreno con las pixel
    */
-  std::unique_ptr<Affine<geometry::PointD>> mTrfAffine;
+  std::unique_ptr<Affine<PointD>> mTrfAffine;
 
   /*!
    * \brief Proyección
@@ -451,7 +498,19 @@ public:
    * \brief Ventana envolvente de la imagen
    * \return Ventana
    */
+  geometry::WindowD window() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Ventana envolvente de la imagen
+   * \return Ventana
+   * \deprecated Use 'window' en su lugar
+   */
+  TL_DEPRECATED("window", "2.0")
   geometry::WindowD getWindow() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Establece la georeferencia de la imagen
@@ -473,18 +532,31 @@ public:
    * \param[in] wTerrain Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
-  Status read(cv::Mat *image, const geometry::Window<geometry::Point<double>> &wTerrain, double scale = 1.);
+  Status read(cv::Mat *image, const Window<Point<double>> &wTerrain, double scale = 1.);
 
 #endif // HAVE_OPENCV
 
-  char get(const geometry::PointD &pt);
+  char get(const PointD &pt);
 
-  float getZ(const geometry::PointD &pt);
-  float getZ(const geometry::PointI &pt);
+  float getZ(const PointD &pt);
 
 private:
 
   void update() override;
+
+protected:
+
+  std::array<double, 6> mGeoTransform;
+
+  /*!
+   * \brief Transformación afin que relacción las coordenadas terreno con las pixel
+   */
+  std::unique_ptr<Affine<geometry::PointD>> mTrfAffine;
+
+  /*!
+   * \brief Proyección
+   */
+  std::string mProjection;
 
 };
 
@@ -504,11 +576,8 @@ private:
  */
 class TL_EXPORT RegisterEDSDK
 {
-private:
 
-  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
-    
-  static std::mutex sMutex;
+private:
 
   /*!
    * \brief Constructor privado
@@ -527,37 +596,20 @@ public:
    */
   static void init();
 
+private:
+
+  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+    
+  static std::mutex sMutex;
 };
 
 #endif \\ HAVE_EDSDK 
 
 
 // http://www.libraw.org/node/2165
-class TL_EXPORT RawImage : public VrtRaster
+class TL_EXPORT RawImage
+  : public VrtRaster
 {
-private:
-
-#ifdef HAVE_LIBRAW 
-  std::unique_ptr<LibRaw> mRawProcessor;
-
-  libraw_processed_image_t *mProcessedImage;
-#endif //HAVE_LIBRAW
-
-#ifdef HAVE_EDSDK
-  EdsStreamRef mInputStream;
-  EdsImageRef mEdsImage;
-#endif 
-
-  //unsigned short mBits;
-  //LibRaw_image_formats mType;
-  //unsigned char *mData;
-  unsigned int mSize;
-
-  /*!
-   * \brief Formato raw especifico de canon.
-   * Se lee con el EDSDK
-   */
-  bool bCanon;
 
 public:
 
@@ -604,7 +656,7 @@ public:
     * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
     * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
     */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(cv::Mat *image, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -612,7 +664,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  Status write(const cv::Mat &image, const geometry::WindowI &w) override;
+  Status write(const cv::Mat &image, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -620,7 +672,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const cv::Mat &image, const Helmert2D<PointI> *trf = NULL) override;
 
 #else
 
@@ -631,7 +683,7 @@ public:
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  Status read(uchar *buff, const geometry::WindowI &wLoad = geometry::WindowI(), double scale = 1., Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status read(uchar *buff, const WindowI &wLoad = WindowI(), double scale = 1., Helmert2D<PointI> *trf = NULL) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -639,7 +691,7 @@ public:
    * \param[in] w Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    * \return
    */
-  Status write(const uchar *buff, const geometry::WindowI &w) override;
+  Status write(const uchar *buff, const WindowI &w) override;
 
   /*!
    * \brief Escribe en la imagen
@@ -647,7 +699,7 @@ public:
    * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
    * \return
    */
-  Status write(const uchar *buff, const Helmert2D<geometry::PointI> *trf = NULL) override;
+  Status write(const uchar *buff, const Helmert2D<PointI> *trf = NULL) override;
 
 
 #endif
@@ -667,11 +719,35 @@ public:
 
   ImgMetadata metadata() const override;
 
-  uchar get(const geometry::PointI &pt) const override;
+  uchar get(const PointI &pt) const override;
 
 private:
 
   void update();
+
+private:
+
+#ifdef HAVE_LIBRAW 
+  std::unique_ptr<LibRaw> mRawProcessor;
+
+  libraw_processed_image_t *mProcessedImage;
+#endif //HAVE_LIBRAW
+
+#ifdef HAVE_EDSDK
+  EdsStreamRef mInputStream;
+  EdsImageRef mEdsImage;
+#endif 
+
+  //unsigned short mBits;
+  //LibRaw_image_formats mType;
+  //unsigned char *mData;
+  unsigned int mSize;
+
+  /*!
+   * \brief Formato raw especifico de canon.
+   * Se lee con el EDSDK
+   */
+  bool bCanon;
 
 };
 
@@ -694,6 +770,186 @@ private:
 class TL_EXPORT RasterGraphics
   : public File
 {
+
+public:
+
+  /*!
+   * \brief Constructor de la clase RasterGraphics
+   */
+  RasterGraphics();
+
+  /*!
+   * \brief Destructora de la clase RasterGraphics
+   */
+  ~RasterGraphics();
+
+  /*!
+   * \brief Cierra el archivo imagen
+   */
+  virtual void close() override;
+
+  /*!
+   * \brief Abre un archivo imagen especificando las opciones del formato
+   * \param[in] file Nombre del fichero
+   * \param[in] mode Modo de apertura   
+   * \param[in] options Opciones del formato
+   * \return Error
+   * \see Mode
+   */
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
+
+  /*!
+   * \brief Crea una imagen
+   * \param[in] rows Número de filas de la imagen
+   * \param[in] cols Número de columnas de la imagen
+   * \param[in] bands Número de bandas de la imagen
+   * \param[in] type Tipo de datos
+   */
+  Status create(int rows, int cols, int bands, DataType type); //... No me convence el nombre
+
+#ifdef HAVE_OPENCV
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wLoad Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  Status read(cv::Mat *image, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   */
+  Status write(const cv::Mat &image, const WindowI &w);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
+   */
+  Status write(const cv::Mat &image, Helmert2D<PointI> *trf = NULL);
+
+#else
+
+  /*!
+   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \param[out] image Imagen que se lee
+   * \param[in] wRead Ventana de la imagen que se quiere cargar
+   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   */
+  Status read(unsigned char *buff, const WindowI &wLoad, double scale = 1., Helmert2D<PointI> *trf = NULL);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] w Ventana del bloque de imagen que se escribe
+   */
+  Status write(const unsigned char *buff, const WindowI &w);
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
+   */
+  Status write(const unsigned char *buff, Helmert2D<PointI> *trf = NULL);
+
+#endif // HAVE_OPENCV
+
+  /*!
+   * \brief Guarda una imagen con otro nombre o con otro formato
+   * \param[in] fileOut Nombre con el que se guarda el fichero
+   * \return
+   */
+  virtual Status createCopy(const std::string &fileOut) override;
+
+  /*!
+   * \brief Devuelve el número de filas de la imagen
+   * \return Número de filas de la imagen
+   */
+  virtual int rows() const;
+
+  /*!
+   * \brief Devuelve el número de columnas de la imagen
+   * \return Número de columnas de la imagen
+   */
+  virtual int cols() const;
+
+  /*!
+   * \brief Devuelve el número de canales o bandas de la imagen
+   * \return Número de bandas de la imagen
+   */
+  virtual int channels() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return 
+   */
+  virtual DataType dataType() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color o bits por pixel de una imagen
+   * \return Profundidad de color
+   */
+  virtual int depth() const;
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
+  /*!
+   * \brief Devuelve el número de filas de la imagen
+   * \return Número de filas de la imagen
+   * \deprecated Use 'rows' en su lugar
+   */
+  TL_DEPRECATED("rows", "2.0")
+  int getRows() const;
+
+  /*!
+   * \brief Devuelve el número de columnas de la imagen
+   * \return Número de columnas de la imagen
+   * \deprecated Use 'cols' en su lugar
+   */
+  TL_DEPRECATED("cols", "2.0")
+  int getCols() const;
+
+  /*!
+   * \brief Devuelve el número de canales o bandas de la imagen
+   * \return Número de bandas de la imagen
+   * \deprecated Use 'channels' en su lugar
+   */
+  TL_DEPRECATED("channels", "2.0")
+  int getBands() const;
+
+  /*!
+   * \brief Devuelve el tipo de dato
+   * \return
+   * \deprecated Use 'dataType' en su lugar
+   */
+  TL_DEPRECATED("dataType", "2.0")
+
+  DataType getDataType() const;
+
+  /*!
+   * \brief Devuelve la profundidad de color
+   * \return Profundidad de color
+   * \deprecated Use 'depth' en su lugar
+   */
+  TL_DEPRECATED("depth", "2.0")
+  int getColorDepth() const;
+
+#endif // TL_ENABLE_DEPRECATED_METHODS
+
+  // Dataset Information
+
+  //ImgMetadata metadata() const;
+
+  char get(const PointI &pt) const;
+
+protected:
+
+  virtual void update();
 
 protected:
 
@@ -721,141 +977,6 @@ protected:
 
   std::unique_ptr<VrtRaster> mImageFormat;
 
-public:
-
-  /*!
-   * \brief Constructor de la clase RasterGraphics
-   */
-  RasterGraphics();
-
-  /*!
-   * \brief Destructora de la clase RasterGraphics
-   */
-  ~RasterGraphics();
-
-  /*!
-   * \brief Cierra el archivo imagen
-   */
-  virtual void close() override;
-
-  /*!
-   * \brief Abre un archivo imagen especificando las opciones del formato
-   * \param[in] file Nombre del fichero
-   * \param[in] mode Modo de apertura   
-   * \param[in] options Opciones del formato
-   * \return Error
-   * \see Mode
-   */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
-
-  /*!
-   * \brief Crea una imagen
-   * \param[in] rows Número de filas de la imagen
-   * \param[in] cols Número de columnas de la imagen
-   * \param[in] bands Número de bandas de la imagen
-   * \param[in] type Tipo de datos
-   */
-  Status create(int rows, int cols, int bands, DataType type); //... No me convence el nombre
-
-#ifdef HAVE_OPENCV
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wLoad Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  Status read(cv::Mat *image, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   */
-  Status write(const cv::Mat &image, const geometry::WindowI &w);
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
-   */
-  Status write(const cv::Mat &image, Helmert2D<geometry::PointI> *trf = NULL);
-
-#else
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  Status read(unsigned char *buff, const geometry::WindowI &wLoad, double scale = 1., Helmert2D<geometry::PointI> *trf = NULL);
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] w Ventana del bloque de imagen que se escribe
-   */
-  Status write(const unsigned char *buff, const geometry::WindowI &w);
-
-  /*!
-   * \brief Escribe en la imagen
-   * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación 
-   */
-  Status write(const unsigned char *buff, Helmert2D<geometry::PointI> *trf = NULL);
-
-#endif // HAVE_OPENCV
-
-  /*!
-   * \brief Guarda una imagen con otro nombre o con otro formato
-   * \param[in] fileOut Nombre con el que se guarda el fichero
-   * \return
-   */
-  virtual Status createCopy(const std::string &fileOut) override;
-
-  /*!
-   * \brief Devuelve el número de filas de la imagen
-   * \return Número de filas de la imagen
-   */
-  int getRows() const;
-
-  /*!
-   * \brief Devuelve el número de columnas de la imagen
-   * \return Número de columnas de la imagen
-   */
-  int getCols() const;
-
-  /*!
-   * \brief Devuelve el número de canales o bandas de la imagen
-   * \return Número de bandas de la imagen
-   */
-  int getBands() const;
-
-  /*!
-   * \brief Devuelve el tipo de dato
-   * \return
-   */
-  DataType getDataType() const;
-
-  /*!
-   * \brief Devuelve la profundidad de color
-   * \return Profundidad de color
-   */
-  int getColorDepth() const;
-
-  // Dataset Information
-
-  //ImgMetadata metadata() const;
-
-  char get(const geometry::PointI &pt) const;
-
-protected:
-
-  virtual void update();
-
 };
 
 
@@ -865,7 +986,6 @@ protected:
 class TL_EXPORT GeoRasterGraphics
   : public RasterGraphics
 {
-private:
 
 public:
 
@@ -889,7 +1009,7 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief georeference
@@ -923,11 +1043,11 @@ public:
    * \param[in] wLoad Ventana en coordenadas terreno de la imagen que se quiere cargar
    * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    */
-  Status read(cv::Mat *image, const geometry::WindowD &wLoad, double scale = 1.);
+  Status read(cv::Mat *image, const WindowD &wLoad, double scale = 1.);
 
 #endif // HAVE_OPENCV
 
-  char get(const geometry::PointD &pt) const;
+  char get(const PointD &pt) const;
 
 private:
 
@@ -940,15 +1060,15 @@ class TL_EXPORT Mdt
   : public GeoRasterGraphics
 {
 public:
+
   Mdt() {}
 
-  float getZ(const geometry::PointD &pt) const;
-  float getZ(const geometry::PointI &pt) const;
+  float getZ(const PointD &pt) const;
 };
 
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 

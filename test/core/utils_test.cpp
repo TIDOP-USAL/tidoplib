@@ -1,7 +1,9 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop utils test
+#include <boost/test/unit_test.hpp>
 #include <tidop/core/utils.h>
 
-using namespace TL;
+
+using namespace tl;
 
 
 //TEST(isDirectoryTest, Expect)
@@ -317,5 +319,9 @@ using namespace TL;
 //TEST(Path, parse){
 //
 //}
+
+
+
+
 
 

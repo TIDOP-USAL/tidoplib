@@ -9,7 +9,7 @@
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/entities/linestring.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;
@@ -33,7 +33,7 @@ class TL_EXPORT Painter
 {
 protected:
 
-  Transform<geometry::PointF> *mTrf;
+  Transform<PointF> *mTrf;
   Canvas *mCanvas;
   GraphicStyle *mGraphicStyle;
 
@@ -66,7 +66,7 @@ public:
    * \param[in] point Punto
    */
   void drawPoint(const GPoint &point);
-  void drawPoint(const geometry::PointD &point);
+  void drawPoint(const PointD &point);
 
   /*!
    * \brief Dibuja una polilinea
@@ -132,7 +132,7 @@ public:
    * \brief Establece la transformación que se aplica para dibujar el en canvas
    * \param[in] trf Transformación
    */
-  void setTransform(Transform<geometry::PointF> *trf);
+  void setTransform(Transform<PointF> *trf);
 
   //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
   //void drawImage(const RasterGraphics &image, Helmert2D<geometry::PointI> *trf);

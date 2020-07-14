@@ -13,15 +13,23 @@ target_link_libraries(tl_vect tl_graphic)
 
 #instalación
 if(BUILD_SHARED_LIBS)
-  install(TARGETS tl_vect
-    EXPORT "${TARGETS_EXPORT_NAME}"
-          RUNTIME DESTINATION bin
-		  LIBRARY DESTINATION lib) 
+    install(TARGETS tl_vect
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+		    LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+		    ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib) 
+			
+	target_link_libraries(tl_vect tl_core)	
+	
+    if (HAVE_GDAL)
+        target_link_libraries(tl_vect ${GDAL_LIBRARY})
+    endif(HAVE_GDAL)
+
 else()
-  install(TARGETS tl_vect 
-    EXPORT "${TARGETS_EXPORT_NAME}"
-          LIBRARY DESTINATION lib 
-          ARCHIVE DESTINATION lib)
+    install(TARGETS tl_vect 
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
 install(DIRECTORY . DESTINATION include/tidop/vect

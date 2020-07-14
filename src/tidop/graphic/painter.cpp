@@ -17,7 +17,7 @@ TL_DEFAULT_WARNINGS
 
 #include "tidop/graphic/canvas.h"
 
-namespace TL
+namespace tl
 {
 
 namespace graph
@@ -61,7 +61,7 @@ void Painter::drawPoint(const GPoint &point)
   }
 }
 
-void Painter::drawPoint(const geometry::PointD &point)
+void Painter::drawPoint(const PointD &point)
 {
   if (mCanvas){
     mCanvas->drawPoint(point, *mGraphicStyle);
@@ -128,7 +128,7 @@ void Painter::setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel)
   mGraphicStyle->setStyleLabel(styleLabel);
 }
 
-void Painter::setTransform(Transform<geometry::PointF> *trf)
+void Painter::setTransform(Transform<PointF> *trf)
 {
   mTrf = trf;
 }

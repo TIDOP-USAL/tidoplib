@@ -10,7 +10,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 
-using namespace TL;
+using namespace tl;
 
 int main(int argc, char** argv)
 {
@@ -18,11 +18,13 @@ int main(int argc, char** argv)
   /* */
   Chrono chrono;
   chrono.run();  // Se inicia el cronometro
-  //código que se quiere medir
+  // [código que se quiere medir]
   chrono.stop(); // Se detiene el cronometro
 
   chrono.reset(); // Se reinicia el cronometro
   chrono.setMessage("Tiempo 2: "); // Se añade un mensaje para mostrar junto con el tiempo medido
+
+  chrono.run();  // Se inicia el cronometro
 
   chrono.stop();
 

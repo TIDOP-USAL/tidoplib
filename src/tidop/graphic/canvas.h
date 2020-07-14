@@ -1,4 +1,4 @@
-#ifndef TL_GRAPHIC_CANVAS_H
+﻿#ifndef TL_GRAPHIC_CANVAS_H
 #define TL_GRAPHIC_CANVAS_H
 
 #include "config_tl.h"
@@ -10,7 +10,7 @@
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
 
-namespace TL
+namespace tl
 {
 
 template<typename T> class Transform;
@@ -88,7 +88,7 @@ public:
    * \param point Punto
    */
   virtual void drawPoint(const GPoint &point) = 0;
-  virtual void drawPoint(const geometry::PointD &point, const GraphicStyle &style) = 0;
+  virtual void drawPoint(const PointD &point, const GraphicStyle &style) = 0;
 
   /*!
    * \brief Dibuja una polilinea en el canvas
@@ -140,7 +140,7 @@ public:
   void setSize(int width, int height) override;
   void setBackgroundColor(const Color &color) override;
   void drawPoint(const GPoint &point) override;
-  void drawPoint(const geometry::PointD &point, const GraphicStyle &style) override;
+  void drawPoint(const PointD &point, const GraphicStyle &style) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
 
@@ -159,12 +159,54 @@ private:
 
 };
 
+/// Definición de métodos inline
+
+inline int CanvasCV::width() const
+{
+  return mCanvas.cols;
+}
+
+inline int CanvasCV::height() const
+{
+  return mCanvas.rows;
+}
+
+inline Color CanvasCV::backgroundColor() const
+{
+  return mBgColor;
+}
+
+inline void CanvasCV::setWidth(int width)
+{
+  mWidth = width;
+  update();
+}
+
+inline void CanvasCV::setHeight(int height)
+{
+  mHeight = height;
+  update();
+}
+
+inline void CanvasCV::setSize(int width, int height)
+{
+  mWidth = width;
+  mHeight = height;
+  update();
+}
+
+inline void CanvasCV::setBackgroundColor(const Color &color)
+{
+  mBgColor = color;
+  update();
+}
+
 #endif // HAVE_OPENCV
 
 } // Fin namespace graph
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_GRAPHIC_CANVAS_H

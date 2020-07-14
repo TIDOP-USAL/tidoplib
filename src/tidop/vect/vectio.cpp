@@ -25,11 +25,10 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 
-namespace TL
+namespace tl
 {
 
 using namespace graph;
-using namespace geometry;
 
 
 VrtVector::VrtVector()
@@ -70,9 +69,9 @@ GdalVector::Status GdalVector::open(const std::string &file, Mode mode, FileOpti
   close();
 
   mFile = file;
-  std::string ext = fs::extension(mFile);
+  std::string ext = fs::path(mFile).extension().string();
   mDriverName = driverFromExt(ext.c_str());
-  if (mDriverName == nullptr) return Status::OPEN_FAIL;
+  if (mDriverName == nullptr) return Status::open_fail;
 
   // No parece que se necesite
   //GDALAccess gdal_access;
@@ -92,25 +91,25 @@ GdalVector::Status GdalVector::open(const std::string &file, Mode mode, FileOpti
   //}
   //....
 
-  if (mode == Mode::Create) {
+  if (mode == Mode::create) {
 
     pDriver = GetGDALDriverManager()->GetDriverByName(mDriverName);
-    if (pDriver == nullptr) return Status::OPEN_FAIL;
+    if (pDriver == nullptr) return Status::open_fail;
 
     // Se crea el directorio si no existe
     char dir[TL_MAX_PATH];
     if ( getFileDriveDir(file.c_str(), dir, TL_MAX_PATH) == 0 )
-      if ( createDir(dir) == -1) return Status::OPEN_FAIL;
-    return Status::OPEN_OK;
+      if ( createDir(dir) == -1) return Status::open_fail;
+    return Status::open_ok;
   } else {
 
     pDataset = (GDALDataset*)GDALOpenEx( file.c_str(), GDAL_OF_VECTOR, nullptr, nullptr/*options->getOptions()*/, nullptr ); //GDALOpen( file, gdal_access);
     if (pDataset == nullptr) {
-      return Status::OPEN_FAIL;
+      return Status::open_fail;
     } else {
       pDriver = pDataset->GetDriver();
       update();
-      return Status::OPEN_OK;
+      return Status::open_ok;
     }
 
   }
@@ -121,7 +120,7 @@ GdalVector::Status  GdalVector::create()
 {
   if (pDriver == nullptr) {
     msgError("Utilice el modo Create para abrir el archivo");
-    return Status::FAILURE;
+    return Status::failure;
   }
 
   if (pDataset) GDALClose(pDataset), pDataset = nullptr;
@@ -129,12 +128,12 @@ GdalVector::Status  GdalVector::create()
 
   if (pDataset == nullptr) {
     msgError("Creation of output file failed.");
-    return Status::FAILURE;
+    return Status::failure;
   }
 
   update();
 
-  return Status::SUCCESS;
+  return Status::success;
 }
 
 int GdalVector::layersCount() const
@@ -154,7 +153,7 @@ void GdalVector::read(const std::string &name, GLayer *layer)
 
 GdalVector::Status GdalVector::createCopy(const std::string &fileOut)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::createLayer(const std::string &layerName)
@@ -176,10 +175,10 @@ GdalVector::Status GdalVector::createLayer(const std::string &layerName)
 
   if (layer == nullptr) {
     msgError("Layer creation failed.");
-    return Status::FAILURE;
+    return Status::failure;
   } else {
 
-    return Status::SUCCESS;
+    return Status::success;
   }
 }
 
@@ -746,7 +745,7 @@ std::shared_ptr<StylePen> GdalVector::readStylePen(OGRStylePen *ogrStylePen)
     /* Pen Color */
     const char *hexColor = ogrStylePen->Color(bDefault);
     if (!bDefault) {
-      stylePen->setColor(TL::graph::Color(hexColor+1));
+      stylePen->setColor(tl::graph::Color(hexColor+1));
     }
 
     /* Pen Cap */
@@ -869,13 +868,13 @@ std::shared_ptr<StyleBrush> GdalVector::readStyleBrush(OGRStyleBrush *ogrStyleBr
     /* Back Color */
     const char *hexColor = ogrStyleBrush->BackColor(bDefault);
     if (!bDefault) {
-      styleBrush->setBackColor(TL::graph::Color(hexColor+1));
+      styleBrush->setBackColor(tl::graph::Color(hexColor+1));
     }
 
     /* Fore Color */
     hexColor = ogrStyleBrush->ForeColor(bDefault);
     if (!bDefault) {
-      styleBrush->setForeColor(TL::graph::Color(hexColor+1));
+      styleBrush->setForeColor(tl::graph::Color(hexColor+1));
     }
 
     /* Brush Name */
@@ -946,7 +945,7 @@ std::shared_ptr<StyleSymbol> GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyl
     /* Color */
     const char *hexColor = ogrStyleSymbol->Color(bDefault);
     if (!bDefault) {
-      styleSymbol->setColor(TL::graph::Color(hexColor+1));
+      styleSymbol->setColor(tl::graph::Color(hexColor+1));
     }
 
     /* Name */
@@ -992,7 +991,7 @@ std::shared_ptr<StyleSymbol> GdalVector::readStyleSymbol(OGRStyleSymbol *ogrStyl
     /* Outline Color */
     hexColor = ogrStyleSymbol->OColor(bDefault);
     if (!bDefault) {
-      styleSymbol->setOutlineColor(TL::graph::Color(hexColor+1));
+      styleSymbol->setOutlineColor(tl::graph::Color(hexColor+1));
     }
 
     /* Priority Level */
@@ -1073,25 +1072,25 @@ std::shared_ptr<StyleLabel> GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLa
     /* Background Color */
     const char *hexColor = ogrStyleLabel->BackColor(bDefault);
     if (!bDefault) {
-      styleLabel->setBackgroundColor(TL::graph::Color(hexColor+1));
+      styleLabel->setBackgroundColor(tl::graph::Color(hexColor+1));
     }
 
     /* Foreground Color */
     hexColor = ogrStyleLabel->ForeColor(bDefault);
     if (!bDefault) {
-      styleLabel->setForegroundColor(TL::graph::Color(hexColor+1));
+      styleLabel->setForegroundColor(tl::graph::Color(hexColor+1));
     }
 
     /* Outline Color */
     hexColor = ogrStyleLabel->OutlineColor(bDefault);
     if (!bDefault) {
-      styleLabel->setOutlineColor(TL::graph::Color(hexColor+1));
+      styleLabel->setOutlineColor(tl::graph::Color(hexColor+1));
     }
 
     /* Shadow Color */
     hexColor = ogrStyleLabel->ShadowColor(bDefault);
     if (!bDefault) {
-      styleLabel->setShadowColor(TL::graph::Color(hexColor+1));
+      styleLabel->setShadowColor(tl::graph::Color(hexColor+1));
     }
 
     /* Label Placement */
@@ -1181,7 +1180,7 @@ std::shared_ptr<StyleLabel> GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLa
       font.setSize(static_cast<int>(size));
     }
 
-    bool strikeout = ogrStyleLabel->Strikeout(bDefault);
+    bool strikeout = ogrStyleLabel->Strikeout(bDefault) == 1;
     if (!bDefault) {
       font.setStrikethrough(strikeout);
     }
@@ -1198,58 +1197,58 @@ std::shared_ptr<StyleLabel> GdalVector::readStyleLabel(OGRStyleLabel *ogrStyleLa
 
 GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer &layer)
 {
-  Status err = Status::SUCCESS;
+  Status err = Status::success;
   OGRFeature *ogrFeature = OGRFeature::CreateFeature(pLayer->GetLayerDefn());
   for (auto &entity : layer) {
     GraphicEntity::Type type = entity->type();
     switch (type) {
-    case TL::graph::GraphicEntity::Type::POINT_2D:
+    case tl::graph::GraphicEntity::Type::point_2d:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POINT_3D:
+    case tl::graph::GraphicEntity::Type::point_3d:
       err = writePoint(ogrFeature, std::dynamic_pointer_cast<GPoint3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::LINESTRING_2D:
+    case tl::graph::GraphicEntity::Type::linestring_2d:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::LINESTRING_3D:
+    case tl::graph::GraphicEntity::Type::linestring_3d:
       err = writeLineString(ogrFeature, std::dynamic_pointer_cast<GLineString3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POLYGON_2D:
+    case tl::graph::GraphicEntity::Type::polygon_2d:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::POLYGON_3D:
+    case tl::graph::GraphicEntity::Type::polygon_3d:
       err = writePolygon(ogrFeature, std::dynamic_pointer_cast<GPolygon3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::SEGMENT_2D:
+    case tl::graph::GraphicEntity::Type::segment_2d:
       break;
-    case TL::graph::GraphicEntity::Type::SEGMENT_3D:
+    case tl::graph::GraphicEntity::Type::segment_3d:
       break;
-    case TL::graph::GraphicEntity::Type::WINDOW:
+    case tl::graph::GraphicEntity::Type::window:
       break;
-    case TL::graph::GraphicEntity::Type::BOX:
+    case tl::graph::GraphicEntity::Type::box:
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOINT_2D:
+    case tl::graph::GraphicEntity::Type::multipoint_2d:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOINT_3D:
+    case tl::graph::GraphicEntity::Type::multipoint_3d:
       err = writeMultiPoint(ogrFeature, std::dynamic_pointer_cast<GMultiPoint3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTILINE_2D:
+    case tl::graph::GraphicEntity::Type::multiline_2d:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTILINE_3D:
+    case tl::graph::GraphicEntity::Type::multiline_3d:
       err = writeMultiLineString(ogrFeature, std::dynamic_pointer_cast<GMultiLineString3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_2D:
+    case tl::graph::GraphicEntity::Type::multipolygon_2d:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::MULTIPOLYGON_3D:
+    case tl::graph::GraphicEntity::Type::multipolygon_3d:
       err = writeMultiPolygon(ogrFeature, std::dynamic_pointer_cast<GMultiPolygon3D>(entity));
       break;
-    case TL::graph::GraphicEntity::Type::CIRCLE:
+    case tl::graph::GraphicEntity::Type::circle:
       break;
-    case TL::graph::GraphicEntity::Type::ELLIPSE:
+    case tl::graph::GraphicEntity::Type::ellipse:
       break;
     default:
       break;
@@ -1257,7 +1256,7 @@ GdalVector::Status GdalVector::writeLayer(OGRLayer *pLayer, const graph::GLayer 
   }
 
   if (pLayer->CreateFeature(ogrFeature) != OGRERR_NONE) {
-    err = Status::FAILURE;
+    err = Status::failure;
   }
 
   OGRFeature::DestroyFeature(ogrFeature);
@@ -1270,9 +1269,9 @@ GdalVector::Status GdalVector::writePoint(OGRFeature *ogrFeature, const std::sha
   ogrPoint.setX(gPoint->x);
   ogrPoint.setY(gPoint->y);
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPoint))
-    return Status::SUCCESS;
+    return Status::success;
   else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 GdalVector::Status GdalVector::writePoint(OGRFeature *ogrFeature, const std::shared_ptr<GPoint3D> &gPoint3D)
@@ -1282,9 +1281,9 @@ GdalVector::Status GdalVector::writePoint(OGRFeature *ogrFeature, const std::sha
   ogrPoint.setY(gPoint3D->y);
   ogrPoint.setZ(gPoint3D->z);
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPoint))
-    return Status::SUCCESS;
+    return Status::success;
   else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<GLineString> &gLineString)
@@ -1296,9 +1295,9 @@ GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std
   }
 
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrLineString))
-    return Status::SUCCESS;
+    return Status::success;
   else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std::shared_ptr<GLineString3D> &gLineString3D)
@@ -1310,9 +1309,9 @@ GdalVector::Status GdalVector::writeLineString(OGRFeature *ogrFeature, const std
   }
 
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrLineString))
-    return Status::SUCCESS;
+    return Status::success;
   else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<GPolygon> &gPolygon)
@@ -1326,9 +1325,9 @@ GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::s
   ogrPolygon.addRing(&ogrLinearRing);
 
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPolygon))
-    return Status::SUCCESS;
+    return Status::success;
   else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::shared_ptr<GPolygon3D> &gPolygon3D)
@@ -1342,40 +1341,40 @@ GdalVector::Status GdalVector::writePolygon(OGRFeature *ogrFeature, const std::s
   ogrPolygon.addRing(&ogrLinearRing);
 
   if (OGRERR_NONE == ogrFeature->SetGeometry(&ogrPolygon))
-    return Status::FAILURE;
+    return Status::failure;
   else
-    return Status::SUCCESS;
-  return Status::FAILURE;
+    return Status::success;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPoint> &gMultiPoint)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiPoint(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPoint3D> &gMultiPoint3D)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<GMultiLineString> &gMultiLineString)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiLineString(OGRFeature *ogrFeature, const std::shared_ptr<GMultiLineString3D> &gMultiLineString3D)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPolygon> &gMultiPolygon)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 GdalVector::Status GdalVector::writeMultiPolygon(OGRFeature *ogrFeature, const std::shared_ptr<GMultiPolygon3D> &gMultiPolygon3D)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 void GdalVector::update()
@@ -1412,7 +1411,7 @@ VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode, 
 
   mFile = file;
 
-  std::string ext = fs::extension(mFile);
+  std::string ext = fs::path(mFile).extension().string();
 
   const char *frtName;
 
@@ -1421,15 +1420,15 @@ VectorGraphics::Status VectorGraphics::open(const std::string &file, Mode mode, 
     // Existe un driver de GDAL para el formato vectorial
     mVectorFormat = std::make_unique<GdalVector>();
   } else {
-    return Status::FAILURE;
+    return Status::failure;
   }
 #endif
 
   if (mVectorFormat) {
     mVectorFormat->open(file, mode, options);
     update();
-    return Status::OPEN_OK;
-  } else return Status::OPEN_FAIL;
+    return Status::open_ok;
+  } else return Status::open_fail;
 }
 
 VectorGraphics::Status VectorGraphics::create()
@@ -1437,16 +1436,15 @@ VectorGraphics::Status VectorGraphics::create()
   if (mVectorFormat) {
     return mVectorFormat->create();
   } else {
-    return Status::FAILURE;
+    return Status::failure;
   }
 }
 
 VectorGraphics::Status VectorGraphics::createCopy(const std::string &fileOut)
 {
-  return Status::FAILURE;
+  return Status::failure;
 }
 
-///TODO: Por ahora leo todo pero habria que poder filtrar por ventana.
 //VectorGraphics::Status VectorGraphics::read()
 //{
 //  if (mVectorFormat) {
@@ -1468,9 +1466,9 @@ VectorGraphics::Status VectorGraphics::read(int layerId, graph::GLayer *layer)
 {
   if (mVectorFormat) {
     mVectorFormat->read(layerId, layer);
-    return Status::SUCCESS;
+    return Status::success;
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 
@@ -1478,9 +1476,9 @@ VectorGraphics::Status VectorGraphics::read(const std::string &layerName, graph:
 {
   if (mVectorFormat) {
     mVectorFormat->read(layerName, layer);
-    return Status::SUCCESS;
+    return Status::success;
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 
@@ -1489,7 +1487,7 @@ VectorGraphics::Status VectorGraphics::writeLayer(int id, const graph::GLayer &l
   if (mVectorFormat) {
     return mVectorFormat->writeLayer(id, layer);
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 
@@ -1498,7 +1496,7 @@ VectorGraphics::Status VectorGraphics::writeLayer(const std::string &layerName, 
   if (mVectorFormat) {
     return mVectorFormat->writeLayer(layerName, layer);
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 
@@ -1517,7 +1515,7 @@ VectorGraphics::Status VectorGraphics::createLayer(const std::string &layerName)
   if (mVectorFormat) {
     return mVectorFormat->createLayer(layerName);
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 
@@ -1526,7 +1524,7 @@ VectorGraphics::Status VectorGraphics::createLayer(const graph::GLayer &layer)
   if (mVectorFormat) {
     return mVectorFormat->createLayer(layer);
   } else {
-    return VectorGraphics::Status::FAILURE;
+    return VectorGraphics::Status::failure;
   }
 }
 

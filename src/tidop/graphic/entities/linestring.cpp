@@ -1,9 +1,7 @@
 #include "tidop/graphic/entities/linestring.h"
 
-namespace TL
+namespace tl
 {
-
-using namespace geometry;
 
 namespace graph
 { 
@@ -12,13 +10,13 @@ namespace graph
 
 GLineString::GLineString() 
   : LineString<Point<double>>(), 
-    GraphicEntity(GraphicEntity::Type::LINESTRING_2D)
+    GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
 GLineString::GLineString(const LineString<Point<double>> &lineString) 
   : LineString<Point<double>>(lineString), 
-    GraphicEntity(GraphicEntity::Type::LINESTRING_2D)
+    GraphicEntity(GraphicEntity::Type::linestring_2d)
 {
 }
 
@@ -71,13 +69,13 @@ bool GLineString::isSimpleEntity() const
 
 GLineString3D::GLineString3D() 
   : LineString3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::LINESTRING_3D)
+    GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
 GLineString3D::GLineString3D(const LineString3D<Point3<double>> &gLineString3D)
   : LineString3D<Point3<double>>(gLineString3D),
-    GraphicEntity(GraphicEntity::Type::LINESTRING_3D)
+    GraphicEntity(GraphicEntity::Type::linestring_3d)
 {
 }
 
@@ -131,13 +129,13 @@ bool GLineString3D::isSimpleEntity() const
 
 GMultiLineString::GMultiLineString()
   : MultiLineString<Point<double>>(), 
-    GraphicEntity(GraphicEntity::Type::MULTILINE_2D)
+    GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
-GMultiLineString::GMultiLineString(const MultiLineString<geometry::Point<double>> &multiLineString)
+GMultiLineString::GMultiLineString(const MultiLineString<Point<double>> &multiLineString)
   : MultiLineString<Point<double>>(multiLineString), 
-    GraphicEntity(GraphicEntity::Type::MULTILINE_2D)
+    GraphicEntity(GraphicEntity::Type::multiline_2d)
 {
 }
 
@@ -190,13 +188,13 @@ bool GMultiLineString::isSimpleEntity() const
 
 GMultiLineString3D::GMultiLineString3D()
   : MultiLineString3D<Point3<double>>(),
-    GraphicEntity(GraphicEntity::Type::MULTILINE_3D)
+    GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 
-GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<geometry::Point3<double>> &multiLineString)
+GMultiLineString3D::GMultiLineString3D(const MultiLineString3D<Point3<double>> &multiLineString)
   : MultiLineString3D<Point3<double>>(multiLineString),
-    GraphicEntity(GraphicEntity::Type::MULTILINE_3D)
+    GraphicEntity(GraphicEntity::Type::multiline_3d)
 {
 }
 

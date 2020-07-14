@@ -10,7 +10,7 @@ TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
 
-namespace TL
+namespace tl
 {
 
 namespace graph
