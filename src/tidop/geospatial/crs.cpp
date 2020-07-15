@@ -9,7 +9,7 @@ namespace geospatial
 {
 
 
-#ifdef HAVE_GDAL
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 
 
 /* ---------------------------------------------------------------------------------- */

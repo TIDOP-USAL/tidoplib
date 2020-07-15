@@ -150,6 +150,7 @@ OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON
 OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
+OPTION (BUILD_APPS            "APPS"                  ON)
 OPTION (BUILD_TEST            "Include test"          OFF)
 OPTION (BUILD_EXAMPLES        "Include examples"      OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
@@ -195,7 +196,7 @@ OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_EIGEN  "Include eigen support"                   OFF)
 OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
-OPTION (WITH_PROJ4  "Include PROJ.4 Support"                  OFF)
+OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
 OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
@@ -391,6 +392,8 @@ set(TidopLib_LIBRARIES)
 
 # Directorio con el código fuente de los diferentes modulos
 add_subdirectory(src)
+
+add_subdirectory(apps)
 
 # Directorio con la documentación
 add_subdirectory(doc)

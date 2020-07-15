@@ -36,7 +36,7 @@ namespace geospatial
 {
 
 
-#ifdef HAVE_GDAL
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 
 
 /*!
@@ -44,31 +44,6 @@ namespace geospatial
  */
 class TL_EXPORT Crs
 {
-
-private:
-  
-  /*!
-   * \brief Código EPSG del sistema de referencia
-   */
-  std::string mEpsg;
-
-  /*!
-   * \brief Rejilla de transformación de sistema de coordenadas
-   */
-  std::string mGrid;
-
-  /*!
-   * \brief Geoide
-   */
-  std::string mGeoid;
-
-  // TODO: como puntero no hay manera. No hay manera de destruirlo sin que de un error...
-  //OGRSpatialReference *pCrs;
-
-  /*!
-   * \brief Objeto OGRSpatialReference de Gdal
-   */
-  OGRSpatialReference mCrs;
 
 public:
 
@@ -109,6 +84,31 @@ private:
    */
   void init();
 
+private:
+  
+  /*!
+   * \brief Código EPSG del sistema de referencia
+   */
+  std::string mEpsg;
+
+  /*!
+   * \brief Rejilla de transformación de sistema de coordenadas
+   */
+  std::string mGrid;
+
+  /*!
+   * \brief Geoide
+   */
+  std::string mGeoid;
+
+  // TODO: como puntero no hay manera. No hay manera de destruirlo sin que de un error...
+  //OGRSpatialReference *pCrs;
+
+  /*!
+   * \brief Objeto OGRSpatialReference de Gdal
+   */
+  OGRSpatialReference mCrs;
+
 };
 
 inline std::string Crs::epsgCode() const
@@ -123,7 +123,7 @@ inline bool Crs::isGeocentric() const
 
 inline bool Crs::isGeographic() const
 {
-  return mCrs.IsGeographic()!= 0;
+  return mCrs.IsGeographic() != 0;
 }
 
 inline OGRSpatialReference *Crs::getOGRSpatialReference()
@@ -499,7 +499,7 @@ transform_status CrsTransform<Point_t>::transform(const Point_t &ptIn, Point_t *
         msgError("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     }
   } catch (std::exception &e) {
-    throw std::runtime_error( e.what() );
+    throw;
   }
   return transform_status::success;
 }
