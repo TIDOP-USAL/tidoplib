@@ -1072,7 +1072,7 @@ public:
   FileOptions();
   virtual ~FileOptions();
 
-  virtual const char *getOptions() = 0;
+  virtual const char *options() = 0;
 };
 
 /*!

@@ -1,6 +1,6 @@
 #include "tidop/img/formats.h"
 
-#include "tidop/img/imgio.h"
+#include "tidop/img/img.h"
 
 
 
@@ -158,72 +158,72 @@ void TiffOptions::setZLevel(uint8_t zLevel)
   mZLevel = zLevel;
 }
 
-TiffOptions::BIGTIFF TiffOptions::bigTiff() const
+TiffOptions::BigTiff TiffOptions::bigTiff() const
 {
   return mBigTiff;
 }
 
-void TiffOptions::setBigTiff(BIGTIFF bigTiff)
+void TiffOptions::setBigTiff(BigTiff bigTiff)
 {
   mBigTiff = bigTiff;
 }
 
-TiffOptions::COMPRESS TiffOptions::compress() const
+TiffOptions::Compress TiffOptions::compress() const
 {
   return mCompress;
 }
 
-void TiffOptions::setCompress(COMPRESS compress)
+void TiffOptions::setCompress(Compress compress)
 {
   mCompress = compress;
 }
 
-TiffOptions::PHOTOMETRIC TiffOptions::photometric() const
+TiffOptions::Photometric TiffOptions::photometric() const
 {
   return mPhotometric;
 }
 
-void TiffOptions::setPhotometric(PHOTOMETRIC photometric)
+void TiffOptions::setPhotometric(Photometric photometric)
 {
   mPhotometric = photometric;
 }
 
-TiffOptions::ALPHA TiffOptions::alpha() const
+TiffOptions::Alpha TiffOptions::alpha() const
 {
   return mAlpha;
 }
 
-void TiffOptions::setAlpha(ALPHA alpha)
+void TiffOptions::setAlpha(Alpha alpha)
 {
   mAlpha = alpha;
 }
 
-TiffOptions::PROFILE TiffOptions::profile() const
+TiffOptions::Profile TiffOptions::profile() const
 {
   return mProfile;
 }
 
-void TiffOptions::setProfile(PROFILE profile)
+void TiffOptions::setProfile(Profile profile)
 {
   mProfile = profile;
 }
 
-TiffOptions::PIXELTYPE TiffOptions::pixelType() const
+TiffOptions::PixelType TiffOptions::pixelType() const
 {
   return mPixelType;
 }
 
-void TiffOptions::setPixelType(PIXELTYPE pixelType)
+void TiffOptions::setPixelType(PixelType pixelType)
 {
   mPixelType = pixelType;
 }
 
-TiffOptions::GEOTIFF_KEYS_FLAVOR TiffOptions::geotiffKeysFlavor() const
+TiffOptions::GeotiffKeysFlavor TiffOptions::geotiffKeysFlavor() const
 {
   return mGeotiffKeysFlavor;
 }
 
-void TiffOptions::setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor)
+void TiffOptions::setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor)
 {
   mGeotiffKeysFlavor = geotiffKeysFlavor;
 }

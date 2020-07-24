@@ -1,5 +1,5 @@
-#ifndef TL_GRAPHIC_IMG_FORMATS_H
-#define TL_GRAPHIC_IMG_FORMATS_H
+#ifndef TL_IMG_FORMATS_H
+#define TL_IMG_FORMATS_H
 
 #include "config_tl.h"
 #include "tidop/core/defs.h"
@@ -81,24 +81,24 @@ public:
   //  TILED  = 0x03          /*!<  By default stripped TIFF files are created. This option can be used to force creation of tiled TIFF files. */
   //};
 
-  enum Active
-  {
-    tfw         = 0x00,
-    rpb         = 0x01,
-    rpctxt      = 0x02,
-    tiled       = 0x03,
-    blockxsize  = 0x04,
-    blockysize  = 0x05,
-    jpegquality = 0x06,
-    zlevel      = 0x07,
-    bigtiff     = 0x08,
-    compress    = 0x09,
-    photometric = 0x10,
-    alpha       = 0x11,
-    profile     = 0x12,
-    pixeltype   = 0x13,
-    geotiff_keys_flavor
-  };
+  //enum Active
+  //{
+  //  tfw         = 0x00,
+  //  rpb         = 0x01,
+  //  rpctxt      = 0x02,
+  //  tiled       = 0x03,
+  //  blockxsize  = 0x04,
+  //  blockysize  = 0x05,
+  //  jpegquality = 0x06,
+  //  zlevel      = 0x07,
+  //  bigtiff     = 0x08,
+  //  compress    = 0x09,
+  //  photometric = 0x10,
+  //  alpha       = 0x11,
+  //  profile     = 0x12,
+  //  pixeltype   = 0x13,
+  //  geotiff_keys_flavor
+  //};
 
   //typedef bool TFW;
   //typedef bool RPB;
@@ -112,66 +112,67 @@ public:
   /*!
    * \brief Propiedades de BIGTIFF
    */
-  enum class BIGTIFF : uint8_t
+  enum class BigTiff : uint8_t
   {
-    YES,            /*!< Fuerza BigTiff. */
-    NO,             /*!< Fuerza tiff normal. */
-    IF_NEEDED,      /*!< BigTiff si es necesario. */ 
-    IF_SAFER        /*!< . */
+    yes,            /*!< Fuerza BigTiff. */
+    no,             /*!< Fuerza tiff normal. */
+    if_needed,      /*!< BigTiff si es necesario. */ 
+    if_safer        /*!< . */
   };
 
   /*!
    * \brief Tipo de compresión
    */
-  enum class COMPRESS : uint8_t
+  enum class Compress : uint8_t
   {
-    JPEG,
-    LZW,
-    PACKBITS,
-    DEFLATE,
-    CCITTRLE,
-    CCITTFAX3,
-    CCITTFAX4,
-    LZMA,
-    NONE
+    jpeg,
+    lzw,
+    packbits,
+    deflate,
+    ccittrle,
+    ccittfax3,
+    ccittfax4,
+    lzma,
+    none
   };
 
-  enum class PHOTOMETRIC : uint8_t
+  enum class Photometric : uint8_t
   {
-    MINISBLACK, 
-    MINISWHITE, 
-    RGB, CMYK, 
-    YCBCR, 
-    CIELAB, 
-    ICCLAB, 
-    ITULAB
+    minisblack, 
+    miniswhite, 
+    rgb, 
+    cmyk, 
+    ycbcr, 
+    cielab, 
+    icclab, 
+    itulab
   };
 
-  enum class ALPHA : uint8_t
+  enum class Alpha : uint8_t
   { 
-    YES, 
-    NON_PREMULTIPLIED, 
-    PREMULTIPLIED, 
-    UNSPECIFIED 
+    yes, 
+    non_premultiplied, 
+    premultiplied, 
+    unspecified 
   };
 
-  enum class PROFILE : uint8_t
+  enum class Profile : uint8_t
   { 
-    GDALGeoTIFF, 
-    GeoTIFF, 
-    BASELINE 
+    gdal_geotiff, 
+    geotiff, 
+    baseline 
   };
 
-  enum class PIXELTYPE : uint8_t
+  enum class PixelType : uint8_t
   { 
-    DEFAULT, 
-    SIGNEDBYTE 
+    default, 
+    signedbyte 
   };
 
-  enum class GEOTIFF_KEYS_FLAVOR : uint8_t
+  enum class GeotiffKeysFlavor : uint8_t
   { 
-    STANDARD, 
-    ESRI_PE 
+    standard, 
+    esri_pe 
   };
 
 public:
@@ -207,25 +208,23 @@ public:
 
   uint8_t jpegQuality() const;
   uint8_t zLevel() const;
-  BIGTIFF bigTiff() const;
-  COMPRESS compress() const;
-  PHOTOMETRIC photometric() const;
-  ALPHA alpha() const;
-  PROFILE profile() const;
-  PIXELTYPE pixelType() const;
-  GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor() const;
+  BigTiff bigTiff() const;
+  Compress compress() const;
+  Photometric photometric() const;
+  Alpha alpha() const;
+  Profile profile() const;
+  PixelType pixelType() const;
+  GeotiffKeysFlavor geotiffKeysFlavor() const;
 
-  
-  
   void setJpegQuality(uint8_t jpegQuality);
   void setZLevel(uint8_t zLevel);
-  void setBigTiff(BIGTIFF bigTiff);
-  void setCompress(COMPRESS compress);
-  void setPhotometric(PHOTOMETRIC photometric);
-  void setAlpha(ALPHA alpha);
-  void setProfile(PROFILE profile);
-  void setPixelType(PIXELTYPE pixelType);
-  void setGeotiffKeysFlavor(GEOTIFF_KEYS_FLAVOR geotiffKeysFlavor);
+  void setBigTiff(BigTiff bigTiff);
+  void setCompress(Compress compress);
+  void setPhotometric(Photometric photometric);
+  void setAlpha(Alpha alpha);
+  void setProfile(Profile profile);
+  void setPixelType(PixelType pixelType);
+  void setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor);
 
 protected:
 
@@ -285,22 +284,22 @@ protected:
   /*!
    * \brief BigTiff
    */
-  BIGTIFF mBigTiff;
+  BigTiff mBigTiff;
 
   /*!
    * \brief Compresión utilizada
    */
-  COMPRESS mCompress;
+  Compress mCompress;
 
-  PHOTOMETRIC mPhotometric;
+  Photometric mPhotometric;
 
-  ALPHA mAlpha;
+  Alpha mAlpha;
 
-  PROFILE mProfile;
+  Profile mProfile;
 
-  PIXELTYPE mPixelType;
+  PixelType mPixelType;
 
-  GEOTIFF_KEYS_FLAVOR mGeotiffKeysFlavor;
+  GeotiffKeysFlavor mGeotiffKeysFlavor;
 
 
 };
@@ -386,10 +385,6 @@ class TL_EXPORT BmpOptions
   : public ImageOptions
 {
 
-protected:
-
-  bool bWorldFile; //Force the generation of an associated ESRI world file(with the extension.wld).
-
 public:
   
   BmpOptions();
@@ -401,6 +396,10 @@ public:
 
   void setEnableWorldFile(bool enable);
 
+protected:
+
+  bool bWorldFile; //Force the generation of an associated ESRI world file(with the extension.wld).
+
 };
 
 
@@ -408,4 +407,4 @@ public:
 
 
 
-#endif // TL_GRAPHIC_IMG_FORMATS_H
+#endif // TL_IMG_FORMATS_H
