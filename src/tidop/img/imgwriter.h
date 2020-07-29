@@ -14,6 +14,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
 
 namespace tl
@@ -65,15 +66,23 @@ public:
    * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    */
   virtual void write(const cv::Mat &image, 
-                     const WindowI &window = WindowI()) = 0;
+                     const Rect<int> &rect = Rect<int>()) = 0;
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \param[in] window Ventana del bloque de imagen que se escribe.
    */
   virtual void write(const cv::Mat &image, 
-                     const Helmert2D<PointI> *trf = nullptr) = 0;
+                     const WindowI &window) = 0;
+
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen.
+   */
+  virtual void write(const cv::Mat &image, 
+                     const Affine<PointI> &trf) = 0;
 
 #endif
 

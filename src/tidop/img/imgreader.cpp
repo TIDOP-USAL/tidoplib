@@ -90,11 +90,11 @@ public:
   }
 
 #ifdef HAVE_OPENCV
-  
+
   void read(cv::Mat &image, 
             const RectI &rect, 
-            double scale, 
-            Helmert2D<PointI> *trf) override
+            const Size<int> size,  
+            Affine<PointI> *trf) override
   {
     if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
@@ -108,13 +108,75 @@ public:
       offset = rect_to_read.topLeft() - rect.topLeft();
     }
 
-    offset /= scale; // Corregido por la escala
+    Size<int> size_to_write;
+    if (size.isEmpty()) {
+      size_to_write = rect_to_read.size();
+    } else {
+      size_to_write = size;
+    }
+
+    double scaleX = size_to_write.width / static_cast<double>(rect_to_read.width);
+    double scaleY = size_to_write.height / static_cast<double>(rect_to_read.height);
+    offset.x *= scaleX; // Corregido por la escala
+    offset.y *= scaleY;
+
+    ////if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
+    //  size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
+    //  size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
+      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+    ////} else {
+    ////  size.width = wRead.getWidth();
+    ////  size.height = wRead.getHeight();
+    ////  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
+    ////}
+
+    image.create(size_to_write.height, size_to_write.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
+    if (image.empty())
+      return;// Status::failure;
+
+    uchar *buff = image.ptr();
+    int nPixelSpace = static_cast<int>(image.elemSize());
+    int nLineSpace = nPixelSpace * image.cols;
+    int nBandSpace = static_cast<int>(image.elemSize1());
+
+    CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
+                                     rect_to_read.width, rect_to_read.height,
+                                     buff, size_to_write.width, size_to_write.height, this->gdalDataType(),
+                                     this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
+                                     nLineSpace, nBandSpace);
+    
+    ///TODO: Mejorar el control de errores
+    if (cerr != 0) {
+      throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+    }
+  }
+
+  void read(cv::Mat &image, 
+            double scaleX,
+            double scaleY,  
+            const RectI &rect, 
+            Affine<PointI> *trf) override
+  {
+    if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
+
+    RectI rect_to_read;
+    PointI offset;
+    RectI rect_full_image(0, 0, this->cols(), this->rows());
+    if (rect.isEmpty()) {
+      rect_to_read = rect_full_image;
+    } else {
+      rect_to_read = intersect(rect_full_image, rect);
+      offset = rect_to_read.topLeft() - rect.topLeft();
+    }
+
+    offset.x *= scaleX; // Corregido por la escala
+    offset.y *= scaleY;
 
     cv::Size size;
     //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-      size.width = TL_ROUND_TO_INT(rect_to_read.width / scale);
-      size.height = TL_ROUND_TO_INT(rect_to_read.height / scale);
-      if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
+      size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
+      size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
+      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
     //} else {
     //  size.width = wRead.getWidth();
     //  size.height = wRead.getHeight();
@@ -144,11 +206,12 @@ public:
 
   void read(cv::Mat &image, 
             const WindowI &window, 
-            double scale, 
-            Helmert2D<PointI> *trf) override
+            double scaleX,
+            double scaleY,
+            Affine<PointI> *trf) override
   {
     RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
-    read(image, rect, scale, trf);
+    read(image, scaleX, scaleY, rect, trf);
 
     //if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
