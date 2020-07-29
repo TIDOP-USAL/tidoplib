@@ -8,7 +8,8 @@ add_library(tl_geospatial ${LIB_TYPE}
 )
   
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_geospatial PROPERTY FOLDER "modules")
+set_property(TARGET tl_geospatial 
+             PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
@@ -34,5 +35,8 @@ else()
           ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
-install(DIRECTORY . DESTINATION include/tidop/geospatial
+install(DIRECTORY . 
+        DESTINATION include/tidop/geospatial
         FILES_MATCHING PATTERN "*.h")
+        
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_geospatial)

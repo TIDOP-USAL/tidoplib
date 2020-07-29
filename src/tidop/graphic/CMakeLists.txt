@@ -27,7 +27,8 @@ add_library(tl_graphic ${LIB_TYPE}
  
  
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_graphic PROPERTY FOLDER "modules")
+set_property(TARGET tl_graphic 
+             PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
@@ -52,3 +53,5 @@ endif()
 install(DIRECTORY . 
         DESTINATION include/tidop/graphic
         FILES_MATCHING PATTERN "*.h")
+        
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_graphic)

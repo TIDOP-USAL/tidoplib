@@ -147,7 +147,8 @@ public:
             double scale, 
             Helmert2D<PointI> *trf) override
   {
-    read(image, RectI(window.pt1, window.pt2), scale, trf);
+    RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+    read(image, rect, scale, trf);
 
     //if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 

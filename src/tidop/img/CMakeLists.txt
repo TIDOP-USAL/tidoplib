@@ -53,3 +53,5 @@ endif()
 install(DIRECTORY . 
         DESTINATION include/tidop/img
         FILES_MATCHING PATTERN "*.h")
+        
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_img)
