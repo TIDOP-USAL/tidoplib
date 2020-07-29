@@ -50,28 +50,37 @@ public:
 #ifdef HAVE_OPENCV
 
   /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
+   * \brief Lee el fragmento de imagen correspondiente a una región
    * \param[out] image Imagen que se lee
    * \param[in] rect Región de la imagen que se carga
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
   virtual void read(cv::Mat &image, 
-                    const RectI &rect = RectI(), 
-                    double scale = 1., 
-                    Helmert2D<PointI> *trf = nullptr) = 0;
+                    const Rect<int> &rect = Rect<int>(), 
+                    double scaleX = 1.,
+                    double scaleY = 1., 
+                    Affine<PointI> *trf = nullptr) = 0;
+
+  virtual void read(cv::Mat &image, 
+                    const Rect<int> &rect = Rect<int>(), 
+                    const Size<int> size = Size<int>(), 
+                    Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[out] image Imagen que se lee
    * \param[in] window Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
   virtual void read(cv::Mat &image, 
                     const WindowI &window, 
-                    double scale = 1., 
-                    Helmert2D<PointI> *trf = nullptr) = 0;
+                    double scaleX = 1.,
+                    double scaleY = 1., 
+                    Affine<PointI> *trf = nullptr) = 0;
 
 #endif
 
@@ -85,7 +94,7 @@ public:
   //virtual void read(Image &image, 
   //                  const WindowI &wLoad = WindowI(), 
   //                  double scale = 1., 
-  //                  Helmert2D<PointI> *trf = nullptr) = 0;
+  //                  Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen

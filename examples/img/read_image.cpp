@@ -45,6 +45,11 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
+  Chrono chrono("Image read");
+  chrono.run();  // Se inicia el cronometro
+  
+  cv::Mat bmp;
+
   try {
     std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::createReader(img);
     imageReader->open();
@@ -54,8 +59,9 @@ int main(int argc, char** argv)
       msgInfo("Profundidad de color: %i", imageReader->depth());
       msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
       
-      cv::Mat bmp;
-      imageReader->read(bmp);
+      Affine<PointI> trf;
+      //imageReader->read(bmp, RectI(-1000, -1000, 6000, 6000), 0.5, 0.5, &trf);
+      imageReader->read(bmp, RectI(-1000, -1000, 6000, 6000), SizeI(3000, 2000), &trf);
 
       imageReader->close();
     } else {
@@ -64,6 +70,8 @@ int main(int argc, char** argv)
   } catch (const std::exception &e) {
     msgError(e.what());
   }
+
+  chrono.stop();
 
   return 0;
 }
