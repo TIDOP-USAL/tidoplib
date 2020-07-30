@@ -72,6 +72,44 @@ GDALDataType openCvToGdal(int cvdt);
 
 #endif // HAVE_GDAL
 
+
+#ifdef HAVE_EDSDK
+
+/*!
+ * \brief Clase singleton para registrar la API de canon
+ *
+ */
+class TL_EXPORT RegisterEDSDK
+{
+
+private:
+
+  /*!
+   * \brief Constructor privado
+   */
+  RegisterEDSDK();
+
+public:
+
+  ~RegisterEDSDK();
+
+  RegisterEDSDK(RegisterEDSDK const&) = delete;
+  void operator=(RegisterEDSDK const&) = delete;
+
+  /*!
+   * \brief Inicio de la API EDSDK
+   */
+  static void init();
+
+private:
+
+  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+  static std::mutex sMutex;
+};
+
+#endif \\ HAVE_EDSDK
+
+
 } // End namespace tl
 
 #endif // TL_IMG_H

@@ -3,12 +3,14 @@
 
 #include "config_tl.h"
 
+
+#ifdef HAVE_OPENCV
+
+
 #include <string>
 #include <memory>
 
-#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
@@ -47,58 +49,41 @@ public:
    */
   virtual void close() = 0;
 
-#ifdef HAVE_OPENCV
-
-  virtual void read(cv::Mat &image, 
-                    const Rect<int> &rect = Rect<int>(), 
-                    const Size<int> size = Size<int>(), 
-                    Affine<PointI> *trf = nullptr) = 0;
+  /*!
+   * \brief Lee un fragmento de imagen correspondiente a una región
+   * \param[in] rect Región de la imagen que se carga. Por defecto toda la imagen
+   * \param[in] size Tamaño de la imagen de salida. Por defecto el tamaño de la región de lectura
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   * \return imagen
+   */
+  virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
+                       const Size<int> size = Size<int>(), 
+                       Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una región
-   * \param[out] image Imagen que se lee
    * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
    * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[in] rect Región de la imagen que se carga
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   * \return imagen
    */
-  virtual void read(cv::Mat &image, 
-                    double scaleX,
-                    double scaleY, 
-                    const Rect<int> &rect = Rect<int>(), 
-                    Affine<PointI> *trf = nullptr) = 0;
+  virtual cv::Mat read(double scaleX,
+                       double scaleY, 
+                       const Rect<int> &rect = Rect<int>(), 
+                       Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
    * \param[in] window Ventana de la imagen que se quiere cargar
    * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
    * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(cv::Mat &image, 
-                    const WindowI &window, 
+  virtual cv::Mat read(const WindowI &window, 
                     double scaleX = 1.,
                     double scaleY = 1., 
                     Affine<PointI> *trf = nullptr) = 0;
-
-  //virtual void read(cv::Mat &image, 
-  //                  const WindowI &window,
-  //                  const Size<int> size = Size<int>(), 
-  //                  Affine<PointI> *trf = nullptr) = 0;
-#endif
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar. Por defecto toda la ventana
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  //virtual void read(Image &image, 
-  //                  const WindowI &wLoad = WindowI(), 
-  //                  double scale = 1., 
-  //                  Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -159,6 +144,6 @@ public:
 
 } // End namespace tl
 
-
+#endif // HAVE_OPENCV
 
 #endif // TL_IMAGE_READER_H

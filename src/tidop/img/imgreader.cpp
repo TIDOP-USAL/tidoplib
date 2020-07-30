@@ -1,5 +1,7 @@
 #include "tidop/img/imgreader.h"
 
+#ifdef HAVE_OPENCV
+
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
@@ -64,14 +66,14 @@ public:
 
   ~ImageReaderGdal()
   {
-    close();
+    this->close();
   }
 
 // Heredado vía ImageReader
 
   void open() override
   {
-    close();
+    this->close();
 
     mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_ReadOnly));
   }
@@ -89,13 +91,12 @@ public:
     }
   }
 
-#ifdef HAVE_OPENCV
-
-  void read(cv::Mat &image, 
-            const RectI &rect, 
-            const Size<int> size,  
-            Affine<PointI> *trf) override
+  cv::Mat read(const RectI &rect, 
+               const Size<int> size,  
+               Affine<PointI> *trf) override
   {
+    cv::Mat image;
+
     if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
     RectI rect_to_read;
@@ -108,31 +109,21 @@ public:
       offset = rect_to_read.topLeft() - rect.topLeft();
     }
 
-    Size<int> size_to_write;
+    Size<int> size_to_read;
     if (size.isEmpty()) {
-      size_to_write = rect_to_read.size();
+      size_to_read = rect_to_read.size();
     } else {
-      size_to_write = size;
+      size_to_read = size;
     }
 
-    double scaleX = size_to_write.width / static_cast<double>(rect_to_read.width);
-    double scaleY = size_to_write.height / static_cast<double>(rect_to_read.height);
+    double scaleX = size_to_read.width / static_cast<double>(rect_to_read.width);
+    double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
     offset.x *= scaleX; // Corregido por la escala
     offset.y *= scaleY;
+    if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
-    ////if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-    //  size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
-    //  size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
-      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
-    ////} else {
-    ////  size.width = wRead.getWidth();
-    ////  size.height = wRead.getHeight();
-    ////  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
-    ////}
-
-    image.create(size_to_write.height, size_to_write.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image.empty())
-      return;// Status::failure;
+    image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
+    if (image.empty()) throw std::runtime_error("");
 
     uchar *buff = image.ptr();
     int nPixelSpace = static_cast<int>(image.elemSize());
@@ -141,7 +132,7 @@ public:
 
     CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
                                      rect_to_read.width, rect_to_read.height,
-                                     buff, size_to_write.width, size_to_write.height, this->gdalDataType(),
+                                     buff, size_to_read.width, size_to_read.height, this->gdalDataType(),
                                      this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
                                      nLineSpace, nBandSpace);
     
@@ -149,14 +140,17 @@ public:
     if (cerr != 0) {
       throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
     }
+
+    return image;
   }
 
-  void read(cv::Mat &image, 
-            double scaleX,
-            double scaleY,  
-            const RectI &rect, 
-            Affine<PointI> *trf) override
+  cv::Mat read(double scaleX,
+               double scaleY,  
+               const RectI &rect, 
+               Affine<PointI> *trf) override
   {
+    cv::Mat image;
+
     if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
 
     RectI rect_to_read;
@@ -173,19 +167,12 @@ public:
     offset.y *= scaleY;
 
     cv::Size size;
-    //if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-      size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
-      size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
-      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
-    //} else {
-    //  size.width = wRead.getWidth();
-    //  size.height = wRead.getHeight();
-    //  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
-    //}
+    size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
+    size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
+    if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
     image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image.empty())
-      return;// Status::failure;
+    if (image.empty()) if (image.empty()) throw std::runtime_error("");
 
     uchar *buff = image.ptr();
     int nPixelSpace = static_cast<int>(image.elemSize());
@@ -202,88 +189,18 @@ public:
     if (cerr != 0) {
       throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
     }
+
+    return image;
   }
 
-  void read(cv::Mat &image, 
-            const WindowI &window, 
-            double scaleX,
-            double scaleY,
-            Affine<PointI> *trf) override
+  cv::Mat read(const WindowI &window, 
+               double scaleX,
+               double scaleY,
+               Affine<PointI> *trf) override
   {
     RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
-    read(image, scaleX, scaleY, rect, trf);
-
-    //if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
-
-    //WindowI wRead;
-    //PointI offset;
-    //windowRead(window, &wRead, &offset);
-
-    //offset /= scale; // Corregido por la escala
-    //cv::Size size;
-    ////if (scale >= 1.) { // Si interesase hacer el remuestreo posteriormente se haría asi
-    //  size.width = TL_ROUND_TO_INT(wRead.width() / scale);
-    //  size.height = TL_ROUND_TO_INT(wRead.height() / scale);
-    //  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
-    ////} else {
-    ////  size.width = wRead.getWidth();
-    ////  size.height = wRead.getHeight();
-    ////  if (trf) trf->setParameters(offset.x, offset.y, scale, 0.);
-    ////}
-
-    //image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    //if (image.empty())
-    //  return;// Status::failure;
-
-    //uchar *buff = image.ptr();
-    //int nPixelSpace = static_cast<int>(image.elemSize());
-    //int nLineSpace = nPixelSpace * image.cols;
-    //int nBandSpace = static_cast<int>(image.elemSize1());
-
-    //CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
-    //                                 wRead.width(), wRead.height(),
-    //                                 buff, size.width, size.height, this->gdalDataType(),
-    //                                 this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
-    //                                 nLineSpace, nBandSpace);
-    //
-    /////TODO: Mejorar el control de errores
-    //if (cerr != 0) {
-    //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-    //}
+    return this->read(scaleX, scaleY, rect, trf);
   }
-#endif // HAVE_OPENCV
-
-  //void read(unsigned char *&buff, 
-  //          const WindowI &wLoad = WindowI(), 
-  //          double scale = 1., 
-  //          Helmert2D<PointI>* trf = nullptr) override
-  //{
-  //  WindowI wRead;
-  //  PointI offset;
-  //  windowRead(wLoad, &wRead, &offset);
-  //  WindowI wAll(PointI(0, 0), PointI(this->cols(), this->rows()));
-  //
-  //  offset /= scale; // Corregido por la escala
-
-  //  int width = TL_ROUND_TO_INT(wRead.width() / scale);
-  //  int height = TL_ROUND_TO_INT(wRead.height() / scale);
-  //  if (trf) trf->setParameters(offset.x, offset.y, 1., 0.);
-
-  //  buff = (unsigned char *)std::malloc(this->rows() * this->cols() * this->channels() * this->depth());
-  //  size_t nPixelSpace = this->channels() ;
-  //  size_t nLineSpace = this->channels() * this->cols();
-  //  size_t nBandSpace = 1;
-
-  //  CPLErr cerr = mDataset->RasterIO(GF_Read, wRead.pt1.x, wRead.pt1.y,
-  //                                   wRead.width(), wRead.height(),
-  //                                   buff, width, height, this->gdalDataType(),
-  //                                   this->channels(), gdalBandOrder(this->channels()).data(), (int)nPixelSpace,
-  //                                   (int)nLineSpace, (int)nBandSpace );
-
-  //  if (cerr != 0) {
-  //    throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-  //  }
-  //}
 
   int rows() const override
   {
@@ -316,7 +233,7 @@ protected:
 
   GDALDataType gdalDataType() const
   {
-    GDALDataType dataType;
+    GDALDataType dataType = GDALDataType::GDT_Byte;
     if (mDataset) {
       if (GDALRasterBand *rasterBand = mDataset->GetRasterBand(1)) {
         dataType = rasterBand->GetRasterDataType();
@@ -344,18 +261,36 @@ class ImageReaderCanon
 public:
 
   ImageReaderCanon(const std::string &fileName)
-    : ImageReader(fileName)
+    : ImageReader(fileName),
+      mRows(0), 
+      mCols(0), 
+      mBands (0),
+      mDataType(DataType::TL_16U),
+      mColorDepth(16)
   {
+    RegisterEDSDK::init();
   }
 
   ~ImageReaderCanon()
   {
+    this->close();
   }
 
 // Heredado vía ImageReader
 
   void open() override
   {
+    this->close();
+    
+    EdsError err = EdsCreateFileStream(mFileName.c_str(), 
+                                       kEdsFileCreateDisposition_OpenExisting, 
+                                       kEdsAccess_Read, &mInputStream);
+    if (err != EDS_ERR_OK) throw std::runtime_error("Open Error");
+
+    err = EdsCreateImageRef(mInputStream, &mEdsImage);
+    if (err != EDS_ERR_OK) throw std::runtime_error("Open Error");
+
+    this->update();
   }
 
   bool isOpen() override
@@ -364,53 +299,154 @@ public:
 
   void close() override
   {
+    EdsRelease(mInputStream);
+    EdsRelease(mEdsImage);
+    mCols = 0;
+    mRows = 0;
+    mBands = 0;
+    mDataType = DataType::TL_16;
+    mColorDepth = 16;
   }
 
-#ifdef HAVE_OPENCV
-
-  void read(cv::Mat &image, 
-                    const geometry::WindowI &wLoad = geometry::WindowI(), 
-                    double scale = 1., 
-                    Helmert2D<geometry::PointI> *trf = nullptr) override
+  cv::Mat read(const Rect<int> &rect, 
+               const Size<int> size, 
+               Affine<PointI> *trf) override
   {
   }
 
-#endif // HAVE_OPENCV
 
-  void read(unsigned char *buff, 
-                    const geometry::WindowI &wLoad = geometry::WindowI(), 
-                    double scale = 1., 
-                    Helmert2D<geometry::PointI> *trf = nullptr) override
+  cv::Mat read(double scaleX,
+               double scaleY, 
+               const Rect<int> &rect, 
+               Affine<PointI> *trf) override
+  {
+
+    RectI rect_to_read;
+    PointI offset;
+    RectI rect_full_image(0, 0, this->cols(), this->rows());
+    if (rect.isEmpty()) {
+      rect_to_read = rect_full_image;
+    } else {
+      rect_to_read = intersect(rect_full_image, rect);
+      offset = rect_to_read.topLeft() - rect.topLeft();
+    }
+
+    Size<int> size_to_read;
+    if (size.isEmpty()) {
+      size_to_read = rect_to_read.size();
+    } else {
+      size_to_read = size;
+    }
+
+    double scaleX = size_to_read.width / static_cast<double>(rect_to_read.width);
+    double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
+    offset.x *= scaleX; // Corregido por la escala
+    offset.y *= scaleY;
+    if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+
+    EdsRect rect;
+	  rect.point.x	= rect_to_read.x;
+	  rect.point.y	= rect_to_read.y;
+	  rect.size.width	= rect_to_read.width;
+	  rect.size.height = rect_to_read.height;
+
+    EdsSize eds_size;
+	  eds_size.width = size_to_read.width;
+	  eds_size.height = size_to_read.height;
+
+    EdsError err = EDS_ERR_OK;
+    EdsStreamRef dstStreamRef;
+    err = EdsCreateMemoryStream(0, &dstStreamRef);
+    if (err == EDS_ERR_OK) {
+      //EdsUInt32 sharpness = 2;
+      //EdsError err = EdsSetPropertyData(mEdsImage, kEdsPropID_Sharpness, 0, sizeof(sharpness), &sharpness);
+      
+      EdsPictureStyleDesc psDesc;
+      err = EdsGetPropertyData(mEdsImage, kEdsPropID_PictureStyleDesc | kEdsPropID_AtCapture_Flag, 0, sizeof(psDesc), &psDesc);
+      
+      //EdsPictureStyleDesc pictureStyleDesc;
+      //pictureStyleDesc.sharpness = 2;
+      psDesc.sharpThreshold = 0;
+      psDesc.sharpFineness = 0;
+      psDesc.sharpness = 0;
+
+      err = EdsSetPropertyData(mEdsImage, kEdsPropID_PictureStyleDesc, 0, sizeof(psDesc), &psDesc);
+
+      if (err != EDS_ERR_OK) {
+        msgError("EdsSetPropertyData: kEdsPropID_SaveTo");
+        return Status::FAILURE;
+      }
+      err = EdsGetImage(mEdsImage, kEdsImageSrc_RAWFullView, kEdsTargetImageType_RGB, rect, eds_size, dstStreamRef);
+      if (err == EDS_ERR_OK) {
+        EdsVoid* pBuff;
+        EdsGetPointer(dstStreamRef, &pBuff);
+        aux = cv::Mat(size.height, size.width, CV_MAKETYPE(depth, mBands), pBuff);
+        if (aux.empty() == false) {
+          cvtColor(aux, *image, CV_RGB2BGR);
+          status = Status::SUCCESS;
+        }
+      }
+    }
+
+    EdsRelease(dstStreamRef);
+  }
+
+  cv::Mat read(const WindowI &window,
+               double scaleX,
+               double scaleY,
+               Affine<PointI> *trf) override
   {
   }
 
   int rows() const override
   {
-    return 0;
+    return mRows;
   }
 
   int cols() const override
   {
-    return 0;
+    return mCols;
   }
 
   int channels() const override
   {
-    return 0;
+    return mBands;
   }
 
   DataType dataType() const override
   {
-    return DataType();
+    return mDataType;
   }
 
   int depth() const override
   {
-    return 0;
+    return mColorDepth;
   }
 
 private:
 
+  void update()
+  {
+    EdsImageInfo imageInfo;
+    EdsError err = EdsGetImageInfo(mEdsImage, kEdsImageSrc_FullView, &imageInfo);
+    if (err == EDS_ERR_OK) {
+      mCols = imageInfo.width;
+      mRows = imageInfo.height;
+      mBands = imageInfo.numOfComponents;
+      mColorDepth = imageInfo.componentDepth;
+      mDataType = imageInfo.componentDepth == 16 ? DataType::TL_16U : DataType::TL_8U;
+    }
+  }
+
+private:
+
+  EdsStreamRef mInputStream;
+  EdsImageRef mEdsImage;
+  int mRows;
+  int mCols;
+  int mBands;
+  DataType mDataType;
+  int mColorDepth;
 };
 
 #endif // HAVE_EDSDK
@@ -438,5 +474,6 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const std::string 
   return image_reader;
 }
 
-
 } // End namespace tl
+
+#endif // HAVE_OPENCV

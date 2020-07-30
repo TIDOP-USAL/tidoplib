@@ -1,5 +1,7 @@
 #include "tidop/img/imgwriter.h"
 
+#ifdef HAVE_OPENCV
+
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
@@ -68,24 +70,6 @@ public:
 
   ~ImageWriterGdal()
   {
-    //char **tmp = nullptr;
-    //if (bTempFile) {
-    //  std::string ext = fs::path(mFileName).extension().string();
-    //  GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
-    //  GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, nullptr, nullptr, nullptr);
-    //  if (!tempDataSet) {
-    //    msgError("No se pudo crear la imagen");
-    //  } else {
-    //    GDALClose(static_cast<GDALDatasetH>(tempDataSet));
-    //  }
-    //  tmp = mDataset->GetFileList();
-    ////}
-
-    ////if (bTempFile) {
-    //  for (size_t i = 0; i < sizeof(**tmp); i++)
-    //    remove(tmp[i]);
-    //}
-
     close();
   }
 
@@ -168,9 +152,8 @@ public:
     if (mDataset == nullptr) throw std::runtime_error("Creation of output file failed"); 
   }
 
-#ifdef HAVE_OPENCV
-
-  void write(const cv::Mat &image, const Rect<int> &rect)
+  void write(const cv::Mat &image, 
+             const Rect<int> &rect)
   {
     RectI rect_full_image(0, 0, this->cols(), this->rows());
     RectI rect_to_write;
@@ -183,49 +166,53 @@ public:
       crop_image = rect_to_write != rect;
     }
 
-    cv::Mat aux;
+    cv::Mat image_to_write;
 
     if (crop_image) {
-      Affine<PointI> affine;
-      std::vector<PointI> image_points{
-        PointI(0, 0),
-        //PointI(image.cols, 0),
-        PointI(image.cols, image.rows),
-        //PointI(0, image.rows)
+      Affine<PointD> affine;
+      std::vector<PointD> image_points{
+        PointD(0, 0),
+        PointD(image.cols, 0),
+        PointD(image.cols, image.rows),
+        PointD(0, image.rows)
       };
        
-      std::vector<PointI> image_rect{
-        rect.topLeft(),
-        //rect.topRight(),
-        rect.bottomRight(),
-        //rect.bottomLeft()
+      std::vector<PointD> image_rect{
+        static_cast<PointD>(rect.topLeft()),
+        static_cast<PointD>(rect.topRight()),
+        static_cast<PointD>(rect.bottomRight()),
+        static_cast<PointD>(rect.bottomLeft())
       };
 
-      affine.compute(image_rect, image_points);
+      affine.compute(image_points, image_rect);
 
-      std::vector<PointI> image_points_transform;
+      std::vector<PointD> image_points_transform;
       affine.transform(image_points, &image_points_transform);
-      int width = image_points_transform[1].x - image_points_transform[0].x;
-      int height = image_points_transform[1].y - image_points_transform[0].y;
-      aux = cv::Mat(cv::Size(width, height), image.type());
-      image.copyTo(aux.colRange(image_points_transform[0].x, image_points_transform[1].x).rowRange(image_points_transform[0].y, image_points_transform[1].y));
+      RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+      RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+
+      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), transform_order::inverse);
+      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), transform_order::inverse);
+      
+      rect_to_crop_image = RectI(tl, br);
+      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x).rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y).clone();
 
     } else {
-      aux = image;
+      image_to_write = image;
     }
 
     GDALDataType gdal_data_type = openCvToGdal(image.depth());
 
-    uchar *buff = const_cast<uchar *>(aux.isContinuous() ? aux.ptr() : aux.clone().ptr());
-    int nPixelSpace = static_cast<int>(aux.elemSize());
-    int nLineSpace = nPixelSpace * aux.cols;
-    int nBandSpace = static_cast<int>(aux.elemSize1());
+    uchar *buff = const_cast<uchar *>(image_to_write.isContinuous() ? image_to_write.ptr() : image_to_write.clone().ptr());
+    int nPixelSpace = static_cast<int>(image_to_write.elemSize());
+    int nLineSpace = nPixelSpace * image_to_write.cols;
+    int nBandSpace = static_cast<int>(image_to_write.elemSize1());
 
     CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, 
                                      rect_to_write.width, rect_to_write.height, buff, 
-                                     aux.cols, aux.rows, 
-                                     gdal_data_type, aux.channels(), 
-                                     gdalBandOrder(aux.channels()).data(), nPixelSpace,
+                                     image_to_write.cols, image_to_write.rows, 
+                                     gdal_data_type, image_to_write.channels(), 
+                                     gdalBandOrder(image_to_write.channels()).data(), nPixelSpace,
                                      nLineSpace, nBandSpace);
 
     if (cerr != 0) {
@@ -235,41 +222,15 @@ public:
     }
   }
 
-  void write(const cv::Mat &image, const WindowI &window) override
+  void write(const cv::Mat &image, 
+             const WindowI &window) override
   {
-    //if (mDataset == nullptr) throw std::runtime_error("Can't write the image");
-    //
-    //WindowI window_write;
-    //PointI offset;
-    //windowWrite(window, &window_write, &offset);
-
-    /////// TODO: chequeos sobre el objeto cv::Mat. Las dimensiones tienen que coincidir con Window
-    /////// Sustituir por Assert. 
-    //GDALDataType gdal_data_type = openCvToGdal(image.depth());
-    ////GDALDataType gdal_data_type2 = dataTypeToGdalDataType(this->dataType());
-    ////if (image.rows != w.getHeight() || image.cols != w.getWidth() ||
-    ////    this->channels() != image.channels() ||
-    ////    gdal_data_type != gdal_data_type2) 
-    ////  throw std::runtime_error("Can't write the image");
-
-    //uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
-    //int nPixelSpace = static_cast<int>(image.elemSize());
-    //int nLineSpace = nPixelSpace * image.cols;
-    //int nBandSpace = static_cast<int>(image.elemSize1());
-
-    //CPLErr cerr = mDataset->RasterIO(GF_Write, window_write.pt1.x, window_write.pt1.y, 
-    //                                 window_write.width(), window_write.height(), buff, 
-    //                                 image.cols, image.rows, 
-    //                                 gdal_data_type, image.channels(), 
-    //                                 gdalBandOrder(image.channels()).data(), nPixelSpace,
-    //                                 nLineSpace, nBandSpace);
-
-    //if (cerr != 0) {
-    //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-    //}
+    RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+    write(image, rect);
   }
 
-  void write(const cv::Mat &image, const Affine<PointI> &trf) override
+  void write(const cv::Mat &image, 
+             const Affine<PointI> &trf) override
   {
     //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
 
@@ -298,57 +259,6 @@ public:
     //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
     //}
   }
-
-#endif
-
-  void write(const unsigned char *buff, const WindowI &window = WindowI()) override
-  {
-    //if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
-
-    //int nPixelSpace = this->channels() * this->depth();
-    //int nLineSpace = nPixelSpace * window.width();
-    //int nBandSpace = 1; ///TODO: comprobar...
-
-    //unsigned char *_buff = const_cast<unsigned char *>(buff);
-    //CPLErr cerr = mDataset->RasterIO(GF_Write, window.pt1.x, window.pt1.y, 
-    //                                 window.width(), window.height(), _buff, 
-    //                                 window.width(), window.height(), 
-    //                                 dataTypeToGdalDataType(this->dataType()), this->channels(), 
-    //                                 gdalBandOrder(this->channels()).data(), nPixelSpace,
-    //                                 nLineSpace, nBandSpace);
-
-    //if (cerr != 0) {
-    //  throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-    //} else {
-    //  mDataset->FlushCache();
-    //}
-  }
-
-  //void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override
-  //{
-  //  if (mDataset != nullptr) throw std::runtime_error("Can't write the image");
-
-  //  ////if (!image.isContinuous()) image = image.clone();
-  //  ////uchar *buff = image.ptr();
-  //  //uchar *buff = const_cast<uchar *>(image.isContinuous() ? image.ptr() : image.clone().ptr());
-  //  
-  //  size_t nPixelSpace = image.elemSize();
-  //  size_t nLineSpace = image.elemSize() * image.cols;
-  //  size_t nBandSpace = image.elemSize1();
-
-  //  Helmert2D<PointI> _trf;
-  //  if (trf) _trf = *trf;
-  //  
-  //  CPLErr cerr = pDataset->RasterIO(GF_Write, _trf.tx, _trf.ty, 
-  //                                   image.cols, image.rows, buff, 
-  //                                   image.cols, image.rows, 
-  //                                   dataTypeToGdalDataType(this->dataType()), this->channels(), 
-  //                                   gdalBandOrder(this->channels()).data(), nPixelSpace, 
-  //                                   nLineSpace, nBandSpace);
-  //  if (cerr != 0) {
-  //    throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-  //  }
-  //}
 
   int rows() const override
   {
@@ -425,25 +335,23 @@ public:
   {
   }
 
-#ifdef HAVE_OPENCV
-
-  void write(const cv::Mat &image, const geometry::WindowI &window = geometry::WindowI()) override
+  void write(const cv::Mat &image, 
+             const Rect<int> &rect) override
   {
   }
 
-  void write(const cv::Mat &image, const Helmert2D<geometry::PointI> *trf = nullptr) override
+  void write(const cv::Mat &image, 
+             const Affine<PointI> &trf) override
   {
   }
 
-#endif // HAVE_OPENCV
+  //void write(const unsigned char *buff, const geometry::WindowI &window) override
+  //{
+  //}
 
-  void write(const unsigned char *buff, const geometry::WindowI &window) override
-  {
-  }
-
-  void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override
-  {
-  }
+  //void write(const unsigned char *buff, const Helmert2D<geometry::PointI> *trf = nullptr) override
+  //{
+  //}
 
 };
 
@@ -471,6 +379,8 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const std::string 
   }
   return image_writer;
 }
+
+#endif // HAVE_OPENCV
 
 
 } // End namespace tl

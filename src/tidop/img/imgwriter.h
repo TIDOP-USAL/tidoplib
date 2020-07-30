@@ -3,12 +3,12 @@
 
 #include "config_tl.h"
 
+#ifdef HAVE_OPENCV
+
 #include <string>
 #include <memory>
 
-#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
@@ -58,8 +58,6 @@ public:
    */
   virtual void create(int rows, int cols, int bands, DataType type) = 0;
 
-#ifdef HAVE_OPENCV
-
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
@@ -84,15 +82,13 @@ public:
   virtual void write(const cv::Mat &image, 
                      const Affine<PointI> &trf) = 0;
 
-#endif
-
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  virtual void write(const unsigned char *buff, 
-                     const WindowI &w) = 0;
+  //virtual void write(const unsigned char *buff, 
+  //                   const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -162,6 +158,6 @@ public:
 
 } // End namespace tl
 
-
+#endif // HAVE_OPENCV
 
 #endif // TL_IMAGE_WRITER_H

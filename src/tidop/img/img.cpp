@@ -1,5 +1,12 @@
 #include "img.h"
 
+#ifdef HAVE_EDSDK
+#include "EDSDK.h"
+#ifndef HAVE_RAW
+#  define HAVE_RAW
+#endif
+#endif // HAVE_EDSDK
+
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // HAVE_OPENCV
@@ -254,5 +261,33 @@ GDALDataType openCvToGdal(int cvdt)
 #endif // HAVE_OPENCV
 
 #endif // HAVE_GDAL
+
+
+#ifdef HAVE_EDSDK
+
+std::unique_ptr<RegisterEDSDK> RegisterEDSDK::sRegisterEDSDK;
+std::mutex RegisterEDSDK::sMutex;
+
+RegisterEDSDK::RegisterEDSDK() 
+{
+  EdsInitializeSDK();
+}
+
+RegisterEDSDK::~RegisterEDSDK() 
+{
+  EdsTerminateSDK();
+}
+
+void RegisterEDSDK::init()
+{
+  if (sRegisterEDSDK.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterEDSDK::sMutex);
+    if (sRegisterEDSDK.get() == nullptr) {
+      sRegisterEDSDK.reset(new RegisterEDSDK());
+    }
+  }
+}
+
+#endif // HAVE_EDSDK
 
 } // End namespace tl
