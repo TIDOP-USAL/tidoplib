@@ -20,6 +20,8 @@
 namespace tl
 {
 
+class ImageOptions;
+class ImageMetadata;
 
 /*!
  * \brief Clase para la escritura de distintos formatos imagen
@@ -47,6 +49,15 @@ public:
    */
   virtual void close() = 0;
 
+  /*!
+   * \brief Establece las opciones de creación del formato imagen
+   */
+  virtual void setImageOptions(ImageOptions *imageOptions) = 0;
+
+  /*!
+   * \brief Establece los metadatos de la imagen
+   */
+  virtual void setImageMetadata(ImageMetadata *imageMetadata) = 0;
 
   /*!
    * \brief Crea una imagen
@@ -56,7 +67,10 @@ public:
    * \param[in] type Tipo de dato
    * \see DataType
    */
-  virtual void create(int rows, int cols, int bands, DataType type) = 0;
+  virtual void create(int rows, 
+                      int cols, 
+                      int bands, 
+                      DataType type) = 0;
 
   /*!
    * \brief Escribe en la imagen

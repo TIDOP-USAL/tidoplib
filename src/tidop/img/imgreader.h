@@ -22,6 +22,7 @@
 namespace tl
 {
 
+class ImageMetadata;
 
 /*!
  * \brief Clase para la lectura de diferentes formatos de imagen
@@ -114,6 +115,8 @@ public:
    * \return Profundidad de color
    */
   virtual int depth() const = 0;
+
+  virtual std::shared_ptr<ImageMetadata> metadata() const = 0;
 
 protected:
   

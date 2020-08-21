@@ -2,6 +2,9 @@
 
 #ifdef HAVE_OPENCV
 
+#include "tidop/img/formats.h"
+#include "tidop/img/metadata.h"
+
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
@@ -63,7 +66,9 @@ public:
       mDriver(nullptr),
       bTempFile(false),
       mTempName(""),
-      mDataType(DataType::TL_8U)
+      mDataType(DataType::TL_8U),
+      mImageOptions(nullptr),
+      mImageMetadata(nullptr)
   {
     RegisterGdal::init();
   }
@@ -78,8 +83,6 @@ public:
   void open() override
   {
     close();
-
-    mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_Update));
 
     std::string extension = fs::path(mFileName).extension().string();
     std::string driver_name = gdalDriverFromExtension(extension);
@@ -102,6 +105,8 @@ public:
       mTempName = path.string();
       mTempName.append("\\").append(file_path.stem().string());
       mTempName.append(".tif");
+    } else {
+      mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_Update));
     }
   }
 
@@ -116,7 +121,14 @@ public:
     if (bTempFile) {
       std::string ext = fs::path(mFileName).extension().string();
       GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
-      GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, nullptr, nullptr, nullptr);
+      char **gdalOpt = nullptr;
+      if (mImageOptions) {
+        std::map<std::string, std::string> options = mImageOptions->activeOptions();
+        for (const auto &option : options) {
+          gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+        }
+      }
+      GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
       if (!tempDataSet) {
         msgError("No se pudo crear la imagen");
       } else {
@@ -136,7 +148,20 @@ public:
     mTempName = "";
   }
 
-  void create(int rows, int cols, int bands, DataType type) override
+  void setImageOptions(ImageOptions *imageOptions) override
+  {
+    mImageOptions = imageOptions;
+  }
+
+  void setImageMetadata(ImageMetadata *imageMetadata) override
+  {
+    mImageMetadata = imageMetadata;
+  }
+
+  void create(int rows, 
+              int cols, 
+              int bands, 
+              DataType type) override
   {
     if (mDriver == nullptr) throw std::runtime_error("Driver not found"); 
     
@@ -147,8 +172,26 @@ public:
 
     mDataType = type;
 
+    char **gdalOpt = nullptr;
+    if (mImageOptions && !bTempFile) {
+      std::map<std::string, std::string> options = mImageOptions->activeOptions();
+      for (const auto &option : options) {
+        gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+      }
+    }
+
     mDataset = mDriver->Create(bTempFile ? mTempName.c_str() : mFileName.c_str(), 
-                               cols, rows, bands, dataTypeToGdalDataType(type), nullptr/*gdalOpt*/);
+                               cols, rows, bands, dataTypeToGdalDataType(type), gdalOpt);
+
+    char **gdalMetadata = nullptr;
+    if (mImageMetadata) {
+      std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+      for (const auto &metadata : active_metadata) {
+        gdalMetadata = CSLSetNameValue(gdalMetadata, metadata.first.c_str(), metadata.second.c_str());
+      }
+    }
+    mDataset->SetMetadata(gdalMetadata);
+
     if (mDataset == nullptr) throw std::runtime_error("Creation of output file failed"); 
   }
 
@@ -294,6 +337,8 @@ private:
   bool bTempFile;
   std::string mTempName;
   DataType mDataType;
+  ImageOptions *mImageOptions;  
+  ImageMetadata *mImageMetadata;
 };
 
 #endif // HAVE_GDAL

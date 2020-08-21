@@ -58,6 +58,17 @@ int main(int argc, char** argv)
       msgInfo("Profundidad de color: %i", imageReader->depth());
       msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
       
+      std::shared_ptr<ImageMetadata> image_metadata = imageReader->metadata();
+      std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
+      std::string name;
+      std::string value;
+      msgInfo("Metadatos:");
+      for (auto it = metadata.begin(); it != metadata.end(); it++) {
+        name = it->first;
+        value = it->second;
+        msgInfo("  %s: %s", name.c_str(), value.c_str());
+      }
+
       cv::Mat bmp = imageReader->read(RectI(100,100,500,500));
 
       imageReader->close();

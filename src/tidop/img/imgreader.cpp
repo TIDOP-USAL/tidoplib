@@ -1,5 +1,7 @@
 #include "tidop/img/imgreader.h"
 
+#include "tidop/img/metadata.h"
+
 #ifdef HAVE_OPENCV
 
 #ifdef HAVE_GDAL
@@ -227,6 +229,29 @@ public:
   {
     GDALDataType gdal_data_type = this->gdalDataType();
     return  GDALGetDataTypeSizeBits(gdal_data_type);
+  }
+  
+  std::shared_ptr<ImageMetadata> metadata() const
+  {
+    std::shared_ptr<ImageMetadata> metadata;
+
+    if (mDataset) {
+      std::string driver_name = mDataset->GetDriverName();
+      metadata = ImageMetadataFactory::create(driver_name);
+      char **gdalMetadata = mDataset->GetMetadata();
+      if (gdalMetadata != nullptr && *gdalMetadata != nullptr) {
+        for (int i = 0; gdalMetadata[i] != nullptr; i++) {
+          char *key = nullptr;
+          const char *value = CPLParseNameValue(gdalMetadata[i], &key);
+          if (key) {
+            metadata->setMetadata(key, value);
+            CPLFree(key);
+          }
+        }
+      }
+    }
+
+    return metadata;
   }
 
 protected:
