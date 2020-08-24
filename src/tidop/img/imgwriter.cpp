@@ -64,6 +64,7 @@ public:
     : ImageWriter(fileName),
       mDataset(nullptr),
       mDriver(nullptr),
+      mValidDataTypes(DataType::TL_8U),
       bTempFile(false),
       mTempName(""),
       mDataType(DataType::TL_8U),
@@ -93,6 +94,8 @@ public:
 
     if (mDriver == nullptr) throw std::runtime_error("Image open fail");
 
+    mValidDataTypes = gdalValidDataTypes(driver_name);
+
     char **gdalMetadata = mDriver->GetMetadata();
     if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
       // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
@@ -117,33 +120,35 @@ public:
 
   void close() override
   {
-    char **tmp = nullptr;
-    if (bTempFile) {
-      std::string ext = fs::path(mFileName).extension().string();
-      GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
-      char **gdalOpt = nullptr;
-      if (mImageOptions) {
-        std::map<std::string, std::string> options = mImageOptions->activeOptions();
-        for (const auto &option : options) {
-          gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
-        }
-      }
-      GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
-      if (!tempDataSet) {
-        msgError("No se pudo crear la imagen");
-      } else {
-        GDALClose(static_cast<GDALDatasetH>(tempDataSet));
-      }
-      tmp = mDataset->GetFileList();
-
-      for (size_t i = 0; i < sizeof(**tmp); i++)
-        remove(tmp[i]);
-    }
-
     if (mDataset) {
+      char **tmp = nullptr;
+      if (bTempFile) {
+        std::string ext = fs::path(mFileName).extension().string();
+        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
+        char **gdalOpt = nullptr;
+        if (mImageOptions) {
+          std::map<std::string, std::string> options = mImageOptions->activeOptions();
+          for (const auto &option : options) {
+            gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+          }
+        }
+        GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
+        if (!tempDataSet) {
+          msgError("No se pudo crear la imagen");
+        } else {
+          GDALClose(static_cast<GDALDatasetH>(tempDataSet));
+        }
+        tmp = mDataset->GetFileList();
+
+        for (size_t i = 0; i < sizeof(**tmp); i++)
+          remove(tmp[i]);
+      }
+
+
       GDALClose(mDataset);
       mDataset = nullptr;
     }
+
     bTempFile = false;
     mTempName = "";
   }
@@ -153,7 +158,7 @@ public:
     mImageOptions = imageOptions;
   }
 
-  void setImageMetadata(ImageMetadata *imageMetadata) override
+  void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) override
   {
     mImageMetadata = imageMetadata;
   }
@@ -164,7 +169,8 @@ public:
               DataType type) override
   {
     if (mDriver == nullptr) throw std::runtime_error("Driver not found"); 
-    
+    if (!checkDataType()) throw std::runtime_error("Data Type not supported"); 
+
     if (mDataset) {
       GDALClose(mDataset);
       mDataset = nullptr;
@@ -244,7 +250,9 @@ public:
       image_to_write = image;
     }
 
-    GDALDataType gdal_data_type = openCvToGdal(image.depth());
+    GDALDataType gdal_data_type_in = openCvToGdal(image.depth());
+    GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
+    if (gdal_data_type_in != gdal_data_type) throw std::runtime_error("La profundidad de la imagen de entrada es distinta a la profundidad de la imagen de salida");
 
     uchar *buff = const_cast<uchar *>(image_to_write.isContinuous() ? image_to_write.ptr() : image_to_write.clone().ptr());
     int nPixelSpace = static_cast<int>(image_to_write.elemSize());
@@ -331,14 +339,22 @@ public:
 
 private:
 
+  bool checkDataType()
+  {
+    return mValidDataTypes.isActive(mDataType);
+  }
+
+private:
+
   GDALDataset *mDataset;
   GDALDriver *mDriver;
+  EnumFlags<DataType> mValidDataTypes;
   // Se crea fichero temporal para formatos que no permiten trabajar directamente
   bool bTempFile;
   std::string mTempName;
   DataType mDataType;
   ImageOptions *mImageOptions;  
-  ImageMetadata *mImageMetadata;
+  std::shared_ptr<ImageMetadata> mImageMetadata;
 };
 
 #endif // HAVE_GDAL

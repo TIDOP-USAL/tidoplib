@@ -57,7 +57,7 @@ public:
   /*!
    * \brief Establece los metadatos de la imagen
    */
-  virtual void setImageMetadata(ImageMetadata *imageMetadata) = 0;
+  virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
   /*!
    * \brief Crea una imagen

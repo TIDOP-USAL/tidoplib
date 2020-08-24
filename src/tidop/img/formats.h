@@ -317,7 +317,7 @@ protected:
   std::pair<std::string, std::string> mCopyright;
   std::pair<std::string, std::string> mComment;
 #endif
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0,0)
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
   std::pair<int, int> mNBits;
 #endif
 
@@ -374,7 +374,7 @@ public:
   //(Starting with GDAL 2.3). 
   //Whether to write EXIF_xxxx metadata items in a EXIF segment. 
   //Default to YES.
-#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0,0)
+#if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
   bool writeExifMetadata() const;
   void setWriteExifMetadata(bool writeExifMetadata);
 #endif

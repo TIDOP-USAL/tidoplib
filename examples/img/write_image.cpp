@@ -54,37 +54,42 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  cv::Mat bmp = cv::imread("C:\\Users\\esteban\\Pictures\\OI000006_2.jpg");
+  //cv::Mat bmp = cv::imread("C:\\temp\\prueba_16bits.tif", cv::IMREAD_UNCHANGED);
+  cv::Mat bmp = cv::imread("C:\\temp\\prueba_horizontal.jpg", cv::IMREAD_UNCHANGED);
 
   try {
-    std::shared_ptr<JpegOptions> options(new JpegOptions());
-    options->setQuality(50);
+    //std::shared_ptr<JpegOptions> options(new JpegOptions());
+    //options->setQuality(50);
 
-    std::shared_ptr<JpegMetadata> metadata(new JpegMetadata());
-    metadata->setExifDocumentName("imagen prueba");
-    metadata->setExifImageDescription("imagen de prueba");
-    metadata->setExifMake("Canon");
-    metadata->setExifModel("ddd");
-    metadata->setExifOrientation(JpegMetadata::Orientation::horizontal);
-    metadata->setExifXResolution(100);  //??
-    metadata->setExifYResolution(100);  //??
-    metadata->setExifResolutionUnit(2);
-    metadata->setExifSoftware("TidopLib");
-    metadata->setExifDateTime("2020:08:18 17:42:30"); //??
-    metadata->setExifArtist("Esteban");
+    //std::shared_ptr<ImageMetadata> image_metadata = ImageMetadataFactory::create("JPEG");
+    //image_metadata->setMetadata("EXIF_Make", "Olympus");
+    //image_metadata->setMetadata("EXIF_Model", "E‑M10 Mark II");
+    //image_metadata->setMetadata("EXIF_Orientation", "2");
+    //std::shared_ptr<JpegMetadata> metadata(new JpegMetadata());
+    //metadata->setExifDocumentName("imagen prueba");
+    //metadata->setExifImageDescription("imagen de prueba");
+    //metadata->setExifMake("Canon");
+    //metadata->setExifModel("ddd");
+    //metadata->setExifOrientation(JpegMetadata::Orientation::horizontal);
+    //metadata->setExifXResolution(100);  //??
+    //metadata->setExifYResolution(100);  //??
+    //metadata->setExifResolutionUnit(2);
+    //metadata->setExifSoftware("TidopLib");
+    //metadata->setExifDateTime("2020:08:18 17:42:30"); //??
+    //metadata->setExifArtist("Esteban");
 
     std::unique_ptr<ImageWriter> imageWriter = ImageWriterFactory::createWriter(img);
     imageWriter->open();
-    imageWriter->setImageOptions(options.get());
-    imageWriter->setImageMetadata(metadata.get());
-    imageWriter->create(rows, cols, channels, DataType::TL_8U);
+    //imageWriter->setImageOptions(options.get());
+    //imageWriter->setImageMetadata(image_metadata);
+    imageWriter->create(rows, cols, channels, DataType::TL_16U);
     if (imageWriter->isOpen()) {
 
       msgInfo("Numero de bandas: %i", imageWriter->channels());
       msgInfo("Profundidad de color: %i", imageWriter->depth());
       msgInfo("Dimensiones de la imagen: %ix%i", imageWriter->cols(), imageWriter->rows());
       
-      //cv::Mat bmp(rows, cols, CV_MAKETYPE(CV_8U, channels));
+      //cv::Mat bmp(rows, cols, CV_MAKETYPE(CV_16U, channels));
       //double low = -500.0;
       //double high = +500.0;
       //cv::randu(bmp, cv::Scalar(low), cv::Scalar(high));

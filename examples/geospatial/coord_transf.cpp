@@ -63,35 +63,38 @@ int main(int argc, char** argv)
   console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
   MessageManager::instance().addListener(&console);
 
-  CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
+  try {
+    CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
 
-  if (fs::exists(coord)) {
+    if (fs::exists(coord)) {
     
-    std::ifstream ifs;
-    ifs.open(coord, std::ifstream::in);
-    if (ifs.is_open()) {
-      std::string line;
-      while (std::getline(ifs, line)) {
-        std::vector<double> vector;
-        splitToNumbers(line, vector, separator.c_str());
-        std::vector<double> point;
-        splitToNumbers(coord, point, separator.c_str());
-        Point3D pt_in(vector[0], vector[1], vector[2]);
-        Point3D pt_out;
-        crs.transform(pt_in, &pt_out);
-        msgInfo("f%,f%,f% -> f%,f%,f%", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+      std::ifstream ifs;
+      ifs.open(coord, std::ifstream::in);
+      if (ifs.is_open()) {
+        std::string line;
+        while (std::getline(ifs, line)) {
+          std::vector<double> vector;
+          splitToNumbers(line, vector, separator.c_str());
+          Point3D pt_in(vector[0], vector[1], vector[2]);
+          Point3D pt_out;
+          crs.transform(pt_in, &pt_out);
+          msgInfo("%lf,%lf,%lf -> %lf,%lf,%lf", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+        }
+        ifs.close();
       }
-      ifs.close();
-    }
 
-  } else {
-    std::vector<double> point;
-    splitToNumbers(coord, point, separator.c_str());
-    Point3D pt_in(point[0], point[1], point[2]);
-    Point3D pt_out;
-    crs.transform(pt_in, &pt_out);
-    msgInfo("f%,f%,f% -> f%,f%,f%", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
+    } else {
+      std::vector<double> point;
+      splitToNumbers(coord, point, separator.c_str());
+      Point3D pt_in(point[0], point[1], point[2]);
+      Point3D pt_out;
+      crs.transform(pt_in, &pt_out);
+      msgInfo("%lf,%lf,%lf -> %lf,%lf,%lf", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
+    }
+  } catch (const std::exception &e) {
+    msgError(e.what());
   }
+
 
   return 0;
 }
