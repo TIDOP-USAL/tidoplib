@@ -4,8 +4,8 @@ add_library(tl_geom ${LIB_TYPE}
             operations.cpp
             operations.h
             transform.h
-			rect.h
-			size.h
+            rect.h
+            size.h
             entities/bbox.h
             entities/entity.h
             entities/linestring.h
@@ -29,23 +29,24 @@ if(BUILD_SHARED_LIBS)
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-	
+
     set_target_properties(tl_geom PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-	
+
     target_link_libraries(tl_geom tl_core)
-	
+
 else()
 
     install(TARGETS tl_geom 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-		  
+
 endif()
 
 
-install(DIRECTORY . DESTINATION include/tidop/geometry
+install(DIRECTORY . 
+        DESTINATION include/tidop/geometry
         FILES_MATCHING PATTERN "*.h")
 		
-#list(APPEND ${TIDOP_LIBS} tl_geom)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_geom)

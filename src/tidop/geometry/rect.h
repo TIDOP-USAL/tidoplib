@@ -48,7 +48,9 @@ public:
   Rect &operator = (Rect &&rect) TL_NOEXCEPT;
 
   Point<T> topLeft() const;
+  Point<T> topRight() const;
   Point<T> bottomRight() const;
+  Point<T> bottomLeft() const;
   Size<T> size() const;
   bool isEmpty() const;
   bool contains(const Point<T> &pt) const;
@@ -168,10 +170,22 @@ Point<T> Rect<T>::topLeft() const
   return Point<T>(this->x, this->y);
 }
 
+template<typename T> inline
+Point<T> Rect<T>::topRight() const
+{
+  return Point<T>(this->x + this->width, this->y);
+}
+
 template<typename T>
 inline Point<T> Rect<T>::bottomRight() const
 {
   return Point<T>(this->x + this->width, this->y + this->height);
+}
+
+template<typename T>
+inline Point<T> Rect<T>::bottomLeft() const
+{
+  return Point<T>(this->x, this->y + this->height);
 }
 
 template<typename T> inline

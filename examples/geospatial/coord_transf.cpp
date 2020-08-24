@@ -7,6 +7,7 @@
 #include <memory>
 
 // Cabeceras tidopLib
+#include <tidop/core/utils.h>
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 #include <tidop/geometry/entities/point.h>
@@ -24,15 +25,8 @@ namespace fs = boost::filesystem;
 using namespace tl;
 using namespace geospatial;
 
-enum class options {
-  opt1,
-  opt2,
-  opt3
-};
-
 int main(int argc, char** argv)
 {
-#ifdef HAVE_GDAL
 
   fs::path app_path = argv[0];
   std::string cmd_name = app_path.stem().string();
@@ -40,12 +34,14 @@ int main(int argc, char** argv)
   std::string epsg_in;
   std::string epsg_out;
   std::string coord;
+  std::string separator = ";";
 
   // Se definen los parámetros y opciones
   Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_out", 'o', "Sistema de referencia de salida", &epsg_out));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("coord", 'c', "Coordenadas a transformar", &coord));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto", &coord));
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
@@ -67,11 +63,38 @@ int main(int argc, char** argv)
   console.setLogLevel(MessageLevel::msg_verbose); // Se muestran todos los mensajes por consola
   MessageManager::instance().addListener(&console);
 
-  CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
-  Point3D pt_utm(350000., 4800000., 0.);
-  Point3D pt_geo;
-  crs.transform(pt_utm, &pt_geo);
-#endif
+  try {
+    CrsTransform<Point3D> crs(std::make_shared<Crs>(epsg_in), std::make_shared<Crs>(epsg_out));
+
+    if (fs::exists(coord)) {
+    
+      std::ifstream ifs;
+      ifs.open(coord, std::ifstream::in);
+      if (ifs.is_open()) {
+        std::string line;
+        while (std::getline(ifs, line)) {
+          std::vector<double> vector;
+          splitToNumbers(line, vector, separator.c_str());
+          Point3D pt_in(vector[0], vector[1], vector[2]);
+          Point3D pt_out;
+          crs.transform(pt_in, &pt_out);
+          msgInfo("%lf,%lf,%lf -> %lf,%lf,%lf", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
+        }
+        ifs.close();
+      }
+
+    } else {
+      std::vector<double> point;
+      splitToNumbers(coord, point, separator.c_str());
+      Point3D pt_in(point[0], point[1], point[2]);
+      Point3D pt_out;
+      crs.transform(pt_in, &pt_out);
+      msgInfo("%lf,%lf,%lf -> %lf,%lf,%lf", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
+    }
+  } catch (const std::exception &e) {
+    msgError(e.what());
+  }
+
 
   return 0;
 }

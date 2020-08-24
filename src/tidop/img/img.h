@@ -18,22 +18,25 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-enum class DataType : int8_t
+template<typename T> class EnumFlags;
+
+enum class DataType : int16_t
 {
-  TL_8U,      // Equivalente a CV_8U y GDT_Byte
-  TL_8S,      // Equivalente a CV_8S
-  TL_16U,     // Equivalente a CV_16U y GDT_UInt16
-  TL_16S,     // Equivalente a CV_16S y GDT_Int16
-  TL_32U,     // Equivalente a GDT_UInt32
-  TL_32S,     // Equivalente a CV_32S y GDT_Int32
-  TL_32F,     // Equivalente a CV_32F y GDT_Float32  
-  TL_64F      // Equivalente a CV_64F y GDT_Float64
+  TL_8U = (1 << 0),      // Equivalente a CV_8U y GDT_Byte
+  TL_8S = (1 << 1),      // Equivalente a CV_8S
+  TL_16U = (1 << 2),     // Equivalente a CV_16U y GDT_UInt16
+  TL_16S = (1 << 3),     // Equivalente a CV_16S y GDT_Int16
+  TL_32U = (1 << 4),     // Equivalente a GDT_UInt32
+  TL_32S = (1 << 5),     // Equivalente a CV_32S y GDT_Int32
+  TL_32F = (1 << 6),     // Equivalente a CV_32F y GDT_Float32  
+  TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
 };
 
 #ifdef HAVE_GDAL
 
 //TL_EXPORT std::vector<std::string> gdalValidExtensions();
 TL_EXPORT bool gdalValidExtensions(const std::string &extension);
+TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
 
 /*!
  * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
@@ -47,6 +50,7 @@ TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
 
 TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
+TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
@@ -71,6 +75,44 @@ GDALDataType openCvToGdal(int cvdt);
 #endif // HAVE_OPENCV
 
 #endif // HAVE_GDAL
+
+
+#ifdef HAVE_EDSDK
+
+/*!
+ * \brief Clase singleton para registrar la API de canon
+ *
+ */
+class TL_EXPORT RegisterEDSDK
+{
+
+private:
+
+  /*!
+   * \brief Constructor privado
+   */
+  RegisterEDSDK();
+
+public:
+
+  ~RegisterEDSDK();
+
+  RegisterEDSDK(RegisterEDSDK const&) = delete;
+  void operator=(RegisterEDSDK const&) = delete;
+
+  /*!
+   * \brief Inicio de la API EDSDK
+   */
+  static void init();
+
+private:
+
+  static std::unique_ptr<RegisterEDSDK> sRegisterEDSDK;
+  static std::mutex sMutex;
+};
+
+#endif \\ HAVE_EDSDK
+
 
 } // End namespace tl
 

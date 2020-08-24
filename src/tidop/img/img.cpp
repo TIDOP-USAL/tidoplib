@@ -1,5 +1,14 @@
 #include "img.h"
 
+#include <tidop/core/flags.h>
+
+#ifdef HAVE_EDSDK
+#include "EDSDK.h"
+#ifndef HAVE_RAW
+#  define HAVE_RAW
+#endif
+#endif // HAVE_EDSDK
+
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif // HAVE_OPENCV
@@ -16,6 +25,7 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 #include <boost/algorithm/string.hpp>
+
 
 namespace tl
 {
@@ -85,6 +95,89 @@ bool gdalValidExtensions(const std::string &extension)
   }
 
   return false;
+}
+
+EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
+{
+  EnumFlags<DataType> flag;
+  if (format.compare("BMP") == 0) {
+    flag.flagOn(DataType::TL_8U);
+  } else if (format.compare("PNG") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_16U);
+  } else if (format.compare("JPEG") == 0) {
+    flag.flagOn(DataType::TL_8U);
+  } else if (format.compare("GTiff") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_16U);
+    flag.flagOn(DataType::TL_16S);
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32S);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);
+  } else if (format.compare("GIF") == 0) {
+    flag.flagOn(DataType::TL_8U);
+  } else if (format.compare("GTX") == 0) {
+    flag.flagOn(DataType::TL_32F);
+  } else if (format.compare("AAIGrid") == 0) {
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);
+  } else if (format.compare("NTv2") == 0) {
+    flag.flagOn(DataType::TL_32F);
+  } else if (format.compare("ECW") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_16U);
+  } else if (format.compare("JP2OpenJPEG") == 0) {
+  
+  } else if (format.compare("LAN") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_16S);
+  } else if (format.compare("ENVI") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_16U);
+    flag.flagOn(DataType::TL_16S);
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32S);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);
+  } else if (format.compare("HFA") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_8S);
+    flag.flagOn(DataType::TL_16U);
+    flag.flagOn(DataType::TL_16S);
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32S);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);
+  } else if (format.compare("BLX") == 0) {
+    flag.flagOn(DataType::TL_16U); 
+  } else if (format.compare("MAP") == 0) {
+  
+  } else if (format.compare("E00GRID") == 0) {
+  
+  } else if (format.compare("MFF") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_8S);
+    flag.flagOn(DataType::TL_16U);
+    flag.flagOn(DataType::TL_16S);
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32S);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);
+  } else if (format.compare("HFA") == 0) {
+    flag.flagOn(DataType::TL_8U);
+    flag.flagOn(DataType::TL_8S);
+    flag.flagOn(DataType::TL_16U);
+    flag.flagOn(DataType::TL_16S);
+    flag.flagOn(DataType::TL_32U);
+    flag.flagOn(DataType::TL_32S);
+    flag.flagOn(DataType::TL_32F);
+    flag.flagOn(DataType::TL_64F);  
+  } else if (format.compare("WMS") == 0) {
+  
+  }
+  return flag;
 }
 
 /*!
@@ -157,7 +250,7 @@ DataType gdalConvertDataType(GDALDataType dataType)
 GDALDataType dataTypeToGdalDataType(DataType dataType)
 { 
   GDALDataType ret = GDT_Unknown;
-  switch ( dataType ) {
+  switch (dataType) {
   case tl::DataType::TL_8U:
     ret = GDT_Byte;
     break;
@@ -184,6 +277,41 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
     break;
   default:
     ret = GDT_Unknown;
+    break;
+  }
+  return ret;
+}
+
+int dataTypeToOpenCVDataType(DataType dataType)
+{
+  int ret;
+  switch (dataType) {
+  case tl::DataType::TL_8U:
+    ret = CV_8U;
+    break;
+  case tl::DataType::TL_8S:
+    ret = CV_8S;
+    break;
+  case tl::DataType::TL_16U:
+    ret = CV_16U;
+    break;
+  case tl::DataType::TL_16S:
+    ret = CV_16S;
+    break;
+  case tl::DataType::TL_32U:
+    ret = CV_32S;
+    break;
+  case tl::DataType::TL_32S:
+    ret = CV_32S;
+    break;
+  case tl::DataType::TL_32F:
+    ret = CV_32F;
+    break;
+  case tl::DataType::TL_64F:
+    ret = CV_64F;
+    break;
+  default:
+    ret = -1;
     break;
   }
   return ret;
@@ -223,10 +351,10 @@ int gdalToOpenCv(GDALDataType gdalType, int channels)
   else if ( gdalType == GDT_Int32   ) depth = CV_32S;   // GDT_Int32   == 5   CV_32S == 4  
   else if ( gdalType == GDT_Float32 ) depth = CV_32F;   // GDT_Float32 == 6   CV_32F == 5  
   else if ( gdalType == GDT_Float64 ) depth = CV_64F;   // GDT_Float64 == 7   CV_64F == 5
-  else if ( gdalType == GDT_CInt16  ) depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
-  else if ( gdalType == GDT_CInt32  ) depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
-  else if ( gdalType == GDT_CFloat32) depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
-  else if ( gdalType == GDT_CFloat64) depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
+  //else if ( gdalType == GDT_CInt16  ) depth = CV_16U;   // GDT_CInt16  == 8   CV_16U == 2 
+  //else if ( gdalType == GDT_CInt32  ) depth = CV_32S;   // GDT_CInt32  == 9   CV_32S == 4 
+  //else if ( gdalType == GDT_CFloat32) depth = CV_32F;   // GDT_CFloat32==10   CV_32F == 5   
+  //else if ( gdalType == GDT_CFloat64) depth = CV_64F;   // GDT_CFloat64==11   CV_64F == 5   
   else                                depth = -1    ;   // GDT_Unknown == 0
   return( CV_MAKETYPE(depth,channels) );
 }
@@ -254,5 +382,33 @@ GDALDataType openCvToGdal(int cvdt)
 #endif // HAVE_OPENCV
 
 #endif // HAVE_GDAL
+
+
+#ifdef HAVE_EDSDK
+
+std::unique_ptr<RegisterEDSDK> RegisterEDSDK::sRegisterEDSDK;
+std::mutex RegisterEDSDK::sMutex;
+
+RegisterEDSDK::RegisterEDSDK() 
+{
+  EdsInitializeSDK();
+}
+
+RegisterEDSDK::~RegisterEDSDK() 
+{
+  EdsTerminateSDK();
+}
+
+void RegisterEDSDK::init()
+{
+  if (sRegisterEDSDK.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(RegisterEDSDK::sMutex);
+    if (sRegisterEDSDK.get() == nullptr) {
+      sRegisterEDSDK.reset(new RegisterEDSDK());
+    }
+  }
+}
+
+#endif // HAVE_EDSDK
 
 } // End namespace tl

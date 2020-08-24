@@ -3,22 +3,25 @@
 
 #include "config_tl.h"
 
+#ifdef HAVE_OPENCV
+
 #include <string>
 #include <memory>
 
-#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform.h"
+#include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
 
 namespace tl
 {
 
+class ImageOptions;
+class ImageMetadata;
 
 /*!
  * \brief Clase para la escritura de distintos formatos imagen
@@ -46,6 +49,15 @@ public:
    */
   virtual void close() = 0;
 
+  /*!
+   * \brief Establece las opciones de creación del formato imagen
+   */
+  virtual void setImageOptions(ImageOptions *imageOptions) = 0;
+
+  /*!
+   * \brief Establece los metadatos de la imagen
+   */
+  virtual void setImageMetadata(const std::shared_ptr<ImageMetadata> &imageMetadata) = 0;
 
   /*!
    * \brief Crea una imagen
@@ -55,9 +67,10 @@ public:
    * \param[in] type Tipo de dato
    * \see DataType
    */
-  virtual void create(int rows, int cols, int bands, DataType type) = 0;
-
-#ifdef HAVE_OPENCV
+  virtual void create(int rows, 
+                      int cols, 
+                      int bands, 
+                      DataType type) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -65,25 +78,31 @@ public:
    * \param[in] window Ventana del bloque de imagen que se escribe. Por defecto toda la imagen
    */
   virtual void write(const cv::Mat &image, 
-                     const WindowI &window = WindowI()) = 0;
+                     const Rect<int> &rect = Rect<int>()) = 0;
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
-   * \param[in] trf Transformación entre el bloque y la imagen. Si es nula no se aplica transformación
+   * \param[in] window Ventana del bloque de imagen que se escribe.
    */
   virtual void write(const cv::Mat &image, 
-                     const Helmert2D<PointI> *trf = nullptr) = 0;
+                     const WindowI &window) = 0;
 
-#endif
+  /*!
+   * \brief Escribe en la imagen
+   * \param[in] image Bloque de imagen que se escribe
+   * \param[in] trf Transformación entre el bloque y la imagen.
+   */
+  virtual void write(const cv::Mat &image, 
+                     const Affine<PointI> &trf) = 0;
 
   /*!
    * \brief Escribe en la imagen
    * \param[in] image Bloque de imagen que se escribe
    * \param[in] w Ventana del bloque de imagen que se escribe
    */
-  virtual void write(const unsigned char *buff, 
-                     const WindowI &w) = 0;
+  //virtual void write(const unsigned char *buff, 
+  //                   const WindowI &w) = 0;
 
   /*!
    * \brief Escribe en la imagen
@@ -153,6 +172,6 @@ public:
 
 } // End namespace tl
 
-
+#endif // HAVE_OPENCV
 
 #endif // TL_IMAGE_WRITER_H

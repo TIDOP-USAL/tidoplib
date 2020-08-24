@@ -20,7 +20,8 @@ add_library(tl_math ${LIB_TYPE}
 )
 
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_math PROPERTY FOLDER "modules")
+set_property(TARGET tl_math 
+             PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
@@ -41,3 +42,5 @@ endif()
 install(DIRECTORY . 
         DESTINATION include/tidop/math
         FILES_MATCHING PATTERN "*.h")
+        
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_math)

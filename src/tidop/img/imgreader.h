@@ -3,12 +3,14 @@
 
 #include "config_tl.h"
 
+
+#ifdef HAVE_OPENCV
+
+
 #include <string>
 #include <memory>
 
-#ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
@@ -20,6 +22,7 @@
 namespace tl
 {
 
+class ImageMetadata;
 
 /*!
  * \brief Clase para la lectura de diferentes formatos de imagen
@@ -47,45 +50,41 @@ public:
    */
   virtual void close() = 0;
 
-#ifdef HAVE_OPENCV
+  /*!
+   * \brief Lee un fragmento de imagen correspondiente a una región
+   * \param[in] rect Región de la imagen que se carga. Por defecto toda la imagen
+   * \param[in] size Tamaño de la imagen de salida. Por defecto el tamaño de la región de lectura
+   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   * \return imagen
+   */
+  virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
+                       const Size<int> size = Size<int>(), 
+                       Affine<PointI> *trf = nullptr) = 0;
 
   /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
+   * \brief Lee el fragmento de imagen correspondiente a una región
+   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[in] rect Región de la imagen que se carga
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
+   * \return imagen
    */
-  virtual void read(cv::Mat &image, 
-                    const RectI &rect = RectI(), 
-                    double scale = 1., 
-                    Helmert2D<PointI> *trf = nullptr) = 0;
+  virtual cv::Mat read(double scaleX,
+                       double scaleY, 
+                       const Rect<int> &rect = Rect<int>(), 
+                       Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
    * \param[in] window Ventana de la imagen que se quiere cargar
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
+   * \param[in] scaleX Escala horizontal que se aplica a la región leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la región leida. Por defecto 1
    * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
    */
-  virtual void read(cv::Mat &image, 
-                    const WindowI &window, 
-                    double scale = 1., 
-                    Helmert2D<PointI> *trf = nullptr) = 0;
-
-#endif
-
-  /*!
-   * \brief Lee el fragmento de imagen correspondiente a una ventana
-   * \param[out] image Imagen que se lee
-   * \param[in] wRead Ventana de la imagen que se quiere cargar. Por defecto toda la ventana
-   * \param[in] scale Escala entre la imagen real y la que se lee. Por defecto 1
-   * \param[out] trf Transformación que hay que aplicar a la imagen devuelta
-   */
-  //virtual void read(Image &image, 
-  //                  const WindowI &wLoad = WindowI(), 
-  //                  double scale = 1., 
-  //                  Helmert2D<PointI> *trf = nullptr) = 0;
+  virtual cv::Mat read(const WindowI &window, 
+                    double scaleX = 1.,
+                    double scaleY = 1., 
+                    Affine<PointI> *trf = nullptr) = 0;
 
   /*!
    * \brief Devuelve el número de filas de la imagen
@@ -117,6 +116,8 @@ public:
    */
   virtual int depth() const = 0;
 
+  virtual std::shared_ptr<ImageMetadata> metadata() const = 0;
+
 protected:
   
   void windowRead(const WindowI &wLoad, 
@@ -146,6 +147,6 @@ public:
 
 } // End namespace tl
 
-
+#endif // HAVE_OPENCV
 
 #endif // TL_IMAGE_READER_H
