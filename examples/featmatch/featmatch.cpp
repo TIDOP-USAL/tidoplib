@@ -15,7 +15,7 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img/imgio.h>
+//#include <tidop/img/imgio.h>
 #include <tidop/featmatch/features.h>
 
 #if (__cplusplus >= 201703L)

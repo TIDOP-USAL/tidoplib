@@ -5,7 +5,7 @@
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/geometry/transform.h>
-#include <tidop/img/imgio.h>
+//#include <tidop/img/imgio.h>
 #include <tidop/math/angles.h>
 
 // filesystem

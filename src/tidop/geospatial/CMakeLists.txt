@@ -8,6 +8,8 @@ add_library(tl_geospatial ${LIB_TYPE}
 			crstransf.h
             dtm.cpp
             dtm.h
+			util.cpp
+			util.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

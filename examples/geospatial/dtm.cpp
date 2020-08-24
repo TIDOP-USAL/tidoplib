@@ -4,7 +4,7 @@
 #include <tidop/core/messages.h>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/dtm.h>
-#include <tidop/img/imgio.h>
+//#include <tidop/img/imgio.h>
 
 
 // filesystem

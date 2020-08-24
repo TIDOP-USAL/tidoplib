@@ -3,7 +3,7 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/img/imgio.h>
+//#include <tidop/img/imgio.h>
 
 using namespace tl;
 
