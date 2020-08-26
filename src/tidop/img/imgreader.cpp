@@ -66,7 +66,7 @@ public:
     RegisterGdal::init();
   }
 
-  ~ImageReaderGdal()
+  ~ImageReaderGdal() override
   {
     this->close();
   }
@@ -77,7 +77,8 @@ public:
   {
     this->close();
 
-    mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_ReadOnly));
+    mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), 
+                                          GA_ReadOnly));
   }
 
   bool isOpen() override

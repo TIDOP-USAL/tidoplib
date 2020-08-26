@@ -1,8 +1,11 @@
 #Modulo graphic de la librería
 
 add_library(tl_vect ${LIB_TYPE}
-            vectio.cpp
-            vectio.h
+            vect.h
+            vectreader.cpp
+            vectreader.h
+            vectwriter.cpp
+            vectwriter.h			
             formats.cpp
             formats.h)
   

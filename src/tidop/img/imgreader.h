@@ -131,7 +131,7 @@ protected:
 
 
 /*!
- * \brief Clase factoria de lectura de formatos de imagen
+ * \brief Factoria de clases para la lectura de formatos de imagen
  */
 class TL_EXPORT ImageReaderFactory
 {
