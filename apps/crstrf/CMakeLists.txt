@@ -54,14 +54,14 @@ if (UNIX)
 endif()
 
 # Añade el proyecto de ejemplo a la carpeta 'examples'
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/crstrasform")
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/crstransform")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME "${PROJECT_NAME}"
                       PROJECT_LABEL "${PROJECT_NAME}")
 
 if(ENABLE_SOLUTION_FOLDERS)
-  set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/crstrasform")
+  set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/crstransform")
 endif()
 
 if(WIN32)

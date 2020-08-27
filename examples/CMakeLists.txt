@@ -5,7 +5,6 @@ if(BUILD_EXAMPLES)
 
   add_subdirectory(core)
   add_subdirectory(geometry)
-  add_subdirectory(geospatial)
   #add_subdirectory(graphic)
   add_subdirectory(img)
   add_subdirectory(imgproces)
