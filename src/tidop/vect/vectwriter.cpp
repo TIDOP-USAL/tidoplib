@@ -74,6 +74,7 @@ private:
   void writeMultiLineString(OGRFeature *ogrFeature, const GMultiLineString3D *gMultiLineString3D);
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon *gMultiPolygon);
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon3D *gMultiPolygon3D);
+  void writeStyles(OGRStyleMgr *ogrStyleMgr, const GraphicEntity *gStyle);
 
 private:
 
@@ -137,6 +138,9 @@ void GdalVectorWriter::write(const GLayer &layer)
     ogrLayer = this->createLayer(layer.name());
   }
 
+  OGRStyleTable oStyleTable;
+  OGRStyleMgr *ogrStyleMgr = new OGRStyleMgr(&oStyleTable);
+
   OGRFeature *ogrFeature = OGRFeature::CreateFeature(ogrLayer->GetLayerDefn());
   for (auto &entity : layer) {
     GraphicEntity::Type type = entity->type();
@@ -192,12 +196,30 @@ void GdalVectorWriter::write(const GLayer &layer)
     default:
       break;
     }
+
+    this->writeStyles(ogrStyleMgr, entity.get());
+
   }
 
   if (ogrLayer->CreateFeature(ogrFeature) != OGRERR_NONE) throw std::runtime_error("Create Feature Error");
 
+  if (ogrStyleMgr) {
+    delete ogrStyleMgr;
+    ogrStyleMgr = nullptr;
+  }
+
   OGRFeature::DestroyFeature(ogrFeature);
 
+}
+
+void GdalVectorWriter::writeStyles(OGRStyleMgr *ogrStyleMgr, 
+                                   const GraphicEntity *gStyle)
+{
+  OGRStyleTool *ogrStyleTool = nullptr;
+
+  TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo está activo");
+
+  delete ogrStyleTool;
 }
 
 std::string GdalVectorWriter::driverFromExt(std::string &extension) const
