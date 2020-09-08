@@ -55,64 +55,132 @@ template<typename Point_t> class Affine;
  *  \{
  */
 
-/*!
- * \brief Tipos de transformaciones
- */
-enum class transform_type {
-  translation,     /*!< Desplazamiento */
-  rotation,        /*!< Giro */
-  scaling,         /*!< Escalado */
-  reflection,      /*!< */
-  shear,
-  helmert_2d,      /*!< Helmert 2D */
-  affine,          /*!< Afin */
-  perspective,     /*!< Perspectiva */
-  projective,      /*!< Projectiva */
-  helmert_3d,      /*!< Helmert 3D */
-  polynomial,      /*!< Transformación polinómica */
-  // tipos especiales
-  multiple,
-  crs,
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TRANSLATION = translation,    /*!< Desplazamiento. */
-  ROTATION = rotation,          /*!< Giro. */
-  HELMERT_2D = helmert_2d,      /*!< Helmert 2D */
-  AFFINE = affine,              /*!< Afin */
-  PERSPECTIVE = perspective,    /*!< Perspectiva */
-  PROJECTIVE = projective,      /*!< Projectiva */
-  HELMERT_3D = helmert_3d,      /*!< Helmert 3D */
-  POLYNOMIAL = polynomial,      /*!< Transformación polinómica*/
-  // tipos especiales
-  MULTIPLE = multiple,
-  CRS = crs
-#endif // TL_ENABLE_DEPRECATED_METHODS
-};
-
-enum class transform_order {
-  direct,   /*!< Transformación directa. */
-  inverse,  /*!< Transformación inversa. */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  DIRECT = direct,    /*!< Transformación directa. */
-  INVERSE = inverse   /*!< Transformación inversa. */
-#endif // TL_ENABLE_DEPRECATED_METHODS
-};
-
-enum class transform_status {
-  success,
-  failure,
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  SUCCESS = success,
-  FAILURE =failure
-#endif // TL_ENABLE_DEPRECATED_METHODS
-};
+///*!
+// * \brief Tipos de transformaciones
+// */
+//enum class Transform::Type {
+//  translation,     /*!< Desplazamiento */
+//  rotation,        /*!< Giro */
+//  scaling,         /*!< Escalado */
+//  reflection,      /*!< */
+//  shear,
+//  helmert_2d,      /*!< Helmert 2D */
+//  affine,          /*!< Afin */
+//  perspective,     /*!< Perspectiva */
+//  projective,      /*!< Projectiva */
+//  helmert_3d,      /*!< Helmert 3D */
+//  polynomial,      /*!< Transformación polinómica */
+//  // tipos especiales
+//  multiple,
+//  crs,
+//#ifdef TL_ENABLE_DEPRECATED_METHODS
+//  TRANSLATION = translation,    /*!< Desplazamiento. */
+//  ROTATION = rotation,          /*!< Giro. */
+//  HELMERT_2D = helmert_2d,      /*!< Helmert 2D */
+//  AFFINE = affine,              /*!< Afin */
+//  PERSPECTIVE = perspective,    /*!< Perspectiva */
+//  PROJECTIVE = projective,      /*!< Projectiva */
+//  HELMERT_3D = helmert_3d,      /*!< Helmert 3D */
+//  POLYNOMIAL = polynomial,      /*!< Transformación polinómica*/
+//  // tipos especiales
+//  MULTIPLE = multiple,
+//  CRS = crs
+//#endif // TL_ENABLE_DEPRECATED_METHODS
+//};
+//
+//enum class Transform::Order {
+//  direct,   /*!< Transformación directa. */
+//  inverse,  /*!< Transformación inversa. */
+//#ifdef TL_ENABLE_DEPRECATED_METHODS
+//  DIRECT = direct,    /*!< Transformación directa. */
+//  INVERSE = inverse   /*!< Transformación inversa. */
+//#endif // TL_ENABLE_DEPRECATED_METHODS
+//};
+//
+//enum class Transform::Status {
+//  success,
+//  failure,
+//#ifdef TL_ENABLE_DEPRECATED_METHODS
+//  SUCCESS = success,
+//  FAILURE =failure
+//#endif // TL_ENABLE_DEPRECATED_METHODS
+//};
 
 /// TODO: inverse()
+
+
+class Transform
+{
+
+public:
+
+  /*!
+   * \brief Tipos de transformaciones
+   */
+  enum class Type
+  {
+    translation,     /*!< Desplazamiento */
+    rotation,        /*!< Giro */
+    scaling,         /*!< Escalado */
+    reflection,      /*!< */
+    shear,
+    helmert_2d,      /*!< Helmert 2D */
+    affine,          /*!< Afin */
+    perspective,     /*!< Perspectiva */
+    projective,      /*!< Projectiva */
+    helmert_3d,      /*!< Helmert 3D */
+    polynomial,      /*!< Transformación polinómica */
+    // tipos especiales
+    multiple,
+    crs
+  };
+
+  enum class Order 
+  {
+    direct,   /*!< Transformación directa. */
+    inverse,  /*!< Transformación inversa. */
+  };
+
+  enum class Status
+  {
+    success,
+    failure
+  };
+
+public:
+
+  Transform() {}
+  virtual ~Transform() = default;
+
+  /*!
+   * \brief Tipo de transformación
+   * \return Tipo de transformación
+   * \see Transform::Type
+   */
+  virtual Type transformType() const = 0;
+
+  /*!
+   * \brief Número mínimo de puntos necesario para la transformación
+   * \return Número mínimo de puntos
+   */
+  virtual int minNumberOfPoints() const = 0;
+
+  /*!
+   * \brief Determina si el numero de puntos son suficientes para calcular la transformación
+   * \param[in] npoints Número de puntos para calcular la transformación
+   * \return Verdadero si son puntos suficientes
+   */
+  virtual bool isNumberOfPointsValid(size_t npoints) const = 0;
+
+};
+
 
 /*!
  * \brief Clase base para transformaciones
  */
 template<typename Point_t>
-class Transform
+class TransformBase
+  : public Transform
 {
 
 public:
@@ -127,24 +195,6 @@ public:
    */
   typedef typename Point_t::value_type sub_type;
 
-protected:
-
-  /*!
-   * \brief Tipo de transformación
-   * \see transform_type
-   */
-  transform_type mTrfType;
-
-  /*!
-   * \brief Número mínimo de puntos necesario para la transformación
-   */
-  int mMinPoint;
-
-  /*!
-   * \brief Dimensiones de la transformación. 2D o 3D
-   */
-  int mDimensions;
-
 public:
 
   /*!
@@ -152,12 +202,12 @@ public:
    * \param[in] trfType Tipo de transformación
    * \param[in] nMin Número mínimo de puntos necesario para la transformación
    */
-  Transform(transform_type trfType, int nMin = 0);
+  TransformBase(Type trfType, int nMin = 0);
 
   /*!
    * \brief Destructora
    */
-  virtual ~Transform() = default;
+  ~TransformBase() override = default;
 
   /*!
    * \brief Calcula los parámetros de transformación
@@ -165,40 +215,34 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  virtual transform_status compute(const std::vector<Point_t> &pts1, 
-                                   const std::vector<Point_t> &pts2, 
-                                   std::vector<double> *error = nullptr,
-                                   double *rmse = nullptr) = 0;
-
-  /*!
-   * \brief Determina si el numero de puntos son suficientes para calcular la transformación
-   * \param[in] npoints Número de puntos para calcular la transformación
-   * \return Verdadero si son puntos suficientes
-   */
-  virtual bool isNumberOfPointsValid(size_t npoints) const;
+  virtual Transform::Status compute(const std::vector<Point_t> &pts1, 
+                                    const std::vector<Point_t> &pts2, 
+                                    std::vector<double> *error = nullptr,
+                                    double *rmse = nullptr) = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  virtual transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                                     transform_order trfOrder = transform_order::direct) const = 0;
+  virtual Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                                      Order trfOrder = Order::direct) const = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const = 0;
+  virtual Point_t transform(const Point_t &ptIn, 
+                            Transform::Order trfOrder = Transform::Order::direct) const = 0;
     
   /*!
    * \brief Aplica la transformación a un punto
@@ -212,48 +256,24 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  virtual transform_status transform(const std::vector<Point_t> &ptsIn,
-                                     std::vector<Point_t> *ptsOut,
-                                     transform_order trfOrder = transform_order::direct) const = 0;
+  virtual Transform::Status transform(const std::vector<Point_t> &ptsIn,
+                                      std::vector<Point_t> *ptsOut,
+                                      Transform::Order trfOrder = Transform::Order::direct) const = 0;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos aplicando paralelismo
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  virtual transform_status transformParallel(const std::vector<Point_t> &ptsIn,
+  virtual Transform::Status transformParallel(const std::vector<Point_t> &ptsIn,
                                              std::vector<Point_t> *ptsOut,
-                                             transform_order trfOrder = transform_order::direct) const;
-
-  /*!
-   * \brief Número mínimo de puntos necesario para la transformación
-   * \return Número mínimo de puntos
-   */
-  int minNumberOfPoints();
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Tipo de transformación
-   * \return Tipo de transformación
-   * \see transform_type
-   * \deprecated Use 'transformType()' en su lugar
-   */
-  TL_DEPRECATED("transformType", "2.0")
-  transform_type getTransformType();
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-  /*!
-   * \brief Tipo de transformación
-   * \return Tipo de transformación
-   * \see transform_type
-   */
-  transform_type transformType();
+                                             Transform::Order trfOrder = Transform::Order::direct) const;
 
   /*!
    * \brief root-mean-square error (Raiz cuadrada de error cuadratico medio)
@@ -279,7 +299,8 @@ protected:
    * \param[out] ptsOut Puntos de salida
    */
   template<typename T2> 
-  void formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const;
+  void formatVectorOut(const std::vector<T2> &ptsIn, 
+                       std::vector<T2> *ptsOut) const;
 
   /*!
    * \brief root-mean-square error
@@ -291,70 +312,85 @@ protected:
   double _rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
                               const std::vector<Point_t> &ptsOut, 
                               std::vector<double> *error = nullptr);
+
+// Transform interfaz
+
+  Type transformType() const override;
+  int minNumberOfPoints() const override;
+  bool isNumberOfPointsValid(size_t npoints) const override;
+
+protected:
+
+  /*!
+   * \brief Tipo de transformación
+   * \see Transform::Type
+   */
+  Type mTrfType;
+
+  /*!
+   * \brief Número mínimo de puntos necesario para la transformación
+   */
+  int mMinPoint;
+
+  /*!
+   * \brief Dimensiones de la transformación. 2D o 3D
+   */
+  int mDimensions;
 };
 
 
 /// Implementación Transform
 
 template<typename Point_t> inline
-Transform<Point_t>::Transform(transform_type trfType, int nMin)
+TransformBase<Point_t>::TransformBase(Type trfType, int nMin)
   : mTrfType(trfType),
     mMinPoint(nMin)
 {
 
 }
 
+template<typename Point_t>
+Transform::Type TransformBase<Point_t>::transformType() const
+{
+  return mTrfType;
+}
+
 template<typename Point_t> inline
-bool Transform<Point_t>::isNumberOfPointsValid(size_t npoints) const
+int TransformBase<Point_t>::minNumberOfPoints() const
+{
+  return mMinPoint;
+}
+
+template<typename Point_t> inline
+bool TransformBase<Point_t>::isNumberOfPointsValid(size_t npoints) const
 {
   return npoints >= static_cast<size_t>(mMinPoint);
 }
 
 template<typename Point_t>
-Point_t Transform<Point_t>::operator()(const Point_t &ptIn) const
+Point_t TransformBase<Point_t>::operator()(const Point_t &ptIn) const
 {
   return this->transform(ptIn);
 }
 
 template<typename Point_t> inline
-transform_status Transform<Point_t>::transformParallel( const std::vector<Point_t> &ptsIn,
-                                                        std::vector<Point_t> *ptsOut,
-                                                        transform_order trfOrder) const
+Transform::Status TransformBase<Point_t>::transformParallel(const std::vector<Point_t> &ptsIn,
+                                                            std::vector<Point_t> *ptsOut,
+                                                            Transform::Order trfOrder) const
 {
   formatVectorOut(ptsIn, ptsOut);
-  transform_status r_status;
+  Transform::Status r_status;
   parallel_for(0, ptsIn.size(), [&](size_t i) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) return;
+    if (r_status == Transform::Status::failure) return;
   });
   return r_status;
 }
 
 template<typename Point_t> inline
-int Transform<Point_t>::minNumberOfPoints()
-{
-  return mMinPoint;
-}
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t>
-transform_type Transform<Point_t>::getTransformType()
-{
-  return mTrfType;
-}
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-template<typename Point_t>
-transform_type Transform<Point_t>::transformType()
-{
-  return mTrfType;
-}
-
-template<typename Point_t> inline
-double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
-                                               const std::vector<Point_t> &ptsOut, 
-                                               std::vector<double> *error)
+double TransformBase<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
+                                                   const std::vector<Point_t> &ptsOut, 
+                                                   std::vector<double> *error)
 {
   size_t n = ptsIn.size();
   std::vector<Point_t> pts_out(n);
@@ -362,7 +398,7 @@ double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn
   double sumErr = 0.;
 
   //... Sería mejor añadirlo en el propio calculo de los parámetros?
-  if (compute(ptsIn, ptsOut) == transform_status::success) { //... Revisar esto
+  if (compute(ptsIn, ptsOut) == Transform::Status::success) { //... Revisar esto
     for (size_t i = 0; i < n; i++) {
       transform(ptsIn[i], &pts_out[i]);
       pts_out[i] -= ptsOut[i];
@@ -376,7 +412,9 @@ double Transform<Point_t>::rootMeanSquareError(const std::vector<Point_t> &ptsIn
 }
 
 template<typename Point_t> template<typename T2> inline
-void Transform<Point_t>::formatVectorOut(const std::vector<T2> &ptsIn, std::vector<T2> *ptsOut) const {
+void TransformBase<Point_t>::formatVectorOut(const std::vector<T2> &ptsIn, 
+                                             std::vector<T2> *ptsOut) const 
+{
   if (&ptsIn != ptsOut && ptsIn.size() != ptsOut->size()) {
     ptsOut->clear();
     ptsOut->resize(ptsIn.size());
@@ -384,9 +422,9 @@ void Transform<Point_t>::formatVectorOut(const std::vector<T2> &ptsIn, std::vect
 }
 
 template<typename Point_t> inline
-double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
-                                                const std::vector<Point_t> &ptsOut, 
-                                                std::vector<double> *error)
+double TransformBase<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsIn, 
+                                                    const std::vector<Point_t> &ptsOut, 
+                                                    std::vector<double> *error)
 {
   size_t n = ptsIn.size();
   std::vector<Point_t> pts_out(n);
@@ -411,11 +449,11 @@ double Transform<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &ptsI
  * \brief Transformación multiple.
  *
  * Una transformación multiple permite agrupar varias transformaciones de 
- * forma que se ejecutan a la vez (consecutivamente).
+ * forma que se ejecutan de manera secuencial.
  */
 template<typename Point_t>
 class TrfMultiple
-  : public Transform<Point_t>
+  : public TransformBase<Point_t>
 {
 
 public:
@@ -433,50 +471,42 @@ public:
   /*!
    * \brief Tipo entero sin signo (por lo general size_t)
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::size_type size_type;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::size_type size_type;
 
   /*!
    * \brief Tipo entero con signo (por lo general ptrdiff_t)
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::difference_type difference_type;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::difference_type difference_type;
 
   /*!
    * \brief std::allocator_traits<Allocator>::pointer
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::pointer pointer;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::pointer pointer;
 
   /*!
    * \brief std::allocator_traits<Allocator>::const_pointer
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::const_pointer const_pointer;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::const_pointer const_pointer;
 
   /*!
    * \brief value_type&
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::reference reference;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::reference reference;
 
   /*!
    * \brief const value_type&
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::const_reference const_reference;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::const_reference const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::iterator iterator;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::iterator iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  typedef typename std::list<std::shared_ptr<Transform<Point_t>>>::const_iterator const_iterator;
-
-
-private:
-
-  /*!
-   * \brief Lista de transformaciones
-   */
-  std::list<std::shared_ptr<Transform<Point_t>>> mTransf;
+  typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::const_iterator const_iterator;
 
 public:
 
@@ -489,7 +519,7 @@ public:
    * \brief Constructor de lista
    * \param[in] transfList listado de transformaciones
    */
-  TrfMultiple(std::initializer_list<std::shared_ptr<Transform<Point_t>>> transfList);
+  TrfMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t>>> transfList);
 
   /*!
    * \brief Destructora
@@ -502,70 +532,14 @@ public:
   const_reference front() const;
   reference back();
   const_reference back() const;
-
-  /*!
-   * \brief Devuelve un iterador al inicio
-   * \return Iterador al primer elemento
-   */
   iterator begin() TL_NOEXCEPT;
-
-  /*!
-   * \brief Devuelve un iterador constante al inicio
-   * \return Iterador al primer elemento
-   */
   const_iterator begin() const TL_NOEXCEPT;
-
-  /*!
-   * \brief Devuelve un iterador al siguiente elemento después del final
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-   * \return Iterador al siguiente elemento después del final del contenedor
-   */
   iterator end() TL_NOEXCEPT;
-
-  /*!
-   * \brief Devuelve un iterador constante al siguiente elemento después del final
-   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
-   * \return Iterador al siguiente elemento después del final del contenedor
-   */
   const_iterator end() const TL_NOEXCEPT;
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Añade una nueva transformación a la lista
-   * \param[in] trf Transformación que se añade
-   * \deprecated Use 'push_back' en su lugar
-   */
-  TL_DEPRECATED("push_back(const std::shared_ptr<Transform<Point_t>> &trf)", "2.0")
-  void add(std::shared_ptr<Transform<Point_t>> trf);
-#endif
-
-  /*!
-   * \brief Añade una nueva transformación mediante copia
-   * \param[in] trf Transformación que se añade
-   */
-  void push_back(const std::shared_ptr<Transform<Point_t>> &trf);
-
-  /*!
-   * \brief Añade una nueva transformación mediante movimiento
-   * \param[in] trf Transformación que se añade
-   */
-  void push_back(std::shared_ptr<Transform<Point_t>> &&trf) TL_NOEXCEPT;
-
-  /*!
-   * \brief Borra las transformaciones
-   */
+  void push_back(const std::shared_ptr<TransformBase<Point_t>> &trf);
+  void push_back(std::shared_ptr<TransformBase<Point_t>> &&trf) TL_NOEXCEPT;
   void clear() TL_NOEXCEPT;
-
-  /*!
-   * \brief Comprueba si no hay transformaciones
-   * \return true si no se ha añadido ninguna transformación y false en caso contrario
-   */
   bool empty() const TL_NOEXCEPT;
-
-  /*!
-   * \brief Devuelve el número de transformaciones
-   * \return Tamaño
-   */
   size_t size() const;
 
   void del(int id);
@@ -576,53 +550,32 @@ public:
   ///TODO: incluir y quitar del
   iterator erase(const_iterator first, const_iterator last);
 
+// Transform Interfaz
 
   bool isNumberOfPointsValid(int npoints) const override;
 
-  /*!
-   * \brief Calcula los parámetros de transformación
-   * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
-   * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[out] error Vector con los errores para cada punto
-   * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
-   */
-  transform_status compute(const std::vector<Point_t> &pts1, 
-                           const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = nullptr,
-                           double *rmse = nullptr) override;
+// TransformBase Interfaz
+
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
+                            const std::vector<Point_t> &pts2, 
+                            std::vector<double> *error = nullptr,
+                            double *rmse = nullptr) override;
+  Transform::Status transform(const Point_t &ptIn, 
+                              Point_t *ptOut, 
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
+  Point_t transform(const Point_t &ptIn, 
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, 
+                              std::vector<Point_t> *ptsOut,
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
+
+private:
 
   /*!
-   * \brief Aplica la transformación a un punto
-   * \param[in] ptIn Punto de entrada
-   * \param[out] ptOut Punto de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \brief Lista de transformaciones
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  std::list<std::shared_ptr<TransformBase<Point_t>>> mTransformationList;
 
-  /*!
-   * \brief Aplica la transformación a un punto
-   * \param[in] ptIn Punto de entrada
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return Punto de salida
-   * \see transform_order
-   */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override;
-
-  /*!
-   * \brief Aplica la transformación a un conjunto de puntos
-   * \param[in] ptsIn Puntos de entrada
-   * \param[out] ptsOut Puntos de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
-   */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
 };
 
 
@@ -630,107 +583,99 @@ public:
 
 template<typename Point_t>
 TrfMultiple<Point_t>::TrfMultiple()
-  : Transform<Point_t>(transform_type::multiple)
+  : TransformBase<Point_t>(Type::multiple)
 {
 }
 
 template<typename Point_t>
-TrfMultiple<Point_t>::TrfMultiple(std::initializer_list<std::shared_ptr<Transform<Point_t> > > transfList)
-  : Transform<Point_t>(transform_type::multiple),
-    mTransf(transfList)
+TrfMultiple<Point_t>::TrfMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t> > > transformations)
+  : TransformBase<Point_t>(Transform::Type::multiple),
+    mTransformationList(transformations)
 {
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::reference TrfMultiple<Point_t>::front()
 {
-  return mTransf.front();
+  return mTransformationList.front();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::const_reference TrfMultiple<Point_t>::front() const
 {
-  return mTransf.front();
+  return mTransformationList.front();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::reference TrfMultiple<Point_t>::back()
 {
-  return mTransf.back();
+  return mTransformationList.back();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::const_reference TrfMultiple<Point_t>::back() const
 {
-  return mTransf.back();
+  return mTransformationList.back();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::iterator TrfMultiple<Point_t>::begin() TL_NOEXCEPT
 {
-  return mTransf.begin();
+  return mTransformationList.begin();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::const_iterator TrfMultiple<Point_t>::begin() const TL_NOEXCEPT
 {
-  return mTransf.cbegin();
+  return mTransformationList.cbegin();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::iterator TrfMultiple<Point_t>::end() TL_NOEXCEPT
 {
-  return mTransf.end();
+  return mTransformationList.end();
 }
 
 template<typename Point_t>
 typename TrfMultiple<Point_t>::const_iterator TrfMultiple<Point_t>::end() const TL_NOEXCEPT
 {
-  return mTransf.end();
-}
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t>
-void TrfMultiple<Point_t>::add(std::shared_ptr<Transform<Point_t>> trf)
-{
-  mTransf.push_back(trf);
-}
-#endif
-
-template<typename Point_t>
-void TrfMultiple<Point_t>::push_back(const std::shared_ptr<Transform<Point_t>> &trf)
-{
-  mTransf.push_back(trf);
+  return mTransformationList.end();
 }
 
 template<typename Point_t>
-void TrfMultiple<Point_t>::push_back(std::shared_ptr<Transform<Point_t>> &&trf) TL_NOEXCEPT
+void TrfMultiple<Point_t>::push_back(const std::shared_ptr<TransformBase<Point_t>> &trf)
 {
-  mTransf.push_back(std::forward<std::shared_ptr<Transform<Point_t>>>(trf));
+  mTransformationList.push_back(trf);
+}
+
+template<typename Point_t>
+void TrfMultiple<Point_t>::push_back(std::shared_ptr<TransformBase<Point_t>> &&trf) TL_NOEXCEPT
+{
+  mTransformationList.push_back(std::forward<std::shared_ptr<TransformBase<Point_t>>>(trf));
 }
 
 template<typename Point_t>
 void TrfMultiple<Point_t>::clear() TL_NOEXCEPT
 {
-  mTransf.clear();
+  mTransformationList.clear();
 }
 
 template<typename Point_t>
 bool TrfMultiple<Point_t>::empty() const TL_NOEXCEPT
 {
-  return mTransf.empty();
+  return mTransformationList.empty();
 }
 
 template<typename Point_t>
 size_t TrfMultiple<Point_t>::size() const
 {
-  return mTransf.size();
+  return mTransformationList.size();
 }
 
 template<typename Point_t>
 void TrfMultiple<Point_t>::del(int id)
 {
-  mTransf.erase(mTransf.begin() + id);
+  mTransformationList.erase(mTransformationList.begin() + id);
 }
 
 template<typename Point_t> inline
@@ -742,48 +687,51 @@ bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
 }
 
 template<typename Point_t> inline
-transform_status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, 
-                                               const std::vector<Point_t> &pts2, 
-                                               std::vector<double> *error, double *rmse)
+Transform::Status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, 
+                                                const std::vector<Point_t> &pts2, 
+                                                std::vector<double> *error, 
+                                                double *rmse)
 {
   msgError("'compute' is not supported for TrfMultiple");
   TL_COMPILER_WARNING("'compute' is not supported for TrfMultiple");
-  return transform_status::failure;
+  return Transform::Status::failure;
 }
 
 template<typename Point_t> inline
-transform_status TrfMultiple<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
-                                                 transform_order trfOrder) const
+Transform::Status TrfMultiple<Point_t>::transform(const Point_t &ptIn, 
+                                                  Point_t *ptOut, 
+                                                  Transform::Order trfOrder) const
 {
   *ptOut = ptIn;
-  transform_status r_status;
-  for (auto &trf : mTransf) {
-    r_status = trf->transform(*ptOut, ptOut, trfOrder);
-    if ( r_status == transform_status::failure ) break;
+  Transform::Status r_status;
+  for (const auto &transformation : mTransformationList) {
+    r_status = transformation->transform(*ptOut, ptOut, trfOrder);
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, 
+                                        Transform::Order trfOrder) const
 {
   Point_t out = ptIn;
-  for (auto &trf : mTransf) {
-    out = trf->transform(out, trfOrder);
+  for (const auto &trf : transformation) {
+    out = transformation->transform(out, trfOrder);
   }
   return out;
 }
 
 template<typename Point_t> inline
-transform_status TrfMultiple<Point_t>::transform(const std::vector<Point_t> &ptsIn,
-                                                 std::vector<Point_t> *ptsOut,
-                                                 transform_order trfOrder) const
+Transform::Status TrfMultiple<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+                                                  std::vector<Point_t> *ptsOut,
+                                                  Transform::Order trfOrder) const
 {
   *ptsOut = ptsIn;
-  transform_status r_status;
-  for (auto &trf : mTransf) {
-    r_status = trf->transform(*ptsOut, ptsOut, trfOrder);
-    if ( r_status == transform_status::failure ) break;
+  Transform::Status r_status;
+  for (const auto &trf : transformation) {
+    r_status = transformation->transform(*ptsOut, ptsOut, trfOrder);
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -801,7 +749,7 @@ transform_status TrfMultiple<Point_t>::transform(const std::vector<Point_t> &pts
  */
 template<typename Point_t>
 class Transform2D
-  : public Transform<Point_t>
+  : public TransformBase<Point_t>
 {
 
 public:
@@ -823,8 +771,8 @@ public:
    * \param[in] trfType Tipo de transformación
    * \param[in] n_min Número mínimo de puntos necesario para la transformación
    */
-  Transform2D(transform_type trfType, int n_min = 0)
-    : Transform<Point_t>(trfType, n_min)
+  Transform2D(Transform::Type trfType, int n_min = 0)
+    : TransformBase<Point_t>(trfType, n_min)
   {
     this->mDimensions = 2;
   }
@@ -840,10 +788,10 @@ public:
   // * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
   // * \param[out] error Vector con los errores para cada punto
   // * \param[out] rmse Root Mean Square Error
-  // * \return transform_status
-  // * \see transform_status
+  // * \return Transform::Status
+  // * \see Transform::Status
   // */
-  //virtual transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2,
+  //virtual Transform::Status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2,
   //                                 std::vector<double> *error = nullptr, double *rmse = nullptr) override = 0;
   //
   ///*!
@@ -851,31 +799,31 @@ public:
   // * \param[in] ptsIn Puntos de entrada
   // * \param[out] ptsOut Puntos de salida
   // * \param[in] trfOrder Transformación directa (por defecto) o inversa
-  // * \return transform_status
-  // * \see transform_order, transform_status
+  // * \return Transform::Status
+  // * \see Transform::Order, Transform::Status
   // */
-  //virtual transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
-  //                                   transform_order trfOrder = transform_order::direct) const override = 0;
+  //virtual Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
+  //                                   Transform::Order trfOrder = Transform::Order::direct) const override = 0;
   //
   ///*!
   // * \brief Aplica la transformación a un punto
   // * \param[in] ptIn Punto de entrada
   // * \param[out] ptOut Punto de salida
   // * \param[in] trfOrder Transformación directa (por defecto) o inversa
-  // * \return transform_status
-  // * \see transform_order, transform_status
+  // * \return Transform::Status
+  // * \see Transform::Order, Transform::Status
   // */
-  //virtual transform_status transform(const Point_t &ptIn, Point_t *ptOut,
-  //                                   transform_order trfOrder = transform_order::direct) const override = 0;
+  //virtual Transform::Status transform(const Point_t &ptIn, Point_t *ptOut,
+  //                                   Transform::Order trfOrder = Transform::Order::direct) const override = 0;
   //
   ///*!
   // * \brief Aplica la transformación a un punto
   // * \param[in] ptIn Punto de entrada
   // * \param[in] trfOrder Transformación directa (por defecto) o inversa
   // * \return Punto de salida
-  // * \see transform_order
+  // * \see Transform::Order
   // */
-  //virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override = 0;
+  //virtual Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override = 0;
 
 };
 
@@ -941,56 +889,19 @@ public:
    */
   Translation(Translation &&translation) TL_NOEXCEPT;
 
-  /*!
-   * \brief Cálculo de la traslación
-   *
-   * Calcula la traslación entre dos sistemas diferentes a partir
-   * de dos conjuntos de puntos en cada sistema
-   * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
-   * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-   * \param[out] error Vector con los errores para cada punto
-   * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
-   */
-  transform_status compute(const std::vector<Point_t> &pts1, 
-                           const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = nullptr,
-                           double *rmse = nullptr) override;
 
-  /*!
-   * \brief Aplica una traslación a un punto
-   * \param[in] ptIn Punto de entrada
-   * \param[out] ptOut Punto de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
-   */
-  transform_status transform(const Point_t &ptIn,
-                             Point_t *ptOut,
-                             transform_order trfOrder = transform_order::direct) const override;
-
-  /*!
-   * \brief Aplica una traslación a un punto
-   * \param[in] ptIn Punto de entrada
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return Punto de salida
-   * \see transform_order
-   */
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
+                            const std::vector<Point_t> &pts2, 
+                            std::vector<double> *error = nullptr,
+                            double *rmse = nullptr) override;
+  Transform::Status transform(const Point_t &ptIn,
+                              Point_t *ptOut,
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
   Point_t transform(const Point_t &ptIn,
-                    transform_order trfOrder = transform_order::direct) const override;
-
-  /*!
-   * \brief Transforma un conjunto de puntos en otro aplicando una traslación
-   * \param[in] ptsIn Puntos de entrada
-   * \param[out] ptsOut Puntos de salida
-   * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
-   */
-  transform_status transform(const std::vector<Point_t> &ptsIn,
-                             std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn,
+                              std::vector<Point_t> *ptsOut,
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transformación inversa
@@ -1027,7 +938,7 @@ public:
 
 template<typename Point_t> inline
 Translation<Point_t>::Translation()
-  : Transform2D<Point_t>(transform_type::translation, 1),
+  : Transform2D<Point_t>(Transform::Type::translation, 1),
     tx(0.),
     ty(0.)
 {
@@ -1035,7 +946,7 @@ Translation<Point_t>::Translation()
 
 template<typename Point_t> inline
 Translation<Point_t>::Translation(double tx, double ty)
-  : Transform2D<Point_t>(transform_type::translation, 1),
+  : Transform2D<Point_t>(Transform::Type::translation, 1),
     tx(tx),
     ty(ty)
 {
@@ -1058,25 +969,25 @@ Translation<Point_t>::Translation(Translation &&translation) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-transform_status Translation<Point_t>::compute(const std::vector<Point_t> &pts1,
-                                              const std::vector<Point_t> &pts2,
-                                              std::vector<double> *error,
-                                              double *rmse)
+Transform::Status Translation<Point_t>::compute(const std::vector<Point_t> &pts1,
+                                                const std::vector<Point_t> &pts2,
+                                                std::vector<double> *error,
+                                                double *rmse)
 {
   size_t n1 = pts1.size();
   size_t n2 = pts2.size();
   
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zui", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
   size_t m = n1 * this->mDimensions, n = 4;
   double *a = new double[m*n];
   double *pa = a;
@@ -1107,7 +1018,7 @@ transform_status Translation<Point_t>::compute(const std::vector<Point_t> &pts1,
     
   } catch (std::exception &e) {
     MessageManager::release(e.what(), tl::MessageLevel::msg_error);
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] a;
@@ -1118,11 +1029,11 @@ transform_status Translation<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
-transform_status Translation<Point_t>::transform(const Point_t &ptIn,
-                                                 Point_t *ptOut,
-                                                 transform_order trfOrder) const
+Transform::Status Translation<Point_t>::transform(const Point_t &ptIn,
+                                                  Point_t *ptOut,
+                                                  Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   Point_t pt_aux;
   if (std::is_integral<sub_type>::value) {
     pt_aux.x = TL_ROUND_TO_INT(tx);
@@ -1132,28 +1043,29 @@ transform_status Translation<Point_t>::transform(const Point_t &ptIn,
     pt_aux.y = static_cast<sub_type>(ty);
   }
   if(ptOut)
-    *ptOut = (trfOrder == transform_order::direct) ? ptIn + pt_aux : ptIn - pt_aux;
+    *ptOut = (trfOrder == Transform::Order::direct) ? ptIn + pt_aux : ptIn - pt_aux;
   return r_status;
 }
 
 template<typename Point_t> inline
-Point_t Translation<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Translation<Point_t>::transform(const Point_t &ptIn, 
+                                        Transform::Order trfOrder) const
 {
   Point_t pt_aux;
-  transform_status r_status = transform(ptIn, &pt_aux, trfOrder);
-  return r_status == transform_status::success ? pt_aux : ptIn;
+  Transform::Status r_status = transform(ptIn, &pt_aux, trfOrder);
+  return r_status == Transform::Status::success ? pt_aux : ptIn;
 }
 
 template<typename Point_t> inline
-transform_status Translation<Point_t>::transform(const std::vector<Point_t> &ptsIn,
-                                                std::vector<Point_t> *ptsOut,
-                                                transform_order trfOrder) const
+Transform::Status Translation<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+                                                  std::vector<Point_t> *ptsOut,
+                                                  Transform::Order trfOrder) const
 {
   this->formatVectorOut(ptsIn, ptsOut);
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   for (size_t i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -1287,23 +1199,14 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
-                           const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = nullptr,
-                           double *rmse = nullptr) override;
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
+                            const std::vector<Point_t> &pts2, 
+                            std::vector<double> *error = nullptr,
+                            double *rmse = nullptr) override;
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Devuelve el ángulo de la rotación
-   * \return Ángulo en radianes
-   * \deprecated Use 'angle()' en su lugar
-   */
-  TL_DEPRECATED("angle", "2.0")
-  double getAngle() const;
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
   /*!
    * \brief Devuelve el ángulo de la rotación
@@ -1322,21 +1225,21 @@ public:
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una rotación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
   Point_t transform(const Point_t &ptIn,
-                    transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una rotación a un conjunto de puntos
@@ -1354,12 +1257,12 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn,
+  Transform::Status transform(const std::vector<Point_t> &ptsIn,
                              std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transformación inversa
@@ -1399,7 +1302,7 @@ private:
 
 template<typename Point_t> inline
 Rotation<Point_t>::Rotation()
-  : Transform2D<Point_t>(transform_type::rotation, 1),
+  : Transform2D<Point_t>(Transform::Type::rotation, 1),
     mAngle(0.)
 {
   update();
@@ -1407,7 +1310,7 @@ Rotation<Point_t>::Rotation()
 
 template<typename Point_t> inline
 Rotation<Point_t>::Rotation(double angle)
-  : Transform2D<Point_t>(transform_type::rotation, 1),
+  : Transform2D<Point_t>(Transform::Type::rotation, 1),
     mAngle(angle)
 {
   update();
@@ -1432,7 +1335,7 @@ Rotation<Point_t>::Rotation(Rotation &&rotation) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                             const std::vector<Point_t> &pts2,
                                             std::vector<double> *error, 
                                             double *rmse)
@@ -1442,15 +1345,15 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zu", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
 
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
   size_t m = n1 * this->mDimensions, n = 2;
   double *a = new double[m*n], *pa = a, *b = new double[m], *pb = b;
   double *c = new double[n];
@@ -1475,7 +1378,7 @@ transform_status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
     }
   } catch (std::exception &e) {
     MessageManager::release(e.what(), tl::MessageLevel::msg_error);
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] a;
@@ -1507,13 +1410,13 @@ void Rotation<Point_t>::setAngle(double angle)
 }
 
 template<typename Point_t> inline
-transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *ptsOut, 
-                                              transform_order trfOrder) const
+Transform::Status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *ptsOut, 
+                                              Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   if (ptsOut){
     sub_type x_aux = ptsIn.x;
-    if (trfOrder == transform_order::direct) {
+    if (trfOrder == Transform::Order::direct) {
       ptsOut->x = static_cast<sub_type>(x_aux*r1 - ptsIn.y*r2);
       ptsOut->y = static_cast<sub_type>(x_aux*r2 + ptsIn.y*r1);
     } else {
@@ -1521,15 +1424,15 @@ transform_status Rotation<Point_t>::transform(const Point_t &ptsIn, Point_t *pts
       ptsOut->y = static_cast<sub_type>(ptsIn.y*r1 - x_aux*r2);
     }
   } else
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   return r_status; 
 }
 
 template<typename Point_t> inline
-Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, transform_order trfOrder) const
+Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, Transform::Order trfOrder) const
 {
   Point_t out;
-  if (trfOrder == transform_order::direct) {
+  if (trfOrder == Transform::Order::direct) {
     out.x = ptsIn.x*r1 - ptsIn.y*r2;
     out.y = ptsIn.x*r2 + ptsIn.y*r1;
   } else {
@@ -1540,15 +1443,15 @@ Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, transform_order trfOr
 }
 
 template<typename Point_t> inline
-transform_status Rotation<Point_t>::transform(const std::vector<Point_t> &in,
+Transform::Status Rotation<Point_t>::transform(const std::vector<Point_t> &in,
                                               std::vector<Point_t> *out,
-                                              transform_order trfOrder) const
+                                              Transform::Order trfOrder) const
 {
   this->formatVectorOut(in, out);
-  transform_status r_status;
+  Transform::Status r_status;
   for (int i = 0; i < in.size(); i++) {
     r_status = transform(in[i], &(*out)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -1673,10 +1576,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1,
+  Transform::Status compute(const std::vector<Point_t> &pts1,
                            const std::vector<Point_t> &pts2,
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -1686,34 +1589,34 @@ public:
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn,
+  Transform::Status transform(const Point_t &ptIn,
                              Point_t *ptOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una traslación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
   Point_t transform(const Point_t &ptIn,
-                    transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando una traslación
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn,
+  Transform::Status transform(const std::vector<Point_t> &ptsIn,
                              std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Devuelve la escala de la transformación
@@ -1758,14 +1661,14 @@ public:
 
 template<typename Point_t> inline
 Scaling<Point_t>::Scaling()
-  : Transform2D<Point_t>(transform_type::scaling, 1),
+  : Transform2D<Point_t>(Transform::Type::scaling, 1),
     mScale(1.)
 {
 }
 
 template<typename Point_t> inline
 Scaling<Point_t>::Scaling(double scale)
-  : Transform2D<Point_t>(transform_type::scaling, 1),
+  : Transform2D<Point_t>(Transform::Type::scaling, 1),
     mScale(scale)
 {
 }
@@ -1785,7 +1688,7 @@ Scaling<Point_t>::Scaling(Scaling &&obj) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-transform_status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
+Transform::Status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
                                               const std::vector<Point_t> &pts2,
                                               std::vector<double> *error,
                                               double *rmse)
@@ -1795,15 +1698,15 @@ transform_status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zui", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
   size_t m = n1 * this->mDimensions, n = 4;
   double *a = new double[m*n];
   double *pa = a;
@@ -1832,7 +1735,7 @@ transform_status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   } catch (std::exception &e) {
     MessageManager::release(e.what(), tl::MessageLevel::msg_error);
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] a;
@@ -1843,13 +1746,13 @@ transform_status Scaling<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
-transform_status Scaling<Point_t>::transform(const Point_t &ptIn,
+Transform::Status Scaling<Point_t>::transform(const Point_t &ptIn,
                                              Point_t *ptOut,
-                                             transform_order trfOrder) const
+                                             Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   try {
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       ptOut->x = static_cast<sub_type>(mScale * ptIn.x);
       ptOut->y = static_cast<sub_type>(mScale * ptIn.y);
     } else {
@@ -1861,29 +1764,29 @@ transform_status Scaling<Point_t>::transform(const Point_t &ptIn,
     MessageManager::release(
           MessageManager::Message("Scaling transformation error: %s", e.what()).message(),
           tl::MessageLevel::msg_error);
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-Point_t Scaling<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Scaling<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t pt_aux;
-  transform_status r_status = transform(ptIn, &pt_aux, trfOrder);
-  return r_status == transform_status::success ? pt_aux : ptIn;
+  Transform::Status r_status = transform(ptIn, &pt_aux, trfOrder);
+  return r_status == Transform::Status::success ? pt_aux : ptIn;
 }
 
 template<typename Point_t> inline
-transform_status Scaling<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+Transform::Status Scaling<Point_t>::transform(const std::vector<Point_t> &ptsIn,
                                                 std::vector<Point_t> *ptsOut,
-                                                transform_order trfOrder) const
+                                                Transform::Order trfOrder) const
 {
   this->formatVectorOut(ptsIn, ptsOut);
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   for (size_t i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -2054,10 +1957,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -2067,8 +1970,8 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    *  
    * <H3>Ejemplo:</H3>
    * \code
@@ -2081,21 +1984,21 @@ public:
    * h2d.transform(pts_in, &pts_out);
    * \endcode
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn,
+  Transform::Status transform(const std::vector<Point_t> &ptsIn,
                              std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
   * \brief Aplica un helmert 2D a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn,
+  Transform::Status transform(const Point_t &ptIn,
                              Point_t *ptOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
 
   /*!
@@ -2103,10 +2006,10 @@ public:
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
   Point_t transform(const Point_t &ptIn,
-                    transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
@@ -2209,7 +2112,7 @@ private:
 
 template<typename Point_t> inline
 Helmert2D<Point_t>::Helmert2D()
-  : Transform2D<Point_t>(transform_type::helmert_2d, 2),
+  : Transform2D<Point_t>(Transform::Type::helmert_2d, 2),
     tx(0),
     ty(0),
     mScale(1.),
@@ -2220,7 +2123,7 @@ Helmert2D<Point_t>::Helmert2D()
 
 template<typename Point_t>
 Helmert2D<Point_t>::Helmert2D(double tx, double ty, double scale, double rotation)
-  : Transform2D<Point_t>(transform_type::helmert_2d, 2),
+  : Transform2D<Point_t>(Transform::Type::helmert_2d, 2),
     tx(tx),
     ty(ty),
     mScale(scale),
@@ -2263,7 +2166,7 @@ Helmert2D<Point_t>::Helmert2D(Helmert2D &&helmert2D) TL_NOEXCEPT
 
 
 template<typename Point_t> inline
-transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                              const std::vector<Point_t> &pts2,
                                              std::vector<double> *error,
                                              double *rmse)
@@ -2273,15 +2176,15 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
     
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
   size_t m = n1 * this->mDimensions, n = 4;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
   double *c = new double[n];
@@ -2317,7 +2220,7 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   } catch (std::exception &e) {
     msgError(e.what());
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
   delete[] A;
   delete[] B;
@@ -2327,13 +2230,13 @@ transform_status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
-transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
-                                               transform_order trfOrder) const
+Transform::Status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
+                                               Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   sub_type x_aux = ptIn.x;
   try {
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       ptOut->x = static_cast<sub_type>(a * x_aux - b * ptIn.y + tx);
       ptOut->y = static_cast<sub_type>(b * x_aux + a * ptIn.y + ty);
     } else {
@@ -2348,16 +2251,16 @@ transform_status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
     MessageManager::release(
           MessageManager::Message("Helmert 2D transformation error: %s", e.what()).message(),
           tl::MessageLevel::msg_error);
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt;
-  if (trfOrder == transform_order::direct){
+  if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>(a * ptIn.x - b * ptIn.y + tx);
     r_pt.y = static_cast<sub_type>(b * ptIn.x + a * ptIn.y + ty);
   } else {
@@ -2368,15 +2271,15 @@ Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, transform_order trfOr
 }
 
 template<typename Point_t> inline
-transform_status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+Transform::Status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsIn,
                                                std::vector<Point_t> *ptsOut,
-                                               transform_order trfOrder) const
+                                               Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -2671,10 +2574,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -2687,32 +2590,32 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una transformación afín a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una transformación afín a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
   Point_t transform(const Point_t &ptIn,
-                    transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
    * \brief Devuelve los coeficientes de la transformación
@@ -2849,7 +2752,7 @@ private:
 
 template<typename Point_t> inline
 Affine<Point_t>::Affine()
-  : Transform2D<Point_t>(transform_type::affine, 3),
+  : Transform2D<Point_t>(Transform::Type::affine, 3),
     tx(0.),
     ty(0.),
     mScaleX(1.),
@@ -2861,7 +2764,7 @@ Affine<Point_t>::Affine()
 
 template<typename Point_t> inline
 Affine<Point_t>::Affine(double tx, double ty, double scaleX, double scaleY, double rotation)
-  : Transform2D<Point_t>(transform_type::affine, 3),
+  : Transform2D<Point_t>(Transform::Type::affine, 3),
     tx(tx),
     ty(ty),
     mScaleX(scaleX),
@@ -2873,13 +2776,13 @@ Affine<Point_t>::Affine(double tx, double ty, double scaleX, double scaleY, doub
 
 template<typename Point_t> inline
 Affine<Point_t>::Affine(const math::Matrix<2, 3, double> &mat)
-  : Transform2D<Point_t>(transform_type::affine, 3)
+  : Transform2D<Point_t>(Transform::Type::affine, 3)
 {
   this->setParameters(mat.at(0,0), mat.at(0,1), mat.at(1,0), mat.at(1,1), mat.at(0,2), mat.at(2,2));
 }
 
 template<typename Point_t> inline
-transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                           const std::vector<Point_t> &pts2,
                                           std::vector<double> *error,
                                           double *rmse)
@@ -2889,15 +2792,15 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
 
   size_t m = n1 * this->mDimensions, n = 6;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
@@ -2943,7 +2846,7 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   } catch (std::exception &e) {
     msgError(e.what());
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] A;
@@ -2954,26 +2857,26 @@ transform_status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
-transform_status Affine<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+Transform::Status Affine<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                             std::vector<Point_t> *ptsOut, 
-                                            transform_order trfOrder) const
+                                            Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-transform_status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+Transform::Status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   sub_type x_aux = ptIn.x;
   try {
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       ptOut->x = static_cast<sub_type>(a * x_aux + b * ptIn.y + tx);
       ptOut->y = static_cast<sub_type>(c * x_aux + d * ptIn.y + ty);
     } else {
@@ -2982,16 +2885,16 @@ transform_status Affine<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut,
     }
   } catch (std::exception &e ) {
     msgError("Affine transformation error: %s", e.what());
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status; 
 }
 
 template<typename Point_t> inline
-Point_t Affine<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Affine<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt;
-  if (trfOrder == transform_order::direct){
+  if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>(a * ptIn.x + b * ptIn.y + tx);
     r_pt.y = static_cast<sub_type>(c * ptIn.x + d * ptIn.y + ty);
   }
@@ -3287,10 +3190,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -3305,32 +3208,32 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una transformación proyectiva a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica una transformación proyectiva a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
   Point_t transform(const Point_t &ptIn, 
-                    transform_order trfOrder = transform_order::direct) const override;
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Establece los parámetros
@@ -3359,7 +3262,7 @@ private:
 
 template<typename Point_t> inline
 Projective<Point_t>::Projective()
-  : Transform2D<Point_t>(transform_type::projective, 4),
+  : Transform2D<Point_t>(Transform::Type::projective, 4),
     a(1),
     b(0),
     c(0),
@@ -3374,7 +3277,7 @@ Projective<Point_t>::Projective()
 
 template<typename Point_t> inline
 Projective<Point_t>::Projective(double a, double b, double c, double d, double e, double f, double g, double h)
-  : Transform2D<Point_t>(transform_type::projective, 4),
+  : Transform2D<Point_t>(Transform::Type::projective, 4),
     a(a),
     b(b),
     c(c),
@@ -3388,7 +3291,7 @@ Projective<Point_t>::Projective(double a, double b, double c, double d, double e
 }
 
 template<typename Point_t> inline
-transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Projective<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                               const std::vector<Point_t> &pts2,
                                               std::vector<double> *error,
                                               double *rmse)
@@ -3398,15 +3301,15 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
 
   size_t m = n1 * this->mDimensions, n = 8;
   double *A = new double[m*n], *pa = A, *B = new double[m], *pb = B;
@@ -3450,7 +3353,7 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   } catch (std::exception &e) {
     msgError(e.what());
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] A;
@@ -3461,27 +3364,27 @@ transform_status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
 }
 
 template<typename Point_t> inline
-transform_status Projective<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+Transform::Status Projective<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                                 std::vector<Point_t> *ptsOut, 
-                                                transform_order trfOrder) const
+                                                Transform::Order trfOrder) const
 {
-  transform_status r_status;
+  Transform::Status r_status;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-transform_status Projective<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
-                                                transform_order trfOrder) const
+Transform::Status Projective<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, 
+                                                Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   Point_t pt_aux = ptIn;
   try {
-    if ( trfOrder == transform_order::direct ) {
+    if ( trfOrder == Transform::Order::direct ) {
       ptOut->x = static_cast<sub_type>((a * ptIn.x + b * ptIn.y + c) 
                                        / (g * ptIn.x + h * ptIn.y + 1));
       ptOut->y = static_cast<sub_type>((d * ptIn.x + e * ptIn.y + f) 
@@ -3494,16 +3397,16 @@ transform_status Projective<Point_t>::transform(const Point_t &ptIn, Point_t *pt
     }
   } catch (std::exception &e ) {
     msgError("Error in projective transformation: %s", e.what());
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status; 
 }
 
 template<typename Point_t> inline
-Point_t Projective<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Projective<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt;
-  if (trfOrder == transform_order::direct){
+  if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>((a * ptIn.x + b * ptIn.y + c) 
                                    / (g * ptIn.x + h * ptIn.y + 1));
     r_pt.y = static_cast<sub_type>((d * ptIn.x + e * ptIn.y + f) 
@@ -3614,10 +3517,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2,
+  Transform::Status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2,
                            std::vector<double> *error = nullptr, double *rmse = nullptr) override;
 
   /*!
@@ -3625,44 +3528,44 @@ public:
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut,
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override;
+  Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica la transformación a un conjunto de puntos
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
 };
 
 
 template<typename Point_t> inline
 TrfPerspective<Point_t>::TrfPerspective()
-  : Transform2D<Point_t>(transform_type::perspective, 4)
+  : Transform2D<Point_t>(Transform::Type::perspective, 4)
 {
 
 }
 
 template<typename Point_t> inline
-transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1,
+Transform::Status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1,
                                                   const std::vector<Point_t> &pts2,
                                                   std::vector<double> *error,
                                                   double *rmse)
@@ -3675,7 +3578,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
   //TODO: chapuza...
@@ -3688,10 +3591,10 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
 
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
 
   try {
     H = cv::findHomography(in, out, cv::RANSAC);
@@ -3702,7 +3605,7 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
     //TL_THROW_ASSERT(!H.empty(), "Error al calcular los parámetros de la transformación");
     if (H.empty()) {
       msgError("Error al calcular los parámetros de la transformación");
-      return transform_status::failure;
+      return Transform::Status::failure;
     }
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
@@ -3711,21 +3614,21 @@ transform_status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pt
   } catch (std::exception &e) {
     //msgError(e.what());
     tl::MessageManager::release(e.what(), tl::MessageLevel::msg_error);
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   return status;
 }
 
 template<typename Point_t> inline
-transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
+Transform::Status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
                                                     Point_t *ptOut,
-                                                    transform_order trfOrder) const
+                                                    Transform::Order trfOrder) const
 {
   std::vector<cv::Point_<sub_type>> vIn, vOut;
   vIn.push_back(cv::Point_<sub_type>(ptIn.x, ptIn.y));
   try {
-    if (trfOrder == transform_order::direct) {
+    if (trfOrder == Transform::Order::direct) {
       cv::perspectiveTransform(vIn, vOut, H);
     } else {
       cv::perspectiveTransform(vIn, vOut, H.inv());
@@ -3734,13 +3637,13 @@ transform_status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
     ptOut->y = vOut[0].y;
   } catch ( cv::Exception &e ) {
     msgError("Error in perspective transformation: %s", e.what());
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
-  return transform_status::success;
+  return Transform::Status::success;
 }
 
 template<typename Point_t> inline
-Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t out = ptIn;
   transform(ptIn, &out, trfOrder);
@@ -3748,9 +3651,9 @@ Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, transform_order 
 }
 
 template<typename Point_t> inline
-transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+Transform::Status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn,
                                                     std::vector<Point_t> *ptsOut,
-                                                    transform_order trfOrder) const
+                                                    Transform::Order trfOrder) const
 {
   // TODO: chapuza...
   size_t n = ptsIn.size();
@@ -3761,21 +3664,21 @@ transform_status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &
   }
 
   try {
-    if (trfOrder == transform_order::direct)
+    if (trfOrder == Transform::Order::direct)
       cv::perspectiveTransform(in, out, H);
     else {
       cv::perspectiveTransform(in, out, H.inv());
     }
   } catch ( cv::Exception &e ) {
     msgError("Error in perspective transformation: %s",e.what());
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
   ptsOut->resize(n);
   for (size_t i = 0; i < n; i++) {
     (*ptsOut)[i].x = out[i].x;
     (*ptsOut)[i].y = out[i].y;
   }
-  return transform_status::success;
+  return Transform::Status::success;
 }
 
 
@@ -3812,7 +3715,7 @@ public:
    * \brief Constructor por defecto
    */
   polynomialTransform()
-    : Transform2D<Point_t>(transform_type::polynomial, 2)
+    : Transform2D<Point_t>(Transform::Type::polynomial, 2)
   {
   }
 
@@ -3825,10 +3728,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -3838,36 +3741,36 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
   * \brief Aplica una transformación polinómica a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override;
+  Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override;
 
 };
 
 template<typename Point_t> inline
-transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status polynomialTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                                        const std::vector<Point_t> &pts2, 
                                                        std::vector<double> *error,
                                                        double *rmse)
@@ -3877,15 +3780,15 @@ transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
 
   double xmin = TL_DOUBLE_MAX;
   double ymin = TL_DOUBLE_MAX;
@@ -3912,36 +3815,36 @@ transform_status polynomialTransform<Point_t>::compute(const std::vector<Point_t
 }
 
 template<typename Point_t> inline
-transform_status polynomialTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+Transform::Status polynomialTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                                          std::vector<Point_t> *ptsOut, 
-                                                         transform_order trfOrder) const
+                                                         Transform::Order trfOrder) const
 {
-  transform_status r_status;
+  Transform::Status r_status;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-transform_status polynomialTransform<Point_t>::transform(const Point_t &ptIn, Point_t *out, 
-                                                         transform_order trfOrder) const
+Transform::Status polynomialTransform<Point_t>::transform(const Point_t &ptIn, Point_t *out, 
+                                                         Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   sub_type x_aux = ptIn.x;
   try {
     //...
   } catch (std::exception &e ) {
     msgError("Polynomial transform error: %s", e.what());
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status; 
 }
 
 template<typename Point_t> inline
-Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt;
   
@@ -3971,7 +3874,7 @@ Point_t polynomialTransform<Point_t>::transform(const Point_t &ptIn, transform_o
 
 template<typename Point_t>
 class Transform3D
-  : public Transform<Point_t>
+  : public TransformBase<Point_t>
 {
 
 public:
@@ -3991,8 +3894,8 @@ public:
   /*!
    * \brief Transform
    */
-  Transform3D(transform_type trfType, int n_min = 0)
-    : Transform<Point_t>(trfType, n_min)
+  Transform3D(Transform::Type trfType, int n_min = 0)
+    : TransformBase<Point_t>(trfType, n_min)
   {
     this->mDimensions = 3;
   }
@@ -4000,7 +3903,7 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~Transform3D() {}
+  ~Transform3D() override = default;
 
   /*!
    * \brief Calcula los parámetros de transformación
@@ -4008,10 +3911,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  virtual transform_status compute(const std::vector<Point_t> &pts1, 
+  virtual Transform::Status compute(const std::vector<Point_t> &pts1, 
                                    const std::vector<Point_t> &pts2, 
                                    std::vector<double> *error = nullptr,
                                    double *rmse = nullptr) override = 0;
@@ -4021,36 +3924,36 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  virtual transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                                     transform_order trfOrder = transform_order::direct) const override = 0;
+  virtual Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                                     Transform::Order trfOrder = Transform::Order::direct) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  virtual transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                                     transform_order trfOrder = transform_order::direct) const override = 0;
+  virtual Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                                     Transform::Order trfOrder = Transform::Order::direct) const override = 0;
 
   /*!
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  virtual Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override = 0;
+  virtual Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override = 0;
 
 };
 
 //template<typename Point_t> inline
-//void Transform3D<Point_t>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, transform_order trfOrder = transform_order::direct) const
+//void Transform3D<Point_t>::transformEntity(const Entity<sub_type> &in, Entity<sub_type> *out, Transform::Order trfOrder = Transform::Order::direct) const
 //{
 //  if (in.getType() == entity_type::BBOX) {
 //    Bbox<sub_type> *bbox = dynamic_cast<const Bbox<sub_type> *>(out);
@@ -4202,10 +4105,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -4221,31 +4124,31 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica un helmert 3D a un punto
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return transform_status
-   * \see transform_order, transform_status
+   * \return Transform::Status
+   * \see Transform::Order, Transform::Status
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, 
-                             transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, 
+                             Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Aplica un helmert 3D a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override;
+  Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override;
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
   /*!
@@ -4303,7 +4206,7 @@ private:
 
 template<typename Point_t> inline
 Helmert3D<Point_t>::Helmert3D()
-  : Transform3D<Point_t>(transform_type::helmert_3d, 3),
+  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
     tx(0.),
     ty(0.),
     tz(0.),
@@ -4317,7 +4220,7 @@ Helmert3D<Point_t>::Helmert3D()
 
 template<typename Point_t> inline
 Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, double omega, double phi, double kappa)
-  : Transform3D<Point_t>(transform_type::helmert_3d, 3),
+  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
     tx(tx),
     ty(ty),
     tz(tz),
@@ -4331,7 +4234,7 @@ Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, dou
 
 template<typename Point_t> inline
 Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, const std::array<std::array<double, 3>, 3> &rotation)
-  : Transform3D<Point_t>(transform_type::helmert_3d, 3),
+  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
     tx(tx),
     ty(ty),
     tz(tz),
@@ -4344,7 +4247,7 @@ Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, con
 
 //template<typename Point_t> inline
 //Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, const math::RotationMatrix<double> &rotation)
-//  : Transform3D<Point_t>(transform_type::helmert_3d, 3),
+//  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
 //    tx(tx),
 //    ty(ty),
 //    tz(tz),
@@ -4357,7 +4260,7 @@ Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, con
 
 template<typename Point_t>
 Helmert3D<Point_t>::Helmert3D(const Helmert3D &trf)
-  : Transform3D<Point_t>(transform_type::helmert_3d, 3),
+  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
     tx(trf.tx),
     ty(trf.ty),
     tz(trf.tz),
@@ -4372,7 +4275,7 @@ Helmert3D<Point_t>::Helmert3D(const Helmert3D &trf)
 }
 
 template<typename Point_t> inline
-transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                              const std::vector<Point_t> &pts2,
                                              std::vector<double> *error,
                                              double *rmse)
@@ -4382,15 +4285,15 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %i and size pts2 = %i", n1, n2);
-    return transform_status::failure;
+    return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %i < %i", n1, this->mMinPoint);
-    return transform_status::failure;
+    return Transform::Status::failure;
   }
 
-  transform_status status = transform_status::success;
+  Transform::Status status = Transform::Status::success;
 
   size_t m = n1 * this->mDimensions, n = 7;
   double *A = new double[m*n], *pa = A, *L = new double[m], *pl = L;
@@ -4441,7 +4344,7 @@ transform_status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
     //rmse = _rootMeanSquareError(pts1, pts2, error);
   } catch (std::exception &e) {
     msgError(e.what());
-    status = transform_status::failure;
+    status = Transform::Status::failure;
   }
 
   delete[] A;
@@ -4464,26 +4367,26 @@ const std::array<std::array<double, 3>, 3> &Helmert3D<Point_t>::getRotationMatri
 //}
 
 template<typename Point_t> inline
-transform_status Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+Transform::Status Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                                std::vector<Point_t> *ptsOut, 
-                                               transform_order trfOrder) const
+                                               Transform::Order trfOrder) const
 {
-  transform_status r_status;
+  Transform::Status r_status;
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
 
 template<typename Point_t> inline
-transform_status Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder) const
+Transform::Status Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptOut, Transform::Order trfOrder) const
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   Point_t ptAux = ptIn;
   try {
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       ptOut->x = static_cast<sub_type>( mScale * (ptAux.x*mR[0][0] + ptAux.y*mR[0][1] + ptAux.z*mR[0][2]) + tx );
       ptOut->y = static_cast<sub_type>( mScale * (ptAux.x*mR[1][0] + ptAux.y*mR[1][1] + ptAux.z*mR[1][2]) + ty );
       ptOut->z = static_cast<sub_type>( mScale * (ptAux.x*mR[2][0] + ptAux.y*mR[2][1] + ptAux.z*mR[2][2]) + tz );
@@ -4497,16 +4400,16 @@ transform_status Helmert3D<Point_t>::transform(const Point_t &ptIn, Point_t *ptO
     }
   } catch (std::exception &e ) {
     msgError("Error in Helmert 3D transformation: %s", e.what());
-    r_status = transform_status::failure;
+    r_status = Transform::Status::failure;
   }
   return r_status; 
 }
 
 template<typename Point_t> inline
-Point_t Helmert3D<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t Helmert3D<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt;
-  if (trfOrder == transform_order::direct){
+  if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>( mScale * (ptIn.x*mR[0][0] + ptIn.y*mR[0][1] + ptIn.z*mR[0][2]) + tx );
     r_pt.y = static_cast<sub_type>( mScale * (ptIn.x*mR[1][0] + ptIn.y*mR[1][1] + ptIn.z*mR[1][2]) + ty );
     r_pt.z = static_cast<sub_type>( mScale * (ptIn.x*mR[2][0] + ptIn.y*mR[2][1] + ptIn.z*mR[2][2]) + tz );
@@ -4632,11 +4535,11 @@ TL_TODO("Marcar los métodos 'transform' como obsoletos y usar std::transform co
  * \param[in] in Ventana de entrada
  * \param[out] out Ventana de salida
  * \param[in] trf Transformación que se aplica
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename Point_t> inline
 void transform(const Window<Point_t> &in, Window<Point_t> *out,
-                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
+                          TransformBase<Point_t> *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
   Point_t pt1;
   Point_t pt2;
@@ -4652,11 +4555,11 @@ void transform(const Window<Point_t> &in, Window<Point_t> *out,
  * \param[in] in Segmento de entrada
  * \param[out] out Segmento de salida
  * \param[in] trf Transformación que se aplica
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename Point_t> inline
 void transform(const Segment<Point_t> &in, Segment<Point_t> *out, 
-                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
+                          TransformBase<Point_t> *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
   trf->transform(in.pt1, &out->pt1, trfOrder);
   trf->transform(in.pt2, &out->pt2, trfOrder);
@@ -4667,16 +4570,16 @@ void transform(const Segment<Point_t> &in, Segment<Point_t> *out,
  * \param[in] ptsIn Contenedor de entrada
  * \param[out] ptsOut Contenedor de salida
  * \param[in] trf Transformación que se aplica
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename Point_t> inline
-transform_status transform(const EntityContainer<Point_t> &ptsIn, EntityContainer<Point_t> *ptsOut,
-               Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
+Transform::Status transform(const EntityContainer<Point_t> &ptsIn, EntityContainer<Point_t> *ptsOut,
+               TransformBase<Point_t> *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
-  transform_status r_status = transform_status::success;
+  Transform::Status r_status = Transform::Status::success;
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = trf->transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
-    if ( r_status == transform_status::failure ) break;
+    if ( r_status == Transform::Status::failure ) break;
   }
   return r_status;
 }
@@ -4686,11 +4589,11 @@ transform_status transform(const EntityContainer<Point_t> &ptsIn, EntityContaine
  * \param[in] in Entidad de entrada
  * \param[out] out Entidad de salida
  * \param[in] trf Transformación que se aplica a la entidad
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename Entity_t, typename Point_t> inline
 void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
-                          Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
+                          TransformBase<Point_t> *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
   out->resize(in.size());
   for (int i = 0; i < in.size(); i++) {
@@ -4703,11 +4606,11 @@ void transform(const std::vector<Entity_t> &in, std::vector<Entity_t> *out,
  * \param[in] in Entidad de entrada
  * \param[out] out Entidad de salida
  * \param[in] trf Transformación que se aplica a la entidad
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename Entity_t, typename Point_t> inline
 void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *out, 
-                                  Transform<Point_t> *trf, transform_order trfOrder = transform_order::direct)
+                                  TransformBase<Point_t> *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
   parallel_for(0, static_cast<int>(in.size()), [&](int i) {
     transform(in[i], &(*out)[i], trf, trfOrder);
@@ -4720,10 +4623,10 @@ void transformParalell(const std::vector<Entity_t> &in, std::vector<Entity_t> *o
  * \param[in] in_last  Iterador al último elemento de entrada
  * \param[out] out_first Iterador al primer elemento de salida
  * \param[in] trf Transformación que se aplica a la entidad
- * \param[in] trfOrder Orden de la transformación. Por defecto transform_order::direct
+ * \param[in] trfOrder Orden de la transformación. Por defecto Transform::Order::direct
  */
 template<typename itIn, typename itOut, typename trf_t> inline
-void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, transform_order trfOrder = transform_order::direct)
+void transform(itIn in_first, itIn in_last, itOut out_first, trf_t *trf, Transform::Order trfOrder = Transform::Order::direct)
 {
   while (in_first != in_last) {
     trf->transform(*in_first++, &(*out_first++), trfOrder);

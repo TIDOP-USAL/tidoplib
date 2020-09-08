@@ -798,6 +798,7 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
 
   for (auto &command : mCommands){
     if(command->name().compare(arg_cmd_name) == 0){
+      mCommand = command;
       std::vector<char const*> cmd_argv;
       for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
         if (i != 1)
@@ -812,26 +813,8 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
         return Status::show_licence;
       } else if (status == Command::Status::show_version) {
         return Status::show_version;
-      }
-    }
-  }
-
-  for (auto &command : mCommands){
-    if(command->name().compare(arg_cmd_name) == 0){
-      std::vector<char const*> cmd_argv;
-      for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
-        if (i != 1)
-          cmd_argv.push_back(argv[i]);
-      }
-      Command::Status status = command->parse(argc-1, cmd_argv.data());
-      if (status == Command::Status::parse_error) {
-        return Status::parse_error;
-      } else if (status == Command::Status::show_help) {
-        return Status::show_help;
-      } else if (status == Command::Status::show_licence) {
-        return Status::show_licence;
-      } else if (status == Command::Status::show_version) {
-        return Status::show_version;
+      } else {
+        return Status::parse_success;
       }
     }
   }
@@ -905,6 +888,11 @@ void CommandList::showLicence() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
+}
+
+std::string CommandList::commandName() const
+{
+  return mCommand ? mCommand->name() : std::string();
 }
 
 

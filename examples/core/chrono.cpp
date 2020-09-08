@@ -15,6 +15,11 @@ using namespace tl;
 int main(int argc, char** argv)
 {
 
+  Console &console = Console::instance();
+  console.setTitle("Chrono Example");
+  console.setLogLevel(MessageLevel::msg_verbose);
+  MessageManager::instance().addListener(&console);
+
   /* */
   Chrono chrono;
   chrono.run();  // Se inicia el cronometro

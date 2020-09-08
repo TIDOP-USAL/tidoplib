@@ -1715,6 +1715,8 @@ private:
    */
   std::list<std::shared_ptr<Command>> mCommands;
 
+  std::shared_ptr<Command> mCommand;
+
   /*!
    * \brief Versión del programa
    */
@@ -1884,6 +1886,7 @@ public:
    */
   void showLicence() const;
 
+  std::string commandName() const;
 };
 
 
