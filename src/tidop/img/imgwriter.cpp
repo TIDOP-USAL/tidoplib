@@ -240,11 +240,13 @@ public:
       RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
       RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), transform_order::inverse);
-      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), transform_order::inverse);
+      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
+      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
       
       rect_to_crop_image = RectI(tl, br);
-      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x).rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y).clone();
+      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
+                            .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
+                            .clone();
 
     } else {
       image_to_write = image;

@@ -67,8 +67,8 @@ bool gdalValidExtensions(const std::string &extension)
     std::vector<std::string> extensions {
     ".bmp",    // Microsoft Windows Device Independent Bitmap (.bmp)
     ".png",    // Portable Network Graphics (.png)
-    ".jpg",    // JPEG JFIF (.jpg)
-    ".tif",    // TIFF / BigTIFF / GeoTIFF (.tif)
+    ".jpg",".jpeg",".jpe",".jif",".jfif",".jfi"    // JPEG JFIF (.jpg)
+    ".tif",".tiff",    // TIFF / BigTIFF / GeoTIFF (.tif)
     ".gif",    // Graphics Interchange Format (.gif)
     ".gtx",    // NOAA .gtx vertical datum shift
     ".grd",    // Arc/Info ASCII Grid
@@ -191,8 +191,14 @@ TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension)
   std::string format;
   if      (boost::iequals(extension, ".bmp")) format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
   else if (boost::iequals(extension, ".png")) format = "PNG";          // Portable Network Graphics (.png)
-  else if (boost::iequals(extension, ".jpg")) format = "JPEG";         // JPEG JFIF (.jpg)
-  else if (boost::iequals(extension, ".tif")) format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+  else if (boost::iequals(extension, ".jpg") ||
+           boost::iequals(extension, ".jpeg") ||
+           boost::iequals(extension, ".jpe") ||
+           boost::iequals(extension, ".jif") || 
+           boost::iequals(extension, ".jfif") || 
+           boost::iequals(extension, ".jfi")) format = "JPEG";         // JPEG JFIF (.jpg)
+  else if (boost::iequals(extension, ".tif") ||
+           boost::iequals(extension, ".tiff")) format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
   else if (boost::iequals(extension, ".gif")) format = "GIF";          // Graphics Interchange Format (.gif)
   else if (boost::iequals(extension, ".gtx")) format = "GTX";          // NOAA .gtx vertical datum shift
   else if (boost::iequals(extension, ".grd") ||

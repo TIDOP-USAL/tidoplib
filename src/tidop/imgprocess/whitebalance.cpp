@@ -27,7 +27,7 @@ Grayworld::Grayworld()
 void Grayworld::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
-  TL_ASSERT(matIn.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(matIn.channels() == 3, "Invalid image type. Incorrect number of channels")
   
   mGrayworld->balanceWhite(matIn, matOut);
 }
@@ -46,7 +46,7 @@ WhitePatch::WhitePatch(const graph::Color & white)
 void WhitePatch::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
   TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
-  TL_ASSERT(matIn.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(matIn.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   std::vector<cv::Mat> bgr(3);
   cv::split(matIn, bgr);

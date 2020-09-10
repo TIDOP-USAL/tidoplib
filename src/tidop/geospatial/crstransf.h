@@ -58,10 +58,10 @@ public:
    * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
    * \param[out] error Vector con los errores para cada punto
    * \param[out] rmse Root Mean Square Error
-   * \return transform_status
-   * \see transform_status
+   * \return Transform::Status
+   * \see Transform::Status
    */
-  transform_status compute(const std::vector<Point_t> &pts1, 
+  Transform::Status compute(const std::vector<Point_t> &pts1, 
                            const std::vector<Point_t> &pts2, 
                            std::vector<double> *error = nullptr,
                            double *rmse = nullptr) override;
@@ -71,28 +71,28 @@ public:
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \see transform_order
+   * \see Transform::Order
    */
-  transform_status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                 transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
+                 Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transforma un punto a otro sistema de referencia
    * \param[in] ptIn Punto de entrada
    * \param[out] ptOut Punto de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \see transform_order
+   * \see Transform::Order
    */
-  transform_status transform(const Point_t &ptIn, Point_t *ptOut, transform_order trfOrder = transform_order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transforma un punto a otro sistema de referencia
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \return Punto de salida
-   * \see transform_order
+   * \see Transform::Order
    */
-  Point_t transform(const Point_t &ptIn, transform_order trfOrder = transform_order::direct) const override;
+  Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override;
 
 private:
 
@@ -121,7 +121,7 @@ private:
 template<typename Point_t> inline
 CrsTransform<Point_t>::CrsTransform(const std::shared_ptr<Crs> &epsgIn, 
                                     const std::shared_ptr<Crs> &epsgOut) 
-  : Transform3D<Point_t>(transform_type::crs),
+  : Transform3D<Point_t>(Transform::Type::crs),
     mEpsgIn(epsgIn), 
     mEpsgOut(epsgOut), 
     pCoordinateTransformation(nullptr),
@@ -132,7 +132,7 @@ CrsTransform<Point_t>::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
 
 //template<typename Point_t> inline
 //CrsTransform<Point_t>::CrsTransform(const char *epsgIn, const char *epsgOut) 
-//  : Transform3D<Point_t>(transform_type::CRS), 
+//  : Transform3D<Point_t>(Transform::Type::CRS), 
 //  mEpsgIn(std::make_shared<Crs>(epsgIn)), 
 //  mEpsgOut(std::make_shared<Crs>(epsgOut)), 
 //  pCoordinateTransformation(0), 
@@ -153,21 +153,21 @@ CrsTransform<Point_t>::~CrsTransform()
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 template<typename Point_t> inline
-transform_status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                                 const std::vector<Point_t> &pts2, 
                                                 std::vector<double> *error,
                                                 double *rmse)
 {
   msgError("'compute' is not supported for CrsTransform");
   //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
-  return transform_status::failure;
+  return Transform::Status::failure;
 }
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 template<typename Point_t> inline
-transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
+Transform::Status CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
                                                   std::vector<Point_t> *ptsOut, 
-                                                  transform_order trfOrder) const
+                                                  Transform::Order trfOrder) const
 {
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
@@ -181,25 +181,25 @@ transform_status CrsTransform<Point_t>::transform(const std::vector<Point_t> &pt
     //  *p_y++ = ptsIn[i].y;
     //  *p_z++ = ptsIn[i].z;
     //}
-    // if (trfOrder == transform_order::DIRECT){
+    // if (trfOrder == Transform::Order::direct){
     //   pCoordinateTransformation->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
     // } else {
     //   pCoordinateTransformationInv->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
     //}
     transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
   }
-  return transform_status::success;
+  return Transform::Status::success;
 }
 
 
 template<typename Point_t> inline
-transform_status CrsTransform<Point_t>::transform(const Point_t &ptIn, 
+Transform::Status CrsTransform<Point_t>::transform(const Point_t &ptIn, 
                                                   Point_t *ptOut, 
-                                                  transform_order trfOrder) const
+                                                  Transform::Order trfOrder) const
 {
   *ptOut = ptIn;
   try {
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       if (pCoordinateTransformation)
         pCoordinateTransformation->Transform(1, &ptOut->x, &ptOut->y, &ptOut->z);
       else
@@ -213,16 +213,16 @@ transform_status CrsTransform<Point_t>::transform(const Point_t &ptIn,
   } catch (...) {
     throw;
   }
-  return transform_status::success;
+  return Transform::Status::success;
 }
 
 
 template<typename Point_t> inline
-Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, transform_order trfOrder) const
+Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, Transform::Order trfOrder) const
 {
   Point_t r_pt = ptIn;
   try{
-    if (trfOrder == transform_order::direct){
+    if (trfOrder == Transform::Order::direct){
       pCoordinateTransformation->Transform(1, &r_pt.x, &r_pt.y, &r_pt.z);
     } else {
       pCoordinateTransformationInv->Transform(1, &r_pt.x, &r_pt.y, &r_pt.z);

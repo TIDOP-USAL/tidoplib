@@ -131,7 +131,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, TranslationTest)
   trf_pointer->transform(ptsIn[0], &pt_out);
   BOOST_CHECK_EQUAL(ptsOut[0].x, pt_out.x);
   BOOST_CHECK_EQUAL(ptsOut[0].y, pt_out.y);
-  pt_out = trf_pointer->transform(ptsIn[0], transform_order::direct);
+  pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
   BOOST_CHECK_EQUAL(ptsOut[0].x, pt_out.x);
   BOOST_CHECK_EQUAL(ptsOut[0].y, pt_out.y);
 }
@@ -182,9 +182,9 @@ BOOST_FIXTURE_TEST_CASE(compute, TranslationTest)
 //    PointD(4172803.511, 690340.078),
 //    PointD(4177148.376, 642997.635)};
 //
-//  transform_status status = trf.compute(ptsIn2, ptsOut);
+//  Transform::Status status = trf.compute(ptsIn2, ptsOut);
 //
-//  BOOST_CHECK_EQUAL(transform_status::FAILURE, trf.compute(ptsIn2, ptsOut));
+//  BOOST_CHECK_EQUAL(Transform::Status::FAILURE, trf.compute(ptsIn2, ptsOut));
 //
 //  //EXPECT_THROW({
 //  //      try
@@ -200,7 +200,7 @@ BOOST_FIXTURE_TEST_CASE(compute, TranslationTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, TranslationTest)
 {
-  BOOST_CHECK(transform_type::translation == trf.transformType());
+  BOOST_CHECK(Transform::Type::translation == trf.transformType());
 }
 
 BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, TranslationTest)
@@ -353,7 +353,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, RotationTest)
   rot2->transform(ptsIn[0], &pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
-  pt_out = rot2->transform(ptsIn[0], transform_order::direct);
+  pt_out = rot2->transform(ptsIn[0], Transform::Order::direct);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
 }
@@ -398,7 +398,7 @@ BOOST_FIXTURE_TEST_CASE(compute, RotationTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, RotationTest)
 {
-  BOOST_CHECK(transform_type::rotation == rot.transformType());
+  BOOST_CHECK(Transform::Type::rotation == rot.transformType());
 }
 
 BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, RotationTest)
@@ -545,7 +545,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, ScalingTest)
   trf_pointer->transform(ptsIn[0], &pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
-  pt_out = trf_pointer->transform(ptsIn[0], transform_order::direct);
+  pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
 }
@@ -591,7 +591,7 @@ BOOST_FIXTURE_TEST_CASE(compute, ScalingTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, ScalingTest)
 {
-  BOOST_CHECK(transform_type::scaling == trf.transformType());
+  BOOST_CHECK(Transform::Type::scaling == trf.transformType());
 }
 
 BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, ScalingTest)
@@ -753,7 +753,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, Helmert2DTest)
   trf_pointer->transform(ptsIn[0], &pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
-  pt_out = trf_pointer->transform(ptsIn[0], transform_order::direct);
+  pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
 }
@@ -801,7 +801,7 @@ BOOST_FIXTURE_TEST_CASE(compute, Helmert2DTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, Helmert2DTest)
 {
-  BOOST_CHECK(transform_type::helmert_2d == trf.transformType());
+  BOOST_CHECK(Transform::Type::helmert_2d == trf.transformType());
 }
 
 BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, Helmert2DTest)
@@ -935,7 +935,7 @@ struct AffineTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, AffineTest)
 {
-  BOOST_CHECK(transform_type::affine == trf.transformType());
+  BOOST_CHECK(Transform::Type::affine == trf.transformType());
   BOOST_CHECK_EQUAL(0.0, trf.rotation());
   BOOST_CHECK_EQUAL(1., trf.scaleX());
   BOOST_CHECK_EQUAL(1., trf.scaleY());
@@ -946,7 +946,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor, AffineTest)
 {
-  BOOST_CHECK(transform_type::affine == trf_pointer->transformType());
+  BOOST_CHECK(Transform::Type::affine == trf_pointer->transformType());
   BOOST_CHECK_EQUAL(TL_PI / 180 * 35, trf_pointer->rotation());
   BOOST_CHECK_EQUAL(0.25, trf_pointer->scaleX());
   BOOST_CHECK_EQUAL(0.30, trf_pointer->scaleY());
@@ -1011,7 +1011,7 @@ BOOST_FIXTURE_TEST_CASE(compute, AffineTest)
 
 BOOST_FIXTURE_TEST_CASE(transformType, AffineTest)
 {
-  BOOST_CHECK(transform_type::affine == trf.transformType());
+  BOOST_CHECK(Transform::Type::affine == trf.transformType());
 }
 
 BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, AffineTest)
@@ -1072,7 +1072,7 @@ BOOST_AUTO_TEST_SUITE_END()
 //TEST(Projective, default_constructor)
 //{
 //  Projective<PointD> trf;
-//  BOOST_CHECK_EQUAL(transform_type::PROJECTIVE, trf.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::PROJECTIVE, trf.getTransformType());
 //  BOOST_CHECK_EQUAL(4,trf.minNumberOfPoints());
 //}
 //
@@ -1106,22 +1106,22 @@ BOOST_AUTO_TEST_SUITE_END()
 //  Affine<PointD> trfAffine;
 //  Projective<PointD> trfProjective;
 //
-//  BOOST_CHECK_EQUAL(transform_type::TRANSLATE, trfTranslate.getTransformType());
-//  BOOST_CHECK_EQUAL(transform_type::ROTATION, trfRotate.getTransformType());
-//  BOOST_CHECK_EQUAL(transform_type::HELMERT_2D, trfHelmert2D.getTransformType());
-//  BOOST_CHECK_EQUAL(transform_type::AFFINE, trfAffine.getTransformType());
-//  BOOST_CHECK_EQUAL(transform_type::PROJECTIVE, trfProjective.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::TRANSLATE, trfTranslate.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::ROTATION, trfRotate.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::HELMERT_2D, trfHelmert2D.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::AFFINE, trfAffine.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::PROJECTIVE, trfProjective.getTransformType());
 //
 //  Transform<PointD> *trf = &trfTranslate;
-//  BOOST_CHECK_EQUAL(transform_type::TRANSLATE, trf->getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::TRANSLATE, trf->getTransformType());
 //  trf = &trfRotate;
-//  BOOST_CHECK_EQUAL(transform_type::ROTATION, trfRotate.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::ROTATION, trfRotate.getTransformType());
 //  trf = &trfHelmert2D;
-//  BOOST_CHECK_EQUAL(transform_type::HELMERT_2D, trfHelmert2D.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::HELMERT_2D, trfHelmert2D.getTransformType());
 //  trf = &trfAffine;
-//  BOOST_CHECK_EQUAL(transform_type::AFFINE, trfAffine.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::AFFINE, trfAffine.getTransformType());
 //  trf = &trfProjective;
-//  BOOST_CHECK_EQUAL(transform_type::PROJECTIVE, trfProjective.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::PROJECTIVE, trfProjective.getTransformType());
 //}
 //
 //// Pendiente test de transformación de entidades
@@ -1141,19 +1141,19 @@ BOOST_AUTO_TEST_SUITE_END()
 //
 //// Pendiente test de transformación de imagenes
 //// Pendiente test transformación multiple
-//TEST(TrfMultiple, default_constructor)
+//TEST(TransformMultiple, default_constructor)
 //{
-//  TrfMultiple<PointD> trfMul;
+//  TransformMultiple<PointD> trfMul;
 //  trfMul.add(std::make_shared<Translate<PointD>>(150.0, 75.0));
 //  trfMul.add(std::make_shared<Rotation<PointD>>(45. * TL_DEG_TO_RAD));
 //
-//  BOOST_CHECK_EQUAL(transform_type::MULTIPLE, trfMul.getTransformType());
+//  BOOST_CHECK_EQUAL(Transform::Type::MULTIPLE, trfMul.getTransformType());
 //
 //}
 //
-//TEST(TrfMultiple, constructor)
+//TEST(TransformMultiple, constructor)
 //{
-//  TrfMultiple<PointD> trf{
+//  TransformMultiple<PointD> trf{
 //    std::make_shared<Translate<PointD>>(150.0, 75.0),
 //    std::make_shared<Rotation<PointD>>(45. * TL_DEG_TO_RAD)
 //  };

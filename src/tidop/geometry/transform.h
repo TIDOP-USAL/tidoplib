@@ -55,60 +55,10 @@ template<typename Point_t> class Affine;
  *  \{
  */
 
-///*!
-// * \brief Tipos de transformaciones
-// */
-//enum class Transform::Type {
-//  translation,     /*!< Desplazamiento */
-//  rotation,        /*!< Giro */
-//  scaling,         /*!< Escalado */
-//  reflection,      /*!< */
-//  shear,
-//  helmert_2d,      /*!< Helmert 2D */
-//  affine,          /*!< Afin */
-//  perspective,     /*!< Perspectiva */
-//  projective,      /*!< Projectiva */
-//  helmert_3d,      /*!< Helmert 3D */
-//  polynomial,      /*!< Transformación polinómica */
-//  // tipos especiales
-//  multiple,
-//  crs,
-//#ifdef TL_ENABLE_DEPRECATED_METHODS
-//  TRANSLATION = translation,    /*!< Desplazamiento. */
-//  ROTATION = rotation,          /*!< Giro. */
-//  HELMERT_2D = helmert_2d,      /*!< Helmert 2D */
-//  AFFINE = affine,              /*!< Afin */
-//  PERSPECTIVE = perspective,    /*!< Perspectiva */
-//  PROJECTIVE = projective,      /*!< Projectiva */
-//  HELMERT_3D = helmert_3d,      /*!< Helmert 3D */
-//  POLYNOMIAL = polynomial,      /*!< Transformación polinómica*/
-//  // tipos especiales
-//  MULTIPLE = multiple,
-//  CRS = crs
-//#endif // TL_ENABLE_DEPRECATED_METHODS
-//};
-//
-//enum class Transform::Order {
-//  direct,   /*!< Transformación directa. */
-//  inverse,  /*!< Transformación inversa. */
-//#ifdef TL_ENABLE_DEPRECATED_METHODS
-//  DIRECT = direct,    /*!< Transformación directa. */
-//  INVERSE = inverse   /*!< Transformación inversa. */
-//#endif // TL_ENABLE_DEPRECATED_METHODS
-//};
-//
-//enum class Transform::Status {
-//  success,
-//  failure,
-//#ifdef TL_ENABLE_DEPRECATED_METHODS
-//  SUCCESS = success,
-//  FAILURE =failure
-//#endif // TL_ENABLE_DEPRECATED_METHODS
-//};
 
-/// TODO: inverse()
-
-
+/*!
+ * \brief Interfaz Transform
+ */
 class Transform
 {
 
@@ -122,8 +72,8 @@ public:
     translation,     /*!< Desplazamiento */
     rotation,        /*!< Giro */
     scaling,         /*!< Escalado */
-    reflection,      /*!< */
-    shear,
+    reflection,      /*!< Reflexión */
+    shear,           /*!< Mapeo de corte, transformación de corte o transvección*/
     helmert_2d,      /*!< Helmert 2D */
     affine,          /*!< Afin */
     perspective,     /*!< Perspectiva */
@@ -154,7 +104,6 @@ public:
 
   /*!
    * \brief Tipo de transformación
-   * \return Tipo de transformación
    * \see Transform::Type
    */
   virtual Type transformType() const = 0;
@@ -238,7 +187,7 @@ public:
    * \brief Aplica la transformación a un punto
    * \param[in] ptIn Punto de entrada
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
-   * \return Punto de salida
+   * \return Punto transformado
    * \see Transform::Order
    */
   virtual Point_t transform(const Point_t &ptIn, 
@@ -252,7 +201,7 @@ public:
   virtual Point_t operator() (const Point_t &ptIn) const;
 
   /*!
-   * \brief Aplica la transformación a un conjunto de puntos
+   * \brief Aplica la transformación a un vector de puntos
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
@@ -264,7 +213,7 @@ public:
                                       Transform::Order trfOrder = Transform::Order::direct) const = 0;
 
   /*!
-   * \brief Aplica la transformación a un conjunto de puntos aplicando paralelismo
+   * \brief Aplica la transformación a un vector de puntos aplicando paralelismo
    * \param[in] ptsIn Puntos de entrada
    * \param[out] ptsOut Puntos de salida
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
@@ -315,6 +264,8 @@ protected:
 
 // Transform interfaz
 
+public:
+
   Type transformType() const override;
   int minNumberOfPoints() const override;
   bool isNumberOfPointsValid(size_t npoints) const override;
@@ -339,14 +290,13 @@ protected:
 };
 
 
-/// Implementación Transform
+/// Implementación TransformBase
 
 template<typename Point_t> inline
 TransformBase<Point_t>::TransformBase(Type trfType, int nMin)
   : mTrfType(trfType),
     mMinPoint(nMin)
 {
-
 }
 
 template<typename Point_t>
@@ -452,7 +402,7 @@ double TransformBase<Point_t>::_rootMeanSquareError(const std::vector<Point_t> &
  * forma que se ejecutan de manera secuencial.
  */
 template<typename Point_t>
-class TrfMultiple
+class TransformMultiple
   : public TransformBase<Point_t>
 {
 
@@ -513,18 +463,18 @@ public:
   /*!
    * \brief Constructora
    */
-  TrfMultiple();
+  TransformMultiple();
 
   /*!
    * \brief Constructor de lista
    * \param[in] transfList listado de transformaciones
    */
-  TrfMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t>>> transfList);
+  TransformMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t>>> transfList);
 
   /*!
    * \brief Destructora
    */
-  virtual ~TrfMultiple() override {}
+  virtual ~TransformMultiple() override {}
 
 public:
 
@@ -579,126 +529,126 @@ private:
 };
 
 
-/// Implementación TrfMultiple
+/// Implementación TransformMultiple
 
 template<typename Point_t>
-TrfMultiple<Point_t>::TrfMultiple()
+TransformMultiple<Point_t>::TransformMultiple()
   : TransformBase<Point_t>(Type::multiple)
 {
 }
 
 template<typename Point_t>
-TrfMultiple<Point_t>::TrfMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t> > > transformations)
+TransformMultiple<Point_t>::TransformMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t> > > transformations)
   : TransformBase<Point_t>(Transform::Type::multiple),
     mTransformationList(transformations)
 {
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::reference TrfMultiple<Point_t>::front()
+typename TransformMultiple<Point_t>::reference TransformMultiple<Point_t>::front()
 {
   return mTransformationList.front();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::const_reference TrfMultiple<Point_t>::front() const
+typename TransformMultiple<Point_t>::const_reference TransformMultiple<Point_t>::front() const
 {
   return mTransformationList.front();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::reference TrfMultiple<Point_t>::back()
+typename TransformMultiple<Point_t>::reference TransformMultiple<Point_t>::back()
 {
   return mTransformationList.back();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::const_reference TrfMultiple<Point_t>::back() const
+typename TransformMultiple<Point_t>::const_reference TransformMultiple<Point_t>::back() const
 {
   return mTransformationList.back();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::iterator TrfMultiple<Point_t>::begin() TL_NOEXCEPT
+typename TransformMultiple<Point_t>::iterator TransformMultiple<Point_t>::begin() TL_NOEXCEPT
 {
   return mTransformationList.begin();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::const_iterator TrfMultiple<Point_t>::begin() const TL_NOEXCEPT
+typename TransformMultiple<Point_t>::const_iterator TransformMultiple<Point_t>::begin() const TL_NOEXCEPT
 {
   return mTransformationList.cbegin();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::iterator TrfMultiple<Point_t>::end() TL_NOEXCEPT
+typename TransformMultiple<Point_t>::iterator TransformMultiple<Point_t>::end() TL_NOEXCEPT
 {
   return mTransformationList.end();
 }
 
 template<typename Point_t>
-typename TrfMultiple<Point_t>::const_iterator TrfMultiple<Point_t>::end() const TL_NOEXCEPT
+typename TransformMultiple<Point_t>::const_iterator TransformMultiple<Point_t>::end() const TL_NOEXCEPT
 {
   return mTransformationList.end();
 }
 
 template<typename Point_t>
-void TrfMultiple<Point_t>::push_back(const std::shared_ptr<TransformBase<Point_t>> &trf)
+void TransformMultiple<Point_t>::push_back(const std::shared_ptr<TransformBase<Point_t>> &trf)
 {
   mTransformationList.push_back(trf);
 }
 
 template<typename Point_t>
-void TrfMultiple<Point_t>::push_back(std::shared_ptr<TransformBase<Point_t>> &&trf) TL_NOEXCEPT
+void TransformMultiple<Point_t>::push_back(std::shared_ptr<TransformBase<Point_t>> &&trf) TL_NOEXCEPT
 {
   mTransformationList.push_back(std::forward<std::shared_ptr<TransformBase<Point_t>>>(trf));
 }
 
 template<typename Point_t>
-void TrfMultiple<Point_t>::clear() TL_NOEXCEPT
+void TransformMultiple<Point_t>::clear() TL_NOEXCEPT
 {
   mTransformationList.clear();
 }
 
 template<typename Point_t>
-bool TrfMultiple<Point_t>::empty() const TL_NOEXCEPT
+bool TransformMultiple<Point_t>::empty() const TL_NOEXCEPT
 {
   return mTransformationList.empty();
 }
 
 template<typename Point_t>
-size_t TrfMultiple<Point_t>::size() const
+size_t TransformMultiple<Point_t>::size() const
 {
   return mTransformationList.size();
 }
 
 template<typename Point_t>
-void TrfMultiple<Point_t>::del(int id)
+void TransformMultiple<Point_t>::del(int id)
 {
   mTransformationList.erase(mTransformationList.begin() + id);
 }
 
 template<typename Point_t> inline
-bool TrfMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
+bool TransformMultiple<Point_t>::isNumberOfPointsValid(int npoints) const
 { 
-  msgError("'isNumberOfPointsValid' is not supported for TrfMultiple");
-  TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TrfMultiple");
+  msgError("'isNumberOfPointsValid' is not supported for TransformMultiple");
+  TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TransformMultiple");
   return true;
 }
 
 template<typename Point_t> inline
-Transform::Status TrfMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status TransformMultiple<Point_t>::compute(const std::vector<Point_t> &pts1, 
                                                 const std::vector<Point_t> &pts2, 
                                                 std::vector<double> *error, 
                                                 double *rmse)
 {
-  msgError("'compute' is not supported for TrfMultiple");
-  TL_COMPILER_WARNING("'compute' is not supported for TrfMultiple");
+  msgError("'compute' is not supported for TransformMultiple");
+  TL_COMPILER_WARNING("'compute' is not supported for TransformMultiple");
   return Transform::Status::failure;
 }
 
 template<typename Point_t> inline
-Transform::Status TrfMultiple<Point_t>::transform(const Point_t &ptIn, 
+Transform::Status TransformMultiple<Point_t>::transform(const Point_t &ptIn, 
                                                   Point_t *ptOut, 
                                                   Transform::Order trfOrder) const
 {
@@ -712,7 +662,7 @@ Transform::Status TrfMultiple<Point_t>::transform(const Point_t &ptIn,
 }
 
 template<typename Point_t> inline
-Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn, 
+Point_t TransformMultiple<Point_t>::transform(const Point_t &ptIn, 
                                         Transform::Order trfOrder) const
 {
   Point_t out = ptIn;
@@ -723,7 +673,7 @@ Point_t TrfMultiple<Point_t>::transform(const Point_t &ptIn,
 }
 
 template<typename Point_t> inline
-Transform::Status TrfMultiple<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+Transform::Status TransformMultiple<Point_t>::transform(const std::vector<Point_t> &ptsIn,
                                                   std::vector<Point_t> *ptsOut,
                                                   Transform::Order trfOrder) const
 {
@@ -781,49 +731,6 @@ public:
    * \brief Destructora
    */
   virtual ~Transform2D() {}
-
-  ///*!
-  // * \brief Calcula los parámetros de transformación
-  // * \param[in] pts1 Conjunto de puntos en el primero de los sistemas
-  // * \param[in] pts2 Conjunto de puntos en el segundo de los sistemas
-  // * \param[out] error Vector con los errores para cada punto
-  // * \param[out] rmse Root Mean Square Error
-  // * \return Transform::Status
-  // * \see Transform::Status
-  // */
-  //virtual Transform::Status compute(const std::vector<Point_t> &pts1, const std::vector<Point_t> &pts2,
-  //                                 std::vector<double> *error = nullptr, double *rmse = nullptr) override = 0;
-  //
-  ///*!
-  // * \brief Aplica la transformación a un conjunto de puntos
-  // * \param[in] ptsIn Puntos de entrada
-  // * \param[out] ptsOut Puntos de salida
-  // * \param[in] trfOrder Transformación directa (por defecto) o inversa
-  // * \return Transform::Status
-  // * \see Transform::Order, Transform::Status
-  // */
-  //virtual Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut,
-  //                                   Transform::Order trfOrder = Transform::Order::direct) const override = 0;
-  //
-  ///*!
-  // * \brief Aplica la transformación a un punto
-  // * \param[in] ptIn Punto de entrada
-  // * \param[out] ptOut Punto de salida
-  // * \param[in] trfOrder Transformación directa (por defecto) o inversa
-  // * \return Transform::Status
-  // * \see Transform::Order, Transform::Status
-  // */
-  //virtual Transform::Status transform(const Point_t &ptIn, Point_t *ptOut,
-  //                                   Transform::Order trfOrder = Transform::Order::direct) const override = 0;
-  //
-  ///*!
-  // * \brief Aplica la transformación a un punto
-  // * \param[in] ptIn Punto de entrada
-  // * \param[in] trfOrder Transformación directa (por defecto) o inversa
-  // * \return Punto de salida
-  // * \see Transform::Order
-  // */
-  //virtual Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override = 0;
 
 };
 
@@ -1140,23 +1047,6 @@ public:
    */
   typedef typename Point_t::value_type sub_type;
 
-private:
-
-  /*!
-   * \brief Ángulo de rotación
-   */
-  double mAngle;
-
-  /*!
-   * \brief r1 = cos(angle);
-   */
-  double r1;
-
-  /*!
-   * \brief r2 = sin(angle);
-   */
-  double r2;
-
 public:
 
   /*!
@@ -1249,9 +1139,14 @@ public:
    *
    * <H3>Ejemplo:</H3>
    * \code
-   * Rotation<cv::Point2d> rot(0.562);
-   * std::vector<cv::Point2d> pts_in{ cv::Point2d(12.3, 34.3), cv::Point2d(10.6, 34.345), cv::Point2d(34.76, 54.26) };
-   * std::vector<cv::Point2d> pts_out;
+   * std::vector<PointD> pts_in{ 
+   *   PointD(12.3, 34.3), 
+   *   PointD(10.6, 34.345),
+   *   PointD(34.76, 54.26) };
+   *
+   * std::vector<PointD> pts_out;
+   *
+   * Rotation<PointD> rot(0.562);
    * rot.transform(pts_in, &pts_out);
    * \endcode
    * \param[in] ptsIn Puntos de entrada
@@ -1294,10 +1189,25 @@ public:
 
 private:
 
-  /*!
-   * \brief Actualiza los parámetros r1 y r2
-   */
   void update();
+
+private:
+
+  /*!
+   * \brief Ángulo de rotación
+   */
+  double mAngle;
+
+  /*!
+   * \brief r1 = cos(angle);
+   */
+  double r1;
+
+  /*!
+   * \brief r2 = sin(angle);
+   */
+  double r2;
+
 };
 
 template<typename Point_t> inline
@@ -1518,7 +1428,7 @@ void Rotation<Point_t>::update()
 /*!
  * \brief Escala
  *
- * Transformación que aplica una traslación en el plano a un conjunto de puntos
+ * Transformación que aplica un cambio de escala
  */
 template<typename Point_t>
 class Scaling
@@ -1526,11 +1436,6 @@ class Scaling
 {
 
 public:
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
 
   /*!
    * \brief Tipo de objeto punto. Puede ser Point<sub_type> o CV::Point_<sub_type>
@@ -1654,6 +1559,14 @@ public:
 
   template <typename Point_t2>
   explicit operator Affine<Point_t2>() const;
+
+protected:
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
+
 };
 
 
@@ -1893,33 +1806,6 @@ public:
    */
   typedef typename Point_t::value_type sub_type;
 
-private:
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
-
-  /*!
-   * \brief Ángulo de rotation
-   */
-  double mRotation;
-
-  /*!
-   * \brief a = scale * cos(rotation);
-   */
-  double a;
-
-  /*!
-   * \brief b = scale * sin(rotation);
-   */
-  double b;
-
-  double ai;
-  double bi;
-  double txi;
-  double tyi;
-
 public:
 
   /*!
@@ -2106,6 +1992,32 @@ private:
    */
   void updateInv();
 
+private:
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
+
+  /*!
+   * \brief Ángulo de rotation
+   */
+  double mRotation;
+
+  /*!
+   * \brief a = scale * cos(rotation);
+   */
+  double a;
+
+  /*!
+   * \brief b = scale * sin(rotation);
+   */
+  double b;
+
+  double ai;
+  double bi;
+  double txi;
+  double tyi;
 };
 
 
@@ -2151,16 +2063,16 @@ Helmert2D<Point_t>::Helmert2D(const Helmert2D &helmert2D)
 template<typename Point_t> inline
 Helmert2D<Point_t>::Helmert2D(Helmert2D &&helmert2D) TL_NOEXCEPT
   : Transform2D<Point_t>(std::forward<Transform2D<Point_t>>(helmert2D)),
-    tx(std::move(helmert2D.tx)),
-    ty(std::move(helmert2D.ty)),
-    mScale(std::move(helmert2D.mScale)),
-    mRotation(std::move(helmert2D.mRotation)),
-    a(std::move(helmert2D.a)),
-    b(std::move(helmert2D.b)),
-    ai(std::move(helmert2D.ai)),
-    bi(std::move(helmert2D.bi)),
-    txi(std::move(helmert2D.txi)),
-    tyi(std::move(helmert2D.tyi))
+    tx(helmert2D.tx),
+    ty(helmert2D.ty),
+    mScale(helmert2D.mScale),
+    mRotation(helmert2D.mRotation),
+    a(helmert2D.a),
+    b(helmert2D.b),
+    ai(helmert2D.ai),
+    bi(helmert2D.bi),
+    txi(helmert2D.txi),
+    tyi(helmert2D.tyi)
 {
 }
 
@@ -2240,10 +2152,6 @@ Transform::Status Helmert2D<Point_t>::transform(const Point_t &ptIn, Point_t *pt
       ptOut->x = static_cast<sub_type>(a * x_aux - b * ptIn.y + tx);
       ptOut->y = static_cast<sub_type>(b * x_aux + a * ptIn.y + ty);
     } else {
-//      double det = a*a + b*b;
-//      if ( det == 0. ) throw TL_ERROR("Division by zero");
-//      ptOut->x = static_cast<sub_type>((a*(x_aux - tx) + b*(ptIn.y - ty)) / det);
-//      ptOut->y = static_cast<sub_type>((-b*(x_aux - tx) + a*(ptIn.y - ty)) / det);
       ptOut->x = static_cast<sub_type>(ai * x_aux - bi * ptIn.y + txi);
       ptOut->y = static_cast<sub_type>(bi * x_aux + ai * ptIn.y + tyi);
     }
@@ -2364,16 +2272,16 @@ Helmert2D<Point_t> &Helmert2D<Point_t>::operator = (Helmert2D<Point_t> &&helmert
 {
   if (this != &helmert) {
     Transform2D<Point_t>::operator = (std::forward<Transform2D<Point_t>>(helmert));
-    this->tx = std::move(helmert.tx);
-    this->ty = std::move(helmert.ty);
-    this->mRotation = std::move(helmert.mRotation);
-    this->mScale = std::move(helmert.mScale);
-    this->a = std::move(helmert.a);
-    this->b = std::move(helmert.b);
-    this->ai = std::move(helmert.ai);
-    this->bi = std::move(helmert.bi);
-    this->txi = std::move(helmert.txi);
-    this->tyi = std::move(helmert.tyi);
+    this->tx = helmert.tx;
+    this->ty = helmert.ty;
+    this->mRotation = helmert.mRotation;
+    this->mScale = helmert.mScale;
+    this->a = helmert.a;
+    this->b = helmert.b;
+    this->ai = helmert.ai;
+    this->bi = helmert.bi;
+    this->txi = helmert.txi;
+    this->tyi = helmert.tyi;
   }
   return *this;
 }

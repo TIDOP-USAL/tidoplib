@@ -152,7 +152,6 @@ OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OF
 # Activación/desactivación de otros componentes de la libreria
 OPTION (BUILD_APPS            "APPS"                  ON)
 OPTION (BUILD_TEST            "Include test"          OFF)
-OPTION (BUILD_EXAMPLES        "Include examples"      OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
 
 # Activa el gestor de mensajes. Si se desactiva no se mostrarán los mensajes del la librería
