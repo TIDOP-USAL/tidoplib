@@ -290,9 +290,9 @@ template<typename Point3_t> inline
 Point3_t BoundingBox<Point3_t>::center() const
 {
   if (std::is_integral<typename Point3_t::value_type>::value) {
-    return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2),
-                    TL_ROUND_TO_INT((pt1.y + pt2.y) / 2),
-                    TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));
+    return Point3_t(static_cast<typename Point3_t::value_type>(round((pt1.x + pt2.x) / 2.)),
+                    static_cast<typename Point3_t::value_type>(round((pt1.y + pt2.y) / 2.)),
+                    static_cast<typename Point3_t::value_type>(round((pt1.z + pt2.z) / 2.)));
   } else {
     return Point3_t((pt1.x + pt2.x) / 2., 
                     (pt1.y + pt2.y) / 2., 

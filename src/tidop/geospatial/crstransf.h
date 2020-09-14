@@ -16,7 +16,7 @@ TL_DEFAULT_WARNINGS
 #include "tidop/geospatial/crs.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
-#include "tidop/geometry/transform.h"
+#include "tidop/geometry/transform/transform.h"
 
 
 namespace tl
@@ -62,9 +62,9 @@ public:
    * \see Transform::Status
    */
   Transform::Status compute(const std::vector<Point_t> &pts1, 
-                           const std::vector<Point_t> &pts2, 
-                           std::vector<double> *error = nullptr,
-                           double *rmse = nullptr) override;
+                            const std::vector<Point_t> &pts2, 
+                            std::vector<double> *error = nullptr,
+                            double *rmse = nullptr) override;
 
   /*!
    * \brief Transforma un conjunto de puntos a otro sistema de referencia
@@ -73,8 +73,9 @@ public:
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \see Transform::Order
    */
-  Transform::Status transform(const std::vector<Point_t> &ptsIn, std::vector<Point_t> *ptsOut, 
-                 Transform::Order trfOrder = Transform::Order::direct) const override;
+  Transform::Status transform(const std::vector<Point_t> &ptsIn, 
+                              std::vector<Point_t> &ptsOut, 
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transforma un punto a otro sistema de referencia
@@ -83,7 +84,9 @@ public:
    * \param[in] trfOrder Transformación directa (por defecto) o inversa
    * \see Transform::Order
    */
-  Transform::Status transform(const Point_t &ptIn, Point_t *ptOut, Transform::Order trfOrder = Transform::Order::direct) const override;
+  Transform::Status transform(const Point_t &ptIn, 
+                              Point_t &ptOut, 
+                              Transform::Order trfOrder = Transform::Order::direct) const override;
 
   /*!
    * \brief Transforma un punto a otro sistema de referencia
@@ -92,7 +95,8 @@ public:
    * \return Punto de salida
    * \see Transform::Order
    */
-  Point_t transform(const Point_t &ptIn, Transform::Order trfOrder = Transform::Order::direct) const override;
+  Point_t transform(const Point_t &ptIn, 
+                    Transform::Order trfOrder = Transform::Order::direct) const override;
 
 private:
 
@@ -154,9 +158,9 @@ CrsTransform<Point_t>::~CrsTransform()
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 template<typename Point_t> inline
 Transform::Status CrsTransform<Point_t>::compute(const std::vector<Point_t> &pts1, 
-                                                const std::vector<Point_t> &pts2, 
-                                                std::vector<double> *error,
-                                                double *rmse)
+                                                 const std::vector<Point_t> &pts2, 
+                                                 std::vector<double> *error,
+                                                 double *rmse)
 {
   msgError("'compute' is not supported for CrsTransform");
   //TL_COMPILER_WARNING("'compute' is not supported for CrsTransform");
@@ -166,12 +170,12 @@ TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 template<typename Point_t> inline
 Transform::Status CrsTransform<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
-                                                  std::vector<Point_t> *ptsOut, 
-                                                  Transform::Order trfOrder) const
+                                                   std::vector<Point_t> &ptsOut, 
+                                                   Transform::Order trfOrder) const
 {
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
-    // TODO: Debería ser mas rapido hacer:
+    TL_TODO("Debería ser mas rapido hacer ...")
     // size_t n = ptsIn.size();
     // double *x = new double[n], *p_x = x;
     // double *y = new double[n], *p_y = y;
@@ -186,7 +190,7 @@ Transform::Status CrsTransform<Point_t>::transform(const std::vector<Point_t> &p
     // } else {
     //   pCoordinateTransformationInv->Transform(n, &ptOut->x, &ptOut->y, &ptOut->z);
     //}
-    transform(ptsIn[i], &(*ptsOut)[i], trfOrder);
+    transform(ptsIn[i], ptsOut[i], trfOrder);
   }
   return Transform::Status::success;
 }
@@ -194,19 +198,19 @@ Transform::Status CrsTransform<Point_t>::transform(const std::vector<Point_t> &p
 
 template<typename Point_t> inline
 Transform::Status CrsTransform<Point_t>::transform(const Point_t &ptIn, 
-                                                  Point_t *ptOut, 
-                                                  Transform::Order trfOrder) const
+                                                   Point_t &ptOut, 
+                                                   Transform::Order trfOrder) const
 {
-  *ptOut = ptIn;
+  ptOut = ptIn;
   try {
     if (trfOrder == Transform::Order::direct){
       if (pCoordinateTransformation)
-        pCoordinateTransformation->Transform(1, &ptOut->x, &ptOut->y, &ptOut->z);
+        pCoordinateTransformation->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
       else
         msgError("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     } else {
       if (pCoordinateTransformationInv) 
-        pCoordinateTransformationInv->Transform(1, &ptOut->x, &ptOut->y, &ptOut->z);
+        pCoordinateTransformationInv->Transform(1, &ptOut.x, &ptOut.y, &ptOut.z);
       else
         msgError("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
     }

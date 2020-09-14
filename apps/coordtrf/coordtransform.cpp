@@ -1,6 +1,9 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/geometry/transform.h>
+#include <tidop/geometry/transform/affine.h>
+#include <tidop/geometry/transform/translation.h>
+#include <tidop/geometry/transform/rotation.h>
+#include <tidop/geometry/transform/helmert2d.h>
 #include <tidop/geometry/entities/point.h>
 
 using namespace tl;
@@ -107,7 +110,7 @@ int main(int argc, char** argv)
       transformation = std::make_shared<Affine<PointD>>(tx, ty, scale_x, scale_y, rotation_angle);
     }
 
-    transformation->transform(pts_in, &pts_out);
+    transformation->transform(pts_in, pts_out);
 
   } else {
 

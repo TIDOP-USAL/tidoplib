@@ -4,6 +4,7 @@
 
 #include "tidop/img/formats.h"
 #include "tidop/img/metadata.h"
+#include "tidop/core/messages.h"
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -236,7 +237,7 @@ public:
       affine.compute(image_points, image_rect);
 
       std::vector<PointD> image_points_transform;
-      affine.transform(image_points, &image_points_transform);
+      affine.transform(image_points, image_points_transform);
       RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
       RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 

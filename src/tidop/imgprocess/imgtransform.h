@@ -9,7 +9,8 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/imgprocess/imgprocess.h"
-#include "tidop/geometry/transform.h"
+#include "tidop/geometry/transform/transform.h"
+#include "tidop/geometry/size.h"
 
 namespace tl
 {

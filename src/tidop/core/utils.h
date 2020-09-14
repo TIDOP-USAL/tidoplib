@@ -888,39 +888,14 @@ public:
 #endif
   };
 
-private:
-  
-  /*!
-   * Tiempo de inicio en milisegundos
-   */
-  uint64_t mTimeIni;
-
-  /*!
-   * Tiempo acumulado en milisegundos
-   */
-  uint64_t mAccumulated;
-
-  /*!
-   * \brief Estado del cronómetro
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Mensaje de información opcional
-   */
-  std::string mMessage;
-
-  /*!
-   * \brief Escribe mensajes en log y consola
-   */
-  bool bWriteMsg;
-
 public:
+
 
   /*!
    * \brief Constructor
    */
-  Chrono(const char *msg = "", bool writeMsg = true);
+  Chrono(const std::string &message = "", 
+         bool writeMessage = true);
 
   /*!
    * \brief Destructora
@@ -953,9 +928,34 @@ public:
    */
   uint64_t stop();
 
-  void setMessage(const char *msg);
+  void setMessage(const std::string &message);
 
 private:
+  
+  /*!
+   * Tiempo de inicio en milisegundos
+   */
+  uint64_t mTimeIni;
+
+  /*!
+   * Tiempo acumulado en milisegundos
+   */
+  uint64_t mAccumulated;
+
+  /*!
+   * \brief Estado del cronómetro
+   */
+  Status mStatus;
+
+  /*!
+   * \brief Mensaje de información opcional
+   */
+  std::string mMessage;
+
+  /*!
+   * \brief Escribe mensajes en log y consola
+   */
+  bool bWriteMessage;
 
 };
 

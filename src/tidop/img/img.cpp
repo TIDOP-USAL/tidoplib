@@ -67,7 +67,7 @@ bool gdalValidExtensions(const std::string &extension)
     std::vector<std::string> extensions {
     ".bmp",    // Microsoft Windows Device Independent Bitmap (.bmp)
     ".png",    // Portable Network Graphics (.png)
-    ".jpg",".jpeg",".jpe",".jif",".jfif",".jfi"    // JPEG JFIF (.jpg)
+    ".jpg",".jpeg",".jpe",".jif",".jfif",".jfi",    // JPEG JFIF (.jpg)
     ".tif",".tiff",    // TIFF / BigTIFF / GeoTIFF (.tif)
     ".gif",    // Graphics Interchange Format (.gif)
     ".gtx",    // NOAA .gtx vertical datum shift

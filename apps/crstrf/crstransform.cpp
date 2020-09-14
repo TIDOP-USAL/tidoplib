@@ -82,7 +82,7 @@ int main(int argc, char** argv)
           splitToNumbers(line, vector, separator.c_str());
           Point3D pt_in(vector[0], vector[1], vector[2]);
           Point3D pt_out;
-          crs.transform(pt_in, &pt_out);
+          crs.transform(pt_in, pt_out);
           msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", vector[0], vector[1], vector[2], pt_out.x, pt_out.y, pt_out.z);
 
           if (ofs.is_open()) {
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
       splitToNumbers(coord, point, separator.c_str());
       Point3D pt_in(point[0], point[1], point[2]);
       Point3D pt_out;
-      crs.transform(pt_in, &pt_out);
+      crs.transform(pt_in, pt_out);
       msgInfo("%lf;%lf;%lf -> %lf;%lf;%lf", point[0], point[1], point[2], pt_out.x, pt_out.y, pt_out.z);
 
       if (ofs.is_open()) {

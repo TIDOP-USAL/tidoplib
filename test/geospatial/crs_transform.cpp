@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE Tidop geospatial crs_transform test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/crstransf.h>
+#include <tidop/geometry/entities/point.h>
 
 using namespace tl;
 using namespace tl::geospatial;
@@ -44,7 +45,7 @@ BOOST_FIXTURE_TEST_CASE(isGeocentric, CrsTransformTest)
   CrsTransform<Point3D> trf(epsg25830, epsg4258);
   Point3D pt_utm(281815.044, 4827675.243, 0.);
   Point3D pt_geo;
-  trf.transform(pt_utm, &pt_geo);
+  trf.transform(pt_utm, pt_geo);
   BOOST_CHECK_EQUAL(43.570113, pt_geo.x);
   BOOST_CHECK_EQUAL(-5.701905, pt_geo.y);
   BOOST_CHECK_EQUAL(0., pt_geo.z);

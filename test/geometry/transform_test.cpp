@@ -1,6 +1,12 @@
 #define BOOST_TEST_MODULE Tidop Transform test
 #include <boost/test/unit_test.hpp>
-#include <tidop/geometry/transform.h>
+#include <tidop/geometry/entities/point.h>
+#include <tidop/geometry/transform/transform.h>
+#include <tidop/geometry/transform/translation.h>
+#include <tidop/geometry/transform/helmert2d.h>
+#include <tidop/geometry/transform/affine.h>
+#include <tidop/geometry/transform/rotation.h>
+#include <tidop/geometry/transform/scale.h>
 #include <tidop/core/utils.h>
 #include <tidop/core/exception.h>
 #include <tidop/math/algebra/vector.h>
@@ -12,7 +18,7 @@ BOOST_AUTO_TEST_SUITE(TranslationTestSuite)
 struct TranslationTest
 {
   TranslationTest()
-    :trf_pointer(new Translation<PointD>(150.0, 75.0))
+    : trf_pointer(new Translation<PointD>(150.0, 75.0))
   {}
 
   ~TranslationTest()
@@ -128,7 +134,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, TranslationTest)
 BOOST_FIXTURE_TEST_CASE(transform_point, TranslationTest)
 {
   PointD pt_out;
-  trf_pointer->transform(ptsIn[0], &pt_out);
+  trf_pointer->transform(ptsIn[0], pt_out);
   BOOST_CHECK_EQUAL(ptsOut[0].x, pt_out.x);
   BOOST_CHECK_EQUAL(ptsOut[0].y, pt_out.y);
   pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
@@ -139,7 +145,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, TranslationTest)
 BOOST_FIXTURE_TEST_CASE(transform_point_list, TranslationTest)
 {
   std::vector<PointD> pts_out;
-  trf_pointer->transform(ptsIn, &pts_out);
+  trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
     BOOST_CHECK_EQUAL(ptsOut[i].x, pts_out[i].x);
@@ -350,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE(setAngle, RotationTest)
 BOOST_FIXTURE_TEST_CASE(transform_point, RotationTest)
 {
   PointD pt_out;
-  rot2->transform(ptsIn[0], &pt_out);
+  rot2->transform(ptsIn[0], pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
   pt_out = rot2->transform(ptsIn[0], Transform::Order::direct);
@@ -361,7 +367,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, RotationTest)
 BOOST_FIXTURE_TEST_CASE(transform_point_list, RotationTest)
 {
   std::vector<PointD> pts_out;
-  rot2->transform(ptsIn, &pts_out);
+  rot2->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
     BOOST_CHECK_CLOSE(pts_out[i].x, ptsOut[i].x, 0.1);
@@ -542,7 +548,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, ScalingTest)
 BOOST_FIXTURE_TEST_CASE(transform_point, ScalingTest)
 {
   PointD pt_out;
-  trf_pointer->transform(ptsIn[0], &pt_out);
+  trf_pointer->transform(ptsIn[0], pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
   pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
@@ -553,7 +559,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, ScalingTest)
 BOOST_FIXTURE_TEST_CASE(transform_point_list, ScalingTest)
 {
   std::vector<PointD> pts_out;
-  trf_pointer->transform(ptsIn, &pts_out);
+  trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
     BOOST_CHECK_CLOSE(pts_out[i].x, ptsOut[i].x, 0.1);
@@ -750,7 +756,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, Helmert2DTest)
 BOOST_FIXTURE_TEST_CASE(transform_point, Helmert2DTest)
 {
   PointD pt_out;
-  trf_pointer->transform(ptsIn[0], &pt_out);
+  trf_pointer->transform(ptsIn[0], pt_out);
   BOOST_CHECK_CLOSE(ptsOut[0].x, pt_out.x, 0.1);
   BOOST_CHECK_CLOSE(ptsOut[0].y, pt_out.y, 0.1);
   pt_out = trf_pointer->transform(ptsIn[0], Transform::Order::direct);
@@ -761,7 +767,7 @@ BOOST_FIXTURE_TEST_CASE(transform_point, Helmert2DTest)
 BOOST_FIXTURE_TEST_CASE(transform_point_list, Helmert2DTest)
 {
   std::vector<PointD> pts_out;
-  trf_pointer->transform(ptsIn, &pts_out);
+  trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
     BOOST_CHECK_CLOSE(pts_out[i].x, ptsOut[i].x, 0.1);
@@ -991,7 +997,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, AffineTest)
 BOOST_FIXTURE_TEST_CASE(transform, AffineTest)
 {
   std::vector<PointD> pts_out;
-  trf_pointer->transform(ptsIn, &pts_out);
+  trf_pointer->transform(ptsIn, pts_out);
 
   for (size_t i = 0; i < ptsOut.size(); i++) {
     BOOST_CHECK_CLOSE(pts_out[i].x, ptsOut[i].x, 0.1);
