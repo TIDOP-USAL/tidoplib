@@ -35,6 +35,10 @@ class Size
 
 public:
 
+  typedef T value_type;
+
+public:
+
   Size();
   Size(T width, T height);
   Size(const Size &size);
@@ -52,7 +56,6 @@ public:
 
 public:
 
-  typedef T value_type;
   T width;
   T height;
 };

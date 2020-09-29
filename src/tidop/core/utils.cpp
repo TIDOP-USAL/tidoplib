@@ -18,11 +18,11 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-#ifdef HAVE_GDAL
+/* #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // HAVE_GDAL */
 
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>
@@ -782,71 +782,71 @@ int stringToInteger(const std::string &text, Base base)
 
 #ifdef HAVE_OPENCV
 
-void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
-{
-  cv::FileStorage fs(file, cv::FileStorage::READ);
-  fs["image_width"] >> imageSize.width;
-  fs["image_height"] >> imageSize.height;
-  fs["camera_matrix"] >> cameraMatrix;
-  fs["distortion_coefficients"] >> distCoeffs;
-  fs.release();
-}
-
-int loadBinMat(const char *file, cv::Mat *data)
-{
-  FILE *fp = std::fopen(file, "rb");
-  if (!fp) {
-    return 1;
-  }
-  int i_ret = 0;
-  //cabecera
-  int32_t rows;
-  int32_t cols;
-  int32_t type;
-  try {
-    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
-    TL_ASSERT(err != 1, "Reading error")
-    err = std::fread(&cols, sizeof(int32_t), 1, fp);
-    TL_ASSERT(err != 1, "Reading error")
-    err = std::fread(&type, sizeof(int32_t), 1, fp);
-    TL_ASSERT(err != 1, "Reading error")
-    //Cuerpo
-    cv::Mat aux(rows, cols, type);
-    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
-    TL_ASSERT(err != rows*cols, "Reading error")
-    aux.copyTo(*data);
-  } catch (std::exception &e) {
-    msgError(e.what());
-    i_ret = 1;
-  }
-  std::fclose(fp);
-  return i_ret;
-}
-
-int saveBinMat(const char *file, cv::Mat &data)
-{
-  FILE* fp = std::fopen(file, "wb");
-  if (!fp) {
-    return 1;
-  }
-  int i_ret = 0;
-  //cabecera
-  int32_t rows = data.rows;
-  int32_t cols = data.cols;
-  int32_t type = data.type();
-  try {
-    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
-    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
-    std::fwrite(&type, sizeof(int32_t), 1, fp);
-    //Cuerpo
-    std::fwrite(data.data, sizeof(float), rows*cols, fp);
-  } catch (std::exception &e) {
-    msgError(e.what());
-    i_ret = 1;
-  }
-  std::fclose(fp);
-  return i_ret;
-}
+//void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
+//{
+//  cv::FileStorage fs(file, cv::FileStorage::READ);
+//  fs["image_width"] >> imageSize.width;
+//  fs["image_height"] >> imageSize.height;
+//  fs["camera_matrix"] >> cameraMatrix;
+//  fs["distortion_coefficients"] >> distCoeffs;
+//  fs.release();
+//}
+//
+//int loadBinMat(const char *file, cv::Mat *data)
+//{
+//  FILE *fp = std::fopen(file, "rb");
+//  if (!fp) {
+//    return 1;
+//  }
+//  int i_ret = 0;
+//  //cabecera
+//  int32_t rows;
+//  int32_t cols;
+//  int32_t type;
+//  try {
+//    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    err = std::fread(&cols, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    err = std::fread(&type, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    //Cuerpo
+//    cv::Mat aux(rows, cols, type);
+//    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
+//    TL_ASSERT(err != rows*cols, "Reading error")
+//    aux.copyTo(*data);
+//  } catch (std::exception &e) {
+//    msgError(e.what());
+//    i_ret = 1;
+//  }
+//  std::fclose(fp);
+//  return i_ret;
+//}
+//
+//int saveBinMat(const char *file, cv::Mat &data)
+//{
+//  FILE* fp = std::fopen(file, "wb");
+//  if (!fp) {
+//    return 1;
+//  }
+//  int i_ret = 0;
+//  //cabecera
+//  int32_t rows = data.rows;
+//  int32_t cols = data.cols;
+//  int32_t type = data.type();
+//  try {
+//    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
+//    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
+//    std::fwrite(&type, sizeof(int32_t), 1, fp);
+//    //Cuerpo
+//    std::fwrite(data.data, sizeof(float), rows*cols, fp);
+//  } catch (std::exception &e) {
+//    msgError(e.what());
+//    i_ret = 1;
+//  }
+//  std::fclose(fp);
+//  return i_ret;
+//}
 
 #endif // HAVE_OPENCV
 
@@ -1452,25 +1452,25 @@ Compression::Status Compression::decompress()
 
 
 
-#ifdef HAVE_GDAL
-
-/* ---------------------------------------------------------------------------------- */
-
-std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
-std::mutex RegisterGdal::sMutex;
-
-void RegisterGdal::init()
-{
-  if (sRegisterGdal.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
-    if (sRegisterGdal.get() == nullptr) {
-      sRegisterGdal.reset(new RegisterGdal());
-      GDALAllRegister();
-    }
-  }
-}
-
-#endif
+//#ifdef HAVE_GDAL
+//
+///* ---------------------------------------------------------------------------------- */
+//
+//std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
+//std::mutex RegisterGdal::sMutex;
+//
+//void RegisterGdal::init()
+//{
+//  if (sRegisterGdal.get() == nullptr) {
+//    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
+//    if (sRegisterGdal.get() == nullptr) {
+//      sRegisterGdal.reset(new RegisterGdal());
+//      GDALAllRegister();
+//    }
+//  }
+//}
+//
+//#endif
 
 
 } // End namespace tl

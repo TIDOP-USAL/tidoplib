@@ -19,13 +19,14 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/geometry/transform/translation.h"
+#include "tidop/geometry/transform/affine.h"
+#include "tidop/geometry/transform/rotation.h"
+#include "tidop/geometry/transform/scale.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
-
-template<typename Point_t> class Rotation;
-template<typename Point_t> class Affine;
 
 
 /*! \addtogroup trfGroup

@@ -1,13 +1,6 @@
 #include "vectio.h"
 
-#include "tidop/core/utils.h"
-
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
-
+#include "tidop/core/gdalreg.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
@@ -15,6 +8,12 @@ TL_DEFAULT_WARNINGS
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/font.h"
+
+#ifdef HAVE_GDAL
+TL_SUPPRESS_WARNINGS
+#include "ogrsf_frmts.h"
+TL_DEFAULT_WARNINGS
+#endif // HAVE_GDAL
 
 // filesystem
 #if (__cplusplus >= 201703L)

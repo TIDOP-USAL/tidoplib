@@ -2,10 +2,10 @@
 
 #include "tidop/core/messages.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#include "opencv2/imgproc/imgproc.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#include "opencv2/imgproc/imgproc.hpp"
+//#endif
 
 #ifdef HAVE_EIGEN
 TL_SUPPRESS_WARNINGS
@@ -120,37 +120,37 @@ void rotationMatrix(double omega, double phi, double kappa, std::array<std::arra
 /* ---------------------------------------------------------------------------------- */
 
 
-#ifdef HAVE_OPENCV
-
-int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
-{
-  int iret = 1;
-  if (in.empty() || in.channels() != 1) iret = -1;
-  try {
-    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
-    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
-  } catch (std::exception &e) {
-    msgError("%s", e.what());
-    iret = -1;
-  }
-  return iret;
-}
-
-int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
-{
-  int iret = 1;
-  if (in.empty() || in.channels() != 1) iret = -1;
-  try {
-    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
-    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
-  } catch (std::exception &e) {
-    msgError("%s", e.what());
-    iret = -1;
-  }
-  return iret;
-}
-
-#endif
+//#ifdef HAVE_OPENCV
+//
+//int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
+//{
+//  int iret = 1;
+//  if (in.empty() || in.channels() != 1) iret = -1;
+//  try {
+//    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
+//    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
+//  } catch (std::exception &e) {
+//    msgError("%s", e.what());
+//    iret = -1;
+//  }
+//  return iret;
+//}
+//
+//int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
+//{
+//  int iret = 1;
+//  if (in.empty() || in.channels() != 1) iret = -1;
+//  try {
+//    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
+//    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
+//  } catch (std::exception &e) {
+//    msgError("%s", e.what());
+//    iret = -1;
+//  }
+//  return iret;
+//}
+//
+//#endif
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
@@ -370,14 +370,14 @@ void solveQR(int nRows, int nCols, double *a, double *b, double *c)
   // - FullPivHouseholderQR (full pivoting, so slowest and most stable)
   Eigen::VectorXd C = A.colPivHouseholderQr().solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
-  cv::solve(A, B, C, cv::DECOMP_QR);
-  std::vector<double> v_aux;
-  cvMatToVector(C, &v_aux);
-  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(nRows, nCols, CV_64F, a);
+//  cv::Mat B(nRows, 1, CV_64F, b);
+//  cv::Mat C(nCols, 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_QR);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   //TODO: añadir método alternativo
 #endif
@@ -488,14 +488,14 @@ void solveLU(int nRows, int nCols, double *a, double *b, double *c)
     C = A.fullPivLu().solve(B);
   }
   std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
-  cv::solve(A, B, C, cv::DECOMP_LU);
-  std::vector<double> v_aux;
-  cvMatToVector(C, &v_aux);
-  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(nRows, nCols, CV_64F, a);
+//  cv::Mat B(nRows, 1, CV_64F, b);
+//  cv::Mat C(nCols, 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_LU);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   //TODO: añadir método alternativo
 #endif
@@ -510,14 +510,14 @@ void solveCholesky(int nRows, int nCols, double *a, double *b, double *c)
   Eigen::LLT<Eigen::MatrixXd> cholesky(A);
   Eigen::VectorXd C = A.llt().solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-  cv::Mat A(nRows, nCols, CV_64F, a);
-  cv::Mat B(nRows, 1, CV_64F, b);
-  cv::Mat C(nCols, 1, CV_64F);
-  cv::solve(A, B, C, cv::DECOMP_CHOLESKY);
-  std::vector<double> v_aux;
-  cvMatToVector(C, &v_aux);
-  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(nRows, nCols, CV_64F, a);
+//  cv::Mat B(nRows, 1, CV_64F, b);
+//  cv::Mat C(nCols, 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_CHOLESKY);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   //TODO: añadir método alternativo
 #endif

@@ -17,6 +17,8 @@ add_library(tl_core ${LIB_TYPE}
             process.h
             licence.cpp
             licence.h
+            gdalreg.cpp
+            gdalreg.h
 )
   
 # Añade el proyecto a la carpeta 'modules'
@@ -36,9 +38,9 @@ if(BUILD_SHARED_LIBS)
 						  
     target_link_libraries(tl_core ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     
-	if (HAVE_GDAL)
-        target_link_libraries(tl_core ${GDAL_LIBRARY})
-    endif(HAVE_GDAL)
+  #if (HAVE_GDAL)
+  #     target_link_libraries(tl_core ${GDAL_LIBRARY})
+  #endif(HAVE_GDAL)
 
 else()
     install(TARGETS tl_core

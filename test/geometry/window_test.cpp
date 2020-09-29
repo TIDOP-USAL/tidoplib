@@ -4,6 +4,351 @@
 
 using namespace tl;
 
+
+BOOST_AUTO_TEST_SUITE(WindowTestSuite)
+
+struct WindowTest
+{
+
+  WindowTest()
+    : window_integer(nullptr),
+      window_double(nullptr),
+      window_float(nullptr),
+      window_integer_copy(nullptr),
+      window_double_copy(nullptr),
+      window_float_copy(nullptr),
+      window_constructor_center_side_integer_even_size(nullptr),
+      window_constructor_center_side_integer_odd_size(nullptr),
+      window_constructor_center_side_double(nullptr),
+      window_constructor_center_side_float(nullptr),
+      window_constructor_center_size_integer_even_size(nullptr),
+      window_constructor_center_size_integer_odd_size(nullptr),
+      window_constructor_center_size_double(nullptr),
+      window_constructor_center_size_float(nullptr)
+  {
+
+  }
+
+  ~WindowTest()
+  {
+    delete window_integer;
+    delete window_double;
+    delete window_float;
+    delete window_integer_copy;
+    delete window_double_copy;
+    delete window_float_copy;
+    delete window_constructor_center_side_integer_even_size;
+    delete window_constructor_center_side_integer_odd_size;
+    delete window_constructor_center_side_double;
+    delete window_constructor_center_side_float;
+    delete window_constructor_center_size_integer_even_size;
+    delete window_constructor_center_size_integer_odd_size;
+    delete window_constructor_center_size_double;
+    delete window_constructor_center_size_float;
+  }
+
+  void setup()
+  {
+    window_integer = new WindowI(PointI(0,0),PointI(100,100));
+    window_double = new WindowD(PointD(0., 0.), PointD(100., 100.));
+    window_float = new WindowF(PointF(0.f, 0.f), PointF(100.f, 100.f));
+
+    window_integer_copy = new WindowI(*window_integer);
+    window_double_copy = new WindowD(*window_double);
+    window_float_copy = new WindowF(*window_float);
+
+    ptc_integer = PointI(50, 50);
+    ptc_double = PointD(50.67, 50.76);
+    ptc_float = PointF(50.67f, 34.45f);
+    
+    window_constructor_center_side_integer_even_size = new WindowI(ptc_integer, 50);
+    window_constructor_center_side_integer_odd_size = new WindowI(ptc_integer, 51);
+    window_constructor_center_side_double = new WindowD(ptc_double, 50.);
+    window_constructor_center_side_float = new WindowF(ptc_float, 50.f);
+
+    window_constructor_center_size_integer_even_size = new WindowI(ptc_integer, 50, 60);
+    window_constructor_center_size_integer_odd_size = new WindowI(ptc_integer, 51, 61);
+    window_constructor_center_size_double = new WindowD(ptc_double, 100.32, 254.25);
+    window_constructor_center_size_float = new WindowF(ptc_float, 100.34f, 254.23f);
+  }
+ 
+  void teardown()
+  {
+
+  }
+
+  WindowI window_default_constructor_integer;
+  WindowD window_default_constructor_double;
+  WindowF window_default_constructor_float;
+
+  WindowI *window_integer;
+  WindowD *window_double;
+  WindowF *window_float;
+  WindowI *window_integer_copy;
+  WindowD *window_double_copy;
+  WindowF *window_float_copy;
+
+  PointI ptc_integer;
+  PointD ptc_double;
+  PointF ptc_float;
+
+  WindowI *window_constructor_center_side_integer_even_size;
+  WindowI *window_constructor_center_side_integer_odd_size;
+  WindowD *window_constructor_center_side_double;
+  WindowF *window_constructor_center_side_float;
+
+  WindowI *window_constructor_center_size_integer_even_size;
+  WindowI *window_constructor_center_size_integer_odd_size;
+  WindowD *window_constructor_center_size_double;
+  WindowF *window_constructor_center_size_float;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(TL_INT_MAX, window_default_constructor_integer.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, window_default_constructor_integer.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, window_default_constructor_integer.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, window_default_constructor_integer.pt2.y);
+
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, window_default_constructor_double.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, window_default_constructor_double.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, window_default_constructor_double.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, window_default_constructor_double.pt2.y);
+    
+  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, window_default_constructor_float.pt1.x);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, window_default_constructor_float.pt1.y);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, window_default_constructor_float.pt2.x);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, window_default_constructor_float.pt2.y);
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(window_integer->pt1.x, window_integer_copy->pt1.x);
+  BOOST_CHECK_EQUAL(window_integer->pt1.y, window_integer_copy->pt1.y);
+  BOOST_CHECK_EQUAL(window_integer->pt2.x, window_integer_copy->pt2.x);
+  BOOST_CHECK_EQUAL(window_integer->pt2.y, window_integer_copy->pt2.y);
+
+  BOOST_CHECK_EQUAL(window_double->pt1.x, window_double_copy->pt1.x);
+  BOOST_CHECK_EQUAL(window_double->pt1.y, window_double_copy->pt1.y);
+  BOOST_CHECK_EQUAL(window_double->pt2.x, window_double_copy->pt2.x);
+  BOOST_CHECK_EQUAL(window_double->pt2.y, window_double_copy->pt2.y);
+    
+  BOOST_CHECK_EQUAL(window_float->pt1.x, window_float_copy->pt1.x);
+  BOOST_CHECK_EQUAL(window_float->pt1.y, window_float_copy->pt1.y);
+  BOOST_CHECK_EQUAL(window_float->pt2.x, window_float_copy->pt2.x);
+  BOOST_CHECK_EQUAL(window_float->pt2.y, window_float_copy->pt2.y);
+}
+
+BOOST_FIXTURE_TEST_CASE(copy_constructor_dif_types, WindowTest)
+{
+  const WindowD w(PointD(0.5, 0.4), PointD(100.6, 100.4));
+  WindowI w2(w);
+  BOOST_CHECK_EQUAL(1, w2.pt1.x);
+  BOOST_CHECK_EQUAL(0, w2.pt1.y);
+  BOOST_CHECK_EQUAL(101, w2.pt2.x);
+  BOOST_CHECK_EQUAL(100, w2.pt2.y);
+}
+
+BOOST_FIXTURE_TEST_CASE(constructor_center_side, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(25, window_constructor_center_side_integer_even_size->pt1.x);
+  BOOST_CHECK_EQUAL(25, window_constructor_center_side_integer_even_size->pt1.y);
+  BOOST_CHECK_EQUAL(75, window_constructor_center_side_integer_even_size->pt2.x);
+  BOOST_CHECK_EQUAL(75, window_constructor_center_side_integer_even_size->pt2.y);
+
+  BOOST_CHECK_EQUAL(25, window_constructor_center_side_integer_odd_size->pt1.x);
+  BOOST_CHECK_EQUAL(25, window_constructor_center_side_integer_odd_size->pt1.y);
+  BOOST_CHECK_EQUAL(76, window_constructor_center_side_integer_odd_size->pt2.x);
+  BOOST_CHECK_EQUAL(76, window_constructor_center_side_integer_odd_size->pt2.y);
+
+  BOOST_CHECK_CLOSE(25.67, window_constructor_center_side_double->pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(25.76, window_constructor_center_side_double->pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(75.67, window_constructor_center_side_double->pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(75.76, window_constructor_center_side_double->pt2.y, 0.01);
+    
+  BOOST_CHECK_CLOSE(25.67f, window_constructor_center_side_float->pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(9.45f, window_constructor_center_side_float->pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(75.67f, window_constructor_center_side_float->pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(59.45f, window_constructor_center_side_float->pt2.y, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(constructor_center_size, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(25, window_constructor_center_size_integer_even_size->pt1.x);
+  BOOST_CHECK_EQUAL(20, window_constructor_center_size_integer_even_size->pt1.y);
+  BOOST_CHECK_EQUAL(75, window_constructor_center_size_integer_even_size->pt2.x);
+  BOOST_CHECK_EQUAL(80, window_constructor_center_size_integer_even_size->pt2.y);
+
+  BOOST_CHECK_EQUAL(25, window_constructor_center_size_integer_odd_size->pt1.x);
+  BOOST_CHECK_EQUAL(20, window_constructor_center_size_integer_odd_size->pt1.y);
+  BOOST_CHECK_EQUAL(76, window_constructor_center_size_integer_odd_size->pt2.x);
+  BOOST_CHECK_EQUAL(81, window_constructor_center_size_integer_odd_size->pt2.y);
+
+  BOOST_CHECK_CLOSE(0.51, window_constructor_center_size_double->pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(-76.365, window_constructor_center_size_double->pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(100.83, window_constructor_center_size_double->pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(177.885, window_constructor_center_size_double->pt2.y, 0.01);
+
+  BOOST_CHECK_CLOSE(0.5f, window_constructor_center_size_float->pt1.x, 0.01);
+  BOOST_CHECK_CLOSE(-92.665f, window_constructor_center_size_float->pt1.y, 0.01);
+  BOOST_CHECK_CLOSE(100.84f, window_constructor_center_size_float->pt2.x, 0.01);
+  BOOST_CHECK_CLOSE(161.565f, window_constructor_center_size_float->pt2.y, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(center, WindowTest) 
+{
+  BOOST_CHECK(PointI(0, 0) == window_default_constructor_integer.center());
+  BOOST_CHECK(PointD(0., 0.) == window_default_constructor_double.center());
+  BOOST_CHECK(PointF(0.f, 0.f) == window_default_constructor_float.center());
+
+  BOOST_CHECK(PointI(50, 50) == window_integer->center());
+  BOOST_CHECK(PointD(50., 50.) == window_double->center());
+  BOOST_CHECK(PointF(50.f, 50.f) == window_float->center());
+
+  BOOST_CHECK(PointI(50, 50) == window_integer_copy->center());
+  BOOST_CHECK(PointD(50., 50.) == window_double_copy->center());
+  BOOST_CHECK(PointF(50.f, 50.f) == window_float_copy->center());
+
+  BOOST_CHECK(ptc_integer == window_constructor_center_side_integer_even_size->center());
+  BOOST_CHECK(ptc_integer == window_constructor_center_side_integer_odd_size->center());
+  BOOST_CHECK_CLOSE(ptc_double.x, window_constructor_center_side_double->center().x, 0.01);
+  BOOST_CHECK_CLOSE(ptc_double.y, window_constructor_center_side_double->center().y, 0.01);
+  BOOST_CHECK_CLOSE(ptc_float.x, window_constructor_center_side_float->center().x, 0.01);
+  BOOST_CHECK_CLOSE(ptc_float.y, window_constructor_center_side_float->center().y, 0.01);
+  BOOST_CHECK(ptc_integer == window_constructor_center_size_integer_even_size->center());
+  BOOST_CHECK(ptc_integer == window_constructor_center_size_integer_odd_size->center()); 
+  BOOST_CHECK_CLOSE(ptc_double.x, window_constructor_center_size_double->center().x, 0.01);
+  BOOST_CHECK_CLOSE(ptc_double.y, window_constructor_center_size_double->center().y, 0.01);
+  BOOST_CHECK_CLOSE(ptc_float.x, window_constructor_center_size_float->center().x, 0.01);
+  BOOST_CHECK_CLOSE(ptc_float.y, window_constructor_center_size_float->center().y, 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(width, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(0, window_default_constructor_integer.width());
+  BOOST_CHECK_EQUAL(0., window_default_constructor_double.width());
+  BOOST_CHECK_EQUAL(0.f, window_default_constructor_float.width());
+
+  BOOST_CHECK_EQUAL(100, window_integer->width());
+  BOOST_CHECK_EQUAL(100., window_double->width());
+  BOOST_CHECK_EQUAL(100.f, window_float->width());
+
+  BOOST_CHECK_EQUAL(100, window_integer_copy->width());
+  BOOST_CHECK_EQUAL(100., window_double_copy->width());
+  BOOST_CHECK_EQUAL(100.f, window_float_copy->width());
+
+  BOOST_CHECK_EQUAL(50, window_constructor_center_side_integer_even_size->width());
+  BOOST_CHECK_EQUAL(51, window_constructor_center_side_integer_odd_size->width());
+  BOOST_CHECK_EQUAL(50., window_constructor_center_side_double->width());
+  BOOST_CHECK_EQUAL(50.f, window_constructor_center_side_float->width());
+  BOOST_CHECK_EQUAL(50, window_constructor_center_size_integer_even_size->width());
+  BOOST_CHECK_EQUAL(51, window_constructor_center_size_integer_odd_size->width()); 
+  BOOST_CHECK_EQUAL(100.32, window_constructor_center_size_double->width());
+  BOOST_CHECK_EQUAL(100.34f, window_constructor_center_size_float->width());
+}
+
+BOOST_FIXTURE_TEST_CASE(height, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(0, window_default_constructor_integer.height());
+  BOOST_CHECK_EQUAL(0., window_default_constructor_double.height());
+  BOOST_CHECK_EQUAL(0.f, window_default_constructor_float.height());
+
+  BOOST_CHECK_EQUAL(100, window_integer->height());
+  BOOST_CHECK_EQUAL(100., window_double->height());
+  BOOST_CHECK_EQUAL(100.f, window_float->height());
+
+  BOOST_CHECK_EQUAL(100, window_integer_copy->height());
+  BOOST_CHECK_EQUAL(100., window_double_copy->height());
+  BOOST_CHECK_EQUAL(100.f, window_float_copy->height());
+
+  BOOST_CHECK_EQUAL(50, window_constructor_center_side_integer_even_size->height());
+  BOOST_CHECK_EQUAL(51, window_constructor_center_side_integer_odd_size->height());
+  BOOST_CHECK_CLOSE(50., window_constructor_center_side_double->height(), 0.01);
+  BOOST_CHECK_CLOSE(50.f, window_constructor_center_side_float->height(), 0.01);
+  BOOST_CHECK_EQUAL(60, window_constructor_center_size_integer_even_size->height());
+  BOOST_CHECK_EQUAL(61, window_constructor_center_size_integer_odd_size->height()); 
+  BOOST_CHECK_CLOSE(254.25, window_constructor_center_size_double->height(), 0.01);
+  BOOST_CHECK_CLOSE(254.23f, window_constructor_center_size_float->height(), 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(type, WindowTest) 
+{
+  BOOST_CHECK(window_default_constructor_integer.type() == Entity::Type::window);
+  BOOST_CHECK(window_integer->type() == Entity::Type::window);
+  BOOST_CHECK(window_integer_copy->type() == Entity::Type::window);
+  BOOST_CHECK(window_constructor_center_side_integer_even_size->type() == Entity::Type::window);
+  BOOST_CHECK(window_constructor_center_size_integer_even_size->type() == Entity::Type::window);
+}
+
+BOOST_FIXTURE_TEST_CASE(isEmpty, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(true, window_default_constructor_integer.isEmpty());
+  BOOST_CHECK_EQUAL(false, window_integer->isEmpty());
+  BOOST_CHECK_EQUAL(false, window_integer_copy->isEmpty());
+  BOOST_CHECK_EQUAL(false, window_constructor_center_side_integer_even_size->isEmpty());
+  BOOST_CHECK_EQUAL(false, window_constructor_center_size_integer_even_size->isEmpty());
+}
+
+BOOST_FIXTURE_TEST_CASE(is3D, WindowTest) 
+{
+  BOOST_CHECK_EQUAL(false, window_default_constructor_integer.is3D());
+  BOOST_CHECK_EQUAL(false, window_integer->is3D());
+  BOOST_CHECK_EQUAL(false, window_integer_copy->is3D());
+  BOOST_CHECK_EQUAL(false, window_constructor_center_side_integer_even_size->is3D());
+  BOOST_CHECK_EQUAL(false, window_constructor_center_size_integer_even_size->is3D());
+}
+
+BOOST_FIXTURE_TEST_CASE(containsPoint, WindowTest) 
+{
+  PointI point1(0, 0);
+  PointI point2(50, 50);
+  PointI point3(-50, -50);
+  BOOST_CHECK_EQUAL(false, window_default_constructor_integer.containsPoint(point1));
+  BOOST_CHECK_EQUAL(true, window_integer->containsPoint(point1));
+  BOOST_CHECK_EQUAL(true, window_integer->containsPoint(point2));
+  BOOST_CHECK_EQUAL(false, window_integer->containsPoint(point3));
+
+}
+
+BOOST_FIXTURE_TEST_CASE(containsWindow, WindowTest) 
+{
+  WindowI w1(PointI(50, 50), 50);
+  WindowI w2(PointI(200, 50), 50);
+  BOOST_CHECK_EQUAL(false, window_default_constructor_integer.containsWindow(w1));
+  BOOST_CHECK_EQUAL(true, window_integer->containsWindow(w1));
+  BOOST_CHECK_EQUAL(false, window_integer->containsWindow(w2));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+
+BOOST_AUTO_TEST_CASE(WindowI_constructor_vector)
+{
+  std::vector<PointD> v{ PointD(0.5, 1.5), PointD(3.6, 4.4) };
+  WindowI w(v);
+  BOOST_CHECK_EQUAL(1, w.pt1.x);
+  BOOST_CHECK_EQUAL(2, w.pt1.y);
+  BOOST_CHECK_EQUAL(4, w.pt2.x);
+  BOOST_CHECK_EQUAL(4, w.pt2.y);
+
+  std::vector<PointD> v2{ PointD(-0.5, -1.5), PointD(-3.6, -4.4) };
+  WindowI w2(v2);
+  BOOST_CHECK_EQUAL(-4, w2.pt1.x);
+  BOOST_CHECK_EQUAL(-4, w2.pt1.y);
+  BOOST_CHECK_EQUAL(-1, w2.pt2.x);
+  BOOST_CHECK_EQUAL(-2, w2.pt2.y);
+}
+
+BOOST_AUTO_TEST_CASE(Window_assing_operator)
+{
+  const WindowD w(PointD(0., 0.), PointD(100., 100.));
+  WindowD w2 = w;
+  BOOST_CHECK(w.pt1 == w2.pt1);
+  BOOST_CHECK(w.pt2 == w2.pt2);
+}
+
 /* ---------------------------------------------------------------------------------- */
 /*                        Test Operaciones con ventanas                                */
 /* ---------------------------------------------------------------------------------- */
@@ -58,176 +403,4 @@ BOOST_AUTO_TEST_CASE(windowIntersection_window_int)
   BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
 }
 
-// Constructor por defecto
 
-BOOST_AUTO_TEST_CASE(WindowI_default_constructor)
-{
-  const WindowI w;
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
-  BOOST_CHECK(w.type() == Entity::Type::window);
-}
-
-BOOST_AUTO_TEST_CASE(WindowD_default_constructor)
-{
-  const WindowD w;
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w.pt2.y);
-  BOOST_CHECK(w.type() == Entity::Type::window);
-}
-
-BOOST_AUTO_TEST_CASE(WindowF_default_constructor)
-{
-  const WindowF w;
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w.pt2.y);
-  BOOST_CHECK(w.type() == Entity::Type::window);
-}
-
-// Constructor de copia
-
-BOOST_AUTO_TEST_CASE(WindowI_copy_constructor) {
-  const WindowI w(PointI(0,0),PointI(100,100));
-  WindowI w2(w);
-  BOOST_CHECK(w.pt1 == w2.pt1);
-  BOOST_CHECK(w.pt2 == w2.pt2);
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-}
-
-BOOST_AUTO_TEST_CASE(WindowD_copy_constructor)
-{
-  const WindowD w(PointD(0., 0.), PointD(100., 100.));
-  WindowD w2(w);
-  BOOST_CHECK(w.pt1 == w2.pt1);
-  BOOST_CHECK(w.pt2 == w2.pt2);
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-}
-
-
-BOOST_AUTO_TEST_CASE(WindowI_constructor_vector)
-{
-  std::vector<PointD> v{ PointD(0.5, 1.5), PointD(3.6, 4.4) };
-  WindowI w(v);
-  BOOST_CHECK_EQUAL(1, w.pt1.x);
-  BOOST_CHECK_EQUAL(2, w.pt1.y);
-  BOOST_CHECK_EQUAL(4, w.pt2.x);
-  BOOST_CHECK_EQUAL(4, w.pt2.y);
-  BOOST_CHECK(w.type() == Entity::Type::window);
-
-  std::vector<PointD> v2{ PointD(-0.5, -1.5), PointD(-3.6, -4.4) };
-  WindowI w2(v2);
-  BOOST_CHECK_EQUAL(-4, w2.pt1.x);
-  BOOST_CHECK_EQUAL(-4, w2.pt1.y);
-  BOOST_CHECK_EQUAL(-1, w2.pt2.x);
-  BOOST_CHECK_EQUAL(-2, w2.pt2.y);
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-}
-
-//constructor de copia tipos diferentes
-
-BOOST_AUTO_TEST_CASE(WindowD_copy_constructor_diff_type)
-{
-  const WindowD w(PointD(0.5, 0.4), PointD(100.6, 100.4));
-  WindowI w2(w);
-  BOOST_CHECK_EQUAL(1, w2.pt1.x);
-  BOOST_CHECK_EQUAL(0, w2.pt1.y);
-  BOOST_CHECK_EQUAL(101, w2.pt2.x);
-  BOOST_CHECK_EQUAL(100, w2.pt2.y);
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-}
-
-// Comprobación de que redondea bien con ventanas de enteros
-
-BOOST_AUTO_TEST_CASE(WindowI_constructor_center_dimensions)
-{
-  // Tamaño par
-  PointI ptc(50, 50);
-  WindowI w(ptc, 50, 50);
-  BOOST_CHECK_EQUAL(50, w.width());
-  BOOST_CHECK_EQUAL(50, w.height());
-  BOOST_CHECK(w.type() == Entity::Type::window);
-
-  //Tamaño impar
-  PointI ptc2(50, 50);
-  WindowI w2(ptc2, 51, 51);
-  BOOST_CHECK_EQUAL(51, w2.width());
-  BOOST_CHECK_EQUAL(51, w2.height());
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-
-  // Ventana double
-  PointD ptc3(50.67, 50.76);
-  WindowD w3(ptc3, 100.32, 254.25);
-  BOOST_CHECK_CLOSE(100.32, w3.width(), 0.01);
-  BOOST_CHECK_CLOSE(254.25, w3.height(), 0.01);
-  BOOST_CHECK(w3.type() == Entity::Type::window);
-
-  // Ventana float
-  PointF ptc4(50.67f, 50.76f);
-  WindowF w4(ptc4, 100.34f, 254.23f);
-  BOOST_CHECK_CLOSE(100.34f, w4.width(), 0.01);
-  BOOST_CHECK_CLOSE(254.23f, w4.height(), 0.01);
-  BOOST_CHECK(w4.type() == Entity::Type::window);
-}
-
-BOOST_AUTO_TEST_CASE(WindowI_constructor_center_size)
-{
-  // Tamaño par
-  PointI ptc(50, 50);
-  WindowI w(ptc, 50);
-  BOOST_CHECK_EQUAL(50, w.width());
-  BOOST_CHECK_EQUAL(50, w.height());
-  BOOST_CHECK(w.type() == Entity::Type::window);
-
-  //Tamaño impar
-  PointI ptc2(50, 50);
-  WindowI w2(ptc2, 51);
-  BOOST_CHECK_EQUAL(51, w2.width());
-  BOOST_CHECK_EQUAL(51, w2.height());
-  BOOST_CHECK(w2.type() == Entity::Type::window);
-
-  // Ventana double
-  PointD ptc3(50.67, 50.76);
-  WindowD w3(ptc3, 100.32);
-  BOOST_CHECK_CLOSE(100.32, w3.width(), 0.01);
-  BOOST_CHECK_CLOSE(100.32, w3.height(), 0.01);
-  BOOST_CHECK(w3.type() == Entity::Type::window);
-
-  // Ventana float
-  PointF ptc4(50.67f, 50.76f);
-  WindowF w4(ptc4, 100.34f);
-  BOOST_CHECK_CLOSE(100.34f, w4.width(), 0.01);
-  BOOST_CHECK_CLOSE(100.34f, w4.height(), 0.01);
-  BOOST_CHECK(w4.type() == Entity::Type::window);
-}
-
-BOOST_AUTO_TEST_CASE(window_center)
-{
-  // Tamaño par
-  PointI ptc(50, 50);
-  WindowI w(ptc, 50);
-  BOOST_CHECK(ptc == w.center());
-
-  //Tamaño impar
-  PointI ptc2(50, 50);
-  WindowI w2(ptc2, 51);
-  BOOST_CHECK(ptc2 == w2.center());
-
-  //// Ventana double
-  //PointD ptc3(50.67, 50.76);
-  //WindowD w3(ptc3, 100.32);
-  //BOOST_CHECK_CLOSE(100.32, w3.width(), 0.01);
-  //BOOST_CHECK_CLOSE(100.32, w3.height(), 0.01);
-
-  //// Ventana float
-  //PointF ptc4(50.67f, 50.76f);
-  //WindowF w4(ptc4, 100.34f);
-  //BOOST_CHECK_CLOSE(100.34f, w4.width(), 0.01);
-  //BOOST_CHECK_CLOSE(100.34f, w4.height(), 0.01);
-
-}

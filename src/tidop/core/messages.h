@@ -349,7 +349,7 @@ public:
   /*!
    * \brief Inicializa los manejadores para las librerias externas
    */
-  static void initExternalHandlers();
+  //static void initExternalHandlers();
 
   /*!
    * \brief Pausa el envio de mensajes

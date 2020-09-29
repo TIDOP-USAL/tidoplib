@@ -398,9 +398,6 @@ add_subdirectory(apps)
 # Directorio con la documentación
 add_subdirectory(doc)
 
-# Se incluye el directorio con los ejemplos
-add_subdirectory(examples)
-
 # Se incluye el directorio con los test
 add_subdirectory(test)
 

@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/console.h>
 
+#include <array>
 
 using namespace tl;
 
