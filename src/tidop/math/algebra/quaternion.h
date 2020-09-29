@@ -17,10 +17,11 @@
 
 #include "config_tl.h"
 
-#include "tidop/math/algebra/rotation_matrix.h"
-
 #include <vector>
 #include <array>
+
+//#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/rotations.h"
 
 namespace tl
 {
@@ -53,6 +54,7 @@ namespace math
  */
 template<typename T>
 class Quaternion
+  : public RotationBase<T>
 {
 
 public:
@@ -80,7 +82,7 @@ public:
   /*!
    * \brief destructora
    */
-  ~Quaternion();
+  ~Quaternion() override;
 
   /*!
    * \brief Operador de asignación
@@ -163,7 +165,8 @@ typedef Quaternion<double>  Quaterniond;
 
 template<typename T>
 Quaternion<T>::Quaternion()
-  : x(-std::numeric_limits<T>().max()), 
+  : RotationBase<T>(Rotation::Type::quaternion),
+    x(-std::numeric_limits<T>().max()), 
     y(-std::numeric_limits<T>().max()),
     z(-std::numeric_limits<T>().max()),
     w(-std::numeric_limits<T>().max())
@@ -172,7 +175,8 @@ Quaternion<T>::Quaternion()
 
 template<typename T>
 Quaternion<T>::Quaternion(T x, T y, T z, T w)
-  : x(x), 
+  : RotationBase<T>(Rotation::Type::quaternion),
+    x(x), 
     y(y), 
     z(z), 
     w(w)
@@ -181,7 +185,8 @@ Quaternion<T>::Quaternion(T x, T y, T z, T w)
 
 template<typename T>
 Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
-  : x(quaternion.x), 
+  : RotationBase<T>(Rotation::Type::quaternion),
+    x(quaternion.x), 
     y(quaternion.y), 
     z(quaternion.z), 
     w(quaternion.w)

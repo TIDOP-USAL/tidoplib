@@ -41,7 +41,7 @@ template<typename Point_t> class Translation;
 /*!
  * \brief Interfaz Transform
  */
-class Transform
+class TL_EXPORT Transform
 {
 
 public:
