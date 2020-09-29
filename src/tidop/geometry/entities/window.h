@@ -87,23 +87,25 @@ public:
    * \param[in] pt1 Primer punto
    * \param[in] pt2 Segundo punto
    */
-  Window(const Point_t &pt1, const Point_t &pt2);
+  Window(const Point_t &pt1, 
+         const Point_t &pt2);
 
   /*!
    * \brief Constructor Window
    * \param[in] pt Punto central
-   * \param[in] sxx Ancho de la ventana
+   * \param[in] width Ancho de la ventana
    * \param[in] szy Alto de la ventana
    */
-  template<typename T> Window(const Point_t &pt, T sxx, T szy);
+  template<typename T> Window(const Point_t &pt, 
+                              T width, T height);
 
   /*!
    * \brief Constructor Window
    * \param[in] pt Punto central
-   * \param[in] sz Alto y ancho de la ventana
+   * \param[in] side Tamaño del lado de una ventana cuadrada
    */
   template<typename T> 
-  Window(const Point_t &pt, T sz);
+  Window(const Point_t &pt, T side);
 
   /*!
    * \brief Constructor Window
@@ -151,14 +153,14 @@ public:
    * \brief Devuelve el ancho de la ventana
    * \return Ancho
    */
-  typename Point_t::value_type width() const { return pt2.x - pt1.x; }
+  typename Point_t::value_type width() const;
 
   /*!
    * \brief Devuelve el alto de la ventana
    * \return Alto
    * \deprecated Use 'height' en su lugar
    */
-  typename Point_t::value_type height() const { return pt2.y - pt1.y; }
+  typename Point_t::value_type height() const;
 
   /*!
    * \brief Devuelve centro de la ventana
@@ -185,6 +187,8 @@ public:
   template<typename Point_t2> bool containsWindow(const Window<Point_t2> &w) const;
 
 };
+
+
 
 // Definición de métodos
 
@@ -215,49 +219,63 @@ Window<Point_t>::Window(Window &&window) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-Window<Point_t>::Window(const Point_t &_pt1, const Point_t &_pt2) 
+Window<Point_t>::Window(const Point_t &pt1,
+                        const Point_t &pt2) 
   : Entity(Entity::Type::window) 
 {
-  pt1.x = std::min(_pt1.x, _pt2.x);
-  pt1.y = std::min(_pt1.y, _pt2.y);
-  pt2.x = std::max(_pt1.x, _pt2.x);
-  pt2.y = std::max(_pt1.y, _pt2.y);
+  this->pt1.x = std::min(pt1.x, pt2.x);
+  this->pt1.y = std::min(pt1.y, pt2.y);
+  this->pt2.x = std::max(pt1.x, pt2.x);
+  this->pt2.y = std::max(pt1.y, pt2.y);
 }
     
-TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename Point_t> template<typename T> inline
-Window<Point_t>::Window(const Point_t &_pt, T sxx, T szy) 
+Window<Point_t>::Window(const Point_t &pt,
+                        T width, T height) 
   : Entity(Entity::Type::window)
 { 
+  typename Point_t::value_type two{2};
+  auto half_width = width / two;
+  auto half_height = height / two;
+
   if (std::is_integral<typename Point_t::value_type>::value) {
-    int sxx_2 = TL_ROUND_TO_INT(sxx / 2);
-    int szy_2 = TL_ROUND_TO_INT(szy / 2);
-    int dx = static_cast<int>(sxx) % 2;
-    int dy = static_cast<int>(szy) % 2;
-    pt1 = Point_t(_pt.x - sxx_2, _pt.y - szy_2);
-    pt2 = Point_t(_pt.x + sxx_2 + dx, _pt.y + szy_2 + dy);
+
+    int dx = static_cast<int>(width) % 2;
+    int dy = static_cast<int>(height) % 2;
+
+    this->pt1 = Point_t(pt.x - half_width, 
+                        pt.y - half_height);
+    this->pt2 = Point_t(pt.x + half_width + dx, 
+                        pt.y + half_height + dy);
   } else {
-    pt1 = Point_t(_pt.x - sxx / 2., _pt.y - szy / 2.);
-    pt2 = Point_t(_pt.x + sxx / 2., _pt.y + szy / 2.);
+    this->pt1 = Point_t(pt.x - half_width, 
+                        pt.y - half_height);
+    this->pt2 = Point_t(pt.x + half_width, 
+                        pt.y + half_height);
   }
 }
 
 template<typename Point_t> template<typename T> inline
-Window<Point_t>::Window(const Point_t &_pt, T sz) 
+Window<Point_t>::Window(const Point_t &pt, 
+                        T side) 
   : Entity(Entity::Type::window)
 { 
+  typename Point_t::value_type two{2};
+  auto half_side = side / two;
+
   if (std::is_integral<typename Point_t::value_type>::value) {
-    int sz_2 = TL_ROUND_TO_INT(sz / 2);
-    int dxy = static_cast<int>(sz) % 2;
-    pt1 = Point_t(_pt.x - sz_2, _pt.y - sz_2);
-    pt2 = Point_t(_pt.x + sz_2 + dxy, _pt.y + sz_2 + dxy);
+    int dxy = static_cast<int>(side) % 2;
+    this->pt1 = Point_t(pt.x - half_side,
+                        pt.y - half_side);
+    this->pt2 = Point_t(pt.x + half_side + dxy,
+                        pt.y + half_side + dxy);
   } else {
-    T sz_2 = sz / 2;
-    pt1 = Point<T>(_pt.x - sz_2, _pt.y - sz_2);
-    pt2 = Point<T>(_pt.x + sz_2, _pt.y + sz_2);
+    this->pt1 = Point<T>(pt.x - half_side, 
+                         pt.y - half_side);
+    this->pt2 = Point<T>(pt.x + half_side, 
+                         pt.y + half_side);
   }
 }
-TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point_t> inline
 Window<Point_t>::Window(const std::vector<Point_t> &window)
@@ -288,10 +306,10 @@ Window<Point_t>::Window(const std::vector<Point_t2> &window)
   if (window.size() >= 2) {
     for (size_t i = 0; i < window.size(); i++) {
       if (std::is_integral<typename Point_t::value_type>::value) {
-        if (pt1.x > window[i].x) pt1.x = TL_ROUND_TO_INT(window[i].x);
-        if (pt1.y > window[i].y) pt1.y = TL_ROUND_TO_INT(window[i].y);
-        if (pt2.x < window[i].x) pt2.x = TL_ROUND_TO_INT(window[i].x);
-        if (pt2.y < window[i].y) pt2.y = TL_ROUND_TO_INT(window[i].y);
+        if (pt1.x > window[i].x) pt1.x = static_cast<typename Point_t::value_type>(std::round(window[i].x));
+        if (pt1.y > window[i].y) pt1.y = static_cast<typename Point_t::value_type>(std::round(window[i].y));
+        if (pt2.x < window[i].x) pt2.x = static_cast<typename Point_t::value_type>(std::round(window[i].x));
+        if (pt2.y < window[i].y) pt2.y = static_cast<typename Point_t::value_type>(std::round(window[i].y));
       } else {
         if (pt1.x > window[i].x) pt1.x = static_cast<typename Point_t::value_type>(window[i].x);
         if (pt1.y > window[i].y) pt1.y = static_cast<typename Point_t::value_type>(window[i].y);
@@ -349,26 +367,38 @@ Window<Point_t>::operator Window<Point_t2>() const
   return w;
 }
 
-TL_DISABLE_WARNING(TL_WARNING_C4244)
+template<typename Point_t> inline
+typename Point_t::value_type Window<Point_t>::width() const 
+{ 
+  return this->isEmpty() ? 
+    static_cast<typename Point_t::value_type>(0) : 
+    pt2.x - pt1.x; 
+}
+
+template<typename Point_t> inline
+typename Point_t::value_type Window<Point_t>::height() const 
+{ 
+  return this->isEmpty() ?
+    static_cast<typename Point_t::value_type>(0) :
+    pt2.y - pt1.y;
+}
+
 template<typename Point_t> inline
 Point_t Window<Point_t>::center() const
 {
-  if (std::is_integral<typename Point_t::value_type>::value) {
-    return Point_t(static_cast<typename Point_t::value_type>(std::round((pt1.x + pt2.x) / 2)), 
-                   static_cast<typename Point_t::value_type>(std::round((pt1.y + pt2.y) / 2)));
-  } else {
-    return Point_t((pt1.x + pt2.x) / 2., (pt1.y + pt2.y) / 2.);
-  }
+  typename Point_t::value_type two{2};
+
+  return Point_t((pt1.x + pt2.x) / two, 
+                 (pt1.y + pt2.y) / two);
 }
-TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point_t> inline
 bool Window<Point_t>::isEmpty() const 
 { 
-  return (   pt1.x == std::numeric_limits<typename Point_t::value_type>().max() 
-          && pt1.y == std::numeric_limits<typename Point_t::value_type>().max() 
-          && pt2.x == -std::numeric_limits<typename Point_t::value_type>().max() 
-          && pt2.y == -std::numeric_limits<typename Point_t::value_type>().max()); 
+  return (pt1.x == std::numeric_limits<typename Point_t::value_type>().max() && 
+          pt1.y == std::numeric_limits<typename Point_t::value_type>().max() && 
+          pt2.x == -std::numeric_limits<typename Point_t::value_type>().max() && 
+          pt2.y == -std::numeric_limits<typename Point_t::value_type>().max());
 }
 
 template<typename Point_t> template<typename Point_t2> inline
@@ -376,14 +406,17 @@ bool Window<Point_t>::containsPoint(const Point_t2 &pt) const
 {
   Point_t _pt(pt.x, pt.y);
   return ((pt2.x >= _pt.x) && (pt2.y >= _pt.y) &&
-    (pt1.x <= _pt.x) && (pt1.y <= _pt.y));
+          (pt1.x <= _pt.x) && (pt1.y <= _pt.y));
 }
 
 template<typename Point_t> template<typename Point_t2> inline
 bool Window<Point_t>::containsWindow(const Window<Point_t2> &w) const
 {
   Window<Point_t> w2 = w;
-  return pt1.x <= w2.pt1.x && pt1.y <= w2.pt1.y && pt2.x >= w2.pt2.x && pt2.y >= w2.pt2.y;
+  return pt1.x <= w2.pt1.x && 
+         pt1.y <= w2.pt1.y && 
+         pt2.x >= w2.pt2.x && 
+         pt2.y >= w2.pt2.y;
 }
 
 typedef Window<Point<int>> WindowI;

@@ -19,10 +19,13 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/geometry/transform/translation.h"
+#include "tidop/geometry/transform/helmert2d.h"
+#include "tidop/geometry/transform/affine.h"
 
 namespace tl
 {
+
 
 
 /*! \addtogroup trfGroup
@@ -351,11 +354,11 @@ Point_t Rotation<Point_t>::transform(const Point_t &ptsIn,
 {
   Point_t out;
   if (trfOrder == Transform::Order::direct) {
-    out.x = ptsIn.x*r1 - ptsIn.y*r2;
-    out.y = ptsIn.x*r2 + ptsIn.y*r1;
+    out.x = static_cast<sub_type>(ptsIn.x*r1 - ptsIn.y*r2);
+    out.y = static_cast<sub_type>(ptsIn.x*r2 + ptsIn.y*r1);
   } else {
-    out.x = ptsIn.x*r1 + ptsIn.y*r2;
-    out.y = ptsIn.y*r1 - ptsIn.x*r2;
+    out.x = static_cast<sub_type>(ptsIn.x*r1 + ptsIn.y*r2);
+    out.y = static_cast<sub_type>(ptsIn.y*r1 - ptsIn.x*r2);
   }
   return out;
 }
@@ -366,7 +369,7 @@ Transform::Status Rotation<Point_t>::transform(const std::vector<Point_t> &in,
                                                Transform::Order trfOrder) const
 {
   this->formatVectorOut(in, out);
-  Transform::Status r_status;
+  Transform::Status r_status = Transform::Status::success;
   for (int i = 0; i < in.size(); i++) {
     r_status = transform(in[i], out[i], trfOrder);
     if ( r_status == Transform::Status::failure ) break;

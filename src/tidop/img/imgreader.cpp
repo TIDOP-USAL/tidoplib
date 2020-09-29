@@ -2,6 +2,7 @@
 
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/gdalreg.h"
 
 #ifdef HAVE_OPENCV
 

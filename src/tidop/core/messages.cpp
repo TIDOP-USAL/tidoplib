@@ -17,15 +17,15 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/utility.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/utility.hpp"
+//#endif
 
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal_priv.h"
-TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+//#ifdef HAVE_GDAL
+//TL_SUPPRESS_WARNINGS
+//#include "gdal_priv.h"
+//TL_DEFAULT_WARNINGS
+//#endif // HAVE_GDAL
 
 #include <cstdarg>
 #if defined WIN32
@@ -45,40 +45,40 @@ namespace tl
 
 #ifdef TL_MESSAGE_HANDLER
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-
-#ifdef HAVE_OPENCV
-// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
-int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
-{
-  MessageManager::release(MessageManager::Message(err_msg).message(), MessageLevel::msg_error, file_name, line, func_name);
-  return 0;
-}
-
-#endif // HAVE_OPENCV
-
-#ifdef HAVE_GDAL
-// Manejador de eventos para GDAL 
-void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
-{
-  MessageLevel ml;
-  if (err == CE_Debug) {
-    ml = MessageLevel::msg_debug;
-  } else if (err == CE_Warning) {
-    ml = MessageLevel::msg_warning;
-  } else if (err == CE_Failure) {
-    ml = MessageLevel::msg_error;
-  } else if (err == CE_Fatal) {
-    ml = MessageLevel::msg_error;
-  } else {
-    ml = MessageLevel::msg_info;
-  }
-  MessageManager::release(MessageManager::Message(err_msg).message(), ml);
-  return;
-}
-#endif // HAVE_GDAL
-
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+//TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+//
+//#ifdef HAVE_OPENCV
+//// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
+//int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
+//{
+//  MessageManager::release(MessageManager::Message(err_msg).message(), MessageLevel::msg_error, file_name, line, func_name);
+//  return 0;
+//}
+//
+//#endif // HAVE_OPENCV
+//
+//#ifdef HAVE_GDAL
+//// Manejador de eventos para GDAL 
+//void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
+//{
+//  MessageLevel ml;
+//  if (err == CE_Debug) {
+//    ml = MessageLevel::msg_debug;
+//  } else if (err == CE_Warning) {
+//    ml = MessageLevel::msg_warning;
+//  } else if (err == CE_Failure) {
+//    ml = MessageLevel::msg_error;
+//  } else if (err == CE_Fatal) {
+//    ml = MessageLevel::msg_error;
+//  } else {
+//    ml = MessageLevel::msg_info;
+//  }
+//  MessageManager::release(MessageManager::Message(err_msg).message(), ml);
+//  return;
+//}
+//#endif // HAVE_GDAL
+//
+//TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 static struct _msgProperties _msgTemplate[] = {   
@@ -131,16 +131,16 @@ void MessageManager::addListener(Listener *listener)
 }
 
 ///TODO: esto puede que estuviese mejor fuera
-void MessageManager::initExternalHandlers()
-{
-#ifdef HAVE_OPENCV
-  cv::redirectError(handleError);
-#endif // HAVE_OPENCV
-
-#ifdef HAVE_GDAL
-  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
-#endif // HAVE_GDAL
-}
+//void MessageManager::initExternalHandlers()
+//{
+//#ifdef HAVE_OPENCV
+//  cv::redirectError(handleError);
+//#endif // HAVE_OPENCV
+//
+//#ifdef HAVE_GDAL
+//  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
+//#endif // HAVE_GDAL
+//}
 
 void MessageManager::pause()
 {

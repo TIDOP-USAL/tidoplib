@@ -19,7 +19,9 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/euler_angles.h"
+#include "tidop/math/algebra/rotations.h"
 
 namespace tl
 {
@@ -102,12 +104,16 @@ public:
    * \param[in] scale Escala
    * \param[in] rotation Matriz de rotación
    */
+  //Helmert3D(double tx, 
+  //          double ty, 
+  //          double tz, 
+  //          double scale, 
+  //          const std::array<std::array<double, 3>, 3> &rotation);
   Helmert3D(double tx, 
             double ty, 
             double tz, 
             double scale, 
-            const std::array<std::array<double, 3>, 3> &rotation);
-  //Helmert3D(double tx, double ty, double tz, double scale, const math::RotationMatrix<double> &rotation);
+            const math::RotationMatrix<double> &rotation);
 
   /*!
    * \brief Constructor de copia Helmert3D
@@ -134,10 +140,10 @@ public:
                             double *rmse = nullptr) override;
 
   /*!
-   * \brief Devuelve una referencia a la matriz de rotación
+   * \brief Devuelve la matriz de rotación
    */
-  const std::array<std::array<double, 3>, 3> &rotationMatrix() const;
-  //const RotationMatrix<double> &rotationMatrix() const;
+  //const std::array<std::array<double, 3>, 3> &rotationMatrix() const;
+  math::RotationMatrix<double> rotationMatrix() const;
 
   /*!
    * \brief Transforma un conjunto de puntos en otro aplicando un helmert 3D
@@ -254,14 +260,14 @@ private:
   /*!
    * \brief Matriz de rotación
    */
-  std::array<std::array<double, 3>, 3> mR;
-  //math::RotationMatrix<double> mR;
+  //std::array<std::array<double, 3>, 3> mR;
+  math::RotationMatrix<double> mR;
 
   /*!
    * \brief Matriz de rotación inversa
    */
-  std::array<std::array<double, 3>, 3> mRinv;
-  //math::RotationMatrix<double> mRinv;
+  //std::array<std::array<double, 3>, 3> mRinv;
+  math::RotationMatrix<double> mRinv;
 };
 
 
@@ -300,25 +306,12 @@ Helmert3D<Point_t>::Helmert3D(double tx,
   update();
 }
 
-template<typename Point_t> inline
-Helmert3D<Point_t>::Helmert3D(double tx, 
-                              double ty, 
-                              double tz,
-                              double scale,
-                              const std::array<std::array<double, 3>, 3> &rotation)
-  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
-    tx(tx),
-    ty(ty),
-    tz(tz),
-    mScale(scale),
-    mR(rotation)
-{
-  eulerAngles(mR, &mOmega, &mPhi, &mKappa);
-  update();
-}
-
 //template<typename Point_t> inline
-//Helmert3D<Point_t>::Helmert3D(double tx, double ty, double tz, double scale, const math::RotationMatrix<double> &rotation)
+//Helmert3D<Point_t>::Helmert3D(double tx, 
+//                              double ty, 
+//                              double tz,
+//                              double scale,
+//                              const std::array<std::array<double, 3>, 3> &rotation)
 //  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
 //    tx(tx),
 //    ty(ty),
@@ -329,6 +322,29 @@ Helmert3D<Point_t>::Helmert3D(double tx,
 //  eulerAngles(mR, &mOmega, &mPhi, &mKappa);
 //  update();
 //}
+
+template<typename Point_t> inline
+Helmert3D<Point_t>::Helmert3D(double tx, 
+                              double ty, 
+                              double tz, 
+                              double scale, 
+                              const math::RotationMatrix<double> &rotation)
+  : Transform3D<Point_t>(Transform::Type::helmert_3d, 3),
+    tx(tx),
+    ty(ty),
+    tz(tz),
+    mScale(scale),
+    mR(rotation)
+{
+  math::EulerAngles<double> eulerAngles;
+  eulerAngles.axes = math::EulerAngles<double>::Axes::xyz;
+  math::RotationConverter<double>::convert(rotation, eulerAngles);
+  mOmega = eulerAngles.omega;
+  mPhi = eulerAngles.phi;
+  mKappa = eulerAngles.kappa;
+  //eulerAngles(mR, &mOmega, &mPhi, &mKappa);
+  update();
+}
 
 template<typename Point_t>
 Helmert3D<Point_t>::Helmert3D(const Helmert3D &trf)
@@ -436,18 +452,18 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
 
   return status;
 }
-
-template<typename Point_t> inline
-const std::array<std::array<double, 3>, 3> &Helmert3D<Point_t>::rotationMatrix() const 
-{
-  return mR;
-}
-
+//
 //template<typename Point_t> inline
-//const RotationMatrix<double> &Helmert3D<Point_t>::rotationMatrix() const
+//const std::array<std::array<double, 3>, 3> &Helmert3D<Point_t>::rotationMatrix() const 
 //{
 //  return mR;
 //}
+
+template<typename Point_t> inline
+math::RotationMatrix<double> Helmert3D<Point_t>::rotationMatrix() const
+{
+  return mR;
+}
 
 template<typename Point_t> inline
 Transform::Status Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsIn, 
@@ -578,18 +594,22 @@ void Helmert3D<Point_t>::setKappa(double kappa)
 template<typename Point_t> inline
 void Helmert3D<Point_t>::update()
 {
-  rotationMatrix(mOmega, mPhi, mKappa, &mR);
-#ifdef HAVE_OPENCV
-  cv::Mat inv = cv::Mat(3, 3, CV_64F, mR.data()).inv();
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      mRinv[i][j] = inv.at<double>(i, j);
-    }
-  }
-#elif HAVE_EIGEN
-  Eigen::Map<Matrix<double, 3, 3, RowMajor> > mat(mR.data());
-  mat = mat.inverse();
-#endif
+  math::EulerAngles<double> eulerAngles(mOmega, mPhi, mKappa, 
+                                        math::EulerAngles<double>::Axes::xyz);
+  math::RotationConverter<double>::convert(eulerAngles, mR);
+  mRinv = mR.inverse();
+//  rotationMatrix(mOmega, mPhi, mKappa, &mR);
+//#ifdef HAVE_OPENCV
+//  cv::Mat inv = cv::Mat(3, 3, CV_64F, mR.data()).inv();
+//  for (int i = 0; i < 3; i++) {
+//    for (int j = 0; j < 3; j++) {
+//      mRinv[i][j] = inv.at<double>(i, j);
+//    }
+//  }
+//#elif HAVE_EIGEN
+//  Eigen::Map<Matrix<double, 3, 3, RowMajor> > mat(mR.data());
+//  mat = mat.inverse();
+//#endif
 }
 
 template<typename Point_t> inline

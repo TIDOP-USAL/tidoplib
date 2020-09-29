@@ -7,9 +7,9 @@
 #include <vector>
 #include <array>
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#endif
 
 #ifdef HAVE_EIGEN
 TL_SUPPRESS_WARNINGS
@@ -146,14 +146,14 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
   //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
   Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
-  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
-  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
-  cv::solve(A, B, C, cv::DECOMP_SVD);
-  std::vector<double> v_aux;
-  cvMatToVector(C, &v_aux);
-  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
+//  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
+//  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_SVD);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   //TODO: O implementar método alternativo o devolver error
   // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
@@ -619,25 +619,25 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por filas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-TL_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-
-/*!
- * \brief Ordena los valores de una matriz de mayor a menor por columnas
- * \param[in] in
- * \param[out] out
- * \param[out] idx
- */
-TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-
-#endif
+//#ifdef HAVE_OPENCV
+//
+///*!
+// * \brief Ordena los valores de una matriz de mayor a menor por filas
+// * \param[in] in
+// * \param[out] out
+// * \param[out] idx
+// */
+//TL_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+//
+///*!
+// * \brief Ordena los valores de una matriz de mayor a menor por columnas
+// * \param[in] in
+// * \param[out] out
+// * \param[out] idx
+// */
+//TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
+//
+//#endif
 
 
 

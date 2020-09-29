@@ -19,13 +19,12 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-#include "tidop/core/messages.h"
+#include "tidop/geometry/transform/helmert2d.h"
+#include "tidop/geometry/transform/affine.h"
 
 namespace tl
 {
 
-template<typename Point_t> class Helmert2D;
-template<typename Point_t> class Affine;
 
 /*! \addtogroup trfGroup
  *  \{
@@ -173,12 +172,12 @@ Transform::Status Translation<Point_t>::compute(const std::vector<Point_t> &pts1
   size_t n2 = pts2.size();
   
   if (n1 != n2) {
-    msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zu", n1, n2);
+    //msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zu", n1, n2);
     return Transform::Status::failure;
   } 
   
   if (!this->isNumberOfPointsValid(n1)) {
-    msgError("Invalid number of points: %zu < %i", n1, this->mMinPoint);
+    //msgError("Invalid number of points: %zu < %i", n1, this->mMinPoint);
     return Transform::Status::failure;
   }
 

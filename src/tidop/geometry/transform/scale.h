@@ -19,7 +19,8 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/geometry/transform/helmert2d.h"
+#include "tidop/geometry/transform/affine.h"
 
 namespace tl
 {

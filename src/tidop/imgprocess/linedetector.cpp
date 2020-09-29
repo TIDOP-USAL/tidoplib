@@ -18,8 +18,10 @@ namespace tl
 void LineDetector::drawLines(cv::Mat &canvas, const cv::Scalar &color, int thickness, int lineType) const
 {
   for (size_t i = 0; i < mLines.size(); i++) {
-    //cv::line(canvas, point_cast<cv::Point>(mLines[i].pt1), point_cast<cv::Point>(mLines[i].pt2), color, thickness, lineType);
-    cv::line(canvas, static_cast<cv::Point>(mLines[i].pt1), static_cast<cv::Point>(mLines[i].pt2), color, thickness, lineType);
+    cv::line(canvas, 
+             cv::Point(mLines[i].pt1.x, mLines[i].pt1.y), 
+             cv::Point(mLines[i].pt2.x, mLines[i].pt2.y),
+             color, thickness, lineType);
   }
 }
 
