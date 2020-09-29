@@ -173,6 +173,16 @@ public:
   Matrix cofactorMatrix() const;
 
   /*!
+   * \brief Forma escalonada de fila
+   */
+  Matrix rowEchelonForm(T *determinant = nullptr) const;
+
+  /*!
+   * \brief Forma escalonada de fila reducida
+   */
+  //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
+
+  /*!
    * \brief Determinante de la matriz
    * \return Determinante
    */
@@ -481,6 +491,63 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 }
 
 template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::rowEchelonForm(T *determinant) const
+{
+  const T zero{0};
+  const T one{1};
+  T d = one;
+  size_t n = mMatrix.size();
+  std::array<std::array<T, _cols>, _rows> matrix(mMatrix);
+
+  for (size_t i = 0; i < n; ++i) {
+    T pivotElement = matrix[i][i];
+    size_t pivotRow = i;
+    for (size_t r = i + 1; r < n; ++r) {
+      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
+        pivotElement = matrix[r][i];
+        pivotRow = r;
+      }
+    }
+
+    if (pivotElement == zero) {
+      d = zero;
+      break;
+    }
+
+    if (pivotRow != i) {
+      matrix[i].swap(matrix[pivotRow]);
+      d *= -one;
+    }
+
+    d *= pivotElement;
+
+    for (size_t r = i + 1; r < n; ++r) {
+      for (size_t c = i + 1; c < n; ++c) {
+        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
+      }
+    }
+  }
+        
+  if (determinant) {
+    *determinant = d;
+  }
+
+  return matrix;
+}
+
+//template<size_t _rows, size_t _cols, typename T> 
+//Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::reducedRowEchelonForm(T *determinant) const
+//{
+//  const T zero{0};
+//  const T one{1};
+//  T d = one;
+//  size_t n = mMatrix.size();
+//  std::array<std::array<T, _cols>, _rows> matrix = this->rowEchelonForm(determinant);
+//
+//  return matrix;
+//}
+
+template<size_t _rows, size_t _cols, typename T> 
 T Matrix<_rows, _cols, T>::determinant() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
@@ -778,13 +845,17 @@ template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inversenxn(bool *invertibility) const
 {
   Matrix<_rows, _cols, T> matrix;
-  T det = determinantnxn(); 
-  if (det == static_cast<T>(0)) { 
+  T det;// = determinantnxn();
+  matrix = this->rowEchelonForm(invertibility, &det);
+  if (det != static_cast<T>(0)) {
+    if (invertibility) *invertibility = true;
+
+
+
+  } else {
     // Matriz singular, no se puede encontrar la inversa;
     if (invertibility != nullptr) *invertibility = false;
-    return matrix; 
   }
-
 
   return matrix;
 }
