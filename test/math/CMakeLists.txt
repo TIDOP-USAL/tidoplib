@@ -8,7 +8,7 @@ if(BUILD_TL_MATH AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
   MACRO(DEFINE_TEST name srcs)
 
     include_directories(${CMAKE_SOURCE_DIR}/src)
-    include_directories(${GTEST_INCLUDE_DIRS})
+    #include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)

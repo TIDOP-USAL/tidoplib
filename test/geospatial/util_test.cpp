@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE Tidop geospatial util test
+#define BOOST_TEST_MODULE Tidop geospatial geospatial_util test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geospatial/util.h>
 

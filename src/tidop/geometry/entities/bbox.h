@@ -289,15 +289,22 @@ BoundingBox<Point3_t>::operator BoundingBox<Point3_t2>() const
 template<typename Point3_t> inline
 Point3_t BoundingBox<Point3_t>::center() const
 {
-  if (std::is_integral<typename Point3_t::value_type>::value) {
-    return Point3_t(static_cast<typename Point3_t::value_type>(round((pt1.x + pt2.x) / 2.)),
-                    static_cast<typename Point3_t::value_type>(round((pt1.y + pt2.y) / 2.)),
-                    static_cast<typename Point3_t::value_type>(round((pt1.z + pt2.z) / 2.)));
-  } else {
-    return Point3_t((pt1.x + pt2.x) / 2., 
-                    (pt1.y + pt2.y) / 2., 
-                    (pt1.z + pt2.z) / 2.);
-  }
+  //if (std::is_integral<typename Point3_t::value_type>::value) {
+  //  double x = (static_cast<double>(pt1.x) + static_cast<double>(pt2.x)) / 2.;
+  //  double y = (static_cast<double>(pt1.y) + static_cast<double>(pt2.y)) / 2.;
+  //  double z = (static_cast<double>(pt1.z) + static_cast<double>(pt2.z)) / 2.;
+  //  Point3_t pt(static_cast<typename Point3_t::value_type>(round(x)),
+  //              static_cast<typename Point3_t::value_type>(round(y)),
+  //              static_cast<typename Point3_t::value_type>(round(z)));
+  //  //return Point3_t(static_cast<typename Point3_t::value_type>(round((pt1.x + pt2.x) / 2.)),
+  //  //                static_cast<typename Point3_t::value_type>(round((pt1.y + pt2.y) / 2.)),
+  //  //                static_cast<typename Point3_t::value_type>(round((pt1.z + pt2.z) / 2.)));
+  //} else {
+    typename Point3_t::value_type two{2};
+    return Point3_t((pt1.x + pt2.x) / two, 
+                    (pt1.y + pt2.y) / two, 
+                    (pt1.z + pt2.z) / two);
+  //}
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)
 

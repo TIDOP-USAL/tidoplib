@@ -93,9 +93,9 @@ void ImageMetadataBase::setMetadata(const std::string &name, const std::string &
   if (metadata != mMetadata.end()) {
     metadata->second.first = value;
     metadata->second.second = true;
-  } else {
+  } /*else {
     msgWarning("Metadata '%s' not supported", name.c_str());
-  }
+  }*/
 }
 
 std::map<std::string, std::string> ImageMetadataBase::ImageMetadataBase::metadata(bool all) const
