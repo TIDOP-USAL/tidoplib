@@ -173,10 +173,22 @@ public:
   Matrix cofactorMatrix() const;
 
   /*!
+   * \brief Forma escalonada de fila
+   */
+  Matrix rowEchelonForm(T *determinant = nullptr) const;
+
+  /*!
+   * \brief Forma escalonada de fila reducida
+   */
+  //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
+
+  /*!
    * \brief Determinante de la matriz
    * \return Determinante
    */
   T determinant() const;
+
+  T trace() const;
 
   /*!
    * \brief Comprueba si la matrix es invertible
@@ -220,6 +232,7 @@ public:
    * \return Primero menor
    */
   T firstMinor(size_t r, size_t c) const;
+
 
   /*!
    * \brief Construye una matriz de ceros
@@ -270,6 +283,10 @@ private:
   Matrix inverse3x3(bool *invertibility) const;
   Matrix inverse4x4(bool *invertibility) const;
   Matrix inversenxn(bool *invertibility) const;
+  Matrix adjoint2x2() const;
+  Matrix adjoint3x3() const;
+  Matrix adjoint4x4() const;
+  Matrix adjointnxn() const;
 
 public:
 
@@ -368,15 +385,6 @@ Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> 
 
 }
 
-//template<size_t _rows, size_t _cols, typename T> inline
-//Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> mat)
-//  : mMatrix(),
-//    mRows(_rows),
-//    mCols(_cols)
-//{
-//
-//}
-
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::~Matrix()
 {
@@ -416,18 +424,6 @@ const T &Matrix<_rows, _cols, T>::at(size_t r, size_t c) const
   return mMatrix[r][c];
 }
 
-//template<size_t _rows, size_t _cols, typename T>
-//size_t Matrix<_rows, _cols, T>::rows() const
-//{
-//  return mRows;
-//}
-
-//template<size_t _rows, size_t _cols, typename T>
-//size_t Matrix<_rows, _cols, T>::cols() const
-//{
-//  return mCols;
-//}
-
 template<size_t _rows, size_t _cols, typename T> 
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) const
 {
@@ -442,6 +438,121 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse(bool *invertibility) co
     matrix = inverse4x4(invertibility);
   } else {
     matrix = inversenxn(invertibility);
+  }
+
+  return matrix;
+}
+template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse2x2(bool *invertibility) const
+{
+  Matrix<_rows, _cols, T> matrix;
+  T det = determinant2x2();
+  if (det != static_cast<T>(0)) {
+    matrix.at(0, 0) =  mMatrix[1][1] / det;
+    matrix.at(0, 1) = -mMatrix[0][1] / det;
+    matrix.at(1, 0) = -mMatrix[1][0] / det;
+    matrix.at(1, 1) =  mMatrix[0][0] / det;
+    if (invertibility) *invertibility = true;
+  } else {
+    if (invertibility) *invertibility = false;
+  }
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse3x3(bool *invertibility) const
+{
+  Matrix<_rows, _cols, T> matrix;
+
+  Matrix<_rows, _cols, T> adj = this->adjoint3x3();
+  T det = mMatrix[0][0] * adj.at(0, 0) + mMatrix[0][1] * adj.at(1, 0) + mMatrix[0][2] * adj.at(2, 0);
+
+  if (det != static_cast<T>(0)) {
+
+    matrix = adj / det;
+
+    if (invertibility) *invertibility = true;
+  } else {
+    if (invertibility) *invertibility = false;
+  }
+
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse4x4(bool *invertibility) const
+{
+  Matrix<_rows, _cols, T> matrix;
+
+  T m00 = mMatrix[0][0];
+  T m01 = mMatrix[0][1];
+  T m02 = mMatrix[0][2];
+  T m03 = mMatrix[0][3];
+  T m10 = mMatrix[1][0];
+  T m11 = mMatrix[1][1];
+  T m12 = mMatrix[1][2];
+  T m13 = mMatrix[1][3];
+  T m20 = mMatrix[2][0];
+  T m21 = mMatrix[2][1];
+  T m22 = mMatrix[2][2];
+  T m23 = mMatrix[2][3];
+  T m30 = mMatrix[3][0];
+  T m31 = mMatrix[3][1];
+  T m32 = mMatrix[3][2];
+  T m33 = mMatrix[3][3];
+
+  T a0 = m00 * m11 - m01 * m10;
+  T a1 = m00 * m12 - m02 * m10;
+  T a2 = m00 * m13 - m03 * m10;
+  T a3 = m01 * m12 - m02 * m11;
+  T a4 = m01 * m13 - m03 * m11;
+  T a5 = m02 * m13 - m03 * m12;
+  T b0 = m20 * m31 - m21 * m30;
+  T b1 = m20 * m32 - m22 * m30;
+  T b2 = m20 * m33 - m23 * m30;
+  T b3 = m21 * m32 - m22 * m31;
+  T b4 = m21 * m33 - m23 * m31;
+  T b5 = m22 * m33 - m23 * m32;
+  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+
+  if (det != static_cast<T>(0)) {
+    
+    matrix.at(0, 0) = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
+    matrix.at(0, 1) = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
+    matrix.at(0, 2) = ( m31 * a5 - m32 * a4 + m33 * a3) / det;
+    matrix.at(0, 3) = (-m21 * a5 + m22 * a4 - m23 * a3) / det;
+    matrix.at(1, 0) = (-m10 * b5 + m12 * b2 - m13 * b1) / det;
+    matrix.at(1, 1) = ( m00 * b5 - m02 * b2 + m03 * b1) / det;
+    matrix.at(1, 2) = (-m30 * a5 + m32 * a2 - m33 * a1) / det;
+    matrix.at(1, 3) = ( m20 * a5 - m22 * a2 + m23 * a1) / det;
+    matrix.at(2, 0) = ( m10 * b4 - m11 * b2 + m13 * b0) / det;
+    matrix.at(2, 1) = (-m00 * b4 + m01 * b2 - m03 * b0) / det;
+    matrix.at(2, 2) = ( m30 * a4 - m31 * a2 + m33 * a0) / det;
+    matrix.at(2, 3) = (-m20 * a4 + m21 * a2 - m23 * a0) / det;
+    matrix.at(3, 0) = (-m10 * b3 + m11 * b1 - m12 * b0) / det;
+    matrix.at(3, 1) = ( m00 * b3 - m01 * b1 + m02 * b0) / det;
+    matrix.at(3, 2) = (-m30 * a3 + m31 * a1 - m32 * a0) / det;
+    matrix.at(3, 3) = ( m20 * a3 - m21 * a1 + m22 * a0) / det;
+
+    if (invertibility) *invertibility = true;
+  } else {
+    if (invertibility) *invertibility = false;
+  }
+
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inversenxn(bool *invertibility) const
+{
+  Matrix<_rows, _cols, T> matrix;
+
+  T det = determinantnxn();
+  if (det != static_cast<T>(0)) {
+    Matrix<_rows, _cols, T> adjoint = this->adjugate();
+    matrix = adjoint / det;
+  } else {
+    if (invertibility != nullptr) *invertibility = false;
   }
 
   return matrix;
@@ -463,6 +574,107 @@ template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjugate() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
+
+  Matrix<_cols, _rows, T> matrix;
+  if (mMatrix.size() == 2) {
+    matrix = adjoint2x2();
+  } else if (mMatrix.size() == 3) {
+    matrix = adjoint3x3();
+  } else if (mMatrix.size() == 4) {
+    matrix = adjoint4x4();
+  } else {
+    matrix = adjointnxn();
+  }
+
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T>
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint2x2() const
+{
+  Matrix<_rows, _cols, T> matrix;
+  matrix.at(0, 0) = mMatrix[1][1];
+  matrix.at(0, 1) = -mMatrix[0][1];
+  matrix.at(1, 0) = -mMatrix[1][0];
+  matrix.at(1, 1) = mMatrix[0][0];
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T>
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint3x3() const
+{
+  Matrix<_rows, _cols, T> matrix;
+  matrix.at(0, 0) = mMatrix[1][1] * mMatrix[2][2] - mMatrix[1][2] * mMatrix[2][1];
+  matrix.at(0, 1) = mMatrix[0][2] * mMatrix[2][1] - mMatrix[0][1] * mMatrix[2][2];
+  matrix.at(0, 2) = mMatrix[0][1] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][1];
+  matrix.at(1, 0) = mMatrix[1][2] * mMatrix[2][0] - mMatrix[1][0] * mMatrix[2][2];
+  matrix.at(1, 1) = mMatrix[0][0] * mMatrix[2][2] - mMatrix[0][2] * mMatrix[2][0];
+  matrix.at(1, 2) = mMatrix[0][2] * mMatrix[1][0] - mMatrix[0][0] * mMatrix[1][2];
+  matrix.at(2, 0) = mMatrix[1][0] * mMatrix[2][1] - mMatrix[1][1] * mMatrix[2][0];
+  matrix.at(2, 1) = mMatrix[0][1] * mMatrix[2][0] - mMatrix[0][0] * mMatrix[2][1];
+  matrix.at(2, 2) = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T>
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjoint4x4() const
+{
+  Matrix<_rows, _cols, T> matrix;
+
+  T m00 = mMatrix[0][0];
+  T m01 = mMatrix[0][1];
+  T m02 = mMatrix[0][2];
+  T m03 = mMatrix[0][3];
+  T m10 = mMatrix[1][0];
+  T m11 = mMatrix[1][1];
+  T m12 = mMatrix[1][2];
+  T m13 = mMatrix[1][3];
+  T m20 = mMatrix[2][0];
+  T m21 = mMatrix[2][1];
+  T m22 = mMatrix[2][2];
+  T m23 = mMatrix[2][3];
+  T m30 = mMatrix[3][0];
+  T m31 = mMatrix[3][1];
+  T m32 = mMatrix[3][2];
+  T m33 = mMatrix[3][3];
+
+  T a0 = m00 * m11 - m01 * m10;
+  T a1 = m00 * m12 - m02 * m10;
+  T a2 = m00 * m13 - m03 * m10;
+  T a3 = m01 * m12 - m02 * m11;
+  T a4 = m01 * m13 - m03 * m11;
+  T a5 = m02 * m13 - m03 * m12;
+  T b0 = m20 * m31 - m21 * m30;
+  T b1 = m20 * m32 - m22 * m30;
+  T b2 = m20 * m33 - m23 * m30;
+  T b3 = m21 * m32 - m22 * m31;
+  T b4 = m21 * m33 - m23 * m31;
+  T b5 = m22 * m33 - m23 * m32;
+
+  matrix.at(0, 0) =  m11 * b5 - m12 * b4 + m13 * b3;
+  matrix.at(0, 1) = -m01 * b5 + m02 * b4 - m03 * b3;
+  matrix.at(0, 2) =  m31 * a5 - m32 * a4 + m33 * a3;
+  matrix.at(0, 3) = -m21 * a5 + m22 * a4 - m23 * a3;
+  matrix.at(1, 0) = -m10 * b5 + m12 * b2 - m13 * b1;
+  matrix.at(1, 1) =  m00 * b5 - m02 * b2 + m03 * b1;
+  matrix.at(1, 2) = -m30 * a5 + m32 * a2 - m33 * a1;
+  matrix.at(1, 3) =  m20 * a5 - m22 * a2 + m23 * a1;
+  matrix.at(2, 0) =  m10 * b4 - m11 * b2 + m13 * b0;
+  matrix.at(2, 1) = -m00 * b4 + m01 * b2 - m03 * b0;
+  matrix.at(2, 2) =  m30 * a4 - m31 * a2 + m33 * a0;
+  matrix.at(2, 3) = -m20 * a4 + m21 * a2 - m23 * a0;
+  matrix.at(3, 0) = -m10 * b3 + m11 * b1 - m12 * b0;
+  matrix.at(3, 1) =  m00 * b3 - m01 * b1 + m02 * b0;
+  matrix.at(3, 2) = -m30 * a3 + m31 * a1 - m32 * a0;
+  matrix.at(3, 3) =  m20 * a3 - m21 * a1 + m22 * a0;
+
+  return matrix;
+}
+
+template<size_t _rows, size_t _cols, typename T>
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::adjointnxn() const
+{
+  static_assert(_rows == _cols, "Non-Square Matrix");
   Matrix<_rows, _cols, T> matrix = this->cofactorMatrix();
   return matrix.transpose();
 }
@@ -471,6 +683,7 @@ template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
+
   Matrix<_rows, _cols, T> matrix;
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
@@ -481,17 +694,75 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::cofactorMatrix() const
 }
 
 template<size_t _rows, size_t _cols, typename T> 
+Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::rowEchelonForm(T *determinant) const
+{
+  const T zero{0};
+  const T one{1};
+  T d = one;
+  size_t n = mMatrix.size();
+  std::array<std::array<T, _cols>, _rows> matrix(mMatrix);
+
+  for (size_t i = 0; i < n; ++i) {
+    T pivotElement = matrix[i][i];
+    size_t pivotRow = i;
+    for (size_t r = i + 1; r < n; ++r) {
+      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
+        pivotElement = matrix[r][i];
+        pivotRow = r;
+      }
+    }
+
+    if (pivotElement == zero) {
+      d = zero;
+      break;
+    }
+
+    if (pivotRow != i) {
+      matrix[i].swap(matrix[pivotRow]);
+      d *= -one;
+    }
+
+    d *= pivotElement;
+
+    for (size_t r = i + 1; r < n; ++r) {
+      for (size_t c = i + 1; c < n; ++c) {
+        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
+      }
+    }
+  }
+        
+  if (determinant) {
+    *determinant = d;
+  }
+
+  return matrix;
+}
+
+//template<size_t _rows, size_t _cols, typename T> 
+//Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::reducedRowEchelonForm(T *determinant) const
+//{
+//  const T zero{0};
+//  const T one{1};
+//  T d = one;
+//  size_t n = mMatrix.size();
+//  std::array<std::array<T, _cols>, _rows> matrix = this->rowEchelonForm(determinant);
+//
+//  return matrix;
+//}
+
+template<size_t _rows, size_t _cols, typename T> 
 T Matrix<_rows, _cols, T>::determinant() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
 
   T d = static_cast<T>(1);
- 
-  if (mMatrix.size() == 2) {
+  size_t size = mMatrix.size();
+
+  if (size == 2) {
     d = determinant2x2();
-  } else if (mMatrix.size() == 3) {
+  } else if (size == 3) {
     d = determinant3x3();
-  } else if (mMatrix.size() == 4) {
+  } else if (size == 4) {
     d = determinant4x4();
   } else {
     d = determinantnxn();
@@ -500,8 +771,96 @@ T Matrix<_rows, _cols, T>::determinant() const
   return d;
 }
 
+template<size_t _rows, size_t _cols, typename T> 
+T Matrix<_rows, _cols, T>::determinant2x2() const
+{
+  T det = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
+  return det;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+T Matrix<_rows, _cols, T>::determinant3x3() const
+{
+  T c00 = mMatrix[1][1] * mMatrix[2][2] - mMatrix[1][2] * mMatrix[2][1];
+  T c10 = mMatrix[1][2] * mMatrix[2][0] - mMatrix[1][0] * mMatrix[2][2];
+  T c20 = mMatrix[1][0] * mMatrix[2][1] - mMatrix[1][1] * mMatrix[2][0];
+  T det = mMatrix[0][0] * c00 + mMatrix[0][1] * c10 + mMatrix[0][2] * c20;
+  return det;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+T Matrix<_rows, _cols, T>::determinant4x4() const
+{
+  T a0 = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
+  T a1 = mMatrix[0][0] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][0];
+  T a2 = mMatrix[0][0] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][0];
+  T a3 = mMatrix[0][1] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][1];
+  T a4 = mMatrix[0][1] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][1];
+  T a5 = mMatrix[0][2] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][2];
+  T b0 = mMatrix[2][0] * mMatrix[3][1] - mMatrix[2][1] * mMatrix[3][0];
+  T b1 = mMatrix[2][0] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][0];
+  T b2 = mMatrix[2][0] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][0];
+  T b3 = mMatrix[2][1] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][1];
+  T b4 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][1];
+  T b5 = mMatrix[2][2] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][2];
+  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
+  return det;
+}
+
+template<size_t _rows, size_t _cols, typename T> 
+T Matrix<_rows, _cols, T>::determinantnxn() const
+{
+  const T zero{0};
+  const T one{1};
+  T d = one;
+  size_t n = mMatrix.size();
+  std::array<std::array<T, _cols>, _rows> matrix(mMatrix);
+
+  for (size_t i = 0; i < n; ++i) {
+    T pivotElement = matrix[i][i];
+    size_t pivotRow = i;
+    for (size_t r = i + 1; r < n; ++r) {
+      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
+        pivotElement = matrix[r][i];
+        pivotRow = r;
+      }
+    }
+
+    if (pivotElement == zero) {
+      return zero;
+    }
+
+    if (pivotRow != i) {
+      matrix[i].swap(matrix[pivotRow]);
+      d *= -one;
+    }
+
+    d *= pivotElement;
+
+    for (size_t r = i + 1; r < n; ++r) {
+      for (size_t c = i + 1; c < n; ++c) {
+        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
+      }
+    }
+  }
+  return d;
+}
+
+
 template<size_t _rows, size_t _cols, typename T> inline
-bool tl::math::Matrix<_rows, _cols, T>::invertible()
+T Matrix<_rows, _cols, T>::trace() const
+{
+  static_assert(_rows == _cols, "Non-Square Matrix");
+
+  T trace;
+  for (size_t i = 0; r < mMatrix.size(); i++) {
+    trace += mMatrix[i][i];
+  }
+  return trace;
+}
+
+template<size_t _rows, size_t _cols, typename T> inline
+bool Matrix<_rows, _cols, T>::invertible()
 {
   T det = determinant();
   if (det == static_cast<T>(0)) return false;
@@ -509,7 +868,7 @@ bool tl::math::Matrix<_rows, _cols, T>::invertible()
 }
 
 template<size_t _rows, size_t _cols, typename T> inline
-bool tl::math::Matrix<_rows, _cols, T>::singular()
+bool Matrix<_rows, _cols, T>::singular()
 {
   T det = determinant();
   if (det == static_cast<T>(0)) return true;
@@ -589,208 +948,6 @@ Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::identity()
   }
   return matrix;
 }
-
-template<size_t _rows, size_t _cols, typename T> 
-T Matrix<_rows, _cols, T>::determinant2x2() const
-{
-  T det = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
-  return det;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-T Matrix<_rows, _cols, T>::determinant3x3() const
-{
-  T c00 = mMatrix[1][1] * mMatrix[2][2] - mMatrix[1][2] * mMatrix[2][1];
-  T c10 = mMatrix[1][2] * mMatrix[2][0] - mMatrix[1][0] * mMatrix[2][2];
-  T c20 = mMatrix[1][0] * mMatrix[2][1] - mMatrix[1][1] * mMatrix[2][0];
-  T det = mMatrix[0][0] * c00 + mMatrix[0][1] * c10 + mMatrix[0][2] * c20;
-  return det;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-T Matrix<_rows, _cols, T>::determinant4x4() const
-{
-  T a0 = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
-  T a1 = mMatrix[0][0] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][0];
-  T a2 = mMatrix[0][0] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][0];
-  T a3 = mMatrix[0][1] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][1];
-  T a4 = mMatrix[0][1] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][1];
-  T a5 = mMatrix[0][2] * mMatrix[1][3] - mMatrix[0][3] * mMatrix[1][2];
-  T b0 = mMatrix[2][0] * mMatrix[3][1] - mMatrix[2][1] * mMatrix[3][0];
-  T b1 = mMatrix[2][0] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][0];
-  T b2 = mMatrix[2][0] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][0];
-  T b3 = mMatrix[2][1] * mMatrix[3][2] - mMatrix[2][2] * mMatrix[3][1];
-  T b4 = mMatrix[2][1] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][1];
-  T b5 = mMatrix[2][2] * mMatrix[3][3] - mMatrix[2][3] * mMatrix[3][2];
-  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-  return det;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-T Matrix<_rows, _cols, T>::determinantnxn() const
-{
-  const T zero{0};
-  const T one{1};
-  T d = one;
-  size_t n = mMatrix.size();
-  std::array<std::array<T, _cols>, _rows> matrix(mMatrix);
-
-  for (size_t i = 0; i < n; ++i) {
-    T pivotElement = matrix[i][i];
-    size_t pivotRow = i;
-    for (size_t r = i + 1; r < n; ++r) {
-      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
-        pivotElement = matrix[r][i];
-        pivotRow = r;
-      }
-    }
-
-    if (pivotElement == zero) {
-      return zero;
-    }
-
-    if (pivotRow != i) {
-      matrix[i].swap(matrix[pivotRow]);
-      d *= -one;
-    }
-
-    d *= pivotElement;
-
-    for (size_t r = i + 1; r < n; ++r) {
-      for (size_t c = i + 1; c < n; ++c) {
-        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
-      }
-    }
-  }
-  return d;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse2x2(bool *invertibility) const
-{
-  Matrix<_rows, _cols, T> matrix;
-  T det = determinant2x2();
-  if (det != static_cast<T>(0)) {
-    matrix.at(0, 0) =  mMatrix[1][1] / det;
-    matrix.at(0, 1) = -mMatrix[0][1] / det;
-    matrix.at(1, 0) = -mMatrix[1][0] / det;
-    matrix.at(1, 1) =  mMatrix[0][0] / det;
-    if (invertibility) *invertibility = true;
-  } else {
-    if (invertibility) *invertibility = false;
-  }
-  return matrix;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse3x3(bool *invertibility) const
-{
-  Matrix<_rows, _cols, T> matrix;
-
-  T c00 = mMatrix[1][1] * mMatrix[2][2] - mMatrix[1][2] * mMatrix[2][1];
-  T c10 = mMatrix[1][2] * mMatrix[2][0] - mMatrix[1][0] * mMatrix[2][2];
-  T c20 = mMatrix[1][0] * mMatrix[2][1] - mMatrix[1][1] * mMatrix[2][0];
-  T det = mMatrix[0][0] * c00 + mMatrix[0][1] * c10 + mMatrix[0][2] * c20;
-
-  if (det != static_cast<T>(0)) {
-
-    matrix.at(0, 0) = c00 / det;
-    matrix.at(0, 1) = (mMatrix[0][2] * mMatrix[2][1] - mMatrix[0][1] * mMatrix[2][2]) / det;
-    matrix.at(0, 2) = (mMatrix[0][1] * mMatrix[1][2] - mMatrix[0][2] * mMatrix[1][1]) / det;
-    matrix.at(1, 0) = c10 / det;
-    matrix.at(1, 1) = (mMatrix[0][0] * mMatrix[2][2] - mMatrix[0][2] * mMatrix[2][0]) / det;
-    matrix.at(1, 2) = (mMatrix[0][2] * mMatrix[1][0] - mMatrix[0][0] * mMatrix[1][2]) / det;
-    matrix.at(2, 0) = c20 / det;
-    matrix.at(2, 1) = (mMatrix[0][1] * mMatrix[2][0] - mMatrix[0][0] * mMatrix[2][1]) / det;
-    matrix.at(2, 2) = (mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0]) / det;
-    if (invertibility) *invertibility = true;
-  } else {
-    if (invertibility) *invertibility = false;
-  }
-
-  return matrix;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inverse4x4(bool *invertibility) const
-{
-  Matrix<_rows, _cols, T> matrix;
-
-  T m00 = mMatrix[0][0];
-  T m01 = mMatrix[0][1];
-  T m02 = mMatrix[0][2];
-  T m03 = mMatrix[0][3];
-  T m10 = mMatrix[1][0];
-  T m11 = mMatrix[1][1];
-  T m12 = mMatrix[1][2];
-  T m13 = mMatrix[1][3];
-  T m20 = mMatrix[2][0];
-  T m21 = mMatrix[2][1];
-  T m22 = mMatrix[2][2];
-  T m23 = mMatrix[2][3];
-  T m30 = mMatrix[3][0];
-  T m31 = mMatrix[3][1];
-  T m32 = mMatrix[3][2];
-  T m33 = mMatrix[3][3];
-
-  T a0 = m00 * m11 - m01 * m10;
-  T a1 = m00 * m12 - m02 * m10;
-  T a2 = m00 * m13 - m03 * m10;
-  T a3 = m01 * m12 - m02 * m11;
-  T a4 = m01 * m13 - m03 * m11;
-  T a5 = m02 * m13 - m03 * m12;
-  T b0 = m20 * m31 - m21 * m30;
-  T b1 = m20 * m32 - m22 * m30;
-  T b2 = m20 * m33 - m23 * m30;
-  T b3 = m21 * m32 - m22 * m31;
-  T b4 = m21 * m33 - m23 * m31;
-  T b5 = m21 * m33 - m23 * m32;
-  T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
-
-  if (det != static_cast<T>(0)) {
-    
-    matrix.at(0, 0) = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
-    matrix.at(0, 1) = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
-    matrix.at(0, 2) = ( m31 * a5 - m32 * a4 + m33 * a3) / det;
-    matrix.at(0, 3) = (-m21 * a5 + m22 * a4 - m23 * a3) / det;
-    matrix.at(1, 0) = (-m10 * b5 + m12 * b2 - m13 * b1) / det;
-    matrix.at(1, 1) = ( m00 * b5 - m02 * b2 + m03 * b1) / det;
-    matrix.at(1, 2) = (-m30 * a5 + m32 * a2 - m33 * a1) / det;
-    matrix.at(1, 3) = ( m20 * a5 - m22 * a2 + m23 * a1) / det;
-    matrix.at(2, 0) = ( m10 * b4 - m11 * b2 + m13 * b0) / det;
-    matrix.at(2, 1) = (-m00 * b4 + m01 * b2 - m03 * b0) / det;
-    matrix.at(2, 2) = ( m30 * a4 - m31 * a2 + m33 * a0) / det;
-    matrix.at(2, 3) = (-m20 * a4 + m21 * a2 - m23 * a0) / det;
-    matrix.at(3, 0) = (-m10 * b3 + m11 * b1 - m12 * b0) / det;
-    matrix.at(3, 1) = ( m00 * b3 - m01 * b1 + m02 * b0) / det;
-    matrix.at(3, 2) = (-m30 * a3 + m31 * a1 - m32 * a0) / det;
-    matrix.at(3, 3) = ( m20 * a3 - m21 * a1 + m22 * a0) / det;
-
-    if (invertibility) *invertibility = true;
-  } else {
-    if (invertibility) *invertibility = false;
-  }
-
-  return matrix;
-}
-
-template<size_t _rows, size_t _cols, typename T> 
-Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::inversenxn(bool *invertibility) const
-{
-  Matrix<_rows, _cols, T> matrix;
-  T det = determinantnxn(); 
-  if (det == static_cast<T>(0)) { 
-    // Matriz singular, no se puede encontrar la inversa;
-    if (invertibility != nullptr) *invertibility = false;
-    return matrix; 
-  }
-
-
-  return matrix;
-}
-
-
-
 
 
 /* Operaciones unarias */

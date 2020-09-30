@@ -360,7 +360,8 @@ Point<T1> operator * (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x*b)), 
                      static_cast<T1>(std::round(pt.y*b)));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x*b), static_cast<T1>(pt.y*b));
+    return Point<T1>(static_cast<T1>(pt.x*b), 
+                     static_cast<T1>(pt.y*b));
   }
 }
 
@@ -371,7 +372,8 @@ Point<T2> operator * (T1 a, const Point<T2> &b)
     return Point<T2>(static_cast<T2>(std::round(b.x*a)), 
                      static_cast<T2>(std::round(b.y*a)));
   } else {
-    return Point<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a));
+    return Point<T2>(static_cast<T2>(b.x*a), 
+                     static_cast<T2>(b.y*a));
   }
 }
 
@@ -383,7 +385,8 @@ Point<T1> operator / (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x / static_cast<double>(b))),
                      static_cast<T1>(std::round(pt.y / static_cast<double>(b))));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x / b), static_cast<T1>(pt.y / b));
+    return Point<T1>(static_cast<T1>(pt.x / b), 
+                     static_cast<T1>(pt.y / b));
   }
 }
 
