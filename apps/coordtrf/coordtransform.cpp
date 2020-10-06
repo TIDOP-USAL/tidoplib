@@ -6,10 +6,78 @@
 #include <tidop/geometry/transform/helmert2d.h>
 #include <tidop/geometry/entities/point.h>
 
+#include <Eigen/SVD>
+#include <tidop/math/algebra/svd.h>
+#include <tidop/math/algebra/matrix.h>
+
 using namespace tl;
+
 
 int main(int argc, char** argv)
 {
+
+
+  Eigen::Matrix3f A;
+  Eigen::Vector3f B;
+  A << 1,2,3,  4,5,6,  7,8,10;
+  B << 3, 3, 4;
+  Eigen::JacobiSVD<Eigen::Matrix3f> svd_eigen = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
+  std::cout << "Here is the matrix A:\n" << A << std::endl;
+  std::cout << "Here is the vector b:\n" << B << std::endl;
+  std::cout << "Its singular values are:" << std::endl << svd_eigen.singularValues() << std::endl;
+  std::cout << "Its left singular vectors are the columns of the thin U matrix:" << std::endl << svd_eigen.matrixU() << std::endl;
+  std::cout << "Its right singular vectors are the columns of the thin V matrix:" << std::endl << svd_eigen.matrixV() << std::endl;
+  Eigen::Vector3f x = svd_eigen.solve(B);
+  std::cout << "The solution is:\n" << x << std::endl;
+
+  double *a = new double[3*3];
+  double *pa = a;
+  double *b = new double[3];
+  double *pb = b;
+
+  *pa++ = 1;
+  *pa++ = 2;
+  *pa++ = 3;
+  *pa++ = 4;
+  *pa++ = 5;
+  *pa++ = 6;
+  *pa++ = 7;
+  *pa++ = 8;
+  *pa++ = 10;
+
+  *pb++ = 3;
+  *pb++ = 3;
+  *pb++ = 4;
+
+  //cv::Mat cvA(static_cast<int>(3), static_cast<int>(3), CV_64F, a);
+  //cv::Mat cvB(static_cast<int>(3), 1, CV_64F, b);
+
+  //cv::Mat cvC(static_cast<int>(3), 1, CV_64F);
+  //cv::solve(cvA, cvB, cvC, cv::DECOMP_SVD);
+  
+  tl::math::Matrix<3, 3, float> _A;
+  _A.at(0, 0) = 1;
+  _A.at(0, 1) = 2;
+  _A.at(0, 2) = 3;
+  _A.at(1, 0) = 4;
+  _A.at(1, 1) = 5;
+  _A.at(1, 2) = 6;
+  _A.at(2, 0) = 7;
+  _A.at(2, 1) = 8;
+  _A.at(2, 2) = 10;
+  
+  tl::math::Vector3f _B{3, 3, 4};
+
+  tl::math::SingularValueDecomposition<tl::math::Matrix<3, 3, float>> svd(_A);
+
+  //svd.solve(_A);
+  tl::math::Matrix<3, 3, float> u = svd.u();
+  tl::math::Matrix<3, 3, float> v = svd.v();
+  tl::math::Vector3f w = svd.w();
+  tl::math::Vector3f c = svd.solve(_B);
+
+
+
   bool compute = false;
   bool transform = true;
   double tx = 0.0;

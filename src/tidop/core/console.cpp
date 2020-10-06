@@ -770,7 +770,7 @@ CommandList::CommandList(const std::string &name, const std::string &description
 
 CommandList::Status CommandList::parse(int argc, const char * const argv[])
 {
-  if (argc < 1) return Status::parse_error;
+  if (argc <= 1) return Status::parse_error;
 
   std::string arg_cmd_name = std::string(argv[1]);
   std::size_t found_name = arg_cmd_name.find("--");

@@ -245,27 +245,55 @@ BOOST_FIXTURE_TEST_CASE(inverse4x4, MatrixTest)
   bool invertible;
   Matrix<4, 4> inv_mat = _mat_4x4_d->inverse(&invertible);
   BOOST_CHECK(invertible);
-  BOOST_CHECK_SMALL( 0.268435, inv_mat.at(0, 0));
-  BOOST_CHECK_SMALL(-0.018133, inv_mat.at(0, 1));
-  BOOST_CHECK_SMALL(-0.010673, inv_mat.at(0, 2));
-  BOOST_CHECK_SMALL(-0.002479, inv_mat.at(0, 3));
-  BOOST_CHECK_SMALL(-0.077647, inv_mat.at(1, 0));
-  BOOST_CHECK_SMALL( 0.005298, inv_mat.at(1, 1));
-  BOOST_CHECK_SMALL(-0.006780, inv_mat.at(1, 2));
-  BOOST_CHECK_SMALL( 0.035491, inv_mat.at(1, 3));
-  BOOST_CHECK_SMALL( 0.007528, inv_mat.at(2, 0));
-  BOOST_CHECK_SMALL( 0.013172, inv_mat.at(2, 1));
-  BOOST_CHECK_SMALL(-0.019248, inv_mat.at(2, 2));
-  BOOST_CHECK_SMALL( 0.018059, inv_mat.at(2, 3));
-  BOOST_CHECK_SMALL(-0.007974, inv_mat.at(3, 0));
-  BOOST_CHECK_SMALL(-0.001035, inv_mat.at(3, 1));
-  BOOST_CHECK_SMALL( 0.034578, inv_mat.at(3, 2));
-  BOOST_CHECK_SMALL(-0.036946, inv_mat.at(3, 3));
+  BOOST_CHECK_CLOSE( 0.268435, inv_mat.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.018133, inv_mat.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.010673, inv_mat.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-0.002479, inv_mat.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(-0.077647, inv_mat.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE( 0.005298, inv_mat.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.006780, inv_mat.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE( 0.035491, inv_mat.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE( 0.007528, inv_mat.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE( 0.013172, inv_mat.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.019248, inv_mat.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE( 0.018059, inv_mat.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(-0.007974, inv_mat.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.001035, inv_mat.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE( 0.034578, inv_mat.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(-0.036946, inv_mat.at(3, 3), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(inverse, MatrixTest)
 {
-  ///TODO: Terminar método inverse
+  bool invertible;
+  Matrix<5, 5> inv_mat = _mat_5x5_d.inverse(&invertible);
+  BOOST_CHECK(invertible);
+  BOOST_CHECK_CLOSE(-0.00208479, inv_mat.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.0799166, inv_mat.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.273801, inv_mat.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-0.066713, inv_mat.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(-0.0250174, inv_mat.at(0, 4), 0.1);
+  BOOST_CHECK_CLOSE(0.000694945, inv_mat.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.359972, inv_mat.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.4246, inv_mat.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.0222376, inv_mat.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(0.00833914, inv_mat.at(1, 4), 0.1);
+  BOOST_CHECK_CLOSE(0.134468, inv_mat.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.345379, inv_mat.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.339819, inv_mat.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(-0.197012, inv_mat.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(0.113621, inv_mat.at(2, 4), 0.1);
+  BOOST_CHECK_CLOSE(0.113621, inv_mat.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.144545, inv_mat.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.0778318, inv_mat.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.135858, inv_mat.at(3, 3), 0.1);
+  BOOST_CHECK_CLOSE(-0.136553, inv_mat.at(3, 4), 0.1);                 
+  BOOST_CHECK_CLOSE(-0.198402, inv_mat.at(4, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.227936, inv_mat.at(4, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.276581, inv_mat.at(4, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.151147, inv_mat.at(4, 3), 0.1);
+  BOOST_CHECK_CLOSE(0.11918, inv_mat.at(4, 4), 0.1);                 
+                        
 }
 
 BOOST_FIXTURE_TEST_CASE(transpose_squared, MatrixTest)
