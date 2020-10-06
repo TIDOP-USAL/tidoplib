@@ -290,8 +290,8 @@ private:
 
 public:
 
-  size_t rows = _rows;
-  size_t cols = _cols;
+  const size_t rows = _rows;
+  const size_t cols = _cols;
 
 protected:
 
@@ -320,8 +320,8 @@ typedef Matrix<4,4,double> Matrix4x4d;
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix()
-  : rows(_rows),
-    cols(_cols)
+  //: rows(_rows),
+  //  cols(_cols)
 {
   T ini_val = -std::numeric_limits<T>().max();
   for (size_t r = 0; r < _rows; r++) {
@@ -333,33 +333,33 @@ Matrix<_rows, _cols, T>::Matrix()
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(const Matrix &mat)
-  : mMatrix(mat.mMatrix),
+  : mMatrix(mat.mMatrix)/*,
     rows(_rows),
-    cols(_cols)
+    cols(_cols)*/
 {
 }
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(Matrix &&mat) TL_NOEXCEPT
-  : mMatrix(std::forward<std::array<std::array<T, _cols>, _rows>>(mat.mMatrix)),
+  : mMatrix(std::forward<std::array<std::array<T, _cols>, _rows>>(mat.mMatrix))/*,
     rows(mat.rows),
-    cols(mat.cols)
+    cols(mat.cols)*/
 {
 }
 
 
 template<size_t _rows, size_t _cols, typename T>
 Matrix<_rows, _cols, T>::Matrix(const std::array<std::array<T, _cols>, _rows> &mat)
-  : mMatrix(mat),
+  : mMatrix(mat)/*,
     rows(_rows),
-    cols(_cols)
+    cols(_cols)*/
 {
 }
 
 template<size_t _rows, size_t _cols, typename T> inline
 Matrix<_rows, _cols, T>::Matrix(std::initializer_list<std::initializer_list<T>> mat)
-  : rows(_rows),
-    cols(_cols)
+  //: rows(_rows),
+  //  cols(_cols)
 {
   TL_TODO("ver por que peta con mas de 3 filas")
   size_t n_rows = mat.size();
@@ -395,8 +395,8 @@ Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (const Matrix& rot)
 {
   if (this != &rot) {
     this->mMatrix = rot.mMatrix;
-    this->rows = rot.rows;
-    this->cols = rot.cols;
+    //this->rows = rot.rows;
+    //this->cols = rot.cols;
   }
   return *this;
 }
@@ -406,8 +406,8 @@ Matrix<_rows, _cols, T> &Matrix<_rows, _cols, T>::operator = (Matrix &&rot) TL_N
 {
   if (this != &rot) {
     this->mMatrix = std::forward<std::array<std::array<T, _cols>, _rows>>(rot.mMatrix);
-    this->rows = rot.rows;
-    this->cols = rot.cols;
+    //this->rows = rot.rows;
+    //this->cols = rot.cols;
   }
   return *this;
 }
