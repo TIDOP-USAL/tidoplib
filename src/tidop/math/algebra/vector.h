@@ -24,6 +24,8 @@
 #include <array>
 #include <valarray>
 
+#include "tidop/core/exception.h"
+
 namespace tl
 {
 
@@ -134,7 +136,7 @@ public:
    * \brief Devuelve el tamaño del vector
    * \return Tamaño del vector
    */
-  size_t size() TL_NOEXCEPT;
+  size_t size() const TL_NOEXCEPT;
 
   reference front();
   const_reference front() const;
@@ -295,7 +297,7 @@ Vector<_size, T>::Vector(std::initializer_list<T> vector)
 }
 
 template<size_t _size, typename T> inline 
-size_t Vector<_size, T>::size() TL_NOEXCEPT
+size_t Vector<_size, T>::size() const TL_NOEXCEPT
 {
   return _size;
 }
@@ -767,7 +769,9 @@ public:
    */
   size_t size() TL_NOEXCEPT;
 
-  /// resize
+  void resize(size_t size);
+  void resize(size_t size, T value);
+
   reference front();
   const_reference front() const;
   reference back();
@@ -910,29 +914,32 @@ VectorDyn<T>::VectorDyn(const VectorDyn &vector)
 
 template<typename T> inline
 VectorDyn<T>::VectorDyn(VectorDyn &&vector) TL_NOEXCEPT
-  : mVector(std::forward<std::vector<T>>(vector.mVector))
+  : mVector(std::move(vector.mVector))
 {
 }
 
 template<typename T> inline
 VectorDyn<T>::VectorDyn(std::initializer_list<T> vector)
 {
-  size_t n1 = mVector.size();
-  size_t n2 = vector.size();
-  if (n1 == n2){
-    std::copy(vector.begin(), vector.end(), mVector.begin());
-  } else if (n2 > n1){
-    std::copy(vector.begin(), vector.end(), mVector.begin());
-    std::fill(mVector.begin() + n2, mVector.end(), T{0});
-  } else {
-    std::copy(vector.begin(), vector.begin() + n2, mVector.begin());
-  }
+  mVector = vector;
 }
 
 template<typename T> inline 
 size_t VectorDyn<T>::size() TL_NOEXCEPT
 {
   return mVector.size();
+}
+
+template<typename T> inline
+void VectorDyn<T>::resize(size_t size)
+{
+  mVector.resize(size);
+}
+
+template<typename T> inline
+void VectorDyn<T>::resize(size_t size, T value)
+{
+  mVector.resize(size, value);
 }
 
 template<typename T> inline
@@ -1080,21 +1087,6 @@ void VectorDyn<T>::normalize()
   }
 }
 
-//template<typename T> inline
-//VectorDyn<T> VectorDyn<T>::normalize() const
-//{
-//  VectorDyn<T> v = *this;
-//  T length = static_cast<T>(v.module());
-//  if (length > static_cast<T>(0)) {
-//    v /= length;
-//  } else {
-//    for (size_t i = 0; i < mVector.size(); i++) {
-//      v.at(i) = static_cast<T>(0);
-//    }
-//  }
-//  return v;
-//}
-
 template<typename T> inline
 bool VectorDyn<T>::operator == (const VectorDyn &vector) const
 {
@@ -1134,176 +1126,172 @@ bool VectorDyn<T>::operator >= (const VectorDyn &vector) const
 template<typename T> inline
 VectorDyn<T> VectorDyn<T>::zero(size_t size)
 {
-  VectorDyn<T> vector(size, 0);
-  //for (size_t i = 0; i < mVector.size(); i++) {
-  //  vector[i] = T{0};
-  //}
-  return vector;
+  return VectorDyn<T>(size, 0);
 }
 
 /* Operaciones unarias */
 
-//template<typename T>  static
-//VectorDyn<T> operator + (const VectorDyn<T> &vector)
-//{
-//  return vector;
-//}
-//
-//template<typename T> static
-//VectorDyn<T> operator - (const VectorDyn<T> &vector)
-//{
-//  VectorDyn<T> v(vector.size());
-//  for (size_t i = 0; i < vector.size(); i++) {
-//    v[i] = -vector[i];
-//  }
-//  return v;
-//}
+template<typename T>  static
+VectorDyn<T> operator + (const VectorDyn<T> &vector)
+{
+  return vector;
+}
+
+template<typename T> static
+VectorDyn<T> operator - (const VectorDyn<T> &vector)
+{
+  VectorDyn<T> v(vector);
+  for (size_t i = 0; i < v.size(); i++) {
+    v[i] = -v[i];
+  }
+  return v;
+}
 
 /* Operaciones binarias */
 
-//template<typename T>
-//VectorDyn<T> operator + (const VectorDyn<T> &v0,
-//                         const VectorDyn<T> &v1)
-//{
-//  VectorDyn<T> v = v0;
-//  return v += v1;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator += (VectorDyn<T> &v0, 
-//                           const VectorDyn<T> &v1)
-//{
-//  //assert(v0.size() == v1.size(), "");
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] += v1[i];
-//  }
-//  return v0;
-//}
-//
-//template<typename T>
-//VectorDyn<T> operator - (const VectorDyn<T> &v0,
-//                         const VectorDyn<T> &v1)
-//{
-//  VectorDyn<T> v = v0;
-//  return v -= v1;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator -= (VectorDyn<T> &v0, 
-//                           const VectorDyn<T> &v1)
-//{
-//  //assert(v0.size() == v1.size(), "");
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] -= v1[i];
-//  }
-//  return v0;
-//}
-//
-//
-//template<typename T>
-//VectorDyn<T> operator*(VectorDyn<T> const& v0,
-//                       VectorDyn<T> const& v1)
-//{
-//  VectorDyn<T> result = v0;
-//  return result *= v1;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator *= (VectorDyn<T> &v0, 
-//                           const VectorDyn<T> &v1)
-//{
-//  //assert(v0.size() == v1.size(), "");
-//
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] *= v1[i];
-//  }
-//  return v0;
-//}
-//
-//template<typename T>
-//VectorDyn<T> operator / (const VectorDyn<T> &v0,
-//                         const VectorDyn<T> &v1)
-//{
-//  VectorDyn<T> result = v0;
-//  return result /= v1;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator /= (VectorDyn<T> &v0, 
-//                           const VectorDyn<T> &v1)
-//{
-//  //assert(v0.size() == v1.size(), "");
-//
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] /= v1[i];
-//  }
-//  return v0;
-//}
-//
-//template<typename T>
-//VectorDyn<T> operator * (const VectorDyn<T> &vector, 
-//                         T scalar)
-//{
-//  VectorDyn<T> v = vector;
-//  return v *= scalar;
-//}
-//
-//template<typename T>
-//VectorDyn<T> operator * (T scalar, 
-//                         const VectorDyn<T> &vector)
-//{
-//  VectorDyn<T> v = vector;
-//  return v *= scalar;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator *= (VectorDyn<T> &vector, 
-//                           T scalar)
-//{
-//  for (size_t i = 0; i < vector.size(); i++) {
-//    vector[i] *= scalar;
-//  }
-//  return vector;
-//}
-//
-//template<typename T>
-//VectorDyn<T> operator / (const VectorDyn<T> &vector, 
-//                         T scalar)
-//{
-//  VectorDyn<T> v = vector;
-//  return v /= scalar;
-//}
-//
-//template<typename T>
-//VectorDyn<T> &operator /= (VectorDyn<T> &vector,
-//                           T scalar)
-//{
-//  if (scalar != static_cast<T>(0)) {
-//    for (size_t i = 0; i < vector.size(); i++) {
-//      vector[i] /= scalar;
-//    }
-//  } else {
-//    for (size_t i = 0; i < vector.size(); i++) {
-//      vector[i] = static_cast<T>(0);
-//    }
-//  }
-//  return vector;
-//}
-//
-//
-//template<size_t _size, typename T> inline 
-//double dotProduct(const VectorDyn<T> &v1,
-//                  const VectorDyn<T> &v2)
-//{
-//  //assert(v1.size() == v2.size(), "");
-//
-//  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
-//  for (size_t i = 1; i < v1.size(); i++) {
-//    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
-//  }
-//
-//  return dot;
-//}
+template<typename T>
+VectorDyn<T> operator + (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> v = v0;
+  return v += v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator += (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //assert(v0.size() == v1.size(), "");
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] += v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator - (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> v = v0;
+  return v -= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator -= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //assert(v0.size() == v1.size(), "");
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] -= v1[i];
+  }
+  return v0;
+}
+
+
+template<typename T>
+VectorDyn<T> operator*(const VectorDyn<T> &v0,
+                       const VectorDyn<T> &v1)
+{
+  VectorDyn<T> result = v0;
+  return result *= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator *= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] *= v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator / (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> result = v0;
+  return result /= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator /= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] /= v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator * (const VectorDyn<T> &vector, 
+                         T scalar)
+{
+  VectorDyn<T> v = vector;
+  return v *= scalar;
+}
+
+template<typename T>
+VectorDyn<T> operator * (T scalar, 
+                         const VectorDyn<T> &vector)
+{
+  VectorDyn<T> v = vector;
+  return v *= scalar;
+}
+
+template<typename T>
+VectorDyn<T> &operator *= (VectorDyn<T> &vector, 
+                           T scalar)
+{
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] *= scalar;
+  }
+  return vector;
+}
+
+template<typename T>
+VectorDyn<T> operator / (const VectorDyn<T> &vector, 
+                         T scalar)
+{
+  VectorDyn<T> v = vector;
+  return v /= scalar;
+}
+
+template<typename T>
+VectorDyn<T> &operator /= (VectorDyn<T> &vector,
+                           T scalar)
+{
+  if (scalar != static_cast<T>(0)) {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] /= scalar;
+    }
+  } else {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] = static_cast<T>(0);
+    }
+  }
+  return vector;
+}
+
+
+template<size_t _size, typename T> inline 
+double dotProduct(const VectorDyn<T> &v1,
+                  const VectorDyn<T> &v2)
+{
+  //TL_ASSERT(v1.size() == v2.size(), "");
+
+  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
+  for (size_t i = 1; i < v1.size(); i++) {
+    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
+  }
+
+  return dot;
+}
 
 
 
