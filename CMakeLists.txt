@@ -258,17 +258,13 @@ endif(WITH_OPENCV)
 # Eigen  (optional)
 # ----------------------------------------------------------------------------
 if(WITH_EIGEN)
-  find_path(EIGEN_INCLUDE_PATH "Eigen/Core"
-            PATHS /usr/local /opt /usr $ENV{EIGEN_ROOT}/include ENV ProgramFiles ENV ProgramW6432
-            PATH_SUFFIXES include/eigen3 include/eigen2 Eigen/include/eigen3 Eigen/include/eigen2
-            DOC "The path to Eigen3/Eigen2 headers"
-            CMAKE_FIND_ROOT_PATH_BOTH)
-
-  if(EIGEN_INCLUDE_PATH)
-    include_directories(${EIGEN_INCLUDE_PATH})
-    set(HAVE_EIGEN YES)
-  else()
+ 
+  find_package(EIGEN3 QUIET)
+  if(NOT EIGEN3_FOUND)
     set(HAVE_EIGEN NO)
+  else()
+    include_directories(${EIGEN3_INCLUDE_DIRS})
+    set(HAVE_EIGEN YES)
   endif()
 
 endif(WITH_EIGEN)

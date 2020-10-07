@@ -22,6 +22,9 @@
 #include <iterator>
 #include <vector>
 #include <array>
+#include <valarray>
+
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -133,7 +136,7 @@ public:
    * \brief Devuelve el tamaño del vector
    * \return Tamaño del vector
    */
-  size_t size() TL_NOEXCEPT;
+  size_t size() const TL_NOEXCEPT;
 
   reference front();
   const_reference front() const;
@@ -294,7 +297,7 @@ Vector<_size, T>::Vector(std::initializer_list<T> vector)
 }
 
 template<size_t _size, typename T> inline 
-size_t Vector<_size, T>::size() TL_NOEXCEPT
+size_t Vector<_size, T>::size() const TL_NOEXCEPT
 {
   return _size;
 }
@@ -657,6 +660,636 @@ double dotProduct(const Vector<_size, T> &v1,
   for (size_t i = 1; i < _size; i++) {
     dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
   }
+  return dot;
+}
+
+
+
+// 
+
+
+
+template<typename T = double>
+class VectorDyn
+{
+
+public:
+
+  /*!
+   * \brief value_type
+   */
+  typedef T value_type;
+
+  /*!
+   * \brief Tipo entero sin signo (por lo general size_t)
+   */
+  typedef typename std::vector<T>::size_type size_type;
+
+  /*!
+   * \brief Tipo entero con signo (por lo general ptrdiff_t)
+   */
+  typedef typename std::vector<T>::difference_type difference_type;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::pointer
+   */
+  typedef typename std::vector<T>::pointer pointer;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::const_pointer 
+   */
+  typedef typename std::vector<T>::const_pointer const_pointer;
+
+  /*!
+   * \brief value_type&
+   */
+  typedef typename std::vector<T>::reference reference;
+
+  /*!
+   * \brief const value_type&
+   */
+  typedef typename std::vector<T>::const_reference const_reference;
+
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
+  typedef typename std::vector<T>::iterator iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
+  typedef typename std::vector<T>::const_iterator const_iterator;
+
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
+  typedef typename std::vector<T>::reverse_iterator reverse_iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
+  typedef typename std::vector<T>::const_reverse_iterator const_reverse_iterator;
+
+public:
+  
+  /*!
+   * \brief Constructora por defecto
+   */
+  VectorDyn();
+
+  VectorDyn(size_t size, 
+            T val = -std::numeric_limits<T>().max());
+
+  /*!
+   * \brief Constructor de copia
+   * \param[in] vector Objeto que se copia
+   */
+  VectorDyn(const VectorDyn &vector);
+
+  /*!
+   * \brief Constructor de movimiento
+   * \param[in] vector Objeto que se mueve
+   */
+  VectorDyn(VectorDyn &&vector) TL_NOEXCEPT;
+
+  /*!
+   * \brief Constructora inicializador de lista
+   * \param[in] values Listado de valores del vector
+   */
+  VectorDyn(std::initializer_list<T> values);
+
+  /*!
+   * \brief Destructora
+   */
+  ~VectorDyn() = default;
+
+  /*!
+   * \brief Devuelve el tamaño del vector
+   * \return Tamaño del vector
+   */
+  size_t size() TL_NOEXCEPT;
+
+  void resize(size_t size);
+  void resize(size_t size, T value);
+
+  reference front();
+  const_reference front() const;
+  reference back();
+  const_reference back() const;
+
+  /*!
+   * \brief Devuelve un iterador al inicio del vector
+   * \return Iterador al primer elemento del vector
+   */
+  iterator begin() TL_NOEXCEPT;
+
+  /*!
+   * \brief Devuelve un iterador constante al inicio del vector
+   * \return Iterador al primer elemento del vector
+   */
+  const_iterator begin() const TL_NOEXCEPT;
+
+  /*!
+   * \brief Devuelve un iterador al siguiente elemento después del final del vector
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
+   * \return Iterador al siguiente elemento después del final del vector
+   */
+  iterator end() TL_NOEXCEPT;
+
+  /*!
+   * \brief Devuelve un iterador constante al siguiente elemento después del final del contenedor
+   * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
+   * \return Iterador al siguiente elemento después del final del contenedor
+   */
+  const_iterator end() const TL_NOEXCEPT;
+
+  reverse_iterator rbegin() TL_NOEXCEPT;
+  const_reverse_iterator rbegin() const TL_NOEXCEPT;
+
+  reverse_iterator rend() TL_NOEXCEPT;
+  const_reverse_iterator rend() const TL_NOEXCEPT;
+
+  /*!
+   * \brief Devuelve una referencia constante al elemento de la posición indicada
+   * return Referencia constante al elemento
+   */
+  const_reference at(size_type position) const;
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * return Referencia al elemento
+   */
+  reference at(size_type position);
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
+   * return Referencia constante al elemento
+   */
+  const_reference operator[](size_t position) const;
+
+  /*!
+   * \brief Devuelve una referencia al elemento de la posición indicada
+   * No se comprueba si el elemento al que se quiere acceder esta dentro de los limites
+   * return Referencia al elemento
+   */
+  reference operator[](size_t position);
+
+  /*!
+   * \brief Comprueba si el contenedor esta vacio
+   * \return true si el contenedor está vacío y false en caso contrario
+   */
+  //bool empty() const;
+
+  void fill(T value);
+
+  /*!
+   * \brief Asignación de copia
+   */
+  VectorDyn &operator=(const VectorDyn &entity);
+
+  /*!
+   * \brief Asignación de movimiento
+   */
+  VectorDyn &operator=(VectorDyn &&entity) TL_NOEXCEPT;
+
+  double module() const;
+
+  void normalize();
+  //Vector normalize() const;
+
+  bool operator == (const VectorDyn &vector) const;
+  bool operator != (const VectorDyn &vector) const;
+  bool operator <  (const VectorDyn &vector) const;
+  bool operator <= (const VectorDyn &vector) const;
+  bool operator >  (const VectorDyn &vector) const;
+  bool operator >= (const VectorDyn &vector) const;
+
+  /*!
+   * \brief Construye un vector de ceros
+   * \f[ V = [ 0 0 0 ] \f]
+   * \return
+   */
+  static VectorDyn zero(size_t size);
+
+  //static Vector unit();
+
+protected:
+
+  std::vector<T> mVector;
+
+};
+
+
+/* Definición de alias Vector */
+
+
+typedef VectorDyn<int>    Vectorni;
+typedef VectorDyn<double> Vectornd;
+typedef VectorDyn<float>  Vectornf;
+
+
+/* Implementación Vector */
+
+template<typename T> inline 
+VectorDyn<T>::VectorDyn()
+{
+  //T ini_val = -std::numeric_limits<T>().max();
+  //for (size_t i = 0; i < _size; i++) {
+  //  this->mVector[i] = ini_val;
+  //}
+}
+
+template<typename T> inline 
+VectorDyn<T>::VectorDyn(size_t size, T val)
+{
+  this->mVector.resize(size, val);
+}
+
+template<typename T> inline
+VectorDyn<T>::VectorDyn(const VectorDyn &vector)
+  : mVector(vector.mVector)
+{
+}
+
+template<typename T> inline
+VectorDyn<T>::VectorDyn(VectorDyn &&vector) TL_NOEXCEPT
+  : mVector(std::move(vector.mVector))
+{
+}
+
+template<typename T> inline
+VectorDyn<T>::VectorDyn(std::initializer_list<T> vector)
+{
+  mVector = vector;
+}
+
+template<typename T> inline 
+size_t VectorDyn<T>::size() TL_NOEXCEPT
+{
+  return mVector.size();
+}
+
+template<typename T> inline
+void VectorDyn<T>::resize(size_t size)
+{
+  mVector.resize(size);
+}
+
+template<typename T> inline
+void VectorDyn<T>::resize(size_t size, T value)
+{
+  mVector.resize(size, value);
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reference VectorDyn<T>::front()
+{
+  return mVector.front();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reference VectorDyn<T>::front() const
+{
+  return mVector.front();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reference VectorDyn<T>::back()
+{
+  return mVector.back();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reference VectorDyn<T>::back() const
+{
+  return mVector.back();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::iterator VectorDyn<T>::begin() TL_NOEXCEPT
+{
+  return mVector.begin();
+}
+
+template<typename T> inline 
+typename VectorDyn<T>::const_iterator VectorDyn<T>::begin() const TL_NOEXCEPT
+{
+  return mVector.cbegin();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::iterator VectorDyn<T>::end() TL_NOEXCEPT
+{
+  return mVector.end();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_iterator VectorDyn<T>::end() const TL_NOEXCEPT
+{
+  return mVector.cend();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reverse_iterator VectorDyn<T>::rbegin() TL_NOEXCEPT
+{
+  return mVector.rbegin();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reverse_iterator VectorDyn<T>::rbegin() const TL_NOEXCEPT
+{
+  return mVector.rbegin();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reverse_iterator VectorDyn<T>::rend() TL_NOEXCEPT
+{
+  return mVector.rend();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reverse_iterator VectorDyn<T>::rend() const TL_NOEXCEPT
+{
+  return mVector.rend();
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reference VectorDyn<T>::at(size_type position) const
+{
+  return mVector.at(position);
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reference VectorDyn<T>::at(size_type position)
+{
+  return mVector.at(position);
+}
+
+template<typename T> inline
+typename VectorDyn<T>::const_reference VectorDyn<T>::operator[](size_t position) const
+{
+  return mVector[position];
+}
+
+template<typename T> inline
+typename VectorDyn<T>::reference VectorDyn<T>::operator[](size_t position)
+{
+  return mVector[position];
+}
+
+//template<typename T> inline
+//bool VectorDyn<T>::empty() const
+//{
+//  return mVector.empty();
+//}
+
+template<typename T> inline
+void VectorDyn<T>::fill(T value)
+{
+  return mVector.fill(value);
+}
+
+template<typename T> inline
+VectorDyn<T> &VectorDyn<T>::operator=(const VectorDyn<T> &vector)
+{
+  if (this != &vector) {
+    this->mVector = vector.mVector;
+  }
+  return (*this);
+}
+
+template<typename T> inline
+VectorDyn<T> &VectorDyn<T>::operator=(VectorDyn<T> &&vector) TL_NOEXCEPT
+{
+  if (this != &vector) {
+    this->mVector = std::forward<std::vector<T>>(vector.mVector);
+  }
+  return (*this);
+}
+
+template<typename T> inline
+double VectorDyn<T>::module() const
+{
+  return sqrt(dotProduct(*this, *this));
+}
+
+template<typename T> inline
+void VectorDyn<T>::normalize()
+{
+  T length = static_cast<T>(this->module());
+  if (length > static_cast<T>(0)) {
+    *this /= length;
+  } else {
+    for (size_t i = 0; i < mVector.size(); i++) {
+      this->mVector[i] = static_cast<T>(0);
+    }
+  }
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator == (const VectorDyn &vector) const
+{
+  return this->mVector == vector.mVector;
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator != (const VectorDyn &vector) const
+{
+  return this->mVector != vector.mVector;
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator <  (const VectorDyn &vector) const
+{
+  return this->mVector < vector.mVector;
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator <= (const VectorDyn &vector) const
+{
+  return this->mVector <= vector.mVector;
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator >  (const VectorDyn &vector) const
+{
+  return this->mVector > vector.mVector;
+}
+
+template<typename T> inline
+bool VectorDyn<T>::operator >= (const VectorDyn &vector) const
+{
+  return this->mVector > vector.mVector;
+}
+
+template<typename T> inline
+VectorDyn<T> VectorDyn<T>::zero(size_t size)
+{
+  return VectorDyn<T>(size, 0);
+}
+
+/* Operaciones unarias */
+
+template<typename T>  static
+VectorDyn<T> operator + (const VectorDyn<T> &vector)
+{
+  return vector;
+}
+
+template<typename T> static
+VectorDyn<T> operator - (const VectorDyn<T> &vector)
+{
+  VectorDyn<T> v(vector);
+  for (size_t i = 0; i < v.size(); i++) {
+    v[i] = -v[i];
+  }
+  return v;
+}
+
+/* Operaciones binarias */
+
+template<typename T>
+VectorDyn<T> operator + (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> v = v0;
+  return v += v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator += (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //assert(v0.size() == v1.size(), "");
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] += v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator - (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> v = v0;
+  return v -= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator -= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //assert(v0.size() == v1.size(), "");
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] -= v1[i];
+  }
+  return v0;
+}
+
+
+template<typename T>
+VectorDyn<T> operator*(const VectorDyn<T> &v0,
+                       const VectorDyn<T> &v1)
+{
+  VectorDyn<T> result = v0;
+  return result *= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator *= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] *= v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator / (const VectorDyn<T> &v0,
+                         const VectorDyn<T> &v1)
+{
+  VectorDyn<T> result = v0;
+  return result /= v1;
+}
+
+template<typename T>
+VectorDyn<T> &operator /= (VectorDyn<T> &v0, 
+                           const VectorDyn<T> &v1)
+{
+  //TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] /= v1[i];
+  }
+  return v0;
+}
+
+template<typename T>
+VectorDyn<T> operator * (const VectorDyn<T> &vector, 
+                         T scalar)
+{
+  VectorDyn<T> v = vector;
+  return v *= scalar;
+}
+
+template<typename T>
+VectorDyn<T> operator * (T scalar, 
+                         const VectorDyn<T> &vector)
+{
+  VectorDyn<T> v = vector;
+  return v *= scalar;
+}
+
+template<typename T>
+VectorDyn<T> &operator *= (VectorDyn<T> &vector, 
+                           T scalar)
+{
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] *= scalar;
+  }
+  return vector;
+}
+
+template<typename T>
+VectorDyn<T> operator / (const VectorDyn<T> &vector, 
+                         T scalar)
+{
+  VectorDyn<T> v = vector;
+  return v /= scalar;
+}
+
+template<typename T>
+VectorDyn<T> &operator /= (VectorDyn<T> &vector,
+                           T scalar)
+{
+  if (scalar != static_cast<T>(0)) {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] /= scalar;
+    }
+  } else {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] = static_cast<T>(0);
+    }
+  }
+  return vector;
+}
+
+
+template<size_t _size, typename T> inline 
+double dotProduct(const VectorDyn<T> &v1,
+                  const VectorDyn<T> &v2)
+{
+  //TL_ASSERT(v1.size() == v2.size(), "");
+
+  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
+  for (size_t i = 1; i < v1.size(); i++) {
+    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
+  }
+
   return dot;
 }
 

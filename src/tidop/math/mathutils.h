@@ -17,8 +17,9 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif
 
-
 #include "tidop/core/messages.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
@@ -155,10 +156,18 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
 //  cvMatToVector(C, &v_aux);
 //  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-  //TODO: O implementar método alternativo o devolver error
-  // http://www2.units.it/ipl/students_area/imm2/files/Numerical_Recipes.pdf
-  //svdcmp(a, nRows, nCols, b, float **v);
+  Matrix<nRows, nCols, double> A(a);
+  Vector<nRows, double> B(b);
+  SingularValueDecomposition<Matrix<3, 3, float>> svd(A);
+  Vector<nCols, T> c = svd.solve(_B);
+  c.data();
 #endif
+  //std::array<double, nRows> kk;
+  //math::Matrix<nRows, nCols, double> A;// (a);
+  //Vector<nRows, double> B(b);
+  //SingularValueDecomposition<Matrix<3, 3, float>> svd(A);
+  //Vector<nCols, T> c = svd.solve(_B);
+  //c.data();
 }
 
 /*!

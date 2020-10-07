@@ -20,13 +20,21 @@ if(@HAVE_BOOST@)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
-if(@HAVE_EIGEN@)
-  find_path(EIGEN_INCLUDE_PATH "Eigen/Core"
-            PATHS /usr/local /opt /usr $ENV{EIGEN_ROOT}/include ENV ProgramFiles ENV ProgramW6432
-            PATH_SUFFIXES include/eigen3 include/eigen2 Eigen/include/eigen3 Eigen/include/eigen2
-            DOC "The path to Eigen3/Eigen2 headers"
-            CMAKE_FIND_ROOT_PATH_BOTH)
-  include_directories(${EIGEN_INCLUDE_PATH})
+if(@HAVE_EIGEN3@)
+  find_package(EIGEN3 QUIET)
+  if(NOT EIGEN3_FOUND)
+    set(HAVE_EIGEN NO)
+  else()
+    set(HAVE_EIGEN YES)
+    include_directories(${EIGEN3_INCLUDE_DIR})
+  endif()
+  
+  #find_path(EIGEN_INCLUDE_PATH "Eigen/Core"
+  #          PATHS /usr/local /opt /usr $ENV{EIGEN_ROOT}/include ENV ProgramFiles ENV ProgramW6432
+  #          PATH_SUFFIXES include/eigen3 include/eigen2 Eigen/include/eigen3 Eigen/include/eigen2
+  #          DOC "The path to Eigen3/Eigen2 headers"
+  #          CMAKE_FIND_ROOT_PATH_BOTH)
+  #include_directories(${EIGEN_INCLUDE_PATH})
 endif()
 
 if(@HAVE_GDAL@)
