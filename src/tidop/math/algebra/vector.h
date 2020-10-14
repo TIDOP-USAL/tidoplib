@@ -665,7 +665,7 @@ double dotProduct(const Vector<_size, T> &v1,
 
 
 
-// 
+/////////////////////////////////// 
 
 
 
@@ -874,7 +874,7 @@ public:
 
   //static Vector unit();
 
-protected:
+private:
 
   std::vector<T> mVector;
 
@@ -1295,6 +1295,599 @@ double dotProduct(const VectorDyn<T> &v1,
 
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+template<typename T, size_t _size>
+class VectorBase;
+
+template<typename T, size_t _size>
+class VectorBase
+{
+
+public:
+
+  using value_type      = T;
+  using size_type       = size_t;
+  using pointer         = T*;
+  using const_pointer   = const T*;
+  using reference       = T&;
+  using const_reference = const T&;
+
+public:
+
+  VectorBase()
+  {
+    T ini_val = -std::numeric_limits<T>().max();
+    for (size_t i = 0; i < _size; i++) {
+      this->mData[i] = ini_val;
+    }
+  }
+
+  VectorBase(size_t size,
+             T val)
+  {    
+    static_assert(_size == -1, "Dynamic Matrix not support resize");
+  }
+
+  VectorBase(const VectorBase &vector)
+    : mData(vector.mData)
+  {
+  }
+
+  VectorBase(VectorBase &&vector) TL_NOEXCEPT
+    : mData(std::move(vector.mData))
+  {
+  }
+    
+  VectorBase(std::initializer_list<T> values)
+  {
+    size_t n = values.size();
+    if (n == _size){
+      std::copy(values.begin(), values.end(), mData.begin());
+    } else if (n > _size){
+      std::copy(values.begin(), values.end(), mData.begin());
+      std::fill(mData.begin() + n, mData.end(), T{0});
+    } else {
+      std::copy(values.begin(), values.begin() + n, mData.begin());
+    }
+  }
+
+  void resize(size_t size)
+  {
+    static_assert(_size == -1, "Dynamic Vector not support resize");
+  }
+  
+  void resize(size_t size, T value)
+  {
+    static_assert(_size == -1, "Dynamic Vector not support resize");
+  }
+
+  size_t size() const TL_NOEXCEPT
+  {
+    return _size;
+  }
+    
+  const_reference at(size_type position) const
+  { 
+    return mData.at(position);
+  }
+
+  reference at(size_type position)
+  {
+    return mData.at(position);
+  }
+
+  const_reference operator[](size_t position) const
+  {
+    return mData[position];
+  }
+
+  reference operator[](size_t position)
+  {
+    return mData[position];
+  }
+
+  //void fill(T value)
+  //{
+  //  mData.fill(value);
+  //}
+
+  bool operator == (const VectorBase &vector) const;
+  bool operator != (const VectorBase &vector) const;
+  bool operator <  (const VectorBase &vector) const;
+  bool operator <= (const VectorBase &vector) const;
+  bool operator >  (const VectorBase &vector) const;
+  bool operator >= (const VectorBase &vector) const;
+
+protected:
+
+  std::array<T, _size> mData;
+
+};
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator == (const VectorBase<T, _size> &vector) const
+{
+  return this->mData == vector.mData;
+}
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator != (const VectorBase<T, _size> &vector) const
+{
+  return this->mData != vector.mData;
+}
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator <  (const VectorBase<T, _size> &vector) const
+{
+  return this->mData < vector.mData;
+}
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator <= (const VectorBase<T, _size> &vector) const
+{
+  return this->mData <= vector.mData;
+}
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator >  (const VectorBase<T, _size> &vector) const
+{
+  return this->mData > vector.mData;
+}
+
+template<typename T, size_t _size> inline
+bool VectorBase<T, _size>::operator >= (const VectorBase<T, _size> &vector) const
+{
+  return this->mData > vector.mData;
+}
+
+
+
+
+template<typename T>
+class VectorBase<T, -1>
+{
+
+public:
+
+  using value_type      = T;
+  using size_type       = size_t;
+  using pointer         = T*;
+  using const_pointer   = const T*;
+  using reference       = T&;
+  using const_reference = const T&;
+
+public:
+
+  VectorBase()
+  {
+  }
+  
+  VectorBase(size_t size,
+             T val)
+  {
+    mData.resize(size, val);
+  }
+
+  VectorBase(const VectorBase &vector)
+    : mData(vector.mData)
+  {
+  }
+    
+  VectorBase(VectorBase &&vector) TL_NOEXCEPT
+    : mData(std::move(vector.mData))
+  {
+  }
+ 
+  VectorBase(std::initializer_list<T> values)
+    : mData(values)
+  {
+  }
+
+  void resize(size_t size)
+  {
+    mData.resize(size);
+  }
+  
+  void resize(size_t size, T value)
+  {
+    mData.resize(size, value);
+  }
+
+  size_t size() const TL_NOEXCEPT
+  {
+    return mData.size();
+  }
+
+  const_reference at(size_type position) const
+  { 
+    return mData.at(position);
+  }
+
+  reference at(size_type position)
+  {
+    return mData.at(position);
+  }
+
+  const_reference operator[](size_t position) const
+  {
+    return mData[position];
+  }
+
+  reference operator[](size_t position)
+  {
+    return mData[position];
+  }
+
+  //void fill(T value)
+  //{
+  //  mData.fill(value);
+  //}
+
+  bool operator == (const VectorBase &vector) const;
+  bool operator != (const VectorBase &vector) const;
+  bool operator <  (const VectorBase &vector) const;
+  bool operator <= (const VectorBase &vector) const;
+  bool operator >  (const VectorBase &vector) const;
+  bool operator >= (const VectorBase &vector) const;
+
+private:
+
+  TL_TODO("¿Probar con std::valarray?")
+  std::vector<T> mData;
+
+};
+
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator == (const VectorBase<T, -1> &vector) const
+{
+  return this->mData == vector.mData;
+}
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator != (const VectorBase<T, -1> &vector) const
+{
+  return this->mData != vector.mData;
+}
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator <  (const VectorBase<T, -1> &vector) const
+{
+  return this->mData < vector.mData;
+}
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator <= (const VectorBase<T, -1> &vector) const
+{
+  return this->mData <= vector.mData;
+}
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator >  (const VectorBase<T, -1> &vector) const
+{
+  return this->mData > vector.mData;
+}
+
+template<typename T> inline
+bool VectorBase<T, -1>::operator >= (const VectorBase<T, -1> &vector) const
+{
+  return this->mData > vector.mData;
+}
+
+
+
+
+
+template<typename T, size_t _size = -1>
+class Vector2
+  : public VectorBase<T, _size>
+{
+
+public:
+  
+  Vector2();
+  Vector2(size_t size, T val = -std::numeric_limits<T>().max());
+  Vector2(const Vector2 &vector);
+  Vector2(Vector2 &&vector) TL_NOEXCEPT;
+  Vector2(std::initializer_list<T> values);
+  ~Vector2() = default;
+
+  Vector2 &operator=(const Vector2 &vector);
+  Vector2 &operator=(Vector2 &&vector) TL_NOEXCEPT;
+
+  double module() const;
+  void normalize();
+
+  static Vector2 zero();
+  static Vector2 zero(size_t size);
+  static Vector2 unit();
+  static Vector2 unit(size_t size);
+};
+
+
+/* Definición de alias Vector */
+
+
+//typedef Vector2<int, 2>    Vector2i;
+//typedef Vector2<double, 2> Vector2d;
+//typedef Vector2<float, 2>  Vector2f;
+//typedef Vector2<int, 3>    Vector3i;
+//typedef Vector2<double, 3> Vector3d;
+//typedef Vector2<float, 3>  Vector3f;
+
+
+
+/* Implementación Vector */
+
+template<typename T, size_t _size> inline
+Vector2<T, _size>::Vector2()
+{
+}
+  
+template<typename T, size_t _size> inline
+Vector2<T, _size>::Vector2(size_t size, T val)
+  : VectorBase(size, val)
+{
+}
+ 
+template<typename T, size_t _size> inline
+Vector2<T, _size>::Vector2(const Vector2 &vector)
+  : VectorBase(vector)
+{
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size>::Vector2(Vector2 &&vector) TL_NOEXCEPT
+  : VectorBase(std::forward<VectorBase<T, _size>>(vector))
+{
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size>::Vector2(std::initializer_list<T> values)
+  : VectorBase(values)
+{
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> &Vector2<T, _size>::operator=(const Vector2<T, _size> &vector)
+{
+  if (this != &vector) {
+    //this->mData = vector.mData;
+    VectorBase::operator=(vector);
+  }
+  return (*this);
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> &Vector2<T, _size>::operator=(Vector2<T, _size> &&vector) TL_NOEXCEPT
+{
+  if (this != &vector) {
+    VectorBase::operator=(std::forward<VectorBase<T, _size>>(vector));
+    //this->mData = std::move(vector.mData);
+  }
+  return (*this);
+}
+
+template<typename T, size_t _size> inline
+double Vector2<T, _size>::module() const
+{
+  return sqrt(dotProduct(*this, *this));
+}
+
+template<typename T, size_t _size> inline
+void Vector2<T, _size>::normalize()
+{
+  T length = static_cast<T>(this->module());
+  if (length > static_cast<T>(0)) {
+    *this /= length;
+  } else {
+    for (size_t i = 0; i < mVector.size(); i++) {
+      this->mVector[i] = static_cast<T>(0);
+    }
+  }
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> Vector2<T, _size>::zero()
+{ 
+  Vector2<T, _size> vector;
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = static_cast<size_t>(0);
+  }
+  return vector;
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> Vector2<T, _size>::zero(size_t size)
+{ 
+  static_assert(_size == -1, "Dynamic Vector not support resize");
+  return Vector2<T>(size, static_cast<size_t>(0));
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> Vector2<T, _size>::unit()
+{
+  Vector2<T, _size> vector;
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = static_cast<size_t>(1);
+  }
+  return vector;
+}
+
+template<typename T, size_t _size> inline
+Vector2<T, _size> Vector2<T, _size>::unit(size_t size)
+{
+  static_assert(_size == -1, "Dynamic Matrix not support resize");
+  return Vector2<T>(size, static_cast<size_t>(1));
+}
+
+/* Operaciones unarias */
+
+template<typename T, size_t _size>  static
+Vector2<T, _size> operator + (const Vector2<T, _size> &vector)
+{
+  return vector;
+}
+
+template<typename T, size_t _size> static
+Vector2<T, _size> operator - (const Vector2<T, _size> &vector)
+{
+  Vector2<T, _size> v = vector;
+  for (size_t i = 0; i < vector.size(); i++) {
+    v[i] = -vector[i];
+  }
+  return v;
+}
+
+/* Operaciones binarias */
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator + (const Vector2<T, _size> &v0,
+                              const Vector2<T, _size> &v1)
+{
+  Vector2<T, _size> v = v0;
+  return v += v1;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator += (Vector2<T, _size> &v0, 
+                                const Vector2<T, _size> &v1)
+{
+  TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] += v1[i];
+  }
+  return v0;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator - (const Vector2<T, _size> &v0,
+                              const Vector2<T, _size> &v1)
+{
+  Vector2<T, _size> v = v0;
+  return v -= v1;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator -= (Vector2<T, _size> &v0, 
+                                const Vector2<T, _size> &v1)
+{
+  TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] -= v1[i];
+  }
+  return v0;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator*(Vector2<T, _size> const& v0,
+                            Vector2<T, _size> const& v1)
+{
+  Vector2<T, _size> result = v0;
+  return result *= v1;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator *= (Vector2<T, _size> &v0, 
+                                const Vector2<T, _size> &v1)
+{
+  TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] *= v1[i];
+  }
+  return v0;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator / (const Vector2<T, _size> &v0,
+                              const Vector2<T, _size> &v1)
+{
+  Vector2<T, _size> result = v0;
+  return result /= v1;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator /= (Vector2<T, _size> &v0, 
+                                const Vector2<T, _size> &v1)
+{
+  TL_ASSERT(v0.size() == v1.size(), "");
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] /= v1[i];
+  }
+  return v0;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator * (const Vector2<T, _size> &vector, 
+                              T scalar)
+{
+  Vector2<T, _size> v = vector;
+  return v *= scalar;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator * (T scalar, 
+                              const Vector2<T, _size> &vector)
+{
+  Vector2<T, _size> v = vector;
+  return v *= scalar;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator *= (Vector2<T, _size> &vector, 
+                                T scalar)
+{
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] *= scalar;
+  }
+  return vector;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> operator / (const Vector2<T, _size> &vector, 
+                              T scalar)
+{
+  Vector2<T, _size> v = vector;
+  return v /= scalar;
+}
+
+template<typename T, size_t _size>
+Vector2<T, _size> &operator /= (Vector2<T, _size> &vector,
+                                T scalar)
+{
+  if (scalar != static_cast<T>(0)) {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] /= scalar;
+    }
+  } else {
+    for (size_t i = 0; i < vector.size(); i++) {
+      vector[i] = static_cast<T>(0);
+    }
+  }
+  return vector;
+}
+
+template<typename T, size_t _size> 
+double dotProduct(const Vector2<T, _size> &v1,
+                  const Vector2<T, _size> &v2)
+{
+  TL_ASSERT(v1.size() == v2.size(), "");
+
+  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
+  for (size_t i = 1; i < v1.size(); i++) {
+    dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
+  }
+  return dot;
+}
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math
@@ -1305,3 +1898,4 @@ double dotProduct(const VectorDyn<T> &v1,
 } // End namespace tl
 
 #endif // TL_MATH_VECTOR_H
+
