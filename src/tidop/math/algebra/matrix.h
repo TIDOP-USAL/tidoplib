@@ -2790,183 +2790,188 @@ void MatrixBase<T, _rows, _cols>::swapRows(size_t i, size_t j)
 
 
 
+//#define MATRIX_STD_VECTOR 1
+#define MATRIX_STD_VALARRAY 1
+
+#ifdef MATRIX_STD_VECTOR
+
+template<typename T>
+class MatrixBase<T, DYN_MATRIX, DYN_MATRIX>
+{
+
+public:
+
+  using value_type      = T;
+  using size_type       = size_t;
+  using pointer         = T*;
+  using const_pointer   = const T*;
+  using reference       = T&;
+  using const_reference = const T&;
+
+public:
+
+  MatrixBase();
+  MatrixBase(size_t rows, size_t cols);
+  MatrixBase(size_t rows, size_t cols, T val);
+  MatrixBase(const MatrixBase &matrix);
+  MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
+  //MatrixBase(std::initializer_list<std::initializer_list<T>> matrix);
+  virtual ~MatrixBase() {}
+
+  MatrixBase &operator = (const MatrixBase &matrix);
+  MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
+
+  reference at(size_t r, size_t c);
+  const_reference at(size_t r, size_t c) const;
+
+  //value_type operator()(size_t r, size_t c) const;
+
+  //void setValue(size_t r, size_t c, T value)
+  //{
+  //  mData[r * this->cols() + c] = value;
+  //}
+
+  size_t rows() const;
+  size_t cols() const;
+
+  void swapRows(size_t i, size_t j);
+
+  //pointer data()
+  //{
+  //  return mData.data();
+  //}
+  // 
+  //const_pointer data() const
+  //{
+  //  return mData.data();
+  //}
+
+private:
+
+  //std::vector<std::vector<T>> mData;
+  std::vector<T> mData;
+  size_t mRows;
+  size_t mCols;
+};
 
 
-//template<typename T>
-//class MatrixBase<T, DYN_MATRIX, DYN_MATRIX>
-//{
-//
-//public:
-//
-//  using value_type      = T;
-//  using size_type       = size_t;
-//  using pointer         = T*;
-//  using const_pointer   = const T*;
-//  using reference       = T&;
-//  using const_reference = const T&;
-//
-//public:
-//
-//  MatrixBase();
-//  MatrixBase(size_t rows, size_t cols);
-//  MatrixBase(size_t rows, size_t cols, T val);
-//  MatrixBase(const MatrixBase &matrix);
-//  MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
-//  //MatrixBase(std::initializer_list<std::initializer_list<T>> matrix);
-//  virtual ~MatrixBase() {}
-//
-//  MatrixBase &operator = (const MatrixBase &matrix);
-//  MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
-//
-//  reference at(size_t r, size_t c);
-//  const_reference at(size_t r, size_t c) const;
-//
-//  //value_type operator()(size_t r, size_t c) const;
-//
-//  //void setValue(size_t r, size_t c, T value)
-//  //{
-//  //  mData[r * this->cols() + c] = value;
-//  //}
-//
-//  size_t rows() const;
-//  size_t cols() const;
-//
-//  void swapRows(size_t i, size_t j);
-//
-//  //pointer data()
-//  //{
-//  //  return mData.data();
-//  //}
-//  // 
-//  //const_pointer data() const
-//  //{
-//  //  return mData.data();
-//  //}
-//
-//private:
-//
-//  //std::vector<std::vector<T>> mData;
-//  std::vector<T> mData;
-//  size_t mRows;
-//  size_t mCols;
-//};
-//
-//
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase()
+  : mRows(0),
+    mCols(0)
+{
+}
+
+template<typename T> inline
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols)
+  //: mData(rows, std::vector<T>(cols, -std::numeric_limits<T>().max()))
+  : mData(rows * cols, -std::numeric_limits<T>().max()),
+    mRows(rows),
+    mCols(cols)
+{
+}
+
+template<typename T> inline
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols, T val)
+  //: mData(rows, std::vector<T>(cols, val))
+  : mData(rows * cols, val),
+    mRows(rows),
+    mCols(cols)
+{
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(const MatrixBase &matrix)
+  : mData(matrix.mData), 
+    mRows(matrix.mRows),
+    mCols(matrix.mCols)
+{
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT
+  : mData(std::move(matrix.mData)), 
+    mRows(matrix.mRows),
+    mCols(matrix.mCols)
+{
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (const MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &matrix)
+{
+  if (this != &matrix) {
+    this->mData = matrix.mData;
+    this->mRows = matrix.mRows;
+    this->mCols = matrix.mCols;
+  }
+  return *this;
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &&matrix) TL_NOEXCEPT
+{
+  if (this != &matrix) {
+    this->mData = std::move(matrix.mData);
+    this->mRows = matrix.mRows;
+    this->mCols = matrix.mCols;
+  }
+  return *this;
+}
+
+template<typename T> inline 
+T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c)
+{
+  //return mData[r][c];
+  return mData[r * mCols + c];
+}
+
+template<typename T> inline 
+const T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c) const
+{
+  //return mData[r][c];
+  return mData[r * mCols + c];
+}
+
 //template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase()
-//  : mRows(0),
-//    mCols(0)
+//T MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator()(size_t r, size_t c) const
 //{
-//}
-//
-//template<typename T> inline
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols)
-//  //: mData(rows, std::vector<T>(cols, -std::numeric_limits<T>().max()))
-//  : mData(rows * cols, -std::numeric_limits<T>().max()),
-//    mRows(rows),
-//    mCols(cols)
-//{
-//}
-//
-//template<typename T> inline
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols, T val)
-//  //: mData(rows, std::vector<T>(cols, val))
-//  : mData(rows * cols, val),
-//    mRows(rows),
-//    mCols(cols)
-//{
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(const MatrixBase &matrix)
-//  : mData(matrix.mData), 
-//    mRows(matrix.mRows),
-//    mCols(matrix.mCols)
-//{
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT
-//  : mData(std::move(matrix.mData)), 
-//    mRows(matrix.mRows),
-//    mCols(matrix.mCols)
-//{
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (const MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &matrix)
-//{
-//  if (this != &matrix) {
-//    this->mData = matrix.mData;
-//    this->mRows = matrix.mRows;
-//    this->mCols = matrix.mCols;
-//  }
-//  return *this;
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &&matrix) TL_NOEXCEPT
-//{
-//  if (this != &matrix) {
-//    this->mData = std::move(matrix.mData);
-//    this->mRows = matrix.mRows;
-//    this->mCols = matrix.mCols;
-//  }
-//  return *this;
-//}
-//
-//template<typename T> inline 
-//T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c)
-//{
-//  //return mData[r][c];
 //  return mData[r * this->cols() + c];
 //}
-//
-//template<typename T> inline 
-//const T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c) const
-//{
-//  //return mData[r][c];
-//  return mData[r * this->cols() + c];
-//}
-//
-////template<typename T> inline 
-////T MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator()(size_t r, size_t c) const
-////{
-////  return mData[r * this->cols() + c];
-////}
-//
-//template<typename T> inline 
-//size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::rows() const
-//{
-//  //return mData.size();
-//  return mRows;
-//}
-//
-//template<typename T> inline 
-//size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::cols() const
-//{
-//  //if (mData.empty()) {
-//  //  return 0;
-//  //} else {
-//  //  return mData[0].size();
-//  //}
-//  return mCols;
-//}
-//
-//template<typename T> inline 
-//void MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::swapRows(size_t i, size_t j)
-//{
-//  //mData[i].swap(mData[j]);
-//  for (size_t c = 0; c < mCols; c++) {
-//    std::swap(mData[i* this->cols() + c], mData[j * this->cols() + c]);
-//  }
-//}
+
+template<typename T> inline 
+size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::rows() const
+{
+  //return mData.size();
+  return mRows;
+}
+
+template<typename T> inline 
+size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::cols() const
+{
+  //if (mData.empty()) {
+  //  return 0;
+  //} else {
+  //  return mData[0].size();
+  //}
+  return mCols;
+}
+
+template<typename T> inline 
+void MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::swapRows(size_t i, size_t j)
+{
+  //mData[i].swap(mData[j]);
+  for (size_t c = 0; c < mCols; c++) {
+    std::swap(mData[i* mCols + c], mData[j * mCols + c]);
+  }
+}
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
+#elif MATRIX_STD_VALARRAY
 
 template<typename T>
 class MatrixBase<T, DYN_MATRIX, DYN_MATRIX>
@@ -3083,13 +3088,13 @@ MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::op
 template<typename T> inline 
 T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c)
 {
-  return mData[r * this->cols() + c];
+  return mData[r * mCols + c];
 }
 
 template<typename T> inline 
 const T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c) const
 {
-  return mData[r * this->cols() + c];
+  return mData[r * mCols + c];
 }
 
 template<typename T> inline 
@@ -3108,7 +3113,7 @@ template<typename T> inline
 void MatrixBase<T, std::numeric_limits<size_t>().max(), DYN_MATRIX>::swapRows(size_t i, size_t j)
 {
   for (size_t c = 0; c < mCols; c++) {
-    std::swap(mData[i* this->cols() + c], mData[j * this->cols() + c]);
+    std::swap(mData[i* mCols + c], mData[j * mCols + c]);
   }
 }
 
@@ -3116,166 +3121,172 @@ void MatrixBase<T, std::numeric_limits<size_t>().max(), DYN_MATRIX>::swapRows(si
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+#else
+
+template<typename T>
+class MatrixBase<T, DYN_MATRIX, DYN_MATRIX>
+{
+
+public:
+
+  using value_type      = T;
+  using size_type       = size_t;
+  using pointer         = T*;
+  using const_pointer   = const T*;
+  using reference       = T&;
+  using const_reference = const T&;
+
+public:
+
+  MatrixBase();
+  MatrixBase(size_t rows, size_t cols);
+  MatrixBase(size_t rows, size_t cols, T val);
+  MatrixBase(const MatrixBase &matrix);
+  MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
+  //MatrixBase(std::initializer_list<std::initializer_list<T>> matrix);
+  virtual ~MatrixBase() 
+  {
+    if (mData) {
+      delete[] mData;
+
+    }
+  }
+
+  MatrixBase &operator = (const MatrixBase &matrix);
+  MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
+
+  reference at(size_t r, size_t c);
+  const_reference at(size_t r, size_t c) const;
+
+  size_t rows() const;
+  size_t cols() const;
+
+  void swapRows(size_t i, size_t j);
+
+  pointer data()
+  {
+    return mData;
+  }
+
+private:
+
+  //std::vector<std::vector<T>> mData;
+  //std::valarray<T> mData;
+  T *mData;
+  size_t mRows;
+  size_t mCols;
+
+};
 
 
-//template<typename T>
-//class MatrixBase<T, DYN_MATRIX, DYN_MATRIX>
-//{
-//
-//public:
-//
-//  using value_type      = T;
-//  using size_type       = size_t;
-//  using pointer         = T*;
-//  using const_pointer   = const T*;
-//  using reference       = T&;
-//  using const_reference = const T&;
-//
-//public:
-//
-//  MatrixBase();
-//  MatrixBase(size_t rows, size_t cols);
-//  MatrixBase(size_t rows, size_t cols, T val);
-//  MatrixBase(const MatrixBase &matrix);
-//  MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
-//  //MatrixBase(std::initializer_list<std::initializer_list<T>> matrix);
-//  virtual ~MatrixBase() {}
-//
-//  MatrixBase &operator = (const MatrixBase &matrix);
-//  MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
-//
-//  reference at(size_t r, size_t c);
-//  const_reference at(size_t r, size_t c) const;
-//
-//  size_t rows() const;
-//  size_t cols() const;
-//
-//  void swapRows(size_t i, size_t j);
-//
-//  pointer data()
-//  {
-//    return mData;
-//  }
-//
-//private:
-//
-//  //std::vector<std::vector<T>> mData;
-//  //std::valarray<T> mData;
-//  T *mData;
-//  size_t mRows;
-//  size_t mCols;
-//
-//};
-//
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase()
-//  : mData(nullptr),
-//    mRows(0),
-//    mCols(0)
-//{
-//}
-//
-//template<typename T> inline
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols)
-//  : mData(new T[rows * cols]),
-//    mRows(rows),
-//    mCols(cols)
-//{
-//}
-//
-//template<typename T> inline
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols, T val)
-//  : mRows(rows),
-//    mCols(cols)
-//{
-//  mData = new T[rows * cols];
-//  T ini_val = -std::numeric_limits<T>().max();
-//  for (size_t r = 0; r < rows * cols; r++) {
-//    this->mData[r] = ini_val;
-//  }
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(const MatrixBase &matrix)
-//  : mRows(matrix.mRows),
-//    mCols(matrix.mCols)
-//{
-//  mData = new T[matrix.mRows * matrix.mCols];
-//  *mData = *matrix.mData;
-//  //for (size_t r = 0; r < _rows * _cols; r++) {
-//  //  this->mData[r] = matrix.at(r);
-//  //}
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT
-//  : mRows(matrix.mRows),
-//    mCols(matrix.mCols)
-//    
-//{
-//  mData = new T[matrix.mRows * matrix.mCols];
-//  *this->mData = std::move(*matrix.mData);
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (const MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &matrix)
-//{
-//  if (this != &matrix) {
-//    mData = new T[matrix.mRows * matrix.mCols];
-//    *this->mData = *matrix.mData;
-//    this->mRows = matrix.mRows;
-//    this->mCols = matrix.mCols;
-//  }
-//  return *this;
-//}
-//
-//template<typename T> inline 
-//MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &&matrix) TL_NOEXCEPT
-//{
-//  if (this != &matrix) {
-//    mData = new T[matrix.mRows * matrix.mCols];
-//    *mData = *matrix.mData;
-//    //this->mData = std::move(matrix.mData);
-//    this->mRows = matrix.mRows;
-//    this->mCols = matrix.mCols;
-//  }
-//  return *this;
-//}
-//
-//template<typename T> inline 
-//T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c)
-//{
-//  return mData[r * this->cols() + c];
-//}
-//
-//template<typename T> inline 
-//const T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c) const
-//{
-//  return mData[r * this->cols() + c];
-//}
-//
-//template<typename T> inline 
-//size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::rows() const
-//{
-//  return mRows;
-//}
-//
-//template<typename T> inline 
-//size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::cols() const
-//{
-//  return mCols;
-//}
-//
-//template<typename T> inline 
-//void MatrixBase<T, std::numeric_limits<size_t>().max(), DYN_MATRIX>::swapRows(size_t i, size_t j)
-//{
-//  for (size_t c = 0; c < mCols; c++) {
-//    std::swap(mData[i* this->cols() + c], mData[j * this->cols() + c]);
-//  }
-//}
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase()
+  : mData(nullptr),
+    mRows(0),
+    mCols(0)
+{
+}
 
+template<typename T> inline
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols)
+  : mData(new T[rows * cols]),
+    mRows(rows),
+    mCols(cols)
+{
+}
 
+template<typename T> inline
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(size_t rows, size_t cols, T val)
+  : mRows(rows),
+    mCols(cols)
+{
+  mData = new T[rows * cols];
+  T ini_val = -std::numeric_limits<T>().max();
+  for (size_t r = 0; r < rows * cols; r++) {
+    this->mData[r] = ini_val;
+  }
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(const MatrixBase &matrix)
+  : mRows(matrix.mRows),
+    mCols(matrix.mCols)
+{
+  mData = new T[matrix.mRows * matrix.mCols];
+  *mData = *matrix.mData;
+  //for (size_t r = 0; r < _rows * _cols; r++) {
+  //  this->mData[r] = matrix.at(r);
+  //}
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT
+  : mRows(matrix.mRows),
+    mCols(matrix.mCols)
+    
+{
+  mData = new T[matrix.mRows * matrix.mCols];
+  *this->mData = std::move(*matrix.mData);
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (const MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &matrix)
+{
+  if (this != &matrix) {
+    mData = new T[matrix.mRows * matrix.mCols];
+    *this->mData = *matrix.mData;
+    this->mRows = matrix.mRows;
+    this->mCols = matrix.mCols;
+  }
+  return *this;
+}
+
+template<typename T> inline 
+MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::operator = (MatrixBase<T, DYN_MATRIX, DYN_MATRIX> &&matrix) TL_NOEXCEPT
+{
+  if (this != &matrix) {
+    mData = new T[matrix.mRows * matrix.mCols];
+    *mData = *matrix.mData;
+    //this->mData = std::move(matrix.mData);
+    this->mRows = matrix.mRows;
+    this->mCols = matrix.mCols;
+  }
+  return *this;
+}
+
+template<typename T> inline 
+T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c)
+{
+  return mData[r * mCols + c];
+}
+
+template<typename T> inline 
+const T &MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::at(size_t r, size_t c) const
+{
+  return mData[r * mCols + c];
+}
+
+template<typename T> inline 
+size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::rows() const
+{
+  return mRows;
+}
+
+template<typename T> inline 
+size_t MatrixBase<T, DYN_MATRIX, DYN_MATRIX>::cols() const
+{
+  return mCols;
+}
+
+template<typename T> inline 
+void MatrixBase<T, std::numeric_limits<size_t>().max(), DYN_MATRIX>::swapRows(size_t i, size_t j)
+{
+  for (size_t c = 0; c < mCols; c++) {
+    std::swap(mData[i* mCols + c], mData[j * mCols + c]);
+  }
+}
+
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3507,9 +3518,12 @@ private:
   Matrix2 adjoint4x4() const;
   Matrix2 adjointnxn() const;
 
+  /// por referencia
   void adjoint2x2(Matrix2<T, _rows, _cols> &matrix) const;
   void adjoint3x3(Matrix2<T, _rows, _cols> &matrix) const;
-
+  void adjoint4x4(Matrix2<T, _rows, _cols> &matrix) const;
+  void adjointnxn(Matrix2<T, _rows, _cols> &matrix) const;
+  void cofactorMatrix(Matrix2<T, _rows, _cols> &matrix) const;
 //public:
 //
 //  const size_t rows = _rows;
@@ -3553,15 +3567,13 @@ Matrix2<T, DYN_MATRIX, DYN_MATRIX> matrixReserve(const Matrix2<T, DYN_MATRIX, DY
 template<typename T, size_t _rows, size_t _cols>
 Matrix2<T, _cols, _rows> transposeReserve(const Matrix2<T, _rows, _cols> &_matrix)
 {
-  Matrix2<T, _cols, _rows> matrix;
-  return matrix;
+  return Matrix2<T, _cols, _rows>();
 }
 
 template<typename T>
 Matrix2<T, DYN_MATRIX, DYN_MATRIX> transposeReserve(const Matrix2<T, DYN_MATRIX, DYN_MATRIX> &matrix)
 {
-  Matrix2<T> _matrix = Matrix2<T>::zero(matrix.cols(), matrix.rows());
-  return _matrix;
+  return Matrix2<T>::zero(matrix.cols(), matrix.rows());
 }
 
 
@@ -3638,7 +3650,7 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix2<T, _rows, _cols> &Matrix2<T, _rows, _cols>::operator = (const Matrix2 &matrix)
 {
   if (this != &matrix) {
-    MatrixBase::operator=(std::forward<MatrixBase<T, _rows, _cols>>(matrix));
+    MatrixBase::operator=(matrix);
   }
   return *this;
 }
@@ -3834,31 +3846,32 @@ Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::adjugate() const
   size_t cols = this->cols();
   TL_ASSERT(rows == cols, "Non-Square Matrix");
 
-  Matrix2<T, _rows, _cols> matrix;
+  //Matrix2<T, _rows, _cols> matrix;
 
-  if (rows == 2) {
-    matrix = adjoint2x2();
-  } else if (rows == 3) {
-    matrix = adjoint3x3();
-  } else if (rows == 4) {
-    matrix = adjoint4x4();
-  } else {
-    matrix = adjointnxn();
-  }
-
-  //Matrix2<T, _rows, _cols> matrix(matrixReserve(*this));
-  
   //if (rows == 2) {
-  //  adjoint2x2(matrix);
-  //  //matrix = adjoint2x2();
+  //  matrix = adjoint2x2();
   //} else if (rows == 3) {
-  //  //adjoint3x3(matrix);
   //  matrix = adjoint3x3();
   //} else if (rows == 4) {
   //  matrix = adjoint4x4();
   //} else {
   //  matrix = adjointnxn();
   //}
+
+  Matrix2<T, _rows, _cols> matrix;
+  if (_rows == DYN_MATRIX && _cols == DYN_MATRIX) {
+    matrix = *this;
+  }
+
+  if (rows == 2) {
+    adjoint2x2(matrix);
+  } else if (rows == 3) {
+    adjoint3x3(matrix);
+  } else if (rows == 4) {
+    adjoint4x4(matrix);
+  } else {
+    adjointnxn(matrix);
+  }
 
   return matrix;
 }
@@ -3867,35 +3880,14 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::adjoint2x2() const
 {
   Matrix2<T, _rows, _cols> matrix(*this);
-  matrix.at(0, 0) = this->at(1,1);
-  matrix.at(0, 1) = -this->at(0,1);
-  matrix.at(1, 0) = -this->at(1,0);
-  matrix.at(1, 1) = this->at(0,0);
+  //matrix.at(0, 0) = this->at(1,1);
+  //matrix.at(0, 1) = -this->at(0,1);
+  //matrix.at(1, 0) = -this->at(1,0);
+  //matrix.at(1, 1) = this->at(0,0);
+  std::swap(matrix.at(0, 0), matrix.at(1, 1));
+  matrix.at(0, 1) = -matrix.at(0, 1);
+  matrix.at(1, 0) = -matrix.at(1, 0);
   return matrix;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-void Matrix2<T, _rows, _cols>::adjoint2x2(Matrix2<T, _rows, _cols> &matrix) const
-{
-  matrix.at(0, 0) = this->at(1,1);
-  matrix.at(0, 1) = -this->at(0,1);
-  matrix.at(1, 0) = -this->at(1,0);
-  matrix.at(1, 1) = this->at(0,0);
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-void Matrix2<T, _rows, _cols>::adjoint3x3(Matrix2<T, _rows, _cols> &matrix) const
-{
-
-  matrix.at(0, 0) = this->at(1,1) * this->at(2,2) - this->at(1,2) * this->at(2,1);
-  matrix.at(0, 1) = this->at(0,2) * this->at(2,1) - this->at(0,1) * this->at(2,2);
-  matrix.at(0, 2) = this->at(0,1) * this->at(1,2) - this->at(0,2) * this->at(1,1);
-  matrix.at(1, 0) = this->at(1,2) * this->at(2,0) - this->at(1,0) * this->at(2,2);
-  matrix.at(1, 1) = this->at(0,0) * this->at(2,2) - this->at(0,2) * this->at(2,0);
-  matrix.at(1, 2) = this->at(0,2) * this->at(1,0) - this->at(0,0) * this->at(1,2);
-  matrix.at(2, 0) = this->at(1,0) * this->at(2,1) - this->at(1,1) * this->at(2,0);
-  matrix.at(2, 1) = this->at(0,1) * this->at(2,0) - this->at(0,0) * this->at(2,1);
-  matrix.at(2, 2) = this->at(0,0) * this->at(1,1) - this->at(0,1) * this->at(1,0);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -3979,6 +3971,111 @@ Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::adjointnxn() const
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
+void Matrix2<T, _rows, _cols>::adjoint2x2(Matrix2<T, _rows, _cols> &matrix) const
+{
+  //matrix.at(0, 0) = this->at(1,1);
+  //matrix.at(0, 1) = -this->at(0,1);
+  //matrix.at(1, 0) = -this->at(1,0);
+  //matrix.at(1, 1) = this->at(0,0);
+  std::swap(matrix.at(0, 0), matrix.at(1, 1));
+  matrix.at(0, 1) = -matrix.at(0, 1);
+  matrix.at(1, 0) = -matrix.at(1, 0);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+void Matrix2<T, _rows, _cols>::adjoint3x3(Matrix2<T, _rows, _cols> &matrix) const
+{
+  //matrix.at(0, 0) = this->at(1,1) * this->at(2,2) - this->at(1,2) * this->at(2,1);
+  //matrix.at(0, 1) = this->at(0,2) * this->at(2,1) - this->at(0,1) * this->at(2,2);
+  //matrix.at(0, 2) = this->at(0,1) * this->at(1,2) - this->at(0,2) * this->at(1,1);
+  //matrix.at(1, 0) = this->at(1,2) * this->at(2,0) - this->at(1,0) * this->at(2,2);
+  //matrix.at(1, 1) = this->at(0,0) * this->at(2,2) - this->at(0,2) * this->at(2,0);
+  //matrix.at(1, 2) = this->at(0,2) * this->at(1,0) - this->at(0,0) * this->at(1,2);
+  //matrix.at(2, 0) = this->at(1,0) * this->at(2,1) - this->at(1,1) * this->at(2,0);
+  //matrix.at(2, 1) = this->at(0,1) * this->at(2,0) - this->at(0,0) * this->at(2,1);
+  //matrix.at(2, 2) = this->at(0,0) * this->at(1,1) - this->at(0,1) * this->at(1,0);
+
+  const T m00 = this->at(0,0);
+  const T m01 = this->at(0,1);
+  const T m02 = this->at(0,2);
+  const T m10 = this->at(1,0);
+  const T m11 = this->at(1,1);
+  const T m12 = this->at(1,2);
+  const T m20 = this->at(2,0);
+  const T m21 = this->at(2,1);
+  const T m22 = this->at(2,2);
+
+  matrix.at(0, 0) = m11 * m22 - m12 * m21;
+  matrix.at(0, 1) = m02 * m21 - m01 * m22;
+  matrix.at(0, 2) = m01 * m12 - m02 * m11;
+  matrix.at(1, 0) = m12 * m20 - m10 * m22;
+  matrix.at(1, 1) = m00 * m22 - m02 * m20;
+  matrix.at(1, 2) = m02 * m10 - m00 * m12;
+  matrix.at(2, 0) = m10 * m21 - m11 * m20;
+  matrix.at(2, 1) = m01 * m20 - m00 * m21;
+  matrix.at(2, 2) = m00 * m11 - m01 * m10;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+void Matrix2<T, _rows, _cols>::adjoint4x4(Matrix2<T, _rows, _cols> &matrix) const
+{
+  const T m00 = this->at(0,0);
+  const T m01 = this->at(0,1);
+  const T m02 = this->at(0,2);
+  const T m03 = this->at(0,3);
+  const T m10 = this->at(1,0);
+  const T m11 = this->at(1,1);
+  const T m12 = this->at(1,2);
+  const T m13 = this->at(1,3);
+  const T m20 = this->at(2,0);
+  const T m21 = this->at(2,1);
+  const T m22 = this->at(2,2);
+  const T m23 = this->at(2,3);
+  const T m30 = this->at(3,0);
+  const T m31 = this->at(3,1);
+  const T m32 = this->at(3,2);
+  const T m33 = this->at(3,3);
+
+  T a0 = m00 * m11 - m01 * m10;
+  T a1 = m00 * m12 - m02 * m10;
+  T a2 = m00 * m13 - m03 * m10;
+  T a3 = m01 * m12 - m02 * m11;
+  T a4 = m01 * m13 - m03 * m11;
+  T a5 = m02 * m13 - m03 * m12;
+  T b0 = m20 * m31 - m21 * m30;
+  T b1 = m20 * m32 - m22 * m30;
+  T b2 = m20 * m33 - m23 * m30;
+  T b3 = m21 * m32 - m22 * m31;
+  T b4 = m21 * m33 - m23 * m31;
+  T b5 = m22 * m33 - m23 * m32;
+
+  matrix.at(0, 0) =  m11 * b5 - m12 * b4 + m13 * b3;
+  matrix.at(0, 1) = -m01 * b5 + m02 * b4 - m03 * b3;
+  matrix.at(0, 2) =  m31 * a5 - m32 * a4 + m33 * a3;
+  matrix.at(0, 3) = -m21 * a5 + m22 * a4 - m23 * a3;
+  matrix.at(1, 0) = -m10 * b5 + m12 * b2 - m13 * b1;
+  matrix.at(1, 1) =  m00 * b5 - m02 * b2 + m03 * b1;
+  matrix.at(1, 2) = -m30 * a5 + m32 * a2 - m33 * a1;
+  matrix.at(1, 3) =  m20 * a5 - m22 * a2 + m23 * a1;
+  matrix.at(2, 0) =  m10 * b4 - m11 * b2 + m13 * b0;
+  matrix.at(2, 1) = -m00 * b4 + m01 * b2 - m03 * b0;
+  matrix.at(2, 2) =  m30 * a4 - m31 * a2 + m33 * a0;
+  matrix.at(2, 3) = -m20 * a4 + m21 * a2 - m23 * a0;
+  matrix.at(3, 0) = -m10 * b3 + m11 * b1 - m12 * b0;
+  matrix.at(3, 1) =  m00 * b3 - m01 * b1 + m02 * b0;
+  matrix.at(3, 2) = -m30 * a3 + m31 * a1 - m32 * a0;
+  matrix.at(3, 3) =  m20 * a3 - m21 * a1 + m22 * a0;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline 
+void Matrix2<T, _rows, _cols>::adjointnxn(Matrix2<T, _rows, _cols> &matrix) const
+{
+  //matrix = this->cofactorMatrix();
+  this->cofactorMatrix(matrix);
+  matrix = matrix.transpose();
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
 Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::cofactorMatrix() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
@@ -3995,6 +4092,23 @@ Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::cofactorMatrix() const
   }
   return matrix;
 }
+
+template<typename T, size_t _rows, size_t _cols> inline
+void Matrix2<T, _rows, _cols>::cofactorMatrix(Matrix2<T, _rows, _cols> &matrix) const
+{
+  static_assert(_rows == _cols, "Non-Square Matrix");
+
+  size_t rows = this->rows();
+  size_t cols = this->cols();
+  TL_ASSERT(rows == cols, "Non-Square Matrix");
+
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t c = 0; c < cols; c++) {
+      matrix.at(r, c) = cofactor(r, c);
+    }
+  }
+}
+
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix2<T, _rows, _cols> Matrix2<T, _rows, _cols>::rowEchelonForm(T *determinant) const
@@ -4096,18 +4210,37 @@ T Matrix2<T, _rows, _cols>::determinant3x3() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix2<T, _rows, _cols>::determinant4x4() const
 {
-  T a0 = this->at(0,0) * this->at(1,1) - this->at(0,1) * this->at(1,0);
-  T a1 = this->at(0,0) * this->at(1,2) - this->at(0,2) * this->at(1,0);
-  T a2 = this->at(0,0) * this->at(1,3) - this->at(0,3) * this->at(1,0);
-  T a3 = this->at(0,1) * this->at(1,2) - this->at(0,2) * this->at(1,1);
-  T a4 = this->at(0,1) * this->at(1,3) - this->at(0,3) * this->at(1,1);
-  T a5 = this->at(0,2) * this->at(1,3) - this->at(0,3) * this->at(1,2);
-  T b0 = this->at(2,0) * this->at(3,1) - this->at(2,1) * this->at(3,0);
-  T b1 = this->at(2,0) * this->at(3,2) - this->at(2,2) * this->at(3,0);
-  T b2 = this->at(2,0) * this->at(3,3) - this->at(2,3) * this->at(3,0);
-  T b3 = this->at(2,1) * this->at(3,2) - this->at(2,2) * this->at(3,1);
-  T b4 = this->at(2,1) * this->at(3,3) - this->at(2,3) * this->at(3,1);
-  T b5 = this->at(2,2) * this->at(3,3) - this->at(2,3) * this->at(3,2);
+  TL_TODO("codigo repetido con adjoint4x4")
+  const T m00 = this->at(0,0);
+  const T m01 = this->at(0,1);
+  const T m02 = this->at(0,2);
+  const T m03 = this->at(0,3);
+  const T m10 = this->at(1,0);
+  const T m11 = this->at(1,1);
+  const T m12 = this->at(1,2);
+  const T m13 = this->at(1,3);
+  const T m20 = this->at(2,0);
+  const T m21 = this->at(2,1);
+  const T m22 = this->at(2,2);
+  const T m23 = this->at(2,3);
+  const T m30 = this->at(3,0);
+  const T m31 = this->at(3,1);
+  const T m32 = this->at(3,2);
+  const T m33 = this->at(3,3);
+
+  T a0 = m00 * m11 - m01 * m10;
+  T a1 = m00 * m12 - m02 * m10;
+  T a2 = m00 * m13 - m03 * m10;
+  T a3 = m01 * m12 - m02 * m11;
+  T a4 = m01 * m13 - m03 * m11;
+  T a5 = m02 * m13 - m03 * m12;
+  T b0 = m20 * m31 - m21 * m30;
+  T b1 = m20 * m32 - m22 * m30;
+  T b2 = m20 * m33 - m23 * m30;
+  T b3 = m21 * m32 - m22 * m31;
+  T b4 = m21 * m33 - m23 * m31;
+  T b5 = m22 * m33 - m23 * m32;
+
   T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
   return det;
 }
