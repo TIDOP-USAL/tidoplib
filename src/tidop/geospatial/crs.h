@@ -3,12 +3,9 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "ogr_spatialref.h"
-TL_DEFAULT_WARNINGS
-#endif
+#include <string>
 
+class OGRSpatialReference;
 
 namespace tl
 {
@@ -28,6 +25,8 @@ class TL_EXPORT Crs
 
 public:
 
+  Crs();
+
   /*!
    * \brief Constructor
    * \param[in] epsg Sistema de referencia como código EPSG
@@ -45,13 +44,12 @@ public:
    * \return
    */
   std::string epsgCode() const;
-
+  void setEpsgCode(const std::string &epsg);
   bool isGeocentric() const;
-
   bool isGeographic() const;
-
   std::string exportToProj() const;
   std::string exportToWkt() const;
+  bool isValid() const;
 
 protected:
 
@@ -64,7 +62,7 @@ private:
   /*!
    * \brief inicializador de la clase
    */
-  void init();
+  void initFromEpsg();
   void initGrid();
   void initGeoid();
 
@@ -85,35 +83,12 @@ private:
    */
   std::string mGeoid;
 
-  // TODO: como puntero no hay manera. No hay manera de destruirlo sin que de un error...
-  //OGRSpatialReference *pCrs;
-
   /*!
    * \brief Objeto OGRSpatialReference de Gdal
    */
-  OGRSpatialReference mCrs;
+  OGRSpatialReference *mCrs;
 
 };
-
-inline std::string Crs::epsgCode() const
-{
-  return mEpsg;
-}
-
-inline bool Crs::isGeocentric() const
-{
-  return mCrs.IsGeocentric() != 0;
-}
-
-inline bool Crs::isGeographic() const
-{
-  return mCrs.IsGeographic() != 0;
-}
-
-inline OGRSpatialReference *Crs::getOGRSpatialReference()
-{
-  return &mCrs;
-}
 
 
 /* ---------------------------------------------------------------------------------- */
