@@ -23,7 +23,7 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL)
 
     if(HAVE_PROJ4)
         target_link_libraries(${the_target} 
-                              ${PROJ4_LIBRARY})
+                              ${PROJ4_LIBRARIES})
     endif(HAVE_PROJ4)
 
 	  if(HAVE_OPENCV)
