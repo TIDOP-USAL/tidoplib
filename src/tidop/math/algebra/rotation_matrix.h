@@ -34,13 +34,13 @@ namespace math
 template <typename T>
 class RotationMatrix 
   : public RotationBase<T>,
-    public Matrix<3, 3, T>
+    public Matrix<T, 3, 3>
 {
 
 public:
   
   RotationMatrix();
-  RotationMatrix(const Matrix<3, 3, T> &rot);
+  RotationMatrix(const Matrix<T, 3, 3> &rot);
   ~RotationMatrix() override {}
 
   TL_TODO("constructoras a partir de angulo y eje")
@@ -57,14 +57,14 @@ private:
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix()
   : RotationBase<T>(Rotation::Type::rotation_matrix),
-    Matrix<3, 3, T>()
+    Matrix<T, 3, 3>()
 {
 }
 
 template <typename T> inline
-RotationMatrix<T>::RotationMatrix(const Matrix<3, 3, T> &rot)
+RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
   : RotationBase<T>(Rotation::Type::rotation_matrix),
-    Matrix<3, 3, T>(rot)
+    Matrix<T, 3, 3>(rot)
 {
 }
 

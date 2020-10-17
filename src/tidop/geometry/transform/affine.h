@@ -107,7 +107,7 @@ public:
    *
    * \param[in] mat Matriz de coficientes
    */
-  Affine(const math::Matrix<2, 3, double> &mat);
+  Affine(const math::Matrix<double, 2, 3> &mat);
 
   ~Affine() override = default;
 
@@ -206,7 +206,7 @@ public:
    * \end{bmatrix}
    * \f]
    */
-  math::Matrix<2,3,double> parameters() const;
+  math::Matrix<double,2,3> parameters() const;
 
   /*!
    * \brief Devuelve el giro
@@ -276,7 +276,7 @@ public:
    *
    * \param[in] mat Matriz de coficientes
    */
-  void setParameters(const math::Matrix<2, 3, double> &mat);
+  void setParameters(const math::Matrix<double, 2, 3> &mat);
 
   /*!
    * \brief Establece la rotación de la transformación
@@ -357,7 +357,7 @@ Affine<Point_t>::Affine(double tx,
 }
 
 template<typename Point_t> inline
-Affine<Point_t>::Affine(const math::Matrix<2, 3, double> &mat)
+Affine<Point_t>::Affine(const math::Matrix<double, 2, 3> &mat)
   : Transform2D<Point_t>(Transform::Type::affine, 3)
 {
   this->setParameters(mat.at(0,0), mat.at(0,1), mat.at(1,0), 
@@ -533,9 +533,9 @@ double Affine::getScaleY() const
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 template<typename Point_t>
-math::Matrix<2, 3, double> Affine<Point_t>::parameters() const
+math::Matrix<double, 2, 3> Affine<Point_t>::parameters() const
 {
-  math::Matrix<2, 3, double> mat;
+  math::Matrix<double, 2, 3> mat;
   mat.at(0, 0) = this->a;
   mat.at(0, 1) = this->b;
   mat.at(0, 2) = this->x0;
@@ -602,7 +602,7 @@ void Affine<Point_t>::setParameters(double a,
 }
 
 template<typename Point_t>
-inline void Affine<Point_t>::setParameters(const math::Matrix<2, 3, double> &mat)
+inline void Affine<Point_t>::setParameters(const math::Matrix<double, 2, 3> &mat)
 {
   this->setParameters(mat.at(0,0), mat.at(0,1), 
                       mat.at(1,0), mat.at(1,1), 

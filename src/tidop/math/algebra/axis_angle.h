@@ -52,13 +52,13 @@ class AxisAngle
 public:
 
   AxisAngle();
-  AxisAngle(T angle, const Vector<3, T> &axis);
+  AxisAngle(T angle, const Vector<T, 3> &axis);
   ~AxisAngle() override;
 
 public:
 
   T angle;
-  Vector<3, T> axis;
+  Vector<T, 3> axis;
 };
 
 template<typename T>
@@ -72,7 +72,7 @@ AxisAngle<T>::AxisAngle()
 }
 
 template<typename T>
-AxisAngle<T>::AxisAngle(T angle, const Vector<3, T> &axis)
+AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
   : RotationBase<T>(Rotation::Type::axis_angle),
     angle(angle),
     axis(axis)

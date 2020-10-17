@@ -77,7 +77,7 @@ struct StatisticsTest
   std::list<double> x;
   std::list<double> y;
 
-  tl::math::Vector<9, double> tl_vector;
+  tl::math::Vector<double, 9> tl_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)

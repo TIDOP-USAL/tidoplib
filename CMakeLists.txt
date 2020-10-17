@@ -138,6 +138,7 @@ endif (BUILD_SHARED_LIBS)
 
 
 # Activación/desactivación de los diferentes modulos de la libreria
+##TODO: CORE tiene que ser obligatorio...
 OPTION (BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
 OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON )
 OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
@@ -200,6 +201,31 @@ OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
+
+
+# ----------------------------------------------------------------------------
+#  Modulos TidopLib
+# ----------------------------------------------------------------------------
+
+set(HAVE_TL_CORE NO)
+set(HAVE_TL_MATH NO)
+set(HAVE_TL_GEOMETRY NO)
+set(HAVE_TL_IMG NO)
+set(HAVE_TL_IMG_PROCESS NO)
+set(HAVE_TL_FEAT_MATCH NO)
+set(HAVE_TL_GRAPHIC NO)
+set(HAVE_TL_GEOSPATIAL NO)
+set(HAVE_TL_VECT NO)
+set(HAVE_TL_EXPERIMENTAL NO)
+
+if(BUILD_TL_CORE)
+    set(HAVE_TL_CORE YES)
+	if(BUILD_TL_MATH)
+	    set(HAVE_TL_MATH YES)
+	endif(BUILD_TL_MATH)
+	#completar y ver que modulos se activan/desactivan en función de la activación de otros
+endif(BUILD_TL_CORE)
+
 
 # ----------------------------------------------------------------------------
 #  Detect 3rd-party libraries

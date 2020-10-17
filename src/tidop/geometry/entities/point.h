@@ -91,7 +91,7 @@ public:
    * \brief Constructor a partir de un vector
    * \param[in] vector Vector
    */
-  Point(const math::Vector<2, T> &vector);
+  Point(const math::Vector<T, 2> &vector);
 
   /*!
    * \brief Constructor
@@ -187,7 +187,7 @@ Point<T>::Point(Point &&pt) TL_NOEXCEPT
 }
 
 template<typename T> inline
-Point<T>::Point(const math::Vector<2, T> &vector)
+Point<T>::Point(const math::Vector<T, 2> &vector)
   : Entity(Entity::Type::point2d),
     x(vector[0]),
     y(vector[1])
@@ -462,7 +462,7 @@ public:
    * \brief Constructor vector
    * \param[in] vector Vector
    */
-  Point3(const math::Vector<3, T> &vector);
+  Point3(const math::Vector<T, 3> &vector);
 
   /*!
    * \brief Constructor vector
@@ -533,7 +533,7 @@ Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
 }
 
 template<typename T> inline 
-Point3<T>::Point3(const math::Vector<3, T> &vector)
+Point3<T>::Point3(const math::Vector<T, 3> &vector)
   : Entity(Entity::Type::point3d),
     x(vector[0]),
     y(vector[1]),

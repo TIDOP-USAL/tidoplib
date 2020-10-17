@@ -43,167 +43,165 @@ int main(int argc, char** argv)
 //Info:    Eigen transpose [Time: 0.000000 seconds]
 //Info:    Eigen transpose dynamic transpose [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static transpose [Time: 0.015000 seconds]
-//Info:    Tidop Matrix2 static transpose [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.719000 seconds]
+//Info:    Tidop Matrix static transpose [Time: 0.000000 seconds]
+//Info:    Tidop Matrix dynamic transpose [Time: 0.719000 seconds]
 // 3x3
 //Info:    Eigen transpose [Time: 0.000000 seconds]
 //Info:    Eigen transpose dynamic transpose [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static transpose [Time: 0.062000 seconds]
-//Info:    Tidop Matrix2 static transpose [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.750000 seconds]
+//Info:    Tidop Matrix static transpose [Time: 0.000000 seconds]
+//Info:    Tidop Matrix dynamic transpose [Time: 0.750000 seconds]
 //  4x4
 //Info:    Eigen transpose [Time: 0.000000 seconds]
 //Info:    Eigen transpose dynamic transpose [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static transpose [Time: 0.078000 seconds]
-//Info:    Tidop Matrix2 static transpose [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.672000 seconds] -> std::vector
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.735000 seconds] -> std::valarray
+//Info:    Tidop Matrix static transpose [Time: 0.000000 seconds]
+//Info:    Tidop Matrix dynamic transpose [Time: 0.672000 seconds] -> std::vector
+//Info:    Tidop Matrix dynamic transpose [Time: 0.735000 seconds] -> std::valarray
 // 5x5
 //Info:    Eigen transpose [Time: 0.000000 seconds]
 //Info:    Eigen transpose dynamic transpose [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static transpose [Time: 0.094000 seconds]
-//Info:    Tidop Matrix2 static transpose [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.765000 seconds] -> std::vector
-//Info:    Tidop Matrix2 dynamic transpose [Time: 0.813000 seconds] -> std::valarray
-//Info:    Tidop Matrix2 dynamic transpose [Time: 1.000000 seconds] -> T*
+//Info:    Tidop Matrix static transpose [Time: 0.000000 seconds]
+//Info:    Tidop Matrix dynamic transpose [Time: 0.765000 seconds] -> std::vector
+//Info:    Tidop Matrix dynamic transpose [Time: 0.813000 seconds] -> std::valarray
+//Info:    Tidop Matrix dynamic transpose [Time: 1.000000 seconds] -> T*
 
 // adjugate
 // 2x2
 //Info:    Eigen static adjugate [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static adjugate [Time: 0.016000 seconds]
-//Info:    Tidop Matrix2 static adjugate [Time: 0.000000 seconds]
+//Info:    Tidop Matrix static adjugate [Time: 0.000000 seconds]
 //Info:    Eigen inverse dynamic adjugate [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.797000 seconds] -> MATRIX_STD_VECTOR
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.750000 seconds] -> MATRIX_STD_VALARRAY
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.797000 seconds] -> MATRIX_STD_VECTOR
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.750000 seconds] -> MATRIX_STD_VALARRAY
 // 3x3
 //Info:    Eigen static adjugate [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static adjugate [Time: 0.047000 seconds]
-//Info:    Tidop Matrix2 static adjugate [Time: 0.000000 seconds]
+//Info:    Tidop Matrix static adjugate [Time: 0.000000 seconds]
 //Info:    Eigen inverse dynamic adjugate [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.875000 seconds] -> MATRIX_STD_VECTOR
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.813000 seconds] -> MATRIX_STD_VALARRAY
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.766000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.875000 seconds] -> MATRIX_STD_VECTOR
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.813000 seconds] -> MATRIX_STD_VALARRAY
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.766000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
 // 4x4
 //Info:    Eigen static adjugate [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static adjugate [Time: 0.297000 seconds]
-//Info:    Tidop Matrix2 static adjugate [Time: 0.219000 seconds]
+//Info:    Tidop Matrix static adjugate [Time: 0.219000 seconds]
 //Info:    Eigen inverse dynamic adjugate [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 1.032000 seconds] -> MATRIX_STD_VECTOR
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 1.063000 seconds] -> MATRIX_STD_VALARRAY
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 0.969000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
+//Info:    Tidop Matrix dynamic adjugate [Time: 1.032000 seconds] -> MATRIX_STD_VECTOR
+//Info:    Tidop Matrix dynamic adjugate [Time: 1.063000 seconds] -> MATRIX_STD_VALARRAY
+//Info:    Tidop Matrix dynamic adjugate [Time: 0.969000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
 // 5x5
 //Info:    Eigen static adjugate [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static adjugate [Time: 7.813000 seconds]
-//Info:    Tidop Matrix2 static adjugate [Time: 7.406000 seconds]
+//Info:    Tidop Matrix static adjugate [Time: 7.406000 seconds]
 //Info:    Eigen inverse dynamic adjugate [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 29.844000 seconds] -> MATRIX_STD_VECTOR
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 27.781000 seconds] -> MATRIX_STD_VALARRAY
-//Info:    Tidop Matrix2 dynamic adjugate [Time: 26.922000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
+//Info:    Tidop Matrix dynamic adjugate [Time: 29.844000 seconds] -> MATRIX_STD_VECTOR
+//Info:    Tidop Matrix dynamic adjugate [Time: 27.781000 seconds] -> MATRIX_STD_VALARRAY
+//Info:    Tidop Matrix dynamic adjugate [Time: 26.922000 seconds] -> MATRIX_STD_VALARRAY pasando por referencia
 
 // determinant
 // 2x2
 //Info:    Eigen static determinant [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 static determinant [Time: 0.000000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
 //Info:    Eigen inverse dynamic determinant [Time: 3.406000 seconds]
-//Info:    Tidop Matrix2 dynamic determinant [Time: 0.016000 seconds]
+//Info:    Tidop Matrix dynamic determinant [Time: 0.016000 seconds]
 // 3x3
 //Info:    Eigen static determinant [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 static determinant [Time: 0.000000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
 //Info:    Eigen inverse dynamic determinant [Time: 3.812000 seconds]
-//Info:    Tidop Matrix2 dynamic determinant [Time: 0.047000 seconds]
+//Info:    Tidop Matrix dynamic determinant [Time: 0.047000 seconds]
 // 4x4
 //Info:    Eigen static determinant [Time: 0.000000 seconds]
 //Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
-//Info:    Tidop Matrix2 static determinant [Time: 0.000000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.000000 seconds]
 //Info:    Eigen inverse dynamic determinant [Time: 4.890000 seconds]
-//Info:    Tidop Matrix2 dynamic determinant [Time: 0.094000 seconds]
+//Info:    Tidop Matrix dynamic determinant [Time: 0.094000 seconds]
 // 5x5
 //Info:    Eigen static determinant [Time: 3.547000 seconds]
 //Info:    Tidop Matrix static determinant [Time: 0.734000 seconds]
-//Info:    Tidop Matrix2 static determinant [Time: 0.703000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.703000 seconds]
 //Info:    Eigen inverse dynamic determinant [Time: 5.703000 seconds]
-//Info:    Tidop Matrix2 dynamic determinant [Time: 1.516000 seconds]
+//Info:    Tidop Matrix dynamic determinant [Time: 1.516000 seconds]
+///Portatil
+//Info:    Eigen static determinant [Time: 5.672000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.797000 seconds]
+//Info:    Tidop Matrix static determinant [Time: 0.734000 seconds]
+//Info:    Eigen inverse dynamic determinant [Time: 6.953000 seconds]
+//Info:    Tidop Matrix dynamic determinant [Time: 1.719000 seconds]
+
 
   Console &console = Console::instance();
   console.setTitle("Transform Example");
   console.setLogLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
-  Eigen::Matrix<float,__ROWS__,__COLS__> eigen_matrix;
-  Eigen::MatrixXf eigen_matrix_dynamic(__ROWS__, __COLS__);
-  tl::math::Matrix<__ROWS__, __COLS__, float> tidop_matrix;
-  tl::math::Matrix2<float,__ROWS__,__COLS__> tidop_matrix2;
-  tl::math::Matrix2<float> tidop_matrix2_dyn(__ROWS__, __COLS__);
+  //Eigen::Matrix<float,__ROWS__,__COLS__> eigen_matrix;
+  //Eigen::MatrixXf eigen_matrix_dynamic(__ROWS__, __COLS__);
+  //tl::math::Matrix<float,__ROWS__,__COLS__> tidop_matrix;
+  //tl::math::Matrix<float> tidop_matrix_dyn(__ROWS__, __COLS__);
 
 
-  for (size_t r = 0; r < __ROWS__; r++) {
-    for (size_t c = 0; c < __COLS__; c++) {
-      float rand = random<float>(0.0f,1.0f);
-      eigen_matrix(r, c) = rand;
-      eigen_matrix_dynamic(r, c) = rand;
-      tidop_matrix.at(r, c) = rand;
-      tidop_matrix2.at(r, c) = rand;
-      tidop_matrix2_dyn.at(r, c) = rand;
-    }
-  }
+  //for (size_t r = 0; r < __ROWS__; r++) {
+  //  for (size_t c = 0; c < __COLS__; c++) {
+  //    float rand = random<float>(0.0f,1.0f);
+  //    eigen_matrix(r, c) = rand;
+  //    eigen_matrix_dynamic(r, c) = rand;
+  //    tidop_matrix.at(r, c) = rand;
+  //    tidop_matrix_dyn.at(r, c) = rand;
+  //  }
+  //}
 
-  Chrono chrono2("Eigen static determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    //eigen_matrix.inverse();
-    //auto tr = eigen_matrix.adjoint();
-    //auto tr = eigen_matrix.transpose();
-    auto tr = eigen_matrix.determinant();
-  }
-  chrono2.stop();
+  //Chrono chrono2("Eigen static determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  //eigen_matrix.inverse();
+  //  auto tr = eigen_matrix.adjoint();
+  //  //auto tr = eigen_matrix.transpose();
+  //  //auto tr = eigen_matrix.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
 
 
-  chrono2.reset();
-  chrono2.setMessage("Tidop Matrix static determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    //tidop_matrix.inverse();
-    //auto tr = tidop_matrix.adjugate();
-    //auto tr = tidop_matrix.transpose();
-    auto tr = tidop_matrix.determinant();
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Tidop Matrix static determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  //tidop_matrix.inverse();
+  //  auto tr = tidop_matrix.adjugate();
+  //  //auto tr = tidop_matrix.transpose();
+  //  //auto tr = tidop_matrix.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
-  chrono2.reset();
-  chrono2.setMessage("Tidop Matrix2 static determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    //tidop_matrix2.inverse();
-    //auto tr = tidop_matrix2.adjugate();
-    //auto tr = tidop_matrix2.transpose();
-    auto tr = tidop_matrix2.determinant();
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Eigen inverse dynamic determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  //eigen_matrix_dynamic.inverse();
+  //  auto tr = eigen_matrix_dynamic.adjoint();
+  //  //auto tr = eigen_matrix_dynamic.transpose();
+  //  //auto tr = eigen_matrix_dynamic.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
-  chrono2.reset();
-  chrono2.setMessage("Eigen inverse dynamic determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    //eigen_matrix_dynamic.inverse();
-    //auto tr = eigen_matrix_dynamic.adjoint();
-    //auto tr = eigen_matrix_dynamic.transpose();
-    auto tr = eigen_matrix_dynamic.determinant();
-  }
-  chrono2.stop();
-
-  chrono2.reset();
-  chrono2.setMessage("Tidop Matrix2 dynamic determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    //tidop_matrix2_dyn.inverse();
-    //auto tr = tidop_matrix2_dyn.adjugate();
-    //auto tr = tidop_matrix2_dyn.transpose();
-    auto tr = tidop_matrix2_dyn.determinant();
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Tidop Matrix dynamic determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  //tidop_matrix_dyn.inverse();
+  //  //auto tr = tidop_matrix_dyn.adjugate();
+  //  //auto tr = tidop_matrix_dyn.transpose();
+  //  auto tr = tidop_matrix_dyn.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
 
   //Eigen::Matrix3f A;
@@ -244,29 +242,29 @@ int main(int argc, char** argv)
 
   ////cv::Mat cvC(static_cast<int>(3), 1, CV_64F);
   ////cv::solve(cvA, cvB, cvC, cv::DECOMP_SVD);
-  //
-  //tl::math::Matrix<3, 3, float> _A;
-  //_A.at(0, 0) = 1;
-  //_A.at(0, 1) = 2;
-  //_A.at(0, 2) = 3;
-  //_A.at(1, 0) = 4;
-  //_A.at(1, 1) = 5;
-  //_A.at(1, 2) = 6;
-  //_A.at(2, 0) = 7;
-  //_A.at(2, 1) = 8;
-  //_A.at(2, 2) = 10;
-  //
-  //tl::math::Vector3f _B{3, 3, 4};
+  
+  tl::math::Matrix<float> _A(3,3);
+  _A.at(0, 0) = 1;
+  _A.at(0, 1) = 2;
+  _A.at(0, 2) = 3;
+  _A.at(1, 0) = 4;
+  _A.at(1, 1) = 5;
+  _A.at(1, 2) = 6;
+  _A.at(2, 0) = 7;
+  _A.at(2, 1) = 8;
+  _A.at(2, 2) = 10;
+  
+  tl::math::Vector<float> _B { 3, 3, 4 };
 
-  //tl::math::SingularValueDecomposition<tl::math::Matrix<3, 3, float>> svd(_A);
+  tl::math::SingularValueDecomposition<tl::math::Matrix<float>> svd(_A);
 
   ////svd.solve(_A);
-  //tl::math::Matrix<3, 3, float> u = svd.u();
-  //tl::math::Matrix<3, 3, float> v = svd.v();
-  //tl::math::Vector3f w = svd.w();
-  //tl::math::Vector3f c = svd.solve(_B);
+  tl::math::Matrix<float> u = svd.u();
+  tl::math::Matrix<float> v = svd.v();
+  tl::math::Vector<float> w = svd.w();
+  tl::math::Vector<float> c = svd.solve(_B);
 
-  //tl::math::Vector2<double, 3> v_;
+  //tl::math::Vector<double, 3> v_;
   //size_t tam = v_.size();
 
   return 0;
