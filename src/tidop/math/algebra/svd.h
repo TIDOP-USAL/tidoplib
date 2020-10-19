@@ -19,12 +19,31 @@ namespace math
  *  \{
  */
 
-template<typename T>
-class SingularValueDecomposition;
-
 /*! \addtogroup Algebra
  *  \{
  */
+
+/*!
+ * \brief SVD (Singular value decomposition)
+ *
+ * En álgebra lineal, la descomposición en valores singulares de una matriz A
+ * es una factorización de la misma con muchas aplicaciones, entre ellas
+ * la resolución de sistemas lineales.
+ *
+ * Dada una matriz A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
+ * y una matriz diagonal Σ (de tamaño m×n) tales que:
+ *
+ * \f[ A = UΣV^T  \f]
+ *
+ * Esta factorización de A se llama descomposición en valores singulares de A.
+ *
+ *
+ * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
+ * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
+ */
+template<typename T>
+class SingularValueDecomposition;
+
 template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -93,13 +112,9 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
     mRows(a.rows()),
     mCols(a.cols())
 {
-  if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
-    //U = matrixReserve<T, _rows, _cols>(mRows, mCols);
-    //V = matrixReserve<T, _cols, _cols>(mCols, mCols);
-    U = Matrix<T, _rows, _cols>(mRows, mCols);
-    V = Matrix<T, _cols, _cols>(mCols, mCols);
-    W = Vector<T, _cols>(mCols);
-  }
+  U = Matrix<T, _rows, _cols>(mRows, mCols);
+  V = Matrix<T, _cols, _cols>(mCols, mCols);
+  W = Vector<T, _cols>(mCols);
 
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
@@ -117,12 +132,6 @@ Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(co
   T s;
   Vector<T, _cols> C(mCols);
   Vector<T, _cols> tmp(mCols);
-  //if (_cols == DynamicVector) {
-  //  C = vectorReserve<T, _cols>(mCols);
-  //  tmp = vectorReserve<T, _cols>(mCols);
-  //}
-
-  //tsh = (thresh >= 0. ? thresh : 0.5 * sqrt(mRows + mCols + 1.) * W[0] * eps);
 
   for (size_t j = 0; j < mCols; j++) {
     s = 0.0;
@@ -152,7 +161,6 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
   this->U = this->A;
   Vector<T, _cols> rv1(mCols);
-  //if (_cols == DynamicVector) rv1 = vectorReserve<T, _cols>(mCols);
   int i, j, k, l;
   T anorm, f, g, h, s, scale;
   g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
@@ -368,10 +376,6 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
   T sw;
   Vector<T, _rows> su(mRows);
   Vector<T, _cols> sv(mCols);
-  //if (_rows == DynamicVector) {
-  //  su = vectorReserve<T, _rows>(mRows);
-  //  sv = vectorReserve<T, _cols>(mCols);
-  //}
   
   if (mRows == DynamicVector) 
 

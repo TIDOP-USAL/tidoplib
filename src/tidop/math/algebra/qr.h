@@ -5,6 +5,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/matrix.h"
 
 #include <algorithm>
 
@@ -14,19 +15,41 @@ namespace tl
 namespace math
 {
 
-template<typename T, size_t _rows, size_t _cols>
-class Matrix;
+//template<typename T, size_t _rows, size_t _cols>
+//class Matrix;
 
 /*! \addtogroup Math
  *  \{
  */
 
-template<typename T>
-class QRDecomposition;
 
 /*! \addtogroup Algebra
  *  \{
  */
+
+//https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
+
+
+/*!
+ * \brief Factorización QR
+ * 
+ * La descomposición o factorización QR de una matriz es una descomposición 
+ * de la misma como producto de una matriz ortogonal por una triangular 
+ * superior.
+ *
+ * La descomposición QR de una matriz cuadrada T A es:
+ * 
+ * \f[ A = Q*R \f]
+ *
+ * donde Q es una matriz ortogonal:
+ * 
+ * \f[ Q^t*Q = I \f]
+ * 
+ * y R es una matriz triangular superior.
+ */
+template<typename T>
+class QRDecomposition;
+
 template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -43,15 +66,20 @@ public:
   QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
+  
+  void update(const Vector<T, _rows> &u, const Vector<T, _rows> &v);
+  /// Jacobi rotations
+  void jacobiRotation(int i, T a, T b);
+
+  Matrix<T, _rows, _cols> q() const;
+  Matrix<T, _rows, _cols> r() const;
 
 private:
 
+  //Householder
   void decompose();
-  Vector<T, _rows> QRdcmp::qtmult(const Vector<T, _rows> &b);
   Vector<T, _rows> qtmult(const Vector<T, _rows> &b);
   Vector<T, _rows> rsolve(Vector<T, _rows> &b);
-  Vector<T, _rows> update(Vector<T, _rows> &u);
-  void rotate(int i, double a, double b);
 
 private:
 
@@ -63,8 +91,8 @@ private:
 
 protected:
 
-  Matrix<T, _rows, _cols> qt;
-  Matrix<T, _rows, _cols> r;
+  Matrix<T, _rows, _cols> Q_t;
+  Matrix<T, _rows, _cols> R;
   bool sing;
   size_t mRows;
 };
@@ -75,13 +103,13 @@ template<
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
-  : qt(a.rows(), a.rows()),
-    r(a),
-  sing(false),
+  : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
+    R(a),
+    sing(false),
     mRows(a.rows())
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
-  TL_ASSERT(this->qt.rows() == this->qt.cols(), "Non-Square Matrix");
+  TL_ASSERT(this->Q_t.rows() == this->Q_t.cols(), "Non-Square Matrix");
 
   this->decompose();
 }
@@ -92,76 +120,70 @@ template<
 >
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
-  int i, j, k;
+  size_t i, j, k;
   T scale, sigma, sum, tau;
 
-  Vector<T, _rows> c(n);
-  Vector<T, _rows> d(n);
+  Vector<T, _rows> c(mRows);
+  Vector<T, _rows> d(mRows);
 
-  for (k = 0; k < n - 1; k++) {
+  for (k = 0; k < mRows - 1; k++) {
 
     scale = static_cast<T>(0);
 
-    for (i = k; i < n; i++) {
-      //scale = MAX(scale, abs(this->r(i, k)));
-      scale = std::max(scale, abs(this->r(i, k)));
+    for (i = k; i < mRows; i++) {
+      scale = std::max(scale, std::abs(this->R.at(i, k)));
     }
 
     if (scale == 0.0) {
       sing = true;
       c[k] = d[k] = 0.0;
     } else {
-      for (i = k; i < n; i++) {
-        this->r(i, k) /= scale; 
+      for (i = k; i < mRows; i++) {
+        this->R.at(i, k) /= scale; 
       }
 
-      for (sum = 0.0, i = k; i < n; i++) { 
-        //sum += SQR(this->r(i, k));
-        sum += sqrt(this->r(i, k)); 
+      for (sum = 0.0, i = k; i < mRows; i++) { 
+        sum += this->R.at(i, k)*this->R.at(i, k); 
       }
 
-      sigma = sign(sqrt(sum), this->r(k, k));
-      this->r(k, k) += sigma;
-      c[k] = sigma * this->r(k, k);
+      sigma = sign(sqrt(sum), this->R.at(k, k));
+      this->R.at(k, k) += sigma;
+      c[k] = sigma * this->R.at(k, k);
       d[k] = -scale * sigma;
-      for (j = k + 1; j < n; j++) {
-        for (sum = 0.0, i = k; i < n; i++) {
-          sum += this->r(i, k) * this->r(i, j);
+      for (j = k + 1; j < mRows; j++) {
+        for (sum = 0.0, i = k; i < mRows; i++) {
+          sum += this->R.at(i, k) * this->R.at(i, j);
         }
 
         tau = sum / c[k];
-        for (i = k; i < n; i++) {
-          this->r(i, j) -= tau * this->r(i, k);
+        for (i = k; i < mRows; i++) {
+          this->R.at(i, j) -= tau * this->R.at(i, k);
         }
       }
     }
   }
 
-  d[n - 1] = this->r(n - 1, n - 1);
-  if (d[n - 1] == 0.0) sing = true;
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < n; j++) this->qt(i, j) = 0.0;
-    this->qt(i, i) = 1.0;
-  }
+  d[mRows - 1] = this->R.at(mRows - 1, mRows - 1);
+  if (d[mRows - 1] == 0.0) sing = true;
 
-  for (k = 0; k < n - 1; k++) {
+  for (k = 0; k < mRows - 1; k++) {
     if (c[k] != 0.0) {
-      for (j = 0; j < n; j++) {
+      for (j = 0; j < mRows; j++) {
         sum = 0.0;
-        for (i = k; i < n; i++)
-          sum += this->r(i, k) * this->qt(i, j);
+        for (i = k; i < mRows; i++)
+          sum += this->R.at(i, k) * this->Q_t.at(i, j);
         sum /= c[k];
 
-        for (i = k; i < n; i++)
-          this->qt(i, j) -= sum * this->r(i, k);
+        for (i = k; i < mRows; i++)
+          this->Q_t.at(i, j) -= sum * this->R.at(i, k);
       }
     }
   }
 
-  for (i = 0; i < n; i++) {
-    this->r(i, i) = d[i];
+  for (i = 0; i < mRows; i++) {
+    this->R.at(i, i) = d[i];
     for (j = 0; j < i; j++) 
-      this->r(i, j) = 0.0;
+      this->R.at(i, j) = 0.0;
   }
 }
 
@@ -188,19 +210,38 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
+inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const
+{
+  return this->Q_t.transpose();
+}
+
+template<
+  template<typename, size_t, size_t>
+  class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const
+{
+  return this->R;
+}
+
+template<
+  template<typename, size_t, size_t>
+  class Matrix_t, typename T, size_t _rows, size_t _cols
+>
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::qtmult(const Vector<T, _rows> &b) 
 {
-  int i,j;
+  size_t i, j;
   T sum;
-  Vector<T, _rows> x;
+  Vector<T, _rows> x(mRows);
 
-  for (i=0;i<n;i++) {
-    sum = 0.;
-    for (j = 0; j < n; j++) { 
-      sum += this->qt(i, j) * b[j];
+  for (i = 0; i < mRows; i++) {
+    sum = static_cast<T>(0);
+    for (j = 0; j < mRows; j++) {
+      sum += this->Q_t.at(i, j) * b[j];
     }
     x[i] = sum;
   }
+
   return x;
 }
 
@@ -210,15 +251,19 @@ template<
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::rsolve(Vector<T, _rows> &b)
 {
+  TL_ASSERT(!sing, "attempting solve in a singular QR");
+
   int i, j;
-  double sum;
-  Vector<T, _rows> x;
-  if (sing) throw("attempting solve in a singular QR");
-  for (i = n - 1; i >= 0; i--) {
+  T sum;
+  Vector<T, _rows> x(b);
+
+  for (i = mRows - 1; i >= 0; i--) {
     sum = b[i];
-    for (j = i + 1; j < n; j++) sum -= this->r(i, j) * x[j];
-    x[i] = sum / this->r(i, i);
+    for (j = i + 1; j < mRows; j++) 
+      sum -= this->R.at(i, j) * x[j];
+    x[i] = sum / this->R.at(i, i);
   }
+
   return x;
 }
 
@@ -226,61 +271,79 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::update(Vector<T, _rows> &u)
+void QRDecomposition<Matrix_t<T, _rows, _cols>>::update(const Vector<T, _rows> &u, 
+                                                        const Vector<T, _rows> &v)
 {
-  Vector<T, _rows>v(this);
   int i, k;
+  T aux;
   Vector<T, _rows> w(u);
-  for (k = n - 1; k >= 0; k--)
+
+  for (k = mRows - 1; k >= 0; k--)
     if (w[k] != 0.0) break;
+
   if (k < 0) k = 0;
+
+  // Transform R + u*v to upper Hessenberg
   for (i = k - 1; i >= 0; i--) {
-    rotate(i, w[i], -w[i + 1]);
-    if (w[i] == 0.0)
+    jacobiRotation(i, w[i], -w[i + 1]);
+    if (w[i] == 0.0) {
       w[i] = abs(w[i + 1]);
-    else if (abs(w[i]) > abs(w[i + 1]))
-      w[i] = abs(w[i]) * sqrt(1.0 + SQR(w[i + 1] / w[i]));
-    else w[i] = abs(w[i + 1]) * sqrt(1.0 + SQR(w[i] / w[i + 1]));
+    } else if (abs(w[i]) > abs(w[i + 1])) {
+      aux = w[i + 1] / w[i];
+      w[i] = abs(w[i]) * sqrt(1.0 + aux*aux);
+    } else {
+      aux = w[i] / w[i + 1];
+      w[i] = abs(w[i + 1]) * sqrt(1.0 + aux*aux);
+    }
   }
-  for (i = 0; i < n; i++) this->r(0, i) += w[0] * v[i];
+
+  for (i = 0; i < mRows; i++) 
+    this->R.at(0, i) += w[0] * v[i];
+
+  // transform upper Hessenberg matrix to upper triangular
   for (i = 0; i < k; i++)
-    rotate(i, this->r(i, i), -this->r(i + 1, i));
-  for (i = 0; i < n; i++)
-    if (this->r(i, i) == 0.0) sing = true;
-  return v;
+    jacobiRotation(i, this->R.at(i, i), -this->R.at(i + 1, i));
+
+  for (i = 0; i < mRows; i++) {
+    if (this->R.at(i, i) == 0.0)
+      sing = true;
+  }
 }
   
 template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-void QRDecomposition<Matrix_t<T, _rows, _cols>>::rotate(int i, double a, double b)
+void QRDecomposition<Matrix_t<T, _rows, _cols>>::jacobiRotation(int i, T a, T b)
 {
   int j;
-  double c, fact, s, w, y;
-  if (a == 0.0) {
-    c = 0.0;
-    s = (b >= 0.0 ? 1.0 : -1.0);
+  T c, fact, s, w, y;
+
+  if (a == static_cast<T>(0)) {
+    c = static_cast<T>(0);
+    s = (b >= static_cast<T>(0) ? static_cast<T>(1) : -static_cast<T>(1));
   } else if (abs(a) > abs(b)) {
     fact = b / a;
-    c = SIGN(1.0 / sqrt(1.0 + (fact * fact)), a);
+    c = this->sign(static_cast<T>(1) / sqrt(static_cast<T>(1)+ (fact * fact)), a);
     s = fact * c;
   } else {
     fact = a / b;
-    s = SIGN(1.0 / sqrt(1.0 + (fact * fact)), b);
+    s = this->sign(static_cast<T>(1) / sqrt(static_cast<T>(1) + (fact * fact)), b);
     c = fact * s;
   }
-  for (j = i; j < n; j++) {
-    y = this->r(i, j);
-    w = this->r(i + 1, j);
-    this->r(i, j) = c * y - s * w;
-    this->r(i + 1, j) = s * y + c * w;
+
+  for (j = i; j < mRows; j++) {
+    y = this->R.at(i, j);
+    w = this->R.at(i + 1, j);
+    this->R.at(i, j) = c * y - s * w;
+    this->R.at(i + 1, j) = s * y + c * w;
   }
-  for (j = 0; j < n; j++) {
-    y = this->qt(i, j);
-    w = this->qt(i + 1, j);
-    this->qt(i, j) = c * y - s * w;
-    this->qt(i + 1, j) = s * y + c * w;
+
+  for (j = 0; j < mRows; j++) {
+    y = this->Q_t.at(i, j);
+    w = this->Q_t.at(i + 1, j);
+    this->Q_t.at(i, j) = c * y - s * w;
+    this->Q_t.at(i + 1, j) = s * y + c * w;
   }
 }
 

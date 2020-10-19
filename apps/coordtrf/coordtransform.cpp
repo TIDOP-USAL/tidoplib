@@ -10,7 +10,31 @@
 #include <Eigen/Dense>
 #include <tidop/math/algebra/svd.h>
 #include <tidop/math/algebra/lu.h>
+#include <tidop/math/algebra/qr.h>
+#include <tidop/math/algebra/cholesky.h>
 #include <tidop/math/algebra/matrix.h>
+
+
+
+
+//
+//
+//#include "D:/Desarrollo/libs_sources/Numerical-Recipes/nr3.h"
+//#include "D:/Desarrollo/libs_sources/Numerical-Recipes/qrdcmp.h"
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 using namespace tl;
 
@@ -139,77 +163,77 @@ int main(int argc, char** argv)
   console.setLogLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
-  Eigen::Matrix<float,__ROWS__,__COLS__> eigen_matrix;
-  Eigen::MatrixXf eigen_matrix_dynamic(__ROWS__, __COLS__);
-  tl::math::Matrix<float,__ROWS__,__COLS__> tidop_matrix;
-  tl::math::Matrix<float> tidop_matrix_dyn(__ROWS__, __COLS__);
+  //Eigen::Matrix<float,__ROWS__,__COLS__> eigen_matrix;
+  //Eigen::MatrixXf eigen_matrix_dynamic(__ROWS__, __COLS__);
+  //tl::math::Matrix<float,__ROWS__,__COLS__> tidop_matrix;
+  //tl::math::Matrix<float> tidop_matrix_dyn(__ROWS__, __COLS__);
 
 
-  for (size_t r = 0; r < __ROWS__; r++) {
-    for (size_t c = 0; c < __COLS__; c++) {
-      float rand = random<float>(0.0f,1.0f);
-      eigen_matrix(r, c) = rand;
-      eigen_matrix_dynamic(r, c) = rand;
-      tidop_matrix.at(r, c) = rand;
-      tidop_matrix_dyn.at(r, c) = rand;
-    }
-  }
+  //for (size_t r = 0; r < __ROWS__; r++) {
+  //  for (size_t c = 0; c < __COLS__; c++) {
+  //    float rand = random<float>(0.0f,1.0f);
+  //    eigen_matrix(r, c) = rand;
+  //    eigen_matrix_dynamic(r, c) = rand;
+  //    tidop_matrix.at(r, c) = rand;
+  //    tidop_matrix_dyn.at(r, c) = rand;
+  //  }
+  //}
 
-  Chrono chrono2("Eigen static determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    auto tr = eigen_matrix.inverse();
-    //auto tr = eigen_matrix.adjoint();
-    //auto tr = eigen_matrix.transpose();
-    //auto tr = eigen_matrix.determinant();
-    //break;
-  }
-  chrono2.stop();
+  //Chrono chrono2("Eigen static determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  auto tr = eigen_matrix.inverse();
+  //  //auto tr = eigen_matrix.adjoint();
+  //  //auto tr = eigen_matrix.transpose();
+  //  //auto tr = eigen_matrix.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
 
 
-  chrono2.reset();
-  chrono2.setMessage("Tidop Matrix static determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    auto tr = tidop_matrix.inverse();
-    //auto tr = tidop_matrix.adjugate();
-    //auto tr = tidop_matrix.transpose();
-    //auto tr = tidop_matrix.determinant();
-    //break;
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Tidop Matrix static determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  auto tr = tidop_matrix.inverse();
+  //  //auto tr = tidop_matrix.adjugate();
+  //  //auto tr = tidop_matrix.transpose();
+  //  //auto tr = tidop_matrix.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
-  chrono2.reset();
-  chrono2.setMessage("Eigen inverse dynamic determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    auto tr = eigen_matrix_dynamic.inverse();
-    //auto tr = eigen_matrix_dynamic.adjoint();
-    //auto tr = eigen_matrix_dynamic.transpose();
-    //auto tr = eigen_matrix_dynamic.determinant();
-    //break;
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Eigen inverse dynamic determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  auto tr = eigen_matrix_dynamic.inverse();
+  //  //auto tr = eigen_matrix_dynamic.adjoint();
+  //  //auto tr = eigen_matrix_dynamic.transpose();
+  //  //auto tr = eigen_matrix_dynamic.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
-  chrono2.reset();
-  chrono2.setMessage("Tidop Matrix dynamic determinant");
-  chrono2.run();
-  for (size_t i = 0; i < 10000000; i++) {
-    auto tr = tidop_matrix_dyn.inverse();
-    //auto tr = tidop_matrix_dyn.adjugate();
-    //auto tr = tidop_matrix_dyn.transpose();
-    //auto tr = tidop_matrix_dyn.determinant();
-    //break;
-  }
-  chrono2.stop();
+  //chrono2.reset();
+  //chrono2.setMessage("Tidop Matrix dynamic determinant");
+  //chrono2.run();
+  //for (size_t i = 0; i < 10000000; i++) {
+  //  auto tr = tidop_matrix_dyn.inverse();
+  //  //auto tr = tidop_matrix_dyn.adjugate();
+  //  //auto tr = tidop_matrix_dyn.transpose();
+  //  //auto tr = tidop_matrix_dyn.determinant();
+  //  //break;
+  //}
+  //chrono2.stop();
 
 
   Eigen::Matrix3f A;
   Eigen::Vector3f B;
   A << 1,2,3,  4,5,6,  7,8,10;
   B << 3, 3, 4;
-  Eigen::Vector3f x = A.partialPivLu().solve(B);
+  //Eigen::Vector3f x = A.partialPivLu().solve(B);
   //Eigen::JacobiSVD<Eigen::Matrix3f> svd_eigen = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
   //std::cout << "Here is the matrix A:\n" << A << std::endl;
   //std::cout << "Here is the vector b:\n" << B << std::endl;
@@ -218,48 +242,42 @@ int main(int argc, char** argv)
   //std::cout << "Its right singular vectors are the columns of the thin V matrix:" << std::endl << svd_eigen.matrixV() << std::endl;
   //Eigen::Vector3f x = svd_eigen.solve(B);
   //std::cout << "The solution is:\n" << x << std::endl;
+  //Eigen::HouseholderQR<Eigen::Matrix3f> qr(A);
+  //Eigen::MatrixXf Q = qr.householderQ();
+  //float q1 = Q(0, 0);
+  //float q2 = Q(0, 1);
+  //float q3 = Q(0, 2);
+  //float q4 = Q(1, 0);
+  //float q5 = Q(1, 1);
+  //Eigen::Vector3f x = qr.solve(B);
 
+  tl::math::Matrix<float> _A(3,3);
+  _A.at(0, 0) = 1;
+  _A.at(0, 1) = 2;
+  _A.at(0, 2) = 3;
+  _A.at(1, 0) = 4;
+  _A.at(1, 1) = 5;
+  _A.at(1, 2) = 6;
+  _A.at(2, 0) = 7;
+  _A.at(2, 1) = 8;
+  _A.at(2, 2) = 10;
+  //_A.at(0, 0) = 12;
+  //_A.at(0, 1) = -51;
+  //_A.at(0, 2) = 4;
+  //_A.at(1, 0) = 6;
+  //_A.at(1, 1) = 167;
+  //_A.at(1, 2) = -68;
+  //_A.at(2, 0) = -4;
+  //_A.at(2, 1) = 24;
+  //_A.at(2, 2) = -41;
 
-  //double *a = new double[3*3];
-  //double *pa = a;
-  //double *b = new double[3];
-  //double *pb = b;
-
-  //*pa++ = 1;
-  //*pa++ = 2;
-  //*pa++ = 3;
-  //*pa++ = 4;
-  //*pa++ = 5;
-  //*pa++ = 6;
-  //*pa++ = 7;
-  //*pa++ = 8;
-  //*pa++ = 10;
-
-  //*pb++ = 3;
-  //*pb++ = 3;
-  //*pb++ = 4;
-
-  ////cv::Mat cvA(static_cast<int>(3), static_cast<int>(3), CV_64F, a);
-  ////cv::Mat cvB(static_cast<int>(3), 1, CV_64F, b);
-
-  ////cv::Mat cvC(static_cast<int>(3), 1, CV_64F);
-  ////cv::solve(cvA, cvB, cvC, cv::DECOMP_SVD);
-  
-  //tl::math::Matrix<float> _A(3,3);
-  //_A.at(0, 0) = 1;
-  //_A.at(0, 1) = 2;
-  //_A.at(0, 2) = 3;
-  //_A.at(1, 0) = 4;
-  //_A.at(1, 1) = 5;
-  //_A.at(1, 2) = 6;
-  //_A.at(2, 0) = 7;
-  //_A.at(2, 1) = 8;
-  //_A.at(2, 2) = 10;
-  //
-  //tl::math::Vector<float> _B { 3, 3, 4 };
+  tl::math::Vector<float> _B { 3, 3, 4 };
   //tl::math::LuDecomposition<tl::math::Matrix<float>> lu(_A);
   //tl::math::Vector<float> c = lu.solve(_B);
   //tl::math::SingularValueDecomposition<tl::math::Matrix<float>> svd(_A);
+  //tl::math::QRDecomposition<tl::math::Matrix<float>> _qr(_A);
+  //auto _q = _qr.q();
+  //tl::math::Vector<float> c = _qr.solve(_B);
 
   //////svd.solve(_A);
   //tl::math::Matrix<float> u = svd.u();
@@ -267,35 +285,35 @@ int main(int argc, char** argv)
   //tl::math::Vector<float> w = svd.w();
   //tl::math::Vector<float> c = svd.solve(_B);
 
-  tl::math::Matrix<double, 5, 5> _mat_5x5_d;
-  _mat_5x5_d.at(0, 0) = 6;
-  _mat_5x5_d.at(0, 1) = 8;
-  _mat_5x5_d.at(0, 2) = 6;
-  _mat_5x5_d.at(0, 3) = 7;
-  _mat_5x5_d.at(0, 4) = 3;
-  _mat_5x5_d.at(1, 0) = 9;
-  _mat_5x5_d.at(1, 1) = 6;
-  _mat_5x5_d.at(1, 2) = 2;
-  _mat_5x5_d.at(1, 3) = 3;
-  _mat_5x5_d.at(1, 4) = 3;
-  _mat_5x5_d.at(2, 0) = 8;
-  _mat_5x5_d.at(2, 1) = 3;
-  _mat_5x5_d.at(2, 2) = 2;
-  _mat_5x5_d.at(2, 3) = 3;
-  _mat_5x5_d.at(2, 4) = 3;
-  _mat_5x5_d.at(3, 0) = 5;
-  _mat_5x5_d.at(3, 1) = 3;
-  _mat_5x5_d.at(3, 2) = 3;
-  _mat_5x5_d.at(3, 3) = 7;
-  _mat_5x5_d.at(3, 4) = 6;
-  _mat_5x5_d.at(4, 0) = 5;
-  _mat_5x5_d.at(4, 1) = 5;
-  _mat_5x5_d.at(4, 2) = 7;
-  _mat_5x5_d.at(4, 3) = 4;
-  _mat_5x5_d.at(4, 4) = 7;
+  //tl::math::Matrix<double, 5, 5> _mat_5x5_d;
+  //_mat_5x5_d.at(0, 0) = 6;
+  //_mat_5x5_d.at(0, 1) = 8;
+  //_mat_5x5_d.at(0, 2) = 6;
+  //_mat_5x5_d.at(0, 3) = 7;
+  //_mat_5x5_d.at(0, 4) = 3;
+  //_mat_5x5_d.at(1, 0) = 9;
+  //_mat_5x5_d.at(1, 1) = 6;
+  //_mat_5x5_d.at(1, 2) = 2;
+  //_mat_5x5_d.at(1, 3) = 3;
+  //_mat_5x5_d.at(1, 4) = 3;
+  //_mat_5x5_d.at(2, 0) = 8;
+  //_mat_5x5_d.at(2, 1) = 3;
+  //_mat_5x5_d.at(2, 2) = 2;
+  //_mat_5x5_d.at(2, 3) = 3;
+  //_mat_5x5_d.at(2, 4) = 3;
+  //_mat_5x5_d.at(3, 0) = 5;
+  //_mat_5x5_d.at(3, 1) = 3;
+  //_mat_5x5_d.at(3, 2) = 3;
+  //_mat_5x5_d.at(3, 3) = 7;
+  //_mat_5x5_d.at(3, 4) = 6;
+  //_mat_5x5_d.at(4, 0) = 5;
+  //_mat_5x5_d.at(4, 1) = 5;
+  //_mat_5x5_d.at(4, 2) = 7;
+  //_mat_5x5_d.at(4, 3) = 4;
+  //_mat_5x5_d.at(4, 4) = 7;
 
-  tl::math::LuDecomposition<tl::math::Matrix<double, 5, 5>> lu(_mat_5x5_d);
-  tl::math::Matrix<double, 5, 5> inverse = lu.inverse();
+  //tl::math::LuDecomposition<tl::math::Matrix<double, 5, 5>> lu(_mat_5x5_d);
+  //tl::math::Matrix<double, 5, 5> inverse = lu.inverse();
 
   return 0;
 

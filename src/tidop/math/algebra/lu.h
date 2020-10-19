@@ -21,12 +21,24 @@ class Matrix;
  *  \{
  */
 
-template<typename T>
-class LuDecomposition;
-
 /*! \addtogroup Algebra
  *  \{
  */
+
+/*!
+ * \brief Factorización o descomposición LU
+ *
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ *
+ * \f[ A=LU \f]
+ *
+ * donde L y U son matrices inferiores y superiores triangulares respectivamente.
+ *
+ */
+template<typename T>
+class LuDecomposition;
+
+
 template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -42,7 +54,7 @@ public:
 
   LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-  Vector<T, _cols> solve(const Vector<T, _rows> &b);
+  Vector<T, _rows> solve(const Vector<T, _rows> &b);
   Matrix<T, _rows, _cols> solve(const Matrix<T, _rows, _cols> &b);
 
   Matrix<T, _rows, _cols> lu() const;
@@ -82,7 +94,7 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
   TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
 

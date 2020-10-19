@@ -139,7 +139,7 @@ TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT /*void solveSVD(int nRows, int nCols, double *a, double *b, double *c);*/
+TL_EXPORT
 inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
 {
 #ifdef HAVE_EIGEN

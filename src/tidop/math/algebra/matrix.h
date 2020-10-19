@@ -1772,7 +1772,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  //static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
 
   Matrix<T> matrix(rows, cols);
   for (size_t r = 0; r < matrix.rows(); r++) {
