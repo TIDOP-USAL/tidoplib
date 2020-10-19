@@ -18,6 +18,8 @@ add_library(tl_math ${LIB_TYPE}
             algebra/matrix.h
             algebra/vector.h
             algebra/svd.h
+			algebra/lu.h
+			algebra/qr.h
 )
 
 # Añade el proyecto a la carpeta 'modules'

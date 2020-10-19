@@ -620,15 +620,15 @@ BOOST_FIXTURE_TEST_CASE(size, VectorTest)
   BOOST_CHECK_EQUAL(4, _vect_dynamic_def_4->size());
 }
 
-//BOOST_FIXTURE_TEST_CASE(iterator, VectorTest)
-//{
-//  Vector<4>::iterator it = _vect_4_d.begin();
-//  BOOST_CHECK_EQUAL( 3.4, *it++);
-//  BOOST_CHECK_EQUAL( 5.7, *it++);
-//  BOOST_CHECK_EQUAL(-3.4, *it++);
-//  BOOST_CHECK_EQUAL( 5.4, *it++);
-//  BOOST_CHECK(it == _vect_4_d.end());
-//}
+BOOST_FIXTURE_TEST_CASE(iterator, VectorTest)
+{
+  Vector<double, 4>::iterator it = _vect_4_d.begin();
+  BOOST_CHECK_EQUAL( 3.4, *it++);
+  BOOST_CHECK_EQUAL( 5.7, *it++);
+  BOOST_CHECK_EQUAL(-3.4, *it++);
+  BOOST_CHECK_EQUAL( 5.4, *it++);
+  BOOST_CHECK(it == _vect_4_d.end());
+}
 
 BOOST_FIXTURE_TEST_CASE(value_at, VectorTest)
 {

@@ -20,6 +20,7 @@ TL_DEFAULT_WARNINGS
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -145,9 +146,10 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
   Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
   Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
   //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
-  Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-//#elif defined( HAVE_OPENCV)
+#elif defined( HAVE_OPENCV)
 //  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
 //  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
 //  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
@@ -156,18 +158,12 @@ inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c
 //  cvMatToVector(C, &v_aux);
 //  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
-  Matrix<nRows, nCols, double> A(a);
-  Vector<nRows, double> B(b);
-  SingularValueDecomposition<Matrix<3, 3, float>> svd(A);
-  Vector<nCols, T> c = svd.solve(_B);
-  c.data();
+  math::Matrix<double> A(a, nRows, nCols);
+  math::Vector<double> B(b, nRows);
+  math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+  math::Vector<double> C = svd.solve(B);
+  std::memcpy(c, C.data(), nCols*sizeof(double));
 #endif
-  //std::array<double, nRows> kk;
-  //math::Matrix<nRows, nCols, double> A;// (a);
-  //Vector<nRows, double> B(b);
-  //SingularValueDecomposition<Matrix<3, 3, float>> svd(A);
-  //Vector<nCols, T> c = svd.solve(_B);
-  //c.data();
 }
 
 /*!

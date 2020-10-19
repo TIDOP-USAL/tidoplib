@@ -20,6 +20,12 @@
 /* Muestra las clases y funciones marcados como obsoletos */
 #cmakedefine TL_ENABLE_DEPRECATED_METHODS 
 
+#cmakedefine HAVE_TL_MATH
+#cmakedefine HAVE_TL_GEOM
+#cmakedefine HAVE_TL_GEOM
+#cmakedefine HAVE_TL_GEOM
+
+
 
 #cmakedefine HAVE_OPENCV
 
