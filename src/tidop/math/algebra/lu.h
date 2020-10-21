@@ -26,9 +26,9 @@ class Matrix;
  */
 
 /*!
- * \brief Factorización o descomposición LU
+ * \brief FactorizaciÃ³n o descomposiciÃ³n LU
  *
- * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposiciÃ³n podrÃ­a no ser Ãºnica)
  *
  * \f[ A=LU \f]
  *

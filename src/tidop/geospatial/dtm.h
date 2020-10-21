@@ -24,26 +24,26 @@ namespace geospatial
 {
 
 
-class Dtm
-{
-
-public:
-
-  Dtm(std::shared_ptr<Interpolation>);
-  ~Dtm();
-
-  //Interpolation interpolation() const;
-
-  void compute();
-  void setResolution(double res);
-
-protected:
-
-  double mResolution;
-  std::shared_ptr<Interpolation> mInterpolation;
-
-
-};
+//class Dtm
+//{
+//
+//public:
+//
+//  Dtm(std::shared_ptr<Interpolation>);
+//  ~Dtm();
+//
+//  //Interpolation interpolation() const;
+//
+//  void compute();
+//  void setResolution(double res);
+//
+//protected:
+//
+//  double mResolution;
+//  std::shared_ptr<Interpolation> mInterpolation;
+//
+//
+//};
 
 
 } // End namespace geospatial

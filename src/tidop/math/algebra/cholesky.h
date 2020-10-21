@@ -27,7 +27,7 @@ namespace math
 
 
 /*!
- * \brief Factorización Cholesky
+ * \brief FactorizaciÃ³n Cholesky
  * 
  */
 template<typename T>

@@ -31,13 +31,13 @@ namespace math
 
 
 /*!
- * \brief Factorizaci髇 QR
+ * \brief Factorizaci贸n QR
  * 
- * La descomposici髇 o factorizaci髇 QR de una matriz es una descomposici髇 
+ * La descomposici贸n o factorizaci贸n QR de una matriz es una descomposici贸n 
  * de la misma como producto de una matriz ortogonal por una triangular 
  * superior.
  *
- * La descomposici髇 QR de una matriz cuadrada T A es:
+ * La descomposici贸n QR de una matriz cuadrada T A es:
  * 
  * \f[ A = Q*R \f]
  *
@@ -83,7 +83,7 @@ private:
 
 private:
 
-  TL_TODO("c骴igo duplicado de SingularValueDecomposition");
+  TL_TODO("c贸digo duplicado de SingularValueDecomposition");
   T sign(T a, T b)
   {
     return ((b) >= static_cast<T>(0) ? fabs(a) : -fabs(a));

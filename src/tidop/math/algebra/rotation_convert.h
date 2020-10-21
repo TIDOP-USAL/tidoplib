@@ -43,21 +43,20 @@ public:
 
   /*!
    * \brief Convierte una matriz de rotación a cuaterniones
-   * \f[ x^2 = (+r00 - r11 - r22 + 1)/4  \f]
-   * \f[ y^2 = (-r00 + r11 - r22 + 1)/4  \f]
-   * \f[ z^2 = (-r00 - r11 + r22 + 1)/4  \f]
-   * \f[ w^2 = (+r00 + r11 + r22 + 1)/4  \f]
-   * \f[ x^2 + y^2 = (1 - r22)/2 \f]
-   * \f[ z^2 + w^2 = (1 + r22)/2 \f]
-   * \f[ y^2 - x^2 = (r11 - r00)/2 \f]
-   * \f[ w^2 - z^2 = (r11 + r00)/2 \f]
-   * \f[ x*y = (r01 + r10)/4 \f]
-   * \f[ x*z = (r02 + r20)/4 \f]
-   * \f[ y*z = (r12 + r21)/4 \f]
-   *
-   *   x*w = (r21 - r12)/4
-   *   y*w = (r02 - r20)/4
-   *   z*w = (r10 - r01)/4
+   * \f[ x^2 = \frac{+r_{00} - r_{11} - r_{22} + 1}{4}  \f]
+   * \f[ y^2 = \frac{-r_{00} + r_{11} - r_{22} + 1}{4}  \f]
+   * \f[ z^2 = \frac{-r_{00} - r_{11} + r_{22} + 1}{4}  \f]
+   * \f[ w^2 = \frac{+r_{00} + r_{11} + r_{22} + 1}{4}  \f]
+   * \f[ x^2 + y^2 = \frac{1 - r_{22}}{2} \f]
+   * \f[ z^2 + w^2 = \frac{1 + r_{22}}{2} \f]
+   * \f[ y^2 - x^2 = \frac{r_{11} - r_{00}}{2} \f]
+   * \f[ w^2 - z^2 = \frac{r_{11} + r_{00}}{2} \f]
+   * \f[ x*y = \frac{r_{01} + r_{10}}{4} \f]
+   * \f[ x*z = \frac{r_{02} + r_{20}}{4} \f]
+   * \f[ y*z = \frac{r_{12} + r_{21}}{4} \f]
+   * \f[ x*w = \frac{r_{21} - r_{12}}{4} \f]
+   * \f[ y*w = \frac{r_{02} - r_{20}}{4} \f]
+   * \f[ z*w = \frac{r_{10} - r_{01}}{4} \f]
    *
    * <h4>Ejemplo</h4>
    * \code
@@ -84,15 +83,15 @@ public:
   /*!
    * \brief Convierte una rotación como cuaterniones a matriz de rotación
    *
-   * \f[ r00 = 1 - 2 * y² - 2 * z \f]
-   * \f[ r01 = 2 * x * y - 2 * z * w  \f]
-   * \f[ r02 = 2 * x * z + 2 * y * w \f]
-   * \f[ r10 = 2 * x * y + 2 * z * w \f]
-   * \f[ r11 = 1 - 2 * x² - 2 * z² \f]
-   * \f[ r12 = 2 * y * z - 2 * x * w \f]
-   * \f[ r20 = 2 * x * z - 2 * y * w \f]
-   * \f[ r21 = 2 * y * z + 2 * x * w \f]
-   * \f[ r22 = 1 - 2 * x² - 2 * y² \f]
+   * \f[ r_{00} = 1 - 2 * y² - 2 * z \f]
+   * \f[ r_{01} = 2 * x * y - 2 * z * w  \f]
+   * \f[ r_{02} = 2 * x * z + 2 * y * w \f]
+   * \f[ r_{10} = 2 * x * y + 2 * z * w \f]
+   * \f[ r_{11} = 1 - 2 * x² - 2 * z² \f]
+   * \f[ r_{12} = 2 * y * z - 2 * x * w \f]
+   * \f[ r_{20} = 2 * x * z - 2 * y * w \f]
+   * \f[ r_{21} = 2 * y * z + 2 * x * w \f]
+   * \f[ r_{22} = 1 - 2 * x² - 2 * y² \f]
    *
    * <h4>Ejemplo</h4>
    * \code
