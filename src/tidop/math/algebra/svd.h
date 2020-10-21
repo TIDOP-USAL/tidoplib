@@ -112,6 +112,8 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
     mRows(a.rows()),
     mCols(a.cols())
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+
   U = Matrix<T, _rows, _cols>(mRows, mCols);
   V = Matrix<T, _cols, _cols>(mCols, mCols);
   W = Vector<T, _cols>(mCols);

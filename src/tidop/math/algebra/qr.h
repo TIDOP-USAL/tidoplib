@@ -108,6 +108,7 @@ QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _r
     sing(false),
     mRows(a.rows())
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   static_assert(_rows == _cols, "Non-Square Matrix");
   TL_ASSERT(this->Q_t.rows() == this->Q_t.cols(), "Non-Square Matrix");
 

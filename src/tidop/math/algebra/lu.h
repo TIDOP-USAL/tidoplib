@@ -84,6 +84,7 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
     mIndx(a.rows()),
     mRows(a.rows())
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   static_assert(_rows == _cols, "Non-Square Matrix");
   TL_ASSERT(LU.rows() == LU.cols(), "Non-Square Matrix");
 

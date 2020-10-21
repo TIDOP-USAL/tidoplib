@@ -18,9 +18,11 @@ TL_DEFAULT_WARNINGS
 #endif
 
 #include "tidop/core/messages.h"
+#ifndef HAVE_EIGEN
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/svd.h"
+#endif
 
 namespace tl
 {

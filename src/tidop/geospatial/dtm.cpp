@@ -1,6 +1,9 @@
 #include "dtm.h"
 
 #include "tidop/core/utils.h"
+#include "tidop/geospatial/interpolation.h"
+
+#include "gdalgrid.h"
 
 namespace tl
 {
@@ -11,10 +14,50 @@ namespace geospatial
 /* ---------------------------------------------------------------------------------- */
 
 
-Dtm::Dtm(Interpolation interpolation)
+Dtm::Dtm(std::shared_ptr<Interpolation> interpolation)
   : mInterpolation(interpolation)
 {
+    //  GDALGridOptions *psOptions =
+    //    static_cast<GDALGridOptions *>(CPLCalloc(1, sizeof(GDALGridOptions)));
 
+    //psOptions->pszFormat = nullptr;
+    //psOptions->bQuiet = true;
+    //psOptions->pfnProgress = GDALDummyProgress;
+    //psOptions->pProgressData = nullptr;
+    //psOptions->papszLayers = nullptr;
+    //psOptions->pszBurnAttribute = nullptr;
+    //psOptions->dfIncreaseBurnValue = 0.0;
+    //psOptions->dfMultiplyBurnValue = 1.0;
+    //psOptions->pszWHERE = nullptr;
+    //psOptions->pszSQL = nullptr;
+    //psOptions->eOutputType = GDT_Float64;
+    //psOptions->papszCreateOptions = nullptr;
+    //psOptions->nXSize = 0;
+    //psOptions->nYSize = 0;
+    //psOptions->dfXMin = 0.0;
+    //psOptions->dfXMax = 0.0;
+    //psOptions->dfYMin = 0.0;
+    //psOptions->dfYMax = 0.0;
+    //psOptions->bIsXExtentSet = false;
+    //psOptions->bIsYExtentSet = false;
+    //psOptions->eAlgorithm = GGA_InverseDistanceToAPower;
+    //psOptions->pOptions = nullptr;
+    //psOptions->pszOutputSRS = nullptr;
+    //psOptions->poSpatialFilter = nullptr;
+    //psOptions->poClipSrc = nullptr;
+    //psOptions->bClipSrc = false;
+    //psOptions->pszClipSrcDS = nullptr;
+    //psOptions->pszClipSrcSQL = nullptr;
+    //psOptions->pszClipSrcLayer = nullptr;
+    //psOptions->pszClipSrcWhere = nullptr;
+    //psOptions->bNoDataSet = false;
+    //psOptions->dfNoDataValue = 0;
+
+  //GDALDatasetH hInDS = GDALOpenEx("xyztest.vrt", GDAL_OF_VECTOR | GDAL_OF_VERBOSE_ERROR,
+  //                                nullptr, nullptr, nullptr );
+  //                                   
+  //int bUsageError = FALSE;
+  //GDALDatasetH hOutDS = GDALGrid("dtm.tif", hInDS, psOptions, &bUsageError);
 }
 
 Dtm::~Dtm()
@@ -22,78 +65,26 @@ Dtm::~Dtm()
 
 }
 
-Dtm::Interpolation Dtm::interpolation() const
+void Dtm::compute()
 {
-  return mInterpolation;
 }
 
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-DtmLinear::DtmLinear(double radius)
-  : Dtm(Dtm::Interpolation::linear),
-    mRadius(radius)
+void Dtm::setResolution(double res)
 {
-
 }
 
-DtmLinear::~DtmLinear()
-{
-
-}
-
-void DtmLinear::compute()
-{
-
-}
-
-void DtmLinear::setResolution(double res)
-{
-  this->mResolution = res;
-}
+//
+//Dtm::Interpolation Dtm::interpolation() const
+//{
+//  return mInterpolation;
+//}
 
 
-/* ---------------------------------------------------------------------------------- */
-
-
-DtmNearest::DtmNearest(double radius1, double radius2, double angle)
-  : Dtm(Dtm::Interpolation::nearest),
-    mRadius1(radius1),
-    mRadius2(radius2),
-    mAngle(angle)
-{
-
-}
-
-DtmNearest::~DtmNearest()
-{
-
-}
-
-void DtmNearest::compute()
-{
-  /// Se divide la ventana en trozos mas pequeños
-  mLimits.height();
-  mLimits.width();
-
-  /// Se crean las subventanas
-  //std::vector<std::vector<TL::geometry::PointF>> mGrid;
-
-  /// Se segmenta la nube de puntos en las subventanas
-  /// Se recorren la imagen final tomando los vecinos mas proximos de la ventana actual
-}
-
-void DtmNearest::setResolution(double res)
-{
-  this->mResolution = res;
-}
 
 /* ---------------------------------------------------------------------------------- */
 
 
 } // End namespace  geospatial
 
-} // End namespace TL
+} // End namespace tl
 

@@ -73,6 +73,7 @@ CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::CholeskyDecomposition(const Ma
   : L(a),
     mRows(a.rows())
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   static_assert(_rows == _cols, "Non-Square Matrix");
   TL_ASSERT(this->L.rows() == this->L.cols(), "Non-Square Matrix");
 

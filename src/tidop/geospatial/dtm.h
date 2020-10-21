@@ -13,6 +13,7 @@
 #include "tidop/geometry/entities/window.h"
 
 
+
 namespace tl
 {
 
@@ -28,78 +29,27 @@ class Dtm
 
 public:
 
-  enum class Interpolation : uint8_t
-  {
-    linear,
-    nearest
-  };
+  Dtm(std::shared_ptr<Interpolation>);
+  ~Dtm();
+
+  //Interpolation interpolation() const;
+
+  void compute();
+  void setResolution(double res);
 
 protected:
 
-  Interpolation mInterpolation;
   double mResolution;
-  WindowD mLimits;
-
-public:
-
-  Dtm(Interpolation interpolation);
-  virtual ~Dtm();
-
-  Interpolation interpolation() const;
-
-  virtual void compute() = 0;
-
-  virtual void setResolution(double res) = 0;
-
-};
+  std::shared_ptr<Interpolation> mInterpolation;
 
 
-
-class DtmLinear
-  : public Dtm
-{
-
-protected:
-
-  double mRadius;
-
-public:
-
-  DtmLinear(double radius = 0.0);
-  ~DtmLinear() override;
-
-  void compute() override;
-
-  void setResolution(double res) override;
-};
-
-
-
-class DtmNearest
-  : public Dtm
-{
-
-protected:
-
-  double mRadius1;
-  double mRadius2;
-  double mAngle;
-
-public:
-
-  DtmNearest(double radius1 = 0.0, double radius2 = 0.0, double angle = 0.0);
-  ~DtmNearest() override;
-
-  void compute() override;
-
-  void setResolution(double res) override;
 };
 
 
 } // End namespace geospatial
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_GEOSPATIAL_CRS_H
