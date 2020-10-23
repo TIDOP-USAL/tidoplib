@@ -6,6 +6,10 @@
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 
+#ifdef HAVE_LAPACKE
+#include <lapacke.h>
+#endif // HAVE_LAPACKE
+
 #include <algorithm>
 
 namespace tl
@@ -163,6 +167,14 @@ template<
 >
 void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+#ifdef HAVE_LAPACKE
+  
+  lapack_int n = mRows;
+
+#else
+
+#endif 
+
 	const T TINY = static_cast<T>(1.0e-40);
   
   T big, temp;
