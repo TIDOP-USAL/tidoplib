@@ -538,10 +538,10 @@ math::Matrix<double, 2, 3> Affine<Point_t>::parameters() const
   math::Matrix<double, 2, 3> mat;
   mat.at(0, 0) = this->a;
   mat.at(0, 1) = this->b;
-  mat.at(0, 2) = this->x0;
+  mat.at(0, 2) = this->tx;
   mat.at(1, 0) = this->c;
   mat.at(1, 1) = this->d;
-  mat.at(1, 2) = this->y0;
+  mat.at(1, 2) = this->ty;
   return mat;
 }
 

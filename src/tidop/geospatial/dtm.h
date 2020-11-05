@@ -16,9 +16,6 @@
 namespace tl
 {
 
-
-/* ---------------------------------------------------------------------------------- */
-
 namespace geospatial
 {
 
@@ -99,7 +96,7 @@ public:
 } // End namespace geospatial
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_GEOSPATIAL_CRS_H

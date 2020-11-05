@@ -4,7 +4,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
-project(crstransform)
+project(extract_frames)
 
 if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
@@ -12,15 +12,14 @@ if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
 endif()
 
   
-add_executable(${PROJECT_NAME} crstransform.cpp)
+add_executable(${PROJECT_NAME} extract_frames.cpp)
 
 target_link_libraries(${PROJECT_NAME} 
                       tl_core
                       tl_math
                       tl_geom
-                      tl_geospatial
-                      tl_img
-                      tl_experimental)
+                      tl_experimental
+                      tl_img)
 					  
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 
@@ -54,15 +53,15 @@ if (UNIX)
                           -lpcre)
 endif()
 
-# Añade el proyecto de ejemplo a la carpeta 'examples'
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/crstransform")
+
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/extract_frames")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME "${PROJECT_NAME}"
                       PROJECT_LABEL "${PROJECT_NAME}")
 
 if(ENABLE_SOLUTION_FOLDERS)
-  set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/crstransform")
+  set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/extract_frames")
 endif()
 
 if(WIN32)

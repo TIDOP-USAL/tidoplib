@@ -2212,6 +2212,7 @@ Matrix<T, DynamicMatrix, DynamicMatrix> matrixReserve(const Matrix<T, DynamicMat
 //  return Matrix<T>(rows, cols);
 //}
 
+TL_TODO("Quitar estas funciones")
 template<typename T, size_t _rows, size_t _cols>
 Matrix<T, _cols, _rows> transposeReserve(const Matrix<T, _rows, _cols> &_matrix)
 {

@@ -80,6 +80,30 @@ public:
     this->close();
 
     mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_ReadOnly));
+
+    std::array<double, 6> geotransform;
+    if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
+      // Valores por defecto
+      geotransform[0] = 0.;           /* top left x */
+      geotransform[1] = 1.;           /* w-e pixel resolution */
+      geotransform[2] = 0.;           /* 0 */
+      geotransform[3] = this->rows(); /* top left y */
+      geotransform[4] = 0.;           /* 0 */
+      geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+    }
+
+    mAffine.setParameters(geotransform[1], 
+                          geotransform[2], 
+                          geotransform[4], 
+                          geotransform[5], 
+                          geotransform[0], 
+                          geotransform[3]);
+      
+    const char *prj = mDataset->GetProjectionRef();
+    if (prj != nullptr) {
+      mEpsgCode = prj;
+    }
+
   }
 
   bool isOpen() override
@@ -167,6 +191,7 @@ public:
       offset = rect_to_read.topLeft() - rect.topLeft();
     }
 
+    TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
     offset.x = TL_ROUND_TO_INT(offset.x * scaleX); // Corregido por la escala
     offset.y = TL_ROUND_TO_INT(offset.y * scaleY);
 
@@ -176,7 +201,7 @@ public:
     if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
     image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image.empty()) if (image.empty()) throw std::runtime_error("");
+    if (image.empty()) throw std::runtime_error("");
 
     uchar *buff = image.ptr();
     int nPixelSpace = static_cast<int>(image.elemSize());
@@ -206,6 +231,20 @@ public:
     return this->read(scaleX, scaleY, rect, trf);
   }
 
+  cv::Mat read(const Window<PointD> &terrainWindow, 
+               double scaleX,
+               double scaleY,
+               Affine<PointI> *trf) override
+  {
+    Window<PointD> wLoad;
+    wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
+    wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
+
+    WindowI wRead(wLoad);
+
+    return read(wRead, scaleX, scaleY, trf);
+  }
+
   int rows() const override
   {
     return mDataset ? mDataset->GetRasterYSize() : 0;
@@ -233,7 +272,7 @@ public:
     return  GDALGetDataTypeSizeBits(gdal_data_type);
   }
   
-  std::shared_ptr<ImageMetadata> metadata() const
+  std::shared_ptr<ImageMetadata> metadata() const override
   {
     std::shared_ptr<ImageMetadata> metadata;
 
@@ -254,6 +293,28 @@ public:
     }
 
     return metadata;
+  }
+
+  bool isGeoreferenced() const override
+  {
+    std::array<double, 6> geotransform;
+    bool georef = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
+    return georef;
+  }
+
+  Affine<PointD> georeference() const override
+  {
+    return mAffine;
+  }
+
+  std::string crs() const override
+  {
+    return mEpsgCode;
+  }
+
+  WindowD window() const override
+  {
+    return WindowD();
   }
 
 protected:

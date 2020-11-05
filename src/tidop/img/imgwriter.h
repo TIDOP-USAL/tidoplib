@@ -141,6 +141,18 @@ public:
    */
   virtual int depth() const = 0;
 
+  /*!
+   * \brief Establece la georeferencia de la imagen
+   * \param[in] georeference Georeferencia
+   */
+  virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
+
+  /*!
+   * \brief Establece la proyección de la imagen
+   * \param[in] projection Proyección
+   */
+  virtual void setProjection(const std::string &projection) = 0;
+
 protected:
   
   void windowWrite(const WindowI &window, 
@@ -149,7 +161,8 @@ protected:
 protected:
 
   std::string mFileName;
-
+  std::string mEpsgCode;
+  Affine<PointD> mAffine;
 };
 
 

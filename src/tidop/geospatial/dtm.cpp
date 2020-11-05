@@ -8,8 +8,6 @@ namespace tl
 namespace geospatial
 {
 
-/* ---------------------------------------------------------------------------------- */
-
 
 Dtm::Dtm(Interpolation interpolation)
   : mInterpolation(interpolation)
@@ -90,10 +88,8 @@ void DtmNearest::setResolution(double res)
   this->mResolution = res;
 }
 
-/* ---------------------------------------------------------------------------------- */
-
 
 } // End namespace  geospatial
 
-} // End namespace TL
+} // End namespace tl
 

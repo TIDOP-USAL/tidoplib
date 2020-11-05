@@ -277,6 +277,9 @@ Rect<T> intersect(const Rect<T> &rect1,
   Point<T> bottomRight2 = rect2.bottomRight();
   rect.width = std::min(bottomRight1.x, bottomRight2.x) - rect.x;
   rect.height = std::min(bottomRight1.y, bottomRight2.y) - rect.y;
+  if (rect.width < 0) rect.width = 0;
+  if (rect.height < 0) rect.height = 0;
+
   return rect;
 }
 

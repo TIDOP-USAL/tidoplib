@@ -191,6 +191,8 @@ public:
     mDataset = mDriver->Create(bTempFile ? mTempName.c_str() : mFileName.c_str(), 
                                cols, rows, bands, dataTypeToGdalDataType(type), gdalOpt);
 
+    if (mDataset == nullptr) throw std::runtime_error("Creation of output file failed"); 
+
     char **gdalMetadata = nullptr;
     if (mImageMetadata) {
       std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
@@ -200,7 +202,28 @@ public:
     }
     mDataset->SetMetadata(gdalMetadata);
 
-    if (mDataset == nullptr) throw std::runtime_error("Creation of output file failed"); 
+    std::array<double, 6> geotransform;
+    if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
+      // Valores por defecto
+      geotransform[0] = 0.;           /* top left x */
+      geotransform[1] = 1.;           /* w-e pixel resolution */
+      geotransform[2] = 0.;           /* 0 */
+      geotransform[3] = this->rows(); /* top left y */
+      geotransform[4] = 0.;           /* 0 */
+      geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+    }
+
+    mAffine.setParameters(-geotransform[1], 
+                           geotransform[2], 
+                           geotransform[4], 
+                           geotransform[5], 
+                           geotransform[0], 
+                           geotransform[3]);
+      
+    const char *prj = mDataset->GetProjectionRef();
+    if (prj != nullptr) {
+      mEpsgCode = prj;
+    }
   }
 
   void write(const cv::Mat &image, 
@@ -339,6 +362,25 @@ public:
   {
     GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
     return  GDALGetDataTypeSizeBits(gdal_data_type);
+  }
+
+  void setGeoreference(const Affine<PointD> &georeference) override
+  {
+    mAffine = georeference;
+    std::array<double, 6> geotransform;
+    math::Matrix<double, 2, 3> parameters = mAffine.parameters();
+    geotransform[1] = -parameters.at(0, 0);
+    geotransform[2] = parameters.at(0, 1);
+    geotransform[4] = parameters.at(1, 0);
+    geotransform[5] = parameters.at(1, 1);
+    geotransform[0] = parameters.at(0, 2);
+    geotransform[3] = parameters.at(1, 2);
+    mDataset->SetGeoTransform(geotransform.data());
+  }
+
+  void setProjection(const std::string &projection) override
+  {
+    mEpsgCode = projection;
   }
 
 private:

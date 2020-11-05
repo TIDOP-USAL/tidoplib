@@ -10,6 +10,8 @@ add_library(tl_geospatial ${LIB_TYPE}
             dtm.h
 			util.cpp
 			util.h
+            ortho.cpp
+            ortho.h
 )
   
 # Añade el proyecto a la carpeta 'modules'
