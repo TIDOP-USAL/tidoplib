@@ -7,6 +7,8 @@
 
 #include <opencv2/calib3d.hpp> // Rodrigues
 
+//#define ORTHO_1
+
 namespace tl
 {
 
@@ -32,6 +34,7 @@ Añadir clase Camera. Contendrá las orientaciones y parametros internos.
 O eso o transformación 
 */
 
+//void interpolationBilineal();
 
 
 
@@ -51,7 +54,7 @@ Orthorectification::~Orthorectification()
 }
 
 void Orthorectification::run(const std::string &file,
-                             const PhotoOrientation &ori,
+                             const experimental::Photo::Orientation &orientation,
 					                   const std::string &rectifiedFile)
 {
   if (!mDtmReader->isOpen()) {
@@ -78,15 +81,15 @@ void Orthorectification::run(const std::string &file,
   //// >> transformación imagen terreno >>
 
   cv::Mat rotation_matrix(3,3,CV_32F);
-  rotation_matrix.at<float>(0, 0) = ori.rotationMatrix.at(0, 0);
-  rotation_matrix.at<float>(0, 1) = ori.rotationMatrix.at(0, 1);
-  rotation_matrix.at<float>(0, 2) = ori.rotationMatrix.at(0, 2);
-  rotation_matrix.at<float>(1, 0) = ori.rotationMatrix.at(1, 0);
-  rotation_matrix.at<float>(1, 1) = ori.rotationMatrix.at(1, 1);
-  rotation_matrix.at<float>(1, 2) = ori.rotationMatrix.at(1, 2);
-  rotation_matrix.at<float>(2, 0) = ori.rotationMatrix.at(2, 0);
-  rotation_matrix.at<float>(2, 1) = ori.rotationMatrix.at(2, 1);
-  rotation_matrix.at<float>(2, 2) = ori.rotationMatrix.at(2, 2);
+  rotation_matrix.at<float>(0, 0) = orientation.rotationMatrix().at(0, 0);
+  rotation_matrix.at<float>(0, 1) = orientation.rotationMatrix().at(0, 1);
+  rotation_matrix.at<float>(0, 2) = orientation.rotationMatrix().at(0, 2);
+  rotation_matrix.at<float>(1, 0) = orientation.rotationMatrix().at(1, 0);
+  rotation_matrix.at<float>(1, 1) = orientation.rotationMatrix().at(1, 1);
+  rotation_matrix.at<float>(1, 2) = orientation.rotationMatrix().at(1, 2);
+  rotation_matrix.at<float>(2, 0) = orientation.rotationMatrix().at(2, 0);
+  rotation_matrix.at<float>(2, 1) = orientation.rotationMatrix().at(2, 1);
+  rotation_matrix.at<float>(2, 2) = orientation.rotationMatrix().at(2, 2);
 
   //// << transformación imagen terreno << 
 
@@ -95,18 +98,18 @@ void Orthorectification::run(const std::string &file,
   cv::Mat omega_phi_kappa;
   cv::Rodrigues(rotation_matrix.t(), omega_phi_kappa);
   
-  math::RotationMatrix<double> rotation_transpose = ori.rotationMatrix.transpose();
+  math::RotationMatrix<double> rotation_transpose = orientation.rotationMatrix().transpose();
 
   cv::Vec3d tvec;
-  tvec[0] = -(rotation_transpose.at(0, 0) * ori.principal_point.x + 
-              rotation_transpose.at(0, 1) * ori.principal_point.y + 
-              rotation_transpose.at(0, 2) * ori.principal_point.z);
-  tvec[1] = -(rotation_transpose.at(1, 0) * ori.principal_point.x + 
-              rotation_transpose.at(1, 1) * ori.principal_point.y + 
-              rotation_transpose.at(1, 2) * ori.principal_point.z);
-  tvec[2] = -(rotation_transpose.at(2, 0) * ori.principal_point.x + 
-              rotation_transpose.at(0, 1) * ori.principal_point.y + 
-              rotation_transpose.at(0, 2) * ori.principal_point.z);
+  tvec[0] = -(rotation_transpose.at(0, 0) * orientation.x() + 
+              rotation_transpose.at(0, 1) * orientation.y() + 
+              rotation_transpose.at(0, 2) * orientation.z());
+  tvec[1] = -(rotation_transpose.at(1, 0) * orientation.x() + 
+              rotation_transpose.at(1, 1) * orientation.y() + 
+              rotation_transpose.at(1, 2) * orientation.z());
+  tvec[2] = -(rotation_transpose.at(2, 0) * orientation.x() + 
+              rotation_transpose.at(0, 1) * orientation.y() + 
+              rotation_transpose.at(0, 2) * orientation.z());
     
   //(ori.principal_point.x, ori.principal_point.y, ori.principal_point.z);
 
@@ -177,8 +180,13 @@ void Orthorectification::run(const std::string &file,
   }
 
   std::vector<PointI> limits = this->imageLimits(rows, cols);
-  std::vector<Point3D> footprint = this->terrainProjected(limits, ori.rotationMatrix, ori.principal_point, (focal_x + focal_y) / 2.);
-  
+  std::vector<Point3D> footprint = this->terrainProjected(limits, orientation.rotationMatrix(), orientation.principalPoint(), (focal_x + focal_y) / 2.);
+  //msgInfo("footprint: ");
+  //msgInfo("- TL: %lf;%lf;%lf", footprint[0].x, footprint[0].y, footprint[0].z);
+  //msgInfo("- TL: %lf;%lf;%lf", footprint[1].x, footprint[1].y, footprint[1].z);
+  //msgInfo("- TL: %lf;%lf;%lf", footprint[2].x, footprint[2].y, footprint[2].z);
+  //msgInfo("- TL: %lf;%lf;%lf", footprint[3].x, footprint[3].y, footprint[3].z);
+
   /// A partir de la huella del fotograma en el terreno se calcula la ventana envolvente.
   
   Window<PointD> window_ortho_terrain;
@@ -217,57 +225,6 @@ void Orthorectification::run(const std::string &file,
   window_dtm_terrain.pt2.x = affine.tx + affine.scaleX() *mDtmReader->cols();
   window_dtm_terrain.pt2.y = affine.ty + affine.scaleY() *mDtmReader->rows();
 
-  /// Trabajar con ventanas de tamaño del pixel del DTM
-  //std::vector<Point3D> ortho_terrain(4);
-  //std::vector<PointD> ortho_image(4);
-  //double steps_x  = mDtmReader->rows();
-  //double steps_y  = mDtmReader->cols();
-  //for (int r = 0; r < steps_y - 1; r++) {
-  //  for (int c = 0; c < steps_x - 1; c++) {
-  //
-  //    ortho_terrain[0] = Point3D(window_ortho_terrain.pt1.x + c * 0.25, window_ortho_terrain.pt1.y + r * 0.25, 0.);
-  //    ortho_terrain[1] = Point3D(window_ortho_terrain.pt1.x + (c+1) * 0.25, window_ortho_terrain.pt1.y + r * 0.25, 0.);
-  //    ortho_terrain[2] = Point3D(window_ortho_terrain.pt1.x + (c+1) * 0.25, window_ortho_terrain.pt1.y + (r+1) * 0.25, 0.);
-  //    ortho_terrain[3] = Point3D(window_ortho_terrain.pt1.x + c * 0.25, window_ortho_terrain.pt1.y + (r+1) * 0.25, 0.);
-  //
-  //    if (window_dtm_terrain.containsPoint(ortho_terrain[0]) &&
-  //        window_dtm_terrain.containsPoint(ortho_terrain[1]) &&
-  //        window_dtm_terrain.containsPoint(ortho_terrain[2]) &&
-  //        window_dtm_terrain.containsPoint(ortho_terrain[3])) {
-  //
-  //      WindowD w(ortho_terrain[0], affine.scaleX());
-  //      cv::Mat image = mDtmReader->read(w);
-  //      ortho_terrain[0].z = image.at<float>(0, 0);
-  //
-  //      w = WindowD(ortho_terrain[1], affine.scaleX());
-  //      image = mDtmReader->read(w);
-  //      ortho_terrain[1].z = image.at<float>(0, 0);
-  //
-  //      w = WindowD(ortho_terrain[2], affine.scaleX());
-  //      image = mDtmReader->read(w);
-  //      ortho_terrain[2].z = image.at<float>(0, 0);
-  //
-  //      w = WindowD(ortho_terrain[3], affine.scaleX());
-  //      image = mDtmReader->read(w);
-  //      ortho_terrain[3].z = image.at<float>(0, 0);
-  //
-  //      /// Se calcula la transformación proyectiva y se corrige la imagen
-  //      std::vector<cv::Point3d> terrain_points(4);
-  //      std::vector<cv::Point2d> image_points(4);
-  //      terrain_points[0] = cv::Point3d(ortho_terrain[0].x, ortho_terrain[0].y, ortho_terrain[0].z);
-  //      terrain_points[1] = cv::Point3d(ortho_terrain[1].x, ortho_terrain[1].y, ortho_terrain[1].z);
-  //      terrain_points[2] = cv::Point3d(ortho_terrain[2].x, ortho_terrain[2].y, ortho_terrain[2].z);
-  //      terrain_points[3] = cv::Point3d(ortho_terrain[3].x, ortho_terrain[3].y, ortho_terrain[3].z);
-  //
-  //      cv::projectPoints(terrain_points, omega_phi_kappa, tvec, cameraMatrix, distCoeffs, image_points);
-  //
-  //
-  //    }
-  //  }
-  //}
-  
-
-
   mOrthophotoWriter = ImageWriterFactory::createWriter(rectifiedFile);
   mOrthophotoWriter->open();
   if (!mOrthophotoWriter->isOpen())throw std::runtime_error("Image open error");
@@ -282,11 +239,75 @@ void Orthorectification::run(const std::string &file,
   mOrthophotoWriter->create(rows_ortho, cols_ortho, channels_ortho, data_type_ortho);
   cv::Mat mat_ortho(rows_ortho, cols_ortho, CV_MAKETYPE(dataTypeToOpenCVDataType(data_type_ortho), channels_ortho));
 
+#ifdef ORTHO_1
+  
+  // Trabajar con ventanas de tamaño del pixel del DTM
+  std::vector<Point3D> ortho_terrain(4);
+  std::vector<PointD> ortho_image(4);
+  double step_x  = affine.scaleX();
+  double step_y  = affine.scaleY();
+
+  tl::Affine<PointI> ortoTerrainToRectRead;
+  cv::Mat dtm = mDtmReader->read(window_ortho_terrain, 1,1, &ortoTerrainToRectRead);
+
+  for (int r = 0; r < dtm.rows - 1; r++) {
+    for (int c = 0; c < dtm.cols - 1; c++) {
+  
+      ortho_terrain[0] = Point3D(window_ortho_terrain.pt1.x + c * step_x, window_ortho_terrain.pt1.y + r * step_y, 0.);
+      ortho_terrain[1] = Point3D(window_ortho_terrain.pt1.x + (c+1) * step_x, window_ortho_terrain.pt1.y + r * step_y, 0.);
+      ortho_terrain[2] = Point3D(window_ortho_terrain.pt1.x + (c+1) * step_x, window_ortho_terrain.pt1.y + (r+1) * step_y, 0.);
+      ortho_terrain[3] = Point3D(window_ortho_terrain.pt1.x + c * step_x, window_ortho_terrain.pt1.y + (r+1) * step_y, 0.);
+  
+      if (window_dtm_terrain.containsPoint(ortho_terrain[0]) &&
+          window_dtm_terrain.containsPoint(ortho_terrain[1]) &&
+          window_dtm_terrain.containsPoint(ortho_terrain[2]) &&
+          window_dtm_terrain.containsPoint(ortho_terrain[3])) {
+  
+        /// Cargar la z asi es costoso. Deberia ser mejor cargar en memoria el trozo de DTM correspondiente a la orto
+        /// y leer la z.
+
+        WindowD w(ortho_terrain[0], affine.scaleX());
+        cv::Mat image = mDtmReader->read(w);
+        ortho_terrain[0].z = image.at<float>(0, 0);
+  
+        w = WindowD(ortho_terrain[1], affine.scaleX());
+        image = mDtmReader->read(w);
+        ortho_terrain[1].z = image.at<float>(0, 0);
+  
+        w = WindowD(ortho_terrain[2], affine.scaleX());
+        image = mDtmReader->read(w);
+        ortho_terrain[2].z = image.at<float>(0, 0);
+  
+        w = WindowD(ortho_terrain[3], affine.scaleX());
+        image = mDtmReader->read(w);
+        ortho_terrain[3].z = image.at<float>(0, 0);
+  
+        /// Se calcula la transformación proyectiva y se corrige la imagen
+        std::vector<cv::Point3d> terrain_points(4);
+        std::vector<cv::Point2d> image_points(4);
+        terrain_points[0] = cv::Point3d(ortho_terrain[0].x, ortho_terrain[0].y, ortho_terrain[0].z);
+        terrain_points[1] = cv::Point3d(ortho_terrain[1].x, ortho_terrain[1].y, ortho_terrain[1].z);
+        terrain_points[2] = cv::Point3d(ortho_terrain[2].x, ortho_terrain[2].y, ortho_terrain[2].z);
+        terrain_points[3] = cv::Point3d(ortho_terrain[3].x, ortho_terrain[3].y, ortho_terrain[3].z);
+  
+        //cv::projectPoints(terrain_points, omega_phi_kappa, tvec, cameraMatrix, distCoeffs, image_points);
+        PointD photocoord = photocoordinates(ori.rotationMatrix,
+                                             ori.principal_point,
+                                             ortho_terrain[0],
+                                             -(focal_x + focal_y) / 2.);
+      
+      }
+    }
+  }
+  
+#else
+
+  
   Point3D ortho_terrain;
   for (int r = 0; r < rows_ortho; r++) {
     for (int c = 0; c < cols_ortho; c++) {
   
-      ortho_terrain = Point3D(window_ortho_terrain.pt1.x + c * 0.02, window_ortho_terrain.pt1.y + r * 0.02, 0.);
+      ortho_terrain = Point3D(window_ortho_terrain.pt1.x + c * 0.02, window_ortho_terrain.pt1.y + rows_ortho * 0.02 - r * 0.02, 0.);
   
       if (window_dtm_terrain.containsPoint(ortho_terrain)) {
   
@@ -295,29 +316,48 @@ void Orthorectification::run(const std::string &file,
         ortho_terrain.z = dtm.at<float>(0, 0);
   
         /// Se calcula la transformación proyectiva y se corrige la imagen
-        std::vector<cv::Point3d> terrain_points(1);
-        std::vector<cv::Point2d> image_points(1);
-        terrain_points[0] = cv::Point3d(ortho_terrain.x, ortho_terrain.y, ortho_terrain.z);
+        //std::vector<cv::Point3d> terrain_points(1);
+        //std::vector<cv::Point2d> image_points(1);
+        //terrain_points[0] = cv::Point3d(ortho_terrain.x, ortho_terrain.y, ortho_terrain.z);
   
-        cv::projectPoints(terrain_points, omega_phi_kappa, tvec, cameraMatrix, distCoeffs, image_points);
+        //cv::projectPoints(terrain_points, omega_phi_kappa, tvec, cameraMatrix, distCoeffs, image_points);
         //cv::Vec3b color = image.at<cv::Vec3b>(TL_ROUND_TO_INT(image_points[0].y), TL_ROUND_TO_INT(image_points[0].x));
         
-        PointD photocoord = photocoordinates(ori.rotationMatrix,
-                                             ori.principal_point,
+        PointD photocoord = photocoordinates(orientation.rotationMatrix(),
+                                             orientation.principalPoint(),
                                              ortho_terrain,
                                              -(focal_x + focal_y) / 2.);
         /// Transformacion afin fotocoordenadas -> coordenadas pixel
         photocoord += PointD(cols / 2., rows / 2.);
         tl::RectD rect(0, 0, cols-1, rows-1);
         if (rect.contains(photocoord)) {
-          int r_coor = TL_ROUND_TO_INT(photocoord.y);
-          int c_coor = TL_ROUND_TO_INT(photocoord.x);
-          cv::Vec3b color = image.at<cv::Vec3b>(r_coor, c_coor);
+          
+          cv::Vec3b color;
+          if (1 /* vecino mas proximo*/) {
+            int r_coor = TL_ROUND_TO_INT(photocoord.y);
+            int c_coor = TL_ROUND_TO_INT(photocoord.x);
+            color = image.at<cv::Vec3b>(r_coor, c_coor);
+          } else {
+            /// Interpolación
+            RectI rect(TL_ROUND_TO_INT(photocoord.y), TL_ROUND_TO_INT(photocoord.x), 1, 1);
+            PointI top_left = rect.topLeft();
+            PointI top_right = rect.topRight();
+            PointI botton_left = rect.bottomLeft();
+            PointI botton_right = rect.bottomRight();
+
+            cv::Vec3b color_top_left = image.at<cv::Vec3b>(top_left.y, top_left.x);
+            cv::Vec3b color_top_right = image.at<cv::Vec3b>(top_right.y, top_right.x);
+            cv::Vec3b color_bottom_right = image.at<cv::Vec3b>(botton_right.y, botton_right.x);
+            cv::Vec3b color_bottom_left = image.at<cv::Vec3b>(botton_left.y, botton_left.x);
+          }
+
           mat_ortho.at<cv::Vec3b>(r, c) = color;
         }
       }
     }
   }
+
+#endif
 
   //mOrthophotoWriter->setGeoreference();
   mOrthophotoWriter->write(mat_ortho);

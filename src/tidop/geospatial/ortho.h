@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "tidop/experimental/camera.h"
+#include "tidop/experimental/photo.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 
@@ -14,11 +15,6 @@ namespace tl
 class ImageReader;
 class ImageWriter;
 
-struct TL_EXPORT PhotoOrientation
-{
-  Point3D principal_point;
-  tl::math::RotationMatrix<double> rotationMatrix;
-};
 
 
 namespace geospatial
@@ -34,7 +30,7 @@ public:
 	~Orthorectification();
 
 	void run(const std::string &file, 
-					 const PhotoOrientation &ori,
+					 const experimental::Photo::Orientation &orientation,
 					 const std::string &rectifiedFile);
 private:
 

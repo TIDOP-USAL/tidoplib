@@ -1,0 +1,163 @@
+#include "footprint.h"
+
+#include "tidop/img/imgreader.h"
+#include "tidop/geospatial/util.h"
+
+namespace tl
+{
+
+namespace geospatial
+{
+
+
+Footprint::Footprint(const std::string &dtm)
+  : mDtm(dtm),
+    mDtmReader(ImageReaderFactory::createReader(dtm))
+{
+}
+
+Footprint::~Footprint()
+{
+  if (mDtmReader->isOpen()){
+    mDtmReader->close();
+  }
+}
+
+void Footprint::run(const std::vector<experimental::Photo> &photos, 
+                    const std::string &footprint)
+{
+
+  if (!mDtmReader->isOpen()) {
+    mDtmReader->open();
+  }
+
+  for (size_t i = 0; i < photos.size(); i++) {
+    
+    try {
+
+      mCamera = photos[i].camera();
+      std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+
+      mImageReader = ImageReaderFactory::createReader(photos[i].path());
+      mImageReader->open();
+      if (!mImageReader->isOpen()) throw std::runtime_error("Image open error");
+
+      int rows = mImageReader->rows();
+      int cols = mImageReader->cols();
+
+      std::vector<PointI> limits = this->imageLimits(rows, cols);
+
+      cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
+      float focal_x = 1.f;
+      float focal_y = 1.f;
+      float ppx = 0.f;
+      float ppy = 0.f;
+
+      for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+        experimental::Calibration::Parameters parameter = param->first;
+        double value = param->second;
+        switch (parameter) {
+          case experimental::Calibration::Parameters::focal:
+            focal_x = value;
+            focal_y = value;
+            break;
+          case experimental::Calibration::Parameters::focalx:
+            focal_x = value;
+            break;
+          case experimental::Calibration::Parameters::focaly:
+            focal_y = value;
+            break;
+          case experimental::Calibration::Parameters::cx:
+            ppx = value;
+            break;
+          case experimental::Calibration::Parameters::cy:
+            ppy = value;
+            break;
+          case experimental::Calibration::Parameters::k1:
+            distCoeffs.at<float>(0) = value;
+            break;
+          case experimental::Calibration::Parameters::k2:
+            distCoeffs.at<float>(1) = value;
+            break;
+          case experimental::Calibration::Parameters::k3:
+            distCoeffs.at<float>(4) = value;
+            break;
+            //case experimental::Calibration::Parameters::k4:
+            //  distCoeffs.at<float>(5) = value;
+            //  break;
+            //case experimental::Calibration::Parameters::k5:
+            //  distCoeffs.at<float>(6) = value;
+            //  break;
+            //case experimental::Calibration::Parameters::k6:
+            //  distCoeffs.at<float>(7) = value;
+            //  break;
+          case experimental::Calibration::Parameters::p1:
+            distCoeffs.at<float>(2) = value;
+            break;
+          case experimental::Calibration::Parameters::p2:
+            distCoeffs.at<float>(3) = value;
+            break;
+          default:
+            break;
+        }
+      }
+
+      experimental::Photo::Orientation orientation = photos[i].orientation();
+
+      std::vector<Point3D> footprint = this->terrainProjected(limits,
+                                                              orientation.rotationMatrix(), 
+                                                              orientation.principalPoint(), 
+                                                              (focal_x + focal_y) / 2.);
+
+
+
+    } catch (std::exception &e) {
+      
+    }
+  
+  }
+}
+
+std::vector<PointI> Footprint::imageLimits(int rows, int cols)
+{
+  std::vector<PointI> points(4);
+
+  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
+  points[0] = PointI(-cols/2, -rows/2);
+  points[1] = PointI(cols/2, -rows/2);
+  points[2] = PointI(cols/2, rows/2);
+  points[3] = PointI(-cols/2, rows/2);
+
+  return points;
+}
+
+std::vector<Point3D> Footprint::terrainProjected(const std::vector<PointI> &imageLimits,
+                                                 const tl::math::RotationMatrix<double> &rotation_matrix,
+															                   const Point3D &principal_point,
+															                   double focal)
+{
+  std::vector<Point3D> terrainLimits(4);
+
+  
+  
+  /// Se lee el dtm en las coordenadas xy del punto principal. Se usa esa z para comenzar el proceso
+  //mDtmReader->read();
+  
+  for (size_t i = 0; i < imageLimits.size(); i++) {
+    
+    Affine<PointD> affine = mDtmReader->georeference();
+    PointD pt(principal_point.x, principal_point.y);
+    WindowD w(pt, 1 * affine.scaleX());
+    cv::Mat image = mDtmReader->read(w);
+    double z = image.at<float>(0, 0);
+
+    Point3D terrain_point = projectPhotoToTerrain(rotation_matrix, principal_point, imageLimits[i], focal, z);
+    terrainLimits[i] = terrain_point;
+  }
+
+  return terrainLimits;
+}
+
+} // End namespace geospatial
+
+} // End namespace tl

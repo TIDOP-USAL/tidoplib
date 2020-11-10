@@ -9,6 +9,8 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif
 
+#include "tidop/geometry/entities/point.h"
+#include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
 {
@@ -18,18 +20,16 @@ namespace geospatial
 
 TL_EXPORT int utmZoneFromLongitude(double longitude);
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
+                              const Point3D &principal_point,
+                              const PointD &coordinates_image,
+                              double focal,
+                              double z);
 
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-#endif // HAVE_GDAL and HAVE_PROJ4
-
+PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
+                             const Point3D &principal_point,
+                             const Point3D &coordinates_terrain,
+                             double focal);
 
 } // End namespace geospatial
 

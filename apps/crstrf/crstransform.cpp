@@ -7,7 +7,7 @@
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/crstransf.h>
 #include <tidop/geospatial/ortho.h>
-
+#include <tidop/geospatial/footprint.h>
 
 // filesystem
 #if (__cplusplus >= 201703L)
@@ -23,6 +23,15 @@ using namespace geospatial;
 
 int main(int argc, char** argv)
 {
+
+  // Consola
+  Console &console = Console::instance();
+  console.setTitle("");
+  console.setConsoleUnicode();
+  console.setFontHeight(14);
+  console.setLogLevel(MessageLevel::msg_verbose);
+  MessageManager::instance().addListener(&console);
+
   std::string dtm("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\dense\\pmvs\\models\\madrigalejo.tif");
   experimental::Camera camera;
   camera.setMake("SONY");
@@ -40,24 +49,38 @@ int main(int argc, char** argv)
   calibration->setParameter(tl::experimental::Calibration::Parameters::k1, 0.0315184);
   camera.setCalibration(calibration);
 
-  std::string file = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_37_35.jpg";
-  std::string rectifiedFile = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\ortho\\image_2020-08-04 12_37_35.jpg";
-  
-  tl::PhotoOrientation ori;
-  ori.principal_point = Point3D(-26.4568 + 272021.61, 49.9899 + 4338369.137, -0.184017 + 314.874);
-  ori.rotationMatrix.at(0, 0) = 0.766944;
-  ori.rotationMatrix.at(0, 1) = -0.640877;
-  ori.rotationMatrix.at(0, 2) = -0.0327755;
-  ori.rotationMatrix.at(1, 0) = -0.637979;
-  ori.rotationMatrix.at(1, 1) = -0.766987;
-  ori.rotationMatrix.at(1, 2) = 0.0686509;
-  ori.rotationMatrix.at(2, 0) = -0.0691352;
-  ori.rotationMatrix.at(2, 1) = -0.0317413;
-  ori.rotationMatrix.at(2, 2) = -0.997102;
-  
-  Orthorectification ortho(dtm, camera);
-  ortho.run(file, ori, rectifiedFile);
+  //std::string file = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_37_35.jpg";
+  //std::string rectifiedFile = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\ortho\\image_2020-08-04 12_37_35.jpg";
+  std::string file = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg";
+  std::string rectifiedFile = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\ortho\\image_2020-08-04 12_45_42.jpg";
+  std::string footprint_file = "C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\footprint.shp";
 
+  math::RotationMatrix<double> rotation_matrix;
+  //ori.principal_point = Point3D(-26.4568 + 272021.61, 49.9899 + 4338369.137, -0.184017 + 314.874);
+  Point3D principal_point(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
+  rotation_matrix.at(0, 0) = 0.775278;// 0.766944;
+  rotation_matrix.at(0, 1) = -0.625695;// -0.640877;
+  rotation_matrix.at(0, 2) = -0.0863097;// -0.0327755;
+  rotation_matrix.at(1, 0) = -0.624984;// -0.637979;
+  rotation_matrix.at(1, 1) = -0.779693;// -0.766987;
+  rotation_matrix.at(1, 2) = 0.0383955;// 0.0686509;
+  rotation_matrix.at(2, 0) = -0.091319;// -0.0691352;
+  rotation_matrix.at(2, 1) = 0.024175;// -0.0317413;
+  rotation_matrix.at(2, 2) = -0.995528;// -0.997102;
+  
+  //Orthorectification ortho(dtm, camera);
+  //ortho.run(file, ori, rectifiedFile);
+
+  experimental::Photo::Orientation orientation(principal_point, rotation_matrix);
+  experimental::Photo photo(file);
+  photo.setCamera(camera);
+  photo.setOrientation(orientation);
+
+  std::vector<experimental::Photo> photos;
+  photos.push_back(photo);
+
+  Footprint footprint(dtm);
+  footprint.run(photos, footprint_file);
 
   //fs::path app_path = argv[0];
   //std::string cmd_name = app_path.stem().string();
