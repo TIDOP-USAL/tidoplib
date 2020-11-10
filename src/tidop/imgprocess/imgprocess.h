@@ -146,10 +146,10 @@ private:
  * \brief Contenedor de procesos de imagen que permite su ejecución secuencial.
  * \code
  * tl::ImagingProcesses imagingProcesses;
- * imagingProcesses.add(std::make_shared<tl::Normalize>(0., 255.));
- * imagingProcesses.add(std::make_shared<tl::BilateralFilter>(5, 50., 50.));
- * imagingProcesses.add(std::make_shared<tl::Erotion>(1));
- * imagingProcesses.add(std::make_shared<tl::Dilate>(1));
+ * imagingProcesses.push_back(std::make_shared<tl::Normalize>(0., 255.));
+ * imagingProcesses.push_back(std::make_shared<tl::BilateralFilter>(5, 50., 50.));
+ * imagingProcesses.push_back(std::make_shared<tl::Erotion>(1));
+ * imagingProcesses.push_back(std::make_shared<tl::Dilate>(1));
  * cv::Mat out;
  * try {
  *   imagingProcesses.execute(in, out);
@@ -367,7 +367,7 @@ public:
  * out->convertTo(out, CV_8U);
  * });
  *
- * tl::ImgProcessingList imgprolist{ fProcess1, fProcess2 };
+ * tl::ImagingProcesses imgprolist{ fProcess1, fProcess2 };
  * \endcode
  */
 class TL_EXPORT FunctionProcess 

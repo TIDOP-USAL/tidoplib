@@ -2,10 +2,12 @@
 #define TL_MATH_ROTATION_MATRIX_H
 
 #include "config_tl.h"
-#include "tidop/math/algebra/matrix.h"
 
 #include <vector>
 #include <array>
+
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/rotations.h"
 
 namespace tl
 {
@@ -31,14 +33,15 @@ namespace math
  */
 template <typename T>
 class RotationMatrix 
-  : public Matrix<3, 3, T>
+  : public RotationBase<T>,
+    public Matrix<T, 3, 3>
 {
 
 public:
   
   RotationMatrix();
-  RotationMatrix(const Matrix<3, 3, T> &rot);
-  ~RotationMatrix() {}
+  RotationMatrix(const Matrix<T, 3, 3> &rot);
+  ~RotationMatrix() override {}
 
   TL_TODO("constructoras a partir de angulo y eje")
   // mathutils
@@ -53,13 +56,15 @@ private:
 
 template <typename T> inline
 RotationMatrix<T>::RotationMatrix()
-  : Matrix<3, 3, T>()
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>()
 {
 }
 
 template <typename T> inline
-RotationMatrix<T>::RotationMatrix(const Matrix<3, 3, T> &rot)
-  : Matrix<3, 3, T>(rot)
+RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>(rot)
 {
 }
 

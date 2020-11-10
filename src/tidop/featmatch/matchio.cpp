@@ -120,7 +120,7 @@ void MatchesReaderBinary::open()
 
 bool MatchesReaderBinary::isOpen()
 {
-  return mFile;
+  return mFile != nullptr;
 }
 
 void MatchesReaderBinary::readHeader()
@@ -318,7 +318,7 @@ void MatchesWriterBinary::open()
 
 bool MatchesWriterBinary::isOpen() const
 {
-  return mFile;
+  return mFile != nullptr;
 }
 
 void MatchesWriterBinary::writeHeader() const

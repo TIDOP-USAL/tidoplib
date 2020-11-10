@@ -81,25 +81,27 @@ public:
    * \param[in] pt1 Primer punto
    * \param[in] pt2 Segundo punto
    */
-  BoundingBox(const Point3_t &pt1, const Point3_t &pt2);
+  BoundingBox(const Point3_t &pt1, 
+              const Point3_t &pt2);
 
   /*!
    * \brief Constructor
    * \param[in] pt Punto central
-   * \param[in] sxx Ancho de la ventana
-   * \param[in] szy profundidad de la ventana
-   * \param[in] szz Alto de la ventana 
+   * \param[in] width Anchura de la caja
+   * \param[in] depth Profundidad de la caja
+   * \param[in] height Altura de la caja 
    */
   template<typename T>
-  BoundingBox(const Point3_t &pt, T sxx, T szy, T szz);
+  BoundingBox(const Point3_t &pt, 
+              T width, T depth, T height);
 
   /*!
    * \brief Constructor 
    * \param[in] pt Punto central
-   * \param[in] sz Dimensiones
+   * \param[in] side Dimensiones
    */
   template<typename T>
-  BoundingBox(const Point3_t &pt, T sz);
+  BoundingBox(const Point3_t &pt, T side);
 
   ~BoundingBox() override = default;
 
@@ -171,6 +173,8 @@ public:
   bool containsBox(const BoundingBox<Point3_t> &bbox) const;
 };
 
+
+
 // Definición de métodos
 
 template<typename Point3_t> inline
@@ -202,7 +206,8 @@ BoundingBox<Point3_t>::BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT
 }
 
 template<typename Point3_t> inline
-BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, const Point3_t &pt2) 
+BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, 
+                                   const Point3_t &pt2) 
   : Entity(Entity::Type::bounding_box)
 {
   this->pt1.x = std::min(pt1.x, pt2.x);
@@ -213,43 +218,66 @@ BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, const Point3_t &pt2)
   this->pt2.z = std::max(pt1.z, pt2.z);
 }
 
-TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename Point3_t> template<typename T> inline
-BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, T sxx, T szy, T szz) 
+BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, 
+                                   T width, T depth, T height) 
   : Entity(Entity::Type::bounding_box)
 { 
+  typename Point3_t::value_type two{2};
+  auto half_width = width / two;
+  auto half_depth = depth / two;
+  auto half_height = height / two;
+
   if (std::is_integral<typename Point3_t::value_type>::value) {
-    int sxx_2 = TL_ROUND_TO_INT(sxx / 2);
-    int szy_2 = TL_ROUND_TO_INT(szy / 2);
-    int szz_2 = TL_ROUND_TO_INT(szz / 2);
-    int dx = static_cast<int>(sxx) % 2;
-    int dy = static_cast<int>(szy) % 2;
-    int dz = static_cast<int>(szz) % 2;
-    pt1 = Point3_t(pt.x - sxx_2, pt.y - szy_2, pt.z - szz_2);
-    pt2 = Point3_t(pt.x + sxx_2 + dx, pt.y + szy_2 + dy, pt.z + szz_2 + dz);
+
+    int dx = static_cast<int>(width) % 2;
+    int dy = static_cast<int>(depth) % 2;
+    int dz = static_cast<int>(height) % 2;
+
+    pt1 = Point3_t(pt.x - half_width, 
+                   pt.y - half_depth, 
+                   pt.z - half_height);
+    pt2 = Point3_t(pt.x + half_width + dx, 
+                   pt.y + half_depth + dy, 
+                   pt.z + half_height + dz);
   } else {
-    pt1 = Point3_t(pt.x - sxx / 2., pt.y - szy / 2., pt.z - szz / 2.);
-    pt2 = Point3_t(pt.x + sxx / 2., pt.y + szy / 2., pt.z + szz / 2.);
+    pt1 = Point3_t(pt.x - half_width, 
+                   pt.y - half_depth, 
+                   pt.z - half_height);
+    pt2 = Point3_t(pt.x + half_width, 
+                   pt.y + half_depth, 
+                   pt.z + half_height);
   }
 }
 
 
 template<typename Point3_t> template<typename T> inline
-BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, T sz) 
+BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt, 
+                                   T side) 
   : Entity(Entity::Type::bounding_box) 
 {
+  typename Point3_t::value_type two{2};
+  auto half_side = side / two;
+
   if (std::is_integral<typename Point3_t::value_type>::value) {
-    int sz_2 = TL_ROUND_TO_INT(sz / 2);
-    int dxyz = static_cast<int>(sz) % 2;
-    pt1 = Point3_t(pt.x - sz_2, pt.y - sz_2, pt.z - sz_2);
-    pt2 = Point3_t(pt.x + sz_2 + dxyz, pt.y + sz_2 + dxyz, pt.z + sz_2 + dxyz);
+
+    int dxyz = static_cast<int>(side) % 2;
+
+    pt1 = Point3_t(pt.x - half_side, 
+                   pt.y - half_side, 
+                   pt.z - half_side);
+    pt2 = Point3_t(pt.x + half_side + dxyz, 
+                   pt.y + half_side + dxyz, 
+                   pt.z + half_side + dxyz);
   } else {
-    int sz_2 = sz / 2.;
-    pt1 = Point3_t(pt.x - sz_2, pt.y - sz_2, pt.z - sz_2);
-    pt2 = Point3_t(pt.x + sz_2, pt.y + sz_2, pt.z + sz_2);
+    pt1 = Point3_t(pt.x - half_side, 
+                   pt.y - half_side, 
+                   pt.z - half_side);
+    pt2 = Point3_t(pt.x + half_side, 
+                   pt.y + half_side, 
+                   pt.z + half_side);
   }
 }
-TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point3_t> inline
 BoundingBox<Point3_t> &BoundingBox<Point3_t>::operator = (const BoundingBox &bbox)
@@ -289,59 +317,68 @@ BoundingBox<Point3_t>::operator BoundingBox<Point3_t2>() const
 template<typename Point3_t> inline
 Point3_t BoundingBox<Point3_t>::center() const
 {
-  if (std::is_integral<typename Point3_t::value_type>::value) {
-    return Point3_t(TL_ROUND_TO_INT((pt1.x + pt2.x) / 2),
-                    TL_ROUND_TO_INT((pt1.y + pt2.y) / 2),
-                    TL_ROUND_TO_INT((pt1.z + pt2.z) / 2));
-  } else {
-    return Point3_t((pt1.x + pt2.x) / 2., 
-                    (pt1.y + pt2.y) / 2., 
-                    (pt1.z + pt2.z) / 2.);
+  Point3_t pt_center;
+
+  if (!this->isEmpty()) {
+    typename Point3_t::value_type two{2};
+
+    pt_center.x = (pt1.x + pt2.x) / two;
+    pt_center.y = (pt1.y + pt2.y) / two;
+    pt_center.z = (pt1.z + pt2.z) / two;
   }
+
+  return pt_center;
 }
-TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::width() const
 {
-  return pt2.x - pt1.x;
+  return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.x - pt1.x;
 }
 
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::height() const
 {
-  return pt2.y - pt1.y;
+  return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.y - pt1.y;
 }
 
 template<typename Point3_t> inline
 typename Point3_t::value_type BoundingBox<Point3_t>::depth() const
 {
-  return pt2.z - pt1.z;
+  return this->isEmpty() ?  static_cast<typename Point3_t::value_type>(0) : pt2.z - pt1.z;
 }
 
 template<typename Point3_t> inline
 bool BoundingBox<Point3_t>::isEmpty() const 
 { 
-  return (   pt1.x == std::numeric_limits<typename Point3_t::value_type>().max() 
-          && pt1.y == std::numeric_limits<typename Point3_t::value_type>().max() 
-          && pt1.z == std::numeric_limits<typename Point3_t::value_type>().max() 
-          && pt2.x == -std::numeric_limits<typename Point3_t::value_type>().max() 
-          && pt2.y == -std::numeric_limits<typename Point3_t::value_type>().max()
-          && pt2.z == -std::numeric_limits<typename Point3_t::value_type>().max()); 
+  return (pt1.x == std::numeric_limits<typename Point3_t::value_type>().max() && 
+          pt1.y == std::numeric_limits<typename Point3_t::value_type>().max() &&
+          pt1.z == std::numeric_limits<typename Point3_t::value_type>().max() &&
+          pt2.x == -std::numeric_limits<typename Point3_t::value_type>().max() &&
+          pt2.y == -std::numeric_limits<typename Point3_t::value_type>().max() &&
+          pt2.z == -std::numeric_limits<typename Point3_t::value_type>().max());
 }
 
 template<typename Point3_t> inline
 bool BoundingBox<Point3_t>::containsPoint(const Point3_t &pt) const
 {
-  return ((pt2.x >= pt.x) && (pt2.y >= pt.y) && (pt2.z >= pt.z)
-       && (pt1.x <= pt.x) && (pt1.y <= pt.y) && (pt1.z <= pt.z));
+  return ((pt2.x >= pt.x) &&
+          (pt2.y >= pt.y) &&
+          (pt2.z >= pt.z) &&
+          (pt1.x <= pt.x) &&
+          (pt1.y <= pt.y) &&
+          (pt1.z <= pt.z));
 }
 
 template<typename Point3_t> inline
 bool BoundingBox<Point3_t>::containsBox(const BoundingBox<Point3_t> &bbox) const
 {
-  return (pt1.x <= bbox.pt1.x && pt1.y <= bbox.pt1.y && pt1.z <= bbox.pt1.z &&
-          pt2.x >= bbox.pt2.x && pt2.y >= bbox.pt2.y && pt2.z >= bbox.pt2.z);
+  return (pt1.x <= bbox.pt1.x &&
+          pt1.y <= bbox.pt1.y &&
+          pt1.z <= bbox.pt1.z &&
+          pt2.x >= bbox.pt2.x &&
+          pt2.y >= bbox.pt2.y &&
+          pt2.z >= bbox.pt2.z);
 }
 
 typedef BoundingBox<Point3<int>> BoundingBoxI;

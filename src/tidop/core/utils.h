@@ -39,9 +39,9 @@
 #endif
 #include <boost/algorithm/string.hpp>
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#endif // HAVE_OPENCV
 
 #ifdef HAVE_MINIZIP
 #include "minizip/zip.h"
@@ -564,27 +564,27 @@ TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal
 /*                              Operaciones con vectores                              */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Convierte una matriz de OpenCV en un vector
- * \param[in] m Matriz de entrada
- * \param[out] av Vector de salida
- */
-template<typename T> inline 
-void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
-{
-  av->resize(m.rows*m.cols);
-  if (m.isContinuous()) {
-    av->assign((T*)m.datastart, (T*)m.dataend);
-  } else {
-    for (int i = 0; i < m.rows; ++i) {
-      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
-    }
-  }
-}
-
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//
+///*!
+// * \brief Convierte una matriz de OpenCV en un vector
+// * \param[in] m Matriz de entrada
+// * \param[out] av Vector de salida
+// */
+//template<typename T> inline 
+//void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+//{
+//  av->resize(m.rows*m.cols);
+//  if (m.isContinuous()) {
+//    av->assign((T*)m.datastart, (T*)m.dataend);
+//  } else {
+//    for (int i = 0; i < m.rows; ++i) {
+//      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
+//    }
+//  }
+//}
+//
+//#endif // HAVE_OPENCV
 
 /*!
  * \brief Ordena un vector de menor a mayor
@@ -715,11 +715,11 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
 
-TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
-
-TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
-
-TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
+//TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
+//
+//TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
+//
+//TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 
 #endif // HAVE_OPENCV
 
@@ -888,39 +888,14 @@ public:
 #endif
   };
 
-private:
-  
-  /*!
-   * Tiempo de inicio en milisegundos
-   */
-  uint64_t mTimeIni;
-
-  /*!
-   * Tiempo acumulado en milisegundos
-   */
-  uint64_t mAccumulated;
-
-  /*!
-   * \brief Estado del cronómetro
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Mensaje de información opcional
-   */
-  std::string mMessage;
-
-  /*!
-   * \brief Escribe mensajes en log y consola
-   */
-  bool bWriteMsg;
-
 public:
+
 
   /*!
    * \brief Constructor
    */
-  Chrono(const char *msg = "", bool writeMsg = true);
+  Chrono(const std::string &message = "", 
+         bool writeMessage = true);
 
   /*!
    * \brief Destructora
@@ -953,9 +928,34 @@ public:
    */
   uint64_t stop();
 
-  void setMessage(const char *msg);
+  void setMessage(const std::string &message);
 
 private:
+  
+  /*!
+   * Tiempo de inicio en milisegundos
+   */
+  uint64_t mTimeIni;
+
+  /*!
+   * Tiempo acumulado en milisegundos
+   */
+  uint64_t mAccumulated;
+
+  /*!
+   * \brief Estado del cronómetro
+   */
+  Status mStatus;
+
+  /*!
+   * \brief Mensaje de información opcional
+   */
+  std::string mMessage;
+
+  /*!
+   * \brief Escribe mensajes en log y consola
+   */
+  bool bWriteMessage;
 
 };
 
@@ -1308,40 +1308,40 @@ private:
 /*! \} */ // end of utilities
 
 
-#ifdef HAVE_GDAL
+//#ifdef HAVE_GDAL
 
 /*!
  * \brief Clase para registrar los drivers de GDAL
  *
  */
-class TL_EXPORT RegisterGdal
-{
-private:
-
-  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-  static std::mutex sMutex;
-
-  /*!
-   * \brief Constructor privado
-   */
-  RegisterGdal() {}
-
-public:
-
-  ~RegisterGdal() {}
-
-  // Se impide la copia y asignación
-  RegisterGdal(RegisterGdal const&) = delete;
-  void operator=(RegisterGdal const&) = delete;
-
-  /*!
-   * \brief Método para iniciar GDAL una unica vez
-   */
-  static void init();
-
-};
-
-#endif // HAVE_GDAL
+//class TL_EXPORT RegisterGdal
+//{
+//private:
+//
+//  static std::unique_ptr<RegisterGdal> sRegisterGdal;
+//  static std::mutex sMutex;
+//
+//  /*!
+//   * \brief Constructor privado
+//   */
+//  RegisterGdal() {}
+//
+//public:
+//
+//  ~RegisterGdal() {}
+//
+//  // Se impide la copia y asignación
+//  RegisterGdal(RegisterGdal const&) = delete;
+//  void operator=(RegisterGdal const&) = delete;
+//
+//  /*!
+//   * \brief Método para iniciar GDAL una unica vez
+//   */
+//  static void init();
+//
+//};
+//
+//#endif // HAVE_GDAL
 
 
 } // End namespace tl

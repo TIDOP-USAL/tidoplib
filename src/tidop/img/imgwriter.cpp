@@ -4,6 +4,8 @@
 
 #include "tidop/img/formats.h"
 #include "tidop/img/metadata.h"
+#include "tidop/core/messages.h"
+#include "tidop/core/gdalreg.h"
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -236,15 +238,17 @@ public:
       affine.compute(image_points, image_rect);
 
       std::vector<PointD> image_points_transform;
-      affine.transform(image_points, &image_points_transform);
+      affine.transform(image_points, image_points_transform);
       RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
       RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), transform_order::inverse);
-      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), transform_order::inverse);
+      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
+      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
       
       rect_to_crop_image = RectI(tl, br);
-      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x).rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y).clone();
+      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
+                            .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
+                            .clone();
 
     } else {
       image_to_write = image;

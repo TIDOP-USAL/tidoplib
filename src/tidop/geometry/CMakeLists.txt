@@ -3,7 +3,16 @@
 add_library(tl_geom ${LIB_TYPE}
             operations.cpp
             operations.h
-            transform.h
+            transform/transform.h
+            transform/affine.h
+            transform/helmert2d.h
+            transform/helmert3d.h
+            transform/perspective.h
+            transform/polynomial.h
+            transform/projective.h
+            transform/rotation.h
+            transform/scale.h
+            transform/translation.h
             rect.h
             size.h
             entities/bbox.h

@@ -85,35 +85,6 @@ mean(It first, It last)
   return x;
 }
 
-
-//template<typename It> inline
-//auto mean2(It first, It last)
-//{
-//  using T = typename std::iterator_traits<It>::value_type;
-//  if (std::is_integral<T>::value) {
-//
-//    double x = 0.;
-//    double i = 1;
-//
-//    while(first != last) {
-//      x += (*first++ - x)/i;
-//      i++;
-//    }
-//
-//    return x;
-//  } else {
-//
-//    T x{0};
-//    T i{1};
-//
-//    while(first != last) {
-//      x += (*first++ - x)/i;
-//      i++;
-//    }
-//    return x;
-//  }
-//}
-
 /*!
  * \brief Media
  * La media es la suma de todos los datos partido del número de datos.
@@ -129,7 +100,7 @@ mean(It first, It last)
 template<typename T> inline
 double mean(const T &container)
 {
-  return mean(container.cbegin(), container.cend());
+  return mean(container.begin(), container.end());
 }
 
 /*!
@@ -169,7 +140,7 @@ double median(It first, It last)
 template<typename T> inline
 double median(const T &container)
 {
-  return median(container.cbegin(), container.cend());
+  return median(container.begin(), container.end());
 }
 
 
@@ -209,7 +180,7 @@ typename std::iterator_traits<It>::value_type mode(It first, It last)
 template<typename T> inline
 typename T::value_type mode(const T &container)
 {
-  return mode(container.cbegin(), container.cend());
+  return mode(container.begin(), container.end());
 }
 
 
@@ -249,7 +220,7 @@ typename std::iterator_traits<It>::value_type range(It first, It last)
 template<typename T> inline
 typename T::value_type range(const T &container)
 {
-  return range(container.cbegin(), container.cend());
+  return range(container.begin(), container.end());
 }
 
 /*!
@@ -292,7 +263,7 @@ double interquartileRange(It first, It last)
 template<typename T> inline
 double interquartileRange(const T &container)
 {
-  return interquartileRange(container.cbegin(), container.cend());
+  return interquartileRange(container.begin(), container.end());
 }
 
 /*!
@@ -333,7 +304,7 @@ double variance(It first, It last)
 template<typename T> inline
 double variance(const T &container)
 {
-  return variance(container.cbegin(), container.cend());
+  return variance(container.begin(), container.end());
 }
 
 /*!
@@ -362,7 +333,7 @@ double standarDeviation(It first, It last)
 template<typename T> inline
 double standarDeviation(const T &container)
 {
-  return standarDeviation(container.cbegin(), container.cend());
+  return standarDeviation(container.begin(), container.end());
 }
 
 /*!
@@ -375,7 +346,8 @@ double standarDeviation(const T &container)
 template<typename It> inline
 double coefficientOfVariation(It first, It last)
 {
-  return static_cast<double>(standarDeviation(first, last) / fabs(mean(first, last)));
+  return static_cast<double>(standarDeviation(first, last) 
+                             / fabs(mean(first, last)));
 }
 
 /*!
@@ -388,7 +360,7 @@ double coefficientOfVariation(It first, It last)
 template<typename T> inline
 double coefficientOfVariation(const T &container)
 {
-  return coefficientOfVariation(container.cbegin(), container.cend());
+  return coefficientOfVariation(container.begin(), container.end());
 }
 
 /*!
@@ -429,7 +401,10 @@ double covariance(It first_x, It last_x, It first_y, It last_y)
 template<typename T> inline
 double covariance(const T &container1, const T &container2)
 {
-  return covariance(container1.cbegin(), container1.cend(), container2.cbegin(), container2.cend());
+  return covariance(container1.begin(), 
+                    container1.end(), 
+                    container2.begin(), 
+                    container2.end());
 }
 
 /*!
@@ -441,7 +416,8 @@ double covariance(const T &container1, const T &container2)
  * \return
  */
 template<typename It> inline
-double pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_y)
+double pearsonCorrelationCoefficient(It first_x, It last_x, 
+                                     It first_y, It last_y)
 {
   auto n_x = std::distance(first_x, last_x);
   auto n_y = std::distance(first_y, last_y);
@@ -457,9 +433,13 @@ double pearsonCorrelationCoefficient(It first_x, It last_x, It first_y, It last_
  * \return
  */
 template<typename T> inline
-double pearsonCorrelationCoefficient(const T &container1, const T &container2)
+double pearsonCorrelationCoefficient(const T &container1, 
+                                     const T &container2)
 {
-  return pearsonCorrelationCoefficient(container1.cbegin(), container1.cend(), container2.cbegin(), container2.cend());
+  return pearsonCorrelationCoefficient(container1.begin(),
+                                       container1.end(), 
+                                       container2.begin(), 
+                                       container2.end());
 }
 
 template<typename itIn, typename itOut> inline
@@ -491,7 +471,7 @@ double averageAbsoluteDeviation(It first, It last)
 template<typename T> inline
 double averageAbsoluteDeviation(const T &container)
 {
-  return averageAbsoluteDeviation(container.cbegin(), container.cend());
+  return averageAbsoluteDeviation(container.begin(), container.end());
 }
 
 /*!
@@ -535,7 +515,7 @@ double skewness(It first, It last)
 template<typename T> inline
 double skewness(const T &container)
 {
-  return skewness(container.cbegin(), container.cend());
+  return skewness(container.begin(), container.end());
 }
 
 
@@ -577,7 +557,7 @@ double kurtosis(It first, It last)
 template<typename T> inline
 double kurtosis(const T &container)
 {
-  return kurtosis(container.cbegin(), container.cend());
+  return kurtosis(container.begin(), container.end());
 }
 
 

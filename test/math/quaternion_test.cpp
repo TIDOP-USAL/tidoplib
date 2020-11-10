@@ -103,6 +103,17 @@ BOOST_FIXTURE_TEST_CASE(k, QuaternionTest)
   BOOST_CHECK_EQUAL(1.f, q_k.z);
 }
 
+BOOST_FIXTURE_TEST_CASE(rotationType, QuaternionTest)
+{
+  BOOST_CHECK(Rotation::Type::quaternion == q_uninitialized.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_d_uninitialized.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_cero.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_identity.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_i.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_j.rotationType());
+  BOOST_CHECK(Rotation::Type::quaternion == q_k.rotationType());
+}
+
 BOOST_FIXTURE_TEST_CASE(parameters, QuaternionTest)
 {
   BOOST_CHECK_EQUAL(2.f, q.w);

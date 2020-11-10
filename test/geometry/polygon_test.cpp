@@ -13,8 +13,36 @@ BOOST_AUTO_TEST_SUITE(PolygonTestSuite)
 struct PolygonTest
 {
   PolygonTest()
+    : polygon_initializer_list_constructor(nullptr),
+      polygon_reserve_constructor(nullptr),
+      polygon_copy_constructor_integer(nullptr),
+      polygon_copy_constructor_double(nullptr)
   {
-    pol_2 = new PolygonI{
+  }
+
+  ~PolygonTest()
+  {
+    if (polygon_initializer_list_constructor) { 
+      delete polygon_initializer_list_constructor;
+      polygon_initializer_list_constructor = nullptr;
+    }
+    if (polygon_reserve_constructor) {
+      delete polygon_reserve_constructor;
+      polygon_reserve_constructor = nullptr;
+    }
+    if (polygon_copy_constructor_integer) {
+      delete polygon_copy_constructor_integer;
+      polygon_copy_constructor_integer = nullptr;
+    }
+    if (polygon_copy_constructor_double) {
+      delete polygon_copy_constructor_double;
+      polygon_copy_constructor_double = nullptr;
+    }
+  }
+
+  void setup()
+  {
+    polygon_initializer_list_constructor = new PolygonI{
       PointI(4157222, 664789),
       PointI(4149043, 688836),
       PointI(4172803, 690340),
@@ -23,16 +51,11 @@ struct PolygonTest
       PointI(4146292, 666953),
       PointI(4138759, 702670) };
              
-    pol_3 = new PolygonD(10);
-  }
-  ~PolygonTest()
-  {
-    if (pol_2) delete pol_2, pol_2 = nullptr;
-    if (pol_3) delete pol_3, pol_3 = nullptr;
-  }
+    polygon_reserve_constructor = new PolygonD(10);
 
-  void setup()
-  {
+    polygon_copy_constructor_integer = new PolygonI(*polygon_initializer_list_constructor);
+    
+    polygon_copy_constructor_double = new PolygonD(*polygon_reserve_constructor);
   }
 
   void teardown()
@@ -40,91 +63,102 @@ struct PolygonTest
 
   }
 
-  PolygonI pol_1;
-  PolygonI *pol_2;
-  PolygonD *pol_3;
+  PolygonI polygon_default_constructor_integer;
+  PolygonD polygon_default_constructor_double;
+  PolygonF polygon_default_constructor_float;
+
+  PolygonI *polygon_initializer_list_constructor;
+  PolygonD *polygon_reserve_constructor;
+
+  PolygonI *polygon_copy_constructor_integer;
+  PolygonD *polygon_copy_constructor_double;
+
 };
 
 
-/* Constructor por defecto */
-
-BOOST_FIXTURE_TEST_CASE(default_constructor, PolygonTest)
+BOOST_FIXTURE_TEST_CASE(size, PolygonTest) 
 {
-
-  WindowI w = pol_1.window();
-  
-  /*Comprobamos si se ha creado con el contructor por defecto*/
-  BOOST_CHECK_EQUAL(0, pol_1.size());
-  BOOST_CHECK(pol_1.type() == Entity::Type::polygon2d);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.x);
-  BOOST_CHECK_EQUAL(TL_INT_MAX, w.pt1.y);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.x);
-  BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
-  BOOST_CHECK_EQUAL(0., pol_1.length());
-  BOOST_CHECK(false == pol_1.is3D());
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.size());
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_double.size());
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_float.size());
+  BOOST_CHECK_EQUAL(7, polygon_initializer_list_constructor->size());
+  BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->size());
+  BOOST_CHECK_EQUAL(7, polygon_copy_constructor_integer->size());
+  BOOST_CHECK_EQUAL(10, polygon_copy_constructor_double->size());
 }
 
-/* Constructor reserve */
-
-BOOST_FIXTURE_TEST_CASE(constructor_reserve, PolygonTest)
+BOOST_FIXTURE_TEST_CASE(window, PolygonTest)
 {
-  WindowD w = pol_3->window();
+  WindowI w_i = polygon_default_constructor_integer.window();
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.x);
+  BOOST_CHECK_EQUAL(TL_INT_MAX, w_i.pt1.y);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.x);
+  BOOST_CHECK_EQUAL(TL_INT_MIN, w_i.pt2.y);
 
-  BOOST_CHECK_EQUAL(10, pol_3->size());
-  BOOST_CHECK(pol_3->type() == Entity::Type::polygon2d);
-  BOOST_CHECK_EQUAL(0., w.pt1.x);
-  BOOST_CHECK_EQUAL(0., w.pt1.y);
-  BOOST_CHECK_EQUAL(0., w.pt2.x);
-  BOOST_CHECK_EQUAL(0., w.pt2.y);
-  BOOST_CHECK_EQUAL(0., pol_3->length());
+  WindowD w_d = polygon_default_constructor_double.window();
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MAX, w_d.pt1.y);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.x);
+  BOOST_CHECK_EQUAL(TL_DOUBLE_MIN, w_d.pt2.y);
+    
+  WindowF w_f = polygon_default_constructor_float.window();
+  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.x);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MAX, w_f.pt1.y);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.x);
+  BOOST_CHECK_EQUAL(TL_FLOAT_MIN, w_f.pt2.y);
+
+  w_i = polygon_initializer_list_constructor->window();
+  BOOST_CHECK_EQUAL(4137012, w_i.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w_i.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w_i.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w_i.pt2.y);
+
+  w_d = polygon_reserve_constructor->window();
+  BOOST_CHECK_EQUAL(0., w_d.pt1.x);
+  BOOST_CHECK_EQUAL(0., w_d.pt1.y);
+  BOOST_CHECK_EQUAL(0., w_d.pt2.x);
+  BOOST_CHECK_EQUAL(0., w_d.pt2.y);
+
+  w_i = polygon_copy_constructor_integer->window();
+  BOOST_CHECK_EQUAL(4137012, w_i.pt1.x);
+  BOOST_CHECK_EQUAL(642997, w_i.pt1.y);
+  BOOST_CHECK_EQUAL(4177148, w_i.pt2.x);
+  BOOST_CHECK_EQUAL(702670, w_i.pt2.y);
+
+  w_d = polygon_copy_constructor_double->window();
+  BOOST_CHECK_EQUAL(0., w_d.pt1.x);
+  BOOST_CHECK_EQUAL(0., w_d.pt1.y);
+  BOOST_CHECK_EQUAL(0., w_d.pt2.x);
+  BOOST_CHECK_EQUAL(0., w_d.pt2.y);
 }
 
-/*Constructor de copia*/
-
-BOOST_FIXTURE_TEST_CASE(copy_constructor, PolygonTest)
+BOOST_FIXTURE_TEST_CASE(length, PolygonTest) 
 {
-  PolygonD pol_c(*pol_3);
-  BOOST_CHECK_EQUAL(10, pol_c.size());
-  BOOST_CHECK(pol_c.type() == Entity::Type::polygon2d);
-  auto w = pol_c.window();
-  BOOST_CHECK_EQUAL(0., w.pt1.x);
-  BOOST_CHECK_EQUAL(0., w.pt1.y);
-  BOOST_CHECK_EQUAL(0., w.pt2.x);
-  BOOST_CHECK_EQUAL(0., w.pt2.y);
-
-  BOOST_CHECK_EQUAL(0., pol_c.length());
-
-}
-
-
-/* Constructor lista de inicializadores */
-
-BOOST_FIXTURE_TEST_CASE(constructor_list, PolygonTest)
-{
-  BOOST_CHECK_EQUAL(7, pol_2->size());
-  BOOST_CHECK(pol_2->type() == Entity::Type::polygon2d);
-  WindowI w = pol_2->window();
-
-  BOOST_CHECK_EQUAL(4137012, w.pt1.x);
-  BOOST_CHECK_EQUAL(642997, w.pt1.y);
-  BOOST_CHECK_EQUAL(4177148, w.pt2.x);
-  BOOST_CHECK_EQUAL(702670, w.pt2.y);
-
-  BOOST_CHECK_CLOSE(193131.62, pol_2->length(), 0.01);
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.length());
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.length());
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.length());
+  BOOST_CHECK_CLOSE(193131.62, polygon_initializer_list_constructor->length(), 0.01);
+  BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->length());
+  BOOST_CHECK_CLOSE(193131.62, polygon_copy_constructor_integer->length(), 0.01);
+  BOOST_CHECK_EQUAL(0., polygon_copy_constructor_double->length());
 }
 
 BOOST_FIXTURE_TEST_CASE(type, PolygonTest)
 {
-  BOOST_CHECK(pol_1.type() == Entity::Type::polygon2d);
-  BOOST_CHECK(pol_2->type() == Entity::Type::polygon2d);
-  BOOST_CHECK(pol_3->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_default_constructor_integer.type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_default_constructor_double.type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_default_constructor_float.type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_initializer_list_constructor->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_reserve_constructor->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_copy_constructor_integer->type() == Entity::Type::polygon2d);
+  BOOST_CHECK(polygon_copy_constructor_double->type() == Entity::Type::polygon2d);
 }
 
 /* Operador de asignación */
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
 {
-  PolygonI polygon = *pol_2;
+  PolygonI polygon = *polygon_initializer_list_constructor;
 
   BOOST_CHECK_EQUAL(7, polygon.size());
 
@@ -138,16 +172,30 @@ BOOST_FIXTURE_TEST_CASE(assing_operator, PolygonTest)
   BOOST_CHECK_CLOSE(193131.62, polygon.length(), 0.01);
 }
 
+BOOST_FIXTURE_TEST_CASE(move_operator, PolygonTest)
+{
+  PolygonI polygon_to_move(*polygon_initializer_list_constructor);
+  PolygonI polygon = std::move(polygon_to_move);
+
+  BOOST_CHECK_EQUAL(7, polygon.size());
+  BOOST_CHECK_EQUAL(0, polygon_to_move.size());
+
+  for (int i = 0; i < polygon.size(); i++) {
+    BOOST_CHECK(polygon[i] == (*polygon_initializer_list_constructor)[i]);
+  }
+
+}
+
 BOOST_FIXTURE_TEST_CASE(area, PolygonTest)
 {
-  BOOST_CHECK_CLOSE(0, pol_1.area(), 0.01);
-  BOOST_CHECK_CLOSE(2059476079.5, pol_2->area(), 0.01);
+  BOOST_CHECK_CLOSE(0, polygon_default_constructor_integer.area(), 0.01);
+  BOOST_CHECK_CLOSE(2059476079.5, polygon_initializer_list_constructor->area(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(isInner, PolygonTest)
 {
-  BOOST_CHECK(false == pol_2->isInner(PointI(0,0)));
-  BOOST_CHECK(pol_2->isInner(PointI(4160000, 675000)));
+  BOOST_CHECK(false == polygon_initializer_list_constructor->isInner(PointI(0,0)));
+  BOOST_CHECK(polygon_initializer_list_constructor->isInner(PointI(4160000, 675000)));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -162,7 +210,7 @@ struct Polygon3DTest
 {
   Polygon3DTest()
   {
-    pol_2 = new Polygon3dI {
+    polygon_initializer_list_constructor = new Polygon3dI {
       Point3I(4157222, 664789, 10),
       Point3I(4149043, 688836, 20),
       Point3I(4172803, 690340, 30),
@@ -171,12 +219,12 @@ struct Polygon3DTest
       Point3I(4146292, 666953, 15),
       Point3I(4138759, 702670, 10) };
              
-    pol_3 = new Polygon3dD(10);
+    polygon_reserve_constructor = new Polygon3dD(10);
   }
   ~Polygon3DTest()
   {
-    if (pol_2) delete pol_2, pol_2 = nullptr;
-    if (pol_3) delete pol_3, pol_3 = nullptr;
+    if (polygon_initializer_list_constructor) delete polygon_initializer_list_constructor, polygon_initializer_list_constructor = nullptr;
+    if (polygon_reserve_constructor) delete polygon_reserve_constructor, polygon_reserve_constructor = nullptr;
   }
 
   void setup()
@@ -188,9 +236,9 @@ struct Polygon3DTest
 
   }
 
-  Polygon3dI  pol_1;
-  Polygon3dI *pol_2;
-  Polygon3dD *pol_3;
+  Polygon3dI  polygon_default_constructor_integer;
+  Polygon3dI *polygon_initializer_list_constructor;
+  Polygon3dD *polygon_reserve_constructor;
 };
 
 
@@ -198,42 +246,42 @@ struct Polygon3DTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
 {
-  BoundingBoxI bbox = pol_1.boundingBox();
+  BoundingBoxI bbox = polygon_default_constructor_integer.boundingBox();
   
-  BOOST_CHECK_EQUAL(0, pol_1.size());
-  BOOST_CHECK(pol_1.type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(0, polygon_default_constructor_integer.size());
+  BOOST_CHECK(polygon_default_constructor_integer.type() == Entity::Type::polygon3d);
   BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.x);
   BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.y);
   BOOST_CHECK_EQUAL(TL_INT_MAX, bbox.pt1.z);
   BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.x);
   BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.y);
   BOOST_CHECK_EQUAL(TL_INT_MIN, bbox.pt2.z);
-  BOOST_CHECK_EQUAL(0., pol_1.length());
-  BOOST_CHECK(pol_1.is3D());
+  BOOST_CHECK_EQUAL(0., polygon_default_constructor_integer.length());
+  BOOST_CHECK(polygon_default_constructor_integer.is3D());
 }
 
 /* Constructor reserve */
 
 BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
 {
-  BoundingBoxD bbox = pol_3->boundingBox();
+  BoundingBoxD bbox = polygon_reserve_constructor->boundingBox();
 
-  BOOST_CHECK_EQUAL(10, pol_3->size());
-  BOOST_CHECK(pol_3->type() == Entity::Type::polygon3d);
+  BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->size());
+  BOOST_CHECK(polygon_reserve_constructor->type() == Entity::Type::polygon3d);
   BOOST_CHECK_EQUAL(0., bbox.pt1.x);
   BOOST_CHECK_EQUAL(0., bbox.pt1.y);
   BOOST_CHECK_EQUAL(0., bbox.pt1.z);
   BOOST_CHECK_EQUAL(0., bbox.pt2.x);
   BOOST_CHECK_EQUAL(0., bbox.pt2.y);
   BOOST_CHECK_EQUAL(0., bbox.pt2.z);
-  BOOST_CHECK_EQUAL(0., pol_3->length());
+  BOOST_CHECK_EQUAL(0., polygon_reserve_constructor->length());
 }
 
 /*Constructor de copia*/
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 {
-  Polygon3dD pol_c(*pol_3);
+  Polygon3dD pol_c(*polygon_reserve_constructor);
   BOOST_CHECK_EQUAL(10, pol_c.size());
 
   BoundingBoxD bbox = pol_c.boundingBox();
@@ -254,9 +302,9 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
 {
-  BOOST_CHECK_EQUAL(7, pol_2->size());
+  BOOST_CHECK_EQUAL(7, polygon_initializer_list_constructor->size());
 
-  BoundingBoxD bbox = pol_2->boundingBox();
+  BoundingBoxD bbox = polygon_initializer_list_constructor->boundingBox();
 
   BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
   BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
@@ -265,25 +313,25 @@ BOOST_FIXTURE_TEST_CASE(constructor_list, Polygon3DTest)
   BOOST_CHECK_EQUAL(702670, bbox.pt2.y);
   BOOST_CHECK_EQUAL(30, bbox.pt2.z);
 
-  BOOST_CHECK_CLOSE(193131.62, pol_2->length(), 0.01);
+  BOOST_CHECK_CLOSE(193131.62, polygon_initializer_list_constructor->length(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(type, Polygon3DTest)
 {
-  BOOST_CHECK(pol_1.type() == Entity::Type::polygon3d);
-  BOOST_CHECK(pol_2->type() == Entity::Type::polygon3d);
-  BOOST_CHECK(pol_3->type() == Entity::Type::polygon3d);
+  BOOST_CHECK(polygon_default_constructor_integer.type() == Entity::Type::polygon3d);
+  BOOST_CHECK(polygon_initializer_list_constructor->type() == Entity::Type::polygon3d);
+  BOOST_CHECK(polygon_reserve_constructor->type() == Entity::Type::polygon3d);
 }
 
 /* Operador de asignación */
 
 BOOST_FIXTURE_TEST_CASE(assing_operator, Polygon3DTest)
 {
-  Polygon3dI polygon = *pol_2;
+  Polygon3dI polygon = *polygon_initializer_list_constructor;
 
   BOOST_CHECK_EQUAL(7, polygon.size());
 
-  BoundingBoxD bbox = pol_2->boundingBox();
+  BoundingBoxD bbox = polygon_initializer_list_constructor->boundingBox();
 
   BOOST_CHECK_EQUAL(4137012, bbox.pt1.x);
   BOOST_CHECK_EQUAL(642997, bbox.pt1.y);
@@ -418,7 +466,7 @@ struct MultiPolygon3DTest
 
   void setup()
   {
-    Polygon3dI pol_2{
+    Polygon3dI polygon_initializer_list_constructor{
       Point3I(4157222, 664789, 10),
       Point3I(4149043, 688836, 20),
       Point3I(4172803, 690340, 30),
@@ -427,7 +475,7 @@ struct MultiPolygon3DTest
       Point3I(4146292, 666953, 15),
       Point3I(4138759, 702670, 10) 
     };
-    multipolygon2.push_back(pol_2);
+    multipolygon2.push_back(polygon_initializer_list_constructor);
   }
 
   void teardown()

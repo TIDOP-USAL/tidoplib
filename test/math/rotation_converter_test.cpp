@@ -1,6 +1,6 @@
 #define BOOST_TEST_MODULE Tidop rotation converter test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/rotations.h>
+#include <tidop/math/algebra/rotation_convert.h>
 
 using namespace tl::math;
 

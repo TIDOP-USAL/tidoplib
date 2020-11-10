@@ -15,13 +15,21 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL)
     add_executable(${the_target} ${srcs})
 	
     target_link_libraries(${the_target} tl_core tl_geom tl_geospatial)
-	    target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+	  target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    
     if(HAVE_GDAL)
       target_link_libraries(${the_target} ${GDAL_LIBRARY})
-	endif(HAVE_GDAL)
-	if(HAVE_OPENCV)
+    endif(HAVE_GDAL)
+
+    if(HAVE_PROJ4)
+        target_link_libraries(${the_target} 
+                              ${PROJ4_LIBRARIES})
+    endif(HAVE_PROJ4)
+
+	  if(HAVE_OPENCV)
       target_link_libraries(${the_target} ${OpenCV_LIBS})
-	endif(HAVE_OPENCV)
+	  endif(HAVE_OPENCV)
+
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()

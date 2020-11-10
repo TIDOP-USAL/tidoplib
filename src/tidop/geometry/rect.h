@@ -36,11 +36,19 @@ class Rect
 
 public:
 
+  typedef T value_type;
+
+public:
+
   Rect();
   Rect(T x, T y, T width, T height);
-  Rect(const Point<T> &topLeft, const Point<T> &bottomRight);
-  Rect(const Point<T> &topLeft, const Size<T> &size);
-  Rect(const Point<T> &topLeft, T width, T height);
+  Rect(const Point<T> &topLeft, 
+       const Point<T> &bottomRight);
+  Rect(const Point<T> &topLeft, 
+       const Size<T> &size);
+  Rect(const Point<T> &topLeft, 
+       T width, 
+       T height);
   Rect(const Rect &rect);
   Rect(Rect &&rect) TL_NOEXCEPT;
 
@@ -63,7 +71,6 @@ public:
 
 public:
 
-  typedef T value_type;
   T x;
   T y;
   T width;
@@ -96,7 +103,8 @@ Rect<T>::Rect(T x, T y, T width, T height)
 }
 
 template<typename T> inline 
-Rect<T>::Rect(const Point<T> &topLeft, const Point<T> &bottomRight)
+Rect<T>::Rect(const Point<T> &topLeft, 
+              const Point<T> &bottomRight)
   : x(topLeft.x), 
     y(topLeft.y), 
     width(bottomRight.x - topLeft.x), 
@@ -105,7 +113,8 @@ Rect<T>::Rect(const Point<T> &topLeft, const Point<T> &bottomRight)
 }
 
 template<typename T> inline
-Rect<T>::Rect(const Point<T> &topLeft, const Size<T> &size)
+Rect<T>::Rect(const Point<T> &topLeft, 
+              const Size<T> &size)
   : x(topLeft.x), 
     y(topLeft.y), 
     width(size.width), 
@@ -114,7 +123,8 @@ Rect<T>::Rect(const Point<T> &topLeft, const Size<T> &size)
 }
 
 template<typename T> inline
-Rect<T>::Rect(const Point<T> &topLeft, T width, T height)
+Rect<T>::Rect(const Point<T> &topLeft,
+              T width, T height)
   : x(topLeft.x), 
     y(topLeft.y), 
     width(width), 
@@ -179,7 +189,8 @@ Point<T> Rect<T>::topRight() const
 template<typename T>
 inline Point<T> Rect<T>::bottomRight() const
 {
-  return Point<T>(this->x + this->width, this->y + this->height);
+  return Point<T>(this->x + this->width, 
+                  this->y + this->height);
 }
 
 template<typename T>
@@ -213,7 +224,8 @@ template<typename T> inline
 Window<Point<T>> Rect<T>::window() const
 {
   return Window<Point<T>>(Point<T>(this->x, this->y), 
-                          Point<T>(this->x + this->width, this->y + this->height));
+                          Point<T>(this->x + this->width, 
+                                   this->y + this->height));
 }
 
 template<typename T> template<typename T2> inline 
@@ -235,7 +247,8 @@ Rect<T>::operator Rect<T2>() const
 
 
 template<typename T> static inline
-bool operator == (const Rect<T> &rect1, const Rect<T> &rect2)
+bool operator == (const Rect<T> &rect1, 
+                  const Rect<T> &rect2)
 {
   return (rect1.x == rect2.x && 
           rect1.y == rect2.y && 
@@ -244,7 +257,8 @@ bool operator == (const Rect<T> &rect1, const Rect<T> &rect2)
 }
 
 template<typename T> static inline
-bool operator != (const Rect<T> &rect1, const Rect<T> &rect2)
+bool operator != (const Rect<T> &rect1, 
+                  const Rect<T> &rect2)
 {
   return (rect1.x != rect2.x || 
           rect1.y != rect2.y || 
@@ -253,7 +267,8 @@ bool operator != (const Rect<T> &rect1, const Rect<T> &rect2)
 }
 
 template<typename T> static inline
-Rect<T> intersect(const Rect<T> &rect1, const Rect<T> &rect2)
+Rect<T> intersect(const Rect<T> &rect1, 
+                  const Rect<T> &rect2)
 {
   Rect<T> rect;
   rect.x = std::max(rect1.x, rect2.x);

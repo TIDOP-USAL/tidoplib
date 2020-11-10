@@ -183,7 +183,7 @@
 #else
 // Ver si funciona _Pragma()... Da los errores:
 // /home/esteban/desarrollo/tidoplib/src/transform.h:331: error: _Pragma takes a parenthesized string literal
-// TL_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
+// TL_COMPILER_WARNING("'compute' no esta soportado para TransformMultiple");
 //                                                                   ^
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )

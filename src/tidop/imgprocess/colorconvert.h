@@ -86,8 +86,6 @@ TL_EXPORT void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
 
 
 
-
-
 /* ---------------------------------------------------------------------------------- */
 
 /*!

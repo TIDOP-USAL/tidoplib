@@ -67,7 +67,7 @@ if(MSVC)
     set(TL_RUNTIME vc12)
   elseif(MSVC_VERSION EQUAL 1900)
     set(TL_RUNTIME vc14)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
   elseif(MSVC_VERSION MATCHES "^191[0-9]$")
     set(TL_RUNTIME vc15)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
@@ -138,6 +138,7 @@ endif (BUILD_SHARED_LIBS)
 
 
 # Activación/desactivación de los diferentes modulos de la libreria
+##TODO: CORE tiene que ser obligatorio...
 OPTION (BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
 OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON )
 OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
@@ -150,8 +151,8 @@ OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON
 OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
+OPTION (BUILD_APPS            "APPS"                  ON)
 OPTION (BUILD_TEST            "Include test"          OFF)
-OPTION (BUILD_EXAMPLES        "Include examples"      OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
 
 # Activa el gestor de mensajes. Si se desactiva no se mostrarán los mensajes del la librería
@@ -195,11 +196,36 @@ OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_EIGEN  "Include eigen support"                   OFF)
 OPTION (WITH_GDAL   "Include GDAL Support"                    OFF)
-OPTION (WITH_PROJ4  "Include PROJ.4 Support"                  OFF)
+OPTION (WITH_PROJ4  "Include PROJ4 Support"                   OFF)
 OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
+
+
+# ----------------------------------------------------------------------------
+#  Modulos TidopLib
+# ----------------------------------------------------------------------------
+
+set(HAVE_TL_CORE NO)
+set(HAVE_TL_MATH NO)
+set(HAVE_TL_GEOMETRY NO)
+set(HAVE_TL_IMG NO)
+set(HAVE_TL_IMG_PROCESS NO)
+set(HAVE_TL_FEAT_MATCH NO)
+set(HAVE_TL_GRAPHIC NO)
+set(HAVE_TL_GEOSPATIAL NO)
+set(HAVE_TL_VECT NO)
+set(HAVE_TL_EXPERIMENTAL NO)
+
+if(BUILD_TL_CORE)
+    set(HAVE_TL_CORE YES)
+	if(BUILD_TL_MATH)
+	    set(HAVE_TL_MATH YES)
+	endif(BUILD_TL_MATH)
+	#completar y ver que modulos se activan/desactivan en función de la activación de otros
+endif(BUILD_TL_CORE)
+
 
 # ----------------------------------------------------------------------------
 #  Detect 3rd-party libraries
@@ -258,17 +284,13 @@ endif(WITH_OPENCV)
 # Eigen  (optional)
 # ----------------------------------------------------------------------------
 if(WITH_EIGEN)
-  find_path(EIGEN_INCLUDE_PATH "Eigen/Core"
-            PATHS /usr/local /opt /usr $ENV{EIGEN_ROOT}/include ENV ProgramFiles ENV ProgramW6432
-            PATH_SUFFIXES include/eigen3 include/eigen2 Eigen/include/eigen3 Eigen/include/eigen2
-            DOC "The path to Eigen3/Eigen2 headers"
-            CMAKE_FIND_ROOT_PATH_BOTH)
-
-  if(EIGEN_INCLUDE_PATH)
-    include_directories(${EIGEN_INCLUDE_PATH})
-    set(HAVE_EIGEN YES)
-  else()
+ 
+  find_package(EIGEN3 QUIET)
+  if(NOT EIGEN3_FOUND)
     set(HAVE_EIGEN NO)
+  else()
+    include_directories(${EIGEN3_INCLUDE_DIRS})
+    set(HAVE_EIGEN YES)
   endif()
 
 endif(WITH_EIGEN)
@@ -301,7 +323,9 @@ if(WITH_PROJ4)
     set(HAVE_PROJ4 NO)
   else()
     set(HAVE_PROJ4 YES)
-    include_directories(${PROJ4_INCLUDE})
+    include_directories(${PROJ4_INCLUDE_DIRS})
+	message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
+    message(STATUS "  Library : ${PROJ4_LIBRARIES}")
   endif()
 endif()
 # ----------------------------------------------------------------------------
@@ -392,11 +416,10 @@ set(TidopLib_LIBRARIES)
 # Directorio con el código fuente de los diferentes modulos
 add_subdirectory(src)
 
+add_subdirectory(apps)
+
 # Directorio con la documentación
 add_subdirectory(doc)
-
-# Se incluye el directorio con los ejemplos
-add_subdirectory(examples)
 
 # Se incluye el directorio con los test
 add_subdirectory(test)

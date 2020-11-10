@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <tidop/math/statistics.h>
+#include <tidop/math/algebra/vector.h>
 
 #include <array>
 #include <list>
@@ -48,6 +49,16 @@ struct StatisticsTest
 
     x = { 0., 1., 2., 3., 4., 5., 6., 7., 8., 9.};
     y = { 92.8, 92.3, 80., 89.1, 83.5, 68.9, 69.2, 67.1, 58.3, 61.2};
+
+    tl_vector[0] = 8.0;
+    tl_vector[1] = 8.5;
+    tl_vector[2] = 7.5;
+    tl_vector[3] = 9.0;
+    tl_vector[4] = 6.25;
+    tl_vector[5] = 5.5;
+    tl_vector[6] = 8.5;
+    tl_vector[7] = 7.5;
+    tl_vector[8] = 8.5;
   }
 
   void teardown()
@@ -65,6 +76,8 @@ struct StatisticsTest
 
   std::list<double> x;
   std::list<double> y;
+
+  tl::math::Vector<double, 9> tl_vector;
 };
 
 BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
@@ -74,6 +87,9 @@ BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
 
   BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi.begin(), vi.end()), 0.1);
   BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi), 0.1);
+
+  BOOST_CHECK_CLOSE(7.695, tl::math::mean(tl_vector.begin(), tl_vector.end()), 0.1);
+  BOOST_CHECK_CLOSE(7.695, tl::math::mean(tl_vector), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)
@@ -82,6 +98,9 @@ BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)
   BOOST_CHECK_CLOSE(8, tl::math::median(vd), 0.01);
   BOOST_CHECK_CLOSE(4.5, tl::math::median(l.begin(), l.end()), 0.1);
   BOOST_CHECK_CLOSE(4.5, tl::math::median(l), 0.01);
+
+  BOOST_CHECK_CLOSE(8, tl::math::median(tl_vector.begin(), tl_vector.end()), 0.1);
+  BOOST_CHECK_CLOSE(8, tl::math::median(tl_vector), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(mode, StatisticsTest)

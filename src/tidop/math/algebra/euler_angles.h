@@ -20,6 +20,8 @@
 #include <vector>
 #include <array>
 
+#include "tidop/math/algebra/rotations.h"
+
 namespace tl
 {
 
@@ -45,6 +47,7 @@ namespace math
  */
 template<typename T>
 class EulerAngles
+  : public RotationBase<T>
 {
 
 public:
@@ -72,7 +75,7 @@ public:
   EulerAngles();
   EulerAngles(double omega, double phi, double kappa, Axes axes);
   EulerAngles(const EulerAngles<T> &eulerAngles);
-  ~EulerAngles();
+  ~EulerAngles() override;
 
   /*!
    * \brief Operador de asignación
@@ -91,7 +94,8 @@ public:
 
 template<typename T>
 EulerAngles<T>::EulerAngles()
-  : omega{0},
+  : RotationBase<T>(Rotation::Type::euler_angles),
+    omega{0},
     phi{0},
     kappa{0},
     axes(Axes::xyz)
@@ -103,7 +107,8 @@ EulerAngles<T>::EulerAngles(double omega,
                             double phi, 
                             double kappa, 
                             Axes axes)
-  : omega(omega),
+  : RotationBase<T>(Rotation::Type::euler_angles),
+    omega(omega),
     phi(phi),
     kappa(kappa),
     axes(axes)
@@ -112,7 +117,8 @@ EulerAngles<T>::EulerAngles(double omega,
 
 template<typename T>
 EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
-  : omega(eulerAngles.omega),
+  : RotationBase<T>(Rotation::Type::euler_angles),
+    omega(eulerAngles.omega),
     phi(eulerAngles.phi),
     kappa(eulerAngles.kappa),
     axes(eulerAngles.axes)

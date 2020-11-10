@@ -21,6 +21,7 @@
 #include <array>
 
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/rotations.h"
 
 namespace tl
 {
@@ -41,27 +42,29 @@ namespace math
   */
 
 /*!
- * \brief Ángulos de Euler
+ * \brief Notación axial-angular
  */
 template<typename T>
 class AxisAngle
+  : public RotationBase<T>
 {
 
 public:
 
   AxisAngle();
-  AxisAngle(T angle, const Vector<3, T> &axis);
-  ~AxisAngle();
+  AxisAngle(T angle, const Vector<T, 3> &axis);
+  ~AxisAngle() override;
 
 public:
 
   T angle;
-  Vector<3, T> axis;
+  Vector<T, 3> axis;
 };
 
 template<typename T>
 AxisAngle<T>::AxisAngle()
-  : angle(0)
+  : RotationBase<T>(Rotation::Type::axis_angle),
+    angle(0)
 {
   axis.at(0) = 1;
   axis.at(1) = 0;
@@ -69,8 +72,9 @@ AxisAngle<T>::AxisAngle()
 }
 
 template<typename T>
-AxisAngle<T>::AxisAngle(T angle, const Vector<3, T> &axis)
-  : angle(angle),
+AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
+  : RotationBase<T>(Rotation::Type::axis_angle),
+    angle(angle),
     axis(axis)
 {
   TL_TODO("normalizar vector")

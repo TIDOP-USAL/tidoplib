@@ -24,9 +24,9 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/types.hpp"
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/types.hpp"
+//#endif // HAVE_OPENCV
 
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/math/algebra/vector.h"
@@ -61,16 +61,6 @@ public:
    */
   typedef T value_type;
 
-  /*!
-   * \brief Coordenada X
-   */
-  T x;
-
-  /*!
-   * \brief Coordenada Y
-   */
-  T y;
-
 public:
 
   /*!
@@ -101,7 +91,7 @@ public:
    * \brief Constructor a partir de un vector
    * \param[in] vector Vector
    */
-  Point(const math::Vector<2, T> &vector);
+  Point(const math::Vector<T, 2> &vector);
 
   /*!
    * \brief Constructor
@@ -133,12 +123,24 @@ public:
    */
   template<typename T2> operator Point3<T2>() const;
 
-#ifdef HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//  /*!
+//   * \brief Conversión a punto OpenCV
+//   */
+//  template<typename T2> operator cv::Point_<T2>() const;
+//#endif
+
+public:
+
   /*!
-   * \brief Conversión a punto OpenCV
+   * \brief Coordenada X
    */
-  template<typename T2> operator cv::Point_<T2>() const;
-#endif
+  T x;
+
+  /*!
+   * \brief Coordenada Y
+   */
+  T y;
 
 };
 
@@ -179,13 +181,13 @@ Point<T>::Point(const Point &pt)
 template<typename T> inline
 Point<T>::Point(Point &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)), 
-    x(pt.x), 
-    y(pt.y) 
+    x(std::exchange(pt.x, static_cast<T>(0))),
+    y(std::exchange(pt.y, static_cast<T>(0)))
 {
 }
 
 template<typename T> inline
-Point<T>::Point(const math::Vector<2, T> &vector)
+Point<T>::Point(const math::Vector<T, 2> &vector)
   : Entity(Entity::Type::point2d),
     x(vector[0]),
     y(vector[1])
@@ -217,8 +219,8 @@ Point<T> &Point<T>::operator = (Point &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     Entity::operator = (std::forward<Entity>(pt));
-    this->x = pt.x;
-    this->y = pt.y;
+    this->x = std::exchange(pt.x, static_cast<T>(0));
+    this->y = std::exchange(pt.y, static_cast<T>(0));
   }
   return *this;
 }
@@ -251,19 +253,19 @@ Point<T>::operator Point3<T2>() const
 }
 
 
-#ifdef HAVE_OPENCV
-template<typename T> template<typename T2> inline
-Point<T>::operator cv::Point_<T2>() const
-{
-  if (std::is_integral<T2>::value) {
-    return cv::Point_<T2>(static_cast<T2>(std::round(this->x)), 
-                          static_cast<T2>(std::round(this->y)));
-  } else {
-    return cv::Point_<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
-  }
-}
-#endif
-TL_ENABLE_WARNING(TL_WARNING_C4244)
+//#ifdef HAVE_OPENCV
+//template<typename T> template<typename T2> inline
+//Point<T>::operator cv::Point_<T2>() const
+//{
+//  if (std::is_integral<T2>::value) {
+//    return cv::Point_<T2>(static_cast<T2>(std::round(this->x)), 
+//                          static_cast<T2>(std::round(this->y)));
+//  } else {
+//    return cv::Point_<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
+//  }
+//}
+//#endif
+//TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename T> static inline
 Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
@@ -358,7 +360,8 @@ Point<T1> operator * (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x*b)), 
                      static_cast<T1>(std::round(pt.y*b)));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x*b), static_cast<T1>(pt.y*b));
+    return Point<T1>(static_cast<T1>(pt.x*b), 
+                     static_cast<T1>(pt.y*b));
   }
 }
 
@@ -369,7 +372,8 @@ Point<T2> operator * (T1 a, const Point<T2> &b)
     return Point<T2>(static_cast<T2>(std::round(b.x*a)), 
                      static_cast<T2>(std::round(b.y*a)));
   } else {
-    return Point<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a));
+    return Point<T2>(static_cast<T2>(b.x*a), 
+                     static_cast<T2>(b.y*a));
   }
 }
 
@@ -381,7 +385,8 @@ Point<T1> operator / (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x / static_cast<double>(b))),
                      static_cast<T1>(std::round(pt.y / static_cast<double>(b))));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x / b), static_cast<T1>(pt.y / b));
+    return Point<T1>(static_cast<T1>(pt.x / b), 
+                     static_cast<T1>(pt.y / b));
   }
 }
 
@@ -457,7 +462,7 @@ public:
    * \brief Constructor vector
    * \param[in] vector Vector
    */
-  Point3(const math::Vector<3, T> &vector);
+  Point3(const math::Vector<T, 3> &vector);
 
   /*!
    * \brief Constructor vector
@@ -521,14 +526,14 @@ Point3<T>::Point3(const Point3 &pt)
 template<typename T> inline
 Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)),
-    x(pt.x), 
-    y(pt.y), 
-    z(pt.z)
+    x(std::exchange(pt.x, 0)), 
+    y(std::exchange(pt.y, 0)), 
+    z(std::exchange(pt.z, 0))
 {
 }
 
 template<typename T> inline 
-Point3<T>::Point3(const math::Vector<3, T> &vector)
+Point3<T>::Point3(const math::Vector<T, 3> &vector)
   : Entity(Entity::Type::point3d),
     x(vector[0]),
     y(vector[1]),
@@ -562,9 +567,9 @@ Point3<T> &Point3<T>::operator = (Point3 &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     Entity::operator = (std::forward<Entity>(pt));
-    this->x = pt.x;
-    this->y = pt.y;
-    this->z = pt.z;
+    this->x = std::exchange(pt.x, 0);
+    this->y = std::exchange(pt.y, 0);
+    this->z = std::exchange(pt.z, 0);
   }
   return *this;
 }
@@ -1061,24 +1066,24 @@ typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
 
 #ifdef HAVE_OPENCV
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<int> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<int> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<double> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<double> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<float> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<float> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
 #endif
 

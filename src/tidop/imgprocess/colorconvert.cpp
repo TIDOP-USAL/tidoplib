@@ -10,7 +10,7 @@ namespace tl
 
 void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk)
 {
-  TL_ASSERT(rgb.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   cv::Mat _cmyk(rgb.size(), CV_32FC4);
 
@@ -47,7 +47,7 @@ void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk)
 
 void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb)
 {
-  TL_ASSERT(cmyk.channels() != 4, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(cmyk.channels() == 4, "Invalid image type. Incorrect number of channels")
 
   cv::Mat _rgb(cmyk.size(), CV_8UC3);
 
@@ -82,7 +82,7 @@ void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb)
 
 void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl)
 {
-  TL_ASSERT(rgb.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   cv::Mat _hsl(rgb.size(), CV_32FC3);
 
@@ -116,7 +116,7 @@ void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl)
 
 void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb)
 {
-  TL_ASSERT(hsl.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(hsl.channels() == 3, "Invalid image type. Incorrect number of channels")
   
   cv::Mat _rgb(hsl.size(), CV_8UC3);
 
@@ -150,7 +150,7 @@ void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb)
 
 void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv)
 {
-  TL_ASSERT(rgb.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   //cv::Mat _hsv(rgb.size(), CV_32FC3);
 
@@ -186,7 +186,7 @@ void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv)
 
 void hsvToRgb(const cv::Mat &hsv, cv::Mat &rgb)
 {
-  TL_ASSERT(hsv.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(hsv.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   //cv::Mat _rgb(hsv.size(), CV_8UC3);
 
@@ -228,7 +228,7 @@ void rgbToLuminance(const cv::Mat &rgb, cv::Mat &gray)
 
 void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
 {
-  TL_ASSERT(rgb.channels() != 3, "Invalid image type. Incorrect number of channels")
+  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
   cv::Mat chroma_coord(rgb.size(), CV_32FC3);
 

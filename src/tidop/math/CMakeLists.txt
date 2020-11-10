@@ -12,11 +12,14 @@ add_library(tl_math ${LIB_TYPE}
             algebra/euler_angles.h
             algebra/rotations.h
             algebra/rotation_matrix.h
+            algebra/rotation_convert.h
             algebra/axis_angle.h
             algebra/vectors.h
             algebra/matrix.h
             algebra/vector.h
             algebra/svd.h
+			algebra/lu.h
+			algebra/qr.h
 )
 
 # Añade el proyecto a la carpeta 'modules'
