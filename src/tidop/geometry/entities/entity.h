@@ -303,7 +303,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~EntityContainer() = default;
+  virtual ~EntityContainer() = default;
 
 
   /*!
@@ -784,6 +784,8 @@ public:
    */
   Entities3D(std::initializer_list<Entity_t> entities);
   
+  ~Entities3D() override = default;
+
   /*!
    * \brief Devuelve los puntos que esta dentro de un cuadro delimitador
    * \param[in] bbox Cuadro delimitador

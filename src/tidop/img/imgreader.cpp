@@ -68,7 +68,7 @@ public:
     RegisterGdal::init();
   }
 
-  ~ImageReaderGdal()
+  ~ImageReaderGdal() override
   {
     this->close();
   }

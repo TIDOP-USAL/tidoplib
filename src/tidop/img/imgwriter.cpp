@@ -78,14 +78,14 @@ public:
 
   ~ImageWriterGdal()
   {
-    close();
+    this->close();
   }
 
 // Heredado vía ImageWriter
 
   void open() override
   {
-    close();
+    this->close();
 
     std::string extension = fs::path(mFileName).extension().string();
     std::string driver_name = gdalDriverFromExtension(extension);

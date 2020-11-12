@@ -216,7 +216,7 @@ TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension)
   else if (boost::iequals(extension, ".hdr" ))  format = "MFF";          // Vexcel MFF
   else if (boost::iequals(extension, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
   else if (boost::iequals(extension, ".wms" ))  format = "WMS";          // WMS
-  else                                          format = nullptr;
+  else                                          format = "";
   return format;
 }
 

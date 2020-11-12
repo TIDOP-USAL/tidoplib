@@ -1,103 +1,126 @@
-#include "core/datamodel.h"
+#include "datamodel.h"
 
 namespace tl
 {
 
-//TODO: falta todo por hacer...
+namespace experimental
+{
+
 
 /* ---------------------------------------------------------------------------------- */
 
-TableHeaderField::TableHeaderField(const std::string &name, Type type) 
+TableField::TableField(const std::string &name, 
+                                   Type type,
+                                   int size) 
   : mName(name),
-    mType(type)
+    mType(type),
+    mSize(size)
 {
 }
 
-TableHeaderField::~TableHeaderField()
+TableField::~TableField()
 {
 }
 
-const char *TableHeaderField::getName() const
+std::string TableField::name() const
 {
-  return mName.c_str();
+  return mName;
 }
 
-TableHeaderField::Type TableHeaderField::getType() const
+TableField::Type TableField::type() const
 {
   return mType;
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-TableHeader::TableHeader()
-  : mTableFields(0)
+int TableField::size() const
 {
-}
-
-TableHeader::TableHeader(const TableHeader &tableHeader) 
-  : mTableFields(tableHeader.mTableFields) 
-{
-}
-
-TableHeader::TableHeader(std::initializer_list<std::shared_ptr<TableHeaderField>> tableHeader) 
-  : mTableFields(tableHeader) 
-{
-}
-
-TableHeader::~TableHeader()
-{
-}
-
-void TableHeader::addField(std::shared_ptr<TableHeaderField> field)
-{
-  mTableFields.push_back(field);
-}
-
-void TableHeader::clear() 
-{ 
-  mTableFields.clear(); 
-}
-
-size_t TableHeader::getFieldCount() const
-{
-  return mTableFields.size();
-}
-
-const TableHeaderField *TableHeader::getTableHeaderField(int idx) const
-{
-  return mTableFields[idx].get();
+  return mSize;
 }
 
 /* ---------------------------------------------------------------------------------- */
 
-//TableRegisterField::TableRegisterField(const std::string &value) 
-//  : mValue(value)
-//{}
-//
-//TableRegisterField::~TableRegisterField()
-//{}
-//
-//std::string  TableRegisterField::getValue() const
+//TableHeader::TableHeader()
+//  : mTableFields(0)
 //{
-//  return mValue;
 //}
 //
-//void TableRegisterField::setValue(const std::string &value)
+//TableHeader::TableHeader(const TableHeader &tableHeader) 
+//  : mTableFields(tableHeader.mTableFields) 
 //{
-//  mValue = value;
+//}
+//
+//TableHeader::TableHeader(std::initializer_list<TableField> tableHeader) 
+//  : mTableFields(tableHeader) 
+//{
+//}
+//
+//TableHeader::~TableHeader()
+//{
+//}
+//
+//void TableHeader::addField(const TableField &field)
+//{
+//  mTableFields.push_back(field);
+//}
+//
+//void TableHeader::clear() 
+//{ 
+//  mTableFields.clear(); 
+//}
+//
+//size_t TableHeader::size() const
+//{
+//  return mTableFields.size();
+//}
+//
+//TableField TableHeader::tableHeaderField(int idx) const
+//{
+//  return mTableFields[idx];
 //}
 
 /* ---------------------------------------------------------------------------------- */
 
 
-TableRegister::TableRegister()
-  : mRegisterValues(0)
+
+RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field)
+  : mField(field),
+    mValue("")
 {
 }
 
-TableRegister::TableRegister(int size)
-  : mRegisterValues(size)
+RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field,
+                             const std::string &value) 
+  : mField(field),
+    mValue(value)
 {
+}
+
+RegisterValue::~RegisterValue()
+{
+}
+
+std::string  RegisterValue::value() const
+{
+  return mValue;
+}
+
+void RegisterValue::setValue(const std::string &value)
+{
+  TL_TODO("Usar TableField para comprobar que el valor introducido es correcto")
+  mValue = value;
+}
+
+/* ---------------------------------------------------------------------------------- */
+
+
+TableRegister::TableRegister(const std::vector<std::shared_ptr<TableField>> &fields)
+{
+  size_t size = fields.size();
+  //mRegisterValues.resize(size);
+
+  for (size_t i = 0; i < size; i++) {
+    mRegisterValues.push_back(RegisterValue(fields[i]));
+  }
 }
 
 TableRegister::TableRegister(const TableRegister &_register)
@@ -115,27 +138,33 @@ TableRegister::~TableRegister()
 {
 }
 
-const char *TableRegister::getValue(int idx)
-{
-  //TODO: Aqui hay que ver como devolver el tipo adecuado
-  if (idx < mRegisterValues.size())
-    return mRegisterValues[idx].c_str();
-  else return NULL;
-}
-
-void TableRegister::setField(int idx, const std::string &field)
+std::string TableRegister::value(int idx) const
 {
   if (idx < mRegisterValues.size())
-    mRegisterValues[idx] = field;
+    return mRegisterValues[idx].value();
+  else return std::string();
 }
 
-void TableRegister::setSize(int size)
+void TableRegister::setValue(int idx, const std::string &field)
 {
-  mRegisterValues.resize(size);
+  if (idx < mRegisterValues.size())
+    mRegisterValues[idx].setValue(field);
+}
+
+size_t TableRegister::size() const
+{
+  return mRegisterValues.size();
 }
 
 /* ---------------------------------------------------------------------------------- */
 
+
+DataTable::DataTable(const std::string &tableName, 
+                     const std::vector<std::shared_ptr<TableField>> &TableField)
+  : mTableName(tableName), 
+    mTableFields(TableField)
+{
+}
 
 DataTable::iterator DataTable::begin()
 {
@@ -147,49 +176,55 @@ DataTable::iterator DataTable::end()
   return mRegister.end();
 }
 
-void DataTable::addRegister(std::shared_ptr<TableRegister> _register)
+//void DataTable::addRegister(std::shared_ptr<TableRegister> _register)
+//{
+//  mRegister.push_back(_register);
+//}
+//
+//void DataTable::deleteRegister(int index)
+//{
+//  iterator it = mRegister.begin();
+//  std::advance(it, index);
+//  mRegister.erase(it);
+//}
+
+std::string DataTable::name() const
 {
-  mRegister.push_back(_register);
+  return mTableName;
 }
 
-void DataTable::deleteRegister(int index)
+//std::shared_ptr<TableRegister> DataTable::getRegister(int index)
+//{
+//  iterator it = mRegister.begin();
+//  std::advance(it, index);
+//  return *it;
+//}
+
+TL_TODO("¿Mejor como estatica?")
+std::shared_ptr<TableRegister> DataTable::createRegister(int index)
 {
-  iterator it = mRegister.begin();
-  std::advance(it, index);
-  mRegister.erase(it);
+  return std::shared_ptr<TableRegister>(new TableRegister(mTableFields));
 }
 
-const char *DataTable::getName() const
+std::vector<std::shared_ptr<TableField>> DataTable::fields() const
 {
-  return mTableName.c_str();
+  return mTableFields;
 }
-
-std::shared_ptr<TableRegister> DataTable::getRegister(int index)
-{
-  iterator it = mRegister.begin();
-  std::advance(it, index);
-  return *it;
-}
-
-const TableHeader *DataTable::getTableHeader() const
-{
-  return mTableHeader.get();
-}
-
-size_t DataTable::getFieldCount() const
-{
-  return mTableHeader->getFieldCount();
-}
+//
+//size_t DataTable::getFieldCount() const
+//{
+//  return mTableHeader->getFieldCount();
+//}
 
 void DataTable::setName(const char *name)
 {
   mTableName = name;
 }
 
-void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
-{
-  mTableHeader = tableHeader;
-}
+//void DataTable::setTableHeader(std::shared_ptr<TableHeader> tableHeader)
+//{
+//  mTableHeader = tableHeader;
+//}
 
 size_t DataTable::size()
 {
@@ -208,9 +243,10 @@ DataModel::~DataModel()
 {
 }
 
-void DataModel::createTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader) 
+void DataModel::createTable(const std::string &tableName,
+                            const std::vector<std::shared_ptr<TableField>> &fields) 
 {
-  mDataTables.push_back(std::make_shared<DataTable>(tableName, tableHeader));
+  mDataTables.push_back(std::make_shared<DataTable>(tableName, fields));
 }
 
 void DataModel::addTable(std::shared_ptr<DataTable> table)
@@ -218,7 +254,7 @@ void DataModel::addTable(std::shared_ptr<DataTable> table)
   mDataTables.push_back(table);
 }
 
-/* ---------------------------------------------------------------------------------- */
 
+} // End namespace experimental
 
-} // End namespace TKL
+} // End namespace tl
