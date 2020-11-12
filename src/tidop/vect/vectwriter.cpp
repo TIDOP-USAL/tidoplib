@@ -39,25 +39,15 @@ class VectorWriterGdal
 
 public:
 
-	VectorWriterGdal(const std::string &fileName)
-    : VectorWriter(fileName),
-      mDataset(nullptr),
-      mDriver(nullptr),
-      mSpatialReference()
-  {
-    RegisterGdal::init();
-  }
-
-  ~VectorWriterGdal() override
-  {
-    this->close();
-  }
+  VectorWriterGdal(const std::string &fileName);
+  ~VectorWriterGdal() override;
 
   void open() override;
   bool isOpen() override;
   void close() override;
   void create() override;
   void write(const GLayer &layer) override;
+  void setCRS(const geospatial::Crs &crs) override;
 
 private:
 
@@ -76,13 +66,42 @@ private:
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon *gMultiPolygon);
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon3D *gMultiPolygon3D);
   void writeStyles(OGRStyleMgr *ogrStyleMgr, const GraphicEntity *gStyle);
+  void setGdalProjection(const geospatial::Crs &crs);
 
 private:
 
   GDALDataset *mDataset;
   GDALDriver *mDriver;
-  OGRSpatialReference mSpatialReference;
+  OGRSpatialReference *mSpatialReference;
 };
+
+
+VectorWriterGdal::VectorWriterGdal(const std::string &fileName)
+  : VectorWriter(fileName),
+    mDataset(nullptr),
+    mDriver(nullptr),
+#if _DEBUG
+    mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+#else
+    mSpatialReference(new OGRSpatialReference(nullptr))
+#endif
+{
+  RegisterGdal::init();
+}
+
+VectorWriterGdal::~VectorWriterGdal()
+{
+  this->close();
+
+  if (mSpatialReference) {
+#if _DEBUG
+    OSRDestroySpatialReference(mSpatialReference);
+#else
+    OGRSpatialReference::DestroySpatialReference(mSpatialReference);
+#endif
+    mSpatialReference = nullptr;
+  }
+}
 
 void VectorWriterGdal::open()
 {
@@ -96,12 +115,6 @@ void VectorWriterGdal::open()
   mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str()); 
 
   if (mDriver == nullptr) throw std::runtime_error("Vector file open fail");
-
-  mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFileName.c_str(),
-                                        GDAL_OF_VECTOR,
-                                        nullptr,
-                                        nullptr/*options*/,
-                                        nullptr));
 }
   
 inline bool VectorWriterGdal::isOpen()
@@ -129,10 +142,13 @@ void VectorWriterGdal::create()
   mDataset = mDriver->Create(mFileName.c_str(), 0, 0, 0, GDT_Unknown, nullptr);
   
   if (mDataset == nullptr) throw std::runtime_error("Creation of file failed"); 
+
 }
 
 void VectorWriterGdal::write(const GLayer &layer)
 {
+  if (mDataset == nullptr) throw std::runtime_error("The file has not been created. Use VectorWriterGdal::create() method");
+
   OGRLayer *ogrLayer = mDataset->GetLayerByName(layer.name().c_str());
   if (!ogrLayer) {
     ogrLayer = this->createLayer(layer.name());
@@ -172,7 +188,7 @@ void VectorWriterGdal::write(const GLayer &layer)
   OGRStyleTable oStyleTable;
   OGRStyleMgr *ogrStyleMgr = new OGRStyleMgr(&oStyleTable);
 
-  OGRFeature *ogrFeature; 
+  OGRFeature *ogrFeature = nullptr; 
 
   for (auto &entity : layer) {
 
@@ -254,6 +270,13 @@ void VectorWriterGdal::write(const GLayer &layer)
 
 }
 
+void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
+{
+  if (mDataset && crs.isValid()) {
+    this->setGdalProjection(crs);
+  }
+}
+
 void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr, 
                                    const GraphicEntity *gStyle)
 {
@@ -300,18 +323,18 @@ OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
     if (mDataset->GetLayerCount() == 0) {
       /// S?lo soportan la creaci?n de una capa con lo cual se a?adir? siempre a la capa "0"
       layer = mDataset->CreateLayer("0", 
-                                    &mSpatialReference /*poOutputSRS*/, 
+                                    mSpatialReference, 
                                     static_cast<OGRwkbGeometryType>(wkbUnknown), 
                                     encoding);
     }
   } else if (strcmp(driver_name, "SHP") == 0) {
     layer = mDataset->CreateLayer(layerName.c_str(), 
-                                  &mSpatialReference, 
+                                  mSpatialReference, 
                                   static_cast<OGRwkbGeometryType>(wkbUnknown), 
                                   encoding);
   } else {
     layer = mDataset->CreateLayer(layerName.c_str(), 
-                                  &mSpatialReference, 
+                                  mSpatialReference, 
                                   static_cast<OGRwkbGeometryType>(wkbUnknown),
                                   encoding);
   }
@@ -589,6 +612,12 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
   if (OGRERR_NONE != ogrFeature->SetGeometry(&ogrMultiPolygon))
     throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", 
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+}
+
+void VectorWriterGdal::setGdalProjection(const geospatial::Crs &crs)
+{
+  std::string wkt = crs.exportToWkt();
+  mSpatialReference->importFromWkt(wkt.c_str());
 }
 
 #endif

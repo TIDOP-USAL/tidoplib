@@ -159,6 +159,11 @@ public:
   template <typename Point_t2>
   explicit operator Affine<Point_t2>() const;
 
+  bool isNull() const
+  {
+    return (mScale == 1.);
+  }
+
 protected:
 
   /*!

@@ -103,6 +103,12 @@ public:
    */
   virtual bool isNumberOfPointsValid(size_t npoints) const = 0;
 
+  /*!
+   * \brief Transformación con valores por defecto
+   * Si la transformación tiene los valores por defecto al aplicarla los 
+   * el resultado será el mismo que la entrada
+   */
+  virtual bool isNull() const = 0;
 };
 
 

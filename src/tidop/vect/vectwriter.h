@@ -8,6 +8,7 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
+#include "tidop/geospatial/crs.h"
 
 namespace tl
 {
@@ -43,6 +44,8 @@ public:
   virtual void create() = 0;
 
   virtual void write(const graph::GLayer &layer) = 0;
+
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
 
 protected:
 

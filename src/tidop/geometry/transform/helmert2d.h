@@ -252,6 +252,14 @@ public:
   template <typename Point_t2>
   explicit operator Rotation<Point_t2>() const;
 
+  bool isNull() const
+  {
+    return (tx == 0. &&
+            ty == 0. &&
+            mScale == 1. &&
+            mRotation == 0.);
+  }
+
 private:
 
   /*!

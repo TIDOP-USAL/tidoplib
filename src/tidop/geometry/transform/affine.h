@@ -296,6 +296,15 @@ public:
    */
   void setScaleY(double scaleY);
 
+  bool isNull() const
+  {
+    return (tx == 0. &&
+            ty == 0. &&
+            mScaleX == 1. &&
+            mScaleY == 1. &&
+            mRotation == 0.);
+  }
+
 private:
 
   /*!

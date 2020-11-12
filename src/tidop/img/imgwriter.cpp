@@ -110,9 +110,10 @@ public:
       mTempName = path.string();
       mTempName.append("\\").append(file_path.stem().string());
       mTempName.append(".tif");
-    } else {
+    } /*else {
+      /// Creo que no hace falta
       mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_Update));
-    }
+    }*/
   }
 
   bool isOpen() override
@@ -202,28 +203,36 @@ public:
     }
     mDataset->SetMetadata(gdalMetadata);
 
-    std::array<double, 6> geotransform;
-    if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
-      // Valores por defecto
-      geotransform[0] = 0.;           /* top left x */
-      geotransform[1] = 1.;           /* w-e pixel resolution */
-      geotransform[2] = 0.;           /* 0 */
-      geotransform[3] = this->rows(); /* top left y */
-      geotransform[4] = 0.;           /* 0 */
-      geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+    if (!mAffine.isNull()) {
+      this->setGdalGeoTransform();
     }
 
-    mAffine.setParameters(-geotransform[1], 
-                           geotransform[2], 
-                           geotransform[4], 
-                           geotransform[5], 
-                           geotransform[0], 
-                           geotransform[3]);
-      
-    const char *prj = mDataset->GetProjectionRef();
-    if (prj != nullptr) {
-      mEpsgCode = prj;
+    if (mCRS.isValid()) {
+      this->setGdalProjection();
     }
+    //std::array<double, 6> geotransform;
+    //if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
+    //  // Valores por defecto
+    //  geotransform[0] = 0.;           /* top left x */
+    //  geotransform[1] = 1.;           /* w-e pixel resolution */
+    //  geotransform[2] = 0.;           /* 0 */
+    //  geotransform[3] = this->rows(); /* top left y */
+    //  geotransform[4] = 0.;           /* 0 */
+    //  geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+    //}
+
+    //mAffine.setParameters(-geotransform[1], 
+    //                       geotransform[2], 
+    //                       geotransform[4], 
+    //                       geotransform[5], 
+    //                       geotransform[0], 
+    //                       geotransform[3]);
+      
+    //TL_TODO("¿Esto tiene sentido?")
+    //const char *prj = mDataset->GetProjectionRef();
+    //if (prj != nullptr) {
+    //  mEpsgCode = prj;
+    //}
   }
 
   void write(const cv::Mat &image, 
@@ -367,6 +376,30 @@ public:
   void setGeoreference(const Affine<PointD> &georeference) override
   {
     mAffine = georeference;
+      
+    if (mDataset && !mAffine.isNull()) {
+      this->setGdalGeoTransform();
+    }
+  }
+
+  void setCRS(const std::string &epsgCode) override
+  {
+    mCRS.setEpsgCode(epsgCode);
+    
+    if (mDataset && mCRS.isValid()) {
+      this->setGdalProjection();
+    }
+  }
+
+private:
+
+  bool checkDataType()
+  {
+    return mValidDataTypes.isActive(mDataType);
+  }
+
+  void setGdalGeoTransform()
+  {
     std::array<double, 6> geotransform;
     math::Matrix<double, 2, 3> parameters = mAffine.parameters();
     geotransform[1] = -parameters.at(0, 0);
@@ -378,16 +411,9 @@ public:
     mDataset->SetGeoTransform(geotransform.data());
   }
 
-  void setProjection(const std::string &projection) override
+  void setGdalProjection()
   {
-    mEpsgCode = projection;
-  }
-
-private:
-
-  bool checkDataType()
-  {
-    return mValidDataTypes.isActive(mDataType);
+    mDataset->SetProjection(mCRS.exportToProj().c_str());
   }
 
 private:

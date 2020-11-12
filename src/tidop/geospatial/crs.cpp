@@ -118,8 +118,10 @@ void Crs::initFromEpsg()
       initGrid();
       initGeoid();
     }
+  } catch (std::exception &e) {
+    msgError(e.what());
   } catch (...) {
-
+    msgError("Unknow exception");
   }
 }
 

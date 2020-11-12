@@ -1,7 +1,11 @@
 #include "footprint.h"
 
 #include "tidop/img/imgreader.h"
+#include "tidop/vect/vectwriter.h"
 #include "tidop/geospatial/util.h"
+#include "tidop/graphic/layer.h"
+#include "tidop/graphic/entities/polygon.h"
+#include "tidop/experimental/datamodel.h"
 
 namespace tl
 {
@@ -30,6 +34,24 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
   if (!mDtmReader->isOpen()) {
     mDtmReader->open();
   }
+
+  mVectorWriter = VectorWriterFactory::createWriter(footprint);
+  mVectorWriter->open();
+  if (!mVectorWriter->isOpen())throw std::runtime_error("Vector open error");
+
+  std::shared_ptr<experimental::TableField> field(new experimental::TableField("image", 
+                                                  experimental::TableField::Type::STRING, 
+                                                  254));
+  std::vector<std::shared_ptr<experimental::TableField>> fields;
+  fields.push_back(field);
+
+  mVectorWriter->create();
+  TL_TODO("Pasar CRS como parametro a la clase")
+  mVectorWriter->setCRS(Crs("EPSG:25830")); 
+
+  graph::GLayer layer;
+  layer.setName("footprint");
+  layer.addDataField(field);
 
   for (size_t i = 0; i < photos.size(); i++) {
     
@@ -104,18 +126,33 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
 
       experimental::Photo::Orientation orientation = photos[i].orientation();
 
-      std::vector<Point3D> footprint = this->terrainProjected(limits,
+      std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits,
                                                               orientation.rotationMatrix(), 
                                                               orientation.principalPoint(), 
                                                               (focal_x + focal_y) / 2.);
 
 
+      std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>();
+      entity->push_back(footprint_coordinates[0]);
+      entity->push_back(footprint_coordinates[1]);
+      entity->push_back(footprint_coordinates[2]);
+      entity->push_back(footprint_coordinates[3]);
+
+      std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(fields));
+      data->setValue(0, photos[i].name());
+      entity->setData(data);
+
+      layer.push_back(entity);
 
     } catch (std::exception &e) {
-      
+      msgError(e.what());
     }
-  
+
   }
+
+  mVectorWriter->write(layer);
+
+  mVectorWriter->close();
 }
 
 std::vector<PointI> Footprint::imageLimits(int rows, int cols)

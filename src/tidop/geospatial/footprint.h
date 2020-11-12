@@ -13,6 +13,7 @@ namespace tl
 {
 
 class ImageReader;
+class VectorWriter;
 
 namespace geospatial
 {
@@ -42,6 +43,7 @@ private:
 	std::string mDtm;
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
+	std::unique_ptr<VectorWriter> mVectorWriter;
 	experimental::Camera mCamera;
 };
 

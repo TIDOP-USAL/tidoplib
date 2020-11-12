@@ -16,6 +16,7 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
+#include "tidop/geospatial/crs.h"
 
 namespace tl
 {
@@ -149,9 +150,9 @@ public:
 
   /*!
    * \brief Establece la proyección de la imagen
-   * \param[in] projection Proyección
+   * \param[in] epsgCode Código EPSG
    */
-  virtual void setProjection(const std::string &projection) = 0;
+  virtual void setCRS(const std::string &epsgCode) = 0;
 
 protected:
   
@@ -161,7 +162,7 @@ protected:
 protected:
 
   std::string mFileName;
-  std::string mEpsgCode;
+  geospatial::Crs mCRS;
   Affine<PointD> mAffine;
 };
 
