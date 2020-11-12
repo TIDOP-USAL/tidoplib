@@ -1,6 +1,7 @@
 #include "vectwriter.h"
 
 #include "tidop/core/utils.h"
+#include "tidop/core/gdalreg.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
@@ -32,13 +33,13 @@ VectorWriter::VectorWriter(const std::string &fileName)
 
 #ifdef HAVE_GDAL
 
-class GdalVectorWriter
+class VectorWriterGdal
   : public VectorWriter
 {
 
 public:
 
-	GdalVectorWriter(const std::string &fileName)
+	VectorWriterGdal(const std::string &fileName)
     : VectorWriter(fileName),
       mDataset(nullptr),
       mDriver(nullptr),
@@ -47,7 +48,7 @@ public:
     RegisterGdal::init();
   }
 
-  ~GdalVectorWriter() override
+  ~VectorWriterGdal() override
   {
     this->close();
   }
@@ -83,7 +84,7 @@ private:
   OGRSpatialReference mSpatialReference;
 };
 
-void GdalVectorWriter::open()
+void VectorWriterGdal::open()
 {
   this->close();
 
@@ -103,21 +104,20 @@ void GdalVectorWriter::open()
                                         nullptr));
 }
   
-inline bool GdalVectorWriter::isOpen()
+inline bool VectorWriterGdal::isOpen()
 {
   return mDriver != nullptr;
 }
 
-inline void GdalVectorWriter::close()
+inline void VectorWriterGdal::close()
 {
   if (mDataset) {
     GDALClose(mDataset);
     mDataset = nullptr;
   }
-  mFileName = "";
 }
 
-void GdalVectorWriter::create()
+void VectorWriterGdal::create()
 {
   if (mDriver == nullptr) throw std::runtime_error("Driver not found"); 
 
@@ -131,18 +131,59 @@ void GdalVectorWriter::create()
   if (mDataset == nullptr) throw std::runtime_error("Creation of file failed"); 
 }
 
-void GdalVectorWriter::write(const GLayer &layer)
+void VectorWriterGdal::write(const GLayer &layer)
 {
   OGRLayer *ogrLayer = mDataset->GetLayerByName(layer.name().c_str());
   if (!ogrLayer) {
     ogrLayer = this->createLayer(layer.name());
   }
 
+  std::vector<std::shared_ptr<experimental::TableField>> fields = layer.tableFields();
+
+  for (size_t i = 0; i < fields.size(); i++) {
+
+    experimental::TableField::Type type = fields[i]->type();
+    OGRFieldType ogr_type;
+    switch (type) {
+      case tl::experimental::TableField::Type::INT:
+        ogr_type = OFTInteger;
+        break;
+      case tl::experimental::TableField::Type::INT64:
+        ogr_type = OFTInteger64;
+        break;
+      case tl::experimental::TableField::Type::DOUBLE:
+        ogr_type = OFTReal;
+        break;
+      case tl::experimental::TableField::Type::STRING:
+        ogr_type = OFTString;
+        break;
+      default:
+        ogr_type = OFTString;
+        break;
+    }
+
+    OGRFieldDefn fieldDefinition(fields[i]->name().c_str(), ogr_type);
+    fieldDefinition.SetWidth(fields[i]->size());
+    OGRErr error = ogrLayer->CreateField(&fieldDefinition);
+    TL_ASSERT(error == OGRERR_NONE, "Creating field failed");
+
+  }
+
   OGRStyleTable oStyleTable;
   OGRStyleMgr *ogrStyleMgr = new OGRStyleMgr(&oStyleTable);
 
-  OGRFeature *ogrFeature = OGRFeature::CreateFeature(ogrLayer->GetLayerDefn());
+  OGRFeature *ogrFeature; 
+
   for (auto &entity : layer) {
+
+    ogrFeature = OGRFeature::CreateFeature(ogrLayer->GetLayerDefn());
+
+    std::shared_ptr<experimental::TableRegister> data = entity->data();
+    for (size_t i = 0; i < data->size(); i++) {
+      TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
+      ogrFeature->SetField(i, data->value(i).c_str());
+    }
+
     GraphicEntity::Type type = entity->type();
     switch (type) {
     case GraphicEntity::Type::point_2d:
@@ -199,9 +240,10 @@ void GdalVectorWriter::write(const GLayer &layer)
 
     this->writeStyles(ogrStyleMgr, entity.get());
 
+    if (ogrLayer->CreateFeature(ogrFeature) != OGRERR_NONE) throw std::runtime_error("Create Feature Error");
+
   }
 
-  if (ogrLayer->CreateFeature(ogrFeature) != OGRERR_NONE) throw std::runtime_error("Create Feature Error");
 
   if (ogrStyleMgr) {
     delete ogrStyleMgr;
@@ -212,7 +254,7 @@ void GdalVectorWriter::write(const GLayer &layer)
 
 }
 
-void GdalVectorWriter::writeStyles(OGRStyleMgr *ogrStyleMgr, 
+void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr, 
                                    const GraphicEntity *gStyle)
 {
   OGRStyleTool *ogrStyleTool = nullptr;
@@ -222,7 +264,7 @@ void GdalVectorWriter::writeStyles(OGRStyleMgr *ogrStyleMgr,
   delete ogrStyleTool;
 }
 
-std::string GdalVectorWriter::driverFromExt(std::string &extension) const
+std::string VectorWriterGdal::driverFromExt(std::string &extension) const
 {
   std::string format;
   if (boost::iequals(extension, ".dxf" ))  
@@ -247,7 +289,7 @@ std::string GdalVectorWriter::driverFromExt(std::string &extension) const
   return format;
 }
 
-OGRLayer *GdalVectorWriter::createLayer(const std::string &layerName)
+OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
 {
   OGRLayer *layer = nullptr;
     
@@ -276,7 +318,7 @@ OGRLayer *GdalVectorWriter::createLayer(const std::string &layerName)
   return layer;
 }
 
-void GdalVectorWriter::writePoint(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writePoint(OGRFeature *ogrFeature, 
                                   const GPoint *gPoint)
 {
   OGRPoint ogrPoint;
@@ -288,7 +330,7 @@ void GdalVectorWriter::writePoint(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writePoint(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writePoint(OGRFeature *ogrFeature, 
                                   const GPoint3D *gPoint3D)
 {
   OGRPoint ogrPoint;
@@ -301,7 +343,7 @@ void GdalVectorWriter::writePoint(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeLineString(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature, 
                                        const GLineString *gLineString)
 {
   OGRLineString ogrLineString;
@@ -315,7 +357,7 @@ void GdalVectorWriter::writeLineString(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeLineString(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature, 
                                        const GLineString3D *gLineString3D)
 {
   OGRLineString ogrLineString;
@@ -329,7 +371,7 @@ void GdalVectorWriter::writeLineString(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writePolygon(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature, 
                                     const GPolygon *gPolygon)
 {
   OGRPolygon ogrPolygon;
@@ -359,7 +401,7 @@ void GdalVectorWriter::writePolygon(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writePolygon(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature, 
                                     const GPolygon3D *gPolygon3D)
 {
   OGRPolygon ogrPolygon;
@@ -389,7 +431,7 @@ void GdalVectorWriter::writePolygon(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiPoint(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature, 
                                        const GMultiPoint *gMultiPoint)
 {
   OGRMultiPoint ogrMultiPoint;
@@ -408,7 +450,7 @@ void GdalVectorWriter::writeMultiPoint(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiPoint(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature, 
                                        const GMultiPoint3D *gMultiPoint3D)
 {
   OGRMultiPoint ogrMultiPoint;
@@ -429,7 +471,7 @@ void GdalVectorWriter::writeMultiPoint(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiLineString(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature, 
                                             const GMultiLineString *gMultiLineString)
 {
   OGRMultiLineString ogrMultiLineString;
@@ -449,7 +491,7 @@ void GdalVectorWriter::writeMultiLineString(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiLineString(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature, 
                                             const GMultiLineString3D *gMultiLineString3D)
 {
   OGRMultiLineString ogrMultiLineString;
@@ -469,7 +511,7 @@ void GdalVectorWriter::writeMultiLineString(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiPolygon(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature, 
                                          const GMultiPolygon *gMultiPolygon)
 {
   OGRMultiPolygon ogrMultiPolygon;
@@ -509,7 +551,7 @@ void GdalVectorWriter::writeMultiPolygon(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void GdalVectorWriter::writeMultiPolygon(OGRFeature *ogrFeature, 
+void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature, 
                                          const GMultiPolygon3D *gMultiPolygon3D)
 {
   OGRMultiPolygon ogrMultiPolygon;
@@ -559,7 +601,21 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const std::strin
   std::string extension = fs::path(fileName).extension().string();
   std::unique_ptr<VectorWriter> vector_writer;
 #ifdef HAVE_GDAL
+  if (boost::iequals(extension, ".dxf") ||
+        boost::iequals(extension, ".dwg") ||
+        boost::iequals(extension, ".dgn") ||
+        boost::iequals(extension, ".shp") ||
+        boost::iequals(extension, ".gml") ||
+        boost::iequals(extension, ".kml") ||
+        boost::iequals(extension, ".kmz") ||
+        boost::iequals(extension, ".json") ||
+        boost::iequals(extension, ".osm")) {
+    vector_writer = std::make_unique<VectorWriterGdal>(fileName);
+  } else
 #endif
+  {
+    throw std::runtime_error("Invalid Vector Writer");
+  }
   return vector_writer;
 }
 

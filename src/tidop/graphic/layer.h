@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include <tidop/experimental/datamodel.h>
+
 namespace tl
 {
 
@@ -211,6 +213,10 @@ public:
    */
   void setName(const std::string &name);
 
+  void addDataField(const std::shared_ptr<experimental::TableField> &field);
+
+  std::vector<std::shared_ptr<experimental::TableField>> tableFields() const;
+
 protected:
 
   /*!
@@ -227,6 +233,8 @@ protected:
    * \brief Entidades seleccionadas
    */
   std::shared_ptr<GraphicEntity> mSelectEntity;
+
+  std::vector<std::shared_ptr<experimental::TableField>> mTableFields;
 };
 
 

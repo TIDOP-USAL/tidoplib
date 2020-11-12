@@ -2,10 +2,12 @@
 
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/gdalreg.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
+
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -149,6 +151,9 @@ private:
   std::shared_ptr<graph::StyleBrush> readStyleBrush(OGRStyleBrush *ogrStyleBrush);
   std::shared_ptr<graph::StyleSymbol> readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol);
   std::shared_ptr<graph::StyleLabel> readStyleLabel(OGRStyleLabel *ogrStyleLabel);
+  void readData(OGRFeature *ogrFeature,
+                OGRFeatureDefn *ogrFeatureDefinition,
+                std::shared_ptr<experimental::TableRegister> &data);
 
 private:
 
@@ -161,8 +166,50 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 {
   std::shared_ptr<graph::GLayer> layer(new graph::GLayer);
 
+  ////////////////////////////////////////////////////////////////////
+  // Definición de campos asociados a las entidades
+
+  OGRFeatureDefn *featureDefinition = ogrLayer->GetLayerDefn();
+  int size = featureDefinition->GetFieldCount();
+  for (int i = 0; i < size; i++) {
+
+    if (OGRFieldDefn *fieldDefinition = featureDefinition->GetFieldDefn(i)) {
+
+      experimental::TableField::Type type;
+
+      const char *name = fieldDefinition->GetNameRef();
+      OGRFieldType ogr_type = fieldDefinition->GetType();
+      switch (ogr_type) {
+        case OFTInteger:
+          type = experimental::TableField::Type::INT;
+          break;
+        case OFTInteger64:
+          type = experimental::TableField::Type::INT64;
+          break;
+        case OFTReal:
+          type = experimental::TableField::Type::DOUBLE;
+          break;
+        case OFTString:
+          type = experimental::TableField::Type::STRING;
+          break;
+        default:
+          type = experimental::TableField::Type::STRING;
+          break;
+      }
+      int width = fieldDefinition->GetWidth();
+
+      std::shared_ptr<experimental::TableField> field(new experimental::TableField(name, type, width));
+      layer->addDataField(field);
+
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////
+
+
   OGRFeature *ogrFeature;
   while ((ogrFeature = ogrLayer->GetNextFeature()) != nullptr) {
+
     const char *driver_name = mDataset->GetDriverName();
     const char *layerName = nullptr;
     if (strcmp(driver_name, "DXF") == 0) {
@@ -174,6 +221,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
     }
 
     layer->setName(layerName);
+
     if (OGRGeometry *pGeometry = ogrFeature->GetGeometryRef()) {
 
       OGRStyleMgr *ogrStyleMgr = nullptr;
@@ -181,13 +229,14 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         std::shared_ptr<graph::GraphicEntity> entity = readEntity(pGeometry);
         ogrStyleMgr = new OGRStyleMgr();
         ogrStyleMgr->GetStyleString(ogrFeature);
-        //readStyles(ogrStyleMgr, std::dynamic_pointer_cast<GraphicStyle>(entity));
         readStyles(ogrStyleMgr, entity);
-        //readData()
+
+        std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(layer->tableFields()));
+        readData(ogrFeature, featureDefinition, data);
+        entity->setData(data);
+        
         layer->push_back(entity);
-        // comprobación de que se estuviese guardando
-        //std::shared_ptr<GPolygon> polygon = std::dynamic_pointer_cast<GPolygon>((*layer->begin()));
-        //polygon->size();
+
       } catch (std::exception & e) {
         msgError(e.what());
       }
@@ -197,23 +246,8 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         ogrStyleMgr = nullptr;
       }
 
-      //GVE_Base *gent;
-      //gent = ReadOgrGeometry( poGeometry, ly );
-      //if ( gent ) {
-        //// Estilos
-        //GVE_Style gs;
-        //ReadOgrStyles( poStyleMgr, &gs );
-        //gent->SetStyles( &gs );
-        // Atributos
-        //CSL_SetStr sat;
-        //ReadOgrFeatureVal( poFeature, &sat );
-        //gent->SetAttributes( &sat );
-
-      //} else {
-      //  // Salida a fichero log con errores.  GDAL en OpenCv lo env?a a cout
-      //}
     }
-    //OGRFeature::DestroyFeature(ogrFeature);
+
   }
   OGRFeature::DestroyFeature(ogrFeature);
 
@@ -1091,6 +1125,33 @@ std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrS
   styleLabel->setFont(font);
 
   return styleLabel;
+}
+
+void VectorReaderGdal::readData(OGRFeature *ogrFeature,
+                                OGRFeatureDefn *ogrFeatureDefinition,
+                                std::shared_ptr<experimental::TableRegister> &data)
+{
+  for (int i = 0; i < ogrFeatureDefinition->GetFieldCount(); i++) {
+    OGRFieldDefn *poFieldDefn = ogrFeatureDefinition->GetFieldDefn(i);
+    
+    switch (poFieldDefn->GetType()) {
+      case OFTInteger:
+        data->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger(i)));
+        break;
+      case OFTInteger64:
+        data->setValue(i, std::to_string(ogrFeature->GetFieldAsInteger64(i)));
+        break;
+      case OFTReal:
+        data->setValue(i, std::to_string(ogrFeature->GetFieldAsDouble(i)));
+        break;
+      case OFTString:
+        data->setValue(i, ogrFeature->GetFieldAsString(i));
+        break;
+      default:
+        data->setValue(i, ogrFeature->GetFieldAsString(i));
+        break;
+    }
+  }
 }
 
 #endif // HAVE_GDAL

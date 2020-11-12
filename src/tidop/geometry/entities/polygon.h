@@ -426,8 +426,7 @@ Polygon3DHole<Point3_t>::Polygon3DHole()
 }
 
 template<typename Point3_t> inline
-PolygonHole<Point3_t>::PolygonHole(typename PolygonHole<Point3_t>::size_type size)
-  : Entities2D<Point3_t>(size)
+Polygon3DHole<Point3_t>::Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size)
 {
 }
 

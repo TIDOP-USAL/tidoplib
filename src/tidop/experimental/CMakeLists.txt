@@ -3,6 +3,8 @@
 add_library(tl_experimental ${LIB_TYPE}
             desingpatterns.cpp
             designpatterns.h
+            datamodel.cpp
+            datamodel.h
             video/videoio.cpp
             video/videoio.h)
   
