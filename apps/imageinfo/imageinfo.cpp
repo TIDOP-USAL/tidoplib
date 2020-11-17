@@ -22,6 +22,13 @@ using namespace tl;
 int main(int argc, char** argv)
 {
 
+  // Consola
+  Console &console = Console::instance();
+  console.setTitle("Read Image");
+  console.setLogLevel(MessageLevel::msg_verbose);
+  console.setConsoleUnicode();
+  MessageManager::instance().addListener(&console);
+
   std::string img;
 
   Command cmd("read_image", "Lectura de una imagen");
@@ -38,13 +45,6 @@ int main(int argc, char** argv)
   } else if (status == Command::Status::show_version) {
     return 0;
   }
-
-  // Consola
-  Console &console = Console::instance();
-  console.setTitle("Read Image");
-  console.setLogLevel(MessageLevel::msg_verbose);
-  console.setConsoleUnicode();
-  MessageManager::instance().addListener(&console);
 
   Chrono chrono("Image read");
   chrono.run();  // Se inicia el cronometro

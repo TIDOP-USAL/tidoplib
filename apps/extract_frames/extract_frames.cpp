@@ -153,6 +153,13 @@ void VideoHelper::onStop()
 int main(int argc, char** argv)
 {
 
+  // Consola
+  Console &console = Console::instance();
+  console.setTitle("Extract frames from video");
+  console.setLogLevel(MessageLevel::msg_verbose);
+  console.setConsoleUnicode();
+  MessageManager::instance().addListener(&console);
+
   std::string video;
   std::string image_path;
   int step = 20;
@@ -173,13 +180,6 @@ int main(int argc, char** argv)
   } else if (status == Command::Status::show_version) {
     return 0;
   }
-
-  // Consola
-  Console &console = Console::instance();
-  console.setTitle("Extract frames from video");
-  console.setLogLevel(MessageLevel::msg_verbose);
-  console.setConsoleUnicode();
-  MessageManager::instance().addListener(&console);
 
   VideoOpenCV video_cv(video);
   if (video_cv.isOpened()) {

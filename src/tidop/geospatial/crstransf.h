@@ -98,6 +98,8 @@ public:
   Point_t transform(const Point_t &ptIn, 
                     Transform::Order trfOrder = Transform::Order::direct) const override;
 
+  bool isNull() const override;
+
 private:
 
   void init();
@@ -235,6 +237,12 @@ Point_t CrsTransform<Point_t>::transform(const Point_t &ptIn, Transform::Order t
     throw std::runtime_error( e.what() );
   }
   return r_pt;
+}
+
+template<typename Point_t>
+inline bool CrsTransform<Point_t>::isNull() const
+{
+  return (!mEpsgIn->isValid() || !mEpsgOut->isValid());
 }
 
 template<typename Point_t> inline

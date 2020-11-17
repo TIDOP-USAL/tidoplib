@@ -95,8 +95,8 @@ void Orthorectification::run(const std::string &file,
 
   //// >> transformación terreno imagen >> 
 
-  cv::Mat omega_phi_kappa;
-  cv::Rodrigues(rotation_matrix.t(), omega_phi_kappa);
+  //cv::Mat omega_phi_kappa;
+  //cv::Rodrigues(rotation_matrix.t(), omega_phi_kappa);
   
   math::RotationMatrix<double> rotation_transpose = orientation.rotationMatrix().transpose();
 

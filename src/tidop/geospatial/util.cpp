@@ -27,10 +27,12 @@ Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_m
   double y = coordinates_image.y;
   double z_dif = point.z - principal_point.z;
 
+  TL_TODO("revisar el orden de la matriz de rotación")
+
   double div = rotation_matrix.at(0, 2) * x + 
                rotation_matrix.at(1, 2) * y - 
                rotation_matrix.at(2, 2) * -focal;
-  
+
   point.x = principal_point.x + z_dif * (rotation_matrix.at(0, 0) * coordinates_image.x + 
                                          rotation_matrix.at(1, 0) * coordinates_image.y - 
                                          rotation_matrix.at(2, 0) * -focal) / div;
