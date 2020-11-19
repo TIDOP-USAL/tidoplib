@@ -152,7 +152,7 @@ public:
    * \brief Establece la proyección de la imagen
    * \param[in] epsgCode Código EPSG
    */
-  virtual void setCRS(const std::string &epsgCode) = 0;
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
 
 protected:
   
@@ -162,7 +162,7 @@ protected:
 protected:
 
   std::string mFileName;
-  geospatial::Crs mCRS;
+  //geospatial::Crs mCRS;
   Affine<PointD> mAffine;
 };
 

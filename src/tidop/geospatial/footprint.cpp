@@ -67,7 +67,12 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
       int rows = mImageReader->rows();
       int cols = mImageReader->cols();
 
-      std::vector<PointI> limits = this->imageLimits(rows, cols);
+      Affine<PointI> affine_fotocoordinates_image(-cols / 2, rows / 2, 1, -1, 0);
+      std::vector<PointI> limits(4);
+      limits[0] = affine_fotocoordinates_image.transform(PointI(0, 0));
+      limits[1] = affine_fotocoordinates_image.transform(PointI(cols, 0));
+      limits[2] = affine_fotocoordinates_image.transform(PointI(cols, rows));
+      limits[3] = affine_fotocoordinates_image.transform(PointI(0, rows));
 
       cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
       float focal_x = 1.f;
@@ -127,9 +132,9 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
       experimental::Photo::Orientation orientation = photos[i].orientation();
 
       std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits,
-                                                              orientation.rotationMatrix(), 
-                                                              orientation.principalPoint(), 
-                                                              (focal_x + focal_y) / 2.);
+                                                                          orientation.rotationMatrix(),
+                                                                          orientation.principalPoint(),
+                                                                          (focal_x + focal_y) / 2.);
 
 
       std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>();
@@ -155,18 +160,18 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
   mVectorWriter->close();
 }
 
-std::vector<PointI> Footprint::imageLimits(int rows, int cols)
-{
-  std::vector<PointI> points(4);
-
-  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
-  points[0] = PointI(-cols/2, -rows/2);
-  points[1] = PointI(cols/2, -rows/2);
-  points[2] = PointI(cols/2, rows/2);
-  points[3] = PointI(-cols/2, rows/2);
-
-  return points;
-}
+//std::vector<PointI> Footprint::imageLimits(int rows, int cols)
+//{
+//  std::vector<PointI> points(4);
+//
+//  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
+//  points[0] = PointI(-cols/2, rows/2);
+//  points[1] = PointI(cols/2, rows/2);
+//  points[2] = PointI(cols/2, -rows/2);
+//  points[3] = PointI(-cols/2, -rows/2);
+//
+//  return points;
+//}
 
 std::vector<Point3D> Footprint::terrainProjected(const std::vector<PointI> &imageLimits,
                                                  const tl::math::RotationMatrix<double> &rotation_matrix,
@@ -179,16 +184,48 @@ std::vector<Point3D> Footprint::terrainProjected(const std::vector<PointI> &imag
   
   /// Se lee el dtm en las coordenadas xy del punto principal. Se usa esa z para comenzar el proceso
   //mDtmReader->read();
-  
-  for (size_t i = 0; i < imageLimits.size(); i++) {
-    
-    Affine<PointD> affine = mDtmReader->georeference();
-    PointD pt(principal_point.x, principal_point.y);
-    WindowD w(pt, 1 * affine.scaleX());
-    cv::Mat image = mDtmReader->read(w);
-    double z = image.at<float>(0, 0);
+  Affine<PointD> affine = mDtmReader->georeference();
+  PointD pt(principal_point.x, principal_point.y);
+  WindowD w(pt, 1 * affine.scaleX());
+  cv::Mat image = mDtmReader->read(w);
+  double z_ini = image.at<float>(0, 0);
+  double z = z_ini;
 
-    Point3D terrain_point = projectPhotoToTerrain(rotation_matrix, principal_point, imageLimits[i], focal, z);
+  
+   Window<PointD> window_dtm_terrain;
+   window_dtm_terrain.pt1.x = affine.tx;
+   window_dtm_terrain.pt1.y = affine.ty;
+   window_dtm_terrain.pt2.x = affine.tx + affine.scaleX() *mDtmReader->cols();
+   window_dtm_terrain.pt2.y = affine.ty + affine.scaleY() *mDtmReader->rows();
+
+  for (size_t i = 0; i < imageLimits.size(); i++) {
+
+    int it = 10;
+    Point3D terrain_point;
+
+    terrain_point = projectPhotoToTerrain(rotation_matrix, principal_point, imageLimits[i], focal, z_ini);
+    double z2;
+    while (it > 0) {
+      
+      PointD pt(terrain_point.x, terrain_point.y);
+      if (window_dtm_terrain.containsPoint(terrain_point)) {
+        WindowD w(pt, 1 * affine.scaleX());
+        cv::Mat image = mDtmReader->read(w);
+        if (!image.empty()) {
+          z2 = image.at<float>(0, 0);
+          if (std::abs(z2 - z) > 0.1) {
+            terrain_point = projectPhotoToTerrain(rotation_matrix, principal_point, imageLimits[i], focal, z2);
+            z = z2;
+          } else {
+            it = 0;
+          }
+        }  
+      } else {
+        it = 0;
+      }
+      it--;
+    }
+
     terrainLimits[i] = terrain_point;
   }
 

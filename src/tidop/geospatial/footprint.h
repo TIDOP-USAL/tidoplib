@@ -32,7 +32,6 @@ public:
 
 private:
 
-	std::vector<PointI> imageLimits(int rows, int cols);
 	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits,
 																				const tl::math::RotationMatrix<double> &rotation_matrix,
 																				const Point3D &principal_point,

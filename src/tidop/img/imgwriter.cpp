@@ -71,7 +71,12 @@ public:
       mTempName(""),
       mDataType(DataType::TL_8U),
       mImageOptions(nullptr),
-      mImageMetadata(nullptr)
+      mImageMetadata(nullptr),
+#if _DEBUG
+    mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+#else
+    mSpatialReference(new OGRSpatialReference(nullptr))
+#endif
   {
     RegisterGdal::init();
   }
@@ -79,6 +84,15 @@ public:
   ~ImageWriterGdal()
   {
     this->close();
+
+    if (mSpatialReference) {
+#if _DEBUG
+      OSRDestroySpatialReference(mSpatialReference);
+#else
+      OGRSpatialReference::DestroySpatialReference(mSpatialReference);
+#endif
+      mSpatialReference = nullptr;
+    }
   }
 
 // Heredado vía ImageWriter
@@ -207,9 +221,9 @@ public:
       this->setGdalGeoTransform();
     }
 
-    if (mCRS.isValid()) {
-      this->setGdalProjection();
-    }
+    //if (mCRS.isValid()) {
+    //  this->setGdalProjection();
+    //}
     //std::array<double, 6> geotransform;
     //if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
     //  // Valores por defecto
@@ -382,12 +396,12 @@ public:
     }
   }
 
-  void setCRS(const std::string &epsgCode) override
+  void setCRS(const geospatial::Crs &crs) override
   {
-    mCRS.setEpsgCode(epsgCode);
+    //mCRS.setEpsgCode(epsgCode);
     
-    if (mDataset && mCRS.isValid()) {
-      this->setGdalProjection();
+    if (mDataset && crs.isValid()) {
+      this->setGdalProjection(crs);
     }
   }
 
@@ -402,7 +416,7 @@ private:
   {
     std::array<double, 6> geotransform;
     math::Matrix<double, 2, 3> parameters = mAffine.parameters();
-    geotransform[1] = -parameters.at(0, 0);
+    geotransform[1] = parameters.at(0, 0);
     geotransform[2] = parameters.at(0, 1);
     geotransform[4] = parameters.at(1, 0);
     geotransform[5] = parameters.at(1, 1);
@@ -411,9 +425,12 @@ private:
     mDataset->SetGeoTransform(geotransform.data());
   }
 
-  void setGdalProjection()
+  void setGdalProjection(const geospatial::Crs &crs)
   {
-    mDataset->SetProjection(mCRS.exportToProj().c_str());
+    //mDataset->SetProjection(mCRS.exportToProj().c_str());
+    std::string wkt = crs.exportToWkt();
+    mSpatialReference->importFromWkt(wkt.c_str());
+    mDataset->SetSpatialRef(mSpatialReference);
   }
 
 private:
@@ -427,6 +444,7 @@ private:
   DataType mDataType;
   ImageOptions *mImageOptions;  
   std::shared_ptr<ImageMetadata> mImageMetadata;
+  OGRSpatialReference *mSpatialReference;
 };
 
 #endif // HAVE_GDAL

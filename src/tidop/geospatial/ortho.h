@@ -25,13 +25,12 @@ class TL_EXPORT Orthorectification
 
 public:
 
-	Orthorectification(const std::string &dtm, 
-										 const experimental::Camera &camera);
+	Orthorectification(const std::string &dtm);
 	~Orthorectification();
 
-	void run(const std::string &file, 
-					 const experimental::Photo::Orientation &orientation,
-					 const std::string &rectifiedFile);
+	void run(const std::vector<experimental::Photo> &photos,
+					 const std::string &orthoPath);
+
 private:
 
 	std::vector<PointI> imageLimits(int rows, int cols);
@@ -39,14 +38,17 @@ private:
 														 	          const tl::math::RotationMatrix<double> &rotation_matrix,
 															          const Point3D &principal_point,
 															          double focal);
-	Point3D projectImageCoordToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
-                                     const Point3D &principal_point,
-                                     const PointD &coordinates_image,
-                                     double focal);
-	PointD photocoordinates(const tl::math::RotationMatrix<double> &rotation_matrix,
-													const Point3D &principal_point,
-													const Point3D &coordinates_terrain,
-													double focal);
+	Window<PointD> windowOrthoTerrain(const std::vector<Point3D> &footprint);
+
+	//Point3D projectImageCoordToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
+ //                                    const Point3D &principal_point,
+ //                                    const PointD &coordinates_image,
+ //                                    double focal);
+	//PointD photocoordinates(const tl::math::RotationMatrix<double> &rotation_matrix,
+	//												const Point3D &principal_point,
+	//												const Point3D &coordinates_terrain,
+	//												double focal);
+
 private:
 
 	std::string mDtm;

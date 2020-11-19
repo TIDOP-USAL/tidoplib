@@ -13,7 +13,7 @@
 #include <tidop/experimental/camera.h>
 #include <tidop/experimental/photo.h>
 #include <tidop/geospatial/footprint.h>
-#include <tidop/geospatial/util.h>
+#include <tidop/geospatial/ortho.h>
 
 // filesystem
 #if (__cplusplus >= 201703L)
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
   std::string image_path;
   std::string crs;
   std::string mdt;
-  std::string footprint_file;
+  std::string ortho_path;
 
   Command cmd(cmd_name, "Huella de vuelo");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("crs", 'c', "Código EPSG", &crs));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
 
   cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --crs EPSG:25830 -- mdt mdt.tif");
 
@@ -236,7 +236,7 @@ int main(int argc, char** argv)
         experimental::Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
-        //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
+        if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
           photos.push_back(photo);
       }
 
@@ -245,8 +245,11 @@ int main(int argc, char** argv)
 
     /// Fin lectura de fichero bundle
 
-    Footprint footprint(mdt);
-    footprint.run(photos, footprint_file);
+    //Footprint footprint(mdt);
+    //footprint.run(photos, footprint_file);
+    
+    Orthorectification ortho(mdt);
+    ortho.run(photos, ortho_path);
 
   } catch (const std::exception &e) {
     msgError(e.what());
