@@ -83,7 +83,6 @@ public:
       GDALClose(mDataset);
       mDataset = nullptr;
     }
-    mFileName = "";
   }
  
   int layersCount() const
@@ -94,12 +93,14 @@ public:
   std::shared_ptr<graph::GLayer> read(int layerId)
   {
     OGRLayer *ogrLayer = mDataset->GetLayer(layerId);
+    TL_ASSERT(ogrLayer != nullptr, "Layer not found");
     return this->read(ogrLayer);
   }
 
   std::shared_ptr<graph::GLayer> read(const std::string &layerName)
   {
     OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
+    TL_ASSERT(ogrLayer != nullptr, "Layer not found");
     return this->read(ogrLayer);
   }
 

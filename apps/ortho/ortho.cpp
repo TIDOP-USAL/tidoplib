@@ -236,7 +236,7 @@ int main(int argc, char** argv)
         experimental::Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
-        if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
+        //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
           photos.push_back(photo);
       }
 

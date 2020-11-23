@@ -14,7 +14,7 @@
 #include <tidop/experimental/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/util.h>
-
+#include <tidop/vect/vectreader.h> // Para la lectura de la huella de vuelo
 // filesystem
 #if (__cplusplus >= 201703L)
 #include <filesystem>
@@ -251,6 +251,57 @@ int main(int argc, char** argv)
   } catch (const std::exception &e) {
     msgError(e.what());
   } 
+
+
+
+  /// Prueba de lectura de huella de vuelo y selección de los fotogramas que contienen un punto
+
+  PointD pt(272013.665, 4338378.212);
+  std::map<double, std::shared_ptr<graph::GPolygon>> entities;
+  int n_best_entities = 5;
+  std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
+  vectorReader->open();
+  if (vectorReader->isOpen()) {
+
+    size_t size = vectorReader->layersCount();
+
+    if (size >= 1) {
+      std::shared_ptr<graph::GLayer> layer = vectorReader->read(0);
+
+      for (const auto &entity : *layer) {
+        graph::GraphicEntity::Type type = entity->type();
+        if (type == graph::GraphicEntity::Type::polygon_2d) {
+
+          std::shared_ptr<graph::GPolygon> polygon = std::dynamic_pointer_cast<graph::GPolygon>(entity);
+          if (polygon->isInner(pt)) {
+            PointD center = polygon->window().center();
+            double distance = tl::distance(center, pt);
+            entities[distance] = polygon;
+          }
+
+        } else {
+          msgError("No es un fichero de huella de vuelo");
+          break;
+        }
+        
+      }
+    }
+    
+    vectorReader->close();
+  }
+
+  int entities_contain_point = entities.size();
+  for (auto entity : entities) {
+    if (n_best_entities == 0) break;
+    //msgInfo("distance: %lf", entity.first);
+    std::shared_ptr<graph::GPolygon> polygon = entity.second;
+    std::shared_ptr<experimental::TableRegister> data = polygon->data();
+    for (size_t i = 0; i < data->size(); i++) {
+      std::string value = data->value(i);
+      msgInfo("image: %s", value.c_str());
+    }
+    --n_best_entities;
+  }
 
   return 0;
 }

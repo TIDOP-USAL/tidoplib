@@ -189,7 +189,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 
       
       std::string ortho_file = orthoPath;
-      ortho_file.append("\\").append(photos[i].name()).append(".tif");
+      ortho_file.append("\\").append(photos[i].name()).append(".png");
       mOrthophotoWriter = ImageWriterFactory::createWriter(ortho_file);
       mOrthophotoWriter->open();
       if (!mOrthophotoWriter->isOpen())throw std::runtime_error("Image open error");
@@ -304,7 +304,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
             WindowD w(ortho_terrain, affine.scaleX());
             cv::Mat dtm = mDtmReader->read(w);
             ortho_terrain.z = dtm.at<float>(0, 0);
-
+            if (ortho_terrain.z == 0) continue;
 
             /// Se calcula la transformación proyectiva y se corrige la imagen
             //std::vector<cv::Point3d> terrain_points(1);
@@ -692,18 +692,18 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 //  mOrthophotoWriter->write(mat_ortho);
 }
 
-std::vector<PointI> Orthorectification::imageLimits(int rows, int cols)
-{
-  std::vector<PointI> points(4);
-
-  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
-  points[0] = PointI(-cols/2, rows/2);
-  points[1] = PointI(cols/2, rows/2);
-  points[2] = PointI(cols/2, -rows/2);
-  points[3] = PointI(-cols/2, -rows/2);
-
-  return points;
-}
+//std::vector<PointI> Orthorectification::imageLimits(int rows, int cols)
+//{
+//  std::vector<PointI> points(4);
+//
+//  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
+//  points[0] = PointI(-cols/2, rows/2);
+//  points[1] = PointI(cols/2, rows/2);
+//  points[2] = PointI(cols/2, -rows/2);
+//  points[3] = PointI(-cols/2, -rows/2);
+//
+//  return points;
+//}
 
 std::vector<Point3D> Orthorectification::terrainProjected(const std::vector<PointI> &imageLimits,
                                                           const tl::math::RotationMatrix<double> &rotation_matrix,
