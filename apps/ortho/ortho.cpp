@@ -166,8 +166,8 @@ int main(int argc, char** argv)
         //camera.setSensorSize(23.5);
         std::shared_ptr<experimental::Calibration> calibration = experimental::CalibrationFactory::create(camera.type());
         calibration->setParameter(tl::experimental::Calibration::Parameters::focal, focal);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cx, width / 2);        
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cy, height / 2);
+        calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3006.23);        
+        calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2024.27);
         calibration->setParameter(tl::experimental::Calibration::Parameters::k1, k1);
         calibration->setParameter(tl::experimental::Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
@@ -213,26 +213,26 @@ int main(int argc, char** argv)
         double tz;
         ss >> tx >> ty >> tz;
         
-        //Point3D principal_point(tx, ty, tz);
-        //Point3D principal_point(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        Point3D principal_point;
+        //Point3D position(tx, ty, tz);
+        //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
+        Point3D position;
 
         // Paso de la transformación de mundo a imagen a imagen mundo
 
         math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
 
-        principal_point.x = -(rotation_transpose.at(0, 0) * tx +
+        position.x = -(rotation_transpose.at(0, 0) * tx +
                               rotation_transpose.at(0, 1) * ty +
-                              rotation_transpose.at(0, 2) * tz) + 272021.61;
-        principal_point.y = -(rotation_transpose.at(1, 0) * tx +
+                              rotation_transpose.at(0, 2) * tz) + 272021.250;
+        position.y = -(rotation_transpose.at(1, 0) * tx +
                               rotation_transpose.at(1, 1) * ty +
-                              rotation_transpose.at(1, 2) * tz) + 4338369.137;
-        principal_point.z = -(rotation_transpose.at(2, 0) * tx +
+                              rotation_transpose.at(1, 2) * tz) + 4338368.076;
+        position.z = -(rotation_transpose.at(2, 0) * tx +
                               rotation_transpose.at(2, 1) * ty +
-                              rotation_transpose.at(2, 2) * tz) + 314.874;
+                              rotation_transpose.at(2, 2) * tz) + 379.370;
 
 
-        experimental::Photo::Orientation orientation(principal_point, rotation_matrix);
+        experimental::Photo::Orientation orientation(position, rotation_matrix);
         experimental::Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
@@ -249,7 +249,7 @@ int main(int argc, char** argv)
     //footprint.run(photos, footprint_file);
     
     Orthorectification ortho(mdt);
-    ortho.run(photos, ortho_path);
+    ortho.run2(photos, ortho_path);
 
   } catch (const std::exception &e) {
     msgError(e.what());

@@ -34,7 +34,7 @@ private:
 
 	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits,
 																				const tl::math::RotationMatrix<double> &rotation_matrix,
-																				const Point3D &principal_point,
+																				const Point3D &position,
 																				double focal);
 
 private:

@@ -43,7 +43,7 @@ public:
     double z() const;
     void setZ(double z);
 
-    Point3D principalPoint() const;
+    Point3D position() const;
 
     math::RotationMatrix<double> rotationMatrix() const;
     void setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix);
@@ -52,7 +52,7 @@ public:
 
   private:
 
-    Point3D mPrincipalPoint;
+    Point3D mPosition;
     tl::math::RotationMatrix<double> mRotationMatrix;
 
   };

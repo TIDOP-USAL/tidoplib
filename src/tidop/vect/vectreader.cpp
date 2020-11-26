@@ -62,14 +62,7 @@ public:
                                           GDAL_OF_VECTOR, 
                                           nullptr, 
                                           nullptr/*options->getOptions()*/, 
-                                          nullptr )); //GDALOpen( file, gdal_access);
-    //if (pDataset == nullptr) {
-    //  return Status::open_fail;
-    //} else {
-    //  pDriver = pDataset->GetDriver();
-    //  update();
-    //  return Status::open_ok;
-    //}
+                                          nullptr ));
   }
 
   bool isOpen() override

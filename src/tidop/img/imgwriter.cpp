@@ -138,8 +138,11 @@ public:
   void close() override
   {
     if (mDataset) {
+
       char **tmp = nullptr;
+
       if (bTempFile) {
+
         std::string ext = fs::path(mFileName).extension().string();
         GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
         char **gdalOpt = nullptr;
@@ -155,15 +158,17 @@ public:
         } else {
           GDALClose(static_cast<GDALDatasetH>(tempDataSet));
         }
-        tmp = mDataset->GetFileList();
-
-        for (size_t i = 0; i < sizeof(**tmp); i++)
-          remove(tmp[i]);
+        
       }
-
-
+      
+      tmp = mDataset->GetFileList();
+      
       GDALClose(mDataset);
       mDataset = nullptr;
+
+      for (size_t i = 0; i < sizeof(**tmp); i++)
+        std::remove(tmp[i]);
+
     }
 
     bTempFile = false;

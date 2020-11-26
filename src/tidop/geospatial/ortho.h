@@ -8,6 +8,7 @@
 #include "tidop/experimental/photo.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/geometry/transform/affine.h"
 
 namespace tl
 {
@@ -28,26 +29,23 @@ public:
 	Orthorectification(const std::string &dtm);
 	~Orthorectification();
 
+  void run2(const std::vector<experimental::Photo> &photos,
+					  const std::string &orthoPath);
+
 	void run(const std::vector<experimental::Photo> &photos,
 					 const std::string &orthoPath);
 
 private:
 
-	//std::vector<PointI> imageLimits(int rows, int cols);
 	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits,
 														 	          const tl::math::RotationMatrix<double> &rotation_matrix,
-															          const Point3D &principal_point,
+															          const Point3D &position,
 															          double focal);
 	Window<PointD> windowOrthoTerrain(const std::vector<Point3D> &footprint);
 
-	//Point3D projectImageCoordToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
- //                                    const Point3D &principal_point,
- //                                    const PointD &coordinates_image,
- //                                    double focal);
-	//PointD photocoordinates(const tl::math::RotationMatrix<double> &rotation_matrix,
-	//												const Point3D &principal_point,
-	//												const Point3D &coordinates_terrain,
-	//												double focal);
+	float focal() const;
+	PointF principalPoint() const;
+	cv::Mat distCoeffs() const;
 
 private:
 
@@ -56,6 +54,7 @@ private:
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;
 	experimental::Camera mCamera;
+	Affine<PointI> mAffinePhotocoordinatesToImage;
 };
 
 } // End namespace geospatial

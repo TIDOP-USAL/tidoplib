@@ -21,13 +21,13 @@ namespace geospatial
 TL_EXPORT int utmZoneFromLongitude(double longitude);
 
 Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
-                              const Point3D &principal_point,
+                              const Point3D &camera_position,
                               const PointD &coordinates_image,
                               double focal,
                               double z);
 
 PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
-                             const Point3D &principal_point,
+                             const Point3D &camera_position,
                              const Point3D &coordinates_terrain,
                              double focal);
 

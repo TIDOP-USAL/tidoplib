@@ -108,58 +108,58 @@ void Photo::update()
 /* Photo::Orientation */
 
 Photo::Orientation::Orientation()
-  : mPrincipalPoint(TL_DOUBLE_MAX, TL_DOUBLE_MAX, TL_DOUBLE_MAX),
+  : mPosition(TL_DOUBLE_MAX, TL_DOUBLE_MAX, TL_DOUBLE_MAX),
     mRotationMatrix(math::RotationMatrix<double>::identity())
 {
 }
 
 Photo::Orientation::Orientation(double x, double y, double z, 
                                 math::RotationMatrix<double> rotationMatrix)
-  : mPrincipalPoint(x, y, z),
+  : mPosition(x, y, z),
     mRotationMatrix(rotationMatrix)
 {
 }
 
 Photo::Orientation::Orientation(const Point3D &principalPoint, 
                                 math::RotationMatrix<double> rotationMatrix)
-  : mPrincipalPoint(principalPoint),
+  : mPosition(principalPoint),
     mRotationMatrix(rotationMatrix)
 {
 }
 
 double Photo::Orientation::x() const
 {
-  return mPrincipalPoint.x;
+  return mPosition.x;
 }
 
 void Photo::Orientation::setX(double x)
 {
-  mPrincipalPoint.x = x;
+  mPosition.x = x;
 }
 
 double Photo::Orientation::y() const
 {
-  return mPrincipalPoint.y;
+  return mPosition.y;
 }
 
 void Photo::Orientation::setY(double y)
 {
-  mPrincipalPoint.y = y;
+  mPosition.y = y;
 }
 
 double Photo::Orientation::z() const
 {
-  return mPrincipalPoint.z;
+  return mPosition.z;
 }
 
 void Photo::Orientation::setZ(double z)
 {
-  mPrincipalPoint.z = z;
+  mPosition.z = z;
 }
 
-Point3D Photo::Orientation::principalPoint() const
+Point3D Photo::Orientation::position() const
 {
-  return mPrincipalPoint;
+  return mPosition;
 }
 
 math::RotationMatrix<double> Photo::Orientation::rotationMatrix() const
@@ -174,9 +174,9 @@ void Photo::Orientation::setRotationMatrix(const math::RotationMatrix<double> &r
 
 bool Photo::Orientation::isEmpty() const
 {
-  return mPrincipalPoint.x == TL_DOUBLE_MAX ||
-         mPrincipalPoint.y == TL_DOUBLE_MAX ||
-         mPrincipalPoint.z == TL_DOUBLE_MAX;
+  return mPosition.x == TL_DOUBLE_MAX ||
+         mPosition.y == TL_DOUBLE_MAX ||
+         mPosition.z == TL_DOUBLE_MAX;
 
   return false;
 }

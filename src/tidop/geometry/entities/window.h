@@ -559,6 +559,23 @@ bool operator != (const Window<Point_t> &rect1, const Window<Point_t> &rect2)
           window1.pt2 != window2.pt2);
 }
 
+template<typename It> inline
+Window<typename std::iterator_traits<It>::value_type> boundingWindow(It begin, It end)
+{
+  using Point_t = typename std::iterator_traits<It>::value_type;
+  Window<Point_t> window;
+  
+  while(begin != end) {
+    if (window.pt1.x > begin->x) window.pt1.x = begin->x;
+    if (window.pt1.y > begin->y) window.pt1.y = begin->y;
+    if (window.pt2.x < begin->x) window.pt2.x = begin->x;
+    if (window.pt2.y < begin->y) window.pt2.y = begin->y;
+    ++begin;
+  }
+
+  return window;
+}
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace TL
