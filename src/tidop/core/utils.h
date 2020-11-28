@@ -890,11 +890,12 @@ public:
 
 public:
 
+  Chrono();
 
   /*!
    * \brief Constructor
    */
-  Chrono(const std::string &message = "", 
+  Chrono(const std::string &message, 
          bool writeMessage = true);
 
   /*!

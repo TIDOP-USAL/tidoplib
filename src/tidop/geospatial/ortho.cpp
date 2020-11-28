@@ -8,7 +8,7 @@
 #include "tidop/geometry/operations.h"
 #include "tidop/geometry/transform/perspective.h"
 
-//#include <opencv2/calib3d.hpp> // Rodrigues
+#include <opencv2/calib3d.hpp> // Rodrigues
 #include <opencv2/imgproc.hpp>
 //#define ORTHO_1
 
@@ -89,6 +89,27 @@ void Orthorectification::run2(const std::vector<experimental::Photo> &photos,
       PointF principal_point = this->principalPoint();
       cv::Mat distCoeffs = this->distCoeffs();
 
+      ///////////////////////////////////////////////////
+
+      //// Prueba de utilizar las imagenes corregidas
+
+      //std::array<std::array<float, 3>, 3> camera_matrix_data = {focal, 0.f, principal_point.x,
+      //                                                          0.f, focal, principal_point.y,
+      //                                                          0.f, 0.f, 1.f};
+      //cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
+
+      //cv::Size imageSize(cols, rows);
+      //cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, nullptr);
+
+      //focal = (optCameraMat.at<float>(0,0) + optCameraMat.at<float>(1,1)) / 2;
+      //principal_point.x = optCameraMat.at<float>(0,2);
+      //principal_point.y = optCameraMat.at<float>(1,2);
+
+      ///////////////////////////////////////////////////
+
+
+
+
       mAffinePhotocoordinatesToImage = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
       std::vector<PointI> limits(4);
       limits[0] = mAffinePhotocoordinatesToImage.transform(PointI(0, 0));
@@ -103,6 +124,8 @@ void Orthorectification::run2(const std::vector<experimental::Photo> &photos,
                                                                           orientation.rotationMatrix(),
                                                                           orientation.position(),
                                                                           focal);
+
+
 
       /// Calculo de transformación afin entre coordenadas terreno y coordenadas imagen
       std::vector<PointD> t_coor;
@@ -126,7 +149,7 @@ void Orthorectification::run2(const std::vector<experimental::Photo> &photos,
       
       PointI window_dtm_image_pt1 = affine_dtm_image_to_terrain.transform(window_ortho_terrain.pt1, tl::Transform::Order::inverse);
       PointI window_dtm_image_pt2 = affine_dtm_image_to_terrain.transform(window_ortho_terrain.pt2, tl::Transform::Order::inverse);
-      TL_TODO("Hay que reacer la clase Window para que las coordenadas del pt2 sean siempre mayores...")
+      TL_TODO("Hay que rehacer la clase Window para que las coordenadas del pt2 sean siempre mayores...")
       WindowI window_dtm_image(window_dtm_image_pt1, window_dtm_image_pt2);
       PointD point_dtm_terrain_pt1 = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1);
       PointD point_dtm_terrain_pt2 = affine_dtm_image_to_terrain.transform(window_dtm_image.pt2);
@@ -165,10 +188,56 @@ void Orthorectification::run2(const std::vector<experimental::Photo> &photos,
       //cv::Mat mat_c(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
       ////
 
+
+
+
+      //////////////////////////////////////////////////////////////////////////////////////
+      {
+        Point3D pt_terreno(271998.43, 4338425.766, 0);
+
+        Affine<PointD> affine = mDtmReader->georeference();
+        //PointD pt(position.x, position.y);
+        WindowD w(pt_terreno, 1 * affine.scaleX());
+        cv::Mat dtm = mDtmReader->read(w);
+        pt_terreno.z = dtm.at<float>(0, 0);
+
+        WindowD w_check(pt_terreno, 20 * affine.scaleX());
+        cv::Mat dtm_load_check = mDtmReader->read(w_check);
+
+        PointD pt_check = projectTerrainToPhoto(orientation.rotationMatrix(),
+                                                 orientation.position(),
+                                                 pt_terreno,
+                                                 focal);
+
+        PointI punto_imagen = mAffinePhotocoordinatesToImage.transform(pt_check, tl::Transform::Order::inverse);
+
+
+
+        WindowI window_image(punto_imagen, 50);
+
+        cv::Mat in(window_image.height(), window_image.width(), image.type());
+        image.colRange(window_image.pt1.x, window_image.pt2.x)
+              .rowRange(window_image.pt1.y, window_image.pt2.y).copyTo(in);
+
+
+
+        PointD pt_check2 = projectTerrainToPhoto(orientation.rotationMatrix(),
+                                                 orientation.position(),
+                                                 pt_terreno,
+                                                 focal);
+      }
+      //////////////////////////////////////////////////////////////////////////////////////
+
+
+
       std::vector<Point3D> dtm_grid_terrain_points(4);
       std::vector<PointD> ortho_image_coordinates(4);
       std::vector<PointD> photo_photocoordinates(4);
       std::vector<PointD> photo_image_coordinates(4);
+
+
+
+
 
       for (int r = 0; r < dtm.rows - 1; r++) {
         for (int c = 0; c < dtm.cols - 1; c++) {

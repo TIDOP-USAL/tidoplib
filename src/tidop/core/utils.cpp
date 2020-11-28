@@ -951,7 +951,16 @@ uint64_t getTickCount()
   return tickCount();
 }
 
-Chrono::Chrono(const std::string &message, 
+Chrono::Chrono()
+  : mTimeIni(0),
+    mAccumulated(0),
+    mStatus(Chrono::Status::start),
+    mMessage(""),
+    bWriteMessage(false)
+{
+}
+
+Chrono::Chrono(const std::string &message,
                bool writeMessage)
   : mTimeIni(0),
     mAccumulated(0),

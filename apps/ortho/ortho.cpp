@@ -168,6 +168,8 @@ int main(int argc, char** argv)
         calibration->setParameter(tl::experimental::Calibration::Parameters::focal, focal);
         calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3006.23);        
         calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2024.27);
+        //calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3000);        
+        //calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2000);
         calibration->setParameter(tl::experimental::Calibration::Parameters::k1, k1);
         calibration->setParameter(tl::experimental::Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
@@ -237,6 +239,8 @@ int main(int argc, char** argv)
         photo.setCamera(camera);
         photo.setOrientation(orientation);
         //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
+        if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_37_40.jpg") == 0)
+        //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\dense\\pmvs\\visualize\\00000004.jpg") == 0)
           photos.push_back(photo);
       }
 
