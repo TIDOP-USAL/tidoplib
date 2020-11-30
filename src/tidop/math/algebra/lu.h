@@ -6,6 +6,10 @@
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 
+#ifdef HAVE_LAPACKE
+#include <lapacke.h>
+#endif // HAVE_LAPACKE
+
 #include <algorithm>
 
 namespace tl
@@ -21,12 +25,24 @@ class Matrix;
  *  \{
  */
 
-template<typename T>
-class LuDecomposition;
-
 /*! \addtogroup Algebra
  *  \{
  */
+
+/*!
+ * \brief Factorización o descomposición LU
+ *
+ * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
+ *
+ * \f[ A=LU \f]
+ *
+ * donde L y U son matrices inferiores y superiores triangulares respectivamente.
+ *
+ */
+template<typename T>
+class LuDecomposition;
+
+
 template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
@@ -42,7 +58,7 @@ public:
 
   LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-  Vector<T, _cols> solve(const Vector<T, _rows> &b);
+  Vector<T, _rows> solve(const Vector<T, _rows> &b);
   Matrix<T, _rows, _cols> solve(const Matrix<T, _rows, _cols> &b);
 
   Matrix<T, _rows, _cols> lu() const;
@@ -72,6 +88,7 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
     mIndx(a.rows()),
     mRows(a.rows())
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   static_assert(_rows == _cols, "Non-Square Matrix");
   TL_ASSERT(LU.rows() == LU.cols(), "Non-Square Matrix");
 
@@ -82,7 +99,7 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Vector<T, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
   TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
 
@@ -150,6 +167,14 @@ template<
 >
 void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
+#ifdef HAVE_LAPACKE
+  
+  lapack_int n = mRows;
+
+#else
+
+#endif 
+
 	const T TINY = static_cast<T>(1.0e-40);
   
   T big, temp;

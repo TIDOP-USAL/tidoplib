@@ -150,10 +150,16 @@ CrsTransform<Point_t>::CrsTransform(const std::shared_ptr<Crs> &epsgIn,
 template<typename Point_t> inline
 CrsTransform<Point_t>::~CrsTransform() 
 {
-  if (pCoordinateTransformation)
-    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformation), pCoordinateTransformation = nullptr;
-  if (pCoordinateTransformationInv)
-    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformationInv), pCoordinateTransformationInv = nullptr;
+  if (pCoordinateTransformation) {
+    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformation);
+    pCoordinateTransformation = nullptr;
+  }
+    
+  if (pCoordinateTransformationInv) {
+    OGRCoordinateTransformation::DestroyCT(pCoordinateTransformationInv);
+    pCoordinateTransformationInv = nullptr;
+  }
+    
   OSRCleanup();
 }
 
@@ -243,6 +249,12 @@ template<typename Point_t>
 inline bool CrsTransform<Point_t>::isNull() const
 {
   return (!mEpsgIn->isValid() || !mEpsgOut->isValid());
+}
+
+template<typename Point_t> inline
+bool CrsTransform<Point_t>::isNull() const
+{
+  return (pCoordinateTransformation != nullptr);
 }
 
 template<typename Point_t> inline

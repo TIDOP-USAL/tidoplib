@@ -3,13 +3,13 @@
 add_library(tl_geospatial ${LIB_TYPE}
             crs.cpp
             crs.h
-			crscache.cpp
-			crscache.h
-			crstransf.h
+            crscache.cpp
+            crscache.h
+            crstransf.h
             dtm.cpp
             dtm.h
-			util.cpp
-			util.h
+            util.cpp
+            util.h
             ortho.cpp
             ortho.h
             footprint.cpp

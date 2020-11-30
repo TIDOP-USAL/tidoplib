@@ -299,6 +299,28 @@ BOOST_FIXTURE_TEST_CASE(isEmpty, RectTest)
   BOOST_CHECK_EQUAL(false, rect_double->isEmpty());
 }
 
+BOOST_FIXTURE_TEST_CASE(isValid, RectTest)
+{
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.isValid());
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_double.isValid());
+  BOOST_CHECK_EQUAL(false, rect_default_constructor_float.isValid());
+  BOOST_CHECK_EQUAL(true, rect_integer->isValid());
+  BOOST_CHECK_EQUAL(true, rect_double->isValid());
+  BOOST_CHECK_EQUAL(true, rect_double->isValid());
+  Rect<int> rect_invalid(10, 20, -30, 10);
+  BOOST_CHECK_EQUAL(false, rect_invalid.isValid());
+}
+
+BOOST_FIXTURE_TEST_CASE(normalized, RectTest)
+{
+  Rect<int> rect_normalized(10, 20, -30, -10);
+  rect_normalized.normalized();
+  BOOST_CHECK_EQUAL(-20, rect_normalized.x);
+  BOOST_CHECK_EQUAL(10, rect_normalized.y);
+  BOOST_CHECK_EQUAL(30, rect_normalized.width);
+  BOOST_CHECK_EQUAL(10, rect_normalized.height);
+}
+
 BOOST_FIXTURE_TEST_CASE(contains, RectTest)
 {
   BOOST_CHECK_EQUAL(false, rect_default_constructor_integer.contains(PointI(50, 50)));

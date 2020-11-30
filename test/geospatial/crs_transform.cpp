@@ -40,22 +40,16 @@ struct CrsTransformTest
 };
 
 
-BOOST_FIXTURE_TEST_CASE(isGeocentric, CrsTransformTest)
+BOOST_FIXTURE_TEST_CASE(transform, CrsTransformTest)
 {
   CrsTransform<Point3D> trf(epsg25830, epsg4258);
   Point3D pt_utm(281815.044, 4827675.243, 0.);
   Point3D pt_geo;
   trf.transform(pt_utm, pt_geo);
-  BOOST_CHECK_EQUAL(43.570113, pt_geo.x);
-  BOOST_CHECK_EQUAL(-5.701905, pt_geo.y);
-  BOOST_CHECK_EQUAL(0., pt_geo.z);
+  BOOST_CHECK_CLOSE(43.570113, pt_geo.x, 0.1);
+  BOOST_CHECK_CLOSE(-5.701905, pt_geo.y, 0.1);
+  BOOST_CHECK_CLOSE(0., pt_geo.z, 0.1);
 }
-
-//BOOST_FIXTURE_TEST_CASE(isGeographic, CrsTest)
-//{
-//  BOOST_CHECK(false ==epsg25830->isGeographic());
-//  BOOST_CHECK(epsg4258->isGeographic());
-//}
 
 BOOST_AUTO_TEST_SUITE_END()
 

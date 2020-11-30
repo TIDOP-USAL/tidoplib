@@ -290,13 +290,26 @@ BOOST_FIXTURE_TEST_CASE(isEmpty, WindowTest)
   BOOST_CHECK_EQUAL(false, window_constructor_center_size_integer_even_size->isEmpty());
 }
 
-BOOST_FIXTURE_TEST_CASE(is3D, WindowTest) 
+BOOST_FIXTURE_TEST_CASE(isValid, WindowTest) 
 {
-  BOOST_CHECK_EQUAL(false, window_default_constructor_integer.is3D());
-  BOOST_CHECK_EQUAL(false, window_integer->is3D());
-  BOOST_CHECK_EQUAL(false, window_integer_copy->is3D());
-  BOOST_CHECK_EQUAL(false, window_constructor_center_side_integer_even_size->is3D());
-  BOOST_CHECK_EQUAL(false, window_constructor_center_size_integer_even_size->is3D());
+  BOOST_CHECK_EQUAL(false, window_default_constructor_integer.isValid());
+  BOOST_CHECK_EQUAL(true, window_integer->isValid());
+  BOOST_CHECK_EQUAL(true, window_integer_copy->isValid());
+  BOOST_CHECK_EQUAL(true, window_constructor_center_side_integer_even_size->isValid());
+  BOOST_CHECK_EQUAL(true, window_constructor_center_size_integer_even_size->isValid());
+}
+
+BOOST_FIXTURE_TEST_CASE(normalized, WindowTest) 
+{
+  WindowI w(PointI(100,100), PointI(0,0));
+  
+  BOOST_CHECK_EQUAL(false, w.isValid());
+  w.normalized();
+  BOOST_CHECK_EQUAL(true, w.isValid());
+  BOOST_CHECK_EQUAL(0, w.pt1.x);
+  BOOST_CHECK_EQUAL(0, w.pt1.y);
+  BOOST_CHECK_EQUAL(100, w.pt2.x);
+  BOOST_CHECK_EQUAL(100, w.pt2.y);
 }
 
 BOOST_FIXTURE_TEST_CASE(containsPoint, WindowTest) 

@@ -103,7 +103,7 @@ public:
 
   virtual void compute(size_t steeps) = 0;
 
-  std::vector<geometry::PointF> curve() const;
+  std::vector<PointF> curve() const;
 
   double auc() const;
 
@@ -118,7 +118,7 @@ public:
 protected:
 
   std::vector<std::pair<T, int>> mData;
-  std::vector<geometry::PointF> mCurve;
+  std::vector<PointF> mCurve;
   size_t mPositives;
   size_t mNegatives;
   double mAuc;
@@ -340,7 +340,7 @@ double Curve<T>::falseNegativeRate(T threshold) const
 }
 
 template<typename T>
-std::vector<geometry::PointF> Curve<T>::curve() const
+std::vector<PointF> Curve<T>::curve() const
 {
   return mCurve;
 }

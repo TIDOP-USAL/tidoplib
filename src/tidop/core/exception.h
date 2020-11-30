@@ -128,7 +128,7 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 //#ifdef TL_MESSAGE_HANDLER
 //#ifdef _DEBUG
 #define TL_ERROR(...) tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
-#define TL_THROW_ERROR(...) throw tl::make_exception(MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_ERROR(...) throw tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 //#define TL_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION); }
