@@ -65,5 +65,6 @@
 // boost
 #cmakedefine HAVE_BOOST
 
+#cmakedefine HAVE_LAPACKE
 
 #endif // TL_CONFIG_H

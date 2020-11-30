@@ -201,6 +201,7 @@ OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
+OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
 
 
 # ----------------------------------------------------------------------------
@@ -225,7 +226,6 @@ if(BUILD_TL_CORE)
 	endif(BUILD_TL_MATH)
 	#completar y ver que modulos se activan/desactivan en función de la activación de otros
 endif(BUILD_TL_CORE)
-
 
 # ----------------------------------------------------------------------------
 #  Detect 3rd-party libraries
@@ -369,6 +369,47 @@ if(WITH_EDSDK)
 endif()
 # ----------------------------------------------------------------------------
 
+if(BUILD_TL_MATH)
+
+if(WITH_LAPACKE)
+
+  #SET(LAPACKE_LIBRARY "" CACHE FILE "Path to library LAPACKE")
+  #SET(LAPACK_LIBRARY "" CACHE FILE "Path to library LAPACK")
+  #SET(BLAS_LIBRARY "" CACHE FILE "Path to library BLAS")
+  
+  add_library(blas SHARED IMPORTED)
+  set_property(TARGET blas PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/libblas.dll)
+  set_property(TARGET blas PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/libblas.lib)
+  
+  add_library(lapack SHARED IMPORTED)
+  set_property(TARGET lapack PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapack.dll)
+  set_property(TARGET lapack PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapack.lib)
+  
+  add_library(lapacke SHARED IMPORTED)
+  set_property(TARGET lapacke PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapacke.dll)
+  set_property(TARGET lapacke PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapacke.lib)
+  
+  set(LAPACKE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/third_party/lapacke/include)
+  set(LAPACKE_LIBRARIES blas lapack lapacke)
+    
+  include_directories(${LAPACKE_INCLUDE_DIRS})
+   
+  ## install lapack and blas dependencies
+  file(GLOB lapacke_windows_libs 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/*.lib")
+  file(GLOB lapacke_windows_dll 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/*.dll")
+  if(lapacke_windows_libs AND lapacke_windows_dll)
+      set(LAPACKE_LIB_DIR "lib/lapacke")
+  			install(FILES ${lapacke_windows_libs} ${lapacke_windows_dll}
+  					    DESTINATION ${LAPACKE_LIB_DIR})
+  endif()
+              
+  set(HAVE_LAPACKE YES)
+else()
+  set(HAVE_LAPACKE NO)
+endif()
+  
+endif(BUILD_TL_MATH)
+
 # --- VLD ---
 ### TODO: Revisar. por ahora s?lo 64 bits
 #if(WITH_VLD AND MSVC)
@@ -412,6 +453,8 @@ include_directories("${PROJECT_BINARY_DIR}")
 
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(TidopLib_LIBRARIES)
+
+#add_subdirectory(third_party)
 
 # Directorio con el código fuente de los diferentes modulos
 add_subdirectory(src)

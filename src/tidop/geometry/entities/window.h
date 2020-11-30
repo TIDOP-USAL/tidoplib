@@ -158,7 +158,6 @@ public:
   /*!
    * \brief Devuelve el alto de la ventana
    * \return Alto
-   * \deprecated Use 'height' en su lugar
    */
   typename Point_t::value_type height() const;
 

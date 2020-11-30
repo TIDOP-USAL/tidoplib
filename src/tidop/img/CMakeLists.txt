@@ -1,5 +1,7 @@
 #Modulo img de la librería
 
+SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
+
 add_library(tl_img ${LIB_TYPE}
             img.h
 			      img.cpp

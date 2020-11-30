@@ -1223,7 +1223,7 @@ Matrix<T, _cols, _rows> Matrix<T, _rows, _cols>::transpose() const
 {
   size_t rows = this->rows();
   size_t cols = this->cols();
-  Matrix<T, _cols, _rows> matrix = transposeReserve(*this);
+  Matrix<T, _cols, _rows> matrix(cols, rows);
 
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
@@ -1772,7 +1772,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  //static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
 
   Matrix<T> matrix(rows, cols);
   for (size_t r = 0; r < matrix.rows(); r++) {
@@ -2186,44 +2186,6 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
 }
 
 
-
-
-template<typename T, size_t _rows, size_t _cols>
-Matrix<T, _rows, _cols> matrixReserve(const Matrix<T, _rows, _cols> &_matrix)
-{
-  return Matrix<T, _cols, _rows>();
-}
-
-template<typename T>
-Matrix<T, DynamicMatrix, DynamicMatrix> matrixReserve(const Matrix<T, DynamicMatrix, DynamicMatrix> &matrix)
-{
-  return Matrix<T>(matrix.cols(), matrix.rows());
-}
-
-//template<typename T, size_t _rows, size_t _cols>
-//Matrix<T, _rows, _cols> matrixReserve(size_t rows, size_t cols)
-//{
-//  return Matrix<T, _cols, _rows>();
-//}
-//
-//template<typename T>
-//Matrix<T, DynamicMatrix, DynamicMatrix> matrixReserve(size_t rows, size_t cols)
-//{
-//  return Matrix<T>(rows, cols);
-//}
-
-TL_TODO("Quitar estas funciones")
-template<typename T, size_t _rows, size_t _cols>
-Matrix<T, _cols, _rows> transposeReserve(const Matrix<T, _rows, _cols> &_matrix)
-{
-  return Matrix<T, _cols, _rows>();
-}
-
-template<typename T>
-Matrix<T, DynamicMatrix, DynamicMatrix> transposeReserve(const Matrix<T, DynamicMatrix, DynamicMatrix> &matrix)
-{
-  return Matrix<T>::zero(matrix.cols(), matrix.rows());
-}
 
 /*! \} */ // end of Algebra
 

@@ -18,8 +18,9 @@ add_library(tl_math ${LIB_TYPE}
             algebra/matrix.h
             algebra/vector.h
             algebra/svd.h
-			algebra/lu.h
-			algebra/qr.h
+            algebra/lu.h
+            algebra/qr.h
+            algebra/cholesky.h
 )
 
 # Añade el proyecto a la carpeta 'modules'
@@ -34,7 +35,12 @@ if(BUILD_SHARED_LIBS)
 			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
 			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 			
-	target_link_libraries(tl_math tl_core)		
+	target_link_libraries(tl_math tl_core)
+  
+  if(HAVE_LAPACKE)
+    target_link_libraries(tl_math ${LAPACKE_LIBRARIES})
+  endif(HAVE_LAPACKE)
+  
 else()
   install(TARGETS tl_math
 			EXPORT "${TARGETS_EXPORT_NAME}"
