@@ -7,9 +7,12 @@ namespace tl
 namespace geospatial
 {
 
+
 int utmZoneFromLongitude(double longitude)
 {
-  int zone = static_cast<int>(ceil((longitude + TL_PI) / (6.0 * TL_DEG_TO_RAD)));
+  TL_TODO("Esto es el calculo del huso correspondiente a la longitud aunque no tiene porque coincidir con el huso real ya que hay zonas que usan husos extendidos")
+  int zone = static_cast<int>(ceil((longitude + 180.) / 6.0));
+  if (zone == 0) zone = 1;
   return zone;
 }
 

@@ -48,6 +48,7 @@ public:
   Size &operator = (Size &&size) TL_NOEXCEPT;
 
   bool isEmpty() const;
+  bool isValid() const;
 
   /*!
    * \brief Conversión de tipo
@@ -118,7 +119,13 @@ Size<T> &Size<T>::operator = (Size &&size) TL_NOEXCEPT
 template<typename T>
 inline bool tl::Size<T>::isEmpty() const
 {
-  return width <= 0 || height <= 0;
+  return width <= static_cast<T>(0) || height <= static_cast<T>(0);
+}
+
+template<typename T>
+inline bool tl::Size<T>::isValid() const
+{
+  return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
 template<typename T> template<typename T2> inline 
