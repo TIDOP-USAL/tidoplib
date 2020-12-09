@@ -6,29 +6,60 @@
 #include <list>
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "tidop/core/defs.h"
 
-namespace TL
+namespace tl
 {
 
+namespace experimental
+{
 
 /*!
  * \brief Campo de la tabla
  *
  */
-class TL_EXPORT TableHeaderField
+class TL_EXPORT TableField
 {
 public:
 
   enum class Type
   {
     INT,
+    INT64,
     DOUBLE,
     FLOAT,
     STRING
     //....
   };
+
+public:
+
+  /*!
+   * \brief Constructor
+   * \param[in] name Nombre del campo
+   * \param[in] type Tipo
+   * \param[in] size Tamaño
+   */
+  TableField(const std::string &name, Type type, int size);
+
+  ~TableField();
+
+  /*!
+   * \brief Devuelve el nombre del campo
+   */
+  std::string name() const;
+
+  /*!
+   * \brief Devuelve el tipo del campo
+   */
+  Type type() const;
+
+  /*!
+   * \brief Devuelve el tamaño del campo
+   */
+  int size() const;
 
 private:
 
@@ -42,101 +73,77 @@ private:
    */
   Type mType;
 
-  //TODO: Añadir tamaño??
-public:
-
   /*!
-   * \brief Constructor
-   * \param[in] name Nombre del campo
-   * \param[in] type Tipo
+   * \brief Tamaño 
    */
-  TableHeaderField(const std::string &name, Type type);
-
-  /*!
-   * \brief Destructor
-   */
-  ~TableHeaderField();
-
-  /*!
-   * \brief Devuelve el nombre del campo
-   */
-  const char *getName() const;
-
-  /*!
-   * \brief Devuelve el tipo del campo
-   */
-  Type getType() const;
+  int mSize;
 };
 
 
 /*!
  * \brief Cabecera de la tabla
  */
-class TL_EXPORT TableHeader
-{
-private:
+//class TL_EXPORT TableHeader
+//{
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  TableHeader();
+//
+//  /*!
+//   * \brief Constructor de copia
+//   * \param[in] tableHeader
+//   */
+//  TableHeader(const TableHeader &tableHeader);
+//
+//  /*!
+//   * \brief Constructor de lista
+//   * \param[in] tableHeader
+//   */
+//  TableHeader(std::initializer_list<TableField> tableHeader);
+//
+//  /*!
+//   * \brief Destructora
+//   */
+//  ~TableHeader();
+//
+//  void addField(const TableField &field);
+//  void clear();
+//  size_t size() const;
+//  TableField tableHeaderField(int idx) const;
+//
+//private:
+//
+//  /*!
+//   * \brief Campos de la tabla
+//   */
+//  std::vector<TableField> mTableFields;
+//
+//};
 
-  /*!
-   * \brief Campos de la tabla
-   */
-  std::vector<std::shared_ptr<TableHeaderField>> mTableFields;
+
+class TL_EXPORT RegisterValue
+{
 
 public:
 
-  /*!
-   * \brief Constructora por defecto
-   */
-  TableHeader();
+  RegisterValue(const std::shared_ptr<TableField> &field);
+  RegisterValue(const std::shared_ptr<TableField> &field, 
+                const std::string &value);
+  ~RegisterValue();
 
-  /*!
-   * \brief Constructor de copia
-   * \param[in] tableHeader
-   */
-  TableHeader(const TableHeader &tableHeader);
-
-  /*!
-   * \brief Constructor de lista
-   * \param[in] tableHeader
-   */
-  TableHeader(std::initializer_list<std::shared_ptr<TableHeaderField>> tableHeader);
-
-  /*!
-   * \brief Destructora
-   */
-  ~TableHeader();
-
-  void addField(std::shared_ptr<TableHeaderField> field);
-
-  /*!
-   * \brief Limpia la lista de procesos
-   */
-  void clear();
-
-  size_t getFieldCount() const;
-
-  const TableHeaderField *getTableHeaderField(int idx) const;
+  std::string value() const;
+  void setValue(const std::string &value);
 
 private:
 
+  std::shared_ptr<TableField> mField;
+  //Por ahora cargo una cadena con el valor
+  std::string mValue;
 };
-
-
-//class TL_EXPORT TableRegisterField
-//{
-//private:
-//
-//  //Por ahora cargo una cadena con el valor
-//  std::string mValue;
-//
-//public:
-//  TableRegisterField(const std::string &value);
-//  ~TableRegisterField();
-//
-//  std::string  getValue() const;
-//  void setValue(const std::string &value);
-//private:
-//
-//};
 
 
 
@@ -147,21 +154,12 @@ private:
 class TL_EXPORT TableRegister
 {
 
-protected:
-  
-  /*!
-   * \brief Campos de la tabla
-   */
-  //std::vector<std::shared_ptr<TableRegisterField>> mRegisterValues;
-  std::vector<std::string> mRegisterValues;
-
 public:
 
   /*!
    * \brief Constructora por defecto
    */
-  TableRegister();
-  TableRegister(int size);
+  TableRegister(const std::vector<std::shared_ptr<TableField>> &fields);
 
   /*!
    * \brief Constructor de copia
@@ -176,11 +174,19 @@ public:
    */
   ~TableRegister();
 
-  const char *getValue(int idx);
+  std::string value(int idx) const;
+  void setValue(int idx, const std::string &field);
 
-  void setField(int idx, const std::string &field);
+  size_t size() const;
 
-  void setSize(int size);
+protected:
+  
+  TL_TODO("por ahora trabajo con cadenas de texto");
+
+  /*!
+   * \brief Campos de la tabla
+   */
+  std::vector<RegisterValue> mRegisterValues;
 
 };
 
@@ -188,7 +194,7 @@ public:
 /*!
  * \brief Tabla de datos
  */
-class TL_EXPORT DataTable /*: public std::iterator<std::bidirectional_iterator_tag, int>*/
+class TL_EXPORT DataTable
 {
 public:
 
@@ -197,47 +203,11 @@ public:
    */
   typedef std::list<std::shared_ptr<TableRegister>>::iterator iterator;
 
-private:
-
-  /*!
-   * \brief Nombre de la tabla
-   */
-  std::string mTableName;
-
-  /*!
-   * \brief Campos de la tabla
-   */
-  std::shared_ptr<TableHeader> mTableHeader;
-
-  /*!
-   * \brief Registros de la tabla
-   */
-  std::list<std::shared_ptr<TableRegister>> mRegister;
-  
-  //size_t index;
-
 public:
 
-  DataTable() 
-    : mTableName(""), mTableHeader(0) { }
-
-  DataTable(const DataTable &dataTable) 
-    : mTableName(dataTable.mTableName), mTableHeader(dataTable.mTableHeader) {}
-  DataTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader)
-    : mTableName(tableName), mTableHeader(tableHeader) { }
-
+  DataTable(const std::string &tableName,
+            const std::vector<std::shared_ptr<TableField>> &TableField);
   ~DataTable() {}
-
-  ///*!
-  // * \brief read
-  // */
-  //void read();
-
-  ///*!
-  // * \brief write
-  // */
-  //void write();
-
 
   /*!
    * \brief Iterador al primer registro
@@ -249,34 +219,30 @@ public:
    */
   iterator end();
 
-  /*!
-   * \brief Añade un registro al final
-   * \param[in] _register Registro que se añade
-   */
-  void addRegister(std::shared_ptr<TableRegister> _register);
+  ///*!
+  // * \brief Añade un registro al final
+  // * \param[in] _register Registro que se añade
+  // */
+  //void addRegister(std::shared_ptr<TableRegister> _register);
 
-  /*!
-   * \brief Borra un registro
-   * \param[in] index Indice del registro que se borra
-   */
-  void deleteRegister(int index);
+  ///*!
+  // * \brief Borra un registro
+  // * \param[in] index Indice del registro que se borra
+  // */
+  //void deleteRegister(int index);
 
   /*!
    * \brief Nombre de la tabla
    * \return Nombre de la tabla
    */
-  const char *getName() const;
+  std::string name() const;
 
-  /*!
-   * \brief Devuelve el registro
-   * \param[in] index Indice del registro
-   * \return Registro
-   */
-  std::shared_ptr<TableRegister> getRegister(int index);
 
-  const TableHeader *getTableHeader() const;
+  std::shared_ptr<TableRegister> createRegister(int index);
+
+  std::vector<std::shared_ptr<TableField>> fields() const;
   
-  size_t getFieldCount() const;
+  //size_t getFieldCount() const;
   
   /*!
    * \brief Establece el nombre de la tabla
@@ -288,9 +254,29 @@ public:
    * \brief Establece la cabecera de la tabla
    * \param[in] tableHeader Cabecera de la tabla
    */
-  void setTableHeader(std::shared_ptr<TableHeader> tableHeader);
+  //void setTableHeader(std::shared_ptr<TableHeader> tableHeader);
 
   size_t size();
+
+private:
+
+  /*!
+   * \brief Nombre de la tabla
+   */
+  std::string mTableName;
+
+  /*!
+   * \brief Campos de la tabla
+   */
+  std::vector<std::shared_ptr<TableField>> mTableFields;
+
+  /*!
+   * \brief Registros de la tabla
+   */
+  std::list<std::shared_ptr<TableRegister>> mRegister;
+  
+  //size_t index;
+
 };
 
 
@@ -299,10 +285,6 @@ public:
  */
 class TL_EXPORT DataModel
 {
-
-private:
-
-  std::list<std::shared_ptr<DataTable>> mDataTables;
 
 public:
 
@@ -327,7 +309,8 @@ public:
    * \param[in] tableHeader Cabecera de la tabla
    * \see TableField
    */
-  void createTable(const std::string &tableName, std::shared_ptr<TableHeader> tableHeader);
+  void createTable(const std::string &tableName,
+                   const std::vector<std::shared_ptr<TableField>> &fields);
 
   /*!
    * \brief Añade una tabla al modelo de datos
@@ -338,32 +321,36 @@ public:
   /*!
    * \brief drop
    */
-  void drop();
+  //void drop();
 
   /*!
    * \brief open
    */
-  void open(std::string file);
+  //void open(std::string file);
 
   /*!
    * \brief read
    */
-  void read();
+  //void read();
 
   /*!
    * \brief write
    */
-  void write();
+  //void write();
 
   /*!
    * \brief save
    */
-  void save();
+  //void save();
+
+private:
+
+  std::list<std::shared_ptr<DataTable>> mDataTables;
+
 };
 
+} // End namespace experimental
 
+} // End namespace tl
 
-
-} // End namespace TL
-
-#endif // TL_CONSOLE_H
+#endif // TL_DATA_MODEL_H

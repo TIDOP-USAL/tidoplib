@@ -16,6 +16,7 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
+#include "tidop/geospatial/crs.h"
 
 namespace tl
 {
@@ -141,6 +142,18 @@ public:
    */
   virtual int depth() const = 0;
 
+  /*!
+   * \brief Establece la georeferencia de la imagen
+   * \param[in] georeference Georeferencia
+   */
+  virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
+
+  /*!
+   * \brief Establece la proyección de la imagen
+   * \param[in] epsgCode Código EPSG
+   */
+  virtual void setCRS(const std::string &epsgCode) = 0;
+
 protected:
   
   void windowWrite(const WindowI &window, 
@@ -149,7 +162,8 @@ protected:
 protected:
 
   std::string mFileName;
-
+  geospatial::Crs mCRS;
+  Affine<PointD> mAffine;
 };
 
 

@@ -42,8 +42,6 @@ namespace tl
 namespace geospatial
 {
 
-/* ---------------------------------------------------------------------------------- */
-
 
 Dtm::Dtm(std::shared_ptr<Interpolation> algorithm)
   : mInterpolation(algorithm)
@@ -157,11 +155,6 @@ void Dtm::compute(const std::string &fileIn, const std::string &fileOut)
   GDALDatasetH hOutDS = GDALGrid("dtm.tif", hInDS, gdalGridOptions, &bUsageError);
 
 }
-
-
-
-
-/* ---------------------------------------------------------------------------------- */
 
 
 } // End namespace  geospatial

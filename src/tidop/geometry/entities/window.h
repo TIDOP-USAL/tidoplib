@@ -172,6 +172,8 @@ public:
    * \return True si la ventana es nula
    */
   bool isEmpty() const;
+  bool isValid() const;
+  void normalized();
 
   /*!
    * \brief Comprueba si un punto está contenido dentro de la ventana
@@ -184,7 +186,7 @@ public:
    * \brief La ventana contiene la ventana
    */
   template<typename Point_t2> bool containsWindow(const Window<Point_t2> &w) const;
-
+ 
 };
 
 
@@ -220,12 +222,14 @@ Window<Point_t>::Window(Window &&window) TL_NOEXCEPT
 template<typename Point_t> inline
 Window<Point_t>::Window(const Point_t &pt1,
                         const Point_t &pt2) 
-  : Entity(Entity::Type::window) 
+  : Entity(Entity::Type::window), 
+    pt1(pt1), 
+    pt2(pt2) 
 {
-  this->pt1.x = std::min(pt1.x, pt2.x);
-  this->pt1.y = std::min(pt1.y, pt2.y);
-  this->pt2.x = std::max(pt1.x, pt2.x);
-  this->pt2.y = std::max(pt1.y, pt2.y);
+  //this->pt1.x = std::min(pt1.x, pt2.x);
+  //this->pt1.y = std::min(pt1.y, pt2.y);
+  //this->pt2.x = std::max(pt1.x, pt2.x);
+  //this->pt2.y = std::max(pt1.y, pt2.y);
 }
     
 template<typename Point_t> template<typename T> inline
@@ -398,6 +402,22 @@ bool Window<Point_t>::isEmpty() const
           pt1.y == std::numeric_limits<typename Point_t::value_type>().max() && 
           pt2.x == -std::numeric_limits<typename Point_t::value_type>().max() && 
           pt2.y == -std::numeric_limits<typename Point_t::value_type>().max());
+}
+
+template<typename Point_t>
+inline bool tl::Window<Point_t>::isValid() const
+{
+  return this->width() > static_cast<typename Point_t::value_type>(0) && 
+         this->height() > static_cast<typename Point_t::value_type>(0);
+}
+
+template<typename Point_t>
+inline void tl::Window<Point_t>::normalized()
+{
+  if (!this->isValid()) {
+    if (this->pt1.x > this->pt2.x) std::swap(this->pt1.x, this->pt2.x);
+    if (this->pt1.y > this->pt2.y) std::swap(this->pt1.y, this->pt2.y);
+  }
 }
 
 template<typename Point_t> template<typename Point_t2> inline

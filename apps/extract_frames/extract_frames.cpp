@@ -5,6 +5,8 @@
 #include <tidop/core/messages.h>
 #include <tidop/experimental/video/videoio.h>
 
+#include <boost/filesystem.hpp>
+
 using namespace tl;
 
 #ifdef HAVE_VLD
@@ -27,16 +29,24 @@ public:
    * \brief mOutPath Ruta donde se guarda el log e información de salida
    */
   std::string mOutPath;
-
+  
+  int mStep;
+  
 public:
 
   VideoHelper(const std::string &path) 
     : mOutPath(path),
-      mCurrentPosition(0)
+      mCurrentPosition(0),
+	  mStep(20)
   { 
   }
 
   ~VideoHelper() {}
+
+  void setStep(int step)
+  {
+	  mStep = step;
+  }
 
   /*!
    * \brief onFinish
@@ -91,7 +101,7 @@ void VideoHelper::onFinish()
 void VideoHelper::onInitialize()
 {
   VideoOpenCV::Listener::onInitialize();
-  cv::namedWindow("Video", cv::WINDOW_NORMAL);
+  //cv::namedWindow("Video", cv::WINDOW_NORMAL);
 }
 
 void VideoHelper::onPause()
@@ -108,7 +118,14 @@ void VideoHelper::onPositionChange(double position)
 void VideoHelper::onRead(cv::Mat &frame) 
 {
   VideoOpenCV::Listener::onRead(frame);
-  cv::imshow("Video", frame);
+  std::string path = mOutPath;
+  int pos = static_cast<int>(mCurrentPosition);
+  if (pos % mStep == 0) {
+    path.append("/frame").append(std::to_string(pos)).append(".jpg");
+    cv::imwrite(path, frame);
+  }
+
+  //cv::imshow("Video", frame);
 }
 
 void VideoHelper::onResume() 
@@ -118,7 +135,7 @@ void VideoHelper::onResume()
 
 void VideoHelper::onShow(cv::Mat &frame) 
 { 
-  VideoOpenCV::Listener::onShow(frame);
+  //VideoOpenCV::Listener::onShow(frame);
 }
 
 void VideoHelper::onStop()
@@ -127,14 +144,24 @@ void VideoHelper::onStop()
 }
 
 
+/*!
+ * read_video: 
+ *
+ *
+ * uso:
+ */
 int main(int argc, char** argv)
 {
 
   std::string video;
-
-  Command cmd("extract_frame", "Extract frames from video");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("video", 'v', "Video", &video));
-
+  std::string image_path;
+  int step = 20;
+  
+  Command cmd("extract_frames", "Extract frames from video");
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("video", 'v', "Video del cual se quieren extraer los fotogramas", &video));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("images", 'i', "Ruta en la que se guardan las imágenes", &image_path));
+  cmd.push_back(std::make_shared<ArgumentIntegerOptional>("step", 's', "Número de frames que se saltan. Por defecto 20", &step));
+  
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
   if (status == Command::Status::parse_error ) {
@@ -154,29 +181,21 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  Chrono chrono("Extract frames from video finish ");
-  chrono.run();  // Se inicia el cronometro
+  VideoOpenCV video_cv(video);
+  if (video_cv.isOpened()) {
+      
+    boost::filesystem::create_directories(image_path);
 
-  try {
+    VideoHelper videoHelper(image_path);
+    videoHelper.setStep(step);
+    video_cv.addListener(&videoHelper);
+    //video_cv.setFramePerSeconds(30);
+    video_cv.run();
 
-    VideoOpenCV video_cv(video);
-
-    if (video_cv.isOpened()) {
-
-      VideoHelper videoHelper("");
-      video_cv.addListener(&videoHelper);
-      video_cv.setFramePerSeconds(30);
-      video_cv.run();
-
-    } else {
-      msgError("No se ha podido cargar el video: %s", video.c_str());
-      return 1;
-    }
-  } catch (const std::exception &e) {
-    msgError(e.what());
+  } else {
+    msgError("No se ha podido cargar el video: %s", video.c_str());
+    return 1;
   }
-
-  chrono.stop();
 
   return 0;
 }

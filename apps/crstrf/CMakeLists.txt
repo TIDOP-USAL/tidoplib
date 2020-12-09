@@ -19,7 +19,8 @@ target_link_libraries(${PROJECT_NAME}
                       tl_math
                       tl_geom
                       tl_geospatial
-                      tl_img)
+                      tl_img
+                      tl_experimental)
 					  
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 

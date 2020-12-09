@@ -227,6 +227,16 @@ public:
                      double phi, 
                      double kappa);
 
+  bool isNull() const
+  {
+    return (tx == 0. &&
+            ty == 0. &&
+            tz == 0. &&
+            mScale == 1. &&
+            mOmega == 0. &&
+            mPhi == 0. &&
+            mKappa == 0.);
+  }
 
 private:
 

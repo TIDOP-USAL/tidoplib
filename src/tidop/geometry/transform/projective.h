@@ -149,6 +149,18 @@ public:
                      double *e, double *f, 
                      double *g, double *h);
 
+  bool isNull() const
+  {
+    return (a == 1. &&
+            b == 0. &&
+            c == 0. &&
+            d == 0. &&
+            e == 1. &&
+            f == 0. &&
+            g == 0. &&
+            h == 0.);
+  }
+
 private:
 
   /*!

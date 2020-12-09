@@ -303,7 +303,9 @@ double Segment<Point_t>::angleOY() const
 template<typename Point_t> inline
 Window<Point_t> Segment<Point_t>::window() const
 {
-  return Window<Point_t>(pt1, pt2);
+  Window<Point_t> w(pt1, pt2);
+  w.normalized();
+  return w;
 }
 
 template<typename Point_t> inline

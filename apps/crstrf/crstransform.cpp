@@ -6,6 +6,8 @@
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/crstransf.h>
+#include <tidop/geospatial/ortho.h>
+#include <tidop/geospatial/footprint.h>
 
 // filesystem
 #if (__cplusplus >= 201703L)

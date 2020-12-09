@@ -104,6 +104,11 @@ public:
   Point_t transform(const Point_t &ptIn,
                     Transform::Order trfOrder = Transform::Order::direct) const override;
 
+  bool isNull() const
+  {
+    return true;
+  }
+
 };
 
 template<typename Point_t> inline

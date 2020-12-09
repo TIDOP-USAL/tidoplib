@@ -61,12 +61,11 @@ public:
   Point<T> bottomLeft() const;
   Size<T> size() const;
   bool isEmpty() const;
+  bool isValid() const;
   bool contains(const Point<T> &pt) const;
   Window<Point<T>> window() const;
+  void normalized();
 
-  /*!
-   * \brief Conversión de tipo
-   */
   template<typename T2> operator Rect<T2>() const;
 
 public:
@@ -208,7 +207,13 @@ Size<T> tl::Rect<T>::size() const
 template<typename T>
 inline bool tl::Rect<T>::isEmpty() const
 {
-  return width <= 0 || height <= 0;
+  return width <= static_cast<T>(0) || height <= static_cast<T>(0);
+}
+
+template<typename T>
+inline bool tl::Rect<T>::isValid() const
+{
+  return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
 template<typename T>
@@ -226,6 +231,21 @@ Window<Point<T>> Rect<T>::window() const
   return Window<Point<T>>(Point<T>(this->x, this->y), 
                           Point<T>(this->x + this->width, 
                                    this->y + this->height));
+}
+
+template<typename T>
+inline void tl::Rect<T>::normalized()
+{
+  if (!this->isValid()) {
+    if (this->width < static_cast<T>(0)) {
+      this->x += this->width;
+      this->width = -this->width;
+    }
+    if (this->height < static_cast<T>(0)) {
+      this->y += this->height;
+      this->height = -this->height;
+    }
+  }
 }
 
 template<typename T> template<typename T2> inline 
@@ -277,6 +297,9 @@ Rect<T> intersect(const Rect<T> &rect1,
   Point<T> bottomRight2 = rect2.bottomRight();
   rect.width = std::min(bottomRight1.x, bottomRight2.x) - rect.x;
   rect.height = std::min(bottomRight1.y, bottomRight2.y) - rect.y;
+  if (rect.width < 0) rect.width = 0;
+  if (rect.height < 0) rect.height = 0;
+
   return rect;
 }
 

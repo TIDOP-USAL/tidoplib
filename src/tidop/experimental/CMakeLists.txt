@@ -3,8 +3,14 @@
 add_library(tl_experimental ${LIB_TYPE}
             desingpatterns.cpp
             designpatterns.h
+            datamodel.cpp
+            datamodel.h
             video/videoio.cpp
-            video/videoio.h)
+            video/videoio.h
+            camera.cpp
+            camera.h
+            photo.cpp
+            photo.h)
   
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_experimental PROPERTY FOLDER "modules")
