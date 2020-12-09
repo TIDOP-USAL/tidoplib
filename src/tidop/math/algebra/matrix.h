@@ -119,15 +119,15 @@ public:
 
   void swapRows(size_t i, size_t j);
 
-  //pointer data()
-  //{
-  //  return mData.data();
-  //}
+  pointer data()
+  {
+    return mData.data();
+  }
     
-  //const_pointer data() const
-  //{
-  //  return mData.data();
-  //}
+  const_pointer data() const
+  {
+    return mData.data();
+  }
 
 private:
 
@@ -248,8 +248,8 @@ void MatrixBase<T, _rows, _cols>::swapRows(size_t i, size_t j)
 
 
 
-//#define MATRIX_STD_VECTOR 1
-#define MATRIX_STD_VALARRAY 1
+#define MATRIX_STD_VECTOR 1
+//#define MATRIX_STD_VALARRAY 1
 
 #ifdef MATRIX_STD_VECTOR
 
@@ -274,7 +274,7 @@ public:
   MatrixBase(const MatrixBase &matrix);
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
-  MatrixBase(T *data, size_t rows = 0, size_t cols = 0);
+  MatrixBase(T *data, size_t rows, size_t cols);
   virtual ~MatrixBase() {}
 
   MatrixBase &operator = (const MatrixBase &matrix);
@@ -283,31 +283,23 @@ public:
   reference at(size_t r, size_t c);
   const_reference at(size_t r, size_t c) const;
 
-  //value_type operator()(size_t r, size_t c) const;
-
-  //void setValue(size_t r, size_t c, T value)
-  //{
-  //  mData[r * this->cols() + c] = value;
-  //}
-
   size_t rows() const;
   size_t cols() const;
 
   void swapRows(size_t i, size_t j);
 
-  //pointer data()
-  //{
-  //  return mData.data();
-  //}
-  // 
-  //const_pointer data() const
-  //{
-  //  return mData.data();
-  //}
+  pointer data()
+  {
+    return mData.data();
+  }
+  
+  const_pointer data() const
+  {
+    return mData.data();
+  }
 
 private:
 
-  //std::vector<std::vector<T>> mData;
   std::vector<T> mData;
   size_t mRows;
   size_t mCols;
@@ -323,7 +315,6 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase()
 
 template<typename T> inline
 MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(size_t rows, size_t cols)
-  //: mData(rows, std::vector<T>(cols, -std::numeric_limits<T>().max()))
   : mData(rows * cols, -std::numeric_limits<T>().max()),
     mRows(rows),
     mCols(cols)
@@ -332,7 +323,6 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(size_t rows, size_t cols
 
 template<typename T> inline
 MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(size_t rows, size_t cols, T val)
-  //: mData(rows, std::vector<T>(cols, val))
   : mData(rows * cols, val),
     mRows(rows),
     mCols(cols)
@@ -353,6 +343,26 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(MatrixBase &&matrix) TL_
     mRows(matrix.mRows),
     mCols(matrix.mCols)
 {
+}
+
+template<typename T> inline 
+MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(std::initializer_list<T> values)
+{
+  this->mRows = 1;
+  this->mCols = values.size();
+
+  std::copy(values.begin(), values.end(), mData.begin());
+}
+
+template<typename T> inline
+MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(T *data, size_t rows, size_t cols)
+  : mData(-std::numeric_limits<T>().max(), rows *cols),
+    mRows(rows),
+    mCols(cols)
+{
+  for (size_t i = 0; i < mData.size(); i++){
+    mData[i] = data[i];
+  }
 }
 
 template<typename T> inline 
@@ -380,45 +390,30 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix> &MatrixBase<T, DynamicMatrix, Dynami
 template<typename T> inline 
 T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c)
 {
-  //return mData[r][c];
   return mData[r * mCols + c];
 }
 
 template<typename T> inline 
 const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c) const
 {
-  //return mData[r][c];
   return mData[r * mCols + c];
 }
-
-//template<typename T> inline 
-//T MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r, size_t c) const
-//{
-//  return mData[r * this->cols() + c];
-//}
 
 template<typename T> inline 
 size_t MatrixBase<T, DynamicMatrix, DynamicMatrix>::rows() const
 {
-  //return mData.size();
   return mRows;
 }
 
 template<typename T> inline 
 size_t MatrixBase<T, DynamicMatrix, DynamicMatrix>::cols() const
 {
-  //if (mData.empty()) {
-  //  return 0;
-  //} else {
-  //  return mData[0].size();
-  //}
   return mCols;
 }
 
 template<typename T> inline 
 void MatrixBase<T, DynamicMatrix, DynamicMatrix>::swapRows(size_t i, size_t j)
 {
-  //mData[i].swap(mData[j]);
   for (size_t c = 0; c < mCols; c++) {
     std::swap(mData[i* mCols + c], mData[j * mCols + c]);
   }

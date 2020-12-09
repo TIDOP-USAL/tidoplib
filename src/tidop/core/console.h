@@ -805,6 +805,7 @@ std::string Argument_<std::string, true>::typeName() const
 {
   return "std::string";
 }
+
 template<> inline
 std::string Argument_<std::string, false>::typeName() const
 {

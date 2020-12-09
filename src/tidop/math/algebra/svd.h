@@ -7,6 +7,10 @@
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 
+#ifdef HAVE_LAPACKE
+#include <lapacke.h>
+#endif // HAVE_LAPACKE
+
 #include <algorithm>
 
 namespace tl
@@ -22,6 +26,28 @@ namespace math
 /*! \addtogroup Algebra
  *  \{
  */
+
+#ifdef HAVE_LAPACKE
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
+lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+{
+  lapack_int info = LAPACKE_sgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+  return info;
+}
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
+lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+{
+  lapack_int info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+  return info;
+}
+
+#endif // HAVE_LAPACKE
 
 /*!
  * \brief SVD (Singular value decomposition)
@@ -87,6 +113,9 @@ private:
 
   void decompose();
   void reorder();
+#ifdef HAVE_LAPACKE
+  void lapackeDecompose();
+#endif // HAVE_LAPACKE
 
 protected:
 
@@ -118,10 +147,15 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
   V = Matrix<T, _cols, _cols>(mCols, mCols);
   W = Vector<T, _cols>(mCols);
 
+#ifdef HAVE_LAPACKE
+  this->lapackeDecompose();
+#else
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
   this->reorder();
   tsh = static_cast<T>(0.5) * sqrt(mRows + mCols + static_cast<T>(1)) * W[0] * eps;
+#endif // HAVE_LAPACKE
+
 }
 
 
@@ -414,6 +448,32 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
     }
   }
 }
+
+#ifdef HAVE_LAPACKE
+
+template<
+  template<typename, size_t, size_t> 
+  class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+{
+  lapack_int info;
+  lapack_int lda = mCols;
+  lapack_int ldu = mRows;
+  lapack_int ldvt = mCols;
+  //Vector<T, _cols> _s(mCols);
+  T *superb = new T[std::min(mRows,mCols)-1];
+
+  info = lapackeGESVD(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
+  TL_TODO("Hay que transponer la matriz para que tenga sentido con el código propio...")
+  V = V.transpose();
+
+  delete[] superb;
+
+  TL_ASSERT(info == 0, "The algorithm computing SVD failed to converge.");
+}
+
+#endif // HAVE_LAPACKE
 
 template<
   template<typename, size_t, size_t> 

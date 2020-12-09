@@ -20,6 +20,11 @@ add_library(tl_img ${LIB_TYPE}
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_img PROPERTY FOLDER "modules")
 
+if(HAVE_LAPACKE)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)	
+
 #instalación
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_img
@@ -33,7 +38,8 @@ if(BUILD_SHARED_LIBS)
 	
     target_link_libraries(tl_img 
                           tl_core 
-                          tl_geom 
+                          tl_geom
+                          tl_math 
                           tl_geospatial)
     if(HAVE_OPENCV)			
         target_link_libraries(tl_img 
@@ -44,7 +50,7 @@ if(BUILD_SHARED_LIBS)
         target_link_libraries(tl_img 
                               ${GDAL_LIBRARY})
     endif(HAVE_GDAL)
-	
+
 else()
     install(TARGETS tl_img 
             EXPORT "${TARGETS_EXPORT_NAME}"

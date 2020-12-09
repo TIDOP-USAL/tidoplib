@@ -202,7 +202,7 @@ OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
-
+#OPTION (WITH_OPENBLAS "Include OpenBLAS"                      OFF)
 
 # ----------------------------------------------------------------------------
 #  Modulos TidopLib
@@ -324,7 +324,7 @@ if(WITH_PROJ4)
   else()
     set(HAVE_PROJ4 YES)
     include_directories(${PROJ4_INCLUDE_DIRS})
-	message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
+    message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
     message(STATUS "  Library : ${PROJ4_LIBRARIES}")
   endif()
 endif()
@@ -360,12 +360,13 @@ if(WITH_EDSDK)
 
   find_library(EDSDK_LIBRARY NAMES EDSDK )
 
-    if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
-        set(HAVE_EDSDK NO)
-    else()
-        set(HAVE_EDSDK YES)
+  if(NOT EDSDK_INCLUDE_DIR AND EDSDK_LIBRARY)
+    set(HAVE_EDSDK NO)
+  else()
+    set(HAVE_EDSDK YES)
     include_directories(${EDSDK_INCLUDE_DIR})
-    endif()
+  endif()
+  
 endif()
 # ----------------------------------------------------------------------------
 
@@ -373,40 +374,53 @@ if(BUILD_TL_MATH)
 
 if(WITH_LAPACKE)
 
-  #SET(LAPACKE_LIBRARY "" CACHE FILE "Path to library LAPACKE")
-  #SET(LAPACK_LIBRARY "" CACHE FILE "Path to library LAPACK")
-  #SET(BLAS_LIBRARY "" CACHE FILE "Path to library BLAS")
+  # #SET(LAPACKE_LIBRARY "" CACHE FILE "Path to library LAPACKE")
+  # #SET(LAPACK_LIBRARY "" CACHE FILE "Path to library LAPACK")
+  # #SET(BLAS_LIBRARY "" CACHE FILE "Path to library BLAS")
   
-  add_library(blas SHARED IMPORTED)
-  set_property(TARGET blas PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/libblas.dll)
-  set_property(TARGET blas PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/libblas.lib)
+  # add_library(blas SHARED IMPORTED)
+  # set_property(TARGET blas PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/libblas.dll)
+  # set_property(TARGET blas PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/libblas.lib)
   
-  add_library(lapack SHARED IMPORTED)
-  set_property(TARGET lapack PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapack.dll)
-  set_property(TARGET lapack PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapack.lib)
+  # add_library(lapack SHARED IMPORTED)
+  # set_property(TARGET lapack PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapack.dll)
+  # set_property(TARGET lapack PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapack.lib)
   
-  add_library(lapacke SHARED IMPORTED)
-  set_property(TARGET lapacke PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapacke.dll)
-  set_property(TARGET lapacke PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/liblapacke.lib)
+  # add_library(lapacke SHARED IMPORTED)
+  # set_property(TARGET lapacke PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapacke.dll)
+  # set_property(TARGET lapacke PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapacke.lib)
   
-  set(LAPACKE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/third_party/lapacke/include)
-  set(LAPACKE_LIBRARIES blas lapack lapacke)
+  # set(LAPACKE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/third_party/lapacke/include)
+  # set(LAPACKE_LIBRARIES blas lapack lapacke)
     
-  include_directories(${LAPACKE_INCLUDE_DIRS})
+  # include_directories(${LAPACKE_INCLUDE_DIRS})
    
-  ## install lapack and blas dependencies
-  file(GLOB lapacke_windows_libs 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/*.lib")
-  file(GLOB lapacke_windows_dll 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/*.dll")
-  if(lapacke_windows_libs AND lapacke_windows_dll)
-      set(LAPACKE_LIB_DIR "lib/lapacke")
-  			install(FILES ${lapacke_windows_libs} ${lapacke_windows_dll}
-  					    DESTINATION ${LAPACKE_LIB_DIR})
+  # ## install lapack and blas dependencies
+  # file(GLOB lapacke_windows_libs 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/*.lib")
+  # file(GLOB lapacke_windows_dll 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/*.dll")
+  # if(lapacke_windows_libs AND lapacke_windows_dll)
+      # set(LAPACKE_LIB_DIR "lib/lapacke")
+  			# install(FILES ${lapacke_windows_libs} ${lapacke_windows_dll}
+  					    # DESTINATION ${LAPACKE_LIB_DIR})
+  # endif()
+        
+  find_package(OpenBLAS QUIET)
+  
+  if(NOT OpenBLAS_FOUND)
+    set(HAVE_LAPACKE NO)
+  else()
+    set(HAVE_LAPACKE YES)
+    include_directories(${OpenBLAS_INCLUDE_DIRS})
   endif()
-              
-  set(HAVE_LAPACKE YES)
-else()
-  set(HAVE_LAPACKE NO)
+  
 endif()
+  
+  # if(WITH_OPENBLAS)
+    # set(HAVE_OPENBLAS YES)
+  # else()
+    # set(HAVE_OPENBLAS NO)
+  # endif()
+  
   
 endif(BUILD_TL_MATH)
 
