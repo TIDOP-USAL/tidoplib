@@ -233,7 +233,9 @@ int main(int argc, char** argv)
   Eigen::Vector3f B;
   A << 1,2,3,  4,5,6,  7,8,10;
   B << 3, 3, 4;
-  //Eigen::Vector3f x = A.partialPivLu().solve(B);
+
+  auto eigen_lu = A.partialPivLu();
+  Eigen::Vector3f x = eigen_lu.solve(B);
   //Eigen::JacobiSVD<Eigen::Matrix3f> svd_eigen = A.jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV);
   //std::cout << "Here is the matrix A:\n" << A << std::endl;
   //std::cout << "Here is the vector b:\n" << B << std::endl;
@@ -272,8 +274,11 @@ int main(int argc, char** argv)
   //_A.at(2, 2) = -41;
 
   tl::math::Vector<float> _B { 3, 3, 4 };
-  //tl::math::LuDecomposition<tl::math::Matrix<float>> lu(_A);
-  //tl::math::Vector<float> c = lu.solve(_B);
+
+  tl::math::LuDecomposition<tl::math::Matrix<float>> lu(_A);
+  auto tl_lu = lu.lu();
+  tl::math::Vector<float> c = lu.solve(_B);
+
   //tl::math::SingularValueDecomposition<tl::math::Matrix<float>> svd(_A);
   //tl::math::QRDecomposition<tl::math::Matrix<float>> _qr(_A);
   //auto _q = _qr.q();

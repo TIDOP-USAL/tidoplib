@@ -27,6 +27,12 @@ add_library(tl_math ${LIB_TYPE}
 set_property(TARGET tl_math 
              PROPERTY FOLDER "modules")
 
+
+if(HAVE_LAPACKE)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
+
 #instalación
 if(BUILD_SHARED_LIBS)
 	install(TARGETS tl_math

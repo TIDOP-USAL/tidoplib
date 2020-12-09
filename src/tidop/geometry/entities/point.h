@@ -29,7 +29,7 @@
 //#endif // HAVE_OPENCV
 
 #include "tidop/geometry/entities/entity.h"
-#include "tidop/math/algebra/vector.h"
+//#include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
@@ -87,11 +87,11 @@ public:
    */
   Point(Point<T> &&point) TL_NOEXCEPT;
 
-  /*!
-   * \brief Constructor a partir de un vector
-   * \param[in] vector Vector
-   */
-  Point(const math::Vector<T, 2> &vector);
+  ///*!
+  // * \brief Constructor a partir de un vector
+  // * \param[in] vector Vector
+  // */
+  //Point(const math::Vector<T, 2> &vector);
 
   /*!
    * \brief Constructor
@@ -186,13 +186,13 @@ Point<T>::Point(Point &&pt) TL_NOEXCEPT
 {
 }
 
-template<typename T> inline
-Point<T>::Point(const math::Vector<T, 2> &vector)
-  : Entity(Entity::Type::point2d),
-    x(vector[0]),
-    y(vector[1])
-{
-}
+//template<typename T> inline
+//Point<T>::Point(const math::Vector<T, 2> &vector)
+//  : Entity(Entity::Type::point2d),
+//    x(vector[0]),
+//    y(vector[1])
+//{
+//}
 
 template<typename T> inline
 Point<T>::Point(const std::array<T, 2> &v)
@@ -462,7 +462,7 @@ public:
    * \brief Constructor vector
    * \param[in] vector Vector
    */
-  Point3(const math::Vector<T, 3> &vector);
+  //Point3(const math::Vector<T, 3> &vector);
 
   /*!
    * \brief Constructor vector
@@ -532,14 +532,14 @@ Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
 {
 }
 
-template<typename T> inline 
-Point3<T>::Point3(const math::Vector<T, 3> &vector)
-  : Entity(Entity::Type::point3d),
-    x(vector[0]),
-    y(vector[1]),
-    z(vector[2])
-{
-}
+//template<typename T> inline 
+//Point3<T>::Point3(const math::Vector<T, 3> &vector)
+//  : Entity(Entity::Type::point3d),
+//    x(vector[0]),
+//    y(vector[1]),
+//    z(vector[2])
+//{
+//}
 
 template<typename T> inline
 Point3<T>::Point3(const std::array<T, 3> &v)
