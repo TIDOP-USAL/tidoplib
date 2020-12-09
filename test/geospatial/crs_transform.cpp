@@ -25,12 +25,12 @@ struct CrsTransformTest
   }
 
 
-  virtual void SetUp()
+  virtual void setup()
   {
 
   }
 
-  virtual void TearDown()
+  virtual void teardown()
   {
 
   }

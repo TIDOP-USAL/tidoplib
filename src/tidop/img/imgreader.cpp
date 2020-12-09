@@ -230,7 +230,7 @@ public:
 
     int x = window.pt1.x < window.pt2.x ? window.pt1.x : window.pt2.x;
     int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
-
+    
     RectI rect = window.isEmpty() ? RectI() : RectI(x, y, std::abs(window.width()), std::abs(window.height()));
     return this->read(scaleX, scaleY, rect, trf);
   }
@@ -243,6 +243,7 @@ public:
     Window<PointD> wLoad;
     wLoad.pt1 = mAffine.transform(terrainWindow.pt1, Transform::Order::inverse);
     wLoad.pt2 = mAffine.transform(terrainWindow.pt2, Transform::Order::inverse);
+    wLoad.normalized();
 
     WindowI wRead(wLoad);
 

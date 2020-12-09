@@ -163,19 +163,6 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
   mVectorWriter->close();
 }
 
-//std::vector<PointI> Footprint::imageLimits(int rows, int cols)
-//{
-//  std::vector<PointI> points(4);
-//
-//  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
-//  points[0] = PointI(-cols/2, rows/2);
-//  points[1] = PointI(cols/2, rows/2);
-//  points[2] = PointI(cols/2, -rows/2);
-//  points[3] = PointI(-cols/2, -rows/2);
-//
-//  return points;
-//}
-
 std::vector<Point3D> Footprint::terrainProjected(const std::vector<PointI> &imageLimits,
                                                  const tl::math::RotationMatrix<double> &rotation_matrix,
 															                   const Point3D &position,

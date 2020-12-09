@@ -332,8 +332,10 @@ public:
    */
   ~MessageManager();
 
-  MessageManager(MessageManager const&) = delete;
-  void operator=(MessageManager const&) = delete;
+  MessageManager(const MessageManager &) = delete;
+  MessageManager(MessageManager &&) = delete;
+  MessageManager operator=(const MessageManager &) = delete;
+  MessageManager operator=(MessageManager &&) = delete;
 
   /*!
    * \brief Singleton para obtener una referencia

@@ -252,12 +252,6 @@ inline bool CrsTransform<Point_t>::isNull() const
 }
 
 template<typename Point_t> inline
-bool CrsTransform<Point_t>::isNull() const
-{
-  return (pCoordinateTransformation != nullptr);
-}
-
-template<typename Point_t> inline
 void CrsTransform<Point_t>::init()
 {
   OGRSpatialReference *spatialReferenceIn = mEpsgIn->getOGRSpatialReference();

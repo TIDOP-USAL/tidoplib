@@ -215,6 +215,7 @@ int main(int argc, char** argv)
         
         //Point3D position(tx, ty, tz);
         //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
+        Point3D offset(272021.250, 4338368.076, 379.370);
         Point3D position;
 
         // Paso de la transformación de mundo a imagen a imagen mundo
@@ -222,14 +223,14 @@ int main(int argc, char** argv)
         math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
 
         position.x = -(rotation_transpose.at(0, 0) * tx +
-                              rotation_transpose.at(0, 1) * ty +
-                              rotation_transpose.at(0, 2) * tz) + 272021.250;
+                       rotation_transpose.at(0, 1) * ty +
+                       rotation_transpose.at(0, 2) * tz) + offset.x;
         position.y = -(rotation_transpose.at(1, 0) * tx +
-                              rotation_transpose.at(1, 1) * ty +
-                              rotation_transpose.at(1, 2) * tz) + 4338368.076;
+                       rotation_transpose.at(1, 1) * ty +
+                       rotation_transpose.at(1, 2) * tz) + offset.y;
         position.z = -(rotation_transpose.at(2, 0) * tx +
-                              rotation_transpose.at(2, 1) * ty +
-                              rotation_transpose.at(2, 2) * tz) + 379.370;
+                       rotation_transpose.at(2, 1) * ty +
+                       rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
         experimental::Photo::Orientation orientation(position, rotation_matrix);

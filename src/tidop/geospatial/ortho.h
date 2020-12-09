@@ -15,7 +15,7 @@ namespace tl
 
 class ImageReader;
 class ImageWriter;
-
+class VectorWriter;
 
 
 namespace geospatial
@@ -29,11 +29,9 @@ public:
 	Orthorectification(const std::string &dtm);
 	~Orthorectification();
 
-  void run2(const std::vector<experimental::Photo> &photos,
-					  const std::string &orthoPath);
-
-	void run(const std::vector<experimental::Photo> &photos,
-					 const std::string &orthoPath);
+  void run(const std::vector<experimental::Photo> &photos,
+					 const std::string &orthoPath,
+					 const std::string &footprint);
 
 private:
 
@@ -53,6 +51,7 @@ private:
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;
+	std::unique_ptr<VectorWriter> mVectorWriter;
 	experimental::Camera mCamera;
 	Affine<PointI> mAffinePhotocoordinatesToImage;
 };
