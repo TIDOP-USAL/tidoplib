@@ -64,7 +64,8 @@ public:
     polynomial,      /*!< Transformación polinómica */
     // tipos especiales
     multiple,
-    crs
+    crs,
+    differential_rectification  /*!< Rectificación diferencial */
   };
 
   enum class Order 

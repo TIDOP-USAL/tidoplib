@@ -5,7 +5,7 @@ add_subdirectory(coordtrf)
 add_subdirectory(imageinfo)
 add_subdirectory(extract_frames)
 #add_subdirectory(dtm)
-#Xadd_subdirectory(footprint)
+add_subdirectory(footprint)
 add_subdirectory(ortho)
 
 endif()
