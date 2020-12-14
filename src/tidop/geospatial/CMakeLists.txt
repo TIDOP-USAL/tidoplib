@@ -12,8 +12,10 @@ add_library(tl_geospatial ${LIB_TYPE}
             util.h
             ortho.cpp
             ortho.h
-            #footprint.cpp
-            #footprint.h
+            footprint.cpp
+            footprint.h
+            diffrect.cpp
+            diffrect.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

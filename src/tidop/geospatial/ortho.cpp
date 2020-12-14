@@ -13,7 +13,9 @@
 #include "tidop/experimental/datamodel.h"
 
 #include <opencv2/imgproc.hpp>
-//#define ORTHO_1
+
+#include <boost/filesystem.hpp>
+namespace fs = boost::filesystem;
 
 namespace tl
 {
@@ -48,6 +50,7 @@ Orthorectification::Orthorectification(const std::string &dtm)
   : mDtm(dtm),
     mDtmReader(ImageReaderFactory::createReader(dtm))
 {
+  init();
 }
 
 Orthorectification::~Orthorectification()
@@ -57,13 +60,24 @@ Orthorectification::~Orthorectification()
   }
 }
 
+void Orthorectification::init()
+{
+  mDtmReader->open();
+
+  mAffineDtmImageToTerrain = mDtmReader->georeference();
+  
+  mWindowDtmTerrainExtension.pt1.x = mAffineDtmImageToTerrain.tx;
+  mWindowDtmTerrainExtension.pt1.y = mAffineDtmImageToTerrain.ty;
+  mWindowDtmTerrainExtension.pt2.x = mAffineDtmImageToTerrain.tx + mAffineDtmImageToTerrain.scaleX() *mDtmReader->cols();
+  mWindowDtmTerrainExtension.pt2.y = mAffineDtmImageToTerrain.ty + mAffineDtmImageToTerrain.scaleY() *mDtmReader->rows();
+}
+
 void Orthorectification::run(const std::vector<experimental::Photo> &photos,
                              const std::string &orthoPath,
 					                   const std::string &footprint)
 {
-  if (!mDtmReader->isOpen()) {
-    mDtmReader->open();
-  }
+
+  fs::create_directories(orthoPath);
 
   mVectorWriter = VectorWriterFactory::createWriter(footprint);
   mVectorWriter->open();
@@ -74,6 +88,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
                                                   254));
   std::vector<std::shared_ptr<experimental::TableField>> fields;
   fields.push_back(field);
+  std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(fields));
 
   mVectorWriter->create();
   TL_TODO("Pasar CRS como parametro a la clase")
@@ -82,18 +97,12 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
   graph::GLayer layer;
   layer.setName("footprint");
   layer.addDataField(field);
-
-  Affine<PointD> affine_dtm_image_to_terrain = mDtmReader->georeference();
       
-  Window<PointD> window_dtm_terrain_extension;
-  window_dtm_terrain_extension.pt1.x = affine_dtm_image_to_terrain.tx;
-  window_dtm_terrain_extension.pt1.y = affine_dtm_image_to_terrain.ty;
-  window_dtm_terrain_extension.pt2.x = affine_dtm_image_to_terrain.tx + affine_dtm_image_to_terrain.scaleX() *mDtmReader->cols();
-  window_dtm_terrain_extension.pt2.y = affine_dtm_image_to_terrain.ty + affine_dtm_image_to_terrain.scaleY() *mDtmReader->rows();
 
   std::string ortho_file;
 
-  for (size_t i = 0; i < photos.size(); i++) {
+  for (size_t i = 0; i < 4/*photos.size()*/; i++) {
+
     try {
 
       mCamera = photos[i].camera();
@@ -108,23 +117,22 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
       Rect<int> rect_image(0, 0, cols, rows);
 
       float focal = this->focal();
-      PointF principal_point = this->principalPoint();
+      //PointF principal_point = this->principalPoint();
       cv::Mat distCoeffs = this->distCoeffs();
 
-      mAffinePhotocoordinatesToImage = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
-      std::vector<PointI> limits(4);
-      limits[0] = mAffinePhotocoordinatesToImage.transform(PointI(0, 0));
-      limits[1] = mAffinePhotocoordinatesToImage.transform(PointI(cols, 0));
-      limits[2] = mAffinePhotocoordinatesToImage.transform(PointI(cols, rows));
-      limits[3] = mAffinePhotocoordinatesToImage.transform(PointI(0, rows));
+      //mAffineImageCoordinatesToPhotocoordinates = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
+      mAffineImageCoordinatesToPhotocoordinates = this->affineImageToPhotocoordinates();
+      std::vector<PointI> limits = this->imageLimitsInPhotocoordinates();
 
 
       experimental::Photo::Orientation orientation = photos[i].orientation();
 
-      std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits,
-                                                                          orientation.rotationMatrix(),
-                                                                          orientation.position(),
-                                                                          focal);
+
+      mDifferentialRectification = std::make_unique<DifferentialRectification<double>>(orientation.rotationMatrix(),
+                                                                                       orientation.position(),
+                                                                                       focal);
+
+      std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits);
 
       /////////////////////////////////////////////////////////////////////////////
 
@@ -134,14 +142,14 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
       entity->push_back(footprint_coordinates[2]);
       entity->push_back(footprint_coordinates[3]);
 
-      std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(fields));
+      
       data->setValue(0, photos[i].name());
       entity->setData(data);
 
       layer.push_back(entity);
 
       /////////////////////////////////////////////////////////////////////////////
-
+      double scale_ortho;
       /// Calculo de transformación afin entre coordenadas terreno y coordenadas imagen
       std::vector<PointD> t_coor;
       t_coor.push_back(footprint_coordinates[0]);
@@ -157,19 +165,19 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 
       Affine<PointD> affine_terrain_image;
       affine_terrain_image.compute(i_coor, t_coor);
-      double scale_ortho = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
+      scale_ortho = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
       /// A partir de la huella del fotograma en el terreno se calcula la ventana envolvente.
       Window<PointD> window_ortho_terrain = this->windowOrthoTerrain(footprint_coordinates);
 
       
-      PointI window_dtm_image_pt1 = affine_dtm_image_to_terrain.transform(window_ortho_terrain.pt1, tl::Transform::Order::inverse);
-      PointI window_dtm_image_pt2 = affine_dtm_image_to_terrain.transform(window_ortho_terrain.pt2, tl::Transform::Order::inverse);
+      PointI window_dtm_image_pt1 = mAffineDtmImageToTerrain.transform(window_ortho_terrain.pt1, tl::Transform::Order::inverse);
+      PointI window_dtm_image_pt2 = mAffineDtmImageToTerrain.transform(window_ortho_terrain.pt2, tl::Transform::Order::inverse);
       ///TL_TODO("Hay que rehacer la clase Window para que las coordenadas del pt2 sean siempre mayores...")
       /// Se ha añadido el método 'normalized'
       WindowI window_dtm_image(window_dtm_image_pt1, window_dtm_image_pt2);
       window_dtm_image.normalized();
-      PointD point_dtm_terrain_pt1 = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1);
-      PointD point_dtm_terrain_pt2 = affine_dtm_image_to_terrain.transform(window_dtm_image.pt2);
+      PointD point_dtm_terrain_pt1 = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1);
+      PointD point_dtm_terrain_pt2 = mAffineDtmImageToTerrain.transform(window_dtm_image.pt2);
       Window<PointD> window_dtm_terrain(point_dtm_terrain_pt1, point_dtm_terrain_pt2);
       window_dtm_terrain.normalized();
 
@@ -200,109 +208,98 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
                                   window_ortho_terrain.pt2.y,
                                   scale_ortho, -scale_ortho, 0.0);
 
-      ////
-      // Ortoproyección usando mapas de distorsión
-      //cv::Mat mat_r(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
-      //cv::Mat mat_c(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
-      ////
-
-
-
-
-      //////////////////////////////////////////////////////////////////////////////////////
-      //{
-      //  //Point3D pt_terreno(271998.067,4338425.754, 0);
-      //  Point3D pt_terreno(272021.250, 4338368.076, 379.370);
-      //  //pt_terreno += Point3D(-21.242137795333861, 42.484888339009238, -29.321820108739011);
-      //  pt_terreno += Point3D(-22.9325, 57.457, -27.3279);  // Cogido de la nube de puntos... Con este punto sale bien.
-      //  Affine<PointD> affine = mDtmReader->georeference();
-      //  //PointD pt(position.x, position.y);
-      //  WindowD w(pt_terreno, 1 * affine.scaleX());
-      //  cv::Mat dtm = mDtmReader->read(w);
-      //  pt_terreno.z = dtm.at<float>(0, 0);
-
-      //  WindowD w_check(pt_terreno, 25 * affine.scaleX());
-      //  cv::Mat dtm_load_check = mDtmReader->read(w_check);
-
-      //  PointD pt_check = projectTerrainToPhoto(orientation.rotationMatrix(),
-      //                                           orientation.position(),
-      //                                           pt_terreno,
-      //                                           focal);
-
-      //  PointI punto_imagen = mAffinePhotocoordinatesToImage.transform(pt_check, tl::Transform::Order::inverse);
-      //          
-      //  WindowI window_image(punto_imagen, 50);
-
-      //  cv::Mat in(window_image.height(), window_image.width(), image.type());
-      //  image.colRange(window_image.pt1.x, window_image.pt2.x)
-      //        .rowRange(window_image.pt1.y, window_image.pt2.y).copyTo(in);
-
-      //  // Corrección de distorsión
-      //  ////void RadialCameraModel::Distortion(const T* extra_params, const T u, const T v,
-      //  ////                           T* du, T* dv) {
-      //  ////  const T k1 = extra_params[0];
-      //  ////  const T k2 = extra_params[1];
-
-      //  ////  const T u2 = u * u;
-      //  ////  const T v2 = v * v;
-      //  ////  const T r2 = u2 + v2;
-      //  ////  const T radial = k1 * r2 + k2 * r2 * r2;
-      //  ////  *du = u * radial;
-      //  ////  *dv = v * radial;
-      //  ////}
-      //  float u = pt_check.x / focal;
-      //  float v = pt_check.y / focal;
-
-      //  float k1 = distCoeffs.at<float>(0)/* / pow(focal, 3)*/;
-      //  float k2 = distCoeffs.at<float>(1)/* / pow(focal, 5)*/;
-      //  float u2 = u * u;
-      //  float v2 = v * v;
-      //  float r2 = u2 + v2;
-      //  float radial = k1 * r2 + k2 * r2 * r2;
-      //  float du = (u * radial);
-      //  float dv = (v * radial);
-      //  PointD pt_check2 = PointD(u + du, v + dv);
-      //  pt_check2 *= focal;
-
-      //  cv::Mat map1, map2;
-      //  std::array<std::array<float, 3>, 3> camera_matrix_data = {focal, 0.f, principal_point.x,
-      //                                                            0.f, focal, principal_point.y,
-      //                                                            0.f, 0.f, 1.f};
-      //  cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
-      //  cv::Size imageSize(cols, rows);
-      //  cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, nullptr);
-      //  cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), optCameraMat, imageSize, CV_32FC1, map1, map2);
-
-      //  float d_u = map1.at<float>(punto_imagen.y, punto_imagen.x);
-      //  float d_v = map2.at<float>(punto_imagen.y, punto_imagen.x);
-      //          
-      //  window_image = WindowI(PointI(d_u, d_v), 50);
-
-      //  image.colRange(window_image.pt1.x, window_image.pt2.x)
-      //        .rowRange(window_image.pt1.y, window_image.pt2.y).copyTo(in);
-
-      //  msgInfo("");
-      //}
-      //////////////////////////////////////////////////////////////////////////////////////
-
-
-
       std::vector<Point3D> dtm_grid_terrain_points(4);
       std::vector<PointD> ortho_image_coordinates(4);
       std::vector<PointD> photo_photocoordinates(4);
       std::vector<PointD> photo_image_coordinates(4);
 
+      //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+      //// Mascara
+                  
+      ///// se crea la mascara
+      //cv::Mat mask =  cv::Mat::zeros(dtm.row, dtm.cols, CV_8U);
+
+      //{
+
+      //  cv::Mat mat_r(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
+      //  cv::Mat mat_c(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
 
 
+      //  Point3D dtm_grid_terrain_point;
+      //  for (int r = 0; r < dtm.rows; r++) {
+      //    for (int c = 0; c < dtm.cols; c++) {
+
+      //      dtm_grid_terrain_point = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1 + PointI(c, r));
+      //      dtm_grid_terrain_point.z = dtm.at<float>(r, c);
+
+      //      if (dtm_grid_terrain_point.z == 0)
+      //        continue;
+
+      //      Point3D ortho_image_point = affine_ortho.transform(dtm_grid_terrain_point, Transform::Order::inverse);
+
+      //      PointD photocoord = mDifferentialRectification->backwardProjection(dtm_grid_terrain_point);
+      //      PointD imagecoord = mAffineImageCoordinatesToPhotocoordinates.transform(photocoord, tl::Transform::Order::inverse);
+
+      //      if (rect_image.contains(imagecoord) &&
+      //          rect_ortho.contains(ortho_image_point)) {
+
+      //          int _r = mat_r.at<int>(r_coor, c_coor);
+      //          int _c = mat_c.at<int>(r_coor, c_coor);
+
+      //          if (_r == -1 && _c == -1) {
+      //            mat_r.at<int>(r_coor, c_coor) = r;
+      //            mat_c.at<int>(r_coor, c_coor) = c;
+      //          } else {
+      //            Point3D first_point(window_ortho_terrain.pt1.x + _c * affine_terrain_image.scaleX(), window_ortho_terrain.pt1.y + rows_ortho * affine_terrain_image.scaleY() - _r * affine_terrain_image.scaleY(), 0.);
+      //            WindowD w(first_point, affine.scaleX());
+      //            cv::Mat dtm = mDtmReader->read(w);
+      //            first_point.z = dtm.at<float>(0, 0);
+
+      //            double distance1 = tl::distance3D(first_point, orientation.position());
+      //            double distance2 = tl::distance3D(ortho_terrain, orientation.position());
+      //            double z_dif = first_point.z - ortho_terrain.z;
+      //            if (distance1 > distance2) {
+      //              mat_r.at<int>(r_coor, c_coor) = r;
+      //              mat_c.at<int>(r_coor, c_coor) = c;
+      //              if (z_dif > 0.001) {
+      //                mask.at<uchar>(_r, _c) = static_cast<uchar>(1);
+      //              }
+      //            } else {
+      //              mask.at<uchar>(r, c) = static_cast<uchar>(1);
+      //            }
+      //          }
+      //        } else {
+      //          /// Ir rellenando mascara...
+      //          mask.at<uchar>(r, c) = static_cast<uchar>(1);
+      //        }
+
+      //    }
+      //  }
+
+
+      //  for (int r = 0; r < mImageReader->rows(); r++) {
+      //    for (int c = 0; c < mImageReader->cols(); c++) {
+
+      //      int _r = mat_r.at<int>(r, c);
+      //      int _c = mat_c.at<int>(r, c);
+      //      if (_r != -1 && _c != -1) {
+      //        mask.at<uchar>(_r, _c) = static_cast<uchar>(1);
+      //      }
+      //    }
+      //  }
+
+      //}
+
+      /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
       for (int r = 0; r < dtm.rows - 1; r++) {
         for (int c = 0; c < dtm.cols - 1; c++) {
 
-          dtm_grid_terrain_points[0] = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1 + PointI(c, r));
-          dtm_grid_terrain_points[1] = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1 + PointI(c + 1, r));
-          dtm_grid_terrain_points[2] = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1 + PointI(c + 1, r + 1));
-          dtm_grid_terrain_points[3] = affine_dtm_image_to_terrain.transform(window_dtm_image.pt1 + PointI(c, r + 1));
+          dtm_grid_terrain_points[0] = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1 + PointI(c, r));
+          dtm_grid_terrain_points[1] = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1 + PointI(c + 1, r));
+          dtm_grid_terrain_points[2] = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1 + PointI(c + 1, r + 1));
+          dtm_grid_terrain_points[3] = mAffineDtmImageToTerrain.transform(window_dtm_image.pt1 + PointI(c, r + 1));
 
           dtm_grid_terrain_points[0].z = dtm.at<float>(r, c);
           dtm_grid_terrain_points[1].z = dtm.at<float>(r, c + 1);
@@ -318,31 +315,16 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
           ortho_image_coordinates[2] = affine_ortho.transform(dtm_grid_terrain_points[2], Transform::Order::inverse);
           ortho_image_coordinates[3] = affine_ortho.transform(dtm_grid_terrain_points[3], Transform::Order::inverse);
 
-          
+          photo_photocoordinates[0] = mDifferentialRectification->backwardProjection(dtm_grid_terrain_points[0]);
+          photo_photocoordinates[1] = mDifferentialRectification->backwardProjection(dtm_grid_terrain_points[1]);
+          photo_photocoordinates[2] = mDifferentialRectification->backwardProjection(dtm_grid_terrain_points[2]);
+          photo_photocoordinates[3] = mDifferentialRectification->backwardProjection(dtm_grid_terrain_points[3]);
 
-          photo_photocoordinates[0] = projectTerrainToPhoto(orientation.rotationMatrix(),
-                                                       orientation.position(),
-                                                       dtm_grid_terrain_points[0],
-                                                       focal);
-          photo_photocoordinates[1] = projectTerrainToPhoto(orientation.rotationMatrix(),
-                                                       orientation.position(),
-                                                       dtm_grid_terrain_points[1],
-                                                       focal);
-          photo_photocoordinates[2] = projectTerrainToPhoto(orientation.rotationMatrix(),
-                                                       orientation.position(),
-                                                       dtm_grid_terrain_points[2],
-                                                       focal);
-          photo_photocoordinates[3] = projectTerrainToPhoto(orientation.rotationMatrix(),
-                                                       orientation.position(),
-                                                       dtm_grid_terrain_points[3],
-                                                       focal);
+          photo_image_coordinates[0] = mAffineImageCoordinatesToPhotocoordinates.transform(photo_photocoordinates[0], tl::Transform::Order::inverse);
+          photo_image_coordinates[1] = mAffineImageCoordinatesToPhotocoordinates.transform(photo_photocoordinates[1], tl::Transform::Order::inverse);
+          photo_image_coordinates[2] = mAffineImageCoordinatesToPhotocoordinates.transform(photo_photocoordinates[2], tl::Transform::Order::inverse);
+          photo_image_coordinates[3] = mAffineImageCoordinatesToPhotocoordinates.transform(photo_photocoordinates[3], tl::Transform::Order::inverse);
 
-          photo_image_coordinates[0] = mAffinePhotocoordinatesToImage.transform(photo_photocoordinates[0], tl::Transform::Order::inverse);
-          photo_image_coordinates[1] = mAffinePhotocoordinatesToImage.transform(photo_photocoordinates[1], tl::Transform::Order::inverse);
-          photo_image_coordinates[2] = mAffinePhotocoordinatesToImage.transform(photo_photocoordinates[2], tl::Transform::Order::inverse);
-          photo_image_coordinates[3] = mAffinePhotocoordinatesToImage.transform(photo_photocoordinates[3], tl::Transform::Order::inverse);
-
-          //tl::RectD rect_image(0, 0, cols - 1, rows - 1);
           if (rect_image.contains(photo_image_coordinates[0]) && 
               rect_image.contains(photo_image_coordinates[1]) && 
               rect_image.contains(photo_image_coordinates[2]) && 
@@ -351,15 +333,6 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
               rect_ortho.contains(ortho_image_coordinates[1]) &&
               rect_ortho.contains(ortho_image_coordinates[2]) &&
               rect_ortho.contains(ortho_image_coordinates[3])) {
-
-            /// Cálculo de transformación proyectiva fotocoordenadas - orto
-
-            /// Cálculo de las transformaciones proyectivas para los puntos de anclaje
-            /// Despues se calcularian los mapas de distorsión para x e y.
-            //TrfPerspective<PointD> perspective;
-            //perspective.compute(image_coordinates, ortho_grid_image_points);
-
-
 
             WindowI window_ortho_in = boundingWindow(ortho_image_coordinates.begin(), ortho_image_coordinates.end());
             if (!window_ortho_in.isValid()) continue;
@@ -390,8 +363,6 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
             image.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
                  .rowRange(window_image_in.pt1.y, window_image_in.pt2.y).copyTo(in);
             
-            //h.at<double>(0, 2) = 0.;
-            //h.at<double>(1, 2) = 0.;
             cv::warpPerspective(in, out, h, cv::Size(window_ortho_in.width(), window_ortho_in.height()), cv::INTER_NEAREST | cv::WARP_INVERSE_MAP, cv::BORDER_TRANSPARENT);
 
             out.copyTo(mat_ortho.colRange(window_ortho_in.pt1.x, window_ortho_in.pt2.x)
@@ -424,6 +395,181 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
   mVectorWriter->close();
 }
 
+Affine<PointI> Orthorectification::affineImageToPhotocoordinates()
+{
+  PointF principal_point = this->principalPoint();
+  return Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
+}
+
+std::vector<tl::PointI> Orthorectification::imageLimitsInPhotocoordinates()
+{
+  std::vector<tl::PointI> limits(4);
+  int rows = mImageReader->rows();
+  int cols = mImageReader->cols();
+  limits[0] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(0, 0));
+  limits[1] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(cols, 0));
+  limits[2] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(cols, rows));
+  limits[3] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(0, rows));
+
+  return limits;
+}
+
+std::vector<Point3D> Orthorectification::terrainProjected(const std::vector<PointI> &imageLimits)
+{
+  std::vector<Point3D> terrainLimits(4);
+
+  WindowD w(mDifferentialRectification->cameraPosition(), 
+            1 * mAffineDtmImageToTerrain.scaleX(), 
+            1 * mAffineDtmImageToTerrain.scaleY());
+  cv::Mat image = mDtmReader->read(w);
+  double z_ini = image.at<float>(0, 0);
+  double z = z_ini;
+
+  for (size_t i = 0; i < imageLimits.size(); i++) {
+
+    int it = 10;
+
+    Point3D terrain_point = mDifferentialRectification->forwardProjection(imageLimits[i], z_ini);
+    double z2;
+    while (it > 0) {
+      
+      PointD pt(terrain_point.x, terrain_point.y);
+      if (mWindowDtmTerrainExtension.containsPoint(terrain_point)) {
+        w = WindowD(pt, 
+                    1 * mAffineDtmImageToTerrain.scaleX(), 
+                    1 * mAffineDtmImageToTerrain.scaleY());
+        image = mDtmReader->read(w);
+        if (!image.empty()) {
+          z2 = image.at<float>(0, 0);
+          if (std::abs(z2 - z) > 0.1 && z2 != 0.) {
+            terrain_point = mDifferentialRectification->forwardProjection(imageLimits[i], z2);
+            z = z2;
+          } else {
+            it = 0;
+          }
+        }  
+      } else {
+        it = 0;
+      }
+      it--;
+    }
+
+    terrainLimits[i] = terrain_point;
+  }
+
+  return terrainLimits;
+}
+
+Window<PointD> Orthorectification::windowOrthoTerrain(const std::vector<Point3D> &footprint)
+{
+  Window<PointD> window_ortho_terrain;
+  for (size_t i = 0; i < footprint.size(); i++) {
+    if (window_ortho_terrain.pt1.x > footprint[i].x) window_ortho_terrain.pt1.x = footprint[i].x;
+    if (window_ortho_terrain.pt1.y > footprint[i].y) window_ortho_terrain.pt1.y = footprint[i].y;
+    if (window_ortho_terrain.pt2.x < footprint[i].x) window_ortho_terrain.pt2.x = footprint[i].x;
+    if (window_ortho_terrain.pt2.y < footprint[i].y) window_ortho_terrain.pt2.y = footprint[i].y;
+  }
+  return window_ortho_terrain;
+}
+
+float Orthorectification::focal() const
+{
+  float focal_x = 1.f;
+  float focal_y = 1.f;
+
+  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+
+  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+    experimental::Calibration::Parameters parameter = param->first;
+    double value = param->second;
+    switch (parameter) {
+      case experimental::Calibration::Parameters::focal:
+        focal_x = value;
+        focal_y = value;
+        break;
+      case experimental::Calibration::Parameters::focalx:
+        focal_x = value;
+        break;
+      case experimental::Calibration::Parameters::focaly:
+        focal_y = value;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return (focal_x + focal_y) / 2.f;
+}
+
+PointF Orthorectification::principalPoint() const
+{
+  PointF principal_point;
+
+  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+
+  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+    experimental::Calibration::Parameters parameter = param->first;
+    double value = param->second;
+    switch (parameter) {
+      case experimental::Calibration::Parameters::cx:
+        principal_point.x = value;
+        break;
+      case experimental::Calibration::Parameters::cy:
+        principal_point.y = value;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return principal_point;
+}
+
+cv::Mat Orthorectification::distCoeffs() const
+{
+  cv::Mat dist_coeffs = cv::Mat::zeros(1, 5, CV_32F);
+
+  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+
+  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+    experimental::Calibration::Parameters parameter = param->first;
+    double value = param->second;
+    switch (parameter) {
+      case experimental::Calibration::Parameters::k1:
+        dist_coeffs.at<float>(0) = value;
+        break;
+      case experimental::Calibration::Parameters::k2:
+        dist_coeffs.at<float>(1) = value;
+        break;
+      case experimental::Calibration::Parameters::k3:
+        dist_coeffs.at<float>(4) = value;
+        break;
+        //case experimental::Calibration::Parameters::k4:
+        //  dist_coeffs.at<float>(5) = value;
+        //  break;
+        //case experimental::Calibration::Parameters::k5:
+        //  dist_coeffs.at<float>(6) = value;
+        //  break;
+        //case experimental::Calibration::Parameters::k6:
+        //  dist_coeffs.at<float>(7) = value;
+        //  break;
+      case experimental::Calibration::Parameters::p1:
+        dist_coeffs.at<float>(2) = value;
+        break;
+      case experimental::Calibration::Parameters::p2:
+        dist_coeffs.at<float>(3) = value;
+        break;
+      default:
+        break;
+    }
+  }
+
+  return dist_coeffs;
+}
+
+
+
+
 //void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 //					                   const std::string &orthoPath)
 //{
@@ -448,12 +594,12 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 //      PointF principal_point = this->principalPoint();
 //      cv::Mat distCoeffs = this->distCoeffs();
 //
-//      mAffinePhotocoordinatesToImage = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
+//      mAffineImageCoordinatesToPhotocoordinates = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
 //      std::vector<PointI> limits(4);
-//      limits[0] = mAffinePhotocoordinatesToImage.transform(PointI(0, 0));
-//      limits[1] = mAffinePhotocoordinatesToImage.transform(PointI(cols, 0));
-//      limits[2] = mAffinePhotocoordinatesToImage.transform(PointI(cols, rows));
-//      limits[3] = mAffinePhotocoordinatesToImage.transform(PointI(0, rows));
+//      limits[0] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(0, 0));
+//      limits[1] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(cols, 0));
+//      limits[2] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(cols, rows));
+//      limits[3] = mAffineImageCoordinatesToPhotocoordinates.transform(PointI(0, rows));
 //
 //      //std::vector<PointI> limits = this->imageLimits(rows, cols);
 //    
@@ -524,10 +670,10 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 //      //tl::PointD pi2 = projectTerrainToPhoto(orientation.rotationMatrix(), orientation.position(), footprint_coordinates[1], (focal_x + focal_y) / 2.);
 //      //tl::PointD pi3 = projectTerrainToPhoto(orientation.rotationMatrix(), orientation.position(), footprint_coordinates[2], (focal_x + focal_y) / 2.);
 //      //tl::PointD pi4 = projectTerrainToPhoto(orientation.rotationMatrix(), orientation.position(), footprint_coordinates[3], (focal_x + focal_y) / 2.);
-//      //tl::PointI pi1_image = mAffinePhotocoordinatesToImage.transform(pi1, tl::Transform::Order::inverse);
-//      //tl::PointI pi2_image = mAffinePhotocoordinatesToImage.transform(pi2, tl::Transform::Order::inverse);
-//      //tl::PointI pi3_image = mAffinePhotocoordinatesToImage.transform(pi3, tl::Transform::Order::inverse);
-//      //tl::PointI pi4_image = mAffinePhotocoordinatesToImage.transform(pi4, tl::Transform::Order::inverse);
+//      //tl::PointI pi1_image = mAffineImageCoordinatesToPhotocoordinates.transform(pi1, tl::Transform::Order::inverse);
+//      //tl::PointI pi2_image = mAffineImageCoordinatesToPhotocoordinates.transform(pi2, tl::Transform::Order::inverse);
+//      //tl::PointI pi3_image = mAffineImageCoordinatesToPhotocoordinates.transform(pi3, tl::Transform::Order::inverse);
+//      //tl::PointI pi4_image = mAffineImageCoordinatesToPhotocoordinates.transform(pi4, tl::Transform::Order::inverse);
 //
 //      std::vector<PointD> t_coor;
 //      t_coor.push_back(footprint_coordinates[0]);
@@ -697,7 +843,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 //            //photocoord += PointD(cols / 2., rows / 2.); //TODO: Aqui habría que ver si se añade 0.5 para considerar el centro del pixel
 //            //photocoord.x = photocoord.x + cols / 2.;
 //            //photocoord.y = rows - (rows / 2. + photocoord.y);
-//            PointI coord_image = mAffinePhotocoordinatesToImage.transform(photocoord, tl::Transform::Order::inverse);
+//            PointI coord_image = mAffineImageCoordinatesToPhotocoordinates.transform(photocoord, tl::Transform::Order::inverse);
 //            tl::RectD rect(0, 0, cols - 1, rows - 1);
 //            if (rect.contains(coord_image)) {
 //
@@ -1066,183 +1212,6 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 ////  //mOrthophotoWriter->setGeoreference();
 ////  mOrthophotoWriter->write(mat_ortho);
 //}
-
-//std::vector<PointI> Orthorectification::imageLimits(int rows, int cols)
-//{
-//  std::vector<PointI> points(4);
-//
-//  // Sustituir por transformación coordenadas pixel -> fotocoordenadas
-//  points[0] = PointI(-cols/2, rows/2);
-//  points[1] = PointI(cols/2, rows/2);
-//  points[2] = PointI(cols/2, -rows/2);
-//  points[3] = PointI(-cols/2, -rows/2);
-//
-//  return points;
-//}
-
-std::vector<Point3D> Orthorectification::terrainProjected(const std::vector<PointI> &imageLimits,
-                                                          const tl::math::RotationMatrix<double> &rotation_matrix,
-															                            const Point3D &position,
-															                            double focal)
-{
-  std::vector<Point3D> terrainLimits(4);
-
-  
-  /// Se lee el dtm en las coordenadas xy del punto principal. Se usa esa z para comenzar el proceso
-  Affine<PointD> affine = mDtmReader->georeference();
-  PointD pt(position.x, position.y);
-  WindowD w(pt, 1 * affine.scaleX());
-  cv::Mat image = mDtmReader->read(w);
-  double z_ini = image.at<float>(0, 0);
-  double z = z_ini;
-
-   Window<PointD> window_dtm_terrain;
-   window_dtm_terrain.pt1.x = affine.tx;
-   window_dtm_terrain.pt1.y = affine.ty;
-   window_dtm_terrain.pt2.x = affine.tx + affine.scaleX() *mDtmReader->cols();
-   window_dtm_terrain.pt2.y = affine.ty + affine.scaleY() *mDtmReader->rows();
-
-  for (size_t i = 0; i < imageLimits.size(); i++) {
-
-    int it = 10;
-    Point3D terrain_point;
-
-    terrain_point = projectPhotoToTerrain(rotation_matrix, position, imageLimits[i], focal, z_ini);
-    double z2;
-    while (it > 0) {
-      
-      PointD pt(terrain_point.x, terrain_point.y);
-      if (window_dtm_terrain.containsPoint(terrain_point)) {
-        WindowD w(pt, 1 * affine.scaleX());
-        cv::Mat image = mDtmReader->read(w);
-        if (!image.empty()) {
-          z2 = image.at<float>(0, 0);
-          if (std::abs(z2 - z) > 0.1 && z2 != 0.) {
-            terrain_point = projectPhotoToTerrain(rotation_matrix, position, imageLimits[i], focal, z2);
-            z = z2;
-          } else {
-            it = 0;
-          }
-        }  
-      } else {
-        it = 0;
-      }
-      it--;
-    }
-
-    terrainLimits[i] = terrain_point;
-  }
-
-  return terrainLimits;
-}
-
-Window<PointD> Orthorectification::windowOrthoTerrain(const std::vector<Point3D> &footprint)
-{
-  Window<PointD> window_ortho_terrain;
-  for (size_t i = 0; i < footprint.size(); i++) {
-    if (window_ortho_terrain.pt1.x > footprint[i].x) window_ortho_terrain.pt1.x = footprint[i].x;
-    if (window_ortho_terrain.pt1.y > footprint[i].y) window_ortho_terrain.pt1.y = footprint[i].y;
-    if (window_ortho_terrain.pt2.x < footprint[i].x) window_ortho_terrain.pt2.x = footprint[i].x;
-    if (window_ortho_terrain.pt2.y < footprint[i].y) window_ortho_terrain.pt2.y = footprint[i].y;
-  }
-  return window_ortho_terrain;
-}
-
-float Orthorectification::focal() const
-{
-  float focal_x = 1.f;
-  float focal_y = 1.f;
-
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
-
-  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
-    double value = param->second;
-    switch (parameter) {
-      case experimental::Calibration::Parameters::focal:
-        focal_x = value;
-        focal_y = value;
-        break;
-      case experimental::Calibration::Parameters::focalx:
-        focal_x = value;
-        break;
-      case experimental::Calibration::Parameters::focaly:
-        focal_y = value;
-        break;
-      default:
-        break;
-    }
-  }
-
-  return (focal_x + focal_y) / 2.f;
-}
-
-PointF Orthorectification::principalPoint() const
-{
-  PointF principal_point;
-
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
-
-  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
-    double value = param->second;
-    switch (parameter) {
-      case experimental::Calibration::Parameters::cx:
-        principal_point.x = value;
-        break;
-      case experimental::Calibration::Parameters::cy:
-        principal_point.y = value;
-        break;
-      default:
-        break;
-    }
-  }
-
-  return principal_point;
-}
-
-cv::Mat Orthorectification::distCoeffs() const
-{
-  cv::Mat dist_coeffs = cv::Mat::zeros(1, 5, CV_32F);
-
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
-
-  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
-    double value = param->second;
-    switch (parameter) {
-      case experimental::Calibration::Parameters::k1:
-        dist_coeffs.at<float>(0) = value;
-        break;
-      case experimental::Calibration::Parameters::k2:
-        dist_coeffs.at<float>(1) = value;
-        break;
-      case experimental::Calibration::Parameters::k3:
-        dist_coeffs.at<float>(4) = value;
-        break;
-        //case experimental::Calibration::Parameters::k4:
-        //  dist_coeffs.at<float>(5) = value;
-        //  break;
-        //case experimental::Calibration::Parameters::k5:
-        //  dist_coeffs.at<float>(6) = value;
-        //  break;
-        //case experimental::Calibration::Parameters::k6:
-        //  dist_coeffs.at<float>(7) = value;
-        //  break;
-      case experimental::Calibration::Parameters::p1:
-        dist_coeffs.at<float>(2) = value;
-        break;
-      case experimental::Calibration::Parameters::p2:
-        dist_coeffs.at<float>(3) = value;
-        break;
-      default:
-        break;
-    }
-  }
-
-  return dist_coeffs;
-}
-
 
 } // End namespace geospatial
 

@@ -40,6 +40,7 @@ class RotationMatrix
 public:
   
   RotationMatrix();
+  RotationMatrix(const RotationMatrix<T> &rot);
   RotationMatrix(const Matrix<T, 3, 3> &rot);
   ~RotationMatrix() override {}
 
@@ -58,6 +59,13 @@ template <typename T> inline
 RotationMatrix<T>::RotationMatrix()
   : RotationBase<T>(Rotation::Type::rotation_matrix),
     Matrix<T, 3, 3>()
+{
+}
+
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>(rot)
 {
 }
 
