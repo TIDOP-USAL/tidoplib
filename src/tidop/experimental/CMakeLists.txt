@@ -15,6 +15,11 @@ add_library(tl_experimental ${LIB_TYPE}
 # Añade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_experimental PROPERTY FOLDER "modules")
 
+if(HAVE_LAPACKE)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
+
 #instalación
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_experimental
@@ -28,6 +33,10 @@ if(BUILD_SHARED_LIBS)
 						
     target_link_libraries(tl_experimental tl_core)	
 						
+  if(HAVE_LAPACKE)
+    target_link_libraries(tl_math ${LAPACKE_LIBRARIES})
+  endif(HAVE_LAPACKE)
+
 else()
   install(TARGETS tl_experimental 
           EXPORT "${TARGETS_EXPORT_NAME}"

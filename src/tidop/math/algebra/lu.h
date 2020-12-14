@@ -209,8 +209,9 @@ Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const 
   Matrix<T, _rows, _cols> x(b);
 
 #ifdef HAVE_LAPACKE    
+  lapack_int info;
   lapack_int nrhs = 1; ///¿Porque es 1?
-  lapack_int lda = mCols;
+  lapack_int lda = mRows;
   lapack_int *ipiv = new lapack_int[mRows];
   lapack_int ldb = mRows;
 

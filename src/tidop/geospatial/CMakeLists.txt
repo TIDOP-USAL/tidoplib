@@ -20,6 +20,11 @@ add_library(tl_geospatial ${LIB_TYPE}
 set_property(TARGET tl_geospatial 
              PROPERTY FOLDER "modules")
 
+if(HAVE_LAPACKE)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
+
 #instalación
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_geospatial
@@ -41,6 +46,10 @@ if(BUILD_SHARED_LIBS)
         target_link_libraries(tl_geospatial 
                               ${PROJ4_LIBRARY})
     endif(HAVE_PROJ4)
+
+  if(HAVE_LAPACKE)
+    target_link_libraries(tl_geospatial ${LAPACKE_LIBRARIES})
+  endif(HAVE_LAPACKE)
 
 else()
     install(TARGETS tl_geospatial 
