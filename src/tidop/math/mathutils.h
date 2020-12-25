@@ -52,63 +52,6 @@ T clamp(const T &value, const T &_min, const T &_max)
 
 } // End namespace math
 
-TL_TODO("Limpiar a partir de aqui")
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-/*!
- * \brief ángulos de Euler
- *
- * A partir de una matriz de rotación obtiene los ángulos de giro.
- *
- * Referencias:
- * https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
- * http://mathworld.wolfram.com/EulerAngles.html
- *
- * \param[in] R Matriz de rotación
- * \param[out] omega Rotación respecto al eje X en radianes
- * \param[out] phi Rotación respecto al eje Y en radianes
- * \param[out] kappa Rotación respecto al eje Z en radianes
- */
-TL_EXPORT void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
-
-//Otra posible solución. Tizar un test en condiciones y ver cual es mejor 
-//https://www.learnopencv.com/rotation-matrix-to-euler-angles/ 
-//TL_EXPORT void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa);
-
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje X
- * \param[in] rX Rotación respecto al eje X en radianes
- * \param[out] RX Matriz de rotación
- */
-void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje Y
- * \param[in] rY Rotación respecto al eje Y en radianes
- * \param[out] RY Matriz de rotación
- */
-void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
-
-/*!
- * \brief Cálculo de la matriz de rotación respecto al eje Z
- * \param[in] rZ Rotación respecto al eje Z en radianes
- * \param[out] RZ Matriz de rotación
- */
-void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
-
-/*!
- * \brief Cálculo de la matriz de rotación
- * \param[in] omega Rotación respecto al eje X en radianes
- * \param[in] phi Rotación respecto al eje Y en radianes
- * \param[in] kappa Rotación respecto al eje Z en radianes
- * \param[out] R Matriz de rotación
- */
-TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R);
-
-
-#endif TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
@@ -141,32 +84,7 @@ TL_EXPORT void rotationMatrix(double omega, double phi, double kappa, std::array
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT
-inline void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
-  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
-  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
-  Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#elif defined( HAVE_OPENCV)
-//  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
-//  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
-//  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
-//  cv::solve(A, B, C, cv::DECOMP_SVD);
-//  std::vector<double> v_aux;
-//  cvMatToVector(C, &v_aux);
-//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
-#else
-  math::Matrix<double> A(a, nRows, nCols);
-  math::Vector<double> B(b, nRows);
-  math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-  math::Vector<double> C = svd.solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#endif
-}
+TL_EXPORT void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Factorización QR

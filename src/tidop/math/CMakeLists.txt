@@ -1,5 +1,7 @@
 #Modulo Math de la librería
 
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
+  
 add_library(tl_math ${LIB_TYPE}
             angles.cpp
             angles.h

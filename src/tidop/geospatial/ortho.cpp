@@ -101,7 +101,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
 
   std::string ortho_file;
 
-  for (size_t i = 0; i < 4/*photos.size()*/; i++) {
+  for (size_t i = 0; i < photos.size(); i++) {
 
     try {
 
@@ -143,7 +143,7 @@ void Orthorectification::run(const std::vector<experimental::Photo> &photos,
       entity->push_back(footprint_coordinates[3]);
 
       
-      data->setValue(0, photos[i].name());
+      data->setValue(0, photos[i].path());
       entity->setData(data);
 
       layer.push_back(entity);

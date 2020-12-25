@@ -105,7 +105,7 @@ if(MSVC)
 
   # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
-
+  
 endif()
 
 

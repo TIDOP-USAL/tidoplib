@@ -16,7 +16,7 @@ if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
 	
-    target_link_libraries(${the_target} tl_core tl_geom)
+    target_link_libraries(${the_target} tl_core tl_geom tl_math)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 #	if(HAVE_GDAL)
 #      target_link_libraries(${the_target} ${GDAL_LIBRARY})
