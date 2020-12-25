@@ -2,153 +2,87 @@
 #define TL_MATH_ROTATION_MATRIX_H
 
 #include "config_tl.h"
-#include "tidop/math/matrix.h"
 
 #include <vector>
 #include <array>
 
-namespace TL
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/rotations.h"
+
+namespace tl
 {
 
 namespace math
 {
 
-/*!
- * \brief Matriz de rotación
+/*! \addtogroup Math
+ *  \{
  */
-template<int dim, typename T = double>
-class RotationMatrix
-  : public Matrix<dim, dim, T>
+
+
+ /*! \addtogroup Algebra
+  *
+  * Algebra
+  *
+  *  \{
+  */
+
+
+/*!
+ * \brief Matriz de rotaciÃ³n
+ */
+template <typename T>
+class RotationMatrix 
+  : public RotationBase<T>,
+    public Matrix<T, 3, 3>
 {
-  
+
 public:
-
-  /*!
-   * \brief Constructor por defecto
-   */
-  RotationMatrix();
   
-  /*!
-   * \brief Constructor de copia
-   * \param[in] rot Matriz de rotación
-   */
-  RotationMatrix(const RotationMatrix<dim, dim, T> &rot);
+  RotationMatrix();
+  RotationMatrix(const RotationMatrix<T> &rot);
+  RotationMatrix(const Matrix<T, 3, 3> &rot);
+  ~RotationMatrix() override {}
 
-  /*!
-   * \brief Constructor
-   * \param[in] rot Matriz de rotación
-   */
-  RotationMatrix(const std::array<std::array<T, dim>, dim> &rot);
-
-  /*!
-   * \brief destructora
-   */
-  ~RotationMatrix();
-
-  /*!
-   * \brief Operador de asignación
-   * \param[in] eulerAngles Objeto que se copia
-   */
-  RotationMatrix& operator = (const RotationMatrix<dim, T> &mat);
-
-  RotationMatrix<dim, T> inverse() const;
+  TL_TODO("constructoras a partir de angulo y eje")
+  // mathutils
+  //void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
+  //void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
+  //void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
 private:
 
-  RotationMatrix<dim, T> inverse_2x2() const;
-  RotationMatrix<dim, T> inverse_3x3() const;
-  RotationMatrix<dim, T> inverse_4x4() const;
-  RotationMatrix<dim, T> inverse_nxn() const;
 };
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T>::RotationMatrix()
-  : Matrix<dim, dim, T>()
-{
-  mMatrix[0][0] = 1.;
-  mMatrix[1][1] = 1.;
-  mMatrix[2][2] = 1.;
-}
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T>::RotationMatrix(const RotationMatrix<dim, T> &rot)
-  : Matrix<dim, dim, T>(rot)
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix()
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>()
 {
 }
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T>::RotationMatrix(const std::array<std::array<T, dim>, dim> &rot)
-  : Matrix<dim, dim, T>(rot)
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>(rot)
 {
 }
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T>::~RotationMatrix()
+template <typename T> inline
+RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
+  : RotationBase<T>(Rotation::Type::rotation_matrix),
+    Matrix<T, 3, 3>(rot)
 {
 }
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T> &RotationMatrix<dim, T>::operator = (const RotationMatrix& rot)
-{
-  if (this != &rot) {
-    this->mMatrix = rot.mMatrix;
-  }
-  return *this;
-}
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T>  RotationMatrix<dim, T>::inverse() const
-{
-  RotationMatrix<dim, T> inverse;
-  if (mMatrix.size() == 2) {
-    inverse = inverse_2x2();
-  } else if (mMatrix.size() == 3) {
-    inverse = inverse_3x3();
-  } else if (mMatrix.size() == 4) {
-    inverse = inverse_4x4();
-  } else {
-    inverse = inverse_nxn();
-  }
-  return inverse;
-}
+/*! \} */ // end of Algebra
 
-template<int dim, typename T> inline
-RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_2x2() const
-{
-  RotationMatrix<dim, T> inverse;
-  T det = mMatrix[0][0] * mMatrix[1][1] - mMatrix[0][1] * mMatrix[1][0];
-  if (det != static_cast<T>(0)) {
-    inverse.at(0, 0) = mMatrix[1][1] / det;
-    inverse.at(0, 1) = -mMatrix[0][1] / det;
-    inverse.at(1, 0) = -mMatrix[1][0] / det;
-    inverse.at(1, 1) = mMatrix[0][0] / det;
-  } else {
-    ///No invertible
-  }
-  return inverse;
-}
-
-template<int dim, typename T> inline
-RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_3x3() const
-{
-  return RotationMatrix<dim, T>();
-}
-
-template<int dim, typename T> inline
-RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_4x4() const
-{
-  return RotationMatrix<dim, T>();
-}
-
-template<int dim, typename T> inline
-RotationMatrix<dim, T> RotationMatrix<dim, T>::inverse_nxn() const
-{
-  return RotationMatrix<dim, T>();
-}
-
+/*! \} */ // end of Math
 
 } // Fin namespace math
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_MATH_ROTATION_MATRIX_H

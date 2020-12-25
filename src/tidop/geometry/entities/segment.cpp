@@ -20,10 +20,7 @@
 #include "tidop/geometry/operations.h"
 
 
-namespace TL
-{
-
-namespace geometry
+namespace tl
 {
 
 GroupLines::GroupLines()
@@ -79,8 +76,5 @@ void GroupLines::deleteLine(int id)
 {
   linesgroup.erase(linesgroup.begin() + id);
 }
-
-}
-
 
 } // End namespace TL

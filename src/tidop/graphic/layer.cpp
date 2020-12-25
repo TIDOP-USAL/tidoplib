@@ -1,7 +1,7 @@
 #include "tidop/graphic/layer.h"
 
 
-namespace TL
+namespace tl
 {
 
 namespace graph
@@ -39,22 +39,22 @@ GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities)
 {
 }
 
-GLayer::iterator GLayer::begin() 
+GLayer::iterator GLayer::begin() TL_NOEXCEPT
 {
   return mEntities.begin();
 }
 
-GLayer::const_iterator GLayer::begin() const 
+GLayer::const_iterator GLayer::begin() const TL_NOEXCEPT
 {
   return mEntities.cbegin();
 }
 
-GLayer::iterator GLayer::end()
+GLayer::iterator GLayer::end() TL_NOEXCEPT
 {
   return mEntities.end();
 }
 
-GLayer::const_iterator GLayer::end() const 
+GLayer::const_iterator GLayer::end() const TL_NOEXCEPT
 {
   return mEntities.cend();
 }
@@ -69,12 +69,12 @@ void GLayer::push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT
   mEntities.push_back(std::forward<std::shared_ptr<GraphicEntity>>(entity));
 }
 
-void GLayer::clear() 
+void GLayer::clear() TL_NOEXCEPT
 { 
   mEntities.clear();
 }
 
-bool GLayer::empty() const
+bool GLayer::empty() const TL_NOEXCEPT
 {
   return mEntities.empty();
 }
@@ -89,7 +89,7 @@ void GLayer::resize(size_type count, const std::shared_ptr<GraphicEntity> &value
   mEntities.resize(count, value);
 }
 
-GLayer::size_type GLayer::size() const
+GLayer::size_type GLayer::size() const TL_NOEXCEPT
 { 
   return mEntities.size();
 }
@@ -130,6 +130,15 @@ void GLayer::setName(const std::string & name)
   mName = name;
 }
 
+void GLayer::addDataField(const std::shared_ptr<experimental::TableField> &field)
+{
+  mTableFields.push_back(field);
+}
+
+std::vector<std::shared_ptr<experimental::TableField>> GLayer::tableFields() const
+{
+  return mTableFields;
+}
 
 } // Fin namespace graph
 

@@ -12,11 +12,10 @@
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
+#include "tidop/experimental/datamodel.h"
 
-namespace TL
+namespace tl
 {
-
-template<typename T> class Transform;
 
 
 /*! \defgroup GraphicEntities Entidades gráficas
@@ -64,8 +63,8 @@ private:
  * \see GraphicStyle, GData
  */
 class TL_EXPORT GraphicEntity 
-  : public GraphicStyle, 
-    public GData
+  : public GraphicStyle/*, 
+    public GData*/
 {
 
 public:
@@ -74,33 +73,26 @@ public:
    * \brief Tipos de entidades gráficas
    */
   enum class Type {
-    POINT_2D,                   /*!< Punto 2D */
-    POINT_3D,                   /*!< Punto 3D */
-    LINESTRING_2D,              /*!< Polilinea 2D */
-    LINESTRING_3D,              /*!< Polilinea 3D */
-    POLYGON_2D,                 /*!< Poligono 2D */
-    POLYGON_3D,                 /*!< Poligono 3D */
-    SEGMENT_2D,                 /*!< Segmento 2D */
-    SEGMENT_3D,                 /*!< Segmento 3D */
-    WINDOW,                     /*!< Ventana */
-    BOX,                        /*!< Caja */
-    MULTIPOINT_2D,              /*!< Multipunto 2D */
-    MULTIPOINT_3D,              /*!< Multipunto 3D */
-    MULTILINE_2D,               /*!< Multi-línea 2D */
-    MULTILINE_3D,               /*!< Multi-línea 3D */
-    MULTIPOLYGON_2D,            /*!< Multi-polígono 2D */
-    MULTIPOLYGON_3D,            /*!< Multi-polígono 3D */
-    CIRCLE,                     /*!< Circulo */
-    ELLIPSE                     /*!< Elipse */
+    point_2d,                   /*!< Punto 2D */
+    point_3d,                   /*!< Punto 3D */
+    linestring_2d,              /*!< Polilinea 2D */
+    linestring_3d,              /*!< Polilinea 3D */
+    polygon_2d,                 /*!< Poligono 2D */
+    polygon_3d,                 /*!< Poligono 3D */
+    segment_2d,                 /*!< Segmento 2D */
+    segment_3d,                 /*!< Segmento 3D */
+    window,                     /*!< Ventana */
+    box,                        /*!< Caja */
+    multipoint_2d,              /*!< Multipunto 2D */
+    multipoint_3d,              /*!< Multipunto 3D */
+    multiline_2d,               /*!< Multi-línea 2D */
+    multiline_3d,               /*!< Multi-línea 3D */
+    multipolygon_2d,            /*!< Multi-polígono 2D */
+    multipolygon_3d,            /*!< Multi-polígono 3D */
+    circle,                     /*!< Circulo */
+    ellipse                     /*!< Elipse */
   };
 
-protected:
-
-  /*!
-   * \brief Tipo de entidad
-   * \see Type
-   */
-  Type mEntityType;
 
 public:
 
@@ -153,6 +145,18 @@ public:
    */
   virtual bool isSimpleEntity() const = 0;
 
+  std::shared_ptr<experimental::TableRegister> data() const;
+  void setData(std::shared_ptr<experimental::TableRegister> &data);
+
+protected:
+
+  /*!
+   * \brief Tipo de entidad
+   * \see Type
+   */
+  Type mEntityType;
+
+  std::shared_ptr<experimental::TableRegister> mData;
 };
 
 
@@ -160,6 +164,6 @@ public:
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_GRAPHIC_ENTITY_H

@@ -1,8 +1,9 @@
-#include <gtest/gtest.h>
+#define BOOST_TEST_MODULE Tidop color test
+#include <boost/test/unit_test.hpp>
 #include <tidop/graphic/color.h>
 
 
-using namespace TL;
+using namespace tl;
 //using namespace std;
 
 ////Datos para los test
@@ -536,186 +537,186 @@ using namespace TL;
 
 /////* Contructor por defecto */
 
-//TEST(Color, DefaultConstructor)
+//BOOST_AUTO_TEST_CASE(Color, DefaultConstructor)
 //{
 //  Color _color;
-//  EXPECT_EQ(color[0], static_cast<int>(_color));
+//  BOOST_CHECK_EQUAL(color[0], static_cast<int>(_color));
 //}
 
 ///* Contructor de copia */
 
-//TEST(Color, CopyConstructor)
+//BOOST_AUTO_TEST_CASE(Color, CopyConstructor)
 //{
 //  Color _color(color[1]);
 //  Color _colorCpy(_color);
-//  EXPECT_EQ(color[1], static_cast<int>(_colorCpy));
+//  BOOST_CHECK_EQUAL(color[1], static_cast<int>(_colorCpy));
 //}
 
 ///* Contructor por n\FAmero entero */
 
-//TEST(Color, ConstructorInt)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorInt)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    Color _color(color[i]);
-//    EXPECT_EQ(color[i], static_cast<int>(_color));
+//    BOOST_CHECK_EQUAL(color[i], static_cast<int>(_color));
 //  }
 //}
 
 ///* Contructor RGBA */
 
-//TEST(Color, ConstructorRGBA)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorRGBA)
 //{
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    int i_color = static_cast<int>(Color(color_type[i].rgb[0], color_type[i].rgb[1], color_type[i].rgb[2]));
-//    EXPECT_EQ(color_type[i].color_int, i_color);
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, i_color);
 //  }
 //}
 
 ///* Contructor CMYK */
 
-//TEST(Color, ConstructorCMYK)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorCMYK)
 //{
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    int i_color = static_cast<int>(Color(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]));
-//    EXPECT_EQ(color_type[i].color_int, i_color);
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, i_color);
 //  }
 //}
 
 ///* Contructor HSV */
 
-//TEST(Color, ConstructorHSV)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorHSV)
 //{
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    int i_color = static_cast<int>(Color(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100));
-//    EXPECT_EQ(color_type[i].color_int, i_color);
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, i_color);
 //  }
 //}
 
 ///* Contructor Hex */
 
-//TEST(Color, ConstructorHex)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorHex)
 //{
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    int i_color = static_cast<int>(Color(color_type[i].hex));
-//    EXPECT_EQ(color_type[i].color_int, i_color);
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, i_color);
 //  }
 //}
 
 ///* Constructora nombre del color */
 
-//TEST(Color, ConstructorName)
+//BOOST_AUTO_TEST_CASE(Color, ConstructorName)
 //{
 //  int i_color = static_cast<int>(Color(Color::NAME::Black));
-//  EXPECT_EQ(0, i_color);
+//  BOOST_CHECK_EQUAL(0, i_color);
 //  i_color = static_cast<int>(Color(Color::NAME::Navy));
-//  EXPECT_EQ(128, i_color);
+//  BOOST_CHECK_EQUAL(128, i_color);
 //  i_color = static_cast<int>(Color(Color::NAME::DarkBlue));
-//  EXPECT_EQ(139, i_color);
+//  BOOST_CHECK_EQUAL(139, i_color);
 //}
 
 ///* getBlue */
 
-//TEST(Color, getBlue)
+//BOOST_AUTO_TEST_CASE(Color, getBlue)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(rbga[i][2], Color(color[i]).getBlue());
+//    BOOST_CHECK_EQUAL(rbga[i][2], Color(color[i]).getBlue());
 //  }
 //}
 
 ///* getGreen */
 
-//TEST(Color, getGreen)
+//BOOST_AUTO_TEST_CASE(Color, getGreen)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(rbga[i][1], Color(color[i]).getGreen());
+//    BOOST_CHECK_EQUAL(rbga[i][1], Color(color[i]).getGreen());
 //  }
 //}
 
 ///* getRed */
 
-//TEST(Color, getRed)
+//BOOST_AUTO_TEST_CASE(Color, getRed)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(rbga[i][0], Color(color[i]).getRed());
+//    BOOST_CHECK_EQUAL(rbga[i][0], Color(color[i]).getRed());
 //  }
 //}
 
 ///* getAlpha */
 
-//TEST(Color, getAlpha)
+//BOOST_AUTO_TEST_CASE(Color, getAlpha)
 //{
-//  EXPECT_EQ(50, Color(100, 100, 100, 50).getAlpha());
+//  BOOST_CHECK_EQUAL(50, Color(100, 100, 100, 50).getAlpha());
 //}
 
 ///* color a partir de sus valores CMYK */
 
-//TEST(Color, fromCMYK)
+//BOOST_AUTO_TEST_CASE(Color, fromCMYK)
 //{
 //  Color c;
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    c.fromCMYK(color_type[i].cmyk[0], color_type[i].cmyk[1], color_type[i].cmyk[2], color_type[i].cmyk[3]);
-//    EXPECT_EQ(color_type[i].color_int, static_cast<int>(c));
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, static_cast<int>(c));
 //  }
 //}
 
 ///* color a partir de sus valores HSV */
 
-//TEST(Color, fromHSV)
+//BOOST_AUTO_TEST_CASE(Color, fromHSV)
 //{
 //  Color c;
 //  for (int i = 0; i < sizeof(color_type) / sizeof(color_type[0]); i++) {
 //    c.fromHSV(color_type[i].hsv[0]*360, color_type[i].hsv[1]*100, color_type[i].hsv[2]*100);
-//    EXPECT_EQ(color_type[i].color_int, static_cast<int>(c));
+//    BOOST_CHECK_EQUAL(color_type[i].color_int, static_cast<int>(c));
 //  }
 //}
 
 ///* color a partir de sus valores HSL */
 
-//TEST(Color, fromHSL)
+//BOOST_AUTO_TEST_CASE(Color, fromHSL)
 //{
 //  Color c;
 //  for (int i = 0; i < color.size(); i++) {
 //    c.fromHSL(hsl[i][0], hsl[i][1], hsl[i][2]);
-//    EXPECT_EQ(color[i], static_cast<unsigned int>(c));
+//    BOOST_CHECK_EQUAL(color[i], static_cast<unsigned int>(c));
 //  }
 //}
 
 ///* color a partir de sus valores XYZ */
 
-////TEST(Color, fromXYZ)
+////BOOST_AUTO_TEST_CASE(Color, fromXYZ)
 ////{
 ////  Color c;
 ////}
 
-////TEST(Color, fromLuv)
+////BOOST_AUTO_TEST_CASE(Color, fromLuv)
 ////{
 ////  Color c;
 ////}
 
-////TEST(Color, fromLab)
+////BOOST_AUTO_TEST_CASE(Color, fromLab)
 ////{
 ////  Color c;
 ////}
 
-////TEST(Color, toRGB)
+////BOOST_AUTO_TEST_CASE(Color, toRGB)
 ////{
 ////  Color c;
 ////}
 
-////TEST(Color, toLuminance)
+////BOOST_AUTO_TEST_CASE(Color, toLuminance)
 ////{
 ////  Color c;
 ////}
 
-//TEST(Color, get_string)
+//BOOST_AUTO_TEST_CASE(Color, get_string)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(color[i], static_cast<int>(Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3])));
+//    BOOST_CHECK_EQUAL(color[i], static_cast<int>(Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3])));
 //    ASSERT_STRCASEEQ(_hex[i].c_str(), Color(rbga[i][0],rbga[i][1],rbga[i][2],rbga[i][3]).toHex().c_str());
 //  }
 //}
 
-//TEST(Color, toCMYK)
+//BOOST_AUTO_TEST_CASE(Color, toCMYK)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    Color c(color[i]);
@@ -728,7 +729,7 @@ using namespace TL;
 //  }
 //}
 
-//TEST(Color, toHSV)
+//BOOST_AUTO_TEST_CASE(Color, toHSV)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    Color c(color[i]);
@@ -740,7 +741,7 @@ using namespace TL;
 //  }
 //}
 
-//TEST(Color, toHSL)
+//BOOST_AUTO_TEST_CASE(Color, toHSL)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    Color c(color[i]);
@@ -752,15 +753,15 @@ using namespace TL;
 //  }
 //}
 
-//TEST(Color, toRGB)
+//BOOST_AUTO_TEST_CASE(Color, toRGB)
 //{
 //  int red, green, blue;
 //  for (int i = 0; i < color.size(); i++) {
 //    Color c(color[i]);
 //    c.toRGB(&red, &green, &blue);
-//    EXPECT_EQ(rbga[i][0], red);
-//    EXPECT_EQ(rbga[i][1], green);
-//    EXPECT_EQ(rbga[i][2], blue);
+//    BOOST_CHECK_EQUAL(rbga[i][0], red);
+//    BOOST_CHECK_EQUAL(rbga[i][1], green);
+//    BOOST_CHECK_EQUAL(rbga[i][2], blue);
 //  }
 //}
 
@@ -776,74 +777,74 @@ using namespace TL;
 
 
 
-////TEST(Test_, getBlue)
+////BOOST_AUTO_TEST_CASE(Test_, getBlue)
 ////{
 ////  for (int i = 0; i < color.size(); i++) {
-////    EXPECT_EQ(rbga[i][2], getBlue(color[i]));
+////    BOOST_CHECK_EQUAL(rbga[i][2], getBlue(color[i]));
 ////  }
 ////}
 
-////TEST(Test_, getGreen)
+////BOOST_AUTO_TEST_CASE(Test_, getGreen)
 ////{
 ////  for (int i = 0; i < color.size(); i++) {
-////    EXPECT_EQ(rbga[i][1], getGreen(color[i]));
+////    BOOST_CHECK_EQUAL(rbga[i][1], getGreen(color[i]));
 ////  }
 ////}
 
-////TEST(Test_, getRed)
+////BOOST_AUTO_TEST_CASE(Test_, getRed)
 ////{
 ////  for (int i = 0; i < color.size(); i++) {
-////    EXPECT_EQ(rbga[i][0], getRed(color[i]));
+////    BOOST_CHECK_EQUAL(rbga[i][0], getRed(color[i]));
 ////  }
 ////}
 
-////TEST(Test_, getAlpha)
+////BOOST_AUTO_TEST_CASE(Test_, getAlpha)
 ////{
 ////  for (int i = 0; i < color.size(); i++) {
-////    EXPECT_EQ(rbga[i][3], getAlpha(color[i]));
+////    BOOST_CHECK_EQUAL(rbga[i][3], getAlpha(color[i]));
 ////  }
 ////}
 
-//TEST(Test_, intToRGB)
+//BOOST_AUTO_TEST_CASE(Test_, intToRGB)
 //{
 //  int red, green, blue;
 //  for (int i = 0; i < color.size(); i++) {
 //    intToRGB(color[i], &red, &green, &blue);
-//    EXPECT_EQ(rbga[i][0], red);
-//    EXPECT_EQ(rbga[i][1], green);
-//    EXPECT_EQ(rbga[i][2], blue);
+//    BOOST_CHECK_EQUAL(rbga[i][0], red);
+//    BOOST_CHECK_EQUAL(rbga[i][1], green);
+//    BOOST_CHECK_EQUAL(rbga[i][2], blue);
 //  }
 //}
 
-//TEST(Test_, rgbToInt)
+//BOOST_AUTO_TEST_CASE(Test_, rgbToInt)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(color[i], rgbToInt(rbga[i][0], rbga[i][1], rbga[i][2]));
+//    BOOST_CHECK_EQUAL(color[i], rgbToInt(rbga[i][0], rbga[i][1], rbga[i][2]));
 //  }
 //}
 
-//TEST(Test_, rgbaToInt)
+//BOOST_AUTO_TEST_CASE(Test_, rgbaToInt)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(color[i], rgbaToInt(rbga[i][0], rbga[i][1], rbga[i][2], rbga[i][3]));
+//    BOOST_CHECK_EQUAL(color[i], rgbaToInt(rbga[i][0], rbga[i][1], rbga[i][2], rbga[i][3]));
 //  }
 //}
 
-//TEST(Test_, hexToInt)
+//BOOST_AUTO_TEST_CASE(Test_, hexToInt)
 //{
 //  for (int i = 0; i < color.size(); i++) {
-//    EXPECT_EQ(color[i], hexToInt(_hex[i]));
+//    BOOST_CHECK_EQUAL(color[i], hexToInt(_hex[i]));
 //  }
 //}
 
-////TEST(Test_, intToHex)
+////BOOST_AUTO_TEST_CASE(Test_, intToHex)
 ////{
 ////  for (int i = 0; i < color.size(); i++) {
-////    EXPECT_EQ(_hex[i], intToHex(color[i]));
+////    BOOST_CHECK_EQUAL(_hex[i], intToHex(color[i]));
 ////  }
 ////}
 
-//TEST(Test_, rgbToCmyk)
+//BOOST_AUTO_TEST_CASE(Test_, rgbToCmyk)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    double cyan, magenta, yellow, key;
@@ -856,19 +857,19 @@ using namespace TL;
 //}
 
 
-//TEST(Test_, cmykToRgb)
+//BOOST_AUTO_TEST_CASE(Test_, cmykToRgb)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    int r, g, b;
 //    cmykToRgb(cmyk[i][0], cmyk[i][1], cmyk[i][2], cmyk[i][3], &r, &g, &b);
-//    EXPECT_EQ(rbga[i][0], r);
-//    EXPECT_EQ(rbga[i][1], g);
-//    EXPECT_EQ(rbga[i][2], b);
+//    BOOST_CHECK_EQUAL(rbga[i][0], r);
+//    BOOST_CHECK_EQUAL(rbga[i][1], g);
+//    BOOST_CHECK_EQUAL(rbga[i][2], b);
 //  }
 //}
 
 
-//TEST(Test_, rgbToCmyk)
+//BOOST_AUTO_TEST_CASE(Test_, rgbToCmyk)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    double cyan, magenta, yellow, key;
@@ -881,14 +882,14 @@ using namespace TL;
 //}
 
 
-//TEST(Test_, cmykToRgb)
+//BOOST_AUTO_TEST_CASE(Test_, cmykToRgb)
 //{
 //  for (int i = 0; i < color.size(); i++) {
 //    int r, g, b;
 //    cmykToRgb(cmyk[i][0], cmyk[i][1], cmyk[i][2], cmyk[i][3], &r, &g, &b);
-//    EXPECT_EQ(rbga[i][0], r);
-//    EXPECT_EQ(rbga[i][1], g);
-//    EXPECT_EQ(rbga[i][2], b);
+//    BOOST_CHECK_EQUAL(rbga[i][0], r);
+//    BOOST_CHECK_EQUAL(rbga[i][1], g);
+//    BOOST_CHECK_EQUAL(rbga[i][2], b);
 //  }
 //}
 
@@ -901,24 +902,18 @@ using namespace TL;
 // chromaticityCoordinates
 
 
+BOOST_AUTO_TEST_SUITE(ColorTestSuite)
 
-
-class ColorTest
-  : public testing::Test
+struct ColorTest
 {
-public:
+  ColorTest()
+    : color2(new graph::Color(graph::Color::Name::azure)),
+      rgb2(new graph::ColorRGB(10, 25, 30))
+  {}
 
-protected:
-
-  virtual void SetUp() override
+  ~ColorTest()
   {
-    color2 = new graph::Color(graph::Color::Name::Azure);
-    rgb2 = new graph::ColorRGB(10, 25, 30);
-  }
-
-  virtual void TearDown() override
-  {
-    if (color2) {
+    if (color2){
       delete color2;
       color2 = nullptr;
     }
@@ -926,6 +921,14 @@ protected:
       delete rgb2;
       rgb2 = nullptr;
     }
+  }
+ 
+  void setup()
+  {
+  }
+ 
+  void teardown()
+  {
   }
 
   graph::Color color1;
@@ -935,298 +938,290 @@ protected:
 };
 
 
-TEST_F(ColorTest, DefaultConstructor)
+BOOST_FIXTURE_TEST_CASE(default_constructor, ColorTest)
 {
-  EXPECT_EQ(0, static_cast<int>(color1));
+  BOOST_CHECK_EQUAL(0, static_cast<int>(color1));
 }
 
-TEST_F(ColorTest, NameConstructor)
+BOOST_FIXTURE_TEST_CASE(name_constructor, ColorTest)
 {
-  EXPECT_EQ(15794175, static_cast<int>(*color2));
+  BOOST_CHECK_EQUAL(15794175, static_cast<int>(*color2));
 }
 
-TEST_F(ColorTest, equal)
+BOOST_FIXTURE_TEST_CASE(equal, ColorTest)
 {
-  graph::Color azure(graph::Color::Name::Azure);
-  EXPECT_TRUE(azure == *color2);
+  graph::Color azure(graph::Color::Name::azure);
+  BOOST_CHECK(azure == *color2);
 }
 
-TEST_F(ColorTest, DefaultConstructorColorRGB)
+BOOST_FIXTURE_TEST_CASE(default_constructor_color_rgb, ColorTest)
 {
-  EXPECT_EQ(0, rgb1.red());
-  EXPECT_EQ(0, rgb1.green());
-  EXPECT_EQ(0, rgb1.blue());
+  BOOST_CHECK_EQUAL(0, rgb1.red());
+  BOOST_CHECK_EQUAL(0, rgb1.green());
+  BOOST_CHECK_EQUAL(0, rgb1.blue());
 }
 
-TEST_F(ColorTest, ConstructorColorRGB)
+BOOST_FIXTURE_TEST_CASE(constructor_color_rgb, ColorTest)
 {
-  EXPECT_EQ(10, rgb2->red());
-  EXPECT_EQ(25, rgb2->green());
-  EXPECT_EQ(30, rgb2->blue());
+  BOOST_CHECK_EQUAL(10, rgb2->red());
+  BOOST_CHECK_EQUAL(25, rgb2->green());
+  BOOST_CHECK_EQUAL(30, rgb2->blue());
 }
 
-TEST_F(ColorTest, ColorFromColorRGB)
+BOOST_FIXTURE_TEST_CASE(color_from_color_rgb, ColorTest)
 {
   graph::Color color(rgb2);
-  EXPECT_EQ(661790, static_cast<int>(color));
+  BOOST_CHECK_EQUAL(661790, static_cast<int>(color));
 }
 
-TEST(ColorRGB, setRed)
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_CASE(ColorRGB_setRed)
 {
   graph::ColorRGB rgb;
   rgb.setRed(45);
-  EXPECT_EQ(45, rgb.red());
+  BOOST_CHECK_EQUAL(45, rgb.red());
 }
 
-TEST(ColorRGB, setRedOutRange)
+BOOST_AUTO_TEST_CASE(ColorRGB_setRedOutRange)
 {
   graph::ColorRGB rgb;
   rgb.setRed(300);
-  EXPECT_EQ(255, rgb.red());
+  BOOST_CHECK_EQUAL(255, rgb.red());
   rgb.setRed(-4);
-  EXPECT_EQ(0, rgb.red());
+  BOOST_CHECK_EQUAL(0, rgb.red());
 }
 
-TEST(ColorRGB, setGreen)
+BOOST_AUTO_TEST_CASE(ColorRGB_setGreen)
 {
   graph::ColorRGB rgb;
   rgb.setGreen(45);
-  EXPECT_EQ(45, rgb.green());
+  BOOST_CHECK_EQUAL(45, rgb.green());
 }
 
-TEST(ColorRGB, setGreenOutRange)
+BOOST_AUTO_TEST_CASE(ColorRGB_setGreenOutRange)
 {
   graph::ColorRGB rgb;
   rgb.setGreen(300);
-  EXPECT_EQ(255, rgb.green());
+  BOOST_CHECK_EQUAL(255, rgb.green());
   rgb.setGreen(-4);
-  EXPECT_EQ(0, rgb.green());
+  BOOST_CHECK_EQUAL(0, rgb.green());
 }
 
-TEST(ColorRGB, setBlue)
+BOOST_AUTO_TEST_CASE(ColorRGB_setBlue)
 {
   graph::ColorRGB rgb;
   rgb.setBlue(45);
-  EXPECT_EQ(45, rgb.blue());
+  BOOST_CHECK_EQUAL(45, rgb.blue());
 }
 
-TEST(ColorRGB, setBlueOutRange)
+BOOST_AUTO_TEST_CASE(ColorRGB_setBlueOutRange)
 {
   graph::ColorRGB rgb;
   rgb.setBlue(300);
-  EXPECT_EQ(255, rgb.blue());
+  BOOST_CHECK_EQUAL(255, rgb.blue());
   rgb.setBlue(-4);
-  EXPECT_EQ(0, rgb.blue());
+  BOOST_CHECK_EQUAL(0, rgb.blue());
 }
 
 /// toColor
 /// fromColor
 
-TEST(ColorRGBA, setAlpha)
+BOOST_AUTO_TEST_CASE(ColorRGBA_setAlpha)
 {
   graph::ColorRGBA rgba;
   rgba.setAlpha(45);
-  EXPECT_EQ(45, rgba.alpha());
+  BOOST_CHECK_EQUAL(45, rgba.alpha());
 }
 
-TEST(ColorRGBA, setAlphaOutRange)
+BOOST_AUTO_TEST_CASE(ColorRGBA_setAlphaOutRange)
 {
   graph::ColorRGBA rgba;
   rgba.setAlpha(300);
-  EXPECT_EQ(255, rgba.alpha());
+  BOOST_CHECK_EQUAL(255, rgba.alpha());
   rgba.setAlpha(-4);
-  EXPECT_EQ(0, rgba.alpha());
+  BOOST_CHECK_EQUAL(0, rgba.alpha());
 }
 
 
-TEST(ColorCMYK, SetGetCyan)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setGetCyan)
 {
   graph::ColorCMYK cmyk;
   cmyk.setCyan(0.5);
-  EXPECT_EQ(0.5, cmyk.cyan());
+  BOOST_CHECK_EQUAL(0.5, cmyk.cyan());
 }
 
-TEST(ColorCMYK, SetCyanOutRange)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setCyanOutRange)
 {
   graph::ColorCMYK cmyk;
   cmyk.setCyan(1.1);
-  EXPECT_EQ(1.0, cmyk.cyan());
+  BOOST_CHECK_EQUAL(1.0, cmyk.cyan());
   cmyk.setCyan(-0.1);
-  EXPECT_EQ(0.0, cmyk.cyan());
+  BOOST_CHECK_EQUAL(0.0, cmyk.cyan());
 }
 
-TEST(ColorCMYK, SetGetGreen)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setGetGreen)
 {
   graph::ColorCMYK cmyk;
   cmyk.setMagenta(0.3);
-  EXPECT_EQ(0.3, cmyk.magenta());
+  BOOST_CHECK_EQUAL(0.3, cmyk.magenta());
 }
 
-TEST(ColorCMYK, SetMagentaOutRange)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setMagentaOutRange)
 {
   graph::ColorCMYK cmyk;
   cmyk.setMagenta(1.1);
-  EXPECT_EQ(1.0, cmyk.magenta());
+  BOOST_CHECK_EQUAL(1.0, cmyk.magenta());
   cmyk.setMagenta(-0.1);
-  EXPECT_EQ(0.0, cmyk.magenta());
+  BOOST_CHECK_EQUAL(0.0, cmyk.magenta());
 }
 
-TEST(ColorCMYK, SetGetYellow)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setGetYellow)
 {
   graph::ColorCMYK cmyk;
   cmyk.setYellow(0.6);
-  EXPECT_EQ(0.6, cmyk.yellow());
+  BOOST_CHECK_EQUAL(0.6, cmyk.yellow());
 }
 
-TEST(ColorCMYK, setYellowOutRange)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setYellowOutRange)
 {
   graph::ColorCMYK cmyk;
   cmyk.setYellow(1.1);
-  EXPECT_EQ(1.0, cmyk.yellow());
+  BOOST_CHECK_EQUAL(1.0, cmyk.yellow());
   cmyk.setYellow(-0.1);
-  EXPECT_EQ(0.0, cmyk.yellow());
+  BOOST_CHECK_EQUAL(0.0, cmyk.yellow());
 }
 
-TEST(ColorCMYK, SetGetKey)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setGetKey)
 {
   graph::ColorCMYK cmyk;
   cmyk.setKey(0.6);
-  EXPECT_EQ(0.6, cmyk.key());
+  BOOST_CHECK_EQUAL(0.6, cmyk.key());
 }
 
-TEST(ColorCMYK, setKeyOutRange)
+BOOST_AUTO_TEST_CASE(ColorCMYK_setKeyOutRange)
 {
   graph::ColorCMYK cmyk;
   cmyk.setKey(1.2);
-  EXPECT_EQ(1.0, cmyk.key());
+  BOOST_CHECK_EQUAL(1.0, cmyk.key());
   cmyk.setKey(-0.1);
-  EXPECT_EQ(0.0, cmyk.key());
+  BOOST_CHECK_EQUAL(0.0, cmyk.key());
 }
 
 /* ColorHSV */
 
-TEST(ColorHSV, setHue)
+BOOST_AUTO_TEST_CASE(ColorHSV_setHue)
 {
   graph::ColorHSV hsv;
   hsv.setHue(45);
-  EXPECT_EQ(45, hsv.hue());
+  BOOST_CHECK_EQUAL(45, hsv.hue());
 }
 
-TEST(ColorHSV, setHueOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSV_setHueOutRange)
 {
   graph::ColorHSV hsv;
   hsv.setHue(400);
-  EXPECT_EQ(360., hsv.hue());
+  BOOST_CHECK_EQUAL(360., hsv.hue());
   hsv.setHue(-4);
-  EXPECT_EQ(0, hsv.hue());
+  BOOST_CHECK_EQUAL(0, hsv.hue());
 }
 
-TEST(ColorHSV, setSaturation)
+BOOST_AUTO_TEST_CASE(ColorHSV_setSaturation)
 {
   graph::ColorHSV hsv;
   hsv.setSaturation(45);
-  EXPECT_EQ(45, hsv.saturation());
+  BOOST_CHECK_EQUAL(45, hsv.saturation());
 }
 
-TEST(ColorHSV, setSaturationOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSV_setSaturationOutRange)
 {
   graph::ColorHSV hsv;
   hsv.setSaturation(300);
-  EXPECT_EQ(100, hsv.saturation());
+  BOOST_CHECK_EQUAL(100, hsv.saturation());
   hsv.setSaturation(-4);
-  EXPECT_EQ(0, hsv.saturation());
+  BOOST_CHECK_EQUAL(0, hsv.saturation());
 }
 
-TEST(ColorHSV, setValue)
+BOOST_AUTO_TEST_CASE(ColorHSV_setValue)
 {
   graph::ColorHSV hsv;
   hsv.setValue(45);
-  EXPECT_EQ(45, hsv.value());
+  BOOST_CHECK_EQUAL(45, hsv.value());
 }
 
-TEST(ColorHSV, setValueOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSV_setValueOutRange)
 {
   graph::ColorHSV hsv;
   hsv.setValue(400);
-  EXPECT_EQ(100, hsv.value());
+  BOOST_CHECK_EQUAL(100, hsv.value());
   hsv.setValue(-4);
-  EXPECT_EQ(0, hsv.value());
+  BOOST_CHECK_EQUAL(0, hsv.value());
 }
 
 /* ColorHSL */
 
-TEST(ColorHSL, setHue)
+BOOST_AUTO_TEST_CASE(ColorHSL_setHue)
 {
   graph::ColorHSL hsl;
   hsl.setHue(45);
-  EXPECT_EQ(45, hsl.hue());
+  BOOST_CHECK_EQUAL(45, hsl.hue());
 }
 
-TEST(ColorHSL, setHueOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSL_setHueOutRange)
 {
   graph::ColorHSL hsl;
   hsl.setHue(400);
-  EXPECT_EQ(360., hsl.hue());
+  BOOST_CHECK_EQUAL(360., hsl.hue());
   hsl.setHue(-4);
-  EXPECT_EQ(0, hsl.hue());
+  BOOST_CHECK_EQUAL(0, hsl.hue());
 }
 
-TEST(ColorHSL, setSaturation)
+BOOST_AUTO_TEST_CASE(ColorHSL_setSaturation)
 {
   graph::ColorHSL hsl;
   hsl.setSaturation(45);
-  EXPECT_EQ(45, hsl.saturation());
+  BOOST_CHECK_EQUAL(45, hsl.saturation());
 }
 
-TEST(ColorHSL, setSaturationOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSL_setSaturationOutRange)
 {
   graph::ColorHSL hsl;
   hsl.setSaturation(300);
-  EXPECT_EQ(100, hsl.saturation());
+  BOOST_CHECK_EQUAL(100, hsl.saturation());
   hsl.setSaturation(-4);
-  EXPECT_EQ(0, hsl.saturation());
+  BOOST_CHECK_EQUAL(0, hsl.saturation());
 }
 
-TEST(ColorHSL, setValue)
+BOOST_AUTO_TEST_CASE(ColorHSL_setValue)
 {
   graph::ColorHSL hsl;
   hsl.setLightness(45);
-  EXPECT_EQ(45, hsl.lightness());
+  BOOST_CHECK_EQUAL(45, hsl.lightness());
 }
 
-TEST(ColorHSL, setValueOutRange)
+BOOST_AUTO_TEST_CASE(ColorHSL_setValueOutRange)
 {
   graph::ColorHSL hsl;
   hsl.setLightness(300);
-  EXPECT_EQ(100, hsl.lightness());
+  BOOST_CHECK_EQUAL(100, hsl.lightness());
   hsl.setLightness(-4);
-  EXPECT_EQ(0, hsl.lightness());
+  BOOST_CHECK_EQUAL(0, hsl.lightness());
 }
 
+BOOST_AUTO_TEST_SUITE(TrfColorModelTestSuite)
 
 
-class TrfColorModel
-  : public testing::Test
+struct TrfColorModelTest
 {
-public:
 
-protected:
+  TrfColorModelTest()
+    : rgb(new graph::ColorRGB(0, 255, 0)),
+      cmyk(new graph::ColorCMYK(1, 1, 0, 0)),
+      hsl(new graph::ColorHSL(338.298, 88.679, 58.431)),
+      hsv(new graph::ColorHSV(259.592, 57.647, 33.333))
+  {}
 
-  virtual void SetUp() override
-  {
-    //std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 }  };
-    //std::vector<std::string> _hex{ "0", "FF0000", "FF00", "FF", "FFFFFF", "342455", "F3377B" };
-    //std::vector<int> color{ 0, 16711680, 65280, 255, 16777215, 3417173, 15939451 };
-    //std::vector<std::vector<double>> cmyk{ { 0, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 }, { 1, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0.388, 0.576, 0, 0.667 }, { 0, 0.774, 0.494, 0.047 } };
-    //std::vector<std::vector<double>> hsv{ { 0., 0., 0.}, { 0., 100., 100.}, { 120., 100., 100.}, { 240., 100., 100.}, { 0., 0., 100.}, { 259.592, 57.647, 33.333}, { 338.298, 77.366, 95.294} };
-    //std::vector<std::vector<double>> hsl{ { 0., 0., 0.}, { 0., 100., 50.}, { 120., 100., 50.}, { 240., 100., 50.}, { 0., 0., 100.}, { 259.592, 40.495, 23.725}, { 338.298, 88.679, 58.431} };
-    rgb = new graph::ColorRGB(0, 255, 0);
-    cmyk = new graph::ColorCMYK(1, 1, 0, 0);
-    hsl = new graph::ColorHSL(338.298, 88.679, 58.431);
-    hsv = new graph::ColorHSV(259.592, 57.647, 33.333);
-  }
-
-  virtual void TearDown() override
+  ~TrfColorModelTest()
   {
     if (rgb) {
       delete rgb;
@@ -1246,6 +1241,21 @@ protected:
     }
   }
 
+  void setup()
+  {
+    //std::vector<std::vector<int>> rbga{ { 0, 0, 0, 0 }, { 255, 0, 0, 0 }, { 0, 255, 0, 0 }, { 0, 0, 255, 0 }, { 255, 255, 255, 0 }, { 52, 36, 85, 0 }, { 243, 55, 123, 0 }  };
+    //std::vector<std::string> _hex{ "0", "FF0000", "FF00", "FF", "FFFFFF", "342455", "F3377B" };
+    //std::vector<int> color{ 0, 16711680, 65280, 255, 16777215, 3417173, 15939451 };
+    //std::vector<std::vector<double>> cmyk{ { 0, 0, 0, 1 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 }, { 1, 1, 0, 0 }, { 0, 0, 0, 0 }, { 0.388, 0.576, 0, 0.667 }, { 0, 0.774, 0.494, 0.047 } };
+    //std::vector<std::vector<double>> hsv{ { 0., 0., 0.}, { 0., 100., 100.}, { 120., 100., 100.}, { 240., 100., 100.}, { 0., 0., 100.}, { 259.592, 57.647, 33.333}, { 338.298, 77.366, 95.294} };
+    //std::vector<std::vector<double>> hsl{ { 0., 0., 0.}, { 0., 100., 50.}, { 120., 100., 50.}, { 240., 100., 50.}, { 0., 0., 100.}, { 259.592, 40.495, 23.725}, { 338.298, 88.679, 58.431} };
+  }
+
+  void teardown()
+  {
+    
+  }
+
   graph::Color color1;
   graph::ColorRGB *rgb;
   graph::ColorCMYK *cmyk;
@@ -1254,8 +1264,10 @@ protected:
 
 };
 
-//TEST_F(TrfColorModel, rgbToCMYK)
+//BOOST_FIXTURE_TEST_CASE(TrfColorModel, rgbToCMYK)
 //{
 //  TrfColorModel<graph::ColorRGB, graph::ColorCMYK> rgbToCmyk;
 //  rgbToCmyk
 //}
+
+BOOST_AUTO_TEST_SUITE_END()

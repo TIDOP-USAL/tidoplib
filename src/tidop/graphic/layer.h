@@ -6,9 +6,11 @@
 
 #include <list>
 #include <memory>
+#include <string>
 
+#include <tidop/experimental/datamodel.h>
 
-namespace TL
+namespace tl
 {
 
 
@@ -80,23 +82,6 @@ public:
    */
   typedef std::list<std::shared_ptr<GraphicEntity>>::const_iterator const_iterator;
 
-protected:
-
-  /*!
-   * \brief Nombre de la capa
-   */
-  std::string mName;
-
-  /*!
-   * \brief Listado de entidades
-   */
-  std::list<std::shared_ptr<GraphicEntity>> mEntities;
-
-  /*!
-   * \brief Entidades seleccionadas
-   */
-  std::shared_ptr<GraphicEntity> mSelectEntity;
-
 public:
 
   /*!
@@ -132,27 +117,27 @@ public:
    * \brief Devuelve un iterador al inicio de la capa
    * \return Iterador al primer elemento
    */
-  iterator begin();
+  iterator begin() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al inicio de la capa
    * \return Iterador al primer elemento
    */
-  const_iterator begin() const;
+  const_iterator begin() const TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  iterator end();
+  iterator end() TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve un iterador constante al siguiente elemento después de la última entidad
    * Este elemento actúa como un marcador de posición, intentar acceder a él resulta en un comportamiento no definido 
    * \return Iterador al siguiente elemento después de la última entidad
    */
-  const_iterator end() const;
+  const_iterator end() const TL_NOEXCEPT;
 
   /*!
    * \brief Agrega una entidad mediante copia al final del contenedor
@@ -169,13 +154,13 @@ public:
   /*!
    * \brief Elimina los elementos del recipiente
    */
-  void clear();
+  void clear() TL_NOEXCEPT;
     
   /*!
    * \brief Comprueba si el contenedor esta vacio
    * \return true si el contenedor está vacío y false en caso contrario
    */
-  bool empty() const;
+  bool empty() const TL_NOEXCEPT;
 
   /*!
    * \brief Modifica el tamaño del contenedor
@@ -192,23 +177,24 @@ public:
    * \param[in] count Nuevo tamaño del contenedor
    * \param[in] value Valor que se asigna a los nuevos elementos
    */
-  void resize(size_type count, const std::shared_ptr<GraphicEntity> &value);
+  void resize(size_type count, 
+              const std::shared_ptr<GraphicEntity> &value);
 
   /*!
    * \brief Devuelve el tamaño del contenedor
    * \return Tamaño
    */
-  size_type size() const;
+  size_type size() const TL_NOEXCEPT;
 
   /*!
    * \brief Asignación de copia
    */
-  GLayer& operator=(const GLayer& entity);
+  GLayer &operator=(const GLayer& entity);
 
   /*!
    * \brief Asignación de movimiento
    */
-  GLayer& operator=(GLayer&& entity) TL_NOEXCEPT;
+  GLayer &operator=(GLayer &&entity) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina el intervalo
@@ -227,13 +213,35 @@ public:
    */
   void setName(const std::string &name);
 
+  void addDataField(const std::shared_ptr<experimental::TableField> &field);
+
+  std::vector<std::shared_ptr<experimental::TableField>> tableFields() const;
+
+protected:
+
+  /*!
+   * \brief Nombre de la capa
+   */
+  std::string mName;
+
+  /*!
+   * \brief Listado de entidades
+   */
+  std::list<std::shared_ptr<GraphicEntity>> mEntities;
+
+  /*!
+   * \brief Entidades seleccionadas
+   */
+  std::shared_ptr<GraphicEntity> mSelectEntity;
+
+  std::vector<std::shared_ptr<experimental::TableField>> mTableFields;
 };
 
 
-} // Fin namespace graph
+} // namespace graph
 
-/*! \} */ // Fin GraphicEntities
+/*! \} */ //  GraphicEntities
 
-} // Fin namespace TL
+} // namespace tl
 
 #endif // TL_GRAPHIC_LAYER_H

@@ -13,8 +13,8 @@
  ****************************************************************************/
 
 
-#ifndef TL_GEOM_POINT_H
-#define TL_GEOM_POINT_H
+#ifndef TL_GEOMETRY_POINT_H
+#define TL_GEOMETRY_POINT_H
 
 #include "config_tl.h"
 
@@ -24,25 +24,20 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/types.hpp"
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/types.hpp"
+//#endif // HAVE_OPENCV
 
 #include "tidop/geometry/entities/entity.h"
+//#include "tidop/math/algebra/vector.h"
 
-namespace TL
+namespace tl
 {
 
 /*! \addtogroup GeometricEntities
  *  \{
  */
 
-
-namespace geometry
-{
-
-
-/* ---------------------------------------------------------------------------------- */
 
 /*!
  * \brief Clase punto 2D
@@ -65,16 +60,6 @@ public:
    * \brief type
    */
   typedef T value_type;
-
-  /*!
-   * \brief Coordenada X
-   */
-  T x;
-
-  /*!
-   * \brief Coordenada Y
-   */
-  T y;
 
 public:
 
@@ -102,13 +87,19 @@ public:
    */
   Point(Point<T> &&point) TL_NOEXCEPT;
 
+  ///*!
+  // * \brief Constructor a partir de un vector
+  // * \param[in] vector Vector
+  // */
+  //Point(const math::Vector<T, 2> &vector);
+
   /*!
    * \brief Constructor
    * \param[in] v Objeto Point que se copia
    */
   Point(const std::array<T, 2> &v);
 
-  ~Point() = default;
+  ~Point() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -132,23 +123,40 @@ public:
    */
   template<typename T2> operator Point3<T2>() const;
 
-#ifdef HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//  /*!
+//   * \brief Conversión a punto OpenCV
+//   */
+//  template<typename T2> operator cv::Point_<T2>() const;
+//#endif
+
+public:
+
   /*!
-   * \brief Conversión a punto OpenCV
+   * \brief Coordenada X
    */
-  template<typename T2> operator cv::Point_<T2>() const;
-#endif
+  T x;
+
+  /*!
+   * \brief Coordenada Y
+   */
+  T y;
 
 };
+
+
+/* Definición de alias Point */
 
 typedef Point<int> PointI;
 typedef Point<double> PointD;
 typedef Point<float> PointF;
 
 
+/* Implementación Point */
+
 template<typename T> inline
 Point<T>::Point()
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(static_cast<T>(0)), 
     y(static_cast<T>(0)) 
 {
@@ -156,7 +164,7 @@ Point<T>::Point()
 
 template<typename T> inline
 Point<T>::Point(T x, T y)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(x), 
     y(y) 
 {
@@ -164,7 +172,7 @@ Point<T>::Point(T x, T y)
 
 template<typename T> inline
 Point<T>::Point(const Point &pt)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(pt.x), 
     y(pt.y) 
 {
@@ -173,24 +181,32 @@ Point<T>::Point(const Point &pt)
 template<typename T> inline
 Point<T>::Point(Point &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)), 
-    x(std::move(pt.x)), 
-    y(std::move(pt.y)) 
+    x(std::exchange(pt.x, static_cast<T>(0))),
+    y(std::exchange(pt.y, static_cast<T>(0)))
 {
 }
+
+//template<typename T> inline
+//Point<T>::Point(const math::Vector<T, 2> &vector)
+//  : Entity(Entity::Type::point2d),
+//    x(vector[0]),
+//    y(vector[1])
+//{
+//}
 
 template<typename T> inline
 Point<T>::Point(const std::array<T, 2> &v)
-  : Entity(Entity::Type::POINT_2D),
+  : Entity(Entity::Type::point2d),
     x(v[0]), 
     y(v[1]) 
 {
-
 }
 
 template<typename T> inline
-Point<T>& Point<T>::operator = (const Point &pt)
+Point<T> &Point<T>::operator = (const Point &pt)
 {
   if (this != &pt) {
+    Entity::operator = (pt);
     this->x = pt.x;
     this->y = pt.y;
   }
@@ -199,12 +215,12 @@ Point<T>& Point<T>::operator = (const Point &pt)
 
 
 template<typename T> inline
-Point<T>& Point<T>::operator = (Point &&pt) TL_NOEXCEPT
+Point<T> &Point<T>::operator = (Point &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
-    this->mEntityType = std::move(pt.mEntityType);
-    this->x = std::move(pt.x);
-    this->y = std::move(pt.y);
+    Entity::operator = (std::forward<Entity>(pt));
+    this->x = std::exchange(pt.x, static_cast<T>(0));
+    this->y = std::exchange(pt.y, static_cast<T>(0));
   }
   return *this;
 }
@@ -237,19 +253,19 @@ Point<T>::operator Point3<T2>() const
 }
 
 
-#ifdef HAVE_OPENCV
-template<typename T> template<typename T2> inline
-Point<T>::operator cv::Point_<T2>() const
-{
-  if (std::is_integral<T2>::value) {
-    return cv::Point_<T2>(static_cast<T2>(std::round(this->x)), 
-                          static_cast<T2>(std::round(this->y)));
-  } else {
-    return cv::Point_<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
-  }
-}
-#endif
-TL_ENABLE_WARNING(TL_WARNING_C4244)
+//#ifdef HAVE_OPENCV
+//template<typename T> template<typename T2> inline
+//Point<T>::operator cv::Point_<T2>() const
+//{
+//  if (std::is_integral<T2>::value) {
+//    return cv::Point_<T2>(static_cast<T2>(std::round(this->x)), 
+//                          static_cast<T2>(std::round(this->y)));
+//  } else {
+//    return cv::Point_<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
+//  }
+//}
+//#endif
+//TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename T> static inline
 Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
@@ -344,7 +360,8 @@ Point<T1> operator * (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x*b)), 
                      static_cast<T1>(std::round(pt.y*b)));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x*b), static_cast<T1>(pt.y*b));
+    return Point<T1>(static_cast<T1>(pt.x*b), 
+                     static_cast<T1>(pt.y*b));
   }
 }
 
@@ -355,7 +372,8 @@ Point<T2> operator * (T1 a, const Point<T2> &b)
     return Point<T2>(static_cast<T2>(std::round(b.x*a)), 
                      static_cast<T2>(std::round(b.y*a)));
   } else {
-    return Point<T2>(static_cast<T2>(b.x*a), static_cast<T2>(b.y*a));
+    return Point<T2>(static_cast<T2>(b.x*a), 
+                     static_cast<T2>(b.y*a));
   }
 }
 
@@ -367,7 +385,8 @@ Point<T1> operator / (const Point<T1> &pt, T2 b)
     return Point<T1>(static_cast<T1>(std::round(pt.x / static_cast<double>(b))),
                      static_cast<T1>(std::round(pt.y / static_cast<double>(b))));
   } else {
-    return Point<T1>(static_cast<T1>(pt.x / b), static_cast<T1>(pt.y / b));
+    return Point<T1>(static_cast<T1>(pt.x / b), 
+                     static_cast<T1>(pt.y / b));
   }
 }
 
@@ -441,11 +460,17 @@ public:
 
   /*!
    * \brief Constructor vector
+   * \param[in] vector Vector
+   */
+  //Point3(const math::Vector<T, 3> &vector);
+
+  /*!
+   * \brief Constructor vector
    * \param[in] v Vector de coordenadas
    */
   Point3(const std::array<T, 3> &v);
 
-  ~Point3() = default;
+  ~Point3() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -473,7 +498,7 @@ typedef Point3<float> Point3F;
 
 template<typename T> inline
 Point3<T>::Point3()
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(0), 
     y(0), 
     z(0)
@@ -482,7 +507,7 @@ Point3<T>::Point3()
 
 template<typename T> inline
 Point3<T>::Point3(T x, T y, T z)
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(x), 
     y(y), 
     z(z)
@@ -501,15 +526,24 @@ Point3<T>::Point3(const Point3 &pt)
 template<typename T> inline
 Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
   : Entity(std::forward<Entity>(pt)),
-    x(std::move(pt.x)), 
-    y(std::move(pt.y)), 
-    z(std::move(pt.z))
+    x(std::exchange(pt.x, 0)), 
+    y(std::exchange(pt.y, 0)), 
+    z(std::exchange(pt.z, 0))
 {
 }
 
+//template<typename T> inline 
+//Point3<T>::Point3(const math::Vector<T, 3> &vector)
+//  : Entity(Entity::Type::point3d),
+//    x(vector[0]),
+//    y(vector[1]),
+//    z(vector[2])
+//{
+//}
+
 template<typename T> inline
 Point3<T>::Point3(const std::array<T, 3> &v)
-  : Entity(Entity::Type::POINT_3D),
+  : Entity(Entity::Type::point3d),
     x(v[0]), 
     y(v[1]),
     z(v[2])
@@ -520,6 +554,7 @@ template<typename T> inline
 Point3<T> &Point3<T>::operator = (const Point3 &pt)
 {
   if (this != &pt) {
+    Entity::operator = (pt);
     this->x = pt.x;
     this->y = pt.y;
     this->z = pt.z;
@@ -532,9 +567,9 @@ Point3<T> &Point3<T>::operator = (Point3 &&pt) TL_NOEXCEPT
 {
   if (this != &pt) {
     Entity::operator = (std::forward<Entity>(pt));
-    this->x = std::move(pt.x);
-    this->y = std::move(pt.y);
-    this->z = std::move(pt.z);
+    this->x = std::exchange(pt.x, 0);
+    this->y = std::exchange(pt.y, 0);
+    this->z = std::exchange(pt.z, 0);
   }
   return *this;
 }
@@ -763,7 +798,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPoint() = default;
+  ~MultiPoint() override = default;
 
   /*!
    * \brief Operador asignación
@@ -781,30 +816,26 @@ public:
    * \brief Ventana envolvente
    * \return Ventana envolvente de los puntos
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("window()")
-  Window<Point_t> getWindow() const;
-#endif
   Window<Point_t> window() const;
 };
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint() 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(typename MultiPoint<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(size) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(multiPoint) 
 {
 }
@@ -812,20 +843,20 @@ MultiPoint<Point_t>::MultiPoint(const MultiPoint &multiPoint)
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(MultiPoint &&multiPoint) TL_NOEXCEPT
   : Entity(std::forward<Entity>(multiPoint)), 
-    Entities2D<Point_t>(std::forward<MultiPoint<Point_t>>(multiPoint)) 
+    Entities2D<Point_t>(std::forward<Entities2D<Point_t>>(multiPoint)) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(vPoint) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint<Point_t>::MultiPoint(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::MULTIPOINT_2D),
+  : Entity(Entity::Type::multipoint2d),
     Entities2D<Point_t>(listPoints)
 {
 }
@@ -834,9 +865,8 @@ template<typename Point_t> inline
 MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (const MultiPoint &multiPoint)
 {
   if (this != &multiPoint) {
-    this->mEntityType = multiPoint.mEntityType;
-    //Entities2D<Point_t>::operator = (multiPoint);
-    this->mEntities = multiPoint.mEntities;
+    Entity::operator = (multiPoint);
+    Entities2D<Point_t>::operator = (multiPoint);
   }
   return *this;
 }
@@ -845,26 +875,11 @@ template<typename Point_t> inline
 MultiPoint<Point_t> &MultiPoint<Point_t>::operator = (MultiPoint &&multiPoint) TL_NOEXCEPT
 {
   if (this != &multiPoint) {
-    this->mEntityType = std::move(multiPoint.mEntityType);
-    Entities2D<Point_t>::operator = (std::forward<MultiPoint<Point_t>>(multiPoint));
+    Entity::operator = (std::forward<Entity>(multiPoint));
+    Entities2D<Point_t>::operator = (std::forward<Entities2D<Point_t>>(multiPoint));
   }
   return *this;
 }
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-template<typename Point_t> inline
-Window<Point_t> MultiPoint<Point_t>::getWindow() const
-{
-  Window<Point_t> w;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (w.pt1.x > this->mEntities[i].x) w.pt1.x = this->mEntities[i].x;
-    if (w.pt1.y > this->mEntities[i].y) w.pt1.y = this->mEntities[i].y;
-    if (w.pt2.x < this->mEntities[i].x) w.pt2.x = this->mEntities[i].x;
-    if (w.pt2.y < this->mEntities[i].y) w.pt2.y = this->mEntities[i].y;
-  }
-  return w;
-}
-#endif
 
 template<typename Point_t> inline
 Window<Point_t> MultiPoint<Point_t>::window() const
@@ -944,7 +959,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~MultiPoint3D() = default;
+  ~MultiPoint3D() override = default;
 
   /*!
    * \brief Operador asignación
@@ -962,23 +977,19 @@ public:
    * \brief Caja envolvente
    * \return Caja envolvente de los puntos
    */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  TL_DEPRECATED("box()")
-  Box<Point_t> getBox() const;
-#endif
-  Box<Point_t> box() const;
+  BoundingBox<Point_t> boundingBox() const;
 };
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D() 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>() 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(typename MultiPoint3D<Point_t>::size_type size)
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(size) 
 {
 }
@@ -999,14 +1010,14 @@ MultiPoint3D<Point_t>::MultiPoint3D(MultiPoint3D &&multiPoint) TL_NOEXCEPT
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(const std::vector<Point_t> &vPoint) 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(vPoint) 
 {
 }
 
 template<typename Point_t> inline
 MultiPoint3D<Point_t>::MultiPoint3D(std::initializer_list<Point_t> listPoints) 
-  : Entity(Entity::Type::MULTIPOINT_3D),
+  : Entity(Entity::Type::multipoint3d),
     Entities3D<Point_t>(listPoints)
 {
 }
@@ -1015,8 +1026,8 @@ template<typename Point_t> inline
 MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (const MultiPoint3D &multiPoint)
 {
   if (this != &multiPoint) {
-    this->mEntityType = multiPoint.mEntityType;
-    this->mEntities = multiPoint.mEntities;
+    Entity::operator=(multiPoint);
+    Entities3D<Point_t>::operator = (multiPoint);
   }
   return *this;
 }
@@ -1025,42 +1036,25 @@ template<typename Point_t> inline
 MultiPoint3D<Point_t> &MultiPoint3D<Point_t>::operator = (MultiPoint3D &&multiPoint) TL_NOEXCEPT
 {
   if (this != &multiPoint) {
-    this->mEntityType = std::move(multiPoint.mEntityType);
-    Entities3D<Point_t>::operator = (std::forward<MultiPoint3D<Point_t>>(multiPoint));
+    Entity::operator = (std::forward<Entity>(multiPoint));
+    Entities3D<Point_t>::operator = (std::forward<Entities3D<Point_t>>(multiPoint));
   }
   return *this;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
 template<typename Point_t> inline
-Box<Point_t> MultiPoint3D<Point_t>::getBox() const
+BoundingBox<Point_t> MultiPoint3D<Point_t>::boundingBox() const
 {
-  Box<Point_t> box;
+  BoundingBox<Point_t> bounding_box;
   for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
+    if (bounding_box.pt1.x > this->mEntities[i].x) bounding_box.pt1.x = this->mEntities[i].x;
+    if (bounding_box.pt1.y > this->mEntities[i].y) bounding_box.pt1.y = this->mEntities[i].y;
+    if (bounding_box.pt1.z > this->mEntities[i].z) bounding_box.pt1.z = this->mEntities[i].z;
+    if (bounding_box.pt2.x < this->mEntities[i].x) bounding_box.pt2.x = this->mEntities[i].x;
+    if (bounding_box.pt2.y < this->mEntities[i].y) bounding_box.pt2.y = this->mEntities[i].y;
+    if (bounding_box.pt2.z < this->mEntities[i].z) bounding_box.pt2.z = this->mEntities[i].z;
   }
-  return box;
-}
-#endif
-
-template<typename Point_t> inline
-Box<Point_t> MultiPoint3D<Point_t>::box() const
-{
-  Box<Point_t> box;
-  for (size_t i = 0; i < this->mEntities.size(); i++) {
-    if (box.pt1.x > this->mEntities[i].x) box.pt1.x = this->mEntities[i].x;
-    if (box.pt1.y > this->mEntities[i].y) box.pt1.y = this->mEntities[i].y;
-    if (box.pt1.z > this->mEntities[i].z) box.pt1.z = this->mEntities[i].z;
-    if (box.pt2.x < this->mEntities[i].x) box.pt2.x = this->mEntities[i].x;
-    if (box.pt2.y < this->mEntities[i].y) box.pt2.y = this->mEntities[i].y;
-    if (box.pt2.z < this->mEntities[i].z) box.pt2.z = this->mEntities[i].z;
-  }
-  return box;
+  return bounding_box;
 }
 
 typedef MultiPoint3D<Point3<int>> MultiPoint3dI;
@@ -1069,77 +1063,32 @@ typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
 
 /* ---------------------------------------------------------------------------------- */
 
-}
-
-//TODO: revisar y ver si se puede hacer mejor
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point<int> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point<double> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point<float> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point3<int> &pt)    
-{ 
-  return Point_t(pt.x, pt.y, pt.z); 
-}
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point3<double> &pt)    
-{ 
-  return Point_t(pt.x, pt.y, pt.z); 
-}
-
-template<typename Point_t> static inline 
-TL_DEPRECATED("static_cast<Point_t>()")
-Point_t point_cast(const geometry::Point3<float> &pt)    
-{ 
-  return Point_t(pt.x, pt.y, pt.z); 
-}
 
 #ifdef HAVE_OPENCV
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<int> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<int> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<double> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<double> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
-template<typename Point_t> static inline 
-Point_t point_cast(const cv::Point_<float> &pt)    
-{ 
-  return Point_t(pt.x, pt.y); 
-}
+//template<typename Point_t> static inline 
+//Point_t point_cast(const cv::Point_<float> &pt)    
+//{ 
+//  return Point_t(pt.x, pt.y); 
+//}
 
 #endif
 
 /*! \} */ // end of GeometricEntities
 
-} // End namespace TL
+} // End namespace tl
 
-#endif // TL_GEOM_POINT_H
+#endif // TL_GEOMETRY_POINT_H

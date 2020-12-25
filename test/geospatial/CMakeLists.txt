@@ -1,21 +1,12 @@
-if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
+if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL)
 
   project(test)
 
-  #if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
-  #  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-  #  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-function -Wno-missing-declarations")
-  #endif()
 
-  
-  # ---------------------------------------------
-  #      Define executable targets
-  # ---------------------------------------------
   MACRO(DEFINE_TEST name srcs)
 
     include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-    include_directories(${GTEST_INCLUDE_DIRS})
 	
     set(test_kind test)
     set(test_KIND TEST)
@@ -23,10 +14,22 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
 	
-    target_link_libraries(${the_target} gtest_main)
     target_link_libraries(${the_target} tl_core tl_geom tl_geospatial)
-    target_link_libraries(${the_target} ${OpenCV_LIBS} ${GDAL_LIBRARY} ${PROJ4_LIBRARY})
-    target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+	  target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+    
+    if(HAVE_GDAL)
+      target_link_libraries(${the_target} ${GDAL_LIBRARY})
+    endif(HAVE_GDAL)
+
+    if(HAVE_PROJ4)
+        target_link_libraries(${the_target} 
+                              ${PROJ4_LIBRARIES})
+    endif(HAVE_PROJ4)
+
+	  if(HAVE_OPENCV)
+      target_link_libraries(${the_target} ${OpenCV_LIBS})
+	  endif(HAVE_OPENCV)
+
     if (UNIX)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
@@ -64,10 +67,8 @@ if(BUILD_TEST AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
   
 
   foreach(test_filename ${cpp_test})
-    if(NOT "${sample_filename}" MATCHES "real_time_pose_estimation/")
-        get_filename_component(test ${test_filename} NAME_WE)
-        DEFINE_TEST(${test}  ${test_filename})
-    endif()
+    get_filename_component(test ${test_filename} NAME_WE)
+    DEFINE_TEST(${test}  ${test_filename})
   endforeach()
 
 

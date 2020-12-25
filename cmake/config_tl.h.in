@@ -20,6 +20,12 @@
 /* Muestra las clases y funciones marcados como obsoletos */
 #cmakedefine TL_ENABLE_DEPRECATED_METHODS 
 
+#cmakedefine HAVE_TL_MATH
+#cmakedefine HAVE_TL_GEOM
+#cmakedefine HAVE_TL_GEOM
+#cmakedefine HAVE_TL_GEOM
+
+
 
 #cmakedefine HAVE_OPENCV
 
@@ -32,6 +38,8 @@
 
 // Activa GDAL
 #cmakedefine HAVE_GDAL
+
+#cmakedefine HAVE_PROJ4
 
 // libraw: Lectura de formato raw
 #cmakedefine HAVE_LIBRAW
@@ -57,8 +65,6 @@
 // boost
 #cmakedefine HAVE_BOOST
 
-// Google Test
-#cmakedefine HAVE_GTEST
-#cmakedefine HAVE_GMOCK
+#cmakedefine HAVE_LAPACKE
 
 #endif // TL_CONFIG_H

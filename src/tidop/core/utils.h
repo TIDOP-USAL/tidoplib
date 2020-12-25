@@ -32,18 +32,16 @@
 //C++17
 //http://en.cppreference.com/w/cpp/filesystem
 #include <filesystem>
-namespace fs = std::filesystem;
 #else
 //Boost
 //http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
 #endif
 #include <boost/algorithm/string.hpp>
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#endif // HAVE_OPENCV
 
 #ifdef HAVE_MINIZIP
 #include "minizip/zip.h"
@@ -53,7 +51,7 @@ namespace fs = boost::filesystem;
 #include "tidop/core/defs.h"
 //#include "core/datamodel.h"
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -149,6 +147,7 @@ TL_EXPORT int getFileDir(const char *path, char *dir, int size);
  */
 TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Optiene la extensión de un archivo
  * \param[in] path Ruta del archivo
@@ -165,7 +164,7 @@ TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::extension()
  */
-TL_DEPRECATED("boost::filesystem::extension()")
+TL_DEPRECATED("boost::filesystem::extension()", "2.0")
 TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
 
 /*!
@@ -184,8 +183,9 @@ TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::extension()
  */
-TL_DEPRECATED("boost::filesystem::filename()")
+TL_DEPRECATED("boost::filesystem::filename()", "2.0")
 TL_EXPORT int getFileName(const char *path, char *name, int size);
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
@@ -222,6 +222,7 @@ TL_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
  */
 TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Cambia la extensión de un archivo
  * \param[in] path Ruta del archivo
@@ -239,8 +240,9 @@ TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOu
  * \endcode
  * \deprecated Usar en su lugar boost::filesystem::replace_extension() o std::filesystem::replace_extension()
  */
-TL_DEPRECATED("filesystem::replace_extension()")
+TL_DEPRECATED("filesystem::replace_extension()", "2.0")
 TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Cambia el nombre y la extensión de un archivo
@@ -263,8 +265,10 @@ TL_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameEx
 
 TL_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
 
-TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)")
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)", "2.0")
 TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Devuelve el listado de archivos de un directorio
@@ -299,7 +303,7 @@ TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
  * - Como separador admite "/" y "\\".
  *
  */
-class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path") Path
+class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path", "2.0") Path
 {
 private:
 
@@ -503,20 +507,21 @@ TL_EXPORT int split(const std::string &in, std::vector<std::string> &out, const 
 
 /*! \} */ // end of stringOper
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief Convierte un número a una cadena de texto
  * \param[in] number Numero
  * \return Cadena de texto
  */
 template <typename T> inline
-TL_DEPRECATED("std::to_string()")
+TL_DEPRECATED("std::to_string()", "2.0")
 std::string numberToString(T number)
 {
   std::ostringstream ss;
   ss << number;
   return ss.str();
 }
-
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 
 /*!
@@ -533,9 +538,15 @@ T stringToNumber(const std::string &text)
 
 enum class Base : int8_t
 {
+  octal       =  8,
+  decimal     = 10,
+  hexadecimal = 16
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  ,
   OCTAL       =  8,
   DECIMAL     = 10,
   HEXADECIMAL = 16
+#endif
 };
 
 /*!
@@ -547,33 +558,33 @@ enum class Base : int8_t
  * \return Número
  * \see Base
  */
-TL_EXPORT int stringToInteger(const std::string &text, TL::Base base = TL::Base::DECIMAL);
+TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal);
 
 /* ---------------------------------------------------------------------------------- */
 /*                              Operaciones con vectores                              */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Convierte una matriz de OpenCV en un vector
- * \param[in] m Matriz de entrada
- * \param[out] av Vector de salida
- */
-template<typename T> inline 
-void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
-{
-  av->resize(m.rows*m.cols);
-  if (m.isContinuous()) {
-    av->assign((T*)m.datastart, (T*)m.dataend);
-  } else {
-    for (int i = 0; i < m.rows; ++i) {
-      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
-    }
-  }
-}
-
-#endif // HAVE_OPENCV
+//#ifdef HAVE_OPENCV
+//
+///*!
+// * \brief Convierte una matriz de OpenCV en un vector
+// * \param[in] m Matriz de entrada
+// * \param[out] av Vector de salida
+// */
+//template<typename T> inline 
+//void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
+//{
+//  av->resize(m.rows*m.cols);
+//  if (m.isContinuous()) {
+//    av->assign((T*)m.datastart, (T*)m.dataend);
+//  } else {
+//    for (int i = 0; i < m.rows; ++i) {
+//      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
+//    }
+//  }
+//}
+//
+//#endif // HAVE_OPENCV
 
 /*!
  * \brief Ordena un vector de menor a mayor
@@ -704,11 +715,11 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 /*                Utilidades de carga y guardado para OpenCV                          */
 /* ---------------------------------------------------------------------------------- */
 
-TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
-
-TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
-
-TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
+//TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
+//
+//TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
+//
+//TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
 
 #endif // HAVE_OPENCV
 
@@ -728,7 +739,45 @@ TL_EXPORT uint32_t getOptimalNumberOfThreads();
  * \param[in] end
  * \param[in] f Función o lambda
  */
-TL_EXPORT void parallel_for(size_t ini, size_t end, std::function<void(int)> f);
+TL_EXPORT void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f);
+
+//template<typename T> inline
+//void parallel_for(T ini, T end, const std::function<void(T)> &f)
+//{
+//  #ifdef HAVE_OMP
+//  //TODO: Sin probar
+//  #pragma omp parallel for
+//  for (T i = ini; i < end; i++) {
+//    f(i);
+//  }
+//#elif defined TL_MSVS_CONCURRENCY
+//  Concurrency::cancellation_token_source cts;
+//  //Concurrency::run_with_cancellation_token([ini, end, f]() {
+//  //  Concurrency::parallel_for(ini, end, f);
+//  //},cts.get_token());
+//  Concurrency::parallel_for(ini, end, f);
+//#else
+//
+//  auto f_aux = [&](T ini, T end) {
+//    for (T r = ini; r < end; r++) {
+//      f(r);
+//    }
+//  };
+//
+//  T num_threads = getOptimalNumberOfThreads();
+//  std::vector<std::thread> threads(num_threads);
+//
+//  T size = (end - ini) / num_threads;
+//  for (T i = 0; i < num_threads; i++) {
+//    T _ini = i * size + ini;
+//    T _end = _ini + size;
+//    if (i == num_threads -1) _end = end;
+//    threads[i] = std::thread(f_aux, _ini, _end);
+//  }
+//
+//  for (auto &_thread : threads) _thread.join();
+//#endif
+//}
 
 /*!
  * \brief Ejecuta una función en paralelo
@@ -739,7 +788,7 @@ TL_EXPORT void parallel_for(size_t ini, size_t end, std::function<void(int)> f);
  * \param[in] f Función o lambda
  */
 template<typename itIn, typename itOut> inline
-void parallel_for(itIn it_begin, itIn it_end, itOut *it_out_begin, std::function<void(itIn, itIn, itOut *)> f)
+void parallel_for(itIn it_begin, itIn it_end, itOut &it_out_begin, std::function<void(itIn, itIn, itOut &)> f)
 {
 //#ifdef TL_MSVS_CONCURRENCY
   //Concurrency::cancellation_token_source cts;
@@ -794,6 +843,7 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  */
 TL_EXPORT uint64_t tickCount();
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
  * \brief tiempo actual
  *
@@ -806,8 +856,9 @@ TL_EXPORT uint64_t tickCount();
  * \endcode
  * \deprecated Se cambia el nombre del método a tickCount()
  */
-TL_DEPRECATED("tickCount()") 
+TL_DEPRECATED("tickCount()", "2.0") 
 TL_EXPORT uint64_t getTickCount();
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Clase para medir tiempos.
@@ -822,46 +873,30 @@ public:
    * \brief Posibles estados del cronómetro
    */
   enum class Status {
-    START,      /*!< Inicio */
-    RUNNING,    /*!< Corriendo */
-    PAUSE,      /*!< Pausado */
-    STOPPED,    /*!< Detenido */
-    FINALIZED   /*!< Finalizado */
+    start,      /*!< Inicio */
+    running,    /*!< Corriendo */
+    pause,      /*!< Pausado */
+    stopped,    /*!< Detenido */
+    finalized   /*!< Finalizado */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    START     = start,      /*!< Inicio */
+    RUNNING   = running,    /*!< Corriendo */
+    PAUSE     = pause,      /*!< Pausado */
+    STOPPED   = stopped,    /*!< Detenido */
+    FINALIZED = finalized   /*!< Finalizado */
+#endif
   };
 
-private:
-  
-  /*!
-   * Tiempo de inicio en milisegundos
-   */
-  uint64_t mTimeIni;
-
-  /*!
-   * Tiempo acumulado en milisegundos
-   */
-  uint64_t mAccumulated;
-
-  /*!
-   * \brief Estado del cronómetro
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Mensaje de información opcional
-   */
-  std::string mMessage;
-
-  /*!
-   * \brief Escribe mensajes en log y consola
-   */
-  bool bWriteMsg;
-
 public:
+
+  Chrono();
 
   /*!
    * \brief Constructor
    */
-  Chrono(const char *msg = "", bool writeMsg = true);
+  Chrono(const std::string &message, 
+         bool writeMessage = true);
 
   /*!
    * \brief Destructora
@@ -894,9 +929,34 @@ public:
    */
   uint64_t stop();
 
-  void setMessage(const char *msg);
+  void setMessage(const std::string &message);
 
 private:
+  
+  /*!
+   * Tiempo de inicio en milisegundos
+   */
+  uint64_t mTimeIni;
+
+  /*!
+   * Tiempo acumulado en milisegundos
+   */
+  uint64_t mAccumulated;
+
+  /*!
+   * \brief Estado del cronómetro
+   */
+  Status mStatus;
+
+  /*!
+   * \brief Mensaje de información opcional
+   */
+  std::string mMessage;
+
+  /*!
+   * \brief Escribe mensajes en log y consola
+   */
+  bool bWriteMessage;
 
 };
 
@@ -1013,7 +1073,7 @@ public:
   FileOptions();
   virtual ~FileOptions();
 
-  virtual const char *getOptions() = 0;
+  virtual const char *options() = 0;
 };
 
 /*!
@@ -1031,9 +1091,15 @@ public:
    */
   enum class Mode : int8_t
   {
-    Read,      /*!< Lectura */
-    Update,    /*!< Lectura y escritura. */
-    Create     /*!< Creación */
+    read,      /*!< Lectura */
+    update,    /*!< Lectura y escritura. */
+    create     /*!< Creación */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    Read   = read,     /*!< Lectura */
+    Update = update,   /*!< Lectura y escritura. */
+    Create = create    /*!< Creación */
+ #endif
   };
 
   /*!
@@ -1041,11 +1107,19 @@ public:
    */
   enum class Status : int8_t
   {
-    OPEN_OK,
-    OPEN_FAIL,
-    SAVE_OK,
-    SUCCESS,
-    FAILURE
+    open_ok,
+    open_fail,
+    save_ok,
+    success,
+    failure
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+    ,
+    OPEN_OK   = open_ok,
+    OPEN_FAIL = open_fail,
+    SAVE_OK   = save_ok,
+    SUCCESS   = success,
+    FAILURE   = failure
+#endif
   };
 
 protected:
@@ -1065,17 +1139,14 @@ public:
   File() : mFile("") {}
 
   //File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
-  File(const std::string &file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
+  File(const std::string &file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
 
   /*!
    * \brief Destructora
    */
   virtual ~File(){}
 
-  /*!
-   * \brief Cierra el fichero
-   */
-  virtual void close() = 0;
+
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -1086,7 +1157,12 @@ public:
    * \see Mode
    */
   //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
-  virtual Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
+  virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
+ 
+  /*!
+   * \brief Cierra el fichero
+   */
+  virtual void close() = 0;
 
   /*!
    * \brief Guarda una copia con otro nonbre
@@ -1110,7 +1186,7 @@ public:
    */
   Csv();
 
-  Csv(const char *file, Mode mode = Mode::Update);
+  Csv(const char *file, Mode mode = Mode::update);
 
   Csv(const Csv &csv);
 
@@ -1147,7 +1223,7 @@ public:
    * \return
    * \see Mode
    */
-  Status open(const std::string &file, Mode mode = Mode::Update, FileOptions *options = nullptr) override;
+  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
 
   /*!
    * \brief Lee un registro de la tabla
@@ -1233,43 +1309,42 @@ private:
 /*! \} */ // end of utilities
 
 
-#ifdef HAVE_GDAL
+//#ifdef HAVE_GDAL
 
 /*!
- * \brief Clase singleton para registrar los drivers de GDAL
+ * \brief Clase para registrar los drivers de GDAL
  *
  */
-class TL_EXPORT RegisterGdal
-{
-private:
+//class TL_EXPORT RegisterGdal
+//{
+//private:
+//
+//  static std::unique_ptr<RegisterGdal> sRegisterGdal;
+//  static std::mutex sMutex;
+//
+//  /*!
+//   * \brief Constructor privado
+//   */
+//  RegisterGdal() {}
+//
+//public:
+//
+//  ~RegisterGdal() {}
+//
+//  // Se impide la copia y asignación
+//  RegisterGdal(RegisterGdal const&) = delete;
+//  void operator=(RegisterGdal const&) = delete;
+//
+//  /*!
+//   * \brief Método para iniciar GDAL una unica vez
+//   */
+//  static void init();
+//
+//};
+//
+//#endif // HAVE_GDAL
 
-  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-  static std::mutex sMutex;
 
-  /*!
-   * \brief Constructor privado
-   */
-  RegisterGdal() {}
-
-public:
-
-  ~RegisterGdal() {}
-
-  // Se impide la copia y asignación
-  RegisterGdal(RegisterGdal const&) = delete;
-  void operator=(RegisterGdal const&) = delete;
-
-  /*!
-   * \brief Método para iniciar GDAL una unica vez
-   */
-  static void init();
-
-};
-
-#endif // HAVE_GDAL
-
-
-
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_UTILS_H

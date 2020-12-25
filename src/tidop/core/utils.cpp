@@ -18,11 +18,11 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-#ifdef HAVE_GDAL
+/* #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // HAVE_GDAL */
 
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>
@@ -45,7 +45,13 @@ TL_DEFAULT_WARNINGS
 #  include <thread>
 #endif
 
-namespace TL
+#if (__cplusplus >= 201703L)
+namespace fs = std::filesystem;
+#else
+namespace fs = boost::filesystem;
+#endif
+
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
@@ -113,9 +119,9 @@ int createDir(const char *path)
   if (isDirectory(path)) return 1;
 
   std::vector<std::string> splitPath;
-  TL::split(path, splitPath, "\\");
+  split(path, splitPath, "\\");
   if (splitPath.size() == 1)
-    TL::split(path, splitPath, "/");
+    split(path, splitPath, "/");
 
   std::string _path = "";
   try {
@@ -276,6 +282,7 @@ int changeFileName(const char *path, const char *newName, char *pathOut, int siz
   return r_err;
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size)
 {
   int r_err = 0;
@@ -292,6 +299,7 @@ int changeFileExtension(const char *path, const char *newExt, char *pathOut, int
 #endif
   return r_err;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size)
 {
@@ -351,6 +359,7 @@ void directoryList(const char *directory, std::list<std::string> *dirList)
 #endif
 }
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard)
 {
@@ -384,6 +393,7 @@ void fileList(const char *directory, std::list<std::string> *fileList, const cha
 #endif
 }
 TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /// https://stackoverflow.com/questions/1257721/can-i-use-a-mask-to-iterate-files-in-a-directory-with-boost
 void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
@@ -395,8 +405,8 @@ void fileList(const std::string &directory, std::list<std::string> *fileList, co
     if (!fs::is_regular_file(it->status())) continue;
 
     std::smatch what;
-
-    if (!std::regex_match(it->path().filename().string(), what, filter)) continue;
+    std::string fname = it->path().filename().string();
+    if (!std::regex_match(fname, what, filter)) continue;
 
     // File matches, store it
     if (fileList)
@@ -613,12 +623,12 @@ bool Path::isFile()
 
 void Path::createDir()
 {
-  TL::createDir(toString().c_str());
+  tl::createDir(toString().c_str());
 }
 
 void Path::deleteDir()
 {
-  TL::deleteDir(toString().c_str());
+  tl::deleteDir(toString().c_str());
 }
 
 Path &Path::append(const std::string &dir)
@@ -746,17 +756,17 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   return r_err;
 }
 
-int stringToInteger(const std::string &text, TL::Base base)
+int stringToInteger(const std::string &text, Base base)
 {
   std::istringstream ss(text);
   switch (base) {
-  case TL::Base::OCTAL:
+  case Base::octal:
     ss.setf(std::ios_base::oct, std::ios::basefield);
     break;
-  case TL::Base::DECIMAL:
+  case Base::decimal:
     ss.setf(std::ios_base::dec, std::ios::basefield);
     break;
-  case TL::Base::HEXADECIMAL:
+  case Base::hexadecimal:
     ss.setf(std::ios_base::hex, std::ios::basefield);
     break;
   default:
@@ -772,71 +782,71 @@ int stringToInteger(const std::string &text, TL::Base base)
 
 #ifdef HAVE_OPENCV
 
-void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
-{
-  cv::FileStorage fs(file, cv::FileStorage::READ);
-  fs["image_width"] >> imageSize.width;
-  fs["image_height"] >> imageSize.height;
-  fs["camera_matrix"] >> cameraMatrix;
-  fs["distortion_coefficients"] >> distCoeffs;
-  fs.release();
-}
-
-int loadBinMat(const char *file, cv::Mat *data)
-{
-  FILE *fp = std::fopen(file, "rb");
-  if (!fp) {
-    return 1;
-  }
-  int i_ret = 0;
-  //cabecera
-  int32_t rows;
-  int32_t cols;
-  int32_t type;
-  try {
-    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
-    err = std::fread(&cols, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
-    err = std::fread(&type, sizeof(int32_t), 1, fp);
-    TL_THROW_ASSERT(err != 1, "Reading error")
-    //Cuerpo
-    cv::Mat aux(rows, cols, type);
-    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
-    TL_THROW_ASSERT(err != rows*cols, "Reading error")
-    aux.copyTo(*data);
-  } catch (std::exception &e) {
-    msgError(e.what());
-    i_ret = 1;
-  }
-  std::fclose(fp);
-  return i_ret;
-}
-
-int saveBinMat(const char *file, cv::Mat &data)
-{
-  FILE* fp = std::fopen(file, "wb");
-  if (!fp) {
-    return 1;
-  }
-  int i_ret = 0;
-  //cabecera
-  int32_t rows = data.rows;
-  int32_t cols = data.cols;
-  int32_t type = data.type();
-  try {
-    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
-    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
-    std::fwrite(&type, sizeof(int32_t), 1, fp);
-    //Cuerpo
-    std::fwrite(data.data, sizeof(float), rows*cols, fp);
-  } catch (std::exception &e) {
-    msgError(e.what());
-    i_ret = 1;
-  }
-  std::fclose(fp);
-  return i_ret;
-}
+//void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
+//{
+//  cv::FileStorage fs(file, cv::FileStorage::READ);
+//  fs["image_width"] >> imageSize.width;
+//  fs["image_height"] >> imageSize.height;
+//  fs["camera_matrix"] >> cameraMatrix;
+//  fs["distortion_coefficients"] >> distCoeffs;
+//  fs.release();
+//}
+//
+//int loadBinMat(const char *file, cv::Mat *data)
+//{
+//  FILE *fp = std::fopen(file, "rb");
+//  if (!fp) {
+//    return 1;
+//  }
+//  int i_ret = 0;
+//  //cabecera
+//  int32_t rows;
+//  int32_t cols;
+//  int32_t type;
+//  try {
+//    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    err = std::fread(&cols, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    err = std::fread(&type, sizeof(int32_t), 1, fp);
+//    TL_ASSERT(err != 1, "Reading error")
+//    //Cuerpo
+//    cv::Mat aux(rows, cols, type);
+//    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
+//    TL_ASSERT(err != rows*cols, "Reading error")
+//    aux.copyTo(*data);
+//  } catch (std::exception &e) {
+//    msgError(e.what());
+//    i_ret = 1;
+//  }
+//  std::fclose(fp);
+//  return i_ret;
+//}
+//
+//int saveBinMat(const char *file, cv::Mat &data)
+//{
+//  FILE* fp = std::fopen(file, "wb");
+//  if (!fp) {
+//    return 1;
+//  }
+//  int i_ret = 0;
+//  //cabecera
+//  int32_t rows = data.rows;
+//  int32_t cols = data.cols;
+//  int32_t type = data.type();
+//  try {
+//    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
+//    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
+//    std::fwrite(&type, sizeof(int32_t), 1, fp);
+//    //Cuerpo
+//    std::fwrite(data.data, sizeof(float), rows*cols, fp);
+//  } catch (std::exception &e) {
+//    msgError(e.what());
+//    i_ret = 1;
+//  }
+//  std::fclose(fp);
+//  return i_ret;
+//}
 
 #endif // HAVE_OPENCV
 
@@ -859,8 +869,9 @@ uint32_t getOptimalNumberOfThreads()
 #endif
 }
 
-void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
+void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f)
 {
+  TL_TODO("Tiene que ser una plantilla")
   //uint64_t time_ini = getTickCount();
 #ifdef HAVE_OMP
   //TODO: Sin probar
@@ -876,8 +887,8 @@ void parallel_for(size_t ini, size_t end, std::function<void(int)> f)
   Concurrency::parallel_for(ini, end, f);
 #else
 
-  auto f_aux = [&](int ini, int end) {
-    for (int r = ini; r < end; r++) {
+  auto f_aux = [&](size_t ini, size_t end) {
+    for (size_t r = ini; r < end; r++) {
       f(r);
     }
   };
@@ -940,30 +951,38 @@ uint64_t getTickCount()
   return tickCount();
 }
 
-Chrono::Chrono(const char *msg, bool writeMsg)
+Chrono::Chrono()
   : mTimeIni(0),
     mAccumulated(0),
-    mStatus(Chrono::Status::START),
-    mMessage(msg),
-    bWriteMsg(writeMsg)
+    mStatus(Chrono::Status::start),
+    mMessage(""),
+    bWriteMessage(false)
 {
-  //run();
+}
+
+Chrono::Chrono(const std::string &message,
+               bool writeMessage)
+  : mTimeIni(0),
+    mAccumulated(0),
+    mStatus(Chrono::Status::start),
+    mMessage(message),
+    bWriteMessage(writeMessage)
+{
 }
 
 Chrono::~Chrono()
 {
-  if (mStatus == Status::RUNNING || mStatus == Status::PAUSE) {
+  if (mStatus == Status::running || mStatus == Status::pause) {
     stop();
   }
-  mStatus = Status::FINALIZED;
+  mStatus = Status::finalized;
 }
 
 uint64_t Chrono::pause()
 {
-  if (mStatus == Status::RUNNING) {
+  if (mStatus == Status::running) {
     mAccumulated += tickCount() - mTimeIni;
-    mStatus = Status::PAUSE;
-    //if (bWriteMsg) msgDebug("Chrono paused");
+    mStatus = Status::pause;
   }
   return mAccumulated;
 }
@@ -972,17 +991,15 @@ void Chrono::reset()
 {
   mTimeIni = 0;
   mAccumulated = 0;
-  mStatus = Status::START;
+  mStatus = Status::start;
   mMessage = "";
-  //if (bWriteMsg) msgDebug("Chrono reset");
 }
 
 void Chrono::resume()
 {
-  if (mStatus == Status::PAUSE) {
+  if (mStatus == Status::pause) {
     mTimeIni = tickCount();
-    mStatus = Status::RUNNING;
-    //if (bWriteMsg) msgDebug("Chrono resume");
+    mStatus = Status::running;
   }
 }
 
@@ -990,30 +1007,32 @@ uint64_t Chrono::run()
 {
   mTimeIni = tickCount();
   mAccumulated = 0;
-  mStatus = Status::RUNNING;
-  //if (bWriteMsg) msgDebug("Chrono run");
+  mStatus = Status::running;
   return mTimeIni;
 }
 
 uint64_t Chrono::stop()
 {
   uint64_t time;
-  if (mStatus == Status::RUNNING) {
+  if (mStatus == Status::running) {
     time = tickCount() - mTimeIni + mAccumulated;
-    mStatus = Status::STOPPED;
-  } else if (mStatus == Status::PAUSE) {
+    mStatus = Status::stopped;
+  } else if (mStatus == Status::pause) {
     // Puede estar pausado y querer terminar
-    mStatus = Status::STOPPED;
+    mStatus = Status::stopped;
     time = mAccumulated;
   } else
     time = 0;
-  if (bWriteMsg) msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time / 1000.);
+
+  if (bWriteMessage) 
+    msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time / 1000.);
+  
   return time;
 }
 
-void Chrono::setMessage(const char *msg)
+void Chrono::setMessage(const std::string &message)
 {
-  mMessage = msg;
+  mMessage = message;
 }
 
 
@@ -1151,12 +1170,12 @@ Csv::Status Csv::create(const std::string &header)
 {
   if (!fs.is_open()) {
     msgError("No se ha abierto el archivo %s", mFile.c_str());
-    return Status::FAILURE;
+    return Status::failure;
   }
 
-  if (mMode != Mode::Create) {
+  if (mMode != Mode::create) {
     msgError("Utilice el modo 'Create' al abrir el archivo");
-    return Status::FAILURE;
+    return Status::failure;
   }
 
   //setName(File::mName.c_str());
@@ -1170,9 +1189,9 @@ Csv::Status Csv::create(const std::string &header)
       if (i != size - 1) fs << ";";
     }
     fs << std::endl;
-    return Status::SUCCESS;
+    return Status::success;
   } else
-    return Status::FAILURE;
+    return Status::failure;
 }
 
 //Csv::Status Csv::create(const DataTable &dataTable)
@@ -1214,9 +1233,9 @@ Csv::Status Csv::create(const std::string &header)
 Csv::Status Csv::createCopy(const std::string &fileOut)
 {
   Csv csv;
-  csv.open(fileOut, Mode::Create);
+  csv.open(fileOut, Mode::create);
   //csv.create(std::make_shared<TableHeader>(getTableHeader()));
-  return Status::FAILURE;
+  return Status::failure;
 }
 
 Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
@@ -1228,36 +1247,34 @@ Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
 
   //fs::path _path(file);
   //fs::path ext = _path.extension().string();
-  if (boost::iequals(fs::extension(file), ".csv") == false) return Status::OPEN_FAIL;
+  
+  if (boost::iequals(fs::path(file).extension().string(), ".csv") == false) return Status::open_fail;
 
   std::ios_base::openmode _mode;
   switch (mMode) {
-  case Mode::Read:
+  case Mode::read:
     _mode = std::fstream::in;
     break;
-  case Mode::Update:
+  case Mode::update:
     _mode = std::fstream::in | std::fstream::out | std::fstream::app;
     break;
-  case Mode::Create:
+  case Mode::create:
     _mode = std::fstream::out | std::fstream::trunc;
-    break;
-  default:
-    _mode = std::fstream::in | std::fstream::out;
     break;
   }
 
   fs.open(file, _mode);
 
   if (fs.is_open()) {
-    if (mMode == Mode::Create) {
+    if (mMode == Mode::create) {
       char dir[TL_MAX_PATH];
       if ( getFileDriveDir(file.c_str(), dir, TL_MAX_PATH) == 0 )
-        if ( createDir(dir) == -1) return Status::OPEN_FAIL;
+        if ( createDir(dir) == -1) return Status::open_fail;
     }
-    return Status::OPEN_OK;
+    return Status::open_ok;
   } else {
     msgError("File open failed: %s", std::strerror(errno));
-    return Status::OPEN_FAIL;
+    return Status::open_fail;
   }
 }
 
@@ -1293,7 +1310,7 @@ Csv::Status Csv::write(const std::vector<std::string> &_register)
     if (i != size -1) fs << ";";
   }
   fs << std::endl;
-  return Status::SUCCESS;
+  return Status::success;
 }
 
 //Csv::Status Csv::load(std::shared_ptr<TableRegister> _register)
@@ -1442,25 +1459,28 @@ Compression::Status Compression::decompress()
 
 
 
-#ifdef HAVE_GDAL
-
-/* ---------------------------------------------------------------------------------- */
-
-std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
-std::mutex RegisterGdal::sMutex;
-
-void RegisterGdal::init()
-{
-  if (sRegisterGdal.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
-    if (sRegisterGdal.get() == nullptr) {
-      sRegisterGdal.reset(new RegisterGdal());
-      GDALAllRegister();
-    }
-  }
-}
-
-#endif
 
 
-} // End namespace TL
+//#ifdef HAVE_GDAL
+//
+///* ---------------------------------------------------------------------------------- */
+//
+//std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
+//std::mutex RegisterGdal::sMutex;
+//
+//void RegisterGdal::init()
+//{
+//  if (sRegisterGdal.get() == nullptr) {
+//    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
+//    if (sRegisterGdal.get() == nullptr) {
+//      sRegisterGdal.reset(new RegisterGdal());
+//      GDALAllRegister();
+//    }
+//  }
+//}
+//
+//#endif
+
+
+} // End namespace tl
+

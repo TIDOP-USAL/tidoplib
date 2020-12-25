@@ -16,7 +16,7 @@ TL_DEFAULT_WARNINGS
 #endif
 
 
-namespace TL
+namespace tl
 {
 
 namespace graph
@@ -27,21 +27,21 @@ namespace graph
 
 GraphicEntity::GraphicEntity(Type type)
   : GraphicStyle(),
-    GData(),
+    //GData(),
     mEntityType(type)
 {
 }
 
 GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
   : GraphicStyle(graphicEntity),
-    GData(graphicEntity),
+    //GData(graphicEntity),
     mEntityType(graphicEntity.mEntityType)
 {
 }
 
 GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
   : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
-    GData(std::forward<GData>(graphicEntity)),
+    //GData(std::forward<GData>(graphicEntity)),
     mEntityType(std::move(graphicEntity.mEntityType))
 {
 }
@@ -54,7 +54,7 @@ GraphicEntity &GraphicEntity::operator = (const GraphicEntity &graphicEntity)
 { 
   if (this != &graphicEntity) {
     GraphicStyle::operator=(graphicEntity);
-    GData::operator=(graphicEntity);
+    //GData::operator=(graphicEntity);
     mEntityType = graphicEntity.mEntityType;
   }
   return *this;
@@ -64,7 +64,7 @@ GraphicEntity &GraphicEntity::operator = (GraphicEntity &&graphicEntity) TL_NOEX
 { 
   if (this != &graphicEntity) {
     GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
-    GData::operator=(std::forward<GData>(graphicEntity));
+    //GData::operator=(std::forward<GData>(graphicEntity));
     mEntityType = std::move(graphicEntity.mEntityType);
   }
   return *this;
@@ -75,7 +75,15 @@ GraphicEntity::Type GraphicEntity::type() const
   return mEntityType;
 }
 
+std::shared_ptr<experimental::TableRegister> graph::GraphicEntity::data() const
+{
+  return mData;
+}
 
+void GraphicEntity::setData(std::shared_ptr<experimental::TableRegister> &data)
+{
+  mData = data;
+}
 
 
 } // Fin namespace graph

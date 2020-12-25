@@ -23,7 +23,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 
-namespace TL
+namespace tl
 {
 
 /*!
@@ -32,6 +32,53 @@ namespace TL
 class TL_EXPORT Exception
   : public std::exception
 {
+
+public:
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+  /*!
+   * \brief Constructor
+   * \deprecated Usar Exception(const std::string &error)
+   */
+  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
+  explicit Exception(const char *error);
+
+  /*!
+   * \brief Constructor
+   */
+  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
+  explicit Exception(const char *error, const char *file, int line, const char *function);
+
+#endif
+
+  /*!
+   * \brief Constructor
+   */
+  explicit Exception(const std::string &error);
+
+  /*!
+   * \brief Constructor
+   */
+  explicit Exception(const std::string &error, const std::string &file, int line, const std::string &function);
+
+  /*!
+   * \brief destructor
+   */
+  virtual ~Exception() TL_NOEXCEPT override {}
+
+  /*!
+   * \brief Descripción del error
+   */
+  virtual const char *what() const TL_NOEXCEPT override;
+
+  std::string file() const;
+  std::string function() const;
+  int line() const;
+
+private:
+
+  void messagef();
+
 protected:
 
   /*!
@@ -58,32 +105,6 @@ protected:
    * \brief Mensaje de error
    */
   std::string mMessage;
-
-public:
-
-  /*!
-   * \brief Constructor
-   */
-  explicit Exception(const char *error);
-
-  /*!
-   * \brief Constructor
-   */
-  explicit Exception(const char *error, const char *file, int line, const char *function);
-
-  /*!
-   * \brief destructor
-   */
-  virtual ~Exception() TL_NOEXCEPT {}
-
-  /*!
-   * \brief Descripción del error
-   */
-  virtual const char *what() const TL_NOEXCEPT;
-
-private:
-
-  void messagef();
 };
 
 //TL_EXPORT void throw_exception(const char *error, const char *file = nullptr, int line = -1, const char *function = nullptr);
@@ -101,26 +122,32 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 #endif
 
 
-} // fin namespace TL 
+} // fin namespace tl
 
 
-
-#ifdef _DEBUG
-#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
-#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION)
+//#ifdef TL_MESSAGE_HANDLER
+//#ifdef _DEBUG
+#define TL_ERROR(...) tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_ERROR(...) throw tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
 //https://www.softwariness.com/articles/assertions-in-cpp/
 //#define TL_THROW_ASSERT(EXPRESSION, ...) if(!(EXPRESSION)) { throw Exception(#EXPRESSION MessageManager::Message(__VA_ARGS__).getMessage(), __FILE__, __LINE__, TL_FUNCTION); }
-#define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
+#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
 
-#else
-#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
-#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).getMessage())
+//#else
+//#define TL_ERROR(...) make_exception(MessageManager::Message(__VA_ARGS__).message())
+//#define TL_THROW_ERROR(...) throw make_exception(MessageManager::Message(__VA_ARGS__).message())
+//
+////https://www.softwariness.com/articles/assertions-in-cpp/
+//#define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR(#EXPRESSION MESSAGE); }
+//
+//#endif
+//#else  // End TL_MESSAGE_HANDLER
 
-//https://www.softwariness.com/articles/assertions-in-cpp/
-#define TL_THROW_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR(#EXPRESSION MESSAGE); }
-
-#endif
-
+//#define TL_ERROR(...)
+//#define TL_THROW_ERROR(...)
+//#define TL_THROW_ASSERT(EXPRESSION, MESSAGE)
+//
+//#endif
 
 #endif // TL_CORE_EXCEPTION_H

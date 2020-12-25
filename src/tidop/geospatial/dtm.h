@@ -11,13 +11,11 @@
 
 #include "tidop/core/messages.h"
 #include "tidop/geometry/entities/window.h"
+#include "tidop/geospatial/dtminterpolation.h"
 
 
-namespace TL
+namespace tl
 {
-
-
-/* ---------------------------------------------------------------------------------- */
 
 namespace geospatial
 {
@@ -28,77 +26,65 @@ class Dtm
 
 public:
 
-  enum class Interpolation : uint8_t
-  {
-    LINEAR,
-    NEAREST
-  };
-protected:
+  Dtm(std::shared_ptr<Interpolation> algorithm);
+  Dtm(Interpolation::Algorithm algorithm);
+  Dtm(const std::string &algorithm);
+  ~Dtm();
 
-  Interpolation mInterpolation;
-  double mResolution;
-  geometry::WindowD mLimits;
+  //Interpolation interpolation() const;
+  void setBoundingBox(const WindowD &bbox);
+  void setResolution(double xResolution, double yResolution);
+  void setCRS(const std::string &epsgCode);
 
-public:
-
-  Dtm(Interpolation interpolation);
-  virtual ~Dtm();
-
-  Interpolation interpolation() const;
-
-  virtual void compute() = 0;
-
-  virtual void setResolution(double res) = 0;
-
-};
-
-
-
-class DtmLinear
-  : public Dtm
-{
+  void compute(const std::string &fileIn, const std::string &fileOut);
 
 protected:
 
-  double mRadius;
+  std::shared_ptr<Interpolation> mInterpolation;
+  WindowD mBbox;
+  double mXResolution;
+  double mYResolution;
+  std::string mEPSGCode;
 
-public:
-
-  DtmLinear(double radius = 0.0);
-  ~DtmLinear() override;
-
-  void compute() override;
-
-  void setResolution(double res) override;
-};
-
-
-
-class DtmNearest
-  : public Dtm
-{
-
-protected:
-
-  double mRadius1;
-  double mRadius2;
-  double mAngle;
-
-public:
-
-  DtmNearest(double radius1 = 0.0, double radius2 = 0.0, double angle = 0.0);
-  ~DtmNearest() override;
-
-  void compute() override;
-
-  void setResolution(double res) override;
+  //psOptions->pszFormat = nullptr;
+  //psOptions->bQuiet = true;
+  //psOptions->pfnProgress = GDALDummyProgress;
+  //psOptions->pProgressData = nullptr;
+  //psOptions->papszLayers = nullptr;
+  //psOptions->pszBurnAttribute = nullptr;
+  //psOptions->dfIncreaseBurnValue = 0.0;
+  //psOptions->dfMultiplyBurnValue = 1.0;
+  //psOptions->pszWHERE = nullptr;
+  //psOptions->pszSQL = nullptr;
+  //psOptions->eOutputType = GDT_Float64;
+  //psOptions->papszCreateOptions = nullptr;
+  //psOptions->nXSize = 0;
+  //psOptions->nYSize = 0;
+  //psOptions->dfXMin = 0.0;
+  //psOptions->dfXMax = 0.0;
+  //psOptions->dfYMin = 0.0;
+  //psOptions->dfYMax = 0.0;
+  //psOptions->bIsXExtentSet = false;
+  //psOptions->bIsYExtentSet = false;
+  //psOptions->eAlgorithm = GGA_InverseDistanceToAPower;
+  //psOptions->pOptions = nullptr;
+  //psOptions->pszOutputSRS = nullptr;
+  //psOptions->poSpatialFilter = nullptr;
+  //psOptions->poClipSrc = nullptr;
+  //psOptions->bClipSrc = false;
+  //psOptions->pszClipSrcDS = nullptr;
+  //psOptions->pszClipSrcSQL = nullptr;
+  //psOptions->pszClipSrcLayer = nullptr;
+  //psOptions->pszClipSrcWhere = nullptr;
+  //psOptions->bNoDataSet = false;
+  //psOptions->dfNoDataValue = 0;
 };
 
 
 } // End namespace geospatial
 
 
-} // End namespace TL
+} // End namespace tl
 
 
 #endif // TL_GEOSPATIAL_CRS_H

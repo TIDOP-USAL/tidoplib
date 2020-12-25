@@ -17,15 +17,15 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/utility.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/utility.hpp"
+//#endif
 
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal_priv.h"
-TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+//#ifdef HAVE_GDAL
+//TL_SUPPRESS_WARNINGS
+//#include "gdal_priv.h"
+//TL_DEFAULT_WARNINGS
+//#endif // HAVE_GDAL
 
 #include <cstdarg>
 #if defined WIN32
@@ -37,58 +37,48 @@ TL_DEFAULT_WARNINGS
 #include <cstdio>
 #include <iostream>
 #include <fstream>
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
 
 
-namespace TL
+
+namespace tl
 {
 
 #ifdef TL_MESSAGE_HANDLER
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-
-#ifdef HAVE_OPENCV
-// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
-int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
-{
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), MessageLevel::MSG_ERROR, file_name, line, func_name);
-  return 0;
-}
-
-#endif // HAVE_OPENCV
-
-#ifdef HAVE_GDAL
-// Manejador de eventos para GDAL 
-void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
-{
-  MessageLevel ml;
-  if (err == CE_Debug) {
-    ml = MessageLevel::MSG_DEBUG;
-  } else if (err == CE_Warning) {
-    ml = MessageLevel::MSG_WARNING;
-  } else if (err == CE_Failure) {
-    ml = MessageLevel::MSG_ERROR;
-  } else if (err == CE_Fatal) {
-    ml = MessageLevel::MSG_ERROR;
-  } else {
-    ml = MessageLevel::MSG_INFO;
-  }
-  MessageManager::release(MessageManager::Message(err_msg).getMessage(), ml);
-  return;
-}
-#endif // HAVE_GDAL
-
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+//TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
+//
+//#ifdef HAVE_OPENCV
+//// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
+//int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
+//{
+//  MessageManager::release(MessageManager::Message(err_msg).message(), MessageLevel::msg_error, file_name, line, func_name);
+//  return 0;
+//}
+//
+//#endif // HAVE_OPENCV
+//
+//#ifdef HAVE_GDAL
+//// Manejador de eventos para GDAL 
+//void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
+//{
+//  MessageLevel ml;
+//  if (err == CE_Debug) {
+//    ml = MessageLevel::msg_debug;
+//  } else if (err == CE_Warning) {
+//    ml = MessageLevel::msg_warning;
+//  } else if (err == CE_Failure) {
+//    ml = MessageLevel::msg_error;
+//  } else if (err == CE_Fatal) {
+//    ml = MessageLevel::msg_error;
+//  } else {
+//    ml = MessageLevel::msg_info;
+//  }
+//  MessageManager::release(MessageManager::Message(err_msg).message(), ml);
+//  return;
+//}
+//#endif // HAVE_GDAL
+//
+//TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 static struct _msgProperties _msgTemplate[] = {   
@@ -115,7 +105,7 @@ MessageManager::~MessageManager()
   sObjMessage.release();
 }
 
-MessageManager &MessageManager::getInstance()
+MessageManager &MessageManager::instance()
 {
   if (sObjMessage.get() == nullptr) {
     std::lock_guard<std::mutex> lck(MessageManager::sMutex);
@@ -141,16 +131,16 @@ void MessageManager::addListener(Listener *listener)
 }
 
 ///TODO: esto puede que estuviese mejor fuera
-void MessageManager::initExternalHandlers()
-{
-#ifdef HAVE_OPENCV
-  cv::redirectError(handleError);
-#endif // HAVE_OPENCV
-
-#ifdef HAVE_GDAL
-  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
-#endif // HAVE_GDAL
-}
+//void MessageManager::initExternalHandlers()
+//{
+//#ifdef HAVE_OPENCV
+//  cv::redirectError(handleError);
+//#endif // HAVE_OPENCV
+//
+//#ifdef HAVE_GDAL
+//  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
+//#endif // HAVE_GDAL
+//}
 
 void MessageManager::pause()
 {
@@ -159,29 +149,13 @@ void MessageManager::pause()
 
 void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
 {
-  getInstance();
+  MessageManager::instance();
 
   if (sStopHandler) return;
 
   // Bloqueo aqui para evitar problemas entre hilos
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-//  char date[64];
-//  struct tm _tm;
-//  std::time_t now = std::time(NULL);
-//#ifdef __STDC_LIB_EXT1__
-//  _tm = *std::localtime_s(&now, &_tm);
-//#else
-//  _tm = *std::localtime(&now);
-//#endif
 
-//  //localtime_s(&_tm, &now);
-
-//  //if (_tm) {
-//    std::strftime(date, sizeof(date), "%d/%b/%Y %H:%M:%S", &_tm);
-//  //} else {
-//  //  //strcpy(date, "NULL");
-//  //  strcpy_s(date, sizeof date, "NULL");
-//  //}
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
   char buf[1000];
@@ -198,16 +172,16 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   #endif
 
   switch (level) {
-  case TL::MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     sObjMessage->onDebug(buf, date.c_str());
     break;
-  case TL::MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     sObjMessage->onInfo(buf, date.c_str());
     break;
-  case TL::MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     sObjMessage->onWarning(buf, date.c_str());
     break;
-  case TL::MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     sObjMessage->onError(buf, date.c_str());
     break;
   default:
@@ -217,36 +191,36 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
 
 void MessageManager::release(const Message &msg)
 {
-  getInstance();
+  MessageManager::instance();
   
   if (sStopHandler) return;
 
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
   std::string msg_out;
-  if (msg.getLine() == -1 && strcmp(msg.getFile(), "") == 0 && strcmp(msg.getFunction(), "") == 0) {
-    msg_out = msg.getMessage();
+  if (msg.line() == -1 && strcmp(msg.file(), "") == 0 && strcmp(msg.function(), "") == 0) {
+    msg_out = msg.message();
   } else {
     char buf[1000];
 #if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
+    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
 #else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.getMessage(), msg.getFile(), msg.getLine(), msg.getFunction());
+    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
 #endif
     msg_out =  std::string(buf);
   }
 
-  switch (msg.getLevel()) {
-  case TL::MessageLevel::MSG_DEBUG:
-    sObjMessage->onDebug(msg_out.c_str(), msg.getDate());
+  switch (msg.level()) {
+  case MessageLevel::msg_debug:
+    sObjMessage->onDebug(msg_out.c_str(), msg.date());
     break;
-  case TL::MessageLevel::MSG_INFO:
-    sObjMessage->onInfo(msg_out.c_str(), msg.getDate());
+  case MessageLevel::msg_info:
+    sObjMessage->onInfo(msg_out.c_str(), msg.date());
     break;
-  case TL::MessageLevel::MSG_WARNING:
-    sObjMessage->onWarning(msg_out.c_str(), msg.getDate());
+  case MessageLevel::msg_warning:
+    sObjMessage->onWarning(msg_out.c_str(), msg.date());
     break;
-  case TL::MessageLevel::MSG_ERROR:
-    sObjMessage->onError(msg_out.c_str(), msg.getDate());
+  case MessageLevel::msg_error:
+    sObjMessage->onError(msg_out.c_str(), msg.date());
     break;
   default:
     break;
@@ -309,16 +283,16 @@ _msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
 {
   int iLevel = 0;
   switch (msgLevel) {
-  case TL::MessageLevel::MSG_DEBUG:
+  case MessageLevel::msg_debug:
     iLevel = 0;
     break;
-  case TL::MessageLevel::MSG_INFO:
+  case MessageLevel::msg_info:
     iLevel = 1;
     break;
-  case TL::MessageLevel::MSG_WARNING:
+  case MessageLevel::msg_warning:
     iLevel = 2;
     break;
-  case TL::MessageLevel::MSG_ERROR:
+  case MessageLevel::msg_error:
     iLevel = 3;
     break;
   default:
@@ -333,45 +307,33 @@ _msgProperties MessageManager::messageProperties(MessageLevel msgLevel)
 MessageManager::Listener::Listener(bool add)
 {
   if (add) {
-    MessageManager::getInstance().addListener(this);
+    MessageManager::instance().addListener(this);
   }
 }
 
 MessageManager::Listener::~Listener()
 {
-  MessageManager::getInstance().removeListener(this);
+  MessageManager::instance().removeListener(this);
 }
 
 /* ---------------------------------------------------------------------------------- */
 
 
 MessageManager::Message::Message(const char *msg, ...)
-  : mLevel(MessageLevel::MSG_ERROR),
+  : mLevel(MessageLevel::msg_error),
     mFile(""), 
     mLine(-1),
     mFunction("")
 {
   try {
-//    char date[64];
-//    std::time_t now = std::time(NULL);
-//    //std::tm *_tm = std::localtime(&now);
-//    struct tm _tm;
-//    localtime_s(&_tm, &now); //TODO: no es localtime_s de c++ 11.
 
-//    //if (_tm) {
-//      std::strftime(date, sizeof(date), sTimeLogFormat.c_str()/*"%d/%b/%Y %H:%M:%S"*/, &_tm);
-//    //} else {
-//    //  //strcpy(date, "NULL");
-//    //  strcpy_s(date, sizeof date, "NULL");
-//    //}
-//    mDate = date;
-    mDate = TL::formatTimeToString("%d/%b/%Y %H:%M:%S");
+    mDate = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     char buf[500];
     memset(buf, 0, sizeof(buf));
     std::string aux(msg);
-    TL::replaceString(&aux, "% ", "%% ");
-    TL::replaceString(&aux, "%(\s)", "%%");
+    replaceString(&aux, "% ", "%% ");
+    replaceString(&aux, "%(\s)", "%%");
     va_list args;
     va_start(args, msg);
 #ifdef _MSC_VER
@@ -387,36 +349,36 @@ MessageManager::Message::Message(const char *msg, ...)
   }
 }
 
-const char *MessageManager::Message::getDate() const
+const char *MessageManager::Message::date() const
 {
   return mDate.c_str();
 }
 
-const char *MessageManager::Message::getFile() const
+const char *MessageManager::Message::file() const
 {
   return mFile.c_str();
 }
-    
-const char *MessageManager::Message::getFunction() const
+
+const char *MessageManager::Message::function() const
 {
   return mFunction.c_str();
 }
 
-MessageLevel MessageManager::Message::getLevel() const
+MessageLevel MessageManager::Message::level() const
 {
   return mLevel;
 }
 
-int MessageManager::Message::getLine() const
+int MessageManager::Message::line() const
 {
   return mLine;
 }
 
-const char *MessageManager::Message::getMessage() const
+const char *MessageManager::Message::message() const
 {
   return mMessage.c_str();
 }
-    
+
 void MessageManager::Message::setTimeLogFormat( const char *timeTemplate)
 {
   sTimeLogFormat = timeTemplate;
@@ -437,128 +399,48 @@ void MessageManager::Message::setMessageProperties(const MessageLevel &level, co
 
 #endif  // TL_MESSAGE_HANDLER
 
-/* ---------------------------------------------------------------------------------- */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 
-std::unique_ptr<Log> Log::sObjLog;
-std::string Log::sLogFile = "";
-EnumFlags<MessageLevel> Log::sLevel = MessageLevel::MSG_ERROR;
-std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
-std::mutex Log::mtx;
-
-Log::Log()
-#ifdef TL_MESSAGE_HANDLER  
-  : MessageManager::Listener(false)
-#endif
+MessageManager &MessageManager::getInstance()
 {
-}
-
-Log::~Log() 
-{
-  sObjLog.release();
-}
-
-Log &Log::getInstance()
-{
-  if (sObjLog.get() == nullptr) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    if (sObjLog.get() == nullptr) {
-      sObjLog.reset(new Log());
+  if (sObjMessage.get() == nullptr) {
+    std::lock_guard<std::mutex> lck(MessageManager::sMutex);
+    if (sObjMessage.get() == nullptr) {
+      sObjMessage.reset(new MessageManager());
     }
   }
-  return *sObjLog;
+  return *sObjMessage;
 }
 
-EnumFlags<MessageLevel> Log::getLogLevel() const
+const char *MessageManager::Message::getDate() const
 {
-  return sLevel;
+  return mDate.c_str();
 }
 
-void Log::setLogFile(const char* file)
+const char *MessageManager::Message::getFile() const
 {
-  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
-  TL_TODO("Comprobar si tiene permisos de escritura")
-  sLogFile = file;
+  return mFile.c_str();
 }
 
-void Log::setLogLevel(MessageLevel level)
+const char *MessageManager::Message::getFunction() const
 {
-  sLevel = level;
+  return mFunction.c_str();
 }
 
-void Log::write(const char *msg)
+MessageLevel MessageManager::Message::getLevel() const
 {
-
-  std::string date = TL::formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-  if (sLogFile.empty()) {
-    // Log por defecto
-    fs::path logPath(getRunfile());
-    logPath.replace_extension(".log");
-    sLogFile = logPath.string();
-  }
-  std::ofstream hLog(sLogFile,std::ofstream::app);
-  if (hLog.is_open()) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << msg << "\n";
-    hLog.close();
-  } else {
-    msgError("Permission denied: %s", sLogFile.c_str());
-  }
+  return mLevel;
 }
 
-#ifdef TL_MESSAGE_HANDLER  
-
-void Log::onMsgDebug(const char *msg, const char *date)
+int MessageManager::Message::getLine() const
 {
-  if (sLevel.isActive(MessageLevel::MSG_DEBUG)) {
-    _write(msg, date);
-  }
+  return mLine;
 }
 
-void Log::onMsgInfo(const char *msg, const char *date)
+const char *MessageManager::Message::getMessage() const
 {
-  if (sLevel.isActive(MessageLevel::MSG_INFO)) {
-    _write(msg, date);
-  }
+  return mMessage.c_str();
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
-void Log::onMsgWarning(const char *msg, const char *date)
-{
-  if (sLevel.isActive(MessageLevel::MSG_WARNING)) {
-    _write(msg, date);
-  }
-}
-
-void Log::onMsgError(const char *msg, const char *date)
-{
-  if (sLevel.isActive(MessageLevel::MSG_ERROR)) {
-    _write(msg, date);
-  }
-}
-
-void Log::_write(const char *msg, const char *date)
-{
-  TL_TODO("Permitir que se pueda pausar la escritura de los mensajes en el log")
-  if (sLogFile.empty()) {
-    // Log por defecto
-    fs::path logPath(getRunfile());
-    logPath.replace_extension(".log");
-    sLogFile = logPath.string();
-  }
-  std::ofstream hLog(sLogFile,std::ofstream::app);
-  if (hLog.is_open()) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << msg << "\n";
-    hLog.close();
-  } else {
-    //Error al abrir/crear archivo. Se saca el error por consola
-    printf("The file %s was not opened\n", sLogFile.c_str());
-  }
-}
-
-
-#endif // TL_MESSAGE_HANDLER 
-
-
-
-} // End mamespace TL
+} // End mamespace tl

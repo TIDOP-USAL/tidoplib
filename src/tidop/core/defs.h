@@ -140,30 +140,30 @@
  * \brief Warning para informar que una función esta obsoleta
  * Se debe anteceder a la función obsoleta añadiendo el método que lo reemplaza:
  *
- * TL_DEPRECATED("newFunc(int a, float b)")
+ * TL_DEPRECATED("newFunc(int a, float b)", "2.0")
  * void oldFunc(int a, float b);
  *
  * En el caso de una clase o un enum se debe añadir entre class y el nombre de la clase:
  *
- * class TL_DEPRECATED(NewClass) OldClass
+ * class TL_DEPRECATED(NewClass, "2.0") OldClass
  * { ...
  *
  * En el caso de las funciones template:
  *
  * template<typename T> inline
- * TL_DEPRECATED("void newFunc(T a, T b)")
+ * TL_DEPRECATED("void newFunc(T a, T b)", "2.0")
  * void oldFunc(T a, T b);
  */
 //#if __cplusplus >= 201402L // c++ 14
 //#  define TL_DEPRECATED(msg)  [[deprecated("Use " msg " instead")]]
 //#else
 #  ifdef __GNUC__
-#    define TL_DEPRECATED(msg) __attribute__((deprecated("Use " msg " instead")))
+#    define TL_DEPRECATED(msg, version) __attribute__((deprecated(version " Use " msg " instead")))
 #  elif defined _MSC_VER
-#    define TL_DEPRECATED(msg) __declspec(deprecated("Deprecated: use " msg " instead"))
+#    define TL_DEPRECATED(msg, version) __declspec(deprecated("Deprecated in version " version ": use " msg " instead"))
 #  else
 #    pragma message("WARNING: You need to implement DEPRECATED for this compiler")
-#    define TL_DEPRECATED(msg)
+#    define TL_DEPRECATED(msg, version)
 #  endif
 //#endif
 
@@ -183,7 +183,7 @@
 #else
 // Ver si funciona _Pragma()... Da los errores:
 // /home/esteban/desarrollo/tidoplib/src/transform.h:331: error: _Pragma takes a parenthesized string literal
-// TL_COMPILER_WARNING("'compute' no esta soportado para TrfMultiple");
+// TL_COMPILER_WARNING("'compute' no esta soportado para TransformMultiple");
 //                                                                   ^
 // /home/esteban/desarrollo/tidoplib/src/core/defs.h:102: error: there are no arguments to '_Pragma' that depend on a template parameter, so a declaration of '_Pragma' must be available [-fpermissive]
 //  #  define TL_COMPILER_WARNING(msg) _Pragma(message( __FILE__ "(" STRING(__LINE__) "): warning(TIDOPLIB): " msg  ) )

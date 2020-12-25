@@ -14,10 +14,13 @@
 
 #include "tidop/core/exception.h"
 
-#if defined WIN32
-#include <atlstr.h>
-#endif
+#include <boost/filesystem.hpp>
 
+ //#if defined WIN32
+//#include <atlstr.h>
+//#endif
+#include <locale>
+#include <codecvt>
 
 //TODO: mirar
 //https://en.cppreference.com/w/cpp/error/nested_exception
@@ -26,26 +29,66 @@
 //https://github.com/GPMueller/mwe-cpp-exception
 //https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack
 
-namespace TL
+namespace fs = boost::filesystem;
+
+namespace tl
 {
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 Exception::Exception(const char *error)
-  : mError(error), mFile(""), mLine(-1), mFunction("")
+  : mError(error), 
+    mFile(""), 
+    mLine(-1), 
+    mFunction("")
 {
   messagef();
 }
 
-Exception::Exception(const char *error, const char *file, int line, const char *function )
+Exception::Exception(const char *error, const char *file, int line, const char *function)
   : mError(error), mFile(file), mLine(line), mFunction(function)
 {
+  messagef();
+}
+#endif
+
+Exception::Exception(const std::string & error)
+  : mError(error),
+    mFile(""),
+    mLine(-1),
+    mFunction("")
+{
+}
+
+Exception::Exception(const std::string &error, const std::string &file, int line, const std::string &function )
+  : mError(error), 
+    //mFile(file), 
+    mLine(line), 
+    mFunction(function)
+{
+  mFile = fs::path(file).filename().string();
   messagef();
 }
 
 const char *Exception::what() const TL_NOEXCEPT
 {
   return mMessage.c_str();
+}
+
+std::string tl::Exception::file() const
+{
+  return mFile;
+}
+
+std::string tl::Exception::function() const
+{
+  return mFunction;
+}
+
+int tl::Exception::line() const
+{
+  return mLine;
 }
 
 void Exception::messagef()
@@ -95,10 +138,13 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
                 sizeof(errorMessage)/sizeof(TCHAR),
                 NULL);
 
-  std::string strError = CW2A(errorMessage);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  std::string strError = converter.to_bytes(errorMessage);
+
+  //std::string strError = CW2A(errorMessage);
   return strError;
 }
 #endif
 
 
-} // End namespace TL
+} // End namespace tl
