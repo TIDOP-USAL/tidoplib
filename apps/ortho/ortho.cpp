@@ -270,19 +270,18 @@ int main(int argc, char** argv)
     ortho.run(photos, ortho_path, footprint_file);
 
 
-//    /// Fusión de ortos en un unico mosaico
-//    size_t num_images = photos.size();
-//    std::vector<cv::Point> corners(num_images);
-//    std::vector<cv::UMat> masks_warped(num_images);
-//    std::vector<cv::UMat> images_warped(num_images);
+    /// Fusión de ortos en un unico mosaico
+    size_t num_images = photos.size();
+    std::vector<cv::Point> corners(num_images);
+    std::vector<cv::UMat> masks_warped(num_images);
+    std::vector<cv::UMat> images_warped(num_images);
 //    std::vector<cv::Size> sizes(num_images);
 //    std::vector<cv::UMat> masks(num_images);
 //
 //    std::vector<cv::UMat> seam_est_imgs_;
 //
 //    // Prepare image masks
-//    for (size_t i = 0; i < num_images; ++i)
-//    {
+//    for (size_t i = 0; i < num_images; ++i) {
 //        masks[i].create(seam_est_imgs_[i].size(), CV_8U);
 //        masks[i].setTo(cv::Scalar::all(255));
 //    }
@@ -363,10 +362,10 @@ int main(int argc, char** argv)
 //    for (size_t i = 0; i < photos.size(); ++i)
 //        images_warped[i].convertTo(images_warped_f[i], CV_32F);
 //	
-//    /// 1 - Compensación de exposición
-//	
-//	int expos_comp_type = ExposureCompensator::GAIN_BLOCKS;
-//	
+    /// 1 - Compensación de exposición
+	
+	int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
+	
 ///*    
 //    if (string(argv[i + 1]) == "no")
 //      expos_comp_type = ExposureCompensator::NO;
@@ -382,8 +381,9 @@ int main(int argc, char** argv)
 //      cout << "Bad exposure compensation method\n";
 //      return -1;
 //    } */
-//			
-//    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+			
+    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+
 //    if (dynamic_cast<GainCompensator*>(compensator.get())){
 //        GainCompensator* gcompensator = dynamic_cast<GainCompensator*>(compensator.get());
 //        gcompensator->setNrFeeds(expos_comp_nr_feeds);
@@ -396,9 +396,14 @@ int main(int argc, char** argv)
 //        bcompensator->setNrGainsFilteringIterations(expos_comp_nr_filtering);
 //        bcompensator->setBlockSize(expos_comp_block_size, expos_comp_block_size);
 //    }
-//    
-//	compensator->feed(corners, images_warped, masks_warped);
-//	
+    
+  	compensator->feed(corners, images_warped, masks_warped);
+
+  
+    for (size_t i = 0; i < num_images; ++i) {
+
+    }
+
 //	
 //    /// 2 - Busqueda de costuras (seam finder)
 //

@@ -419,8 +419,8 @@ std::vector<Point3D> Orthorectification::terrainProjected(const std::vector<Poin
   std::vector<Point3D> terrainLimits(4);
 
   WindowD w(mDifferentialRectification->cameraPosition(), 
-            1 * mAffineDtmImageToTerrain.scaleX(), 
-            1 * mAffineDtmImageToTerrain.scaleY());
+            mAffineDtmImageToTerrain.scaleX(), 
+            mAffineDtmImageToTerrain.scaleY());
   cv::Mat image = mDtmReader->read(w);
   double z_ini = image.at<float>(0, 0);
   double z = z_ini;
@@ -436,8 +436,8 @@ std::vector<Point3D> Orthorectification::terrainProjected(const std::vector<Poin
       PointD pt(terrain_point.x, terrain_point.y);
       if (mWindowDtmTerrainExtension.containsPoint(terrain_point)) {
         w = WindowD(pt, 
-                    1 * mAffineDtmImageToTerrain.scaleX(), 
-                    1 * mAffineDtmImageToTerrain.scaleY());
+                    mAffineDtmImageToTerrain.scaleX(), 
+                    mAffineDtmImageToTerrain.scaleY());
         image = mDtmReader->read(w);
         if (!image.empty()) {
           z2 = image.at<float>(0, 0);

@@ -34,7 +34,7 @@ if(BUILD_SHARED_LIBS)
     target_link_libraries(tl_experimental tl_core)	
 						
   if(HAVE_LAPACKE)
-    target_link_libraries(tl_math ${LAPACKE_LIBRARIES})
+    target_link_libraries(tl_experimental ${LAPACKE_LIBRARIES})
   endif(HAVE_LAPACKE)
 
 else()
@@ -45,5 +45,7 @@ else()
 endif()
 
 install(DIRECTORY . 
-        DESTINATION include/experimental
+        DESTINATION include/tidop/experimental
         FILES_MATCHING PATTERN "*.h")
+
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_experimental)
