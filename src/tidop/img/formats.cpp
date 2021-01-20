@@ -260,7 +260,7 @@ void TiffOptions::init()
   mPhotometric = std::make_pair(Photometric::minisblack, Photometric::minisblack);
   mAlpha = std::make_pair(Alpha::unspecified, Alpha::unspecified);
   mProfile = std::make_pair(Profile::gdal_geotiff, Profile::gdal_geotiff);
-  mPixelType = std::make_pair(PixelType::default, PixelType::default);
+  mPixelType = std::make_pair(PixelType::def, PixelType::def);
   mGeotiffKeysFlavor = std::make_pair(GeotiffKeysFlavor::standard, GeotiffKeysFlavor::standard);
 }
 
@@ -452,7 +452,7 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
   if (all || mPixelType.first != mPixelType.second) {
     switch (mPixelType.second) {
-      case tl::TiffOptions::PixelType::default:
+      case tl::TiffOptions::PixelType::def:
         options["PIXELTYPE"] = "DEFAULT";
         break;
       case tl::TiffOptions::PixelType::signedbyte:

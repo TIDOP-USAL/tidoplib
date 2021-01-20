@@ -59,16 +59,11 @@ class QRDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
-  typedef typename T value_type;
-
-public:
-
   QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
   
   void update(const Vector<T, _rows> &u, const Vector<T, _rows> &v);
-  /// Jacobi rotations
   void jacobiRotation(int i, T a, T b);
 
   Matrix<T, _rows, _cols> q() const;
@@ -83,7 +78,7 @@ private:
 
 private:
 
-  TL_TODO("código duplicado de SingularValueDecomposition");
+  TL_TODO("código duplicado de SingularValueDecomposition")
   T sign(T a, T b)
   {
     return ((b) >= static_cast<T>(0) ? fabs(a) : -fabs(a));

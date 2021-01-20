@@ -42,7 +42,10 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(tl_geom PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 
-    target_link_libraries(tl_geom tl_core)
+    target_link_libraries(tl_geom tl_core tl_math)
+    if(HAVE_EIGEN)
+        target_link_libraries (tl_geom Eigen3::Eigen)
+    endif(HAVE_EIGEN)
 
 else()
 

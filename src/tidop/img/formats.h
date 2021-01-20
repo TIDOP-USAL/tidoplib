@@ -70,7 +70,7 @@ class ImageOptionsBase
 public:
 
   ImageOptionsBase(Format format);
-  ~ImageOptionsBase();
+  ~ImageOptionsBase() override;
 
   Format format() const override;
   std::map<std::string, std::string> options() const override;
@@ -160,7 +160,7 @@ public:
 
   enum class PixelType : uint8_t
   { 
-    default, 
+    def, //default
     signedbyte 
   };
 

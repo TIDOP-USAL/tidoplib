@@ -234,7 +234,7 @@ void Matching::getGoodMatches(const std::vector<cv::KeyPoint> &keyPoints1, const
     // Se calcula una transformación perspectiva y se van limpiando puntos
     //... Hay que revisar el valor de error medio cuadrático que se pone y
     //    la forma de ver la convergencia de la solución
-    TrfPerspective<cv::Point2f> trfPerps;
+    Perspective<cv::Point2f> trfPerps;
     std::vector<double> err;
     int it = 0;
     double rmse = trfPerps.rootMeanSquareError(pts1, pts2, &err);

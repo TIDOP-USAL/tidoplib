@@ -38,9 +38,9 @@ if(BUILD_SHARED_LIBS)
 						  
     target_link_libraries(tl_core ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
     
-  #if (HAVE_GDAL)
-  #     target_link_libraries(tl_core ${GDAL_LIBRARY})
-  #endif(HAVE_GDAL)
+    if (HAVE_GDAL)
+         target_link_libraries(tl_core ${GDAL_LIBRARY})
+    endif(HAVE_GDAL)
 
 else()
     install(TARGETS tl_core
@@ -49,10 +49,6 @@ else()
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
-#target_include_directories(
-#    tl_core PUBLIC
-#    "$<INSTALL_INTERFACE:include>"
-#)
 
 install(DIRECTORY .
         DESTINATION include/tidop/core

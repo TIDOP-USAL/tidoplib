@@ -480,7 +480,10 @@ Transform::Status Affine<Point_t>::transform(const Point_t &ptIn,
                                              Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
+  using sub_type = typename Point_t::value_type;
   sub_type x_aux = ptIn.x;
+
   try {
     if (trfOrder == Transform::Order::direct){
       ptOut.x = static_cast<sub_type>(a * x_aux + b * ptIn.y + tx);
@@ -493,6 +496,7 @@ Transform::Status Affine<Point_t>::transform(const Point_t &ptIn,
     msgError("Affine transformation error: %s", e.what());
     r_status = Transform::Status::failure;
   }
+
   return r_status; 
 }
 
@@ -501,14 +505,16 @@ Point_t Affine<Point_t>::transform(const Point_t &ptIn,
                                    Transform::Order trfOrder) const
 {
   Point_t r_pt;
+
+  using sub_type = typename Point_t::value_type;
   if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>(a * ptIn.x + b * ptIn.y + tx);
     r_pt.y = static_cast<sub_type>(c * ptIn.x + d * ptIn.y + ty);
-  }
-  else {
+  } else {
     r_pt.x = static_cast<sub_type>(ai * ptIn.x + bi * ptIn.y + txi);
     r_pt.y = static_cast<sub_type>(ci * ptIn.x + di * ptIn.y + tyi);
   }
+
   return r_pt;
 }
 

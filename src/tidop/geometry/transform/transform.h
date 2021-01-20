@@ -21,8 +21,10 @@
 
 #include <vector>
 #include <memory>
+#include <list>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/messages.h"
 
 namespace tl
 {
@@ -37,6 +39,7 @@ template<typename Point_t> class Helmert2D;
 template<typename Point_t> class Rotation;
 template<typename Point_t> class Affine;
 template<typename Point_t> class Translation;
+template<typename Point_t> class Perspective;
 
 /*!
  * \brief Interfaz Transform
@@ -131,7 +134,7 @@ public:
   /*!
    * \brief Tipo de dato basico. int, float o double
    */
-  typedef typename Point_t::value_type sub_type;
+  //typedef typename Point_t::value_type sub_type;
 
 public:
 
@@ -421,14 +424,7 @@ public:
    */
   typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::const_pointer const_pointer;
 
-  /*!
-   * \brief value_type&
-   */
   typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::reference reference;
-
-  /*!
-   * \brief const value_type&
-   */
   typedef typename std::list<std::shared_ptr<TransformBase<Point_t>>>::const_reference const_reference;
 
   /*!
@@ -507,7 +503,7 @@ private:
   /*!
    * \brief Lista de transformaciones
    */
-  std::list<std::shared_ptr<TransformBase<Point_t>>> mTransformationList;
+  std::list<std::shared_ptr<TransformBase<Point_t>>> mTransformations;
 
 };
 
@@ -516,106 +512,106 @@ private:
 
 template<typename Point_t>
 TransformMultiple<Point_t>::TransformMultiple()
-  : TransformBase<Point_t>(Type::multiple)
+  : TransformBase<Point_t>(Transform::Type::multiple)
 {
 }
 
 template<typename Point_t>
 TransformMultiple<Point_t>::TransformMultiple(std::initializer_list<std::shared_ptr<TransformBase<Point_t> > > transformations)
   : TransformBase<Point_t>(Transform::Type::multiple),
-    mTransformationList(transformations)
+    mTransformations(transformations)
 {
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::reference TransformMultiple<Point_t>::front()
 {
-  return mTransformationList.front();
+  return mTransformations.front();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::const_reference TransformMultiple<Point_t>::front() const
 {
-  return mTransformationList.front();
+  return mTransformations.front();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::reference TransformMultiple<Point_t>::back()
 {
-  return mTransformationList.back();
+  return mTransformations.back();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::const_reference TransformMultiple<Point_t>::back() const
 {
-  return mTransformationList.back();
+  return mTransformations.back();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::iterator TransformMultiple<Point_t>::begin() TL_NOEXCEPT
 {
-  return mTransformationList.begin();
+  return mTransformations.begin();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::const_iterator TransformMultiple<Point_t>::begin() const TL_NOEXCEPT
 {
-  return mTransformationList.cbegin();
+  return mTransformations.cbegin();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::iterator TransformMultiple<Point_t>::end() TL_NOEXCEPT
 {
-  return mTransformationList.end();
+  return mTransformations.end();
 }
 
 template<typename Point_t>
 typename TransformMultiple<Point_t>::const_iterator TransformMultiple<Point_t>::end() const TL_NOEXCEPT
 {
-  return mTransformationList.end();
+  return mTransformations.end();
 }
 
 template<typename Point_t>
 void TransformMultiple<Point_t>::push_back(const std::shared_ptr<TransformBase<Point_t>> &trf)
 {
-  mTransformationList.push_back(trf);
+  mTransformations.push_back(trf);
 }
 
 template<typename Point_t>
 void TransformMultiple<Point_t>::push_back(std::shared_ptr<TransformBase<Point_t>> &&trf) TL_NOEXCEPT
 {
-  mTransformationList.push_back(std::forward<std::shared_ptr<TransformBase<Point_t>>>(trf));
+  mTransformations.push_back(std::forward<std::shared_ptr<TransformBase<Point_t>>>(trf));
 }
 
 template<typename Point_t>
 void TransformMultiple<Point_t>::clear() TL_NOEXCEPT
 {
-  mTransformationList.clear();
+  mTransformations.clear();
 }
 
 template<typename Point_t>
 bool TransformMultiple<Point_t>::empty() const TL_NOEXCEPT
 {
-  return mTransformationList.empty();
+  return mTransformations.empty();
 }
 
 template<typename Point_t>
 size_t TransformMultiple<Point_t>::size() const
 {
-  return mTransformationList.size();
+  return mTransformations.size();
 }
 
 template<typename Point_t>
 void TransformMultiple<Point_t>::del(int id)
 {
-  mTransformationList.erase(mTransformationList.begin() + id);
+  mTransformations.erase(mTransformations.begin() + id);
 }
 
 template<typename Point_t> inline
 bool TransformMultiple<Point_t>::isNumberOfPointsValid(size_t npoints) const
 { 
   msgError("'isNumberOfPointsValid' is not supported for TransformMultiple");
-  TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TransformMultiple");
+  TL_COMPILER_WARNING("'isNumberOfPointsValid' is not supported for TransformMultiple")
   return true;
 }
 
@@ -626,7 +622,7 @@ Transform::Status TransformMultiple<Point_t>::compute(const std::vector<Point_t>
                                                       double *rmse)
 {
   msgError("'compute' is not supported for TransformMultiple");
-  TL_COMPILER_WARNING("'compute' is not supported for TransformMultiple");
+  TL_COMPILER_WARNING("'compute' is not supported for TransformMultiple")
   return Transform::Status::failure;
 }
 
@@ -639,7 +635,7 @@ Transform::Status TransformMultiple<Point_t>::transform(const Point_t &ptIn,
 
   Transform::Status r_status;
 
-  for (const auto &transformation : mTransformationList) {
+  for (const auto &transformation : mTransformations) {
     r_status = transformation->transform(ptOut, ptOut, trfOrder);
     if ( r_status == Transform::Status::failure ) break;
   }
@@ -653,7 +649,7 @@ Point_t TransformMultiple<Point_t>::transform(const Point_t &ptIn,
 {
   Point_t out = ptIn;
 
-  for (const auto &trf : transformation) {
+  for (const auto &transformation : mTransformations) {
     out = transformation->transform(out, trfOrder);
   }
 
@@ -669,7 +665,7 @@ Transform::Status TransformMultiple<Point_t>::transform(const std::vector<Point_
 
   Transform::Status r_status;
 
-  for (const auto &trf : transformation) {
+  for (const auto &transformation : mTransformations) {
     r_status = transformation->transform(ptsOut, ptsOut, trfOrder);
     if ( r_status == Transform::Status::failure ) break;
   }

@@ -39,9 +39,9 @@ TL_EXPORT bool gdalValidExtensions(const std::string &extension);
 TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
 
 /*!
- * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensión de archivo
- * Si la extensión no se correspondo con un driver disponible devuelve nulo.
- * \param ext Extensión del archivo
+ * \brief Devuelve el nombre del driver de GDAL correspondiente a una extensiÃ³n de archivo
+ * Si la extensiÃ³n no se correspondo con un driver disponible devuelve nulo.
+ * \param ext ExtensiÃ³n del archivo
  * \return Nombre del Driver de GDAL
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
@@ -59,7 +59,7 @@ TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
  * \param gdalType Tipo de GDAL
- * \param channels Número de canales
+ * \param channels NÃºmero de canales
  * \return Tipo de OpenCV
  */
 int gdalToOpenCv(GDALDataType gdalType, int channels);
@@ -111,7 +111,7 @@ private:
   static std::mutex sMutex;
 };
 
-#endif \\ HAVE_EDSDK
+#endif // HAVE_EDSDK
 
 
 } // End namespace tl

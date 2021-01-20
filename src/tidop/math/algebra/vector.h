@@ -627,31 +627,31 @@ Vector<T, _size>::Vector()
   
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(size_t size, T val)
-  : VectorBase(size, val)
+  : VectorBase<T, _size>(size, val)
 {
 }
  
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(const Vector &vector)
-  : VectorBase(vector)
+  : VectorBase<T, _size>(vector)
 {
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(Vector &&vector) TL_NOEXCEPT
-  : VectorBase(std::forward<VectorBase<T, _size>>(vector))
+  : VectorBase<T, _size>(std::forward<VectorBase<T, _size>>(vector))
 {
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(std::initializer_list<T> values)
-  : VectorBase(values)
+  : VectorBase<T, _size>(values)
 {
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(T *data, size_t size)
-  : VectorBase(data, size)
+  : VectorBase<T, _size>(data, size)
 {
 }
 
@@ -659,7 +659,7 @@ template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator=(const Vector<T, _size> &vector)
 {
   if (this != &vector) {
-    VectorBase::operator=(vector);
+    VectorBase<T, _size>::operator=(vector);
   }
   return (*this);
 }
@@ -668,7 +668,7 @@ template<typename T, size_t _size> inline
 Vector<T, _size> &Vector<T, _size>::operator=(Vector<T, _size> &&vector) TL_NOEXCEPT
 {
   if (this != &vector) {
-    VectorBase::operator=(std::forward<VectorBase<T, _size>>(vector));
+    VectorBase<T, _size>::operator=(std::forward<VectorBase<T, _size>>(vector));
   }
   return (*this);
 }
@@ -686,7 +686,7 @@ void Vector<T, _size>::normalize()
   if (length > static_cast<T>(0)) {
     *this /= length;
   } else {
-    for (size_t i = 0; i < mVector.size(); i++) {
+    for (size_t i = 0; i < this->mVector.size(); i++) {
       this->mVector[i] = static_cast<T>(0);
     }
   }

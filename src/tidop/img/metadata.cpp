@@ -408,7 +408,7 @@ public:
   {
   }
   
-  ~TiffMetadata()
+  ~TiffMetadata() override
   {
   }
 
@@ -450,7 +450,7 @@ public:
   {
   }
   
-  ~PngMetadata()
+  ~PngMetadata() override
   {
   }
 
@@ -485,7 +485,7 @@ public:
   {
   }
   
-  ~BmpMetadata()
+  ~BmpMetadata() override
   {
   }
 
@@ -508,7 +508,7 @@ public:
   {
   }
   
-  ~GifMetadata()
+  ~GifMetadata() override
   {
   }
 

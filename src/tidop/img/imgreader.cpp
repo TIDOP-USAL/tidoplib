@@ -73,7 +73,7 @@ public:
     this->close();
   }
 
-// Heredado vía ImageReader
+// Heredado vÃ­a ImageReader
 
   void open() override
   {
@@ -92,11 +92,11 @@ public:
       geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
     }
 
-    mAffine.setParameters(geotransform[1], 
-                          geotransform[2], 
-                          geotransform[4], 
-                          geotransform[5], 
-                          geotransform[0], 
+    mAffine.setParameters(geotransform[1],
+                          geotransform[2],
+                          geotransform[4],
+                          geotransform[5],
+                          geotransform[0],
                           geotransform[3]);
       
     const char *prj = mDataset->GetProjectionRef();
@@ -369,7 +369,7 @@ public:
     this->close();
   }
 
-// Heredado vía ImageReader
+// Heredado vÃ­a ImageReader
 
   void open() override
   {

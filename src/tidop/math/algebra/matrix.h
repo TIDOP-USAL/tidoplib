@@ -1018,37 +1018,37 @@ Matrix<T, _rows, _cols>::Matrix()
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(size_t rows, size_t cols)
-  : MatrixBase(rows, cols)
+  : MatrixBase<T, _rows, _cols>(rows, cols)
 {
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(size_t rows, size_t cols, T val)
-  : MatrixBase(rows, cols, val)
+  : MatrixBase<T, _rows, _cols>(rows, cols, val)
 {
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(const Matrix &matrix)
-  : MatrixBase(matrix)
+  : MatrixBase<T, _rows, _cols>(matrix)
 {
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(std::initializer_list<T> values)
-  : MatrixBase(values)
+  : MatrixBase<T, _rows, _cols>(values)
 {
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(T *data, size_t rows, size_t cols)
-  : MatrixBase(data, rows, cols)
+  : MatrixBase<T, _rows, _cols>(data, rows, cols)
 {
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(Matrix &&matrix) TL_NOEXCEPT
-  : MatrixBase(std::forward<MatrixBase<T, _rows, _cols>>(matrix))
+  : MatrixBase<T, _rows, _cols>(std::forward<MatrixBase<T, _rows, _cols>>(matrix))
 {
 }
 
@@ -1056,7 +1056,7 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator = (const Matrix &matrix)
 {
   if (this != &matrix) {
-    MatrixBase::operator=(matrix);
+    MatrixBase<T, _rows, _cols>::operator=(matrix);
   }
   return *this;
 }
@@ -1065,7 +1065,7 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator = (Matrix &&matrix) TL_NOEXCEPT
 {
   if (this != &matrix) {
-    MatrixBase::operator=(std::forward<MatrixBase<T, _rows, _cols>>(matrix));
+    MatrixBase<T, _rows, _cols>::operator=(std::forward<MatrixBase<T, _rows, _cols>>(matrix));
   }
   return *this;
 }

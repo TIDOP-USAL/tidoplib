@@ -23,7 +23,7 @@ target_link_libraries(${PROJECT_NAME}
                       tl_experimental
                       tl_vect
                       tl_graphic)
-					  
+
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 
                           ${OpenCV_LIBS})
@@ -56,7 +56,16 @@ if (UNIX)
                           -lpcre)
 endif()
 
-# Añade el proyecto de ejemplo a la carpeta 'examples'
+if(HAVE_LAPACKE)
+    target_link_libraries(${PROJECT_NAME}
+                          OpenBLAS::OpenBLAS)
+
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
+
+
+# AÃ±ade el proyecto de ejemplo a la carpeta 'examples'
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/footprint")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
