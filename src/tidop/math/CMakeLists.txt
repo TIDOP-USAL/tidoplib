@@ -1,5 +1,9 @@
 #Modulo Math de la librería
 
+if(MSVC)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
+endif(MSVC)
+
 add_library(tl_math ${LIB_TYPE}
             angles.cpp
             angles.h
@@ -27,6 +31,9 @@ add_library(tl_math ${LIB_TYPE}
 set_property(TARGET tl_math 
              PROPERTY FOLDER "modules")
 
+if(HAVE_EIGEN)
+    target_link_libraries (tl_math Eigen3::Eigen)
+endif(HAVE_EIGEN)
 
 if(HAVE_LAPACKE)
     add_definitions(-DHAVE_LAPACK_CONFIG_H)

@@ -6,8 +6,8 @@ add_library(tl_geospatial ${LIB_TYPE}
             crscache.cpp
             crscache.h
             crstransf.h
-            dtm.cpp
-            dtm.h
+            #dtm.cpp
+            #dtm.h
             util.cpp
             util.h
             ortho.cpp
@@ -38,7 +38,7 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(tl_geospatial PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 	
-    target_link_libraries(tl_geospatial tl_core tl_geom)
+    target_link_libraries(tl_geospatial tl_core tl_math tl_geom)
 	
 	  if (HAVE_GDAL)
         target_link_libraries(tl_geospatial ${GDAL_LIBRARY})
@@ -57,7 +57,7 @@ else()
     install(TARGETS tl_geospatial 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
 install(DIRECTORY . 

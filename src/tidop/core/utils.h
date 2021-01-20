@@ -25,6 +25,7 @@
 #include <thread>
 #include <list>
 #include <mutex>
+#include <numeric>
 
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
@@ -701,7 +702,7 @@ template <typename T> inline
 std::vector<int> sortIdx(const std::vector<T> &v)
 {
   std::vector<int> idx(v.size());
-  iota(idx.begin(), idx.end(), 0);
+  std::iota(idx.begin(), idx.end(), 0);
 
   sort(idx.begin(), idx.end(), [&v](int i1, int i2) {return v[i1] < v[i2]; });
 

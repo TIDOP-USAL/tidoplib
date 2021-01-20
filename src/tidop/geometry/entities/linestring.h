@@ -60,7 +60,7 @@ public:
   /*!
    * \brief Constructor que establece el tamaño de la polilínea
    */
-  LineString(size_type size);
+  LineString(size_t size);
 
   /*!
    * \brief Constructor de copia
@@ -123,7 +123,7 @@ LineString<Point_t>::LineString()
 }
 
 template<typename Point_t> inline
-LineString<Point_t>::LineString(size_type size)
+LineString<Point_t>::LineString(size_t size)
   : Entity(Entity::Type::linestring2d), 
     Entities2D<Point_t>(size) 
 {

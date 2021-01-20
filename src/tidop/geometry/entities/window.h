@@ -226,10 +226,6 @@ Window<Point_t>::Window(const Point_t &pt1,
     pt1(pt1), 
     pt2(pt2) 
 {
-  //this->pt1.x = std::min(pt1.x, pt2.x);
-  //this->pt1.y = std::min(pt1.y, pt2.y);
-  //this->pt2.x = std::max(pt1.x, pt2.x);
-  //this->pt2.y = std::max(pt1.y, pt2.y);
 }
     
 template<typename Point_t> template<typename T> inline
@@ -338,7 +334,6 @@ template<typename Point_t> inline
 Window<Point_t> &Window<Point_t>::operator = (Window &&window) TL_NOEXCEPT
 {
   if (this != &window) {
-    Entity::operator = (window);
     Entity::operator = (std::forward<Entity>(window));
     this->pt1 = std::move(window.pt1);
     this->pt2 = std::move(window.pt2);
@@ -453,7 +448,7 @@ typedef Window<Point<float>> WindowF;
 template<typename T> inline
 cv::Rect_<T> windowToCvRect(const Window<Point<T>> &w)
 {
-  return cv::Rect_<T>(point_cast<cv::Point_<T>>(w.pt1), point_cast<cv::Point_<T>>(w.pt2));
+  return cv::Rect_<T>(cv::Point_<T>(w.pt1.x, w.pt1.y), cv::Point_<T>(w.pt2.x, w.pt2.y));
 }
 
 /*!
@@ -572,7 +567,7 @@ bool operator == (const Window<Point_t> &window1, const Window<Point_t> &window2
 }
 
 template<typename Point_t> static inline
-bool operator != (const Window<Point_t> &rect1, const Window<Point_t> &rect2)
+bool operator != (const Window<Point_t> &window1, const Window<Point_t> &window2)
 {
   return (window1.pt1 != window2.pt1 || 
           window1.pt2 != window2.pt2);

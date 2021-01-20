@@ -19,9 +19,8 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-#include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/math/algebra/euler_angles.h"
-#include "tidop/math/algebra/rotations.h"
+#include "tidop/math/algebra/rotation_convert.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -498,16 +497,16 @@ Transform::Status Helmert3D<Point_t>::transform(const Point_t &ptIn,
   Point_t ptAux = ptIn;
   try {
     if (trfOrder == Transform::Order::direct){
-      ptOut.x = static_cast<sub_type>(mScale * (ptAux.x * mR[0][0] + ptAux.y * mR[0][1] + ptAux.z * mR[0][2]) + tx);
-      ptOut.y = static_cast<sub_type>(mScale * (ptAux.x * mR[1][0] + ptAux.y * mR[1][1] + ptAux.z * mR[1][2]) + ty);
-      ptOut.z = static_cast<sub_type>(mScale * (ptAux.x * mR[2][0] + ptAux.y * mR[2][1] + ptAux.z * mR[2][2]) + tz);
+      ptOut.x = static_cast<sub_type>(mScale * (ptAux.x * mR.at(0,0) + ptAux.y * mR.at(0,1) + ptAux.z * mR.at(0,2)) + tx);
+      ptOut.y = static_cast<sub_type>(mScale * (ptAux.x * mR.at(1,0) + ptAux.y * mR.at(1,1) + ptAux.z * mR.at(1,2)) + ty);
+      ptOut.z = static_cast<sub_type>(mScale * (ptAux.x * mR.at(2,0) + ptAux.y * mR.at(2,1) + ptAux.z * mR.at(2,2)) + tz);
     } else {
       sub_type dx = ptIn.x - tx; 
       sub_type dy = ptIn.y - ty; 
       sub_type dz = ptIn.z - tz;
-      ptOut.x = static_cast<sub_type>(mScale * (dx * mRinv[0][0] + dy * mRinv[0][1] + dz * mRinv[0][2]));
-      ptOut.y = static_cast<sub_type>(mScale * (dx * mRinv[1][0] + dy * mRinv[1][1] + dz * mRinv[1][2]));
-      ptOut.z = static_cast<sub_type>(mScale * (dx * mRinv[2][0] + dy * mRinv[2][1] + dz * mRinv[2][2]));
+      ptOut.x = static_cast<sub_type>(mScale * (dx * mRinv.at(0,0) + dy * mRinv.at(0,1) + dz * mRinv.at(0,2)));
+      ptOut.y = static_cast<sub_type>(mScale * (dx * mRinv.at(1,0) + dy * mRinv.at(1,1) + dz * mRinv.at(1,2)));
+      ptOut.z = static_cast<sub_type>(mScale * (dx * mRinv.at(2,0) + dy * mRinv.at(2,1) + dz * mRinv.at(2,2)));
     }
   } catch (std::exception &e ) {
     msgError("Error in Helmert 3D transformation: %s", e.what());
@@ -522,16 +521,16 @@ Point_t Helmert3D<Point_t>::transform(const Point_t &ptIn,
 {
   Point_t r_pt;
   if (trfOrder == Transform::Order::direct){
-    r_pt.x = static_cast<sub_type>(mScale * (ptIn.x * mR[0][0] + ptIn.y * mR[0][1] + ptIn.z * mR[0][2]) + tx);
-    r_pt.y = static_cast<sub_type>(mScale * (ptIn.x * mR[1][0] + ptIn.y * mR[1][1] + ptIn.z * mR[1][2]) + ty);
-    r_pt.z = static_cast<sub_type>(mScale * (ptIn.x * mR[2][0] + ptIn.y * mR[2][1] + ptIn.z * mR[2][2]) + tz);
+    r_pt.x = static_cast<sub_type>(mScale * (ptIn.x * mR.at(0,0) + ptIn.y * mR.at(0,1) + ptIn.z * mR.at(0,2)) + tx);
+    r_pt.y = static_cast<sub_type>(mScale * (ptIn.x * mR.at(1,0) + ptIn.y * mR.at(1,1) + ptIn.z * mR.at(1,2)) + ty);
+    r_pt.z = static_cast<sub_type>(mScale * (ptIn.x * mR.at(2,0) + ptIn.y * mR.at(2,1) + ptIn.z * mR.at(2,2)) + tz);
   } else {
     sub_type dx = ptIn.x - tx; 
     sub_type dy = ptIn.y - ty; 
     sub_type dz = ptIn.z - tz;
-    r_pt.x = static_cast<sub_type>(mScale * (dx * mRinv[0][0] + dy * mRinv[0][1] + dz * mRinv[0][2]));
-    r_pt.y = static_cast<sub_type>(mScale * (dx * mRinv[1][0] + dy * mRinv[1][1] + dz * mRinv[1][2]));
-    r_pt.z = static_cast<sub_type>(mScale * (dx * mRinv[2][0] + dy * mRinv[2][1] + dz * mRinv[2][2]));
+    r_pt.x = static_cast<sub_type>(mScale * (dx * mRinv.at(0,0) + dy * mRinv.at(0,1) + dz * mRinv.at(0,2)));
+    r_pt.y = static_cast<sub_type>(mScale * (dx * mRinv.at(1,0) + dy * mRinv.at(1,1) + dz * mRinv.at(1,2)));
+    r_pt.z = static_cast<sub_type>(mScale * (dx * mRinv.at(2,0) + dy * mRinv.at(2,1) + dz * mRinv.at(2,2)));
   }
   return r_pt;
 }

@@ -15,12 +15,12 @@ endif()
 add_executable(${PROJECT_NAME} imageinfo.cpp)
 
 target_link_libraries(${PROJECT_NAME} 
+                      tl_img
                       tl_core
                       tl_math
                       tl_geom
-                      tl_geospatial
-                      tl_img)
-					  
+                      tl_geospatial)
+
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 
                           ${OpenCV_LIBS})
@@ -53,6 +53,13 @@ if (UNIX)
                           -lpcre)
 endif()
 
+if(HAVE_LAPACKE)
+    target_link_libraries(${PROJECT_NAME}
+                          OpenBLAS::OpenBLAS)
+
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/imageinfo")
 

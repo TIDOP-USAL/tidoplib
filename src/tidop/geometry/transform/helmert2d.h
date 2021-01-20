@@ -443,7 +443,10 @@ Transform::Status Helmert2D<Point_t>::transform(const Point_t &ptIn,
                                                 Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
+  using sub_type = typename Point_t::value_type;
   sub_type x_aux = ptIn.x;
+
   try {
     if (trfOrder == Transform::Order::direct){
       ptOut.x = static_cast<sub_type>(a * x_aux - b * ptIn.y + tx);
@@ -458,6 +461,7 @@ Transform::Status Helmert2D<Point_t>::transform(const Point_t &ptIn,
           tl::MessageLevel::msg_error);
     r_status = Transform::Status::failure;
   }
+
   return r_status;
 }
 
@@ -465,6 +469,8 @@ template<typename Point_t> inline
 Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn, 
                                       Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   Point_t r_pt;
   if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>(a * ptIn.x - b * ptIn.y + tx);
@@ -473,6 +479,7 @@ Point_t Helmert2D<Point_t>::transform(const Point_t &ptIn,
     r_pt.x = static_cast<sub_type>(ai * ptIn.x - bi * ptIn.y + txi);
     r_pt.y = static_cast<sub_type>(bi * ptIn.x + ai * ptIn.y + tyi);
   }
+
   return r_pt;
 }
 
@@ -482,11 +489,13 @@ Transform::Status Helmert2D<Point_t>::transform(const std::vector<Point_t> &ptsI
                                                Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], ptsOut[i], trfOrder);
     if ( r_status == Transform::Status::failure ) break;
   }
+
   return r_status;
 }
 

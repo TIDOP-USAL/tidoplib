@@ -23,142 +23,36 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
-/* ---------------------------------------------------------------------------------- */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-//https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/07/euler-angles.pdf
-void eulerAngles(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa)
-{
-  //-sinOmega * cosPhi, cosOmega * cosPhi
-  if (omega) *omega = atan2(R[1][2], R[2][2]);
-  if (phi) *phi = atan2(-R[0][2], sqrt(R[0][0] * R[0][0] + R[0][1] * R[0][1]));
-  double s1 = sin(*omega);
-  double c1 = cos(*omega);
-  if (kappa) *kappa = atan2(s1 * R[2][0] - c1 * R[1][0], c1 * R[1][1] - s1 * R[2][1]);
-}
-
-//void eulerAngles2(const std::array<std::array<double, 3>, 3> &R, double *omega, double *phi, double *kappa) 
-//{ 
-//  float sy = sqrt(R[0][0] * R[0][0] + R[0][1] * R[0][1]);
-//  if (phi) *phi = atan2(-R[0][2], sy);
-//
-//  if (sy < 1e-6) {
-//    if (omega) *omega = atan2(-R[2][1], R[1][1]);
-//    if (kappa) *kappa = 0;
-//  } else {
-//    if (omega) *omega = atan2(R[1][2], R[2][2]);
-//    if (kappa) *kappa = atan2(R[0][1], R[0][0]);
-//  }
-//}
-
-void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX)
-{
-  double sinOmega = sin(rX);
-  double cosOmega = cos(rX);
-
-  (*RX)[0][0] = 1;
-  (*RX)[0][1] = 0;
-  (*RX)[0][2] = 0;
-  (*RX)[1][0] = 0;
-  (*RX)[1][1] = cosOmega;
-  (*RX)[1][2] = -sinOmega;
-  (*RX)[2][0] = 0;
-  (*RX)[2][1] = -sinOmega;
-  (*RX)[2][2] = cosOmega;
-}
-
-void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY)
-{
-  double sinPhi = sin(rY);
-  double cosPhi = cos(rY);
-
-  (*RY)[0][0] = cosPhi;
-  (*RY)[0][1] = 0;
-  (*RY)[0][2] = sinPhi;
-  (*RY)[1][0] = 0;
-  (*RY)[1][1] = 1;
-  (*RY)[1][2] = 0;
-  (*RY)[2][0] = -sinPhi;
-  (*RY)[2][1] = 0;
-  (*RY)[2][2] = cosPhi;
-}
-
-
-void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ)
-{
-  double sinKappa = sin(rZ);
-  double cosKappa = cos(rZ);
-
-  (*RZ)[0][0] = cosKappa;
-  (*RZ)[0][1] = -sinKappa;
-  (*RZ)[0][2] = 0;
-  (*RZ)[1][0] = sinKappa;
-  (*RZ)[1][1] = cosKappa;
-  (*RZ)[1][2] = 0;
-  (*RZ)[2][0] = 0;
-  (*RZ)[2][1] = 0;
-  (*RZ)[2][2] = 1;
-}
-
-
-void rotationMatrix(double omega, double phi, double kappa, std::array<std::array<double, 3>, 3> *R) 
-{ 
-  double sinOmega = sin(omega);
-  double cosOmega = cos(omega);
-  double sinPhi = sin(phi);
-  double cosPhi = cos(phi);
-  double sinKappa = sin(kappa);
-  double cosKappa = cos(kappa);
-
-  (*R)[0][0] = cosPhi * cosKappa;
-  (*R)[0][1] = -cosPhi * sinKappa;
-  (*R)[0][2] = sinPhi;
-  (*R)[1][0] = sinOmega * sinPhi * cosKappa + cosOmega * sinKappa;
-  (*R)[1][1] = cosOmega * cosKappa - sinOmega * sinPhi * sinKappa;
-  (*R)[1][2] = -sinOmega * cosPhi;
-  (*R)[2][0] = sinOmega * sinKappa - cosOmega * sinPhi * cosKappa;
-  (*R)[2][1] = cosOmega * sinPhi * sinKappa + sinOmega * cosKappa;
-  (*R)[2][2] = cosOmega * cosPhi;
-}
-#endif TL_ENABLE_DEPRECATED_METHODS
-/* ---------------------------------------------------------------------------------- */
-
-
-//#ifdef HAVE_OPENCV
-//
-//int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx)
-//{
-//  int iret = 1;
-//  if (in.empty() || in.channels() != 1) iret = -1;
-//  try {
-//    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
-//    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_ROW + cv::SortFlags::SORT_ASCENDING);
-//  } catch (std::exception &e) {
-//    msgError("%s", e.what());
-//    iret = -1;
-//  }
-//  return iret;
-//}
-//
-//int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx )
-//{
-//  int iret = 1;
-//  if (in.empty() || in.channels() != 1) iret = -1;
-//  try {
-//    cv::sortIdx(in, *idx, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
-//    cv::sort(in, *out, cv::SortFlags::SORT_EVERY_COLUMN + cv::SortFlags::SORT_ASCENDING);
-//  } catch (std::exception &e) {
-//    msgError("%s", e.what());
-//    iret = -1;
-//  }
-//  return iret;
-//}
-//
-//#endif
 
 /* ---------------------------------------------------------------------------------- */
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
 /* ---------------------------------------------------------------------------------- */
 
+void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
+{
+#ifdef HAVE_EIGEN
+  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
+  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
+  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#elif defined( HAVE_OPENCV)
+//  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
+//  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
+//  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
+//  cv::solve(A, B, C, cv::DECOMP_SVD);
+//  std::vector<double> v_aux;
+//  cvMatToVector(C, &v_aux);
+//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+#else
+  math::Matrix<double> A(a, nRows, nCols);
+  math::Vector<double> B(b, nRows);
+  math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+  math::Vector<double> C = svd.solve(B);
+  std::memcpy(c, C.data(), nCols*sizeof(double));
+#endif
+}
 
 void solveQR(int nRows, int nCols, double *a, double *b, double *c)
 {

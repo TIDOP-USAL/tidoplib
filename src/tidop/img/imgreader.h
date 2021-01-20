@@ -51,10 +51,10 @@ public:
   virtual void close() = 0;
 
   /*!
-   * \brief Lee un fragmento de imagen correspondiente a una regi髇
-   * \param[in] rect Regi髇 de la imagen que se carga. Por defecto toda la imagen
-   * \param[in] size Tama駉 de la imagen de salida. Por defecto el tama駉 de la regi髇 de lectura
-   * \param[out] trf Transformaci髇 que hay que aplicar a la imagen devuelta
+   * \brief Lee un fragmento de imagen correspondiente a una regi贸n
+   * \param[in] rect Regi贸n de la imagen que se carga. Por defecto toda la imagen
+   * \param[in] size Tama帽o de la imagen de salida. Por defecto el tama帽o de la regi贸n de lectura
+   * \param[out] trf Transformaci贸n que hay que aplicar a la imagen devuelta
    * \return imagen
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
@@ -62,11 +62,11 @@ public:
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!
-   * \brief Lee el fragmento de imagen correspondiente a una regi髇
-   * \param[in] scaleX Escala horizontal que se aplica a la regi髇 leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la regi髇 leida. Por defecto 1
-   * \param[in] rect Regi髇 de la imagen que se carga
-   * \param[out] trf Transformaci髇 que hay que aplicar a la imagen devuelta
+   * \brief Lee el fragmento de imagen correspondiente a una regi贸n
+   * \param[in] scaleX Escala horizontal que se aplica a la regi贸n leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la regi贸n leida. Por defecto 1
+   * \param[in] rect Regi贸n de la imagen que se carga
+   * \param[out] trf Transformaci贸n que hay que aplicar a la imagen devuelta
    * \return imagen
    */
   virtual cv::Mat read(double scaleX,
@@ -77,9 +77,9 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana
    * \param[in] window Ventana de la imagen que se quiere cargar
-   * \param[in] scaleX Escala horizontal que se aplica a la regi髇 leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la regi髇 leida. Por defecto 1
-   * \param[out] trf Transformaci髇 que hay que aplicar a la imagen devuelta
+   * \param[in] scaleX Escala horizontal que se aplica a la regi贸n leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la regi贸n leida. Por defecto 1
+   * \param[out] trf Transformaci贸n que hay que aplicar a la imagen devuelta
    */
   virtual cv::Mat read(const WindowI &window, 
                        double scaleX = 1.,
@@ -89,9 +89,9 @@ public:
   /*!
    * \brief Lee el fragmento de imagen correspondiente a una ventana en coordenadas terreno
    * \param[in] terrainWindow Ventana en coordenadas terreno de la imagen que se quiere cargar
-   * \param[in] scaleX Escala horizontal que se aplica a la regi髇 leida. Por defecto 1
-   * \param[in] scaleY Escala Vertical que se aplica a la regi髇 leida. Por defecto 1
-   * \param[out] trf Transformaci髇 que hay que aplicar a la imagen devuelta
+   * \param[in] scaleX Escala horizontal que se aplica a la regi贸n leida. Por defecto 1
+   * \param[in] scaleY Escala Vertical que se aplica a la regi贸n leida. Por defecto 1
+   * \param[out] trf Transformaci贸n que hay que aplicar a la imagen devuelta
    */
   virtual cv::Mat read(const Window<PointD> &terrainWindow, 
                        double scaleX = 1.,
@@ -99,20 +99,20 @@ public:
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!
-   * \brief Devuelve el n鷐ero de filas de la imagen
-   * \return N鷐ero de filas de la imagen
+   * \brief Devuelve el n煤mero de filas de la imagen
+   * \return N煤mero de filas de la imagen
    */
   virtual int rows() const = 0;
 
   /*!
-   * \brief Devuelve el n鷐ero de columnas de la imagen
-   * \return N鷐ero de columnas de la imagen
+   * \brief Devuelve el n煤mero de columnas de la imagen
+   * \return N煤mero de columnas de la imagen
    */
   virtual int cols() const = 0;
 
   /*!
-   * \brief Devuelve el n鷐ero de canales o bandas de la imagen
-   * \return N鷐ero de bandas de la imagen
+   * \brief Devuelve el n煤mero de canales o bandas de la imagen
+   * \return N煤mero de bandas de la imagen
    */
   virtual int channels() const = 0;
 
@@ -139,17 +139,17 @@ public:
    * \brief Georeferencia de la imagen
    * Los valores del array se corresponden con:
    * 1 - Coordenada X de la esquina superior izquierda
-   * 2 - Resoluci髇 en x
+   * 2 - Resoluci贸n en x
    * 3 - Giro x
    * 4 - Coordenada Y de la esquina superior izquierda
    * 5 - Giro y
-   * 6 - Resoluci髇 en y.
+   * 6 - Resoluci贸n en y.
    * \return Georeferencia
    */
   virtual Affine<PointD> georeference() const = 0;
 
   /*!
-   * \brief Sistema de referencia por su c骴igo EPSG
+   * \brief Sistema de referencia por su c贸digo EPSG
    */
   virtual std::string crs() const = 0;
 

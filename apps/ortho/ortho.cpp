@@ -18,6 +18,7 @@
 
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
+#include <tidop/core/exception.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/vect/vectwriter.h>
@@ -91,7 +92,7 @@ int main(int argc, char** argv)
 
     /// Carga de imagenes 
 
-    if (!fs::exists(image_list)) throw std::exception("Image list not found");
+    if (!fs::exists(image_list)) throw std::runtime_error("Image list not found");
 
     std::vector<std::string> images;
 
@@ -113,7 +114,7 @@ int main(int argc, char** argv)
           } else {
             std::string err = "Image not found: ";
             err.append(image);
-            throw std::exception(err.c_str());
+            throw std::runtime_error(err.c_str());
           }
 
         }
@@ -133,7 +134,7 @@ int main(int argc, char** argv)
 
     std::unique_ptr<ImageReader> imageReader;
 
-    if (!fs::exists(bundle_file)) throw std::exception("Bundle file not found");
+    if (!fs::exists(bundle_file)) throw std::runtime_error("Bundle file not found");
 
     ifs.open(bundle_file, std::ifstream::in);
     if (ifs.is_open()) {

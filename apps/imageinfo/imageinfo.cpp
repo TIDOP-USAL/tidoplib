@@ -14,7 +14,7 @@ using namespace tl;
 #endif
 
 /*!
- * read_image: 
+ * read_image:
  *
  *
  * uso:
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
       msgInfo("Numero de bandas: %i", imageReader->channels());
       msgInfo("Profundidad de color: %i", imageReader->depth());
       msgInfo("Dimensiones de la imagen: %ix%i", imageReader->cols(), imageReader->rows());
-      
+
       std::shared_ptr<ImageMetadata> image_metadata = imageReader->metadata();
       std::map<std::string, std::string> metadata = image_metadata->activeMetadata();
       std::string name;
@@ -94,9 +94,9 @@ int main(int argc, char** argv)
       //    temperatures.at<float>(r, c) = 0.04f * temp - 273.15f;
       //  }
       //});
-      
 
-      
+
+
 
       //tl::ImagingProcesses imagingProcesses;
       //imagingProcesses.push_back(std::make_shared<GaussianBlur>(cv::Size(3,3), 0));

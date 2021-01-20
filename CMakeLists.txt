@@ -105,7 +105,7 @@ if(MSVC)
 
   # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
-
+  
 endif()
 
 
@@ -250,9 +250,9 @@ if(WITH_BOOST)
         set(HAVE_BOOST YES)
 
     #if (WIN32)
-        #    add_definitions(-DBOOST_ALL_NO_LIB)
-        #    add_definitions(-DBOOST_ALL_DYN_LINK)
-        #endif()
+    #    add_definitions(-DBOOST_ALL_NO_LIB)
+    #    add_definitions(-DBOOST_ALL_DYN_LINK)
+    #endif()
 
     else()
       set(HAVE_BOOST NO)
@@ -285,13 +285,14 @@ endif(WITH_OPENCV)
 # ----------------------------------------------------------------------------
 if(WITH_EIGEN)
  
-  find_package(EIGEN3 QUIET)
-  if(NOT EIGEN3_FOUND)
+  find_package(Eigen3 QUIET NO_MODULE)
+  if(NOT Eigen3_FOUND)
     set(HAVE_EIGEN NO)
   else()
-    include_directories(${EIGEN3_INCLUDE_DIRS})
+    #include_directories(${Eigen3_INCLUDE_DIRS})
     set(HAVE_EIGEN YES)
   endif()
+
 
 endif(WITH_EIGEN)
 # ----------------------------------------------------------------------------

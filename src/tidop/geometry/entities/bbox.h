@@ -159,6 +159,8 @@ public:
    * \brief Comprueba si el cuadro delimitador esta vacio
    */
   bool isEmpty() const;
+  bool isValid() const;
+  void normalized();
 
   /*!
    * \brief Comprueba si un punto está contenido dentro del cuadro delimitador
@@ -208,14 +210,10 @@ BoundingBox<Point3_t>::BoundingBox(BoundingBox &&bbox) TL_NOEXCEPT
 template<typename Point3_t> inline
 BoundingBox<Point3_t>::BoundingBox(const Point3_t &pt1, 
                                    const Point3_t &pt2) 
-  : Entity(Entity::Type::bounding_box)
+  : Entity(Entity::Type::bounding_box),
+    pt1(std::move(pt1)),
+    pt2(std::move(pt2))
 {
-  this->pt1.x = std::min(pt1.x, pt2.x);
-  this->pt1.y = std::min(pt1.y, pt2.y);
-  this->pt1.z = std::min(pt1.z, pt2.z);
-  this->pt2.x = std::max(pt1.x, pt2.x);
-  this->pt2.y = std::max(pt1.y, pt2.y);
-  this->pt2.z = std::max(pt1.z, pt2.z);
 }
 
 template<typename Point3_t> template<typename T> inline
@@ -283,7 +281,7 @@ template<typename Point3_t> inline
 BoundingBox<Point3_t> &BoundingBox<Point3_t>::operator = (const BoundingBox &bbox)
 {
   if (this != &bbox) {
-    Entity::operator = (bbox.mEntityType);
+    Entity::operator = (bbox);
     this->pt1 = bbox.pt1;
     this->pt2 = bbox.pt2;
   }
@@ -357,6 +355,24 @@ bool BoundingBox<Point3_t>::isEmpty() const
           pt2.x == -std::numeric_limits<typename Point3_t::value_type>().max() &&
           pt2.y == -std::numeric_limits<typename Point3_t::value_type>().max() &&
           pt2.z == -std::numeric_limits<typename Point3_t::value_type>().max());
+}
+
+template<typename Point3_t>
+bool BoundingBox<Point3_t>::isValid() const
+{
+  return this->width() > static_cast<typename Point3_t::value_type>(0) &&
+         this->height() > static_cast<typename Point3_t::value_type>(0) &&
+      this->depth() > static_cast<typename Point3_t::value_type>(0);
+}
+
+template<typename Point3_t>
+void BoundingBox<Point3_t>::normalized()
+{
+  if (!this->isValid()) {
+    if (this->pt1.x > this->pt2.x) std::swap(this->pt1.x, this->pt2.x);
+    if (this->pt1.y > this->pt2.y) std::swap(this->pt1.y, this->pt2.y);
+    if (this->pt1.z > this->pt2.z) std::swap(this->pt1.z, this->pt2.z);
+  }
 }
 
 template<typename Point3_t> inline

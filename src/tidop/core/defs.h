@@ -21,6 +21,7 @@
 
 #include <limits>
 #include <cstdlib>
+#include <math.h>
 
 #ifdef __GNUC__
 #include <cstdio>
