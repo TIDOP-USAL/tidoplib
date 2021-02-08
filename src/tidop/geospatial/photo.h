@@ -5,14 +5,10 @@
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/experimental/camera.h"
+#include "tidop/geospatial/camera.h"
 
 namespace tl
 {
-
-namespace experimental
-{
-
 
 
 
@@ -21,7 +17,7 @@ class TL_EXPORT Photo
 
 public:
 
-  class Orientation
+  class TL_EXPORT Orientation
   {
 
   public:
@@ -147,8 +143,6 @@ protected:
   Photo::Orientation mOrientation;
 
 };
-
-} // namespace experimental
 
 } // namespace tl
 

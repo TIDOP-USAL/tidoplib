@@ -1067,12 +1067,12 @@ public:
 /*!
  * \brief Opciones del formato
  */
-class FileOptions
+class TL_EXPORT FileOptions
 {
 public:
 
-  FileOptions();
-  virtual ~FileOptions();
+  FileOptions() {}
+  virtual ~FileOptions() = default;
 
   virtual const char *options() = 0;
 };

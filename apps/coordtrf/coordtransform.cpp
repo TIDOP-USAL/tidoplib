@@ -76,10 +76,10 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  //Console &console = Console::instance();
-  //console.setTitle("Transform Example");
-  //console.setLogLevel(MessageLevel::msg_verbose);
-  //MessageManager::instance().addListener(&console);
+  Console &console = Console::instance();
+  console.setTitle("Transform Example");
+  console.setLogLevel(MessageLevel::msg_verbose);
+  MessageManager::instance().addListener(&console);
 
 
   std::string transform_name = cmd_list_transform.commandName();

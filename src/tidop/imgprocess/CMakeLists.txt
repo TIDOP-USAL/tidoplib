@@ -1,6 +1,8 @@
 # Modulo de procesamiento de imágenes
 
-add_library(tl_imgprocess ${LIB_TYPE}
+project(tl_imgprocess)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             anaglyph.cpp
             anaglyph.h
             colorconvert.cpp
@@ -28,28 +30,30 @@ add_library(tl_imgprocess ${LIB_TYPE}
             morphologicaloper.h)
   
 # Creates folder "libraries" and adds target project (math.vcproj)
-set_property(TARGET tl_imgprocess 
+set_property(TARGET ${PROJECT_NAME} 
              PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
-    install(TARGETS tl_imgprocess
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib) 
 			
-    set_target_properties(tl_imgprocess PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 
-    target_link_libraries(tl_imgprocess tl_core)
+    target_link_libraries(${PROJECT_NAME} 
+                          tl_core
+                          tl_graphic)
 	
 	if(HAVE_OPENCV)			
-        target_link_libraries(tl_imgprocess ${OpenCV_LIBS})	
+        target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})	
     endif(HAVE_OPENCV)
 	
 else()
-    install(TARGETS tl_imgprocess 
+    install(TARGETS ${PROJECT_NAME} 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -59,4 +63,4 @@ install(DIRECTORY .
         DESTINATION include/tidop/imgprocess
         FILES_MATCHING PATTERN "*.h")
         
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_imgprocess)       
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})       

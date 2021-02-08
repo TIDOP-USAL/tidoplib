@@ -4,6 +4,7 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/entities/multipoint.h"
 #include "tidop/graphic/entities/entity.h"
 
 namespace tl

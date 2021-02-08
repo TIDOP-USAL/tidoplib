@@ -1,4 +1,5 @@
-#Modulo img de la librería
+# Modulo img de la librería
+# Lectura y escritura de formatos raster
 
 if(MSVC)
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
@@ -43,8 +44,7 @@ if(BUILD_SHARED_LIBS)
     target_link_libraries(${PROJECT_NAME}
                           tl_core
                           tl_geom
-                          tl_math
-                          tl_geospatial)
+                          tl_math)
     if(HAVE_OPENCV)			
         target_link_libraries(${PROJECT_NAME}
                               ${OpenCV_LIBS})	
@@ -60,10 +60,12 @@ if(BUILD_SHARED_LIBS)
     endif(HAVE_EIGEN)
 
 else()
+
     install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+
 endif()
 
 install(DIRECTORY . 

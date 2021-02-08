@@ -5,8 +5,7 @@
 namespace tl
 {
 
-namespace experimental
-{
+
 	
 /// Cámaras predefinidas
 
@@ -443,7 +442,7 @@ std::shared_ptr<Calibration> CalibrationFactory::create(const std::string &camer
   return calibration;
 }
 
-std::shared_ptr<Calibration> tl::experimental::CalibrationFactory::create(Calibration::CameraModel cameraModel)
+std::shared_ptr<Calibration> tl::CalibrationFactory::create(Calibration::CameraModel cameraModel)
 {
   std::shared_ptr<Calibration> calibration;
   switch (cameraModel)
@@ -625,6 +624,5 @@ void Camera::init()
 {
 }
 
-} // namespace experimental
 
 } // namespace tl

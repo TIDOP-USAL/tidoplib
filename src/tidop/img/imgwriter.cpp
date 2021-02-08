@@ -401,12 +401,18 @@ public:
     }
   }
 
-  void setCRS(const geospatial::Crs &crs) override
+  //void setCRS(const geospatial::Crs &crs) override
+  //{
+  //  //mCRS.setEpsgCode(epsgCode);
+  //  
+  //  if (mDataset && crs.isValid()) {
+  //    this->setGdalProjection(crs);
+  //  }
+  //}
+  void setCRS(const std::string &epsgCode) override
   {
-    //mCRS.setEpsgCode(epsgCode);
-    
-    if (mDataset && crs.isValid()) {
-      this->setGdalProjection(crs);
+    if (mDataset) {
+      this->setGdalProjection(epsgCode);
     }
   }
 
@@ -430,18 +436,34 @@ private:
     mDataset->SetGeoTransform(geotransform.data());
   }
 
-  void setGdalProjection(const geospatial::Crs &crs)
+//  void setGdalProjection(const geospatial::Crs &crs)
+//  {
+//    //mDataset->SetProjection(mCRS.exportToProj().c_str());
+//    std::string wkt = crs.exportToWkt();
+//    mSpatialReference->importFromWkt(wkt.c_str());
+//#if GDAL_VERSION_MAJOR >= 3
+//    mDataset->SetSpatialRef(mSpatialReference);
+//#else
+//    mDataset->SetProjection(wkt.c_str());
+//#endif
+//  }
+  void setGdalProjection(const std::string &epsgCode)
   {
-    //mDataset->SetProjection(mCRS.exportToProj().c_str());
-    std::string wkt = crs.exportToWkt();
-    mSpatialReference->importFromWkt(wkt.c_str());
+    if (epsgCode.size() <= 5) return;
+    OGRErr err = mSpatialReference->importFromEPSG(std::stoi(epsgCode.substr(5)));
+    if (err != 0) {
+      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+    } else {
 #if GDAL_VERSION_MAJOR >= 3
-    mDataset->SetSpatialRef(mSpatialReference);
+      mDataset->SetSpatialRef(mSpatialReference);
 #else
-    mDataset->SetProjection(wkt.c_str());
+      char *prjin = nullptr;
+      mSpatialReference->exportToWkt(&prjin);
+      mDataset->SetProjection(prjin);
+      CPLFree(prjin);
 #endif
+    }
   }
-
 private:
 
   GDALDataset *mDataset;

@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE Tidop Point test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/point.h>
+#include <tidop/geometry/entities/multipoint.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
 #include <tidop/core/utils.h>

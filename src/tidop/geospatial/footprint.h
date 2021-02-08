@@ -4,8 +4,8 @@
 #include <string>
 #include <memory>
 
-#include "tidop/experimental/camera.h"
-#include "tidop/experimental/photo.h"
+#include "tidop/geospatial/camera.h"
+#include "tidop/geospatial/photo.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 
@@ -27,7 +27,7 @@ public:
 	Footprint(const std::string &dtm);
 	~Footprint();
 
-	void run(const std::vector<experimental::Photo> &photos,
+	void run(const std::vector<Photo> &photos,
 					 const std::string &footprint);
 
 private:
@@ -43,7 +43,7 @@ private:
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<VectorWriter> mVectorWriter;
-	experimental::Camera mCamera;
+	Camera mCamera;
 };
 
 

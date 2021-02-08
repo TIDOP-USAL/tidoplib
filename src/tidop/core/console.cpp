@@ -98,7 +98,15 @@ Console &Console::instance()
   return *sObjConsole;
 }
 
+EnumFlags<MessageLevel> Console::messageLevel()
+{
+  return sLevel;
+}
 
+void Console::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
 
 void Console::printMessage(const std::string &msg)
 {
@@ -118,7 +126,15 @@ void Console::printErrorMessage(const std::string &msg)
   reset();
 }
 
-
+void Console::reset()
+{
+#ifdef WIN32
+  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
+#else
+  sprintf(mCommand, "%c[0;m", 0x1B);
+  fprintf(mStream, "%s", mCommand);
+#endif
+}
 
 void Console::setConsoleBackgroundColor(Console::Color backColor,
                                         Console::Intensity intensity)
@@ -235,7 +251,22 @@ void Console::setFontBold(bool bBold)
   update();
 }
 
+void Console::setFontHeight(int16_t size)
+{
+#ifdef WIN32
+  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(size);
+#endif
+  update();
+}
 
+void Console::setTitle(const std::string &title)
+{
+#ifdef WIN32
+  SetConsoleTitleA(title.c_str());
+#else
+  //printf("%c]0;%s%c", '\033', title, '\007');
+#endif
+}
 
 #ifdef TL_MESSAGE_HANDLER 
 
@@ -412,7 +443,41 @@ Argument &Argument::operator = (Argument &&arg) TL_NOEXCEPT
   return *this;
 }
 
+std::string Argument::name() const
+{
+  return mName;
+}
+
+void Argument::setName(const std::string &name)
+{
+  mName = name;
+}
+
+std::string Argument::description() const
+{
+  return mDescription;
+}
+
+void Argument::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+char Argument::shortName() const
+{
+  return mShortName;
+}
+
+void Argument::setShortName(const char &shortName)
+{
+  mShortName = shortName;
+}
+
+
+
 /* ---------------------------------------------------------------------------------- */
+
+
 
 Command::Command()
   : mName(""),
@@ -452,6 +517,36 @@ Command::Command(const std::string &name, const std::string &description,
     mVersion("0.0.0"),
     mExamples()
 {
+}
+
+std::string Command::name() const
+{
+  return mName;
+}
+
+void Command::setName(const std::string &name)
+{
+  mName = name;
+}
+
+std::string Command::description() const
+{
+  return mDescription;
+}
+
+void Command::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+std::string Command::version() const
+{
+  return mVersion;
+}
+
+void Command::setVersion(const std::string &version)
+{
+  mVersion = version;
 }
 
 Command::Status Command::parse(int argc, const char * const argv[])
@@ -613,6 +708,52 @@ Command::Status Command::parse(int argc, const char * const argv[])
   return Command::Status::parse_success;
 }
 
+Command::iterator Command::begin() TL_NOEXCEPT
+{
+  return mCmdArgs.begin();
+}
+
+Command::const_iterator Command::begin() const TL_NOEXCEPT
+{
+  return mCmdArgs.cbegin();
+}
+
+Command::iterator Command::end() TL_NOEXCEPT
+{
+  return mCmdArgs.end();
+}
+
+Command::const_iterator Command::end() const TL_NOEXCEPT
+{
+  return mCmdArgs.cend();
+}
+
+void Command::push_back(const std::shared_ptr<Argument> &arg)
+{
+  mCmdArgs.push_back(arg);
+}
+
+void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
+{
+  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
+}
+
+void Command::clear() TL_NOEXCEPT
+{
+  mCmdArgs.clear();
+  mExamples.clear();
+}
+
+bool Command::empty() const TL_NOEXCEPT
+{
+  return mCmdArgs.empty();
+}
+
+size_t Command::size() const TL_NOEXCEPT
+{
+  return mCmdArgs.size();
+}
+
 Command &Command::operator=(const Command &command)
 {
   if (this != &command) {
@@ -633,6 +774,11 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
     this->mVersion = std::move(command.mVersion);
   }
   return (*this);
+}
+
+Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
+{
+  return mCmdArgs.erase(first, last);
 }
 
 void Command::showHelp() const
@@ -721,7 +867,10 @@ void Command::showLicence() const
   console.setFontBold(true);
 }
 
-
+void Command::addExample(const std::string &example)
+{
+  mExamples.push_back(example);
+}
 
 void Command::init()
 {
@@ -766,6 +915,36 @@ CommandList::CommandList(const std::string &name, const std::string &description
     mCommands(commands),
     mVersion("0.0.0")
 {
+}
+
+std::string CommandList::name() const
+{
+  return mName;
+}
+
+void CommandList::setName(const std::string &name)
+{
+  mName = name;
+}
+
+std::string CommandList::description() const
+{
+  return mDescription;
+}
+
+void CommandList::setDescription(const std::string &description)
+{
+  mDescription = description;
+}
+
+std::string CommandList::version() const
+{
+  return mVersion;
+}
+
+void CommandList::setVersion(const std::string &version)
+{
+  mVersion = version;
 }
 
 CommandList::Status CommandList::parse(int argc, const char * const argv[])
@@ -820,6 +999,56 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
   }
 
   return Status::parse_error;
+}
+
+CommandList::iterator CommandList::begin() TL_NOEXCEPT
+{
+  return mCommands.begin();
+}
+
+CommandList::const_iterator CommandList::begin() const TL_NOEXCEPT
+{
+  return mCommands.cbegin();
+}
+
+CommandList::iterator CommandList::end() TL_NOEXCEPT
+{
+  return mCommands.end();
+}
+
+CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
+{
+  return mCommands.cend();
+}
+
+void CommandList::push_back(const std::shared_ptr<Command> &cmd)
+{
+  mCommands.push_back(cmd);
+}
+
+void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
+}
+
+void CommandList::clear() TL_NOEXCEPT
+{
+  mCommands.clear();
+}
+
+bool CommandList::empty() const TL_NOEXCEPT
+{
+  return mCommands.empty();
+}
+
+CommandList::size_type CommandList::size() const TL_NOEXCEPT
+{
+  return mCommands.size();
+}
+
+CommandList::iterator CommandList::erase(CommandList::const_iterator first, CommandList::const_iterator last)
+{
+  return mCommands.erase(first, last);
 }
 
 CommandList &CommandList::operator=(const CommandList &cmdList)

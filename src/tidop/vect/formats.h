@@ -21,7 +21,8 @@ namespace tl
 /*!
  * \brief Opciones del formato
  */
-class TL_EXPORT VectorOptions : public FileOptions
+class TL_EXPORT VectorOptions 
+  : public FileOptions
 {
 
 public:

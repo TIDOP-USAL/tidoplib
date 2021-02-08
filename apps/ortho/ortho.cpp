@@ -24,9 +24,9 @@
 #include <tidop/vect/vectwriter.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
-#include <tidop/experimental/datamodel.h>
-#include <tidop/experimental/camera.h>
-#include <tidop/experimental/photo.h>
+#include <tidop/graphic/datamodel.h>
+#include <tidop/geospatial/camera.h>
+#include <tidop/geospatial/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/ortho.h>
 
@@ -127,7 +127,7 @@ int main(int argc, char** argv)
 
     /// Fin carga de imagenes 
 
-    std::vector<experimental::Photo> photos;
+    std::vector<Photo> photos;
     
 
     /// Lectura de fichero bundle
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
         ss >> focal >> k1 >> k2;
 
         TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-        experimental::Camera camera;
+        Camera camera;
         //camera.setMake("SONY");
         //camera.setModel("ILCE-6000");
         //camera.setFocal(16);
@@ -183,14 +183,14 @@ int main(int argc, char** argv)
         camera.setWidth(width);
         camera.setType("Radial");
         //camera.setSensorSize(23.5);
-        std::shared_ptr<experimental::Calibration> calibration = experimental::CalibrationFactory::create(camera.type());
-        calibration->setParameter(tl::experimental::Calibration::Parameters::focal, focal);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3006.23);        
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2024.27);
-        //calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3000);        
-        //calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2000);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k1, k1);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k2, k2);
+        std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
+        calibration->setParameter(Calibration::Parameters::focal, focal);
+        calibration->setParameter(Calibration::Parameters::cx, 3006.23);        
+        calibration->setParameter(Calibration::Parameters::cy, 2024.27);
+        //calibration->setParameter(Calibration::Parameters::cx, 3000);        
+        //calibration->setParameter(Calibration::Parameters::cy, 2000);
+        calibration->setParameter(Calibration::Parameters::k1, k1);
+        calibration->setParameter(Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
 
         std::getline(ifs, line);
@@ -255,8 +255,8 @@ int main(int argc, char** argv)
                        rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
-        experimental::Photo::Orientation orientation(position, rotation_matrix);
-        experimental::Photo photo(images[i]);
+        Photo::Orientation orientation(position, rotation_matrix);
+        Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
         photos.push_back(photo);

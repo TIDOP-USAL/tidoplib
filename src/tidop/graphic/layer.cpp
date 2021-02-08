@@ -130,12 +130,12 @@ void GLayer::setName(const std::string & name)
   mName = name;
 }
 
-void GLayer::addDataField(const std::shared_ptr<experimental::TableField> &field)
+void GLayer::addDataField(const std::shared_ptr<TableField> &field)
 {
   mTableFields.push_back(field);
 }
 
-std::vector<std::shared_ptr<experimental::TableField>> GLayer::tableFields() const
+std::vector<std::shared_ptr<TableField>> GLayer::tableFields() const
 {
   return mTableFields;
 }

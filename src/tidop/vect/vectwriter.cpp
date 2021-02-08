@@ -47,7 +47,8 @@ public:
   void close() override;
   void create() override;
   void write(const GLayer &layer) override;
-  void setCRS(const geospatial::Crs &crs) override;
+  //void setCRS(const geospatial::Crs &crs) override;
+  void setCRS(const std::string &epsgCode) override;
 
 private:
 
@@ -66,7 +67,8 @@ private:
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon *gMultiPolygon);
   void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon3D *gMultiPolygon3D);
   void writeStyles(OGRStyleMgr *ogrStyleMgr, const GraphicEntity *gStyle);
-  void setGdalProjection(const geospatial::Crs &crs);
+  //void setGdalProjection(const geospatial::Crs &crs);
+  void setGdalProjection(const std::string &epsgCode);
 
 private:
 
@@ -154,23 +156,23 @@ void VectorWriterGdal::write(const GLayer &layer)
     ogrLayer = this->createLayer(layer.name());
   }
 
-  std::vector<std::shared_ptr<experimental::TableField>> fields = layer.tableFields();
+  std::vector<std::shared_ptr<TableField>> fields = layer.tableFields();
 
   for (size_t i = 0; i < fields.size(); i++) {
 
-    experimental::TableField::Type type = fields[i]->type();
+    TableField::Type type = fields[i]->type();
     OGRFieldType ogr_type;
     switch (type) {
-      case tl::experimental::TableField::Type::INT:
+      case TableField::Type::INT:
         ogr_type = OFTInteger;
         break;
-      case tl::experimental::TableField::Type::INT64:
+      case TableField::Type::INT64:
         ogr_type = OFTInteger64;
         break;
-      case tl::experimental::TableField::Type::DOUBLE:
+      case TableField::Type::DOUBLE:
         ogr_type = OFTReal;
         break;
-      case tl::experimental::TableField::Type::STRING:
+      case TableField::Type::STRING:
         ogr_type = OFTString;
         break;
       default:
@@ -194,7 +196,7 @@ void VectorWriterGdal::write(const GLayer &layer)
 
     ogrFeature = OGRFeature::CreateFeature(ogrLayer->GetLayerDefn());
 
-    std::shared_ptr<experimental::TableRegister> data = entity->data();
+    std::shared_ptr<TableRegister> data = entity->data();
     for (size_t i = 0; i < data->size(); i++) {
       TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
       ogrFeature->SetField(i, data->value(i).c_str());
@@ -270,10 +272,17 @@ void VectorWriterGdal::write(const GLayer &layer)
 
 }
 
-void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
+//void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
+//{
+//  if (mDataset && crs.isValid()) {
+//    this->setGdalProjection(crs);
+//  }
+//}
+
+void VectorWriterGdal::setCRS(const std::string &epsgCode)
 {
-  if (mDataset && crs.isValid()) {
-    this->setGdalProjection(crs);
+  if (mDataset) {
+    this->setGdalProjection(epsgCode);
   }
 }
 
@@ -614,10 +623,16 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-void VectorWriterGdal::setGdalProjection(const geospatial::Crs &crs)
+//void VectorWriterGdal::setGdalProjection(const geospatial::Crs &crs)
+//{
+//  std::string wkt = crs.exportToWkt();
+//  mSpatialReference->importFromWkt(wkt.c_str());
+//}
+void VectorWriterGdal::setGdalProjection(const std::string &epsgCode)
 {
-  std::string wkt = crs.exportToWkt();
-  mSpatialReference->importFromWkt(wkt.c_str());
+  //std::string wkt = crs.exportToWkt();
+  //mSpatialReference->importFromWkt(wkt.c_str());
+  mSpatialReference->importFromEPSG(std::stoi(epsgCode.substr(5)));
 }
 
 #endif

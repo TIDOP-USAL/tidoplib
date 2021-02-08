@@ -65,6 +65,23 @@ Log &Log::instance()
   return *sObjLog;
 }
 
+EnumFlags<MessageLevel> Log::logLevel()
+{
+  return sLevel;
+}
+
+void Log::setLogLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+void Log::setLogFile(const std::string &file)
+{
+  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
+  TL_TODO("Comprobar si tiene permisos de escritura")
+  sLogFile = file;
+}
+
 void Log::write(const std::string &msg)
 {
 
@@ -87,6 +104,16 @@ void Log::write(const std::string &msg)
 }
 
 #ifdef TL_MESSAGE_HANDLER
+
+void Log::pauseListener()
+{
+  sPauseListener = true;
+}
+
+void Log::resumeListener()
+{
+  sPauseListener = false;
+}
 
 void Log::onMsgDebug(const char *msg, const char *date)
 {

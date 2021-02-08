@@ -147,7 +147,7 @@ private:
   std::shared_ptr<graph::StyleLabel> readStyleLabel(OGRStyleLabel *ogrStyleLabel);
   void readData(OGRFeature *ogrFeature,
                 OGRFeatureDefn *ogrFeatureDefinition,
-                std::shared_ptr<experimental::TableRegister> &data);
+                std::shared_ptr<TableRegister> &data);
 
 private:
 
@@ -169,30 +169,30 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
 
     if (OGRFieldDefn *fieldDefinition = featureDefinition->GetFieldDefn(i)) {
 
-      experimental::TableField::Type type;
+      TableField::Type type;
 
       const char *name = fieldDefinition->GetNameRef();
       OGRFieldType ogr_type = fieldDefinition->GetType();
       switch (ogr_type) {
         case OFTInteger:
-          type = experimental::TableField::Type::INT;
+          type = TableField::Type::INT;
           break;
         case OFTInteger64:
-          type = experimental::TableField::Type::INT64;
+          type = TableField::Type::INT64;
           break;
         case OFTReal:
-          type = experimental::TableField::Type::DOUBLE;
+          type = TableField::Type::DOUBLE;
           break;
         case OFTString:
-          type = experimental::TableField::Type::STRING;
+          type = TableField::Type::STRING;
           break;
         default:
-          type = experimental::TableField::Type::STRING;
+          type = TableField::Type::STRING;
           break;
       }
       int width = fieldDefinition->GetWidth();
 
-      std::shared_ptr<experimental::TableField> field(new experimental::TableField(name, type, width));
+      std::shared_ptr<TableField> field(new TableField(name, type, width));
       layer->addDataField(field);
 
     }
@@ -225,7 +225,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         ogrStyleMgr->GetStyleString(ogrFeature);
         readStyles(ogrStyleMgr, entity);
 
-        std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(layer->tableFields()));
+        std::shared_ptr<TableRegister> data(new TableRegister(layer->tableFields()));
         readData(ogrFeature, featureDefinition, data);
         entity->setData(data);
         
@@ -1123,7 +1123,7 @@ std::shared_ptr<StyleLabel> VectorReaderGdal::readStyleLabel(OGRStyleLabel *ogrS
 
 void VectorReaderGdal::readData(OGRFeature *ogrFeature,
                                 OGRFeatureDefn *ogrFeatureDefinition,
-                                std::shared_ptr<experimental::TableRegister> &data)
+                                std::shared_ptr<TableRegister> &data)
 {
   for (int i = 0; i < ogrFeatureDefinition->GetFieldCount(); i++) {
     OGRFieldDefn *poFieldDefn = ogrFeatureDefinition->GetFieldDefn(i);

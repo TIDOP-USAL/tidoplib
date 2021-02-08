@@ -1,10 +1,12 @@
-#Modulo Math de la librería
+#Modulo Math de la librería TIDOP
 
 if(MSVC)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
 endif(MSVC)
 
-add_library(tl_math ${LIB_TYPE}
+project(tl_math)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             angles.cpp
             angles.h
             statistics.cpp
@@ -28,11 +30,11 @@ add_library(tl_math ${LIB_TYPE}
 )
 
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_math 
+set_property(TARGET ${PROJECT_NAME} 
              PROPERTY FOLDER "modules")
 
 if(HAVE_EIGEN)
-    target_link_libraries (tl_math Eigen3::Eigen)
+    target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
 endif(HAVE_EIGEN)
 
 if(HAVE_LAPACKE)
@@ -42,20 +44,29 @@ endif(HAVE_LAPACKE)
 
 #instalación
 if(BUILD_SHARED_LIBS)
-	install(TARGETS tl_math
-			EXPORT "${TARGETS_EXPORT_NAME}"
-			RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+
+    install(TARGETS ${PROJECT_NAME}
+            EXPORT "${TARGETS_EXPORT_NAME}"
+            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 			
-	target_link_libraries(tl_math tl_core)
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+                          DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+
+    target_link_libraries(${PROJECT_NAME} tl_core)
   
-  if(HAVE_LAPACKE)
-    target_link_libraries(tl_math ${LAPACKE_LIBRARIES})
-  endif(HAVE_LAPACKE)
+    if(HAVE_LAPACKE)
+        target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
+    endif(HAVE_LAPACKE)
   
+    if(HAVE_OPENCV)
+        target_link_libraries(${PROJECT_NAME} 
+                              ${OpenCV_LIBS})
+    endif(HAVE_OPENCV)
+
 else()
-  install(TARGETS tl_math
+  install(TARGETS ${PROJECT_NAME}
 			EXPORT "${TARGETS_EXPORT_NAME}"
 			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
 			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -65,4 +76,4 @@ install(DIRECTORY .
         DESTINATION include/tidop/math
         FILES_MATCHING PATTERN "*.h")
         
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_math)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
