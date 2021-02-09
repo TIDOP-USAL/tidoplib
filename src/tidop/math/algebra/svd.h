@@ -79,10 +79,6 @@ class SingularValueDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
-  typedef typename T value_type;
-
-public:
-
   SingularValueDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _cols> solve(const Vector<T, _rows> &b);

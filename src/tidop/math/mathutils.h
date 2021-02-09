@@ -11,11 +11,11 @@
 //#include "opencv2/core/core.hpp"
 //#endif
 
-#ifdef HAVE_EIGEN
-TL_SUPPRESS_WARNINGS
-#include <Eigen/SVD>
-TL_DEFAULT_WARNINGS
-#endif
+//#ifdef HAVE_EIGEN
+//TL_SUPPRESS_WARNINGS
+//#include <Eigen/SVD>
+//TL_DEFAULT_WARNINGS
+//#endif
 
 #include "tidop/core/messages.h"
 #ifndef HAVE_EIGEN

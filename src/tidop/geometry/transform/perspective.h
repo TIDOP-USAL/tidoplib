@@ -21,6 +21,8 @@
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform/transform.h"
 
+#include <opencv2/core.hpp>
+#include <opencv2/calib3d.hpp>
 
 namespace tl
 {
@@ -41,7 +43,7 @@ namespace tl
  * \brief Transformación perspectiva
  */
 template<typename Point_t>
-class TrfPerspective
+class Perspective
   : public Transform2D<Point_t>
 {
 
@@ -50,12 +52,12 @@ public:
   /*!
    * \brief Constructor
    */
-  TrfPerspective();
+  Perspective();
 
   /*!
    * \brief Destructora
    */
-  ~TrfPerspective() override = default;
+  ~Perspective() override = default;
 
   /*!
    * \brief Calcula los parámetros de transformación
@@ -120,20 +122,21 @@ private:
 
 
 template<typename Point_t> inline
-TrfPerspective<Point_t>::TrfPerspective()
+Perspective<Point_t>::Perspective()
   : Transform2D<Point_t>(Transform::Type::perspective, 4)
 {
 
 }
 
 template<typename Point_t> inline
-Transform::Status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &pts1,
+Transform::Status Perspective<Point_t>::compute(const std::vector<Point_t> &pts1,
                                                    const std::vector<Point_t> &pts2,
                                                    std::vector<double> *error,
                                                    double *rmse)
 {
   //if (error) error = NULL; // Habria que poder calcular el error
   //if (rmse) rmse = NULL;
+  using sub_type = typename Point_t::value_type;
 
   size_t n1 = pts1.size();
   size_t n2 = pts2.size();
@@ -183,10 +186,12 @@ Transform::Status TrfPerspective<Point_t>::compute(const std::vector<Point_t> &p
 }
 
 template<typename Point_t> inline
-Transform::Status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
+Transform::Status Perspective<Point_t>::transform(const Point_t &ptIn,
                                                      Point_t &ptOut,
                                                      Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   std::vector<cv::Point_<sub_type>> vIn, vOut;
   vIn.push_back(cv::Point_<sub_type>(ptIn.x, ptIn.y));
   try {
@@ -205,7 +210,7 @@ Transform::Status TrfPerspective<Point_t>::transform(const Point_t &ptIn,
 }
 
 template<typename Point_t> inline
-Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn, 
+Point_t Perspective<Point_t>::transform(const Point_t &ptIn,
                                            Transform::Order trfOrder) const
 {
   Point_t out = ptIn;
@@ -214,10 +219,12 @@ Point_t TrfPerspective<Point_t>::transform(const Point_t &ptIn,
 }
 
 template<typename Point_t> inline
-Transform::Status TrfPerspective<Point_t>::transform(const std::vector<Point_t> &ptsIn,
+Transform::Status Perspective<Point_t>::transform(const std::vector<Point_t> &ptsIn,
                                                      std::vector<Point_t> &ptsOut,
                                                      Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   // TODO: chapuza...
   size_t n = ptsIn.size();
   std::vector<cv::Point_<sub_type>> in(n);

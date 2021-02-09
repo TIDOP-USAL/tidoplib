@@ -257,7 +257,7 @@ void transform(const cv::Mat &in, cv::Mat out, TransformBase<Point_t> *trf, Tran
     else
       cv::warpAffine(in, out, affMat.inv(), in.size(), cv::INTER_LINEAR);
   } else if (type == tl::Transform::Type::perspective) {
-    TrfPerspective<Point_t> *perspTrf = dynamic_cast<TrfPerspective<Point_t> *>(trf);
+    Perspective<Point_t> *perspTrf = dynamic_cast<Perspective<Point_t> *>(trf);
     if (trfOrder == Transform::Order::direct)
       cv::warpPerspective(in, out, perspTrf->H, in.size(), cv::INTER_LINEAR);
     else

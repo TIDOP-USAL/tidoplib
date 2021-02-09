@@ -274,6 +274,8 @@ Transform::Status Scaling<Point_t>::transform(const Point_t &ptIn,
                                               Point_t &ptOut,
                                               Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   Transform::Status r_status = Transform::Status::success;
   try {
     if (trfOrder == Transform::Order::direct){

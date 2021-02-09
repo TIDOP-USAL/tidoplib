@@ -309,7 +309,7 @@ void CmdProcess::execute(Progress *progressBar)
       //printf("Child pid: %i\n", pid);
       if (waitpid(pid, &status, 0) != -1) {
           //printf("Child exited with status %i\n", status);
-        return Process::Status::finalized;
+        return;
       } else {
         return; //Process::Status::error;
       }

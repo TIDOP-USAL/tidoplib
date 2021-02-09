@@ -95,7 +95,7 @@ public:
     }
   }
 
-// Heredado vía ImageWriter
+// Heredado vÃ­a ImageWriter
 
   void open() override
   {
@@ -247,7 +247,7 @@ public:
     //                       geotransform[0], 
     //                       geotransform[3]);
       
-    //TL_TODO("¿Esto tiene sentido?")
+    //TL_TODO("Â¿Esto tiene sentido?")
     //const char *prj = mDataset->GetProjectionRef();
     //if (prj != nullptr) {
     //  mEpsgCode = prj;
@@ -342,7 +342,7 @@ public:
 
     ////TODO: No deberia tomar las dimensiones de cv::Mat... Se tiene que llamar 
     ////anteriormente a create y asignar los valores correctos.
-    //// De hecho debería utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
+    //// De hecho deberÃ­a utilizar siempre un uchar y convertir cv::Mat antes de pasarlo
 
     ////if (!image.isContinuous()) image = image.clone();
     ////uchar *buff = image.ptr();
@@ -352,7 +352,7 @@ public:
     //int nLineSpace = nPixelSpace * image.cols;
     //int nBandSpace = static_cast<int>(image.elemSize1());
   
-    //TL_TODO("Aplicar transformación a la región a leer")
+    //TL_TODO("Aplicar transformaciÃ³n a la regiÃ³n a leer")
     //CPLErr cerr = mDataset->RasterIO(GF_Write, static_cast<int>(trf.tx), 
     //                                 static_cast<int>(trf.ty), 
     //                                 image.cols, image.rows, buff, 
@@ -435,7 +435,11 @@ private:
     //mDataset->SetProjection(mCRS.exportToProj().c_str());
     std::string wkt = crs.exportToWkt();
     mSpatialReference->importFromWkt(wkt.c_str());
+#if GDAL_VERSION_MAJOR >= 3
     mDataset->SetSpatialRef(mSpatialReference);
+#else
+    mDataset->SetProjection(wkt.c_str());
+#endif
   }
 
 private:
@@ -473,7 +477,7 @@ public:
   {
   }
 
-// Heredado vía ImageWriter
+// Heredado vÃ­a ImageWriter
 
   void open() override
   {

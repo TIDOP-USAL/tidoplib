@@ -159,15 +159,15 @@ public:
    */
   template<typename T> 
   void filter(const cv::Mat &in, const Window<T> &w, cv::Mat *out, std::vector<cv::KeyPoint> *_keyPoints, cv::Mat *_descriptor) {
-    geometry::Window<T> waux = w;
-    geometry::PointF pt_aux;
-    for (int j = 0; j < mKeyPoints.size(); j++) {
+    Window<T> waux = w;
+    PointF pt_aux;
+    for (size_t j = 0; j < mKeyPoints.size(); j++) {
       pt_aux.x = mKeyPoints[j].pt.x;
       pt_aux.y = mKeyPoints[j].pt.y;
       if (!waux.containsPoint(pt_aux)) {
-        mKeyPoints.erase(mKeyPoints.begin() + j);
+        mKeyPoints.erase(mKeyPoints.begin() + static_cast<int>(j));
         j--;
-      } else mKeyPoints[j].pt = mKeyPoints[j].pt - (cv::Point2f)waux.pt1;
+      } else mKeyPoints[j].pt = mKeyPoints[j].pt - cv::Point2f(waux.pt1.x, waux.pt1.y);
     }
     in.colRange(waux.pt1.x, waux.pt2.x).rowRange(waux.pt1.y, waux.pt2.y).copyTo(*out);
     calcDescriptor(*out, &mKeyPoints, &mDescriptor); // Se recalculan los descriptores

@@ -1,4 +1,4 @@
-#Modulo graphic de la librería
+#Modulo graphic de la librerÃ­a
 
 add_library(tl_vect ${LIB_TYPE}
             vect.h
@@ -9,12 +9,12 @@ add_library(tl_vect ${LIB_TYPE}
             formats.cpp
             formats.h)
   
-# Añade el proyecto a la carpeta 'modules'
+# AÃ±ade el proyecto a la carpeta 'modules'
 set_property(TARGET tl_vect PROPERTY FOLDER "modules")
 
 target_link_libraries(tl_vect tl_graphic)
 
-#instalación
+#instalaciÃ³n
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_vect
             EXPORT "${TARGETS_EXPORT_NAME}"

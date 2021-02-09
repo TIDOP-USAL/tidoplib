@@ -6,8 +6,8 @@ add_library(tl_geospatial ${LIB_TYPE}
             crscache.cpp
             crscache.h
             crstransf.h
-            dtm.cpp
-            dtm.h
+            #dtm.cpp
+            #dtm.h
             util.cpp
             util.h
             ortho.cpp
@@ -22,6 +22,11 @@ add_library(tl_geospatial ${LIB_TYPE}
 set_property(TARGET tl_geospatial 
              PROPERTY FOLDER "modules")
 
+if(HAVE_LAPACKE)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_LAPACKE)
+
 #instalación
 if(BUILD_SHARED_LIBS)
     install(TARGETS tl_geospatial
@@ -33,7 +38,7 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(tl_geospatial PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 	
-    target_link_libraries(tl_geospatial tl_core tl_geom)
+    target_link_libraries(tl_geospatial tl_core tl_math tl_geom)
 	
 	  if (HAVE_GDAL)
         target_link_libraries(tl_geospatial ${GDAL_LIBRARY})
@@ -44,11 +49,15 @@ if(BUILD_SHARED_LIBS)
                               ${PROJ4_LIBRARY})
     endif(HAVE_PROJ4)
 
+    if(HAVE_EIGEN)
+        target_link_libraries (tl_geospatial Eigen3::Eigen)
+    endif(HAVE_EIGEN)
+
 else()
     install(TARGETS tl_geospatial 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
 install(DIRECTORY . 

@@ -17,7 +17,8 @@ add_executable(${PROJECT_NAME} coordtransform.cpp)
 target_link_libraries(${PROJECT_NAME} 
                       tl_core
                       tl_math
-                      tl_geom)
+                      tl_geom
+                      tl_img)
 					  
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 
@@ -59,7 +60,7 @@ if(HAVE_LAPACKE)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
 endif(HAVE_LAPACKE)
 
-# Añade el proyecto de ejemplo a la carpeta 'examples'
+# AÃ±ade el proyecto de ejemplo a la carpeta 'examples'
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/coordtransform")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

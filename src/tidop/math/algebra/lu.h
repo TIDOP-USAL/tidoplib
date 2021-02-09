@@ -97,10 +97,6 @@ class LuDecomposition<Matrix_t<T, _rows, _cols>>
 
 public:
 
-  typedef typename T value_type;
-
-public:
-
   LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);

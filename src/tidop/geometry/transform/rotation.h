@@ -341,7 +341,10 @@ Transform::Status Rotation<Point_t>::transform(const Point_t &ptsIn,
                                                Point_t &ptsOut,
                                                Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   Transform::Status r_status = Transform::Status::success;
+
   sub_type x_aux = ptsIn.x;
   if (trfOrder == Transform::Order::direct) {
     ptsOut.x = static_cast<sub_type>(x_aux * r1 - ptsIn.y * r2);
@@ -357,6 +360,8 @@ template<typename Point_t> inline
 Point_t Rotation<Point_t>::transform(const Point_t &ptsIn, 
                                      Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   Point_t out;
   if (trfOrder == Transform::Order::direct) {
     out.x = static_cast<sub_type>(ptsIn.x*r1 - ptsIn.y*r2);

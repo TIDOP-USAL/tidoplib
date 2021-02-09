@@ -1,8 +1,12 @@
 #Modulo img de la librería
 
+if(MSVC)
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
+endif(MSVC)
 
-add_library(tl_img ${LIB_TYPE}
+project(tl_img)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             img.h
 			      img.cpp
             image.h
@@ -18,41 +22,45 @@ add_library(tl_img ${LIB_TYPE}
 )
   
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_img PROPERTY FOLDER "modules")
+set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
 
 if(HAVE_LAPACKE)
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_LAPACKE)	
+endif(HAVE_LAPACKE)
 
 #instalación
 if(BUILD_SHARED_LIBS)
-    install(TARGETS tl_img
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
-    set_target_properties(tl_img PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 	
-    target_link_libraries(tl_img 
-                          tl_core 
+    target_link_libraries(${PROJECT_NAME}
+                          tl_core
                           tl_geom
-                          tl_math 
+                          tl_math
                           tl_geospatial)
     if(HAVE_OPENCV)			
-        target_link_libraries(tl_img 
+        target_link_libraries(${PROJECT_NAME}
                               ${OpenCV_LIBS})	
     endif(HAVE_OPENCV)
 	
     if (HAVE_GDAL)
-        target_link_libraries(tl_img 
+        target_link_libraries(${PROJECT_NAME}
                               ${GDAL_LIBRARY})
     endif(HAVE_GDAL)
 
+    if(HAVE_EIGEN)
+        target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
+    endif(HAVE_EIGEN)
+
 else()
-    install(TARGETS tl_img 
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -62,4 +70,4 @@ install(DIRECTORY .
         DESTINATION include/tidop/img
         FILES_MATCHING PATTERN "*.h")
         
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_img)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
