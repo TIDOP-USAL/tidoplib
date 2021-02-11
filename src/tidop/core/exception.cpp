@@ -16,9 +16,6 @@
 
 #include <boost/filesystem.hpp>
 
- //#if defined WIN32
-//#include <atlstr.h>
-//#endif
 #include <locale>
 #include <codecvt>
 
@@ -34,26 +31,8 @@ namespace fs = boost::filesystem;
 namespace tl
 {
 
-/* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-Exception::Exception(const char *error)
-  : mError(error), 
-    mFile(""), 
-    mLine(-1), 
-    mFunction("")
-{
-  messagef();
-}
-
-Exception::Exception(const char *error, const char *file, int line, const char *function)
-  : mError(error), mFile(file), mLine(line), mFunction(function)
-{
-  messagef();
-}
-#endif
-
-Exception::Exception(const std::string & error)
+Exception::Exception(const std::string &error)
   : mError(error),
     mFile(""),
     mLine(-1),
@@ -61,9 +40,11 @@ Exception::Exception(const std::string & error)
 {
 }
 
-Exception::Exception(const std::string &error, const std::string &file, int line, const std::string &function )
-  : mError(error), 
-    //mFile(file), 
+Exception::Exception(const std::string &error, 
+                     const std::string &file, 
+                     int line, 
+                     const std::string &function )
+  : mError(error),
     mLine(line), 
     mFunction(function)
 {
@@ -106,17 +87,23 @@ void Exception::messagef()
   }
 }
 
+
+
+
 /* ---------------------------------------------------------------------------------- */
 
-//void throw_exception(const char *error, const char *file, int line, const char *function)
-//{
-//  throw Exception(error, file, line, function);
-//}
 
-Exception make_exception(const char *error, const char *file, int line, const char *function)
+
+
+Exception make_exception(const char *error, 
+                         const char *file, 
+                         int line, 
+                         const char *function)
 {
   return Exception(error, file, line, function);
 }
+
+
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -141,7 +128,6 @@ std::string formatWindowsErrorMsg(DWORD errorCode)
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   std::string strError = converter.to_bytes(errorMessage);
 
-  //std::string strError = CW2A(errorMessage);
   return strError;
 }
 #endif

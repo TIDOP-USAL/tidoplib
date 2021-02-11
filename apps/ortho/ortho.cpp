@@ -65,7 +65,9 @@ int main(int argc, char** argv)
   std::string mdt;
   std::string ortho_path;
   std::string footprint_file;
-
+  std::string offset_file;
+  double cx = 0.;
+  double cy = 0.;
   Command cmd(cmd_name, "Huella de vuelo");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
@@ -74,6 +76,9 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
 
   cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --crs EPSG:25830 -- mdt mdt.tif");
 
@@ -89,6 +94,21 @@ int main(int argc, char** argv)
   }
 
   try {
+
+    /// Lectura del offset
+    
+    Point3D offset; // (272021.250, 4338368.076, 379.370);
+
+    {
+      std::ifstream ifs;
+      ifs.open(offset_file, std::ifstream::in);
+      if (ifs.is_open()) {
+      
+        ifs >> offset.x >> offset.y >> offset.z;
+
+        ifs.close();
+      }
+    }
 
     /// Carga de imagenes 
 
@@ -119,7 +139,6 @@ int main(int argc, char** argv)
 
         }
         
-
       }
 
       ifs.close();
@@ -185,10 +204,12 @@ int main(int argc, char** argv)
         //camera.setSensorSize(23.5);
         std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
         calibration->setParameter(Calibration::Parameters::focal, focal);
-        calibration->setParameter(Calibration::Parameters::cx, 3006.23);        
-        calibration->setParameter(Calibration::Parameters::cy, 2024.27);
-        //calibration->setParameter(Calibration::Parameters::cx, 3000);        
-        //calibration->setParameter(Calibration::Parameters::cy, 2000);
+        if (cx == 0. && cy == 0.) {
+          cx = width / 2;
+          cy = height / 2;
+        } 
+        calibration->setParameter(Calibration::Parameters::cx, cx);        
+        calibration->setParameter(Calibration::Parameters::cy, cy);
         calibration->setParameter(Calibration::Parameters::k1, k1);
         calibration->setParameter(Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
@@ -236,7 +257,7 @@ int main(int argc, char** argv)
         
         //Point3D position(tx, ty, tz);
         //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        Point3D offset(272021.250, 4338368.076, 379.370);
+        //Point3D offset(272021.250, 4338368.076, 379.370);
         Point3D position;
 
         // Paso de la transformación de mundo a imagen a imagen mundo

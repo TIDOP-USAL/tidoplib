@@ -37,6 +37,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
+#include "tidop/core/licence.h"
 
 namespace tl
 {
@@ -1264,37 +1265,6 @@ public:
    */
   typedef std::list<std::shared_ptr<Argument>>::const_iterator const_iterator;
 
-
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Argument>> mCmdArgs;
-
-  /*!
-   * \brief Listado de los argumentos por defecto comando
-   * Comandos como ayuda [-h | --help] o versión [--version]
-   */
-  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
-
-  std::list<std::string> mExamples;
-
 public:
 
   /*!
@@ -1458,10 +1428,43 @@ public:
    */
   void addExample(const std::string &example);
 
+  void setLicence(const Licence &licence);
+
 protected:
 
   void init();
 
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Argument>> mCmdArgs;
+
+  /*!
+   * \brief Listado de los argumentos por defecto comando
+   * Comandos como ayuda [-h | --help] o versión [--version]
+   */
+  //std::list<std::shared_ptr<Argument>> mDefaultArgs;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
+  std::list<std::string> mExamples;
+
+  Licence mLicence;
 };
 
 

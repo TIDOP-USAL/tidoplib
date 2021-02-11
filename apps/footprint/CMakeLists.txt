@@ -16,13 +16,12 @@ add_executable(${PROJECT_NAME} footprint.cpp)
 
 target_link_libraries(${PROJECT_NAME} 
                       tl_core
-                      #tl_math
+                      tl_math
                       tl_geom
                       tl_geospatial
-                      #tl_img
-                      #tl_vect
-                      #tl_graphic
-                      )
+                      tl_img
+                      tl_vect
+                      tl_graphic)
 
 if(HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} 

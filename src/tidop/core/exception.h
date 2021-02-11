@@ -35,44 +35,31 @@ class TL_EXPORT Exception
 
 public:
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  /*!
-   * \brief Constructor
-   * \deprecated Usar Exception(const std::string &error)
-   */
-  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
-  explicit Exception(const char *error);
-
-  /*!
-   * \brief Constructor
-   */
-  TL_DEPRECATED("Exception::Exception(const std::string &error)", "2.0")
-  explicit Exception(const char *error, const char *file, int line, const char *function);
-
-#endif
-
-  /*!
-   * \brief Constructor
-   */
   explicit Exception(const std::string &error);
-
-  /*!
-   * \brief Constructor
-   */
-  explicit Exception(const std::string &error, const std::string &file, int line, const std::string &function);
-
-  /*!
-   * \brief destructor
-   */
+  explicit Exception(const std::string &error, 
+                     const std::string &file, 
+                     int line, 
+                     const std::string &function);
   virtual ~Exception() TL_NOEXCEPT override {}
 
   /*!
    * \brief Descripción del error
    */
   virtual const char *what() const TL_NOEXCEPT override;
-
+  
+  /*!
+   * \brief Fichero fuente donde se ha producido el error
+   */
   std::string file() const;
+
+  /*!
+   * \brief Nombre de la función donde se ha producido el error
+   */
   std::string function() const;
+
+  /*!
+   * \brief Número de línea donde se ha producido el error
+   */
   int line() const;
 
 private:
@@ -81,34 +68,20 @@ private:
 
 protected:
 
-  /*!
-   * \brief Error
-   */
   std::string mError;
-
-  /*!
-   * \brief Fichero en el cual se ha producido el error
-   */
   std::string mFile;
-
-  /*!
-   * \brief Número de línea donde se ha producido el error
-   */
   int mLine;
-
-  /*!
-   * \brief Nombre de la función donde se ha producido el error
-   */
   std::string mFunction;
-
-  /*!
-   * \brief Mensaje de error
-   */
   std::string mMessage;
 };
 
-//TL_EXPORT void throw_exception(const char *error, const char *file = nullptr, int line = -1, const char *function = nullptr);
-TL_EXPORT Exception make_exception(const char *error, const char *file = nullptr, int line= -1, const char *function = nullptr);
+
+
+
+TL_EXPORT Exception make_exception(const char *error, 
+                                   const char *file = nullptr, 
+                                   int line= -1, 
+                                   const char *function = nullptr);
 
 
 
@@ -125,8 +98,17 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 } // fin namespace tl
 
 
+/*!
+ * \brief Macro para crear una excepción
+ */
 #define TL_ERROR(...) tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+
+/*!
+ * \brief Macro para lanzar una excepción
+ */
 #define TL_THROW_ERROR(...) throw tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+
+
 
 #define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
 

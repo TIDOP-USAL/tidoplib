@@ -865,11 +865,26 @@ void Command::showLicence() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
+  printf("Licence\n\n");
+  console.reset();
+
+  printf_s("%s: %s\n", mLicence.productName().c_str(), mLicence.version().c_str());
+
+  //mLicence.productName(); 
+  //mLicence.version();
+  //mLicence.autor();
+  //mLicence.autorEmail();
+  //mLicence.type();
 }
 
 void Command::addExample(const std::string &example)
 {
   mExamples.push_back(example);
+}
+
+void Command::setLicence(const Licence &licence)
+{
+  mLicence = licence;
 }
 
 void Command::init()
