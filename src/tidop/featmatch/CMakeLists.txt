@@ -2,7 +2,10 @@
 
 if(HAVE_OPENCV)
 
-add_library(tl_featmatch ${LIB_TYPE}
+
+project(tl_featmatch)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             agast.cpp
             agast.h
             akaze.cpp
@@ -56,46 +59,43 @@ add_library(tl_featmatch ${LIB_TYPE}
 )
   
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_featmatch
+set_property(TARGET ${PROJECT_NAME}
              PROPERTY FOLDER "modules")
 
 # Instalación
 if(BUILD_SHARED_LIBS)
-    install(TARGETS tl_featmatch
+
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
-    set_target_properties(tl_featmatch PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 						  
-    target_link_libraries(tl_featmatch 
+    target_link_libraries(${PROJECT_NAME} 
                           tl_core 
                           tl_geom
                           ${OpenCV_LIBS})
     
 	if (HAVE_GDAL)
-        target_link_libraries(tl_featmatch ${GDAL_LIBRARY})
+        target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
     endif(HAVE_GDAL)
     
 else()
-    install(TARGETS tl_featmatch
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 endif()
 
-#target_include_directories(
-#    tl_featmatch PUBLIC
-#    "$<INSTALL_INTERFACE:include>"
-#)
 
 install(DIRECTORY .
         DESTINATION include/tidop/featmatch
         FILES_MATCHING PATTERN "*.h")
 
 
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_featmatch)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
 endif(HAVE_OPENCV)

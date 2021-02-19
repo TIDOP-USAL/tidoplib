@@ -14,8 +14,6 @@
 namespace tl
 {
 
-namespace experimental
-{
 	
 class TL_EXPORT Calibration
 {
@@ -376,11 +374,6 @@ protected:
 
 };
 
-
-
-
-
-} // namespace experimental
 
 } // namespace tl
 

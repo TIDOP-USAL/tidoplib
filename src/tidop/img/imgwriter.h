@@ -16,7 +16,7 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-#include "tidop/geospatial/crs.h"
+//#include "tidop/geospatial/crs.h"
 
 namespace tl
 {
@@ -152,7 +152,8 @@ public:
    * \brief Establece la proyección de la imagen
    * \param[in] epsgCode Código EPSG
    */
-  virtual void setCRS(const geospatial::Crs &crs) = 0;
+  //virtual void setCRS(const geospatial::Crs &crs) = 0;
+  virtual void setCRS(const std::string &epsgCode) = 0;
 
 protected:
   

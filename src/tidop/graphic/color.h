@@ -965,32 +965,6 @@ public:
 class TL_EXPORT ColorRGB 
   : public IColorModel
 {
-protected:
-
-  /*!
-   * \brief Componente roja
-   */
-  int mRed;
-
-  /*!
-   * \brief Componente verde
-   */
-  int mGreen;
-
-  /*!
-   * \brief Componente azul
-   */
-  int mBlue;
-
-  /*!
-   * \brief Rango inferior
-   */
-  int mRangeMin;
-
-  /*!
-   * \brief Rango superior
-   */
-  int mRangeMax;
 
 public:
 
@@ -1069,6 +1043,33 @@ protected:
   void adjustRangeRed();
   void adjustRangeGreen();
   void adjustRangeBlue();
+
+protected:
+
+  /*!
+   * \brief Componente roja
+   */
+  int mRed;
+
+  /*!
+   * \brief Componente verde
+   */
+  int mGreen;
+
+  /*!
+   * \brief Componente azul
+   */
+  int mBlue;
+
+  /*!
+   * \brief Rango inferior
+   */
+  int mRangeMin;
+
+  /*!
+   * \brief Rango superior
+   */
+  int mRangeMax;
 };
 
 
@@ -1081,12 +1082,6 @@ protected:
 class TL_EXPORT ColorRGBA 
   : public ColorRGB
 {
-protected:
-
-  /*!
-   * \brief Canal alfa
-   */
-  int mAlpha;
 
 public:
 
@@ -1130,6 +1125,13 @@ public:
 protected:
 
   void adjustRangeAlpha();
+
+protected:
+
+  /*!
+   * \brief Canal alfa
+   */
+  int mAlpha;
 };
 
 
@@ -1142,15 +1144,6 @@ protected:
 class TL_EXPORT ColorCMYK 
   : public IColorModel
 {
-
-protected:
-
-  double mCyan;
-  double mMagenta;
-  double mYellow;
-  double mKey;
-  double mRangeMin;
-  double mRangeMax;
 
 public:
 
@@ -1245,6 +1238,16 @@ protected:
   void adjustRangeMagenta();
   void adjustRangeYellow();
   void adjustRangeKey();
+
+protected:
+
+  double mCyan;
+  double mMagenta;
+  double mYellow;
+  double mKey;
+  double mRangeMin;
+  double mRangeMax;
+
 };
 
 
@@ -1257,34 +1260,6 @@ protected:
 class TL_EXPORT ColorHSV
   : public IColorModel
 {
-
-private:
-
-  /*!
-   * \brief Matiz del color
-   * Se representa como un grado de ángulo cuyos valores posibles van de 0 a 360°
-   */
-  double mHue;
-
-  /*!
-   * \brief Saturación, tono o tinte de un color
-   * Se representa como la distancia al eje de brillo negro-blanco. Los valores
-   * posibles van del 0 al 100%.
-   */
-  double mSaturation;
-
-  /*!
-   * \brief Valor
-   * Representa la altura en el eje blanco-negro. Los valores posibles van de 0 al 100%
-   * siendo el 0 el negro.
-   */
-  double mValue;
-
-  double mRangeMinHue;
-  double mRangeMaxHue;
-
-  double mRangeMin;
-  double mRangeMax;
 
 public:
 
@@ -1359,15 +1334,6 @@ protected:
   void adjustRangeSaturation();
   void adjustRangeValue();
 
-};
-
-
-/*!
- * \brief The ColorHSL class
- */
-class TL_EXPORT ColorHSL 
-  : public IColorModel
-{
 private:
 
   /*!
@@ -1384,15 +1350,27 @@ private:
   double mSaturation;
 
   /*!
-   * \brief Luminosidad
+   * \brief Valor
+   * Representa la altura en el eje blanco-negro. Los valores posibles van de 0 al 100%
+   * siendo el 0 el negro.
    */
-  double mLightness;
+  double mValue;
 
   double mRangeMinHue;
   double mRangeMaxHue;
 
   double mRangeMin;
   double mRangeMax;
+
+};
+
+
+/*!
+ * \brief The ColorHSL class
+ */
+class TL_EXPORT ColorHSL 
+  : public IColorModel
+{
 
 public:
 
@@ -1434,6 +1412,33 @@ protected:
   void adjustRangeHue();
   void adjustRangeSaturation();
   void adjustRangeLightness();
+
+private:
+
+  /*!
+   * \brief Matiz del color
+   * Se representa como un grado de ángulo cuyos valores posibles van de 0 a 360°
+   */
+  double mHue;
+
+  /*!
+   * \brief Saturación, tono o tinte de un color
+   * Se representa como la distancia al eje de brillo negro-blanco. Los valores
+   * posibles van del 0 al 100%.
+   */
+  double mSaturation;
+
+  /*!
+   * \brief Luminosidad
+   */
+  double mLightness;
+
+  double mRangeMinHue;
+  double mRangeMaxHue;
+
+  double mRangeMin;
+  double mRangeMax;
+
 };
 
 
@@ -1471,16 +1476,17 @@ class TrfColorModel
 
 public:
 
+  TrfColorModel();
+
+  void aply();
+
+private:
+
   /*!
    * \brief Transformación que se aplica
    */
   std::function<void(T1, T2)> mTrf;
 
-public:
-
-  TrfColorModel();
-
-  void aply();
 };
 
 template<typename T1, typename T2>

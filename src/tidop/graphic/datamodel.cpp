@@ -3,9 +3,6 @@
 namespace tl
 {
 
-namespace experimental
-{
-
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -255,6 +252,5 @@ void DataModel::addTable(std::shared_ptr<DataTable> table)
 }
 
 
-} // End namespace experimental
 
 } // End namespace tl

@@ -50,7 +50,8 @@ inline int isNegative(T t)
  * \param[in] seconds Segundos
  * \return Grados sexagesimales en notación decimal
  */
-TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, double seconds);
+
 
 /*!
  * \brief Conversión de grados sexagesimales a radianes
@@ -59,7 +60,7 @@ TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, int seconds);
  * \param[in] seconds Segundos
  * \return radianes
  */
-TL_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToRadians(int degrees, int minutes, double seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales a grados centesimales
@@ -68,7 +69,7 @@ TL_EXPORT double degreesToRadians(int degrees, int minutes, int seconds);
  * \param[in] seconds Segundos
  * \return Grados centesimales
  */
-TL_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
+TL_EXPORT double degreesToGradians(int degrees, int minutes, double seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
@@ -84,7 +85,7 @@ TL_EXPORT double degreesToGradians(int degrees, int minutes, int seconds);
  * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
  * \endcode
  */
-TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, double *seconds);
 
 /*!
  * \brief Conversión de grados sexagesimales en notación decimal a radianes
@@ -107,7 +108,7 @@ TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-TL_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, double *seconds);
 
 /*!
  * \brief Conversión de radianes a grados sexagesimales en notación decimal
@@ -130,7 +131,7 @@ TL_EXPORT double radiansToGradians(double radians);
  * \param[out] minutes Puntero a entero que recibe como valor los minutos
  * \param[out] seconds Puntero a entero que recibe como valor los segundos
  */
-TL_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, int *seconds);
+TL_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seconds);
 
 /*!
  * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal

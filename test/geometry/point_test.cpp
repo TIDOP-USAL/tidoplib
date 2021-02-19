@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE Tidop Point test
 #include <boost/test/unit_test.hpp>
 #include <tidop/geometry/entities/point.h>
+#include <tidop/geometry/entities/multipoint.h>
 #include <tidop/geometry/entities/window.h>
 #include <tidop/geometry/entities/bbox.h>
 #include <tidop/core/utils.h>
@@ -20,9 +21,6 @@ struct PointTest
       point_integer_copy(nullptr),
       point_double_copy(nullptr),
       point_float_copy(nullptr),
-      //point_vector_constructor_integer(nullptr),
-      //point_vector_constructor_double(nullptr),
-      //point_vector_constructor_float(nullptr),
       point_array_constructor_integer(nullptr)
   {
 
@@ -36,9 +34,6 @@ struct PointTest
     delete point_integer_copy;
     delete point_double_copy;
     delete point_float_copy;
-    //delete point_vector_constructor_integer;
-    //delete point_vector_constructor_double;
-    //delete point_vector_constructor_float;
     delete point_array_constructor_integer;
   }
 
@@ -55,10 +50,6 @@ struct PointTest
     math::Vector2i vector_int{{23, 67}};
     math::Vector2d vector_double{{253.56, 562.94}};
     math::Vector2f vector_float{{564.26f, 646.65f}};
-
-    //point_vector_constructor_integer = new Point<int>(vector_int);
-    //point_vector_constructor_double = new Point<double>(vector_double);
-    //point_vector_constructor_float = new Point<float>(vector_float);
 
     std::array<int, 2> pt_int{ { 23, 67 } };
 
@@ -80,10 +71,6 @@ struct PointTest
   Point<int> *point_integer_copy;
   Point<double> *point_double_copy;
   Point<float> *point_float_copy;
-
-  //Point<int> *point_vector_constructor_integer;
-  //Point<double> *point_vector_constructor_double;
-  //Point<float> *point_vector_constructor_float;
 
   Point<int> *point_array_constructor_integer;
 
@@ -125,18 +112,6 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, PointTest)
   BOOST_CHECK_CLOSE(646.65f, point_float_copy->y, 0.05);
 }
 
-//BOOST_FIXTURE_TEST_CASE(vector_constructor, PointTest) 
-//{
-//  BOOST_CHECK_EQUAL(23, point_vector_constructor_integer->x);
-//  BOOST_CHECK_EQUAL(67, point_vector_constructor_integer->y);
-//  
-//  BOOST_CHECK_CLOSE(253.56, point_vector_constructor_double->x, 0.01);
-//  BOOST_CHECK_CLOSE(562.94, point_vector_constructor_double->y, 0.01);
-//
-//  BOOST_CHECK_CLOSE(564.26f, point_vector_constructor_float->x, 0.05);
-//  BOOST_CHECK_CLOSE(646.65f, point_vector_constructor_float->y, 0.05);
-//}
-
 BOOST_FIXTURE_TEST_CASE(array_constructor, PointTest) 
 {
   BOOST_CHECK_EQUAL(23, point_array_constructor_integer->x);
@@ -160,7 +135,6 @@ BOOST_FIXTURE_TEST_CASE(type, PointTest)
   BOOST_CHECK(Entity::Type::point2d == point_double->type());
   BOOST_CHECK(Entity::Type::point2d == point_float->type());
   BOOST_CHECK(Entity::Type::point2d == point_integer_copy->type());
-  //BOOST_CHECK(Entity::Type::point2d == point_vector_constructor_integer->type());
   BOOST_CHECK(Entity::Type::point2d == point_array_constructor_integer->type());
 }
 
@@ -239,9 +213,6 @@ struct Point3Test
       point_integer_copy(nullptr),
       point_double_copy(nullptr),
       point_float_copy(nullptr),
-      //point_vector_constructor_integer(nullptr),
-      //point_vector_constructor_double(nullptr),
-      //point_vector_constructor_float(nullptr),
       point_array_constructor_integer(nullptr)
   {
 
@@ -255,9 +226,6 @@ struct Point3Test
     delete point_integer_copy;
     delete point_double_copy;
     delete point_float_copy;
-    //delete point_vector_constructor_integer;
-    //delete point_vector_constructor_double;
-    //delete point_vector_constructor_float;
     delete point_array_constructor_integer;
   }
 
@@ -274,10 +242,6 @@ struct Point3Test
     math::Vector3i vector_int{{23, 67, 23}};
     math::Vector3d vector_double{{253.56, 562.94, 234.67}};
     math::Vector3f vector_float{{564.26f, 646.65f, 56.21f}};
-
-    //point_vector_constructor_integer = new Point3<int>(vector_int);
-    //point_vector_constructor_double = new Point3<double>(vector_double);
-    //point_vector_constructor_float = new Point3<float>(vector_float);
 
     std::array<int, 3> pt_int{ { 23, 67, 23 } };
 
@@ -299,10 +263,6 @@ struct Point3Test
   Point3<int> *point_integer_copy;
   Point3<double> *point_double_copy;
   Point3<float> *point_float_copy;
-
-  //Point3<int> *point_vector_constructor_integer;
-  //Point3<double> *point_vector_constructor_double;
-  //Point3<float> *point_vector_constructor_float;
 
   Point3<int> *point_array_constructor_integer;
 
@@ -353,21 +313,6 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Point3Test)
   BOOST_CHECK_CLOSE(45.89f, point_float_copy->z, 0.05);
 }
 
-//BOOST_FIXTURE_TEST_CASE(vector_constructor, Point3Test) 
-//{
-//  BOOST_CHECK_EQUAL(23, point_vector_constructor_integer->x);
-//  BOOST_CHECK_EQUAL(67, point_vector_constructor_integer->y);
-//  BOOST_CHECK_EQUAL(23, point_vector_constructor_integer->z);
-//
-//  BOOST_CHECK_CLOSE(253.56, point_vector_constructor_double->x, 0.01);
-//  BOOST_CHECK_CLOSE(562.94, point_vector_constructor_double->y, 0.01);
-//  BOOST_CHECK_CLOSE(234.67, point_vector_constructor_double->z, 0.01);
-//
-//  BOOST_CHECK_CLOSE(564.26f, point_vector_constructor_float->x, 0.05);
-//  BOOST_CHECK_CLOSE(646.65f, point_vector_constructor_float->y, 0.05);
-//  BOOST_CHECK_CLOSE(56.21f, point_vector_constructor_float->z, 0.05);
-//}
-
 BOOST_FIXTURE_TEST_CASE(array_constructor, Point3Test) 
 {
   BOOST_CHECK_EQUAL(23, point_array_constructor_integer->x);
@@ -393,7 +338,6 @@ BOOST_FIXTURE_TEST_CASE(type, Point3Test)
   BOOST_CHECK(Entity::Type::point3d == point_double->type());
   BOOST_CHECK(Entity::Type::point3d == point_float->type());
   BOOST_CHECK(Entity::Type::point3d == point_integer_copy->type());
-  //BOOST_CHECK(Entity::Type::point3d == point_vector_constructor_integer->type());
   BOOST_CHECK(Entity::Type::point3d == point_array_constructor_integer->type());
 }
 

@@ -437,6 +437,7 @@ typedef Window<Point<int>> WindowI;
 typedef Window<Point<double>> WindowD;
 typedef Window<Point<float>> WindowF;
 
+TL_TODO("Quitar de aqui")
 
 #ifdef HAVE_OPENCV
 

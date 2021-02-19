@@ -1,6 +1,8 @@
 # Modulo Core de la librería TIDOP
 
-add_library(tl_core ${LIB_TYPE}
+project(tl_core)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             console.cpp
             console.h
             defs.h
@@ -22,31 +24,36 @@ add_library(tl_core ${LIB_TYPE}
 )
   
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_core
+set_property(TARGET ${PROJECT_NAME}
              PROPERTY FOLDER "modules")
 
 # Instalación
 if(BUILD_SHARED_LIBS)
-    install(TARGETS tl_core
+
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
-    set_target_properties(tl_core PROPERTIES
+    set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 						  
-    target_link_libraries(tl_core ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY})
+    target_link_libraries(${PROJECT_NAME} 
+                          ${Boost_FILESYSTEM_LIBRARY} 
+                          ${Boost_SYSTEM_LIBRARY})
     
     if (HAVE_GDAL)
-         target_link_libraries(tl_core ${GDAL_LIBRARY})
+         target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
     endif(HAVE_GDAL)
 
 else()
-    install(TARGETS tl_core
+
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+
 endif()
 
 
@@ -55,5 +62,5 @@ install(DIRECTORY .
         FILES_MATCHING PATTERN "*.h")
 
 
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_core)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 

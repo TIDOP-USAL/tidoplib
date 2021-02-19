@@ -48,34 +48,35 @@ namespace tl
 class TL_EXPORT Licence
 {
 
-protected:
-
-  std::string mProductName;
-  std::string mText;
-  std::string mVersion;
-  std::string mAutor;
-  std::string mUrl;
 public:
 
   Licence();
-  Licence(const std::string &name, const std::string &text);
-
-  /*!
-   * \brief El objeto Licence esta vacio
-   * \return
-   */
-  bool empty() const;
+  Licence(const std::string &name, 
+          const std::string &type);
 
   std::string productName() const;
   void setProductName(const std::string &productName);
-  std::string text() const;
-  void setText(const std::string &text);
+  std::string type() const;
+  void setType(const std::string &type);
   std::string version() const;
   void setVersion(const std::string &version);
   std::string autor() const;
   void setAutor(const std::string &autor);
+  std::string autorEmail() const;
+  void setAutorEmail(const std::string &autorEmail);
   std::string url() const;
   void setUrl(const std::string &url);
+
+  bool empty() const;
+
+protected:
+
+  std::string mProductName;
+  std::string mType;
+  std::string mVersion;
+  std::string mAutor;
+  std::string mEmail;
+  std::string mUrl;
 };
 
 
@@ -89,18 +90,17 @@ class TL_EXPORT AppLicence
   : public Licence
 {
 
-protected:
-
-  std::list<Licence> mThirdPartyLicences;
-
 public:
 
   AppLicence();
 
   const std::list<Licence> *thirdPartyLicences() const;
 
-};
+protected:
 
+  std::list<Licence> mThirdPartyLicences;
+
+};
 
 
 

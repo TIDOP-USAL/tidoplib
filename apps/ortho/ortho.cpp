@@ -24,9 +24,9 @@
 #include <tidop/vect/vectwriter.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
-#include <tidop/experimental/datamodel.h>
-#include <tidop/experimental/camera.h>
-#include <tidop/experimental/photo.h>
+#include <tidop/graphic/datamodel.h>
+#include <tidop/geospatial/camera.h>
+#include <tidop/geospatial/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/ortho.h>
 
@@ -65,8 +65,11 @@ int main(int argc, char** argv)
   std::string mdt;
   std::string ortho_path;
   std::string footprint_file;
+  std::string offset_file;
+  double cx = 0.;
+  double cy = 0.;
 
-  Command cmd(cmd_name, "Huella de vuelo");
+  Command cmd(cmd_name, "ortho");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
@@ -74,6 +77,9 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
 
   cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --crs EPSG:25830 -- mdt mdt.tif");
 
@@ -89,6 +95,21 @@ int main(int argc, char** argv)
   }
 
   try {
+
+    /// Lectura del offset
+    
+    Point3D offset;
+
+    {
+      std::ifstream ifs;
+      ifs.open(offset_file, std::ifstream::in);
+      if (ifs.is_open()) {
+      
+        ifs >> offset.x >> offset.y >> offset.z;
+
+        ifs.close();
+      }
+    }
 
     /// Carga de imagenes 
 
@@ -119,7 +140,6 @@ int main(int argc, char** argv)
 
         }
         
-
       }
 
       ifs.close();
@@ -127,7 +147,7 @@ int main(int argc, char** argv)
 
     /// Fin carga de imagenes 
 
-    std::vector<experimental::Photo> photos;
+    std::vector<Photo> photos;
     
 
     /// Lectura de fichero bundle
@@ -153,7 +173,6 @@ int main(int argc, char** argv)
       TL_ASSERT(camera_count == images.size(), "ERROR");
 
       for (size_t i = 0; i < camera_count; i++) {
-      //while (std::getline(ifs, line)) {
 
         imageReader = ImageReaderFactory::createReader(images[i]);
         imageReader->open();
@@ -175,22 +194,20 @@ int main(int argc, char** argv)
         ss >> focal >> k1 >> k2;
 
         TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-        experimental::Camera camera;
-        //camera.setMake("SONY");
-        //camera.setModel("ILCE-6000");
-        //camera.setFocal(16);
+        Camera camera;
         camera.setHeight(height);
         camera.setWidth(width);
         camera.setType("Radial");
-        //camera.setSensorSize(23.5);
-        std::shared_ptr<experimental::Calibration> calibration = experimental::CalibrationFactory::create(camera.type());
-        calibration->setParameter(tl::experimental::Calibration::Parameters::focal, focal);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3006.23);        
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2024.27);
-        //calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3000);        
-        //calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2000);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k1, k1);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k2, k2);
+        std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
+        calibration->setParameter(Calibration::Parameters::focal, focal);
+        if (cx == 0. && cy == 0.) {
+          cx = width / 2;
+          cy = height / 2;
+        } 
+        calibration->setParameter(Calibration::Parameters::cx, cx);        
+        calibration->setParameter(Calibration::Parameters::cy, cy);
+        calibration->setParameter(Calibration::Parameters::k1, k1);
+        calibration->setParameter(Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
 
         std::getline(ifs, line);
@@ -234,15 +251,11 @@ int main(int argc, char** argv)
         double tz;
         ss >> tx >> ty >> tz;
         
-        //Point3D position(tx, ty, tz);
-        //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        Point3D offset(272021.250, 4338368.076, 379.370);
-        Point3D position;
-
         // Paso de la transformación de mundo a imagen a imagen mundo
 
         math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
 
+        Point3D position;
 
         position.x = -(rotation_transpose.at(0, 0) * tx +
                        rotation_transpose.at(0, 1) * ty +
@@ -255,8 +268,8 @@ int main(int argc, char** argv)
                        rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
-        experimental::Photo::Orientation orientation(position, rotation_matrix);
-        experimental::Photo photo(images[i]);
+        Photo::Orientation orientation(position, rotation_matrix);
+        Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
         photos.push_back(photo);
@@ -267,23 +280,27 @@ int main(int argc, char** argv)
 
     /// Fin lectura de fichero bundle
     
-    Orthorectification ortho(mdt);
-    ortho.run(photos, ortho_path, footprint_file);
+    //Orthorectification ortho(mdt);
+    //ortho.run(photos, ortho_path, footprint_file);
 
 
-//    /// Fusión de ortos en un unico mosaico
-//    size_t num_images = photos.size();
-//    std::vector<cv::Point> corners(num_images);
-//    std::vector<cv::UMat> masks_warped(num_images);
-//    std::vector<cv::UMat> images_warped(num_images);
+    /// Cargar ortos
+    
+    //std::vector<UMat> imgs;
+    //images.getUMatVector(imgs);
+
+    /// Fusión de ortos en un unico mosaico
+    size_t num_images = photos.size();
+    std::vector<cv::Point> corners(num_images);
+    std::vector<cv::UMat> masks_warped(num_images);
+    std::vector<cv::UMat> images_warped(num_images);
 //    std::vector<cv::Size> sizes(num_images);
 //    std::vector<cv::UMat> masks(num_images);
 //
 //    std::vector<cv::UMat> seam_est_imgs_;
 //
 //    // Prepare image masks
-//    for (size_t i = 0; i < num_images; ++i)
-//    {
+//    for (size_t i = 0; i < num_images; ++i) {
 //        masks[i].create(seam_est_imgs_[i].size(), CV_8U);
 //        masks[i].setTo(cv::Scalar::all(255));
 //    }
@@ -364,10 +381,10 @@ int main(int argc, char** argv)
 //    for (size_t i = 0; i < photos.size(); ++i)
 //        images_warped[i].convertTo(images_warped_f[i], CV_32F);
 //	
-//    /// 1 - Compensación de exposición
-//	
-//	int expos_comp_type = ExposureCompensator::GAIN_BLOCKS;
-//	
+    /// 1 - Compensación de exposición
+	
+	int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
+	
 ///*    
 //    if (string(argv[i + 1]) == "no")
 //      expos_comp_type = ExposureCompensator::NO;
@@ -383,8 +400,9 @@ int main(int argc, char** argv)
 //      cout << "Bad exposure compensation method\n";
 //      return -1;
 //    } */
-//			
-//    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+			
+    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+
 //    if (dynamic_cast<GainCompensator*>(compensator.get())){
 //        GainCompensator* gcompensator = dynamic_cast<GainCompensator*>(compensator.get());
 //        gcompensator->setNrFeeds(expos_comp_nr_feeds);
@@ -397,9 +415,14 @@ int main(int argc, char** argv)
 //        bcompensator->setNrGainsFilteringIterations(expos_comp_nr_filtering);
 //        bcompensator->setBlockSize(expos_comp_block_size, expos_comp_block_size);
 //    }
-//    
-//	compensator->feed(corners, images_warped, masks_warped);
-//	
+    
+  	compensator->feed(corners, images_warped, masks_warped);
+
+  
+    for (size_t i = 0; i < num_images; ++i) {
+      compensator->apply(int(i), corners[i], images_warped[i], masks_warped[i]);
+    }
+
 //	
 //    /// 2 - Busqueda de costuras (seam finder)
 //

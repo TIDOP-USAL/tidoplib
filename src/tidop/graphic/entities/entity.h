@@ -12,7 +12,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
-#include "tidop/experimental/datamodel.h"
+#include "tidop/graphic/datamodel.h"
 
 namespace tl
 {
@@ -145,8 +145,8 @@ public:
    */
   virtual bool isSimpleEntity() const = 0;
 
-  std::shared_ptr<experimental::TableRegister> data() const;
-  void setData(std::shared_ptr<experimental::TableRegister> &data);
+  std::shared_ptr<TableRegister> data() const;
+  void setData(std::shared_ptr<TableRegister> &data);
 
 protected:
 
@@ -156,7 +156,7 @@ protected:
    */
   Type mEntityType;
 
-  std::shared_ptr<experimental::TableRegister> mData;
+  std::shared_ptr<TableRegister> mData;
 };
 
 

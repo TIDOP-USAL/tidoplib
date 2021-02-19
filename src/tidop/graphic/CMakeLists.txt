@@ -1,6 +1,8 @@
 #Modulo graphic de la librería
 
-add_library(tl_graphic ${LIB_TYPE}
+project(tl_graphic)
+
+add_library(${PROJECT_NAME} ${LIB_TYPE}
             color.cpp
             color.h
             font.cpp
@@ -15,6 +17,8 @@ add_library(tl_graphic ${LIB_TYPE}
             canvas.h
             painter.cpp
             painter.h
+            datamodel.cpp
+            datamodel.h
             entities/entity.cpp
             entities/entity.h
             entities/point.cpp
@@ -27,24 +31,24 @@ add_library(tl_graphic ${LIB_TYPE}
  
  
 # Añade el proyecto a la carpeta 'modules'
-set_property(TARGET tl_graphic 
+set_property(TARGET ${PROJECT_NAME} 
              PROPERTY FOLDER "modules")
 
 #instalación
 if(BUILD_SHARED_LIBS)
-    install(TARGETS tl_graphic
+    install(TARGETS ${PROJECT_NAME}
             EXPORT "${TARGETS_EXPORT_NAME}"
             RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
 	
-	set_target_properties(tl_graphic PROPERTIES
+	set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 	
-	target_link_libraries(tl_graphic 
+	target_link_libraries(${PROJECT_NAME} 
 	                      tl_core tl_geom)
 else()
-    install(TARGETS tl_graphic 
+    install(TARGETS ${PROJECT_NAME} 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -54,4 +58,4 @@ install(DIRECTORY .
         DESTINATION include/tidop/graphic
         FILES_MATCHING PATTERN "*.h")
         
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_graphic)
+set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})

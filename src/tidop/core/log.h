@@ -85,13 +85,7 @@ public:
    * \return Flag con los niveles de mensajes aceptados por el log
    * \see EnumFlags
    */
-  EnumFlags<MessageLevel> logLevel() const;
-
-  /*!
-   * \brief Establece el nombre del fichero log
-   * \param[in] file fichero log
-   */
-  void setLogFile(const std::string &file);
+  static EnumFlags<MessageLevel> logLevel();
 
   /*!
    * \brief Establece el nivel de log
@@ -100,12 +94,18 @@ public:
    *
    * \code
    * Log log;
-   * log.setLogLevel(MessageLevel::MSG_WARNING | MessageLevel::MSG_ERROR);
+   * log.setLogLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
    * \endcode
    *
    * \param[in] level Niveles de log.
    */
-  void setLogLevel(MessageLevel level);
+  static void setLogLevel(MessageLevel level);
+
+  /*!
+   * \brief Establece el nombre del fichero log
+   * \param[in] file fichero log
+   */
+  void setLogFile(const std::string &file);
 
   /*!
    * \brief Escribe una linea en el log
@@ -219,39 +219,6 @@ private:
 
 };
 
-
-/* Definición de métodos inline de la clase Console */
-
-inline EnumFlags<MessageLevel> Log::logLevel() const
-{
-  return sLevel;
-}
-
-inline void Log::setLogFile(const std::string &file)
-{
-  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
-  TL_TODO("Comprobar si tiene permisos de escritura")
-  sLogFile = file;
-}
-
-inline void Log::setLogLevel(MessageLevel level)
-{
-  sLevel = level;
-}
-
-#ifdef TL_MESSAGE_HANDLER
-
-inline void Log::pauseListener()
-{
-  sPauseListener = true;
-}
-
-inline void Log::resumeListener()
-{
-  sPauseListener = false;
-}
-
-#endif // TL_MESSAGE_HANDLER
 
 /*! \} */ // end of Log
 

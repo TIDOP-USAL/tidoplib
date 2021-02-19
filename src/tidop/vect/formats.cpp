@@ -1,9 +1,5 @@
 #include "tidop/vect/formats.h"
 
-#include "tidop/vect/vectio.h"
-
-
-
 
 namespace tl
 {

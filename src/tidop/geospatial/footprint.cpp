@@ -5,7 +5,7 @@
 #include "tidop/geospatial/util.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/polygon.h"
-#include "tidop/experimental/datamodel.h"
+#include "tidop/graphic/datamodel.h"
 
 namespace tl
 {
@@ -28,7 +28,7 @@ Footprint::~Footprint()
   }
 }
 
-void Footprint::run(const std::vector<experimental::Photo> &photos, 
+void Footprint::run(const std::vector<Photo> &photos, 
                     const std::string &footprint)
 {
 
@@ -40,15 +40,15 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
   mVectorWriter->open();
   if (!mVectorWriter->isOpen())throw std::runtime_error("Vector open error");
 
-  std::shared_ptr<experimental::TableField> field(new experimental::TableField("image", 
-                                                  experimental::TableField::Type::STRING, 
+  std::shared_ptr<TableField> field(new TableField("image", 
+                                                  TableField::Type::STRING, 
                                                   254));
-  std::vector<std::shared_ptr<experimental::TableField>> fields;
+  std::vector<std::shared_ptr<TableField>> fields;
   fields.push_back(field);
 
   mVectorWriter->create();
   TL_TODO("Pasar CRS como parametro a la clase")
-  mVectorWriter->setCRS(Crs("EPSG:25830")); 
+  mVectorWriter->setCRS("EPSG:25830"); 
 
   graph::GLayer layer;
   layer.setName("footprint");
@@ -59,7 +59,7 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
     try {
 
       mCamera = photos[i].camera();
-      std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+      std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
       mImageReader = ImageReaderFactory::createReader(photos[i].path());
       mImageReader->open();
@@ -136,7 +136,7 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
       //limits[3] = affine_fotocoordinates_image.transform(PointI(0, rows));
       std::vector<PointI> limits = this->imageLimitsInPhotocoordinates();
 
-      experimental::Photo::Orientation orientation = photos[i].orientation();
+      Photo::Orientation orientation = photos[i].orientation();
 
       mDifferentialRectification = std::make_unique<DifferentialRectification<double>>(orientation.rotationMatrix(),
                                                                                        orientation.position(),
@@ -154,7 +154,7 @@ void Footprint::run(const std::vector<experimental::Photo> &photos,
       entity->push_back(footprint_coordinates[2]);
       entity->push_back(footprint_coordinates[3]);
 
-      std::shared_ptr<experimental::TableRegister> data(new experimental::TableRegister(fields));
+      std::shared_ptr<TableRegister> data(new TableRegister(fields));
       data->setValue(0, photos[i].name());
       entity->setData(data);
 
@@ -254,20 +254,20 @@ float Footprint::focal() const
   float focal_x = 1.f;
   float focal_y = 1.f;
 
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
+    Calibration::Parameters parameter = param->first;
     double value = param->second;
     switch (parameter) {
-      case experimental::Calibration::Parameters::focal:
+      case Calibration::Parameters::focal:
         focal_x = value;
         focal_y = value;
         break;
-      case experimental::Calibration::Parameters::focalx:
+      case Calibration::Parameters::focalx:
         focal_x = value;
         break;
-      case experimental::Calibration::Parameters::focaly:
+      case Calibration::Parameters::focaly:
         focal_y = value;
         break;
       default:
@@ -282,16 +282,16 @@ PointF Footprint::principalPoint() const
 {
   PointF principal_point;
 
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
+    Calibration::Parameters parameter = param->first;
     double value = param->second;
     switch (parameter) {
-      case experimental::Calibration::Parameters::cx:
+      case Calibration::Parameters::cx:
         principal_point.x = value;
         break;
-      case experimental::Calibration::Parameters::cy:
+      case Calibration::Parameters::cy:
         principal_point.y = value;
         break;
       default:
@@ -306,19 +306,19 @@ cv::Mat Footprint::distCoeffs() const
 {
   cv::Mat dist_coeffs = cv::Mat::zeros(1, 5, CV_32F);
 
-  std::shared_ptr<experimental::Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    experimental::Calibration::Parameters parameter = param->first;
+    Calibration::Parameters parameter = param->first;
     double value = param->second;
     switch (parameter) {
-      case experimental::Calibration::Parameters::k1:
+      case Calibration::Parameters::k1:
         dist_coeffs.at<float>(0) = value;
         break;
-      case experimental::Calibration::Parameters::k2:
+      case Calibration::Parameters::k2:
         dist_coeffs.at<float>(1) = value;
         break;
-      case experimental::Calibration::Parameters::k3:
+      case Calibration::Parameters::k3:
         dist_coeffs.at<float>(4) = value;
         break;
         //case experimental::Calibration::Parameters::k4:
@@ -330,10 +330,10 @@ cv::Mat Footprint::distCoeffs() const
         //case experimental::Calibration::Parameters::k6:
         //  dist_coeffs.at<float>(7) = value;
         //  break;
-      case experimental::Calibration::Parameters::p1:
+      case Calibration::Parameters::p1:
         dist_coeffs.at<float>(2) = value;
         break;
-      case experimental::Calibration::Parameters::p2:
+      case Calibration::Parameters::p2:
         dist_coeffs.at<float>(3) = value;
         break;
       default:

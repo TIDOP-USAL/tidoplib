@@ -75,12 +75,12 @@ GraphicEntity::Type GraphicEntity::type() const
   return mEntityType;
 }
 
-std::shared_ptr<experimental::TableRegister> graph::GraphicEntity::data() const
+std::shared_ptr<TableRegister> graph::GraphicEntity::data() const
 {
   return mData;
 }
 
-void GraphicEntity::setData(std::shared_ptr<experimental::TableRegister> &data)
+void GraphicEntity::setData(std::shared_ptr<TableRegister> &data)
 {
   mData = data;
 }

@@ -20,21 +20,21 @@ namespace tl
 
 Licence::Licence()
   : mProductName(),
-    mText()
+    mType()
 {
-
 }
 
-Licence::Licence(const std::string &productName, const std::string &text)
-    : mProductName(productName),
-      mText(text)
+Licence::Licence(const std::string &productName, 
+                 const std::string &type)
+  : mProductName(productName),
+    mType(type)
 {
     
 }
 
 bool Licence::empty() const
 {
-  return mProductName.empty() && mText.empty();
+  return mProductName.empty() && mType.empty();
 }
 
 std::string Licence::productName() const
@@ -46,14 +46,14 @@ void Licence::setProductName(const std::string &productName)
 {
   mProductName = productName;
 }
-std::string Licence::text() const
+std::string Licence::type() const
 {
-  return mText;
+  return mType;
 }
 
-void Licence::setText(const std::string &text)
+void Licence::setType(const std::string &text)
 {
-  mText = text;
+  mType = text;
 }
 
 std::string Licence::version() const
@@ -74,6 +74,16 @@ std::string Licence::autor() const
 void Licence::setAutor(const std::string &autor)
 {
   mAutor = autor;
+}
+
+std::string Licence::autorEmail() const
+{
+  return mEmail;
+}
+
+void Licence::setAutorEmail(const std::string &autorEmail)
+{
+  mEmail = autorEmail;
 }
 
 std::string Licence::url() const

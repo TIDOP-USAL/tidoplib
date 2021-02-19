@@ -18,13 +18,12 @@
 #include <string>
 #include <memory>
 
-#include "tidop/experimental/camera.h"
-#include "tidop/experimental/photo.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geospatial/diffrect.h"
-
+#include "tidop/geospatial/camera.h"
+#include "tidop/geospatial/photo.h"
 
 namespace tl
 {
@@ -45,7 +44,7 @@ public:
 	Orthorectification(const std::string &dtm);
 	~Orthorectification();
 
-  void run(const std::vector<experimental::Photo> &photos,
+  void run(const std::vector<Photo> &photos,
 					 const std::string &orthoPath,
 					 const std::string &footprint);
 
@@ -73,7 +72,7 @@ private:
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;
 	std::unique_ptr<VectorWriter> mVectorWriter;
-	experimental::Camera mCamera;
+	Camera mCamera;
 	Affine<PointI> mAffineImageCoordinatesToPhotocoordinates;
 	Affine<PointD> mAffineDtmImageToTerrain;
 	Window<PointD> mWindowDtmTerrainExtension;

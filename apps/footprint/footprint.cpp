@@ -9,9 +9,9 @@
 #include <tidop/vect/vectwriter.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
-#include <tidop/experimental/datamodel.h>
-#include <tidop/experimental/camera.h>
-#include <tidop/experimental/photo.h>
+#include <tidop/graphic/datamodel.h>
+#include <tidop/geospatial/camera.h>
+#include <tidop/geospatial/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/util.h>
 #include <tidop/vect/vectreader.h> // Para la lectura de la huella de vuelo
@@ -47,6 +47,9 @@ int main(int argc, char** argv)
   std::string crs;
   std::string mdt;
   std::string footprint_file;
+  std::string offset_file;
+  double cx = 0.;
+  double cy = 0.;
 
   Command cmd(cmd_name, "Huella de vuelo");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
@@ -55,8 +58,11 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentStringRequired>("crs", 'c', "Código EPSG", &crs));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
+  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
 
-  cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --crs EPSG:25830 -- mdt mdt.tif");
+  cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --image_path visualize --crs EPSG:25830 --mdt mdt.tif --footprint_file footprint.shp");
 
   Command::Status status = cmd.parse(argc, argv);
   if (status == Command::Status::parse_error ) {
@@ -70,6 +76,21 @@ int main(int argc, char** argv)
   }
 
   try {
+
+    /// Lectura del offset
+    
+    Point3D offset; // (272021.250, 4338368.076, 379.370);
+
+    {
+      std::ifstream ifs;
+      ifs.open(offset_file, std::ifstream::in);
+      if (ifs.is_open()) {
+      
+        ifs >> offset.x >> offset.y >> offset.z;
+
+        ifs.close();
+      }
+    }
 
     /// Carga de imagenes 
 
@@ -108,7 +129,7 @@ int main(int argc, char** argv)
 
     /// Fin carga de imagenes 
 
-    std::vector<experimental::Photo> photos;
+    std::vector<Photo> photos;
     
 
     /// Lectura de fichero bundle
@@ -156,7 +177,7 @@ int main(int argc, char** argv)
         ss >> focal >> k1 >> k2;
 
         TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-        experimental::Camera camera;
+        Camera camera;
         //camera.setMake("SONY");
         //camera.setModel("ILCE-6000");
         //camera.setFocal(16);
@@ -164,12 +185,16 @@ int main(int argc, char** argv)
         camera.setWidth(width);
         camera.setType("Radial");
         //camera.setSensorSize(23.5);
-        std::shared_ptr<experimental::Calibration> calibration = experimental::CalibrationFactory::create(camera.type());
-        calibration->setParameter(tl::experimental::Calibration::Parameters::focal, focal);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cx, 3006.23);        
-        calibration->setParameter(tl::experimental::Calibration::Parameters::cy, 2024.27);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k1, k1);
-        calibration->setParameter(tl::experimental::Calibration::Parameters::k2, k2);
+        std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
+        calibration->setParameter(Calibration::Parameters::focal, focal);
+        if (cx == 0. && cy == 0.) {
+          cx = width / 2;
+          cy = height / 2;
+        } 
+        calibration->setParameter(Calibration::Parameters::cx, cx);        
+        calibration->setParameter(Calibration::Parameters::cy, cy);
+        calibration->setParameter(Calibration::Parameters::k1, k1);
+        calibration->setParameter(Calibration::Parameters::k2, k2);
         camera.setCalibration(calibration);
 
         std::getline(ifs, line);
@@ -215,7 +240,7 @@ int main(int argc, char** argv)
         
         //Point3D position(tx, ty, tz);
         //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        Point3D offset(272021.250, 4338368.076, 379.370);
+        //Point3D offset(272021.250, 4338368.076, 379.370);
         Point3D position;
 
         // Paso de la transformación de mundo a imagen a imagen mundo
@@ -233,8 +258,8 @@ int main(int argc, char** argv)
                        rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
-        experimental::Photo::Orientation orientation(position, rotation_matrix);
-        experimental::Photo photo(images[i]);
+        Photo::Orientation orientation(position, rotation_matrix);
+        Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
         //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)

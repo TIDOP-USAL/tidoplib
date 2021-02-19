@@ -63,7 +63,7 @@ public:
 };
 
 
-class ImageOptionsBase
+class TL_EXPORT ImageOptionsBase
   : public ImageOptions
 {
 

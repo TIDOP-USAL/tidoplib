@@ -360,18 +360,6 @@ inline T_FLAG operator ~ (T_FLAG flag)                              \
     ~static_cast<std::underlying_type<T_FLAG>::type>(flag)          \
   );                                                                \
 }                                                                   \
-                                                                    
-//inline bool operator == (T_FLAG flag1, T_FLAG flag2)                \
-//{                                                                   \
-//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) == \
-//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
-//}                                                                   \
-//                                                                    \
-//inline bool operator != (T_FLAG flag1, T_FLAG flag2)                \
-//{                                                                   \
-//  return (static_cast<std::underlying_type<T_FLAG>::type>(flag1) != \
-//          static_cast<std::underlying_type<T_FLAG>::type>(flag2));  \
-//}                                                                   \
 
 
 

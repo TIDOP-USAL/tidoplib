@@ -4,9 +4,6 @@
 namespace tl
 {
 
-namespace experimental
-{
-
 
 
 Photo::Photo()
@@ -190,6 +187,5 @@ bool Photo::Orientation::isEmpty() const
 //{
 //}
 
-} // namespace experimental
 
 } // namespace tl
