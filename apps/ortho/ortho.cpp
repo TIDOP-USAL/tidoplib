@@ -68,7 +68,8 @@ int main(int argc, char** argv)
   std::string offset_file;
   double cx = 0.;
   double cy = 0.;
-  Command cmd(cmd_name, "Huella de vuelo");
+
+  Command cmd(cmd_name, "ortho");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
@@ -97,7 +98,7 @@ int main(int argc, char** argv)
 
     /// Lectura del offset
     
-    Point3D offset; // (272021.250, 4338368.076, 379.370);
+    Point3D offset;
 
     {
       std::ifstream ifs;
@@ -172,7 +173,6 @@ int main(int argc, char** argv)
       TL_ASSERT(camera_count == images.size(), "ERROR");
 
       for (size_t i = 0; i < camera_count; i++) {
-      //while (std::getline(ifs, line)) {
 
         imageReader = ImageReaderFactory::createReader(images[i]);
         imageReader->open();
@@ -195,13 +195,9 @@ int main(int argc, char** argv)
 
         TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
         Camera camera;
-        //camera.setMake("SONY");
-        //camera.setModel("ILCE-6000");
-        //camera.setFocal(16);
         camera.setHeight(height);
         camera.setWidth(width);
         camera.setType("Radial");
-        //camera.setSensorSize(23.5);
         std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
         calibration->setParameter(Calibration::Parameters::focal, focal);
         if (cx == 0. && cy == 0.) {
@@ -255,15 +251,11 @@ int main(int argc, char** argv)
         double tz;
         ss >> tx >> ty >> tz;
         
-        //Point3D position(tx, ty, tz);
-        //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        //Point3D offset(272021.250, 4338368.076, 379.370);
-        Point3D position;
-
         // Paso de la transformación de mundo a imagen a imagen mundo
 
         math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
 
+        Point3D position;
 
         position.x = -(rotation_transpose.at(0, 0) * tx +
                        rotation_transpose.at(0, 1) * ty +
@@ -288,9 +280,14 @@ int main(int argc, char** argv)
 
     /// Fin lectura de fichero bundle
     
-    Orthorectification ortho(mdt);
-    ortho.run(photos, ortho_path, footprint_file);
+    //Orthorectification ortho(mdt);
+    //ortho.run(photos, ortho_path, footprint_file);
 
+
+    /// Cargar ortos
+    
+    //std::vector<UMat> imgs;
+    //images.getUMatVector(imgs);
 
     /// Fusión de ortos en un unico mosaico
     size_t num_images = photos.size();
@@ -423,7 +420,7 @@ int main(int argc, char** argv)
 
   
     for (size_t i = 0; i < num_images; ++i) {
-
+      compensator->apply(int(i), corners[i], images_warped[i], masks_warped[i]);
     }
 
 //	
