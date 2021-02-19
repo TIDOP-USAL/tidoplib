@@ -81,27 +81,29 @@ public:
 
     mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_ReadOnly));
 
-    std::array<double, 6> geotransform;
-    if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
-      // Valores por defecto
-      geotransform[0] = 0.;           /* top left x */
-      geotransform[1] = 1.;           /* w-e pixel resolution */
-      geotransform[2] = 0.;           /* 0 */
-      geotransform[3] = this->rows(); /* top left y */
-      geotransform[4] = 0.;           /* 0 */
-      geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
-    }
+    if (mDataset) {
+      std::array<double, 6> geotransform;
+      if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
+        // Valores por defecto
+        geotransform[0] = 0.;           /* top left x */
+        geotransform[1] = 1.;           /* w-e pixel resolution */
+        geotransform[2] = 0.;           /* 0 */
+        geotransform[3] = this->rows(); /* top left y */
+        geotransform[4] = 0.;           /* 0 */
+        geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+      }
 
-    mAffine.setParameters(geotransform[1],
-                          geotransform[2],
-                          geotransform[4],
-                          geotransform[5],
-                          geotransform[0],
-                          geotransform[3]);
-      
-    const char *prj = mDataset->GetProjectionRef();
-    if (prj != nullptr) {
-      mEpsgCode = prj;
+      mAffine.setParameters(geotransform[1],
+                            geotransform[2],
+                            geotransform[4],
+                            geotransform[5],
+                            geotransform[0],
+                            geotransform[3]);
+
+      const char *prj = mDataset->GetProjectionRef();
+      if (prj != nullptr) {
+        mEpsgCode = prj;
+      }
     }
 
   }
