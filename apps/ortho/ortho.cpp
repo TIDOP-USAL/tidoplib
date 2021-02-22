@@ -29,6 +29,7 @@
 #include <tidop/geospatial/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/ortho.h>
+#include <tidop/vect/vectreader.h>
 
 #include <opencv2/stitching.hpp>
 
@@ -284,10 +285,76 @@ int main(int argc, char** argv)
     //ortho.run(photos, ortho_path, footprint_file);
 
 
-    /// Cargar ortos
-    
-    //std::vector<UMat> imgs;
-    //images.getUMatVector(imgs);
+    /// Se carga la huella de vuelo y se van leyendo las ortos y realizando la compensación de exposición
+
+    std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
+    vectorReader->open();
+    if (vectorReader->isOpen()) {
+
+      if (vectorReader->layersCount() >= 1) {
+
+        std::map<double, std::shared_ptr<graph::GPolygon>> entities;
+        std::shared_ptr<graph::GLayer> layer = vectorReader->read(0);
+
+        for (const auto &entity : *layer) {
+
+          graph::GraphicEntity::Type type = entity->type();
+          if (type == graph::GraphicEntity::Type::polygon_2d) {
+
+            /// se carga la primera imagen y se busca las que intersectan
+            std::shared_ptr<graph::GPolygon> polygon = std::dynamic_pointer_cast<graph::GPolygon>(entity);
+            std::shared_ptr<TableRegister> data = polygon->data();
+            std::string orto_to_compensate = data->value(0);
+
+            /// Busqueda de imagenes que intersectan
+
+            
+
+
+          } else {
+            msgError("No es un fichero de huella de vuelo");
+            return 1;
+          }
+
+        }
+
+      }
+
+      vectorReader->close();
+    }
+
+    for (size_t i = 0; i < photos.size(); i++) {
+
+      // Carga de  la huella de vuelo
+      
+      
+      
+      std::string ortho_file = ortho_path;
+      ortho_file.append("\\").append(photos[i].name()).append(".png");
+
+
+    //  std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortho_file);
+    //  image_reader->open();
+    //  if (image_reader->isOpen()) {
+
+    //    int cols = image_reader->cols();
+    //    int rows = image_reader->rows();
+    //    double scale = 1.;
+    //    if (cols > rows) {
+    //      scale = cols / 1000.;
+    //    } else {
+    //      scale = rows / 1000.;
+    //    }
+    //    cv::Mat img_low = image_reader->read(scale, scale);
+    //    low_res_images[i] = img_low.clone();
+    //    image_reader->close();
+    //  }
+    }
+    //
+    //std::vector<cv::UMat> imgs;
+    ////low_res_images.getUMatVector(imgs);
+
+
 
     /// Fusión de ortos en un unico mosaico
     size_t num_images = photos.size();
