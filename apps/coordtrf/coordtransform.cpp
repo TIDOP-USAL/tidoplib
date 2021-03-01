@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 
   Console &console = Console::instance();
   console.setTitle("Transform Example");
-  console.setLogLevel(MessageLevel::msg_verbose);
+  console.setMessageLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
 

@@ -56,7 +56,7 @@ int main(int argc, char** argv)
   console.setTitle(cmd_name);
   console.setConsoleUnicode();
   console.setFontHeight(14);
-  console.setLogLevel(MessageLevel::msg_verbose);
+  console.setMessageLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
   std::string bundle_file;

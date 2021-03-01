@@ -324,13 +324,6 @@
 #define TL_ROUND_TO_INT(n)  static_cast<int>(round(n))
 
 #ifndef _MSC_VER
-//En el compilador de LINUX no incluye printf_s de C++11
-// De momento lo hago asi...
-#define printf_s(...) printf( __VA_ARGS__)
-#define sprintf_s(dest, len, format, ...) snprintf(dest, len, format, __VA_ARGS__) 
-#endif
-
-#ifndef _MSC_VER
 #  define DO_PRAGMA(x) _Pragma (#x)
 #  define TL_TODO(x) DO_PRAGMA(message ("TODO: " #x))
 #else

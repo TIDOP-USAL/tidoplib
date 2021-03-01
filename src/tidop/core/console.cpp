@@ -22,6 +22,7 @@
 #include <ctime>
 #include <cstdio>
 #include <vector>
+#include <iomanip>
 
 namespace tl
 {
@@ -40,7 +41,7 @@ static struct msgProperties msgTemplate[] = {
   { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::red, Console::Intensity::bright}
 };
 
-msgProperties getMessageProperties(MessageLevel msgLevel) 
+msgProperties messageProperties(MessageLevel msgLevel) 
 {
   int iLevel = 0;
   switch (msgLevel) {
@@ -103,10 +104,17 @@ EnumFlags<MessageLevel> Console::messageLevel()
   return sLevel;
 }
 
+void Console::setMessageLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 void Console::setLogLevel(MessageLevel level)
 {
   sLevel = level;
 }
+#endif
 
 void Console::printMessage(const std::string &msg)
 {
@@ -115,13 +123,13 @@ void Console::printMessage(const std::string &msg)
 
   std::string aux(msg);
   replaceString(&aux, "%", "%%");
-  printf_s("%s\n", aux.c_str());
+  std::cout << aux << "\n";
 }
 
 void Console::printErrorMessage(const std::string &msg)
 {
-  setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_error).foreColor,
-                            getMessageProperties(MessageLevel::msg_error).intensity);
+  setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
+                            messageProperties(MessageLevel::msg_error).intensity);
   printMessage(msg);
   reset();
 }
@@ -275,8 +283,8 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void Console::onMsgDebug(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_debug).foreColor,
-                              getMessageProperties(MessageLevel::msg_debug).intensity);
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foreColor,
+                              messageProperties(MessageLevel::msg_debug).intensity);
     printMessage(msg);
     reset();
   }
@@ -285,8 +293,8 @@ void Console::onMsgDebug(const char *msg, const char *date)
 void Console::onMsgInfo(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::msg_info)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_info).foreColor,
-                              getMessageProperties(MessageLevel::msg_info).intensity);
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foreColor,
+                              messageProperties(MessageLevel::msg_info).intensity);
     printMessage(msg);
     reset();
   }
@@ -295,8 +303,8 @@ void Console::onMsgInfo(const char *msg, const char *date)
 void Console::onMsgWarning(const char *msg, const char *date)
 {
   if (sLevel.isActive(MessageLevel::msg_warning)) {
-    setConsoleForegroundColor(getMessageProperties(MessageLevel::msg_warning).foreColor,
-                              getMessageProperties(MessageLevel::msg_warning).intensity);
+    setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foreColor,
+                              messageProperties(MessageLevel::msg_warning).intensity);
     printMessage(msg);
     reset();
   }
@@ -791,60 +799,62 @@ void Command::showHelp() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("\nUsage: %s [OPTION...] \n\n", mName.c_str());
+  std::cout << "\nUsage: " << mName << " [OPTION...] \n\n";
   console.reset();
 
   /// Descripción del comando
-  printf("%s \n\n", mDescription.c_str());
+  std::cout << mDescription << "\n\n";
 
   size_t max_name_size = 7;
   for (auto arg : mCmdArgs) {
     max_name_size = std::max(max_name_size, arg->name().size());
   }
-  std::string name_tmpl = std::string("%s%-").append(std::to_string(max_name_size)).append("s %s %s");
-  printf( "  -h, ");
-  printf(name_tmpl.c_str(), "--", "help", "   ", "Display this help and exit\n");
-  printf( "    , ");
-  printf(name_tmpl.c_str(), "--", "version", "   ", "Output version information and exit\n");
+  max_name_size += 1;
+  
+  std::cout << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
+  std::cout << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
 
   for (auto arg : mCmdArgs) {
-    if (arg->shortName()){
-      printf( "  -%c, ", arg->shortName());
-    } else {
-      printf( "    , ");
-    }
-    if (!arg->name().empty()){
-      printf(name_tmpl.c_str(), "--", arg->name().c_str(), (arg->isRequired() ? "[R]" : "[O]"), arg->description().c_str());
-    } else {
-      printf(name_tmpl.c_str(), "  ", "", (arg->isRequired() ? "[R]" : "[O]"), arg->description().c_str());
-    }
-    printf("\n");
-  }
-  printf("\n\n");
 
-  printf("R: Required argument\n");
-  printf("O: Optional argument\n\n");
+    if (arg->shortName()){
+      std::cout << "  -" << arg->shortName() << ", ";
+    } else {
+      std::cout << "    , ";
+    }
+
+    if (!arg->name().empty()){
+      std::cout << "--" << std::left << std::setw(max_name_size) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ") << arg->description();
+    } else {
+      std::cout << "--" << std::left << std::setw(max_name_size) << "" << (arg->isRequired() ? "[R] " : "[O] ") << arg->description();
+    }
+
+    std::cout << "\n";
+  }
+  std::cout << "\n\n";
+
+  std::cout << "R: Required argument\n";
+  std::cout << "O: Optional argument\n\n";
 
 
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("Argument Syntax Conventions\n\n");
+  std::cout << "Argument Syntax Conventions\n\n";
   console.reset();
 
-  printf_s("  - Arguments are options if they begin with a hyphen delimiter (-).\n");
-  printf_s("  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. ‘-abc’ is equivalent to ‘-a -b -c’.\n");
-  printf_s("  - Option names are single alphanumeric characters.\n");
-  printf_s("  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n");
-  printf_s("  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n");
+  std::cout << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
+  std::cout << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. ‘-abc’ is equivalent to ‘-a -b -c’.\n";
+  std::cout << "  - Option names are single alphanumeric characters.\n";
+  std::cout << "  - An option and its argument may or may not appear as separate tokens. ‘-o foo’ and ‘-ofoo’ are equivalent.\n";
+  std::cout << "  - Long options (--) can have arguments specified after space or equal sign (=).  ‘--name=value’ is equivalent to ‘--name value’.\n\n";
 
   if (!mExamples.empty()){
     console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
-    printf("Examples\n\n");
+    std::cout << "Examples\n\n";
     console.reset();
 
     for (auto &example : mExamples){
-      printf_s("  %s\n", example.c_str());
+      std::cout << "  " << example << "\n";
     }
   }
 }
@@ -855,7 +865,7 @@ void Command::showVersion() const
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
-  printf_s("Version: %s\n", mVersion.c_str());
+  std::cout << "Version: " << mVersion << "\n";
 
   console.reset();
 }
@@ -865,10 +875,10 @@ void Command::showLicence() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("Licence\n\n");
+  std::cout << "Licence\n\n";
   console.reset();
 
-  printf_s("%s: %s\n", mLicence.productName().c_str(), mLicence.version().c_str());
+  std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 
   //mLicence.productName(); 
   //mLicence.version();
@@ -1094,24 +1104,24 @@ void CommandList::showHelp() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("\nUsage: %s [--version] [-h | --help] [--licence] <command> [<args>] \n\n", mName.c_str());
+  std::cout << "\nUsage: " << mName << " [--version] [-h | --help] [--licence] <command> [<args>] \n\n";
   console.reset();
 
-  printf("%s \n\n", mDescription.c_str());
+  std::cout << mDescription << " \n\n";
 
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
-  printf("Command list: \n\n");
+  std::cout << "Command list: \n\n";
   console.reset();
 
-  size_t max_name_size = 7;
+  size_t max_name_size = 10;
   for (auto &arg : mCommands) {
     max_name_size = std::max(max_name_size, arg->name().size());
   }
-  std::string name_tmpl = std::string("%-").append(std::to_string(max_name_size)).append("s %s\n");
+  max_name_size += 2;
 
   for (auto &arg : mCommands) {
-    printf(name_tmpl.c_str(), arg->name().c_str(), arg->description().c_str());
+    std::cout << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
   }
 
 }
@@ -1122,7 +1132,7 @@ void CommandList::showVersion() const
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
 
-  printf_s("Version: %s\n", mVersion.c_str());
+  std::cout << "Version: " << mVersion << "\n";
 
   console.reset();
 }
@@ -1158,7 +1168,9 @@ Progress::Progress()
   updateScale();
 }
 
-Progress::Progress(double min, double max, const std::string &msg) 
+Progress::Progress(double min, 
+                   double max, 
+                   const std::string &msg) 
   : mProgress(0.), 
     mMinimun(min), 
     mMaximun(max), 
@@ -1174,6 +1186,7 @@ Progress::Progress(double min, double max, const std::string &msg)
 bool Progress::operator()(double increment) 
 { 
   std::lock_guard<std::mutex> lck(Progress::sMutex);
+
   if (mProgress == 0.) initialize();
   mProgress += increment;
   int percent = TL_ROUND_TO_INT(mProgress * mScale);
@@ -1185,7 +1198,9 @@ bool Progress::operator()(double increment)
   return true;
 }
 
-void Progress::init(double min, double max, const std::string &msg)
+void Progress::init(double min, 
+                    double max, 
+                    const std::string &msg)
 {
   mMinimun = min;
   mMaximun = max;
@@ -1229,15 +1244,10 @@ void Progress::setOnTerminateListener(std::function<void(void)> &terminateFuncti
 
 void Progress::initialize()
 {
-  printf_s("%s\n", mMsg.c_str());
+  std::cout << mMsg << "\n";
 
   if (onInitialize) (*onInitialize)();
 }
-
-//void Progress::updateProgress() 
-//{
-//  if (onProgress) (*onProgress)(mPercent);
-//}
 
 void Progress::updateScale()
 {
@@ -1272,7 +1282,7 @@ void ProgressBar::updateProgress()
     std::cout << "\r";
 
     Console &console = Console::instance();
-    int posInBar = TL_ROUND_TO_INT(mPercent * mSize / 100.);
+    int posInBar = TL_ROUND_TO_INT(static_cast<double>(mPercent) * static_cast<double>(mSize) / 100.);
 
     int ini = mSize / 2 - 2;
     for (int i = 0; i < mSize; i++) {
@@ -1323,7 +1333,7 @@ void ProgressBar::updateProgress()
 void ProgressBar::terminate()
 {
   if (onTerminate == nullptr)
-    printf("\n");
+    std::cout << "\n";
   else 
     (*onTerminate)();
 }
@@ -1354,298 +1364,11 @@ void ProgressPercent::updateProgress()
 void ProgressPercent::terminate()
 {
   if (onTerminate == nullptr)
-    printf("\n");
+    std::cout << "\n";
   else 
     (*onTerminate)();
 }
 
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-/* Deprecated class */
-
-CmdArgument::CmdArgument(const char *name, const char *description, bool optional)
-  : mName(name),
-    mDescription(description),
-    bOptional(optional)
-{
-}
-
-const char *CmdArgument::getDescription() const
-{
-  return mDescription.c_str();
-}
-
-const char *CmdArgument::getName() const
-{
-  return mName.c_str();
-}
-
-bool CmdArgument::isOptional() const
-{
-  return bOptional;
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdOption::CmdOption(const char *name, const char *description)
-  : CmdArgument(name, description, true), mValue(false)
-{
-}
-
-CmdArgument::Type CmdOption::getType() const
-{
-  return CmdArgument::Type::OPTION;
-}
-
-bool CmdOption::isActive() const
-{
-  return mValue;
-}
-
-void CmdOption::setActive(bool active)
-{
-  mValue = active;
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParameter::CmdParameter(const char *name, const char *description, bool optional, const char *defValue)
-  : CmdArgument(name, description, optional), mValue(defValue)
-{
-}
-
-CmdArgument::Type CmdParameter::getType() const
-{
-  return CmdArgument::Type::PARAMETER;
-}
-
-const char *CmdParameter::getValue() const
-{
-  return mValue.c_str();
-}
-
-void CmdParameter::setValue(const std::string &value)
-{
-  mValue = value;
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParameterOptions::CmdParameterOptions(const char *name, const char *options, const char *description, bool optional, const char *defValue)
-  : CmdArgument(name, description, optional), mValue(defValue)
-{
-  split(options, mOptions, ",");
-}
-
-int CmdParameterOptions::getIndex() const
-{
-  for ( size_t i = 0; i < mOptions.size(); i++ ) {
-    if (mOptions[i] == mValue) {
-      return static_cast<int>(i);
-      break;
-    }
-  }
-  return 0;
-}
-
-int CmdParameterOptions::getIndex(const std::string &value) const
-{
-  for ( size_t i = 0; i < mOptions.size(); i++ ) {
-    if (mOptions[i] == value) {
-      return static_cast<int>(i);
-      break;
-    }
-  }
-  return 0;
-}
-
-std::vector<std::string> CmdParameterOptions::getOptions() const
-{
-  return mOptions;
-}
-
-CmdArgument::Type CmdParameterOptions::getType() const
-{
-  return CmdArgument::Type::PARAMETER_OPTIONS;
-}
-
-const char *CmdParameterOptions::getValue() const
-{
-  return mValue.c_str();
-}
-
-void CmdParameterOptions::setValue(const std::string &value)
-{
-  for (auto opt : mOptions) {
-    if (value == opt) {
-      mValue = value;
-      break;
-    }
-  }
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-CmdParser::CmdParser()
-  : mCmdName(""),
-    mCmdDescription(""),
-    mCmdArgs(0)
-{
-}
-
-CmdParser::CmdParser(const char *name, const char *description)
-  : mCmdName(name),
-    mCmdDescription(description),
-    mCmdArgs(0)
-{
-}
-
-CmdParser::CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args)
-  : mCmdName(name),
-    mCmdDescription(description),
-    mCmdArgs(cmd_args)
-{
-}
-
-void CmdParser::addParameter(const char *name, const char *description, bool optional, const char *defValue)
-{
-  mCmdArgs.push_back(std::make_shared<CmdParameter>(name, description, optional, defValue));
-}
-
-
-void CmdParser::addParameterOption(const char *name, const char *options, const char *description, bool optional, const char *defValue)
-{
-  mCmdArgs.push_back(std::make_shared<CmdParameterOptions>(name, options, description, optional, defValue));
-}
-
-
-void CmdParser::addOption(const char *name, const char *description)
-{
-  mCmdArgs.push_back(std::make_shared<CmdOption>(name, description));
-}
-
-CmdParser::Status CmdParser::parse(int argc, const char* const argv[])
-{
-  for (auto arg : mCmdArgs) {
-    // Comando de ayuda
-    if (argc > 1 && strcmp(argv[1], "-help") == 0) {
-      printHelp();
-      return CmdParser::Status::PARSE_HELP;
-    }
-    bool bOptional = arg->isOptional();
-    std::string argName = (arg->getType() == CmdArgument::Type::OPTION) ? "-" : "--";
-    argName += arg->getName();
-    bool bFind = false;
-    for (int i = 1; i < argc; ++i) {
-      std::string arg_name = std::string(argv[i]);
-      std::size_t found = arg_name.find(argName);
-      if (found != std::string::npos) {
-        if (arg_name == argName && arg->getType() == CmdArgument::Type::OPTION) {
-          dynamic_cast<CmdOption *>(arg.get())->setActive(true);
-          break;
-        } else {
-          std::size_t val_pos = arg_name.find("=",found);
-          std::string name = arg_name.substr(0, val_pos);
-          if (val_pos != std::string::npos && name == argName) {
-            if (arg->getType() == CmdArgument::Type::PARAMETER) {
-              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              tl::replaceString(&value, "\"", "\\");
-              dynamic_cast<CmdParameter *>(arg.get())->setValue(value);
-              bFind = true;
-              break;
-            } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
-              std::string value = arg_name.substr(val_pos+1, arg_name.size() - val_pos);
-              dynamic_cast<CmdParameterOptions *>(arg.get())->setValue(value);
-              bFind = true;
-              break;
-            }
-          }
-        }
-      }
-    }
-    // Ver si no es opcional y devolver un error si no existe
-    if (bFind == false && bOptional == false) {
-      msgError("Falta %s. Parámetro obligatorio ", arg->getName());
-      printHelp();
-      return CmdParser::Status::PARSE_ERROR;
-    }
-  }
-  return CmdParser::Status::PARSE_SUCCESS;
-}
-
-void CmdParser::printHelp()
-{
-
-  Console &console = Console::instance();
-
-  console.setConsoleForegroundColor(Console::Color::GREEN, Console::Intensity::BRIGHT);
-  console.setFontBold(true);
-  //TODO: Solución rapida. modificar
-  printf("%s: %s \n\n", mCmdName.c_str(), mCmdDescription.c_str());
-  //printf_s("%s: %s \n", mCmdName.c_str(), mCmdDescription.c_str());
-
-  console.setConsoleForegroundColor(Console::Color::WHITE, Console::Intensity::BRIGHT);
-  console.setFontBold(false);
-
-  printf("Listado de parámetros: \n\n");
-
-  //TODO: Añadir automaticamente el valor por defecto
-  for (auto arg : mCmdArgs) {
-    std::string s_type, s_description;
-    if (arg->getType() == CmdArgument::Type::OPTION) {
-      s_type = "Opción";
-      s_description = arg->getDescription();
-    } else if (arg->getType() == CmdArgument::Type::PARAMETER) {
-      s_type = "Parámetro";
-      s_description = arg->getDescription();
-    } else if (arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
-      s_type = "Lista de opciones";
-      s_description = arg->getDescription();
-      s_description = ". Los valores posibles son: ";
-      for (auto opt : dynamic_cast<CmdParameterOptions *>(arg.get())->getOptions()) {
-        s_description += " ";
-        s_description += opt;
-      }
-    } else continue;
-     printf_s("- %s [%s | %s]: %s \n", arg->getName(), s_type.c_str(), (arg->isOptional() ? "O" : "R"), s_description.c_str());
-    //printf_s("%s [%s | %s]: %s \n", arg->getName(), ((ArgType::OPTION == arg->getType())? "Option" : "Parameter"), (arg->isOptional() ? "O" : "R"), arg->getDescription().c_str());
-  }
-  printf_s("\nUso:\n\n");
-  printf_s("%s", mCmdName.c_str());
-  for (auto arg : mCmdArgs) {
-    printf_s( " %s%s%s", ((CmdArgument::Type::OPTION == arg->getType())? "-" : "--"),
-             arg->getName(), ((CmdArgument::Type::OPTION == arg->getType())? "" : "=[value]"));
-  }
-  printf_s("\n\n");
-  //printf_s("\n\nPulse intro para continuar");
-  //getchar();
-}
-
-bool CmdParser::hasOption(const std::string &option) const
-{
-  for (auto arg : mCmdArgs) {
-    if (arg->getType() == CmdArgument::Type::OPTION) {
-      if (arg->getName() == option) {
-        return dynamic_cast<CmdOption *>(arg.get())->isActive();
-      }
-    }
-  }
-  return false;
-}
-
-/* End deprecated class */
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-/* ---------------------------------------------------------------------------------- */
 
 } // End mamespace tl
 

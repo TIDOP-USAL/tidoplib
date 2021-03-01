@@ -25,7 +25,7 @@ int main(int argc, char** argv)
   // Consola
   Console &console = Console::instance();
   console.setTitle("Read Image");
-  console.setLogLevel(MessageLevel::msg_verbose);
+  console.setMessageLevel(MessageLevel::msg_verbose);
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 

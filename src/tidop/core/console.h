@@ -164,7 +164,10 @@ public:
    * \param[in] level Nivel de log
    * \see MessageLevel
    */
+  static void setMessageLevel(MessageLevel level);
+  #ifdef TL_ENABLE_DEPRECATED_METHODS
   static void setLogLevel(MessageLevel level);
+  #endif
 
   /*!
    * \brief Imprime un mensaje en la consola
@@ -1119,10 +1122,6 @@ class ArgumentValidator;
 template <typename T>
 class ArgumentValidator<T, typename std::enable_if<std::is_arithmetic<T>::value>::type>
 {
-private:
-
-  T mMin;
-  T mMax;
 
 public:
 
@@ -1151,6 +1150,11 @@ public:
   {
     return mMax;
   }
+
+private:
+
+  T mMin;
+  T mMax;
 };
 
 
@@ -1750,58 +1754,6 @@ public:
  */
 class TL_EXPORT Progress
 {
-protected:
-
-  /*!
-   * \brief Valor actual
-   */
-  double mProgress;
-
-  /*!
-   * \brief Valor mínimo
-   */
-  double mMinimun;
-
-  /*!
-   * \brief Valor máximo
-   */
-  double mMaximun;
-
-  /*!
-   * \brief Valor actual en tanto por ciento
-   */
-  int mPercent;
-
-  /*!
-   * \brief Mensaje que se puede añadir con información del proceso.
-   */
-  std::string mMsg;
-
-  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
-  //      crear una clase hija si hace falta
-
-  /*!
-   * \brief Manejador del evento que se produce cada vez que se
-   * avanza una posición en la función de progreso
-   */
-  std::function<void(double)> *onProgress;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al inicializar
-   */
-  std::function<void(void)> *onInitialize;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al terminar
-   */
-  std::function<void(void)> *onTerminate;
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
-
-  static std::mutex sMutex;
 
 public:
 
@@ -1817,12 +1769,12 @@ public:
    * \param[in] max Valor máximo
    * \param[in] msg Mensaje opcional con información del proceso.
    */
-  Progress(double min, double max, const std::string &msg = "");
+  Progress(double min, double max, const std::string &msg = std::string());
 
   /*!
    * \brief Destructora
    */
-  virtual ~Progress() {}
+  virtual ~Progress() = default;
 
   /*!
    * \brief Operador de llamada.
@@ -1887,6 +1839,59 @@ protected:
    * \brief terminate
    */
   virtual void terminate() = 0;
+
+protected:
+
+  /*!
+   * \brief Valor actual
+   */
+  double mProgress;
+
+  /*!
+   * \brief Valor mínimo
+   */
+  double mMinimun;
+
+  /*!
+   * \brief Valor máximo
+   */
+  double mMaximun;
+
+  /*!
+   * \brief Valor actual en tanto por ciento
+   */
+  int mPercent;
+
+  /*!
+   * \brief Mensaje que se puede añadir con información del proceso.
+   */
+  std::string mMsg;
+
+  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
+  //      crear una clase hija si hace falta
+
+  /*!
+   * \brief Manejador del evento que se produce cada vez que se
+   * avanza una posición en la función de progreso
+   */
+  std::function<void(double)> *onProgress;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al inicializar
+   */
+  std::function<void(void)> *onInitialize;
+
+  /*!
+   * \brief Manejador del evento que se ejecuta al terminar
+   */
+  std::function<void(void)> *onTerminate;
+
+  /*!
+   * \brief Escala
+   */
+  double mScale;
+
+  static std::mutex sMutex;
 };
 
 
@@ -1994,499 +1999,6 @@ private:
    */
   void terminate() override;
 };
-
-
-
-
-
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-/* Deprecated class */
-
-
-
-// http://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html#Argument-Syntax
-
-// POSIX
-// Los argumentos son opciones si comienzan con un guión (‘-’).
-// Múltiples opciones pueden seguir un delimitador de guión en un único token si las opciones no tienen argumentos.
-// Asi '-abc' es equivalente a '-a -b -c'.
-// Option names are single alphanumeric characters (as for isalnum; see Classification of Characters).
-// Ciertas opciones requieren un argumento. Por ejemplo, el '-o' comando del comando ld requiere un argumento
-// nombre-archivo de salida.
-// Una opción y su argumento pueden o no pueden aparecer como fichas separadas. (En otras palabras, el espacio en
-// blanco que los separa es opcional.) Por lo tanto, '-o foo' y '-ofoo' son equivalentes.
-//
-// GNU añade opciones de larga duración a estas convenciones. Las opciones largas consisten en '-' seguido de un
-// nombre hecho de caracteres alfanuméricos y guiones. Los nombres de opciones son por lo general de una a tres
-// palabras de largo, con guiones para separar las palabras. Los usuarios pueden abreviar los nombres de las opciones,
-// siempre y cuando las abreviaturas son únicos.
-//
-// Para especificar un argumento para una larga, debe escribirse '--name = valor'. Esta sintaxis permite una opción a
-// largo para aceptar un argumento que es en sí opcional.
-
-//enum class ArgType : int8_t {
-//  OPTION,
-//  PARAMETER,
-//  PARAMETER_OPTIONS
-//};
-
-/*!
- * \brief Clase base para la gestión de argumentos en comandos de consola
- * \deprecated
- */
-class TL_EXPORT TL_DEPRECATED("Argument", "2.0") CmdArgument
-{
-public:
-
-  /*!
-   * \brief Tipo de argumento
-   */
-  enum class Type : int8_t {
-    OPTION,             /*!< Opción */
-    PARAMETER,          /*!< Parámetro */
-    PARAMETER_OPTIONS   /*!< Lista de opciones*/
-  };
-
-protected:
-
-  /*!
-   * \brief Nombre del argumento
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del argumento
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Argumento opcional u obligatorio
-   */
-  bool bOptional;
-
-public:
-
-  /*!
-   * \brief Constructor
-   * \param[in] name Nombre de argumento
-   * \param[in] description Descripción
-   * \param[in] optional Párametro obligatorio u opcional. Por defecto es obligatorio.
-   */
-  CmdArgument(const char *name, const char *description, bool optional = false);
-
-  virtual ~CmdArgument(){}
-
-  CmdArgument(CmdArgument const&) = delete;
-  void operator=(CmdArgument const&) = delete;
-
-  /*!
-   * \brief Devuelve la descripción del argumento
-   * \return Descripción
-   */
-  const char *getDescription() const;
-
-  /*!
-   * \brief Devuelve el nombre del argumento
-   * \return Nombre del argumento
-   */
-  const char *getName() const;
-
-  /*!
-   * \brief Tipo
-   * \return
-   */
-  virtual Type getType() const = 0;
-
-  /*!
-   * \brief Devuelve si el argumento es opcional
-   * \return verdadero si el argumento es opcional
-   */
-  bool isOptional() const;
-
-};
-
-
-/*!
- * \brief Opción de un comando
- * \deprecated
- */
-class TL_EXPORT  CmdOption : public CmdArgument
-{
-private:
-
-  /*!
-   * \brief Valor de la opción (verdadero o falso)
-   */
-  bool mValue;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase CmdOption
-   * \param[in] name Nombre de la opción
-   * \param[in] description Descripción de la opción
-   */
-  CmdOption(const char *name, const char *description);
-
-  ~CmdOption() {}
-
-  /*!
-   * \brief getType
-   * \return
-   */
-  CmdArgument::Type getType() const override;
-
-  /*!
-   * \brief Comprueba si la opción esta activada
-   * \return Verdadero si esta activada y falso en caso contrario
-   */
-  bool isActive() const;
-
-  /*!
-   * \brief Establece si esta activada o no
-   * \param[in] option
-   * \deprecated Use TL::CmdOption::setActive en su lugar
-   */
-  TL_DEPRECATED("CmdOption::setActive", "2.0")
-  void setOption(bool option) { mValue = option; }
-
-  /*!
-   * \brief Establece si esta activada o no
-   * \param[in] active
-   */
-  void setActive(bool active);
-};
-
-/*!
- * \brief Parametro de un comando de consola
- * \deprecated
- */
-class TL_EXPORT CmdParameter : public CmdArgument
-{
-private:
-
-  /*!
-   * \brief Valor del parámetro
-   */
-  std::string mValue;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase CmdParameter
-   * \param[in] name Nombre del parámetro
-   * \param[in] description Descripción del parámetro
-   * \param[in] optional El parametro es opcional. Por defecto no es opcional
-   * \param[in] defValue Valor por defecto
-   */
-  CmdParameter(const char *name, const char *description, bool optional = false, const char *defValue = "");
-
-  ~CmdParameter() {}
-
-  /*!
-   * \brief getType
-   * \return
-   */
-  CmdArgument::Type getType() const override;
-
-  /*!
-   * \brief Devuelve el valor del parámetro
-   * \return Valor del parámetro
-   */
-  const char *getValue() const;
-
-  /*!
-   * \brief Establece el valor del parámetro
-   * \param[in] value Valor del parámetro
-   */
-  void setValue(const std::string &value);
-};
-
-
-/*!
- * \brief Un parametro que toma un valor de una lista predefinida de opciones
- * \deprecated
- */
-struct TL_EXPORT CmdParameterOptions : public CmdArgument
-{
-
-private:
-
-  /*!
-   * \brief mDefValue
-   */
-  std::string mValue;
-
-  /*!
-   * \brief listado de opciones
-   */
-  std::vector<std::string> mOptions;
-
-public:
-
-  /*!
-   * \brief Constructora de la clase CmdParameterOptions
-   * \param[in] name Nombre del parámetro
-   * \param[in] options Valores que puede tomar el parámetro
-   * \param[in] description Descripción del parámetro
-   * \param[in] optional El parametro es opcional. Por defecto no es opcional
-   * \param[in] defValue Valor por defecto
-   */
-  CmdParameterOptions(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "");
-
-  ~CmdParameterOptions() {}
-
-  /*!
-   * \brief Indice de opción
-   * \return Indice
-   */
-  int getIndex(const std::string &value) const;
-
-  /*!
-   * \brief Indice de opción seleccionada
-   * \return Indice
-   */
-  int getIndex() const;
-
-  /*!
-   * \brief listado de opciones
-   */
-  std::vector<std::string> getOptions() const;
-
-  /*!
-   * \brief getType
-   * \return
-   */
-  CmdArgument::Type getType() const override;
-
-  /*!
-   * \brief getValue
-   * \return
-   */
-  const char *getValue() const;
-
-  /*!
-   * \brief setValue
-   * \param value
-   */
-  void setValue(const std::string &value);
-
-};
-
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Parser de los argumentos de entrada  de la consola
- *
- * La estructura de un comando es:
- *
- * cmdName --param1=[Value] --param2=[Value] --par_op=["Value1" o "Value2"] -opt
- *
- * Ejemplo de uso:
- *
- * \code
- * CmdParser cmdParser("cmdName", "Descripción del comando");
- * cmdParser.addParameter("param1", "Descripción del primer parámetro");
- * cmdParser.addParameter("param2", "Descripción del segundo parámetro. Este es opcional", true);
- * cmdParser.addParameterOption("par_op", "Value1,Value2", "Parámetro con una lista de valores predetermidados", true, "Value1"); // "Value1" es el valor por defecto
- * cmdParser.addOption("opt", "Opción");
- *
- * // Se parsea el comando y si da error se cierra la aplicación
- * if ( cmdParser.parse(argc, argv) == CmdParser::Status::PARSE_ERROR ) {
- *   exit(EXIT_FAILURE);
- * }
- * \endcode
- * \deprecated
- */
-class TL_EXPORT TL_DEPRECATED("Command", "2.0") CmdParser
-{
-public:
-
-  /*!
-   * \brief Estado de salida del parseo del comando
-   */
-  enum class Status
-  {
-    PARSE_SUCCESS,  /*!< El parseo se ejecuto correctamente */
-    PARSE_ERROR,    /*!< Ocurrio un error al ejecutar el comando */
-    PARSE_HELP      /*!< Se pasa como parametro: help */
-  };
-
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mCmdName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mCmdDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<CmdArgument>> mCmdArgs;
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  CmdParser();
-
-  /*!
-   * \brief Constructor CmdParser
-   * \param[in] name Nombre del comando
-   * \param[in] description Descripción del comando
-   */
-  CmdParser(const char *name, const char *description);
-
-  /*!
-   * \brief Constructor de lista
-   * \param[in] name Nombre del comando
-   * \param[in] description Descripción del comando
-   * \param[in] cmd_args Lista de argumentos
-   */
-  CmdParser(const char *name, const char *description, std::initializer_list<std::shared_ptr<CmdArgument>> cmd_args);
-
-  /*!
-   * \brief Destructora
-   */
-  ~CmdParser() {}
-
-  /*!
-   * \brief Añade un parámetro
-   * \param[in] name Nombre del parámetro
-   * \param[in] description Descripción del parámetro
-   * \param[in] optional Parametro opcional o no. Por defecto es requerido
-   * \param[in] defValue Valor por defecto
-   */
-  void addParameter(const char *name, const char *description, bool optional = false, const char *defValue = "");
-
-  /*!
-   * \brief Añade un parámetro
-   * \param[in] name Nombre del parámetro
-   * \param[in] options Lista separada por comas de los valores que puede tomar el parámetro
-   * \param[in] description Descripción del parámetro
-   * \param[in] optional Parametro opcional o no. Por defecto es requerido
-   * \param[in] defValue Valor por defecto
-   */
-  void addParameterOption(const char *name, const char *options, const char *description, bool optional = false, const char *defValue = "");
-
-  /*!
-   * \brief Añade una opción
-   * \param[in] name Nombre de la opción
-   * \param[in] description Descripción de la opción
-   */
-  void addOption(const char *name, const char *description);
-
-  /*!
-   * \brief parsea los argumentos de entrada
-   * \param[in] argc
-   * \param[in] argv
-   * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
-   * \see CmdParser::Status
-   */
-  CmdParser::Status parse(int argc, const char* const argv[]);
-
-  /*!
-   * \brief Muestra por consola la ayuda del programa
-   */
-  void printHelp();
-
-  /*!
-   * \brief Limpia el parser de comando
-   */
-  void clear() { mCmdArgs.clear(); }
-
-  /*!
-   * \brief Devuelve el valor de un parametro
-   * \param[in] name Nombre del parámetro
-   * \return Valor del parámetro en el tipo indicado
-   *
-   * Ejemplo de uso:
-   *
-   * \code
-   * std::string filename = cmdParser.getValue<std::string>("img");
-   * bool bSaveImages = cmdParser.hasOption("si");
-   * int skip_frames = cmdParser.getValue<int>("skip_frames");
-   * LD_TYPE ls = cmdParser.getParameterOptionIndex<LD_TYPE>("l_detect");
-   * \endcode
-   */
-  template<typename T>
-  T getValue( const char *name) const
-  {
-    T t = T();
-    void *_value = (void *)&t;
-
-    std::string _name(name);
-    for (auto arg : mCmdArgs) {
-      if (arg->getType() == CmdArgument::Type::PARAMETER
-          || arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS) {
-        if (arg->getName() == _name) {
-          std::string value = (arg->getType() == CmdArgument::Type::PARAMETER) ?
-            dynamic_cast<CmdParameter *>(arg.get())->getValue()
-            : dynamic_cast<CmdParameterOptions *>(arg.get())->getValue();
-          std::stringstream strm_value(value);
-          if (typeid(T) == typeid(std::string)) {
-            *(std::string *)_value = value;
-          } else if (typeid(T) == typeid(int)) {
-            strm_value >> *(int *)_value;
-          } else if (typeid(T) == typeid(double)) {
-            strm_value >> *(double *)_value;
-          } else if (typeid(T) == typeid(float)) {
-            strm_value >> *(float *)_value;
-          } /*else if (typeid(T) == typeid(Path)) {
-            *(Path *)_value = Path(value);
-          }*/ else {
-            TL_THROW_ERROR("Tipo de dato  no permitido");
-            //throw std::runtime_error("Tipo de dato  no permitido");
-          }
-        }
-      }
-    }
-    return t;
-  }
-
-  /*!
-   * \brief Devuelve el indice de un parámetro
-   * \param[in] name Nombre del parámetro
-   * \return Valor del parámetro en el tipo indicado
-   */
-  template<typename T = int>
-  T getParameterOptionIndex(const char *name) const
-  {
-    std::string _name(name);
-    for (auto arg : mCmdArgs) {
-      if ( arg->getType() == CmdArgument::Type::PARAMETER_OPTIONS ) {
-        if ( arg->getName() == _name ) {
-          CmdParameterOptions *cpo = dynamic_cast<CmdParameterOptions *>(arg.get());
-          return static_cast<T>(cpo->getIndex());
-        }
-      }
-    }
-    return static_cast<T>(0);
-  }
-
-  bool hasOption( const std::string &option) const;
-};
-
-
-
-/* End deprecated class */
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-
-/* ---------------------------------------------------------------------------------- */
 
 
 
