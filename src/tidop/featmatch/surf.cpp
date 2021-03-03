@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "surf.h"
 
 #include "tidop/core/messages.h"
@@ -124,34 +147,11 @@ SurfDetectorDescriptor::SurfDetectorDescriptor(double hessianThreshold,
   setUpright(upright);
 }
 
-bool SurfDetectorDescriptor::detect(const cv::Mat &img,
-                                    std::vector<cv::KeyPoint> &keyPoints,
-                                    cv::InputArray &mask)
+std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    mSurf->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("SURF Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
-}
-
-bool SurfDetectorDescriptor::extract(const cv::Mat &img,
-                                     std::vector<cv::KeyPoint> &keyPoints,
-                                     cv::Mat &descriptors)
-{
-
-  try {
-    mSurf->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("SURF Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mSurf->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
 void SurfDetectorDescriptor::setHessianThreshold(double hessianThreshold)
@@ -237,42 +237,23 @@ SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(double hessianThreshold,
   setUpright(upright);
 }
 
-bool SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
-                                        std::vector<cv::KeyPoint> &keyPoints,
-                                        cv::InputArray &mask)
+std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    cv::cuda::GpuMat g_img;
-    cv::cuda::GpuMat g_mask;
-    g_img.upload(img);
-    g_mask.upload(mask);
-    (*mSurf)(g_img, g_mask, keyPoints);
-  } catch (cv::Exception &e) {
-    msgError("SURF Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  cv::cuda::GpuMat g_img(img);
+  cv::cuda::GpuMat g_mask(mask);
+  (*mSurf)(g_img, g_mask, keyPoints);
+  return keyPoints;
 }
 
-bool SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
-                                         std::vector<cv::KeyPoint> &keyPoints,
-                                         cv::Mat &descriptors)
+cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-
-  try {
-    cv::cuda::GpuMat g_img;
-    g_img.upload(img);
-    cv::cuda::GpuMat g_descriptors;
-    (*mSurf)(g_img, cv::cuda::GpuMat(), keyPoints, g_descriptors);
-    g_descriptors.download(descriptors);
-  } catch (cv::Exception &e) {
-    msgError("SURF Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  cv::cuda::GpuMat g_img(img);
+  cv::cuda::GpuMat g_descriptors;
+  (*mSurf)(g_img, cv::cuda::GpuMat(), keyPoints, g_descriptors, true);
+  g_descriptors.download(descriptors);
+  return descriptors;
 }
 
 void SurfCudaDetectorDescriptor::setHessianThreshold(double hessianThreshold)

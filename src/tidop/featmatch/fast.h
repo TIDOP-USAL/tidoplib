@@ -1,5 +1,28 @@
-#ifndef TL_FAST_DETECTOR_H
-#define TL_FAST_DETECTOR_H
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
+#ifndef TL_FEATMATCH_FAST_DETECTOR_H
+#define TL_FEATMATCH_FAST_DETECTOR_H
 
 #include "config_tl.h"
 
@@ -87,9 +110,8 @@ private:
 
 public:
 
-  bool detect(const cv::Mat &img,
-              std::vector<cv::KeyPoint> &keyPoints,
-              cv::InputArray &mask = cv::noArray()) override;
+  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                   cv::InputArray &mask = cv::noArray()) override;
 
 // Fast interface
 
@@ -132,11 +154,7 @@ public:
 
 private:
 
-#if CV_VERSION_MAJOR >= 4
-  cv::FastFeatureDetector::DetectorType convertDetectorType(const std::string &detectorType);
-#else
   int convertDetectorType(const std::string &detectorType);
-#endif
   
   void update();
   
@@ -144,9 +162,8 @@ private:
 
 public:
 
-  bool detect(const cv::Mat &img,
-              std::vector<cv::KeyPoint> &keyPoints,
-              cv::InputArray &mask = cv::noArray()) override;
+  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                   cv::InputArray &mask = cv::noArray()) override;
 
 // Fast interface
 
@@ -177,4 +194,4 @@ protected:
 
 } // namespace tl
 
-#endif // TL_AGAST_DETECTOR_H
+#endif // TL_FEATMATCH_AGAST_DETECTOR_H

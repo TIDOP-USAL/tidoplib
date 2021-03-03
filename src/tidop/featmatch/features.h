@@ -1,5 +1,28 @@
-#ifndef TL_FEATURES_H
-#define TL_FEATURES_H
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
+#ifndef TL_FEATMATCH_FEATURES_H
+#define TL_FEATMATCH_FEATURES_H
 
 #include "config_tl.h"
 
@@ -58,7 +81,7 @@ public:
 
 public:
 
-  Feature(Type type) : mFeatType(type) {}
+  Feature() {}
   virtual ~Feature() = default;
 
   /*!
@@ -66,15 +89,37 @@ public:
    */
   virtual void reset() = 0;
 
-  Type type() const { return mFeatType.flags(); }
+  virtual Type type() const = 0;
   virtual std::string name() const = 0;
+
+};
+ALLOW_BITWISE_FLAG_OPERATIONS(Feature::Type)
+
+
+
+/*----------------------------------------------------------------*/
+
+
+
+class TL_EXPORT FeatureBase
+  : public Feature
+{
+
+public:
+
+  FeatureBase(Type type) : mFeatType(type) {}
+  ~FeatureBase() override = default;
+
+  Type type() const override 
+  { 
+    return mFeatType.flags(); 
+  }
 
 protected:
 
   tl::EnumFlags<Type> mFeatType;
 
 };
-ALLOW_BITWISE_FLAG_OPERATIONS(Feature::Type)
 
 
 
@@ -97,10 +142,9 @@ public:
    * \param[in] img Image
    * \param[out] keyPoints The detected keypoints
    * \param[in] mask Optional mask
-   * \return true if error
+   * \return key points detected
    */
-  virtual bool detect(const cv::Mat &img,
-                      std::vector<cv::KeyPoint> &keyPoints,
+  virtual std::vector<cv::KeyPoint> detect(const cv::Mat &img,
                       cv::InputArray &mask = cv::noArray()) = 0;
 
 };
@@ -126,11 +170,10 @@ public:
    * \param[in] img Image
    * \param[in] keyPoints KeyPoints
    * \param[out] descriptors Computed descriptors
-   * \return true if error
+   * \return Computed descriptors
    */
-  virtual bool extract(const cv::Mat &img,
-                       std::vector<cv::KeyPoint> &keyPoints,
-                       cv::Mat &descriptors) = 0;
+  virtual cv::Mat extract(const cv::Mat &img,
+                       std::vector<cv::KeyPoint> &keyPoints) = 0;
 
 };
 
@@ -149,12 +192,12 @@ public:
  * https://mediatum.ub.tum.de/doc/1287456/1287456.pdf
  */
 class TL_EXPORT Agast
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Agast() : Feature(Feature::Type::agast) {}
+  Agast() : FeatureBase(Feature::Type::agast) {}
   virtual ~Agast() = default;
 
   /*!
@@ -217,12 +260,12 @@ public:
 
 
 class TL_EXPORT Akaze
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Akaze() : Feature(Feature::Type::akaze) {}
+  Akaze() : FeatureBase(Feature::Type::akaze) {}
   virtual ~Akaze() = default;
 
   /*!
@@ -319,12 +362,12 @@ public:
  * \brief The Boost class
  */
 class TL_EXPORT Boost
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Boost() : Feature(Feature::Type::boost){}
+  Boost() : FeatureBase(Feature::Type::boost){}
   ~Boost() override = default;
 
   /*!
@@ -383,12 +426,12 @@ public:
  * https://www.cs.ubc.ca/~lowe/525/papers/calonder_eccv10.pdf
  */
 class TL_EXPORT Brief
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Brief() : Feature(Feature::Type::brief) {}
+  Brief() : FeatureBase(Feature::Type::brief) {}
   virtual ~Brief() = default;
 
   /*!
@@ -431,12 +474,12 @@ public:
  * http://margaritachli.com/papers/ICCV2011paper.pdf
  */
 class TL_EXPORT Brisk
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Brisk() : Feature(Feature::Type::brisk) {}
+  Brisk() : FeatureBase(Feature::Type::brisk) {}
   virtual ~Brisk() = default;
 
   /*!
@@ -489,12 +532,12 @@ public:
  * Intelligence, 32(5):815–830, May 2010.
  */
 class TL_EXPORT Daisy
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Daisy() : Feature(Feature::Type::daisy) {}
+  Daisy() : FeatureBase(Feature::Type::daisy) {}
   virtual ~Daisy() = default;
 
   /*!
@@ -606,12 +649,12 @@ public:
  * Lecture Notes in Computer Science, vol 3951. Springer, Berlin, Heidelberg
  */
 class TL_EXPORT Fast
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Fast() : Feature(Feature::Type::fast) {}
+  Fast() : FeatureBase(Feature::Type::fast) {}
   virtual ~Fast() = default;
 
   /*!
@@ -671,12 +714,12 @@ public:
  * Recognition (CVPR), 2012 IEEE Conference on, pages 510–517. Ieee, 2012.
  */
 class TL_EXPORT Freak
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Freak() : Feature(Feature::Type::freak) {}
+  Freak() : FeatureBase(Feature::Type::freak) {}
   virtual ~Freak() = default;
 
   /*!
@@ -734,12 +777,12 @@ public:
 
 
 class TL_EXPORT Gftt
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Gftt() : Feature(Feature::Type::gftt) {}
+  Gftt() : FeatureBase(Feature::Type::gftt) {}
   virtual ~Gftt() = default;
 
   virtual int maxFeatures() const = 0;
@@ -767,12 +810,12 @@ public:
  * Navneet Dalal and Bill Triggs @cite Dalal2005
  */
 class TL_EXPORT Hog
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Hog() : Feature(Feature::Type::hog) {}
+  Hog() : FeatureBase(Feature::Type::hog) {}
   virtual ~Hog() = default;
 
   virtual Size<int> winSize() const = 0;
@@ -822,12 +865,12 @@ public:
  * https://www.doc.ic.ac.uk/~ajd/Publications/alcantarilla_etal_eccv2012.pdf
  */
 class TL_EXPORT Kaze
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Kaze() : Feature(Feature::Type::kaze) {}
+  Kaze() : FeatureBase(Feature::Type::kaze) {}
   virtual ~Kaze() = default;
 
   /*!
@@ -909,12 +952,12 @@ public:
 
 
 class TL_EXPORT Latch
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Latch() : Feature(Feature::Type::latch) {}
+  Latch() : FeatureBase(Feature::Type::latch) {}
   virtual ~Latch() = default;
 
   virtual std::string bytes() const = 0;
@@ -937,11 +980,11 @@ public:
  * Locally uniform comparison image descriptor
  */
 class TL_EXPORT Lucid
-  : public Feature
+  : public FeatureBase
 {
 public:
 
-  Lucid() : Feature(Feature::Type::lucid) {}
+  Lucid() : FeatureBase(Feature::Type::lucid) {}
   virtual ~Lucid() = default;
 
   /*!
@@ -977,12 +1020,12 @@ public:
 
 
 class TL_EXPORT Lss
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Lss() : Feature(Feature::Type::lss) {}
+  Lss() : FeatureBase(Feature::Type::lss) {}
   virtual ~Lss() = default;
 
 };
@@ -992,12 +1035,12 @@ public:
 
 
 class TL_EXPORT Msd
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Msd() : Feature(Feature::Type::msd) {}
+  Msd() : FeatureBase(Feature::Type::msd) {}
   virtual ~Msd() = default;
 
   virtual double thresholdSaliency() const = 0;
@@ -1031,12 +1074,12 @@ public:
 
 
 class TL_EXPORT Mser
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Mser() : Feature(Feature::Type::mser) {}
+  Mser() : FeatureBase(Feature::Type::mser) {}
   virtual ~Mser() = default;
 
   virtual int delta() const = 0;
@@ -1069,12 +1112,12 @@ public:
  * \brief Interface ORB
  */
 class TL_EXPORT Orb
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Orb() : Feature(Feature::Type::orb)  {}
+  Orb() : FeatureBase(Feature::Type::orb)  {}
   virtual ~Orb() = default;
 
   /*!
@@ -1202,10 +1245,10 @@ public:
 
 
 class TL_EXPORT Sift
-  : public Feature
+  : public FeatureBase
 {
 public:
-  Sift() : Feature(Feature::Type::sift)  {}
+  Sift() : FeatureBase(Feature::Type::sift)  {}
   virtual ~Sift() = default;
 
   /*!
@@ -1283,12 +1326,12 @@ public:
 
 
 class TL_EXPORT Star
-  : public Feature
+  : public FeatureBase
 {
 
 public:
 
-  Star() : Feature(Feature::Type::star) {}
+  Star() : FeatureBase(Feature::Type::star) {}
   virtual ~Star() = default;
 
   virtual int maxSize() const  = 0;
@@ -1310,11 +1353,11 @@ public:
 
 
 class TL_EXPORT Surf
-  : public Feature
+  : public FeatureBase
 {
 public:
 
-  Surf() : Feature(Feature::Type::surf) {}
+  Surf() : FeatureBase(Feature::Type::surf) {}
   virtual ~Surf() = default;
 
   /*!
@@ -1393,11 +1436,11 @@ public:
  * Analysis and Machine Intelligence, 2014.
  */
 class TL_EXPORT Vgg
-  : public Feature
+  : public FeatureBase
 {
 public:
 
-  Vgg() : Feature(Feature::Type::vgg) {}
+  Vgg() : FeatureBase(Feature::Type::vgg) {}
   ~Vgg() override = default;
 
   /*!
@@ -1447,4 +1490,4 @@ public:
 } // namespace tl
 
 
-#endif // TL_FEATURES_H
+#endif // TL_FEATMATCH_FEATURES_H

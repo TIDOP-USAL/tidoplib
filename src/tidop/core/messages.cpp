@@ -17,16 +17,6 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 
-//#ifdef HAVE_OPENCV
-//#include "opencv2/core/utility.hpp"
-//#endif
-
-//#ifdef HAVE_GDAL
-//TL_SUPPRESS_WARNINGS
-//#include "gdal_priv.h"
-//TL_DEFAULT_WARNINGS
-//#endif // HAVE_GDAL
-
 #include <cstdarg>
 #if defined WIN32
 # include <windows.h>
@@ -44,41 +34,6 @@ namespace tl
 {
 
 #ifdef TL_MESSAGE_HANDLER
-
-//TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-//
-//#ifdef HAVE_OPENCV
-//// manejador de error para OpenCV. Para evitar los mensajes por consola de OpenCV
-//int handleError( int status, const char* func_name, const char* err_msg, const char* file_name, int line, void* userdata )
-//{
-//  MessageManager::release(MessageManager::Message(err_msg).message(), MessageLevel::msg_error, file_name, line, func_name);
-//  return 0;
-//}
-//
-//#endif // HAVE_OPENCV
-//
-//#ifdef HAVE_GDAL
-//// Manejador de eventos para GDAL 
-//void handleErrorGDAL(CPLErr err, CPLErrorNum eNum, const char *err_msg) 
-//{
-//  MessageLevel ml;
-//  if (err == CE_Debug) {
-//    ml = MessageLevel::msg_debug;
-//  } else if (err == CE_Warning) {
-//    ml = MessageLevel::msg_warning;
-//  } else if (err == CE_Failure) {
-//    ml = MessageLevel::msg_error;
-//  } else if (err == CE_Fatal) {
-//    ml = MessageLevel::msg_error;
-//  } else {
-//    ml = MessageLevel::msg_info;
-//  }
-//  MessageManager::release(MessageManager::Message(err_msg).message(), ml);
-//  return;
-//}
-//#endif // HAVE_GDAL
-//
-//TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 
 static struct _msgProperties _msgTemplate[] = {   
@@ -130,30 +85,21 @@ void MessageManager::addListener(Listener *listener)
     mListeners.push_back(listener);
 }
 
-///TODO: esto puede que estuviese mejor fuera
-//void MessageManager::initExternalHandlers()
-//{
-//#ifdef HAVE_OPENCV
-//  cv::redirectError(handleError);
-//#endif // HAVE_OPENCV
-//
-//#ifdef HAVE_GDAL
-//  CPLPushErrorHandler(static_cast<CPLErrorHandler>(handleErrorGDAL));
-//#endif // HAVE_GDAL
-//}
-
 void MessageManager::pause()
 {
   sStopHandler = true;
 }
 
-void MessageManager::release(const char *msg, const MessageLevel &level, const char *file, int line, const char *function)
+void MessageManager::release(const std::string &message, 
+                             const MessageLevel &level, 
+                             const std::string &file, 
+                             int line, 
+                             const std::string &function)
 {
   MessageManager::instance();
 
   if (sStopHandler) return;
 
-  // Bloqueo aqui para evitar problemas entre hilos
   std::lock_guard<std::mutex> lck(MessageManager::sMutex);
 
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
@@ -161,70 +107,75 @@ void MessageManager::release(const char *msg, const MessageLevel &level, const c
   char buf[1000];
   #if defined _MSC_VER
     if (line == -1)
-      sprintf_s(buf, 1000, messageProperties(level).normal, msg, file, line, function);
+      sprintf_s(buf, 1000, messageProperties(level).normal, message.c_str(), file.c_str(), line, function.c_str());
     else
-      sprintf_s(buf, 1000, messageProperties(level).extend, msg, file, line, function);
+      sprintf_s(buf, 1000, messageProperties(level).extend, message.c_str(), file.c_str(), line, function.c_str());
   #else
     if (line == -1)
-      snprintf(buf, 1000, messageProperties(level).normal, msg, file, line, function);
+      snprintf(buf, 1000, messageProperties(level).normal, msg.c_str(), file.c_str(), line, function.c_str());
     else
-      snprintf(buf, 1000, messageProperties(level).extend, msg, file, line, function);
+      snprintf(buf, 1000, messageProperties(level).extend, msg.c_str(), file.c_str(), line, function.c_str());
   #endif
 
   switch (level) {
   case MessageLevel::msg_debug:
-    sObjMessage->onDebug(buf, date.c_str());
+    sObjMessage->onDebug(buf, date);
     break;
   case MessageLevel::msg_info:
-    sObjMessage->onInfo(buf, date.c_str());
+    sObjMessage->onInfo(buf, date);
     break;
   case MessageLevel::msg_warning:
-    sObjMessage->onWarning(buf, date.c_str());
+    sObjMessage->onWarning(buf, date);
     break;
   case MessageLevel::msg_error:
-    sObjMessage->onError(buf, date.c_str());
+    sObjMessage->onError(buf, date);
     break;
   default:
     break;
   }
 }
 
-void MessageManager::release(const Message &msg)
+void MessageManager::release(const Message &message)
 {
-  MessageManager::instance();
-  
-  if (sStopHandler) return;
-
-  std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-  std::string msg_out;
-  if (msg.line() == -1 && strcmp(msg.file(), "") == 0 && strcmp(msg.function(), "") == 0) {
-    msg_out = msg.message();
-  } else {
-    char buf[1000];
-#if defined _MSC_VER
-    sprintf_s(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
-#else
-    snprintf(buf, 1000, "%s (%s:%u, %s)", msg.message(), msg.file(), msg.line(), msg.function());
-#endif
-    msg_out =  std::string(buf);
-  }
-
-  switch (msg.level()) {
-  case MessageLevel::msg_debug:
-    sObjMessage->onDebug(msg_out.c_str(), msg.date());
-    break;
-  case MessageLevel::msg_info:
-    sObjMessage->onInfo(msg_out.c_str(), msg.date());
-    break;
-  case MessageLevel::msg_warning:
-    sObjMessage->onWarning(msg_out.c_str(), msg.date());
-    break;
-  case MessageLevel::msg_error:
-    sObjMessage->onError(msg_out.c_str(), msg.date());
-    break;
-  default:
-    break;
-  }
+  MessageManager::release(message.message(),
+                          message.level(),
+                          message.file(),
+                          message.line(),
+                          message.function());
+//  MessageManager::instance();
+//  
+//  if (sStopHandler) return;
+//
+//  std::lock_guard<std::mutex> lck(MessageManager::sMutex);
+//  std::string msg_out;
+//  if (message.line() == -1 && message.file().compare("") == 0 && message.function().compare("") == 0) {
+//    msg_out = message.message();
+//  } else {
+//    char buf[1000];
+//#if defined _MSC_VER
+//    sprintf_s(buf, 1000, "%s (%s:%u, %s)", message.message(), message.file(), message.line(), message.function());
+//#else
+//    snprintf(buf, 1000, "%s (%s:%u, %s)", message.message(), message.file(), message.line(), message.function());
+//#endif
+//    msg_out =  std::string(buf);
+//  }
+//
+//  switch (message.level()) {
+//  case MessageLevel::msg_debug:
+//    sObjMessage->onDebug(msg_out.c_str(), message.date());
+//    break;
+//  case MessageLevel::msg_info:
+//    sObjMessage->onInfo(msg_out.c_str(), message.date());
+//    break;
+//  case MessageLevel::msg_warning:
+//    sObjMessage->onWarning(msg_out.c_str(), message.date());
+//    break;
+//  case MessageLevel::msg_error:
+//    sObjMessage->onError(msg_out.c_str(), message.date());
+//    break;
+//  default:
+//    break;
+//  }
 }
 
 void MessageManager::removeListener(Listener *listener)
@@ -240,41 +191,41 @@ void MessageManager::resume()
 }
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-void MessageManager::onDebug(const char *msg, const char *date)
+void MessageManager::onDebug(const std::string &message, const std::string &date)
 {
 #ifdef _DEBUG
   if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgDebug(msg, date);
+      lst->onMsgDebug(message, date);
     }
   }
 #endif
 }
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-void MessageManager::onInfo(const char *msg, const char *date)
+void MessageManager::onInfo(const std::string &message, const std::string &date)
 {
   if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgInfo(msg, date);
+      lst->onMsgInfo(message, date);
     }
   }
 }
 
-void MessageManager::onWarning(const char *msg, const char *date)
+void MessageManager::onWarning(const std::string &message, const std::string &date)
 {
   if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgWarning(msg, date);
+      lst->onMsgWarning(message, date);
     }
   }
 }
 
-void MessageManager::onError(const char *msg, const char *date)
+void MessageManager::onError(const std::string &message, const std::string &date)
 {
   if (!sStopHandler && !mListeners.empty()) {
     for (auto &lst : mListeners) {
-      lst->onMsgError(msg, date);
+      lst->onMsgError(message, date);
     }
   }
 }
@@ -319,23 +270,24 @@ MessageManager::Listener::~Listener()
 /* ---------------------------------------------------------------------------------- */
 
 
-MessageManager::Message::Message(const char *msg, ...)
+MessageManager::Message::Message(const char *message, ...)
   : mLevel(MessageLevel::msg_error),
     mFile(""), 
     mLine(-1),
     mFunction("")
 {
+  TL_TODO("revisar")
   try {
 
     mDate = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
     char buf[500];
     memset(buf, 0, sizeof(buf));
-    std::string aux(msg);
+    std::string aux(message);
     replaceString(&aux, "% ", "%% ");
     replaceString(&aux, "%(\s)", "%%");
     va_list args;
-    va_start(args, msg);
+    va_start(args, message);
 #ifdef _MSC_VER
   vsnprintf_s(buf, _countof(buf), _TRUNCATE, aux.c_str(), args);
 #else
@@ -349,19 +301,19 @@ MessageManager::Message::Message(const char *msg, ...)
   }
 }
 
-const char *MessageManager::Message::date() const
+std::string MessageManager::Message::date() const
 {
-  return mDate.c_str();
+  return mDate;
 }
 
-const char *MessageManager::Message::file() const
+std::string MessageManager::Message::file() const
 {
-  return mFile.c_str();
+  return mFile;
 }
 
-const char *MessageManager::Message::function() const
+std::string MessageManager::Message::function() const
 {
-  return mFunction.c_str();
+  return mFunction;
 }
 
 MessageLevel MessageManager::Message::level() const
@@ -374,12 +326,12 @@ int MessageManager::Message::line() const
   return mLine;
 }
 
-const char *MessageManager::Message::message() const
+std::string MessageManager::Message::message() const
 {
-  return mMessage.c_str();
+  return mMessage;
 }
 
-void MessageManager::Message::setTimeLogFormat( const char *timeTemplate)
+void MessageManager::Message::setTimeLogFormat(const std::string &timeTemplate)
 {
   sTimeLogFormat = timeTemplate;
 }
@@ -389,7 +341,10 @@ void MessageManager::Message::setMessageLevel(const MessageLevel &level)
   mLevel = level;
 }
     
-void MessageManager::Message::setMessageProperties(const MessageLevel &level, const char *file, int line, const char *function)
+void MessageManager::Message::setMessageProperties(const MessageLevel &level, 
+                                                   const std::string &file, 
+                                                   int line, 
+                                                   const std::string &function)
 {
   mLevel = level;
   mLine = line;

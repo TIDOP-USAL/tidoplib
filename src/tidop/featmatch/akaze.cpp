@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "akaze.h"
 
 #include "tidop/core/messages.h"
@@ -175,6 +198,7 @@ AkazeDetectorDescriptor::AkazeDetectorDescriptor(const std::string &descriptorTy
 }
 
 #if CV_VERSION_MAJOR >= 4
+TL_DISABLE_WARNING(26812)
 cv::AKAZE::DescriptorType AkazeDetectorDescriptor::convertDescriptorType(const std::string &descriptorType)
 {
   cv::AKAZE::DescriptorType descriptor_type = cv::AKAZE::DescriptorType::DESCRIPTOR_MLDB;
@@ -208,6 +232,7 @@ cv::KAZE::DiffusivityType AkazeDetectorDescriptor::convertDiffusivity(const std:
 
   return diff;
 }
+TL_ENABLE_WARNING(26812)
 
 #else
 
@@ -246,35 +271,21 @@ int AkazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
 }
 #endif
 
-bool AkazeDetectorDescriptor::detect(const cv::Mat &img,
-                                     std::vector<cv::KeyPoint> &keyPoints,
-                                     cv::InputArray &mask)
+std::vector<cv::KeyPoint> AkazeDetectorDescriptor::detect(const cv::Mat &img,
+                                                          cv::InputArray &mask)
 {
-
-  try {
-    mAkaze->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("AKAZE Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mAkaze->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
 
-bool AkazeDetectorDescriptor::extract(const cv::Mat &img,
-                                      std::vector<cv::KeyPoint> &keyPoints,
-                                      cv::Mat &descriptors)
+cv::Mat AkazeDetectorDescriptor::extract(const cv::Mat &img, 
+                                         std::vector<cv::KeyPoint> &keyPoints)
 {
-
-  try {
-    mAkaze->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("AKAZE Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  mAkaze->compute(img, keyPoints, descriptors);
+  return descriptors;
 }
 
 void AkazeDetectorDescriptor::setDescriptorType(const std::string &descriptorType)

@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "sift.h"
 
 #include "tidop/core/messages.h"
@@ -94,7 +117,7 @@ std::string SiftProperties::name() const
 
 /*----------------------------------------------------------------*/
 
-#ifdef OPENCV_ENABLE_NONFREE
+#if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
 
 SiftDetectorDescriptor::SiftDetectorDescriptor()
 { 
@@ -132,34 +155,18 @@ void SiftDetectorDescriptor::update()
                                         SiftProperties::sigma());
 }
 
-bool SiftDetectorDescriptor::detect(const cv::Mat &img,
-                                    std::vector<cv::KeyPoint> &keyPoints,
-                                    cv::InputArray &mask)
+std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    mSift->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("SIFT Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mSift->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
-bool SiftDetectorDescriptor::extract(const cv::Mat &img,
-                                     std::vector<cv::KeyPoint> &keyPoints,
-                                     cv::Mat &descriptors)
+cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-
-  try {
-    mSift->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("SIFT Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  mSift->compute(img, keyPoints, descriptors);
+  return descriptors;
 }
 
 void SiftDetectorDescriptor::setFeaturesNumber(int featuresNumber)

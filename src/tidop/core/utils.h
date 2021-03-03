@@ -1310,42 +1310,6 @@ private:
 /*! \} */ // end of utilities
 
 
-//#ifdef HAVE_GDAL
-
-/*!
- * \brief Clase para registrar los drivers de GDAL
- *
- */
-//class TL_EXPORT RegisterGdal
-//{
-//private:
-//
-//  static std::unique_ptr<RegisterGdal> sRegisterGdal;
-//  static std::mutex sMutex;
-//
-//  /*!
-//   * \brief Constructor privado
-//   */
-//  RegisterGdal() {}
-//
-//public:
-//
-//  ~RegisterGdal() {}
-//
-//  // Se impide la copia y asignación
-//  RegisterGdal(RegisterGdal const&) = delete;
-//  void operator=(RegisterGdal const&) = delete;
-//
-//  /*!
-//   * \brief Método para iniciar GDAL una unica vez
-//   */
-//  static void init();
-//
-//};
-//
-//#endif // HAVE_GDAL
-
-
 } // End namespace tl
 
 #endif // TL_CORE_UTILS_H

@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "matchio.h"
 
 #include <tidop/core/messages.h>
@@ -501,6 +524,67 @@ std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const std::str
   }
   return matches_writer;
 }
+
+/*----------------------------------------------------------------*/
+
+
+void passPointsWrite(const std::string &fname,
+                     const std::vector<std::vector<std::pair<std::string, int>>> &pass_points)
+{
+  std::ofstream ofs(fname, std::ofstream::trunc);
+  if (ofs.is_open()){
+
+    for (size_t i = 0; i < pass_points.size(); i++) {
+
+      ofs << i;
+
+      for (size_t j = 0; j < pass_points[i].size(); j++){
+        ofs << ";" << pass_points[i][j].first
+          << ";" << pass_points[i][j].second;
+      }
+
+      ofs << std::endl;
+    }
+
+    ofs.close();
+  }
+}
+
+void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<std::string, int>>> &pass_points)
+{
+  pass_points.resize(0);
+  std::ifstream ifs(fname);
+  std::string line;
+  if (ifs.is_open()) {
+
+    int r = 0;
+    while (std::getline(ifs, line)) {
+
+      std::vector<std::string> list;
+      boost::split(list, line, boost::is_any_of(";"));
+      int size = list.size();
+      if (size >= 1){
+        if (size == 1 || size % 2 == 0){
+          /// deleted point
+          pass_points.push_back(std::vector<std::pair<std::string, int>>());
+        } else {
+          std::vector<std::pair<std::string, int>> pass_point;
+          for(int i = 1; i < size; i++){
+            std::string idImage = list[i];
+            int idx = stringToNumber<int>(list[++i]);
+            pass_point.emplace_back(idImage, idx);
+          }
+          pass_points.push_back(pass_point);
+        }
+      }
+
+      r++;
+    }
+
+    ifs.close();
+  }
+}
+
 
 
 } // namespace tl

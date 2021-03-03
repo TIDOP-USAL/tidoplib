@@ -107,31 +107,35 @@ public:
 
     /*!
      * \brief Mensaje de depuración
-     * \param msg Mensaje que recibe el escuchador
+     * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
-    virtual void onMsgDebug(const char *msg, const char *date) = 0;
+    virtual void onMsgDebug(const std::string &message, 
+                            const std::string &date) = 0;
 
     /*!
      * \brief Mensaje de información
-     * \param msg Mensaje que recibe el escuchador
+     * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
-    virtual void onMsgInfo(const char *msg, const char *date) = 0;
+    virtual void onMsgInfo(const std::string &message, 
+                           const std::string &date) = 0;
 
     /*!
      * \brief Mensaje de advertencia
-     * \param msg Mensaje que recibe el escuchador
+     * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
-    virtual void onMsgWarning(const char *msg, const char *date) = 0;
+    virtual void onMsgWarning(const std::string &message, 
+                              const std::string &date) = 0;
 
     /*!
      * \brief Mensaje de error
-     * \param msg Mensaje que recibe el escuchador
+     * \param message Mensaje que recibe el escuchador
      * \param date Fecha y hora en la que se emite el mensaje
      */
-    virtual void onMsgError(const char *msg, const char *date) = 0;
+    virtual void onMsgError(const std::string &message, 
+                            const std::string &date) = 0;
 
   };
 
@@ -149,16 +153,16 @@ public:
      * Mediante una cadena con formato y una lista variable de argumentos se
      * permite formatear los mensajes de una forma rapida.
      *
-     * \param[in] msg Cadena con formato que se rellenará para componer el mensaje
+     * \param[in] message Cadena con formato que se rellenará para componer el mensaje
      *
      * <b>Ejemplo</b>
      *
      * \code
-     *   Message msg("Cadena de ejemplo nº%i", 1); // Da como resultado "Cadena de ejemplo nº1"
+     *   Message message("Cadena de ejemplo nº%i", 1); // Da como resultado "Cadena de ejemplo nº1"
      * \endcode
      *
      */
-    Message(const char *msg, ...);
+    Message(const char *message, ...);
    
     /*!
      * \brief Destructora
@@ -169,19 +173,19 @@ public:
      * \brief Devuelve la fecha y hora del mensaje
      * \return Fecha y hora del mensaje
      */
-    const char *date() const;
+    std::string date() const;
 
     /*!
      * \brief file
      * \return
      */
-    const char *file() const;
+    std::string file() const;
 
     /*!
      * \brief function
      * \return
      */
-    const char *function() const;
+    std::string function() const;
     
     /*!
      * \brief Nivel del mensaje
@@ -250,7 +254,7 @@ public:
      * \brief Devuelve el mensaje como cadena de texto
      * \return Mensaje
      */
-    const char *message() const;
+    std::string message() const;
 
     /*!
      * \brief setTimeLogFormat
@@ -259,7 +263,7 @@ public:
      * \endcode
      * \param[in] timeTemplate
      */
-    static void setTimeLogFormat(const char *timeTemplate);
+    static void setTimeLogFormat(const std::string &timeTemplate);
 
     void setMessageLevel(const MessageLevel &level);
 
@@ -271,7 +275,10 @@ public:
      * \param[in] line Número de línea del mensaje
      * \param[in] function Nombre de la función desde la que se lanza el mensaje
      */
-    void setMessageProperties(const MessageLevel &level, const char *file, int line, const char *function);
+    void setMessageProperties(const MessageLevel &level, 
+                              const std::string &file, 
+                              int line, 
+                              const std::string &function);
     
   private:
 
@@ -360,19 +367,23 @@ public:
 
   /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
-   * \param[in] msg Mensaje que se lanza
+   * \param[in] message Mensaje que se lanza
    * \param[in] level Nivel de log
    * \param[in] file Fichero
    * \param[in] line Linea
    * \param[in] function Función
    */
-  static void release(const char *msg, const MessageLevel &level, const char *file = nullptr, int line = -1, const char *function = nullptr);
+  static void release(const std::string &message, 
+                      const MessageLevel &level, 
+                      const std::string &file = std::string(), 
+                      int line = -1, 
+                      const std::string &function = std::string());
 
   /*!
    * \brief Lanza un mensaje para que aquellos objetos que estén subscritos lo reciban
-   * \param[in] msg Mensaje que se lanza
+   * \param[in] message Mensaje que se lanza
    */
-  static void release(const Message &msg);
+  static void release(const Message &message);
 
   /*!
    * \brief Quita un escuchador de mensajes
@@ -387,10 +398,10 @@ public:
 
 protected:
 
-  void onDebug(const char *msg, const char *date);
-  void onInfo(const char *msg, const char *date);
-  void onWarning(const char *msg, const char *date);
-  void onError(const char *msg, const char *date);
+  void onDebug(const std::string &message, const std::string &date);
+  void onInfo(const std::string &message, const std::string &date);
+  void onWarning(const std::string &message, const std::string &date);
+  void onError(const std::string &message, const std::string &date);
 
 private:
 

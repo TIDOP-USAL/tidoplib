@@ -116,21 +116,21 @@ void Console::setLogLevel(MessageLevel level)
 }
 #endif
 
-void Console::printMessage(const std::string &msg)
+void Console::printMessage(const std::string &message)
 {
   // Por si esta corriendo la barra de progreso
   std::cout << "\r";
 
-  std::string aux(msg);
+  std::string aux(message);
   replaceString(&aux, "%", "%%");
   std::cout << aux << "\n";
 }
 
-void Console::printErrorMessage(const std::string &msg)
+void Console::printErrorMessage(const std::string &message)
 {
   setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
                             messageProperties(MessageLevel::msg_error).intensity);
-  printMessage(msg);
+  printMessage(message);
   reset();
 }
 
@@ -280,40 +280,44 @@ void Console::setTitle(const std::string &title)
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-void Console::onMsgDebug(const char *msg, const char *date)
+void Console::onMsgDebug(const std::string &message, 
+                         const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foreColor,
                               messageProperties(MessageLevel::msg_debug).intensity);
-    printMessage(msg);
+    printMessage(message);
     reset();
   }
 }
 
-void Console::onMsgInfo(const char *msg, const char *date)
+void Console::onMsgInfo(const std::string &message, 
+                        const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_info)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foreColor,
                               messageProperties(MessageLevel::msg_info).intensity);
-    printMessage(msg);
+    printMessage(message);
     reset();
   }
 }
 
-void Console::onMsgWarning(const char *msg, const char *date)
+void Console::onMsgWarning(const std::string &message, 
+                           const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_warning)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foreColor,
                               messageProperties(MessageLevel::msg_warning).intensity);
-    printMessage(msg);
+    printMessage(message);
     reset();
   }
 }
 
-void Console::onMsgError(const char *msg, const char *date)
+void Console::onMsgError(const std::string &message, 
+                         const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_error)) {
-    printErrorMessage(msg);
+    printErrorMessage(message);
   }
 }
 
@@ -391,7 +395,8 @@ EnumFlags<MessageLevel> Console::getMessageLevel() const
 
 /* ---------------------------------------------------------------------------------- */
 
-Argument::Argument(const std::string &name, const std::string &description)
+Argument::Argument(const std::string &name, 
+                   const std::string &description)
   : mName(name),
     mDescription(description),
     mShortName()
@@ -399,14 +404,17 @@ Argument::Argument(const std::string &name, const std::string &description)
 
 }
 
-Argument::Argument(const char &shortName, const std::string &description)
+Argument::Argument(const char &shortName, 
+                   const std::string &description)
   : mName(""),
     mDescription(description),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const std::string &name, const char &shortName, const std::string &description)
+Argument::Argument(const std::string &name, 
+                   const char &shortName, 
+                   const std::string &description)
   : mName(name),
     mDescription(description),
     mShortName(shortName)

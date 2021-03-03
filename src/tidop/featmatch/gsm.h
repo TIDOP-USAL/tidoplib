@@ -21,100 +21,86 @@
  *                                                                      *
  ************************************************************************/
 
-#include "lucid.h"
+#ifndef TL_FEATMATCH_GSM_H
+#define TL_FEATMATCH_GSM_H
 
-#include "tidop/core/messages.h"
+#include "tidop/featmatch/matcher.h"
 
 namespace tl
 {
 
-
-LucidProperties::LucidProperties()
-  : mLucidKernel(1),
-    mBlurKernel(2)
-{}
-
-int LucidProperties::lucidKernel() const
+class TL_EXPORT GmsProperties
+  : public Gms
 {
-  return mLucidKernel;
-}
 
-int LucidProperties::blurKernel() const
-{
-  return mBlurKernel;
-}
+public:
 
-void LucidProperties::setLucidKernel(int lucidKernel)
-{
-  mLucidKernel = lucidKernel;
-}
+  GmsProperties();
+  ~GmsProperties() override = default;
 
-void LucidProperties::setBlurKernel(int blurKernel)
-{
-  mBlurKernel = blurKernel;
-}
 
-void LucidProperties::reset()
-{
-  mLucidKernel = 1;
-  mBlurKernel = 2;
-}
+// MatchingStrategy interface
 
-std::string LucidProperties::name() const
-{
-  return std::string("LUCID");
-}
+public:
+
+  void reset() override;
+  std::string name() const override;
+
+// IGms interface
+
+public:
+
+  bool rotation() const override;
+  void setRotation(bool rotation) override;
+  bool scale() const override;
+  void setScale(bool scale) override;
+  double threshold() const override;
+  void setThreshold(double threshold) override;
+
+protected:
+
+  bool mRotation;
+  bool mScale;
+  double mThreshold;
+};
 
 
 /*----------------------------------------------------------------*/
 
 
-LucidDescriptor::LucidDescriptor()
+class TL_EXPORT GsmImp
+  : public GmsProperties,
+    public MatchingAlgorithm
 {
-  update();
-}
 
-LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-  : LucidProperties(),
-    DescriptorExtractor()
-{
-  LucidProperties::setLucidKernel(lucidKernel);
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
-}
+public:
 
-void LucidDescriptor::update()
-{
-  mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
-                                          LucidProperties::blurKernel());
-}
+  explicit GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
+  GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+         bool rotation,
+         bool scale,
+         double threshold);
+  ~GsmImp() override = default;
 
-cv::Mat LucidDescriptor::extract(const cv::Mat &img, 
-                                 std::vector<cv::KeyPoint> &keyPoints)
-{
-  cv::Mat descriptors;
-  mLUCID->compute(img, keyPoints, descriptors);
-  return descriptors;
-}
+// MatchingAlgorithm interface
 
-void LucidDescriptor::setLucidKernel(int lucidKernel)
-{
-  LucidProperties::setLucidKernel(lucidKernel);
-  update();
-}
+public:
 
-void LucidDescriptor::setBlurKernel(int blurKernel)
-{
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
-}
+  bool compute(const cv::Mat &queryDescriptor,
+               const cv::Mat &trainDescriptor,
+               const std::vector<cv::KeyPoint> &keypoints1,
+               const std::vector<cv::KeyPoint> &keypoints2,
+               std::vector<cv::DMatch> *goodMatches,
+               std::vector<cv::DMatch> *wrongMatches = nullptr,
+               const cv::Size &queryImageSize = cv::Size(),
+               const cv::Size &trainImageSize = cv::Size()) override;
 
-void LucidDescriptor::reset()
-{
-  LucidProperties::reset();
-  update();
-}
+protected:
 
+  std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
 
+};
 
 } // namespace tl
+
+#endif // TL_FEATMATCH_GSM_H

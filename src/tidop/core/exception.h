@@ -78,10 +78,10 @@ protected:
 
 
 
-TL_EXPORT Exception make_exception(const char *error, 
-                                   const char *file = nullptr, 
+TL_EXPORT Exception make_exception(const std::string &error, 
+                                   const std::string &file = std::string(), 
                                    int line= -1, 
-                                   const char *function = nullptr);
+                                   const std::string &function = std::string());
 
 
 

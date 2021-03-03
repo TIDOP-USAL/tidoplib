@@ -171,15 +171,15 @@ public:
 
   /*!
    * \brief Imprime un mensaje en la consola
-   * \param[in] msg Mensaje que se muestra por consola
+   * \param[in] message Mensaje que se muestra por consola
    */
-  void printMessage(const std::string &msg);
+  void printMessage(const std::string &message);
 
   /*!
    * \brief Imprime un mensaje de error en la consola
-   * \param[in] msg Mensaje que se muestra por consola
+   * \param[in] message Mensaje que se muestra por consola
    */
-  void printErrorMessage(const std::string &msg);
+  void printErrorMessage(const std::string &message);
 
   /*!
    * \brief Recupera los valores iniciales
@@ -235,28 +235,32 @@ protected:
    * \param msg
    * \param date
    */
-  void onMsgDebug(const char *msg, const char *date) override;
+  void onMsgDebug(const std::string &message, 
+                  const std::string &date) override;
 
   /*!
    * \brief onMsgInfo
    * \param msg
    * \param date
    */
-  void onMsgInfo(const char *msg, const char *date) override;
+  void onMsgInfo(const std::string &message, 
+                 const std::string &date) override;
 
   /*!
    * \brief onMsgWarning
    * \param msg
    * \param date
    */
-  void onMsgWarning(const char *msg, const char *date) override;
+  void onMsgWarning(const std::string &message, 
+                    const std::string &date) override;
 
   /*!
    * \brief onMsgError
    * \param msg
    * \param date
    */
-  void onMsgError(const char *msg, const char *date) override;
+  void onMsgError(const std::string &message, 
+                  const std::string &date) override;
 
 #endif // TL_MESSAGE_HANDLER 
 

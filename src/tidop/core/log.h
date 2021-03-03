@@ -94,12 +94,15 @@ public:
    *
    * \code
    * Log log;
-   * log.setLogLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
+   * log.setMessageLevel(MessageLevel::msg_warning | MessageLevel::msg_error);
    * \endcode
    *
    * \param[in] level Niveles de log.
    */
+  static void setMessageLevel(MessageLevel level);
+#ifdef TL_ENABLE_DEPRECATED_METHODS
   static void setLogLevel(MessageLevel level);
+#endif
 
   /*!
    * \brief Establece el nombre del fichero log
@@ -109,9 +112,9 @@ public:
 
   /*!
    * \brief Escribe una linea en el log
-   * \param[in] msg Mensaje que se escribe en el log
+   * \param[in] message Mensaje que se escribe en el log
    */
-  void write(const std::string &msg);
+  void write(const std::string &message);
 
 #ifdef TL_MESSAGE_HANDLER
 
@@ -122,38 +125,43 @@ protected:
 
   /*!
    * \brief Mensaje de depuración
-   * \param msg Mensaje que se escribe en el log
+   * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
-  void onMsgDebug(const char *msg, const char *date) override;
+  void onMsgDebug(const std::string &message, 
+                  const std::string &date) override;
 
   /*!
    * \brief Mensaje de información
-   * \param msg Mensaje que se escribe en el log
+   * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
-  void onMsgInfo(const char *msg, const char *date) override;
+  void onMsgInfo(const std::string &message, 
+                 const std::string &date) override;
 
   /*!
    * \brief Mensaje de advertencia
-   * \param msg Mensaje que se escribe en el log
+   * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
-  void onMsgWarning(const char *msg, const char *date) override;
+  void onMsgWarning(const std::string &message, 
+                    const std::string &date) override;
 
   /*!
    * \brief Mensaje de error
-   * \param msg Mensaje que se escribe en el log
+   * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
-  void onMsgError(const char *msg, const char *date) override;
+  void onMsgError(const std::string &message, 
+                  const std::string &date) override;
 
   /*!
    * \brief Escribe una linea en el log
-   * \param msg Mensaje que se escribe en el log
+   * \param message Mensaje que se escribe en el log
    * \param date Fecha y hora del mensaje
    */
-  void _write(const char *msg, const char *date);
+  void _write(const std::string &message, 
+              const std::string &date);
 
 #endif // TL_MESSAGE_HANDLER
 

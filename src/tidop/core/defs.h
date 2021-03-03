@@ -269,7 +269,7 @@
 #endif
 
 /*!
- * \brief Se activa un mensaje de advertencia especifico
+ * \brief Se desactiva un mensaje de advertencia especifico
  *
  * <h4>Ejemplo</h4>
  * \code
@@ -292,7 +292,7 @@
 #endif
 
 /*!
- * \brief Se desactiva un mensaje de advertencia especifico
+ * \brief Se activa un mensaje de advertencia especifico
  *
  * <h4>Ejemplo</h4>
  * \code

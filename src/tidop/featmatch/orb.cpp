@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "orb.h"
 
 #include "tidop/core/messages.h"
@@ -197,6 +220,7 @@ OrbDetectorDescriptor::OrbDetectorDescriptor(int featuresNumber,
 
 #if CV_VERSION_MAJOR >= 4
 
+TL_DISABLE_WARNING(26812)
 cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
 {
   cv::ORB::ScoreType score = cv::ORB::ScoreType::HARRIS_SCORE;
@@ -209,6 +233,7 @@ cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &sc
 
   return score;
 }
+TL_ENABLE_WARNING(26812)
 
 #else
 
@@ -224,36 +249,21 @@ int OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
 
   return score;
 }
+
 #endif
 
-bool OrbDetectorDescriptor::detect(const cv::Mat &img,
-                                   std::vector<cv::KeyPoint> &keyPoints,
-                                   cv::InputArray &mask)
+std::vector<cv::KeyPoint> OrbDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    mOrb->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("ORB Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mOrb->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
-bool OrbDetectorDescriptor::extract(const cv::Mat &img,
-                                    std::vector<cv::KeyPoint> &keyPoints,
-                                    cv::Mat &descriptors)
+cv::Mat OrbDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-
-  try {
-    mOrb->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("ORB Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  mOrb->compute(img, keyPoints, descriptors);
+  return descriptors;
 }
 
 void OrbDetectorDescriptor::setFeaturesNumber(int featuresNumber)
@@ -362,23 +372,6 @@ OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor(int featuresNumber,
   setFastThreshold(fastThreshold);
 }
 
-#if CV_VERSION_MAJOR >= 4
-
-cv::ORB::ScoreType OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType)
-{
-  cv::ORB::ScoreType score = cv::ORB::ScoreType::HARRIS_SCORE;
-
-  if (scoreType.compare("Harris") == 0){
-    score = cv::ORB::HARRIS_SCORE;
-  } else if (scoreType.compare("FAST") == 0){
-    score = cv::ORB::FAST_SCORE;
-  }
-
-  return score;
-}
-
-#else
-
 int OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType)
 {
   int score = cv::ORB::HARRIS_SCORE;
@@ -391,7 +384,6 @@ int OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType)
 
   return score;
 }
-#endif
 
 void OrbCudaDetectorDescriptor::update()
 {
@@ -406,37 +398,25 @@ void OrbCudaDetectorDescriptor::update()
                                OrbProperties::fastThreshold());
 }
 
-bool OrbCudaDetectorDescriptor::detect(const cv::Mat &img,
-                                       std::vector<cv::KeyPoint> &keyPoints,
-                                       cv::InputArray &mask)
+std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img, 
+                                                            cv::InputArray &mask)
 {
-  try {
-    cv::cuda::GpuMat g_img(img);
-    cv::cuda::GpuMat g_mask(mask);
-    mOrb->detect(g_img, keyPoints, g_mask);
-  } catch (cv::Exception &e) {
-    msgError("ORB Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  cv::cuda::GpuMat g_img(img);
+  cv::cuda::GpuMat g_mask(mask);
+  mOrb->detect(g_img, keyPoints, g_mask);
+  return keyPoints;
 }
 
-bool OrbCudaDetectorDescriptor::extract(const cv::Mat &img,
-                                        std::vector<cv::KeyPoint> &keyPoints,
-                                        cv::Mat &descriptors)
+cv::Mat OrbCudaDetectorDescriptor::extract(const cv::Mat &img, 
+                                           std::vector<cv::KeyPoint> &keyPoints)
 {
-  try {
-    cv::cuda::GpuMat g_img(img);
-    cv::cuda::GpuMat g_descriptors;
-    mOrb->compute(g_img, keyPoints, g_descriptors);
-    g_descriptors.download(descriptors);
-  } catch (cv::Exception &e) {
-    msgError("ORB Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  cv::cuda::GpuMat g_img(img);
+  cv::cuda::GpuMat g_descriptors;
+  mOrb->compute(g_img, keyPoints, g_descriptors);
+  g_descriptors.download(descriptors);
+  return descriptors;
 }
 
 void OrbCudaDetectorDescriptor::setFeaturesNumber(int featuresNumber)

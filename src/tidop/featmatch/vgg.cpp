@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "vgg.h"
 
 #include <tidop/core/messages.h>
@@ -206,20 +229,16 @@ void VggDescriptor::setUseScaleOrientation(bool useScaleOrientation)
   update();
 }
 
-bool VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints, cv::Mat &descriptors)
+cv::Mat VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
-  try {
-    mVGG->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("VGG Descriptor error: %s", e.what());
-    return true;
-  }
-
-#  else
+#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
+  cv::Mat descriptors;
+  mVGG->compute(img, keyPoints, descriptors);
+  return descriptors;
+#else
   TL_COMPILER_WARNING("VGG Descriptor not supported in OpenCV versions < 3.3 ")
+  throw std::exception("VGG Descriptor not supported in OpenCV versions < 3.3");
 #endif
-  return false;
 }
 
 } // namespace tl

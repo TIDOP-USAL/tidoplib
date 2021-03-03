@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "latch.h"
 
 #include "tidop/core/messages.h"
@@ -106,19 +129,11 @@ void LatchDescriptor::update()
                                           LatchProperties::halfSsdSize());
 }
 
-bool LatchDescriptor::extract(const cv::Mat &img,
-                              std::vector<cv::KeyPoint> &keyPoints,
-                              cv::Mat &descriptors)
+cv::Mat LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-
-  try {
-    mLATCH->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("LATCH Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  mLATCH->compute(img, keyPoints, descriptors);
+  return descriptors;
 }
 
 void LatchDescriptor::setBytes(const std::string &bytes)

@@ -18,11 +18,6 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-/* #ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal.h"
-TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL */
 
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>
@@ -1456,30 +1451,6 @@ Compression::Status Compression::decompress()
 }
 
 #endif // HAVE_MINIZIP
-
-
-
-
-
-//#ifdef HAVE_GDAL
-//
-///* ---------------------------------------------------------------------------------- */
-//
-//std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;
-//std::mutex RegisterGdal::sMutex;
-//
-//void RegisterGdal::init()
-//{
-//  if (sRegisterGdal.get() == nullptr) {
-//    std::lock_guard<std::mutex> lck(RegisterGdal::sMutex);
-//    if (sRegisterGdal.get() == nullptr) {
-//      sRegisterGdal.reset(new RegisterGdal());
-//      GDALAllRegister();
-//    }
-//  }
-//}
-//
-//#endif
 
 
 } // End namespace tl

@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "fast.h"
 
 #include "tidop/core/messages.h"
@@ -96,6 +119,8 @@ FastDetector::FastDetector(int threshold,
 }
 
 #if CV_VERSION_MAJOR >= 4
+
+TL_DISABLE_WARNING(26812)
 cv::FastFeatureDetector::DetectorType FastDetector::convertDetectorType(const std::string &detectorType)
 {
   cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::DetectorType::TYPE_9_16;
@@ -110,6 +135,7 @@ cv::FastFeatureDetector::DetectorType FastDetector::convertDetectorType(const st
 
   return type;
 }
+TL_ENABLE_WARNING(26812)
 
 #else
 
@@ -129,19 +155,11 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 }
 #endif
 
-bool FastDetector::detect(const cv::Mat &img,
-                          std::vector<cv::KeyPoint> &keyPoints,
-                          cv::InputArray &mask)
+std::vector<cv::KeyPoint> FastDetector::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    mFast->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("FAST Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mFast->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
 void FastDetector::setThreshold(int threshold)
@@ -198,25 +216,6 @@ FastDetectorCuda::FastDetectorCuda(int threshold,
   this->update();
 }
 
-
-#if CV_VERSION_MAJOR >= 4
-cv::FastFeatureDetector::DetectorType FastDetectorCuda::convertDetectorType(const std::string &detectorType)
-{
-  cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::DetectorType::TYPE_9_16;
-
-  if (detectorType.compare("TYPE_5_8") == 0){
-    type = cv::FastFeatureDetector::TYPE_5_8;
-  } else if (detectorType.compare("TYPE_7_12") == 0) {
-    type = cv::FastFeatureDetector::TYPE_7_12;
-  } else if (detectorType.compare("TYPE_9_16") == 0) {
-    type = cv::FastFeatureDetector::TYPE_9_16;
-  }
-
-  return type;
-}
-
-#else
-
 int FastDetectorCuda::convertDetectorType(const std::string &detectorType)
 {
   int type = cv::FastFeatureDetector::TYPE_9_16;
@@ -231,7 +230,6 @@ int FastDetectorCuda::convertDetectorType(const std::string &detectorType)
 
   return type;
 }
-#endif
 
 void FastDetectorCuda::update()
 {
@@ -241,21 +239,13 @@ void FastDetectorCuda::update()
                                                 10000);
 }
 
-bool FastDetectorCuda::detect(const cv::Mat &img,
-                              std::vector<cv::KeyPoint> &keyPoints,
-                              cv::InputArray &mask)
+std::vector<cv::KeyPoint> FastDetectorCuda::detect(const cv::Mat &img, cv::InputArray &mask)
 {
-
-  try {
-    cv::cuda::GpuMat g_img(img);
-    cv::cuda::GpuMat g_mask(mask);
-    mFast->detect(g_img, keyPoints, g_mask);
-  } catch (cv::Exception &e) {
-    msgError("FAST Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  cv::cuda::GpuMat g_img(img);
+  cv::cuda::GpuMat g_mask(mask);
+  mFast->detect(g_img, keyPoints, g_mask);
+  return keyPoints;
 }
 
 void FastDetectorCuda::setThreshold(int threshold)

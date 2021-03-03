@@ -95,10 +95,10 @@ void Exception::messagef()
 
 
 
-Exception make_exception(const char *error, 
-                         const char *file, 
+Exception make_exception(const std::string &error, 
+                         const std::string &file, 
                          int line, 
-                         const char *function)
+                         const std::string &function)
 {
   return Exception(error, file, line, function);
 }

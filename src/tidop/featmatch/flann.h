@@ -21,100 +21,93 @@
  *                                                                      *
  ************************************************************************/
 
-#include "lucid.h"
+#ifndef TL_FEATMATCH_FLANN_MATCHER_H
+#define TL_FEATMATCH_FLANN_MATCHER_H
 
-#include "tidop/core/messages.h"
+#include "tidop/featmatch/matcher.h"
 
 namespace tl
 {
 
-
-LucidProperties::LucidProperties()
-  : mLucidKernel(1),
-    mBlurKernel(2)
-{}
-
-int LucidProperties::lucidKernel() const
+class TL_EXPORT FlannMatcherProperties
+  : public FlannMatcher
 {
-  return mLucidKernel;
-}
 
-int LucidProperties::blurKernel() const
-{
-  return mBlurKernel;
-}
+public:
 
-void LucidProperties::setLucidKernel(int lucidKernel)
-{
-  mLucidKernel = lucidKernel;
-}
+  FlannMatcherProperties();
+  ~FlannMatcherProperties() override;
 
-void LucidProperties::setBlurKernel(int blurKernel)
-{
-  mBlurKernel = blurKernel;
-}
+// Match interface
 
-void LucidProperties::reset()
-{
-  mLucidKernel = 1;
-  mBlurKernel = 2;
-}
+public:
 
-std::string LucidProperties::name() const
-{
-  return std::string("LUCID");
-}
+  void reset() override;
+  std::string name() const final;
+
+// FlannMatcher interface
+
+public:
+
+  Index index() const override;
+  virtual void setIndex(Index index) override;
+
+private:
+
+  Index mIndex;
+};
 
 
 /*----------------------------------------------------------------*/
 
 
-LucidDescriptor::LucidDescriptor()
+class TL_EXPORT FlannMatcherImp
+  : public FlannMatcherProperties,
+    public DescriptorMatcher
 {
-  update();
-}
 
-LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-  : LucidProperties(),
-    DescriptorExtractor()
-{
-  LucidProperties::setLucidKernel(lucidKernel);
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
-}
+public:
 
-void LucidDescriptor::update()
-{
-  mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
-                                          LucidProperties::blurKernel());
-}
+  FlannMatcherImp();
+  explicit FlannMatcherImp(FlannMatcher::Index index);
+  ~FlannMatcherImp() override = default;
 
-cv::Mat LucidDescriptor::extract(const cv::Mat &img, 
-                                 std::vector<cv::KeyPoint> &keyPoints)
-{
-  cv::Mat descriptors;
-  mLUCID->compute(img, keyPoints, descriptors);
-  return descriptors;
-}
+private:
 
-void LucidDescriptor::setLucidKernel(int lucidKernel)
-{
-  LucidProperties::setLucidKernel(lucidKernel);
-  update();
-}
+  void update();
 
-void LucidDescriptor::setBlurKernel(int blurKernel)
-{
-  LucidProperties::setBlurKernel(blurKernel);
-  update();
-}
+// DescriptorMatcher interface
 
-void LucidDescriptor::reset()
-{
-  LucidProperties::reset();
-  update();
-}
+public:
 
+  bool match(cv::InputArray &queryDescriptors,
+             cv::InputArray &trainDescriptors,
+             std::vector<cv::DMatch> &matches,
+             cv::InputArray mask = cv::noArray()) override;
 
+  bool match(cv::InputArray &queryDescriptors,
+             cv::InputArray &trainDescriptors,
+             std::vector<std::vector<cv::DMatch>> &matches,
+             cv::InputArray mask = cv::noArray()) override;
+
+// Match interface
+
+public:
+
+  void reset() override;
+
+// FlannMatcher interface
+
+public:
+
+  void setIndex(Index index) override;
+
+protected:
+
+  cv::Ptr<cv::FlannBasedMatcher> mFlannBasedMatcher;
+
+};
 
 } // namespace tl
+
+#endif // TL_FEATMATCH_FLANN_MATCHER_H

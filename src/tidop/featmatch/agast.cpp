@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "agast.h"
 
 #include "tidop/core/messages.h"
@@ -146,9 +169,11 @@ AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) noexcept
 }
 
 #if CV_VERSION_MAJOR >= 4
+TL_DISABLE_WARNING(26812)
 cv::AgastFeatureDetector::DetectorType AgastDetector::convertDetectorType(const std::string &detectorType)
 {
   cv::AgastFeatureDetector::DetectorType detector_type = cv::AgastFeatureDetector::DetectorType::OAST_9_16;
+
   if (detectorType.compare("AGAST_5_8") == 0 ) {
     detector_type = cv::AgastFeatureDetector::AGAST_5_8;
   } else if (detectorType.compare("AGAST_7_12d") == 0){
@@ -158,6 +183,7 @@ cv::AgastFeatureDetector::DetectorType AgastDetector::convertDetectorType(const 
   }
   return detector_type;
 }
+TL_ENABLE_WARNING(26812)
 #else
 int AgastDetector::convertDetectorType(const std::string &detectorType)
 {
@@ -180,19 +206,12 @@ void AgastDetector::initAgastFromProperties()
                                             convertDetectorType(AgastProperties::detectorType()));
 }
 
-bool AgastDetector::detect(const cv::Mat &img,
-                           std::vector<cv::KeyPoint> &keyPoints,
-                           cv::InputArray &mask)
+std::vector<cv::KeyPoint> AgastDetector::detect(const cv::Mat &img,
+                                                cv::InputArray &mask)
 {
-
-  try {
-    mAgast->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("AGAST Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mAgast->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
 void AgastDetector::setThreshold(int threshold)

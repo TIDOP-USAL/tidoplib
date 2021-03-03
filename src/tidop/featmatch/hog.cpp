@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "hog.h"
 
 #include "tidop/core/messages.h"
@@ -206,41 +229,29 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
   else source1.copyTo(output);
 }
 
-bool HogDescriptor::extract(const cv::Mat &img,
-                            std::vector<cv::KeyPoint> &keyPoints,
-                            cv::Mat &descriptors)
+cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
+  cv::Mat descriptors;
 
-  try {
+  std::vector<cv::Point> p_c;
+  cv::Point punto_central;
+  punto_central.x = HogProperties::winSize().width / 2;
+  punto_central.y = HogProperties::winSize().height / 2;
+  p_c.push_back(punto_central);
 
-    std::vector<float> hogdescriptor;
-    std::vector<cv::Point> p_c;
-    cv::Point punto_central;
-    punto_central.x = HogProperties::winSize().width / 2;
-    punto_central.y = HogProperties::winSize().height / 2;
-    p_c.push_back(punto_central);
+  int size = static_cast<int>(keyPoints.size());
+  descriptors = cv::Mat(size, static_cast<int>(mHOG->getDescriptorSize()), CV_32FC1);
 
-    int size = static_cast<int>(keyPoints.size());
-    descriptors = cv::Mat(size, static_cast<int>(mHOG->getDescriptorSize()), CV_32FC1);
-
-    for (int i = 0; i < size; i++) {
-      std::vector<float> hogdescriptor_aux;
-      cv::Mat patch;
-      normalizepatch(img, keyPoints[static_cast<size_t>(i)], patch);
-      mHOG->compute(patch, hogdescriptor_aux);
-      for (size_t j = 0; j < hogdescriptor_aux.size(); j++)
-        descriptors.at<float>(i, static_cast<int>(j)) = hogdescriptor_aux[j];
-    }
-
-  } catch (cv::Exception &e) {
-    tl::MessageManager::release(tl::MessageManager::Message("HOG Descriptor error: %s", e.what()).message(), tl::MessageLevel::msg_error);
-    return true;
-  } catch (std::exception &e) {
-    tl::MessageManager::release(tl::MessageManager::Message("HOG Descriptor error: %s", e.what()).message(), tl::MessageLevel::msg_error);
-    return true;
+  for (int i = 0; i < size; i++) {
+    std::vector<float> hogdescriptor_aux;
+    cv::Mat patch;
+    normalizepatch(img, keyPoints[static_cast<size_t>(i)], patch);
+    mHOG->compute(patch, hogdescriptor_aux);
+    for (size_t j = 0; j < hogdescriptor_aux.size(); j++)
+      descriptors.at<float>(i, static_cast<int>(j)) = hogdescriptor_aux[j];
   }
 
-  return false;
+  return descriptors;
 }
 
 void tl::HogDescriptor::setWinSize(const Size<int> &winSize)

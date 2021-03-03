@@ -70,37 +70,28 @@ EnumFlags<MessageLevel> Log::logLevel()
   return sLevel;
 }
 
+void Log::setMessageLevel(MessageLevel level)
+{
+  sLevel = level;
+}
+  
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 void Log::setLogLevel(MessageLevel level)
 {
   sLevel = level;
 }
+#endif
 
 void Log::setLogFile(const std::string &file)
 {
-  TL_TODO("Se tiene que comprobar si existe el directorio e intentar crearlo en caso contrario")
-  TL_TODO("Comprobar si tiene permisos de escritura")
   sLogFile = file;
 }
 
-void Log::write(const std::string &msg)
+void Log::write(const std::string &message)
 {
 
   std::string date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-  if (sLogFile.empty()) {
-    // Log por defecto
-    fs::path logPath(getRunfile());
-    logPath.replace_extension(".log");
-    sLogFile = logPath.string();
-  }
-  std::ofstream hLog(sLogFile,std::ofstream::app);
-  if (hLog.is_open()) {
-    std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << msg << "\n";
-    hLog.close();
-  } else {
-    msgError("Permission denied: %s", sLogFile.c_str());
-  }
+  this->_write(message, date);
 }
 
 #ifdef TL_MESSAGE_HANDLER
@@ -115,50 +106,63 @@ void Log::resumeListener()
   sPauseListener = false;
 }
 
-void Log::onMsgDebug(const char *msg, const char *date)
+void Log::onMsgDebug(const std::string &message, 
+                     const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
-    _write(msg, date);
+    _write(message, date);
   }
 }
 
-void Log::onMsgInfo(const char *msg, const char *date)
+void Log::onMsgInfo(const std::string &message, 
+                    const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_info)) {
-    _write(msg, date);
+    _write(message, date);
   }
 }
 
-void Log::onMsgWarning(const char *msg, const char *date)
+void Log::onMsgWarning(const std::string &message, 
+                       const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_warning)) {
-    _write(msg, date);
+    _write(message, date);
   }
 }
 
-void Log::onMsgError(const char *msg, const char *date)
+void Log::onMsgError(const std::string &message, 
+                     const std::string &date)
 {
   if (sLevel.isActive(MessageLevel::msg_error)) {
-    _write(msg, date);
+    _write(message, date);
   }
 }
 
-void Log::_write(const char *msg, const char *date)
+void Log::_write(const std::string &message, 
+                 const std::string &date)
 {
   if (sLogFile.empty()) {
     // Log por defecto
-    fs::path logPath(getRunfile());
-    logPath.replace_extension(".log");
-    sLogFile = logPath.string();
+    fs::path log_path(getRunfile());
+    log_path.replace_extension(".log");
+    sLogFile = log_path.string();
   }
+  
+  fs::path log_root_path = fs::path(sLogFile).root_path();
+  bool directory_created = fs::create_directories(log_root_path);
+  if (!directory_created) {
+    msgError("Directory '%s' could not be created: %s", log_root_path.c_str());
+    return;
+  }
+
   std::ofstream hLog(sLogFile,std::ofstream::app);
   if (hLog.is_open()) {
     std::lock_guard<std::mutex> lck(Log::mtx);
-    hLog << date << " - " << msg << "\n";
+    hLog << date << " - " << message << "\n";
     hLog.close();
   } else {
-    //Error al abrir/crear archivo. Se saca el error por consola
-    printf("The file %s was not opened\n", sLogFile.c_str());
+    msgError("The file '%s' could not be opened", sLogFile.c_str());
+    MessageManager::instance().removeListener(this);
   }
 }
 

@@ -1,5 +1,6 @@
 if(BUILD_TEST)
 add_subdirectory(core)
+add_subdirectory(featmatch)
 add_subdirectory(geometry)
 add_subdirectory(geospatial)
 add_subdirectory(graphic)  

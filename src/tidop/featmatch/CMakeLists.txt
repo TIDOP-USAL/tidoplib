@@ -38,7 +38,6 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             #lss.h
             lucid.cpp
             lucid.h
-            matcher.cpp
             matcher.h
             matchio.cpp
             matchio.h
@@ -56,6 +55,16 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             surf.h
             vgg.h
             vgg.cpp
+            gsm.cpp
+            gsm.h
+            robustmatch.cpp
+            robustmatch.h
+            bfmatch.cpp
+            bfmatch.h
+            flann.cpp
+            flann.h
+            keypointsfilter.cpp
+            keypointsfilter.h
 )
   
 # Añade el proyecto a la carpeta 'modules'

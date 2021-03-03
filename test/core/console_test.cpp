@@ -2,11 +2,12 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/output_test_stream.hpp>
 #include <tidop/core/console.h>
+#include <tidop/core/log.h>
 
 using namespace tl;
 
 
-/* ArgumentTest */
+/* ConsoleTestSuite */
 
 BOOST_AUTO_TEST_SUITE(ConsoleTestSuite)
 
@@ -60,5 +61,3 @@ BOOST_AUTO_TEST_CASE(printMessage)
 
 
 BOOST_AUTO_TEST_SUITE_END()
-
-

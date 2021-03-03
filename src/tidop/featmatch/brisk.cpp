@@ -1,3 +1,26 @@
+/************************************************************************
+ *                                                                      *
+ * Copyright (C) 2020 by Tidop Research Group                           *
+ *                                                                      *
+ * This file is part of TidopLib                                        *
+ *                                                                      *
+ * TidopLib is free software: you can redistribute it and/or modify     *
+ * it under the terms of the GNU General Public License as published by *
+ * the Free Software Foundation, either version 3 of the License, or    *
+ * (at your option) any later version.                                  *
+ *                                                                      *
+ * TidopLib is distributed in the hope that it will be useful,          *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+ * GNU General Public License for more details.                         *
+ *                                                                      *
+ * You should have received a copy of the GNU General Public License    *
+ * along with Foobar.  If not, see <http://www.gnu.org/licenses/>.      *
+ *                                                                      *
+ * @license GPL-3.0+ <http://spdx.org/licenses/GPL-3.0+>                *
+ *                                                                      *
+ ************************************************************************/
+
 #include "brisk.h"
 
 #include "tidop/core/messages.h"
@@ -103,33 +126,20 @@ void BriskDetectorDescriptor::update()
                              static_cast<float>(BriskProperties::patternScale()));
 }
 
-bool BriskDetectorDescriptor::detect(const cv::Mat &img,
-                                     std::vector<cv::KeyPoint> &keyPoints,
-                                     cv::InputArray &mask)
+std::vector<cv::KeyPoint> BriskDetectorDescriptor::detect(const cv::Mat &img,
+                                                          cv::InputArray &mask)
 {
-
-  try {
-    mBrisk->detect(img, keyPoints, mask);
-  } catch (cv::Exception &e) {
-    msgError("BRISK Detector error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  std::vector<cv::KeyPoint> keyPoints;
+  mBrisk->detect(img, keyPoints, mask);
+  return keyPoints;
 }
 
-bool BriskDetectorDescriptor::extract(const cv::Mat &img,
-                                      std::vector<cv::KeyPoint> &keyPoints,
-                                      cv::Mat &descriptors)
+cv::Mat BriskDetectorDescriptor::extract(const cv::Mat &img,
+                                         std::vector<cv::KeyPoint> &keyPoints)
 {
-  try {
-    mBrisk->compute(img, keyPoints, descriptors);
-  } catch (cv::Exception &e) {
-    msgError("BRISK Descriptor error: %s", e.what());
-    return true;
-  }
-
-  return false;
+  cv::Mat descriptors;
+  mBrisk->compute(img, keyPoints, descriptors);
+  return descriptors;
 }
 
 void BriskDetectorDescriptor::setThreshold(int threshold)
