@@ -1,5 +1,7 @@
 #include "matching.h"
 
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+
 #ifdef HAVE_OPENCV
 //#include "core/mathutils.h"
 #include "tidop/core/messages.h"
@@ -490,3 +492,5 @@ void RobustMatching::fastRobustMatch(const cv::Mat &descriptor1, const cv::Mat &
 } // End namespace TL
 
 #endif // HAVE_OPENCV
+
+#endif // TL_ENABLE_DEPRECATED_METHODS

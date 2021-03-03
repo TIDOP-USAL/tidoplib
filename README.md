@@ -18,7 +18,7 @@ Para la instalación de la libreria se hara uso de la herramienta [CMake](https:
 * [OpenCV](https://bitbucket.org/tidop/tidoplib/wiki/OpenCV) (Opcional)
 * [Cuda](https://bitbucket.org/tidop/tidoplib/wiki/Cuda) (Opcional - Requerida en función de la compilación de OpenCV)
 * [GDAL](http://www.gdal.org) (Opcional)
-* [GoogleTest]()
+*
 
 ### Instalación
 
@@ -27,14 +27,14 @@ Para la instalación de la libreria se hara uso de la herramienta [CMake](https:
 Se clona el repositorio o bien utilizando algún cliente como [TortoiseGit](https://tortoisegit.org) o [SourceTree](www.sourcetreeapp.com) o directamente desde la consola. Para utilizar algún cliente se selecciona la opción de clonar el repositorio indicando la url del repositorio:
 
 ```
-https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+https://.../tidop/tidoplib.git
 ```
 
 Desde la consola vamos al directorio donde queremos situar el repositorio y se clona:
 
 ```
-cd D:/desarrollo
-git clone https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+cd D:/dev
+git clone https://.../tidop/tidoplib.git
 ```
 
 La instalación se hara con CMake.
@@ -45,7 +45,7 @@ Se va al directorio donde se quiere descargar el código y se clona el repositor
 
 ```
 cd ~/desarrollo
-git clone https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+git clone https://.../tidop/tidoplib.git
 ```
 
 Una vez clonado se crea una carpeta build para realizar la compilación con CMake:
