@@ -73,7 +73,11 @@ void FastProperties::setNonmaxSuppression(bool nonmaxSuppression)
 
 void FastProperties::setDetectorType(const std::string &detectorType)
 {
-  mDetectorType = detectorType;
+  if (detectorType.compare("TYPE_5_8") == 0 ||
+      detectorType.compare("TYPE_7_12") == 0 ||
+      detectorType.compare("TYPE_9_16") == 0) {
+    mDetectorType = detectorType;
+  }
 }
 
 void FastProperties::reset()

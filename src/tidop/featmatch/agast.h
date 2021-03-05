@@ -51,7 +51,7 @@ public:
   AgastProperties();
   AgastProperties(const AgastProperties &agast);
   AgastProperties(AgastProperties &&agast) noexcept;
-  ~AgastProperties() override = default;
+  ~AgastProperties() override;
 
   AgastProperties &operator =(const AgastProperties &agast);
   AgastProperties &operator =(AgastProperties &&agast) noexcept;
@@ -99,7 +99,7 @@ public:
   AgastDetector(int threshold, 
                 bool nonmaxSuppression, 
                 const std::string &detectorType);
-  ~AgastDetector() override = default;
+  ~AgastDetector() override;
   AgastDetector &operator =(const AgastDetector &agastDetector);
   AgastDetector &operator =(AgastDetector &&agastDetector) noexcept;
 

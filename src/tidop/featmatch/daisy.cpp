@@ -110,7 +110,12 @@ void DaisyProperties::setQHist(int qHist)
 
 void DaisyProperties::setNorm(const std::string &norm)
 {
-  mNorm = norm;
+  if (norm.compare("NRM_NONE") == 0 ||
+      norm.compare("NRM_PARTIAL") == 0 ||
+      norm.compare("NRM_FULL") == 0 ||
+      norm.compare("NRM_SIFT") == 0) {
+    mNorm = norm;
+  }
 }
 
 void DaisyProperties::setInterpolation(bool interpolation)
@@ -173,6 +178,7 @@ DaisyDescriptor::DaisyDescriptor(double radius,
   update();
 }
 
+TL_DISABLE_WARNING(26812)
 void DaisyDescriptor::update()
 {
 
@@ -200,6 +206,7 @@ void DaisyDescriptor::update()
                                           DaisyProperties::interpolation(),
                                           DaisyProperties::useOrientation());
 }
+TL_ENABLE_WARNING(26812)
 
 cv::Mat DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {

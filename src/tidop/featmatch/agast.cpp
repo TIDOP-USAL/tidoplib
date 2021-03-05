@@ -52,6 +52,10 @@ AgastProperties::AgastProperties(AgastProperties &&agast) noexcept
 {
 }
 
+AgastProperties::~AgastProperties()
+{
+}
+
 AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
 {
   if (this != &agast) {
@@ -148,6 +152,11 @@ AgastDetector::AgastDetector(int threshold,
   setThreshold(threshold);
   setNonmaxSuppression(nonmaxSuppression);
   setDetectorType(detectorType);
+}
+
+AgastDetector::~AgastDetector()
+{
+  mAgast.release();
 }
 
 AgastDetector &AgastDetector::operator =(const AgastDetector &agastDetector)
