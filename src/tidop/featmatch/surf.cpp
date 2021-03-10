@@ -154,6 +154,14 @@ std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv:
   return keyPoints;
 }
 
+cv::Mat SurfDetectorDescriptor::extract(const cv::Mat &img,
+                                        std::vector<cv::KeyPoint> &keyPoints)
+{
+  cv::Mat descriptors;
+  mSurf->compute(img, keyPoints, descriptors);
+  return descriptors;
+}
+
 void SurfDetectorDescriptor::setHessianThreshold(double hessianThreshold)
 {
   SurfProperties::setHessianThreshold(hessianThreshold);
@@ -237,7 +245,8 @@ SurfCudaDetectorDescriptor::SurfCudaDetectorDescriptor(double hessianThreshold,
   setUpright(upright);
 }
 
-std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
+std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img, 
+                                                             cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
   cv::cuda::GpuMat g_img(img);
@@ -246,7 +255,8 @@ std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
   return keyPoints;
 }
 
-cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
+cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img, 
+                                            std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
   cv::cuda::GpuMat g_img(img);
