@@ -181,12 +181,6 @@ endif()
 # Test
 if(BUILD_TEST)
   enable_testing() #CMake predefined targets
-  if (BUILD_GTEST)
-    set(HAVE_GTEST YES)
-  endif()
-  if (BUILD_GMOCK)
-    set(HAVE_GMOCK YES)
-  endif()
 endif()
 
 # Librerias externas:
