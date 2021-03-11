@@ -28,7 +28,7 @@ cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
 
 # Nombre del projecto y versión
 project(TidopLib
-        VERSION 1.1.0
+        VERSION 2.0.0
         LANGUAGES CXX)
 
 

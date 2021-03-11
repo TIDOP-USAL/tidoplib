@@ -24,6 +24,7 @@
 
 #include "tidop/core/log.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/chrono.h"
 
 
 #if (__cplusplus >= 201703L)

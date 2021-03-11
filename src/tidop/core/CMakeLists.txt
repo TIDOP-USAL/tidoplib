@@ -45,6 +45,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             licence.h
             gdalreg.cpp
             gdalreg.h
+            chrono.cpp
+            chrono.h
 )
   
 

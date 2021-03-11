@@ -24,6 +24,18 @@
 
 #include "photo.h"
 
+#if (__cplusplus >= 201703L) //C++17
+#include <filesystem>
+#else //Boost
+#include <boost/filesystem.hpp>
+#endif
+
+#if (__cplusplus >= 201703L)
+namespace fs = std::filesystem;
+#else
+namespace fs = boost::filesystem;
+#endif
+
 
 namespace tl
 {
@@ -120,7 +132,7 @@ Photo &Photo::operator =(Photo &&photo) noexcept
 
 void Photo::update()
 {
-  mName = boost::filesystem::basename(mFilePath);
+  mName = fs::basename(mFilePath);
 }
 
 

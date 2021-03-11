@@ -27,6 +27,7 @@
 #include <tidop/core/messages.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 namespace fs = boost::filesystem;
 
 #include <stdexcept>

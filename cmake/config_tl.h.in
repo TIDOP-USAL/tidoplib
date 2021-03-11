@@ -37,30 +37,23 @@
 /// Mensajes por consola
 #cmakedefine TL_ENABLE_CONSOLE
 
-//#if defined(TL_MESSAGE_HANDLER) && defined(TL_ENABLE_CONSOLE)
-
-//#endif
-
 /* Muestra las clases y funciones marcados como obsoletos */
 #cmakedefine TL_ENABLE_DEPRECATED_METHODS 
 
+#cmakedefine HAVE_TL_CORE
 #cmakedefine HAVE_TL_MATH
-#cmakedefine HAVE_TL_GEOM
-#cmakedefine HAVE_TL_GEOM
-#cmakedefine HAVE_TL_GEOM
+#cmakedefine HAVE_TL_GEOMETRY
+#cmakedefine HAVE_TL_IMG
+#cmakedefine HAVE_TL_IMG_PROCESS
+#cmakedefine HAVE_TL_FEAT_MATCH
+#cmakedefine HAVE_TL_GRAPHIC
+#cmakedefine HAVE_TL_GEOSPATIAL
+#cmakedefine HAVE_TL_VECT
 
-
-
+// OpenCV
 #cmakedefine HAVE_OPENCV
 
-//#ifdef HAVE_OPENCV
-//
-//// Modulos contrib de OpenCV
-//#undef TL_ENABLE_OPENCV_SFM
-//
-//#endif
-
-// Activa GDAL
+// GDAL
 #cmakedefine HAVE_GDAL
 
 #cmakedefine HAVE_PROJ4
@@ -69,8 +62,7 @@
 #cmakedefine HAVE_LIBRAW
 #cmakedefine HAVE_EDSDK
 
-// Eigen Lib: Se utiliza para la resolución de sistemas de ecuaciones lineales
-// Es mucho mas rapida que OpenCV
+// Eigen Lib
 #cmakedefine HAVE_EIGEN
 
 // OpenMP

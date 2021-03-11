@@ -24,6 +24,7 @@
  
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
+#include <tidop/core/chrono.h>
 #include <tidop/geometry/transform/affine.h>
 #include <tidop/geometry/transform/translation.h>
 #include <tidop/geometry/transform/rotation.h>
