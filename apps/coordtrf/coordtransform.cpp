@@ -92,28 +92,24 @@ int main(int argc, char** argv)
     PointD(4137012.190, 671808.029),
     PointD(4146292.729, 666952.887),
     PointD(4138759.902, 702670.738) };
-  std::vector<PointD> pts_out;
+  
 
   std::shared_ptr<TransformBase<PointD>> transformation;
 
   Chrono chrono("Translation");
   chrono.run();
 
-  if (transform) {
+  if (compute) {
 
-    if (transform_name.compare("Translation") == 0) {
-      transformation = std::make_shared<Translation<PointD>>(tx, ty);
-    } else if (transform_name.compare("Rotation") == 0) {
-      transformation = std::make_shared<Rotation<PointD>>(rotation_angle);
-    } else if (transform_name.compare("Helmert2D") == 0) {
-      transformation = std::make_shared<Helmert2D<PointD>>(tx, ty, scale, rotation_angle);
-    } else if (transform_name.compare("Affine") == 0) {
-      transformation = std::make_shared<Affine<PointD>>(tx, ty, scale_x, scale_y, rotation_angle);
-    }
-
-    transformation->transform(pts_in, pts_out);
-
-  } else {
+    /// TODO: Por ahora para pruebas
+    std::vector<PointD> pts_out = {
+      PointD(737107.092,	759565.279),
+      PointD(731294.227,	764301.907),
+      PointD(735901.291,	768078.488),
+      PointD(744937.420,	757067.318),
+      PointD(731760.522,  758392.053),
+      PointD(734496.503,	758529.698),
+      PointD(726807.795,	766227.040) };
 
     if (transform_name.compare("Translation") == 0) {
       transformation = std::make_shared<Translation<PointD>>();
@@ -126,6 +122,23 @@ int main(int argc, char** argv)
     }
 
     transformation->compute(pts_in, pts_out);
+
+  } else {
+
+    if (transform_name.compare("Translation") == 0) {
+      transformation = std::make_shared<Translation<PointD>>(tx, ty);
+    } else if (transform_name.compare("Rotation") == 0) {
+      transformation = std::make_shared<Rotation<PointD>>(rotation_angle);
+    } else if (transform_name.compare("Helmert2D") == 0) {
+      transformation = std::make_shared<Helmert2D<PointD>>(tx, ty, scale, rotation_angle);
+    } else if (transform_name.compare("Affine") == 0) {
+      transformation = std::make_shared<Affine<PointD>>(tx, ty, scale_x, scale_y, rotation_angle);
+    }
+
+    std::vector<PointD> pts_out;
+
+    transformation->transform(pts_in, pts_out);
+    
   }
 
   chrono.stop();

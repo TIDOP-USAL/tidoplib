@@ -365,7 +365,7 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(std::initializer_list<T>
 
 template<typename T> inline
 MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(T *data, size_t rows, size_t cols)
-  : mData(-std::numeric_limits<T>().max(), rows *cols),
+  : mData(rows *cols, -std::numeric_limits<T>().max()),
     mRows(rows),
     mCols(cols)
 {
@@ -375,7 +375,8 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(T *data, size_t rows, si
 }
 
 template<typename T> inline 
-MatrixBase<T, DynamicMatrix, DynamicMatrix> &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator = (const MatrixBase<T, DynamicMatrix, DynamicMatrix> &matrix)
+MatrixBase<T, DynamicMatrix, DynamicMatrix> 
+&MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator = (const MatrixBase<T, DynamicMatrix, DynamicMatrix> &matrix)
 {
   if (this != &matrix) {
     this->mData = matrix.mData;
@@ -386,7 +387,8 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix> &MatrixBase<T, DynamicMatrix, Dynami
 }
 
 template<typename T> inline 
-MatrixBase<T, DynamicMatrix, DynamicMatrix> &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator = (MatrixBase<T, DynamicMatrix, DynamicMatrix> &&matrix) TL_NOEXCEPT
+MatrixBase<T, DynamicMatrix, DynamicMatrix> 
+&MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator = (MatrixBase<T, DynamicMatrix, DynamicMatrix> &&matrix) TL_NOEXCEPT
 {
   if (this != &matrix) {
     this->mData = std::move(matrix.mData);
