@@ -25,6 +25,7 @@
 #include "whitebalance.h"
 
 #include "tidop/core/messages.h"
+#include "tidop/core/concurrency.h"
 
 #ifdef HAVE_OPENCV
 #include <opencv2/highgui.hpp>

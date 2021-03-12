@@ -36,6 +36,7 @@
 
 #include "tidop/imgprocess/anaglyph.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/concurrency.h"
 
 #ifdef HAVE_OPENCV
 

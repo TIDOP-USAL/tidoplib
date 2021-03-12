@@ -34,6 +34,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/concurrency.h"
 
 namespace tl
 {

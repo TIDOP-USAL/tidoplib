@@ -47,6 +47,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             gdalreg.h
             chrono.cpp
             chrono.h
+            concurrency.cpp
+            concurrency.h
 )
   
 
@@ -64,7 +66,7 @@ if(BUILD_SHARED_LIBS)
 	
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-						  
+
     target_link_libraries(${PROJECT_NAME} 
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY})

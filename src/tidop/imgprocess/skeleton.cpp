@@ -25,6 +25,7 @@
 #include "skeleton.h"
 
 #include "tidop/core/utils.h"
+#include "tidop/core/concurrency.h"
 
 #ifdef HAVE_OPENCV
 
@@ -82,7 +83,7 @@ void Thinning::thinningIteration(cv::Mat &image, int iter, Type type) const
     }
   };
 
-  int num_threads = getOptimalNumberOfThreads();
+  int num_threads = optimalNumberOfThreads();
   std::vector<std::thread> threads(num_threads);
 
   int _size = image.rows / num_threads;

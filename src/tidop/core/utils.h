@@ -29,12 +29,9 @@
 
 #include <iostream>
 #include <fstream>
-#include <functional>
 #include <map>
 #include <regex>
-#include <thread>
 #include <list>
-#include <mutex>
 #include <numeric>
 
 
@@ -45,7 +42,6 @@
 #endif // HAVE_MINIZIP
 
 #include "tidop/core/defs.h"
-//#include "core/datamodel.h"
 
 namespace tl
 {
@@ -290,137 +286,6 @@ TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string
 
 
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
-/*!
- * \brief Clase para gestionar la ruta de ficheros o directorios
- * - Se admiten rutas absolutas y relativas
- * - Como separador admite "/" y "\\".
- *
- */
-class TL_EXPORT TL_DEPRECATED("std::filesystem::path (c++17) or boost::filesystem::path", "2.0") Path
-{
-private:
-
- /*!
-  * \brief mPos
-  */
-  int mPos;
-
-  /*!
-   * \brief mPath
-   */
-  std::vector<std::string> mPath;
-
-  std::string mFileName;
-  std::string mFileExtension;
-
-  /*!
-   * \brief Directorio o fichero
-   */
-  bool bFile;
-
-
-#if defined WIN32
-
-  /*!
-   * \brief Unidad de disco
-   */
-  std::string mDrive;
-
-#endif
-
-public:
-
-  /*!
-   * \brief Constructor por defecto
-   */
-  Path();
-
-  /*!
-   * \brief Constructor
-   * \param path Ruta
-   */
-  Path(const std::string &path);
-
-  /*!
-   * \brief Constructor de copia
-   * \param path Objeto Path que se copia
-   */
-  Path(const Path &path);
-
-  /*!
-   * \brief Operador de asignación
-   * \param[in] path Objeto Path que se copia
-   */
-  Path &operator = (const Path& path);
-
-  /*!
-   * \brief Destructora
-   */
-  ~Path();
-
-  /*!
-   * \brief Parsea una cadena obteniendo los directorios de la ruta, unidad de disco y nombre si es un fichero
-   * \param path Ruta
-   * 
-   */
-  void parse(const std::string &path);
-
-#if defined WIN32
-
-  /*!
-   * \brief getDrive
-   * \return
-   */
-  const char *getDrive();
-
-#endif
-
-  /*!
-   * \brief Sube una posición en el path
-   */
-  void up();
-
-  /*!
-   * \brief Baja una posición
-   */
-  void down();
-  
-  /*!
-   * \brief currentPath
-   * \return
-   */
-  std::vector<std::string> currentPath();
-
-  /*!
-   * \brief convierte el path a una cadena
-   * \return
-   */
-  std::string toString();
-
-  //TODO: Un path no solo apunta a un directorio con lo cual habría que añadir utilidades para imagenes
-  bool isDirectory();
-  bool isFile();
-  
-  void createDir();
-  void deleteDir();
-
-  /*!
-   * \brief
-   */
-  std::list<std::string> files(const std::string &wildcard);  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
-
-  std::list<std::string> dirs();
-
-  Path &append(const std::string &dir);
-};
-TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
 /* ---------------------------------------------------------------------------------- */
@@ -560,28 +425,6 @@ TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal
 /*                              Operaciones con vectores                              */
 /* ---------------------------------------------------------------------------------- */
 
-//#ifdef HAVE_OPENCV
-//
-///*!
-// * \brief Convierte una matriz de OpenCV en un vector
-// * \param[in] m Matriz de entrada
-// * \param[out] av Vector de salida
-// */
-//template<typename T> inline 
-//void cvMatToVector(const cv::Mat &m, std::vector<T> *av)
-//{
-//  av->resize(m.rows*m.cols);
-//  if (m.isContinuous()) {
-//    av->assign((T*)m.datastart, (T*)m.dataend);
-//  } else {
-//    for (int i = 0; i < m.rows; ++i) {
-//      av->insert(av->end(), (T*)m.ptr<uchar>(i), (T*)m.ptr<uchar>(i)+m.cols);
-//    }
-//  }
-//}
-//
-//#endif // HAVE_OPENCV
-
 /*!
  * \brief Ordena un vector de menor a mayor
  * \param[in] v Vector
@@ -703,119 +546,6 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 
   return idx;
 }
-
-#ifdef HAVE_OPENCV
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                Utilidades de carga y guardado para OpenCV                          */
-/* ---------------------------------------------------------------------------------- */
-
-//TL_EXPORT void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat &distCoeffs);
-//
-//TL_EXPORT int loadBinMat(const char *file, cv::Mat *data);
-//
-//TL_EXPORT int saveBinMat(const char *file, cv::Mat &data);
-
-#endif // HAVE_OPENCV
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                         Concurrencia, hilos y multiproceso                         */
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief número optimo de hilos
- */
-TL_EXPORT uint32_t getOptimalNumberOfThreads();
-
-/*!
- * \brief Ejecuta una función en paralelo
- * \param[in] ini
- * \param[in] end
- * \param[in] f Función o lambda
- */
-TL_EXPORT void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f);
-
-//template<typename T> inline
-//void parallel_for(T ini, T end, const std::function<void(T)> &f)
-//{
-//  #ifdef HAVE_OMP
-//  //TODO: Sin probar
-//  #pragma omp parallel for
-//  for (T i = ini; i < end; i++) {
-//    f(i);
-//  }
-//#elif defined TL_MSVS_CONCURRENCY
-//  Concurrency::cancellation_token_source cts;
-//  //Concurrency::run_with_cancellation_token([ini, end, f]() {
-//  //  Concurrency::parallel_for(ini, end, f);
-//  //},cts.get_token());
-//  Concurrency::parallel_for(ini, end, f);
-//#else
-//
-//  auto f_aux = [&](T ini, T end) {
-//    for (T r = ini; r < end; r++) {
-//      f(r);
-//    }
-//  };
-//
-//  T num_threads = getOptimalNumberOfThreads();
-//  std::vector<std::thread> threads(num_threads);
-//
-//  T size = (end - ini) / num_threads;
-//  for (T i = 0; i < num_threads; i++) {
-//    T _ini = i * size + ini;
-//    T _end = _ini + size;
-//    if (i == num_threads -1) _end = end;
-//    threads[i] = std::thread(f_aux, _ini, _end);
-//  }
-//
-//  for (auto &_thread : threads) _thread.join();
-//#endif
-//}
-
-/*!
- * \brief Ejecuta una función en paralelo
- * Método sobrecargado para trabajar con contenedores
- * \param[in] it_begin
- * \param[in] it_end
- * \param[out] it_out_begin 
- * \param[in] f Función o lambda
- */
-template<typename itIn, typename itOut> inline
-void parallel_for(itIn it_begin, itIn it_end, itOut &it_out_begin, std::function<void(itIn, itIn, itOut &)> f)
-{
-//#ifdef TL_MSVS_CONCURRENCY
-  //Concurrency::cancellation_token_source cts;
-  //Concurrency::run_with_cancellation_token([ini, end, f]() {
-  //  Concurrency::parallel_for(ini, end, f);
-  //},cts.get_token());
-  //Concurrency::parallel_for(ini, end, f);
-//#else
-
-  auto f_aux = [&](itIn ini, itIn end, itOut *out) {
-    while (ini != end) {
-      f(ini, end, out);
-    }
-  };
-
-  int num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
-  auto size = std::distance(it_begin, it_end);
-  int _size = size / num_threads;
-  for (int i = 0; i < num_threads; i++) {
-    itIn _ini = i * _size + it_begin;
-    itIn _end = _ini + _size;
-    itOut _out = i * _size + it_out_begin;
-    if (i == num_threads -1) _end = it_end;
-    threads[i] = std::thread(f_aux, _ini, it_out_begin, _end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
-//#endif
-}
-
 
 
 

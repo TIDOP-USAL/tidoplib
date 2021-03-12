@@ -40,15 +40,15 @@
 #include <ctime>
 #include <cstring>
 
-// Paralelismo
-#if defined HAVE_OMP
-#  include <omp.h>  // OpenMP
-#elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
-#  define TL_MSVS_CONCURRENCY
-#  include <ppl.h>  // Parallel Patterns Library (PPL)
-#else
-#  include <thread>
-#endif
+//// Paralelismo
+//#if defined HAVE_OMP
+//#  include <omp.h>  // OpenMP
+//#elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
+//#  define TL_MSVS_CONCURRENCY
+//#  include <ppl.h>  // Parallel Patterns Library (PPL)
+//#else
+//#  include <thread>
+//#endif
 
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
@@ -62,6 +62,7 @@
 #include <boost/filesystem.hpp>
 #endif
 #include <boost/algorithm/string.hpp>
+#include "concurrency.h"
 
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
@@ -455,210 +456,8 @@ void fileListByExt(const std::string &directory, std::list<std::string> *fileLis
 
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-// TODO: C++17 incluye filesystem que tiene una clase path.
-//       Ahora se incluye con BOOST. La podria utilizar directamente y si el compilador
-//       no soporta c++17 se utilizar?a BOOST
-
-// Se desactiva el warning que se establece al hacer la clase deprecated para la propia clase
-//TL_DISABLE_WARNING(4996)
-TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
-Path::Path()
-  : mPos(0),
-    mPath(0),
-    mFileName(""),
-    mFileExtension(""),
-    bFile(false)
-{
-}
-
-Path::Path(const std::string &path)
-  : mPos(0),
-    mPath(0),
-    mFileName(""),
-    mFileExtension(""),
-    bFile(false)
-{
-  parse(path);
-}
-
-Path::Path(const Path &path)
-  : mPos(path.mPos),
-    mPath(path.mPath),
-    mFileName(path.mFileName),
-    mFileExtension(path.mFileExtension),
-    bFile(path.bFile)
-{
-}
-
-Path::~Path()
-{
-}
-
-Path &Path::operator=(const Path &path)
-{
-  mPos = path.mPos;
-  mPath = path.mPath;
-  mFileName = path.mFileName;
-  mFileExtension = path.mFileExtension;
-  bFile = path.bFile;
-  return *this;
-}
-
-void Path::parse(const std::string &path)
-{
-//  char name[TL_MAX_FNAME];
-//  char drive[TL_MAX_DRIVE];
-//  char dir[TL_MAX_DIR];
-//  char ext[TL_MAX_EXT];
-//#ifdef _MSC_VER
-//  int r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, name, TL_MAX_FNAME, ext, TL_MAX_EXT);
-//
-//#endif
-
-  // Se comprueba si es un fichero
-  //char name[TL_MAX_FNAME];
-  //if (getFileName(path.c_str(), name, TL_MAX_FNAME) == 0) {
-  //  mFileName = name;
-  //  bFile = true;
-  //}
-
-  // Extensi?n
-  //char ext[TL_MAX_EXT];
-  //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
-  //  mFileExtension = ext;
-  //}
-
-  //char drive[TL_MAX_DRIVE];
-  //if (getFileDrive(path.c_str(), drive, TL_MAX_DRIVE) == 0) {
-  //  mDrive = drive;
-  //}
-
-  //char dir[TL_MAX_DIR];
-  //if (getFileDir(path.c_str(), dir, TL_MAX_DIR) == 0) {
-  //
-  //}
-
-  split(path, mPath, "/\\");
-  mPos = static_cast<int>(mPath.size());
-  if (mPath.size() == 0) return;
-
-  // rutas relativas
-  if (mPath[0] == std::string("..")) {
-    char dir[TL_MAX_DIR];
-    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
-    //std::string runFilePath = getRunfile();
-    Path runPath(dir);
-    int i = 0;
-    for (; mPath[i] == std::string(".."); i++) {
-      runPath.down();
-    }
-
-    std::vector<std::string> current = runPath.currentPath();
-    for (int j = i; j < mPath.size(); j++)
-      current.push_back(mPath[j]);
-    mPath = current;
-    mPos = static_cast<int>(mPath.size());
-  } else if (mPath[0] == std::string(".")) {
-    char dir[TL_MAX_DIR];
-    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
-    Path runPath(dir);
-    std::vector<std::string> current = runPath.currentPath();
-    for (int j = 1; j < mPath.size(); j++)
-      current.push_back(mPath[j]);
-    mPath = current;
-    mPos = static_cast<int>(mPath.size());
-  }
-}
-
-#if defined WIN32
-const char *Path::getDrive()
-{
-  //TODO: Esto s?lo en Windows...
-  //return mPath[0].c_str();
-  return mDrive.c_str();
-}
-#endif
-
-void Path::up()
-{
-  if (mPos < mPath.size())
-    mPos++;
-}
-
-void Path::down()
-{
-  if (mPos != 0)
-    mPos--;
-}
-
-std::vector<std::string> Path::currentPath()
-{
-  std::vector<std::string> cur_path;
-  for (int i = 0; i < mPos; i++) {
-    cur_path.push_back(mPath[i]);
-  }
-  return cur_path;
-}
 
 
-std::string Path::toString()
-{
-  std::string _path;
-  for (int i = 0; i < mPos; i++) {
-    _path.append(mPath[i]);
-    if (i < mPos - 1) _path.append("\\");
-  }
-  return _path;
-}
-
-std::list<std::string> Path::files(const std::string &wildcard)
-{
-  std::list<std::string> files;
-  fileList(toString().c_str(), &files, wildcard.c_str());
-  return files;
-}
-
-std::list<std::string> Path::dirs()
-{
-  std::list<std::string> dirs;
-  directoryList(toString().c_str(), &dirs);
-  return dirs;
-}
-
-bool Path::isDirectory()
-{
-  return !bFile;
-}
-
-bool Path::isFile()
-{
-  return bFile;
-}
-
-void Path::createDir()
-{
-  tl::createDir(toString().c_str());
-}
-
-void Path::deleteDir()
-{
-  tl::deleteDir(toString().c_str());
-}
-
-Path &Path::append(const std::string &dir)
-{
-  //TODO: Si el path es de un fichero no se puede a?adir...
-  mPath.push_back(dir);
-  return *this;
-}
-
-TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                             Operaciones con cadenas                                */
@@ -793,147 +592,6 @@ int stringToInteger(const std::string &text, Base base)
   int number;
   return ss >> number ? number : 0;
 }
-
-/* ---------------------------------------------------------------------------------- */
-/*                Utilidades de carga y guardado para OpenCV                          */
-/* ---------------------------------------------------------------------------------- */
-
-#ifdef HAVE_OPENCV
-
-//void loadCameraParams(const std::string &file, cv::Size &imageSize, cv::Mat &cameraMatrix, cv::Mat& distCoeffs)
-//{
-//  cv::FileStorage fs(file, cv::FileStorage::READ);
-//  fs["image_width"] >> imageSize.width;
-//  fs["image_height"] >> imageSize.height;
-//  fs["camera_matrix"] >> cameraMatrix;
-//  fs["distortion_coefficients"] >> distCoeffs;
-//  fs.release();
-//}
-//
-//int loadBinMat(const char *file, cv::Mat *data)
-//{
-//  FILE *fp = std::fopen(file, "rb");
-//  if (!fp) {
-//    return 1;
-//  }
-//  int i_ret = 0;
-//  //cabecera
-//  int32_t rows;
-//  int32_t cols;
-//  int32_t type;
-//  try {
-//    size_t err = std::fread(&rows, sizeof(int32_t), 1, fp);
-//    TL_ASSERT(err != 1, "Reading error")
-//    err = std::fread(&cols, sizeof(int32_t), 1, fp);
-//    TL_ASSERT(err != 1, "Reading error")
-//    err = std::fread(&type, sizeof(int32_t), 1, fp);
-//    TL_ASSERT(err != 1, "Reading error")
-//    //Cuerpo
-//    cv::Mat aux(rows, cols, type);
-//    err = std::fread(aux.data, sizeof(float), rows*cols, fp);
-//    TL_ASSERT(err != rows*cols, "Reading error")
-//    aux.copyTo(*data);
-//  } catch (std::exception &e) {
-//    msgError(e.what());
-//    i_ret = 1;
-//  }
-//  std::fclose(fp);
-//  return i_ret;
-//}
-//
-//int saveBinMat(const char *file, cv::Mat &data)
-//{
-//  FILE* fp = std::fopen(file, "wb");
-//  if (!fp) {
-//    return 1;
-//  }
-//  int i_ret = 0;
-//  //cabecera
-//  int32_t rows = data.rows;
-//  int32_t cols = data.cols;
-//  int32_t type = data.type();
-//  try {
-//    std::fwrite(&data.rows, sizeof(int32_t), 1, fp);
-//    std::fwrite(&data.cols, sizeof(int32_t), 1, fp);
-//    std::fwrite(&type, sizeof(int32_t), 1, fp);
-//    //Cuerpo
-//    std::fwrite(data.data, sizeof(float), rows*cols, fp);
-//  } catch (std::exception &e) {
-//    msgError(e.what());
-//    i_ret = 1;
-//  }
-//  std::fclose(fp);
-//  return i_ret;
-//}
-
-#endif // HAVE_OPENCV
-
-/* ---------------------------------------------------------------------------------- */
-/*                         Concurrencia, hilos y multiproceso                         */
-/* ---------------------------------------------------------------------------------- */
-
-// A?adir cancelaci?n para poder detener los procesos en caso de error
-
-uint32_t getOptimalNumberOfThreads()
-{
-#ifdef HAVE_OMP
-  //TODO: Sin probar
-  return omp_get_max_threads();
-#elif defined TL_MSVS_CONCURRENCY
-  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
-#else
-  uint32_t n_threads = std::thread::hardware_concurrency();
-  return n_threads == 0 ? 1 : n_threads;
-#endif
-}
-
-void parallel_for(size_t ini, size_t end, const std::function<void(size_t)> &f)
-{
-  TL_TODO("Tiene que ser una plantilla")
-  //uint64_t time_ini = getTickCount();
-#ifdef HAVE_OMP
-  //TODO: Sin probar
-  #pragma omp parallel for
-  for (size_t i = ini; i < end; i++) {
-    f(i);
-  }
-#elif defined TL_MSVS_CONCURRENCY
-  Concurrency::cancellation_token_source cts;
-  //Concurrency::run_with_cancellation_token([ini, end, f]() {
-  //  Concurrency::parallel_for(ini, end, f);
-  //},cts.get_token());
-  Concurrency::parallel_for(ini, end, f);
-#else
-
-  auto f_aux = [&](size_t ini, size_t end) {
-    for (size_t r = ini; r < end; r++) {
-      f(r);
-    }
-  };
-
-  size_t num_threads = getOptimalNumberOfThreads();
-  std::vector<std::thread> threads(num_threads);
-
-  size_t size = (end - ini) / num_threads;
-  for (size_t i = 0; i < num_threads; i++) {
-    size_t _ini = i * size + ini;
-    size_t _end = _ini + size;
-    if (i == num_threads -1) _end = end;
-    threads[i] = std::thread(f_aux, _ini, _end);
-  }
-
-  for (auto &_thread : threads) _thread.join();
-#endif
-  //double time = (getTickCount() - time_ini) / 1000.;
-  //printf("Time %f", time);
-}
-
-
-///TODO: A?adir m?todo para ejecutar c?digo de forma asincrona
-// std::async
-// Concurrency::task<T> (PPL)
-
-
 
 /* ---------------------------------------------------------------------------------- */
 
