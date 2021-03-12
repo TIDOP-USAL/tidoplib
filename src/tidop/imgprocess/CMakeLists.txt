@@ -48,12 +48,10 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             skeleton.h
             whitebalance.cpp
             whitebalance.h
-            matching.cpp
-            matching.h
             morphologicaloper.cpp
             morphologicaloper.h)
   
-# Creates folder "libraries" and adds target project (math.vcproj)
+
 set_property(TARGET ${PROJECT_NAME} 
              PROPERTY FOLDER "modules")
 
@@ -73,7 +71,8 @@ if(BUILD_SHARED_LIBS)
                           tl_graphic)
 	
 	if(HAVE_OPENCV)			
-        target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})	
+        target_link_libraries(${PROJECT_NAME} 
+                              ${OpenCV_LIBS})	
     endif(HAVE_OPENCV)
 	
 else()
