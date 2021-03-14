@@ -101,6 +101,24 @@ void parallel_for(size_t ini,
 }
 
 
+
+
+
+
+//template<typename T>
+//Queue<T>::Queue()
+//{
+//}
+//
+//template<typename T>
+//Queue<T>::~Queue()
+//{
+//}
+
+
+
+
+
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 
 uint32_t getOptimalNumberOfThreads()

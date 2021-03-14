@@ -31,6 +31,7 @@
 #include <functional>
 #include <thread>
 #include <mutex>
+#include <queue>
 
 namespace tl
 {
@@ -91,58 +92,143 @@ void parallel_for(itIn it_begin,
 }
 
 
-class Queue
+
+
+/*--------------------------------------------------------------------------------*/
+
+
+
+template<typename T>
+class QueueSPSC
 {
+
 public:
-  Queue();
-  ~Queue();
+
+  QueueSPSC();
+  QueueSPSC(size_t capacity);
+  ~QueueSPSC();
+
+  void push(const T &value);
+  void pop(T &value);
+  size_t size() const;
 
 private:
 
+  size_t mCapacity;
+  std::queue<T> mBuffer;
+  std::mutex mMutex;
+  std::condition_variable mConditionVariable;
 };
 
-Queue::Queue()
+template<typename T>
+QueueSPSC<T>::QueueSPSC()
+  : mCapacity(256)
 {
 }
 
-Queue::~Queue()
+template<typename T>
+QueueSPSC<T>::QueueSPSC(size_t capacity)
+  : mCapacity(capacity)
 {
 }
 
+template<typename T>
+QueueSPSC<T>::~QueueSPSC()
+{
+}
 
+template<typename T>
+void QueueSPSC<T>::push(const T &value)
+{
+  std::unique_lock<std::mutex> locker(mMutex);
+
+  while (true) {
+    mConditionVariable.wait(locker, [this]() {return mBuffer.size() < mCapacity; });
+    mBuffer.push(value);
+    locker.unlock();
+    mConditionVariable.notify_one();
+    return;
+  }
+}
+
+template<typename T>
+inline void QueueSPSC<T>::pop(T &value)
+{
+  std::unique_lock<std::mutex> locker(mMutex);
+  while (true) {
+    mConditionVariable.wait(locker, [this]() {return mBuffer.size() > 0; });
+    value = mBuffer.front();
+    mBuffer.pop();
+    locker.unlock();
+    mConditionVariable.notify_one();
+    return;
+  }
+}
+
+template<typename T>
+inline size_t QueueSPSC<T>::size() const
+{
+  return mBuffer.size();
+}
+
+
+
+
+/*--------------------------------------------------------------------------------*/
+
+
+template<typename T>
 class Producer
 {
 public:
-  Producer(Queue &queue);
+
+  Producer(QueueSPSC<T> *queue);
   ~Producer();
+
+  virtual void operator() () = 0;
 
 private:
 
+  QueueSPSC<T> *mQueue;
+
 };
 
-Producer::Producer(Queue &queue)
+template<typename T>
+Producer<T>::Producer(QueueSPSC<T> *queue)
+  : mQueue(queue) 
 {
 }
 
-Producer::~Producer()
+template<typename T>
+Producer<T>::~Producer()
 {
 }
 
+
+template<typename T>
 class Consumer
 {
 public:
-  Consumer(Queue &queue);
+
+  Consumer(QueueSPSC<T> *queue);
   ~Consumer();
+
+  virtual void operator() () = 0;
 
 private:
 
+  QueueSPSC<T> *mQueue;
+
 };
 
-Consumer::Consumer(Queue &queue)
+template<typename T>
+Consumer<T>::Consumer(QueueSPSC<T> *queue)
+  : mQueue(queue) 
 {
 }
 
-Consumer::~Consumer()
+template<typename T>
+Consumer<T>::~Consumer()
 {
 }
 
