@@ -99,14 +99,14 @@ void parallel_for(itIn it_begin,
 
 
 template<typename T>
-class QueueSPSC
+class QueueMPMC
 {
 
 public:
 
-  QueueSPSC();
-  QueueSPSC(size_t capacity);
-  ~QueueSPSC();
+  QueueMPMC();
+  QueueMPMC(size_t capacity);
+  ~QueueMPMC();
 
   void push(const T &value);
   void pop(T &value);
@@ -116,29 +116,29 @@ private:
 
   size_t mCapacity;
   std::queue<T> mBuffer;
-  std::mutex mMutex;
+  mutable std::mutex mMutex;
   std::condition_variable mConditionVariable;
 };
 
 template<typename T>
-QueueSPSC<T>::QueueSPSC()
+QueueMPMC<T>::QueueMPMC()
   : mCapacity(256)
 {
 }
 
 template<typename T>
-QueueSPSC<T>::QueueSPSC(size_t capacity)
+QueueMPMC<T>::QueueMPMC(size_t capacity)
   : mCapacity(capacity)
 {
 }
 
 template<typename T>
-QueueSPSC<T>::~QueueSPSC()
+QueueMPMC<T>::~QueueMPMC()
 {
 }
 
 template<typename T>
-void QueueSPSC<T>::push(const T &value)
+void QueueMPMC<T>::push(const T &value)
 {
   std::unique_lock<std::mutex> locker(mMutex);
 
@@ -152,7 +152,7 @@ void QueueSPSC<T>::push(const T &value)
 }
 
 template<typename T>
-inline void QueueSPSC<T>::pop(T &value)
+inline void QueueMPMC<T>::pop(T &value)
 {
   std::unique_lock<std::mutex> locker(mMutex);
   while (true) {
@@ -166,8 +166,9 @@ inline void QueueSPSC<T>::pop(T &value)
 }
 
 template<typename T>
-inline size_t QueueSPSC<T>::size() const
+inline size_t QueueMPMC<T>::size() const
 {
+  std::unique_lock<std::mutex> locker(mMutex);
   return mBuffer.size();
 }
 
@@ -182,19 +183,19 @@ class Producer
 {
 public:
 
-  Producer(QueueSPSC<T> *queue);
+  Producer(QueueMPMC<T> *queue);
   ~Producer();
 
   virtual void operator() () = 0;
 
 private:
 
-  QueueSPSC<T> *mQueue;
+  QueueMPMC<T> *mQueue;
 
 };
 
 template<typename T>
-Producer<T>::Producer(QueueSPSC<T> *queue)
+Producer<T>::Producer(QueueMPMC<T> *queue)
   : mQueue(queue) 
 {
 }
@@ -210,19 +211,19 @@ class Consumer
 {
 public:
 
-  Consumer(QueueSPSC<T> *queue);
+  Consumer(QueueMPMC<T> *queue);
   ~Consumer();
 
   virtual void operator() () = 0;
 
 private:
 
-  QueueSPSC<T> *mQueue;
+  QueueMPMC<T> *mQueue;
 
 };
 
 template<typename T>
-Consumer<T>::Consumer(QueueSPSC<T> *queue)
+Consumer<T>::Consumer(QueueMPMC<T> *queue)
   : mQueue(queue) 
 {
 }

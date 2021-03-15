@@ -29,6 +29,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 
+#include <memory>
 
 namespace tl
 {
