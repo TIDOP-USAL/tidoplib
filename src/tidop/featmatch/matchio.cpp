@@ -564,14 +564,14 @@ void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<
 
       std::vector<std::string> list;
       boost::split(list, line, boost::is_any_of(";"));
-      int size = list.size();
+      size_t size = list.size();
       if (size >= 1){
         if (size == 1 || size % 2 == 0){
           /// deleted point
           pass_points.push_back(std::vector<std::pair<std::string, int>>());
         } else {
           std::vector<std::pair<std::string, int>> pass_point;
-          for(int i = 1; i < size; i++){
+          for(size_t i = 1; i < size; i++){
             std::string idImage = list[i];
             int idx = stringToNumber<int>(list[++i]);
             pass_point.emplace_back(idImage, idx);

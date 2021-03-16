@@ -481,12 +481,11 @@ public:
   bool empty() const TL_NOEXCEPT;
   size_t size() const;
 
-  void del(int id);
+  //void del(int id);
 
   /*!
    * \brief Elimina el intervalo
    */
-  ///TODO: incluir y quitar del
   iterator erase(const_iterator first, const_iterator last);
 
 // Transform Interfaz
@@ -611,10 +610,18 @@ size_t TransformMultiple<Point_t>::size() const
   return mTransformations.size();
 }
 
+//template<typename Point_t>
+//void TransformMultiple<Point_t>::del(int id)
+//{
+//  mTransformations.erase(mTransformations.begin() + id);
+//}
+
 template<typename Point_t>
-void TransformMultiple<Point_t>::del(int id)
+typename TransformMultiple<Point_t>::iterator 
+TransformMultiple<Point_t>::erase(typename TransformMultiple<Point_t>::const_iterator first, 
+                                  typename TransformMultiple<Point_t>::const_iterator last)
 {
-  mTransformations.erase(mTransformations.begin() + id);
+  mTransformations.erase(first, last);
 }
 
 template<typename Point_t> inline

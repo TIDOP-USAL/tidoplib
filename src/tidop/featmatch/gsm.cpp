@@ -134,7 +134,7 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
       }
     }
 
-    /// TODO: devolver wrongMatches
+    TL_TODO("devolver wrongMatches")
 
   } catch(std::exception &e){
     msgError(e.what());

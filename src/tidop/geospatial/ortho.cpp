@@ -378,8 +378,10 @@ void Orthorectification::run(const std::vector<Photo> &photos,
             cv::Point2f cv_photo_image_coordinates[4];
             cv::Point2f cv_ortho_image_coordinates[4];
             for (int i = 0; i < 4; i++) {
-              cv_photo_image_coordinates[i] = cv::Point2f(photo_image_coordinates[i].x - window_image_in.pt1.x, photo_image_coordinates[i].y - window_image_in.pt1.y);
-              cv_ortho_image_coordinates[i] = cv::Point2f(ortho_image_coordinates[i].x - window_ortho_in.pt1.x, ortho_image_coordinates[i].y - window_ortho_in.pt1.y);
+              cv_photo_image_coordinates[i] = cv::Point2f(static_cast<float>(photo_image_coordinates[i].x - window_image_in.pt1.x), 
+                                                          static_cast<float>(photo_image_coordinates[i].y - window_image_in.pt1.y));
+              cv_ortho_image_coordinates[i] = cv::Point2f(static_cast<float>(ortho_image_coordinates[i].x - window_ortho_in.pt1.x), 
+                                                          static_cast<float>(ortho_image_coordinates[i].y - window_ortho_in.pt1.y));
             }
             cv::Mat h = cv::getPerspectiveTransform(cv_ortho_image_coordinates, cv_photo_image_coordinates);
 
@@ -505,7 +507,7 @@ float Orthorectification::focal() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::focal:
         focal_x = value;
@@ -533,7 +535,7 @@ PointF Orthorectification::principalPoint() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::cx:
         principal_point.x = value;
@@ -557,7 +559,7 @@ cv::Mat Orthorectification::distCoeffs() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::k1:
         dist_coeffs.at<float>(0) = value;

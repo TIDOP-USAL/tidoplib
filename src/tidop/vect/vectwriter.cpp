@@ -223,7 +223,7 @@ void VectorWriterGdal::write(const GLayer &layer)
     std::shared_ptr<TableRegister> data = entity->data();
     for (size_t i = 0; i < data->size(); i++) {
       TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
-      ogrFeature->SetField(i, data->value(i).c_str());
+      ogrFeature->SetField(static_cast<int>(i), data->value(static_cast<int>(i)).c_str());
     }
 
     GraphicEntity::Type type = entity->type();

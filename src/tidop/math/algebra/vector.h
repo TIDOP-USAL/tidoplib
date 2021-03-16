@@ -471,7 +471,6 @@ public:
 
 private:
 
-  TL_TODO("¿Probar con std::valarray?")
   std::vector<T> mData;
 
 };
@@ -596,7 +595,7 @@ class Vector
 public:
   
   Vector();
-  Vector(size_t size, T val = -std::numeric_limits<T>().max());
+  Vector(size_t size, T val = std::numeric_limits<T>().lowest());
   Vector(const Vector &vector);
   Vector(Vector &&vector) TL_NOEXCEPT;
   Vector(std::initializer_list<T> values);

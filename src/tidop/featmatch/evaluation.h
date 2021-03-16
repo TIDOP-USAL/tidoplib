@@ -476,11 +476,11 @@ PRCurve<T>::PRCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-
-///TODO: para enteros habria que especializar la plantilla
 template<typename T> inline
 void PRCurve<T>::compute(size_t steeps)
 {
+  TL_TODO("para enteros habria que especializar la plantilla")
+
   if (this->mData.empty()) return;                 
   
   this->mCurve.resize(0);
@@ -535,10 +535,10 @@ ROCCurve<T>::ROCCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-///TODO: para enteros habria que especializar la plantilla
 template<typename T> inline
 void ROCCurve<T>::compute(size_t steeps)
 {
+  TL_TODO("para enteros habria que especializar la plantilla")
   if (this->mData.empty()) return;
 
   this->mCurve.resize(0);
@@ -584,10 +584,10 @@ DETCurve<T>::DETCurve(const std::vector<std::pair<T, int>> &data)
 {
 }
 
-///TODO: para enteros habria que especializar la plantilla
 template<typename T> inline
 void DETCurve<T>::compute(size_t steeps)
 {
+  TL_TODO("para enteros habria que especializar la plantilla")
 
   if (this->mData.empty()) return;   
   

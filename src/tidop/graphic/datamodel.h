@@ -103,50 +103,6 @@ private:
 };
 
 
-/*!
- * \brief Cabecera de la tabla
- */
-//class TL_EXPORT TableHeader
-//{
-//
-//public:
-//
-//  /*!
-//   * \brief Constructora por defecto
-//   */
-//  TableHeader();
-//
-//  /*!
-//   * \brief Constructor de copia
-//   * \param[in] tableHeader
-//   */
-//  TableHeader(const TableHeader &tableHeader);
-//
-//  /*!
-//   * \brief Constructor de lista
-//   * \param[in] tableHeader
-//   */
-//  TableHeader(std::initializer_list<TableField> tableHeader);
-//
-//  /*!
-//   * \brief Destructora
-//   */
-//  ~TableHeader();
-//
-//  void addField(const TableField &field);
-//  void clear();
-//  size_t size() const;
-//  TableField tableHeaderField(int idx) const;
-//
-//private:
-//
-//  /*!
-//   * \brief Campos de la tabla
-//   */
-//  std::vector<TableField> mTableFields;
-//
-//};
-
 
 class TL_EXPORT RegisterValue
 {
@@ -203,8 +159,6 @@ public:
   size_t size() const;
 
 protected:
-  
-  TL_TODO("por ahora trabajo con cadenas de texto");
 
   /*!
    * \brief Campos de la tabla
@@ -324,7 +278,7 @@ public:
   /*!
    * \brief create
    */
-  void create();
+  //void create();
 
   /*!
    * \brief Crea una tabla nueva en el modelo de datos

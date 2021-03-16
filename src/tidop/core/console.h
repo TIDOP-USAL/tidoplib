@@ -359,7 +359,7 @@ private:
    */
   WORD mBackgroundColor;
 
-  //TODO: Por terminar
+  TL_TODO("Por terminar")
   CONSOLE_FONT_INFOEX mIniFont;
   CONSOLE_FONT_INFOEX mCurrentFont;
 
@@ -497,13 +497,6 @@ public:
    * \return true si es obligatorio
    */
   virtual bool isRequired() const = 0;
-
-  /*!
-   * \brief Convierte el valor del argumento a cadena de texto
-   * \return Cadena de texto con el valor del argumento
-   */
-  ///TODO: si el valor no esta inicializado puede provocar un comportamiento inexperado
-  //virtual std::string toString() const = 0;
 
   /*!
    * \brief Establece el valor del argumento a partir de una cadena de texto
@@ -868,7 +861,7 @@ void Argument_<T, required>::fromString(const std::string &value)
   }
 }
 
-///TODO: especialización de plantilla para salir del paso...
+
 template<> inline
 void Argument_<std::string, true>::fromString(const std::string &value)
 {
@@ -931,7 +924,7 @@ void Argument_<T, required>::setValue(const T &value)
 template<typename T, bool required> inline
 bool Argument_<T, required>::isValid()
 {
-  ///TODO: Incluir clase ArgumentValidator
+  TL_TODO("Incluir clase ArgumentValidator")
   return bValid;
 }
 

@@ -100,14 +100,6 @@ private:
   Vector<T, _rows> qtmult(const Vector<T, _rows> &b);
   Vector<T, _rows> rsolve(Vector<T, _rows> &b);
 
-private:
-
-  TL_TODO("código duplicado de SingularValueDecomposition")
-  T sign(T a, T b)
-  {
-    return ((b) >= static_cast<T>(0) ? fabs(a) : -fabs(a));
-  }
-
 protected:
 
   Matrix<T, _rows, _cols> Q_t;
@@ -164,7 +156,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         sum += this->R.at(i, k)*this->R.at(i, k); 
       }
 
-      sigma = sign(sqrt(sum), this->R.at(k, k));
+      sigma = std::copysign(sqrt(sum), this->R.at(k, k));
       this->R.at(k, k) += sigma;
       c[k] = sigma * this->R.at(k, k);
       d[k] = -scale * sigma;
@@ -275,9 +267,9 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::rsolve(Vector<T, _r
   T sum;
   Vector<T, _rows> x(b);
 
-  for (i = mRows - 1; i >= 0; i--) {
+  for (i = static_cast<int>(mRows) - 1; i >= 0; i--) {
     sum = b[i];
-    for (j = i + 1; j < mRows; j++) 
+    for (j = i + 1; j < static_cast<int>(mRows); j++) 
       sum -= this->R.at(i, j) * x[j];
     x[i] = sum / this->R.at(i, i);
   }
@@ -342,11 +334,11 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::jacobiRotation(int i, T a, T b)
     s = (b >= static_cast<T>(0) ? static_cast<T>(1) : -static_cast<T>(1));
   } else if (abs(a) > abs(b)) {
     fact = b / a;
-    c = this->sign(static_cast<T>(1) / sqrt(static_cast<T>(1)+ (fact * fact)), a);
+    c = std::copysign(static_cast<T>(1) / sqrt(static_cast<T>(1)+ (fact * fact)), a);
     s = fact * c;
   } else {
     fact = a / b;
-    s = this->sign(static_cast<T>(1) / sqrt(static_cast<T>(1) + (fact * fact)), b);
+    s = std::copysign(static_cast<T>(1) / sqrt(static_cast<T>(1) + (fact * fact)), b);
     c = fact * s;
   }
 

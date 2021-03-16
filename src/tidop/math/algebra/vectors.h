@@ -46,6 +46,8 @@ namespace math
 /* Operaciones entre vectores en el plano y en el espacio                             */
 /* ---------------------------------------------------------------------------------- */
 
+///TODO: esto debería estar en geometry con la clase punto
+
 /*!
  * \brief Vector entre dos puntos
  * \param[in] pt1 punto 1
@@ -92,7 +94,9 @@ double crossProduct(const Point_t &pt1, const Point_t &pt2)
 template<typename Point3_t> inline
 Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
-  return Point3_t(pt1.y*pt2.z - pt1.z*pt2.y, pt1.z*pt2.x - pt1.x*pt2.z, pt1.x*pt2.y - pt1.y*pt2.x);
+  return Point3_t(pt1.y * pt2.z - pt1.z * pt2.y,
+                  pt1.z * pt2.x - pt1.x * pt2.z,
+                  pt1.x * pt2.y - pt1.y * pt2.x);
 }
 
 /*!
@@ -104,8 +108,8 @@ Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double dotProduct(const Point_t &pt1, const Point_t &pt2)
 {
-  return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) +
-         static_cast<double>(pt1.y)*static_cast<double>(pt2.y);
+  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+         static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
 }
 
 /*!
@@ -117,9 +121,9 @@ double dotProduct(const Point_t &pt1, const Point_t &pt2)
 template<typename Point3_t> inline
 double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
-  return static_cast<double>(pt1.x)*static_cast<double>(pt2.x) +
-    static_cast<double>(pt1.y)*static_cast<double>(pt2.y) +
-    static_cast<double>(pt1.z)*static_cast<double>(pt2.z);
+  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+         static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
+         static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
 }
 
 /*!
@@ -129,6 +133,7 @@ double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 double module(const Point_t &v)
 {
+  TL_TODO("cambiar por math::module para evitar desbordes")
   return sqrt(dotProduct(v, v));
 }
 
@@ -139,6 +144,7 @@ double module(const Point_t &v)
 template<typename Point3_t> inline
 double module3D(const Point3_t &v)
 {
+  TL_TODO("cambiar por math::module3d para evitar desbordes")
   return sqrt(dotProduct3D(v, v));
 }
 
