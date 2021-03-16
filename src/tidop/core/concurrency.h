@@ -186,7 +186,8 @@ public:
   Producer(QueueMPMC<T> *queue);
   ~Producer();
 
-  virtual void operator() () = 0;
+  virtual void operator() (size_t size) = 0;
+  virtual void operator() (size_t ini, size_t end) = 0;
 
 private:
 
