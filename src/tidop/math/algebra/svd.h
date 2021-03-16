@@ -28,6 +28,7 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
+#include "tidop/math/mathutils.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 
@@ -115,21 +116,6 @@ public:
   void setIterationMax(int iterationMax);
 
 private:
-
-  T sign(T a, T b)
-  {
-    return ((b) >= static_cast<T>(0) ? fabs(a) : -fabs(a));
-  }
-
-  T pythag(T a, T b)
-  {
-    T absa = abs(a);
-    T absb = abs(b);
-    T div = absb / absa;
-    T inv_div = 1 / div;
-	  return (absa > absb ? absa*sqrt(static_cast<T>(1)+div*div) :
-		       (absb == static_cast<T>(0) ? static_cast<T>(0) : absb*sqrt(static_cast<T>(1)+inv_div*inv_div)));
-  }
 
   void decompose();
   void reorder();
@@ -236,7 +222,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           s += this->U.at(k, i) * this->U.at(k, i);
         }
         f = this->U.at(i, i);
-        g = -sign(sqrt(s), f);
+        g = -std::copysign(sqrt(s), f);
         h = f * g - s;
         this->U.at(i, i) = f - g;
         for (j = l - one; j < mCols; j++) {
@@ -261,7 +247,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           s += this->U.at(i, k) * this->U.at(i, k);
         }
         f = this->U.at(i, l - one);
-        g = -sign(sqrt(s), f);
+        g = -std::copysign(sqrt(s), f);
         h = f * g - s;
         this->U.at(i, l - one) = f - g;
 
@@ -283,7 +269,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   }
 
 
-  for (i = mCols - one; i >= 0; i--) { //Accumulation of right-hand transformations.
+  for (i = static_cast<int>(mCols) - one; i >= 0; i--) { //Accumulation of right-hand transformations.
     if (i < mCols - one) {
       if (g != 0.) {
         for (j = l; j < mCols; j++) //Double division to avoid possible underflow.
@@ -329,7 +315,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   int its;
   size_t nm;
   T c, x, y, z;
-  for (k = mCols - one; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
+  for (k = static_cast<int>(mCols) - one; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
     for (its = 0; its < mIterationMax; its++) { // singular values, and over allowed iterations.
       flag = true;
       for (l = k; l >= 0; l--) { //Test for splitting.
@@ -348,7 +334,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           rv1[i] = c * rv1[i];
           if (abs(f) <= eps * anorm) break;
           g = W[i];
-          h = pythag(f, g);
+          h = math::module(f, g);
           W[i] = h;
           h = static_cast<T>(1) / h;
           c = g * h;
@@ -376,8 +362,8 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
       g = rv1[nm];
       h = rv1[k];
       f = ((y - z) * (y + z) + (g - h) * (g + h)) / (static_cast<T>(2) * h * y);
-      g = pythag(f, static_cast<T>(1));
-      f = ((x - z) * (x + z) + h * ((y / (f + sign(g, f))) - h)) / x;
+      g = math::module(f, static_cast<T>(1));
+      f = ((x - z) * (x + z) + h * ((y / (f + std::copysign(g, f))) - h)) / x;
       c = s = 1.0; //Next QR transformation:
       for (j = l; j <= nm; j++) {
         i = j + one;
@@ -385,7 +371,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         y = W[i];
         h = s * g;
         g = c * g;
-        z = pythag(f, h);
+        z = math::module(f, h);
         rv1[j] = z;
         c = f / z;
         s = h / z;
@@ -399,7 +385,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           V.at(jj, j) = x * c + z * s;
           V.at(jj, i) = z * c - x * s;
         }
-        z = pythag(f, h);
+        z = math::module(f, h);
         W[j] = z; //Rotation can be arbitrary if z = 0.
         if (z != 0.) {
           z = static_cast<T>(1) / z;

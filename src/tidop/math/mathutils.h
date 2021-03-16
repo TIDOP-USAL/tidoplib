@@ -63,6 +63,30 @@ T clamp(const T &value, const T &_min, const T &_max)
   return std::max(_min, std::min(_max, value));
 }
 
+/*!
+ * \brief Módulo de un vector 2D
+ * \param[in] v Vector
+ */
+template<typename T> inline
+typename std::enable_if<
+    std::is_integral<T>::value,
+    double>::type
+module(T a, T b)
+{
+  auto result = std::minmax(abs(a), abs(b));
+  double div = static_cast<double>(result.first) / static_cast<double>(result.second);
+  return static_cast<double>(result.second) * sqrt(1. + div * div);
+}
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_floating_point<T>::value,T>::type
+module(T a, T b)
+{
+  auto result = std::minmax(abs(a), abs(b));
+  T div = result.first / result.second;
+  return result.second * sqrt(static_cast<T>(1) + div * div);
+}
 
 } // End namespace math
 

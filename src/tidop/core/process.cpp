@@ -105,7 +105,6 @@ void Process::pause()
 
 void Process::reset()
 {
-  TL_TODO("Si esta arrancado el proceso se tiene que detener antes")
   mStatus = Status::start;
 }
 
@@ -120,7 +119,6 @@ void Process::resume()
 void Process::stop()
 {
   if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
-    TL_TODO("Estado Stopping")
     mStatus = Status::stopped;
     stopTriggered();
   }

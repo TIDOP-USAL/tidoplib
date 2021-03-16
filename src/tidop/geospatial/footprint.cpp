@@ -282,7 +282,7 @@ float Footprint::focal() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::focal:
         focal_x = value;
@@ -310,7 +310,7 @@ PointF Footprint::principalPoint() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::cx:
         principal_point.x = value;
@@ -334,7 +334,7 @@ cv::Mat Footprint::distCoeffs() const
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
-    double value = param->second;
+    float value = static_cast<float>(param->second);
     switch (parameter) {
       case Calibration::Parameters::k1:
         dist_coeffs.at<float>(0) = value;

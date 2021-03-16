@@ -810,9 +810,6 @@ Command::iterator Command::erase(Command::const_iterator first, Command::const_i
 void Command::showHelp() const
 {
 
-  /// Linux syntax
-  TL_TODO("Solucion rapida. revisar")
-
   /// Uso
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);

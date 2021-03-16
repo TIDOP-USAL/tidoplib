@@ -206,8 +206,7 @@ std::vector<cv::DMatch> RobustMatchingImp::geometricFilter(const std::vector<cv:
     pts2[igm] = keypoints2[static_cast<size_t>(matches[igm].trainIdx)].pt;
   }
 
-  ///TODO: Sería mejor 3 clases GeometricTest (GeometricTestHomography, GeometricTestFundamental y GeometricTestEssential)
-  ///      Se crearia una clase GeometricTestFactory que cree la clase adecuada
+  TL_TODO("Sería mejor 3 clases GeometricTest (GeometricTestHomography, GeometricTestFundamental y GeometricTestEssential)")
   RobustMatcher::GeometricTest geometric_test = RobustMatchingProperties::geometricTest();
   if (geometric_test == RobustMatcher::GeometricTest::essential) {
 

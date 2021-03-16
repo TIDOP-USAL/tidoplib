@@ -28,11 +28,10 @@ namespace tl
 {
 
 
-/* ---------------------------------------------------------------------------------- */
 
 TableField::TableField(const std::string &name, 
-                                   Type type,
-                                   int size) 
+                       Type type,
+                       int size) 
   : mName(name),
     mType(type),
     mSize(size)
@@ -58,48 +57,11 @@ int TableField::size() const
   return mSize;
 }
 
-/* ---------------------------------------------------------------------------------- */
 
-//TableHeader::TableHeader()
-//  : mTableFields(0)
-//{
-//}
-//
-//TableHeader::TableHeader(const TableHeader &tableHeader) 
-//  : mTableFields(tableHeader.mTableFields) 
-//{
-//}
-//
-//TableHeader::TableHeader(std::initializer_list<TableField> tableHeader) 
-//  : mTableFields(tableHeader) 
-//{
-//}
-//
-//TableHeader::~TableHeader()
-//{
-//}
-//
-//void TableHeader::addField(const TableField &field)
-//{
-//  mTableFields.push_back(field);
-//}
-//
-//void TableHeader::clear() 
-//{ 
-//  mTableFields.clear(); 
-//}
-//
-//size_t TableHeader::size() const
-//{
-//  return mTableFields.size();
-//}
-//
-//TableField TableHeader::tableHeaderField(int idx) const
-//{
-//  return mTableFields[idx];
-//}
+
 
 /* ---------------------------------------------------------------------------------- */
+
 
 
 
@@ -137,7 +99,6 @@ void RegisterValue::setValue(const std::string &value)
 TableRegister::TableRegister(const std::vector<std::shared_ptr<TableField>> &fields)
 {
   size_t size = fields.size();
-  //mRegisterValues.resize(size);
 
   for (size_t i = 0; i < size; i++) {
     mRegisterValues.push_back(RegisterValue(fields[i]));

@@ -446,34 +446,7 @@ typedef Window<Point<int>> WindowI;
 typedef Window<Point<double>> WindowD;
 typedef Window<Point<float>> WindowF;
 
-TL_TODO("Quitar de aqui")
 
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Convierte una ventana a un Rect de OpenCV
- * \param[in] w Ventana
- * \return cv::Rect
- */
-template<typename T> inline
-cv::Rect_<T> windowToCvRect(const Window<Point<T>> &w)
-{
-  return cv::Rect_<T>(cv::Point_<T>(w.pt1.x, w.pt1.y), cv::Point_<T>(w.pt2.x, w.pt2.y));
-}
-
-/*!
- * \brief Convierte una Rect de OpenCV a un objeto WindowI
- * \param[in] rect cv::Rect
- * \return Ventana
- */
-template<typename T> inline
-Window<T> cvRectToWindow(const cv::Rect_<T> &rect)
-{
-  Point<T> pt1(rect.tl().x,rect.tl().y);
-  Point<T> pt2(rect.br().x,rect.br().y);
-  return Window<T>(pt1, pt2);
-}
-#endif // HAVE_OPENCV
 
 /* Operaciones con ventanas */
 

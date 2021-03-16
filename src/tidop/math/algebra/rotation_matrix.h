@@ -66,13 +66,8 @@ public:
   RotationMatrix();
   RotationMatrix(const RotationMatrix<T> &rot);
   RotationMatrix(const Matrix<T, 3, 3> &rot);
-  ~RotationMatrix() override {}
+  ~RotationMatrix() override = default;
 
-  TL_TODO("constructoras a partir de angulo y eje")
-  // mathutils
-  //void rotationMatrixAxisX(double rX, std::array<std::array<double, 3>, 3> *RX);
-  //void rotationMatrixAxisY(double rY, std::array<std::array<double, 3>, 3> *RY);
-  //void rotationMatrixAxisZ(double rZ, std::array<std::array<double, 3>, 3> *RZ);
 
 private:
 

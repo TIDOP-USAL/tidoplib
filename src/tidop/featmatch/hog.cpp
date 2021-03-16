@@ -202,8 +202,8 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
   // here there are a problem with the center, it depends on the value it´s not a trivial thing.
       // solved
   if ((input.cols % 4) == 1) {
-    pt.x = cvRound(input.cols / 2.0);
-    pt.y = cvRound(input.rows / 2.0);
+    pt.x = static_cast<float>(cvRound(input.cols / 2.0));
+    pt.y = static_cast<float>(cvRound(input.rows / 2.0));
   } else if ((input.cols % 4) == 0) {
     pt.x = (input.cols / 2.0f) - 0.5f;
     pt.y = (input.rows / 2.0f) - 0.5f;
