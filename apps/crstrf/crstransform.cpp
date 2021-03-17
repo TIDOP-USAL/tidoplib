@@ -27,6 +27,7 @@
 
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
+#include <tidop/core/log.h>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/crstransf.h>
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
   std::string coord;
   std::string separator = ";";
   std::string coord_trf;
+  std::string log_file;
 
   Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
@@ -69,7 +71,8 @@ int main(int argc, char** argv)
   cmd.push_back(std::make_shared<ArgumentStringRequired>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto", &coord));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", &coord_trf));
-  
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("log", 'l', "Fichero de log", &log_file));
+
   cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
   cmd.addExample(cmd_name + " -iEPSG:25830 -oEPSG:4258 --coord utm.txt");
 
@@ -83,6 +86,13 @@ int main(int argc, char** argv)
     return 0;
   } else if (status == Command::Status::show_version) {
     return 0;
+  }
+
+  if (!log_file.empty()) {
+    Log &log = Log::instance();
+    log.setMessageLevel(MessageLevel::msg_verbose);
+    log.setLogFile(log_file);
+    MessageManager::instance().addListener(&log);
   }
 
   try {

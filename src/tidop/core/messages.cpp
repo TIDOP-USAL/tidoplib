@@ -205,8 +205,9 @@ TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 void MessageManager::onDebug(const std::string &message, const std::string &date)
 {
 #ifdef _DEBUG
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
+  std::list<Listener *> listeners = mListeners;
+  if (!sStopHandler && !listeners.empty()) {
+    for (auto &lst : listeners) {
       lst->onMsgDebug(message, date);
     }
   }
@@ -216,8 +217,9 @@ TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
 void MessageManager::onInfo(const std::string &message, const std::string &date)
 {
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
+  std::list<Listener *> listeners = mListeners;
+  if (!sStopHandler && !listeners.empty()) {
+    for (auto &lst : listeners) {
       lst->onMsgInfo(message, date);
     }
   }
@@ -225,8 +227,9 @@ void MessageManager::onInfo(const std::string &message, const std::string &date)
 
 void MessageManager::onWarning(const std::string &message, const std::string &date)
 {
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
+  std::list<Listener *> listeners = mListeners;
+  if (!sStopHandler && !listeners.empty()) {
+    for (auto &lst : listeners) {
       lst->onMsgWarning(message, date);
     }
   }
@@ -234,8 +237,9 @@ void MessageManager::onWarning(const std::string &message, const std::string &da
 
 void MessageManager::onError(const std::string &message, const std::string &date)
 {
-  if (!sStopHandler && !mListeners.empty()) {
-    for (auto &lst : mListeners) {
+  std::list<Listener *> listeners = mListeners;
+  if (!sStopHandler && !listeners.empty()) {
+    for (auto &lst : listeners) {
       lst->onMsgError(message, date);
     }
   }

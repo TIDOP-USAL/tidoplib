@@ -158,11 +158,13 @@ void Log::_write(const std::string &message,
     sLogFile = log_path.string();
   }
   
-  fs::path log_root_path = fs::path(sLogFile).root_path();
-  bool directory_created = fs::create_directories(log_root_path);
-  if (!directory_created) {
-    msgError("Directory '%s' could not be created: %s", log_root_path.c_str());
-    return;
+  fs::path log_parent_path = fs::path(sLogFile).parent_path();
+  if (!fs::exists(log_parent_path)) {
+    bool directory_created = fs::create_directories(log_parent_path);
+    if (!directory_created) {
+      MessageManager::instance().removeListener(this);
+      return;
+    }
   }
 
   std::ofstream hLog(sLogFile,std::ofstream::app);
@@ -171,7 +173,6 @@ void Log::_write(const std::string &message,
     hLog << date << " - " << message << "\n";
     hLog.close();
   } else {
-    msgError("The file '%s' could not be opened", sLogFile.c_str());
     MessageManager::instance().removeListener(this);
   }
 }
