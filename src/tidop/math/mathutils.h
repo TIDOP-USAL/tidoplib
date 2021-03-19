@@ -74,7 +74,8 @@ typename std::enable_if<
 module(T a, T b)
 {
   auto result = std::minmax(abs(a), abs(b));
-  double div = static_cast<double>(result.first) / static_cast<double>(result.second);
+  double div = static_cast<double>(result.first) / 
+               static_cast<double>(result.second);
   return static_cast<double>(result.second) * sqrt(1. + div * div);
 }
 

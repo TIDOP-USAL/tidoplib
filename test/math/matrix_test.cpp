@@ -739,6 +739,143 @@ BOOST_FIXTURE_TEST_CASE(singular, MatrixTest)
   BOOST_CHECK(mat_singular.singular());
 }
 
+BOOST_FIXTURE_TEST_CASE(adjoint2x2, MatrixTest)
+{
+  Matrix<double, 2, 2> adjoint2x2 = _mat_2x2.adjugate();
+
+  BOOST_CHECK_CLOSE(4., adjoint2x2.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-3., adjoint2x2.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-1., adjoint2x2.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(2., adjoint2x2.at(1, 1), 0.1);
+
+  Matrix<double> adjoint2x2_dyn = _mat_dyn_2x2->adjugate();
+  BOOST_CHECK_CLOSE(4., adjoint2x2_dyn.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-3., adjoint2x2_dyn.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-1., adjoint2x2_dyn.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(2., adjoint2x2_dyn.at(1, 1), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(adjoint3x3, MatrixTest)
+{
+  Matrix<double, 3, 3> adjoint3x3 = _mat_3x3_d.adjugate();
+  BOOST_CHECK_CLOSE(-2.82, adjoint3x3.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(6.5, adjoint3x3.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-2.5, adjoint3x3.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(1.26, adjoint3x3.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-2.8, adjoint3x3.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.7, adjoint3x3.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(1.3, adjoint3x3.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(-3.9, adjoint3x3.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(1.5, adjoint3x3.at(2, 2), 0.1);
+
+  Matrix<double> adjoint3x3_dyn = _mat_dyn_3x3_d->adjugate();
+  BOOST_CHECK_CLOSE(-2.82, adjoint3x3_dyn.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(6.5, adjoint3x3_dyn.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-2.5, adjoint3x3_dyn.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(1.26, adjoint3x3_dyn.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-2.8, adjoint3x3_dyn.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.7, adjoint3x3_dyn.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(1.3, adjoint3x3_dyn.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(-3.9, adjoint3x3_dyn.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(1.5, adjoint3x3_dyn.at(2, 2), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(adjoint4x4, MatrixTest)
+{
+  Matrix<double, 4, 4> adjoint4x4 = _mat_4x4_d.adjugate();
+  BOOST_CHECK_CLOSE(94784.4, adjoint4x4.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-6402.73, adjoint4x4.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-3768.58, adjoint4x4.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-875.303, adjoint4x4.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(-27417.3, adjoint4x4.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(1870.688, adjoint4x4.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-2394.03, adjoint4x4.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(12531.8, adjoint4x4.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(2658.05, adjoint4x4.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(4651.01, adjoint4x4.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-6796.42, adjoint4x4.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(6376.45, adjoint4x4.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(-2815.65, adjoint4x4.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(-365.281, adjoint4x4.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE(12209.4, adjoint4x4.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(-13045.7, adjoint4x4.at(3, 3), 0.1);
+
+  Matrix<double> adjoint4x4_dyn = _mat_dyn_4x4_d->adjugate();
+  BOOST_CHECK_CLOSE(94784.4, adjoint4x4_dyn.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-6402.73, adjoint4x4_dyn.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-3768.58, adjoint4x4_dyn.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-875.303, adjoint4x4_dyn.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(-27417.3, adjoint4x4_dyn.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(1870.688, adjoint4x4_dyn.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-2394.03, adjoint4x4_dyn.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(12531.8, adjoint4x4_dyn.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(2658.05, adjoint4x4_dyn.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(4651.01, adjoint4x4_dyn.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-6796.42, adjoint4x4_dyn.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(6376.45, adjoint4x4_dyn.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(-2815.65, adjoint4x4_dyn.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(-365.281, adjoint4x4_dyn.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE(12209.4, adjoint4x4_dyn.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(-13045.7, adjoint4x4_dyn.at(3, 3), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(adjointnxn, MatrixTest)
+{
+  Matrix<double, 5, 5> adjointnxn = _mat_5x5_d.adjugate();
+  BOOST_CHECK_CLOSE(6, adjointnxn.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(230, adjointnxn.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-788, adjointnxn.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(192, adjointnxn.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(72, adjointnxn.at(0, 4), 0.1);
+  BOOST_CHECK_CLOSE(-2, adjointnxn.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-1036, adjointnxn.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(1222, adjointnxn.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(-64, adjointnxn.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(-24, adjointnxn.at(1, 4), 0.1);
+  BOOST_CHECK_CLOSE(-387, adjointnxn.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(994, adjointnxn.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-978, adjointnxn.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(567, adjointnxn.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(-327, adjointnxn.at(2, 4), 0.1);
+  BOOST_CHECK_CLOSE(-327, adjointnxn.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(416, adjointnxn.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE(-224, adjointnxn.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(-391, adjointnxn.at(3, 3), 0.1);
+  BOOST_CHECK_CLOSE(393, adjointnxn.at(3, 4), 0.1);
+  BOOST_CHECK_CLOSE(571, adjointnxn.at(4, 0), 0.1);
+  BOOST_CHECK_CLOSE(-656, adjointnxn.at(4, 1), 0.1);
+  BOOST_CHECK_CLOSE(796, adjointnxn.at(4, 2), 0.1);
+  BOOST_CHECK_CLOSE(-435, adjointnxn.at(4, 3), 0.1);
+  BOOST_CHECK_CLOSE(-343, adjointnxn.at(4, 4), 0.1);
+
+  Matrix<double> adjointnxn_dyn = _mat_dyn_5x5_d->adjugate();
+  BOOST_CHECK_CLOSE(6, adjointnxn_dyn.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(230, adjointnxn_dyn.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(-788, adjointnxn_dyn.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(192, adjointnxn_dyn.at(0, 3), 0.1);
+  BOOST_CHECK_CLOSE(72, adjointnxn_dyn.at(0, 4), 0.1);
+  BOOST_CHECK_CLOSE(-2, adjointnxn_dyn.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-1036, adjointnxn_dyn.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(1222, adjointnxn_dyn.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(-64, adjointnxn_dyn.at(1, 3), 0.1);
+  BOOST_CHECK_CLOSE(-24, adjointnxn_dyn.at(1, 4), 0.1);
+  BOOST_CHECK_CLOSE(-387, adjointnxn_dyn.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(994, adjointnxn_dyn.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-978, adjointnxn_dyn.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(567, adjointnxn_dyn.at(2, 3), 0.1);
+  BOOST_CHECK_CLOSE(-327, adjointnxn_dyn.at(2, 4), 0.1);
+  BOOST_CHECK_CLOSE(-327, adjointnxn_dyn.at(3, 0), 0.1);
+  BOOST_CHECK_CLOSE(416, adjointnxn_dyn.at(3, 1), 0.1);
+  BOOST_CHECK_CLOSE(-224, adjointnxn_dyn.at(3, 2), 0.1);
+  BOOST_CHECK_CLOSE(-391, adjointnxn_dyn.at(3, 3), 0.1);
+  BOOST_CHECK_CLOSE(393, adjointnxn_dyn.at(3, 4), 0.1);
+  BOOST_CHECK_CLOSE(571, adjointnxn_dyn.at(4, 0), 0.1);
+  BOOST_CHECK_CLOSE(-656, adjointnxn_dyn.at(4, 1), 0.1);
+  BOOST_CHECK_CLOSE(796, adjointnxn_dyn.at(4, 2), 0.1);
+  BOOST_CHECK_CLOSE(-435, adjointnxn_dyn.at(4, 3), 0.1);
+  BOOST_CHECK_CLOSE(-343, adjointnxn_dyn.at(4, 4), 0.1);
+
+}
 
 /* Operaciones unarias */
 

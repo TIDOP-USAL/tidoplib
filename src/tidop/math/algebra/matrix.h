@@ -874,16 +874,6 @@ public:
   Matrix cofactorMatrix() const;
 
   /*!
-   * \brief Forma escalonada de fila
-   */
-  Matrix rowEchelonForm(T *determinant = nullptr) const;
-
-  /*!
-   * \brief Forma escalonada de fila reducida
-   */
-  //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
-
-  /*!
    * \brief Determinante de la matriz
    * \return Determinante
    */
@@ -1002,6 +992,15 @@ private:
   void adjointnxn(Matrix<T, _rows, _cols> &matrix) const;
   void cofactorMatrix(Matrix<T, _rows, _cols> &matrix) const;
 
+  /*!
+   * \brief Forma escalonada de fila
+   */
+  Matrix rowEchelonForm(T *determinant = nullptr) const;
+
+  /*!
+   * \brief Forma escalonada de fila reducida
+   */
+  //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
 };
 
 
@@ -1086,6 +1085,7 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse(bool *invertibility) const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
   Matrix<T, _rows, _cols> matrix;
   
@@ -1249,10 +1249,10 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjugate() const
   size_t cols = this->cols();
   TL_ASSERT(rows == cols, "Non-Square Matrix");
 
-  Matrix<T, _rows, _cols> matrix;
-  if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
-    matrix = *this;
-  }
+  Matrix<T, _rows, _cols> matrix(*this);
+  //if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
+  //  matrix = *this;
+  //}
 
   if (rows == 2) {
     adjoint2x2(matrix);

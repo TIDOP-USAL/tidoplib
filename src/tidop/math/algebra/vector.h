@@ -607,11 +607,13 @@ public:
 
   double module() const;
   void normalize();
+  double dotProduct(const Vector<T, _size> &vector) const;
 
   static Vector zero();
   static Vector zero(size_t size);
   static Vector unit();
   static Vector unit(size_t size);
+
 };
 
 
@@ -695,10 +697,21 @@ void Vector<T, _size>::normalize()
   if (length > static_cast<T>(0)) {
     *this /= length;
   } else {
-    for (size_t i = 0; i < this->mVector.size(); i++) {
-      this->mVector[i] = static_cast<T>(0);
+    for (size_t i = 0; i < mVector.size(); i++) {
+      mVector[i] = static_cast<T>(0);
     }
   }
+}
+
+template<typename T, size_t _size> inline
+double Vector<T, _size>::dotProduct(const Vector<T, _size> &vector) const
+{
+  TL_ASSERT(this->size() == vector.size(), "Different vector size");
+  double dot = static_cast<double>(mVector[0]) * static_cast<double>(vector[0]);
+  for (size_t i = 1; i < this->size(); i++) {
+    dot += static_cast<double>(mVector[i]) * static_cast<double>(vector[i]);
+  }
+  return dot;
 }
 
 template<typename T, size_t _size> inline
@@ -889,9 +902,9 @@ template<typename T, size_t _size>
 double dotProduct(const Vector<T, _size> &v1,
                   const Vector<T, _size> &v2)
 {
-  TL_ASSERT(v1.size() == v2.size(), "");
+  TL_ASSERT(v1.size() == v2.size(), "Different vector size");
 
-  double dot = static_cast<double>(v1.at(0)) * static_cast<double>(v2[0]);
+  double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
   for (size_t i = 1; i < v1.size(); i++) {
     dot += static_cast<double>(v1[i]) * static_cast<double>(v2[i]);
   }
