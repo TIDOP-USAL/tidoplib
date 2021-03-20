@@ -60,9 +60,9 @@ AgastProperties::~AgastProperties()
 AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
 {
   if (this != &agast) {
-    this->mThreshold = agast.mThreshold;
-    this->mNonmaxSuppression = agast.mNonmaxSuppression;
-    this->mDetectorType = agast.mDetectorType;
+    mThreshold = agast.mThreshold;
+    mNonmaxSuppression = agast.mNonmaxSuppression;
+    mDetectorType = agast.mDetectorType;
   }
   return *this;
 }
@@ -70,9 +70,9 @@ AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
 AgastProperties &AgastProperties::operator =(AgastProperties &&agast) noexcept
 {
   if (this != &agast) {
-    this->mThreshold = agast.mThreshold;
-    this->mNonmaxSuppression = agast.mNonmaxSuppression;
-    this->mDetectorType = std::move(agast.mDetectorType);
+    mThreshold = agast.mThreshold;
+    mNonmaxSuppression = agast.mNonmaxSuppression;
+    mDetectorType = std::move(agast.mDetectorType);
   }
   return *this;
 }

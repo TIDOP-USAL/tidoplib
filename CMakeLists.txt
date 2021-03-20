@@ -445,7 +445,7 @@ include_directories("${PROJECT_BINARY_DIR}")
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
 set(TidopLib_LIBRARIES)
 
-#add_subdirectory(third_party)
+add_subdirectory(third_party)
 
 # Directorio con el código fuente de los diferentes modulos
 add_subdirectory(src)

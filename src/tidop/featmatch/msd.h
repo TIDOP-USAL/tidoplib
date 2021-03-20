@@ -22,32 +22,38 @@
  *                                                                        *
  **************************************************************************/
  
-#ifndef FME_MSD_DETECTOR_H
-#define FME_MSD_DETECTOR_H
+#ifndef TL_FEATMATCH_MSD_DETECTOR_H
+#define TL_FEATMATCH_MSD_DETECTOR_H
 
-#include "tl/fme_global.h"
+#include "config_tl.h"
 
-#include "tl/core/features/features.h"
+#include "tidop/featmatch/features.h"
 
 #include <memory>
 
-#include <std::string>
-
-#include "msd/MSD.h"
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#include <opencv2/xfeatures2d.hpp>
+#elif
+class MsdDetector;
+#endif
 
 namespace tl
 {
 
 
 class TL_EXPORT MsdProperties
-  : public IMsd
+  : public Msd
 {
 public:
 
   MsdProperties();
+  MsdProperties(const MsdProperties &msd);
   ~MsdProperties() override;
 
-// IMsd interface
+  MsdProperties &operator =(const MsdProperties &msd);
+
+// Msd interface
+
 public:
 
   virtual double thresholdSaliency() const override;
@@ -79,7 +85,7 @@ public:
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -125,19 +131,24 @@ public:
 
 private:
 
+  void update();
+
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+
   bool pointIsAcceptable(const cv::KeyPoint &vl_keypoint, int width, int height);
   void compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta);
   void affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mask, cv::Mat &Ai);
+
+#endif
 
 // KeypointDetector interface
 
 public:
 
-  bool detect(const cv::Mat &img,
-              std::vector<cv::KeyPoint> &keyPoints,
-              cv::InputArray &mask = cv::noArray()) override;
+  std::vector<cv::KeyPoint> detect(const cv::Mat &img,
+                                   cv::InputArray &mask = cv::noArray()) override;
 
-// IMsd interface
+// Msd interface
 
 public:
 
@@ -161,11 +172,14 @@ public:
 
 protected:
 
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  cv::Ptr<cv::xfeatures2d::MSDDetector> mMSD;
+#elif
   std::shared_ptr<::MsdDetector> mMSD;
-
+#endif
 };
 
 
 } // namespace tl
 
-#endif // FME_MSD_DETECTOR_H
+#endif // TL_FEATMATCH_MSD_DETECTOR_H

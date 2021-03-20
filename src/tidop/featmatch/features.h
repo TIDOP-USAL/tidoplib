@@ -1034,7 +1034,7 @@ public:
 
 /*----------------------------------------------------------------*/
 
-
+TL_TODO("incluir implementación OpenCV")
 class TL_EXPORT Msd
   : public FeatureBase
 {
