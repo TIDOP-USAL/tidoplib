@@ -40,10 +40,10 @@ if(BUILD_TL_MATH AND BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
     set(the_target "${test_kind}_${name}")
     add_executable(${the_target} ${srcs})
     
-if(HAVE_LAPACKE)
+if(HAVE_OPENBLAS)
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_LAPACKE)
+endif(HAVE_OPENBLAS)
 
     target_link_libraries(${the_target} tl_core tl_geom tl_math)
     target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
@@ -54,9 +54,10 @@ endif(HAVE_LAPACKE)
       target_link_libraries(${the_target} ${OpenCV_LIBS})
 	endif(HAVE_OPENCV)
 	
-  if(HAVE_LAPACKE)
-    target_link_libraries(${the_target} ${LAPACKE_LIBRARIES})
-  endif(HAVE_LAPACKE)
+  if(HAVE_OPENBLAS)
+    target_link_libraries(${the_target}
+                          OpenBLAS::OpenBLAS)
+  endif(HAVE_OPENBLAS)
 
     # Añade el proyecto de test a la carpeta 'test/math'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/math")

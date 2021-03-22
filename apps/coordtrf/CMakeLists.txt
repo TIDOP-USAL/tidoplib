@@ -76,13 +76,13 @@ if (UNIX)
                           -lpcre)
 endif()
 
-if(HAVE_LAPACKE)
+if(HAVE_OPENBLAS)
     target_link_libraries(${PROJECT_NAME} 
                           OpenBLAS::OpenBLAS)
 
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_LAPACKE)
+endif(HAVE_OPENBLAS)
 
 # Añade el proyecto de ejemplo a la carpeta 'examples'
 set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/coordtransform")

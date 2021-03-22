@@ -52,10 +52,10 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
 set_property(TARGET ${PROJECT_NAME} 
              PROPERTY FOLDER "modules")
 
-if(HAVE_LAPACKE)
+if(HAVE_OPENBLAS)
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_LAPACKE)
+endif(HAVE_OPENBLAS)
 
 #instalación
 if(BUILD_SHARED_LIBS)
@@ -85,9 +85,9 @@ if(BUILD_SHARED_LIBS)
                               ${PROJ4_LIBRARY})
     endif(HAVE_PROJ4)
 
-    if(HAVE_LAPACKE)
+    if(HAVE_OPENBLAS)
         target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
-    endif(HAVE_LAPACKE)
+    endif(HAVE_OPENBLAS)
 
 else()
 
