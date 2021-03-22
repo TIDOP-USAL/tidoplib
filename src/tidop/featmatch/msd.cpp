@@ -28,32 +28,71 @@
 
 #include <opencv2/imgproc.hpp>
 
-namespace tl
-{
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#include "msd/MSD.h"
 
 #define _USE_MATH_DEFINES
 #define ABS(x)    (((x) > 0) ? (x) : (-(x)))
 #define M_PI 3.14159265358979323846
 
+#endif
+
+namespace tl
+{
 
 MsdProperties::MsdProperties()
-  : IMsd(),
-    mThresholdSaliency(250),
-    mPatchRadius(3),
-    mKNN(4),
-    mAreaRadius(5),
-    mScaleFactor(1.25),
-    mNMSRadius(5),
-    mNScales(-1),
-    mNMSScaleR(0),
-    mComputeOrientations(false),
-    mAffineMSD(false),
-    mAffineTilts(3)
-{}
+  : Msd(),
+  mThresholdSaliency(250),
+  mPatchRadius(3),
+  mKNN(4),
+  mAreaRadius(5),
+  mScaleFactor(1.25),
+  mNMSRadius(5),
+  mNScales(-1),
+  mNMSScaleR(0),
+  mComputeOrientations(false),
+  mAffineMSD(false),
+  mAffineTilts(3)
+{
+}
+
+MsdProperties::MsdProperties(const MsdProperties &msd)
+  : Msd(msd),
+  mThresholdSaliency(msd.mThresholdSaliency),
+  mPatchRadius(msd.mPatchRadius),
+  mKNN(msd.mKNN),
+  mAreaRadius(msd.mAreaRadius),
+  mScaleFactor(msd.mScaleFactor),
+  mNMSRadius(msd.mNMSRadius),
+  mNScales(msd.mNScales),
+  mNMSScaleR(msd.mNMSScaleR),
+  mComputeOrientations(msd.mComputeOrientations),
+  mAffineMSD(msd.mAffineMSD),
+  mAffineTilts(msd.mAffineTilts)
+{
+}
 
 MsdProperties::~MsdProperties()
 {
 
+}
+
+MsdProperties &MsdProperties::operator =(const MsdProperties &msd)
+{
+  if (this != &msd) {
+    mThresholdSaliency = msd.mThresholdSaliency;
+    mPatchRadius = msd.mPatchRadius;
+    mKNN = msd.mKNN;
+    mAreaRadius = msd.mAreaRadius;
+    mScaleFactor = msd.mScaleFactor;
+    mNMSRadius = msd.mNMSRadius;
+    mNScales = msd.mNScales;
+    mNMSScaleR = msd.mNMSScaleR;
+    mComputeOrientations = msd.mComputeOrientations;
+    mAffineMSD = msd.mAffineMSD;
+    mAffineTilts = msd.mAffineTilts;
+  }
+  return *this;
 }
 
 double MsdProperties::thresholdSaliency() const
@@ -193,20 +232,14 @@ std::string MsdProperties::name() const
 
 MsdDetector::MsdDetector()
   : MsdProperties(),
-    KeypointDetector()
+  KeypointDetector()
 {
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
   mMSD = std::make_shared<::MsdDetector>();
-  mMSD->setThSaliency(static_cast<float>(MsdProperties::thresholdSaliency()));
-  mMSD->setPatchRadius(MsdProperties::patchRadius());
-  mMSD->setKNN(MsdProperties::knn());
-  mMSD->setSearchAreaRadius(MsdProperties::searchAreaRadius());
-  mMSD->setScaleFactor(static_cast<float>(MsdProperties::scaleFactor()));
-  mMSD->setNMSRadius(MsdProperties::NMSRadius());
-  mMSD->setNScales(MsdProperties::nScales());
-  mMSD->setNMSScaleRadius(MsdProperties::NMSScaleRadius());
-  mMSD->setComputeOrientation(MsdProperties::computeOrientation());
-}
+#endif
 
+  update();
+}
 
 MsdDetector::MsdDetector(double thresholdSaliency,
                          int pathRadius,
@@ -220,9 +253,12 @@ MsdDetector::MsdDetector(double thresholdSaliency,
                          bool affineMSD,
                          int affineTilts)
   : MsdProperties(),
-    KeypointDetector()
+  KeypointDetector()
 {
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
   mMSD = std::make_shared<::MsdDetector>();
+#endif
+
   MsdProperties::setThresholdSaliency(thresholdSaliency);
   MsdProperties::setPatchRadius(pathRadius);
   MsdProperties::setKNN(knn);
@@ -234,6 +270,8 @@ MsdDetector::MsdDetector(double thresholdSaliency,
   MsdProperties::setComputeOrientation(computeOrientations);
   MsdProperties::setAffineMSD(affineMSD);
   MsdProperties::setAffineTilts(affineTilts);
+
+  update();
 }
 
 MsdDetector::~MsdDetector()
@@ -241,98 +279,100 @@ MsdDetector::~MsdDetector()
 
 }
 
-bool MsdDetector::detect(const cv::Mat &img,
-                         std::vector<cv::KeyPoint> &keyPoints,
-                         cv::InputArray &mask)
+void MsdDetector::update()
+{
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  mMSD = cv::xfeatures2d::MSDDetector::create(MsdProperties::patchRadius(),
+                                              MsdProperties::searchAreaRadius(),
+                                              MsdProperties::NMSRadius(),
+                                              MsdProperties::NMSScaleRadius(),
+                                              static_cast<float>(MsdProperties::thresholdSaliency()),
+                                              MsdProperties::knn(),
+                                              static_cast<float>(MsdProperties::scaleFactor()),
+                                              MsdProperties::nScales(),
+                                              MsdProperties::computeOrientation());
+#elif
+  mMSD->setThSaliency(static_cast<float>(MsdProperties::thresholdSaliency()));
+  mMSD->setPatchRadius(MsdProperties::patchRadius());
+  mMSD->setKNN(MsdProperties::knn());
+  mMSD->setSearchAreaRadius(MsdProperties::searchAreaRadius());
+  mMSD->setScaleFactor(static_cast<float>(MsdProperties::scaleFactor()));
+  mMSD->setNMSRadius(MsdProperties::NMSRadius());
+  mMSD->setNScales(MsdProperties::nScales());
+  mMSD->setNMSScaleRadius(MsdProperties::NMSScaleRadius());
+  mMSD->setComputeOrientation(MsdProperties::computeOrientation());
+#endif
+}
+
+std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
+                                              cv::InputArray &mask)
 {
 
-  try {
+  std::vector<cv::KeyPoint> keyPoints;
 
-    if (MsdProperties::affineMSD()) {
-      //emit newStdData("Searching Affine-MSD key-points for image " + mImageName);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
 
-      float maxX = 0;
-      float maxY = 0;
+  mMSD->detect(img, keyPoints, mask);
 
-      //int i = 0;
-      int affineTilts = MsdProperties::affineTilts();
-      for (int tl = 1; tl <= affineTilts; tl++) {
-        double t = pow(2, 0.5*tl);
-        for (double phi = 0.; phi < 180.; phi += 72.0 / t) {
-          //i++;
-          std::vector<cv::KeyPoint> kps;
-          //kps.clear();
-          cv::Mat timg, mask, Ai;
+#elif
 
-          img.copyTo(timg);
-          affineSkew(t, phi, timg, mask, Ai);
+  if (MsdProperties::affineMSD()) {
 
-          kps = mMSD->detect(timg);
+    float maxX = 0;
+    float maxY = 0;
+
+    int affineTilts = MsdProperties::affineTilts();
+    for (int tl = 1; tl <= affineTilts; tl++) {
+      double t = pow(2, 0.5 * tl);
+      for (double phi = 0.; phi < 180.; phi += 72.0 / t) {
+        std::vector<cv::KeyPoint> kps;
+        cv::Mat timg, mask, Ai;
+
+        img.copyTo(timg);
+        affineSkew(t, phi, timg, mask, Ai);
+
+        kps = mMSD->detect(timg);
 
 
-          for (unsigned int i = 0; i < kps.size(); i++)
-          {
-            cv::Point3f kpt(kps[i].pt.x, kps[i].pt.y, 1);
-            cv::Mat kpt_t = Ai*cv::Mat(kpt);
+        for (unsigned int i = 0; i < kps.size(); i++) {
+          cv::Point3f kpt(kps[i].pt.x, kps[i].pt.y, 1);
+          cv::Mat kpt_t = Ai * cv::Mat(kpt);
 
-            kps[i].pt.x = kpt_t.at<float>(0, 0);
-            kps[i].pt.y = kpt_t.at<float>(1, 0);
-            if (phi == 0. || pointIsAcceptable(kps[i], img.cols, img.rows)) {
-              if (kps[i].pt.x > maxX) {
-                maxX = kps[i].pt.x;
-              }
-              if (kps[i].pt.y > maxY) {
-                maxY = kps[i].pt.y;
-              }
-              keyPoints.push_back(kps[i]);
+          kps[i].pt.x = kpt_t.at<float>(0, 0);
+          kps[i].pt.y = kpt_t.at<float>(1, 0);
+          if (phi == 0. || pointIsAcceptable(kps[i], img.cols, img.rows)) {
+            if (kps[i].pt.x > maxX) {
+              maxX = kps[i].pt.x;
             }
-            kpt_t.release();
+            if (kps[i].pt.y > maxY) {
+              maxY = kps[i].pt.y;
+            }
+            keyPoints.push_back(kps[i]);
           }
-
-
-          timg.release();
-          mask.release();
-          Ai.release();
+          kpt_t.release();
         }
+
+
+        timg.release();
+        mask.release();
+        Ai.release();
       }
-      //emit newStdData("Affine-MSD Key-points found in image " + mImageName + ": " + std::string::number(key_points.size()));
-
-    } else {
-      //emit newStdData("Searching MSD key-points for image " + mImageName);
-
-
-
-  //    MSDDetector.setPatchRadius(msdPatchRadius);
-  //    MSDDetector.setSearchAreaRadius(msdSearchAreaRadius);
-
-  //    MSDDetector.setNMSRadius(msdNMSRadius);
-  //    MSDDetector.setNMSScaleRadius(msdNMSScaleRadius);
-
-  //    MSDDetector.setThSaliency(msdThSaliency);
-  //    MSDDetector.setKNN(msdKNN);
-
-  //    MSDDetector.setScaleFactor(msdScaleFactor);
-  //    MSDDetector.setNScales(msdNScales);
-
-  //    MSDDetector.setComputeOrientation(msdComputeOrientations);
-
-      cv::Mat img2;
-      img.copyTo(img2);
-      keyPoints = mMSD->detect(img2);
-      //emit newStdData("MSD Key-points found in image " + mImageName + ": " + std::string::number(key_points.size()));
-
     }
 
-  } catch (cv::Exception &e) {
-    msgError("AGAST Detector error: %s", e.what());
-    return true;
-  } catch (std::exception &e) {
-    msgError("AGAST Detector error: %s", e.what());
-    return true;
-  }
+  } else {
 
-  return false;
+    cv::Mat img2;
+    img.copyTo(img2);
+    keyPoints = mMSD->detect(img2);
+
 }
+
+#endif
+
+  return keyPoints;
+}
+
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
 
 void MsdDetector::compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta)
 {
@@ -470,58 +510,96 @@ void MsdDetector::affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mas
   invertAffineTransform(A, Ai);
 }
 
+#endif
+
 void MsdDetector::setThresholdSaliency(double thresholdSaliency)
 {
   MsdProperties::setThresholdSaliency(thresholdSaliency);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setThSaliency(static_cast<float>(thresholdSaliency));
+#endif
 }
 
 void MsdDetector::setPatchRadius(int pathRadius)
 {
   MsdProperties::setPatchRadius(pathRadius);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setPatchRadius(pathRadius);
+#endif
 }
 
 void MsdDetector::setKNN(int knn)
 {
   MsdProperties::setKNN(knn);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setKNN(knn);
+#endif
 }
 
 void MsdDetector::setSearchAreaRadius(int areaRadius)
 {
   MsdProperties::setSearchAreaRadius(areaRadius);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setSearchAreaRadius(areaRadius);
+#endif
 }
 
 void MsdDetector::setScaleFactor(double scaleFactor)
 {
   MsdProperties::setScaleFactor(scaleFactor);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setScaleFactor(static_cast<float>(scaleFactor));
+#endif
 }
 
 void MsdDetector::setNMSRadius(int NMSRadius)
 {
   MsdProperties::setNMSRadius(NMSRadius);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setNMSRadius(NMSRadius);
+#endif
 }
 
 void MsdDetector::setNScales(int nScales)
 {
   MsdProperties::setNScales(nScales);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setNScales(nScales);
+#endif
 }
 
 void MsdDetector::setNMSScaleRadius(int NMSScaleR)
 {
   MsdProperties::setNMSScaleRadius(NMSScaleR);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setScaleFactor(NMSScaleR);
+#endif
 }
 
 void MsdDetector::setComputeOrientation(bool computeOrientations)
 {
   MsdProperties::setComputeOrientation(computeOrientations);
+#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+  update();
+#elif
   mMSD->setComputeOrientation(computeOrientations);
+#endif
 }
 
 void MsdDetector::setAffineMSD(bool affineMSD)
@@ -537,15 +615,7 @@ void MsdDetector::setAffineTilts(int tilts)
 void MsdDetector::reset()
 {
   MsdProperties::reset();
-  mMSD->setThSaliency(static_cast<float>(MsdProperties::thresholdSaliency()));
-  mMSD->setPatchRadius(MsdProperties::patchRadius());
-  mMSD->setKNN(MsdProperties::knn());
-  mMSD->setSearchAreaRadius(MsdProperties::searchAreaRadius());
-  mMSD->setScaleFactor(static_cast<float>(MsdProperties::scaleFactor()));
-  mMSD->setNMSRadius(MsdProperties::NMSRadius());
-  mMSD->setNScales(MsdProperties::nScales());
-  mMSD->setNMSScaleRadius(MsdProperties::NMSScaleRadius());
-  mMSD->setComputeOrientation(MsdProperties::computeOrientation());
+  update();
 }
 
 

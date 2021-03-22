@@ -24,6 +24,8 @@
 
 # Modulo featmatch de la librería TIDOP que incluye detectores/descriptores y matching
 
+include_directories(${CMAKE_SOURCE_DIR}/third_party)
+
 if(HAVE_OPENCV)
 
 project(tl_featmatch)
@@ -64,8 +66,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             matcher.h
             matchio.cpp
             matchio.h
-            #msd.cpp
-            #msd.h
+            msd.cpp
+            msd.h
             mser.cpp
             mser.h
             orb.cpp
@@ -88,6 +90,10 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             flann.h
             keypointsfilter.cpp
             keypointsfilter.h
+            ${CMAKE_SOURCE_DIR}/third_party/msd/MSD.h
+            ${CMAKE_SOURCE_DIR}/third_party/msd/MSD.cpp
+            ${CMAKE_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h
+            ${CMAKE_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp
 )
   
 # Añade el proyecto a la carpeta 'modules'
