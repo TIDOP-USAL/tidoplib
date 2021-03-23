@@ -22,13 +22,27 @@
 #                                                                        #
 ##########################################################################
  
-# Math tests
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-add_subdirectory(matrix)
-add_subdirectory(quaternion)
-add_subdirectory(vector)
-add_subdirectory(vectors)
-add_subdirectory(angle_conversion)
-add_subdirectory(rotation_converter)
-add_subdirectory(statistics)
-#add_subdirectory(utils)
+project(test)
+
+set(test_filename rotation_converter_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+set(test_target "${test_name}")
+
+add_executable(${test_target} 
+               ${test_filename})
+target_link_libraries(${test_target} tl_core)
+target_link_libraries(${test_target} 
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set_target_properties(${test_target} PROPERTIES
+                      OUTPUT_NAME ${test_target}
+                      PROJECT_LABEL "(TEST) ${test_name}")
+
+set_target_properties(${test_target} PROPERTIES 
+                      FOLDER "test/math")
+
+add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
