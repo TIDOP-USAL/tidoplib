@@ -26,9 +26,11 @@
 
 #include "tidop/core/messages.h"
 
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 #include "tidop/math/algebra/qr.h"
 #include "tidop/math/algebra/lu.h"
-
 
 #ifdef HAVE_EIGEN
 TL_SUPPRESS_WARNINGS
@@ -57,14 +59,6 @@ void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
   //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-//#elif defined( HAVE_OPENCV)
-//  cv::Mat A(static_cast<int>(nRows), static_cast<int>(nCols), CV_64F, a);
-//  cv::Mat B(static_cast<int>(nRows), 1, CV_64F, b);
-//  cv::Mat C(static_cast<int>(nCols), 1, CV_64F);
-//  cv::solve(A, B, C, cv::DECOMP_SVD);
-//  std::vector<double> v_aux;
-//  cvMatToVector(C, &v_aux);
-//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   math::Matrix<double> A(a, nRows, nCols);
   math::Vector<double> B(b, nRows);
@@ -85,14 +79,6 @@ void solveQR(int nRows, int nCols, double *a, double *b, double *c)
   // - FullPivHouseholderQR (full pivoting, so slowest and most stable)
   Eigen::VectorXd C = A.colPivHouseholderQr().solve(B);
   std::memcpy(c, C.data(), nCols*sizeof(double));
-//#elif defined( HAVE_OPENCV)
-//  cv::Mat A(nRows, nCols, CV_64F, a);
-//  cv::Mat B(nRows, 1, CV_64F, b);
-//  cv::Mat C(nCols, 1, CV_64F);
-//  cv::solve(A, B, C, cv::DECOMP_QR);
-//  std::vector<double> v_aux;
-//  cvMatToVector(C, &v_aux);
-//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   math::Matrix<double> A(a, nRows, nCols);
   math::Vector<double> B(b, nRows);
@@ -118,14 +104,6 @@ void solveLU(int nRows, int nCols, double *a, double *b, double *c)
     C = A.fullPivLu().solve(B);
   }
   std::memcpy(c, C.data(), nCols*sizeof(double));
-//#elif defined( HAVE_OPENCV)
-//  cv::Mat A(nRows, nCols, CV_64F, a);
-//  cv::Mat B(nRows, 1, CV_64F, b);
-//  cv::Mat C(nCols, 1, CV_64F);
-//  cv::solve(A, B, C, cv::DECOMP_LU);
-//  std::vector<double> v_aux;
-//  cvMatToVector(C, &v_aux);
-//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
 #else
   math::Matrix<double> A(a, nRows, nCols);
   math::Vector<double> B(b, nRows);
@@ -173,4 +151,4 @@ void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c)
 
 
 
-} // End namespace TL
+} // End namespace tl

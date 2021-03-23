@@ -26,8 +26,11 @@
 #define TL_MATH_LU_DECOMPOSITION_H
 
 #include "config_tl.h"
+
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
+//#include "tidop/math/mathutils.h"
+#include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 
 #ifdef HAVE_OPENBLAS
@@ -42,8 +45,8 @@ namespace tl
 namespace math
 {
 
-template<typename T, size_t _rows, size_t _cols>
-class Matrix;
+//template<typename T, size_t _rows, size_t _cols>
+//class Matrix;
 
 /*! \addtogroup Math
  *  \{
@@ -91,8 +94,6 @@ lapackeGETRS(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int 
   lapack_int info = LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', rows, nrhs, a, lda, ipiv, b, ldb);
   return info;
 }
-
-
 
 #endif // HAVE_OPENBLAS
 

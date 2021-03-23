@@ -151,6 +151,23 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
   return *this;
 }
 
+
+
+
+/* Operaciones unarias */
+
+
+template <typename T>
+EulerAngles<T> operator - (const EulerAngles<T> &eulerAngles)
+{
+  return EulerAngles<T>(-eulerAngles.omega,
+                        -eulerAngles.phi, 
+                        -eulerAngles.kappa,
+                        eulerAngles.axes);
+}
+
+
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math

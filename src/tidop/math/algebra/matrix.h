@@ -31,12 +31,14 @@
 
 #include <vector>
 #include <array>
+#if MATRIX_STD_VALARRAY
 #include <valarray>
+#endif
 
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/lu.h"
+//#include "tidop/math/algebra/lu.h"
 
 namespace tl
 {
@@ -1209,7 +1211,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inversenxn(bool *invertibility)
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-#ifdef TL_INVERSE_ADJUGATE_DIV_DETERMINANT
+//#ifdef TL_INVERSE_ADJUGATE_DIV_DETERMINANT
   T det = determinantnxn();
   if (det != static_cast<T>(0)) {
     matrix = this->adjugate();
@@ -1217,10 +1219,10 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inversenxn(bool *invertibility)
   } else {
     if (invertibility != nullptr) *invertibility = false;
   }
-#else
-  LuDecomposition<Matrix<T, _rows, _cols>> lu(*this);
-  matrix = lu.inverse();
-#endif 
+//#else
+//  LuDecomposition<Matrix<T, _rows, _cols>> lu(*this);
+//  matrix = lu.inverse();
+//#endif 
 
   return matrix;
 }
@@ -2191,6 +2193,8 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
   }
   return matrix;
 }
+
+
 
 
 

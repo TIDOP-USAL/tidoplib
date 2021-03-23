@@ -35,12 +35,17 @@
 #include <valarray>
 
 #include "tidop/core/exception.h"
+#include "tidop/math/algebra/matrix.h"
+
 
 namespace tl
 {
 
 namespace math
 {
+
+//template<typename T, size_t _rows, size_t _cols>
+//class Matrix;
 
 constexpr auto DynamicVector = std::numeric_limits<size_t>().max();
 
@@ -911,6 +916,37 @@ double dotProduct(const Vector<T, _size> &v1,
   return dot;
 }
 
+
+//template<typename T, size_t _rows, size_t _dim> inline  static
+//Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
+//                            const Vector<T, _dim> &vector)
+//{
+//  Vector<T, _dim> vect = Vector<T, _dim>::zero();
+//  for (size_t r = 0; r < _rows; r++) {
+//    for (size_t c = 0; c < _dim; c++) {
+//        vect.at(r) += matrix.at(r, c) * vector.at(c);
+//    }
+//  }
+//  return vect;
+//}
+
+//template<typename T> inline  static
+//Vector<T> operator * (const Matrix<T> &matrix,
+//                      const Vector<T> &vector)
+//{
+//  size_t rows = matrix.rows();
+//  size_t dim1 = matrix.cols();
+//  size_t dim2 = vector.size();
+//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
+//
+//  Vector<T> vect = Matrix<T>::zero(rows, cols);
+//  for (size_t r = 0; r < rows; r++) {
+//    for (size_t c = 0; c < dim1; c++) {
+//      vect.at(r) += matrix.at(r, c) * vector.at(c);
+//    }
+//  }
+//  return vect;
+//}
 
 /*! \} */ // end of Algebra
 

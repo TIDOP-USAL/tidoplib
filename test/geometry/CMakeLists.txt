@@ -57,7 +57,7 @@ endif(HAVE_OPENBLAS)
       target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
   if(HAVE_OPENBLAS)
-    target_link_libraries(${the_target} ${LAPACKE_LIBRARIES})
+    target_link_libraries(${the_target} OpenBLAS::OpenBLAS)
   endif(HAVE_OPENBLAS)
     # Añade el proyecto de ejmplo a la carpeta 'test/core'
     set_property(TARGET ${the_target} PROPERTY FOLDER "test/geometry")
