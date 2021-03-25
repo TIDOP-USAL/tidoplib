@@ -27,6 +27,7 @@
 
 #include <tidop/geometry/transform/translation.h>
 #include <tidop/geometry/entities/point.h>
+#include <tidop/math/algebra/vector.h>
 
 using namespace tl;
 

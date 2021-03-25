@@ -775,7 +775,7 @@ Vector<T, _size> operator - (const Vector<T, _size> &vector)
 
 template<typename T, size_t _size>
 Vector<T, _size> operator + (const Vector<T, _size> &v0,
-                              const Vector<T, _size> &v1)
+                             const Vector<T, _size> &v1)
 {
   Vector<T, _size> v = v0;
   return v += v1;
@@ -783,7 +783,7 @@ Vector<T, _size> operator + (const Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator += (Vector<T, _size> &v0, 
-                                const Vector<T, _size> &v1)
+                               const Vector<T, _size> &v1)
 {
   TL_ASSERT(v0.size() == v1.size(), "");
 
@@ -795,7 +795,7 @@ Vector<T, _size> &operator += (Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &v0,
-                              const Vector<T, _size> &v1)
+                             const Vector<T, _size> &v1)
 {
   Vector<T, _size> v = v0;
   return v -= v1;
@@ -803,7 +803,7 @@ Vector<T, _size> operator - (const Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
-                                const Vector<T, _size> &v1)
+                               const Vector<T, _size> &v1)
 {
   TL_ASSERT(v0.size() == v1.size(), "");
 
@@ -815,7 +815,7 @@ Vector<T, _size> &operator -= (Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator*(Vector<T, _size> const& v0,
-                            Vector<T, _size> const& v1)
+                           Vector<T, _size> const& v1)
 {
   Vector<T, _size> result = v0;
   return result *= v1;
@@ -823,7 +823,7 @@ Vector<T, _size> operator*(Vector<T, _size> const& v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator *= (Vector<T, _size> &v0, 
-                                const Vector<T, _size> &v1)
+                               const Vector<T, _size> &v1)
 {
   TL_ASSERT(v0.size() == v1.size(), "");
 
@@ -835,7 +835,7 @@ Vector<T, _size> &operator *= (Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator / (const Vector<T, _size> &v0,
-                              const Vector<T, _size> &v1)
+                             const Vector<T, _size> &v1)
 {
   Vector<T, _size> result = v0;
   return result /= v1;
@@ -843,7 +843,7 @@ Vector<T, _size> operator / (const Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
-                                const Vector<T, _size> &v1)
+                               const Vector<T, _size> &v1)
 {
   TL_ASSERT(v0.size() == v1.size(), "");
 
@@ -855,7 +855,7 @@ Vector<T, _size> &operator /= (Vector<T, _size> &v0,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (const Vector<T, _size> &vector, 
-                              T scalar)
+                             T scalar)
 {
   Vector<T, _size> v = vector;
   return v *= scalar;
@@ -863,7 +863,7 @@ Vector<T, _size> operator * (const Vector<T, _size> &vector,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (T scalar, 
-                              const Vector<T, _size> &vector)
+                             const Vector<T, _size> &vector)
 {
   Vector<T, _size> v = vector;
   return v *= scalar;
@@ -871,7 +871,7 @@ Vector<T, _size> operator * (T scalar,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator *= (Vector<T, _size> &vector, 
-                                T scalar)
+                               T scalar)
 {
   for (size_t i = 0; i < vector.size(); i++) {
     vector[i] *= scalar;
@@ -881,7 +881,7 @@ Vector<T, _size> &operator *= (Vector<T, _size> &vector,
 
 template<typename T, size_t _size>
 Vector<T, _size> operator / (const Vector<T, _size> &vector, 
-                              T scalar)
+                             T scalar)
 {
   Vector<T, _size> v = vector;
   return v /= scalar;
@@ -889,7 +889,7 @@ Vector<T, _size> operator / (const Vector<T, _size> &vector,
 
 template<typename T, size_t _size>
 Vector<T, _size> &operator /= (Vector<T, _size> &vector,
-                                T scalar)
+                               T scalar)
 {
   if (scalar != static_cast<T>(0)) {
     for (size_t i = 0; i < vector.size(); i++) {
@@ -917,36 +917,36 @@ double dotProduct(const Vector<T, _size> &v1,
 }
 
 
-//template<typename T, size_t _rows, size_t _dim> inline  static
-//Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
-//                            const Vector<T, _dim> &vector)
-//{
-//  Vector<T, _dim> vect = Vector<T, _dim>::zero();
-//  for (size_t r = 0; r < _rows; r++) {
-//    for (size_t c = 0; c < _dim; c++) {
-//        vect.at(r) += matrix.at(r, c) * vector.at(c);
-//    }
-//  }
-//  return vect;
-//}
+template<typename T, size_t _rows, size_t _dim> inline  static
+Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
+                            const Vector<T, _dim> &vector)
+{
+  Vector<T, _dim> vect = Vector<T, _dim>::zero();
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t c = 0; c < _dim; c++) {
+        vect.at(r) += matrix.at(r, c) * vector.at(c);
+    }
+  }
+  return vect;
+}
 
-//template<typename T> inline  static
-//Vector<T> operator * (const Matrix<T> &matrix,
-//                      const Vector<T> &vector)
-//{
-//  size_t rows = matrix.rows();
-//  size_t dim1 = matrix.cols();
-//  size_t dim2 = vector.size();
-//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
-//
-//  Vector<T> vect = Matrix<T>::zero(rows, cols);
-//  for (size_t r = 0; r < rows; r++) {
-//    for (size_t c = 0; c < dim1; c++) {
-//      vect.at(r) += matrix.at(r, c) * vector.at(c);
-//    }
-//  }
-//  return vect;
-//}
+template<typename T> inline  static
+Vector<T> operator * (const Matrix<T> &matrix,
+                      const Vector<T> &vector)
+{
+  size_t rows = matrix.rows();
+  size_t dim1 = matrix.cols();
+  size_t dim2 = vector.size();
+  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
+
+  Vector<T> vect = Matrix<T>::zero(rows, cols);
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t c = 0; c < dim1; c++) {
+      vect.at(r) += matrix.at(r, c) * vector.at(c);
+    }
+  }
+  return vect;
+}
 
 /*! \} */ // end of Algebra
 

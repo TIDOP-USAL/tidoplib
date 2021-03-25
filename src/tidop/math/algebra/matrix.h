@@ -37,7 +37,7 @@
 
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
-#include "tidop/math/algebra/vector.h"
+//#include "tidop/math/algebra/vector.h"
 //#include "tidop/math/algebra/lu.h"
 
 namespace tl
