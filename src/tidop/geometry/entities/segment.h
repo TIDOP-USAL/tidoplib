@@ -158,7 +158,7 @@ public:
    * \brief Comprueba si el segmento esta vacio pt1 = (0, 0) ; pt2 = (0, 0)
    * \return Verdadero si esta vacio
    */
-  bool isEmpty() const;
+  bool empty() const;
 
   /*!
    * \brief Comprueba si dos segmentos están próximos
@@ -318,7 +318,7 @@ Window<Point_t> Segment<Point_t>::window() const
 }
 
 template<typename Point_t> inline
-bool Segment<Point_t>::isEmpty() const
+bool Segment<Point_t>::empty() const
 {
   return (pt1.x == static_cast<typename Point_t::value_type>(0) && 
           pt1.y == static_cast<typename Point_t::value_type>(0) && 

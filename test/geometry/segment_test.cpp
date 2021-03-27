@@ -123,14 +123,14 @@ BOOST_AUTO_TEST_CASE(Segment_window)
 
 /* Comprueba si el segmento esta vacio */
 
-BOOST_AUTO_TEST_CASE(Segment_isEmpty)
+BOOST_AUTO_TEST_CASE(Segment_empty)
 {
   Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
 
-  BOOST_CHECK(false == segment.isEmpty());
+  BOOST_CHECK(false == segment.empty());
 
   Segment<Point<double>> segment2;
-  BOOST_CHECK(segment2.isEmpty());
+  BOOST_CHECK(segment2.empty());
 }
 
 BOOST_AUTO_TEST_CASE(Segment_length)
