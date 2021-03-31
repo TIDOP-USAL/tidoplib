@@ -26,15 +26,16 @@
 #define TL_MATH_SVD_H
 
 #include "config_tl.h"
+
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
 
-#ifdef HAVE_LAPACKE
+#ifdef HAVE_OPENBLAS
 #include <lapacke.h>
-#endif // HAVE_LAPACKE
+#endif // HAVE_OPENBLAS
 
 #include <algorithm>
 
@@ -52,7 +53,7 @@ namespace math
  *  \{
  */
 
-#ifdef HAVE_LAPACKE
+#ifdef HAVE_OPENBLAS
 
 template<typename T> inline
 typename std::enable_if<
@@ -72,7 +73,7 @@ lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u,
   return info;
 }
 
-#endif // HAVE_LAPACKE
+#endif // HAVE_OPENBLAS
 
 /*!
  * \brief SVD (Singular value decomposition)
@@ -119,9 +120,9 @@ private:
 
   void decompose();
   void reorder();
-#ifdef HAVE_LAPACKE
+#ifdef HAVE_OPENBLAS
   void lapackeDecompose();
-#endif // HAVE_LAPACKE
+#endif // HAVE_OPENBLAS
 
 protected:
 
@@ -153,14 +154,14 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
   V = Matrix<T, _cols, _cols>(mCols, mCols);
   W = Vector<T, _cols>(mCols);
 
-#ifdef HAVE_LAPACKE
+#ifdef HAVE_OPENBLAS
   this->lapackeDecompose();
 #else
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
   this->reorder();
   tsh = static_cast<T>(0.5) * sqrt(mRows + mCols + static_cast<T>(1)) * W[0] * eps;
-#endif // HAVE_LAPACKE
+#endif // HAVE_OPENBLAS
 
 }
 
@@ -455,7 +456,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
   }
 }
 
-#ifdef HAVE_LAPACKE
+#ifdef HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 
@@ -479,7 +480,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecomp
   TL_ASSERT(info == 0, "The algorithm computing SVD failed to converge.");
 }
 
-#endif // HAVE_LAPACKE
+#endif // HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 

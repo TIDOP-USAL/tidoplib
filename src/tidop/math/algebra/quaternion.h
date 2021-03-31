@@ -157,6 +157,7 @@ public:
    */
   static Quaternion identity();
 
+  static Quaternion normalize(const Quaternion<T> &quaternion);
 
 public:
 
@@ -336,6 +337,14 @@ Quaternion<T> Quaternion<T>::identity()
                     static_cast<T>(0), 
                     static_cast<T>(0), 
                     static_cast<T>(1));
+}
+
+template<typename T> inline
+Quaternion<T> Quaternion<T>::normalize(const Quaternion<T> &quaternion)
+{
+  Quaternion<T> _quaternion(quaternion);
+  _quaternion.normalize();
+  return _quaternion;
 }
 
 

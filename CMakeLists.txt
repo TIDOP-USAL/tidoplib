@@ -205,8 +205,8 @@ OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
-OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
-#OPTION (WITH_OPENBLAS "Include OpenBLAS"                      OFF)
+#OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
+OPTION (WITH_OpenBLAS "Include OpenBLAS"                      OFF)
 
 # ----------------------------------------------------------------------------
 #  Modulos TidopLib
@@ -377,7 +377,7 @@ endif()
 
 if(BUILD_TL_MATH)
 
-if(WITH_LAPACKE)
+if(WITH_OpenBLAS)
 
   # #SET(LAPACKE_LIBRARY "" CACHE FILE "Path to library LAPACKE")
   # #SET(LAPACK_LIBRARY "" CACHE FILE "Path to library LAPACK")
@@ -412,9 +412,9 @@ if(WITH_LAPACKE)
   find_package(OpenBLAS QUIET)
   
   if(NOT OpenBLAS_FOUND)
-    set(HAVE_LAPACKE NO)
+    set(HAVE_OPENBLAS NO)
   else()
-    set(HAVE_LAPACKE YES)
+    set(HAVE_OPENBLAS YES)
     include_directories(${OpenBLAS_INCLUDE_DIRS})
   endif()
   

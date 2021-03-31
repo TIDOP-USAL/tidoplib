@@ -76,6 +76,8 @@ AxisAngle<T>::AxisAngle()
   : RotationBase<T>(Rotation::Type::axis_angle),
     angle(0)
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
+
   axis.at(0) = 1;
   axis.at(1) = 0;
   axis.at(2) = 0;
@@ -87,6 +89,7 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
     angle(angle),
     axis(axis)
 {
+  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   TL_TODO("normalizar vector")
 }
 

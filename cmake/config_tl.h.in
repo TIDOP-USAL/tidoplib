@@ -81,6 +81,6 @@
 // boost
 #cmakedefine HAVE_BOOST
 
-#cmakedefine HAVE_LAPACKE
+#cmakedefine HAVE_OPENBLAS
 
 #endif // TL_CONFIG_H

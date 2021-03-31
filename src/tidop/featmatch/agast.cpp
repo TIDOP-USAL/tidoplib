@@ -48,7 +48,7 @@ AgastProperties::AgastProperties(const AgastProperties &agast)
 
 AgastProperties::AgastProperties(AgastProperties &&agast) noexcept
   : mThreshold(agast.mThreshold),
-    mNonmaxSuppression(agast.mNonmaxSuppression),
+    mNonmaxSuppression(std::exchange(agast.mNonmaxSuppression,true)),
     mDetectorType(std::move(agast.mDetectorType))
 {
 }
@@ -71,7 +71,7 @@ AgastProperties &AgastProperties::operator =(AgastProperties &&agast) noexcept
 {
   if (this != &agast) {
     mThreshold = agast.mThreshold;
-    mNonmaxSuppression = agast.mNonmaxSuppression;
+    mNonmaxSuppression = std::exchange(agast.mNonmaxSuppression, true);
     mDetectorType = std::move(agast.mDetectorType);
   }
   return *this;

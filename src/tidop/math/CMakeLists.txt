@@ -60,10 +60,10 @@ if(HAVE_EIGEN)
     target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
 endif(HAVE_EIGEN)
 
-if(HAVE_LAPACKE)
+if(HAVE_OPENBLAS)
     add_definitions(-DHAVE_LAPACK_CONFIG_H)
     add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_LAPACKE)
+endif(HAVE_OPENBLAS)
 
 #instalación
 if(BUILD_SHARED_LIBS)
@@ -79,9 +79,9 @@ if(BUILD_SHARED_LIBS)
 
     target_link_libraries(${PROJECT_NAME} tl_core)
   
-    if(HAVE_LAPACKE)
+    if(HAVE_OPENBLAS)
         target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
-    endif(HAVE_LAPACKE)
+    endif(HAVE_OPENBLAS)
   
     if(HAVE_OPENCV)
         target_link_libraries(${PROJECT_NAME} 
