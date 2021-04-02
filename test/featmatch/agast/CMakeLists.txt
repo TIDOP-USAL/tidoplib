@@ -22,28 +22,31 @@
 #                                                                        #
 ##########################################################################
 
-# Test modulo featmatch
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-if(HAVE_TL_FEAT_MATCH)
+project(test)
 
-add_subdirectory(agast)
-add_subdirectory(akaze)
-add_subdirectory(boost)
-add_subdirectory(brief)
-add_subdirectory(brisk)
-add_subdirectory(daisy)
-add_subdirectory(evaluation)
-add_subdirectory(fast)
-add_subdirectory(freak)
-add_subdirectory(gftt)
-add_subdirectory(hog)
-add_subdirectory(kaze)
-add_subdirectory(latch)
-add_subdirectory(lucid)
-add_subdirectory(mser)
-add_subdirectory(orb)
-add_subdirectory(sift)
-add_subdirectory(star)
-add_subdirectory(surf)
-add_subdirectory(vgg)
-endif()
+set(test_filename agast_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+set(test_target "${test_name}")
+
+add_executable(${test_target} 
+               ${test_filename})
+
+target_link_libraries(${test_target} tl_core tl_geom tl_featmatch)
+target_link_libraries(${test_target} 
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+if(HAVE_OPENCV)
+    target_link_libraries(${test_target} ${OpenCV_LIBS})
+endif(HAVE_OPENCV)
+	
+set_target_properties(${test_target} PROPERTIES
+                      OUTPUT_NAME ${test_target}
+                      PROJECT_LABEL "(TEST) ${test_name}")
+
+set_target_properties(${test_target} PROPERTIES 
+                      FOLDER "test/featmatch")
+
+add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
