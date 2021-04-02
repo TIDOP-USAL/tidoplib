@@ -435,6 +435,8 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(Point_append)
 {
+  /// 2D
+
   PointI pt_1(23, 67);
   PointI pt_2(67, 56);
 
@@ -455,6 +457,32 @@ BOOST_AUTO_TEST_CASE(Point_append)
   pt_1 += pt_2d;
   BOOST_CHECK_EQUAL(114, pt_1.x);
   BOOST_CHECK_EQUAL(191, pt_1.y);
+
+  /// 3D
+
+  Point3I pt3_1(23, 67, 10);
+  Point3I pt3_2(67, 56, 25);
+
+  pt3_2 += pt3_1;
+
+  BOOST_CHECK_EQUAL(90, pt3_2.x);
+  BOOST_CHECK_EQUAL(123, pt3_2.y);
+  BOOST_CHECK_EQUAL(35, pt3_2.z);
+
+  Point3D pt3_1d(23.45, 67.52, 10.5);
+  Point3D pt3_2d(67.59, 56.39, 15.9);
+
+  pt3_2d += pt3_1d;
+
+  BOOST_CHECK_CLOSE(91.04, pt3_2d.x, 0.01);
+  BOOST_CHECK_CLOSE(123.91, pt3_2d.y, 0.01);
+  BOOST_CHECK_CLOSE(26.4, pt3_2d.z, 0.01);
+
+  // Tipos diferentes
+  pt3_1 += pt3_2d;
+  BOOST_CHECK_EQUAL(114, pt3_1.x);
+  BOOST_CHECK_EQUAL(191, pt3_1.y);
+  BOOST_CHECK_EQUAL(36, pt3_1.z);
 }
 
 BOOST_AUTO_TEST_CASE(Point_addition)
@@ -475,6 +503,25 @@ BOOST_AUTO_TEST_CASE(Point_addition)
   BOOST_CHECK_CLOSE(91.04, pt_3d.x, 0.01);
   BOOST_CHECK_CLOSE(123.91, pt_3d.y, 0.01);
 
+  /// 3D
+
+  Point3I pt3_1(23, 67, 10);
+  Point3I pt3_2(67, 56, 25);
+
+  Point3I pt3_3 = pt3_1 + pt3_2;
+
+  BOOST_CHECK_EQUAL(90, pt3_3.x);
+  BOOST_CHECK_EQUAL(123, pt3_3.y);
+  BOOST_CHECK_EQUAL(35, pt3_3.z);
+
+  Point3D pt3_1d(23.45, 67.52, 10.5);
+  Point3D pt3_2d(67.59, 56.39, 15.9);
+
+  Point3D pt3_3d = pt3_1d + pt3_2d;
+
+  BOOST_CHECK_CLOSE(91.04, pt3_3d.x, 0.01);
+  BOOST_CHECK_CLOSE(123.91, pt3_3d.y, 0.01);
+  BOOST_CHECK_CLOSE(26.4, pt3_3d.z, 0.01);
 }
 
 BOOST_AUTO_TEST_CASE(Point_substraction)
@@ -494,6 +541,26 @@ BOOST_AUTO_TEST_CASE(Point_substraction)
 
   BOOST_CHECK_CLOSE(-638.4, pt_3d.x, 0.01);
   BOOST_CHECK_CLOSE(1874.8, pt_3d.y, 0.01);
+
+  /// 3D
+
+  Point3I pt3_1(23, 67, 10);
+  Point3I pt3_2(67, 56, 25);
+
+  Point3I pt3_3 = pt3_1 - pt3_2;
+
+  BOOST_CHECK_EQUAL(-44, pt3_3.x);
+  BOOST_CHECK_EQUAL(11, pt3_3.y);
+  BOOST_CHECK_EQUAL(-15, pt3_3.z);
+
+  Point3D pt3_1d(256.26, 2526.36, 12.36);
+  Point3D pt3_2d(894.66, 651.56, 265.3);
+
+  Point3D pt3_3d = pt3_1d - pt3_2d;
+
+  BOOST_CHECK_CLOSE(-638.4, pt3_3d.x, 0.01);
+  BOOST_CHECK_CLOSE(1874.8, pt3_3d.y, 0.01);
+  BOOST_CHECK_CLOSE(-252.94, pt3_3d.z, 0.01);
 
 }
 
@@ -519,6 +586,32 @@ BOOST_AUTO_TEST_CASE(Point_substraction2)
   pt_1 -= pt_1d;
   BOOST_CHECK_EQUAL(594, pt_1.x);
   BOOST_CHECK_EQUAL(-1864, pt_1.y);
+
+  /// 3D
+
+  Point3I pt3_1(23, 67, 10);
+  Point3I pt3_2(67, 56, 25);
+
+  pt3_1 -= pt3_2;
+
+  BOOST_CHECK_EQUAL(-44, pt3_1.x);
+  BOOST_CHECK_EQUAL(11, pt3_1.y);
+  BOOST_CHECK_EQUAL(-15, pt3_1.z);
+
+  Point3D pt3_1d(256.26, 2526.36, 12.36);
+  Point3D pt3_2d(894.66, 651.56, 265.3);
+
+  pt3_1d -= pt3_2d;
+
+  BOOST_CHECK_CLOSE(-638.4, pt3_1d.x, 0.01);
+  BOOST_CHECK_CLOSE(1874.8, pt3_1d.y, 0.01);
+  BOOST_CHECK_CLOSE(-252.94, pt3_1d.z, 0.01);
+
+  // Tipos diferentes
+  pt3_1 -= pt3_1d;
+  BOOST_CHECK_EQUAL(594, pt3_1.x);
+  BOOST_CHECK_EQUAL(-1864, pt3_1.y);
+  BOOST_CHECK_EQUAL(238, pt3_1.z);
 }
 
 /* Multiplicación de un punto por un escalar */
@@ -548,6 +641,32 @@ BOOST_AUTO_TEST_CASE(Point_multiplication)
   BOOST_CHECK_EQUAL(76, pt2.x);
   BOOST_CHECK_EQUAL(221, pt2.y);
 
+
+  /// 3D
+
+  Point3I pt3(23, 67, 15);
+
+  pt3 *= s;
+
+  BOOST_CHECK_EQUAL(69, pt3.x);
+  BOOST_CHECK_EQUAL(201, pt3.y);
+  BOOST_CHECK_EQUAL(45, pt3.z);
+
+  Point3D pt3_d(256.26, 2526.36, 236.47);
+
+  pt3_d *= s_d;
+
+  BOOST_CHECK_CLOSE(6022.11, pt3_d.x, 0.01);
+  BOOST_CHECK_CLOSE(59369.46, pt3_d.y, 0.01);
+  BOOST_CHECK_CLOSE(5557.045, pt3_d.z, 0.01);
+
+  Point3I pt3_2(23, 67, 26);
+
+  pt3_2 *= s2;
+  BOOST_CHECK_EQUAL(76, pt3_2.x);
+  BOOST_CHECK_EQUAL(221, pt3_2.y);
+  BOOST_CHECK_EQUAL(86, pt3_2.z);
+
 }
 
 /* División de un punto por un escalar */
@@ -576,6 +695,32 @@ BOOST_AUTO_TEST_CASE(Point_division)
   pt2 /= s2;
   BOOST_CHECK_EQUAL(7, pt2.x);
   BOOST_CHECK_EQUAL(20, pt2.y);
+
+
+  /// 3D
+
+  Point3I pt3(23, 67, 15);
+
+  pt3 /= s;
+
+  BOOST_CHECK_EQUAL(8, pt3.x);
+  BOOST_CHECK_EQUAL(22, pt3.y);
+  BOOST_CHECK_EQUAL(5, pt3.z);
+
+  Point3D pt3_d(256.26, 2526.36, 236.47);
+
+  pt3_d /= s_d;
+
+  BOOST_CHECK_CLOSE(10.905, pt3_d.x, 0.01);
+  BOOST_CHECK_CLOSE(107.505, pt3_d.y, 0.01);
+  BOOST_CHECK_CLOSE(10.0625, pt3_d.z, 0.01);
+
+  Point3I pt3_2(23, 67, 26);
+
+  pt3_2 /= s2;
+  BOOST_CHECK_EQUAL(7, pt3_2.x);
+  BOOST_CHECK_EQUAL(20, pt3_2.y);
+  BOOST_CHECK_EQUAL(8, pt3_2.z);
 }
 
 
@@ -640,6 +785,28 @@ BOOST_AUTO_TEST_CASE(Point_multiplication1)
   BOOST_CHECK_EQUAL(76, pt2.x);
   BOOST_CHECK_EQUAL(221, pt2.y);
 
+  /// 3D
+
+  Point3I pt3_1(23, 67, 15);
+
+  Point3I pt3_2 = pt3_1 * s;
+
+  BOOST_CHECK_EQUAL(69, pt3_2.x);
+  BOOST_CHECK_EQUAL(201, pt3_2.y);
+  BOOST_CHECK_EQUAL(45, pt3_2.z);
+
+  Point3D pt3_d(256.26, 2526.36, 236.47);
+
+  Point3D pt4_d = pt3_d * s_d;
+
+  BOOST_CHECK_CLOSE(6022.11, pt4_d.x, 0.01);
+  BOOST_CHECK_CLOSE(59369.46, pt4_d.y, 0.01);
+  BOOST_CHECK_CLOSE(5557.045, pt4_d.z, 0.01);
+
+  Point3D pt5 = Point3I(23, 67, 26) * 3.3;
+  BOOST_CHECK_EQUAL(76, pt5.x);
+  BOOST_CHECK_EQUAL(221, pt5.y);
+  BOOST_CHECK_EQUAL(86, pt5.z);
 }
 
 /* Escalar por punto */
