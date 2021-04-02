@@ -31,7 +31,7 @@
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
-#endif // HAVE_CUDA
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 namespace tl
 {
@@ -175,7 +175,6 @@ protected:
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 class TL_EXPORT OrbCudaDetectorDescriptor
   : public OrbProperties,
@@ -240,10 +239,12 @@ public:
 
 protected:
 
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::Ptr<cv::cuda::ORB> mOrb;
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 };
 
-#endif // HAVE_OPENCV_CUDAFEATURES2D
+
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
 

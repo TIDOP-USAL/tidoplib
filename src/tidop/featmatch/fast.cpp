@@ -197,7 +197,6 @@ void FastDetector::reset()
 /*----------------------------------------------------------------*/
 
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 FastDetectorCuda::FastDetectorCuda()
 {
@@ -238,18 +237,27 @@ int FastDetectorCuda::convertDetectorType(const std::string &detectorType)
 
 void FastDetectorCuda::update()
 {
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   mFast = cv::cuda::FastFeatureDetector::create(FastProperties::threshold(),
                                                 FastProperties::nonmaxSuppression(),
                                                 convertDetectorType(FastProperties::detectorType()),
                                                 10000);
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 }
 
 std::vector<cv::KeyPoint> FastDetectorCuda::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
+
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::cuda::GpuMat g_img(img);
   cv::cuda::GpuMat g_mask(mask);
   mFast->detect(g_img, keyPoints, g_mask);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported")
+  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported");
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
   return keyPoints;
 }
 
@@ -276,8 +284,6 @@ void FastDetectorCuda::reset()
   FastProperties::reset();
   update();
 }
-
-#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 
 } // namespace tl

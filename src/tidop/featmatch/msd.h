@@ -31,9 +31,9 @@
 
 #include <memory>
 
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1))
 #include <opencv2/xfeatures2d.hpp>
-#elif
+#else
 class MsdDetector;
 #endif
 
@@ -133,7 +133,7 @@ private:
 
   void update();
 
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
 
   bool pointIsAcceptable(const cv::KeyPoint &vl_keypoint, int width, int height);
   void compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta);
@@ -172,9 +172,9 @@ public:
 
 protected:
 
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1))
   cv::Ptr<cv::xfeatures2d::MSDDetector> mMSD;
-#elif
+#else
   std::shared_ptr<::MsdDetector> mMSD;
 #endif
 };

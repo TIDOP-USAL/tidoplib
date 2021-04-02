@@ -109,6 +109,8 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
                      const cv::Size &queryImageSize,
                      const cv::Size &trainImageSize)
 {
+#ifdef HAVE_OPENCV_XFEATURES2D 
+
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
   try {
 
@@ -140,9 +142,16 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
     msgError(e.what());
     return true;
   }
+
 #  else
   TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
+  throw std::exception("'matchGMS' not supported in OpenCV versions < 3.3.1");
 #endif
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. 'matchGMS' not supported")
+  throw std::exception("OpenCV not built with extra modules. 'matchGMS' not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return false;
 }
 

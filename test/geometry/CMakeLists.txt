@@ -24,7 +24,7 @@
 
 # Test modulo Geometry
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
+if(HAVE_TL_GEOMETRY)
 
   project(test)
 

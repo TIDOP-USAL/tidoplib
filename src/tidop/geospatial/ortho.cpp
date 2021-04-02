@@ -36,6 +36,9 @@
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/datamodel.h"
 
+#ifdef HAVE_OPENCV
+
+#include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
 #include <boost/filesystem.hpp>
@@ -1242,3 +1245,5 @@ cv::Mat Orthorectification::distCoeffs() const
 } // End namespace geospatial
 
 } // End namespace tl
+
+#endif // HAVE_OPENCV

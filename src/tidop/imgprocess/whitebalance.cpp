@@ -39,7 +39,8 @@ namespace tl
 
 
 /* ---------------------------------------------------------------------------------- */
-
+  
+#ifdef  HAVE_OPENCV_XPHOTO
 #if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
 #  if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
 
@@ -59,6 +60,7 @@ void Grayworld::run(const cv::Mat &matIn, cv::Mat &matOut) const
 
 #  endif // CV_VERSION_MINOR
 #endif // CV_VERSION_MAJOR
+#endif // HAVE_OPENCV_XPHOTO
 
 /* ---------------------------------------------------------------------------------- */
 

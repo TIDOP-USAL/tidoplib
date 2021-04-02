@@ -339,7 +339,7 @@ void OrbDetectorDescriptor::reset()
 /*----------------------------------------------------------------*/
 
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
+
 
 OrbCudaDetectorDescriptor::OrbCudaDetectorDescriptor()
 {
@@ -388,6 +388,7 @@ int OrbCudaDetectorDescriptor::convertScoreType(const std::string &scoreType)
 
 void OrbCudaDetectorDescriptor::update()
 {
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   mOrb = cv::cuda::ORB::create(OrbProperties::featuresNumber(),
                                static_cast<float>(OrbProperties::scaleFactor()),
                                OrbProperties::levelsNumber(),
@@ -397,15 +398,23 @@ void OrbCudaDetectorDescriptor::update()
                                convertScoreType(OrbProperties::scoreType()),
                                OrbProperties::patchSize(),
                                OrbProperties::fastThreshold());
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 }
 
 std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img, 
                                                             cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
+
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::cuda::GpuMat g_img(img);
   cv::cuda::GpuMat g_mask(mask);
   mOrb->detect(g_img, keyPoints, g_mask);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
+  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
   return keyPoints;
 }
 
@@ -413,10 +422,17 @@ cv::Mat OrbCudaDetectorDescriptor::extract(const cv::Mat &img,
                                            std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::cuda::GpuMat g_img(img);
   cv::cuda::GpuMat g_descriptors;
   mOrb->compute(g_img, keyPoints, g_descriptors);
   g_descriptors.download(descriptors);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
+  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+
   return descriptors;
 }
 
@@ -480,7 +496,6 @@ void OrbCudaDetectorDescriptor::reset()
   update();
 }
 
-#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 } // namespace tl
 

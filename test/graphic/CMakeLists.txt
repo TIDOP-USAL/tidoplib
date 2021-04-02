@@ -24,7 +24,7 @@
 
 # Test
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)
+if(HAVE_TL_GRAPHIC)
 
   project(test)
 

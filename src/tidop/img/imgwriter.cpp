@@ -586,7 +586,6 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const std::string 
   return image_writer;
 }
 
-#endif // HAVE_OPENCV
-
-
 } // End namespace tl
+
+#endif // HAVE_OPENCV

@@ -29,7 +29,9 @@
 
 #include "tidop/featmatch/features.h"
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 
 
 namespace tl
@@ -143,9 +145,11 @@ public:
 
 protected:
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
   cv::Ptr<cv::xfeatures2d::VGG> mVGG;
 #endif
+#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor

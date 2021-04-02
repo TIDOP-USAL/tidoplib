@@ -35,6 +35,8 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geospatial/diffrect.h"
 
+#ifdef HAVE_OPENCV
+
 namespace tl
 {
 
@@ -91,5 +93,6 @@ private:
 
 } // End namespace tl
 
+#endif // HAVE_OPENCV
 
 #endif // TL_GEOSPATIAL_FOOTPRINT_H

@@ -55,7 +55,7 @@ namespace tl
 {
 
 
-#ifdef HAVE_GDAL
+
 
 //std::vector<std::string> gdalValidExtensions()
 //{
@@ -245,6 +245,8 @@ TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension)
 }
 
 
+#ifdef HAVE_GDAL
+
 DataType gdalConvertDataType(GDALDataType dataType)
 {
   DataType ret;
@@ -312,6 +314,8 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
   return ret;
 }
 
+#endif // HAVE_GDAL
+
 int dataTypeToOpenCVDataType(DataType dataType)
 {
   int ret;
@@ -363,7 +367,7 @@ std::vector<int> gdalBandOrder(int channels)
   return panBandMap;
 }
 
-#ifdef HAVE_OPENCV
+#if defined HAVE_OPENCV && defined HAVE_GDAL
 
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
@@ -410,8 +414,6 @@ GDALDataType openCvToGdal(int cvdt)
 }
 
 #endif // HAVE_OPENCV
-
-#endif // HAVE_GDAL
 
 
 #ifdef HAVE_EDSDK

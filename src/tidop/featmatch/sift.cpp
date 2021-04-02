@@ -149,24 +149,46 @@ SiftDetectorDescriptor::SiftDetectorDescriptor(int featuresNumber,
 
 void SiftDetectorDescriptor::update()
 {
+#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
+  mSift = cv::SIFT::create(SiftProperties::featuresNumber(),
+    SiftProperties::octaveLayers(),
+    SiftProperties::contrastThreshold(),
+    SiftProperties::edgeThreshold(),
+    SiftProperties::sigma());
+#elif defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE
   mSift = cv::xfeatures2d::SIFT::create(SiftProperties::featuresNumber(),
                                         SiftProperties::octaveLayers(),
                                         SiftProperties::contrastThreshold(),
                                         SiftProperties::edgeThreshold(),
                                         SiftProperties::sigma());
+#endif
 }
 
 std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
+
+#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
   mSift->detect(img, keyPoints, mask);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return keyPoints;
 }
 
 cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
   mSift->compute(img, keyPoints, descriptors);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return descriptors;
 }
 

@@ -143,6 +143,7 @@ public:
     ccittfax3,
     ccittfax4,
     lzma,
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
     zstd,
 #endif
@@ -151,6 +152,7 @@ public:
     lerc_deflate,
     lerc_zstd,
 #endif
+#endif // HAVE_GDAL
     webp,
     none
   };
@@ -303,6 +305,7 @@ public:
   uint8_t zLevel() const;
   void setZLevel(uint8_t zLevel);
 
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
 
   std::string title() const;
@@ -325,6 +328,7 @@ public:
   void setNBits(int nBits);
 
 #endif
+#endif // HAVE_GDAL
 
 private:
 
@@ -335,6 +339,7 @@ protected:
 
   std::pair<bool, bool> bWorldFile;
   std::pair<uint8_t, uint8_t> mZLevel;
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
   std::pair<std::string, std::string> mTitle;
   std::pair<std::string, std::string> mDescription;
@@ -344,6 +349,7 @@ protected:
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
   std::pair<int, int> mNBits;
 #endif
+#endif // HAVE_GDAL
 
 };
 
@@ -398,10 +404,13 @@ public:
   //(Starting with GDAL 2.3). 
   //Whether to write EXIF_xxxx metadata items in a EXIF segment. 
   //Default to YES.
+
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
   bool writeExifMetadata() const;
   void setWriteExifMetadata(bool writeExifMetadata);
 #endif
+#endif // HAVE_GDAL
 
 private:
 

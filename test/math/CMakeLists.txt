@@ -24,6 +24,7 @@
  
 # Math tests
 
+if(HAVE_TL_MATH)
 add_subdirectory(matrix)
 add_subdirectory(quaternion)
 add_subdirectory(vector)
@@ -32,3 +33,4 @@ add_subdirectory(angle_conversion)
 add_subdirectory(rotation_converter)
 add_subdirectory(statistics)
 #add_subdirectory(utils)
+endif()

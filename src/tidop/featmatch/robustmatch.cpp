@@ -26,7 +26,9 @@
 
 #include <tidop/core/messages.h>
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 #include <opencv2/calib3d.hpp>
 
 namespace tl

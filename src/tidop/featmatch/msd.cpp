@@ -28,7 +28,7 @@
 
 #include <opencv2/imgproc.hpp>
 
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
 #include "msd/MSD.h"
 
 #define _USE_MATH_DEFINES
@@ -234,7 +234,7 @@ MsdDetector::MsdDetector()
   : MsdProperties(),
   KeypointDetector()
 {
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1) || !defined HAVE_OPENCV_XFEATURES2D
   mMSD = std::make_shared<::MsdDetector>();
 #endif
 
@@ -255,7 +255,7 @@ MsdDetector::MsdDetector(double thresholdSaliency,
   : MsdProperties(),
   KeypointDetector()
 {
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)  || !defined HAVE_OPENCV_XFEATURES2D
   mMSD = std::make_shared<::MsdDetector>();
 #endif
 
@@ -281,7 +281,7 @@ MsdDetector::~MsdDetector()
 
 void MsdDetector::update()
 {
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1)) && defined HAVE_OPENCV_XFEATURES2D
   mMSD = cv::xfeatures2d::MSDDetector::create(MsdProperties::patchRadius(),
                                               MsdProperties::searchAreaRadius(),
                                               MsdProperties::NMSRadius(),
@@ -291,7 +291,7 @@ void MsdDetector::update()
                                               static_cast<float>(MsdProperties::scaleFactor()),
                                               MsdProperties::nScales(),
                                               MsdProperties::computeOrientation());
-#elif
+#else
   mMSD->setThSaliency(static_cast<float>(MsdProperties::thresholdSaliency()));
   mMSD->setPatchRadius(MsdProperties::patchRadius());
   mMSD->setKNN(MsdProperties::knn());
@@ -310,11 +310,11 @@ std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
 
   std::vector<cv::KeyPoint> keyPoints;
 
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1)) && defined HAVE_OPENCV_XFEATURES2D
 
   mMSD->detect(img, keyPoints, mask);
 
-#elif
+#else
 
   if (MsdProperties::affineMSD()) {
 
@@ -372,7 +372,7 @@ std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
   return keyPoints;
 }
 
-#if CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)
+#if (CV_VERSION_MAJOR < 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR < 1)) || !defined HAVE_OPENCV_XFEATURES2D
 
 void MsdDetector::compensate_affine_coor1(float *x0, float *y0, int w1, int h1, float t1, float t2, float Rtheta)
 {
@@ -385,7 +385,7 @@ void MsdDetector::compensate_affine_coor1(float *x0, float *y0, int w1, int h1, 
 
   Rtheta = Rtheta*M_PI/180.f;
 
-  if ( Rtheta <= M_PI/2 )
+  if ( Rtheta <= M_PI/2.f )
   {
     x_ori = 0;
     y_ori = w1 * sin(Rtheta) / t1;
@@ -393,7 +393,7 @@ void MsdDetector::compensate_affine_coor1(float *x0, float *y0, int w1, int h1, 
   else
   {
     x_ori = -w1 * cos(Rtheta) / t2;
-    y_ori = ( w1 * sin(Rtheta) + h1 * sin(Rtheta-M_PI/2) ) / t1;
+    y_ori = ( w1 * sin(Rtheta) + h1 * sin(Rtheta-M_PI/2.f) ) / t1;
   }
 
   float sin_Rtheta = sin(Rtheta);
@@ -449,7 +449,7 @@ bool MsdDetector::pointIsAcceptable(const cv::KeyPoint &vl_keypoint, int width, 
   d3 = sqrt(pow((x0 - vx3), 2) + pow((y0 - vy3), 2));
   d4 = sqrt(pow((x0 - vx4), 2) + pow((y0 - vy4), 2));
 
-  float BorderFact = width / 100 * sqrt(2.);
+  float BorderFact = width / 100.f * sqrt(2.f);
   //if (scale1 < 1){ scale1 = 1;}
   BorderTh = BorderFact*scale1;
 
@@ -515,9 +515,9 @@ void MsdDetector::affineSkew(double tilt, double phi, cv::Mat &img, cv::Mat &mas
 void MsdDetector::setThresholdSaliency(double thresholdSaliency)
 {
   MsdProperties::setThresholdSaliency(thresholdSaliency);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setThSaliency(static_cast<float>(thresholdSaliency));
 #endif
 }
@@ -525,9 +525,9 @@ void MsdDetector::setThresholdSaliency(double thresholdSaliency)
 void MsdDetector::setPatchRadius(int pathRadius)
 {
   MsdProperties::setPatchRadius(pathRadius);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setPatchRadius(pathRadius);
 #endif
 }
@@ -535,9 +535,9 @@ void MsdDetector::setPatchRadius(int pathRadius)
 void MsdDetector::setKNN(int knn)
 {
   MsdProperties::setKNN(knn);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setKNN(knn);
 #endif
 }
@@ -545,9 +545,9 @@ void MsdDetector::setKNN(int knn)
 void MsdDetector::setSearchAreaRadius(int areaRadius)
 {
   MsdProperties::setSearchAreaRadius(areaRadius);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setSearchAreaRadius(areaRadius);
 #endif
 }
@@ -555,9 +555,9 @@ void MsdDetector::setSearchAreaRadius(int areaRadius)
 void MsdDetector::setScaleFactor(double scaleFactor)
 {
   MsdProperties::setScaleFactor(scaleFactor);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setScaleFactor(static_cast<float>(scaleFactor));
 #endif
 }
@@ -565,9 +565,9 @@ void MsdDetector::setScaleFactor(double scaleFactor)
 void MsdDetector::setNMSRadius(int NMSRadius)
 {
   MsdProperties::setNMSRadius(NMSRadius);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setNMSRadius(NMSRadius);
 #endif
 }
@@ -575,9 +575,9 @@ void MsdDetector::setNMSRadius(int NMSRadius)
 void MsdDetector::setNScales(int nScales)
 {
   MsdProperties::setNScales(nScales);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setNScales(nScales);
 #endif
 }
@@ -585,9 +585,9 @@ void MsdDetector::setNScales(int nScales)
 void MsdDetector::setNMSScaleRadius(int NMSScaleR)
 {
   MsdProperties::setNMSScaleRadius(NMSScaleR);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setScaleFactor(NMSScaleR);
 #endif
 }
@@ -595,9 +595,9 @@ void MsdDetector::setNMSScaleRadius(int NMSScaleR)
 void MsdDetector::setComputeOrientation(bool computeOrientations)
 {
   MsdProperties::setComputeOrientation(computeOrientations);
-#if CV_VERSION_MAJOR >= 3 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 1)
+#if defined HAVE_OPENCV_XFEATURES2D && (CV_VERSION_MAJOR > 3 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR >= 1))
   update();
-#elif
+#else
   mMSD->setComputeOrientation(computeOrientations);
 #endif
 }
