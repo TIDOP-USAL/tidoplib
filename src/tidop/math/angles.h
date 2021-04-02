@@ -500,7 +500,7 @@ int Gradians<T>::degrees() const
 template<typename T> inline
 int Gradians<T>::minutes() const
 {
-  return static_cast<int>(fabs(mValue - this->degrees())) * 100;
+  return static_cast<int>(fabs(mValue - this->degrees()) * 100);
 }
 
 template<typename T> inline

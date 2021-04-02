@@ -36,12 +36,6 @@
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/font.h"
 
-class OGRStyleMgr;
-class OGRStylePen;
-class OGRStyleBrush;
-class OGRStyleSymbol;
-class OGRStyleLabel;
-
 namespace tl
 {
 

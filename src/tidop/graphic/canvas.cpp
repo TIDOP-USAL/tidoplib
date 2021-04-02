@@ -239,4 +239,4 @@ cv::Scalar CanvasCV::colorToCvScalar(const Color &color)
 
 } // Fin namespace graph
 
-} // End namespace TL
+} // End namespace tl

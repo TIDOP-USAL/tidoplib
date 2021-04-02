@@ -24,15 +24,6 @@
 
 #include "tidop/graphic/styles.h"
 
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal_priv.h"
-#include "cpl_conv.h"
-#include "ogr_core.h"
-#include "ogr_featurestyle.h"
-TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
-
 
 namespace tl
 {
@@ -611,42 +602,6 @@ GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
 {
 }
 
-//#ifdef HAVE_GDAL
-//bool GraphicStyle::readFromOGR(OGRStyleMgr *ogrStyle)
-//{
-//  OGRStyleTool *ogrStyleTool = nullptr;
-//  for (int i = 0; i < ogrStyle->GetPartCount(); i++) {
-//    if ((ogrStyleTool = ogrStyle->GetPart(i)) != nullptr) {
-//      OGRSTClassId oci = ogrStyleTool->GetType();
-//      switch (oci) {
-//      case OGRSTCPen:
-//        readStylePen(dynamic_cast<OGRStylePen *>(ogrStyleTool));
-//        break;
-//      case OGRSTCBrush:
-//        readStyleBrush(dynamic_cast<OGRStyleBrush *>(ogrStyleTool));
-//        break;
-//      case OGRSTCSymbol:
-//        readStyleSymbol(dynamic_cast<OGRStyleSymbol *>(ogrStyleTool));
-//        break;
-//      case OGRSTCLabel:
-//        readStyleLabel(dynamic_cast<OGRStyleLabel *>(ogrStyleTool));
-//        break;
-//      case OGRSTCVector:
-//
-//        break;
-//      default:
-//        break;
-//      }
-//    }
-//  }
-//  return false;
-//}
-//#endif 
-//
-//bool GraphicStyle::write()
-//{
-//  return false;
-//}
 
 StylePen *GraphicStyle::stylePen() const
 {
@@ -698,73 +653,6 @@ GraphicStyle &GraphicStyle::operator = (const GraphicStyle &graphicStyle)
   }
   return *this;
 }
-
-//#ifdef HAVE_GDAL
-//
-//void GraphicStyle::readStylePen(OGRStylePen *ogrStylePen)
-//{
-//  GBool bDefault = false;
-//  std::shared_ptr<StylePen> stylePen = std::make_shared<StylePen>();
-//  const char *hexColor = ogrStylePen->Color(bDefault);
-//  if (!bDefault) stylePen->setPenColor(Color(hexColor));
-//
-//  double width = ogrStylePen->Width(bDefault);
-//  if ( !bDefault ) { 
-//    //unsigned __int8 w = (unsigned __int8)GetWidthPx( wd, poStylePen->GetUnit() );
-//    //gs->AddStyle( gstPenWidth, w );
-//    //stylePen->setPenWidth();
-//  }
-//
-//  const char *pattern = ogrStylePen->Pattern(bDefault);
-//  if (!bDefault) stylePen->setPattern(pattern);
-//
-//  //const char *name = ogrStylePen->Id(bDefault);
-//  //if ( !bDefault ) {
-//  //  stylePen->setPenName()
-//  //}
-//
-//  const char *cap = ogrStylePen->Cap(bDefault);
-//  if ( !bDefault ) {
-//    StylePen::PenCap penCap;
-//    if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::BUTT;
-//    else if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::PROJECTING;
-//    else if (strcmp(cap, "") == 0) penCap = StylePen::PenCap::ROUND;
-//    stylePen->setPenCap(penCap);
-//  }
-//
-//  const char *join = ogrStylePen->Join(bDefault);
-//  if ( !bDefault ) {
-//    StylePen::PenJoin penJoin;
-//    if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::MITER;
-//    else if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::ROUNDED;
-//    else if (strcmp(join, "") == 0) penJoin = StylePen::PenJoin::BEVEL;
-//    stylePen->setPenJoin(penJoin);
-//  }
-//
-//  double perpendicularOffset = ogrStylePen->PerpendicularOffset(bDefault);
-//  if ( !bDefault ) {
-//    stylePen->setPerpendicularOffset(TL_ROUND_TO_INT(perpendicularOffset));
-//  }
-//
-//  setStylePen(stylePen);
-//}
-//
-//void GraphicStyle::readStyleBrush(OGRStyleBrush *ogrStyleBrush)
-//{
-//
-//}
-//
-//void GraphicStyle::readStyleSymbol(OGRStyleSymbol *ogrStyleSymbol)
-//{
-//
-//}
-//
-//void GraphicStyle::readStyleLabel(OGRStyleLabel *ogrStyleLabel)
-//{
-//
-//}
-//
-//#endif
 
 
 /* ---------------------------------------------------------------------------------- */
