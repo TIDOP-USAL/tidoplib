@@ -375,6 +375,7 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::Compress::lzma:
         options["COMPRESS"] = "LZMA";
         break;
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
       case tl::TiffOptions::Compress::zstd:
         options["COMPRESS"] = "ZSTD";
@@ -391,6 +392,7 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
         options["COMPRESS"] = "LERC_ZSTD";
         break;
 #endif
+#endif // HAVE_GDAL
       case tl::TiffOptions::Compress::webp:
         options["COMPRESS"] = "WEBP";
         break;
@@ -597,6 +599,7 @@ void PngOptions::setComment(const std::string &comment)
 
 #endif
 
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
 
 int PngOptions::nBits() const
@@ -610,11 +613,13 @@ void PngOptions::setNBits(int nBits)
 }
 
 #endif
+#endif // HAVE_GDAL
 
 void PngOptions::init()
 {
   bWorldFile = std::make_pair(false, false);
   mZLevel = std::make_pair(6, 6);
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
   mTitle = std::make_pair("", "");
   mDescription = std::make_pair("", "");
@@ -624,6 +629,7 @@ void PngOptions::init()
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
   mNBits = std::make_pair(8, 8);
 #endif
+#endif // HAVE_GDAL
 }
 
 std::map<std::string, std::string> PngOptions::options(bool all) const
@@ -638,6 +644,7 @@ std::map<std::string, std::string> PngOptions::options(bool all) const
     options["ZLEVEL"] = std::to_string(mZLevel.second);
   }
 
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
 
   if (all || mTitle.first != mTitle.second) {
@@ -665,6 +672,7 @@ std::map<std::string, std::string> PngOptions::options(bool all) const
   }
 
 #endif
+#endif // HAVE_GDAL
 
   return options;
 }
@@ -781,6 +789,7 @@ void JpegOptions::setThumbnailHeight(int thumbnailHeight)
   mThumbnailHeight.second = thumbnailHeight;
 }
 
+#ifdef HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
 bool JpegOptions::writeExifMetadata() const
 {
@@ -792,6 +801,7 @@ void JpegOptions::setWriteExifMetadata(bool writeExifMetadata)
   mWriteExifMetadata.second = writeExifMetadata;
 }
 #endif
+#endif // HAVE_GDAL
 
 void JpegOptions::init()
 {

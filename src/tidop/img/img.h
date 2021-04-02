@@ -29,14 +29,14 @@
 
 #include "tidop/core/defs.h"
 
-#include <vector>
-
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
+#include <string>
+#include <vector>
 
 
 namespace tl
@@ -56,7 +56,6 @@ enum class DataType : int16_t
   TL_64F = (1 << 7)      // Equivalente a CV_64F y GDT_Float64
 };
 
-#ifdef HAVE_GDAL
 
 //TL_EXPORT std::vector<std::string> gdalValidExtensions();
 TL_EXPORT bool gdalValidExtensions(const std::string &extension);
@@ -70,15 +69,18 @@ TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
+#ifdef HAVE_GDAL
 
 TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
-
 TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
+
+#endif // HAVE_GDAL
+
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
-#ifdef HAVE_OPENCV
+#if defined HAVE_OPENCV && defined HAVE_GDAL
 
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
@@ -96,9 +98,8 @@ int gdalToOpenCv(GDALDataType gdalType, int channels);
  */
 GDALDataType openCvToGdal(int cvdt);
 
-#endif // HAVE_OPENCV
+#endif
 
-#endif // HAVE_GDAL
 
 
 #ifdef HAVE_EDSDK

@@ -24,7 +24,11 @@
 
 # Graphic Test
 
+if(HAVE_TL_GRAPHIC)
+
 #add_subdirectory(canvas)
 add_subdirectory(color)
 add_subdirectory(font)
 add_subdirectory(styles)
+
+endif()

@@ -25,7 +25,9 @@
 #include "linedetector.h"
 
 #ifdef HAVE_OPENCV
+#ifdef HAVE_OPENCV_XIMGPROC
 #include <opencv2/ximgproc.hpp>
+#endif // HAVE_OPENCV_XIMGPROC
 
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
@@ -144,6 +146,7 @@ void ldHouhP::setParameters(double _minLineLength, double _maxLineGap)
 
 LineDetector::Exit ldHouhFast::run(cv::Mat &image)
 {
+#ifdef HAVE_OPENCV_XIMGPROC
   double angle = 0.0;
   mLines.clear();
   std::vector<cv::Vec4i> linesaux;
@@ -176,6 +179,8 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
     }
   }
   return LineDetector::Exit::SUCCESS;
+#endif
+  return LineDetector::Exit::FAILURE;
 }
 
 LineDetector::Exit ldHouhFast::run(cv::Mat &image, const cv::Scalar &_angletol)
@@ -216,6 +221,7 @@ static const int MAX_LEN = 10000;
 template<typename T>
 bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::Mat &fht, float minWeight, int maxCount)
 {
+#ifdef HAVE_OPENCV_XIMGPROC
   std::vector<pair<T, cv::Point> > weightedPoints;
   for (int y = 0; y < fht.rows; ++y) {
     if (weightedPoints.size() > MAX_LEN)
@@ -256,6 +262,8 @@ bool _getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::
     lines.push_back(cv::ximgproc::HoughPoint2Line(weightedPoints[i].second, src));
   }
   return true;
+#endif 
+  return false;
 }
 
 bool ldHouhFast::getLocalExtr(std::vector<cv::Vec4i> &lines, const cv::Mat &src, const cv::Mat &fht, float minWeight, int maxCount)

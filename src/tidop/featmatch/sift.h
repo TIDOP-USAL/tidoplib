@@ -29,7 +29,9 @@
 
 #include "tidop/featmatch/features.h"
 
+#if defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 
 namespace tl
 {
@@ -89,7 +91,7 @@ private:
 
 /*----------------------------------------------------------------*/
 
-#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || defined OPENCV_ENABLE_NONFREE
+
 
 class TL_EXPORT SiftDetectorDescriptor
   : public SiftProperties,
@@ -144,10 +146,13 @@ public:
 
 protected:
 
+#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
+  cv::Ptr <cv::SIFT>  mSift;
+#elif defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D
   cv::Ptr<cv::xfeatures2d::SIFT> mSift;
-};
+#endif // HAVE_OPENCV_XFEATURES2D
 
-#endif
+};
 
 /*! \} */ // end of FeatureDetectorAndDescriptor
 

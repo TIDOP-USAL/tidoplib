@@ -28,44 +28,61 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 if(BUILD_TL_CORE)
   #directorio con el módulo 'Core' de la librería
   add_subdirectory(tidop/core)
-  
-  if(BUILD_TL_MATH)
-    add_subdirectory(tidop/math)
-  endif()
-  
-  if(BUILD_TL_GEOMETRY)
-    add_subdirectory(tidop/geometry)
-  endif()
-  
-  if(BUILD_TL_IMG)
-    add_subdirectory(tidop/img)
-  endif()
-  
-  if(BUILD_TL_IMG_PROCESS)
-    add_subdirectory(tidop/imgprocess)
-  endif()
-  
-  if(BUILD_TL_FEAT_MATCH)
-    add_subdirectory(tidop/featmatch)
-  endif(BUILD_TL_FEAT_MATCH)
-  
-  if(BUILD_TL_GRAPHIC AND BUILD_TL_GEOMETRY)
-    add_subdirectory(tidop/graphic)
-  endif()
-  
-  if(BUILD_TL_GEOSPATIAL)
-    add_subdirectory(tidop/geospatial)
-  endif()
-
-  if(BUILD_TL_VECT)
-    add_subdirectory(tidop/vect)
-  endif()
-   
-  if(BUILD_TL_EXPERIMENTAL)
-    add_subdirectory(tidop/experimental)
-  endif()
-     
 else()
-  # Se deberia mostrar un mensaje de error
+  message(STATUS "TidopLib::tl_core disabled")
+  #message(WARNING "Disable tl_core dependent methods: tl_math, tl_geom, tl_img, tl_imgprocess, tl_graphic, tl_geospatial, tl_vect, tl_experimental")
 endif()
 
+if(BUILD_TL_MATH)
+  add_subdirectory(tidop/math)
+else()
+  message(STATUS "TidopLib::tl_math disabled")
+endif()
+    
+if(BUILD_TL_GEOMETRY)
+  add_subdirectory(tidop/geometry)
+else()
+  message(STATUS "TidopLib::tl_geom disabled")
+endif()
+	
+if(BUILD_TL_IMG)
+  add_subdirectory(tidop/img)
+else()
+ message(STATUS "TidopLib::tl_img disabled")
+endif()
+    
+if(BUILD_TL_FEAT_MATCH)
+  add_subdirectory(tidop/featmatch)
+else()
+  message(STATUS "TidopLib::tl_featmatch disabled")
+endif()
+    
+if(BUILD_TL_GRAPHIC)
+  add_subdirectory(tidop/graphic)
+ else()
+  message(STATUS "TidopLib::tl_graphic disabled")
+ endif()
+    
+if(BUILD_TL_IMG_PROCESS)
+  add_subdirectory(tidop/imgprocess)
+else()
+  message(STATUS "TidopLib::tl_imgprocess disabled")
+endif()
+	
+if(BUILD_TL_VECT)
+  add_subdirectory(tidop/vect)
+else()
+  message(STATUS "TidopLib::tl_vect disabled")
+endif()
+
+if(BUILD_TL_GEOSPATIAL)
+  add_subdirectory(tidop/geospatial)
+else()
+  message(STATUS "TidopLib::tl_geospatial disabled")
+endif()
+     
+if(BUILD_TL_EXPERIMENTAL)
+  add_subdirectory(tidop/experimental)
+else()
+  message(STATUS "TidopLib::tl_experimental disabled")
+endif()

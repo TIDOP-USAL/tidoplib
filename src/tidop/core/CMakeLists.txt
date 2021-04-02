@@ -92,3 +92,5 @@ install(DIRECTORY .
 
 set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
+set(HAVE_TL_CORE YES CACHE INTERNAL "")
+message(STATUS "TidopLib::tl_core enabled")

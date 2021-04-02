@@ -29,7 +29,9 @@
 
 #include "tidop/featmatch/features.h"
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 
 namespace tl
 {
@@ -130,7 +132,9 @@ public:
 
 protected:
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::FREAK> mFREAK;
+#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 /*! \} */ // end of FeatureDetectorAndDescriptor

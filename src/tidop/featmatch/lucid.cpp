@@ -86,15 +86,24 @@ LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
 
 void LucidDescriptor::update()
 {
+#ifdef HAVE_OPENCV_XFEATURES2D
   mLUCID = cv::xfeatures2d::LUCID::create(LucidProperties::lucidKernel(),
                                           LucidProperties::blurKernel());
+#endif
 }
 
 cv::Mat LucidDescriptor::extract(const cv::Mat &img, 
                                  std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mLUCID->compute(img, keyPoints, descriptors);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Lucid Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. Lucid Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return descriptors;
 }
 

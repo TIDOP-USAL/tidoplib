@@ -31,6 +31,8 @@
 #include "tidop/graphic/entities/polygon.h"
 #include "tidop/graphic/datamodel.h"
 
+#ifdef HAVE_OPENCV
+
 namespace tl
 {
 
@@ -426,3 +428,5 @@ cv::Mat Footprint::distCoeffs() const
 } // End namespace geospatial
 
 } // End namespace tl
+
+#endif // HAVE_OPENCV

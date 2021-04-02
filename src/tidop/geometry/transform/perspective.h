@@ -30,6 +30,8 @@
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform/transform.h"
 
+#ifdef HAVE_OPENCV
+
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>
 
@@ -270,5 +272,7 @@ Transform::Status Perspective<Point_t>::transform(const std::vector<Point_t> &pt
 
 
 } // End namespace tl
+
+#endif // HAVE_OPENCV
 
 #endif // TL_GEOMETRY_TRANSFORM_PERSPECTIVE_H

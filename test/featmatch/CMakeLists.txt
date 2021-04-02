@@ -24,7 +24,7 @@
 
 # Test modulo featmatch
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_FEAT_MATCH)
+if(HAVE_TL_FEAT_MATCH)
 
   project(test)
 

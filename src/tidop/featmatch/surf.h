@@ -29,7 +29,9 @@
 
 #include "tidop/featmatch/features.h"
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
 #include <opencv2/xfeatures2d/cuda.hpp>
@@ -94,7 +96,6 @@ private:
 
 /*----------------------------------------------------------------*/
 
-#ifdef OPENCV_ENABLE_NONFREE
 
 class TL_EXPORT SurfDetectorDescriptor
   : public SurfProperties,
@@ -146,13 +147,15 @@ public:
 
 protected:
 
+#ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::SURF> mSurf;
+#endif // HAVE_OPENCV_XFEATURES2D
 };
 
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
+
 
 class TL_EXPORT SurfCudaDetectorDescriptor
   : public SurfProperties,
@@ -203,13 +206,10 @@ public:
 
 protected:
 
+#if defined HAVE_OPENCV_XFEATURES2D && defined HAVE_OPENCV_CUDAFEATURES2D 
   std::unique_ptr<cv::cuda::SURF_CUDA> mSurf;
+#endif
 };
-
-
-#endif // HAVE_OPENCV_CUDAFEATURES2D
-
-#endif // OPENCV_ENABLE_NONFREE
 
 
 /*! \} */ // end of FeatureDetectorAndDescriptor

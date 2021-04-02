@@ -166,6 +166,7 @@ VggDescriptor::VggDescriptor(std::string descriptorType,
 
 void VggDescriptor::update()
 {
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
   int descriptor_type = cv::xfeatures2d::VGG::VGG_120;
   std::string descriptorType = VggProperties::descriptorType();
@@ -186,6 +187,7 @@ void VggDescriptor::update()
                                       static_cast<float>(VggProperties::scaleFactor()),
                                       VggProperties::useNormalizeDescriptor());
 #endif
+#endif // HAVE_OPENCV_XFEATURES2D
 }
 
 void VggDescriptor::reset()
@@ -232,14 +234,21 @@ void VggDescriptor::setUseScaleOrientation(bool useScaleOrientation)
 
 cv::Mat VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
   cv::Mat descriptors;
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
+#  if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
   mVGG->compute(img, keyPoints, descriptors);
-  return descriptors;
-#else
+#  else
   TL_COMPILER_WARNING("VGG Descriptor not supported in OpenCV versions < 3.3 ")
   throw std::exception("VGG Descriptor not supported in OpenCV versions < 3.3");
-#endif
+#  endif
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. VGG Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. VGG Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
+  return descriptors;
 }
 
 } // namespace tl

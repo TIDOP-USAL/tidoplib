@@ -35,6 +35,8 @@
 #include "tidop/geospatial/camera.h"
 #include "tidop/geospatial/photo.h"
 
+#ifdef HAVE_OPENCV
+
 namespace tl
 {
 
@@ -94,5 +96,6 @@ private:
 
 } // End namespace tl
 
+#endif // HAVE_OPENCV
 
 #endif // TL_GEOSPATIAL_CRS_H

@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL)
+if(HAVE_TL_GEOSPATIAL)
 
   project(test)
 

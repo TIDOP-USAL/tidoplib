@@ -145,17 +145,26 @@ StarDetector::StarDetector(int maxSize,
 
 void StarDetector::update()
 {
+#ifdef HAVE_OPENCV_XFEATURES2D
   mSTAR = cv::xfeatures2d::StarDetector::create(StarProperties::maxSize(),
                                                 StarProperties::responseThreshold(),
                                                 StarProperties::lineThresholdProjected(),
                                                 StarProperties::lineThresholdBinarized(),
                                                 StarProperties::suppressNonmaxSize());
+#endif // HAVE_OPENCV_XFEATURES2D
 }
 
 std::vector<cv::KeyPoint> StarDetector::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mSTAR->detect(img, keyPoints, mask);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Star Detector not supported")
+  throw std::exception("OpenCV not built with extra modules. Star Detector not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return keyPoints;
 }
 

@@ -29,7 +29,10 @@
 
 #include <memory>
 
+#include <opencv2/features2d.hpp>
+#ifdef HAVE_OPENCV_XFEATURES2D 
 #include <opencv2/xfeatures2d.hpp>
+#endif // HAVE_OPENCV_XFEATURES2D
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
 #include <opencv2/cudafeatures2d.hpp>
 #endif // HAVE_OPENCV_CUDAFEATURES2D

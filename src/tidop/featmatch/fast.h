@@ -137,7 +137,6 @@ protected:
 
 /*----------------------------------------------------------------*/
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
 
 class TL_EXPORT FastDetectorCuda
   : public FastProperties,
@@ -182,11 +181,12 @@ public:
 
 protected:
 
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::Ptr<cv::cuda::FastFeatureDetector> mFast;
+#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 };
 
-#endif // HAVE_OPENCV_CUDAFEATURES2D
 
 
 /*! \} */ // end of FeatureDetectorAndDescriptor

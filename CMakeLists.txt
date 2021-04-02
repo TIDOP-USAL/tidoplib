@@ -212,24 +212,25 @@ OPTION (WITH_OpenBLAS "Include OpenBLAS"                      OFF)
 #  Modulos TidopLib
 # ----------------------------------------------------------------------------
 
-set(HAVE_TL_CORE NO)
-set(HAVE_TL_MATH NO)
-set(HAVE_TL_GEOMETRY NO)
-set(HAVE_TL_IMG NO)
-set(HAVE_TL_IMG_PROCESS NO)
-set(HAVE_TL_FEAT_MATCH NO)
-set(HAVE_TL_GRAPHIC NO)
-set(HAVE_TL_GEOSPATIAL NO)
-set(HAVE_TL_VECT NO)
-set(HAVE_TL_EXPERIMENTAL NO)
 
-if(BUILD_TL_CORE)
-    set(HAVE_TL_CORE YES)
-	if(BUILD_TL_MATH)
-	    set(HAVE_TL_MATH YES)
-	endif(BUILD_TL_MATH)
-	#completar y ver que modulos se activan/desactivan en función de la activación de otros
-endif(BUILD_TL_CORE)
+unset(HAVE_TL_CORE CACHE)
+unset(HAVE_TL_MATH CACHE)
+unset(HAVE_TL_GEOMETRY CACHE)
+unset(HAVE_TL_IMG CACHE)
+unset(HAVE_TL_IMG_PROCESS CACHE)
+unset(HAVE_TL_FEAT_MATCH CACHE)
+unset(HAVE_TL_GRAPHIC CACHE)
+unset(HAVE_TL_GEOSPATIAL CACHE)
+unset(HAVE_TL_VECT CACHE)
+unset(HAVE_TL_EXPERIMENTAL CACHE)
+
+# if(BUILD_TL_CORE)
+    # set(HAVE_TL_CORE YES)
+	# if(BUILD_TL_MATH)
+	    # set(HAVE_TL_MATH YES)
+	# endif(BUILD_TL_MATH)
+	# #completar y ver que modulos se activan/desactivan en función de la activación de otros
+# endif(BUILD_TL_CORE)
 
 # ----------------------------------------------------------------------------
 #  Detect 3rd-party libraries
@@ -438,8 +439,7 @@ include_directories(${CMAKE_BUILD_DIR})
 
 
 
-#cabecera con la configuración
-configure_file("${PROJECT_SOURCE_DIR}/cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
+
 include_directories("${PROJECT_BINARY_DIR}")
 
 set(TARGETS_EXPORT_NAME "${PROJECT_NAME}Targets")
@@ -457,6 +457,10 @@ add_subdirectory(doc)
 
 # Se incluye el directorio con los test
 add_subdirectory(test)
+
+
+#cabecera con la configuración
+configure_file("${PROJECT_SOURCE_DIR}/cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
 
 
 ###############################################################################################################

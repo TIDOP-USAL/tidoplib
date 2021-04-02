@@ -125,15 +125,24 @@ LatchDescriptor::LatchDescriptor(const std::string &bytes,
 
 void LatchDescriptor::update()
 {
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mLATCH = cv::xfeatures2d::LATCH::create(std::stoi(LatchProperties::bytes()),
                                           LatchProperties::rotationInvariance(),
                                           LatchProperties::halfSsdSize());
+#endif // HAVE_OPENCV_XFEATURES2D
 }
 
 cv::Mat LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mLATCH->compute(img, keyPoints, descriptors);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Latch Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. Latch Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return descriptors;
 }
 

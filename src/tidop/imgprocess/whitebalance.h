@@ -30,7 +30,9 @@
 #ifdef HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
+#ifdef HAVE_OPENCV_XPHOTO
 #include <opencv2/xphoto/white_balance.hpp>
+#endif // HAVE_OPENCV_XPHOTO
 
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
@@ -55,6 +57,7 @@ namespace tl
 
 /* ---------------------------------------------------------------------------------- */
 
+#ifdef HAVE_OPENCV_XPHOTO
 #if defined CV_VERSION_MAJOR && CV_VERSION_MAJOR >= 3
 #  if defined CV_VERSION_MINOR && CV_VERSION_MINOR >= 2
 
@@ -85,11 +88,12 @@ private:
    * \brief Tamaño del kernel
    */
   cv::Ptr<cv::xphoto::GrayworldWB> mGrayworld;
+
 };
 
 #  endif // CV_VERSION_MINOR
 #endif // CV_VERSION_MAJOR
-
+#endif // HAVE_OPENCV_XPHOTO
 /* ---------------------------------------------------------------------------------- */
 
 /*!

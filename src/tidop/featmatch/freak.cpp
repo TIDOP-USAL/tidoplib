@@ -131,17 +131,26 @@ FreakDescriptor::FreakDescriptor(bool orientationNormalized,
 
 void FreakDescriptor::update()
 {
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mFREAK = cv::xfeatures2d::FREAK::create(FreakProperties::orientationNormalized(),
                                           FreakProperties::scaleNormalized(),
                                           static_cast<float>(FreakProperties::patternScale()),
                                           FreakProperties::octaves());
+#endif // HAVE_OPENCV_XFEATURES2D
 }
 
 cv::Mat FreakDescriptor::extract(const cv::Mat &img, 
                                  std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+#ifdef HAVE_OPENCV_XFEATURES2D 
   mFREAK->compute(img, keyPoints, descriptors);
+#else
+  TL_COMPILER_WARNING("OpenCV not built with extra modules. Freak Descriptor not supported")
+  throw std::exception("OpenCV not built with extra modules. Freak Descriptor not supported");
+#endif // HAVE_OPENCV_XFEATURES2D
+
   return descriptors;
 }
 
