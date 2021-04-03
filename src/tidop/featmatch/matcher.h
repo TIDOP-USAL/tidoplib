@@ -140,10 +140,10 @@ public:
    * \param[in] mask
    * \return
    */
-  virtual bool match(cv::InputArray &queryDescriptors,
-                     cv::InputArray &trainDescriptors,
+  virtual bool match(const cv::Mat &queryDescriptors,
+                     const cv::Mat &trainDescriptors,
                      std::vector<cv::DMatch> &matches,
-                     cv::InputArray mask = cv::noArray()) = 0;
+                     const cv::Mat mask = cv::Mat()) = 0;
 
   /*!
    * \brief Compute matching
@@ -153,10 +153,10 @@ public:
    * \param[in] mask
    * \return 
    */
-  virtual bool match(cv::InputArray &queryDescriptors,
-                     cv::InputArray &trainDescriptors,
+  virtual bool match(const cv::Mat &queryDescriptors,
+                     const cv::Mat &trainDescriptors,
                      std::vector<std::vector<cv::DMatch>> &matches,
-                     cv::InputArray mask = cv::noArray()) = 0;
+                     const cv::Mat mask = cv::Mat()) = 0;
 
 };
 

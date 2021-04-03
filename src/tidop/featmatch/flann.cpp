@@ -85,10 +85,10 @@ void FlannMatcherImp::update()
   mFlannBasedMatcher = cv::Ptr<cv::FlannBasedMatcher>(new cv::FlannBasedMatcher(indexParams));
 }
 
-bool FlannMatcherImp::match(cv::InputArray &queryDescriptors,
-                         cv::InputArray &trainDescriptors,
-                         std::vector<cv::DMatch> &matches,
-                         cv::InputArray mask)
+bool FlannMatcherImp::match(const cv::Mat &queryDescriptors,
+                            const cv::Mat &trainDescriptors,
+                            std::vector<cv::DMatch> &matches,
+                            const cv::Mat mask)
 {
   try {
     mFlannBasedMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
@@ -99,10 +99,10 @@ bool FlannMatcherImp::match(cv::InputArray &queryDescriptors,
   return false;
 }
 
-bool FlannMatcherImp::match(cv::InputArray &queryDescriptors,
-                         cv::InputArray &trainDescriptors,
-                         std::vector<std::vector<cv::DMatch>> &matches,
-                         cv::InputArray mask)
+bool FlannMatcherImp::match(const cv::Mat &queryDescriptors,
+                            const cv::Mat &trainDescriptors,
+                            std::vector<std::vector<cv::DMatch>> &matches,
+                            const cv::Mat mask)
 {
   try {
     mFlannBasedMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
