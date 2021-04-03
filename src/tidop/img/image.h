@@ -52,6 +52,7 @@ public:
   DataType type() const;
   int channels() const;
   unsigned char *data();
+  int depth();
 
   bool isEmpty();
 

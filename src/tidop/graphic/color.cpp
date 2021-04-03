@@ -86,220 +86,12 @@ void adjustRangeHSL(double *hue, double *saturation, double *lightness)
   if (*lightness > 100.) *lightness = 100.;
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
 
-/* ---------------------------------------------------------------------------------- */
-/*                                     Clase Color                                    */
-/* ---------------------------------------------------------------------------------- */
-
-Color::Color() 
-  : mColor(0)
-{
-}
-
-Color::Color(const Color &color) 
-  : mColor(color.mColor) 
-{
-}
-
-Color::Color(int color)
-  : mColor(static_cast<uint32_t>(color))
-{
-}
-
-Color::Color(int red, int green, int blue, int alpha)
-{
-  adjustRangeRGBA(&red, &green, &blue, &alpha);
-  mColor = (blue & 0xFF) | ((green << 8) & 0xFF00) | ((red << 16) & 0xFF0000) | ((alpha << 24) & 0xFF000000);
-}
-
-Color::Color(double cyan, double magenta, double yellow, double key) : mColor(0)
-{
-  fromCMYK(cyan, magenta, yellow, key);
-}
-
-Color::Color(double hue, double saturation, double value) : mColor(0)
-{
-  fromHSV(hue, saturation, value);
-}
-
-Color::Color(const std::string &color)
-{
-  ///TODO: error inprevisto en test
-  //mColor = static_cast<uint32_t>(stringToInteger(color, TL::Base::HEXADECIMAL));
-  mColor = static_cast<uint32_t>(std::stoi(color, nullptr, 16));
-}
-
-Color::Color(const Color::NAME &color)
-{
-  mColor = static_cast<uint32_t>(color);
-}
-
-#ifdef HAVE_OPENCV
-//Color::Color(const cv::Scalar &color)
-//{
-//  //mColor = rgbToInt(TL_ROUND_TO_INT(color[2]), TL_ROUND_TO_INT(color[1]), TL_ROUND_TO_INT(color[0]));
-//}
-#endif
-
-int Color::getBlue() const
-{
-  return (mColor & 0xFF);
-}
-
-int Color::getGreen() const
-{
-  return((mColor & 0xFF00) >> 8);
-}
-
-int Color::getRed() const
-{
-  return((mColor & 0xFF0000) >> 16);
-}
-
-int Color::getAlpha() const
-{
-  return((mColor & 0xFF000000) >> 24);
-}
-
-void Color::fromCMYK(double cyan, double magenta, double yellow, double key)
-{
-  int red, green, blue;
-  cmykToRgb(cyan, magenta, yellow, key, &red, &green, &blue);
-  mColor = (blue & 0xFF)
-    | ((green << 8) & 0xFF00)
-    | ((red << 16) & 0xFF0000);
-}
-
-void Color::fromHSV(double hue, double saturation, double value)
-{ 
-  int red, green, blue;
-  hsvToRgb(hue, saturation, value, &red, &green, &blue);
-  mColor = (blue & 0xFF)
-         | ((green << 8) & 0xFF00)
-         | ((red << 16) & 0xFF0000);
-}
-
-void Color::fromHSL(double hue, double saturation, double lightness)
-{
-  int red, green, blue;
-  hslToRgb(hue, saturation, lightness, &red, &green, &blue);
-  mColor = (blue & 0xFF)
-         | ((green << 8) & 0xFF00)
-         | ((red << 16) & 0xFF0000);
-}
-
-void Color::fromXYZ(double X, double Y, double Z)
-{
-
-}
-
-void Color::fromLuv(double L, double u, double v)
-{
-
-}
-
-void Color::fromLab(double L, double a, double b)
-{
-
-}
-
-void Color::toCMYK(double *cyan, double *magenta, double *yellow, double *key)  const
-{
-  rgbToCmyk(getRed(), getGreen(), getBlue(), cyan, magenta, yellow, key);
-}
-
-void Color::toHSV(double *hue, double *saturation, double *value) const
-{
-  rgbToHSV(getRed(), getGreen(), getBlue(), hue, saturation, value);
-}
-
-void Color::toHSL(double *hue, double *saturation, double *lightness) const
-{
-  rgbToHSL(getRed(), getGreen(), getBlue(), hue, saturation, lightness);
-}
-
-void Color::toRGB(int *red, int *green, int *blue, int *alpha) const
-{
-  *red = getRed();
-  *green = getGreen();
-  *blue = getBlue();
-  if(alpha) *alpha = getAlpha();
-}
-
-int Color::toLuminance() const
-{
-  return rgbToLuminance(getRed(), getGreen(), getBlue());
-}
-
-std::string Color::toHex() const
-{
-  return intToHex(mColor);
-}
-
-Color &Color::operator = (const Color &color)
-{
-  if (this != &color) {
-    mColor = color.mColor;
-  }
-  return *this;
-}
-
-Color Color::randomColor()
-{
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_int_distribution<> dis(0, 16777216);
-  return Color(dis(gen));
-}
-
-#ifdef HAVE_OPENCV
-cv::Scalar Color::toCvScalar()
-{
-  return cv::Scalar(static_cast<double>(getBlue()),
-                    static_cast<double>(getGreen()),
-                    static_cast<double>(getRed()));
-}
-#endif
-
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /* ---------------------------------------------------------------------------------- */
 /*                                Conversión de color                                 */
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-
-int getBlue(int color)
-{
-  return Color(color).getBlue();
-}
-
-int getGreen(int color)
-{
-  return Color(color).getGreen();
-}
-
-int getRed(int color)
-{
-  return Color(color).getRed();
-}
-
-int getAlpha(int color)
-{
-  return Color(color).getAlpha();
-}
-
-void intToRGB(int color, int *red, int *green, int *blue)
-{
-  Color _color(color);
-  *red = _color.getRed();
-  *green = _color.getGreen();
-  *blue = _color.getBlue();
-}
-
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 int rgbToInt(int red, int green, int blue)
 {
@@ -572,7 +364,7 @@ Color::Color(const Color::Name &color)
   mColor = static_cast<uint32_t>(color);
 }
 
-Color::Color(const IColorModel *colorModel)
+Color::Color(const ColorModel *colorModel)
 {
   *this = colorModel->toColor();
 }
@@ -642,8 +434,8 @@ bool operator != (const tl::graph::Color &color1, const tl::graph::Color &color2
 /* ---------------------------------------------------------------------------------- */
 
 
-IColorModel::IColorModel() {}
-IColorModel::~IColorModel() {}
+ColorModel::ColorModel() {}
+ColorModel::~ColorModel() {}
 
 
 ColorRGB::ColorRGB()
