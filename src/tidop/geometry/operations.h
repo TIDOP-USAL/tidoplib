@@ -36,7 +36,6 @@
 #include "tidop/core/defs.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/geometry/entities/point.h"
-//#include "geometry/entities/polygon.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/entities/bbox.h"
 #include "tidop/math/algebra/vectors.h"

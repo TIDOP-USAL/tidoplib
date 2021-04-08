@@ -245,4 +245,4 @@ bool GMultiPolygon3D::isSimpleEntity() const
 
 } // Fin namespace graph
 
-} // End namespace TL
+} // End namespace tl

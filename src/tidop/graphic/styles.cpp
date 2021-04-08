@@ -660,4 +660,4 @@ GraphicStyle &GraphicStyle::operator = (const GraphicStyle &graphicStyle)
 
 } // Fin namespace graph
 
-} // End namespace TL
+} // End namespace tl
