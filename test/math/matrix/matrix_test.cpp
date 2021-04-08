@@ -719,9 +719,17 @@ BOOST_FIXTURE_TEST_CASE(identity, MatrixTest)
   }
 }
 
-BOOST_FIXTURE_TEST_CASE(rowEchelonForm, MatrixTest)
-{
-}
+//BOOST_FIXTURE_TEST_CASE(rowEchelonForm, MatrixTest)
+//{
+//  Matrix<float, 3, 4> matrix{ 3, 6, -5, 0,
+//                              1, 1, 2, 9,
+//                              2, 4, -3, 1};
+//  Matrix<float, 3, 4> ref = matrix.rowEchelonForm();
+//  BOOST_CHECK_EQUAL(1, ref.at(0, 0));
+//  BOOST_CHECK_EQUAL(1, ref.at(1, 1));
+//  BOOST_CHECK_EQUAL(1, ref.at(1, 1));
+//
+//}
 
 BOOST_FIXTURE_TEST_CASE(trace, MatrixTest)
 {
