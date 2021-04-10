@@ -39,7 +39,7 @@
 //#include "geometry/entities/polygon.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/entities/bbox.h"
-#include "tidop/math/algebra/vectors.h"
+//#include "tidop/math/algebra/vectors.h"
 
 namespace tl
 {
@@ -57,6 +57,106 @@ class GroupLines;
 
 
 /*!
+ * \brief Vector entre dos puntos
+ * \param[in] pt1 punto 1
+ * \param[in] pt2 punto 2
+ * \return Vector
+ */
+template<typename Point_t> inline
+Point_t vector2D(const Point_t &pt1, const Point_t &pt2)
+{
+  Point_t v;
+  v.x = pt2.x - pt1.x;
+  v.y = pt2.y - pt1.y;
+  return v;
+}
+
+template<typename Point_t> inline
+Point_t vector3D(const Point_t &pt1, const Point_t &pt2)
+{
+  Point_t v;
+  v.x = pt2.x - pt1.x;
+  v.y = pt2.y - pt1.y;
+  v.z = pt2.z - pt1.z;
+  return v;
+}
+
+/*!
+ * \brief Producto vectorial de dos vectores en el plano
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto vectorial de los dos vectores
+ */
+template<typename Point_t> inline
+double crossProduct(const Point_t &pt1, const Point_t &pt2)
+{
+  return static_cast<double>(pt1.x * pt2.y - pt1.y * pt2.x);
+}
+
+/*!
+ * \brief Producto vectorial de dos vectores en 3 dimensiones
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto vectorial de los dos vectores
+ */
+template<typename Point3_t> inline
+Point3_t crossProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+{
+  return Point3_t(pt1.y * pt2.z - pt1.z * pt2.y,
+                  pt1.z * pt2.x - pt1.x * pt2.z,
+                  pt1.x * pt2.y - pt1.y * pt2.x);
+}
+
+/*!
+ * \brief Producto escalar de dos vectores en el plano
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto escalar de los dos vectores
+ */
+template<typename Point_t> inline
+double dotProduct(const Point_t &pt1, const Point_t &pt2)
+{
+  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+    static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
+}
+
+/*!
+ * \brief Producto escalar de dos vectores en 3 dimensiones
+ * \param[in] pt1 Vector o punto 1
+ * \param[in] pt2 Vector o punto 2
+ * \return Producto escalar de los dos vectores
+ */
+template<typename Point3_t> inline
+double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
+{
+  return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
+    static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
+    static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
+}
+
+/*!
+ * \brief Módulo de un vector 2D
+ * \param[in] v Vector
+ */
+template<typename Point_t> inline
+double module(const Point_t &v)
+{
+  TL_TODO("cambiar por math::module para evitar desbordes")
+    return sqrt(dotProduct(v, v));
+}
+
+/*!
+ * \brief Módulo de un vector 3D
+ * \param[in] v Vector
+ */
+template<typename Point3_t> inline
+double module3D(const Point3_t &v)
+{
+  TL_TODO("cambiar por math::module3d para evitar desbordes")
+    return sqrt(dotProduct3D(v, v));
+}
+
+/*!
  * \brief Distancia entre dos puntos
  * \param[in] pt1 Punto 1
  * \param[in] pt2 Punto 2
@@ -68,7 +168,7 @@ double distance(const Point_t &pt1, const Point_t &pt2)
   Point_t v;
   v.x = pt2.x - pt1.x;
   v.y = pt2.y - pt1.y;
-  return math::module(v);
+  return module(v);
 }
 
 template<typename Point3_t> inline
@@ -78,7 +178,7 @@ double distance3D(const Point3_t &pt1, const Point3_t &pt2)
   v.x = pt2.x - pt1.x;
   v.y = pt2.y - pt1.y;
   v.z = pt2.z - pt1.z;
-  return math::module3D(v);
+  return module3D(v);
 }
 
 // Comprueba si un punto esta a la derecha o izquierda de una linea
@@ -131,7 +231,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   }
   Point_t v1 = pt - ln.pt1;
   Point_t v2 = ln.vector();
-  double daux = math::dotProduct(v1, v2);
+  double daux = dotProduct(v1, v2);
   double r = daux / (v2.x * v2.x + v2.y * v2.y);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -258,10 +358,10 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = math::crossProduct(vs1, vs2)) {
+  if (double cross_product = crossProduct(vs1, vs2)) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
-    double t = math::crossProduct(v11_12, vs2) / cross_product;
-    double u = math::crossProduct(v11_12, vs1) / cross_product;
+    double t = crossProduct(v11_12, vs2) / cross_product;
+    double u = crossProduct(v11_12, vs1) / cross_product;
     if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
       if (typeid(typename Point_t::value_type) == typeid(int)) {
         pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);

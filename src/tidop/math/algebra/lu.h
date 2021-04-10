@@ -27,17 +27,18 @@
 
 #include "config_tl.h"
 
-#include "tidop/core/defs.h"
-#include "tidop/core/messages.h"
-//#include "tidop/math/mathutils.h"
-#include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/vector.h"
+#include <algorithm>
 
 #ifdef HAVE_OPENBLAS
 #include <lapacke.h>
 #endif // HAVE_OPENBLAS
 
-#include <algorithm>
+#include "tidop/math/math.h"
+#include "tidop/core/messages.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+
+
 
 namespace tl
 {

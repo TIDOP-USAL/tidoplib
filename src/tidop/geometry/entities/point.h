@@ -378,7 +378,7 @@ typename std::enable_if<
 operator * (T1 a, const Point<T2> &b)
 {
   return Point<T2>(static_cast<T2>(std::round(b.x*a)), 
-                     static_cast<T2>(std::round(b.y*a)));
+                   static_cast<T2>(std::round(b.y*a)));
 }
 
 template<typename T1, typename T2> static inline

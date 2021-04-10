@@ -25,8 +25,7 @@
 #ifndef TL_MATH_ANGLES_H
 #define TL_MATH_ANGLES_H
 
-#include "config_tl.h"
-#include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 
 #include <utility>
 
@@ -373,24 +372,24 @@ Radians<T> &Radians<T>::operator=(Radians &&radians) TL_NOEXCEPT
 template<typename T> inline
 void Radians<T>::normalize()
 {
-  if (mValue <= -TL_PI || mValue > TL_PI) {
-    mValue = fmod(mValue + TL_PI, TL_2PI);
+  if (mValue <= -pi || mValue > pi) {
+    mValue = fmod(mValue + pi, two_pi);
 
     if (mValue <= 0)
-      mValue += TL_PI;
+      mValue += pi;
     else 
-      mValue -= TL_PI;
+      mValue -= pi;
   }
 }
 
 template<typename T> inline
 void Radians<T>::normalizePositive()
 {
-  if (mValue < 0 || mValue >= TL_2PI) {
-    mValue = fmod(mValue, TL_2PI);
+  if (mValue < 0 || mValue >= two_pi) {
+    mValue = fmod(mValue, two_pi);
 
     if (mValue < 0)
-      mValue += TL_2PI;
+      mValue += two_pi;
   }
 }
 
@@ -641,7 +640,7 @@ template<typename T>
 inline void AngleConverter<T>::convert(const Degrees<T> &degrees, 
                                        Radians<T> &radians)
 {
-  radians = degrees.value() * TL_DEG_TO_RAD;
+  radians = degrees.value() * deg_to_rad;
 }
 
 template<typename T>
@@ -655,7 +654,7 @@ template<typename T>
 inline void AngleConverter<T>::convert(const Gradians<T> &gradians, 
                                        Radians<T> &radians)
 {
-  radians = gradians.value() * TL_GRAD_TO_RAD;
+  radians = gradians.value() * grad_to_rad;
 }
 
 template<typename T>
@@ -669,14 +668,14 @@ template<typename T>
 inline void AngleConverter<T>::convert(const Radians<T> &radians, 
                                        Degrees<T> &degrees)
 {
-  degrees = radians.value() * TL_RAD_TO_DEG;
+  degrees = radians.value() * rad_to_deg;
 }
 
 template<typename T>
 inline void AngleConverter<T>::convert(const Radians<T> &radians, 
                                        Gradians<T> &gradians)
 {
-  gradians = radians.value() * TL_RAD_TO_GRAD;
+  gradians = radians.value() * rad_to_grad;
 }
 
 

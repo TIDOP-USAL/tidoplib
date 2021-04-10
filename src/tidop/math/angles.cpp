@@ -24,8 +24,6 @@
 
 #include "angles.h"
 
-#include <cmath>
-
 namespace tl
 {
 
@@ -58,7 +56,7 @@ void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, 
 
 double decimalDegreesToRadians(double decimalDegrees)
 {
-  return decimalDegrees * TL_DEG_TO_RAD;
+  return decimalDegrees * deg_to_rad;
 }
 
 double decimalDegreesToGradians(double decimalDegrees)
@@ -73,12 +71,12 @@ void radiansToDegrees(double rad, int *degrees, int *minutes, double *seconds)
 
 double radiansToDecimalDegrees(double radians)
 { 
-  return radians * TL_RAD_TO_DEG;
+  return radians * rad_to_deg;
 }
 
 double radiansToGradians(double radians)
 {
-  return radians * TL_RAD_TO_GRAD;
+  return radians * rad_to_grad;
 }
 
 void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seconds)
@@ -93,7 +91,7 @@ double gradiansToDecimalDegrees(double gradians)
 
 double gradiansToRadians(double gradians)
 {
-  return gradians * TL_GRAD_TO_RAD;
+  return gradians * grad_to_rad;
 }
 
 

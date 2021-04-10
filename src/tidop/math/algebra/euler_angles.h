@@ -30,6 +30,7 @@
 #include <vector>
 #include <array>
 
+#include "tidop/math/math.h"
 #include "tidop/math/algebra/rotations.h"
 
 namespace tl

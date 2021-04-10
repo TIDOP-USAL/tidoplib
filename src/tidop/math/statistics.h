@@ -451,7 +451,7 @@ double pearsonCorrelationCoefficient(It first_x, It last_x,
 }
 
 /*!
- * \brief pearsonCorrelationCoefficient
+ * \brief Pearson Correlation Coefficient
  * \param[in] container1 Objeto contenedor
  * \param[in] container2 Objeto contenedor
  * \return
@@ -608,6 +608,6 @@ TL_EXPORT double laplacianVariance(const cv::Mat &src);
 
 } // Fin namespace math
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_MATH_STATISTICS_H

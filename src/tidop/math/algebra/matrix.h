@@ -27,18 +27,15 @@
 
 #include "config_tl.h"
 
-#include "tidop/core/defs.h"
-
 #include <vector>
 #include <array>
 #if MATRIX_STD_VALARRAY
 #include <valarray>
 #endif
 
+#include "tidop/math/math.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
-//#include "tidop/math/algebra/vector.h"
-//#include "tidop/math/algebra/lu.h"
 
 namespace tl
 {
@@ -845,11 +842,8 @@ public:
    * \param[out] invertibility Comprueba si la matriz es invertible
    * \return Matriz inversa
    * <h4>Ejemplo</h4>
-   * Matrix<double, 2, 2> mat_2x2;
-   * mat_2x2.at(0, 0) = 2.;
-   * mat_2x2.at(0, 1) = 3.;
-   * mat_2x2.at(1, 0) = 1.;
-   * mat_2x2.at(1, 1) = 4.;
+   * Matrix<double, 2, 2> mat_2x2{2., 3.
+   *                              1., 4.};
    * bool invertible;
    * Matrix<double, 2, 2> inv_mat = mat_2x2.inverse(&invertible);
    * \endcode
@@ -858,6 +852,31 @@ public:
 
   /*!
    * \brief Calcula la matriz transpuesta
+   * 
+   * \f[
+   * A=\begin{bmatrix}
+   * 1 & 2 & 3 \\
+   * 4 & 5 & 6 \\
+   * 7 & 8 & 9 \\
+   * \end{bmatrix}
+   * \f]
+   * 
+   * \f[
+   * A^{T}=\begin{bmatrix}
+   * 1 & 4 & 7 \\
+   * 2 & 5 & 0 \\
+   * 3 & 6 & 8 \\
+   * \end{bmatrix}
+   * \f]
+   * 
+   * <h4>Ejemplo</h4>
+   * Matrix<double, 2, 2> mat_2x2{2., 3.
+   *                              1., 4.};
+   * Matrix<double, 2, 2> transpose_mat = mat_2x2.transpose();
+   * std::cout << transpose_mat << std::endl;
+   * 
+   * \endcode
+   * 
    * \return Matriz transpuesta
    */
   Matrix<T, _cols, _rows> transpose() const;
@@ -881,6 +900,9 @@ public:
    */
   T determinant() const;
 
+  /*!
+   * \brief
+   */
   T trace() const;
 
   /*!
@@ -1796,6 +1818,8 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t co
   return matrix;
 }
 
+
+
 /* Operaciones unarias */
 
 template<typename T, size_t _rows, size_t _cols> inline  static
@@ -1804,6 +1828,28 @@ Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix)
   return matrix;
 }
 
+/*!
+ * \brief Cambia el signo de una matriz
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * 1 & 2 & 3 \\
+ * 4 & 5 & 6 \\
+ * 7 & 8 & 9 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * \f[ B = -A \f]
+ * 
+ * B=\begin{bmatrix}
+ * -1 & -2 & -3 \\
+ * -4 & -5 & -6 \\
+ * -7 & -8 & -9 \\
+ * \end{bmatrix}
+ * \f]
+ * 
+ * \return Matriz con todos los elementos de la matriz de entrada cambiados de signo
+ */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
 {
@@ -1816,7 +1862,9 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
   return _m;
 }
 
+
 /* Operaciones binarias entre matrices */
+
 
 /*!
  * \brief Suma o adición de matrices 
@@ -1848,15 +1896,10 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
  * Matrix2x2i A;
  * Matrix2x2i B;
  *
- * A.at(0, 0) = 1;
- * A.at(0, 1) = 4;
- * A.at(1, 0) = 3;
- * A.at(1, 1) = 2;
- *
- * B.at(0, 0) = 4;
- * B.at(0, 1) = 5;
- * B.at(1, 0) = 2;
- * B.at(1, 1) = 8;
+ * Matrix2x2i A{1, 4,
+ *              3, 2};
+ * Matrix2x2i B{4, 5,
+ *              2, 8};
  *
  * Matrix2x2i C = A + B;
  * \endcode
@@ -1869,6 +1912,44 @@ Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix1,
   return matrix += matrix2;
 }
 
+/*!
+ * \brief Adición a una matriz
+ *
+ * Adicción de una matriz a otra
+ * 
+ * \f[ A += B \f]
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * a1 & a2 & a3 \\
+ * a4 & a5 & a6 \\
+ * a7 & a8 & a9 \\
+ * \end{bmatrix}
+ *
+ * B=\begin{bmatrix}
+ * b1 & b2 & b3 \\
+ * b4 & b5 & b6 \\
+ * b7 & b8 & b9 \\
+ * \end{bmatrix}
+ *
+ * A=\begin{bmatrix}
+ * a1+b1 & a2+b2 & a3+b3 \\
+ * a4+b4 & a5+b5 & a6+b6 \\
+ * a7+b7 & a8+b8 & a9+b9 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * Matrix2x2i A{1, 4, 
+ *              3, 2};
+ * Matrix2x2i B{4, 5, 
+ *              2, 8};
+ *
+ *  A += B;
+ * 
+ * \endcode
+ */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator += (Matrix<T, _rows, _cols> &matrix1,
                                        const Matrix<T, _rows, _cols> &matrix2)
@@ -1917,15 +1998,10 @@ Matrix<T, _rows, _cols> &operator += (Matrix<T, _rows, _cols> &matrix1,
  * Matrix2x2i A;
  * Matrix2x2i B;
  *
- * A.at(0, 0) = 1;
- * A.at(0, 1) = 4;
- * A.at(1, 0) = 3;
- * A.at(1, 1) = 2;
- *
- * B.at(0, 0) = 4;
- * B.at(0, 1) = 5;
- * B.at(1, 0) = 2;
- * B.at(1, 1) = 8;
+ * Matrix2x2i A{1, 4,
+ *              3, 2};
+ * Matrix2x2i B{4, 5,
+ *              2, 8};
  *
  * Matrix2x2i C = A - B;
  * \endcode
@@ -1938,6 +2014,38 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
   return matrix -= matrix2;
 }
 
+/*!
+ * \brief Resta de una matriz por otra
+ *
+ * \f[ A -= B \f]
+ *
+ * \f[
+ * A=\begin{bmatrix}
+ * a1 & a2 & a3 \\
+ * a4 & a5 & a6 \\
+ * a7 & a8 & a9 \\
+ * \end{bmatrix}
+ *
+ * B=\begin{bmatrix}
+ * b1 & b2 & b3 \\
+ * b4 & b5 & b6 \\
+ * b7 & b8 & b9 \\
+ * \end{bmatrix}
+ * \f]
+ *
+ * <h4>Ejemplo</h4>
+ * \code
+ * Matrix2x2i A;
+ * Matrix2x2i B;
+ *
+ * Matrix2x2i A{1, 4,
+ *              3, 2};
+ * Matrix2x2i B{4, 5,
+ *              2, 8};
+ *
+ * Matrix2x2i A -= B;
+ * \endcode
+ */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
                                        const Matrix<T, _rows, _cols> &matrix2)
@@ -1999,7 +2107,7 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
  */
 template<typename T, size_t _rows, size_t _dim, size_t _cols> inline  static
 Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
-                                     const Matrix<T, _dim, _cols> &matrix2)
+                                    const Matrix<T, _dim, _cols> &matrix2)
 {
   Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::zero();
   for (size_t r = 0; r < _rows; r++) {
@@ -2014,7 +2122,7 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
 
 template<typename T> inline  static
 Matrix<T> operator * (const Matrix<T> &matrix1,
-                       const Matrix<T> &matrix2)
+                      const Matrix<T> &matrix2)
 {
   size_t rows = matrix1.rows();
   size_t dim1 = matrix1.cols();
@@ -2055,12 +2163,8 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
  *
  * <h4>Ejemplo</h4>
  * \code
- * Matrix2x2i A;
- *
- * A.at(0, 0) = 1;
- * A.at(0, 1) = 4;
- * A.at(1, 0) = 3;
- * A.at(1, 1) = 2;
+ * Matrix2x2i A{1, 4,
+ *              3, 2};
  *
  * int s = 2;
  * Matrix2x2i C = A * s;
@@ -2096,12 +2200,8 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _cols> &matrix,
  *
  * <h4>Ejemplo</h4>
  * \code
- * Matrix2x2i A;
- *
- * A.at(0, 0) = 1;
- * A.at(0, 1) = 4;
- * A.at(1, 0) = 3;
- * A.at(1, 1) = 2;
+ * Matrix2x2i A{1, 4,
+ *              3, 2};
  *
  * int s = 2;
  * Matrix2x2i C = s * A;
@@ -2146,14 +2246,10 @@ Matrix<T, _rows, _cols> &operator *= (Matrix<T, _rows, _cols> &matrix, T scalar)
  *
  * <h4>Ejemplo</h4>
  * \code
- * Matrix2x2f A;
+ * Matrix2x2i A{1.f, 4.f,
+ *              3.f, 2.f};
  *
- * A.at(0, 0) = 1.f;
- * A.at(0, 1) = 4.f;
- * A.at(1, 0) = 3.f;
- * A.at(1, 1) = 2.f;
- *
- * float s = 2;
+ * float s = 2.f;
  * Matrix2x2f C = A / s;
  * \endcode
  */

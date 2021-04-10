@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"

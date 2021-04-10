@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -22,89 +22,49 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_MATH_AXIS_ANGLE_H
-#define TL_MATH_AXIS_ANGLE_H
+#ifndef TL_CORE_MATH_H
+#define TL_CORE_MATH_H
 
-#include "tidop/math/math.h"
+#include "config_tl.h"
+#include "tidop/core/defs.h"
 
-#include <vector>
-#include <array>
-
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/rotations.h"
+#include <cmath>
 
 namespace tl
 {
 
+/*!
+ * \defgroup Math Utilidades matemáticas
+ *
+ * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
+ * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
+ * de sistemas de ecuaciones lineales.
+ *
+ * \{
+ */
+
 namespace math
 {
 
-/*! \addtogroup Math
- *  \{
- */
+/* Definición de constantes de tipo general */
+
+constexpr auto half_pi = 1.5707963267948966192313216916398;
+constexpr auto pi = 3.1415926535897932384626433832795;
+constexpr auto two_pi = 6.283185307179586476925286766559;
 
 
- /*! \addtogroup Algebra
-  *
-  * Algebra
-  *
-  *  \{
-  */
+/* Conversión de ángulos */
 
-/*!
- * \brief NotaciÃ³n axial-angular
- */
-template<typename T>
-class AxisAngle
-  : public RotationBase<T>
-{
-
-public:
-
-  AxisAngle();
-  AxisAngle(T angle, const Vector<T, 3> &axis);
-  ~AxisAngle() override;
-
-public:
-
-  T angle;
-  Vector<T, 3> axis;
-};
-
-template<typename T>
-AxisAngle<T>::AxisAngle()
-  : RotationBase<T>(Rotation::Type::axis_angle),
-    angle(0)
-{
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-
-  axis.at(0) = 1;
-  axis.at(1) = 0;
-  axis.at(2) = 0;
-}
-
-template<typename T>
-AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
-  : RotationBase<T>(Rotation::Type::axis_angle),
-    angle(angle),
-    axis(axis)
-{
-  static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-  TL_TODO("normalizar vector")
-}
-
-template<typename T>
-AxisAngle<T>::~AxisAngle()
-{
-
-}
-
-/*! \} */ // end of Algebra
-
-/*! \} */ // end of Math
+constexpr auto rad_to_deg = 57.295779513082320876798154814105;
+constexpr auto deg_to_rad = 0.01745329251994329576923690768489;
+constexpr auto rad_to_grad = 63.661977236758134307553505349006;
+constexpr auto grad_to_rad = 0.0157079632679489661923132169164;
 
 } // Fin namespace math
 
+
+/*! \} */ // end of Math
+
 } // End namespace tl
 
-#endif // TL_MATH_AXIS_ANGLE_H
+#endif // TL_CORE_MATH_H

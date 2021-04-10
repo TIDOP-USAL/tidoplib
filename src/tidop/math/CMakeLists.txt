@@ -33,6 +33,7 @@ if (HAVE_TL_CORE)
   project(tl_math)
   
   add_library(${PROJECT_NAME} ${LIB_TYPE}
+              math.h
               angles.cpp
               angles.h
               statistics.cpp

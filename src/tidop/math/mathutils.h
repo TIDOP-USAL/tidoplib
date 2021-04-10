@@ -37,7 +37,7 @@ namespace tl
 {
 
 /*!
- * \defgroup Math Utilidades matemáticas
+ * \addtogroup Math
  *
  * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
  * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
