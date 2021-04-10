@@ -73,6 +73,24 @@ lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u,
   return info;
 }
 
+//template<typename T> inline
+//typename std::enable_if<
+//  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
+//  lapackeGELSS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+//{
+//  lapack_int info = LAPACKE_sgelss(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+//  return info;
+//}
+//
+//template<typename T> inline
+//typename std::enable_if<
+//  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
+//  lapackeGELSS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+//{
+//  lapack_int info = LAPACKE_dgelss(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+//  return info;
+//}
+
 #endif // HAVE_OPENBLAS
 
 /*!
@@ -172,8 +190,13 @@ template<
 >
 Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &B)
 {
-  T s;
   Vector<T, _cols> C(mCols);
+
+//#ifdef HAVE_OPENBLAS
+//
+//#else
+
+  T s;
   Vector<T, _cols> tmp(mCols);
 
   for (size_t j = 0; j < mCols; j++) {
@@ -192,6 +215,8 @@ Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(co
       s += V.at(j, k) * tmp[k];
     C[j] = s;
   }
+
+//#endif
 
   return C;
 }
