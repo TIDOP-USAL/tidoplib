@@ -90,10 +90,10 @@ void BruteForceMatcherImp::update()
   }
 }
 
-bool BruteForceMatcherImp::match(cv::InputArray &queryDescriptors,
-                                 cv::InputArray &trainDescriptors,
+bool BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
+                                 const cv::Mat &trainDescriptors,
                                  std::vector<cv::DMatch> &matches,
-                                 cv::InputArray mask)
+                                 const cv::Mat mask)
 {
   try {
     mBFMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
@@ -104,10 +104,10 @@ bool BruteForceMatcherImp::match(cv::InputArray &queryDescriptors,
   return false;
 }
 
-bool BruteForceMatcherImp::match(cv::InputArray &queryDescriptors,
-                                 cv::InputArray &trainDescriptors,
+bool BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
+                                 const cv::Mat &trainDescriptors,
                                  std::vector<std::vector<cv::DMatch>> &matches,
-                                 cv::InputArray mask)
+                                 const cv::Mat mask)
 {
   try {
     mBFMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
@@ -168,15 +168,16 @@ void BruteForceMatcherCuda::update()
   }
 }
 
-bool BruteForceMatcherCuda::match(cv::InputArray &queryDescriptors,
-                                  cv::InputArray &trainDescriptors,
+bool BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
+                                  const cv::Mat &trainDescriptors,
                                   std::vector<cv::DMatch> &matches,
-                                  cv::InputArray mask)
+                                  const cv::Mat mask)
 {
   try {
     cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
     cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
-    cv::cuda::GpuMat gMask(mask);
+    cv::cuda::GpuMat gMask;
+    if (!mask.empty()) gMask.upload(mask);
     mBFMatcher->match(gQueryDescriptors, gTrainDescriptors, matches, gMask);
   } catch (cv::Exception &e) {
     msgError("Brute-force Matcher error: %s", e.what());
@@ -185,15 +186,16 @@ bool BruteForceMatcherCuda::match(cv::InputArray &queryDescriptors,
   return false;
 }
 
-bool BruteForceMatcherCuda::match(cv::InputArray &queryDescriptors,
-                                  cv::InputArray &trainDescriptors,
+bool BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
+                                  const cv::Mat &trainDescriptors,
                                   std::vector<std::vector<cv::DMatch>> &matches,
-                                  cv::InputArray mask)
+                                  const cv::Mat mask)
 {
   try {
     cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
     cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
-    cv::cuda::GpuMat gMask(mask);
+    cv::cuda::GpuMat gMask;
+    if (!mask.empty()) gMask.upload(mask);
     mBFMatcher->knnMatch(gQueryDescriptors, gTrainDescriptors, matches, 2, gMask);
   } catch (cv::Exception &e) {
     msgError("Brute-force Matcher error: %s", e.what());

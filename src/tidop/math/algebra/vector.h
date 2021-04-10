@@ -948,6 +948,28 @@ Vector<T> operator * (const Matrix<T> &matrix,
   return vect;
 }
 
+
+
+template<typename T, size_t _size>
+std::ostream &operator<< (std::ostream &os, const Vector<T, _size> &vector)
+{
+  for (size_t i = 0; i < vector.size(); i++) {
+    os << " " << vector[i] << "\n";
+  }
+  os << std::flush;
+  return os;
+}
+
+template<typename T, size_t _size>
+std::ostream &operator<< (std::ostream &os, const Vector<T, _size> *vector)
+{
+  for (size_t i = 0; i < vector->size(); i++) {
+    os << " " << (*vector)[i] << "\n";
+  }
+  os << std::flush;
+  return os;
+}
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math

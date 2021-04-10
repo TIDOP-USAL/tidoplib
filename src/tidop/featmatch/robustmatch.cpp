@@ -371,7 +371,9 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
   return goodMatches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor, const cv::Mat &trainDescriptor, std::vector<cv::DMatch> *wrongMatches)
+std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor, 
+                                                           const cv::Mat &trainDescriptor, 
+                                                           std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> goodMatches;
 
@@ -396,13 +398,13 @@ std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryD
 }
 
 bool RobustMatchingImp::compute(const cv::Mat &queryDescriptor,
-                                     const cv::Mat &trainDescriptor,
-                                     const std::vector<cv::KeyPoint> &keypoints1,
-                                     const std::vector<cv::KeyPoint> &keypoints2,
-                                     std::vector<cv::DMatch> *goodMatches,
-                                     std::vector<cv::DMatch> *wrongMatches,
-                                     const cv::Size &queryImageSize,
-                                     const cv::Size &trainImageSize)
+                                const cv::Mat &trainDescriptor,
+                                const std::vector<cv::KeyPoint> &keypoints1,
+                                const std::vector<cv::KeyPoint> &keypoints2,
+                                std::vector<cv::DMatch> *goodMatches,
+                                std::vector<cv::DMatch> *wrongMatches,
+                                const cv::Size &queryImageSize,
+                                const cv::Size &trainImageSize)
 {
   try {
     *goodMatches = this->match(queryDescriptor, trainDescriptor, wrongMatches);

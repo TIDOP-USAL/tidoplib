@@ -81,15 +81,15 @@ private:
 
 public:
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<cv::DMatch> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<std::vector<cv::DMatch>> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
 // Match interface
 

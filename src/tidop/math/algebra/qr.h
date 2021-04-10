@@ -32,6 +32,10 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/math/algebra/matrix.h"
 
+#ifdef HAVE_OPENBLAS
+#include <lapacke.h>
+#endif // HAVE_OPENBLAS
+
 #include <algorithm>
 
 namespace tl
@@ -53,6 +57,31 @@ namespace math
  */
 
 //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
+
+#ifdef HAVE_OPENBLAS
+
+template<typename T> inline
+  typename std::enable_if<
+  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
+  lapackeGELS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+{
+  lapack_int info = LAPACKE_sgels(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+  return info;
+}
+
+template<typename T> inline
+  typename std::enable_if<
+  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
+  lapackeGELS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
+{
+  lapack_int info = LAPACKE_dgels(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
+  return info;
+}
+
+
+#endif // HAVE_OPENBLAS
+
+
 
 
 /*!
@@ -100,6 +129,9 @@ private:
   void decompose();
   Vector<T, _rows> qtmult(const Vector<T, _rows> &b);
   Vector<T, _rows> rsolve(Vector<T, _rows> &b);
+#ifdef HAVE_OPENBLAS
+  void lapackeDecompose();
+#endif // HAVE_OPENBLAS
 
 protected:
 
@@ -205,9 +237,6 @@ template<
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
   TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
-
-  //if (b.size() != mRows || x.size() != mRows)
-  //  throw("LUdcmp::solve bad sizes");
   
   Vector<T, _rows> x(b);
 
@@ -277,6 +306,22 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::rsolve(Vector<T, _r
 
   return x;
 }
+
+#ifdef HAVE_OPENBLAS
+
+template<
+  template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+{
+  lapack_int info;
+
+  info = lapackeGELS(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
+
+}
+
+#endif // HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t>

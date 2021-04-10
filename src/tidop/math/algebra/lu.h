@@ -178,17 +178,17 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
 
   Vector<T, _rows> x(b);
 
-#ifdef HAVE_OPENBLAS    
-  lapack_int nrhs = 1; ///¿Porque es 1?
-  lapack_int lda = mRows;
-  lapack_int *ipiv = new lapack_int[mRows];
-  lapack_int ldb = x.size();
-
-  lapack_int info = lapackeGETRS(mRows, nrhs, LU.data(), lda, ipiv, x.data(), ldb);
-
-  delete[] ipiv;
-
-#else
+//#ifdef HAVE_OPENBLAS    
+//  lapack_int nrhs = 1; ///¿Porque es 1?
+//  lapack_int lda = mRows;
+//  lapack_int *ipiv = new lapack_int[mRows];
+//  lapack_int ldb = x.size();
+//
+//  lapack_int info = lapackeGETRS(mRows, nrhs, LU.data(), lda, ipiv, x.data(), ldb);
+//
+//  delete[] ipiv;
+//
+//#else
 
   T sum;
   size_t ii = 0;
@@ -215,7 +215,7 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     x[i] = sum / this->LU.at(i, i);
   }
 
-#endif
+//#endif
 
   return x;
 }
@@ -230,18 +230,18 @@ Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const 
 
   Matrix<T, _rows, _cols> x(b);
 
-#ifdef HAVE_OPENBLAS    
-  lapack_int info;
-  lapack_int nrhs = 1; ///¿Porque es 1?
-  lapack_int lda = mRows;
-  lapack_int *ipiv = new lapack_int[mRows];
-  lapack_int ldb = mRows;
-
-  info = lapackeGETRS(mRows, nrhs, LU.data(), lda, ipiv, x.data(), ldb);
-
-  delete[] ipiv;
-
-#else
+//#ifdef HAVE_OPENBLAS    
+//  lapack_int info;
+//  lapack_int nrhs = 1; ///¿Porque es 1?
+//  lapack_int lda = mRows;
+//  lapack_int *ipiv = new lapack_int[mRows];
+//  lapack_int ldb = mRows;
+//
+//  info = lapackeGETRS(mRows, nrhs, LU.data(), lda, ipiv, x.data(), ldb);
+//
+//  delete[] ipiv;
+//
+//#else
 
   Vector<T, _rows> xx(mRows);
 
@@ -259,7 +259,7 @@ Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const 
     }
   }
 
-#endif
+//#endif
 
   return x;
 }

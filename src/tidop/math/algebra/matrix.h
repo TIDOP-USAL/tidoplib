@@ -901,7 +901,9 @@ public:
   T determinant() const;
 
   /*!
-   * \brief
+   * \brief Traza de una matriz cuadrada
+   * Suma de los elementos de la diagonal principal de una matriz cuadrada
+   * \f[ tr(A) = a_{11} + ... +  a_{nn} \f]
    */
   T trace() const;
 
@@ -947,7 +949,6 @@ public:
    * \return Primero menor
    */
   T firstMinor(size_t r, size_t c) const;
-
 
   /*!
    * \brief Construye una matriz de ceros
@@ -1025,6 +1026,9 @@ private:
    * \brief Forma escalonada de fila reducida
    */
   //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
+  
+  //Matrix gaussianElimination(T* determinant = nullptr) const;
+  //size_t findMax(const Matrix<T, _rows, _cols>& matrix, size_t index) const;
 };
 
 
@@ -1552,6 +1556,63 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
 
   return matrix;
 }
+
+//template<typename T, size_t _rows, size_t _cols> inline
+//Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::gaussianElimination(T *determinant) const
+//{
+//  T d{1};
+//  size_t rows = this->rows();
+//  size_t cols = this->cols();
+//
+//  Matrix<T, _rows, _cols> matrix(*this);
+//
+//  for (size_t i = 0; i < rows; ++i) {
+//
+//    size_t pivot_row = findMax(matrix, i);
+//    T pivotElement = matrix.at(pivot_row, i);
+//
+//    if (pivotElement == static_cast<T>(0)) {
+//      d = static_cast<T>(0);
+//      // Matriz singular
+//      break;
+//    }
+//
+//    if (pivot_row != i) {
+//      matrix.swapRows(i, pivot_row);
+//      d *= -static_cast<T>(1);
+//    }
+//
+//    d *= pivotElement;
+//
+//    for (size_t r = i + 1; r < rows; ++r) {
+//      T scale_row_coeff = matrix.at(r, i) / matrix.at(i, i);
+//      matrix.at(r, i) = 0;
+//      for (size_t c = i + 1; c < cols; ++c) {
+//        matrix.at(r, c) -= scale_row_coeff * matrix.at(i, c);
+//      }
+//    }
+//  }
+//
+//  if (determinant) {
+//    *determinant = d;
+//  }
+//
+//  return matrix;
+//}
+//
+//template<typename T, size_t _rows, size_t _cols>
+//inline size_t Matrix<T, _rows, _cols>::findMax(const Matrix<T, _rows, _cols>& matrix, size_t index) const
+//{
+//  T pivotElement = matrix.at(index, index);
+//  size_t pivotRow = index;
+//  for (size_t r = index + 1; r < this->rows(); ++r) {
+//    if (std::abs(matrix.at(r, index)) > std::abs(pivotElement)) {
+//      pivotElement = matrix.at(r, index);
+//      pivotRow = r;
+//    }
+//  }
+//  return pivotRow;
+//}
 
 ////template<size_t _rows, size_t _cols, typename T> 
 ////Matrix<_rows, _cols, T> Matrix<_rows, _cols, T>::reducedRowEchelonForm(T *determinant) const
@@ -2290,9 +2351,31 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
   return matrix;
 }
 
+template<typename T, size_t _rows, size_t _cols>
+std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matrix) 
+{
+  for (int r = 0; r < matrix.rows(); r++) {
+    for (int c = 0; c < matrix.cols(); c++) {
+      os << " " << matrix.at(r, c);
+    }
+    os << "\n";
+  }
+  os << std::flush;
+  return os;
+}
 
-
-
+template<typename T, size_t _rows, size_t _cols>
+std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matrix)
+{
+  for (int r = 0; r < matrix->rows(); r++) {
+    for (int c = 0; c < matrix->cols(); c++) {
+      os << " " << matrix->at(r, c);
+    }
+    os << "\n";
+  }
+  os << std::flush;
+  return os;
+}
 
 /*! \} */ // end of Algebra
 

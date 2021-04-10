@@ -25,6 +25,8 @@
 #ifndef TL_FEATMATCH_BRUTE_FORCE_MATCHER_H
 #define TL_FEATMATCH_BRUTE_FORCE_MATCHER_H
 
+#include "config_tl.h"
+
 #include "tidop/featmatch/matcher.h"
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
@@ -88,15 +90,15 @@ private:
 
 public:
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<cv::DMatch> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<std::vector<cv::DMatch>> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
 // Match interface
 
@@ -140,15 +142,15 @@ private:
 
 public:
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<cv::DMatch> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
-  bool match(cv::InputArray &queryDescriptors,
-             cv::InputArray &trainDescriptors,
+  bool match(const cv::Mat &queryDescriptors,
+             const cv::Mat &trainDescriptors,
              std::vector<std::vector<cv::DMatch>> &matches,
-             cv::InputArray mask = cv::noArray()) override;
+             const cv::Mat mask = cv::Mat()) override;
 
 // Match interface
 
