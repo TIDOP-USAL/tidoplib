@@ -196,7 +196,7 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   v.y = pt2.y - pt1.y;
   if (v.x == 0 && v.y == 0) return azimut;
   azimut = atan2(v.x, v.y);
-  if (azimut < 0.) azimut += TL_2PI;
+  if (azimut < 0.) azimut += two_pi;
   return azimut;
 }
 

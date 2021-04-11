@@ -48,9 +48,17 @@ namespace math
 
 /* Definición de constantes de tipo general */
 
-constexpr auto half_pi = 1.5707963267948966192313216916398;
 constexpr auto pi = 3.1415926535897932384626433832795;
+constexpr auto half_pi = 1.5707963267948966192313216916398;
 constexpr auto two_pi = 6.283185307179586476925286766559;
+constexpr auto inv_pi = 0.318309886183790671538;
+constexpr auto sqrt2 = 1.41421356237309504880;
+constexpr auto inv_sqrt2 = 0.707106781186547524401;
+constexpr auto e = 2.71828182845904523536;
+constexpr auto log2e = 1.44269504088896340736;
+constexpr auto log10e = 0.434294481903251827651;
+constexpr auto ln2 = 0.693147180559945309417;
+constexpr auto ln10 = 2.30258509299404568402;
 
 
 /* Conversión de ángulos */

@@ -30,10 +30,6 @@
 
 #include <vector>
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif
-
 #include <vector>
 #include <map>
 
@@ -585,22 +581,6 @@ double kurtosis(const T &container)
 }
 
 
-#ifdef HAVE_OPENCV
-
-/*!
- * \brief Varianza del laplaciano
- * \param[in] src
- * \return
- */
-TL_EXPORT double laplacianVariance(const cv::Mat &src);
-
-#endif
-
-//TL_EXPORT double computeMedian(const std::vector<double> &input);
-//
-//TL_EXPORT double computeTempMAD(const std::vector<double> &input, double median);
-//
-//TL_EXPORT bool isOutlier(double temp, double median, double mad);
 
 /*! \} */ // end of Statistic
 

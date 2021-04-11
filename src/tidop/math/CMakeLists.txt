@@ -36,7 +36,6 @@ if (HAVE_TL_CORE)
               math.h
               angles.cpp
               angles.h
-              statistics.cpp
               statistics.h
               mathutils.cpp
               mathutils.h
