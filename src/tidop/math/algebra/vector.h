@@ -702,8 +702,8 @@ void Vector<T, _size>::normalize()
   if (length > static_cast<T>(0)) {
     *this /= length;
   } else {
-    for (size_t i = 0; i < mVector.size(); i++) {
-      mVector[i] = static_cast<T>(0);
+    for (size_t i = 0; i < this->mVector.size(); i++) {
+      this->mVector[i] = static_cast<T>(0);
     }
   }
 }
@@ -711,10 +711,11 @@ void Vector<T, _size>::normalize()
 template<typename T, size_t _size> inline
 double Vector<T, _size>::dotProduct(const Vector<T, _size> &vector) const
 {
-  TL_ASSERT(this->size() == vector.size(), "Different vector size");
-  double dot = static_cast<double>(mVector[0]) * static_cast<double>(vector[0]);
+  TL_ASSERT(this->size() == vector.size(), "Different vector size")
+
+  double dot = static_cast<double>(vector[0]) * static_cast<double>(vector[0]);
   for (size_t i = 1; i < this->size(); i++) {
-    dot += static_cast<double>(mVector[i]) * static_cast<double>(vector[i]);
+    dot += static_cast<double>(vector[i]) * static_cast<double>(vector[i]);
   }
   return dot;
 }
@@ -785,7 +786,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator += (Vector<T, _size> &v0, 
                                const Vector<T, _size> &v1)
 {
-  TL_ASSERT(v0.size() == v1.size(), "");
+  TL_ASSERT(v0.size() == v1.size(), "")
 
   for (size_t i = 0; i < v0.size(); i++) {
     v0[i] += v1[i];
@@ -805,7 +806,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
                                const Vector<T, _size> &v1)
 {
-  TL_ASSERT(v0.size() == v1.size(), "");
+  TL_ASSERT(v0.size() == v1.size(), "")
 
   for (size_t i = 0; i < v0.size(); i++) {
     v0[i] -= v1[i];
@@ -825,7 +826,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator *= (Vector<T, _size> &v0, 
                                const Vector<T, _size> &v1)
 {
-  TL_ASSERT(v0.size() == v1.size(), "");
+  TL_ASSERT(v0.size() == v1.size(), "")
 
   for (size_t i = 0; i < v0.size(); i++) {
     v0[i] *= v1[i];
@@ -845,7 +846,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
                                const Vector<T, _size> &v1)
 {
-  TL_ASSERT(v0.size() == v1.size(), "");
+  TL_ASSERT(v0.size() == v1.size(), "")
 
   for (size_t i = 0; i < v0.size(); i++) {
     v0[i] /= v1[i];
@@ -907,7 +908,7 @@ template<typename T, size_t _size>
 double dotProduct(const Vector<T, _size> &v1,
                   const Vector<T, _size> &v2)
 {
-  TL_ASSERT(v1.size() == v2.size(), "Different vector size");
+  TL_ASSERT(v1.size() == v2.size(), "Different vector size")
 
   double dot = static_cast<double>(v1[0]) * static_cast<double>(v2[0]);
   for (size_t i = 1; i < v1.size(); i++) {
@@ -937,9 +938,9 @@ Vector<T> operator * (const Matrix<T> &matrix,
   size_t rows = matrix.rows();
   size_t dim1 = matrix.cols();
   size_t dim2 = vector.size();
-  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size");
+  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
 
-  Vector<T> vect = Matrix<T>::zero(rows, cols);
+  Vector<T> vect = Matrix<T>::zero(rows, dim1);
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < dim1; c++) {
       vect.at(r) += matrix.at(r, c) * vector.at(c);

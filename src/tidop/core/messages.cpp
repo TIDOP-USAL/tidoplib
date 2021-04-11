@@ -123,9 +123,9 @@ void MessageManager::release(const std::string &message,
       sprintf_s(buf, 1000, messageProperties(level).extend, message.c_str(), file.c_str(), line, function.c_str());
   #else
     if (line == -1)
-      snprintf(buf, 1000, messageProperties(level).normal, msg.c_str(), file.c_str(), line, function.c_str());
+      snprintf(buf, 1000, messageProperties(level).normal, message.c_str(), file.c_str(), line, function.c_str());
     else
-      snprintf(buf, 1000, messageProperties(level).extend, msg.c_str(), file.c_str(), line, function.c_str());
+      snprintf(buf, 1000, messageProperties(level).extend, message.c_str(), file.c_str(), line, function.c_str());
   #endif
 
   switch (level) {

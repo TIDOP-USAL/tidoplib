@@ -316,6 +316,8 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
 
 #endif // HAVE_GDAL
 
+#ifdef HAVE_OPENCV
+
 int dataTypeToOpenCVDataType(DataType dataType)
 {
   int ret;
@@ -350,6 +352,8 @@ int dataTypeToOpenCVDataType(DataType dataType)
   }
   return ret;
 }
+
+#endif // HAVE_OPENCV
 
 std::vector<int> gdalBandOrder(int channels)
 {
