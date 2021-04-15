@@ -31,6 +31,9 @@
 #include "tidop/geometry/transform/translation.h"
 #include "tidop/geometry/transform/helmert2d.h"
 #include "tidop/geometry/transform/affine.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -283,43 +286,41 @@ Transform::Status Rotation<Point_t>::compute(const std::vector<Point_t> &pts1,
   
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 2;
-  double *a = nullptr;
-  double *b = nullptr;
-  double *c = nullptr;
 
   try {
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    a = new double[m * n];
-    double *pa = a;
-    b = new double[m];
-    double *pb = b;
-    c = new double[n];
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = -pts1[i].y;
-      *pb++ = pts2[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = pts1[i].x;
-      *pb++ = pts2[i].y;
+      A.at(r, 0) = pts1[i].x;
+      A.at(r, 1) = -pts1[i].y;
+
+      B[r] = pts2[i].x;
+      
+      r++;
+
+      A.at(r, 0) = pts1[i].y;
+      A.at(r, 1) = pts1[i].x;
+
+      B[r] = pts2[i].y;
     }
-    
-    solveSVD(m, n, a, b, c);
-    r1 = c[0];
-    r2 = c[1];
+
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
+
+    r1 = C[0];
+    r2 = C[1];
     mAngle = acos(r1);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
+
   } catch (std::exception &e) {
-    MessageManager::release(e.what(), tl::MessageLevel::msg_error);
+    msgError(e.what());
     status = Transform::Status::failure;
   }
-
-  delete[] a;
-  delete[] b;
-  delete[] c;
 
   return status;
 }

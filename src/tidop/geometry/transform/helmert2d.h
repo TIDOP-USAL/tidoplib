@@ -33,6 +33,9 @@
 #include "tidop/geometry/transform/rotation.h"
 #include "tidop/geometry/transform/scale.h"
 #include "tidop/core/exception.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -393,42 +396,42 @@ Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 4;
 
-  double *A = nullptr;
-  double *B = nullptr;
-  double *c = nullptr;
-
   try {
 
-    A = new double[m * n];
-    double *pa = A;
-    B = new double[m];
-    double *pb = B;
-    c = new double[n];
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = -pts1[i].y;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pb++ = pts2[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = pts1[i].x;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pb++ = pts2[i].y;
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
+      
+      A.at(r, 0) = pts1[i].x;
+      A.at(r, 1) = -pts1[i].y;
+      A.at(r, 2) = 1;
+      //A.at(r, 3) = 0;
+      
+      B[r] = pts2[i].x;
+      
+      r++;
+
+      A.at(r, 0) = pts1[i].y;
+      A.at(r, 1) = pts1[i].x;
+      //A.at(r, 2) = 0;
+      A.at(r, 3) = 1;
+
+      B[r] = pts2[i].y;
     }
 
-    solveSVD(m, n, A, B, c);
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
 
-    a = c[0];
-    b = c[1];
-    tx = c[2];
-    ty = c[3];
+    a = C[0];
+    b = C[1];
+    tx = C[2];
+    ty = C[3];
 
     updateInv();
 
     mRotation = atan2(b, a);
-    mScale = sqrt(a*a + b*b);
+    mScale = math::module(a, b);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
@@ -438,10 +441,6 @@ Transform::Status Helmert2D<Point_t>::compute(const std::vector<Point_t> &pts1,
     msgError(e.what());
     status = Transform::Status::failure;
   }
-
-  delete[] A;
-  delete[] B;
-  delete[] c;
 
   return status;
 }

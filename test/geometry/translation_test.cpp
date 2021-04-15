@@ -28,6 +28,9 @@
 #include <tidop/geometry/transform/translation.h>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/math/algebra/vector.h>
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 using namespace tl;
 

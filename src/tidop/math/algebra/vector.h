@@ -692,7 +692,7 @@ Vector<T, _size> &Vector<T, _size>::operator=(Vector<T, _size> &&vector) TL_NOEX
 template<typename T, size_t _size> inline
 double Vector<T, _size>::module() const
 {
-  return sqrt(dotProduct(*this, *this));
+  return sqrt(dotProduct(*this));
 }
 
 template<typename T, size_t _size> inline

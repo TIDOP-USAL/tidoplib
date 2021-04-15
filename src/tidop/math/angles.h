@@ -178,7 +178,7 @@ public:
 public:
 
   Angle() {}
-  virtual ~Angle() = 0;
+  virtual ~Angle() = default;
 
   virtual Unit unit() const = 0;
   virtual void normalize() = 0;

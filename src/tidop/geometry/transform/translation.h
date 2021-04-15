@@ -30,6 +30,9 @@
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/geometry/transform/helmert2d.h"
 #include "tidop/geometry/transform/affine.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -200,47 +203,46 @@ Transform::Status Translation<Point_t>::compute(const std::vector<Point_t> &pts1
   Transform::Status status = Transform::Status::success;
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 4;
-  double *a = nullptr;
-  double *b = nullptr;
-  double *c = nullptr;
 
   try {
 
-    a = new double[m*n];
-    double *pa = a;
-    b = new double[m];
-    double *pb = b;
-    c = new double[n];
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pb++ = pts2[i].x;
-      *pa++ = 0;
-      *pa++ = pts1[i].y;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pb++ = pts2[i].y;
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
+
+      A.at(r, 0) = pts1[i].x;
+      //A.at(r, 1) = 0;
+      A.at(r, 2) = 1;
+      //A.at(r, 3) = 0;
+
+      B[r] = pts2[i].x;
+
+      r++;
+
+      //A.at(r, 0) = 0;
+      A.at(r, 1) = pts1[i].y;
+      //A.at(r, 2) = 0;
+      A.at(r, 3) = 1;
+
+      B[r] = pts2[i].y;
+
     }
 
-    solveSVD(m, n, a, b, c);
-    tx = c[2];
-    ty = c[3];
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
+
+    tx = C[2];
+    ty = C[3];
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
-    
+
   } catch (std::exception &e) {
     MessageManager::release(e.what(), tl::MessageLevel::msg_error);
     status = Transform::Status::failure;
   }
-
-  delete[] a;
-  delete[] b;
-  delete[] c;
 
   return status;
 }

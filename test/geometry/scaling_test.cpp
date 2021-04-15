@@ -175,8 +175,8 @@ BOOST_FIXTURE_TEST_CASE(std_transform_point_list, ScalingTest)
 BOOST_FIXTURE_TEST_CASE(compute, ScalingTest)
 {
   /// TODO: no esta bien calculado
-//  trf.compute(ptsIn, ptsOut);
-//  BOOST_CHECK_CLOSE(0.25, trf.scale(), 0.01);
+  trf.compute(ptsIn, ptsOut);
+  BOOST_CHECK_CLOSE(0.25, trf.scale(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(transformType, ScalingTest)
