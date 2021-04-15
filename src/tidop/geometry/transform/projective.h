@@ -28,7 +28,10 @@
 #include "config_tl.h"
 
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/math/mathutils.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -319,40 +322,40 @@ Transform::Status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 8;
 
-  double *A = nullptr;
-  double *B = nullptr;
-  double *C = nullptr;
-
   try {
 
-    A = new double[m * n];
-    double *pa = A;
-    B = new double[m];
-    double *pb = B;
-    C = new double[n];
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = -pts1[i].x * pts2[i].x;
-      *pa++ = -pts2[i].x * pts1[i].y;
-      *pb++ = pts2[i].x;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = pts1[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = 1;
-      *pa++ = -pts2[i].y * pts1[i].x;
-      *pa++ = -pts2[i].y * pts1[i].y;
-      *pb++ = pts2[i].y;
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
+
+      A.at(r, 0) = pts1[i].x;
+      A.at(r, 1) = pts1[i].y;
+      A.at(r, 2) = 1;
+      A.at(r, 3)  = 0;
+      A.at(r, 4)  = 0;
+      A.at(r, 5)  = 0;
+      A.at(r, 6)  = -pts1[i].x * pts2[i].x;
+      A.at(r, 7)  = -pts2[i].x * pts1[i].y;
+      
+      B[r] = pts2[i].x;
+
+      r++;
+
+      A.at(r, 0) = 0;
+      A.at(r, 1) = 0;
+      A.at(r, 2) = 0;
+      A.at(r, 3) = pts1[i].x;
+      A.at(r, 4) = pts1[i].y;
+      A.at(r, 5) = 1;
+      A.at(r, 6) = -pts2[i].y * pts1[i].x;
+      A.at(r, 7) = -pts2[i].y * pts1[i].y;
+
+      B[r] = pts2[i].y;
     }
 
-    solveSVD(m, n, A, B, C);
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
 
     a = C[0];
     b = C[1];
@@ -363,6 +366,8 @@ Transform::Status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
     g = C[6];
     h = C[7];
 
+    update();
+
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
@@ -372,9 +377,62 @@ Transform::Status Projective<Point_t>::compute(const std::vector<Point_t> &pts1,
     status = Transform::Status::failure;
   }
 
-  delete[] A;
-  delete[] B;
-  delete[] C;
+  //double *A = nullptr;
+  //double *B = nullptr;
+  //double *C = nullptr;
+
+  //try {
+
+  //  A = new double[m * n];
+  //  double *pa = A;
+  //  B = new double[m];
+  //  double *pb = B;
+  //  C = new double[n];
+
+  //  for (int i = 0; i < n1; i++) {
+  //    *pa++ = pts1[i].x;
+  //    *pa++ = pts1[i].y;
+  //    *pa++ = 1;
+  //    *pa++ = 0;
+  //    *pa++ = 0;
+  //    *pa++ = 0;
+  //    *pa++ = -pts1[i].x * pts2[i].x;
+  //    *pa++ = -pts2[i].x * pts1[i].y;
+  //    *pb++ = pts2[i].x;
+  //    *pa++ = 0;
+  //    *pa++ = 0;
+  //    *pa++ = 0;
+  //    *pa++ = pts1[i].x;
+  //    *pa++ = pts1[i].y;
+  //    *pa++ = 1;
+  //    *pa++ = -pts2[i].y * pts1[i].x;
+  //    *pa++ = -pts2[i].y * pts1[i].y;
+  //    *pb++ = pts2[i].y;
+  //  }
+
+  //  tl::solveSVD(m, n, A, B, C);
+
+  //  a = C[0];
+  //  b = C[1];
+  //  c = C[2];
+  //  d = C[3];
+  //  e = C[4];
+  //  f = C[5];
+  //  g = C[6];
+  //  h = C[7];
+
+  //  if (error) {
+  //    if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
+  //  }
+
+  //} catch (std::exception &e) {
+  //  msgError(e.what());
+  //  status = Transform::Status::failure;
+  //}
+
+  //delete[] A;
+  //delete[] B;
+  //delete[] C;
 
   return status;
 }
@@ -399,6 +457,8 @@ Transform::Status Projective<Point_t>::transform(const Point_t &ptIn,
                                                  Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
+  using sub_type = typename Point_t::value_type;
   Point_t pt_aux = ptIn;
   try {
     if ( trfOrder == Transform::Order::direct ) {
@@ -424,6 +484,8 @@ Point_t Projective<Point_t>::transform(const Point_t &ptIn,
                                        Transform::Order trfOrder) const
 {
   Point_t r_pt;
+
+  using sub_type = typename Point_t::value_type;
   if (trfOrder == Transform::Order::direct) {
     r_pt.x = static_cast<sub_type>((a * ptIn.x + b * ptIn.y + c)
                                    / (g * ptIn.x + h * ptIn.y + 1));

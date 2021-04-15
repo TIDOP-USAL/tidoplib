@@ -30,7 +30,9 @@
 #include "tidop/core/messages.h"
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/math/mathutils.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -383,7 +385,7 @@ Affine<Point_t>::Affine(const math::Matrix<double, 2, 3> &mat)
 }
 
 template<typename Point_t> inline
-Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1, 
+Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
                                            const std::vector<Point_t> &pts2,
                                            std::vector<double> *error,
                                            double *rmse)
@@ -394,8 +396,8 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
   if (n1 != n2) {
     msgError("Sets of points with different size. Size pts1 = %zu and size pts2 = %zu", n1, n2);
     return Transform::Status::failure;
-  } 
-  
+  }
+
   if (!this->isNumberOfPointsValid(n1)) {
     msgError("Invalid number of points: %zu < %i", n1, this->mMinPoint);
     return Transform::Status::failure;
@@ -406,36 +408,35 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 6;
 
-  double *A = nullptr;
-  double *B = nullptr;
-  double *C = nullptr;
-
   try {
 
-    A = new double[m * n];
-    double *pa = A;
-    B = new double[m];
-    double *pb = B;
-    C = new double[n];
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pb++ = pts2[i].x;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = pts1[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pb++ = pts2[i].y;
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
+      A.at(r, 0) = pts1[i].x;
+      A.at(r, 1) = pts1[i].y;
+      //A.at(r, 2) = 0;
+      //A.at(r, 3) = 0;
+      A.at(r, 4) = 1;
+      //A.at(r, 5) = 0;
+
+      B[r] = pts2[i].x;
+
+      r++;
+
+      //A.at(r, 0) = 0;
+      //A.at(r, 1) = 0;
+      A.at(r, 2) = pts1[i].x;
+      A.at(r, 3) = pts1[i].y;
+      //A.at(r, 4) = 0;
+      A.at(r, 5) = 1;
+
+      B[r] = pts2[i].y;
     }
 
-    tl::solveSVD(m, n, A, B, C);
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
 
     a = C[0];
     b = C[1];
@@ -443,25 +444,20 @@ Transform::Status Affine<Point_t>::compute(const std::vector<Point_t> &pts1,
     d = C[3];
     tx = C[4];
     ty = C[5];
-    
-    this->updateInv();
 
-    mRotation = (atan2(c, a) + atan2(-b, d) ) / 2.; 
-    mScaleX = sqrt(a*a + c*c);
-    mScaleY = sqrt(b*b + d*d);
+    updateInv();
+
+    mRotation = (atan2(c, a) + atan2(-b, d)) / 2.;
+    mScaleX = math::module(a, c);
+    mScaleY = math::module(b, d);
 
     if (error) {
       if (rmse) *rmse = this->_rootMeanSquareError(pts1, pts2, error);
     }
-
   } catch (std::exception &e) {
     msgError(e.what());
     status = Transform::Status::failure;
   }
-
-  delete[] A;
-  delete[] B;
-  delete[] C;
 
   return status;
 }
