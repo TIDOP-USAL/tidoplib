@@ -1242,6 +1242,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inversenxn(bool *invertibility)
   if (det != static_cast<T>(0)) {
     matrix = this->adjugate();
     matrix /= det;
+    if (invertibility != nullptr) *invertibility = true;
   } else {
     if (invertibility != nullptr) *invertibility = false;
   }

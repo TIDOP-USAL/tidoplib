@@ -26,7 +26,7 @@
 #define TL_MATH_VECTORS_H
 
 #include "config_tl.h"
-#include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 #include "tidop/math/mathutils.h"
 
 namespace tl
