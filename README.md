@@ -57,7 +57,7 @@ mkdir build
 
 ## Running the tests
 
-Para los test se utiliza el framework Google Test.
+Para los test se utiliza el framework Boost Test.
 
 ## Versioning
 
