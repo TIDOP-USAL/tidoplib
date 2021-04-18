@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de O馻 Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O帽a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -110,19 +110,19 @@ public:
   ~Circle() override = default;
 
   /*!
-   * \brief Operador de asignaci髇
+   * \brief Operador de asignaci贸n
    * \param[in] circle Objeto Circle que se copia
    */
   Circle<T> &operator = (const Circle<T> &circle);
     
   /*!
-   * \brief Operador de asignaci髇 de movimiento
+   * \brief Operador de asignaci贸n de movimiento
    * \param[in] circle Objeto Circle que se mueve
    */
   Circle<T>& operator = (Circle<T> &&circle) TL_NOEXCEPT;
 
   /*!
-   * \brief Conversi髇 de tipo
+   * \brief Conversi贸n de tipo
    */
   template<typename T2> operator Circle<T2>() const;
 
@@ -213,13 +213,13 @@ Circle<T>::operator Circle<T2>() const
 template<typename T> inline
 double Circle<T>::area() const
 {
-  return TL_PI * radius * radius;
+  return math::consts::pi<double> * radius * radius;
 }
 
 template<typename T> inline
 double Circle<T>::length() const
 {
-  return TL_2PI * radius;
+  return math::consts::two_pi<double> * radius;
 }
 
 
@@ -287,19 +287,19 @@ public:
   ~Ellipse() override = default;
 
   /*!
-   * \brief Operador de asignaci髇
+   * \brief Operador de asignaci贸n
    * \param[in] ellipse Objeto Ellipse que se copia
    */
   Ellipse<T> &operator = (const Ellipse<T> &ellipse);
 
   /*!
-   * \brief Operador de asignaci髇 de movimiento
+   * \brief Operador de asignaci贸n de movimiento
    * \param[in] ellipse Objeto Ellipse que se mueve
    */
   Ellipse<T> &operator = (Ellipse<T> &&ellipse) TL_NOEXCEPT;
 
   /*!
-   * \brief Conversi髇 de tipo
+   * \brief Conversi贸n de tipo
    */
   template<typename T2> operator Ellipse<T2>() const;
 
@@ -404,13 +404,13 @@ Ellipse<T>::operator Ellipse<T2>() const
 template<typename T> inline
 double Ellipse<T>::area() const
 {
-  return TL_PI * a * b;
+  return math::consts::pi<double> * a * b;
 }
 
 template<typename T> inline
 double Ellipse<T>::length() const
 {
-  return TL_PI * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
+  return math::consts::pi<double> * (3 * (a + b) - sqrt((3 * a + b)*(a + 3 * b)));
 }
 
 
@@ -455,13 +455,13 @@ public:
   ~Triangle() override = default;
 
   /*!
-   * \brief Operador de asignaci髇
+   * \brief Operador de asignaci贸n
    * \param[in] triangle Objeto Triangle que se copia
    */
   Triangle<T> &operator = (const Triangle<T> &circle);
     
   /*!
-   * \brief Operador de asignaci髇 de movimiento
+   * \brief Operador de asignaci贸n de movimiento
    * \param[in] triangle Objeto Triangle que se mueve
    */
   Triangle<T> &operator = (Triangle<T> &&triangle) TL_NOEXCEPT;

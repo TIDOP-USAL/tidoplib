@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de O馻 Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O帽a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -29,15 +29,17 @@
 #include "tidop/core/defs.h"
 
 #include <cmath>
+#include <type_traits>
+#include <algorithm>
 
 namespace tl
 {
 
 /*!
- * \defgroup Math Utilidades matem醫icas
+ * \defgroup Math Utilidades matem谩ticas
  *
  * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
- * funciones estad韘ticas, ajuste de nubes de puntos a diversas geometrias, resoluci髇
+ * funciones estad铆sticas, ajuste de nubes de puntos a diversas geometrias, resoluci贸n
  * de sistemas de ecuaciones lineales.
  *
  * \{
@@ -46,27 +48,95 @@ namespace tl
 namespace math
 {
 
-/* Definici髇 de constantes de tipo general */
+/* Definici贸n de constantes de tipo general */
 
-constexpr auto pi = 3.1415926535897932384626433832795;
-constexpr auto half_pi = 1.5707963267948966192313216916398;
-constexpr auto two_pi = 6.283185307179586476925286766559;
-constexpr auto inv_pi = 0.318309886183790671538;
-constexpr auto sqrt2 = 1.41421356237309504880;
-constexpr auto inv_sqrt2 = 0.707106781186547524401;
-constexpr auto e = 2.71828182845904523536;
-constexpr auto log2e = 1.44269504088896340736;
-constexpr auto log10e = 0.434294481903251827651;
-constexpr auto ln2 = 0.693147180559945309417;
-constexpr auto ln10 = 2.30258509299404568402;
+namespace consts
+{
+
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type pi = static_cast<T>(3.141592653589793238462643383279502884L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type half_pi = static_cast<T>(1.570796326794896619231321691639751442L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type two_pi = static_cast<T>(6.283185307179586476925286766559005768L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type inv_pi = static_cast<T>(1.L / 3.141592653589793238462643383279502884L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type sqrt2 = static_cast<T>(1.414213562373095048801688724209698079L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type inv_sqrt2 = static_cast<T>(1.L / 1.414213562373095048801688724209698079L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type e = static_cast<T>(2.718281828459045235360287471352662498L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type log2e = static_cast<T>(1.442695040888963407359924681001892137L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type log10e = static_cast<T>(0.4342944819032518276511289189166050823L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type ln2 = static_cast<T>(0.6931471805599453094172321214581765681L);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type ln10 = static_cast<T>(2.302585092994045684017991454684364208L);
 
 
-/* Conversi髇 de 醤gulos */
+/* Conversi贸n de 谩ngulos */
 
-constexpr auto rad_to_deg = 57.295779513082320876798154814105;
-constexpr auto deg_to_rad = 0.01745329251994329576923690768489;
-constexpr auto rad_to_grad = 63.661977236758134307553505349006;
-constexpr auto grad_to_rad = 0.0157079632679489661923132169164;
+constexpr auto full_circle_deg = 360;
+constexpr auto full_circle_grad = 400;
+constexpr auto half_circle_deg = 180;
+constexpr auto half_circle_grad = 200;
+constexpr auto quarter_circle_deg = 90;
+constexpr auto quarter_circle_grad = 100;
+constexpr auto degrees_to_minutes = 60;
+constexpr auto minutes_to_seconds = 60;
+constexpr auto degrees_to_seconds = 3600;
+
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_deg = static_cast<T>(static_cast<T>(half_circle_deg) / pi<T>);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_rad = static_cast<T>(pi<T> / static_cast<T>(half_circle_deg));
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type rad_to_grad = static_cast<T>(static_cast<T>(half_circle_grad) / pi<T>);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_rad = static_cast<T>(pi<T> / static_cast<T>(half_circle_grad));
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type deg_to_grad = static_cast<T>(static_cast<T>(half_circle_grad) / static_cast<T>(half_circle_deg));
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type grad_to_deg = static_cast<T>(static_cast<T>(half_circle_deg) / static_cast<T>(half_circle_grad));
+
+
+}
+
+
+template<typename T> inline
+T clamp(const T &value, const T &_min, const T &_max)
+{
+  return std::max(_min, std::min(_max, value));
+}
+
+/*!
+ * \brief M贸dulo de un vector 2D
+ * \param[in] v Vector
+ */
+template<typename T> inline
+typename std::enable_if<
+    std::is_integral<T>::value,
+    double>::type
+module(T a, T b)
+{
+  auto result = std::minmax(abs(a), abs(b));
+  double div = static_cast<double>(result.first) /
+               static_cast<double>(result.second);
+  return static_cast<double>(result.second) * sqrt(1. + div * div);
+}
+
+template<typename T> inline
+typename std::enable_if<
+    std::is_floating_point<T>::value,T>::type
+module(T a, T b)
+{
+  auto result = std::minmax(abs(a), abs(b));
+  T div = static_cast<T>(result.first) / static_cast<T>(result.second);
+  return result.second * sqrt(static_cast<T>(1) + div * div);
+}
 
 } // Fin namespace math
 

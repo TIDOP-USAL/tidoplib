@@ -32,6 +32,8 @@
 #include <array>
 
 #include "tidop/core/messages.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
@@ -48,43 +50,43 @@ namespace tl
  * \{
  */
 
-namespace math
-{
-
-
-template<typename T> inline
-T clamp(const T &value, const T &_min, const T &_max)
-{
-  return std::max(_min, std::min(_max, value));
-}
-
-/*!
- * \brief Módulo de un vector 2D
- * \param[in] v Vector
- */
-template<typename T> inline
-typename std::enable_if<
-    std::is_integral<T>::value,
-    double>::type
-module(T a, T b)
-{
-  auto result = std::minmax(abs(a), abs(b));
-  double div = static_cast<double>(result.first) / 
-               static_cast<double>(result.second);
-  return static_cast<double>(result.second) * sqrt(1. + div * div);
-}
-
-template<typename T> inline
-typename std::enable_if<
-    std::is_floating_point<T>::value,T>::type
-module(T a, T b)
-{
-  auto result = std::minmax(abs(a), abs(b));
-  T div = result.first / result.second;
-  return result.second * sqrt(static_cast<T>(1) + div * div);
-}
-
-} // End namespace math
+//namespace math
+//{
+//
+//
+//template<typename T> inline
+//T clamp(const T &value, const T &_min, const T &_max)
+//{
+//  return std::max(_min, std::min(_max, value));
+//}
+//
+///*!
+// * \brief Módulo de un vector 2D
+// * \param[in] v Vector
+// */
+//template<typename T> inline
+//typename std::enable_if<
+//    std::is_integral<T>::value,
+//    double>::type
+//module(T a, T b)
+//{
+//  auto result = std::minmax(abs(a), abs(b));
+//  double div = static_cast<double>(result.first) /
+//               static_cast<double>(result.second);
+//  return static_cast<double>(result.second) * sqrt(1. + div * div);
+//}
+//
+//template<typename T> inline
+//typename std::enable_if<
+//    std::is_floating_point<T>::value,T>::type
+//module(T a, T b)
+//{
+//  auto result = std::minmax(abs(a), abs(b));
+//  T div = static_cast<T>(result.first) / static_cast<T>(result.second);
+//  return result.second * sqrt(static_cast<T>(1) + div * div);
+//}
+//
+//} // End namespace math
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -226,7 +228,11 @@ template<typename Point_t> inline
 double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
-  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+  double sx = 0.;
+  double sy = 0.;
+  double sx2 = 0.;
+  double sy2 = 0.;
+  double sxy = 0.;
   size_t n = pts.size();
   if (n >= 2) {
     for (size_t i = 0; i < n; i++) {
@@ -237,7 +243,7 @@ double regressionLinearYX(const std::vector<Point_t> &pts, double *m, double *b)
       sxy += pts[i].x * pts[i].y;
     }
     double den = (n*sx2 - sx*sx);
-    if (den) {
+    if (den != 0.) {
       // Línea no vertical
       *m = (n*sxy - sy*sx) / (n*sx2 - sx*sx);
       *b = (sy - *m*sx) / n;
@@ -271,7 +277,11 @@ template<typename Point_t> inline
 double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
 {
   double corr = 0.0;
-  double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+  double sx = 0.;
+  double sy = 0.;
+  double sx2 = 0.;
+  double sy2 = 0.;
+  double sxy = 0.;
   size_t n = pts.size();
   if (n >= 2) {
     for (size_t i = 0; i < n; i++) {
@@ -282,7 +292,7 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
       sxy += pts[i].x * pts[i].y;
     }
     double den = (n*sy2 - sy*sy);
-    if (den) {
+    if (den != 0.) {
       *m = (n*sxy - sy*sx) / (n*sy2 - sy*sy);
       *b = (sx - *m*sy) / n;
       corr = sqrt(*m * (sxy - sx*sy / n) / (sx2 - sx*sx / n));
@@ -329,11 +339,23 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
   double corr = 0.0;
   size_t size = pts.size();
   if (size >= 2) {
-    int _m = static_cast<int>(size) * 2, _n = 2;
-    double *_a = new double[_m*_n], *pa = _a, *_b = new double[_m], *pb = _b;
+    size_t _m = size * 2;
+    size_t _n = 2;
+    double *_a = new double[_m*_n];
+    double *pa = _a;
+    double *_b = new double[_m];
+    double *pb = _b;
     double *_c = new double[_n];
-    double sum_sx = 0., sum_sy = 0., sum_sx2 = 0., sum_sy2 = 0., sum_sxy = 0.;
-    double sx = 0., sy = 0., sx2 = 0., sy2 = 0., sxy = 0.;
+    double sum_sx = 0.;
+    double sum_sy = 0.;
+    double sum_sx2 = 0.;
+    double sum_sy2 = 0.;
+    double sum_sxy = 0.;
+    double sx = 0.;
+    double sy = 0.;
+    double sx2 = 0.;
+    double sy2 = 0.;
+    double sxy = 0.;
     for (size_t i = 0; i < size; i++) {
       sum_sx += (sx = pts[i].x);
       sum_sy += (sy = pts[i].y);
@@ -352,7 +374,7 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
     *m = _c[0];
     *b = _c[1];
     double div = YX ? (sum_sy2 - sum_sy*sum_sy / size) : (sum_sx2 - sum_sx*sum_sx / size);
-    if (div != 0) {
+    if (div != 0.) {
       corr = sqrt(*m * (sum_sxy - sum_sx*sum_sy / size) / div);
     }
   }
@@ -423,7 +445,7 @@ double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &p
   plane[2] = v1.x*v2.y - v2.x*v1.y;
   plane[3] = -plane[0] *points[0].x - plane[1]*points[0].y - plane[2]*points[0].z;
   double N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + plane[2]*plane[2]);
-  if ( N && normalize ) { 
+  if ( N != 0. && normalize ) {
     plane[0] /= N;
     plane[1] /= N;
     plane[2] /= N;
@@ -459,11 +481,15 @@ double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> 
     std::copy_n(points.begin(), 3, _points.begin());
     threePointsPlane(_points, plane, normalize);
   } else {
-    int m = static_cast<int>(size) * 3, n = 3;
-    double *_a = new double[m*n], *pa = _a, *_b = new double[m], *pb = _b;
+    size_t m = size * 3;
+    size_t n = 3;
+    double *_a = new double[m*n];
+    double *pa = _a;
+    double *_b = new double[m];
+    double *pb = _b;
     double *_c = new double[n];
     try {
-      for (int i = 0; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         *pa++ = points[i].x*points[i].x;
         *pa++ = points[i].x*points[i].y;
         *pa++ = points[i].x;
@@ -488,14 +514,14 @@ double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> 
       // Por si me interesase devolver el error
       double dz = 0.;
       double sumErr = 0.;
-      for (int i = 0; i < size; i++) {
+      for (size_t i = 0; i < size; i++) {
         dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
         sumErr += dz*dz;
       }
 
       N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
 
-      if ( N && normalize ) { 
+      if ( N != 0. && normalize ) {
         plane[0] /= N;
         plane[1] /= N;
         plane[2] /= N;
@@ -524,8 +550,12 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
     std::copy_n(it_begin, 3, _points.begin());
     threePointsPlane(_points, plane, normalize);
   } else {
-    int m = static_cast<int>(size) * 3, n = 3;
-    double *_a = new double[m*n], *pa = _a, *_b = new double[m], *pb = _b;
+    size_t m = size * 3;
+    size_t n = 3;
+    double *_a = new double[m*n];
+    double *pa = _a;
+    double *_b = new double[m];
+    double *pb = _b;
     double *_c = new double[n];
     try {
       for (int i = 0; i < size; i++, it_begin++) {
@@ -561,7 +591,7 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
 
       N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
 
-      if ( N && normalize ) { 
+      if ( N != 0. && normalize ) {
         plane[0] /= N;
         plane[1] /= N;
         plane[2] /= N;
@@ -576,38 +606,8 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
   return N ;
 }
 
-/* ---------------------------------------------------------------------------------- */
-
-//#ifdef HAVE_OPENCV
-//
-///*!
-// * \brief Ordena los valores de una matriz de mayor a menor por filas
-// * \param[in] in
-// * \param[out] out
-// * \param[out] idx
-// */
-//TL_EXPORT int sortMatRows(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-//
-///*!
-// * \brief Ordena los valores de una matriz de mayor a menor por columnas
-// * \param[in] in
-// * \param[out] out
-// * \param[out] idx
-// */
-//TL_EXPORT int sortMatCols(const cv::Mat &in, cv::Mat *out, cv::Mat *idx);
-//
-//#endif
-
-
-
-//template<typename T>
-//T clamp(const T &value, const T &_min, const T &_max)
-//{
-//  return std::max(_min, std::min(_max, value));
-//};
-
 /*! \} */ // end of Math
 
-} // End namespace TL
+} // End namespace tl
 
 #endif // TL_CORE_MATH_UTILS_H

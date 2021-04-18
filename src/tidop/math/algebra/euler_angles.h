@@ -86,7 +86,7 @@ public:
   EulerAngles();
   EulerAngles(double omega, double phi, double kappa, Axes axes);
   EulerAngles(const EulerAngles<T> &eulerAngles);
-  ~EulerAngles() override;
+  ~EulerAngles() override = default;
 
   /*!
    * \brief Operador de asignación
@@ -135,10 +135,6 @@ EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
     axes(eulerAngles.axes)
 {
 }
-
-template<typename T>
-EulerAngles<T>::~EulerAngles()
-{}
 
 template<typename T>
 EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)

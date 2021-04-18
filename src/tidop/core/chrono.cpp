@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -37,7 +37,7 @@ std::string formatTimeToString(const std::string &templ)
 {
   std::string time_format;
   char date[80];
-  struct tm _tm;
+  struct tm _tm{};
   std::time_t now = std::time(nullptr);
 #ifdef __STDC_LIB_EXT1__
     _tm = *std::localtime_s(&now, &_tm);

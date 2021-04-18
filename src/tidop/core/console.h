@@ -445,7 +445,7 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~Argument() = 0;
+  virtual ~Argument() = default;
 
   Argument &operator = (const Argument &arg);
   Argument &operator = (Argument &&arg) TL_NOEXCEPT;
@@ -510,7 +510,7 @@ public:
    */
   virtual bool isValid() = 0;
 
-protected:
+private:
 
   /*!
    * \brief Nombre del argumento
@@ -587,7 +587,7 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~Argument_() override {}
+  ~Argument_() override = default;
 
   Argument_ &operator = (const Argument_ &argument);
   Argument_ &operator = (Argument_ &&arg) TL_NOEXCEPT;
@@ -632,6 +632,10 @@ public:
 
 protected:
 
+  void setValid(bool valid);
+
+private:
+
   T *mValue;
   bool bValid;
 };
@@ -639,23 +643,23 @@ protected:
 
 /* Definición de unos alias para los tipos mas frecuentes */
 
-typedef Argument_<int, true> ArgumentIntegerRequired;
-typedef Argument_<int, false> ArgumentIntegerOptional;
-typedef Argument_<double, true> ArgumentDoubleRequired;
-typedef Argument_<double, false> ArgumentDoubleOptional;
-typedef Argument_<float, true> ArgumentFloatRequired;
-typedef Argument_<float, false> ArgumentFloatOptional;
-typedef Argument_<bool, true> ArgumentBooleanRequired;
-typedef Argument_<bool, false> ArgumentBooleanOptional;
-typedef Argument_<std::string, true> ArgumentStringRequired;
-typedef Argument_<std::string, false> ArgumentStringOptional;
+using ArgumentIntegerRequired = Argument_<int, true>;
+using ArgumentIntegerOptional = Argument_<int, false>;
+using ArgumentDoubleRequired = Argument_<double, true>;
+using ArgumentDoubleOptional = Argument_<double, false>;
+using ArgumentFloatRequired = Argument_<float, true>;
+using ArgumentFloatOptional = Argument_<float, false>;
+using ArgumentBooleanRequired = Argument_<bool, true>;
+using ArgumentBooleanOptional = Argument_<bool, false>;
+using ArgumentStringRequired = Argument_<std::string, true>;
+using ArgumentStringOptional = Argument_<std::string, false>;
 
 #if (__cplusplus >= 201703L)
-typedef Argument_<std::filesystem::path, true> ArgumentPathRequired;
-typedef Argument_<std::filesystem::path, false> ArgumentPathOptional;
+using ArgumentPathRequired = Argument_<std::filesystem::path, true>;
+using ArgumentPathOptional = Argument_<std::filesystem::path, false>;
 #else
-typedef Argument_<boost::filesystem::path, true> ArgumentPathRequired;
-typedef Argument_<boost::filesystem::path, false> ArgumentPathOptional;
+using ArgumentPathRequired = Argument_<boost::filesystem::path, true>;
+using ArgumentPathOptional = Argument_<boost::filesystem::path, false>;
 #endif
 
 /* Implementación */
@@ -715,7 +719,7 @@ Argument_<T, required> &Argument_<T, required>::operator=(const Argument_ &argum
     this->mValue = argument.mValue;
     this->bValid = argument.bValid;
   }
-  return this;
+  return *this;
 }
 
 template<typename T, bool required> inline
@@ -726,7 +730,7 @@ Argument_<T, required> &Argument_<T, required>::operator=(Argument_ &&argument) 
     this->mValue = std::move(argument.mValue);
     this->bValid = std::move(argument.bValid);
   }
-  return this;
+  return *this;
 }
 
 template<typename T, bool required> inline
@@ -928,6 +932,13 @@ bool Argument_<T, required>::isValid()
   return bValid;
 }
 
+template<typename T, bool required>
+void Argument_<T, required>::setValid(bool valid)
+{
+  bValid = valid;
+}
+
+
 
 /*!
  * \brief Argumento lista de opciones
@@ -981,7 +992,7 @@ public:
   /*!
    * \brief Destructora
    */
-  virtual ~ArgumentList_() override {}
+  ~ArgumentList_() override = default;
 
   void fromString(const std::string &value) override;
 
@@ -992,22 +1003,22 @@ public:
 
 /* Definición de unos alias para los tipos mas frecuentes */
 
-typedef ArgumentList_<int, true> ArgumentListIntegerRequired;
-typedef ArgumentList_<int, false> ArgumentListIntegerOptional;
-typedef ArgumentList_<double, true> ArgumentListDoubleRequired;
-typedef ArgumentList_<double, false> ArgumentListDoubleOptional;
-typedef ArgumentList_<float, true> ArgumentListFloatRequired;
-typedef ArgumentList_<float, false> ArgumentListFloatOptional;
-typedef ArgumentList_<bool, true> ArgumentListBooleanRequired;
-typedef ArgumentList_<bool, false> ArgumentListBooleanOptional;
-typedef ArgumentList_<std::string, true> ArgumentListStringRequired;
-typedef ArgumentList_<std::string, false> ArgumentListStringOptional;
+using ArgumentListIntegerRequired = ArgumentList_<int, true>;
+using ArgumentListIntegerOptional = ArgumentList_<int, false>;
+using ArgumentListDoubleRequired = ArgumentList_<double, true>;
+using ArgumentListDoubleOptional = ArgumentList_<double, false>;
+using ArgumentListFloatRequired = ArgumentList_<float, true>;
+using ArgumentListFloatOptional = ArgumentList_<float, false>;
+using ArgumentListBooleanRequired = ArgumentList_<bool, true>;
+using ArgumentListBooleanOptional = ArgumentList_<bool, false>;
+using ArgumentListStringRequired = ArgumentList_<std::string, true>;
+using ArgumentListStringOptional = ArgumentList_<std::string, false>;
 #if (__cplusplus >= 201703L)
-typedef ArgumentList_<std::filesystem::path, true> ArgumentListPathRequired;
-typedef ArgumentList_<std::filesystem::path, false> ArgumentListPathOptional;
+using ArgumentListPathRequired = ArgumentList_<std::filesystem::path, true>;
+using ArgumentListPathOptional = ArgumentList_<std::filesystem::path, false>;
 #else
-typedef ArgumentList_<boost::filesystem::path, true> ArgumentListPathRequired;
-typedef ArgumentList_<boost::filesystem::path, false> ArgumentListPathOptional;
+using ArgumentListPathRequired = ArgumentList_<boost::filesystem::path, true>;
+using ArgumentListPathOptional = ArgumentList_<boost::filesystem::path, false>;
 #endif
 
 
@@ -1085,10 +1096,10 @@ void ArgumentList_<T, required>::fromString(const std::string &value)
   }
   if (bFind){
     *mIdx = idx;
-    this->bValid = true;
+    this->setValid(true);
   } else {
     Argument_<T, required>::setValue(prev_value);
-    this->bValid = false;
+    this->setValid(false);
   }
 }
 
@@ -1107,9 +1118,9 @@ void ArgumentList_<T, required>::setValue(const T &value)
   }
   if (bFind) {
     *mIdx = idx;
-    this->bValid = true;
+    this->setValid(true);
   } else {
-    this->bValid = false;
+    this->setValid(false);
   }
 }
 
@@ -1229,52 +1240,52 @@ public:
   /*!
    * \brief Allocator
    */
-  typedef std::list<std::shared_ptr<Argument>>::allocator_type allocator_type;
+  using allocator_type = std::list<std::shared_ptr<Argument> >::allocator_type;
 
   /*!
    * \brief value_type
    */
-  typedef std::list<std::shared_ptr<Argument>>::value_type value_type;
+  using value_type = std::list<std::shared_ptr<Argument> >::value_type;
 
   /*!
    * \brief Tipo entero sin signo (por lo general size_t)
    */
-  typedef std::list<std::shared_ptr<Argument>>::size_type size_type;
+  using size_type = std::list<std::shared_ptr<Argument> >::size_type;
 
   /*!
    * \brief Tipo entero con signo (por lo general ptrdiff_t)
    */
-  typedef std::list<std::shared_ptr<Argument>>::difference_type difference_type;
+  using difference_type = std::list<std::shared_ptr<Argument> >::difference_type;
 
   /*!
    * \brief std::allocator_traits<Allocator>::pointer
    */
-  typedef std::list<std::shared_ptr<Argument>>::pointer pointer;
+  using pointer = std::list<std::shared_ptr<Argument> >::pointer;
 
   /*!
    * \brief std::allocator_traits<Allocator>::const_pointer
    */
-  typedef std::list<std::shared_ptr<Argument>>::const_pointer const_pointer;
+  using const_pointer = std::list<std::shared_ptr<Argument> >::const_pointer;
 
   /*!
    * \brief value_type&
    */
-  typedef std::list<std::shared_ptr<Argument>>::reference reference;
+  using reference = std::list<std::shared_ptr<Argument> >::reference;
 
   /*!
    * \brief const value_type&
    */
-  typedef std::list<std::shared_ptr<Argument>>::const_reference const_reference;
+  using const_reference = std::list<std::shared_ptr<Argument> >::const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<Argument>>::iterator iterator;
+  using iterator = std::list<std::shared_ptr<Argument> >::iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<Argument>>::const_iterator const_iterator;
+  using const_iterator = std::list<std::shared_ptr<Argument> >::const_iterator;
 
 public:
 
@@ -1303,6 +1314,8 @@ public:
    * \param[in] arguments listado de argumentos
    */
   Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
+
+  ~Command() = default;
 
   /*!
    * \brief Devuelve el nombre del comando
@@ -1511,52 +1524,52 @@ public:
   /*!
    * \brief Allocator
    */
-  typedef std::list<std::shared_ptr<Command>>::allocator_type allocator_type;
+  using allocator_type = std::list<std::shared_ptr<Command> >::allocator_type;
 
   /*!
    * \brief value_type
    */
-  typedef std::list<std::shared_ptr<Command>>::value_type value_type;
+  using value_type = std::list<std::shared_ptr<Command> >::value_type;
 
   /*!
    * \brief Tipo entero sin signo (por lo general size_t)
    */
-  typedef std::list<std::shared_ptr<Command>>::size_type size_type;
+  using size_type = std::list<std::shared_ptr<Command> >::size_type;
 
   /*!
    * \brief Tipo entero con signo (por lo general ptrdiff_t)
    */
-  typedef std::list<std::shared_ptr<Command>>::difference_type difference_type;
+  using difference_type = std::list<std::shared_ptr<Command> >::difference_type;
 
   /*!
    * \brief std::allocator_traits<Allocator>::pointer
    */
-  typedef std::list<std::shared_ptr<Command>>::pointer pointer;
+  using pointer = std::list<std::shared_ptr<Command> >::pointer;
 
   /*!
    * \brief std::allocator_traits<Allocator>::const_pointer
    */
-  typedef std::list<std::shared_ptr<Command>>::const_pointer const_pointer;
+  using const_pointer = std::list<std::shared_ptr<Command> >::const_pointer;
 
   /*!
    * \brief value_type&
    */
-  typedef std::list<std::shared_ptr<Command>>::reference reference;
+  using reference = std::list<std::shared_ptr<Command> >::reference;
 
   /*!
    * \brief const value_type&
    */
-  typedef std::list<std::shared_ptr<Command>>::const_reference const_reference;
+  using const_reference = std::list<std::shared_ptr<Command> >::const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<Command>>::iterator iterator;
+  using iterator = std::list<std::shared_ptr<Command> >::iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  typedef std::list<std::shared_ptr<Command>>::const_iterator const_iterator;
+  using const_iterator = std::list<std::shared_ptr<Command> >::const_iterator;
 
 
 private:
@@ -1939,7 +1952,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~ProgressBar() override {}
+  ~ProgressBar() override = default;
 
   //... warning C4512: 'TL::ProgressBar' : no se pudo generar el operador de asignaciones
   //    Este warning aparece debido a que mSize es constante. impido la asignación que por
@@ -1992,7 +2005,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~ProgressPercent() override {}
+  ~ProgressPercent() override = default;
 
 private:
 

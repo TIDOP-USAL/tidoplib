@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de O馻 Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O帽a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -68,7 +68,7 @@ TL_EXPORT uint64_t tickCount();
  * double time = (getTickCount() - time_ini) / 1000.;
  * msgInfo("Time %f", time);
  * \endcode
- * \deprecated Se cambia el nombre del m閠odo a tickCount()
+ * \deprecated Se cambia el nombre del m茅todo a tickCount()
  */
 TL_DEPRECATED("tickCount()", "2.0") 
 TL_EXPORT uint64_t getTickCount();
@@ -77,14 +77,14 @@ TL_EXPORT uint64_t getTickCount();
 /*!
  * \brief Clase para medir tiempos.
  *
- * Su uso esta pensado para medir tiempos en depuraci髇
+ * Su uso esta pensado para medir tiempos en depuraci贸n
  */
 class TL_EXPORT Chrono
 {
 public:
 
   /*!
-   * \brief Posibles estados del cron髆etro
+   * \brief Posibles estados del cron贸metro
    */
   enum class Status {
     start,      /*!< Inicio */
@@ -114,7 +114,7 @@ public:
 
   /*!
    * \brief Destructora
-   * En la destructora se llama al m閠odo stop si este no ha sido llamado
+   * En la destructora se llama al m茅todo stop si este no ha sido llamado
    */
   ~Chrono();
 
@@ -158,12 +158,12 @@ private:
   uint64_t mAccumulated;
 
   /*!
-   * \brief Estado del cron髆etro
+   * \brief Estado del cron贸metro
    */
   Status mStatus;
 
   /*!
-   * \brief Mensaje de informaci髇 opcional
+   * \brief Mensaje de informaci贸n opcional
    */
   std::string mMessage;
 

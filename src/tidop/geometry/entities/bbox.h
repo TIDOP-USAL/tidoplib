@@ -54,7 +54,7 @@ public:
   /*!
    * \brief type
    */
-  typedef Point3_t value_type;
+  using value_type = Point3_t;
 
   /*!
    * \brief Punto 1
@@ -406,9 +406,9 @@ bool BoundingBox<Point3_t>::containsBox(const BoundingBox<Point3_t> &bbox) const
           pt2.z >= bbox.pt2.z);
 }
 
-typedef BoundingBox<Point3<int>> BoundingBoxI;
-typedef BoundingBox<Point3<double>> BoundingBoxD;
-typedef BoundingBox<Point3<float>> BoundingBoxF;
+using BoundingBoxI = BoundingBox<Point3<int> >;
+using BoundingBoxD = BoundingBox<Point3<double> >;
+using BoundingBoxF = BoundingBox<Point3<float> >;
 
 
 /*!

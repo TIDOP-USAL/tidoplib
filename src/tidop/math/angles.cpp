@@ -33,7 +33,9 @@ namespace math
 
 double degreesToDecimalDegrees(int degrees, int minutes, double seconds)
 {
-  return isNegative(degrees) * (abs(degrees) + minutes / 60. + seconds / 3600.);
+  return isNegative(degrees) * (abs(degrees) +
+                                minutes / static_cast<double>(consts::degrees_to_minutes) +
+                                seconds / static_cast<double>(consts::degrees_to_seconds));
 }
 
 double degreesToRadians(int degrees, int minutes, double seconds)
@@ -49,19 +51,19 @@ double degreesToGradians(int degrees, int minutes, double seconds)
 void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, double *seconds)
 {
   *degrees = static_cast<int>(decimalDegrees);
-  double min = fabs(decimalDegrees - *degrees) * 60.;
+  double min = fabs(decimalDegrees - *degrees) * consts::degrees_to_minutes;
   *minutes = static_cast<int>(min);
-  *seconds = fabs(min - *minutes) * 60.;
+  *seconds = fabs(min - *minutes) * consts::minutes_to_seconds;
 }
 
 double decimalDegreesToRadians(double decimalDegrees)
 {
-  return decimalDegrees * deg_to_rad;
+  return decimalDegrees * consts::deg_to_rad<double>;
 }
 
 double decimalDegreesToGradians(double decimalDegrees)
 {
-  return decimalDegrees * 200. / 180.;
+  return decimalDegrees * consts::deg_to_grad<double>;
 }
 
 void radiansToDegrees(double rad, int *degrees, int *minutes, double *seconds)
@@ -71,12 +73,12 @@ void radiansToDegrees(double rad, int *degrees, int *minutes, double *seconds)
 
 double radiansToDecimalDegrees(double radians)
 { 
-  return radians * rad_to_deg;
+  return radians * consts::rad_to_deg<double>;
 }
 
 double radiansToGradians(double radians)
 {
-  return radians * rad_to_grad;
+  return radians * consts::rad_to_grad<double>;
 }
 
 void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seconds)
@@ -86,12 +88,12 @@ void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seco
 
 double gradiansToDecimalDegrees(double gradians)
 {
-  return gradians * 180. / 200.;
+  return gradians * consts::grad_to_deg<double>;
 }
 
 double gradiansToRadians(double gradians)
 {
-  return gradians * grad_to_rad;
+  return gradians * consts::grad_to_rad<double>;
 }
 
 

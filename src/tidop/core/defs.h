@@ -31,7 +31,7 @@
 
 #include <limits>
 #include <cstdlib>
-#include <math.h>
+#include <cmath>
 
 #ifdef __GNUC__
 #include <cstdio>
@@ -70,19 +70,19 @@
 #  include <windows.h>
 #endif
 
-/* Definición de constantes de tipo general */
+///* Definición de constantes de tipo general */
 
-#define TL_PI_2 1.5707963267948966192313216916398
-#define TL_PI   3.1415926535897932384626433832795
-#define TL_2PI  6.283185307179586476925286766559
+//#define TL_PI_2 1.5707963267948966192313216916398
+//#define TL_PI   3.1415926535897932384626433832795
+//#define TL_2PI  6.283185307179586476925286766559
 
 
-/* Conversión de ángulos */
+///* Conversión de ángulos */
 
-#define TL_RAD_TO_DEG	57.295779513082320876798154814105
-#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
-#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
-#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
+//#define TL_RAD_TO_DEG	57.295779513082320876798154814105
+//#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
+//#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
+//#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
 
 
 /* Límites maximos y minimos de tipos numéricos */

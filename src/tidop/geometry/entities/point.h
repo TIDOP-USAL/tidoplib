@@ -59,7 +59,7 @@ public:
   /*!
    * \brief type
    */
-  typedef T value_type;
+  using value_type = T;
 
 public:
 
@@ -101,7 +101,7 @@ public:
    * \brief Operador de asignación
    * \param[in] point Objeto Point que se copia
    */
-  Point<T> &operator = (const Point<T>& point);
+  Point<T> &operator = (const Point<T> &point);
 
   /*!
    * \brief Operador de asignación de movimiento
@@ -138,9 +138,9 @@ public:
 
 /* Definición de alias Point */
 
-typedef Point<int> PointI;
-typedef Point<double> PointD;
-typedef Point<float> PointF;
+using PointI = Point<int>;
+using PointD = Point<double>;
+using PointF = Point<float>;
 
 
 /* Implementación Point */
@@ -162,18 +162,18 @@ Point<T>::Point(T x, T y)
 }
 
 template<typename T> inline
-Point<T>::Point(const Point &pt)
+Point<T>::Point(const Point<T> &point)
   : Entity(Entity::Type::point2d),
-    x(pt.x), 
-    y(pt.y) 
+    x(point.x),
+    y(point.y)
 {
 }
 
 template<typename T> inline
-Point<T>::Point(Point &&pt) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(pt)), 
-    x(std::exchange(pt.x, static_cast<T>(0))),
-    y(std::exchange(pt.y, static_cast<T>(0)))
+Point<T>::Point(Point<T> &&point) TL_NOEXCEPT
+  : Entity(std::forward<Entity>(point)),
+    x(std::exchange(point.x, static_cast<T>(0))),
+    y(std::exchange(point.y, static_cast<T>(0)))
 {
 }
 
@@ -194,23 +194,23 @@ Point<T>::Point(const math::Vector<T, 2> &vector)
 }
 
 template<typename T> inline
-Point<T> &Point<T>::operator = (const Point &pt)
+Point<T> &Point<T>::operator = (const Point<T> &point)
 {
-  if (this != &pt) {
-    Entity::operator = (pt);
-    this->x = pt.x;
-    this->y = pt.y;
+  if (this != &point) {
+    Entity::operator = (point);
+    this->x = point.x;
+    this->y = point.y;
   }
   return *this;
 }
 
 template<typename T> inline
-Point<T> &Point<T>::operator = (Point &&pt) TL_NOEXCEPT
+Point<T> &Point<T>::operator = (Point<T> &&point) TL_NOEXCEPT
 {
-  if (this != &pt) {
-    Entity::operator = (std::forward<Entity>(pt));
-    this->x = std::exchange(pt.x, static_cast<T>(0));
-    this->y = std::exchange(pt.y, static_cast<T>(0));
+  if (this != &point) {
+    Entity::operator = (std::forward<Entity>(point));
+    this->x = std::exchange(point.x, static_cast<T>(0));
+    this->y = std::exchange(point.y, static_cast<T>(0));
   }
   return *this;
 }
@@ -219,26 +219,31 @@ TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
+  Point<T2> point;
   if (std::is_integral<T2>::value) {
-    return Point<T2>(static_cast<T2>(std::round(this->x)), 
-                     static_cast<T2>(std::round(this->y)));
+    point.x = static_cast<T2>(std::round(this->x));
+    point.y = static_cast<T2>(std::round(this->y));
   } else {
-    return Point<T2>(static_cast<T2>(this->x), static_cast<T2>(this->y));
+    point.x = static_cast<T2>(this->x);
+    point.y = static_cast<T2>(this->y);
   }
+  return point;
 }
 
 template<typename T> template<typename T2> inline
 Point<T>::operator Point3<T2>() const
 {
+  Point3<T2> point;
   if (std::is_integral<T2>::value) {
-    return Point3<T2>(static_cast<T2>(std::round(this->x)), 
-                      static_cast<T2>(std::round(this->y)),
-                      0);
+    point.x = static_cast<T2>(std::round(this->x));
+    point.y = static_cast<T2>(std::round(this->y));
+    point.z = static_cast<T2>(0);
   } else {
-    return Point3<T2>(static_cast<T2>(this->x), 
-                      static_cast<T2>(this->y), 
-                      0);
+    point.x = static_cast<T2>(this->x);
+    point.y = static_cast<T2>(this->y);
+    point.z = static_cast<T2>(0);
   }
+  return point;
 }
 
 template<typename T> inline
@@ -435,7 +440,7 @@ public:
   /*!
    * \brief type
    */
-  typedef T value_type;
+  using value_type = T;
 
   /*!
    * \brief Coordenada X
@@ -510,9 +515,9 @@ public:
   math::Vector<T, 3> vector() const;
 };
 
-typedef Point3<int> Point3I;
-typedef Point3<double> Point3D;
-typedef Point3<float> Point3F;
+using Point3I = Point3<int>;
+using Point3D = Point3<double>;
+using Point3F = Point3<float>;
 
 
 template<typename T> inline
@@ -534,20 +539,20 @@ Point3<T>::Point3(T x, T y, T z)
 }
 
 template<typename T> inline
-Point3<T>::Point3(const Point3 &pt)
-  : Entity(pt),
-    x(pt.x), 
-    y(pt.y), 
-    z(pt.z)
+Point3<T>::Point3(const Point3<T> &point)
+  : Entity(point),
+    x(point.x),
+    y(point.y),
+    z(point.z)
 {
 }
 
 template<typename T> inline
-Point3<T>::Point3(Point3 &&pt) TL_NOEXCEPT
-  : Entity(std::forward<Entity>(pt)),
-    x(std::exchange(pt.x, 0)), 
-    y(std::exchange(pt.y, 0)), 
-    z(std::exchange(pt.z, 0))
+Point3<T>::Point3(Point3<T> &&point) TL_NOEXCEPT
+  : Entity(std::forward<Entity>(point)),
+    x(std::exchange(point.x, 0)),
+    y(std::exchange(point.y, 0)),
+    z(std::exchange(point.z, 0))
 {
 }
 
@@ -570,25 +575,25 @@ Point3<T>::Point3(const math::Vector<T, 3> &vector)
 }
 
 template<typename T> inline
-Point3<T> &Point3<T>::operator = (const Point3 &pt)
+Point3<T> &Point3<T>::operator = (const Point3<T> &point)
 {
-  if (this != &pt) {
-    Entity::operator = (pt);
-    this->x = pt.x;
-    this->y = pt.y;
-    this->z = pt.z;
+  if (this != &point) {
+    Entity::operator = (point);
+    this->x = point.x;
+    this->y = point.y;
+    this->z = point.z;
   }
   return *this;
 }
 
 template<typename T> inline
-Point3<T> &Point3<T>::operator = (Point3 &&pt) TL_NOEXCEPT
+Point3<T> &Point3<T>::operator = (Point3 &&point) TL_NOEXCEPT
 {
-  if (this != &pt) {
-    Entity::operator = (std::forward<Entity>(pt));
-    this->x = std::exchange(pt.x, 0);
-    this->y = std::exchange(pt.y, 0);
-    this->z = std::exchange(pt.z, 0);
+  if (this != &point) {
+    Entity::operator = (std::forward<Entity>(point));
+    this->x = std::exchange(point.x, 0);
+    this->y = std::exchange(point.y, 0);
+    this->z = std::exchange(point.z, 0);
   }
   return *this;
 }
@@ -596,26 +601,29 @@ TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename T> template<typename T2> inline
 Point3<T>::operator Point3<T2>() const
 {
+  Point3<T2> point;
   if (std::is_integral<T2>::value) {
-    return Point3<T2>(static_cast<T2>(std::round(this->x)), 
-                      static_cast<T2>(std::round(this->y)), 
-                      static_cast<T2>(std::round(this->z)));
+    point.x = static_cast<T2>(std::round(this->x));
+    point.y = static_cast<T2>(std::round(this->y));
+    point.z = static_cast<T2>(std::round(this->z));
   } else {
-    return Point3<T2>(static_cast<T2>(this->x), 
-                      static_cast<T2>(this->y), 
-                      static_cast<T2>(this->z));
+    point.x = static_cast<T2>(this->x);
+    point.y = static_cast<T2>(this->y);
+    point.z = static_cast<T2>(this->z);
   }
+  return point;
 }
 
 template<typename T> template<typename T2> inline
 Point3<T>::operator Point<T2>() const
 {
+  Point<T2> point;
   if (std::is_integral<T2>::value) {
-    return Point<T2>(static_cast<T2>(std::round(this->x)), 
-                     static_cast<T2>(std::round(this->y)));
+    point.x = static_cast<T2>(std::round(this->x));
+    point.y = static_cast<T2>(std::round(this->y));
   } else {
-    return Point<T2>(static_cast<T2>(this->x), 
-                     static_cast<T2>(this->y));
+    point.x = static_cast<T2>(this->x);
+    point.y = static_cast<T2>(this->y);
   }
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)

@@ -64,7 +64,7 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
   mLines.clear();
   std::vector<cv::Vec2f> auxlines;
   try{
-    HoughLines(image, auxlines, 1, TL_DEG_TO_RAD, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
+    HoughLines(image, auxlines, 1, math::consts::deg_to_rad<double>, mThreshold, 0.0, 0.0, mMinTheta, mMaxTheta);
   } catch (std::exception &e) {
     msgError(e.what());
     return LineDetector::Exit::FAILURE;
@@ -105,7 +105,7 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
   mLines.clear();
   std::vector<cv::Vec4i> linesaux;
   try {
-    HoughLinesP(image, linesaux, 1., TL_DEG_TO_RAD, mThreshold, mMinLineLength, mMaxLineGap);
+    HoughLinesP(image, linesaux, 1., math::consts::deg_to_rad<double>, mThreshold, mMinLineLength, mMaxLineGap);
   } catch (exception &e) {
     msgError(e.what());
     return LineDetector::Exit::FAILURE;
@@ -117,7 +117,9 @@ LineDetector::Exit ldHouhP::run(cv::Mat &image)
     l.pt2.x = linesaux[i][2];
     l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
-    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + TL_PI && angle <= mMaxTheta + TL_PI) ) {
+    if ( (angle >= mMinTheta && angle <= mMaxTheta) ||
+         (angle >= mMinTheta + math::consts::pi<double> &&
+          angle <= mMaxTheta + math::consts::pi<double>) ) {
       mLines.push_back(l);
     }
   }
@@ -174,7 +176,9 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
     l.pt2.x = linesaux[i][2];
     l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
-    if ( (angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + TL_PI && angle <= mMaxTheta + TL_PI) ) {
+    if ( (angle >= mMinTheta && angle <= mMaxTheta) ||
+         (angle >= mMinTheta + math::consts::pi<double> &&
+          angle <= mMaxTheta + math::consts::pi<double>) ) {
       mLines.push_back(l);
     }
   }
@@ -309,7 +313,9 @@ LineDetector::Exit ldLSD::run(cv::Mat &image)
     l.pt2.x = linesaux[i][2];
     l.pt2.y = linesaux[i][3];
     angle = l.angleOY();
-    if ((angle >= mMinTheta && angle <= mMaxTheta) || (angle >= mMinTheta + TL_PI && angle <= mMaxTheta + TL_PI)) {
+    if ((angle >= mMinTheta && angle <= mMaxTheta) ||
+        (angle >= mMinTheta + math::consts::pi<double> &&
+         angle <= mMaxTheta + math::consts::pi<double>)) {
       mLines.push_back(l);
     }
   }

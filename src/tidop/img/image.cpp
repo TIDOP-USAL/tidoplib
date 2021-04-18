@@ -28,14 +28,7 @@
 namespace tl
 {
 
-Image::Image()
-  : mRows(0),
-    mCols(0),
-    mType(DataType::TL_8U),
-    mChannels(1),
-    mData(nullptr)
-{
-}
+Image::Image() = default;
 
 Image::Image(int rows, 
              int cols, 
@@ -62,18 +55,8 @@ Image::Image(const SizeI &size,
   init();
 }
 
-Image::Image(const Image &image)
-  : mRows(image.mRows),
-    mCols(image.mCols),
-    mType(image.mType),
-    mChannels(image.mChannels),
-    mData(image.mData)
-{
-}
-
-Image::~Image()
-{
-}
+Image::Image(const Image &image) = default;
+Image::~Image() = default;
 
 Image &Image::operator=(const Image &image)
 {

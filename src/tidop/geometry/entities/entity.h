@@ -195,7 +195,7 @@ public:
     return mEntityType.isActive(Type::geom3d);
   }
 
-protected:
+private:
 
   /*!
    * \brief Tipo de entidad
@@ -225,52 +225,52 @@ public:
   /*!
    * \brief Allocator
    */
-  typedef typename std::vector<Entity_t>::allocator_type allocator_type;
+  using allocator_type = typename std::vector<Entity_t>::allocator_type;
 
   /*!
    * \brief value_type
    */
-  typedef typename std::vector<Entity_t>::value_type value_type;
+  using value_type = typename std::vector<Entity_t>::value_type;
 
   /*!
    * \brief Tipo entero sin signo (por lo general size_t) 
    */
-  typedef typename std::vector<Entity_t>::size_type size_type;
+  using size_type = typename std::vector<Entity_t>::size_type;
 
   /*!
    * \brief Tipo entero con signo (por lo general ptrdiff_t)
    */
-  typedef typename std::vector<Entity_t>::difference_type difference_type;
+  using difference_type = typename std::vector<Entity_t>::difference_type;
 
   /*!
    * \brief std::allocator_traits<Allocator>::pointer
    */
-  typedef typename std::vector<Entity_t>::pointer pointer;
+  using pointer = typename std::vector<Entity_t>::pointer;
 
   /*!
    * \brief std::allocator_traits<Allocator>::const_pointer 
    */
-  typedef typename std::vector<Entity_t>::const_pointer const_pointer;
+  using const_pointer = typename std::vector<Entity_t>::const_pointer;
 
   /*!
    * \brief value_type&
    */
-  typedef typename std::vector<Entity_t>::reference reference;
+  using reference = typename std::vector<Entity_t>::reference;
 
   /*!
    * \brief const value_type&
    */
-  typedef typename std::vector<Entity_t>::const_reference const_reference;
+  using const_reference = typename std::vector<Entity_t>::const_reference;
 
   /*!
    * \brief Iterador de acceso aleatorio
    */
-  typedef typename std::vector<Entity_t>::iterator iterator;
+  using iterator = typename std::vector<Entity_t>::iterator;
 
   /*!
    * \brief Iterador constante de acceso aleatorio
    */
-  typedef typename std::vector<Entity_t>::const_iterator const_iterator;
+  using const_iterator = typename std::vector<Entity_t>::const_iterator;
 
 public:
   

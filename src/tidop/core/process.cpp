@@ -479,7 +479,7 @@ BatchProcessing::BatchProcessing(const BatchProcessing &batchProcess)
     mThread(),
     mCurrentProcess(nullptr)
 {
-  for (auto process : mProcessList) {
+  for (const auto &process : mProcessList) {
     process->addListener(this);
   }
 }
@@ -490,7 +490,7 @@ BatchProcessing::BatchProcessing(std::initializer_list<std::shared_ptr<Process>>
     mThread(),
     mCurrentProcess(nullptr)
 {
-  for (auto process : mProcessList) {
+  for (const auto &process : mProcessList) {
     process->addListener(this);
   }
 }
@@ -588,9 +588,15 @@ void BatchProcessing::removeListener(Listener * listener)
 
 void BatchProcessing::remove(uint64_t id)
 {
-  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
-    if ((*it)->id() == id) {
-      remove(*it);
+//  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
+//    if ((*it)->id() == id) {
+//      remove(*it);
+//      break;
+//    }
+//  }
+  for (auto &process : mProcessList) {
+    if (process->id() == id) {
+      remove(process);
       break;
     }
   }

@@ -61,8 +61,8 @@ class TL_EXPORT Licence
 public:
 
   Licence();
-  Licence(const std::string &name, 
-          const std::string &type);
+  Licence(std::string name, 
+          std::string type);
 
   std::string productName() const;
   void setProductName(const std::string &productName);
@@ -79,7 +79,7 @@ public:
 
   bool empty() const;
 
-protected:
+private:
 
   std::string mProductName;
   std::string mType;
@@ -106,7 +106,7 @@ public:
 
   const std::list<Licence> *thirdPartyLicences() const;
 
-protected:
+private:
 
   std::list<Licence> mThirdPartyLicences;
 

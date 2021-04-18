@@ -40,11 +40,11 @@ GroupLines::GroupLines()
 GroupLines::GroupLines(const std::vector<Line> &lines)
 {
   linesgroup = lines; 
-  for (size_t i = 0; i < linesgroup.size(); i++) {
-    if (bbox.pt1.x > linesgroup[i].pt1.x) bbox.pt1.x = linesgroup[i].pt1.x;
-    if (bbox.pt1.y > linesgroup[i].pt1.y) bbox.pt1.y = linesgroup[i].pt1.y;
-    if (bbox.pt2.x < linesgroup[i].pt2.x) bbox.pt2.x = linesgroup[i].pt2.x;
-    if (bbox.pt2.y < linesgroup[i].pt2.y) bbox.pt2.y = linesgroup[i].pt2.y;
+  for (auto & i : linesgroup) {
+    if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
+    if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
+    if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
+    if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
   }
 }
 
@@ -74,8 +74,8 @@ void GroupLines::add(const cv::Vec4i &lvect)
 double GroupLines::angleMean()
 {
   double angle = 0.0;
-  for (size_t i = 0; i < linesgroup.size(); i++){
-    angle += linesgroup[i].angleOX();
+  for (auto & line : linesgroup){
+    angle += line.angleOX();
   }
   angle /= linesgroup.size();
   return angle;
@@ -86,4 +86,4 @@ void GroupLines::deleteLine(int id)
   linesgroup.erase(linesgroup.begin() + id);
 }
 
-} // End namespace TL
+} // End namespace tl

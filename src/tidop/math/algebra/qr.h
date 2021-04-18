@@ -27,16 +27,16 @@
 
 #include "config_tl.h"
 
-#include "tidop/math/math.h"
-#include "tidop/core/messages.h"
-#include "tidop/math/algebra/vector.h"
-#include "tidop/math/algebra/matrix.h"
+#include <algorithm>
 
 #ifdef HAVE_OPENBLAS
 #include <lapacke.h>
 #endif // HAVE_OPENBLAS
 
-#include <algorithm>
+#include "tidop/math/math.h"
+#include "tidop/core/messages.h"
+#include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/matrix.h"
 
 namespace tl
 {
@@ -133,7 +133,7 @@ private:
   void lapackeDecompose();
 #endif // HAVE_OPENBLAS
 
-protected:
+private:
 
   Matrix<T, _rows, _cols> Q_t;
   Matrix<T, _rows, _cols> R;
@@ -163,8 +163,13 @@ template<
 >
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
-  size_t i, j, k;
-  T scale, sigma, sum, tau;
+  size_t i;
+  size_t j;
+  size_t k;
+  T scale;
+  T sigma;
+  T sum;
+  T tau;
 
   Vector<T, _rows> c(mRows);
   Vector<T, _rows> d(mRows);
@@ -270,7 +275,8 @@ template<
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::qtmult(const Vector<T, _rows> &b) 
 {
-  size_t i, j;
+  size_t i;
+  size_t j;
   T sum;
   Vector<T, _rows> x(mRows);
 
@@ -293,7 +299,8 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::rsolve(Vector<T, _r
 {
   TL_ASSERT(!sing, "attempting solve in a singular QR");
 
-  int i, j;
+  int i;
+  int j;
   T sum;
   Vector<T, _rows> x(b);
 
@@ -330,7 +337,8 @@ template<
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::update(const Vector<T, _rows> &u, 
                                                         const Vector<T, _rows> &v)
 {
-  int i, k;
+  int i;
+  int k;
   T aux;
   Vector<T, _rows> w(u);
 
@@ -373,7 +381,11 @@ template<
 void QRDecomposition<Matrix_t<T, _rows, _cols>>::jacobiRotation(int i, T a, T b)
 {
   int j;
-  T c, fact, s, w, y;
+  T c;
+  T fact;
+  T s;
+  T w;
+  T y;
 
   if (a == static_cast<T>(0)) {
     c = static_cast<T>(0);

@@ -48,8 +48,8 @@ else()
               imgtransform.h
               linedetector.cpp
               linedetector.h
-              shapedetection.cpp
-              shapedetection.h
+              #shapedetection.cpp
+              #shapedetection.h
               skeleton.cpp
               skeleton.h
               whitebalance.cpp

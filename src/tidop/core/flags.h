@@ -89,7 +89,7 @@ public:
   /*!
    * \brief Tipo de la enumeración
    */
-  typedef typename std::underlying_type<T>::type Type; 
+  using Type = typename std::underlying_type<T>::type; 
 
 public:
 
@@ -119,7 +119,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~EnumFlags();
+  ~EnumFlags() = default;
 
   /*!
    * \brief Operador asignación
@@ -228,11 +228,6 @@ EnumFlags<T>::EnumFlags(EnumFlags<T> &&flag) TL_NOEXCEPT
 template<typename T> inline
 EnumFlags<T>::EnumFlags(T flag) 
   : mFlag(static_cast<Type>(flag))
-{
-}
-
-template<typename T> inline
-EnumFlags<T>::~EnumFlags()
 {
 }
 
@@ -382,7 +377,7 @@ public:
   /*!
    * \brief Tipo del flag
    */
-  typedef T Type; 
+  using Type = T; 
 
 public:
 
@@ -405,7 +400,7 @@ public:
   /*!
    * \brief Destructora
    */
-  ~Flags();
+  ~Flags() = default;
 
   /*!
    * \brief Operador asignación
@@ -471,10 +466,10 @@ private:
 
 /* Definición de tipos */
 
-typedef Flags<uint8_t> Flags_8;
-typedef Flags<uint16_t> Flags_16;
-typedef Flags<uint32_t> Flags_32;
-typedef Flags<uint64_t> Flags_64;
+using Flags_8 = Flags<uint8_t>;
+using Flags_16 = Flags<uint16_t>;
+using Flags_32 = Flags<uint32_t>;
+using Flags_64 = Flags<uint64_t>;
 
 
 template<typename T> inline
@@ -490,11 +485,6 @@ Flags<T>::Flags(std::initializer_list<int> flags)
   for (auto flg : flags) {
     this->flagOn(flg);
   }
-}
-
-template<typename T> inline
-Flags<T>::~Flags()
-{
 }
 
 template<typename T> inline

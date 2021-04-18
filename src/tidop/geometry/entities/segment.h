@@ -25,6 +25,8 @@
 #ifndef TL_GEOMETRY_SEGMENT_H
 #define TL_GEOMETRY_SEGMENT_H
 
+#include <utility>
+
 #include "config_tl.h"
 
 #ifdef HAVE_OPENCV
@@ -72,7 +74,7 @@ public:
   /*!
    * \brief type Tipo de punto
    */
-  typedef Point_t value_type;
+  using value_type = Point_t;
 
   /*!
    * \brief Punto inicial del segmento
@@ -106,7 +108,7 @@ public:
    * \param[in] _pt1 Punto inicial del segmento
    * \param[in] _pt2 Punto final del segmento
    */
-  Segment(const Point_t &_pt1, const Point_t &_pt2);
+  Segment(Point_t _pt1, Point_t _pt2);
 
   /*!
    * \brief Constructor segment
@@ -130,6 +132,8 @@ public:
    * \return Referencia al segmento
    */
   Segment &operator = (Segment &&segment) TL_NOEXCEPT;
+
+  ~Segment() override = default;
 
   /*!
    * \brief Conversión a un segmento de un tipo diferente
@@ -217,10 +221,10 @@ Segment<Point_t>::Segment(Segment &&segment) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-Segment<Point_t>::Segment(const Point_t &_pt1, const Point_t &_pt2)
+Segment<Point_t>::Segment(Point_t _pt1, Point_t _pt2)
   : Entity(Entity::Type::segment2d),
-    pt1(_pt1), 
-    pt2(_pt2)
+    pt1(std::move(_pt1)), 
+    pt2(std::move(_pt2))
 {
 }
 
@@ -228,7 +232,8 @@ template<typename Point_t> inline
 Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool bCenter)
   : Entity(Entity::Type::segment2d)
 {
-  double a = cos(angle), b = sin(angle);
+  double a = cos(angle);
+  double b = sin(angle);
   double l1 = 0;
   double l2 = length;
   if (bCenter) {
@@ -352,10 +357,10 @@ Point_t Segment<Point_t>::vector() const
   return (pt2 - pt1); 
 }
 
-typedef Segment<Point<int>> SegmentI;
-typedef Segment<Point<double>> SegmentD;
-typedef Segment<Point<float>> SegmentF;
-typedef SegmentI Line;
+using SegmentI = Segment<Point<int> >;
+using SegmentD = Segment<Point<double> >;
+using SegmentF = Segment<Point<float> >;
+using Line = SegmentI;
 
 
 
@@ -379,7 +384,7 @@ class Segment3D
 {
 public:
 
-  typedef Point3_t value_type;
+  using value_type = Point3_t;
 
   /*!
    * \brief Punto 1
@@ -416,6 +421,8 @@ public:
    * \param[in] _pt2 Punto 2
    */
   Segment3D(const Point3_t &_pt1, const Point3_t &_pt2);
+
+  ~Segment3D() override = default;
 
   /*!
    * \brief Sobrecarga del operador de asignación
@@ -574,9 +581,9 @@ Point3_t Segment3D<Point3_t>::vector() const
   return (pt2 - pt1); 
 }
 
-typedef Segment3D<Point3<int>> Segment3dI;
-typedef Segment3D<Point3<double>> Segment3dD;
-typedef Segment3D<Point3<float>> Segment3dF;
+using Segment3dI = Segment3D<Point3<int> >;
+using Segment3dD = Segment3D<Point3<double> >;
+using Segment3dF = Segment3D<Point3<float> >;
 
 
 

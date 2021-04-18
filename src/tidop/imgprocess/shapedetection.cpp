@@ -25,6 +25,7 @@
 #include "shapedetection.h"
 
 #include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 
 #ifdef HAVE_OPENCV
 
@@ -55,9 +56,9 @@ GeneralizedHough::GeneralizedHough()
   rangeXY = 6;
   
   // min value allowed is -pi
-  phimin = -static_cast<float>(TL_PI);
+  phimin = -math::consts::pi<float>;
   // max value allowed is +pi
-  phimax = static_cast<float>(TL_PI);
+  phimax = math::consts::pi<float>;
   // number of slices (angles) in R-table
   intervals = 16;
 }
@@ -82,11 +83,13 @@ void GeneralizedHough::setLinearPars(int w1, int w2, int rS, int rXY)
 void GeneralizedHough::setAngularPars(int p1, int p2, int ints)
 {
   if ( p1 < p2 ) {
-    if ( p1 > -TL_PI ) {
-      phimin = static_cast<float>(p1);
+    float p1f = static_cast<float>(p1);
+    if ( p1f > -math::consts::pi<float> ) {
+      phimin = p1f;
 		}
-    if ( p2 < TL_PI ) {
-			phimax = static_cast<float>(p2);
+    float p2f = static_cast<float>(p2);
+    if ( p2f < math::consts::pi<float> ) {
+      phimax = p2f;
 		}
 	}
 	intervals = ints;
@@ -135,10 +138,10 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 	// load all points from image all image contours on vector pts2
 	int nl= detected_edges.rows;
 	int nc= detected_edges.cols; 
-  float deltaphi = TL_PI / static_cast<float>(intervals);
-  float inv_deltaphi = static_cast<float>(intervals) / TL_PI;
+  float deltaphi = math::consts::pi<float> / static_cast<float>(intervals);
+  float inv_deltaphi = static_cast<float>(intervals) / math::consts::pi<float>;
 	float inv_rangeXY = 1.f / static_cast<float>(rangeXY);
-  float pi_half = TL_PI * 0.5f;
+  //float pi_half = math::consts::pi<float> * 0.5f;
 	std::vector<Rpoint2> pts2;
 	for (int j=0; j<nl; ++j) {
 		uchar* data= (uchar*)(detected_edges.data + detected_edges.step.p[0]*j);
@@ -150,9 +153,9 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 				Rpoint2 rpt;
 				rpt.x = i*inv_rangeXY;
 				rpt.y = j*inv_rangeXY;
-				float a = atan2((float)vy, (float)vx);              //	gradient angle in radians
-				float phi = ((a > 0) ? a-pi_half : a+pi_half);      // contour angle with respect to x axis
-        int angleindex = (int)((phi + TL_PI*0.5f)*inv_deltaphi); // index associated with angle (0 index = -90 degrees)
+        float a = std::atan2(static_cast<float>(vy), static_cast<float>(vx));              //	gradient angle in radians
+        float phi = ((a > 0) ? a-math::consts::half_pi<float> : a+math::consts::half_pi<float>);      // contour angle with respect to x axis
+        int angleindex = static_cast<int>((phi + math::consts::two_pi<float>)*inv_deltaphi); // index associated with angle (0 index = -90 degrees)
 				if (angleindex == intervals) angleindex=intervals-1;// -90°angle and +90° has same effect
 				rpt.phiindex = angleindex;
 				pts2.push_back( rpt );
@@ -165,7 +168,7 @@ void GeneralizedHough::accumulate(cv::Mat &input_img)
 	int Y = ceil((float)nl/rangeXY);
 	int S = ceil((float)(wmax-wmin)/rangeS+1.0f);
 	int R = ceil(phimax/deltaphi)-floor(phimin/deltaphi);
-  if ( phimax == TL_PI && phimin == -TL_PI ) R--;
+  if ( phimax == math::consts::pi<float> && phimin == -math::consts::pi<float> ) R--;
 	int r0 = -floor(phimin/deltaphi);
 	int matSizep_S[] = {X, Y, S, R};
 	accum.create(4, matSizep_S, CV_16S);
@@ -232,7 +235,7 @@ void GeneralizedHough::bestCandidate()
 	
 	// rotate and scale points all at once. Then impress them on image
 	std::vector<std::vector<cv::Vec2i>> Rtablerotatedscaled(intervals);
-  float deltaphi = TL_PI / intervals;
+  float deltaphi = math::consts::pi<float> / intervals;
 	int r0 = -floor(phimin/deltaphi);
 	int reff = id_max[3]-r0;
 	float cs = cos(reff*deltaphi);
@@ -317,7 +320,7 @@ void GeneralizedHough::readPoints(const char *originalImg, const char *templatei
 				rpt.dx = refPoint(0)-i;
 				rpt.dy = refPoint(1)-j;
 				float a = atan2((float)vy, (float)vx); //radians
-        rpt.phi = ((a > 0) ? a - TL_PI / 2 : a + TL_PI / 2);
+        rpt.phi = ((a > 0) ? a - math::consts::pi<float> / 2 : a + math::consts::pi<float> / 2);
 				//float a = atan2((float)vy, (float)vx) * 180/3.14159265358979f; //degrees
 				//rpt.phi = ((a > 0) ? a-90 : a+90);
 				// update further right and left dx
@@ -337,9 +340,9 @@ void GeneralizedHough::readRtable()
 	Rtable.clear();
 	Rtable.resize(intervals);
 	// put points in the right interval, according to discretized angle and range size 
-	float range = TL_PI/intervals;
+  float range = math::consts::pi<float>/intervals;
 	for (std::vector<Rpoint>::size_type t = 0; t < pts.size(); ++t){
-    int angleindex = (int)((pts[t].phi + TL_PI / 2) / range);
+    int angleindex = (int)((pts[t].phi + math::consts::pi<float> / 2) / range);
 		if (angleindex == intervals) angleindex=intervals-1;
 		Rtable[angleindex].push_back( cv::Vec2i(pts[t].dx, pts[t].dy) );
 	}

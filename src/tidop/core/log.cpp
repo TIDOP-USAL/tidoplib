@@ -66,9 +66,9 @@ Log::~Log()
 
 Log &Log::instance()
 {
-  if (sObjLog.get() == nullptr) {
+  if (sObjLog == nullptr) {
     std::lock_guard<std::mutex> lck(Log::mtx);
-    if (sObjLog.get() == nullptr) {
+    if (sObjLog == nullptr) {
       sObjLog.reset(new Log());
     }
   }

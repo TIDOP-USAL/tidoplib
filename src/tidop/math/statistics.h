@@ -29,9 +29,9 @@
 #include "tidop/core/defs.h"
 
 #include <vector>
-
-#include <vector>
 #include <map>
+
+#include "tidop/math/math.h"
 
 namespace tl
 {

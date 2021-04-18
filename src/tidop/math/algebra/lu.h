@@ -140,7 +140,7 @@ private:
   void lapackeDecompose();
 #endif // HAVE_OPENBLAS
 
-protected:
+private:
 
   Matrix<T, _rows, _cols> LU;
   Vector<size_t, _rows> mIndx;
@@ -174,7 +174,7 @@ template<
 >
 Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
-  TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes");
+  TL_ASSERT(b.size() == mRows, "LuDecomposition::solve bad sizes")
 
   Vector<T, _rows> x(b);
 
@@ -226,7 +226,7 @@ template<
 >
 Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T, _rows, _cols> &b)
 {
-  TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes");
+  TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes")
 
   Matrix<T, _rows, _cols> x(b);
 
@@ -273,7 +273,8 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
 	const T TINY = static_cast<T>(1.0e-40);
   
-  T big, temp;
+  T big;
+  T temp;
 	Vector<T, _rows> vv(mRows);
 
   this->d = static_cast<T>(1);
@@ -289,7 +290,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     }
       
     //if (big == 0.0) throw("Singular matrix in LUdcmp");
-    TL_ASSERT(big != 0.0, "Singular matrix");
+    TL_ASSERT(big != 0.0, "Singular matrix")
 
     vv[i] = static_cast<T>(1) / big;
   }
@@ -345,7 +346,7 @@ inline void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 
   delete[] ipiv;
 
-  TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.");
+  TL_ASSERT(info == 0, "The algorithm computing LU failed to converge.")
 }
 
 #endif // HAVE_OPENBLAS

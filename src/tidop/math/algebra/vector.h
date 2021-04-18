@@ -47,7 +47,7 @@ namespace math
 //template<typename T, size_t _rows, size_t _cols>
 //class Matrix;
 
-constexpr auto DynamicVector = std::numeric_limits<size_t>().max();
+constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 
 
 /*! \addtogroup Math
@@ -89,6 +89,7 @@ public:
   VectorBase(VectorBase &&vector) TL_NOEXCEPT;
   VectorBase(std::initializer_list<T> values);
   VectorBase(T *data, size_t size);
+  ~VectorBase() = default;
 
   void resize(size_t size);
   void resize(size_t size, T value);
@@ -164,7 +165,7 @@ public:
   bool operator >  (const VectorBase &vector) const;
   bool operator >= (const VectorBase &vector) const;
 
-protected:
+private:
 
   std::array<T, _size> mData;
 
@@ -178,7 +179,7 @@ VectorBase<T, _size>::VectorBase()
 }
 
 template<typename T, size_t _size> inline
-VectorBase<T, _size>::VectorBase(size_t size, T val)
+VectorBase<T, _size>::VectorBase(size_t  /*size*/, T val)
   : mData()
 {
   //static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
@@ -212,19 +213,19 @@ VectorBase<T, _size>::VectorBase(std::initializer_list<T> values)
 }
 
 template<typename T, size_t _size> inline
-VectorBase<T, _size>::VectorBase(T *data, size_t size)
+VectorBase<T, _size>::VectorBase(T *data, size_t  /*size*/)
   : mData(data)
 {
 }
 
 template<typename T, size_t _size> inline
-void VectorBase<T, _size>::resize(size_t size)
+void VectorBase<T, _size>::resize(size_t  /*size*/)
 {
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
 }
 
 template<typename T, size_t _size> inline
-void VectorBase<T, _size>::resize(size_t size, T value)
+void VectorBase<T, _size>::resize(size_t  /*size*/, T  /*value*/)
 {
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
 }
@@ -361,8 +362,7 @@ public:
 public:
 
   VectorBase()
-  {
-  }
+  = default;
   
   VectorBase(size_t size,
              T val)
@@ -385,13 +385,15 @@ public:
   {
   }
     
-  VectorBase(T *data, size_t size)
+  VectorBase(const T *data, size_t size)
     : mData(size)
   {
     for (size_t i = 0; i < size; i++) {
       mData[i] = data[i];
     }
   }
+
+  ~VectorBase() = default;
 
   void resize(size_t size)
   {
@@ -599,7 +601,7 @@ class Vector
 
 public:
   
-  Vector();
+  Vector() = default;
   Vector(size_t size, T val = std::numeric_limits<T>().lowest());
   Vector(const Vector &vector);
   Vector(Vector &&vector) TL_NOEXCEPT;
@@ -624,22 +626,15 @@ public:
 
 /* Definición de alias Vector */
 
-
-typedef Vector<int, 2>    Vector2i;
-typedef Vector<double, 2> Vector2d;
-typedef Vector<float, 2>  Vector2f;
-typedef Vector<int, 3>    Vector3i;
-typedef Vector<double, 3> Vector3d;
-typedef Vector<float, 3>  Vector3f;
-
+using Vector2i = Vector<int, 2>;
+using Vector2d = Vector<double, 2>;
+using Vector2f = Vector<float, 2>;
+using Vector3i = Vector<int, 3>;
+using Vector3d = Vector<double, 3>;
+using Vector3f = Vector<float, 3>;
 
 
 /* Implementación Vector */
-
-template<typename T, size_t _size> inline
-Vector<T, _size>::Vector()
-{
-}
   
 template<typename T, size_t _size> inline
 Vector<T, _size>::Vector(size_t size, T val)

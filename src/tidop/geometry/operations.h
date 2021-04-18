@@ -34,6 +34,7 @@
 #endif
 
 #include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 #include "tidop/math/mathutils.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/window.h"
@@ -184,11 +185,13 @@ double distance3D(const Point3_t &pt1, const Point3_t &pt2)
 template<typename Point_t> inline
 int isLeft( Point_t ln_pt1, Point_t ln_pt2, Point_t pt )
 {
+  int r_value{0};
   double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
              - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
-  if (aux > 0) return 1;
-  else if (aux < 0) return -1;
-  else return 0;
+  if (aux > 0) r_value = 1;
+  else if (aux < 0) r_value = -1;
+
+  return r_value;
 }
 
 /*!
@@ -204,8 +207,8 @@ void lineBuffer(const Segment<Point_t> &ln, int size, std::vector<Point_t> *buff
   Point_t pt1 = ln.pt1;
   Point_t pt2 = ln.pt2;
   double acimut = azimut(pt1, pt2);
-  double dx = size * sin(acimut + TL_PI_2);
-  double dy = size * cos(acimut + TL_PI_2);
+  double dx = size * sin(acimut + math::consts::half_pi<double>);
+  double dy = size * cos(acimut + math::consts::half_pi<double>);
   (*buff)[0] = Point_t(pt1.x + dx, pt1.y + dy);
   (*buff)[1] = Point_t(pt2.x + dx, pt2.y + dy);
   (*buff)[2] = Point_t(pt2.x - dx, pt2.y - dy);
@@ -243,7 +246,7 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
 
   if (daux <= 0) iret = -1;
   else if (daux >= (v2.x * v2.x + v2.y * v2.y)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
+  else if (daux == 0.) iret = 2; // Esta en la línea
   return iret;
 }
 
@@ -272,7 +275,7 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
 
   if (daux <= 0) iret = -1;
   else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
+  else if (daux == 0.) iret = 2; // Esta en la línea
   return iret;
 }
 
@@ -331,12 +334,12 @@ double distPointToLine(const Point_t &pt, const Segment<Point_t> &ln)
 template<typename Point_t> inline
 double minDistanceSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2)
 {
-  double dist[4];
+  std::array<double, 4> dist{};
   dist[0] = distPointToSegment(ln1.pt1, ln2);
   dist[1] = distPointToSegment(ln1.pt2, ln2);
   dist[2] = distPointToSegment(ln2.pt1, ln1);
   dist[3] = distPointToSegment(ln2.pt2, ln1);
-  return *std::min_element(dist, dist + 4);
+  return *std::min_element(dist.begin(), dist.end());
 }
 
 TL_DISABLE_WARNING(TL_WARNING_C4244)
@@ -353,11 +356,13 @@ template <typename Point_t>
 inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
   int iret = 0;
-  Point_t vs1, vs2;
+  Point_t vs1;
+  Point_t vs2;
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  double cross_product = crossProduct(vs1, vs2);
+  if (cross_product != 0.) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
     double t = crossProduct(v11_12, vs2) / cross_product;
     double u = crossProduct(v11_12, vs1) / cross_product;
@@ -387,11 +392,13 @@ template<typename Point_t>
 inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &ln2, Point_t *pt)
 {
   int iret = 0;
-  Point_t vs1, vs2;
+  Point_t vs1;
+  Point_t vs2;
   vs1 = ln1.vector();
   vs2 = ln2.vector();
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
-  if (double cross_product = crossProduct(vs1, vs2)) {
+  double cross_product = crossProduct(vs1, vs2);
+  if (cross_product != 0.) {
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
     double t = crossProduct(v11_12, vs2) / cross_product;
     if (typeid(typename Point_t::value_type) == typeid(int)) {
@@ -633,7 +640,7 @@ double angleBetweenLineAndPlane(const Segment3D<Point3_t> &line, const Point3_t 
   Point3_t v1 = line.vector();
   double dot = dotProduct3D(v1, plane);
   double det = module3D(v1)*module3D(plane);
-  return det ? asin(dot / det) : 0.;
+  return det != 0. ? asin(dot / det) : 0.;
 }
 
 /*!
@@ -661,7 +668,7 @@ double angleBetweenPlanes(const Vect_t &plane1, const Vect_t &plane2)
 {
   double dot = dotProduct3D(plane1, plane2);
   double det = module3D(plane1) * module3D(plane2);
-  return det ? acos(dot / det) : 0.;
+  return det != 0. ? acos(dot / det) : 0.;
 }
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
@@ -736,7 +743,8 @@ Point_t findInscribedCircleSequential(const Polygon<Point_t> &polygon, const Win
 	// biggest known distance
 	double max_distance = 0.;
 
-	int i, j;
+	int i;
+	int j;
   double tmp_distance = TL_DOUBLE_MAX;
 	for (i = 0; i <= nCells; i++) {
 
@@ -808,7 +816,7 @@ Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const
   Point3_t tmp;
 
   // Se determina el plano de mejor ajuste
-  std::array<double, 4> plane;
+  std::array<double, 4> plane{};
   nPointsPlaneLS(polygon.begin(), polygon.end(), plane);
   //Polygon3D<T> _poligon = polygon;
   //// Proyectar polilinea en plano
@@ -827,7 +835,7 @@ Point3_t findInscribedCircleSequential(const Polygon3D<Point3_t> &polygon, const
   }
 
   // Plano horizontal (1,1,0)
-  std::array<double, 4> plane_z;
+  std::array<double, 4> plane_z{};
   plane_z[0] = 1;
   plane_z[1] = 1;
   plane_z[2] = 0;
@@ -959,8 +967,8 @@ int projectPointInSegment(const Point_t &segment_pt1, const Point_t &segment_pt2
     *ptp = pt;
     return 2;
   }
-  std::array<double, 2> v1;
-  std::array<double, 2> v2;
+  std::array<double, 2> v1{};
+  std::array<double, 2> v2{};
   v1[0] = pt.x - segment_pt1.x;
   v1[1] = pt.y - segment_pt1.y;
   v2[0] = segment_pt2.x - segment_pt1.x;
@@ -1016,7 +1024,7 @@ int projectPointInSegment3D(const Point_t &segment_pt1, const Point_t &segment_p
 
   if (daux <= 0) iret = -1;
   else if (daux >= (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z)) iret = 1;
-  else if (daux == 0) iret = 2; // Esta en la línea
+  else if (daux == 0.) iret = 2; // Esta en la línea
   return iret;
 }
 
@@ -1078,8 +1086,8 @@ inline int intersectSegments(const Point_t &segment1_pt1, const Point_t &segment
                              Point_t *pt)
 {
   int iret = 0;
-  std::array<double, 2> vs1;
-  std::array<double, 2> vs2;
+  std::array<double, 2> vs1{};
+  std::array<double, 2> vs2{};
   vs1[0] = segment1_pt2.x - segment1_pt1.x;
   vs1[1] = segment1_pt2.y - segment1_pt1.y;
   vs2[0] = segment2_pt2.x - segment2_pt1.x;
@@ -1087,7 +1095,7 @@ inline int intersectSegments(const Point_t &segment1_pt1, const Point_t &segment
 
   // si el producto vectorial de los vectores que unen ambos segmentos es 0 son paralelas
   double cross_product = vs1[0]*vs2[1] - vs1[1]*vs2[0];
-  if (cross_product) {
+  if (cross_product != 0.) {
     Point_t v11_12(segment2_pt1.x - segment1_pt1.x, segment2_pt1.y - segment1_pt1.y);
     double t = (v11_12.x*vs2[1] - v11_12.y*vs2[0]) / cross_product;
     double u = (v11_12.x*vs1[1] - v11_12.y*vs1[0]) / cross_product;
@@ -1112,13 +1120,13 @@ findInscribedCircleSequential(T in_first, T in_last,
                               const std::array<typename std::iterator_traits<T>::value_type, 2> bounds, 
                               double xCells, double yCells, double zCells) 
 {
-  typedef typename std::iterator_traits<T>::value_type Point3_t;
+  using Point3_t = typename std::iterator_traits<T>::value_type;
 
   Point3_t pia((bounds[0].x + bounds[1].x) / 2., (bounds[0].y + bounds[1].y) / 2., (bounds[0].z + bounds[1].z) / 2.);
   Point3_t tmp;
   
   // Se determina el plano de mejor ajuste
-  std::array<double, 4> plane;
+  std::array<double, 4> plane{};
   nPointsPlaneLS(in_first, in_last, plane, true);
 
   // Máxima distancia de los puntos al plano
@@ -1146,7 +1154,7 @@ findInscribedCircleSequential(T in_first, T in_last,
 
 
   // Plano horizontal (1,1,0)
-  std::array<double, 4> plane_z;
+  std::array<double, 4> plane_z{};
   plane_z[0] = 0;
   plane_z[1] = 0;
   plane_z[2] = 1;
@@ -1228,7 +1236,7 @@ findInscribedCircleSequential(T in_first, T in_last,
                 bVertex = true;
               nIntersection += intersectSegments(poligon_z[i], poligon_z[j], pth1, pth2, &ptp);
             }
-            if (isInner == false) {
+            if (!isInner) {
               if (bVertex) 
                 nIntersection--;
               if (nIntersection % 2 == 0) isInner = false;
@@ -1271,7 +1279,7 @@ template <typename T>
 class point_2d_temp
 {
 public:
-  typedef T value_type;
+  using value_type = T;
   T x;
   T y;
   point_2d_temp() : x(0), y(0) {}
@@ -1282,7 +1290,7 @@ template<typename T> inline
 typename std::iterator_traits<T>::value_type 
 findInscribedCircleSequential(T in_first, T in_last, const std::array<typename std::iterator_traits<T>::value_type, 2> bounds, double nCells, double mCells) 
 {
-  typedef typename std::iterator_traits<T>::value_type Point_t;
+  using Point_t = typename std::iterator_traits<T>::value_type;
   typename std::iterator_traits<T>::difference_type size = std::distance(in_first, in_last);
 
   Point_t pia((bounds[0].x + bounds[1].x) / 2., (bounds[0].y + bounds[1].y) / 2.);
@@ -1309,8 +1317,9 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
   // Maxima distancia
 	double max_distance = 0.;
 
-	int i, j;
-    double tmp_distance = std::numeric_limits<double>().max();
+	int i;
+	int j;
+    double tmp_distance = std::numeric_limits<double>::max();
 	for (i = 0; i <= nCells; i++) {
 
 		pt_tmp.x = bounds[0].x + i * increment_x;
@@ -1335,7 +1344,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
         }
 
         Point_t prev;
-        if (isInner == false) {
+        if (!isInner) {
             
           Point_t pth1 = pt_tmp;
           Point_t pth2(w_pol[1].x, pt_tmp.y);
@@ -1375,7 +1384,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
           }
 
           
-          if (bVertex == true) {
+          if (bVertex) {
             std::vector<int> order;
             int vertex_prev = 0;
             int vertex_next = 0;
@@ -1401,7 +1410,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
 
               if (pt_prev.y == pth1.y) {
                 continue;
-              } else {
+              } 
                 if (pt_next.y == pth1.y) {
                   int prev = isLeft(pth1, pth2, pt_prev);
                   if (vertex_next == size - 1) {
@@ -1421,7 +1430,7 @@ findInscribedCircleSequential(T in_first, T in_last, const std::array<typename s
                   else nIntersection--;
                 }
 
-              }
+              
 
             }
           }
@@ -1462,7 +1471,7 @@ template<typename T> inline
 void poleOfInaccessibility2D(T in_first, T in_last, typename std::iterator_traits<T>::value_type *pole, double nCells = 20., double mCells = 20.) 
 {
   if (pole == NULL) return;
-  typedef typename std::iterator_traits<T>::value_type Point_t;
+  using Point_t = typename std::iterator_traits<T>::value_type;
 
   //Window<Point_t> w = polygon.getWindow();
   std::array<Point_t, 2> w;
@@ -1512,7 +1521,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
 {
   if (pole == NULL) return;
 
-  typedef typename std::iterator_traits<T>::value_type Point_t;
+  using Point_t = typename std::iterator_traits<T>::value_type;
   typename std::iterator_traits<T>::difference_type size = std::distance(in_first, in_last);
 
   T it = in_first;
@@ -1532,7 +1541,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
  
 
   // Se determina el plano de mejor ajuste
-  std::array<double, 4> plane;
+  std::array<double, 4> plane{};
   nPointsPlaneLS(in_first, in_last, plane, true);
 
   // Máxima distancia de los puntos al plano
@@ -1560,7 +1569,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
   Point_t pc((bounding_box[0].x + bounding_box[1].x) / 2., (bounding_box[0].y + bounding_box[1].y) / 2., (bounding_box[0].z + bounding_box[1].z) / 2.);
 
   // Plano horizontal (1,1,0)
-  std::array<double, 4> plane_z;
+  std::array<double, 4> plane_z{};
   plane_z[0] = 0;
   plane_z[1] = 0;
   plane_z[2] = 1;
@@ -1575,7 +1584,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
     poligon_z.push_back(point_2d_temp<typename Point_t::value_type>(pt.x, pt.y));
   }
 
-  typedef point_2d_temp<typename Point_t::value_type> point2d_t;
+  using point2d_t = point_2d_temp<typename Point_t::value_type>;
 
   // Ventana envolvente del poligono 
   std::array<point2d_t, 2> w_pol;
@@ -1609,8 +1618,9 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
     // Maxima distancia
 	  double max_distance = 0.;
 
-	  int i, j;
-    double tmp_distance = std::numeric_limits<double>().max();
+	  int i;
+	  int j;
+    double tmp_distance = std::numeric_limits<double>::max();
 	  for (i = 0; i <= xCells; i++) {
 
 		  tmp.x = w[0].x + i * increment_x;
@@ -1634,7 +1644,7 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
             it2++;
           }
           
-          if (isInner == false) {
+          if (!isInner) {
 
             point2d_t pth1 = tmp;
             point2d_t pth2(w_pol[1].x, tmp.y);
@@ -1664,28 +1674,28 @@ void poleOfInaccessibility3D(T in_first, T in_last, typename std::iterator_trait
             }
 
 
-            if (bVertex == true) {
+            if (bVertex) {
               std::vector<int> order;
               int vertex_prev = 0;
               int vertex_next = 0;
               point2d_t pt_prev;
               point2d_t pt_next;
-              for (int i = 0; i < vertex_id.size(); i++) {
+              for (int &id : vertex_id) {
                 // Se comprueban los puntos anterior y siguiente
-                if (vertex_id[i] == 0) {
+                if (id == 0) {
                   pt_prev = *(poligon_z.begin() + size - 1);
                   vertex_prev = size - 1;
                 } else {
-                  pt_prev = *(poligon_z.begin() + vertex_id[i] - 1);
-                  vertex_prev = vertex_id[i] - 1;
+                  pt_prev = *(poligon_z.begin() + id - 1);
+                  vertex_prev = id - 1;
                 }
 
-                if (vertex_id[i] == size - 1) {
+                if (id == size - 1) {
                   pt_next = *(poligon_z.begin());
                   vertex_next = 0;
                 } else {
-                  pt_next = *(poligon_z.begin() + vertex_id[i] + 1);
-                  vertex_next = vertex_id[i] + 1;
+                  pt_next = *(poligon_z.begin() + id + 1);
+                  vertex_next = id + 1;
                 }
 
                 if (pt_prev.y == pth1.y) {

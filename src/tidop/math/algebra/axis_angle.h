@@ -63,7 +63,7 @@ public:
 
   AxisAngle();
   AxisAngle(T angle, const Vector<T, 3> &axis);
-  ~AxisAngle() override;
+  ~AxisAngle() override = default;
 
 public:
 
@@ -91,12 +91,6 @@ AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
   TL_TODO("normalizar vector")
-}
-
-template<typename T>
-AxisAngle<T>::~AxisAngle()
-{
-
 }
 
 /*! \} */ // end of Algebra

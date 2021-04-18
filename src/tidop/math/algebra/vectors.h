@@ -27,7 +27,6 @@
 
 #include "config_tl.h"
 #include "tidop/math/math.h"
-#include "tidop/math/mathutils.h"
 
 namespace tl
 {
@@ -196,7 +195,7 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   v.y = pt2.y - pt1.y;
   if (v.x == 0 && v.y == 0) return azimut;
   azimut = atan2(v.x, v.y);
-  if (azimut < 0.) azimut += two_pi;
+  if (azimut < 0.) azimut += consts::two_pi<double>;
   return azimut;
 }
 

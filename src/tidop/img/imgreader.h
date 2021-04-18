@@ -56,7 +56,7 @@ class TL_EXPORT ImageReader
 
 public:
 
-  ImageReader(const std::string &fileName);
+  ImageReader(std::string fileName);
   virtual ~ImageReader() = default;
 
   /*!
@@ -82,7 +82,7 @@ public:
    * \return imagen
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
-                       const Size<int> size = Size<int>(), 
+                       Size<int> size = Size<int>(), 
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!
@@ -182,17 +182,18 @@ public:
    */
   virtual WindowD window() const = 0;
 
+  std::string fileName() const;
+
 protected:
   
-  void windowRead(const WindowI &wLoad, 
+  void windowRead(const WindowI &wLoad,
                   WindowI *wRead, 
                   PointI *offset) const;
 
-protected:
+private:
 
   std::string mFileName;
-  std::string mEpsgCode;
-  Affine<PointD> mAffine;
+
 };
 
 
@@ -204,7 +205,7 @@ class TL_EXPORT ImageReaderFactory
 
 private:
 
-  ImageReaderFactory() {}
+  ImageReaderFactory() = default;
 
 public:
 

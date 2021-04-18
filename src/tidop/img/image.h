@@ -62,11 +62,11 @@ private:
 
 private:
 
-  int mRows;
-  int mCols;
-  DataType mType;
-  int mChannels;
-  unsigned char *mData;
+  int mRows{0};
+  int mCols{0};
+  DataType mType{DataType::TL_8U};
+  int mChannels{1};
+  unsigned char *mData{nullptr};
 };
 
 } // End namespace tl

@@ -27,17 +27,16 @@
 
 #include "config_tl.h"
 
-#include "tidop/core/defs.h"
-#include "tidop/core/messages.h"
-#include "tidop/math/mathutils.h"
-#include "tidop/math/algebra/matrix.h"
-#include "tidop/math/algebra/vector.h"
+#include <algorithm>
 
 #ifdef HAVE_OPENBLAS
 #include <lapacke.h>
 #endif // HAVE_OPENBLAS
 
-#include <algorithm>
+#include "tidop/core/defs.h"
+#include "tidop/core/messages.h"
+#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/algebra/vector.h"
 
 namespace tl
 {
@@ -142,7 +141,7 @@ private:
   void lapackeDecompose();
 #endif // HAVE_OPENBLAS
 
-protected:
+private:
 
   Matrix<T, _rows, _cols> A;
   Matrix<T, _rows, _cols> U;
@@ -229,8 +228,16 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
   this->U = this->A;
   Vector<T, _cols> rv1(mCols);
-  int i, j, k, l;
-  T anorm, f, g, h, s, scale;
+  int i;
+  int j;
+  int k;
+  int l;
+  T anorm;
+  T f;
+  T g;
+  T h;
+  T s;
+  T scale;
   g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
 
   int one = 1;
@@ -340,7 +347,10 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   bool flag;
   int its;
   size_t nm;
-  T c, x, y, z;
+  T c;
+  T x;
+  T y;
+  T z;
   for (k = static_cast<int>(mCols) - one; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
     for (its = 0; its < mIterationMax; its++) { // singular values, and over allowed iterations.
       flag = true;
@@ -440,7 +450,11 @@ template<
 >
 inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
 {
-  int i, j, k, s, inc = 1;
+  int i;
+  int j;
+  int k;
+  int s;
+  int inc = 1;
   T sw;
   Vector<T, _rows> su(mRows);
   Vector<T, _cols> sv(mCols);

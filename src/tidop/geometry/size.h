@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -44,7 +44,7 @@ class Size
 
 public:
 
-  typedef T value_type;
+  using value_type = T;
 
 public:
 
@@ -60,7 +60,7 @@ public:
   bool isValid() const;
 
   /*!
-   * \brief Conversión de tipo
+   * \brief ConversiÃ³n de tipo
    */
   template<typename T2> operator Size<T2>() const;
 
@@ -71,9 +71,9 @@ public:
 };
 
 
-typedef Size<int> SizeI;
-typedef Size<float> SizeF;
-typedef Size<double> SizeD;
+using SizeI = Size<int>;
+using SizeF = Size<float>;
+using SizeD = Size<double>;
 
 
 
@@ -86,21 +86,21 @@ Size<T>::Size()
 
 template<typename T> inline
 Size<T>::Size(T width, T height)
-  : width(width), 
+  : width(width),
     height(height)
 {
 }
 
 template<typename T> inline
 Size<T>::Size(const Size &size)
-  : width(size.width), 
+  : width(size.width),
     height(size.height)
 {
 }
 
 template<typename T> inline
 Size<T>::Size(Size &&size) TL_NOEXCEPT
-  : width(size.width), 
+  : width(size.width),
     height(size.height)
 {
 }
@@ -137,29 +137,30 @@ inline bool tl::Size<T>::isValid() const
   return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
-template<typename T> template<typename T2> inline 
+template<typename T> template<typename T2> inline
 Size<T>::operator Size<T2>() const
 {
+  Size<T2> size;
   if (std::is_integral<T2>::value) {
-    return Size<T2>(TL_ROUND_TO_INT(this->width),
-                    TL_ROUND_TO_INT(this->height));
+    size.width = TL_ROUND_TO_INT(this->width);
+    size.height = TL_ROUND_TO_INT(this->height);
   } else {
-    return Size<T2>(static_cast<T2>(this->width),
-                    static_cast<T2>(this->height));
+    size.width = static_cast<T2>(this->width);
+    size.height = static_cast<T2>(this->height);
   }
 }
 
 template<typename T> static inline
 bool operator == (const Size<T> &size1, const Size<T> &size2)
 {
-  return (size1.width == size2.width && 
+  return (size1.width == size2.width &&
           size1.height == size2.height);
 }
 
 template<typename T> static inline
 bool operator != (const Size<T> &size1, const Size<T> &size2)
 {
-  return (size1.width != size2.width || 
+  return (size1.width != size2.width ||
           size1.height != size2.height);
 }
 
@@ -182,7 +183,7 @@ Size<T>& operator -= (Size<T> &size1, const Size<T> &size2)
 template<typename T> static inline
 Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
 {
-  return Size<T>(size1.width + size2.width, 
+  return Size<T>(size1.width + size2.width,
                  size1.height + size2.height);
 }
 
@@ -196,7 +197,7 @@ Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
 template<typename T> static inline
 Size<T> operator * (const Size<T> &size, T scalar)
 {
-  return Size<T>(size.width * scalar, 
+  return Size<T>(size.width * scalar,
                  size.height * scalar);
 }
 
@@ -219,7 +220,7 @@ Size<T>& operator /= (Size<T> &size, T scalar)
 template<typename T> static inline
 Size<T> operator / (const Size<T> &size, T scalar)
 {
-  return Size<T>(size.width / scalar, 
+  return Size<T>(size.width / scalar,
                  size.height / scalar);
 }
 

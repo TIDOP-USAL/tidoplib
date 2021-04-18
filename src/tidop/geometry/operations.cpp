@@ -35,17 +35,17 @@ void joinLinesByDist(const std::vector<Line> &linesIn, std::vector<Line> *linesO
   std::vector<GroupLines> linesGrops;
   groupLinesByDist(linesIn, &linesGrops, dist);
 
-  for (size_t ilg = 0; ilg < linesGrops.size(); ilg++) {
+  for (auto &linesGrop : linesGrops) {
     std::vector<PointI> pts;
     int xmin = TL_INT_MAX;
     int xmax = TL_INT_MIN;
-    for (int il = 0; il < linesGrops[ilg].size(); il++) {
-      pts.push_back(linesGrops[ilg][il].pt1);
-      xmin = std::min(xmin, linesGrops[ilg][il].pt1.x);
-      xmax = std::max(xmax, linesGrops[ilg][il].pt1.x);
-      pts.push_back(linesGrops[ilg][il].pt2);
-      xmin = std::min(xmin, linesGrops[ilg][il].pt2.x);
-      xmax = std::max(xmax, linesGrops[ilg][il].pt2.x);
+    for (size_t il = 0; il < linesGrop.size(); il++) {
+      pts.push_back(linesGrop[il].pt1);
+      xmin = std::min(xmin, linesGrop[il].pt1.x);
+      xmax = std::max(xmax, linesGrop[il].pt1.x);
+      pts.push_back(linesGrop[il].pt2);
+      xmin = std::min(xmin, linesGrop[il].pt2.x);
+      xmax = std::max(xmax, linesGrop[il].pt2.x);
     }
     double m = 0.;
     double b = 0.;
@@ -62,13 +62,13 @@ void groupParallelLines(std::vector<Line> linesaux, std::vector<GroupLines> *cur
 {
 
   //Comenzamos a agrupar por la primera linea
-  while (linesaux.size() > 0) {
+  while (!linesaux.empty()) {
 
     GroupLines lg;
     lg.add(linesaux[0]);
     linesaux.erase(linesaux.begin());
 
-    for (int ilg = 0; ilg < lg.size(); ilg++) {
+    for (size_t ilg = 0; ilg < lg.size(); ilg++) {
       for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isParallel(linesaux[i], angTol)) {
           lg.add(linesaux[i]);
@@ -86,13 +86,13 @@ void groupLinesByDist(const std::vector<Line> &linesIn, std::vector<GroupLines> 
 
   //Comenzamos a agrupar por la primera linea
   std::vector<Line> linesaux = linesIn;
-  while (linesaux.size() > 0) {
+  while (!linesaux.empty()) {
 
     GroupLines lg;
     lg.add(linesaux[0]);
     linesaux.erase(linesaux.begin());
 
-    for (int ilg = 0; ilg < lg.size(); ilg++) {
+    for (size_t ilg = 0; ilg < lg.size(); ilg++) {
       for (size_t i = 0; i < linesaux.size(); i++) {
         if (lg[ilg].isNear(linesaux[i], dist)) {
           lg.add(linesaux[i]);

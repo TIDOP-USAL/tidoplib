@@ -43,7 +43,7 @@ namespace tl
 namespace math
 {
 
-constexpr auto DynamicMatrix = std::numeric_limits<size_t>().max();
+constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
 
 /*! \addtogroup Math
  *  \{
@@ -83,7 +83,7 @@ public:
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
   MatrixBase(T *data, size_t rows = 0, size_t cols = 0);
-  virtual ~MatrixBase() {}
+  virtual ~MatrixBase() = default;
 
   MatrixBase &operator = (const MatrixBase &matrix);
   MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
@@ -152,7 +152,7 @@ MatrixBase<T, _rows, _cols>::MatrixBase()
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixBase<T, _rows, _cols>::MatrixBase(size_t rows, size_t cols)
+MatrixBase<T, _rows, _cols>::MatrixBase(size_t  /*rows*/, size_t  /*cols*/)
   : mData()
 {
   //static_assert(_rows == -1 && _cols == -1, "Dynamic Matrix not support resize");
@@ -160,7 +160,7 @@ MatrixBase<T, _rows, _cols>::MatrixBase(size_t rows, size_t cols)
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
-MatrixBase<T, _rows, _cols>::MatrixBase(size_t rows, size_t cols, T val)
+MatrixBase<T, _rows, _cols>::MatrixBase(size_t  /*rows*/, size_t  /*cols*/, T val)
   : mData()
 {
   //static_assert(_rows == -1 && _cols == -1, "Dynamic Matrix not support resize");
@@ -188,7 +188,7 @@ MatrixBase<T, _rows, _cols>::MatrixBase(std::initializer_list<T> values)
 }
 
 template<typename T, size_t _rows, size_t _cols>
-inline MatrixBase<T, _rows, _cols>::MatrixBase(T *data, size_t rows, size_t cols)
+inline MatrixBase<T, _rows, _cols>::MatrixBase(T *data, size_t  /*rows*/, size_t  /*cols*/)
   : mData(data)
 {
 }
@@ -220,13 +220,13 @@ MatrixBase<T, _rows, _cols> &MatrixBase<T, _rows, _cols>::operator = (MatrixBase
 template<typename T, size_t _rows, size_t _cols> inline 
 T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c)
 {
-  return mData[r * this->cols() + c];
+  return mData.at(r * this->cols() + c);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
 {
-  return mData[r * this->cols() + c];
+  return mData.at(r * this->cols() + c);
 }
 
 //template<typename T, size_t _rows, size_t _cols> inline 
@@ -277,14 +277,14 @@ public:
 
 public:
 
-  MatrixBase();
+  MatrixBase()= default;
   MatrixBase(size_t rows, size_t cols);
   MatrixBase(size_t rows, size_t cols, T val);
   MatrixBase(const MatrixBase &matrix);
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
-  MatrixBase(T *data, size_t rows, size_t cols);
-  virtual ~MatrixBase() {}
+  MatrixBase(const T *data, size_t rows, size_t cols);
+  virtual ~MatrixBase() = default;
 
   MatrixBase &operator = (const MatrixBase &matrix);
   MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
@@ -310,17 +310,10 @@ public:
 private:
 
   std::vector<T> mData;
-  size_t mRows;
-  size_t mCols;
+  size_t mRows{0};
+  size_t mCols{0};
 };
 
-
-template<typename T> inline 
-MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase()
-  : mRows(0),
-    mCols(0)
-{
-}
 
 template<typename T> inline
 MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(size_t rows, size_t cols)
@@ -364,7 +357,7 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(std::initializer_list<T>
 }
 
 template<typename T> inline
-MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(T *data, size_t rows, size_t cols)
+MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(const T *data, size_t rows, size_t cols)
   : mData(rows *cols, -std::numeric_limits<T>().max()),
     mRows(rows),
     mCols(cols)
@@ -460,7 +453,7 @@ public:
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
   MatrixBase(T *data, size_t rows, size_t cols);
-  virtual ~MatrixBase() {}
+  virtual ~MatrixBase() = default;
 
   MatrixBase &operator = (const MatrixBase &matrix);
   MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
@@ -792,7 +785,7 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Matrix();
+  Matrix() = default;
 
   /*!
    * \brief Constructora filas-columnas
@@ -1035,25 +1028,20 @@ private:
 
 /* Definición de alias Matrix */
 
-typedef Matrix<int, 2, 2>    Matrix2x2i;
-typedef Matrix<float, 2, 2>  Matrix2x2f;
-typedef Matrix<double, 2, 2> Matrix2x2d;
-typedef Matrix<int, 3, 3>    Matrix3x3i;
-typedef Matrix<float, 3, 3>  Matrix3x3f;
-typedef Matrix<double, 3, 3> Matrix3x3d;
-typedef Matrix<int, 4, 4>    Matrix4x4i;
-typedef Matrix<float, 4, 4>  Matrix4x4f;
-typedef Matrix<double, 4, 4> Matrix4x4d;
-
+using Matrix2x2i = Matrix<int, 2, 2>;
+using Matrix2x2f = Matrix<float, 2, 2>;
+using Matrix2x2d = Matrix<double, 2, 2>;
+using Matrix3x3i = Matrix<int, 3, 3>;
+using Matrix3x3f = Matrix<float, 3, 3>;
+using Matrix3x3d = Matrix<double, 3, 3>;
+using Matrix4x4i = Matrix<int, 4, 4>;
+using Matrix4x4f = Matrix<float, 4, 4>;
+using Matrix4x4d = Matrix<double, 4, 4>;
 
 
 
 /* Implementación Matrix */
 
-template<typename T, size_t _rows, size_t _cols> inline
-Matrix<T, _rows, _cols>::Matrix()
-{
-}
 
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(size_t rows, size_t cols)
@@ -1731,17 +1719,19 @@ T Matrix<T, _rows, _cols>::trace() const
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::invertible()
 {
+  bool r = true;
   T det = determinant();
-  if (det == static_cast<T>(0)) return false;
-  else return true;
+  if (det == static_cast<T>(0)) r = false;
+  return r;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::singular()
 {
+  bool r = false;
   T det = determinant();
-  if (det == static_cast<T>(0)) return true;
-  else return false;
+  if (det == static_cast<T>(0)) r = true;
+  return r;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
@@ -2022,8 +2012,8 @@ Matrix<T, _rows, _cols> &operator += (Matrix<T, _rows, _cols> &matrix1,
   size_t cols2 = matrix2.cols();
   TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size");
 
-  for (int r = 0; r < rows1; r++) {
-    for (int c = 0; c < cols1; c++) {
+  for (size_t r = 0; r < rows1; r++) {
+    for (size_t c = 0; c < cols1; c++) {
       matrix1.at(r, c) += matrix2.at(r, c);
     }
   }

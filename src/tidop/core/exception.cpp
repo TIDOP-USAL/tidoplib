@@ -28,6 +28,7 @@
 
 #include <locale>
 #include <codecvt>
+#include <utility>
 
 //TODO: mirar
 //https://en.cppreference.com/w/cpp/error/nested_exception
@@ -42,21 +43,21 @@ namespace tl
 {
 
 
-Exception::Exception(const std::string &error)
-  : mError(error),
+Exception::Exception(std::string error) TL_NOEXCEPT
+  : mError(std::move(error)),
     mFile(""),
     mLine(-1),
     mFunction("")
 {
 }
 
-Exception::Exception(const std::string &error, 
+Exception::Exception(std::string error, 
                      const std::string &file, 
                      int line, 
-                     const std::string &function )
-  : mError(error),
+                     std::string function ) TL_NOEXCEPT
+  : mError(std::move(error)),
     mLine(line), 
-    mFunction(function)
+    mFunction(std::move(function))
 {
   mFile = fs::path(file).filename().string();
   messagef();

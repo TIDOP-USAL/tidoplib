@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -749,7 +749,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_xyx_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(0.302905, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -763,7 +763,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_xzx_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(0.302905, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(-0.673887, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -777,7 +777,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_yxy_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(0.302905, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(-0.673887, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -791,7 +791,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_yzy_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(0.302905, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -805,7 +805,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_zxz_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(0.302905, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -819,7 +819,7 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_zyz_to_Quaternion, RotationConverterTest)
   BOOST_CHECK_CLOSE(-0.673887, quaternion.x, 0.1);
   BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.1);
   BOOST_CHECK_CLOSE(0.302905, quaternion.z, 0.1);
-  /// Número muy pequeño, lo cual da problemas con el test normal
+  /// NÃºmero muy pequeÃ±o, lo cual da problemas con el test normal
   double abs_w = std::abs(quaternion.w);
   bool check = abs_w < 0.0000001;
   BOOST_CHECK(check);
@@ -1011,39 +1011,39 @@ BOOST_FIXTURE_TEST_CASE(MatrixZeroToEulerAngles, RotationConverterTest)
 
   eulerAngles.axes = EulerAngles<double>::Axes::zxz;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xyx;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzy;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyz;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
   BOOST_CHECK_CLOSE(0, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzx;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
   BOOST_CHECK_CLOSE(0, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxy;
   RotationConverter<double>::convert(rot_zero, eulerAngles);
   BOOST_CHECK_CLOSE(0, eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI_2, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::half_pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
 }
 
@@ -1439,74 +1439,74 @@ BOOST_FIXTURE_TEST_CASE(QuaternionIToEulerAngles, RotationConverterTest)
   EulerAngles<double> eulerAngles;
   eulerAngles.axes = EulerAngles<double>::Axes::xyz;
   RotationConverter<double>::convert(q_i, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzy;
   RotationConverter<double>::convert(q_i, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxz;
   RotationConverter<double>::convert(q_i, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzx;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zxy;
   RotationConverter<double>::convert(q_i, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyx;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zxz;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xyx;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzy;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyz;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzx;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxy;
   RotationConverter<double>::convert(q_i, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 }
 
@@ -1516,25 +1516,25 @@ BOOST_FIXTURE_TEST_CASE(QuaternionJToEulerAngles, RotationConverterTest)
   EulerAngles<double> eulerAngles;
   eulerAngles.axes = EulerAngles<double>::Axes::xyz;
   RotationConverter<double>::convert(q_j, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzy;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxz;
   RotationConverter<double>::convert(q_j, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzx;
   RotationConverter<double>::convert(q_j, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
@@ -1542,49 +1542,49 @@ BOOST_FIXTURE_TEST_CASE(QuaternionJToEulerAngles, RotationConverterTest)
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyx;
   RotationConverter<double>::convert(q_j, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zxz;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xyx;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzy;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyz;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzx;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxy;
   RotationConverter<double>::convert(q_j, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(QuaternionKToEulerAngles, RotationConverterTest)
@@ -1594,35 +1594,35 @@ BOOST_FIXTURE_TEST_CASE(QuaternionKToEulerAngles, RotationConverterTest)
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzy;
   RotationConverter<double>::convert(q_k, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxz;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzx;
   RotationConverter<double>::convert(q_k, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zxy;
   RotationConverter<double>::convert(q_k, eulerAngles);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyx;
   RotationConverter<double>::convert(q_k, eulerAngles);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.omega, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
@@ -1630,37 +1630,37 @@ BOOST_FIXTURE_TEST_CASE(QuaternionKToEulerAngles, RotationConverterTest)
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xyx;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(-TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(-consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yzy;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::zyz;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::xzx;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
   BOOST_CHECK_CLOSE(0., eulerAngles.kappa, 0.1);
 
   eulerAngles.axes = EulerAngles<double>::Axes::yxy;
   RotationConverter<double>::convert(q_k, eulerAngles);
   BOOST_CHECK_CLOSE(0., eulerAngles.omega, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.phi, 0.1);
-  BOOST_CHECK_CLOSE(TL_PI, eulerAngles.kappa, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.phi, 0.1);
+  BOOST_CHECK_CLOSE(consts::pi<double>, eulerAngles.kappa, 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(QuaternionToEulerAngles, RotationConverterTest)

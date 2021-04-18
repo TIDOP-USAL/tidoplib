@@ -44,14 +44,14 @@ struct msgProperties {
   Console::Intensity intensity;
 };
 
-static struct msgProperties msgTemplate[] = {   
+static struct msgProperties msgTemplate[] = {
   { "Debug:   %s", "Debug:   %s (%s:%u, %s)", Console::Color::white, Console::Intensity::normal},
   { "Info:    %s", "Info:    %s (%s:%u, %s)", Console::Color::white, Console::Intensity::bright},
   { "Warning: %s", "Warning: %s (%s:%u, %s)", Console::Color::magenta, Console::Intensity::bright},
   { "Error:   %s", "Error:   %s (%s:%u, %s)", Console::Color::red, Console::Intensity::bright}
 };
 
-msgProperties messageProperties(MessageLevel msgLevel) 
+msgProperties messageProperties(MessageLevel msgLevel)
 {
   int iLevel = 0;
   switch (msgLevel) {
@@ -81,10 +81,10 @@ std::unique_ptr<Console> Console::sObjConsole;
 std::mutex Console::mtx;
 
 Console::Console()
-#ifdef TL_MESSAGE_HANDLER 
+#ifdef TL_MESSAGE_HANDLER
   : MessageManager::Listener(false)
 #endif
-{ 
+{
 #ifdef WIN32
   init(STD_OUTPUT_HANDLE);
 #else
@@ -92,7 +92,7 @@ Console::Console()
 #endif
 }
 
-Console::~Console() 
+Console::~Console()
 {
   reset();
   sObjConsole.release();
@@ -100,9 +100,9 @@ Console::~Console()
 
 Console &Console::instance()
 {
-  if (sObjConsole.get() == nullptr) {
+  if (sObjConsole == nullptr) {
     std::lock_guard<std::mutex> lck(Console::mtx);
-    if (sObjConsole.get() == nullptr) {
+    if (sObjConsole == nullptr) {
       sObjConsole.reset(new Console());
     }
   }
@@ -197,7 +197,7 @@ void Console::setConsoleBackgroundColor(Console::Color backColor,
   update();
 }
 
-void Console::setConsoleForegroundColor(Console::Color foreColor, 
+void Console::setConsoleForegroundColor(Console::Color foreColor,
                                         Console::Intensity intensity)
 {
 #ifdef WIN32
@@ -242,10 +242,10 @@ void Console::setConsoleForegroundColor(Console::Color foreColor,
   update();
 }
 
-void Console::setConsoleUnicode() 
+void Console::setConsoleUnicode()
 {
 #ifdef WIN32
-  //SetConsoleOutputCP(1252);     
+  //SetConsoleOutputCP(1252);
   //SetConsoleCP(1252);
   SetConsoleOutputCP(CP_UTF8/*65001*/);
 #endif
@@ -286,12 +286,12 @@ void Console::setTitle(const std::string &title)
 #endif
 }
 
-#ifdef TL_MESSAGE_HANDLER 
+#ifdef TL_MESSAGE_HANDLER
 
 TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-void Console::onMsgDebug(const std::string &message, 
-                         const std::string &date)
+void Console::onMsgDebug(const std::string &message,
+                         const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_debug)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_debug).foreColor,
@@ -301,8 +301,8 @@ void Console::onMsgDebug(const std::string &message,
   }
 }
 
-void Console::onMsgInfo(const std::string &message, 
-                        const std::string &date)
+void Console::onMsgInfo(const std::string &message,
+                        const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_info)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_info).foreColor,
@@ -312,8 +312,8 @@ void Console::onMsgInfo(const std::string &message,
   }
 }
 
-void Console::onMsgWarning(const std::string &message, 
-                           const std::string &date)
+void Console::onMsgWarning(const std::string &message,
+                           const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_warning)) {
     setConsoleForegroundColor(messageProperties(MessageLevel::msg_warning).foreColor,
@@ -323,8 +323,8 @@ void Console::onMsgWarning(const std::string &message,
   }
 }
 
-void Console::onMsgError(const std::string &message, 
-                         const std::string &date)
+void Console::onMsgError(const std::string &message,
+                         const std::string &)
 {
   if (sLevel.isActive(MessageLevel::msg_error)) {
     printErrorMessage(message);
@@ -333,18 +333,18 @@ void Console::onMsgError(const std::string &message,
 
 TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-#endif // TL_MESSAGE_HANDLER 
+#endif // TL_MESSAGE_HANDLER
 
 #ifdef WIN32
-void Console::init(DWORD handle) 
+void Console::init(DWORD handle)
 {
   setConsoleUnicode();
   mHandle = GetStdHandle(handle);
-  CONSOLE_SCREEN_BUFFER_INFO info; 
+  CONSOLE_SCREEN_BUFFER_INFO info;
   if (! GetConsoleScreenBufferInfo(mHandle, &info)) {
     mOldColorAttrs = 0x0007;
   } else {
-    mOldColorAttrs = info.wAttributes; 
+    mOldColorAttrs = info.wAttributes;
   }
   mForeColor = (mOldColorAttrs & 0x0007);
   mForeIntensity = (mOldColorAttrs & 0x0008);
@@ -405,7 +405,7 @@ EnumFlags<MessageLevel> Console::getMessageLevel() const
 
 /* ---------------------------------------------------------------------------------- */
 
-Argument::Argument(const std::string &name, 
+Argument::Argument(const std::string &name,
                    const std::string &description)
   : mName(name),
     mDescription(description),
@@ -414,7 +414,7 @@ Argument::Argument(const std::string &name,
 
 }
 
-Argument::Argument(const char &shortName, 
+Argument::Argument(const char &shortName,
                    const std::string &description)
   : mName(""),
     mDescription(description),
@@ -422,8 +422,8 @@ Argument::Argument(const char &shortName,
 {
 }
 
-Argument::Argument(const std::string &name, 
-                   const char &shortName, 
+Argument::Argument(const std::string &name,
+                   const char &shortName,
                    const std::string &description)
   : mName(name),
     mDescription(description),
@@ -441,11 +441,7 @@ Argument::Argument(const Argument &argument)
 Argument::Argument(Argument &&argument) TL_NOEXCEPT
   : mName(std::move(argument.mName)),
     mDescription(std::move(argument.mDescription)),
-    mShortName(std::move(argument.mShortName))
-{
-}
-
-Argument::~Argument()
+    mShortName(argument.mShortName)
 {
 }
 
@@ -464,7 +460,7 @@ Argument &Argument::operator = (Argument &&arg) TL_NOEXCEPT
   if (this != &arg){
     this->mName = std::move(arg.mName);
     this->mDescription = std::move(arg.mName);
-    this->mShortName = std::move(arg.mShortName);
+    this->mShortName = arg.mShortName;
   }
   return *this;
 }
@@ -509,8 +505,7 @@ Command::Command()
   : mName(""),
     mDescription(""),
     mCmdArgs(0),
-    mVersion("0.0.0"),
-    mExamples()
+    mVersion("0.0.0")
 {
     init();
 }
@@ -529,19 +524,17 @@ Command::Command(const std::string &name, const std::string &description)
   : mName(name),
     mDescription(description),
     mCmdArgs(0),
-    mVersion("0.0.0"),
-    mExamples()
+    mVersion("0.0.0")
 {
   init();
 }
-  
+
 Command::Command(const std::string &name, const std::string &description,
                  std::initializer_list<std::shared_ptr<Argument>> arguments)
   : mName(name),
     mDescription(description),
     mCmdArgs(arguments),
-    mVersion("0.0.0"),
-    mExamples()
+    mVersion("0.0.0")
 {
 }
 
@@ -583,7 +576,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
   for (int i = 1; i < argc; ++i) {
     std::string arg_cmd_name = std::string(argv[i]);
     std::size_t found_name = arg_cmd_name.find("--");
-    std::size_t found_short_name = arg_cmd_name.find("-");
+    std::size_t found_short_name = arg_cmd_name.find('-');
 
     if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
@@ -611,7 +604,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
               }
             }
           }
-          if (bFind == false) {
+          if (!bFind) {
             /// Si no encuentra no es opción
             check_combined = false;
             break;
@@ -643,7 +636,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
       /// Se comprueba si el elemento siguiente es un valor
       std::string arg_value = std::string(argv[i+1]);
       std::size_t found_next_name = arg_value.find("--");
-      std::size_t found_next_short_name = arg_value.find("-");
+      std::size_t found_next_short_name = arg_value.find('-');
       if ((found_next_name != std::string::npos  && found_next_name == 0) ||
           (found_next_short_name != std::string::npos && found_next_short_name == 0)){
         //value = "true";
@@ -719,13 +712,15 @@ Command::Status Command::parse(int argc, const char * const argv[])
       bFind = false;
     }
 
-    if (bFind == false && bOptional == false) {
+    if (!bFind && !bOptional) {
       msgError("Missing mandatory argument: %s", arg->name().c_str());
       return Command::Status::parse_error;
-    } else if (bFind == true && bFindValue == false) {
+    }
+    if (bFind && !bFindValue) {
       msgError("Missing value for argument: %s", arg->name().c_str());
       return Command::Status::parse_error;
-    } else if (!arg->isValid()){
+    }
+    if (!arg->isValid()){
       msgError("Invalid argument (%s) value", arg->name().c_str());
       return Command::Status::parse_error;
     }
@@ -820,16 +815,16 @@ void Command::showHelp() const
   /// Descripción del comando
   std::cout << mDescription << "\n\n";
 
-  size_t max_name_size = 7;
-  for (auto arg : mCmdArgs) {
-    max_name_size = std::max(max_name_size, arg->name().size());
+  int max_name_size = 7;
+  for (const auto &arg : mCmdArgs) {
+    max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
   }
   max_name_size += 1;
-  
+
   std::cout << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
   std::cout << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
 
-  for (auto arg : mCmdArgs) {
+  for (const auto &arg : mCmdArgs) {
 
     if (arg->shortName()){
       std::cout << "  -" << arg->shortName() << ", ";
@@ -895,7 +890,7 @@ void Command::showLicence() const
 
   std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 
-  //mLicence.productName(); 
+  //mLicence.productName();
   //mLicence.version();
   //mLicence.autor();
   //mLicence.autorEmail();
@@ -993,7 +988,7 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
 
   std::string arg_cmd_name = std::string(argv[1]);
   std::size_t found_name = arg_cmd_name.find("--");
-  std::size_t found_short_name = arg_cmd_name.find("-");
+  std::size_t found_short_name = arg_cmd_name.find('-');
   if (found_name != std::string::npos && found_name == 0) {
     arg_cmd_name = (argv[1])+2;
   } else if (found_short_name != std::string::npos && found_short_name == 0) {
@@ -1170,11 +1165,11 @@ std::string CommandList::commandName() const
 
 std::mutex Progress::sMutex;
 
-Progress::Progress() 
-  : mProgress(0.), 
-    mMinimun(0.), 
-    mMaximun(100.), 
-    mPercent(-1), 
+Progress::Progress()
+  : mProgress(0.),
+    mMinimun(0.),
+    mMaximun(100.),
+    mPercent(-1),
     mMsg(""),
     onProgress(nullptr),
     onInitialize(nullptr),
@@ -1183,13 +1178,13 @@ Progress::Progress()
   updateScale();
 }
 
-Progress::Progress(double min, 
-                   double max, 
-                   const std::string &msg) 
-  : mProgress(0.), 
-    mMinimun(min), 
-    mMaximun(max), 
-    mPercent(-1), 
+Progress::Progress(double min,
+                   double max,
+                   const std::string &msg)
+  : mProgress(0.),
+    mMinimun(min),
+    mMaximun(max),
+    mPercent(-1),
     mMsg(msg),
     onProgress(nullptr),
     onInitialize(nullptr),
@@ -1198,8 +1193,8 @@ Progress::Progress(double min,
   updateScale();
 }
 
-bool Progress::operator()(double increment) 
-{ 
+bool Progress::operator()(double increment)
+{
   std::lock_guard<std::mutex> lck(Progress::sMutex);
 
   if (mProgress == 0.) initialize();
@@ -1213,8 +1208,8 @@ bool Progress::operator()(double increment)
   return true;
 }
 
-void Progress::init(double min, 
-                    double max, 
+void Progress::init(double min,
+                    double max,
                     const std::string &msg)
 {
   mMinimun = min;
@@ -1279,21 +1274,21 @@ void Progress::updateScale()
 /* ---------------------------------------------------------------------------------- */
 
 ProgressBar::ProgressBar(bool customConsole)
-  : Progress(), 
-    bCustomConsole(customConsole) 
+  : Progress(),
+    bCustomConsole(customConsole)
 {
 }
 
 ProgressBar::ProgressBar(double min, double max, bool customConsole)
   : Progress(min, max),
-    bCustomConsole(customConsole) 
+    bCustomConsole(customConsole)
 {
 }
 
-void ProgressBar::updateProgress() 
+void ProgressBar::updateProgress()
 {
   if (onProgress == nullptr) {
-    
+
     std::cout << "\r";
 
     Console &console = Console::instance();
@@ -1349,7 +1344,7 @@ void ProgressBar::terminate()
 {
   if (onTerminate == nullptr)
     std::cout << "\n";
-  else 
+  else
     (*onTerminate)();
 }
 
@@ -1357,17 +1352,17 @@ void ProgressBar::terminate()
 
 ProgressPercent::ProgressPercent(bool customConsole)
   : Progress(),
-    bCustomConsole(customConsole) 
+    bCustomConsole(customConsole)
 {
 }
 
 ProgressPercent::ProgressPercent(double min, double max, bool customConsole)
-  : Progress(min, max), 
-    bCustomConsole(customConsole) 
+  : Progress(min, max),
+    bCustomConsole(customConsole)
 {
 }
 
-void ProgressPercent::updateProgress() 
+void ProgressPercent::updateProgress()
 {
   if (onProgress == nullptr) {
     std::cout << "\r";
@@ -1380,7 +1375,7 @@ void ProgressPercent::terminate()
 {
   if (onTerminate == nullptr)
     std::cout << "\n";
-  else 
+  else
     (*onTerminate)();
 }
 

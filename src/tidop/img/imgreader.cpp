@@ -50,13 +50,14 @@ namespace fs = std::filesystem;
 namespace fs = boost::filesystem;
 #endif
 #include <boost/algorithm/string.hpp>
+#include <utility>
 
 namespace tl
 {
 
 
-ImageReader::ImageReader(const std::string &fileName)
-  : mFileName(fileName)
+ImageReader::ImageReader(std::string fileName)
+  : mFileName(std::move(fileName))
 {
 
 }
@@ -72,6 +73,11 @@ void ImageReader::windowRead(const WindowI &wLoad,
     *wRead = windowIntersection(wAll, wLoad);
     *offset = wRead->pt1 - wLoad.pt1;
   }
+}
+
+std::string ImageReader::fileName() const
+{
+  return mFileName;
 }
 
 
@@ -103,7 +109,7 @@ public:
   {
     this->close();
 
-    mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_ReadOnly));
+    mDataset = static_cast<GDALDataset *>(GDALOpen(fileName().c_str(), GA_ReadOnly));
 
     if (mDataset) {
       std::array<double, 6> geotransform;
@@ -364,7 +370,8 @@ protected:
 private:
 
   GDALDataset *mDataset;
-
+  std::string mEpsgCode;
+  Affine<PointD> mAffine;
 };
 
 #endif // HAVE_GDAL
@@ -401,7 +408,7 @@ public:
   {
     this->close();
     
-    EdsError err = EdsCreateFileStream(mFileName.c_str(), 
+    EdsError err = EdsCreateFileStream(fileName().c_str(),
                                        kEdsFileCreateDisposition_OpenExisting, 
                                        kEdsAccess_Read, &mInputStream);
     if (err != EDS_ERR_OK) throw std::runtime_error("Open Error");

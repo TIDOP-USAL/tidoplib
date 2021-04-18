@@ -31,7 +31,6 @@
 #include "tidop/math/algebra/euler_angles.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/axis_angle.h"
-#include "tidop/math/mathutils.h"
 
 namespace tl
 {

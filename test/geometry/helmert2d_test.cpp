@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_SUITE(Helmert2DTestSuite)
 struct Helmert2DTest
 {
   Helmert2DTest()
-    : trf_pointer(new Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * TL_DEG_TO_RAD))
+    : trf_pointer(new Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>))
   {
 
   }
@@ -94,7 +94,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Helmert2DTest)
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Helmert2DTest)
 {
   Helmert2D<PointD> copy(*trf_pointer);
-  BOOST_CHECK_CLOSE( 35 * TL_DEG_TO_RAD, copy.rotation(), 0.0001);
+  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, copy.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(0.25, copy.scale());
   BOOST_CHECK_EQUAL(150.0, copy.tx);
   BOOST_CHECK_EQUAL(75.0, copy.ty);
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(copy_constructor, Helmert2DTest)
 BOOST_FIXTURE_TEST_CASE(assignement_operator, Helmert2DTest)
 {
   Helmert2D<PointD> assig = *trf_pointer;
-  BOOST_CHECK_CLOSE( 35 * TL_DEG_TO_RAD, assig.rotation(), 0.0001);
+  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, assig.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(0.25, assig.scale());
   BOOST_CHECK_EQUAL(150.0, assig.tx);
   BOOST_CHECK_EQUAL(75.0, assig.ty);
@@ -113,8 +113,8 @@ BOOST_FIXTURE_TEST_CASE(assignement_operator, Helmert2DTest)
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, Helmert2DTest)
 {
-  Helmert2D<PointD> move(Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * TL_DEG_TO_RAD));
-  BOOST_CHECK_CLOSE( 35 * TL_DEG_TO_RAD, move.rotation(), 0.0001);
+  Helmert2D<PointD> move(Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>));
+  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(0.25, move.scale());
   BOOST_CHECK_EQUAL(150.0, move.tx);
   BOOST_CHECK_EQUAL(75.0, move.ty);
@@ -123,8 +123,8 @@ BOOST_FIXTURE_TEST_CASE(move_constructor, Helmert2DTest)
 
 BOOST_FIXTURE_TEST_CASE(move_operator, Helmert2DTest)
 {
-  Helmert2D<PointD> move_assig = Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * TL_DEG_TO_RAD);
-  BOOST_CHECK_CLOSE( 35 * TL_DEG_TO_RAD, move_assig.rotation(), 0.0001);
+  Helmert2D<PointD> move_assig = Helmert2D<PointD>(150.0, 75.0, 0.25, 35 * math::consts::deg_to_rad<double>);
+  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, move_assig.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(0.25, move_assig.scale());
   BOOST_CHECK_EQUAL(150.0, move_assig.tx);
   BOOST_CHECK_EQUAL(75.0, move_assig.ty);
@@ -177,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(std_transform, Helmert2DTest)
 BOOST_FIXTURE_TEST_CASE(compute, Helmert2DTest)
 {
   trf.compute(ptsIn, ptsOut);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, trf.rotation(), 0.01);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, trf.rotation(), 0.01);
   BOOST_CHECK_CLOSE(0.25, trf.scale(), 0.01);
   BOOST_CHECK_CLOSE(150.0, trf.tx, 0.1);
   BOOST_CHECK_CLOSE(75.0, trf.ty, 0.1);
@@ -198,7 +198,7 @@ BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, Helmert2DTest)
 
 BOOST_FIXTURE_TEST_CASE(rotation, Helmert2DTest)
 {
-  BOOST_CHECK_CLOSE( 35 * TL_DEG_TO_RAD, trf_pointer->rotation(), 0.0001);
+  BOOST_CHECK_CLOSE( 35 * math::consts::deg_to_rad<double>, trf_pointer->rotation(), 0.0001);
 }
 
 BOOST_FIXTURE_TEST_CASE(scale, Helmert2DTest)
@@ -218,8 +218,8 @@ BOOST_FIXTURE_TEST_CASE(setParameters, Helmert2DTest)
 
 BOOST_FIXTURE_TEST_CASE(setRotation, Helmert2DTest)
 {
-  trf_pointer->setRotation(47 * TL_DEG_TO_RAD);
-  BOOST_CHECK_EQUAL( 47 * TL_DEG_TO_RAD, trf_pointer->rotation());
+  trf_pointer->setRotation(47 * math::consts::deg_to_rad<double>);
+  BOOST_CHECK_EQUAL( 47 * math::consts::deg_to_rad<double>, trf_pointer->rotation());
 }
 
 BOOST_FIXTURE_TEST_CASE(setScale, Helmert2DTest)
@@ -250,7 +250,7 @@ BOOST_FIXTURE_TEST_CASE(casting, Helmert2DTest)
 
   // cast a afín
   Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*trf_pointer);
-  BOOST_CHECK_EQUAL(35 * TL_DEG_TO_RAD, trf_affine.rotation());
+  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, trf_affine.rotation());
   BOOST_CHECK_EQUAL(0.25, trf_affine.scaleX());
   BOOST_CHECK_EQUAL(0.25, trf_affine.scaleY());
   BOOST_CHECK_EQUAL(150.0, trf_affine.tx);
@@ -262,7 +262,7 @@ BOOST_FIXTURE_TEST_CASE(casting, Helmert2DTest)
   BOOST_CHECK_EQUAL(75.0, translation.ty);
 
   Rotation<PointD> rotation = static_cast<Rotation<PointD>>(*trf_pointer);
-  BOOST_CHECK_EQUAL(35 * TL_DEG_TO_RAD, rotation.angle());
+  BOOST_CHECK_EQUAL(35 * math::consts::deg_to_rad<double>, rotation.angle());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -56,7 +56,7 @@
 // GDAL
 #cmakedefine HAVE_GDAL
 
-#cmakedefine HAVE_PROJ4
+#cmakedefine HAVE_PROJ
 
 // libraw: Lectura de formato raw
 #cmakedefine HAVE_LIBRAW

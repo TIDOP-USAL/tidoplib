@@ -261,7 +261,7 @@ private:
   void init();
   std::map<std::string, std::string> options(bool all) const override;
 
-protected:
+private:
 
   std::pair<bool, bool> bTFW;
   std::pair<bool, bool> bRPB;
@@ -335,7 +335,7 @@ private:
   void init();
   std::map<std::string, std::string> options(bool all) const override;
 
-protected:
+private:
 
   std::pair<bool, bool> bWorldFile;
   std::pair<uint8_t, uint8_t> mZLevel;
@@ -417,7 +417,7 @@ private:
   void init();
   std::map<std::string, std::string> options(bool all) const override;
 
-protected:
+private:
 
   std::pair<bool, bool> bWorldFile;
   std::pair<uint8_t, uint8_t> mQuality;

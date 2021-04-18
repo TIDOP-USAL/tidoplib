@@ -45,17 +45,17 @@ class TL_EXPORT Exception
 
 public:
 
-  explicit Exception(const std::string &error);
-  explicit Exception(const std::string &error, 
+  explicit Exception(std::string error) TL_NOEXCEPT;
+  explicit Exception(std::string error, 
                      const std::string &file, 
                      int line, 
-                     const std::string &function);
-  virtual ~Exception() TL_NOEXCEPT override {}
+                     std::string function) TL_NOEXCEPT;
+  ~Exception() TL_NOEXCEPT override = default;
 
   /*!
    * \brief Descripción del error
    */
-  virtual const char *what() const TL_NOEXCEPT override;
+  const char *what() const TL_NOEXCEPT override;
   
   /*!
    * \brief Fichero fuente donde se ha producido el error
@@ -76,7 +76,7 @@ private:
 
   void messagef();
 
-protected:
+private:
 
   std::string mError;
   std::string mFile;

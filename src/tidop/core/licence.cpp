@@ -24,20 +24,18 @@
 
 #include "licence.h"
 
+#include <utility>
+
 namespace tl
 {
 
 
-Licence::Licence()
-  : mProductName(),
-    mType()
-{
-}
+Licence::Licence() = default;
 
-Licence::Licence(const std::string &productName, 
-                 const std::string &type)
-  : mProductName(productName),
-    mType(type)
+Licence::Licence(std::string productName, 
+                 std::string type)
+  : mProductName(std::move(productName)),
+    mType(std::move(type))
 {
     
 }
@@ -61,9 +59,9 @@ std::string Licence::type() const
   return mType;
 }
 
-void Licence::setType(const std::string &text)
+void Licence::setType(const std::string &type)
 {
-  mType = text;
+  mType = type;
 }
 
 std::string Licence::version() const

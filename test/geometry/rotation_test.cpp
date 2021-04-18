@@ -25,6 +25,7 @@
 #define BOOST_TEST_MODULE Tidop Rotation test
 #include <boost/test/unit_test.hpp>
 
+#include <tidop/math/math.h>
 #include <tidop/geometry/transform/rotation.h>
 #include <tidop/geometry/entities/point.h>
 
@@ -37,7 +38,7 @@ struct RotationTest
 {
 
   RotationTest()
-    : rot2(new Rotation<PointD>(35. * TL_DEG_TO_RAD))
+    : rot2(new Rotation<PointD>(35. * math::consts::deg_to_rad<double>))
   {
 
   }
@@ -92,42 +93,42 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, RotationTest)
 BOOST_FIXTURE_TEST_CASE(constructor, RotationTest)
 {
 
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, rot2->angle(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, rot2->angle(), 0.0001);
   BOOST_CHECK_EQUAL(1., rot2->minNumberOfPoints());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, RotationTest)
 {
   Rotation<PointD> copy(*rot2);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, copy.angle(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, copy.angle(), 0.0001);
   BOOST_CHECK_EQUAL(1., copy.minNumberOfPoints());
 }
 
 BOOST_FIXTURE_TEST_CASE(assignement_operator, RotationTest)
 {
   Rotation<PointD> assign = *rot2;
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, assign.angle(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, assign.angle(), 0.0001);
   BOOST_CHECK_EQUAL(1., assign.minNumberOfPoints());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, RotationTest)
 {
-  Rotation<PointD> move(Rotation<PointD>(35. * TL_DEG_TO_RAD));
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, move.angle(), 0.0001);
+  Rotation<PointD> move(Rotation<PointD>(35. * math::consts::deg_to_rad<double>));
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, move.angle(), 0.0001);
   BOOST_CHECK_EQUAL(1., move.minNumberOfPoints());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_operator, RotationTest)
 {
-  Rotation<PointD> move_assign = Rotation<PointD>(35. * TL_DEG_TO_RAD);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, move_assign.angle(), 0.0001);
+  Rotation<PointD> move_assign = Rotation<PointD>(35. * math::consts::deg_to_rad<double>);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, move_assign.angle(), 0.0001);
   BOOST_CHECK_EQUAL(1., move_assign.minNumberOfPoints());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAngle, RotationTest)
 {
-  rot.setAngle(61. * TL_DEG_TO_RAD);
-  BOOST_CHECK_CLOSE(61. * TL_DEG_TO_RAD, rot.angle(), 0.0001);
+  rot.setAngle(61. * math::consts::deg_to_rad<double>);
+  BOOST_CHECK_CLOSE(61. * math::consts::deg_to_rad<double>, rot.angle(), 0.0001);
 }
 
 BOOST_FIXTURE_TEST_CASE(transform_point, RotationTest)
@@ -176,7 +177,7 @@ BOOST_FIXTURE_TEST_CASE(std_transform_point_list, RotationTest)
 BOOST_FIXTURE_TEST_CASE(compute, RotationTest)
 {
   rot.compute(ptsIn, ptsOut);
-  BOOST_CHECK_CLOSE(35. * TL_DEG_TO_RAD, rot.angle(), 0.1);
+  BOOST_CHECK_CLOSE(35. * math::consts::deg_to_rad<double>, rot.angle(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(transformType, RotationTest)
@@ -194,18 +195,18 @@ BOOST_FIXTURE_TEST_CASE(isNumberOfPointsValid, RotationTest)
 BOOST_FIXTURE_TEST_CASE(inverse, RotationTest)
 {
   Rotation<PointD> rot_inv = rot2->inverse();
-  BOOST_CHECK_CLOSE(-35 * TL_DEG_TO_RAD, rot_inv.angle(), 0.0001);
+  BOOST_CHECK_CLOSE(-35 * math::consts::deg_to_rad<double>, rot_inv.angle(), 0.0001);
 }
 
 BOOST_FIXTURE_TEST_CASE(casting, RotationTest)
 {
   // cast a Rotation float
   Rotation<Point<float>> rot_float = static_cast<Rotation<Point<float>>>(*rot2);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, rot_float.angle(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, rot_float.angle(), 0.0001);
 
   // cast a Helmert2D
   Helmert2D<PointD> trf_h2d = static_cast<Helmert2D<PointD>>(*rot2);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, trf_h2d.rotation(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, trf_h2d.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(1., trf_h2d.scale());
   BOOST_CHECK_EQUAL(0., trf_h2d.tx);
   BOOST_CHECK_EQUAL(0., trf_h2d.ty);
@@ -213,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(casting, RotationTest)
 
   // cast a afín
   Affine<PointD> trf_affine = static_cast<Affine<PointD>>(*rot2);
-  BOOST_CHECK_CLOSE(35 * TL_DEG_TO_RAD, trf_affine.rotation(), 0.0001);
+  BOOST_CHECK_CLOSE(35 * math::consts::deg_to_rad<double>, trf_affine.rotation(), 0.0001);
   BOOST_CHECK_EQUAL(1., trf_affine.scaleX());
   BOOST_CHECK_EQUAL(1., trf_affine.scaleY());
   BOOST_CHECK_EQUAL(0., trf_affine.tx);

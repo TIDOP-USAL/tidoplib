@@ -73,9 +73,9 @@ MessageManager::~MessageManager()
 
 MessageManager &MessageManager::instance()
 {
-  if (sObjMessage.get() == nullptr) {
+  if (sObjMessage == nullptr) {
     std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-    if (sObjMessage.get() == nullptr) {
+    if (sObjMessage == nullptr) {
       sObjMessage.reset(new MessageManager());
     }
   }

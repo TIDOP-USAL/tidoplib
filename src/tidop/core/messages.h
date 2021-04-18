@@ -177,7 +177,7 @@ public:
     /*!
      * \brief Destructora
      */
-    ~Message() { }
+    ~Message() = default;
 
     /*!
      * \brief Devuelve la fecha y hora del mensaje

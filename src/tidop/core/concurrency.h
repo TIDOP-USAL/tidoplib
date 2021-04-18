@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de O馻 Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O帽a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -46,10 +46,10 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
 
 
 /*!
- * \brief Ejecuta una funci髇 en paralelo
+ * \brief Ejecuta una funci贸n en paralelo
  * \param[in] ini
  * \param[in] end
- * \param[in] f Funci髇 o lambda
+ * \param[in] f Funci贸n o lambda
  */
 TL_EXPORT void parallel_for(size_t ini, 
                             size_t end, 
@@ -58,12 +58,12 @@ TL_EXPORT void parallel_for(size_t ini,
 
 
 /*!
- * \brief Ejecuta una funci髇 en paralelo
- * M閠odo sobrecargado para trabajar con contenedores
+ * \brief Ejecuta una funci贸n en paralelo
+ * M茅todo sobrecargado para trabajar con contenedores
  * \param[in] it_begin
  * \param[in] it_end
  * \param[out] it_out_begin 
- * \param[in] f Funci髇 o lambda
+ * \param[in] f Funci贸n o lambda
  */
 template<typename itIn, typename itOut> inline
 void parallel_for(itIn it_begin, 
@@ -185,7 +185,7 @@ class Producer
 public:
 
   Producer(QueueMPMC<T> *queue);
-  ~Producer();
+  ~Producer() = default;
 
   virtual void operator() (size_t size) = 0;
   virtual void operator() (size_t ini, size_t end) = 0;
@@ -202,11 +202,6 @@ Producer<T>::Producer(QueueMPMC<T> *queue)
 {
 }
 
-template<typename T>
-Producer<T>::~Producer()
-{
-}
-
 
 template<typename T>
 class Consumer
@@ -214,7 +209,7 @@ class Consumer
 public:
 
   Consumer(QueueMPMC<T> *queue);
-  ~Consumer();
+  ~Consumer() = default;
 
   virtual void operator() () = 0;
 
@@ -230,16 +225,11 @@ Consumer<T>::Consumer(QueueMPMC<T> *queue)
 {
 }
 
-template<typename T>
-Consumer<T>::~Consumer()
-{
-}
-
 
 
 #ifdef TL_ENABLE_DEPRECATED_METHODS
 /*!
- * \brief n鷐ero optimo de hilos
+ * \brief n煤mero optimo de hilos
  * \deprecated Usar en su lugar optimalNumberOfThreads()
  */
 TL_DEPRECATED("optimalNumberOfThreads()", "2.0")

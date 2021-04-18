@@ -51,18 +51,18 @@ struct RadiansTest
   void setup()
   {
     angle_0 = Radians<double>(0);
-    angle_pi_div2 = Radians<double>(TL_PI_2);
-    angle_minus_30 = Radians<double>(-30.*TL_DEG_TO_RAD);
-    angle_pi = Radians<double>(TL_PI);
-    angle_2pi = Radians<double>(TL_2PI);
-    angle_3pi = Radians<double>(3 * TL_PI);
-    angle_4pi = Radians<double>(4 * TL_PI);
-    angle_minus_pi_div2 = Radians<double>(-TL_PI_2);
-    angle_minus_pi = Radians<double>(-TL_PI);
-    angle_minus_2pi = Radians<double>(-TL_2PI);
-    angle_minus_3pi = Radians<double>(-3 * TL_PI);
-    angle_minus_4pi = Radians<double>(-4 * TL_PI);
-    angle_1 = Radians<double>(-3 * TL_PI_2);
+    angle_pi_div2 = Radians<double>(consts::half_pi<double>);
+    angle_minus_30 = Radians<double>(-30.*consts::deg_to_rad<double>);
+    angle_pi = Radians<double>(consts::pi<double>);
+    angle_2pi = Radians<double>(consts::two_pi<double>);
+    angle_3pi = Radians<double>(3 * consts::pi<double>);
+    angle_4pi = Radians<double>(4 * consts::pi<double>);
+    angle_minus_pi_div2 = Radians<double>(-consts::half_pi<double>);
+    angle_minus_pi = Radians<double>(-consts::pi<double>);
+    angle_minus_2pi = Radians<double>(-consts::two_pi<double>);
+    angle_minus_3pi = Radians<double>(-3 * consts::pi<double>);
+    angle_minus_4pi = Radians<double>(-4 * consts::pi<double>);
+    angle_1 = Radians<double>(-3 * consts::half_pi<double>);
   }
  
   void teardown()
@@ -99,40 +99,40 @@ BOOST_FIXTURE_TEST_CASE(normalize, RadiansTest)
   BOOST_CHECK_EQUAL(0., angle_0.value());
 
   angle_pi_div2.normalize();
-  BOOST_CHECK_EQUAL(TL_PI_2, angle_pi_div2.value());
+  BOOST_CHECK_EQUAL(consts::half_pi<double>, angle_pi_div2.value());
 
   angle_minus_30.normalize();
-  BOOST_CHECK_CLOSE(-30.*TL_DEG_TO_RAD, angle_minus_30.value(), 0.01);
+  BOOST_CHECK_CLOSE(-30.*consts::deg_to_rad<double>, angle_minus_30.value(), 0.01);
 
   angle_pi.normalize();
-  BOOST_CHECK_EQUAL(TL_PI, angle_pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_pi.value());
 
   angle_2pi.normalize();
   BOOST_CHECK_EQUAL(0., angle_2pi.value());
 
   angle_3pi.normalize();
-  BOOST_CHECK_EQUAL(TL_PI, angle_3pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_3pi.value());
 
   angle_4pi.normalize();
   BOOST_CHECK_EQUAL(0., angle_4pi.value());
 
   angle_minus_pi_div2.normalize();
-  BOOST_CHECK_EQUAL(-TL_PI_2, angle_minus_pi_div2.value());
+  BOOST_CHECK_EQUAL(-consts::half_pi<double>, angle_minus_pi_div2.value());
 
   angle_minus_pi.normalize();
-  BOOST_CHECK_EQUAL(TL_PI, angle_minus_pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_minus_pi.value());
 
   angle_minus_2pi.normalize();
   BOOST_CHECK_EQUAL(0, angle_minus_2pi.value());
 
   angle_minus_3pi.normalize();
-  BOOST_CHECK_EQUAL(TL_PI, angle_minus_3pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_minus_3pi.value());
 
   angle_minus_4pi.normalize();
   BOOST_CHECK_EQUAL(0., angle_minus_4pi.value());
 
   angle_1.normalize();
-  BOOST_CHECK_EQUAL(TL_PI_2, angle_1.value());
+  BOOST_CHECK_EQUAL(consts::half_pi<double>, angle_1.value());
 }
 
 BOOST_FIXTURE_TEST_CASE(normalizePositive, RadiansTest) 
@@ -146,31 +146,31 @@ BOOST_FIXTURE_TEST_CASE(normalizePositive, RadiansTest)
   BOOST_CHECK_CLOSE(5.75958653, angle_minus_30.value(), 0.01);
 
   angle_pi_div2.normalizePositive();
-  BOOST_CHECK_EQUAL(TL_PI_2, angle_pi_div2.value());
+  BOOST_CHECK_EQUAL(consts::half_pi<double>, angle_pi_div2.value());
 
   angle_pi.normalizePositive();
-  BOOST_CHECK_EQUAL(TL_PI, angle_pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_pi.value());
 
   angle_2pi.normalizePositive();
   BOOST_CHECK_EQUAL(0., angle_2pi.value());
 
   angle_3pi.normalizePositive();
-  BOOST_CHECK_EQUAL(TL_PI, angle_3pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_3pi.value());
 
   angle_4pi.normalizePositive();
   BOOST_CHECK_EQUAL(0., angle_4pi.value());
 
   angle_minus_pi_div2.normalizePositive();
-  BOOST_CHECK_EQUAL(3*TL_PI/2, angle_minus_pi_div2.value());
+  BOOST_CHECK_EQUAL(3*consts::half_pi<double>, angle_minus_pi_div2.value());
 
   angle_minus_pi.normalizePositive();
-  BOOST_CHECK_EQUAL(TL_PI, angle_minus_pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_minus_pi.value());
 
   angle_minus_2pi.normalizePositive();
   BOOST_CHECK_EQUAL(0, angle_minus_2pi.value());
 
   angle_minus_3pi.normalizePositive();
-  BOOST_CHECK_EQUAL(TL_PI, angle_minus_3pi.value());
+  BOOST_CHECK_EQUAL(consts::pi<double>, angle_minus_3pi.value());
 
   angle_minus_4pi.normalizePositive();
   BOOST_CHECK_EQUAL(0., angle_minus_4pi.value());

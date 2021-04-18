@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <typeinfo>
 #include <cmath>
+#include <utility>
 
 #ifdef HAVE_OPENCV
 #include "opencv2/core/core.hpp"
@@ -61,7 +62,7 @@ public:
   /*!
    * \brief type
    */
-  typedef Point_t value_type;
+  using value_type = Point_t;
 
   /*!
    * \brief Punto 1
@@ -96,8 +97,8 @@ public:
    * \param[in] pt1 Primer punto
    * \param[in] pt2 Segundo punto
    */
-  Window(const Point_t &pt1, 
-         const Point_t &pt2);
+  Window(Point_t pt1, 
+         Point_t pt2);
 
   /*!
    * \brief Constructor Window
@@ -122,13 +123,13 @@ public:
    *
    * \param[in] vector vector de puntos
    */
-  Window(const std::vector<Point_t> &vector);
+  Window(const std::vector<Point_t> &window);
 
   /*!
    * \brief 
    * \param[in] vector Ventana
    */
-  template<typename Point_t2> Window(const std::vector<Point_t2> &vector);
+  template<typename Point_t2> Window(const std::vector<Point_t2> &window);
 
   ~Window() override = default;
 
@@ -229,11 +230,11 @@ Window<Point_t>::Window(Window &&window) TL_NOEXCEPT
 }
 
 template<typename Point_t> inline
-Window<Point_t>::Window(const Point_t &pt1,
-                        const Point_t &pt2) 
+Window<Point_t>::Window(Point_t pt1,
+                        Point_t pt2)
   : Entity(Entity::Type::window), 
-    pt1(pt1), 
-    pt2(pt2) 
+    pt1(std::move(pt1)), 
+    pt2(std::move(pt2)) 
 {
 }
     
@@ -442,9 +443,9 @@ bool Window<Point_t>::containsWindow(const Window<Point_t2> &w) const
          pt2.y >= w2.pt2.y;
 }
 
-typedef Window<Point<int>> WindowI;
-typedef Window<Point<double>> WindowD;
-typedef Window<Point<float>> WindowF;
+using WindowI = Window<Point<int> >;
+using WindowD = Window<Point<double> >;
+using WindowF = Window<Point<float> >;
 
 
 
