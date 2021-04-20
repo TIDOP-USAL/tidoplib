@@ -488,7 +488,8 @@ Transform::Status Helmert3D<Point_t>::transform(const std::vector<Point_t> &ptsI
                                                std::vector<Point_t> &ptsOut, 
                                                Transform::Order trfOrder) const
 {
-  Transform::Status r_status;
+  Transform::Status r_status = Transform::Status::success;
+
   this->formatVectorOut(ptsIn, ptsOut);
   for (int i = 0; i < ptsIn.size(); i++) {
     r_status = transform(ptsIn[i], ptsOut[i], trfOrder);
@@ -503,7 +504,11 @@ Transform::Status Helmert3D<Point_t>::transform(const Point_t &ptIn,
                                                 Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
+  using sub_type = typename Point_t::value_type;
+
   Point_t ptAux = ptIn;
+
   try {
     if (trfOrder == Transform::Order::direct){
       ptOut.x = static_cast<sub_type>(mScale * (ptAux.x * mR.at(0,0) + ptAux.y * mR.at(0,1) + ptAux.z * mR.at(0,2)) + tx);
@@ -528,6 +533,8 @@ template<typename Point_t> inline
 Point_t Helmert3D<Point_t>::transform(const Point_t &ptIn,
                                       Transform::Order trfOrder) const
 {
+  using sub_type = typename Point_t::value_type;
+
   Point_t r_pt;
   if (trfOrder == Transform::Order::direct){
     r_pt.x = static_cast<sub_type>(mScale * (ptIn.x * mR.at(0,0) + ptIn.y * mR.at(0,1) + ptIn.z * mR.at(0,2)) + tx);
