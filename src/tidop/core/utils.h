@@ -36,10 +36,7 @@
 
 
 
-#ifdef HAVE_MINIZIP
-#include "minizip/zip.h"
-#include "minizip/unzip.h"
-#endif // HAVE_MINIZIP
+
 
 #include "tidop/core/defs.h"
 
@@ -393,7 +390,7 @@ std::string numberToString(T number)
 template <typename T> inline 
 T stringToNumber(const std::string &text)
 {
-  T number;
+  T number{};
   return (std::istringstream(text) >> number) ? number : 0;
 }
 
@@ -843,55 +840,6 @@ private:
   //Status readHeader();
 
 };
-
-
-//TL_EXPORT void compressFile(const char *file, const char *zip);
-
-#ifdef HAVE_MINIZIP
-
-// Clase para compresión de archivos
-class Compression : public File
-{
-private:
-
-  zipFile mZipFile; 
-  unzFile mUnZipFile;
-  unz_global_info mGlobalInfo;
-
-public:
-
-  Compression();
-  Compression(const char *file, Mode mode = Mode::Update);
-  Compression(const Compression &compression);
-  ~Compression();
-
-  /*!
-   * \brief Cierra el fichero
-   */
-  void close() override;
-
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  Status createCopy(const char *fileOut) override;
-
-  /*!
-   * \brief Abre un fichero
-   * \param[in] file Nombre del fichero
-   * \param[in] mode Modo de apertura
-   * \return
-   * \see Mode
-   */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-
-  Status compress(const std::string &file, const std::string &directory = {});
-  Status decompress();
-
-private:
-
-};
-
-#endif // HAVE_MINIZIP
 
 
 /*! \} */ // end of utilities

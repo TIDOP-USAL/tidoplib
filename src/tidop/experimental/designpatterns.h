@@ -22,12 +22,12 @@
  *                                                                        *
  **************************************************************************/
  
-#ifndef I3D_DESING_PATTERNS_H
-#define I3D_DESING_PATTERNS_H
+#ifndef TL_DESING_PATTERNS_H
+#define TL_DESING_PATTERNS_H
 
 #include <mutex>
 
-namespace TL
+namespace tl
 {
 
 namespace experimental
@@ -66,6 +66,6 @@ namespace experimental
 
 } // End namespace experimental
 
-} // End namespace I3D
+} // End namespace tl
 
-#endif // I3D_DESING_PATTERNS_H
+#endif // TL_DESING_PATTERNS_H
