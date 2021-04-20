@@ -595,303 +595,79 @@ int stringToInteger(const std::string &text, Base base)
 
 /* ---------------------------------------------------------------------------------- */
 
-int readToString(const char *file, std::string *text)
-{
-  //TODO: Forma muy sencilla para salir de paso por ahora
-  std::ifstream in(file);
-  *text = static_cast<std::stringstream const&>(std::stringstream() << in.rdbuf()).str();
-  //TODO: Por ahora se devuelve 0. Cuando se controlen los errores se devolvera 1 en caso de error
-  return 0;
-}
-
-VrtTemplate::VrtTemplate() : mText("")
-{}
-
-VrtTemplate::VrtTemplate(const char *text) : mText(text)
-{}
-
-VrtTemplate::~VrtTemplate()
-{}
-
-int VrtTemplate::read(const char *file)
-{
-  return readToString(file, &mText);
-}
-
-int VrtTemplate::replace(std::string *output) const
-{
-  int i_ret = 0;
-  output->append(mText);
-  size_t ini = output->find("<#");
-  size_t end;
-  while (ini != std::string::npos) {
-    end = output->find(">", ini);
-    size_t size = end - ini + 1;
-    std::string tagString = output->substr(ini + 2, end - (ini + 2));
-    std::string replaceText;
-    replaceTag(tagString, &replaceText);
-    output->replace(ini, size, replaceText);
-    ini = output->find("<#", replaceText.size());
-  }
-  return i_ret;
-}
-
-void VrtTemplate::setTemplate(const char *templ)
-{
-  mText = templ;
-}
-
-
-HtmlTemplate::HtmlTemplate()
-  : VrtTemplate(),
-  mTagValues()
-{}
-
-HtmlTemplate::HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values)
-  : VrtTemplate(text),
-  mTagValues(tag_values)
-{
-
-}
-
-HtmlTemplate::~HtmlTemplate()
-{
-
-}
-
-void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) const
-{
-  std::map<std::string, std::string>::const_iterator it = mTagValues.find(tag);
-  if (it != mTagValues.end())
-    *replaceText = it->second;
-  else
-    *replaceText = "";
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-Csv::Csv()
-  : File()
-{
-}
-
-Csv::Csv(const char *file, Mode mode)
-  : File(file, mode)
-{
-  open(file, mode);
-}
-
-Csv::Csv(const Csv &csv)
-  : File(csv)
-{
-}
-
-Csv::~Csv()
-{
-  close();
-}
-
-void Csv::close()
-{
-  if (fs.is_open())
-    fs.close();
-}
-
-//Csv::Status Csv::create(std::shared_ptr<TableHeader> tableHeader)
+//int readToString(const char *file, std::string *text)
 //{
-//  if (!fs.is_open()) {
-//    msgError("No se ha abierto el archivo");
-//    return Status::FAILURE;
-//  }
-//
-//  if (mMode != Mode::Create) {
-//    msgError("Utilice el modo 'Create' para abrir el archivo");
-//    return Status::FAILURE;
-//  }
-//
-//  setName(File::mName.c_str());
-//  setTableHeader(tableHeader);
-//
-//  size_t size = getFieldCount();
-//  for (size_t i = 0; i < size; i++) {
-//    fs << tableHeader->getTableHeaderField(i)->getName();
-//    if (i != size -1) fs << ";";
-//  }
-//  fs << std::endl;
-//
-//  return Status::SUCCESS;
-//}
-
-Csv::Status Csv::create(const std::string &header)
-{
-  if (!fs.is_open()) {
-    msgError("No se ha abierto el archivo %s", mFile.c_str());
-    return Status::failure;
-  }
-
-  if (mMode != Mode::create) {
-    msgError("Utilice el modo 'Create' al abrir el archivo");
-    return Status::failure;
-  }
-
-  //setName(File::mName.c_str());
-
-
-  std::vector<std::string> out;
-  if (split(header, out, ";") == 0) {
-    size_t size = out.size();
-    for (size_t i = 0; i < size; i++) {
-      fs << out[i];
-      if (i != size - 1) fs << ";";
-    }
-    fs << std::endl;
-    return Status::success;
-  } else
-    return Status::failure;
-}
-
-//Csv::Status Csv::create(const DataTable &dataTable)
-//{
-//  if (!fs.is_open()) {
-//    msgError("No se ha abierto el archivo");
-//    return Status::FAILURE;
-//  }
-//
-//  if (mMode != Mode::Create) {
-//    msgError("Utilice el modo 'Create' para abrir el archivo");
-//    return Status::FAILURE;
-//  }
-//
-//  size_t size = dataTable.getFieldCount();
-//
-//  // Cabecera
-//
-//  const TableHeader *header = dataTable.getTableHeader();
-//  for (size_t i = 0; i < size; i++) {
-//    fs << header->getTableHeaderField(i)->getName();
-//    if (i != size -1) fs << ";";
-//  }
-//  fs << std::endl;
-//
-//  // datos
-//  for (auto &reg : dataTable) {
-//    size_t size = getFieldCount();
-//    for (size_t i = 0; i < size; i++) {
-//      fs << reg->getValue(i);
-//      if (i != size -1) fs << ";";
-//    }
-//    fs << std::endl;
-//  }
-//
-//  return Status::SUCCESS;
-//}
-
-Csv::Status Csv::createCopy(const std::string &fileOut)
-{
-  Csv csv;
-  csv.open(fileOut, Mode::create);
-  //csv.create(std::make_shared<TableHeader>(getTableHeader()));
-  return Status::failure;
-}
-
-Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
-{
-  close();
-
-  mFile = file;
-  mMode = mode;
-
-  //fs::path _path(file);
-  //fs::path ext = _path.extension().string();
-  
-  if (boost::iequals(fs::path(file).extension().string(), ".csv") == false) return Status::open_fail;
-
-  std::ios_base::openmode _mode;
-  switch (mMode) {
-  case Mode::read:
-    _mode = std::fstream::in;
-    break;
-  case Mode::update:
-    _mode = std::fstream::in | std::fstream::out | std::fstream::app;
-    break;
-  case Mode::create:
-    _mode = std::fstream::out | std::fstream::trunc;
-    break;
-  }
-
-  fs.open(file, _mode);
-
-  if (fs.is_open()) {
-    if (mMode == Mode::create) {
-      char dir[TL_MAX_PATH];
-      if ( getFileDriveDir(file.c_str(), dir, TL_MAX_PATH) == 0 )
-        if ( createDir(dir) == -1) return Status::open_fail;
-    }
-    return Status::open_ok;
-  } else {
-    msgError("File open failed: %s", std::strerror(errno));
-    return Status::open_fail;
-  }
-}
-
-//TableRegister *Csv::read(int id)
-//{
-//  return getRegister(id).get();
-//}
-
-//Csv::Status Csv::readHeader()
-//{
-//  return Status::SUCCESS;
-//}
-
-//Csv::Status Csv::write(std::shared_ptr<TableRegister> _register)
-//{
-//  addRegister(_register);
-//
-//  TableRegister *reg = getRegister(size()-1).get();
-//  size_t size = getFieldCount();
-//  for (size_t i = 0; i < size; i++) {
-//    fs << reg->getValue(i);
-//    if (i != size -1) fs << ";";
-//  }
-//  fs << std::endl;
-//  return Status::SUCCESS;
-//}
-
-Csv::Status Csv::write(const std::vector<std::string> &_register)
-{
-  size_t size = _register.size();
-  for (size_t i = 0; i < size; i++) {
-    fs << _register[i];
-    if (i != size -1) fs << ";";
-  }
-  fs << std::endl;
-  return Status::success;
-}
-
-//Csv::Status Csv::load(std::shared_ptr<TableRegister> _register)
-//{
-//
-//  return Status::SUCCESS;
+//  //TODO: Forma muy sencilla para salir de paso por ahora
+//  std::ifstream in(file);
+//  *text = static_cast<std::stringstream const&>(std::stringstream() << in.rdbuf()).str();
+//  //TODO: Por ahora se devuelve 0. Cuando se controlen los errores se devolvera 1 en caso de error
+//  return 0;
 //}
 //
-//Csv::Status Csv::save()
+//VrtTemplate::VrtTemplate() : mText("")
+//{}
+//
+//VrtTemplate::VrtTemplate(const char *text) : mText(text)
+//{}
+//
+//VrtTemplate::~VrtTemplate()
+//{}
+//
+//int VrtTemplate::read(const char *file)
+//{
+//  return readToString(file, &mText);
+//}
+//
+//int VrtTemplate::replace(std::string *output) const
+//{
+//  int i_ret = 0;
+//  output->append(mText);
+//  size_t ini = output->find("<#");
+//  size_t end;
+//  while (ini != std::string::npos) {
+//    end = output->find(">", ini);
+//    size_t size = end - ini + 1;
+//    std::string tagString = output->substr(ini + 2, end - (ini + 2));
+//    std::string replaceText;
+//    replaceTag(tagString, &replaceText);
+//    output->replace(ini, size, replaceText);
+//    ini = output->find("<#", replaceText.size());
+//  }
+//  return i_ret;
+//}
+//
+//void VrtTemplate::setTemplate(const char *templ)
+//{
+//  mText = templ;
+//}
+//
+//
+//HtmlTemplate::HtmlTemplate()
+//  : VrtTemplate(),
+//  mTagValues()
+//{}
+//
+//HtmlTemplate::HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values)
+//  : VrtTemplate(text),
+//  mTagValues(tag_values)
 //{
 //
-//  return Status::SUCCESS;
 //}
-
-
-//void compressFile(const char *file, const char *zip)
-//{
-//  std::string cmd;
-//  std::string pto_gen_cmd("/c \"C:\\Desarrollo\\Libs_sources\\lzma1701\\bin\\x64\\7za.exe\" a ");
-//  pto_gen_cmd.append(zip).append(" ").append(file);
 //
-//  CmdProcess process(cmd);
-//  CmdProcess::Status status = process.run();
+//HtmlTemplate::~HtmlTemplate()
+//{
+//
 //}
+//
+//void HtmlTemplate::replaceTag(const std::string &tag, std::string *replaceText) const
+//{
+//  std::map<std::string, std::string>::const_iterator it = mTagValues.find(tag);
+//  if (it != mTagValues.end())
+//    *replaceText = it->second;
+//  else
+//    *replaceText = "";
+//}
+//
 
 
 

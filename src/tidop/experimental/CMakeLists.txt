@@ -35,6 +35,8 @@ else()
               video/videoio.h
               compression.cpp
               compression.h
+              csv.cpp
+              csv.h
               )
     
   # Añade el proyecto a la carpeta 'modules'

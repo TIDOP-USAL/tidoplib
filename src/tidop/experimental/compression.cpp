@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
-#include "designpatterns.h"
+#include "compression.h"
 
 namespace tl
 {
