@@ -388,9 +388,10 @@ public:
   VectorBase(const T *data, size_t size)
     : mData(size)
   {
-    for (size_t i = 0; i < size; i++) {
-      mData[i] = data[i];
-    }
+    mData.assign(data, data + size);
+//    for (size_t i = 0; i < size; i++) {
+//      mData[i] = data[i];
+//    }
   }
 
   ~VectorBase() = default;

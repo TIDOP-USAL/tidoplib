@@ -241,7 +241,7 @@ template<
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
-  TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes");
+  TL_ASSERT(b.size() == mRows, "QRDecomposition::solve bad sizes")
   
   Vector<T, _rows> x(b);
 
@@ -297,7 +297,7 @@ template<
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::rsolve(Vector<T, _rows> &b)
 {
-  TL_ASSERT(!sing, "attempting solve in a singular QR");
+  TL_ASSERT(!sing, "attempting solve in a singular QR")
 
   int i;
   int j;
