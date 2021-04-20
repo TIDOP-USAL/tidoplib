@@ -362,9 +362,10 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(const T *data, size_t ro
     mRows(rows),
     mCols(cols)
 {
-  for (size_t i = 0; i < mData.size(); i++){
-    mData[i] = data[i];
-  }
+  mData.assign(data, data + mData.size());
+//  for (size_t i = 0; i < mData.size(); i++){
+//    mData[i] = data[i];
+//  }
 }
 
 template<typename T> inline 

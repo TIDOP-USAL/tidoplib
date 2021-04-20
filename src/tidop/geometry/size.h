@@ -148,6 +148,7 @@ Size<T>::operator Size<T2>() const
     size.width = static_cast<T2>(this->width);
     size.height = static_cast<T2>(this->height);
   }
+  return size;
 }
 
 template<typename T> static inline
