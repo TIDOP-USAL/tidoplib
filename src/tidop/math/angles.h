@@ -201,14 +201,14 @@ public:
 
   AngleBase &operator=(const AngleBase &angle);
   AngleBase &operator=(AngleBase &&angle) TL_NOEXCEPT;
-  void operator=(T angle);
+  //void operator=(T angle);
 
   virtual T value() const;
   virtual void setValue(T angle);
 
   Unit unit() const override;
 
-protected:
+private:
 
   Unit mUnit;
   T mValue;
@@ -271,11 +271,11 @@ AngleBase<T> &AngleBase<T>::operator=(AngleBase &&angle) TL_NOEXCEPT
   return (*this);
 }
 
-template<typename T> inline
-void AngleBase<T>::operator=(T angle)
-{
-  mUnit = angle;
-}
+//template<typename T> inline
+//void AngleBase<T>::operator=(T angle)
+//{
+//  mValue = angle;
+//}
 
 template<typename T> inline
 T AngleBase<T>::value() const
@@ -367,24 +367,32 @@ Radians<T> &Radians<T>::operator=(Radians &&radians) TL_NOEXCEPT
 template<typename T> inline
 void Radians<T>::normalize()
 {
-  if (this->mValue <= -consts::pi<T> || this->mValue > consts::pi<T>) {
-    this->mValue = fmod(this->mValue + consts::pi<T>, consts::two_pi<T>);
+  T value = this->value();
 
-    if (this->mValue <= 0)
-      this->mValue += consts::pi<T>;
+  if (value <= -consts::pi<T> || value > consts::pi<T>) {
+    value = fmod(value + consts::pi<T>, consts::two_pi<T>);
+
+    if (value <= 0)
+      value += consts::pi<T>;
     else 
-      this->mValue -= consts::pi<T>;
+      value -= consts::pi<T>;
+
+    this->setValue(value);
   }
 }
 
 template<typename T> inline
 void Radians<T>::normalizePositive()
 {
-  if (this->mValue < 0 || this->mValue >= consts::two_pi<T>) {
-    this->mValue = fmod(this->mValue, consts::two_pi<T>);
+  T value = this->value();
 
-    if (this->mValue < 0)
-      this->mValue += consts::two_pi<T>;
+  if (value < 0 || value >= consts::two_pi<T>) {
+    value = fmod(value, consts::two_pi<T>);
+
+    if (value < 0)
+      value += consts::two_pi<T>;
+
+    this->setValue(value);
   }
 }
 
@@ -464,43 +472,55 @@ Gradians<T> &Gradians<T>::operator=(Gradians &&gradians) TL_NOEXCEPT
 template<typename T>
 inline void Gradians<T>::normalize()
 {
-  if (this->mValue <= -static_cast<T>(consts::half_circle_grad) || this->mValue > static_cast<T>(consts::half_circle_grad)) {
-    this->mValue = fmod(this->mValue + consts::half_circle_grad, consts::full_circle_grad);
+  T value = this->value();
 
-    if (this->mValue <= static_cast<T>(0))
-      this->mValue += static_cast<T>(consts::half_circle_grad);
+  if (value <= -static_cast<T>(consts::half_circle_grad) ||
+      value > static_cast<T>(consts::half_circle_grad)) {
+
+    value = fmod(value + consts::half_circle_grad, consts::full_circle_grad);
+
+    if (value <= static_cast<T>(0))
+      value += static_cast<T>(consts::half_circle_grad);
     else 
-      this->mValue -= static_cast<T>(consts::half_circle_grad);
+      value -= static_cast<T>(consts::half_circle_grad);
+
+    this->setValue(value);
   }
 }
 
 template<typename T> inline
 void Gradians<T>::normalizePositive()
 {
-  if (this->mValue < static_cast<T>(0) || this->mValue >= static_cast<T>(consts::full_circle_grad)) {
-    this->mValue = fmod(this->mValue, static_cast<T>(consts::full_circle_grad));
+  T value = this->value();
 
-    if (this->mValue < static_cast<T>(0))
-      this->mValue += static_cast<T>(consts::full_circle_grad);
+  if (value < static_cast<T>(0) ||
+      value >= static_cast<T>(consts::full_circle_grad)) {
+
+    value = fmod(value, static_cast<T>(consts::full_circle_grad));
+
+    if (value < static_cast<T>(0))
+      value += static_cast<T>(consts::full_circle_grad);
+
+    this->setValue(value);
   }
 }
 
 template<typename T> inline
 int Gradians<T>::degrees() const
 {
-  return static_cast<int>(this->mValue);
+  return static_cast<int>(this->value());
 }
 
 template<typename T> inline
 int Gradians<T>::minutes() const
 {
-  return static_cast<int>(fabs(this->mValue - this->degrees()) * consts::quarter_circle_grad);
+  return static_cast<int>(fabs(this->value() - this->degrees()) * consts::quarter_circle_grad);
 }
 
 template<typename T> inline
 T Gradians<T>::seconds() const
 {
-  double min = fabs(this->mValue - this->degrees()) * static_cast<T>(consts::quarter_circle_grad);
+  double min = fabs(this->value() - this->degrees()) * static_cast<T>(consts::quarter_circle_grad);
   return fabs(min - this->minutes()) * static_cast<T>(consts::quarter_circle_grad);
 }
 
@@ -519,8 +539,13 @@ public:
 
   Degrees();
   Degrees(T value);
+  Degrees(const Degrees &degrees);
+  Degrees(Degrees &&degrees) TL_NOEXCEPT;
   Degrees(int degrees, int minutes, T seconds);
   ~Degrees() override = default;
+
+  Degrees &operator=(const Degrees &degrees);
+  Degrees &operator=(Degrees &&degrees) TL_NOEXCEPT;
 
   void normalize() override;
   void normalizePositive() override;
@@ -544,6 +569,19 @@ Degrees<T>::Degrees(T value)
 }
 
 template<typename T> inline
+Degrees<T>::Degrees(const Degrees &degrees)
+  : AngleBase<T>(degrees)
+{
+
+}
+
+template<typename T> inline
+Degrees<T>::Degrees(Degrees &&degrees) TL_NOEXCEPT
+  : AngleBase<T>(std::forward<AngleBase<T>>(degrees))
+{
+}
+
+template<typename T> inline
 Degrees<T>::Degrees(int degrees, int minutes, T seconds)
   : AngleBase<T>(Angle::Unit::degrees)
 {
@@ -554,45 +592,76 @@ Degrees<T>::Degrees(int degrees, int minutes, T seconds)
 }
 
 template<typename T> inline
+Degrees<T> &Degrees<T>::operator=(const Degrees &degrees)
+{
+  if (this != &degrees) {
+    AngleBase<T>::operator=(degrees);
+  }
+  return (*this);
+}
+
+template<typename T> inline
+Degrees<T> &Degrees<T>::operator=(Degrees &&degrees) TL_NOEXCEPT
+{
+  if (this != &degrees) {
+    AngleBase<T>::operator=(std::forward<AngleBase<T>>(degrees));
+  }
+  return (*this);
+}
+
+template<typename T> inline
 void Degrees<T>::normalize()
 {
-  if (this->mValue <= -static_cast<T>(consts::half_circle_deg) || this->mValue > static_cast<T>(consts::half_circle_deg)) {
-    this->mValue = fmod(this->mValue + static_cast<T>(consts::half_circle_deg), static_cast<T>(consts::full_circle_deg));
+  T value = this->value();
 
-    if (this->mValue <= static_cast<T>(0))
-      this->mValue += static_cast<T>(consts::half_circle_deg);
+  if (value <= -static_cast<T>(consts::half_circle_deg) ||
+      value > static_cast<T>(consts::half_circle_deg)) {
+
+    value = fmod(value + static_cast<T>(consts::half_circle_deg),
+                 static_cast<T>(consts::full_circle_deg));
+
+    if (value <= static_cast<T>(0))
+      value += static_cast<T>(consts::half_circle_deg);
     else 
-      this->mValue -= static_cast<T>(consts::half_circle_deg);
+      value -= static_cast<T>(consts::half_circle_deg);
+
+    this->setValue(value);
   }
 }
 
 template<typename T> inline
 void Degrees<T>::normalizePositive()
 {
-  if (this->mValue < static_cast<T>(0) || this->mValue >= static_cast<T>(consts::full_circle_deg)) {
-    this->mValue = fmod(this->mValue, static_cast<T>(consts::full_circle_deg));
+  T value = this->value();
 
-    if (this->mValue < static_cast<T>(0))
-      this->mValue += static_cast<T>(consts::full_circle_deg);
+  if (value < static_cast<T>(0) ||
+      value >= static_cast<T>(consts::full_circle_deg)) {
+
+    value = fmod(value, static_cast<T>(consts::full_circle_deg));
+
+    if (value < static_cast<T>(0))
+      value += static_cast<T>(consts::full_circle_deg);
+
+    this->setValue(value);
   }
 }
 
 template<typename T> inline
 int Degrees<T>::degrees() const
 {
-  return static_cast<int>(this->mValue);
+  return static_cast<int>(this->value());
 }
 
 template<typename T> inline
 int Degrees<T>::minutes() const
 {
-  return static_cast<int>(fabs(this->mValue - this->degrees()) * consts::degrees_to_minutes);
+  return static_cast<int>(fabs(this->value() - this->degrees()) * consts::degrees_to_minutes);
 }
 
 template<typename T> inline
 T Degrees<T>::seconds() const
 {
-  double min = fabs(this->mValue - this->degrees()) * consts::degrees_to_minutes;
+  double min = fabs(this->value() - this->degrees()) * consts::degrees_to_minutes;
   return fabs(min - this->minutes()) * consts::minutes_to_seconds;
 }
 
