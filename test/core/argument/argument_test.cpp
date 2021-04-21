@@ -37,7 +37,7 @@ using namespace tl;
 
 BOOST_AUTO_TEST_CASE(ArgumentIntegerRequired_constructor)
 {
-  int val_i;
+  int val_i = 0;
   ArgumentIntegerRequired arg_int("int", 'i', "integer argument", &val_i);
 
   BOOST_CHECK_EQUAL("int", arg_int.name());
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(ArgumentIntegerOptional_constructor)
 
 BOOST_AUTO_TEST_CASE(ArgumentDoubleRequired_constructor)
 {
-  double val_d;
+  double val_d = 0.0;
   ArgumentDoubleRequired arg_double("double", 'd', "double argument", &val_d);
 
   BOOST_CHECK_EQUAL("double", arg_double.name());
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(ArgumentDoubleOptional_constructor)
 
 BOOST_AUTO_TEST_CASE(ArgumentFloatRequired_constructor)
 {
-  float val_f;
+  float val_f = 0.0;
   ArgumentFloatRequired arg_float("float", 'f', "coma flotante", &val_f);
 
   BOOST_CHECK_EQUAL("float", arg_float.name());
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(ArgumentFloatOptional_constructor)
 
 BOOST_AUTO_TEST_CASE(ArgumentBooleanRequired_constructor)
 {
-  bool val_b;
+  bool val_b = false;
   ArgumentBooleanRequired arg_bool("bool", 'b', "option", &val_b);
 
   BOOST_CHECK_EQUAL("bool", arg_bool.name());

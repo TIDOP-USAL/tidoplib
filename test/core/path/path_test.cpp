@@ -22,12 +22,58 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop utils test
+#define BOOST_TEST_MODULE Tidop path test
 #include <boost/test/unit_test.hpp>
-#include <tidop/core/utils.h>
+#include <tidop/core/path.h>
 
 
 using namespace tl;
+
+BOOST_AUTO_TEST_SUITE(PathTestSuite)
+
+struct PathTest
+{
+  PathTest()
+    : path(new Path("D:\\Desarrollo\\Libs"))
+  {
+  }
+
+  ~PathTest()
+  {
+    if (path) {
+      delete path;
+      path = nullptr;
+    }
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+
+  }
+
+  Path *path;
+  Path path_empty;
+};
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, PathTest)
+{
+  BOOST_CHECK_EQUAL(std::string{}, path_empty.toString());
+  BOOST_CHECK_EQUAL(std::string{}, path_empty.extension());
+  BOOST_CHECK_EQUAL(true, path_empty.empty());
+}
+
+BOOST_FIXTURE_TEST_CASE(Constructor, PathTest)
+{
+  BOOST_CHECK_EQUAL("D:\\Desarrollo\\Libs", path->toString());
+  BOOST_CHECK_EQUAL("", path->extension());
+  BOOST_CHECK_EQUAL(false, path->empty());
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 
 //TEST(isDirectoryTest, Expect)

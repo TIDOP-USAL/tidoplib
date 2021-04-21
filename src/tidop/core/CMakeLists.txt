@@ -49,6 +49,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             chrono.h
             concurrency.cpp
             concurrency.h
+            path.cpp
+            path.h
 )
   
 

@@ -21,16 +21,28 @@
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
+ 
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-# Test modulo Core
+project(test)
 
+set(test_filename console_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+set(test_target "${test_name}")
 
-if(HAVE_TL_CORE)
-add_subdirectory(argument)
-add_subdirectory(console)
-add_subdirectory(flag)
-add_subdirectory(licence)
-add_subdirectory(messages)
-add_subdirectory(path)
-add_subdirectory(process)
-endif()
+add_executable(${test_target} 
+               ${test_filename})
+target_link_libraries(${test_target} tl_core)
+target_link_libraries(${test_target} 
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set_target_properties(${test_target} PROPERTIES
+                      OUTPUT_NAME ${test_target}
+                      PROJECT_LABEL "(TEST) ${test_name}")
+
+set_target_properties(${test_target} PROPERTIES 
+                      FOLDER "test/core")
+
+add_test(NAME ${test_target} COMMAND $<TARGET_FILE:${test_target}>)
