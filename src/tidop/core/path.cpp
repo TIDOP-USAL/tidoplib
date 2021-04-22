@@ -75,24 +75,51 @@ public:
     return mPath.string();
   }
 
+  std::string fileName() const
+  {
+    return mPath.filename().string();
+  }
+
+  std::string baseName() const
+  {
+    return mPath.stem().string();
+  }
+
   std::string extension() const
   {
     return mPath.extension().string();
   }
 
-  bool Path::isDirectory() const
+  bool isDirectory() const
   {
     return fs::is_directory(mPath);
   }
 
-  bool Path::isFile() const
+  bool isFile() const
   {
     return fs::is_regular_file(mPath);
   }
 
-  bool Path::empty() const
+  bool empty() const
   {
     return mPath.empty();
+  }
+
+  bool Path::exists() const
+  {
+    return fs::exists(mPath);
+  }
+
+  std::string Path::replaceExtension(const std::string &extension)
+  {
+    mPath.replace_extension(extension);
+    return mPath.string();
+  }
+
+  std::string Path::parent()
+  {
+    fs::path parent_path = mPath.parent_path();
+    return parent_path.string();
   }
 
 private:
@@ -106,151 +133,61 @@ private:
 
 Path::Path()
   : mPath(new internal::Path())
-  //  mPos(0),
-  //  mPath(0),
-  //  mFileName(""),
-  //  mFileExtension(""),
-  //  bFile(false)
 {
 }
 
 Path::Path(const std::string &path)
   : mPath(new internal::Path(path))
-//  //: mPos(0),
-//  //  mPath(0),
-//  //  mFileName(""),
-//  //  mFileExtension(""),
-//  //  bFile(false)
 {
 }
 
-//Path::Path(const Path &path)
-//  //: mPos(path.mPos),
-//  //  mPath(path.mPath),
-//  //  mFileName(path.mFileName),
-//  //  mFileExtension(path.mFileExtension),
-//  //  bFile(path.bFile)
-//{
-//}
+Path::Path(const Path &path)
+  : mPath(new internal::Path(*path.mPath))
+{
+
+}
+
+Path::Path(Path &&path) TL_NOEXCEPT
+  : mPath(std::move(path.mPath))
+{
+}
 
 Path::~Path()
 {
-  if (mPath) {
-    delete mPath;
-    mPath = nullptr;
-  }
 }
 
-//Path &Path::operator=(const Path &path)
-//{
-//  //mPos = path.mPos;
-//  //mPath = path.mPath;
-//  //mFileName = path.mFileName;
-//  //mFileExtension = path.mFileExtension;
-//  //bFile = path.bFile;
-//  //return *this;
-//}
+Path &Path::operator=(const Path &path)
+{
+  mPath.reset(new internal::Path(*path.mPath));
 
-//void Path::parse(const std::string &path)
-//{
-////  char name[TL_MAX_FNAME];
-////  char drive[TL_MAX_DRIVE];
-////  char dir[TL_MAX_DIR];
-////  char ext[TL_MAX_EXT];
-////#ifdef _MSC_VER
-////  int r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, name, TL_MAX_FNAME, ext, TL_MAX_EXT);
-////
-////#endif
-//
-//  // Se comprueba si es un fichero
-//  //char name[TL_MAX_FNAME];
-//  //if (getFileName(path.c_str(), name, TL_MAX_FNAME) == 0) {
-//  //  mFileName = name;
-//  //  bFile = true;
-//  //}
-//
-//  // Extensi?n
-//  //char ext[TL_MAX_EXT];
-//  //if (getFileExtension(path.c_str(), ext, TL_MAX_EXT) == 0) {
-//  //  mFileExtension = ext;
-//  //}
-//
-//  //char drive[TL_MAX_DRIVE];
-//  //if (getFileDrive(path.c_str(), drive, TL_MAX_DRIVE) == 0) {
-//  //  mDrive = drive;
-//  //}
-//
-//  //char dir[TL_MAX_DIR];
-//  //if (getFileDir(path.c_str(), dir, TL_MAX_DIR) == 0) {
-//  //
-//  //}
-//
-//  split(path, mPath, "/\\");
-//  mPos = static_cast<int>(mPath.size());
-//  if (mPath.size() == 0) return;
-//
-//  // rutas relativas
-//  if (mPath[0] == std::string("..")) {
-//    char dir[TL_MAX_DIR];
-//    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
-//    //std::string runFilePath = getRunfile();
-//    Path runPath(dir);
-//    int i = 0;
-//    for (; mPath[i] == std::string(".."); i++) {
-//      runPath.down();
-//    }
-//
-//    std::vector<std::string> current = runPath.currentPath();
-//    for (int j = i; j < mPath.size(); j++)
-//      current.push_back(mPath[j]);
-//    mPath = current;
-//    mPos = static_cast<int>(mPath.size());
-//  } else if (mPath[0] == std::string(".")) {
-//    char dir[TL_MAX_DIR];
-//    getFileDriveDir(getRunfile(), dir, TL_MAX_DIR);
-//    Path runPath(dir);
-//    std::vector<std::string> current = runPath.currentPath();
-//    for (int j = 1; j < mPath.size(); j++)
-//      current.push_back(mPath[j]);
-//    mPath = current;
-//    mPos = static_cast<int>(mPath.size());
-//  }
-//}
+  return *this;
+}
 
-//#if defined WIN32
-//const char *Path::getDrive()
-//{
-//  //TODO: Esto s?lo en Windows...
-//  //return mPath[0].c_str();
-//  return mDrive.c_str();
-//}
-//#endif
+Path &Path::operator=(Path &&path) TL_NOEXCEPT
+{
+  mPath = std::move(path.mPath);
+  
+  return *this;
+}
 
-//void Path::up()
-//{
-//  if (mPos < mPath.size())
-//    mPos++;
-//}
-//
-//void Path::down()
-//{
-//  if (mPos != 0)
-//    mPos--;
-//}
-
-//std::vector<std::string> Path::currentPath()
-//{
-//  std::vector<std::string> cur_path;
-//  for (int i = 0; i < mPos; i++) {
-//    cur_path.push_back(mPath[i]);
-//  }
-//  return cur_path;
-//}
-
+void Path::setPath(const std::string &path)
+{
+  mPath.reset(new internal::Path(path));
+}
 
 std::string Path::toString() const
 {
   return mPath->toString();
+}
+
+std::string Path::fileName() const
+{
+  return mPath->fileName();
+}
+
+std::string Path::baseName() const
+{
+  return mPath->baseName();
 }
 
 std::string Path::extension() const
@@ -272,6 +209,48 @@ bool Path::empty() const
 {
   return mPath->empty();
 }
+
+bool Path::exists() const
+{
+  return mPath->exists();
+}
+
+Path &Path::replaceExtension(const std::string &extension)
+{
+  mPath->replaceExtension(extension);
+  return *this;
+}
+
+Path Path::parentPath() const
+{
+  Path parent_path(mPath->parent());
+  return parent_path;
+}
+
+
+/* Static methods */
+
+bool Path::exists(const std::string &path)
+{
+  return Path(path).exists();
+}
+
+bool Path::exists(const Path &path)
+{
+  return path.exists();
+}
+
+Path Path::tempDirectory()
+{
+  std::string temp = fs::temp_directory_path().string();
+  return Path(temp);
+}
+
+//Path tl::Path::tempFile()
+//{
+//  std::string name = std::tmpnam(nullptr);
+//  return Path(name);
+//}
 
 //std::list<std::string> Path::files(const std::string &wildcard)
 //{

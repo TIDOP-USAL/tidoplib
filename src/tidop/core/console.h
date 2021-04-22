@@ -37,17 +37,13 @@
 #if defined (__clang__) || defined (__GNUG__)
 #include <cxxabi.h>
 #endif
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-#else
-#include <boost/filesystem.hpp>
-#endif
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/licence.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -653,14 +649,8 @@ using ArgumentBooleanRequired = Argument_<bool, true>;
 using ArgumentBooleanOptional = Argument_<bool, false>;
 using ArgumentStringRequired = Argument_<std::string, true>;
 using ArgumentStringOptional = Argument_<std::string, false>;
-
-#if (__cplusplus >= 201703L)
-using ArgumentPathRequired = Argument_<std::filesystem::path, true>;
-using ArgumentPathOptional = Argument_<std::filesystem::path, false>;
-#else
-using ArgumentPathRequired = Argument_<boost::filesystem::path, true>;
-using ArgumentPathOptional = Argument_<boost::filesystem::path, false>;
-#endif
+using ArgumentPathRequired = Argument_<Path, true>;
+using ArgumentPathOptional = Argument_<Path, false>;
 
 /* Implementación */
 
@@ -761,29 +751,16 @@ std::string Argument_<std::string, false>::typeName() const
   return "std::string";
 }
 
-#if (__cplusplus >= 201703L)
 template<> inline
-std::string Argument_<std::filesystem::path, true>::typeName() const
+std::string Argument_<Path, true>::typeName() const
 {
-  return "path";
+  return "Path";
 }
 template<> inline
-std::string Argument_<std::filesystem::path, false>::typeName() const
+std::string Argument_<Path, false>::typeName() const
 {
-  return "path";
+  return "Path";
 }
-#else
-template<> inline
-std::string Argument_<boost::filesystem::path, true>::typeName() const
-{
-  return "path";
-}
-template<> inline
-std::string Argument_<boost::filesystem::path, false>::typeName() const
-{
-  return "path";
-}
-#endif
 
 
 template<typename T, bool required> inline
@@ -880,35 +857,19 @@ void Argument_<std::string, false>::fromString(const std::string &value)
   bValid = true;
 }
 
-#if (__cplusplus >= 201703L)
 template<> inline
-void Argument_<std::filesystem::path, true>::fromString(const std::string &value)
+void Argument_<Path, true>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
 
 template<> inline
-void Argument_<std::filesystem::path, false>::fromString(const std::string &value)
+void Argument_<Path, false>::fromString(const std::string &value)
 {
   *mValue = value;
   bValid = true;
 }
-#else
-template<> inline
-void Argument_<boost::filesystem::path, true>::fromString(const std::string &value)
-{
-  *mValue = value;
-  bValid = true;
-}
-
-template<> inline
-void Argument_<boost::filesystem::path, false>::fromString(const std::string &value)
-{
-  *mValue = value;
-  bValid = true;
-}
-#endif
 
 
 
@@ -1013,13 +974,8 @@ using ArgumentListBooleanRequired = ArgumentList_<bool, true>;
 using ArgumentListBooleanOptional = ArgumentList_<bool, false>;
 using ArgumentListStringRequired = ArgumentList_<std::string, true>;
 using ArgumentListStringOptional = ArgumentList_<std::string, false>;
-#if (__cplusplus >= 201703L)
-using ArgumentListPathRequired = ArgumentList_<std::filesystem::path, true>;
-using ArgumentListPathOptional = ArgumentList_<std::filesystem::path, false>;
-#else
-using ArgumentListPathRequired = ArgumentList_<boost::filesystem::path, true>;
-using ArgumentListPathOptional = ArgumentList_<boost::filesystem::path, false>;
-#endif
+using ArgumentListPathRequired = ArgumentList_<Path, true>;
+using ArgumentListPathOptional = ArgumentList_<Path, false>;
 
 
 /* Implementación */

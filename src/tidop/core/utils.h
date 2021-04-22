@@ -73,7 +73,6 @@ TL_EXPORT const char *getRunfile();
  * \param[in] path Ruta del directorio
  * \return true si existe.
  */
-TL_EXPORT bool isDirectory(const char *path);
 TL_EXPORT bool isDirectory(const std::string &path);
 
 /*!
@@ -81,7 +80,6 @@ TL_EXPORT bool isDirectory(const std::string &path);
  * \param[in] file Fichero
  * \return true si existe.
  */
-TL_EXPORT bool isFile(const char *file);
 TL_EXPORT bool isFile(const std::string &file);
 
 /*!
@@ -89,17 +87,17 @@ TL_EXPORT bool isFile(const std::string &file);
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1
  */
-TL_EXPORT int createDir(const char *path);
+TL_EXPORT int createDir(const std::string &path);
 
 /*!
- * \brief Crea un directorio
+ * \brief Borra un directorio
  * \param[in] path Ruta del directorio
  * \param[in] confirm Pide confirmación para borrar el archivo
  * \return Error
  */
-TL_EXPORT int deleteDir(const char *path, bool confirm = false);
+TL_EXPORT int deleteDir(const std::string &path, bool confirm = false);
 
-TL_EXPORT int move(const char *in, const char *out);
+//TL_EXPORT int move(const std::string &in, const std::string &out);
 
 
 /*!
@@ -437,7 +435,8 @@ std::vector<int> sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-
+TL_EXPORT bool compareInsensitiveCase(const std::string &source,
+                                      const std::string &compare);
 
 /* ---------------------------------------------------------------------------------- */
 /*                               Plantillas html y xml                                */

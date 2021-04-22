@@ -53,6 +53,9 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             path.h
 )
   
+target_link_libraries(${PROJECT_NAME} PRIVATE
+                      ${Boost_FILESYSTEM_LIBRARY} 
+                      ${Boost_SYSTEM_LIBRARY})
 
 set_property(TARGET ${PROJECT_NAME}
              PROPERTY FOLDER "modules")
@@ -69,9 +72,9 @@ if(BUILD_SHARED_LIBS)
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
 
-    target_link_libraries(${PROJECT_NAME} 
-                          ${Boost_FILESYSTEM_LIBRARY} 
-                          ${Boost_SYSTEM_LIBRARY})
+    #target_link_libraries(${PROJECT_NAME} 
+    #                      ${Boost_FILESYSTEM_LIBRARY} 
+    #                      ${Boost_SYSTEM_LIBRARY})
     
     if (HAVE_GDAL)
          target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})

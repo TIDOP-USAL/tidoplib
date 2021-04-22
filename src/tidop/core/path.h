@@ -63,45 +63,14 @@ public:
 
   Path();
   Path(const std::string &path);
-  //Path(const Path &path);
-  //Path(Path &&path) TL_NOEXCEPT;
+  Path(const Path &path);
+  Path(Path &&path) TL_NOEXCEPT;
   ~Path();
 
-  //Path &operator = (const Path &path);
-  //Path &operator = (Path &&path) TL_NOEXCEPT;
+  Path &operator = (const Path &path);
+  Path &operator = (Path &&path) TL_NOEXCEPT;
 
-//  /*!
-//   * \brief Parsea una cadena obteniendo los directorios de la ruta, unidad de disco y nombre si es un fichero
-//   * \param path Ruta
-//   * 
-//   */
-//  void parse(const std::string &path);
-//
-//#if defined WIN32
-//
-//  /*!
-//   * \brief getDrive
-//   * \return
-//   */
-//  const char *getDrive();
-//
-//#endif
-//
-//  /*!
-//   * \brief Sube una posición en el path
-//   */
-//  void up();
-//
-//  /*!
-//   * \brief Baja una posición
-//   */
-//  void down();
-//  
-//  /*!
-//   * \brief currentPath
-//   * \return
-//   */
-//  std::vector<std::string> currentPath();
+  void setPath(const std::string &path);
 
   /*!
    * \brief Convierte el path en una cadena
@@ -109,10 +78,23 @@ public:
    */
   std::string toString() const;
   
+  std::string fileName() const;
+  std::string baseName() const;
   std::string extension() const;
   bool isDirectory() const;
   bool isFile() const;
   bool empty() const;
+  bool exists() const;
+  Path &replaceExtension(const std::string &extension);
+
+  Path parentPath() const;
+
+/* Static methods */
+
+  static bool exists(const std::string &path);
+  static bool exists(const Path &path);
+  static Path tempDirectory();
+  //static Path tempFile();
 
 //  
 //  void createDir();
@@ -129,7 +111,7 @@ public:
 
 private:
 
-  internal::Path *mPath;
+  std::unique_ptr<internal::Path> mPath;
 
 };
 

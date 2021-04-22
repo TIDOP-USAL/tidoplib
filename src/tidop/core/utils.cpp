@@ -173,7 +173,12 @@ int createDir(const char *path)
   return i_ret;
 }
 
-int deleteDir(const char *path, bool confirm)
+int createDir(const std::string &path)
+{
+  return createDir(path.c_str());
+}
+
+int deleteDir(const std::string &path, bool confirm)
 {
   int i_ret = 0;
   try {
@@ -196,36 +201,36 @@ int deleteDir(const char *path, bool confirm)
   return i_ret;
 }
 
-int move(const char *in, const char *out)
-{
-#ifdef WIN32
-
-  size_t len = strlen(in) + 1;
-  wchar_t * w_in = new wchar_t[len];
-  size_t convertedChars = 0;
-  mbstowcs_s(&convertedChars, w_in, len, in, _TRUNCATE);
-
-  len = strlen(out) + 1;
-  wchar_t * w_out = new wchar_t[len];
-  convertedChars = 0;
-  mbstowcs_s(&convertedChars, w_out, len, out, _TRUNCATE);
-
-  if (!MoveFileEx(w_in, w_out, MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
-    //printf("MoveFileEx failed with error %d\n", GetLastError());
-    msgError("%s", formatWindowsErrorMsg(GetLastError()).c_str());
-    return 1;
-  } else {
-    //tprintf(TEXT("%s has been moved to %s\n"), argv[1], argv[2]);
-    return 0;
-  }
-
-  delete w_in;
-  delete w_out;
-
-#else
-  ///TODO: Completar
-#endif
-}
+//int move(const char *in, const char *out)
+//{
+//#ifdef WIN32
+//
+//  size_t len = strlen(in) + 1;
+//  wchar_t * w_in = new wchar_t[len];
+//  size_t convertedChars = 0;
+//  mbstowcs_s(&convertedChars, w_in, len, in, _TRUNCATE);
+//
+//  len = strlen(out) + 1;
+//  wchar_t * w_out = new wchar_t[len];
+//  convertedChars = 0;
+//  mbstowcs_s(&convertedChars, w_out, len, out, _TRUNCATE);
+//
+//  if (!MoveFileEx(w_in, w_out, MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+//    //printf("MoveFileEx failed with error %d\n", GetLastError());
+//    msgError("%s", formatWindowsErrorMsg(GetLastError()).c_str());
+//    return 1;
+//  } else {
+//    //tprintf(TEXT("%s has been moved to %s\n"), argv[1], argv[2]);
+//    return 0;
+//  }
+//
+//  delete w_in;
+//  delete w_out;
+//
+//#else
+//  ///TODO: Completar
+//#endif
+//}
 
 int getFileDir(const char *path, char *dir, int size)
 {
@@ -591,6 +596,11 @@ int stringToInteger(const std::string &text, Base base)
   }
   int number;
   return ss >> number ? number : 0;
+}
+
+bool compareInsensitiveCase(const std::string &source, const std::string &compare)
+{
+  return boost::iequals(source, compare);
 }
 
 /* ---------------------------------------------------------------------------------- */

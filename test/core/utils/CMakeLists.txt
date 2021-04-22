@@ -26,7 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 project(test)
 
-set(test_filename argument_test.cpp)
+set(test_filename utils_test.cpp)
 get_filename_component(test_name ${test_filename} NAME_WE)
 set(test_target "${test_name}")
 
@@ -34,8 +34,8 @@ add_executable(${test_target}
                ${test_filename})
 target_link_libraries(${test_target} tl_core)
 target_link_libraries(${test_target} 
-                      #${Boost_FILESYSTEM_LIBRARY}
-                      #${Boost_SYSTEM_LIBRARY}
+                      ${Boost_FILESYSTEM_LIBRARY}
+                      ${Boost_SYSTEM_LIBRARY}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${test_target} PROPERTIES

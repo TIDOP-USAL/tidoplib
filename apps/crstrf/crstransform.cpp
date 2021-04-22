@@ -27,19 +27,11 @@
 
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
+#include <tidop/core/path.h>
 #include <tidop/core/log.h>
 #include <tidop/geometry/entities/point.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/crstransf.h>
-
-// filesystem
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
 
 using namespace tl;
 using namespace geospatial;
@@ -47,8 +39,8 @@ using namespace geospatial;
 int main(int argc, char** argv)
 {
 
-  fs::path app_path = argv[0];
-  std::string cmd_name = app_path.stem().string();
+  Path app_path = argv[0];
+  std::string cmd_name = app_path.baseName();
 
   // Consola
   Console &console = Console::instance();
@@ -104,7 +96,7 @@ int main(int argc, char** argv)
     std::ofstream ofs;
     ofs.open(coord_trf, std::ofstream::out | std::ofstream::trunc);
 
-    if (fs::exists(coord)) {
+    if (Path::exists(coord)) {
     
       std::ifstream ifs;
       ifs.open(coord, std::ifstream::in);

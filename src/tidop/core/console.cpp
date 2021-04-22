@@ -140,7 +140,15 @@ void Console::printErrorMessage(const std::string &message)
 {
   setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
                             messageProperties(MessageLevel::msg_error).intensity);
-  printMessage(message);
+  //printMessage(message);
+
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  std::string aux(message);
+  replaceString(&aux, "%", "%%");
+  std::cerr << aux << "\n";
+
   reset();
 }
 

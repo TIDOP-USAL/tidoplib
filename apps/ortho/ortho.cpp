@@ -29,6 +29,7 @@
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
 #include <tidop/core/exception.h>
+#include <tidop/core/path.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/vect/vectwriter.h>
@@ -43,23 +44,14 @@
 
 #include <opencv2/stitching.hpp>
 
-// filesystem
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-
 using namespace tl;
 using namespace geospatial;
 
 int main(int argc, char** argv)
 {
 
-  fs::path app_path = argv[0];
-  std::string cmd_name = app_path.stem().string();
+  Path app_path = argv[0];
+  std::string cmd_name = app_path.baseName();
 
   // Consola
   Console &console = Console::instance();
@@ -124,7 +116,7 @@ int main(int argc, char** argv)
 
     /// Carga de imagenes 
 
-    if (!fs::exists(image_list)) throw std::runtime_error("Image list not found");
+    if (!Path::exists(image_list)) throw std::runtime_error("Image list not found");
 
     std::vector<std::string> images;
 
@@ -136,12 +128,12 @@ int main(int argc, char** argv)
 
       while (std::getline(ifs, line)) {
         
-        if (fs::exists(line)) {
+        if (Path::exists(line)) {
           images.push_back(line);
         } else {
           std::string image = std::string(image_path).append("\\").append(line);
           
-          if (fs::exists(image)) {
+          if (Path::exists(image)) {
             images.push_back(image);
           } else {
             std::string err = "Image not found: ";
@@ -165,7 +157,7 @@ int main(int argc, char** argv)
 
     std::unique_ptr<ImageReader> imageReader;
 
-    if (!fs::exists(bundle_file)) throw std::runtime_error("Bundle file not found");
+    if (!Path::exists(bundle_file)) throw std::runtime_error("Bundle file not found");
 
     ifs.open(bundle_file, std::ifstream::in);
     if (ifs.is_open()) {
