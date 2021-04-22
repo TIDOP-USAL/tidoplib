@@ -41,6 +41,8 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             utils.h
             process.cpp
             process.h
+            event.cpp
+            event.h
             licence.cpp
             licence.h
             gdalreg.cpp

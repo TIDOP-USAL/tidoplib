@@ -34,8 +34,8 @@ add_executable(${test_target}
                ${test_filename})
 target_link_libraries(${test_target} tl_core)
 target_link_libraries(${test_target} 
-                      ${Boost_FILESYSTEM_LIBRARY}
-                      ${Boost_SYSTEM_LIBRARY}
+                      #${Boost_FILESYSTEM_LIBRARY}
+                      #${Boost_SYSTEM_LIBRARY}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 set_target_properties(${test_target} PROPERTIES
