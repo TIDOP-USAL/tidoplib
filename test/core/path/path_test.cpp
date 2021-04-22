@@ -111,4 +111,11 @@ BOOST_FIXTURE_TEST_CASE(parent_path, PathTest)
   BOOST_CHECK_EQUAL("C:\\", path3.toString());
 }
 
+BOOST_FIXTURE_TEST_CASE(append, PathTest)
+{
+  Path path("C:\\temp\\dir1");
+  Path path1 = path.append("dir2");
+  BOOST_CHECK_EQUAL("C:\\temp\\dir1\\dir2", path1.toString());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

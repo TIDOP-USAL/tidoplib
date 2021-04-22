@@ -122,6 +122,11 @@ public:
     return parent_path.string();
   }
 
+  void Path::append(const std::string &text)
+  {
+    mPath.append(text);
+  }
+
 private:
 
   fs::path mPath;
@@ -227,6 +232,11 @@ Path Path::parentPath() const
   return parent_path;
 }
 
+Path &Path::append(const std::string &text)
+{
+  mPath->append(text);
+  return *this;
+}
 
 /* Static methods */
 
@@ -244,6 +254,26 @@ Path Path::tempDirectory()
 {
   std::string temp = fs::temp_directory_path().string();
   return Path(temp);
+}
+
+bool Path::createDirectory(const Path &directory)
+{
+  return fs::create_directory(directory.toString());
+}
+
+bool Path::createDirectory(const std::string &directory)
+{
+  return fs::create_directory(directory);
+}
+
+bool Path::createDirectories(const Path &directory)
+{
+  return fs::create_directories(directory.toString());
+}
+
+bool Path::createDirectories(const std::string &directory)
+{
+  return fs::create_directories(directory);
 }
 
 //Path tl::Path::tempFile()

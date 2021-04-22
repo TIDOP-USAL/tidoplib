@@ -33,9 +33,7 @@
 #include <regex>
 #include <list>
 #include <numeric>
-
-
-
+#include <memory>
 
 
 #include "tidop/core/defs.h"
@@ -88,12 +86,17 @@ public:
   Path &replaceExtension(const std::string &extension);
 
   Path parentPath() const;
+  Path &append(const std::string &text);
 
 /* Static methods */
 
   static bool exists(const std::string &path);
   static bool exists(const Path &path);
   static Path tempDirectory();
+  static bool createDirectory(const Path &directory);
+  static bool createDirectory(const std::string &directory);
+  static bool createDirectories(const Path &directory);
+  static bool createDirectories(const std::string &directory);
   //static Path tempFile();
 
 //  
