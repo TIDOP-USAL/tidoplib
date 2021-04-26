@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -31,12 +31,7 @@ namespace tl
 
 
 EventBase::EventBase(Type type)
-  : Event(),
-    mType(type)
-{
-}
-
-EventBase::~EventBase()
+  : mType(type)
 {
 }
 
@@ -53,10 +48,6 @@ ProcessRunningEvent::ProcessRunningEvent()
 {
 }
 
-ProcessRunningEvent::~ProcessRunningEvent()
-{
-}
-
 void ProcessRunningEvent::clear()
 {
 }
@@ -66,10 +57,6 @@ void ProcessRunningEvent::clear()
 
 ProcessPausingEvent::ProcessPausingEvent()
   : EventBase(Event::Type::process_pausing)
-{
-}
-
-ProcessPausingEvent::~ProcessPausingEvent()
 {
 }
 
@@ -85,10 +72,6 @@ ProcessPauseEvent::ProcessPauseEvent()
 {
 }
 
-ProcessPauseEvent::~ProcessPauseEvent()
-{
-}
-
 void ProcessPauseEvent::clear()
 {
 }
@@ -98,10 +81,6 @@ void ProcessPauseEvent::clear()
 
 ProcessResumedEvent::ProcessResumedEvent()
   : EventBase(Event::Type::process_resumed)
-{
-}
-
-ProcessResumedEvent::~ProcessResumedEvent()
 {
 }
 
@@ -117,10 +96,6 @@ ProcessStoppingEvent::ProcessStoppingEvent()
 {
 }
 
-ProcessStoppingEvent::~ProcessStoppingEvent()
-{
-}
-
 void ProcessStoppingEvent::clear()
 {
 }
@@ -130,10 +105,6 @@ void ProcessStoppingEvent::clear()
 
 ProcessStoppedEvent::ProcessStoppedEvent()
   : EventBase(Event::Type::process_stopped)
-{
-}
-
-ProcessStoppedEvent::~ProcessStoppedEvent()
 {
 }
 
@@ -149,10 +120,6 @@ ProcessFinalizedEvent::ProcessFinalizedEvent()
 {
 }
 
-ProcessFinalizedEvent::~ProcessFinalizedEvent()
-{
-}
-
 void ProcessFinalizedEvent::clear()
 {
 }
@@ -163,10 +130,6 @@ void ProcessFinalizedEvent::clear()
 ProcessErrorEvent::ProcessErrorEvent()
   : EventBase(Event::Type::process_error),
     mErrorMessage("")
-{
-}
-
-ProcessErrorEvent::~ProcessErrorEvent()
 {
 }
 
@@ -195,10 +158,6 @@ ImageChangeEvent::ImageChangeEvent()
 {
 }
 
-ImageChangeEvent::~ImageChangeEvent()
-{
-}
-
 std::string ImageChangeEvent::image() const
 {
   return mImage;
@@ -211,7 +170,7 @@ void ImageChangeEvent::setImage(const std::string &image)
 
 void ImageChangeEvent::clear()
 {
-  mImage = -1;
+  mImage.clear();
 }
 
 } // namespace tl

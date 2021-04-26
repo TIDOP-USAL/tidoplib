@@ -32,20 +32,12 @@ namespace tl
 
 
 FastProperties::FastProperties()
-  : mThreshold(10),
-    mNonmaxSuppression(true),
-    mDetectorType("TYPE_9_16")
+  : mDetectorType(fast_default_value_detector_type)
 {
 
 }
 
-FastProperties::FastProperties(const FastProperties &fastProperties)
-  : Fast(fastProperties),
-    mThreshold(fastProperties.mThreshold),
-    mNonmaxSuppression(fastProperties.mNonmaxSuppression),
-    mDetectorType(fastProperties.mDetectorType)
-{
-}
+FastProperties::FastProperties(const FastProperties &fastProperties) = default;
 
 int FastProperties::threshold() const
 {
@@ -74,18 +66,18 @@ void FastProperties::setNonmaxSuppression(bool nonmaxSuppression)
 
 void FastProperties::setDetectorType(const std::string &detectorType)
 {
-  if (detectorType.compare("TYPE_5_8") == 0 ||
-      detectorType.compare("TYPE_7_12") == 0 ||
-      detectorType.compare("TYPE_9_16") == 0) {
+  if (detectorType == "TYPE_5_8" ||
+      detectorType == "TYPE_7_12" ||
+      detectorType == "TYPE_9_16") {
     mDetectorType = detectorType;
   }
 }
 
 void FastProperties::reset()
 {
-  mThreshold = 10;
-  mNonmaxSuppression = true;
-  mDetectorType = "TYPE_9_16";
+  mThreshold = fast_default_value_threshold;
+  mNonmaxSuppression = fast_default_value_nonmax_suppression;
+  mDetectorType = fast_default_value_detector_type;
 }
 
 std::string FastProperties::name() const
@@ -125,22 +117,20 @@ FastDetector::FastDetector(int threshold,
 
 #if CV_VERSION_MAJOR >= 4
 
-TL_DISABLE_WARNING(26812)
 cv::FastFeatureDetector::DetectorType FastDetector::convertDetectorType(const std::string &detectorType)
 {
   cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::DetectorType::TYPE_9_16;
 
-  if (detectorType.compare("TYPE_5_8") == 0){
+  if (detectorType == "TYPE_5_8"){
     type = cv::FastFeatureDetector::TYPE_5_8;
-  } else if (detectorType.compare("TYPE_7_12") == 0) {
+  } else if (detectorType == "TYPE_7_12") {
     type = cv::FastFeatureDetector::TYPE_7_12;
-  } else if (detectorType.compare("TYPE_9_16") == 0) {
+  } else if (detectorType == "TYPE_9_16") {
     type = cv::FastFeatureDetector::TYPE_9_16;
   }
 
   return type;
 }
-TL_ENABLE_WARNING(26812)
 
 #else
 
@@ -148,11 +138,11 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 {
   int type = cv::FastFeatureDetector::TYPE_9_16;
 
-  if (detectorType.compare("TYPE_5_8") == 0){
+  if (detectorType == "TYPE_5_8"){
     type = cv::FastFeatureDetector::TYPE_5_8;
-  } else if (detectorType.compare("TYPE_7_12") == 0) {
+  } else if (detectorType == "TYPE_7_12") {
     type = cv::FastFeatureDetector::TYPE_7_12;
-  } else if (detectorType.compare("TYPE_9_16") == 0) {
+  } else if (detectorType == "TYPE_9_16") {
     type = cv::FastFeatureDetector::TYPE_9_16;
   }
 
@@ -203,7 +193,7 @@ FastDetectorCuda::FastDetectorCuda()
   this->update();
 }
 
-FastDetectorCuda::FastDetectorCuda(const FastDetector &fastDetector)
+FastDetectorCuda::FastDetectorCuda(const FastDetectorCuda &fastDetector)
   : FastProperties(fastDetector),
     KeypointDetector(fastDetector)
 {
@@ -224,11 +214,11 @@ int FastDetectorCuda::convertDetectorType(const std::string &detectorType)
 {
   int type = cv::FastFeatureDetector::TYPE_9_16;
 
-  if (detectorType.compare("TYPE_5_8") == 0){
+  if (detectorType == "TYPE_5_8"){
     type = cv::FastFeatureDetector::TYPE_5_8;
-  } else if (detectorType.compare("TYPE_7_12") == 0) {
+  } else if (detectorType == "TYPE_7_12") {
     type = cv::FastFeatureDetector::TYPE_7_12;
-  } else if (detectorType.compare("TYPE_9_16") == 0) {
+  } else if (detectorType == "TYPE_9_16") {
     type = cv::FastFeatureDetector::TYPE_9_16;
   }
 

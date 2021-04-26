@@ -36,6 +36,9 @@
 namespace tl
 {
 
+constexpr auto boost_default_value_use_orientation = true;
+constexpr auto boost_default_value_scale_factor = 6.25;
+
 /*! \addtogroup Features
  * 
  *  \{
@@ -55,7 +58,11 @@ public:
 
   BoostProperties();
   BoostProperties(const BoostProperties &boostProperties);
-  ~BoostProperties() override = default;
+  BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT;
+  ~BoostProperties() override;
+
+  BoostProperties &operator =(const BoostProperties &boostProperties);
+  BoostProperties &operator =(BoostProperties &&boostProperties) TL_NOEXCEPT;
 
 // Boost interface
 
@@ -78,8 +85,8 @@ public:
 private:
 
   std::string mDescriptorType;
-  bool bUseOrientation;
-  double mScaleFactor;
+  bool bUseOrientation{boost_default_value_use_orientation};
+  double mScaleFactor{boost_default_value_scale_factor};
 
 };
 
@@ -95,10 +102,14 @@ public:
 
   BoostDescriptor();
   BoostDescriptor(const BoostDescriptor &boostDescriptor);
+  BoostDescriptor(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
   BoostDescriptor(const std::string &descriptorType,
                   bool useOrientation,
                   double scaleFactor);
   ~BoostDescriptor() override = default;
+
+  BoostDescriptor &operator =(const BoostDescriptor &boostDescriptor);
+  BoostDescriptor &operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT;
 
 private:
 
@@ -125,7 +136,7 @@ public:
   cv::Mat extract(const cv::Mat &img,
                   std::vector<cv::KeyPoint> &keyPoints) override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)

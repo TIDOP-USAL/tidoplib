@@ -50,11 +50,10 @@ GroupLines::GroupLines(const std::vector<Line> &lines)
 
 void GroupLines::add(const Line &line)
 {
-  Line laux = line;
   linesgroup.push_back(line);
-  WindowI w = laux.window();
+  WindowI window = line.window();
   //Se actualiza la ventana  envolvente
-  bbox = (bbox.isEmpty() ) ? w : joinWindow(bbox, w);
+  bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
 }
 
 #ifdef HAVE_OPENCV

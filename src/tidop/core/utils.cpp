@@ -36,9 +36,9 @@
 #include <dirent.h>
 #endif
 
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <ctime>
-#include <cstring>
+//#define __STDC_WANT_LIB_EXT1__ 1
+//#include <ctime>
+//#include <cstring>
 
 //// Paralelismo
 //#if defined HAVE_OMP
@@ -544,6 +544,7 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
 
 int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 {
+  TL_TODO("boost::split(list, line, boost::is_any_of(" "));");
   out.resize(0);
   int r_err = 0;
   char *dup;

@@ -31,12 +31,6 @@ namespace tl
 {
 
 GfttProperties::GfttProperties()
-  : mMaxFeatures(1000),
-    mQualityLevel(0.01),
-    mMinDistance(1),
-    mBlockSize(3),
-    mHarrisDetector(false),
-    mK(0.04)
 {
 }
 

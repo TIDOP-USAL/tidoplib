@@ -474,9 +474,12 @@ double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> 
 {
   double N = 0.;
   size_t size = points.size();
+
   if (size < 3) {
     return 0.; // O devolver error
-  } else if (size == 3) {
+  }
+
+  if (size == 3) {
     std::array<Point_t, 3> _points;
     std::copy_n(points.begin(), 3, _points.begin());
     threePointsPlane(_points, plane, normalize);
@@ -543,9 +546,12 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
   double N = 0.;
   typename std::iterator_traits<it>::difference_type size = std::distance(it_begin, it_end);
   typedef typename std::iterator_traits<it>::value_type Point3_t;
+
   if (size < 3) {
     return 0.; // O devolver error
-  } else if (size == 3) {
+  }
+
+  if (size == 3) {
     std::array<Point3_t, 3> _points;
     std::copy_n(it_begin, 3, _points.begin());
     threePointsPlane(_points, plane, normalize);

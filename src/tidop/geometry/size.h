@@ -52,6 +52,7 @@ public:
   Size(T width, T height);
   Size(const Size &size);
   Size(Size &&size) TL_NOEXCEPT;
+  ~Size() = default;
 
   Size &operator = (const Size &size);
   Size &operator = (Size &&size) TL_NOEXCEPT;

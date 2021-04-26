@@ -42,6 +42,14 @@ namespace tl
  *  \{
  */
 
+constexpr auto akaze_default_value_descriptor_type{"MLDB"};
+constexpr auto akaze_default_value_descriptor_size{0};
+constexpr auto akaze_default_value_descriptor_channels{3};
+constexpr auto akaze_default_value_threshold{0.001};
+constexpr auto akaze_default_value_octaves{4};
+constexpr auto akaze_default_value_octave_layers{4};
+constexpr auto akaze_default_value_diffusivity{"DIFF_PM_G2"};
+
 
 class TL_EXPORT AkazeProperties
   : public Akaze
@@ -51,7 +59,11 @@ public:
 
   AkazeProperties();
   AkazeProperties(const AkazeProperties &akazeProperties);
-  ~AkazeProperties() override = default;
+  AkazeProperties(AkazeProperties &&akazeProperties) TL_NOEXCEPT;
+  ~AkazeProperties() override;
+
+  AkazeProperties &operator =(const AkazeProperties &akazeProperties);
+  AkazeProperties &operator =(AkazeProperties &&akazeProperties) TL_NOEXCEPT;
 
 // Akaze interface
 
@@ -82,11 +94,11 @@ public:
 private:
 
   std::string mDescriptorType;
-  int mDescriptorSize;
-  int mDescriptorChannels;
-  double mThreshold;
-  int mOctaves;
-  int mOctaveLayers;
+  int mDescriptorSize{akaze_default_value_descriptor_size};
+  int mDescriptorChannels{akaze_default_value_descriptor_channels};
+  double mThreshold{akaze_default_value_threshold};
+  int mOctaves{akaze_default_value_octaves};
+  int mOctaveLayers{akaze_default_value_octave_layers};
   std::string mDiffusivity;
 
 };
@@ -105,6 +117,7 @@ public:
 
   AkazeDetectorDescriptor();
   AkazeDetectorDescriptor(const AkazeDetectorDescriptor &akazeDetectorDescriptor);
+  AkazeDetectorDescriptor(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT;
   AkazeDetectorDescriptor(const std::string &descriptorType,
                           int descriptorSize,
                           int descriptorChannels,
@@ -115,15 +128,20 @@ public:
 
   ~AkazeDetectorDescriptor() override = default;
 
+  AkazeDetectorDescriptor &operator =(const AkazeDetectorDescriptor &akazeDetectorDescriptor);
+  AkazeDetectorDescriptor &operator =(AkazeDetectorDescriptor &&akazeDetectorDescriptor) TL_NOEXCEPT;
+
 private:
 
 #if CV_VERSION_MAJOR >= 4
   cv::AKAZE::DescriptorType convertDescriptorType(const std::string &descriptorType);
-  cv::KAZE::DiffusivityType convertDiffusivity(const std::string &descriptorType);
+  cv::KAZE::DiffusivityType convertDiffusivity(const std::string &diffusivity);
 #else
   int convertDescriptorType(const std::string &descriptorType);
   int convertDiffusivity(const std::string &diffusivity);
 #endif
+
+  void initAkazeFromProperties();
 
 // KeypointDetector interface
 
@@ -158,7 +176,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   cv::Ptr<cv::AKAZE> mAkaze;
 

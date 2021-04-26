@@ -30,6 +30,8 @@
 
 #include <string>
 
+#include <chrono>
+
 namespace tl
 {
 
@@ -57,22 +59,6 @@ TL_EXPORT std::string formatTimeToString(const std::string &templ = "%d/%b/%Y %H
  */
 TL_EXPORT uint64_t tickCount();
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief tiempo actual
- *
- * <h4>Ejemplo</h4>
- * \code
- * uint64_t time_ini = getTickCount();
- * ...
- * double time = (getTickCount() - time_ini) / 1000.;
- * msgInfo("Time %f", time);
- * \endcode
- * \deprecated Se cambia el nombre del método a tickCount()
- */
-TL_DEPRECATED("tickCount()", "2.0") 
-TL_EXPORT uint64_t getTickCount();
-#endif // TL_ENABLE_DEPRECATED_METHODS
 
 /*!
  * \brief Clase para medir tiempos.
@@ -92,36 +78,29 @@ public:
     pause,      /*!< Pausado */
     stopped,    /*!< Detenido */
     finalized   /*!< Finalizado */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    START     = start,      /*!< Inicio */
-    RUNNING   = running,    /*!< Corriendo */
-    PAUSE     = pause,      /*!< Pausado */
-    STOPPED   = stopped,    /*!< Detenido */
-    FINALIZED = finalized   /*!< Finalizado */
-#endif
   };
 
 public:
 
   Chrono();
-
-  /*!
-   * \brief Constructor
-   */
-  Chrono(const std::string &message, 
+  Chrono(std::string message,
          bool writeMessage = true);
-
+  Chrono(const Chrono &) = delete;
+  Chrono(Chrono &&) = delete;
   /*!
    * \brief Destructora
    * En la destructora se llama al método stop si este no ha sido llamado
    */
   ~Chrono();
 
+  void operator=(const Chrono &) = delete;
+  void operator=(Chrono &&) = delete;
+
   /*!
    * \brief Pausa el cronometro
+   * \return Tiempo transcurrido en segundos
    */
-  uint64_t pause();
+  double pause();
 
   /*!
    * \brief Reinicio del cronometro
@@ -136,41 +115,24 @@ public:
   /*!
    * \brief Arranca el cronometro
    */
-  uint64_t run();
+  void run();
 
   /*!
    * \brief Detiene el cronometro
+   * \return Tiempo transcurrido en segundos
    */
-  uint64_t stop();
+  double stop();
 
   void setMessage(const std::string &message);
 
 private:
-  
-  /*!
-   * Tiempo de inicio en milisegundos
-   */
-  uint64_t mTimeIni;
 
-  /*!
-   * Tiempo acumulado en milisegundos
-   */
-  uint64_t mAccumulated;
-
-  /*!
-   * \brief Estado del cronómetro
-   */
-  Status mStatus;
-
-  /*!
-   * \brief Mensaje de información opcional
-   */
+  std::chrono::steady_clock::time_point mTimeIni;
+  //std::chrono::steady_clock::duration mAccumulated;
+  std::chrono::duration<double> mAccumulated{};
+  Status mStatus{Chrono::Status::start};
   std::string mMessage;
-
-  /*!
-   * \brief Escribe mensajes en log y consola
-   */
-  bool bWriteMessage;
+  bool bWriteMessage{false};
 
 };
 

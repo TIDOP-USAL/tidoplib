@@ -24,24 +24,23 @@
 
 #include "gsm.h"
 
+#include <utility>
+
 #include "tidop/core/messages.h"
 
 namespace tl
 {
 
 GmsProperties::GmsProperties()
-  : mRotation(true),
-    mScale(true),
-    mThreshold(6.)
 {
 
 }
 
 void GmsProperties::reset()
 {
-  mRotation = true;
-  mScale = true;
-  mThreshold = 6.;
+  mRotation = gms_default_value_rotation;
+  mScale = gms_default_value_scale;
+  mThreshold = gms_default_value_threshold;
 }
 
 std::string GmsProperties::name() const
@@ -82,18 +81,18 @@ void GmsProperties::setThreshold(double threshold)
 /*----------------------------------------------------------------*/
 
 
-GsmImp::GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
   : GmsProperties(),
-    mDescriptorMatcher(descriptorMatcher)
+    mDescriptorMatcher(std::move(descriptorMatcher))
 {
 }
 
-GsmImp::GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+GsmImp::GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
                          bool rotation,
                          bool scale,
                          double threshold)
   : GmsProperties(),
-    mDescriptorMatcher(descriptorMatcher)
+    mDescriptorMatcher(std::move(descriptorMatcher))
 {
   this->setRotation(rotation);
   this->setScale(scale);
@@ -109,7 +108,7 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
                      const cv::Size &queryImageSize,
                      const cv::Size &trainImageSize)
 {
-#ifdef HAVE_OPENCV_XFEATURES2D 
+#ifdef HAVE_OPENCV_XFEATURES2D
 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
   try {

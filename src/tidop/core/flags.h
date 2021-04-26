@@ -384,12 +384,14 @@ public:
   /*!
    * \brief Constructora por defecto
    */
-  Flags() : mFlag(0) {}
+  Flags();
 
   /*!
    * \brief Constructora de copia
    */
   Flags(const Flags &flag);
+
+  Flags(Flags &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Constructora de lista
@@ -408,6 +410,13 @@ public:
    * \return Referencia al objeto EnumFlags
    */
   Flags &operator = (const Flags<T> &flag);
+
+  /*!
+   * \brief Operador asignación de movimiento
+   * \param flag enumeracion o unión de ellas
+   * \return Referencia al objeto EnumFlags
+   */
+  Flags &operator = (Flags<T> &&flag) TL_NOEXCEPT;
 
   /*!
    * \brief Comprueba si el flag esta activo
@@ -472,8 +481,20 @@ using Flags_32 = Flags<uint32_t>;
 using Flags_64 = Flags<uint64_t>;
 
 
+template<typename T>
+Flags<T>::Flags()
+  : mFlag(0)
+{
+}
+
 template<typename T> inline
 Flags<T>::Flags(const Flags &flag) 
+  : mFlag(flag.mFlag)
+{
+}
+
+template<typename T>
+Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
   : mFlag(flag.mFlag)
 {
 }
@@ -489,6 +510,15 @@ Flags<T>::Flags(std::initializer_list<int> flags)
 
 template<typename T> inline
 Flags<T> &Flags<T>::operator = (const Flags<T> &flag)
+{
+  if (this != &flag) {
+    mFlag = flag.mFlag;
+  }
+  return *this;
+}
+
+template<typename T> inline
+Flags<T> &Flags<T>::operator = (Flags<T> &&flag) TL_NOEXCEPT
 {
   if (this != &flag) {
     mFlag = flag.mFlag;

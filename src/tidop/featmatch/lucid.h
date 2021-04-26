@@ -73,8 +73,8 @@ public:
 
 private:
 
-  int mLucidKernel;
-  int mBlurKernel;
+  int mLucidKernel{1};
+  int mBlurKernel{2};
 };
 
 
@@ -117,7 +117,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::LUCID> mLUCID;

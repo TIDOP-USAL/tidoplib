@@ -409,14 +409,14 @@ public:
    * \param[in] name Nombre del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const std::string &name, const std::string &description);
+  Argument(std::string name, std::string description);
 
   /*!
    * \brief Constructora argumento
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const char &shortName, const std::string &description);
+  Argument(const char &shortName, std::string description);
 
   /*!
    * \brief Constructora argumento
@@ -424,7 +424,7 @@ public:
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const std::string &name, const char &shortName, const std::string &description);
+  Argument(std::string name, const char &shortName, std::string description);
 
   /*!
    * \brief Constructora de copia
@@ -909,11 +909,6 @@ class ArgumentList_
   : public Argument_<T, required>
 {
 
-protected:
-
-  std::vector<T> mValues;
-  size_t *mIdx;
-
 public:
 
   /*!
@@ -923,7 +918,9 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const std::string &name, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const std::string &name,
+                const std::string &description,
+                std::vector<T> &values, size_t *idx);
 
   /*!
    * \brief Constructora argumento lista de opciones
@@ -932,7 +929,10 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const char &shortName,
+                const std::string &description,
+                std::vector<T> &values,
+                size_t *idx);
 
   /*!
    * \brief Constructora argumento lista de opciones
@@ -942,7 +942,11 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const std::string &name, const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const std::string &name,
+                const char &shortName,
+                const std::string &description,
+                std::vector<T> &values,
+                size_t *idx);
 
   /*!
    * \brief Constructora de copia
@@ -959,6 +963,10 @@ public:
 
   void setValue(const T &value) override;
 
+private:
+
+  std::vector<T> mValues;
+  size_t *mIdx;
 };
 
 
@@ -1261,7 +1269,7 @@ public:
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    */
-  Command(const std::string &name, const std::string &description);
+  Command(std::string name, std::string description);
 
   /*!
    * \brief Constructora de lista
@@ -1269,7 +1277,7 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
+  Command(std::string name, std::string description, std::initializer_list<std::shared_ptr<Argument>> arguments);
 
   ~Command() = default;
 
@@ -1564,7 +1572,8 @@ public:
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    */
-  CommandList(const std::string &name, const std::string &description);
+  CommandList(std::string name,
+              std::string description);
   
   /*!
    * \brief Constructor de copia
@@ -1745,7 +1754,7 @@ public:
    * \param[in] max Valor máximo
    * \param[in] msg Mensaje opcional con información del proceso.
    */
-  Progress(double min, double max, const std::string &msg = std::string());
+  Progress(double min, double max, std::string msg = std::string());
 
   /*!
    * \brief Destructora
@@ -1865,7 +1874,7 @@ protected:
   /*!
    * \brief Escala
    */
-  double mScale;
+  double mScale{};
 
   static std::mutex sMutex;
 };

@@ -47,6 +47,10 @@ namespace tl
  */
 
 
+constexpr auto brief_default_value_bytes = "32";
+constexpr auto brief_default_value_use_orientation = false;
+
+
 class TL_EXPORT BriefProperties
   : public Brief
 {
@@ -54,28 +58,32 @@ public:
 
   BriefProperties();
   BriefProperties(const BriefProperties &briefProperties);
-  ~BriefProperties() override = default;
+  BriefProperties(BriefProperties &&briefProperties) TL_NOEXCEPT;
+  ~BriefProperties() override;
+
+  BriefProperties &operator =(const BriefProperties &briefProperties);
+  BriefProperties &operator =(BriefProperties &&briefProperties) TL_NOEXCEPT;
 
 // Brief interface
 
 public:
 
-  virtual std::string bytes() const override;
-  virtual bool useOrientation() const override;
-  virtual void setBytes(const std::string &bytes) override;
-  virtual void setUseOrientation(bool useOrientation) override;
+  std::string bytes() const override;
+  bool useOrientation() const override;
+  void setBytes(const std::string &bytes) override;
+  void setUseOrientation(bool useOrientation) override;
 
 // Feature interface
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
 
   std::string mBytes;
-  bool mUseOrientation;
+  bool mUseOrientation{brief_default_value_use_orientation};
 };
 
 
@@ -91,9 +99,13 @@ public:
 
   BriefDescriptor();
   BriefDescriptor(const BriefDescriptor &briefDescriptor);
-  BriefDescriptor(std::string bytes,
+  BriefDescriptor(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
+  BriefDescriptor(const std::string &bytes,
                   bool useOrientation);
-  ~BriefDescriptor() override = default;
+  ~BriefDescriptor() override;
+
+  BriefDescriptor &operator =(const BriefDescriptor &briefDescriptor);
+  BriefDescriptor &operator =(BriefDescriptor &&briefDescriptor) TL_NOEXCEPT;
 
 private:
 
@@ -120,7 +132,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::BriefDescriptorExtractor> mBrief;

@@ -33,6 +33,7 @@
 #include <regex>
 #include <list>
 #include <numeric>
+#include <utility>
 
 
 
@@ -547,7 +548,7 @@ class TL_EXPORT FileOptions
 {
 public:
 
-  FileOptions() {}
+  FileOptions() = default;
   virtual ~FileOptions() = default;
 
   virtual const char *options() = 0;
@@ -610,20 +611,9 @@ protected:
 
 public:
 
-  /*!
-   * \brief Constructora
-   */
   File() : mFile("") {}
-
-  //File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
-  File(const std::string &file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~File(){}
-
-
+  File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) { }
+  virtual ~File()= default;
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -633,7 +623,6 @@ public:
    * \return
    * \see Mode
    */
-  //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
   virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
  
   /*!
@@ -644,7 +633,6 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  //virtual Status createCopy(const char *fileOut) = 0;
   virtual Status createCopy(const std::string &fileOut) = 0;
 };
 

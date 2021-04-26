@@ -107,7 +107,12 @@ public:
 
   QueueMPMC();
   QueueMPMC(size_t capacity);
-  ~QueueMPMC();
+  QueueMPMC(const QueueMPMC &) = delete;
+  QueueMPMC(QueueMPMC &&) = delete;
+  ~QueueMPMC() = default;
+
+  void operator=(const QueueMPMC &) = delete;
+  void operator=(QueueMPMC &&) = delete;
 
   void push(const T &value);
   void pop(T &value);
@@ -115,26 +120,16 @@ public:
 
 private:
 
-  size_t mCapacity;
+  size_t mCapacity{256};
   std::queue<T> mBuffer;
   mutable std::mutex mMutex;
   std::condition_variable mConditionVariable;
 };
 
-template<typename T>
-QueueMPMC<T>::QueueMPMC()
-  : mCapacity(256)
-{
-}
 
 template<typename T>
 QueueMPMC<T>::QueueMPMC(size_t capacity)
   : mCapacity(capacity)
-{
-}
-
-template<typename T>
-QueueMPMC<T>::~QueueMPMC()
 {
 }
 
@@ -184,8 +179,13 @@ class Producer
 {
 public:
 
-  Producer(QueueMPMC<T> *queue);
+  explicit Producer(QueueMPMC<T> *queue);
+  Producer(const Producer &) = delete;
+  Producer(Producer &&) = delete;
   ~Producer() = default;
+
+  void operator=(const Producer &) = delete;
+  void operator=(Producer &&) = delete;
 
   virtual void operator() (size_t size) = 0;
   virtual void operator() (size_t ini, size_t end) = 0;
@@ -208,8 +208,13 @@ class Consumer
 {
 public:
 
-  Consumer(QueueMPMC<T> *queue);
+  explicit Consumer(QueueMPMC<T> *queue);
+  Consumer(const Consumer &) = delete;
+  Consumer(Consumer &&) = delete;
   ~Consumer() = default;
+
+  void operator=(const Consumer &) = delete;
+  void operator=(Consumer &&) = delete;
 
   virtual void operator() () = 0;
 

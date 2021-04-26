@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -59,8 +59,8 @@ public:
 
 public:
 
-  Event(){}
-  virtual ~Event() = default;
+  Event() = default;
+  //virtual ~Event() = default;
 
   virtual Type type() const = 0;
   virtual void clear() = 0;
@@ -75,11 +75,11 @@ class TL_EXPORT EventBase
 public:
 
   EventBase(Type type);
-  ~EventBase() override;
+  //~EventBase() override = default;
 
   Type type() const override;
 
-protected:
+private:
 
   Type mType;
 
@@ -96,7 +96,7 @@ class TL_EXPORT ProcessRunningEvent
 public:
 
   ProcessRunningEvent();
-  ~ProcessRunningEvent() override;
+  //~ProcessRunningEvent() override = default;
 
   void clear() override;
 };
@@ -111,7 +111,7 @@ class TL_EXPORT ProcessPausingEvent
 public:
 
   ProcessPausingEvent();
-  ~ProcessPausingEvent() override;
+  //~ProcessPausingEvent() override = default;
 
   void clear() override;
 };
@@ -126,7 +126,7 @@ class TL_EXPORT ProcessPauseEvent
 public:
 
   ProcessPauseEvent();
-  ~ProcessPauseEvent() override;
+  //~ProcessPauseEvent() override = default;
 
   void clear() override;
 };
@@ -141,7 +141,7 @@ class TL_EXPORT ProcessResumedEvent
 public:
 
   ProcessResumedEvent();
-  ~ProcessResumedEvent() override;
+  //~ProcessResumedEvent() override = default;
 
   void clear() override;
 };
@@ -156,7 +156,7 @@ class TL_EXPORT ProcessStoppingEvent
 public:
 
   ProcessStoppingEvent();
-  ~ProcessStoppingEvent() override;
+  //~ProcessStoppingEvent() override = default;
 
   void clear() override;
 };
@@ -171,7 +171,7 @@ class TL_EXPORT ProcessStoppedEvent
 public:
 
   ProcessStoppedEvent();
-  ~ProcessStoppedEvent() override;
+  //~ProcessStoppedEvent() override = default;
 
   void clear() override;
 };
@@ -186,7 +186,7 @@ class TL_EXPORT ProcessFinalizedEvent
 public:
 
   ProcessFinalizedEvent();
-  ~ProcessFinalizedEvent() override;
+  //~ProcessFinalizedEvent() override = default;
 
   void clear() override;
 };
@@ -201,7 +201,7 @@ class TL_EXPORT ProcessErrorEvent
 public:
 
   ProcessErrorEvent();
-  ~ProcessErrorEvent() override;
+  //~ProcessErrorEvent() override = default;
 
   std::string errorMessage() const;
   void setErrorMessage(const std::string &error);
@@ -223,7 +223,7 @@ class TL_EXPORT ImageChangeEvent
 public:
 
   ImageChangeEvent();
-  ~ImageChangeEvent() override;
+  //~ImageChangeEvent() override = default;
 
   std::string image() const;
   void setImage(const std::string &image);

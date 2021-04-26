@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -68,15 +68,15 @@ public:
     error              /*!< Terminado con error */
   };
 
-  typedef typename std::function<void(Event *)> EventHandler;
-  typedef typename std::function<void(ProcessErrorEvent *)> ProcessErrorEventHandler;
-  typedef typename std::function<void(ProcessFinalizedEvent *)> ProcessFinalizedEventHandler;
-  typedef typename std::function<void(ProcessPauseEvent *)> ProcessPauseEventHandler;
-  typedef typename std::function<void(ProcessPausingEvent *)> ProcessPausingEventHandler;
-  typedef typename std::function<void(ProcessResumedEvent *)> ProcessResumedEventHandler;
-  typedef typename std::function<void(ProcessRunningEvent *)> ProcessRunningEventHandler;
-  typedef typename std::function<void(ProcessStoppedEvent *)> ProcessStoppedEventHandler;
-  typedef typename std::function<void(ProcessStoppingEvent *)> ProcessStoppingEventHandler;
+  using EventHandler = typename std::function<void (Event *)>;
+  using ProcessErrorEventHandler = typename std::function<void (ProcessErrorEvent *)>;
+  using ProcessFinalizedEventHandler = typename std::function<void (ProcessFinalizedEvent *)>;
+  using ProcessPauseEventHandler = typename std::function<void (ProcessPauseEvent *)>;
+  using ProcessPausingEventHandler = typename std::function<void (ProcessPausingEvent *)>;
+  using ProcessResumedEventHandler = typename std::function<void (ProcessResumedEvent *)>;
+  using ProcessRunningEventHandler = typename std::function<void (ProcessRunningEvent *)>;
+  using ProcessStoppedEventHandler = typename std::function<void (ProcessStoppedEvent *)>;
+  using ProcessStoppingEventHandler = typename std::function<void (ProcessStoppingEvent *)>;
 
 public:
 
@@ -145,7 +145,12 @@ class TL_EXPORT ProcessBase
 public:
 
   ProcessBase();
+  ProcessBase(const ProcessBase &process);
+  ProcessBase(ProcessBase &&process) TL_NOEXCEPT;
   ~ProcessBase() override;
+
+  ProcessBase &operator=(const ProcessBase &process);
+  ProcessBase &operator=(ProcessBase &&process) TL_NOEXCEPT;
 
 protected:
 
@@ -158,8 +163,8 @@ protected:
 
 public:
 
-  void run(Progress *progressBar = nullptr) override final;
-  void runAsync(Progress *progressBar = nullptr) override final;
+  void run(Progress *progressBar = nullptr) final;
+  void runAsync(Progress *progressBar = nullptr) final;
   void pause() override;
   void reset() override;
   void resume() override;
@@ -201,17 +206,17 @@ protected:
 private:
 
   /// TODO: añadir clase chrono para medir tiempos
-  Status mStatus;
+  Status mStatus{Status::start};
   std::thread mThread;
   std::mutex mMutex;
-  ProcessErrorEvent *mProcessErrorEvent;
-  ProcessFinalizedEvent *mProcessFinalizedEvent;
-  ProcessPauseEvent *mProcessPauseEvent;
-  ProcessPausingEvent *mProcessPausingEvent;
-  ProcessResumedEvent *mProcessResumedEvent;
-  ProcessRunningEvent *mProcessRunningEvent;
-  ProcessStoppedEvent *mProcessStoppedEvent;
-  ProcessStoppingEvent *mProcessStoppingEvent;
+  std::unique_ptr<ProcessErrorEvent> mProcessErrorEvent;
+  std::unique_ptr<ProcessFinalizedEvent> mProcessFinalizedEvent;
+  std::unique_ptr<ProcessPauseEvent> mProcessPauseEvent;
+  std::unique_ptr<ProcessPausingEvent> mProcessPausingEvent;
+  std::unique_ptr<ProcessResumedEvent> mProcessResumedEvent;
+  std::unique_ptr<ProcessRunningEvent> mProcessRunningEvent;
+  std::unique_ptr<ProcessStoppedEvent> mProcessStoppedEvent;
+  std::unique_ptr<ProcessStoppingEvent> mProcessStoppingEvent;
   std::list<ProcessErrorEventHandler> mProcessErrorEventHandler;
   std::list<ProcessFinalizedEventHandler> mProcessFinalizedEventHandler;
   std::list<ProcessPauseEventHandler> mProcessPauseEventHandler;

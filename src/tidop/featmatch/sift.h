@@ -47,6 +47,13 @@ namespace tl
  */
 
 
+constexpr auto sift_default_value_features_number{5000};
+constexpr auto sift_default_value_octave_layers{3};
+constexpr auto sift_default_value_contrast_threshold{0.04};
+constexpr auto sift_default_value_edge_threshold{10.};
+constexpr auto sift_default_value_sigma{1.6};
+
+
 class TL_EXPORT SiftProperties
   : public Sift
 {
@@ -81,11 +88,11 @@ public:
 
 private:
 
-  int mFeaturesNumber;
-  int mOctaveLayers;
-  double mContrastThreshold;
-  double mEdgeThreshold;
-  double mSigma;
+  int mFeaturesNumber{sift_default_value_features_number};
+  int mOctaveLayers{sift_default_value_octave_layers};
+  double mContrastThreshold{sift_default_value_contrast_threshold};
+  double mEdgeThreshold{sift_default_value_edge_threshold};
+  double mSigma{sift_default_value_sigma};
 };
 
 
@@ -144,7 +151,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
   cv::Ptr <cv::SIFT>  mSift;

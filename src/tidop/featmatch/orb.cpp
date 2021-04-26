@@ -221,7 +221,6 @@ OrbDetectorDescriptor::OrbDetectorDescriptor(int featuresNumber,
 
 #if CV_VERSION_MAJOR >= 4
 
-TL_DISABLE_WARNING(26812)
 cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
 {
   cv::ORB::ScoreType score = cv::ORB::ScoreType::HARRIS_SCORE;
@@ -234,7 +233,6 @@ cv::ORB::ScoreType OrbDetectorDescriptor::convertScoreType(const std::string &sc
 
   return score;
 }
-TL_ENABLE_WARNING(26812)
 
 #else
 

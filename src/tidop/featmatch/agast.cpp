@@ -32,9 +32,7 @@ namespace tl
 
 
 AgastProperties::AgastProperties()
-  : mThreshold(10),
-    mNonmaxSuppression(true),
-    mDetectorType("OAST_9_16")
+  : mDetectorType(agast_default_value_DetectorType)
 {
 }
 
@@ -46,16 +44,14 @@ AgastProperties::AgastProperties(const AgastProperties &agast)
 {
 }
 
-AgastProperties::AgastProperties(AgastProperties &&agast) noexcept
+AgastProperties::AgastProperties(AgastProperties &&agast) TL_NOEXCEPT
   : mThreshold(agast.mThreshold),
     mNonmaxSuppression(std::exchange(agast.mNonmaxSuppression,true)),
     mDetectorType(std::move(agast.mDetectorType))
 {
 }
 
-AgastProperties::~AgastProperties()
-{
-}
+AgastProperties::~AgastProperties() = default;
 
 AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
 {
@@ -67,7 +63,7 @@ AgastProperties &AgastProperties::operator =(const AgastProperties &agast)
   return *this;
 }
 
-AgastProperties &AgastProperties::operator =(AgastProperties &&agast) noexcept
+AgastProperties &AgastProperties::operator =(AgastProperties &&agast) TL_NOEXCEPT
 {
   if (this != &agast) {
     mThreshold = agast.mThreshold;
@@ -104,19 +100,19 @@ void AgastProperties::setNonmaxSuppression(bool nonmaxSuppression)
 
 void AgastProperties::setDetectorType(const std::string &detectorType)
 {
-  if (detectorType.compare("AGAST_5_8") == 0 ||
-      detectorType.compare("AGAST_7_12d") == 0 ||
-      detectorType.compare("AGAST_7_12s") == 0 ||
-      detectorType.compare("OAST_9_16") == 0) {
+  if (detectorType == "AGAST_5_8" ||
+      detectorType == "AGAST_7_12d" ||
+      detectorType == "AGAST_7_12s" ||
+      detectorType == "OAST_9_16") {
     mDetectorType = detectorType;
   }
 }
 
 void AgastProperties::reset()
 {
-  mThreshold = 10;
-  mNonmaxSuppression = true;
-  mDetectorType = "OAST_9_16";
+  mThreshold = agast_default_value_Threshold;
+  mNonmaxSuppression = agast_default_value_NonmaxSuppression;
+  mDetectorType = agast_default_value_DetectorType;
 }
 
 std::string AgastProperties::name() const
@@ -139,7 +135,7 @@ AgastDetector::AgastDetector(const AgastDetector &agastDetector)
   this->initAgastFromProperties();
 }
 
-AgastDetector::AgastDetector(AgastDetector &&agastDetector) noexcept
+AgastDetector::AgastDetector(AgastDetector &&agastDetector) TL_NOEXCEPT
   : AgastProperties(std::forward<AgastProperties>(agastDetector))
 {
   this->initAgastFromProperties();
@@ -157,7 +153,7 @@ AgastDetector::AgastDetector(int threshold,
 
 AgastDetector::~AgastDetector()
 {
-  mAgast.release();
+  mAgast.reset();
 }
 
 AgastDetector &AgastDetector::operator =(const AgastDetector &agastDetector)
@@ -169,7 +165,7 @@ AgastDetector &AgastDetector::operator =(const AgastDetector &agastDetector)
   return *this;
 }
 
-AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) noexcept
+AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) TL_NOEXCEPT
 {
   if (this != &agastDetector){
     AgastProperties::operator=(std::forward<AgastProperties>(agastDetector));
@@ -179,21 +175,19 @@ AgastDetector &AgastDetector::operator =(AgastDetector &&agastDetector) noexcept
 }
 
 #if CV_VERSION_MAJOR >= 4
-TL_DISABLE_WARNING(26812)
 cv::AgastFeatureDetector::DetectorType AgastDetector::convertDetectorType(const std::string &detectorType)
 {
   cv::AgastFeatureDetector::DetectorType detector_type = cv::AgastFeatureDetector::DetectorType::OAST_9_16;
 
-  if (detectorType.compare("AGAST_5_8") == 0 ) {
+  if (detectorType == "AGAST_5_8" ) {
     detector_type = cv::AgastFeatureDetector::AGAST_5_8;
-  } else if (detectorType.compare("AGAST_7_12d") == 0){
+  } else if (detectorType == "AGAST_7_12d"){
     detector_type = cv::AgastFeatureDetector::AGAST_7_12d;
-  } else if (detectorType.compare("AGAST_7_12s") == 0){
+  } else if (detectorType == "AGAST_7_12s"){
     detector_type = cv::AgastFeatureDetector::AGAST_7_12s;
   }
   return detector_type;
 }
-TL_ENABLE_WARNING(26812)
 #else
 int AgastDetector::convertDetectorType(const std::string &detectorType)
 {

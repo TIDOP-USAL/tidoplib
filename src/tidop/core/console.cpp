@@ -31,6 +31,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdio>
+#include <utility>
 #include <vector>
 #include <iomanip>
 
@@ -95,7 +96,7 @@ Console::Console()
 Console::~Console()
 {
   reset();
-  sObjConsole.release();
+  sObjConsole.reset();
 }
 
 Console &Console::instance()
@@ -133,7 +134,7 @@ void Console::printMessage(const std::string &message)
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
-  std::cout << aux << "\n";
+  std::cout << aux << std::endl;
 }
 
 void Console::printErrorMessage(const std::string &message)
@@ -147,7 +148,7 @@ void Console::printErrorMessage(const std::string &message)
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
-  std::cerr << aux << "\n";
+  std::cerr << aux << std::endl;
 
   reset();
 }
@@ -413,38 +414,33 @@ EnumFlags<MessageLevel> Console::getMessageLevel() const
 
 /* ---------------------------------------------------------------------------------- */
 
-Argument::Argument(const std::string &name,
-                   const std::string &description)
-  : mName(name),
-    mDescription(description),
+Argument::Argument(std::string name,
+                   std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mShortName()
 {
 
 }
 
 Argument::Argument(const char &shortName,
-                   const std::string &description)
+                   std::string description)
   : mName(""),
-    mDescription(description),
+    mDescription(std::move(description)),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const std::string &name,
+Argument::Argument(std::string name,
                    const char &shortName,
-                   const std::string &description)
-  : mName(name),
-    mDescription(description),
+                   std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const Argument &argument)
-  : mName(argument.mName),
-    mDescription(argument.mDescription),
-    mShortName(argument.mShortName)
-{
-}
+Argument::Argument(const Argument &argument) = default;
 
 Argument::Argument(Argument &&argument) TL_NOEXCEPT
   : mName(std::move(argument.mName)),
@@ -528,19 +524,19 @@ Command::Command(const Command &command)
 
 }
 
-Command::Command(const std::string &name, const std::string &description)
-  : mName(name),
-    mDescription(description),
+Command::Command(std::string name, std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCmdArgs(0),
     mVersion("0.0.0")
 {
   init();
 }
 
-Command::Command(const std::string &name, const std::string &description,
+Command::Command(std::string name, std::string description,
                  std::initializer_list<std::shared_ptr<Argument>> arguments)
-  : mName(name),
-    mDescription(description),
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCmdArgs(arguments),
     mVersion("0.0.0")
 {
@@ -928,9 +924,10 @@ CommandList::CommandList()
 {
 }
 
-CommandList::CommandList(const std::string &name, const std::string &description)
-  : mName(name),
-    mDescription(description),
+CommandList::CommandList(std::string name,
+                         std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mVersion("0.0.0")
 {
 }
@@ -1188,12 +1185,12 @@ Progress::Progress()
 
 Progress::Progress(double min,
                    double max,
-                   const std::string &msg)
+                   std::string msg)
   : mProgress(0.),
     mMinimun(min),
     mMaximun(max),
     mPercent(-1),
-    mMsg(msg),
+    mMsg(std::move(msg)),
     onProgress(nullptr),
     onInitialize(nullptr),
     onTerminate(nullptr)

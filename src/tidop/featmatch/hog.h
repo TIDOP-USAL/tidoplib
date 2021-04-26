@@ -77,7 +77,7 @@ public:
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
@@ -86,8 +86,8 @@ private:
   Size<int> mBlockSize;
   Size<int> mBlockStride;
   Size<int> mCellSize;
-  int mNbins;
-  int mDerivAperture;
+  int mNbins{9};
+  int mDerivAperture{1};
 };
 
 
@@ -103,10 +103,10 @@ public:
 
   HogDescriptor();
   HogDescriptor(const HogDescriptor &hogDescriptor);
-  HogDescriptor(Size<int> winSize,
-                Size<int> blockSize,
-                Size<int> blockStride,
-                Size<int> cellSize,
+  HogDescriptor(const Size<int>& winSize,
+                const Size<int>& blockSize,
+                const Size<int>& blockStride,
+                const Size<int>& cellSize,
                 int nbins,
                 int derivAperture);
   ~HogDescriptor() override = default;
@@ -142,7 +142,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   std::shared_ptr<cv::HOGDescriptor> mHOG;
 };

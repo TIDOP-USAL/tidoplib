@@ -31,12 +31,7 @@ namespace tl
 
 
 VggProperties::VggProperties()
-  : mDescriptorType("VGG_120"),
-    mScaleFactor(6.25),
-    mSigma(1.4),
-    bUseNormalizeDescriptor(false),
-    bUseNormalizeImage(true),
-    bUseScaleOrientation(true)
+  : mDescriptorType(vgg_default_value_descriptor_type)
 {
 }
 
@@ -58,10 +53,10 @@ std::string VggProperties::descriptorType() const
 
 void VggProperties::setDescriptorType(const std::string &descriptorType)
 {
-  if (descriptorType.compare("VGG_120") == 0 ||
-      descriptorType.compare("VGG_80") == 0 ||
-      descriptorType.compare("VGG_64") == 0 ||
-      descriptorType.compare("VGG_48") == 0) {
+  if (descriptorType == "VGG_120" ||
+      descriptorType == "VGG_80" ||
+      descriptorType == "VGG_64" ||
+      descriptorType == "VGG_48") {
     mDescriptorType = descriptorType;
   }
 }
@@ -118,12 +113,12 @@ void VggProperties::setUseScaleOrientation(bool useScaleOrientation)
 
 void VggProperties::reset()
 {
-  mDescriptorType = "VGG_120";
-  mScaleFactor = 6.25;
-  mSigma = 1.4;
-  bUseNormalizeDescriptor = false;
-  bUseNormalizeImage = true;
-  bUseScaleOrientation = true;
+  mDescriptorType = vgg_default_value_descriptor_type;
+  mScaleFactor = vgg_default_value_scale_factor;
+  mSigma = vgg_default_value_sigma;
+  bUseNormalizeDescriptor = vgg_default_value_use_normalize_descriptor;
+  bUseNormalizeImage = vgg_default_value_use_normalize_image;
+  bUseScaleOrientation = vgg_default_value_useScale_orientation;
 }
 
 std::string VggProperties::name() const
@@ -148,7 +143,7 @@ VggDescriptor::VggDescriptor(const VggDescriptor &vggDescriptor)
   update();
 }
 
-VggDescriptor::VggDescriptor(std::string descriptorType,
+VggDescriptor::VggDescriptor(const std::string& descriptorType,
                              double scaleFactor,
                              double sigma,
                              bool useNormalizeDescriptor,
@@ -170,13 +165,13 @@ void VggDescriptor::update()
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
   int descriptor_type = cv::xfeatures2d::VGG::VGG_120;
   std::string descriptorType = VggProperties::descriptorType();
-  if (descriptorType.compare("VGG_120") == 0 ) {
+  if (descriptorType == "VGG_120" ) {
     descriptor_type = cv::xfeatures2d::VGG::VGG_120;
-  } else if (descriptorType.compare("VGG_80") == 0){
+  } else if (descriptorType == "VGG_80"){
     descriptor_type = cv::xfeatures2d::VGG::VGG_80;
-  } else if (descriptorType.compare("VGG_64") == 0){
+  } else if (descriptorType == "VGG_64"){
     descriptor_type = cv::xfeatures2d::VGG::VGG_64;
-  } else if (descriptorType.compare("VGG_48") == 0){
+  } else if (descriptorType == "VGG_48"){
     descriptor_type = cv::xfeatures2d::VGG::VGG_48;
   }
 

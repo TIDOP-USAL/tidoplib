@@ -43,6 +43,11 @@ namespace tl
  */
 
 
+constexpr auto agast_default_value_Threshold{10};
+constexpr auto agast_default_value_NonmaxSuppression{true};
+constexpr auto agast_default_value_DetectorType{"OAST_9_16"};
+
+
 class TL_EXPORT AgastProperties
   : public Agast
 {
@@ -51,11 +56,11 @@ public:
 
   AgastProperties();
   AgastProperties(const AgastProperties &agast);
-  AgastProperties(AgastProperties &&agast) noexcept;
+  AgastProperties(AgastProperties &&agast) TL_NOEXCEPT;
   ~AgastProperties() override;
 
   AgastProperties &operator =(const AgastProperties &agast);
-  AgastProperties &operator =(AgastProperties &&agast) noexcept;
+  AgastProperties &operator =(AgastProperties &&agast) TL_NOEXCEPT;
 
 // Agast interface
 
@@ -77,8 +82,8 @@ public:
 
 private:
 
-  int mThreshold;
-  bool mNonmaxSuppression;
+  int mThreshold{agast_default_value_Threshold};
+  bool mNonmaxSuppression{agast_default_value_NonmaxSuppression};
   std::string mDetectorType;
 
 };
@@ -96,13 +101,13 @@ public:
 
   AgastDetector();
   AgastDetector(const AgastDetector &agastDetector);
-  AgastDetector(AgastDetector &&agastDetector) noexcept;
+  AgastDetector(AgastDetector &&agastDetector) TL_NOEXCEPT;
   AgastDetector(int threshold, 
                 bool nonmaxSuppression, 
                 const std::string &detectorType);
   ~AgastDetector() override;
   AgastDetector &operator =(const AgastDetector &agastDetector);
-  AgastDetector &operator =(AgastDetector &&agastDetector) noexcept;
+  AgastDetector &operator =(AgastDetector &&agastDetector) TL_NOEXCEPT;
 
 private:
 
@@ -135,7 +140,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   cv::Ptr<cv::AgastFeatureDetector> mAgast;
 

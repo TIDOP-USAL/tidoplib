@@ -32,7 +32,7 @@ namespace tl
 {
 
 std::unique_ptr<Log> Log::sObjLog;
-std::string Log::sLogFile = "";
+std::string Log::sLogFile;
 EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
@@ -49,7 +49,7 @@ Log::Log()
 
 Log::~Log()
 {
-  sObjLog.release();
+  sObjLog.reset();
 }
 
 Log &Log::instance()
