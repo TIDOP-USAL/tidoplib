@@ -60,7 +60,6 @@ public:
 public:
 
   Event() = default;
-  //virtual ~Event() = default;
 
   virtual Type type() const = 0;
   virtual void clear() = 0;
@@ -75,7 +74,6 @@ class TL_EXPORT EventBase
 public:
 
   EventBase(Type type);
-  //~EventBase() override = default;
 
   Type type() const override;
 
@@ -96,7 +94,6 @@ class TL_EXPORT ProcessRunningEvent
 public:
 
   ProcessRunningEvent();
-  //~ProcessRunningEvent() override = default;
 
   void clear() override;
 };
@@ -111,7 +108,6 @@ class TL_EXPORT ProcessPausingEvent
 public:
 
   ProcessPausingEvent();
-  //~ProcessPausingEvent() override = default;
 
   void clear() override;
 };
@@ -126,7 +122,6 @@ class TL_EXPORT ProcessPauseEvent
 public:
 
   ProcessPauseEvent();
-  //~ProcessPauseEvent() override = default;
 
   void clear() override;
 };
@@ -141,7 +136,6 @@ class TL_EXPORT ProcessResumedEvent
 public:
 
   ProcessResumedEvent();
-  //~ProcessResumedEvent() override = default;
 
   void clear() override;
 };
@@ -156,7 +150,6 @@ class TL_EXPORT ProcessStoppingEvent
 public:
 
   ProcessStoppingEvent();
-  //~ProcessStoppingEvent() override = default;
 
   void clear() override;
 };
@@ -171,7 +164,6 @@ class TL_EXPORT ProcessStoppedEvent
 public:
 
   ProcessStoppedEvent();
-  //~ProcessStoppedEvent() override = default;
 
   void clear() override;
 };
@@ -186,7 +178,6 @@ class TL_EXPORT ProcessFinalizedEvent
 public:
 
   ProcessFinalizedEvent();
-  //~ProcessFinalizedEvent() override = default;
 
   void clear() override;
 };
@@ -201,7 +192,6 @@ class TL_EXPORT ProcessErrorEvent
 public:
 
   ProcessErrorEvent();
-  //~ProcessErrorEvent() override = default;
 
   std::string errorMessage() const;
   void setErrorMessage(const std::string &error);
@@ -223,7 +213,6 @@ class TL_EXPORT ImageChangeEvent
 public:
 
   ImageChangeEvent();
-  //~ImageChangeEvent() override = default;
 
   std::string image() const;
   void setImage(const std::string &image);

@@ -43,9 +43,9 @@ namespace tl
  */
 
 
-constexpr auto agast_default_value_Threshold{10};
-constexpr auto agast_default_value_NonmaxSuppression{true};
-constexpr auto agast_default_value_DetectorType{"OAST_9_16"};
+constexpr auto agast_default_value_threshold{10};
+constexpr auto agast_default_value_nonmax_suppression{true};
+constexpr auto agast_default_value_detector_type{"OAST_9_16"};
 
 
 class TL_EXPORT AgastProperties
@@ -82,8 +82,8 @@ public:
 
 private:
 
-  int mThreshold{agast_default_value_Threshold};
-  bool mNonmaxSuppression{agast_default_value_NonmaxSuppression};
+  int mThreshold{agast_default_value_threshold};
+  bool mNonmaxSuppression{agast_default_value_nonmax_suppression};
   std::string mDetectorType;
 
 };

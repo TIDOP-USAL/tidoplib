@@ -91,7 +91,7 @@ public:
    * \brief Destructora
    * En la destructora se llama al método stop si este no ha sido llamado
    */
-  ~Chrono();
+  virtual ~Chrono();
 
   void operator=(const Chrono &) = delete;
   void operator=(Chrono &&) = delete;
@@ -128,13 +128,36 @@ public:
 private:
 
   std::chrono::steady_clock::time_point mTimeIni;
-  //std::chrono::steady_clock::duration mAccumulated;
   std::chrono::duration<double> mAccumulated{};
   Status mStatus{Chrono::Status::start};
   std::string mMessage;
   bool bWriteMessage{false};
 
 };
+
+
+
+
+
+class ChronoAuto
+  : private Chrono
+{
+
+public:
+
+  explicit ChronoAuto(const std::string &message);
+  ~ChronoAuto() override;
+
+  ChronoAuto(const ChronoAuto &) = delete;
+  ChronoAuto(ChronoAuto &&) = delete;
+  void operator=(const ChronoAuto &) = delete;
+  void operator=(ChronoAuto &&) = delete;
+
+private:
+
+};
+
+
 
 /*! \} */ // end of utilities
 

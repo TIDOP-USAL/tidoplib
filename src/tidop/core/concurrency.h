@@ -105,7 +105,7 @@ class QueueMPMC
 
 public:
 
-  QueueMPMC();
+  QueueMPMC() = default;
   QueueMPMC(size_t capacity);
   QueueMPMC(const QueueMPMC &) = delete;
   QueueMPMC(QueueMPMC &&) = delete;

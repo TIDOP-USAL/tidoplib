@@ -32,7 +32,7 @@ namespace tl
 
 
 AgastProperties::AgastProperties()
-  : mDetectorType(agast_default_value_DetectorType)
+  : mDetectorType(agast_default_value_detector_type)
 {
 }
 
@@ -110,9 +110,9 @@ void AgastProperties::setDetectorType(const std::string &detectorType)
 
 void AgastProperties::reset()
 {
-  mThreshold = agast_default_value_Threshold;
-  mNonmaxSuppression = agast_default_value_NonmaxSuppression;
-  mDetectorType = agast_default_value_DetectorType;
+  mThreshold = agast_default_value_threshold;
+  mNonmaxSuppression = agast_default_value_nonmax_suppression;
+  mDetectorType = agast_default_value_detector_type;
 }
 
 std::string AgastProperties::name() const

@@ -61,7 +61,7 @@ public:
     start,             /*!< Inicio */
     running,           /*!< Corriendo */
     pausing,           /*!< Pausando */
-    paused,             /*!< Pausado */
+    paused,            /*!< Pausado */
     stopping,
     stopped,           /*!< Detenido por el usuario */
     finalized,         /*!< Finalizado */
@@ -226,6 +226,65 @@ private:
   std::list<ProcessStoppedEventHandler> mProcessStoppedEventHandler;
   std::list<ProcessStoppingEventHandler> mProcessStoppingEventHandler;
 };
+
+
+
+
+class TL_EXPORT ExternalProcess
+  : public ProcessBase
+{
+
+public:
+
+#ifdef WIN32
+
+  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
+  enum class Priority
+  {
+    realtime = REALTIME_PRIORITY_CLASS,
+    high = HIGH_PRIORITY_CLASS,
+    above_normal = ABOVE_NORMAL_PRIORITY_CLASS,
+    normal = NORMAL_PRIORITY_CLASS,
+    below_normal = BELOW_NORMAL_PRIORITY_CLASS,
+    idle = IDLE_PRIORITY_CLASS
+  };
+
+#endif
+
+public:
+
+  ExternalProcess(const std::string &commandText);
+  ~ExternalProcess();
+
+private:
+
+#ifdef WIN32
+  std::string formatErrorMsg(DWORD errorCode);
+#endif
+
+private:
+
+// ProcessBase
+  
+  void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+  std::string mCommandText;
+#ifdef WIN32
+  STARTUPINFO mStartUpInfo;
+  PROCESS_INFORMATION mProcessInformation;
+  //static DWORD sPriority;
+  /////////////////////////////////
+  //HANDLE m_hreadDataFromExtProgram;
+  //SECURITY_ATTRIBUTES saAttr;
+  /////////////////////////////////
+#endif
+  
+
+};
+
+
 
 
 /*! \} */ // end of utilities

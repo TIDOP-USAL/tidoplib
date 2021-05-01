@@ -26,12 +26,8 @@
 
 #include "tidop/core/messages.h"
 
-//#define __STDC_WANT_LIB_EXT1__ 1
-//#include <ctime>
-//#include <cstring>
-//#include <utility>
-
 #include <iomanip>
+#include <sstream>
 
 namespace tl
 {
@@ -133,6 +129,25 @@ double Chrono::stop()
 void Chrono::setMessage(const std::string &message)
 {
   mMessage = message;
+}
+
+
+
+
+
+
+
+
+
+
+ChronoAuto::ChronoAuto(const std::string &message)
+  : Chrono(message, true)
+{
+  run();
+}
+
+ChronoAuto::~ChronoAuto()
+{
 }
 
 
