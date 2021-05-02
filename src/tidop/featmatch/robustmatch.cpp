@@ -26,7 +26,7 @@
 
 #include <tidop/core/messages.h>
 
-#ifdef HAVE_OPENCV_XFEATURES2D 
+#ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
 #endif // HAVE_OPENCV_XFEATURES2D
 #include <opencv2/calib3d.hpp>
@@ -161,22 +161,22 @@ std::string RobustMatchingProperties::name() const
 
 
 
-RobustMatchingImp::RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher)
+RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher)
   : mDescriptorMatcher(descriptorMatcher)
 {
 
 }
 
-RobustMatchingImp::RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
-                                               double ratio,
-                                               bool crossCheck,
-                                               GeometricTest geometricTest,
-                                               HomographyComputeMethod homographyComputeMethod,
-                                               FundamentalComputeMethod fundamentalComputeMethod,
-                                               EssentialComputeMethod essentialComputeMethod,
-                                               double distance,
-                                               double confidence,
-                                               int maxIter)
+RobustMatchingImp::RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
+                                     double ratio,
+                                     bool crossCheck,
+                                     GeometricTest geometricTest,
+                                     HomographyComputeMethod homographyComputeMethod,
+                                     FundamentalComputeMethod fundamentalComputeMethod,
+                                     EssentialComputeMethod essentialComputeMethod,
+                                     double distance,
+                                     double confidence,
+                                     int maxIter)
   : mDescriptorMatcher(descriptorMatcher)
 {
   this->setRatio(ratio);
@@ -371,8 +371,8 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
   return goodMatches;
 }
 
-std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor, 
-                                                           const cv::Mat &trainDescriptor, 
+std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryDescriptor,
+                                                           const cv::Mat &trainDescriptor,
                                                            std::vector<cv::DMatch> *wrongMatches)
 {
   std::vector<cv::DMatch> goodMatches;

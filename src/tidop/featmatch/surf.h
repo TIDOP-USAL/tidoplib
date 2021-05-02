@@ -51,6 +51,11 @@ namespace tl
  *  \{
  */
 
+constexpr auto surf_default_value_hessian_threshold{100};
+constexpr auto surf_default_value_octaves{4};
+constexpr auto surf_default_value_octave_layers{3};
+constexpr auto surf_default_value_extended_descriptor{false};
+constexpr auto surf_default_value_upright{false};
 
 class TL_EXPORT SurfProperties
   : public Surf
@@ -86,11 +91,11 @@ public:
 
 private:
 
-  double mHessianThreshold;
-  int mOctaves;
-  int mOctaveLayers;
-  bool mExtendedDescriptor;
-  bool mUpright;
+  double mHessianThreshold{surf_default_value_hessian_threshold};
+  int mOctaves{surf_default_value_octaves};
+  int mOctaveLayers{surf_default_value_octave_layers};
+  bool mExtendedDescriptor{surf_default_value_extended_descriptor};
+  bool mUpright{surf_default_value_upright};
 };
 
 
@@ -145,7 +150,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::SURF> mSurf;

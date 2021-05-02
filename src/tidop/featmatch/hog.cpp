@@ -37,9 +37,7 @@ HogProperties::HogProperties()
   : mWinSize(16, 16),
     mBlockSize(4, 4),
     mBlockStride(2, 2),
-    mCellSize(2, 2),
-    mNbins(9),
-    mDerivAperture(1)
+    mCellSize(2, 2)
 {}
 
 HogProperties::HogProperties(const HogProperties &hogProperties)
@@ -144,10 +142,10 @@ HogDescriptor::HogDescriptor(const HogDescriptor &hogDescriptor)
   update();
 }
 
-HogDescriptor::HogDescriptor(Size<int> winSize,
-                             Size<int> blockSize,
-                             Size<int> blockStride,
-                             Size<int> cellSize,
+HogDescriptor::HogDescriptor(const Size<int>& winSize,
+                             const Size<int>& blockSize,
+                             const Size<int>& blockStride,
+                             const Size<int>& cellSize,
                              int nbins,
                              int derivAperture)
 {

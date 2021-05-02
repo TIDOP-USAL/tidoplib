@@ -30,10 +30,7 @@ namespace tl
 {
 
 
-BruteForceMatcherProperties::BruteForceMatcherProperties()
-  : mNormType(BruteForceMatcherProperties::Norm::l2)
-{
-}
+BruteForceMatcherProperties::BruteForceMatcherProperties() = default;
 
 void BruteForceMatcherProperties::reset()
 {

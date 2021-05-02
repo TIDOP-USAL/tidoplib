@@ -97,7 +97,7 @@ unsigned char *Image::data()
 
 int Image::depth()
 {
-  int bits;
+  int bits = 0;
   TL_TODO("Completar")
   //switch (mType) 	{
   //  case tl::DataType::TL_8U:

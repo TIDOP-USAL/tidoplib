@@ -46,6 +46,13 @@ namespace tl
  *  \{
  */
 
+constexpr auto daisy_default_value_radius{15.};
+constexpr auto daisy_default_value_qradius{3};
+constexpr auto daisy_default_value_qtheta{8};
+constexpr auto daisy_default_value_qhist{8};
+constexpr auto daisy_default_value_norm{"NRM_NONE"};
+constexpr auto daisy_default_value_interpolation{true};
+constexpr auto daisy_default_value_use_orientation{false};
 
 class TL_EXPORT DaisyProperties
   : public Daisy
@@ -84,13 +91,13 @@ public:
 
 private:
 
-  double mRadius;
-  int mQRadius;
-  int mQTheta;
-  int mQHist;
+  double mRadius{daisy_default_value_radius};
+  int mQRadius{daisy_default_value_qradius};
+  int mQTheta{daisy_default_value_qtheta};
+  int mQHist{daisy_default_value_qhist};
   std::string mNorm;
-  bool mInterpolation;
-  bool mUseOrientation;
+  bool mInterpolation{daisy_default_value_interpolation};
+  bool mUseOrientation{daisy_default_value_use_orientation};
 };
 
 
@@ -145,7 +152,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::DAISY> mDAISY;

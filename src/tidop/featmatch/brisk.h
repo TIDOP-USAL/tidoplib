@@ -43,6 +43,11 @@ namespace tl
  */
 
 
+constexpr auto brisk_default_value_threshold{30};
+constexpr auto brisk_default_value_octaves{3};
+constexpr auto brisk_default_value_pattern_scale{1.0};
+
+
 class TL_EXPORT BriskProperties
   : public Brisk
 {
@@ -72,9 +77,9 @@ public:
 
 private:
 
-  int mThreshold;
-  int mOctaves;
-  double mPatternScale;
+  int mThreshold{brisk_default_value_threshold};
+  int mOctaves{brisk_default_value_octaves};
+  double mPatternScale{brisk_default_value_pattern_scale};
 };
 
 
@@ -129,7 +134,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   cv::Ptr<cv::BRISK> mBrisk;
 

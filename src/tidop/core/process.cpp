@@ -22,721 +22,666 @@
  *                                                                        *
  **************************************************************************/
 
-/// https://github.com/eidheim/tiny-process-library
 
 #include "tidop/core/process.h"
-
 #include "tidop/core/messages.h"
-#include "tidop/core/console.h"
-#include "tidop/core/exception.h"
 
 #if defined WIN32
 #include <windows.h>
-//#include <atlstr.h>
 #else
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
-
 #include <locale>
 #include <codecvt>
-
-/* ---------------------------------------------------------------------------------- */
-/*          PROCESOS Y BATCH                                                          */
-/* ---------------------------------------------------------------------------------- */
-
 
 namespace tl
 {
 
+/* Process */
 
-unsigned long Process::sProcessCount = 0;
+Process::Process() = default;
 
-Process::Process(Process *parent)
-  : mStatus(Status::start),
-    mParent(parent),
-    mListeners(0),
-    mProcessId(0),
-    mProcessName("")
+Process::~Process() = default;
+
+
+
+/* ProcessBase */
+
+
+ProcessBase::ProcessBase()
+  : Process(),
+    mProcessErrorEvent(new ProcessErrorEvent),
+    mProcessFinalizedEvent(new ProcessFinalizedEvent),
+    mProcessPauseEvent(new ProcessPauseEvent),
+    mProcessPausingEvent(new ProcessPausingEvent),
+    mProcessResumedEvent(new ProcessResumedEvent),
+    mProcessRunningEvent(new ProcessRunningEvent),
+    mProcessStoppedEvent(new ProcessStoppedEvent),
+    mProcessStoppingEvent(new ProcessStoppingEvent),
+    mProcessErrorEventHandler(0),
+    mProcessFinalizedEventHandler(0),
+    mProcessPauseEventHandler(0),
+    mProcessPausingEventHandler(0),
+    mProcessResumedEventHandler(0),
+    mProcessRunningEventHandler(0),
+    mProcessStoppedEventHandler(0),
+    mProcessStoppingEventHandler(0)
 {
-  if (mParent == nullptr) {
-    mProcessId = ++sProcessCount;
-  }
+
 }
 
-Process::~Process()
+ProcessBase::ProcessBase(const ProcessBase &process)
+  : Process(),
+    mProcessErrorEvent(new ProcessErrorEvent(*process.mProcessErrorEvent)),
+    mProcessFinalizedEvent(new ProcessFinalizedEvent(*process.mProcessFinalizedEvent)),
+    mProcessPauseEvent(new ProcessPauseEvent(*process.mProcessPauseEvent)),
+    mProcessPausingEvent(new ProcessPausingEvent(*process.mProcessPausingEvent)),
+    mProcessResumedEvent(new ProcessResumedEvent(*process.mProcessResumedEvent)),
+    mProcessRunningEvent(new ProcessRunningEvent(*process.mProcessRunningEvent)),
+    mProcessStoppedEvent(new ProcessStoppedEvent(*process.mProcessStoppedEvent)),
+    mProcessStoppingEvent(new ProcessStoppingEvent(*process.mProcessStoppingEvent)),
+    mProcessErrorEventHandler(process.mProcessErrorEventHandler),
+    mProcessFinalizedEventHandler(process.mProcessFinalizedEventHandler),
+    mProcessPauseEventHandler(process.mProcessPauseEventHandler),
+    mProcessPausingEventHandler(process.mProcessPausingEventHandler),
+    mProcessResumedEventHandler(process.mProcessResumedEventHandler),
+    mProcessRunningEventHandler(process.mProcessRunningEventHandler),
+    mProcessStoppedEventHandler(process.mProcessStoppedEventHandler),
+    mProcessStoppingEventHandler(process.mProcessStoppingEventHandler)
 {
-  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
+
+}
+
+ProcessBase::ProcessBase(ProcessBase &&process) TL_NOEXCEPT
+  : Process(),
+    mProcessErrorEvent(std::move(process.mProcessErrorEvent)),
+    mProcessFinalizedEvent(std::move(process.mProcessFinalizedEvent)),
+    mProcessPauseEvent(std::move(process.mProcessPauseEvent)),
+    mProcessPausingEvent(std::move(process.mProcessPausingEvent)),
+    mProcessResumedEvent(std::move(process.mProcessResumedEvent)),
+    mProcessRunningEvent(std::move(process.mProcessRunningEvent)),
+    mProcessStoppedEvent(std::move(process.mProcessStoppedEvent)),
+    mProcessStoppingEvent(std::move(process.mProcessStoppingEvent)),
+    mProcessErrorEventHandler(std::move(process.mProcessErrorEventHandler)),
+    mProcessFinalizedEventHandler(std::move(process.mProcessFinalizedEventHandler)),
+    mProcessPauseEventHandler(std::move(process.mProcessPauseEventHandler)),
+    mProcessPausingEventHandler(std::move(process.mProcessPausingEventHandler)),
+    mProcessResumedEventHandler(std::move(process.mProcessResumedEventHandler)),
+    mProcessRunningEventHandler(std::move(process.mProcessRunningEventHandler)),
+    mProcessStoppedEventHandler(std::move(process.mProcessStoppedEventHandler)),
+    mProcessStoppingEventHandler(std::move(process.mProcessStoppingEventHandler))
+{
+
+}
+
+ProcessBase::~ProcessBase()
+{
+  if (mStatus == Status::running ||
+      mStatus == Status::paused ||
+      mStatus == Status::pausing) {
     stop();
   }
-  mStatus = Status::finalized;
-}
 
-Process::Status Process::run(Progress *progressBar)
-{
-  if (mStatus != Status::finalized) { // Para saltar procesos ya realizados.
-    runTriggered();
-    mStatus = Status::running;
-    //this->execute(progressBar);
-    mThread = std::move(std::thread(&Process::execute, this, progressBar));
-    mThread.join();
+  if (mStatus != Status::finalized) {
+    mStatus = Status::finalized;
+    eventTriggered(Event::Type::process_finalized);
   }
 
-  return mStatus;
 }
 
-void Process::runAsync(Progress *progressBar)
+ProcessBase &ProcessBase::operator=(const ProcessBase &process)
 {
-  if (mStatus != Status::finalized) { // Para saltar procesos ya realizados.
-    runTriggered();
+  if (this != &process){
+    mProcessErrorEvent = std::make_unique<ProcessErrorEvent>(*process.mProcessErrorEvent);
+    mProcessFinalizedEvent = std::make_unique<ProcessFinalizedEvent>(*process.mProcessFinalizedEvent);
+    mProcessPauseEvent = std::make_unique<ProcessPauseEvent>(*process.mProcessPauseEvent);
+    mProcessPausingEvent = std::make_unique<ProcessPausingEvent>(*process.mProcessPausingEvent);
+    mProcessResumedEvent = std::make_unique<ProcessResumedEvent>(*process.mProcessResumedEvent);
+    mProcessRunningEvent = std::make_unique<ProcessRunningEvent>(*process.mProcessRunningEvent);
+    mProcessStoppedEvent = std::make_unique<ProcessStoppedEvent>(*process.mProcessStoppedEvent);
+    mProcessStoppingEvent = std::make_unique<ProcessStoppingEvent>(*process.mProcessStoppingEvent);
+    mProcessErrorEventHandler = process.mProcessErrorEventHandler;
+    mProcessFinalizedEventHandler = process.mProcessFinalizedEventHandler;
+    mProcessPauseEventHandler = process.mProcessPauseEventHandler;
+    mProcessPausingEventHandler = process.mProcessPausingEventHandler;
+    mProcessResumedEventHandler = process.mProcessResumedEventHandler;
+    mProcessRunningEventHandler = process.mProcessRunningEventHandler;
+    mProcessStoppedEventHandler = process.mProcessStoppedEventHandler;
+    mProcessStoppingEventHandler = process.mProcessStoppingEventHandler;
+  }
+  return *this;
+}
+
+ProcessBase &ProcessBase::operator=(ProcessBase &&process) TL_NOEXCEPT
+{
+  if (this != &process){
+    mProcessErrorEvent = std::move(process.mProcessErrorEvent);
+    mProcessFinalizedEvent = std::move(process.mProcessFinalizedEvent);
+    mProcessPauseEvent = std::move(process.mProcessPauseEvent);
+    mProcessPausingEvent = std::move(process.mProcessPausingEvent);
+    mProcessResumedEvent = std::move(process.mProcessResumedEvent);
+    mProcessRunningEvent = std::move(process.mProcessRunningEvent);
+    mProcessStoppedEvent = std::move(process.mProcessStoppedEvent);
+    mProcessStoppingEvent = std::move(process.mProcessStoppingEvent);
+    mProcessErrorEventHandler = std::move(process.mProcessErrorEventHandler);
+    mProcessFinalizedEventHandler = std::move(process.mProcessFinalizedEventHandler);
+    mProcessPauseEventHandler = std::move(process.mProcessPauseEventHandler);
+    mProcessPausingEventHandler = std::move(process.mProcessPausingEventHandler);
+    mProcessResumedEventHandler = std::move(process.mProcessResumedEventHandler);
+    mProcessRunningEventHandler = std::move(process.mProcessRunningEventHandler);
+    mProcessStoppedEventHandler = std::move(process.mProcessStoppedEventHandler);
+    mProcessStoppingEventHandler = std::move(process.mProcessStoppingEventHandler);
+  }
+  return *this;
+}
+
+void ProcessBase::run(Progress *progressBar)
+{
+
+  if (mStatus == Status::finalized) return;
+
+  try {
+
     mStatus = Status::running;
-    //this->execute(progressBar);
-    mThread = std::thread(&Process::execute, this, progressBar);
-    mThread.detach();
-  } 
+    eventTriggered(Event::Type::process_running);
+
+    mThread = std::move(std::thread(&ProcessBase::execute, this, progressBar));
+    mThread.join();
+
+    mStatus = Status::finalized;
+    eventTriggered(Event::Type::process_finalized);
+
+  } catch (const std::exception &e) {
+    mStatus = Status::error;
+    mProcessErrorEvent->setErrorMessage(e.what());
+    eventTriggered(Event::Type::process_error);
+  }
 }
 
-void Process::pause()
+void ProcessBase::runAsync(Progress *progressBar)
 {
-  mStatus = Status::pausing;
-  while (mStatus != Status::pause);
-  pauseTriggered();
+  if (mStatus == Status::finalized) return;
+
+  mStatus = Status::running;
+  eventTriggered(Event::Type::process_running);
+
+  mThread = std::thread(&ProcessBase::execute, this, progressBar);
+  mThread.detach();
+
+  TL_TODO("Hay que activar Status::finalized")
 }
 
-void Process::reset()
+void ProcessBase::pause()
+{
+  if (mStatus == Status::running) {
+    mStatus = Status::pausing;
+    eventTriggered(Event::Type::process_pausing);
+
+    TL_TODO("Revisar")
+    //while (mStatus != Status::paused || mStatus != Status::finalized || mStatus != Status::error);
+
+    eventTriggered(Event::Type::process_paused);
+  }
+}
+
+void ProcessBase::reset()
 {
   mStatus = Status::start;
+  mProcessErrorEventHandler.clear();
+  mProcessFinalizedEventHandler.clear();
+  mProcessPauseEventHandler.clear();
+  mProcessPausingEventHandler.clear();
+  mProcessResumedEventHandler.clear();
+  mProcessRunningEventHandler.clear();
+  mProcessStoppedEventHandler.clear();
+  mProcessStoppingEventHandler.clear();
 }
 
-void Process::resume()
+void ProcessBase::resume()
 {
-  if (mStatus == Status::pause || mStatus == Status::pausing) {
+  eventTriggered(Event::Type::process_resumed);
+
+  if (mStatus == Status::paused || mStatus == Status::pausing) {
     mStatus = Status::running;
-    resumeTriggered();
+    eventTriggered(Event::Type::process_running);
   }
 }
 
-void Process::stop()
+void ProcessBase::stop()
 {
-  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
-    mStatus = Status::stopped;
-    stopTriggered();
+  if (mStatus == Status::running ||
+      mStatus == Status::paused ||
+      mStatus == Status::pausing) {
+
+    mStatus = Status::stopping;
+    eventTriggered(Event::Type::process_stopping);
+
+    TL_TODO("Revisar")
+    //while (mStatus != Status::stopped || mStatus != Status::finalized || mStatus != Status::error);
+
+    if (mStatus == Status::stopped)
+      eventTriggered(Event::Type::process_stopped);
+
   }
 }
 
-Process::Status Process::status()
+void ProcessBase::subscribe(Event::Type eventType,
+                            const EventHandler &eventHandler)
 {
-  return mStatus;
+  switch (eventType) {
+    case Event::Type::process_error:
+      mProcessErrorEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_paused:
+      mProcessPauseEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_pausing:
+      mProcessPausingEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_resumed:
+      mProcessResumedEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_running:
+      mProcessRunningEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_stopped:
+      mProcessStoppedEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_stopping:
+      mProcessStoppingEventHandler.emplace_back(eventHandler);
+      break;
+    case Event::Type::process_finalized:
+      mProcessFinalizedEventHandler.emplace_back(eventHandler);
+      break;
+    default:
+      break;
+  }
+
 }
 
-uint64_t Process::id() const
+void ProcessBase::subscribe(const EventHandler &eventHandler)
 {
-  return mProcessId;
+  mProcessErrorEventHandler.emplace_back(eventHandler);
+  mProcessFinalizedEventHandler.emplace_back(eventHandler);
+  mProcessPauseEventHandler.emplace_back(eventHandler);
+  mProcessPausingEventHandler.emplace_back(eventHandler);
+  mProcessResumedEventHandler.emplace_back(eventHandler);
+  mProcessRunningEventHandler.emplace_back(eventHandler);
+  mProcessStoppedEventHandler.emplace_back(eventHandler);
+  mProcessStoppingEventHandler.emplace_back(eventHandler);
 }
 
-std::string Process::name() const
+void ProcessBase::subscribe(const ProcessErrorEventHandler &eventHandler)
 {
-  return mProcessName;
+  mProcessErrorEventHandler.push_back(eventHandler);
 }
 
-void Process::addListener(Listener *listener)
+void ProcessBase::subscribe(const ProcessFinalizedEventHandler &eventHandler)
 {
-  if (mParent == nullptr) {
-    mListeners.push_back(listener);
+  mProcessFinalizedEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessPauseEventHandler &eventHandler)
+{
+  mProcessPauseEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessPausingEventHandler &eventHandler)
+{
+  mProcessPausingEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessResumedEventHandler &eventHandler)
+{
+  mProcessResumedEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessRunningEventHandler &eventHandler)
+{
+  mProcessRunningEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessStoppedEventHandler &eventHandler)
+{
+  mProcessStoppedEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::subscribe(const ProcessStoppingEventHandler &eventHandler)
+{
+  mProcessStoppingEventHandler.push_back(eventHandler);
+}
+
+void ProcessBase::eventTriggered(Event::Type type)
+{
+  switch (type) {
+    case Event::Type::process_error:
+      this->eventProcessErrorTriggered();
+      break;
+    case Event::Type::process_paused:
+      this->eventProcessPauseTriggered();
+      break;
+    case Event::Type::process_pausing:
+      this->eventProcessPausingTriggered();
+      break;
+    case Event::Type::process_resumed:
+      this->eventProcessResumedTriggered();
+      break;
+    case Event::Type::process_running:
+      this->eventProcessRunningTriggered();
+      break;
+    case Event::Type::process_stopped:
+      this->eventProcessStoppedTriggered();
+      break;
+    case Event::Type::process_stopping:
+      this->eventProcessStoppingTriggered();
+      break;
+    case Event::Type::process_finalized:
+      this->eventProcessFinalizedTriggered();
+      break;
+    default:
+      break;
+  }
+
+}
+
+void ProcessBase::eventProcessErrorTriggered()
+{
+  std::list<ProcessErrorEventHandler> event_handler = mProcessErrorEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessErrorEvent.get());
   }
 }
 
-void Process::removeListener(Listener *listener)
+void ProcessBase::eventProcessFinalizedTriggered()
 {
-  if (!mListeners.empty()) {
-    mListeners.remove(listener);
+  std::list<ProcessFinalizedEventHandler> event_handler = mProcessFinalizedEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessFinalizedEvent.get());
   }
 }
 
-void Process::processCountReset()
+void ProcessBase::eventProcessPauseTriggered()
 {
-  sProcessCount = 0;
-}
-
-void Process::endTriggered()
-{
-  mStatus = Status::finalized;						  
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onEnd(id());
-    }
+  std::list<ProcessPauseEventHandler> event_handler = mProcessPauseEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessPauseEvent.get());
   }
 }
 
-void Process::pauseTriggered()
+void ProcessBase::eventProcessPausingTriggered()
 {
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onPause(id());
-    }
+  std::list<ProcessPausingEventHandler> event_handler = mProcessPausingEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessPausingEvent.get());
   }
 }
 
-void Process::resumeTriggered()
+void ProcessBase::eventProcessResumedTriggered()
 {
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onResume(id());
-    }
+  std::list<ProcessResumedEventHandler> event_handler = mProcessResumedEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessResumedEvent.get());
   }
 }
 
-void Process::runTriggered()
+void ProcessBase::eventProcessRunningTriggered()
 {
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onRun(id());
-    }
+  std::list<ProcessRunningEventHandler> event_handler = mProcessRunningEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessRunningEvent.get());
   }
 }
 
-void Process::stopTriggered()
+void ProcessBase::eventProcessStoppedTriggered()
 {
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onStop(id());
-    }
+  std::list<ProcessStoppedEventHandler> event_handler = mProcessStoppedEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessStoppedEvent.get());
   }
 }
 
-void Process::errorTriggered()
+void ProcessBase::eventProcessStoppingTriggered()
 {
-  mStatus = Status::error;						  
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onError(id());
-    }
+  std::list<ProcessStoppingEventHandler> event_handler = mProcessStoppingEventHandler;
+  for (auto &handler : event_handler) {
+    handler(mProcessStoppingEvent.get());
   }
 }
 
-
-/* ---------------------------------------------------------------------------------- */
-
-
-#ifdef WIN32
-DWORD CmdProcess::sPriority = NORMAL_PRIORITY_CLASS;
-#endif
-
-CmdProcess::CmdProcess(const std::string &cmd, Process *parentProcess)
-  : Process(parentProcess),
-    mCmd(cmd)
+ProcessErrorEvent *ProcessBase::errorEvent()
 {
-#ifdef WIN32
-  ZeroMemory(&si, sizeof(si));
-  si.cb = sizeof(si);
-  ZeroMemory(&pi, sizeof(pi));
-#endif
+  return mProcessErrorEvent.get();
 }
 
-CmdProcess::~CmdProcess()
+ProcessFinalizedEvent *ProcessBase::finalizedEvent()
 {
-#ifdef WIN32
-  // Se cierran procesos e hilos 
-  CloseHandle(pi.hProcess);
-  CloseHandle(pi.hThread);
-#endif
+  return mProcessFinalizedEvent.get();
 }
 
-TL_DISABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
-//Process::Status CmdProcess::run(Progress *progressBar)
+ProcessPauseEvent *ProcessBase::pauseEvent()
+{
+  return mProcessPauseEvent.get();
+}
+
+ProcessPausingEvent *ProcessBase::pausingEvent()
+{
+  return mProcessPausingEvent.get();
+}
+
+ProcessResumedEvent *ProcessBase::resumedEvent()
+{
+  return mProcessResumedEvent.get();
+}
+
+ProcessRunningEvent *ProcessBase::runningEvent()
+{
+  return mProcessRunningEvent.get();
+}
+
+ProcessStoppedEvent *ProcessBase::stoppedEvent()
+{
+  return mProcessStoppedEvent.get();
+}
+
+ProcessStoppingEvent *ProcessBase::stoppingEvent()
+{
+  return mProcessStoppingEvent.get();
+}
+
+
+
+
+/* ExternalProcess */
+//https://stackoverflow.com/questions/42402673/createprocess-and-capture-stdout
+//#define BUFSIZE 4096
+//HANDLE m_hChildStd_OUT_Rd = NULL;
+//HANDLE m_hChildStd_OUT_Wr = NULL;
+//
+//DWORD __stdcall readDataFromExtProgram(void *argh)
 //{
-//  Process::run();
-//  return this->execute(progressBar);
+//  DWORD dwRead;
+//  CHAR chBuf[BUFSIZE];
+//  BOOL bSuccess = FALSE;
+//
+//  std::string outputText;
+//
+//  for (;;) {
+//    bSuccess = ReadFile(m_hChildStd_OUT_Rd, chBuf, BUFSIZE, &dwRead, NULL);
+//    if (!bSuccess || dwRead == 0) continue;
+//    chBuf[dwRead] = '\0';
+//    msgInfo(chBuf);
+//
+//    if (!bSuccess) break;
+//  }
+//  return 0;
 //}
 
-void CmdProcess::execute(Progress *progressBar)
+ExternalProcess::ExternalProcess(const std::string &commandText)
+  : mCommandText(commandText)
 {
-
 #ifdef WIN32
-  size_t len = strlen(mCmd.c_str());
-  std::wstring wCmdLine(len, L'#');
-  mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-  //size_t outSize;
-  //mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
+  ZeroMemory(&mStartUpInfo, sizeof(mStartUpInfo));
+  mStartUpInfo.cb = sizeof(mStartUpInfo);
+  ////////////////////////////////////////////
+  //mStartUpInfo.hStdError = m_hChildStd_OUT_Wr;
+  //mStartUpInfo.hStdOutput = m_hChildStd_OUT_Wr;
+  //mStartUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-    cmdLine,                      // Command line
-    NULL,                         // Process handle not inheritable
-    NULL,                         // Thread handle not inheritable
-    FALSE,                        // Set handle inheritance to FALSE
-    CREATE_NO_WINDOW | sPriority, // Flags de creación
-    NULL,                         // Use parent's environment block
-    NULL,                         // Use parent's starting directory 
-    &si,                          // Pointer to STARTUPINFO structure
-    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
-
-    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-    errorTriggered();
-    return;   
-  }
-
-  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
-  if (ret == WAIT_FAILED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    errorTriggered();
-    return;  
-  } else if (ret == WAIT_OBJECT_0) {
-    msgInfo("Command executed: %s", mCmd.c_str());
-  } else if (ret == WAIT_ABANDONED) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    errorTriggered();
-    return;   
-  } else if (ret == WAIT_TIMEOUT) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    errorTriggered();
-    return;	   
-  } /*else {
-    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-    return Process::Status::FINALIZED;
-  }*/
-  DWORD exitCode;
-  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-    errorTriggered();
-    return;	   
-  }
-
-  endTriggered();
-
-  return;
-#else
-  pid_t pid;
-  char *cmd = nullptr;
-  strcpy(cmd, mCmd.c_str());
-  char *argv[] = {"sh", "-c", cmd, nullptr};
-  int status;
-  //printf("Run command: %s\n", cmd);
-  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
-  if (status == 0) {
-      //printf("Child pid: %i\n", pid);
-      if (waitpid(pid, &status, 0) != -1) {
-          //printf("Child exited with status %i\n", status);
-        return;
-      } else {
-        return; //Process::Status::error;
-      }
-  } else {
-      printf("posix_spawn: %s\n", strerror(status));
-      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
-      return; //Process::Status::error;
-  }
-//  int posix_spawn(pid_t *pid, const char *path,
-//                  const posix_spawn_file_actions_t *file_actions,
-//                  const posix_spawnattr_t *attrp,
-//                  char *const argv[], char *const envp[]);
-  /// Para escribir en un log la salida
-  /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+  //ZeroMemory(&saAttr, sizeof(saAttr));
+  //saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
+  //saAttr.bInheritHandle = TRUE;
+  //saAttr.lpSecurityDescriptor = NULL;
+  //m_hreadDataFromExtProgram = nullptr;
+  ///////////////////////////////////////////
+  ZeroMemory(&mProcessInformation, sizeof(mProcessInformation));
 
 #endif
 }
-//Process::Status CmdProcess::run(Progress *progressBar)
-//{
-//  Process::run();
-//
-//#ifdef WIN32
-//  size_t len = strlen(mCmd.c_str());
-//  std::wstring wCmdLine(len, L'#');
-//  //mbstowcs(&wCmdLine[0], mCmd.c_str(), len);
-//  size_t outSize;
-//  mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
-//
-//  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-//  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-//    cmdLine,                      // Command line
-//    NULL,                         // Process handle not inheritable
-//    NULL,                         // Thread handle not inheritable
-//    FALSE,                        // Set handle inheritance to FALSE
-//    CREATE_NO_WINDOW | sPriority, // Flags de creación
-//    NULL,                         // Use parent's environment block
-//    NULL,                         // Use parent's starting directory 
-//    &si,                          // Pointer to STARTUPINFO structure
-//    &pi)) {                       // Pointer to PROCESS_INFORMATION structure
-//
-//    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
-//    return Process::Status::error;
-//  }
-//
-//  DWORD ret = WaitForSingleObject(pi.hProcess, INFINITE);
-//  if (ret == WAIT_FAILED) {
-//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-//    return Process::Status::error;
-//  } else if (ret == WAIT_OBJECT_0) {
-//    msgInfo("Command executed: %s", mCmd.c_str());
-//    //return Process::Status::FINALIZED;
-//  } else if (ret == WAIT_ABANDONED) {
-//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-//    return Process::Status::error;
-//  } else if (ret == WAIT_TIMEOUT) {
-//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-//    return Process::Status::error;
-//  } /*else {
-//    msgInfo("Comando ejecutado: %s", mCmd.c_str());
-//    return Process::Status::FINALIZED;
-//  }*/
-//  DWORD exitCode;
-//  if (GetExitCodeProcess(pi.hProcess, &exitCode) == 0) {
-//    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCmd.c_str());
-//    return Process::Status::error;
-//  }
-//  return Process::Status::finalized;
-//#else
-//  pid_t pid;
-//  char *cmd = nullptr;
-//  strcpy(cmd, mCmd.c_str());
-//  char *argv[] = {"sh", "-c", cmd, nullptr};
-//  int status;
-//  //printf("Run command: %s\n", cmd);
-//  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
-//  if (status == 0) {
-//      //printf("Child pid: %i\n", pid);
-//      if (waitpid(pid, &status, 0) != -1) {
-//          //printf("Child exited with status %i\n", status);
-//        return Process::Status::finalized;
-//      } else {
-//        return Process::Status::error;
-//      }
-//  } else {
-//      printf("posix_spawn: %s\n", strerror(status));
-//      msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCmd.c_str());
-//      return Process::Status::error;
-//  }
-////  int posix_spawn(pid_t *pid, const char *path,
-////                  const posix_spawn_file_actions_t *file_actions,
-////                  const posix_spawnattr_t *attrp,
-////                  char *const argv[], char *const envp[]);
-//  /// Para escribir en un log la salida
-//  /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
-//
-//#endif
-//}
-TL_ENABLE_WARNING(TL_UNREFERENCED_FORMAL_PARAMETER)
 
-void CmdProcess::setPriority(int priority)
+ExternalProcess::~ExternalProcess()
 {
 #ifdef WIN32
-  if (priority == 0) {
-    sPriority = REALTIME_PRIORITY_CLASS;
-  } else if (priority == 1) {
-    sPriority = HIGH_PRIORITY_CLASS;
-  } else if (priority == 2) {
-    sPriority = ABOVE_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 3) {
-    sPriority = NORMAL_PRIORITY_CLASS;
-  } else if (priority == 4) {
-    sPriority = BELOW_NORMAL_PRIORITY_CLASS;
-  } else if (priority == 5) {
-    sPriority = IDLE_PRIORITY_CLASS;
-  }
+  CloseHandle(mProcessInformation.hProcess);
+  CloseHandle(mProcessInformation.hThread);
 #endif
 }
 
 #ifdef WIN32
-std::string CmdProcess::formatErrorMsg(DWORD errorCode)
+std::string ExternalProcess::formatErrorMsg(DWORD errorCode)
 {
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM
-    | FORMAT_MESSAGE_IGNORE_INSERTS
-    | FORMAT_MESSAGE_MAX_WIDTH_MASK;
-  
+  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | 
+                FORMAT_MESSAGE_IGNORE_INSERTS | 
+                FORMAT_MESSAGE_MAX_WIDTH_MASK;
+
   TCHAR errorMessage[1024] = TEXT("");
 
   FormatMessage(flags,
-                NULL,
+                nullptr,
                 errorCode,
                 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                 errorMessage,
-                sizeof(errorMessage)/sizeof(TCHAR),
-                NULL);
+                sizeof(errorMessage) / sizeof(TCHAR),
+                nullptr);
 
-  //std::string strError = CW2A(errorMessage);
   std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
   std::string strError = converter.to_bytes(errorMessage);
   return strError;
 }
 #endif
 
-
-/* ---------------------------------------------------------------------------------- */
-
-BatchProcessing::BatchProcessing()
-  : mStatus(Status::start),
-    mProcessList(0),
-    mListeners(0),
-    mThread(),
-    mCurrentProcess(nullptr)
+void ExternalProcess::execute(Progress *progressBar)
 {
-}
+#ifdef WIN32
+  size_t len = strlen(mCommandText.c_str());
+  std::wstring wCmdLine(len, L'#');
+  mbstowcs(&wCmdLine[0], mCommandText.c_str(), len);
+  //size_t outSize;
+  //mbstowcs_s(&outSize, &wCmdLine[0], len, mCmd.c_str(), len);
 
-BatchProcessing::BatchProcessing(const BatchProcessing &batchProcess)
-  : mStatus(Status::start),
-    mProcessList(batchProcess.mProcessList),
-    mListeners(batchProcess.mListeners),
-    mThread(),
-    mCurrentProcess(nullptr)
-{
-  for (const auto &process : mProcessList) {
-    process->addListener(this);
+  /////////////////////////////////////////////////////////////////////////
+
+  //  // Create a pipe for the child process's STDOUT. 
+
+  //if (!CreatePipe(&m_hChildStd_OUT_Rd, &m_hChildStd_OUT_Wr, &saAttr, 0)) {
+  //  // log error
+  //  //return HRESULT_FROM_WIN32(GetLastError());
+  //  msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+  //  eventTriggered(Event::Type::process_error);
+  //  return;
+  //}
+
+  //// Ensure the read handle to the pipe for STDOUT is not inherited.
+
+  //if (!SetHandleInformation(m_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0)) {
+  //  // log error
+  //  //return HRESULT_FROM_WIN32(GetLastError());
+  //  msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+  //  eventTriggered(Event::Type::process_error);
+  //  return;
+  //}
+
+  /////////////////////////////////////////////////////////////////////////
+
+  LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
+  if (!CreateProcess(nullptr/*L"C:\\WINDOWS\\system32\\cmd.exe"*/,
+                     cmdLine,                      // Command line
+                     nullptr,                      // Process handle not inheritable
+                     nullptr,                      // Thread handle not inheritable
+                     false,                        // Set handle inheritance to FALSE
+                     CREATE_NO_WINDOW /*| sPriority*/, // Flags de creación
+                     nullptr,                      // Use parent's environment block
+                     nullptr,                      // Use parent's starting directory 
+                     &mStartUpInfo,                // Pointer to STARTUPINFO structure
+                     &mProcessInformation)) {      // Pointer to PROCESS_INFORMATION structure
+
+    msgError("CreateProcess failed (%d) %s", GetLastError(), formatErrorMsg(GetLastError()).c_str());
+    eventTriggered(Event::Type::process_error);
+    return;
+  } /*else {
+    m_hreadDataFromExtProgram = CreateThread(0, 0, readDataFromExtProgram, NULL, 0, NULL);
+  }*/
+
+  DWORD ret = WaitForSingleObject(mProcessInformation.hProcess, INFINITE);
+  if (ret == WAIT_FAILED) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCommandText.c_str());
+    eventTriggered(Event::Type::process_error);
+    return;
+  } else if (ret == WAIT_OBJECT_0) {
+    msgInfo("Command executed: %s", mCommandText.c_str());
+  } else if (ret == WAIT_ABANDONED) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCommandText.c_str());
+    eventTriggered(Event::Type::process_error);
+    return;
+  } else if (ret == WAIT_TIMEOUT) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCommandText.c_str());
+    eventTriggered(Event::Type::process_error);
+    return;
+  } /*else {
+    msgInfo("Comando ejecutado: %s", mCmd.c_str());
+    return Process::Status::FINALIZED;
+  }*/
+  DWORD exitCode;
+  if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode) == 0) {
+    msgError("Error (%d: %s) when executing the command: %s", GetLastError(), formatErrorMsg(GetLastError()).c_str(), mCommandText.c_str());
+    eventTriggered(Event::Type::process_error);
+    return;
   }
-}
 
-BatchProcessing::BatchProcessing(std::initializer_list<std::shared_ptr<Process>> procList)
-  : mStatus(Status::start),
-    mProcessList(procList),
-    mThread(),
-    mCurrentProcess(nullptr)
-{
-  for (const auto &process : mProcessList) {
-    process->addListener(this);
-  }
-}
+  //endTriggered();
 
-BatchProcessing::~BatchProcessing()
-{
-  if (mStatus == Status::running || mStatus == Status::pause || mStatus == Status::pausing) {
-    stop();
-  }
-  mStatus = Status::finalized;
-}
-
-BatchProcessing::Status BatchProcessing::run(Progress * progressBarTotal, Progress * progressBarPartial)
-{
-  mStatus = Status::running;
-  if (progressBarTotal) progressBarTotal->init(0., static_cast<double>(mProcessList.size()));
-  for (const auto &process : mProcessList) {
-    if (mStatus == Status::pausing) {
-      mStatus = Status::pause;
-      while (mStatus == Status::pause);
-    } else if (mStatus == Status::stopped) {
-      // Se fuerza la terminación
-      return Status::stopped;
-    } else {
-      //if (process->run(progressBarPartial) == Process::Status::FINALIZED_ERROR) {
-      //  return Status::FINALIZED_ERROR;
-      //} else {
-      //  if (progressBarTotal) (*progressBarTotal)();
-      //}
-      process->run(progressBarPartial);
-      if (progressBarTotal) (*progressBarTotal)();
+#else
+  pid_t pid;
+  char *cmd = nullptr;
+  strcpy(cmd, mCommandText.c_str());
+  char *argv[] = { "sh", "-c", cmd, nullptr };
+  int status;
+  //printf("Run command: %s\n", cmd);
+  status = posix_spawn(&pid, "/bin/sh", nullptr, nullptr, argv, environ);
+  if (status == 0) {
+    //printf("Child pid: %i\n", pid);
+    if (waitpid(pid, &status, 0) != -1) {
+      //printf("Child exited with status %i\n", status);
+      return;
+    }
+    else {
+      return; //Process::Status::error;
     }
   }
-  return (mStatus = Status::finalized);
-}
-
-BatchProcessing::Status BatchProcessing::run_async(Progress * progressBarTotal, Progress * progressBarPartial)
-{
-  mStatus = Status::running;
-
-  auto f_aux = [&](Progress *progress_bar_total, Progress *progress_bar_partial) {
-    if (progress_bar_total) progress_bar_total->init(0., static_cast<double>(mProcessList.size()));
-    for (const auto &process : mProcessList) {
-      if (progress_bar_total) {
-        // Se han añadido nuevos procesos asi que se actualiza
-        progress_bar_total->setMaximun(static_cast<double>(mProcessList.size()));
-        progress_bar_total->updateScale();
-      }
-      mCurrentProcess = process.get();
-      if (mStatus == Status::pausing) {
-        mStatus = Status::pause;
-        while (mStatus == Status::pause);
-      } else if (mStatus == Status::stopped) {
-        // Se fuerza la terminación
-        return Status::stopped;
-      } else {
-        //process->run(progress_bar_partial);
-        if (process->run(progress_bar_partial) == Process::Status::error) {
-        //  return Status::FINALIZED_ERROR;
-          if (progress_bar_partial) progress_bar_partial->restart();
-          //TODO: evento de error con el id de proceso
-        }
-          
-        if (progress_bar_total) (*progress_bar_total)();
-        
-      }
-    }
-    endTriggered();
-    return (mStatus = Status::finalized);
-  };
-
-  mThread = std::thread(f_aux, progressBarTotal, progressBarPartial);
-  mThread.detach();
-
-  return mStatus;
-}
-
-void BatchProcessing::push_back(const std::shared_ptr<Process> &process)
-{
-  mProcessList.push_back(process);
-  process->addListener(this);
-}
-
-void BatchProcessing::addListener(Listener * listener)
-{
-  mListeners.push_back(listener);
-}
-
-void BatchProcessing::removeListener(Listener * listener)
-{
-  if (!mListeners.empty()) {
-    mListeners.remove(listener);
+  else {
+    printf("posix_spawn: %s\n", strerror(status));
+    msgError("Error (%i: %s) when executing the command: %s", status, strerror(status), mCommandText.c_str());
+    return; //Process::Status::error;
   }
+  //  int posix_spawn(pid_t *pid, const char *path,
+  //                  const posix_spawn_file_actions_t *file_actions,
+  //                  const posix_spawnattr_t *attrp,
+  //                  char *const argv[], char *const envp[]);
+    /// Para escribir en un log la salida
+    /// https://unix.stackexchange.com/questions/252901/get-output-of-posix-spawn
+
+#endif
 }
-
-void BatchProcessing::remove(uint64_t id)
-{
-//  for (std::list<std::shared_ptr<Process>>::iterator it = mProcessList.begin(); it != mProcessList.end(); it++) {
-//    if ((*it)->id() == id) {
-//      remove(*it);
-//      break;
-//    }
-//  }
-  for (auto &process : mProcessList) {
-    if (process->id() == id) {
-      remove(process);
-      break;
-    }
-  }
-}
-
-void BatchProcessing::remove(const std::shared_ptr<Process> &process)
-{
-  process->removeListener(this);
-  mProcessList.remove(process);
-}
-
-bool BatchProcessing::isRunning() const
-{
-  return (mStatus == Status::running || mStatus == Status::pausing || mStatus == Status::pause);
-}
-
-void BatchProcessing::pause()
-{
-  mStatus = Status::pausing;
-  if (mCurrentProcess) {
-    mCurrentProcess->pause();
-  }
-}
-
-void BatchProcessing::reset()
-{
-  //TODO: Si esta corriendo no se puede hacer un reset
-  if (mStatus == Status::running) {
-    msgWarning("No se puede hacer un reset mientras el batch esta corriendo. Utilice el método stop() para cancelar los procesos");
-  } else {
-    mStatus = Status::start;
-    mProcessList.clear();
-    Process::processCountReset();
-  }
-}
-
-void BatchProcessing::resume()
-{
-  if (mStatus == Status::pause || mStatus == Status::pausing) {
-    mStatus = Status::running;
-    if (mCurrentProcess) 
-      mCurrentProcess->resume();
-  }
-}
-
-void BatchProcessing::stop()
-{
-  mStatus = Status::stopped;
-  if (mCurrentProcess) {
-    mCurrentProcess->stop();
-  }
-}
-
-void BatchProcessing::initCounter()
-{
-  Process::processCountReset();
-}
-
-void BatchProcessing::onPause(uint64_t id)
-{
-  msgInfo("Process %i paused", id);
-}
-
-void BatchProcessing::onResume(uint64_t id)
-{
-  msgInfo("Process %i resumed", id);
-}
-
-void BatchProcessing::onRun(uint64_t id)
-{
-  msgInfo("Process %i running", id);
-}
-
-void BatchProcessing::onStop(uint64_t id)
-{
-  msgInfo("Process %i stopped", id);
-}
-
-void BatchProcessing::onEnd(uint64_t id)
-{
-  msgInfo("Process %i completed", id);
-}
-
-void BatchProcessing::onError(uint64_t id)
-{
-  msgInfo("Process %i. Process error", id);
-  errorTriggered();
-}
-
-void BatchProcessing::endTriggered()
-{
-  mStatus = Status::finalized;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onEnd();
-    }
-  }
-}
-
-void BatchProcessing::errorTriggered()
-{
-  mStatus = Status::error;
-  if (!mListeners.empty()) {
-    for (auto &lst : mListeners) {
-      lst->onError();
-    }
-  }
-}
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-//ProcessBlock::ProcessBlock(int nBlocks, TL::Progress *progressBar)
-//  : mCount(nBlocks), 
-//    mProgressBar(progressBar)
-//{
-//  if (mProgressBar) {
-//    mProgressBar->init(0, nBlocks);
-//  }
-//}
-//
-//ProcessBlock::~ProcessBlock()
-//{
-//}
-//
-//void ProcessBlock::next()
-//{
-//  if (mProgressBar) (*mProgressBar)();
-//  if (mStatus == Status::PAUSING) {
-//    pauseTriggered();
-//    while (mStatus == Status::PAUSE);
-//  } else if (mStatus == Status::STOPPED) {
-//    // Se fuerza la terminación
-//    stopTriggered();
-//    return Status::STOPPED;
-//  }
-//}
-
 
 
 

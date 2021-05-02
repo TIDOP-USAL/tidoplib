@@ -32,12 +32,6 @@ namespace tl
 
 
 SiftProperties::SiftProperties()
-  : Sift(),
-    mFeaturesNumber(5000),
-    mOctaveLayers(3),
-    mContrastThreshold(0.04),
-    mEdgeThreshold(10.),
-    mSigma(1.6)
 {
 }
 
@@ -103,11 +97,11 @@ void SiftProperties::setSigma(double sigma)
 
 void SiftProperties::reset()
 {
-  mFeaturesNumber = 5000;
-  mOctaveLayers = 3;
-  mContrastThreshold = 0.04;
-  mEdgeThreshold = 10.;
-  mSigma = 1.6;
+  mFeaturesNumber = sift_default_value_features_number;
+  mOctaveLayers = sift_default_value_octave_layers;
+  mContrastThreshold = sift_default_value_contrast_threshold;
+  mEdgeThreshold = sift_default_value_edge_threshold;
+  mSigma = sift_default_value_sigma;
 }
 
 std::string SiftProperties::name() const

@@ -71,14 +71,14 @@ public:
 
 public:
 
-  virtual void reset() override;
+  void reset() override;
   std::string name() const final;
 
 private:
 
   std::string mBytes;
-  bool mRotationInvariance;
-  int mHalfSsdSize;
+  bool mRotationInvariance{true};
+  int mHalfSsdSize{3};
 };
 
 /*----------------------------------------------------------------*/
@@ -123,7 +123,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::LATCH> mLATCH;

@@ -26,30 +26,23 @@
 
 #include "tidop/core/messages.h"
 
-#define __STDC_WANT_LIB_EXT1__ 1
-#include <ctime>
-#include <cstring>
+#include <iomanip>
+#include <sstream>
 
 namespace tl
 {
 
+
 std::string formatTimeToString(const std::string &templ)
 {
-  std::string time_format;
-  char date[80];
-  struct tm _tm{};
-  std::time_t now = std::time(nullptr);
-#ifdef __STDC_LIB_EXT1__
-    _tm = *std::localtime_s(&now, &_tm);
-#else
-    _tm = *std::localtime(&now);
-#endif
+  auto now = std::chrono::system_clock::now();
+  auto in_time_t = std::chrono::system_clock::to_time_t(now);
 
-  std::strftime(date, 80, templ.c_str(), &_tm);
-  time_format = std::string(date);
-
-  return time_format;
+  std::stringstream ss;
+  ss << std::put_time(std::localtime(&in_time_t), templ.c_str());
+  return ss.str();
 }
+
 
 uint64_t tickCount()
 {
@@ -60,31 +53,16 @@ uint64_t tickCount()
 #endif
 }
 
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-uint64_t getTickCount()
-{
-  return tickCount();
-}
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-
 
 
 Chrono::Chrono()
-  : mTimeIni(0),
-    mAccumulated(0),
-    mStatus(Chrono::Status::start),
-    mMessage(""),
-    bWriteMessage(false)
+  : mMessage("")
 {
 }
 
-Chrono::Chrono(const std::string &message,
+Chrono::Chrono(std::string message,
                bool writeMessage)
-  : mTimeIni(0),
-    mAccumulated(0),
-    mStatus(Chrono::Status::start),
-    mMessage(message),
+  : mMessage(std::move(message)),
     bWriteMessage(writeMessage)
 {
 }
@@ -97,19 +75,18 @@ Chrono::~Chrono()
   mStatus = Status::finalized;
 }
 
-uint64_t Chrono::pause()
+double Chrono::pause()
 {
   if (mStatus == Status::running) {
-    mAccumulated += tickCount() - mTimeIni;
+    mAccumulated += std::chrono::steady_clock::now() - mTimeIni;
     mStatus = Status::pause;
   }
-  return mAccumulated;
+  return mAccumulated.count();
 }
 
 void Chrono::reset()
 {
-  mTimeIni = 0;
-  mAccumulated = 0;
+  mAccumulated = std::chrono::seconds::zero();
   mStatus = Status::start;
   mMessage = "";
 }
@@ -117,41 +94,62 @@ void Chrono::reset()
 void Chrono::resume()
 {
   if (mStatus == Status::pause) {
-    mTimeIni = tickCount();
+    mTimeIni = std::chrono::steady_clock::now();
     mStatus = Status::running;
   }
 }
 
-uint64_t Chrono::run()
+void Chrono::run()
 {
-  mTimeIni = tickCount();
-  mAccumulated = 0;
+  mTimeIni = std::chrono::steady_clock::now();
+  mAccumulated = std::chrono::seconds::zero();
   mStatus = Status::running;
-  return mTimeIni;
 }
 
-uint64_t Chrono::stop()
+double Chrono::stop()
 {
-  uint64_t time;
+  std::chrono::duration<double> time = mAccumulated;
+
   if (mStatus == Status::running) {
-    time = tickCount() - mTimeIni + mAccumulated;
+    time += std::chrono::steady_clock::now() - mTimeIni;
     mStatus = Status::stopped;
   } else if (mStatus == Status::pause) {
-    // Puede estar pausado y querer terminar
     mStatus = Status::stopped;
-    time = mAccumulated;
-  } else
-    time = 0;
+  } else{
+    time = std::chrono::seconds::zero();
+  }
 
-  if (bWriteMessage) 
-    msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time / 1000.);
-  
-  return time;
+  if (bWriteMessage){
+    msgInfo("%s [Time: %f seconds]", mMessage.c_str(), time.count());
+  }
+
+  return time.count();
 }
 
 void Chrono::setMessage(const std::string &message)
 {
   mMessage = message;
 }
+
+
+
+
+
+
+
+
+
+
+ChronoAuto::ChronoAuto(const std::string &message)
+  : Chrono(message, true)
+{
+  run();
+}
+
+ChronoAuto::~ChronoAuto()
+{
+}
+
+
 
 } // End namespace tl

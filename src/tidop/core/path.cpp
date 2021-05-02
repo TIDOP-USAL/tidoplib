@@ -37,6 +37,7 @@
 //Boost
 //http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
+#include <memory>
 #endif
 
 #if (__cplusplus >= 201703L)
@@ -56,18 +57,12 @@ class Path
 
 public:
 
-  Path()
-    : mPath{}
-  {
-  }
+  Path() = default;
 
-  Path(const std::string &path)
+  explicit Path(const std::string &path)
     : mPath(path)
   {
-  }
-
-  ~Path()
-  {
+    mPath = mPath.native();
   }
 
   std::string toString() const
@@ -105,18 +100,18 @@ public:
     return mPath.empty();
   }
 
-  bool Path::exists() const
+  bool exists() const
   {
     return fs::exists(mPath);
   }
 
-  std::string Path::replaceExtension(const std::string &extension)
+  std::string replaceExtension(const std::string &extension)
   {
     mPath.replace_extension(extension);
     return mPath.string();
   }
 
-  std::string Path::parent()
+  std::string parent()
   {
     fs::path parent_path = mPath.parent_path();
     return parent_path.string();
@@ -157,13 +152,11 @@ Path::Path(Path &&path) TL_NOEXCEPT
 {
 }
 
-Path::~Path()
-{
-}
+Path::~Path() = default;
 
 Path &Path::operator=(const Path &path)
 {
-  mPath.reset(new internal::Path(*path.mPath));
+  mPath = std::make_unique<internal::Path>(*path.mPath);
 
   return *this;
 }
@@ -171,13 +164,13 @@ Path &Path::operator=(const Path &path)
 Path &Path::operator=(Path &&path) TL_NOEXCEPT
 {
   mPath = std::move(path.mPath);
-  
+
   return *this;
 }
 
 void Path::setPath(const std::string &path)
 {
-  mPath.reset(new internal::Path(path));
+  mPath = std::make_unique<internal::Path>(path);
 }
 
 std::string Path::toString() const

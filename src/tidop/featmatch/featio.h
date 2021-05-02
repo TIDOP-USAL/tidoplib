@@ -50,7 +50,7 @@ class TL_EXPORT FeaturesWriter
 
 public:
 
-  FeaturesWriter(const std::string &fileName);
+  FeaturesWriter(std::string fileName);
   virtual ~FeaturesWriter() = default;
 
   virtual bool write() = 0;
@@ -77,13 +77,14 @@ class TL_EXPORT FeaturesReader
 
 public:
 
-  FeaturesReader(const std::string &fileName);
+  FeaturesReader(std::string fileName);
   virtual ~FeaturesReader() = default;
 
   virtual bool read() = 0;
 
   std::vector<cv::KeyPoint> keyPoints() const;
   cv::Mat descriptors() const;
+  std::string fileName() const;
 
 protected:
 
@@ -150,7 +151,7 @@ public:
 //  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
 //  void setDescriptors(const cv::Mat &descriptors);
 
-protected:
+private:
 
   std::unique_ptr<FeaturesReader> mReader;
   std::unique_ptr<FeaturesWriter> mWriter;

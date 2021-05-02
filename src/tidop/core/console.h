@@ -409,14 +409,14 @@ public:
    * \param[in] name Nombre del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const std::string &name, const std::string &description);
+  Argument(std::string name, std::string description);
 
   /*!
    * \brief Constructora argumento
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const char &shortName, const std::string &description);
+  Argument(const char &shortName, std::string description);
 
   /*!
    * \brief Constructora argumento
@@ -424,7 +424,7 @@ public:
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
    */
-  Argument(const std::string &name, const char &shortName, const std::string &description);
+  Argument(std::string name, const char &shortName, std::string description);
 
   /*!
    * \brief Constructora de copia
@@ -909,11 +909,6 @@ class ArgumentList_
   : public Argument_<T, required>
 {
 
-protected:
-
-  std::vector<T> mValues;
-  size_t *mIdx;
-
 public:
 
   /*!
@@ -923,7 +918,9 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const std::string &name, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const std::string &name,
+                const std::string &description,
+                std::vector<T> &values, size_t *idx);
 
   /*!
    * \brief Constructora argumento lista de opciones
@@ -932,7 +929,10 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const char &shortName,
+                const std::string &description,
+                std::vector<T> &values,
+                size_t *idx);
 
   /*!
    * \brief Constructora argumento lista de opciones
@@ -942,7 +942,11 @@ public:
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
    * \param[in,out] idx Indice del valor que toma el argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  ArgumentList_(const std::string &name, const char &shortName, const std::string &description, std::vector<T> &values, size_t *idx);
+  ArgumentList_(const std::string &name,
+                const char &shortName,
+                const std::string &description,
+                std::vector<T> &values,
+                size_t *idx);
 
   /*!
    * \brief Constructora de copia
@@ -959,6 +963,10 @@ public:
 
   void setValue(const T &value) override;
 
+private:
+
+  std::vector<T> mValues;
+  size_t *mIdx;
 };
 
 
@@ -1261,7 +1269,7 @@ public:
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    */
-  Command(const std::string &name, const std::string &description);
+  Command(std::string name, std::string description);
 
   /*!
    * \brief Constructora de lista
@@ -1269,7 +1277,7 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Argument>> arguments);
+  Command(std::string name, std::string description, std::initializer_list<std::shared_ptr<Argument>> arguments);
 
   ~Command() = default;
 
@@ -1564,7 +1572,8 @@ public:
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    */
-  CommandList(const std::string &name, const std::string &description);
+  CommandList(std::string name,
+              std::string description);
   
   /*!
    * \brief Constructor de copia
@@ -1717,263 +1726,6 @@ public:
   void showLicence() const;
 
   std::string commandName() const;
-};
-
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-
-/*!
- * \brief Función objeto de progreso
- */
-class TL_EXPORT Progress
-{
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  Progress();
-
-
-  /*!
-   * \brief Constructora de la clase Progress
-   * \param[in] min Valor mínimo
-   * \param[in] max Valor máximo
-   * \param[in] msg Mensaje opcional con información del proceso.
-   */
-  Progress(double min, double max, const std::string &msg = std::string());
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~Progress() = default;
-
-  /*!
-   * \brief Operador de llamada.
-   *
-   * Se llama cada vez que se quiera avanzar en la función de progreso
-   */
-  bool operator() (double increment = 1.);
-
-  /*!
-   * \brief Inicializa el progreso
-   * \param[in] min Valor minimo
-   * \param[in] max Valor máximo
-   * \param[in] msg Mensaje opcional con información del proceso.
-   */
-  virtual void init(double min, double max, const std::string &msg = "");
-
-  /*!
-   * \brief Restablece los valores al inicio
-   */
-  void restart();
-
-  /*!
-   * \brief Establece el manejador del evento OnInitialize
-   * \param[in] initializeFunction Función que se llama al inicializar
-   */
-  void setOnInitializeListener(std::function<void(void)> &initializeFunction);
-
-  /*!
-   * \brief Establece el manejador del evento OnProgress
-   * \param[in] progressFunction Función de control del progreso
-   */
-  void setOnProgressListener(std::function<void(double)> &progressFunction);
-
-  /*!
-   * \brief Establece el manejador del evento OnTerminate
-   * \param[in] terminateFunction Función que se llama al terminar
-   */
-  void setOnTerminateListener(std::function<void(void)> &terminateFunction);
-
-  void setMinimun(double min);
-
-  void setMaximun(double max);
-
-  /*!
-   * \brief updateScale
-   */
-  void updateScale();
-
-protected:
-
-  /*!
-   * \brief initialize
-   */
-  void initialize();
-
-  /*!
-   * \brief
-   */
-  virtual void updateProgress() = 0;
-
-  /*!
-   * \brief terminate
-   */
-  virtual void terminate() = 0;
-
-protected:
-
-  /*!
-   * \brief Valor actual
-   */
-  double mProgress;
-
-  /*!
-   * \brief Valor mínimo
-   */
-  double mMinimun;
-
-  /*!
-   * \brief Valor máximo
-   */
-  double mMaximun;
-
-  /*!
-   * \brief Valor actual en tanto por ciento
-   */
-  int mPercent;
-
-  /*!
-   * \brief Mensaje que se puede añadir con información del proceso.
-   */
-  std::string mMsg;
-
-  //TODO: quitar los manejadores de eventos. Mejor una clase virtual pura y
-  //      crear una clase hija si hace falta
-
-  /*!
-   * \brief Manejador del evento que se produce cada vez que se
-   * avanza una posición en la función de progreso
-   */
-  std::function<void(double)> *onProgress;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al inicializar
-   */
-  std::function<void(void)> *onInitialize;
-
-  /*!
-   * \brief Manejador del evento que se ejecuta al terminar
-   */
-  std::function<void(void)> *onTerminate;
-
-  /*!
-   * \brief Escala
-   */
-  double mScale;
-
-  static std::mutex sMutex;
-};
-
-
-/*!
- * \brief Barra de progreso de consola
- */
-class TL_EXPORT ProgressBar 
-  : public Progress
-{
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
-
-  /*!
-   * \brief Longitud de la barra de progreso
-   */
-  const int mSize = 50;
-
-public:
-
-  /*!
-   * \brief Constructora
-   * \param[in] customConsole
-   */
-  ProgressBar(bool customConsole = true);
-
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   * \param customConsole Si este valor esta activado la barra de progreso se muestra en color
-   */
-  ProgressBar(double min, double max, bool customConsole = true);
-
-  /*!
-   * \brief Destructora
-   */
-  ~ProgressBar() override = default;
-
-  //... warning C4512: 'TL::ProgressBar' : no se pudo generar el operador de asignaciones
-  //    Este warning aparece debido a que mSize es constante. impido la asignación que por
-  //    otra parte tampoco me interesa
-
-  ProgressBar &operator=(const ProgressBar &pb) = delete;
-
-private:
-
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
-
-  /*!
-   * \brief terminate
-   */
-  void terminate() override;
-};
-
-/*!
- * \brief Progreso en porcentaje
- */
-class TL_EXPORT ProgressPercent 
-  : public Progress
-{
-private:
-
-  /*!
-   * \brief bCustomConsole
-   */
-  bool bCustomConsole;
-
-public:
-
-  /*!
-   * \brief Constructora ProgressPercent
-   * \param customConsole
-   */
-  ProgressPercent(bool customConsole = false);
-
-  /*!
-   * \brief Constructora
-   * \param min Valor mínimo
-   * \param max Valor máximo
-   * \param customConsole
-   */
-  ProgressPercent(double min, double max, bool customConsole = false);
-
-  /*!
-   * \brief Destructora
-   */
-  ~ProgressPercent() override = default;
-
-private:
-
-  /*!
-   * \brief Actualiza la barra de progreso
-   */
-  void updateProgress() override;
-
-  /*!
-   * \brief terminate
-   */
-  void terminate() override;
 };
 
 

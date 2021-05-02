@@ -25,18 +25,16 @@
 #include "featio.h"
 
 #include <tidop/core/messages.h>
-
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-namespace fs = boost::filesystem;
+#include <tidop/core/path.h>
 
 #include <stdexcept>
+#include <utility>
 
 namespace tl
 {
 
-FeaturesWriter::FeaturesWriter(const std::string &fileName)
-  : mFileName(fileName)
+FeaturesWriter::FeaturesWriter(std::string fileName)
+  : mFileName(std::move(fileName))
 {
 
 }
@@ -57,8 +55,8 @@ void FeaturesWriter::setDescriptors(const cv::Mat &descriptors)
 
 
 
-FeaturesReader::FeaturesReader(const std::string &fileName)
-  : mFileName(fileName)
+FeaturesReader::FeaturesReader(std::string fileName)
+  : mFileName(std::move(fileName))
 {
 
 }
@@ -71,6 +69,11 @@ std::vector<cv::KeyPoint> FeaturesReader::keyPoints() const
 cv::Mat FeaturesReader::descriptors() const
 {
   return mDescriptors;
+}
+
+std::string FeaturesReader::fileName() const
+{
+  return mFileName;
 }
 
 
@@ -434,11 +437,11 @@ private:
 FeaturesWriterOpenCV::FeaturesWriterOpenCV(const std::string &fileName)
   : FeaturesWriter(fileName)
 { 
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
-  if (boost::iequals(ext, ".xml")) {
+  Path ext_path = Path(fileName).extension();
+  std::string ext = ext_path.toString();
+  if (compareInsensitiveCase(ext, ".xml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (boost::iequals(ext, ".yml")) {
+  } else if (compareInsensitiveCase(ext, ".yml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
   }
 }
@@ -574,8 +577,7 @@ void FeaturesReaderTxt::readBody()
   while (std::getline(ifs, line)) {
 
     std::vector<std::string> list;
-    boost::split(list, line, boost::is_any_of(" "));
-    //std::stringList list = std::string(line.c_str()).split(" ");
+    tl::split(line, list, " ");
     mKeyPoints[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
     mKeyPoints[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
     mKeyPoints[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
@@ -740,16 +742,16 @@ void FeaturesWriterTxt::close()
 
 std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const std::string &fileName)
 {
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
+  Path ext_path = Path(fileName).extension();
+  std::string ext = ext_path.toString();
   std::unique_ptr<FeaturesReader> features_reader;
-  if (boost::iequals(ext, ".bin")) {
+  if (compareInsensitiveCase(ext, ".bin")) {
     features_reader = std::make_unique<FeaturesReaderBinary>(fileName);
-  } else if (boost::iequals(ext, ".xml")) {
+  } else if (compareInsensitiveCase(ext, ".xml")) {
     features_reader = std::make_unique<FeaturesReaderOpenCV>(fileName);
-  } else if (boost::iequals(ext, ".yml")) {
+  } else if (compareInsensitiveCase(ext, ".yml")) {
     features_reader = std::make_unique<FeaturesReaderOpenCV>(fileName);
-  } else if (boost::iequals(ext, ".txt")) {
+  } else if (compareInsensitiveCase(ext, ".txt")) {
     features_reader = std::make_unique<FeaturesReaderTxt>(fileName);
   } else {
     throw std::runtime_error("Invalid Features Reader");
@@ -765,16 +767,16 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const std::s
 
 std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const std::string &fileName)
 {
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
+  Path ext_path = Path(fileName).extension();
+  std::string ext = ext_path.toString();
   std::unique_ptr<FeaturesWriter> features_writer;
-  if (boost::iequals(ext, ".bin")) {
+  if (compareInsensitiveCase(ext, ".bin")) {
     features_writer = std::make_unique<FeaturesWriterBinary>(fileName);
-  } else if (boost::iequals(ext, ".txt")) {
+  } else if (compareInsensitiveCase(ext, ".txt")) {
     features_writer = std::make_unique<FeaturesWriterTxt>(fileName);
-  } else if (boost::iequals(ext, ".xml")) {
+  } else if (compareInsensitiveCase(ext, ".xml")) {
     features_writer = std::make_unique<FeaturesWriterOpenCV>(fileName);
-  } else if (boost::iequals(ext, ".yml")) {
+  } else if (compareInsensitiveCase(ext, ".yml")) {
     features_writer = std::make_unique<FeaturesWriterOpenCV>(fileName);
   } else {
     throw std::runtime_error("Invalid Features Writer");

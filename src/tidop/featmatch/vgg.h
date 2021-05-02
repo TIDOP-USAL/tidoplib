@@ -48,6 +48,14 @@ namespace tl
  */
 
 
+constexpr auto vgg_default_value_descriptor_type{"VGG_120"};
+constexpr auto vgg_default_value_scale_factor{6.25};
+constexpr auto vgg_default_value_sigma{1.4};
+constexpr auto vgg_default_value_use_normalize_descriptor{false};
+constexpr auto vgg_default_value_use_normalize_image{true};
+constexpr auto vgg_default_value_useScale_orientation{true};
+
+
 class TL_EXPORT VggProperties
   : public Vgg
 {
@@ -85,11 +93,11 @@ public:
 private:
 
   std::string mDescriptorType;
-  double mScaleFactor;
-  double mSigma;
-  bool bUseNormalizeDescriptor;
-  bool bUseNormalizeImage;
-  bool bUseScaleOrientation;
+  double mScaleFactor{vgg_default_value_scale_factor};
+  double mSigma{vgg_default_value_sigma};
+  bool bUseNormalizeDescriptor{vgg_default_value_use_normalize_descriptor};
+  bool bUseNormalizeImage{vgg_default_value_use_normalize_image};
+  bool bUseScaleOrientation{vgg_default_value_useScale_orientation};
 
 };
 
@@ -107,7 +115,7 @@ public:
 
   VggDescriptor();
   VggDescriptor(const VggDescriptor &vggDescriptor);
-  VggDescriptor(std::string descriptorType,
+  VggDescriptor(const std::string& descriptorType,
                 double scaleFactor,
                 double sigma,
                 bool useNormalizeDescriptor,
@@ -143,7 +151,7 @@ public:
     cv::Mat extract(const cv::Mat &img,
                   std::vector<cv::KeyPoint> &keyPoints) override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)

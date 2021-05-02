@@ -94,8 +94,8 @@ class TL_EXPORT RobustMatchingImp
 
 public:
 
-  explicit RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
-  RobustMatchingImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+  explicit RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
+  RobustMatchingImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
                     double ratio,
                     bool crossCheck,
                     GeometricTest geometricTest,

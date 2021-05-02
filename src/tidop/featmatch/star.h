@@ -46,6 +46,12 @@ namespace tl
  *  \{
  */
 
+constexpr auto star_default_value_max_size{45};
+constexpr auto star_default_value_response_threshold{30};
+constexpr auto star_default_value_line_threshold_projected{10};
+constexpr auto star_default_value_line_threshold_binarized{8};
+constexpr auto star_default_value_suppress_nonmax_size{5};
+
 
 class TL_EXPORT StarProperties
   : public Star
@@ -80,11 +86,11 @@ public:
 
 private:
 
-  int mMaxSize;
-  int mResponseThreshold;
-  int mLineThresholdProjected;
-  int mLineThresholdBinarized;
-  int mSuppressNonmaxSize;
+  int mMaxSize{star_default_value_max_size};
+  int mResponseThreshold{star_default_value_response_threshold};
+  int mLineThresholdProjected{star_default_value_line_threshold_projected};
+  int mLineThresholdBinarized{star_default_value_line_threshold_binarized};
+  int mSuppressNonmaxSize{star_default_value_suppress_nonmax_size};
 };
 
 
@@ -135,7 +141,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::StarDetector> mSTAR;

@@ -30,20 +30,42 @@ namespace tl
 {
 
 BoostProperties::BoostProperties()
-  : mDescriptorType("BINBOOST_256"),
-    bUseOrientation(true),
-    mScaleFactor(6.25)
+  : mDescriptorType("BINBOOST_256")
 {
-
 }
 
-BoostProperties::BoostProperties(const BoostProperties &boostProperties)
-  : Boost(boostProperties),
-    mDescriptorType(boostProperties.mDescriptorType),
+
+
+BoostProperties::BoostProperties(const BoostProperties &boostProperties) = default;
+
+BoostProperties::BoostProperties(BoostProperties &&boostProperties) TL_NOEXCEPT
+  : mDescriptorType(std::exchange(boostProperties.mDescriptorType,"")),
     bUseOrientation(boostProperties.bUseOrientation),
     mScaleFactor(boostProperties.mScaleFactor)
 {
 
+}
+
+BoostProperties::~BoostProperties() = default;
+
+BoostProperties &BoostProperties::operator =(const BoostProperties &boostProperties)
+{
+  if (this != &boostProperties) {
+    mDescriptorType = boostProperties.mDescriptorType;
+    bUseOrientation = boostProperties.bUseOrientation;
+    mScaleFactor = boostProperties.mScaleFactor;
+  }
+  return *this;
+}
+
+BoostProperties &BoostProperties::operator =(BoostProperties &&boostProperties) TL_NOEXCEPT
+{
+  if (this != &boostProperties) {
+    mDescriptorType = std::exchange(boostProperties.mDescriptorType,"");
+    bUseOrientation = std::exchange(boostProperties.bUseOrientation, boost_default_value_use_orientation);
+    mScaleFactor = std::exchange(boostProperties.mScaleFactor, boost_default_value_scale_factor);
+  }
+  return *this;
 }
 
 std::string BoostProperties::descriptorType() const
@@ -63,13 +85,13 @@ double BoostProperties::scaleFactor() const
 
 void BoostProperties::setDescriptorType(const std::string &descriptorType)
 {
-  if (descriptorType.compare("BGM") == 0 ||
-      descriptorType.compare("BGM_HARD") == 0 ||
-      descriptorType.compare("BGM_BILINEAR") == 0 ||
-      descriptorType.compare("LBGM") == 0||
-      descriptorType.compare("BINBOOST_64") == 0||
-      descriptorType.compare("BINBOOST_128") == 0||
-      descriptorType.compare("BINBOOST_256") == 0) {
+  if (descriptorType == "BGM" ||
+      descriptorType == "BGM_HARD" ||
+      descriptorType == "BGM_BILINEAR" ||
+      descriptorType == "LBGM" ||
+      descriptorType == "BINBOOST_64" ||
+      descriptorType == "BINBOOST_128" ||
+      descriptorType == "BINBOOST_256") {
     mDescriptorType = descriptorType;
   }
 }
@@ -87,8 +109,8 @@ void BoostProperties::setScaleFactor(double scaleFactor)
 void BoostProperties::reset()
 {
   mDescriptorType = "BINBOOST_256";
-  bUseOrientation = true;
-  mScaleFactor = 6.25;
+  bUseOrientation = boost_default_value_use_orientation;
+  mScaleFactor = boost_default_value_scale_factor;
 }
 
 std::string BoostProperties::name() const
@@ -106,8 +128,13 @@ BoostDescriptor::BoostDescriptor()
 }
 
 BoostDescriptor::BoostDescriptor(const BoostDescriptor &boostDescriptor)
-  : BoostProperties(boostDescriptor),
-    DescriptorExtractor(boostDescriptor)
+  : BoostProperties(boostDescriptor)
+{
+  update();
+}
+
+BoostDescriptor::BoostDescriptor(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT
+  : BoostProperties(std::forward<BoostProperties>(boostDescriptor))
 {
   update();
 }
@@ -122,6 +149,24 @@ BoostDescriptor::BoostDescriptor(const std::string &descriptorType,
   update();
 }
 
+BoostDescriptor &BoostDescriptor::operator =(const BoostDescriptor &boostDescriptor)
+{
+  if (this != &boostDescriptor){
+    BoostProperties::operator=(boostDescriptor);
+    update();
+  }
+  return *this;
+}
+
+BoostDescriptor &BoostDescriptor::operator =(BoostDescriptor &&boostDescriptor) TL_NOEXCEPT
+{
+  if (this != &boostDescriptor){
+    BoostProperties::operator=(std::forward<BoostProperties>(boostDescriptor));
+    update();
+  }
+  return *this;
+}
+
 void BoostDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D
@@ -129,19 +174,19 @@ void BoostDescriptor::update()
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR > 2)
   int descriptor_type = cv::xfeatures2d::BoostDesc::BGM;
   std::string descriptorType = BoostProperties::descriptorType();
-  if (descriptorType.compare("BGM") == 0 ) {
+  if (descriptorType == "BGM") {
     descriptor_type = cv::xfeatures2d::BoostDesc::BGM;
-  } else if (descriptorType.compare("BGM_HARD") == 0){
+  } else if (descriptorType == "BGM_HARD"){
     descriptor_type = cv::xfeatures2d::BoostDesc::BGM_HARD;
-  } else if (descriptorType.compare("BGM_BILINEAR") == 0){
+  } else if (descriptorType == "BGM_BILINEAR"){
     descriptor_type = cv::xfeatures2d::BoostDesc::BGM_BILINEAR;
-  } else if (descriptorType.compare("LBGM") == 0){
+  } else if (descriptorType == "LBGM"){
     descriptor_type = cv::xfeatures2d::BoostDesc::LBGM;
-  } else if (descriptorType.compare("BINBOOST_64") == 0){
+  } else if (descriptorType == "BINBOOST_64"){
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_64;
-  } else if (descriptorType.compare("BINBOOST_128") == 0){
+  } else if (descriptorType == "BINBOOST_128"){
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_128;
-  } else if (descriptorType.compare("BINBOOST_256") == 0){
+  } else if (descriptorType == "BINBOOST_256"){
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_256;
   }
 
@@ -178,7 +223,7 @@ void BoostDescriptor::setScaleFactor(double scaleFactor)
 }
 
 cv::Mat BoostDescriptor::extract(const cv::Mat &img, 
-                              std::vector<cv::KeyPoint> &keyPoints)
+                                 std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
 

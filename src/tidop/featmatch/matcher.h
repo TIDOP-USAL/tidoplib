@@ -112,7 +112,7 @@ public:
     return mMatchType.flags(); 
   }
 
-protected:
+private:
 
   tl::EnumFlags<Type> mMatchType;
 };

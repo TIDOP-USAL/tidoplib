@@ -30,6 +30,11 @@
 namespace tl
 {
 
+constexpr auto gms_default_value_rotation{true};
+constexpr auto gms_default_value_scale{true};
+constexpr auto gms_default_value_threshold{6.};
+
+
 class TL_EXPORT GmsProperties
   : public Gms
 {
@@ -58,11 +63,11 @@ public:
   double threshold() const override;
   void setThreshold(double threshold) override;
 
-protected:
+private:
 
-  bool mRotation;
-  bool mScale;
-  double mThreshold;
+  bool mRotation{gms_default_value_rotation};
+  bool mScale{gms_default_value_scale};
+  double mThreshold{gms_default_value_threshold};
 };
 
 
@@ -76,8 +81,8 @@ class TL_EXPORT GsmImp
 
 public:
 
-  explicit GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher);
-  GsmImp(const std::shared_ptr<DescriptorMatcher> &descriptorMatcher,
+  explicit GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher);
+  GsmImp(std::shared_ptr<DescriptorMatcher> descriptorMatcher,
          bool rotation,
          bool scale,
          double threshold);
@@ -96,7 +101,7 @@ public:
                const cv::Size &queryImageSize = cv::Size(),
                const cv::Size &trainImageSize = cv::Size()) override;
 
-protected:
+private:
 
   std::shared_ptr<DescriptorMatcher> mDescriptorMatcher;
 

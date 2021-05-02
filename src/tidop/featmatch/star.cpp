@@ -32,11 +32,6 @@ namespace tl
 
 
 StarProperties::StarProperties()
-  : mMaxSize(45),
-    mResponseThreshold(30),
-    mLineThresholdProjected(10),
-    mLineThresholdBinarized(8),
-    mSuppressNonmaxSize(5)
 {
 }
 
@@ -102,11 +97,11 @@ void StarProperties::setSuppressNonmaxSize(int suppressNonmaxSize)
 
 void StarProperties::reset()
 {
-  mMaxSize = 45;
-  mResponseThreshold = 30;
-  mLineThresholdProjected = 10;
-  mLineThresholdBinarized = 8;
-  mSuppressNonmaxSize = 5;
+  mMaxSize = star_default_value_max_size;
+  mResponseThreshold = star_default_value_response_threshold;
+  mLineThresholdProjected = star_default_value_line_threshold_projected;
+  mLineThresholdBinarized = star_default_value_line_threshold_binarized;
+  mSuppressNonmaxSize = star_default_value_suppress_nonmax_size;
 }
 
 std::string StarProperties::name() const

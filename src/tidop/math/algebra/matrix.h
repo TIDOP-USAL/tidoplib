@@ -29,7 +29,7 @@
 
 #include <vector>
 #include <array>
-#if MATRIX_STD_VALARRAY
+#ifdef MATRIX_STD_VALARRAY
 #include <valarray>
 #endif
 

@@ -139,3 +139,91 @@
 #define BOOST_TEST_MODULE Tidop process test
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/process.h>
+#include <tidop/core/console.h>
+
+using namespace tl;
+
+class Process1
+  : public ProcessBase
+{
+
+public:
+
+  Process1()
+    : ProcessBase()
+  {
+  }
+
+  ~Process1()
+  {
+  }
+
+  size_t count() const
+  {
+    return _count;
+  }
+
+// Heredado vía ProcessBase
+
+protected:
+
+  void execute(Progress *progressBar = nullptr) override
+  {
+    _count = 0;
+
+    try {
+
+      for (size_t i = 0; i < 100; i++) {
+        _count++;
+      }
+      eventTriggered(Event::Type::process_finalized);
+
+    } catch (std::exception &e) {
+      ProcessBase::errorEvent()->setErrorMessage(e.what());
+      eventTriggered(Event::Type::process_error);
+    }
+  }
+
+
+
+private:
+
+  size_t _count{};
+};
+
+
+BOOST_AUTO_TEST_SUITE(ProcessTestSuite)
+
+struct ProcessTest
+{
+  ProcessTest()
+  {
+  }
+
+  ~ProcessTest()
+  {
+  }
+
+  void setup()
+  {
+  }
+
+  void teardown()
+  {
+  }
+
+  Process1 process1;
+}; 
+
+BOOST_FIXTURE_TEST_CASE(DefaultConstructor, ProcessTest)
+{
+  BOOST_CHECK_EQUAL(0, process1.count());
+}
+
+BOOST_FIXTURE_TEST_CASE(run, ProcessTest)
+{
+  process1.run();
+  BOOST_CHECK_EQUAL(100, process1.count());
+}
+
+BOOST_AUTO_TEST_SUITE_END()

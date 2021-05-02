@@ -103,7 +103,7 @@ public:
 
   void setIndex(Index index) override;
 
-protected:
+private:
 
   cv::Ptr<cv::FlannBasedMatcher> mFlannBasedMatcher;
 
