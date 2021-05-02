@@ -84,7 +84,7 @@ public:
 public:
 
   EulerAngles();
-  EulerAngles(double omega, double phi, double kappa, Axes axes);
+  EulerAngles(double x, double y, double z, Axes axes);
   EulerAngles(const EulerAngles<T> &eulerAngles);
   ~EulerAngles() override = default;
 
@@ -96,9 +96,9 @@ public:
 
 public:
 
-  double omega;
-  double phi;
-  double kappa;
+  double x;
+  double y;
+  double z;
   Axes axes;
 
 };
@@ -106,22 +106,22 @@ public:
 template<typename T>
 EulerAngles<T>::EulerAngles()
   : RotationBase<T>(Rotation::Type::euler_angles),
-    omega{0},
-    phi{0},
-    kappa{0},
+    x{0},
+    y{0},
+    z{0},
     axes(Axes::xyz)
 {
 }
 
 template<typename T>
-EulerAngles<T>::EulerAngles(double omega, 
-                            double phi, 
-                            double kappa, 
+EulerAngles<T>::EulerAngles(double x, 
+                            double y, 
+                            double z, 
                             Axes axes)
   : RotationBase<T>(Rotation::Type::euler_angles),
-    omega(omega),
-    phi(phi),
-    kappa(kappa),
+    x(x),
+    y(y),
+    z(z),
     axes(axes)
 {
 }
@@ -129,9 +129,9 @@ EulerAngles<T>::EulerAngles(double omega,
 template<typename T>
 EulerAngles<T>::EulerAngles(const EulerAngles<T> &eulerAngles)
   : RotationBase<T>(Rotation::Type::euler_angles),
-    omega(eulerAngles.omega),
-    phi(eulerAngles.phi),
-    kappa(eulerAngles.kappa),
+    x(eulerAngles.x),
+    y(eulerAngles.y),
+    z(eulerAngles.z),
     axes(eulerAngles.axes)
 {
 }
@@ -140,9 +140,9 @@ template<typename T>
 EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
 {
   if (this != &eulerAngles) {
-    omega = eulerAngles.omega;
-    phi = eulerAngles.phi;
-    kappa = eulerAngles.kappa;
+    x = eulerAngles.x;
+    y = eulerAngles.y;
+    z = eulerAngles.z;
     axes = eulerAngles.axes;
   }
   return *this;
@@ -157,9 +157,9 @@ EulerAngles<T> &EulerAngles<T>::operator = (const EulerAngles &eulerAngles)
 template <typename T>
 EulerAngles<T> operator - (const EulerAngles<T> &eulerAngles)
 {
-  return EulerAngles<T>(-eulerAngles.omega,
-                        -eulerAngles.phi, 
-                        -eulerAngles.kappa,
+  return EulerAngles<T>(-eulerAngles.x,
+                        -eulerAngles.y, 
+                        -eulerAngles.z,
                         eulerAngles.axes);
 }
 

@@ -698,8 +698,8 @@ void Vector<T, _size>::normalize()
   if (length > static_cast<T>(0)) {
     *this /= length;
   } else {
-    for (size_t i = 0; i < this->mVector.size(); i++) {
-      this->mVector[i] = static_cast<T>(0);
+    for (size_t i = 0; i < this->size(); i++) {
+      this->at(i) = static_cast<T>(0);
     }
   }
 }
