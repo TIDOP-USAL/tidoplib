@@ -397,7 +397,7 @@ public:
    * \brief Constructora de lista
    * \param[in] flags listado de flags activos
    */
-  Flags(std::initializer_list<int> flags);
+  Flags(std::initializer_list<T> flags);
 
   /*!
    * \brief Destructora
@@ -423,25 +423,25 @@ public:
    * \param flag Flag que se comprueba
    * \return Verdadero si esta activo y falso en caso contrario.
    */
-  bool isActive(int flag) const;
+  bool isActive(T flag) const;
 
   /*!
    * \brief Activa un flag
    * \param flag Flag que se activa
    */
-  void flagOn(int flag);
+  void flagOn(T flag);
 
   /*!
    * \brief Desactiva un flag
    * \param flag Flag que se desactiva
    */
-  void flagOff(int flag);
+  void flagOff(T flag);
 
   /*!
    * \brief Invierte un flag
    * \param flag Flag que se invierte
    */
-  void switchFlag(int flag);
+  void switchFlag(T flag);
 
   /*!
    * \brief Pone a cero todos los flags
@@ -485,24 +485,28 @@ template<typename T>
 Flags<T>::Flags()
   : mFlag(0)
 {
+  static_assert(std::is_integral<T>::value, "Float point type not supported");
 }
 
 template<typename T> inline
 Flags<T>::Flags(const Flags &flag) 
   : mFlag(flag.mFlag)
 {
+  static_assert(std::is_integral<T>::value, "Float point type not supported");
 }
 
 template<typename T>
 Flags<T>::Flags(Flags &&flag) TL_NOEXCEPT
   : mFlag(flag.mFlag)
 {
+  static_assert(std::is_integral<T>::value, "Float point type not supported");
 }
 
 template<typename T> inline
-Flags<T>::Flags(std::initializer_list<int> flags)
+Flags<T>::Flags(std::initializer_list<T> flags)
   : mFlag(0)
 {
+  static_assert(std::is_integral<T>::value, "Float point type not supported");
   for (auto flg : flags) {
     this->flagOn(flg);
   }
@@ -527,25 +531,25 @@ Flags<T> &Flags<T>::operator = (Flags<T> &&flag) TL_NOEXCEPT
 }
 
 template<typename T> inline
-bool Flags<T>::isActive(int flag) const
+bool Flags<T>::isActive(T flag) const
 {
-  return 0 != (mFlag & static_cast<Type>(1 << flag));
+  return 0 != (mFlag & static_cast<Type>(static_cast<T>(1) << flag));
 }
 
 template<typename T> inline
-void Flags<T>::flagOn(int flag)
+void Flags<T>::flagOn(T flag)
 {
-  mFlag |= static_cast<Type>(1 << flag);
+  mFlag |= static_cast<Type>(static_cast<T>(1) << flag);
 }
 
 template<typename T> inline
-void Flags<T>::flagOff(int flag)
+void Flags<T>::flagOff(T flag)
 {
-  mFlag &= ~static_cast<Type>(1 << flag);
+  mFlag &= ~static_cast<Type>(static_cast<T>(1) << flag);
 }
 
 template<typename T> inline
-void Flags<T>::switchFlag(int flag)
+void Flags<T>::switchFlag(T flag)
 {
   if (isActive(flag)) 
     flagOff(flag);
