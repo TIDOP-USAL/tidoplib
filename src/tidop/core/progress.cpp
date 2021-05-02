@@ -44,7 +44,7 @@ ProgressBase::ProgressBase()
   updateScale();
 }
 
-ProgressBase::ProgressBase(double min, double max)
+ProgressBase::ProgressBase(size_t min, size_t max)
   : mMinimun(min),
     mMaximun(max),
     mMessage(""),
@@ -134,7 +134,7 @@ ProgressBar::ProgressBar()
 {
 }
 
-ProgressBar::ProgressBar(double min, double max)
+ProgressBar::ProgressBar(size_t min, size_t max)
   : ProgressBase(min, max)
 {
 }
@@ -172,7 +172,7 @@ ProgressBarColor::ProgressBarColor()
 {
 }
 
-ProgressBarColor::ProgressBarColor(double min, double max)
+ProgressBarColor::ProgressBarColor(size_t min, size_t max)
   : ProgressBase(min, max)
 {
 }
@@ -246,7 +246,7 @@ ProgressPercent::ProgressPercent()
 {
 }
 
-ProgressPercent::ProgressPercent(double min, double max)
+ProgressPercent::ProgressPercent(size_t min, size_t max)
   : ProgressBase(min, max)
 {
 }

@@ -80,7 +80,7 @@ class TL_EXPORT ProgressBase
 public:
 
 	ProgressBase();
-  ProgressBase(double min, double max);
+  ProgressBase(size_t min, size_t max);
 	virtual ~ProgressBase();
 
 // Progress
@@ -155,7 +155,7 @@ public:
    * \param min Valor mínimo
    * \param max Valor máximo
    */
-  ProgressBar(double min, double max);
+  ProgressBar(size_t min, size_t max);
 
   /*!
    * \brief Destructora
@@ -200,7 +200,7 @@ public:
    * \param min Valor mínimo
    * \param max Valor máximo
    */
-  ProgressBarColor(double min, double max);
+  ProgressBarColor(size_t min, size_t max);
 
   /*!
    * \brief Destructora
@@ -249,7 +249,7 @@ public:
    * \param min Valor mínimo
    * \param max Valor máximo
    */
-  ProgressPercent(double min, double max);
+  ProgressPercent(size_t min, size_t max);
 
   /*!
    * \brief Destructora
