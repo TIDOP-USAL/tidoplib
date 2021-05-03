@@ -1535,31 +1535,6 @@ public:
    */
   using const_iterator = std::list<std::shared_ptr<Command> >::const_iterator;
 
-
-private:
-
-  /*!
-   * \brief Nombre del comando
-   */
-  std::string mName;
-
-  /*!
-   * \brief Descripción del comando
-   */
-  std::string mDescription;
-
-  /*!
-   * \brief Listado de los argumentos del comando
-   */
-  std::list<std::shared_ptr<Command>> mCommands;
-
-  std::shared_ptr<Command> mCommand;
-
-  /*!
-   * \brief Versión del programa
-   */
-  std::string mVersion;
-
 public:
 
   /*!
@@ -1593,7 +1568,11 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] commands listado de comandos
    */
-  CommandList(const std::string &name, const std::string &description, std::initializer_list<std::shared_ptr<Command>> commands);
+  CommandList(std::string name,
+              std::string description,
+              std::initializer_list<std::shared_ptr<Command>> commands);
+
+  ~CommandList() = default;
 
   /*!
    * \brief Devuelve el nombre del programa
@@ -1726,6 +1705,32 @@ public:
   void showLicence() const;
 
   std::string commandName() const;
+
+
+private:
+
+  /*!
+   * \brief Nombre del comando
+   */
+  std::string mName;
+
+  /*!
+   * \brief Descripción del comando
+   */
+  std::string mDescription;
+
+  /*!
+   * \brief Listado de los argumentos del comando
+   */
+  std::list<std::shared_ptr<Command>> mCommands;
+
+  std::shared_ptr<Command> mCommand;
+
+  /*!
+   * \brief Versión del programa
+   */
+  std::string mVersion;
+
 };
 
 

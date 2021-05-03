@@ -253,8 +253,8 @@ public:
 
 public:
 
-  ExternalProcess(const std::string &commandText);
-  ~ExternalProcess();
+  ExternalProcess(std::string commandText);
+  ~ExternalProcess() override;
 
 private:
 

@@ -30,15 +30,11 @@
 
 // filesystem
 #if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
 #include <filesystem>
 #else
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
-#include <memory>
 #endif
+#include <memory>
 
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
@@ -117,7 +113,7 @@ public:
     return parent_path.string();
   }
 
-  void Path::append(const std::string &text)
+  void append(const std::string &text)
   {
     mPath.append(text);
   }

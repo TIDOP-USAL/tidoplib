@@ -54,11 +54,13 @@ namespace consts
 {
 
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type zero = static_cast<T>(0);
+constexpr T zero = static_cast<T>(0);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type one = static_cast<T>(1);
+constexpr T one = static_cast<T>(1);
 template<typename T>
-constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type two = static_cast<T>(2);
+constexpr T two = static_cast<T>(2);
+template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type half = static_cast<T>(0.5L);
 
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type pi = static_cast<T>(3.141592653589793238462643383279502884L);

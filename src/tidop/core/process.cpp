@@ -34,6 +34,12 @@
 #endif
 #include <locale>
 #include <codecvt>
+#include <utility>
+
+
+#ifndef WIN32
+extern char **environ;
+#endif
 
 namespace tl
 {
@@ -491,7 +497,6 @@ ProcessStoppingEvent *ProcessBase::stoppingEvent()
 
 
 
-
 /* ExternalProcess */
 //https://stackoverflow.com/questions/42402673/createprocess-and-capture-stdout
 //#define BUFSIZE 4096
@@ -517,8 +522,8 @@ ProcessStoppingEvent *ProcessBase::stoppingEvent()
 //  return 0;
 //}
 
-ExternalProcess::ExternalProcess(const std::string &commandText)
-  : mCommandText(commandText)
+ExternalProcess::ExternalProcess(std::string commandText)
+  : mCommandText(std::move(commandText))
 {
 #ifdef WIN32
   ZeroMemory(&mStartUpInfo, sizeof(mStartUpInfo));
@@ -570,7 +575,7 @@ std::string ExternalProcess::formatErrorMsg(DWORD errorCode)
 }
 #endif
 
-void ExternalProcess::execute(Progress *progressBar)
+void ExternalProcess::execute(Progress *)
 {
 #ifdef WIN32
   size_t len = strlen(mCommandText.c_str());

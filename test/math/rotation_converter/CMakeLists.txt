@@ -37,7 +37,7 @@ target_link_libraries(${test_target}
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-target_link_libraries (${test_target} Eigen3::Eigen)
+
 set_target_properties(${test_target} PROPERTIES
                       OUTPUT_NAME ${test_target}
                       PROJECT_LABEL "(TEST) ${test_name}")

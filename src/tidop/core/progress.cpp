@@ -34,12 +34,7 @@ namespace tl
 std::mutex ProgressBase::sMutex;
 
 ProgressBase::ProgressBase()
-  : mMinimun(0),
-    mMaximun(0),
-    mMessage(""),
-    mProgress(),
-    mPercent(-1),
-    mScale(1.)
+  : mMessage("")
 {
   updateScale();
 }
@@ -47,16 +42,9 @@ ProgressBase::ProgressBase()
 ProgressBase::ProgressBase(size_t min, size_t max)
   : mMinimun(min),
     mMaximun(max),
-    mMessage(""),
-    mProgress(),
-    mPercent(-1),
-    mScale(1.)
+    mMessage("")
 {
   updateScale();
-}
-
-ProgressBase::~ProgressBase()
-{
 }
 
 bool ProgressBase::operator()(size_t increment)
@@ -108,7 +96,7 @@ void ProgressBase::initialize()
 
 void ProgressBase::updateScale()
 {
-  mScale = 100. / (mMaximun - mMinimun);
+  mScale = 100. / static_cast<double>(mMaximun - mMinimun);
 }
 
 int ProgressBase::percent()

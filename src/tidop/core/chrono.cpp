@@ -147,8 +147,7 @@ ChronoAuto::ChronoAuto(const std::string &message)
 }
 
 ChronoAuto::~ChronoAuto()
-{
-}
+= default;
 
 
 

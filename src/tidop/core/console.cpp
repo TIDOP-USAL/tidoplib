@@ -952,10 +952,11 @@ CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
 {
 }
 
-CommandList::CommandList(const std::string &name, const std::string &description,
-                 std::initializer_list<std::shared_ptr<Command>> commands)
-  : mName(name),
-    mDescription(description),
+CommandList::CommandList(std::string name,
+                         std::string description,
+                         std::initializer_list<std::shared_ptr<Command>> commands)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCommands(commands),
     mVersion("0.0.0")
 {
@@ -1004,17 +1005,17 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
     arg_cmd_name = (argv[1])+1;
   }
 
-  if (arg_cmd_name.compare("h") == 0 || arg_cmd_name.compare("help") == 0){
+  if (arg_cmd_name == "h" || arg_cmd_name == "help"){
     showHelp();
     return Status::show_help;
   }
 
-  if (arg_cmd_name.compare("version") == 0){
+  if (arg_cmd_name == "version"){
     showVersion();
     return Status::show_version;
   }
 
-  if (arg_cmd_name.compare("licence") == 0){
+  if (arg_cmd_name == "licence"){
     showLicence();
     return Status::show_licence;
   }

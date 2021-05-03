@@ -25,7 +25,6 @@
 #define BOOST_TEST_MODULE Tidop rotation converter test
 #include <boost/test/unit_test.hpp>
 #include <tidop/math/algebra/rotation_convert.h>
-#include <Eigen/Dense>
 
 using namespace tl::math;
 
