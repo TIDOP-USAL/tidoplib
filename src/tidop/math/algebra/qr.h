@@ -176,7 +176,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   for (k = 0; k < mRows - 1; k++) {
 
-    scale = static_cast<T>(0);
+    scale = consts::zero<T>;
 
     for (i = k; i < mRows; i++) {
       scale = std::max(scale, std::abs(this->R.at(i, k)));
@@ -281,7 +281,7 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::qtmult(const Vector
   Vector<T, _rows> x(mRows);
 
   for (i = 0; i < mRows; i++) {
-    sum = static_cast<T>(0);
+    sum = consts::zero<T>;
     for (j = 0; j < mRows; j++) {
       sum += this->Q_t.at(i, j) * b[j];
     }
@@ -387,16 +387,16 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::jacobiRotation(int i, T a, T b)
   T w;
   T y;
 
-  if (a == static_cast<T>(0)) {
-    c = static_cast<T>(0);
-    s = (b >= static_cast<T>(0) ? static_cast<T>(1) : -static_cast<T>(1));
+  if (a == consts::zero<T>) {
+    c = consts::zero<T>;
+    s = (b >= consts::zero<T> ? consts::one<T> : -consts::one<T>);
   } else if (abs(a) > abs(b)) {
     fact = b / a;
-    c = std::copysign(static_cast<T>(1) / sqrt(static_cast<T>(1)+ (fact * fact)), a);
+    c = std::copysign(consts::one<T> / sqrt(consts::one<T> + (fact * fact)), a);
     s = fact * c;
   } else {
     fact = a / b;
-    s = std::copysign(static_cast<T>(1) / sqrt(static_cast<T>(1) + (fact * fact)), b);
+    s = std::copysign(consts::one<T> / sqrt(consts::one<T> + (fact * fact)), b);
     c = fact * s;
   }
 

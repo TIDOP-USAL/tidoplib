@@ -1470,11 +1470,11 @@ public:
    */
   enum class Status
   {
-    parse_success,  /*!< El parseo se ejecuto correctamente */
+    parse_success,  /*!< El parséo se ejecutó correctamente */
     parse_error,    /*!< Ocurrio un error al ejecutar el comando */
-    show_help,      /*!< Se pasa como parametro: help. Muestra la ayuda del programa */
-    show_version,   /*!< Se pasa como parametro: version. Se muestra la versión del programa */
-    show_licence    /*!< Se pasa como parametro: licence. Se muestra la información de licencia */
+    show_help,      /*!< Se pasa como parámetro: help. Muestra la ayuda del programa */
+    show_version,   /*!< Se pasa como parámetro: version. Se muestra la versión del programa */
+    show_licence    /*!< Se pasa como parámetro: licence. Se muestra la información de licencia */
 #ifdef TL_ENABLE_DEPRECATED_METHODS
     ,
     PARSE_SUCCESS = parse_success,  /*!< El parseo se ejecuto correctamente */

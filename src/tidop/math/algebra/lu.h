@@ -198,12 +198,12 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     ip = mIndx[i];
     sum = x[ip];
     x[ip] = x[i];
-    if (ii != static_cast<size_t>(0)) {
-      for (j = ii - static_cast<size_t>(1); j < i; j++) { 
+    if (ii != consts::zero<T>) {
+      for (j = ii - consts::one<T>; j < i; j++) {
         sum -= this->LU.at(i, j) * x[j]; 
       }
     } else if (sum != static_cast<T>(0)) {
-      ii = i + static_cast<size_t>(1);
+      ii = i + consts::one<T>;
     }
       
     x[i] = sum;
@@ -322,7 +322,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     mIndx[k] = imax;
     if (this->LU.at(k,k) == 0.0) this->LU.at(k,k) = TINY;
-    for (size_t i = k + static_cast<size_t>(1); i < mRows; i++) {
+    for (size_t i = k + consts::one<T>; i < mRows; i++) {
       temp = this->LU.at(i, k) /= this->LU.at(k, k);
       for (size_t j = k + 1; j < mRows; j++)
         this->LU.at(i, j) -= temp * this->LU.at(k, j);
