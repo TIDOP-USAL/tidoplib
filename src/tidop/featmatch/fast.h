@@ -47,6 +47,11 @@ namespace tl
  */
 
 
+constexpr auto fast_default_value_threshold{10};
+constexpr auto fast_default_value_nonmax_suppression{true};
+constexpr auto fast_default_value_detector_type{"TYPE_9_16"};
+
+
 class TL_EXPORT FastProperties
   : public Fast
 {
@@ -76,8 +81,8 @@ public:
 
 private:
 
-  int mThreshold;
-  bool mNonmaxSuppression;
+  int mThreshold{fast_default_value_threshold};
+  bool mNonmaxSuppression{fast_default_value_nonmax_suppression};
   std::string mDetectorType;
 };
 
@@ -128,7 +133,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   cv::Ptr<cv::FastFeatureDetector> mFast;
 
@@ -146,7 +151,7 @@ class TL_EXPORT FastDetectorCuda
 public:
 
   FastDetectorCuda();
-  FastDetectorCuda(const FastDetector &fastDetector);
+  FastDetectorCuda(const FastDetectorCuda &fastDetector);
   FastDetectorCuda(int threshold, 
                    bool nonmaxSuppression, 
                    const std::string &detectorType);
@@ -179,7 +184,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
   cv::Ptr<cv::cuda::FastFeatureDetector> mFast;

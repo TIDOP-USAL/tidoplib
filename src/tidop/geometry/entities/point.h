@@ -625,6 +625,7 @@ Point3<T>::operator Point<T2>() const
     point.x = static_cast<T2>(this->x);
     point.y = static_cast<T2>(this->y);
   }
+  return point;
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)
 

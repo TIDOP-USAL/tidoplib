@@ -31,14 +31,12 @@ else()
   add_library(tl_experimental ${LIB_TYPE}
               desingpatterns.cpp
               designpatterns.h
-              #datamodel.cpp
-              #datamodel.h
               video/videoio.cpp
               video/videoio.h
-              #camera.cpp
-              #camera.h
-              #photo.cpp
-              #photo.h
+              compression.cpp
+              compression.h
+              csv.cpp
+              csv.h
               )
     
   # Añade el proyecto a la carpeta 'modules'

@@ -27,6 +27,7 @@
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
+#include "tidop/core/path.h"
 
 #ifdef HAVE_OPENCV
 
@@ -38,18 +39,6 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#include <boost/algorithm/string.hpp>
 #include <utility>
 
 namespace tl
@@ -582,7 +571,7 @@ private:
 
 std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const std::string &fileName)
 {
-  std::string extension = fs::path(fileName).extension().string();
+  std::string extension = Path(fileName).extension();
   std::unique_ptr<ImageReader> image_reader;
 #ifdef HAVE_GDAL
   if (gdalValidExtensions(extension)) {

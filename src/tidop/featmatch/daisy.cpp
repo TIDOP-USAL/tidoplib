@@ -31,28 +31,10 @@ namespace tl
 {
 
 DaisyProperties::DaisyProperties()
-  : Daisy(),
-    mRadius(15.),
-    mQRadius(3),
-    mQTheta(8),
-    mQHist(8),
-    mNorm("NRM_NONE"),
-    mInterpolation(true),
-    mUseOrientation(false)
+  : mNorm(daisy_default_value_norm)
 {}
 
-DaisyProperties::DaisyProperties(const DaisyProperties &daisyProperties)
-  : Daisy(daisyProperties),
-    mRadius(daisyProperties.mRadius),
-    mQRadius(daisyProperties.mQRadius),
-    mQTheta(daisyProperties.mQTheta),
-    mQHist(daisyProperties.mQHist),
-    mNorm(daisyProperties.mNorm),
-    mInterpolation(daisyProperties.mInterpolation),
-    mUseOrientation(daisyProperties.mUseOrientation)
-{
-
-}
+DaisyProperties::DaisyProperties(const DaisyProperties &daisyProperties) = default;
 
 double DaisyProperties::radius() const
 {
@@ -111,10 +93,10 @@ void DaisyProperties::setQHist(int qHist)
 
 void DaisyProperties::setNorm(const std::string &norm)
 {
-  if (norm.compare("NRM_NONE") == 0 ||
-      norm.compare("NRM_PARTIAL") == 0 ||
-      norm.compare("NRM_FULL") == 0 ||
-      norm.compare("NRM_SIFT") == 0) {
+  if (norm == "NRM_NONE" ||
+      norm == "NRM_PARTIAL" ||
+      norm == "NRM_FULL" ||
+      norm == "NRM_SIFT") {
     mNorm = norm;
   }
 }
@@ -131,13 +113,13 @@ void DaisyProperties::setUseOrientation(bool useOrientation)
 
 void DaisyProperties::reset()
 {
-  mRadius = 15.;
-  mQRadius = 3;
-  mQTheta = 8;
-  mQHist = 8;
-  mNorm = "NRM_NONE";
-  mInterpolation = true;
-  mUseOrientation = false;
+  mRadius = daisy_default_value_radius;
+  mQRadius = daisy_default_value_qradius;
+  mQTheta = daisy_default_value_qtheta;
+  mQHist = daisy_default_value_qhist;
+  mNorm = daisy_default_value_norm;
+  mInterpolation = daisy_default_value_interpolation;
+  mUseOrientation = daisy_default_value_use_orientation;
 }
 
 std::string DaisyProperties::name() const
@@ -179,7 +161,6 @@ DaisyDescriptor::DaisyDescriptor(double radius,
   update();
 }
 
-TL_DISABLE_WARNING(26812)
 void DaisyDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D
@@ -191,13 +172,13 @@ void DaisyDescriptor::update()
 #endif
 
   std::string norm = DaisyProperties::norm();
-  if (norm.compare("NRM_NONE") == 0 ) {
+  if (norm == "NRM_NONE" ) {
     daisy_norm = cv::xfeatures2d::DAISY::NRM_NONE;
-  } else if (norm.compare("NRM_PARTIAL") == 0){
+  } else if (norm == "NRM_PARTIAL"){
     daisy_norm = cv::xfeatures2d::DAISY::NRM_PARTIAL;
-  } else if (norm.compare("NRM_FULL") == 0){
+  } else if (norm == "NRM_FULL"){
     daisy_norm = cv::xfeatures2d::DAISY::NRM_FULL;
-  } else if (norm.compare("NRM_SIFT") == 0){
+  } else if (norm == "NRM_SIFT"){
     daisy_norm = cv::xfeatures2d::DAISY::NRM_SIFT;
   }
   mDAISY = cv::xfeatures2d::DAISY::create(static_cast<float>(DaisyProperties::radius()),
@@ -209,7 +190,6 @@ void DaisyDescriptor::update()
                                           DaisyProperties::useOrientation());
 #endif // HAVE_OPENCV_XFEATURES2D
 }
-TL_ENABLE_WARNING(26812)
 
 cv::Mat DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {

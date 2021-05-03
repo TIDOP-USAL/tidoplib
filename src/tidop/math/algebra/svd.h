@@ -177,7 +177,7 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
   this->reorder();
-  tsh = static_cast<T>(0.5) * sqrt(mRows + mCols + static_cast<T>(1)) * W[0] * eps;
+  tsh = consts::half<T> * sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
 #endif // HAVE_OPENBLAS
 
 }
@@ -372,7 +372,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           g = W[i];
           h = math::module(f, g);
           W[i] = h;
-          h = static_cast<T>(1) / h;
+          h = consts::one<T> / h;
           c = g * h;
           s = -f * h;
           for (j = 0; j < mRows; j++) {
@@ -398,9 +398,9 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
       g = rv1[nm];
       h = rv1[k];
       f = ((y - z) * (y + z) + (g - h) * (g + h)) / (static_cast<T>(2) * h * y);
-      g = math::module(f, static_cast<T>(1));
+      g = math::module(f, consts::one<T>);
       f = ((x - z) * (x + z) + h * ((y / (f + std::copysign(g, f))) - h)) / x;
-      c = s = 1.0; //Next QR transformation:
+      c = s = consts::one<T>; //Next QR transformation:
       for (j = l; j <= nm; j++) {
         i = j + one;
         g = rv1[i];
@@ -424,7 +424,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         z = math::module(f, h);
         W[j] = z; //Rotation can be arbitrary if z = 0.
         if (z != 0.) {
-          z = static_cast<T>(1) / z;
+          z = consts::one<T> / z;
           c = f * z;
           s = h * z;
         }
@@ -437,7 +437,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
           this->U.at(jj, i) = z * c - y * s;
         }
       }
-      rv1[l] = 0.0;
+      rv1[l] = consts::zero<T>;
       rv1[k] = f;
       W[k] = x;
     }
@@ -459,7 +459,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
   Vector<T, _rows> su(mRows);
   Vector<T, _cols> sv(mCols);
   
-  if (mRows == DynamicVector) 
+  //if (mRows == DynamicVector) /// ¿Que hace esto aqui?
 
   do { inc *= 3; inc++; } while (inc <= mCols);
 

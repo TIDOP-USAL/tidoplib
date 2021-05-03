@@ -79,10 +79,10 @@ public:
 
 private:
 
-  bool mOrientationNormalized;
-  bool mScaleNormalized;
-  double mPatternScale;
-  int mOctaves;
+  bool mOrientationNormalized{true};
+  bool mScaleNormalized{true};
+  double mPatternScale{22.};
+  int mOctaves{4};
 };
 
 
@@ -130,7 +130,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
 #ifdef HAVE_OPENCV_XFEATURES2D 
   cv::Ptr<cv::xfeatures2d::FREAK> mFREAK;

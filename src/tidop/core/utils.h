@@ -33,13 +33,11 @@
 #include <regex>
 #include <list>
 #include <numeric>
+#include <utility>
 
 
 
-#ifdef HAVE_MINIZIP
-#include "minizip/zip.h"
-#include "minizip/unzip.h"
-#endif // HAVE_MINIZIP
+
 
 #include "tidop/core/defs.h"
 
@@ -76,7 +74,6 @@ TL_EXPORT const char *getRunfile();
  * \param[in] path Ruta del directorio
  * \return true si existe.
  */
-TL_EXPORT bool isDirectory(const char *path);
 TL_EXPORT bool isDirectory(const std::string &path);
 
 /*!
@@ -84,7 +81,6 @@ TL_EXPORT bool isDirectory(const std::string &path);
  * \param[in] file Fichero
  * \return true si existe.
  */
-TL_EXPORT bool isFile(const char *file);
 TL_EXPORT bool isFile(const std::string &file);
 
 /*!
@@ -92,17 +88,17 @@ TL_EXPORT bool isFile(const std::string &file);
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1
  */
-TL_EXPORT int createDir(const char *path);
+TL_EXPORT int createDir(const std::string &path);
 
 /*!
- * \brief Crea un directorio
+ * \brief Borra un directorio
  * \param[in] path Ruta del directorio
  * \param[in] confirm Pide confirmación para borrar el archivo
  * \return Error
  */
-TL_EXPORT int deleteDir(const char *path, bool confirm = false);
+TL_EXPORT int deleteDir(const std::string &path, bool confirm = false);
 
-TL_EXPORT int move(const char *in, const char *out);
+//TL_EXPORT int move(const std::string &in, const std::string &out);
 
 
 /*!
@@ -393,7 +389,7 @@ std::string numberToString(T number)
 template <typename T> inline 
 T stringToNumber(const std::string &text)
 {
-  T number;
+  T number{};
   return (std::istringstream(text) >> number) ? number : 0;
 }
 
@@ -421,113 +417,6 @@ enum class Base : int8_t
  */
 TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal);
 
-/* ---------------------------------------------------------------------------------- */
-/*                              Operaciones con vectores                              */
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Ordena un vector de menor a mayor
- * \param[in] v Vector
- */
-template<typename T> inline 
-void sortVector(std::vector<T> *v)
-{
-  std::sort(v->begin(), v->end());
-}
-
-/*!
- * \brief Ordena un vector de mayor a menor
- * \param[in] v Vector
- */
-template<typename T> inline 
-void sortVectorInv(std::vector<T> *v)
-{
-  std::sort(v->rbegin(),v->rend());
-}
-
-/*!
- * \brief Determinar el número de elementos iguales a un número.
- * Sobrecarga del operador == para determinar el número de elementos de un
- * vector que son iguales al valor pasado como parámetro.
- * \param[in] v Vector
- * \param[in] t Valor
- * \return Número de elementos que cumplen la condición
- */
-template<typename T> inline 
-int operator==(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
-  bounds = std::equal_range(v.begin(), v.end(), t);
-  int ini = bounds.first - v.begin();
-  int end = bounds.second - v.begin();
-  return ( end - ini );
-}
-
-/*!
- * \brief Determina el número de elementos distintos a un número.
- * Sobrecarga del operador != para determinar el número de elementos de un
- * vector que son distintos al valor pasado como parámetro.
- * \param[in] v Vector
- * \param[in] t Valor
- * \return Número de elementos que cumplen la condición
- */
-template<typename T> inline 
-int operator!=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  std::pair<typename std::vector<T>::iterator, typename std::vector<T>::iterator> bounds;
-  bounds = std::equal_range(v.begin(), v.end(), t);
-  int r1 = bounds.first - v.begin();
-  int r2 = v.end() - bounds.second;
-  return (r1 + r2 );
-}
-
-/*!
- * \brief operator >=
- * \param[in] v
- * \param[in] t
- * \return
- */
-template<typename T> inline 
-int operator>=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator upOrEq;
-  upOrEq = std::lower_bound(v.begin(), v.end(), t);
-  return (v.end() - upOrEq);
-}
-
-template<typename T> inline 
-int operator<=(const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator lowOrEq;
-  lowOrEq = std::upper_bound(v.begin(), v.end(), t);
-  return (lowOrEq - v.begin());
-}
-
-template<typename T> inline 
-int operator> (const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator up;
-  up = std::upper_bound(v.begin(), v.end(), t);
-  return (v.end() - up);
-}
-
-template<typename T> inline 
-int operator< (const std::vector<T> &v, const T t)
-{
-  sortVector(v);
-  typename std::vector<T>::iterator low;
-  low = std::lower_bound(v.begin(), v.end(), t);
-  return (low - v.begin());
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-
 
 /*!
  * \brief Ordena los indices de un vector de menor a mayor
@@ -547,7 +436,8 @@ std::vector<int> sortIdx(const std::vector<T> &v)
   return idx;
 }
 
-
+TL_EXPORT bool compareInsensitiveCase(const std::string &source,
+                                      const std::string &compare);
 
 /* ---------------------------------------------------------------------------------- */
 /*                               Plantillas html y xml                                */
@@ -556,98 +446,98 @@ std::vector<int> sortIdx(const std::vector<T> &v)
 /*!
  * \brief Clase virtual para la sustitución de etiquetas en textos, ficheros html o xml.
  */
-class TL_EXPORT VrtTemplate
-{
-
-protected:
-
-  /*!
-   * \brief Texto con las etiquetas de reemplazo
-   */
-  std::string mText;
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  VrtTemplate();
-
-  /*!
-   * \brief Constructora
-   */
-  VrtTemplate(const char *text);
-
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~VrtTemplate();
-
-  /*!
-   * \brief Lee un fichero plantilla
-   * \param[in] file Fichero plantilla
-   * \return
-   */
-  virtual int read(const char *file);
-
-  /*!
-   * \brief Establece la plantilla
-   * \param[in] templ Texto con la plantilla
-   * \return
-   */
-  void setTemplate(const char *templ);
-
-  /*!
-   * \brief Remplaza todas las ocurrencias de las etiquetas
-   * de plantilla
-   * \param[out] output Texto con las etiquetas sustituidas
-   * \return
-   */
-  virtual int replace(std::string *output) const;
-
-  /*!
-   * \brief Reemplaza una etiqueta por su valor
-   * \param tag Etiqueta que se sustituye
-   * \param replaceText Texto que sustituye a la etiqueta
-   */
-  virtual void replaceTag(const std::string &tag, std::string *replaceText) const = 0;
-
-};
-
-
-class TL_EXPORT HtmlTemplate : public VrtTemplate
-{
-
-protected:
-
-  std::map<std::string, std::string> mTagValues;
-
-public:
-
-  /*!
-   * \brief Constructora por defecto
-   */
-  HtmlTemplate();
-
-  /*!
-   * \brief Constructora
-   */
-  HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values);
-
-  /*!
-   * \brief Destructora
-   */
-  ~HtmlTemplate();
-
-  /*!
-   * \brief Reemplaza una etiqueta por su valor
-   * \param tag Etiqueta que se sustituye
-   * \param replaceText Texto que sustituye a la etiqueta
-   */
-  void replaceTag(const std::string &tag, std::string *replaceText) const override;
-};
-
+//class TL_EXPORT VrtTemplate
+//{
+//
+//protected:
+//
+//  /*!
+//   * \brief Texto con las etiquetas de reemplazo
+//   */
+//  std::string mText;
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  VrtTemplate();
+//
+//  /*!
+//   * \brief Constructora
+//   */
+//  VrtTemplate(const char *text);
+//
+//
+//  /*!
+//   * \brief Destructora
+//   */
+//  virtual ~VrtTemplate();
+//
+//  /*!
+//   * \brief Lee un fichero plantilla
+//   * \param[in] file Fichero plantilla
+//   * \return
+//   */
+//  virtual int read(const char *file);
+//
+//  /*!
+//   * \brief Establece la plantilla
+//   * \param[in] templ Texto con la plantilla
+//   * \return
+//   */
+//  void setTemplate(const char *templ);
+//
+//  /*!
+//   * \brief Remplaza todas las ocurrencias de las etiquetas
+//   * de plantilla
+//   * \param[out] output Texto con las etiquetas sustituidas
+//   * \return
+//   */
+//  virtual int replace(std::string *output) const;
+//
+//  /*!
+//   * \brief Reemplaza una etiqueta por su valor
+//   * \param tag Etiqueta que se sustituye
+//   * \param replaceText Texto que sustituye a la etiqueta
+//   */
+//  virtual void replaceTag(const std::string &tag, std::string *replaceText) const = 0;
+//
+//};
+//
+//
+//class TL_EXPORT HtmlTemplate : public VrtTemplate
+//{
+//
+//protected:
+//
+//  std::map<std::string, std::string> mTagValues;
+//
+//public:
+//
+//  /*!
+//   * \brief Constructora por defecto
+//   */
+//  HtmlTemplate();
+//
+//  /*!
+//   * \brief Constructora
+//   */
+//  HtmlTemplate(const char *text, const std::map<std::string, std::string> &tag_values);
+//
+//  /*!
+//   * \brief Destructora
+//   */
+//  ~HtmlTemplate();
+//
+//  /*!
+//   * \brief Reemplaza una etiqueta por su valor
+//   * \param tag Etiqueta que se sustituye
+//   * \param replaceText Texto que sustituye a la etiqueta
+//   */
+//  void replaceTag(const std::string &tag, std::string *replaceText) const override;
+//};
+//
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -658,7 +548,7 @@ class TL_EXPORT FileOptions
 {
 public:
 
-  FileOptions() {}
+  FileOptions() = default;
   virtual ~FileOptions() = default;
 
   virtual const char *options() = 0;
@@ -721,20 +611,9 @@ protected:
 
 public:
 
-  /*!
-   * \brief Constructora
-   */
   File() : mFile("") {}
-
-  //File(const char *file, Mode mode = Mode::Update) : mFile(file), mMode(mode) { }
-  File(const std::string &file, Mode mode = Mode::update) : mFile(file), mMode(mode) { }
-
-  /*!
-   * \brief Destructora
-   */
-  virtual ~File(){}
-
-
+  File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) { }
+  virtual ~File()= default;
 
   /*!
    * \brief Abre un fichero especificando las opciones del formato
@@ -744,7 +623,6 @@ public:
    * \return
    * \see Mode
    */
-  //virtual Status open(const char *file, Mode mode = Mode::Update, FileOptions *options = nullptr) = 0;
   virtual Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) = 0;
  
   /*!
@@ -755,143 +633,9 @@ public:
   /*!
    * \brief Guarda una copia con otro nonbre
    */
-  //virtual Status createCopy(const char *fileOut) = 0;
   virtual Status createCopy(const std::string &fileOut) = 0;
 };
 
-//Es un fichero y es un modelo de datos con lo cual tendria que heredar de forma publica tambien de 
-// DataTable
-class TL_EXPORT Csv : public File/*, private DataTable*/
-{
-private:
-
-  std::fstream fs;
-
-public:
-
-  /*!
-   * \brief Constructora
-   */
-  Csv();
-
-  Csv(const char *file, Mode mode = Mode::update);
-
-  Csv(const Csv &csv);
-
-  /*!
-   * \brief Destructora
-   */
-  ~Csv() override;
-
-  /*!
-   * \brief Cierra el fichero csv
-   */
-  void close() override;
-
-  /*!
-   * \brief Crea el fichero
-   */
-  Status create(const std::string &header);
-  
-  /*!
-   * \brief Crea el fichero
-   */  
-  //Status create(const DataTable &dataTable);
-
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  Status createCopy(const std::string &fileOut) override;
-
-  /*!
-   * \brief Abre un fichero especificando las opciones del formato
-   * \param[in] file Fichero
-   * \param[in] mode Modo de apertura
-   * \param[in] options Opciones del formato
-   * \return
-   * \see Mode
-   */
-  Status open(const std::string &file, Mode mode = Mode::update, FileOptions *options = nullptr) override;
-
-  /*!
-   * \brief Lee un registro de la tabla
-   */
-  //TableRegister *read(int id);
-
-  /*!
-   * \brief Escribe una linea en el fichero
-   * \return
-   */
-  //Status write(std::shared_ptr<TableRegister> _register);
-  Status write(const std::vector<std::string> &_register);
-
-  /*!
-   * \brief carga todo el fichero a memoria
-   */
-  //Status load();
-
-  /*!
-   * \brief Salva el fichero cuando se esta trabajando en memoria
-   */
-  Status save();
-
-private:
-
-  /*!
-   * \brief Lee la cabecera
-   */
-  //Status readHeader();
-
-};
-
-
-//TL_EXPORT void compressFile(const char *file, const char *zip);
-
-#ifdef HAVE_MINIZIP
-
-// Clase para compresión de archivos
-class Compression : public File
-{
-private:
-
-  zipFile mZipFile; 
-  unzFile mUnZipFile;
-  unz_global_info mGlobalInfo;
-
-public:
-
-  Compression();
-  Compression(const char *file, Mode mode = Mode::Update);
-  Compression(const Compression &compression);
-  ~Compression();
-
-  /*!
-   * \brief Cierra el fichero
-   */
-  void close() override;
-
-  /*!
-   * \brief Guarda una copia con otro nonbre
-   */
-  Status createCopy(const char *fileOut) override;
-
-  /*!
-   * \brief Abre un fichero
-   * \param[in] file Nombre del fichero
-   * \param[in] mode Modo de apertura
-   * \return
-   * \see Mode
-   */
-  Status open(const char *file, Mode mode = Mode::Read) override;
-
-  Status compress(const std::string &file, const std::string &directory = {});
-  Status decompress();
-
-private:
-
-};
-
-#endif // HAVE_MINIZIP
 
 
 /*! \} */ // end of utilities

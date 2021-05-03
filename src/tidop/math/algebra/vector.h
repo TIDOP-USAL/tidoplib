@@ -206,7 +206,7 @@ VectorBase<T, _size>::VectorBase(std::initializer_list<T> values)
     std::copy(values.begin(), values.end(), mData.begin());
   } else if (n > _size){
     std::copy(values.begin(), values.end(), mData.begin());
-    std::fill(mData.begin() + n, mData.end(), static_cast<T>(0));
+    std::fill(mData.begin() + n, mData.end(), consts::zero<T>);
   } else {
     std::copy(values.begin(), values.begin() + n, mData.begin());
   }
@@ -695,11 +695,11 @@ template<typename T, size_t _size> inline
 void Vector<T, _size>::normalize()
 {
   T length = static_cast<T>(this->module());
-  if (length > static_cast<T>(0)) {
+  if (length > consts::zero<T>) {
     *this /= length;
   } else {
-    for (size_t i = 0; i < this->mVector.size(); i++) {
-      this->mVector[i] = static_cast<T>(0);
+    for (size_t i = 0; i < this->size(); i++) {
+      this->at(i) = consts::zero<T>;
     }
   }
 }
@@ -888,7 +888,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator /= (Vector<T, _size> &vector,
                                T scalar)
 {
-  if (scalar != static_cast<T>(0)) {
+  if (scalar != consts::zero<T>) {
     for (size_t i = 0; i < vector.size(); i++) {
       vector[i] /= scalar;
     }

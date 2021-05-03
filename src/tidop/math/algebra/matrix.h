@@ -29,7 +29,7 @@
 
 #include <vector>
 #include <array>
-#if MATRIX_STD_VALARRAY
+#ifdef MATRIX_STD_VALARRAY
 #include <valarray>
 #endif
 
@@ -181,7 +181,7 @@ MatrixBase<T, _rows, _cols>::MatrixBase(std::initializer_list<T> values)
     std::copy(values.begin(), values.end(), mData.begin());
   } else if (n > _rows * _cols){
     std::copy(values.begin(), values.end(), mData.begin());
-    std::fill(mData.begin() + n, mData.end(), static_cast<T>(0));
+    std::fill(mData.begin() + n, mData.end(), consts::zero<T>);
   } else {
     std::copy(values.begin(), values.begin() + n, mData.begin());
   }
@@ -1126,7 +1126,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse2x2(bool *invertibility)
 {
   Matrix<T, _rows, _cols> matrix(*this);
   T det = determinant2x2();
-  if (det != static_cast<T>(0)) {
+  if (det != consts::zero<T>) {
     matrix.at(0, 0) =  this->at(1,1) / det;
     matrix.at(0, 1) = -this->at(0,1) / det;
     matrix.at(1, 0) = -this->at(1,0) / det;
@@ -1146,7 +1146,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse3x3(bool *invertibility)
   Matrix<T, _rows, _cols> adj = this->adjoint3x3();
   T det = this->at(0,0) * adj.at(0, 0) + this->at(0,1) * adj.at(1, 0) + this->at(0,2) * adj.at(2, 0);
 
-  if (det != static_cast<T>(0)) {
+  if (det != consts::zero<T>) {
 
     matrix = adj / det;
 
@@ -1194,7 +1194,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse4x4(bool *invertibility)
   T b5 = m22 * m33 - m23 * m32;
   T det = a0 * b5 - a1 * b4 + a2 * b3 + a3 * b2 - a4 * b1 + a5 * b0;
 
-  if (det != static_cast<T>(0)) {
+  if (det != consts::zero<T>) {
     
     matrix.at(0, 0) = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
     matrix.at(0, 1) = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
@@ -1228,7 +1228,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inversenxn(bool *invertibility)
 
 //#ifdef TL_INVERSE_ADJUGATE_DIV_DETERMINANT
   T det = determinantnxn();
-  if (det != static_cast<T>(0)) {
+  if (det != consts::zero<T>) {
     matrix = this->adjugate();
     matrix /= det;
     if (invertibility != nullptr) *invertibility = true;
@@ -1265,12 +1265,9 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjugate() const
   static_assert(_rows == _cols, "Non-Square Matrix");
   size_t rows = this->rows();
   size_t cols = this->cols();
-  TL_ASSERT(rows == cols, "Non-Square Matrix");
+  TL_ASSERT(rows == cols, "Non-Square Matrix")
 
   Matrix<T, _rows, _cols> matrix(*this);
-  //if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
-  //  matrix = *this;
-  //}
 
   if (rows == 2) {
     adjoint2x2(matrix);
@@ -1472,7 +1469,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
 
   size_t rows = this->rows();
   size_t cols = this->cols();
-  TL_ASSERT(rows == cols, "Non-Square Matrix");
+  TL_ASSERT(rows == cols, "Non-Square Matrix")
 
   Matrix<T, _rows, _cols> matrix(*this);
   for (size_t r = 0; r < rows; r++) {
@@ -1490,7 +1487,7 @@ void Matrix<T, _rows, _cols>::cofactorMatrix(Matrix<T, _rows, _cols> &matrix) co
 
   size_t rows = this->rows();
   size_t cols = this->cols();
-  TL_ASSERT(rows == cols, "Non-Square Matrix");
+  TL_ASSERT(rows == cols, "Non-Square Matrix")
 
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
@@ -1503,9 +1500,7 @@ void Matrix<T, _rows, _cols>::cofactorMatrix(Matrix<T, _rows, _cols> &matrix) co
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) const
 {
-  const T zero{0};
-  const T one{1};
-  T d = one;
+  T d = consts::one<T>;
   size_t rows = this->rows();
   size_t cols = this->cols();
 
@@ -1521,14 +1516,14 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
       }
     }
 
-    if (pivotElement == zero) {
-      d = zero;
+    if (pivotElement == consts::zero<T>) {
+      d = consts::zero<T>;
       break;
     }
 
     if (pivotRow != i) {
       matrix.swapRows(i, pivotRow);
-      d *= -one;
+      d *= -consts::one<T>;
     }
 
     d *= pivotElement;
@@ -1561,15 +1556,15 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
 //    size_t pivot_row = findMax(matrix, i);
 //    T pivotElement = matrix.at(pivot_row, i);
 //
-//    if (pivotElement == static_cast<T>(0)) {
-//      d = static_cast<T>(0);
+//    if (pivotElement == consts::zero<T>) {
+//      d = consts::zero<T>;
 //      // Matriz singular
 //      break;
 //    }
 //
 //    if (pivot_row != i) {
 //      matrix.swapRows(i, pivot_row);
-//      d *= -static_cast<T>(1);
+//      d *= -consts::one<T>;
 //    }
 //
 //    d *= pivotElement;
@@ -1621,7 +1616,7 @@ T Matrix<T, _rows, _cols>::determinant() const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
 
-  T d = static_cast<T>(1);
+  T d = consts::one<T>;
   size_t rows = this->rows();
 
   if (rows == 2) {
@@ -1708,9 +1703,9 @@ T Matrix<T, _rows, _cols>::trace() const
   size_t rows = this->rows();
   size_t cols = this->cols();
   
-  TL_ASSERT(rows == cols, "Non-Square Matrix");
+  TL_ASSERT(rows == cols, "Non-Square Matrix")
 
-  T trace = static_cast<T>(0);
+  T trace = consts::zero<T>;
   for (size_t r = 0; r < rows; r++) {
     trace += this->at(r,r);
   }
@@ -1720,19 +1715,15 @@ T Matrix<T, _rows, _cols>::trace() const
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::invertible()
 {
-  bool r = true;
   T det = determinant();
-  if (det == static_cast<T>(0)) r = false;
-  return r;
+  return (det != consts::zero<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 bool Matrix<T, _rows, _cols>::singular()
 {
-  bool r = false;
   T det = determinant();
-  if (det == static_cast<T>(0)) r = true;
-  return r;
+  return (det == consts::zero<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
@@ -1740,7 +1731,7 @@ T Matrix<T, _rows, _cols>::cofactor(size_t r, size_t c) const
 {
   static_assert(_rows == _cols, "Non-Square Matrix");
 
-  T sign = ((r + c) % 2 == 0) ? static_cast<T>(1) : -static_cast<T>(1);
+  T sign = ((r + c) % 2 == 0) ? consts::one<T> : -consts::one<T>;
   return sign * this->firstMinor(r, c);
 }
 
@@ -1752,9 +1743,9 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
   size_t rows = this->rows();
   size_t cols = this->cols();
   
-  TL_ASSERT(rows == cols, "Non-Square Matrix");
+  TL_ASSERT(rows == cols, "Non-Square Matrix")
 
-  T determinant = static_cast<T>(0);
+  T determinant = consts::zero<T>;
 
   size_t i = 0;
   size_t j = 0;
@@ -1798,11 +1789,10 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero()
 {
-  const T zero{0};
   Matrix<T, _rows, _cols> matrix;
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix.at(r, c) = zero;
+      matrix.at(r, c) = consts::zero<T>;
     }
   }
   return matrix;
@@ -1813,17 +1803,16 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero(size_t rows, size_t cols)
 {
   static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
 
-  return Matrix<T>(rows, cols, static_cast<T>(0));
+  return Matrix<T>(rows, cols, consts::zero<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones()
 {
-  const T one{1};
   Matrix<T, _rows, _cols> matrix;
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix.at(r, c) = one;
+      matrix.at(r, c) = consts::one<T>;
     }
   }
   return matrix;
@@ -1834,7 +1823,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones(size_t rows, size_t cols)
 {
   static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
 
-  return Matrix<T>(rows, cols, static_cast<T>(1));
+  return Matrix<T>(rows, cols, consts::one<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
@@ -1844,9 +1833,9 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
       if (r == c) {
-        matrix.at(r, c) = static_cast<T>(1);
+        matrix.at(r, c) = consts::one<T>;
       } else {
-        matrix.at(r, c) = static_cast<T>(0);
+        matrix.at(r, c) = consts::zero<T>;
       }
     }
   }
@@ -1862,9 +1851,9 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t co
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
       if (r == c) {
-        matrix.at(r, c) = static_cast<T>(1);
+        matrix.at(r, c) = consts::one<T>;
       } else {
-        matrix.at(r, c) = static_cast<T>(0);
+        matrix.at(r, c) = consts::zero<T>;
       }
     }
   }
@@ -2011,7 +2000,7 @@ Matrix<T, _rows, _cols> &operator += (Matrix<T, _rows, _cols> &matrix1,
   size_t cols1 = matrix1.cols();
   size_t rows2 = matrix2.rows();
   size_t cols2 = matrix2.cols();
-  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size");
+  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
   for (size_t r = 0; r < rows1; r++) {
     for (size_t c = 0; c < cols1; c++) {
@@ -2107,7 +2096,7 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
   size_t cols1 = matrix1.cols();
   size_t rows2 = matrix2.rows();
   size_t cols2 = matrix2.cols();
-  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size");
+  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
 
   for (int r = 0; r < matrix1.rows(); r++) {
@@ -2181,7 +2170,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
   size_t dim1 = matrix1.cols();
   size_t cols = matrix2.cols();
   size_t dim2 = matrix2.rows();
-  TL_ASSERT(dim1 == dim2, "A columns != B rows");
+  TL_ASSERT(dim1 == dim2, "A columns != B rows")
 
   Matrix<T> matrix = Matrix<T>::zero(rows, cols);
   for (size_t r = 0; r < rows; r++) {
@@ -2316,7 +2305,7 @@ Matrix<T, _rows, _cols> operator / (const Matrix<T, _rows, _cols> &matrix, T sca
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
 {
-  if (scalar != static_cast<T>(0)) {
+  if (scalar != consts::zero<T>) {
     for (int r = 0; r < matrix.rows(); r++) {
       for (int c = 0; c < matrix.cols(); c++) {
         matrix.at(r, c) /= scalar;
@@ -2331,7 +2320,7 @@ Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
 template<typename T> inline static
 Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
 {
-  if (scalar != static_cast<T>(0)) {
+  if (scalar != consts::zero<T>) {
     for (int r = 0; r < matrix.rows(); r++) {
       for (int c = 0; c < matrix.cols(); c++) {
         matrix.at(r, c) /= scalar;

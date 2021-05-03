@@ -31,11 +31,7 @@ namespace tl
 {
 
 
-FreakProperties::FreakProperties()
-  : mOrientationNormalized(true),
-    mScaleNormalized(true),
-    mPatternScale(22.),
-    mOctaves(4)
+FreakProperties::FreakProperties()   
 {
 }
 

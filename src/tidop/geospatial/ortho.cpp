@@ -996,8 +996,8 @@ cv::Mat Orthorectification::distCoeffs() const
 ////
 ////  //cv::Mat omega_phi_kappa(1,3,CV_32F);
 ////  //omega_phi_kappa.at<float>(0) = eulerAngles.omega;
-////  //omega_phi_kappa.at<float>(1) = eulerAngles.phi;
-////  //omega_phi_kappa.at<float>(2) = eulerAngles.kappa;
+////  //omega_phi_kappa.at<float>(1) = eulerAngles.y;
+////  //omega_phi_kappa.at<float>(2) = eulerAngles.z;
 ////
 ////  
 ////

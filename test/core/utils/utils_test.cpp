@@ -29,32 +29,14 @@
 
 using namespace tl;
 
+BOOST_AUTO_TEST_CASE(compare_insensitive_case)
+{
+  BOOST_CHECK_EQUAL(true, compareInsensitiveCase("AbcDEfgHI", "AbcDEfgHI"));
+  BOOST_CHECK_EQUAL(true, compareInsensitiveCase("abcdefghi", "AbcDEfgHI"));
+  BOOST_CHECK_EQUAL(true, compareInsensitiveCase("AbcDEfgHI", "ABCDEFGHI"));
+  BOOST_CHECK_EQUAL(false, compareInsensitiveCase("AbcDEfgHI", "aaaaaa"));
+}
 
-//TEST(isDirectoryTest, Expect)
-//{
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo"));
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo/tidop/test"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo\\tidop\\test"));
-//  //EXPECT_FALSE(isDirectory("D:/Desarrollo_"));
-//  //EXPECT_FALSE(isDirectory("D:/Desarrollo/no_existe_dir"));
-//  //EXPECT_FALSE(isDirectory("D:\\Desarrollo_"));
-//  //EXPECT_FALSE(isDirectory("D:\\Desarrollo\\no_existe_dir"));
-//
-//  //// Con barra final
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo/"));
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo/tidop/test/"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo\\"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo\\tidop\\test\\"));
-//
-//  //// Con espacios
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo/Nueva carpeta"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo\\Nueva carpeta"));
-//  //EXPECT_TRUE(isDirectory("D:/Desarrollo/Nueva carpeta/"));
-//  //EXPECT_TRUE(isDirectory("D:\\Desarrollo\\Nueva carpeta\\"));
-//
-//}
-//
 //TEST(isDirectoryTest, Null)
 //{
 //  EXPECT_FALSE(isDirectory(""));
@@ -313,39 +295,3 @@ using namespace tl;
 //  EXPECT_EQ("cad2", out[1]);
 //  EXPECT_EQ("cad3", out[2]);
 //}
-//
-//
-//TEST(Path, DefaultConstructor)
-//{
-//  Path path;
-//  // Path esta vacio con lo cual el path actual tiene que estar vacio
-//  std::vector<std::string> _path = path.currentPath();
-//  EXPECT_EQ(0, _path.size());
-//  //No tiene que dar error...
-//  path.down();
-//  path.up();
-//}
-//
-//TEST(Path, Constructor)
-//{
-//  Path path1("D:\\Desarrollo\\Libs");
-//  std::vector<std::string> _path = path1.currentPath();
-//  EXPECT_EQ(3, _path.size());
-//  Path path2("D:/Desarrollo/Libs/");
-//  std::vector<std::string> _path2 = path2.currentPath();
-//  EXPECT_EQ(3, _path2.size());
-//}
-
-//TEST(Path, CopyConstructor){
-//
-//}
-//
-//TEST(Path, parse){
-//
-//}
-
-
-
-
-
-

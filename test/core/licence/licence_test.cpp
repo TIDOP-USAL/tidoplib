@@ -101,25 +101,3 @@ BOOST_FIXTURE_TEST_CASE(url, LicenceTest)
 
 
 BOOST_AUTO_TEST_SUITE_END()
-
-
-//class AppLicenceTest : public testing::Test
-//{
-//public:
-//
-//  virtual void SetUp()
-//  {
-//  }
-//
-//  virtual void TearDown()
-//  {
-//  }
-//
-//  AppLicence licence;
-//};
-//
-//
-//TEST_F(AppLicenceTest, DefaultConstructor)
-//{
-//  EXPECT_EQ(0, licence.thirdPartyLicences()->size());
-//}

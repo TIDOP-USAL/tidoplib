@@ -30,23 +30,20 @@
 namespace tl
 {
 
-ImageOptions::ImageOptions(Format format) 
+ImageOptions::ImageOptions()
 {}
 
-ImageOptions::~ImageOptions()
-{}
+//ImageOptions::~ImageOptions() = default;
 
 
 
 ImageOptionsBase::ImageOptionsBase(Format format)
-  : ImageOptions(Format::tiff),
+  : ImageOptions(),
     mFormat(format)
 {
 }
 
-ImageOptionsBase::~ImageOptionsBase()
-{
-}
+ImageOptionsBase::~ImageOptionsBase() = default;
 
 ImageOptionsBase::Format ImageOptionsBase::format() const
 {
@@ -65,6 +62,8 @@ std::map<std::string, std::string> ImageOptionsBase::activeOptions() const
 
 
 
+/* TiffOptions */
+
 TiffOptions::TiffOptions() 
   : ImageOptionsBase(Format::tiff)
 {
@@ -81,18 +80,7 @@ TiffOptions::TiffOptions()
   this->init();
 }
 
-TiffOptions::~TiffOptions()
-{}
-
-//std::map<std::string, std::string> TiffOptions::options() const
-//{
-//  return this->options(true);
-//}
-//
-//std::map<std::string, std::string> TiffOptions::activeOptions() const
-//{
-//  return this->options(false);
-//}
+TiffOptions::~TiffOptions() = default;
 
 void TiffOptions::reset()
 {
@@ -342,9 +330,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::BigTiff::if_safer:
         options["BigTiff"] = "IF_SAFER";
         break;
-      default:
-        options["BigTiff"] = "IF_NEEDED";
-        break;
     }
   }
     
@@ -399,9 +384,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::Compress::none:
         options["COMPRESS"] = "NONE";
         break;
-      default:
-        options["COMPRESS"] = "NONE";
-        break;
     }
   }
 
@@ -432,9 +414,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::Photometric::itulab:
         options["PHOTOMETRIC"] = "ITULAB";
         break;
-      default:
-        options["PHOTOMETRIC"] = "MINISBLACK";
-        break;
     }
   }
 
@@ -453,9 +432,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::Alpha::unspecified:
         options["ALPHA"] = "UNSPECIFIED";
         break;
-      default:
-        options["ALPHA"] = "UNSPECIFIED";
-        break;
     }
   }
 
@@ -470,9 +446,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::Profile::baseline:
         options["PROFILE"] = "BASELINE";
         break;
-      default:
-        options["PROFILE"] = "GDALgeoTIFF";
-        break;
     }
   }
 
@@ -483,9 +456,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
         break;
       case tl::TiffOptions::PixelType::signedbyte:
         options["PIXELTYPE"] = "SIGNEDBYTE";
-        break;
-      default:
-        options["PIXELTYPE"] = "DEFAULT";
         break;
     }
   }
@@ -498,9 +468,6 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
       case tl::TiffOptions::GeotiffKeysFlavor::esri_pe:
         options["GEOTIFF_KEYS_FLAVOR"] = "ESRI_PE";
         break;
-      default:
-        options["GEOTIFF_KEYS_FLAVOR"] = "DEFAULT";
-        break;
     }
   }
 
@@ -509,6 +476,8 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
 
 
 
+/* PngOptions */
+
 PngOptions::PngOptions() 
   : ImageOptionsBase(Format::png)
 {
@@ -516,18 +485,7 @@ PngOptions::PngOptions()
   this->init();
 }
 
-PngOptions::~PngOptions()
-{}
-
-//std::map<std::string, std::string> PngOptions::options() const
-//{
-//  return this->options(true);
-//}
-//
-//std::map<std::string, std::string> PngOptions::activeOptions() const
-//{
-//  return this->options(false);
-//}
+PngOptions::~PngOptions() = default;
 
 void PngOptions::reset()
 {
@@ -680,6 +638,7 @@ std::map<std::string, std::string> PngOptions::options(bool all) const
 
 
 
+/* JpegOptions */
 
 JpegOptions::JpegOptions() 
   : ImageOptionsBase(Format::jpeg)
@@ -688,19 +647,8 @@ JpegOptions::JpegOptions()
   this->init();
 }
 
-JpegOptions::~JpegOptions()
-{
-}
+JpegOptions::~JpegOptions() = default;
 
-//std::map<std::string, std::string> JpegOptions::options() const
-//{
-//  return this->options(true);
-//}
-//
-//std::map<std::string, std::string> JpegOptions::activeOptions() const
-//{
-//  return this->options(false);
-//}
 
 void JpegOptions::reset()
 {
@@ -860,6 +808,8 @@ std::map<std::string, std::string> JpegOptions::options(bool all) const
 
 
 
+/* BmpOptions */
+
 BmpOptions::BmpOptions() 
   : ImageOptionsBase(Format::bmp)
 {
@@ -867,18 +817,7 @@ BmpOptions::BmpOptions()
   this->init();
 }
 
-BmpOptions::~BmpOptions()
-{}
-
-//std::map<std::string, std::string> BmpOptions::options() const
-//{
-//  return this->options(true);
-//}
-//
-//std::map<std::string, std::string> BmpOptions::activeOptions() const
-//{
-//  return this->options(false);
-//}
+BmpOptions::~BmpOptions() = default;
 
 void BmpOptions::reset()
 {
@@ -913,6 +852,8 @@ std::map<std::string, std::string> BmpOptions::options(bool all) const
 
 
 
+/* GifOptions */
+
 GifOptions::GifOptions() 
   : ImageOptionsBase(Format::bmp)
 {
@@ -920,8 +861,7 @@ GifOptions::GifOptions()
   this->init();
 }
 
-GifOptions::~GifOptions()
-{}
+GifOptions::~GifOptions() = default;
 
 void GifOptions::reset()
 {
@@ -950,7 +890,7 @@ void GifOptions::setInterlacing(bool active)
 void GifOptions::init()
 {
   mWorldFile = std::make_pair(false, false);
-  mWorldFile = std::make_pair(false, false);
+  mInterlacing = std::make_pair(false, false);
 }
 
 std::map<std::string, std::string> GifOptions::options(bool all) const

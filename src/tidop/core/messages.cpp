@@ -32,9 +32,6 @@
 #if defined WIN32
 # include <windows.h>
 #endif
-//#define __STDC_WANT_LIB_EXT1__ 1
-//#include <ctime>
-//#include <cstring>
 #include <cstdio>
 #include <iostream>
 #include <fstream>

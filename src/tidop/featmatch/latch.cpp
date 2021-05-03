@@ -31,9 +31,7 @@ namespace tl
 {
 
 LatchProperties::LatchProperties()
-  : mBytes("32"),
-    mRotationInvariance(true),
-    mHalfSsdSize(3)
+  : mBytes("32")
 {
 }
 
@@ -62,13 +60,13 @@ int LatchProperties::halfSsdSize() const
 
 void LatchProperties::setBytes(const std::string &bytes)
 {
-  if (bytes.compare("1") == 0 ||
-      bytes.compare("2") == 0 ||
-      bytes.compare("4") == 0 ||
-      bytes.compare("8") == 0 ||
-      bytes.compare("16") == 0 ||
-      bytes.compare("32") == 0 ||
-      bytes.compare("64") == 0) {
+  if (bytes == "1" ||
+      bytes == "2" ||
+      bytes == "4" ||
+      bytes == "8" ||
+      bytes == "16" ||
+      bytes == "32" ||
+      bytes == "64") {
     mBytes = bytes;
   }
 }
@@ -114,8 +112,7 @@ LatchDescriptor::LatchDescriptor(const LatchDescriptor &latchDescriptor)
 LatchDescriptor::LatchDescriptor(const std::string &bytes,
                                  bool rotationInvariance,
                                  int halfSsdSize)
-  : LatchProperties(),
-    DescriptorExtractor()
+  : LatchProperties()
 {
   LatchProperties::setBytes(bytes);
   LatchProperties::setRotationInvariance(rotationInvariance);

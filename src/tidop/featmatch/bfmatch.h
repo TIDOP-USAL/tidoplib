@@ -63,7 +63,7 @@ public:
 
 private:
 
-  Norm mNormType;
+  Norm mNormType{BruteForceMatcherProperties::Norm::l2};
 
 };
 
@@ -112,7 +112,7 @@ public:
 
   void setNormType(Norm normType) override;
 
-protected:
+private:
 
   cv::Ptr<cv::BFMatcher> mBFMatcher;
 };
@@ -164,7 +164,7 @@ public:
 
   void setNormType(Norm normType) override;
 
-protected:
+private:
 
   cv::Ptr<cv::cuda::DescriptorMatcher> mBFMatcher;
 };

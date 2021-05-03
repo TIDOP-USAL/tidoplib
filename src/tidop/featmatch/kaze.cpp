@@ -169,7 +169,6 @@ KazeDetectorDescriptor::KazeDetectorDescriptor(bool extendedDescriptor,
 
 #if CV_VERSION_MAJOR >= 4
 
-TL_DISABLE_WARNING(26812)
 cv::KAZE::DiffusivityType KazeDetectorDescriptor::convertDiffusivity(const std::string &diffusivity)
 {
   cv::KAZE::DiffusivityType diff = cv::KAZE::DIFF_PM_G1;
@@ -184,7 +183,6 @@ cv::KAZE::DiffusivityType KazeDetectorDescriptor::convertDiffusivity(const std::
   }
   return diff;
 }
-TL_ENABLE_WARNING(26812)
 
 #else
 

@@ -121,9 +121,7 @@ public:
    * \brief Constructor de copia
    * \param[in] entity Objeto que se copia
    */
-  Entity(const Entity &entity) 
-    : mEntityType(entity.mEntityType)
-  {}
+  Entity(const Entity &entity) = default;
   
   /*!
    * \brief Constructor de movimiento

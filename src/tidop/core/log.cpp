@@ -25,26 +25,14 @@
 #include "tidop/core/log.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/chrono.h"
-
-
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
+#include "tidop/core/path.h"
 
 
 namespace tl
 {
 
 std::unique_ptr<Log> Log::sObjLog;
-std::string Log::sLogFile = "";
+std::string Log::sLogFile;
 EnumFlags<MessageLevel> Log::sLevel = MessageLevel::msg_error;
 std::string Log::sTimeLogFormat = "%d/%b/%Y %H:%M:%S";
 std::mutex Log::mtx;
@@ -61,7 +49,7 @@ Log::Log()
 
 Log::~Log()
 {
-  sObjLog.release();
+  sObjLog.reset();
 }
 
 Log &Log::instance()
@@ -153,15 +141,15 @@ void Log::_write(const std::string &message,
 {
   if (sLogFile.empty()) {
     // Log por defecto
-    fs::path log_path(getRunfile());
-    log_path.replace_extension(".log");
-    sLogFile = log_path.string();
+    Path log_path(getRunfile());
+    log_path.replaceExtension(".log");
+    sLogFile = log_path.toString();
   }
   
-  fs::path log_parent_path = fs::path(sLogFile).parent_path();
-  if (!fs::exists(log_parent_path)) {
-    bool directory_created = fs::create_directories(log_parent_path);
-    if (!directory_created) {
+  Path log_parent_path = Path(sLogFile).parentPath();
+  if (!Path::exists(log_parent_path)) {
+    int err = createDir(log_parent_path.toString());
+    if (err == -1) {
       MessageManager::instance().removeListener(this);
       return;
     }

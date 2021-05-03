@@ -32,11 +32,6 @@ namespace tl
 
 
 SurfProperties::SurfProperties()
-  : mHessianThreshold(100),
-    mOctaves(4),
-    mOctaveLayers(3),
-    mExtendedDescriptor(false),
-    mUpright(false)
 {
 }
 
@@ -102,11 +97,11 @@ void SurfProperties::setUpright(bool upright)
 
 void SurfProperties::reset()
 {
-  mHessianThreshold = 100;
-  mOctaves = 4;
-  mOctaveLayers = 3;
-  mExtendedDescriptor = false;
-  mUpright = false;
+  mHessianThreshold = surf_default_value_hessian_threshold;
+  mOctaves = surf_default_value_octaves;
+  mOctaveLayers = surf_default_value_octave_layers;
+  mExtendedDescriptor = surf_default_value_extended_descriptor;
+  mUpright = surf_default_value_upright;
 }
 
 std::string SurfProperties::name() const

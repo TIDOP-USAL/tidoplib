@@ -52,6 +52,7 @@ public:
   Size(T width, T height);
   Size(const Size &size);
   Size(Size &&size) TL_NOEXCEPT;
+  ~Size() = default;
 
   Size &operator = (const Size &size);
   Size &operator = (Size &&size) TL_NOEXCEPT;
@@ -148,6 +149,7 @@ Size<T>::operator Size<T2>() const
     size.width = static_cast<T2>(this->width);
     size.height = static_cast<T2>(this->height);
   }
+  return size;
 }
 
 template<typename T> static inline

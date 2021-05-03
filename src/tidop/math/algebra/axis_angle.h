@@ -65,32 +65,68 @@ public:
   AxisAngle(T angle, const Vector<T, 3> &axis);
   ~AxisAngle() override = default;
 
-public:
+  T angle() const;
+  void setAngle(T angle);
+  Vector<T, 3> axis() const;
+  T axis(size_t i) const;
+  void setAxis(const Vector<T, 3> &axis);
 
-  T angle;
-  Vector<T, 3> axis;
+private:
+
+  T mAngle;
+  Vector<T, 3> mAxis;
 };
 
 template<typename T>
 AxisAngle<T>::AxisAngle()
   : RotationBase<T>(Rotation::Type::axis_angle),
-    angle(0)
+    mAngle(0),
+    mAxis{1,0,0}
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-
-  axis.at(0) = 1;
-  axis.at(1) = 0;
-  axis.at(2) = 0;
 }
 
 template<typename T>
 AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
   : RotationBase<T>(Rotation::Type::axis_angle),
-    angle(angle),
-    axis(axis)
+    mAngle(angle),
+    mAxis(axis)
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-  TL_TODO("normalizar vector")
+
+  mAxis.normalize();
+}
+
+template<typename T>
+inline T AxisAngle<T>::angle() const
+{
+  return mAngle;
+}
+
+template<typename T>
+inline void AxisAngle<T>::setAngle(T angle)
+{
+  mAngle = angle;
+}
+
+template<typename T>
+inline Vector<T, 3> AxisAngle<T>::axis() const
+{
+  return mAxis;
+}
+
+template<typename T>
+inline T AxisAngle<T>::axis(size_t i) const
+{
+  TL_ASSERT((0 <= i) && (i < 3), "")
+  return mAxis.at(i);
+}
+
+template<typename T>
+inline void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
+{
+  mAxis = axis;
+  mAxis.normalize();
 }
 
 /*! \} */ // end of Algebra

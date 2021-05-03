@@ -31,6 +31,7 @@
 #include <iostream>
 #include <ctime>
 #include <cstdio>
+#include <utility>
 #include <vector>
 #include <iomanip>
 
@@ -95,7 +96,7 @@ Console::Console()
 Console::~Console()
 {
   reset();
-  sObjConsole.release();
+  //sObjConsole.reset();
 }
 
 Console &Console::instance()
@@ -133,21 +134,33 @@ void Console::printMessage(const std::string &message)
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
-  std::cout << aux << "\n";
+  std::cout << aux << std::endl;
 }
 
 void Console::printErrorMessage(const std::string &message)
 {
   setConsoleForegroundColor(messageProperties(MessageLevel::msg_error).foreColor,
                             messageProperties(MessageLevel::msg_error).intensity);
-  printMessage(message);
+  //printMessage(message);
+
+  // Por si esta corriendo la barra de progreso
+  std::cout << "\r";
+
+  std::string aux(message);
+  replaceString(&aux, "%", "%%");
+  std::cerr << aux << std::endl;
+
   reset();
 }
 
 void Console::reset()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(mHandle, mOldColorAttrs);
+  mForeColor = (mOldColorAttrs & 0x0007);
+  mForeIntensity = (mOldColorAttrs & 0x0008);
+  mBackgroundColor = (mOldColorAttrs & 0x0070);
+  mBackIntensity = (mOldColorAttrs & 0x0080);
+  update();
 #else
   sprintf(mCommand, "%c[0;m", 0x1B);
   fprintf(mStream, "%s", mCommand);
@@ -405,38 +418,33 @@ EnumFlags<MessageLevel> Console::getMessageLevel() const
 
 /* ---------------------------------------------------------------------------------- */
 
-Argument::Argument(const std::string &name,
-                   const std::string &description)
-  : mName(name),
-    mDescription(description),
+Argument::Argument(std::string name,
+                   std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mShortName()
 {
 
 }
 
 Argument::Argument(const char &shortName,
-                   const std::string &description)
+                   std::string description)
   : mName(""),
-    mDescription(description),
+    mDescription(std::move(description)),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const std::string &name,
+Argument::Argument(std::string name,
                    const char &shortName,
-                   const std::string &description)
-  : mName(name),
-    mDescription(description),
+                   std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mShortName(shortName)
 {
 }
 
-Argument::Argument(const Argument &argument)
-  : mName(argument.mName),
-    mDescription(argument.mDescription),
-    mShortName(argument.mShortName)
-{
-}
+Argument::Argument(const Argument &argument) = default;
 
 Argument::Argument(Argument &&argument) TL_NOEXCEPT
   : mName(std::move(argument.mName)),
@@ -520,19 +528,19 @@ Command::Command(const Command &command)
 
 }
 
-Command::Command(const std::string &name, const std::string &description)
-  : mName(name),
-    mDescription(description),
+Command::Command(std::string name, std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCmdArgs(0),
     mVersion("0.0.0")
 {
   init();
 }
 
-Command::Command(const std::string &name, const std::string &description,
+Command::Command(std::string name, std::string description,
                  std::initializer_list<std::shared_ptr<Argument>> arguments)
-  : mName(name),
-    mDescription(description),
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCmdArgs(arguments),
     mVersion("0.0.0")
 {
@@ -920,9 +928,10 @@ CommandList::CommandList()
 {
 }
 
-CommandList::CommandList(const std::string &name, const std::string &description)
-  : mName(name),
-    mDescription(description),
+CommandList::CommandList(std::string name,
+                         std::string description)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mVersion("0.0.0")
 {
 }
@@ -943,10 +952,11 @@ CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
 {
 }
 
-CommandList::CommandList(const std::string &name, const std::string &description,
-                 std::initializer_list<std::shared_ptr<Command>> commands)
-  : mName(name),
-    mDescription(description),
+CommandList::CommandList(std::string name,
+                         std::string description,
+                         std::initializer_list<std::shared_ptr<Command>> commands)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCommands(commands),
     mVersion("0.0.0")
 {
@@ -995,17 +1005,17 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
     arg_cmd_name = (argv[1])+1;
   }
 
-  if (arg_cmd_name.compare("h") == 0 || arg_cmd_name.compare("help") == 0){
+  if (arg_cmd_name == "h" || arg_cmd_name == "help"){
     showHelp();
     return Status::show_help;
   }
 
-  if (arg_cmd_name.compare("version") == 0){
+  if (arg_cmd_name == "version"){
     showVersion();
     return Status::show_version;
   }
 
-  if (arg_cmd_name.compare("licence") == 0){
+  if (arg_cmd_name == "licence"){
     showLicence();
     return Status::show_licence;
   }
@@ -1157,226 +1167,6 @@ void CommandList::showLicence() const
 std::string CommandList::commandName() const
 {
   return mCommand ? mCommand->name() : std::string();
-}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-
-std::mutex Progress::sMutex;
-
-Progress::Progress()
-  : mProgress(0.),
-    mMinimun(0.),
-    mMaximun(100.),
-    mPercent(-1),
-    mMsg(""),
-    onProgress(nullptr),
-    onInitialize(nullptr),
-    onTerminate(nullptr)
-{
-  updateScale();
-}
-
-Progress::Progress(double min,
-                   double max,
-                   const std::string &msg)
-  : mProgress(0.),
-    mMinimun(min),
-    mMaximun(max),
-    mPercent(-1),
-    mMsg(msg),
-    onProgress(nullptr),
-    onInitialize(nullptr),
-    onTerminate(nullptr)
-{
-  updateScale();
-}
-
-bool Progress::operator()(double increment)
-{
-  std::lock_guard<std::mutex> lck(Progress::sMutex);
-
-  if (mProgress == 0.) initialize();
-  mProgress += increment;
-  int percent = TL_ROUND_TO_INT(mProgress * mScale);
-  if (percent > mPercent) {
-    mPercent = percent;
-    updateProgress();
-  }
-  if (mProgress == mMaximun) terminate();
-  return true;
-}
-
-void Progress::init(double min,
-                    double max,
-                    const std::string &msg)
-{
-  mMinimun = min;
-  mMaximun = max;
-  mMsg = msg;
-  restart();
-  updateScale();
-}
-
-void Progress::setMinimun(double min)
-{
-  mMinimun = min;
-}
-
-void Progress::setMaximun(double max)
-{
-  mMaximun = max;
-}
-
-void Progress::restart()
-{
-  mPercent = 0;
-  mProgress = 0.;
-}
-
-void Progress::setOnProgressListener(std::function<void(double)> &progressFunction)
-{
-  *onProgress = progressFunction;
-}
-
-void Progress::setOnInitializeListener(std::function<void(void)> &initializeFunction)
-{
-  *onInitialize = initializeFunction;
-}
-
-void Progress::setOnTerminateListener(std::function<void(void)> &terminateFunction)
-{
-  *onTerminate = terminateFunction;
-}
-
-/* metodos protected*/
-
-void Progress::initialize()
-{
-  std::cout << mMsg << "\n";
-
-  if (onInitialize) (*onInitialize)();
-}
-
-void Progress::updateScale()
-{
-  mScale = 100./(mMaximun - mMinimun);
-}
-
-//void Progress::terminate()
-//{
-//  printf("\n");
-//  if (onTerminate) (*onTerminate)();
-//}
-
-
-/* ---------------------------------------------------------------------------------- */
-
-ProgressBar::ProgressBar(bool customConsole)
-  : Progress(),
-    bCustomConsole(customConsole)
-{
-}
-
-ProgressBar::ProgressBar(double min, double max, bool customConsole)
-  : Progress(min, max),
-    bCustomConsole(customConsole)
-{
-}
-
-void ProgressBar::updateProgress()
-{
-  if (onProgress == nullptr) {
-
-    std::cout << "\r";
-
-    Console &console = Console::instance();
-    int posInBar = TL_ROUND_TO_INT(static_cast<double>(mPercent) * static_cast<double>(mSize) / 100.);
-
-    int ini = mSize / 2 - 2;
-    for (int i = 0; i < mSize; i++) {
-      if (i < posInBar) {
-        if (bCustomConsole) {
-          console.setConsoleBackgroundColor(Console::Color::green);
-        } else {
-          std::cout << "#";
-        }
-      } else {
-        if (bCustomConsole) {
-          console.setConsoleBackgroundColor(Console::Color::yellow);
-        } else {
-          std::cout << "-";
-        }
-      }
-      if (bCustomConsole) {
-        int n;
-        if (i == ini) {
-          n = mPercent / 100 % 10;
-          if ( n > 0 ) std::cout << n;
-          else std::cout << " ";
-        } else if (i == ini + 1) {
-          n = mPercent / 10 % 10;
-          if ( n > 0 || mPercent >= 10) std::cout << n;
-          else std::cout << " ";
-        } else if (i == ini + 2) {
-          n = mPercent % 10;
-          std::cout << n;
-        } else if (i == ini + 3) {
-          std::cout << "%";
-        } else {
-          std::cout << " ";
-        }
-      }
-    }
-
-    if (bCustomConsole) {
-      console.reset();
-    } else {
-      std::cout << " " << mPercent << "%  completed" << std::flush;
-    }
-  } else {
-    (*onProgress)(mPercent);
-  }
-}
-
-void ProgressBar::terminate()
-{
-  if (onTerminate == nullptr)
-    std::cout << "\n";
-  else
-    (*onTerminate)();
-}
-
-/* ---------------------------------------------------------------------------------- */
-
-ProgressPercent::ProgressPercent(bool customConsole)
-  : Progress(),
-    bCustomConsole(customConsole)
-{
-}
-
-ProgressPercent::ProgressPercent(double min, double max, bool customConsole)
-  : Progress(min, max),
-    bCustomConsole(customConsole)
-{
-}
-
-void ProgressPercent::updateProgress()
-{
-  if (onProgress == nullptr) {
-    std::cout << "\r";
-    std::cout << " " << mPercent << "%  completed" << std::flush;
-  } else
-    (*onProgress)(mPercent);
-}
-
-void ProgressPercent::terminate()
-{
-  if (onTerminate == nullptr)
-    std::cout << "\n";
-  else
-    (*onTerminate)();
 }
 
 

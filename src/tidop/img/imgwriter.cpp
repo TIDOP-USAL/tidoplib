@@ -30,6 +30,7 @@
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
+#include "tidop/core/path.h"
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -38,19 +39,6 @@ TL_SUPPRESS_WARNINGS
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
-
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#include <boost/algorithm/string.hpp>
 
 
 namespace tl
@@ -125,7 +113,7 @@ public:
   {
     this->close();
 
-    std::string extension = fs::path(mFileName).extension().string();
+    std::string extension = Path(mFileName).extension();
     std::string driver_name = gdalDriverFromExtension(extension);
    
     if (driver_name.empty()) throw std::runtime_error("Image open fail. Driver not found");
@@ -142,11 +130,11 @@ public:
       mDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
 
       bTempFile = true;
-      fs::path path = fs::temp_directory_path();
-      fs::path file_path(mFileName);
+      Path path = Path::tempDirectory();
+      Path file_path(mFileName);
 
-      mTempName = path.string();
-      mTempName.append("\\").append(file_path.stem().string());
+      mTempName = path.toString();
+      mTempName.append("\\").append(file_path.baseName());
       mTempName.append(".tif");
     } /*else {
       /// Creo que no hace falta
@@ -167,7 +155,7 @@ public:
 
       if (bTempFile) {
 
-        std::string ext = fs::path(mFileName).extension().string();
+        std::string ext = Path(mFileName).extension();
         GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
         char **gdalOpt = nullptr;
         if (mImageOptions) {
@@ -568,7 +556,7 @@ public:
 
 std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const std::string &fileName)
 {
-  std::string extension = fs::path(fileName).extension().string();
+  std::string extension = Path(fileName).extension();
   std::unique_ptr<ImageWriter> image_writer;
 #ifdef HAVE_GDAL
   if (gdalValidExtensions(extension)) {

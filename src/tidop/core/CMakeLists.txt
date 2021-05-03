@@ -41,6 +41,10 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             utils.h
             process.cpp
             process.h
+            progress.cpp
+            progress.h
+            event.cpp
+            event.h
             licence.cpp
             licence.h
             gdalreg.cpp
@@ -49,8 +53,14 @@ add_library(${PROJECT_NAME} ${LIB_TYPE}
             chrono.h
             concurrency.cpp
             concurrency.h
+            path.cpp
+            path.h
 )
   
+target_link_libraries(${PROJECT_NAME} PRIVATE
+                      ${Boost_FILESYSTEM_LIBRARY} 
+                      ${Boost_SYSTEM_LIBRARY})
+
 
 set_property(TARGET ${PROJECT_NAME}
              PROPERTY FOLDER "modules")
@@ -66,10 +76,6 @@ if(BUILD_SHARED_LIBS)
 	
     set_target_properties(${PROJECT_NAME} PROPERTIES
                           DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-
-    target_link_libraries(${PROJECT_NAME} 
-                          ${Boost_FILESYSTEM_LIBRARY} 
-                          ${Boost_SYSTEM_LIBRARY})
     
     if (HAVE_GDAL)
          target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})

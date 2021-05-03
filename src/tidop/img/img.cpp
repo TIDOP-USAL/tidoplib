@@ -25,6 +25,7 @@
 #include "img.h"
 
 #include <tidop/core/flags.h>
+#include <tidop/core/utils.h>
 
 #ifdef HAVE_EDSDK
 #include "EDSDK.h"
@@ -37,18 +38,18 @@
 #include "opencv2/core/core.hpp"
 #endif // HAVE_OPENCV
 
-#if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
-#include <filesystem>
-namespace fs = std::filesystem;
-#elif defined HAVE_BOOST
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
-#include <boost/algorithm/string.hpp>
+//#if (__cplusplus >= 201703L)
+////C++17
+////http://en.cppreference.com/w/cpp/filesystem
+//#include <filesystem>
+//namespace fs = std::filesystem;
+//#elif defined HAVE_BOOST
+////Boost
+////http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
+//#include <boost/filesystem.hpp>
+//namespace fs = boost::filesystem;
+//#endif
+//#include <boost/algorithm/string.hpp>
 
 
 namespace tl
@@ -113,7 +114,7 @@ bool gdalValidExtensions(const std::string &extension)
   };
 
   for (auto &gdal_extension : extensions) {
-    if (boost::iequals(extension, gdal_extension)) {
+    if (compareInsensitiveCase(extension, gdal_extension)) {
       return true;
     }
   }
@@ -213,33 +214,33 @@ EnumFlags<DataType> gdalValidDataTypes(const std::string &format)
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension)
 {
   std::string format;
-  if      (boost::iequals(extension, ".bmp")) format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
-  else if (boost::iequals(extension, ".png")) format = "PNG";          // Portable Network Graphics (.png)
-  else if (boost::iequals(extension, ".jpg") ||
-           boost::iequals(extension, ".jpeg") ||
-           boost::iequals(extension, ".jpe") ||
-           boost::iequals(extension, ".jif") || 
-           boost::iequals(extension, ".jfif") || 
-           boost::iequals(extension, ".jfi")) format = "JPEG";         // JPEG JFIF (.jpg)
-  else if (boost::iequals(extension, ".tif") ||
-           boost::iequals(extension, ".tiff")) format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
-  else if (boost::iequals(extension, ".gif")) format = "GIF";          // Graphics Interchange Format (.gif)
-  else if (boost::iequals(extension, ".gtx")) format = "GTX";          // NOAA .gtx vertical datum shift
-  else if (boost::iequals(extension, ".grd") ||
-           boost::iequals(extension, ".asc" ))  format = "AAIGrid";      // Arc/Info ASCII Grid
-  else if (boost::iequals(extension, ".gsb" ))  format = "NTv2";         // NTv2 Datum Grid Shift
-  else if (boost::iequals(extension, ".ecw" ))  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
-  else if (boost::iequals(extension, ".jp2" ))  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
-  else if (boost::iequals(extension, ".lan" ))  format = "LAN";          // Erdas 7.x .LAN and .GIS
-  else if (boost::iequals(extension, ".hdr" ))  format = "ENVI";         // ENVI .hdr Labelled Raster
-  else if (boost::iequals(extension, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
-  else if (boost::iequals(extension, ".blx" ) ||
-           boost::iequals(extension, ".xlb" ))  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
-  else if (boost::iequals(extension, ".map" ))  format = "MAP";          // OziExplorer .MAP
-  else if (boost::iequals(extension, ".e00" ))  format = "E00GRID";      // Arc/Info Export E00 GRID
-  else if (boost::iequals(extension, ".hdr" ))  format = "MFF";          // Vexcel MFF
-  else if (boost::iequals(extension, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
-  else if (boost::iequals(extension, ".wms" ))  format = "WMS";          // WMS
+  if      (compareInsensitiveCase(extension, ".bmp")) format = "BMP";          // Microsoft Windows Device Independent Bitmap (.bmp)
+  else if (compareInsensitiveCase(extension, ".png")) format = "PNG";          // Portable Network Graphics (.png)
+  else if (compareInsensitiveCase(extension, ".jpg") ||
+           compareInsensitiveCase(extension, ".jpeg") ||
+           compareInsensitiveCase(extension, ".jpe") ||
+           compareInsensitiveCase(extension, ".jif") || 
+           compareInsensitiveCase(extension, ".jfif") || 
+           compareInsensitiveCase(extension, ".jfi")) format = "JPEG";         // JPEG JFIF (.jpg)
+  else if (compareInsensitiveCase(extension, ".tif") ||
+           compareInsensitiveCase(extension, ".tiff")) format = "GTiff";        // TIFF / BigTIFF / GeoTIFF (.tif)
+  else if (compareInsensitiveCase(extension, ".gif")) format = "GIF";          // Graphics Interchange Format (.gif)
+  else if (compareInsensitiveCase(extension, ".gtx")) format = "GTX";          // NOAA .gtx vertical datum shift
+  else if (compareInsensitiveCase(extension, ".grd") ||
+           compareInsensitiveCase(extension, ".asc" ))  format = "AAIGrid";      // Arc/Info ASCII Grid
+  else if (compareInsensitiveCase(extension, ".gsb" ))  format = "NTv2";         // NTv2 Datum Grid Shift
+  else if (compareInsensitiveCase(extension, ".ecw" ))  format = "ECW";          // ERDAS Compressed Wavelets (.ecw)
+  else if (compareInsensitiveCase(extension, ".jp2" ))  format = "JP2OpenJPEG";  // JPEG2000 (.jp2, .j2k)
+  else if (compareInsensitiveCase(extension, ".lan" ))  format = "LAN";          // Erdas 7.x .LAN and .GIS
+  else if (compareInsensitiveCase(extension, ".hdr" ))  format = "ENVI";         // ENVI .hdr Labelled Raster
+  else if (compareInsensitiveCase(extension, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
+  else if (compareInsensitiveCase(extension, ".blx" ) ||
+           compareInsensitiveCase(extension, ".xlb" ))  format = "BLX";          // Magellan BLX Topo (.blx, .xlb)
+  else if (compareInsensitiveCase(extension, ".map" ))  format = "MAP";          // OziExplorer .MAP
+  else if (compareInsensitiveCase(extension, ".e00" ))  format = "E00GRID";      // Arc/Info Export E00 GRID
+  else if (compareInsensitiveCase(extension, ".hdr" ))  format = "MFF";          // Vexcel MFF
+  else if (compareInsensitiveCase(extension, ".img" ))  format = "HFA";          // Erdas Imagine (.img)
+  else if (compareInsensitiveCase(extension, ".wms" ))  format = "WMS";          // WMS
   else                                          format = "";
   return format;
 }

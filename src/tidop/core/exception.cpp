@@ -23,8 +23,7 @@
  **************************************************************************/
 
 #include "tidop/core/exception.h"
-
-#include <boost/filesystem.hpp>
+#include "tidop/core/path.h"
 
 #include <locale>
 #include <codecvt>
@@ -37,7 +36,7 @@
 //https://github.com/GPMueller/mwe-cpp-exception
 //https://www.boost.org/doc/libs/1_65_1/doc/html/stacktrace/getting_started.html#stacktrace.getting_started.how_to_print_current_call_stack
 
-namespace fs = boost::filesystem;
+
 
 namespace tl
 {
@@ -59,7 +58,7 @@ Exception::Exception(std::string error,
     mLine(line), 
     mFunction(std::move(function))
 {
-  mFile = fs::path(file).filename().string();
+  mFile = Path(file).fileName();
   messagef();
 }
 

@@ -31,8 +31,6 @@ namespace tl
 
 
 LucidProperties::LucidProperties()
-  : mLucidKernel(1),
-    mBlurKernel(2)
 {}
 
 int LucidProperties::lucidKernel() const
@@ -76,8 +74,7 @@ LucidDescriptor::LucidDescriptor()
 }
 
 LucidDescriptor::LucidDescriptor(int lucidKernel, int blurKernel)
-  : LucidProperties(),
-    DescriptorExtractor()
+  : LucidProperties()
 {
   LucidProperties::setLucidKernel(lucidKernel);
   LucidProperties::setBlurKernel(blurKernel);

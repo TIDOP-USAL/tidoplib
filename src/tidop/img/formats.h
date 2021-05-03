@@ -65,24 +65,19 @@ public:
     gif
   };
 
-  typedef std::map<std::string, std::string>::iterator option_iterator;
-  typedef std::map<std::string, std::string>::const_iterator option_const_iterator;
+  using option_iterator = std::map<std::string, std::string>::iterator;
+  using option_const_iterator = std::map<std::string, std::string>::const_iterator;
 
 public:
 
-  ImageOptions(Format format);
-  virtual ~ImageOptions();
+  ImageOptions();
+  //virtual ~ImageOptions();
 
   virtual Format format() const = 0;
     
   virtual std::map<std::string, std::string> options() const = 0;
   virtual std::map<std::string, std::string> activeOptions() const = 0;
   virtual void reset() = 0;
-
-//protected:
-//
-//  Format mFormat;
-//  std::vector<DataType> mDataTypes;
 
 };
 
@@ -94,7 +89,7 @@ class TL_EXPORT ImageOptionsBase
 public:
 
   ImageOptionsBase(Format format);
-  ~ImageOptionsBase() override;
+  virtual ~ImageOptionsBase();
 
   Format format() const override;
   std::map<std::string, std::string> options() const override;
@@ -201,8 +196,6 @@ public:
   TiffOptions();
   ~TiffOptions() override;
 
-  //std::map<std::string, std::string> options() const override;
-  //std::map<std::string, std::string> activeOptions() const override;
   void reset() override;
 
   bool isEnableTFW() const;
@@ -295,8 +288,6 @@ public:
   PngOptions();
   ~PngOptions() override;
  
-  //std::map<std::string, std::string> options() const override;
-  //std::map<std::string, std::string> activeOptions() const override;
   void reset() override;
 
   bool isEnableWorldFile() const;
@@ -366,8 +357,6 @@ public:
   JpegOptions();
   ~JpegOptions() override;
   
-  //std::map<std::string, std::string> options() const override;
-  //std::map<std::string, std::string> activeOptions() const override;
   void reset() override;
 
   bool isEnableWorldFile() const;
@@ -444,9 +433,6 @@ public:
   BmpOptions();
   ~BmpOptions() override;
   
-  //std::map<std::string, std::string> options() const override;
-  //std::map<std::string, std::string> activeOptions() const override;
-
   void reset() override;
 
   bool isEnableWorldFile() const;
@@ -457,7 +443,7 @@ private:
   void init();
   std::map<std::string, std::string> options(bool all) const override;
 
-protected:
+private:
 
   std::pair<bool, bool> bWorldFile;
 
@@ -476,9 +462,6 @@ public:
   GifOptions();
   ~GifOptions() override;
   
-  //std::map<std::string, std::string> options() const override;
-  //std::map<std::string, std::string> activeOptions() const override;
-
   void reset() override;
 
   bool isEnableWorldFile() const;
@@ -491,7 +474,7 @@ private:
   void init();
   std::map<std::string, std::string> options(bool all) const override;
 
-protected:
+private:
 
   std::pair<bool, bool> mWorldFile;
   std::pair<bool, bool> mInterlacing;

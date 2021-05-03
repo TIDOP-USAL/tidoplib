@@ -292,7 +292,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     //if (big == 0.0) throw("Singular matrix in LUdcmp");
     TL_ASSERT(big != 0.0, "Singular matrix")
 
-    vv[i] = static_cast<T>(1) / big;
+    vv[i] = consts::one<T> / big;
   }
 
   size_t imax = 0;
@@ -380,17 +380,17 @@ template<
 > 
 Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse()
 {
-  Matrix<T, _rows, _cols> matrix(mRows, mRows);
+  Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::identity(mRows, mRows);
 
-  for (size_t r = 0; r < mRows; r++) {
-    for (size_t c = 0; c < mRows; c++) {
-      if (r == c) {
-        matrix.at(r, c) = static_cast<T>(1);
-      } else {
-        matrix.at(r, c) = static_cast<T>(0);
-      }
-    }
-  }
+//  for (size_t r = 0; r < mRows; r++) {
+//    for (size_t c = 0; c < mRows; c++) {
+//      if (r == c) {
+//        matrix.at(r, c) = consts::one<T>;
+//      } else {
+//        matrix.at(r, c) = consts::zero<T>;
+//      }
+//    }
+//  }
 
   Matrix<T, _rows, _cols> inv = this->solve(matrix);
   return inv;

@@ -78,12 +78,12 @@ public:
 
 private:
 
-  int mMaxFeatures;
-  double mQualityLevel;
-  double mMinDistance;
-  int mBlockSize;
-  bool mHarrisDetector;
-  double mK;
+  int mMaxFeatures{1000};
+  double mQualityLevel{0.01};
+  double mMinDistance{1};
+  int mBlockSize{3};
+  bool mHarrisDetector{false};
+  double mK{0.04};
 
 };
 
@@ -132,7 +132,7 @@ public:
 
   void reset() override;
 
-protected:
+private:
 
   cv::Ptr<cv::GFTTDetector> mGFTT;
 

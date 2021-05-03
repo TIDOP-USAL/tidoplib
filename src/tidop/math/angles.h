@@ -372,7 +372,7 @@ void Radians<T>::normalize()
   if (value <= -consts::pi<T> || value > consts::pi<T>) {
     value = fmod(value + consts::pi<T>, consts::two_pi<T>);
 
-    if (value <= 0)
+    if (value <= consts::zero<T>)
       value += consts::pi<T>;
     else 
       value -= consts::pi<T>;
@@ -386,10 +386,10 @@ void Radians<T>::normalizePositive()
 {
   T value = this->value();
 
-  if (value < 0 || value >= consts::two_pi<T>) {
+  if (value < consts::zero<T> || value >= consts::two_pi<T>) {
     value = fmod(value, consts::two_pi<T>);
 
-    if (value < 0)
+    if (value < consts::zero<T>)
       value += consts::two_pi<T>;
 
     this->setValue(value);
@@ -479,7 +479,7 @@ inline void Gradians<T>::normalize()
 
     value = fmod(value + consts::half_circle_grad, consts::full_circle_grad);
 
-    if (value <= static_cast<T>(0))
+    if (value <= consts::zero<T>)
       value += static_cast<T>(consts::half_circle_grad);
     else 
       value -= static_cast<T>(consts::half_circle_grad);
@@ -493,12 +493,12 @@ void Gradians<T>::normalizePositive()
 {
   T value = this->value();
 
-  if (value < static_cast<T>(0) ||
+  if (value < consts::zero<T> ||
       value >= static_cast<T>(consts::full_circle_grad)) {
 
     value = fmod(value, static_cast<T>(consts::full_circle_grad));
 
-    if (value < static_cast<T>(0))
+    if (value < consts::zero<T>)
       value += static_cast<T>(consts::full_circle_grad);
 
     this->setValue(value);
@@ -620,7 +620,7 @@ void Degrees<T>::normalize()
     value = fmod(value + static_cast<T>(consts::half_circle_deg),
                  static_cast<T>(consts::full_circle_deg));
 
-    if (value <= static_cast<T>(0))
+    if (value <= consts::zero<T>)
       value += static_cast<T>(consts::half_circle_deg);
     else 
       value -= static_cast<T>(consts::half_circle_deg);
@@ -634,12 +634,12 @@ void Degrees<T>::normalizePositive()
 {
   T value = this->value();
 
-  if (value < static_cast<T>(0) ||
+  if (value < consts::zero<T> ||
       value >= static_cast<T>(consts::full_circle_deg)) {
 
     value = fmod(value, static_cast<T>(consts::full_circle_deg));
 
-    if (value < static_cast<T>(0))
+    if (value < consts::zero<T>)
       value += static_cast<T>(consts::full_circle_deg);
 
     this->setValue(value);

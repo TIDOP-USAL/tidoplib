@@ -82,7 +82,7 @@ public:
 
 public:
 
-  Feature() {}
+  Feature() = default;
   virtual ~Feature() = default;
 
   /*!
@@ -116,7 +116,7 @@ public:
     return mFeatType.flags(); 
   }
 
-protected:
+private:
 
   tl::EnumFlags<Type> mFeatType;
 
@@ -135,7 +135,7 @@ class TL_EXPORT KeypointDetector
 
 public:
 
-  KeypointDetector() {}
+  KeypointDetector() = default;
   virtual ~KeypointDetector() = default;
 
   /*!
@@ -163,7 +163,7 @@ class TL_EXPORT DescriptorExtractor
 
 public:
 
-  DescriptorExtractor() {}
+  DescriptorExtractor() = default;
   virtual ~DescriptorExtractor() = default;
 
   /*!
@@ -199,7 +199,7 @@ class TL_EXPORT Agast
 public:
 
   Agast() : FeatureBase(Feature::Type::agast) {}
-  virtual ~Agast() = default;
+  ~Agast() override = default;
 
   /*!
    * \brief threshold
@@ -267,7 +267,7 @@ class TL_EXPORT Akaze
 public:
 
   Akaze() : FeatureBase(Feature::Type::akaze) {}
-  virtual ~Akaze() = default;
+  ~Akaze() override = default;
 
   /*!
    * \brief Type of the extracted descriptor
@@ -433,7 +433,7 @@ class TL_EXPORT Brief
 public:
 
   Brief() : FeatureBase(Feature::Type::brief) {}
-  virtual ~Brief() = default;
+  ~Brief() override = default;
 
   /*!
    * \brief Legth of the descriptor in bytes
@@ -481,7 +481,7 @@ class TL_EXPORT Brisk
 public:
 
   Brisk() : FeatureBase(Feature::Type::brisk) {}
-  virtual ~Brisk() = default;
+  ~Brisk() override = default;
 
   /*!
    * \brief AGAST detection threshold score (Default=30)
@@ -539,7 +539,7 @@ class TL_EXPORT Daisy
 public:
 
   Daisy() : FeatureBase(Feature::Type::daisy) {}
-  virtual ~Daisy() = default;
+  ~Daisy() override = default;
 
   /*!
    * \brief Radius of the descriptor at the initial scale (Default=15.)
@@ -656,7 +656,7 @@ class TL_EXPORT Fast
 public:
 
   Fast() : FeatureBase(Feature::Type::fast) {}
-  virtual ~Fast() = default;
+  ~Fast() override = default;
 
   /*!
    * \brief threshold (Default=10)
@@ -721,7 +721,7 @@ class TL_EXPORT Freak
 public:
 
   Freak() : FeatureBase(Feature::Type::freak) {}
-  virtual ~Freak() = default;
+  ~Freak() override = default;
 
   /*!
    * \brief Orientation normalization (Default=true)
@@ -784,7 +784,7 @@ class TL_EXPORT Gftt
 public:
 
   Gftt() : FeatureBase(Feature::Type::gftt) {}
-  virtual ~Gftt() = default;
+  ~Gftt() override = default;
 
   virtual int maxFeatures() const = 0;
   virtual double qualityLevel() const = 0;
@@ -817,7 +817,7 @@ class TL_EXPORT Hog
 public:
 
   Hog() : FeatureBase(Feature::Type::hog) {}
-  virtual ~Hog() = default;
+  ~Hog() override = default;
 
   virtual Size<int> winSize() const = 0;
   virtual Size<int> blockSize() const = 0;
@@ -872,7 +872,7 @@ class TL_EXPORT Kaze
 public:
 
   Kaze() : FeatureBase(Feature::Type::kaze) {}
-  virtual ~Kaze() = default;
+  ~Kaze() override = default;
 
   /*!
    * \brief Extended descriptor
@@ -959,7 +959,7 @@ class TL_EXPORT Latch
 public:
 
   Latch() : FeatureBase(Feature::Type::latch) {}
-  virtual ~Latch() = default;
+  ~Latch() override = default;
 
   virtual std::string bytes() const = 0;
   virtual bool rotationInvariance() const = 0;
@@ -986,7 +986,7 @@ class TL_EXPORT Lucid
 public:
 
   Lucid() : FeatureBase(Feature::Type::lucid) {}
-  virtual ~Lucid() = default;
+  ~Lucid() override = default;
 
   /*!
    * \brief kernel for descriptor construction
@@ -1027,7 +1027,7 @@ class TL_EXPORT Lss
 public:
 
   Lss() : FeatureBase(Feature::Type::lss) {}
-  virtual ~Lss() = default;
+  ~Lss() override = default;
 
 };
 
@@ -1041,7 +1041,7 @@ class TL_EXPORT Msd
 public:
 
   Msd() : FeatureBase(Feature::Type::msd) {}
-  virtual ~Msd() = default;
+  ~Msd() override = default;
 
   virtual double thresholdSaliency() const = 0;
   virtual int patchRadius() const = 0;
@@ -1080,7 +1080,7 @@ class TL_EXPORT Mser
 public:
 
   Mser() : FeatureBase(Feature::Type::mser) {}
-  virtual ~Mser() = default;
+  ~Mser() override = default;
 
   virtual int delta() const = 0;
   virtual int minArea() const = 0;
@@ -1118,7 +1118,7 @@ class TL_EXPORT Orb
 public:
 
   Orb() : FeatureBase(Feature::Type::orb)  {}
-  virtual ~Orb() = default;
+  ~Orb() override = default;
 
   /*!
    * \brief The maximum number of features to retain
@@ -1249,7 +1249,7 @@ class TL_EXPORT Sift
 {
 public:
   Sift() : FeatureBase(Feature::Type::sift)  {}
-  virtual ~Sift() = default;
+  ~Sift() override = default;
 
   /*!
    * \brief The number of best features to retain
@@ -1332,7 +1332,7 @@ class TL_EXPORT Star
 public:
 
   Star() : FeatureBase(Feature::Type::star) {}
-  virtual ~Star() = default;
+  ~Star() override = default;
 
   virtual int maxSize() const  = 0;
   virtual int responseThreshold() const  = 0;
@@ -1358,7 +1358,7 @@ class TL_EXPORT Surf
 public:
 
   Surf() : FeatureBase(Feature::Type::surf) {}
-  virtual ~Surf() = default;
+  ~Surf() override = default;
 
   /*!
    * \brief Threshold for hessian keypoint detector used in SURF

@@ -24,7 +24,7 @@
  
 #include "designpatterns.h"
 
-namespace TL
+namespace tl
 {
 
 namespace experimental
@@ -58,4 +58,4 @@ namespace experimental
 
 } // End namespace experimental
 
-} // End namespace TL
+} // End namespace tl
