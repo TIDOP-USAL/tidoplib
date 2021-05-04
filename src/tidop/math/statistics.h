@@ -519,12 +519,12 @@ double skewness(It first, It last)
     skew += aux2 * aux;
   }
 
-  double variance =  (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
+  double variance =  (sum - ep*ep / n) / (n - 1);
 
   if (variance != 0.) {
-    double stdDev = sqrt(variance); // Desviación tipica
+    double stdDev = sqrt(variance);
     return skew / (n*variance*stdDev);
-  } else return 0.;// "No skew when variance = 0 (in moment)")
+  } else return 0.;
 }
 
 /*!
@@ -565,12 +565,12 @@ double kurtosis(It first, It last)
     _kurtosis += aux2;
   }
 
-  double variance = (sum - ep*ep / n) / (n - 1);  // Varianza Corrected two-pass formula
+  double variance = (sum - ep*ep / n) / (n - 1);
 
   if (variance != 0.) {
     _kurtosis /= (n*variance*variance);
     return _kurtosis - 3.;
-  } else return 0.;// "No kurtosis when variance = 0 (in moment)")
+  } else return 0.;
 }
 
 

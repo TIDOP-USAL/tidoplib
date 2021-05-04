@@ -34,6 +34,7 @@
 #endif
 
 #include "tidop/math/math.h"
+#include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 
@@ -888,6 +889,9 @@ public:
    */
   Matrix cofactorMatrix() const;
 
+  Vector<T, _rows> col(size_t col) const;
+  Vector<T, _cols> row(size_t row) const;
+
   /*!
    * \brief Determinante de la matriz
    * \return Determinante
@@ -1478,6 +1482,26 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
     }
   }
   return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline Vector<T, _rows> Matrix<T, _rows, _cols>::col(size_t col) const
+{
+  Vector<T, _rows> vector;
+  for (size_t r = 0; r < rows; r++) {
+    vector.at(c) = matrix.at(r, col);
+  }
+  return vector;
+}
+
+template<typename T, size_t _rows, size_t _cols>
+inline Vector<T, _cols> Matrix<T, _rows, _cols>::row(size_t row) const
+{
+  Vector<T, _cols> vector;
+  for (size_t c = 0; c < cols; c++) {
+    vector.at(c) = matrix.at(row, c);
+  }
+  return vector;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -2332,6 +2356,9 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
   return matrix;
 }
 
+
+
+
 template<typename T, size_t _rows, size_t _cols>
 std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matrix) 
 {
@@ -2357,6 +2384,41 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
   os << std::flush;
   return os;
 }
+
+
+
+
+template<typename T, size_t _rows, size_t _dim> inline  static
+Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
+                            const Vector<T, _dim> &vector)
+{
+  Vector<T, _dim> vect = Vector<T, _dim>::zero();
+  for (size_t r = 0; r < _rows; r++) {
+    for (size_t c = 0; c < _dim; c++) {
+        vect.at(r) += matrix.at(r, c) * vector.at(c);
+    }
+  }
+  return vect;
+}
+
+template<typename T> inline  static
+Vector<T> operator * (const Matrix<T> &matrix,
+                      const Vector<T> &vector)
+{
+  size_t rows = matrix.rows();
+  size_t dim1 = matrix.cols();
+  size_t dim2 = vector.size();
+  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
+
+  Vector<T> vect = Matrix<T>::zero(rows, dim1);
+  for (size_t r = 0; r < rows; r++) {
+    for (size_t c = 0; c < dim1; c++) {
+      vect.at(r) += matrix.at(r, c) * vector.at(c);
+    }
+  }
+  return vect;
+}
+
 
 /*! \} */ // end of Algebra
 

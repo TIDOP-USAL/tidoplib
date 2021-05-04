@@ -82,7 +82,7 @@ template<typename T> inline
 #endif // HAVE_OPENBLAS
 
 
-
+//https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
 
 /*!
  * \brief Factorización QR
@@ -116,9 +116,6 @@ public:
   QRDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
-  
-  void update(const Vector<T, _rows> &u, const Vector<T, _rows> &v);
-  void jacobiRotation(int i, T a, T b);
 
   Matrix<T, _rows, _cols> q() const;
   Matrix<T, _rows, _cols> r() const;
@@ -329,91 +326,6 @@ inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 }
 
 #endif // HAVE_OPENBLAS
-
-template<
-  template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void QRDecomposition<Matrix_t<T, _rows, _cols>>::update(const Vector<T, _rows> &u, 
-                                                        const Vector<T, _rows> &v)
-{
-  int i;
-  int k;
-  T aux;
-  Vector<T, _rows> w(u);
-
-  for (k = mRows - 1; k >= 0; k--)
-    if (w[k] != 0.0) break;
-
-  if (k < 0) k = 0;
-
-  // Transform R + u*v to upper Hessenberg
-  for (i = k - 1; i >= 0; i--) {
-    jacobiRotation(i, w[i], -w[i + 1]);
-    if (w[i] == 0.0) {
-      w[i] = abs(w[i + 1]);
-    } else if (abs(w[i]) > abs(w[i + 1])) {
-      aux = w[i + 1] / w[i];
-      w[i] = abs(w[i]) * sqrt(1.0 + aux*aux);
-    } else {
-      aux = w[i] / w[i + 1];
-      w[i] = abs(w[i + 1]) * sqrt(1.0 + aux*aux);
-    }
-  }
-
-  for (i = 0; i < mRows; i++) 
-    this->R.at(0, i) += w[0] * v[i];
-
-  // transform upper Hessenberg matrix to upper triangular
-  for (i = 0; i < k; i++)
-    jacobiRotation(i, this->R.at(i, i), -this->R.at(i + 1, i));
-
-  for (i = 0; i < mRows; i++) {
-    if (this->R.at(i, i) == 0.0)
-      sing = true;
-  }
-}
-  
-template<
-  template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
->
-void QRDecomposition<Matrix_t<T, _rows, _cols>>::jacobiRotation(int i, T a, T b)
-{
-  int j;
-  T c;
-  T fact;
-  T s;
-  T w;
-  T y;
-
-  if (a == consts::zero<T>) {
-    c = consts::zero<T>;
-    s = (b >= consts::zero<T> ? consts::one<T> : -consts::one<T>);
-  } else if (abs(a) > abs(b)) {
-    fact = b / a;
-    c = std::copysign(consts::one<T> / sqrt(consts::one<T> + (fact * fact)), a);
-    s = fact * c;
-  } else {
-    fact = a / b;
-    s = std::copysign(consts::one<T> / sqrt(consts::one<T> + (fact * fact)), b);
-    c = fact * s;
-  }
-
-  for (j = i; j < mRows; j++) {
-    y = this->R.at(i, j);
-    w = this->R.at(i + 1, j);
-    this->R.at(i, j) = c * y - s * w;
-    this->R.at(i + 1, j) = s * y + c * w;
-  }
-
-  for (j = 0; j < mRows; j++) {
-    y = this->Q_t.at(i, j);
-    w = this->Q_t.at(i + 1, j);
-    this->Q_t.at(i, j) = c * y - s * w;
-    this->Q_t.at(i + 1, j) = s * y + c * w;
-  }
-}
 
 
 

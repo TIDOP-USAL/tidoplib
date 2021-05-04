@@ -35,9 +35,11 @@ struct QrTest
 {
 
   QrTest()
+    : qr(nullptr)
   {}
   ~QrTest()
   {
+    delete qr;
   }
 
   void setup()
@@ -57,6 +59,8 @@ struct QrTest
     B.at(0) = 1;
     B.at(1) = 3;
     B.at(2) = 2;
+
+    qr = new QRDecomposition<Matrix<double>>(A);
   }
 
   void teardown()
@@ -66,26 +70,45 @@ struct QrTest
 
   Matrix<double> A;
   Vector<double> B;
-
+  QRDecomposition<Matrix<double>> *qr;
 };
 
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, QrTest)
 {
- QRDecomposition<Matrix<double>> qr(A);
- Matrix<double> q = qr.q();
- Matrix<double> r = qr.r();
+  
+  Matrix<double> q = qr->q();
+  Matrix<double> r = qr->r();
+  
+  BOOST_CHECK_CLOSE(-0.85714285714285721, q.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(0.39428571428571429, q.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.33142857142857141, q.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(-0.42857142857142855, q.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.902857142857142915, q.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(-0.034285714285714280, q.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(0.28571428571428570, q.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(-0.17142857142857137, q.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(0.94285714285714295, q.at(2, 2), 0.1);
 
- BOOST_CHECK_CLOSE(-14, r.at(0, 0), 0.1);
- BOOST_CHECK_CLOSE(-21, r.at(0, 1), 0.1);
- BOOST_CHECK_CLOSE(14, r.at(0, 2), 0.1);
- BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.1);
- BOOST_CHECK_CLOSE(-175, r.at(1, 1), 0.1);
- BOOST_CHECK_CLOSE(70, r.at(1, 2), 0.1);
- BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.1);
- BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.1);
- BOOST_CHECK_CLOSE(-35, r.at(2, 2), 0.1);
 
+  BOOST_CHECK_CLOSE(-14, r.at(0, 0), 0.1);
+  BOOST_CHECK_CLOSE(-21, r.at(0, 1), 0.1);
+  BOOST_CHECK_CLOSE(14, r.at(0, 2), 0.1);
+  BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.1);
+  BOOST_CHECK_CLOSE(-175, r.at(1, 1), 0.1);
+  BOOST_CHECK_CLOSE(70, r.at(1, 2), 0.1);
+  BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.1);
+  BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.1);
+  BOOST_CHECK_CLOSE(-35, r.at(2, 2), 0.1);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(solve, QrTest)
+{
+  auto C = qr->solve(B);
+  BOOST_CHECK_CLOSE(0.065306122448979584, C.at(0), 0.1);
+  BOOST_CHECK_CLOSE(-0.0089795918367346957, C.at(1), 0.1);
+  BOOST_CHECK_CLOSE(-0.060408163265306125, C.at(2), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
