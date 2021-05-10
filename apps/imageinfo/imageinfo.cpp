@@ -30,7 +30,6 @@
 #include <tidop/core/chrono.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/img/metadata.h>
-#include <tidop/imgprocess/filters.h>
 
 using namespace tl;
 
@@ -119,9 +118,6 @@ int main(int argc, char** argv)
       //    temperatures.at<float>(r, c) = 0.04f * temp - 273.15f;
       //  }
       //});
-
-
-
 
       //tl::ImagingProcesses imagingProcesses;
       //imagingProcesses.push_back(std::make_shared<GaussianBlur>(cv::Size(3,3), 0));

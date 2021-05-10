@@ -24,7 +24,7 @@
 
 #include "concurrency.h"
 
-#if defined HAVE_OMP
+#if defined HAVE_OPENMP
 #include <omp.h>  // OpenMP
 #endif
 
@@ -37,7 +37,7 @@
 
 
 
-///TODO: A?adir m?todo para ejecutar c?digo de forma asincrona
+///TODO: Añadir método para ejecutar código de forma asincrona
 // std::async
 // Concurrency::task<T> (PPL)
 
@@ -46,7 +46,7 @@ namespace tl
 
 uint32_t optimalNumberOfThreads()
 {
-#ifdef HAVE_OMP
+#ifdef HAVE_OPENMP
   //TODO: Sin probar
   return omp_get_max_threads();
 #elif defined TL_MSVS_CONCURRENCY
@@ -62,11 +62,9 @@ void parallel_for(size_t ini,
                   size_t end, 
                   const std::function<void(size_t)> &f)
 {
-  //uint64_t time_ini = getTickCount();
-#ifdef HAVE_OMP
-  //TODO: Sin probar
+#ifdef HAVE_OPENMP
   #pragma omp parallel for
-  for (size_t i = ini; i < end; i++) {
+  for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
     f(i);
   }
 #elif defined TL_MSVS_CONCURRENCY
@@ -96,8 +94,7 @@ void parallel_for(size_t ini,
 
   for (auto &_thread : threads) _thread.join();
 #endif
-  //double time = (getTickCount() - time_ini) / 1000.;
-  //printf("Time %f", time);
+
 }
 
 
@@ -107,7 +104,7 @@ void parallel_for(size_t ini,
 
 uint32_t getOptimalNumberOfThreads()
 {
-#ifdef HAVE_OMP
+#ifdef HAVE_OPENMP
   //TODO: Sin probar
   return omp_get_max_threads();
 #elif defined TL_MSVS_CONCURRENCY
