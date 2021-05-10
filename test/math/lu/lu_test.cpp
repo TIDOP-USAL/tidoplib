@@ -22,26 +22,26 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop qr test
+#define BOOST_TEST_MODULE Tidop lu test
 #include <boost/test/unit_test.hpp>
-#include <tidop/math/algebra/qr.h>
+#include <tidop/math/algebra/lu.h>
 
 using namespace tl::math;
 
 
-BOOST_AUTO_TEST_SUITE(QrTestSuite)
+BOOST_AUTO_TEST_SUITE(LuTestSuite)
 
-struct QrTest
+struct LuTest
 {
 
-  QrTest()
-    : qr(nullptr),
-      qr2(nullptr)
+  LuTest()
+    : lu(nullptr),
+      lu2(nullptr)
   {}
-  ~QrTest()
+  ~LuTest()
   {
-    delete qr;
-    delete qr2;
+    delete lu;
+    delete lu2;
   }
 
   void setup()
@@ -62,7 +62,7 @@ struct QrTest
     B.at(1) = 3;
     B.at(2) = 2;
 
-    qr = new QRDecomposition<Matrix<double>>(A);
+    lu = new LuDecomposition<Matrix<double>>(A);
 
     A2 = Matrix<double>(3,3);
     A2.at(0,0) = 1.;
@@ -80,7 +80,7 @@ struct QrTest
     B2.at(1) = 3;
     B2.at(2) = 4;
 
-    qr2 = new QRDecomposition<Matrix<double>>(A2);
+    lu2 = new LuDecomposition<Matrix<double>>(A2);
   }
 
   void teardown()
@@ -90,53 +90,60 @@ struct QrTest
 
   Matrix<double> A;
   Vector<double> B;
-  QRDecomposition<Matrix<double>> *qr;
+  LuDecomposition<Matrix<double>> *lu;
   Matrix<double> A2;
   Vector<double> B2;
-  QRDecomposition<Matrix<double>> *qr2;
+  LuDecomposition<Matrix<double>> *lu2;
 };
 
 
-BOOST_FIXTURE_TEST_CASE(default_constructor, QrTest)
+BOOST_FIXTURE_TEST_CASE(default_constructor, LuTest)
 {
   
-  Matrix<double> q = qr->q();
-  Matrix<double> r = qr->r();
+  Matrix<double> _lu = lu->lu();
   
-  BOOST_CHECK_CLOSE(-0.85714285714285721, q.at(0, 0), 0.1);
-  BOOST_CHECK_CLOSE(0.39428571428571429, q.at(0, 1), 0.1);
-  BOOST_CHECK_CLOSE(0.33142857142857141, q.at(0, 2), 0.1);
-  BOOST_CHECK_CLOSE(-0.42857142857142855, q.at(1, 0), 0.1);
-  BOOST_CHECK_CLOSE(-0.902857142857142915, q.at(1, 1), 0.1);
-  BOOST_CHECK_CLOSE(-0.034285714285714280, q.at(1, 2), 0.1);
-  BOOST_CHECK_CLOSE(0.28571428571428570, q.at(2, 0), 0.1);
-  BOOST_CHECK_CLOSE(-0.17142857142857137, q.at(2, 1), 0.1);
-  BOOST_CHECK_CLOSE(0.94285714285714295, q.at(2, 2), 0.1);
-
-
-  BOOST_CHECK_CLOSE(-14, r.at(0, 0), 0.1);
-  BOOST_CHECK_CLOSE(-21, r.at(0, 1), 0.1);
-  BOOST_CHECK_CLOSE(14, r.at(0, 2), 0.1);
-  BOOST_CHECK_CLOSE(0, r.at(1, 0), 0.1);
-  BOOST_CHECK_CLOSE(-175, r.at(1, 1), 0.1);
-  BOOST_CHECK_CLOSE(70, r.at(1, 2), 0.1);
-  BOOST_CHECK_CLOSE(0, r.at(2, 0), 0.1);
-  BOOST_CHECK_CLOSE(0, r.at(2, 1), 0.1);
-  BOOST_CHECK_CLOSE(-35, r.at(2, 2), 0.1);
+  //BOOST_CHECK_CLOSE(-0.85714285714285721, _lu.at(0, 0), 0.1);
+  //BOOST_CHECK_CLOSE(0.39428571428571429, _lu.at(0, 1), 0.1);
+  //BOOST_CHECK_CLOSE(0.33142857142857141, _lu.at(0, 2), 0.1);
+  //BOOST_CHECK_CLOSE(-0.42857142857142855, _lu.at(1, 0), 0.1);
+  //BOOST_CHECK_CLOSE(-0.902857142857142915, _lu.at(1, 1), 0.1);
+  //BOOST_CHECK_CLOSE(-0.034285714285714280, _lu.at(1, 2), 0.1);
+  //BOOST_CHECK_CLOSE(0.28571428571428570, _lu.at(2, 0), 0.1);
+  //BOOST_CHECK_CLOSE(-0.17142857142857137, _lu.at(2, 1), 0.1);
+  //BOOST_CHECK_CLOSE(0.94285714285714295, _lu.at(2, 2), 0.1);
 
 }
 
-BOOST_FIXTURE_TEST_CASE(solve, QrTest)
+BOOST_FIXTURE_TEST_CASE(solve, LuTest)
 {
-  auto C = qr->solve(B);
+  auto C = lu->solve(B);
   BOOST_CHECK_CLOSE(0.065306122448979584, C.at(0), 0.1);
   BOOST_CHECK_CLOSE(-0.0089795918367346957, C.at(1), 0.1);
   BOOST_CHECK_CLOSE(-0.060408163265306125, C.at(2), 0.1);
 
-  C = qr2->solve(B2);
+  C = lu2->solve(B2);
   BOOST_CHECK_CLOSE(-2., C.at(0), 0.1);
   BOOST_CHECK_CLOSE(1., C.at(1), 0.1);
   BOOST_CHECK_CLOSE(1., C.at(2), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(solve_matrix, LuTest)
+{
+  Matrix<double, 2, 2> a{ 2, -1,
+                         -1,  3};
+  Matrix<double> b(2, 2);
+  b.at(0, 0) = 1;
+  b.at(0, 1) = 2;
+  b.at(1, 0) = 3;
+  b.at(1, 1) = 1;
+
+  LuDecomposition<Matrix<double,2,2>> decomp(a);
+
+  auto C = decomp.solve(b);
+  BOOST_CHECK_CLOSE(1.2, C.at(0,0), 0.1);
+  BOOST_CHECK_CLOSE(1.4, C.at(0,1), 0.1);
+  BOOST_CHECK_CLOSE(1.4, C.at(1,0), 0.1);
+  BOOST_CHECK_CLOSE(0.8, C.at(1,1), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

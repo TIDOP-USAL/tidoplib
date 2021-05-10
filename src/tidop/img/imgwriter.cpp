@@ -178,9 +178,10 @@ public:
       GDALClose(mDataset);
       mDataset = nullptr;
 
-      for (size_t i = 0; i < sizeof(**tmp); i++)
-        std::remove(tmp[i]);
-
+      if (bTempFile) {
+        for (size_t i = 0; i < sizeof(**tmp); i++)
+          std::remove(tmp[i]);
+      }
     }
 
     bTempFile = false;
@@ -202,7 +203,9 @@ public:
               int bands, 
               DataType type) override
   {
-    if (mDriver == nullptr) throw std::runtime_error("Driver not found"); 
+    if (!isOpen()) open(); // Se abre el archivo si no esta abierto.
+    if (!isOpen()) throw std::runtime_error("Driver not found");
+
     if (!checkDataType()) throw std::runtime_error("Data Type not supported"); 
 
     if (mDataset) {

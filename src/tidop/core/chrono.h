@@ -83,14 +83,9 @@ public:
 public:
 
   Chrono();
-  Chrono(std::string message,
-         bool writeMessage = true);
+  Chrono(std::string message);
   Chrono(const Chrono &) = delete;
   Chrono(Chrono &&) = delete;
-  /*!
-   * \brief Destructora
-   * En la destructora se llama al método stop si este no ha sido llamado
-   */
   virtual ~Chrono();
 
   void operator=(const Chrono &) = delete;
