@@ -1488,8 +1488,13 @@ template<typename T, size_t _rows, size_t _cols>
 inline Vector<T, _rows> Matrix<T, _rows, _cols>::col(size_t col) const
 {
   Vector<T, _rows> vector;
-  for (size_t r = 0; r < rows; r++) {
-    vector.at(c) = matrix.at(r, col);
+
+  if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
+    vector.resize(this->rows());
+  }
+
+  for (size_t r = 0; r < this->rows(); r++) {
+    vector.at(r) = this->at(r, col);
   }
   return vector;
 }
@@ -1498,8 +1503,13 @@ template<typename T, size_t _rows, size_t _cols>
 inline Vector<T, _cols> Matrix<T, _rows, _cols>::row(size_t row) const
 {
   Vector<T, _cols> vector;
-  for (size_t c = 0; c < cols; c++) {
-    vector.at(c) = matrix.at(row, c);
+
+  if (_rows == DynamicMatrix && _cols == DynamicMatrix) {
+    vector.resize(this->cols());
+  }
+
+  for (size_t c = 0; c < this->cols(); c++) {
+    vector.at(c) = this->at(row, c);
   }
   return vector;
 }
@@ -2401,8 +2411,8 @@ Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
   return vect;
 }
 
-template<typename T> inline  static
-Vector<T> operator * (const Matrix<T> &matrix,
+template<typename T> inline  
+static Vector<T> operator * (const Matrix<T> &matrix,
                       const Vector<T> &vector)
 {
   size_t rows = matrix.rows();
@@ -2418,6 +2428,35 @@ Vector<T> operator * (const Matrix<T> &matrix,
   }
   return vect;
 }
+
+
+
+
+/* SubMatrix */
+
+//template<typename T>
+//class SubMatrix
+//  : public Matrix<T>
+//{
+//
+//public:
+//
+//  SubMatrix();
+//  ~SubMatrix();
+//
+//private:
+//
+//};
+//
+//template<typename T> inline
+//SubMatrix<T>::SubMatrix()
+//{
+//}
+//
+//template<typename T> inline
+//SubMatrix<T>::~SubMatrix()
+//{
+//}
 
 
 /*! \} */ // end of Algebra

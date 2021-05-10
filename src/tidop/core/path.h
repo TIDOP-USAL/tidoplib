@@ -88,10 +88,13 @@ public:
   Path parentPath() const;
   Path &append(const std::string &text);
 
+  void clear();
+
 /* Static methods */
 
   static bool exists(const std::string &path);
   static bool exists(const Path &path);
+  static Path tempPath();
   static Path tempDirectory();
   static bool createDirectory(const Path &directory);
   static bool createDirectory(const std::string &directory);
@@ -115,6 +118,37 @@ public:
 private:
 
   std::unique_ptr<internal::Path> mPath;
+
+};
+
+
+/*!
+ * /brief Crea un directorio temporal que por defecto se borra automaticamente
+ * 
+ */
+class TemporalDir
+{
+
+public:
+
+  /*!
+   * \brief
+   * \param[in] autoRemove 
+   */
+  explicit TemporalDir(bool autoRemove = true);
+  ~TemporalDir();
+
+  TemporalDir(const TemporalDir &) = delete;
+  TemporalDir(TemporalDir &&) = delete;
+  TemporalDir &operator=(const TemporalDir &) = delete;
+  TemporalDir &operator=(TemporalDir &&) = delete;
+
+  Path path() const;
+
+private:
+
+  bool bAutoRemove;
+  Path mPath;
 
 };
 

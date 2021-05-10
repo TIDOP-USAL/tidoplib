@@ -1056,7 +1056,7 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
 
 /// Multiplicación de una matriz por un escalar
 
-BOOST_FIXTURE_TEST_CASE(MatrixScalar, MatrixTest)
+BOOST_FIXTURE_TEST_CASE(matrix_scalar, MatrixTest)
 {
   Matrix<int,2,3> mat = _mat_2x3_i * 10;
 
@@ -1146,6 +1146,277 @@ BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(.13, mat2.at(2, 0));
   BOOST_CHECK_EQUAL(.26, mat2.at(2, 1));
   BOOST_CHECK_EQUAL(.03, mat2.at(2, 2));
+}
+
+
+// Vector
+
+BOOST_FIXTURE_TEST_CASE(col, MatrixTest)
+{
+  auto col_0 = _mat_dyn_3x3_d->col(0);
+  auto col_1 = _mat_dyn_3x3_d->col(1);
+  auto col_2 = _mat_dyn_3x3_d->col(2);
+
+  BOOST_CHECK_EQUAL(1.5, col_0.at(0));
+  BOOST_CHECK_EQUAL(1.0, col_0.at(1));
+  BOOST_CHECK_EQUAL(1.3, col_0.at(2));
+  BOOST_CHECK_EQUAL(0.0, col_1.at(0));
+  BOOST_CHECK_EQUAL(1.0, col_1.at(1));
+  BOOST_CHECK_EQUAL(2.6, col_1.at(2));
+  BOOST_CHECK_EQUAL(2.5, col_2.at(0));
+  BOOST_CHECK_EQUAL(1.2, col_2.at(1));
+  BOOST_CHECK_EQUAL(0.3, col_2.at(2));
+}
+
+BOOST_FIXTURE_TEST_CASE(row, MatrixTest)
+{
+  auto row_0 = _mat_dyn_3x3_d->row(0);
+  auto row_1 = _mat_dyn_3x3_d->row(1);
+  auto row_2 = _mat_dyn_3x3_d->row(2);
+
+  BOOST_CHECK_EQUAL(1.5, row_0.at(0));
+  BOOST_CHECK_EQUAL(0.0, row_0.at(1));
+  BOOST_CHECK_EQUAL(2.5, row_0.at(2));
+  BOOST_CHECK_EQUAL(1.0, row_1.at(0));
+  BOOST_CHECK_EQUAL(1.0, row_1.at(1));
+  BOOST_CHECK_EQUAL(1.2, row_1.at(2));
+  BOOST_CHECK_EQUAL(1.3, row_2.at(0));
+  BOOST_CHECK_EQUAL(2.6, row_2.at(1));
+  BOOST_CHECK_EQUAL(0.3, row_2.at(2));
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(SubMatrixTestSuite)
+
+struct SubMatrixTest
+{
+  SubMatrixTest()
+    //: _mat_dyn_default_constructor(new Matrix<double>()),
+    //_mat_dyn_2x2_constructor(new Matrix<double>(2, 2)),
+    //_mat_dyn_2x2(new Matrix<double>(2, 2)),
+    //_mat_dyn_3x3_d(new Matrix<double>(3, 3)),
+    //_mat_dyn_4x4_d(new Matrix<double>(4, 4)),
+    //_mat_dyn_5x5_d(new Matrix<double>(5, 5)),
+    //_mat_dyn_2x3_i(new Matrix<int>(2, 3)),
+    //_cofactor_matrix_dyn(new Matrix<int>(3, 3))
+  {}
+  ~SubMatrixTest()
+  {
+    //if (_mat_dyn_default_constructor) delete _mat_dyn_default_constructor, _mat_dyn_default_constructor = nullptr;
+    //if (_mat_dyn_2x2_constructor) delete _mat_dyn_2x2_constructor, _mat_dyn_2x2_constructor = nullptr;
+    //if (_mat_dyn_2x2) delete _mat_dyn_2x2, _mat_dyn_2x2 = nullptr;
+    //if (_mat_dyn_3x3_d) delete _mat_dyn_3x3_d, _mat_dyn_3x3_d = nullptr;
+    //if (_mat_dyn_4x4_d) delete _mat_dyn_4x4_d, _mat_dyn_4x4_d = nullptr;
+    //if (_mat_dyn_2x3_i) delete _mat_dyn_2x3_i, _mat_dyn_2x3_i = nullptr;
+    //if (_cofactor_matrix_dyn) delete _cofactor_matrix_dyn, _cofactor_matrix_dyn = nullptr;
+  }
+
+  void setup()
+  {
+
+    //_mat_2x2.at(0, 0) = 2.;
+    //_mat_2x2.at(0, 1) = 3.;
+    //_mat_2x2.at(1, 0) = 1.;
+    //_mat_2x2.at(1, 1) = 4.;
+
+    //_mat_dyn_2x2->at(0, 0) = 2.;
+    //_mat_dyn_2x2->at(0, 1) = 3.;
+    //_mat_dyn_2x2->at(1, 0) = 1.;
+    //_mat_dyn_2x2->at(1, 1) = 4.;
+
+    //_mat_3x3_d.at(0, 0) = 1.5;
+    //_mat_3x3_d.at(0, 1) = 0.0;
+    //_mat_3x3_d.at(0, 2) = 2.5;
+    //_mat_3x3_d.at(1, 0) = 1.0;
+    //_mat_3x3_d.at(1, 1) = 1.0;
+    //_mat_3x3_d.at(1, 2) = 1.2;
+    //_mat_3x3_d.at(2, 0) = 1.3;
+    //_mat_3x3_d.at(2, 1) = 2.6;
+    //_mat_3x3_d.at(2, 2) = 0.3;
+
+    //_mat_dyn_3x3_d->at(0, 0) = 1.5;
+    //_mat_dyn_3x3_d->at(0, 1) = 0.0;
+    //_mat_dyn_3x3_d->at(0, 2) = 2.5;
+    //_mat_dyn_3x3_d->at(1, 0) = 1.0;
+    //_mat_dyn_3x3_d->at(1, 1) = 1.0;
+    //_mat_dyn_3x3_d->at(1, 2) = 1.2;
+    //_mat_dyn_3x3_d->at(2, 0) = 1.3;
+    //_mat_dyn_3x3_d->at(2, 1) = 2.6;
+    //_mat_dyn_3x3_d->at(2, 2) = 0.3;
+
+    //_mat_4x4_d.at(0, 0) = 4.5;    _mat_4x4_d.at(0, 1) = 2.7;  _mat_4x4_d.at(0, 2) = 5.5;  _mat_4x4_d.at(0, 3) = 4.98;
+    //_mat_4x4_d.at(1, 0) = 1.36;   _mat_4x4_d.at(1, 1) = 7.62;	_mat_4x4_d.at(1, 2) = 78.3; _mat_4x4_d.at(1, 3) = 45.5;
+    //_mat_4x4_d.at(2, 0) = 14.3;   _mat_4x4_d.at(2, 1) = 45.3;	_mat_4x4_d.at(2, 2) = 5.;   _mat_4x4_d.at(2, 3) = 45.;
+    //_mat_4x4_d.at(3, 0) = 12.374; _mat_4x4_d.at(3, 1) = 41.6;	_mat_4x4_d.at(3, 2) = 1.3;  _mat_4x4_d.at(3, 3) = 12.7;
+
+    //_mat_dyn_4x4_d->at(0, 0) = 4.5;    _mat_dyn_4x4_d->at(0, 1) = 2.7;  _mat_dyn_4x4_d->at(0, 2) = 5.5;  _mat_dyn_4x4_d->at(0, 3) = 4.98;
+    //_mat_dyn_4x4_d->at(1, 0) = 1.36;   _mat_dyn_4x4_d->at(1, 1) = 7.62;	_mat_dyn_4x4_d->at(1, 2) = 78.3; _mat_dyn_4x4_d->at(1, 3) = 45.5;
+    //_mat_dyn_4x4_d->at(2, 0) = 14.3;   _mat_dyn_4x4_d->at(2, 1) = 45.3;	_mat_dyn_4x4_d->at(2, 2) = 5.;   _mat_dyn_4x4_d->at(2, 3) = 45.;
+    //_mat_dyn_4x4_d->at(3, 0) = 12.374; _mat_dyn_4x4_d->at(3, 1) = 41.6;	_mat_dyn_4x4_d->at(3, 2) = 1.3;  _mat_dyn_4x4_d->at(3, 3) = 12.7;
+
+    //mat_zero = Matrix<double, 3, 3>::zero();
+    //mat_dyn_zero = Matrix<double>::zero(3, 3);
+    //mat_ones = Matrix<double, 3, 3>::ones();
+    //mat_dyn_ones = Matrix<double>::ones(3, 3);
+    //mat_identity = Matrix<double, 3, 3>::identity();
+    //mat_dyn_identity = Matrix<double>::identity(3, 3);
+
+    //_mat_5x5_d.at(0, 0) = 6;
+    //_mat_5x5_d.at(0, 1) = 8;
+    //_mat_5x5_d.at(0, 2) = 6;
+    //_mat_5x5_d.at(0, 3) = 7;
+    //_mat_5x5_d.at(0, 4) = 3;
+    //_mat_5x5_d.at(1, 0) = 9;
+    //_mat_5x5_d.at(1, 1) = 6;
+    //_mat_5x5_d.at(1, 2) = 2;
+    //_mat_5x5_d.at(1, 3) = 3;
+    //_mat_5x5_d.at(1, 4) = 3;
+    //_mat_5x5_d.at(2, 0) = 8;
+    //_mat_5x5_d.at(2, 1) = 3;
+    //_mat_5x5_d.at(2, 2) = 2;
+    //_mat_5x5_d.at(2, 3) = 3;
+    //_mat_5x5_d.at(2, 4) = 3;
+    //_mat_5x5_d.at(3, 0) = 5;
+    //_mat_5x5_d.at(3, 1) = 3;
+    //_mat_5x5_d.at(3, 2) = 3;
+    //_mat_5x5_d.at(3, 3) = 7;
+    //_mat_5x5_d.at(3, 4) = 6;
+    //_mat_5x5_d.at(4, 0) = 5;
+    //_mat_5x5_d.at(4, 1) = 5;
+    //_mat_5x5_d.at(4, 2) = 7;
+    //_mat_5x5_d.at(4, 3) = 4;
+    //_mat_5x5_d.at(4, 4) = 7;
+
+    //_mat_dyn_5x5_d->at(0, 0) = 6;
+    //_mat_dyn_5x5_d->at(0, 1) = 8;
+    //_mat_dyn_5x5_d->at(0, 2) = 6;
+    //_mat_dyn_5x5_d->at(0, 3) = 7;
+    //_mat_dyn_5x5_d->at(0, 4) = 3;
+    //_mat_dyn_5x5_d->at(1, 0) = 9;
+    //_mat_dyn_5x5_d->at(1, 1) = 6;
+    //_mat_dyn_5x5_d->at(1, 2) = 2;
+    //_mat_dyn_5x5_d->at(1, 3) = 3;
+    //_mat_dyn_5x5_d->at(1, 4) = 3;
+    //_mat_dyn_5x5_d->at(2, 0) = 8;
+    //_mat_dyn_5x5_d->at(2, 1) = 3;
+    //_mat_dyn_5x5_d->at(2, 2) = 2;
+    //_mat_dyn_5x5_d->at(2, 3) = 3;
+    //_mat_dyn_5x5_d->at(2, 4) = 3;
+    //_mat_dyn_5x5_d->at(3, 0) = 5;
+    //_mat_dyn_5x5_d->at(3, 1) = 3;
+    //_mat_dyn_5x5_d->at(3, 2) = 3;
+    //_mat_dyn_5x5_d->at(3, 3) = 7;
+    //_mat_dyn_5x5_d->at(3, 4) = 6;
+    //_mat_dyn_5x5_d->at(4, 0) = 5;
+    //_mat_dyn_5x5_d->at(4, 1) = 5;
+    //_mat_dyn_5x5_d->at(4, 2) = 7;
+    //_mat_dyn_5x5_d->at(4, 3) = 4;
+    //_mat_dyn_5x5_d->at(4, 4) = 7;
+
+    //_mat_2x3_i.at(0, 0) = 6;
+    //_mat_2x3_i.at(0, 1) = 8;
+    //_mat_2x3_i.at(0, 2) = 6;
+    //_mat_2x3_i.at(1, 0) = 9;
+    //_mat_2x3_i.at(1, 1) = 6;
+    //_mat_2x3_i.at(1, 2) = 2;
+
+    //_mat_dyn_2x3_i->at(0, 0) = 6;
+    //_mat_dyn_2x3_i->at(0, 1) = 8;
+    //_mat_dyn_2x3_i->at(0, 2) = 6;
+    //_mat_dyn_2x3_i->at(1, 0) = 9;
+    //_mat_dyn_2x3_i->at(1, 1) = 6;
+    //_mat_dyn_2x3_i->at(1, 2) = 2;
+
+
+    //_cofactor_matrix.at(0, 0) = 1;
+    //_cofactor_matrix.at(0, 1) = 2;
+    //_cofactor_matrix.at(0, 2) = 3;
+    //_cofactor_matrix.at(1, 0) = 0;
+    //_cofactor_matrix.at(1, 1) = 4;
+    //_cofactor_matrix.at(1, 2) = 5;
+    //_cofactor_matrix.at(2, 0) = 1;
+    //_cofactor_matrix.at(2, 1) = 0;
+    //_cofactor_matrix.at(2, 2) = 6;
+
+    //_cofactor_matrix_dyn->at(0, 0) = 1;
+    //_cofactor_matrix_dyn->at(0, 1) = 2;
+    //_cofactor_matrix_dyn->at(0, 2) = 3;
+    //_cofactor_matrix_dyn->at(1, 0) = 0;
+    //_cofactor_matrix_dyn->at(1, 1) = 4;
+    //_cofactor_matrix_dyn->at(1, 2) = 5;
+    //_cofactor_matrix_dyn->at(2, 0) = 1;
+    //_cofactor_matrix_dyn->at(2, 1) = 0;
+    //_cofactor_matrix_dyn->at(2, 2) = 6;
+
+    //mat_singular.at(0, 0) = 1;
+    //mat_singular.at(0, 1) = 2;
+    //mat_singular.at(0, 2) = 3;
+    //mat_singular.at(1, 0) = 4;
+    //mat_singular.at(1, 1) = 5;
+    //mat_singular.at(1, 2) = 6;
+    //mat_singular.at(2, 0) = 7;
+    //mat_singular.at(2, 1) = 8;
+    //mat_singular.at(2, 2) = 9;
+  }
+
+  void teardown()
+  {
+
+  }
+
+  //Matrix<double> *_mat_dyn_default_constructor;
+  //Matrix<double, 2, 2> _mat_2x2_default_constructor;
+  //Matrix<double> *_mat_dyn_2x2_constructor;
+
+  //Matrix<double, 2, 2> _mat_2x2;
+  //Matrix<double> *_mat_dyn_2x2;
+
+  //Matrix<double, 3, 3> _mat_3x3_d;
+  //Matrix<double> *_mat_dyn_3x3_d;
+
+  //Matrix<double, 4, 4> _mat_4x4_d;
+  //Matrix<double> *_mat_dyn_4x4_d;
+
+  //Matrix<double, 5, 5> _mat_5x5_d;
+  //Matrix<double> *_mat_dyn_5x5_d;
+
+  ////Matrix<2, 2, float> _mat_2x2_f;
+  ////Matrix<3, 3, float> _mat_3x3_f;
+  ////Matrix<4, 4, float> _mat_4x4_f;
+
+  //Matrix<int, 2, 3> _mat_2x3_i;
+  //Matrix<int> *_mat_dyn_2x3_i;
+  //Matrix<int, 3, 3> _cofactor_matrix;
+  //Matrix<int> *_cofactor_matrix_dyn;
+  //Matrix<double, 3, 3> mat_zero;
+  //Matrix<double> mat_dyn_zero;
+  //Matrix<double, 3, 3> mat_ones;
+  //Matrix<double> mat_dyn_ones;
+  //Matrix<double, 3, 3> mat_identity;
+  //Matrix<double> mat_dyn_identity;
+
+  //Matrix<int, 3, 3> mat_singular;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, SubMatrixTest)
+{
+  Matrix<int, 3, 3> _mat_3x3_i = Matrix<int, 3, 3>::identity();
+  //SubMatrix<double> subMatrix(_mat_3x3_i, size_t r1, size_t r2, size_t c1, size_t c2);
+  //BOOST_CHECK_EQUAL(0, _mat_dyn_default_constructor->rows());
+  //BOOST_CHECK_EQUAL(0, _mat_dyn_default_constructor->cols());
+
+  //constexpr double ini_value = -std::numeric_limits<double>().max();
+
+  //for (size_t r = 0; r < _mat_2x2_default_constructor.rows(); r++) {
+  //  for (size_t c = 0; c < _mat_2x2_default_constructor.cols(); c++) {
+  //    BOOST_CHECK_EQUAL(static_cast<double>(ini_value), _mat_2x2_default_constructor.at(r, c));
+  //  }
+  //}
+  //BOOST_CHECK_EQUAL(2, _mat_2x2_default_constructor.rows());
+  //BOOST_CHECK_EQUAL(2, _mat_2x2_default_constructor.cols());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

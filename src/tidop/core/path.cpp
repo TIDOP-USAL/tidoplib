@@ -227,6 +227,11 @@ Path &Path::append(const std::string &text)
   return *this;
 }
 
+void Path::clear()
+{
+  mPath = std::make_unique<internal::Path>("");
+}
+
 /* Static methods */
 
 bool Path::exists(const std::string &path)
@@ -239,10 +244,18 @@ bool Path::exists(const Path &path)
   return path.exists();
 }
 
-Path Path::tempDirectory()
+Path Path::tempPath()
 {
   std::string temp = fs::temp_directory_path().string();
   return Path(temp);
+}
+
+Path Path::tempDirectory()
+{
+  //Path temp_dir = tempPath();
+  std::string dir = std::tmpnam(nullptr);
+  //temp_dir.append(dir);
+  return Path(dir);
 }
 
 bool Path::createDirectory(const Path &directory)
@@ -304,6 +317,27 @@ bool Path::createDirectories(const std::string &directory)
 //  return *this;
 //}
 
+
+
+
+
+TemporalDir::TemporalDir(bool autoRemove)
+  : bAutoRemove(autoRemove),
+    mPath(Path::tempDirectory())
+{
+  Path::createDirectories(mPath);
+}
+
+TemporalDir::~TemporalDir()
+{
+  if (bAutoRemove && mPath.exists())
+    fs::remove_all(mPath.toString());
+}
+
+Path TemporalDir::path() const
+{
+  return mPath;
+}
 
 } // End namespace tl
 

@@ -207,6 +207,7 @@ OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 #OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
 OPTION (WITH_OpenBLAS "Include OpenBLAS"                      OFF)
+OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
 
 # ----------------------------------------------------------------------------
 #  Modulos TidopLib
@@ -431,8 +432,21 @@ endif()
   
 endif(BUILD_TL_MATH)
 
+# ----------------------------------------------------------------------------
+# OMP (optional)
+# ----------------------------------------------------------------------------
+if(WITH_OPENMP)
 
-
+  find_package(OpenMP)
+  
+  if(OpenMP_FOUND)
+    set(HAVE_OPENMP YES)
+  else()
+    set(HAVE_OPENMP NO)
+  endif()
+  
+endif()
+# ----------------------------------------------------------------------------
 
 
 # include del directorio principal
