@@ -88,7 +88,7 @@ TL_EXPORT bool isFile(const std::string &file);
  * \param[in] path Ruta del directorio
  * \return Error = -1, creado = 0 y existente = 1
  */
-TL_EXPORT int createDir(const std::string &path);
+//TL_EXPORT int createDir(const std::string &path);
 
 /*!
  * \brief Borra un directorio
@@ -96,7 +96,7 @@ TL_EXPORT int createDir(const std::string &path);
  * \param[in] confirm Pide confirmación para borrar el archivo
  * \return Error
  */
-TL_EXPORT int deleteDir(const std::string &path, bool confirm = false);
+//TL_EXPORT int deleteDir(const std::string &path, bool confirm = false);
 
 //TL_EXPORT int move(const std::string &in, const std::string &out);
 
@@ -264,7 +264,7 @@ TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList,
  * \param[out] fileList Listado de archivos
  * \param[in] filter Filtro de busqueda
  */
-TL_EXPORT void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter);
+//TL_EXPORT void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter);
 
 /*!
  * \brief Devuelve el listado de archivos de un directorio filtrando por un tipo de archivo
@@ -278,7 +278,7 @@ TL_EXPORT void fileList(const std::string &directory, std::list<std::string> *fi
  * fileListByExt("D:\\dir", &fileList, ".ext"); 
  * \endcode
  */
-TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext);
+//TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext);
 
 
 

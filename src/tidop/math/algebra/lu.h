@@ -198,12 +198,12 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     ip = mIndx[i];
     sum = x[ip];
     x[ip] = x[i];
-    if (ii != consts::zero<T>) {
-      for (j = ii - consts::one<T>; j < i; j++) {
+    if (ii != 0) {
+      for (j = ii - 1; j < i; j++) {
         sum -= this->LU.at(i, j) * x[j]; 
       }
     } else if (sum != static_cast<T>(0)) {
-      ii = i + consts::one<T>;
+      ii = i + 1;
     }
       
     x[i] = sum;

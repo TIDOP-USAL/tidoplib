@@ -34,7 +34,6 @@
 #else
 #include <boost/filesystem.hpp>
 #endif
-#include <memory>
 
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
@@ -127,6 +126,9 @@ private:
 } // internal
 
 
+
+
+
 Path::Path()
   : mPath(new internal::Path())
 {
@@ -189,6 +191,12 @@ std::string Path::extension() const
   return mPath->extension();
 }
 
+Path Path::parentPath() const
+{
+  Path parent_path(mPath->parent());
+  return parent_path;
+}
+
 bool Path::isDirectory() const
 {
   return mPath->isDirectory();
@@ -209,22 +217,77 @@ bool Path::exists() const
   return mPath->exists();
 }
 
+std::list<Path> Path::list(const std::string &extension)
+{
+  std::list<Path> list;
+
+  fs::directory_iterator it_end;
+
+  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+
+    if (!fs::is_regular_file(it->status())) continue;
+
+    fs::path _path = it->path();
+
+    std::string extension_found = it->path().extension().string();
+
+    if (compareInsensitiveCase(extension_found, extension)) {
+
+      list.push_back(it->path().filename().string());
+    }
+  }
+
+  return list;
+}
+
+std::list<Path> Path::list(const std::regex &filter)
+{
+  std::list<Path> list;
+
+  fs::directory_iterator it_end;
+
+  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+
+
+    if (!fs::is_regular_file(it->status())) continue;
+
+    std::smatch what;
+
+    std::string fname = it->path().filename().string();
+
+    if (!std::regex_match(fname, what, filter)) continue;
+
+    list.push_back(fname);
+  }
+
+  return list;
+}
+
 Path &Path::replaceExtension(const std::string &extension)
 {
   mPath->replaceExtension(extension);
   return *this;
 }
 
-Path Path::parentPath() const
-{
-  Path parent_path(mPath->parent());
-  return parent_path;
-}
-
 Path &Path::append(const std::string &text)
 {
   mPath->append(text);
   return *this;
+}
+
+bool Path::createDirectory() const
+{
+  return fs::create_directory(mPath->toString());
+}
+
+bool Path::createDirectories() const
+{
+  return fs::create_directories(mPath->toString());
+}
+
+void Path::removeDirectory() const
+{
+  fs::remove_all(mPath->toString());
 }
 
 void Path::clear()
@@ -239,11 +302,6 @@ bool Path::exists(const std::string &path)
   return Path(path).exists();
 }
 
-bool Path::exists(const Path &path)
-{
-  return path.exists();
-}
-
 Path Path::tempPath()
 {
   std::string temp = fs::temp_directory_path().string();
@@ -252,15 +310,8 @@ Path Path::tempPath()
 
 Path Path::tempDirectory()
 {
-  //Path temp_dir = tempPath();
   std::string dir = std::tmpnam(nullptr);
-  //temp_dir.append(dir);
   return Path(dir);
-}
-
-bool Path::createDirectory(const Path &directory)
-{
-  return fs::create_directory(directory.toString());
 }
 
 bool Path::createDirectory(const std::string &directory)
@@ -268,56 +319,15 @@ bool Path::createDirectory(const std::string &directory)
   return fs::create_directory(directory);
 }
 
-bool Path::createDirectories(const Path &directory)
-{
-  return fs::create_directories(directory.toString());
-}
-
 bool Path::createDirectories(const std::string &directory)
 {
   return fs::create_directories(directory);
 }
 
-//Path tl::Path::tempFile()
-//{
-//  std::string name = std::tmpnam(nullptr);
-//  return Path(name);
-//}
-
-//std::list<std::string> Path::files(const std::string &wildcard)
-//{
-//  std::list<std::string> files;
-//  //fileList(toString().c_str(), &files, wildcard.c_str());
-//  return files;
-//}
-//
-//std::list<std::string> Path::dirs()
-//{
-//  std::list<std::string> dirs;
-//  directoryList(toString().c_str(), &dirs);
-//  return dirs;
-//}
-//
-
-//
-//void Path::createDir()
-//{
-//  tl::createDir(toString().c_str());
-//}
-//
-//void Path::deleteDir()
-//{
-//  tl::deleteDir(toString().c_str());
-//}
-
-//Path &Path::append(const std::string &dir)
-//{
-//  //TODO: Si el path es de un fichero no se puede a?adir...
-//  mPath.push_back(dir);
-//  return *this;
-//}
-
-
+void Path::removeDirectory(const std::string &directory)
+{
+  fs::remove_all(directory);
+}
 
 
 
@@ -325,13 +335,13 @@ TemporalDir::TemporalDir(bool autoRemove)
   : bAutoRemove(autoRemove),
     mPath(Path::tempDirectory())
 {
-  Path::createDirectories(mPath);
+  mPath.createDirectories();
 }
 
 TemporalDir::~TemporalDir()
 {
   if (bAutoRemove && mPath.exists())
-    fs::remove_all(mPath.toString());
+    mPath.removeDirectory();
 }
 
 Path TemporalDir::path() const

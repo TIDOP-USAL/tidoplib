@@ -117,7 +117,7 @@ template<typename Point_t> inline
 double dotProduct(const Point_t &pt1, const Point_t &pt2)
 {
   return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
-    static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
+         static_cast<double>(pt1.y) * static_cast<double>(pt2.y);
 }
 
 /*!
@@ -130,8 +130,8 @@ template<typename Point3_t> inline
 double dotProduct3D(const Point3_t &pt1, const Point3_t &pt2)
 {
   return static_cast<double>(pt1.x) * static_cast<double>(pt2.x) +
-    static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
-    static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
+         static_cast<double>(pt1.y) * static_cast<double>(pt2.y) +
+         static_cast<double>(pt1.z) * static_cast<double>(pt2.z);
 }
 
 /*!

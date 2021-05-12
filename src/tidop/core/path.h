@@ -27,9 +27,6 @@
 
 #include "config_tl.h"
 
-#include <iostream>
-#include <fstream>
-#include <map>
 #include <regex>
 #include <list>
 #include <numeric>
@@ -79,41 +76,33 @@ public:
   std::string fileName() const;
   std::string baseName() const;
   std::string extension() const;
+  Path parentPath() const;
+  std::list<Path> list(const std::string &extension);
+  std::list<Path> list(const std::regex &filter);
+
   bool isDirectory() const;
   bool isFile() const;
   bool empty() const;
   bool exists() const;
-  Path &replaceExtension(const std::string &extension);
+  
 
-  Path parentPath() const;
+  Path &replaceExtension(const std::string &extension);
   Path &append(const std::string &text);
+
+  bool createDirectory() const;
+  bool createDirectories() const;
+  void removeDirectory() const;
 
   void clear();
 
 /* Static methods */
 
   static bool exists(const std::string &path);
-  static bool exists(const Path &path);
   static Path tempPath();
   static Path tempDirectory();
-  static bool createDirectory(const Path &directory);
   static bool createDirectory(const std::string &directory);
-  static bool createDirectories(const Path &directory);
   static bool createDirectories(const std::string &directory);
-  //static Path tempFile();
-
-//  
-//  void createDir();
-//  void deleteDir();
-//
-//  /*!
-//   * \brief
-//   */
-//  std::list<std::string> files(const std::string &wildcard);  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
-//
-//  std::list<std::string> dirs();
-//
-//  Path &append(const std::string &dir);
+  static void removeDirectory(const std::string &directory);
 
 private:
 
