@@ -27,9 +27,9 @@
 // Cabeceras tidopLib
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
+#include <tidop/core/path.h>
 #include <tidop/experimental/video/videoio.h>
 
-#include <boost/filesystem.hpp>
 
 using namespace tl;
 
@@ -61,7 +61,7 @@ public:
   VideoHelper(const std::string &path) 
     : mOutPath(path),
       mCurrentPosition(0),
-	  mStep(20)
+	    mStep(20)
   { 
   }
 
@@ -184,13 +184,13 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  std::string video;
-  std::string image_path;
+  Path video;
+  Path image_path;
   int step = 20;
   
   Command cmd("extract_frames", "Extract frames from video");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("video", 'v', "Video del cual se quieren extraer los fotogramas", &video));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("images", 'i', "Ruta en la que se guardan las imágenes", &image_path));
+  cmd.push_back(std::make_shared<ArgumentPathRequired>("video", 'v', "Video del cual se quieren extraer los fotogramas", &video));
+  cmd.push_back(std::make_shared<ArgumentPathRequired>("images", 'i', "Ruta en la que se guardan las imágenes", &image_path));
   cmd.push_back(std::make_shared<ArgumentIntegerOptional>("step", 's', "Número de frames que se saltan. Por defecto 20", &step));
   
   // Parseo de los argumentos y comprobación de los mismos
@@ -205,19 +205,19 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  VideoOpenCV video_cv(video);
+  VideoOpenCV video_cv(video.toString());
   if (video_cv.isOpened()) {
       
-    boost::filesystem::create_directories(image_path);
+    image_path.createDirectories();
 
-    VideoHelper videoHelper(image_path);
+    VideoHelper videoHelper(image_path.toString());
     videoHelper.setStep(step);
     video_cv.addListener(&videoHelper);
     //video_cv.setFramePerSeconds(30);
     video_cv.run();
 
   } else {
-    msgError("No se ha podido cargar el video: %s", video.c_str());
+    msgError("No se ha podido cargar el video: %s", video.toString().c_str());
     return 1;
   }
 

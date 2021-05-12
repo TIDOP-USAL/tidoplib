@@ -500,7 +500,8 @@ void PRCurve<T>::compute(size_t steeps)
     double recall = truePositiveRate(confussionMatrix[PRCurve<T>::Classification::true_positives], this->mPositives);
     double precision = positivePredictiveValue(confussionMatrix[PRCurve<T>::Classification::true_positives],
                                                confussionMatrix[PRCurve<T>::Classification::true_positives] + confussionMatrix[PRCurve<T>::Classification::false_positives]);
-    this->mCurve.push_back(PointF(recall, 1-precision));
+    //this->mCurve.push_back(PointF(recall, 1-precision));
+    this->mCurve.emplace_back(static_cast<float>(recall), 1.f - static_cast<float>(precision));
     threshold += step;
   }
 
