@@ -289,6 +289,14 @@ int main(int argc, char** argv)
 
     /// Se carga la huella de vuelo y se van leyendo las ortos y realizando la compensación de exposición
 
+    std::vector<cv::Point> corners;
+    std::vector<cv::UMat> masks_warped;
+    std::vector<cv::UMat> images_warped;
+
+    int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
+
+    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+
     std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
     vectorReader->open();
     if (vectorReader->isOpen()) {
@@ -307,11 +315,47 @@ int main(int argc, char** argv)
             std::shared_ptr<graph::GPolygon> polygon = std::dynamic_pointer_cast<graph::GPolygon>(entity);
             std::shared_ptr<TableRegister> data = polygon->data();
             std::string orto_to_compensate = data->value(0);
+            PointD center = polygon->window().center();
 
             /// Busqueda de imagenes que intersectan
 
-            
+            std::vector<std::string> ortos;
+            ortos.push_back(orto_to_compensate);
 
+            for (const auto &entity2 : *layer) {
+              std::shared_ptr<graph::GPolygon> polygon2 = std::dynamic_pointer_cast<graph::GPolygon>(entity2);
+              std::shared_ptr<TableRegister> data = polygon2->data();
+              std::string orto = data->value(0);
+
+              if (orto != orto_to_compensate) {
+
+                /// No se si será suficiente o tengo que seleccionar todas las imagenes que intersecten...
+                if (polygon->isInner(center)) {
+                  ortos.push_back(orto);
+                }
+
+              }
+
+            }
+
+            size_t n_orthos = ortos.size();
+            corners.resize(n_orthos);
+            masks_warped.resize(n_orthos);
+            images_warped.resize(n_orthos);
+
+            /// Aplicar un factor de escala para el calculo de la compensación de exposición
+            for (size_t i = 0; i < n_orthos; i++) {
+
+              /// Esquinas -> Calcular ventana total y guardar las posiciones (ventana) de cada orto
+
+              /// La mascara debería leerse si se creo en la generación del MDS.
+
+            }
+
+            compensator->feed(corners, images_warped, masks_warped);
+
+            /// Se compensa la imagen
+            compensator->apply(0, corners[0], images_warped[0], masks_warped[0]); 
 
           } else {
             msgError("No es un fichero de huella de vuelo");
@@ -325,44 +369,13 @@ int main(int argc, char** argv)
       vectorReader->close();
     }
 
-    for (size_t i = 0; i < photos.size(); i++) {
-
-      // Carga de  la huella de vuelo
-      
-      
-      
-      std::string ortho_file = ortho_path;
-      ortho_file.append("\\").append(photos[i].name()).append(".png");
-
-
-    //  std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortho_file);
-    //  image_reader->open();
-    //  if (image_reader->isOpen()) {
-
-    //    int cols = image_reader->cols();
-    //    int rows = image_reader->rows();
-    //    double scale = 1.;
-    //    if (cols > rows) {
-    //      scale = cols / 1000.;
-    //    } else {
-    //      scale = rows / 1000.;
-    //    }
-    //    cv::Mat img_low = image_reader->read(scale, scale);
-    //    low_res_images[i] = img_low.clone();
-    //    image_reader->close();
-    //  }
-    }
-    //
-    //std::vector<cv::UMat> imgs;
-    ////low_res_images.getUMatVector(imgs);
-
 
 
     /// Fusión de ortos en un unico mosaico
-    size_t num_images = photos.size();
-    std::vector<cv::Point> corners(num_images);
-    std::vector<cv::UMat> masks_warped(num_images);
-    std::vector<cv::UMat> images_warped(num_images);
+    //size_t num_images = photos.size();
+    //std::vector<cv::Point> corners(num_images);
+    //std::vector<cv::UMat> masks_warped(num_images);
+    //std::vector<cv::UMat> images_warped(num_images);
 //    std::vector<cv::Size> sizes(num_images);
 //    std::vector<cv::UMat> masks(num_images);
 //
@@ -452,7 +465,7 @@ int main(int argc, char** argv)
 //	
     /// 1 - Compensación de exposición
 	
-	int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
+	//int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
 	
 ///*    
 //    if (string(argv[i + 1]) == "no")
@@ -470,7 +483,7 @@ int main(int argc, char** argv)
 //      return -1;
 //    } */
 			
-    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+    //cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
 
 //    if (dynamic_cast<GainCompensator*>(compensator.get())){
 //        GainCompensator* gcompensator = dynamic_cast<GainCompensator*>(compensator.get());
@@ -485,12 +498,12 @@ int main(int argc, char** argv)
 //        bcompensator->setBlockSize(expos_comp_block_size, expos_comp_block_size);
 //    }
     
-  	compensator->feed(corners, images_warped, masks_warped);
+  	//compensator->feed(corners, images_warped, masks_warped);
 
   
-    for (size_t i = 0; i < num_images; ++i) {
-      compensator->apply(int(i), corners[i], images_warped[i], masks_warped[i]);
-    }
+   // for (size_t i = 0; i < num_images; ++i) {
+   //   compensator->apply(int(i), corners[i], images_warped[i], masks_warped[i]);
+   // }
 
 //	
 //    /// 2 - Busqueda de costuras (seam finder)
