@@ -283,8 +283,8 @@ int main(int argc, char** argv)
 
     /// Fin lectura de fichero bundle
     
-    //Orthorectification ortho(mdt);
-    //ortho.run(photos, ortho_path, footprint_file);
+    Orthorectification ortho(mdt);
+    ortho.run(photos, ortho_path, footprint_file);
 
 
     /// Se carga la huella de vuelo y se van leyendo las ortos y realizando la compensación de exposición
