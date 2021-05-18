@@ -130,7 +130,7 @@ public:
       mDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
 
       bTempFile = true;
-      Path path = Path::tempDirectory();
+      Path path = Path::tempPath();
       Path file_path(mFileName);
 
       mTempName = path.toString();
