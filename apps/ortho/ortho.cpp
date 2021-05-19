@@ -293,9 +293,7 @@ int main(int argc, char** argv)
     std::vector<cv::UMat> masks_warped;
     std::vector<cv::UMat> images_warped;
 
-    int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
-
-    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(cv::detail::ExposureCompensator::GAIN_BLOCKS);
 
     std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
     vectorReader->open();
@@ -348,7 +346,7 @@ int main(int argc, char** argv)
 
               /// Esquinas -> Calcular ventana total y guardar las posiciones (ventana) de cada orto
 
-              /// La mascara debería leerse si se creo en la generación del MDS.
+              /// La mascara debería leerse si se creó en la generación del MDS.
 
             }
 
