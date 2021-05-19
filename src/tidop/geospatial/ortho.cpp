@@ -148,10 +148,7 @@ void Orthorectification::run(const std::vector<Photo> &photos,
       Rect<int> rect_image(0, 0, cols, rows);
 
       float focal = this->focal();
-      //PointF principal_point = this->principalPoint();
-      cv::Mat distCoeffs = this->distCoeffs();
 
-      //mAffineImageCoordinatesToPhotocoordinates = Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
       mAffineImageCoordinatesToPhotocoordinates = this->affineImageToPhotocoordinates();
       std::vector<PointI> limits = this->imageLimitsInPhotocoordinates();
 

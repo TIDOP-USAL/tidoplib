@@ -74,11 +74,11 @@ int main(int argc, char** argv)
 
   Command cmd(cmd_name, "ortho");
   cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imágenes", &image_list));
+  cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imágenes si el listado de imágenes sólo contiene el nombre", &image_path));
   cmd.push_back(std::make_shared<ArgumentStringRequired>("crs", 'c', "Código EPSG", &crs));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno o de superficie", &mdt));
+  cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta de salida de las ortofotos", &ortho_path));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
   cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
   cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
