@@ -189,9 +189,9 @@ int main(int argc, char** argv)
   int step = 20;
   
   Command cmd("extract_frames", "Extract frames from video");
-  cmd.push_back(std::make_shared<ArgumentPathRequired>("video", 'v', "Video del cual se quieren extraer los fotogramas", &video));
-  cmd.push_back(std::make_shared<ArgumentPathRequired>("images", 'i', "Ruta en la que se guardan las imágenes", &image_path));
-  cmd.push_back(std::make_shared<ArgumentIntegerOptional>("step", 's', "Número de frames que se saltan. Por defecto 20", &step));
+  cmd.addArgument(CreateArgumentPathRequired("video", 'v', "Video del cual se quieren extraer los fotogramas", &video));
+  cmd.addArgument(CreateArgumentPathRequired("images", 'i', "Ruta en la que se guardan las imágenes", &image_path));
+  cmd.addArgument(CreateArgumentIntegerOptional("step", 's', "Número de frames que se saltan. Por defecto 20", &step));
   
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);

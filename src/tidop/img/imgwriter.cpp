@@ -30,7 +30,6 @@
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
-#include "tidop/core/path.h"
 
 #ifdef HAVE_GDAL
 TL_SUPPRESS_WARNINGS
@@ -572,6 +571,11 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const std::string 
     throw std::runtime_error("Invalid Image Writer");
   }
   return image_writer;
+}
+
+std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &fileName)
+{
+  return ImageWriterFactory::createWriter(fileName.toString());
 }
 
 } // End namespace tl

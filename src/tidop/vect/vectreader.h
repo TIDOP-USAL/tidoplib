@@ -25,13 +25,14 @@
 #ifndef TL_VECTOR_READER_H
 #define TL_VECTOR_READER_H
 
+#include "config_tl.h"
+
 #include <memory>
 #include <list>
 #include <string>
 
-#include "config_tl.h"
-
 #include "tidop/core/defs.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -84,11 +85,12 @@ class TL_EXPORT VectorReaderFactory
 
 private:
 
-  VectorReaderFactory() {}
+  VectorReaderFactory() = default;
 
 public:
 
   static std::unique_ptr<VectorReader> createReader(const std::string &fileName);
+  static std::unique_ptr<VectorReader> createReader(const Path &fileName);
 };
 
 

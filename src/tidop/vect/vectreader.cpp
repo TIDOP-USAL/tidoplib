@@ -1193,4 +1193,9 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const std::strin
   return vector_reader;
 }
 
+std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &fileName)
+{
+  return VectorReaderFactory::createReader(fileName.toString());
+}
+
 } // End namespace tl

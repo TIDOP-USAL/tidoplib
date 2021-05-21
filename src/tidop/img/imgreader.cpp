@@ -27,7 +27,6 @@
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
-#include "tidop/core/path.h"
 
 #ifdef HAVE_OPENCV
 
@@ -587,6 +586,11 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const std::string 
     throw std::runtime_error("Invalid Image Reader");
   }
   return image_reader;
+}
+
+std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &fileName)
+{
+  return ImageReaderFactory::createReader(fileName.toString());
 }
 
 } // End namespace tl

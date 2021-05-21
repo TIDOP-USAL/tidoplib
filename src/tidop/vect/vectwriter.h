@@ -32,7 +32,7 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
-//#include "tidop/geospatial/crs.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -93,6 +93,7 @@ private:
 public:
 
   static std::unique_ptr<VectorWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<VectorWriter> createWriter(const Path &fileName);
 };
 
 

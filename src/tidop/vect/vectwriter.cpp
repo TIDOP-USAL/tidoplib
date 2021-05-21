@@ -687,4 +687,9 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const std::strin
   return vector_writer;
 }
 
+std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &fileName)
+{
+  return VectorWriterFactory::createWriter(fileName.toString());
+}
+
 } // End namespace tl

@@ -61,9 +61,9 @@ int main(int argc, char** argv)
   console.setMessageLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
-  std::string bundle_file;
-  std::string image_list;
-  std::string image_path;
+  Path bundle_file;
+  Path image_list;
+  Path image_path;
   std::string crs;
   std::string mdt;
   std::string ortho_path;
@@ -73,16 +73,16 @@ int main(int argc, char** argv)
   double cy = 0.;
 
   Command cmd(cmd_name, "ortho");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("crs", 'c', "Código EPSG", &crs));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
-  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
-  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
+  cmd.addArgument(CreateArgumentPathRequired("bundle_file", 'b', "Fichero bundle", &bundle_file));
+  cmd.addArgument(CreateArgumentPathRequired("image_list", 'i', "Listado de imagenes", &image_list));
+  cmd.addArgument(CreateArgumentPathOptional("image_path", 'p', "Ruta de imagenes", &image_path));
+  cmd.addArgument(CreateArgumentStringRequired("crs", 'c', "Código EPSG", &crs));
+  cmd.addArgument(CreateArgumentStringRequired("mdt", 'm', "Modelo digital del terreno", &mdt));
+  cmd.addArgument(CreateArgumentStringRequired("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
+  cmd.addArgument(CreateArgumentStringRequired("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.addArgument(CreateArgumentStringOptional("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
+  cmd.addArgument(CreateArgumentDoubleOptional("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
+  cmd.addArgument(CreateArgumentDoubleOptional("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
 
   cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --crs EPSG:25830 -- mdt mdt.tif");
 
@@ -116,12 +116,12 @@ int main(int argc, char** argv)
 
     /// Carga de imagenes 
 
-    if (!Path::exists(image_list)) throw std::runtime_error("Image list not found");
+    if (!image_list.exists()) throw std::runtime_error("Image list not found");
 
     std::vector<std::string> images;
 
     std::ifstream ifs;
-    ifs.open(image_list, std::ifstream::in);
+    ifs.open(image_list.toString(), std::ifstream::in);
     if (ifs.is_open()) {
 
       std::string line;
@@ -131,13 +131,14 @@ int main(int argc, char** argv)
         if (Path::exists(line)) {
           images.push_back(line);
         } else {
-          std::string image = std::string(image_path).append("\\").append(line);
+          Path image(image_path);
+          image.append(line);
           
-          if (Path::exists(image)) {
-            images.push_back(image);
+          if (image.exists()) {
+            images.push_back(image.toString());
           } else {
             std::string err = "Image not found: ";
-            err.append(image);
+            err.append(image.toString());
             throw std::runtime_error(err.c_str());
           }
 
@@ -157,9 +158,9 @@ int main(int argc, char** argv)
 
     std::unique_ptr<ImageReader> imageReader;
 
-    if (!Path::exists(bundle_file)) throw std::runtime_error("Bundle file not found");
+    if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
 
-    ifs.open(bundle_file, std::ifstream::in);
+    ifs.open(bundle_file.toString(), std::ifstream::in);
     if (ifs.is_open()) {
     
       std::string line;

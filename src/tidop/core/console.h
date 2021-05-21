@@ -194,19 +194,19 @@ public:
 
   /*!
    * \brief Establece el color de fondo
-   * \param[in] backColor Color de fondo
+   * \param[in] backgroundColor Color de fondo
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    */
-  void setConsoleBackgroundColor(Console::Color backColor, 
+  void setConsoleBackgroundColor(Console::Color backgroundColor,
                                  Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
    * \brief Establece el color de caracter
-   * \param[in] foreColor Color de caracter
+   * \param[in] foregroundColor Color de caracter
    * \param[in] intensity Intensidad. El valor por defecto es Intensity::NORMAL
    * \see Console::Color, Console::Intensity
    */
-  void setConsoleForegroundColor(Console::Color foreColor, 
+  void setConsoleForegroundColor(Console::Color foregroundColor,
                                  Console::Intensity intensity = Console::Intensity::normal);
 
   /*!
@@ -222,9 +222,9 @@ public:
 
   /*!
    * \brief Establece el tamaño de la fuente
-   * \param[in] size Tamaño de la fuente
+   * \param[in] fontHeight Tamaño de la fuente
    */
-  void setFontHeight(int16_t size);
+  void setFontHeight(int16_t fontHeight);
 
   /*!
    * \brief Establece el título de la consola
@@ -338,17 +338,17 @@ private:
   /*!
    * \brief Intensidad de caracter
    */
-  WORD mForeIntensity;
+  WORD mForegroundIntensity;
 
   /*!
    * \brief Color de caracteres
    */
-  WORD mForeColor;
+  WORD mForegroundColor;
 
   /*!
    * \brief Intensidad de fondo
    */
-  WORD mBackIntensity;
+  WORD mBackgroundIntensity;
 
   /*!
    * \brief Color de fondo
@@ -376,7 +376,7 @@ private:
   /*!
    * \brief Color de caracteres
    */
-  int mForeColor;
+  int mForegroundColor;
 
   /*!
    * \brief Color de fondo
@@ -443,8 +443,8 @@ public:
    */
   virtual ~Argument() = default;
 
-  Argument &operator = (const Argument &arg);
-  Argument &operator = (Argument &&arg) TL_NOEXCEPT;
+  Argument &operator = (const Argument &argument);
+  Argument &operator = (Argument &&argument) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve el nombre del argumento
@@ -549,7 +549,9 @@ public:
    * \param[in] description Descripción del argumento
    * \param[in,out] value Valor del argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  Argument_(const std::string &name, const std::string &description, T *value);
+  Argument_(const std::string &name, 
+            const std::string &description, 
+            T *value);
 
   /*!
    * \brief Constructora argumento
@@ -557,7 +559,9 @@ public:
    * \param[in] description Descripción del argumento
    * \param[in,out] value Valor del argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  Argument_(const char &shortName, const std::string &description, T *value);
+  Argument_(const char &shortName, 
+            const std::string &description,
+            T *value);
 
   /*!
    * \brief Constructora argumento
@@ -566,7 +570,10 @@ public:
    * \param[in] description Descripción del argumento
    * \param[in,out] value Valor del argumento. En el caso de argumentos opcionales establece el valor por defecto
    */
-  Argument_(const std::string &name, const char &shortName, const std::string &description, T *value);
+  Argument_(const std::string &name, 
+            const char &shortName, 
+            const std::string &description, 
+            T *value);
 
   /*!
    * \brief Constructora de copia
@@ -586,7 +593,7 @@ public:
   ~Argument_() override = default;
 
   Argument_ &operator = (const Argument_ &argument);
-  Argument_ &operator = (Argument_ &&arg) TL_NOEXCEPT;
+  Argument_ &operator = (Argument_ &&argument) TL_NOEXCEPT;
 
   /*!
    * \brief Devuelve una cadena de texto con el tipo del argumento
@@ -651,6 +658,22 @@ using ArgumentStringRequired = Argument_<std::string, true>;
 using ArgumentStringOptional = Argument_<std::string, false>;
 using ArgumentPathRequired = Argument_<Path, true>;
 using ArgumentPathOptional = Argument_<Path, false>;
+
+/* Macros para la creación de los argumentos */
+
+# define CreateArgumentIntegerRequired(...) std::make_shared<ArgumentIntegerRequired>(__VA_ARGS__)
+# define CreateArgumentIntegerOptional(...) std::make_shared<ArgumentIntegerOptional>(__VA_ARGS__)
+# define CreateArgumentDoubleRequired(...) std::make_shared<ArgumentDoubleRequired> (__VA_ARGS__)
+# define CreateArgumentDoubleOptional(...) std::make_shared<ArgumentDoubleOptional>(__VA_ARGS__)
+# define CreateArgumentFloatRequired(...) std::make_shared<ArgumentFloatRequired>(__VA_ARGS__)
+# define CreateArgumentFloatOptional(...) std::make_shared<ArgumentFloatOptional>(__VA_ARGS__)
+# define CreateArgumentBooleanRequired(...) std::make_shared<ArgumentBooleanRequired>(__VA_ARGS__)
+# define CreateArgumentBooleanOptional(...) std::make_shared<ArgumentBooleanOptional>(__VA_ARGS__)
+# define CreateArgumentStringRequired(...) std::make_shared<ArgumentStringRequired>(__VA_ARGS__)
+# define CreateArgumentStringOptional(...) std::make_shared<ArgumentStringOptional>(__VA_ARGS__)
+# define CreateArgumentPathRequired(...) std::make_shared<ArgumentPathRequired>(__VA_ARGS__)
+# define CreateArgumentPathOptional(...) std::make_shared<ArgumentPathOptional>(__VA_ARGS__)
+
 
 /* Implementación */
 
@@ -768,61 +791,6 @@ bool Argument_<T, required>::isRequired() const
 {
   return required;
 }
-
-//template<typename T, bool required> inline
-//std::string Argument_<T, required>::toString() const
-//{
-//  std::string val;
-//  if(typeid(T) == typeid(bool)) {
-//    val = *mValue ? "true" : "false";
-//  } else if (std::is_integral<T>::value) {
-//    val = std::to_string(*mValue);
-//  } else if (std::is_floating_point<T>::value){
-//    val = std::to_string(*mValue);
-//  } else if(typeid(T) == typeid(std::string)) {
-//    val = *mValue;
-//  }
-//  return val;
-//}
-//
-//template<> inline
-//std::string Argument_<std::string, true>::toString() const
-//{
-//  return *mValue;
-//}
-//
-//template<> inline
-//std::string Argument_<std::string, false>::toString() const
-//{
-//  return *mValue;
-//}
-//
-//
-//#if (__cplusplus >= 201703L)
-//template<> inline
-//std::string Argument_<std::filesystem::path, true>::toString() const
-//{
-//  return mValue->string();
-//}
-//
-//template<> inline
-//std::string Argument_<std::filesystem::path, false>::toString() const
-//{
-//  return mValue->string();
-//}
-//#else
-//template<> inline
-//std::string Argument_<boost::filesystem::path, true>::toString() const
-//{
-//  return mValue->string();
-//}
-//
-//template<> inline
-//std::string Argument_<boost::filesystem::path, false>::toString() const
-//{
-//  return mValue->string();
-//}
-//#endif
 
 template<typename T, bool required> inline
 void Argument_<T, required>::fromString(const std::string &value)
@@ -978,28 +946,22 @@ using ArgumentListDoubleRequired = ArgumentList_<double, true>;
 using ArgumentListDoubleOptional = ArgumentList_<double, false>;
 using ArgumentListFloatRequired = ArgumentList_<float, true>;
 using ArgumentListFloatOptional = ArgumentList_<float, false>;
-using ArgumentListBooleanRequired = ArgumentList_<bool, true>;
-using ArgumentListBooleanOptional = ArgumentList_<bool, false>;
 using ArgumentListStringRequired = ArgumentList_<std::string, true>;
 using ArgumentListStringOptional = ArgumentList_<std::string, false>;
-using ArgumentListPathRequired = ArgumentList_<Path, true>;
-using ArgumentListPathOptional = ArgumentList_<Path, false>;
+
+/* Macros para la creación de los argumentos */
+
+# define CreateArgumentListIntegerRequired(...) std::make_shared<ArgumentListIntegerRequired>(__VA_ARGS__)
+# define CreateArgumentListIntegerOptional(...) std::make_shared<ArgumentListIntegerOptional>(__VA_ARGS__)
+# define CreateArgumentListDoubleRequired(...) std::make_shared<ArgumentListDoubleRequired>(__VA_ARGS__)
+# define CreateArgumentListDoubleOptional(...) std::make_shared<ArgumentListDoubleOptional>(__VA_ARGS__)
+# define CreateArgumentListFloatRequired(...) std::make_shared<ArgumentListFloatRequired>(__VA_ARGS__)
+# define CreateArgumentListFloatOptional(...) std::make_shared<ArgumentListFloatOptional>(__VA_ARGS__)
+# define CreateArgumentListStringRequired(...) std::make_shared<ArgumentListStringRequired>(__VA_ARGS__)
+# define CreateArgumentListStringOptional(...) std::make_shared<ArgumentListStringOptional>(__VA_ARGS__)
 
 
 /* Implementación */
-
-//template<typename T, bool required> inline
-//ArgumentList_<T, required>::ArgumentList_(const std::string &name,
-//                                          const std::string &description,
-//                                          const std::vector<T> &values, /// Si values esta vacio...
-//                                          size_t *idx)
-//  : Argument_<T, required>(name, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
-//    mValues(values),
-//    mIdx(idx)
-//{
-//  this->setName(name);
-//  this->setDescription(description);
-//}
 
 template<typename T, bool required> inline
 ArgumentList_<T, required>::ArgumentList_(const std::string &name,
@@ -1158,10 +1120,10 @@ private:
  *  double val_d = 0.5;
  *
  *  Command cmd(name, "Ejemplo de aplicación de consola");
- *  cmd.push_back(std::make_shared<ArgumentStringRequired>("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero.", &file));
- *  cmd.push_back(std::make_shared<ArgumentIntegerRequired>("int", 'i', "Valor entero obligatorio", &val));
- *  cmd.push_back(std::make_shared<ArgumentBooleanOptional>("bool", 'b', "boolean", &bOpt));
- *  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("double", "Parámetro doble opcional. Si se omite se toma el valor por defecto", &val_d));
+ *  cmd.addArgument(CreateArgumentStringRequired("file", 'f', "Ejemplo de parámetro obligatorio. Ruta de un fichero.", &file));
+ *  cmd.addArgument(CreateArgumentIntegerRequired("int", 'i', "Valor entero obligatorio", &val));
+ *  cmd.addArgument(CreateArgumentBooleanOptional("bool", 'b', "boolean", &bOpt));
+ *  cmd.addArgument(CreateArgumentDoubleOptional("double", "Parámetro doble opcional. Si se omite se toma el valor por defecto", &val_d));
  *
  *  // Parseo de los argumentos y comprobación de los mismos
  *  Command::Status status = cmd.parse(argc, argv);
@@ -1277,7 +1239,9 @@ public:
    * \param[in] description Descripción del comando
    * \param[in] arguments listado de argumentos
    */
-  Command(std::string name, std::string description, std::initializer_list<std::shared_ptr<Argument>> arguments);
+  Command(std::string name, 
+          std::string description, 
+          std::initializer_list<std::shared_ptr<Argument>> arguments);
 
   ~Command() = default;
 
@@ -1354,15 +1318,17 @@ public:
 
   /*!
    * \brief Agrega un argumento mediante copia al final
-   * \param[in] arg Argumento que se añade
+   * \param[in] argument Argumento que se añade
    */
-  void push_back(const std::shared_ptr<Argument> &arg);
+  void push_back(const std::shared_ptr<Argument> &argument);
+  void addArgument(const std::shared_ptr<Argument> &argument);
 
   /*!
    * \brief Agrega un argumento mediante movimiento al final
-   * \param[in] arg Argumento que se añade
+   * \param[in] argument Argumento que se añade
    */
-  void push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT;
+  void push_back(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT;
+  void addArgument(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina los argumentos
@@ -1384,7 +1350,7 @@ public:
   /*!
    * \brief Asignación de copia
    */
-  Command& operator=(const Command& command);
+  Command& operator=(const Command &command);
 
   /*!
    * \brief Asignación de movimiento
@@ -1437,7 +1403,7 @@ private:
   /*!
    * \brief Listado de los argumentos del comando
    */
-  std::list<std::shared_ptr<Argument>> mCmdArgs;
+  std::list<std::shared_ptr<Argument>> mArguments;
 
   /*!
    * \brief Listado de los argumentos por defecto comando
@@ -1647,15 +1613,17 @@ public:
 
   /*!
    * \brief Agrega un comando mediante copia al final
-   * \param[in] cmd Comando que se añade
+   * \param[in] command Comando que se añade
    */
-  void push_back(const std::shared_ptr<Command> &cmd);
+  void push_back(const std::shared_ptr<Command> &command);
+  void addCommand(const std::shared_ptr<Command> &command);
 
   /*!
    * \brief Agrega un comando mediante movimiento al final
-   * \param[in] cmd Comando que se añade
+   * \param[in] command Comando que se añade
    */
-  void push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT;
+  void push_back(std::shared_ptr<Command> && command) TL_NOEXCEPT;
+  void addCommand(std::shared_ptr<Command> && command) TL_NOEXCEPT;
 
   /*!
    * \brief Elimina los comandos
