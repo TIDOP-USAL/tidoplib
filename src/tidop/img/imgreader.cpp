@@ -119,10 +119,6 @@ public:
                             geotransform[0],
                             geotransform[3]);
 
-      const char *prj = mDataset->GetProjectionRef();
-      if (prj != nullptr) {
-        mEpsgCode = prj;
-      }
     }
 
   }
@@ -335,7 +331,17 @@ public:
 
   std::string crs() const override
   {
-    return mEpsgCode;
+    std::string crs_wkt;
+
+    const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
+    if (spatialReference) {
+      char *wkt = nullptr;
+      spatialReference->exportToWkt(&wkt);
+      crs_wkt = std::string(wkt);
+      CPLFree(wkt);
+    }
+    
+    return crs_wkt;
   }
 
   WindowD window() const override
@@ -359,7 +365,6 @@ protected:
 private:
 
   GDALDataset *mDataset;
-  std::string mEpsgCode;
   Affine<PointD> mAffine;
 };
 

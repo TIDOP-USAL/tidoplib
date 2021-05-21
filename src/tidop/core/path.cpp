@@ -100,6 +100,26 @@ public:
     return fs::exists(mPath);
   }
 
+  std::string replaceFileName(const std::string &fileName)
+  {
+    if (mPath.has_filename()) {
+      mPath.remove_filename();
+      mPath.append(fileName);
+    }
+    return mPath.string();
+  }
+
+  std::string replaceBaseName(const std::string &baseName)
+  {
+    if (mPath.has_filename()) {
+      std::string ext = mPath.extension().string();
+      std::string file_name = baseName + ext;
+      mPath.remove_filename();
+      mPath.append(file_name);
+    }
+    return mPath.string();
+  }
+
   std::string replaceExtension(const std::string &extension)
   {
     mPath.replace_extension(extension);
@@ -261,6 +281,18 @@ std::list<Path> Path::list(const std::regex &filter)
   }
 
   return list;
+}
+
+Path &Path::replaceFileName(const std::string &fileName)
+{
+  mPath->replaceFileName(fileName);
+  return *this;
+}
+
+Path &Path::replaceBaseName(const std::string &baseName)
+{
+  mPath->replaceBaseName(baseName);
+  return *this;
 }
 
 Path &Path::replaceExtension(const std::string &extension)

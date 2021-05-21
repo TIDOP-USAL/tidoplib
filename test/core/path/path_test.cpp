@@ -100,6 +100,20 @@ BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
   BOOST_CHECK_EQUAL(false, path.empty());
 }
 
+BOOST_FIXTURE_TEST_CASE(replace_file_name, PathTest)
+{
+  Path path("C:\\temp\\file.xyz");
+  path.replaceFileName("file2.txt");
+  BOOST_CHECK_EQUAL("C:\\temp\\file2.txt", path.toString());
+}
+
+BOOST_FIXTURE_TEST_CASE(replace_base_name, PathTest)
+{
+  Path path("C:\\temp\\file.xyz");
+  path.replaceBaseName("file2");
+  BOOST_CHECK_EQUAL("C:\\temp\\file2.xyz", path.toString());
+}
+
 BOOST_FIXTURE_TEST_CASE(parent_path, PathTest)
 {
   Path path("C:\\temp\\dir1\\dir2");

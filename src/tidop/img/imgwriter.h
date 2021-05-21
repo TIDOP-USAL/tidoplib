@@ -40,7 +40,9 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#include "tidop/geospatial/crs.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
 
 namespace tl
 {
@@ -173,11 +175,19 @@ public:
   virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
 
   /*!
-   * \brief Establece la proyección de la imagen
-   * \param[in] epsgCode Código EPSG
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs Coordinate Reference System in WKT format
    */
-  //virtual void setCRS(const geospatial::Crs &crs) = 0;
-  virtual void setCRS(const std::string &epsgCode) = 0;
+  virtual void setCRS(const std::string &crs) = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs geospatial::Crs object
+   */
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
+#endif
+  
 
 protected:
   
@@ -187,8 +197,10 @@ protected:
 protected:
 
   std::string mFileName;
-  //geospatial::Crs mCRS;
   Affine<PointD> mAffine;
+#ifdef HAVE_TL_GEOSPATIAL
+  geospatial::Crs mCRS;
+#endif
 };
 
 

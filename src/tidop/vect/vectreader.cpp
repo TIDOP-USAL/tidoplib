@@ -27,6 +27,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
+#include "tidop/core/path.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
@@ -38,11 +39,6 @@ TL_SUPPRESS_WARNINGS
 #include "ogrsf_frmts.h"
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
-
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-
-namespace fs = boost::filesystem;
 
 namespace tl
 {
@@ -125,15 +121,15 @@ public:
   {
     bool bSupported = false;
 
-    if (boost::iequals(extension, ".dxf") ||
-        boost::iequals(extension, ".dwg") ||
-        boost::iequals(extension, ".dgn") ||
-        boost::iequals(extension, ".shp") ||
-        boost::iequals(extension, ".gml") ||
-        boost::iequals(extension, ".kml") ||
-        boost::iequals(extension, ".kmz") ||
-        boost::iequals(extension, ".json") ||
-        boost::iequals(extension, ".osm")) {
+    if (compareInsensitiveCase(extension, ".dxf") ||
+        compareInsensitiveCase(extension, ".dwg") ||
+        compareInsensitiveCase(extension, ".dgn") ||
+        compareInsensitiveCase(extension, ".shp") ||
+        compareInsensitiveCase(extension, ".gml") ||
+        compareInsensitiveCase(extension, ".kml") ||
+        compareInsensitiveCase(extension, ".kmz") ||
+        compareInsensitiveCase(extension, ".json") ||
+        compareInsensitiveCase(extension, ".osm")) {
       bSupported = true;
     }
 
@@ -1180,7 +1176,7 @@ void VectorReaderGdal::readData(OGRFeature *ogrFeature,
 
 std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const std::string &fileName)
 {
-  std::string extension = fs::path(fileName).extension().string();
+  std::string extension = Path(fileName).extension();
   std::unique_ptr<VectorReader> vector_reader;
 #ifdef HAVE_GDAL
   if (VectorReaderGdal::isExtensionSupported(extension)) {

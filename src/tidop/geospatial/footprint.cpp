@@ -95,71 +95,9 @@ void Footprint::run(const std::vector<Photo> &photos,
       int cols = mImageReader->cols();
 
       float focal = this->focal();
-      cv::Mat distCoeffs = this->distCoeffs();
-
-      /*cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
-      float focal_x = 1.f;
-      float focal_y = 1.f;
-      float ppx = cols / 2.f;
-      float ppy = rows / 2.f;*/
-
-      //for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-      //  experimental::Calibration::Parameters parameter = param->first;
-      //  double value = param->second;
-      //  switch (parameter) {
-      //    case experimental::Calibration::Parameters::focal:
-      //      focal_x = value;
-      //      focal_y = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::focalx:
-      //      focal_x = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::focaly:
-      //      focal_y = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::cx:
-      //      ppx = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::cy:
-      //      ppy = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::k1:
-      //      distCoeffs.at<float>(0) = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::k2:
-      //      distCoeffs.at<float>(1) = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::k3:
-      //      distCoeffs.at<float>(4) = value;
-      //      break;
-      //      //case experimental::Calibration::Parameters::k4:
-      //      //  distCoeffs.at<float>(5) = value;
-      //      //  break;
-      //      //case experimental::Calibration::Parameters::k5:
-      //      //  distCoeffs.at<float>(6) = value;
-      //      //  break;
-      //      //case experimental::Calibration::Parameters::k6:
-      //      //  distCoeffs.at<float>(7) = value;
-      //      //  break;
-      //    case experimental::Calibration::Parameters::p1:
-      //      distCoeffs.at<float>(2) = value;
-      //      break;
-      //    case experimental::Calibration::Parameters::p2:
-      //      distCoeffs.at<float>(3) = value;
-      //      break;
-      //    default:
-      //      break;
-      //  }
-      //}
 
       mAffineImageCoordinatesToPhotocoordinates = this->affineImageToPhotocoordinates();
 
-      //Affine<PointI> affine_fotocoordinates_image(-ppx, ppy, 1, -1, 0);
-      //std::vector<PointI> limits(4);
-      //limits[0] = affine_fotocoordinates_image.transform(PointI(0, 0));
-      //limits[1] = affine_fotocoordinates_image.transform(PointI(cols, 0));
-      //limits[2] = affine_fotocoordinates_image.transform(PointI(cols, rows));
-      //limits[3] = affine_fotocoordinates_image.transform(PointI(0, rows));
       std::vector<PointI> limits = this->imageLimitsInPhotocoordinates();
 
       Photo::Orientation orientation = photos[i].orientation();
@@ -168,10 +106,6 @@ void Footprint::run(const std::vector<Photo> &photos,
                                                                                        orientation.position(),
                                                                                        focal);
 
-      //std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits,
-      //                                                                    orientation.rotationMatrix(),
-      //                                                                    orientation.position(),
-      //                                                                    (focal_x + focal_y) / 2.);
       std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits);
 
       std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>();

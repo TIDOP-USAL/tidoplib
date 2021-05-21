@@ -34,6 +34,7 @@
 #include "tidop/geospatial/diffrect.h"
 #include "tidop/geospatial/camera.h"
 #include "tidop/geospatial/photo.h"
+#include "tidop/geospatial/crs.h"
 
 #ifdef HAVE_OPENCV
 
@@ -53,7 +54,8 @@ class TL_EXPORT Orthorectification
 
 public:
 
-	Orthorectification(const std::string &dtm);
+	Orthorectification(const std::string &dtm, 
+										 const Crs &crs);
 	~Orthorectification();
 
   void run(const std::vector<Photo> &photos,
@@ -80,6 +82,7 @@ private:
 private:
 
 	std::string mDtm;
+	Crs mCrs;
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;

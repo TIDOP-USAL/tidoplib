@@ -84,8 +84,9 @@ public:
   bool isFile() const;
   bool empty() const;
   bool exists() const;
-  
 
+  Path &replaceFileName(const std::string &fileName);
+  Path &replaceBaseName(const std::string &baseName);
   Path &replaceExtension(const std::string &extension);
   Path &append(const std::string &text);
 

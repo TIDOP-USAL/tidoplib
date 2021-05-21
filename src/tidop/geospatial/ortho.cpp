@@ -27,6 +27,7 @@
 #include "tidop/core/chrono.h"
 #include "tidop/img/imgreader.h"
 #include "tidop/img/imgwriter.h"
+#include "tidop/img/formats.h"
 #include "tidop/vect/vectwriter.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/rotation_convert.h"
@@ -74,8 +75,9 @@ O eso o transformación
 
 
 
-Orthorectification::Orthorectification(const std::string &dtm)
+Orthorectification::Orthorectification(const std::string &dtm, const Crs &crs)
   : mDtm(dtm),
+    mCrs(crs),
     mDtmReader(ImageReaderFactory::createReader(dtm))
 {
   init();
@@ -116,11 +118,10 @@ void Orthorectification::run(const std::vector<Photo> &photos,
                                                    254));
   std::vector<std::shared_ptr<TableField>> fields;
   fields.push_back(field);
-  std::shared_ptr<TableRegister> data(new TableRegister(fields));
+  //std::shared_ptr<TableRegister> data(new TableRegister(fields));
 
   mVectorWriter->create();
-  TL_TODO("Pasar CRS como parametro a la clase")
-  mVectorWriter->setCRS("EPSG:25830"); 
+  mVectorWriter->setCRS(mCrs.epsgCode());
 
   graph::GLayer layer;
   layer.setName("footprint");
@@ -162,6 +163,9 @@ void Orthorectification::run(const std::vector<Photo> &photos,
 
       std::vector<Point3D> footprint_coordinates = this->terrainProjected(limits);
 
+      ortho_file = orthoPath;
+      ortho_file.append("\\").append(photos[i].name()).append(".png");
+
       /////////////////////////////////////////////////////////////////////////////
 
       std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>();
@@ -170,15 +174,17 @@ void Orthorectification::run(const std::vector<Photo> &photos,
       entity->push_back(footprint_coordinates[2]);
       entity->push_back(footprint_coordinates[3]);
 
-      
-      data->setValue(0, photos[i].path());
+      std::shared_ptr<TableRegister> data(new TableRegister(fields));
+      data->setValue(0, ortho_file);
       entity->setData(data);
 
       layer.push_back(entity);
 
       /////////////////////////////////////////////////////////////////////////////
+      
+      TL_TODO("La escala tiene que ser la misma para todas las ortos. Tiene que ser un parámetro")
       double scale_ortho;
-      /// Calculo de transformación afin entre coordenadas terreno y coordenadas imagen
+      /// Calculo de transformación afin entre coordenadas terreno y fotocoordenadas
       std::vector<PointD> t_coor;
       t_coor.push_back(footprint_coordinates[0]);
       t_coor.push_back(footprint_coordinates[1]);
@@ -213,11 +219,13 @@ void Orthorectification::run(const std::vector<Photo> &photos,
 
       //// Open ortho
 
-      ortho_file = orthoPath;
-      ortho_file.append("\\").append(photos[i].name()).append(".png");
       mOrthophotoWriter = ImageWriterFactory::createWriter(ortho_file);
       mOrthophotoWriter->open();
       if (!mOrthophotoWriter->isOpen()) throw std::runtime_error("Image open error");
+
+      //std::unique_ptr<PngOptions> options = std::make_unique<PngOptions>();
+      //options->setEnableWorldFile(true);
+      //mOrthophotoWriter->setImageOptions(options.get());
 
       cv::Mat image = mImageReader->read();
 
@@ -400,7 +408,7 @@ void Orthorectification::run(const std::vector<Photo> &photos,
         }
       }
 
-      mOrthophotoWriter->setCRS("EPSG:25830");
+      mOrthophotoWriter->setCRS(mCrs);
       mOrthophotoWriter->setGeoreference(affine_ortho);
       mOrthophotoWriter->write(mat_ortho);
       mOrthophotoWriter->close();
