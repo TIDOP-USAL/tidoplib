@@ -60,19 +60,14 @@ Chrono::Chrono()
 {
 }
 
-Chrono::Chrono(std::string message,
-               bool writeMessage)
+Chrono::Chrono(std::string message)
   : mMessage(std::move(message)),
-    bWriteMessage(writeMessage)
+    bWriteMessage(true)
 {
 }
 
 Chrono::~Chrono()
 {
-  if (mStatus == Status::running || mStatus == Status::pause) {
-    stop();
-  }
-  mStatus = Status::finalized;
 }
 
 double Chrono::pause()
@@ -129,6 +124,7 @@ double Chrono::stop()
 void Chrono::setMessage(const std::string &message)
 {
   mMessage = message;
+  bWriteMessage = true;
 }
 
 
@@ -141,13 +137,15 @@ void Chrono::setMessage(const std::string &message)
 
 
 ChronoAuto::ChronoAuto(const std::string &message)
-  : Chrono(message, true)
+  : Chrono(message)
 {
   run();
 }
 
 ChronoAuto::~ChronoAuto()
-= default;
+{
+  stop();
+}
 
 
 

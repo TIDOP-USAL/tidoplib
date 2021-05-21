@@ -609,7 +609,7 @@ void ExternalProcess::execute(Progress *)
   /////////////////////////////////////////////////////////////////////////
 
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(nullptr/*L"C:\\WINDOWS\\system32\\cmd.exe"*/,
+  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
                      cmdLine,                      // Command line
                      nullptr,                      // Process handle not inheritable
                      nullptr,                      // Thread handle not inheritable

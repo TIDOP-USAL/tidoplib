@@ -115,7 +115,7 @@ private:
  * /brief Crea un directorio temporal que por defecto se borra automaticamente
  * 
  */
-class TemporalDir
+class TL_EXPORT TemporalDir
 {
 
 public:

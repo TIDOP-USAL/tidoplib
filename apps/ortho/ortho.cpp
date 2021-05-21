@@ -74,11 +74,11 @@ int main(int argc, char** argv)
 
   Command cmd(cmd_name, "ortho");
   cmd.addArgument(CreateArgumentPathRequired("bundle_file", 'b', "Fichero bundle", &bundle_file));
-  cmd.addArgument(CreateArgumentPathRequired("image_list", 'i', "Listado de imagenes", &image_list));
-  cmd.addArgument(CreateArgumentPathOptional("image_path", 'p', "Ruta de imagenes", &image_path));
+  cmd.addArgument(CreateArgumentPathRequired("image_list", 'i', "Listado de imágenes", &image_list));
+  cmd.addArgument(CreateArgumentPathOptional("image_path", 'p', "Ruta de imágenes si el listado de imágenes sólo contiene el nombre", &image_path));
   cmd.addArgument(CreateArgumentStringRequired("crs", 'c', "Código EPSG", &crs));
-  cmd.addArgument(CreateArgumentStringRequired("mdt", 'm', "Modelo digital del terreno", &mdt));
-  cmd.addArgument(CreateArgumentStringRequired("ortho_path", 'o', "Ruta ortofotos", &ortho_path));
+  cmd.addArgument(CreateArgumentStringRequired("mdt", 'm', "Modelo digital del terreno o de superficie", &mdt));
+  cmd.addArgument(CreateArgumentStringRequired("ortho_path", 'o', "Ruta de salida de las ortofotos", &ortho_path));
   cmd.addArgument(CreateArgumentStringRequired("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
   cmd.addArgument(CreateArgumentStringOptional("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
   cmd.addArgument(CreateArgumentDoubleOptional("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
@@ -294,9 +294,7 @@ int main(int argc, char** argv)
     std::vector<cv::UMat> masks_warped;
     std::vector<cv::UMat> images_warped;
 
-    int expos_comp_type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
-
-    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(expos_comp_type);
+    cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(cv::detail::ExposureCompensator::GAIN_BLOCKS);
 
     std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
     vectorReader->open();
@@ -349,7 +347,7 @@ int main(int argc, char** argv)
 
               /// Esquinas -> Calcular ventana total y guardar las posiciones (ventana) de cada orto
 
-              /// La mascara debería leerse si se creo en la generación del MDS.
+              /// La mascara debería leerse si se creó en la generación del MDS.
 
             }
 

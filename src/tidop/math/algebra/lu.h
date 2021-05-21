@@ -126,7 +126,7 @@ public:
   LuDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
-  Matrix<T, _rows, _cols> solve(const Matrix<T, _rows, _cols> &b);
+  Matrix<T> solve(const Matrix<T> &b);
 
   Matrix<T, _rows, _cols> lu() const;
 
@@ -224,11 +224,11 @@ template<
   template<typename, size_t, size_t>
   class Matrix_t, typename T, size_t _rows, size_t _cols
 >
-Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T, _rows, _cols> &b)
+Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) ///Por ahora solo funciona con matrizes dinamicas
 {
   TL_ASSERT(b.rows() == mRows, "LuDecomposition::solve bad sizes")
-
-  Matrix<T, _rows, _cols> x(b);
+  
+  Matrix<T> x(b);
 
 //#ifdef HAVE_OPENBLAS    
 //  lapack_int info;
@@ -277,20 +277,19 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   T temp;
 	Vector<T, _rows> vv(mRows);
 
-  this->d = static_cast<T>(1);
+  this->d = consts::one<T>;
 
   for (size_t i = 0; i < mRows; i++) {
 
-    big = static_cast<T>(0);
+    big = consts::zero<T>;
 
     for (size_t j = 0; j < mRows; j++) {
-      if ((temp = abs(this->LU.at(i,j))) > big) {
+      if ((temp = abs(LU.at(i,j))) > big) {
         big = temp;
       }
     }
       
-    //if (big == 0.0) throw("Singular matrix in LUdcmp");
-    TL_ASSERT(big != 0.0, "Singular matrix")
+    TL_ASSERT(big != consts::zero<T>, "Singular matrix")
 
     vv[i] = consts::one<T> / big;
   }
@@ -299,11 +298,11 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   for (size_t k = 0; k < mRows; k++) {
 
-    big = 0.0;
+    big = consts::zero<T>;
     imax = k;
 
     for (size_t i = k; i < mRows; i++) {
-      temp = vv[i] * abs(this->LU.at(i,k));
+      temp = vv[i] * abs(LU.at(i,k));
       if (temp > big) {
         big = temp;
         imax = i;
@@ -312,20 +311,20 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     if (k != imax) {
       for (size_t j = 0; j < mRows; j++) {
-        temp = this->LU.at(imax, j);
-        this->LU.at(imax, j) = this->LU.at(k, j);
-        this->LU.at(k, j) = temp;
+        temp = LU.at(imax, j);
+        LU.at(imax, j) = LU.at(k, j);
+        LU.at(k, j) = temp;
       }
       this->d = -this->d;
       vv[imax] = vv[k];
     }
 
     mIndx[k] = imax;
-    if (this->LU.at(k,k) == 0.0) this->LU.at(k,k) = TINY;
-    for (size_t i = k + consts::one<T>; i < mRows; i++) {
-      temp = this->LU.at(i, k) /= this->LU.at(k, k);
+    if (LU.at(k,k) == consts::zero<T>) LU.at(k,k) = TINY;
+    for (size_t i = k + 1; i < mRows; i++) {
+      temp = LU.at(i, k) /= LU.at(k, k);
       for (size_t j = k + 1; j < mRows; j++)
-        this->LU.at(i, j) -= temp * this->LU.at(k, j);
+        LU.at(i, j) -= temp * LU.at(k, j);
     }
   }
 }
@@ -357,7 +356,7 @@ template<
 > 
 inline Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::lu() const
 {
-  return this->LU;
+  return LU;
 }
 
 template<
@@ -369,7 +368,7 @@ T LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const
   T dd = this->d;
 
 	for (size_t i = 0; i < mRows; i++) 
-    dd *= this->LU.at(i, i);
+    dd *= LU.at(i, i);
 
 	return dd;
 }
@@ -381,16 +380,6 @@ template<
 Matrix<T, _rows, _cols> LuDecomposition<Matrix_t<T, _rows, _cols>>::inverse()
 {
   Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::identity(mRows, mRows);
-
-//  for (size_t r = 0; r < mRows; r++) {
-//    for (size_t c = 0; c < mRows; c++) {
-//      if (r == c) {
-//        matrix.at(r, c) = consts::one<T>;
-//      } else {
-//        matrix.at(r, c) = consts::zero<T>;
-//      }
-//    }
-//  }
 
   Matrix<T, _rows, _cols> inv = this->solve(matrix);
   return inv;

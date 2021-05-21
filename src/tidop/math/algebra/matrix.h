@@ -115,6 +115,9 @@ public:
    */
   const_reference at(size_t r, size_t c) const;
 
+  //reference operator()(size_t r, size_t c);
+  //const_reference operator()(size_t r, size_t c) const;
+
   /*!
    * \brief Número de filas de la matriz
    * \return Número de filas
@@ -231,7 +234,13 @@ const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
 }
 
 //template<typename T, size_t _rows, size_t _cols> inline 
-//T MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
+//T MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c)
+//{
+//  return mData[r * this->cols() + c];
+//}
+//
+//template<typename T, size_t _rows, size_t _cols> inline 
+//const T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
 //{
 //  return mData[r * this->cols() + c];
 //}
@@ -1724,7 +1733,7 @@ T Matrix<T, _rows, _cols>::determinant4x4() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinantnxn() const
 {
-  T d;
+  T d{};
   this->rowEchelonForm(&d);
   return d;
 }
@@ -2402,6 +2411,7 @@ template<typename T, size_t _rows, size_t _dim> inline  static
 Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
                             const Vector<T, _dim> &vector)
 {
+  TL_TODO("Añadir test")
   Vector<T, _dim> vect = Vector<T, _dim>::zero();
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _dim; c++) {
@@ -2415,12 +2425,13 @@ template<typename T> inline
 static Vector<T> operator * (const Matrix<T> &matrix,
                       const Vector<T> &vector)
 {
+  TL_TODO("Añadir test")
   size_t rows = matrix.rows();
   size_t dim1 = matrix.cols();
   size_t dim2 = vector.size();
   TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
 
-  Vector<T> vect = Matrix<T>::zero(rows, dim1);
+  Vector<T> vect = Vector<T>::zero(dim1);
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < dim1; c++) {
       vect.at(r) += matrix.at(r, c) * vector.at(c);
