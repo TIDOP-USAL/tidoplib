@@ -239,6 +239,6 @@ public:
 
 /*! \} */ // Fin GraphicEntities
 
-} // Fin namespace TL
+} // Fin namespace tl
 
 #endif // TL_GRAPHIC_ENTITIES_POLYGON_H

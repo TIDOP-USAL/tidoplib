@@ -35,10 +35,6 @@
 #include <numeric>
 #include <utility>
 
-
-
-
-
 #include "tidop/core/defs.h"
 
 namespace tl

@@ -25,13 +25,17 @@
 #ifndef TL_VECTOR_READER_H
 #define TL_VECTOR_READER_H
 
+#include "config_tl.h"
+
 #include <memory>
 #include <list>
 #include <string>
 
-#include "config_tl.h"
-
 #include "tidop/core/defs.h"
+#include "tidop/core/path.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
 
 namespace tl
 {
@@ -69,6 +73,18 @@ public:
   virtual std::shared_ptr<graph::GLayer> read(int layerId) = 0;
   virtual std::shared_ptr<graph::GLayer> read(const std::string &layerName) = 0;
 
+  /*!
+   * \brief Sistema de referencia en formato WKT
+   */
+  virtual std::string crsWkt() const = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Sistema de referencia
+   */
+  virtual geospatial::Crs crs() const = 0;
+#endif
+
 protected:
 
   std::string mFileName;
@@ -84,11 +100,12 @@ class TL_EXPORT VectorReaderFactory
 
 private:
 
-  VectorReaderFactory() {}
+  VectorReaderFactory() = default;
 
 public:
 
   static std::unique_ptr<VectorReader> createReader(const std::string &fileName);
+  static std::unique_ptr<VectorReader> createReader(const Path &fileName);
 };
 
 

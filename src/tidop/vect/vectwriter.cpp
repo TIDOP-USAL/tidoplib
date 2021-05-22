@@ -71,8 +71,8 @@ public:
   void close() override;
   void create() override;
   void write(const GLayer &layer) override;
-  //void setCRS(const geospatial::Crs &crs) override;
-  void setCRS(const std::string &epsgCode) override;
+  void setCRS(const std::string &crs) override;
+  void setCRS(const geospatial::Crs &crs) override;
 
 private:
 
@@ -296,19 +296,21 @@ void VectorWriterGdal::write(const GLayer &layer)
 
 }
 
-//void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
-//{
-//  if (mDataset && crs.isValid()) {
-//    this->setGdalProjection(crs);
-//  }
-//}
-
-void VectorWriterGdal::setCRS(const std::string &epsgCode)
+void VectorWriterGdal::setCRS(const std::string &crs)
 {
   if (mDataset) {
-    this->setGdalProjection(epsgCode);
+    this->setGdalProjection(crs);
   }
 }
+
+#ifdef HAVE_TL_GEOSPATIAL
+void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
+{
+  if (mDataset && crs.isValid()) {
+    this->setGdalProjection(crs.toWktFormat());
+  }
+}
+#endif
 
 void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr, 
                                    const GraphicEntity *gStyle)
@@ -647,16 +649,12 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
                              CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
 }
 
-//void VectorWriterGdal::setGdalProjection(const geospatial::Crs &crs)
-//{
-//  std::string wkt = crs.exportToWkt();
-//  mSpatialReference->importFromWkt(wkt.c_str());
-//}
-void VectorWriterGdal::setGdalProjection(const std::string &epsgCode)
+void VectorWriterGdal::setGdalProjection(const std::string &crs)
 {
-  //std::string wkt = crs.exportToWkt();
-  //mSpatialReference->importFromWkt(wkt.c_str());
-  mSpatialReference->importFromEPSG(std::stoi(epsgCode.substr(5)));
+  OGRErr err = mSpatialReference->importFromWkt(crs.c_str());
+  if (err != 0) {
+    msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+  }
 }
 
 #endif
@@ -685,6 +683,11 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const std::strin
     throw std::runtime_error("Invalid Vector Writer");
   }
   return vector_writer;
+}
+
+std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &fileName)
+{
+  return VectorWriterFactory::createWriter(fileName.toString());
 }
 
 } // End namespace tl

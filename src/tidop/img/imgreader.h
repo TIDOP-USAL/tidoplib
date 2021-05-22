@@ -38,10 +38,14 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/path.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
 
 namespace tl
 {
@@ -173,9 +177,16 @@ public:
   virtual Affine<PointD> georeference() const = 0;
 
   /*!
-   * \brief Sistema de referencia por su código EPSG
+   * \brief Sistema de referencia en formato WKT
    */
-  virtual std::string crs() const = 0;
+  virtual std::string crsWkt() const = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Sistema de referencia
+   */
+  virtual geospatial::Crs crs() const = 0;
+#endif
 
   /*!
    * \brief Ventana envolvente de la imagen en coordenadas terreno
@@ -210,6 +221,7 @@ private:
 public:
 
   static std::unique_ptr<ImageReader> createReader(const std::string &fileName);
+  static std::unique_ptr<ImageReader> createReader(const Path &fileName);
 };
 
 } // End namespace tl

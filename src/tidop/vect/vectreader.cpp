@@ -117,6 +117,36 @@ public:
     return this->read(ogrLayer);
   }
 
+  std::string crsWkt() const override
+  {
+    std::string crs_wkt;
+
+    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+      char *wkt = nullptr;
+      spatialReference->exportToWkt(&wkt);
+      crs_wkt = std::string(wkt);
+      CPLFree(wkt);
+    }
+
+    return crs_wkt;
+  }
+
+#ifdef HAVE_TL_GEOSPATIAL
+  geospatial::Crs crs() const override
+  {
+    geospatial::Crs crs;
+
+    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+      char *wkt = nullptr;
+      spatialReference->exportToWkt(&wkt);
+      crs.fromWktFormat(wkt);
+      CPLFree(wkt);
+    }
+
+    return crs;
+  }
+#endif
+
   static bool isExtensionSupported(const std::string &extension)
   {
     bool bSupported = false;
@@ -1187,6 +1217,11 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const std::strin
     throw std::runtime_error("Invalid Vector Reader");
   }
   return vector_reader;
+}
+
+std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &fileName)
+{
+  return VectorReaderFactory::createReader(fileName.toString());
 }
 
 } // End namespace tl

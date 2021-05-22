@@ -36,6 +36,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/path.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
@@ -218,6 +219,7 @@ private:
 public:
 
   static std::unique_ptr<ImageWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
 };
 
 

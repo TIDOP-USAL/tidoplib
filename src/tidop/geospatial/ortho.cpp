@@ -121,7 +121,7 @@ void Orthorectification::run(const std::vector<Photo> &photos,
   //std::shared_ptr<TableRegister> data(new TableRegister(fields));
 
   mVectorWriter->create();
-  mVectorWriter->setCRS(mCrs.epsgCode());
+  mVectorWriter->setCRS(mCrs);
 
   graph::GLayer layer;
   layer.setName("footprint");

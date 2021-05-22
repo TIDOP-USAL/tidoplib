@@ -53,10 +53,10 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  std::string img;
+  Path img;
 
   Command cmd("read_image", "Lectura de una imagen");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
+  cmd.addArgument(CreateArgumentPathRequired("img", 'i', "Lectura de una imagen", &img));
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 
       imageReader->close();
     } else {
-      msgError("Error al abrir la imagen: %s", img.c_str());
+      msgError("Error al abrir la imagen: %s", img.toString().c_str());
     }
   } catch (const std::exception &e) {
     msgError(e.what());

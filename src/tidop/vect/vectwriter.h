@@ -32,7 +32,10 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
-//#include "tidop/geospatial/crs.h"
+#include "tidop/core/path.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
 
 namespace tl
 {
@@ -69,8 +72,19 @@ public:
 
   virtual void write(const graph::GLayer &layer) = 0;
 
-  //virtual void setCRS(const geospatial::Crs &crs) = 0;
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs Coordinate Reference System in WKT format
+   */
   virtual void setCRS(const std::string &epsgCode) = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs geospatial::Crs object
+   */
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
+#endif
 
 protected:
 
@@ -93,6 +107,7 @@ private:
 public:
 
   static std::unique_ptr<VectorWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<VectorWriter> createWriter(const Path &fileName);
 };
 
 

@@ -27,7 +27,6 @@
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
-#include "tidop/core/path.h"
 
 #ifdef HAVE_OPENCV
 
@@ -329,7 +328,7 @@ public:
     return mAffine;
   }
 
-  std::string crs() const override
+  std::string crsWkt() const override
   {
     std::string crs_wkt;
 
@@ -343,6 +342,22 @@ public:
     
     return crs_wkt;
   }
+
+#ifdef HAVE_TL_GEOSPATIAL
+  geospatial::Crs crs() const override
+  {
+    geospatial::Crs crs;
+
+    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+      char *wkt = nullptr;
+      spatialReference->exportToWkt(&wkt);
+      crs.fromWktFormat(wkt);
+      CPLFree(wkt);
+    }
+
+    return crs;
+  }
+#endif
 
   WindowD window() const override
   {
@@ -592,6 +607,11 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const std::string 
     throw std::runtime_error("Invalid Image Reader");
   }
   return image_reader;
+}
+
+std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &fileName)
+{
+  return ImageReaderFactory::createReader(fileName.toString());
 }
 
 } // End namespace tl
