@@ -61,6 +61,8 @@ public:
       const std::string &grid = "", 
       const std::string &geoid = "");
 
+  Crs(const Crs &crs);
+
   ~Crs();
 
   /*!

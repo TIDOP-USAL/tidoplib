@@ -67,6 +67,21 @@ Crs::Crs(const std::string &epsg,
   initFromEpsg();
 }
 
+Crs::Crs(const Crs &crs)
+  : mEpsg(crs.mEpsg),
+    mGrid(crs.mGrid),
+    mGeoid(crs.mGeoid),
+#if _DEBUG
+/// Por ahora...
+    mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+#else
+    mCrs(new OGRSpatialReference(nullptr))
+#endif
+{
+  fromWktFormat(crs.toWktFormat());
+}
+
+
 Crs::~Crs()
 {
   if (mCrs) {
@@ -94,9 +109,21 @@ void Crs::setEpsgCode(const std::string &epsg)
 std::string Crs::toProjFormat() const
 {
   char *c_prj = nullptr;
-  mCrs->exportToProj4(&c_prj);
-  std::string s_prj(c_prj);
+  std::string s_prj;
+
+  try {
+ 
+    mCrs->exportToProj4(&c_prj);
+    s_prj = c_prj;
+
+  } catch (std::exception &e) {
+    msgError(e.what());
+  } catch (...) {
+    msgError("Unknow exception");
+  }
+
   CPLFree(c_prj);
+
   return s_prj;
 }
 
