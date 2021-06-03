@@ -369,6 +369,12 @@ void Console::init(DWORD handle)
   mCurrentFont.cbSize = sizeof(mCurrentFont);
   mCurrentFont = mIniFont;
   //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
+
+  //CONSOLE_SCREEN_BUFFER_INFOEX cbi;
+  //cbi.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+  //GetConsoleScreenBufferInfoEx(mHandle, &cbi);
+  //cbi.wAttributes = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
+  //SetConsoleScreenBufferInfoEx(mHandle, &cbi);
 }
 #else
 void Console::init(FILE *stream)

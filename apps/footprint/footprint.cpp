@@ -28,25 +28,19 @@
 
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>
-#include <tidop/geospatial/crs.h>
+#include <tidop/core/path.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/vect/vectwriter.h>
+#include <tidop/vect/vectreader.h>
 #include <tidop/graphic/layer.h>
 #include <tidop/graphic/entities/polygon.h>
 #include <tidop/graphic/datamodel.h>
+#include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/camera.h>
 #include <tidop/geospatial/photo.h>
 #include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/util.h>
-#include <tidop/vect/vectreader.h> // Para la lectura de la huella de vuelo
-// filesystem
-#if (__cplusplus >= 201703L)
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
-#endif
+
 
 using namespace tl;
 using namespace geospatial;
@@ -54,8 +48,8 @@ using namespace geospatial;
 int main(int argc, char** argv)
 {
 
-  fs::path app_path = argv[0];
-  std::string cmd_name = app_path.stem().string();
+  Path app_path = argv[0];
+  std::string cmd_name = app_path.baseName();
 
   // Consola
   Console &console = Console::instance();
@@ -65,26 +59,26 @@ int main(int argc, char** argv)
   console.setMessageLevel(MessageLevel::msg_verbose);
   MessageManager::instance().addListener(&console);
 
-  std::string bundle_file;
-  std::string image_list;
-  std::string image_path;
-  std::string crs;
-  std::string mdt;
-  std::string footprint_file;
-  std::string offset_file;
+  Path bundle_file;
+  Path image_list;
+  Path image_path;
+  std::string epsg;
+  Path mdt;
+  Path footprint_file;
+  Path offset_file;
   double cx = 0.;
   double cy = 0.;
 
   Command cmd(cmd_name, "Huella de vuelo");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("bundle_file", 'b', "Fichero bundle", &bundle_file));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("image_list", 'i', "Listado de imagenes", &image_list));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("image_path", 'p', "Ruta de imagenes", &image_path));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("crs", 'c', "Código EPSG", &crs));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("mdt", 'm', "Modelo digital del terreno", &mdt));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
-  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
-  cmd.push_back(std::make_shared<ArgumentDoubleOptional>("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
+  cmd.addArgument(CreateArgumentPathRequired("bundle_file", 'b', "Fichero bundle", &bundle_file));
+  cmd.addArgument(CreateArgumentPathRequired("image_list", 'i', "Listado de imágenes", &image_list));
+  cmd.addArgument(CreateArgumentPathOptional("image_path", 'p', "Ruta de imágenes si el listado de imágenes sólo contiene el nombre", &image_path));  
+  cmd.addArgument(CreateArgumentStringRequired("crs", 'c', "Código EPSG", &epsg));
+  cmd.addArgument(CreateArgumentPathRequired("mdt", 'm', "Modelo digital del terreno o de superficie", &mdt));
+  cmd.addArgument(CreateArgumentPathRequired("footprint_file", 'f', "Fichero Shapefile con la huella de vuelo", &footprint_file));
+  cmd.addArgument(CreateArgumentPathOptional("offset_file", "Fichero con el offset a aplicar a las cámaras", &offset_file));
+  cmd.addArgument(CreateArgumentDoubleOptional("cx", "Punto principal x. Por defecto la mitad de la anchura de las imágenes", &cx));
+  cmd.addArgument(CreateArgumentDoubleOptional("cy", "Punto principal y. Por defecto la mitad de la altura de las imágenes", &cy));
 
   cmd.addExample(cmd_name + " --bundle_file bundle.rd.out --image_list bundle.rd.out.list.txt --image_path visualize --crs EPSG:25830 --mdt mdt.tif --footprint_file footprint.shp");
 
@@ -103,11 +97,13 @@ int main(int argc, char** argv)
 
     /// Lectura del offset
     
-    Point3D offset; // (272021.250, 4338368.076, 379.370);
+    Point3D offset;
 
     {
+      if (!offset_file.exists()) throw std::runtime_error("Offset file not found");
+
       std::ifstream ifs;
-      ifs.open(offset_file, std::ifstream::in);
+      ifs.open(offset_file.toString(), std::ifstream::in);
       if (ifs.is_open()) {
       
         ifs >> offset.x >> offset.y >> offset.z;
@@ -118,33 +114,35 @@ int main(int argc, char** argv)
 
     /// Carga de imagenes 
 
-    if (!fs::exists(image_list)) throw std::runtime_error("Image list not found");
+    if (!image_list.exists()) throw std::runtime_error("Image list not found");
 
     std::vector<std::string> images;
 
     std::ifstream ifs;
-    ifs.open(image_list, std::ifstream::in);
+    ifs.open(image_list.toString(), std::ifstream::in);
     if (ifs.is_open()) {
 
       std::string line;
 
       while (std::getline(ifs, line)) {
         
-        if (fs::exists(line)) {
+        if (Path::exists(line)) {
           images.push_back(line);
-        } else {
-          std::string image = std::string(image_path).append("\\").append(line);
-          
-          if (fs::exists(image)) {
-            images.push_back(image);
-          } else {
+        }
+        else {
+          Path image(image_path);
+          image.append(line);
+
+          if (image.exists()) {
+            images.push_back(image.toString());
+          }
+          else {
             std::string err = "Image not found: ";
-            err.append(image);
+            err.append(image.toString());
             throw std::runtime_error(err.c_str());
           }
 
         }
-        
 
       }
 
@@ -160,11 +158,11 @@ int main(int argc, char** argv)
 
     std::unique_ptr<ImageReader> imageReader;
 
-    if (!fs::exists(bundle_file)) throw std::runtime_error("Bundle file not found");
+    if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
 
-    ifs.open(bundle_file, std::ifstream::in);
+    ifs.open(bundle_file.toString(), std::ifstream::in);
     if (ifs.is_open()) {
-    
+
       std::string line;
       std::getline(ifs, line); // Salto primera linea
 
@@ -179,8 +177,7 @@ int main(int argc, char** argv)
       TL_ASSERT(camera_count == images.size(), "ERROR");
 
       for (size_t i = 0; i < camera_count; i++) {
-      //while (std::getline(ifs, line)) {
-        
+
         imageReader = ImageReaderFactory::createReader(images[i]);
         imageReader->open();
         int width = 0;
@@ -201,21 +198,17 @@ int main(int argc, char** argv)
         ss >> focal >> k1 >> k2;
 
         TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-        Camera camera;
-        //camera.setMake("SONY");
-        //camera.setModel("ILCE-6000");
-        //camera.setFocal(16);
+          Camera camera;
         camera.setHeight(height);
         camera.setWidth(width);
         camera.setType("Radial");
-        //camera.setSensorSize(23.5);
         std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
         calibration->setParameter(Calibration::Parameters::focal, focal);
         if (cx == 0. && cy == 0.) {
-          cx = width / 2;
-          cy = height / 2;
-        } 
-        calibration->setParameter(Calibration::Parameters::cx, cx);        
+          cx = width / 2.;
+          cy = height / 2.;
+        }
+        calibration->setParameter(Calibration::Parameters::cx, cx);
         calibration->setParameter(Calibration::Parameters::cy, cy);
         calibration->setParameter(Calibration::Parameters::k1, k1);
         calibration->setParameter(Calibration::Parameters::k2, k2);
@@ -261,33 +254,29 @@ int main(int argc, char** argv)
         double ty;
         double tz;
         ss >> tx >> ty >> tz;
-        
-        //Point3D position(tx, ty, tz);
-        //Point3D position(-5.7208 + 272021.61, -17.8296 + 4338369.137, 0.166741 + 314.874);
-        //Point3D offset(272021.250, 4338368.076, 379.370);
-        Point3D position;
 
         // Paso de la transformación de mundo a imagen a imagen mundo
 
         math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
 
+        Point3D position;
+
         position.x = -(rotation_transpose.at(0, 0) * tx +
-                       rotation_transpose.at(0, 1) * ty +
-                       rotation_transpose.at(0, 2) * tz) + offset.x;
+          rotation_transpose.at(0, 1) * ty +
+          rotation_transpose.at(0, 2) * tz) + offset.x;
         position.y = -(rotation_transpose.at(1, 0) * tx +
-                       rotation_transpose.at(1, 1) * ty +
-                       rotation_transpose.at(1, 2) * tz) + offset.y;
+          rotation_transpose.at(1, 1) * ty +
+          rotation_transpose.at(1, 2) * tz) + offset.y;
         position.z = -(rotation_transpose.at(2, 0) * tx +
-                       rotation_transpose.at(2, 1) * ty +
-                       rotation_transpose.at(2, 2) * tz) + offset.z;
+          rotation_transpose.at(2, 1) * ty +
+          rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
         Photo::Orientation orientation(position, rotation_matrix);
         Photo photo(images[i]);
         photo.setCamera(camera);
         photo.setOrientation(orientation);
-        //if (images[i].compare("C:\\Users\\esteban\\Documents\\Inspector\\Projects\\Madrigalejo\\images\\image_2020-08-04 12_45_42.jpg") == 0)
-          photos.push_back(photo);
+        photos.push_back(photo);
       }
 
       ifs.close();
@@ -295,8 +284,10 @@ int main(int argc, char** argv)
 
     /// Fin lectura de fichero bundle
 
-    Footprint footprint(mdt);
-    footprint.run(photos, footprint_file);
+    Crs crs(epsg);
+
+    Footprint footprint(mdt.toString(), crs);
+    footprint.run(photos, footprint_file.toString());
 
   } catch (const std::exception &e) {
     msgError(e.what());

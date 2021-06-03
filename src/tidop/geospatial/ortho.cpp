@@ -43,8 +43,8 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+//#include <boost/filesystem.hpp>
+//namespace fs = boost::filesystem;
 
 namespace tl
 {
@@ -75,7 +75,8 @@ O eso o transformación
 
 
 
-Orthorectification::Orthorectification(const std::string &dtm, const Crs &crs)
+Orthorectification::Orthorectification(const std::string &dtm, 
+                                       const Crs &crs)
   : mDtm(dtm),
     mCrs(crs),
     mDtmReader(ImageReaderFactory::createReader(dtm))
@@ -106,8 +107,7 @@ void Orthorectification::run(const std::vector<Photo> &photos,
                              const std::string &orthoPath,
 					                   const std::string &footprint)
 {
-
-  fs::create_directories(orthoPath);
+  Path::createDirectories(orthoPath);
 
   mVectorWriter = VectorWriterFactory::createWriter(footprint);
   mVectorWriter->open();
@@ -118,7 +118,6 @@ void Orthorectification::run(const std::vector<Photo> &photos,
                                                    254));
   std::vector<std::shared_ptr<TableField>> fields;
   fields.push_back(field);
-  //std::shared_ptr<TableRegister> data(new TableRegister(fields));
 
   mVectorWriter->create();
   mVectorWriter->setCRS(mCrs);
@@ -127,7 +126,6 @@ void Orthorectification::run(const std::vector<Photo> &photos,
   layer.setName("footprint");
   layer.addDataField(field);
       
-
   std::string ortho_file;
 
   for (size_t i = 0; i < photos.size(); i++) {
@@ -583,15 +581,15 @@ cv::Mat Orthorectification::distCoeffs() const
       case Calibration::Parameters::k3:
         dist_coeffs.at<float>(4) = value;
         break;
-        //case Calibration::Parameters::k4:
-        //  dist_coeffs.at<float>(5) = value;
-        //  break;
-        //case Calibration::Parameters::k5:
-        //  dist_coeffs.at<float>(6) = value;
-        //  break;
-        //case experimental::Calibration::Parameters::k6:
-        //  dist_coeffs.at<float>(7) = value;
-        //  break;
+      case Calibration::Parameters::k4:
+        dist_coeffs.at<float>(5) = value;
+        break;
+      case Calibration::Parameters::k5:
+        dist_coeffs.at<float>(6) = value;
+        break;
+      case Calibration::Parameters::k6:
+        dist_coeffs.at<float>(7) = value;
+        break;
       case Calibration::Parameters::p1:
         dist_coeffs.at<float>(2) = value;
         break;
