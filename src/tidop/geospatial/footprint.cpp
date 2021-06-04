@@ -40,7 +40,8 @@ namespace geospatial
 {
 
 
-Footprint::Footprint(const std::string &dtm)
+Footprint::Footprint(const std::string &dtm, 
+                     const Crs &crs)
   : mDtm(dtm),
     mDtmReader(ImageReaderFactory::createReader(dtm))
 {
@@ -57,14 +58,12 @@ Footprint::~Footprint()
 void Footprint::run(const std::vector<Photo> &photos, 
                     const std::string &footprint)
 {
-
-  if (!mDtmReader->isOpen()) {
-    mDtmReader->open();
-  }
+  Path footprint_path(footprint);
+  footprint_path.parentPath().createDirectories();
 
   mVectorWriter = VectorWriterFactory::createWriter(footprint);
   mVectorWriter->open();
-  if (!mVectorWriter->isOpen())throw std::runtime_error("Vector open error");
+  if (!mVectorWriter->isOpen()) throw std::runtime_error("Vector open error");
 
   std::shared_ptr<TableField> field(new TableField("image", 
                                                   TableField::Type::STRING, 
@@ -73,8 +72,7 @@ void Footprint::run(const std::vector<Photo> &photos,
   fields.push_back(field);
 
   mVectorWriter->create();
-  TL_TODO("Pasar CRS como parametro a la clase")
-  mVectorWriter->setCRS("EPSG:25830"); 
+  mVectorWriter->setCRS(mCrs);
 
   graph::GLayer layer;
   layer.setName("footprint");
@@ -304,60 +302,6 @@ cv::Mat Footprint::distCoeffs() const
   return dist_coeffs;
 }
 
-//std::vector<Point3D> Footprint::terrainProjected(const std::vector<PointI> &imageLimits,
-//                                                 const tl::math::RotationMatrix<double> &rotation_matrix,
-//															                   const Point3D &position,
-//															                   double focal)
-//{
-//  std::vector<Point3D> terrainLimits(4);
-//  
-//  /// Se lee el dtm en las coordenadas xy del punto principal. Se usa esa z para comenzar el proceso
-//  Affine<PointD> affine = mDtmReader->georeference();
-//  PointD pt(position.x, position.y);
-//  WindowD w(pt, 1 * affine.scaleX());
-//  cv::Mat image = mDtmReader->read(w);
-//  double z_ini = image.at<float>(0, 0);
-//  double z = z_ini;
-//
-//   Window<PointD> window_dtm_terrain;
-//   window_dtm_terrain.pt1.x = affine.tx;
-//   window_dtm_terrain.pt1.y = affine.ty;
-//   window_dtm_terrain.pt2.x = affine.tx + affine.scaleX() *mDtmReader->cols();
-//   window_dtm_terrain.pt2.y = affine.ty + affine.scaleY() *mDtmReader->rows();
-//
-//  for (size_t i = 0; i < imageLimits.size(); i++) {
-//
-//    int it = 10;
-//    Point3D terrain_point;
-//
-//    terrain_point = projectPhotoToTerrain(rotation_matrix, position, imageLimits[i], focal, z_ini);
-//    double z2;
-//    while (it > 0) {
-//      
-//      PointD pt(terrain_point.x, terrain_point.y);
-//      if (window_dtm_terrain.containsPoint(terrain_point)) {
-//        WindowD w(pt, 1 * affine.scaleX());
-//        cv::Mat image = mDtmReader->read(w);
-//        if (!image.empty()) {
-//          z2 = image.at<float>(0, 0);
-//          if (std::abs(z2 - z) > 0.1) {
-//            terrain_point = projectPhotoToTerrain(rotation_matrix, position, imageLimits[i], focal, z2);
-//            z = z2;
-//          } else {
-//            it = 0;
-//          }
-//        }  
-//      } else {
-//        it = 0;
-//      }
-//      it--;
-//    }
-//
-//    terrainLimits[i] = terrain_point;
-//  }
-//
-//  return terrainLimits;
-//}
 
 } // End namespace geospatial
 

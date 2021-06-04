@@ -576,24 +576,15 @@ public:
             T *value);
 
   /*!
-   * \brief Constructora de copia
-   * \param[in] argument Objeto que se copia
-   */
-  Argument_(const Argument_ &argument);
-
-  /*!
-   * \brief Constructora de movimiento
-   * \param[in] argument Objeto que se mueve
-   */
-  Argument_(Argument_ &&argument) TL_NOEXCEPT;
-
-  /*!
    * \brief Destructora
    */
   ~Argument_() override = default;
 
-  Argument_ &operator = (const Argument_ &argument);
-  Argument_ &operator = (Argument_ &&argument) TL_NOEXCEPT;
+  /// Se invalida la copia y la asignación
+  Argument_(const Argument_ &) = delete;
+  Argument_(Argument_ &&) = delete;
+  Argument_ &operator = (const Argument_ &) = delete;
+  Argument_ &operator = (Argument_ &&) = delete;
 
   /*!
    * \brief Devuelve una cadena de texto con el tipo del argumento
@@ -706,44 +697,6 @@ Argument_<T, required>::Argument_(const std::string &name,
     mValue(value),
     bValid(true)
 {
-}
-
-template<typename T, bool required> inline
-Argument_<T, required>::Argument_(const Argument_ &argument)
-  : Argument(argument),
-    mValue(argument.mValue),
-    bValid(argument.bValid)
-{
-}
-
-template<typename T, bool required> inline
-Argument_<T, required>::Argument_(Argument_ &&argument) TL_NOEXCEPT
-  : Argument(std::forward<Argument>(argument)),
-    mValue(std::move(argument.mValue)),
-    bValid(std::move(argument.bValid))
-{
-}
-
-template<typename T, bool required> inline
-Argument_<T, required> &Argument_<T, required>::operator=(const Argument_ &argument)
-{
-  if (this != &argument){
-    Argument::operator=(argument);
-    this->mValue = argument.mValue;
-    this->bValid = argument.bValid;
-  }
-  return *this;
-}
-
-template<typename T, bool required> inline
-Argument_<T, required> &Argument_<T, required>::operator=(Argument_ &&argument) TL_NOEXCEPT
-{
-  if (this != &argument){
-    Argument::operator=(std::forward<Argument>(argument));
-    this->mValue = std::move(argument.mValue);
-    this->bValid = std::move(argument.bValid);
-  }
-  return *this;
 }
 
 template<typename T, bool required> inline
@@ -880,7 +833,7 @@ class ArgumentList_
 public:
 
   /*!
-   * \brief Constructora argumento lista de opciones
+   * \brief Constructor argumento lista de opciones
    * \param[in] name Nombre del argumento
    * \param[in] description Descripción del argumento
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
@@ -891,7 +844,7 @@ public:
                 std::vector<T> &values, size_t *idx);
 
   /*!
-   * \brief Constructora argumento lista de opciones
+   * \brief Constructor argumento lista de opciones
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
    * \param[in] values Vector con los posibles valores que puede tomar el argumento
@@ -903,7 +856,7 @@ public:
                 size_t *idx);
 
   /*!
-   * \brief Constructora argumento lista de opciones
+   * \brief Constructor argumento lista de opciones
    * \param[in] name Nombre del argumento
    * \param[in] shortName Nombre corto del argumento
    * \param[in] description Descripción del argumento
@@ -916,16 +869,16 @@ public:
                 std::vector<T> &values,
                 size_t *idx);
 
-  /*!
-   * \brief Constructora de copia
-   * \param[in] argument Objeto que se copia
-   */
-  ArgumentList_(const ArgumentList_ &argumentList);
 
   /*!
    * \brief Destructora
    */
   ~ArgumentList_() override = default;
+
+  ArgumentList_(const ArgumentList_ &) = delete;
+  ArgumentList_(ArgumentList_ &&) = delete;
+  ArgumentList_ &operator = (const ArgumentList_ &) = delete;
+  ArgumentList_ &operator = (ArgumentList_ &&) = delete;
 
   void fromString(const std::string &value) override;
 
@@ -994,14 +947,6 @@ ArgumentList_<T, required>::ArgumentList_(const std::string &name,
   : Argument_<T, required>(name, shortName, description, &values[*idx >= 0 && *idx < values.size() ? *idx : 0]),
     mValues(values),
     mIdx(idx)
-{
-}
-
-template<typename T, bool required> inline
-ArgumentList_<T, required>::ArgumentList_(const ArgumentList_ &argumentList)
-  : Argument_<T, required>(argumentList),
-    mValues(argumentList.mValues),
-    mIdx(argumentList.mIdx)
 {
 }
 

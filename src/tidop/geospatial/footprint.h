@@ -34,6 +34,7 @@
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geospatial/diffrect.h"
+#include "tidop/geospatial/crs.h"
 
 #ifdef HAVE_OPENCV
 
@@ -52,7 +53,8 @@ class TL_EXPORT Footprint
 
 public:
 
-	Footprint(const std::string &dtm);
+	Footprint(const std::string &dtm,
+		        const Crs &crs);
 	~Footprint();
 
 	void run(const std::vector<Photo> &photos,
@@ -64,10 +66,7 @@ private:
 	Affine<PointI> affineImageToPhotocoordinates();
 	std::vector<tl::PointI> imageLimitsInPhotocoordinates();
 	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits);
-	//std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits,
-	//																			const tl::math::RotationMatrix<double> &rotation_matrix,
-	//																			const Point3D &position,
-	//																			double focal);
+
 	TL_TODO("Mover a calibration")
 	float focal() const;
 	PointF principalPoint() const;
@@ -76,6 +75,7 @@ private:
 private:
 
 	std::string mDtm;
+	Crs mCrs;
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
 	std::unique_ptr<VectorWriter> mVectorWriter;
