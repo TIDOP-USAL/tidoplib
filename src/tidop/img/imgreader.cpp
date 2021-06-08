@@ -361,7 +361,11 @@ public:
 
   WindowD window() const override
   {
-    return WindowD();
+    PointD p1 = mAffine.transform(PointD(0, 0));
+    PointD p2 = mAffine.transform(PointD(cols(), rows()));
+    WindowD window(p1, p2);
+    window.normalized();
+    return window;
   }
 
 protected:
