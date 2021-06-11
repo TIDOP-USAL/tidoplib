@@ -31,6 +31,7 @@
 #include "tidop/vect/vectwriter.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/rotation_convert.h"
+#include "tidop/math/algebra/matrix.h"
 #include "tidop/geospatial/util.h"
 #include "tidop/geometry/operations.h"
 #include "tidop/geometry/transform/perspective.h"
@@ -248,11 +249,21 @@ void Orthorectification::run(const std::vector<Photo> &photos,
 
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       //// Mascara
-                  
-      ///// se crea la mascara
-      //cv::Mat mask =  cv::Mat::zeros(dtm.row, dtm.cols, CV_8U);
 
-      //{
+      /// Z-Buffer arrays
+      //math::Matrix<double> z_buffer_distances(mImageReader->rows(), mImageReader->cols(), 0.0);
+      //math::Matrix<int> z_buffer_y(mImageReader->rows(), mImageReader->cols(), -1);
+      //math::Matrix<int> z_buffer_x(mImageReader->rows(), mImageReader->cols(), -1);
+
+      cv::Mat z_buffer_distances = cv::Mat::zeros(mImageReader->rows(), mImageReader->cols(), CV_32F);
+      cv::Mat z_buffer_y(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
+      cv::Mat z_buffer_x(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
+      cv::Mat visibility_map = cv::Mat::zeros(dtm.rows, dtm.cols, CV_8U);
+
+      ///// se crea la mascara
+      //cv::Mat mask =  cv::Mat::zeros(rows_ortho, cols_ortho, CV_8U);
+
+      {
 
       //  cv::Mat mat_r(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
       //  cv::Mat mat_c(mImageReader->rows(), mImageReader->cols(), CV_32S, -1);
@@ -321,9 +332,10 @@ void Orthorectification::run(const std::vector<Photo> &photos,
       //    }
       //  }
 
-      //}
+      }
 
       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 
       for (int r = 0; r < dtm.rows - 1; r++) {
@@ -340,8 +352,11 @@ void Orthorectification::run(const std::vector<Photo> &photos,
           dtm_grid_terrain_points[3].z = dtm.at<float>(r + 1, c);
           
           //// Valor nulo. No debería ser 0
-          if (dtm_grid_terrain_points[0].z == 0 || dtm_grid_terrain_points[1].z == 0 || dtm_grid_terrain_points[2].z == 0 || dtm_grid_terrain_points[3].z == 0)
+          //// Leer valor nulo del DTM
+          if (dtm_grid_terrain_points[0].z == 0 || dtm_grid_terrain_points[1].z == 0 || dtm_grid_terrain_points[2].z == 0 || dtm_grid_terrain_points[3].z == 0) {
+            
             continue;
+          }
 
           ortho_image_coordinates[0] = affine_ortho.transform(dtm_grid_terrain_points[0], Transform::Order::inverse);
           ortho_image_coordinates[1] = affine_ortho.transform(dtm_grid_terrain_points[1], Transform::Order::inverse);
@@ -368,6 +383,9 @@ void Orthorectification::run(const std::vector<Photo> &photos,
               rect_ortho.contains(ortho_image_coordinates[3])) {
 
             WindowI window_ortho_in = boundingWindow(ortho_image_coordinates.begin(), ortho_image_coordinates.end());
+            bool kk;
+            if (window_ortho_in.containsPoint(PointI(1400,2100)))
+              kk = false;
             if (!window_ortho_in.isValid()) continue;
             cv::Mat out = cv::Mat::zeros(cv::Size(window_ortho_in.width(), window_ortho_in.height()), image.type());
             
@@ -394,6 +412,155 @@ void Orthorectification::run(const std::vector<Photo> &photos,
             }
             cv::Mat h = cv::getPerspectiveTransform(cv_ortho_image_coordinates, cv_photo_image_coordinates);
 
+            ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            /// Se comprueba si ya se han tomado esos valores
+            
+            {
+
+              //for (size_t ri = 0; ri < window_image_in.height(); ri++) {
+              //  for (size_t ci = 0; ci < window_image_in.width(); ci++) {
+
+              //    std::vector<cv::Point2f> points_image;
+              //    points_image.emplace_back(ci, ri);
+              //    std::vector<cv::Point2f> points_ortho;
+              //    cv::perspectiveTransform(points_image, points_ortho, h.inv());
+              //    
+              //    PointI ortho_image_point(std::round(points_ortho[0].x + window_ortho_in.pt1.x), std::round(points_ortho[0].y + window_ortho_in.pt1.y));
+              //    Point3D terrain_point = affine_ortho.transform(ortho_image_point);
+              //    terrain_point.z = dtm.at<float>(r, c); // Hay que interpolar
+              //    //Point3D terrain_point(points_ortho[0].x, points_ortho[0].y, dtm.at<float>(r, c)); /// Interpolar!!!
+              //    double distance = tl::distance3D(terrain_point, orientation.position());
+              //    if (z_buffer_distances.at(ri+ window_image_in.pt1.y, ci+ window_image_in.pt1.x) == 0. || z_buffer_distances.at(ri+ window_image_in.pt1.y, ci+ window_image_in.pt1.x) > distance) {
+              //      z_buffer_distances.at(ri+ window_image_in.pt1.y, ci+ window_image_in.pt1.x) = distance;
+              //      int old_row = z_buffer_y.at(ri+ window_image_in.pt1.y, ci+ window_image_in.pt1.x);
+              //      int old_col = z_buffer_x.at(ri+ window_image_in.pt1.y, ci+ window_image_in.pt1.x);
+              //      z_buffer_y.at(ri + window_image_in.pt1.y, ci + window_image_in.pt1.x) = ortho_image_point.y;
+              //      z_buffer_x.at(ri + window_image_in.pt1.y, ci + window_image_in.pt1.x) = ortho_image_point.x;
+              //      if (old_row !=- 1 && old_col != -1) visibility_map.at<uchar>(old_row, old_col) = 0;
+              //      visibility_map.at<uchar>(ortho_image_point.y, ortho_image_point.x) = 1;
+              //    } else {
+              //      visibility_map.at<uchar>(ortho_image_point.y, ortho_image_point.x) = 0;
+              //    }
+
+              //  }
+              //}
+
+              /// Se busca sólo el punto central
+
+              //std::vector<cv::Point2f> points_image;
+              //std::vector<cv::Point2f> points_ortho;
+              //points_ortho.emplace_back(window_ortho_in.center().x - window_ortho_in.pt1.x, window_ortho_in.center().y - window_ortho_in.pt1.y);
+
+              //cv::perspectiveTransform(points_ortho, points_image, h.inv());
+              //PointI pt_image(points_image[0].x + window_image_in.pt1.x, points_image[0].y + window_image_in.pt1.y);
+              //if (rect_image.contains(pt_image)) {
+              //  Point3D terrain_point = dtm_grid_terrain_points[0];
+              //  for (size_t j = 1; j < dtm_grid_terrain_points.size(); j++) {
+              //    terrain_point += (dtm_grid_terrain_points[j] - terrain_point) / (j + 1);
+              //  }
+
+              //  double distance = tl::distance3D(terrain_point, orientation.position());
+              //  double z_buffer_distance = z_buffer_distances.at(pt_image.y, pt_image.x);
+              //  double old_row = z_buffer_y.at(pt_image.y, pt_image.x);
+              //  double old_col = z_buffer_x.at(pt_image.y, pt_image.x);
+              //  if (z_buffer_distances.at(pt_image.y, pt_image.x) == 0. || z_buffer_distances.at(pt_image.y, pt_image.x) > (distance+0.2)) {
+
+              //    for (size_t ri = window_image_in.pt1.y; ri < window_image_in.pt2.y; ri++) {
+              //      for (size_t ci = window_image_in.pt1.x; ci < window_image_in.pt2.x; ci++) {
+              //        z_buffer_distances.at(ri, ci) = distance;
+              //        z_buffer_y.at(ri, ci) = /*window_dtm_image.pt1.y + */r; /// coordenadas del DTM
+              //        z_buffer_x.at(ri, ci) = /*window_dtm_image.pt1.x + */c;
+
+              //      }
+              //    }
+
+              //    if (old_row != -1 && old_col != -1) {
+              //      visibility_map.at<uchar>(old_row, old_col) = 0;
+              //    }
+
+              //    visibility_map.at<uchar>(/*window_dtm_image.pt1.y + */r, /*window_dtm_image.pt1.x + */c) = 255;
+              //  } else {
+              //    visibility_map.at<uchar>(/*window_dtm_image.pt1.y + */r, /*window_dtm_image.pt1.x + */c) = 0;
+              //  }
+              //}
+
+
+              std::vector<cv::Point2f> points_image;
+              std::vector<cv::Point2f> points_ortho;
+              points_ortho.emplace_back(window_ortho_in.center().x - window_ortho_in.pt1.x, window_ortho_in.center().y - window_ortho_in.pt1.y);
+
+              cv::perspectiveTransform(points_ortho, points_image, h.inv());
+              PointI pt_image(points_image[0].x + window_image_in.pt1.x, points_image[0].y + window_image_in.pt1.y);
+              if (rect_image.contains(pt_image)) {
+                Point3D terrain_point = dtm_grid_terrain_points[0];
+                for (size_t j = 1; j < dtm_grid_terrain_points.size(); j++) {
+                  terrain_point += (dtm_grid_terrain_points[j] - terrain_point) / (j + 1);
+                }
+
+                double distance = tl::distance3D(terrain_point, orientation.position());
+                double z_buffer_distance = z_buffer_distances.at<float>(pt_image.y, pt_image.x);
+                double old_row = z_buffer_y.at<int>(pt_image.y, pt_image.x);
+                double old_col = z_buffer_x.at<int>(pt_image.y, pt_image.x);
+                //if (z_buffer_distances.at<float>(pt_image.y, pt_image.x) == 0. || z_buffer_distances.at<float>(pt_image.y, pt_image.x) > (distance)) {
+
+                  //for (size_t ri = window_image_in.pt1.y; ri < window_image_in.pt2.y; ri++) {
+                  //  for (size_t ci = window_image_in.pt1.x; ci < window_image_in.pt2.x; ci++) {
+                  //    z_buffer_distances.at<float>(ri, ci) = distance;
+                  //    z_buffer_y.at<int>(ri, ci) = /*window_dtm_image.pt1.y + */r; /// coordenadas del DTM
+                  //    z_buffer_x.at<int>(ri, ci) = /*window_dtm_image.pt1.x + */c;
+
+                  //  }
+                  //}
+                {
+                  cv::Mat mask_image = cv::Mat::zeros(window_image_in.height(), window_image_in.width(), CV_8U);
+                  std::vector<cv::Point> pts;
+                  for (int k = 0; k < photo_image_coordinates.size(); k++) {
+                    pts.emplace_back(TL_ROUND_TO_INT(photo_image_coordinates[k].x - window_image_in.pt1.x),
+                      TL_ROUND_TO_INT(photo_image_coordinates[k].y - window_image_in.pt1.y));
+                  }
+                  const cv::Point *cpts = (const cv::Point *)cv::Mat(pts).data;
+                  int npts = pts.size();
+                  cv::fillPoly(mask_image, &cpts, &npts, 1, cv::Scalar(255));
+
+                  cv::Mat image_distances(window_image_in.height(), window_image_in.width(), CV_32F);
+                  image_distances = distance;
+                  image_distances.copyTo(z_buffer_distances.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
+                                                           .rowRange(window_image_in.pt1.y, window_image_in.pt2.y), mask_image);
+
+                  cv::Mat image_z_buffer_y(window_image_in.height(), window_image_in.width(), CV_32S, r);
+                  image_z_buffer_y.copyTo(z_buffer_y.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
+                                                    .rowRange(window_image_in.pt1.y, window_image_in.pt2.y), mask_image);
+                  cv::Mat image_z_buffer_x(window_image_in.height(), window_image_in.width(), CV_32S, c);
+                  image_z_buffer_x.copyTo(z_buffer_x.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
+                                                    .rowRange(window_image_in.pt1.y, window_image_in.pt2.y), mask_image);
+                }
+
+                if (old_row != -1 && old_col != -1) { // Se comprueba si ya estaba ocupado ese pixel del DTM
+
+                  if (z_buffer_distance > distance) {
+                    visibility_map.at<uchar>(old_row, old_col) = 0;
+                    visibility_map.at<uchar>(r, c) = 255;
+                  } else {
+                    visibility_map.at<uchar>(r, c) = 0;
+                  }
+                
+                }
+
+                //if (z_buffer_distances.at<float>(pt_image.y, pt_image.x) == 0. || z_buffer_distances.at<float>(pt_image.y, pt_image.x) > (distance)) {
+                //  if (old_row != -1 && old_col != -1) {
+                //    visibility_map.at<uchar>(old_row, old_col) = 0;
+                //  }
+
+                //  visibility_map.at<uchar>(/*window_dtm_image.pt1.y + */r, /*window_dtm_image.pt1.x + */c) = 255;
+                //}
+                //else {
+                //  visibility_map.at<uchar>(/*window_dtm_image.pt1.y + */r, /*window_dtm_image.pt1.x + */c) = 0;
+                //}
+              }
+
+            }
+
+            /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             image.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
                  .rowRange(window_image_in.pt1.y, window_image_in.pt2.y).copyTo(in);

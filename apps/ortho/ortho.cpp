@@ -342,8 +342,8 @@ int main(int argc, char** argv)
 
     /// Ortorectificación
 
-    //Orthorectification ortho(mdt.toString(), crs);
-    //ortho.run(photos, ortho_path.toString(), footprint_file.toString());
+    Orthorectification ortho(mdt.toString(), crs);
+    ortho.run(photos, ortho_path.toString(), footprint_file.toString());
 
     /// Huella de vuelo optima
     
@@ -549,8 +549,8 @@ int main(int argc, char** argv)
 
       msgInfo("Exposure compensator");
 
-      //int type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
-      int type = cv::detail::ExposureCompensator::GAIN;
+      int type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
+      //int type = cv::detail::ExposureCompensator::GAIN;
       cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(type);
 
       std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(path_optimal_footprint.toString());
@@ -637,10 +637,22 @@ int main(int argc, char** argv)
               cv::InputArrayOfArrays(images_ortos).getUMatVector(images_warped);
               compensator->feed(corners, images_warped, masks_warped);
 
+              msgInfo("Seam finder");
+
+              cv::Ptr<cv::detail::SeamFinder> seam_finder;
+              seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+              seam_finder->find(images_warped, corners, masks_warped);
+              images_warped.clear();
+
               std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(orto_to_compensate);
               image_reader->open();
               if (!image_reader->isOpen()) throw std::runtime_error("Image open error");
               cv::Mat compensate_image = image_reader->read();
+
+              //std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(orto_to_compensate);
+              //image_reader->open();
+              //if (!image_reader->isOpen()) throw std::runtime_error("Image open error");
+              //cv::Mat compensate_image = image_reader->read();
 
               /// Se compensa la imagen
               cv::Point corner = corners[0] / 0.02;
@@ -651,11 +663,14 @@ int main(int argc, char** argv)
               cv::Mat mask_full_size(compensate_image.size(), CV_8U);
               mask_full_size.setTo(cv::Scalar::all(0));
               mask_full_size.setTo(cv::Scalar::all(255), gray > 0);
+              /// mask_full_size + mask_finder
+              //mask_full_size = mask_full_size & mask_finder;
+              cv::dilate(mask_full_size, mask_full_size, cv::Mat());
               cv::dilate(mask_full_size, mask_full_size, cv::Mat());
               compensator->apply(0, corner, compensate_image, mask_full_size);
 
               Path orto_compensate(orto_to_compensate);
-              std::string name = orto_compensate.baseName() + "_compensate_gain";
+              std::string name = orto_compensate.baseName() + "_compensate_gain_blocks";
               orto_compensate.replaceBaseName(name);
               std::unique_ptr<ImageWriter> image_writer = ImageWriterFactory::createWriter(orto_compensate.toString());
               image_writer->open();
@@ -672,13 +687,18 @@ int main(int argc, char** argv)
               /// 2 - Busqueda de costuras (seam finder)
               /// ¿Esto tendría que ir antes de compensator? 
 
-              msgInfo("Seam finder");
-
-              cv::Ptr<cv::detail::SeamFinder> seam_finder;
-              seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
-              seam_finder->find(images_warped, corners, masks_warped);
+              //msgInfo("Seam finder");
+              //
+              //cv::Ptr<cv::detail::SeamFinder> seam_finder;
+              //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+              //seam_finder->find(images_warped, corners, masks_warped);
               cv::Mat mask_finder = masks_warped[0].getMat(cv::ACCESS_READ);
               cv::resize(mask_finder, mask_finder, compensate_image.size());
+              cv::dilate(mask_finder, mask_finder, cv::Mat());
+              cv::dilate(mask_finder, mask_finder, cv::Mat());
+              /// mask_full_size + mask_finder
+              mask_finder = mask_finder & mask_full_size;
+              
               Path orto_seam(orto_to_compensate);
               name = orto_seam.baseName() + "_seam.tif";
               orto_seam.replaceFileName(name);
