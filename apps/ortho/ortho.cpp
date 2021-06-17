@@ -342,8 +342,8 @@ int main(int argc, char** argv)
 
     /// Ortorectificación
 
-    Orthorectification ortho(mdt.toString(), crs);
-    ortho.run(photos, ortho_path.toString(), footprint_file.toString());
+    //Orthorectification ortho(mdt.toString(), crs);
+    //ortho.run(photos, ortho_path.toString(), footprint_file.toString());
 
     /// Huella de vuelo optima
     
@@ -396,7 +396,7 @@ int main(int argc, char** argv)
           double x_ini = window_all.pt1.x + grid_step / 2.;
           double y_ini = window_all.pt2.y - grid_step / 2.;
 
-          grid.emplace_back(PointD(x_ini, y_ini), grid_step);
+          grid.emplace_back(PointD(x_ini, y_ini), grid_step * 2);
 
           PointD point;
           for (size_t i = 0; i < grid_horizontal_size; i++) {
@@ -407,7 +407,7 @@ int main(int argc, char** argv)
 
               point.y = y_ini - grid_step * j;
 
-              grid.emplace_back(point, grid_step);
+              grid.emplace_back(point, grid_step * 2);
 
               /// Busqueda de imagen mas centrada
               std::shared_ptr<graph::GPolygon> polygon = bestImage(point, footprint_file.toString());
@@ -551,6 +551,8 @@ int main(int argc, char** argv)
 
       int type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
       //int type = cv::detail::ExposureCompensator::GAIN;
+      //int type = cv::detail::ExposureCompensator::CHANNELS;
+      //int type = cv::detail::ExposureCompensator::CHANNELS;
       cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(type);
 
       std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(path_optimal_footprint.toString());
@@ -588,6 +590,10 @@ int main(int argc, char** argv)
 
                 if (orto != orto_to_compensate) {
 
+                  //if (polygon2->isInner(polygon->at(0)) || 
+                  //    polygon2->isInner(polygon->at(1)) || 
+                  //    polygon2->isInner(polygon->at(2)) || 
+                  //    polygon2->isInner(polygon->at(3))) {
                   /// No se si será suficiente o tengo que seleccionar todas las imagenes que intersecten...
                   if (polygon2->isInner(center)) {
                     ortos.push_back(orto);
@@ -612,15 +618,15 @@ int main(int argc, char** argv)
                 std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortos[i]);
                 image_reader->open();
                 if (!image_reader->isOpen()) throw std::runtime_error("Image open error");
-                cv::Mat image = image_reader->read(0.02, 0.02);
+                cv::Mat image = image_reader->read(0.1, 0.1);
                 images_ortos[i] = image.clone();
                 //images_warped[i] = _images[i].getUMat(cv::ACCESS_READ)/*.convertTo(images_warped[i], CV_32F)*/; /// ¿?
                 double scale = image_reader->georeference().scaleX();
                 //image_reader->close();
 
                 /// Esquinas
-                corners[i].x = (windows[i].pt1.x - window_all.pt1.x) * 0.02 / scale;
-                corners[i].y = (window_all.pt2.y - windows[i].pt2.y) * 0.02 / scale;
+                corners[i].x = (windows[i].pt1.x - window_all.pt1.x) * 0.1 / scale;
+                corners[i].y = (window_all.pt2.y - windows[i].pt2.y) * 0.1 / scale;
 
                 /// La mascara debería leerse si se creó en la generación del MDS.
                 /// Por ahora mascara nula
@@ -640,7 +646,9 @@ int main(int argc, char** argv)
               msgInfo("Seam finder");
 
               cv::Ptr<cv::detail::SeamFinder> seam_finder;
-              seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+              //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+              //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR_GRAD);
+              seam_finder = cv::makePtr<cv::detail::VoronoiSeamFinder>(cv::detail::DpSeamFinder::VORONOI_SEAM);
               seam_finder->find(images_warped, corners, masks_warped);
               images_warped.clear();
 
@@ -655,7 +663,7 @@ int main(int argc, char** argv)
               //cv::Mat compensate_image = image_reader->read();
 
               /// Se compensa la imagen
-              cv::Point corner = corners[0] / 0.02;
+              cv::Point corner = corners[0] / 0.1;
               //cv::Mat mask_full_size = masks_warped[0].getMat(cv::ACCESS_READ);
               //cv::resize(mask_full_size, mask_full_size, compensate_image.size());
               cv::Mat gray;
