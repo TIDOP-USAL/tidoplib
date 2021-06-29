@@ -332,6 +332,7 @@ public:
   {
     std::string crs_wkt;
 
+#if GDAL_VERSION_MAJOR >= 3
     const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
     if (spatialReference) {
       char *wkt = nullptr;
@@ -339,7 +340,10 @@ public:
       crs_wkt = std::string(wkt);
       CPLFree(wkt);
     }
-    
+#else
+    crs_wkt = std::string(mDataset->GetProjectionRef());
+#endif
+
     return crs_wkt;
   }
 
@@ -348,12 +352,16 @@ public:
   {
     geospatial::Crs crs;
 
+#if GDAL_VERSION_MAJOR >= 3
     if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
       char *wkt = nullptr;
       spatialReference->exportToWkt(&wkt);
       crs.fromWktFormat(wkt);
       CPLFree(wkt);
     }
+#else
+    crs.fromWktFormat(mDataset->GetProjectionRef());
+#endif
 
     return crs;
   }

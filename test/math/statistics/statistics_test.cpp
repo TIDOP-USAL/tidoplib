@@ -107,24 +107,15 @@ struct StatisticsTest
 BOOST_FIXTURE_TEST_CASE(mean, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(7.695, tl::math::mean(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(7.695, tl::math::mean(vd), 0.1);
-
   BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi.begin(), vi.end()), 0.1);
-  BOOST_CHECK_CLOSE(1.142857143, tl::math::mean(vi), 0.1);
-
   BOOST_CHECK_CLOSE(7.695, tl::math::mean(tl_vector.begin(), tl_vector.end()), 0.1);
-  BOOST_CHECK_CLOSE(7.695, tl::math::mean(tl_vector), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(median, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(8, tl::math::median(vd.begin(), vd.end()), 0.1);
-  BOOST_CHECK_CLOSE(8, tl::math::median(vd), 0.01);
   BOOST_CHECK_CLOSE(4.5, tl::math::median(l.begin(), l.end()), 0.1);
-  BOOST_CHECK_CLOSE(4.5, tl::math::median(l), 0.01);
-
   BOOST_CHECK_CLOSE(8, tl::math::median(tl_vector.begin(), tl_vector.end()), 0.1);
-  BOOST_CHECK_CLOSE(8, tl::math::median(tl_vector), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(mode, StatisticsTest)
@@ -143,25 +134,21 @@ BOOST_FIXTURE_TEST_CASE(range, StatisticsTest)
 BOOST_FIXTURE_TEST_CASE(variance, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(33.2, tl::math::variance(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(33.2, tl::math::variance(vi2), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(standarDeviation, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(5.76, tl::math::standarDeviation(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(5.76, tl::math::standarDeviation(vi2), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(coefficientOfVariation, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(0.411567, tl::math::coefficientOfVariation(vi2.begin(), vi2.end()), 0.1);
-  BOOST_CHECK_CLOSE(0.411567, tl::math::coefficientOfVariation(vi2), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(covariance, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(-33.06, tl::math::covariance(x.begin(), x.end(), y.begin(), y.end()), 0.1);
-  BOOST_CHECK_CLOSE(-33.06, tl::math::covariance(x, y), 0.1);
 }
 
 //Pearson correlation coefficient
@@ -169,7 +156,6 @@ BOOST_FIXTURE_TEST_CASE(covariance, StatisticsTest)
 BOOST_FIXTURE_TEST_CASE(pearsonCorrelationCoefficient, StatisticsTest)
 {
   BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.1);
-  BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x, y), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
