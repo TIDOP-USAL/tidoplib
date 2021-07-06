@@ -233,7 +233,8 @@ typename T::value_type range(const T &container)
 
 /*!
  * \brief Rango o recorrido intercuartilico
- * El RI es la diferencia entre el tercer quartil y el primer cuartil
+ * El RI es la diferencia entre el tercer quartil (percentil 75) y el 
+ * primer cuartil (percentil 25)
  * \f[ RI=Q_3-Q_1 \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
@@ -514,13 +515,17 @@ double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
   return rms;
 }
 
-//average deviation or mean absolute deviation
-// Estimador mas robusto que la desviacion estandar y la varianza
+
+/*!
+ * \brief Mean Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
 template<typename It> inline
 typename std::enable_if<
   std::is_integral<typename std::iterator_traits<It>::value_type>::value,
   double>::type
-averageAbsoluteDeviation(It first, It last)
+meanAbsoluteDeviation(It first, It last)
 {
   size_t n = std::distance(first, last);
   if (n <= 1) return consts::zero<double>;
@@ -538,7 +543,7 @@ template<typename It> inline
 typename std::enable_if<
   std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
   typename std::iterator_traits<It>::value_type>::type
-averageAbsoluteDeviation(It first, It last)
+meanAbsoluteDeviation(It first, It last)
 {
   using T = typename std::iterator_traits<It>::value_type;
 
@@ -556,153 +561,129 @@ averageAbsoluteDeviation(It first, It last)
 
 
 /*!
- * \brief skewness
+ * \brief Median Absolute Deviation
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
- * \return
  */
 template<typename It> inline
 typename std::enable_if<
   std::is_integral<typename std::iterator_traits<It>::value_type>::value,
   double>::type
-skewness(It first, It last)
+medianAbsoluteDeviation(It first, It last)
 {
   size_t n = std::distance(first, last);
-// Varianza
   if (n <= 1) return consts::zero<double>;
 
-  double _mean = mean(first, last);
-  double ep{};
-  double aux{};
-  double aux2{};
-  double skew{};
+  double _median = median(first, last);
   double sum{};
 
+  std::vector<double> x(n);
+  auto x_it = x.begin();
+
   while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux*aux);
-    skew += aux2 * aux;
+    *x_it++ = std::abs(static_cast<double>(*first++) - _median);
   }
 
-  double variance =  (sum - ep*ep / n) / static_cast<double>(n - 1);
-
-  if (variance != consts::zero<double>) {
-    double stdDev = sqrt(variance);
-    return skew / (n*variance*stdDev);
-  } else
-    return consts::zero<double>;
+  return median(x.begin(), x.end());
 }
 
 template<typename It> inline
 typename std::enable_if<
   std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
   typename std::iterator_traits<It>::value_type>::type
-skewness(It first, It last)
+medianAbsoluteDeviation(It first, It last)
 {
   using T = typename std::iterator_traits<It>::value_type;
 
   size_t n = std::distance(first, last);
-  // Varianza
   if (n <= 1) return consts::zero<T>;
 
-  T _mean = mean(first, last);
-  T ep{};
-  T aux{};
-  T aux2{};
-  T skew{};
+  T _median = median(first, last);
   T sum{};
 
+  std::vector<T> x(n);
+  auto x_it = x.begin();
+
+
   while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux * aux);
-    skew += aux2 * aux;
+    *x_it++ = std::abs(*first++ - _median);
   }
 
-  T variance = (sum - ep * ep / n) / static_cast<T>(n - 1);
-
-  if (variance != consts::zero<T>) {
-    T stdDev = sqrt(variance);
-    return skew / (n * variance * stdDev);
-  } else 
-    return consts::zero<T>;
+  return median(x.begin(), x.end());
 }
 
 
 /*!
- * \brief kurtosis
+ * \brief Biweight Midvariance
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
- * \return
  */
 template<typename It> inline
 typename std::enable_if<
   std::is_integral<typename std::iterator_traits<It>::value_type>::value,
   double>::type
-kurtosis(It first, It last)
+biweightMidvariance(It first, It last)
 {
   size_t n = std::distance(first, last);
-// Varianza
-  if (n <= 1) return consts::zero<double>;
+  if (n <= 2) return consts::zero<double>;
 
-  double _mean = mean(first, last);
-  double ep{};
-  double aux{};
-  double _kurtosis{};
-  double aux2{};
-  double sum{};
+  double _median = median(first, last);
+  double mad = medianAbsoluteDeviation(first, last);
 
+  double num{};
+  double den{};
   while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux*aux);
-    _kurtosis += aux2;
+    double x = *first++ - _median;
+    double u = x / (9 * mad);
+    if (std::abs(u) < consts::one<double>) {
+      double u2 = u * u;
+      double y = consts::one<double> - u2;
+      double y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<double> - static_cast<double>(5) * u2);
+    }
   }
 
-  double variance = (sum - ep*ep / static_cast<double>(n)) / static_cast<double>(n - 1);
-
-  if (variance != consts::zero<double>) {
-    _kurtosis /= (n*variance*variance);
-    return _kurtosis - 3.;
-  } else 
+  if (den == consts::zero<double>)
     return consts::zero<double>;
+
+  return n * num / (den * den);
 }
 
 template<typename It> inline
 typename std::enable_if<
   std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
   typename std::iterator_traits<It>::value_type>::type
-kurtosis(It first, It last)
+biweightMidvariance(It first, It last)
 {
   using T = typename std::iterator_traits<It>::value_type;
 
   size_t n = std::distance(first, last);
-  // Varianza
-  if (n <= 1) return consts::zero<T>;
-  
-  T _mean = mean(first, last);
-  T ep{};
-  T aux{};
-  T _kurtosis{};
-  T aux2{};
-  T sum{};
+  if (n <= 2) return consts::zero<T>;
 
+  T _median = median(first, last);
+  T mad = medianAbsoluteDeviation(first, last);
+
+  T num{};
+  T den{};
   while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux * aux);
-    _kurtosis += aux2;
+    T x = *first++ - _median;
+    T u = x / (9 * mad);
+    if (std::abs(u) < consts::one<T>) {
+      T u2 = u * u;
+      T y = consts::one<T> - u2;
+      T y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<T> - static_cast<T>(5) * u2);
+    }
   }
 
-  T variance = (sum - ep * ep / static_cast<T>(n)) / static_cast<T>(n - 1);
-
-  if (variance != consts::zero<T>) {
-    _kurtosis /= (n * variance * variance);
-    return _kurtosis - static_cast<T>(3);
-  } else 
+  if (den == consts::zero<T>)
     return consts::zero<T>;
+
+  return n * num / (den * den);
 }
+
 
 
 
