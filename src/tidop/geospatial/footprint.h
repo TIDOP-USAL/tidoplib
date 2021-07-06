@@ -78,7 +78,7 @@ private:
 	Crs mCrs;
 	std::unique_ptr<ImageReader> mDtmReader;
 	std::unique_ptr<ImageReader> mImageReader;
-	std::unique_ptr<VectorWriter> mVectorWriter;
+	std::unique_ptr<VectorWriter> mFootprintWriter;
 	Camera mCamera;
 	Affine<PointI> mAffineImageCoordinatesToPhotocoordinates;
 	Affine<PointD> mAffineDtmImageToTerrain;

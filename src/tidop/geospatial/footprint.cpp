@@ -43,6 +43,7 @@ namespace geospatial
 Footprint::Footprint(const std::string &dtm, 
                      const Crs &crs)
   : mDtm(dtm),
+    mCrs(crs),
     mDtmReader(ImageReaderFactory::createReader(dtm))
 {
   init();
@@ -55,15 +56,27 @@ Footprint::~Footprint()
   }
 }
 
+void Footprint::init()
+{
+  mDtmReader->open();
+
+  mAffineDtmImageToTerrain = mDtmReader->georeference();
+
+  mWindowDtmTerrainExtension.pt1.x = mAffineDtmImageToTerrain.tx;
+  mWindowDtmTerrainExtension.pt1.y = mAffineDtmImageToTerrain.ty;
+  mWindowDtmTerrainExtension.pt2.x = mAffineDtmImageToTerrain.tx + mAffineDtmImageToTerrain.scaleX() * mDtmReader->cols();
+  mWindowDtmTerrainExtension.pt2.y = mAffineDtmImageToTerrain.ty + mAffineDtmImageToTerrain.scaleY() * mDtmReader->rows();
+}
+
 void Footprint::run(const std::vector<Photo> &photos, 
                     const std::string &footprint)
 {
   Path footprint_path(footprint);
   footprint_path.parentPath().createDirectories();
 
-  mVectorWriter = VectorWriterFactory::createWriter(footprint);
-  mVectorWriter->open();
-  if (!mVectorWriter->isOpen()) throw std::runtime_error("Vector open error");
+  mFootprintWriter = VectorWriterFactory::createWriter(footprint);
+  mFootprintWriter->open();
+  if (!mFootprintWriter->isOpen()) throw std::runtime_error("Vector open error");
 
   std::shared_ptr<TableField> field(new TableField("image", 
                                                   TableField::Type::STRING, 
@@ -71,8 +84,8 @@ void Footprint::run(const std::vector<Photo> &photos,
   std::vector<std::shared_ptr<TableField>> fields;
   fields.push_back(field);
 
-  mVectorWriter->create();
-  mVectorWriter->setCRS(mCrs);
+  mFootprintWriter->create();
+  mFootprintWriter->setCRS(mCrs);
 
   graph::GLayer layer;
   layer.setName("footprint");
@@ -89,8 +102,8 @@ void Footprint::run(const std::vector<Photo> &photos,
       mImageReader->open();
       if (!mImageReader->isOpen()) throw std::runtime_error("Image open error");
 
-      int rows = mImageReader->rows();
-      int cols = mImageReader->cols();
+      //int rows = mImageReader->rows();
+      //int cols = mImageReader->cols();
 
       float focal = this->focal();
 
@@ -113,7 +126,7 @@ void Footprint::run(const std::vector<Photo> &photos,
       entity->push_back(footprint_coordinates[3]);
 
       std::shared_ptr<TableRegister> data(new TableRegister(fields));
-      data->setValue(0, photos[i].name());
+      data->setValue(0, photos[i].path().toString());
       entity->setData(data);
 
       layer.push_back(entity);
@@ -124,28 +137,15 @@ void Footprint::run(const std::vector<Photo> &photos,
 
   }
 
-  mVectorWriter->write(layer);
+  mFootprintWriter->write(layer);
 
-  mVectorWriter->close();
-}
-
-void Footprint::init()
-{
-  mDtmReader->open();
-
-  mAffineDtmImageToTerrain = mDtmReader->georeference();
-  
-  mWindowDtmTerrainExtension.pt1.x = mAffineDtmImageToTerrain.tx;
-  mWindowDtmTerrainExtension.pt1.y = mAffineDtmImageToTerrain.ty;
-  mWindowDtmTerrainExtension.pt2.x = mAffineDtmImageToTerrain.tx + mAffineDtmImageToTerrain.scaleX() *mDtmReader->cols();
-  mWindowDtmTerrainExtension.pt2.y = mAffineDtmImageToTerrain.ty + mAffineDtmImageToTerrain.scaleY() *mDtmReader->rows();
+  mFootprintWriter->close();
 }
 
 Affine<PointI> Footprint::affineImageToPhotocoordinates()
 {
   PointF principal_point = this->principalPoint();
   return Affine<PointI>(-principal_point.x, principal_point.y, 1, -1, 0);
-
 }
 
 std::vector<tl::PointI> Footprint::imageLimitsInPhotocoordinates()

@@ -27,6 +27,7 @@
 
 #include "config_tl.h"
 
+#include "tidop/core/path.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/geospatial/camera.h"
@@ -89,7 +90,7 @@ public:
    * \brief Constructor Photo
    * \param[in] file Fichero imagen
    */
-  Photo(const std::string &file);
+  Photo(const Path &file);
 
   /*!
    * \brief Constructor de copia Photo
@@ -112,13 +113,13 @@ public:
    * \brief Devuelve la ruta del fichero imagen
    * \return Ruta del fichero
    */
-  std::string path() const;
+  Path path() const;
 
   /*!
    * \brief Establece la ruta del fichero imagen
    * \param[in] file Ruta del fichero
    */
-  void setPath(const std::string &file);
+  void setPath(const Path &file);
 
   /*!
    * \brief Nombre del fichero
@@ -161,7 +162,7 @@ private:
 
 protected:
 
-  std::string mFilePath;
+  Path mFilePath;
   std::string mName;
   Camera mCamera;
   Photo::Orientation mOrientation;

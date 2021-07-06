@@ -49,7 +49,7 @@ Photo::Photo()
 {
 }
 
-Photo::Photo(const std::string &file)
+Photo::Photo(const Path &file)
   : mFilePath(file),
     mCamera()
 {
@@ -72,12 +72,12 @@ Photo::Photo(Photo &&photo) noexcept
 {
 }
 
-std::string Photo::path() const
+Path Photo::path() const
 {
   return mFilePath;
 }
 
-void Photo::setPath(const std::string &file)
+void Photo::setPath(const Path &file)
 {
   mFilePath = file;
   update();
@@ -132,7 +132,7 @@ Photo &Photo::operator =(Photo &&photo) noexcept
 
 void Photo::update()
 {
-  mName = fs::basename(mFilePath);
+  mName = mFilePath.baseName();
 }
 
 
