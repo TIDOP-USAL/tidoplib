@@ -158,4 +158,31 @@ BOOST_FIXTURE_TEST_CASE(pearsonCorrelationCoefficient, StatisticsTest)
   BOOST_CHECK_CLOSE(-0.8459, tl::math::pearsonCorrelationCoefficient(x.begin(), x.end(), y.begin(), y.end()), 0.1);
 }
 
+BOOST_FIXTURE_TEST_CASE(meanAbsoluteDeviation, StatisticsTest)
+{
+  std::vector<int> data{ 2, 2, 3, 4, 14 };
+  BOOST_CHECK_EQUAL(3.6, tl::math::meanAbsoluteDeviation(data.begin(), data.end()));
+}
+
+BOOST_FIXTURE_TEST_CASE(medianAbsoluteDeviation, StatisticsTest)
+{
+  std::vector<int> data{ 2, 2, 3, 4, 14 };
+  BOOST_CHECK_EQUAL(1, tl::math::medianAbsoluteDeviation(data.begin(), data.end()));
+  Vector<int> data2{ 1, 1, 2, 2, 4, 6, 9 };
+  BOOST_CHECK_EQUAL(1, tl::math::medianAbsoluteDeviation(data2.begin(), data2.end()));
+  Vector<double> data3{ 6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3 };
+  BOOST_CHECK_EQUAL(0.5, tl::math::medianAbsoluteDeviation(data3.begin(), data3.end()));
+}
+
+BOOST_FIXTURE_TEST_CASE(biweightMidvariance, StatisticsTest)
+{
+  std::vector<int> data{ 2, 2 };
+  BOOST_CHECK_EQUAL(0., tl::math::biweightMidvariance(data.begin(), data.end()));
+  Vector<double> data2{ 6.5, 3.8, 6.6, 5.7, 6.0, 6.4, 5.3 };
+  BOOST_CHECK_CLOSE(0.677818, tl::math::biweightMidvariance(data2.begin(), data2.end()), 0.1);
+  Vector<int> data3{ 1, 2, 3, 4 };
+  BOOST_CHECK_CLOSE(1.36477, tl::math::biweightMidvariance(data3.begin(), data3.end()), 0.1);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
