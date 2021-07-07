@@ -59,6 +59,11 @@ namespace math
 // - Mediana
 // - Moda
 
+
+/*! \defgroup Measure of Central Tendency
+ *  \{
+ */
+  
 /*!
  * \brief Media
  * La media es la suma de todos los datos partido del número de datos.
@@ -191,6 +196,12 @@ typename T::value_type mode(const T &container)
   return mode(container.begin(), container.end());
 }
 
+/*! \} */ // end of Measure of Central Tendency
+
+
+/*! \defgroup Dispersion
+ *  \{
+ */
 
 // Medidas de dispersión
 // - Recorrido
@@ -200,101 +211,7 @@ typename T::value_type mode(const T &container)
 // - Recorrido intercuantilico
 
 /*!
- * \brief Rango o recorrido
- * El Rango es la diferencia entre el valor mayor y el menor del conjunto de datos
- * \f[ R=x_{max}-x_{min} \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor del rango para el conjunto de datos
- */
-template<typename It> inline
-typename std::iterator_traits<It>::value_type range(It first, It last)
-{
-  typename std::iterator_traits<It>::value_type _r{0};
-  if (first != last){
-    auto result = std::minmax_element(first, last);
-    _r = *result.second - *result.first;
-  }
-  return _r;
-}
-
-/*!
- * \brief Rango o recorrido
- * El Rango es la diferencia entre el valor mayor y el menor del conjunto de datos
- * \f[ R=x_{max}-x_{min} \f]
- * \param[in] container Objeto contenedor
- * \return Valor del rango para el conjunto de datos
- */
-template<typename T> inline
-typename T::value_type range(const T &container)
-{
-  return range(container.begin(), container.end());
-}
-
-/*!
- * \brief Rango o recorrido intercuartilico
- * El RI es la diferencia entre el tercer quartil (percentil 75) y el 
- * primer cuartil (percentil 25)
- * \f[ RI=Q_3-Q_1 \f]
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Valor del rango para el conjunto de datos
- */
-template<typename It> inline
-typename std::enable_if<
-  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-  double>::type
-interquartileRange(It first, It last)
-{
-  double q1;
-  double q3;
-
-  auto n = std::distance(first, last);
-  std::vector<typename std::iterator_traits<It>::value_type> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-  q1 = (n % 4 != 0) ?
-        static_cast<double>(copy_container[n/4]) :
-        static_cast<double>(copy_container[n / 4 - 1] + copy_container[n / 4]) / consts::two<double>;
-
-  q3 = (n % 4 != 0) ?
-        static_cast<double>(copy_container[n*3/4]) :
-        static_cast<double>(copy_container[n*3/4 - 1] + copy_container[n*3/4]) / consts::two<double>;
-
-  return q3-q1;
-}
-
-template<typename It> inline
-typename std::enable_if<
-  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-  typename std::iterator_traits<It>::value_type>::type
-interquartileRange(It first, It last)
-{
-  using T = typename std::iterator_traits<It>::value_type;
-
-  T q1;
-  T q3;
-
-  auto n = std::distance(first, last);
-  std::vector<T> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-  q1 = (n % 4 != 0) ?
-    static_cast<double>(copy_container[n / 4]) :
-    static_cast<double>(copy_container[n / 4 - 1] + copy_container[n / 4]) / consts::two<T>;
-
-  q3 = (n % 4 != 0) ?
-    static_cast<double>(copy_container[n * 3 / 4]) :
-    static_cast<double>(copy_container[n * 3 / 4 - 1] + copy_container[n * 3 / 4]) / consts::two<T>;
-
-  return q3 - q1;
-}
-
-
-/*!
- * \brief Varianza
+ * \brief Sample Variance
  *
  * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
  *
@@ -319,10 +236,10 @@ variance(It first, It last)
   while (first != last) {
     aux = *first++ - _mean;
     ep += aux;
-    sum += aux*aux;
+    sum += aux * aux;
   }
 
-  return (sum - ep*ep / n) / (n - 1);
+  return (sum - ep * ep / n) / (n - 1);
 }
 
 template<typename It> inline
@@ -335,7 +252,7 @@ variance(It first, It last)
 
   auto n = std::distance(first, last);
   if (n <= 1) return consts::one<T>;
-  
+
   T _mean = mean(first, last);
   T sum{};
   T ep{};
@@ -348,6 +265,64 @@ variance(It first, It last)
   }
 
   return (sum - ep * ep / n) / (n - 1);
+}
+
+
+/*!
+ * \brief Varianza
+ *
+ * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
+ *
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Varianza del conjunto de datos
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+populationVariance(It first, It last)
+{
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<double>;
+
+  double _mean = mean(first, last);
+  double sum{};
+  double ep{};
+  double aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / n;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+populationVariance(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<T>;
+
+  T _mean = mean(first, last);
+  T sum{};
+  T ep{};
+  T aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / n;
 }
 
 
@@ -380,7 +355,160 @@ standarDeviation(It first, It last)
 
 
 /*!
- * \brief Coeficiente de variación
+ * \brief Rango o recorrido
+ * El Rango es la diferencia entre el valor mayor y el menor del conjunto de datos
+ * \f[ R=x_{max}-x_{min} \f]
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Valor del rango para el conjunto de datos
+ */
+template<typename It> inline
+typename std::iterator_traits<It>::value_type range(It first, It last)
+{
+  typename std::iterator_traits<It>::value_type _r{0};
+  if (first != last){
+    auto result = std::minmax_element(first, last);
+    _r = *result.second - *result.first;
+  }
+  return _r;
+}
+
+
+/*!
+ * \brief Rango o recorrido intercuartilico
+ * El RI es la diferencia entre el tercer quartil (percentil 75) y el 
+ * primer cuartil (percentil 25)
+ * \f[ RI=Q_3-Q_1 \f]
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Valor del rango para el conjunto de datos
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+interquartileRange(It first, It last)
+{
+  double q1 = tl::math::quantile(first, last, 0.25);
+  double q3 = tl::math::quantile(first, last, 0.75);
+
+  return q3-q1;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+interquartileRange(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = tl::math::quantile(first, last, 0.25);
+  T q3 = tl::math::quantile(first, last, 0.75);
+
+  return q3 - q1;
+}
+
+
+/*!
+ * \brief Mean Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+meanAbsoluteDeviation(It first, It last)
+{
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<double>;
+
+  double _mean = mean(first, last);
+  double sum{};
+
+  while (first != last) {
+    sum += std::abs(static_cast<double>(*first++) - _mean);
+  }
+  return sum / n;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+meanAbsoluteDeviation(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<T>;
+
+  T _mean = mean(first, last);
+  T sum{};
+
+  while (first != last) {
+    sum += std::abs(*first++ - _mean);
+  }
+  return sum / n;
+}
+
+
+/*!
+ * \brief Median Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+medianAbsoluteDeviation(It first, It last)
+{
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<double>;
+
+  double _median = median(first, last);
+  double sum{};
+
+  std::vector<double> x(n);
+  auto x_it = x.begin();
+
+  while (first != last) {
+    *x_it++ = std::abs(static_cast<double>(*first++) - _median);
+  }
+
+  return median(x.begin(), x.end());
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+medianAbsoluteDeviation(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<T>;
+
+  T _median = median(first, last);
+  T sum{};
+
+  std::vector<T> x(n);
+  auto x_it = x.begin();
+
+
+  while (first != last) {
+    *x_it++ = std::abs(*first++ - _median);
+  }
+
+  return median(x.begin(), x.end());
+}
+
+
+/*!
+ * \brief Coefficient of variation (CV) or Relative Standard Deviation (RSD)
  * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
@@ -403,6 +531,236 @@ coefficientOfVariation(It first, It last)
 {
   return standarDeviation(first, last) / std::abs(mean(first, last));
 }
+
+
+/*!
+ * \brief Quartile coefficient of dispersion
+ * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quartileCoefficientOfDispersion(It first, It last)
+{
+  double q1 = quantile(first, last, 0.25);
+  double q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / (q3 + q1);
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quartileCoefficientOfDispersion(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = quantile(first, last, 0.25);
+  T q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / (q3 + q1);
+}
+
+
+/*!
+ * \brief Quartile coefficient of dispersion
+ * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quartileDeviation(It first, It last)
+{
+  double q1 = quantile(first, last, 0.25);
+  double q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / 2.;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quartileDeviation(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = quantile(first, last, 0.25);
+  T q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / consts::two<T>;
+}
+
+
+/*!
+ * \brief Biweight Midvariance
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+biweightMidvariance(It first, It last)
+{
+  size_t n = std::distance(first, last);
+  if (n <= 2) return consts::zero<double>;
+
+  double _median = median(first, last);
+  double mad = medianAbsoluteDeviation(first, last);
+
+  double num{};
+  double den{};
+  while (first != last) {
+    double x = *first++ - _median;
+    double u = x / (9 * mad);
+    if (std::abs(u) < consts::one<double>) {
+      double u2 = u * u;
+      double y = consts::one<double> -u2;
+      double y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<double> -static_cast<double>(5) * u2);
+    }
+  }
+
+  if (den == consts::zero<double>)
+    return consts::zero<double>;
+
+  return n * num / (den * den);
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+biweightMidvariance(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 2) return consts::zero<T>;
+
+  T _median = median(first, last);
+  T mad = medianAbsoluteDeviation(first, last);
+
+  T num{};
+  T den{};
+  while (first != last) {
+    T x = *first++ - _median;
+    T u = x / (9 * mad);
+    if (std::abs(u) < consts::one<T>) {
+      T u2 = u * u;
+      T y = consts::one<T> -u2;
+      T y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<T> -static_cast<T>(5) * u2);
+    }
+  }
+
+  if (den == consts::zero<T>)
+    return consts::zero<T>;
+
+  return n * num / (den * den);
+}
+
+
+/*! \} */ // end of Dispersion
+
+
+/*!
+ * \brief Quantile
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \param[in] p [0,1]
+ * \return
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quantile(It first, It last, double p)
+{
+  double q;
+
+  auto n = std::distance(first, last);
+  std::vector<typename std::iterator_traits<It>::value_type> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n) * p - 0.5;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = static_cast<double>(sort_vector[idx_1]);
+  } else {
+    q = (static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2])) / consts::two<double>;
+  }
+
+  //double idx = static_cast<double>(n + 1) * p;
+  //size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  //size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  //if (idx_1 == idx_2) {
+  //  q = sort_vector[idx_1];
+  //}
+  //else {
+  //  q = sort_vector[idx_1] + p * (sort_vector[idx_2] - sort_vector[idx_1]);
+  //}
+
+  return q;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quantile(It first, It last, double p)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q;
+
+  auto n = std::distance(first, last);
+  std::vector<T> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n) * p - 0.5;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = sort_vector[idx_1];
+  } else {
+    q = (sort_vector[idx_1] + sort_vector[idx_2]) / consts::two<T>;
+  }
+
+  //double idx = static_cast<double>(n + 1) * p;
+  //size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  //size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  //if (idx_1 == idx_2) {
+  //  q = sort_vector[idx_1];
+  //} else {
+  //  q = sort_vector[idx_1] + p * (sort_vector[idx_2] - sort_vector[idx_1]);
+  //}
+
+  return q;
+}
+
+
+
+
+
+
 
 
 /*!
@@ -516,175 +874,16 @@ double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
 }
 
 
-/*!
- * \brief Mean Absolute Deviation
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- */
-template<typename It> inline
-typename std::enable_if<
-  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-  double>::type
-meanAbsoluteDeviation(It first, It last)
+template<typename itIn, typename itOut> inline
+void zScore(itIn in_first, itIn in_last, itOut out_first)
 {
-  size_t n = std::distance(first, last);
-  if (n <= 1) return consts::zero<double>;
+  double _mean = mean(in_first, in_last);
+  double standar_deviation =  standarDeviation(in_first, in_last);
 
-  double _mean = mean(first, last);
-  double sum{};
-
-  while (first != last) {
-    sum += std::abs(static_cast<double>(*first++) - _mean);
+  while (in_first != in_last) {
+    *out_first++ = (*in_first++ - _mean) / standar_deviation;
   }
-  return sum / n;
 }
-
-template<typename It> inline
-typename std::enable_if<
-  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-  typename std::iterator_traits<It>::value_type>::type
-meanAbsoluteDeviation(It first, It last)
-{
-  using T = typename std::iterator_traits<It>::value_type;
-
-  size_t n = std::distance(first, last);
-  if (n <= 1) return consts::zero<T>;
-
-  T _mean = mean(first, last);
-  T sum{};
-
-  while (first != last) {
-    sum += std::abs(*first++ - _mean);
-  }
-  return sum / n;
-}
-
-
-/*!
- * \brief Median Absolute Deviation
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- */
-template<typename It> inline
-typename std::enable_if<
-  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-  double>::type
-medianAbsoluteDeviation(It first, It last)
-{
-  size_t n = std::distance(first, last);
-  if (n <= 1) return consts::zero<double>;
-
-  double _median = median(first, last);
-  double sum{};
-
-  std::vector<double> x(n);
-  auto x_it = x.begin();
-
-  while (first != last) {
-    *x_it++ = std::abs(static_cast<double>(*first++) - _median);
-  }
-
-  return median(x.begin(), x.end());
-}
-
-template<typename It> inline
-typename std::enable_if<
-  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-  typename std::iterator_traits<It>::value_type>::type
-medianAbsoluteDeviation(It first, It last)
-{
-  using T = typename std::iterator_traits<It>::value_type;
-
-  size_t n = std::distance(first, last);
-  if (n <= 1) return consts::zero<T>;
-
-  T _median = median(first, last);
-  T sum{};
-
-  std::vector<T> x(n);
-  auto x_it = x.begin();
-
-
-  while (first != last) {
-    *x_it++ = std::abs(*first++ - _median);
-  }
-
-  return median(x.begin(), x.end());
-}
-
-
-/*!
- * \brief Biweight Midvariance
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- */
-template<typename It> inline
-typename std::enable_if<
-  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-  double>::type
-biweightMidvariance(It first, It last)
-{
-  size_t n = std::distance(first, last);
-  if (n <= 2) return consts::zero<double>;
-
-  double _median = median(first, last);
-  double mad = medianAbsoluteDeviation(first, last);
-
-  double num{};
-  double den{};
-  while (first != last) {
-    double x = *first++ - _median;
-    double u = x / (9 * mad);
-    if (std::abs(u) < consts::one<double>) {
-      double u2 = u * u;
-      double y = consts::one<double> - u2;
-      double y2 = y * y;
-      num += x * x * y2 * y2;
-      den += y * (consts::one<double> - static_cast<double>(5) * u2);
-    }
-  }
-
-  if (den == consts::zero<double>)
-    return consts::zero<double>;
-
-  return n * num / (den * den);
-}
-
-template<typename It> inline
-typename std::enable_if<
-  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-  typename std::iterator_traits<It>::value_type>::type
-biweightMidvariance(It first, It last)
-{
-  using T = typename std::iterator_traits<It>::value_type;
-
-  size_t n = std::distance(first, last);
-  if (n <= 2) return consts::zero<T>;
-
-  T _median = median(first, last);
-  T mad = medianAbsoluteDeviation(first, last);
-
-  T num{};
-  T den{};
-  while (first != last) {
-    T x = *first++ - _median;
-    T u = x / (9 * mad);
-    if (std::abs(u) < consts::one<T>) {
-      T u2 = u * u;
-      T y = consts::one<T> - u2;
-      T y2 = y * y;
-      num += x * x * y2 * y2;
-      den += y * (consts::one<T> - static_cast<T>(5) * u2);
-    }
-  }
-
-  if (den == consts::zero<T>)
-    return consts::zero<T>;
-
-  return n * num / (den * den);
-}
-
-
 
 
 /*! \} */ // end of Statistic
