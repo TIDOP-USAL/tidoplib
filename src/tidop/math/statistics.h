@@ -126,15 +126,7 @@ typename std::enable_if<
   double>::type
 median(It first, It last)
 {
-  auto n = std::distance(first, last);
-  std::vector<typename std::iterator_traits<It>::value_type> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-  if (n % 2 != 0)
-    return static_cast<double>(copy_container[n / 2]);
-  else
-    return static_cast<double>(copy_container[n / 2 - 1] + copy_container[n / 2]) / consts::two<double>;
+  return tl::math::quantile(first, last, 0.5);
 }
 
 template<typename It> inline
@@ -143,17 +135,7 @@ typename std::enable_if<
   typename std::iterator_traits<It>::value_type>::type
 median(It first, It last)
 {
-  using T = typename std::iterator_traits<It>::value_type;
-
-  auto n = std::distance(first, last);
-  std::vector<T> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-  if (n % 2 != 0)
-    return static_cast<T>(copy_container[n / 2]);
-  else
-    return static_cast<T>(copy_container[n / 2 - 1] + copy_container[n / 2]) / consts::two<T>;
+  return tl::math::quantile(first, last, 0.5);
 }
 
 
@@ -694,26 +676,15 @@ quantile(It first, It last, double p)
   std::copy(first, last, sort_vector.begin());
   std::sort(sort_vector.begin(), sort_vector.end());
 
-  double idx = static_cast<double>(n) * p - 0.5;
+  double idx = static_cast<double>(n+1) * p - 1.;
   size_t idx_1 = static_cast<size_t>(std::floor(idx));
   size_t idx_2 = static_cast<size_t>(std::ceil(idx));
 
   if (idx_1 == idx_2) {
     q = static_cast<double>(sort_vector[idx_1]);
   } else {
-    q = (static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2])) / consts::two<double>;
+    q = static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
   }
-
-  //double idx = static_cast<double>(n + 1) * p;
-  //size_t idx_1 = static_cast<size_t>(std::floor(idx));
-  //size_t idx_2 = static_cast<size_t>(std::ceil(idx));
-
-  //if (idx_1 == idx_2) {
-  //  q = sort_vector[idx_1];
-  //}
-  //else {
-  //  q = sort_vector[idx_1] + p * (sort_vector[idx_2] - sort_vector[idx_1]);
-  //}
 
   return q;
 }
@@ -733,30 +704,19 @@ quantile(It first, It last, double p)
   std::copy(first, last, sort_vector.begin());
   std::sort(sort_vector.begin(), sort_vector.end());
 
-  double idx = static_cast<double>(n) * p - 0.5;
+  double idx = static_cast<double>(n + 1) * p - 1.;
   size_t idx_1 = static_cast<size_t>(std::floor(idx));
   size_t idx_2 = static_cast<size_t>(std::ceil(idx));
 
   if (idx_1 == idx_2) {
     q = sort_vector[idx_1];
-  } else {
-    q = (sort_vector[idx_1] + sort_vector[idx_2]) / consts::two<T>;
   }
-
-  //double idx = static_cast<double>(n + 1) * p;
-  //size_t idx_1 = static_cast<size_t>(std::floor(idx));
-  //size_t idx_2 = static_cast<size_t>(std::ceil(idx));
-
-  //if (idx_1 == idx_2) {
-  //  q = sort_vector[idx_1];
-  //} else {
-  //  q = sort_vector[idx_1] + p * (sort_vector[idx_2] - sort_vector[idx_1]);
-  //}
+  else {
+    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+  }
 
   return q;
 }
-
-
 
 
 
