@@ -30,8 +30,10 @@
 #include <tidop/core/messages.h>
 #include <tidop/core/exception.h>
 #include <tidop/core/path.h>
+#include <tidop/core/progress.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/img/imgwriter.h>
+#include <tidop/img/formats.h>
 #include <tidop/vect/vectreader.h>
 #include <tidop/vect/vectwriter.h>
 #include <tidop/graphic/layer.h>
@@ -540,8 +542,8 @@ void orthoMosaic(Path &optimal_footprint_path,
           compensator->apply(0, corner, compensate_image, mask_full_size);
 
           Path orto_compensate(ortho_to_compensate);
-          std::string name = orto_compensate.baseName() + "_compensate_gain_blocks";
-          orto_compensate.replaceBaseName(name);
+          std::string name = orto_compensate.baseName() + "_compensate.png";
+          orto_compensate.replaceFileName(name);
           std::unique_ptr<ImageWriter> image_writer = ImageWriterFactory::createWriter(orto_compensate.toString());
           image_writer->open();
           if (image_writer->isOpen()) {
@@ -745,6 +747,29 @@ int main(int argc, char** argv)
     return 0;
   }
 
+  //{
+  //  std::unique_ptr<ImageReader> dtmReader = ImageReaderFactory::createReader(mdt);
+  //  dtmReader->open();
+  //  DataType data_type = dtmReader->dataType();
+  //  cv::Mat _dtm_ = dtmReader->read();
+  //  _dtm_.setTo(cv::Scalar::all(-9999), _dtm_ <= 0);
+  //  Crs crs = dtmReader->crs();
+  //  Affine<PointD> georef = dtmReader->georeference();
+  //  dtmReader->close();
+
+  //  std::unique_ptr<ImageWriter> dtmWriter = ImageWriterFactory::createWriter(mdt);
+  //  dtmWriter->open();
+  //  //std::shared_ptr<TiffOptions> options = std::make_shared<TiffOptions>();
+  //  //options->setInternalMask(true);
+  //  //dtmWriter->setImageOptions(options.get());
+  //  dtmWriter->create(_dtm_.rows, _dtm_.cols, 1, data_type);
+  //  dtmWriter->write(_dtm_);
+  //  dtmWriter->setCRS(crs);
+  //  dtmWriter->setGeoreference(georef);
+  //  dtmWriter->setNoDataValue(-9999.);
+  //  dtmWriter->close();
+  //}
+
   try {
 
     msgInfo("Read offset");
@@ -761,11 +786,9 @@ int main(int argc, char** argv)
     
     Crs crs(epsg);
 
-    //Orthorectification ortho(mdt.toString(), crs);
-    //ortho.run(photos, ortho_path.toString(), footprint_file.toString());
-
-    OrthoimageProcess ortho_process(photos, mdt, ortho_path, footprint_file, crs);
-    ortho_process.run();
+    ProgressBarColor progress;
+    OrthoimageProcess ortho_process(photos, mdt, ortho_path, footprint_file, crs, 0.01, 0.4);
+    ortho_process.run(&progress);
 
     //msgInfo("Optimal footprint searching");
     //

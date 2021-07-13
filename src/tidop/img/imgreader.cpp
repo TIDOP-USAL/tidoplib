@@ -352,16 +352,18 @@ public:
   {
     geospatial::Crs crs;
 
+    if (mDataset) {
 #if GDAL_VERSION_MAJOR >= 3
-    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs.fromWktFormat(wkt);
-      CPLFree(wkt);
-    }
+      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs.fromWktFormat(wkt);
+        CPLFree(wkt);
+      }
 #else
-    crs.fromWktFormat(mDataset->GetProjectionRef());
+      crs.fromWktFormat(mDataset->GetProjectionRef());
 #endif
+    }
 
     return crs;
   }
@@ -374,6 +376,17 @@ public:
     WindowD window(p1, p2);
     window.normalized();
     return window;
+  }
+
+  double noDataValue(bool *exist) const
+  {
+    double nodata{};
+    if (mDataset) {
+      int success{};
+      nodata = mDataset->GetRasterBand(1)->GetNoDataValue(&success);
+      if (exist) *exist = success;
+    }
+    return nodata;
   }
 
 protected:

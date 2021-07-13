@@ -256,6 +256,16 @@ void TiffOptions::setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor)
   mGeotiffKeysFlavor.second = geotiffKeysFlavor;
 }
 
+bool TiffOptions::internalMask() const
+{
+  return mInternalMask.second;
+}
+
+void TiffOptions::setInternalMask(bool internalMask)
+{
+  mInternalMask.second = internalMask;
+}
+
 void TiffOptions::init()
 {
   bTFW = std::make_pair(false, false);
@@ -469,6 +479,10 @@ std::map<std::string, std::string> TiffOptions::options(bool all) const
         options["GEOTIFF_KEYS_FLAVOR"] = "ESRI_PE";
         break;
     }
+  }
+
+  if (all || mInternalMask.first != mInternalMask.second) {
+    options["GDAL_TIFF_INTERNAL_MASK"] = std::to_string(mBlockXSize.second);
   }
 
   return options;

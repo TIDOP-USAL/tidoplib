@@ -52,72 +52,19 @@ class VectorWriter;
 namespace geospatial
 {
 
-
-
-
-
-
-class TL_EXPORT Orthorectification
-{
-
-public:
-
-	Orthorectification(const std::string &dtm, 
-										 const Crs &crs);
-	~Orthorectification();
-
-  void run(const std::vector<Photo> &photos,
-					 const std::string &orthoPath,
-					 const std::string &footprint);
-
-
-
-private:
-
-	void init();
-
-	Affine<PointI> affineImageToPhotocoordinates();
-	std::vector<tl::PointI> imageLimitsInPhotocoordinates();
-
-	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits);
-	Window<PointD> windowOrthoTerrain(const std::vector<Point3D> &footprint);
-	
-	TL_TODO("Mover a calibration")
-	float focal() const;
-	PointF principalPoint() const;
-	cv::Mat distCoeffs() const;
-
-private:
-
-	std::string mDtm;
-	Crs mCrs;
-	std::unique_ptr<ImageReader> mDtmReader;
-	std::unique_ptr<ImageReader> mImageReader;
-	std::unique_ptr<ImageWriter> mOrthophotoWriter;
-	std::unique_ptr<VectorWriter> mFootprintWriter;
-	Camera mCamera;
-	Affine<PointI> mAffineImageCoordinatesToPhotocoordinates;
-	Affine<PointD> mAffineDtmImageToTerrain;
-	Window<PointD> mWindowDtmTerrainExtension;
-	std::unique_ptr<DifferentialRectification<double>> mDifferentialRectification;
-};
-
-
-
-
 /*!
  * \brief Orthorectification
  */
-class Orthorectification2
+class Orthorectification
 {
 
 public:
 
-	Orthorectification2(const Path &dtm,
-		                  const Camera &camera,
-		                  const Photo::Orientation &orientation);
+	Orthorectification(const Path &dtm,
+		                 const Camera &camera,
+		                 const Photo::Orientation &orientation);
 	
-	~Orthorectification2()
+	~Orthorectification()
 	{
 
 	}
@@ -139,6 +86,9 @@ public:
 	graph::GPolygon footprint() const;
 
 	Photo::Orientation orientation() const;
+
+	bool hasNodataValue() const;
+	double nodataValue() const;
 
 private:
 
@@ -164,6 +114,7 @@ private:
 	Rect<int> mRectDtm;
 	graph::GPolygon mFootprint;
 	//Rect<int> mRectOrtho;
+	double mNoDataValue;
 };
 
 
@@ -176,8 +127,11 @@ private:
  {
  public:
  	
-   ZBuffer(Orthorectification2 *orthorectification,
-		       double scale = -1);
+   ZBuffer(Orthorectification *orthorectification,
+		       const Rect<int> &rectOrtho,
+		       const Affine<PointD> &georeference
+		       /*double scale = -1.,
+		       double crop = 1.*/);
    ~ZBuffer();
  
  	void run();
@@ -189,14 +143,17 @@ private:
  	void clear();
  
  private:
- 
- 	cv::Mat mDistances;
+
+  Orthorectification *mOrthorectification;
+	Rect<int> mRectOrtho;
+	Affine<PointD> mGeoreference;
+ //	double mScale;
+	//double mCrop;
+	Window<PointD> mWindowOrthoTerrain;
+	cv::Mat mDistances;
  	cv::Mat mY;
  	cv::Mat mX;
-	Orthorectification2 *mOrthorectification;
-	//std::unique_ptr<ImageReader> mImageReader;
-	double mScale;
-	Rect<int> mRectOrtho;
+	
  };
 
 
@@ -210,21 +167,28 @@ class Orthoimage
 public:
 
 	Orthoimage(const Path &image,
-		         Orthorectification2 *orthorectification,
+		         Orthorectification *orthorectification,
 		         const geospatial::Crs &crs,
-		         double scale = -1);
+		         const Rect<int> &rectOrtho,
+		         const Affine<PointD> &georeference
+		         /*double scale = -1.,
+		         double crop = 1.*/);
 	~Orthoimage();
 
 	void run(const Path &ortho, const cv::Mat &visibilityMap = cv::Mat());
 
 private:
 
-	Orthorectification2 *mOrthorectification;
-	std::unique_ptr<ImageReader> mImageReader;
-	std::unique_ptr<ImageWriter> mOrthophotoWriter;
-	double mScale;
-	Rect<int> mRectOrtho;
+	std::unique_ptr<ImageReader> mImageReader; 
+	Orthorectification *mOrthorectification;
 	geospatial::Crs mCrs;
+  Rect<int> mRectOrtho;
+	Affine<PointD> mGeoreference;
+	//double mScale; 
+	//double mCrop;
+	std::unique_ptr<ImageWriter> mOrthophotoWriter;
+	Window<PointD> mWindowOrthoTerrain;
+	
 };
 
 
@@ -238,12 +202,22 @@ class OrthoimageProcess
 
 public:
 
+	/*!
+	 * \brief  
+	 */
 	OrthoimageProcess(const std::vector<Photo> &photos,
 		                const Path &dtm,
 		                const Path &orthoPath,
 		                const Path &footprint,
-		                const Crs &crs);
+		                const Crs &crs,
+	                 	double scale = -1,
+		                double crop = 1);
 	~OrthoimageProcess();
+
+private:
+
+	cv::Mat visibilityMap(const Orthorectification &orthorectification,
+		                    const ZBuffer &zBuffer) const;
 
 // Heredado vía ProcessBase
 
@@ -259,7 +233,11 @@ private:
 	Path mFootprint;
 	geospatial::Crs mCrs;
 	std::unique_ptr<VectorWriter> mFootprintWriter;
+	double mScale; 
+	double mCrop;
 };
+
+
 
 /*!
  * \brief Orthomosaic 

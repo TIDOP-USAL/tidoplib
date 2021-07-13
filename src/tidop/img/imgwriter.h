@@ -44,6 +44,9 @@
 #ifdef HAVE_TL_GEOSPATIAL 
 #include "tidop/geospatial/crs.h"
 #endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -189,6 +192,11 @@ public:
   virtual void setCRS(const geospatial::Crs &crs) = 0;
 #endif
   
+  virtual void setNoDataValue(double nodata) = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual void setNoDataValue(const graph::Color &nodata) = 0;
+//#endif
 
 protected:
   

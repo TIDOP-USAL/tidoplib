@@ -64,6 +64,14 @@ public:
   virtual void setMaximun(size_t max) = 0;
   virtual void setText(const std::string &text) = 0;
 
+  static bool isRunning()
+  {
+    return sIsRunning;
+  }
+
+protected:
+
+  static bool sIsRunning;
 };
 
 
