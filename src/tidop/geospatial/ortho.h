@@ -77,6 +77,7 @@ public:
 	PointI photocoordinatesToImage(const PointI &photocoordinates) const;
 	Point3D dtmToTerrain(const PointI &imagePoint) const;
 	PointI terrainToDTM(const Point3D &terrainPoint) const;
+	double z(const PointD &terrainPoint) const;
 	/*Point3D orthoToTerrain(const PointI &imagePoint);
 	PointI terrainToOrtho(const Point3D &terrainPoint);*/
 

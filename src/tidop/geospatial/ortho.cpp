@@ -95,31 +95,6 @@ Point3D Orthorectification::photocoordinatesToTerrain(const PointI &photocoordin
   Point3D terrain_point = mDifferentialRectification->forwardProjection(photocoordinates, z);
   double z2;
 
-  //while (it > 0) {
-
-  //  PointD pt(terrain_point.x, terrain_point.y);
-  //  if (mWindowDtmTerrainExtension.containsPoint(terrain_point)) {
-  //    WindowD w(pt,
-  //              mAffineDtmImageToTerrain.scaleX(),
-  //              mAffineDtmImageToTerrain.scaleY());
-  //    cv::Mat image = mDtmReader->read(w);
-  //    if (!image.empty()) {
-  //      z2 = image.at<float>(0, 0);
-  //      if (std::abs(z2 - z) > 0.1 && z2 != 0.) {
-  //        terrain_point = mDifferentialRectification->forwardProjection(photocoordinates, z2);
-  //        z = z2;
-  //      } else {
-  //        //it = 0;
-  //        break;
-  //      }
-  //    }
-  //  } else {
-  //    //it = 0;
-  //    break;
-  //  }
-  //  it--;
-  //}
-
   while (it > 0) {
 
     PointI image_point = terrainToDTM(terrain_point);
@@ -127,9 +102,6 @@ Point3D Orthorectification::photocoordinatesToTerrain(const PointI &photocoordin
 
     PointD pt(terrain_point.x, terrain_point.y);
     if (rect_full.contains(image_point)) {
-      //WindowD w(pt,
-      //  mAffineDtmImageToTerrain.scaleX(),
-      //  mAffineDtmImageToTerrain.scaleY());
       RectI rect(image_point, 1, 1);
       cv::Mat image = mDtmReader->read(rect); 
       if (!image.empty()) {
@@ -138,16 +110,15 @@ Point3D Orthorectification::photocoordinatesToTerrain(const PointI &photocoordin
           terrain_point = mDifferentialRectification->forwardProjection(photocoordinates, z2);
           z = z2;
         } else {
-          //it = 0;
           break;
         }
       }
     } else {
-      //it = 0;
       break;
     }
     it--;
   }
+
   return terrain_point;
 }
 
@@ -171,6 +142,17 @@ Point3D Orthorectification::dtmToTerrain(const PointI &imagePoint) const
 PointI Orthorectification::terrainToDTM(const Point3D &terrainPoint) const
 {
   return mAffineDtmImageToTerrain.transform(terrainPoint, tl::Transform::Order::inverse);
+}
+
+double Orthorectification::z(const PointD &terrainPoint) const
+{
+  double z = mNoDataValue;
+  RectI rect(terrainToDTM(terrainPoint), 1, 1);
+  cv::Mat image = mDtmReader->read(rect);
+  if (!image.empty()) {
+    z = image.at<float>(0, 0);
+  }
+  return z;
 }
 
 //Point3D Orthorectification::orthoToTerrain(const PointI &imagePoint)
@@ -813,8 +795,8 @@ void OrthoimageProcess::execute(Progress *progressBar)
   std::shared_ptr<TableField> field(new TableField("image",
     TableField::Type::STRING,
     254));
-  std::vector<std::shared_ptr<TableField>> fields;
-  fields.push_back(field);
+  //std::vector<std::shared_ptr<TableField>> fields;
+  //fields.push_back(field);
 
   mFootprintWriter->create();
   mFootprintWriter->setCRS(mCrs);
@@ -832,11 +814,11 @@ void OrthoimageProcess::execute(Progress *progressBar)
   for (const auto &photo : mPhotos) {
 
     ortho_file = mOrthoPath;
-    ortho_file.append(photo.name()).replaceExtension(".jpg");
+    ortho_file.append(photo.name()).replaceExtension(".png");
     //if (ortho_file.exists()) continue;
     Orthorectification orthorectification(mDtm, photo.camera(), photo.orientation());
     std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
-    std::shared_ptr<TableRegister> data(new TableRegister(fields));
+    std::shared_ptr<TableRegister> data(new TableRegister(layer.tableFields()/*fields*/));
     data->setValue(0, ortho_file.toString());
     entity->setData(data);
     layer.push_back(entity);
