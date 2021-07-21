@@ -54,7 +54,7 @@ namespace tl
  * \brief Clase segmento 2D
  *
  * Esta template representa un segmento recto entre dos puntos independientemente de
- * que sean int, double o float. Se utiliza la clase point_ de OpenCV.
+ * que sean int, double o float.
  *
  * Se han definido los siguientes alias para facilitar el acceso:
  * \code

@@ -54,8 +54,8 @@ public:
 public:
 
   Curve(const std::vector<std::pair<T, int>> &data);
-
   virtual ~Curve() = default;
+
   /*!
    * \brief Confussion matrix for the specified threshold
    * \param[in] threshold

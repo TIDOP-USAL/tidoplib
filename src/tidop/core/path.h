@@ -143,6 +143,10 @@ private:
 };
 
 
+TL_EXPORT std::ostream &operator<< (std::ostream &os, const Path &path);
+
+
+
 /*! \} */ // end of utilities
 
 

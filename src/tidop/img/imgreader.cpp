@@ -100,7 +100,7 @@ public:
     mDataset = static_cast<GDALDataset *>(GDALOpen(fileName().c_str(), GA_ReadOnly));
 
     if (mDataset) {
-      std::array<double, 6> geotransform;
+      std::array<double, 6> geotransform{};
       if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
         // Valores por defecto
         geotransform[0] = 0.;           /* top left x */
@@ -318,7 +318,7 @@ public:
 
   bool isGeoreferenced() const override
   {
-    std::array<double, 6> geotransform;
+    std::array<double, 6> geotransform{};
     bool georef = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
     return georef;
   }

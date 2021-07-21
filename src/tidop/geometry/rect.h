@@ -86,10 +86,9 @@ public:
 };
 
 
-typedef Rect<int> RectI;
-typedef Rect<float> RectF;
-typedef Rect<double> RectD;
-
+using RectI = Rect<int>;
+using RectF = Rect<float>;
+using RectD = Rect<double>;
 
 
 template<typename T> inline
