@@ -58,6 +58,7 @@ public:
 
   Path();
   Path(const std::string &path);
+  Path(const std::wstring &path);
   Path(const Path &path);
   Path(Path &&path) TL_NOEXCEPT;
   ~Path();
@@ -66,13 +67,15 @@ public:
   Path &operator = (Path &&path) TL_NOEXCEPT;
 
   void setPath(const std::string &path);
+  void setPath(const std::wstring &path);
 
   /*!
    * \brief Convierte el path en una cadena
    * \return
    */
   std::string toString() const;
-  
+  std::wstring toWString() const;
+
   std::string fileName() const;
   std::string baseName() const;
   std::string extension() const;

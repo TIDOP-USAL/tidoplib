@@ -63,7 +63,18 @@ public:
     mPath = mPath.native();
   }
 
+  explicit Path(const std::wstring &path)
+    : mPath(path)
+  {
+    mPath = mPath.native();
+  }
+
   std::string toString() const
+  {
+    return mPath.string();
+  }
+  
+  std::string toWString() const
   {
     return mPath.string();
   }
@@ -162,6 +173,11 @@ Path::Path(const std::string &path)
 {
 }
 
+Path::Path(const std::wstring &path)
+  : mPath(new internal::Path(path))
+{
+}
+
 Path::Path(const Path &path)
   : mPath(new internal::Path(*path.mPath))
 {
@@ -194,9 +210,19 @@ void Path::setPath(const std::string &path)
   mPath = std::make_unique<internal::Path>(path);
 }
 
+void Path::setPath(const std::wstring &path)
+{
+  mPath = std::make_unique<internal::Path>(path);
+}
+
 std::string Path::toString() const
 {
   return mPath->toString();
+}
+
+std::wstring Path::toWString() const
+{
+  return mPath->toWString();
 }
 
 std::string Path::fileName() const
