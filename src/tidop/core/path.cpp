@@ -35,6 +35,9 @@
 #include <boost/filesystem.hpp>
 #endif
 
+#include <ostream>
+
+
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
 #else
@@ -379,6 +382,15 @@ TemporalDir::~TemporalDir()
 Path TemporalDir::path() const
 {
   return mPath;
+}
+
+
+
+
+std::ostream &operator<< (std::ostream &os, const Path &path)
+{
+  os << path.toString() << std::flush;
+  return os;
 }
 
 } // End namespace tl

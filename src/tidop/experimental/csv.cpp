@@ -209,7 +209,7 @@ Csv::Status Csv::open(const std::string &file, Mode mode, FileOptions *options)
     if (mMode == Mode::create) {
       char dir[TL_MAX_PATH];
       if ( getFileDriveDir(file.c_str(), dir, TL_MAX_PATH) == 0 )
-        if ( Path::createDirectories(dir) == -1) return Status::open_fail;
+        if (!Path::createDirectories(dir)) return Status::open_fail;
     }
     return Status::open_ok;
   } else {

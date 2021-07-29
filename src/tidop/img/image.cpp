@@ -99,16 +99,16 @@ int Image::depth()
 {
   int bits = 0;
   TL_TODO("Completar")
-  //switch (mType) 	{
-  //  case tl::DataType::TL_8U:
-  //    bits = 8;
-  //    break;
-  //  case tl::DataType::TL_8S:
-  //    bits = 8;
-  //    break;
-  //  case tl::DataType::TL_16U:
-  //    bits = 16;
-  //    break;
+  switch (mType) 	{
+    case tl::DataType::TL_8U:
+      bits = 8;
+      break;
+    case tl::DataType::TL_8S:
+      bits = 8;
+      break;
+    case tl::DataType::TL_16U:
+      bits = 16;
+      break;
   //  case tl::DataType::TL_16S:
   //    break;
   //  case tl::DataType::TL_32U:
@@ -119,9 +119,7 @@ int Image::depth()
   //    break;
   //  case tl::DataType::TL_64F:
   //    break;
-  //  default:
-  //    break;
-  //}
+  }
   return bits;
 }
 
@@ -132,7 +130,10 @@ bool Image::isEmpty()
 
 void Image::init()
 {
-  mData = (unsigned char *)std::malloc(mRows * mCols * mChannels * this->depth());
+  mData = (unsigned char *)std::malloc(static_cast<size_t>(mRows) * 
+                                       static_cast<size_t>(mCols) * 
+                                       static_cast<size_t>(mChannels) * 
+                                       static_cast<size_t>(this->depth()));
 }
 
 } // End namespace tl

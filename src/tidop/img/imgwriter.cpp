@@ -437,7 +437,7 @@ private:
 
   void setGdalGeoTransform()
   {
-    std::array<double, 6> geotransform;
+    std::array<double, 6> geotransform{};
     math::Matrix<double, 2, 3> parameters = mAffine.parameters();
     geotransform[1] = parameters.at(0, 0);
     geotransform[2] = parameters.at(0, 1);
