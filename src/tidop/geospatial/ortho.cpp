@@ -346,44 +346,66 @@ cv::Mat Orthorectification::distCoeffs() const
 
 
 
+/* Footprint */
+
+Footprint::Footprint(const std::vector<Photo> &photos,
+                     const Path &dtm,
+                     const geospatial::Crs &crs, 
+                     const Path &footprint)
+  : mPhotos(photos),
+    mDtm(dtm),
+    mCrs(crs)
+{
+  footprint.parentPath().createDirectories();
+
+  mFootprintWriter = VectorWriterFactory::createWriter(footprint);
+  mFootprintWriter->open();
+}
+
+Footprint::~Footprint()
+{
+}
+
+void Footprint::execute(Progress *progressBar)
+{
+  if (!mFootprintWriter->isOpen())throw std::runtime_error("Vector open error");
+
+  mFootprintWriter->create();
+  mFootprintWriter->setCRS(mCrs);
+
+  std::shared_ptr<TableField> field = std::make_shared<TableField>("image", TableField::Type::STRING, 254);
+  graph::GLayer layer;
+  layer.setName("footprint");
+  layer.addDataField(field);
+
+  for (const auto &photo : mPhotos) {
+
+    Orthorectification orthorectification(mDtm, photo.camera(), photo.orientation());
+    std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
+    std::shared_ptr<TableRegister> data = std::make_shared <TableRegister>(layer.tableFields());
+    data->setValue(0, photo.name());
+    entity->setData(data);
+    layer.push_back(entity);
+
+  }
+
+  mFootprintWriter->write(layer);
+  mFootprintWriter->close();
+}
+
+
+
+
+/* ZBuffer */
 
 ZBuffer::ZBuffer(Orthorectification *orthorectification,
                  const Rect<int> &rectOrtho,
-                 const Affine<PointD> &georeference
-                 /*double scale,
-		             double crop*/)
+                 const Affine<PointD> &georeference)
   : mOrthorectification(orthorectification),
     mRectOrtho(rectOrtho),
     mGeoreference(georeference)
-    /*mScale(scale),
-    mCrop(crop)*/
 {
   Rect<int> rect_image = mOrthorectification->rectImage();
-
-  //if (mScale == -1) {
-  //  /// Calculo de transformación afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
-  //  graph::GPolygon polygon = mOrthorectification->footprint();
-  //  std::vector<PointD> t_coor;
-  //  t_coor.push_back(polygon[0]);
-  //  t_coor.push_back(polygon[1]);
-  //  t_coor.push_back(polygon[2]);
-  //  t_coor.push_back(polygon[3]);
-
-  //  std::vector<PointD> i_coor;
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.topLeft()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.topRight()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.bottomRight()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.bottomLeft()));
-  //  Affine<PointD> affine_terrain_image;
-  //  affine_terrain_image.compute(i_coor, t_coor);
-  //  mScale = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
-  //}
-
-  //Window<PointD> window_ortho_terrain = mOrthorectification->footprint().window();
-  //mWindowOrthoTerrain = expandWindow(window_ortho_terrain, window_ortho_terrain.width() * (mCrop - 1.) / 2., window_ortho_terrain.height() * (mCrop - 1.) / 2.);
-  //int rows_ortho = static_cast<int>(std::round(mWindowOrthoTerrain.height() / mScale));
-  //int cols_ortho = static_cast<int>(std::round(mWindowOrthoTerrain.width() / mScale));
-  //mRectOrtho = Rect<int>(0, 0, cols_ortho, rows_ortho);
 
   mDistances = cv::Mat::zeros(rect_image.height, rect_image.width, CV_32F);
   mY = cv::Mat(rect_image.height, rect_image.width, CV_32S, -1);
@@ -401,12 +423,6 @@ void ZBuffer::run()
 
     Rect<int> rect_image = mOrthorectification->rectImage();
     Rect<int> rect_dtm = mOrthorectification->rectDtm();
-
-    /// georeferencia orto
-    //Window<PointD> window_ortho_terrain = mOrthorectification->footprint().window();
-    //Affine<PointD> affine_ortho(mWindowOrthoTerrain.pt1.x,
-    //                            mWindowOrthoTerrain.pt2.y,
-    //                            mScale, -mScale, 0.0);
 
     std::vector<Point3D> dtm_grid_terrain_points(4);
     std::vector<PointD> ortho_image_coordinates(4);
@@ -764,23 +780,27 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 OrthoimageProcess::OrthoimageProcess(const std::vector<Photo> &photos,
                                      const Path &dtm,
                                      const Path &orthoPath,
-                                     const Path &footprint,
+                                     const Path &graphOrthos,
                                      const Crs &crs,
+                                     const Path &footprint,
                                      double scale,
                                      double crop)
   : mPhotos(photos),
     mDtm(dtm),
     mOrthoPath(orthoPath),
-    mFootprint(footprint),
     mCrs(crs),
     mScale(scale),
     mCrop(crop)
 {
   mOrthoPath.createDirectories();
+  graphOrthos.parentPath().createDirectories();
+  footprint.parentPath().createDirectories();
 
   mFootprintWriter = VectorWriterFactory::createWriter(footprint);
   mFootprintWriter->open();
-  
+
+  mGraphOrthosWriter = VectorWriterFactory::createWriter(graphOrthos);
+  mGraphOrthosWriter->open();
 }
 
 OrthoimageProcess::~OrthoimageProcess()
@@ -790,7 +810,8 @@ OrthoimageProcess::~OrthoimageProcess()
 void OrthoimageProcess::execute(Progress *progressBar)
 {
 
-  if (!mFootprintWriter->isOpen())throw std::runtime_error("Vector open error");
+  if (!mFootprintWriter->isOpen()) throw std::runtime_error("Footprint open error");
+  if (!mGraphOrthosWriter) throw std::runtime_error("Graph Orthos open error");
 
   std::shared_ptr<TableField> field(new TableField("image",
     TableField::Type::STRING,
@@ -804,6 +825,17 @@ void OrthoimageProcess::execute(Progress *progressBar)
   graph::GLayer layer;
   layer.setName("footprint");
   layer.addDataField(field);
+
+  std::shared_ptr<TableField> field_ortho(new TableField("orthoimage",
+    TableField::Type::STRING,
+    254));
+
+  mGraphOrthosWriter->create();
+  mGraphOrthosWriter->setCRS(mCrs);
+
+  graph::GLayer layer_ortho_graph;
+  layer_ortho_graph.setName("ortho_graph");
+  layer_ortho_graph.addDataField(field_ortho);
 
   Path ortho_file;
 
@@ -859,25 +891,25 @@ void OrthoimageProcess::execute(Progress *progressBar)
                                 window_ortho_terrain.pt2.y,
                                 scale, -scale, 0.0);
 
+    /// Grafico ortofotos
+    {
+      Rect<double> rect(window_ortho_terrain.pt1, window_ortho_terrain.pt2);
+      rect.normalized();
+      std::shared_ptr<graph::GPolygon> entity_ortho = std::make_shared<graph::GPolygon>();
+      entity_ortho->push_back(rect.topLeft());
+      entity_ortho->push_back(rect.topRight());
+      entity_ortho->push_back(rect.bottomRight());
+      entity_ortho->push_back(rect.bottomLeft());
+      std::shared_ptr<TableRegister> data_ortho(new TableRegister(layer_ortho_graph.tableFields()));
+      data_ortho->setValue(0, ortho_file.toString());
+      entity_ortho->setData(data_ortho);
+      layer_ortho_graph.push_back(entity_ortho);
+    }
+
+
     ZBuffer zBuffer(&orthorectification, rect_ortho, affine_ortho);
     zBuffer.run();
     
-    //cv::Mat z_buffer_x = zBuffer.mapX();
-    //cv::Mat z_buffer_y = zBuffer.mapY();
-
-    ///// Visibility map
-    //Rect<int> rect_dtm = orthorectification.rectDtm();
-    //cv::Mat visibility_map = cv::Mat::zeros(rect_dtm.height, rect_dtm.width, CV_8U);
-
-    //for (int r = 0; r < z_buffer_y.rows; r++) {
-    //  for (int c = 0; c < z_buffer_y.cols; c++) {
-    //    double row = z_buffer_y.at<int>(r, c);
-    //    double col = z_buffer_x.at<int>(r, c);
-    //    if (row != -1 && col != -1) {
-    //      visibility_map.at<uchar>(row, col) = 255;
-    //    }
-    //  }
-    //}
     cv::Mat visibility_map = visibilityMap(orthorectification, zBuffer);
 
     Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho);
@@ -890,6 +922,9 @@ void OrthoimageProcess::execute(Progress *progressBar)
   
   mFootprintWriter->write(layer);
   mFootprintWriter->close();
+
+  mGraphOrthosWriter->write(layer_ortho_graph);
+  mGraphOrthosWriter->close();
 }
 
 cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectification, 

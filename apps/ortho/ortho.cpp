@@ -41,7 +41,6 @@
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/camera.h>
 #include <tidop/geospatial/photo.h>
-#include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/ortho.h>
 
 
@@ -515,9 +514,9 @@ void orthoMosaic(Path &optimal_footprint_path,
           msgInfo("Seam finder");
 
           cv::Ptr<cv::detail::SeamFinder> seam_finder;
-          seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
+          //seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
           //seam_finder = cv::makePtr<cv::detail::VoronoiSeamFinder>();
-          //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+          seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
           //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR_GRAD);
           seam_finder->find(umat_orthos, corners, ortho_masks);
           umat_orthos.clear();
@@ -595,9 +594,10 @@ void orthoMosaic(Path &optimal_footprint_path,
   /// 3 - mezcla (blender)
 
   bool try_cuda = false;
-  int blender_type = cv::detail::Blender::MULTI_BAND;
+  int blender_type = cv::detail::Blender::FEATHER;
+  //int blender_type = cv::detail::Blender::MULTI_BAND;
   cv::Ptr<cv::detail::Blender> blender;
-  float blend_strength = 3; //5;
+  float blend_strength = 5;
 
   Path ortho_final(ortho_path);
   ortho_final.append("ortho.tif");
@@ -614,7 +614,7 @@ void orthoMosaic(Path &optimal_footprint_path,
       res_ortho, -res_ortho, 0.0);
     image_writer->setGeoreference(affine_ortho);
 
-    for (size_t i = 0; i < 2/*grid.size()*/; i++) {
+    for (size_t i = 0; i < grid.size(); i++) {
 
       blender = cv::detail::Blender::createDefault(blender_type, try_cuda);
 
@@ -629,11 +629,11 @@ void orthoMosaic(Path &optimal_footprint_path,
         blender = cv::detail::Blender::createDefault(cv::detail::Blender::NO, try_cuda);
       } else if (blender_type == cv::detail::Blender::MULTI_BAND) {
         cv::detail::MultiBandBlender *multi_band_blender = dynamic_cast<cv::detail::MultiBandBlender *>(blender.get());
-        multi_band_blender->setNumBands(4/*static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.)*/);
+        multi_band_blender->setNumBands(static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.));
         msgInfo("Multi-band blender, number of bands: %i", multi_band_blender->numBands());
       } else if (blender_type == cv::detail::Blender::FEATHER) {
         cv::detail::FeatherBlender *feather_blender = dynamic_cast<cv::detail::FeatherBlender *>(blender.get());
-        feather_blender->setSharpness(0.02f/*1.f / blend_width*/);
+        feather_blender->setSharpness(/*0.02f*/1.f / blend_width);
         msgInfo("Feather blender, sharpness: %f", feather_blender->sharpness());
       }
 
@@ -659,8 +659,15 @@ void orthoMosaic(Path &optimal_footprint_path,
         window_to_read.normalized();
 
         Affine<PointI> affine;
-        cv::Mat compensate_image = image_reader->read(grid[i], read_scale_x, read_scale_y, &affine);
-        cv::Mat seam_image = image_reader_seam->read(grid[i], read_scale_x, read_scale_y);
+        cv::Mat compensate_image;
+        cv::Mat seam_image;
+        try {
+          compensate_image = image_reader->read(grid[i], read_scale_x, read_scale_y, &affine);
+          seam_image = image_reader_seam->read(grid[i], read_scale_x, read_scale_y);
+        } catch (...) {
+          continue;
+        }
+
         if (!compensate_image.empty() && !seam_image.empty()) {
 
           msgInfo("Ortho grid %i", i, compensated_orthos[j].c_str());
@@ -786,20 +793,22 @@ int main(int argc, char** argv)
     
     Crs crs(epsg);
 
-    ProgressBarColor progress;
-    OrthoimageProcess ortho_process(photos, mdt, ortho_path, footprint_file, crs, 0.01, 0.4);
-    ortho_process.run(&progress);
+    Path graph_orthos = footprint_file.replaceBaseName("graph_orthos");
 
-    //msgInfo("Optimal footprint searching");
-    //
-    //std::vector<WindowD> grid = findGrid(footprint_file);
-    //
-    //Path optimal_footprint_path(footprint_file);
-    //std::string name = optimal_footprint_path.baseName() + "_optimal";
-    //optimal_footprint_path.replaceBaseName(name);
-    //findOptimalFootprint(footprint_file, grid, optimal_footprint_path, crs);
-    //
-    //orthoMosaic(optimal_footprint_path, ortho_path, res_ortho, crs, grid);
+    //ProgressBarColor progress;
+    //OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, 0.01, 0.4);
+    //ortho_process.run(&progress);
+
+    msgInfo("Optimal footprint searching");
+    
+    std::vector<WindowD> grid = findGrid(graph_orthos);
+    
+    Path optimal_footprint_path(graph_orthos);
+    std::string name = optimal_footprint_path.baseName() + "_optimal";
+    optimal_footprint_path.replaceBaseName(name);
+    findOptimalFootprint(graph_orthos, grid, optimal_footprint_path, crs);
+    
+    orthoMosaic(optimal_footprint_path, ortho_path, res_ortho, crs, grid);
 
   } catch (const std::exception &e) {
     msgError(e.what());

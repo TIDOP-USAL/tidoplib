@@ -120,6 +120,36 @@ private:
 
 
 
+/*!
+ * \brief Footprint
+ */
+class Footprint
+	: public ProcessBase
+{
+
+public:
+
+	Footprint(const std::vector<Photo> &photos,
+		        const Path &dtm,
+		        const geospatial::Crs &crs,
+		        const Path &footprint);
+	~Footprint();
+	
+// Heredado vía ProcessBase
+
+private:
+
+	void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+	std::vector<Photo> mPhotos;
+	Path mDtm;
+	geospatial::Crs mCrs;
+	std::unique_ptr<VectorWriter> mFootprintWriter;
+};
+
+
 
 /*!
  * \brief ZBuffer
@@ -209,8 +239,9 @@ public:
 	OrthoimageProcess(const std::vector<Photo> &photos,
 		                const Path &dtm,
 		                const Path &orthoPath,
-		                const Path &footprint,
+		                const Path &graphOrthos,
 		                const Crs &crs,
+		                const Path &footprint = Path(),
 	                 	double scale = -1,
 		                double crop = 1);
 	~OrthoimageProcess();
@@ -231,9 +262,9 @@ private:
 	std::vector<Photo> mPhotos;
 	Path mDtm;
 	Path mOrthoPath;
-	Path mFootprint;
 	geospatial::Crs mCrs;
 	std::unique_ptr<VectorWriter> mFootprintWriter;
+	std::unique_ptr<VectorWriter> mGraphOrthosWriter;
 	double mScale; 
 	double mCrop;
 };

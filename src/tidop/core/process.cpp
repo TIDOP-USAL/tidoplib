@@ -495,7 +495,13 @@ ProcessStoppingEvent *ProcessBase::stoppingEvent()
   return mProcessStoppingEvent.get();
 }
 
-
+WCHAR *toWCHAR(const char *str) {
+  const unsigned int length = strlen(str);
+  WCHAR *buffer = (WCHAR *)malloc(sizeof(WCHAR) * length);
+  int nChars = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
+  MultiByteToWideChar(CP_ACP, 0, str, -1, (LPWSTR)buffer, nChars);
+  return buffer;
+}
 
 /* ExternalProcess */
 //https://stackoverflow.com/questions/42402673/createprocess-and-capture-stdout
@@ -609,8 +615,8 @@ void ExternalProcess::execute(Progress *)
   /////////////////////////////////////////////////////////////////////////
 
   LPWSTR cmdLine = (LPWSTR)wCmdLine.c_str();
-  if (!CreateProcess(L"C:\\WINDOWS\\system32\\cmd.exe",
-                     cmdLine,                      // Command line
+  if (!CreateProcess(nullptr/*L"C:\\WINDOWS\\system32\\cmd.exe"*/,
+                     toWCHAR(mCommandText.c_str())/*cmdLine*/,                      // Command line
                      nullptr,                      // Process handle not inheritable
                      nullptr,                      // Thread handle not inheritable
                      false,                        // Set handle inheritance to FALSE
