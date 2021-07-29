@@ -30,6 +30,7 @@
 namespace tl
 {
 
+bool Progress::sIsRunning = false;
 
 std::mutex ProgressBase::sMutex;
 
@@ -92,6 +93,7 @@ void ProgressBase::setText(const std::string &text)
 void ProgressBase::initialize()
 {
   std::cout << mMessage << "\n";
+  sIsRunning = true;
 }
 
 void ProgressBase::updateScale()
@@ -107,6 +109,7 @@ int ProgressBase::percent()
 void ProgressBase::terminate()
 {
   std::cout << std::endl;
+  sIsRunning = false;
 }
 
 

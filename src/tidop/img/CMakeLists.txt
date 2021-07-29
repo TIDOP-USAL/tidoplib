@@ -76,7 +76,8 @@ else()
       target_link_libraries(${PROJECT_NAME}
                             tl_core
                             tl_geom
-                            tl_math)
+                            tl_math
+                            tl_graphic)
       if(HAVE_OPENCV)			
           target_link_libraries(${PROJECT_NAME}
                                 ${OpenCV_LIBS})	

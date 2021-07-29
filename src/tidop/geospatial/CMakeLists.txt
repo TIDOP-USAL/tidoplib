@@ -51,8 +51,8 @@ else()
               util.h
               ortho.cpp
               ortho.h
-              footprint.cpp
-              footprint.h
+              #footprint.cpp
+              #footprint.h
               diffrect.cpp
               diffrect.h
               camera.cpp

@@ -46,6 +46,9 @@
 #ifdef HAVE_TL_GEOSPATIAL 
 #include "tidop/geospatial/crs.h"
 #endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -194,6 +197,12 @@ public:
   virtual WindowD window() const = 0;
 
   std::string fileName() const;
+
+  virtual double noDataValue(bool *exist = nullptr) const = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual graph::Color noDataValue() const = 0;
+//#endif
 
 protected:
   

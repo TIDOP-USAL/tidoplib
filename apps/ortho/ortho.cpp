@@ -30,17 +30,17 @@
 #include <tidop/core/messages.h>
 #include <tidop/core/exception.h>
 #include <tidop/core/path.h>
+#include <tidop/core/progress.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/img/imgwriter.h>
+#include <tidop/img/formats.h>
 #include <tidop/vect/vectreader.h>
 #include <tidop/vect/vectwriter.h>
 #include <tidop/graphic/layer.h>
-#include <tidop/graphic/entities/polygon.h>
 #include <tidop/graphic/datamodel.h>
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/camera.h>
 #include <tidop/geospatial/photo.h>
-#include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/ortho.h>
 
 
@@ -55,6 +55,201 @@ using namespace geospatial;
 constexpr bool find_optimal_footprint = true;
 /// Factor de carga para la compensación de exposición
 constexpr double exposure_compensator_factor = 0.5;
+
+
+Point3D readOffset(tl::Path &offset_file)
+{
+  Point3D offset;
+
+  if (!offset_file.exists()) throw std::runtime_error("Offset file not found");
+
+  std::ifstream ifs;
+  ifs.open(offset_file.toString(), std::ifstream::in);
+  if (ifs.is_open()) {
+
+    ifs >> offset.x >> offset.y >> offset.z;
+
+    ifs.close();
+  }
+
+  return offset;
+}
+
+std::vector<std::string> readImages(tl::Path &image_list, tl::Path &image_path)
+{
+  if (!image_list.exists()) throw std::runtime_error("Image list not found");
+
+  std::vector<std::string> images;
+
+  std::ifstream ifs;
+  ifs.open(image_list.toString(), std::ifstream::in);
+  if (ifs.is_open()) {
+
+    std::string line;
+
+    while (std::getline(ifs, line)) {
+
+      if (Path::exists(line)) {
+        images.push_back(line);
+      }
+      else {
+        Path image(image_path);
+        image.append(line);
+
+        if (image.exists()) {
+          images.push_back(image.toString());
+        }
+        else {
+          std::string err = "Image not found: ";
+          err.append(image.toString());
+          throw std::runtime_error(err.c_str());
+        }
+
+      }
+
+    }
+
+    ifs.close();
+  }
+
+  return images;
+}
+
+std::vector<Photo> readBundleFile(tl::Path &bundle_file, std::vector<std::string> &images, double &cx, double &cy, tl::Point3D &offset)
+{
+  std::vector<Photo> photos;
+
+  std::unique_ptr<ImageReader> imageReader;
+
+  if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
+
+  std::ifstream ifs;
+  ifs.open(bundle_file.toString(), std::ifstream::in);
+  if (ifs.is_open()) {
+
+    std::string line;
+    std::getline(ifs, line); // Salto primera linea
+
+    std::getline(ifs, line);
+
+    std::stringstream ss(line);
+
+    int camera_count;
+    int feature_count;
+    ss >> camera_count >> feature_count;
+
+    TL_ASSERT(camera_count == images.size(), "ERROR");
+
+    for (size_t i = 0; i < camera_count; i++) {
+
+      imageReader = ImageReaderFactory::createReader(images[i]);
+      imageReader->open();
+      int width = 0;
+      int height = 0;
+      if (imageReader->isOpen()) {
+        height = imageReader->rows();
+        width = imageReader->cols();
+      }
+
+
+      std::getline(ifs, line);
+      ss.str(line);
+      ss.clear();
+
+      double focal;
+      double k1;
+      double k2;
+      ss >> focal >> k1 >> k2;
+
+      TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
+        Camera camera;
+      camera.setHeight(height);
+      camera.setWidth(width);
+      camera.setType("Radial");
+      std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
+      calibration->setParameter(Calibration::Parameters::focal, focal);
+      if (cx == 0. && cy == 0.) {
+        cx = width / 2.;
+        cy = height / 2.;
+      }
+      calibration->setParameter(Calibration::Parameters::cx, cx);
+      calibration->setParameter(Calibration::Parameters::cy, cy);
+      calibration->setParameter(Calibration::Parameters::k1, k1);
+      calibration->setParameter(Calibration::Parameters::k2, k2);
+      camera.setCalibration(calibration);
+
+      std::getline(ifs, line);
+      ss.str(line);
+      ss.clear();
+      double r00;
+      double r01;
+      double r02;
+      ss >> r00 >> r01 >> r02;
+      std::getline(ifs, line);
+      ss.str(line);
+      ss.clear();
+      double r10;
+      double r11;
+      double r12;
+      ss >> r10 >> r11 >> r12;
+      std::getline(ifs, line);
+      ss.str(line);
+      ss.clear();
+      double r20;
+      double r21;
+      double r22;
+      ss >> r20 >> r21 >> r22;
+
+      math::RotationMatrix<double> rotation_matrix;
+      rotation_matrix.at(0, 0) = r00;
+      rotation_matrix.at(0, 1) = r01;
+      rotation_matrix.at(0, 2) = r02;
+      rotation_matrix.at(1, 0) = r10;
+      rotation_matrix.at(1, 1) = r11;
+      rotation_matrix.at(1, 2) = r12;
+      rotation_matrix.at(2, 0) = r20;
+      rotation_matrix.at(2, 1) = r21;
+      rotation_matrix.at(2, 2) = r22;
+
+      std::getline(ifs, line);
+      ss.str(line);
+      ss.clear();
+      double tx;
+      double ty;
+      double tz;
+      ss >> tx >> ty >> tz;
+
+      // Paso de la transformación de mundo a imagen a imagen mundo
+
+      math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
+
+      Point3D position;
+
+      position.x = -(rotation_transpose.at(0, 0) * tx +
+        rotation_transpose.at(0, 1) * ty +
+        rotation_transpose.at(0, 2) * tz) + offset.x;
+      position.y = -(rotation_transpose.at(1, 0) * tx +
+        rotation_transpose.at(1, 1) * ty +
+        rotation_transpose.at(1, 2) * tz) + offset.y;
+      position.z = -(rotation_transpose.at(2, 0) * tx +
+        rotation_transpose.at(2, 1) * ty +
+        rotation_transpose.at(2, 2) * tz) + offset.z;
+
+
+
+      Photo::Orientation orientation(position, rotation_matrix);
+      Photo photo(images[i]);
+      photo.setCamera(camera);
+      photo.setOrientation(orientation);
+      photos.push_back(photo);
+    }
+
+    ifs.close();
+  }
+
+  return photos;
+}
+
 
 /// Busqueda de la imagen mas centrada en la huella de vuelo
 std::shared_ptr<graph::GPolygon> bestImage(const PointD &pt, const std::string &footprint_file)
@@ -161,9 +356,9 @@ std::vector<tl::WindowD> findGrid(const tl::Path &footprint_file)
 
 /// Busqueda de la huella de vuelo optima
 void findOptimalFootprint(const tl::Path &footprint_file,
-  std::vector<tl::WindowD> &grid,
-  const Path &path_optimal_footprint,
-  const tl::geospatial::Crs &crs)
+                          std::vector<tl::WindowD> &grid,
+                          const Path &optimal_footprint_path,
+                          const tl::geospatial::Crs &crs)
 {
   std::map<std::string, std::shared_ptr<graph::GPolygon>> clean_footprint;
 
@@ -173,15 +368,15 @@ void findOptimalFootprint(const tl::Path &footprint_file,
     std::shared_ptr<graph::GPolygon> polygon = bestImage(grid[i].center(), footprint_file.toString());
     if (polygon) {
       std::shared_ptr<TableRegister> data = polygon->data();
-      std::string orto_to_compensate = data->value(0);
-      clean_footprint[orto_to_compensate] = polygon;
+      std::string ortho_to_compensate = data->value(0);
+      clean_footprint[ortho_to_compensate] = polygon;
     }
 
   }
 
   msgInfo("Optimal footprint. %i retained images", clean_footprint.size());
 
-  std::unique_ptr<VectorWriter> vector_writer = VectorWriterFactory::createWriter(path_optimal_footprint.toString());
+  std::unique_ptr<VectorWriter> vector_writer = VectorWriterFactory::createWriter(optimal_footprint_path.toString());
   vector_writer->open();
   if (!vector_writer->isOpen())throw std::runtime_error("Vector open error");
   vector_writer->create();
@@ -210,20 +405,18 @@ void findOptimalFootprint(const tl::Path &footprint_file,
 
 
 
-int orthoMosaic(tl::Path &path_optimal_footprint, 
-                std::vector<std::string> &ortos_comp, 
-                std::vector<std::string> &ortos_seam, 
-                tl::Path &ortho_path, 
-                double res_ortho, 
-                tl::geospatial::Crs &crs, 
-                std::vector<tl::WindowD> &grid, 
-                bool &retflag)
+void orthoMosaic(Path &optimal_footprint_path, 
+                 Path &ortho_path, 
+                 double res_ortho, 
+                 geospatial::Crs &crs, 
+                 std::vector<WindowD> &grid)
 {
-  retflag = true;
+  std::vector<std::string> compensated_orthos;
+  std::vector<std::string> ortho_seams;
   std::vector<cv::Point> corners;
-  std::vector<cv::UMat> masks_warped;
-  std::vector<cv::UMat> images_warped;
-  std::vector<cv::Mat> images_ortos;
+  std::vector<cv::Mat> mat_orthos;
+  std::vector<cv::UMat> umat_orthos;
+  std::vector<cv::UMat> ortho_masks;
   WindowD window_all;
 
   msgInfo("Exposure compensator");
@@ -236,12 +429,9 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
   cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(type);
 
   std::unique_ptr<VectorReader> vectorReader;
-  //if (find_optimal_footprint)
-    vectorReader = VectorReaderFactory::createReader(path_optimal_footprint.toString());
-  //else
-  //  vectorReader = VectorReaderFactory::createReader(footprint_file);
-
+  vectorReader = VectorReaderFactory::createReader(optimal_footprint_path.toString());
   vectorReader->open();
+
   if (vectorReader->isOpen()) {
 
     if (vectorReader->layersCount() >= 1) {
@@ -257,14 +447,14 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
           /// se carga la primera imagen y se busca las que intersectan
           std::shared_ptr<graph::GPolygon> polygon = std::dynamic_pointer_cast<graph::GPolygon>(entity);
           std::shared_ptr<TableRegister> data = polygon->data();
-          std::string orto_to_compensate = data->value(0);
+          std::string ortho_to_compensate = data->value(0);
           WindowD window = polygon->window();
           PointD center = window.center();
 
           /// Busqueda de imagenes que intersectan
 
-          std::vector<std::string> ortos;
-          ortos.push_back(orto_to_compensate);
+          std::vector<std::string> orthos;
+          orthos.push_back(ortho_to_compensate);
           std::vector<WindowD> windows;
           windows.push_back(window);
 
@@ -273,7 +463,7 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
             std::shared_ptr<TableRegister> data = polygon2->data();
             std::string orto = data->value(0);
 
-            if (orto != orto_to_compensate) {
+            if (orto != ortho_to_compensate) {
 
               //if (polygon2->isInner(polygon->at(0)) || 
               //    polygon2->isInner(polygon->at(1)) || 
@@ -281,7 +471,7 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
               //    polygon2->isInner(polygon->at(3))) {
               /// No se si será suficiente o tengo que seleccionar todas las imagenes que intersecten...
               if (polygon2->isInner(center)) {
-                ortos.push_back(orto);
+                orthos.push_back(orto);
                 windows.push_back(polygon2->window());
                 window_all = joinWindow(window_all, polygon2->window());
               }
@@ -290,21 +480,20 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
 
           }
 
-          size_t n_orthos = ortos.size();
+          size_t n_orthos = orthos.size();
           corners.resize(n_orthos);
-          masks_warped.resize(n_orthos);
-          images_warped.resize(n_orthos);
-          images_ortos.resize(n_orthos);
+          ortho_masks.resize(n_orthos);
+          umat_orthos.resize(n_orthos);
+          mat_orthos.resize(n_orthos);
 
           /// Aplicar un factor de escala para el calculo de la compensación de exposición
           for (size_t i = 0; i < n_orthos; i++) {
 
-
-            std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortos[i]);
+            std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(orthos[i]);
             image_reader->open();
             if (!image_reader->isOpen()) throw std::runtime_error("Image open error");
             cv::Mat image = image_reader->read(exposure_compensator_factor, exposure_compensator_factor);
-            images_ortos[i] = image.clone();
+            mat_orthos[i] = image.clone();
             double scale = image_reader->georeference().scaleX();
 
             /// Esquinas
@@ -312,56 +501,48 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
             corners[i].y = (window_all.pt2.y - windows[i].pt2.y) * exposure_compensator_factor / scale;
 
             /// La mascara debería leerse si se creó en la generación del MDS.
-            /// Por ahora mascara nula
-            //cv::Mat mask = cv::Mat::zeros(image.rows, image.cols, image.type());
-            //masks_warped[i] = mask.getUMat(cv::ACCESS_READ);
-            masks_warped[i].create(image.size(), CV_8U);
+            ortho_masks[i].create(image.size(), CV_8U);
             cv::Mat gray;
             cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
-            masks_warped[i].setTo(cv::Scalar::all(0));
-            masks_warped[i].setTo(cv::Scalar::all(255), gray > 0);
-            //masks_warped[i].setTo(cv::Scalar::all(255));
+            ortho_masks[i].setTo(cv::Scalar::all(0));
+            ortho_masks[i].setTo(cv::Scalar::all(255), gray > 0);
           }
 
-          cv::InputArrayOfArrays(images_ortos).getUMatVector(images_warped);
-          compensator->feed(corners, images_warped, masks_warped);
+          cv::InputArrayOfArrays(mat_orthos).getUMatVector(umat_orthos);
+          compensator->feed(corners, umat_orthos, ortho_masks);
 
           msgInfo("Seam finder");
 
           cv::Ptr<cv::detail::SeamFinder> seam_finder;
-          seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
+          //seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
           //seam_finder = cv::makePtr<cv::detail::VoronoiSeamFinder>();
-          //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+          seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
           //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR_GRAD);
-          seam_finder->find(images_warped, corners, masks_warped);
-          images_warped.clear();
+          seam_finder->find(umat_orthos, corners, ortho_masks);
+          umat_orthos.clear();
+          mat_orthos.clear();
 
-          std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(orto_to_compensate);
+          std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortho_to_compensate);
           image_reader->open();
           if (!image_reader->isOpen()) throw std::runtime_error("Image open error");
           cv::Mat compensate_image = image_reader->read();
 
           /// Se compensa la imagen
           cv::Point corner = corners[0] / exposure_compensator_factor;
-          //cv::Mat mask_full_size = masks_warped[0].getMat(cv::ACCESS_READ);
-          //cv::resize(mask_full_size, mask_full_size, compensate_image.size());
           cv::Mat gray;
           cv::cvtColor(compensate_image, gray, cv::COLOR_BGR2GRAY);
           cv::Mat mask_full_size(compensate_image.size(), CV_8U);
           mask_full_size.setTo(cv::Scalar::all(0));
           mask_full_size.setTo(cv::Scalar::all(255), gray > 0);
-          /// mask_full_size + mask_finder
-          //mask_full_size = mask_full_size & mask_finder;
           cv::Mat element = getStructuringElement(cv::MorphShapes::MORPH_RECT,
             cv::Size(2 * 2 + 1, 2 * 2 + 1),
             cv::Point(2, 2));
           cv::erode(mask_full_size, mask_full_size, element);
-          //cv::dilate(mask_full_size, mask_full_size, element);
           compensator->apply(0, corner, compensate_image, mask_full_size);
 
-          Path orto_compensate(orto_to_compensate);
-          std::string name = orto_compensate.baseName() + "_compensate_gain_blocks";
-          orto_compensate.replaceBaseName(name);
+          Path orto_compensate(ortho_to_compensate);
+          std::string name = orto_compensate.baseName() + "_compensate.png";
+          orto_compensate.replaceFileName(name);
           std::unique_ptr<ImageWriter> image_writer = ImageWriterFactory::createWriter(orto_compensate.toString());
           image_writer->open();
           if (image_writer->isOpen()) {
@@ -371,28 +552,17 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
             image_writer->write(compensate_image);
             image_writer->close();
             msgInfo("Image Compensate: %s", orto_compensate.fileName().c_str());
-            ortos_comp.push_back(orto_compensate.toString());
+            compensated_orthos.push_back(orto_compensate.toString());
           }
 
           /// 2 - Busqueda de costuras (seam finder)
 
-          //msgInfo("Seam finder");
-          //
-          //cv::Ptr<cv::detail::SeamFinder> seam_finder;
-          //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
-          //seam_finder->find(images_warped, corners, masks_warped);
-          cv::Mat mask_finder = masks_warped[0].getMat(cv::ACCESS_READ);
-          //element = getStructuringElement(cv::MorphShapes::MORPH_RECT,
-          //                                cv::Size(2 * 2 + 1, 2 * 2 + 1),
-          //                                cv::Point(2, 2));
+          cv::Mat mask_finder = ortho_masks[0].getMat(cv::ACCESS_READ);
           cv::erode(mask_finder, mask_finder, element);
-          //cv::dilate(mask_finder, mask_finder, element);
           cv::resize(mask_finder, mask_finder, compensate_image.size());
-          /// mask_full_size + mask_finder
           mask_finder = mask_finder & mask_full_size;
-          //mask_finder.setTo(255, mask_finder > 0);
 
-          Path orto_seam(orto_to_compensate);
+          Path orto_seam(ortho_to_compensate);
           name = orto_seam.baseName() + "_seam.tif";
           orto_seam.replaceFileName(name);
           image_writer = ImageWriterFactory::createWriter(orto_seam.toString());
@@ -404,14 +574,14 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
             image_writer->write(mask_finder);
             image_writer->close();
             msgInfo("Image seam: %s", orto_seam.fileName().c_str());
-            ortos_seam.push_back(orto_seam.toString());
+            ortho_seams.push_back(orto_seam.toString());
           }
 
           image_reader->close();
 
         } else {
           msgError("No es un fichero de huella de vuelo");
-          return 1;
+          return;
         }
 
       }
@@ -424,9 +594,10 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
   /// 3 - mezcla (blender)
 
   bool try_cuda = false;
-  int blender_type = cv::detail::Blender::MULTI_BAND;
+  int blender_type = cv::detail::Blender::FEATHER;
+  //int blender_type = cv::detail::Blender::MULTI_BAND;
   cv::Ptr<cv::detail::Blender> blender;
-  float blend_strength = 3; //5;
+  float blend_strength = 5;
 
   Path ortho_final(ortho_path);
   ortho_final.append("ortho.tif");
@@ -453,30 +624,30 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
 
       //cv::Size dst_sz = rect.size();
       float blend_width = sqrt(static_cast<float>(rect.area())) * blend_strength / 100.f;
-      if (blend_width < 1.f)
+      
+      if (blend_width < 1.f){
         blender = cv::detail::Blender::createDefault(cv::detail::Blender::NO, try_cuda);
-      else if (blender_type == cv::detail::Blender::MULTI_BAND) {
-        cv::detail::MultiBandBlender *mb = dynamic_cast<cv::detail::MultiBandBlender *>(blender.get());
-        mb->setNumBands(4/*static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.)*/);
-        msgInfo("Multi-band blender, number of bands: %i", mb->numBands());
+      } else if (blender_type == cv::detail::Blender::MULTI_BAND) {
+        cv::detail::MultiBandBlender *multi_band_blender = dynamic_cast<cv::detail::MultiBandBlender *>(blender.get());
+        multi_band_blender->setNumBands(static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.));
+        msgInfo("Multi-band blender, number of bands: %i", multi_band_blender->numBands());
+      } else if (blender_type == cv::detail::Blender::FEATHER) {
+        cv::detail::FeatherBlender *feather_blender = dynamic_cast<cv::detail::FeatherBlender *>(blender.get());
+        feather_blender->setSharpness(/*0.02f*/1.f / blend_width);
+        msgInfo("Feather blender, sharpness: %f", feather_blender->sharpness());
       }
-      else if (blender_type == cv::detail::Blender::FEATHER) {
-        cv::detail::FeatherBlender *fb = dynamic_cast<cv::detail::FeatherBlender *>(blender.get());
-        fb->setSharpness(0.02f/*1.f / blend_width*/);
-        msgInfo("Feather blender, sharpness: %f", fb->sharpness());
-      }
+
       blender->prepare(rect);
 
-      for (size_t j = 0; j < ortos_comp.size(); j++) {
-        std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(ortos_comp[j]);
-        std::unique_ptr<ImageReader> image_reader_seam = ImageReaderFactory::createReader(ortos_seam[j]);
+      for (size_t j = 0; j < compensated_orthos.size(); j++) {
+        std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(compensated_orthos[j]);
+        std::unique_ptr<ImageReader> image_reader_seam = ImageReaderFactory::createReader(ortho_seams[j]);
         image_reader->open();
         image_reader_seam->open();
         if (!image_reader->isOpen() || !image_reader_seam->isOpen()) throw std::runtime_error("Image open error");
 
-        //image_reader->window();
-        if (!tl::intersectWindows(image_reader->window(), grid[i]) ||
-          !tl::intersectWindows(image_reader_seam->window(), grid[i])) continue;
+        if (!intersectWindows(image_reader->window(), grid[i]) ||
+            !intersectWindows(image_reader_seam->window(), grid[i])) continue;
 
         double scale_x = image_reader->georeference().scaleX();
         double scale_y = image_reader->georeference().scaleY();
@@ -488,24 +659,31 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
         window_to_read.normalized();
 
         Affine<PointI> affine;
-        cv::Mat compensate_image = image_reader->read(grid[i], read_scale_x, read_scale_y, &affine);
-        cv::Mat seam_image = image_reader_seam->read(grid[i], read_scale_x, read_scale_y);
+        cv::Mat compensate_image;
+        cv::Mat seam_image;
+        try {
+          compensate_image = image_reader->read(grid[i], read_scale_x, read_scale_y, &affine);
+          seam_image = image_reader_seam->read(grid[i], read_scale_x, read_scale_y);
+        } catch (...) {
+          continue;
+        }
+
         if (!compensate_image.empty() && !seam_image.empty()) {
 
-          msgInfo("Ortho grid %i", i, ortos_comp[j].c_str());
+          msgInfo("Ortho grid %i", i, compensated_orthos[j].c_str());
 
-          cv::Mat compensate_image_s;
-          compensate_image.convertTo(compensate_image_s, CV_16S);
+          cv::Mat compensate_image_16s;
+          compensate_image.convertTo(compensate_image_16s, CV_16S);
           compensate_image.release();
 
-          cv::Rect rect_ = cv::Rect(affine.tx, affine.ty, compensate_image_s.cols, compensate_image_s.rows);
-          blender->feed(compensate_image_s, seam_image, rect_.tl());
+          cv::Rect rect = cv::Rect(affine.tx, affine.ty, compensate_image_16s.cols, compensate_image_16s.rows);
+          blender->feed(compensate_image_16s, seam_image, rect.tl());
         }
       }
-      cv::Mat _ortho;
-      cv::Mat _maks;
-      blender->blend(_ortho, _maks);
-      _ortho.convertTo(_ortho, CV_8U);
+      cv::Mat ortho_blend;
+      cv::Mat mask_blend;
+      blender->blend(ortho_blend, mask_blend);
+      ortho_blend.convertTo(ortho_blend, CV_8U);
 
       affine_ortho.transform(grid[i].pt1);
       affine_ortho.transform(grid[i].pt2);
@@ -513,15 +691,15 @@ int orthoMosaic(tl::Path &path_optimal_footprint,
       PointD p2 = affine_ortho.transform(grid[i].pt2, tl::Transform::Order::inverse);
       WindowI window_to_write(static_cast<PointI>(p1), static_cast<PointI>(p2));
       window_to_write.normalized();
-      image_writer->write(_ortho, window_to_write);
+      image_writer->write(ortho_blend, window_to_write);
 
     }
 
     image_writer->close();
   }
-  retflag = false;
-  return {};
 }
+
+
 
 int main(int argc, char** argv)
 {
@@ -576,225 +754,61 @@ int main(int argc, char** argv)
     return 0;
   }
 
+  //{
+  //  std::unique_ptr<ImageReader> dtmReader = ImageReaderFactory::createReader(mdt);
+  //  dtmReader->open();
+  //  DataType data_type = dtmReader->dataType();
+  //  cv::Mat _dtm_ = dtmReader->read();
+  //  _dtm_.setTo(cv::Scalar::all(-9999), _dtm_ <= 0);
+  //  Crs crs = dtmReader->crs();
+  //  Affine<PointD> georef = dtmReader->georeference();
+  //  dtmReader->close();
+
+  //  std::unique_ptr<ImageWriter> dtmWriter = ImageWriterFactory::createWriter(mdt);
+  //  dtmWriter->open();
+  //  //std::shared_ptr<TiffOptions> options = std::make_shared<TiffOptions>();
+  //  //options->setInternalMask(true);
+  //  //dtmWriter->setImageOptions(options.get());
+  //  dtmWriter->create(_dtm_.rows, _dtm_.cols, 1, data_type);
+  //  dtmWriter->write(_dtm_);
+  //  dtmWriter->setCRS(crs);
+  //  dtmWriter->setGeoreference(georef);
+  //  dtmWriter->setNoDataValue(-9999.);
+  //  dtmWriter->close();
+  //}
+
   try {
 
-    /// Lectura del offset
-    
-    Point3D offset;
+    msgInfo("Read offset");
 
-    {
-      if (!offset_file.exists()) throw std::runtime_error("Offset file not found");
+    Point3D offset = readOffset(offset_file);
 
-      std::ifstream ifs;
-      ifs.open(offset_file.toString(), std::ifstream::in);
-      if (ifs.is_open()) {
-      
-        ifs >> offset.x >> offset.y >> offset.z;
+    msgInfo("Read images");
 
-        ifs.close();
-      }
-    }
+    std::vector<std::string> images = readImages(image_list, image_path);
 
-    /// Carga de imagenes 
+    msgInfo("Read poses");
 
-    if (!image_list.exists()) throw std::runtime_error("Image list not found");
-
-    std::vector<std::string> images;
-
-    std::ifstream ifs;
-    ifs.open(image_list.toString(), std::ifstream::in);
-    if (ifs.is_open()) {
-
-      std::string line;
-
-      while (std::getline(ifs, line)) {
-        
-        if (Path::exists(line)) {
-          images.push_back(line);
-        } else {
-          Path image(image_path);
-          image.append(line);
-          
-          if (image.exists()) {
-            images.push_back(image.toString());
-          } else {
-            std::string err = "Image not found: ";
-            err.append(image.toString());
-            throw std::runtime_error(err.c_str());
-          }
-
-        }
-        
-      }
-
-      ifs.close();
-    }
-
-    /// Fin carga de imagenes 
-
-    std::vector<Photo> photos;
-    
-
-    /// Lectura de fichero bundle
-
-    std::unique_ptr<ImageReader> imageReader;
-
-    if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
-
-    ifs.open(bundle_file.toString(), std::ifstream::in);
-    if (ifs.is_open()) {
-    
-      std::string line;
-      std::getline(ifs, line); // Salto primera linea
-
-      std::getline(ifs, line);
-
-      std::stringstream ss(line);
-
-      int camera_count;
-      int feature_count;
-      ss >> camera_count >> feature_count;
-
-      TL_ASSERT(camera_count == images.size(), "ERROR");
-
-      for (size_t i = 0; i < camera_count; i++) {
-
-        imageReader = ImageReaderFactory::createReader(images[i]);
-        imageReader->open();
-        int width = 0;
-        int height = 0;
-        if (imageReader->isOpen()) {
-          height = imageReader->rows();
-          width = imageReader->cols();
-        }
-
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-
-        double focal;
-        double k1;
-        double k2;
-        ss >> focal >> k1 >> k2;
-
-        TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-        Camera camera;
-        camera.setHeight(height);
-        camera.setWidth(width);
-        camera.setType("Radial");
-        std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
-        calibration->setParameter(Calibration::Parameters::focal, focal);
-        if (cx == 0. && cy == 0.) {
-          cx = width / 2.;
-          cy = height / 2.;
-        } 
-        calibration->setParameter(Calibration::Parameters::cx, cx);        
-        calibration->setParameter(Calibration::Parameters::cy, cy);
-        calibration->setParameter(Calibration::Parameters::k1, k1);
-        calibration->setParameter(Calibration::Parameters::k2, k2);
-        camera.setCalibration(calibration);
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r00;
-        double r01;
-        double r02;
-        ss >> r00 >> r01 >> r02;
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r10;
-        double r11;
-        double r12;
-        ss >> r10 >> r11 >> r12;
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r20;
-        double r21;
-        double r22;
-        ss >> r20 >> r21 >> r22;
-
-        math::RotationMatrix<double> rotation_matrix;
-        rotation_matrix.at(0, 0) = r00;
-        rotation_matrix.at(0, 1) = r01;
-        rotation_matrix.at(0, 2) = r02;
-        rotation_matrix.at(1, 0) = r10;
-        rotation_matrix.at(1, 1) = r11;
-        rotation_matrix.at(1, 2) = r12;
-        rotation_matrix.at(2, 0) = r20;
-        rotation_matrix.at(2, 1) = r21;
-        rotation_matrix.at(2, 2) = r22;
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double tx;
-        double ty;
-        double tz;
-        ss >> tx >> ty >> tz;
-        
-        // Paso de la transformación de mundo a imagen a imagen mundo
-
-        math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
-
-        Point3D position;
-
-        position.x = -(rotation_transpose.at(0, 0) * tx +
-                       rotation_transpose.at(0, 1) * ty +
-                       rotation_transpose.at(0, 2) * tz) + offset.x;
-        position.y = -(rotation_transpose.at(1, 0) * tx +
-                       rotation_transpose.at(1, 1) * ty +
-                       rotation_transpose.at(1, 2) * tz) + offset.y;
-        position.z = -(rotation_transpose.at(2, 0) * tx +
-                       rotation_transpose.at(2, 1) * ty +
-                       rotation_transpose.at(2, 2) * tz) + offset.z;
-
-
-
-        Photo::Orientation orientation(position, rotation_matrix);
-        Photo photo(images[i]);
-        photo.setCamera(camera);
-        photo.setOrientation(orientation);
-        photos.push_back(photo);
-      }
-
-      ifs.close();
-    }
-
-    /// Fin lectura de fichero bundle
+    std::vector<Photo> photos = readBundleFile(bundle_file, images, cx, cy, offset);
     
     Crs crs(epsg);
 
-    /// Ortorectificación
+    Path graph_orthos = footprint_file.replaceBaseName("graph_orthos");
 
-    Orthorectification ortho(mdt.toString(), crs);
-    ortho.run(photos, ortho_path.toString(), footprint_file.toString());
+    //ProgressBarColor progress;
+    //OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, 0.01, 0.4);
+    //ortho_process.run(&progress);
 
-    /// Huella de vuelo optima
-    
     msgInfo("Optimal footprint searching");
     
-    Path path_optimal_footprint(footprint_file);
-    std::string name = path_optimal_footprint.baseName() + "_optimal";
-    path_optimal_footprint.replaceBaseName(name);
+    std::vector<WindowD> grid = findGrid(graph_orthos);
     
-    std::vector<WindowD> grid = findGrid(footprint_file);
-
-    findOptimalFootprint(footprint_file, grid, path_optimal_footprint, crs);
-
-
-    /// Se carga la huella de vuelo y se van leyendo las ortos y realizando la compensación de exposición
-
-    std::vector<std::string> ortos_comp;
-    std::vector<std::string> ortos_seam;
-    bool retflag;
-    int retval = orthoMosaic(path_optimal_footprint, ortos_comp, ortos_seam, ortho_path, res_ortho, crs, grid, retflag);
-    if (retflag) return retval;
-
-
+    Path optimal_footprint_path(graph_orthos);
+    std::string name = optimal_footprint_path.baseName() + "_optimal";
+    optimal_footprint_path.replaceBaseName(name);
+    findOptimalFootprint(graph_orthos, grid, optimal_footprint_path, crs);
+    
+    orthoMosaic(optimal_footprint_path, ortho_path, res_ortho, crs, grid);
 
   } catch (const std::exception &e) {
     msgError(e.what());

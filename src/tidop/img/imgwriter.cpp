@@ -203,10 +203,10 @@ public:
               DataType type) override
   {
     if (!isOpen()) open(); // Se abre el archivo si no esta abierto.
-    if (!isOpen()) throw std::runtime_error("Driver not found");
 
-    if (!checkDataType()) throw std::runtime_error("Data Type not supported"); 
-
+    TL_ASSERT(isOpen(), "Driver not found");
+    TL_ASSERT(checkDataType(), "Data Type not supported");
+    
     if (mDataset) {
       GDALClose(mDataset);
       mDataset = nullptr;
@@ -245,6 +245,8 @@ public:
   void write(const cv::Mat &image, 
              const Rect<int> &rect)
   {
+    TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+
     RectI rect_full_image(0, 0, this->cols(), this->rows());
     RectI rect_to_write;
 
@@ -404,6 +406,27 @@ public:
     }
   }
 #endif
+
+  void setNoDataValue(double nodata)
+  {
+    if (mDataset) {
+      mDataset->GetRasterBand(1)->SetNoDataValue(nodata);
+    }
+  }
+
+//#ifdef HAVE_TL_GRAPHIC
+//  void setColor(const graph::Color &nodata)
+//  {
+//    int channels = this->channels();
+//    if (channels == 1) {
+//      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.luminance());
+//    } else {
+//      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.red());
+//      mDataset->GetRasterBand(2)->SetNoDataValue(nodata.green());
+//      mDataset->GetRasterBand(3)->SetNoDataValue(nodata.blue());
+//    }
+//  }
+//#endif
 
 private:
 

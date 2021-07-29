@@ -173,7 +173,7 @@ void VectorWriterGdal::create()
 
 void VectorWriterGdal::write(const GLayer &layer)
 {
-  if (mDataset == nullptr) throw std::runtime_error("The file has not been created. Use VectorWriterGdal::create() method");
+  TL_ASSERT(isOpen(), "The file has not been created. Use VectorWriter::create() method");
 
   OGRLayer *ogrLayer = mDataset->GetLayerByName(layer.name().c_str());
   if (!ogrLayer) {
@@ -300,6 +300,8 @@ void VectorWriterGdal::setCRS(const std::string &crs)
 {
   if (mDataset) {
     this->setGdalProjection(crs);
+  } else {
+    msgWarning("The file has not been created. Use VectorWriterGdal::create() method");
   }
 }
 
@@ -308,6 +310,8 @@ void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
 {
   if (mDataset && crs.isValid()) {
     this->setGdalProjection(crs.toWktFormat());
+  } else {
+    msgWarning("The file has not been created. Use VectorWriterGdal::create() method");
   }
 }
 #endif

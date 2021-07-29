@@ -38,7 +38,7 @@
 #include <tidop/geospatial/crs.h>
 #include <tidop/geospatial/camera.h>
 #include <tidop/geospatial/photo.h>
-#include <tidop/geospatial/footprint.h>
+//#include <tidop/geospatial/footprint.h>
 #include <tidop/geospatial/util.h>
 
 
@@ -93,256 +93,210 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  try {
+  //try {
 
-    /// Lectura del offset
-    
-    Point3D offset;
+  //  /// Lectura del offset
+  //  
+  //  Point3D offset;
 
-    {
-      if (!offset_file.exists()) throw std::runtime_error("Offset file not found");
+  //  {
+  //    if (!offset_file.exists()) throw std::runtime_error("Offset file not found");
 
-      std::ifstream ifs;
-      ifs.open(offset_file.toString(), std::ifstream::in);
-      if (ifs.is_open()) {
-      
-        ifs >> offset.x >> offset.y >> offset.z;
+  //    std::ifstream ifs;
+  //    ifs.open(offset_file.toString(), std::ifstream::in);
+  //    if (ifs.is_open()) {
+  //    
+  //      ifs >> offset.x >> offset.y >> offset.z;
 
-        ifs.close();
-      }
-    }
-
-    /// Carga de imagenes 
-
-    if (!image_list.exists()) throw std::runtime_error("Image list not found");
-
-    std::vector<std::string> images;
-
-    std::ifstream ifs;
-    ifs.open(image_list.toString(), std::ifstream::in);
-    if (ifs.is_open()) {
-
-      std::string line;
-
-      while (std::getline(ifs, line)) {
-        
-        if (Path::exists(line)) {
-          images.push_back(line);
-        }
-        else {
-          Path image(image_path);
-          image.append(line);
-
-          if (image.exists()) {
-            images.push_back(image.toString());
-          }
-          else {
-            std::string err = "Image not found: ";
-            err.append(image.toString());
-            throw std::runtime_error(err.c_str());
-          }
-
-        }
-
-      }
-
-      ifs.close();
-    }
-
-    /// Fin carga de imagenes 
-
-    std::vector<Photo> photos;
-    
-
-    /// Lectura de fichero bundle
-
-    std::unique_ptr<ImageReader> imageReader;
-
-    if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
-
-    ifs.open(bundle_file.toString(), std::ifstream::in);
-    if (ifs.is_open()) {
-
-      std::string line;
-      std::getline(ifs, line); // Salto primera linea
-
-      std::getline(ifs, line);
-
-      std::stringstream ss(line);
-
-      int camera_count;
-      int feature_count;
-      ss >> camera_count >> feature_count;
-
-      TL_ASSERT(camera_count == images.size(), "ERROR");
-
-      for (size_t i = 0; i < camera_count; i++) {
-
-        imageReader = ImageReaderFactory::createReader(images[i]);
-        imageReader->open();
-        int width = 0;
-        int height = 0;
-        if (imageReader->isOpen()) {
-          height = imageReader->rows();
-          width = imageReader->cols();
-        }
-
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-
-        double focal;
-        double k1;
-        double k2;
-        ss >> focal >> k1 >> k2;
-
-        TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
-          Camera camera;
-        camera.setHeight(height);
-        camera.setWidth(width);
-        camera.setType("Radial");
-        std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
-        calibration->setParameter(Calibration::Parameters::focal, focal);
-        if (cx == 0. && cy == 0.) {
-          cx = width / 2.;
-          cy = height / 2.;
-        }
-        calibration->setParameter(Calibration::Parameters::cx, cx);
-        calibration->setParameter(Calibration::Parameters::cy, cy);
-        calibration->setParameter(Calibration::Parameters::k1, k1);
-        calibration->setParameter(Calibration::Parameters::k2, k2);
-        camera.setCalibration(calibration);
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r00;
-        double r01;
-        double r02;
-        ss >> r00 >> r01 >> r02;
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r10;
-        double r11;
-        double r12;
-        ss >> r10 >> r11 >> r12;
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double r20;
-        double r21;
-        double r22;
-        ss >> r20 >> r21 >> r22;
-
-        math::RotationMatrix<double> rotation_matrix;
-        rotation_matrix.at(0, 0) = r00;
-        rotation_matrix.at(0, 1) = r01;
-        rotation_matrix.at(0, 2) = r02;
-        rotation_matrix.at(1, 0) = r10;
-        rotation_matrix.at(1, 1) = r11;
-        rotation_matrix.at(1, 2) = r12;
-        rotation_matrix.at(2, 0) = r20;
-        rotation_matrix.at(2, 1) = r21;
-        rotation_matrix.at(2, 2) = r22;
-
-        std::getline(ifs, line);
-        ss.str(line);
-        ss.clear();
-        double tx;
-        double ty;
-        double tz;
-        ss >> tx >> ty >> tz;
-
-        // Paso de la transformación de mundo a imagen a imagen mundo
-
-        math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
-
-        Point3D position;
-
-        position.x = -(rotation_transpose.at(0, 0) * tx +
-          rotation_transpose.at(0, 1) * ty +
-          rotation_transpose.at(0, 2) * tz) + offset.x;
-        position.y = -(rotation_transpose.at(1, 0) * tx +
-          rotation_transpose.at(1, 1) * ty +
-          rotation_transpose.at(1, 2) * tz) + offset.y;
-        position.z = -(rotation_transpose.at(2, 0) * tx +
-          rotation_transpose.at(2, 1) * ty +
-          rotation_transpose.at(2, 2) * tz) + offset.z;
-
-
-        Photo::Orientation orientation(position, rotation_matrix);
-        Photo photo(images[i]);
-        photo.setCamera(camera);
-        photo.setOrientation(orientation);
-        photos.push_back(photo);
-      }
-
-      ifs.close();
-    }
-
-    /// Fin lectura de fichero bundle
-
-    Crs crs(epsg);
-
-    Footprint footprint(mdt.toString(), crs);
-    footprint.run(photos, footprint_file.toString());
-
-  } catch (const std::exception &e) {
-    msgError(e.what());
-  } 
-
-
-
-  /// Prueba de lectura de huella de vuelo y selección de los fotogramas que contienen un punto
-
-  PointD pt(272013.665, 4338378.212);
-  std::map<double, std::shared_ptr<graph::GPolygon>> entities;
-  int n_best_entities = 5;
-  std::unique_ptr<VectorReader> vectorReader = VectorReaderFactory::createReader(footprint_file);
-  vectorReader->open();
-  if (vectorReader->isOpen()) {
-
-    size_t size = vectorReader->layersCount();
-
-    if (size >= 1) {
-      std::shared_ptr<graph::GLayer> layer = vectorReader->read(0);
-
-      for (const auto &entity : *layer) {
-        graph::GraphicEntity::Type type = entity->type();
-        if (type == graph::GraphicEntity::Type::polygon_2d) {
-
-          std::shared_ptr<graph::GPolygon> polygon = std::dynamic_pointer_cast<graph::GPolygon>(entity);
-          if (polygon->isInner(pt)) {
-            PointD center = polygon->window().center();
-            double distance = tl::distance(center, pt);
-            entities[distance] = polygon;
-          }
-
-        } else {
-          msgError("No es un fichero de huella de vuelo");
-          break;
-        }
-        
-      }
-    }
-    
-    vectorReader->close();
-  }
-
-  //int entities_contain_point = entities.size();
-  //for (auto entity : entities) {
-  //  if (n_best_entities == 0) break;
-  //  //msgInfo("distance: %lf", entity.first);
-  //  std::shared_ptr<graph::GPolygon> polygon = entity.second;
-  //  std::shared_ptr<experimental::TableRegister> data = polygon->data();
-  //  for (size_t i = 0; i < data->size(); i++) {
-  //    std::string value = data->value(i);
-  //    msgInfo("image: %s", value.c_str());
+  //      ifs.close();
+  //    }
   //  }
-  //  --n_best_entities;
+
+  //  /// Carga de imagenes 
+
+  //  if (!image_list.exists()) throw std::runtime_error("Image list not found");
+
+  //  std::vector<std::string> images;
+
+  //  std::ifstream ifs;
+  //  ifs.open(image_list.toString(), std::ifstream::in);
+  //  if (ifs.is_open()) {
+
+  //    std::string line;
+
+  //    while (std::getline(ifs, line)) {
+  //      
+  //      if (Path::exists(line)) {
+  //        images.push_back(line);
+  //      }
+  //      else {
+  //        Path image(image_path);
+  //        image.append(line);
+
+  //        if (image.exists()) {
+  //          images.push_back(image.toString());
+  //        }
+  //        else {
+  //          std::string err = "Image not found: ";
+  //          err.append(image.toString());
+  //          throw std::runtime_error(err.c_str());
+  //        }
+
+  //      }
+
+  //    }
+
+  //    ifs.close();
+  //  }
+
+  //  /// Fin carga de imagenes 
+
+  //  std::vector<Photo> photos;
+  //  
+
+  //  /// Lectura de fichero bundle
+
+  //  std::unique_ptr<ImageReader> imageReader;
+
+  //  if (!bundle_file.exists()) throw std::runtime_error("Bundle file not found");
+
+  //  ifs.open(bundle_file.toString(), std::ifstream::in);
+  //  if (ifs.is_open()) {
+
+  //    std::string line;
+  //    std::getline(ifs, line); // Salto primera linea
+
+  //    std::getline(ifs, line);
+
+  //    std::stringstream ss(line);
+
+  //    int camera_count;
+  //    int feature_count;
+  //    ss >> camera_count >> feature_count;
+
+  //    TL_ASSERT(camera_count == images.size(), "ERROR");
+
+  //    for (size_t i = 0; i < camera_count; i++) {
+
+  //      imageReader = ImageReaderFactory::createReader(images[i]);
+  //      imageReader->open();
+  //      int width = 0;
+  //      int height = 0;
+  //      if (imageReader->isOpen()) {
+  //        height = imageReader->rows();
+  //        width = imageReader->cols();
+  //      }
+
+
+  //      std::getline(ifs, line);
+  //      ss.str(line);
+  //      ss.clear();
+
+  //      double focal;
+  //      double k1;
+  //      double k2;
+  //      ss >> focal >> k1 >> k2;
+
+  //      TL_TODO("¿Necesito algo de Camera o sólo de Calibration?")
+  //        Camera camera;
+  //      camera.setHeight(height);
+  //      camera.setWidth(width);
+  //      camera.setType("Radial");
+  //      std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
+  //      calibration->setParameter(Calibration::Parameters::focal, focal);
+  //      if (cx == 0. && cy == 0.) {
+  //        cx = width / 2.;
+  //        cy = height / 2.;
+  //      }
+  //      calibration->setParameter(Calibration::Parameters::cx, cx);
+  //      calibration->setParameter(Calibration::Parameters::cy, cy);
+  //      calibration->setParameter(Calibration::Parameters::k1, k1);
+  //      calibration->setParameter(Calibration::Parameters::k2, k2);
+  //      camera.setCalibration(calibration);
+
+  //      std::getline(ifs, line);
+  //      ss.str(line);
+  //      ss.clear();
+  //      double r00;
+  //      double r01;
+  //      double r02;
+  //      ss >> r00 >> r01 >> r02;
+  //      std::getline(ifs, line);
+  //      ss.str(line);
+  //      ss.clear();
+  //      double r10;
+  //      double r11;
+  //      double r12;
+  //      ss >> r10 >> r11 >> r12;
+  //      std::getline(ifs, line);
+  //      ss.str(line);
+  //      ss.clear();
+  //      double r20;
+  //      double r21;
+  //      double r22;
+  //      ss >> r20 >> r21 >> r22;
+
+  //      math::RotationMatrix<double> rotation_matrix;
+  //      rotation_matrix.at(0, 0) = r00;
+  //      rotation_matrix.at(0, 1) = r01;
+  //      rotation_matrix.at(0, 2) = r02;
+  //      rotation_matrix.at(1, 0) = r10;
+  //      rotation_matrix.at(1, 1) = r11;
+  //      rotation_matrix.at(1, 2) = r12;
+  //      rotation_matrix.at(2, 0) = r20;
+  //      rotation_matrix.at(2, 1) = r21;
+  //      rotation_matrix.at(2, 2) = r22;
+
+  //      std::getline(ifs, line);
+  //      ss.str(line);
+  //      ss.clear();
+  //      double tx;
+  //      double ty;
+  //      double tz;
+  //      ss >> tx >> ty >> tz;
+
+  //      // Paso de la transformación de mundo a imagen a imagen mundo
+
+  //      math::RotationMatrix<double> rotation_transpose = rotation_matrix.transpose();
+
+  //      Point3D position;
+
+  //      position.x = -(rotation_transpose.at(0, 0) * tx +
+  //        rotation_transpose.at(0, 1) * ty +
+  //        rotation_transpose.at(0, 2) * tz) + offset.x;
+  //      position.y = -(rotation_transpose.at(1, 0) * tx +
+  //        rotation_transpose.at(1, 1) * ty +
+  //        rotation_transpose.at(1, 2) * tz) + offset.y;
+  //      position.z = -(rotation_transpose.at(2, 0) * tx +
+  //        rotation_transpose.at(2, 1) * ty +
+  //        rotation_transpose.at(2, 2) * tz) + offset.z;
+
+
+  //      Photo::Orientation orientation(position, rotation_matrix);
+  //      Photo photo(images[i]);
+  //      photo.setCamera(camera);
+  //      photo.setOrientation(orientation);
+  //      photos.push_back(photo);
+  //    }
+
+  //    ifs.close();
+  //  }
+
+  //  /// Fin lectura de fichero bundle
+
+  //  Crs crs(epsg);
+
+  //  Footprint footprint(mdt.toString(), crs);
+  //  footprint.run(photos, footprint_file.toString());
+
+  //} catch (const std::exception &e) {
+  //  msgError(e.what());
+  //} 
+  //  
+  //  vectorReader->close();
   //}
+
+
 
   return 0;
 }

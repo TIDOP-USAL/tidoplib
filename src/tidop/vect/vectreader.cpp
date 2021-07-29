@@ -100,11 +100,19 @@ public:
  
   int layersCount() const
   {
-    return mDataset ? mDataset->GetLayerCount() : 0;
+    int size = 0;
+    if (mDataset) {
+      size = mDataset->GetLayerCount();
+    } else {
+      msgWarning("The file has not been opened");
+    }
+    return size;
   }
 
   std::shared_ptr<graph::GLayer> read(int layerId)
   {
+    TL_ASSERT(isOpen(), "The file has not been opened. Use VectorReader::create() method");
+
     OGRLayer *ogrLayer = mDataset->GetLayer(layerId);
     TL_ASSERT(ogrLayer != nullptr, "Layer not found");
     return this->read(ogrLayer);
@@ -112,6 +120,8 @@ public:
 
   std::shared_ptr<graph::GLayer> read(const std::string &layerName)
   {
+    TL_ASSERT(isOpen(), "The file has not been opened. Use VectorReader::create() method");
+
     OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
     TL_ASSERT(ogrLayer != nullptr, "Layer not found");
     return this->read(ogrLayer);
@@ -120,16 +130,21 @@ public:
   std::string crsWkt() const override
   {
     std::string crs_wkt;
+    
+    if (mDataset) {
 #if GDAL_VERSION_MAJOR >= 3
-    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs_wkt = std::string(wkt);
-      CPLFree(wkt);
-    }
+      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs_wkt = std::string(wkt);
+        CPLFree(wkt);
+      }
 #else
-    crs_wkt = std::string(mDataset->GetProjectionRef());
+      crs_wkt = std::string(mDataset->GetProjectionRef());
 #endif
+    } else {
+      msgWarning("The file has not been opened");
+    }
 
     return crs_wkt;
   }
@@ -139,16 +154,20 @@ public:
   {
     geospatial::Crs crs;
 
+    if (mDataset) {
 #if GDAL_VERSION_MAJOR >= 3
-    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs.fromWktFormat(wkt);
-      CPLFree(wkt);
-    }
+      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs.fromWktFormat(wkt);
+        CPLFree(wkt);
+      }
 #else
-    crs.fromWktFormat(mDataset->GetProjectionRef());
+      crs.fromWktFormat(mDataset->GetProjectionRef());
 #endif
+    } else {
+      msgWarning("The file has not been opened");
+    }
 
     return crs;
   }

@@ -74,9 +74,9 @@ public:
     return mPath.string();
   }
   
-  std::string toWString() const
+  std::wstring toWString() const
   {
-    return mPath.string();
+    return mPath.wstring();
   }
 
   std::string fileName() const

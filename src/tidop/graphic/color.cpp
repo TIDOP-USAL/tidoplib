@@ -380,17 +380,17 @@ int Color::blue() const
 
 int Color::green() const
 {
-  return((mColor & 0xFF00) >> 8);
+  return (mColor & 0xFF00) >> 8;
 }
 
 int Color::red() const
 {
-  return((mColor & 0xFF0000) >> 16);
+  return (mColor & 0xFF0000) >> 16;
 }
 
 int Color::alpha() const
 {
-  return((mColor & 0xFF000000) >> 24);
+  return (mColor & 0xFF000000) >> 24;
 }
 
 int Color::luminance() const
