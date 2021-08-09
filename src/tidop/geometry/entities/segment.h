@@ -39,8 +39,8 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/window.h"
-#include "tidop/geometry/operations.h"
-#include "tidop/math/algebra/vectors.h"
+#include "tidop/geometry/algorithms.h"
+//#include "tidop/math/algebra/vectors.h"
 
 namespace tl
 {
@@ -298,7 +298,7 @@ double Segment<Point_t>::angleOX() const
 {
   double angle = 0.0;
   if (pt1 != pt2) {
-    angle = math::vectorAngleOX(vector());
+    angle = vectorAngleOX(vector());
   }
   return angle;
 
@@ -309,7 +309,7 @@ double Segment<Point_t>::angleOY() const
 {
   double angle = 0.0;
   if (pt1 != pt2) {
-    angle = math::vectorAngleOY(vector());
+    angle = vectorAngleOY(vector());
   }
   return angle;
 }

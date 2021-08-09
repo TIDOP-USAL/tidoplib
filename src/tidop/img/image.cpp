@@ -43,6 +43,34 @@ Image::Image(int rows,
   init();
 }
 
+Image::Image(int rows, 
+             int cols, 
+             DataType type, 
+             int channels, 
+             const graph::Color &color)
+  : mRows(rows),
+    mCols(cols),
+    mType(type),
+    mChannels(channels),
+    mData(nullptr)
+{
+  init();
+}
+
+Image::Image(int rows, 
+             int cols, 
+             DataType type, 
+             int channels, 
+             void *data)
+  : mRows(rows),
+    mCols(cols),
+    mType(type),
+    mChannels(channels),
+    mData(static_cast<unsigned char *>(data))
+{
+
+}
+
 Image::Image(const SizeI &size, 
              DataType type, 
              int channels)
@@ -53,6 +81,32 @@ Image::Image(const SizeI &size,
     mData(nullptr)
 {
   init();
+}
+
+Image::Image(const SizeI &size, 
+             DataType type, 
+             int channels, 
+             const graph::Color &color)
+  : mRows(size.height),
+    mCols(size.width),
+    mType(type),
+    mChannels(channels),
+    mData(nullptr)
+{
+  init();
+}
+
+Image::Image(const SizeI &size, 
+             DataType type, 
+             int channels, 
+             void *data)
+  : mRows(size.height),
+    mCols(size.width),
+    mType(type),
+    mChannels(channels),
+    mData(static_cast<unsigned char *>(data))
+{
+
 }
 
 Image::Image(const Image &image) = default;
@@ -109,16 +163,19 @@ int Image::depth()
     case tl::DataType::TL_16U:
       bits = 16;
       break;
-  //  case tl::DataType::TL_16S:
-  //    break;
-  //  case tl::DataType::TL_32U:
-  //    break;
-  //  case tl::DataType::TL_32S:
-  //    break;
-  //  case tl::DataType::TL_32F:
-  //    break;
-  //  case tl::DataType::TL_64F:
-  //    break;
+    case tl::DataType::TL_16S:
+      bits = 16;
+      break;
+    case tl::DataType::TL_32U:
+      break;
+    case tl::DataType::TL_32S:
+      break;
+    case tl::DataType::TL_32F:
+      bits = 32;
+      break;
+    case tl::DataType::TL_64F:
+      bits = 64;
+      break;
   }
   return bits;
 }

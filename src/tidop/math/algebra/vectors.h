@@ -151,53 +151,53 @@ namespace math
 
 
 
-/*!
- * \brief Devuelve el ángulo entre dos vectores
- * \param[in] v1 Vector 1
- * \param[in] v2 Vector 2
- * \return Ángulo en radianes
- */
-template<typename Point_t> inline
-double vectorAngle(const Point_t &v1, const Point_t &v2)
-{
-  TL_TODO("debería estar en geometry con la clase punto")
-  if (v1 == Point_t() || v2 == Point_t())
-    return 0.0;
-  return acos((v1.x*v2.x + v1.y*v2.y) / (module(v1.x, v1.y) * module(v2.x, v2.y)));
-}
+///*!
+// * \brief Devuelve el ángulo entre dos vectores
+// * \param[in] v1 Vector 1
+// * \param[in] v2 Vector 2
+// * \return Ángulo en radianes
+// */
+//template<typename Point_t> inline
+//double vectorAngle(const Point_t &v1, const Point_t &v2)
+//{
+//  TL_TODO("debería estar en geometry con la clase punto")
+//  if (v1 == Point_t() || v2 == Point_t())
+//    return 0.0;
+//  return acos((v1.x*v2.x + v1.y*v2.y) / (module(v1.x, v1.y) * module(v2.x, v2.y)));
+//}
+//
+//template<typename Point_t> inline
+//double vectorAngleOX(const Point_t &v)
+//{
+//  TL_TODO("debería estar en geometry con la clase punto")
+//  double angle = 0.0;
+//  if (!(v.x == 0 && v.y == 0))
+//    angle = atan2(v.y, v.x);
+//  return angle;
+//}
+//
+//template<typename Point_t> inline
+//double vectorAngleOY(const Point_t &v)
+//{
+//  TL_TODO("debería estar en geometry con la clase punto")
+//  double angle = 0.0;
+//  if (!(v.x == 0 && v.y == 0))
+//    angle = atan2(v.x, v.y);
+//  return angle;
+//}
 
-template<typename Point_t> inline
-double vectorAngleOX(const Point_t &v)
-{
-  TL_TODO("debería estar en geometry con la clase punto")
-  double angle = 0.0;
-  if (!(v.x == 0 && v.y == 0))
-    angle = atan2(v.y, v.x);
-  return angle;
-}
-
-template<typename Point_t> inline
-double vectorAngleOY(const Point_t &v)
-{
-  TL_TODO("debería estar en geometry con la clase punto")
-  double angle = 0.0;
-  if (!(v.x == 0 && v.y == 0))
-    angle = atan2(v.x, v.y);
-  return angle;
-}
-
-template<typename Point_t> inline
-double azimut(const Point_t &pt1, const Point_t &pt2)
-{
-  double azimut = 0.;
-  Point_t v;
-  v.x = pt2.x - pt1.x;
-  v.y = pt2.y - pt1.y;
-  if (v.x == 0 && v.y == 0) return azimut;
-  azimut = atan2(v.x, v.y);
-  if (azimut < 0.) azimut += consts::two_pi<double>;
-  return azimut;
-}
+//template<typename Point_t> inline
+//double azimut(const Point_t &pt1, const Point_t &pt2)
+//{
+//  double azimut = 0.;
+//  Point_t v;
+//  v.x = pt2.x - pt1.x;
+//  v.y = pt2.y - pt1.y;
+//  if (v.x == 0 && v.y == 0) return azimut;
+//  azimut = atan2(v.x, v.y);
+//  if (azimut < 0.) azimut += consts::two_pi<double>;
+//  return azimut;
+//}
 
 /*! \} */ // end of math
 

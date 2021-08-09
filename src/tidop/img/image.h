@@ -30,6 +30,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/img/img.h"
 #include "tidop/geometry/size.h"
+#include "tidop/graphic/color.h"
 
 namespace tl
 {
@@ -40,8 +41,12 @@ class TL_EXPORT Image
 public:
 
   Image();
-  Image(int rows, int cols, DataType type, int channels = 1);
-  Image(const SizeI &size, DataType type, int channels = 1);
+  Image(int rows, int cols, DataType type, int channels);
+  Image(int rows, int cols, DataType type, int channels, const graph::Color &color);
+  Image(int rows, int cols, DataType type, int channels, void *data);
+  Image(const SizeI &size, DataType type, int channels);
+  Image(const SizeI &size, DataType type, int channels, const graph::Color &color);
+  Image(const SizeI &size, DataType type, int channels, void *data);
   Image(const Image &image);
   ~Image();
 
