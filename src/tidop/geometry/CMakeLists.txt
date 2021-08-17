@@ -34,8 +34,8 @@ else()
   project(tl_geom)
   
   add_library(${PROJECT_NAME} ${LIB_TYPE}
-              operations.cpp
-              operations.h
+              #operations.cpp
+              #operations.h
               transform/transform.h
               transform/affine.h
               transform/helmert2d.h
@@ -60,6 +60,11 @@ else()
               entities/segment.h
               entities/window.h
               entities/shapes.h
+              algorithms.h
+              algorithms/vector.h
+              algorithms/distance.h
+              algorithms/angle.h
+              algorithms/projection.h
   )
     
   # Añade el proyecto a la carpeta 'modules'

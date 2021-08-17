@@ -35,7 +35,7 @@
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/geospatial/util.h"
 #include "tidop/geospatial/crs.h"
-#include "tidop/geometry/operations.h"
+#include "tidop/geometry/algorithms.h"
 #include "tidop/geometry/transform/perspective.h"
 #include "tidop/graphic/layer.h"
 #include "tidop/graphic/entities/polygon.h"
@@ -529,7 +529,7 @@ void ZBuffer::run()
                     TL_ROUND_TO_INT(photo_image_coordinates[k].y - window_image_in.pt1.y));
                 }
                 const cv::Point *cpts = (const cv::Point *)cv::Mat(pts).data;
-                int npts = pts.size();
+                int npts = static_cast<int>(pts.size());
                 cv::fillPoly(mask_image, &cpts, &npts, 1, cv::Scalar(255));
 
                 cv::Mat image_distances(window_image_in.height(), window_image_in.width(), CV_32F);
@@ -938,8 +938,8 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 
   for (int r = 0; r < z_buffer_y.rows; r++) {
     for (int c = 0; c < z_buffer_y.cols; c++) {
-      double row = z_buffer_y.at<int>(r, c);
-      double col = z_buffer_x.at<int>(r, c);
+      int row = z_buffer_y.at<int>(r, c);
+      int col = z_buffer_x.at<int>(r, c);
       if (row != -1 && col != -1) {
         visibility_map.at<uchar>(row, col) = 255;
       }

@@ -529,6 +529,7 @@ unsigned long readFromPipe(void *)
 
     if (!err) break;
   }
+  return 0;
 }
 #endif
 

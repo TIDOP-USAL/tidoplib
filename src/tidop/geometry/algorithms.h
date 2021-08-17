@@ -22,67 +22,25 @@
  *                                                                        *
  **************************************************************************/
 
-#include "segment.h"
+#ifndef TL_GEOMETRY_ALGORITHMS_H
+#define TL_GEOMETRY_ALGORITHMS_H
 
-#include "tidop/math/mathutils.h"
+#include "tidop/geometry/algorithms/distance.h"
+#include "tidop/geometry/algorithms/angle.h"
+#include "tidop/geometry/algorithms/intersect.h"
 
-//#include "tidop/geometry/operations.h"
 
-
-namespace tl
+ // Comprueba si un punto esta a la derecha o izquierda de una linea
+template<typename Point_t> inline
+int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 {
+  int r_value{ 0 };
+  double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
+    - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
+  if (aux > 0) r_value = 1;
+  else if (aux < 0) r_value = -1;
 
-GroupLines::GroupLines()
-{
-  bbox = WindowI();
+  return r_value;
 }
 
-GroupLines::GroupLines(const std::vector<Line> &lines)
-{
-  linesgroup = lines; 
-  for (auto & i : linesgroup) {
-    if (bbox.pt1.x > i.pt1.x) bbox.pt1.x = i.pt1.x;
-    if (bbox.pt1.y > i.pt1.y) bbox.pt1.y = i.pt1.y;
-    if (bbox.pt2.x < i.pt2.x) bbox.pt2.x = i.pt2.x;
-    if (bbox.pt2.y < i.pt2.y) bbox.pt2.y = i.pt2.y;
-  }
-}
-
-void GroupLines::add(const Line &line)
-{
-  linesgroup.push_back(line);
-  WindowI window = line.window();
-  //Se actualiza la ventana  envolvente
-  bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
-}
-
-#ifdef HAVE_OPENCV
-
-void GroupLines::add(const cv::Vec4i &lvect)
-{
-  Line _line;
-  _line.pt1.x = lvect[0];
-  _line.pt1.y = lvect[1];
-  _line.pt2.x = lvect[2];
-  _line.pt2.y = lvect[3];
-  add(_line);
-}
-
-#endif
-
-double GroupLines::angleMean()
-{
-  double angle = 0.0;
-  for (auto & line : linesgroup){
-    angle += line.angleOX();
-  }
-  angle /= linesgroup.size();
-  return angle;
-}
-
-void GroupLines::deleteLine(int id)
-{
-  linesgroup.erase(linesgroup.begin() + id);
-}
-
-} // End namespace tl
+#endif // TL_GEOMETRY_ALGORITHMS_H
