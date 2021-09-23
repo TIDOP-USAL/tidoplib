@@ -46,7 +46,7 @@ class DifferentialRectification
 public:
 
   DifferentialRectification();
-	DifferentialRectification(const math::RotationMatrix<T> &rotationMatrix,
+  DifferentialRectification(const math::RotationMatrix<T> &rotationMatrix,
                             const Point3<T> &cameraPosition,
                             T focal);
 	~DifferentialRectification();

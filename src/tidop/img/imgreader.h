@@ -89,7 +89,7 @@ public:
    * \return imagen
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
-                       Size<int> size = Size<int>(), 
+                       const Size<int> &size = Size<int>(), 
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!

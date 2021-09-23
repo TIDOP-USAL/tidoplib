@@ -26,10 +26,10 @@
 
 #include "tidop/core/chrono.h"
 #include "tidop/core/progress.h"
-#include "tidop/img/imgreader.h"
-#include "tidop/img/imgwriter.h"
+//#include "tidop/img/imgreader.h"
+//#include "tidop/img/imgwriter.h"
 #include "tidop/img/formats.h"
-#include "tidop/vect/vectwriter.h"
+//#include "tidop/vect/vectwriter.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/rotation_convert.h"
 #include "tidop/math/algebra/matrix.h"
@@ -58,12 +58,12 @@ namespace geospatial
 
 /* Orthorectification */
 
-Orthorectification::Orthorectification(const Path &dtm,
-                                         const Camera &camera,
-                                         const Photo::Orientation &orientation)
+
+Orthorectification::Orthorectification(const Path &dtm, 
+                                       const Photo &photo)
   : mDtmReader(ImageReaderFactory::createReader(dtm)),
-    mCamera(camera),
-    mOrientation(orientation),
+    mCamera(photo.camera()),
+    mOrientation(photo.cameraPose()),
     mIniZ(0.),
     mNoDataValue(-std::numeric_limits<double>().max())
 {
@@ -185,7 +185,7 @@ graph::GPolygon Orthorectification::footprint() const
   return mFootprint;
 }
 
-Photo::Orientation Orthorectification::orientation() const
+CameraPose Orthorectification::orientation() const
 {
   return mOrientation;
 }
@@ -380,7 +380,7 @@ void Footprint::execute(Progress *progressBar)
 
   for (const auto &photo : mPhotos) {
 
-    Orthorectification orthorectification(mDtm, photo.camera(), photo.orientation());
+    Orthorectification orthorectification(mDtm, photo);
     std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
     std::shared_ptr<TableRegister> data = std::make_shared <TableRegister>(layer.tableFields());
     data->setValue(0, photo.name());
@@ -651,8 +651,12 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
     mImageReader->open();
     if (!mImageReader->isOpen()) throw std::runtime_error("Image open error");
     cv::Mat image = mImageReader->read();
-
-
+    int depth = mImageReader->depth();
+    if (depth != 8) {
+      cv::normalize(image, image, 0., 255., cv::NORM_MINMAX, CV_8U);
+      depth = 8;
+    }
+    
     /// georeferencia orto
     //Window<PointD> window_ortho_terrain = mOrthorectification->footprint().window();
     //Affine<PointD> affine_ortho(mWindowOrthoTerrain.pt1.x,
@@ -663,7 +667,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
     mOrthophotoWriter->open();
     if (!mOrthophotoWriter->isOpen()) throw std::runtime_error("Image open error");
     int channels_ortho = mImageReader->channels();
-    DataType data_type_ortho = mImageReader->dataType();
+    DataType data_type_ortho = DataType::TL_8U;// mImageReader->dataType();
     mOrthophotoWriter->create(mRectOrtho.height, mRectOrtho.width, channels_ortho, data_type_ortho);
     cv::Mat mat_ortho(mRectOrtho.height, mRectOrtho.width, CV_MAKETYPE(dataTypeToOpenCVDataType(data_type_ortho), channels_ortho));
     mat_ortho = cv::Scalar(0, 0, 0);
@@ -844,11 +848,16 @@ void OrthoimageProcess::execute(Progress *progressBar)
   if (progressBar) progressBar->setMaximun(mPhotos.size());
 
   for (const auto &photo : mPhotos) {
-
+    
+    if (!photo.path().exists()) {
+      msgWarning("Image not found %s", photo.name().c_str());
+      continue;
+    }
+    
     ortho_file = mOrthoPath;
     ortho_file.append(photo.name()).replaceExtension(".png");
     //if (ortho_file.exists()) continue;
-    Orthorectification orthorectification(mDtm, photo.camera(), photo.orientation());
+    Orthorectification orthorectification(mDtm, photo);
     std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
     std::shared_ptr<TableRegister> data(new TableRegister(layer.tableFields()/*fields*/));
     data->setValue(0, ortho_file.toString());

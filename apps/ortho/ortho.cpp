@@ -165,7 +165,7 @@ std::vector<Photo> readBundleFile(tl::Path &bundle_file, std::vector<std::string
         Camera camera;
       camera.setHeight(height);
       camera.setWidth(width);
-      camera.setType("Radial");
+      camera.setType("Radial 1");
       std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
       calibration->setParameter(Calibration::Parameters::focal, focal);
       if (cx == 0. && cy == 0.) {
@@ -226,21 +226,21 @@ std::vector<Photo> readBundleFile(tl::Path &bundle_file, std::vector<std::string
       Point3D position;
 
       position.x = -(rotation_transpose.at(0, 0) * tx +
-        rotation_transpose.at(0, 1) * ty +
-        rotation_transpose.at(0, 2) * tz) + offset.x;
+                     rotation_transpose.at(0, 1) * ty +
+                     rotation_transpose.at(0, 2) * tz) + offset.x;
       position.y = -(rotation_transpose.at(1, 0) * tx +
-        rotation_transpose.at(1, 1) * ty +
-        rotation_transpose.at(1, 2) * tz) + offset.y;
+                     rotation_transpose.at(1, 1) * ty +
+                     rotation_transpose.at(1, 2) * tz) + offset.y;
       position.z = -(rotation_transpose.at(2, 0) * tx +
-        rotation_transpose.at(2, 1) * ty +
-        rotation_transpose.at(2, 2) * tz) + offset.z;
+                     rotation_transpose.at(2, 1) * ty +
+                     rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
 
-      Photo::Orientation orientation(position, rotation_matrix);
+      CameraPose pose(position, rotation_matrix);
       Photo photo(images[i]);
       photo.setCamera(camera);
-      photo.setOrientation(orientation);
+      photo.setCameraPose(pose);
       photos.push_back(photo);
     }
 
@@ -779,6 +779,8 @@ int main(int argc, char** argv)
 
   try {
 
+    if (!mdt.exists()) throw std::runtime_error("DTM file not found");
+
     msgInfo("Read offset");
 
     Point3D offset = readOffset(offset_file);
@@ -793,10 +795,10 @@ int main(int argc, char** argv)
     
     Crs crs(epsg);
 
-    Path graph_orthos = footprint_file.replaceBaseName("graph_orthos");
+    Path graph_orthos = Path(footprint_file).replaceBaseName("graph_orthos");
 
     ProgressBarColor progress;
-    OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, 0.01, 0.4);
+    OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, res_ortho, 0.4);
     ortho_process.run(&progress);
 
     msgInfo("Optimal footprint searching");

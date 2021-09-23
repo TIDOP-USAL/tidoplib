@@ -40,16 +40,6 @@
 //#include <ctime>
 //#include <cstring>
 
-//// Paralelismo
-//#if defined HAVE_OMP
-//#  include <omp.h>  // OpenMP
-//#elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
-//#  define TL_MSVS_CONCURRENCY
-//#  include <ppl.h>  // Parallel Patterns Library (PPL)
-//#else
-//#  include <thread>
-//#endif
-
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
 #if (__cplusplus >= 201703L)

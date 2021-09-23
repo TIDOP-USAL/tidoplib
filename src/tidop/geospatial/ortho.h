@@ -31,6 +31,9 @@
 #include "tidop/core/path.h"
 #include "tidop/core/process.h"
 #include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/img/imgreader.h"
+#include "tidop/img/imgwriter.h"
+#include "tidop/vect/vectwriter.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
@@ -45,9 +48,9 @@
 namespace tl
 {
 
-class ImageReader;
-class ImageWriter;
-class VectorWriter;
+//class ImageReader;
+//class ImageWriter;
+//class VectorWriter;
 
 namespace geospatial
 {
@@ -55,14 +58,13 @@ namespace geospatial
 /*!
  * \brief Orthorectification
  */
-class Orthorectification
+class TL_EXPORT Orthorectification
 {
 
 public:
 
 	Orthorectification(const Path &dtm,
-		                 const Camera &camera,
-		                 const Photo::Orientation &orientation);
+		                 const Photo &photo);
 	
 	~Orthorectification()
 	{
@@ -86,7 +88,7 @@ public:
 	Rect<int> rectDtm() const;
 	graph::GPolygon footprint() const;
 
-	Photo::Orientation orientation() const;
+	CameraPose orientation() const;
 
 	bool hasNodataValue() const;
 	double nodataValue() const;
@@ -102,7 +104,7 @@ private:
 private:
 
 	Camera mCamera;
-	Photo::Orientation mOrientation;
+	CameraPose mOrientation;
 	std::unique_ptr<ImageReader> mDtmReader;
 	cv::Mat mDtm;
 	Window<PointD> mWindowDtmTerrainExtension;
@@ -123,7 +125,7 @@ private:
 /*!
  * \brief Footprint
  */
-class Footprint
+class TL_EXPORT Footprint
 	: public ProcessBase
 {
 
@@ -154,7 +156,7 @@ private:
 /*!
  * \brief ZBuffer
  */
- class ZBuffer
+ class TL_EXPORT ZBuffer
  {
  public:
  	
@@ -192,7 +194,7 @@ private:
 /*!
  * \brief Orthoimage
  */
-class Orthoimage
+class TL_EXPORT Orthoimage
 {
 
 public:
@@ -227,7 +229,7 @@ private:
 /*!
  * \brief OrthoimageProcess
  */
-class OrthoimageProcess
+class TL_EXPORT OrthoimageProcess
 	: public ProcessBase
 {
 

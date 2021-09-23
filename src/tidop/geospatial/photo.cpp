@@ -60,7 +60,7 @@ Photo::Photo(const Photo &photo)
   : mFilePath(photo.mFilePath),
     mName(photo.mName),
     mCamera(photo.mCamera),
-    mOrientation(photo.mOrientation)
+    mCameraPose(photo.mCameraPose)
 {
 }
 
@@ -68,7 +68,7 @@ Photo::Photo(Photo &&photo) noexcept
   : mFilePath(std::move(photo.mFilePath)),
     mName(std::move(photo.mName)),
     mCamera(std::move(photo.mCamera)),
-    mOrientation(std::move(photo.mOrientation))
+    mCameraPose(std::move(photo.mCameraPose))
 {
 }
 
@@ -98,15 +98,25 @@ void Photo::setCamera(const Camera &camera)
   mCamera = camera;
 }
 
-Photo::Orientation Photo::orientation() const
+//Photo::Orientation Photo::orientation() const
+//{
+//  return mOrientation;
+//}
+
+CameraPose Photo::cameraPose() const
 {
-  return mOrientation;
+  return mCameraPose;
 }
 
-void Photo::setOrientation(const Photo::Orientation &orientation)
+void Photo::setCameraPose(const CameraPose &pose)
 {
-  mOrientation = orientation;
+  mCameraPose = pose;
 }
+
+//void Photo::setOrientation(const Photo::Orientation &orientation)
+//{
+//  mOrientation = orientation;
+//}
 
 Photo &Photo::operator =(const Photo &photo)
 {
@@ -114,7 +124,7 @@ Photo &Photo::operator =(const Photo &photo)
     this->mFilePath = photo.mFilePath;
     this->mName = photo.mName;
     this->mCamera = photo.mCamera;
-    this->mOrientation = photo.mOrientation;
+    this->mCameraPose = photo.mCameraPose;
   }
   return *this;
 }
@@ -125,7 +135,7 @@ Photo &Photo::operator =(Photo &&photo) noexcept
     this->mFilePath = std::move(photo.mFilePath);
     this->mName = std::move(photo.mName);
     this->mCamera = std::move(photo.mCamera);
-    this->mOrientation = std::move(photo.mOrientation);
+    this->mCameraPose = std::move(photo.mCameraPose);
   }
   return *this;
 }
@@ -140,79 +150,79 @@ void Photo::update()
 
 /* Photo::Orientation */
 
-Photo::Orientation::Orientation()
-  : mPosition(TL_DOUBLE_MAX, TL_DOUBLE_MAX, TL_DOUBLE_MAX),
-    mRotationMatrix(math::RotationMatrix<double>::identity())
-{
-}
-
-Photo::Orientation::Orientation(double x, double y, double z, 
-                                math::RotationMatrix<double> rotationMatrix)
-  : mPosition(x, y, z),
-    mRotationMatrix(rotationMatrix)
-{
-}
-
-Photo::Orientation::Orientation(const Point3D &principalPoint, 
-                                math::RotationMatrix<double> rotationMatrix)
-  : mPosition(principalPoint),
-    mRotationMatrix(rotationMatrix)
-{
-}
-
-double Photo::Orientation::x() const
-{
-  return mPosition.x;
-}
-
-void Photo::Orientation::setX(double x)
-{
-  mPosition.x = x;
-}
-
-double Photo::Orientation::y() const
-{
-  return mPosition.y;
-}
-
-void Photo::Orientation::setY(double y)
-{
-  mPosition.y = y;
-}
-
-double Photo::Orientation::z() const
-{
-  return mPosition.z;
-}
-
-void Photo::Orientation::setZ(double z)
-{
-  mPosition.z = z;
-}
-
-Point3D Photo::Orientation::position() const
-{
-  return mPosition;
-}
-
-math::RotationMatrix<double> Photo::Orientation::rotationMatrix() const
-{
-  return mRotationMatrix;
-}
-
-void Photo::Orientation::setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix)
-{
-  mRotationMatrix = rotationMatrix;
-}
-
-bool Photo::Orientation::isEmpty() const
-{
-  return mPosition.x == TL_DOUBLE_MAX ||
-         mPosition.y == TL_DOUBLE_MAX ||
-         mPosition.z == TL_DOUBLE_MAX;
-
-  return false;
-}
+//Photo::Orientation::Orientation()
+//  : mPosition(TL_DOUBLE_MAX, TL_DOUBLE_MAX, TL_DOUBLE_MAX),
+//    mRotationMatrix(math::RotationMatrix<double>::identity())
+//{
+//}
+//
+//Photo::Orientation::Orientation(double x, double y, double z, 
+//                                math::RotationMatrix<double> rotationMatrix)
+//  : mPosition(x, y, z),
+//    mRotationMatrix(rotationMatrix)
+//{
+//}
+//
+//Photo::Orientation::Orientation(const Point3D &principalPoint, 
+//                                math::RotationMatrix<double> rotationMatrix)
+//  : mPosition(principalPoint),
+//    mRotationMatrix(rotationMatrix)
+//{
+//}
+//
+//double Photo::Orientation::x() const
+//{
+//  return mPosition.x;
+//}
+//
+//void Photo::Orientation::setX(double x)
+//{
+//  mPosition.x = x;
+//}
+//
+//double Photo::Orientation::y() const
+//{
+//  return mPosition.y;
+//}
+//
+//void Photo::Orientation::setY(double y)
+//{
+//  mPosition.y = y;
+//}
+//
+//double Photo::Orientation::z() const
+//{
+//  return mPosition.z;
+//}
+//
+//void Photo::Orientation::setZ(double z)
+//{
+//  mPosition.z = z;
+//}
+//
+//Point3D Photo::Orientation::position() const
+//{
+//  return mPosition;
+//}
+//
+//math::RotationMatrix<double> Photo::Orientation::rotationMatrix() const
+//{
+//  return mRotationMatrix;
+//}
+//
+//void Photo::Orientation::setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix)
+//{
+//  mRotationMatrix = rotationMatrix;
+//}
+//
+//bool Photo::Orientation::isEmpty() const
+//{
+//  return mPosition.x == TL_DOUBLE_MAX ||
+//         mPosition.y == TL_DOUBLE_MAX ||
+//         mPosition.z == TL_DOUBLE_MAX;
+//
+//  return false;
+//}
 
 //std::string Photo::Orientation::crs() const
 //{
