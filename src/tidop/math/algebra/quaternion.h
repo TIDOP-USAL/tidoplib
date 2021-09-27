@@ -432,6 +432,18 @@ T dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2)
   return quat1.x * quat2.x + quat1.y * quat2.y + quat1.z * quat2.z + quat1.w * quat2.w;
 }
 
+template<typename T> static inline
+bool operator == (const Quaternion<T> &q1, const Quaternion<T> &q2)
+{
+  return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
+}
+
+template<typename T> static inline
+bool operator != (const Quaternion<T> &q1, const Quaternion<T> &q2)
+{
+  return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
+}
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math

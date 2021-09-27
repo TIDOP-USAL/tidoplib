@@ -451,8 +451,46 @@ T intersectBoundingBoxes(const T &b1, const T &b2)
 }
 
 
+
+
+
+
+
+//oriented minimum bounding box
+
+template<typename T>
+class OrientedBoundingBox;
+
+template<  
+  template<typename, typename>
+  class Point_t, typename P, typename T
+>
+class OrientedBoundingBox<Point_t<P, T>>
+{
+
+public:
+
+  OrientedBoundingBox();
+
+  ~OrientedBoundingBox()
+  { }
+
+private:
+
+};
+
+
+template<
+  template<typename, typename>
+  class Point_t, typename P, typename T
+>
+OrientedBoundingBox<Point_t<P, T>>::OrientedBoundingBox()
+{
+}
+
 /*! \} */ // end of GeometricEntities
 
 } // End namespace tl
 
 #endif // TL_GEOMETRY_BOUNDING_BOX_H
+

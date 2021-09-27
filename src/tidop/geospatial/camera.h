@@ -33,7 +33,9 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/flags.h"
-
+#include "tidop/geometry/entities/point.h"
+#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/math/algebra/quaternion.h"
 
 namespace tl
 {
@@ -251,7 +253,6 @@ public:
 
 
 
-
 /* ------------------------------------------------------------------ */
 
 
@@ -396,6 +397,64 @@ protected:
   double mSensorSize;
   std::shared_ptr<Calibration> mCalibration;
 
+};
+
+
+
+/* ------------------------------------------------------------------ */
+
+
+
+class TL_EXPORT CameraPose
+{
+
+public:
+
+  CameraPose();
+  CameraPose(double x, double y, double z,
+             const math::RotationMatrix<double> &rotationMatrix);
+  CameraPose(const Point3D &center,
+             const math::RotationMatrix<double> &rotationMatrix);
+  CameraPose(double x, double y, double z,
+             const math::Quaternion<double> &quaternion);
+  CameraPose(const Point3D &center,
+             const math::Quaternion<double> &quaternion);
+  ~CameraPose();
+
+  Point3D position() const;
+  void setPosition(const Point3D &position);
+
+  /*!
+   * \brief Rotación como cuaterniones
+   * \return
+   */
+  math::Quaterniond quaternion() const;
+
+  /*!
+   * \brief Establece la orientación de la cámaras como cuaterniones
+   * \param[in] quaternion Orientación de la cámara
+   */
+  void setQuaternion(const math::Quaterniond &quaternion);
+
+  /*!
+   * \brief Rotación como matriz de rotación
+   * \return
+   */
+  math::RotationMatrix<double> rotationMatrix() const;
+
+  /*!
+   * \brief Establece la orientación de la cámaras como matriz de rotación
+   * \param[in] rotationMatrix Orientación de la cámara
+   */
+  void setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix);
+
+
+  bool isEmpty() const;
+
+private:
+
+  Point3D mPosition;
+  std::shared_ptr<math::Rotation> mRotation;
 };
 
 

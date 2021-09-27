@@ -165,7 +165,7 @@ std::vector<Photo> readBundleFile(tl::Path &bundle_file, std::vector<std::string
         Camera camera;
       camera.setHeight(height);
       camera.setWidth(width);
-      camera.setType("Radial");
+      camera.setType("Radial 1");
       std::shared_ptr<Calibration> calibration = CalibrationFactory::create(camera.type());
       calibration->setParameter(Calibration::Parameters::focal, focal);
       if (cx == 0. && cy == 0.) {
@@ -226,21 +226,21 @@ std::vector<Photo> readBundleFile(tl::Path &bundle_file, std::vector<std::string
       Point3D position;
 
       position.x = -(rotation_transpose.at(0, 0) * tx +
-        rotation_transpose.at(0, 1) * ty +
-        rotation_transpose.at(0, 2) * tz) + offset.x;
+                     rotation_transpose.at(0, 1) * ty +
+                     rotation_transpose.at(0, 2) * tz) + offset.x;
       position.y = -(rotation_transpose.at(1, 0) * tx +
-        rotation_transpose.at(1, 1) * ty +
-        rotation_transpose.at(1, 2) * tz) + offset.y;
+                     rotation_transpose.at(1, 1) * ty +
+                     rotation_transpose.at(1, 2) * tz) + offset.y;
       position.z = -(rotation_transpose.at(2, 0) * tx +
-        rotation_transpose.at(2, 1) * ty +
-        rotation_transpose.at(2, 2) * tz) + offset.z;
+                     rotation_transpose.at(2, 1) * ty +
+                     rotation_transpose.at(2, 2) * tz) + offset.z;
 
 
 
-      Photo::Orientation orientation(position, rotation_matrix);
+      CameraPose pose(position, rotation_matrix);
       Photo photo(images[i]);
       photo.setCamera(camera);
-      photo.setOrientation(orientation);
+      photo.setCameraPose(pose);
       photos.push_back(photo);
     }
 
@@ -422,9 +422,9 @@ void orthoMosaic(Path &optimal_footprint_path,
   msgInfo("Exposure compensator");
 
   //int type = cv::detail::ExposureCompensator::NO;
-  //int type = cv::detail::ExposureCompensator::GAIN;
+  int type = cv::detail::ExposureCompensator::GAIN;
   //int type = cv::detail::ExposureCompensator::GAIN_BLOCKS;
-  int type = cv::detail::ExposureCompensator::CHANNELS;
+  //int type = cv::detail::ExposureCompensator::CHANNELS;
   //int type = cv::detail::ExposureCompensator::CHANNELS_BLOCKS;
   cv::Ptr<cv::detail::ExposureCompensator> compensator = cv::detail::ExposureCompensator::createDefault(type);
 
@@ -514,9 +514,9 @@ void orthoMosaic(Path &optimal_footprint_path,
           msgInfo("Seam finder");
 
           cv::Ptr<cv::detail::SeamFinder> seam_finder;
-          //seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
+          seam_finder = cv::makePtr<cv::detail::NoSeamFinder>();
           //seam_finder = cv::makePtr<cv::detail::VoronoiSeamFinder>();
-          seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
+          //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR);
           //seam_finder = cv::makePtr<cv::detail::DpSeamFinder>(cv::detail::DpSeamFinder::COLOR_GRAD);
           seam_finder->find(umat_orthos, corners, ortho_masks);
           umat_orthos.clear();
@@ -594,8 +594,8 @@ void orthoMosaic(Path &optimal_footprint_path,
   /// 3 - mezcla (blender)
 
   bool try_cuda = false;
-  int blender_type = cv::detail::Blender::FEATHER;
-  //int blender_type = cv::detail::Blender::MULTI_BAND;
+  //int blender_type = cv::detail::Blender::FEATHER;
+  int blender_type = cv::detail::Blender::MULTI_BAND;
   cv::Ptr<cv::detail::Blender> blender;
   float blend_strength = 5;
 
@@ -629,11 +629,11 @@ void orthoMosaic(Path &optimal_footprint_path,
         blender = cv::detail::Blender::createDefault(cv::detail::Blender::NO, try_cuda);
       } else if (blender_type == cv::detail::Blender::MULTI_BAND) {
         cv::detail::MultiBandBlender *multi_band_blender = dynamic_cast<cv::detail::MultiBandBlender *>(blender.get());
-        multi_band_blender->setNumBands(static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.));
+        multi_band_blender->setNumBands(4/*static_cast<int>(ceil(log(blend_width) / log(2.)) - 1.)*/);
         msgInfo("Multi-band blender, number of bands: %i", multi_band_blender->numBands());
       } else if (blender_type == cv::detail::Blender::FEATHER) {
         cv::detail::FeatherBlender *feather_blender = dynamic_cast<cv::detail::FeatherBlender *>(blender.get());
-        feather_blender->setSharpness(/*0.02f*/1.f / blend_width);
+        feather_blender->setSharpness(0.02f/*1.f / blend_width*/);
         msgInfo("Feather blender, sharpness: %f", feather_blender->sharpness());
       }
 
@@ -779,6 +779,8 @@ int main(int argc, char** argv)
 
   try {
 
+    if (!mdt.exists()) throw std::runtime_error("DTM file not found");
+
     msgInfo("Read offset");
 
     Point3D offset = readOffset(offset_file);
@@ -793,11 +795,11 @@ int main(int argc, char** argv)
     
     Crs crs(epsg);
 
-    Path graph_orthos = footprint_file.replaceBaseName("graph_orthos");
+    Path graph_orthos = Path(footprint_file).replaceBaseName("graph_orthos");
 
-    //ProgressBarColor progress;
-    //OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, 0.01, 0.4);
-    //ortho_process.run(&progress);
+    ProgressBarColor progress;
+    OrthoimageProcess ortho_process(photos, mdt, ortho_path, graph_orthos, crs, footprint_file, res_ortho, 0.4);
+    ortho_process.run(&progress);
 
     msgInfo("Optimal footprint searching");
     

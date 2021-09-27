@@ -2423,7 +2423,7 @@ Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
 
 template<typename T> inline  
 static Vector<T> operator * (const Matrix<T> &matrix,
-                      const Vector<T> &vector)
+                             const Vector<T> &vector)
 {
   TL_TODO("Añadir test")
   size_t rows = matrix.rows();
@@ -2441,6 +2441,43 @@ static Vector<T> operator * (const Matrix<T> &matrix,
 }
 
 
+template<typename T, size_t _rows, size_t _cols> inline static
+bool operator == (const Matrix<T, _rows, _cols> &matrix1,
+                  const Matrix<T, _rows, _cols> &matrix2)
+{
+  size_t rows1 = matrix1.rows();
+  size_t cols1 = matrix1.cols();
+  size_t rows2 = matrix2.rows();
+  size_t cols2 = matrix2.cols();
+  if (rows1 != rows2 || cols1 != cols2) return false;
+
+  for (int r = 0; r < matrix1.rows(); r++) {
+    for (int c = 0; c < matrix1.cols(); c++) {
+      if (matrix1.at(r, c) != matrix2.at(r, c)) return false;
+    }
+  }
+  
+  return true;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline static
+bool operator != (const Matrix<T, _rows, _cols> &matrix1,
+                  const Matrix<T, _rows, _cols> &matrix2)
+{
+  size_t rows1 = matrix1.rows();
+  size_t cols1 = matrix1.cols();
+  size_t rows2 = matrix2.rows();
+  size_t cols2 = matrix2.cols();
+  if (rows1 != rows2 || cols1 != cols2) return true;
+
+  for (int r = 0; r < matrix1.rows(); r++) {
+    for (int c = 0; c < matrix1.cols(); c++) {
+      if (matrix1.at(r, c) != matrix2.at(r, c)) return true;
+    }
+  }
+
+  return false;
+}
 
 
 /* SubMatrix */

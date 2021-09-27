@@ -136,7 +136,7 @@ public:
   }
 
   cv::Mat read(const RectI &rect, 
-               const Size<int> size,  
+               const Size<int> &size,  
                Affine<PointI> *trf) override
   {
     cv::Mat image;

@@ -89,7 +89,9 @@ public:
   bool exists() const;
 
   Path &replaceFileName(const std::string &fileName);
+  Path &replaceFileName(const std::wstring &fileName);
   Path &replaceBaseName(const std::string &baseName);
+  Path &replaceBaseName(const std::wstring &baseName);
   Path &replaceExtension(const std::string &extension);
   Path &append(const std::string &text);
 
@@ -102,11 +104,15 @@ public:
 /* Static methods */
 
   static bool exists(const std::string &path);
+  static bool exists(const std::wstring &path);
   static Path tempPath();
   static Path tempDirectory();
   static bool createDirectory(const std::string &directory);
+  static bool createDirectory(const std::wstring &directory);
   static bool createDirectories(const std::string &directory);
+  static bool createDirectories(const std::wstring &directory);
   static void removeDirectory(const std::string &directory);
+  static void removeDirectory(const std::wstring &directory);
 
 private:
 

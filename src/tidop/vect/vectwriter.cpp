@@ -220,10 +220,11 @@ void VectorWriterGdal::write(const GLayer &layer)
 
     ogrFeature = OGRFeature::CreateFeature(ogrLayer->GetLayerDefn());
 
-    std::shared_ptr<TableRegister> data = entity->data();
-    for (size_t i = 0; i < data->size(); i++) {
-      TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
-      ogrFeature->SetField(static_cast<int>(i), data->value(static_cast<int>(i)).c_str());
+    if (std::shared_ptr<TableRegister> data = entity->data()) {
+      for (size_t i = 0; i < data->size(); i++) {
+        TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
+        ogrFeature->SetField(static_cast<int>(i), data->value(static_cast<int>(i)).c_str());
+      }
     }
 
     GraphicEntity::Type type = entity->type();
@@ -308,8 +309,10 @@ void VectorWriterGdal::setCRS(const std::string &crs)
 #ifdef HAVE_TL_GEOSPATIAL
 void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
 {
-  if (mDataset && crs.isValid()) {
-    this->setGdalProjection(crs.toWktFormat());
+  if (mDataset) {
+    if (crs.isValid()) {
+      this->setGdalProjection(crs.toWktFormat());
+    }
   } else {
     msgWarning("The file has not been created. Use VectorWriterGdal::create() method");
   }
