@@ -192,6 +192,13 @@ public:
    * \return Vector del segmento
    */
   Point_t vector() const;
+
+  /*!
+   * \brief divide un segmento en n partes
+   * \param[in] n número de particiones
+   * \return Segmentos
+   */
+  std::vector<Segment<Point_t>> split(size_t n) const;
 };
 
 // Definición de métodos
@@ -236,9 +243,11 @@ Segment<Point_t>::Segment(const Point_t &pt, double angle, double length, bool b
   double b = sin(angle);
   double l1 = 0;
   double l2 = length;
+  
   if (bCenter) {
-    l1 = l2 = length / 2;
+    l1 = l2 = length / 2.;
   }
+  
   if (std::is_integral<typename Point_t::value_type>::value) {
     pt1.x = TL_ROUND_TO_INT(pt.x - l1 * -b);
     pt1.y = TL_ROUND_TO_INT(pt.y - l1 * a);
@@ -279,17 +288,21 @@ template<typename Point_t> template<typename Point_t2> inline
 Segment<Point_t>::operator Segment<Point_t2>() const
 {
   Segment<Point_t2> s;
-  if (std::is_integral<typename Point_t2::value_type>::value) {
+
+  using sub_type = typename Point_t2::value_type;
+
+  if (std::is_integral<sub_type>::value) {
     s.pt1.x = TL_ROUND_TO_INT(pt1.x);
     s.pt1.y = TL_ROUND_TO_INT(pt1.y);
     s.pt2.x = TL_ROUND_TO_INT(pt2.x);
     s.pt2.y = TL_ROUND_TO_INT(pt2.y);
   } else {
-    s.pt1.x = static_cast<typename Point_t2::value_type>(pt1.x);
-    s.pt1.y = static_cast<typename Point_t2::value_type>(pt1.y);
-    s.pt2.x = static_cast<typename Point_t2::value_type>(pt2.x);
-    s.pt2.y = static_cast<typename Point_t2::value_type>(pt1.y);
+    s.pt1.x = static_cast<sub_type>(pt1.x);
+    s.pt1.y = static_cast<sub_type>(pt1.y);
+    s.pt2.x = static_cast<sub_type>(pt2.x);
+    s.pt2.y = static_cast<sub_type>(pt1.y);
   }
+  
   return s;
 }
 
@@ -325,10 +338,11 @@ Window<Point_t> Segment<Point_t>::window() const
 template<typename Point_t> inline
 bool Segment<Point_t>::empty() const
 {
-  return (pt1.x == static_cast<typename Point_t::value_type>(0) && 
-          pt1.y == static_cast<typename Point_t::value_type>(0) && 
-          pt2.x == static_cast<typename Point_t::value_type>(0) && 
-          pt2.y == static_cast<typename Point_t::value_type>(0)); 
+  using sub_type = typename Point_t::value_type;
+  return (pt1.x == math::consts::zero<sub_type> && 
+          pt1.y == math::consts::zero<sub_type> && 
+          pt2.x == math::consts::zero<sub_type> && 
+          pt2.y == math::consts::zero<sub_type>); 
 }
 
 template<typename Point_t> inline
@@ -355,6 +369,22 @@ template<typename Point_t> inline
 Point_t Segment<Point_t>::vector() const 
 { 
   return (pt2 - pt1); 
+}
+
+template<typename Point_t> inline
+std::vector<Segment<Point_t>> Segment<Point_t>::split(size_t n) const
+{
+  std::vector<Segment<Point_t>> segments;
+
+  Point_t point1 = pt1;
+  Point_t point2;
+  for (size_t i = 1; i <= n; i++) {
+    point2 = pt1 * (1 - i / static_cast<double>(n)) + pt2 * i / static_cast<double>(n);
+    segments.emplace_back(point1, point2);
+    point1 = point2;
+  }
+
+  return segments;
 }
 
 using SegmentI = Segment<Point<int> >;
@@ -529,7 +559,10 @@ template<typename Point3_t> template<typename Point3_t2> inline
 Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
 {
   Segment3D<Point3_t2> s;
-  if (std::is_integral<typename Point3_t2::value_type>::value) {
+
+  using sub_type = typename Point3_t2::value_type;
+
+  if (std::is_integral<sub_type>::value) {
     s.pt1.x = TL_ROUND_TO_INT(pt1.x);
     s.pt1.y = TL_ROUND_TO_INT(pt1.y);
     s.pt1.z = TL_ROUND_TO_INT(pt1.z);
@@ -537,13 +570,14 @@ Segment3D<Point3_t>::operator Segment3D<Point3_t2>() const
     s.pt2.y = TL_ROUND_TO_INT(pt2.y);
     s.pt2.z = TL_ROUND_TO_INT(pt2.z);
   } else {
-    s.pt1.x = static_cast<typename Point3_t2::value_type>(pt1.x);
-    s.pt1.y = static_cast<typename Point3_t2::value_type>(pt1.y);
-    s.pt1.z = static_cast<typename Point3_t2::value_type>(pt1.z);
-    s.pt2.x = static_cast<typename Point3_t2::value_type>(pt2.x);
-    s.pt2.y = static_cast<typename Point3_t2::value_type>(pt1.y);
-    s.pt2.z = static_cast<typename Point3_t2::value_type>(pt1.z);
+    s.pt1.x = static_cast<sub_type>(pt1.x);
+    s.pt1.y = static_cast<sub_type>(pt1.y);
+    s.pt1.z = static_cast<sub_type>(pt1.z);
+    s.pt2.x = static_cast<sub_type>(pt2.x);
+    s.pt2.y = static_cast<sub_type>(pt1.y);
+    s.pt2.z = static_cast<sub_type>(pt1.z);
   }
+
   return s;
 }
 

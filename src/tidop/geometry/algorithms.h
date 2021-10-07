@@ -30,11 +30,15 @@
 #include "tidop/geometry/algorithms/intersect.h"
 
 
- // Comprueba si un punto esta a la derecha o izquierda de una linea
+/*!
+ * \brief Comprueba si un punto esta a la derecha o izquierda de una linea
+ */
+TL_TODO("Mover a clase Segment")
 template<typename Point_t> inline
 int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 {
   int r_value{ 0 };
+
   double aux = (ln_pt2.x - ln_pt1.x) * (pt.y - ln_pt1.y)
     - (pt.x - ln_pt1.x) * (ln_pt2.y - ln_pt1.y);
   if (aux > 0) r_value = 1;
@@ -42,5 +46,8 @@ int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
 
   return r_value;
 }
+
+
+
 
 #endif // TL_GEOMETRY_ALGORITHMS_H

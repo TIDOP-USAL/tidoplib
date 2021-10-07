@@ -151,6 +151,57 @@ BOOST_AUTO_TEST_CASE(Segment_vector)
 TL_TODO("Falta test Segment::isNear()")
 TL_TODO("Falta test Segment::isParallel()")
 
+BOOST_AUTO_TEST_CASE(Segment_split)
+{
+  Segment<Point<double>> segment_horizontal(PointD(0, 0), PointD(100, 0));
+  std::vector<Segment<Point<double>>> horizontal_segments = segment_horizontal.split(2);
+  BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(0., horizontal_segments[0].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(50., horizontal_segments[0].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(0, horizontal_segments[0].pt2.y, 0.1);
+  BOOST_CHECK_CLOSE(50., horizontal_segments[1].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(0, horizontal_segments[1].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(100., horizontal_segments[1].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(0., horizontal_segments[1].pt2.y, 0.1);
+
+  Segment<Point<double>> segment_vertical(PointD(0, 0), PointD(0, 100));
+  std::vector<Segment<Point<double>>> vertical_segments = segment_vertical.split(2);
+  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(0., vertical_segments[0].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(50., vertical_segments[0].pt2.y, 0.1);
+  BOOST_CHECK_CLOSE(0., vertical_segments[1].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(50., vertical_segments[1].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(0., vertical_segments[1].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(100., vertical_segments[1].pt2.y, 0.1);
+
+  Segment<Point<double>> segment(PointD(0, 0), PointD(100, 100));
+  std::vector<Segment<Point<double>>> segments = segment.split(2);
+  BOOST_CHECK_CLOSE(0., segments[0].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(0., segments[0].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(50., segments[0].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(50., segments[0].pt2.y, 0.1);
+  BOOST_CHECK_CLOSE(50., segments[1].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(50., segments[1].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(100., segments[1].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(100., segments[1].pt2.y, 0.1);
+
+  Segment<Point<double>> segment3(PointD(0, 0), PointD(100, 100));
+  std::vector<Segment<Point<double>>> segments3 = segment3.split(3);
+  BOOST_CHECK_CLOSE(0., segments3[0].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(0., segments3[0].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(33.33333, segments3[0].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(33.33333, segments3[0].pt2.y, 0.1);
+  BOOST_CHECK_CLOSE(33.33333, segments3[1].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(33.33333, segments3[1].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(66.666666, segments3[1].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(66.666666, segments3[1].pt2.y, 0.1);
+  BOOST_CHECK_CLOSE(66.666666, segments3[2].pt1.x, 0.1);
+  BOOST_CHECK_CLOSE(66.666666, segments3[2].pt1.y, 0.1);
+  BOOST_CHECK_CLOSE(100., segments3[2].pt2.x, 0.1);
+  BOOST_CHECK_CLOSE(100., segments3[2].pt2.y, 0.1);
+
+}
 
 /* Segment3D */
 
