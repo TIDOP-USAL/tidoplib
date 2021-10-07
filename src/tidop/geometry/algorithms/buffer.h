@@ -21,95 +21,47 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
- 
-#define BOOST_TEST_MODULE Tidop geospatial crs_transform test
-#include <boost/test/unit_test.hpp>
-#include <tidop/geospatial/crstransf.h>
-#include <tidop/geometry/entities/point.h>
 
-using namespace tl;
-using namespace tl::geospatial;
+#ifndef TL_GEOMETRY_ALGORITHMS_BUFFER_H
+#define TL_GEOMETRY_ALGORITHMS_BUFFER_H
 
-/* CrsTransformTest */
+#include "config_tl.h"
 
-#ifdef HAVE_GDAL
+#include "tidop/core/defs.h"
+#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/entities/polygon.h"
+#include "tidop/geometry/algorithms/angle.h"
 
-BOOST_AUTO_TEST_SUITE(CrsTransformTestSuite)
-
-struct CrsTransformTest
+namespace tl
 {
-  CrsTransformTest()
-  {
-    epsg25830 = std::make_shared<Crs>("EPSG:25830");
-    epsg4258 = std::make_shared<Crs>("EPSG:4258");
-  }
-
-  ~CrsTransformTest()
-  {
-  }
 
 
-  virtual void setup()
-  {
-
-  }
-
-  virtual void teardown()
-  {
-
-  }
-
-  std::shared_ptr<Crs> epsg25830;
-  std::shared_ptr<Crs> epsg4258;
-};
-
-
-BOOST_FIXTURE_TEST_CASE(transform, CrsTransformTest)
+/*!
+ * \brief Crea un buffer entorno a una linea
+ * \param[in] ln Línea
+ * \param[in] size Tamaño de buffer
+ * \return Buffer
+ */
+template<typename Point_t> inline
+Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 {
-  CrsTransform<Point3D> trf(epsg25830, epsg4258);
-  Point3D pt_utm(281815.044, 4827675.243, 0.);
-  Point3D pt_geo;
-  trf.transform(pt_utm, pt_geo);
-  BOOST_CHECK_CLOSE(43.570113, pt_geo.x, 0.1);
-  BOOST_CHECK_CLOSE(-5.701905, pt_geo.y, 0.1);
-  BOOST_CHECK_CLOSE(0., pt_geo.z, 0.1);
+  Polygon<Point_t> buff(4);
+
+  Point_t pt1 = ln.pt1;
+  Point_t pt2 = ln.pt2;
+  double acimut = azimut(pt1, pt2);
+  double dx = size * sin(acimut + TL_PI_2);
+  double dy = size * cos(acimut + TL_PI_2);
+
+  buff[0] = Point_t(pt1.x + dx, pt1.y + dy);
+  buff[1] = Point_t(pt2.x + dx, pt2.y + dy);
+  buff[2] = Point_t(pt2.x - dx, pt2.y - dy);
+  buff[3] = Point_t(pt1.x - dx, pt1.y - dy);
+
+  return buff;
 }
 
-BOOST_AUTO_TEST_SUITE_END()
 
+} // End namespace tl
 
-BOOST_AUTO_TEST_SUITE(EcefToEnuTestSuite)
-
-struct EcefToEnuTest
-{
-  EcefToEnuTest()
-  {
-  }
-
-  ~EcefToEnuTest()
-  {
-  }
-
-
-  virtual void setup()
-  {
-
-  }
-
-  virtual void teardown()
-  {
-
-  }
-
-};
-
-
-BOOST_FIXTURE_TEST_CASE(transform, EcefToEnuTest)
-{
-
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-
-#endif // HAVE_GDAL
+#endif // TL_GEOMETRY_ALGORITHMS_BUFFER_H
