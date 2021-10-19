@@ -849,82 +849,90 @@ void OrthoimageProcess::execute(Progress *progressBar)
 
   for (const auto &photo : mPhotos) {
     
-    if (!photo.path().exists()) {
-      msgWarning("Image not found %s", photo.name().c_str());
-      continue;
+    try 	{
+
+      if (!photo.path().exists()) {
+        msgWarning("Image not found %s", photo.name().c_str());
+        continue;
+      }
+
+      ortho_file = mOrthoPath;
+      ortho_file.append(photo.name()).replaceExtension(".png");
+      //if (ortho_file.exists()) continue;
+      Orthorectification orthorectification(mDtm, photo);
+      std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
+
+      double scale = mScale;
+      if (mScale == -1) {
+        /// Calculo de transformación afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
+        //graph::GPolygon polygon = mOrthorectification->footprint();
+        std::vector<PointD> t_coor;
+        t_coor.push_back(entity->at(0));
+        t_coor.push_back(entity->at(1));
+        t_coor.push_back(entity->at(2));
+        t_coor.push_back(entity->at(3));
+
+        Rect<int> rect_image = orthorectification.rectImage();
+        std::vector<PointD> i_coor;
+        i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.topLeft()));
+        i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.topRight()));
+        i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.bottomRight()));
+        i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.bottomLeft()));
+
+        Affine<PointD> affine_terrain_image;
+        affine_terrain_image.compute(i_coor, t_coor);
+        scale = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
+      }
+
+      // Se reserva tamaño para la orto
+      Window<PointD> window_ortho_terrain = orthorectification.footprint().window();
+      window_ortho_terrain = expandWindow(window_ortho_terrain,
+                                          window_ortho_terrain.width() * (mCrop - 1.) / 2.,
+                                          window_ortho_terrain.height() * (mCrop - 1.) / 2.);
+      int rows_ortho = static_cast<int>(std::round(window_ortho_terrain.height() / scale));
+      int cols_ortho = static_cast<int>(std::round(window_ortho_terrain.width() / scale));
+      Rect<int> rect_ortho = Rect<int>(0, 0, cols_ortho, rows_ortho);
+      //Size<int> ortho_size_pixels(cols_ortho, rows_ortho);
+
+      Affine<PointD> affine_ortho(window_ortho_terrain.pt1.x,
+                                  window_ortho_terrain.pt2.y,
+                                  scale, -scale, 0.0);
+
+      /// Grafico ortofotos
+      {
+        Rect<double> rect(window_ortho_terrain.pt1, window_ortho_terrain.pt2);
+        rect.normalized();
+        std::shared_ptr<graph::GPolygon> entity_ortho = std::make_shared<graph::GPolygon>();
+        entity_ortho->push_back(rect.topLeft());
+        entity_ortho->push_back(rect.topRight());
+        entity_ortho->push_back(rect.bottomRight());
+        entity_ortho->push_back(rect.bottomLeft());
+        std::shared_ptr<TableRegister> data_ortho(new TableRegister(layer_ortho_graph.tableFields()));
+        data_ortho->setValue(0, ortho_file.toString());
+        entity_ortho->setData(data_ortho);
+        layer_ortho_graph.push_back(entity_ortho);
+      }
+
+
+      ZBuffer zBuffer(&orthorectification, rect_ortho, affine_ortho);
+      zBuffer.run();
+
+      cv::Mat visibility_map = visibilityMap(orthorectification, zBuffer);
+
+      Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho);
+      orthoimage.run(ortho_file, visibility_map);
+
+      std::shared_ptr<TableRegister> data(new TableRegister(layer.tableFields()/*fields*/));
+      data->setValue(0, ortho_file.toString());
+      entity->setData(data);
+      layer.push_back(entity);
+
+      msgInfo("Write orthoimage: %s", photo.name().c_str());
+
+    } catch (const std::exception &e) {
+      msgError("", e.what());
+      msgError("Write orthoimage error: %s", photo.name().c_str());
     }
-    
-    ortho_file = mOrthoPath;
-    ortho_file.append(photo.name()).replaceExtension(".png");
-    //if (ortho_file.exists()) continue;
-    Orthorectification orthorectification(mDtm, photo);
-    std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
-    std::shared_ptr<TableRegister> data(new TableRegister(layer.tableFields()/*fields*/));
-    data->setValue(0, ortho_file.toString());
-    entity->setData(data);
-    layer.push_back(entity);
-
-    double scale = mScale;
-    if (mScale == -1) {
-      /// Calculo de transformación afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
-      //graph::GPolygon polygon = mOrthorectification->footprint();
-      std::vector<PointD> t_coor;
-      t_coor.push_back(entity->at(0));
-      t_coor.push_back(entity->at(1));
-      t_coor.push_back(entity->at(2));
-      t_coor.push_back(entity->at(3));
-
-      Rect<int> rect_image = orthorectification.rectImage();
-      std::vector<PointD> i_coor;
-      i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.topLeft()));
-      i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.topRight()));
-      i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.bottomRight()));
-      i_coor.push_back(orthorectification.imageToPhotocoordinates(rect_image.bottomLeft()));
-
-      Affine<PointD> affine_terrain_image;
-      affine_terrain_image.compute(i_coor, t_coor);
-      scale = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
-    }
-
-    // Se reserva tamaño para la orto
-    Window<PointD> window_ortho_terrain = orthorectification.footprint().window();
-    window_ortho_terrain = expandWindow(window_ortho_terrain,
-                                        window_ortho_terrain.width() * (mCrop - 1.) / 2., 
-                                        window_ortho_terrain.height() * (mCrop - 1.) / 2.);
-    int rows_ortho = static_cast<int>(std::round(window_ortho_terrain.height() / scale));
-    int cols_ortho = static_cast<int>(std::round(window_ortho_terrain.width() / scale));
-    Rect<int> rect_ortho = Rect<int>(0, 0, cols_ortho, rows_ortho);
-    //Size<int> ortho_size_pixels(cols_ortho, rows_ortho);
-
-    Affine<PointD> affine_ortho(window_ortho_terrain.pt1.x,
-                                window_ortho_terrain.pt2.y,
-                                scale, -scale, 0.0);
-
-    /// Grafico ortofotos
-    {
-      Rect<double> rect(window_ortho_terrain.pt1, window_ortho_terrain.pt2);
-      rect.normalized();
-      std::shared_ptr<graph::GPolygon> entity_ortho = std::make_shared<graph::GPolygon>();
-      entity_ortho->push_back(rect.topLeft());
-      entity_ortho->push_back(rect.topRight());
-      entity_ortho->push_back(rect.bottomRight());
-      entity_ortho->push_back(rect.bottomLeft());
-      std::shared_ptr<TableRegister> data_ortho(new TableRegister(layer_ortho_graph.tableFields()));
-      data_ortho->setValue(0, ortho_file.toString());
-      entity_ortho->setData(data_ortho);
-      layer_ortho_graph.push_back(entity_ortho);
-    }
-
-
-    ZBuffer zBuffer(&orthorectification, rect_ortho, affine_ortho);
-    zBuffer.run();
-    
-    cv::Mat visibility_map = visibilityMap(orthorectification, zBuffer);
-
-    Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho);
-    orthoimage.run(ortho_file, visibility_map);
-
-    msgInfo("Write ortho: %s", photo.name().c_str());
 
     if (progressBar) (*progressBar)();
   }
