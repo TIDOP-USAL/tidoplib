@@ -48,10 +48,6 @@
 namespace tl
 {
 
-//class ImageReader;
-//class ImageWriter;
-//class VectorWriter;
-
 namespace geospatial
 {
 
@@ -64,7 +60,8 @@ class TL_EXPORT Orthorectification
 public:
 
 	Orthorectification(const Path &dtm,
-		                 const Photo &photo);
+										 const Camera &camera,
+										 const CameraPose &cameraPose);
 	
 	~Orthorectification()
 	{
@@ -80,22 +77,26 @@ public:
 	Point3D dtmToTerrain(const PointI &imagePoint) const;
 	PointI terrainToDTM(const Point3D &terrainPoint) const;
 	double z(const PointD &terrainPoint) const;
-	/*Point3D orthoToTerrain(const PointI &imagePoint);
-	PointI terrainToOrtho(const Point3D &terrainPoint);*/
 
 	Rect<int> rectImage() const;
-	//Rect<int> rectOrtho() const;
 	Rect<int> rectDtm() const;
 	graph::GPolygon footprint() const;
 
 	CameraPose orientation() const;
+	Camera camera() const;
+	Camera undistortCamera() const;
 
 	bool hasNodataValue() const;
 	double nodataValue() const;
 
+	cv::Mat undistort(const cv::Mat &image);
+
+	bool isValid() const;
+
 private:
 
 	void init();
+	void initUndistortCamera();
 
 	float focal() const;
 	PointF principalPoint() const;
@@ -104,19 +105,18 @@ private:
 private:
 
 	Camera mCamera;
-	CameraPose mOrientation;
+	Camera mUndistortCamera;
+	CameraPose mCameraPose;
 	std::unique_ptr<ImageReader> mDtmReader;
 	cv::Mat mDtm;
 	Window<PointD> mWindowDtmTerrainExtension;
 	Affine<PointI> mAffineImageToPhotocoordinates;
 	Affine<PointD> mAffineDtmImageToTerrain;
-	//Affine<PointD> mAffineOrthoImageToTerrain;
 	std::unique_ptr<DifferentialRectification<double>> mDifferentialRectification;
 	double mIniZ;
 	Rect<int> mRectImage;
 	Rect<int> mRectDtm;
 	graph::GPolygon mFootprint;
-	//Rect<int> mRectOrtho;
 	double mNoDataValue;
 };
 
@@ -162,9 +162,7 @@ private:
  	
    ZBuffer(Orthorectification *orthorectification,
 		       const Rect<int> &rectOrtho,
-		       const Affine<PointD> &georeference
-		       /*double scale = -1.,
-		       double crop = 1.*/);
+		       const Affine<PointD> &georeference);
    ~ZBuffer();
  
  	void run();
@@ -180,8 +178,6 @@ private:
   Orthorectification *mOrthorectification;
 	Rect<int> mRectOrtho;
 	Affine<PointD> mGeoreference;
- //	double mScale;
-	//double mCrop;
 	Window<PointD> mWindowOrthoTerrain;
 	cv::Mat mDistances;
  	cv::Mat mY;
@@ -203,9 +199,7 @@ public:
 		         Orthorectification *orthorectification,
 		         const geospatial::Crs &crs,
 		         const Rect<int> &rectOrtho,
-		         const Affine<PointD> &georeference
-		         /*double scale = -1.,
-		         double crop = 1.*/);
+		         const Affine<PointD> &georeference);
 	~Orthoimage();
 
 	void run(const Path &ortho, const cv::Mat &visibilityMap = cv::Mat());
@@ -217,8 +211,6 @@ private:
 	geospatial::Crs mCrs;
   Rect<int> mRectOrtho;
 	Affine<PointD> mGeoreference;
-	//double mScale; 
-	//double mCrop;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;
 	Window<PointD> mWindowOrthoTerrain;
 	

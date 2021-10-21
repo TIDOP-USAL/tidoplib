@@ -26,10 +26,7 @@
 
 #include "tidop/core/chrono.h"
 #include "tidop/core/progress.h"
-//#include "tidop/img/imgreader.h"
-//#include "tidop/img/imgwriter.h"
 #include "tidop/img/formats.h"
-//#include "tidop/vect/vectwriter.h"
 #include "tidop/math/algebra/rotation_matrix.h"
 #include "tidop/math/algebra/rotation_convert.h"
 #include "tidop/math/algebra/matrix.h"
@@ -48,6 +45,12 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/stitching.hpp>
 #include <opencv2/imgcodecs.hpp>
+#ifdef HAVE_OPENCV_CUDAARITHM
+#include <opencv2/cudaarithm.hpp>
+#endif
+#ifdef HAVE_OPENCV_CUDAWARPING
+#include <opencv2/cudawarping.hpp>
+#endif
 
 namespace tl
 {
@@ -60,10 +63,11 @@ namespace geospatial
 
 
 Orthorectification::Orthorectification(const Path &dtm, 
-                                       const Photo &photo)
+                                       const Camera &camera,
+                                       const CameraPose &cameraPose)
   : mDtmReader(ImageReaderFactory::createReader(dtm)),
-    mCamera(photo.camera()),
-    mOrientation(photo.cameraPose()),
+    mCamera(camera),
+    mCameraPose(cameraPose),
     mIniZ(0.),
     mNoDataValue(-std::numeric_limits<double>().max())
 {
@@ -155,25 +159,10 @@ double Orthorectification::z(const PointD &terrainPoint) const
   return z;
 }
 
-//Point3D Orthorectification::orthoToTerrain(const PointI &imagePoint)
-//{
-//  return Point3D();
-//}
-//
-//PointI Orthorectification::terrainToOrtho(const Point3D &terrainPoint)
-//{
-//  return PointI();
-//}
-
 Rect<int> Orthorectification::rectImage() const
 {
   return mRectImage;
 }
-
-//Rect<int> Orthorectification::rectOrtho() const
-//{
-//  return mRectOrtho;
-//}
 
 Rect<int> Orthorectification::rectDtm() const
 {
@@ -187,7 +176,17 @@ graph::GPolygon Orthorectification::footprint() const
 
 CameraPose Orthorectification::orientation() const
 {
-  return mOrientation;
+  return mCameraPose;
+}
+
+Camera Orthorectification::camera() const
+{
+  return mCamera;
+}
+
+Camera Orthorectification::undistortCamera() const
+{
+  return Camera();
 }
 
 bool Orthorectification::hasNodataValue() const
@@ -202,6 +201,8 @@ double Orthorectification::nodataValue() const
 
 void Orthorectification::init()
 {
+  initUndistortCamera();
+
   mDtmReader->open();
 
   mAffineDtmImageToTerrain = mDtmReader->georeference();
@@ -211,15 +212,17 @@ void Orthorectification::init()
   mWindowDtmTerrainExtension.pt2.x = mAffineDtmImageToTerrain.tx + mAffineDtmImageToTerrain.scaleX() * mDtmReader->cols();
   mWindowDtmTerrainExtension.pt2.y = mAffineDtmImageToTerrain.ty + mAffineDtmImageToTerrain.scaleY() * mDtmReader->rows();
   
-  mDifferentialRectification = std::make_unique<DifferentialRectification<double>>(mOrientation.rotationMatrix(),
-                                                                                   mOrientation.position(),
+  mDifferentialRectification = std::make_unique<DifferentialRectification<double>>(mCameraPose.rotationMatrix(),
+                                                                                   mCameraPose.position(),
                                                                                    focal());
 
   bool exist_nodata = false;
   double nodata_value = mDtmReader->noDataValue(&exist_nodata);
   if (exist_nodata) mNoDataValue = nodata_value;
 
-  WindowD w(mDifferentialRectification->cameraPosition(),
+  PointD center_project = imageToTerrain(mRectImage.window().center());
+
+  WindowD w(center_project /*mDifferentialRectification->cameraPosition()*/,
             mAffineDtmImageToTerrain.scaleX(),
             mAffineDtmImageToTerrain.scaleY());
   cv::Mat image = mDtmReader->read(w);
@@ -248,12 +251,98 @@ void Orthorectification::init()
   mDtm = mDtmReader->read(mRectDtm);
 }
 
+void Orthorectification::initUndistortCamera()
+{
+  std::shared_ptr<tl::Calibration> calibration = mCamera.calibration();
+
+  float focal_x = 1.f;
+  float focal_y = 1.f;
+  {
+    for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+      tl::Calibration::Parameters parameter = param->first;
+      float value = static_cast<float>(param->second);
+      switch (parameter) {
+        case tl::Calibration::Parameters::focal:
+          focal_x = value;
+          focal_y = value;
+          break;
+        case tl::Calibration::Parameters::focalx:
+          focal_x = value;
+          break;
+        case tl::Calibration::Parameters::focaly:
+          focal_y = value;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+  
+  float ppx = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cx));
+  float ppy = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cy));
+  std::array<std::array<float, 3>, 3> camera_matrix_data = { focal_x, 0.f, ppx,
+                                                            0.f, focal_y, ppy,
+                                                            0.f, 0.f, 1.f };
+  cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
+  
+  cv::Mat dist_coeffs = cv::Mat::zeros(1, 5, CV_32F);
+  
+  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+    tl::Calibration::Parameters parameter = param->first;
+    float value = static_cast<float>(param->second);
+    switch (parameter) {
+      case tl::Calibration::Parameters::k1:
+        dist_coeffs.at<float>(0) = value;
+        break;
+      case tl::Calibration::Parameters::k2:
+        dist_coeffs.at<float>(1) = value;
+        break;
+      case tl::Calibration::Parameters::k3:
+        dist_coeffs.at<float>(4) = value;
+        break;
+      case tl::Calibration::Parameters::k4:
+        dist_coeffs.at<float>(5) = value;
+        break;
+      case tl::Calibration::Parameters::k5:
+        dist_coeffs.at<float>(6) = value;
+        break;
+      case tl::Calibration::Parameters::k6:
+        dist_coeffs.at<float>(7) = value;
+        break;
+      case tl::Calibration::Parameters::p1:
+        dist_coeffs.at<float>(2) = value;
+        break;
+      case tl::Calibration::Parameters::p2:
+        dist_coeffs.at<float>(3) = value;
+        break;
+      default:
+        break;
+    }
+  }
+  
+  cv::Size imageSize(static_cast<int>(mCamera.width()),
+                     static_cast<int>(mCamera.height()));
+  
+  cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, dist_coeffs, imageSize, 1, imageSize, nullptr);
+  
+  mUndistortCamera = mCamera;
+  mUndistortCamera.setFocal((optCameraMat.at<float>(0, 0)+ optCameraMat.at<float>(1, 1))/2.);
+  std::shared_ptr<tl::Calibration> undistort_calibration = tl::CalibrationFactory::create(calibration->cameraModel());
+  undistort_calibration->setParameter(tl::Calibration::Parameters::focal, (optCameraMat.at<float>(0, 0) + optCameraMat.at<float>(1, 1)) / 2.);
+  undistort_calibration->setParameter(tl::Calibration::Parameters::focalx, optCameraMat.at<float>(0, 0));
+  undistort_calibration->setParameter(tl::Calibration::Parameters::focaly, optCameraMat.at<float>(1, 1));
+  undistort_calibration->setParameter(tl::Calibration::Parameters::cx, optCameraMat.at<float>(0, 2));
+  undistort_calibration->setParameter(tl::Calibration::Parameters::cy, optCameraMat.at<float>(1, 2));
+  mUndistortCamera.setCalibration(undistort_calibration);
+
+}
+
 float Orthorectification::focal() const
 {
   float focal_x = 1.f;
   float focal_y = 1.f;
 
-  std::shared_ptr<Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mUndistortCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
@@ -281,7 +370,7 @@ PointF Orthorectification::principalPoint() const
 {
   PointF principal_point;
 
-  std::shared_ptr<Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mUndistortCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
@@ -305,7 +394,7 @@ cv::Mat Orthorectification::distCoeffs() const
 {
   cv::Mat dist_coeffs = cv::Mat::zeros(1, 5, CV_32F);
 
-  std::shared_ptr<Calibration> calibration = mCamera.calibration();
+  std::shared_ptr<Calibration> calibration = mUndistortCamera.calibration();
 
   for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
     Calibration::Parameters parameter = param->first;
@@ -343,8 +432,81 @@ cv::Mat Orthorectification::distCoeffs() const
   return dist_coeffs;
 }
 
+cv::Mat Orthorectification::undistort(const cv::Mat &image)
+{
+  cv::Mat img_undistort;
 
+  std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
+  float ppx = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cx));
+  float ppy = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cy));
+
+  float focal_x = 1.f;
+  float focal_y = 1.f;
+
+  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
+    Calibration::Parameters parameter = param->first;
+    float value = static_cast<float>(param->second);
+    switch (parameter) {
+      case Calibration::Parameters::focal:
+        focal_x = value;
+        focal_y = value;
+        break;
+      case Calibration::Parameters::focalx:
+        focal_x = value;
+        break;
+      case Calibration::Parameters::focaly:
+        focal_y = value;
+        break;
+      default:
+        break;
+    }
+  }
+  std::array<std::array<float, 3>, 3> camera_matrix_data = { focal_x, 0.f, ppx,
+                                                            0.f, focal_y, ppy,
+                                                            0.f, 0.f, 1.f };
+
+  cv::Size imageSize(static_cast<int>(mCamera.width()),
+                     static_cast<int>(mCamera.height()));
+
+  cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
+  cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
+  distCoeffs.at<float>(0) = calibration->existParameter(tl::Calibration::Parameters::k1) ?
+    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k1)) : 0.f;
+  distCoeffs.at<float>(1) = calibration->existParameter(tl::Calibration::Parameters::k2) ?
+    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k2)) : 0.f;
+  distCoeffs.at<float>(2) = calibration->existParameter(tl::Calibration::Parameters::p1) ?
+    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p1)) : 0.f;
+  distCoeffs.at<float>(3) = calibration->existParameter(tl::Calibration::Parameters::p2) ?
+    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p2)) : 0.f;
+  distCoeffs.at<float>(4) = calibration->existParameter(tl::Calibration::Parameters::k3) ?
+    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k3)) : 0.f;
+
+  cv::Mat map1;
+  cv::Mat map2;
+  cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, nullptr);
+  cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), optCameraMat, imageSize, CV_32FC1, map1, map2);
+
+#ifdef HAVE_OPENCV_CUDAWARPING
+  cv::cuda::GpuMat gMap1(map1);
+  cv::cuda::GpuMat gMap2(map2);
+  cv::cuda::GpuMat gImgOut(image);
+  cv::cuda::GpuMat gImgUndistort;
+
+  cv::cuda::remap(gImgOut, gImgUndistort, gMap1, gMap2, cv::INTER_LINEAR, 0, cv::Scalar());
+  gImgUndistort.download(img_undistort);
+
+#else
+  cv::remap(image, img_undistort, map1, map2, cv::INTER_LINEAR);
+#endif
+
+  return img_undistort;
+}
+
+bool Orthorectification::isValid() const
+{
+  return mIniZ != mNoDataValue;
+}
 
 /* Footprint */
 
@@ -380,7 +542,7 @@ void Footprint::execute(Progress *progressBar)
 
   for (const auto &photo : mPhotos) {
 
-    Orthorectification orthorectification(mDtm, photo);
+    Orthorectification orthorectification(mDtm, photo.camera(), photo.cameraPose());
     std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
     std::shared_ptr<TableRegister> data = std::make_shared <TableRegister>(layer.tableFields());
     data->setValue(0, photo.name());
@@ -473,7 +635,6 @@ void ZBuffer::run()
 
           WindowI window_ortho_in = boundingWindow(ortho_image_coordinates.begin(), ortho_image_coordinates.end());
           if (!window_ortho_in.isValid()) continue;
-          //cv::Mat out = cv::Mat::zeros(cv::Size(window_ortho_in.width(), window_ortho_in.height()), image.type());
 
           WindowI window_image_in = boundingWindow(photo_image_coordinates.begin(), photo_image_coordinates.end());
           if (!window_image_in.isValid()) continue;
@@ -592,45 +753,13 @@ Orthoimage::Orthoimage(const Path &image,
                        Orthorectification *orthorectification,
                        const geospatial::Crs &crs,
                        const Rect<int> &rectOrtho,
-                       const Affine<PointD> &georeference
-                       /*double scale,
-                       double crop*/)
+                       const Affine<PointD> &georeference)
   : mImageReader(ImageReaderFactory::createReader(image)),
     mOrthorectification(orthorectification),
     mCrs(crs),
     mRectOrtho(rectOrtho),
     mGeoreference(georeference)
-    /*mScale(scale),
-    mCrop(crop)*/
 {
-  
-  //if (mScale == -1) {
-  //  /// Calculo de transformación afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
-  //  graph::GPolygon polygon = mOrthorectification->footprint();
-  //  std::vector<PointD> t_coor;
-  //  t_coor.push_back(polygon[0]);
-  //  t_coor.push_back(polygon[1]);
-  //  t_coor.push_back(polygon[2]);
-  //  t_coor.push_back(polygon[3]);
-
-  //  Rect<int> rect_image = mOrthorectification->rectImage();
-  //  std::vector<PointD> i_coor;
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.topLeft()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.topRight()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.bottomRight()));
-  //  i_coor.push_back(mOrthorectification->imageToPhotocoordinates(rect_image.bottomLeft()));
-
-  //  Affine<PointD> affine_terrain_image;
-  //  affine_terrain_image.compute(i_coor, t_coor);
-  //  mScale = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
-  //}
-
-  //// Se reserva tamaño para la orto
-  //Window<PointD> window_ortho_terrain = mOrthorectification->footprint().window();
-  //mWindowOrthoTerrain = expandWindow(window_ortho_terrain, window_ortho_terrain.width() * (mCrop - 1.) / 2., window_ortho_terrain.height() * (mCrop - 1.) / 2.);
-  //int rows_ortho = static_cast<int>(std::round(mWindowOrthoTerrain.height() / mScale));
-  //int cols_ortho = static_cast<int>(std::round(mWindowOrthoTerrain.width() / mScale));
-  //mRectOrtho = Rect<int>(0, 0, cols_ortho, rows_ortho);
 }
 
 Orthoimage::~Orthoimage()
@@ -641,7 +770,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 {
   TL_TODO("Comprobar que visibilityMap tenga el tamaño adecuado")
 
-  //try {
+  try {
 
     Rect<int> rect_image = mOrthorectification->rectImage();
     Rect<int> rect_dtm = mOrthorectification->rectDtm();
@@ -652,16 +781,24 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
     if (!mImageReader->isOpen()) throw std::runtime_error("Image open error");
     cv::Mat image = mImageReader->read();
     int depth = mImageReader->depth();
+
     if (depth != 8) {
+#ifdef HAVE_OPENCV_CUDAARITHM
+      cv::cuda::GpuMat gImgIn(image);
+      cv::cuda::GpuMat gImgOut;
+      cv::cuda::normalize(gImgIn, gImgOut, 0., 255., cv::NORM_MINMAX, CV_8U);
+      gImgOut.download(image);
+#else
       cv::normalize(image, image, 0., 255., cv::NORM_MINMAX, CV_8U);
+#endif
       depth = 8;
     }
-    
+
+    /// Undistort
+
+    cv::Mat undistort_image = mOrthorectification->undistort(image);
+    image.release();
     /// georeferencia orto
-    //Window<PointD> window_ortho_terrain = mOrthorectification->footprint().window();
-    //Affine<PointD> affine_ortho(mWindowOrthoTerrain.pt1.x,
-    //                            mWindowOrthoTerrain.pt2.y,
-    //                            mScale, -mScale, 0.0);
 
     mOrthophotoWriter = ImageWriterFactory::createWriter(ortho);
     mOrthophotoWriter->open();
@@ -723,7 +860,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 
           WindowI window_ortho_in = boundingWindow(ortho_image_coordinates.begin(), ortho_image_coordinates.end());
           if (!window_ortho_in.isValid()) continue;
-          cv::Mat out = cv::Mat::zeros(cv::Size(window_ortho_in.width(), window_ortho_in.height()), image.type());
+          cv::Mat out = cv::Mat::zeros(cv::Size(window_ortho_in.width(), window_ortho_in.height()), undistort_image.type());
 
           WindowI window_image_in = boundingWindow(photo_image_coordinates.begin(), photo_image_coordinates.end());
           if (!window_image_in.isValid()) continue;
@@ -736,7 +873,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
             rect_image.contains(window_aux.pt2)) {
             window_image_in = window_aux;
           }
-          cv::Mat in(window_image_in.height(), window_image_in.width(), image.type());
+          cv::Mat in(window_image_in.height(), window_image_in.width(), undistort_image.type());
 
           cv::Point2f cv_photo_image_coordinates[4];
           cv::Point2f cv_ortho_image_coordinates[4];
@@ -748,8 +885,8 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
           }
           cv::Mat h = cv::getPerspectiveTransform(cv_ortho_image_coordinates, cv_photo_image_coordinates);
 
-          image.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
-            .rowRange(window_image_in.pt1.y, window_image_in.pt2.y).copyTo(in);
+          undistort_image.colRange(window_image_in.pt1.x, window_image_in.pt2.x)
+                         .rowRange(window_image_in.pt1.y, window_image_in.pt2.y).copyTo(in);
 
           cv::warpPerspective(in, out, h, cv::Size(window_ortho_in.width(), window_ortho_in.height()), cv::INTER_NEAREST | cv::WARP_INVERSE_MAP, cv::BORDER_TRANSPARENT);
 
@@ -764,16 +901,18 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
     mOrthophotoWriter->write(mat_ortho);
     mOrthophotoWriter->close();
 
-  //} catch (std::exception &e) {
-  //  if (mOrthophotoWriter) mOrthophotoWriter->close();
-  //  msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
-  //  msgError(e.what());
-  //} catch (...) {
-  //  if (mOrthophotoWriter) mOrthophotoWriter->close();
-  //  msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
-  //  msgError("Unhandled exception");
-  //}
+  } catch (std::exception &e) {
+    if (mOrthophotoWriter) mOrthophotoWriter->close();
+    msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
+    msgError(e.what());
+  } catch (...) {
+    if (mOrthophotoWriter) mOrthophotoWriter->close();
+    msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
+    msgError("Unhandled exception");
+  }
 }
+
+
 
 
 
@@ -820,8 +959,6 @@ void OrthoimageProcess::execute(Progress *progressBar)
   std::shared_ptr<TableField> field(new TableField("image",
     TableField::Type::STRING,
     254));
-  //std::vector<std::shared_ptr<TableField>> fields;
-  //fields.push_back(field);
 
   mFootprintWriter->create();
   mFootprintWriter->setCRS(mCrs);
@@ -848,7 +985,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
   if (progressBar) progressBar->setMaximun(mPhotos.size());
 
   for (const auto &photo : mPhotos) {
-    
+
     try 	{
 
       if (!photo.path().exists()) {
@@ -858,14 +995,15 @@ void OrthoimageProcess::execute(Progress *progressBar)
 
       ortho_file = mOrthoPath;
       ortho_file.append(photo.name()).replaceExtension(".png");
-      //if (ortho_file.exists()) continue;
-      Orthorectification orthorectification(mDtm, photo);
+
+      Orthorectification orthorectification(mDtm, photo.camera(), photo.cameraPose());
+      if (!orthorectification.isValid()) continue;
+
       std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
 
       double scale = mScale;
       if (mScale == -1) {
         /// Calculo de transformación afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
-        //graph::GPolygon polygon = mOrthorectification->footprint();
         std::vector<PointD> t_coor;
         t_coor.push_back(entity->at(0));
         t_coor.push_back(entity->at(1));
@@ -892,7 +1030,6 @@ void OrthoimageProcess::execute(Progress *progressBar)
       int rows_ortho = static_cast<int>(std::round(window_ortho_terrain.height() / scale));
       int cols_ortho = static_cast<int>(std::round(window_ortho_terrain.width() / scale));
       Rect<int> rect_ortho = Rect<int>(0, 0, cols_ortho, rows_ortho);
-      //Size<int> ortho_size_pixels(cols_ortho, rows_ortho);
 
       Affine<PointD> affine_ortho(window_ortho_terrain.pt1.x,
                                   window_ortho_terrain.pt2.y,
@@ -918,7 +1055,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
       zBuffer.run();
 
       cv::Mat visibility_map = visibilityMap(orthorectification, zBuffer);
-
+      
       Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho);
       orthoimage.run(ortho_file, visibility_map);
 
