@@ -315,7 +315,7 @@ void DDA::_next(int *max, int *min, int dMin, int endMax, int step)
   if (*max < endMax) {
     *max += step;
     if ( dMin != 0)
-      *min = TL_ROUND_TO_INT(m * *max + b);
+      *min = roundToInteger(m * *max + b);
   }
 }
 

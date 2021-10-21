@@ -710,8 +710,7 @@ quantile(It first, It last, double p)
 
   if (idx_1 == idx_2) {
     q = sort_vector[idx_1];
-  }
-  else {
+  } else {
     q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
   }
 

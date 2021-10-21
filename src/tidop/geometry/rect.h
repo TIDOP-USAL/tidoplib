@@ -260,10 +260,10 @@ template<typename T> template<typename T2> inline
 Rect<T>::operator Rect<T2>() const
 {
   if (std::is_integral<T2>::value) {
-    return Rect<T2>(TL_ROUND_TO_INT(this->x),
-                    TL_ROUND_TO_INT(this->y),
-                    TL_ROUND_TO_INT(this->width),
-                    TL_ROUND_TO_INT(this->height));
+    return Rect<T2>(roundToInteger(this->x),
+                    roundToInteger(this->y),
+                    roundToInteger(this->width),
+                    roundToInteger(this->height));
   } else {
     return Rect<T2>(static_cast<T2>(this->x),
                     static_cast<T2>(this->y),

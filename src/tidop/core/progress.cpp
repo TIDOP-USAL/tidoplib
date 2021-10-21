@@ -55,7 +55,7 @@ bool ProgressBase::operator()(size_t increment)
   if (mProgress == 0.) initialize();
 
   mProgress += static_cast<double>(increment);
-  int percent = TL_ROUND_TO_INT(mProgress * mScale);
+  int percent = roundToInteger(mProgress * mScale);
   if (percent > mPercent) {
     mPercent = percent;
     updateProgress();
@@ -134,7 +134,7 @@ void ProgressBar::updateProgress()
 {
   std::cout << "\r";
 
-  int posInBar = TL_ROUND_TO_INT(static_cast<double>(percent()) * 
+  int posInBar = roundToInteger(static_cast<double>(percent()) * 
                                  static_cast<double>(mProgressBarSize) / 100.);
 
   int ini = mProgressBarSize / 2 - 2;
@@ -183,7 +183,7 @@ void ProgressBarColor::updateProgress()
   std::cout << "\r";
 
   Console &console = Console::instance();
-  int posInBar = TL_ROUND_TO_INT(static_cast<double>(percent()) * static_cast<double>(mProgressBarSize) / 100.);
+  int posInBar = roundToInteger(static_cast<double>(percent()) * static_cast<double>(mProgressBarSize) / 100.);
 
   int ini = mProgressBarSize / 2 - 2;
 

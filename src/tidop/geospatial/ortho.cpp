@@ -525,8 +525,8 @@ void ZBuffer::run()
                 cv::Mat mask_image = cv::Mat::zeros(window_image_in.height(), window_image_in.width(), CV_8U);
                 std::vector<cv::Point> pts;
                 for (int k = 0; k < photo_image_coordinates.size(); k++) {
-                  pts.emplace_back(TL_ROUND_TO_INT(photo_image_coordinates[k].x - window_image_in.pt1.x),
-                    TL_ROUND_TO_INT(photo_image_coordinates[k].y - window_image_in.pt1.y));
+                  pts.emplace_back(roundToInteger(photo_image_coordinates[k].x - window_image_in.pt1.x),
+                    roundToInteger(photo_image_coordinates[k].y - window_image_in.pt1.y));
                 }
                 const cv::Point *cpts = (const cv::Point *)cv::Mat(pts).data;
                 int npts = static_cast<int>(pts.size());

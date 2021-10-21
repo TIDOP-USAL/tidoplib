@@ -70,20 +70,6 @@
 #  include <windows.h>
 #endif
 
-///* Definición de constantes de tipo general */
-
-//#define TL_PI_2 1.5707963267948966192313216916398
-//#define TL_PI   3.1415926535897932384626433832795
-//#define TL_2PI  6.283185307179586476925286766559
-
-
-///* Conversión de ángulos */
-
-//#define TL_RAD_TO_DEG	57.295779513082320876798154814105
-//#define TL_DEG_TO_RAD	0.01745329251994329576923690768489
-//#define TL_RAD_TO_GRAD	63.661977236758134307553505349006
-//#define TL_GRAD_TO_RAD	0.0157079632679489661923132169164
-
 
 /* Límites maximos y minimos de tipos numéricos */
 
@@ -326,12 +312,7 @@
 /*                                       MACROS                                      */
 /*-----------------------------------------------------------------------------------*/
 
-/*!
- * \brief Redondea un doble o float y ademas convierte a entero
- * De esta forma se evita el warning C4244 (conversión de 'double' a 'int')
- * y nos aseguramos de que redondee de la forma correcta.
- */
-#define TL_ROUND_TO_INT(n)  static_cast<int>(round(n))
+
 
 #ifndef _MSC_VER
 #  define DO_PRAGMA(x) _Pragma (#x)
@@ -339,5 +320,25 @@
 #else
 #  define TL_TODO(msg) __pragma(message( __FILE__ "(" STRING(__LINE__) "): TODO(TidopLib): " msg  ) )
 #endif
+
+
+namespace tl
+{
+ 
+  
+/*!
+ * \brief Redondea un doble o float y ademas convierte a entero
+ * De esta forma se evita el warning C4244 (conversión de 'double' a 'int')
+ * y nos aseguramos de que redondee de la forma correcta.
+ */
+template<typename T>
+constexpr auto roundToInteger(T n) {
+  return static_cast<int>(round(n));
+}
+
+}
+
+
+#define TL_ROUND_TO_INT(n)  tl::roundToInteger(n)
 
 #endif // TL_CORE_DEFS_H

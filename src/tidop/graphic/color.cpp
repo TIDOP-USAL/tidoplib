@@ -139,9 +139,9 @@ void cmykToRgb(double cyan, double magenta, double yellow, double key, int *red,
 {
   adjustRangeCMYK(&cyan, &magenta, &yellow, &key);
   double aux = (1 - key) * 255;
-  *red = TL_ROUND_TO_INT((1 - cyan) * aux);
-  *green = TL_ROUND_TO_INT((1 - magenta) * aux); 
-  *blue = TL_ROUND_TO_INT((1 - yellow) * aux);
+  *red = roundToInteger((1 - cyan) * aux);
+  *green = roundToInteger((1 - magenta) * aux); 
+  *blue = roundToInteger((1 - yellow) * aux);
 }
 
 
@@ -212,9 +212,9 @@ void hslToRgb(double hue, double saturation, double lightness, int *red, int *gr
   }
 
   double m = lightness - chroma / 2;
-  *red = TL_ROUND_TO_INT((_rgb[0] + m) * 255);
-  *green = TL_ROUND_TO_INT((_rgb[1] + m) * 255);
-  *blue = TL_ROUND_TO_INT((_rgb[2] + m) * 255);
+  *red = roundToInteger((_rgb[0] + m) * 255);
+  *green = roundToInteger((_rgb[1] + m) * 255);
+  *blue = roundToInteger((_rgb[2] + m) * 255);
 }
 
 
@@ -282,9 +282,9 @@ void hsvToRgb(double hue, double saturation, double value, int *red, int *green,
 
   double m = value - chroma;
 
-  *red = TL_ROUND_TO_INT((_rgb[0] + m) * 255);
-  *green = TL_ROUND_TO_INT((_rgb[1] + m) * 255);
-  *blue = TL_ROUND_TO_INT((_rgb[2] + m) * 255);
+  *red = roundToInteger((_rgb[0] + m) * 255);
+  *green = roundToInteger((_rgb[1] + m) * 255);
+  *blue = roundToInteger((_rgb[2] + m) * 255);
 }
 
 
@@ -294,7 +294,7 @@ int rgbToLuminance(int red, int green, int blue)
   // Poynton	       0.2125	0.7154	0.0721
   // sRGB proposal   0.2126	0.7152	0.0722
   // W3              0.2126	0.7152	0.0722
-  return TL_ROUND_TO_INT(0.2126 * red + 0.7152 * green + 0.0722 * blue);
+  return roundToInteger(0.2126 * red + 0.7152 * green + 0.0722 * blue);
 }
 
 
@@ -395,7 +395,7 @@ int Color::alpha() const
 
 int Color::luminance() const
 {
-  return TL_ROUND_TO_INT(0.2126 * red() + 0.7152 * green() + 0.0722 * blue());
+  return roundToInteger(0.2126 * red() + 0.7152 * green() + 0.0722 * blue());
 }
 
 std::string Color::toHex() const
@@ -729,9 +729,9 @@ Color ColorCMYK::toColor() const
 {
   ///TODO: Tener en cuenta que se puede modificar el rango a 0-100. Hay que normalizar en función de esto
   double aux = (1 - mKey) * 255;
-  int red = TL_ROUND_TO_INT((1 - mCyan) * aux);
-  int green = TL_ROUND_TO_INT((1 - mMagenta) * aux);
-  int blue = TL_ROUND_TO_INT((1 - mYellow) * aux);
+  int red = roundToInteger((1 - mCyan) * aux);
+  int green = roundToInteger((1 - mMagenta) * aux);
+  int blue = roundToInteger((1 - mYellow) * aux);
   Color color((blue & 0xFF) |
               ((green << 8) & 0xFF00) |
               ((red << 16) & 0xFF0000));
@@ -898,9 +898,9 @@ Color ColorHSV::toColor() const
 
   double m = mValue - chroma;
 
-  int red = TL_ROUND_TO_INT((_rgb[0] + m) * 255);
-  int green = TL_ROUND_TO_INT((_rgb[1] + m) * 255);
-  int blue = TL_ROUND_TO_INT((_rgb[2] + m) * 255);
+  int red = roundToInteger((_rgb[0] + m) * 255);
+  int green = roundToInteger((_rgb[1] + m) * 255);
+  int blue = roundToInteger((_rgb[2] + m) * 255);
   Color color((blue & 0xFF) |
                ((green << 8) & 0xFF00) |
                ((red << 16) & 0xFF0000));
@@ -1073,9 +1073,9 @@ Color ColorHSL::toColor() const
   }
 
   double m = lightnessNorm - chroma / 2;
-  int red = TL_ROUND_TO_INT((_rgb[0] + m) * 255);
-  int green = TL_ROUND_TO_INT((_rgb[1] + m) * 255);
-  int blue = TL_ROUND_TO_INT((_rgb[2] + m) * 255);
+  int red = roundToInteger((_rgb[0] + m) * 255);
+  int green = roundToInteger((_rgb[1] + m) * 255);
+  int blue = roundToInteger((_rgb[2] + m) * 255);
 
   Color color((blue & 0xFF) |
                ((green << 8) & 0xFF00) |

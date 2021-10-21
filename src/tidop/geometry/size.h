@@ -143,8 +143,8 @@ Size<T>::operator Size<T2>() const
 {
   Size<T2> size;
   if (std::is_integral<T2>::value) {
-    size.width = TL_ROUND_TO_INT(this->width);
-    size.height = TL_ROUND_TO_INT(this->height);
+    size.width = roundToInteger(this->width);
+    size.height = roundToInteger(this->height);
   } else {
     size.width = static_cast<T2>(this->width);
     size.height = static_cast<T2>(this->height);

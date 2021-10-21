@@ -162,8 +162,8 @@ public:
 
     double scaleX = size_to_read.width / static_cast<double>(rect_to_read.width);
     double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
-    offset.x = TL_ROUND_TO_INT(offset.x * scaleX); // Corregido por la escala
-    offset.y = TL_ROUND_TO_INT(offset.y * scaleY);
+    offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
+    offset.y = roundToInteger(offset.y * scaleY);
     if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
     image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
@@ -208,12 +208,12 @@ public:
     }
 
     TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
-    offset.x = TL_ROUND_TO_INT(offset.x * scaleX); // Corregido por la escala
-    offset.y = TL_ROUND_TO_INT(offset.y * scaleY);
+    offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
+    offset.y = roundToInteger(offset.y * scaleY);
 
     cv::Size size;
-    size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
-    size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
+    size.width = roundToInteger(rect_to_read.width * scaleX);
+    size.height = roundToInteger(rect_to_read.height * scaleY);
     if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
     image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));

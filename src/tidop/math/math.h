@@ -73,6 +73,8 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type inv
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type sqrt2 = static_cast<T>(1.414213562373095048801688724209698079L);
 template<typename T>
+constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type sqrt3 = static_cast<T>(1.7320508075688772935274463415059L);
+template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type inv_sqrt2 = static_cast<T>(1.L / 1.414213562373095048801688724209698079L);
 template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type e = static_cast<T>(2.718281828459045235360287471352662498L);
