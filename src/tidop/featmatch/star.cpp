@@ -153,12 +153,18 @@ std::vector<cv::KeyPoint> StarDetector::detect(const cv::Mat &img, cv::InputArra
 {
   std::vector<cv::KeyPoint> keyPoints;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mSTAR->detect(img, keyPoints, mask);
+    mSTAR->detect(img, keyPoints, mask);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Star Detector not supported")
-  throw std::exception("OpenCV not built with extra modules. Star Detector not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Star Detector not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Star Detector not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+ 
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("StarDetector::detect() failed"));
+  }
 
   return keyPoints;
 }

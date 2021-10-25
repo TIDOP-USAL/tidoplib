@@ -154,13 +154,19 @@ std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv:
 {
   std::vector<cv::KeyPoint> keyPoints;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mSurf->detect(img, keyPoints, mask);
+    mSurf->detect(img, keyPoints, mask);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Surf Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Surf Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("SurfDetectorDescriptor::detect() failed"));
+  }
+  
   return keyPoints;
 }
 
@@ -169,12 +175,18 @@ cv::Mat SurfDetectorDescriptor::extract(const cv::Mat &img,
 {  
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mSurf->compute(img, keyPoints, descriptors);
+    mSurf->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Surf Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Surf Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Surf Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("SurfDetectorDescriptor::extract() failed"));
+  }
 
   return descriptors;
 }
@@ -286,14 +298,20 @@ std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
 {
   std::vector<cv::KeyPoint> keyPoints;
 
+  try {
+
 #if defined HAVE_OPENCV_CUDAFEATURES2D
-  cv::cuda::GpuMat g_img(img);
-  cv::cuda::GpuMat g_mask(mask);
-  (*mSurf)(g_img, g_mask, keyPoints);
+    cv::cuda::GpuMat g_img(img);
+    cv::cuda::GpuMat g_mask(mask);
+    (*mSurf)(g_img, g_mask, keyPoints);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_CUDAFEATURES2D
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("SurfCudaDetectorDescriptor::detect() failed"));
+  }
 
   return keyPoints;
 }
@@ -303,15 +321,21 @@ cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
 {
   cv::Mat descriptors;
 
+  try {
+
 #if defined HAVE_OPENCV_CUDAFEATURES2D
-  cv::cuda::GpuMat g_img(img);
-  cv::cuda::GpuMat g_descriptors;
-  (*mSurf)(g_img, cv::cuda::GpuMat(), keyPoints, g_descriptors, true);
-  g_descriptors.download(descriptors);
+    cv::cuda::GpuMat g_img(img);
+    cv::cuda::GpuMat g_descriptors;
+    (*mSurf)(g_img, cv::cuda::GpuMat(), keyPoints, g_descriptors, true);
+    g_descriptors.download(descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with CUDAFEATURES2D. Cuda Surf Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_CUDAFEATURES2D
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("SurfCudaDetectorDescriptor::extract() failed"));
+  }
 
   return descriptors;
 }

@@ -195,14 +195,20 @@ cv::Mat DaisyDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &
 {
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mDAISY->compute(img, keyPoints, descriptors);
+    mDAISY->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Daisy Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Daisy Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Daisy Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Daisy Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-return descriptors;
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("DaisyDescriptor::extract() failed"));
+  }
+
+  return descriptors;
 }
 
 void DaisyDescriptor::setRadius(double radius)

@@ -44,11 +44,17 @@ BilateralFilter::BilateralFilter(int diameter, double sigmaColor, double sigmaSp
 
 void BilateralFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
-  cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
-  mat_aux.copyTo(matOut);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::Mat mat_aux = cv::Mat::zeros(matIn.size(), CV_8UC1);
+    cv::bilateralFilter(matIn, mat_aux, mDiameter, mSigmaColor, mSigmaSpace, mBorderType);
+    mat_aux.copyTo(matOut);
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("BilateralFilter::run() failed"));
+  }
 }
 
 void BilateralFilter::setParameters(int diameter, 
@@ -76,9 +82,15 @@ Blur::Blur(const cv::Size &ksize,
 
 void Blur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
+  
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
 
-  cv::blur(matIn, matOut, mKernelSize, mAnchor, mBorderType);
+    cv::blur(matIn, matOut, mKernelSize, mAnchor, mBorderType);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Blur::run() failed"));
+  }
 }
 
 void Blur::setParameters(const cv::Size ksize, 
@@ -108,15 +120,15 @@ BoxFilter::BoxFilter(int ddepth,
 
 void BoxFilter::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
+ 
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
 
-  cv::boxFilter(matIn, 
-                matOut, 
-                mDepth, 
-                mKernelSize, 
-                mAnchor, 
-                mNormalize, 
-                mBorderType);
+    cv::boxFilter(matIn, matOut, mDepth, mKernelSize, mAnchor, mNormalize, mBorderType);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("BoxFilter::run() failed"));
+  }
 }
 
 void BoxFilter::setParameters(int ddepth, 
@@ -151,9 +163,15 @@ Convolution::Convolution(int ddepth,
 
 void Convolution::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  cv::filter2D(matIn, matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::filter2D(matIn, matOut, mDepth, mKernel, mAnchor, mDelta, mBorderType);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("FunctionProcess::run() failed"));
+  }
 }
 
 void Convolution::setParameters(int ddepth, 
@@ -186,9 +204,15 @@ GaussianBlur::GaussianBlur(const cv::Size &kernelSize,
 
 void GaussianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  cv::GaussianBlur(matIn, matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::GaussianBlur(matIn, matOut, mKernelSize, mSigmaX, mSigmaY, mBorderType);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("GaussianBlur::run() failed"));
+  }
 }
 
 void GaussianBlur::setParameters(const cv::Size &kernelSize, 
@@ -220,9 +244,15 @@ Laplacian::Laplacian(int ddepth,
 
 void Laplacian::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  cv::Laplacian(matIn, matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::Laplacian(matIn, matOut, mDepth, mKernelsize, mScale, mDelta, mBorderType);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Laplacian::run() failed"));
+  }
 }
 
 void Laplacian::setParameters(int ddepth, 
@@ -248,9 +278,15 @@ MedianBlur::MedianBlur(int ksize)
 
 void MedianBlur::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
+
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
   
-  cv::medianBlur(matIn, matOut, mKernelSize);
+    cv::medianBlur(matIn, matOut, mKernelSize);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("MedianBlur::run() failed"));
+  }
 }
 
 void MedianBlur::setParameters(int ksize)
@@ -284,16 +320,23 @@ Sobel::Sobel(int dx,
 
 void Sobel::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
-
-  cv::Mat grad_x, grad_y;
-  cv::Mat abs_grad_x, abs_grad_y;
-
-  cv::Sobel(matIn, grad_x, mDepth, mDx, mDy, mKernelSize, mScale, mDelta, mBorderType);
+  try {
     
-  TL_TODO("No tiene mucho sentido añadir esto dentro del filtro Sobel")
-  convertScaleAbs(grad_x, abs_grad_x);
-  threshold(abs_grad_x, matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::Mat grad_x, grad_y;
+    cv::Mat abs_grad_x, abs_grad_y;
+
+    cv::Sobel(matIn, grad_x, mDepth, mDx, mDy, mKernelSize, mScale, mDelta, mBorderType);
+
+    TL_TODO("No tiene mucho sentido añadir esto dentro del filtro Sobel")
+    convertScaleAbs(grad_x, abs_grad_x);
+    threshold(abs_grad_x, matOut, mThresh, mMaxVal, cv::THRESH_BINARY);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Sobel::run() failed"));
+  }
+
 }
 
 void Sobel::setParameters(int dx, int dy, int ksize, double scale, double delta, int ddepth, double thresh, double maxval, int bordertype )
@@ -320,20 +363,26 @@ Canny::Canny(double threshold1, double threshold2)
 
 void Canny::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  double th1 = mThreshold1;
-  double th2 = mThreshold2;
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
 
-  if (th1 == 0.0 && th2 == 0.0) {
-    cv::Scalar mean;
-    cv::Scalar stdv;
-    cv::meanStdDev(matIn, mean, stdv);
-    th1 = mean[0] - stdv[0];
-    th2 = mean[0] + stdv[0];
+    double th1 = mThreshold1;
+    double th2 = mThreshold2;
+
+    if (th1 == 0.0 && th2 == 0.0) {
+      cv::Scalar mean;
+      cv::Scalar stdv;
+      cv::meanStdDev(matIn, mean, stdv);
+      th1 = mean[0] - stdv[0];
+      th2 = mean[0] + stdv[0];
+    }
+
+    cv::Canny(matIn, matOut, th1, th2, 3);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Canny::run() failed"));
   }
-
-  cv::Canny(matIn, matOut, th1, th2, 3);
 }
 
 void Canny::setParameters(double threshold1, double threshold2)

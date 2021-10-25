@@ -51,7 +51,7 @@ class TL_EXPORT VectorReader
 
 public:
 
-	VectorReader(const std::string &fileName);
+	VectorReader(Path file);
 	virtual ~VectorReader() = default;
 
   /*!
@@ -62,7 +62,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -87,7 +87,7 @@ public:
 
 protected:
 
-  std::string mFileName;
+  Path mFile;
 
 };
 
@@ -104,8 +104,7 @@ private:
 
 public:
 
-  static std::unique_ptr<VectorReader> createReader(const std::string &fileName);
-  static std::unique_ptr<VectorReader> createReader(const Path &fileName);
+  static std::unique_ptr<VectorReader> createReader(const Path &file);
 };
 
 

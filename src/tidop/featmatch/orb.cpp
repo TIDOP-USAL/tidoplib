@@ -254,14 +254,30 @@ int OrbDetectorDescriptor::convertScoreType(const std::string &scoreType)
 std::vector<cv::KeyPoint> OrbDetectorDescriptor::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mOrb->detect(img, keyPoints, mask);
+
+  try {
+
+    mOrb->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("OrbDetectorDescriptor::detect() failed"));
+  }
+
   return keyPoints;
 }
 
 cv::Mat OrbDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
-  mOrb->compute(img, keyPoints, descriptors);
+
+  try {
+
+    mOrb->compute(img, keyPoints, descriptors);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("OrbDetectorDescriptor::extract() failed"));
+  }
+
   return descriptors;
 }
 
@@ -404,14 +420,20 @@ std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img,
 {
   std::vector<cv::KeyPoint> keyPoints;
 
+  try {
+
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
-  cv::cuda::GpuMat g_img(img);
-  cv::cuda::GpuMat g_mask(mask);
-  mOrb->detect(g_img, keyPoints, g_mask);
+    cv::cuda::GpuMat g_img(img);
+    cv::cuda::GpuMat g_mask(mask);
+    mOrb->detect(g_img, keyPoints, g_mask);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_CUDAFEATURES2D
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("OrbCudaDetectorDescriptor::detect() failed"));
+  }
 
   return keyPoints;
 }
@@ -421,15 +443,21 @@ cv::Mat OrbCudaDetectorDescriptor::extract(const cv::Mat &img,
 {
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_CUDAFEATURES2D
-  cv::cuda::GpuMat g_img(img);
-  cv::cuda::GpuMat g_descriptors;
-  mOrb->compute(g_img, keyPoints, g_descriptors);
-  g_descriptors.download(descriptors);
+    cv::cuda::GpuMat g_img(img);
+    cv::cuda::GpuMat g_descriptors;
+    mOrb->compute(g_img, keyPoints, g_descriptors);
+    g_descriptors.download(descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with CUDAFEATURES2D. Cuda ORB Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_CUDAFEATURES2D
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("OrbCudaDetectorDescriptor::extract() failed"));
+  }
 
   return descriptors;
 }

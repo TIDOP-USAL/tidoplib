@@ -35,7 +35,7 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/segment.h"
 #include "tidop/geometry/algorithms.h"
-//#include "tidop/math/algebra/vectors.h"
+
 
 namespace tl
 {

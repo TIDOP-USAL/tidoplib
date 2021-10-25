@@ -31,5 +31,5 @@ add_subdirectory(extract_frames)
 #add_subdirectory(dtm)
 add_subdirectory(footprint)
 add_subdirectory(ortho)
-
+add_subdirectory(featmatch)
 endif()

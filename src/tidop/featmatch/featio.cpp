@@ -33,8 +33,8 @@
 namespace tl
 {
 
-FeaturesWriter::FeaturesWriter(std::string fileName)
-  : mFileName(std::move(fileName))
+FeaturesWriter::FeaturesWriter(tl::Path file)
+  : mFilePath(std::move(file))
 {
 
 }
@@ -55,8 +55,8 @@ void FeaturesWriter::setDescriptors(const cv::Mat &descriptors)
 
 
 
-FeaturesReader::FeaturesReader(std::string fileName)
-  : mFileName(std::move(fileName))
+FeaturesReader::FeaturesReader(tl::Path file)
+  : mFilePath(std::move(file))
 {
 
 }
@@ -71,9 +71,9 @@ cv::Mat FeaturesReader::descriptors() const
   return mDescriptors;
 }
 
-std::string FeaturesReader::fileName() const
+tl::Path FeaturesReader::file() const
 {
-  return mFileName;
+  return mFilePath;
 }
 
 
@@ -90,7 +90,7 @@ class FeaturesReaderBinary
 
 public:
 
-  explicit FeaturesReaderBinary(const std::string &fileName);
+  explicit FeaturesReaderBinary(const tl::Path &file);
   ~FeaturesReaderBinary() override = default;
 
 // FeaturesReader interface
@@ -119,8 +119,8 @@ private:
 
 };
 
-FeaturesReaderBinary::FeaturesReaderBinary(const std::string &fileName)
-  : FeaturesReader(fileName),
+FeaturesReaderBinary::FeaturesReaderBinary(const tl::Path &file)
+  : FeaturesReader(file),
     mFile(nullptr)
 {
 
@@ -144,7 +144,7 @@ bool FeaturesReaderBinary::read()
 
 void FeaturesReaderBinary::open()
 {
-  mFile = std::fopen(mFileName.c_str(), "rb");
+  mFile = std::fopen(mFilePath.toString().c_str(), "rb");
 }
 
 bool FeaturesReaderBinary::isOpen()
@@ -209,7 +209,7 @@ class FeaturesWriterBinary
 
 public:
 
-  explicit FeaturesWriterBinary(const std::string &fileName);
+  explicit FeaturesWriterBinary(const tl::Path &file);
   ~FeaturesWriterBinary() override = default;
 
   // FeaturesWriter interface
@@ -232,7 +232,7 @@ private:
 };
 
 
-FeaturesWriterBinary::FeaturesWriterBinary(const std::string &fileName)
+FeaturesWriterBinary::FeaturesWriterBinary(const tl::Path &fileName)
   : FeaturesWriter(fileName),
     mFile(nullptr)
 {
@@ -258,7 +258,7 @@ bool FeaturesWriterBinary::write()
 
 void FeaturesWriterBinary::open()
 {
-  mFile = std::fopen(mFileName.c_str(), "rb");
+  mFile = std::fopen(mFilePath.toString().c_str(), "rb");
 }
 
 bool FeaturesWriterBinary::isOpen()
@@ -312,7 +312,7 @@ class FeaturesReaderOpenCV
 
 public:
 
-  explicit FeaturesReaderOpenCV(const std::string &fileName);
+  explicit FeaturesReaderOpenCV(const tl::Path &file);
   ~FeaturesReaderOpenCV() override;
 
   // FeaturesReader interface
@@ -334,8 +334,8 @@ private:
   cv::FileStorage *mFileStorage;
 };
 
-FeaturesReaderOpenCV::FeaturesReaderOpenCV(const std::string &fileName)
-  : FeaturesReader(fileName),
+FeaturesReaderOpenCV::FeaturesReaderOpenCV(const tl::Path &file)
+  : FeaturesReader(file),
     mFileStorage(nullptr)
 {
 
@@ -367,7 +367,7 @@ bool FeaturesReaderOpenCV::read()
 
 void FeaturesReaderOpenCV::open()
 {
-  mFileStorage = new cv::FileStorage(mFileName, cv::FileStorage::READ);
+  mFileStorage = new cv::FileStorage(mFilePath.toString(), cv::FileStorage::READ);
 }
 
 bool FeaturesReaderOpenCV::isOpen()
@@ -410,7 +410,7 @@ class FeaturesWriterOpenCV
 
 public:
 
-  explicit FeaturesWriterOpenCV(const std::string &fileName);
+  explicit FeaturesWriterOpenCV(const tl::Path &file);
   ~FeaturesWriterOpenCV() override = default;
 
 // FeaturesWriter interface
@@ -429,16 +429,15 @@ private:
 
 private:
 
-  int mMode;
+  int mMode{};
   cv::FileStorage mFileStorage;
 };
 
 
-FeaturesWriterOpenCV::FeaturesWriterOpenCV(const std::string &fileName)
-  : FeaturesWriter(fileName)
+FeaturesWriterOpenCV::FeaturesWriterOpenCV(const tl::Path &file)
+  : FeaturesWriter(file)
 { 
-  Path ext_path = Path(fileName).extension();
-  std::string ext = ext_path.toString();
+  std::string ext = file.extension();
   if (compareInsensitiveCase(ext, ".xml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
   } else if (compareInsensitiveCase(ext, ".yml")) {
@@ -464,7 +463,7 @@ bool FeaturesWriterOpenCV::write()
 
 void FeaturesWriterOpenCV::open()
 {
-  mFileStorage = cv::FileStorage(mFileName, mMode);
+  mFileStorage = cv::FileStorage(mFilePath.toString(), mMode);
 }
 
 bool FeaturesWriterOpenCV::isOpen()
@@ -502,7 +501,7 @@ class FeaturesReaderTxt
 
 public:
 
-  explicit FeaturesReaderTxt(const std::string &fileName);
+  explicit FeaturesReaderTxt(const tl::Path &file);
   ~FeaturesReaderTxt() override = default;
 
 // FeaturesReader interface
@@ -527,8 +526,8 @@ private:
   int mCols{0};
 };
 
-FeaturesReaderTxt::FeaturesReaderTxt(const std::string &fileName)
-  : FeaturesReader(fileName)
+FeaturesReaderTxt::FeaturesReaderTxt(const tl::Path &file)
+  : FeaturesReader(file)
 {
 
 }
@@ -551,7 +550,7 @@ bool FeaturesReaderTxt::read()
 
 void FeaturesReaderTxt::open()
 {
-  ifs = std::ifstream(mFileName);
+  ifs = std::ifstream(mFilePath.toString());
 }
 
 bool FeaturesReaderTxt::isOpen()
@@ -630,7 +629,7 @@ class FeaturesWriterTxt
 
 public:
 
-  explicit FeaturesWriterTxt(const std::string &fileName);
+  explicit FeaturesWriterTxt(const tl::Path &file);
   ~FeaturesWriterTxt() override = default;
 
   // FeaturesWriter interface
@@ -667,15 +666,15 @@ private:
 
 };
 
-FeaturesWriterTxt::FeaturesWriterTxt(const std::string &fileName)
-  : FeaturesWriter(fileName)
+FeaturesWriterTxt::FeaturesWriterTxt(const tl::Path &file)
+  : FeaturesWriter(file)
 {
 
 }
 
 void FeaturesWriterTxt::open()
 {
-  ofs = std::ofstream(mFileName, std::ofstream::trunc);
+  ofs = std::ofstream(mFilePath.toString(), std::ofstream::trunc);
 }
 
 bool FeaturesWriterTxt::isOpen()
@@ -739,23 +738,23 @@ void FeaturesWriterTxt::close()
 /* ---------------------------------------------------------------------------------- */
 
 
-
-std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const std::string &fileName)
+std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Path &file)
 {
-  Path ext_path = Path(fileName).extension();
-  std::string ext = ext_path.toString();
   std::unique_ptr<FeaturesReader> features_reader;
+
+  std::string ext = file.extension();
   if (compareInsensitiveCase(ext, ".bin")) {
-    features_reader = std::make_unique<FeaturesReaderBinary>(fileName);
+    features_reader = std::make_unique<FeaturesReaderBinary>(file);
   } else if (compareInsensitiveCase(ext, ".xml")) {
-    features_reader = std::make_unique<FeaturesReaderOpenCV>(fileName);
+    features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
   } else if (compareInsensitiveCase(ext, ".yml")) {
-    features_reader = std::make_unique<FeaturesReaderOpenCV>(fileName);
+    features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
   } else if (compareInsensitiveCase(ext, ".txt")) {
-    features_reader = std::make_unique<FeaturesReaderTxt>(fileName);
+    features_reader = std::make_unique<FeaturesReaderTxt>(file);
   } else {
     throw std::runtime_error("Invalid Features Reader");
   }
+
   return features_reader;
 }
 
@@ -765,22 +764,23 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const std::s
 
 
 
-std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const std::string &fileName)
+std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Path &file)
 {
-  Path ext_path = Path(fileName).extension();
-  std::string ext = ext_path.toString();
   std::unique_ptr<FeaturesWriter> features_writer;
+ 
+  std::string ext = file.extension(); 
   if (compareInsensitiveCase(ext, ".bin")) {
-    features_writer = std::make_unique<FeaturesWriterBinary>(fileName);
+    features_writer = std::make_unique<FeaturesWriterBinary>(file);
   } else if (compareInsensitiveCase(ext, ".txt")) {
-    features_writer = std::make_unique<FeaturesWriterTxt>(fileName);
+    features_writer = std::make_unique<FeaturesWriterTxt>(file);
   } else if (compareInsensitiveCase(ext, ".xml")) {
-    features_writer = std::make_unique<FeaturesWriterOpenCV>(fileName);
+    features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
   } else if (compareInsensitiveCase(ext, ".yml")) {
-    features_writer = std::make_unique<FeaturesWriterOpenCV>(fileName);
+    features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
   } else {
     throw std::runtime_error("Invalid Features Writer");
   }
+
   return features_writer;
 }
 
@@ -794,7 +794,7 @@ FeaturesIOHandler::FeaturesIOHandler()
 {
 }
 
-bool FeaturesIOHandler::read(const std::string &file)
+bool FeaturesIOHandler::read(const tl::Path &file)
 {
   try {
     mReader = FeaturesReaderFactory::createReader(file);
@@ -805,7 +805,7 @@ bool FeaturesIOHandler::read(const std::string &file)
   }
 }
 
-bool FeaturesIOHandler::write(const std::string &file)
+bool FeaturesIOHandler::write(const tl::Path &file)
 {
   try {
     mWriter = FeaturesWriterFactory::createWriter(file);
