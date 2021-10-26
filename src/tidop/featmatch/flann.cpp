@@ -24,8 +24,8 @@
 
 #include "flann.h"
 
-#include <tidop/core/messages.h>
-
+#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -85,32 +85,32 @@ void FlannMatcherImp::update()
   mFlannBasedMatcher = cv::Ptr<cv::FlannBasedMatcher>(new cv::FlannBasedMatcher(indexParams));
 }
 
-bool FlannMatcherImp::match(const cv::Mat &queryDescriptors,
+void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
                             const cv::Mat &trainDescriptors,
                             std::vector<cv::DMatch> &matches,
                             const cv::Mat mask)
 {
   try {
+
     mFlannBasedMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
-  } catch (cv::Exception &e) {
-    msgError("Flann Based Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
-bool FlannMatcherImp::match(const cv::Mat &queryDescriptors,
+void FlannMatcherImp::match(const cv::Mat &queryDescriptors,
                             const cv::Mat &trainDescriptors,
                             std::vector<std::vector<cv::DMatch>> &matches,
                             const cv::Mat mask)
 {
   try {
+
     mFlannBasedMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
-  } catch (cv::Exception &e) {
-    msgError("Flann Based Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
 void FlannMatcherImp::reset()

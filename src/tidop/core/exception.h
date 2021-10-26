@@ -119,11 +119,14 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 /*!
  * \brief Macro para lanzar una excepción
  */
-#define TL_THROW_ERROR(...) throw tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
+ /*!
+  * \brief Macro para lanzar una excepción
+  */
+#define TL_THROW_EXCEPTION_WITH_NESTED(...) std::throw_with_nested(tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION))
 
-
-#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
+#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " MESSAGE); }
 
 
 #endif // TL_CORE_EXCEPTION_H

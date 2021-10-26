@@ -220,7 +220,7 @@ std::vector<cv::KeyPoint> AgastDetector::detect(const cv::Mat &img,
     mAgast->detect(img, keyPoints, mask);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("AgastDetector::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
   
   return keyPoints;

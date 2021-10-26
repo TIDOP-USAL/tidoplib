@@ -190,9 +190,15 @@ void BoostDescriptor::update()
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_256;
   }
 
-  mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
-                                              BoostProperties::useOrientation(),
-                                              static_cast<float>(BoostProperties::scaleFactor()));
+  try {
+
+    mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
+             BoostProperties::useOrientation(),
+             static_cast<float>(BoostProperties::scaleFactor()));
+
+  } catch (...) {
+  }
+  
 #endif
 
 #endif
@@ -244,7 +250,7 @@ cv::Mat BoostDescriptor::extract(const cv::Mat &img,
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BoostDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

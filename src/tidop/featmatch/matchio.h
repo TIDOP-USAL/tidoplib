@@ -32,6 +32,7 @@
 #include <opencv2/features2d.hpp>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -51,17 +52,17 @@ class TL_EXPORT MatchesReader
 
 public:
 
-  MatchesReader(const std::string &fileName);
+  MatchesReader(tl::Path file);
   virtual ~MatchesReader() = default;
 
-  virtual bool read() = 0;
+  virtual void read() = 0;
 
   std::vector<cv::DMatch> goodMatches() const;
   std::vector<cv::DMatch> wrongMatches() const;
 
 protected:
 
-  std::string mFileName;
+  tl::Path mFilePath;
   std::vector<cv::DMatch> mGoodMatches;
   std::vector<cv::DMatch> mWrongMatches;
 };
@@ -77,17 +78,17 @@ class TL_EXPORT MatchesWriter
 
 public:
 
-  MatchesWriter(const std::string &fileName);
+  MatchesWriter(tl::Path file);
   virtual ~MatchesWriter() = default;
 
-  virtual bool write() = 0;
+  virtual void write() = 0;
 
   void setGoodMatches(const std::vector<cv::DMatch> &goodMatches);
   void setWrongMatches(const std::vector<cv::DMatch> &wrongMatches);
 
 protected:
 
-  std::string mFileName;
+  tl::Path mFilePath;
   std::vector<cv::DMatch> mGoodMatches;
   std::vector<cv::DMatch> mWrongMatches;
 };
@@ -107,7 +108,7 @@ private:
 
 public:
 
-  static std::unique_ptr<MatchesReader> createReader(const std::string &fileName);
+  static std::unique_ptr<MatchesReader> createReader(const tl::Path &file);
 };
 
 
@@ -126,7 +127,7 @@ private:
 
 public:
 
-  static std::unique_ptr<MatchesWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<MatchesWriter> createWriter(const tl::Path &file);
 };
 
 

@@ -86,7 +86,7 @@ public:
                                             nullptr/*options->getOptions()*/, 
                                             nullptr ));
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("VectorReaderGdal::open() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -128,7 +128,7 @@ public:
       layer = this->read(ogrLayer);
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("VectorReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return layer;
@@ -148,7 +148,7 @@ public:
       this->read(ogrLayer);
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("VectorReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return layer;
@@ -174,7 +174,7 @@ public:
 #endif
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("VectorReaderGdal::crsWkt() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs_wkt;
@@ -199,7 +199,7 @@ public:
 #endif
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("VectorReaderGdal::crs() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs;
@@ -1276,11 +1276,11 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file
     } else
 #endif
     {
-      throw std::runtime_error("Invalid Vector Reader");
+      TL_THROW_EXCEPTION("Invalid Vector Reader: %s", file.fileName().c_str());
     }
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorReaderFactory::createReader() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return vector_reader;

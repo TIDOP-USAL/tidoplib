@@ -194,7 +194,24 @@
 
 // __FUNCTION__ no es estandar (Es de Visual Studio).
 // __func__ es valida a partir de C99 / C++11
-#if defined (__GNUC__) || __cplusplus >= 201103L
+//#if defined (__GNUC__) || __cplusplus >= 201103L
+//#  define TL_FUNCTION __func__
+//#elif defined _MSC_VER
+//#  define TL_FUNCTION __FUNCTION__
+//#else
+//#  define TL_FUNCTION ""
+//#endif
+//__FUNCSIG__
+
+// __FUNCTION__ no es estandar (Es de Visual Studio).
+// __func__ es valida a partir de C99 / C++11
+#if defined (__GNUC__)
+#  define TL_FUNCTION __PRETTY_FUNCTION__
+#elif defined(__FUNCSIG__)
+# define TL_FUNCTION __FUNCSIG__
+#elif defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901)
+# define TL_FUNCTION __func__
+#elif defined(__cplusplus) && (__cplusplus >= 201103)
 #  define TL_FUNCTION __func__
 #elif defined _MSC_VER
 #  define TL_FUNCTION __FUNCTION__

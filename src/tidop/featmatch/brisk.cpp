@@ -124,7 +124,7 @@ std::vector<cv::KeyPoint> BriskDetectorDescriptor::detect(const cv::Mat &img,
     mBrisk->detect(img, keyPoints, mask);
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BriskDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;
@@ -140,7 +140,7 @@ cv::Mat BriskDetectorDescriptor::extract(const cv::Mat &img,
     mBrisk->compute(img, keyPoints, descriptors);
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BriskDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

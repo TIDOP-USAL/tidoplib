@@ -143,7 +143,7 @@ cv::Mat LatchDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("LatchDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

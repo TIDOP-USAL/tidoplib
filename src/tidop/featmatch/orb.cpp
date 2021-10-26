@@ -432,7 +432,7 @@ std::vector<cv::KeyPoint> OrbCudaDetectorDescriptor::detect(const cv::Mat &img,
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("OrbCudaDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;
@@ -456,7 +456,7 @@ cv::Mat OrbCudaDetectorDescriptor::extract(const cv::Mat &img,
 #endif // HAVE_OPENCV_CUDAFEATURES2D
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("OrbCudaDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

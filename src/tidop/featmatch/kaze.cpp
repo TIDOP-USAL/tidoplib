@@ -223,7 +223,7 @@ std::vector<cv::KeyPoint> KazeDetectorDescriptor::detect(const cv::Mat &img,
     mKaze->detect(img, keyPoints, mask);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("KazeDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;
@@ -239,7 +239,7 @@ cv::Mat KazeDetectorDescriptor::extract(const cv::Mat &img,
     mKaze->compute(img, keyPoints, descriptors);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("KazeDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

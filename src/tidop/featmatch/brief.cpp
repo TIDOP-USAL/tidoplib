@@ -153,8 +153,11 @@ BriefDescriptor::~BriefDescriptor() = default;
 void BriefDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
-                                                             BriefProperties::useOrientation());
+  try {
+    mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
+      BriefProperties::useOrientation());
+  } catch (...) {
+  }
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
@@ -173,7 +176,7 @@ cv::Mat BriefDescriptor::extract(const cv::Mat &img,
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("BriefDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

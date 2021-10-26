@@ -144,7 +144,7 @@ void VectorWriterGdal::open()
     TL_ASSERT(isOpen(), "Vector file open fail. Driver not valid")
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::open() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
   
@@ -177,7 +177,7 @@ void VectorWriterGdal::create()
     TL_ASSERT(mDataset != nullptr, "Creation of output file failed")
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::create() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -308,7 +308,7 @@ void VectorWriterGdal::write(const GLayer &layer)
     OGRFeature::DestroyFeature(ogrFeature);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::write() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -401,7 +401,7 @@ OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
     }
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::createLayer() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return layer;
@@ -421,7 +421,7 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writePoint() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -440,7 +440,7 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writePoint() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -461,7 +461,7 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writeLineString() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
 }
@@ -482,7 +482,7 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writeLineString() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -516,7 +516,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writePolygon() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -550,7 +550,7 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterGdal::writePolygon() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -573,7 +573,7 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiPoint() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -600,7 +600,7 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiPoint() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -627,7 +627,7 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiLineString() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -653,7 +653,7 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiLineString() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -698,7 +698,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiPolygon() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -744,7 +744,7 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
       throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterGdal::writeMultiPolygon() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -782,11 +782,11 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file
     } else
 #endif
     {
-      throw std::runtime_error("Invalid Vector Writer");
+      TL_THROW_EXCEPTION("Invalid Vector Writer: %s", file.fileName().c_str());
     }
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("VectorWriterFactory::createReader() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return vector_writer;

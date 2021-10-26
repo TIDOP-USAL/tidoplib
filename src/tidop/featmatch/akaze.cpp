@@ -335,7 +335,7 @@ std::vector<cv::KeyPoint> AkazeDetectorDescriptor::detect(const cv::Mat &img,
     mAkaze->detect(img, keyPoints, mask);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("AkazeDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
   
   return keyPoints;
@@ -352,7 +352,7 @@ cv::Mat AkazeDetectorDescriptor::extract(const cv::Mat &img,
     mAkaze->compute(img, keyPoints, descriptors);
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("AkazeDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

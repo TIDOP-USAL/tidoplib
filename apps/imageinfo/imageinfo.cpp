@@ -136,6 +136,8 @@ int main(int argc, char** argv)
 
     printException(e);
 
+    return 1;
+
   } catch (...) {
 
     msgError("Unknow exception");

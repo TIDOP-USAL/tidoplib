@@ -229,7 +229,7 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
     else source1.copyTo(output);
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("HogDescriptor::normalizepatch() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -252,7 +252,7 @@ cv::Mat HogDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &ke
     }
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("HogDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

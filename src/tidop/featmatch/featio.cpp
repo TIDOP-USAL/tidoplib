@@ -26,8 +26,8 @@
 
 #include <tidop/core/messages.h>
 #include <tidop/core/path.h>
+#include <tidop/core/exception.h>
 
-#include <stdexcept>
 #include <utility>
 
 namespace tl
@@ -90,14 +90,14 @@ class FeaturesReaderBinary
 
 public:
 
-  explicit FeaturesReaderBinary(const tl::Path &file);
+  explicit FeaturesReaderBinary(tl::Path file);
   ~FeaturesReaderBinary() override = default;
 
 // FeaturesReader interface
 
 public:
 
-  bool read() override;
+  void read() override;
 
 private:
 
@@ -119,32 +119,36 @@ private:
 
 };
 
-FeaturesReaderBinary::FeaturesReaderBinary(const tl::Path &file)
-  : FeaturesReader(file),
+FeaturesReaderBinary::FeaturesReaderBinary(tl::Path file)
+  : FeaturesReader(std::move(file)),
     mFile(nullptr)
 {
 
 }
 
-bool FeaturesReaderBinary::read()
+void FeaturesReaderBinary::read()
 {
   try {
+
     open();
     if (isOpen()) {
       readHeader();
       readBody();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void FeaturesReaderBinary::open()
 {
-  mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+  try {
+    mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesReaderBinary::isOpen()
@@ -154,14 +158,20 @@ bool FeaturesReaderBinary::isOpen()
 
 void FeaturesReaderBinary::readHeader()
 {
-  char h[24];
-  char extraHead[200];
-  std::fread(h, sizeof(char), 24, mFile);
-  std::fread(&mSize, sizeof(int32_t), 1, mFile);
-  std::fread(&mRows, sizeof(int32_t), 1, mFile);
-  std::fread(&mCols, sizeof(int32_t), 1, mFile);
-  std::fread(&mType, sizeof(int32_t), 1, mFile);
-  std::fread(&extraHead, sizeof(char), 200, mFile);
+  try {
+    
+    std::vector<char> h(24);
+    std::fread(&h[0], sizeof(char), 24, mFile);
+    std::fread(&mSize, sizeof(int32_t), 1, mFile);
+    std::fread(&mRows, sizeof(int32_t), 1, mFile);
+    std::fread(&mCols, sizeof(int32_t), 1, mFile);
+    std::fread(&mType, sizeof(int32_t), 1, mFile);
+    std::vector<char> extra_head(200);  // Reserva de espacio para futuros usos
+    std::fread(&extra_head[0], sizeof(char), extra_head.size(), mFile);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesReaderBinary::readBody()
@@ -172,24 +182,36 @@ void FeaturesReaderBinary::readBody()
 
 void FeaturesReaderBinary::readKeypoints()
 {
-  mKeyPoints.resize(static_cast<size_t>(mSize));
-  for (auto &keypoint : mKeyPoints) {
-    std::fread(&keypoint.pt.x, sizeof(float), 1, mFile);
-    std::fread(&keypoint.pt.y, sizeof(float), 1, mFile);
-    std::fread(&keypoint.size, sizeof(float), 1, mFile);
-    std::fread(&keypoint.angle, sizeof(float), 1, mFile);
-    std::fread(&keypoint.response, sizeof(float), 1, mFile);
-    std::fread(&keypoint.octave, sizeof(float), 1, mFile);
-    std::fread(&keypoint.class_id, sizeof(float), 1, mFile);
+  try {
+
+    mKeyPoints.resize(static_cast<size_t>(mSize));
+    for (auto &keypoint : mKeyPoints) {
+      std::fread(&keypoint.pt.x, sizeof(float), 1, mFile);
+      std::fread(&keypoint.pt.y, sizeof(float), 1, mFile);
+      std::fread(&keypoint.size, sizeof(float), 1, mFile);
+      std::fread(&keypoint.angle, sizeof(float), 1, mFile);
+      std::fread(&keypoint.response, sizeof(float), 1, mFile);
+      std::fread(&keypoint.octave, sizeof(float), 1, mFile);
+      std::fread(&keypoint.class_id, sizeof(float), 1, mFile);
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void FeaturesReaderBinary::readDescriptors()
 {
-  cv::Mat aux(static_cast<int>(mRows), static_cast<int>(mCols), mType);
-  std::fread(aux.data, sizeof(float), static_cast<size_t>(mRows*mCols), mFile);
-  aux.copyTo(mDescriptors);
-  aux.release();
+  try {
+
+    cv::Mat aux(static_cast<int>(mRows), static_cast<int>(mCols), mType);
+    std::fread(aux.data, sizeof(float), static_cast<size_t>(mRows) * static_cast<size_t>(mCols), mFile);
+    aux.copyTo(mDescriptors);
+    aux.release();
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesReaderBinary::close()
@@ -209,14 +231,14 @@ class FeaturesWriterBinary
 
 public:
 
-  explicit FeaturesWriterBinary(const tl::Path &file);
+  explicit FeaturesWriterBinary(tl::Path file);
   ~FeaturesWriterBinary() override = default;
 
   // FeaturesWriter interface
 
 public:
 
-  bool write() override;
+  void write() override;
 
 private:
 
@@ -232,33 +254,36 @@ private:
 };
 
 
-FeaturesWriterBinary::FeaturesWriterBinary(const tl::Path &fileName)
-  : FeaturesWriter(fileName),
+FeaturesWriterBinary::FeaturesWriterBinary(tl::Path file)
+  : FeaturesWriter(std::move(file)),
     mFile(nullptr)
 {
 
 }
 
-bool FeaturesWriterBinary::write()
+void FeaturesWriterBinary::write()
 {
   try {
+
     open();
     if (isOpen()) {
       writeHeader();
       writeBody();
       close();
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
-  }
-  return false;
 
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesWriterBinary::open()
 {
-  mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+  try {
+    mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesWriterBinary::isOpen()
@@ -268,33 +293,46 @@ bool FeaturesWriterBinary::isOpen()
 
 void FeaturesWriterBinary::writeHeader()
 {
-  int32_t size = static_cast<int32_t>(mKeyPoints.size());
-  int32_t rows = static_cast<int32_t>(mDescriptors.rows);
-  int32_t cols = static_cast<int32_t>(mDescriptors.cols);
-  int32_t type = mDescriptors.type();
-  std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, mFile);
-  std::fwrite(&size, sizeof(int32_t), 1, mFile);
-  std::fwrite(&rows, sizeof(int32_t), 1, mFile);
-  std::fwrite(&cols, sizeof(int32_t), 1, mFile);
-  std::fwrite(&type, sizeof(int32_t), 1, mFile);
-  char extraHead[200]; // Reserva de espacio para futuros usos
-  std::fwrite(&extraHead, sizeof(char), 200, mFile);
+  try {
+
+    int32_t size = static_cast<int32_t>(mKeyPoints.size());
+    int32_t rows = static_cast<int32_t>(mDescriptors.rows);
+    int32_t cols = static_cast<int32_t>(mDescriptors.cols);
+    int32_t type = mDescriptors.type();
+    std::fwrite("TIDOPLIB-Features2D-#01", sizeof("TIDOPLIB-Features2D-#01"), 1, mFile);
+    std::fwrite(&size, sizeof(int32_t), 1, mFile);
+    std::fwrite(&rows, sizeof(int32_t), 1, mFile);
+    std::fwrite(&cols, sizeof(int32_t), 1, mFile);
+    std::fwrite(&type, sizeof(int32_t), 1, mFile);
+    std::array<char, 200> extra_head{};  // Reserva de espacio para futuros usos
+    std::fwrite(extra_head.data(), sizeof(char), extra_head.size(), mFile);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesWriterBinary::writeBody()
 {
-  for (auto &keyPoint : mKeyPoints) {
-    std::fwrite(&keyPoint.pt.x, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.pt.y, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.size, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.angle, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.response, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.octave, sizeof(float), 1, mFile);
-    std::fwrite(&keyPoint.class_id, sizeof(float), 1, mFile);
+  try {
+
+    for (auto &keyPoint : mKeyPoints) {
+      std::fwrite(&keyPoint.pt.x, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.pt.y, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.size, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.angle, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.response, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.octave, sizeof(float), 1, mFile);
+      std::fwrite(&keyPoint.class_id, sizeof(float), 1, mFile);
+    }
+
+    size_t rows = static_cast<size_t>(mDescriptors.rows);
+    size_t cols = static_cast<size_t>(mDescriptors.cols);
+    std::fwrite(mDescriptors.data, sizeof(float), rows * cols, mFile);
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  int32_t rows = static_cast<int32_t>(mDescriptors.rows);
-  int32_t cols = static_cast<int32_t>(mDescriptors.cols);
-  std::fwrite(mDescriptors.data, sizeof(float), static_cast<size_t>(rows*cols), mFile);
 }
 
 void FeaturesWriterBinary::close()
@@ -312,14 +350,14 @@ class FeaturesReaderOpenCV
 
 public:
 
-  explicit FeaturesReaderOpenCV(const tl::Path &file);
+  explicit FeaturesReaderOpenCV(tl::Path file);
   ~FeaturesReaderOpenCV() override;
 
   // FeaturesReader interface
 
 public:
 
-  bool read() override;
+  void read() override;
 
 private:
 
@@ -334,8 +372,8 @@ private:
   cv::FileStorage *mFileStorage;
 };
 
-FeaturesReaderOpenCV::FeaturesReaderOpenCV(const tl::Path &file)
-  : FeaturesReader(file),
+FeaturesReaderOpenCV::FeaturesReaderOpenCV(tl::Path file)
+  : FeaturesReader(std::move(file)),
     mFileStorage(nullptr)
 {
 
@@ -349,25 +387,31 @@ FeaturesReaderOpenCV::~FeaturesReaderOpenCV()
   }
 }
 
-bool FeaturesReaderOpenCV::read()
+void FeaturesReaderOpenCV::read()
 {
   try {
+
     open();
     if (isOpen()) {
       readkeypoints();
       readDescriptor();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void FeaturesReaderOpenCV::open()
 {
-  mFileStorage = new cv::FileStorage(mFilePath.toString(), cv::FileStorage::READ);
+  try {
+
+    mFileStorage = new cv::FileStorage(mFilePath.toString(), cv::FileStorage::READ);
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesReaderOpenCV::isOpen()
@@ -378,17 +422,29 @@ bool FeaturesReaderOpenCV::isOpen()
 
 void FeaturesReaderOpenCV::readkeypoints()
 {
-  if (mFileStorage) {
-    mKeyPoints.resize(0);
-    (*mFileStorage)["keypoints"] >> mKeyPoints;
+  try {
+
+    if (mFileStorage) {
+      mKeyPoints.resize(0);
+      (*mFileStorage)["keypoints"] >> mKeyPoints;
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void FeaturesReaderOpenCV::readDescriptor()
 {
-  if (mFileStorage) {
-    mDescriptors.resize(0);
-    (*mFileStorage)["descriptors"] >> mDescriptors;
+  try {
+
+    if (mFileStorage) {
+      mDescriptors.resize(0);
+      (*mFileStorage)["descriptors"] >> mDescriptors;
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -410,14 +466,14 @@ class FeaturesWriterOpenCV
 
 public:
 
-  explicit FeaturesWriterOpenCV(const tl::Path &file);
+  explicit FeaturesWriterOpenCV(tl::Path file);
   ~FeaturesWriterOpenCV() override = default;
 
 // FeaturesWriter interface
 
 public:
 
-  bool write() override;
+  void write() override;
 
 private:
 
@@ -434,8 +490,8 @@ private:
 };
 
 
-FeaturesWriterOpenCV::FeaturesWriterOpenCV(const tl::Path &file)
-  : FeaturesWriter(file)
+FeaturesWriterOpenCV::FeaturesWriterOpenCV(tl::Path file)
+  : FeaturesWriter(std::move(file))
 { 
   std::string ext = file.extension();
   if (compareInsensitiveCase(ext, ".xml")) {
@@ -445,25 +501,31 @@ FeaturesWriterOpenCV::FeaturesWriterOpenCV(const tl::Path &file)
   }
 }
 
-bool FeaturesWriterOpenCV::write()
+void FeaturesWriterOpenCV::write()
 {
   try {
+
     open();
     if (isOpen()){
       writeKeypoints();
       writeDescriptors();
       close();
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
 void FeaturesWriterOpenCV::open()
 {
-  mFileStorage = cv::FileStorage(mFilePath.toString(), mMode);
+  try {
+
+    mFileStorage = cv::FileStorage(mFilePath.toString(), mMode);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesWriterOpenCV::isOpen()
@@ -473,14 +535,26 @@ bool FeaturesWriterOpenCV::isOpen()
 
 void FeaturesWriterOpenCV::writeKeypoints()
 {
-  if (!mKeyPoints.empty())
-    cv::write(mFileStorage, "keypoints", mKeyPoints);
+  try {
+
+    if (!mKeyPoints.empty())
+      cv::write(mFileStorage, "keypoints", mKeyPoints);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesWriterOpenCV::writeDescriptors()
 {
-  if (!mDescriptors.empty())
-    cv::write(mFileStorage, "descriptors", mDescriptors);
+  try {
+
+    if (!mDescriptors.empty())
+      cv::write(mFileStorage, "descriptors", mDescriptors);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesWriterOpenCV::close()
@@ -501,14 +575,14 @@ class FeaturesReaderTxt
 
 public:
 
-  explicit FeaturesReaderTxt(const tl::Path &file);
+  explicit FeaturesReaderTxt(tl::Path file);
   ~FeaturesReaderTxt() override = default;
 
 // FeaturesReader interface
 
 public:
 
-  bool read() override;
+  void read() override;
 
 private:
 
@@ -526,31 +600,37 @@ private:
   int mCols{0};
 };
 
-FeaturesReaderTxt::FeaturesReaderTxt(const tl::Path &file)
-  : FeaturesReader(file)
+FeaturesReaderTxt::FeaturesReaderTxt(tl::Path file)
+  : FeaturesReader(std::move(file))
 {
 
 }
 
-bool FeaturesReaderTxt::read()
+void FeaturesReaderTxt::read()
 {
   try {
+
     open();
     if (isOpen()) {
       readHeader();
       readBody();
       close();
     }
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
 void FeaturesReaderTxt::open()
 {
-  ifs = std::ifstream(mFilePath.toString());
+  try {
+
+    ifs = std::ifstream(mFilePath.toString());
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesReaderTxt::isOpen()
@@ -560,56 +640,67 @@ bool FeaturesReaderTxt::isOpen()
 
 void FeaturesReaderTxt::readHeader()
 {
-  std::string line;
-  std::getline(ifs, line);
-  std::istringstream stream(line);
-  stream >> mType >> mSize >> mCols;
+  try {
+
+    std::string line;
+    std::getline(ifs, line);
+    std::istringstream stream(line);
+    stream >> mType >> mSize >> mCols;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesReaderTxt::readBody()
 {
-  mKeyPoints.resize(static_cast<size_t>(mSize));
-  mDescriptors = cv::Mat(mSize, mCols, mType);
+  try {
 
-  int r = 0;
-  std::string line;
-  while (std::getline(ifs, line)) {
+    mKeyPoints.resize(static_cast<size_t>(mSize));
+    mDescriptors = cv::Mat(mSize, mCols, mType);
 
-    std::vector<std::string> list;
-    tl::split(line, list, " ");
-    mKeyPoints[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
-    mKeyPoints[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
-    mKeyPoints[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
-    mKeyPoints[static_cast<size_t>(r)].angle = stringToNumber<float>(list[3]);
+    int r = 0;
+    std::string line;
+    while (std::getline(ifs, line)) {
 
-    for (int c = 0; c < mCols; c++) {
-      switch (mType) {
-      case CV_8U:
-        mDescriptors.at<uchar>(r,c) = static_cast<uchar>(stringToNumber<int>(list[c+4]));
-        break;
-      case CV_8S:
-        mDescriptors.at<schar>(r,c) = static_cast<schar>(stringToNumber<int>(list[c+4]));
-        break;
-      case CV_16U:
-        mDescriptors.at<ushort>(r,c) = static_cast<ushort>(stringToNumber<int>(list[c+4]));
-        break;
-      case CV_16S:
-        mDescriptors.at<short>(r,c) = static_cast<short>(stringToNumber<int>(list[c+4]));
-        break;
-      case CV_32S:
-        mDescriptors.at<int>(r,c) = stringToNumber<int>(list[c+4]);
-        break;
-      case CV_32F:
-        mDescriptors.at<float>(r,c) = stringToNumber<float>(list[c+4]);
-        break;
-      case CV_64F:
-        mDescriptors.at<double>(r,c) = stringToNumber<double>(list[c+4]);
-        break;
-      default:
-        break;
+      std::vector<std::string> list;
+      tl::split(line, list, " ");
+      mKeyPoints[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
+      mKeyPoints[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
+      mKeyPoints[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
+      mKeyPoints[static_cast<size_t>(r)].angle = stringToNumber<float>(list[3]);
+
+      for (int c = 0; c < mCols; c++) {
+        switch (mType) {
+          case CV_8U:
+            mDescriptors.at<uchar>(r, c) = static_cast<uchar>(stringToNumber<int>(list[c + 4]));
+            break;
+          case CV_8S:
+            mDescriptors.at<schar>(r, c) = static_cast<schar>(stringToNumber<int>(list[c + 4]));
+            break;
+          case CV_16U:
+            mDescriptors.at<ushort>(r, c) = static_cast<ushort>(stringToNumber<int>(list[c + 4]));
+            break;
+          case CV_16S:
+            mDescriptors.at<short>(r, c) = static_cast<short>(stringToNumber<int>(list[c + 4]));
+            break;
+          case CV_32S:
+            mDescriptors.at<int>(r, c) = stringToNumber<int>(list[c + 4]);
+            break;
+          case CV_32F:
+            mDescriptors.at<float>(r, c) = stringToNumber<float>(list[c + 4]);
+            break;
+          case CV_64F:
+            mDescriptors.at<double>(r, c) = stringToNumber<double>(list[c + 4]);
+            break;
+          default:
+            break;
+        }
       }
+      r++;
     }
-    r++;
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -629,28 +720,14 @@ class FeaturesWriterTxt
 
 public:
 
-  explicit FeaturesWriterTxt(const tl::Path &file);
+  explicit FeaturesWriterTxt(tl::Path file);
   ~FeaturesWriterTxt() override = default;
 
   // FeaturesWriter interface
 
 public:
 
-  bool write() override
-  {
-    try {
-      open();
-      if (isOpen()){
-        writeHeader();
-        writeBody();
-        close();
-      }
-    } catch (std::exception &e) {
-      msgError(e.what());
-      return true;
-    }
-    return false;
-  }
+  void write() override;
 
 private:
 
@@ -666,15 +743,37 @@ private:
 
 };
 
-FeaturesWriterTxt::FeaturesWriterTxt(const tl::Path &file)
-  : FeaturesWriter(file)
+FeaturesWriterTxt::FeaturesWriterTxt(tl::Path file)
+  : FeaturesWriter(std::move(file))
 {
 
 }
 
+void FeaturesWriterTxt::write()
+{
+  try {
+
+    open();
+    if (isOpen()) {
+      writeHeader();
+      writeBody();
+      close();
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+}
+
 void FeaturesWriterTxt::open()
 {
-  ofs = std::ofstream(mFilePath.toString(), std::ofstream::trunc);
+  try {
+
+    ofs = std::ofstream(mFilePath.toString(), std::ofstream::trunc);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool FeaturesWriterTxt::isOpen()
@@ -684,47 +783,59 @@ bool FeaturesWriterTxt::isOpen()
 
 void FeaturesWriterTxt::writeHeader()
 {
-  ofs << mKeyPoints.size() << " " <<  mDescriptors.cols << " " << mDescriptors.type() << std::endl;
+  try {
+
+    ofs << mKeyPoints.size() << " " << mDescriptors.cols << " " << mDescriptors.type() << std::endl;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void FeaturesWriterTxt::writeBody()
 {
-  int size = static_cast<int>(mKeyPoints.size());
-  int type = mDescriptors.type();
+  try {
 
-  for (int r = 0; r < size; r++) {
-    cv::KeyPoint kp = mKeyPoints[static_cast<size_t>(r)];
-    ofs << kp.pt.x << " " << kp.pt.y << " " << kp.size << " " << kp.angle;
-    for (int c = 0; c < mDescriptors.cols; c++) {
+    int size = static_cast<int>(mKeyPoints.size());
+    int type = mDescriptors.type();
 
-      switch (type) {
-        case CV_8U:
-          ofs << " " << static_cast<int>(mDescriptors.at<uchar>(r,c));
-          break;
-        case CV_8S:
-          ofs << " "  << static_cast<int>(mDescriptors.at<schar>(r,c));
-          break;
-        case CV_16U:
-          ofs << " "  << static_cast<int>(mDescriptors.at<ushort>(r,c));
-          break;
-        case CV_16S:
-          ofs << " "  << static_cast<int>(mDescriptors.at<short>(r,c));
-          break;
-        case CV_32S:
-          ofs << " "  << mDescriptors.at<int>(r,c);
-          break;
-        case CV_32F:
-          ofs << " "  << mDescriptors.at<float>(r,c);
-          break;
-        case CV_64F:
-          ofs << " "  << mDescriptors.at<double>(r,c);
-          break;
-        default:
-          ofs << " "  << -1;
-          break;
+    for (int r = 0; r < size; r++) {
+      cv::KeyPoint kp = mKeyPoints[static_cast<size_t>(r)];
+      ofs << kp.pt.x << " " << kp.pt.y << " " << kp.size << " " << kp.angle;
+      for (int c = 0; c < mDescriptors.cols; c++) {
+
+        switch (type) {
+          case CV_8U:
+            ofs << " " << static_cast<int>(mDescriptors.at<uchar>(r, c));
+            break;
+          case CV_8S:
+            ofs << " " << static_cast<int>(mDescriptors.at<schar>(r, c));
+            break;
+          case CV_16U:
+            ofs << " " << static_cast<int>(mDescriptors.at<ushort>(r, c));
+            break;
+          case CV_16S:
+            ofs << " " << static_cast<int>(mDescriptors.at<short>(r, c));
+            break;
+          case CV_32S:
+            ofs << " " << mDescriptors.at<int>(r, c);
+            break;
+          case CV_32F:
+            ofs << " " << mDescriptors.at<float>(r, c);
+            break;
+          case CV_64F:
+            ofs << " " << mDescriptors.at<double>(r, c);
+            break;
+          default:
+            ofs << " " << -1;
+            break;
+        }
       }
+      ofs << std::endl;
     }
-    ofs << std::endl;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -742,17 +853,23 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
 {
   std::unique_ptr<FeaturesReader> features_reader;
 
-  std::string ext = file.extension();
-  if (compareInsensitiveCase(ext, ".bin")) {
-    features_reader = std::make_unique<FeaturesReaderBinary>(file);
-  } else if (compareInsensitiveCase(ext, ".xml")) {
-    features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
-  } else if (compareInsensitiveCase(ext, ".yml")) {
-    features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
-  } else if (compareInsensitiveCase(ext, ".txt")) {
-    features_reader = std::make_unique<FeaturesReaderTxt>(file);
-  } else {
-    throw std::runtime_error("Invalid Features Reader");
+  try {
+
+    std::string ext = file.extension();
+    if (compareInsensitiveCase(ext, ".bin")) {
+      features_reader = std::make_unique<FeaturesReaderBinary>(file);
+    } else if (compareInsensitiveCase(ext, ".xml")) {
+      features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
+    } else if (compareInsensitiveCase(ext, ".yml")) {
+      features_reader = std::make_unique<FeaturesReaderOpenCV>(file);
+    } else if (compareInsensitiveCase(ext, ".txt")) {
+      features_reader = std::make_unique<FeaturesReaderTxt>(file);
+    } else {
+      TL_THROW_EXCEPTION("Invalid Features Reader: %s", file.fileName().c_str());
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return features_reader;
@@ -768,17 +885,23 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Pa
 {
   std::unique_ptr<FeaturesWriter> features_writer;
  
-  std::string ext = file.extension(); 
-  if (compareInsensitiveCase(ext, ".bin")) {
-    features_writer = std::make_unique<FeaturesWriterBinary>(file);
-  } else if (compareInsensitiveCase(ext, ".txt")) {
-    features_writer = std::make_unique<FeaturesWriterTxt>(file);
-  } else if (compareInsensitiveCase(ext, ".xml")) {
-    features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
-  } else if (compareInsensitiveCase(ext, ".yml")) {
-    features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
-  } else {
-    throw std::runtime_error("Invalid Features Writer");
+  try {
+
+    std::string ext = file.extension(); 
+    if (compareInsensitiveCase(ext, ".bin")) {
+      features_writer = std::make_unique<FeaturesWriterBinary>(file);
+    } else if (compareInsensitiveCase(ext, ".txt")) {
+      features_writer = std::make_unique<FeaturesWriterTxt>(file);
+    } else if (compareInsensitiveCase(ext, ".xml")) {
+      features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
+    } else if (compareInsensitiveCase(ext, ".yml")) {
+      features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
+    } else {
+      TL_THROW_EXCEPTION("Invalid Features Writer: %s", file.fileName().c_str());
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return features_writer;
@@ -794,25 +917,27 @@ FeaturesIOHandler::FeaturesIOHandler()
 {
 }
 
-bool FeaturesIOHandler::read(const tl::Path &file)
+void FeaturesIOHandler::read(const tl::Path &file)
 {
   try {
+
     mReader = FeaturesReaderFactory::createReader(file);
-    return mReader->read();
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+    mReader->read();
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
-bool FeaturesIOHandler::write(const tl::Path &file)
+void FeaturesIOHandler::write(const tl::Path &file)
 {
   try {
+
     mWriter = FeaturesWriterFactory::createWriter(file);
-    return mWriter->write();
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+    mWriter->write();
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 

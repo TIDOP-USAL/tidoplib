@@ -90,12 +90,12 @@ private:
 
 public:
 
-  bool match(const cv::Mat &queryDescriptors,
+  void match(const cv::Mat &queryDescriptors,
              const cv::Mat &trainDescriptors,
              std::vector<cv::DMatch> &matches,
              const cv::Mat mask = cv::Mat()) override;
 
-  bool match(const cv::Mat &queryDescriptors,
+  void match(const cv::Mat &queryDescriptors,
              const cv::Mat &trainDescriptors,
              std::vector<std::vector<cv::DMatch>> &matches,
              const cv::Mat mask = cv::Mat()) override;
@@ -142,12 +142,12 @@ private:
 
 public:
 
-  bool match(const cv::Mat &queryDescriptors,
+  void match(const cv::Mat &queryDescriptors,
              const cv::Mat &trainDescriptors,
              std::vector<cv::DMatch> &matches,
              const cv::Mat mask = cv::Mat()) override;
 
-  bool match(const cv::Mat &queryDescriptors,
+  void match(const cv::Mat &queryDescriptors,
              const cv::Mat &trainDescriptors,
              std::vector<std::vector<cv::DMatch>> &matches,
              const cv::Mat mask = cv::Mat()) override;
