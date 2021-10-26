@@ -59,18 +59,24 @@ Resize::Resize(double scaleX, double scaleY)
 
 void Resize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
-  TL_ASSERT(mWidth > 0 || mScaleX != 0, "Invalid parameter value")
+  try {
+  
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+    TL_ASSERT(mWidth > 0 || mScaleX != 0, "Invalid parameter value")
 
-  if (mScaleX) {
-    cv::resize(matIn, matOut, cv::Size(), mScaleX, mScaleY);
-  } else {
-    if (mHeight == 0) {
-      double scale = static_cast<double>(mWidth / matIn.cols);
-      cv::resize(matIn, matOut, cv::Size(), scale, scale);
+    if (mScaleX) {
+      cv::resize(matIn, matOut, cv::Size(), mScaleX, mScaleY);
     } else {
-      cv::resize(matIn, matOut, cv::Size(mWidth, mHeight));
+      if (mHeight == 0) {
+        double scale = static_cast<double>(mWidth / matIn.cols);
+        cv::resize(matIn, matOut, cv::Size(), scale, scale);
+      } else {
+        cv::resize(matIn, matOut, cv::Size(mWidth, mHeight));
+      }
     }
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Resize::run() failed"));
   }
 }
 
@@ -126,12 +132,18 @@ ResizeCanvas::ResizeCanvas(int width,
 
 void ResizeCanvas::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(matIn.empty(), "Incorrect input data")
+  try {
 
-  TL_TODO("No esta terminada")
-  cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth, mHeight), matIn.type());
-  matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
-  matOut = aux;
+    TL_ASSERT(matIn.empty(), "Incorrect input data")
+
+    TL_TODO("No esta terminada")
+    cv::Mat aux = cv::Mat::zeros(cv::Size(mWidth, mHeight), matIn.type());
+    matIn.copyTo(aux.colRange(0, matIn.cols).rowRange(0, matIn.rows));
+    matOut = aux;
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("ResizeCanvas::run() failed"));
+  }
 }
 
 void ResizeCanvas::setParameters(int width, int height, const graph::Color &color, const Position &position)

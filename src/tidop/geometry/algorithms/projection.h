@@ -58,8 +58,8 @@ int projectPointInSegment(const Segment<Point_t> &ln, const Point_t &pt, Point_t
   double r = daux / (v2.x * v2.x + v2.y * v2.y);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
-    ptp->x = ln.pt1.x + TL_ROUND_TO_INT(v2.x * r);
-    ptp->y = ln.pt1.y + TL_ROUND_TO_INT(v2.y * r);
+    ptp->x = ln.pt1.x + roundToInteger(v2.x * r);
+    ptp->y = ln.pt1.y + roundToInteger(v2.y * r);
   } else {
     ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
     ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);
@@ -85,9 +85,9 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
   double r = daux / (v2.x * v2.x + v2.y * v2.y + v2.z * v2.z);
 
   if (typeid(typename Point_t::value_type) == typeid(int)) {
-    ptp->x = ln.pt1.x + TL_ROUND_TO_INT(v2.x * r);
-    ptp->y = ln.pt1.y + TL_ROUND_TO_INT(v2.y * r);
-    ptp->z = ln.pt1.z + TL_ROUND_TO_INT(v2.z * r);
+    ptp->x = ln.pt1.x + roundToInteger(v2.x * r);
+    ptp->y = ln.pt1.y + roundToInteger(v2.y * r);
+    ptp->z = ln.pt1.z + roundToInteger(v2.z * r);
   } else {
     ptp->x = ln.pt1.x + static_cast<typename Point_t::value_type>(v2.x * r);
     ptp->y = ln.pt1.y + static_cast<typename Point_t::value_type>(v2.y * r);

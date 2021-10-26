@@ -35,6 +35,9 @@ namespace tl
 {
 
 
+/// Clase Intersection que a partir de dos geometrias calcule su intersección
+
+
 /*!
  * \brief Intersect de dos segmentos de línea
  * \param ln1 Primer segmento
@@ -58,8 +61,8 @@ inline int intersectSegments(const Segment<Point_t> &ln1, const Segment<Point_t>
     double u = crossProduct(v11_12, vs1) / cross_product;
     if (t >= 0.  &&  t <= 1 && u >= 0.  &&  u <= 1) {
       if (typeid(typename Point_t::value_type) == typeid(int)) {
-        pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
-        pt->y = TL_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+        pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
+        pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
       } else {
         pt->x += static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
         pt->y += static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);
@@ -91,8 +94,8 @@ inline int intersectLines(const Segment<Point_t> &ln1, const Segment<Point_t> &l
     Point_t v11_12 = ln2.pt1 - ln1.pt1;
     double t = crossProduct(v11_12, vs2) / cross_product;
     if (typeid(typename Point_t::value_type) == typeid(int)) {
-      pt->x = TL_ROUND_TO_INT(ln1.pt1.x + t * vs1.x);
-      pt->y = TL_ROUND_TO_INT(ln1.pt1.y + t * vs1.y);
+      pt->x = roundToInteger(ln1.pt1.x + t * vs1.x);
+      pt->y = roundToInteger(ln1.pt1.y + t * vs1.y);
     } else {
       pt->x = static_cast<typename Point_t::value_type>(ln1.pt1.x + t * vs1.x);
       pt->y = static_cast<typename Point_t::value_type>(ln1.pt1.y + t * vs1.y);

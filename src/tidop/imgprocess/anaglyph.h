@@ -36,16 +36,6 @@
 namespace tl
 {
 
-enum class StereoMode {
-  none,
-  normal,
-  gray,
-  dubois,
-  half_color,
-  optimized,
-  red_blue,
-  side_by_side
-};
 
 /*!
  * \brief construye una imagen estereo en modo anaglifo o 'side by side'
@@ -56,9 +46,47 @@ enum class StereoMode {
  * \param[in] mode Modo de visualización
  * \see StereoMode
  */
-TL_EXPORT int stereoImage(const cv::Mat &left, const cv::Mat &right, cv::Mat *stimage, StereoMode mode = StereoMode::normal);
+class StereoImage
+{
 
-} // End namespace TL
+public:
+
+  enum class Mode
+  {
+    normal,
+    gray,
+    dubois,
+    half_color,
+    optimized,
+    red_blue,
+    side_by_side
+  };
+
+public:
+
+  /*!
+   * \brief Constructor
+   *
+   * \param[in] mode Modo de visualización
+   * \see StereoMode
+   */
+  StereoImage(Mode mode = Mode::normal);
+	~StereoImage();
+
+  cv::Mat run(const cv::Mat &left,
+              const cv::Mat &right);
+
+  Mode mode() const;
+  void setMode(Mode mode);
+
+private:
+
+  Mode mMode;
+};
+
+
+
+} // End namespace tl
 
 #endif
 

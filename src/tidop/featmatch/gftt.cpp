@@ -166,7 +166,15 @@ std::vector<cv::KeyPoint> GfttDetector::detect(const cv::Mat &img,
                                                cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mGFTT->detect(img, keyPoints, mask);
+  
+  try {
+
+    mGFTT->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("GfttDetector::detect() failed"));
+  }
+
   return keyPoints;
 }
 

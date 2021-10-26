@@ -105,7 +105,7 @@ void Exception::messagef()
 
 
 
-Exception make_exception(const std::string &error, 
+Exception makeException(const std::string &error, 
                          const std::string &file, 
                          int line, 
                          const std::string &function)
@@ -113,6 +113,19 @@ Exception make_exception(const std::string &error,
   return Exception(error, file, line, function);
 }
 
+
+void printException(const std::exception &e, int level)
+{
+  std::string err = std::string(level, ' ') + "exception: " + e.what();
+  tl::MessageManager::release(err, tl::MessageLevel::msg_error);
+
+  try {
+    std::rethrow_if_nested(e);
+  } catch (const std::exception &e) {
+    printException(e, level + 1);
+  } catch (...) {
+  }
+}
 
 
 /* ---------------------------------------------------------------------------------- */

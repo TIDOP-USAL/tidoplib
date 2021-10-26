@@ -44,8 +44,8 @@ namespace tl
 {
 
 
-ImageReader::ImageReader(std::string fileName)
-  : mFileName(std::move(fileName))
+ImageReader::ImageReader(tl::Path file)
+  : mFile(std::move(file))
 {
 
 }
@@ -63,9 +63,9 @@ void ImageReader::windowRead(const WindowI &wLoad,
   }
 }
 
-std::string ImageReader::fileName() const
+tl::Path ImageReader::file() const
 {
-  return mFileName;
+  return mFile;
 }
 
 
@@ -79,8 +79,8 @@ class ImageReaderGdal
 
 public:
 
-  ImageReaderGdal(const std::string &fileName)
-    : ImageReader(fileName),
+  ImageReaderGdal(tl::Path file)
+    : ImageReader(std::move(file)),
       mDataset(nullptr)
   {
     RegisterGdal::init();
@@ -95,34 +95,39 @@ public:
 
   void open() override
   {
-    this->close();
+    try {
 
-    mDataset = static_cast<GDALDataset *>(GDALOpen(fileName().c_str(), GA_ReadOnly));
+      this->close();
 
-    if (mDataset) {
-      std::array<double, 6> geotransform{};
-      if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
-        // Valores por defecto
-        geotransform[0] = 0.;           /* top left x */
-        geotransform[1] = 1.;           /* w-e pixel resolution */
-        geotransform[2] = 0.;           /* 0 */
-        geotransform[3] = this->rows(); /* top left y */
-        geotransform[4] = 0.;           /* 0 */
-        geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+      mDataset = static_cast<GDALDataset *>(GDALOpen(file().toString().c_str(), GA_ReadOnly));
+
+      if (mDataset) {
+        std::array<double, 6> geotransform{};
+        if (mDataset->GetGeoTransform(geotransform.data()) != CE_None) {
+          // Valores por defecto
+          geotransform[0] = 0.;           /* top left x */
+          geotransform[1] = 1.;           /* w-e pixel resolution */
+          geotransform[2] = 0.;           /* 0 */
+          geotransform[3] = this->rows(); /* top left y */
+          geotransform[4] = 0.;           /* 0 */
+          geotransform[5] = -1.;          /* n-s pixel resolution (negative value) */
+        }
+
+        mAffine.setParameters(geotransform[1],
+          geotransform[2],
+          geotransform[4],
+          geotransform[5],
+          geotransform[0],
+          geotransform[3]);
+
       }
 
-      mAffine.setParameters(geotransform[1],
-                            geotransform[2],
-                            geotransform[4],
-                            geotransform[5],
-                            geotransform[0],
-                            geotransform[3]);
-
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::open() failed"));
     }
-
   }
 
-  bool isOpen() override
+  bool isOpen() const override
   {
     return mDataset != nullptr;
   }
@@ -141,48 +146,57 @@ public:
   {
     cv::Mat image;
 
-    if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
+    try {
 
-    RectI rect_to_read;
-    PointI offset;
-    RectI rect_full_image(0, 0, this->cols(), this->rows());
-    if (rect.isEmpty()) {
-      rect_to_read = rect_full_image;
-    } else {
-      rect_to_read = intersect(rect_full_image, rect);
-      offset = rect_to_read.topLeft() - rect.topLeft();
-    }
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+      //TL_ASSERT(rect.isValid(), "Image Rect to read invalid")
 
-    Size<int> size_to_read;
-    if (size.isEmpty()) {
-      size_to_read = rect_to_read.size();
-    } else {
-      size_to_read = size;
-    }
+      RectI rect_to_read;
+      PointI offset;
+      RectI rect_full_image(0, 0, this->cols(), this->rows());
+      
 
-    double scaleX = size_to_read.width / static_cast<double>(rect_to_read.width);
-    double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
-    offset.x = TL_ROUND_TO_INT(offset.x * scaleX); // Corregido por la escala
-    offset.y = TL_ROUND_TO_INT(offset.y * scaleY);
-    if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+      if (rect.isEmpty()) {
+        rect_to_read = rect_full_image;
+      } else {
+        rect_to_read = intersect(rect_full_image, rect);
+        offset = rect_to_read.topLeft() - rect.topLeft();
+      }
 
-    image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image.empty()) throw std::runtime_error("");
+      Size<int> size_to_read;
+      if (size.isEmpty()) {
+        size_to_read = rect_to_read.size();
+      } else {
+        size_to_read = size;
+      }
 
-    uchar *buff = image.ptr();
-    int nPixelSpace = static_cast<int>(image.elemSize());
-    int nLineSpace = nPixelSpace * image.cols;
-    int nBandSpace = static_cast<int>(image.elemSize1());
+      double scaleX = size_to_read.width / static_cast<double>(rect_to_read.width);
+      double scaleY = size_to_read.height / static_cast<double>(rect_to_read.height);
+      offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
+      offset.y = roundToInteger(offset.y * scaleY);
+      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
 
-    CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
-                                     rect_to_read.width, rect_to_read.height,
-                                     buff, size_to_read.width, size_to_read.height, this->gdalDataType(),
-                                     this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
-                                     nLineSpace, nBandSpace);
-    
-    ///TODO: Mejorar el control de errores
-    if (cerr != 0) {
-      throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+      image.create(size_to_read.height, size_to_read.width, gdalToOpenCv(this->gdalDataType(), this->channels()));
+
+      TL_ASSERT(!image.empty(), "Image empty")
+
+      uchar *buff = image.ptr();
+      int nPixelSpace = static_cast<int>(image.elemSize());
+      int nLineSpace = nPixelSpace * image.cols;
+      int nBandSpace = static_cast<int>(image.elemSize1());
+
+      CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
+        rect_to_read.width, rect_to_read.height,
+        buff, size_to_read.width, size_to_read.height, this->gdalDataType(),
+        this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
+        nLineSpace, nBandSpace);
+
+      if (cerr != 0) {
+        throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+      }
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
     }
 
     return image;
@@ -195,44 +209,50 @@ public:
   {
     cv::Mat image;
 
-    if (mDataset == nullptr) throw std::runtime_error("Can't read the image");
+    try{
 
-    RectI rect_to_read;
-    PointI offset;
-    RectI rect_full_image(0, 0, this->cols(), this->rows());
-    if (rect.isEmpty()) {
-      rect_to_read = rect_full_image;
-    } else {
-      rect_to_read = intersect(rect_full_image, rect);
-      offset = rect_to_read.topLeft() - rect.topLeft();
-    }
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
 
-    TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
-    offset.x = TL_ROUND_TO_INT(offset.x * scaleX); // Corregido por la escala
-    offset.y = TL_ROUND_TO_INT(offset.y * scaleY);
+      RectI rect_to_read;
+      PointI offset;
+      RectI rect_full_image(0, 0, this->cols(), this->rows());
+      if (rect.isEmpty()) {
+        rect_to_read = rect_full_image;
+      } else {
+        rect_to_read = intersect(rect_full_image, rect);
+        offset = rect_to_read.topLeft() - rect.topLeft();
+      }
+      
+      TL_ASSERT(rect_to_read.width > 0 && rect_to_read.height > 0, "");
+      offset.x = roundToInteger(offset.x * scaleX); // Corregido por la escala
+      offset.y = roundToInteger(offset.y * scaleY);
+      
+      cv::Size size;
+      size.width = roundToInteger(rect_to_read.width * scaleX);
+      size.height = roundToInteger(rect_to_read.height * scaleY);
+      if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
+      
+      image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
+      //if (image.empty()) throw std::runtime_error("");
+      TL_ASSERT(!image.empty(), "Image empty")
+      
+      uchar *buff = image.ptr();
+      int nPixelSpace = static_cast<int>(image.elemSize());
+      int nLineSpace = nPixelSpace * image.cols;
+      int nBandSpace = static_cast<int>(image.elemSize1());
+      
+      CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
+                                       rect_to_read.width, rect_to_read.height,
+                                       buff, size.width, size.height, this->gdalDataType(),
+                                       this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
+                                       nLineSpace, nBandSpace);
+      
+      if (cerr != 0) {
+        throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+      }
 
-    cv::Size size;
-    size.width = TL_ROUND_TO_INT(rect_to_read.width * scaleX);
-    size.height = TL_ROUND_TO_INT(rect_to_read.height * scaleY);
-    if (trf) trf->setParameters(offset.x, offset.y, scaleX, scaleY, 0.);
-
-    image.create(size, gdalToOpenCv(this->gdalDataType(), this->channels()));
-    if (image.empty()) throw std::runtime_error("");
-
-    uchar *buff = image.ptr();
-    int nPixelSpace = static_cast<int>(image.elemSize());
-    int nLineSpace = nPixelSpace * image.cols;
-    int nBandSpace = static_cast<int>(image.elemSize1());
-
-    CPLErr cerr = mDataset->RasterIO(GF_Read, rect_to_read.x, rect_to_read.y,
-                                     rect_to_read.width, rect_to_read.height,
-                                     buff, size.width, size.height, this->gdalDataType(),
-                                     this->channels(), gdalBandOrder(this->channels()).data(), nPixelSpace,
-                                     nLineSpace, nBandSpace);
-    
-    ///TODO: Mejorar el control de errores
-    if (cerr != 0) {
-      throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
     }
 
     return image;
@@ -248,7 +268,16 @@ public:
     int y = window.pt1.y < window.pt2.y ? window.pt1.y : window.pt2.y;
     
     RectI rect = window.isEmpty() ? RectI() : RectI(x, y, std::abs(window.width()), std::abs(window.height()));
-    return this->read(scaleX, scaleY, rect, trf);
+    
+    cv::Mat image;
+
+    try {
+      image = this->read(scaleX, scaleY, rect, trf);
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+    }
+
+    return image;
   }
 
   cv::Mat read(const Window<PointD> &terrainWindow, 
@@ -263,41 +292,108 @@ public:
 
     WindowI wRead(wLoad);
 
-    return read(wRead, scaleX, scaleY, trf);
+    cv::Mat image;
+
+    try{
+      image = read(wRead, scaleX, scaleY, trf);
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+    }
+
+    return image;
   }
 
   int rows() const override
   {
-    return mDataset ? mDataset->GetRasterYSize() : 0;
+    int rows = 0;
+
+    try {
+    
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
+      rows = mDataset->GetRasterYSize();
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::rows() failed"));
+    }
+
+    return rows;
   }
 
   int cols() const override
   {
-    return mDataset ? mDataset->GetRasterXSize() : 0;
+    int cols = 0;
+
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
+      cols = mDataset->GetRasterXSize();
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::cols() failed"));
+    }
+
+    return cols;
   }
 
   int channels() const override
   {
-    return mDataset ? mDataset->GetRasterCount() : 0;
+    int channels = 0;
+
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
+      channels = mDataset->GetRasterCount();
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::channels() failed"));
+    }
+
+    return channels;
   }
 
   DataType dataType() const override
   {
-    GDALDataType gdal_data_type = this->gdalDataType();
-    return gdalConvertDataType(gdal_data_type);
+    DataType data_type = DataType::TL_8U;
+
+    try {
+
+      GDALDataType gdal_data_type = this->gdalDataType();
+      data_type = gdalConvertDataType(gdal_data_type);
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::dataType() failed"));
+    }
+      
+    return data_type;
   }
 
   int depth() const override
   {
-    GDALDataType gdal_data_type = this->gdalDataType();
-    return  GDALGetDataTypeSizeBits(gdal_data_type);
+    int depth = 0;
+
+    try {
+
+      GDALDataType gdal_data_type = this->gdalDataType();
+      depth = GDALGetDataTypeSizeBits(gdal_data_type);
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::depth() failed"));
+    }
+
+    return depth; 
   }
   
   std::shared_ptr<ImageMetadata> metadata() const override
   {
     std::shared_ptr<ImageMetadata> metadata;
 
-    if (mDataset) {
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
       std::string driver_name = mDataset->GetDriverName();
       metadata = ImageMetadataFactory::create(driver_name);
       char **gdalMetadata = mDataset->GetMetadata();
@@ -311,6 +407,9 @@ public:
           }
         }
       }
+    
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::metadata() failed"));
     }
 
     return metadata;
@@ -318,9 +417,20 @@ public:
 
   bool isGeoreferenced() const override
   {
-    std::array<double, 6> geotransform{};
-    bool georef = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
-    return georef;
+    bool georeferenced = false;
+    
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
+      std::array<double, 6> geotransform{};
+      georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
+    
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::metadata() failed"));
+    }
+
+    return georeferenced;
   }
 
   Affine<PointD> georeference() const override
@@ -332,17 +442,25 @@ public:
   {
     std::string crs_wkt;
 
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
 #if GDAL_VERSION_MAJOR >= 3
-    const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
-    if (spatialReference) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs_wkt = std::string(wkt);
-      CPLFree(wkt);
-    }
+      const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef();
+      if (spatialReference) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs_wkt = std::string(wkt);
+        CPLFree(wkt);
+      }
 #else
-    crs_wkt = std::string(mDataset->GetProjectionRef());
+      crs_wkt = std::string(mDataset->GetProjectionRef());
 #endif
+    
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crsWkt() failed"));
+    }
 
     return crs_wkt;
   }
@@ -352,7 +470,10 @@ public:
   {
     geospatial::Crs crs;
 
-    if (mDataset) {
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
 #if GDAL_VERSION_MAJOR >= 3
       if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
         char *wkt = nullptr;
@@ -363,6 +484,8 @@ public:
 #else
       crs.fromWktFormat(mDataset->GetProjectionRef());
 #endif
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crs() failed"));
     }
 
     return crs;
@@ -381,11 +504,19 @@ public:
   double noDataValue(bool *exist) const
   {
     double nodata{};
-    if (mDataset) {
+
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
       int success{};
       nodata = mDataset->GetRasterBand(1)->GetNoDataValue(&success);
       if (exist) *exist = success;
+    
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crs() failed"));
     }
+
     return nodata;
   }
 
@@ -394,11 +525,19 @@ protected:
   GDALDataType gdalDataType() const
   {
     GDALDataType dataType = GDALDataType::GDT_Byte;
-    if (mDataset) {
+    
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method")
+
       if (GDALRasterBand *rasterBand = mDataset->GetRasterBand(1)) {
         dataType = rasterBand->GetRasterDataType();
       }
+
+    } catch (...) {
+      std::throw_with_nested(std::runtime_error("ImageReaderGdal::gdalDataType() failed"));
     }
+
     return dataType;
   }
 
@@ -453,7 +592,7 @@ public:
     this->update();
   }
 
-  bool isOpen() override
+  bool isOpen() const override
   {
   }
 
@@ -614,30 +753,34 @@ private:
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const std::string &fileName)
+std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
 {
-  std::string extension = Path(fileName).extension();
-  std::unique_ptr<ImageReader> image_reader;
+  std::unique_ptr<ImageReader> image_reader; 
+  
+  try {
+    
+    std::string extension = file.extension();
 #ifdef HAVE_GDAL
-  if (gdalValidExtensions(extension)) {
-    image_reader = std::make_unique<ImageReaderGdal>(fileName);
-  } else
+    if (gdalValidExtensions(extension)) {
+      image_reader = std::make_unique<ImageReaderGdal>(file);
+    } else
 #endif
 #ifdef HAVE_EDSDK
-  if (boost::iequals(extension, ".CR2")) {
-    image_reader = std::make_unique<ImageReaderCanon>(fileName);
-  } else
+    if (boost::iequals(extension, ".CR2")) {
+      image_reader = std::make_unique<ImageReaderCanon>(file);
+    } else
 #endif
-  {
-    throw std::runtime_error("Invalid Image Reader");
+    {
+      throw std::runtime_error("Invalid Image Reader");
+    }
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("ImageReaderFactory::createReader() failed"));
   }
+
   return image_reader;
 }
 
-std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &fileName)
-{
-  return ImageReaderFactory::createReader(fileName.toString());
-}
 
 } // End namespace tl
 

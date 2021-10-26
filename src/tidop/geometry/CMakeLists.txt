@@ -66,6 +66,7 @@ else()
               algorithms/angle.h
               algorithms/projection.h
               algorithms/buffer.h
+              algorithms/intersect.h
   )
     
   # Añade el proyecto a la carpeta 'modules'

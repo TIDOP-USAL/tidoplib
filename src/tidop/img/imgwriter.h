@@ -62,7 +62,7 @@ class TL_EXPORT ImageWriter
 
 public:
 
-  ImageWriter(const std::string &fileName);
+  ImageWriter(tl::Path file);
   virtual ~ImageWriter() = default;
 
   /*!
@@ -73,7 +73,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -205,7 +205,7 @@ protected:
                    PointI *offset) const;
 protected:
 
-  std::string mFileName;
+  Path mFile;
   Affine<PointD> mAffine;
 #ifdef HAVE_TL_GEOSPATIAL
   geospatial::Crs mCRS;
@@ -226,7 +226,6 @@ private:
 
 public:
 
-  static std::unique_ptr<ImageWriter> createWriter(const std::string &fileName);
   static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
 };
 

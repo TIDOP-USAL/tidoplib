@@ -116,7 +116,7 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
   cv::Point pt1, pt2;
   if (angle) {
     int x0 = size.width / 2, y0 = size.height / 2;
-    int dx = TL_ROUND_TO_INT(tan(*angle) * 70.);
+    int dx = roundToInteger(tan(*angle) * 70.);
     pt1.x = x0 + dx;
     pt1.y = y0 - 70;
     pt2.x = x0 - dx;
@@ -158,8 +158,8 @@ double fourierLinesDetection(const cv::Mat &source, std::vector<int> &cols, std:
     double b = 0.;
     /*double corr = */regressionLinearXY(pMax, &m, &b);
     
-    pt1 = cv::Point(TL_ROUND_TO_INT(b + rcrop.x), rcrop.y);
-    pt2 = cv::Point(TL_ROUND_TO_INT(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);
+    pt1 = cv::Point(roundToInteger(b + rcrop.x), rcrop.y);
+    pt2 = cv::Point(roundToInteger(m * rcrop.height + b + rcrop.x), rcrop.height + rcrop.y);
     r_angle = atan(m) + CV_PI / 2.;
   }
 

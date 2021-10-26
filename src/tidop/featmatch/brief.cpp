@@ -162,12 +162,19 @@ cv::Mat BriefDescriptor::extract(const cv::Mat &img,
                               std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mBrief->compute(img, keyPoints, descriptors);
+    mBrief->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Brief Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Brief Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Brief Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Brief Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("BriefDescriptor::extract() failed"));
+  }
 
   return descriptors;
 }

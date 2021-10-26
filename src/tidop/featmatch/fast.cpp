@@ -153,7 +153,15 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 std::vector<cv::KeyPoint> FastDetector::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mFast->detect(img, keyPoints, mask);
+
+  try {
+
+    mFast->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("FastDetector::detect() failed"));
+  }
+
   return keyPoints;
 }
 

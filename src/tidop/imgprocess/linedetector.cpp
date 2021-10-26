@@ -76,10 +76,10 @@ LineDetector::Exit ldHouh::run(cv::Mat &image)
     double a = cos(theta), b = sin(theta);
     double x0 = a*rho, y0 = b*rho;
     SegmentI l;
-    l.pt1.x = TL_ROUND_TO_INT(x0 + 1.1 * image.cols * -b);
-    l.pt1.y = TL_ROUND_TO_INT(y0 + 1.1 * image.rows * a);
-    l.pt2.x = TL_ROUND_TO_INT(x0 - 1.1 * image.cols * -b);
-    l.pt2.y = TL_ROUND_TO_INT(y0 - 1.1 * image.rows * a);
+    l.pt1.x = roundToInteger(x0 + 1.1 * image.cols * -b);
+    l.pt1.y = roundToInteger(y0 + 1.1 * image.rows * a);
+    l.pt2.x = roundToInteger(x0 - 1.1 * image.cols * -b);
+    l.pt2.y = roundToInteger(y0 - 1.1 * image.rows * a);
     mLines.push_back(l);
   }
   return LineDetector::Exit::SUCCESS;
