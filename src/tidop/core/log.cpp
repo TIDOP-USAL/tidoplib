@@ -49,7 +49,6 @@ Log::Log()
 
 Log::~Log()
 {
-  sObjLog.reset();
 }
 
 Log &Log::instance()

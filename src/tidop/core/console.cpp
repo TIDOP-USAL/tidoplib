@@ -97,7 +97,6 @@ Console::Console()
 Console::~Console()
 {
   reset();
-  //sObjConsole.reset();
 }
 
 Console &Console::instance()
