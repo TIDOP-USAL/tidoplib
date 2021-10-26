@@ -148,10 +148,10 @@ int main(int argc, char** argv)
 
   try {
 
-    if (!input_path.exists()) TL_THROW_ERROR("Image doesn't exist: %s", input_path.fileName().c_str());
+    if (!input_path.exists()) TL_THROW_EXCEPTION("Image doesn't exist: %s", input_path.fileName().c_str());
 
     cv::Mat img = cv::imread(input_path.toString(), cv::IMREAD_IGNORE_ORIENTATION | cv::IMREAD_GRAYSCALE);
-    if (img.empty()) TL_THROW_ERROR("Could not load image: %s", input_path.toString());
+    if (img.empty()) TL_THROW_EXCEPTION("Could not load image: %s", input_path.toString());
 
     msgInfo("Searching Keypoints for image %s", input_path.toString().c_str());
 

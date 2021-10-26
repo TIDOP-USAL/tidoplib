@@ -371,7 +371,7 @@ std::vector<cv::KeyPoint> MsdDetector::detect(const cv::Mat &img,
 #endif
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("MsdDetector::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;

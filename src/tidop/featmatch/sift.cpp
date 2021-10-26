@@ -172,7 +172,7 @@ std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv:
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SiftDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;
@@ -192,7 +192,7 @@ cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyP
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SiftDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

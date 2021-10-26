@@ -121,8 +121,8 @@ public:
    * \param[out] wrongMatches
    */
   static std::vector<std::vector<cv::DMatch>> ratioTest(const std::vector<std::vector<cv::DMatch>> &matches,
-                        double ratio,
-                        std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr)
+                                                        double ratio,
+                                                        std::vector<std::vector<cv::DMatch>> *wrongMatches = nullptr)
   {
     std::vector<std::vector<cv::DMatch>> goodMatches;
 

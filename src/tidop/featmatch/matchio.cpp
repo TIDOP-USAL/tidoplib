@@ -24,7 +24,8 @@
 
 #include "matchio.h"
 
-#include <tidop/core/messages.h>
+#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
@@ -35,8 +36,8 @@ namespace fs = boost::filesystem;
 namespace tl
 {
 
-MatchesReader::MatchesReader(const std::string &fileName)
-  : mFileName(fileName)
+MatchesReader::MatchesReader(tl::Path file)
+  : mFilePath(std::move(file))
 {
 
 }
@@ -57,8 +58,8 @@ std::vector<cv::DMatch> MatchesReader::wrongMatches() const
 
 
 
-MatchesWriter::MatchesWriter(const std::string &fileName)
-  : mFileName(fileName)
+MatchesWriter::MatchesWriter(tl::Path file)
+  : mFilePath(std::move(file))
 {
 
 }
@@ -84,14 +85,14 @@ class MatchesReaderBinary
 
 public:
 
-  explicit MatchesReaderBinary(const std::string &fileName);
+  explicit MatchesReaderBinary(tl::Path file);
   ~MatchesReaderBinary() override = default;
 
 // MatchesReader interface
 
 public:
 
-  bool read() override;
+  void read() override;
 
 private:
 
@@ -112,8 +113,8 @@ private:
 };
 
 
-MatchesReaderBinary::MatchesReaderBinary(const std::string &fileName)
-  : MatchesReader(fileName),
+MatchesReaderBinary::MatchesReaderBinary(tl::Path file)
+  : MatchesReader(std::move(file)),
     mFile(nullptr)
 {
 
@@ -121,9 +122,10 @@ MatchesReaderBinary::MatchesReaderBinary(const std::string &fileName)
 
 
 
-bool MatchesReaderBinary::read()
+void MatchesReaderBinary::read()
 {
   try {
+
     open();
     if (isOpen()) {
       readHeader();
@@ -131,16 +133,19 @@ bool MatchesReaderBinary::read()
       readWrongMatches();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void MatchesReaderBinary::open()
 {
-  mFile = std::fopen(mFileName.c_str(), "rb");
+  try {
+    mFile = std::fopen(mFilePath.toString().c_str(), "rb");
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool MatchesReaderBinary::isOpen()
@@ -150,34 +155,58 @@ bool MatchesReaderBinary::isOpen()
 
 void MatchesReaderBinary::readHeader()
 {
-  char h[22];
-  char extraHead[100];
-  std::fread(h, sizeof(char), 22, mFile);
-  std::fread(&mSizeGoodMatches, sizeof(uint64_t), 1, mFile);
-  std::fread(&mSizeWrongMatches, sizeof(uint64_t), 1, mFile);
-  std::fread(&extraHead, sizeof(char), 100, mFile);
+  try {
+
+    char h[22];
+    char extraHead[100];
+    std::fread(h, sizeof(char), 22, mFile);
+    std::fread(&mSizeGoodMatches, sizeof(uint64_t), 1, mFile);
+    std::fread(&mSizeWrongMatches, sizeof(uint64_t), 1, mFile);
+    std::fread(&extraHead, sizeof(char), 100, mFile);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesReaderBinary::readMatches(std::vector<cv::DMatch> *matches)
 {
-  for (auto &match : *matches) {
-    std::fread(&match.queryIdx, sizeof(int32_t), 1, mFile);
-    std::fread(&match.trainIdx, sizeof(int32_t), 1, mFile);
-    std::fread(&match.imgIdx, sizeof(int32_t), 1, mFile);
-    std::fread(&match.distance, sizeof(float), 1, mFile);
+  try {
+
+    for (auto &match : *matches) {
+      std::fread(&match.queryIdx, sizeof(int32_t), 1, mFile);
+      std::fread(&match.trainIdx, sizeof(int32_t), 1, mFile);
+      std::fread(&match.imgIdx, sizeof(int32_t), 1, mFile);
+      std::fread(&match.distance, sizeof(float), 1, mFile);
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void MatchesReaderBinary::readGoodMatches()
 {
-  mGoodMatches.resize(static_cast<size_t>(mSizeGoodMatches));
-  readMatches(&mGoodMatches);
+  try {
+
+    mGoodMatches.resize(static_cast<size_t>(mSizeGoodMatches));
+    readMatches(&mGoodMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesReaderBinary::readWrongMatches()
 {
-  mWrongMatches.resize(static_cast<size_t>(mSizeWrongMatches));
-  readMatches(&mWrongMatches);
+  try {
+
+    mWrongMatches.resize(static_cast<size_t>(mSizeWrongMatches));
+    readMatches(&mWrongMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesReaderBinary::close()
@@ -196,14 +225,14 @@ class MatchesReaderOpenCV
 
 public:
 
-  explicit MatchesReaderOpenCV(const std::string &fileName);
+  explicit MatchesReaderOpenCV(Path file);
   ~MatchesReaderOpenCV() override;
 
 // MatchesReader interface
 
 public:
 
-  bool read() override;
+  void read() override;
 
 private:
 
@@ -219,8 +248,8 @@ private:
 };
 
 
-MatchesReaderOpenCV::MatchesReaderOpenCV(const std::string &fileName)
-  : MatchesReader(fileName),
+MatchesReaderOpenCV::MatchesReaderOpenCV(Path file)
+  : MatchesReader(std::move(file)),
     mFileStorage(nullptr)
 {
 
@@ -234,25 +263,31 @@ MatchesReaderOpenCV::~MatchesReaderOpenCV()
   }
 }
 
-bool MatchesReaderOpenCV::read()
+void MatchesReaderOpenCV::read()
 {
   try {
+
     open();
     if (isOpen()) {
       readGoodMatches();
       readWrongMatches();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void MatchesReaderOpenCV::open()
 {
-  mFileStorage = new cv::FileStorage(mFileName, cv::FileStorage::READ);
+  try {
+
+    mFileStorage = new cv::FileStorage(mFilePath.toString().c_str(), cv::FileStorage::READ);
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool MatchesReaderOpenCV::isOpen()
@@ -263,14 +298,26 @@ bool MatchesReaderOpenCV::isOpen()
 
 void MatchesReaderOpenCV::readGoodMatches()
 {
-  mGoodMatches.resize(0);
-  (*mFileStorage)["matches"] >> mGoodMatches;
+  try {
+
+    mGoodMatches.resize(0);
+    (*mFileStorage)["matches"] >> mGoodMatches;
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesReaderOpenCV::readWrongMatches()
 {
-  mWrongMatches.resize(0);
-  (*mFileStorage)["wrong_matches"] >> mWrongMatches;
+  try {
+
+    mWrongMatches.resize(0);
+    (*mFileStorage)["wrong_matches"] >> mWrongMatches;
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesReaderOpenCV::close()
@@ -289,14 +336,14 @@ class MatchesWriterBinary
 
 public:
 
-  explicit MatchesWriterBinary(const std::string &fileName);
+  explicit MatchesWriterBinary(Path file);
   ~MatchesWriterBinary() override = default;
 
 // MatchesWriter interface
 
 public:
 
-  bool write() override;
+  void write() override;
 
 private:
 
@@ -314,14 +361,16 @@ private:
 
 };
 
-MatchesWriterBinary::MatchesWriterBinary(const std::string &fileName)
-  : MatchesWriter(fileName)
+MatchesWriterBinary::MatchesWriterBinary(Path file)
+  : MatchesWriter(std::move(file)),
+    mFile(nullptr)
 {
 }
 
-bool MatchesWriterBinary::write()
+void MatchesWriterBinary::write()
 {
   try {
+
     open();
     if (isOpen()) {
       writeHeader();
@@ -329,16 +378,21 @@ bool MatchesWriterBinary::write()
       writeWrongMatches();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void MatchesWriterBinary::open()
 {
-  mFile = std::fopen(mFileName.c_str(), "wb");
+  try {
+
+    mFile = std::fopen(mFilePath.toString().c_str(), "wb");
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool MatchesWriterBinary::isOpen() const
@@ -348,32 +402,56 @@ bool MatchesWriterBinary::isOpen() const
 
 void MatchesWriterBinary::writeHeader() const
 {
-  uint64_t size = mGoodMatches.size();
-  uint64_t size_wm = mWrongMatches.size();
-  std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, mFile);
-  std::fwrite(&size, sizeof(uint64_t), 1, mFile);
-  std::fwrite(&size_wm, sizeof(uint64_t), 1, mFile);
-  char extraHead[100]; // Reserva de espacio para futuros usos
-  std::fwrite(&extraHead, sizeof(char), 100, mFile);
+  try {
+
+    uint64_t size = mGoodMatches.size();
+    uint64_t size_wm = mWrongMatches.size();
+    std::fwrite("TIDOPLIB-Matching-#01", sizeof("TIDOPLIB-Matching-#01"), 1, mFile);
+    std::fwrite(&size, sizeof(uint64_t), 1, mFile);
+    std::fwrite(&size_wm, sizeof(uint64_t), 1, mFile);
+    char extraHead[100]; // Reserva de espacio para futuros usos
+    std::fwrite(&extraHead, sizeof(char), 100, mFile);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesWriterBinary::writeGoodMatches() const
 {
-  writeMatches(mGoodMatches);
+  try {
+  
+    writeMatches(mGoodMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesWriterBinary::writeWrongMatches() const
 {
-  writeMatches(mWrongMatches);
+  try {
+
+    writeMatches(mWrongMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesWriterBinary::writeMatches(const std::vector<cv::DMatch> &matches) const
 {
-  for (size_t i = 0; i < matches.size(); i++) {
-    std::fwrite(&matches[i].queryIdx, sizeof(int32_t), 1, mFile);
-    std::fwrite(&matches[i].trainIdx, sizeof(int32_t), 1, mFile);
-    std::fwrite(&matches[i].imgIdx, sizeof(int32_t), 1, mFile);
-    std::fwrite(&matches[i].distance, sizeof(float), 1, mFile);
+  try {
+
+    for (size_t i = 0; i < matches.size(); i++) {
+      std::fwrite(&matches[i].queryIdx, sizeof(int32_t), 1, mFile);
+      std::fwrite(&matches[i].trainIdx, sizeof(int32_t), 1, mFile);
+      std::fwrite(&matches[i].imgIdx, sizeof(int32_t), 1, mFile);
+      std::fwrite(&matches[i].distance, sizeof(float), 1, mFile);
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
@@ -393,14 +471,14 @@ class MatchesWriterOpenCV
 
 public:
 
-  explicit MatchesWriterOpenCV(const std::string &fileName);
+  explicit MatchesWriterOpenCV(Path file);
   ~MatchesWriterOpenCV() override;
 
 // MatchesWriter interface
 
 public:
 
-  bool write() override;
+  void write() override;
 
 private:
 
@@ -417,12 +495,11 @@ private:
 
 };
 
-MatchesWriterOpenCV::MatchesWriterOpenCV(const std::string &fileName)
-  : MatchesWriter(fileName),
+MatchesWriterOpenCV::MatchesWriterOpenCV(Path file)
+  : MatchesWriter(std::move(file)),
     mFileStorage(nullptr)
 {
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
+  std::string ext = file.extension();
   if (boost::iequals(ext, ".xml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
   } else if (boost::iequals(ext, ".yml")) {
@@ -438,25 +515,29 @@ MatchesWriterOpenCV::~MatchesWriterOpenCV()
   }
 }
 
-bool MatchesWriterOpenCV::write()
+void MatchesWriterOpenCV::write()
 {
   try {
+
     open();
     if (isOpen()) {
       writeGoodMatches();
       writeWrongMatches();
       close();
     }
-    return false;
-  } catch (std::exception &e) {
-    msgError(e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
 void MatchesWriterOpenCV::open()
 {
-  mFileStorage = new cv::FileStorage(mFileName, mMode);
+  try {
+    mFileStorage = new cv::FileStorage(mFilePath.toString(), mMode);
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 bool MatchesWriterOpenCV::isOpen()
@@ -467,14 +548,26 @@ bool MatchesWriterOpenCV::isOpen()
 
 void MatchesWriterOpenCV::writeGoodMatches()
 {
-  if (mFileStorage)
-    cv::write(*mFileStorage, "matches", mGoodMatches);
+  try {
+
+    if (mFileStorage)
+      cv::write(*mFileStorage, "matches", mGoodMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesWriterOpenCV::writeWrongMatches()
 {
-  if (mFileStorage)
+  try {
+    
+    if (mFileStorage)
     cv::write(*mFileStorage, "wrong_matches", mWrongMatches);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 void MatchesWriterOpenCV::close()
@@ -489,20 +582,28 @@ void MatchesWriterOpenCV::close()
 
 
 
-std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const std::string &fileName)
+std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path &file)
 {
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
   std::unique_ptr<MatchesReader> matches_reader;
-  if (boost::iequals(ext, ".bin")) {
-    matches_reader = std::make_unique<MatchesReaderBinary>(fileName);
-  } else if (boost::iequals(ext, ".xml")){
-    matches_reader = std::make_unique<MatchesReaderOpenCV>(fileName);
-  } else if (boost::iequals(ext, ".yml")) {
-    matches_reader = std::make_unique<MatchesReaderOpenCV>(fileName);
-  } else {
-    throw std::runtime_error("Invalid Matches Reader");
+
+  try {
+
+    std::string ext = file.extension();
+
+    if (boost::iequals(ext, ".bin")) {
+      matches_reader = std::make_unique<MatchesReaderBinary>(file);
+    } else if (boost::iequals(ext, ".xml")) {
+      matches_reader = std::make_unique<MatchesReaderOpenCV>(file);
+    } else if (boost::iequals(ext, ".yml")) {
+      matches_reader = std::make_unique<MatchesReaderOpenCV>(file);
+    } else {
+      TL_THROW_EXCEPTION("Invalid  Matches Reader: %s", file.fileName().c_str());
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
+
   return matches_reader;
 }
 
@@ -510,20 +611,28 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const std::str
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const std::string &fileName)
+std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path &file)
 {
-  fs::path ext_path = fs::path(fileName).extension();
-  std::string ext = ext_path.string();
   std::unique_ptr<MatchesWriter> matches_writer;
-  if (boost::iequals(ext, ".bin")) {
-    matches_writer = std::make_unique<MatchesWriterBinary>(fileName);
-  } else if (boost::iequals(ext, ".xml")){
-    matches_writer = std::make_unique<MatchesWriterOpenCV>(fileName);
-  } else if (boost::iequals(ext, ".yml")) {
-    matches_writer = std::make_unique<MatchesWriterOpenCV>(fileName);
-  } else {
-    throw std::runtime_error("Invalid Writer Reader");
+
+  try {
+
+    std::string ext = file.extension();
+
+    if (boost::iequals(ext, ".bin")) {
+      matches_writer = std::make_unique<MatchesWriterBinary>(file);
+    } else if (boost::iequals(ext, ".xml")){
+      matches_writer = std::make_unique<MatchesWriterOpenCV>(file);
+    } else if (boost::iequals(ext, ".yml")) {
+      matches_writer = std::make_unique<MatchesWriterOpenCV>(file);
+    } else {
+      TL_THROW_EXCEPTION("Invalid Writer Reader: %s", file.fileName().c_str());
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
+
   return matches_writer;
 }
 

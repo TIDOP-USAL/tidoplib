@@ -164,7 +164,7 @@ std::vector<cv::KeyPoint> SurfDetectorDescriptor::detect(const cv::Mat &img, cv:
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SurfDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
   
   return keyPoints;
@@ -185,7 +185,7 @@ cv::Mat SurfDetectorDescriptor::extract(const cv::Mat &img,
 #endif // HAVE_OPENCV_XFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SurfDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;
@@ -310,7 +310,7 @@ std::vector<cv::KeyPoint> SurfCudaDetectorDescriptor::detect(const cv::Mat &img,
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SurfCudaDetectorDescriptor::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;
@@ -334,7 +334,7 @@ cv::Mat SurfCudaDetectorDescriptor::extract(const cv::Mat &img,
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("SurfCudaDetectorDescriptor::extract() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return descriptors;

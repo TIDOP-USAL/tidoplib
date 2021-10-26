@@ -137,7 +137,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::open() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -240,7 +240,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::create() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -323,7 +323,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::write() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -336,7 +336,7 @@ public:
       write(image, rect);
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::write() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -382,7 +382,7 @@ public:
       rows = mDataset->GetRasterYSize();
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::rows() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return rows;
@@ -399,7 +399,7 @@ public:
       cols = mDataset->GetRasterXSize();
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::cols() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return cols;
@@ -416,7 +416,7 @@ public:
       channels = mDataset->GetRasterCount();
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::channels() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return channels;
@@ -437,7 +437,7 @@ public:
       depth = GDALGetDataTypeSizeBits(gdal_data_type);
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageWriterGdal::depth() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return depth;
@@ -620,11 +620,11 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
     } else
 #endif 
     {
-      throw std::runtime_error("Invalid Image Writer");
+      TL_THROW_EXCEPTION("Invalid Image Writer: %s", file.fileName().c_str());
     }
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageWriterFactory::createReader() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return image_writer;

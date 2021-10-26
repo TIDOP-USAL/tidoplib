@@ -116,8 +116,14 @@ Exception makeException(const std::string &error,
 
 void printException(const std::exception &e, int level)
 {
-  std::string err = std::string(level, ' ') + "exception: " + e.what();
-  tl::MessageManager::release(err, tl::MessageLevel::msg_error);
+  if (level == 0) {
+    std::string err = std::string(level, ' ') + "exception: " + e.what();
+    tl::MessageManager::release(err, tl::MessageLevel::msg_error);
+    tl::MessageManager::release("Trace:", tl::MessageLevel::msg_error);
+  } else {
+    std::string err = ">>" + std::string(level, ' ') + "" + e.what();
+    tl::MessageManager::release(err, tl::MessageLevel::msg_error);
+  }
 
   try {
     std::rethrow_if_nested(e);

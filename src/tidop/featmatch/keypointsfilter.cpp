@@ -81,19 +81,24 @@ std::vector<cv::KeyPoint> KeyPointsFilterNBest::filter(const std::vector<cv::Key
 {
   std::vector<cv::KeyPoint> filteredKeypoints = keypoints;
 
-  size_t n_points = static_cast<size_t>(KeyPointsFilterNBestProperties::nPoints());
+  try {
+    size_t n_points = static_cast<size_t>(KeyPointsFilterNBestProperties::nPoints());
 
-  if (filteredKeypoints.size() > n_points) {
-    cv::KeyPointsFilter::retainBest(filteredKeypoints,
-                                    KeyPointsFilterNBestProperties::nPoints());
+    if (filteredKeypoints.size() > n_points) {
+      cv::KeyPointsFilter::retainBest(filteredKeypoints,
+        KeyPointsFilterNBestProperties::nPoints());
 
-    if (filteredKeypoints.size() != n_points) {
-      /// Los keypoints no tienen 'response'. Por ahora...
-      filteredKeypoints.resize(static_cast<size_t>(KeyPointsFilterNBestProperties::nPoints()));
+      if (filteredKeypoints.size() != n_points) {
+        /// Los keypoints no tienen 'response'. Por ahora...
+        filteredKeypoints.resize(static_cast<size_t>(KeyPointsFilterNBestProperties::nPoints()));
+      }
     }
-  }
 
-  msgInfo("Filtered retaining %i best keypoints", static_cast<int>(filteredKeypoints.size()));
+    msgInfo("Filtered retaining %i best keypoints", static_cast<int>(filteredKeypoints.size()));
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return filteredKeypoints;
 }
@@ -175,15 +180,22 @@ void KeyPointsFilterBySize::setMaxSize(double maxSize)
 std::vector<cv::KeyPoint> KeyPointsFilterBySize::filter(const std::vector<cv::KeyPoint> &keypoints)
 {
   std::vector<cv::KeyPoint> filteredKeypoints = keypoints;
-  size_t size = keypoints.size();
-  double min_size = KeyPointsFilterBySizeProperties::minSize();
-  double max_size = KeyPointsFilterBySizeProperties::maxSize();
-  cv::KeyPointsFilter::runByKeypointSize(filteredKeypoints,
-                                         static_cast<float>(min_size),
-                                         static_cast<float>(max_size));
-  size_t new_size = filteredKeypoints.size();
-  msgInfo("Filtered keypoints by size (min=%f,max=%f): %i", min_size, max_size, size - new_size);
-  
+
+  try {
+
+    size_t size = keypoints.size();
+    double min_size = KeyPointsFilterBySizeProperties::minSize();
+    double max_size = KeyPointsFilterBySizeProperties::maxSize();
+    cv::KeyPointsFilter::runByKeypointSize(filteredKeypoints,
+      static_cast<float>(min_size),
+      static_cast<float>(max_size));
+    size_t new_size = filteredKeypoints.size();
+    msgInfo("Filtered keypoints by size (min=%f,max=%f): %i", min_size, max_size, size - new_size);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
   return filteredKeypoints;
 }
 
@@ -227,10 +239,16 @@ std::vector<cv::KeyPoint> KeyPointsFilterRemoveDuplicated::filter(const std::vec
 {
   std::vector<cv::KeyPoint> filteredKeypoints = keypoints;
 
-  int size = static_cast<int>(keypoints.size());
-  cv::KeyPointsFilter::removeDuplicated(filteredKeypoints);
-  int new_size = static_cast<int>(filteredKeypoints.size());
-  msgInfo("Remove duplicated keypoints: %i", size - new_size);
+  try {
+
+    int size = static_cast<int>(keypoints.size());
+    cv::KeyPointsFilter::removeDuplicated(filteredKeypoints);
+    int new_size = static_cast<int>(filteredKeypoints.size());
+    msgInfo("Remove duplicated keypoints: %i", size - new_size);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return filteredKeypoints;
 }

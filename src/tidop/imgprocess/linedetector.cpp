@@ -162,7 +162,7 @@ LineDetector::Exit ldHouhFast::run(cv::Mat &image)
       //cout << "Failed to find local maximums on FHT image";
       //return -2;
       //logPrintError("Failed to find local maximums on FHT image");
-      TL_THROW_ERROR("Failed to find local maximums on FHT image");
+      TL_THROW_EXCEPTION("Failed to find local maximums on FHT image");
     }
   } catch (tl::Exception &e) {
     msgError(e.what());

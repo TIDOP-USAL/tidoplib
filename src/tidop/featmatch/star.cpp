@@ -163,7 +163,7 @@ std::vector<cv::KeyPoint> StarDetector::detect(const cv::Mat &img, cv::InputArra
 #endif // HAVE_OPENCV_XFEATURES2D
  
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("StarDetector::detect() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return keyPoints;

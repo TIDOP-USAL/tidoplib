@@ -123,7 +123,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::open() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
@@ -196,7 +196,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return image;
@@ -252,7 +252,7 @@ public:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return image;
@@ -274,7 +274,7 @@ public:
     try {
       image = this->read(scaleX, scaleY, rect, trf);
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return image;
@@ -297,7 +297,7 @@ public:
     try{
       image = read(wRead, scaleX, scaleY, trf);
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::read() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return image;
@@ -314,7 +314,7 @@ public:
       rows = mDataset->GetRasterYSize();
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::rows() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return rows;
@@ -331,7 +331,7 @@ public:
       cols = mDataset->GetRasterXSize();
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::cols() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return cols;
@@ -348,7 +348,7 @@ public:
       channels = mDataset->GetRasterCount();
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::channels() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return channels;
@@ -364,7 +364,7 @@ public:
       data_type = gdalConvertDataType(gdal_data_type);
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::dataType() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
       
     return data_type;
@@ -380,7 +380,7 @@ public:
       depth = GDALGetDataTypeSizeBits(gdal_data_type);
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::depth() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return depth; 
@@ -409,7 +409,7 @@ public:
       }
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::metadata() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return metadata;
@@ -427,7 +427,7 @@ public:
       georeferenced = (mDataset->GetGeoTransform(geotransform.data()) != CE_None);
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::metadata() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return georeferenced;
@@ -459,7 +459,7 @@ public:
 #endif
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crsWkt() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs_wkt;
@@ -485,7 +485,7 @@ public:
       crs.fromWktFormat(mDataset->GetProjectionRef());
 #endif
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crs() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs;
@@ -514,7 +514,7 @@ public:
       if (exist) *exist = success;
     
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::crs() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return nodata;
@@ -535,7 +535,7 @@ protected:
       }
 
     } catch (...) {
-      std::throw_with_nested(std::runtime_error("ImageReaderGdal::gdalDataType() failed"));
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return dataType;
@@ -771,11 +771,11 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
     } else
 #endif
     {
-      throw std::runtime_error("Invalid Image Reader");
+      TL_THROW_EXCEPTION("Invalid Image Reader: %s", file.fileName().c_str());
     }
   
   } catch (...) {
-    std::throw_with_nested(std::runtime_error("ImageReaderFactory::createReader() failed"));
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return image_reader;

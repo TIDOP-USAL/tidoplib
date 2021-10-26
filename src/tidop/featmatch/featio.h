@@ -54,7 +54,7 @@ public:
   FeaturesWriter(tl::Path file);
   virtual ~FeaturesWriter() = default;
 
-  virtual bool write() = 0;
+  virtual void write() = 0;
 
   void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
   void setDescriptors(const cv::Mat &descriptors);
@@ -81,7 +81,7 @@ public:
   FeaturesReader(tl::Path file);
   virtual ~FeaturesReader() = default;
 
-  virtual bool read() = 0;
+  virtual void read() = 0;
 
   std::vector<cv::KeyPoint> keyPoints() const;
   cv::Mat descriptors() const;
@@ -147,8 +147,8 @@ public:
   FeaturesIOHandler();
   virtual ~FeaturesIOHandler() = default;
 
-  bool read(const tl::Path &file);
-  bool write(const tl::Path &file);
+  void read(const tl::Path &file);
+  void write(const tl::Path &file);
 //  std::vector<cv::KeyPoint> keyPoints() const;
 //  cv::Mat descriptors() const;
 //  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
