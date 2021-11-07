@@ -418,7 +418,7 @@ template<typename T>
 void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle, 
                                    Quaternion<T> &quaternion)
 {
-  T a_2 = axisAngle.angle() * static_cast<T>(0.5);
+  T a_2 = axisAngle.angle() * consts::half<T>;
   T sin_a_2 = std::sin(a_2);
   quaternion.x = sin_a_2 * axisAngle.axis(0);
   quaternion.y = sin_a_2 * axisAngle.axis(1);

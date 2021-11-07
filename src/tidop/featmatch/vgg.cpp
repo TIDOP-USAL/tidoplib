@@ -231,17 +231,23 @@ cv::Mat VggDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyPoint> &ke
 {
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
 #  if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
-  mVGG->compute(img, keyPoints, descriptors);
+    mVGG->compute(img, keyPoints, descriptors);
 #  else
-  TL_COMPILER_WARNING("VGG Descriptor not supported in OpenCV versions < 3.3 ")
-  throw std::exception("VGG Descriptor not supported in OpenCV versions < 3.3");
+    TL_COMPILER_WARNING("VGG Descriptor not supported in OpenCV versions < 3.3 ")
+    throw TL_ERROR("VGG Descriptor not supported in OpenCV versions < 3.3");
 #  endif
 #else
   TL_COMPILER_WARNING("OpenCV not built with extra modules. VGG Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. VGG Descriptor not supported");
+  throw TL_ERROR("OpenCV not built with extra modules. VGG Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return descriptors;
 }

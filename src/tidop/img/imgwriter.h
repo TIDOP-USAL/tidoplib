@@ -44,6 +44,9 @@
 #ifdef HAVE_TL_GEOSPATIAL 
 #include "tidop/geospatial/crs.h"
 #endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -59,7 +62,7 @@ class TL_EXPORT ImageWriter
 
 public:
 
-  ImageWriter(const std::string &fileName);
+  ImageWriter(tl::Path file);
   virtual ~ImageWriter() = default;
 
   /*!
@@ -70,7 +73,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -189,6 +192,11 @@ public:
   virtual void setCRS(const geospatial::Crs &crs) = 0;
 #endif
   
+  virtual void setNoDataValue(double nodata) = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual void setNoDataValue(const graph::Color &nodata) = 0;
+//#endif
 
 protected:
   
@@ -197,7 +205,7 @@ protected:
                    PointI *offset) const;
 protected:
 
-  std::string mFileName;
+  Path mFile;
   Affine<PointD> mAffine;
 #ifdef HAVE_TL_GEOSPATIAL
   geospatial::Crs mCRS;
@@ -218,7 +226,6 @@ private:
 
 public:
 
-  static std::unique_ptr<ImageWriter> createWriter(const std::string &fileName);
   static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
 };
 

@@ -32,8 +32,7 @@
 #include "tidop/geometry/entities/entities2d.h"
 #include "tidop/geometry/entities/entities3d.h"
 #include "tidop/geometry/entities/point.h"
-//#include "tidop/geometry/entities/window.h"
-#include "tidop/geometry/operations.h"
+#include "tidop/geometry/algorithms.h"
 
 namespace tl
 {

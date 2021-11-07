@@ -27,6 +27,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/progress.h"
 
 #include <iostream>
 #include <ctime>
@@ -130,7 +131,11 @@ void Console::setLogLevel(MessageLevel level)
 void Console::printMessage(const std::string &message)
 {
   // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
+  //std::cout << "\r";
+  if (Progress::isRunning()) {
+    std::cout << "\r" << std::string(50, ' ') << "\r";
+    //std::cout << "\r" << std::string(50, ' ');
+  }
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");

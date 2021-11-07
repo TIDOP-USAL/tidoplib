@@ -58,6 +58,7 @@ public:
 
   Path();
   Path(const std::string &path);
+  Path(const std::wstring &path);
   Path(const Path &path);
   Path(Path &&path) TL_NOEXCEPT;
   ~Path();
@@ -66,13 +67,15 @@ public:
   Path &operator = (Path &&path) TL_NOEXCEPT;
 
   void setPath(const std::string &path);
+  void setPath(const std::wstring &path);
 
   /*!
    * \brief Convierte el path en una cadena
    * \return
    */
   std::string toString() const;
-  
+  std::wstring toWString() const;
+
   std::string fileName() const;
   std::string baseName() const;
   std::string extension() const;
@@ -86,7 +89,9 @@ public:
   bool exists() const;
 
   Path &replaceFileName(const std::string &fileName);
+  Path &replaceFileName(const std::wstring &fileName);
   Path &replaceBaseName(const std::string &baseName);
+  Path &replaceBaseName(const std::wstring &baseName);
   Path &replaceExtension(const std::string &extension);
   Path &append(const std::string &text);
 
@@ -99,11 +104,15 @@ public:
 /* Static methods */
 
   static bool exists(const std::string &path);
+  static bool exists(const std::wstring &path);
   static Path tempPath();
   static Path tempDirectory();
   static bool createDirectory(const std::string &directory);
+  static bool createDirectory(const std::wstring &directory);
   static bool createDirectories(const std::string &directory);
+  static bool createDirectories(const std::wstring &directory);
   static void removeDirectory(const std::string &directory);
+  static void removeDirectory(const std::wstring &directory);
 
 private:
 
@@ -141,6 +150,10 @@ private:
   Path mPath;
 
 };
+
+
+TL_EXPORT std::ostream &operator<< (std::ostream &os, const Path &path);
+
 
 
 /*! \} */ // end of utilities

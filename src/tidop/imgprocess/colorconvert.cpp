@@ -34,253 +34,301 @@ namespace tl
 
 void rgbToCmyk(const cv::Mat &rgb, cv::Mat &cmyk)
 {
-  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+  try {
 
-  cv::Mat _cmyk(rgb.size(), CV_32FC4);
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-  parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
+    cv::Mat _cmyk(rgb.size(), CV_32FC4);
 
-    double cyan = 0.;
-    double magenta = 0.;
-    double yellow = 0.;
-    double key = 1.;
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
 
-    int r = static_cast<int>(row);
-    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+      double cyan = 0.;
+      double magenta = 0.;
+      double yellow = 0.;
+      double key = 1.;
 
-    for (int c = 0; c < rgb.cols; c++) {
+      int r = static_cast<int>(row);
+      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
 
-      rgbToCmyk(rgb_ptr[3 * c + 2], 
-                rgb_ptr[3 * c + 1], 
-                rgb_ptr[3 * c], 
-                &cyan, 
-                &magenta, 
-                &yellow, 
-                &key);
+      for (int c = 0; c < rgb.cols; c++) {
 
-      _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan), 
-                                            static_cast<float>(magenta),
-                                            static_cast<float>(yellow),
-                                            static_cast<float>(key));
-    }
-  });
+        rgbToCmyk(rgb_ptr[3 * c + 2],
+          rgb_ptr[3 * c + 1],
+          rgb_ptr[3 * c],
+          &cyan,
+          &magenta,
+          &yellow,
+          &key);
 
-  cmyk = _cmyk;
+        _cmyk.at<cv::Vec4f>(r, c) = cv::Vec4f(static_cast<float>(cyan),
+          static_cast<float>(magenta),
+          static_cast<float>(yellow),
+          static_cast<float>(key));
+      }
+      });
+
+    cmyk = _cmyk;
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("rgbToCmyk() failed"));
+  }
 }
 
 
 void cmykToRgb(const cv::Mat &cmyk, cv::Mat &rgb)
 {
-  TL_ASSERT(cmyk.channels() == 4, "Invalid image type. Incorrect number of channels")
+  try {
 
-  cv::Mat _rgb(cmyk.size(), CV_8UC3);
+    TL_ASSERT(cmyk.channels() == 4, "Invalid image type. Incorrect number of channels")
 
-  parallel_for(static_cast<size_t>(0), static_cast<size_t>(cmyk.rows), [&](size_t row) {
+    cv::Mat _rgb(cmyk.size(), CV_8UC3);
 
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-    int r = static_cast<int>(row);
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(cmyk.rows), [&](size_t row) {
 
-    for (int c = 0; c < cmyk.cols; c++) {
-      
-      cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
+      int red = 0;
+      int green = 0;
+      int blue = 0;
+      int r = static_cast<int>(row);
 
-      cmykToRgb(static_cast<double>(v_cmyk[0]), 
-                static_cast<double>(v_cmyk[1]), 
-                static_cast<double>(v_cmyk[2]), 
-                static_cast<double>(v_cmyk[3]), 
-                &red, 
-                &green, 
-                &blue);
-      
-      _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
-      _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
-      _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
-    }
-  });
+      for (int c = 0; c < cmyk.cols; c++) {
 
-  rgb = _rgb;
+        cv::Vec4f v_cmyk = cmyk.at<cv::Vec4f>(r, c);
+
+        cmykToRgb(static_cast<double>(v_cmyk[0]),
+          static_cast<double>(v_cmyk[1]),
+          static_cast<double>(v_cmyk[2]),
+          static_cast<double>(v_cmyk[3]),
+          &red,
+          &green,
+          &blue);
+
+        _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
+        _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
+        _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
+      }
+      });
+
+    rgb = _rgb;
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("cmykToRgb() failed"));
+  }
 }
 
 
 void rgbToHSL(const cv::Mat &rgb, cv::Mat &hsl)
 {
-  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+  try {
 
-  cv::Mat _hsl(rgb.size(), CV_32FC3);
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-  parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
+    cv::Mat _hsl(rgb.size(), CV_32FC3);
 
-    double hue = 0.;
-    double saturation = 0.;
-    double lightness = 0.;
-    int r = static_cast<int>(row);
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
 
-    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+      double hue = 0.;
+      double saturation = 0.;
+      double lightness = 0.;
+      int r = static_cast<int>(row);
 
-    for (int c = 0; c < rgb.cols; c++) {
+      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
 
-      rgbToHSL(rgb_ptr[3 * c + 2], 
-               rgb_ptr[3 * c + 1], 
-               rgb_ptr[3 * c], 
-               &hue, 
-               &saturation, 
-               &lightness);
+      for (int c = 0; c < rgb.cols; c++) {
 
-      _hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), 
-                                           static_cast<float>(saturation), 
-                                           static_cast<float>(lightness));
-    }
-  });
+        rgbToHSL(rgb_ptr[3 * c + 2],
+          rgb_ptr[3 * c + 1],
+          rgb_ptr[3 * c],
+          &hue,
+          &saturation,
+          &lightness);
 
-  hsl = _hsl;
+        _hsl.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue),
+          static_cast<float>(saturation),
+          static_cast<float>(lightness));
+      }
+      });
+
+    hsl = _hsl;
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("rgbToHSL() failed"));
+  }
 }
 
 
 void hslToRgb(const cv::Mat &hsl, cv::Mat &rgb)
 {
-  TL_ASSERT(hsl.channels() == 3, "Invalid image type. Incorrect number of channels")
-  
-  cv::Mat _rgb(hsl.size(), CV_8UC3);
+  try {
 
-  parallel_for(static_cast<size_t>(0), static_cast<size_t>(hsl.rows), [&](size_t row) {
+    TL_ASSERT(hsl.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-    int r = static_cast<int>(row);
+    cv::Mat _rgb(hsl.size(), CV_8UC3);
 
-    for (int c = 0; c < hsl.cols; c++) {
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(hsl.rows), [&](size_t row) {
 
-      cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
+      int red = 0;
+      int green = 0;
+      int blue = 0;
+      int r = static_cast<int>(row);
 
-      hslToRgb(static_cast<double>(v_hsl[0]), 
-               static_cast<double>(v_hsl[1]), 
-               static_cast<double>(v_hsl[2]), 
-               &red, 
-               &green, 
-               &blue);
+      for (int c = 0; c < hsl.cols; c++) {
 
-      _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
-      _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
-      _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
-    }
-  });
+        cv::Vec3f v_hsl = hsl.at<cv::Vec3f>(r, c);
 
-  rgb = _rgb;
+        hslToRgb(static_cast<double>(v_hsl[0]),
+          static_cast<double>(v_hsl[1]),
+          static_cast<double>(v_hsl[2]),
+          &red,
+          &green,
+          &blue);
+
+        _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
+        _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
+        _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
+      }
+      });
+
+    rgb = _rgb;
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("hslToRgb() failed"));
+  }
 }
 
 
 void rgbToHSV(const cv::Mat &rgb, cv::Mat &hsv)
 {
-  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+  try{
 
-  //cv::Mat _hsv(rgb.size(), CV_32FC3);
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-  //parallel_for(0, rgb.rows, [&](int row) {
+    //cv::Mat _hsv(rgb.size(), CV_32FC3);
 
-  //  double hue = 0.;
-  //  double saturation = 0.;
-  //  double value = 0.;
-  //  int r = static_cast<int>(row);
+    //parallel_for(0, rgb.rows, [&](int row) {
 
-  //  const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+    //  double hue = 0.;
+    //  double saturation = 0.;
+    //  double value = 0.;
+    //  int r = static_cast<int>(row);
 
-  //  for (int c = 0; c < rgb.cols; c++) {
+    //  const uchar *rgb_ptr = rgb.ptr<uchar>(r);
 
-  //    rgbToHSV(rgb_ptr[3 * c + 2], 
-  //             rgb_ptr[3 * c + 1], 
-  //             rgb_ptr[3 * c], 
-  //             &hue, 
-  //             &saturation, 
-  //             &value);
+    //  for (int c = 0; c < rgb.cols; c++) {
 
-  //    _hsv.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), 
-  //                                         static_cast<float>(saturation), 
-  //                                         static_cast<float>(value));
-  //  }
-  //});
+    //    rgbToHSV(rgb_ptr[3 * c + 2], 
+    //             rgb_ptr[3 * c + 1], 
+    //             rgb_ptr[3 * c], 
+    //             &hue, 
+    //             &saturation, 
+    //             &value);
 
-  //hsv = _hsv;
+    //    _hsv.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(hue), 
+    //                                         static_cast<float>(saturation), 
+    //                                         static_cast<float>(value));
+    //  }
+    //});
 
-  cv::cvtColor(rgb, hsv, cv::COLOR_BGR2HSV);
+    //hsv = _hsv;
+
+    cv::cvtColor(rgb, hsv, cv::COLOR_BGR2HSV);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("rgbToHSV() failed"));
+  }
 }
 
 
 void hsvToRgb(const cv::Mat &hsv, cv::Mat &rgb)
 {
-  TL_ASSERT(hsv.channels() == 3, "Invalid image type. Incorrect number of channels")
+  try{
 
-  //cv::Mat _rgb(hsv.size(), CV_8UC3);
+    TL_ASSERT(hsv.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-  //parallel_for(0, hsv.rows, [&](int row) {
+    //cv::Mat _rgb(hsv.size(), CV_8UC3);
 
-  //  int red = 0;
-  //  int green = 0;
-  //  int blue = 0;
-  //  int r = static_cast<int>(row);
+    //parallel_for(0, hsv.rows, [&](int row) {
 
-  //  for (int c = 0; c < hsv.cols; c++) {
+    //  int red = 0;
+    //  int green = 0;
+    //  int blue = 0;
+    //  int r = static_cast<int>(row);
 
-  //    cv::Vec3f v_hsv = hsv.at<cv::Vec3f>(r, c);
+    //  for (int c = 0; c < hsv.cols; c++) {
 
-  //    hsvToRgb(v_hsv[0], 
-  //             v_hsv[1], 
-  //             v_hsv[2], 
-  //             &red, 
-  //             &green, 
-  //             &blue);
+    //    cv::Vec3f v_hsv = hsv.at<cv::Vec3f>(r, c);
 
-  //    _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
-  //    _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
-  //    _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
-  //  }
-  //});
+    //    hsvToRgb(v_hsv[0], 
+    //             v_hsv[1], 
+    //             v_hsv[2], 
+    //             &red, 
+    //             &green, 
+    //             &blue);
 
-  //rgb = _rgb;
+    //    _rgb.at<cv::Vec3b>(r, c)[0] = static_cast<uchar>(blue);
+    //    _rgb.at<cv::Vec3b>(r, c)[1] = static_cast<uchar>(green);
+    //    _rgb.at<cv::Vec3b>(r, c)[2] = static_cast<uchar>(red);
+    //  }
+    //});
 
-  cv::cvtColor(hsv, rgb, cv::COLOR_BGR2HSV);
+    //rgb = _rgb;
+
+    cv::cvtColor(hsv, rgb, cv::COLOR_BGR2HSV);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("hsvToRgb() failed"));
+  }
 }
 
 
 void rgbToLuminance(const cv::Mat &rgb, cv::Mat &gray)
 {
-  cvtColor(rgb, gray, cv::COLOR_BGR2GRAY);
+  try {
+
+    cvtColor(rgb, gray, cv::COLOR_BGR2GRAY);
+   
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("rgbToLuminance() failed"));
+  }
 }
 
 
 void chromaticityCoordinates(const cv::Mat &rgb, cv::Mat &chromaCoord)
 {
-  TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
+  try {
 
-  cv::Mat chroma_coord(rgb.size(), CV_32FC3);
+    TL_ASSERT(rgb.channels() == 3, "Invalid image type. Incorrect number of channels")
 
-  parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
+    cv::Mat chroma_coord(rgb.size(), CV_32FC3);
 
-    double chroma_red = 0.;
-    double chroma_green = 0.;
-    double chroma_blue = 0.;
-    int r = static_cast<int>(row);
+    parallel_for(static_cast<size_t>(0), static_cast<size_t>(rgb.rows), [&](size_t row) {
 
-    const uchar *rgb_ptr = rgb.ptr<uchar>(r);
+      double chroma_red = 0.;
+      double chroma_green = 0.;
+      double chroma_blue = 0.;
+      int r = static_cast<int>(row);
 
-    for (int c = 0; c < rgb.cols; c++) {
+      const uchar *rgb_ptr = rgb.ptr<uchar>(r);
 
-      chromaticityCoordinates(rgb_ptr[3*c+2], 
-                              rgb_ptr[3*c+1], 
-                              rgb_ptr[3*c], 
-                              &chroma_red, 
-                              &chroma_green, 
-                              &chroma_blue);
+      for (int c = 0; c < rgb.cols; c++) {
 
-      chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(chroma_blue), 
-                                                   static_cast<float>(chroma_green), 
-                                                   static_cast<float>(chroma_red));
-    }
-  });
+        chromaticityCoordinates(rgb_ptr[3 * c + 2],
+          rgb_ptr[3 * c + 1],
+          rgb_ptr[3 * c],
+          &chroma_red,
+          &chroma_green,
+          &chroma_blue);
 
-  chromaCoord = chroma_coord;
+        chroma_coord.at<cv::Vec3f>(r, c) = cv::Vec3f(static_cast<float>(chroma_blue),
+                                                     static_cast<float>(chroma_green),
+                                                     static_cast<float>(chroma_red));
+      }
+    });
+
+    chromaCoord = chroma_coord;
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("chromaticityCoordinates() failed"));
+  }
 }
 
 
@@ -298,24 +346,37 @@ TL_TODO("Crear una clase para cada conversión (Factoria de clases) que herede d
 TL_TODO("Crear una clase para crear las factorias")
 void ColorConversion::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+  try {
 
-  if (mModelIn == ColorConversion::ColorModel::rgb && mModelOut == ColorConversion::ColorModel::hsl) {
-    rgbToHSL(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::hsl && mModelOut == ColorConversion::ColorModel::rgb) {
-    hslToRgb(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::rgb && mModelOut == ColorConversion::ColorModel::hsv) {
-    rgbToHSV(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::hsv && mModelOut == ColorConversion::ColorModel::rgb) {
-    hsvToRgb(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::rgb && mModelOut == ColorConversion::ColorModel::cmyk) {
-    rgbToCmyk(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::cmyk && mModelOut == ColorConversion::ColorModel::rgb) {
-    cmykToRgb(matIn, matOut);
-  } else if (mModelIn == ColorConversion::ColorModel::rgb && mModelOut == ColorConversion::ColorModel::luminance) {
-    rgbToLuminance(matIn, matOut);
-  } else {
-    throw "Conversión no disponible";
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+    if (mModelIn == ColorConversion::ColorModel::rgb && 
+       mModelOut == ColorConversion::ColorModel::hsl) {
+      rgbToHSL(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::hsl && 
+               mModelOut == ColorConversion::ColorModel::rgb) {
+      hslToRgb(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::rgb && 
+               mModelOut == ColorConversion::ColorModel::hsv) {
+      rgbToHSV(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::hsv &&
+               mModelOut == ColorConversion::ColorModel::rgb) {
+      hsvToRgb(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::rgb &&
+               mModelOut == ColorConversion::ColorModel::cmyk) {
+      rgbToCmyk(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::cmyk && 
+               mModelOut == ColorConversion::ColorModel::rgb) {
+      cmykToRgb(matIn, matOut);
+    } else if (mModelIn == ColorConversion::ColorModel::rgb &&
+               mModelOut == ColorConversion::ColorModel::luminance) {
+      rgbToLuminance(matIn, matOut);
+    } else {
+      throw TL_ERROR("Color conversion not available");
+    }
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("ColorConversion::run() failed"));
   }
 }
 

@@ -45,8 +45,8 @@ namespace tl
 
 using namespace graph;
 
-VectorReader::VectorReader(const std::string &fileName)
-  : mFileName(fileName)
+VectorReader::VectorReader(Path file)
+  : mFile(std::move(file))
 {
 }
 
@@ -62,8 +62,8 @@ class VectorReaderGdal
 
 public:
 
-  VectorReaderGdal(const std::string &fileName)
-    : VectorReader(fileName),
+  VectorReaderGdal(Path file)
+    : VectorReader(std::move(file)),
       mDataset(nullptr)
   {
     RegisterGdal::init();
@@ -76,16 +76,21 @@ public:
 
   void open() override
   {
-    this->close();
+    try {
 
-    mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFileName.c_str(), 
-                                          GDAL_OF_VECTOR, 
-                                          nullptr, 
-                                          nullptr/*options->getOptions()*/, 
-                                          nullptr ));
+      this->close();
+
+      mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFile.toString().c_str(), 
+                                            GDAL_OF_VECTOR, 
+                                            nullptr, 
+                                            nullptr/*options->getOptions()*/, 
+                                            nullptr ));
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
   }
 
-  bool isOpen() override
+  bool isOpen() const override
   {
     return mDataset != nullptr;
   }
@@ -100,32 +105,76 @@ public:
  
   int layersCount() const
   {
-    return mDataset ? mDataset->GetLayerCount() : 0;
+    int size = 0;
+    if (mDataset) {
+      size = mDataset->GetLayerCount();
+    } else {
+      msgWarning("The file has not been opened");
+    }
+    return size;
   }
 
   std::shared_ptr<graph::GLayer> read(int layerId)
   {
-    OGRLayer *ogrLayer = mDataset->GetLayer(layerId);
-    TL_ASSERT(ogrLayer != nullptr, "Layer not found");
-    return this->read(ogrLayer);
+    std::shared_ptr<graph::GLayer> layer;
+
+    try {
+    
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
+
+      OGRLayer *ogrLayer = mDataset->GetLayer(layerId);
+      TL_ASSERT(ogrLayer != nullptr, "Layer not found");
+
+      layer = this->read(ogrLayer);
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return layer;
   }
 
   std::shared_ptr<graph::GLayer> read(const std::string &layerName)
   {
-    OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
-    TL_ASSERT(ogrLayer != nullptr, "Layer not found");
-    return this->read(ogrLayer);
+    std::shared_ptr<graph::GLayer> layer;
+
+    try {
+
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
+
+      OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
+      TL_ASSERT(ogrLayer != nullptr, "Layer not found");
+    
+      this->read(ogrLayer);
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return layer;
   }
 
   std::string crsWkt() const override
   {
     std::string crs_wkt;
+    
+    try {
 
-    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs_wkt = std::string(wkt);
-      CPLFree(wkt);
+      TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
+
+#if GDAL_VERSION_MAJOR >= 3
+      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs_wkt = std::string(wkt);
+        CPLFree(wkt);
+      }
+#else
+      crs_wkt = std::string(mDataset->GetProjectionRef());
+#endif
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs_wkt;
@@ -136,11 +185,21 @@ public:
   {
     geospatial::Crs crs;
 
-    if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-      char *wkt = nullptr;
-      spatialReference->exportToWkt(&wkt);
-      crs.fromWktFormat(wkt);
-      CPLFree(wkt);
+    try {
+
+#if GDAL_VERSION_MAJOR >= 3
+      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+        char *wkt = nullptr;
+        spatialReference->exportToWkt(&wkt);
+        crs.fromWktFormat(wkt);
+        CPLFree(wkt);
+      }
+#else
+      crs.fromWktFormat(mDataset->GetProjectionRef());
+#endif
+    
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
 
     return crs;
@@ -281,7 +340,7 @@ std::shared_ptr<graph::GLayer> VectorReaderGdal::read(OGRLayer *ogrLayer)
         
         layer->push_back(entity);
 
-      } catch (std::exception & e) {
+      } catch (std::exception &e) {
         msgError(e.what());
       }
 
@@ -1204,24 +1263,27 @@ void VectorReaderGdal::readData(OGRFeature *ogrFeature,
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const std::string &fileName)
+std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file)
 {
-  std::string extension = Path(fileName).extension();
   std::unique_ptr<VectorReader> vector_reader;
-#ifdef HAVE_GDAL
-  if (VectorReaderGdal::isExtensionSupported(extension)) {
-    vector_reader = std::make_unique<VectorReaderGdal>(fileName);
-  } else
-#endif
-  {
-    throw std::runtime_error("Invalid Vector Reader");
-  }
-  return vector_reader;
-}
 
-std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &fileName)
-{
-  return VectorReaderFactory::createReader(fileName.toString());
+  try {
+
+    std::string extension = file.extension();
+#ifdef HAVE_GDAL
+    if (VectorReaderGdal::isExtensionSupported(extension)) {
+      vector_reader = std::make_unique<VectorReaderGdal>(file);
+    } else
+#endif
+    {
+      TL_THROW_EXCEPTION("Invalid Vector Reader: %s", file.fileName().c_str());
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
+  return vector_reader;
 }
 
 } // End namespace tl

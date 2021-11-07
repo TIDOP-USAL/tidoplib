@@ -74,6 +74,7 @@ int main(int argc, char** argv)
   chrono.run();  // Se inicia el cronometro
 
   try {
+
     std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::createReader(img);
 
     imageReader->open();
@@ -130,8 +131,17 @@ int main(int argc, char** argv)
     } else {
       msgError("Error al abrir la imagen: %s", img.toString().c_str());
     }
+
   } catch (const std::exception &e) {
-    msgError(e.what());
+
+    printException(e);
+
+    return 1;
+
+  } catch (...) {
+
+    msgError("Unknow exception");
+
   }
 
   chrono.stop();

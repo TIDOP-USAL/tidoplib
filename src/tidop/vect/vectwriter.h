@@ -50,7 +50,7 @@ class TL_EXPORT VectorWriter
 
 public:
 
-  VectorWriter(const std::string &fileName);
+  VectorWriter(Path file);
   virtual ~VectorWriter() = default;
 
   /*!
@@ -61,7 +61,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -88,7 +88,7 @@ public:
 
 protected:
 
-  std::string mFileName;
+  Path mFile;
 
 };
 
@@ -106,8 +106,7 @@ private:
 
 public:
 
-  static std::unique_ptr<VectorWriter> createWriter(const std::string &fileName);
-  static std::unique_ptr<VectorWriter> createWriter(const Path &fileName);
+  static std::unique_ptr<VectorWriter> createWriter(const Path &file);
 };
 
 

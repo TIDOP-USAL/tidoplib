@@ -32,6 +32,7 @@ using namespace tl;
 
 BOOST_AUTO_TEST_SUITE(PathTestSuite)
 
+
 struct PathTest
 {
   PathTest()
@@ -50,6 +51,8 @@ struct PathTest
   void setup()
   {
     path_file.setPath("C:\\temp\\file.txt");
+
+    path2.setPath("C:\\temp\\áñ.txt");
   }
 
   void teardown()
@@ -60,6 +63,7 @@ struct PathTest
   Path *path;
   Path path_empty;
   Path path_file;
+  Path path2;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, PathTest)
@@ -87,6 +91,8 @@ BOOST_FIXTURE_TEST_CASE(set_path, PathTest)
   BOOST_CHECK_EQUAL("file", path_file.baseName());
   BOOST_CHECK_EQUAL(".txt", path_file.extension());
   BOOST_CHECK_EQUAL(false, path_file.empty());
+
+  BOOST_CHECK_EQUAL("C:\\temp\\áñ.txt", path2.toString());
 }
 
 BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
@@ -139,5 +145,6 @@ BOOST_FIXTURE_TEST_CASE(clear, PathTest)
   path.clear();
   BOOST_CHECK_EQUAL(true, path.empty());
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -153,7 +153,15 @@ int FastDetector::convertDetectorType(const std::string &detectorType)
 std::vector<cv::KeyPoint> FastDetector::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mFast->detect(img, keyPoints, mask);
+
+  try {
+
+    mFast->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
   return keyPoints;
 }
 
@@ -239,15 +247,21 @@ std::vector<cv::KeyPoint> FastDetectorCuda::detect(const cv::Mat &img, cv::Input
 {
   std::vector<cv::KeyPoint> keyPoints;
 
-#ifdef HAVE_OPENCV_CUDAFEATURES2D
-  cv::cuda::GpuMat g_img(img);
-  cv::cuda::GpuMat g_mask(mask);
-  mFast->detect(g_img, keyPoints, g_mask);
-#else
-  TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported")
-  throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported");
-#endif // HAVE_OPENCV_CUDAFEATURES2D
+  try {
 
+#ifdef HAVE_OPENCV_CUDAFEATURES2D
+    cv::cuda::GpuMat g_img(img);
+    cv::cuda::GpuMat g_mask(mask);
+    mFast->detect(g_img, keyPoints, g_mask);
+#else
+    TL_COMPILER_WARNING("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported")
+      throw std::exception("OpenCV not built with CUDAFEATURES2D. Cuda Fast Detector not supported");
+#endif // HAVE_OPENCV_CUDAFEATURES2D
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }  
+  
   return keyPoints;
 }
 

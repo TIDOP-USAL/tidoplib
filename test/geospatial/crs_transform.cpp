@@ -78,4 +78,38 @@ BOOST_FIXTURE_TEST_CASE(transform, CrsTransformTest)
 BOOST_AUTO_TEST_SUITE_END()
 
 
+BOOST_AUTO_TEST_SUITE(EcefToEnuTestSuite)
+
+struct EcefToEnuTest
+{
+  EcefToEnuTest()
+  {
+  }
+
+  ~EcefToEnuTest()
+  {
+  }
+
+
+  virtual void setup()
+  {
+
+  }
+
+  virtual void teardown()
+  {
+
+  }
+
+};
+
+
+BOOST_FIXTURE_TEST_CASE(transform, EcefToEnuTest)
+{
+
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
 #endif // HAVE_GDAL

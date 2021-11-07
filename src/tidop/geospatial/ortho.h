@@ -28,71 +28,323 @@
 #include <string>
 #include <memory>
 
-#include "tidop/geometry/entities/window.h"
+#include "tidop/core/path.h"
+#include "tidop/core/process.h"
 #include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/img/imgreader.h"
+#include "tidop/img/imgwriter.h"
+#include "tidop/vect/vectwriter.h"
+#include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/transform/affine.h"
+#include "tidop/geometry/rect.h"
 #include "tidop/geospatial/diffrect.h"
 #include "tidop/geospatial/camera.h"
 #include "tidop/geospatial/photo.h"
 #include "tidop/geospatial/crs.h"
+#include "tidop/graphic/entities/polygon.h"
 
 #ifdef HAVE_OPENCV
 
 namespace tl
 {
 
-class ImageReader;
-class ImageWriter;
-class VectorWriter;
-
+//class ImageReader;
+//class ImageWriter;
+//class VectorWriter;
 
 namespace geospatial
 {
 
+/*!
+ * \brief Orthorectification
+ */
 class TL_EXPORT Orthorectification
 {
 
 public:
 
-	Orthorectification(const std::string &dtm, 
-										 const Crs &crs);
-	~Orthorectification();
+	Orthorectification(const Path &dtm,
+		                 const Photo &photo);
+	
+	~Orthorectification()
+	{
 
-  void run(const std::vector<Photo> &photos,
-					 const std::string &orthoPath,
-					 const std::string &footprint);
+	}
 
+	PointI terrainToImage(const Point3D &terrainPoint) const;
+	PointI terrainToPhotocoordinates(const Point3D &terrainPoint) const;
+	Point3D imageToTerrain(const PointI &imagePoint) const;
+	Point3D photocoordinatesToTerrain(const PointI &photocoordinates) const;
+	PointI imageToPhotocoordinates(const PointI &imagePoint) const;
+	PointI photocoordinatesToImage(const PointI &photocoordinates) const;
+	Point3D dtmToTerrain(const PointI &imagePoint) const;
+	PointI terrainToDTM(const Point3D &terrainPoint) const;
+	double z(const PointD &terrainPoint) const;
+	/*Point3D orthoToTerrain(const PointI &imagePoint);
+	PointI terrainToOrtho(const Point3D &terrainPoint);*/
 
+	Rect<int> rectImage() const;
+	//Rect<int> rectOrtho() const;
+	Rect<int> rectDtm() const;
+	graph::GPolygon footprint() const;
+
+	CameraPose orientation() const;
+
+	bool hasNodataValue() const;
+	double nodataValue() const;
 
 private:
 
 	void init();
 
-	Affine<PointI> affineImageToPhotocoordinates();
-	std::vector<tl::PointI> imageLimitsInPhotocoordinates();
-
-	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits);
-	Window<PointD> windowOrthoTerrain(const std::vector<Point3D> &footprint);
-
-	TL_TODO("Mover a calibration")
 	float focal() const;
 	PointF principalPoint() const;
 	cv::Mat distCoeffs() const;
 
 private:
 
-	std::string mDtm;
-	Crs mCrs;
-	std::unique_ptr<ImageReader> mDtmReader;
-	std::unique_ptr<ImageReader> mImageReader;
-	std::unique_ptr<ImageWriter> mOrthophotoWriter;
-	std::unique_ptr<VectorWriter> mVectorWriter;
 	Camera mCamera;
-	Affine<PointI> mAffineImageCoordinatesToPhotocoordinates;
-	Affine<PointD> mAffineDtmImageToTerrain;
+	CameraPose mOrientation;
+	std::unique_ptr<ImageReader> mDtmReader;
+	cv::Mat mDtm;
 	Window<PointD> mWindowDtmTerrainExtension;
+	Affine<PointI> mAffineImageToPhotocoordinates;
+	Affine<PointD> mAffineDtmImageToTerrain;
+	//Affine<PointD> mAffineOrthoImageToTerrain;
 	std::unique_ptr<DifferentialRectification<double>> mDifferentialRectification;
+	double mIniZ;
+	Rect<int> mRectImage;
+	Rect<int> mRectDtm;
+	graph::GPolygon mFootprint;
+	//Rect<int> mRectOrtho;
+	double mNoDataValue;
 };
+
+
+
+/*!
+ * \brief Footprint
+ */
+class TL_EXPORT Footprint
+	: public ProcessBase
+{
+
+public:
+
+	Footprint(const std::vector<Photo> &photos,
+		        const Path &dtm,
+		        const geospatial::Crs &crs,
+		        const Path &footprint);
+	~Footprint();
+	
+// Heredado vía ProcessBase
+
+private:
+
+	void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+	std::vector<Photo> mPhotos;
+	Path mDtm;
+	geospatial::Crs mCrs;
+	std::unique_ptr<VectorWriter> mFootprintWriter;
+};
+
+
+
+/*!
+ * \brief ZBuffer
+ */
+ class TL_EXPORT ZBuffer
+ {
+ public:
+ 	
+   ZBuffer(Orthorectification *orthorectification,
+		       const Rect<int> &rectOrtho,
+		       const Affine<PointD> &georeference
+		       /*double scale = -1.,
+		       double crop = 1.*/);
+   ~ZBuffer();
+ 
+ 	void run();
+ 
+ 	cv::Mat distances() const;
+ 	cv::Mat mapX() const;
+ 	cv::Mat mapY() const;
+ 
+ 	void clear();
+ 
+ private:
+
+  Orthorectification *mOrthorectification;
+	Rect<int> mRectOrtho;
+	Affine<PointD> mGeoreference;
+ //	double mScale;
+	//double mCrop;
+	Window<PointD> mWindowOrthoTerrain;
+	cv::Mat mDistances;
+ 	cv::Mat mY;
+ 	cv::Mat mX;
+	
+ };
+
+
+
+/*!
+ * \brief Orthoimage
+ */
+class TL_EXPORT Orthoimage
+{
+
+public:
+
+	Orthoimage(const Path &image,
+		         Orthorectification *orthorectification,
+		         const geospatial::Crs &crs,
+		         const Rect<int> &rectOrtho,
+		         const Affine<PointD> &georeference
+		         /*double scale = -1.,
+		         double crop = 1.*/);
+	~Orthoimage();
+
+	void run(const Path &ortho, const cv::Mat &visibilityMap = cv::Mat());
+
+private:
+
+	std::unique_ptr<ImageReader> mImageReader; 
+	Orthorectification *mOrthorectification;
+	geospatial::Crs mCrs;
+  Rect<int> mRectOrtho;
+	Affine<PointD> mGeoreference;
+	//double mScale; 
+	//double mCrop;
+	std::unique_ptr<ImageWriter> mOrthophotoWriter;
+	Window<PointD> mWindowOrthoTerrain;
+	
+};
+
+
+
+/*!
+ * \brief OrthoimageProcess
+ */
+class TL_EXPORT OrthoimageProcess
+	: public ProcessBase
+{
+
+public:
+
+	/*!
+	 * \brief  
+	 */
+	OrthoimageProcess(const std::vector<Photo> &photos,
+		                const Path &dtm,
+		                const Path &orthoPath,
+		                const Path &graphOrthos,
+		                const Crs &crs,
+		                const Path &footprint = Path(),
+	                 	double scale = -1,
+		                double crop = 1);
+	~OrthoimageProcess();
+
+private:
+
+	cv::Mat visibilityMap(const Orthorectification &orthorectification,
+		                    const ZBuffer &zBuffer) const;
+
+// Heredado vía ProcessBase
+
+private:
+
+	void execute(Progress *progressBar = nullptr) override;
+
+private:
+
+	std::vector<Photo> mPhotos;
+	Path mDtm;
+	Path mOrthoPath;
+	geospatial::Crs mCrs;
+	std::unique_ptr<VectorWriter> mFootprintWriter;
+	std::unique_ptr<VectorWriter> mGraphOrthosWriter;
+	double mScale; 
+	double mCrop;
+};
+
+
+
+/*!
+ * \brief Orthomosaic 
+ */
+//class TL_EXPORT Orthomosaic
+//{
+//
+//public:
+//
+//	enum class ExposureCompensator
+//	{
+//		no,
+//		gain,
+//		gain_blocks,
+//		channels,
+//		channels_blocks
+//	};
+//
+//	enum class SeamFinder
+//	{
+//		no,
+//		voronoi,
+//		color,
+//		color_grad
+//	};
+//
+//	enum class Blender
+//	{
+//		no,
+//		feather,
+//		multi_band
+//	};
+//
+//public:
+//
+//	Orthomosaic(const Path &footprint, 
+//		          const geospatial::Crs &crs,
+//		          const std::vector<tl::WindowD> &grid);
+//	~Orthomosaic();
+//	
+//	void run(const Path &footprint, const Path &orthomosaic, double resolution);
+//	
+//	ExposureCompensator exposureCompensator() const;
+//	void setExposureCompensator(ExposureCompensator exposureCompensator);
+//
+//	SeamFinder seamFinder() const;
+//	void setSeamFinder(SeamFinder seamFinder);
+//
+//	Blender blender() const;
+//	void setBlender(Blender blender);
+//
+//private:
+//
+//	void blender(const tl::Path &orthomosaic, 
+//		           tl::WindowD &window_all, 
+//		           double resolution, 
+//		           std::vector<std::string> &compensated_orthos, 
+//		           std::vector<std::string> &ortho_seams);
+//
+//
+//
+//private:
+//	
+//	ExposureCompensator mExposureCompensator;
+//	SeamFinder mSeamFinder;
+//	Blender mBlender;
+//	Path mFootprint;
+//	geospatial::Crs mCrs;
+//	std::vector<WindowD> mGrid;
+//
+//};
+
+
 
 } // End namespace geospatial
 

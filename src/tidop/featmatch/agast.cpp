@@ -214,7 +214,15 @@ std::vector<cv::KeyPoint> AgastDetector::detect(const cv::Mat &img,
                                                 cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mAgast->detect(img, keyPoints, mask);
+
+  try {
+
+    mAgast->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+  
   return keyPoints;
 }
 

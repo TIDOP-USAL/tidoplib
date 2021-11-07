@@ -88,10 +88,13 @@ private:
 
 
 
-TL_EXPORT Exception make_exception(const std::string &error, 
+TL_EXPORT Exception makeException(const std::string &error, 
                                    const std::string &file = std::string(), 
                                    int line= -1, 
                                    const std::string &function = std::string());
+
+
+TL_EXPORT void printException(const std::exception &e, int level = 0);
 
 
 
@@ -111,16 +114,19 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 /*!
  * \brief Macro para crear una excepción
  */
-#define TL_ERROR(...) tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_ERROR(...) tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
 /*!
  * \brief Macro para lanzar una excepción
  */
-#define TL_THROW_ERROR(...) throw tl::make_exception(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
+#define TL_THROW_EXCEPTION(...) throw tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION)
 
+ /*!
+  * \brief Macro para lanzar una excepción
+  */
+#define TL_THROW_EXCEPTION_WITH_NESTED(...) std::throw_with_nested(tl::makeException(tl::MessageManager::Message(__VA_ARGS__).message(), __FILE__, __LINE__, TL_FUNCTION))
 
-
-#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_ERROR( "Assertion '" #EXPRESSION "' " MESSAGE); }
+#define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " MESSAGE); }
 
 
 #endif // TL_CORE_EXCEPTION_H

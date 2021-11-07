@@ -190,9 +190,15 @@ void BoostDescriptor::update()
     descriptor_type = cv::xfeatures2d::BoostDesc::BINBOOST_256;
   }
 
-  mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
-                                              BoostProperties::useOrientation(),
-                                              static_cast<float>(BoostProperties::scaleFactor()));
+  try {
+
+    mBoost = cv::xfeatures2d::BoostDesc::create(descriptor_type,
+             BoostProperties::useOrientation(),
+             static_cast<float>(BoostProperties::scaleFactor()));
+
+  } catch (...) {
+  }
+  
 #endif
 
 #endif
@@ -227,19 +233,25 @@ cv::Mat BoostDescriptor::extract(const cv::Mat &img,
 {
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
 
-#if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
-  mBoost->compute(img, keyPoints, descriptors);
+#  if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR > 2)
+    mBoost->compute(img, keyPoints, descriptors);
 #  else
-  TL_COMPILER_WARNING("Boost Descriptor not supported in OpenCV versions < 3.3")
-  throw std::exception("Boost Descriptor not supported in OpenCV versions < 3.3");
-#endif
+    TL_COMPILER_WARNING("Boost Descriptor not supported in OpenCV versions < 3.3")
+    throw TL_ERROR("Boost Descriptor not supported in OpenCV versions < 3.3");
+#  endif
 
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Boost Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Boost Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Boost Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Boost Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return descriptors;
 }

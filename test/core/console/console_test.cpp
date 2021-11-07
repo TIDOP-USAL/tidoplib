@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(printMessage)
     console.printMessage("Test");
   }
 
-  BOOST_CHECK( output.is_equal( "\rTest\n" ) );
+  BOOST_CHECK( output.is_equal( "Test\n" ) );
 }
 
 

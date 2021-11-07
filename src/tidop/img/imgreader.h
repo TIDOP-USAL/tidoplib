@@ -46,6 +46,9 @@
 #ifdef HAVE_TL_GEOSPATIAL 
 #include "tidop/geospatial/crs.h"
 #endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -60,7 +63,7 @@ class TL_EXPORT ImageReader
 
 public:
 
-  ImageReader(std::string fileName);
+  ImageReader(tl::Path file);
   virtual ~ImageReader() = default;
 
   /*!
@@ -71,7 +74,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -86,7 +89,7 @@ public:
    * \return imagen
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
-                       Size<int> size = Size<int>(), 
+                       const Size<int> &size = Size<int>(), 
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!
@@ -193,7 +196,13 @@ public:
    */
   virtual WindowD window() const = 0;
 
-  std::string fileName() const;
+  tl::Path file() const;
+
+  virtual double noDataValue(bool *exist = nullptr) const = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual graph::Color noDataValue() const = 0;
+//#endif
 
 protected:
   
@@ -203,7 +212,7 @@ protected:
 
 private:
 
-  std::string mFileName;
+  Path mFile;
 
 };
 
@@ -220,8 +229,7 @@ private:
 
 public:
 
-  static std::unique_ptr<ImageReader> createReader(const std::string &fileName);
-  static std::unique_ptr<ImageReader> createReader(const Path &fileName);
+  static std::unique_ptr<ImageReader> createReader(const Path &file);
 };
 
 } // End namespace tl

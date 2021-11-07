@@ -220,7 +220,15 @@ void MserDetector::update()
 std::vector<cv::KeyPoint> MserDetector::detect(const cv::Mat &img, cv::InputArray &mask)
 {
   std::vector<cv::KeyPoint> keyPoints;
-  mMSER->detect(img, keyPoints, mask);
+
+  try {
+
+    mMSER->detect(img, keyPoints, mask);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
   return keyPoints;
 }
 

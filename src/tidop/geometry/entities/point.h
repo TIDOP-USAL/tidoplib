@@ -148,8 +148,8 @@ using PointF = Point<float>;
 template<typename T> inline
 Point<T>::Point()
   : Entity(Entity::Type::point2d),
-    x(static_cast<T>(0)), 
-    y(static_cast<T>(0)) 
+    x(math::consts::zero<T>), 
+    y(math::consts::zero<T>)
 {
 }
 
@@ -172,8 +172,8 @@ Point<T>::Point(const Point<T> &point)
 template<typename T> inline
 Point<T>::Point(Point<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, static_cast<T>(0))),
-    y(std::exchange(point.y, static_cast<T>(0)))
+    x(std::exchange(point.x, math::consts::zero<T>)),
+    y(std::exchange(point.y, math::consts::zero<T>))
 {
 }
 
@@ -197,10 +197,13 @@ template<typename T> inline
 Point<T> &Point<T>::operator = (const Point<T> &point)
 {
   if (this != &point) {
+
     Entity::operator = (point);
     this->x = point.x;
     this->y = point.y;
+
   }
+
   return *this;
 }
 
@@ -208,10 +211,13 @@ template<typename T> inline
 Point<T> &Point<T>::operator = (Point<T> &&point) TL_NOEXCEPT
 {
   if (this != &point) {
+
     Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, static_cast<T>(0));
-    this->y = std::exchange(point.y, static_cast<T>(0));
+    this->x = std::exchange(point.x, math::consts::zero<T>);
+    this->y = std::exchange(point.y, math::consts::zero<T>);
+
   }
+
   return *this;
 }
 
@@ -220,13 +226,19 @@ template<typename T> template<typename T2> inline
 Point<T>::operator Point<T2>() const
 {
   Point<T2> point;
+
   if (std::is_integral<T2>::value) {
+
     point.x = static_cast<T2>(std::round(this->x));
     point.y = static_cast<T2>(std::round(this->y));
+
   } else {
+
     point.x = static_cast<T2>(this->x);
     point.y = static_cast<T2>(this->y);
+
   }
+
   return point;
 }
 
@@ -234,17 +246,24 @@ template<typename T> template<typename T2> inline
 Point<T>::operator Point3<T2>() const
 {
   Point3<T2> point;
+
   if (std::is_integral<T2>::value) {
+
     point.x = static_cast<T2>(std::round(this->x));
     point.y = static_cast<T2>(std::round(this->y));
     point.z = static_cast<T2>(0);
+
   } else {
+
     point.x = static_cast<T2>(this->x);
     point.y = static_cast<T2>(this->y);
     point.z = static_cast<T2>(0);
+
   }
+
   return point;
 }
+TL_ENABLE_WARNING(TL_WARNING_C4244)
 
 template<typename T> inline
 math::Vector<T, 2> Point<T>::vector() const
@@ -257,6 +276,7 @@ Point<T>& operator += (Point<T> &pt1, const Point<T> &pt2)
 {
   pt1.x += pt2.x;
   pt1.y += pt2.y;
+
   return pt1;
 }
 
@@ -264,6 +284,7 @@ template<typename T1, typename T2> static inline
 Point<T1>& operator += (Point<T1> &pt1, const Point<T2> &pt2)
 {
   pt1 += static_cast<Point<T1>>(pt2);
+
   return pt1;
 }
 
@@ -272,6 +293,7 @@ Point<T>& operator -= (Point<T> &pt1, const Point<T> &pt2)
 {
   pt1.x -= pt2.x;
   pt1.y -= pt2.y;
+
   return pt1;
 }
 
@@ -279,6 +301,7 @@ template<typename T1, typename T2> static inline
 Point<T1>& operator -= (Point<T1> &pt1, const Point<T2> &pt2)
 {
   pt1 -= static_cast<Point<T1>>(pt2);
+
   return pt1;
 }
 
@@ -290,6 +313,7 @@ operator *= (Point<T1>& pt, T2 b)
 {
   pt.x = static_cast<T1>(std::round(pt.x * b));
   pt.y = static_cast<T1>(std::round(pt.y * b));
+
   return pt;
 }
 
@@ -301,6 +325,7 @@ operator *= (Point<T1>& pt, T2 b)
 {
   pt.x = static_cast<T1>(pt.x * b);
   pt.y = static_cast<T1>(pt.y * b);
+
   return pt;
 }
 
@@ -312,6 +337,7 @@ operator /= (Point<T1>& pt, T2 b)
 {
   pt.x = static_cast<T1>(std::round(pt.x / static_cast<double>(b)));
   pt.y = static_cast<T1>(std::round(pt.y / static_cast<double>(b)));
+
   return pt;
 }
 
@@ -323,6 +349,7 @@ operator /= (Point<T1>& pt, T2 b)
 {
   pt.x = static_cast<T1>(pt.x / b);
   pt.y = static_cast<T1>(pt.y / b);
+
   return pt;
 }
 
@@ -382,15 +409,15 @@ typename std::enable_if<
   Point<T2>>::type
 operator * (T1 a, const Point<T2> &b)
 {
-  return Point<T2>(static_cast<T2>(std::round(b.x*a)), 
-                   static_cast<T2>(std::round(b.y*a)));
+  return Point<T2>(static_cast<T2>(std::round(b.x * a)),
+                   static_cast<T2>(std::round(b.y * a)));
 }
 
 template<typename T1, typename T2> static inline
 typename std::enable_if<
   !std::is_integral<T2>::value,
   Point<T2>>::type
-operator * (T1 a, const Point<T2>& b)
+operator * (T1 a, const Point<T2> &b)
 {
   return Point<T2>(static_cast<T2>(b.x * a),
                    static_cast<T2>(b.y * a));
@@ -523,9 +550,9 @@ using Point3F = Point3<float>;
 template<typename T> inline
 Point3<T>::Point3()
   : Entity(Entity::Type::point3d),
-    x(0), 
-    y(0), 
-    z(0)
+    x(math::consts::zero<T>), 
+    y(math::consts::zero<T>), 
+    z(math::consts::zero<T>)
 {
 }
 
@@ -550,9 +577,9 @@ Point3<T>::Point3(const Point3<T> &point)
 template<typename T> inline
 Point3<T>::Point3(Point3<T> &&point) TL_NOEXCEPT
   : Entity(std::forward<Entity>(point)),
-    x(std::exchange(point.x, 0)),
-    y(std::exchange(point.y, 0)),
-    z(std::exchange(point.z, 0))
+    x(std::exchange(point.x, math::consts::zero<T>)),
+    y(std::exchange(point.y, math::consts::zero<T>)),
+    z(std::exchange(point.z, math::consts::zero<T>))
 {
 }
 
@@ -578,11 +605,14 @@ template<typename T> inline
 Point3<T> &Point3<T>::operator = (const Point3<T> &point)
 {
   if (this != &point) {
+
     Entity::operator = (point);
     this->x = point.x;
     this->y = point.y;
     this->z = point.z;
+
   }
+
   return *this;
 }
 
@@ -590,27 +620,37 @@ template<typename T> inline
 Point3<T> &Point3<T>::operator = (Point3 &&point) TL_NOEXCEPT
 {
   if (this != &point) {
+
     Entity::operator = (std::forward<Entity>(point));
-    this->x = std::exchange(point.x, 0);
-    this->y = std::exchange(point.y, 0);
-    this->z = std::exchange(point.z, 0);
+    this->x = std::exchange(point.x, math::consts::zero<T>);
+    this->y = std::exchange(point.y, math::consts::zero<T>);
+    this->z = std::exchange(point.z, math::consts::zero<T>);
+
   }
+
   return *this;
 }
+
 TL_DISABLE_WARNING(TL_WARNING_C4244)
 template<typename T> template<typename T2> inline
 Point3<T>::operator Point3<T2>() const
 {
   Point3<T2> point;
+
   if (std::is_integral<T2>::value) {
+
     point.x = static_cast<T2>(std::round(this->x));
     point.y = static_cast<T2>(std::round(this->y));
     point.z = static_cast<T2>(std::round(this->z));
+
   } else {
+
     point.x = static_cast<T2>(this->x);
     point.y = static_cast<T2>(this->y);
     point.z = static_cast<T2>(this->z);
+
   }
+
   return point;
 }
 
@@ -618,13 +658,19 @@ template<typename T> template<typename T2> inline
 Point3<T>::operator Point<T2>() const
 {
   Point<T2> point;
+
   if (std::is_integral<T2>::value) {
+
     point.x = static_cast<T2>(std::round(this->x));
     point.y = static_cast<T2>(std::round(this->y));
+
   } else {
+
     point.x = static_cast<T2>(this->x);
     point.y = static_cast<T2>(this->y);
+
   }
+
   return point;
 }
 TL_ENABLE_WARNING(TL_WARNING_C4244)
@@ -642,6 +688,7 @@ Point3<T>& operator += (Point3<T>& pt1, const Point3<T>& pt2)
   pt1.x += pt2.x;
   pt1.y += pt2.y;
   pt1.z += pt2.z;
+
   return pt1;
 }
 
@@ -649,6 +696,7 @@ template<typename T1, typename T2> static inline
 Point3<T1>& operator += (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
   pt1 += static_cast<Point3<T1>>(pt2);
+
   return pt1;
 }
 
@@ -658,6 +706,7 @@ Point3<T>& operator -= (Point3<T>& pt1, const Point3<T>& pt2)
   pt1.x -= pt2.x;
   pt1.y -= pt2.y;
   pt1.z -= pt2.z;
+
   return pt1;
 }
 
@@ -665,6 +714,7 @@ template<typename T1, typename T2> static inline
 Point3<T1>& operator -= (Point3<T1>& pt1, const Point3<T2>& pt2)
 {
   pt1 -= static_cast<Point3<T1>>(pt2);
+
   return pt1;
 }
 
@@ -672,11 +722,12 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   std::is_integral<T1>::value,
   Point3<T1> &>::type
-operator *= (Point3<T1>& pt, T2 b)
+operator *= (Point3<T1> &pt, T2 b)
 {
   pt.x = static_cast<T1>(std::round(pt.x * b));
   pt.y = static_cast<T1>(std::round(pt.y * b));
   pt.z = static_cast<T1>(std::round(pt.z * b));
+
   return pt;
 }
 
@@ -684,7 +735,7 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   !std::is_integral<T1>::value,
   Point3<T1> &>::type
-operator *= (Point3<T1>& pt, T2 b)
+operator *= (Point3<T1> &pt, T2 b)
 {
   pt.x = static_cast<T1>(pt.x * b);
   pt.y = static_cast<T1>(pt.y * b);
@@ -696,7 +747,7 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   std::is_integral<T1>::value,
   Point3<T1>&>::type
-operator /= (Point3<T1>& pt, T2 b)
+operator /= (Point3<T1> &pt, T2 b)
 {
   pt.x = static_cast<T1>(std::round(pt.x / static_cast<double>(b)));
   pt.y = static_cast<T1>(std::round(pt.y / static_cast<double>(b)));
@@ -708,7 +759,7 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   !std::is_integral<T1>::value,
   Point3<T1>&>::type
-operator /= (Point3<T1>& pt, T2 b)
+operator /= (Point3<T1> &pt, T2 b)
 {
   pt.x = static_cast<T1>(pt.x / static_cast<T1>(b));
   pt.y = static_cast<T1>(pt.y / static_cast<T1>(b));
@@ -717,31 +768,43 @@ operator /= (Point3<T1>& pt, T2 b)
 }
 
 template<typename T> static inline
-bool operator == (const Point3<T>& pt1, const Point3<T>& pt2)
+bool operator == (const Point3<T> &pt1,
+                  const Point3<T> &pt2)
 {
-  return pt1.x == pt2.x && pt1.y == pt2.y && pt1.z == pt2.z;
+  return pt1.x == pt2.x && 
+         pt1.y == pt2.y && 
+         pt1.z == pt2.z;
 }
 
 template<typename T> static inline
-bool operator != (const Point3<T>& pt1, const Point3<T>& pt2)
+bool operator != (const Point3<T>& pt1, 
+                  const Point3<T>& pt2)
 {
-  return pt1.x != pt2.x || pt1.y != pt2.y || pt1.z != pt2.z;
+  return pt1.x != pt2.x || 
+         pt1.y != pt2.y ||
+         pt1.z != pt2.z;
 }
 
 template<typename T> static inline
-Point3<T> operator + (const Point3<T>& pt1, const Point3<T>& pt2)
+Point3<T> operator + (const Point3<T> &pt1, 
+                      const Point3<T> &pt2)
 {
-  return Point3<T>(pt1.x + pt2.x, pt1.y + pt2.y, pt1.z + pt2.z);
+  return Point3<T>(pt1.x + pt2.x, 
+                   pt1.y + pt2.y, 
+                   pt1.z + pt2.z);
 }
 
 template<typename T> static inline
-Point3<T> operator - (const Point3<T>& pt1, const Point3<T>& pt2)
+Point3<T> operator - (const Point3<T> &pt1, 
+                      const Point3<T> &pt2)
 {
-  return Point3<T>(pt1.x - pt2.x, pt1.y - pt2.y, pt1.z - pt2.z);
+  return Point3<T>(pt1.x - pt2.x, 
+                   pt1.y - pt2.y, 
+                   pt1.z - pt2.z);
 }
 
 template<typename T> static inline
-Point3<T> operator - (const Point3<T>& pt1)
+Point3<T> operator - (const Point3<T> &pt1)
 {
   return Point3<T>(-pt1.x, -pt1.y, -pt1.z);
 }
@@ -750,18 +813,18 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   std::is_integral<T1>::value,
   Point3<T1>>::type
-operator * (const Point3<T1>& pt, T2 b)
+operator * (const Point3<T1> &pt, T2 b)
 {
-  return Point3<T1>(static_cast<T1>(std::round(pt.x*b)), 
-                    static_cast<T1>(std::round(pt.y*b)), 
-                    static_cast<T1>(std::round(pt.z*b)));
+  return Point3<T1>(static_cast<T1>(std::round(pt.x * b)), 
+                    static_cast<T1>(std::round(pt.y * b)), 
+                    static_cast<T1>(std::round(pt.z * b)));
 }
 
 template<typename T1, typename T2> static inline
 typename std::enable_if<
   !std::is_integral<T1>::value,
   Point3<T1>>::type
-operator * (const Point3<T1>& pt, T2 b)
+operator * (const Point3<T1> &pt, T2 b)
 {
   return Point3<T1>(static_cast<T1>(pt.x * b),
                     static_cast<T1>(pt.y * b),
@@ -772,18 +835,18 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   std::is_integral<T2>::value,
   Point3<T2>>::type
-operator * (T1 a, const Point3<T2>& pt)
+operator * (T1 a, const Point3<T2> &pt)
 {
-  return Point3<T2>(static_cast<T2>(std::round(pt.x*a)), 
-                    static_cast<T2>(std::round(pt.y*a)), 
-                    static_cast<T2>(std::round(pt.z*a)));
+  return Point3<T2>(static_cast<T2>(std::round(pt.x * a)), 
+                    static_cast<T2>(std::round(pt.y * a)), 
+                    static_cast<T2>(std::round(pt.z * a)));
 }
 
 template<typename T1, typename T2> static inline
 typename std::enable_if<
   !std::is_integral<T2>::value,
   Point3<T2>>::type
-operator * (T1 a, const Point3<T2>& pt)
+operator * (T1 a, const Point3<T2> &pt)
 {
   return Point3<T2>(static_cast<T2>(pt.x * a),
                     static_cast<T2>(pt.y * a),
@@ -794,11 +857,11 @@ template<typename T1, typename T2> static inline
 typename std::enable_if<
   std::is_integral<T1>::value,
   Point3<T1>>::type
-operator / (const Point3<T1>& pt, T2 b)
+operator / (const Point3<T1> &pt, T2 b)
 {
-  return Point3<T1>(static_cast<T1>(std::round(pt.x/static_cast<double>(b))), 
-                    static_cast<T1>(std::round(pt.y/static_cast<double>(b))), 
-                    static_cast<T1>(std::round(pt.z/static_cast<double>(b))));
+  return Point3<T1>(static_cast<T1>(std::round(pt.x / static_cast<double>(b))), 
+                    static_cast<T1>(std::round(pt.y / static_cast<double>(b))), 
+                    static_cast<T1>(std::round(pt.z / static_cast<double>(b))));
 }
 
 template<typename T1, typename T2> static inline

@@ -58,11 +58,17 @@ ImagingProcesses::~ImagingProcesses()
 
 void ImagingProcesses::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data")
+  try {
 
-  //matIn.copyTo(matOut);
-  for (const auto &process : mProcessList) {
-    process->run(matIn, matOut);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data")
+
+    matIn.copyTo(matOut);
+    for (const auto &process : mProcessList) {
+      process->run(matOut, matOut);
+    }
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("ImagingProcesses::run() failed"));
   }
 }
 
@@ -121,9 +127,15 @@ Normalize::Normalize(double lowRange, double upRange)
 
 void Normalize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+  try {
 
-  cv::normalize(matIn, matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+    cv::normalize(matIn, matOut, mLowRange, mUpRange, cv::NORM_MINMAX);
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Normalize::run() failed"));
+  }
 }
 
 void Normalize::setLowRange(double lowRange)
@@ -148,16 +160,23 @@ Binarize::Binarize(double thresh, double maxVal, bool bInverse)
 
 void Binarize::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+  try {
 
-  double th = mThresh, max = mMaxVal;
-  if (th == 0.0 && max == 0.0) {
-    cv::Scalar m, stdv;
-    cv::meanStdDev(matIn, m, stdv);
-    th = m[0] - stdv[0];
-    max = m[0] + stdv[0];
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+    double th = mThresh, max = mMaxVal;
+    if (th == 0.0 && max == 0.0) {
+      cv::Scalar m, stdv;
+      cv::meanStdDev(matIn, m, stdv);
+      th = m[0] - stdv[0];
+      max = m[0] + stdv[0];
+    }
+
+    cv::threshold(matIn, matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("Binarize::run() failed"));
   }
-  cv::threshold(matIn, matOut, th, max, bInverse ? cv::THRESH_BINARY_INV : cv::THRESH_BINARY);
 }
 
 void Binarize::setParameters(double thresh, double maxval, bool inverse)
@@ -186,9 +205,15 @@ EqualizeHistogram::EqualizeHistogram()
 
 void EqualizeHistogram::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+  try {
 
-  cv::equalizeHist(matIn, matOut);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+    cv::equalizeHist(matIn, matOut);
+  
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("EqualizeHistogram::run() failed"));
+  }
 }
 
 /* ---------------------------------------------------------------------------------- */
@@ -203,9 +228,15 @@ FunctionProcess::FunctionProcess(std::function<void(const cv::Mat&, cv::Mat&)> f
 
 void FunctionProcess::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+  try {
 
-  mFunction(matIn, matOut);
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image");
+
+    mFunction(matIn, matOut);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("FunctionProcess::run() failed"));
+  }
 }
 
 

@@ -35,6 +35,9 @@
 #include <boost/filesystem.hpp>
 #endif
 
+#include <ostream>
+
+
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
 #else
@@ -60,9 +63,20 @@ public:
     mPath = mPath.native();
   }
 
+  explicit Path(const std::wstring &path)
+    : mPath(path)
+  {
+    mPath = mPath.native();
+  }
+
   std::string toString() const
   {
     return mPath.string();
+  }
+  
+  std::wstring toWString() const
+  {
+    return mPath.wstring();
   }
 
   std::string fileName() const
@@ -109,6 +123,15 @@ public:
     return mPath.string();
   }
 
+  std::wstring replaceFileName(const std::wstring &fileName)
+  {
+    if (mPath.has_filename()) {
+      mPath.remove_filename();
+      mPath.append(fileName);
+    }
+    return mPath.wstring();
+  }
+
   std::string replaceBaseName(const std::string &baseName)
   {
     if (mPath.has_filename()) {
@@ -118,6 +141,17 @@ public:
       mPath.append(file_name);
     }
     return mPath.string();
+  }
+
+  std::wstring replaceBaseName(const std::wstring &baseName)
+  {
+    if (mPath.has_filename()) {
+      std::wstring ext = mPath.extension().wstring();
+      std::wstring file_name = baseName + ext;
+      mPath.remove_filename();
+      mPath.append(file_name);
+    }
+    return mPath.wstring();
   }
 
   std::string replaceExtension(const std::string &extension)
@@ -159,6 +193,11 @@ Path::Path(const std::string &path)
 {
 }
 
+Path::Path(const std::wstring &path)
+  : mPath(new internal::Path(path))
+{
+}
+
 Path::Path(const Path &path)
   : mPath(new internal::Path(*path.mPath))
 {
@@ -191,9 +230,19 @@ void Path::setPath(const std::string &path)
   mPath = std::make_unique<internal::Path>(path);
 }
 
+void Path::setPath(const std::wstring &path)
+{
+  mPath = std::make_unique<internal::Path>(path);
+}
+
 std::string Path::toString() const
 {
   return mPath->toString();
+}
+
+std::wstring Path::toWString() const
+{
+  return mPath->toWString();
 }
 
 std::string Path::fileName() const
@@ -289,7 +338,19 @@ Path &Path::replaceFileName(const std::string &fileName)
   return *this;
 }
 
+Path &Path::replaceFileName(const std::wstring &fileName)
+{
+  mPath->replaceFileName(fileName);
+  return *this;
+}
+
 Path &Path::replaceBaseName(const std::string &baseName)
+{
+  mPath->replaceBaseName(baseName);
+  return *this;
+}
+
+Path &Path::replaceBaseName(const std::wstring &baseName)
 {
   mPath->replaceBaseName(baseName);
   return *this;
@@ -334,6 +395,11 @@ bool Path::exists(const std::string &path)
   return Path(path).exists();
 }
 
+bool Path::exists(const std::wstring &path)
+{
+  return Path(path).exists();
+}
+
 Path Path::tempPath()
 {
   std::string temp = fs::temp_directory_path().string();
@@ -351,7 +417,17 @@ bool Path::createDirectory(const std::string &directory)
   return fs::create_directory(directory);
 }
 
+bool Path::createDirectory(const std::wstring &directory)
+{
+  return fs::create_directory(directory);
+}
+
 bool Path::createDirectories(const std::string &directory)
+{
+  return fs::create_directories(directory);
+}
+
+bool Path::createDirectories(const std::wstring &directory)
 {
   return fs::create_directories(directory);
 }
@@ -361,6 +437,10 @@ void Path::removeDirectory(const std::string &directory)
   fs::remove_all(directory);
 }
 
+void Path::removeDirectory(const std::wstring &directory)
+{
+  fs::remove_all(directory);
+}
 
 
 TemporalDir::TemporalDir(bool autoRemove)
@@ -379,6 +459,15 @@ TemporalDir::~TemporalDir()
 Path TemporalDir::path() const
 {
   return mPath;
+}
+
+
+
+
+std::ostream &operator<< (std::ostream &os, const Path &path)
+{
+  os << path.toString() << std::flush;
+  return os;
 }
 
 } // End namespace tl

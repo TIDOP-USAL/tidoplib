@@ -26,9 +26,10 @@
 
 #include <stdexcept>
 
+#include <tidop/math/algebra/rotation_convert.h>
+
 namespace tl
 {
-
 
 	
 /// Cámaras predefinidas
@@ -44,7 +45,7 @@ public:
   virtual ~CalibrationRadial1() override {}
 
   std::string name() const override {
-    return std::string("Simple radial");
+    return std::string("Radial 1");
   }
 
 };
@@ -60,7 +61,7 @@ public:
   virtual ~CalibrationRadial2() override {}
 
   std::string name() const override {
-    return std::string("Radial");
+    return std::string("Radial 2");
   }
 
 };
@@ -76,7 +77,7 @@ public:
   virtual ~CalibrationRadial3() override {}
 
   std::string name() const override {
-    return std::string("Full radial");
+    return std::string("Radial 3");
   }
 
 };
@@ -92,7 +93,7 @@ public:
   virtual ~CalibrationSimpleRadialFisheye() override {}
 
   std::string name() const override {
-    return std::string("Simple Radial Fisheye");
+    return std::string("Radial Fisheye 1");
   }
 
 };
@@ -109,7 +110,7 @@ public:
   virtual ~CalibrationRadialFisheye() override {}
 
   std::string name() const override {
-    return std::string("Radial Fisheye");
+    return std::string("Radial Fisheye 2");
   }
 
 };
@@ -126,7 +127,7 @@ public:
   virtual ~CalibrationOpenCV() override {}
 
   std::string name() const override {
-    return std::string("OpenCV");
+    return std::string("OpenCV 1");
   }
 
 };
@@ -160,7 +161,7 @@ public:
   virtual ~CalibrationOpenCVFull() override {}
 
   std::string name() const override {
-    return std::string("OpenCV Full");
+    return std::string("OpenCV 2");
   }
 
 };
@@ -177,7 +178,7 @@ public:
   virtual ~CalibrationSimplePinhole() override {}
 
   std::string name() const override {
-    return std::string("Simple Pinhole");
+    return std::string("Pinhole 1");
   }
 
 };
@@ -195,7 +196,7 @@ public:
   virtual ~CalibrationPinhole() override {}
 
   std::string name() const override {
-    return std::string("Pinhole");
+    return std::string("Pinhole 2");
   }
 
 };
@@ -439,25 +440,25 @@ std::shared_ptr<Calibration> CalibrationFactory::create(const std::string &camer
 {
   std::shared_ptr<Calibration> calibration;
 
-  if (cameraType.compare("Simple Pinhole") == 0){
+  if (cameraType.compare("Pinhole 1") == 0){
     calibration = std::make_shared<CalibrationSimplePinhole>();
-  } else if (cameraType.compare("Pinhole") == 0){
+  } else if (cameraType.compare("Pinhole 2") == 0){
     calibration = std::make_shared<CalibrationPinhole>();
-  } else if (cameraType.compare("Simple radial") == 0){
+  } else if (cameraType.compare("Radial 1") == 0){
     calibration = std::make_shared<CalibrationRadial1>();
-  } else if (cameraType.compare("Radial") == 0){
+  } else if (cameraType.compare("Radial 2") == 0){
     calibration =std::make_shared<CalibrationRadial2>();
-  } else if (cameraType.compare("OpenCV") == 0){
+  } else if (cameraType.compare("OpenCV 1") == 0){
     calibration = std::make_shared<CalibrationOpenCV>();
   } else if (cameraType.compare("OpenCV Fisheye") == 0){
     calibration = std::make_shared<CalibrationOpenCVFisheye>();
-  } else if (cameraType.compare("OpenCV Full") == 0){
+  } else if (cameraType.compare("OpenCV 2") == 0){
     calibration = std::make_shared<CalibrationOpenCVFull>();
-  } else if (cameraType.compare("Simple Radial Fisheye") == 0){
+  } else if (cameraType.compare("Radial Fisheye 1") == 0){
     calibration = std::make_shared<CalibrationSimpleRadialFisheye>();
-  } else if (cameraType.compare("Radial Fisheye") == 0){
+  } else if (cameraType.compare("Radial Fisheye 2") == 0){
     calibration = std::make_shared<CalibrationRadialFisheye>();
-  } else if (cameraType.compare("Full radial") == 0){
+  } else if (cameraType.compare("Radial 3") == 0){
     calibration = std::make_shared<CalibrationRadial3>();
   } else {
     throw std::runtime_error("Invalid Camera Type");
@@ -514,7 +515,7 @@ std::shared_ptr<Calibration> tl::CalibrationFactory::create(Calibration::CameraM
 Camera::Camera()
     : mMake(""),
       mModel(""),
-      mType("Radial"),
+      mType("Radial 2"),
       mFocal(1.),
       mWidth(0),
       mHeight(0),
@@ -527,7 +528,7 @@ Camera::Camera()
 Camera::Camera(const std::string &make, const std::string &model)
     : mMake(make),
       mModel(model),
-      mType("Radial"),
+      mType("Radial 2"),
       mFocal(1.),
       mWidth(0),
       mHeight(0),
@@ -646,6 +647,109 @@ Camera &Camera::operator =(const Camera &camera)
 
 void Camera::init()
 {
+}
+
+
+
+/* ------------------------------------------------------------------ */
+
+
+
+CameraPose::CameraPose()
+  : mPosition(),
+    mRotation(nullptr)
+{
+}
+
+CameraPose::CameraPose(double x, double y, double z, 
+                       const math::RotationMatrix<double> &rotationMatrix)
+  : mPosition(x, y, z),
+    mRotation(new math::RotationMatrix<double>(rotationMatrix))
+{
+}
+
+CameraPose::CameraPose(const Point3D &center,
+                       const math::RotationMatrix<double> &rotationMatrix)
+  : mPosition(center),
+    mRotation(new math::RotationMatrix<double>(rotationMatrix))
+{
+}
+
+CameraPose::CameraPose(double x, double y, double z,
+                       const math::Quaternion<double> &quaternion)
+  : mPosition(x, y, z),
+    mRotation(new math::Quaternion<double>(quaternion))
+{
+}
+
+CameraPose::CameraPose(const Point3D &center,
+                       const math::Quaternion<double> &quaternion)
+  : mPosition(center),
+    mRotation(new math::Quaternion<double>(quaternion))
+{
+}
+
+CameraPose::~CameraPose()
+{
+}
+
+Point3D CameraPose::position() const
+{
+  return mPosition;
+}
+
+void CameraPose::setPosition(const Point3D &position)
+{
+  mPosition = position;
+}
+
+math::Quaterniond tl::CameraPose::quaternion() const
+{
+  math::Quaterniond quaternion = math::Quaterniond::zero();
+
+  if (mRotation) {
+
+    math::Rotation::Type type = mRotation->rotationType();
+    if (type == math::Rotation::Type::quaternion) {
+      quaternion = *dynamic_cast<math::Quaterniond *>(mRotation.get());
+    } else if (type == math::Rotation::Type::rotation_matrix) {
+      math::RotationConverter<double>::convert(*dynamic_cast<math::RotationMatrix<double> *>(mRotation.get()), quaternion);
+    }
+
+  }
+
+  return quaternion;
+}
+
+void CameraPose::setQuaternion(const math::Quaterniond &quaternion)
+{
+  mRotation = std::make_shared<math::Quaternion<double>>(quaternion);
+}
+
+math::RotationMatrix<double> CameraPose::rotationMatrix() const
+{
+  math::RotationMatrix<double> rotation_matrix = math::RotationMatrix<double>::zero();
+
+  if (mRotation) {
+    math::Rotation::Type type = mRotation->rotationType();
+    if (type == math::Rotation::Type::quaternion) {
+      math::RotationConverter<double>::convert(*dynamic_cast<math::Quaternion<double> *>(mRotation.get()), rotation_matrix);
+    } else if (type == math::Rotation::Type::rotation_matrix) {
+      rotation_matrix = *dynamic_cast<math::RotationMatrix<double> *>(mRotation.get());
+    }
+  }
+
+  return rotation_matrix;
+}
+
+void CameraPose::setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix)
+{
+  mRotation = std::make_shared<math::RotationMatrix<double>>(rotationMatrix);
+}
+
+bool CameraPose::isEmpty() const
+{
+  return mPosition == Point3D();
 }
 
 

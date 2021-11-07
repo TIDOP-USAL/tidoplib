@@ -59,6 +59,11 @@ namespace math
 // - Mediana
 // - Moda
 
+
+/*! \defgroup Measure of Central Tendency
+ *  \{
+ */
+  
 /*!
  * \brief Media
  * La media es la suma de todos los datos partido del número de datos.
@@ -106,61 +111,31 @@ mean(It first, It last)
 }
 
 /*!
- * \brief Media
- * La media es la suma de todos los datos partido del número de datos.
- * Se representa como:
- * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n}  \f]
- * La medida de dispersión más utilizada para la media es la desviación típica o
- * desviación estándar, pero tambień puede ser otra como el recorrido, coeficiente
- * de variación, etc.
- * Es muy sensible a datos discordantes (outliers)
- * \param[in] container Objeto contenedor
- * \return Valor de la media
- */
-template<typename T> inline
-double mean(const T &container)
-{
-  return mean(container.begin(), container.end());
-}
-
-/*!
  * \brief La Mediana es el valor de la variable que toma la posición central de la distribución.
  * Es el valor que verifica que el 50% de las variables son mayores o iguales
  * que él y que el otro 50% son menores.
  * La mediana tiene que ir acompañada de una medida de dispersión (por lo general por el Recorrido
- * Intercuantilico)
+ * Intercuartílico)
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  * \return Valor de la mediana
  */
 template<typename It> inline
-double median(It first, It last)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+median(It first, It last)
 {
-  auto n = std::distance(first, last);
-  std::vector<typename std::iterator_traits<It>::value_type> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-
-  if (n % 2 != 0){
-    return static_cast<double>(copy_container[n/2]);
-  } else
-    return static_cast<double>(copy_container[n / 2 - 1] + copy_container[n / 2]) / 2.;
+  return tl::math::quantile(first, last, 0.5);
 }
 
-/*!
- * \brief La Mediana es el valor de la variable que toma la posición central de la distribución.
- * Es el valor que verifica que el 50% de las variables son mayores o iguales
- * que él y que el otro 50% son menores.
- * La mediana tiene que ir acompañada de una medida de dispersión (por lo general por el Recorrido
- * Intercuantilico)
- * \param[in] container Objeto contenedor
- * \return Valor de la mediana
- */
-template<typename T> inline
-double median(const T &container)
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+median(It first, It last)
 {
-  return median(container.begin(), container.end());
+  return tl::math::quantile(first, last, 0.5);
 }
 
 
@@ -203,6 +178,12 @@ typename T::value_type mode(const T &container)
   return mode(container.begin(), container.end());
 }
 
+/*! \} */ // end of Measure of Central Tendency
+
+
+/*! \defgroup Dispersion
+ *  \{
+ */
 
 // Medidas de dispersión
 // - Recorrido
@@ -210,6 +191,150 @@ typename T::value_type mode(const T &container)
 // - Desviación típica
 // - Coeficiente de variación
 // - Recorrido intercuantilico
+
+/*!
+ * \brief Sample Variance
+ *
+ * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
+ *
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Varianza del conjunto de datos
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+variance(It first, It last)
+{
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<double>;
+
+  double _mean = mean(first, last);
+  double sum{};
+  double ep{};
+  double aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / (n - 1);
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+variance(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<T>;
+
+  T _mean = mean(first, last);
+  T sum{};
+  T ep{};
+  T aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / (n - 1);
+}
+
+
+/*!
+ * \brief Varianza
+ *
+ * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
+ *
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Varianza del conjunto de datos
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+populationVariance(It first, It last)
+{
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<double>;
+
+  double _mean = mean(first, last);
+  double sum{};
+  double ep{};
+  double aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / n;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+populationVariance(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  auto n = std::distance(first, last);
+  if (n <= 1) return consts::one<T>;
+
+  T _mean = mean(first, last);
+  T sum{};
+  T ep{};
+  T aux{};
+
+  while (first != last) {
+    aux = *first++ - _mean;
+    ep += aux;
+    sum += aux * aux;
+  }
+
+  return (sum - ep * ep / n) / n;
+}
+
+
+/*!
+ * \brief Desviación típica
+ *
+ * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}}  \f]
+ *
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \return Desviación típica del conjunto de datos
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+standarDeviation(It first, It last)
+{
+  return sqrt(variance(first, last));
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+standarDeviation(It first, It last)
+{
+  return sqrt(variance(first, last));
+}
+
 
 /*!
  * \brief Rango o recorrido
@@ -230,158 +355,372 @@ typename std::iterator_traits<It>::value_type range(It first, It last)
   return _r;
 }
 
-/*!
- * \brief Rango o recorrido
- * El Rango es la diferencia entre el valor mayor y el menor del conjunto de datos
- * \f[ R=x_{max}-x_{min} \f]
- * \param[in] container Objeto contenedor
- * \return Valor del rango para el conjunto de datos
- */
-template<typename T> inline
-typename T::value_type range(const T &container)
-{
-  return range(container.begin(), container.end());
-}
 
 /*!
- * \brief Rango o recorrido intercuantilico
- * El RI es la diferencia entre el tercer quartil y el primer cuartil
+ * \brief Rango o recorrido intercuartilico
+ * El RI es la diferencia entre el tercer quartil (percentil 75) y el 
+ * primer cuartil (percentil 25)
  * \f[ RI=Q_3-Q_1 \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  * \return Valor del rango para el conjunto de datos
  */
 template<typename It> inline
-double interquartileRange(It first, It last)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+interquartileRange(It first, It last)
 {
-  double q1;
-  double q3;
-
-  auto n = std::distance(first, last);
-  std::vector<typename std::iterator_traits<It>::value_type> copy_container(n);
-  std::copy(first, last, copy_container.begin());
-  std::sort(copy_container.begin(), copy_container.end());
-
-  q1 = (n % 4 != 0) ?
-        static_cast<double>(copy_container[n/4]) :
-        static_cast<double>(copy_container[n / 4 - 1] + copy_container[n / 4]) / 2.;
-
-  q3 = (n % 4 != 0) ?
-        static_cast<double>(copy_container[n*3/4]) :
-        static_cast<double>(copy_container[n*3/4 - 1] + copy_container[n*3/4]) / 2.;
+  double q1 = tl::math::quantile(first, last, 0.25);
+  double q3 = tl::math::quantile(first, last, 0.75);
 
   return q3-q1;
 }
 
-/*!
- * \brief Rango o recorrido intercuantilico
- * El RI es la diferencia entre el tercer quartil y el primer cuartil
- * \f[ RI=Q_3-Q_1 \f]
- * \param[in] container Objeto contenedor
- * \return Valor del rango para el conjunto de datos
- */
-template<typename T> inline
-double interquartileRange(const T &container)
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+interquartileRange(It first, It last)
 {
-  return interquartileRange(container.begin(), container.end());
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = tl::math::quantile(first, last, 0.25);
+  T q3 = tl::math::quantile(first, last, 0.75);
+
+  return q3 - q1;
 }
 
+
 /*!
- * \brief Varianza
- *
- * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
- *
+ * \brief Mean Absolute Deviation
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
- * \return Varianza del conjunto de datos
  */
 template<typename It> inline
-double variance(It first, It last)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+meanAbsoluteDeviation(It first, It last)
 {
-  auto n = std::distance(first, last);
-  if (n <= 1) return 0.0;
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<double>;
+
   double _mean = mean(first, last);
-  double sum = 0.0;
-  double ep = 0.0;
-  double aux = 0.0;
+  double sum{};
+
   while (first != last) {
-    aux = *first++ - _mean;
-    ep += aux;
-    sum += aux*aux;
+    sum += std::abs(static_cast<double>(*first++) - _mean);
+  }
+  return sum / n;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+meanAbsoluteDeviation(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<T>;
+
+  T _mean = mean(first, last);
+  T sum{};
+
+  while (first != last) {
+    sum += std::abs(*first++ - _mean);
+  }
+  return sum / n;
+}
+
+
+/*!
+ * \brief Median Absolute Deviation
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+medianAbsoluteDeviation(It first, It last)
+{
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<double>;
+
+  double _median = median(first, last);
+  double sum{};
+
+  std::vector<double> x(n);
+  auto x_it = x.begin();
+
+  while (first != last) {
+    *x_it++ = std::abs(static_cast<double>(*first++) - _median);
   }
 
-  return (sum - ep*ep / n) / (n - 1);
+  return median(x.begin(), x.end());
 }
 
-/*!
- * \brief Varianza
- *
- * \f[ \sigma² = \frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}  \f]
- *
- * \param[in] container Objeto contenedor
- * \return Varianza del conjunto de datos
- */
-template<typename T> inline
-double variance(const T &container)
-{
-  return variance(container.begin(), container.end());
-}
-
-/*!
- * \brief Desviación típica
- *
- * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}}  \f]
- *
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return Desviación típica del conjunto de datos
- */
 template<typename It> inline
-double standarDeviation(It first, It last)
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+medianAbsoluteDeviation(It first, It last)
 {
-  return sqrt(variance(first, last));
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 1) return consts::zero<T>;
+
+  T _median = median(first, last);
+  T sum{};
+
+  std::vector<T> x(n);
+  auto x_it = x.begin();
+
+
+  while (first != last) {
+    *x_it++ = std::abs(*first++ - _median);
+  }
+
+  return median(x.begin(), x.end());
 }
 
-/*!
- * \brief Desviación típica
- *
- * \f[ \sigma = +\sqrt{\frac{\sum_{i=1}^n (x_i - \overline{x})²}{n}}  \f]
- *
- * \param[in] container Objeto contenedor
- * \return Desviación típica del conjunto de datos
- */
-template<typename T> inline
-double standarDeviation(const T &container)
-{
-  return standarDeviation(container.begin(), container.end());
-}
 
 /*!
- * \brief Coeficiente de variación
+ * \brief Coefficient of variation (CV) or Relative Standard Deviation (RSD)
  * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  * \return Coeficiente de variación para el conjunto de datos
  */
 template<typename It> inline
-double coefficientOfVariation(It first, It last)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+coefficientOfVariation(It first, It last)
 {
-  return static_cast<double>(standarDeviation(first, last) 
-                             / fabs(mean(first, last)));
+  return standarDeviation(first, last) / std::abs(mean(first, last));
 }
 
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+coefficientOfVariation(It first, It last)
+{
+  return standarDeviation(first, last) / std::abs(mean(first, last));
+}
+
+
 /*!
- * \brief Coeficiente de variación
- * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
+ * \brief Quartile coefficient of dispersion
+ * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
- * \return Coeficiente de variación para el conjunto de datos
  */
-template<typename T> inline
-double coefficientOfVariation(const T &container)
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quartileCoefficientOfDispersion(It first, It last)
 {
-  return coefficientOfVariation(container.begin(), container.end());
+  double q1 = quantile(first, last, 0.25);
+  double q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / (q3 + q1);
 }
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quartileCoefficientOfDispersion(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = quantile(first, last, 0.25);
+  T q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / (q3 + q1);
+}
+
+
+/*!
+ * \brief Quartile coefficient of dispersion
+ * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quartileDeviation(It first, It last)
+{
+  double q1 = quantile(first, last, 0.25);
+  double q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / 2.;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quartileDeviation(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q1 = quantile(first, last, 0.25);
+  T q3 = quantile(first, last, 0.75);
+
+  return (q3 - q1) / consts::two<T>;
+}
+
+
+/*!
+ * \brief Biweight Midvariance
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+biweightMidvariance(It first, It last)
+{
+  size_t n = std::distance(first, last);
+  if (n <= 2) return consts::zero<double>;
+
+  double _median = median(first, last);
+  double mad = medianAbsoluteDeviation(first, last);
+
+  double num{};
+  double den{};
+  while (first != last) {
+    double x = *first++ - _median;
+    double u = x / (9 * mad);
+    if (std::abs(u) < consts::one<double>) {
+      double u2 = u * u;
+      double y = consts::one<double> -u2;
+      double y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<double> -static_cast<double>(5) * u2);
+    }
+  }
+
+  if (den == consts::zero<double>)
+    return consts::zero<double>;
+
+  return n * num / (den * den);
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+biweightMidvariance(It first, It last)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  size_t n = std::distance(first, last);
+  if (n <= 2) return consts::zero<T>;
+
+  T _median = median(first, last);
+  T mad = medianAbsoluteDeviation(first, last);
+
+  T num{};
+  T den{};
+  while (first != last) {
+    T x = *first++ - _median;
+    T u = x / (9 * mad);
+    if (std::abs(u) < consts::one<T>) {
+      T u2 = u * u;
+      T y = consts::one<T> -u2;
+      T y2 = y * y;
+      num += x * x * y2 * y2;
+      den += y * (consts::one<T> -static_cast<T>(5) * u2);
+    }
+  }
+
+  if (den == consts::zero<T>)
+    return consts::zero<T>;
+
+  return n * num / (den * den);
+}
+
+
+/*! \} */ // end of Dispersion
+
+
+/*!
+ * \brief Quantile
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \param[in] p [0,1]
+ * \return
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quantile(It first, It last, double p)
+{
+  double q;
+
+  auto n = std::distance(first, last);
+  std::vector<typename std::iterator_traits<It>::value_type> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n+1) * p - 1.;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = static_cast<double>(sort_vector[idx_1]);
+  } else {
+    q = static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+  }
+
+  return q;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quantile(It first, It last, double p)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q;
+
+  auto n = std::distance(first, last);
+  std::vector<T> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n + 1) * p - 1.;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = sort_vector[idx_1];
+  } else {
+    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+  }
+
+  return q;
+}
+
+
+
+
+
 
 /*!
  * \brief covariance
@@ -391,17 +730,21 @@ double coefficientOfVariation(const T &container)
  * \return
  */
 template<typename It> inline
-double covariance(It first_x, It last_x, It first_y, It last_y)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+covariance(It first_x, It last_x, It first_y, It last_y)
 {
   auto n_x = std::distance(first_x, last_x);
   auto n_y = std::distance(first_y, last_y);
-  if (n_x != n_y || n_x <= 1) return 0.;
+  if (n_x != n_y || n_x <= 1) return consts::zero<double>;
 
   double mean_x = mean(first_x, last_x);
   double mean_y = mean(first_y, last_y);
-  double sum = 0.0;
-  double x = 0.0;
-  double y = 0.0;
+  double sum{};
+  double x{};
+  double y{};
+
   while (first_x != last_x) {
     x = *first_x++ - mean_x;
     y = *first_y++ - mean_y;
@@ -411,21 +754,33 @@ double covariance(It first_x, It last_x, It first_y, It last_y)
   return sum / n_x;
 }
 
-/*!
- * \brief covariance
- * \f[ \S_{xy} = \frac{\sum_{i=1}^n (x_i - \overline{x})(y_i - \overline{y})}{n}  \f]
- * \param[in] container1 Objeto contenedor
- * \param[in] container2 Objeto contenedor
- * \return
- */
-template<typename T> inline
-double covariance(const T &container1, const T &container2)
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+covariance(It first_x, It last_x, It first_y, It last_y)
 {
-  return covariance(container1.begin(), 
-                    container1.end(), 
-                    container2.begin(), 
-                    container2.end());
+  using T = typename std::iterator_traits<It>::value_type;
+
+  auto n_x = std::distance(first_x, last_x);
+  auto n_y = std::distance(first_y, last_y);
+  if (n_x != n_y || n_x <= 1) return consts::zero<T>;
+
+  T mean_x = mean(first_x, last_x);
+  T mean_y = mean(first_y, last_y);
+  T sum{};
+  T x{};
+  T y{};
+
+  while (first_x != last_x) {
+    x = *first_x++ - mean_x;
+    y = *first_y++ - mean_y;
+    sum += x * y;
+  }
+
+  return sum / n_x;
 }
+
 
 /*!
  * \brief pearsonCorrelationCoefficient
@@ -436,31 +791,35 @@ double covariance(const T &container1, const T &container2)
  * \return
  */
 template<typename It> inline
-double pearsonCorrelationCoefficient(It first_x, It last_x, 
-                                     It first_y, It last_y)
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+pearsonCorrelationCoefficient(It first_x, It last_x,
+                              It first_y, It last_y)
 {
   auto n_x = std::distance(first_x, last_x);
   auto n_y = std::distance(first_y, last_y);
-  if (n_x != n_y || n_x <= 1) return 0.;
-  return covariance(first_x, last_x, first_y, last_y)
-         / (standarDeviation(first_x, last_x)*standarDeviation(first_y, last_y));
+  if (n_x != n_y || n_x <= 1) return consts::zero<double>;
+  return covariance(first_x, last_x, first_y, last_y) /
+         (standarDeviation(first_x, last_x)*standarDeviation(first_y, last_y));
 }
 
-/*!
- * \brief Pearson Correlation Coefficient
- * \param[in] container1 Objeto contenedor
- * \param[in] container2 Objeto contenedor
- * \return
- */
-template<typename T> inline
-double pearsonCorrelationCoefficient(const T &container1, 
-                                     const T &container2)
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+pearsonCorrelationCoefficient(It first_x, It last_x,
+                              It first_y, It last_y)
 {
-  return pearsonCorrelationCoefficient(container1.begin(),
-                                       container1.end(), 
-                                       container2.begin(), 
-                                       container2.end());
+  using T = typename std::iterator_traits<It>::value_type;
+
+  auto n_x = std::distance(first_x, last_x);
+  auto n_y = std::distance(first_y, last_y);
+  if (n_x != n_y || n_x <= 1) return consts::zero<T>;
+  return covariance(first_x, last_x, first_y, last_y) /
+         (standarDeviation(first_x, last_x) * standarDeviation(first_y, last_y));
 }
+
 
 template<typename itIn, typename itOut> inline
 double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
@@ -473,114 +832,353 @@ double rootMeanSquareError(itIn in_first, itIn in_last, itOut out_first)
   return rms;
 }
 
-//average deviation or mean absolute deviation
-// Estimador mas robusto que la desviacion estandar y la varianza
-template<typename It> inline
-double averageAbsoluteDeviation(It first, It last)
+
+template<typename itIn, typename itOut> inline
+void zScore(itIn in_first, itIn in_last, itOut out_first)
 {
-  size_t n = std::distance(first, last);
-  if (n <= 1) return 0.0;
-  double _mean = mean(first, last);
-  double sum = 0.0;
-  while (first != last) {
-    sum += std::abs(static_cast<double>(*first++) - _mean);
+  double _mean = mean(in_first, in_last);
+  double standar_deviation =  standarDeviation(in_first, in_last);
+
+  while (in_first != in_last) {
+    *out_first++ = (*in_first++ - _mean) / standar_deviation;
   }
-  return sum / n;
+}
+
+
+template<typename T>
+class ConfusionMatrix
+{
+
+public:
+
+  enum class Classification
+  {
+    true_positives,
+    false_positives,
+    true_negatives,
+    false_negatives
+  };
+
+public:
+
+  ConfusionMatrix(const std::vector<std::pair<T, int>> &data);
+  virtual ~ConfusionMatrix() = default;
+
+  /*!
+   * \brief positives
+   * positives = TP + FN
+   * \return
+   */
+  size_t positives() const;
+
+  /*!
+   * \brief negatives
+   * negatives = FP + TN
+   * \return
+   */
+  size_t negatives() const;
+
+  /*!
+   * \brief True Positives
+   * \param[in] threshold
+   * \return
+   */
+  size_t truePositives(T threshold) const;
+
+  /*!
+   * \brief False Positives
+   * \param[in] threshold
+   * \return
+   */
+  size_t falsePositives(T threshold) const;
+
+  /*!
+   * \brief True Negatives
+   * \param[in] threshold
+   * \return
+   */
+  size_t trueNegatives(T threshold) const;
+
+  /*!
+   * \brief False Negatives
+   * \param[in] threshold
+   * \return
+   */
+  size_t falseNegatives(T threshold) const;
+
+  /*!
+   * \brief accuracy
+   * \param[in] threshold
+   * \return
+   */
+  double accuracy(T threshold) const;
+
+  /*!
+   * \brief Precision or Positive Predictive Value
+   * \param[in] threshold
+   * \return
+   */
+  double positivePredictiveValue(T threshold) const;
+
+  /*!
+   * \brief Negative Predictive Value
+   * \param[in] threshold
+   * \return
+   */
+  double negativePredictiveValue(T threshold) const;
+
+  /*!
+   * \brief True Positive Rate, Recall or Sensitivity
+   * \param[in] threshold
+   * \return
+   */
+  double truePositiveRate(T threshold) const;
+
+  /*!
+   * \brief False Positive Rate or Fall-out
+   * \param[in] threshold
+   * \return
+   */
+  double falsePositiveRate(T threshold) const;
+
+  /*!
+   * \brief True Negative Rate or Specificity
+   * \param[in] threshold
+   * \return
+   */
+  double trueNegativeRate(T threshold) const;
+
+  /*!
+   * \brief False Negative Rate
+   * \param[in] threshold
+   * \return
+   */
+  double falseNegativeRate(T threshold) const;
+
+  static double truePositiveRate(size_t tp, size_t positives);
+  static double falsePositiveRate(size_t fp, size_t negatives);
+  static double trueNegativeRate(size_t tn, size_t negatives);
+  static double falseNegativeRate(size_t fn, size_t positives);
+  static double positivePredictiveValue(size_t tp, size_t fp);
+  static double negativePredictiveValue(size_t fn, size_t tn);
+  static double accuracy(size_t tp, size_t tn, size_t positives, size_t negatives);
+
+private:
+
+  /*!
+   * \brief Confussion matrix for the specified threshold
+   * \param[in] threshold
+   * \return Confussion Matrix
+   */
+  std::map<Classification, size_t> compute(T threshold) const;
+
+private:
+
+  std::vector<std::pair<T, int>> mData;
+  size_t mPositives;
+  size_t mNegatives;
+
+};
+
+
+template<typename T>
+ConfusionMatrix<T>::ConfusionMatrix(const std::vector<std::pair<T, int>> &data)
+  : mData(data),
+    mPositives(0),
+    mNegatives(0)
+{
+  std::sort(mData.begin(), mData.end(),
+            [](const std::pair<T, int> &data1,
+               const std::pair<T, int> &data2) {
+              return data1.first < data2.first; });
+
+  for (const auto &data : mData) {
+    if (data.second == 1) {
+      mPositives++;
+    } else {
+      mNegatives++;
+    }
+  }
+
 }
 
 template<typename T> inline
-double averageAbsoluteDeviation(const T &container)
+size_t ConfusionMatrix<T>::positives() const
 {
-  return averageAbsoluteDeviation(container.begin(), container.end());
+  return mPositives;
 }
-
-/*!
- * \brief skewness
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return
- */
-template<typename It> inline
-double skewness(It first, It last)
-{
-  size_t n = std::distance(first, last);
-// Varianza
-  if (n <= 1) return 0.;
-  double _mean = mean(first, last);
-  double ep = 0.;
-  double aux = 0.;
-  double aux2 = 0.;
-  double skew = 0.;
-  double sum = 0.;
-  while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux*aux);
-    skew += aux2 * aux;
-  }
-
-  double variance =  (sum - ep*ep / n) / (n - 1);
-
-  if (variance != 0.) {
-    double stdDev = sqrt(variance);
-    return skew / (n*variance*stdDev);
-  } else return 0.;
-}
-
-/*!
- * \brief skewness
- * \param container Objeto contenedor
- * \return
- */
-template<typename T> inline
-double skewness(const T &container)
-{
-  return skewness(container.begin(), container.end());
-}
-
-
-/*!
- * \brief kurtosis
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \return
- */
-template<typename It> inline
-double kurtosis(It first, It last)
-{
-  size_t n = std::distance(first, last);
-// Varianza
-  if (n <= 1) return 0.;
-  double _mean = mean(first, last);
-  double ep = 0.;
-  double aux = 0.;
-  double _kurtosis = 0.;
-  double aux2 = 0.;
-  double sum = 0.;
-
-  while (first != last) {
-    aux = static_cast<double>(*first++) - _mean;
-    ep += aux;
-    sum += (aux2 = aux*aux);
-    _kurtosis += aux2;
-  }
-
-  double variance = (sum - ep*ep / n) / (n - 1);
-
-  if (variance != 0.) {
-    _kurtosis /= (n*variance*variance);
-    return _kurtosis - 3.;
-  } else return 0.;
-}
-
 
 template<typename T> inline
-double kurtosis(const T &container)
+size_t ConfusionMatrix<T>::negatives() const
 {
-  return kurtosis(container.begin(), container.end());
+  return mNegatives;
 }
 
+template<typename T> inline
+size_t ConfusionMatrix<T>::truePositives(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  return confussionMatrix[Classification::true_positives];
+}
 
+template<typename T> inline
+size_t ConfusionMatrix<T>::falsePositives(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  return confussionMatrix[Classification::false_positives];
+}
+
+template<typename T> inline
+size_t ConfusionMatrix<T>::trueNegatives(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  return confussionMatrix[Classification::true_negatives];
+}
+
+template<typename T> inline
+size_t ConfusionMatrix<T>::falseNegatives(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  return confussionMatrix[Classification::false_negatives];
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::accuracy(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+
+  return (mPositives + mNegatives) ?
+    static_cast<double>(confussionMatrix[Classification::true_positives] + confussionMatrix[Classification::true_negatives])
+    / static_cast<double>(mPositives + mNegatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::positivePredictiveValue(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double tp = confussionMatrix[Classification::true_positives];
+  double fp = confussionMatrix[Classification::false_positives];
+  return ((tp + fp) > 0.) ? tp / (tp + fp) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::negativePredictiveValue(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double fn = confussionMatrix[Classification::false_negatives];
+  double tn = confussionMatrix[Classification::true_negatives];
+  return (fn + tn > 0.) ? tn / (fn + tn) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::truePositiveRate(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double tp = confussionMatrix[Classification::true_positives];
+  return mPositives ? tp / static_cast<double>(mPositives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::falsePositiveRate(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double fp = confussionMatrix[Classification::false_positives];
+  return mNegatives ? static_cast<double>(fp) / static_cast<double>(mNegatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::trueNegativeRate(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double tn = confussionMatrix[Classification::true_negatives];
+  return mNegatives ? static_cast<double>(tn) / static_cast<double>(mNegatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::falseNegativeRate(T threshold) const
+{
+  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
+  double fn = confussionMatrix[Classification::false_negatives];
+  return mPositives ? static_cast<double>(fn) / static_cast<double>(mPositives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::truePositiveRate(size_t tp, size_t positives)
+{
+  return positives ? static_cast<double>(tp) / static_cast<double>(positives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::falsePositiveRate(size_t fp, size_t negatives)
+{
+  return negatives ? static_cast<double>(fp) / static_cast<double>(negatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::trueNegativeRate(size_t tn, size_t negatives)
+{
+  return negatives ? static_cast<double>(tn) / static_cast<double>(negatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::falseNegativeRate(size_t fn, size_t positives)
+{
+  return positives ? static_cast<double>(fn) / static_cast<double>(positives) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::positivePredictiveValue(size_t tp, size_t fp)
+{
+  return ( (tp + fp) > static_cast<size_t>(0)) ? tp / static_cast<double>(tp + fp) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::negativePredictiveValue(size_t fn, size_t tn)
+{
+  return (fn + tn > static_cast<size_t>(0)) ? tn / static_cast<double>(fn + tn) : -consts::one<double>;
+}
+
+template<typename T> inline
+double ConfusionMatrix<T>::accuracy(size_t tp, size_t tn, size_t positives, size_t negatives)
+{
+  return (positives + negatives) ?
+    static_cast<double>(tp+tn)
+      / static_cast<double>(positives + negatives) : -consts::one<double>;
+}
+
+template<typename T> inline
+std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>::compute(T threshold) const
+{
+  size_t true_positives = 0;
+  size_t false_positives = 0;
+  size_t true_negatives = 0;
+  size_t false_negatives = 0;
+
+  for (size_t j = 0; j < mData.size(); j++) {
+
+    if (mData[j].first < threshold) {
+      if (mData[j].second == 1)
+        false_negatives++;
+      else
+        true_negatives++;
+    }
+    else {
+      if (mData[j].second == 0)
+        false_positives++;
+      else
+        true_positives++;
+    }
+
+  }
+
+  std::map<Classification, size_t> confussionMatrix;
+  confussionMatrix[Classification::true_positives] = true_positives;
+  confussionMatrix[Classification::false_positives] = false_positives;
+  confussionMatrix[Classification::true_negatives] = true_negatives;
+  confussionMatrix[Classification::false_negatives] = false_negatives;
+
+  return confussionMatrix;
+}
 
 /*! \} */ // end of Statistic
 

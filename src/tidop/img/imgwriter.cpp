@@ -44,8 +44,8 @@ namespace tl
 {
 
 
-ImageWriter::ImageWriter(const std::string &fileName)
-  : mFileName(fileName)
+ImageWriter::ImageWriter(tl::Path file)
+  : mFile(std::move(file))
 {
 
 }
@@ -73,20 +73,20 @@ class ImageWriterGdal
 
 public:
 
-  ImageWriterGdal(const std::string &fileName)
-    : ImageWriter(fileName),
+  ImageWriterGdal(tl::Path file)
+    : ImageWriter(std::move(file)),
       mDataset(nullptr),
       mDriver(nullptr),
       mValidDataTypes(DataType::TL_8U),
       bTempFile(false),
-      mTempName(""),
+      mTempFile(""),
       mDataType(DataType::TL_8U),
       mImageOptions(nullptr),
       mImageMetadata(nullptr),
 #if _DEBUG
-    mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+      mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
 #else
-    mSpatialReference(new OGRSpatialReference(nullptr))
+      mSpatialReference(new OGRSpatialReference(nullptr))
 #endif
   {
     RegisterGdal::init();
@@ -110,38 +110,38 @@ public:
 
   void open() override
   {
-    this->close();
+    try {
+    
+      this->close();
+  
+      std::string driver_name = gdalDriverFromExtension(mFile.extension());
+     
+      TL_ASSERT(!driver_name.empty(), "Image open fail. Driver not found")
 
-    std::string extension = Path(mFileName).extension();
-    std::string driver_name = gdalDriverFromExtension(extension);
-   
-    if (driver_name.empty()) throw std::runtime_error("Image open fail. Driver not found");
+      mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str()); 
+  
+      TL_ASSERT(isOpen(), "Image open fail. Driver not valid")
+  
+      mValidDataTypes = gdalValidDataTypes(driver_name);
+  
+      char **gdalMetadata = mDriver->GetMetadata();
+      if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
+        // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
+        mDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
+  
+        bTempFile = true;
+        mTempFile = Path::tempPath();
+        mTempFile.append("\\").append(mFile.fileName());
+        mTempFile.replaceExtension(".tif");
 
-    mDriver = GetGDALDriverManager()->GetDriverByName(driver_name.c_str()); 
+      }
 
-    if (mDriver == nullptr) throw std::runtime_error("Image open fail");
-
-    mValidDataTypes = gdalValidDataTypes(driver_name);
-
-    char **gdalMetadata = mDriver->GetMetadata();
-    if (CSLFetchBoolean(gdalMetadata, GDAL_DCAP_CREATE, FALSE) == 0) {
-      // El formato no permite trabajar directamente. Se crea una imagen temporal y posteriormente se copia
-      mDriver = GetGDALDriverManager()->GetDriverByName("GTiff");
-
-      bTempFile = true;
-      Path path = Path::tempPath();
-      Path file_path(mFileName);
-
-      mTempName = path.toString();
-      mTempName.append("\\").append(file_path.baseName());
-      mTempName.append(".tif");
-    } /*else {
-      /// Creo que no hace falta
-      mDataset = static_cast<GDALDataset *>(GDALOpen(mFileName.c_str(), GA_Update));
-    }*/
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
   }
 
-  bool isOpen() override
+  bool isOpen() const override
   {
     return mDriver != nullptr;
   }
@@ -154,8 +154,7 @@ public:
 
       if (bTempFile) {
 
-        std::string ext = Path(mFileName).extension();
-        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(ext).c_str());
+        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(mFile.extension()).c_str());
         char **gdalOpt = nullptr;
         if (mImageOptions) {
           std::map<std::string, std::string> options = mImageOptions->activeOptions();
@@ -163,7 +162,7 @@ public:
             gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
           }
         }
-        GDALDataset *tempDataSet = driver->CreateCopy(mFileName.c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
+        GDALDataset *tempDataSet = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
         if (!tempDataSet) {
           msgError("No se pudo crear la imagen");
         } else {
@@ -184,7 +183,7 @@ public:
     }
 
     bTempFile = false;
-    mTempName = "";
+    mTempFile.clear();
   }
 
   void setImageOptions(ImageOptions *imageOptions) override
@@ -202,125 +201,143 @@ public:
               int bands, 
               DataType type) override
   {
-    if (!isOpen()) open(); // Se abre el archivo si no esta abierto.
-    if (!isOpen()) throw std::runtime_error("Driver not found");
+    try {
 
-    if (!checkDataType()) throw std::runtime_error("Data Type not supported"); 
+      if (!isOpen()) open(); // Se trata de abrir el archivo si no esta abierto.
 
-    if (mDataset) {
-      GDALClose(mDataset);
-      mDataset = nullptr;
-    }
-
-    mDataType = type;
-
-    char **gdalOpt = nullptr;
-    if (mImageOptions && !bTempFile) {
-      std::map<std::string, std::string> options = mImageOptions->activeOptions();
-      for (const auto &option : options) {
-        gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+      mDataType = type;
+      TL_ASSERT(checkDataType(), "Data Type not supported");
+    
+      if (mDataset) {
+        GDALClose(mDataset);
+        mDataset = nullptr;
       }
-    }
 
-    mDataset = mDriver->Create(bTempFile ? mTempName.c_str() : mFileName.c_str(), 
-                               cols, rows, bands, dataTypeToGdalDataType(type), gdalOpt);
-
-    if (mDataset == nullptr) throw std::runtime_error("Creation of output file failed"); 
-
-    char **gdalMetadata = nullptr;
-    if (mImageMetadata) {
-      std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
-      for (const auto &metadata : active_metadata) {
-        gdalMetadata = CSLSetNameValue(gdalMetadata, metadata.first.c_str(), metadata.second.c_str());
+      char **gdalOpt = nullptr;
+      if (mImageOptions && !bTempFile) {
+        std::map<std::string, std::string> options = mImageOptions->activeOptions();
+        for (const auto &option : options) {
+          gdalOpt = CSLSetNameValue(gdalOpt, option.first.c_str(), option.second.c_str());
+        }
       }
-    }
-    mDataset->SetMetadata(gdalMetadata);
 
-    if (!mAffine.isNull()) {
-      this->setGdalGeoTransform();
-    }
+      mDataset = mDriver->Create(bTempFile ? mTempFile.toString().c_str() : mFile.toString().c_str(), 
+                                 cols, rows, bands, dataTypeToGdalDataType(type), gdalOpt);
 
+      TL_ASSERT(mDataset != nullptr, "Creation of output file failed")
+
+      char **gdalMetadata = nullptr;
+      if (mImageMetadata) {
+        std::map<std::string, std::string> active_metadata = mImageMetadata->activeMetadata();
+        for (const auto &metadata : active_metadata) {
+          gdalMetadata = CSLSetNameValue(gdalMetadata, metadata.first.c_str(), metadata.second.c_str());
+        }
+      }
+      mDataset->SetMetadata(gdalMetadata);
+
+      if (!mAffine.isNull()) {
+        this->setGdalGeoTransform();
+      }
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
   }
 
   void write(const cv::Mat &image, 
              const Rect<int> &rect)
   {
-    RectI rect_full_image(0, 0, this->cols(), this->rows());
-    RectI rect_to_write;
+    try{
 
-    bool crop_image = false;
-    if (rect.isEmpty()) {
-      rect_to_write = rect_full_image;
-    } else {
-      rect_to_write = intersect(rect_full_image, rect);
-      crop_image = rect_to_write != rect;
-    }
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
-    cv::Mat image_to_write;
+      RectI rect_full_image(0, 0, this->cols(), this->rows());
+      RectI rect_to_write;
 
-    if (crop_image) {
-      Affine<PointD> affine;
-      std::vector<PointD> image_points{
-        PointD(0, 0),
-        PointD(image.cols, 0),
-        PointD(image.cols, image.rows),
-        PointD(0, image.rows)
-      };
+      bool crop_image = false;
+      if (rect.isEmpty()) {
+        rect_to_write = rect_full_image;
+      } else {
+        rect_to_write = intersect(rect_full_image, rect);
+        crop_image = rect_to_write != rect;
+      }
+
+      cv::Mat image_to_write;
+
+      if (crop_image) {
+        Affine<PointD> affine;
+        std::vector<PointD> image_points{
+          PointD(0, 0),
+          PointD(image.cols, 0),
+          PointD(image.cols, image.rows),
+          PointD(0, image.rows)
+        };
        
-      std::vector<PointD> image_rect{
-        static_cast<PointD>(rect.topLeft()),
-        static_cast<PointD>(rect.topRight()),
-        static_cast<PointD>(rect.bottomRight()),
-        static_cast<PointD>(rect.bottomLeft())
-      };
+        std::vector<PointD> image_rect{
+          static_cast<PointD>(rect.topLeft()),
+          static_cast<PointD>(rect.topRight()),
+          static_cast<PointD>(rect.bottomRight()),
+          static_cast<PointD>(rect.bottomLeft())
+        };
 
-      affine.compute(image_points, image_rect);
+        affine.compute(image_points, image_rect);
 
-      std::vector<PointD> image_points_transform;
-      affine.transform(image_points, image_points_transform);
-      RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
-      RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+        std::vector<PointD> image_points_transform;
+        affine.transform(image_points, image_points_transform);
+        RectI rect_image_points_transform(image_points_transform[0], image_points_transform[2]);
+        RectI rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
 
-      PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
-      PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
+        PointD tl = affine.transform(static_cast<PointD>(rect_to_crop_image.topLeft()), Transform::Order::inverse);
+        PointD br = affine.transform(static_cast<PointD>(rect_to_crop_image.bottomRight()), Transform::Order::inverse);
       
-      rect_to_crop_image = RectI(tl, br);
-      image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
-                            .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
-                            .clone();
+        rect_to_crop_image = RectI(tl, br);
+        image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x)
+                              .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y)
+                              .clone();
 
-    } else {
-      image_to_write = image;
-    }
+      } else {
+        image_to_write = image;
+      }
 
-    GDALDataType gdal_data_type_in = openCvToGdal(image.depth());
-    GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
-    if (gdal_data_type_in != gdal_data_type) throw std::runtime_error("La profundidad de la imagen de entrada es distinta a la profundidad de la imagen de salida");
+      GDALDataType gdal_data_type_in = openCvToGdal(image.depth());
+      GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
+      TL_ASSERT(gdal_data_type_in == gdal_data_type, "Input image depth is different to output image depth");
 
-    uchar *buff = const_cast<uchar *>(image_to_write.isContinuous() ? image_to_write.ptr() : image_to_write.clone().ptr());
-    int nPixelSpace = static_cast<int>(image_to_write.elemSize());
-    int nLineSpace = nPixelSpace * image_to_write.cols;
-    int nBandSpace = static_cast<int>(image_to_write.elemSize1());
+      uchar *buff = const_cast<uchar *>(image_to_write.isContinuous() ? image_to_write.ptr() : image_to_write.clone().ptr());
+      int nPixelSpace = static_cast<int>(image_to_write.elemSize());
+      int nLineSpace = nPixelSpace * image_to_write.cols;
+      int nBandSpace = static_cast<int>(image_to_write.elemSize1());
 
-    CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, 
-                                     rect_to_write.width, rect_to_write.height, buff, 
-                                     image_to_write.cols, image_to_write.rows, 
-                                     gdal_data_type, image_to_write.channels(), 
-                                     gdalBandOrder(image_to_write.channels()).data(), nPixelSpace,
-                                     nLineSpace, nBandSpace);
+      CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, 
+                                       rect_to_write.width, rect_to_write.height, buff, 
+                                       image_to_write.cols, image_to_write.rows, 
+                                       gdal_data_type, image_to_write.channels(), 
+                                       gdalBandOrder(image_to_write.channels()).data(), nPixelSpace,
+                                       nLineSpace, nBandSpace);
 
-    if (cerr != 0) {
-      throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
-    } else {
-      mDataset->FlushCache();
+      if (cerr != 0) {
+        throw TL_ERROR("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        //throw std::runtime_error(MessageManager::Message("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg()).message());
+      } else {
+        mDataset->FlushCache();
+      }
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
     }
   }
 
   void write(const cv::Mat &image, 
              const WindowI &window) override
   {
-    RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
-    write(image, rect);
+    try{
+
+      RectI rect = window.isEmpty() ? RectI() : RectI(window.pt1, window.pt2);
+      write(image, rect);
+    
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
   }
 
   void write(const cv::Mat &image, 
@@ -356,17 +373,53 @@ public:
 
   int rows() const override
   {
-    return mDataset ? mDataset->GetRasterYSize() : 0;
+    int rows = 0;
+
+    try {
+
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+
+      rows = mDataset->GetRasterYSize();
+    
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return rows;
   }
 
   int cols() const override
   {
-    return mDataset ? mDataset->GetRasterXSize() : 0;
+    int cols = 0;
+
+    try {
+
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+      
+      cols = mDataset->GetRasterXSize();
+    
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return cols;
   }
 
   int channels() const override
   {
-    return mDataset ? mDataset->GetRasterCount() : 0;
+    int channels = 0;
+
+    try {
+
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+      
+      channels = mDataset->GetRasterCount();
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return channels;
   }
 
   DataType dataType() const override
@@ -376,8 +429,18 @@ public:
 
   int depth() const override
   {
-    GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
-    return  GDALGetDataTypeSizeBits(gdal_data_type);
+    int depth = 0;
+
+    try {
+
+      GDALDataType gdal_data_type = dataTypeToGdalDataType(this->dataType());
+      depth = GDALGetDataTypeSizeBits(gdal_data_type);
+
+    } catch (...) {
+      TL_THROW_EXCEPTION_WITH_NESTED("");
+    }
+
+    return depth;
   }
 
   void setGeoreference(const Affine<PointD> &georeference) override
@@ -405,6 +468,27 @@ public:
   }
 #endif
 
+  void setNoDataValue(double nodata)
+  {
+    if (mDataset) {
+      mDataset->GetRasterBand(1)->SetNoDataValue(nodata);
+    }
+  }
+
+//#ifdef HAVE_TL_GRAPHIC
+//  void setColor(const graph::Color &nodata)
+//  {
+//    int channels = this->channels();
+//    if (channels == 1) {
+//      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.luminance());
+//    } else {
+//      mDataset->GetRasterBand(1)->SetNoDataValue(nodata.red());
+//      mDataset->GetRasterBand(2)->SetNoDataValue(nodata.green());
+//      mDataset->GetRasterBand(3)->SetNoDataValue(nodata.blue());
+//    }
+//  }
+//#endif
+
 private:
 
   bool checkDataType()
@@ -414,7 +498,7 @@ private:
 
   void setGdalGeoTransform()
   {
-    std::array<double, 6> geotransform;
+    std::array<double, 6> geotransform{};
     math::Matrix<double, 2, 3> parameters = mAffine.parameters();
     geotransform[1] = parameters.at(0, 0);
     geotransform[2] = parameters.at(0, 1);
@@ -446,7 +530,7 @@ private:
   EnumFlags<DataType> mValidDataTypes;
   // Se crea fichero temporal para formatos que no permiten trabajar directamente
   bool bTempFile;
-  std::string mTempName;
+  Path mTempFile;
   DataType mDataType;
   ImageOptions *mImageOptions;  
   std::shared_ptr<ImageMetadata> mImageMetadata;
@@ -517,30 +601,35 @@ public:
 /* ---------------------------------------------------------------------------------- */
 
 
-std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const std::string &fileName)
+std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
 {
-  std::string extension = Path(fileName).extension();
   std::unique_ptr<ImageWriter> image_writer;
+
+  try {
+  
+    std::string extension = file.extension();
+  
 #ifdef HAVE_GDAL
-  if (gdalValidExtensions(extension)) {
-    image_writer = std::make_unique<ImageWriterGdal>(fileName);
-  } else
+    if (gdalValidExtensions(extension)) {
+      image_writer = std::make_unique<ImageWriterGdal>(file);
+    } else
 #endif
 #ifdef HAVE_EDSDK
-  if (boost::iequals(extension, ".CR2")) {
-    image_writer = std::make_unique<ImageWriterCanon>(fileName);
-  } else
+    if (boost::iequals(extension, ".CR2")) {
+      image_writer = std::make_unique<ImageWriterCanon>(fileName);
+    } else
 #endif 
-  {
-    throw std::runtime_error("Invalid Image Writer");
+    {
+      TL_THROW_EXCEPTION("Invalid Image Writer: %s", file.fileName().c_str());
+    }
+  
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
+
   return image_writer;
 }
 
-std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &fileName)
-{
-  return ImageWriterFactory::createWriter(fileName.toString());
-}
 
 } // End namespace tl
 

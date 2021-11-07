@@ -26,7 +26,7 @@
 
 #include "tidop/math/mathutils.h"
 
-#include "tidop/geometry/operations.h"
+//#include "tidop/geometry/operations.h"
 
 
 namespace tl

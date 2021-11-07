@@ -140,12 +140,18 @@ cv::Mat FreakDescriptor::extract(const cv::Mat &img,
 {
   cv::Mat descriptors;
 
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mFREAK->compute(img, keyPoints, descriptors);
+    mFREAK->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Freak Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Freak Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Freak Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Freak Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return descriptors;
 }
