@@ -1566,7 +1566,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
 
     if (pivotRow != i) {
       matrix.swapRows(i, pivotRow);
-      d *= -consts::one<T>;
+      d = -d;
     }
 
     d *= pivotElement;
@@ -2142,8 +2142,8 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
   TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
 
-  for (int r = 0; r < matrix1.rows(); r++) {
-    for (int c = 0; c < matrix1.cols(); c++) {
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t c = 0; c < matrix1.cols(); c++) {
       matrix1.at(r, c) -= matrix2.at(r, c);
     }
   }
@@ -2302,8 +2302,8 @@ Matrix<T, _rows, _cols> operator * (T scalar, const Matrix<T, _rows, _cols> &mat
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator *= (Matrix<T, _rows, _cols> &matrix, T scalar)
 {
-  for (int r = 0; r < matrix.rows(); r++) {
-    for (int c = 0; c < matrix.cols(); c++) {
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
       matrix.at(r, c) *= scalar;
     }
   }
@@ -2349,8 +2349,8 @@ template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
 {
   if (scalar != consts::zero<T>) {
-    for (int r = 0; r < matrix.rows(); r++) {
-      for (int c = 0; c < matrix.cols(); c++) {
+    for (size_t r = 0; r < matrix.rows(); r++) {
+      for (size_t c = 0; c < matrix.cols(); c++) {
         matrix.at(r, c) /= scalar;
       }
     }
@@ -2364,8 +2364,8 @@ template<typename T> inline static
 Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
 {
   if (scalar != consts::zero<T>) {
-    for (int r = 0; r < matrix.rows(); r++) {
-      for (int c = 0; c < matrix.cols(); c++) {
+    for (size_t r = 0; r < matrix.rows(); r++) {
+      for (size_t c = 0; c < matrix.cols(); c++) {
         matrix.at(r, c) /= scalar;
       }
     }
@@ -2381,8 +2381,8 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
 template<typename T, size_t _rows, size_t _cols>
 std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matrix) 
 {
-  for (int r = 0; r < matrix.rows(); r++) {
-    for (int c = 0; c < matrix.cols(); c++) {
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
       os << " " << matrix.at(r, c);
     }
     os << "\n";
@@ -2394,8 +2394,8 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matri
 template<typename T, size_t _rows, size_t _cols>
 std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matrix)
 {
-  for (int r = 0; r < matrix->rows(); r++) {
-    for (int c = 0; c < matrix->cols(); c++) {
+  for (size_t r = 0; r < matrix->rows(); r++) {
+    for (size_t c = 0; c < matrix->cols(); c++) {
       os << " " << matrix->at(r, c);
     }
     os << "\n";
@@ -2451,8 +2451,8 @@ bool operator == (const Matrix<T, _rows, _cols> &matrix1,
   size_t cols2 = matrix2.cols();
   if (rows1 != rows2 || cols1 != cols2) return false;
 
-  for (int r = 0; r < matrix1.rows(); r++) {
-    for (int c = 0; c < matrix1.cols(); c++) {
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t c = 0; c < matrix1.cols(); c++) {
       if (matrix1.at(r, c) != matrix2.at(r, c)) return false;
     }
   }
@@ -2470,8 +2470,8 @@ bool operator != (const Matrix<T, _rows, _cols> &matrix1,
   size_t cols2 = matrix2.cols();
   if (rows1 != rows2 || cols1 != cols2) return true;
 
-  for (int r = 0; r < matrix1.rows(); r++) {
-    for (int c = 0; c < matrix1.cols(); c++) {
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t c = 0; c < matrix1.cols(); c++) {
       if (matrix1.at(r, c) != matrix2.at(r, c)) return true;
     }
   }

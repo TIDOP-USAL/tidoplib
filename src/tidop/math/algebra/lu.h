@@ -127,7 +127,6 @@ public:
 
   Vector<T, _rows> solve(const Vector<T, _rows> &b);
   Matrix<T> solve(const Matrix<T> &b);
-
   Matrix<T, _rows, _cols> lu() const;
 
   T determinant() const;
@@ -271,8 +270,6 @@ template<
 void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
 
-	const T TINY = static_cast<T>(1.0e-40);
-  
   T big;
   T temp;
 	Vector<T, _rows> vv(mRows);
@@ -310,22 +307,23 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     }
 
     if (k != imax) {
-      for (size_t j = 0; j < mRows; j++) {
-        temp = LU.at(imax, j);
-        LU.at(imax, j) = LU.at(k, j);
-        LU.at(k, j) = temp;
-      }
+      LU.swapRows(imax, k);
       this->d = -this->d;
       vv[imax] = vv[k];
     }
 
     mIndx[k] = imax;
-    if (LU.at(k,k) == consts::zero<T>) LU.at(k,k) = TINY;
+    if (LU.at(k,k) == consts::zero<T>) 
+      LU.at(k,k) = std::numeric_limits<T>().min();
+    
     for (size_t i = k + 1; i < mRows; i++) {
+    
       temp = LU.at(i, k) /= LU.at(k, k);
+      
       for (size_t j = k + 1; j < mRows; j++)
         LU.at(i, j) -= temp * LU.at(k, j);
     }
+
   }
 }
 
