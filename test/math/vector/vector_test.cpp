@@ -252,8 +252,8 @@ BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
   BOOST_CHECK_EQUAL( 3.4, v4_dyn[2]);
   BOOST_CHECK_EQUAL(-5.4, v4_dyn[3]);
 
-  // Prueba de que da error de compilación
-  //Vector<unsigned int> vui = -Vector<unsigned int>{1, 2, 3};
+  // Prueba de que da error de compilación con unsigned
+  //Vector<unsigned int> vui = -Vector<unsigned int>{1, 2, 3}; // error C2338: Requires signed type
 
 }
 

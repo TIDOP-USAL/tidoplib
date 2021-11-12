@@ -58,6 +58,9 @@ constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
  *  \{
  */
 
+template<typename T, size_t _rows, size_t _cols>
+class MatrixRow;
+
 
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBase;
@@ -115,8 +118,11 @@ public:
    */
   const_reference at(size_t r, size_t c) const;
 
-  //reference operator()(size_t r, size_t c);
-  //const_reference operator()(size_t r, size_t c) const;
+  const MatrixRow<T, _rows, _cols> operator[](size_t position) const;
+  MatrixRow<T, _rows, _cols> operator[](size_t position);
+
+  reference operator()(size_t r, size_t c);
+  const_reference operator()(size_t r, size_t c) const;
 
   /*!
    * \brief Número de filas de la matriz
@@ -144,6 +150,7 @@ public:
 
 private:
 
+  template<typename T, size_t _rows, size_t _cols> friend class MatrixRow;
   std::array<T, _rows * _cols> mData;
 };
 
@@ -224,26 +231,38 @@ MatrixBase<T, _rows, _cols> &MatrixBase<T, _rows, _cols>::operator = (MatrixBase
 template<typename T, size_t _rows, size_t _cols> inline 
 T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c)
 {
-  return mData.at(r * this->cols() + c);
+  return mData.at(r * _cols + c);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
 {
-  return mData.at(r * this->cols() + c);
+  return mData.at(r * _cols + c);
 }
 
-//template<typename T, size_t _rows, size_t _cols> inline 
-//T MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c)
-//{
-//  return mData[r * this->cols() + c];
-//}
-//
-//template<typename T, size_t _rows, size_t _cols> inline 
-//const T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
-//{
-//  return mData[r * this->cols() + c];
-//}
+template<typename T, size_t _rows, size_t _cols> inline
+const MatrixRow<T, _rows, _cols> MatrixBase<T, _rows, _cols>::operator[](size_t position) const
+{
+  return MatrixRow<T, _rows, _cols>(this, position);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixRow<T, _rows, _cols> MatrixBase<T, _rows, _cols>::operator[](size_t position)
+{
+  return MatrixRow<T, _rows, _cols>(this, position);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline 
+T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c)
+{
+  return mData[r * this->cols() + c];
+}
+
+template<typename T, size_t _rows, size_t _cols> inline 
+const T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
+{
+  return mData[r * this->cols() + c];
+}
 
 template<typename T, size_t _rows, size_t _cols> inline 
 size_t MatrixBase<T, _rows, _cols>::rows() const
@@ -302,6 +321,12 @@ public:
   reference at(size_t r, size_t c);
   const_reference at(size_t r, size_t c) const;
 
+  const MatrixRow<T, DynamicMatrix, DynamicMatrix> operator[](size_t position) const;
+  MatrixRow<T, DynamicMatrix, DynamicMatrix> operator[](size_t position);
+
+  reference operator()(size_t r, size_t c);
+  const_reference operator()(size_t r, size_t c) const;
+
   size_t rows() const;
   size_t cols() const;
 
@@ -319,6 +344,7 @@ public:
 
 private:
 
+  template<typename T, size_t _rows, size_t _cols> friend class MatrixRow;
   std::vector<T> mData;
   size_t mRows{0};
   size_t mCols{0};
@@ -405,11 +431,35 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>
 template<typename T> inline 
 T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c)
 {
-  return mData[r * mCols + c];
+  return mData.at(r * mCols + c);
 }
 
 template<typename T> inline 
 const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c) const
+{
+  return mData.at(r * mCols + c);
+}
+
+template<typename T> inline
+const MatrixRow<T, DynamicMatrix, DynamicMatrix> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
+{
+  return MatrixRow<T, DynamicMatrix, DynamicMatrix>(this, position);
+}
+
+template<typename T> inline
+MatrixRow<T, DynamicMatrix, DynamicMatrix> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
+{
+  return MatrixRow<T, DynamicMatrix, DynamicMatrix>(this, position);
+}
+
+template<typename T> inline
+T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r, size_t c) 
+{
+  return mData[r * mCols + c];
+}
+
+template<typename T> inline
+const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r, size_t c) const
 {
   return mData[r * mCols + c];
 }
@@ -1138,16 +1188,18 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse2x2(bool *invertibility) const
 {
   Matrix<T, _rows, _cols> matrix(*this);
+
   T det = determinant2x2();
   if (det != consts::zero<T>) {
-    matrix.at(0, 0) =  this->at(1,1) / det;
-    matrix.at(0, 1) = -this->at(0,1) / det;
-    matrix.at(1, 0) = -this->at(1,0) / det;
-    matrix.at(1, 1) =  this->at(0,0) / det;
+    matrix[0][0] =  this->operator()(1,1) / det;
+    matrix[0][1] = -this->operator()(0,1) / det;
+    matrix[1][0] = -this->operator()(1,0) / det;
+    matrix[1][1] =  this->operator()(0,0) / det;
     if (invertibility) *invertibility = true;
   } else {
     if (invertibility) *invertibility = false;
   }
+
   return matrix;
 }
 
@@ -1157,7 +1209,9 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse3x3(bool *invertibility)
   Matrix<T, _rows, _cols> matrix(*this);
 
   Matrix<T, _rows, _cols> adj = this->adjoint3x3();
-  T det = this->at(0,0) * adj.at(0, 0) + this->at(0,1) * adj.at(1, 0) + this->at(0,2) * adj.at(2, 0);
+  T det = this->operator()(0,0) * adj.operator()(0, 0) 
+        + this->operator()(0,1) * adj.operator()(1, 0) 
+        + this->operator()(0,2) * adj.operator()(2, 0);
 
   if (det != consts::zero<T>) {
 
@@ -1176,22 +1230,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse4x4(bool *invertibility)
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T m00 = this->at(0,0);
-  T m01 = this->at(0,1);
-  T m02 = this->at(0,2);
-  T m03 = this->at(0,3);
-  T m10 = this->at(1,0);
-  T m11 = this->at(1,1);
-  T m12 = this->at(1,2);
-  T m13 = this->at(1,3);
-  T m20 = this->at(2,0);
-  T m21 = this->at(2,1);
-  T m22 = this->at(2,2);
-  T m23 = this->at(2,3);
-  T m30 = this->at(3,0);
-  T m31 = this->at(3,1);
-  T m32 = this->at(3,2);
-  T m33 = this->at(3,3);
+  T m00 = this->operator()(0,0);
+  T m01 = this->operator()(0,1);
+  T m02 = this->operator()(0,2);
+  T m03 = this->operator()(0,3);
+  T m10 = this->operator()(1,0);
+  T m11 = this->operator()(1,1);
+  T m12 = this->operator()(1,2);
+  T m13 = this->operator()(1,3);
+  T m20 = this->operator()(2,0);
+  T m21 = this->operator()(2,1);
+  T m22 = this->operator()(2,2);
+  T m23 = this->operator()(2,3);
+  T m30 = this->operator()(3,0);
+  T m31 = this->operator()(3,1);
+  T m32 = this->operator()(3,2);
+  T m33 = this->operator()(3,3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1209,22 +1263,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse4x4(bool *invertibility)
 
   if (det != consts::zero<T>) {
     
-    matrix.at(0, 0) = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
-    matrix.at(0, 1) = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
-    matrix.at(0, 2) = ( m31 * a5 - m32 * a4 + m33 * a3) / det;
-    matrix.at(0, 3) = (-m21 * a5 + m22 * a4 - m23 * a3) / det;
-    matrix.at(1, 0) = (-m10 * b5 + m12 * b2 - m13 * b1) / det;
-    matrix.at(1, 1) = ( m00 * b5 - m02 * b2 + m03 * b1) / det;
-    matrix.at(1, 2) = (-m30 * a5 + m32 * a2 - m33 * a1) / det;
-    matrix.at(1, 3) = ( m20 * a5 - m22 * a2 + m23 * a1) / det;
-    matrix.at(2, 0) = ( m10 * b4 - m11 * b2 + m13 * b0) / det;
-    matrix.at(2, 1) = (-m00 * b4 + m01 * b2 - m03 * b0) / det;
-    matrix.at(2, 2) = ( m30 * a4 - m31 * a2 + m33 * a0) / det;
-    matrix.at(2, 3) = (-m20 * a4 + m21 * a2 - m23 * a0) / det;
-    matrix.at(3, 0) = (-m10 * b3 + m11 * b1 - m12 * b0) / det;
-    matrix.at(3, 1) = ( m00 * b3 - m01 * b1 + m02 * b0) / det;
-    matrix.at(3, 2) = (-m30 * a3 + m31 * a1 - m32 * a0) / det;
-    matrix.at(3, 3) = ( m20 * a3 - m21 * a1 + m22 * a0) / det;
+    matrix[0][0] = ( m11 * b5 - m12 * b4 + m13 * b3) / det;
+    matrix[0][1] = (-m01 * b5 + m02 * b4 - m03 * b3) / det;
+    matrix[0][2] = ( m31 * a5 - m32 * a4 + m33 * a3) / det;
+    matrix[0][3] = (-m21 * a5 + m22 * a4 - m23 * a3) / det;
+    matrix[1][0] = (-m10 * b5 + m12 * b2 - m13 * b1) / det;
+    matrix[1][1] = ( m00 * b5 - m02 * b2 + m03 * b1) / det;
+    matrix[1][2] = (-m30 * a5 + m32 * a2 - m33 * a1) / det;
+    matrix[1][3] = ( m20 * a5 - m22 * a2 + m23 * a1) / det;
+    matrix[2][0] = ( m10 * b4 - m11 * b2 + m13 * b0) / det;
+    matrix[2][1] = (-m00 * b4 + m01 * b2 - m03 * b0) / det;
+    matrix[2][2] = ( m30 * a4 - m31 * a2 + m33 * a0) / det;
+    matrix[2][3] = (-m20 * a4 + m21 * a2 - m23 * a0) / det;
+    matrix[3][0] = (-m10 * b3 + m11 * b1 - m12 * b0) / det;
+    matrix[3][1] = ( m00 * b3 - m01 * b1 + m02 * b0) / det;
+    matrix[3][2] = (-m30 * a3 + m31 * a1 - m32 * a0) / det;
+    matrix[3][3] = ( m20 * a3 - m21 * a1 + m22 * a0) / det;
 
     if (invertibility) *invertibility = true;
   } else {
@@ -1265,7 +1319,7 @@ Matrix<T, _cols, _rows> Matrix<T, _rows, _cols>::transpose() const
 
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      matrix.at(c, r) = this->at(r, c);
+      matrix[c][r] = this->operator()(r, c);
     }
   }
 
@@ -1299,9 +1353,11 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint2x2() const
 {
   Matrix<T, _rows, _cols> matrix(*this);
-  std::swap(matrix.at(0, 0), matrix.at(1, 1));
-  matrix.at(0, 1) = -matrix.at(0, 1);
-  matrix.at(1, 0) = -matrix.at(1, 0);
+
+  std::swap(matrix(0, 0), matrix(1, 1));
+  matrix(0, 1) = -matrix(0, 1);
+  matrix(1, 0) = -matrix(1, 0);
+
   return matrix;
 }
 
@@ -1310,15 +1366,25 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint3x3() const
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  matrix.at(0, 0) = this->at(1,1) * this->at(2,2) - this->at(1,2) * this->at(2,1);
-  matrix.at(0, 1) = this->at(0,2) * this->at(2,1) - this->at(0,1) * this->at(2,2);
-  matrix.at(0, 2) = this->at(0,1) * this->at(1,2) - this->at(0,2) * this->at(1,1);
-  matrix.at(1, 0) = this->at(1,2) * this->at(2,0) - this->at(1,0) * this->at(2,2);
-  matrix.at(1, 1) = this->at(0,0) * this->at(2,2) - this->at(0,2) * this->at(2,0);
-  matrix.at(1, 2) = this->at(0,2) * this->at(1,0) - this->at(0,0) * this->at(1,2);
-  matrix.at(2, 0) = this->at(1,0) * this->at(2,1) - this->at(1,1) * this->at(2,0);
-  matrix.at(2, 1) = this->at(0,1) * this->at(2,0) - this->at(0,0) * this->at(2,1);
-  matrix.at(2, 2) = this->at(0,0) * this->at(1,1) - this->at(0,1) * this->at(1,0);
+  T m00 = this->operator()(0, 0);
+  T m01 = this->operator()(0, 1);
+  T m02 = this->operator()(0, 2);
+  T m10 = this->operator()(1, 0);
+  T m11 = this->operator()(1, 1);
+  T m12 = this->operator()(1, 2);
+  T m20 = this->operator()(2, 0);
+  T m21 = this->operator()(2, 1);
+  T m22 = this->operator()(2, 2);
+
+  matrix(0, 0) = m11 * m22 - m12 * m21;
+  matrix(0, 1) = m02 * m21 - m01 * m22;
+  matrix(0, 2) = m01 * m12 - m02 * m11;
+  matrix(1, 0) = m12 * m20 - m10 * m22;
+  matrix(1, 1) = m00 * m22 - m02 * m20;
+  matrix(1, 2) = m02 * m10 - m00 * m12;
+  matrix(2, 0) = m10 * m21 - m11 * m20;
+  matrix(2, 1) = m01 * m20 - m00 * m21;
+  matrix(2, 2) = m00 * m11 - m01 * m10;
 
   return matrix;
 }
@@ -1328,22 +1394,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint4x4() const
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T m00 = this->at(0,0);
-  T m01 = this->at(0,1);
-  T m02 = this->at(0,2);
-  T m03 = this->at(0,3);
-  T m10 = this->at(1,0);
-  T m11 = this->at(1,1);
-  T m12 = this->at(1,2);
-  T m13 = this->at(1,3);
-  T m20 = this->at(2,0);
-  T m21 = this->at(2,1);
-  T m22 = this->at(2,2);
-  T m23 = this->at(2,3);
-  T m30 = this->at(3,0);
-  T m31 = this->at(3,1);
-  T m32 = this->at(3,2);
-  T m33 = this->at(3,3);
+  T m00 = this->operator()(0, 0);
+  T m01 = this->operator()(0, 1);
+  T m02 = this->operator()(0, 2);
+  T m03 = this->operator()(0, 3);
+  T m10 = this->operator()(1, 0);
+  T m11 = this->operator()(1, 1);
+  T m12 = this->operator()(1, 2);
+  T m13 = this->operator()(1, 3);
+  T m20 = this->operator()(2, 0);
+  T m21 = this->operator()(2, 1);
+  T m22 = this->operator()(2, 2);
+  T m23 = this->operator()(2, 3);
+  T m30 = this->operator()(3, 0);
+  T m31 = this->operator()(3, 1);
+  T m32 = this->operator()(3, 2);
+  T m33 = this->operator()(3, 3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1358,22 +1424,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint4x4() const
   T b4 = m21 * m33 - m23 * m31;
   T b5 = m22 * m33 - m23 * m32;
 
-  matrix.at(0, 0) =  m11 * b5 - m12 * b4 + m13 * b3;
-  matrix.at(0, 1) = -m01 * b5 + m02 * b4 - m03 * b3;
-  matrix.at(0, 2) =  m31 * a5 - m32 * a4 + m33 * a3;
-  matrix.at(0, 3) = -m21 * a5 + m22 * a4 - m23 * a3;
-  matrix.at(1, 0) = -m10 * b5 + m12 * b2 - m13 * b1;
-  matrix.at(1, 1) =  m00 * b5 - m02 * b2 + m03 * b1;
-  matrix.at(1, 2) = -m30 * a5 + m32 * a2 - m33 * a1;
-  matrix.at(1, 3) =  m20 * a5 - m22 * a2 + m23 * a1;
-  matrix.at(2, 0) =  m10 * b4 - m11 * b2 + m13 * b0;
-  matrix.at(2, 1) = -m00 * b4 + m01 * b2 - m03 * b0;
-  matrix.at(2, 2) =  m30 * a4 - m31 * a2 + m33 * a0;
-  matrix.at(2, 3) = -m20 * a4 + m21 * a2 - m23 * a0;
-  matrix.at(3, 0) = -m10 * b3 + m11 * b1 - m12 * b0;
-  matrix.at(3, 1) =  m00 * b3 - m01 * b1 + m02 * b0;
-  matrix.at(3, 2) = -m30 * a3 + m31 * a1 - m32 * a0;
-  matrix.at(3, 3) =  m20 * a3 - m21 * a1 + m22 * a0;
+  matrix(0, 0) =  m11 * b5 - m12 * b4 + m13 * b3;
+  matrix(0, 1) = -m01 * b5 + m02 * b4 - m03 * b3;
+  matrix(0, 2) =  m31 * a5 - m32 * a4 + m33 * a3;
+  matrix(0, 3) = -m21 * a5 + m22 * a4 - m23 * a3;
+  matrix(1, 0) = -m10 * b5 + m12 * b2 - m13 * b1;
+  matrix(1, 1) =  m00 * b5 - m02 * b2 + m03 * b1;
+  matrix(1, 2) = -m30 * a5 + m32 * a2 - m33 * a1;
+  matrix(1, 3) =  m20 * a5 - m22 * a2 + m23 * a1;
+  matrix(2, 0) =  m10 * b4 - m11 * b2 + m13 * b0;
+  matrix(2, 1) = -m00 * b4 + m01 * b2 - m03 * b0;
+  matrix(2, 2) =  m30 * a4 - m31 * a2 + m33 * a0;
+  matrix(2, 3) = -m20 * a4 + m21 * a2 - m23 * a0;
+  matrix(3, 0) = -m10 * b3 + m11 * b1 - m12 * b0;
+  matrix(3, 1) =  m00 * b3 - m01 * b1 + m02 * b0;
+  matrix(3, 2) = -m30 * a3 + m31 * a1 - m32 * a0;
+  matrix(3, 3) =  m20 * a3 - m21 * a1 + m22 * a0;
 
   return matrix;
 }
@@ -1388,54 +1454,54 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjointnxn() const
 template<typename T, size_t _rows, size_t _cols> inline
 void Matrix<T, _rows, _cols>::adjoint2x2(Matrix<T, _rows, _cols> &matrix) const
 {
-  std::swap(matrix.at(0, 0), matrix.at(1, 1));
-  matrix.at(0, 1) = -matrix.at(0, 1);
-  matrix.at(1, 0) = -matrix.at(1, 0);
+  std::swap(matrix(0, 0), matrix(1, 1));
+  matrix(0, 1) = -matrix(0, 1);
+  matrix(1, 0) = -matrix(1, 0);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 void Matrix<T, _rows, _cols>::adjoint3x3(Matrix<T, _rows, _cols> &matrix) const
 {
-  const T m00 = this->at(0,0);
-  const T m01 = this->at(0,1);
-  const T m02 = this->at(0,2);
-  const T m10 = this->at(1,0);
-  const T m11 = this->at(1,1);
-  const T m12 = this->at(1,2);
-  const T m20 = this->at(2,0);
-  const T m21 = this->at(2,1);
-  const T m22 = this->at(2,2);
+  T m00 = this->operator()(0,0);
+  T m01 = this->operator()(0,1);
+  T m02 = this->operator()(0,2);
+  T m10 = this->operator()(1,0);
+  T m11 = this->operator()(1,1);
+  T m12 = this->operator()(1,2);
+  T m20 = this->operator()(2,0);
+  T m21 = this->operator()(2,1);
+  T m22 = this->operator()(2,2);
 
-  matrix.at(0, 0) = m11 * m22 - m12 * m21;
-  matrix.at(0, 1) = m02 * m21 - m01 * m22;
-  matrix.at(0, 2) = m01 * m12 - m02 * m11;
-  matrix.at(1, 0) = m12 * m20 - m10 * m22;
-  matrix.at(1, 1) = m00 * m22 - m02 * m20;
-  matrix.at(1, 2) = m02 * m10 - m00 * m12;
-  matrix.at(2, 0) = m10 * m21 - m11 * m20;
-  matrix.at(2, 1) = m01 * m20 - m00 * m21;
-  matrix.at(2, 2) = m00 * m11 - m01 * m10;
+  matrix(0, 0) = m11 * m22 - m12 * m21;
+  matrix(0, 1) = m02 * m21 - m01 * m22;
+  matrix(0, 2) = m01 * m12 - m02 * m11;
+  matrix(1, 0) = m12 * m20 - m10 * m22;
+  matrix(1, 1) = m00 * m22 - m02 * m20;
+  matrix(1, 2) = m02 * m10 - m00 * m12;
+  matrix(2, 0) = m10 * m21 - m11 * m20;
+  matrix(2, 1) = m01 * m20 - m00 * m21;
+  matrix(2, 2) = m00 * m11 - m01 * m10;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 void Matrix<T, _rows, _cols>::adjoint4x4(Matrix<T, _rows, _cols> &matrix) const
 {
-  const T m00 = this->at(0,0);
-  const T m01 = this->at(0,1);
-  const T m02 = this->at(0,2);
-  const T m03 = this->at(0,3);
-  const T m10 = this->at(1,0);
-  const T m11 = this->at(1,1);
-  const T m12 = this->at(1,2);
-  const T m13 = this->at(1,3);
-  const T m20 = this->at(2,0);
-  const T m21 = this->at(2,1);
-  const T m22 = this->at(2,2);
-  const T m23 = this->at(2,3);
-  const T m30 = this->at(3,0);
-  const T m31 = this->at(3,1);
-  const T m32 = this->at(3,2);
-  const T m33 = this->at(3,3);
+  T m00 = this->operator()(0,0);
+  T m01 = this->operator()(0,1);
+  T m02 = this->operator()(0,2);
+  T m03 = this->operator()(0,3);
+  T m10 = this->operator()(1,0);
+  T m11 = this->operator()(1,1);
+  T m12 = this->operator()(1,2);
+  T m13 = this->operator()(1,3);
+  T m20 = this->operator()(2,0);
+  T m21 = this->operator()(2,1);
+  T m22 = this->operator()(2,2);
+  T m23 = this->operator()(2,3);
+  T m30 = this->operator()(3,0);
+  T m31 = this->operator()(3,1);
+  T m32 = this->operator()(3,2);
+  T m33 = this->operator()(3,3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1450,22 +1516,22 @@ void Matrix<T, _rows, _cols>::adjoint4x4(Matrix<T, _rows, _cols> &matrix) const
   T b4 = m21 * m33 - m23 * m31;
   T b5 = m22 * m33 - m23 * m32;
 
-  matrix.at(0, 0) =  m11 * b5 - m12 * b4 + m13 * b3;
-  matrix.at(0, 1) = -m01 * b5 + m02 * b4 - m03 * b3;
-  matrix.at(0, 2) =  m31 * a5 - m32 * a4 + m33 * a3;
-  matrix.at(0, 3) = -m21 * a5 + m22 * a4 - m23 * a3;
-  matrix.at(1, 0) = -m10 * b5 + m12 * b2 - m13 * b1;
-  matrix.at(1, 1) =  m00 * b5 - m02 * b2 + m03 * b1;
-  matrix.at(1, 2) = -m30 * a5 + m32 * a2 - m33 * a1;
-  matrix.at(1, 3) =  m20 * a5 - m22 * a2 + m23 * a1;
-  matrix.at(2, 0) =  m10 * b4 - m11 * b2 + m13 * b0;
-  matrix.at(2, 1) = -m00 * b4 + m01 * b2 - m03 * b0;
-  matrix.at(2, 2) =  m30 * a4 - m31 * a2 + m33 * a0;
-  matrix.at(2, 3) = -m20 * a4 + m21 * a2 - m23 * a0;
-  matrix.at(3, 0) = -m10 * b3 + m11 * b1 - m12 * b0;
-  matrix.at(3, 1) =  m00 * b3 - m01 * b1 + m02 * b0;
-  matrix.at(3, 2) = -m30 * a3 + m31 * a1 - m32 * a0;
-  matrix.at(3, 3) =  m20 * a3 - m21 * a1 + m22 * a0;
+  matrix[0][0] =  m11 * b5 - m12 * b4 + m13 * b3;
+  matrix[0][1] = -m01 * b5 + m02 * b4 - m03 * b3;
+  matrix[0][2] =  m31 * a5 - m32 * a4 + m33 * a3;
+  matrix[0][3] = -m21 * a5 + m22 * a4 - m23 * a3;
+  matrix[1][0] = -m10 * b5 + m12 * b2 - m13 * b1;
+  matrix[1][1] =  m00 * b5 - m02 * b2 + m03 * b1;
+  matrix[1][2] = -m30 * a5 + m32 * a2 - m33 * a1;
+  matrix[1][3] =  m20 * a5 - m22 * a2 + m23 * a1;
+  matrix[2][0] =  m10 * b4 - m11 * b2 + m13 * b0;
+  matrix[2][1] = -m00 * b4 + m01 * b2 - m03 * b0;
+  matrix[2][2] =  m30 * a4 - m31 * a2 + m33 * a0;
+  matrix[2][3] = -m20 * a4 + m21 * a2 - m23 * a0;
+  matrix[3][0] = -m10 * b3 + m11 * b1 - m12 * b0;
+  matrix[3][1] =  m00 * b3 - m01 * b1 + m02 * b0;
+  matrix[3][2] = -m30 * a3 + m31 * a1 - m32 * a0;
+  matrix[3][3] =  m20 * a3 - m21 * a1 + m22 * a0;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
@@ -1482,14 +1548,16 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
 
   size_t rows = this->rows();
   size_t cols = this->cols();
+
   TL_ASSERT(rows == cols, "Non-Square Matrix")
 
   Matrix<T, _rows, _cols> matrix(*this);
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      matrix.at(r, c) = cofactor(r, c);
+      matrix[r][c] = cofactor(r, c);
     }
   }
+
   return matrix;
 }
 
@@ -1503,8 +1571,9 @@ inline Vector<T, _rows> Matrix<T, _rows, _cols>::col(size_t col) const
   }
 
   for (size_t r = 0; r < this->rows(); r++) {
-    vector.at(r) = this->at(r, col);
+    vector[r] = this->operator()(r, col);
   }
+
   return vector;
 }
 
@@ -1518,7 +1587,7 @@ inline Vector<T, _cols> Matrix<T, _rows, _cols>::row(size_t row) const
   }
 
   for (size_t c = 0; c < this->cols(); c++) {
-    vector.at(c) = this->at(row, c);
+    vector[c] = this->operator()(row, c);
   }
   return vector;
 }
@@ -1534,7 +1603,7 @@ void Matrix<T, _rows, _cols>::cofactorMatrix(Matrix<T, _rows, _cols> &matrix) co
 
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      matrix.at(r, c) = cofactor(r, c);
+      matrix[r][c] = cofactor(r, c);
     }
   }
 }
@@ -1550,11 +1619,11 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
   Matrix<T, _rows, _cols> matrix(*this);
 
   for (size_t i = 0; i < rows; ++i) {
-    T pivotElement = matrix.at(i,i);
+    T pivotElement = matrix[i][i];
     size_t pivotRow = i;
     for (size_t r = i + 1; r < rows; ++r) {
-      if (std::abs(matrix.at(r,i)) > std::abs(pivotElement)) {
-        pivotElement = matrix.at(r,i);
+      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
+        pivotElement = matrix[r][i];
         pivotRow = r;
       }
     }
@@ -1572,12 +1641,14 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
     d *= pivotElement;
 
     for (size_t r = i + 1; r < rows; ++r) {
+      auto row = matrix[r];
       for (size_t c = i + 1; c < cols; ++c) {
-        matrix.at(r,c) -= matrix.at(r,i) * matrix.at(i,c) / pivotElement;
+        //matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
+        row[c] -= row[i] * matrix[i][c] / pivotElement;
       }
     }
   }
-        
+
   if (determinant) {
     *determinant = d;
   }
@@ -1678,17 +1749,29 @@ T Matrix<T, _rows, _cols>::determinant() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant2x2() const
 {
-  T det = this->at(0,0) * this->at(1,1) - this->at(0,1) * this->at(1,0);
+  T det = this->operator()(0,0) * this->operator()(1,1) - this->operator()(0,1) * this->operator()(1,0);
   return det;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant3x3() const
 {
-  T c00 = this->at(1,1) * this->at(2,2) - this->at(1,2) * this->at(2,1);
-  T c10 = this->at(1,2) * this->at(2,0) - this->at(1,0) * this->at(2,2);
-  T c20 = this->at(1,0) * this->at(2,1) - this->at(1,1) * this->at(2,0);
-  T det = this->at(0,0) * c00 + this->at(0,1) * c10 + this->at(0,2) * c20;
+  T m00 = this->operator()(0, 0);
+  T m01 = this->operator()(0, 1);
+  T m02 = this->operator()(0, 2);
+  T m10 = this->operator()(1, 0);
+  T m11 = this->operator()(1, 1);
+  T m12 = this->operator()(1, 2);
+  T m20 = this->operator()(2, 0);
+  T m21 = this->operator()(2, 1);
+  T m22 = this->operator()(2, 2);
+
+  T c00 = m11 * m22 - m12 * m21;
+  T c10 = m12 * m20 - m10 * m22;
+  T c20 = m10 * m21 - m11 * m20;
+
+  T det = m00 * c00 + m01 * c10 + m02 * c20;
+
   return det;
 }
 
@@ -1696,22 +1779,22 @@ template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant4x4() const
 {
   TL_TODO("codigo repetido con adjoint4x4")
-  const T m00 = this->at(0,0);
-  const T m01 = this->at(0,1);
-  const T m02 = this->at(0,2);
-  const T m03 = this->at(0,3);
-  const T m10 = this->at(1,0);
-  const T m11 = this->at(1,1);
-  const T m12 = this->at(1,2);
-  const T m13 = this->at(1,3);
-  const T m20 = this->at(2,0);
-  const T m21 = this->at(2,1);
-  const T m22 = this->at(2,2);
-  const T m23 = this->at(2,3);
-  const T m30 = this->at(3,0);
-  const T m31 = this->at(3,1);
-  const T m32 = this->at(3,2);
-  const T m33 = this->at(3,3);
+  T m00 = this->operator()(0,0);
+  T m01 = this->operator()(0,1);
+  T m02 = this->operator()(0,2);
+  T m03 = this->operator()(0,3);
+  T m10 = this->operator()(1,0);
+  T m11 = this->operator()(1,1);
+  T m12 = this->operator()(1,2);
+  T m13 = this->operator()(1,3);
+  T m20 = this->operator()(2,0);
+  T m21 = this->operator()(2,1);
+  T m22 = this->operator()(2,2);
+  T m23 = this->operator()(2,3);
+  T m30 = this->operator()(3,0);
+  T m31 = this->operator()(3,1);
+  T m32 = this->operator()(3,2);
+  T m33 = this->operator()(3,3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1750,7 +1833,7 @@ T Matrix<T, _rows, _cols>::trace() const
 
   T trace = consts::zero<T>;
   for (size_t r = 0; r < rows; r++) {
-    trace += this->at(r,r);
+    trace += this->operator()(r, r);
   }
   return trace;
 }
@@ -1801,7 +1884,7 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
     for (size_t row = 0; row < rows; row++) {
       for (size_t col = 0; col < cols; col++) {
         if (row != r && col != c) {
-          matrix.at(i, j++) = this->at(row,col);
+          matrix[i][j++] = this->operator()(row,col);
           if (j == rows - 1) {
             j = 0;
             i++;
@@ -1815,7 +1898,7 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
     for (size_t row = 0; row < rows; row++) {
       for (size_t col = 0; col < cols; col++) {
         if (row != r && col != c) {
-          matrix.at(i, j++) = this->at(row,col);
+          matrix[i][j++] = this->operator()(row, col);
           if (j == rows - 1) {
             j = 0;
             i++;
@@ -1833,11 +1916,13 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero()
 {
   Matrix<T, _rows, _cols> matrix;
+
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix.at(r, c) = consts::zero<T>;
+      matrix(r, c) = consts::zero<T>;
     }
   }
+
   return matrix;
 }
 
@@ -1853,11 +1938,13 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones()
 {
   Matrix<T, _rows, _cols> matrix;
+
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix.at(r, c) = consts::one<T>;
+      matrix(r, c) = consts::one<T>;
     }
   }
+
   return matrix;
 }
 
@@ -1873,33 +1960,35 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 {
   Matrix<T, _rows, _cols> matrix;
+
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
       if (r == c) {
-        matrix.at(r, c) = consts::one<T>;
+        matrix(r, c) = consts::one<T>;
       } else {
-        matrix.at(r, c) = consts::zero<T>;
+        matrix(r, c) = consts::zero<T>;
       }
     }
   }
+
   return matrix;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
-  //static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
-
   Matrix<T> matrix(rows, cols);
+
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
       if (r == c) {
-        matrix.at(r, c) = consts::one<T>;
+        matrix(r, c) = consts::one<T>;
       } else {
-        matrix.at(r, c) = consts::zero<T>;
+        matrix(r, c) = consts::zero<T>;
       }
     }
   }
+
   return matrix;
 }
 
@@ -1938,12 +2027,16 @@ Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix)
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
 {
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
   Matrix<T, _rows, _cols> _m(matrix);
+
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      _m.at(r, c) = -_m.at(r, c);
+      _m(r, c) = -_m(r, c);
     }
   }
+
   return _m;
 }
 
@@ -2043,13 +2136,15 @@ Matrix<T, _rows, _cols> &operator += (Matrix<T, _rows, _cols> &matrix1,
   size_t cols1 = matrix1.cols();
   size_t rows2 = matrix2.rows();
   size_t cols2 = matrix2.cols();
+
   TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
   for (size_t r = 0; r < rows1; r++) {
     for (size_t c = 0; c < cols1; c++) {
-      matrix1.at(r, c) += matrix2.at(r, c);
+      matrix1(r, c) += matrix2(r, c);
     }
   }
+
   return matrix1;
 }
 
@@ -2139,14 +2234,15 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
   size_t cols1 = matrix1.cols();
   size_t rows2 = matrix2.rows();
   size_t cols2 = matrix2.cols();
-  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
+  TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
   for (size_t r = 0; r < matrix1.rows(); r++) {
     for (size_t c = 0; c < matrix1.cols(); c++) {
-      matrix1.at(r, c) -= matrix2.at(r, c);
+      matrix1(r, c) -= matrix2(r, c);
     }
   }
+
   return matrix1;
 }
 
@@ -2195,13 +2291,15 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
                                     const Matrix<T, _dim, _cols> &matrix2)
 {
   Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::zero();
+
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _cols; c++) {
       for (size_t i = 0; i < _dim; i++) {
-        matrix.at(r, c) += matrix1.at(r, i) * matrix2.at(i, c);
+        matrix(r, c) += matrix1(r, i) * matrix2(i, c);
       }
     }
   }
+
   return matrix;
 }
 
@@ -2213,16 +2311,19 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
   size_t dim1 = matrix1.cols();
   size_t cols = matrix2.cols();
   size_t dim2 = matrix2.rows();
+
   TL_ASSERT(dim1 == dim2, "A columns != B rows")
 
   Matrix<T> matrix = Matrix<T>::zero(rows, cols);
+
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
       for (size_t i = 0; i < dim1; i++) {
-        matrix.at(r, c) += matrix1.at(r, i) * matrix2.at(i, c);
+        matrix(r, c) += matrix1(r, i) * matrix2(i, c);
       }
     }
   }
+
   return matrix;
 }
 
@@ -2304,9 +2405,10 @@ Matrix<T, _rows, _cols> &operator *= (Matrix<T, _rows, _cols> &matrix, T scalar)
 {
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix.at(r, c) *= scalar;
+      matrix(r, c) *= scalar;
     }
   }
+
   return matrix;
 }
 
@@ -2351,12 +2453,13 @@ Matrix<T, _rows, _cols> &operator /= (Matrix<T, _rows, _cols> &matrix, T scalar)
   if (scalar != consts::zero<T>) {
     for (size_t r = 0; r < matrix.rows(); r++) {
       for (size_t c = 0; c < matrix.cols(); c++) {
-        matrix.at(r, c) /= scalar;
+        matrix(r, c) /= scalar;
       }
     }
   } else {
     matrix = Matrix<T, _rows, _cols>::zero();
   }
+
   return matrix;
 }
 
@@ -2366,7 +2469,7 @@ Matrix<T> &operator /= (Matrix<T> &matrix, T scalar)
   if (scalar != consts::zero<T>) {
     for (size_t r = 0; r < matrix.rows(); r++) {
       for (size_t c = 0; c < matrix.cols(); c++) {
-        matrix.at(r, c) /= scalar;
+        matrix(r, c) /= scalar;
       }
     }
   } else {
@@ -2383,7 +2486,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> &matri
 {
   for (size_t r = 0; r < matrix.rows(); r++) {
     for (size_t c = 0; c < matrix.cols(); c++) {
-      os << " " << matrix.at(r, c);
+      os << " " << matrix(r, c);
     }
     os << "\n";
   }
@@ -2396,7 +2499,7 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 {
   for (size_t r = 0; r < matrix->rows(); r++) {
     for (size_t c = 0; c < matrix->cols(); c++) {
-      os << " " << matrix->at(r, c);
+      os << " " << matrix(r, c);
     }
     os << "\n";
   }
@@ -2408,16 +2511,17 @@ std::ostream &operator<< (std::ostream &os, const Matrix<T, _rows, _cols> *matri
 
 
 template<typename T, size_t _rows, size_t _dim> inline  static
-Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
+Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
                             const Vector<T, _dim> &vector)
 {
-  TL_TODO("Añadir test")
-  Vector<T, _dim> vect = Vector<T, _dim>::zero();
+  Vector<T, _rows> vect = Vector<T, _rows>::zero();
+
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _dim; c++) {
-        vect.at(r) += matrix.at(r, c) * vector.at(c);
+        vect[r] += matrix(r, c) * vector[c];
     }
   }
+
   return vect;
 }
 
@@ -2425,18 +2529,20 @@ template<typename T> inline
 static Vector<T> operator * (const Matrix<T> &matrix,
                              const Vector<T> &vector)
 {
-  TL_TODO("Añadir test")
   size_t rows = matrix.rows();
   size_t dim1 = matrix.cols();
   size_t dim2 = vector.size();
+
   TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
 
-  Vector<T> vect = Vector<T>::zero(dim1);
+  Vector<T> vect = Vector<T>::zero(rows);
+
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < dim1; c++) {
-      vect.at(r) += matrix.at(r, c) * vector.at(c);
+      vect[r] += matrix(r, c) * vector[c];
     }
   }
+
   return vect;
 }
 
@@ -2453,7 +2559,7 @@ bool operator == (const Matrix<T, _rows, _cols> &matrix1,
 
   for (size_t r = 0; r < matrix1.rows(); r++) {
     for (size_t c = 0; c < matrix1.cols(); c++) {
-      if (matrix1.at(r, c) != matrix2.at(r, c)) return false;
+      if (matrix1(r, c) != matrix2(r, c)) return false;
     }
   }
   
@@ -2472,7 +2578,7 @@ bool operator != (const Matrix<T, _rows, _cols> &matrix1,
 
   for (size_t r = 0; r < matrix1.rows(); r++) {
     for (size_t c = 0; c < matrix1.cols(); c++) {
-      if (matrix1.at(r, c) != matrix2.at(r, c)) return true;
+      if (matrix1(r,c) != matrix2(r,c)) return true;
     }
   }
 
@@ -2507,6 +2613,119 @@ bool operator != (const Matrix<T, _rows, _cols> &matrix1,
 //}
 
 
+/// Clase MatrixRow
+
+
+
+template<typename T, size_t _rows, size_t _cols>
+class MatrixRow
+{
+
+public:
+
+  using value_type = T;
+  using size_type = size_t;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using reference = T &;
+  using const_reference = const T &;
+
+public:
+
+  MatrixRow(MatrixBase<T, _rows, _cols> *matrix, size_t row)
+    : mMatrix(matrix),
+      mRow(row)
+  {}
+  ~MatrixRow(){}
+
+  const_reference at(size_type column) const
+  {
+    return mMatrix->mData.at(mRow * _cols + column);
+  }
+
+  reference at(size_type column)
+  {
+    return mMatrix->mData.at(mRow * _cols + column);
+  }
+
+  const_reference operator[](size_t column) const
+  {
+    return mMatrix->mData[mRow * _cols + column];
+  }
+
+  reference operator[](size_t column)
+  {
+    return mMatrix->mData[mRow * _cols + column];
+  }
+
+private:
+
+  MatrixBase<T, _rows, _cols> *mMatrix;
+  size_t mRow;
+};
+
+
+#ifdef MATRIX_STD_VECTOR
+
+template<typename T>
+class MatrixRow<T, DynamicMatrix, DynamicMatrix>
+{
+
+public:
+
+  using value_type = T;
+  using size_type = size_t;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using reference = T &;
+  using const_reference = const T &;
+
+public:
+
+  MatrixRow(MatrixBase<T, DynamicMatrix, DynamicMatrix> *matrix, size_t row)
+    : mMatrix(matrix),
+      mRow(row),
+      mRows(matrix->rows()),
+      mCols(matrix->cols())
+  {}
+  ~MatrixRow() {}
+
+  const_reference at(size_type column) const
+  {
+    return mMatrix->mData.at(mRow * mCols + column);
+  }
+
+  reference at(size_type column)
+  {
+    return mMatrix->mData.at(mRow * mCols + column);
+  }
+
+  const_reference operator[](size_t column) const
+  {
+    return mMatrix->mData[mRow * mCols + column];
+  }
+
+  reference operator[](size_t column)
+  {
+    return mMatrix->mData[mRow * mCols + column];
+  }
+
+private:
+
+  MatrixBase<T, DynamicMatrix, DynamicMatrix> *mMatrix;
+  size_t mRow;
+  size_t mRows;
+  size_t mCols;
+};
+
+#endif MATRIX_STD_VECTOR
+
+/// Clase MatrixCol
+/// Ambas clases tendran métodos para operar con filas y columnas. iteradores para permitir el uso con std::transform y demas funciones de la libreria estandar.
+/// 
+
+/// En Matrix añadir metodos col (con el operador [] con la misma utilidad) y row
+
 /*! \} */ // end of Algebra
 
 /*! \} */ // end of Math
@@ -2517,3 +2736,5 @@ bool operator != (const Matrix<T, _rows, _cols> &matrix1,
 } // End namespace tl
 
 #endif // TL_MATH_MATRIX_H
+
+

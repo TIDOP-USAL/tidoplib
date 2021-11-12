@@ -135,6 +135,7 @@ public:
 private:
 
   void decompose();
+  tl::math::Vector<T, _rows> findMaxElementsByRows();
 #ifdef HAVE_OPENBLAS
   void lapackeDecompose();
 #endif // HAVE_OPENBLAS
@@ -272,47 +273,34 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   T big;
   T temp;
-	Vector<T, _rows> vv(mRows);
 
   this->d = consts::one<T>;
 
-  for (size_t i = 0; i < mRows; i++) {
+  Vector<T, _rows> max_elements = findMaxElementsByRows();
 
-    big = consts::zero<T>;
-
-    for (size_t j = 0; j < mRows; j++) {
-      if ((temp = abs(LU.at(i,j))) > big) {
-        big = temp;
-      }
-    }
-      
-    TL_ASSERT(big != consts::zero<T>, "Singular matrix")
-
-    vv[i] = consts::one<T> / big;
-  }
-
-  size_t imax = 0;
+  size_t pivot_row = 0;
 
   for (size_t k = 0; k < mRows; k++) {
 
     big = consts::zero<T>;
-    imax = k;
+    pivot_row = k;
 
     for (size_t i = k; i < mRows; i++) {
-      temp = vv[i] * abs(LU.at(i,k));
+      temp = abs(LU.at(i,k)) / max_elements[i];
       if (temp > big) {
         big = temp;
-        imax = i;
+        pivot_row = i;
       }
     }
 
-    if (k != imax) {
-      LU.swapRows(imax, k);
+    if (k != pivot_row) {
+      LU.swapRows(pivot_row, k);
       this->d = -this->d;
-      vv[imax] = vv[k];
+      max_elements[pivot_row] = max_elements[k];
     }
 
-    mIndx[k] = imax;
+    mIndx[k] = pivot_row;
+
     if (LU.at(k,k) == consts::zero<T>) 
       LU.at(k,k) = std::numeric_limits<T>().min();
     
@@ -324,7 +312,36 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         LU.at(i, j) -= temp * LU.at(k, j);
     }
 
+    //std::cout << LU << std::endl;
   }
+}
+
+template<
+  template<typename, size_t, size_t>
+  class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+tl::math::Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxElementsByRows()
+{
+  Vector<T, _rows> max_elements(mRows, 0);
+  T element;
+  T max;
+
+  for (size_t r = 0; r < mRows; r++) {
+
+    max = consts::zero<T>;
+
+    for (size_t c = 0; c < mRows; c++) {
+      if ((element = abs(LU.at(r, c))) > max) {
+        max = element;
+      }
+    }
+
+    TL_ASSERT(max != consts::zero<T>, "Singular matrix")
+
+    max_elements[r] = max;
+  }
+
+  return max_elements;
 }
 
 #ifdef HAVE_OPENBLAS
@@ -363,12 +380,12 @@ template<
 > 
 T LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const
 {
-  T dd = this->d;
+  T det = this->d;
 
 	for (size_t i = 0; i < mRows; i++) 
-    dd *= LU.at(i, i);
+    det *= LU.at(i, i);
 
-	return dd;
+	return det;
 }
 
 template<
