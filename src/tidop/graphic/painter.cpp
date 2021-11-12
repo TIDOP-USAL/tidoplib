@@ -40,6 +40,7 @@ TL_DEFAULT_WARNINGS
 #endif
 
 #include "tidop/graphic/canvas.h"
+#include "tidop/geometry/transform/transform.h"
 
 namespace tl
 {
@@ -64,12 +65,12 @@ Painter::Painter(Canvas *canvas)
 {
 }
 
-Painter::Painter(const Painter &painter)
-  : mTrf(painter.mTrf),
-    mCanvas(painter.mCanvas),
-    mGraphicStyle(painter.mGraphicStyle)
-{
-}
+//Painter::Painter(const Painter &painter)
+//  : mTrf(painter.mTrf),
+//    mCanvas(new Canvas),
+//    mGraphicStyle(painter.mGraphicStyle)
+//{
+//}
 
 Painter::~Painter()
 {
@@ -106,7 +107,12 @@ void Painter::drawLineString(const GLineString &lineString)
 void Painter::drawPolygon(const GPolygon &polygon)
 {
   if (mCanvas){
-    mCanvas->drawPolygon(polygon);
+    Polygon<Point<double>> polygon_transform(polygon.size());
+    for (size_t i = 0; i < polygon.size(); i++) {
+      polygon_transform[i] = dynamic_cast<TransformBase<PointD> *>(mTrf)->transform(polygon[i], Transform::Order::inverse);
+    }
+    
+    mCanvas->drawPolygon(polygon_transform, *mGraphicStyle);
   } else {
     msgError("Canvas not defined");
   }
@@ -125,6 +131,11 @@ void Painter::drawMultiLineString(const GMultiLineString &multiLineString)
 void Painter::drawMultiPolygon(const GMultiPolygon &multiPolygon)
 {
 
+}
+
+void Painter::drawPicture(const cv::Mat &bmp)
+{
+  ///mCanvas->
 }
 
 void Painter::setCanvas(Canvas *canvas)
@@ -152,7 +163,7 @@ void Painter::setStyleLabel(const std::shared_ptr<StyleLabel> &styleLabel)
   mGraphicStyle->setStyleLabel(styleLabel);
 }
 
-void Painter::setTransform(Transform<PointF> *trf)
+void Painter::setTransform(Transform/*<PointF>*/ *trf)
 {
   mTrf = trf;
 }
@@ -161,4 +172,4 @@ void Painter::setTransform(Transform<PointF> *trf)
 
 } // Fin namespace graph
 
-} // End namespace TL
+} // End namespace tl

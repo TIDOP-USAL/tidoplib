@@ -37,7 +37,7 @@
 namespace tl
 {
 
-template<typename T> class Transform;
+/*template<typename T> class Transform;*/
 
 
 /*! \defgroup GraphicEntities Entidades gráficas
@@ -125,7 +125,7 @@ public:
    * \param polygon Poligono
    */
   virtual void drawPolygon(const GPolygon &polygon) = 0;
-
+  virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
 };
 
 #ifdef HAVE_OPENCV
@@ -133,13 +133,6 @@ public:
 class TL_EXPORT CanvasCV
   : public Canvas
 {
-
-private:
-
-  int mWidth;
-  int mHeight;
-  Color mBgColor;
-  cv::Mat mCanvas;
 
 public:
 
@@ -167,6 +160,12 @@ public:
   void drawPoint(const PointD &point, const GraphicStyle &style) override;
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
+  void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
+  void setPicture(const cv::Mat &bmp);
+  cv::Mat bmp()
+  {
+    return mCanvas;
+  }
 
   /*!
    * \brief operador asignación
@@ -180,6 +179,13 @@ private:
   void update();
 
   cv::Scalar colorToCvScalar(const Color &color);
+
+private:
+
+  int mWidth;
+  int mHeight;
+  Color mBgColor;
+  cv::Mat mCanvas;
 
 };
 

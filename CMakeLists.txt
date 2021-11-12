@@ -137,7 +137,7 @@ OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 set (LIB_TYPE STATIC)
 
 if (BUILD_SHARED_LIBS)
-  # Se configura como libreria estática
+  # Se configura como libreria dinámica
   set (LIB_TYPE SHARED)
 
   if (MSVC)

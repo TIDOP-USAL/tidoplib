@@ -76,54 +76,91 @@ Orthorectification::Orthorectification(const Path &dtm,
 
 PointI Orthorectification::terrainToImage(const Point3D &terrainPoint) const
 {
-  PointD image_point = mDifferentialRectification->backwardProjection(terrainPoint);
-  return photocoordinatesToImage(image_point);
+  PointI image_coordinates;
+
+  try {
+
+    PointD photocoordinates = mDifferentialRectification->backwardProjection(terrainPoint);
+    image_coordinates = photocoordinatesToImage(photocoordinates);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
+  return image_coordinates;
 }
 
 PointI Orthorectification::terrainToPhotocoordinates(const Point3D &terrainPoint) const
 {
-  return mDifferentialRectification->backwardProjection(terrainPoint);
+  PointI photocoordinates;
+
+  try {
+
+    photocoordinates = mDifferentialRectification->backwardProjection(terrainPoint);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
+  return photocoordinates;
 }
 
-Point3D Orthorectification::imageToTerrain(const PointI &imagePoint) const
+Point3D Orthorectification::imageToTerrain(const PointI &imageCoordinates) const
 {
-  PointI photocoordinates = imageToPhotocoordinates(imagePoint);
-  return photocoordinatesToTerrain(photocoordinates);
+  Point3D terrain_coordinates;
+
+  try {
+
+    PointI photo_coordinates = imageToPhotocoordinates(imageCoordinates);
+    terrain_coordinates = photocoordinatesToTerrain(photo_coordinates);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
+  return terrain_coordinates;
 }
 
 Point3D Orthorectification::photocoordinatesToTerrain(const PointI &photocoordinates) const
 {
   double z = mIniZ;
   int it = 10;
+  Point3D terrain_coordinates;
 
-  Point3D terrain_point = mDifferentialRectification->forwardProjection(photocoordinates, z);
-  double z2;
+  try {
 
-  while (it > 0) {
+    terrain_coordinates = mDifferentialRectification->forwardProjection(photocoordinates, z);
+    double z2;
 
-    PointI image_point = terrainToDTM(terrain_point);
-    RectI rect_full(PointI(), mDtmReader->cols(), mDtmReader->rows());
+    while (it > 0) {
 
-    PointD pt(terrain_point.x, terrain_point.y);
-    if (rect_full.contains(image_point)) {
-      RectI rect(image_point, 1, 1);
-      cv::Mat image = mDtmReader->read(rect); 
-      if (!image.empty()) {
-        z2 = image.at<float>(0, 0);
-        if (std::abs(z2 - z) > 0.1 && z2 != mNoDataValue) {
-          terrain_point = mDifferentialRectification->forwardProjection(photocoordinates, z2);
-          z = z2;
-        } else {
-          break;
+      PointI image_point = terrainToDTM(terrain_coordinates);
+      RectI rect_full(PointI(), mDtmReader->cols(), mDtmReader->rows());
+
+      PointD pt(terrain_coordinates.x, terrain_coordinates.y);
+      if (rect_full.contains(image_point)) {
+        RectI rect(image_point, 1, 1);
+        cv::Mat image = mDtmReader->read(rect); 
+        if (!image.empty()) {
+          z2 = image.at<float>(0, 0);
+          if (std::abs(z2 - z) > 0.1 && z2 != mNoDataValue) {
+            terrain_coordinates = mDifferentialRectification->forwardProjection(photocoordinates, z2);
+            z = z2;
+          } else {
+            break;
+          }
         }
+      } else {
+        break;
       }
-    } else {
-      break;
+      it--;
     }
-    it--;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
-  return terrain_point;
+  return terrain_coordinates;
 }
 
 PointI Orthorectification::imageToPhotocoordinates(const PointI &imagePoint) const
@@ -138,8 +175,17 @@ PointI Orthorectification::photocoordinatesToImage(const PointI &photocoordinate
 
 Point3D Orthorectification::dtmToTerrain(const PointI &imagePoint) const
 {
-  Point3D dtm_terrain_point = mAffineDtmImageToTerrain.transform(imagePoint);
-  dtm_terrain_point.z = mDtm.at<float>(imagePoint.y - mRectDtm.y, imagePoint.x - mRectDtm.x);
+  Point3D dtm_terrain_point;
+  
+  try {
+
+    dtm_terrain_point = mAffineDtmImageToTerrain.transform(imagePoint);
+    dtm_terrain_point.z = mDtm.at<float>(imagePoint.y - mRectDtm.y, imagePoint.x - mRectDtm.x);
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
   return dtm_terrain_point;
 }
 
@@ -151,11 +197,19 @@ PointI Orthorectification::terrainToDTM(const Point3D &terrainPoint) const
 double Orthorectification::z(const PointD &terrainPoint) const
 {
   double z = mNoDataValue;
-  RectI rect(terrainToDTM(terrainPoint), 1, 1);
-  cv::Mat image = mDtmReader->read(rect);
-  if (!image.empty()) {
-    z = image.at<float>(0, 0);
+
+  try {
+
+    RectI rect(terrainToDTM(terrainPoint), 1, 1);
+    cv::Mat image = mDtmReader->read(rect);
+    if (!image.empty()) {
+      z = image.at<float>(0, 0);
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
+
   return z;
 }
 
@@ -436,69 +490,77 @@ cv::Mat Orthorectification::undistort(const cv::Mat &image)
 {
   cv::Mat img_undistort;
 
-  std::shared_ptr<Calibration> calibration = mCamera.calibration();
+  try {
 
-  float ppx = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cx));
-  float ppy = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cy));
+    std::shared_ptr<Calibration> calibration = mCamera.calibration();
 
-  float focal_x = 1.f;
-  float focal_y = 1.f;
+    float ppx = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cx));
+    float ppy = static_cast<float>(calibration->parameter(tl::Calibration::Parameters::cy));
 
-  for (auto param = calibration->parametersBegin(); param != calibration->parametersEnd(); param++) {
-    Calibration::Parameters parameter = param->first;
-    float value = static_cast<float>(param->second);
-    switch (parameter) {
-      case Calibration::Parameters::focal:
-        focal_x = value;
-        focal_y = value;
-        break;
-      case Calibration::Parameters::focalx:
-        focal_x = value;
-        break;
-      case Calibration::Parameters::focaly:
-        focal_y = value;
-        break;
-      default:
-        break;
+    float focal_x = 1.f;
+    float focal_y = 1.f;
+
+    for (auto param = calibration->parametersBegin(); 
+         param != calibration->parametersEnd(); param++) {
+      Calibration::Parameters parameter = param->first;
+      float value = static_cast<float>(param->second);
+      switch (parameter) {
+        case Calibration::Parameters::focal:
+          focal_x = value;
+          focal_y = value;
+          break;
+        case Calibration::Parameters::focalx:
+          focal_x = value;
+          break;
+        case Calibration::Parameters::focaly:
+          focal_y = value;
+          break;
+        default:
+          break;
+      }
     }
-  }
-  std::array<std::array<float, 3>, 3> camera_matrix_data = { focal_x, 0.f, ppx,
-                                                            0.f, focal_y, ppy,
-                                                            0.f, 0.f, 1.f };
 
-  cv::Size imageSize(static_cast<int>(mCamera.width()),
-                     static_cast<int>(mCamera.height()));
+    std::array<std::array<float, 3>, 3> camera_matrix_data = { focal_x, 0.f, ppx,
+                                                              0.f, focal_y, ppy,
+                                                              0.f, 0.f, 1.f };
 
-  cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
-  cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
-  distCoeffs.at<float>(0) = calibration->existParameter(tl::Calibration::Parameters::k1) ?
-    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k1)) : 0.f;
-  distCoeffs.at<float>(1) = calibration->existParameter(tl::Calibration::Parameters::k2) ?
-    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k2)) : 0.f;
-  distCoeffs.at<float>(2) = calibration->existParameter(tl::Calibration::Parameters::p1) ?
-    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p1)) : 0.f;
-  distCoeffs.at<float>(3) = calibration->existParameter(tl::Calibration::Parameters::p2) ?
-    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p2)) : 0.f;
-  distCoeffs.at<float>(4) = calibration->existParameter(tl::Calibration::Parameters::k3) ?
-    static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k3)) : 0.f;
+    cv::Size imageSize(static_cast<int>(mCamera.width()),
+                       static_cast<int>(mCamera.height()));
 
-  cv::Mat map1;
-  cv::Mat map2;
-  cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, nullptr);
-  cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), optCameraMat, imageSize, CV_32FC1, map1, map2);
+    cv::Mat cameraMatrix = cv::Mat(3, 3, CV_32F, camera_matrix_data.data());
+    cv::Mat distCoeffs = cv::Mat::zeros(1, 5, CV_32F);
+    distCoeffs.at<float>(0) = calibration->existParameter(tl::Calibration::Parameters::k1) ?
+                              static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k1)) : 0.f;
+    distCoeffs.at<float>(1) = calibration->existParameter(tl::Calibration::Parameters::k2) ?
+                              static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k2)) : 0.f;
+    distCoeffs.at<float>(2) = calibration->existParameter(tl::Calibration::Parameters::p1) ?
+                              static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p1)) : 0.f;
+    distCoeffs.at<float>(3) = calibration->existParameter(tl::Calibration::Parameters::p2) ?
+                              static_cast<float>(calibration->parameter(tl::Calibration::Parameters::p2)) : 0.f;
+    distCoeffs.at<float>(4) = calibration->existParameter(tl::Calibration::Parameters::k3) ?
+                              static_cast<float>(calibration->parameter(tl::Calibration::Parameters::k3)) : 0.f;
+
+    cv::Mat map1;
+    cv::Mat map2;
+    cv::Mat optCameraMat = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, imageSize, 1, imageSize, nullptr);
+    cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), optCameraMat, imageSize, CV_32FC1, map1, map2);
 
 #ifdef HAVE_OPENCV_CUDAWARPING
-  cv::cuda::GpuMat gMap1(map1);
-  cv::cuda::GpuMat gMap2(map2);
-  cv::cuda::GpuMat gImgOut(image);
-  cv::cuda::GpuMat gImgUndistort;
+    cv::cuda::GpuMat gMap1(map1);
+    cv::cuda::GpuMat gMap2(map2);
+    cv::cuda::GpuMat gImgOut(image);
+    cv::cuda::GpuMat gImgUndistort;
 
-  cv::cuda::remap(gImgOut, gImgUndistort, gMap1, gMap2, cv::INTER_LINEAR, 0, cv::Scalar());
-  gImgUndistort.download(img_undistort);
+    cv::cuda::remap(gImgOut, gImgUndistort, gMap1, gMap2, cv::INTER_LINEAR, 0, cv::Scalar());
+    gImgUndistort.download(img_undistort);
 
 #else
-  cv::remap(image, img_undistort, map1, map2, cv::INTER_LINEAR);
+    cv::remap(image, img_undistort, map1, map2, cv::INTER_LINEAR);
 #endif
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return img_undistort;
 }
@@ -530,29 +592,36 @@ Footprint::~Footprint()
 
 void Footprint::execute(Progress *progressBar)
 {
-  if (!mFootprintWriter->isOpen())throw std::runtime_error("Vector open error");
+  try {
 
-  mFootprintWriter->create();
-  mFootprintWriter->setCRS(mCrs);
+    if (!mFootprintWriter->isOpen()) throw std::runtime_error("Vector open error");
 
-  std::shared_ptr<TableField> field = std::make_shared<TableField>("image", TableField::Type::STRING, 254);
-  graph::GLayer layer;
-  layer.setName("footprint");
-  layer.addDataField(field);
+    mFootprintWriter->create();
+    mFootprintWriter->setCRS(mCrs);
 
-  for (const auto &photo : mPhotos) {
+    std::shared_ptr<TableField> field = std::make_shared<TableField>("image", TableField::Type::STRING, 254);
+    graph::GLayer layer;
+    layer.setName("footprint");
+    layer.addDataField(field);
 
-    Orthorectification orthorectification(mDtm, photo.camera(), photo.cameraPose());
-    std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
-    std::shared_ptr<TableRegister> data = std::make_shared <TableRegister>(layer.tableFields());
-    data->setValue(0, photo.name());
-    entity->setData(data);
-    layer.push_back(entity);
+    for (const auto &photo : mPhotos) {
 
+      Orthorectification orthorectification(mDtm, photo.camera(), photo.cameraPose());
+      std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
+      std::shared_ptr<TableRegister> data = std::make_shared <TableRegister>(layer.tableFields());
+      data->setValue(0, photo.name());
+      entity->setData(data);
+      layer.push_back(entity);
+
+    }
+
+    mFootprintWriter->write(layer);
+    mFootprintWriter->close();
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
-  mFootprintWriter->write(layer);
-  mFootprintWriter->close();
 }
 
 

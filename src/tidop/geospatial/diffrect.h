@@ -133,46 +133,61 @@ inline Point3<T> DifferentialRectification<T>::forwardProjection(const Point<T> 
 {
   Point3<T> point;
 
-  point.z = z;
+  try {
 
-  T x = imagePoint.x;
-  T y = imagePoint.y;
-  T z_dif = point.z - mCameraPosition.z;
-
-  T div = mRotationMatrix.at(0, 2) * x + 
-          mRotationMatrix.at(1, 2) * y - 
-          mRotationMatrix.at(2, 2) * mFocal;
-
-  point.x = mCameraPosition.x + 
-            z_dif * (mRotationMatrix.at(0, 0) * imagePoint.x + 
-                     mRotationMatrix.at(1, 0) * imagePoint.y - 
-                     mRotationMatrix.at(2, 0) * mFocal) / div;
-
-  point.y = mCameraPosition.y + 
-            z_dif * (mRotationMatrix.at(0, 1) * imagePoint.x + 
-                     mRotationMatrix.at(1, 1) * imagePoint.y - 
-                     mRotationMatrix.at(2, 1) * mFocal) / div;
-
+    point.z = z;
+    
+    T x = imagePoint.x;
+    T y = imagePoint.y;
+    T z_dif = point.z - mCameraPosition.z;
+    
+    T div = mRotationMatrix.at(0, 2) * x + 
+            mRotationMatrix.at(1, 2) * y - 
+            mRotationMatrix.at(2, 2) * mFocal;
+    
+    point.x = mCameraPosition.x + 
+              z_dif * (mRotationMatrix.at(0, 0) * imagePoint.x + 
+                       mRotationMatrix.at(1, 0) * imagePoint.y - 
+                       mRotationMatrix.at(2, 0) * mFocal) / div;
+    
+    point.y = mCameraPosition.y + 
+              z_dif * (mRotationMatrix.at(0, 1) * imagePoint.x + 
+                       mRotationMatrix.at(1, 1) * imagePoint.y - 
+                       mRotationMatrix.at(2, 1) * mFocal) / div;
+    
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+  
   return point;
 }
 
 template<typename T>
 inline Point<T> DifferentialRectification<T>::backwardProjection(const Point3<T> &groundPoint) const
 {
-  T dx = groundPoint.x - mCameraPosition.x;
-  T dy = groundPoint.y - mCameraPosition.y;
-  T dz = groundPoint.z - mCameraPosition.z;
-  T div = mRotationMatrix.at(2, 0) * dx + 
-          mRotationMatrix.at(2, 1) * dy + 
-          mRotationMatrix.at(2, 2) * (groundPoint.z - mCameraPosition.z);
-
   Point<T> photo_coordinates;
-  photo_coordinates.x = -mFocal * (mRotationMatrix.at(0, 0) * dx +
-                                   mRotationMatrix.at(0, 1) * dy +
-                                   mRotationMatrix.at(0, 2) * dz) / div;
-  photo_coordinates.y = -mFocal * (mRotationMatrix.at(1, 0) * dx +
-                                   mRotationMatrix.at(1, 1) * dy +
-                                   mRotationMatrix.at(1, 2) * dz) / div;
+
+  try {
+
+    T dx = groundPoint.x - mCameraPosition.x;
+    T dy = groundPoint.y - mCameraPosition.y;
+    T dz = groundPoint.z - mCameraPosition.z;
+    T div = mRotationMatrix.at(2, 0) * dx + 
+            mRotationMatrix.at(2, 1) * dy + 
+            mRotationMatrix.at(2, 2) * (groundPoint.z - mCameraPosition.z);
+
+
+    photo_coordinates.x = -mFocal * (mRotationMatrix.at(0, 0) * dx +
+                                     mRotationMatrix.at(0, 1) * dy +
+                                     mRotationMatrix.at(0, 2) * dz) / div;
+    photo_coordinates.y = -mFocal * (mRotationMatrix.at(1, 0) * dx +
+                                     mRotationMatrix.at(1, 1) * dy +
+                                     mRotationMatrix.at(1, 2) * dz) / div;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
+
   return photo_coordinates;
 }
 

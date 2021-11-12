@@ -440,4 +440,11 @@ BOOST_AUTO_TEST_CASE(windowIntersection_window_int)
   BOOST_CHECK_EQUAL(TL_INT_MIN, w.pt2.y);
 }
 
-
+BOOST_AUTO_TEST_CASE(join_window)
+{
+  WindowI w = joinWindow(WindowI(PointI(0, 0), PointI(100, 100)), WindowI(PointI(50, 50), PointI(150, 150)));
+  BOOST_CHECK_EQUAL(0, w.pt1.x);
+  BOOST_CHECK_EQUAL(0, w.pt1.y);
+  BOOST_CHECK_EQUAL(150, w.pt2.x);
+  BOOST_CHECK_EQUAL(150, w.pt2.y);
+}

@@ -36,7 +36,7 @@
 namespace tl
 {
 
-template<typename T> class Transform;
+/*template<typename T> */class Transform;
 
 
 /*! \addtogroup GraphicEntities
@@ -55,11 +55,6 @@ class GraphicStyle;
 
 class TL_EXPORT Painter
 {
-protected:
-
-  Transform<PointF> *mTrf;
-  Canvas *mCanvas;
-  GraphicStyle *mGraphicStyle;
 
 public:
 
@@ -74,11 +69,10 @@ public:
    */
   Painter(Canvas *canvas);
 
-  /*!
-   * \brief Constructor de copia Painter
-   * \param[in] painter Objeto Painter que se copia
-   */
-  Painter(const Painter &painter);
+  Painter(const Painter &painter) = delete;
+  Painter(Painter &&painter) = delete;
+  Painter &operator = (const Painter &painter) = delete;
+  Painter &operator = (Painter &&painter) = delete;
 
   /*!
    * \brief Destructora
@@ -122,6 +116,8 @@ public:
    */
   void drawMultiPolygon(const GMultiPolygon &multiPolygon);
 
+  void drawPicture(const cv::Mat &bmp);
+
   /*!
    * \brief Establece el canvas
    * \param[in] canvas Canvas
@@ -156,12 +152,16 @@ public:
    * \brief Establece la transformación que se aplica para dibujar el en canvas
    * \param[in] trf Transformación
    */
-  void setTransform(Transform<PointF> *trf);
+  void setTransform(Transform/*<PointF>*/ *trf);
 
   //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
   //void drawImage(const RasterGraphics &image, Helmert2D<geometry::PointI> *trf);
 
-private:
+protected:
+
+  Transform/*<PointF>*/ *mTrf;
+  Canvas *mCanvas;
+  GraphicStyle *mGraphicStyle;
 
 };
 

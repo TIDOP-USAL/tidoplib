@@ -439,29 +439,35 @@ void Calibration::setParameter(Calibration::Parameters parameter, double value)
 std::shared_ptr<Calibration> CalibrationFactory::create(const std::string &cameraType)
 {
   std::shared_ptr<Calibration> calibration;
+  
+  try {
+  
+    if (cameraType.compare("Pinhole 1") == 0) {
+      calibration = std::make_shared<CalibrationSimplePinhole>();
+    } else if (cameraType.compare("Pinhole 2") == 0) {
+      calibration = std::make_shared<CalibrationPinhole>();
+    } else if (cameraType.compare("Radial 1") == 0) {
+      calibration = std::make_shared<CalibrationRadial1>();
+    } else if (cameraType.compare("Radial 2") == 0) {
+      calibration = std::make_shared<CalibrationRadial2>();
+    } else if (cameraType.compare("OpenCV 1") == 0) {
+      calibration = std::make_shared<CalibrationOpenCV>();
+    } else if (cameraType.compare("OpenCV Fisheye") == 0) {
+      calibration = std::make_shared<CalibrationOpenCVFisheye>();
+    } else if (cameraType.compare("OpenCV 2") == 0) {
+      calibration = std::make_shared<CalibrationOpenCVFull>();
+    } else if (cameraType.compare("Radial Fisheye 1") == 0) {
+      calibration = std::make_shared<CalibrationSimpleRadialFisheye>();
+    } else if (cameraType.compare("Radial Fisheye 2") == 0) {
+      calibration = std::make_shared<CalibrationRadialFisheye>();
+    } else if (cameraType.compare("Radial 3") == 0) {
+      calibration = std::make_shared<CalibrationRadial3>();
+    } else {
+      TL_THROW_EXCEPTION("Invalid Camera Type: '%s'.", cameraType.c_str());
+    }
 
-  if (cameraType.compare("Pinhole 1") == 0){
-    calibration = std::make_shared<CalibrationSimplePinhole>();
-  } else if (cameraType.compare("Pinhole 2") == 0){
-    calibration = std::make_shared<CalibrationPinhole>();
-  } else if (cameraType.compare("Radial 1") == 0){
-    calibration = std::make_shared<CalibrationRadial1>();
-  } else if (cameraType.compare("Radial 2") == 0){
-    calibration =std::make_shared<CalibrationRadial2>();
-  } else if (cameraType.compare("OpenCV 1") == 0){
-    calibration = std::make_shared<CalibrationOpenCV>();
-  } else if (cameraType.compare("OpenCV Fisheye") == 0){
-    calibration = std::make_shared<CalibrationOpenCVFisheye>();
-  } else if (cameraType.compare("OpenCV 2") == 0){
-    calibration = std::make_shared<CalibrationOpenCVFull>();
-  } else if (cameraType.compare("Radial Fisheye 1") == 0){
-    calibration = std::make_shared<CalibrationSimpleRadialFisheye>();
-  } else if (cameraType.compare("Radial Fisheye 2") == 0){
-    calibration = std::make_shared<CalibrationRadialFisheye>();
-  } else if (cameraType.compare("Radial 3") == 0){
-    calibration = std::make_shared<CalibrationRadial3>();
-  } else {
-    throw std::runtime_error("Invalid Camera Type");
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return calibration;

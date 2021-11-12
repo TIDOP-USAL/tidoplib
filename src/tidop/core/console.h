@@ -650,20 +650,6 @@ using ArgumentStringOptional = Argument_<std::string, false>;
 using ArgumentPathRequired = Argument_<Path, true>;
 using ArgumentPathOptional = Argument_<Path, false>;
 
-/* Macros para la creación de los argumentos */
-
-# define CreateArgumentIntegerRequired(...) std::make_shared<ArgumentIntegerRequired>(__VA_ARGS__)
-# define CreateArgumentIntegerOptional(...) std::make_shared<ArgumentIntegerOptional>(__VA_ARGS__)
-# define CreateArgumentDoubleRequired(...) std::make_shared<ArgumentDoubleRequired> (__VA_ARGS__)
-# define CreateArgumentDoubleOptional(...) std::make_shared<ArgumentDoubleOptional>(__VA_ARGS__)
-# define CreateArgumentFloatRequired(...) std::make_shared<ArgumentFloatRequired>(__VA_ARGS__)
-# define CreateArgumentFloatOptional(...) std::make_shared<ArgumentFloatOptional>(__VA_ARGS__)
-# define CreateArgumentBooleanRequired(...) std::make_shared<ArgumentBooleanRequired>(__VA_ARGS__)
-# define CreateArgumentBooleanOptional(...) std::make_shared<ArgumentBooleanOptional>(__VA_ARGS__)
-# define CreateArgumentStringRequired(...) std::make_shared<ArgumentStringRequired>(__VA_ARGS__)
-# define CreateArgumentStringOptional(...) std::make_shared<ArgumentStringOptional>(__VA_ARGS__)
-# define CreateArgumentPathRequired(...) std::make_shared<ArgumentPathRequired>(__VA_ARGS__)
-# define CreateArgumentPathOptional(...) std::make_shared<ArgumentPathOptional>(__VA_ARGS__)
 
 
 /* Implementación */
@@ -1176,7 +1162,8 @@ public:
    * \param[in] name Nombre del comando
    * \param[in] description Descripción del comando
    */
-  Command(std::string name, std::string description);
+  Command(std::string name, 
+          std::string description);
 
   /*!
    * \brief Constructora de lista
@@ -1233,7 +1220,7 @@ public:
    * \return Devuelve el estado. 'parse_error' en caso de error y 'parse_success' cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
-  Status parse(int argc, const char* const argv[]);
+  Status parse(int argc, char **argv);
 
   /*!
    * \brief Devuelve un iterador al inicio
@@ -1528,7 +1515,7 @@ public:
    * \return Devuelve el estado. PARSE_ERROR en caso de error y PARSE_SUCCESS cuando el parseo se ha hecho correctamente
    * \see CmdParser::Status
    */
-  Status parse(int argc, const char* const argv[]);
+  Status parse(int argc, char **argv);
 
   /*!
    * \brief Devuelve un iterador al inicio
@@ -1654,6 +1641,21 @@ private:
 
 
 } // End namespace tl
+
+/* Macros para la creación de los argumentos */
+
+# define CreateArgumentIntegerRequired(...) std::make_shared<tl::ArgumentIntegerRequired>(__VA_ARGS__)
+# define CreateArgumentIntegerOptional(...) std::make_shared<tl::ArgumentIntegerOptional>(__VA_ARGS__)
+# define CreateArgumentDoubleRequired(...) std::make_shared<tl::ArgumentDoubleRequired> (__VA_ARGS__)
+# define CreateArgumentDoubleOptional(...) std::make_shared<tl::ArgumentDoubleOptional>(__VA_ARGS__)
+# define CreateArgumentFloatRequired(...) std::make_shared<tl::ArgumentFloatRequired>(__VA_ARGS__)
+# define CreateArgumentFloatOptional(...) std::make_shared<tl::ArgumentFloatOptional>(__VA_ARGS__)
+# define CreateArgumentBooleanRequired(...) std::make_shared<tl::ArgumentBooleanRequired>(__VA_ARGS__)
+# define CreateArgumentBooleanOptional(...) std::make_shared<tl::ArgumentBooleanOptional>(__VA_ARGS__)
+# define CreateArgumentStringRequired(...) std::make_shared<tl::ArgumentStringRequired>(__VA_ARGS__)
+# define CreateArgumentStringOptional(...) std::make_shared<tl::ArgumentStringOptional>(__VA_ARGS__)
+# define CreateArgumentPathRequired(...) std::make_shared<tl::ArgumentPathRequired>(__VA_ARGS__)
+# define CreateArgumentPathOptional(...) std::make_shared<tl::ArgumentPathOptional>(__VA_ARGS__)
 
 
 #endif // TL_CORE_CONSOLE_H

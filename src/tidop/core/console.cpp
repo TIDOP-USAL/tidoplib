@@ -148,7 +148,8 @@ void Console::printErrorMessage(const std::string &message)
   //printMessage(message);
 
   // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
+  if (Progress::isRunning())
+    std::cout << "\r" << std::string(50, ' ') << "\r";
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
@@ -587,7 +588,7 @@ void Command::setVersion(const std::string &version)
   mVersion = version;
 }
 
-Command::Status Command::parse(int argc, const char * const argv[])
+Command::Status Command::parse(int argc, char **argv)
 {
 
   std::map<std::string, std::string> cmd_in;
@@ -1013,7 +1014,7 @@ void CommandList::setVersion(const std::string &version)
   mVersion = version;
 }
 
-CommandList::Status CommandList::parse(int argc, const char * const argv[])
+CommandList::Status CommandList::parse(int argc, char **argv)
 {
   if (argc <= 1) return Status::parse_error;
 
@@ -1044,7 +1045,7 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
   for (auto &command : mCommands){
     if(command->name().compare(arg_cmd_name) == 0){
       mCommand = command;
-      std::vector<char const*> cmd_argv;
+      std::vector<char *> cmd_argv;
       for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
         if (i != 1)
           cmd_argv.push_back(argv[i]);
