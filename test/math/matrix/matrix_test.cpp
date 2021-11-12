@@ -919,6 +919,12 @@ BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
       BOOST_CHECK_EQUAL(-mat2.at(r,c), _mat_dyn_3x3_d->at(r, c));
     }
   }
+
+  // Prueba de que da error de compilación con unsigned
+  //Matrix<unsigned int, 2, 2> mat3 = {1, 2,
+  //                                   3, 4};
+
+  //Matrix<unsigned int, 2, 2> mat4 = -mat3; // error C2338: Requires signed type
 }
 
 /* Operaciones binarias entre matrices */
@@ -1119,6 +1125,24 @@ BOOST_FIXTURE_TEST_CASE(scalar_matrix, MatrixTest)
   BOOST_CHECK_EQUAL(20, mat2.at(1, 2));
 }
 
+/// Multiplicación de un vector por una matriz
+
+BOOST_FIXTURE_TEST_CASE(vector_matrix, MatrixTest)
+{
+  Vector<int, 3> vect{ 1, 2, 3 };
+  Vector<int, 2> vect2 = _mat_2x3_i * vect;
+
+  BOOST_CHECK_EQUAL(40, vect2[0]);
+  BOOST_CHECK_EQUAL(27, vect2[1]);
+
+  Vector<int> vect3{ 1, 2, 3 };
+  Vector<int> vect4 = (*_mat_dyn_2x3_i) * vect3;
+
+  BOOST_CHECK_EQUAL(40, vect4[0]);
+  BOOST_CHECK_EQUAL(27, vect4[1]);
+}
+
+
 // División de una matriz por un escalar
 
 BOOST_FIXTURE_TEST_CASE(div_matrix_scalar, MatrixTest)
@@ -1185,8 +1209,86 @@ BOOST_FIXTURE_TEST_CASE(row, MatrixTest)
   BOOST_CHECK_EQUAL(0.3, row_2.at(2));
 }
 
+BOOST_FIXTURE_TEST_CASE(compare, MatrixTest)
+{
+  Matrix<double, 2, 2> mat1;
+  mat1[0][0] = 2.;
+  mat1[0][1] = 3.;
+  mat1[1][0] = 1.;
+  mat1[1][1] = 4.;
+
+  Matrix<double, 2, 2> mat2(mat1);
+
+  Matrix<double, 2, 2> mat3;
+  mat3[0][0] = 1.;
+  mat3[0][1] = 5.;
+  mat3[1][0] = 2.;
+  mat3[1][1] = 3.;
+
+
+  BOOST_CHECK(mat1 == mat2);
+  BOOST_CHECK(mat1 != mat3);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
+/* */
+
+
+BOOST_AUTO_TEST_SUITE(MatrixRowTestSuite)
+
+struct MatrixRowTest
+{
+  MatrixRowTest()
+    : _mat_dyn_2x2(new Matrix<double>(2, 2))
+  {}
+  ~MatrixRowTest()
+  {
+  }
+
+  void setup()
+  {
+    _mat_dyn_2x2->at(0, 0) = 2.;
+    _mat_dyn_2x2->at(0, 1) = 3.;
+    _mat_dyn_2x2->at(1, 0) = 1.;
+    _mat_dyn_2x2->at(1, 1) = 4.;
+
+    _mat_3x3_d.at(0, 0) = 1.5;
+    _mat_3x3_d.at(0, 1) = 0.0;
+    _mat_3x3_d.at(0, 2) = 2.5;
+    _mat_3x3_d.at(1, 0) = 1.0;
+    _mat_3x3_d.at(1, 1) = 1.0;
+    _mat_3x3_d.at(1, 2) = 1.2;
+    _mat_3x3_d.at(2, 0) = 1.3;
+    _mat_3x3_d.at(2, 1) = 2.6;
+    _mat_3x3_d.at(2, 2) = 0.3;
+  }
+
+  void teardown()
+  {
+
+  }
+
+  Matrix<double> *_mat_dyn_2x2;
+  Matrix<double, 3, 3> _mat_3x3_d;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixRowTest)
+{
+  auto v1 = (*_mat_dyn_2x2)[1][0];
+  (*_mat_dyn_2x2)[1][0] = 2.;
+  auto v2 = (*_mat_dyn_2x2)[1][0];
+
+  auto v3 = _mat_3x3_d[1][1];
+  _mat_3x3_d[1][1] = 10.;
+  auto v4 = _mat_3x3_d[1][1];
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* */
 
 BOOST_AUTO_TEST_SUITE(SubMatrixTestSuite)
 

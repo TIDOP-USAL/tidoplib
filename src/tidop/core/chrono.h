@@ -133,7 +133,23 @@ private:
 
 
 
-
+/*!
+ * \brief Clase para medir tiempos en un bloque de código.
+ * 
+ * En la constructora se inicia la medición de tiempos y en la destructora 
+ * se detiene el cronómetro
+ * 
+ * <b>Ejemplo</b>
+ *
+ * \code
+ *   void foo()
+ *   {
+ *     ChronoAuto chrono("foo function finished");
+ *     
+ *     /// ....
+ *   }
+ * \endcode
+ */
 class ChronoAuto
   : private Chrono
 {

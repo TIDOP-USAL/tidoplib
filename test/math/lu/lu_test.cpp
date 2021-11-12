@@ -81,6 +81,24 @@ struct LuTest
     B2.at(2) = 4;
 
     lu2 = new LuDecomposition<Matrix<double>>(A2);
+
+    SA;
+    SA.at(0, 0) = 12.;
+    SA.at(0, 1) = -51.;
+    SA.at(0, 2) = 4.;
+    SA.at(1, 0) = 6.;
+    SA.at(1, 1) = 167.;
+    SA.at(1, 2) = -68.;
+    SA.at(2, 0) = -4.;
+    SA.at(2, 1) = 24.;
+    SA.at(2, 2) = -41.;
+
+    SB;
+    SB.at(0) = 1;
+    SB.at(1) = 3;
+    SB.at(2) = 2;
+
+    slu = new LuDecomposition<Matrix<double, 3, 3>>(SA);
   }
 
   void teardown()
@@ -94,6 +112,10 @@ struct LuTest
   Matrix<double> A2;
   Vector<double> B2;
   LuDecomposition<Matrix<double>> *lu2;
+
+  Matrix<double, 3, 3> SA;
+  Vector<double, 3> SB;
+  LuDecomposition<Matrix<double, 3, 3>> *slu;
 };
 
 
@@ -125,25 +147,57 @@ BOOST_FIXTURE_TEST_CASE(solve, LuTest)
   BOOST_CHECK_CLOSE(-2., C.at(0), 0.1);
   BOOST_CHECK_CLOSE(1., C.at(1), 0.1);
   BOOST_CHECK_CLOSE(1., C.at(2), 0.1);
+
+  auto SC = slu->solve(SB);
+  BOOST_CHECK_CLOSE(0.065306122448979584, SC.at(0), 0.1);
+  BOOST_CHECK_CLOSE(-0.0089795918367346957, SC.at(1), 0.1);
+  BOOST_CHECK_CLOSE(-0.060408163265306125, SC.at(2), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(solve_matrix, LuTest)
 {
-  Matrix<double, 2, 2> a{ 2, -1,
-                         -1,  3};
-  Matrix<double> b(2, 2);
-  b.at(0, 0) = 1;
-  b.at(0, 1) = 2;
-  b.at(1, 0) = 3;
-  b.at(1, 1) = 1;
+  {
+    Matrix<double> a(2, 2);
+    a.at(0, 0) = 2;
+    a.at(0, 1) = -1;
+    a.at(1, 0) = -1;
+    a.at(1, 1) = 3;
 
-  LuDecomposition<Matrix<double,2,2>> decomp(a);
+    Matrix<double> b(2, 2);
+    b.at(0, 0) = 1;
+    b.at(0, 1) = 2;
+    b.at(1, 0) = 3;
+    b.at(1, 1) = 1;
 
-  auto C = decomp.solve(b);
-  BOOST_CHECK_CLOSE(1.2, C.at(0,0), 0.1);
-  BOOST_CHECK_CLOSE(1.4, C.at(0,1), 0.1);
-  BOOST_CHECK_CLOSE(1.4, C.at(1,0), 0.1);
-  BOOST_CHECK_CLOSE(0.8, C.at(1,1), 0.1);
+    LuDecomposition<Matrix<double>> decomp(a);
+
+    auto C = decomp.solve(b);
+    BOOST_CHECK_CLOSE(1.2, C.at(0, 0), 0.1);
+    BOOST_CHECK_CLOSE(1.4, C.at(0, 1), 0.1);
+    BOOST_CHECK_CLOSE(1.4, C.at(1, 0), 0.1);
+    BOOST_CHECK_CLOSE(0.8, C.at(1, 1), 0.1);
+
+  }
+
+
+  // Matrices estáticas
+  //{
+  //  Matrix<double, 2, 2> a{ 2, -1,
+  //                         -1,  3 };
+  //  Matrix<double, 2, 2> b{ 1, 2,
+  //                          3, 1 };
+
+  //  LuDecomposition<Matrix<double, 2, 2>> decomp(a);
+
+  //  auto C = decomp.solve(b);
+  //  BOOST_CHECK_CLOSE(1.2, C.at(0, 0), 0.1);
+  //  BOOST_CHECK_CLOSE(1.4, C.at(0, 1), 0.1);
+  //  BOOST_CHECK_CLOSE(1.4, C.at(1, 0), 0.1);
+  //  BOOST_CHECK_CLOSE(0.8, C.at(1, 1), 0.1);
+
+  //}
+
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

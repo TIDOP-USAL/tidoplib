@@ -762,6 +762,8 @@ Vector<T, _size> operator + (const Vector<T, _size> &vector)
 template<typename T, size_t _size> static
 Vector<T, _size> operator - (const Vector<T, _size> &vector)
 {
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
   Vector<T, _size> v = vector;
   for (size_t i = 0; i < vector.size(); i++) {
     v[i] = -vector[i];

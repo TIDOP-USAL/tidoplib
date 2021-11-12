@@ -31,6 +31,8 @@ using namespace tl::math;
 
 BOOST_AUTO_TEST_SUITE(VectorTestSuite)
 
+/// Ampliar test para enteros y probar Boost_safe_numerics o similares
+
 struct VectorTest
 {
 
@@ -249,6 +251,10 @@ BOOST_FIXTURE_TEST_CASE(minus, VectorTest)
   BOOST_CHECK_EQUAL(-5.7, v4_dyn[1]);
   BOOST_CHECK_EQUAL( 3.4, v4_dyn[2]);
   BOOST_CHECK_EQUAL(-5.4, v4_dyn[3]);
+
+  // Prueba de que da error de compilación con unsigned
+  //Vector<unsigned int> vui = -Vector<unsigned int>{1, 2, 3}; // error C2338: Requires signed type
+
 }
 
 /* Operaciones binarias entre vectores */
