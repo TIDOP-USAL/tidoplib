@@ -1181,15 +1181,15 @@ BOOST_FIXTURE_TEST_CASE(col, MatrixTest)
   auto col_1 = _mat_dyn_3x3_d->col(1);
   auto col_2 = _mat_dyn_3x3_d->col(2);
 
-  BOOST_CHECK_EQUAL(1.5, col_0.at(0));
-  BOOST_CHECK_EQUAL(1.0, col_0.at(1));
-  BOOST_CHECK_EQUAL(1.3, col_0.at(2));
-  BOOST_CHECK_EQUAL(0.0, col_1.at(0));
-  BOOST_CHECK_EQUAL(1.0, col_1.at(1));
-  BOOST_CHECK_EQUAL(2.6, col_1.at(2));
-  BOOST_CHECK_EQUAL(2.5, col_2.at(0));
-  BOOST_CHECK_EQUAL(1.2, col_2.at(1));
-  BOOST_CHECK_EQUAL(0.3, col_2.at(2));
+  BOOST_CHECK_EQUAL(1.5, col_0[0]);
+  BOOST_CHECK_EQUAL(1.0, col_0[1]);
+  BOOST_CHECK_EQUAL(1.3, col_0[2]);
+  BOOST_CHECK_EQUAL(0.0, col_1[0]);
+  BOOST_CHECK_EQUAL(1.0, col_1[1]);
+  BOOST_CHECK_EQUAL(2.6, col_1[2]);
+  BOOST_CHECK_EQUAL(2.5, col_2[0]);
+  BOOST_CHECK_EQUAL(1.2, col_2[1]);
+  BOOST_CHECK_EQUAL(0.3, col_2[2]);
 }
 
 BOOST_FIXTURE_TEST_CASE(row, MatrixTest)
@@ -1198,15 +1198,15 @@ BOOST_FIXTURE_TEST_CASE(row, MatrixTest)
   auto row_1 = _mat_dyn_3x3_d->row(1);
   auto row_2 = _mat_dyn_3x3_d->row(2);
 
-  BOOST_CHECK_EQUAL(1.5, row_0.at(0));
-  BOOST_CHECK_EQUAL(0.0, row_0.at(1));
-  BOOST_CHECK_EQUAL(2.5, row_0.at(2));
-  BOOST_CHECK_EQUAL(1.0, row_1.at(0));
-  BOOST_CHECK_EQUAL(1.0, row_1.at(1));
-  BOOST_CHECK_EQUAL(1.2, row_1.at(2));
-  BOOST_CHECK_EQUAL(1.3, row_2.at(0));
-  BOOST_CHECK_EQUAL(2.6, row_2.at(1));
-  BOOST_CHECK_EQUAL(0.3, row_2.at(2));
+  BOOST_CHECK_EQUAL(1.5, row_0[0]);
+  BOOST_CHECK_EQUAL(0.0, row_0[1]);
+  BOOST_CHECK_EQUAL(2.5, row_0[2]);
+  BOOST_CHECK_EQUAL(1.0, row_1[0]);
+  BOOST_CHECK_EQUAL(1.0, row_1[1]);
+  BOOST_CHECK_EQUAL(1.2, row_1[2]);
+  BOOST_CHECK_EQUAL(1.3, row_2[0]);
+  BOOST_CHECK_EQUAL(2.6, row_2[1]);
+  BOOST_CHECK_EQUAL(0.3, row_2[2]);
 }
 
 BOOST_FIXTURE_TEST_CASE(compare, MatrixTest)
@@ -1285,10 +1285,179 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixRowTest)
   auto v4 = _mat_3x3_d[1][1];
 }
 
+BOOST_FIXTURE_TEST_CASE(iterate, MatrixRowTest)
+{
+  {
+    auto r0 = _mat_3x3_d[0];
+    auto it0 = r0.begin();
+    BOOST_CHECK_EQUAL(1.5, *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(0.0, *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(2.5, *it0);
+    it0++;
+    BOOST_CHECK(it0 == r0.end());
+
+    auto r1 = _mat_3x3_d[1];
+    auto it1 = r1.begin();
+    BOOST_CHECK_EQUAL(1.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(1.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(1.2, *it1);
+    it1++;
+    BOOST_CHECK(it1 == r1.end());
+
+    auto r2 = _mat_3x3_d[2];
+    auto it2 = r2.begin();
+    BOOST_CHECK_EQUAL(1.3, *it2);
+    it2++;
+    BOOST_CHECK_EQUAL(2.6, *it2);
+    it2++;
+    BOOST_CHECK_EQUAL(0.3, *it2);
+    it2++;
+    BOOST_CHECK(it2 == r2.end());
+
+  }
+
+  {
+    auto r0 = (*_mat_dyn_2x2)[0];
+    auto it0 = r0.begin();
+    BOOST_CHECK_EQUAL(2., *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(3., *it0);
+    it0++;
+    BOOST_CHECK(it0 == r0.end());
+
+    auto r1 = (*_mat_dyn_2x2)[1];
+    auto it1 = r1.begin();
+    BOOST_CHECK_EQUAL(1.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(4.0, *it1);
+    it1++;
+    BOOST_CHECK(it1 == r1.end());
+  }
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
 /* */
+
+
+
+BOOST_AUTO_TEST_SUITE(MatrixColTestSuite)
+
+struct MatrixColTest
+{
+  MatrixColTest()
+    : _mat_dyn_2x2(new Matrix<double>(2, 2))
+  {
+  }
+  ~MatrixColTest()
+  {
+  }
+
+  void setup()
+  {
+    _mat_dyn_2x2->at(0, 0) = 2.;
+    _mat_dyn_2x2->at(0, 1) = 3.;
+    _mat_dyn_2x2->at(1, 0) = 1.;
+    _mat_dyn_2x2->at(1, 1) = 4.;
+
+    _mat_3x3_d.at(0, 0) = 1.5;
+    _mat_3x3_d.at(0, 1) = 0.0;
+    _mat_3x3_d.at(0, 2) = 2.5;
+    _mat_3x3_d.at(1, 0) = 1.0;
+    _mat_3x3_d.at(1, 1) = 1.0;
+    _mat_3x3_d.at(1, 2) = 1.2;
+    _mat_3x3_d.at(2, 0) = 1.3;
+    _mat_3x3_d.at(2, 1) = 2.6;
+    _mat_3x3_d.at(2, 2) = 0.3;
+  }
+
+  void teardown()
+  {
+
+  }
+
+  Matrix<double> *_mat_dyn_2x2;
+  Matrix<double, 3, 3> _mat_3x3_d;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(default_constructor, MatrixColTest)
+{
+  auto v1 = (*_mat_dyn_2x2)[1][0];
+  (*_mat_dyn_2x2)[1][0] = 2.;
+  auto v2 = (*_mat_dyn_2x2)[1][0];
+
+  auto v3 = _mat_3x3_d[1][1];
+  _mat_3x3_d[1][1] = 10.;
+  auto v4 = _mat_3x3_d[1][1];
+}
+
+BOOST_FIXTURE_TEST_CASE(iterate, MatrixColTest)
+{
+  {
+    auto c0 = _mat_3x3_d.col(0);
+    auto it0 = c0.begin();
+    BOOST_CHECK_EQUAL(1.5, *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(1.0, *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(1.3, *it0);
+    it0++;
+    BOOST_CHECK(it0 == c0.end());
+
+    auto c1 = _mat_3x3_d.col(1);
+    auto it1 = c1.begin();
+    BOOST_CHECK_EQUAL(0.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(1.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(2.6, *it1);
+    it1++;
+    BOOST_CHECK(it1 == c1.end());
+
+    auto c2 = _mat_3x3_d.col(2);
+    auto it2 = c2.begin();
+    BOOST_CHECK_EQUAL(2.5, *it2);
+    it2++;
+    BOOST_CHECK_EQUAL(1.2, *it2);
+    it2++;
+    BOOST_CHECK_EQUAL(0.3, *it2);
+    it2++;
+    BOOST_CHECK(it2 == c2.end());
+
+  }
+
+  {
+    auto c0 = _mat_dyn_2x2->col(0);
+    auto it0 = c0.begin();
+    BOOST_CHECK_EQUAL(2., *it0);
+    it0++;
+    BOOST_CHECK_EQUAL(1., *it0);
+    it0++;
+    BOOST_CHECK(it0 == c0.end());
+
+    auto c1 = _mat_dyn_2x2->col(1);
+    auto it1 = c1.begin();
+    BOOST_CHECK_EQUAL(3.0, *it1);
+    it1++;
+    BOOST_CHECK_EQUAL(4.0, *it1);
+    it1++;
+    BOOST_CHECK(it1 == c1.end());
+  }
+
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* */
+
 
 BOOST_AUTO_TEST_SUITE(SubMatrixTestSuite)
 

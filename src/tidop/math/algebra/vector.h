@@ -36,7 +36,6 @@
 
 #include "tidop/core/exception.h"
 #include "tidop/math/math.h"
-//#include "tidop/math/algebra/matrix.h"
 
 
 namespace tl
@@ -44,9 +43,6 @@ namespace tl
 
 namespace math
 {
-
-//template<typename T, size_t _rows, size_t _cols>
-//class Matrix;
 
 constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 
