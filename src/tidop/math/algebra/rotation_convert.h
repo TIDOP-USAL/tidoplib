@@ -85,15 +85,15 @@ public:
    * <h4>Ejemplo</h4>
    * \code
    *   RotationMatrix<double> rotationMatrix;
-   *   rot.at(0, 0) = -0.8888889;
-   *   rot.at(0, 1) = 0.4444444;
-   *   rot.at(0, 2) = -0.1111111;
-   *   rot.at(1, 0) = -0.1111111;
-   *   rot.at(1, 1) = -0.4444444;
-   *   rot.at(1, 2) = -0.8888889;
-   *   rot.at(2, 0) = -0.4444444;
-   *   rot.at(2, 1) = -0.7777778;
-   *   rot.at(2, 2) = 0.4444444;
+   *   rot[0][0] = -0.8888889;
+   *   rot[0][1] = 0.4444444;
+   *   rot[0][2] = -0.1111111;
+   *   rot[1][0] = -0.1111111;
+   *   rot[1][1] = -0.4444444;
+   *   rot[1][2] = -0.8888889;
+   *   rot[2][0] = -0.4444444;
+   *   rot[2][1] = -0.7777778;
+   *   rot[2][2] = 0.4444444;
    *   Quaterniond quaternion;
    *   RotationConverter<double>::convert(rotationMatrix, quaternion);
    * \endcode
@@ -168,15 +168,15 @@ public:
    * <h4>Ejemplo</h4>
    * \code
    *   RotationMatrix<double> rotationMatrix;
-   *   rot.at(0, 0) = -0.8888889;
-   *   rot.at(0, 1) = 0.4444444;
-   *   rot.at(0, 2) = -0.1111111;
-   *   rot.at(1, 0) = -0.1111111;
-   *   rot.at(1, 1) = -0.4444444;
-   *   rot.at(1, 2) = -0.8888889;
-   *   rot.at(2, 0) = -0.4444444;
-   *   rot.at(2, 1) = -0.7777778;
-   *   rot.at(2, 2) = 0.4444444;
+   *   rot[0][0] = -0.8888889;
+   *   rot[0][1] = 0.4444444;
+   *   rot[0][2] = -0.1111111;
+   *   rot[1][0] = -0.1111111;
+   *   rot[1][1] = -0.4444444;
+   *   rot[1][2] = -0.8888889;
+   *   rot[2][0] = -0.4444444;
+   *   rot[2][1] = -0.7777778;
+   *   rot[2][2] = 0.4444444;
    *   AxisAngle<double> axis_angle;
    *   RotationConverter<double>::convert(rotationMatrix, axis_angle);
    * \endcode
@@ -209,15 +209,15 @@ public:
    * <h4>Ejemplo</h4>
    * \code
    *   RotationMatrix<double> rotationMatrix;
-   *   rot.at(0, 0) = -0.8888889;
-   *   rot.at(0, 1) = 0.4444444;
-   *   rot.at(0, 2) = -0.1111111;
-   *   rot.at(1, 0) = -0.1111111;
-   *   rot.at(1, 1) = -0.4444444;
-   *   rot.at(1, 2) = -0.8888889;
-   *   rot.at(2, 0) = -0.4444444;
-   *   rot.at(2, 1) = -0.7777778;
-   *   rot.at(2, 2) = 0.4444444;
+   *   rot[0][0] = -0.8888889;
+   *   rot[0][1] = 0.4444444;
+   *   rot[0][2] = -0.1111111;
+   *   rot[1][0] = -0.1111111;
+   *   rot[1][1] = -0.4444444;
+   *   rot[1][2] = -0.8888889;
+   *   rot[2][0] = -0.4444444;
+   *   rot[2][1] = -0.7777778;
+   *   rot[2][2] = 0.4444444;
    *   EulerAngles<double> eulerAngles;
    *   RotationConverter<double>::convert(rotationMatrix, eulerAngles);
    * \endcode
@@ -326,39 +326,39 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 {
   const T four{4};
 
-  T r22 = rotationMatrix.at(2, 2);
+  T r22 = rotationMatrix[2][2];
   if (r22 <= consts::zero<T>) {
 
-    T r11_r00 = rotationMatrix.at(1, 1) - rotationMatrix.at(0, 0);
+    T r11_r00 = rotationMatrix[1][1] - rotationMatrix[0][0];
     if (r11_r00 <= consts::zero<T>) {
       quaternion.x = sqrt((consts::one<T> - r22 - r11_r00) / four);
       T qx4 = quaternion.x * four;
-      quaternion.y = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0)) / qx4;
-      quaternion.z = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0)) / qx4;
-      quaternion.w = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2)) / qx4;
+      quaternion.y = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qx4;
+      quaternion.z = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qx4;
+      quaternion.w = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qx4;
     } else {
       quaternion.y = sqrt((consts::one<T>  - r22 + r11_r00) / four);
       T qy4 = quaternion.y * four;
-      quaternion.x = (rotationMatrix.at(0, 1) + rotationMatrix.at(1, 0)) / qy4;
-      quaternion.z = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1)) / qy4;
-      quaternion.w = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0)) / qy4;
+      quaternion.x = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qy4;
+      quaternion.z = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qy4;
+      quaternion.w = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qy4;
     }
 
   } else {
 
-    T r11_r00 = rotationMatrix.at(1, 1) + rotationMatrix.at(0, 0);
+    T r11_r00 = rotationMatrix[1][1] + rotationMatrix[0][0];
     if (r11_r00 <= consts::zero<T>) {
       quaternion.z = sqrt((consts::one<T>  + r22 - r11_r00) / four);
       T qz4 = quaternion.z * four;
-      quaternion.x = (rotationMatrix.at(0, 2) + rotationMatrix.at(2, 0)) / qz4;
-      quaternion.y = (rotationMatrix.at(1, 2) + rotationMatrix.at(2, 1)) / qz4;
-      quaternion.w = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1)) / qz4;
+      quaternion.x = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qz4;
+      quaternion.y = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qz4;
+      quaternion.w = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qz4;
     } else {
       quaternion.w = sqrt((consts::one<T>  + r22 + r11_r00) / four);
       T qw4 = quaternion.w * four;
-      quaternion.x = (rotationMatrix.at(2, 1) - rotationMatrix.at(1, 2)) / qw4;
-      quaternion.y = (rotationMatrix.at(0, 2) - rotationMatrix.at(2, 0)) / qw4;
-      quaternion.z = (rotationMatrix.at(1, 0) - rotationMatrix.at(0, 1)) / qw4;
+      quaternion.x = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qw4;
+      quaternion.y = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qw4;
+      quaternion.z = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qw4;
     }
 
   }
@@ -384,15 +384,15 @@ void RotationConverter<T>::convert(const Quaternion<T> &quaternion,
   T _2zz = _2z * quaternion.z;
   T _2zw = _2z * quaternion.w;
 
-  rotationMatrix.at(0, 0) = consts::one<T> - _2yy - _2zz;
-  rotationMatrix.at(0, 1) = _2xy - _2zw; 
-  rotationMatrix.at(0, 2) = _2xz + _2yw;
-  rotationMatrix.at(1, 0) = _2xy + _2zw;
-  rotationMatrix.at(1, 1) = consts::one<T> - _2xx - _2zz;
-  rotationMatrix.at(1, 2) = _2yz - _2xw;
-  rotationMatrix.at(2, 0) = _2xz - _2yw;
-  rotationMatrix.at(2, 1) = _2yz + _2xw;
-  rotationMatrix.at(2, 2) = consts::one<T> - _2xx - _2yy;
+  rotationMatrix[0][0] = consts::one<T> - _2yy - _2zz;
+  rotationMatrix[0][1] = _2xy - _2zw; 
+  rotationMatrix[0][2] = _2xz + _2yw;
+  rotationMatrix[1][0] = _2xy + _2zw;
+  rotationMatrix[1][1] = consts::one<T> - _2xx - _2zz;
+  rotationMatrix[1][2] = _2yz - _2xw;
+  rotationMatrix[2][0] = _2xz - _2yw;
+  rotationMatrix[2][1] = _2yz + _2xw;
+  rotationMatrix[2][2] = consts::one<T> - _2xx - _2yy;
 }
 
 template<typename T>
@@ -456,15 +456,15 @@ void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle,
   T ysa = axis_1 * sa;
   T zsa = axis_2 * sa;
 
-  rotationMatrix.at(0, 0) = axis_0 * axis_0 * _1mca + ca;
-  rotationMatrix.at(0, 1) = xy1mca - zsa;
-  rotationMatrix.at(0, 2) = xz1mca + ysa;
-  rotationMatrix.at(1, 0) = xy1mca + zsa;
-  rotationMatrix.at(1, 1) = axis_1 * axis_1 * _1mca + ca;
-  rotationMatrix.at(1, 2) = yz1mca - xsa;
-  rotationMatrix.at(2, 0) = xz1mca - ysa;
-  rotationMatrix.at(2, 1) = yz1mca + xsa;
-  rotationMatrix.at(2, 2) = axis_2 * axis_2 * _1mca + ca;
+  rotationMatrix[0][0] = axis_0 * axis_0 * _1mca + ca;
+  rotationMatrix[0][1] = xy1mca - zsa;
+  rotationMatrix[0][2] = xz1mca + ysa;
+  rotationMatrix[1][0] = xy1mca + zsa;
+  rotationMatrix[1][1] = axis_1 * axis_1 * _1mca + ca;
+  rotationMatrix[1][2] = yz1mca - xsa;
+  rotationMatrix[2][0] = xz1mca - ysa;
+  rotationMatrix[2][1] = yz1mca + xsa;
+  rotationMatrix[2][2] = axis_2 * axis_2 * _1mca + ca;
 }
 
 
@@ -476,15 +476,15 @@ void RotationConverter<T>::convert(const RotationMatrix<T> &rotationMatrix,
 
   typename EulerAngles<T>::Axes axes = eulerAngles.axes;
 
-  T m00 = rotationMatrix.at(0, 0);
-  T m01 = rotationMatrix.at(0, 1);
-  T m02 = rotationMatrix.at(0, 2);
-  T m10 = rotationMatrix.at(1, 0);
-  T m11 = rotationMatrix.at(1, 1);
-  T m12 = rotationMatrix.at(1, 2);
-  T m20 = rotationMatrix.at(2, 0);
-  T m21 = rotationMatrix.at(2, 1);
-  T m22 = rotationMatrix.at(2, 2);
+  T m00 = rotationMatrix[0][0];
+  T m01 = rotationMatrix[0][1];
+  T m02 = rotationMatrix[0][2];
+  T m10 = rotationMatrix[1][0];
+  T m11 = rotationMatrix[1][1];
+  T m12 = rotationMatrix[1][2];
+  T m20 = rotationMatrix[2][0];
+  T m21 = rotationMatrix[2][1];
+  T m22 = rotationMatrix[2][2];
 
   // Tait-Bryan angles
   if (axes == EulerAngles<T>::Axes::xyz) {
@@ -692,149 +692,149 @@ void RotationConverter<T>::convert(const EulerAngles<T> &eulerAngles,
   // Tait-Bryan angles
   if (axes == EulerAngles<T>::Axes::xyz) {
 
-    rotationMatrix.at(0, 0) = c2 * c3;
-    rotationMatrix.at(0, 1) = -c2 * s3;
-    rotationMatrix.at(0, 2) = s2;
-    rotationMatrix.at(1, 0) = c1 * s3 + c3 * s1 * s2;
-    rotationMatrix.at(1, 1) = c1 * c3 - s1 * s2 * s3;
-    rotationMatrix.at(1, 2) = -c2 * s1;
-    rotationMatrix.at(2, 0) = s1 * s3 - c1 * c3 * s2;
-    rotationMatrix.at(2, 1) = c3 * s1 + c1 * s2 * s3;
-    rotationMatrix.at(2, 2) = c1 * c2;
+    rotationMatrix[0][0] = c2 * c3;
+    rotationMatrix[0][1] = -c2 * s3;
+    rotationMatrix[0][2] = s2;
+    rotationMatrix[1][0] = c1 * s3 + c3 * s1 * s2;
+    rotationMatrix[1][1] = c1 * c3 - s1 * s2 * s3;
+    rotationMatrix[1][2] = -c2 * s1;
+    rotationMatrix[2][0] = s1 * s3 - c1 * c3 * s2;
+    rotationMatrix[2][1] = c3 * s1 + c1 * s2 * s3;
+    rotationMatrix[2][2] = c1 * c2;
 
   } else if (axes == EulerAngles<T>::Axes::yxz) {
 
-    rotationMatrix.at(0, 0) = c1 * c3 + s1 * s2 *s3;
-    rotationMatrix.at(0, 1) = c3 * s1 * s2 - c1 * s3;
-    rotationMatrix.at(0, 2) = c2 * s1;
-    rotationMatrix.at(1, 0) = c2 * s3;
-    rotationMatrix.at(1, 1) = c2 * c3;
-    rotationMatrix.at(1, 2) = -s2;
-    rotationMatrix.at(2, 0) = c1 * s2 * s3 - c3 * s1;
-    rotationMatrix.at(2, 1) = c1 * c3 * s2 + s1 * s3;
-    rotationMatrix.at(2, 2) = c1 * c2;
+    rotationMatrix[0][0] = c1 * c3 + s1 * s2 *s3;
+    rotationMatrix[0][1] = c3 * s1 * s2 - c1 * s3;
+    rotationMatrix[0][2] = c2 * s1;
+    rotationMatrix[1][0] = c2 * s3;
+    rotationMatrix[1][1] = c2 * c3;
+    rotationMatrix[1][2] = -s2;
+    rotationMatrix[2][0] = c1 * s2 * s3 - c3 * s1;
+    rotationMatrix[2][1] = c1 * c3 * s2 + s1 * s3;
+    rotationMatrix[2][2] = c1 * c2;
 
   } else if (axes == EulerAngles<T>::Axes::zxy) {
 
-    rotationMatrix.at(0, 0) = c1 * c3 - s1 * s2 * s3;
-    rotationMatrix.at(0, 1) = -s1 * c2;
-    rotationMatrix.at(0, 2) = c1 * s3 + s1 * s2 * c3;
-    rotationMatrix.at(1, 0) = s1 * c3 + c1 * s2 * s3;
-    rotationMatrix.at(1, 1) = c1 * c2;
-    rotationMatrix.at(1, 2) = s1 * s3 - c1 * s2 * c3;
-    rotationMatrix.at(2, 0) = -c2 * s3;
-    rotationMatrix.at(2, 1) = s2;
-    rotationMatrix.at(2, 2) = c2 * c3;
+    rotationMatrix[0][0] = c1 * c3 - s1 * s2 * s3;
+    rotationMatrix[0][1] = -s1 * c2;
+    rotationMatrix[0][2] = c1 * s3 + s1 * s2 * c3;
+    rotationMatrix[1][0] = s1 * c3 + c1 * s2 * s3;
+    rotationMatrix[1][1] = c1 * c2;
+    rotationMatrix[1][2] = s1 * s3 - c1 * s2 * c3;
+    rotationMatrix[2][0] = -c2 * s3;
+    rotationMatrix[2][1] = s2;
+    rotationMatrix[2][2] = c2 * c3;
 
   } else if (axes == EulerAngles<T>::Axes::zyx) {
 
-    rotationMatrix.at(0, 0) = c1 * c2;
-    rotationMatrix.at(0, 1) = c1 * s2 * s3 - c3 * s1;
-    rotationMatrix.at(0, 2) = s1 * s3 + c1 * c3 * s2;
-    rotationMatrix.at(1, 0) = c2 * s1;
-    rotationMatrix.at(1, 1) = c1 * c3 + s1 * s2 * s3;
-    rotationMatrix.at(1, 2) = c3 * s1 * s2 - c1 * s3;
-    rotationMatrix.at(2, 0) = -s2;
-    rotationMatrix.at(2, 1) = c2 * s3;
-    rotationMatrix.at(2, 2) = c2 * c3;
+    rotationMatrix[0][0] = c1 * c2;
+    rotationMatrix[0][1] = c1 * s2 * s3 - c3 * s1;
+    rotationMatrix[0][2] = s1 * s3 + c1 * c3 * s2;
+    rotationMatrix[1][0] = c2 * s1;
+    rotationMatrix[1][1] = c1 * c3 + s1 * s2 * s3;
+    rotationMatrix[1][2] = c3 * s1 * s2 - c1 * s3;
+    rotationMatrix[2][0] = -s2;
+    rotationMatrix[2][1] = c2 * s3;
+    rotationMatrix[2][2] = c2 * c3;
 
   } else if (axes == EulerAngles<T>::Axes::yzx) {
 
-    rotationMatrix.at(0, 0) = c1 * c2;
-    rotationMatrix.at(0, 1) = s1 * s3 - c1 * s2 * c3;
-    rotationMatrix.at(0, 2) = c1 * s2 * s3 + s1 * c3;
-    rotationMatrix.at(1, 0) = s2;
-    rotationMatrix.at(1, 1) = c2 * c3;
-    rotationMatrix.at(1, 2) = -c2 * s3;
-    rotationMatrix.at(2, 0) = -s1 * c2;
-    rotationMatrix.at(2, 1) = c1 * s3 + s1 * s2 * c3;
-    rotationMatrix.at(2, 2) = c1 * c3 - s1 * s2 * s3;
+    rotationMatrix[0][0] = c1 * c2;
+    rotationMatrix[0][1] = s1 * s3 - c1 * s2 * c3;
+    rotationMatrix[0][2] = c1 * s2 * s3 + s1 * c3;
+    rotationMatrix[1][0] = s2;
+    rotationMatrix[1][1] = c2 * c3;
+    rotationMatrix[1][2] = -c2 * s3;
+    rotationMatrix[2][0] = -s1 * c2;
+    rotationMatrix[2][1] = c1 * s3 + s1 * s2 * c3;
+    rotationMatrix[2][2] = c1 * c3 - s1 * s2 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::xzy) {
 
-    rotationMatrix.at(0, 0) = c2 * c3;
-    rotationMatrix.at(0, 1) = -s2;
-    rotationMatrix.at(0, 2) = c2 * s3;
-    rotationMatrix.at(1, 0) = c1 * s2 * c3 + s1 * s3;
-    rotationMatrix.at(1, 1) = c1 * c2;
-    rotationMatrix.at(1, 2) = c1 * s2 *s3 - s1 * c3;
-    rotationMatrix.at(2, 0) = s1 * s2 * c3 - c1 * s3;
-    rotationMatrix.at(2, 1) = s1 * c2;
-    rotationMatrix.at(2, 2) = s1 * s2 * s3 + c1 * c3;
+    rotationMatrix[0][0] = c2 * c3;
+    rotationMatrix[0][1] = -s2;
+    rotationMatrix[0][2] = c2 * s3;
+    rotationMatrix[1][0] = c1 * s2 * c3 + s1 * s3;
+    rotationMatrix[1][1] = c1 * c2;
+    rotationMatrix[1][2] = c1 * s2 *s3 - s1 * c3;
+    rotationMatrix[2][0] = s1 * s2 * c3 - c1 * s3;
+    rotationMatrix[2][1] = s1 * c2;
+    rotationMatrix[2][2] = s1 * s2 * s3 + c1 * c3;
 
   }
   // Euler angles
   else if (axes == EulerAngles<T>::Axes::xyx) {
     
-    rotationMatrix.at(0, 0) = c2;
-    rotationMatrix.at(0, 1) = s2 * s3;
-    rotationMatrix.at(0, 2) = s2 * c3;
-    rotationMatrix.at(1, 0) = s1 * s2;
-    rotationMatrix.at(1, 1) = c1 * c3 - s1 * c2 * s3;
-    rotationMatrix.at(1, 2) = -c1 * s3 - s1 * c2 * c3;
-    rotationMatrix.at(2, 0) = -c1 * s2;
-    rotationMatrix.at(2, 1) = s1 * c3 + c1 * c2 * s3;
-    rotationMatrix.at(2, 2) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[0][0] = c2;
+    rotationMatrix[0][1] = s2 * s3;
+    rotationMatrix[0][2] = s2 * c3;
+    rotationMatrix[1][0] = s1 * s2;
+    rotationMatrix[1][1] = c1 * c3 - s1 * c2 * s3;
+    rotationMatrix[1][2] = -c1 * s3 - s1 * c2 * c3;
+    rotationMatrix[2][0] = -c1 * s2;
+    rotationMatrix[2][1] = s1 * c3 + c1 * c2 * s3;
+    rotationMatrix[2][2] = c1 * c2 * c3 - s1 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::xzx) {
 
-    rotationMatrix.at(0, 0) = c2;
-    rotationMatrix.at(0, 1) = -c3 * s2;
-    rotationMatrix.at(0, 2) = s2 * s3;
-    rotationMatrix.at(1, 0) = c1 * s2;
-    rotationMatrix.at(1, 1) = c1 * c2 * c3 - s1 * s3;
-    rotationMatrix.at(1, 2) = -c3 * s1 - c1 * c2 * s3;
-    rotationMatrix.at(2, 0) = s1 * s2;
-    rotationMatrix.at(2, 1) = c1 * s3 + c2 * c3 * s1;
-    rotationMatrix.at(2, 2) = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix[0][0] = c2;
+    rotationMatrix[0][1] = -c3 * s2;
+    rotationMatrix[0][2] = s2 * s3;
+    rotationMatrix[1][0] = c1 * s2;
+    rotationMatrix[1][1] = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[1][2] = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix[2][0] = s1 * s2;
+    rotationMatrix[2][1] = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix[2][2] = c1 * c3 - c2 * s1 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::yxy) {
 
-    rotationMatrix.at(0, 0) = c1 * c3 - c2 * s1 * s3;
-    rotationMatrix.at(0, 1) = s1 * s2;
-    rotationMatrix.at(0, 2) = c1 * s3 + c2 * c3 * s1;
-    rotationMatrix.at(1, 0) = s2 * s3;
-    rotationMatrix.at(1, 1) = c2;
-    rotationMatrix.at(1, 2) = -c3 * s2;
-    rotationMatrix.at(2, 0) = -c3 * s1 - c1 * c2 * s3;
-    rotationMatrix.at(2, 1) = c1 * s2;
-    rotationMatrix.at(2, 2) = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[0][0] = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix[0][1] = s1 * s2;
+    rotationMatrix[0][2] = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix[1][0] = s2 * s3;
+    rotationMatrix[1][1] = c2;
+    rotationMatrix[1][2] = -c3 * s2;
+    rotationMatrix[2][0] = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix[2][1] = c1 * s2;
+    rotationMatrix[2][2] = c1 * c2 * c3 - s1 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::yzy) {
 
-    rotationMatrix.at(0, 0) = c1 * c2 * c3 - s1 * s3;
-    rotationMatrix.at(0, 1) = -c1 * s2;
-    rotationMatrix.at(0, 2) = c3 * s1 + c1 * c2 * s3;
-    rotationMatrix.at(1, 0) = c3 * s2;
-    rotationMatrix.at(1, 1) = c2;
-    rotationMatrix.at(1, 2) = s2 * s3;
-    rotationMatrix.at(2, 0) = -c1 * s3 - c2 * c3 * s1;
-    rotationMatrix.at(2, 1) = s1 * s2;
-    rotationMatrix.at(2, 2) = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix[0][0] = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[0][1] = -c1 * s2;
+    rotationMatrix[0][2] = c3 * s1 + c1 * c2 * s3;
+    rotationMatrix[1][0] = c3 * s2;
+    rotationMatrix[1][1] = c2;
+    rotationMatrix[1][2] = s2 * s3;
+    rotationMatrix[2][0] = -c1 * s3 - c2 * c3 * s1;
+    rotationMatrix[2][1] = s1 * s2;
+    rotationMatrix[2][2] = c1 * c3 - c2 * s1 * s3;
 
   } else if (axes == EulerAngles<T>::Axes::zxz) {
 
-    rotationMatrix.at(0, 0) = c1 * c3 - c2 * s1 * s3;
-    rotationMatrix.at(0, 1) = -c1 * s3 - c2 * c3 * s1;
-    rotationMatrix.at(0, 2) = s1 * s2;
-    rotationMatrix.at(1, 0) = c3 * s1 + c1 * c2 * s3;
-    rotationMatrix.at(1, 1) = c1 * c2 * c3 - s1 * s3;
-    rotationMatrix.at(1, 2) = -c1 * s2;
-    rotationMatrix.at(2, 0) = s2 * s3;
-    rotationMatrix.at(2, 1) = c3 * s2;
-    rotationMatrix.at(2, 2) = c2;
+    rotationMatrix[0][0] = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix[0][1] = -c1 * s3 - c2 * c3 * s1;
+    rotationMatrix[0][2] = s1 * s2;
+    rotationMatrix[1][0] = c3 * s1 + c1 * c2 * s3;
+    rotationMatrix[1][1] = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[1][2] = -c1 * s2;
+    rotationMatrix[2][0] = s2 * s3;
+    rotationMatrix[2][1] = c3 * s2;
+    rotationMatrix[2][2] = c2;
 
   } else if (axes == EulerAngles<T>::Axes::zyz) {
 
-    rotationMatrix.at(0, 0) = c1 * c2 * c3 - s1 * s3;
-    rotationMatrix.at(0, 1) = -c3 * s1 - c1 * c2 * s3;
-    rotationMatrix.at(0, 2) = c1 * s2;
-    rotationMatrix.at(1, 0) = c1 * s3 + c2 * c3 * s1;
-    rotationMatrix.at(1, 1) = c1 * c3 - c2 * s1 * s3;
-    rotationMatrix.at(1, 2) = s1 * s2;
-    rotationMatrix.at(2, 0) = -c3 * s2;
-    rotationMatrix.at(2, 1) = s2 * s3;
-    rotationMatrix.at(2, 2) = c2;
+    rotationMatrix[0][0] = c1 * c2 * c3 - s1 * s3;
+    rotationMatrix[0][1] = -c3 * s1 - c1 * c2 * s3;
+    rotationMatrix[0][2] = c1 * s2;
+    rotationMatrix[1][0] = c1 * s3 + c2 * c3 * s1;
+    rotationMatrix[1][1] = c1 * c3 - c2 * s1 * s3;
+    rotationMatrix[1][2] = s1 * s2;
+    rotationMatrix[2][0] = -c3 * s2;
+    rotationMatrix[2][1] = s2 * s3;
+    rotationMatrix[2][2] = c2;
 
   }
 }

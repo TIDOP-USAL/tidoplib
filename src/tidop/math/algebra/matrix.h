@@ -58,10 +58,10 @@ constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
  *  \{
  */
 
-template<typename T, size_t _rows, size_t _cols>
+template<typename T>
 class MatrixRow;
 
-template<typename T, size_t _rows, size_t _cols>
+template<typename T>
 class MatrixCol;
 
 template<typename T, size_t _rows, size_t _cols>
@@ -120,8 +120,8 @@ public:
    */
   const_reference at(size_t r, size_t c) const;
 
-  const MatrixRow<T, _rows, _cols> operator[](size_t position) const;
-  MatrixRow<T, _rows, _cols> operator[](size_t position);
+  const MatrixRow<const T> operator[](size_t position) const;
+  MatrixRow<T> operator[](size_t position);
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
@@ -152,8 +152,8 @@ public:
 
 private:
 
-  template<typename T, size_t _rows, size_t _cols> friend class MatrixRow;
-  template<typename T, size_t _rows, size_t _cols> friend class MatrixCol;
+  //template<typename T> friend class MatrixRow;
+  //template<typename T> friend class MatrixCol;
   std::array<T, _rows * _cols> mData;
 };
 
@@ -243,15 +243,15 @@ const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-const MatrixRow<T, _rows, _cols> MatrixBase<T, _rows, _cols>::operator[](size_t position) const
+const MatrixRow<const T> MatrixBase<T, _rows, _cols>::operator[](size_t position) const
 {
-  return MatrixRow<T, _rows, _cols>(this, position);
+  return MatrixRow<const T>(this->data(), position, cols());
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixRow<T, _rows, _cols> MatrixBase<T, _rows, _cols>::operator[](size_t position)
+MatrixRow<T> MatrixBase<T, _rows, _cols>::operator[](size_t position)
 {
-  return MatrixRow<T, _rows, _cols>(this, position);
+  return MatrixRow<T>(this->data(), position, cols());
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
@@ -323,8 +323,8 @@ public:
   reference at(size_t r, size_t c);
   const_reference at(size_t r, size_t c) const;
 
-  const MatrixRow<T, DynamicMatrix, DynamicMatrix> operator[](size_t position) const;
-  MatrixRow<T, DynamicMatrix, DynamicMatrix> operator[](size_t position);
+  const MatrixRow<const T> operator[](size_t position) const;
+  MatrixRow<T> operator[](size_t position);
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
@@ -346,8 +346,8 @@ public:
 
 private:
 
-  template<typename T, size_t _rows, size_t _cols> friend class MatrixRow;
-  template<typename T, size_t _rows, size_t _cols> friend class MatrixCol;
+  //template<typename T> friend class MatrixRow;
+  //template<typename T> friend class MatrixCol;
   std::vector<T> mData;
   size_t mRows{0};
   size_t mCols{0};
@@ -441,15 +441,15 @@ const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c) con
 }
 
 template<typename T> inline
-const MatrixRow<T, DynamicMatrix, DynamicMatrix> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
+const MatrixRow<const T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
 {
-  return MatrixRow<T, DynamicMatrix, DynamicMatrix>(this, position);
+  return MatrixRow<const T>(this->data(), position, cols());
 }
 
 template<typename T> inline
-MatrixRow<T, DynamicMatrix, DynamicMatrix> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
+MatrixRow<T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
 {
-  return MatrixRow<T, DynamicMatrix, DynamicMatrix>(this, position);
+  return MatrixRow<T>(this->data(), position, cols());
 }
 
 template<typename T> inline
@@ -950,10 +950,10 @@ public:
 
   //Vector<T, _rows> col(size_t col) const;
   //Vector<T, _cols> row(size_t row) const;
-  const MatrixRow<T, _rows, _cols> row(size_t row) const;
-  MatrixRow<T, _rows, _cols> row(size_t row);
-  const MatrixCol<T, _rows, _cols> col(size_t col) const;
-  MatrixCol<T, _rows, _cols> col(size_t col);
+  const MatrixRow<const T> row(size_t row) const;
+  MatrixRow<T> row(size_t row);
+  const MatrixCol<const T> col(size_t col) const;
+  MatrixCol<T> col(size_t col);
 
   /*!
    * \brief Determinante de la matriz
@@ -1566,27 +1566,27 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-const MatrixRow<T, _rows, _cols> Matrix<T, _rows, _cols>::row(size_t row) const
+const MatrixRow<const T> Matrix<T, _rows, _cols>::row(size_t row) const
 {
-  return MatrixRow<T, _rows, _cols>(this, row);
+  return MatrixRow<const T>(this, row);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixRow<T, _rows, _cols> Matrix<T, _rows, _cols>::row(size_t row)
+MatrixRow<T> Matrix<T, _rows, _cols>::row(size_t row)
 {
-  return MatrixRow<T, _rows, _cols>(this, row);
+  return MatrixRow<T>(this->data(), row, cols());
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-const MatrixCol<T, _rows, _cols> Matrix<T, _rows, _cols>::col(size_t col) const
+const MatrixCol<const T> Matrix<T, _rows, _cols>::col(size_t col) const
 {
-  return MatrixCol<T, _rows, _cols>(this, col);
+  return MatrixCol<const T>(this->data(), col, rows(), cols());
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixCol<T, _rows, _cols> Matrix<T, _rows, _cols>::col(size_t col)
+MatrixCol<T> Matrix<T, _rows, _cols>::col(size_t col)
 {
-  return MatrixCol<T, _rows, _cols>(this, col);
+  return MatrixCol<T>(this->data(), col, rows(), cols());
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -2637,7 +2637,7 @@ public:
 
 /// Clase MatrixRow
 
-template<typename T, size_t _rows, size_t _cols>
+template<typename T>
 class MatrixRow
 {
 
@@ -2655,121 +2655,46 @@ public:
 
 public:
 
-  MatrixRow(MatrixBase<T, _rows, _cols> *matrix, size_t row)
-    : mMatrix(matrix),
-      mRow(row)
+  MatrixRow(T *data, size_t row, size_t cols)
+    : mData(data),
+      mRow(row),
+      //mRows(rows),
+      mCols(cols)
   {}
   ~MatrixRow(){}
 
-  const_reference at(size_type column) const
-  {
-    return mMatrix->mData.at(mRow * _cols + column);
-  }
-
-  reference at(size_type column)
-  {
-    return mMatrix->mData.at(mRow * _cols + column);
-  }
-
   const_reference operator[](size_t column) const
   {
-    return mMatrix->mData[mRow * _cols + column];
+    return mData[mRow * mCols + column];
   }
 
   reference operator[](size_t column)
   {
-    return mMatrix->mData[mRow * _cols + column];
+    return mData[mRow * mCols + column];
   }
 
   iterator begin() TL_NOEXCEPT
   {
-    return iterator(&mMatrix->mData[mRow * _cols]);
+    return iterator(&mData[mRow * mCols]);
   }
 
   iterator end() TL_NOEXCEPT
   {
-    return iterator(&mMatrix->mData[mRow * _cols]  + _cols);
+    return iterator(&mData[mRow * mCols]  + mCols);
   }
 
 private:
 
-  MatrixBase<T, _rows, _cols> *mMatrix;
+  T *mData;
   size_t mRow;
-};
-
-
-#ifdef MATRIX_STD_VECTOR
-
-template<typename T>
-class MatrixRow<T, DynamicMatrix, DynamicMatrix>
-{
-
-public:
-
-  using value_type = T;
-  using size_type = size_t;
-  using pointer = T *;
-  using const_pointer = const T *;
-  using reference = T &;
-  using const_reference = const T &;
-
-  using iterator = typename IteratorRows<T>;
-  using const_iterator = typename IteratorRows<const T>;
-
-public:
-
-  MatrixRow(MatrixBase<T, DynamicMatrix, DynamicMatrix> *matrix, size_t row)
-    : mMatrix(matrix),
-      mRow(row),
-      mRows(matrix->rows()),
-      mCols(matrix->cols())
-  {}
-  ~MatrixRow() {}
-
-  const_reference at(size_type column) const
-  {
-    return mMatrix->mData.at(mRow * mCols + column);
-  }
-
-  reference at(size_type column)
-  {
-    return mMatrix->mData.at(mRow * mCols + column);
-  }
-
-  const_reference operator[](size_t column) const
-  {
-    return mMatrix->mData[mRow * mCols + column];
-  }
-
-  reference operator[](size_t column)
-  {
-    return mMatrix->mData[mRow * mCols + column];
-  }
-
-  iterator begin() TL_NOEXCEPT
-  {
-    return iterator(&mMatrix->mData[mRow * mCols]);
-  }
-
-  iterator end() TL_NOEXCEPT
-  {
-    return iterator(&mMatrix->mData[mRow * mCols] + mCols);
-  }
-
-private:
-
-  MatrixBase<T, DynamicMatrix, DynamicMatrix> *mMatrix;
-  size_t mRow;
-  size_t mRows;
+  //size_t mRows;
   size_t mCols;
 };
-
-#endif MATRIX_STD_VECTOR
 
 
 /// Clase MatrixCol
 
-template<typename T, size_t _rows, size_t _cols>
+template<typename T>
 class MatrixCol
 {
 
@@ -2787,115 +2712,110 @@ public:
 
 public:
 
-  MatrixCol(MatrixBase<T, _rows, _cols> *matrix, size_t col)
-    : mMatrix(matrix),
-      mCol(col){ }
+  MatrixCol(T *data, size_t col, size_t rows, size_t cols)
+    : mData(data),
+      mCol(col),
+      mRows(rows),
+      mCols(cols)
+  { }
   ~MatrixCol(){ }
 
-  const_reference at(size_type row) const
-  {
-    return mMatrix->mData.at(row * _cols + mCol);
-  }
-
-  reference at(size_type row)
-  {
-    return mMatrix->mData.at(row * _cols + mCol);
-  }
-
   const_reference operator[](size_t row) const
   {
-    return mMatrix->mData[row * _cols + mCol];
+    return mData[row * mCols + mCol];
   }
 
   reference operator[](size_t row)
   {
-    return mMatrix->mData[row * _cols + mCol];
+    return mData[row * mCols + mCol];
   }
 
   iterator begin() TL_NOEXCEPT
   {
-    return iterator(&mMatrix->mData[mCol], _cols);
+    return iterator(&mData[mCol], mCols);
   }
 
   iterator end() TL_NOEXCEPT
   {
-    return iterator(&mMatrix->mData[mCol] + _rows * _cols, _cols);
+    return iterator(&mData[mCol] + mRows * mCols, mCols);
   }
 
 private:
 
-  MatrixBase<T, _rows, _cols> *mMatrix;
-  size_t mCol;
-};
-
-#ifdef MATRIX_STD_VECTOR
-
-template<typename T>
-class MatrixCol<T, DynamicMatrix, DynamicMatrix>
-{
-
-public:
-
-  using value_type = T;
-  using size_type = size_t;
-  using pointer = T *;
-  using const_pointer = const T *;
-  using reference = T &;
-  using const_reference = const T &;
-
-  using iterator = typename IteratorCols<T>;
-  using const_iterator = typename IteratorCols<const T>;
-
-public:
-
-  MatrixCol(MatrixBase<T, DynamicMatrix, DynamicMatrix> *matrix, size_t col)
-    : mMatrix(matrix),
-      mCol(col),
-      mRows(matrix->rows()),
-      mCols(matrix->cols())
-  {
-  }
-  ~MatrixCol()
-  {
-  }
-
-  const_reference at(size_type row) const
-  {
-    return mMatrix->mData.at(row * mCols + mCol);
-  }
-
-  reference at(size_type row)
-  {
-    return mMatrix->mData.at(row * mCols + mCol);
-  }
-
-  const_reference operator[](size_t row) const
-  {
-    return mMatrix->mData[row * mCols + mCol];
-  }
-
-  reference operator[](size_t row)
-  {
-    return mMatrix->mData[row * mCols + mCol];
-  }
-
-  iterator begin() TL_NOEXCEPT
-  {
-    return iterator(&mMatrix->mData[mCol], mCols);
-  }
-
-  iterator end() TL_NOEXCEPT
-  {
-    return iterator(&mMatrix->mData[mCol] + mRows * mCols, mCols);
-  }
-
-private:
-
-  MatrixBase<T, DynamicMatrix, DynamicMatrix> *mMatrix;
+  T *mData;
   size_t mCol;
   size_t mRows;
   size_t mCols;
 };
+
+#ifdef MATRIX_STD_VECTOR
+
+//template<typename T>
+//class MatrixCol<T, DynamicMatrix, DynamicMatrix>
+//{
+//
+//public:
+//
+//  using value_type = T;
+//  using size_type = size_t;
+//  using pointer = T *;
+//  using const_pointer = const T *;
+//  using reference = T &;
+//  using const_reference = const T &;
+//
+//  using iterator = typename IteratorCols<T>;
+//  using const_iterator = typename IteratorCols<const T>;
+//
+//public:
+//
+//  MatrixCol(MatrixBase<T, DynamicMatrix, DynamicMatrix> *matrix, size_t col)
+//    : mMatrix(matrix),
+//      mCol(col),
+//      mRows(matrix->rows()),
+//      mCols(matrix->cols())
+//  {
+//  }
+//  ~MatrixCol()
+//  {
+//  }
+//
+//  //const_reference at(size_type row) const
+//  //{
+//  //  return mMatrix->mData.at(row * mCols + mCol);
+//  //}
+//
+//  //reference at(size_type row)
+//  //{
+//  //  return mMatrix->mData.at(row * mCols + mCol);
+//  //}
+//
+//  const_reference operator[](size_t row) const
+//  {
+//    return mMatrix->mData[row * mCols + mCol];
+//  }
+//
+//  reference operator[](size_t row)
+//  {
+//    return mMatrix->mData[row * mCols + mCol];
+//  }
+//
+//  iterator begin() TL_NOEXCEPT
+//  {
+//    return iterator(&mMatrix->mData[mCol], mCols);
+//  }
+//
+//  iterator end() TL_NOEXCEPT
+//  {
+//    return iterator(&mMatrix->mData[mCol] + mRows * mCols, mCols);
+//  }
+//
+//private:
+//
+//  MatrixBase<T, DynamicMatrix, DynamicMatrix> *mMatrix;
+//  size_t mCol;
+//  size_t mRows;
+//  size_t mCols;
+//};
 
 #endif MATRIX_STD_VECTOR
 

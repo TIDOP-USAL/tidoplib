@@ -200,9 +200,9 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     x[ip] = x[i];
     if (ii != 0) {
       for (j = ii - 1; j < i; j++) {
-        sum -= this->LU.at(i, j) * x[j]; 
+        sum -= LU[i][j] * x[j]; 
       }
-    } else if (sum != static_cast<T>(0)) {
+    } else if (sum != math::consts::zero<T>) {
       ii = i + 1;
     }
       
@@ -211,8 +211,8 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
 
   for (int i = static_cast<int>(mRows) - 1; i >= 0; i--) {
     sum = x[i];
-    for (j = i + 1; j < mRows; j++) sum -= this->LU.at(i, j) * x[j];
-    x[i] = sum / this->LU.at(i, i);
+    for (j = i + 1; j < mRows; j++) sum -= LU[i][j] * x[j];
+    x[i] = sum / LU[i][i];
   }
 
 //#endif
@@ -249,13 +249,13 @@ Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) 
   for (size_t j = 0; j < mRows; j++) {
 
     for (size_t i = 0; i < mRows; i++) {
-      xx[i] = b.at(i,j);
+      xx[i] = b[i][j];
     }
 
     xx = this->solve(xx);
 
     for (size_t i = 0; i < mRows; i++) { 
-      x.at(i,j) = xx[i]; 
+      x[i][j] = xx[i]; 
     }
   }
 
@@ -286,7 +286,7 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     pivot_row = k;
 
     for (size_t i = k; i < mRows; i++) {
-      temp = abs(LU.at(i,k)) / max_elements[i];
+      temp = abs(LU[i][k]) / max_elements[i];
       if (temp > big) {
         big = temp;
         pivot_row = i;
@@ -301,15 +301,15 @@ void LuDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     mIndx[k] = pivot_row;
 
-    if (LU.at(k,k) == consts::zero<T>) 
-      LU.at(k,k) = std::numeric_limits<T>().min();
+    if (LU[k][k] == consts::zero<T>) 
+      LU[k][k] = std::numeric_limits<T>().min();
     
     for (size_t i = k + 1; i < mRows; i++) {
     
-      temp = LU.at(i, k) /= LU.at(k, k);
+      temp = LU[i][k] /= LU[k][k];
       
       for (size_t j = k + 1; j < mRows; j++)
-        LU.at(i, j) -= temp * LU.at(k, j);
+        LU[i][j] -= temp * LU[k][j];
     }
 
     //std::cout << LU << std::endl;
@@ -331,7 +331,7 @@ tl::math::Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxEl
     max = consts::zero<T>;
 
     for (size_t c = 0; c < mRows; c++) {
-      if ((element = abs(LU.at(r, c))) > max) {
+      if ((element = abs(LU[r][c])) > max) {
         max = element;
       }
     }
@@ -383,7 +383,7 @@ T LuDecomposition<Matrix_t<T, _rows, _cols>>::determinant() const
   T det = this->d;
 
 	for (size_t i = 0; i < mRows; i++) 
-    det *= LU.at(i, i);
+    det *= LU[i][i];
 
 	return det;
 }

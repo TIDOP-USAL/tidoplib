@@ -109,16 +109,16 @@ inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(
 
   for (i = 0; i < mRows; i++) {
     for (sum = b[i], k = i - 1; k >= 0; k--) {
-      sum -= this->L.at(i, k) * x[k];
+      sum -= L[i][k] * x[k];
     }
-    x[i] = sum / this->L.at(i, i);
+    x[i] = sum / L[i][i];
   }
 
   for (i = mRows - 1; i >= 0; i--) {
     for (sum = x[i], k = i + 1; k < mRows; k++) {
-      sum -= this->L.at(k, i) * x[k];
+      sum -= L[k][i] * x[k];
     }
-    x[i] = sum / this->L.at(i, i);
+    x[i] = sum / L[i][i];
   }
 
   return x;
@@ -135,17 +135,17 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
     for (size_t j = i; j < mRows; j++) {
 
-      T sum = this->L.at(i, j);
+      T sum = L[i][j];
 
       for (size_t k = i; k > 0; k--) {
-        sum -= this->L.at(i, k-1) * this->L.at(j, k-1);
+        sum -= L[i][k-1] * L[j][k-1];
       }
 
       if (i == j) {
         TL_ASSERT(sum > 0.0, "Cholesky failed");
-        L.at(i, i) = sqrt(sum);
+        L[i][i] = sqrt(sum);
       } else {
-        L.at(j, i) = sum / this->L.at(i, i);
+        L[j][i] = sum / L[i][i];
       }
 
     }
@@ -153,7 +153,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   for (size_t i = 0; i < mRows; i++) {
     for (size_t j = 0; j < i; j++) {
-      this->L.at(j, i) = consts::zero<T>;
+      L[j][i] = consts::zero<T>;
     }
   }
 }
@@ -164,7 +164,7 @@ template<
 >
 inline Matrix<T, _rows, _cols> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::l() const
 {
-  return this->L;
+  return L;
 }
 
 /*! \} */ // end of Algebra

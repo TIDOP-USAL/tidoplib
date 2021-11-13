@@ -168,7 +168,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     T scale = consts::zero<T>;
 
     for (size_t i = k; i < mRows; i++) {
-      scale = std::max(scale, std::abs(R.at(i, k)));
+      scale = std::max(scale, std::abs(R[i][k]));
     }
 
     if (scale == consts::zero<T>) {
@@ -179,39 +179,39 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     } else {
 
       for (size_t i = k; i < mRows; i++) {
-        R.at(i, k) /= scale; 
+        R[i][k] /= scale; 
       }
 
       T aux{0};
 
       for (size_t i = k; i < mRows; i++) { 
-        aux += R.at(i, k) * R.at(i, k);
+        aux += R[i][k] * R[i][k];
       }
 
-      T sigma = std::copysign(sqrt(aux), R.at(k, k));
+      T sigma = std::copysign(sqrt(aux), R[k][k]);
       R.at(k, k) += sigma;
-      c[k] = sigma * R.at(k, k);
-      diagonal.at(k) = -scale * sigma;
+      c[k] = sigma * R[k][k];
+      diagonal[k] = -scale * sigma;
 
       for (size_t j = k + 1; j < mRows; j++) {
 
         T aux{0};
 
         for (size_t i = k; i < mRows; i++) {
-          aux += R.at(i, k) * R.at(i, j);
+          aux += R[i][k] * R[i][j];
         }
 
         T tau = aux / c[k];
 
         for (size_t i = k; i < mRows; i++) {
-          R.at(i, j) -= tau * R.at(i, k);
+          R[i][j] -= tau * R[i][k];
         }
 
       }
     }
   }
 
-  diagonal[mRows - 1] = R.at(mRows - 1, mRows - 1);
+  diagonal[mRows - 1] = R[mRows - 1][mRows - 1];
 
   singular = (diagonal[mRows - 1] == consts::zero<T>);
 
@@ -223,12 +223,12 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
         T aux{0};
         for (size_t i = k; i < mRows; i++)
-          aux += R.at(i, k) * Q_t.at(i, j);
+          aux += R[i][k] * Q_t[i][j];
 
         aux /= c[k];
 
         for (size_t  i = k; i < mRows; i++)
-          Q_t.at(i, j) -= aux * R.at(i, k);
+          Q_t[i][j] -= aux * R[i][k];
       }
 
     }
@@ -236,10 +236,10 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
   for (size_t r = 0; r < mRows; r++) {
 
-    R.at(r, r) = diagonal.at(r);
+    R[r][r] = diagonal[r];
 
     for (size_t c = 0; c < r; c++)
-      R.at(r, c) = consts::zero<T>;
+      R[r][c] = consts::zero<T>;
 
   }
 }
@@ -261,8 +261,8 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     size_t r = i - 1;
     aux = x[r];
     for (size_t j = i; j < mRows; j++) 
-      aux -= this->R.at(r, j) * x[j];
-    x[r] = aux / this->R.at(r, r);
+      aux -= R[r][j] * x[j];
+    x[r] = aux / R[r][r];
   }
 
   return x;
@@ -274,7 +274,7 @@ template<
 >
 inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const
 {
-  return this->Q_t.transpose();
+  return Q_t.transpose();
 }
 
 template<
@@ -283,7 +283,7 @@ template<
 >
 inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const
 {
-  return this->R;
+  return R;
 }
 
 #ifdef HAVE_OPENBLAS
