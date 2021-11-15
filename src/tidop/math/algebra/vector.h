@@ -749,13 +749,13 @@ Vector<T, _size> Vector<T, _size>::unit(size_t size)
 
 /* Operaciones unarias */
 
-template<typename T, size_t _size>  static
+template<typename T, size_t _size>
 Vector<T, _size> operator + (const Vector<T, _size> &vector)
 {
   return vector;
 }
 
-template<typename T, size_t _size> static
+template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &vector)
 {
   static_assert(std::is_signed<T>::value, "Requires signed type");
@@ -810,8 +810,8 @@ Vector<T, _size> &operator -= (Vector<T, _size> &v0,
 }
 
 template<typename T, size_t _size>
-Vector<T, _size> operator*(Vector<T, _size> const& v0,
-                           Vector<T, _size> const& v1)
+Vector<T, _size> operator*(const Vector<T, _size> &v0,
+                           const Vector<T, _size> &v1)
 {
   Vector<T, _size> result = v0;
   return result *= v1;

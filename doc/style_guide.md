@@ -106,17 +106,17 @@ En el caso de usar *templates*, si sus métodos se definen fuera del cuerpo de l
 Los archivos de cabecera (.h) comenzarán siempre con un include guards o guardián de inclusión múltiple, que es algo como:
 
 ```cpp
-#ifndef I3D_NOMBREARCHIVO_H
-#define I3D_NOMBREARCHIVO_H
+#ifndef TL_NOMBREARCHIVO_H
+#define TL_NOMBREARCHIVO_H
 ```
 
 Y terminarán cerrando con *#endif* y con el nombre de la macro comentado para saber que bloque estamos cerrando:
 
 ```cpp
-#endif // I3D_NOMBREARCHIVO_H
+#endif // TL_NOMBREARCHIVO_H
 ```
 
-Un include guards no es más que una forma de evitar nuevas definiciones si un archivo de cabecera se incluye mas de una vez. La primera vez que se incluye la macro I3D_NOMBREARCHIVO_H no está definida aún y por tanto el preprocesador entra en el bloque de código definiendo la macro en la siguiente línea. La siguiente vez que se incluya el archivo de cabecera, como ya existe dicha macro, el preprocesador salta hasta al *#endif* ignorando todo el código encerrado en el bloque.
+Un include guards no es más que una forma de evitar nuevas definiciones si un archivo de cabecera se incluye mas de una vez. La primera vez que se incluye la macro TL_NOMBREARCHIVO_H no está definida aún y por tanto el preprocesador entra en el bloque de código definiendo la macro en la siguiente línea. La siguiente vez que se incluya el archivo de cabecera, como ya existe dicha macro, el preprocesador salta hasta al *#endif* ignorando todo el código encerrado en el bloque.
 
 El compilador MS VC++ dispone de un pragma específico para este fin: *#pragma once*. Sirve para indicar al compilador que el fichero, en que está incluida dicha directiva, debe ser incluido solo una vez en cada compilación.
 
@@ -126,14 +126,14 @@ El compilador MS VC++ dispone de un pragma específico para este fin: *#pragma o
 
 ### Nombre de la macro
 
-El nombre de la macro que utilizamos como include guard comenzará siempre con I3D (siglas de ITOS3D) seguido por un guión bajo, el nombre del fichero, otro guión bajo y una H. Todas las letras irán en mayúsculas.
+El nombre de la macro que utilizamos como include guard comenzará siempre con TL (siglas de Tidop Lib) seguido por un guión bajo, el nombre del fichero, otro guión bajo y una H. Todas las letras irán en mayúsculas.
 
 #include
 La inclusión de las cabeceras se hace mediante la directiva del preprocesador #include. Las inclusiones se harán al comienzo del archivo justo detrás del include guard. Primero se añadirán las cabeceras estándar, ya sean de C++ o de C, después las de las librerías de terceros y finalmente las propias.
 
 ```cpp
-#ifndef I3D_NOMBREARCHIVO_H
-#define I3D_NOMBREARCHIVO_H
+#ifndef TL_NOMBREARCHIVO_H
+#define TL_NOMBREARCHIVO_H
 #include <iostream>
 #include <string>
 
@@ -176,6 +176,6 @@ class Centro;
 
 class Circulo
 {
-  Centro *GetCenter();
+  Centro *center();
 };
 ```

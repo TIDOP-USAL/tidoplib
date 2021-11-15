@@ -60,13 +60,12 @@ namespace math
 // - Moda
 
 
-/*! \defgroup Measure of Central Tendency
+/*! \defgroup CentralTendency Medidas de tendencia central
  *  \{
  */
   
 /*!
- * \brief Media
- * La media es la suma de todos los datos partido del número de datos.
+ * \brief La media es la suma de todos los datos partido del número de datos.
  * Se representa como:
  * \f[ \overline{x} = \frac{\sum_{i=1}^n x_i}{n}  \f]
  * La medida de dispersión más utilizada para la media es la desviación típica o
@@ -140,9 +139,7 @@ median(It first, It last)
 
 
 /*!
- * \brief Moda
- * La moda es el valor de la variable mas veces se repite, el que
- * lleva asociada la mayor frecuencia absoluta.
+ * \brief La moda es el valor de la variable que mas veces se repite, el que lleva asociada la mayor frecuencia absoluta.
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  * \return Valor de la moda
@@ -166,9 +163,7 @@ typename std::iterator_traits<It>::value_type mode(It first, It last)
 }
 
 /*!
- * \brief Moda
- * La moda es el valor de la variable mas veces se repite, el que
- * lleva asociada la mayor frecuencia absoluta.
+ * \brief La moda es el valor de la variable mas veces se repite, el que lleva asociada la mayor frecuencia absoluta.
  * \param[in] container Objeto contenedor
  * \return Valor de la moda
  */

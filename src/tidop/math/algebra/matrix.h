@@ -896,6 +896,7 @@ public:
    * \param[out] invertibility Comprueba si la matriz es invertible
    * \return Matriz inversa
    * <h4>Ejemplo</h4>
+   * \code
    * Matrix<double, 2, 2> mat_2x2{2., 3.
    *                              1., 4.};
    * bool invertible;
@@ -924,6 +925,7 @@ public:
    * \f]
    * 
    * <h4>Ejemplo</h4>
+  * \code
    * Matrix<double, 2, 2> mat_2x2{2., 3.
    *                              1., 4.};
    * Matrix<double, 2, 2> transpose_mat = mat_2x2.transpose();
@@ -1012,6 +1014,16 @@ public:
   T firstMinor(size_t r, size_t c) const;
 
   /*!
+   * \brief Forma escalonada de fila
+   */
+  Matrix rowEchelonForm() const;
+
+  /*!
+   * \brief Forma escalonada de fila reducida
+   */
+  Matrix reducedRowEchelonForm() const;
+
+  /*!
    * \brief Construye una matriz de ceros
    * \f[
    * A=\begin{bmatrix}
@@ -1078,20 +1090,7 @@ private:
   void adjointnxn(Matrix<T, _rows, _cols> &matrix) const;
   void cofactorMatrix(Matrix<T, _rows, _cols> &matrix) const;
 
-  /*!
-   * \brief Forma escalonada de fila
-   */
-  Matrix rowEchelonForm(T *determinant = nullptr) const;
-
-  /*!
-   * \brief Forma escalonada de fila reducida
-   */
-  //Matrix reducedRowEchelonForm(T *determinant = nullptr) const;
-  
-  //Matrix gaussianElimination(T* determinant = nullptr) const;
-  //size_t findMax(const Matrix<T, _rows, _cols>& matrix, size_t index) const;
 };
-
 
 
 /* Definición de alias Matrix */
@@ -1607,9 +1606,8 @@ void Matrix<T, _rows, _cols>::cofactorMatrix(Matrix<T, _rows, _cols> &matrix) co
 
 
 template<typename T, size_t _rows, size_t _cols> inline
-Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) const
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
 {
-  T d = consts::one<T>;
   size_t rows = this->rows();
   size_t cols = this->cols();
 
@@ -1626,28 +1624,45 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm(T *determinant) 
     }
 
     if (pivotElement == consts::zero<T>) {
-      d = consts::zero<T>;
       break;
     }
 
     if (pivotRow != i) {
       matrix.swapRows(i, pivotRow);
-      d = -d;
     }
 
-    d *= pivotElement;
+    matrix[i] /= pivotElement;
 
     for (size_t r = i + 1; r < rows; ++r) {
-      //auto row = matrix[r];
-      for (size_t c = i + 1; c < cols; ++c) {
-        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
-        //row[c] -= row[i] * matrix[i][c] / pivotElement;
+      T scale = matrix[r][i];
+      for (size_t c = i; c < cols; ++c) {
+        matrix[r][c] = matrix[r][c] - scale * matrix[i][c];
       }
     }
   }
 
-  if (determinant) {
-    *determinant = d;
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::reducedRowEchelonForm() const
+{
+  Matrix<T, _rows, _cols> matrix = this->rowEchelonForm();
+
+  size_t rows = this->rows();
+  size_t cols = this->cols();
+
+  for (size_t i = rows; i > 0; --i) {
+
+    for (size_t r = i-1; r > 0; --r) {
+
+      T scale = matrix[r-1][i-1];
+
+      for (size_t c = i-1; c < cols; ++c) {
+        matrix[r-1][c] = matrix[r-1][c] - scale * matrix[i-1][c];
+      }
+    }
+
   }
 
   return matrix;
@@ -1744,8 +1759,41 @@ T Matrix<T, _rows, _cols>::determinant4x4() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinantnxn() const
 {
-  T d{};
-  this->rowEchelonForm(&d);
+  T d = consts::one<T>;
+  size_t rows = this->rows();
+  size_t cols = this->cols();
+
+  Matrix<T, _rows, _cols> matrix(*this);
+
+  for (size_t i = 0; i < rows; ++i) {
+    T pivotElement = matrix[i][i];
+    size_t pivotRow = i;
+    for (size_t r = i + 1; r < rows; ++r) {
+      if (std::abs(matrix[r][i]) > std::abs(pivotElement)) {
+        pivotElement = matrix[r][i];
+        pivotRow = r;
+      }
+    }
+
+    if (pivotElement == consts::zero<T>) {
+      d = consts::zero<T>;
+      break;
+    }
+
+    if (pivotRow != i) {
+      matrix.swapRows(i, pivotRow);
+      d = -d;
+    }
+
+    d *= pivotElement;
+
+    for (size_t r = i + 1; r < rows; ++r) {
+      for (size_t c = i + 1; c < cols; ++c) {
+        matrix[r][c] -= matrix[r][i] * matrix[i][c] / pivotElement;
+      }
+    }
+  }
+
   return d;
 }
 
@@ -2683,6 +2731,11 @@ public:
     return iterator(&mData[mRow * mCols]  + mCols);
   }
 
+  size_t size()
+  {
+    return mCols;
+  }
+
 private:
 
   T *mData;
@@ -2740,6 +2793,11 @@ public:
     return iterator(&mData[mCol] + mRows * mCols, mCols);
   }
 
+  size_t size()
+  {
+    return mRows;
+  }
+
 private:
 
   T *mData;
@@ -2748,102 +2806,420 @@ private:
   size_t mCols;
 };
 
-#ifdef MATRIX_STD_VECTOR
 
-//template<typename T>
-//class MatrixCol<T, DynamicMatrix, DynamicMatrix>
-//{
-//
-//public:
-//
-//  using value_type = T;
-//  using size_type = size_t;
-//  using pointer = T *;
-//  using const_pointer = const T *;
-//  using reference = T &;
-//  using const_reference = const T &;
-//
-//  using iterator = typename IteratorCols<T>;
-//  using const_iterator = typename IteratorCols<const T>;
-//
-//public:
-//
-//  MatrixCol(MatrixBase<T, DynamicMatrix, DynamicMatrix> *matrix, size_t col)
-//    : mMatrix(matrix),
-//      mCol(col),
-//      mRows(matrix->rows()),
-//      mCols(matrix->cols())
-//  {
-//  }
-//  ~MatrixCol()
-//  {
-//  }
-//
-//  //const_reference at(size_type row) const
-//  //{
-//  //  return mMatrix->mData.at(row * mCols + mCol);
-//  //}
-//
-//  //reference at(size_type row)
-//  //{
-//  //  return mMatrix->mData.at(row * mCols + mCol);
-//  //}
-//
-//  const_reference operator[](size_t row) const
-//  {
-//    return mMatrix->mData[row * mCols + mCol];
-//  }
-//
-//  reference operator[](size_t row)
-//  {
-//    return mMatrix->mData[row * mCols + mCol];
-//  }
-//
-//  iterator begin() TL_NOEXCEPT
-//  {
-//    return iterator(&mMatrix->mData[mCol], mCols);
-//  }
-//
-//  iterator end() TL_NOEXCEPT
-//  {
-//    return iterator(&mMatrix->mData[mCol] + mRows * mCols, mCols);
-//  }
-//
-//private:
-//
-//  MatrixBase<T, DynamicMatrix, DynamicMatrix> *mMatrix;
-//  size_t mCol;
-//  size_t mRows;
-//  size_t mCols;
-//};
+/* Operaciones unarias para filas */
 
-#endif MATRIX_STD_VECTOR
+template<typename T>
+MatrixRow<T> operator + (const MatrixRow<T> &row)
+{
+  return row;
+}
 
-/* SubMatrix */
+template<typename T>
+MatrixRow<T> operator - (const MatrixRow<T> &row)
+{
+  static_assert(std::is_signed<T>::value, "Requires signed type");
 
-//template<typename T>
-//class SubMatrix
-//  : public Matrix<T>
-//{
-//
-//public:
-//
-//  SubMatrix();
-//  ~SubMatrix();
-//
-//private:
-//
-//};
-//
-//template<typename T> inline
-//SubMatrix<T>::SubMatrix()
-//{
-//}
-//
-//template<typename T> inline
-//SubMatrix<T>::~SubMatrix()
-//{
-//}
+  MatrixRow<T> r = row;
+  for (size_t i = 0; i < row.size(); i++) {
+    r[i] = -row[i];
+  }
+
+  return r;
+}
+
+/* Operaciones binarias para filas */
+
+template<typename T>
+MatrixRow<T> operator + (const MatrixRow<T> &r0,
+                         const MatrixRow<T> &r1)
+{
+  MatrixRow<T> r = r0;
+  return r += r1;
+}
+
+template<typename T>
+MatrixRow<T> &operator += (MatrixRow<T>  &r0,
+                           const MatrixRow<T> &r1)
+{
+  TL_ASSERT(v0.size() == v1.size(), "")
+
+  for (size_t i = 0; i < v0.size(); i++) {
+    v0[i] += v1[i];
+  }
+
+  return v0;
+}
+
+template<typename T>
+MatrixRow<T> operator - (const MatrixRow<T> &r0,
+                         const MatrixRow<T> &r1)
+{
+  MatrixRow<T> r = r0;
+  return r -= r1;
+}
+
+template<typename T>
+MatrixRow<T> &operator -= (MatrixRow<T> &r0,
+                           const MatrixRow<T> &r1)
+{
+  TL_ASSERT(r0.size() == r1.size(), "")
+
+  for (size_t i = 0; i < r0.size(); i++) {
+    r0[i] -= r1[i];
+  }
+
+  return r0;
+}
+
+template<typename T>
+MatrixRow<T> operator*(const MatrixRow<T> &r0,
+                       const MatrixRow<T> &r1)
+{
+  MatrixRow<T> result = r0;
+  return result *= r1;
+}
+
+template<typename T, size_t _size>
+MatrixRow<T> &operator *= (MatrixRow<T> &r0,
+                           const MatrixRow<T> &r1)
+{
+  TL_ASSERT(r0.size() == r1.size(), "")
+
+  for (size_t i = 0; i < r0.size(); i++) {
+    r0[i] *= r1[i];
+  }
+
+  return r0;
+}
+
+template<typename T>
+MatrixRow<T> operator / (const MatrixRow<T> &r0,
+                         const MatrixRow<T> &r1)
+{
+  MatrixRow<T> result = r0;
+  return result /= r1;
+}
+
+template<typename T>
+MatrixRow<T> &operator /= (MatrixRow<T> &r0,
+                           const MatrixRow<T> &r1)
+{
+  TL_ASSERT(r0.size() == r1.size(), "")
+
+  for (size_t i = 0; i < r1.size(); i++) {
+    r0[i] /= r1[i];
+  }
+  
+  return r0;
+}
+
+template<typename T>
+MatrixRow<T> operator * (const MatrixRow<T> &row,
+                         T scalar)
+{
+  MatrixRow<T> r = row;
+  return r *= scalar;
+}
+
+template<typename T>
+MatrixRow<T> operator * (T scalar,
+                         const MatrixRow<T> &row)
+{
+  MatrixRow<T> r = row;
+  return r *= scalar;
+}
+
+template<typename T>
+MatrixRow<T> &operator *= (MatrixRow<T> &row,
+                           T scalar)
+{
+  for (size_t i = 0; i < row.size(); i++) {
+    row[i] *= scalar;
+  }
+  return row;
+}
+
+template<typename T>
+MatrixRow<T> operator / (const MatrixRow<T> &row,
+                         T scalar)
+{
+  MatrixRow<T> r = row;
+  return r /= scalar;
+}
+
+template<typename T>
+MatrixRow<T> &operator /= (MatrixRow<T> &row,
+                           T scalar)
+{
+  if (scalar != consts::zero<T>) {
+    for (size_t i = 0; i < row.size(); i++) {
+      row[i] /= scalar;
+    }
+  } else {
+    for (size_t i = 0; i < row.size(); i++) {
+      row[i] = static_cast<T>(0);
+    }
+  }
+  return row;
+}
+
+/* Operaciones unarias para columnas */
+
+template<typename T>
+MatrixCol<T> operator + (const MatrixCol<T> &col)
+{
+  return col;
+}
+
+template<typename T>
+MatrixCol<T> operator - (const MatrixCol<T> &col)
+{
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
+  MatrixCol<T> c = col;
+  for (size_t i = 0; i < col.size(); i++) {
+    c[i] = -col[i];
+  }
+
+  return c;
+}
+
+/* Operaciones binarias para columnas */
+
+template<typename T>
+MatrixCol<T> operator + (const MatrixCol<T> &c0,
+                         const MatrixCol<T> &c1)
+{
+  MatrixCol<T> c = c0;
+  return c += c1;
+}
+
+template<typename T>
+MatrixCol<T> &operator += (MatrixCol<T> &c0,
+                           const MatrixCol<T> &c1)
+{
+  TL_ASSERT(c0.size() == c1.size(), "")
+
+  for (size_t i = 0; i < c0.size(); i++) {
+    c0[i] += c1[i];
+  }
+
+  return c0;
+}
+
+template<typename T>
+MatrixCol<T> operator - (const MatrixCol<T> &c0,
+                         const MatrixCol<T> &c1)
+{
+  MatrixCol<T> c = c0;
+  return c -= c1;
+}
+
+template<typename T>
+MatrixCol<T> &operator -= (MatrixCol<T> &c0,
+                           const MatrixCol<T> &c1)
+{
+  TL_ASSERT(c0.size() == c1.size(), "")
+
+  for (size_t i = 0; i < c0.size(); i++) {
+    c0[i] -= c1[i];
+  }
+
+  return c0;
+}
+
+template<typename T>
+MatrixCol<T> operator*(const MatrixCol<T> &c0,
+                       const MatrixCol<T> &c1)
+{
+  MatrixCol<T> result = c0;
+  return result *= c1;
+}
+
+template<typename T, size_t _size>
+MatrixCol<T> &operator *= (MatrixCol<T> &c0,
+                           const MatrixCol<T> &c1)
+{
+  TL_ASSERT(c0.size() == c1.size(), "")
+
+  for (size_t i = 0; i < c0.size(); i++) {
+    c0[i] *= c1[i];
+  }
+
+  return c0;
+}
+
+template<typename T>
+MatrixCol<T> operator / (const MatrixCol<T> &c0,
+                         const MatrixCol<T> &c1)
+{
+  MatrixCol<T> result = c0;
+  return result /= c1;
+}
+
+template<typename T>
+MatrixCol<T> &operator /= (MatrixCol<T> &c0,
+                           const MatrixCol<T> &c1)
+{
+  TL_ASSERT(c0.size() == c1.size(), "")
+
+    for (size_t i = 0; i < c1.size(); i++) {
+      c0[i] /= c1[i];
+    }
+
+  return c0;
+}
+
+template<typename T>
+MatrixCol<T> operator * (const MatrixCol<T> &col,
+                         T scalar)
+{
+  MatrixCol<T> c = col;
+  return c *= scalar;
+}
+
+template<typename T>
+MatrixCol<T> operator * (T scalar,
+                         const MatrixCol<T> &col)
+{
+  MatrixCol<T> c = col;
+  return c *= scalar;
+}
+
+template<typename T>
+MatrixCol<T> &operator *= (MatrixCol<T> &col,
+                           T scalar)
+{
+  for (size_t i = 0; i < col.size(); i++) {
+    col[i] *= scalar;
+  }
+  return col;
+}
+
+template<typename T>
+MatrixCol<T> operator / (const MatrixCol<T> &col,
+                         T scalar)
+{
+  MatrixCol<T> c = col;
+  return c /= scalar;
+}
+
+template<typename T>
+MatrixCol<T> &operator /= (MatrixCol<T> &col,
+                           T scalar)
+{
+  if (scalar != consts::zero<T>) {
+    for (size_t i = 0; i < col.size(); i++) {
+      col[i] /= scalar;
+    }
+  } else {
+    for (size_t i = 0; i < col.size(); i++) {
+      col[i] = static_cast<T>(0);
+    }
+  }
+  return col;
+}
+
+
+/* MatrixRange */
+
+template<typename T>
+class MatrixRange
+{
+
+public:
+
+  using value_type = T;
+  using size_type = size_t;
+  using pointer = T *;
+  using const_pointer = const T *;
+  using reference = T &;
+  using const_reference = const T &;
+
+public:
+
+  MatrixRange(T *data, 
+              size_t rows, 
+              size_t cols, 
+              size_t iniRow,
+              size_t endRow, 
+              size_t iniCol,
+              size_t endCol)
+    : mData(data), 
+      mRows(rows),
+      mCols(cols),
+      mIniRow(iniRow),
+      mEndRow(endRow),
+      mIniCol(iniCol),
+      mEndCol(endCol)
+  { }
+  ~MatrixRange(){ }
+
+  //const_reference operator[](size_t column) const
+  //{
+  //  return mData[mRow * mCols + column];
+  //}
+
+  //reference operator[](size_t column)
+  //{
+  //  return mData[mRow * mCols + column];
+  //}
+  
+  reference operator()(size_t row, size_t col)
+  {
+    mData[(mIniRow + row) * mCols + col + mIniCol];
+  }
+
+  const_reference operator()(size_t row, size_t col) const
+  {
+    mData[(mIniRow + row) * mCols + col + mIniCol];
+  }
+
+  size_t width()
+  {
+    return mEndCol - mIniCol;
+  }
+
+  size_t height()
+  {
+    return mEndRow - mIniRow;
+  }
+
+private:
+
+  T *mData;
+  size_t mRows;
+  size_t mCols;
+  size_t mIniRow;
+  size_t mEndRow;
+  size_t mIniCol;
+  size_t mEndCol;
+};
+
+
+/* Operaciones unarias para un rango */
+
+template<typename T>
+MatrixRange<T> operator + (const MatrixRange<T> &range)
+{
+  return range;
+}
+
+template<typename T>
+MatrixRange<T> operator - (const MatrixRange<T> &range)
+{
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
+  MatrixRange<T> r = range;
+  for (size_t i = 0; i < range.width(); i++) {
+    for (size_t j = 0; j < range.height(); j++) {
+      r[i] = -range(i, j);
+    }
+  }
+
+  return r;
+}
 
 /*! \} */ // end of Algebra
 
