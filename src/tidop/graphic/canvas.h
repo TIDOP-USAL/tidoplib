@@ -126,6 +126,12 @@ public:
    */
   virtual void drawPolygon(const GPolygon &polygon) = 0;
   virtual void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) = 0;
+
+
+  virtual void drawText(const PointD &point, const std::string &text) = 0;
+  virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
+
+  virtual void setPicture(const cv::Mat &bmp) = 0;
 };
 
 #ifdef HAVE_OPENCV
@@ -161,7 +167,11 @@ public:
   void drawLineString(const GLineString &lineString) override;
   void drawPolygon(const GPolygon &polygon) override;
   void drawPolygon(const PolygonD &polygon, const GraphicStyle &style) override;
-  void setPicture(const cv::Mat &bmp);
+  void drawText(const PointD &point, const std::string &text) override;
+  void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) override;
+
+  void setPicture(const cv::Mat &bmp) override;
+
   cv::Mat bmp()
   {
     return mCanvas;

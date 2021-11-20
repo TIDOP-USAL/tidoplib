@@ -138,6 +138,11 @@ void Painter::drawPicture(const cv::Mat &bmp)
   ///mCanvas->
 }
 
+void Painter::drawText(const PointD &point, const std::string &text)
+{
+  mCanvas->drawText(point, text, *mGraphicStyle);
+}
+
 void Painter::setCanvas(Canvas *canvas)
 {
   mCanvas = canvas;

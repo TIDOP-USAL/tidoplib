@@ -118,6 +118,8 @@ public:
 
   void drawPicture(const cv::Mat &bmp);
 
+  void drawText(const PointD &point, const std::string &text);
+
   /*!
    * \brief Establece el canvas
    * \param[in] canvas Canvas

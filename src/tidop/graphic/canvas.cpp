@@ -32,6 +32,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
+#include "ogrsf_frmts.h"
 
 namespace tl
 {
@@ -239,6 +240,25 @@ void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
   if (StyleSymbol *style_symbol = style.styleSymbol()) {
     /// TODO: completar
   }
+}
+
+void CanvasCV::drawText(const PointD &point, const std::string &text)
+{
+
+}
+
+void CanvasCV::drawText(const PointD &point, const std::string &text, const GraphicStyle &style)
+{
+  int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+  double fontScale = 2;
+  int thickness = 3;
+  int baseline = 0;
+  cv::Size textSize = cv::getTextSize(text, fontFace,
+                                      fontScale, thickness, &baseline);
+  baseline += thickness;
+
+  cv::putText(mCanvas, text, cv::Point(point.x, point.y), fontFace, fontScale,
+              cv::Scalar::all(255), thickness, 8);
 }
 
 void CanvasCV::setPicture(const cv::Mat &bmp)
