@@ -29,9 +29,9 @@
 
 #include <algorithm>
 
-#ifdef HAVE_OPENBLAS
-#include <lapacke.h>
-#endif // HAVE_OPENBLAS
+//#ifdef HAVE_OPENBLAS
+//#include <lapacke.h>
+//#endif // HAVE_OPENBLAS
 
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
@@ -58,28 +58,28 @@ namespace math
 
 //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
 
-#ifdef HAVE_OPENBLAS
-
-template<typename T> inline
-  typename std::enable_if<
-  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-  lapackeGELS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-{
-  lapack_int info = LAPACKE_sgels(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-  return info;
-}
-
-template<typename T> inline
-  typename std::enable_if<
-  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-  lapackeGELS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-{
-  lapack_int info = LAPACKE_dgels(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-  return info;
-}
-
-
-#endif // HAVE_OPENBLAS
+//#ifdef HAVE_OPENBLAS
+//
+//template<typename T> inline
+//  typename std::enable_if<
+//  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
+//  lapackeGEQRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *superb)
+//{
+//  lapack_int info = LAPACKE_sgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, superb);
+//  return info;
+//}
+//
+//template<typename T> inline
+//  typename std::enable_if<
+//  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
+//  lapackeGEQRF(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *superb)
+//{
+//  lapack_int info = LAPACKE_dgeqrf(LAPACK_ROW_MAJOR, rows, cols, a, lda, superb);
+//  return info;
+//}
+//
+//
+//#endif // HAVE_OPENBLAS
 
 
 //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
@@ -119,20 +119,23 @@ public:
 
   Matrix<T, _rows, _cols> q() const;
   Matrix<T, _rows, _cols> r() const;
-
+  Matrix<T, _rows, _cols> qr() const;
 private:
 
   //Householder
   void decompose();
 
-#ifdef HAVE_OPENBLAS
-  void lapackeDecompose();
-#endif // HAVE_OPENBLAS
+//#ifdef HAVE_OPENBLAS
+//  void lapackeDecompose();
+//#endif // HAVE_OPENBLAS
 
 private:
 
   Matrix<T, _rows, _cols> Q_t;
   Matrix<T, _rows, _cols> R;
+//#ifdef HAVE_OPENBLAS
+//  Matrix<T, _rows, _cols> QR;
+//#endif // HAVE_OPENBLAS
   bool singular;
   size_t mRows;
 };
@@ -145,12 +148,20 @@ template<
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
   : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
     R(a),
+//#ifdef HAVE_OPENBLAS
+//    QR(a),
+//#endif
     singular(false),
     mRows(a.rows())
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
+//#ifdef HAVE_OPENBLAS
+//  this->lapackeDecompose();
+//#else
   this->decompose();
+//#endif // HAVE_OPENBLAS
+
 }
 
 template<
@@ -202,7 +213,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         }
 
         T tau = aux / c[k];
-
+        
         for (size_t i = k; i < mRows; i++) {
           R[i][j] -= tau * R[i][k];
         }
@@ -221,13 +232,13 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
       for (size_t j = 0; j < mRows; j++) {
 
-        T aux{0};
+        T aux{ 0 };
         for (size_t i = k; i < mRows; i++)
           aux += R[i][k] * Q_t[i][j];
 
         aux /= c[k];
 
-        for (size_t  i = k; i < mRows; i++)
+        for (size_t i = k; i < mRows; i++)
           Q_t[i][j] -= aux * R[i][k];
       }
 
@@ -246,7 +257,7 @@ void QRDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
 template<
   template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
@@ -260,7 +271,7 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
   for (size_t i = mRows; i > 0; i--) {
     size_t r = i - 1;
     aux = x[r];
-    for (size_t j = i; j < mRows; j++) 
+    for (size_t j = i; j < mRows; j++)
       aux -= R[r][j] * x[j];
     x[r] = aux / R[r][r];
   }
@@ -270,37 +281,56 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
 
 template<
   template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::q() const
 {
   return Q_t.transpose();
 }
 
+//template<
+//  template<typename, size_t, size_t>
+//class Matrix_t, typename T, size_t _rows, size_t _cols
+//>
+//inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::qr() const
+//{
+//  return QR;
+//}
+
 template<
   template<typename, size_t, size_t>
-  class Matrix_t, typename T, size_t _rows, size_t _cols
+class Matrix_t, typename T, size_t _rows, size_t _cols
 >
 inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() const
 {
   return R;
 }
 
-#ifdef HAVE_OPENBLAS
-
-template<
-  template<typename, size_t, size_t>
-class Matrix_t, typename T, size_t _rows, size_t _cols
->
-inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
-{
-  lapack_int info;
-
-  info = lapackeGELS(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
-
-}
-
-#endif // HAVE_OPENBLAS
+//#ifdef HAVE_OPENBLAS
+//
+//template<
+//  template<typename, size_t, size_t>
+//class Matrix_t, typename T, size_t _rows, size_t _cols
+//>
+//inline void QRDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+//{
+//  lapack_int info;
+//  lapack_int lda = QR.cols();
+//  T *superb = new T[std::min(QR.rows(), QR.cols()) - 1];
+//  info = lapackeGEQRF(QR.rows(), QR.cols(), QR.data(), lda, superb);
+//
+//  //std::cout << QR << std::endl;
+//  //for (size_t r = 1; r < QR.rows(); r++) {
+//  //  for (size_t c = 0; c < r; c++){
+//  //    R[r][c] = QR[r][c];
+//  //  }
+//  //}
+//
+//  TL_ASSERT(info >= 0, "The algorithm computing SVD failed to converge.");
+//
+//}
+//
+//#endif // HAVE_OPENBLAS
 
 
 
