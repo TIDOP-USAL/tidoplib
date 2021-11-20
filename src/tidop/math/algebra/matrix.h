@@ -33,6 +33,10 @@
 #include <valarray>
 #endif
 
+#ifdef HAVE_OPENBLAS
+#include <lapacke.h>
+#endif // HAVE_OPENBLAS
+
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
@@ -125,6 +129,9 @@ public:
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
+
+  reference operator()(size_t position);
+  const_reference operator()(size_t position) const;
 
   /*!
    * \brief Número de filas de la matriz
@@ -266,6 +273,18 @@ const T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c) const
   return mData[r * this->cols() + c];
 }
 
+template<typename T, size_t _rows, size_t _cols> inline
+T &MatrixBase<T, _rows, _cols>::operator()(size_t position)
+{
+  return mData[position];
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+const T &MatrixBase<T, _rows, _cols>::operator()(size_t position) const
+{
+  return mData[position];
+}
+
 template<typename T, size_t _rows, size_t _cols> inline 
 size_t MatrixBase<T, _rows, _cols>::rows() const
 {
@@ -328,6 +347,9 @@ public:
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
+
+  reference operator()(size_t position);
+  const_reference operator()(size_t position) const;
 
   size_t rows() const;
   size_t cols() const;
@@ -462,6 +484,18 @@ template<typename T> inline
 const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r, size_t c) const
 {
   return mData[r * mCols + c];
+}
+
+template<typename T> inline
+T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t position)
+{
+  return mData[position];
+}
+
+template<typename T> inline
+const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t position) const
+{
+  return mData[position];
 }
 
 template<typename T> inline 
@@ -919,8 +953,8 @@ public:
    * \f[
    * A^{T}=\begin{bmatrix}
    * 1 & 4 & 7 \\
-   * 2 & 5 & 0 \\
-   * 3 & 6 & 8 \\
+   * 2 & 5 & 8 \\
+   * 3 & 6 & 9 \\
    * \end{bmatrix}
    * \f]
    * 
@@ -2262,16 +2296,18 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
  * Matrix2x2i C = A * B;
  * \endcode
  */
-template<typename T, size_t _rows, size_t _dim, size_t _cols> inline  static
+template<typename T, size_t _rows, size_t _dim, size_t _cols> inline
 Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
                                     const Matrix<T, _dim, _cols> &matrix2)
 {
   Matrix<T, _rows, _cols> matrix = Matrix<T, _rows, _cols>::zero();
 
+  T temp = math::consts::zero<T>;
   for (size_t r = 0; r < _rows; r++) {
-    for (size_t c = 0; c < _cols; c++) {
-      for (size_t i = 0; i < _dim; i++) {
-        matrix(r, c) += matrix1(r, i) * matrix2(i, c);
+    for (size_t i = 0; i < _dim; i++) {
+      T a = matrix1(r, i);
+      for (size_t c = 0; c < _cols; c++) {
+        matrix(r, c) += a * matrix2(i, c);
       }
     }
   }
@@ -2279,7 +2315,7 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
   return matrix;
 }
 
-template<typename T> inline  static
+template<typename T> inline
 Matrix<T> operator * (const Matrix<T> &matrix1,
                       const Matrix<T> &matrix2)
 {
@@ -2293,9 +2329,10 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
   Matrix<T> matrix = Matrix<T>::zero(rows, cols);
 
   for (size_t r = 0; r < rows; r++) {
-    for (size_t c = 0; c < cols; c++) {
-      for (size_t i = 0; i < dim1; i++) {
-        matrix(r, c) += matrix1(r, i) * matrix2(i, c);
+    for (size_t i = 0; i < dim1; i++) {
+      T a = matrix1(r, i);
+      for (size_t c = 0; c < cols; c++) {
+        matrix(r, c) += a * matrix2(i, c);
       }
     }
   }

@@ -534,7 +534,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecomp
 
   delete[] superb;
 
-  TL_ASSERT(info == 0, "The algorithm computing SVD failed to converge.");
+  TL_ASSERT(info >= 0, "The algorithm computing SVD failed to converge.");
 }
 
 #endif // HAVE_OPENBLAS

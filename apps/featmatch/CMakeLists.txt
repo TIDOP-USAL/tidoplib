@@ -62,6 +62,14 @@ if(HAVE_PROJ4)
                           ${PROJ4_LIBRARY})
 endif(HAVE_PROJ4)
 
+if(HAVE_OPENBLAS)
+    target_link_libraries(${PROJECT_NAME}
+                          OpenBLAS::OpenBLAS)
+
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+endif(HAVE_OPENBLAS)
+
 if (UNIX)
     target_link_libraries(${PROJECT_NAME} 
                           -lpthread 
