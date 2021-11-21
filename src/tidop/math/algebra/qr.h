@@ -120,6 +120,7 @@ public:
   Matrix<T, _rows, _cols> q() const;
   Matrix<T, _rows, _cols> r() const;
   Matrix<T, _rows, _cols> qr() const;
+
 private:
 
   //Householder
@@ -271,8 +272,8 @@ Vector<T, _rows> QRDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
   for (size_t i = mRows; i > 0; i--) {
     size_t r = i - 1;
     aux = x[r];
-    for (size_t j = i; j < mRows; j++)
-      aux -= R[r][j] * x[j];
+    for (size_t c = i; c < mRows; c++)
+      aux -= R[r][c] * x[c];
     x[r] = aux / R[r][r];
   }
 

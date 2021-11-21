@@ -124,16 +124,27 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, LuTest)
   
   Matrix<double> _lu = lu->lu();
   
-  //BOOST_CHECK_CLOSE(-0.85714285714285721, _lu.at(0, 0), 0.1);
-  //BOOST_CHECK_CLOSE(0.39428571428571429, _lu.at(0, 1), 0.1);
-  //BOOST_CHECK_CLOSE(0.33142857142857141, _lu.at(0, 2), 0.1);
-  //BOOST_CHECK_CLOSE(-0.42857142857142855, _lu.at(1, 0), 0.1);
-  //BOOST_CHECK_CLOSE(-0.902857142857142915, _lu.at(1, 1), 0.1);
-  //BOOST_CHECK_CLOSE(-0.034285714285714280, _lu.at(1, 2), 0.1);
-  //BOOST_CHECK_CLOSE(0.28571428571428570, _lu.at(2, 0), 0.1);
-  //BOOST_CHECK_CLOSE(-0.17142857142857137, _lu.at(2, 1), 0.1);
-  //BOOST_CHECK_CLOSE(0.94285714285714295, _lu.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(12, _lu[0][0], 0.1);
+  BOOST_CHECK_CLOSE(-51, _lu[0][1], 0.1);
+  BOOST_CHECK_CLOSE(4, _lu[0][2], 0.1);
+  BOOST_CHECK_CLOSE(0.5, _lu[1][0], 0.1);
+  BOOST_CHECK_CLOSE(192.5, _lu[1][1], 0.1);
+  BOOST_CHECK_CLOSE(-70, _lu[1][2], 0.1);
+  BOOST_CHECK_CLOSE(-0.333333, _lu[2][0], 0.1);
+  BOOST_CHECK_CLOSE(0.0363636, _lu[2][1], 0.1);
+  BOOST_CHECK_CLOSE(-37.1212, _lu[2][2], 0.1);
+            
+  Matrix<double> _lu2 = lu2->lu();
 
+  BOOST_CHECK_CLOSE(7, _lu2[0][0], 0.1);
+  BOOST_CHECK_CLOSE(8, _lu2[0][1], 0.1);
+  BOOST_CHECK_CLOSE(10, _lu2[0][2], 0.1);
+  BOOST_CHECK_CLOSE(0.142857, _lu2[1][0], 0.1);
+  BOOST_CHECK_CLOSE(0.857143, _lu2[1][1], 0.1);
+  BOOST_CHECK_CLOSE(1.57143, _lu2[1][2], 0.1);
+  BOOST_CHECK_CLOSE(0.571429, _lu2[2][0], 0.1);
+  BOOST_CHECK_CLOSE(0.5, _lu2[2][1], 0.1);
+  BOOST_CHECK_CLOSE(-0.5, _lu2[2][2], 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(solve, LuTest)
@@ -156,47 +167,41 @@ BOOST_FIXTURE_TEST_CASE(solve, LuTest)
 
 BOOST_FIXTURE_TEST_CASE(solve_matrix, LuTest)
 {
-  {
-    Matrix<double> a(2, 2);
-    a[0][0] = 2;
-    a[0][1] = -1;
-    a[1][0] = -1;
-    a[1][1] = 3;
+  Matrix<double> a(2, 2);
+  a[0][0] = 2;
+  a[0][1] = -1;
+  a[1][0] = -1;
+  a[1][1] = 3;
 
-    Matrix<double> b(2, 2);
-    b[0][0] = 1;
-    b[0][1] = 2;
-    b[1][0] = 3;
-    b[1][1] = 1;
+  Matrix<double> b(2, 2);
+  b[0][0] = 1;
+  b[0][1] = 2;
+  b[1][0] = 3;
+  b[1][1] = 1;
 
-    LuDecomposition<Matrix<double>> decomp(a);
+  LuDecomposition<Matrix<double>> decomp(a);
 
-    auto C = decomp.solve(b);
-    BOOST_CHECK_CLOSE(1.2, C[0][0], 0.1);
-    BOOST_CHECK_CLOSE(1.4, C[0][1], 0.1);
-    BOOST_CHECK_CLOSE(1.4, C[1][0], 0.1);
-    BOOST_CHECK_CLOSE(0.8, C[1][1], 0.1);
+  auto C = decomp.solve(b);
+  BOOST_CHECK_CLOSE(1.2, C[0][0], 0.1);
+  BOOST_CHECK_CLOSE(1.4, C[0][1], 0.1);
+  BOOST_CHECK_CLOSE(1.4, C[1][0], 0.1);
+  BOOST_CHECK_CLOSE(0.8, C[1][1], 0.1);
 
-  }
-
-
-  // Matrices estáticas
-  //{
-  //  Matrix<double, 2, 2> a{ 2, -1,
-  //                         -1,  3 };
-  //  Matrix<double, 2, 2> b{ 1, 2,
-  //                          3, 1 };
-
-  //  LuDecomposition<Matrix<double, 2, 2>> decomp(a);
-
-  //  auto C = decomp.solve(b);
-  //  BOOST_CHECK_CLOSE(1.2, C.at(0, 0), 0.1);
-  //  BOOST_CHECK_CLOSE(1.4, C.at(0, 1), 0.1);
-  //  BOOST_CHECK_CLOSE(1.4, C.at(1, 0), 0.1);
-  //  BOOST_CHECK_CLOSE(0.8, C.at(1, 1), 0.1);
-
-  //}
-
+  Matrix<double> mb(3, 2);
+  mb[0][0] = 3;
+  mb[0][1] = 4;
+  mb[1][0] = 6;
+  mb[1][1] = 54;
+  mb[2][0] = 9;
+  mb[2][1] = 13;
+  LuDecomposition<Matrix<double>> decomp2(A);
+  auto mc = decomp2.solve(mb);
+  BOOST_CHECK_CLOSE(0.0281633, mc[0][0], 0.1);
+  BOOST_CHECK_CLOSE(1.0751, mc[0][1], 0.1);
+  BOOST_CHECK_CLOSE(-0.0729796, mc[1][0], 0.1);
+  BOOST_CHECK_CLOSE(0.148245, mc[1][1], 0.1);
+  BOOST_CHECK_CLOSE(-0.26498, mc[2][0], 0.1);
+  BOOST_CHECK_CLOSE(-0.335184, mc[2][1], 0.1);
 
 }
 

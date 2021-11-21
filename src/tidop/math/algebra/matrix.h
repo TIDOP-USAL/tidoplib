@@ -2768,7 +2768,7 @@ public:
     return iterator(&mData[mRow * mCols]  + mCols);
   }
 
-  size_t size()
+  size_t size() const
   {
     return mCols;
   }
@@ -2830,7 +2830,7 @@ public:
     return iterator(&mData[mCol] + mRows * mCols, mCols);
   }
 
-  size_t size()
+  size_t size() const
   {
     return mRows;
   }

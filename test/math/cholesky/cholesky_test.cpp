@@ -47,40 +47,40 @@ struct CholeskyTest
   void setup()
   {
     A = Matrix<double>(3,3);
-    A.at(0,0) = 4.;
-    A.at(0,1) = 12.;
-    A.at(0,2) = -16.;
-    A.at(1,0) = 12.;
-    A.at(1,1) = 37.;
-    A.at(1,2) = -43.;
-    A.at(2,0) = -16.;
-    A.at(2,1) = -43.;
-    A.at(2,2) = 98.;
+    A[0][0] = 6;
+    A[0][1] = 15;
+    A[0][2] = 55;
+    A[1][0] = 15;
+    A[1][1] = 55;
+    A[1][2] = 225;
+    A[2][0] = 55;
+    A[2][1] = 225;
+    A[2][2] = 979;
 
     B = Vector<double>(3);
-    B.at(0) = 1;
-    B.at(1) = 3;
-    B.at(2) = 2;
+    B[0] = 76;
+    B[1] = 295;
+    B[2] = 1259;
 
     cholesky = new CholeskyDecomposition<Matrix<double>>(A);
 
-    A2 = Matrix<double>(3,3);
-    A2.at(0,0) = 1.;
-    A2.at(0,1) = 2.;
-    A2.at(0,2) = 3.;
-    A2.at(1,0) = 4.;
-    A2.at(1,1) = 5.;
-    A2.at(1,2) = 6.;
-    A2.at(2,0) = 7.;
-    A2.at(2,1) = 8.;
-    A2.at(2,2) = 10.;
+    A2 = Matrix<double, 3, 3>();
+    A2[0][0] = 6;
+    A2[0][1] = 15;
+    A2[0][2] = 55;
+    A2[1][0] = 15;
+    A2[1][1] = 55;
+    A2[1][2] = 225;
+    A2[2][0] = 55;
+    A2[2][1] = 225;
+    A2[2][2] = 979;
 
-    B2 = Vector<double>(3);
-    B2.at(0) = 3;
-    B2.at(1) = 3;
-    B2.at(2) = 4;
+    B2 = Vector<double, 3>();
+    B2[0] = 76;
+    B2[1] = 295;
+    B2[2] = 1259;
 
-    cholesky2 = new CholeskyDecomposition<Matrix<double>>(A2);
+    cholesky2 = new CholeskyDecomposition<Matrix<double, 3, 3>>(A2);
   }
 
   void teardown()
@@ -92,9 +92,9 @@ struct CholeskyTest
   Vector<double> B;
   CholeskyDecomposition<Matrix<double>> *cholesky;
 
-  Matrix<double> A2;
-  Vector<double> B2;
-  CholeskyDecomposition<Matrix<double>> *cholesky2;
+  Matrix<double, 3, 3> A2;
+  Vector<double, 3> B2;
+  CholeskyDecomposition<Matrix<double, 3, 3>> *cholesky2;
 };
 
 
@@ -102,41 +102,40 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, CholeskyTest)
 {
   
   Matrix<double> l = cholesky->l();
-  
-  BOOST_CHECK_CLOSE(2., l.at(0, 0), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(0, 1), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(0, 2), 0.1);
-  BOOST_CHECK_CLOSE(6., l.at(1, 0), 0.1);
-  BOOST_CHECK_CLOSE(1., l.at(1, 1), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(1, 2), 0.1);
-  BOOST_CHECK_CLOSE(-8., l.at(2, 0), 0.1);
-  BOOST_CHECK_CLOSE(5., l.at(2, 1), 0.1);
-  BOOST_CHECK_CLOSE(3., l.at(2, 2), 0.1);
+  BOOST_CHECK_CLOSE(2.44949, l[0][0], 0.1);
+  BOOST_CHECK_CLOSE(0., l[0][1], 0.1);
+  BOOST_CHECK_CLOSE(0., l[0][2], 0.1);
+  BOOST_CHECK_CLOSE(6.12372, l[1][0], 0.1);
+  BOOST_CHECK_CLOSE(4.1833, l[1][1], 0.1);
+  BOOST_CHECK_CLOSE(0., l[1][2], 0.1);
+  BOOST_CHECK_CLOSE(22.4537, l[2][0], 0.1);
+  BOOST_CHECK_CLOSE(20.9165, l[2][1], 0.1);
+  BOOST_CHECK_CLOSE(6.1101, l[2][2], 0.1);
 
-  l = cholesky2->l();
-  BOOST_CHECK_CLOSE(1., l.at(0, 0), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(0, 1), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(0, 2), 0.1);
-  BOOST_CHECK_CLOSE(2., l.at(1, 0), 0.1);
-  BOOST_CHECK_CLOSE(1., l.at(1, 1), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(1, 2), 0.1);
-  BOOST_CHECK_CLOSE(3., l.at(2, 0), 0.1);
-  BOOST_CHECK_CLOSE(0., l.at(2, 1), 0.1);
-  BOOST_CHECK_CLOSE(1., l.at(2, 2), 0.1);
+  Matrix<double, 3, 3> l2 = cholesky2->l();
+  BOOST_CHECK_CLOSE(2.44949, l2[0][0], 0.1);
+  BOOST_CHECK_CLOSE(0., l2[0][1], 0.1);
+  BOOST_CHECK_CLOSE(0., l2[0][2], 0.1);
+  BOOST_CHECK_CLOSE(6.12372, l2[1][0], 0.1);
+  BOOST_CHECK_CLOSE(4.1833, l2[1][1], 0.1);
+  BOOST_CHECK_CLOSE(0., l2[1][2], 0.1);
+  BOOST_CHECK_CLOSE(22.4537, l2[2][0], 0.1);
+  BOOST_CHECK_CLOSE(20.9165, l2[2][1], 0.1);
+  BOOST_CHECK_CLOSE(6.1101, l2[2][2], 0.1);
 
 }
 
 BOOST_FIXTURE_TEST_CASE(solve, CholeskyTest)
 {
-/*   auto C = cholesky->solve(B);
-  BOOST_CHECK_CLOSE(0., C.at(0), 0.1);
-  BOOST_CHECK_CLOSE(0., C.at(1), 0.1);
-  BOOST_CHECK_CLOSE(0., C.at(2), 0.1); */
+  auto C = cholesky->solve(B);
+  BOOST_CHECK_CLOSE(1., C[0], 0.1);
+  BOOST_CHECK_CLOSE(1., C[1], 0.1);
+  BOOST_CHECK_CLOSE(1., C[2], 0.1);
 
-  //auto C = cholesky2->solve(B2);
-  //BOOST_CHECK_CLOSE(-2., C.at(0), 0.1);
-  //BOOST_CHECK_CLOSE(1., C.at(1), 0.1);
-  //BOOST_CHECK_CLOSE(1., C.at(2), 0.1);
+  auto C2 = cholesky2->solve(B2);
+  BOOST_CHECK_CLOSE(1., C2[0], 0.1);
+  BOOST_CHECK_CLOSE(1., C2[1], 0.1);
+  BOOST_CHECK_CLOSE(1., C2[2], 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
