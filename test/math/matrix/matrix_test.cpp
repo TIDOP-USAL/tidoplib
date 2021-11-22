@@ -272,69 +272,87 @@ BOOST_FIXTURE_TEST_CASE(rows_cols_constructor, MatrixTest)
   }
 }
 
-//BOOST_FIXTURE_TEST_CASE(iterator_list_constructor, MatrixTest)
-//{
-//
-//  Matrix<2, 2, int> it_list2 {{
-//    {
-//      {0, 1},
-//      {2, 3}
-//    }
-//  }};
-//
-//  BOOST_CHECK_EQUAL(0, it_list2[0][0]);
-//  BOOST_CHECK_EQUAL(1, it_list2[0][1]);
-//  BOOST_CHECK_EQUAL(2, it_list2[1][0]);
-//  BOOST_CHECK_EQUAL(3, it_list2[1][1]);
-//
-//  Matrix<2, 2, int> it_list3 = {
-//    {
-//      { 0, 1 },
-//      {2, 3}
-//    }
-//  };
-//
-//  BOOST_CHECK_EQUAL(0, it_list3[0][0]);
-//  BOOST_CHECK_EQUAL(1, it_list3[0][1]);
-//  BOOST_CHECK_EQUAL(2, it_list3[1][0]);
-//  BOOST_CHECK_EQUAL(3, it_list3[1][1]);
-//
-//  Matrix<2, 3, int> it_list2x3 = {
-//    {
-//      {0, 1, 2},
-//      {3, 4, 5}
-//    }
-//  };
-//
-//  BOOST_CHECK_EQUAL(0, it_list2x3[0][0]);
-//  BOOST_CHECK_EQUAL(1, it_list2x3[0][1]);
-//  BOOST_CHECK_EQUAL(2, it_list2x3[0][2]);
-//  BOOST_CHECK_EQUAL(3, it_list2x3[1][0]);
-//  BOOST_CHECK_EQUAL(4, it_list2x3[1][1]);
-//  BOOST_CHECK_EQUAL(5, it_list2x3[1][2]);
-//
-//  //Matrix<3, 3, int> it_list3x3 = {
-//  //  {
-//  //    {0, 1, 2},
-//  //    {3, 4, 5},
-//  //    {6, 7, 8}
-//  //  }
-//  //};
-//
-//  //BOOST_CHECK_EQUAL(0, it_list3x3[0][0]);
-//  //BOOST_CHECK_EQUAL(1, it_list3x3[0][1]);
-//  //BOOST_CHECK_EQUAL(2, it_list3x3[0][2]);
-//
-//  //Matrix<5, 5, int> it_list5 = {
-//  //  {
-//  //    {6, 8,6,7,3},
-//  //    {9,6,2,3,3},
-//  //    {8,3,2,3,3},
-//  //    {5,3,3,7,6},
-//  //    {5,5,7,4,7}
-//  //  }
-//  //};
-//}
+BOOST_FIXTURE_TEST_CASE(iterator_list_constructor, MatrixTest)
+{
+  Matrix<int, 2, 2> it_list2 {0, 1, 
+                              2, 3};
+
+  BOOST_CHECK_EQUAL(0, it_list2[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list2[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list2[1][0]);
+  BOOST_CHECK_EQUAL(3, it_list2[1][1]);
+
+  Matrix<int, 2, 2> it_list3 { { 0, 1 },
+                               {2, 3} };
+
+  BOOST_CHECK_EQUAL(0, it_list3[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list3[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list3[1][0]);
+  BOOST_CHECK_EQUAL(3, it_list3[1][1]);
+
+  Matrix<int, 2, 2> it_list4{ 0, 1,
+                              2, 3, 4 };
+
+  BOOST_CHECK_EQUAL(0, it_list4[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list4[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list4[1][0]);
+  BOOST_CHECK_EQUAL(3, it_list4[1][1]);
+
+  Matrix<int, 2, 3> it_list2x3 { {0, 1, 2},
+                                 {3, 4, 5} };
+
+  BOOST_CHECK_EQUAL(0, it_list2x3[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list2x3[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list2x3[0][2]);
+  BOOST_CHECK_EQUAL(3, it_list2x3[1][0]);
+  BOOST_CHECK_EQUAL(4, it_list2x3[1][1]);
+  BOOST_CHECK_EQUAL(5, it_list2x3[1][2]);
+
+  Matrix<int, 3, 3> it_list3x3{ {0, 1, 2},
+                                {3, 4, 5},
+                                {6, 7, 8}};
+
+  BOOST_CHECK_EQUAL(0, it_list3x3[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list3x3[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list3x3[0][2]);
+  BOOST_CHECK_EQUAL(3, it_list3x3[1][0]);
+  BOOST_CHECK_EQUAL(4, it_list3x3[1][1]);
+  BOOST_CHECK_EQUAL(5, it_list3x3[1][2]);
+  BOOST_CHECK_EQUAL(6, it_list3x3[2][0]);
+  BOOST_CHECK_EQUAL(7, it_list3x3[2][1]);
+  BOOST_CHECK_EQUAL(8, it_list3x3[2][2]);
+
+  Matrix<int, 5, 5> it_list5{ {6, 8,6,7,3},
+                              {9,6,2,3,3},
+                              {8,3,2,3,3},
+                              {5,3,3,7,6},
+                              {5,5,7,4,7}};
+
+  BOOST_CHECK_EQUAL(6, it_list5[0][0]);
+  BOOST_CHECK_EQUAL(8, it_list5[0][1]);
+  BOOST_CHECK_EQUAL(6, it_list5[0][2]);
+  BOOST_CHECK_EQUAL(7, it_list5[0][3]);
+  BOOST_CHECK_EQUAL(3, it_list5[0][4]);
+  BOOST_CHECK_EQUAL(9, it_list5[1][0]);
+  BOOST_CHECK_EQUAL(6, it_list5[1][1]);
+  BOOST_CHECK_EQUAL(2, it_list5[1][2]);
+  BOOST_CHECK_EQUAL(3, it_list5[1][3]);
+
+
+  Matrix<int> it_list3x3_d{ {0, 1, 2},
+                            {3, 4, 5},
+                            {6, 7, 8} };
+
+  BOOST_CHECK_EQUAL(0, it_list3x3_d[0][0]);
+  BOOST_CHECK_EQUAL(1, it_list3x3_d[0][1]);
+  BOOST_CHECK_EQUAL(2, it_list3x3_d[0][2]);
+  BOOST_CHECK_EQUAL(3, it_list3x3_d[1][0]);
+  BOOST_CHECK_EQUAL(4, it_list3x3_d[1][1]);
+  BOOST_CHECK_EQUAL(5, it_list3x3_d[1][2]);
+  BOOST_CHECK_EQUAL(6, it_list3x3_d[2][0]);
+  BOOST_CHECK_EQUAL(7, it_list3x3_d[2][1]);
+  BOOST_CHECK_EQUAL(8, it_list3x3_d[2][2]);
+}
 
 BOOST_FIXTURE_TEST_CASE(at, MatrixTest)
 {

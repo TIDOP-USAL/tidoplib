@@ -92,6 +92,7 @@ public:
   MatrixBase(const MatrixBase &matrix);
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
+  MatrixBase(std::initializer_list<std::initializer_list<T>> values);
   MatrixBase(T *data, size_t rows = 0, size_t cols = 0);
   virtual ~MatrixBase() = default;
 
@@ -199,11 +200,38 @@ MatrixBase<T, _rows, _cols>::MatrixBase(std::initializer_list<T> values)
   size_t n = values.size();
   if (n == _rows * _cols){
     std::copy(values.begin(), values.end(), mData.begin());
-  } else if (n > _rows * _cols){
+  } else if (n < _rows * _cols){
     std::copy(values.begin(), values.end(), mData.begin());
     std::fill(mData.begin() + n, mData.end(), consts::zero<T>);
   } else {
-    std::copy(values.begin(), values.begin() + n, mData.begin());
+    std::copy(values.begin(), values.begin() + _rows * _cols, mData.begin());
+  }
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixBase<T, _rows, _cols>::MatrixBase(std::initializer_list<std::initializer_list<T>> values)
+{
+  size_t n_rows = values.size();
+  auto it_data = mData.begin();
+  size_t rows_counter = 0;
+  for (auto it = values.begin(); it != values.end(); it++) {
+    if (rows_counter < _rows) {
+      size_t n = it->size();
+      if (n == _cols) {
+        std::copy(it->begin(), it->end(), it_data);
+      } else if (n < _cols) {
+        std::copy(it->begin(), it->end(), it_data);
+        std::fill(it_data + n, mData.end(), consts::zero<T>);
+      } else {
+        std::copy(it->begin(), it->end() + _cols, it_data);
+      }
+      it_data += _cols;
+      rows_counter++;
+    }
+  }
+
+  if (it_data != mData.end()) {
+    std::fill(it_data, mData.end(), consts::zero<T>);
   }
 }
 
@@ -333,6 +361,7 @@ public:
   MatrixBase(const MatrixBase &matrix);
   MatrixBase(MatrixBase &&matrix) TL_NOEXCEPT;
   MatrixBase(std::initializer_list<T> values);
+  MatrixBase(std::initializer_list<std::initializer_list<T>> values);
   MatrixBase(const T *data, size_t rows, size_t cols);
   virtual ~MatrixBase() = default;
 
@@ -415,6 +444,29 @@ MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(std::initializer_list<T>
   this->mCols = values.size();
 
   std::copy(values.begin(), values.end(), mData.begin());
+}
+
+template<typename T> inline
+MatrixBase<T, DynamicMatrix, DynamicMatrix>::MatrixBase(std::initializer_list<std::initializer_list<T>> values)
+{
+  this->mRows = values.size();
+  auto it = values.begin();
+  this->mCols = it->size();
+  mData.resize(this->mRows * this->mCols);
+  size_t n = values.size();
+  auto it_data = mData.begin();
+  for (auto it = values.begin(); it != values.end(); it++) {
+    size_t n = it->size();
+    if (n == mCols) {
+      std::copy(it->begin(), it->end(), it_data);
+    } else if (n < mCols) {
+      std::copy(it->begin(), it->end(), it_data);
+      std::fill(it_data + n, mData.end(), consts::zero<T>);
+    } else {
+      std::copy(it->begin(), it->end() + mCols, it_data);
+    }
+    it_data += mCols;
+  }
 }
 
 template<typename T> inline
@@ -905,6 +957,7 @@ public:
   Matrix(Matrix &&mat) TL_NOEXCEPT;
 
   Matrix(std::initializer_list<T> values);
+  Matrix(std::initializer_list<std::initializer_list<T>> values);
   Matrix(T *data, size_t rows, size_t cols);
 
   /*!
@@ -1166,6 +1219,13 @@ template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols>::Matrix(std::initializer_list<T> values)
   : MatrixBase<T, _rows, _cols>(values)
 {
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols>::Matrix(std::initializer_list<std::initializer_list<T>> values)
+  : MatrixBase<T, _rows, _cols>(values)
+{
+
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
