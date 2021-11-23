@@ -68,6 +68,9 @@ class MatrixRow;
 template<typename T>
 class MatrixCol;
 
+template<typename T>
+class MatrixBlock;
+
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBase;
 
@@ -125,14 +128,19 @@ public:
    */
   const_reference at(size_t r, size_t c) const;
 
-  const MatrixRow<const T> operator[](size_t position) const;
-  MatrixRow<T> operator[](size_t position);
+  //const MatrixRow<const T> operator[](size_t position) const;
+  //MatrixRow<T> operator[](size_t position);
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
 
   reference operator()(size_t position);
   const_reference operator()(size_t position) const;
+
+  void operator=(T value)
+  {
+    mData.fill(val);
+  }
 
   /*!
    * \brief Número de filas de la matriz
@@ -277,17 +285,17 @@ const T &MatrixBase<T, _rows, _cols>::at(size_t r, size_t c) const
   return mData.at(r * _cols + c);
 }
 
-template<typename T, size_t _rows, size_t _cols> inline
-const MatrixRow<const T> MatrixBase<T, _rows, _cols>::operator[](size_t position) const
-{
-  return MatrixRow<const T>(this->data(), position, cols());
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-MatrixRow<T> MatrixBase<T, _rows, _cols>::operator[](size_t position)
-{
-  return MatrixRow<T>(this->data(), position, cols());
-}
+//template<typename T, size_t _rows, size_t _cols> inline
+//const MatrixRow<const T> MatrixBase<T, _rows, _cols>::operator[](size_t position) const
+//{
+//  return MatrixRow<const T>(this->data(), position, cols());
+//}
+//
+//template<typename T, size_t _rows, size_t _cols> inline
+//MatrixRow<T> MatrixBase<T, _rows, _cols>::operator[](size_t position)
+//{
+//  return MatrixRow<T>(this->data(), position, cols());
+//}
 
 template<typename T, size_t _rows, size_t _cols> inline 
 T &MatrixBase<T, _rows, _cols>::operator()(size_t r, size_t c)
@@ -371,14 +379,19 @@ public:
   reference at(size_t r, size_t c);
   const_reference at(size_t r, size_t c) const;
 
-  const MatrixRow<const T> operator[](size_t position) const;
-  MatrixRow<T> operator[](size_t position);
+  //const MatrixRow<const T> operator[](size_t position) const;
+  //MatrixRow<T> operator[](size_t position);
 
   reference operator()(size_t r, size_t c);
   const_reference operator()(size_t r, size_t c) const;
 
   reference operator()(size_t position);
   const_reference operator()(size_t position) const;
+
+  void operator=(T value)
+  {
+    std::fill(mData.begin(), mData.end(), value);
+  }
 
   size_t rows() const;
   size_t cols() const;
@@ -514,17 +527,17 @@ const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r, size_t c) con
   return mData.at(r * mCols + c);
 }
 
-template<typename T> inline
-const MatrixRow<const T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
-{
-  return MatrixRow<const T>(this->data(), position, cols());
-}
-
-template<typename T> inline
-MatrixRow<T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
-{
-  return MatrixRow<T>(this->data(), position, cols());
-}
+//template<typename T> inline
+//const MatrixRow<const T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
+//{
+//  return MatrixRow<const T>(this->data(), position, cols());
+//}
+//
+//template<typename T> inline
+//MatrixRow<T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
+//{
+//  return MatrixRow<T>(this->data(), position, cols());
+//}
 
 template<typename T> inline
 T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r, size_t c) 
@@ -1037,12 +1050,25 @@ public:
    */
   Matrix cofactorMatrix() const;
 
-  //Vector<T, _rows> col(size_t col) const;
-  //Vector<T, _cols> row(size_t row) const;
+  const MatrixRow<const T> operator[](size_t position) const;
+  MatrixRow<T> operator[](size_t position);
   const MatrixRow<const T> row(size_t row) const;
   MatrixRow<T> row(size_t row);
   const MatrixCol<const T> col(size_t col) const;
   MatrixCol<T> col(size_t col);
+
+  const MatrixBlock<const T> block(size_t iniRow,
+                                   size_t endRow,
+                                   size_t iniCol,
+                                   size_t endCol) const;
+  MatrixBlock<T> block(size_t iniRow,
+                       size_t endRow,
+                       size_t iniCol,
+                       size_t endCol);
+  const MatrixBlock<const T> rowBlock(size_t iniRow, size_t endRow) const;
+  MatrixBlock<T> rowBlock(size_t iniRow, size_t endRow);
+  const MatrixBlock<const T> colBlock(size_t iniCol, size_t endCol) const;
+  MatrixBlock<T> colBlock(size_t iniCol, size_t endCol);
 
   /*!
    * \brief Determinante de la matriz
@@ -1659,6 +1685,18 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::cofactorMatrix() const
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
+const MatrixRow<const T> Matrix<T, _rows, _cols>::operator[](size_t position) const
+{
+  return MatrixRow<const T>(this->data(), position, cols());
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixRow<T> Matrix<T, _rows, _cols>::operator[](size_t position)
+{
+  return MatrixRow<T>(this->data(), position, cols());
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
 const MatrixRow<const T> Matrix<T, _rows, _cols>::row(size_t row) const
 {
   return MatrixRow<const T>(this, row);
@@ -1680,6 +1718,48 @@ template<typename T, size_t _rows, size_t _cols> inline
 MatrixCol<T> Matrix<T, _rows, _cols>::col(size_t col)
 {
   return MatrixCol<T>(this->data(), col, rows(), cols());
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+const MatrixBlock<const T> Matrix<T, _rows, _cols>::block(size_t iniRow,
+                                                          size_t endRow,
+                                                          size_t iniCol,
+                                                          size_t endCol) const
+{
+  return MatrixBlock<const T>(this->data(), this->rows(), this->cols(), iniRow, endRow, iniCol, endCol);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixBlock<T> Matrix<T, _rows, _cols>::block(size_t iniRow,
+                                              size_t endRow,
+                                              size_t iniCol,
+                                              size_t endCol)
+{
+  return MatrixBlock<T>(this->data(), this->rows(), this->cols(), iniRow, endRow, iniCol, endCol);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+const MatrixBlock<const T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow, size_t endRow) const
+{
+  return block(iniRow, endRow, 0, this->cols() - 1);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixBlock<T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow, size_t endRow)
+{
+  return block(iniRow, endRow, 0, this->cols() - 1);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+const MatrixBlock<const T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol, size_t endCol) const
+{
+  return block(0, this->rows() - 1, iniCol, endCol);
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+MatrixBlock<T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol, size_t endCol)
+{
+  return block(0, this->rows() - 1, iniCol, endCol);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -2782,6 +2862,8 @@ public:
 
 /// Clase MatrixRow
 
+/// ¿Heredar MatrixRow y MatrixCol de Vector<T> para no duplicar las operaciones entre vectores??
+
 template<typename T>
 class MatrixRow
 {
@@ -2831,6 +2913,11 @@ public:
   size_t size() const
   {
     return mCols;
+  }
+
+  void operator=(T value)
+  {
+    std::fill(begin(), end(), value);
   }
 
 private:
@@ -2893,6 +2980,11 @@ public:
   size_t size() const
   {
     return mRows;
+  }
+
+  void operator=(T value)
+  {
+    std::fill(begin(), end(), value);
   }
 
 private:
@@ -3219,10 +3311,13 @@ MatrixCol<T> &operator /= (MatrixCol<T> &col,
 }
 
 
-/* MatrixRange */
+/* Matrix Block */
+
+/// ¿Heredar de Matrix<T> para no duplicar las operaciones entre matrices??
+
 
 template<typename T>
-class MatrixRange
+class MatrixBlock
 {
 
 public:
@@ -3236,11 +3331,11 @@ public:
 
 public:
 
-  MatrixRange(T *data, 
+  MatrixBlock(T *data,
               size_t rows, 
               size_t cols, 
-              size_t iniRow,
-              size_t endRow, 
+              size_t iniRow, 
+              size_t endRow,
               size_t iniCol,
               size_t endCol)
     : mData(data), 
@@ -3251,7 +3346,23 @@ public:
       mIniCol(iniCol),
       mEndCol(endCol)
   { }
-  ~MatrixRange(){ }
+  ~MatrixBlock(){ }
+
+  MatrixBlock &operator = (const MatrixBlock &block)
+  {
+    // Mismo bloque....
+    if (this != &block) {
+
+      if (this->mData != &block.mData) {
+
+      } else {
+
+      }
+
+    }
+
+    return *this;
+  }
 
   //const_reference operator[](size_t column) const
   //{
@@ -3265,22 +3376,22 @@ public:
   
   reference operator()(size_t row, size_t col)
   {
-    mData[(mIniRow + row) * mCols + col + mIniCol];
+    return mData[(mIniRow + row) * mCols + col + mIniCol];
   }
 
   const_reference operator()(size_t row, size_t col) const
   {
-    mData[(mIniRow + row) * mCols + col + mIniCol];
+    return mData[(mIniRow + row) * mCols + col + mIniCol];
   }
 
-  size_t width()
+  size_t rows()
   {
-    return mEndCol - mIniCol;
+    return mEndRow - mIniRow + 1;
   }
 
-  size_t height()
+  size_t cols()
   {
-    return mEndRow - mIniRow;
+    return mEndCol - mIniCol + 1;
   }
 
 private:
@@ -3295,23 +3406,23 @@ private:
 };
 
 
-/* Operaciones unarias para un rango */
+/* Operaciones unarias para un bloque */
 
 template<typename T>
-MatrixRange<T> operator + (const MatrixRange<T> &range)
+MatrixBlock<T> operator + (const MatrixBlock<T> &block)
 {
-  return range;
+  return block;
 }
 
 template<typename T>
-MatrixRange<T> operator - (const MatrixRange<T> &range)
+MatrixBlock<T> operator - (const MatrixBlock<T> &block)
 {
   static_assert(std::is_signed<T>::value, "Requires signed type");
 
-  MatrixRange<T> r = range;
-  for (size_t i = 0; i < range.width(); i++) {
-    for (size_t j = 0; j < range.height(); j++) {
-      r[i] = -range(i, j);
+  MatrixBlock<T> b = block;
+  for (size_t i = 0; i < block.width(); i++) {
+    for (size_t j = 0; j < block.height(); j++) {
+      b[i] = -block(i, j);
     }
   }
 

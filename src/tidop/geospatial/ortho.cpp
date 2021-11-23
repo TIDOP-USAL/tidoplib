@@ -490,6 +490,8 @@ cv::Mat Orthorectification::undistort(const cv::Mat &image)
 {
   cv::Mat img_undistort;
 
+  TL_TODO("No debería calcular la cámara y los coeficientes de distorsión cada vez")
+
   try {
 
     std::shared_ptr<Calibration> calibration = mCamera.calibration();

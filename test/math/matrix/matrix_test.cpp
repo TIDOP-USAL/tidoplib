@@ -1259,6 +1259,57 @@ BOOST_FIXTURE_TEST_CASE(row, MatrixTest)
   BOOST_CHECK_EQUAL(0.3, row_2[2]);
 }
 
+BOOST_FIXTURE_TEST_CASE(block, MatrixTest)
+{
+  auto block_0 = _mat_5x5_d.block(0, 3, 3, 4);
+
+  BOOST_CHECK_EQUAL(4, block_0.rows());
+  BOOST_CHECK_EQUAL(2, block_0.cols());
+  BOOST_CHECK_EQUAL(7, block_0(0,0));
+  BOOST_CHECK_EQUAL(3, block_0(0,1));
+  BOOST_CHECK_EQUAL(3, block_0(1,0));
+  BOOST_CHECK_EQUAL(3, block_0(1,1));
+  BOOST_CHECK_EQUAL(3, block_0(2,0));
+  BOOST_CHECK_EQUAL(3, block_0(2,1));
+  BOOST_CHECK_EQUAL(7, block_0(3,0));
+  BOOST_CHECK_EQUAL(6, block_0(3,1));
+
+
+  auto block_1 = _mat_5x5_d.rowBlock(2, 4);
+
+  BOOST_CHECK_EQUAL(3, block_1.rows());
+  BOOST_CHECK_EQUAL(5, block_1.cols());
+  BOOST_CHECK_EQUAL(8, block_1(0, 0));
+  BOOST_CHECK_EQUAL(3, block_1(0, 1));
+  BOOST_CHECK_EQUAL(2, block_1(0, 2));
+  BOOST_CHECK_EQUAL(3, block_1(0, 3));
+  BOOST_CHECK_EQUAL(3, block_1(0, 4));
+  BOOST_CHECK_EQUAL(5, block_1(1, 0));
+  BOOST_CHECK_EQUAL(3, block_1(1, 1));
+  BOOST_CHECK_EQUAL(3, block_1(1, 2));
+  BOOST_CHECK_EQUAL(7, block_1(1, 3));
+  BOOST_CHECK_EQUAL(6, block_1(1, 4));
+  BOOST_CHECK_EQUAL(5, block_1(2, 0));
+  BOOST_CHECK_EQUAL(5, block_1(2, 1));
+  BOOST_CHECK_EQUAL(7, block_1(2, 2));
+  BOOST_CHECK_EQUAL(4, block_1(2, 3));
+  BOOST_CHECK_EQUAL(7, block_1(2, 4));
+
+  auto block_2 = _mat_5x5_d.colBlock(1, 2);
+  BOOST_CHECK_EQUAL(5, block_2.rows());
+  BOOST_CHECK_EQUAL(2, block_2.cols());
+  BOOST_CHECK_EQUAL(8, block_2(0, 0));
+  BOOST_CHECK_EQUAL(6, block_2(0, 1));
+  BOOST_CHECK_EQUAL(6, block_2(1, 0));
+  BOOST_CHECK_EQUAL(2, block_2(1, 1));
+  BOOST_CHECK_EQUAL(3, block_2(2, 0));
+  BOOST_CHECK_EQUAL(2, block_2(2, 1));
+  BOOST_CHECK_EQUAL(3, block_2(3, 0));
+  BOOST_CHECK_EQUAL(3, block_2(3, 1));
+  BOOST_CHECK_EQUAL(5, block_2(4, 0));
+  BOOST_CHECK_EQUAL(7, block_2(4, 1));
+}
+
 BOOST_FIXTURE_TEST_CASE(compare, MatrixTest)
 {
   Matrix<double, 2, 2> mat1;
@@ -1399,6 +1450,47 @@ BOOST_FIXTURE_TEST_CASE(size, MatrixRowTest)
   BOOST_CHECK_EQUAL(2, r1.size());
 }
 
+BOOST_FIXTURE_TEST_CASE(asign, MatrixRowTest)
+{
+  Matrix<int, 5, 5> a{ {6, 8,6,7,3},
+                       {9,6,2,3,3},
+                       {8,3,2,3,3},
+                       {5,3,3,7,6},
+                       {5,5,7,4,7} };
+
+  a[0] = 0;
+  a[1] = 1;
+  a[2] = 2;
+  a[3] = 3;
+  a[4] = 4;
+
+  BOOST_CHECK_EQUAL(0, a[0][0]);
+  BOOST_CHECK_EQUAL(0, a[0][1]);
+  BOOST_CHECK_EQUAL(0, a[0][2]);
+  BOOST_CHECK_EQUAL(0, a[0][3]);
+  BOOST_CHECK_EQUAL(0, a[0][4]);
+  BOOST_CHECK_EQUAL(1, a[1][0]);
+  BOOST_CHECK_EQUAL(1, a[1][1]);
+  BOOST_CHECK_EQUAL(1, a[1][2]);
+  BOOST_CHECK_EQUAL(1, a[1][3]);
+  BOOST_CHECK_EQUAL(1, a[1][4]);
+  BOOST_CHECK_EQUAL(2, a[2][0]);
+  BOOST_CHECK_EQUAL(2, a[2][1]);
+  BOOST_CHECK_EQUAL(2, a[2][2]);
+  BOOST_CHECK_EQUAL(2, a[2][3]);
+  BOOST_CHECK_EQUAL(2, a[2][4]);
+  BOOST_CHECK_EQUAL(3, a[3][0]);
+  BOOST_CHECK_EQUAL(3, a[3][1]);
+  BOOST_CHECK_EQUAL(3, a[3][2]);
+  BOOST_CHECK_EQUAL(3, a[3][3]);
+  BOOST_CHECK_EQUAL(3, a[3][4]);
+  BOOST_CHECK_EQUAL(4, a[4][0]);
+  BOOST_CHECK_EQUAL(4, a[4][1]);
+  BOOST_CHECK_EQUAL(4, a[4][2]);
+  BOOST_CHECK_EQUAL(4, a[4][3]);
+  BOOST_CHECK_EQUAL(4, a[4][4]);
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
@@ -1521,183 +1613,83 @@ BOOST_FIXTURE_TEST_CASE(size, MatrixColTest)
   BOOST_CHECK_EQUAL(3, c1.size());
 }
 
+BOOST_FIXTURE_TEST_CASE(asign, MatrixColTest)
+{
+  Matrix<int, 5, 5> a{ {6, 8,6,7,3},
+                       {9,6,2,3,3},
+                       {8,3,2,3,3},
+                       {5,3,3,7,6},
+                       {5,5,7,4,7} };
+
+  a.col(0) = 0;
+  a.col(1) = 1;
+  a.col(2) = 2;
+  a.col(3) = 3;
+  a.col(4) = 4;
+
+  BOOST_CHECK_EQUAL(0, a[0][0]);
+  BOOST_CHECK_EQUAL(0, a[1][0]);
+  BOOST_CHECK_EQUAL(0, a[2][0]);
+  BOOST_CHECK_EQUAL(0, a[3][0]);
+  BOOST_CHECK_EQUAL(0, a[4][0]);
+  BOOST_CHECK_EQUAL(1, a[0][1]);
+  BOOST_CHECK_EQUAL(1, a[1][1]);
+  BOOST_CHECK_EQUAL(1, a[2][1]);
+  BOOST_CHECK_EQUAL(1, a[3][1]);
+  BOOST_CHECK_EQUAL(1, a[4][1]);
+  BOOST_CHECK_EQUAL(2, a[0][2]);
+  BOOST_CHECK_EQUAL(2, a[1][2]);
+  BOOST_CHECK_EQUAL(2, a[2][2]);
+  BOOST_CHECK_EQUAL(2, a[3][2]);
+  BOOST_CHECK_EQUAL(2, a[4][2]);
+  BOOST_CHECK_EQUAL(3, a[0][3]);
+  BOOST_CHECK_EQUAL(3, a[1][3]);
+  BOOST_CHECK_EQUAL(3, a[2][3]);
+  BOOST_CHECK_EQUAL(3, a[3][3]);
+  BOOST_CHECK_EQUAL(3, a[4][3]);
+  BOOST_CHECK_EQUAL(4, a[0][4]);
+  BOOST_CHECK_EQUAL(4, a[1][4]);
+  BOOST_CHECK_EQUAL(4, a[2][4]);
+  BOOST_CHECK_EQUAL(4, a[3][4]);
+  BOOST_CHECK_EQUAL(4, a[4][4]);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
 
 /* */
 
 
-BOOST_AUTO_TEST_SUITE(SubMatrixTestSuite)
+BOOST_AUTO_TEST_SUITE(MatrixBlockTestSuite)
 
-struct SubMatrixTest
+struct MatrixBlockTest
 {
-  SubMatrixTest()
-    //: _mat_dyn_default_constructor(new Matrix<double>()),
-    //_mat_dyn_2x2_constructor(new Matrix<double>(2, 2)),
-    //_mat_dyn_2x2(new Matrix<double>(2, 2)),
-    //_mat_dyn_3x3_d(new Matrix<double>(3, 3)),
-    //_mat_dyn_4x4_d(new Matrix<double>(4, 4)),
-    //_mat_dyn_5x5_d(new Matrix<double>(5, 5)),
-    //_mat_dyn_2x3_i(new Matrix<int>(2, 3)),
-    //_cofactor_matrix_dyn(new Matrix<int>(3, 3))
+  MatrixBlockTest()
+    : block(nullptr),
+      block2(nullptr)
   {}
-  ~SubMatrixTest()
+  ~MatrixBlockTest()
   {
-    //if (_mat_dyn_default_constructor) delete _mat_dyn_default_constructor, _mat_dyn_default_constructor = nullptr;
-    //if (_mat_dyn_2x2_constructor) delete _mat_dyn_2x2_constructor, _mat_dyn_2x2_constructor = nullptr;
-    //if (_mat_dyn_2x2) delete _mat_dyn_2x2, _mat_dyn_2x2 = nullptr;
-    //if (_mat_dyn_3x3_d) delete _mat_dyn_3x3_d, _mat_dyn_3x3_d = nullptr;
-    //if (_mat_dyn_4x4_d) delete _mat_dyn_4x4_d, _mat_dyn_4x4_d = nullptr;
-    //if (_mat_dyn_2x3_i) delete _mat_dyn_2x3_i, _mat_dyn_2x3_i = nullptr;
-    //if (_cofactor_matrix_dyn) delete _cofactor_matrix_dyn, _cofactor_matrix_dyn = nullptr;
+    if (block) {
+      delete block;
+    }
+    
+    if (block2)
+      delete block2;
   }
 
   void setup()
   {
+    mat_3x3_i = Matrix<int, 3, 3>::identity();
+    block = new MatrixBlock<int>(mat_3x3_i.data(), mat_3x3_i.rows(), mat_3x3_i.cols(), 1, 2, 1, 2);
 
-    //_mat_2x2[0][0] = 2.;
-    //_mat_2x2[0][1] = 3.;
-    //_mat_2x2[1][0] = 1.;
-    //_mat_2x2[1][1] = 4.;
-
-    //_mat_dyn_2x2->at(0, 0) = 2.;
-    //_mat_dyn_2x2->at(0, 1) = 3.;
-    //_mat_dyn_2x2->at(1, 0) = 1.;
-    //_mat_dyn_2x2->at(1, 1) = 4.;
-
-    //_mat_3x3_d[0][0] = 1.5;
-    //_mat_3x3_d[0][1] = 0.0;
-    //_mat_3x3_d[0][2] = 2.5;
-    //_mat_3x3_d[1][0] = 1.0;
-    //_mat_3x3_d[1][1] = 1.0;
-    //_mat_3x3_d[1][2] = 1.2;
-    //_mat_3x3_d[2][0] = 1.3;
-    //_mat_3x3_d[2][1] = 2.6;
-    //_mat_3x3_d[2][2] = 0.3;
-
-    //_mat_dyn_3x3_d->at(0, 0) = 1.5;
-    //_mat_dyn_3x3_d->at(0, 1) = 0.0;
-    //_mat_dyn_3x3_d->at(0, 2) = 2.5;
-    //_mat_dyn_3x3_d->at(1, 0) = 1.0;
-    //_mat_dyn_3x3_d->at(1, 1) = 1.0;
-    //_mat_dyn_3x3_d->at(1, 2) = 1.2;
-    //_mat_dyn_3x3_d->at(2, 0) = 1.3;
-    //_mat_dyn_3x3_d->at(2, 1) = 2.6;
-    //_mat_dyn_3x3_d->at(2, 2) = 0.3;
-
-    //_mat_4x4_d[0][0] = 4.5;    _mat_4x4_d[0][1] = 2.7;  _mat_4x4_d[0][2] = 5.5;  _mat_4x4_d[0][3] = 4.98;
-    //_mat_4x4_d[1][0] = 1.36;   _mat_4x4_d[1][1] = 7.62;	_mat_4x4_d[1][2] = 78.3; _mat_4x4_d[1][3] = 45.5;
-    //_mat_4x4_d[2][0] = 14.3;   _mat_4x4_d[2][1] = 45.3;	_mat_4x4_d[2][2] = 5.;   _mat_4x4_d[2][3] = 45.;
-    //_mat_4x4_d[3][0] = 12.374; _mat_4x4_d[3][1] = 41.6;	_mat_4x4_d[3][2] = 1.3;  _mat_4x4_d[3][3] = 12.7;
-
-    //_mat_dyn_4x4_d->at(0, 0) = 4.5;    _mat_dyn_4x4_d->at(0, 1) = 2.7;  _mat_dyn_4x4_d->at(0, 2) = 5.5;  _mat_dyn_4x4_d->at(0, 3) = 4.98;
-    //_mat_dyn_4x4_d->at(1, 0) = 1.36;   _mat_dyn_4x4_d->at(1, 1) = 7.62;	_mat_dyn_4x4_d->at(1, 2) = 78.3; _mat_dyn_4x4_d->at(1, 3) = 45.5;
-    //_mat_dyn_4x4_d->at(2, 0) = 14.3;   _mat_dyn_4x4_d->at(2, 1) = 45.3;	_mat_dyn_4x4_d->at(2, 2) = 5.;   _mat_dyn_4x4_d->at(2, 3) = 45.;
-    //_mat_dyn_4x4_d->at(3, 0) = 12.374; _mat_dyn_4x4_d->at(3, 1) = 41.6;	_mat_dyn_4x4_d->at(3, 2) = 1.3;  _mat_dyn_4x4_d->at(3, 3) = 12.7;
-
-    //mat_zero = Matrix<double, 3, 3>::zero();
-    //mat_dyn_zero = Matrix<double>::zero(3, 3);
-    //mat_ones = Matrix<double, 3, 3>::ones();
-    //mat_dyn_ones = Matrix<double>::ones(3, 3);
-    //mat_identity = Matrix<double, 3, 3>::identity();
-    //mat_dyn_identity = Matrix<double>::identity(3, 3);
-
-    //_mat_5x5_d[0][0] = 6;
-    //_mat_5x5_d[0][1] = 8;
-    //_mat_5x5_d[0][2] = 6;
-    //_mat_5x5_d[0][3] = 7;
-    //_mat_5x5_d[0][4] = 3;
-    //_mat_5x5_d[1][0] = 9;
-    //_mat_5x5_d[1][1] = 6;
-    //_mat_5x5_d[1][2] = 2;
-    //_mat_5x5_d[1][3] = 3;
-    //_mat_5x5_d[1][4] = 3;
-    //_mat_5x5_d[2][0] = 8;
-    //_mat_5x5_d[2][1] = 3;
-    //_mat_5x5_d[2][2] = 2;
-    //_mat_5x5_d[2][3] = 3;
-    //_mat_5x5_d[2][4] = 3;
-    //_mat_5x5_d[3][0] = 5;
-    //_mat_5x5_d[3][1] = 3;
-    //_mat_5x5_d[3][2] = 3;
-    //_mat_5x5_d[3][3] = 7;
-    //_mat_5x5_d[3][4] = 6;
-    //_mat_5x5_d[4][0] = 5;
-    //_mat_5x5_d[4][1] = 5;
-    //_mat_5x5_d[4][2] = 7;
-    //_mat_5x5_d[4][3] = 4;
-    //_mat_5x5_d[4][4] = 7;
-
-    //_mat_dyn_5x5_d->at(0, 0) = 6;
-    //_mat_dyn_5x5_d->at(0, 1) = 8;
-    //_mat_dyn_5x5_d->at(0, 2) = 6;
-    //_mat_dyn_5x5_d->at(0, 3) = 7;
-    //_mat_dyn_5x5_d->at(0, 4) = 3;
-    //_mat_dyn_5x5_d->at(1, 0) = 9;
-    //_mat_dyn_5x5_d->at(1, 1) = 6;
-    //_mat_dyn_5x5_d->at(1, 2) = 2;
-    //_mat_dyn_5x5_d->at(1, 3) = 3;
-    //_mat_dyn_5x5_d->at(1, 4) = 3;
-    //_mat_dyn_5x5_d->at(2, 0) = 8;
-    //_mat_dyn_5x5_d->at(2, 1) = 3;
-    //_mat_dyn_5x5_d->at(2, 2) = 2;
-    //_mat_dyn_5x5_d->at(2, 3) = 3;
-    //_mat_dyn_5x5_d->at(2, 4) = 3;
-    //_mat_dyn_5x5_d->at(3, 0) = 5;
-    //_mat_dyn_5x5_d->at(3, 1) = 3;
-    //_mat_dyn_5x5_d->at(3, 2) = 3;
-    //_mat_dyn_5x5_d->at(3, 3) = 7;
-    //_mat_dyn_5x5_d->at(3, 4) = 6;
-    //_mat_dyn_5x5_d->at(4, 0) = 5;
-    //_mat_dyn_5x5_d->at(4, 1) = 5;
-    //_mat_dyn_5x5_d->at(4, 2) = 7;
-    //_mat_dyn_5x5_d->at(4, 3) = 4;
-    //_mat_dyn_5x5_d->at(4, 4) = 7;
-
-    //_mat_2x3_i[0][0] = 6;
-    //_mat_2x3_i[0][1] = 8;
-    //_mat_2x3_i[0][2] = 6;
-    //_mat_2x3_i[1][0] = 9;
-    //_mat_2x3_i[1][1] = 6;
-    //_mat_2x3_i[1][2] = 2;
-
-    //_mat_dyn_2x3_i->at(0, 0) = 6;
-    //_mat_dyn_2x3_i->at(0, 1) = 8;
-    //_mat_dyn_2x3_i->at(0, 2) = 6;
-    //_mat_dyn_2x3_i->at(1, 0) = 9;
-    //_mat_dyn_2x3_i->at(1, 1) = 6;
-    //_mat_dyn_2x3_i->at(1, 2) = 2;
-
-
-    //_cofactor_matrix[0][0] = 1;
-    //_cofactor_matrix[0][1] = 2;
-    //_cofactor_matrix[0][2] = 3;
-    //_cofactor_matrix[1][0] = 0;
-    //_cofactor_matrix[1][1] = 4;
-    //_cofactor_matrix[1][2] = 5;
-    //_cofactor_matrix[2][0] = 1;
-    //_cofactor_matrix[2][1] = 0;
-    //_cofactor_matrix[2][2] = 6;
-
-    //_cofactor_matrix_dyn->at(0, 0) = 1;
-    //_cofactor_matrix_dyn->at(0, 1) = 2;
-    //_cofactor_matrix_dyn->at(0, 2) = 3;
-    //_cofactor_matrix_dyn->at(1, 0) = 0;
-    //_cofactor_matrix_dyn->at(1, 1) = 4;
-    //_cofactor_matrix_dyn->at(1, 2) = 5;
-    //_cofactor_matrix_dyn->at(2, 0) = 1;
-    //_cofactor_matrix_dyn->at(2, 1) = 0;
-    //_cofactor_matrix_dyn->at(2, 2) = 6;
-
-    //mat_singular[0][0] = 1;
-    //mat_singular[0][1] = 2;
-    //mat_singular[0][2] = 3;
-    //mat_singular[1][0] = 4;
-    //mat_singular[1][1] = 5;
-    //mat_singular[1][2] = 6;
-    //mat_singular[2][0] = 7;
-    //mat_singular[2][1] = 8;
-    //mat_singular[2][2] = 9;
+    m_5x5 = { {6, 8, 6, 7, 3},
+              {9, 6, 2, 3, 3},
+              {8, 3, 2, 3, 3},
+              {5, 3, 3, 7, 6},
+              {5, 5, 7, 4, 7} };
+    block2 = new MatrixBlock<int>(m_5x5.data(), m_5x5.rows(), m_5x5.cols(), 2, 4, 1, 4);
   }
 
   void teardown()
@@ -1705,57 +1697,51 @@ struct SubMatrixTest
 
   }
 
-  //Matrix<double> *_mat_dyn_default_constructor;
-  //Matrix<double, 2, 2> _mat_2x2_default_constructor;
-  //Matrix<double> *_mat_dyn_2x2_constructor;
-
-  //Matrix<double, 2, 2> _mat_2x2;
-  //Matrix<double> *_mat_dyn_2x2;
-
-  //Matrix<double, 3, 3> _mat_3x3_d;
-  //Matrix<double> *_mat_dyn_3x3_d;
-
-  //Matrix<double, 4, 4> _mat_4x4_d;
-  //Matrix<double> *_mat_dyn_4x4_d;
-
-  //Matrix<double, 5, 5> _mat_5x5_d;
-  //Matrix<double> *_mat_dyn_5x5_d;
-
-  ////Matrix<2, 2, float> _mat_2x2_f;
-  ////Matrix<3, 3, float> _mat_3x3_f;
-  ////Matrix<4, 4, float> _mat_4x4_f;
-
-  //Matrix<int, 2, 3> _mat_2x3_i;
-  //Matrix<int> *_mat_dyn_2x3_i;
-  //Matrix<int, 3, 3> _cofactor_matrix;
-  //Matrix<int> *_cofactor_matrix_dyn;
-  //Matrix<double, 3, 3> mat_zero;
-  //Matrix<double> mat_dyn_zero;
-  //Matrix<double, 3, 3> mat_ones;
-  //Matrix<double> mat_dyn_ones;
-  //Matrix<double, 3, 3> mat_identity;
-  //Matrix<double> mat_dyn_identity;
-
-  //Matrix<int, 3, 3> mat_singular;
+  Matrix<int, 3, 3> mat_3x3_i;
+  Matrix<int, 5, 5> m_5x5;
+  MatrixBlock<int> *block;
+  MatrixBlock<int> *block2;
 };
 
 
-BOOST_FIXTURE_TEST_CASE(default_constructor, SubMatrixTest)
+BOOST_FIXTURE_TEST_CASE(constructor, MatrixBlockTest)
 {
-  Matrix<int, 3, 3> _mat_3x3_i = Matrix<int, 3, 3>::identity();
-  //SubMatrix<double> subMatrix(_mat_3x3_i, size_t r1, size_t r2, size_t c1, size_t c2);
-  //BOOST_CHECK_EQUAL(0, _mat_dyn_default_constructor->rows());
-  //BOOST_CHECK_EQUAL(0, _mat_dyn_default_constructor->cols());
 
-  //constexpr double ini_value = -std::numeric_limits<double>().max();
+  BOOST_CHECK_EQUAL(2, block->rows());
+  BOOST_CHECK_EQUAL(2, block->cols());
+  BOOST_CHECK_EQUAL(1, (*block)(0, 0));
+  BOOST_CHECK_EQUAL(0, (*block)(0, 1));
+  BOOST_CHECK_EQUAL(0, (*block)(1, 0));
+  BOOST_CHECK_EQUAL(1, (*block)(1, 1));
 
-  //for (size_t r = 0; r < _mat_2x2_default_constructor.rows(); r++) {
-  //  for (size_t c = 0; c < _mat_2x2_default_constructor.cols(); c++) {
-  //    BOOST_CHECK_EQUAL(static_cast<double>(ini_value), _mat_2x2_default_constructor.at(r, c));
-  //  }
-  //}
-  //BOOST_CHECK_EQUAL(2, _mat_2x2_default_constructor.rows());
-  //BOOST_CHECK_EQUAL(2, _mat_2x2_default_constructor.cols());
+  BOOST_CHECK_EQUAL(3, block2->rows());
+  BOOST_CHECK_EQUAL(4, block2->cols());
+  BOOST_CHECK_EQUAL(3, (*block2)(0, 0));
+  BOOST_CHECK_EQUAL(2, (*block2)(0, 1));
+  BOOST_CHECK_EQUAL(3, (*block2)(0, 2));
+  BOOST_CHECK_EQUAL(3, (*block2)(0, 3));
+  BOOST_CHECK_EQUAL(3, (*block2)(1, 0));
+  BOOST_CHECK_EQUAL(3, (*block2)(1, 1));
+  BOOST_CHECK_EQUAL(7, (*block2)(1, 2));
+  BOOST_CHECK_EQUAL(6, (*block2)(1, 3));
+  BOOST_CHECK_EQUAL(5, (*block2)(2, 0));
+  BOOST_CHECK_EQUAL(7, (*block2)(2, 1));
+  BOOST_CHECK_EQUAL(4, (*block2)(2, 2));
+  BOOST_CHECK_EQUAL(7, (*block2)(2, 3));
+}
+
+
+
+/* Operaciones unarias */
+
+BOOST_FIXTURE_TEST_CASE(plus, MatrixBlockTest)
+{
+
+}
+
+BOOST_FIXTURE_TEST_CASE(minus, MatrixBlockTest)
+{
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
