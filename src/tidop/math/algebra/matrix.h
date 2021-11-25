@@ -2866,6 +2866,7 @@ public:
 
 template<typename T>
 class MatrixRow
+  //: public Vector<T>
 {
 
 public:
@@ -2879,13 +2880,14 @@ public:
 
   using iterator = typename IteratorRows<T>;
   using const_iterator = typename IteratorRows<const T>;
+  //using reverse_iterator = typename std::reverse_iterator<iterator>;
+  //using const_reverse_iterator = typename std::const_reverse_iterator<const_iterator>;
 
 public:
 
   MatrixRow(T *data, size_t row, size_t cols)
     : mData(data),
       mRow(row),
-      //mRows(rows),
       mCols(cols)
   {}
   ~MatrixRow(){}
@@ -2924,7 +2926,6 @@ private:
 
   T *mData;
   size_t mRow;
-  //size_t mRows;
   size_t mCols;
 };
 
