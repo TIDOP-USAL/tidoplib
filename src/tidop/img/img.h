@@ -77,6 +77,7 @@ TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
 #endif // HAVE_GDAL
 
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
+TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 

@@ -34,8 +34,8 @@ else()
   project(tl_geom)
   
   add_library(${PROJECT_NAME} ${LIB_TYPE}
-              operations.cpp
-              operations.h
+              #operations.cpp
+              #operations.h
               transform/transform.h
               transform/affine.h
               transform/helmert2d.h
@@ -60,12 +60,28 @@ else()
               entities/segment.h
               entities/window.h
               entities/shapes.h
+              algorithms.h
+              algorithms/vector.h
+              algorithms/distance.h
+              algorithms/angle.h
+              algorithms/projection.h
+              algorithms/buffer.h
+              algorithms/intersect.h
   )
     
   # Añade el proyecto a la carpeta 'modules'
   set_property(TARGET ${PROJECT_NAME} 
                PROPERTY FOLDER "modules")
   
+  if(HAVE_OPENBLAS)
+    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+  endif(HAVE_OPENBLAS)
+        
+  if(HAVE_EIGEN)
+    target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
+  endif(HAVE_EIGEN)
+
   #instalación
   if(BUILD_SHARED_LIBS)
   
@@ -80,11 +96,10 @@ else()
   
       target_link_libraries(${PROJECT_NAME} 
                             tl_core tl_math)
-  
-      if(HAVE_EIGEN)
-          target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
-      endif(HAVE_EIGEN)
-  
+      if(HAVE_OPENBLAS)
+          target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
+      endif(HAVE_OPENBLAS)
+
   else()
   
       install(TARGETS ${PROJECT_NAME} 

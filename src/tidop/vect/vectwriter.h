@@ -32,7 +32,10 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
-//#include "tidop/geospatial/crs.h"
+#include "tidop/core/path.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
 
 namespace tl
 {
@@ -47,7 +50,7 @@ class TL_EXPORT VectorWriter
 
 public:
 
-  VectorWriter(const std::string &fileName);
+  VectorWriter(Path file);
   virtual ~VectorWriter() = default;
 
   /*!
@@ -58,7 +61,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -69,12 +72,23 @@ public:
 
   virtual void write(const graph::GLayer &layer) = 0;
 
-  //virtual void setCRS(const geospatial::Crs &crs) = 0;
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs Coordinate Reference System in WKT format
+   */
   virtual void setCRS(const std::string &epsgCode) = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs geospatial::Crs object
+   */
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
+#endif
 
 protected:
 
-  std::string mFileName;
+  Path mFile;
 
 };
 
@@ -92,7 +106,7 @@ private:
 
 public:
 
-  static std::unique_ptr<VectorWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<VectorWriter> createWriter(const Path &file);
 };
 
 

@@ -30,7 +30,6 @@
 #include <tidop/core/chrono.h>
 #include <tidop/img/imgreader.h>
 #include <tidop/img/metadata.h>
-#include <tidop/imgprocess/filters.h>
 
 using namespace tl;
 
@@ -54,10 +53,10 @@ int main(int argc, char** argv)
   console.setConsoleUnicode();
   MessageManager::instance().addListener(&console);
 
-  std::string img;
+  Path img;
 
   Command cmd("read_image", "Lectura de una imagen");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("img", 'i', "Lectura de una imagen", &img));
+  cmd.addArgument(CreateArgumentPathRequired("img", 'i', "Lectura de una imagen", &img));
 
   // Parseo de los argumentos y comprobación de los mismos
   Command::Status status = cmd.parse(argc, argv);
@@ -75,6 +74,7 @@ int main(int argc, char** argv)
   chrono.run();  // Se inicia el cronometro
 
   try {
+
     std::unique_ptr<ImageReader> imageReader = ImageReaderFactory::createReader(img);
 
     imageReader->open();
@@ -120,9 +120,6 @@ int main(int argc, char** argv)
       //  }
       //});
 
-
-
-
       //tl::ImagingProcesses imagingProcesses;
       //imagingProcesses.push_back(std::make_shared<GaussianBlur>(cv::Size(3,3), 0));
       //imagingProcesses.push_back(std::make_shared<Binarize>());
@@ -132,10 +129,19 @@ int main(int argc, char** argv)
 
       imageReader->close();
     } else {
-      msgError("Error al abrir la imagen: %s", img.c_str());
+      msgError("Error al abrir la imagen: %s", img.toString().c_str());
     }
+
   } catch (const std::exception &e) {
-    msgError(e.what());
+
+    printException(e);
+
+    return 1;
+
+  } catch (...) {
+
+    msgError("Unknow exception");
+
   }
 
   chrono.stop();

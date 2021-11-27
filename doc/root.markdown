@@ -51,7 +51,6 @@ Para la instalación de la libreria se hara uso de la herramienta CMake.
 - OpenCV (Opcional)
 - Cuda (Opcional - Requerida en función de la compilación de OpenCV)
 - GDAL (Opcional)
-- GoogleTest
 
 #### Instalación
 
@@ -60,14 +59,14 @@ Para la instalación de la libreria se hara uso de la herramienta CMake.
 Se clona el repositorio o bien utilizando algún cliente como TortoiseGit o SourceTree o directamente desde la consola. Para utilzar algún cliente se selecciona la opción de clonar el repositorio indicando la url del repositorio:
 
 ```
-https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+https://github.com/estebanrdo/tidoplib.git
 ```
 
 Desde la consola vamos al directorio donde queremos situar el repositorio y se clona:
 
 ```
 cd D:/desarrollo
-git clone https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+git clone https://github.com/estebanrdo/tidoplib.git
 ```
 
 Con CMake se crea el proyecto para Visual Studio (2013 o superior).
@@ -78,7 +77,7 @@ Se va al directorio donde se quiere descargar el código y se clona el repositor
 
 ```
 cd ~/desarrollo
-git clone https://[nombre_usuario]@bitbucket.org/tidop/tidoplib.git
+git clone https://github.com/estebanrdo/tidoplib.git
 ```
 
 ###### Compilación con CMake

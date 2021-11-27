@@ -32,6 +32,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
+#include "ogrsf_frmts.h"
 
 namespace tl
 {
@@ -195,7 +196,7 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 //  int npts = cv::Mat(pts).rows;
 
   StylePen *style_pen = lineString.stylePen();
-  if (style_pen->pattern().empty()){
+  if (!style_pen->pattern().empty()){
     ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
   } else {
     Color color = style_pen->color();
@@ -205,7 +206,65 @@ void CanvasCV::drawLineString(const GLineString &lineString)
 
 void CanvasCV::drawPolygon(const GPolygon &polygon)
 {
+  drawPolygon(polygon, polygon);
+}
 
+void CanvasCV::drawPolygon(const PolygonD &polygon, const GraphicStyle &style)
+{
+  size_t n = polygon.size();
+  std::vector<std::vector<cv::Point>> pts(1, std::vector<cv::Point>(n));
+  for (size_t i = 0; i < n; i++) {
+    pts[0][i].x = static_cast<int>(polygon[i].x);
+    pts[0][i].y = static_cast<int>(polygon[i].y);
+  }
+
+  if (StyleBrush *style_brush = style.styleBrush()) {
+    Color fore_color = style_brush->foreColor();
+    cv::fillPoly(mCanvas, pts, colorToCvScalar(fore_color));
+  }
+
+  if (StylePen *style_pen = style.stylePen()) {
+    Color color = style_pen->color();
+    uint8_t width = style_pen->width();
+    if (!style_pen->pattern().empty()) {
+      ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
+    } else {
+      cv::polylines(mCanvas, pts, true, colorToCvScalar(color), width);
+    }
+  }
+
+  if (StyleLabel *style_label = style.styleLabel()) {
+    /// TODO: completar
+  }
+
+  if (StyleSymbol *style_symbol = style.styleSymbol()) {
+    /// TODO: completar
+  }
+}
+
+void CanvasCV::drawText(const PointD &point, const std::string &text)
+{
+
+}
+
+void CanvasCV::drawText(const PointD &point, const std::string &text, const GraphicStyle &style)
+{
+  int fontFace = cv::FONT_HERSHEY_SCRIPT_SIMPLEX;
+  double fontScale = 2;
+  int thickness = 3;
+  int baseline = 0;
+  cv::Size textSize = cv::getTextSize(text, fontFace,
+                                      fontScale, thickness, &baseline);
+  baseline += thickness;
+
+  cv::putText(mCanvas, text, cv::Point(point.x, point.y), fontFace, fontScale,
+              cv::Scalar::all(255), thickness, 8);
+}
+
+void CanvasCV::setPicture(const cv::Mat &bmp)
+{
+  /// insertar imagen. 
+  bmp.copyTo(mCanvas);
 }
 
 CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)

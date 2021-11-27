@@ -45,7 +45,7 @@ if (HAVE_TL_CORE)
               algebra/rotation_matrix.h
               algebra/rotation_convert.h
               algebra/axis_angle.h
-              algebra/vectors.h
+              #algebra/vectors.h
               algebra/matrix.h
               algebra/vector.h
               algebra/svd.h

@@ -27,8 +27,7 @@
 
 #include "config_tl.h"
 
-#include "tidop/geometry/entities/point.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/core/path.h"
 #include "tidop/geospatial/camera.h"
 
 namespace tl
@@ -39,43 +38,43 @@ namespace tl
 class TL_EXPORT Photo
 {
 
-public:
-
-  class TL_EXPORT Orientation
-  {
-
-  public:
-
-    Orientation();
-    Orientation(double x, double y, double z,
-                math::RotationMatrix<double> rotationMatrix);
-    Orientation(const Point3D &principalPoint,
-                math::RotationMatrix<double> rotationMatrix);
-    ~Orientation() = default;
-
-    //std::string crs() const;
-    //void setCrs(const std::string &crs);
-
-    double x() const;
-    void setX(double x);
-    double y() const;
-    void setY(double y);
-    double z() const;
-    void setZ(double z);
-
-    Point3D position() const;
-
-    math::RotationMatrix<double> rotationMatrix() const;
-    void setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix);
-
-    bool isEmpty() const;
-
-  private:
-
-    Point3D mPosition;
-    tl::math::RotationMatrix<double> mRotationMatrix;
-
-  };
+//public:
+//
+//  class TL_EXPORT Orientation
+//  {
+//
+//  public:
+//
+//    Orientation();
+//    Orientation(double x, double y, double z,
+//                math::RotationMatrix<double> rotationMatrix);
+//    Orientation(const Point3D &principalPoint,
+//                math::RotationMatrix<double> rotationMatrix);
+//    ~Orientation() = default;
+//
+//    //std::string crs() const;
+//    //void setCrs(const std::string &crs);
+//
+//    double x() const;
+//    void setX(double x);
+//    double y() const;
+//    void setY(double y);
+//    double z() const;
+//    void setZ(double z);
+//
+//    Point3D position() const;
+//
+//    math::RotationMatrix<double> rotationMatrix() const;
+//    void setRotationMatrix(const math::RotationMatrix<double> &rotationMatrix);
+//
+//    bool isEmpty() const;
+//
+//  private:
+//
+//    Point3D mPosition;
+//    tl::math::RotationMatrix<double> mRotationMatrix;
+//
+//  };
 
 
 public:
@@ -89,7 +88,7 @@ public:
    * \brief Constructor Photo
    * \param[in] file Fichero imagen
    */
-  Photo(const std::string &file);
+  Photo(const Path &file);
 
   /*!
    * \brief Constructor de copia Photo
@@ -112,13 +111,13 @@ public:
    * \brief Devuelve la ruta del fichero imagen
    * \return Ruta del fichero
    */
-  std::string path() const;
+  Path path() const;
 
   /*!
    * \brief Establece la ruta del fichero imagen
    * \param[in] file Ruta del fichero
    */
-  void setPath(const std::string &file);
+  void setPath(const Path &file);
 
   /*!
    * \brief Nombre del fichero
@@ -138,8 +137,10 @@ public:
    */
   void setCamera(const Camera &camera);
 
-  Photo::Orientation orientation() const;
-  void setOrientation(const Photo::Orientation &orientation);
+  //Photo::Orientation orientation() const;
+  //void setOrientation(const Photo::Orientation &orientation);
+  CameraPose cameraPose() const;
+  void setCameraPose(const CameraPose &pose);
 
   /*!
    * \brief Operador de asignación
@@ -161,11 +162,11 @@ private:
 
 protected:
 
-  std::string mFilePath;
+  Path mFilePath;
   std::string mName;
   Camera mCamera;
-  Photo::Orientation mOrientation;
-
+  //Photo::Orientation mOrientation;
+  CameraPose mCameraPose;
 };
 
 } // namespace tl

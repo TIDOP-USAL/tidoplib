@@ -213,7 +213,7 @@ BOOST_FIXTURE_TEST_CASE(move_operator, PolygonTest)
 BOOST_FIXTURE_TEST_CASE(area, PolygonTest)
 {
   BOOST_CHECK_CLOSE(0, polygon_default_constructor_integer.area(), 0.01);
-  BOOST_CHECK_CLOSE(2059476079.5, polygon_initializer_list_constructor->area(), 0.01);
+  BOOST_CHECK_CLOSE(1037000000, polygon_initializer_list_constructor->area(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(isInner, PolygonTest)

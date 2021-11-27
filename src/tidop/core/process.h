@@ -238,7 +238,6 @@ public:
 
 #ifdef WIN32
 
-  //// Añadir prioridad https://msdn.microsoft.com/en-us/library/windows/desktop/ms683211(v=vs.85).aspx
   enum class Priority
   {
     realtime = REALTIME_PRIORITY_CLASS,
@@ -253,13 +252,23 @@ public:
 
 public:
 
-  ExternalProcess(const std::string &commandText);
-  ~ExternalProcess();
+  ExternalProcess(std::string commandText, 
+                  Priority priority = Priority::normal);
+  ~ExternalProcess() override;
+
+#ifdef WIN32
+  Priority priority() const;
+
+  /*!
+   * \brief Establece la prioridad del proceso
+   * \param[in] priority
+   */
+  void setPriority(Priority priority);
 
 private:
 
-#ifdef WIN32
-  std::string formatErrorMsg(DWORD errorCode);
+  std::string formatErrorMsg(unsigned long errorCode);
+  bool createPipe();
 #endif
 
 private:
@@ -274,17 +283,12 @@ private:
 #ifdef WIN32
   STARTUPINFO mStartUpInfo;
   PROCESS_INFORMATION mProcessInformation;
-  //static DWORD sPriority;
-  /////////////////////////////////
-  //HANDLE m_hreadDataFromExtProgram;
-  //SECURITY_ATTRIBUTES saAttr;
-  /////////////////////////////////
+  SECURITY_ATTRIBUTES mSecurityAttributes;
+  Priority mPriority;
+  HANDLE mThreadHandle;
 #endif
   
-
 };
-
-
 
 
 /*! \} */ // end of utilities

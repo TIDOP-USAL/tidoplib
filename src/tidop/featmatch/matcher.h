@@ -140,7 +140,7 @@ public:
    * \param[in] mask
    * \return
    */
-  virtual bool match(const cv::Mat &queryDescriptors,
+  virtual void match(const cv::Mat &queryDescriptors,
                      const cv::Mat &trainDescriptors,
                      std::vector<cv::DMatch> &matches,
                      const cv::Mat mask = cv::Mat()) = 0;
@@ -153,7 +153,7 @@ public:
    * \param[in] mask
    * \return 
    */
-  virtual bool match(const cv::Mat &queryDescriptors,
+  virtual void match(const cv::Mat &queryDescriptors,
                      const cv::Mat &trainDescriptors,
                      std::vector<std::vector<cv::DMatch>> &matches,
                      const cv::Mat mask = cv::Mat()) = 0;

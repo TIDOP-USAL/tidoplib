@@ -36,11 +36,17 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/path.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#include "tidop/geospatial/crs.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -56,7 +62,7 @@ class TL_EXPORT ImageWriter
 
 public:
 
-  ImageWriter(const std::string &fileName);
+  ImageWriter(tl::Path file);
   virtual ~ImageWriter() = default;
 
   /*!
@@ -67,7 +73,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -173,11 +179,24 @@ public:
   virtual void setGeoreference(const Affine<PointD> &georeference) = 0;
 
   /*!
-   * \brief Establece la proyección de la imagen
-   * \param[in] epsgCode Código EPSG
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs Coordinate Reference System in WKT format
    */
-  //virtual void setCRS(const geospatial::Crs &crs) = 0;
-  virtual void setCRS(const std::string &epsgCode) = 0;
+  virtual void setCRS(const std::string &crs) = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Set the Coordinate Reference System
+   * \param[in] crs geospatial::Crs object
+   */
+  virtual void setCRS(const geospatial::Crs &crs) = 0;
+#endif
+  
+  virtual void setNoDataValue(double nodata) = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual void setNoDataValue(const graph::Color &nodata) = 0;
+//#endif
 
 protected:
   
@@ -186,9 +205,11 @@ protected:
                    PointI *offset) const;
 protected:
 
-  std::string mFileName;
-  //geospatial::Crs mCRS;
+  Path mFile;
   Affine<PointD> mAffine;
+#ifdef HAVE_TL_GEOSPATIAL
+  geospatial::Crs mCRS;
+#endif
 };
 
 
@@ -205,7 +226,7 @@ private:
 
 public:
 
-  static std::unique_ptr<ImageWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<ImageWriter> createWriter(const Path &fileName);
 };
 
 

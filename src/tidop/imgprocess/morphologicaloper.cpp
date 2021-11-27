@@ -39,40 +39,47 @@ namespace tl
 MorphologicalOperation::MorphologicalOperation(ImageProcess::ProcessType type)
   : ImageProcess(type)
 {
+  TL_TODO("No estan inicializadas las variables...")
 }
 
 void MorphologicalOperation::run(const cv::Mat &matIn, cv::Mat &matOut) const
 {
-  TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+  try {
 
-  cv::Mat element = getStructuringElement(mShapes, 
-                                          cv::Size(2 * mSize + 1, 2 * mSize + 1), 
-                                          cv::Point(mSize, mSize));
-  switch (this->type())
-  {
-  case ImageProcess::ProcessType::morph_dilation:
-    cv::dilate(matIn, matOut, element, mAnchor, mIterations, mBorderType);
-    break;
-  case ImageProcess::ProcessType::morph_erotion:
-    cv::erode(matIn, matOut, element, mAnchor, mIterations, mBorderType);
-    break;
-  case ImageProcess::ProcessType::morph_opening:
-    cv::morphologyEx(matIn, matOut, cv::MORPH_OPEN, element);
-    break;
-  case ImageProcess::ProcessType::morph_closing:
-    cv::morphologyEx(matIn, matOut, cv::MORPH_CLOSE, element);
-    break;
-  case ImageProcess::ProcessType::morph_gradient:
-    cv::morphologyEx(matIn, matOut, cv::MORPH_GRADIENT, element);
-    break;
-  case ImageProcess::ProcessType::morph_tophat:
-    cv::morphologyEx(matIn, matOut, cv::MORPH_TOPHAT, element);
-    break;
-  case ImageProcess::ProcessType::morph_blackhat:
-    cv::morphologyEx(matIn, matOut, cv::MORPH_BLACKHAT, element);
-    break;
-  default:
-    throw "Incorrect image process";
+    TL_ASSERT(!matIn.empty(), "Incorrect input data. Empty image")
+
+    cv::Mat element = getStructuringElement(mShapes,
+    cv::Size(2 * mSize + 1, 2 * mSize + 1),
+    cv::Point(mSize, mSize));
+    
+    switch (this->type()) {
+      case ImageProcess::ProcessType::morph_dilation:
+        cv::dilate(matIn, matOut, element, mAnchor, mIterations, mBorderType);
+        break;
+      case ImageProcess::ProcessType::morph_erotion:
+        cv::erode(matIn, matOut, element, mAnchor, mIterations, mBorderType);
+        break;
+      case ImageProcess::ProcessType::morph_opening:
+        cv::morphologyEx(matIn, matOut, cv::MORPH_OPEN, element);
+        break;
+      case ImageProcess::ProcessType::morph_closing:
+        cv::morphologyEx(matIn, matOut, cv::MORPH_CLOSE, element);
+        break;
+      case ImageProcess::ProcessType::morph_gradient:
+        cv::morphologyEx(matIn, matOut, cv::MORPH_GRADIENT, element);
+        break;
+      case ImageProcess::ProcessType::morph_tophat:
+        cv::morphologyEx(matIn, matOut, cv::MORPH_TOPHAT, element);
+        break;
+      case ImageProcess::ProcessType::morph_blackhat:
+        cv::morphologyEx(matIn, matOut, cv::MORPH_BLACKHAT, element);
+        break;
+      default:
+        throw "Incorrect image process";
+    }
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("MorphologicalOperation::run() failed"));
   }
 }
 

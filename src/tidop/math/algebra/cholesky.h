@@ -27,6 +27,10 @@
 
 #include <algorithm>
 
+#ifdef HAVE_OPENBLAS
+#include <lapacke.h>
+#endif // HAVE_OPENBLAS
+
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/vector.h"
@@ -49,6 +53,29 @@ namespace math
  */
 
 
+
+#ifdef HAVE_OPENBLAS
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
+  lapackePOTRF(lapack_int rows, T *a, lapack_int lda)
+{
+  lapack_int info = LAPACKE_spotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
+  return info;
+}
+
+template<typename T> inline
+typename std::enable_if<
+  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
+  lapackePOTRF(lapack_int rows, T *a, lapack_int lda)
+{
+  lapack_int info = LAPACKE_dpotrf(LAPACK_ROW_MAJOR, 'L', rows, a, lda);
+  return info;
+}
+
+#endif // HAVE_OPENBLAS
+
 /*!
  * \brief Factorización Cholesky
  * 
@@ -67,15 +94,15 @@ public:
 
   CholeskyDecomposition(const Matrix_t<T, _rows, _cols> &a);
 
-  //Vector<T, _rows> solve(const Vector<T, _rows> &b);
-  //Vector<T, _rows> elmult(const Vector<T, _rows> &y);
-  //Vector<T, _rows> elsolve(const Vector<T, _rows> &b);
-  //Matrix<T, _rows, _cols> inverse() const;
+  Vector<T, _rows> solve(const Vector<T, _rows> &b);
   Matrix<T, _rows, _cols> l() const;
 
 private:
 
   void decompose();
+#ifdef HAVE_OPENBLAS
+  void lapackeDecompose();
+#endif // HAVE_OPENBLAS
 
 protected:
 
@@ -94,37 +121,57 @@ CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::CholeskyDecomposition(const Ma
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
+#ifdef HAVE_OPENBLAS
+  this->lapackeDecompose();
+#else
   this->decompose();
+#endif // HAVE_OPENBLAS
+
+  for (size_t i = 0; i < mRows; i++) {
+    for (size_t j = 0; j < i; j++) {
+      L[j][i] = consts::zero<T>;
+    }
+  }
 }
 
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
-//{
-//  TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
-//
-//  int i,k;
-//  double sum;
-//  Vector<T, _rows> x(b);
-//
-//  for (i = 0; i < mRows; i++) {
-//    for (sum = b[i], k = i - 1; k >= 0; k--) {
-//      sum -= this->L.at(i, k) * x[k];
-//    }
-//    x[i] = sum / this->L.at(i, i);
-//  }
-//
-//  for (i = mRows - 1; i >= 0; i--) {
-//    for (sum = x[i], k = i + 1; k < mRows; k++) {
-//      sum -= this->L.at(k, i) * x[k];
-//    }
-//    x[i] = sum / this->L.at(i, i);
-//  }
-//
-//  return x;
-//}
+template<
+  template<typename, size_t, size_t> 
+  class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
+{
+  /// Resolver con matrices...
+  TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
+
+  T sum;
+  Vector<T, _rows> x(b);
+
+  for (size_t r = 0; r < mRows; r++) {
+
+    sum = b[r];
+
+    for (size_t k = r; k > 0; k--) {
+      sum -= L[r][k-1] * x[k-1];
+    }
+
+    x[r] = sum / L[r][r];
+
+  }
+
+  for (size_t i = mRows; i > 0; i--) {
+
+    sum = x[i-1];
+
+    for (size_t k = i; k < mRows; k++) {
+      sum -= L[k][i-1] * x[k];
+    }
+
+    x[i-1] = sum / L[i-1][i-1];
+
+  }
+
+  return x;
+}
 
 template<
   template<typename, size_t, size_t> 
@@ -132,111 +179,47 @@ template<
 >
 inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 {
-  int k;
-  size_t i, j;
-  T sum;
 
-  for (i = 0; i < mRows; i++) {
-    for (j = i; j < mRows; j++) {
-      
-      for (sum = this->L.at(i, j), k = i - 1; k >= 0; k--) {
-        sum -= this->L.at(i, k) * this->L.at(j, k);
+  for (size_t i = 0; i < mRows; i++) {
+
+    T lii = L[i][i];
+
+    for (size_t j = i; j < mRows; j++) {
+
+      T sum = L[i][j];
+
+      for (size_t k = i; k > 0; k--) {
+        sum -= L[i][k-1] * L[j][k-1];
       }
 
       if (i == j) {
         TL_ASSERT(sum > 0.0, "Cholesky failed");
-        this->L.at(i, i) = sqrt(sum);
+        L[i][i] = sqrt(sum);
       } else {
-        this->L.at(j, i) = sum / this->L.at(i, i);
+        L[j][i] = sum / lii;
       }
 
     }
   }
-
-  for (i = 0; i < mRows; i++) {
-    for (j = 0; j < i; j++) {
-      this->L.at(j, i) = static_cast<T>(0);
-    }
-  }
 }
 
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::elmult(const Vector<T, _rows> &y) 
-//{
-//  TL_ASSERT((y.size() == mRows, "bad lengths");
-//
-//  int i, j;
-//  Vector<T, _rows> b(mRows);
-//
-//  
-//  for (size_t i = 0; i < mRows; i++) {
-//    b[i] = 0.;
-//    for (j = 0; j <= i; j++) {
-//      b[i] += this->L.at(i, j) * y[j];
-//    }
-//  }
-//
-//  return b;
-//}
+#ifdef HAVE_OPENBLAS
 
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::elsolve(const Vector<T, _rows> &b) 
-//{
-//  TL_ASSERT(b.size() == mRows, "bad lengths");
-//
-//  size_t j;
-//  double sum;
-//  Vector<T, _rows> y(b);
-//
-//  for (size_t i = 0; i < mRows; i++) {
-//    for (sum = b[i], j = 0; j < i; j++) {
-//      sum -= this->L.at(i, j) * y[j];
-//    }
-//
-//    y[i] = sum / this->L.at(i, i);
-//  }
-//
-//  return y;
-//}
+template<
+  template<typename, size_t, size_t>
+class Matrix_t, typename T, size_t _rows, size_t _cols
+>
+inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
+{
+  lapack_int info;
 
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline Matrix<T, _rows, _cols> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::inverse() const
-//{
-//  int i, j, k;
-//  double sum;
-//  Matrix<T, _rows, _cols> ainv(mRows, mRows);
-//
-//  for (i = 0; i < mRows; i++) {
-//    for (j = 0; j <= i; j++) {
-//      sum = (i == j ? 1. : 0.);
-//      for (k = i - 1; k >= j; k--) { 
-//        sum -= this->L.at(i, k) * ainv.at(j, k); 
-//      }
-//      ainv.at(j, i) = sum / this->L.at(i, i);
-//    }
-//  }
-//
-//  for (i = mRows - 1; i >= 0; i--) {
-//    for (j = 0; j <= i; j++) {
-//      sum = (i < j ? 0. : ainv.at(j, i));
-//      for (k = i + 1; k < mRows; k++) { 
-//        sum -= this->L.at(k, i) * ainv.at(j, k); 
-//      }
-//      ainv.at(i, j) = ainv.at(j, i) = sum / this->L.at(i, i);
-//    }
-//  }
-//
-//  return ainv;
-//}
+  info = lapackePOTRF(L.rows(), L.data(), L.cols());
+
+  TL_ASSERT(info >= 0, "Cholesky Decomposition failed");
+
+}
+
+#endif // HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 
@@ -244,19 +227,8 @@ template<
 >
 inline Matrix<T, _rows, _cols> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::l() const
 {
-  return this->L;
+  return L;
 }
-
-//template<
-//  template<typename, size_t, size_t> 
-//  class Matrix_t, typename T, size_t _rows, size_t _cols
-//>
-//inline double CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::logdet() 
-//{
-//  double sum = 0.;
-//  for (int i=0; i<mRows; i++) sum += log(this->L.at(i, i));
-//  return 2.*sum;
-//}
 
 /*! \} */ // end of Algebra
 

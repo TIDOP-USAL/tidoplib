@@ -38,10 +38,17 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
+#include "tidop/core/path.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
+#ifdef HAVE_TL_GEOSPATIAL 
+#include "tidop/geospatial/crs.h"
+#endif
+//#ifdef HAVE_TL_GRAPHIC
+//#include "tidop/graphic/color.h"
+//#endif
 
 namespace tl
 {
@@ -56,7 +63,7 @@ class TL_EXPORT ImageReader
 
 public:
 
-  ImageReader(std::string fileName);
+  ImageReader(tl::Path file);
   virtual ~ImageReader() = default;
 
   /*!
@@ -67,7 +74,7 @@ public:
   /*!
    * \brief Comprueba si el fichero se ha cargado correctamente
    */
-  virtual bool isOpen() = 0;
+  virtual bool isOpen() const = 0;
 
   /*!
    * \brief Cierra el fichero
@@ -82,7 +89,7 @@ public:
    * \return imagen
    */
   virtual cv::Mat read(const Rect<int> &rect = Rect<int>(), 
-                       Size<int> size = Size<int>(), 
+                       const Size<int> &size = Size<int>(), 
                        Affine<PointI> *trf = nullptr) = 0;
 
   /*!
@@ -173,16 +180,29 @@ public:
   virtual Affine<PointD> georeference() const = 0;
 
   /*!
-   * \brief Sistema de referencia por su código EPSG
+   * \brief Sistema de referencia en formato WKT
    */
-  virtual std::string crs() const = 0;
+  virtual std::string crsWkt() const = 0;
+
+#ifdef HAVE_TL_GEOSPATIAL
+  /*!
+   * \brief Sistema de referencia
+   */
+  virtual geospatial::Crs crs() const = 0;
+#endif
 
   /*!
    * \brief Ventana envolvente de la imagen en coordenadas terreno
    */
   virtual WindowD window() const = 0;
 
-  std::string fileName() const;
+  tl::Path file() const;
+
+  virtual double noDataValue(bool *exist = nullptr) const = 0;
+
+//#ifdef HAVE_TL_GRAPHIC
+//  virtual graph::Color noDataValue() const = 0;
+//#endif
 
 protected:
   
@@ -192,7 +212,7 @@ protected:
 
 private:
 
-  std::string mFileName;
+  Path mFile;
 
 };
 
@@ -209,7 +229,7 @@ private:
 
 public:
 
-  static std::unique_ptr<ImageReader> createReader(const std::string &fileName);
+  static std::unique_ptr<ImageReader> createReader(const Path &file);
 };
 
 } // End namespace tl

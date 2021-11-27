@@ -592,7 +592,7 @@ EntityContainer<Entity_t> &EntityContainer<Entity_t>::operator=(EntityContainer<
   if (this != &entity) {
     this->mEntities.clear();
     this->mEntities = std::move(entity.mEntities);
-    entity = 0;
+    //entity = 0;
   }
   return (*this);
 }

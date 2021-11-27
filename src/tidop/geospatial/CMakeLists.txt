@@ -35,6 +35,10 @@ elseif(NOT HAVE_TL_VECT)
   message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_vect that is deactivated]") 
 elseif(NOT HAVE_TL_IMG)
   message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
+elseif(NOT HAVE_GDAL)
+  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on gdal that is deactivated]")
+elseif(NOT HAVE_PROJ4)
+  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on proj that is deactivated]")
 else()
 
   project(tl_geospatial)
@@ -51,8 +55,8 @@ else()
               util.h
               ortho.cpp
               ortho.h
-              footprint.cpp
-              footprint.h
+              #footprint.cpp
+              #footprint.h
               diffrect.cpp
               diffrect.h
               camera.cpp

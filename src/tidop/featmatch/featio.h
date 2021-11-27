@@ -32,6 +32,7 @@
 #include <opencv2/features2d.hpp>
 
 #include "tidop/core/defs.h"
+#include "tidop/core/path.h"
 
 namespace tl
 {
@@ -50,17 +51,17 @@ class TL_EXPORT FeaturesWriter
 
 public:
 
-  FeaturesWriter(std::string fileName);
+  FeaturesWriter(tl::Path file);
   virtual ~FeaturesWriter() = default;
 
-  virtual bool write() = 0;
+  virtual void write() = 0;
 
   void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);
   void setDescriptors(const cv::Mat &descriptors);
 
 protected:
 
-  std::string mFileName;
+  tl::Path mFilePath;
   std::vector<cv::KeyPoint> mKeyPoints;
   cv::Mat mDescriptors;
 };
@@ -77,18 +78,18 @@ class TL_EXPORT FeaturesReader
 
 public:
 
-  FeaturesReader(std::string fileName);
+  FeaturesReader(tl::Path file);
   virtual ~FeaturesReader() = default;
 
-  virtual bool read() = 0;
+  virtual void read() = 0;
 
   std::vector<cv::KeyPoint> keyPoints() const;
   cv::Mat descriptors() const;
-  std::string fileName() const;
+  tl::Path file() const;
 
 protected:
 
-  std::string mFileName;
+  tl::Path mFilePath;
   std::vector<cv::KeyPoint> mKeyPoints;
   cv::Mat mDescriptors;
 };
@@ -111,7 +112,8 @@ private:
 
 public:
 
-  static std::unique_ptr<FeaturesReader> createReader(const std::string &fileName);
+  static std::unique_ptr<FeaturesReader> createReader(const tl::Path &file);
+
 };
 
 /*!
@@ -127,7 +129,8 @@ private:
 
 public:
 
-  static std::unique_ptr<FeaturesWriter> createWriter(const std::string &fileName);
+  static std::unique_ptr<FeaturesWriter> createWriter(const tl::Path &file);
+
 };
 
 
@@ -144,8 +147,8 @@ public:
   FeaturesIOHandler();
   virtual ~FeaturesIOHandler() = default;
 
-  bool read(const std::string &file);
-  bool write(const std::string &file);
+  void read(const tl::Path &file);
+  void write(const tl::Path &file);
 //  std::vector<cv::KeyPoint> keyPoints() const;
 //  cv::Mat descriptors() const;
 //  void setKeyPoints(const std::vector<cv::KeyPoint> &keyPoints);

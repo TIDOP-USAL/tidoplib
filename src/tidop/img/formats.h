@@ -249,6 +249,9 @@ public:
   GeotiffKeysFlavor geotiffKeysFlavor() const;
   void setGeotiffKeysFlavor(GeotiffKeysFlavor geotiffKeysFlavor);
 
+  bool internalMask() const;
+  void setInternalMask(bool internalMask);
+
 private:
 
   void init();
@@ -273,6 +276,7 @@ private:
   std::pair<PixelType, PixelType> mPixelType;
   std::pair<GeotiffKeysFlavor, GeotiffKeysFlavor> mGeotiffKeysFlavor;
 
+  std::pair<bool, bool> mInternalMask;
 };
 
 

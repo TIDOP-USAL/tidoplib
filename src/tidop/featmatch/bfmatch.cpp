@@ -24,7 +24,8 @@
 
 #include "bfmatch.h"
 
-#include <tidop/core/messages.h>
+#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -82,37 +83,37 @@ void BruteForceMatcherImp::update()
 
   try {
     mBFMatcher = cv::BFMatcher::create(norm);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
-bool BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
+void BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
                                  const cv::Mat &trainDescriptors,
                                  std::vector<cv::DMatch> &matches,
                                  const cv::Mat mask)
 {
   try {
+
     mBFMatcher->match(queryDescriptors, trainDescriptors, matches, mask);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
-bool BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
+void BruteForceMatcherImp::match(const cv::Mat &queryDescriptors,
                                  const cv::Mat &trainDescriptors,
                                  std::vector<std::vector<cv::DMatch>> &matches,
                                  const cv::Mat mask)
 {
   try {
+
     mBFMatcher->knnMatch(queryDescriptors, trainDescriptors, matches, 2, mask);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
 void BruteForceMatcherImp::reset()
@@ -159,46 +160,48 @@ void BruteForceMatcherCuda::update()
   }*/
 
   try {
+
     mBFMatcher = cv::cuda::DescriptorMatcher::createBFMatcher(norm);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 }
 
-bool BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
+void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
                                   const cv::Mat &trainDescriptors,
                                   std::vector<cv::DMatch> &matches,
                                   const cv::Mat mask)
 {
   try {
+
     cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
     cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
     cv::cuda::GpuMat gMask;
     if (!mask.empty()) gMask.upload(mask);
     mBFMatcher->match(gQueryDescriptors, gTrainDescriptors, matches, gMask);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
-bool BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
+void BruteForceMatcherCuda::match(const cv::Mat &queryDescriptors,
                                   const cv::Mat &trainDescriptors,
                                   std::vector<std::vector<cv::DMatch>> &matches,
                                   const cv::Mat mask)
 {
   try {
+
     cv::cuda::GpuMat gQueryDescriptors(queryDescriptors);
     cv::cuda::GpuMat gTrainDescriptors(trainDescriptors);
     cv::cuda::GpuMat gMask;
     if (!mask.empty()) gMask.upload(mask);
     mBFMatcher->knnMatch(gQueryDescriptors, gTrainDescriptors, matches, 2, gMask);
-  } catch (cv::Exception &e) {
-    msgError("Brute-force Matcher error: %s", e.what());
-    return true;
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
-  return false;
 }
 
 void BruteForceMatcherCuda::reset()

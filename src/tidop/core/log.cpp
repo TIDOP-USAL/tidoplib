@@ -49,7 +49,6 @@ Log::Log()
 
 Log::~Log()
 {
-  sObjLog.reset();
 }
 
 Log &Log::instance()
@@ -147,8 +146,8 @@ void Log::_write(const std::string &message,
   }
   
   Path log_parent_path = Path(sLogFile).parentPath();
-  if (!Path::exists(log_parent_path)) {
-    int err = createDir(log_parent_path.toString());
+  if (!log_parent_path.exists()) {
+    int err = log_parent_path.createDirectories();
     if (err == -1) {
       MessageManager::instance().removeListener(this);
       return;

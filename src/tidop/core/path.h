@@ -27,9 +27,6 @@
 
 #include "config_tl.h"
 
-#include <iostream>
-#include <fstream>
-#include <map>
 #include <regex>
 #include <list>
 #include <numeric>
@@ -61,6 +58,7 @@ public:
 
   Path();
   Path(const std::string &path);
+  Path(const std::wstring &path);
   Path(const Path &path);
   Path(Path &&path) TL_NOEXCEPT;
   ~Path();
@@ -69,54 +67,93 @@ public:
   Path &operator = (Path &&path) TL_NOEXCEPT;
 
   void setPath(const std::string &path);
+  void setPath(const std::wstring &path);
 
   /*!
    * \brief Convierte el path en una cadena
    * \return
    */
   std::string toString() const;
-  
+  std::wstring toWString() const;
+
   std::string fileName() const;
   std::string baseName() const;
   std::string extension() const;
+  Path parentPath() const;
+  std::list<Path> list(const std::string &extension);
+  std::list<Path> list(const std::regex &filter);
+
   bool isDirectory() const;
   bool isFile() const;
   bool empty() const;
   bool exists() const;
-  Path &replaceExtension(const std::string &extension);
 
-  Path parentPath() const;
+  Path &replaceFileName(const std::string &fileName);
+  Path &replaceFileName(const std::wstring &fileName);
+  Path &replaceBaseName(const std::string &baseName);
+  Path &replaceBaseName(const std::wstring &baseName);
+  Path &replaceExtension(const std::string &extension);
   Path &append(const std::string &text);
+
+  bool createDirectory() const;
+  bool createDirectories() const;
+  void removeDirectory() const;
+
+  void clear();
 
 /* Static methods */
 
   static bool exists(const std::string &path);
-  static bool exists(const Path &path);
+  static bool exists(const std::wstring &path);
+  static Path tempPath();
   static Path tempDirectory();
-  static bool createDirectory(const Path &directory);
   static bool createDirectory(const std::string &directory);
-  static bool createDirectories(const Path &directory);
+  static bool createDirectory(const std::wstring &directory);
   static bool createDirectories(const std::string &directory);
-  //static Path tempFile();
-
-//  
-//  void createDir();
-//  void deleteDir();
-//
-//  /*!
-//   * \brief
-//   */
-//  std::list<std::string> files(const std::string &wildcard);  // Listar ficheros o directorios. Posibilidad de filtrar con comodines (tipo de archivo, solo directorios, etc)
-//
-//  std::list<std::string> dirs();
-//
-//  Path &append(const std::string &dir);
+  static bool createDirectories(const std::wstring &directory);
+  static void removeDirectory(const std::string &directory);
+  static void removeDirectory(const std::wstring &directory);
 
 private:
 
   std::unique_ptr<internal::Path> mPath;
 
 };
+
+
+/*!
+ * /brief Crea un directorio temporal que por defecto se borra automaticamente
+ * 
+ */
+class TL_EXPORT TemporalDir
+{
+
+public:
+
+  /*!
+   * \brief
+   * \param[in] autoRemove 
+   */
+  explicit TemporalDir(bool autoRemove = true);
+  ~TemporalDir();
+
+  TemporalDir(const TemporalDir &) = delete;
+  TemporalDir(TemporalDir &&) = delete;
+  TemporalDir &operator=(const TemporalDir &) = delete;
+  TemporalDir &operator=(TemporalDir &&) = delete;
+
+  Path path() const;
+
+private:
+
+  bool bAutoRemove;
+  Path mPath;
+
+};
+
+
+TL_EXPORT std::ostream &operator<< (std::ostream &os, const Path &path);
+
 
 
 /*! \} */ // end of utilities

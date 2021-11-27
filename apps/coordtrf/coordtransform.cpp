@@ -45,14 +45,14 @@ int main(int argc, char** argv)
   double scale_x = 1.;
   double scale_y = 1.;
 
-  std::shared_ptr<Argument> arg_compute = std::make_shared<ArgumentBooleanOptional>("compute", "Calcula la transformación a partir de listados de puntos", &compute);
-  std::shared_ptr<Argument> arg_transform = std::make_shared<ArgumentBooleanOptional>("transform", "Aplica la transformación a un listado de puntos", &transform);
-  std::shared_ptr<Argument> arg_tx = std::make_shared<ArgumentDoubleOptional>("tx", "Translación en X", &tx);
-  std::shared_ptr<Argument> arg_ty = std::make_shared<ArgumentDoubleOptional>("ty", "Translación en Y", &ty);
-  std::shared_ptr<Argument> arg_rotation = std::make_shared<ArgumentDoubleOptional>("rotation", "Rotación", &rotation_angle);
-  std::shared_ptr<Argument> arg_scale = std::make_shared<ArgumentDoubleOptional>("scale", "Escala", &scale);
-  std::shared_ptr<Argument> arg_scale_x = std::make_shared<ArgumentDoubleOptional>("scale_x", "Escala X", &scale_x);
-  std::shared_ptr<Argument> arg_scale_y = std::make_shared<ArgumentDoubleOptional>("scale_y", "Escala Y", &scale_y);
+  std::shared_ptr<Argument> arg_compute = CreateArgumentBooleanOptional("compute", "Calcula la transformación a partir de listados de puntos", &compute);
+  std::shared_ptr<Argument> arg_transform = CreateArgumentBooleanOptional("transform", "Aplica la transformación a un listado de puntos", &transform);
+  std::shared_ptr<Argument> arg_tx = CreateArgumentDoubleOptional("tx", "Translación en X", &tx);
+  std::shared_ptr<Argument> arg_ty = CreateArgumentDoubleOptional("ty", "Translación en Y", &ty);
+  std::shared_ptr<Argument> arg_rotation = CreateArgumentDoubleOptional("rotation", "Rotación", &rotation_angle);
+  std::shared_ptr<Argument> arg_scale = CreateArgumentDoubleOptional("scale", "Escala", &scale);
+  std::shared_ptr<Argument> arg_scale_x = CreateArgumentDoubleOptional("scale_x", "Escala X", &scale_x);
+  std::shared_ptr<Argument> arg_scale_y = CreateArgumentDoubleOptional("scale_y", "Escala Y", &scale_y);
 
   std::shared_ptr<Command> cmd_translation(new Command("Translation", "Translation transform", {
                                                        arg_compute,
@@ -84,10 +84,10 @@ int main(int argc, char** argv)
                                            }));
 
   CommandList cmd_list_transform("transform", "Transform");
-  cmd_list_transform.push_back(cmd_translation);
-  cmd_list_transform.push_back(cmd_rotation);
-  cmd_list_transform.push_back(cmd_helmert_2d);
-  cmd_list_transform.push_back(cmd_affine);
+  cmd_list_transform.addCommand(cmd_translation);
+  cmd_list_transform.addCommand(cmd_rotation);
+  cmd_list_transform.addCommand(cmd_helmert_2d);
+  cmd_list_transform.addCommand(cmd_affine);
 
   // Parseo de los argumentos y comprobación de los mismos
   CommandList::Status status = cmd_list_transform.parse(argc, argv);

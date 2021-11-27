@@ -41,7 +41,8 @@ TL_DEFAULT_WARNINGS
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 #include "tidop/geometry/transform/transform.h"
-
+#include "tidop/geometry/entities/point.h"
+#include "tidop/math/algebra/rotation_matrix.h"
 
 namespace tl
 {
@@ -70,7 +71,8 @@ public:
   /*!
    * \brief Constructor
    */
-  CrsTransform(const std::shared_ptr<Crs> &epsgIn, const std::shared_ptr<Crs> &epsgOut);
+  CrsTransform(const std::shared_ptr<Crs> &epsgIn, 
+               const std::shared_ptr<Crs> &epsgOut);
   
   //CrsTransform(const char *epsgIn, const char *epsgOut);
 
@@ -397,8 +399,101 @@ void CrsTransform<Point_t>::init()
 //  return *sCrsCache;
 //}
 
-
 #endif // HAVE_GDAL
+
+
+template<typename T>
+class EcefToEnu
+{
+
+public:
+
+  EcefToEnu(const Point3<T> &center)
+    : mCenter(center)
+  {
+  }
+
+  ~EcefToEnu()
+  {
+  }
+
+  Point3<T> direct(const Point3<T> &ecef,
+                   T longitude,
+                   T latitude);
+  Point3<T> inverse(const Point3<T> &enu,
+                    T longitude,
+                    T latitude);
+
+private:
+
+  math::RotationMatrix<T> rotationMatrixToEnu(T longitude,
+                                              T latitude);
+
+private:
+
+  Point3<T> mCenter;
+
+};
+
+
+
+template<typename T> inline
+Point3<T> EcefToEnu<T>::direct(const Point3<T> &ecef,
+                               T longitude,
+                               T latitude)
+{
+  math::RotationMatrix<T> rotation = rotationMatrixEnu(longitude, latitude);
+  Point3D dif = ecef - mCenter;
+
+  math::Vector<T, 3> enu = rotation * dif.vector();
+
+  return Point3D(enu[0], enu[1], enu[2]);
+}
+
+template<typename T> inline
+Point3<T> EcefToEnu<T>::inverse(const Point3<T> &enu,
+                                T longitude,
+                                T latitude)
+{
+  math::RotationMatrix<T> rotation = rotationMatrixEnu(longitude, latitude);
+  math::Vector<T, 3> d = rotation.transpose() * enu.vector();
+
+  Point3D ecef;
+  ecef.x = mCenter.x + d[0];
+  ecef.y = mCenter.y + d[1];
+  ecef.z = mCenter.z + d[2];
+
+  return ecef;
+}
+
+template<typename T> inline
+math::RotationMatrix<T> EcefToEnu<T>::rotationMatrixToEnu(T longitude,
+                                                          T latitude)
+{
+  math::RotationMatrix<T> rotation_enu;
+
+  T longitude_rad = longitude * math::consts::deg_to_rad<T>;
+  T latitude_rad = latitude * math::consts::deg_to_rad<T>;
+
+  T sin_longitude = sin(longitude_rad);
+  T cos_longitude = cos(longitude_rad);
+  T sin_latitude = sin(latitude_rad);
+  T cos_latitude = cos(latitude_rad);
+
+  rotation_enu.at(0, 0) = -sin_longitude;
+  rotation_enu.at(0, 1) = cos_longitude;
+  rotation_enu.at(0, 2) = 0;
+  rotation_enu.at(1, 0) = -sin_latitude * cos_longitude;
+  rotation_enu.at(1, 1) = -sin_latitude * sin_longitude;
+  rotation_enu.at(1, 2) = cos_latitude;
+  rotation_enu.at(2, 0) = cos_latitude * cos_longitude;
+  rotation_enu.at(2, 1) = cos_latitude * sin_longitude;
+  rotation_enu.at(2, 2) = sin_latitude;
+
+  return rotation_enu;
+}
+
+
 
 } // End namespace geospatial
 

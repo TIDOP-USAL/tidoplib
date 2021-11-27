@@ -27,6 +27,7 @@
 #include <utility>
 
 #include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 namespace tl
 {
@@ -107,17 +108,18 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
                      std::vector<cv::DMatch> *wrongMatches,
                      const cv::Size &queryImageSize,
                      const cv::Size &trainImageSize)
-{
+{  
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D
 
 #if CV_VERSION_MAJOR >= 4 || (CV_VERSION_MAJOR >= 3 && CV_VERSION_MINOR >= 4 && CV_VERSION_REVISION >= 1 )
-  try {
+
 
     if (goodMatches == nullptr) return true;
 
     std::vector<cv::DMatch> matches;
-    bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
-    if (err) return true;
+    mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
 
     cv::xfeatures2d::matchGMS(queryImageSize, trainImageSize, keypoints1, keypoints2, matches, *goodMatches);
 
@@ -137,21 +139,18 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
 
     TL_TODO("devolver wrongMatches")
 
-  } catch(std::exception &e){
-    msgError(e.what());
-    return true;
-  }
-
 #  else
-  TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
-  throw std::exception("'matchGMS' not supported in OpenCV versions < 3.3.1");
+    TL_COMPILER_WARNING("'matchGMS' not supported in OpenCV versions < 3.3.1")
+    throw TL_ERROR("'matchGMS' not supported in OpenCV versions < 3.3.1");
 #endif
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. 'matchGMS' not supported")
-  throw std::exception("OpenCV not built with extra modules. 'matchGMS' not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. 'matchGMS' not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. 'matchGMS' not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
 
-  return false;
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 }
 
 } // namespace tl

@@ -84,10 +84,6 @@ AxisAngle<T>::AxisAngle()
     mAxis{1,0,0}
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
-
-  //axis.at(0) = 1;
-  //axis.at(1) = 0;
-  //axis.at(2) = 0;
 }
 
 template<typename T>

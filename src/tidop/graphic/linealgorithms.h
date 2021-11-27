@@ -172,7 +172,7 @@ public:
 
   /*!
    * \brief Constructora
-   * tl::EXPERIMENTAL::BresenhamLine lineIter1(_line.pt1, _line.pt2);
+   * tl::BresenhamLine lineIter1(_line.pt1, _line.pt2);
    * std::vector<cv::Point> v1 = lineIter1.getPoints();
    */
   BresenhamLine(const PointI &pt1, const PointI &pt2)

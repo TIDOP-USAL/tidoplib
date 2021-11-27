@@ -72,24 +72,6 @@ lapackeGESVD(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u,
   return info;
 }
 
-//template<typename T> inline
-//typename std::enable_if<
-//  std::is_same<float, typename std::remove_cv<T>::type>::value, int>::type
-//  lapackeGELSS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-//{
-//  lapack_int info = LAPACKE_sgelss(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-//  return info;
-//}
-//
-//template<typename T> inline
-//typename std::enable_if<
-//  std::is_same<double, typename std::remove_cv<T>::type>::value, int>::type
-//  lapackeGELSS(lapack_int rows, lapack_int cols, T *a, lapack_int lda, T *s, T *u, lapack_int ldu, T *v, lapack_int ldvt, T *superb)
-//{
-//  lapack_int info = LAPACKE_dgelss(LAPACK_ROW_MAJOR, 'A', 'A', rows, cols, a, lda, s, u, ldu, v, ldvt, superb);
-//  return info;
-//}
-
 #endif // HAVE_OPENBLAS
 
 /*!
@@ -130,8 +112,8 @@ public:
   Matrix<T, _cols, _cols> v() const;
   Vector<T, _cols> w() const;
 
-  int iterationMax() const;
-  void setIterationMax(int iterationMax);
+  int maxIterations() const;
+  void setMaxIterations(int maxIterations);
 
 private:
 
@@ -177,7 +159,7 @@ SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::SingularValueDecompositio
   eps = std::numeric_limits<T>::epsilon();
   this->decompose();
   this->reorder();
-  tsh = static_cast<T>(0.5) * sqrt(mRows + mCols + static_cast<T>(1)) * W[0] * eps;
+  tsh = consts::half<T> * sqrt(mRows + mCols + consts::one<T>) * W[0] * eps;
 #endif // HAVE_OPENBLAS
 
 }
@@ -191,31 +173,25 @@ Vector<T, _cols> SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::solve(co
 {
   Vector<T, _cols> C(mCols);
 
-//#ifdef HAVE_OPENBLAS
-//
-//#else
-
   T s;
   Vector<T, _cols> tmp(mCols);
 
   for (size_t j = 0; j < mCols; j++) {
-    s = 0.0;
+    s = consts::zero<T>;
     if (W[j] > tsh) {
       for (size_t i = 0; i < mRows; i++)
-        s += U.at(i, j) * B[i];
+        s += U[i][j] * B[i];
       s /= W[j];
     }
     tmp[j] = s;
   }
 
   for (size_t j = 0; j < mCols; j++) {
-    s = 0.0;
+    s = consts::zero<T>;
     for (size_t k = 0; k < mCols; k++)
-      s += V.at(j, k) * tmp[k];
+      s += V[j][k] * tmp[k];
     C[j] = s;
   }
-
-//#endif
 
   return C;
 }
@@ -238,9 +214,9 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   T h;
   T s;
   T scale;
-  g = scale = anorm = 0.0; //Householder reduction to bidiagonal form.
+  g = scale = anorm = consts::zero<T>; //Householder reduction to bidiagonal form.
 
-  int one = 1;
+  //int one = 1;
 
   for (i = 0; i < mCols; i++) {
     l = i + 2;
@@ -248,100 +224,101 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
     g = s = scale = 0.0;
 
     if (i < mRows) {
-      for (k = i; k < mRows; k++) scale += fabs(this->U.at(k, i));
+      for (k = i; k < mRows; k++) scale += std::abs(U[k][i]);
       if (scale != 0.) {
         for (k = i; k < mRows; k++) {
-          this->U.at(k, i) /= scale;
-          s += this->U.at(k, i) * this->U.at(k, i);
+          U[k][i] /= scale;
+          s += U[k][i] * U[k][i];
         }
-        f = this->U.at(i, i);
+        f = U[i][i];
         g = -std::copysign(sqrt(s), f);
         h = f * g - s;
-        this->U.at(i, i) = f - g;
-        for (j = l - one; j < mCols; j++) {
+        U[i][i] = f - g;
+        for (j = l - consts::one<int>; j < mCols; j++) {
           for (s = 0.0, k = i; k < mRows; k++)
-            s += this->U.at(k, i) * this->U.at(k, j);
+            s += U[k][i] * U[k][j];
           f = s / h;
           for (k = i; k < mRows; k++)
-            this->U.at(k, j) += f * this->U.at(k, i);
+            U[k][j] += f * U[k][i];
         }
         for (k = i; k < mRows; k++)
-          this->U.at(k, i) *= scale;
+          U[k][i] *= scale;
       }
     }
 
     W[i] = scale * g;
     g = s = scale = 0.0;
-    if (i + one <= mRows && i + one != mCols) {
-      for (k = l - one; k < mCols; k++) scale += fabs(this->U.at(i, k));
+    if (i + consts::one<int> <= mRows && i + consts::one<int> != mCols) {
+      for (k = l - consts::one<int>; k < mCols; k++) scale += fabs(U[i][k]);
       if (scale != 0.) {
-        for (k = l - one; k < mCols; k++) {
-          this->U.at(i, k) /= scale;
-          s += this->U.at(i, k) * this->U.at(i, k);
+        for (k = l - consts::one<int>; k < mCols; k++) {
+          U[i][k] /= scale;
+          s += U[i][k] * U[i][k];
         }
-        f = this->U.at(i, l - one);
+        f = U[i][l - consts::one<int>];
         g = -std::copysign(sqrt(s), f);
         h = f * g - s;
-        this->U.at(i, l - one) = f - g;
+        U[i][l - consts::one<int>] = f - g;
 
-        for (k = l - one; k < mCols; k++)
-          rv1[k] = this->U.at(i, k) / h;
+        for (k = l - consts::one<int>; k < mCols; k++)
+          rv1[k] = U[i][k] / h;
 
-        for (j = l - one; j < mRows; j++) {
-          for (s = 0.0, k = l - one; k < mCols; k++)
-            s += this->U.at(j, k) * this->U.at(i, k);
-          for (k = l - one; k < mCols; k++)
-            this->U.at(j, k) += s * rv1[k];
+        for (j = l - consts::one<int>; j < mRows; j++) {
+          for (s = 0.0, k = l - consts::one<int>; k < mCols; k++)
+            s += U[j][k] * U[i][k];
+          for (k = l - consts::one<int>; k < mCols; k++)
+            U[j][k] += s * rv1[k];
         }
 
-        for (k = l - one; k < mCols; k++)
-          this->U.at(i, k) *= scale;
+        for (k = l - consts::one<int>; k < mCols; k++)
+          U[i][k] *= scale;
       }
     }
     anorm = std::max(anorm, std::abs(W[i]) + std::abs(rv1[i]));
   }
 
-
-  for (i = static_cast<int>(mCols) - one; i >= 0; i--) { //Accumulation of right-hand transformations.
-    if (i < mCols - one) {
+  for (i = static_cast<int>(mCols) - consts::one<int>; i >= 0; i--) { //Accumulation of right-hand transformations.
+    if (i < mCols - consts::one<int>) {
       if (g != 0.) {
         for (j = l; j < mCols; j++) //Double division to avoid possible underflow.
-          V.at(j, i) = (this->U.at(i, j) / this->U.at(i, l)) / g;
+          V[j][i] = (U[i][j] / U[i][l]) / g;
         for (j = l; j < mCols; j++) {
           for (s = 0.0, k = l; k < mCols; k++)
-            s += this->U.at(i, k) * V.at(k, j);
+            s += U[i][k] * V[k][j];
           for (k = l; k < mCols; k++)
-            V.at(k, j) += s * V.at(k, i);
+            V[k][j] += s * V[k][i];
         }
       }
 
       for (j = l; j < mCols; j++)
-        this->V.at(i, j) = this->V.at(j, i) = 0.0;
+        V[i][j] = V[j][i] = consts::zero<T>;
     }
-    this->V.at(i, i) = 1.0;
+
+    V[i][i] = consts::one<T>;
     g = rv1[i];
     l = i;
   }
 
-  for (i = static_cast<int>(std::min(mRows, mCols)) - one; i >= 0; i--) { //Accumulation of left-hand transformations.
-    l = i + one;
+  for (i = static_cast<int>(std::min(mRows, mCols)) - consts::one<int>; i >= 0; i--) { //Accumulation of left-hand transformations.
+    l = i + consts::one<int>;
     g = W[i];
     for (j = l; j < mCols; j++) this->U.at(i, j) = 0.0;
-    if (g != 0.) {
-      g = static_cast<T>(1.0) / g;
+    if (g != consts::zero<T>) {
+      g = consts::one<T> / g;
       for (j = l; j < mCols; j++) {
-        for (s = 0.0, k = l; k < mRows; k++)
-          s += this->U.at(k, i) * this->U.at(k, j);
-        f = (s / this->U.at(i, i)) * g;
-        for (k = i; k < mRows; k++) U.at(k, j) += f * U.at(k, i);
+        for (s = consts::zero<T>, k = l; k < mRows; k++)
+          s += U[k][i] * U[k][j];
+        f = (s / U[i][i]) * g;
+        for (k = i; k < mRows; k++)
+          U[k][j] += f * U[k][i];
       }
       for (j = i; j < mRows; j++)
-        U.at(j, i) *= g;
+        U[j][i] *= g;
     } else {
       for (j = i; j < mRows; j++)
-        U.at(j, i) = 0.0;
+        U[j][i] = consts::zero<T>;
     }
-    ++this->U.at(i, i);
+    ++U[i][i];
   }
 
   bool flag;
@@ -351,58 +328,64 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   T x;
   T y;
   T z;
-  for (k = static_cast<int>(mCols) - one; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
+  for (k = static_cast<int>(mCols) - consts::one<int>; k >= 0; k--) { //Diagonalization of the bidiagonal form: Loop over
     for (its = 0; its < mIterationMax; its++) { // singular values, and over allowed iterations.
+    
       flag = true;
+      
       for (l = k; l >= 0; l--) { //Test for splitting.
-        nm = l - one; //Note that rv1[1] is always zero.
+        nm = l - consts::one<int>; //Note that rv1[1] is always zero.
         if (l == 0 || abs(rv1[l]) <= eps * anorm) {
           flag = false;
           break;
         }
-        if (abs(this->W[nm]) <= eps * anorm) break;
+        if (abs(W[nm]) <= eps * anorm) break;
       }
+
       if (flag) {
-        c = 0.0; //Cancellation of rv1[l], if l > 1.
-        s = 1.0;
-        for (i = l; i < k + one; i++) {
+        c = consts::zero<T>; //Cancellation of rv1[l], if l > 1.
+        s = consts::one<T>;
+        for (i = l; i < k + consts::one<int>; i++) {
           f = s * rv1[i];
           rv1[i] = c * rv1[i];
           if (abs(f) <= eps * anorm) break;
           g = W[i];
           h = math::module(f, g);
           W[i] = h;
-          h = static_cast<T>(1) / h;
+          h = consts::one<T> / h;
           c = g * h;
           s = -f * h;
           for (j = 0; j < mRows; j++) {
-            y = this->U.at(j, nm);
-            z = this->U.at(j, i);
-            this->U.at(j, nm) = y * c + z * s;
-            this->U.at(j, i) = z * c - y * s;
+            y = U[j][nm];
+            z = U[j][i];
+            U[j][nm] = y * c + z * s;
+            U[j][i] = z * c - y * s;
           }
         }
       }
       z = W[k];
       if (l == k) { //Convergence.
-        if (z < 0.0) { //Singular value is made nonnegative.
+        if (z < consts::zero<T>) { //Singular value is made nonnegative.
           W[k] = -z;
-          for (j = 0; j < mCols; j++) V.at(j, k) = -V.at(j, k);
+          for (j = 0; j < mCols; j++) 
+            V[j][k] = -V[j][k];
         }
         break;
       }
-      if (its == 29) throw std::runtime_error("no convergence in 30 svdcmp iterations");
+
+      if (its == 29) throw std::runtime_error("no convergence in 30 iterations");
       x = W[l]; //Shift from bottom 2-by-2 minor.
-      nm = k - one;
+      nm = k - consts::one<int>;
       y = W[nm];
       g = rv1[nm];
       h = rv1[k];
       f = ((y - z) * (y + z) + (g - h) * (g + h)) / (static_cast<T>(2) * h * y);
-      g = math::module(f, static_cast<T>(1));
+      g = math::module(f, consts::one<T>);
       f = ((x - z) * (x + z) + h * ((y / (f + std::copysign(g, f))) - h)) / x;
-      c = s = 1.0; //Next QR transformation:
+      c = s = consts::one<T>; //Next QR transformation:
+
       for (j = l; j <= nm; j++) {
-        i = j + one;
+        i = j + consts::one<int>;
         g = rv1[i];
         y = W[i];
         h = s * g;
@@ -416,28 +399,29 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
         h = y * s;
         y *= c;
         for (size_t jj = 0; jj < mCols; jj++) {
-          x = V.at(jj, j);
-          z = V.at(jj, i);
-          V.at(jj, j) = x * c + z * s;
-          V.at(jj, i) = z * c - x * s;
+          x = V[jj][j];
+          z = V[jj][i];
+          V[jj][j] = x * c + z * s;
+          V[jj][i] = z * c - x * s;
         }
         z = math::module(f, h);
         W[j] = z; //Rotation can be arbitrary if z = 0.
         if (z != 0.) {
-          z = static_cast<T>(1) / z;
+          z = consts::one<T> / z;
           c = f * z;
           s = h * z;
         }
         f = c * g + s * y;
         x = c * y - s * g;
         for (size_t jj = 0; jj < mRows; jj++) {
-          y = this->U.at(jj, j);
-          z = this->U.at(jj, i);
-          this->U.at(jj, j) = y * c + z * s;
-          this->U.at(jj, i) = z * c - y * s;
+          y = U[jj][j];
+          z = U[jj][i];
+          U[jj][j] = y * c + z * s;
+          U[jj][i] = z * c - y * s;
         }
       }
-      rv1[l] = 0.0;
+
+      rv1[l] = consts::zero<T>;
       rv1[k] = f;
       W[k] = x;
     }
@@ -453,13 +437,11 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
   int i;
   int j;
   int k;
-  int s;
+  
   int inc = 1;
   T sw;
   Vector<T, _rows> su(mRows);
   Vector<T, _cols> sv(mCols);
-  
-  if (mRows == DynamicVector) 
 
   do { inc *= 3; inc++; } while (inc <= mCols);
 
@@ -484,13 +466,26 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::reorder()
     }
   } while (inc > 1);
 
-  for (k = 0; k < mCols; k++) {
+  size_t s;
+  for (size_t c = 0; c < mCols; c++) {
     s = 0;
-    for (i = 0; i < mRows; i++) if (U.at(i, k) < 0.) s++;
-    for (j = 0; j < mCols; j++) if (V.at(j, k) < 0.) s++;
+
+    for (size_t r = 0; r < mRows; r++)
+      if (U[r][c] < consts::zero<T>)
+        s++;
+
+    for (size_t r = 0; r < mCols; r++)
+      if (V[r][c] < consts::zero<T>)
+        s++;
+
     if (s > (mRows + mCols) / 2) {
-      for (i = 0; i < mRows; i++) U.at(i, k) = -U.at(i, k);
-      for (j = 0; j < mCols; j++) V.at(j, k) = -V.at(j, k);
+      U.col(c) = -U.col(c);
+      V.col(c) = -V.col(c);
+      //for (size_t r = 0; r < mRows; r++) 
+      //  U[r][c] = -U[r][c];
+
+      //for (size_t r = 0; r < mCols; r++)
+      //  V[r][c] = -V[r][c];
     }
   }
 }
@@ -507,16 +502,14 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecomp
   lapack_int lda = mCols;
   lapack_int ldu = mRows;
   lapack_int ldvt = mCols;
-  //Vector<T, _cols> _s(mCols);
   T *superb = new T[std::min(mRows,mCols)-1];
 
   info = lapackeGESVD(mRows, mCols, A.data(), lda, W.data(), U.data(), ldu, V.data(), ldvt, superb);
-  TL_TODO("Hay que transponer la matriz para que tenga sentido con el código propio...")
   V = V.transpose();
 
   delete[] superb;
 
-  TL_ASSERT(info == 0, "The algorithm computing SVD failed to converge.");
+  TL_ASSERT(info >= 0, "The algorithm computing SVD failed to converge.");
 }
 
 #endif // HAVE_OPENBLAS
@@ -552,7 +545,7 @@ template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
 > 
-inline int SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::iterationMax() const
+inline int SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::maxIterations() const
 {
   return mIterationMax;
 }
@@ -561,9 +554,9 @@ template<
   template<typename, size_t, size_t> 
   class Matrix_t, typename T, size_t _rows, size_t _cols
 > 
-inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::setIterationMax(int iterationMax)
+inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::setMaxIterations(int maxIterations)
 {
-  mIterationMax = iterationMax;
+  mIterationMax = maxIterations;
 }
 
 

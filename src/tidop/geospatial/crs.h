@@ -61,6 +61,8 @@ public:
       const std::string &grid = "", 
       const std::string &geoid = "");
 
+  Crs(const Crs &crs);
+
   ~Crs();
 
   /*!
@@ -69,10 +71,13 @@ public:
    */
   std::string epsgCode() const;
   void setEpsgCode(const std::string &epsg);
+  std::string toProjFormat() const;
+  void fromProjFormat(const std::string &proj);
+  std::string toWktFormat() const;
+  void fromWktFormat(const std::string &wkt);
+
   bool isGeocentric() const;
   bool isGeographic() const;
-  std::string exportToProj() const;
-  std::string exportToWkt() const;
   bool isValid() const;
 
 protected:

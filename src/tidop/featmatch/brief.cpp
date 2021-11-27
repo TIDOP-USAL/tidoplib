@@ -153,8 +153,11 @@ BriefDescriptor::~BriefDescriptor() = default;
 void BriefDescriptor::update()
 {
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
-                                                             BriefProperties::useOrientation());
+  try {
+    mBrief = cv::xfeatures2d::BriefDescriptorExtractor::create(std::stoi(BriefProperties::bytes()),
+      BriefProperties::useOrientation());
+  } catch (...) {
+  }
 #endif // HAVE_OPENCV_XFEATURES2D
 }
 
@@ -162,12 +165,19 @@ cv::Mat BriefDescriptor::extract(const cv::Mat &img,
                               std::vector<cv::KeyPoint> &keyPoints)
 {
   cv::Mat descriptors;
+
+  try {
+
 #ifdef HAVE_OPENCV_XFEATURES2D 
-  mBrief->compute(img, keyPoints, descriptors);
+    mBrief->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Brief Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Brief Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Brief Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Brief Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return descriptors;
 }

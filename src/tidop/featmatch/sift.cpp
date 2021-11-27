@@ -161,12 +161,18 @@ std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv:
 {
   std::vector<cv::KeyPoint> keyPoints;
 
+  try {
+
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
-  mSift->detect(img, keyPoints, mask);
+    mSift->detect(img, keyPoints, mask);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return keyPoints;
 }
@@ -175,12 +181,18 @@ cv::Mat SiftDetectorDescriptor::extract(const cv::Mat &img, std::vector<cv::KeyP
 {
   cv::Mat descriptors;
 
+  try {
+
 #if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
-  mSift->compute(img, keyPoints, descriptors);
+    mSift->compute(img, keyPoints, descriptors);
 #else
-  TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
-  throw std::exception("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
+    TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
+    throw TL_ERROR("OpenCV not built with extra modules. Sift Detector/Descriptor not supported");
 #endif // HAVE_OPENCV_XFEATURES2D
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
+  }
 
   return descriptors;
 }

@@ -67,6 +67,21 @@ Crs::Crs(const std::string &epsg,
   initFromEpsg();
 }
 
+Crs::Crs(const Crs &crs)
+  : mEpsg(crs.mEpsg),
+    mGrid(crs.mGrid),
+    mGeoid(crs.mGeoid),
+#if _DEBUG
+/// Por ahora...
+    mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
+#else
+    mCrs(new OGRSpatialReference(nullptr))
+#endif
+{
+  fromWktFormat(crs.toWktFormat());
+}
+
+
 Crs::~Crs()
 {
   if (mCrs) {
@@ -91,6 +106,63 @@ void Crs::setEpsgCode(const std::string &epsg)
   this->initFromEpsg();
 }
 
+std::string Crs::toProjFormat() const
+{
+  char *c_prj = nullptr;
+  std::string s_prj;
+
+  try {
+ 
+    mCrs->exportToProj4(&c_prj);
+    s_prj = c_prj;
+
+  } catch (std::exception &e) {
+    msgError(e.what());
+  } catch (...) {
+    msgError("Unknow exception");
+  }
+
+  CPLFree(c_prj);
+
+  return s_prj;
+}
+
+void Crs::fromProjFormat(const std::string &proj)
+{
+  try {
+    OGRErr err = mCrs->importFromProj4(proj.c_str());
+    if (err != 0) {
+      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+    }
+  } catch (std::exception &e) {
+    msgError(e.what());
+  } catch (...) {
+    msgError("Unknow exception");
+  }
+}
+
+std::string Crs::toWktFormat() const
+{
+  char *c_wtk = nullptr;
+  mCrs->exportToWkt(&c_wtk);
+  std::string s_wkt(c_wtk);
+  CPLFree(c_wtk);
+  return s_wkt;
+}
+
+void Crs::fromWktFormat(const std::string &wkt)
+{
+  try {
+    OGRErr err = mCrs->importFromWkt(wkt.c_str());
+    if (err != 0) {
+      msgWarning("GDAL ERROR (%i): %s", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+    }
+  } catch (std::exception &e) {
+    msgError(e.what());
+  } catch (...) {
+    msgError("Unknow exception");
+  }
+}
 
 bool Crs::isGeocentric() const
 {
@@ -100,24 +172,6 @@ bool Crs::isGeocentric() const
 bool Crs::isGeographic() const
 {
   return mCrs->IsGeographic() != 0;
-}
-
-std::string Crs::exportToProj() const
-{
-  char *c_prj = nullptr;
-  mCrs->exportToProj4(&c_prj);
-  std::string s_prj(c_prj);
-  CPLFree(c_prj);
-  return s_prj;
-}
-
-std::string Crs::exportToWkt() const
-{
-  char *c_wtk = nullptr;
-  mCrs->exportToWkt(&c_wtk);
-  std::string s_wkt(c_wtk);
-  CPLFree(c_wtk);
-  return s_wkt;
 }
 
 bool Crs::isValid() const

@@ -34,8 +34,8 @@
 #include "tidop/geometry/entities/entities3d.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/segment.h"
-#include "tidop/geometry/operations.h"
-//#include "tidop/math/algebra/vectors.h"
+#include "tidop/geometry/algorithms.h"
+
 
 namespace tl
 {
@@ -347,9 +347,13 @@ double Polygon<Point_t>::area() const
 {
   TL_TODO("Si el poligono es complejo hay que determinarla de otra forma. Primero hay que ver que sea complejo");
   double area = 0.;
-  for (size_t i = 1; i < this->mEntities.size(); i++) {
-    area += crossProduct(this->mEntities[i-1], this->mEntities[i]);
+  for (size_t i = 0; i < this->mEntities.size(); i++) {
+    if (i == this->mEntities.size()-1)
+      area += crossProduct(this->mEntities[i], this->mEntities[0]);
+    else
+      area += crossProduct(this->mEntities[i], this->mEntities[i+1]);
   }
+
   return std::abs(area / 2.);
 }
 

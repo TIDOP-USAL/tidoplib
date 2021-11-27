@@ -64,6 +64,14 @@ public:
   virtual void setMaximun(size_t max) = 0;
   virtual void setText(const std::string &text) = 0;
 
+  static bool isRunning()
+  {
+    return sIsRunning;
+  }
+
+protected:
+
+  static bool sIsRunning;
 };
 
 
@@ -81,7 +89,7 @@ public:
 
 	ProgressBase();
   ProgressBase(size_t min, size_t max);
-	virtual ~ProgressBase();
+  virtual ~ProgressBase() = default;
 
 // Progress
 
@@ -104,12 +112,12 @@ private:
   /*!
    * \brief Valor mínimo
    */
-  size_t mMinimun;
+  size_t mMinimun{0};
 
   /*!
    * \brief Valor máximo
    */
-  size_t mMaximun;
+  size_t mMaximun{0};
 
   /*!
    * \brief Mensaje que se puede añadir con información del proceso.
@@ -119,14 +127,14 @@ private:
   /*!
    * \brief Valor actual
    */
-  double mProgress;
+  double mProgress{};
 
   /*!
    * \brief Valor actual en tanto por ciento
    */
-  int mPercent;
+  int mPercent{-1};
 
-  double mScale;
+  double mScale{1.};
   static std::mutex sMutex;
 };
 

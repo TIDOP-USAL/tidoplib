@@ -22,77 +22,46 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_FOOTPRINT_H
-#define TL_GEOSPATIAL_FOOTPRINT_H
+#ifndef TL_GEOMETRY_ALGORITHMS_BUFFER_H
+#define TL_GEOMETRY_ALGORITHMS_BUFFER_H
 
-#include <string>
-#include <memory>
+#include "config_tl.h"
 
-#include "tidop/geospatial/camera.h"
-#include "tidop/geospatial/photo.h"
-#include "tidop/geometry/entities/window.h"
-#include "tidop/math/algebra/rotation_matrix.h"
-#include "tidop/geometry/transform/affine.h"
-#include "tidop/geospatial/diffrect.h"
-
-#ifdef HAVE_OPENCV
+#include "tidop/core/defs.h"
+#include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/entities/polygon.h"
+#include "tidop/geometry/algorithms/angle.h"
 
 namespace tl
 {
 
-class ImageReader;
-class VectorWriter;
 
-namespace geospatial
+/*!
+ * \brief Crea un buffer entorno a una linea
+ * \param[in] ln Línea
+ * \param[in] size Tamaño de buffer
+ * \return Buffer
+ */
+template<typename Point_t> inline
+Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
 {
+  Polygon<Point_t> buff(4);
 
+  Point_t pt1 = ln.pt1;
+  Point_t pt2 = ln.pt2;
+  double acimut = azimut(pt1, pt2);
+  double dx = size * sin(acimut + TL_PI_2);
+  double dy = size * cos(acimut + TL_PI_2);
 
-class TL_EXPORT Footprint
-{
+  buff[0] = Point_t(pt1.x + dx, pt1.y + dy);
+  buff[1] = Point_t(pt2.x + dx, pt2.y + dy);
+  buff[2] = Point_t(pt2.x - dx, pt2.y - dy);
+  buff[3] = Point_t(pt1.x - dx, pt1.y - dy);
 
-public:
-
-	Footprint(const std::string &dtm);
-	~Footprint();
-
-	void run(const std::vector<Photo> &photos,
-					 const std::string &footprint);
-
-private:
-
-	void init();
-	Affine<PointI> affineImageToPhotocoordinates();
-	std::vector<tl::PointI> imageLimitsInPhotocoordinates();
-	std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits);
-	//std::vector<Point3D> terrainProjected(const std::vector<PointI> &imageLimits,
-	//																			const tl::math::RotationMatrix<double> &rotation_matrix,
-	//																			const Point3D &position,
-	//																			double focal);
-	TL_TODO("Mover a calibration")
-	float focal() const;
-	PointF principalPoint() const;
-	cv::Mat distCoeffs() const;
-
-private:
-
-	std::string mDtm;
-	std::unique_ptr<ImageReader> mDtmReader;
-	std::unique_ptr<ImageReader> mImageReader;
-	std::unique_ptr<VectorWriter> mVectorWriter;
-	Camera mCamera;
-	Affine<PointI> mAffineImageCoordinatesToPhotocoordinates;
-	Affine<PointD> mAffineDtmImageToTerrain;
-	Window<PointD> mWindowDtmTerrainExtension;
-	std::unique_ptr<DifferentialRectification<double>> mDifferentialRectification;
-
-};
-
-
-} // End namespace geospatial
+  return buff;
+}
 
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
-
-#endif // TL_GEOSPATIAL_FOOTPRINT_H
+#endif // TL_GEOMETRY_ALGORITHMS_BUFFER_H

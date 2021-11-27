@@ -139,7 +139,9 @@ void QueueMPMC<T>::push(const T &value)
   std::unique_lock<std::mutex> locker(mMutex);
 
   while (true) {
-    mConditionVariable.wait(locker, [this]() {return mBuffer.size() < mCapacity; });
+    mConditionVariable.wait(locker, [this]() {
+      return mBuffer.size() < mCapacity; 
+      });
     mBuffer.push(value);
     locker.unlock();
     mConditionVariable.notify_one();
@@ -152,7 +154,9 @@ inline void QueueMPMC<T>::pop(T &value)
 {
   std::unique_lock<std::mutex> locker(mMutex);
   while (true) {
-    mConditionVariable.wait(locker, [this]() {return mBuffer.size() > 0; });
+    mConditionVariable.wait(locker, [this]() {
+      return mBuffer.size() > 0; 
+      });
     value = mBuffer.front();
     mBuffer.pop();
     locker.unlock();

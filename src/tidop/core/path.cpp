@@ -30,15 +30,13 @@
 
 // filesystem
 #if (__cplusplus >= 201703L)
-//C++17
-//http://en.cppreference.com/w/cpp/filesystem
 #include <filesystem>
 #else
-//Boost
-//http://www.boost.org/doc/libs/1_66_0/libs/filesystem/doc/index.htm
 #include <boost/filesystem.hpp>
-#include <memory>
 #endif
+
+#include <ostream>
+
 
 #if (__cplusplus >= 201703L)
 namespace fs = std::filesystem;
@@ -65,9 +63,20 @@ public:
     mPath = mPath.native();
   }
 
+  explicit Path(const std::wstring &path)
+    : mPath(path)
+  {
+    mPath = mPath.native();
+  }
+
   std::string toString() const
   {
     return mPath.string();
+  }
+  
+  std::wstring toWString() const
+  {
+    return mPath.wstring();
   }
 
   std::string fileName() const
@@ -105,6 +114,46 @@ public:
     return fs::exists(mPath);
   }
 
+  std::string replaceFileName(const std::string &fileName)
+  {
+    if (mPath.has_filename()) {
+      mPath.remove_filename();
+      mPath.append(fileName);
+    }
+    return mPath.string();
+  }
+
+  std::wstring replaceFileName(const std::wstring &fileName)
+  {
+    if (mPath.has_filename()) {
+      mPath.remove_filename();
+      mPath.append(fileName);
+    }
+    return mPath.wstring();
+  }
+
+  std::string replaceBaseName(const std::string &baseName)
+  {
+    if (mPath.has_filename()) {
+      std::string ext = mPath.extension().string();
+      std::string file_name = baseName + ext;
+      mPath.remove_filename();
+      mPath.append(file_name);
+    }
+    return mPath.string();
+  }
+
+  std::wstring replaceBaseName(const std::wstring &baseName)
+  {
+    if (mPath.has_filename()) {
+      std::wstring ext = mPath.extension().wstring();
+      std::wstring file_name = baseName + ext;
+      mPath.remove_filename();
+      mPath.append(file_name);
+    }
+    return mPath.wstring();
+  }
+
   std::string replaceExtension(const std::string &extension)
   {
     mPath.replace_extension(extension);
@@ -117,7 +166,7 @@ public:
     return parent_path.string();
   }
 
-  void Path::append(const std::string &text)
+  void append(const std::string &text)
   {
     mPath.append(text);
   }
@@ -131,12 +180,20 @@ private:
 } // internal
 
 
+
+
+
 Path::Path()
   : mPath(new internal::Path())
 {
 }
 
 Path::Path(const std::string &path)
+  : mPath(new internal::Path(path))
+{
+}
+
+Path::Path(const std::wstring &path)
   : mPath(new internal::Path(path))
 {
 }
@@ -173,9 +230,19 @@ void Path::setPath(const std::string &path)
   mPath = std::make_unique<internal::Path>(path);
 }
 
+void Path::setPath(const std::wstring &path)
+{
+  mPath = std::make_unique<internal::Path>(path);
+}
+
 std::string Path::toString() const
 {
   return mPath->toString();
+}
+
+std::wstring Path::toWString() const
+{
+  return mPath->toWString();
 }
 
 std::string Path::fileName() const
@@ -191,6 +258,12 @@ std::string Path::baseName() const
 std::string Path::extension() const
 {
   return mPath->extension();
+}
+
+Path Path::parentPath() const
+{
+  Path parent_path(mPath->parent());
+  return parent_path;
 }
 
 bool Path::isDirectory() const
@@ -213,22 +286,106 @@ bool Path::exists() const
   return mPath->exists();
 }
 
+std::list<Path> Path::list(const std::string &extension)
+{
+  std::list<Path> list;
+
+  fs::directory_iterator it_end;
+
+  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+
+    if (!fs::is_regular_file(it->status())) continue;
+
+    fs::path _path = it->path();
+
+    std::string extension_found = it->path().extension().string();
+
+    if (compareInsensitiveCase(extension_found, extension)) {
+
+      list.push_back(it->path().filename().string());
+    }
+  }
+
+  return list;
+}
+
+std::list<Path> Path::list(const std::regex &filter)
+{
+  std::list<Path> list;
+
+  fs::directory_iterator it_end;
+
+  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+
+
+    if (!fs::is_regular_file(it->status())) continue;
+
+    std::smatch what;
+
+    std::string fname = it->path().filename().string();
+
+    if (!std::regex_match(fname, what, filter)) continue;
+
+    list.push_back(fname);
+  }
+
+  return list;
+}
+
+Path &Path::replaceFileName(const std::string &fileName)
+{
+  mPath->replaceFileName(fileName);
+  return *this;
+}
+
+Path &Path::replaceFileName(const std::wstring &fileName)
+{
+  mPath->replaceFileName(fileName);
+  return *this;
+}
+
+Path &Path::replaceBaseName(const std::string &baseName)
+{
+  mPath->replaceBaseName(baseName);
+  return *this;
+}
+
+Path &Path::replaceBaseName(const std::wstring &baseName)
+{
+  mPath->replaceBaseName(baseName);
+  return *this;
+}
+
 Path &Path::replaceExtension(const std::string &extension)
 {
   mPath->replaceExtension(extension);
   return *this;
 }
 
-Path Path::parentPath() const
-{
-  Path parent_path(mPath->parent());
-  return parent_path;
-}
-
 Path &Path::append(const std::string &text)
 {
   mPath->append(text);
   return *this;
+}
+
+bool Path::createDirectory() const
+{
+  return fs::create_directory(mPath->toString());
+}
+
+bool Path::createDirectories() const
+{
+  return fs::create_directories(mPath->toString());
+}
+
+void Path::removeDirectory() const
+{
+  fs::remove_all(mPath->toString());
+}
+
+void Path::clear()
+{
+  mPath = std::make_unique<internal::Path>("");
 }
 
 /* Static methods */
@@ -238,20 +395,21 @@ bool Path::exists(const std::string &path)
   return Path(path).exists();
 }
 
-bool Path::exists(const Path &path)
+bool Path::exists(const std::wstring &path)
 {
-  return path.exists();
+  return Path(path).exists();
 }
 
-Path Path::tempDirectory()
+Path Path::tempPath()
 {
   std::string temp = fs::temp_directory_path().string();
   return Path(temp);
 }
 
-bool Path::createDirectory(const Path &directory)
+Path Path::tempDirectory()
 {
-  return fs::create_directory(directory.toString());
+  std::string dir = std::tmpnam(nullptr);
+  return Path(dir);
 }
 
 bool Path::createDirectory(const std::string &directory)
@@ -259,9 +417,9 @@ bool Path::createDirectory(const std::string &directory)
   return fs::create_directory(directory);
 }
 
-bool Path::createDirectories(const Path &directory)
+bool Path::createDirectory(const std::wstring &directory)
 {
-  return fs::create_directories(directory.toString());
+  return fs::create_directory(directory);
 }
 
 bool Path::createDirectories(const std::string &directory)
@@ -269,45 +427,48 @@ bool Path::createDirectories(const std::string &directory)
   return fs::create_directories(directory);
 }
 
-//Path tl::Path::tempFile()
-//{
-//  std::string name = std::tmpnam(nullptr);
-//  return Path(name);
-//}
+bool Path::createDirectories(const std::wstring &directory)
+{
+  return fs::create_directories(directory);
+}
 
-//std::list<std::string> Path::files(const std::string &wildcard)
-//{
-//  std::list<std::string> files;
-//  //fileList(toString().c_str(), &files, wildcard.c_str());
-//  return files;
-//}
-//
-//std::list<std::string> Path::dirs()
-//{
-//  std::list<std::string> dirs;
-//  directoryList(toString().c_str(), &dirs);
-//  return dirs;
-//}
-//
+void Path::removeDirectory(const std::string &directory)
+{
+  fs::remove_all(directory);
+}
 
-//
-//void Path::createDir()
-//{
-//  tl::createDir(toString().c_str());
-//}
-//
-//void Path::deleteDir()
-//{
-//  tl::deleteDir(toString().c_str());
-//}
+void Path::removeDirectory(const std::wstring &directory)
+{
+  fs::remove_all(directory);
+}
 
-//Path &Path::append(const std::string &dir)
-//{
-//  //TODO: Si el path es de un fichero no se puede a?adir...
-//  mPath.push_back(dir);
-//  return *this;
-//}
 
+TemporalDir::TemporalDir(bool autoRemove)
+  : bAutoRemove(autoRemove),
+    mPath(Path::tempDirectory())
+{
+  mPath.createDirectories();
+}
+
+TemporalDir::~TemporalDir()
+{
+  if (bAutoRemove && mPath.exists())
+    mPath.removeDirectory();
+}
+
+Path TemporalDir::path() const
+{
+  return mPath;
+}
+
+
+
+
+std::ostream &operator<< (std::ostream &os, const Path &path)
+{
+  os << path.toString() << std::flush;
+  return os;
+}
 
 } // End namespace tl
 

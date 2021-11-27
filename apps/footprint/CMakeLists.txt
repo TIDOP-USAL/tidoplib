@@ -22,13 +22,13 @@
 #                                                                        #
 ##########################################################################
 
-if(HAVE_GEOSPATIAL AND HAVE_GDAL AND HAVE_PROJ4)
+if(HAVE_TL_GEOSPATIAL AND HAVE_GDAL AND HAVE_PROJ4)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
-project(footprint)
+project(footprint LANGUAGES CXX)
 
 if(CMAKE_COMPILER_IS_GNUCXX AND NOT ENABLE_NOISY_WARNINGS)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-function -Wno-missing-declarations")

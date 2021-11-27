@@ -24,7 +24,8 @@
 
 #include "robustmatch.h"
 
-#include <tidop/core/messages.h>
+#include "tidop/core/messages.h"
+#include "tidop/core/exception.h"
 
 #ifdef HAVE_OPENCV_XFEATURES2D
 #include <opencv2/xfeatures2d.hpp>
@@ -343,30 +344,33 @@ std::vector<cv::DMatch> RobustMatchingImp::robustMatch(const cv::Mat &queryDescr
 {
   std::vector<cv::DMatch> goodMatches;
 
-  std::vector<std::vector<cv::DMatch>> matches12;
-  std::vector<std::vector<cv::DMatch>> matches21;
+  try {
+    std::vector<std::vector<cv::DMatch>> matches12;
+    std::vector<std::vector<cv::DMatch>> matches21;
 
-  bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches12);
-  if (err) return goodMatches;
+    mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches12);
 
-  err = mDescriptorMatcher->match(trainDescriptor, queryDescriptor, matches21);
-  if (err) return goodMatches;
+    mDescriptorMatcher->match(trainDescriptor, queryDescriptor, matches21);
 
-  std::vector<std::vector<cv::DMatch>> wrong_matches12;
-  std::vector<std::vector<cv::DMatch>> wrong_matches21;
-  std::vector<std::vector<cv::DMatch>> good_matches12 = RobustMatchingImp::ratioTest(matches12, this->ratio(), &wrong_matches12);
-  std::vector<std::vector<cv::DMatch>> good_matches21 = RobustMatchingImp::ratioTest(matches21, this->ratio(), &wrong_matches21);
+    std::vector<std::vector<cv::DMatch>> wrong_matches12;
+    std::vector<std::vector<cv::DMatch>> wrong_matches21;
+    std::vector<std::vector<cv::DMatch>> good_matches12 = RobustMatchingImp::ratioTest(matches12, this->ratio(), &wrong_matches12);
+    std::vector<std::vector<cv::DMatch>> good_matches21 = RobustMatchingImp::ratioTest(matches21, this->ratio(), &wrong_matches21);
 
-  matches12.clear();
-  matches21.clear();
+    matches12.clear();
+    matches21.clear();
 
-  if (wrongMatches){
-    for (auto &wrong_match : wrong_matches12){
-      wrongMatches->push_back(wrong_match[0]);
+    if (wrongMatches) {
+      for (auto &wrong_match : wrong_matches12) {
+        wrongMatches->push_back(wrong_match[0]);
+      }
     }
-  }
 
-  goodMatches = RobustMatchingImp::crossCheckTest(good_matches12, good_matches21, wrongMatches);
+    goodMatches = RobustMatchingImp::crossCheckTest(good_matches12, good_matches21, wrongMatches);
+
+  } catch (...) {
+    std::throw_with_nested(std::runtime_error("RobustMatchingImp::robustMatch() failed"));
+  }
 
   return goodMatches;
 }
@@ -377,21 +381,26 @@ std::vector<cv::DMatch> RobustMatchingImp::fastRobustMatch(const cv::Mat &queryD
 {
   std::vector<cv::DMatch> goodMatches;
 
-  std::vector<std::vector<cv::DMatch>> matches;
-  bool err = mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
-  if (err) return goodMatches;
+  try {
 
-  std::vector<std::vector<cv::DMatch>> ratio_test_wrong_matches;
-  std::vector<std::vector<cv::DMatch>> ratio_test_matches = RobustMatchingImp::ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
+    std::vector<std::vector<cv::DMatch>> matches;
+    mDescriptorMatcher->match(queryDescriptor, trainDescriptor, matches);
 
-  for (auto &match : ratio_test_matches){
-    goodMatches.push_back(match[0]);
-  }
+    std::vector<std::vector<cv::DMatch>> ratio_test_wrong_matches;
+    std::vector<std::vector<cv::DMatch>> ratio_test_matches = RobustMatchingImp::ratioTest(matches, this->ratio(), &ratio_test_wrong_matches);
 
-  if (wrongMatches) {
-    for (auto &wrong_match : ratio_test_wrong_matches){
-      wrongMatches->push_back(wrong_match[0]);
+    for (auto &match : ratio_test_matches){
+      goodMatches.push_back(match[0]);
     }
+
+    if (wrongMatches) {
+      for (auto &wrong_match : ratio_test_wrong_matches){
+        wrongMatches->push_back(wrong_match[0]);
+      }
+    }
+
+  } catch (...) {
+    TL_THROW_EXCEPTION_WITH_NESTED("");
   }
 
   return goodMatches;

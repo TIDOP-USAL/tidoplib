@@ -40,16 +40,6 @@
 //#include <ctime>
 //#include <cstring>
 
-//// Paralelismo
-//#if defined HAVE_OMP
-//#  include <omp.h>  // OpenMP
-//#elif defined (HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
-//#  define TL_MSVS_CONCURRENCY
-//#  include <ppl.h>  // Parallel Patterns Library (PPL)
-//#else
-//#  include <thread>
-//#endif
-
 //TODO: Incluir filesystem. Se simplificarian bastantes cosas
 // filesystem
 #if (__cplusplus >= 201703L)
@@ -132,51 +122,51 @@ bool isFile(const std::string &file)
   return isFile(file.c_str());
 }
 
-int createDir(const char *path)
-{
-  int i_ret = 0;
-  if (isDirectory(path)) return 1;
-
-  std::vector<std::string> splitPath;
-  split(path, splitPath, "\\");
-  if (splitPath.size() == 1)
-    split(path, splitPath, "/");
-
-  std::string _path = "";
-  try {
-    for (size_t i = 0; i < splitPath.size(); i++) {
-      _path += splitPath[i];
-      _path += "\\";
-      if (!isDirectory(_path.c_str())) {
-
-#ifdef _MSC_VER
-
-        if (!CreateDirectoryA(_path.c_str(), NULL)) {
-          i_ret = -1;
-        }
-
-#else
-
-        std::string mkdir = "mkdir \"";
-        mkdir.append(_path);
-        mkdir.append("\"");
-        if(system(mkdir.c_str())==0)
-          i_ret = -1;
-#endif
-      }
-    }
-  } catch (std::exception &e) {
-    msgError(e.what());
-    i_ret = -1;
-  }
-
-  return i_ret;
-}
-
-int createDir(const std::string &path)
-{
-  return createDir(path.c_str());
-}
+//int createDir(const char *path)
+//{
+//  int i_ret = 0;
+//  if (isDirectory(path)) return 1;
+//
+//  std::vector<std::string> splitPath;
+//  split(path, splitPath, "\\");
+//  if (splitPath.size() == 1)
+//    split(path, splitPath, "/");
+//
+//  std::string _path = "";
+//  try {
+//    for (size_t i = 0; i < splitPath.size(); i++) {
+//      _path += splitPath[i];
+//      _path += "\\";
+//      if (!isDirectory(_path.c_str())) {
+//
+//#ifdef _MSC_VER
+//
+//        if (!CreateDirectoryA(_path.c_str(), NULL)) {
+//          i_ret = -1;
+//        }
+//
+//#else
+//
+//        std::string mkdir = "mkdir \"";
+//        mkdir.append(_path);
+//        mkdir.append("\"");
+//        if(system(mkdir.c_str())==0)
+//          i_ret = -1;
+//#endif
+//      }
+//    }
+//  } catch (std::exception &e) {
+//    msgError(e.what());
+//    i_ret = -1;
+//  }
+//
+//  return i_ret;
+//}
+//
+//int createDir(const std::string &path)
+//{
+//  return createDir(path.c_str());
+//}
 
 int deleteDir(const std::string &path, bool confirm)
 {
@@ -420,46 +410,46 @@ TL_ENABLE_WARNING(TL_WARNING_DEPRECATED)
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 /// https://stackoverflow.com/questions/1257721/can-i-use-a-mask-to-iterate-files-in-a-directory-with-boost
-void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
-{
+//void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter)
+//{
+//
+//  fs::directory_iterator itr_end;
+//  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
+//    // Skip if not a file
+//    if (!fs::is_regular_file(it->status())) continue;
+//
+//    std::smatch what;
+//    std::string fname = it->path().filename().string();
+//    if (!std::regex_match(fname, what, filter)) continue;
+//
+//    // File matches, store it
+//    if (fileList)
+//      fileList->push_back(it->path().filename().string());
+//  }
+//
+//}
 
-  fs::directory_iterator itr_end;
-  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
-    // Skip if not a file
-    if (!fs::is_regular_file(it->status())) continue;
-
-    std::smatch what;
-    std::string fname = it->path().filename().string();
-    if (!std::regex_match(fname, what, filter)) continue;
-
-    // File matches, store it
-    if (fileList)
-      fileList->push_back(it->path().filename().string());
-  }
-
-}
-
-void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext)
-{
-
-  fs::directory_iterator itr_end;
-  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
-    // Skip if not a file
-    if (!fs::is_regular_file(it->status())) continue;
-
-    fs::path _path = it->path();
-
-    TL_TODO("Compare es case sensitive");
-    std::string _ext = it->path().extension().string();
-
-    if (it->path().extension().compare(ext) == 0) {
-      // File matches, store it
-      if (fileList)
-        fileList->push_back(it->path().filename().string());
-    }
-  }
-
-}
+//void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext)
+//{
+//
+//  fs::directory_iterator itr_end;
+//  for (fs::directory_iterator it(directory); it != itr_end; ++it) {
+//    // Skip if not a file
+//    if (!fs::is_regular_file(it->status())) continue;
+//
+//    fs::path _path = it->path();
+//
+//    TL_TODO("Compare es case sensitive");
+//    std::string _ext = it->path().extension().string();
+//
+//    if (it->path().extension().compare(ext) == 0) {
+//      // File matches, store it
+//      if (fileList)
+//        fileList->push_back(it->path().filename().string());
+//    }
+//  }
+//
+//}
 
 
 

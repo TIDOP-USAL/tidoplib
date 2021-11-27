@@ -35,7 +35,7 @@
 #include <valarray>
 
 #include "tidop/core/exception.h"
-#include "tidop/math/algebra/matrix.h"
+#include "tidop/math/math.h"
 
 
 namespace tl
@@ -43,9 +43,6 @@ namespace tl
 
 namespace math
 {
-
-//template<typename T, size_t _rows, size_t _cols>
-//class Matrix;
 
 constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 
@@ -206,7 +203,7 @@ VectorBase<T, _size>::VectorBase(std::initializer_list<T> values)
     std::copy(values.begin(), values.end(), mData.begin());
   } else if (n > _size){
     std::copy(values.begin(), values.end(), mData.begin());
-    std::fill(mData.begin() + n, mData.end(), static_cast<T>(0));
+    std::fill(mData.begin() + n, mData.end(), consts::zero<T>);
   } else {
     std::copy(values.begin(), values.begin() + n, mData.begin());
   }
@@ -695,11 +692,11 @@ template<typename T, size_t _size> inline
 void Vector<T, _size>::normalize()
 {
   T length = static_cast<T>(this->module());
-  if (length > static_cast<T>(0)) {
+  if (length > consts::zero<T>) {
     *this /= length;
   } else {
     for (size_t i = 0; i < this->size(); i++) {
-      this->at(i) = static_cast<T>(0);
+      this->at(i) = consts::zero<T>;
     }
   }
 }
@@ -752,15 +749,17 @@ Vector<T, _size> Vector<T, _size>::unit(size_t size)
 
 /* Operaciones unarias */
 
-template<typename T, size_t _size>  static
+template<typename T, size_t _size>
 Vector<T, _size> operator + (const Vector<T, _size> &vector)
 {
   return vector;
 }
 
-template<typename T, size_t _size> static
+template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &vector)
 {
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
   Vector<T, _size> v = vector;
   for (size_t i = 0; i < vector.size(); i++) {
     v[i] = -vector[i];
@@ -811,8 +810,8 @@ Vector<T, _size> &operator -= (Vector<T, _size> &v0,
 }
 
 template<typename T, size_t _size>
-Vector<T, _size> operator*(Vector<T, _size> const& v0,
-                           Vector<T, _size> const& v1)
+Vector<T, _size> operator*(const Vector<T, _size> &v0,
+                           const Vector<T, _size> &v1)
 {
   Vector<T, _size> result = v0;
   return result *= v1;
@@ -888,7 +887,7 @@ template<typename T, size_t _size>
 Vector<T, _size> &operator /= (Vector<T, _size> &vector,
                                T scalar)
 {
-  if (scalar != static_cast<T>(0)) {
+  if (scalar != consts::zero<T>) {
     for (size_t i = 0; i < vector.size(); i++) {
       vector[i] /= scalar;
     }
@@ -914,36 +913,36 @@ double dotProduct(const Vector<T, _size> &v1,
 }
 
 
-template<typename T, size_t _rows, size_t _dim> inline  static
-Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
-                            const Vector<T, _dim> &vector)
-{
-  Vector<T, _dim> vect = Vector<T, _dim>::zero();
-  for (size_t r = 0; r < _rows; r++) {
-    for (size_t c = 0; c < _dim; c++) {
-        vect.at(r) += matrix.at(r, c) * vector.at(c);
-    }
-  }
-  return vect;
-}
-
-template<typename T> inline  static
-Vector<T> operator * (const Matrix<T> &matrix,
-                      const Vector<T> &vector)
-{
-  size_t rows = matrix.rows();
-  size_t dim1 = matrix.cols();
-  size_t dim2 = vector.size();
-  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
-
-  Vector<T> vect = Matrix<T>::zero(rows, dim1);
-  for (size_t r = 0; r < rows; r++) {
-    for (size_t c = 0; c < dim1; c++) {
-      vect.at(r) += matrix.at(r, c) * vector.at(c);
-    }
-  }
-  return vect;
-}
+//template<typename T, size_t _rows, size_t _dim> inline  static
+//Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
+//                            const Vector<T, _dim> &vector)
+//{
+//  Vector<T, _dim> vect = Vector<T, _dim>::zero();
+//  for (size_t r = 0; r < _rows; r++) {
+//    for (size_t c = 0; c < _dim; c++) {
+//        vect.at(r) += matrix.at(r, c) * vector.at(c);
+//    }
+//  }
+//  return vect;
+//}
+//
+//template<typename T> inline  static
+//Vector<T> operator * (const Matrix<T> &matrix,
+//                      const Vector<T> &vector)
+//{
+//  size_t rows = matrix.rows();
+//  size_t dim1 = matrix.cols();
+//  size_t dim2 = vector.size();
+//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
+//
+//  Vector<T> vect = Matrix<T>::zero(rows, dim1);
+//  for (size_t r = 0; r < rows; r++) {
+//    for (size_t c = 0; c < dim1; c++) {
+//      vect.at(r) += matrix.at(r, c) * vector.at(c);
+//    }
+//  }
+//  return vect;
+//}
 
 
 

@@ -58,9 +58,10 @@ public:
 
   ~RegisterGdal() {}
 
-  // Se impide la copia y asignación
-  RegisterGdal(RegisterGdal const&) = delete;
-  void operator=(RegisterGdal const&) = delete;
+  RegisterGdal(const RegisterGdal &) = delete;
+  RegisterGdal(RegisterGdal &&) = delete;
+  void operator=(const RegisterGdal &) = delete;
+  void operator=(RegisterGdal &&) = delete;
 
   /*!
    * \brief Método para iniciar GDAL una unica vez

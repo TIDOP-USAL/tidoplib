@@ -27,6 +27,7 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/core/messages.h"
+#include "tidop/core/progress.h"
 
 #include <iostream>
 #include <ctime>
@@ -96,7 +97,6 @@ Console::Console()
 Console::~Console()
 {
   reset();
-  //sObjConsole.reset();
 }
 
 Console &Console::instance()
@@ -130,7 +130,11 @@ void Console::setLogLevel(MessageLevel level)
 void Console::printMessage(const std::string &message)
 {
   // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
+  //std::cout << "\r";
+  if (Progress::isRunning()) {
+    std::cout << "\r" << std::string(50, ' ') << "\r";
+    //std::cout << "\r" << std::string(50, ' ');
+  }
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
@@ -144,7 +148,8 @@ void Console::printErrorMessage(const std::string &message)
   //printMessage(message);
 
   // Por si esta corriendo la barra de progreso
-  std::cout << "\r";
+  if (Progress::isRunning())
+    std::cout << "\r" << std::string(50, ' ') << "\r";
 
   std::string aux(message);
   replaceString(&aux, "%", "%%");
@@ -156,10 +161,10 @@ void Console::printErrorMessage(const std::string &message)
 void Console::reset()
 {
 #ifdef WIN32
-  mForeColor = (mOldColorAttrs & 0x0007);
-  mForeIntensity = (mOldColorAttrs & 0x0008);
+  mForegroundColor = (mOldColorAttrs & 0x0007);
+  mForegroundIntensity = (mOldColorAttrs & 0x0008);
   mBackgroundColor = (mOldColorAttrs & 0x0070);
-  mBackIntensity = (mOldColorAttrs & 0x0080);
+  mBackgroundIntensity = (mOldColorAttrs & 0x0080);
   update();
 #else
   sprintf(mCommand, "%c[0;m", 0x1B);
@@ -167,11 +172,11 @@ void Console::reset()
 #endif
 }
 
-void Console::setConsoleBackgroundColor(Console::Color backColor,
+void Console::setConsoleBackgroundColor(Console::Color backgroundColor,
                                         Console::Intensity intensity)
 {
 #ifdef WIN32
-  switch (backColor) {
+  switch (backgroundColor) {
   case tl::Console::Color::black:
     mBackgroundColor = 0;
     break;
@@ -201,55 +206,55 @@ void Console::setConsoleBackgroundColor(Console::Color backColor,
     break;
   }
   if(intensity == Console::Intensity::normal)
-      mBackIntensity = 0;
+      mBackgroundIntensity = 0;
   else
-      mBackIntensity = BACKGROUND_INTENSITY;
+      mBackgroundIntensity = BACKGROUND_INTENSITY;
 #else
-  mBackgroundColor = static_cast<int>(backColor) + 40 + static_cast<int>(intensity) * 60;
+  mBackgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity) * 60;
 #endif
   update();
 }
 
-void Console::setConsoleForegroundColor(Console::Color foreColor,
+void Console::setConsoleForegroundColor(Console::Color foregroundColor,
                                         Console::Intensity intensity)
 {
 #ifdef WIN32
-  switch (foreColor) {
+  switch (foregroundColor) {
   case tl::Console::Color::black:
-    mForeColor = 0;
+    mForegroundColor = 0;
     break;
   case tl::Console::Color::blue:
-    mForeColor = FOREGROUND_BLUE;
+    mForegroundColor = FOREGROUND_BLUE;
     break;
   case tl::Console::Color::green:
-    mForeColor = FOREGROUND_GREEN;
+    mForegroundColor = FOREGROUND_GREEN;
     break;
   case tl::Console::Color::cyan:
-    mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
+    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE;
     break;
   case tl::Console::Color::red:
-    mForeColor = FOREGROUND_RED;
+    mForegroundColor = FOREGROUND_RED;
     break;
   case tl::Console::Color::magenta:
-    mForeColor = FOREGROUND_RED | FOREGROUND_BLUE;
+    mForegroundColor = FOREGROUND_RED | FOREGROUND_BLUE;
     break;
   case tl::Console::Color::yellow:
-    mForeColor = FOREGROUND_GREEN | FOREGROUND_RED;
+    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_RED;
     break;
   case tl::Console::Color::white:
-    mForeColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
+    mForegroundColor = FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED;
     break;
   default:
-    mForeColor = 0;
+    mForegroundColor = 0;
     break;
   }
 
   if(intensity == Console::Intensity::normal)
-      mForeIntensity = 0;
+      mForegroundIntensity = 0;
   else
-      mForeIntensity = FOREGROUND_INTENSITY;
+      mForegroundIntensity = FOREGROUND_INTENSITY;
 #else
-  mForeColor = static_cast<int>(foreColor) + 30 + static_cast<int>(intensity) * 60;
+  mForegroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity) * 60;
 #endif
 
   update();
@@ -282,10 +287,10 @@ void Console::setFontBold(bool bBold)
   update();
 }
 
-void Console::setFontHeight(int16_t size)
+void Console::setFontHeight(int16_t fontHeight)
 {
 #ifdef WIN32
-  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(size);
+  mCurrentFont.dwFontSize.Y = static_cast<SHORT>(fontHeight);
 #endif
   update();
 }
@@ -359,22 +364,28 @@ void Console::init(DWORD handle)
   } else {
     mOldColorAttrs = info.wAttributes;
   }
-  mForeColor = (mOldColorAttrs & 0x0007);
-  mForeIntensity = (mOldColorAttrs & 0x0008);
+  mForegroundColor = (mOldColorAttrs & 0x0007);
+  mForegroundIntensity = (mOldColorAttrs & 0x0008);
   mBackgroundColor = (mOldColorAttrs & 0x0070);
-  mBackIntensity = (mOldColorAttrs & 0x0080);
+  mBackgroundIntensity = (mOldColorAttrs & 0x0080);
 
   mIniFont.cbSize = sizeof(mIniFont);
   GetCurrentConsoleFontEx(mHandle, FALSE, &mIniFont);
   mCurrentFont.cbSize = sizeof(mCurrentFont);
   mCurrentFont = mIniFont;
   //COORD fontSize = GetConsoleFontSize(mHandle, mIniFont.nFont);
+
+  //CONSOLE_SCREEN_BUFFER_INFOEX cbi;
+  //cbi.cbSize = sizeof(CONSOLE_SCREEN_BUFFER_INFOEX);
+  //GetConsoleScreenBufferInfoEx(mHandle, &cbi);
+  //cbi.wAttributes = BACKGROUND_BLUE | FOREGROUND_RED | FOREGROUND_INTENSITY;
+  //SetConsoleScreenBufferInfoEx(mHandle, &cbi);
 }
 #else
 void Console::init(FILE *stream)
 {
   mStream = stream;
-  mForeColor = 0;
+  mForegroundColor = 0;
   mBackgroundColor = 0;
   mBold = 21;
 }
@@ -383,13 +394,13 @@ void Console::init(FILE *stream)
 void Console::update()
 {
 #ifdef WIN32
-  SetConsoleTextAttribute(mHandle, mForeColor | mBackgroundColor | mForeIntensity | mBackIntensity);
+  SetConsoleTextAttribute(mHandle, mForegroundColor | mBackgroundColor | mForegroundIntensity | mBackgroundIntensity);
   SetCurrentConsoleFontEx(mHandle, FALSE, &mCurrentFont);
 #else
   std::stringstream ss;
   ss << "\x1B[" << mBold;
-  if (mForeColor != 0)
-    ss << ";" << mForeColor;
+  if (mForegroundColor != 0)
+    ss << ";" << mForegroundColor;
   if (mBackgroundColor != 0)
     ss << ";" << mBackgroundColor;
   ss << "m";
@@ -453,22 +464,22 @@ Argument::Argument(Argument &&argument) TL_NOEXCEPT
 {
 }
 
-Argument &Argument::operator=(const Argument &arg)
+Argument &Argument::operator=(const Argument &argument)
 {
-  if (this != &arg){
-    this->mName = arg.mName;
-    this->mDescription = arg.mName;
-    this->mShortName = arg.mShortName;
+  if (this != &argument){
+    this->mName = argument.mName;
+    this->mDescription = argument.mName;
+    this->mShortName = argument.mShortName;
   }
   return *this;
 }
 
-Argument &Argument::operator = (Argument &&arg) TL_NOEXCEPT
+Argument &Argument::operator = (Argument &&argument) TL_NOEXCEPT
 {
-  if (this != &arg){
-    this->mName = std::move(arg.mName);
-    this->mDescription = std::move(arg.mName);
-    this->mShortName = arg.mShortName;
+  if (this != &argument){
+    this->mName = std::move(argument.mName);
+    this->mDescription = std::move(argument.mName);
+    this->mShortName = argument.mShortName;
   }
   return *this;
 }
@@ -512,7 +523,7 @@ void Argument::setShortName(const char &shortName)
 Command::Command()
   : mName(""),
     mDescription(""),
-    mCmdArgs(0),
+    mArguments(0),
     mVersion("0.0.0")
 {
     init();
@@ -521,7 +532,7 @@ Command::Command()
 Command::Command(const Command &command)
   : mName(command.mName),
     mDescription(command.mDescription),
-    mCmdArgs(command.mCmdArgs),
+    mArguments(command.mArguments),
     mVersion(command.mVersion),
     mExamples(command.mExamples)
 {
@@ -531,17 +542,18 @@ Command::Command(const Command &command)
 Command::Command(std::string name, std::string description)
   : mName(std::move(name)),
     mDescription(std::move(description)),
-    mCmdArgs(0),
+    mArguments(0),
     mVersion("0.0.0")
 {
   init();
 }
 
-Command::Command(std::string name, std::string description,
+Command::Command(std::string name, 
+                 std::string description,
                  std::initializer_list<std::shared_ptr<Argument>> arguments)
   : mName(std::move(name)),
     mDescription(std::move(description)),
-    mCmdArgs(arguments),
+    mArguments(arguments),
     mVersion("0.0.0")
 {
 }
@@ -576,7 +588,7 @@ void Command::setVersion(const std::string &version)
   mVersion = version;
 }
 
-Command::Status Command::parse(int argc, const char * const argv[])
+Command::Status Command::parse(int argc, char **argv)
 {
 
   std::map<std::string, std::string> cmd_in;
@@ -604,9 +616,9 @@ Command::Status Command::parse(int argc, const char * const argv[])
         bool check_combined = true;
         for (auto &opt : arg_cmd_name){
           bool bFind = false;
-          for (auto &arg : mCmdArgs) {
-            if (arg->shortName()){
-              if (arg->shortName() == opt){
+          for (auto &argument : mArguments) {
+            if (argument->shortName()){
+              if (argument->shortName() == opt){
                 bFind = true;
                 break;
               }
@@ -660,7 +672,7 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
   }
 
-  std::map<std::string, std::string>::iterator it;
+  //std::map<std::string, std::string>::iterator it;
   if (cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()){
     showHelp();
     return Command::Status::show_help;
@@ -677,20 +689,20 @@ Command::Status Command::parse(int argc, const char * const argv[])
   }
 
 
-  for (auto &arg : mCmdArgs) {
-    bool bOptional = !arg->isRequired();
+  for (auto &argument : mArguments) {
+    bool bOptional = !argument->isRequired();
     bool bFind = false;
     bool bFindValue = false;
 
     std::stringstream ss;
     std::string short_name;
-    ss << arg->shortName();
+    ss << argument->shortName();
     ss >> short_name;
     if (cmd_in.find(short_name) != cmd_in.end()){
       bFind = true;
       std::string value = cmd_in.find(short_name)->second;
       if (value.empty()){
-        if (arg->typeName() == "bool"){
+        if (argument->typeName() == "bool"){
           value = "true";
           bFindValue = true;
         }
@@ -699,13 +711,13 @@ Command::Status Command::parse(int argc, const char * const argv[])
       }
 
       if (bFindValue)
-        arg->fromString(value);
+        argument->fromString(value);
 
-    } else if (cmd_in.find(arg->name()) != cmd_in.end()){
+    } else if (cmd_in.find(argument->name()) != cmd_in.end()){
       bFind = true;
-      std::string value = cmd_in.find(arg->name())->second;
+      std::string value = cmd_in.find(argument->name())->second;
       if (value.empty()){
-        if (arg->typeName() == "bool"){
+        if (argument->typeName() == "bool"){
           value = "true";
           bFindValue = true;
         }
@@ -714,22 +726,22 @@ Command::Status Command::parse(int argc, const char * const argv[])
       }
 
       if (bFindValue)
-        arg->fromString(value);
+        argument->fromString(value);
 
     } else {
       bFind = false;
     }
 
     if (!bFind && !bOptional) {
-      msgError("Missing mandatory argument: %s", arg->name().c_str());
+      msgError("Missing mandatory argument: %s", argument->name().c_str());
       return Command::Status::parse_error;
     }
     if (bFind && !bFindValue) {
-      msgError("Missing value for argument: %s", arg->name().c_str());
+      msgError("Missing value for argument: %s", argument->name().c_str());
       return Command::Status::parse_error;
     }
-    if (!arg->isValid()){
-      msgError("Invalid argument (%s) value", arg->name().c_str());
+    if (!argument->isValid()){
+      msgError("Invalid argument (%s) value", argument->name().c_str());
       return Command::Status::parse_error;
     }
   }
@@ -739,48 +751,58 @@ Command::Status Command::parse(int argc, const char * const argv[])
 
 Command::iterator Command::begin() TL_NOEXCEPT
 {
-  return mCmdArgs.begin();
+  return mArguments.begin();
 }
 
 Command::const_iterator Command::begin() const TL_NOEXCEPT
 {
-  return mCmdArgs.cbegin();
+  return mArguments.cbegin();
 }
 
 Command::iterator Command::end() TL_NOEXCEPT
 {
-  return mCmdArgs.end();
+  return mArguments.end();
 }
 
 Command::const_iterator Command::end() const TL_NOEXCEPT
 {
-  return mCmdArgs.cend();
+  return mArguments.cend();
 }
 
-void Command::push_back(const std::shared_ptr<Argument> &arg)
+void Command::push_back(const std::shared_ptr<Argument> &argument)
 {
-  mCmdArgs.push_back(arg);
+  mArguments.push_back(argument);
 }
 
-void Command::push_back(std::shared_ptr<Argument> &&arg) TL_NOEXCEPT
+void Command::addArgument(const std::shared_ptr<Argument> &argument)
 {
-  mCmdArgs.push_back(std::forward<std::shared_ptr<Argument>>(arg));
+  mArguments.push_back(argument);
+}
+
+void Command::push_back(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT
+{
+  mArguments.push_back(std::forward<std::shared_ptr<Argument>>(argument));
+}
+
+void Command::addArgument(std::shared_ptr<Argument> &&argument) TL_NOEXCEPT
+{
+  mArguments.push_back(std::forward<std::shared_ptr<Argument>>(argument));
 }
 
 void Command::clear() TL_NOEXCEPT
 {
-  mCmdArgs.clear();
+  mArguments.clear();
   mExamples.clear();
 }
 
 bool Command::empty() const TL_NOEXCEPT
 {
-  return mCmdArgs.empty();
+  return mArguments.empty();
 }
 
 size_t Command::size() const TL_NOEXCEPT
 {
-  return mCmdArgs.size();
+  return mArguments.size();
 }
 
 Command &Command::operator=(const Command &command)
@@ -788,7 +810,7 @@ Command &Command::operator=(const Command &command)
   if (this != &command) {
     this->mName = command.mName;
     this->mDescription = command.mDescription;
-    this->mCmdArgs = command.mCmdArgs;
+    this->mArguments = command.mArguments;
     this->mVersion = command.mVersion;
   }
   return (*this);
@@ -799,21 +821,21 @@ Command &Command::operator=(Command &&command) TL_NOEXCEPT
   if (this != &command) {
     this->mName = std::move(command.mName);
     this->mDescription = std::move(command.mDescription);
-    this->mCmdArgs = std::move(command.mCmdArgs);
+    this->mArguments = std::move(command.mArguments);
     this->mVersion = std::move(command.mVersion);
   }
   return (*this);
 }
 
-Command::iterator Command::erase(Command::const_iterator first, Command::const_iterator last)
+Command::iterator Command::erase(Command::const_iterator first, 
+                                 Command::const_iterator last)
 {
-  return mCmdArgs.erase(first, last);
+  return mArguments.erase(first, last);
 }
 
 void Command::showHelp() const
 {
 
-  /// Uso
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
@@ -824,7 +846,7 @@ void Command::showHelp() const
   std::cout << mDescription << "\n\n";
 
   int max_name_size = 7;
-  for (const auto &arg : mCmdArgs) {
+  for (const auto &arg : mArguments) {
     max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
   }
   max_name_size += 1;
@@ -832,7 +854,7 @@ void Command::showHelp() const
   std::cout << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
   std::cout << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
 
-  for (const auto &arg : mCmdArgs) {
+  for (const auto &arg : mArguments) {
 
     if (arg->shortName()){
       std::cout << "  -" << arg->shortName() << ", ";
@@ -952,10 +974,11 @@ CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
 {
 }
 
-CommandList::CommandList(const std::string &name, const std::string &description,
-                 std::initializer_list<std::shared_ptr<Command>> commands)
-  : mName(name),
-    mDescription(description),
+CommandList::CommandList(std::string name,
+                         std::string description,
+                         std::initializer_list<std::shared_ptr<Command>> commands)
+  : mName(std::move(name)),
+    mDescription(std::move(description)),
     mCommands(commands),
     mVersion("0.0.0")
 {
@@ -991,7 +1014,7 @@ void CommandList::setVersion(const std::string &version)
   mVersion = version;
 }
 
-CommandList::Status CommandList::parse(int argc, const char * const argv[])
+CommandList::Status CommandList::parse(int argc, char **argv)
 {
   if (argc <= 1) return Status::parse_error;
 
@@ -1004,17 +1027,17 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
     arg_cmd_name = (argv[1])+1;
   }
 
-  if (arg_cmd_name.compare("h") == 0 || arg_cmd_name.compare("help") == 0){
+  if (arg_cmd_name == "h" || arg_cmd_name == "help"){
     showHelp();
     return Status::show_help;
   }
 
-  if (arg_cmd_name.compare("version") == 0){
+  if (arg_cmd_name == "version"){
     showVersion();
     return Status::show_version;
   }
 
-  if (arg_cmd_name.compare("licence") == 0){
+  if (arg_cmd_name == "licence"){
     showLicence();
     return Status::show_licence;
   }
@@ -1022,7 +1045,7 @@ CommandList::Status CommandList::parse(int argc, const char * const argv[])
   for (auto &command : mCommands){
     if(command->name().compare(arg_cmd_name) == 0){
       mCommand = command;
-      std::vector<char const*> cmd_argv;
+      std::vector<char *> cmd_argv;
       for (size_t i = 0; i < static_cast<size_t>(argc); ++i) {
         if (i != 1)
           cmd_argv.push_back(argv[i]);
@@ -1065,14 +1088,24 @@ CommandList::const_iterator CommandList::end() const TL_NOEXCEPT
   return mCommands.cend();
 }
 
-void CommandList::push_back(const std::shared_ptr<Command> &cmd)
+void CommandList::push_back(const std::shared_ptr<Command> &command)
 {
-  mCommands.push_back(cmd);
+  mCommands.push_back(command);
 }
 
-void CommandList::push_back(std::shared_ptr<Command> &&cmd) TL_NOEXCEPT
+void CommandList::addCommand(const std::shared_ptr<Command> &command)
 {
-  mCommands.push_back(std::forward<std::shared_ptr<Command>>(cmd));
+  mCommands.push_back(command);
+}
+
+void CommandList::push_back(std::shared_ptr<Command> &&command) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(command));
+}
+
+void CommandList::addCommand(std::shared_ptr<Command> &&command) TL_NOEXCEPT
+{
+  mCommands.push_back(std::forward<std::shared_ptr<Command>>(command));
 }
 
 void CommandList::clear() TL_NOEXCEPT

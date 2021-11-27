@@ -197,8 +197,8 @@ struct CurvesTest
     mROCCurve = new ROCCurve<double>(data);
     mDETCurve = new DETCurve<double>(data);
 
-    mROCCurve->compute(10);
-    mDETCurve->compute(10);
+    mROCCurve->compute(100);
+    mDETCurve->compute(100);
   }
 
   void teardown()
@@ -213,12 +213,12 @@ struct CurvesTest
 BOOST_FIXTURE_TEST_CASE(roc, CurvesTest)
 {
   mROCCurve->compute(100);
-  BOOST_CHECK_EQUAL(0.970221, mROCCurve->auc());
+  BOOST_CHECK_CLOSE(0.75, mROCCurve->auc(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(det, CurvesTest)
 {
-  BOOST_CHECK_EQUAL(0.970221, mDETCurve->auc());
+  BOOST_CHECK_CLOSE(0.75, mDETCurve->auc(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(positives, CurvesTest)
@@ -234,74 +234,81 @@ BOOST_FIXTURE_TEST_CASE(negatives, CurvesTest)
 BOOST_FIXTURE_TEST_CASE(truePositives, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(6, mROCCurve->truePositives(threshold));
+  BOOST_CHECK_EQUAL(75, mROCCurve->truePositives(threshold));
 }
 
 BOOST_FIXTURE_TEST_CASE(falsePositives, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(25, mROCCurve->falsePositives(threshold));
+  BOOST_CHECK_EQUAL(43, mROCCurve->falsePositives(threshold));
 }
 
 BOOST_FIXTURE_TEST_CASE(trueNegatives, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(43, mROCCurve->trueNegatives(threshold));
+  BOOST_CHECK_EQUAL(25, mROCCurve->trueNegatives(threshold));
 }
 
 BOOST_FIXTURE_TEST_CASE(falseNegatives, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(74, mROCCurve->falseNegatives(threshold));
+  BOOST_CHECK_EQUAL(5, mROCCurve->falseNegatives(threshold));
 }
 
 BOOST_FIXTURE_TEST_CASE(accuracy, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_CLOSE(0.3311, mROCCurve->accuracy(threshold), 0.1);
-  BOOST_CHECK_CLOSE(0.3311, Curve<double>::accuracy(mROCCurve->truePositives(threshold), mROCCurve->trueNegatives(threshold), mROCCurve->positives(), mROCCurve->negatives()), 0.1);
+  BOOST_CHECK_CLOSE(0.6756756, mROCCurve->accuracy(threshold), 0.1);
+  BOOST_CHECK_CLOSE(0.6756756, Curve<double>::accuracy(mROCCurve->truePositives(threshold), mROCCurve->trueNegatives(threshold), mROCCurve->positives(), mROCCurve->negatives()), 0.1);
+  BOOST_CHECK_CLOSE(0.9064, Curve<double>::accuracy(20, 1820, 30, 2000), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(positivePredictiveValue, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(0.1935, mROCCurve->positivePredictiveValue(threshold));
-  BOOST_CHECK_EQUAL(0.1935, Curve<double>::positivePredictiveValue(mROCCurve->truePositives(threshold), mROCCurve->positives()));
+  BOOST_CHECK_CLOSE(0.63559, mROCCurve->positivePredictiveValue(threshold), 0.1);
+  BOOST_CHECK_CLOSE(0.63559, Curve<double>::positivePredictiveValue(mROCCurve->truePositives(threshold), mROCCurve->falsePositives(threshold)), 0.1);
+  BOOST_CHECK_CLOSE(0.1, Curve<double>::positivePredictiveValue(20, 180), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(negativePredictiveValue, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_CLOSE(0.3675, mROCCurve->negativePredictiveValue(threshold), 0.1);
-  BOOST_CHECK_CLOSE(0.3675, Curve<double>::negativePredictiveValue(mROCCurve->falseNegatives(threshold), mROCCurve->negatives()), 0.1);
+  BOOST_CHECK_CLOSE(0.8333, mROCCurve->negativePredictiveValue(threshold), 0.1);
+  BOOST_CHECK_CLOSE(0.8333, Curve<double>::negativePredictiveValue(mROCCurve->falseNegatives(threshold), mROCCurve->trueNegatives(threshold)), 0.1);
+  BOOST_CHECK_CLOSE(0.9945, Curve<double>::negativePredictiveValue(10, 1820), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(truePositiveRate, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(0.0750, mROCCurve->truePositiveRate(threshold));
-  BOOST_CHECK_EQUAL(0.0750, Curve<double>::truePositiveRate(mROCCurve->truePositives(threshold), mROCCurve->positives()));
+  BOOST_CHECK_EQUAL(0.9375, mROCCurve->truePositiveRate(threshold));
+  BOOST_CHECK_EQUAL(0.9375, Curve<double>::truePositiveRate(mROCCurve->truePositives(threshold), mROCCurve->falseNegatives(threshold)));
+  BOOST_CHECK_CLOSE(0.66666, Curve<double>::truePositiveRate(20, 10), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(falsePositiveRate, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_CLOSE(0.3676, mROCCurve->falsePositiveRate(threshold), 0.1);
-  BOOST_CHECK_CLOSE(0.3676, Curve<double>::falsePositiveRate(mROCCurve->falsePositives(threshold), mROCCurve->negatives()), 0.1);
+  BOOST_CHECK_CLOSE(0.6323529, mROCCurve->falsePositiveRate(threshold), 0.1);
+  BOOST_CHECK_CLOSE(0.6323529, Curve<double>::falsePositiveRate(mROCCurve->falsePositives(threshold), mROCCurve->trueNegatives(threshold)), 0.1);
+  BOOST_CHECK_CLOSE(0.09, Curve<double>::falsePositiveRate(180, 1820), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(trueNegativeRate, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(0.6324, mROCCurve->trueNegativeRate(threshold));
-  BOOST_CHECK_EQUAL(0.6324, Curve<double>::trueNegativeRate(mROCCurve->trueNegatives(threshold), mROCCurve->negatives()));
+  BOOST_CHECK_CLOSE(0.367647, mROCCurve->trueNegativeRate(threshold), 0.1);
+  BOOST_CHECK_CLOSE(0.367647, Curve<double>::trueNegativeRate(mROCCurve->trueNegatives(threshold), mROCCurve->falsePositives(threshold)), 0.1);
+  BOOST_CHECK_CLOSE(0.91, Curve<double>::trueNegativeRate(1820, 180), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(falseNegativeRate, CurvesTest)
 {
   double threshold = this->data.back().first;
-  BOOST_CHECK_EQUAL(0.9250, mROCCurve->falseNegativeRate(threshold));
-  BOOST_CHECK_EQUAL(0.9250, Curve<double>::falseNegativeRate(mROCCurve->falseNegatives(threshold), mROCCurve->positives()));
+  BOOST_CHECK_EQUAL(0.0625, mROCCurve->falseNegativeRate(threshold));
+  BOOST_CHECK_EQUAL(0.0625, Curve<double>::falseNegativeRate(mROCCurve->falseNegatives(threshold), mROCCurve->truePositives(threshold)));
+  BOOST_CHECK_CLOSE(0.3333, Curve<double>::falseNegativeRate(10, 20), 0.1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

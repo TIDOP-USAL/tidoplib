@@ -58,12 +58,12 @@ int main(int argc, char** argv)
   std::string log_file;
 
   Command cmd(cmd_name, "Ejemplo de transformación de coordenadas");
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("epsg_out", 'o', "Sistema de referencia de salida", &epsg_out));
-  cmd.push_back(std::make_shared<ArgumentStringRequired>("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto", &coord));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", &coord_trf));
-  cmd.push_back(std::make_shared<ArgumentStringOptional>("log", 'l', "Fichero de log", &log_file));
+  cmd.addArgument(CreateArgumentStringRequired("epsg_in", 'i', "Sistema de referencia de entrada", &epsg_in));
+  cmd.addArgument(CreateArgumentStringRequired("epsg_out", 'o', "Sistema de referencia de salida", &epsg_out));
+  cmd.addArgument(CreateArgumentStringRequired("coord", 'c', "Fichero de texto con las coordenadas separadas por comas o cadena de texto con las coordenadas de un punto", &coord));
+  cmd.addArgument(CreateArgumentStringOptional("separator", 's', "Caracter separador de coordenadas. Por defecto ';'", &separator));
+  cmd.addArgument(CreateArgumentStringOptional("coord_trf", 't', "Fichero de texto con las coordenadas transformadas", &coord_trf));
+  cmd.addArgument(CreateArgumentStringOptional("log", 'l', "Fichero de log", &log_file));
 
   cmd.addExample(cmd_name + " --epsg_in EPSG:25830 --epsg_out EPSG:4258 --coord 281815.044;4827675.243;123.35");
   cmd.addExample(cmd_name + " -iEPSG:25830 -oEPSG:4258 --coord utm.txt");
