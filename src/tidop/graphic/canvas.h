@@ -131,7 +131,7 @@ public:
   virtual void drawText(const PointD &point, const std::string &text) = 0;
   virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
 
-  virtual void setPicture(const cv::Mat &bmp) = 0;
+  //virtual void setPicture(const cv::Mat &bmp) = 0;
 };
 
 #ifdef HAVE_OPENCV
@@ -170,7 +170,7 @@ public:
   void drawText(const PointD &point, const std::string &text) override;
   void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) override;
 
-  void setPicture(const cv::Mat &bmp) override;
+  void setPicture(const cv::Mat &bmp);
 
   cv::Mat bmp()
   {

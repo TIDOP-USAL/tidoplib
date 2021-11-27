@@ -619,7 +619,7 @@ BOOST_FIXTURE_TEST_CASE(empty, CommandTest)
 BOOST_FIXTURE_TEST_CASE(parseTextWithHyphen, CommandTest)
 {
   std::array<char *, 3> argv{"" , "--input", "sdfsd-sdfsdf"};
-  BOOST_CHECK(cmd_arg_posix3->parse(argv.size(), argv.data()) == Command::Status::parse_success);
+  BOOST_CHECK(cmd_arg_posix3->parse(static_cast<int>(argv.size()), argv.data()) == Command::Status::parse_success);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

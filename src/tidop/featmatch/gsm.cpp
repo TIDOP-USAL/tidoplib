@@ -151,6 +151,8 @@ bool GsmImp::compute(const cv::Mat &queryDescriptor,
   } catch (...) {
     TL_THROW_EXCEPTION_WITH_NESTED("");
   }
+
+  return false;
 }
 
 } // namespace tl

@@ -72,7 +72,10 @@ public:
   void create() override;
   void write(const GLayer &layer) override;
   void setCRS(const std::string &crs) override;
+
+#ifdef HAVE_TL_GEOSPATIAL
   void setCRS(const geospatial::Crs &crs) override;
+#endif
 
 private:
 

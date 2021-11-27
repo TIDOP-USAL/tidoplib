@@ -23,12 +23,19 @@
 ##########################################################################
 
 
-# Versión mínima soportada de CMake
-cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10.0)
 
-# Nombre del projecto y versión
+
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
+
+
+
 project(TidopLib
         VERSION 2.0.0
+        DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
+        HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
 
 
@@ -56,7 +63,6 @@ endif()
 # Directivas del preprocesador
 add_definitions(-DUNICODE)
 
-
 if(MSVC)
   if(CMAKE_CL_64)
     set(TL_ARCH x64)
@@ -83,6 +89,9 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
   elseif(MSVC_VERSION MATCHES "^192[0-9]$")
     set(TL_RUNTIME vc16)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+  elseif(MSVC_VERSION MATCHES "^193[0-9]$")
+    set(TL_RUNTIME vc17)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
   else()
     message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
@@ -130,7 +139,7 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
 #  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
 endif()
 
-# Se permite elegir entre libreria estatica o
+# Se permite elegir entre libreria estatica o dinámica
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 
 # Por defecto se establece el tipo de librería estática

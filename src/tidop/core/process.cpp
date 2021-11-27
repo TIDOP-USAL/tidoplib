@@ -503,7 +503,7 @@ ProcessStoppingEvent *ProcessBase::stoppingEvent()
 
 WCHAR *toWCHAR(const char *str)
 {
-  const unsigned int length = strlen(str);
+  size_t length = strlen(str);
   WCHAR *buffer = (WCHAR *)malloc(sizeof(WCHAR) * length);
   int nChars = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
   MultiByteToWideChar(CP_ACP, 0, str, -1, (LPWSTR)buffer, nChars);
