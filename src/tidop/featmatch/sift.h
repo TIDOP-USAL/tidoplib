@@ -153,7 +153,7 @@ public:
 
 private:
 
-#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
   cv::Ptr <cv::SIFT>  mSift;
 #elif defined OPENCV_ENABLE_NONFREE && defined HAVE_OPENCV_XFEATURES2D
   cv::Ptr<cv::xfeatures2d::SIFT> mSift;

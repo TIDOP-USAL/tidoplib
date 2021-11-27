@@ -212,6 +212,7 @@ struct CurvesTest
 
 BOOST_FIXTURE_TEST_CASE(roc, CurvesTest)
 {
+  mROCCurve->compute(100);
   BOOST_CHECK_EQUAL(0.970221, mROCCurve->auc());
 }
 
