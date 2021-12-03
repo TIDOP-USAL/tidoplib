@@ -1108,6 +1108,8 @@ BOOST_FIXTURE_TEST_CASE(multiplication, MatrixTest)
   BOOST_CHECK_EQUAL(42, mat2[1][1]);
   BOOST_CHECK_EQUAL(69, mat2[1][2]);
 
+
+
 }
 
 /// Multiplicación de una matriz por un escalar

@@ -41,6 +41,7 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
+#include "tidop/math/simd.h"
 
 namespace tl
 {
@@ -2378,7 +2379,7 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
  */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
-                                       const Matrix<T, _rows, _cols> &matrix2)
+                                      const Matrix<T, _rows, _cols> &matrix2)
 {
   size_t rows1 = matrix1.rows();
   size_t cols1 = matrix1.cols();
@@ -2387,11 +2388,13 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
 
   TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
+
   for (size_t r = 0; r < matrix1.rows(); r++) {
     for (size_t c = 0; c < matrix1.cols(); c++) {
       matrix1(r, c) -= matrix2(r, c);
     }
   }
+  
 
   return matrix1;
 }
@@ -2476,7 +2479,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
       }
     }
   }
-
+  
   return matrix;
 }
 

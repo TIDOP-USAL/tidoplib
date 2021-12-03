@@ -52,6 +52,7 @@ if (HAVE_TL_CORE)
               algebra/lu.h
               algebra/qr.h
               algebra/cholesky.h
+              simd.h
   )
   
   # Añade el proyecto a la carpeta 'modules'
