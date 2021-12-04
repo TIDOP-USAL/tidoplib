@@ -974,11 +974,11 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 
   } catch (std::exception &e) {
     if (mOrthophotoWriter) mOrthophotoWriter->close();
-    msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
+    msgError("Orthorectified image fail: %s", ortho.fileName().toString().c_str());
     msgError(e.what());
   } catch (...) {
     if (mOrthophotoWriter) mOrthophotoWriter->close();
-    msgError("Orthorectified image fail: %s", ortho.fileName().c_str());
+    msgError("Orthorectified image fail: %s", ortho.fileName().toString().c_str());
     msgError("Unhandled exception");
   }
 }

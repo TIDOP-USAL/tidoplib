@@ -493,7 +493,7 @@ private:
 FeaturesWriterOpenCV::FeaturesWriterOpenCV(tl::Path file)
   : FeaturesWriter(std::move(file))
 { 
-  std::string ext = file.extension();
+  std::string ext = file.extension().toString();
   if (compareInsensitiveCase(ext, ".xml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
   } else if (compareInsensitiveCase(ext, ".yml")) {
@@ -663,8 +663,7 @@ void FeaturesReaderTxt::readBody()
     std::string line;
     while (std::getline(ifs, line)) {
 
-      std::vector<std::string> list;
-      tl::split(line, list, " ");
+      std::vector<std::string> list = split(line, " ");
       mKeyPoints[static_cast<size_t>(r)].pt.x = stringToNumber<float>(list[0]);
       mKeyPoints[static_cast<size_t>(r)].pt.y = stringToNumber<float>(list[1]);
       mKeyPoints[static_cast<size_t>(r)].size = stringToNumber<float>(list[2]);
@@ -855,7 +854,7 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
 
   try {
 
-    std::string ext = file.extension();
+    std::string ext = file.extension().toString();
     if (compareInsensitiveCase(ext, ".bin")) {
       features_reader = std::make_unique<FeaturesReaderBinary>(file);
     } else if (compareInsensitiveCase(ext, ".xml")) {
@@ -865,7 +864,7 @@ std::unique_ptr<FeaturesReader> FeaturesReaderFactory::createReader(const tl::Pa
     } else if (compareInsensitiveCase(ext, ".txt")) {
       features_reader = std::make_unique<FeaturesReaderTxt>(file);
     } else {
-      TL_THROW_EXCEPTION("Invalid Features Reader: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Features Reader: %s", file.fileName().toString().c_str());
     }
 
   } catch (...) {
@@ -887,7 +886,7 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Pa
  
   try {
 
-    std::string ext = file.extension(); 
+    std::string ext = file.extension().toString(); 
     if (compareInsensitiveCase(ext, ".bin")) {
       features_writer = std::make_unique<FeaturesWriterBinary>(file);
     } else if (compareInsensitiveCase(ext, ".txt")) {
@@ -897,7 +896,7 @@ std::unique_ptr<FeaturesWriter> FeaturesWriterFactory::createWriter(const tl::Pa
     } else if (compareInsensitiveCase(ext, ".yml")) {
       features_writer = std::make_unique<FeaturesWriterOpenCV>(file);
     } else {
-      TL_THROW_EXCEPTION("Invalid Features Writer: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Features Writer: %s", file.fileName().toString().c_str());
     }
 
   } catch (...) {

@@ -58,7 +58,7 @@ Exception::Exception(std::string error,
     mLine(line), 
     mFunction(std::move(function))
 {
-  mFile = Path(file).fileName();
+  mFile = Path(file).fileName().toString();
   messagef();
 }
 

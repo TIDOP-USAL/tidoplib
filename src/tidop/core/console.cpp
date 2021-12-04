@@ -601,8 +601,7 @@ Command::Status Command::parse(int argc, char **argv)
     if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
-      std::vector<std::string> v;
-      split(arg_cmd_name, v, "=");
+      std::vector<std::string> v = split(arg_cmd_name, "=");
       if(v.size() == 2){
         cmd_in[v[0]] = v[1];
         continue;

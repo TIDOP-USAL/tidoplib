@@ -324,8 +324,7 @@ int changeFileNameAndExtension(const char *path, const char *newNameExt, char *p
 
   r_err = _splitpath_s(path, drive, TL_MAX_DRIVE, dir, TL_MAX_DIR, NULL, NULL, NULL, NULL);
   if (r_err == 0) {
-    std::vector<std::string> nameext;
-    split(newNameExt, nameext, ".");
+    std::vector<std::string> nameext = split(newNameExt, ".");
     r_err = _makepath_s(pathOut, size, drive, dir, nameext[0].c_str(), nameext[1].c_str());
   }
 #else
@@ -532,8 +531,17 @@ void replaceString(std::string *str, const std::string &str_old, const std::stri
   }
 }
 
+std::vector<std::string> split(const std::string &in, const std::string &chs)
+{
+  std::vector<std::string> out;
+  boost::split(out, in, boost::is_any_of(chs));
+  return out;
+}
+
+#ifdef TL_ENABLE_DEPRECATED_METHODS
 int split(const std::string &in, std::vector<std::string> &out, const char *chs)
 {
+  boost::split(in, out, boost::is_any_of(chs));
   TL_TODO("boost::split(list, line, boost::is_any_of(" "));");
   out.resize(0);
   int r_err = 0;
@@ -568,6 +576,7 @@ int split(const std::string &in, std::vector<std::string> &out, const char *chs)
   free(dup);
   return r_err;
 }
+#endif // TL_ENABLE_DEPRECATED_METHODS
 
 int stringToInteger(const std::string &text, Base base)
 {
