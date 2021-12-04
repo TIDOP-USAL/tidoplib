@@ -121,17 +121,15 @@ Csv::Status Csv::create(const std::string &header)
   //setName(File::mName.c_str());
 
 
-  std::vector<std::string> out;
-  if (split(header, out, ";") == 0) {
-    size_t size = out.size();
-    for (size_t i = 0; i < size; i++) {
-      fs << out[i];
-      if (i != size - 1) fs << ";";
-    }
-    fs << std::endl;
-    return Status::success;
-  } else
-    return Status::failure;
+  std::vector<std::string> out = split(header, ";");
+  size_t size = out.size();
+  for (size_t i = 0; i < size; i++) {
+    fs << out[i];
+    if (i != size - 1) fs << ";";
+  }
+  fs << std::endl;
+    
+  return Status::success;
 }
 
 //Csv::Status Csv::create(const DataTable &dataTable)

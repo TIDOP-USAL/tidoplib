@@ -1269,14 +1269,14 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file
 
   try {
 
-    std::string extension = file.extension();
+    std::string extension = file.extension().toString();
 #ifdef HAVE_GDAL
     if (VectorReaderGdal::isExtensionSupported(extension)) {
       vector_reader = std::make_unique<VectorReaderGdal>(file);
     } else
 #endif
     {
-      TL_THROW_EXCEPTION("Invalid Vector Reader: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Vector Reader: %s", file.fileName().toString().c_str());
     }
 
   } catch (...) {

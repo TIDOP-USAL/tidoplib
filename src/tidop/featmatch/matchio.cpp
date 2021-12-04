@@ -27,10 +27,6 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/exception.h"
 
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-namespace fs = boost::filesystem;
-
 #include <stdexcept>
 
 namespace tl
@@ -499,10 +495,10 @@ MatchesWriterOpenCV::MatchesWriterOpenCV(Path file)
   : MatchesWriter(std::move(file)),
     mFileStorage(nullptr)
 {
-  std::string ext = file.extension();
-  if (boost::iequals(ext, ".xml")) {
+  std::string ext = file.extension().toString();
+  if (compareInsensitiveCase(ext, ".xml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_XML;
-  } else if (boost::iequals(ext, ".yml")) {
+  } else if (compareInsensitiveCase(ext, ".yml")) {
     mMode = cv::FileStorage::WRITE | cv::FileStorage::FORMAT_YAML;
   }
 }
@@ -588,16 +584,16 @@ std::unique_ptr<MatchesReader> MatchesReaderFactory::createReader(const tl::Path
 
   try {
 
-    std::string ext = file.extension();
+    std::string ext = file.extension().toString();
 
-    if (boost::iequals(ext, ".bin")) {
+    if (compareInsensitiveCase(ext, ".bin")) {
       matches_reader = std::make_unique<MatchesReaderBinary>(file);
-    } else if (boost::iequals(ext, ".xml")) {
+    } else if (compareInsensitiveCase(ext, ".xml")) {
       matches_reader = std::make_unique<MatchesReaderOpenCV>(file);
-    } else if (boost::iequals(ext, ".yml")) {
+    } else if (compareInsensitiveCase(ext, ".yml")) {
       matches_reader = std::make_unique<MatchesReaderOpenCV>(file);
     } else {
-      TL_THROW_EXCEPTION("Invalid  Matches Reader: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid  Matches Reader: %s", file.fileName().toString().c_str());
     }
 
   } catch (...) {
@@ -617,16 +613,16 @@ std::unique_ptr<MatchesWriter> MatchesWriterFactory::createWriter(const tl::Path
 
   try {
 
-    std::string ext = file.extension();
+    std::string ext = file.extension().toString();
 
-    if (boost::iequals(ext, ".bin")) {
+    if (compareInsensitiveCase(ext, ".bin")) {
       matches_writer = std::make_unique<MatchesWriterBinary>(file);
-    } else if (boost::iequals(ext, ".xml")){
+    } else if (compareInsensitiveCase(ext, ".xml")){
       matches_writer = std::make_unique<MatchesWriterOpenCV>(file);
-    } else if (boost::iequals(ext, ".yml")) {
+    } else if (compareInsensitiveCase(ext, ".yml")) {
       matches_writer = std::make_unique<MatchesWriterOpenCV>(file);
     } else {
-      TL_THROW_EXCEPTION("Invalid Writer Reader: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Writer Reader: %s", file.fileName().toString().c_str());
     }
 
   } catch (...) {
@@ -672,7 +668,7 @@ void passPointsRead(const std::string &fname, std::vector<std::vector<std::pair<
     while (std::getline(ifs, line)) {
 
       std::vector<std::string> list;
-      boost::split(list, line, boost::is_any_of(";"));
+      list = split(line, ";");
       size_t size = list.size();
       if (size >= 1){
         if (size == 1 || size % 2 == 0){
