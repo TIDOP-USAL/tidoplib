@@ -288,6 +288,13 @@ public:
     return *this;
   }
 
+  /*!
+   * \brief Suma de los elementos de un vector
+   */
+  T sum()
+  {
+
+  }
 };
 
 

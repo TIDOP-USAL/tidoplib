@@ -51,6 +51,28 @@ struct PackedTest
     v2d = { -1., 4., 2., 2., 2., 8., 2., 3., 8., 4., 1., 7. };
     v1i32 = { 1, 0, 3, 5, 8, 9, 2, 2, 5, 2, 9, 5 };
     v2i32 = { -1, 4, 2, 2, 2, 8, 2, 3, 8, 4, 1, 7 };
+
+    matrix1 = { 0.81, 7.45, 1.17, 3.44, 4.13, 5.67, 4.57, 2.03, 5.53, 5.25,
+                6.69, 7.87, 1.70, 4.32, 6.33, 0.67, 8.99, 7.63, 7.08, 7.24,
+                6.39, 3.54, 6.47, 7.15, 0.37, 5.52, 3.21, 8.52, 3.20, 5.83,
+                7.86, 5.01, 5.82, 0.94, 8.94, 6.53, 2.04, 5.91, 5.94, 5.18,
+                0.11, 3.99, 1.09, 2.89, 5.71, 6.51, 6.84, 4.33, 3.46, 8.86,
+                0.78, 2.50, 2.20, 5.76, 4.13, 2.64, 6.41, 4.38, 3.75, 8.01,
+                4.52, 0.05, 1.16, 2.97, 2.71, 1.97, 8.81, 3.89, 2.37, 3.86,
+                6.65, 2.05, 8.86, 3.24, 0.83, 7.56, 8.70, 6.93, 0.93, 0.79,
+                2.09, 4.23, 6.07, 8.07, 7.64, 0.80, 7.43, 0.15, 0.07, 7.02,
+                2.24, 3.95, 5.79, 3.45, 3.43, 4.62, 5.88, 2.01, 3.04, 3.06 };
+
+    matrix2 = { 1.48, 1.19, 1.71, 7.35, 2.66, 8.25, 8.28, 3.86, 1.82, 2.69,
+                2.19, 5.53, 2.06, 6.51, 6.39, 1.18, 8.83, 3.41, 6.19, 5.41,
+                8.52, 4.30, 0.60, 0.11, 7.88, 2.41, 3.63, 7.20, 5.96, 5.61,
+                6.35, 0.27, 5.50, 4.55, 2.46, 3.81, 3.20, 6.69, 5.08, 3.68,
+                8.14, 1.13, 5.17, 0.64, 4.79, 6.49, 4.00, 1.22, 6.89, 0.20,
+                2.10, 6.48, 5.23, 1.51, 2.13, 2.42, 7.35, 7.44, 0.24, 3.89,
+                6.93, 8.66, 0.94, 3.01, 3.90, 7.55, 0.08, 8.03, 3.37, 7.25,
+                2.42, 6.20, 3.22, 8.21, 7.63, 2.82, 0.79, 7.68, 7.07, 3.24,
+                2.89, 3.61, 5.30, 2.00, 4.53, 2.41, 7.54, 0.27, 3.02, 4.24,
+                0.58, 0.69, 5.86, 3.62, 5.66, 7.92, 2.53, 3.01, 6.05, 0.82 };
   }
  
   void teardown()
@@ -71,6 +93,9 @@ struct PackedTest
   Vector<double> v2d;
   Vector<int32_t> v1i32;
   Vector<int32_t> v2i32;
+
+  Matrix<double, 10, 10> matrix1;
+  Matrix<double, 10, 10> matrix2;
 };
 
 
@@ -622,5 +647,150 @@ BOOST_FIXTURE_TEST_CASE(vector_div_double, PackedTest)
   BOOST_CHECK_CLOSE(0.714285, v3[11], 0.01);
 
 }
+
+
+BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
+{
+
+  //Matrix<double, 10, 10> mat = matrix1 * matrix2;
+
+  Matrix<double, 10, 10> mat;
+
+  size_t max_vector = (matrix1.cols() / packed_a_d.size()) * packed_a_d.size();
+
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t i = 0; i < max_vector; i += packed_a_d.size()) {
+      for (size_t c = 0; c < matrix2.cols(); c += packed_b_d.size()) {
+
+        packed_a_d.loadAligned(&matrix1[r][i]);
+
+        std::array<double, PackedTraits<Packed<double>>::size> b;
+        for (size_t k = 0; k < packed_b_d.size(); k++) {
+          b[k] = matrix2[i+k][c];
+        }
+
+        //packed_b_d.loadAligned(&matrix2[i][c]);
+        packed_b_d.loadAligned(b.data());
+
+        Packed<double> packed_c = packed_a_d *packed_b_d;
+        packed_c.storeAligned(&mat[r][c]);
+        //matrix(r, c) += matrix1(r, i) * matrix2(i, c);
+      }
+    }
+  }
+
+  for (size_t r = 0; r < matrix1.rows(); r++) {
+    for (size_t i = max_vector; i < matrix1.cols(); i++) {
+      double a = matrix1(r, i);
+      for (size_t c = 0; c < matrix2.cols(); c++) {
+        mat(r, c) += a * matrix2(i, c);
+      }
+    }
+  }
+
+  BOOST_CHECK_CLOSE(mat[0][0],	150.46129999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][1],	165.27870000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][2],	158.26670000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][3],	141.92560000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][4],	187.37970000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][5],	167.06009999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][6],	202.88790000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][7],	176.77520000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][8],	180.07070000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[0][9],	152.05050000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][0], 227.41139999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][1], 227.16690000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][2], 201.63189999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][3], 255.38209999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][4], 290.18440000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][5], 291.53309999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][6], 253.57210000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][7], 261.00040000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][8], 286.16719999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[1][9],	215.73440000000005, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][0],	187.83359999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][1],	189.31679999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][2],	173.78440000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][3],	218.94399999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][4],	246.74090000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][5],	217.63609999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][6],	218.45099999999994, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][7],	282.29669999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][8],	228.28930000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[2][9],	189.72190000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][0],	213.25510000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][1],	194.08109999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][2],	195.57950000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][3],	196.17829999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][4],	267.10329999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][5],	249.59680000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][6],	279.93429999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][7],	234.07190000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][8],	245.87960000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat[3][9],	174.91820000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][0],	169.70760000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][1],	180.98440000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][2],	179.15429999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][3],	148.66820000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][4],	208.23980000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][5],	214.42800000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][6],	172.50779999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][7],	212.39560000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][8],	204.69629999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat[4][9],	150.65260000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][0],	171.61580000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][1],	149.27350000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][2],	161.58570000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][3],	146.83769999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][4],	195.70380000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][5],	203.04889999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][6],	143.38870000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][7],	200.82369999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][8],	200.71049999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[5][9],	143.38950000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][0],	141.29339999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][1],	138.90479999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][2],	105.16480000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][3],	129.06590000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][4],	142.59010000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][5],	187.58380000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][6],	108.31489999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][7],	176.67999999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][8],	137.38419999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[6][9],	127.76190000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][0],	213.23240000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][1],	230.35989999999998, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][2],	122.61140000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][3],	177.68850000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][4],	224.14439999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][5],	208.38609999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][6],	189.76090000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][7],	301.09850000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][8],	187.49260000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat[7][9],	210.30039999999997, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][0],	235.31420000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][1],	138.34640000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][2],	152.97290000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][3],	135.53080000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][4],	208.74430000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][5],	231.41550000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][6],	157.95550000000003, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][7],	217.42079999999996, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][8],	228.77390000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[8][9],	157.30339999999995, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][0],	176.99920000000000, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][1],	160.61970000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][2],	122.35509999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][3],	119.04239999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][4],	180.94049999999999, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][5],	165.30430000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][6],	165.88210000000004, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][7],	198.12640000000002, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][8],	167.02330000000001, 0.01);
+  BOOST_CHECK_CLOSE(mat[9][9],	155.77199999999999, 0.01);
+
+
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
