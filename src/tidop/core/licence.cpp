@@ -109,13 +109,57 @@ void Licence::setUrl(const std::string &url)
 AppLicence::AppLicence()
   : mThirdPartyLicences(0)
 {
-
 }
 
-const std::list<Licence> *AppLicence::thirdPartyLicences() const
+AppLicence::iterator AppLicence::begin() TL_NOEXCEPT
 {
-  return &mThirdPartyLicences;
+  return mThirdPartyLicences.begin();
 }
 
+AppLicence::const_iterator AppLicence::begin() const TL_NOEXCEPT
+{
+  return mThirdPartyLicences.cbegin();
+}
+
+AppLicence::iterator AppLicence::end() TL_NOEXCEPT
+{
+  return mThirdPartyLicences.end();
+}
+
+AppLicence::const_iterator AppLicence::end() const TL_NOEXCEPT
+{
+  return mThirdPartyLicences.cend();
+}
+
+void AppLicence::push_back(const Licence &licence)
+{
+  mThirdPartyLicences.push_back(licence);
+}
+
+void AppLicence::push_back(Licence &&licence) TL_NOEXCEPT
+{
+  mThirdPartyLicences.push_back(std::forward<Licence>(licence));
+}
+
+void AppLicence::clear() TL_NOEXCEPT
+{
+  mThirdPartyLicences.clear();
+}
+
+bool AppLicence::empty() const TL_NOEXCEPT
+{
+  return mThirdPartyLicences.empty();
+}
+
+size_t AppLicence::size() const TL_NOEXCEPT
+{
+  return mThirdPartyLicences.size();
+}
+
+AppLicence::iterator AppLicence::erase(AppLicence::const_iterator first,
+                                       AppLicence::const_iterator last)
+{
+  return mThirdPartyLicences.erase(first, last);
+}
 
 } // End namespace tl
