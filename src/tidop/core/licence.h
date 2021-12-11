@@ -33,22 +33,6 @@
 #include <list>
 
 
-/*
- * Parameters to send to the license handler
- *
- * $plugin_file     - The main plugin file name being registered
- * $product_name    - The name of the Downlaod on the store (exact match)
- * $product_version - The version of the plugin
- * $author_name     - The author name for the plugin
- * $item_id         - This is the post_id of the Download
- * $store_url       - The store URL where this product should check for updates
- *
- */
-// $license = new EDD_License( $plugin_file, $product_name, $product_version, $author_name, $item_id, $store_url
-//if ( class_exists( 'EDD_License' ) ) {
-//    $license = new EDD_License( __FILE__, 'Product Name', '1.0.0', 'Author Name', 1, 'http://example.org' );
-//}
-
 namespace tl
 {
 
@@ -100,11 +84,70 @@ class TL_EXPORT AppLicence
   : public Licence
 {
 
+  /*!
+   * \brief Allocator
+   */
+  using allocator_type = std::list<Licence>::allocator_type;
+
+  /*!
+   * \brief value_type
+   */
+  using value_type = std::list<Licence>::value_type;
+
+  /*!
+   * \brief Tipo entero sin signo (por lo general size_t)
+   */
+  using size_type = std::list<Licence>::size_type;
+
+  /*!
+   * \brief Tipo entero con signo (por lo general ptrdiff_t)
+   */
+  using difference_type = std::list<Licence>::difference_type;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::pointer
+   */
+  using pointer = std::list<Licence>::pointer;
+
+  /*!
+   * \brief std::allocator_traits<Allocator>::const_pointer
+   */
+  using const_pointer = std::list<Licence>::const_pointer;
+
+  /*!
+   * \brief value_type&
+   */
+  using reference = std::list<Licence>::reference;
+
+  /*!
+   * \brief const value_type&
+   */
+  using const_reference = std::list<Licence>::const_reference;
+
+  /*!
+   * \brief Iterador de acceso aleatorio
+   */
+  using iterator = std::list<Licence>::iterator;
+
+  /*!
+   * \brief Iterador constante de acceso aleatorio
+   */
+  using const_iterator = std::list<Licence>::const_iterator;
+
 public:
 
   AppLicence();
 
-  const std::list<Licence> *thirdPartyLicences() const;
+  iterator begin() TL_NOEXCEPT;
+  const_iterator begin() const TL_NOEXCEPT;
+  iterator end() TL_NOEXCEPT;
+  const_iterator end() const TL_NOEXCEPT;
+  void push_back(const Licence &licence);
+  void push_back(Licence &&licence) TL_NOEXCEPT;
+  void clear() TL_NOEXCEPT;
+  bool empty() const TL_NOEXCEPT;
+  size_type size() const TL_NOEXCEPT;
+  iterator erase(const_iterator first, const_iterator last);
 
 private:
 
