@@ -705,7 +705,7 @@ typename std::enable_if<
     __m256i mulodd = _mm256_mullo_epi16(aodd, bodd);           // product of odd  numbered elements
     mulodd = _mm256_slli_epi16(mulodd, 8);                     // put odd numbered elements back in place
     __m256i mask = _mm256_set1_epi32(0x00FF00FF);              // mask for even positions
-    r = selectb(mask, muleven, mulodd);                        // interleave even and odd
+    r = _mm256_blendv_epi8(mask, muleven, mulodd);                        // interleave even and odd
   } else if (packed1.size() == 16) {
     r = _mm256_mullo_epi16(packed1, packed2);
   } else if (packed1.size() == 8) {

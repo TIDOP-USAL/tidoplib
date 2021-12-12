@@ -1149,7 +1149,7 @@ public:
    * \return
    */
   static Matrix zero();
-  static Matrix zero(size_t row, size_t cols);
+  static Matrix zero(size_t rows, size_t cols);
 
   /*!
    * \brief Construye una matriz de 'unos'
@@ -1163,7 +1163,7 @@ public:
    * \return
    */
   static Matrix ones();
-  static Matrix ones(size_t row, size_t cols);
+  static Matrix ones(size_t rows, size_t cols);
 
   /*!
    * \brief Construye la matriz identidad
@@ -1177,7 +1177,10 @@ public:
    * \return
    */
   static Matrix identity();
-  static Matrix identity(size_t row, size_t cols);
+  static Matrix identity(size_t rows, size_t cols);
+
+  static Matrix randon();
+  static Matrix randon(size_t rows, size_t cols);
 
   //static Matrix transpose(const Matrix &matrix);
 
@@ -2128,6 +2131,8 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+
   Matrix<T> matrix(rows, cols);
 
   for (size_t r = 0; r < matrix.rows(); r++) {
@@ -2137,6 +2142,44 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t co
       } else {
         matrix(r, c) = consts::zero<T>;
       }
+    }
+  }
+
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon()
+{
+  Matrix<T, _rows, _cols> matrix;
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
+      matrix(r, c) = distribution(random_number_engine);
+    }
+  }
+
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon(size_t rows, size_t cols)
+{
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+
+  Matrix<T> matrix(rows, cols);
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
+      matrix(r, c) = distribution(random_number_engine);
     }
   }
 

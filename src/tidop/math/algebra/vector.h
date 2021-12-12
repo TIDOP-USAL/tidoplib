@@ -32,11 +32,11 @@
 #include <iterator>
 #include <vector>
 #include <array>
-#include <valarray>
+#include <random>
 
 #include "tidop/core/exception.h"
 #include "tidop/math/math.h"
-
+#include "tidop/math/simd.h"
 
 namespace tl
 {
@@ -618,7 +618,8 @@ public:
   static Vector zero(size_t size);
   static Vector unit();
   static Vector unit(size_t size);
-
+  static Vector randon();
+  static Vector randon(size_t size);
 };
 
 
@@ -718,7 +719,7 @@ Vector<T, _size> Vector<T, _size>::zero()
 { 
   Vector<T, _size> vector;
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = static_cast<size_t>(0);
+    vector[i] = consts::zero<T>;
   }
   return vector;
 }
@@ -727,16 +728,18 @@ template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::zero(size_t size)
 { 
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
-  return Vector<T>(size, static_cast<size_t>(0));
+  return Vector<T>(size, consts::zero<T>);
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::unit()
 {
   Vector<T, _size> vector;
+
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = static_cast<size_t>(1);
+    vector[i] = consts::one<T>;
   }
+
   return vector;
 }
 
@@ -744,7 +747,41 @@ template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::unit(size_t size)
 {
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
-  return Vector<T>(size, static_cast<size_t>(1));
+  return Vector<T>(size, consts::one<T>);
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> Vector<T, _size>::randon()
+{
+  Vector<T, _size> vector;
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = distribution(random_number_engine);
+  }
+
+  return vector;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> Vector<T, _size>::randon(size_t size)
+{
+  static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
+
+  Vector<T, _size> vector(size);
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = distribution(random_number_engine);
+  }
+
+  return vector;
 }
 
 /* Operaciones unarias */
@@ -823,9 +860,29 @@ Vector<T, _size> &operator *= (Vector<T, _size> &v0,
 {
   TL_ASSERT(v0.size() == v1.size(), "")
 
-  for (size_t i = 0; i < v0.size(); i++) {
+  using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b;
+
+  size_t max_vector = (v0.size() / packed_a.size()) * packed_a.size();
+  for (size_t i = 0; i < max_vector; i += packed_a.size()) {
+
+    packed_a.loadAligned(&v0[i]);
+    packed_b.loadAligned(&v1[i]);
+
+    Packed<T> packed_c = packed_a * packed_b;
+    packed_c.storeAligned(&v0[i]);
+
+  }
+
+  for (size_t i = max_vector; i < v0.size(); ++i) {
     v0[i] *= v1[i];
   }
+
+  //for (size_t i = 0; i < v0.size(); i++) {
+  //  v0[i] *= v1[i];
+  //}
   return v0;
 }
 

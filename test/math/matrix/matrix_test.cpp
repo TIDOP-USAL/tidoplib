@@ -737,6 +737,31 @@ BOOST_FIXTURE_TEST_CASE(identity, MatrixTest)
   }
 }
 
+BOOST_FIXTURE_TEST_CASE(randon, MatrixTest)
+{
+  {
+    Matrix<float, 3, 3> randon_matrix = Matrix<float, 3, 3>::randon();
+
+    for (size_t r = 0; r < randon_matrix.rows(); r++) {
+      for (size_t c = 0; c < randon_matrix.cols(); c++) {
+        BOOST_TEST(0 <= randon_matrix[r][c]);
+        BOOST_TEST(99 >= randon_matrix[r][c]);
+      }
+    }
+  }
+
+  {
+    Matrix<int> randon_matrix = Matrix<int>::randon(3,3);
+
+    for (size_t r = 0; r < randon_matrix.rows(); r++) {
+      for (size_t c = 0; c < randon_matrix.cols(); c++) {
+        BOOST_TEST(0 <= randon_matrix[r][c]);
+        BOOST_TEST(99 >= randon_matrix[r][c]);
+      }
+    }
+  }
+}
+
 BOOST_FIXTURE_TEST_CASE(rowEchelonForm, MatrixTest)
 {
   Matrix<float, 3, 4> matrix{ 3.f, 6.f, -5.f, 0.f,
