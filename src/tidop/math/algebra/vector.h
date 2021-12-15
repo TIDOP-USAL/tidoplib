@@ -386,9 +386,6 @@ public:
     : mData(size)
   {
     mData.assign(data, data + size);
-//    for (size_t i = 0; i < size; i++) {
-//      mData[i] = data[i];
-//    }
   }
 
   ~VectorBase() = default;
@@ -614,6 +611,146 @@ public:
   void normalize();
   double dotProduct(const Vector<T, _size> &vector) const;
 
+  Vector &operator+=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] += vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a += packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] += vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator-=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] -= vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a -= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] -= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator*=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+      for (size_t i = 0; i < this->size(); ++i) {
+        (*this)[i] *= vector[i];
+      }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a *= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] *= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator/=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] /= vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a /= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] /= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
   static Vector zero();
   static Vector zero(size_t size);
   static Vector unit();
@@ -814,17 +951,17 @@ Vector<T, _size> operator + (const Vector<T, _size> &v0,
   return v += v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator += (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
-
-  for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] += v1[i];
-  }
-  return v0;
-}
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator += (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] += v1[i];
+//  }
+//  return v0;
+//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &v0,
@@ -834,56 +971,61 @@ Vector<T, _size> operator - (const Vector<T, _size> &v0,
   return v -= v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] -= v1[i];
+//  }
+//  return v0;
+//}
 
+template<typename T, size_t _size>
+Vector<T, _size> operator * (const Vector<T, _size> &v0,
+                             const Vector<T, _size> &v1)
+{
+  size_t vector_size = v0.size();
+  TL_ASSERT(vector_size == v1.size(), "")
+
+  Vector<T, _size> result(v0);
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+  
   for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] -= v1[i];
+    result[i] *= v1[i];
   }
-  return v0;
-}
 
-template<typename T, size_t _size>
-Vector<T, _size> operator*(const Vector<T, _size> &v0,
-                           const Vector<T, _size> &v1)
-{
-  Vector<T, _size> result = v0;
-  return result *= v1;
-}
-
-template<typename T, size_t _size>
-Vector<T, _size> &operator *= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
-
+#else
+    
   using namespace simd;
 
   Packed<T> packed_a;
   Packed<T> packed_b;
 
-  size_t max_vector = (v0.size() / packed_a.size()) * packed_a.size();
-  for (size_t i = 0; i < max_vector; i += packed_a.size()) {
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = (vector_size / packed_size) * packed_size;
 
-    packed_a.loadAligned(&v0[i]);
+  
+
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadAligned(&result[i]);
     packed_b.loadAligned(&v1[i]);
 
-    Packed<T> packed_c = packed_a * packed_b;
-    packed_c.storeAligned(&v0[i]);
-
+    packed_a *= packed_b;
+    packed_a.storeAligned(&result[i]);
   }
 
   for (size_t i = max_vector; i < v0.size(); ++i) {
-    v0[i] *= v1[i];
+    result[i] *= v1[i];
   }
 
-  //for (size_t i = 0; i < v0.size(); i++) {
-  //  v0[i] *= v1[i];
-  //}
-  return v0;
+#endif
+
+  return result;
 }
 
 template<typename T, size_t _size>
@@ -894,17 +1036,17 @@ Vector<T, _size> operator / (const Vector<T, _size> &v0,
   return result /= v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
-
-  for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] /= v1[i];
-  }
-  return v0;
-}
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] /= v1[i];
+//  }
+//  return v0;
+//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (const Vector<T, _size> &vector, 

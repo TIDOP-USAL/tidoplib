@@ -28,6 +28,8 @@
 #include <tidop/math/algebra/vector.h>
 #include <tidop/math/algebra/matrix.h>
 
+#ifdef HAVE_TL_SIMD_INTRINSICS
+
 using namespace tl::math;
 using namespace simd;
 
@@ -652,39 +654,28 @@ BOOST_FIXTURE_TEST_CASE(vector_div_double, PackedTest)
 BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 {
 
-  //Matrix<double, 10, 10> mat = matrix1 * matrix2;
+  Matrix<double, 10, 10> mat = Matrix<double, 10, 10>::zero();
 
-  Matrix<double, 10, 10> mat;
-
-  size_t max_vector = (matrix1.cols() / packed_a_d.size()) * packed_a_d.size();
+  size_t max_vector = (matrix2.cols() / packed_b_d.size()) * packed_b_d.size();
+  Packed<double> packed_c;
 
   for (size_t r = 0; r < matrix1.rows(); r++) {
-    for (size_t i = 0; i < max_vector; i += packed_a_d.size()) {
-      for (size_t c = 0; c < matrix2.cols(); c += packed_b_d.size()) {
+    for (size_t i = 0; i < matrix1.cols(); i++) {
 
-        packed_a_d.loadAligned(&matrix1[r][i]);
+      double a = matrix1[r][i];
 
-        std::array<double, PackedTraits<Packed<double>>::size> b;
-        for (size_t k = 0; k < packed_b_d.size(); k++) {
-          b[k] = matrix2[i+k][c];
-        }
+      for (size_t c = 0; c < max_vector; c += packed_b_d.size()) {
 
-        //packed_b_d.loadAligned(&matrix2[i][c]);
-        packed_b_d.loadAligned(b.data());
-
-        Packed<double> packed_c = packed_a_d *packed_b_d;
+        packed_b_d.loadAligned(&matrix2[i][c]);
+        packed_c.loadAligned(&mat[r][c]);
+        packed_c += a * packed_b_d;
         packed_c.storeAligned(&mat[r][c]);
-        //matrix(r, c) += matrix1(r, i) * matrix2(i, c);
       }
-    }
-  }
 
-  for (size_t r = 0; r < matrix1.rows(); r++) {
-    for (size_t i = max_vector; i < matrix1.cols(); i++) {
-      double a = matrix1(r, i);
-      for (size_t c = 0; c < matrix2.cols(); c++) {
+      for (size_t c = max_vector; c < matrix2.cols(); c++) {
         mat(r, c) += a * matrix2(i, c);
       }
+
     }
   }
 
@@ -794,3 +785,5 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif HAVE_TL_SIMD_INTRINSICS

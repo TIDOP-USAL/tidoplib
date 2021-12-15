@@ -896,6 +896,8 @@ void Command::showHelp() const
       std::cout << "  " << example << "\n";
     }
   }
+
+  std::cout << std::endl;
 }
 
 void Command::showVersion() const
@@ -1175,6 +1177,7 @@ void CommandList::showHelp() const
     std::cout << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
   }
 
+  std::cout << std::endl;
 }
 
 void CommandList::showVersion() const
