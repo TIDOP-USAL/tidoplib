@@ -1631,6 +1631,7 @@ private:
    */
   std::string mVersion;
 
+  Licence mLicence;
 };
 
 

@@ -1196,6 +1196,10 @@ void CommandList::showLicence() const
   Console &console = Console::instance();
   console.setConsoleForegroundColor(Console::Color::green, Console::Intensity::bright);
   console.setFontBold(true);
+  std::cout << "Licence\n\n";
+  console.reset();
+
+  std::cout << mLicence.productName() << ": " << mLicence.version() << "\n";
 }
 
 std::string CommandList::commandName() const

@@ -827,7 +827,11 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m128i mulodd = _mm_mullo_epi16(aodd, bodd);// product of odd  numbered elements
     mulodd = _mm_slli_epi16(mulodd, 8);          // put odd numbered elements back in place
     __m128i mask = _mm_set1_epi32(0x00FF00FF);   // mask for even positions
-    r = selectb(mask, muleven, mulodd);       // interleave even and odd
+#ifdef HAVE_TL_SSE4_1
+    r = _mm_blendv_epi8(mulodd, muleven, mask);
+#else
+    r = _mm_or_si128(_mm_and_si128(mask, muleven), _mm_andnot_si128(mask, mulodd));
+#endif
   } else if (packed1.size() == 8) {
     r = _mm_mullo_epi16(packed1, packed2);
   } else if (packed1.size() == 4) {
@@ -862,10 +866,11 @@ mul(const Packed<T> &packed1, const Packed<T> &packed2)
     __m128i prod = _mm_add_epi64(prodll, prodlh3);         // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
     r = prod;
 #  else
-    int64_t aa[2], bb[2];
-    packed1.store(aa);                                     // split into elements
-    packed2.store(bb);
-    r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
+    ///TODO: Error
+    //int64_t aa[2], bb[2];
+    //packed1.storeUnaligned(&aa[0]);                                     // split into elements
+    //packed2.storeUnaligned(&bb[0]);
+    //r = _mm_set_epi64x(aa[0] * bb[0], aa[1] * bb[1]);     // multiply elements separetely
 #  endif
   }
 #endif
