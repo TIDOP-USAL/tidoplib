@@ -32,9 +32,9 @@
 #include <numeric>
 #include <vector>
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#endif
 
 #include "tidop/core/defs.h"
 #include "tidop/core/flags.h"

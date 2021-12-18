@@ -25,103 +25,93 @@
 #Modulo geospatial de la librería
 
 
-if (NOT HAVE_TL_CORE)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_core that is deactivated]")
-elseif(NOT HAVE_TL_MATH)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_math that is deactivated]") 
-elseif(NOT HAVE_TL_GEOMETRY)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_geom that is deactivated]") 
-elseif(NOT HAVE_TL_VECT)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_vect that is deactivated]") 
-elseif(NOT HAVE_TL_IMG)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
-elseif(NOT HAVE_GDAL)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on gdal that is deactivated]")
-elseif(NOT HAVE_PROJ4)
-  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on proj that is deactivated]")
-else()
+if (BUILD_TL_GEOSPATIAL)
 
-  project(tl_geospatial)
+    project(tl_geospatial)
   
-  add_library(${PROJECT_NAME} ${LIB_TYPE}
-              crs.cpp
-              crs.h
-              crscache.cpp
-              crscache.h
-              crstransf.h
-              #dtm.cpp
-              #dtm.h
-              util.cpp
-              util.h
-              ortho.cpp
-              ortho.h
-              #footprint.cpp
-              #footprint.h
-              diffrect.cpp
-              diffrect.h
-              camera.cpp
-              camera.h
-              photo.cpp
-              photo.h
-  )
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                crs.cpp
+                crs.h
+                crscache.cpp
+                crscache.h
+                crstransf.h
+                util.cpp
+                util.h
+                ortho.cpp
+                ortho.h
+                diffrect.cpp
+                diffrect.h
+                camera.cpp
+                camera.h
+                photo.cpp
+                photo.h)
+
+     target_include_directories(${PROJECT_NAME} PUBLIC
+                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+                                $<INSTALL_INTERFACE:include/tidop/geospatial>)
+  
+     target_link_libraries(${PROJECT_NAME} PRIVATE
+                           tl_core 
+                           tl_math 
+                           tl_geom
+                           tl_vect
+                           tl_img)
+  
+    if (HAVE_GDAL)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${GDAL_LIBRARY})
+    endif(HAVE_GDAL)
     
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET ${PROJECT_NAME} 
-               PROPERTY FOLDER "modules")
-  
-  if(HAVE_OPENBLAS)
-      add_definitions(-DHAVE_LAPACK_CONFIG_H)
-      add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_OPENBLAS)
-  
-  #instalación
-  if(BUILD_SHARED_LIBS)
-  
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  	
-      set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  	
-      target_link_libraries(${PROJECT_NAME} 
-                            tl_core 
-                            tl_math 
-                            tl_geom
-                            tl_vect
-                            tl_img)
-  	
-      if (HAVE_GDAL)
-          target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
-      endif(HAVE_GDAL)
-  
-      if(HAVE_PROJ4)
-          target_link_libraries(${PROJECT_NAME} 
-                                ${PROJ4_LIBRARY})
-      endif(HAVE_PROJ4)
-  
-      if(HAVE_OPENBLAS)
-          target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
-      endif(HAVE_OPENBLAS)
-  
-  else()
-  
-      install(TARGETS ${PROJECT_NAME} 
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  
-  endif()
-  
-  install(DIRECTORY . 
-          DESTINATION include/tidop/geospatial
-          FILES_MATCHING PATTERN "*.h")
-          
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-  
-  set(HAVE_TL_GEOSPATIAL YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::${PROJECT_NAME} enabled")
+    if(HAVE_PROJ4)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJ4_LIBRARY})
+    endif(HAVE_PROJ4)
+    
+    if(HAVE_OPENBLAS)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
+        add_definitions(-DHAVE_LAPACK_CONFIG_H)
+        add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+    endif(HAVE_OPENBLAS)
+
+    
+    set_property(TARGET ${PROJECT_NAME} 
+                 PROPERTY FOLDER "modules")
+
+    if(BUILD_SHARED_LIBS)
+    
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    	
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+    
+    else()
+    
+        install(TARGETS ${PROJECT_NAME} 
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    
+    endif()
+    
+    install(DIRECTORY . 
+            DESTINATION include/tidop/geospatial
+            FILES_MATCHING PATTERN "*.h")
+            
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    
+    set(HAVE_TL_GEOSPATIAL YES CACHE INTERNAL "")
+    message(STATUS "TidopLib::${PROJECT_NAME} enabled")
+
+elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
+
+    #if(NOT HAVE_GDAL)
+    #  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on gdal that is deactivated]")
+    #elseif(NOT HAVE_PROJ4)
+    #  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on proj that is deactivated]")
+    #else()
+
+    message(STATUS "TidopLib::tl_geospatial disabled")
 
 endif()

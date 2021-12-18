@@ -27,12 +27,18 @@
 
 #include "config_tl.h"
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
+
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
+
+
 
 namespace tl
 {

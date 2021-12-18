@@ -24,73 +24,75 @@
 
 #Modulo graphic de la librería
 
-if (NOT HAVE_TL_CORE)
-  message(WARNING "TidopLib::tl_graphic disabled [Module dependent on tl_core that is deactivated]")
-elseif(NOT HAVE_TL_GEOMETRY)
-  message(WARNING "TidopLib::tl_graphic disabled [Module dependent on tl_geom that is deactivated]") 
-else()
+if (BUILD_TL_GRAPHIC)
   
-  project(tl_graphic)
+    project(tl_graphic)
   
-  add_library(${PROJECT_NAME} ${LIB_TYPE}
-              color.cpp
-              color.h
-              font.cpp
-              font.h
-              linealgorithms.cpp
-              linealgorithms.h
-              styles.cpp
-              styles.h
-              layer.cpp
-              layer.h
-              canvas.cpp
-              canvas.h
-              painter.cpp
-              painter.h
-              datamodel.cpp
-              datamodel.h
-              entities/entity.cpp
-              entities/entity.h
-              entities/point.cpp
-              entities/point.h
-              entities/polygon.cpp
-              entities/polygon.h
-              entities/linestring.cpp
-              entities/linestring.h
-  )
-   
-   
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET ${PROJECT_NAME} 
-               PROPERTY FOLDER "modules")
-  
-  if(HAVE_OPENBLAS)
-      add_definitions(-DHAVE_LAPACK_CONFIG_H)
-      add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_OPENBLAS)
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                color.cpp
+                color.h
+                font.cpp
+                font.h
+                linealgorithms.cpp
+                linealgorithms.h
+                styles.cpp
+                styles.h
+                layer.cpp
+                layer.h
+                canvas.cpp
+                canvas.h
+                painter.cpp
+                painter.h
+                datamodel.cpp
+                datamodel.h
+                entities/entity.cpp
+                entities/entity.h
+                entities/point.cpp
+                entities/point.h
+                entities/polygon.cpp
+                entities/polygon.h
+                entities/linestring.cpp
+                entities/linestring.h)
 
-  #instalación
-  if(BUILD_SHARED_LIBS)
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  	
-  	set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  	
-  	target_link_libraries(${PROJECT_NAME} 
+    target_include_directories(${PROJECT_NAME} PUBLIC
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+                               $<INSTALL_INTERFACE:include/tidop/graphic>)
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
   	                      tl_core tl_geom)
     if(HAVE_OPENBLAS)
-        target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
+        add_definitions(-DHAVE_LAPACK_CONFIG_H)
+        add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+        target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
     endif(HAVE_OPENBLAS)
 
+    if(HAVE_OPENCV)
+        target_link_libraries(${PROJECT_NAME} PRIVATE 
+                              ${OpenCV_LIBS})
+    endif(HAVE_OPENCV)
+
+  set_property(TARGET ${PROJECT_NAME} 
+               PROPERTY FOLDER "modules")
+
+
+    if(BUILD_SHARED_LIBS)
+
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+  	
+  	    set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+  
   else()
+
       install(TARGETS ${PROJECT_NAME} 
               EXPORT "${TARGETS_EXPORT_NAME}"
               LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
               ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+
   endif()
   
   install(DIRECTORY . 
@@ -101,5 +103,11 @@ else()
   
   set(HAVE_TL_GRAPHIC YES CACHE INTERNAL "")
   message(STATUS "TidopLib::${PROJECT_NAME} enabled")
-  
-endif()
+   
+elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
+
+    message(STATUS "TidopLib::tl_graphic disabled")
+    message(STATUS "TidopLib::tl_imgprocess disabled   [Module dependent on tl_graphic that is deactivated]") 
+    message(STATUS "TidopLib::tl_vect disabled         [Module dependent on tl_graphic that is deactivated]") 
+
+endif(BUILD_TL_GRAPHIC)

@@ -24,8 +24,8 @@
 
 if(HAVE_TL_CORE AND HAVE_TL_GEOMETRY)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/src)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+#include_directories(${CMAKE_SOURCE_DIR}/src)
 
 
 project(coordtransform LANGUAGES CXX)
@@ -38,24 +38,28 @@ endif()
   
 add_executable(${PROJECT_NAME} coordtransform.cpp)
 
-target_link_libraries(${PROJECT_NAME} 
+target_include_directories(${PROJECT_NAME} PRIVATE 
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${CMAKE_SOURCE_DIR}/src)
+
+target_link_libraries(${PROJECT_NAME}
                       tl_core
                       tl_math
                       tl_geom
                       tl_img)
 					  
 if(HAVE_OPENCV)
-    target_link_libraries(${PROJECT_NAME} 
+    target_link_libraries(${PROJECT_NAME}
                           ${OpenCV_LIBS})
 endif(HAVE_OPENCV)
 
 if(HAVE_GDAL)
-    target_link_libraries(${PROJECT_NAME} 
+    target_link_libraries(${PROJECT_NAME}
                           ${GDAL_LIBRARY})
 endif(HAVE_GDAL)
 
 if(HAVE_PROJ4)
-    target_link_libraries(${PROJECT_NAME} 
+    target_link_libraries(${PROJECT_NAME}
                           ${PROJ4_LIBRARY})
 endif(HAVE_PROJ4)
 
@@ -85,19 +89,22 @@ if(HAVE_OPENBLAS)
 endif(HAVE_OPENBLAS)
 
 # Añade el proyecto de ejemplo a la carpeta 'examples'
-set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "apps/coordtransform")
+set_property(TARGET ${PROJECT_NAME} PROPERTY 
+             FOLDER "apps/coordtransform")
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME "${PROJECT_NAME}"
                       PROJECT_LABEL "${PROJECT_NAME}")
 
 if(ENABLE_SOLUTION_FOLDERS)
-  set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "apps/coordtransform")
+  set_target_properties(${PROJECT_NAME} PROPERTIES 
+                        FOLDER "apps/coordtransform")
 endif()
 
 if(WIN32)
   if (MSVC AND NOT BUILD_SHARED_LIBS)
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+                          LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
   endif()
 endif()
 

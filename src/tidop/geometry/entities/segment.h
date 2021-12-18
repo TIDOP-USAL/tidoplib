@@ -29,9 +29,9 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
-#include "opencv2/core/core.hpp"
-#endif
+//#ifdef HAVE_OPENCV
+//#include "opencv2/core/core.hpp"
+//#endif
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
@@ -657,15 +657,15 @@ public:
    */
   void add(const Line &line);
 
-#ifdef HAVE_OPENCV
-
-  /*!
-   * \brief Añade una línea
-   * \param[in] lvect
-   */
-  void add(const cv::Vec4i &lvect);
-
-#endif
+//#ifdef HAVE_OPENCV
+//
+//  /*!
+//   * \brief Añade una línea
+//   * \param[in] lvect
+//   */
+//  void add(const cv::Vec4i &lvect);
+//
+//#endif
 
   /*!
    * \brief Ángulo medio

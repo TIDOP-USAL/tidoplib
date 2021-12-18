@@ -56,19 +56,19 @@ void GroupLines::add(const Line &line)
   bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
 }
 
-#ifdef HAVE_OPENCV
-
-void GroupLines::add(const cv::Vec4i &lvect)
-{
-  Line _line;
-  _line.pt1.x = lvect[0];
-  _line.pt1.y = lvect[1];
-  _line.pt2.x = lvect[2];
-  _line.pt2.y = lvect[3];
-  add(_line);
-}
-
-#endif
+//#ifdef HAVE_OPENCV
+//
+//void GroupLines::add(const cv::Vec4i &lvect)
+//{
+//  Line _line;
+//  _line.pt1.x = lvect[0];
+//  _line.pt1.y = lvect[1];
+//  _line.pt2.x = lvect[2];
+//  _line.pt2.y = lvect[3];
+//  add(_line);
+//}
+//
+//#endif
 
 double GroupLines::angleMean()
 {

@@ -26,8 +26,12 @@
 #define TL_GRAPHIC_PAINTER_H
 
 #include "config_tl.h"
-#include "tidop/core/defs.h"
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
+
+#include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/polygon.h"

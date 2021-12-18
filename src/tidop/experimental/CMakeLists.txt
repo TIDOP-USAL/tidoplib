@@ -22,57 +22,51 @@
 #                                                                        #
 ##########################################################################
 
-#Modulo Experimental de la librería
+# TidopLib experimental module
 
-if (NOT HAVE_TL_CORE)
-  message(WARNING "TidopLib::tl_experimental disabled [Module dependent on tl_core that is deactivated]")
-else()
+project(tl_experimental)
 
-  add_library(tl_experimental ${LIB_TYPE}
-              desingpatterns.cpp
-              designpatterns.h
-              video/videoio.cpp
-              video/videoio.h
-              compression.cpp
-              compression.h
-              csv.cpp
-              csv.h
-              )
+if (BUILD_TL_EXPERIMENTAL)
+
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                desingpatterns.cpp
+                designpatterns.h
+                video/videoio.cpp
+                video/videoio.h
+                compression.cpp
+                compression.h
+                csv.cpp
+                csv.h)
     
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET tl_experimental PROPERTY FOLDER "modules")
+    target_include_directories(${PROJECT_NAME} INTERFACE 
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+                               $<INSTALL_INTERFACE:include/tidop/experimental>)
   
-  if(HAVE_LAPACKE)
-      add_definitions(-DHAVE_LAPACK_CONFIG_H)
-      add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_LAPACKE)
-  
-  #instalación
+    target_link_libraries(${PROJECT_NAME} PRIVATE tl_core)
+        
+    if(HAVE_OPENCV)
+        target_link_libraries(${PROJECT_NAME} PRIVATE 
+                              ${OpenCV_LIBS})
+    endif(HAVE_OPENCV)
+
+    set_property(TARGET ${PROJECT_NAME} 
+                 PROPERTY FOLDER "modules")
+
+  #install
   if(BUILD_SHARED_LIBS)
   
-      install(TARGETS tl_experimental
+      install(TARGETS ${PROJECT_NAME}
               EXPORT "${TARGETS_EXPORT_NAME}"
               RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
               LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
       	  	  ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib) 
   		  
-      set_target_properties(tl_experimental PROPERTIES
+      set_target_properties(${PROJECT_NAME} PROPERTIES
                             DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  						
-      target_link_libraries(tl_experimental tl_core)	
-  						
-      if(HAVE_LAPACKE)
-          target_link_libraries(tl_experimental ${LAPACKE_LIBRARIES})
-      endif(HAVE_LAPACKE)
-     
-      if(HAVE_OPENCV)
-          target_link_libraries(tl_experimental 
-                                ${OpenCV_LIBS})
-      endif(HAVE_OPENCV)
-  
+
   else()
   
-    install(TARGETS tl_experimental 
+    install(TARGETS ${PROJECT_NAME} 
             EXPORT "${TARGETS_EXPORT_NAME}"
             LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
             ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
@@ -83,10 +77,13 @@ else()
           DESTINATION include/tidop/experimental
           FILES_MATCHING PATTERN "*.h")
   
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} tl_experimental)
+  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
   set(HAVE_TL_EXPERIMENTAL YES CACHE INTERNAL "")
   message(STATUS "TidopLib::${PROJECT_NAME} enabled")
 
-  
+elseif(BUILD_TL_CORE)
+     
+    message(STATUS "TidopLib::${PROJECT_NAME} disabled")
+
 endif()
