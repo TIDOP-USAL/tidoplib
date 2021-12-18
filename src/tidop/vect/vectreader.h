@@ -78,7 +78,7 @@ public:
    */
   virtual std::string crsWkt() const = 0;
 
-#ifdef HAVE_TL_GEOSPATIAL
+#if defined HAVE_TL_GEOSPATIAL
   /*!
    * \brief Sistema de referencia
    */

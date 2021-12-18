@@ -37,7 +37,7 @@ namespace tl
 namespace geospatial
 {
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+
 
 template<typename Point_t> class CrsTransform;
 
@@ -82,7 +82,9 @@ public:
 
 protected:
 
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   OGRSpatialReference *getOGRSpatialReference( );
+#endif
 
   template<typename Point_t> friend class CrsTransform;
 
@@ -115,8 +117,9 @@ private:
   /*!
    * \brief Objeto OGRSpatialReference de Gdal
    */
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   OGRSpatialReference *mCrs;
-
+#endif
 };
 
 
@@ -127,8 +130,6 @@ private:
 
 
 /* ---------------------------------------------------------------------------------- */
-
-#endif // HAVE_GDAL
 
 } // End namespace geospatial
 

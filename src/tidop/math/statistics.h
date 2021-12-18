@@ -839,6 +839,36 @@ void zScore(itIn in_first, itIn in_last, itOut out_first)
   }
 }
 
+enum class tukey_k
+{
+  outlier,
+  far_out
+};
+
+template<typename itIn, typename itOut> inline
+std::vector<bool> tukey(itIn in_first, itIn in_last, tukey_k k = tukey_k::outlier)
+{
+  T q1 = tl::math::quantile(first, last, 0.25);
+  T q3 = tl::math::quantile(first, last, 0.75);
+
+  T interquartile_range = q3 - q1;
+
+  T _k = k == tukey_k::outlier ? static_cast<T>(1.5) : static_cast<T>(3);
+
+  T el1 = q1 - interquartile_range * _k;
+  T el2 = q3 + interquartile_range * _k;
+
+  std::vector<bool> inliers(std::distance(in_first, in_last), false);
+  auto out = inliers.begin();
+  while (in_first != in_last) {
+    T temp = *in_first++;
+    *out++ = el1 < temp && temp > el2;
+  }
+
+  return inliers;
+}
+
+
 
 template<typename T>
 class ConfusionMatrix
@@ -1179,8 +1209,8 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
 
 /*! \} */ // end of Math
 
-} // Fin namespace math
+} // End namespace math
 
-} // Fin namespace tl
+} // End namespace tl
 
 #endif // TL_MATH_STATISTICS_H

@@ -41,6 +41,7 @@
 #include "tidop/math/algebra/vector.h"
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
+#include "tidop/math/simd.h"
 
 namespace tl
 {
@@ -1148,7 +1149,7 @@ public:
    * \return
    */
   static Matrix zero();
-  static Matrix zero(size_t row, size_t cols);
+  static Matrix zero(size_t rows, size_t cols);
 
   /*!
    * \brief Construye una matriz de 'unos'
@@ -1162,7 +1163,7 @@ public:
    * \return
    */
   static Matrix ones();
-  static Matrix ones(size_t row, size_t cols);
+  static Matrix ones(size_t rows, size_t cols);
 
   /*!
    * \brief Construye la matriz identidad
@@ -1176,7 +1177,10 @@ public:
    * \return
    */
   static Matrix identity();
-  static Matrix identity(size_t row, size_t cols);
+  static Matrix identity(size_t rows, size_t cols);
+
+  static Matrix randon();
+  static Matrix randon(size_t rows, size_t cols);
 
   //static Matrix transpose(const Matrix &matrix);
 
@@ -2127,6 +2131,8 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+
   Matrix<T> matrix(rows, cols);
 
   for (size_t r = 0; r < matrix.rows(); r++) {
@@ -2136,6 +2142,44 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t co
       } else {
         matrix(r, c) = consts::zero<T>;
       }
+    }
+  }
+
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon()
+{
+  Matrix<T, _rows, _cols> matrix;
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
+      matrix(r, c) = distribution(random_number_engine);
+    }
+  }
+
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon(size_t rows, size_t cols)
+{
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+
+  Matrix<T> matrix(rows, cols);
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t r = 0; r < matrix.rows(); r++) {
+    for (size_t c = 0; c < matrix.cols(); c++) {
+      matrix(r, c) = distribution(random_number_engine);
     }
   }
 
@@ -2378,7 +2422,7 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
  */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
-                                       const Matrix<T, _rows, _cols> &matrix2)
+                                      const Matrix<T, _rows, _cols> &matrix2)
 {
   size_t rows1 = matrix1.rows();
   size_t cols1 = matrix1.cols();
@@ -2387,11 +2431,13 @@ Matrix<T, _rows, _cols> &operator -= (Matrix<T, _rows, _cols> &matrix1,
 
   TL_ASSERT(rows1 == rows2 && cols1 == cols2, "A size != B size")
 
+
   for (size_t r = 0; r < matrix1.rows(); r++) {
     for (size_t c = 0; c < matrix1.cols(); c++) {
       matrix1(r, c) -= matrix2(r, c);
     }
   }
+  
 
   return matrix1;
 }
@@ -2476,7 +2522,7 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
       }
     }
   }
-
+  
   return matrix;
 }
 
@@ -2866,6 +2912,7 @@ public:
 
 template<typename T>
 class MatrixRow
+  //: public Vector<T>
 {
 
 public:
@@ -2879,13 +2926,14 @@ public:
 
   using iterator = typename IteratorRows<T>;
   using const_iterator = typename IteratorRows<const T>;
+  //using reverse_iterator = typename std::reverse_iterator<iterator>;
+  //using const_reverse_iterator = typename std::const_reverse_iterator<const_iterator>;
 
 public:
 
   MatrixRow(T *data, size_t row, size_t cols)
     : mData(data),
       mRow(row),
-      //mRows(rows),
       mCols(cols)
   {}
   ~MatrixRow(){}
@@ -2924,7 +2972,6 @@ private:
 
   T *mData;
   size_t mRow;
-  //size_t mRows;
   size_t mCols;
 };
 

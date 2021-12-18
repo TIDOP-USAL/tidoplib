@@ -142,7 +142,7 @@ Photo &Photo::operator =(Photo &&photo) noexcept
 
 void Photo::update()
 {
-  mName = mFilePath.baseName();
+  mName = mFilePath.baseName().toString();
 }
 
 

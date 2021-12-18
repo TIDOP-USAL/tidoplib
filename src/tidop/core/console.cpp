@@ -601,8 +601,7 @@ Command::Status Command::parse(int argc, char **argv)
     if (found_name != std::string::npos && found_name == 0) {
       arg_cmd_name = (argv[i])+2;
       /// argumento-valor separado por =
-      std::vector<std::string> v;
-      split(arg_cmd_name, v, "=");
+      std::vector<std::string> v = split(arg_cmd_name, "=");
       if(v.size() == 2){
         cmd_in[v[0]] = v[1];
         continue;
@@ -897,6 +896,8 @@ void Command::showHelp() const
       std::cout << "  " << example << "\n";
     }
   }
+
+  std::cout << std::endl;
 }
 
 void Command::showVersion() const
@@ -1176,6 +1177,7 @@ void CommandList::showHelp() const
     std::cout << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
   }
 
+  std::cout << std::endl;
 }
 
 void CommandList::showVersion() const

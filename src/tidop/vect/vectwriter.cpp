@@ -37,11 +37,6 @@ TL_SUPPRESS_WARNINGS
 TL_DEFAULT_WARNINGS
 #endif // HAVE_GDAL
 
-#include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
-
-namespace fs = boost::filesystem;
-
 namespace tl
 {
 
@@ -138,7 +133,7 @@ void VectorWriterGdal::open()
 
     this->close();
 
-    std::string driver_name = driverFromExt(mFile.extension());
+    std::string driver_name = driverFromExt(mFile.extension().toString());
 
     TL_ASSERT(!driver_name.empty(), "Vector file open fail. Driver not found")
 
@@ -350,23 +345,23 @@ void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr,
 std::string VectorWriterGdal::driverFromExt(std::string &extension) const
 {
   std::string format;
-  if (boost::iequals(extension, ".dxf" ))  
+  if (compareInsensitiveCase(extension, ".dxf" ))
     format = "DXF";
-  else if (boost::iequals(extension, ".dwg" ))  
+  else if (compareInsensitiveCase(extension, ".dwg" ))
     format = "DWG";
-  else if (boost::iequals(extension, ".dgn" ))  
+  else if (compareInsensitiveCase(extension, ".dgn" ))  
     format = "DGN";
-  else if (boost::iequals(extension, ".shp" ))  
+  else if (compareInsensitiveCase(extension, ".shp" ))
     format = "ESRI Shapefile";
-  else if (boost::iequals(extension, ".gml" ))  
+  else if (compareInsensitiveCase(extension, ".gml" ))
     format = "GML";
-  else if (boost::iequals(extension, ".kml" ))  
+  else if (compareInsensitiveCase(extension, ".kml" ))
     format = "LIBKML";
-  else if (boost::iequals(extension, ".kmz" ))  
+  else if (compareInsensitiveCase(extension, ".kmz" ))
     format = "LIBKML";
-  else if (boost::iequals(extension, ".json"))  
+  else if (compareInsensitiveCase(extension, ".json"))
     format = "GeoJSON";
-  else if (boost::iequals(extension, ".osm" ))  
+  else if (compareInsensitiveCase(extension, ".osm" ))
     format = "OSM";
   else format = "";
   return format;
@@ -770,22 +765,22 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file
 
   try {
 
-    std::string extension = file.extension();
+    std::string extension = file.extension().toString();
 #ifdef HAVE_GDAL
-    if (boost::iequals(extension, ".dxf") ||
-          boost::iequals(extension, ".dwg") ||
-          boost::iequals(extension, ".dgn") ||
-          boost::iequals(extension, ".shp") ||
-          boost::iequals(extension, ".gml") ||
-          boost::iequals(extension, ".kml") ||
-          boost::iequals(extension, ".kmz") ||
-          boost::iequals(extension, ".json") ||
-          boost::iequals(extension, ".osm")) {
+    if (compareInsensitiveCase(extension, ".dxf") ||
+        compareInsensitiveCase(extension, ".dwg") ||
+        compareInsensitiveCase(extension, ".dgn") ||
+        compareInsensitiveCase(extension, ".shp") ||
+        compareInsensitiveCase(extension, ".gml") ||
+        compareInsensitiveCase(extension, ".kml") ||
+        compareInsensitiveCase(extension, ".kmz") ||
+        compareInsensitiveCase(extension, ".json") ||
+        compareInsensitiveCase(extension, ".osm")) {
       vector_writer = std::make_unique<VectorWriterGdal>(file);
     } else
 #endif
     {
-      TL_THROW_EXCEPTION("Invalid Vector Writer: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Vector Writer: %s", file.fileName().toString().c_str());
     }
   
   } catch (...) {

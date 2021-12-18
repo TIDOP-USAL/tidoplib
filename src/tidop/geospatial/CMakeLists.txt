@@ -56,7 +56,11 @@ if (BUILD_TL_GEOSPATIAL)
                            tl_geom
                            tl_vect
                            tl_img)
-  
+    if(HAVE_OPENCV)
+        target_link_libraries(${PROJECT_NAME} PRIVATE 
+                              ${OpenCV_LIBS})
+    endif(HAVE_OPENCV)
+
     if (HAVE_GDAL)
         target_link_libraries(${PROJECT_NAME} PRIVATE ${GDAL_LIBRARY})
     endif(HAVE_GDAL)

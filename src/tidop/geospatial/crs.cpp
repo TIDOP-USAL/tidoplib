@@ -39,14 +39,15 @@ namespace geospatial
 {
 
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
 
 Crs::Crs() 
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 #if _DEBUG
     /// Por ahora...
   : mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
 #else
   : mCrs(new OGRSpatialReference(nullptr))
+#endif
 #endif
 {
 }
@@ -56,12 +57,15 @@ Crs::Crs(const std::string &epsg,
          const std::string &geoid) 
   : mEpsg(epsg), 
     mGrid(grid), 
-    mGeoid(geoid),
+    mGeoid(geoid)
+#if defined HAVE_GDAL && defined HAVE_PROJ4
+  ,
 #if _DEBUG
     /// Por ahora...
     mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
 #else
     mCrs(new OGRSpatialReference(nullptr))
+#endif
 #endif
 {
   initFromEpsg();
@@ -70,12 +74,15 @@ Crs::Crs(const std::string &epsg,
 Crs::Crs(const Crs &crs)
   : mEpsg(crs.mEpsg),
     mGrid(crs.mGrid),
-    mGeoid(crs.mGeoid),
+    mGeoid(crs.mGeoid)
+#if defined HAVE_GDAL && defined HAVE_PROJ4
+  ,
 #if _DEBUG
 /// Por ahora...
     mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
 #else
     mCrs(new OGRSpatialReference(nullptr))
+#endif
 #endif
 {
   fromWktFormat(crs.toWktFormat());
@@ -84,6 +91,7 @@ Crs::Crs(const Crs &crs)
 
 Crs::~Crs()
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   if (mCrs) {
 #if _DEBUG
     OSRDestroySpatialReference(mCrs);
@@ -92,6 +100,7 @@ Crs::~Crs()
 #endif
     mCrs = nullptr;
   }
+#endif
 }
 
 
@@ -108,8 +117,12 @@ void Crs::setEpsgCode(const std::string &epsg)
 
 std::string Crs::toProjFormat() const
 {
-  char *c_prj = nullptr;
+  
   std::string s_prj;
+
+#if defined HAVE_GDAL && defined HAVE_PROJ4
+
+  char *c_prj = nullptr;
 
   try {
  
@@ -123,12 +136,14 @@ std::string Crs::toProjFormat() const
   }
 
   CPLFree(c_prj);
+#endif
 
   return s_prj;
 }
 
 void Crs::fromProjFormat(const std::string &proj)
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   try {
     OGRErr err = mCrs->importFromProj4(proj.c_str());
     if (err != 0) {
@@ -139,19 +154,25 @@ void Crs::fromProjFormat(const std::string &proj)
   } catch (...) {
     msgError("Unknow exception");
   }
+#endif
 }
 
 std::string Crs::toWktFormat() const
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   char *c_wtk = nullptr;
   mCrs->exportToWkt(&c_wtk);
   std::string s_wkt(c_wtk);
   CPLFree(c_wtk);
   return s_wkt;
+#else
+  return std::string();
+#endif
 }
 
 void Crs::fromWktFormat(const std::string &wkt)
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   try {
     OGRErr err = mCrs->importFromWkt(wkt.c_str());
     if (err != 0) {
@@ -162,31 +183,47 @@ void Crs::fromWktFormat(const std::string &wkt)
   } catch (...) {
     msgError("Unknow exception");
   }
+#endif
 }
 
 bool Crs::isGeocentric() const
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   return mCrs->IsGeocentric() != 0;
+#else
+  return false;
+#endif
 }
 
 bool Crs::isGeographic() const
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   return mCrs->IsGeographic() != 0;
+#else
+  return false;
+#endif
 }
 
 bool Crs::isValid() const
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   OGRErr err = mCrs->Validate();
   return err == 0;
+#else
+  return false;
+#endif
 }
 
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 OGRSpatialReference *Crs::getOGRSpatialReference()
 {
   return mCrs;
 }
+#endif
 
 void Crs::initFromEpsg()
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   try {
     if (mEpsg.size() <= 5) return;
     OGRErr err = mCrs->importFromEPSG(std::stoi(mEpsg.substr(5)));
@@ -201,10 +238,12 @@ void Crs::initFromEpsg()
   } catch (...) {
     msgError("Unknow exception");
   }
+#endif
 }
 
 void Crs::initGrid()
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   if (mGrid.empty() == false) {
     char *cprj = nullptr;
     mCrs->exportToProj4(&cprj);
@@ -212,10 +251,12 @@ void Crs::initGrid()
     mCrs->importFromProj4(crs_prj4.c_str());
     CPLFree(cprj);
   }
+#endif
 }
 
 void Crs::initGeoid()
 {
+#if defined HAVE_GDAL && defined HAVE_PROJ4
   if (mGeoid.empty() == false) {
     char *prjin = nullptr;
     mCrs->exportToProj4(&prjin);
@@ -223,9 +264,8 @@ void Crs::initGeoid()
     mCrs->importFromProj4(crs_prj4.c_str());
     CPLFree(prjin);
   }
+#endif
 }
-
-#endif // HAVE_GDAL
 
 } // End namespace  geospatial
 

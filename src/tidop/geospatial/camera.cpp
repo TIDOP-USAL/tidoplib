@@ -521,7 +521,7 @@ std::shared_ptr<Calibration> tl::CalibrationFactory::create(Calibration::CameraM
 Camera::Camera()
     : mMake(""),
       mModel(""),
-      mType("Radial 2"),
+      mType("OpenCV 1"),
       mFocal(1.),
       mWidth(0),
       mHeight(0),
@@ -534,7 +534,7 @@ Camera::Camera()
 Camera::Camera(const std::string &make, const std::string &model)
     : mMake(make),
       mModel(model),
-      mType("Radial 2"),
+      mType("OpenCV 1"),
       mFocal(1.),
       mWidth(0),
       mHeight(0),

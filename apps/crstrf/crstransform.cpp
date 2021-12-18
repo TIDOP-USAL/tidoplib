@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 {
 
   Path app_path = argv[0];
-  std::string cmd_name = app_path.baseName();
+  std::string cmd_name = app_path.baseName().toString();
 
   // Consola
   Console &console = Console::instance();

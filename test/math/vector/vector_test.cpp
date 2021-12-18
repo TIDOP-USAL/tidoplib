@@ -216,6 +216,53 @@ BOOST_FIXTURE_TEST_CASE(zero, VectorTest)
   BOOST_CHECK_EQUAL(3, _zero2.size());
 }
 
+BOOST_FIXTURE_TEST_CASE(unit, VectorTest)
+{
+  {
+    Vector<int, 3> one = Vector<int, 3>::unit();
+
+    BOOST_CHECK_EQUAL(1, one[0]);
+    BOOST_CHECK_EQUAL(1, one[1]);
+    BOOST_CHECK_EQUAL(1, one[2]);
+    BOOST_CHECK_EQUAL(3, one.size());
+  }
+
+  {
+    Vector<int> one = Vector<int>::unit(3);
+
+    BOOST_CHECK_EQUAL(1, one[0]);
+    BOOST_CHECK_EQUAL(1, one[1]);
+    BOOST_CHECK_EQUAL(1, one[2]);
+    BOOST_CHECK_EQUAL(3, one.size());
+  }
+}
+
+BOOST_FIXTURE_TEST_CASE(randon, VectorTest)
+{
+  {
+    Vector<int, 3> one = Vector<int, 3>::randon();
+
+    BOOST_CHECK_EQUAL(3, one.size());
+    BOOST_TEST(0 <= one[0]);
+    BOOST_TEST(100 >= one[0]);
+    BOOST_TEST(0 <= one[1]);
+    BOOST_TEST(100 >= one[1]);
+    BOOST_TEST(0 <= one[2]);
+    BOOST_TEST(100 >= one[2]);
+  }
+
+  {
+    Vector<int> one = Vector<int>::randon(3);
+
+    BOOST_CHECK_EQUAL(3, one.size());
+    BOOST_TEST(0 <= one[0]);
+    BOOST_TEST(100 >= one[0]);
+    BOOST_TEST(0 <= one[1]);
+    BOOST_TEST(100 >= one[1]);
+    BOOST_TEST(0 <= one[2]);
+    BOOST_TEST(100 >= one[2]);
+  }
+}
 
 /* Operaciones unarias */
 

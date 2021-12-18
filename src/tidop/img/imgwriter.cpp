@@ -114,7 +114,7 @@ public:
     
       this->close();
   
-      std::string driver_name = gdalDriverFromExtension(mFile.extension());
+      std::string driver_name = gdalDriverFromExtension(mFile.extension().toString());
      
       TL_ASSERT(!driver_name.empty(), "Image open fail. Driver not found")
 
@@ -154,7 +154,7 @@ public:
 
       if (bTempFile) {
 
-        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(mFile.extension()).c_str());
+        GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(gdalDriverFromExtension(mFile.extension().toString()).c_str());
         char **gdalOpt = nullptr;
         if (mImageOptions) {
           std::map<std::string, std::string> options = mImageOptions->activeOptions();
@@ -607,7 +607,7 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
 
   try {
   
-    std::string extension = file.extension();
+    std::string extension = file.extension().toString();
   
 #ifdef HAVE_GDAL
     if (gdalValidExtensions(extension)) {
@@ -615,12 +615,12 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
     } else
 #endif
 #ifdef HAVE_EDSDK
-    if (boost::iequals(extension, ".CR2")) {
+    if (compareInsensitiveCase(extension, ".CR2")) {
       image_writer = std::make_unique<ImageWriterCanon>(fileName);
     } else
 #endif 
     {
-      TL_THROW_EXCEPTION("Invalid Image Writer: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Image Writer: %s", file.fileName().toString().c_str());
     }
   
   } catch (...) {

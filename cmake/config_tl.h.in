@@ -83,4 +83,16 @@
 
 #cmakedefine HAVE_OPENBLAS
 
+
+// SIMD INTRINSICS
+#cmakedefine HAVE_TL_SSE 
+#cmakedefine HAVE_TL_SSE2
+#cmakedefine HAVE_TL_SSE3
+#cmakedefine HAVE_TL_SSE4_1
+#cmakedefine HAVE_TL_SSE4_2
+#cmakedefine HAVE_TL_AVX
+#cmakedefine HAVE_TL_AVX2
+#cmakedefine HAVE_TL_AVX512
+#cmakedefine HAVE_TL_SIMD_INTRINSICS
+
 #endif // TL_CONFIG_H

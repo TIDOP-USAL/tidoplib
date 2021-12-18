@@ -32,11 +32,11 @@
 #include <iterator>
 #include <vector>
 #include <array>
-#include <valarray>
+#include <random>
 
 #include "tidop/core/exception.h"
 #include "tidop/math/math.h"
-
+#include "tidop/math/simd.h"
 
 namespace tl
 {
@@ -386,9 +386,6 @@ public:
     : mData(size)
   {
     mData.assign(data, data + size);
-//    for (size_t i = 0; i < size; i++) {
-//      mData[i] = data[i];
-//    }
   }
 
   ~VectorBase() = default;
@@ -614,11 +611,152 @@ public:
   void normalize();
   double dotProduct(const Vector<T, _size> &vector) const;
 
+  Vector &operator+=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] += vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a += packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] += vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator-=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] -= vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a -= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] -= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator*=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+      for (size_t i = 0; i < this->size(); ++i) {
+        (*this)[i] *= vector[i];
+      }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a *= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] *= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
+  Vector &operator/=(const Vector &vector)
+  {
+    TL_ASSERT(this->size() == vector.size(), "")
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+    for (size_t i = 0; i < this->size(); ++i) {
+      (*this)[i] /= vector[i];
+    }
+#else
+    using namespace simd;
+
+    Packed<T> packed_a;
+    Packed<T> packed_b;
+
+    constexpr size_t packed_size = packed_a.size();
+
+    size_t max_vector = (this->size() / packed_size) * packed_size;
+    for (size_t i = 0; i < max_vector; i += packed_size) {
+
+      packed_a.loadAligned(&(*this)[i]);
+      packed_b.loadAligned(&vector[i]);
+
+      packed_a /= packed_b;
+      packed_a.storeAligned(&(*this)[i]);
+
+    }
+
+    for (size_t i = max_vector; i < this->size(); ++i) {
+      (*this)[i] /= vector[i];
+    }
+#endif
+
+    return *this;
+  }
+
   static Vector zero();
   static Vector zero(size_t size);
   static Vector unit();
   static Vector unit(size_t size);
-
+  static Vector randon();
+  static Vector randon(size_t size);
 };
 
 
@@ -718,7 +856,7 @@ Vector<T, _size> Vector<T, _size>::zero()
 { 
   Vector<T, _size> vector;
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = static_cast<size_t>(0);
+    vector[i] = consts::zero<T>;
   }
   return vector;
 }
@@ -727,16 +865,18 @@ template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::zero(size_t size)
 { 
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
-  return Vector<T>(size, static_cast<size_t>(0));
+  return Vector<T>(size, consts::zero<T>);
 }
 
 template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::unit()
 {
   Vector<T, _size> vector;
+
   for (size_t i = 0; i < vector.size(); i++) {
-    vector[i] = static_cast<size_t>(1);
+    vector[i] = consts::one<T>;
   }
+
   return vector;
 }
 
@@ -744,7 +884,41 @@ template<typename T, size_t _size> inline
 Vector<T, _size> Vector<T, _size>::unit(size_t size)
 {
   static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
-  return Vector<T>(size, static_cast<size_t>(1));
+  return Vector<T>(size, consts::one<T>);
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> Vector<T, _size>::randon()
+{
+  Vector<T, _size> vector;
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = distribution(random_number_engine);
+  }
+
+  return vector;
+}
+
+template<typename T, size_t _size> inline
+Vector<T, _size> Vector<T, _size>::randon(size_t size)
+{
+  static_assert(_size == DynamicVector, "Fixed-size vector not support resize");
+
+  Vector<T, _size> vector(size);
+
+  std::random_device rd;
+  std::mt19937 random_number_engine(rd());
+  std::uniform_real_distribution<> distribution(0.0, 99.0);
+
+  for (size_t i = 0; i < vector.size(); i++) {
+    vector[i] = distribution(random_number_engine);
+  }
+
+  return vector;
 }
 
 /* Operaciones unarias */
@@ -777,17 +951,17 @@ Vector<T, _size> operator + (const Vector<T, _size> &v0,
   return v += v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator += (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
-
-  for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] += v1[i];
-  }
-  return v0;
-}
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator += (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] += v1[i];
+//  }
+//  return v0;
+//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &v0,
@@ -797,36 +971,61 @@ Vector<T, _size> operator - (const Vector<T, _size> &v0,
   return v -= v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] -= v1[i];
+//  }
+//  return v0;
+//}
 
+template<typename T, size_t _size>
+Vector<T, _size> operator * (const Vector<T, _size> &v0,
+                             const Vector<T, _size> &v1)
+{
+  size_t vector_size = v0.size();
+  TL_ASSERT(vector_size == v1.size(), "")
+
+  Vector<T, _size> result(v0);
+
+#ifndef HAVE_TL_SIMD_INTRINSICS
+  
   for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] -= v1[i];
+    result[i] *= v1[i];
   }
-  return v0;
-}
 
-template<typename T, size_t _size>
-Vector<T, _size> operator*(const Vector<T, _size> &v0,
-                           const Vector<T, _size> &v1)
-{
-  Vector<T, _size> result = v0;
-  return result *= v1;
-}
+#else
+    
+  using namespace simd;
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator *= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
+  Packed<T> packed_a;
+  Packed<T> packed_b;
 
-  for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] *= v1[i];
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_vector = (vector_size / packed_size) * packed_size;
+
+  
+
+  for (size_t i = 0; i < max_vector; i += packed_size) {
+
+    packed_a.loadAligned(&result[i]);
+    packed_b.loadAligned(&v1[i]);
+
+    packed_a *= packed_b;
+    packed_a.storeAligned(&result[i]);
   }
-  return v0;
+
+  for (size_t i = max_vector; i < v0.size(); ++i) {
+    result[i] *= v1[i];
+  }
+
+#endif
+
+  return result;
 }
 
 template<typename T, size_t _size>
@@ -837,17 +1036,17 @@ Vector<T, _size> operator / (const Vector<T, _size> &v0,
   return result /= v1;
 }
 
-template<typename T, size_t _size>
-Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
-                               const Vector<T, _size> &v1)
-{
-  TL_ASSERT(v0.size() == v1.size(), "")
-
-  for (size_t i = 0; i < v0.size(); i++) {
-    v0[i] /= v1[i];
-  }
-  return v0;
-}
+//template<typename T, size_t _size>
+//Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
+//                               const Vector<T, _size> &v1)
+//{
+//  TL_ASSERT(v0.size() == v1.size(), "")
+//
+//  for (size_t i = 0; i < v0.size(); i++) {
+//    v0[i] /= v1[i];
+//  }
+//  return v0;
+//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (const Vector<T, _size> &vector, 

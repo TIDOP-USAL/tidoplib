@@ -32,7 +32,7 @@ using namespace tl::geospatial;
 
 /* CrsTransformTest */
 
-#ifdef HAVE_GDAL
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 
 BOOST_AUTO_TEST_SUITE(CrsTransformTestSuite)
 

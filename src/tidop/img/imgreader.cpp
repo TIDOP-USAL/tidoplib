@@ -759,19 +759,19 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
   
   try {
     
-    std::string extension = file.extension();
+    std::string extension = file.extension().toString();
 #ifdef HAVE_GDAL
     if (gdalValidExtensions(extension)) {
       image_reader = std::make_unique<ImageReaderGdal>(file);
     } else
 #endif
 #ifdef HAVE_EDSDK
-    if (boost::iequals(extension, ".CR2")) {
+    if (compareInsensitiveCase(extension, ".CR2")) {
       image_reader = std::make_unique<ImageReaderCanon>(file);
     } else
 #endif
     {
-      TL_THROW_EXCEPTION("Invalid Image Reader: %s", file.fileName().c_str());
+      TL_THROW_EXCEPTION("Invalid Image Reader: %s", file.fileName().toString().c_str());
     }
   
   } catch (...) {
