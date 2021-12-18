@@ -69,27 +69,27 @@ struct PathTest
 BOOST_FIXTURE_TEST_CASE(default_constructor, PathTest)
 {
   BOOST_CHECK_EQUAL(std::string{}, path_empty.toString());
-  BOOST_CHECK_EQUAL("", path_empty.fileName());
-  BOOST_CHECK_EQUAL("", path_empty.baseName());
-  BOOST_CHECK_EQUAL(std::string{}, path_empty.extension());
+  BOOST_CHECK_EQUAL(Path{}, path_empty.fileName());
+  BOOST_CHECK_EQUAL(Path{}, path_empty.baseName());
+  BOOST_CHECK_EQUAL(Path{}, path_empty.extension());
   BOOST_CHECK_EQUAL(true, path_empty.empty());
 }
 
 BOOST_FIXTURE_TEST_CASE(Constructor, PathTest)
 {
   BOOST_CHECK_EQUAL("D:\\Desarrollo\\Libs", path->toString());
-  BOOST_CHECK_EQUAL("Libs", path->fileName());
-  BOOST_CHECK_EQUAL("Libs", path->baseName());
-  BOOST_CHECK_EQUAL("", path->extension());
+  BOOST_CHECK_EQUAL(Path("Libs"), path->fileName());
+  BOOST_CHECK_EQUAL(Path("Libs"), path->baseName());
+  BOOST_CHECK_EQUAL(Path(""), path->extension());
   BOOST_CHECK_EQUAL(false, path->empty());
 }
 
 BOOST_FIXTURE_TEST_CASE(set_path, PathTest)
 {
   BOOST_CHECK_EQUAL("C:\\temp\\file.txt", path_file.toString());
-  BOOST_CHECK_EQUAL("file.txt", path_file.fileName());
-  BOOST_CHECK_EQUAL("file", path_file.baseName());
-  BOOST_CHECK_EQUAL(".txt", path_file.extension());
+  BOOST_CHECK_EQUAL(Path("file.txt"), path_file.fileName());
+  BOOST_CHECK_EQUAL(Path("file"), path_file.baseName());
+  BOOST_CHECK_EQUAL(Path(".txt"), path_file.extension());
   BOOST_CHECK_EQUAL(false, path_file.empty());
 
   BOOST_CHECK_EQUAL("C:\\temp\\áñ.txt", path2.toString());
@@ -99,10 +99,10 @@ BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
 {
   Path path("C:\\temp\\file.xyz");
   path.replaceExtension("csv");
-  BOOST_CHECK_EQUAL("C:\\temp\\file.csv", path.toString());
-  BOOST_CHECK_EQUAL("file.csv", path.fileName());
-  BOOST_CHECK_EQUAL("file", path.baseName());
-  BOOST_CHECK_EQUAL(".csv", path.extension());
+  BOOST_CHECK_EQUAL(Path("C:\\temp\\file.csv"), path.toString());
+  BOOST_CHECK_EQUAL(Path("file.csv"), path.fileName());
+  BOOST_CHECK_EQUAL(Path("file"), path.baseName());
+  BOOST_CHECK_EQUAL(Path(".csv"), path.extension());
   BOOST_CHECK_EQUAL(false, path.empty());
 }
 

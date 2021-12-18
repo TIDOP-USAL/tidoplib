@@ -337,6 +337,20 @@ TL_EXPORT int splitToNumbers(const std::string &cad, std::vector<double> &vOut, 
  */
 TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const std::string &str_new);
 
+/*!
+ * \brief Separa una cadena
+ *
+ * \param[in] in Cadena de entrada
+ * \param[in] chs cadena de separación. Si se omite toma por defecto ","
+ * \return vector con las cadenas resultantes
+ * <h4>Ejemplo</h4>
+ * \code
+ * char *in = "cadena1,cadena2";
+ * std::vector<std::string> out;
+ * split(in, out, ",")
+ * \endcode
+ */
+TL_EXPORT std::vector<std::string> split(const std::string &in, const std::string &chs = ",");
 
 /*!
  * \brief Separa una cadena
@@ -356,7 +370,10 @@ TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const
  * }
  * \endcode
  */
+#ifdef TL_ENABLE_DEPRECATED_METHODS
+TL_DEPRECATED("std::vector<std::string> split(const std::string &, const std::string &)", "2.0")
 TL_EXPORT int split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
+#endif
 
 /*! \} */ // end of stringOper
 

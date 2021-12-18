@@ -57,41 +57,9 @@ public:
 
   Path() = default;
 
-  explicit Path(const std::string &path)
-    : mPath(path)
+  explicit Path(const fs::path &path)
+    : mPath(path.native())
   {
-    mPath = mPath.native();
-  }
-
-  explicit Path(const std::wstring &path)
-    : mPath(path)
-  {
-    mPath = mPath.native();
-  }
-
-  std::string toString() const
-  {
-    return mPath.string();
-  }
-  
-  std::wstring toWString() const
-  {
-    return mPath.wstring();
-  }
-
-  std::string fileName() const
-  {
-    return mPath.filename().string();
-  }
-
-  std::string baseName() const
-  {
-    return mPath.stem().string();
-  }
-
-  std::string extension() const
-  {
-    return mPath.extension().string();
   }
 
   bool isDirectory() const
@@ -114,61 +82,14 @@ public:
     return fs::exists(mPath);
   }
 
-  std::string replaceFileName(const std::string &fileName)
+  const fs::path &ref() const
   {
-    if (mPath.has_filename()) {
-      mPath.remove_filename();
-      mPath.append(fileName);
-    }
-    return mPath.string();
+    return mPath;
   }
 
-  std::wstring replaceFileName(const std::wstring &fileName)
+  fs::path &ref()
   {
-    if (mPath.has_filename()) {
-      mPath.remove_filename();
-      mPath.append(fileName);
-    }
-    return mPath.wstring();
-  }
-
-  std::string replaceBaseName(const std::string &baseName)
-  {
-    if (mPath.has_filename()) {
-      std::string ext = mPath.extension().string();
-      std::string file_name = baseName + ext;
-      mPath.remove_filename();
-      mPath.append(file_name);
-    }
-    return mPath.string();
-  }
-
-  std::wstring replaceBaseName(const std::wstring &baseName)
-  {
-    if (mPath.has_filename()) {
-      std::wstring ext = mPath.extension().wstring();
-      std::wstring file_name = baseName + ext;
-      mPath.remove_filename();
-      mPath.append(file_name);
-    }
-    return mPath.wstring();
-  }
-
-  std::string replaceExtension(const std::string &extension)
-  {
-    mPath.replace_extension(extension);
-    return mPath.string();
-  }
-
-  std::string parent()
-  {
-    fs::path parent_path = mPath.parent_path();
-    return parent_path.string();
-  }
-
-  void append(const std::string &text)
-  {
-    mPath.append(text);
+    return mPath;
   }
 
 private:
@@ -237,32 +158,32 @@ void Path::setPath(const std::wstring &path)
 
 std::string Path::toString() const
 {
-  return mPath->toString();
+  return mPath->ref().string();
 }
 
 std::wstring Path::toWString() const
 {
-  return mPath->toWString();
+  return mPath->ref().wstring();
 }
 
-std::string Path::fileName() const
+Path Path::fileName() const
 {
-  return mPath->fileName();
+  return Path(mPath->ref().filename().native());
 }
 
-std::string Path::baseName() const
+Path Path::baseName() const
 {
-  return mPath->baseName();
+  return Path(mPath->ref().stem().native());
 }
 
-std::string Path::extension() const
+Path Path::extension() const
 {
-  return mPath->extension();
+  return Path(mPath->ref().extension().native());
 }
 
 Path Path::parentPath() const
 {
-  Path parent_path(mPath->parent());
+  Path parent_path(mPath->ref().parent_path().native());
   return parent_path;
 }
 
@@ -292,7 +213,7 @@ std::list<Path> Path::list(const std::string &extension)
 
   fs::directory_iterator it_end;
 
-  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+  for (fs::directory_iterator it(mPath->ref()); it != it_end; ++it) {
 
     if (!fs::is_regular_file(it->status())) continue;
 
@@ -315,7 +236,7 @@ std::list<Path> Path::list(const std::regex &filter)
 
   fs::directory_iterator it_end;
 
-  for (fs::directory_iterator it(mPath->toString()); it != it_end; ++it) {
+  for (fs::directory_iterator it(mPath->ref()); it != it_end; ++it) {
 
 
     if (!fs::is_regular_file(it->status())) continue;
@@ -334,53 +255,113 @@ std::list<Path> Path::list(const std::regex &filter)
 
 Path &Path::replaceFileName(const std::string &fileName)
 {
-  mPath->replaceFileName(fileName);
+  fs::path& _path = mPath->ref();
+
+  if (_path.has_filename()) {
+    _path.remove_filename();
+    _path.append(fileName);
+  }
+
   return *this;
 }
 
 Path &Path::replaceFileName(const std::wstring &fileName)
 {
-  mPath->replaceFileName(fileName);
+  fs::path &_path = mPath->ref();
+
+  if (_path.has_filename()) {
+    _path.remove_filename();
+    _path.append(fileName);
+  }
+
   return *this;
+}
+
+Path &Path::replaceFileName(const Path &fileName)
+{
+  return replaceFileName(fileName.toWString());
 }
 
 Path &Path::replaceBaseName(const std::string &baseName)
 {
-  mPath->replaceBaseName(baseName);
+  fs::path &_path = mPath->ref();
+
+  if (_path.has_filename()) {
+    std::string ext = _path.extension().string();
+    std::string file_name = baseName + ext;
+    _path.remove_filename();
+    _path.append(file_name);
+  }
+
   return *this;
 }
 
 Path &Path::replaceBaseName(const std::wstring &baseName)
 {
-  mPath->replaceBaseName(baseName);
+  fs::path &_path = mPath->ref();
+
+  if (_path.has_filename()) {
+    std::wstring ext = _path.extension().wstring();
+    std::wstring file_name = baseName + ext;
+    _path.remove_filename();
+    _path.append(file_name);
+  }
+
   return *this;
+}
+
+Path &Path::replaceBaseName(const Path &baseName)
+{
+  return replaceBaseName(baseName.toWString());
 }
 
 Path &Path::replaceExtension(const std::string &extension)
 {
-  mPath->replaceExtension(extension);
+  mPath->ref().replace_extension(extension);
   return *this;
+}
+
+Path &Path::replaceExtension(const std::wstring &extension)
+{
+  mPath->ref().replace_extension(extension);
+  return *this;
+}
+
+Path &Path::replaceExtension(const Path &extension)
+{
+  return replaceExtension(extension.toString());
 }
 
 Path &Path::append(const std::string &text)
 {
-  mPath->append(text);
+  mPath->ref().append(text);
   return *this;
+}
+
+Path &Path::append(const std::wstring &text)
+{
+  mPath->ref().append(text);
+  return *this;
+}
+
+Path &Path::append(const Path &text)
+{
+  return append(text.toWString());
 }
 
 bool Path::createDirectory() const
 {
-  return fs::create_directory(mPath->toString());
+  return fs::create_directory(mPath->ref());
 }
 
 bool Path::createDirectories() const
 {
-  return fs::create_directories(mPath->toString());
+  return fs::create_directories(mPath->ref());
 }
 
 void Path::removeDirectory() const
 {
-  fs::remove_all(mPath->toString());
+  fs::remove_all(mPath->ref());
 }
 
 void Path::clear()
@@ -390,14 +371,9 @@ void Path::clear()
 
 /* Static methods */
 
-bool Path::exists(const std::string &path)
+bool Path::exists(const Path &path)
 {
-  return Path(path).exists();
-}
-
-bool Path::exists(const std::wstring &path)
-{
-  return Path(path).exists();
+  return path.exists();
 }
 
 Path Path::tempPath()
@@ -412,6 +388,16 @@ Path Path::tempDirectory()
   return Path(dir);
 }
 
+int Path::compare(const Path &path) const
+{
+  return mPath->ref().compare(path.toString());
+}
+
+bool Path::createDirectory(const Path &directory)
+{
+  return fs::create_directory(directory.toWString());
+}
+
 bool Path::createDirectory(const std::string &directory)
 {
   return fs::create_directory(directory);
@@ -420,6 +406,11 @@ bool Path::createDirectory(const std::string &directory)
 bool Path::createDirectory(const std::wstring &directory)
 {
   return fs::create_directory(directory);
+}
+
+bool Path::createDirectories(const Path &directory)
+{
+  return fs::create_directories(directory.toWString());
 }
 
 bool Path::createDirectories(const std::string &directory)
@@ -432,6 +423,11 @@ bool Path::createDirectories(const std::wstring &directory)
   return fs::create_directories(directory);
 }
 
+void Path::removeDirectory(const Path &directory)
+{
+  fs::remove_all(directory.toWString());
+}
+
 void Path::removeDirectory(const std::string &directory)
 {
   fs::remove_all(directory);
@@ -440,6 +436,18 @@ void Path::removeDirectory(const std::string &directory)
 void Path::removeDirectory(const std::wstring &directory)
 {
   fs::remove_all(directory);
+}
+
+/* Override operators */
+
+bool Path::operator==(const Path& path) const
+{
+  return this->compare(path) == 0;
+}
+
+bool Path::operator!=(const Path& path) const
+{
+  return this->compare(path) != 0;
 }
 
 
@@ -460,7 +468,6 @@ Path TemporalDir::path() const
 {
   return mPath;
 }
-
 
 
 

@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 {
 
   Path app_path = argv[0];
-  std::string cmd_name = app_path.baseName();
+  std::string cmd_name = app_path.baseName().toString();
 
   /// Consola
   Console &console = Console::instance();
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 
   try {
 
-    if (!input_path.exists()) TL_THROW_EXCEPTION("Image doesn't exist: %s", input_path.fileName().c_str());
+    if (!input_path.exists()) TL_THROW_EXCEPTION("Image doesn't exist: %s", input_path.fileName().toString().c_str());
 
     cv::Mat img = cv::imread(input_path.toString(), cv::IMREAD_IGNORE_ORIENTATION | cv::IMREAD_GRAYSCALE);
     if (img.empty()) TL_THROW_EXCEPTION("Could not load image: %s", input_path.toString());
@@ -161,9 +161,9 @@ int main(int argc, char** argv)
     std::vector<cv::KeyPoint> key_points = keypointDetector->detect(img);
 
     uint64_t time = chrono.stop();
-    msgInfo("%i Keypoints detected in image %s [Time: %f seconds]", key_points.size(), input_path.fileName().c_str(), time);
+    msgInfo("%i Keypoints detected in image %s [Time: %f seconds]", key_points.size(), input_path.fileName().toString().c_str(), time);
 
-    msgInfo("Computing keypoints descriptors for image %s", input_path.fileName().c_str());
+    msgInfo("Computing keypoints descriptors for image %s", input_path.fileName().toString().c_str());
 
     chrono.reset();
     chrono.run();
@@ -171,7 +171,7 @@ int main(int argc, char** argv)
     cv::Mat descriptors = descriptorExtractor->extract(img, key_points);
 
     time = chrono.stop();
-    msgInfo("Descriptors computed for image %s [Time: %f seconds]", input_path.fileName().c_str(), time);
+    msgInfo("Descriptors computed for image %s [Time: %f seconds]", input_path.fileName().toString().c_str(), time);
 
     std::unique_ptr<FeaturesWriter> writer = FeaturesWriterFactory::createWriter(output_path);
     writer->setKeyPoints(key_points);

@@ -64,23 +64,30 @@ endif()
 add_definitions(-DUNICODE)
 
 if(MSVC)
+
   if(CMAKE_CL_64)
     set(TL_ARCH x64)
-  elseif((CMAKE_GENERATOR MATCHES "ARM") OR ("${arch_hint}" STREQUAL "ARM") OR (CMAKE_VS_EFFECTIVE_PLATFORMS MATCHES "ARM|arm"))
-    set(TL_ARCH ARM)
+  #elseif((CMAKE_GENERATOR MATCHES "ARM") OR ("${arch_hint}" STREQUAL "ARM") OR (CMAKE_VS_EFFECTIVE_PLATFORMS MATCHES "ARM|arm"))
+  #  set(TL_ARCH ARM)
   else()
     set(TL_ARCH x86)
   endif()
+
   if(MSVC_VERSION EQUAL 1400)
-    set(TL_RUNTIME vc8)
+    #set(TL_RUNTIME vc8)
+    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
   elseif(MSVC_VERSION EQUAL 1500)
-    set(TL_RUNTIME vc9)
+    #set(TL_RUNTIME vc9)
+    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
   elseif(MSVC_VERSION EQUAL 1600)
-    set(TL_RUNTIME vc10)
+    #set(TL_RUNTIME vc10)
+    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
   elseif(MSVC_VERSION EQUAL 1700)
-    set(TL_RUNTIME vc11)
+    #set(TL_RUNTIME vc11)
+    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
   elseif(MSVC_VERSION EQUAL 1800)
-    set(TL_RUNTIME vc12)
+    #set(TL_RUNTIME vc12)
+    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
   elseif(MSVC_VERSION EQUAL 1900)
     set(TL_RUNTIME vc14)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
@@ -97,6 +104,7 @@ if(MSVC)
     message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
   endif()
 elseif(MINGW)
+
   set(TL_RUNTIME mingw)
 
   if(MINGW64)
@@ -104,7 +112,10 @@ elseif(MINGW)
   else()
     set(TL_ARCH x86)
   endif()
+
 endif()
+
+
 
 # Configuracion especifica de Visual Studio
 if(MSVC)
@@ -124,8 +135,77 @@ if(MSVC)
 
   # https://docs.microsoft.com/es-es/cpp/build/reference/zc-cplusplus?view=vs-2019
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++latest")
-  
+
 endif()
+
+
+
+
+
+
+
+unset(HAVE_TL_SSE CACHE)
+unset(HAVE_TL_SSE2 CACHE)
+unset(HAVE_TL_SSE3 CACHE)
+unset(HAVE_TL_SSE4_1 CACHE)
+unset(HAVE_TL_SSE4_2 CACHE)
+unset(HAVE_TL_AVX CACHE)
+unset(HAVE_TL_AVX2 CACHE)
+unset(HAVE_TL_SIMD_INTRINSICS CACHE)
+
+OPTION(BUILD_WITH_SIMD_INTRINSICS "Use SIMD intrinsics" ON )
+
+if (BUILD_WITH_SIMD_INTRINSICS)
+
+    set(SIMD "SSE3" CACHE STRING "")
+    set_property(CACHE SIMD PROPERTY STRINGS SSE SSE2 SSE3 SSE4_1 SSE4_2 AVX AVX2)
+
+    set(HAVE_TL_SIMD_INTRINSICS TRUE)
+
+    message(STATUS "Build with SIMD intrinsics [${SIMD}]")
+
+    if(${SIMD} STREQUAL "AVX2")
+      set(HAVE_TL_AVX2 TRUE)
+      set(HAVE_TL_AVX TRUE)
+      set(HAVE_TL_SSE4_2 TRUE)
+      set(HAVE_TL_SSE4_1 TRUE)
+      set(HAVE_TL_SSE3 TRUE)
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "AVX")
+      set(HAVE_TL_AVX TRUE)
+      set(HAVE_TL_SSE4_2 TRUE)
+      set(HAVE_TL_SSE4_1 TRUE)
+      set(HAVE_TL_SSE3 TRUE)
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE4_2")
+      set(HAVE_TL_SSE4_2 TRUE)
+      set(HAVE_TL_SSE4_1 TRUE)
+      set(HAVE_TL_SSE3 TRUE)
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE4_1")
+      set(HAVE_TL_SSE4_1 TRUE)
+      set(HAVE_TL_SSE3 TRUE)
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE3")
+      set(HAVE_TL_SSE3 TRUE)
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE2")
+      set(HAVE_TL_SSE2 TRUE)
+      set(HAVE_TL_SSE TRUE)
+    elseif(${SIMD} STREQUAL "SSE")
+      set(HAVE_TL_SSE TRUE)
+    else()
+      set(HAVE_TL_SIMD_INTRINSICS FALSE)
+    endif()
+
+else()
+    unset(SIMD CACHE)
+endif(BUILD_WITH_SIMD_INTRINSICS)
 
 
 if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)

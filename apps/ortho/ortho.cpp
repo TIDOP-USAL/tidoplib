@@ -541,7 +541,7 @@ void orthoMosaic(Path &optimal_footprint_path,
           compensator->apply(0, corner, compensate_image, mask_full_size);
 
           Path orto_compensate(ortho_to_compensate);
-          std::string name = orto_compensate.baseName() + "_compensate.png";
+          std::string name = orto_compensate.baseName().toString() + "_compensate.png";
           orto_compensate.replaceFileName(name);
           std::unique_ptr<ImageWriter> image_writer = ImageWriterFactory::createWriter(orto_compensate.toString());
           image_writer->open();
@@ -551,7 +551,7 @@ void orthoMosaic(Path &optimal_footprint_path,
             image_writer->setGeoreference(image_reader->georeference());
             image_writer->write(compensate_image);
             image_writer->close();
-            msgInfo("Image Compensate: %s", orto_compensate.fileName().c_str());
+            msgInfo("Image Compensate: %s", orto_compensate.fileName().toString().c_str());
             compensated_orthos.push_back(orto_compensate.toString());
           }
 
@@ -563,7 +563,7 @@ void orthoMosaic(Path &optimal_footprint_path,
           mask_finder = mask_finder & mask_full_size;
 
           Path orto_seam(ortho_to_compensate);
-          name = orto_seam.baseName() + "_seam.tif";
+          name = orto_seam.baseName().toString() + "_seam.tif";
           orto_seam.replaceFileName(name);
           image_writer = ImageWriterFactory::createWriter(orto_seam.toString());
           image_writer->open();
@@ -573,7 +573,7 @@ void orthoMosaic(Path &optimal_footprint_path,
             image_writer->setGeoreference(image_reader->georeference());
             image_writer->write(mask_finder);
             image_writer->close();
-            msgInfo("Image seam: %s", orto_seam.fileName().c_str());
+            msgInfo("Image seam: %s", orto_seam.fileName().toString().c_str());
             ortho_seams.push_back(orto_seam.toString());
           }
 
@@ -705,7 +705,7 @@ int main(int argc, char** argv)
 {
 
   Path app_path = argv[0];
-  std::string cmd_name = app_path.baseName();
+  std::string cmd_name = app_path.baseName().toString();
 
   // Consola
   Console &console = Console::instance();
@@ -806,7 +806,7 @@ int main(int argc, char** argv)
     std::vector<WindowD> grid = findGrid(graph_orthos);
     
     Path optimal_footprint_path(graph_orthos);
-    std::string name = optimal_footprint_path.baseName() + "_optimal";
+    std::string name = optimal_footprint_path.baseName().toString() + "_optimal";
     optimal_footprint_path.replaceBaseName(name);
     findOptimalFootprint(graph_orthos, grid, optimal_footprint_path, crs);
     
