@@ -48,6 +48,7 @@ else()
               crs.h
               crscache.cpp
               crscache.h
+			  crstransf.cpp
               crstransf.h
               #dtm.cpp
               #dtm.h

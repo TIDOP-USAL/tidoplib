@@ -39,7 +39,9 @@ namespace geospatial
 
 #if defined HAVE_GDAL && defined HAVE_PROJ4
 
-template<typename Point_t> class CrsTransform;
+//template<typename Point_t> class CrsTransform;
+
+class CrsTransform;
 
 /*!
  * \brief Clase sistema de referencia
@@ -84,7 +86,7 @@ protected:
 
   OGRSpatialReference *getOGRSpatialReference( );
 
-  template<typename Point_t> friend class CrsTransform;
+  /*template<typename Point_t> */friend class CrsTransform;
 
 private:
 

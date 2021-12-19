@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(constructor_default, CameraTest)
 {
   BOOST_CHECK_EQUAL("", camera1->make());
   BOOST_CHECK_EQUAL("", camera1->model());
-  BOOST_CHECK_EQUAL("Radial 2", camera1->type());
+  BOOST_CHECK_EQUAL("OpenCV 1", camera1->type());
   BOOST_CHECK_EQUAL(1., camera1->focal());
   BOOST_CHECK_EQUAL(0, camera1->width());
   BOOST_CHECK_EQUAL(0, camera1->height());
