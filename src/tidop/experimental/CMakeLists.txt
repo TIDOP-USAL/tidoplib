@@ -38,12 +38,18 @@ if (BUILD_TL_EXPERIMENTAL)
                 csv.cpp
                 csv.h)
     
-    target_include_directories(${PROJECT_NAME} INTERFACE 
-                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include/tidop/experimental>)
-  
-    target_link_libraries(${PROJECT_NAME} PRIVATE tl_core)
-        
+    #target_include_directories(${PROJECT_NAME} PUBLIC 
+    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+    #                           $<INSTALL_INTERFACE:include>)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE 
+                          tl_core
+                          tl_graphic
+                          ${Boost_FILESYSTEM_LIBRARY} 
+                          ${Boost_SYSTEM_LIBRARY}
+                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
+
     if(HAVE_OPENCV)
         target_link_libraries(${PROJECT_NAME} PRIVATE 
                               ${OpenCV_LIBS})
@@ -82,7 +88,7 @@ if (BUILD_TL_EXPERIMENTAL)
   set(HAVE_TL_EXPERIMENTAL YES CACHE INTERNAL "")
   message(STATUS "TidopLib::${PROJECT_NAME} enabled")
 
-elseif(BUILD_TL_CORE)
+elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
      
     message(STATUS "TidopLib::${PROJECT_NAME} disabled")
 

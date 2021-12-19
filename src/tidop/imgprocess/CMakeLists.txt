@@ -51,9 +51,9 @@ if (BUILD_TL_IMG_PROCESS)
                 morphologicaloper.cpp
                 morphologicaloper.h)
     
-    target_include_directories(${PROJECT_NAME} PUBLIC
-                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include/tidop/imgprocess>)
+    #target_include_directories(${PROJECT_NAME} PUBLIC
+    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+    #                           $<INSTALL_INTERFACE:include>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
                           tl_core

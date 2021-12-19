@@ -28,7 +28,7 @@
 
 #include <opencv2/imgproc.hpp>
 
-#include <boost/thread.hpp>
+//#include <boost/thread.hpp>
 
 struct sortByStrength
 {
@@ -80,14 +80,14 @@ std::vector<cv::KeyPoint> MsdDetector::detect(cv::Mat &img)
   }
 
   for (int r = 0; r < m_cur_n_scales; r++) {
-    unsigned nThreads = boost::thread::hardware_concurrency();
+    unsigned nThreads = std::thread::hardware_concurrency();
     unsigned stepThread = (m_scaleSpace[r].cols - 2 * border) / nThreads;
 
-    std::vector<boost::thread*> threads;
+    std::vector<std::thread*> threads;
     for (unsigned i = 0; i < nThreads - 1; i++) {
-      threads.push_back(new boost::thread(&MsdDetector::contextualSelfDissimilarity, this, m_scaleSpace[r], border + i*stepThread, border + (i + 1)*stepThread, saliency[r]));
+      threads.push_back(new std::thread(&MsdDetector::contextualSelfDissimilarity, this, m_scaleSpace[r], border + i*stepThread, border + (i + 1)*stepThread, saliency[r]));
     }
-    threads.push_back(new boost::thread(&MsdDetector::contextualSelfDissimilarity, this, m_scaleSpace[r], border + (nThreads - 1)*stepThread, m_scaleSpace[r].cols - border, saliency[r]));
+    threads.push_back(new std::thread(&MsdDetector::contextualSelfDissimilarity, this, m_scaleSpace[r], border + (nThreads - 1)*stepThread, m_scaleSpace[r].cols - border, saliency[r]));
 
     for (unsigned i = 0; i < threads.size(); i++) {
       threads[i]->join();

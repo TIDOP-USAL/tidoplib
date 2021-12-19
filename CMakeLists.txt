@@ -64,6 +64,17 @@ else()
 endif()
 
 
+
+# General configuration
+
+
+# C++ standar
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 # Se activa el uso de carpetas para una mejor organización en Visual Studio
 set_property(GLOBAL
              PROPERTY USE_FOLDERS ON)
@@ -76,13 +87,15 @@ set(CMAKE_DEBUG_POSTFIX d)
 # Tipos de configuración de compilación disponibles
 #set(CMAKE_CONFIGURATION_TYPES Release;Debug)
 
+#if(NOT CMAKE_BUILD_TYPE)
+#  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+#endif()
+
 # Macro para depuración
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+
 
 
 # Directivas del preprocesador
@@ -105,6 +118,9 @@ if(MSVC)
   else()
     message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
   endif()
+
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+
 elseif(MINGW)
 
   set(TL_RUNTIME mingw)
@@ -405,7 +421,7 @@ if(WITH_GDAL)
     message(STATUS "  GDAL not found")
   else()
     set(HAVE_GDAL YES)
-    include_directories(${GDAL_INCLUDE_DIR})
+    #include_directories(${GDAL_INCLUDE_DIR})
   endif()
 
 endif(WITH_GDAL)
@@ -502,6 +518,7 @@ if(WITH_OPENMP)
   
   if(OpenMP_FOUND)
     set(HAVE_OPENMP YES)
+    message(STATUS "OpenMP enable}")
   else()
     set(HAVE_OPENMP NO)
   endif()
@@ -538,19 +555,21 @@ add_subdirectory(doc)
 add_subdirectory(test)
 
 
-#cabecera con la configuración
-configure_file("${PROJECT_SOURCE_DIR}/cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
+# TidopLib config file
+configure_file("cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
 
 
 ##########################################################################
 # Install                                                                #
 ##########################################################################
 
+include(GNUInstallDirs)
+
 # TidopLib config file
 install(FILES ${PROJECT_BINARY_DIR}/config_tl.h 
         DESTINATION include)
 
-include(GNUInstallDirs)
+
 
 
 #set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")

@@ -63,15 +63,22 @@ if(BUILD_TL_GEOMETRY)
    
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include/tidop/geometry>)
+                               $<INSTALL_INTERFACE:include>)
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
-                          tl_core tl_math)
-    if(HAVE_OPENBLAS)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
-        add_definitions(-DHAVE_LAPACK_CONFIG_H)
-        add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    endif(HAVE_OPENBLAS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+                          tl_core
+                          tl_math
+                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
+
+    #if(HAVE_OPENBLAS)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${LAPACKE_LIBRARIES})
+    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+    #endif(HAVE_OPENBLAS)
 
 
     set_property(TARGET ${PROJECT_NAME} 

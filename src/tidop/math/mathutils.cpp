@@ -32,13 +32,13 @@
 #include "tidop/math/algebra/qr.h"
 #include "tidop/math/algebra/lu.h"
 
-#ifdef HAVE_EIGEN
-TL_SUPPRESS_WARNINGS
-#include <Eigen/SVD>
-#include <Eigen/LU>
-#include <Eigen/QR>
-TL_DEFAULT_WARNINGS
-#endif
+//#ifdef HAVE_EIGEN
+//TL_SUPPRESS_WARNINGS
+//#include <Eigen/SVD>
+//#include <Eigen/LU>
+//#include <Eigen/QR>
+//TL_DEFAULT_WARNINGS
+//#endif
 
 #include <cmath> 
 
@@ -50,104 +50,104 @@ namespace tl
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
 /* ---------------------------------------------------------------------------------- */
 
-void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
-  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
-  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
-  Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#else
-  math::Matrix<double> A(a, nRows, nCols);
-  math::Vector<double> B(b, nRows);
-  math::SingularValueDecomposition<math::Matrix<double>> svd(A);
-  math::Vector<double> C = svd.solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#endif
-}
-
-void solveQR(int nRows, int nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
-  // Existen 3 métodos:
-  // - HouseholderQR (no pivoting, so fast but unstable)
-  // - ColPivHouseholderQR (column pivoting, thus a bit slower but more accurate) 
-  // - FullPivHouseholderQR (full pivoting, so slowest and most stable)
-  Eigen::VectorXd C = A.colPivHouseholderQr().solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#else
-  math::Matrix<double> A(a, nRows, nCols);
-  math::Vector<double> B(b, nRows);
-  math::QRDecomposition<math::Matrix<double>> qr(A);
-  math::Vector<double> C = qr.solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#endif
-}
-
-void solveLU(int nRows, int nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
-  // PartialPivLU es mas rapido que FullPivLU pero requiere que la matriz 
-  // sea invertible. Se hace la comprobación y se elige el método mas 
-  // adecuado.
-  Eigen::VectorXd C;
-  Eigen::FullPivLU<Eigen::MatrixXd> full_lu(A);
-  if (full_lu.isInvertible()) {
-    C = A.partialPivLu().solve(B);
-  } else {
-    C = A.fullPivLu().solve(B);
-  }
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#else
-  math::Matrix<double> A(a, nRows, nCols);
-  math::Vector<double> B(b, nRows);
-  math::LuDecomposition<math::Matrix<double>> lu(A);
-  math::Vector<double> C = lu.solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-#endif
-}
-
-// Standard Cholesky decomposition
-void solveCholesky(int nRows, int nCols, double *a, double *b, double *c)
-{
-#ifdef HAVE_EIGEN
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
-  //Eigen::LLT<Eigen::MatrixXd> cholesky(A);
-  Eigen::VectorXd C = A.llt().solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-//#elif defined( HAVE_OPENCV)
-//  cv::Mat A(nRows, nCols, CV_64F, a);
-//  cv::Mat B(nRows, 1, CV_64F, b);
-//  cv::Mat C(nCols, 1, CV_64F);
-//  cv::solve(A, B, C, cv::DECOMP_CHOLESKY);
-//  std::vector<double> v_aux;
-//  cvMatToVector(C, &v_aux);
-//  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
-#else
-  //TODO: añadir método alternativo
-#endif
-}
-
-#ifdef HAVE_EIGEN
-// Robust Cholesky decomposition
-void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c)
-{
-
-  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
-  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
-  //Eigen::LDLT<Eigen::MatrixXd> cholesky(A);
-  Eigen::VectorXd C = A.ldlt().solve(B);
-  std::memcpy(c, C.data(), nCols*sizeof(double));
-
-}
-#endif
+//void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c)
+//{
+//#ifdef HAVE_EIGEN
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, static_cast<long>(nCols), static_cast<long>(nRows));
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, static_cast<long>(nRows));
+//  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(B);
+//  //Eigen::VectorXd C = A.transpose().jacobiSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+//  Eigen::VectorXd C = A.transpose().bdcSvd(Eigen::ComputeFullU | Eigen::ComputeFullV).solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#else
+//  math::Matrix<double> A(a, nRows, nCols);
+//  math::Vector<double> B(b, nRows);
+//  math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+//  math::Vector<double> C = svd.solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#endif
+//}
+//
+//void solveQR(int nRows, int nCols, double *a, double *b, double *c)
+//{
+//#ifdef HAVE_EIGEN
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+//  // Existen 3 métodos:
+//  // - HouseholderQR (no pivoting, so fast but unstable)
+//  // - ColPivHouseholderQR (column pivoting, thus a bit slower but more accurate) 
+//  // - FullPivHouseholderQR (full pivoting, so slowest and most stable)
+//  Eigen::VectorXd C = A.colPivHouseholderQr().solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#else
+//  math::Matrix<double> A(a, nRows, nCols);
+//  math::Vector<double> B(b, nRows);
+//  math::QRDecomposition<math::Matrix<double>> qr(A);
+//  math::Vector<double> C = qr.solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#endif
+//}
+//
+//void solveLU(int nRows, int nCols, double *a, double *b, double *c)
+//{
+//#ifdef HAVE_EIGEN
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+//  // PartialPivLU es mas rapido que FullPivLU pero requiere que la matriz 
+//  // sea invertible. Se hace la comprobación y se elige el método mas 
+//  // adecuado.
+//  Eigen::VectorXd C;
+//  Eigen::FullPivLU<Eigen::MatrixXd> full_lu(A);
+//  if (full_lu.isInvertible()) {
+//    C = A.partialPivLu().solve(B);
+//  } else {
+//    C = A.fullPivLu().solve(B);
+//  }
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#else
+//  math::Matrix<double> A(a, nRows, nCols);
+//  math::Vector<double> B(b, nRows);
+//  math::LuDecomposition<math::Matrix<double>> lu(A);
+//  math::Vector<double> C = lu.solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//#endif
+//}
+//
+//// Standard Cholesky decomposition
+//void solveCholesky(int nRows, int nCols, double *a, double *b, double *c)
+//{
+//#ifdef HAVE_EIGEN
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+//  //Eigen::LLT<Eigen::MatrixXd> cholesky(A);
+//  Eigen::VectorXd C = A.llt().solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+////#elif defined( HAVE_OPENCV)
+////  cv::Mat A(nRows, nCols, CV_64F, a);
+////  cv::Mat B(nRows, 1, CV_64F, b);
+////  cv::Mat C(nCols, 1, CV_64F);
+////  cv::solve(A, B, C, cv::DECOMP_CHOLESKY);
+////  std::vector<double> v_aux;
+////  cvMatToVector(C, &v_aux);
+////  std::memcpy(c, v_aux.data(), nCols*sizeof(double));
+//#else
+//  //TODO: añadir método alternativo
+//#endif
+//}
+//
+//#ifdef HAVE_EIGEN
+//// Robust Cholesky decomposition
+//void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c)
+//{
+//
+//  Eigen::MatrixXd A = Eigen::Map<Eigen::MatrixXd>(a, nCols, nRows);
+//  Eigen::VectorXd B = Eigen::Map<Eigen::VectorXd>(b, nRows);
+//  //Eigen::LDLT<Eigen::MatrixXd> cholesky(A);
+//  Eigen::VectorXd C = A.ldlt().solve(B);
+//  std::memcpy(c, C.data(), nCols*sizeof(double));
+//
+//}
+//#endif
 
 
 

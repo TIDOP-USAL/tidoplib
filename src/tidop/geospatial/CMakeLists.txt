@@ -46,34 +46,43 @@ if (BUILD_TL_GEOSPATIAL)
                 photo.cpp
                 photo.h)
 
-     target_include_directories(${PROJECT_NAME} PUBLIC
-                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                                $<INSTALL_INTERFACE:include/tidop/geospatial>)
-  
-     target_link_libraries(${PROJECT_NAME} PRIVATE
-                           tl_core 
-                           tl_math 
-                           tl_geom
-                           tl_vect
-                           tl_img)
+    #target_include_directories(${PROJECT_NAME} PUBLIC
+    #                            $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+    #                            $<INSTALL_INTERFACE:include>)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+                          tl_core 
+                          tl_math 
+                          tl_geom
+                          tl_vect
+                          tl_img
+                          tl_graphic
+                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
     if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} PRIVATE 
+        target_link_libraries(${PROJECT_NAME} PUBLIC 
                               ${OpenCV_LIBS})
     endif(HAVE_OPENCV)
 
-    if (HAVE_GDAL)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${GDAL_LIBRARY})
-    endif(HAVE_GDAL)
+    #if (HAVE_GDAL)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${GDAL_LIBRARY})
+    #endif(HAVE_GDAL)
     
-    if(HAVE_PROJ4)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJ4_LIBRARY})
-    endif(HAVE_PROJ4)
+    #if(HAVE_PROJ4)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJ4_LIBRARY})
+    #endif(HAVE_PROJ4)
     
-    if(HAVE_OPENBLAS)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
-        add_definitions(-DHAVE_LAPACK_CONFIG_H)
-        add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    endif(HAVE_OPENBLAS)
+    #if(HAVE_OPENBLAS)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${LAPACKE_LIBRARIES})
+    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
+    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
+    #endif(HAVE_OPENBLAS)
 
     
     set_property(TARGET ${PROJECT_NAME} 

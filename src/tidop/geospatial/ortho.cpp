@@ -599,7 +599,7 @@ void Footprint::execute(Progress *progressBar)
     if (!mFootprintWriter->isOpen()) throw std::runtime_error("Vector open error");
 
     mFootprintWriter->create();
-    mFootprintWriter->setCRS(mCrs);
+    mFootprintWriter->setCRS(mCrs.toWktFormat());
 
     std::shared_ptr<TableField> field = std::make_shared<TableField>("image", TableField::Type::STRING, 254);
     graph::GLayer layer;
@@ -967,7 +967,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
       }
     }
 
-    mOrthophotoWriter->setCRS(mCrs);
+    mOrthophotoWriter->setCRS(mCrs.toWktFormat());
     mOrthophotoWriter->setGeoreference(mGeoreference);
     mOrthophotoWriter->write(mat_ortho);
     mOrthophotoWriter->close();
@@ -1032,7 +1032,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
     254));
 
   mFootprintWriter->create();
-  mFootprintWriter->setCRS(mCrs);
+  mFootprintWriter->setCRS(mCrs.toWktFormat());
 
   graph::GLayer layer;
   layer.setName("footprint");
@@ -1043,7 +1043,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
     254));
 
   mGraphOrthosWriter->create();
-  mGraphOrthosWriter->setCRS(mCrs);
+  mGraphOrthosWriter->setCRS(mCrs.toWktFormat());
 
   graph::GLayer layer_ortho_graph;
   layer_ortho_graph.setName("ortho_graph");

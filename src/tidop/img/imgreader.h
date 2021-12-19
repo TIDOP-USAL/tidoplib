@@ -43,9 +43,9 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-#ifdef HAVE_TL_GEOSPATIAL 
-#include "tidop/geospatial/crs.h"
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL 
+//#include "tidop/geospatial/crs.h"
+//#endif
 //#ifdef HAVE_TL_GRAPHIC
 //#include "tidop/graphic/color.h"
 //#endif
@@ -184,12 +184,12 @@ public:
    */
   virtual std::string crsWkt() const = 0;
 
-#ifdef HAVE_TL_GEOSPATIAL
-  /*!
-   * \brief Sistema de referencia
-   */
-  virtual geospatial::Crs crs() const = 0;
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  /*!
+//   * \brief Sistema de referencia
+//   */
+//  virtual geospatial::Crs crs() const = 0;
+//#endif
 
   /*!
    * \brief Ventana envolvente de la imagen en coordenadas terreno

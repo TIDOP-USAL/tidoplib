@@ -95,23 +95,25 @@ if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp)
     
-    target_include_directories(${PROJECT_NAME} PUBLIC
-                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include/tidop/featmatch>)
+    #target_include_directories(${PROJECT_NAME} PUBLIC
+    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+    #                           $<INSTALL_INTERFACE:include>)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+    target_link_libraries(${PROJECT_NAME} PUBLIC
                           tl_core 
-                          tl_geom)
+                          tl_geom
+                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
 
     if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} PRIVATE 
+        target_link_libraries(${PROJECT_NAME} PUBLIC 
                               ${OpenCV_LIBS})
     endif(HAVE_OPENCV)
   						  
-  	if (HAVE_GDAL)
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-                              ${GDAL_LIBRARY})
-    endif(HAVE_GDAL)
+  	#if (HAVE_GDAL)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC
+    #                          ${GDAL_LIBRARY})
+    #endif(HAVE_GDAL)
 
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")

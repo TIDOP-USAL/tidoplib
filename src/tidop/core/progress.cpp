@@ -32,6 +32,11 @@ namespace tl
 
 bool Progress::sIsRunning = false;
 
+inline bool Progress::isRunning()
+{
+  return sIsRunning;
+}
+
 std::mutex ProgressBase::sMutex;
 
 ProgressBase::ProgressBase()
@@ -247,6 +252,8 @@ void ProgressPercent::updateProgress()
   std::cout << "\r";
   std::cout << " " << percent() << "%  completed" << std::flush;
 }
+
+
 
 } // End namespace tl
 

@@ -47,7 +47,6 @@ namespace tl
 uint32_t optimalNumberOfThreads()
 {
 #ifdef HAVE_OPENMP
-  //TODO: Sin probar
   return omp_get_max_threads();
 #elif defined TL_MSVS_CONCURRENCY
   return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();

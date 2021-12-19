@@ -29,6 +29,8 @@
 
 #define TL_VERSION_MAJOR @TidopLib_VERSION_MAJOR@
 #define TL_VERSION_MINOR @TidopLib_VERSION_MINOR@
+#define TL_VERSION_PATCH @TidopLib_VERSION_PATCH@
+#define TL_VERSION "@TidopLib_VERSION@"
 
 // Manejo de errores como log y/o mensajes de consola
 

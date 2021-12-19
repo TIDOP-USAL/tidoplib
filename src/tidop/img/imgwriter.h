@@ -41,9 +41,9 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-#ifdef HAVE_TL_GEOSPATIAL 
-#include "tidop/geospatial/crs.h"
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL 
+//#include "tidop/geospatial/crs.h"
+//#endif
 //#ifdef HAVE_TL_GRAPHIC
 //#include "tidop/graphic/color.h"
 //#endif
@@ -184,13 +184,13 @@ public:
    */
   virtual void setCRS(const std::string &crs) = 0;
 
-#ifdef HAVE_TL_GEOSPATIAL
-  /*!
-   * \brief Set the Coordinate Reference System
-   * \param[in] crs geospatial::Crs object
-   */
-  virtual void setCRS(const geospatial::Crs &crs) = 0;
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  /*!
+//   * \brief Set the Coordinate Reference System
+//   * \param[in] crs geospatial::Crs object
+//   */
+//  virtual void setCRS(const geospatial::Crs &crs) = 0;
+//#endif
   
   virtual void setNoDataValue(double nodata) = 0;
 
@@ -207,9 +207,9 @@ protected:
 
   Path mFile;
   Affine<PointD> mAffine;
-#ifdef HAVE_TL_GEOSPATIAL
-  geospatial::Crs mCRS;
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  geospatial::Crs mCRS;
+//#endif
 };
 
 

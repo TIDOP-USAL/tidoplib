@@ -459,14 +459,14 @@ public:
     }
   }
 
-#ifdef HAVE_TL_GEOSPATIAL
-  void setCRS(const geospatial::Crs &crs) override
-  {
-    if (mDataset && crs.isValid()) {
-      this->setGdalProjection(crs.toWktFormat());
-    }
-  }
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  void setCRS(const geospatial::Crs &crs) override
+//  {
+//    if (mDataset && crs.isValid()) {
+//      this->setGdalProjection(crs.toWktFormat());
+//    }
+//  }
+//#endif
 
   void setNoDataValue(double nodata)
   {

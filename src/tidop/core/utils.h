@@ -624,7 +624,7 @@ protected:
 
 public:
 
-  File() : mFile("") {}
+  File() : mFile(""), mMode(Mode::read){}
   File(std::string file, Mode mode = Mode::update) : mFile(std::move(file)), mMode(mode) { }
   virtual ~File()= default;
 

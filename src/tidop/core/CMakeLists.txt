@@ -60,20 +60,23 @@ if(BUILD_TL_CORE)
     
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-                               $<INSTALL_INTERFACE:include/tidop/core>)
-    
-    target_link_libraries(${PROJECT_NAME} PRIVATE
+                               $<INSTALL_INTERFACE:include>)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
-                          ${Boost_SYSTEM_LIBRARY})
-    if (HAVE_OPENMP)
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-                              OpenMP::OpenMP_CXX)
-    endif(HAVE_OPENMP)
+                          ${Boost_SYSTEM_LIBRARY}
+                          $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>
+                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
+    #if (HAVE_OPENMP)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC
+    #                          OpenMP::OpenMP_CXX)
+    #endif(HAVE_OPENMP)
     
-    if (HAVE_GDAL)
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-                              ${GDAL_LIBRARY})
-    endif(HAVE_GDAL)
+    #if (HAVE_GDAL)
+    #    target_link_libraries(${PROJECT_NAME} PUBLIC
+    #                          ${GDAL_LIBRARY})
+    #endif(HAVE_GDAL)
     
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")
