@@ -66,19 +66,13 @@ if(BUILD_TL_GEOMETRY)
                                $<INSTALL_INTERFACE:include>)
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           tl_core
                           tl_math
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-
-    #if(HAVE_OPENBLAS)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${LAPACKE_LIBRARIES})
-    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    #endif(HAVE_OPENBLAS)
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
 
 
     set_property(TARGET ${PROJECT_NAME} 

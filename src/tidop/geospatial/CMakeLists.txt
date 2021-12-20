@@ -34,6 +34,7 @@ if (BUILD_TL_GEOSPATIAL)
                 crs.h
                 crscache.cpp
                 crscache.h
+                crstransf.cpp
                 crstransf.h
                 util.cpp
                 util.h
@@ -46,14 +47,11 @@ if (BUILD_TL_GEOSPATIAL)
                 photo.cpp
                 photo.h)
 
-    #target_include_directories(${PROJECT_NAME} PUBLIC
-    #                            $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                            $<INSTALL_INTERFACE:include>)
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
     target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           tl_core 
@@ -62,27 +60,10 @@ if (BUILD_TL_GEOSPATIAL)
                           tl_vect
                           tl_img
                           tl_graphic
-                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${PROJ4_FOUND}>:${PROJ4_LIBRARY}>
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} PUBLIC 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
-
-    #if (HAVE_GDAL)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${GDAL_LIBRARY})
-    #endif(HAVE_GDAL)
-    
-    #if(HAVE_PROJ4)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${PROJ4_LIBRARY})
-    #endif(HAVE_PROJ4)
-    
-    #if(HAVE_OPENBLAS)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${LAPACKE_LIBRARIES})
-    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    #endif(HAVE_OPENBLAS)
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          ${OpenCV_LIBS})
 
     
     set_property(TARGET ${PROJECT_NAME} 
@@ -118,12 +99,6 @@ if (BUILD_TL_GEOSPATIAL)
     message(STATUS "TidopLib::${PROJECT_NAME} enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_IMG AND BUILD_TL_VECT)
-
-    #if(NOT HAVE_GDAL)
-    #  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on gdal that is deactivated]")
-    #elseif(NOT HAVE_PROJ4)
-    #  message(WARNING "TidopLib::tl_geospatial disabled [Module dependent on proj that is deactivated]")
-    #else()
 
     message(STATUS "TidopLib::tl_geospatial disabled")
 

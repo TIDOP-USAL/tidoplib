@@ -26,8 +26,6 @@
 
 if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
   
-    include_directories(${CMAKE_SOURCE_DIR}/third_party)
-  
     project(tl_featmatch)
   
     add_library(${PROJECT_NAME} ${LIB_TYPE}
@@ -95,30 +93,19 @@ if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.h
                 ${TidopLib_SOURCE_DIR}/third_party/msd/MSDImgPyramid.cpp)
     
-    #target_include_directories(${PROJECT_NAME} PUBLIC
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
-    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+                               ${GDAL_INCLUDE_DIR} 
+                               ${CMAKE_SOURCE_DIR}/third_party)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           tl_core 
                           tl_geom
-                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
-
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} PUBLIC 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
-  						  
-  	#if (HAVE_GDAL)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC
-    #                          ${GDAL_LIBRARY})
-    #endif(HAVE_GDAL)
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          ${OpenCV_LIBS})
 
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")
   
-    # Instalación
     if(BUILD_SHARED_LIBS)
   
         install(TARGETS ${PROJECT_NAME}

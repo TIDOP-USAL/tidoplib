@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 
     std::shared_ptr<Crs> epsgIn(new Crs(epsg_in));
     std::shared_ptr<Crs> epsgOut(new Crs(epsg_out));
-    CrsTransform<Point3D> crs(epsgIn, epsgOut);
+    CrsTransform crs(epsgIn, epsgOut);
     
     std::ofstream ofs;
     ofs.open(coord_trf, std::ofstream::out | std::ofstream::trunc);

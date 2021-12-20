@@ -66,17 +66,8 @@ if(BUILD_TL_CORE)
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
-                          $<$<BOOL:${OpenMP_FOUND}>:OpenMP::OpenMP_CXX>
-                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
-    #if (HAVE_OPENMP)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC
-    #                          OpenMP::OpenMP_CXX)
-    #endif(HAVE_OPENMP)
-    
-    #if (HAVE_GDAL)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC
-    #                          ${GDAL_LIBRARY})
-    #endif(HAVE_GDAL)
+                          $<$<BOOL:${HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>)
     
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")

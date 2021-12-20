@@ -39,7 +39,9 @@ namespace geospatial
 
 
 
-template<typename Point_t> class CrsTransform;
+//template<typename Point_t> class CrsTransform;
+
+class CrsTransform;
 
 /*!
  * \brief Clase sistema de referencia
@@ -86,7 +88,7 @@ protected:
   OGRSpatialReference *getOGRSpatialReference( );
 #endif
 
-  template<typename Point_t> friend class CrsTransform;
+  /*template<typename Point_t> */friend class CrsTransform;
 
 private:
 

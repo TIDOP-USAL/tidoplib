@@ -26,10 +26,6 @@
 
 if(BUILD_TL_MATH)
 
-    #if(MSVC)
-    #    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
-    #endif(MSVC)
-    
     project(tl_math)
     
     add_library(${PROJECT_NAME} ${LIB_TYPE}
@@ -56,28 +52,17 @@ if(BUILD_TL_MATH)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)
 
-    #target_include_directories(${PROJECT_NAME} PUBLIC
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
-
     target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC 
                           tl_core
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-      
-    #if(HAVE_OPENBLAS)
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC ${LAPACKE_LIBRARIES})
-    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    #endif(HAVE_OPENBLAS)
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        
     set_property(TARGET ${PROJECT_NAME} 
                  PROPERTY FOLDER "modules")
 
-    #instalación
     if(BUILD_SHARED_LIBS)
     
         install(TARGETS ${PROJECT_NAME}
@@ -111,7 +96,6 @@ elseif(BUILD_TL_CORE)
     message(STATUS "TidopLib::tl_math disabled")
     message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
     message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_math that is deactivated]") 
-    message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
     message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_math that is deactivated]") 
 
 endif(BUILD_TL_MATH)

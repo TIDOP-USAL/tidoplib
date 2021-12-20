@@ -32,7 +32,7 @@ namespace tl
 
 bool Progress::sIsRunning = false;
 
-inline bool Progress::isRunning()
+bool Progress::isRunning()
 {
   return sIsRunning;
 }

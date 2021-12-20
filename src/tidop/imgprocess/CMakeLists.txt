@@ -50,29 +50,16 @@ if (BUILD_TL_IMG_PROCESS)
                 whitebalance.h
                 morphologicaloper.cpp
                 morphologicaloper.h)
-    
-    #target_include_directories(${PROJECT_NAME} PUBLIC
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
                           tl_core
-                          tl_graphic)  
-
-    if(HAVE_OPENCV)			
-          target_link_libraries(${PROJECT_NAME} PRIVATE
-                                ${OpenCV_LIBS})	
-    endif(HAVE_OPENCV)
-  	
-    if(HAVE_OPENBLAS)
-        target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
-        add_definitions(-DHAVE_LAPACK_CONFIG_H)
-        add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    endif(HAVE_OPENBLAS)
+                          tl_graphic
+                          ${OpenCV_LIBS})  
 
     set_property(TARGET ${PROJECT_NAME} 
                  PROPERTY FOLDER "modules")
-    #instalación
+
+
     if(BUILD_SHARED_LIBS)
         install(TARGETS ${PROJECT_NAME}
                 EXPORT "${TARGETS_EXPORT_NAME}"

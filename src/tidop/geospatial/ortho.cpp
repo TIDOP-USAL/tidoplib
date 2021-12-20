@@ -266,9 +266,9 @@ void Orthorectification::init()
   mWindowDtmTerrainExtension.pt2.x = mAffineDtmImageToTerrain.tx + mAffineDtmImageToTerrain.scaleX() * mDtmReader->cols();
   mWindowDtmTerrainExtension.pt2.y = mAffineDtmImageToTerrain.ty + mAffineDtmImageToTerrain.scaleY() * mDtmReader->rows();
   
-  mDifferentialRectification = std::make_unique<DifferentialRectification<double>>(mCameraPose.rotationMatrix(),
-                                                                                   mCameraPose.position(),
-                                                                                   focal());
+  mDifferentialRectification = std::make_unique<DifferentialRectification>(mCameraPose.rotationMatrix(),
+                                                                           mCameraPose.position(),
+                                                                           focal());
 
   bool exist_nodata = false;
   double nodata_value = mDtmReader->noDataValue(&exist_nodata);

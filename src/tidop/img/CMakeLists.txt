@@ -48,36 +48,23 @@ if(BUILD_TL_IMG)
         target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
     endif(MSVC)
 
-    #target_include_directories(${PROJECT_NAME} INTERFACE
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+
     target_link_libraries(${PROJECT_NAME} PRIVATE
                           tl_core
                           tl_geom
                           tl_math
                           tl_graphic
-                          $<$<BOOL:${GDAL_FOUND}>:${GDAL_LIBRARY}>)
-    if(HAVE_OPENCV)			
-        target_link_libraries(${PROJECT_NAME} PRIVATE
-                              ${OpenCV_LIBS})	
-    endif(HAVE_OPENCV)
-    
-    #if (HAVE_GDAL)
-    #    target_link_libraries(${PROJECT_NAME} PRIVATE
-    #                          ${GDAL_LIBRARY})
-    #endif(HAVE_GDAL)
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          ${OpenCV_LIBS})
 
-    #if(HAVE_OPENBLAS)
-    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    #endif(HAVE_OPENBLAS)
-  
-    # Añade el proyecto a la carpeta 'modules'
     set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
 
-    #instalación
     if(BUILD_SHARED_LIBS)
         install(TARGETS ${PROJECT_NAME}
                 EXPORT "${TARGETS_EXPORT_NAME}"

@@ -54,29 +54,17 @@ if (BUILD_TL_GRAPHIC)
                 entities/linestring.cpp
                 entities/linestring.h)
 
-    #target_include_directories(${PROJECT_NAME} PUBLIC
-    #                           $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
-    #                           $<INSTALL_INTERFACE:include>)
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${OPENBLAS_FOUND}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${OPENBLAS_FOUND}>:LAPACK_COMPLEX_STRUCTURE>)
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PRIVATE
   	                      tl_core 
                           tl_geom
-                          $<$<BOOL:${OPENBLAS_FOUND}>:${LAPACKE_LIBRARIES}>)
-    #if(HAVE_OPENBLAS)
-    #    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    #    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-    #    target_link_libraries(${PROJECT_NAME} PRIVATE ${LAPACKE_LIBRARIES})
-    #endif(HAVE_OPENBLAS)
-
-    if(HAVE_OPENCV)
-        target_link_libraries(${PROJECT_NAME} PRIVATE 
-                              ${OpenCV_LIBS})
-    endif(HAVE_OPENCV)
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          ${OpenCV_LIBS})
 
   set_property(TARGET ${PROJECT_NAME} 
                PROPERTY FOLDER "modules")
