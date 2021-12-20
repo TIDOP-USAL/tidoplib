@@ -22,14 +22,57 @@
 #                                                                        #
 ##########################################################################
 
+cmake_minimum_required(VERSION 3.10.0...3.22)
 
-# Versión mínima soportada de CMake
-cmake_minimum_required(VERSION 3.5.0 FATAL_ERROR)
+if(${CMAKE_VERSION} VERSION_LESS 3.12)
+    cmake_policy(VERSION ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION})
+endif()
 
-# Nombre del projecto y versión
+
+
 project(TidopLib
         VERSION 2.0.0
+        DESCRIPTION "TidopLib is an open-source C++ library developed by Tidop Research Group"
+        HOMEPAGE_URL "http://tidop.usal.es"
         LANGUAGES CXX)
+
+
+# Compiler info
+if(CMAKE_CXX_COMPILER_LOADED)
+  message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
+  message(STATUS "C++ compiler version: ${CMAKE_CXX_COMPILER_VERSION}\n")
+endif()
+
+# Operating system info
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  message(STATUS "Operating system: Linux ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  message(STATUS "Operating system: macOS ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  message(STATUS "Operating system: Windows ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+  message(STATUS "Operating system: IBM AIX ${CMAKE_SYSTEM_VERSION}\n")
+else()
+  message(STATUS "Operating system: ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}\n")
+endif()
+
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(TL_ARCH x64)
+else()
+  set(TL_ARCH x86)
+endif()
+
+
+
+# General configuration
+
+
+# C++ standar
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 # Se activa el uso de carpetas para una mejor organización en Visual Studio
@@ -42,77 +85,53 @@ set_property(GLOBAL
 set(CMAKE_DEBUG_POSTFIX d)
 
 # Tipos de configuración de compilación disponibles
-set(CMAKE_CONFIGURATION_TYPES Release;Debug)
+#set(CMAKE_CONFIGURATION_TYPES Release;Debug)
+
+#if(NOT CMAKE_BUILD_TYPE)
+#  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+#endif()
 
 # Macro para depuración
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
-if (UNIX)
-  set(CMAKE_CXX_STANDARD 14)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
+
+
+
 
 # Directivas del preprocesador
 add_definitions(-DUNICODE)
 
-
 if(MSVC)
 
-  if(CMAKE_CL_64)
-    set(TL_ARCH x64)
-  #elseif((CMAKE_GENERATOR MATCHES "ARM") OR ("${arch_hint}" STREQUAL "ARM") OR (CMAKE_VS_EFFECTIVE_PLATFORMS MATCHES "ARM|arm"))
-  #  set(TL_ARCH ARM)
-  else()
-    set(TL_ARCH x86)
-  endif()
-
-  if(MSVC_VERSION EQUAL 1400)
-    #set(TL_RUNTIME vc8)
-    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
-  elseif(MSVC_VERSION EQUAL 1500)
-    #set(TL_RUNTIME vc9)
-    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
-  elseif(MSVC_VERSION EQUAL 1600)
-    #set(TL_RUNTIME vc10)
-    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
-  elseif(MSVC_VERSION EQUAL 1700)
-    #set(TL_RUNTIME vc11)
-    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
-  elseif(MSVC_VERSION EQUAL 1800)
-    #set(TL_RUNTIME vc12)
-    message(WARNING "TidopLib does not suport MSVC_VERSION \"${MSVC_VERSION}\".")
-  elseif(MSVC_VERSION EQUAL 1900)
+  if(MSVC_VERSION EQUAL 1900)
     set(TL_RUNTIME vc14)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
   elseif(MSVC_VERSION MATCHES "^191[0-9]$")
     set(TL_RUNTIME vc15)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
   elseif(MSVC_VERSION MATCHES "^192[0-9]$")
     set(TL_RUNTIME vc16)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus /std:c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
+  elseif(MSVC_VERSION MATCHES "^193[0-9]$")
+    set(TL_RUNTIME vc17)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:__cplusplus")
   else()
     message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
   endif()
+
 elseif(MINGW)
 
   set(TL_RUNTIME mingw)
 
-  if(MINGW64)
-    set(TL_ARCH x64)
-  else()
-    set(TL_ARCH x86)
-  endif()
-
 endif()
 
 
-
 # Configuracion especifica de Visual Studio
+#TODO: https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html
 if(MSVC)
 
   # Nivel de warning
-  set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
 
   # /EH (Modelo de control de excepciones)
   # /EHsc captura solo las excepciones de C++ e indica al compilador que suponga que las funciones
@@ -206,14 +225,11 @@ if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     message(STATUS "Can't detect runtime and/or arch")
     set(TL_INSTALL_BINARIES_PREFIX "")
   endif()
-#else()
-#  ocv_update(TL_INSTALL_BINARIES_PREFIX "")
 endif()
 
-
-
-
-# Se permite elegir entre libreria estatica o
+# Se permite elegir entre libreria estatica o dinámica
+#TODO: BUILD_SHARED_LIBS es un flag global de CMAKE: set(BUILD_SHARED_LIBS OFF)
+#      Tal vez seria mejor cambiar el nombre 
 OPTION (BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 
 # Por defecto se establece el tipo de librería estática
@@ -225,25 +241,36 @@ if (BUILD_SHARED_LIBS)
 
   if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251")
+    #TODO: Probar
+    #set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   endif(MSVC)
 
 endif (BUILD_SHARED_LIBS)
 
 
-# Activación/desactivación de los diferentes modulos de la libreria
-##TODO: CORE tiene que ser obligatorio...
-OPTION (BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
-OPTION (BUILD_TL_MATH         "Include math module in TidopLib build"         ON )
-OPTION (BUILD_TL_GEOMETRY     "Include geom module in TidopLib build"         ON )
-OPTION (BUILD_TL_IMG          "Include img module in TidopLib build"          ON )
-OPTION (BUILD_TL_IMG_PROCESS  "Include imgprocess module in TidopLib build"   ON )
-OPTION (BUILD_TL_FEAT_MATCH   "Include featmatch module in TidopLib build"    ON )
-OPTION (BUILD_TL_GRAPHIC      "Include graphic module in TidopLib build"      ON )
-OPTION (BUILD_TL_GEOSPATIAL   "Include geospatial module in TidopLib build"   ON )
-OPTION (BUILD_TL_VECT         "Include vect module in TidopLib build"         ON )
-OPTION (BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF)
+##########################################################################
+#  Modulos TidopLib                                                      #
+#------------------------------------------------------------------------#
+#                                                                        #
+# Activación/desactivación de los diferentes modulos de la libreria      #
+#                                                                        #
+##########################################################################
+
+include(CMakeDependentOption)
+
+option(BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
+cmake_dependent_option(BUILD_TL_MATH "Include math module in TidopLib build" ON "BUILD_TL_CORE" OFF)
+cmake_dependent_option(BUILD_TL_GEOMETRY "Include geometry module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH" OFF)
+cmake_dependent_option(BUILD_TL_IMG "Include image module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_IMG_PROCESS "Include imgprocess module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_FEAT_MATCH "Include featmatch module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_GRAPHIC "Include graphic module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GEOMETRY" OFF)
+cmake_dependent_option(BUILD_TL_GEOSPATIAL "Include geospatial module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_MATH;BUILD_TL_GEOMETRY;BUILD_TL_IMG;BUILD_TL_VECT" OFF)
+cmake_dependent_option(BUILD_TL_VECT "Include vector module in TidopLib build" ON "BUILD_TL_CORE;BUILD_TL_GRAPHIC" OFF)
+cmake_dependent_option(BUILD_TL_EXPERIMENTAL "Include experimental module in TidopLib build" OFF "BUILD_TL_CORE" OFF)
 
 # Activación/desactivación de otros componentes de la libreria
+
 OPTION (BUILD_APPS            "APPS"                  ON)
 OPTION (BUILD_TEST            "Include test"          OFF)
 OPTION (BUILD_DOC             "Build documentation"   OFF)
@@ -276,9 +303,16 @@ if(BUILD_TEST)
   enable_testing() #CMake predefined targets
 endif()
 
-# Librerias externas:
-# - Sólo es obligatoria Boost
-# - Según las dependencias incluidas las funcionalidades de la librería variarán
+
+##########################################################################
+#  Librerias externas                                                    #
+#------------------------------------------------------------------------#
+#                                                                        #
+# - Sólo es obligatoria Boost.                                           #
+# - Según las dependencias incluidas las funcionalidades de la librería  #
+#   variarán.                                                            #
+##########################################################################
+
 OPTION (WITH_BOOST  "Include Boost support"                   ON)
 OPTION (WITH_OPENCV "Include OpenCV support"                  OFF)
 OPTION (WITH_EIGEN  "Include eigen support"                   OFF)
@@ -288,13 +322,10 @@ OPTION (WITH_LIBRAW "Include LibRaw Support"                  OFF)
 OPTION (WITH_EDSDK  "Include EDSDK Support"                   OFF)
 OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
-#OPTION (WITH_LAPACKE "Include LAPACKE"                        OFF)
 OPTION (WITH_OpenBLAS "Include OpenBLAS"                      OFF)
 OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
 
-# ----------------------------------------------------------------------------
-#  Modulos TidopLib
-# ----------------------------------------------------------------------------
+
 
 
 unset(HAVE_TL_CORE CACHE)
@@ -316,44 +347,34 @@ unset(HAVE_TL_EXPERIMENTAL CACHE)
 	# #completar y ver que modulos se activan/desactivan en función de la activación de otros
 # endif(BUILD_TL_CORE)
 
-# ----------------------------------------------------------------------------
-#  Detect 3rd-party libraries
-# ----------------------------------------------------------------------------
+message(STATUS "\nDependency loading:\n")
 
-# ----------------------------------------------------------------------------
-# BOOST
-# ----------------------------------------------------------------------------
+##########################################################################
+# BOOST (REQUIRED)                                                       #
+##########################################################################
+
 if(WITH_BOOST)
-    #unset(Boost_LIBRARIES)
-    #set(Boost_USE_STATIC             ON)
+
     set(Boost_USE_STATIC_LIBS        ON) # only find static libs
     set(Boost_USE_MULTITHREADED      ON)
     set(Boost_USE_STATIC_RUNTIME     OFF)
 
-#TODO: Deber?a establecer la versi?n m?nima de Boost en find_package
-    #find_package(Boost 1.50.0 COMPONENTS filesystem system REQUIRED)
-    find_package(Boost COMPONENTS filesystem system REQUIRED)
-    find_package(Boost COMPONENTS filesystem system unit_test_framework REQUIRED)
+    find_package(Boost 1.50 COMPONENTS filesystem system unit_test_framework REQUIRED)
     if(Boost_FOUND)
+        message(STATUS "Boost version: ${Boost_VERSION}")
         include_directories(${Boost_INCLUDE_DIRS})
         set(HAVE_BOOST YES)
-
-    #if (WIN32)
-    #    add_definitions(-DBOOST_ALL_NO_LIB)
-    #    add_definitions(-DBOOST_ALL_DYN_LINK)
-    #endif()
-
     else()
       set(HAVE_BOOST NO)
     endif()
 
 endif()
-# ----------------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------------
-# OpenCV  (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# OpenCV  (optional)                                                     #
+##########################################################################
+
 if(WITH_OPENCV)
 
     find_package(OpenCV QUIET)
@@ -361,36 +382,36 @@ if(WITH_OPENCV)
     if(NOT OPENCV_FOUND)
       set(HAVE_OPENCV NO)
     else()
+      message(STATUS "OpenCV version: ${OpenCV_VERSION}")
       set(HAVE_OPENCV YES)
-      include_directories(${OpenCV_INCLUDE_DIRS})
     endif()
 
 endif(WITH_OPENCV)
-# ----------------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------------
-# Eigen  (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# Eigen  (optional)                                                      #
+##########################################################################
+
 if(WITH_EIGEN)
  
   find_package(Eigen3 QUIET NO_MODULE)
   if(NOT Eigen3_FOUND)
     set(HAVE_EIGEN NO)
   else()
-    #include_directories(${Eigen3_INCLUDE_DIRS})
     set(HAVE_EIGEN YES)
   endif()
 
 
 endif(WITH_EIGEN)
-# ----------------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------------
-# GDAL (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# GDAL (optional)                                                        #
+##########################################################################
+
 if(WITH_GDAL)
+
   find_package(GDAL QUIET)
 
   if(NOT GDAL_FOUND)
@@ -398,15 +419,15 @@ if(WITH_GDAL)
     message(STATUS "  GDAL not found")
   else()
     set(HAVE_GDAL YES)
-    include_directories(${GDAL_INCLUDE_DIR})
   endif()
-endif()
-# ----------------------------------------------------------------------------
+
+endif(WITH_GDAL)
 
 
-# ----------------------------------------------------------------------------
-# PROJ4 (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# PROJ4 (optional)                                                       #
+##########################################################################
+
 if(WITH_PROJ4)
   find_package(PROJ4 QUIET)
 
@@ -418,13 +439,13 @@ if(WITH_PROJ4)
     message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
     message(STATUS "  Library : ${PROJ4_LIBRARIES}")
   endif()
-endif()
-# ----------------------------------------------------------------------------
+endif(WITH_PROJ4)
 
 
-# ----------------------------------------------------------------------------
-# LibRaw (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# LibRaw (optional)                                                      #
+##########################################################################
+
 if(WITH_LIBRAW)
 
   find_package(LIBRAW QUIET)
@@ -436,13 +457,13 @@ if(WITH_LIBRAW)
     include_directories(${LIBRAW_INCLUDE_DIR})
   endif()
 
-endif()
-# ----------------------------------------------------------------------------
+endif(WITH_LIBRAW)
 
 
-# ----------------------------------------------------------------------------
-# EDSDK (optional)
-# ----------------------------------------------------------------------------
+##########################################################################
+# EDSDK (optional)                                                       #
+##########################################################################
+
 if(WITH_EDSDK)
 
 #TODO: Esto no esta bien hecho...
@@ -459,42 +480,16 @@ if(WITH_EDSDK)
   endif()
   
 endif()
-# ----------------------------------------------------------------------------
+
 
 if(BUILD_TL_MATH)
 
-if(WITH_OpenBLAS)
+##########################################################################
+# OpenBLAS (optional)                                                    #
+##########################################################################
 
-  # #SET(LAPACKE_LIBRARY "" CACHE FILE "Path to library LAPACKE")
-  # #SET(LAPACK_LIBRARY "" CACHE FILE "Path to library LAPACK")
-  # #SET(BLAS_LIBRARY "" CACHE FILE "Path to library BLAS")
-  
-  # add_library(blas SHARED IMPORTED)
-  # set_property(TARGET blas PROPERTY IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/libblas.dll)
-  # set_property(TARGET blas PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/libblas.lib)
-  
-  # add_library(lapack SHARED IMPORTED)
-  # set_property(TARGET lapack PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapack.dll)
-  # set_property(TARGET lapack PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapack.lib)
-  
-  # add_library(lapacke SHARED IMPORTED)
-  # set_property(TARGET lapacke PROPERTY IMPORTED_LOCATION 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapacke.dll)
-  # set_property(TARGET lapacke PROPERTY IMPORTED_IMPLIB 	${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/liblapacke.lib)
-  
-  # set(LAPACKE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/third_party/lapacke/include)
-  # set(LAPACKE_LIBRARIES blas lapack lapacke)
-    
-  # include_directories(${LAPACKE_INCLUDE_DIRS})
-   
-  # ## install lapack and blas dependencies
-  # file(GLOB lapacke_windows_libs 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/*.lib")
-  # file(GLOB lapacke_windows_dll 	"${PROJECT_SOURCE_DIR}/third_party/lapacke/lib/${TL_ARCH}/*.dll")
-  # if(lapacke_windows_libs AND lapacke_windows_dll)
-      # set(LAPACKE_LIB_DIR "lib/lapacke")
-  			# install(FILES ${lapacke_windows_libs} ${lapacke_windows_dll}
-  					    # DESTINATION ${LAPACKE_LIB_DIR})
-  # endif()
-        
+if(WITH_OpenBLAS)
+       
   find_package(OpenBLAS QUIET)
   
   if(NOT OpenBLAS_FOUND)
@@ -504,33 +499,33 @@ if(WITH_OpenBLAS)
     include_directories(${OpenBLAS_INCLUDE_DIRS})
   endif()
   
-endif()
-  
-  # if(WITH_OPENBLAS)
-    # set(HAVE_OPENBLAS YES)
-  # else()
-    # set(HAVE_OPENBLAS NO)
-  # endif()
-  
+endif(WITH_OpenBLAS)
   
 endif(BUILD_TL_MATH)
 
-# ----------------------------------------------------------------------------
-# OMP (optional)
-# ----------------------------------------------------------------------------
+
+##########################################################################
+# OpenMP (optional)                                                      #
+##########################################################################
+
+
 if(WITH_OPENMP)
 
   find_package(OpenMP)
   
   if(OpenMP_FOUND)
     set(HAVE_OPENMP YES)
+    message(STATUS "OpenMP enable}")
   else()
     set(HAVE_OPENMP NO)
   endif()
   
 endif()
-# ----------------------------------------------------------------------------
 
+
+##########################################################################
+
+message(STATUS "\nTidop modules:\n")
 
 # include del directorio principal
 include_directories(${CMAKE_BUILD_DIR})
@@ -557,18 +552,21 @@ add_subdirectory(doc)
 add_subdirectory(test)
 
 
-#cabecera con la configuración
-configure_file("${PROJECT_SOURCE_DIR}/cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
+# TidopLib config file
+configure_file("cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")
 
 
-###############################################################################################################
-#                                                Instalación                                                  #
-###############################################################################################################
-
-# Fichero de configuracion de TidopLib
-install(FILES ${PROJECT_BINARY_DIR}/config_tl.h DESTINATION include)
+##########################################################################
+# Install                                                                #
+##########################################################################
 
 include(GNUInstallDirs)
+
+# TidopLib config file
+install(FILES ${PROJECT_BINARY_DIR}/config_tl.h 
+        DESTINATION include)
+
+
 
 
 #set(TIDOP_CONFIG_CMAKE_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}")

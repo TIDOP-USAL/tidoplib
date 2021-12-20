@@ -22,69 +22,45 @@
 #                                                                        #
 ##########################################################################
 
-# Test modulo Geometry
-
 if(HAVE_TL_GEOMETRY)
 
-  project(test)
-
-  
   MACRO(DEFINE_TEST name srcs)
 
     include_directories(${CMAKE_BUILD_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)
-	
-    set(test_kind test)
-    set(test_KIND TEST)
 
-    set(the_target "${test_kind}_${name}")
-    add_executable(${the_target} ${srcs})
-	
-if(HAVE_OPENBLAS)
-    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-endif(HAVE_OPENBLAS)
+    project(${name} LANGUAGES CXX)
 
-    target_link_libraries(${the_target} tl_core tl_geom tl_math)
-    target_link_libraries(${the_target} ${Boost_FILESYSTEM_LIBRARY} ${Boost_SYSTEM_LIBRARY} ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
-#	if(HAVE_GDAL)
-#      target_link_libraries(${the_target} ${GDAL_LIBRARY})
-#	endif(HAVE_GDAL)
-#	if(HAVE_OPENCV)
-#      target_link_libraries(${the_target} ${OpenCV_LIBS})
-#	endif(HAVE_OPENCV)
+    add_executable(${PROJECT_NAME} ${srcs})
+	
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+
+
+    target_link_libraries(${PROJECT_NAME} 
+                          tl_core 
+                          tl_geom 
+                          tl_math 
+                          ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+
     if (UNIX)
-      target_link_libraries(${the_target} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
+      target_link_libraries(${PROJECT_NAME} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
     endif()
-  if(HAVE_OPENBLAS)
-    target_link_libraries(${the_target} OpenBLAS::OpenBLAS)
-  endif(HAVE_OPENBLAS)
-    # Añade el proyecto de ejmplo a la carpeta 'test/core'
-    set_property(TARGET ${the_target} PROPERTY FOLDER "test/geometry")
 
-    set_target_properties(${the_target} PROPERTIES
-      OUTPUT_NAME "cpp-${test_kind}-${name}"
-      PROJECT_LABEL "(${test_KIND}) ${name}")
+
+    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "test/geometry")
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+                          OUTPUT_NAME ${PROJECT_NAME}
+                          PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
 
     if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${the_target} PROPERTIES FOLDER "test/geometry")
+        set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "test/geometry")
     endif()
-
-    #if(WIN32)
-    #  if (MSVC AND NOT BUILD_SHARED_LIBS)
-    #    set_target_properties(${the_target} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:atlthunk.lib /NODEFAULTLIB:atlsd.lib /DEBUG")
-    #  endif()
-    #  install(TARGETS ${the_target}
-    #          RUNTIME DESTINATION "${PROJECT_BINARY_DIR}" COMPONENT test)
-    #endif()
-	#
-    #if (BUILD_SHARED_LIBS)
-    #  set_target_properties(${the_target}
-    #    PROPERTIES
-    #    COMPILE_DEFINITIONS "GTEST_LINKED_AS_SHARED_LIBRARY=1")
-    #endif()
 	
-    add_test(NAME ${the_target} COMMAND $<TARGET_FILE:${the_target}>)
+    add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
 	
   ENDMACRO()
 

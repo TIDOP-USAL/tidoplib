@@ -32,7 +32,7 @@ using namespace tl::geospatial;
 
 /* CrsTransformTest */
 
-#ifdef HAVE_GDAL
+#if defined HAVE_GDAL && defined HAVE_PROJ4
 
 BOOST_AUTO_TEST_SUITE(CrsTransformTestSuite)
 
@@ -66,7 +66,7 @@ struct CrsTransformTest
 
 BOOST_FIXTURE_TEST_CASE(transform, CrsTransformTest)
 {
-  CrsTransform<Point3D> trf(epsg25830, epsg4258);
+  CrsTransform trf(epsg25830, epsg4258);
   Point3D pt_utm(281815.044, 4827675.243, 0.);
   Point3D pt_geo;
   trf.transform(pt_utm, pt_geo);

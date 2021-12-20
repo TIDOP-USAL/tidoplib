@@ -140,9 +140,9 @@ struct DifferentialRectificationTest
     this->cameraRotation.at(2, 2) = 0.996;
 
     ///TODO: ¿Objeto Camera?
-    this->differentialRectification = new DifferentialRectification<double>(cameraRotation,
-                                                                            cameraPosition,
-                                                                            focal);
+    this->differentialRectification = new DifferentialRectification(cameraRotation,
+                                                                    cameraPosition,
+                                                                    focal);
   }
 
   virtual void teardown()
@@ -155,7 +155,7 @@ struct DifferentialRectificationTest
   double focal;
   math::RotationMatrix<double> cameraRotation;
 
-  DifferentialRectification<double> *differentialRectification;
+  DifferentialRectification *differentialRectification;
 };
 
 
@@ -189,6 +189,23 @@ BOOST_FIXTURE_TEST_CASE(backwardProjection, DifferentialRectificationTest)
   PointD pt_image = differentialRectification->backwardProjection(pt);
   BOOST_CHECK_CLOSE(110., pt_image.x, 0.1);
   BOOST_CHECK_CLOSE(50., pt_image.y, 0.1);
+}
+
+TL_TODO("Completar test")
+
+BOOST_FIXTURE_TEST_CASE(focal, DifferentialRectificationTest)
+{
+  double focal = differentialRectification->focal();
+}
+
+BOOST_FIXTURE_TEST_CASE(cameraPosition, DifferentialRectificationTest)
+{
+  Point3D position = differentialRectification->cameraPosition();
+}
+
+BOOST_FIXTURE_TEST_CASE(rotationMatrix, DifferentialRectificationTest)
+{
+  differentialRectification->rotationMatrix();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

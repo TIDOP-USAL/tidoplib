@@ -483,7 +483,7 @@ template<typename Point_t> inline
 Point_t Projective<Point_t>::transform(const Point_t &ptIn,
                                        Transform::Order trfOrder) const
 {
-  Point_t r_pt;
+  Point_t r_pt{};
 
   using sub_type = typename Point_t::value_type;
   if (trfOrder == Transform::Order::direct) {

@@ -112,7 +112,7 @@ private:
 	Window<PointD> mWindowDtmTerrainExtension;
 	Affine<PointI> mAffineImageToPhotocoordinates;
 	Affine<PointD> mAffineDtmImageToTerrain;
-	std::unique_ptr<DifferentialRectification<double>> mDifferentialRectification;
+	std::unique_ptr<DifferentialRectification> mDifferentialRectification;
 	double mIniZ;
 	Rect<int> mRectImage;
 	Rect<int> mRectDtm;

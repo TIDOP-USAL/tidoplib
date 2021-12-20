@@ -33,6 +33,7 @@
 
 #include "tidop/geometry/entities/point.h"
 
+///TODO: No esta preparado para trabajar con enteros 
 
 namespace tl
 {

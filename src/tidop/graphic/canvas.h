@@ -27,12 +27,18 @@
 
 #include "config_tl.h"
 
+#ifdef HAVE_OPENCV
+#include "opencv2/core/core.hpp"
+#endif // HAVE_OPENCV
+
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/graphic/styles.h"
 #include "tidop/graphic/entities/point.h"
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
+
+
 
 namespace tl
 {
@@ -131,7 +137,7 @@ public:
   virtual void drawText(const PointD &point, const std::string &text) = 0;
   virtual void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) = 0;
 
-  virtual void setPicture(const cv::Mat &bmp) = 0;
+  //virtual void setPicture(const cv::Mat &bmp) = 0;
 };
 
 #ifdef HAVE_OPENCV
@@ -170,7 +176,7 @@ public:
   void drawText(const PointD &point, const std::string &text) override;
   void drawText(const PointD &point, const std::string &text, const GraphicStyle &style) override;
 
-  void setPicture(const cv::Mat &bmp) override;
+  void setPicture(const cv::Mat &bmp);
 
   cv::Mat bmp()
   {

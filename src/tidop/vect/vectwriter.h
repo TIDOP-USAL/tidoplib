@@ -33,9 +33,9 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-#ifdef HAVE_TL_GEOSPATIAL 
-#include "tidop/geospatial/crs.h"
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL 
+//#include "tidop/geospatial/crs.h"
+//#endif
 
 namespace tl
 {
@@ -78,13 +78,13 @@ public:
    */
   virtual void setCRS(const std::string &epsgCode) = 0;
 
-#ifdef HAVE_TL_GEOSPATIAL
-  /*!
-   * \brief Set the Coordinate Reference System
-   * \param[in] crs geospatial::Crs object
-   */
-  virtual void setCRS(const geospatial::Crs &crs) = 0;
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  /*!
+//   * \brief Set the Coordinate Reference System
+//   * \param[in] crs geospatial::Crs object
+//   */
+//  virtual void setCRS(const geospatial::Crs &crs) = 0;
+//#endif
 
 protected:
 

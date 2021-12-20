@@ -24,91 +24,78 @@
 
 #Modulo Math de la librería TIDOP
 
-if (HAVE_TL_CORE)
+if(BUILD_TL_MATH)
 
-  if(MSVC)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
-  endif(MSVC)
-  
-  project(tl_math)
-  
-  add_library(${PROJECT_NAME} ${LIB_TYPE}
-              math.h
-              angles.cpp
-              angles.h
-              statistics.h
-              mathutils.cpp
-              mathutils.h
-              algebra/quaternion.h
-              algebra/euler_angles.h
-              algebra/rotations.h
-              algebra/rotation_matrix.h
-              algebra/rotation_convert.h
-              algebra/axis_angle.h
-              #algebra/vectors.h
-              algebra/matrix.h
-              algebra/vector.h
-              algebra/svd.h
-              algebra/lu.h
-              algebra/qr.h
-              algebra/cholesky.h
-              simd.h
-  )
-  
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET ${PROJECT_NAME} 
-               PROPERTY FOLDER "modules")
-  
-  if(HAVE_EIGEN)
-      target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
-  endif(HAVE_EIGEN)
-  
-  if(HAVE_OPENBLAS)
-      add_definitions(-DHAVE_LAPACK_CONFIG_H)
-      add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_OPENBLAS)
-  
-  #instalación
-  if(BUILD_SHARED_LIBS)
-  
+    project(tl_math)
+    
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                math.h
+                angles.cpp
+                angles.h
+                statistics.h
+                mathutils.cpp
+                mathutils.h
+                algebra/quaternion.h
+                algebra/euler_angles.h
+                algebra/rotations.h
+                algebra/rotation_matrix.h
+                algebra/rotation_convert.h
+                algebra/axis_angle.h
+                algebra/matrix.h
+                algebra/vector.h
+                algebra/svd.h
+                algebra/lu.h
+                algebra/qr.h
+                algebra/cholesky.h)
+
+    if(MSVC)
+        target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
+    endif(MSVC)
+
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC 
+                          tl_core
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+       
+    set_property(TARGET ${PROJECT_NAME} 
+                 PROPERTY FOLDER "modules")
+
+    if(BUILD_SHARED_LIBS)
+    
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    			
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+    
+    else()
+
       install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  			
-      set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  
-      target_link_libraries(${PROJECT_NAME} tl_core)
+    			EXPORT "${TARGETS_EXPORT_NAME}"
+    			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+    			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    endif()
     
-      if(HAVE_OPENBLAS)
-          target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
-      endif(HAVE_OPENBLAS)
+    install(DIRECTORY . 
+            DESTINATION include/tidop/math
+            FILES_MATCHING PATTERN "*.h")
+            
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
-      if(HAVE_OPENCV)
-          target_link_libraries(${PROJECT_NAME} 
-                                ${OpenCV_LIBS})
-      endif(HAVE_OPENCV)
-  
-  else()
-    install(TARGETS ${PROJECT_NAME}
-  			EXPORT "${TARGETS_EXPORT_NAME}"
-  			LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-  			ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  endif()
-  
-  install(DIRECTORY . 
-          DESTINATION include/tidop/math
-          FILES_MATCHING PATTERN "*.h")
-          
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-  
-  set(HAVE_TL_MATH YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::tl_math enabled")
+    set(HAVE_TL_MATH YES CACHE INTERNAL "")
+    message(STATUS "TidopLib::tl_math enabled")
 
-else()
+elseif(BUILD_TL_CORE)
+    
+    message(STATUS "TidopLib::tl_math disabled")
+    message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_math that is deactivated]") 
 
-  message(STATUS "TidopLib::tl_math disabled")
-  
-endif()
+endif(BUILD_TL_MATH)

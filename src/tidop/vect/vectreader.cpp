@@ -180,31 +180,31 @@ public:
     return crs_wkt;
   }
 
-#ifdef HAVE_TL_GEOSPATIAL
-  geospatial::Crs crs() const override
-  {
-    geospatial::Crs crs;
-
-    try {
-
-#if GDAL_VERSION_MAJOR >= 3
-      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
-        char *wkt = nullptr;
-        spatialReference->exportToWkt(&wkt);
-        crs.fromWktFormat(wkt);
-        CPLFree(wkt);
-      }
-#else
-      crs.fromWktFormat(mDataset->GetProjectionRef());
-#endif
-    
-    } catch (...) {
-      TL_THROW_EXCEPTION_WITH_NESTED("");
-    }
-
-    return crs;
-  }
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//  geospatial::Crs crs() const override
+//  {
+//    geospatial::Crs crs;
+//
+//    try {
+//
+//#if GDAL_VERSION_MAJOR >= 3
+//      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+//        char *wkt = nullptr;
+//        spatialReference->exportToWkt(&wkt);
+//        crs.fromWktFormat(wkt);
+//        CPLFree(wkt);
+//      }
+//#else
+//      crs.fromWktFormat(mDataset->GetProjectionRef());
+//#endif
+//    
+//    } catch (...) {
+//      TL_THROW_EXCEPTION_WITH_NESTED("");
+//    }
+//
+//    return crs;
+//  }
+//#endif
 
   static bool isExtensionSupported(const std::string &extension)
   {

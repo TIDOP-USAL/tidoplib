@@ -112,7 +112,6 @@ std::string SiftProperties::name() const
 
 /*----------------------------------------------------------------*/
 
-#if (CV_VERSION_MAJOR > 4 || CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4) || defined OPENCV_ENABLE_NONFREE
 
 SiftDetectorDescriptor::SiftDetectorDescriptor()
 { 
@@ -143,7 +142,7 @@ SiftDetectorDescriptor::SiftDetectorDescriptor(int featuresNumber,
 
 void SiftDetectorDescriptor::update()
 {
-#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4))
   mSift = cv::SIFT::create(SiftProperties::featuresNumber(),
     SiftProperties::octaveLayers(),
     SiftProperties::contrastThreshold(),
@@ -164,7 +163,7 @@ std::vector<cv::KeyPoint> SiftDetectorDescriptor::detect(const cv::Mat &img, cv:
 
   try {
 
-#if (CV_VERSION_MAJOR > 5 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
+#if (CV_VERSION_MAJOR > 4 || (CV_VERSION_MAJOR == 4 && CV_VERSION_MINOR >= 4)) || (defined HAVE_OPENCV_XFEATURES2D && defined OPENCV_ENABLE_NONFREE)
     mSift->detect(img, keyPoints, mask);
 #else
     TL_COMPILER_WARNING("OpenCV not built with extra modules. Sift Detector/Descriptor not supported")
@@ -234,7 +233,6 @@ void SiftDetectorDescriptor::reset()
   update();
 }
 
-#endif
 
 } // namespace tl
 

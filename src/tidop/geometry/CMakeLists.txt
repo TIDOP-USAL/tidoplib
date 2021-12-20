@@ -23,100 +23,98 @@
 ##########################################################################
 
 
-#Modulo geometry de la librería
+# Geometry module
 
-if (NOT HAVE_TL_CORE)
-  message(WARNING "TidopLib::tl_geom disabled [Module dependent on tl_core that is deactivated]")
-elseif(NOT HAVE_TL_MATH)
-  message(WARNING "TidopLib::tl_geom disabled [Module dependent on tl_math that is deactivated]") 
-else()
+if(BUILD_TL_GEOMETRY)
 
-  project(tl_geom)
+    project(tl_geom)
   
-  add_library(${PROJECT_NAME} ${LIB_TYPE}
-              #operations.cpp
-              #operations.h
-              transform/transform.h
-              transform/affine.h
-              transform/helmert2d.h
-              transform/helmert3d.h
-              #transform/perspective.h
-              transform/polynomial.h
-              transform/projective.h
-              transform/rotation.h
-              transform/scale.h
-              transform/translation.h
-              rect.h
-              size.h
-              entities/bbox.h
-              entities/entity.h
-              entities/entities2d.h
-              entities/entities3d.h
-              entities/linestring.h
-              entities/point.h
-              entities/polygon.h
-              entities/multipoint.h
-              entities/segment.cpp
-              entities/segment.h
-              entities/window.h
-              entities/shapes.h
-              algorithms.h
-              algorithms/vector.h
-              algorithms/distance.h
-              algorithms/angle.h
-              algorithms/projection.h
-              algorithms/buffer.h
-              algorithms/intersect.h
-  )
-    
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET ${PROJECT_NAME} 
-               PROPERTY FOLDER "modules")
-  
-  if(HAVE_OPENBLAS)
-    add_definitions(-DHAVE_LAPACK_CONFIG_H)
-    add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_OPENBLAS)
-        
-  if(HAVE_EIGEN)
-    target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
-  endif(HAVE_EIGEN)
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                transform/transform.h
+                transform/affine.h
+                transform/helmert2d.h
+                transform/helmert3d.h
+                transform/polynomial.h
+                transform/projective.h
+                transform/rotation.h
+                transform/scale.h
+                transform/translation.h
+                rect.h
+                size.h
+                entities/bbox.h
+                entities/entity.h
+                entities/entities2d.h
+                entities/entities3d.h
+                entities/linestring.h
+                entities/point.h
+                entities/polygon.h
+                entities/multipoint.h
+                entities/segment.cpp
+                entities/segment.h
+                entities/window.h
+                entities/shapes.h
+                algorithms.h
+                algorithms/vector.h
+                algorithms/distance.h
+                algorithms/angle.h
+                algorithms/projection.h
+                algorithms/buffer.h
+                algorithms/intersect.h)
+   
+    target_include_directories(${PROJECT_NAME} PUBLIC
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+                               $<INSTALL_INTERFACE:include>)
 
-  #instalación
-  if(BUILD_SHARED_LIBS)
-  
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  
-      set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  
-      target_link_libraries(${PROJECT_NAME} 
-                            tl_core tl_math)
-      if(HAVE_OPENBLAS)
-          target_link_libraries(${PROJECT_NAME} ${LAPACKE_LIBRARIES})
-      endif(HAVE_OPENBLAS)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
-  else()
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+                          tl_core
+                          tl_math
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+
+
+    set_property(TARGET ${PROJECT_NAME} 
+                 PROPERTY FOLDER "modules")
+  
+
+
+    if(BUILD_SHARED_LIBS)
+  
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+  
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+    else()
   
       install(TARGETS ${PROJECT_NAME} 
               EXPORT "${TARGETS_EXPORT_NAME}"
               LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
               ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
   
-  endif()
+    endif()
   
   
-  install(DIRECTORY . 
-          DESTINATION include/tidop/geometry
-          FILES_MATCHING PATTERN "*.h")
+    install(DIRECTORY . 
+            DESTINATION include/tidop/geometry
+            FILES_MATCHING PATTERN "*.h")
   		
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
-  set(HAVE_TL_GEOMETRY YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::${PROJECT_NAME} enabled")
-  
-endif()
+    set(HAVE_TL_GEOMETRY YES CACHE INTERNAL "")
+    message(STATUS "TidopLib::tl_geom enabled")
+
+elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
+
+    message(STATUS "TidopLib::tl_geom disabled")
+    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_geom that is deactivated]") 
+    message(STATUS "TidopLib::tl_graphic disabled      [Module dependent on tl_geom that is deactivated]") 
+    message(STATUS "TidopLib::tl_featmatch disabled    [Module dependent on tl_geom that is deactivated]")
+    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_geom that is deactivated]")
+
+endif(BUILD_TL_GEOMETRY)

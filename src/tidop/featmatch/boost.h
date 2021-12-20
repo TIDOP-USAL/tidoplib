@@ -93,7 +93,7 @@ private:
 
 /*----------------------------------------------------------------*/
 
-class BoostDescriptor
+class TL_EXPORT BoostDescriptor
   : public BoostProperties,
     public DescriptorExtractor
 {

@@ -32,7 +32,9 @@
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
+#ifdef HAVE_GDAL
 #include "ogrsf_frmts.h"
+#endif
 
 namespace tl
 {
@@ -257,7 +259,7 @@ void CanvasCV::drawText(const PointD &point, const std::string &text, const Grap
                                       fontScale, thickness, &baseline);
   baseline += thickness;
 
-  cv::putText(mCanvas, text, cv::Point(point.x, point.y), fontFace, fontScale,
+  cv::putText(mCanvas, text, cv::Point(roundToInteger(point.x), roundToInteger(point.y)), fontFace, fontScale,
               cv::Scalar::all(255), thickness, 8);
 }
 

@@ -174,6 +174,8 @@ cv::Mat StereoImage::run(const cv::Mat &left,
   } catch (...) {
     std::throw_with_nested(std::runtime_error("StereoImage::run() failed"));
   }
+
+  return stereo;
 }
 
 StereoImage::Mode StereoImage::mode() const

@@ -33,9 +33,9 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-#ifdef HAVE_TL_GEOSPATIAL 
-#include "tidop/geospatial/crs.h"
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL 
+//#include "tidop/geospatial/crs.h"
+//#endif
 
 namespace tl
 {
@@ -78,12 +78,12 @@ public:
    */
   virtual std::string crsWkt() const = 0;
 
-#ifdef HAVE_TL_GEOSPATIAL
-  /*!
-   * \brief Sistema de referencia
-   */
-  virtual geospatial::Crs crs() const = 0;
-#endif
+//#if defined HAVE_TL_GEOSPATIAL
+//  /*!
+//   * \brief Sistema de referencia
+//   */
+//  virtual geospatial::Crs crs() const = 0;
+//#endif
 
 protected:
 

@@ -55,9 +55,6 @@ namespace tl
 /*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
 /* ---------------------------------------------------------------------------------- */
 
-// La resolución de sistemas lineales con OpenCV es muy lenta:
-// http://www.patrikhuber.ch/blog/5-solving-linear-systems-with-eigen
-// Se usa Eigen en caso de que este presente la libreria.
 
 /*!
  * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
@@ -82,7 +79,7 @@ namespace tl
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c);
+//TL_EXPORT void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Factorización QR
@@ -105,7 +102,7 @@ TL_EXPORT void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
+//TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Factorización o descomposición LU
@@ -122,7 +119,7 @@ TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
+//TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
 
 /*!
  * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky
@@ -141,7 +138,7 @@ TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
+//TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
 #ifdef HAVE_EIGEN
 
@@ -156,7 +153,7 @@ TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double 
  * \param[in] b
  * \param[out] c
  */
-TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
+//TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
 
 #endif
 

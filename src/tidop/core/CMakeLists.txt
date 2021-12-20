@@ -22,84 +22,98 @@
 #                                                                        #
 ##########################################################################
  
- # Modulo Core de la librería TIDOP
+ # TidopLib Core module
 
-project(tl_core)
+if(BUILD_TL_CORE)
 
-add_library(${PROJECT_NAME} ${LIB_TYPE}
-            console.cpp
-            console.h
-            defs.h
-            exception.cpp
-            exception.h
-            flags.h
-            messages.cpp
-            messages.h
-            log.cpp
-            log.h
-            utils.cpp
-            utils.h
-            process.cpp
-            process.h
-            progress.cpp
-            progress.h
-            event.cpp
-            event.h
-            licence.cpp
-            licence.h
-            gdalreg.cpp
-            gdalreg.h
-            chrono.cpp
-            chrono.h
-            concurrency.cpp
-            concurrency.h
-            path.cpp
-            path.h
-)
-  
-target_link_libraries(${PROJECT_NAME} PRIVATE
-                      ${Boost_FILESYSTEM_LIBRARY} 
-                      ${Boost_SYSTEM_LIBRARY})
-if (HAVE_OPENMP)
-target_link_libraries(${PROJECT_NAME} PRIVATE
-                      OpenMP::OpenMP_CXX)
-endif(HAVE_OPENMP)
+    project(tl_core)
 
-set_property(TARGET ${PROJECT_NAME}
-             PROPERTY FOLDER "modules")
-
-
-if(BUILD_SHARED_LIBS)
-
-    install(TARGETS ${PROJECT_NAME}
-            EXPORT "${TARGETS_EXPORT_NAME}"
-            RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-	
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-                          DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                console.cpp
+                console.h
+                defs.h
+                exception.cpp
+                exception.h
+                flags.h
+                messages.cpp
+                messages.h
+                log.cpp
+                log.h
+                utils.cpp
+                utils.h
+                process.cpp
+                process.h
+                progress.cpp
+                progress.h
+                event.cpp
+                event.h
+                licence.cpp
+                licence.h
+                gdalreg.cpp
+                gdalreg.h
+                chrono.cpp
+                chrono.h
+                concurrency.cpp
+                concurrency.h
+                path.cpp
+                path.h)
     
-    if (HAVE_GDAL)
-         target_link_libraries(${PROJECT_NAME} ${GDAL_LIBRARY})
-    endif(HAVE_GDAL)
+    target_include_directories(${PROJECT_NAME} PUBLIC
+                               $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
+                               $<INSTALL_INTERFACE:include>)
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
 
+    target_link_libraries(${PROJECT_NAME} PUBLIC
+                          ${Boost_FILESYSTEM_LIBRARY} 
+                          ${Boost_SYSTEM_LIBRARY}
+                          $<$<BOOL:${HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>)
+    
+    set_property(TARGET ${PROJECT_NAME}
+                 PROPERTY FOLDER "modules")
+    
+    if(BUILD_SHARED_LIBS)
+    
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    	
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)  
+    
+    else()
+    
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    
+    endif()
+    
+    
+    install(DIRECTORY .
+            DESTINATION include/tidop/core
+            FILES_MATCHING PATTERN "*.h")
+    
+    
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    
+    set(HAVE_TL_CORE YES CACHE INTERNAL "")
+    message(STATUS "TidopLib::tl_core enabled")
+    
 else()
 
-    install(TARGETS ${PROJECT_NAME}
-            EXPORT "${TARGETS_EXPORT_NAME}"
-            LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-            ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-
-endif()
-
-
-install(DIRECTORY .
-        DESTINATION include/tidop/core
-        FILES_MATCHING PATTERN "*.h")
-
-
-set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-
-set(HAVE_TL_CORE YES CACHE INTERNAL "")
-message(STATUS "TidopLib::tl_core enabled")
+    message(STATUS "TidopLib::tl_core disabled")
+    message(STATUS "TidopLib::tl_math disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_imgprocess disabled   [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_graphic disabled      [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_featmatch disabled    [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_vect disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_core that is deactivated]")
+    message(STATUS "TidopLib::tl_experimental disabled [Module dependent on tl_core that is deactivated]")
+  
+endif(BUILD_TL_CORE)

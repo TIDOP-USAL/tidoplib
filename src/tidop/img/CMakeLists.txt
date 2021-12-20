@@ -22,92 +22,80 @@
 #                                                                        #
 ##########################################################################
 
-# Modulo img de la librería
-# Lectura y escritura de formatos raster
+if(BUILD_TL_IMG)
 
-if (NOT HAVE_TL_CORE)
-  message(WARNING "TidopLib::tl_img disabled [Module dependent on tl_core that is deactivated]")
-elseif(NOT HAVE_TL_MATH)
-  message(WARNING "TidopLib::tl_img disabled [Module dependent on tl_math that is deactivated]") 
-elseif(NOT HAVE_TL_GEOMETRY)
-  message(WARNING "TidopLib::tl_img disabled [Module dependent on tl_geom that is deactivated]") 
-else()
+    #if(MSVC)
+    #    SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
+    #endif(MSVC)
+  
+    project(tl_img)
+  
+    add_library(${PROJECT_NAME} ${LIB_TYPE}
+                img.h
+                img.cpp
+                image.h
+                image.cpp
+                imgreader.cpp
+                imgreader.h
+                imgwriter.cpp
+                imgwriter.h
+                formats.cpp
+                formats.h
+                metadata.h
+                metadata.cpp)
 
-  if(MSVC)
-  SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
-  endif(MSVC)
-  
-  project(tl_img)
-  
-  add_library(${PROJECT_NAME} ${LIB_TYPE}
-              img.h
-              img.cpp
-              image.h
-              image.cpp
-              imgreader.cpp
-              imgreader.h
-              imgwriter.cpp
-              imgwriter.h
-              formats.cpp
-              formats.h
-              metadata.h
-              metadata.cpp
-  )
+    if(MSVC)
+        target_compile_options(${PROJECT_NAME} PRIVATE "/bigobj")
+    endif(MSVC)
+
+    target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     
-  # Añade el proyecto a la carpeta 'modules'
-  set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
+    target_compile_definitions(${PROJECT_NAME} PUBLIC
+                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+                          tl_core
+                          tl_geom
+                          tl_math
+                          tl_graphic
+                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
+                          ${OpenCV_LIBS})
+
+    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "modules")
+
+    if(BUILD_SHARED_LIBS)
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    	
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+                              DEFINE_SYMBOL TIDOPLIB_EXPORTS)
+    	
+    else()
+    
+        install(TARGETS ${PROJECT_NAME}
+                EXPORT "${TARGETS_EXPORT_NAME}"
+                LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
+                ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
+    
+    endif()
   
-  if(HAVE_OPENBLAS)
-      add_definitions(-DHAVE_LAPACK_CONFIG_H)
-      add_definitions(-DLAPACK_COMPLEX_STRUCTURE)
-  endif(HAVE_OPENBLAS)
-  
-  #instalación
-  if(BUILD_SHARED_LIBS)
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              RUNTIME DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/bin
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  	
-      set_target_properties(${PROJECT_NAME} PROPERTIES
-                            DEFINE_SYMBOL TIDOPLIB_EXPORTS)
-  	
-      target_link_libraries(${PROJECT_NAME}
-                            tl_core
-                            tl_geom
-                            tl_math
-                            tl_graphic)
-      if(HAVE_OPENCV)			
-          target_link_libraries(${PROJECT_NAME}
-                                ${OpenCV_LIBS})	
-      endif(HAVE_OPENCV)
-  	
-      if (HAVE_GDAL)
-          target_link_libraries(${PROJECT_NAME}
-                                ${GDAL_LIBRARY})
-      endif(HAVE_GDAL)
-  
-      if(HAVE_EIGEN)
-          target_link_libraries (${PROJECT_NAME} Eigen3::Eigen)
-      endif(HAVE_EIGEN)
-  
-  else()
-  
-      install(TARGETS ${PROJECT_NAME}
-              EXPORT "${TARGETS_EXPORT_NAME}"
-              LIBRARY DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib 
-              ARCHIVE DESTINATION ${TL_INSTALL_BINARIES_PREFIX}/lib)
-  
-  endif()
-  
-  install(DIRECTORY . 
-          DESTINATION include/tidop/img
-          FILES_MATCHING PATTERN "*.h")
-          
-  set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
-  
-  set(HAVE_TL_IMG YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::${PROJECT_NAME} enabled")
-  
-endif()
+    install(DIRECTORY . 
+            DESTINATION include/tidop/img
+            FILES_MATCHING PATTERN "*.h")
+            
+    set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
+    
+    set(HAVE_TL_IMG YES CACHE INTERNAL "")
+    message(STATUS "TidopLib::tl_img enabled")
+
+elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)  
+
+    message(STATUS "TidopLib::tl_img disabled")
+    message(STATUS "TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
+
+endif(BUILD_TL_IMG)

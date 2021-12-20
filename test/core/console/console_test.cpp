@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop Console test
 #include <boost/test/unit_test.hpp>
-#include <boost/test/output_test_stream.hpp>
+#include <boost/test/tools/output_test_stream.hpp>
 #include <tidop/core/console.h>
 #include <tidop/core/log.h>
 

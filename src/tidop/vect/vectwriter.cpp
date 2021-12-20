@@ -67,7 +67,10 @@ public:
   void create() override;
   void write(const GLayer &layer) override;
   void setCRS(const std::string &crs) override;
-  void setCRS(const geospatial::Crs &crs) override;
+
+//#ifdef HAVE_TL_GEOSPATIAL
+//  void setCRS(const geospatial::Crs &crs) override;
+//#endif
 
 private:
 
@@ -316,18 +319,18 @@ void VectorWriterGdal::setCRS(const std::string &crs)
   }
 }
 
-#ifdef HAVE_TL_GEOSPATIAL
-void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
-{
-  if (mDataset) {
-    if (crs.isValid()) {
-      this->setGdalProjection(crs.toWktFormat());
-    }
-  } else {
-    msgWarning("The file has not been created. Use VectorWriterGdal::create() method");
-  }
-}
-#endif
+//#ifdef HAVE_TL_GEOSPATIAL
+//void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
+//{
+//  if (mDataset) {
+//    if (crs.isValid()) {
+//      this->setGdalProjection(crs.toWktFormat());
+//    }
+//  } else {
+//    msgWarning("The file has not been created. Use VectorWriterGdal::create() method");
+//  }
+//}
+//#endif
 
 void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr, 
                                    const GraphicEntity *gStyle)

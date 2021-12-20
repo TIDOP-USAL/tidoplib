@@ -220,8 +220,6 @@
 #endif
 //__FUNCSIG__
 
-// noexcept es valida a partir de C++11. Visual Studio 2013 no cumple todo C++11
-
 #if __cplusplus >= 201103L
 #  define TL_NOEXCEPT noexcept
 #  define TL_NOEXCEPT_OP(x) noexcept((x))

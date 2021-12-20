@@ -27,11 +27,11 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "ogr_spatialref.h"
-TL_DEFAULT_WARNINGS
-#endif
+//#ifdef HAVE_GDAL
+//TL_SUPPRESS_WARNINGS
+//#include "ogr_spatialref.h"
+//TL_DEFAULT_WARNINGS
+//#endif
 
 #include "tidop/geometry/entities/point.h"
 #include "tidop/math/algebra/rotation_matrix.h"
