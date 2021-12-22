@@ -69,7 +69,8 @@ Orthorectification::Orthorectification(const Path &dtm,
     mCamera(camera),
     mCameraPose(cameraPose),
     mIniZ(0.),
-    mNoDataValue(-std::numeric_limits<double>().max())
+    mNoDataValue(-std::numeric_limits<double>().max()),
+    bCuda(false)
 {
   init();
 }
@@ -486,6 +487,11 @@ cv::Mat Orthorectification::distCoeffs() const
   return dist_coeffs;
 }
 
+void Orthorectification::setCuda(bool active)
+{
+  bCuda = active;
+}
+
 cv::Mat Orthorectification::undistort(const cv::Mat &image)
 {
   cv::Mat img_undistort;
@@ -548,16 +554,21 @@ cv::Mat Orthorectification::undistort(const cv::Mat &image)
     cv::initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), optCameraMat, imageSize, CV_32FC1, map1, map2);
 
 #ifdef HAVE_OPENCV_CUDAWARPING
-    cv::cuda::GpuMat gMap1(map1);
-    cv::cuda::GpuMat gMap2(map2);
-    cv::cuda::GpuMat gImgOut(image);
-    cv::cuda::GpuMat gImgUndistort;
+    if (bCuda) {
+      cv::cuda::GpuMat gMap1(map1);
+      cv::cuda::GpuMat gMap2(map2);
+      cv::cuda::GpuMat gImgOut(image);
+      cv::cuda::GpuMat gImgUndistort;
 
-    cv::cuda::remap(gImgOut, gImgUndistort, gMap1, gMap2, cv::INTER_LINEAR, 0, cv::Scalar());
-    gImgUndistort.download(img_undistort);
+      cv::cuda::remap(gImgOut, gImgUndistort, gMap1, gMap2, cv::INTER_LINEAR, 0, cv::Scalar());
+      gImgUndistort.download(img_undistort);
+    } else {
+#endif
 
-#else
     cv::remap(image, img_undistort, map1, map2, cv::INTER_LINEAR);
+
+#ifdef HAVE_OPENCV_CUDAWARPING
+    }
 #endif
 
   } catch (...) {
@@ -824,12 +835,14 @@ Orthoimage::Orthoimage(const Path &image,
                        Orthorectification *orthorectification,
                        const geospatial::Crs &crs,
                        const Rect<int> &rectOrtho,
-                       const Affine<PointD> &georeference)
+                       const Affine<PointD> &georeference,
+                       bool cuda)
   : mImageReader(ImageReaderFactory::createReader(image)),
     mOrthorectification(orthorectification),
     mCrs(crs),
     mRectOrtho(rectOrtho),
-    mGeoreference(georeference)
+    mGeoreference(georeference),
+    bCuda(cuda)
 {
 }
 
@@ -855,13 +868,20 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 
     if (depth != 8) {
 #ifdef HAVE_OPENCV_CUDAARITHM
-      cv::cuda::GpuMat gImgIn(image);
-      cv::cuda::GpuMat gImgOut;
-      cv::cuda::normalize(gImgIn, gImgOut, 0., 255., cv::NORM_MINMAX, CV_8U);
-      gImgOut.download(image);
-#else
-      cv::normalize(image, image, 0., 255., cv::NORM_MINMAX, CV_8U);
+      if (bCuda) {
+        cv::cuda::GpuMat gImgIn(image);
+        cv::cuda::GpuMat gImgOut;
+        cv::cuda::normalize(gImgIn, gImgOut, 0., 255., cv::NORM_MINMAX, CV_8U);
+        gImgOut.download(image);
+      } else {
 #endif
+
+        cv::normalize(image, image, 0., 255., cv::NORM_MINMAX, CV_8U);
+
+#ifdef HAVE_OPENCV_CUDAARITHM
+      }
+#endif
+
       depth = 8;
     }
 
@@ -998,13 +1018,15 @@ OrthoimageProcess::OrthoimageProcess(const std::vector<Photo> &photos,
                                      const Crs &crs,
                                      const Path &footprint,
                                      double scale,
-                                     double crop)
+                                     double crop,
+                                     bool cuda)
   : mPhotos(photos),
     mDtm(dtm),
     mOrthoPath(orthoPath),
     mCrs(crs),
     mScale(scale),
-    mCrop(crop)
+    mCrop(crop),
+    bCuda(cuda)
 {
   mOrthoPath.createDirectories();
   graphOrthos.parentPath().createDirectories();
@@ -1068,6 +1090,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
       ortho_file.append(photo.name()).replaceExtension(".png");
 
       Orthorectification orthorectification(mDtm, photo.camera(), photo.cameraPose());
+      orthorectification.setCuda(bCuda);
       if (!orthorectification.isValid()) continue;
 
       std::shared_ptr<graph::GPolygon> entity = std::make_shared<graph::GPolygon>(orthorectification.footprint());
@@ -1127,7 +1150,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
 
       cv::Mat visibility_map = visibilityMap(orthorectification, zBuffer);
       
-      Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho);
+      Orthoimage orthoimage(photo.path(), &orthorectification, mCrs, rect_ortho, affine_ortho, bCuda);
       orthoimage.run(ortho_file, visibility_map);
 
       std::shared_ptr<TableRegister> data(new TableRegister(layer.tableFields()/*fields*/));

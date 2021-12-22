@@ -37,26 +37,6 @@ project(TidopLib
         LANGUAGES CXX)
 
 
-# Compiler info
-if(CMAKE_CXX_COMPILER_LOADED)
-  message(STATUS "C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
-  message(STATUS "C++ compiler version: ${CMAKE_CXX_COMPILER_VERSION}\n")
-endif()
-
-# Operating system info
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  message(STATUS "Operating system: Linux ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-  message(STATUS "Operating system: macOS ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-  message(STATUS "Operating system: Windows ${CMAKE_SYSTEM_VERSION}\n")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
-  message(STATUS "Operating system: IBM AIX ${CMAKE_SYSTEM_VERSION}\n")
-else()
-  message(STATUS "Operating system: ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}\n")
-endif()
-
-
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
   set(TL_ARCH x64)
 else()
@@ -248,6 +228,35 @@ if (BUILD_SHARED_LIBS)
 endif (BUILD_SHARED_LIBS)
 
 
+
+
+# Compiler info
+
+message(STATUS "\nCompiler info:\n")
+if(CMAKE_CXX_COMPILER_LOADED)
+  message(STATUS "  C++ compiler:         ${CMAKE_CXX_COMPILER}")
+  message(STATUS "  C++ compiler ID:      ${CMAKE_CXX_COMPILER_ID}")
+  message(STATUS "  C++ compiler version: ${CMAKE_CXX_COMPILER_VERSION}")
+  message(STATUS "  C++ estandar:         ${CMAKE_CXX_STANDARD}\n")
+endif()
+
+# Operating system info
+
+message(STATUS "\nOperating system info:\n")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  message(STATUS "  Linux ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+  message(STATUS "  macOS ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  message(STATUS "  Windows ${CMAKE_SYSTEM_VERSION}\n")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "AIX")
+  message(STATUS "  IBM AIX ${CMAKE_SYSTEM_VERSION}\n")
+else()
+  message(STATUS "  ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}\n")
+endif()
+
+
+
 ##########################################################################
 #  Modulos TidopLib                                                      #
 #------------------------------------------------------------------------#
@@ -257,6 +266,8 @@ endif (BUILD_SHARED_LIBS)
 ##########################################################################
 
 include(CMakeDependentOption)
+
+message(STATUS "\nTidopLib config:\n")
 
 option(BUILD_TL_CORE         "Include core module in TidopLib build"         ON )
 cmake_dependent_option(BUILD_TL_MATH "Include math module in TidopLib build" ON "BUILD_TL_CORE" OFF)
@@ -284,23 +295,37 @@ OPTION (BUILD_DEPRECATED_METHODS "Show deprecated methods and class" OFF)
 
 if(BUILD_MESSAGE_HANDLER)
   set(TL_MESSAGE_HANDLER YES)
-  message(STATUS "[TidopLib] Message manager enabled")
+  message(STATUS "  [TidopLib] Message manager enabled")
 else()
   set(TL_MESSAGE_HANDLER NO)
-  message(STATUS "[TidopLib] Message manager disabled")
+  message(STATUS "  [TidopLib] Message manager disabled")
 endif()
 
 if(BUILD_DEPRECATED_METHODS)
   set(TL_ENABLE_DEPRECATED_METHODS YES)
-  message(WARNING "[TidopLib] Enable deprecated methods and class")
+  message(WARNING "  [TidopLib] Enable deprecated methods and class")
 else()
   set(TL_ENABLE_DEPRECATED_METHODS NO)
-  message(STATUS "[TidopLib] Disable deprecated methods and class")
+  message(STATUS "  [TidopLib] Disable deprecated methods and class")
 endif()
 
-# Test
+if(BUILD_APPS)
+  message(STATUS "  [TidopLib] Build apps")
+else()
+  message(STATUS "  [TidopLib] Build apps disabled")
+endif()
+
 if(BUILD_TEST)
-  enable_testing() #CMake predefined targets
+  enable_testing()
+  message(STATUS "  [TidopLib] Build testing")
+else()
+  message(STATUS "  [TidopLib] Build testing disabled")
+endif()
+
+if(BUILD_DOC)
+  message(STATUS "  [TidopLib] Build documentation")
+else()
+  message(STATUS "  [TidopLib] Build documentation disabled")
 endif()
 
 
@@ -361,7 +386,7 @@ if(WITH_BOOST)
 
     find_package(Boost 1.50 COMPONENTS filesystem system unit_test_framework REQUIRED)
     if(Boost_FOUND)
-        message(STATUS "Boost version: ${Boost_VERSION}")
+        message(STATUS "  Boost version: ${Boost_VERSION}")
         include_directories(${Boost_INCLUDE_DIRS})
         set(HAVE_BOOST YES)
     else()
@@ -382,7 +407,7 @@ if(WITH_OPENCV)
     if(NOT OPENCV_FOUND)
       set(HAVE_OPENCV NO)
     else()
-      message(STATUS "OpenCV version: ${OpenCV_VERSION}")
+      message(STATUS "  OpenCV version: ${OpenCV_VERSION}")
       set(HAVE_OPENCV YES)
     endif()
 
@@ -515,7 +540,7 @@ if(WITH_OPENMP)
   
   if(OpenMP_FOUND)
     set(HAVE_OPENMP YES)
-    message(STATUS "OpenMP enable}")
+    message(STATUS "  OpenMP enable")
   else()
     set(HAVE_OPENMP NO)
   endif()

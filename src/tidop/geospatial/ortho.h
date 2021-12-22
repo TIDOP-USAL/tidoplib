@@ -93,6 +93,8 @@ public:
 
 	bool isValid() const;
 
+	void setCuda(bool active);
+
 private:
 
 	void init();
@@ -118,6 +120,7 @@ private:
 	Rect<int> mRectDtm;
 	graph::GPolygon mFootprint;
 	double mNoDataValue;
+	bool bCuda;
 };
 
 
@@ -199,7 +202,8 @@ public:
 		         Orthorectification *orthorectification,
 		         const geospatial::Crs &crs,
 		         const Rect<int> &rectOrtho,
-		         const Affine<PointD> &georeference);
+		         const Affine<PointD> &georeference,
+						 bool cuda = false);
 	~Orthoimage();
 
 	void run(const Path &ortho, const cv::Mat &visibilityMap = cv::Mat());
@@ -213,7 +217,7 @@ private:
 	Affine<PointD> mGeoreference;
 	std::unique_ptr<ImageWriter> mOrthophotoWriter;
 	Window<PointD> mWindowOrthoTerrain;
-	
+	bool bCuda;
 };
 
 
@@ -237,7 +241,8 @@ public:
 		                const Crs &crs,
 		                const Path &footprint = Path(),
 	                 	double scale = -1,
-		                double crop = 1);
+		                double crop = 1,
+										bool bCuda = false);
 	~OrthoimageProcess();
 
 private:
@@ -261,6 +266,7 @@ private:
 	std::unique_ptr<VectorWriter> mGraphOrthosWriter;
 	double mScale; 
 	double mCrop;
+	bool bCuda;
 };
 
 
