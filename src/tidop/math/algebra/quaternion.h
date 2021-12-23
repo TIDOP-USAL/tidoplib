@@ -39,17 +39,19 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
+ *  \{
+ */
+
+/*! \addtogroup algebra
+ *  \{
+ */
+
+/*! \defgroup rotations Rotations
  *  \{
  */
 
 
-/*! \addtogroup Algebra
- *  
- * Algebra
- *
- *  \{
- */
 
 /*!
  * \brief Clase cuaternión para la representación de orientaciones y rotaciones en el espacio
@@ -444,9 +446,11 @@ bool operator != (const Quaternion<T> &q1, const Quaternion<T> &q2)
   return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
 }
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of rotations
 
-/*! \} */ // end of Math
+/*! \} */ // end of algebra
+
+/*! \} */ // end of math
 
 } // Fin namespace math
 

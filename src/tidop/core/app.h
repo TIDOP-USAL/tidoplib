@@ -22,4 +22,65 @@
  *                                                                        *
  **************************************************************************/
 
-#include "mathutils.h"
+#ifndef TL_CORE_APP_H
+#define TL_CORE_APP_H
+
+#include "config_tl.h"
+
+#include <string>
+#include <memory>
+#include <mutex>
+
+#include "tidop/core/defs.h"
+#include "tidop/core/path.h"
+
+namespace tl
+{
+
+/*! \addtogroup core
+ *  \{
+ */
+
+/*!
+ * \brief Información de la aplicación 
+ */
+class TL_EXPORT App
+{
+
+private:
+
+  App();
+
+public:
+
+
+  ~App() = default;
+  App(const App &) = delete;
+  App(App &&) = delete;
+  App &operator = (const App &) = delete;
+  App &operator = (App &&) = delete;
+
+  /*!
+   * \brief Singleton
+   */
+  static App &instance();
+
+  tl::Path path() const;
+  std::string version() const;
+
+private:
+
+  void init();
+
+private:
+
+  static std::unique_ptr<App> sObjApp;
+  static std::mutex mtx;
+
+};
+
+/*! \} */ // end of core
+
+} // namespace tl
+
+#endif // TL_CORE_EVENT_H

@@ -39,123 +39,10 @@ namespace tl
 {
 
 /*!
- * \addtogroup Math
- *
- * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
- * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
- * de sistemas de ecuaciones lineales.
- *
- * Se utilizan contenedores y un tipo de punto generico (con métodos miembro x, y, z).
+ * \addtogroup math
  *
  * \{
  */
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                  RESOLUCIÓN DE SISTEMAS DE ECUACIONES LINEALES                     */
-/* ---------------------------------------------------------------------------------- */
-
-
-/*!
- * \brief Resolución de Sistemas Lineales mediante SVD (Singular value decomposition)
- *
- * En álgebra lineal, la descomposición en valores singulares de una matriz T
- * o compleja es una factorización de la misma con muchas aplicaciones, entre ellas
- * la resolución de sistemas lineales.
- *
- * Dada una matriz T A de m×n, existen matrices ortogonales U (de orden m) y V (de orden n)
- * y una matriz diagonal Σ (de tamaño m×n) tales que:
- *
- * \f[ A = UΣV^T  \f]
- *
- * Esta factorización de A se llama descomposición en valores singulares de A.
- *
- *
- * http://www.ehu.eus/izaballa/Cursos/valores_singulares.pdf
- * https://www.researchgate.net/publication/263583897_La_descomposicion_en_valores_singulares_SVD_y_algunas_de_sus_aplicaciones
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a
- * \param[in] b
- * \param[out] c
- */
-//TL_EXPORT void solveSVD(size_t nRows, size_t nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Factorización QR
- *
- * La descomposición o factorización QR de una matriz es una descomposición de
- * la misma como producto de una matriz ortogonal por una triangular superior.
- *
- * La descomposición QR de una matriz cuadrada T A es:
- *
- * \f[ A = QR \f]
- *
- * donde Q es una matriz ortogonal:
- *
- * \f[ Q^TQ = I \f]
- *
- * y R es una matriz triangular superior.
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a
- * \param[in] b
- * \param[out] c
- */
-//TL_EXPORT void solveQR(int nRows, int nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Factorización o descomposición LU
- *
- * Sea A una matriz no singular (si lo fuera, entonces la descomposición podría no ser única)
- *
- * \f[ A=LU \f]
- *
- * donde L y U son matrices inferiores y superiores triangulares respectivamente.
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a
- * \param[in] b
- * \param[out] c
- */
-//TL_EXPORT void solveLU(int nRows, int nCols, double *a, double *b, double *c);
-
-/*!
- * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky
- *
- * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto
- * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe
- * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva,
- * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama
- * la descomposición o factorización de Cholesky.
- *
- * La matriz A tiene que ser simétrica y definida positiva.
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a
- * \param[in] b
- * \param[out] c
- */
-//TL_EXPORT void solveCholesky(int nRows, int nCols, double *a, double *b, double *c);
-
-#ifdef HAVE_EIGEN
-
-/*!
- * \brief Resolución de sistemas de ecuaciones lineales mediante la Factorización Cholesky
- *
- * Resolución por Cholesky para el caso de matrices semidefinidas positivas o negativas
- *
- * \param[in] nRows Número de filas
- * \param[in] nCols Número de columnas
- * \param[in] a
- * \param[in] b
- * \param[out] c
- */
-//TL_EXPORT void solveRobustCholesky(int nRows, int nCols, double *a, double *b, double *c);
-
-#endif
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -571,7 +458,7 @@ double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool
   return N ;
 }
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // End namespace tl
 

@@ -33,10 +33,13 @@
 
 #include "tidop/geometry/entities/point.h"
 
-///TODO: No esta preparado para trabajar con enteros 
+
 
 namespace tl
 {
+
+///TODO: No esta preparado para trabajar con enteros 
+
 
 template<typename T>
 class Curve

@@ -44,11 +44,11 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
-/*! \addtogroup Algebra
+/*! \addtogroup algebra
  *  \{
  */
 
@@ -560,9 +560,9 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::setMaxIterati
 }
 
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

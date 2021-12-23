@@ -34,20 +34,23 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
- /*! \addtogroup Algebra
-  *
-  * Algebra
-  *
-  *  \{
-  */
+/*! \addtogroup algebra
+ *  \{
+ */
+
+/*! \defgroup rotations Rotations
+ *  \{
+ */
+
+
 
 /*!
- * \brief Interfaz Rotation
+ * \brief Rotation Interface
  */
 class TL_EXPORT Rotation
 {
@@ -55,14 +58,14 @@ class TL_EXPORT Rotation
 public:
 
   /*!
-   * \brief Tipos de rotaciones
+   * \brief Rotacion types
    */
   enum class Type
   {
     axis_angle,      /*!< Axial-angular */
-    euler_angles,    /*!< Angulos Euler/TaitBryan */
-    rotation_matrix, /*!< Matriz de rotación */
-    quaternion       /*!< Quaterniones */
+    euler_angles,    /*!< Euler/TaitBryan angles*/
+    rotation_matrix, /*!< Rotation matriz */
+    quaternion       /*!< Quaternions */
   };
 
 public:
@@ -71,7 +74,7 @@ public:
   virtual ~Rotation() = default;
 
   /*!
-   * \brief Tipo de rotacion
+   * \brief Rotation type
    * \see Rotation::Type
    */
   virtual Type rotationType() const = 0;
@@ -80,7 +83,7 @@ public:
 
 
 /*!
- * \brief Clase base para rotaciones
+ * \brief Base class for rotations
  */
 template<typename T>
 class RotationBase
@@ -96,17 +99,13 @@ public:
 
 protected:
 
-  /*!
-   * \brief Tipo de rotación
-   * \see Rotation::Type
-   */
   Type mRotationType;
 
 };
 
 
 
-/// Implementación RotationBase
+/* RotationBase implementation */
 
 
 template<typename T> inline
@@ -121,10 +120,11 @@ Rotation::Type RotationBase<Point_t>::rotationType() const
   return mRotationType;
 }
 
+/*! \} */ // end of rotation
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 
 } // Fin namespace math

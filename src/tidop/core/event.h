@@ -31,8 +31,13 @@
 
 #include "tidop/core/defs.h"
 
+
 namespace tl
 {
+
+/*! \addtogroup core
+ *  \{
+ */
 
 class TL_EXPORT Event
 {
@@ -225,6 +230,9 @@ private:
 
 };
 
+/*! \} */ // end of core
+
 } // namespace tl
+
 
 #endif // TL_CORE_EVENT_H

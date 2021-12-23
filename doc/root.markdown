@@ -1,93 +1,50 @@
-Página principal {#mainpage}
+Main Page {#mainpage}
 ==============
 
-Introducción
+Modules
 ------------
 
+  - @ref core
+  - @ref featmatch
+  - @ref geometry
+  - @ref geospatial
+  - @ref graphic
+  - @ref img
+  - @ref img_process
+  - @ref math
+  - @ref vect
 
-### Estructura del proyecto
 
-El proyecto se estructura actualmente en los siguientes directorios:
+#### Dependencies
 
-- cmake: Plantillas de CMake
-- doc: Documentación de la aplicación generada con Doxygen
-- examples: Programas de ejemplo
-- src: Código de la librería TidopLib. consta de los siguientes modulos
-  - core
-  - geometry
-  - geospatial
-  - graphic
-  - img
-  - img_process
-  - vect
-- test: Proyectos de test
+- Boost (Required)
+- OpenCV (Optional)
+- Cuda (Optional)
+- GDAL (Optional)
 
-### Modulos
+#### Install
 
-- @ref angleConversion
-- @ref utilities
-- @ref FeatDetection
-- @ref GeometricEntities
-- @ref ImgProc
-- @ref trfGroup
-- @ref math
+##### Windows
 
-### Tutoriales
-
-@ref tutorials
-
-### Instalación
-
-#### Prerrequisitos
-
-La librería **TidopLib** hace uso de una serie de librerias externas. En función de su activación habrá ciertas funcionalidades que estarán disponibles o no.
-
-Para la instalación de la libreria se hara uso de la herramienta CMake.
-
-#### Listado de librerías
-
-- Eigen 3 (Opcional)
-- Boost (Requerida)
-- OpenCV (Opcional)
-- Cuda (Opcional - Requerida en función de la compilación de OpenCV)
-- GDAL (Opcional)
-
-#### Instalación
-
-##### Instalación en Windows
-
-Se clona el repositorio o bien utilizando algún cliente como TortoiseGit o SourceTree o directamente desde la consola. Para utilzar algún cliente se selecciona la opción de clonar el repositorio indicando la url del repositorio:
 
 ```
 https://github.com/estebanrdo/tidoplib.git
 ```
 
-Desde la consola vamos al directorio donde queremos situar el repositorio y se clona:
 
 ```
 cd D:/desarrollo
 git clone https://github.com/estebanrdo/tidoplib.git
+cd tidoplib
+mkdir build
 ```
 
-Con CMake se crea el proyecto para Visual Studio (2013 o superior).
 
-##### Instalación en Linux
-
-Se va al directorio donde se quiere descargar el código y se clona el repositorio:
+##### Linux
 
 ```
 cd ~/desarrollo
 git clone https://github.com/estebanrdo/tidoplib.git
 ```
 
-###### Compilación con CMake
-
-Una vez clonado se crea una carpeta build para realizar la compilación con CMake:
-
-```
-cd tidoplib
-mkdir build
-```
-
-###### Compilación desde Qt Creator
 

@@ -39,17 +39,18 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
- /*! \addtogroup Algebra
-  *
-  * Algebra
-  *
+ /*! \addtogroup algebra
   *  \{
   */
+
+/*! \addtogroup rotations
+ *  \{
+ */
 
 /*!
  * \brief Notación axial-angular
@@ -129,9 +130,11 @@ inline void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
   mAxis.normalize();
 }
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of rotations
 
-/*! \} */ // end of Math
+/*! \} */ // end of algebra
+
+/*! \} */ // end of math
 
 } // Fin namespace math
 

@@ -36,13 +36,10 @@
 #include <vector>
 
 
-
-///TODO: Añadir método para ejecutar código de forma asincrona
-// std::async
-// Concurrency::task<T> (PPL)
-
 namespace tl
 {
+
+
 
 uint32_t optimalNumberOfThreads()
 {
@@ -55,7 +52,6 @@ uint32_t optimalNumberOfThreads()
   return n_threads == 0 ? 1 : n_threads;
 #endif
 }
-
 
 void parallel_for(size_t ini, 
                   size_t end, 

@@ -79,9 +79,9 @@ BOOST_FIXTURE_TEST_CASE(product_name, LicenceTest)
   BOOST_CHECK_EQUAL("PhotoMatch", licence2->productName());
 }
 
-BOOST_FIXTURE_TEST_CASE(type, LicenceTest)
+BOOST_FIXTURE_TEST_CASE(text, LicenceTest)
 {
-  BOOST_CHECK_EQUAL("GNU Lesser General Public License v3.0", licence2->type());
+  BOOST_CHECK_EQUAL("GNU Lesser General Public License v3.0", licence2->text());
 }
 
 BOOST_FIXTURE_TEST_CASE(version, LicenceTest)

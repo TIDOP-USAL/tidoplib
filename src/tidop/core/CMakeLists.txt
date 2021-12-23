@@ -29,6 +29,8 @@ if(BUILD_TL_CORE)
     project(tl_core)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
+                app.cpp
+                app.h
                 console.cpp
                 console.h
                 defs.h
@@ -101,19 +103,19 @@ if(BUILD_TL_CORE)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(HAVE_TL_CORE YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_core enabled")
+    message(STATUS "  TidopLib::tl_core enabled")
     
 else()
 
-    message(STATUS "TidopLib::tl_core disabled")
-    message(STATUS "TidopLib::tl_math disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_imgprocess disabled   [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_graphic disabled      [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_featmatch disabled    [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_vect disabled         [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_core that is deactivated]")
-    message(STATUS "TidopLib::tl_experimental disabled [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_core disabled")
+    message(STATUS "  TidopLib::tl_math disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_geom disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_imgprocess disabled   [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_graphic disabled      [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_featmatch disabled    [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_vect disabled         [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_core that is deactivated]")
+    message(STATUS "  TidopLib::tl_experimental disabled [Module dependent on tl_core that is deactivated]")
   
 endif(BUILD_TL_CORE)

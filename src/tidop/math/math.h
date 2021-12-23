@@ -35,20 +35,19 @@
 namespace tl
 {
 
-/*!
- * \defgroup Math Utilidades matemáticas
- *
- * Utilidades matematicas para operaciones entre vectores (tanto en el plano como en espacio),
- * funciones estadísticas, ajuste de nubes de puntos a diversas geometrias, resolución
- * de sistemas de ecuaciones lineales.
- *
- * \{
- */
+
 
 namespace math
 {
 
-/* Definición de constantes de tipo general */
+/*!
+ * \defgroup math Mathematical module
+ *
+ * \{
+ */
+
+
+/* Definition of constants */
 
 namespace consts
 {
@@ -88,7 +87,17 @@ template<typename T>
 constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type ln10 = static_cast<T>(2.302585092994045684017991454684364208L);
 
 
-/* Conversión de ángulos */
+
+/*! \defgroup angleConversion Angle conversion
+ *
+ * Conversions between different angle formats:
+ * - Degrees
+ * - Gradians or gons
+ * - Radians
+ * \{
+ */
+
+ /* Angle conversion constants */
 
 constexpr auto full_circle_deg = 360;
 constexpr auto full_circle_grad = 400;
@@ -116,15 +125,22 @@ constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type gra
 
 }
 
-
+/*!
+  * \brief "clamping" a value between a pair of boundary values
+  * If value compares less than min, returns min; otherwise if max 
+  * compares less than value, returns max; otherwise returns value.
+  * \param[int] value
+  * \param[int] min 
+  * \param[int] max
+  */
 template<typename T> inline
-T clamp(const T &value, const T &_min, const T &_max)
+T clamp(const T &value, const T &min, const T &max)
 {
-  return std::max(_min, std::min(_max, value));
+  return std::max(min, std::min(max, value));
 }
 
 /*!
- * \brief Módulo de un vector 2D
+ * \brief 2D Vector module
  * \param[in] v Vector
  */
 template<typename T> inline
@@ -149,10 +165,9 @@ module(T a, T b)
   return result.second * sqrt(static_cast<T>(1) + div * div);
 }
 
+/*! \} */ // end of math
+
 } // Fin namespace math
-
-
-/*! \} */ // end of Math
 
 } // End namespace tl
 

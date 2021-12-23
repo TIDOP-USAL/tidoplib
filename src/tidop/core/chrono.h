@@ -36,7 +36,7 @@ namespace tl
 {
 
 
-/*! \addtogroup utilities
+/*! \addtogroup core
  *  \{
  */
 
@@ -170,7 +170,7 @@ private:
 
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
 
 
 } // End namespace tl

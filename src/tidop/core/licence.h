@@ -28,13 +28,16 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
-
 #include <string>
 #include <list>
 
 
 namespace tl
 {
+
+/*! \addtogroup core
+ *  \{
+ */
 
 /*!
  * \brief Licencia asociada a una programa o librería
@@ -46,12 +49,12 @@ public:
 
   Licence();
   Licence(std::string name, 
-          std::string type);
+          std::string text);
 
   std::string productName() const;
   void setProductName(const std::string &productName);
-  std::string type() const;
-  void setType(const std::string &type);
+  std::string text() const;
+  void setText(const std::string &text);
   std::string version() const;
   void setVersion(const std::string &version);
   std::string autor() const;
@@ -66,7 +69,7 @@ public:
 private:
 
   std::string mProductName;
-  std::string mType;
+  std::string mText;
   std::string mVersion;
   std::string mAutor;
   std::string mEmail;
@@ -155,7 +158,7 @@ private:
 
 };
 
-
+/*! \} */ // end of core
 
 } // End namespace tl
 

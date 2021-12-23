@@ -83,10 +83,10 @@ if (BUILD_TL_IMG_PROCESS)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})       
   
     set(HAVE_TL_IMG_PROCESS YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_imgprocess enabled")
+    message(STATUS "  TidopLib::tl_imgprocess enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
-    message(STATUS "TidopLib::tl_imgprocess disabled")
+    message(STATUS "  TidopLib::tl_imgprocess disabled")
 
 endif(BUILD_TL_IMG_PROCESS)

@@ -27,13 +27,9 @@
 
 #include "config_tl.h"
 
-#include <iostream>
-#include <fstream>
-#include <map>
-#include <regex>
-#include <list>
+#include <vector>
+#include <string>
 #include <numeric>
-#include <utility>
 
 #include "tidop/core/defs.h"
 
@@ -41,240 +37,11 @@ namespace tl
 {
 
 /*!
- * \defgroup utilities Utilidades
+ * \addtogroup core
  *
- * Utilidades de proposito general como manipulación de cadenas, información de la
- * aplicación etc
  * \{
  */
 
-/* ---------------------------------------------------------------------------------- */
-/*                           Información de la aplicación                             */
-/* ---------------------------------------------------------------------------------- */
-
-/*!
- * \brief Obtiene el path (directorio + nombre + extensión) de la aplicación
- * que esta corriendo
- * \return path de la aplicación
- */
-TL_EXPORT const char *getRunfile();
-
-
-/* ---------------------------------------------------------------------------------- */
-/*                    Operaciones con directorios y archivos                          */
-/* ---------------------------------------------------------------------------------- */
-
-
-/*!
- * \brief Comprueba si existe un directorio
- * \param[in] path Ruta del directorio
- * \return true si existe.
- */
-TL_EXPORT bool isDirectory(const std::string &path);
-
-/*!
- * \brief Comprueba si existe el fichero
- * \param[in] file Fichero
- * \return true si existe.
- */
-TL_EXPORT bool isFile(const std::string &file);
-
-/*!
- * \brief Crea un directorio
- * \param[in] path Ruta del directorio
- * \return Error = -1, creado = 0 y existente = 1
- */
-//TL_EXPORT int createDir(const std::string &path);
-
-/*!
- * \brief Borra un directorio
- * \param[in] path Ruta del directorio
- * \param[in] confirm Pide confirmación para borrar el archivo
- * \return Error
- */
-//TL_EXPORT int deleteDir(const std::string &path, bool confirm = false);
-
-//TL_EXPORT int move(const std::string &in, const std::string &out);
-
-
-/*!
- * \brief Optiene el directorio de un archivo
- * \param[in] path Ruta del archivo
- * \param[out] dir Directorio del archivo
- * \param[in] size Tamaño de dir
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char dir[TL_MAX_DIR];
- * if (getFileDir("c:\temp\file.txt", dir, TL_MAX_DIR) == 0) {
- * ...
- * }
- * \endcode
- */
-TL_EXPORT int getFileDir(const char *path, char *dir, int size);
-
-/*!
- * \brief Optiene la unidad de disco de un archivo
- * \param[in] path Ruta del archivo
- * \param[out] drive Unidad de disco
- * \param[in] size Tamaño de drive
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char drive[TL_MAX_DRIVE];
- * if (getFileDrive("c:\temp\file.txt", drive, TL_MAX_DRIVE) == 0) {
- * ...
- * }
- * \endcode
- */
-TL_EXPORT int getFileDrive(const char *path, char *drive, int size);
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief Optiene la extensión de un archivo
- * \param[in] path Ruta del archivo
- * \param[out] ext Extensión del archivo
- * \param[in] size Tamaño de ext
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char ext[TL_MAX_EXT];
- * if (getFileExtension("c:\temp\file.txt", ext, TL_MAX_EXT) == 0) {
- * ...
- * }
- * \endcode
- * \deprecated Usar en su lugar boost::filesystem::extension()
- */
-TL_DEPRECATED("boost::filesystem::extension()", "2.0")
-TL_EXPORT int getFileExtension(const char *path, char *ext, int size);
-
-/*!
- * \brief Optiene el nombre de un archivo
- * \param[in] path Ruta del archivo
- * \param[out] name Nombre del archivo
- * \param[in] size Tamaño de name
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char name[TL_MAX_FNAME];
- * if (getFileName("c:\temp\file.txt", name, TL_MAX_FNAME) == 0) {
- * ...
- * }
- * \endcode
- * \deprecated Usar en su lugar boost::filesystem::extension()
- */
-TL_DEPRECATED("boost::filesystem::filename()", "2.0")
-TL_EXPORT int getFileName(const char *path, char *name, int size);
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-/*!
- * \brief Optiene el directorio de un archivo incluyendo la letra de la unidad
- * \param[in] path Ruta del archivo
- * \param[out] driveDir Unidad de disco y directorio del archivo
- * \param[in] size Tamaño de driveDir
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char driveDir[TL_MAX_PATH];
- * if (getFileDriveDir("c:\temp\file.txt", driveDir, TL_MAX_PATH) == 0) {
- * ...
- * }
- * \endcode
- */
-TL_EXPORT int getFileDriveDir(const char *path, char *driveDir, int size);
-
-/*!
- * \brief Cambia el nombre de un archivo
- * \param[in] path Ruta del archivo
- * \param[in] newName Nuevo nombre
- * \param[out] pathOut Ruta del archivo modificada
- * \param[in] size Tamaño de pathOut
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char new_name[TL_MAX_PATH];
- * if (changeFileName("c:\temp\old_name.txt", "new_name", new_name, TL_MAX_PATH) == 0) {
- * ...
- * }
- * \endcode
- */
-TL_EXPORT int changeFileName(const char *path, const char *newName, char *pathOut, int size);
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-/*!
- * \brief Cambia la extensión de un archivo
- * \param[in] path Ruta del archivo
- * \param[in] newExt Nueva extensión
- * \param[out] pathOut Ruta del archivo modificada
- * \param[in] size Tamaño de pathOut
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char logfile[TL_MAX_PATH];
- * if (changeFileExtension(getRunfile(), "log", logfile, TL_MAX_PATH) == 0) {
- * ...
- * }
- * \endcode
- * \deprecated Usar en su lugar boost::filesystem::replace_extension() o std::filesystem::replace_extension()
- */
-TL_DEPRECATED("filesystem::replace_extension()", "2.0")
-TL_EXPORT int changeFileExtension(const char *path, const char *newExt, char *pathOut, int size);
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-/*!
- * \brief Cambia el nombre y la extensión de un archivo
- * \param[in] path Ruta del archivo
- * \param[in] newNameExt Nuevo nombre incluyendo la extensión
- * \param[out] pathOut Ruta del archivo modificada
- * \param[in] size Tamaño de pathOut
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char logfile[TL_MAX_FNAME + TL_MAX_EXT];
- * if (changeFileNameAndExtension(getRunfile(), "error.log", logfile, TL_MAX_FNAME + TL_MAX_EXT) == 0) {
- * ...
- * }
- * \endcode
- */
-TL_EXPORT int changeFileNameAndExtension(const char *path, const char *newNameExt, char *pathOut, int size);
-
-
-TL_EXPORT void directoryList(const char *directory, std::list<std::string> *dirList);
-
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-TL_DEPRECATED("fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &wildcard)", "2.0")
-TL_EXPORT void fileList(const char *directory, std::list<std::string> *fileList, const char *wildcard = "");
-#endif // TL_ENABLE_DEPRECATED_METHODS
-
-/*!
- * \brief Devuelve el listado de archivos de un directorio
- * \param[in] directory Directorio que se quiere listar
- * \param[out] fileList Listado de archivos
- * \param[in] filter Filtro de busqueda
- */
-//TL_EXPORT void fileList(const std::string &directory, std::list<std::string> *fileList, const std::regex &filter);
-
-/*!
- * \brief Devuelve el listado de archivos de un directorio filtrando por un tipo de archivo
- * \param[in] directory Directorio que se quiere listar
- * \param[out] fileList Listado de archivos
- * \param[in] ext Extensión de archivo (incluyendo el punto)
- *
- * <h4>Ejemplo</h4>
- * \code
- * std::list<std::string> fileList;
- * fileListByExt("D:\\dir", &fileList, ".ext"); 
- * \endcode
- */
-//TL_EXPORT void fileListByExt(const std::string &directory, std::list<std::string> *fileList, const std::string &ext);
 
 
 
@@ -352,28 +119,6 @@ TL_EXPORT void replaceString(std::string *str, const std::string &str_old, const
  */
 TL_EXPORT std::vector<std::string> split(const std::string &in, const std::string &chs = ",");
 
-/*!
- * \brief Separa una cadena
- *
- * \param[in] in Cadena de entrada
- * \param[out] out vector con las cadenas resultantes
- * \param[in] chs cadena de separación. Si se omite toma por defecto ","
- * \return (1) error
- *
- * <h4>Ejemplo</h4>
- * \code
- * char *in = "cadena1,cadena2";
- * std::vector<std::string> out;
- *
- * if ( split(in, out, ",") == 0 ){
- * ...
- * }
- * \endcode
- */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-TL_DEPRECATED("std::vector<std::string> split(const std::string &, const std::string &)", "2.0")
-TL_EXPORT int split(const std::string &in, std::vector<std::string> &out, const char *chs = ",");
-#endif
 
 /*! \} */ // end of stringOper
 
@@ -411,12 +156,6 @@ enum class Base : int8_t
   octal       =  8,
   decimal     = 10,
   hexadecimal = 16
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-  ,
-  OCTAL       =  8,
-  DECIMAL     = 10,
-  HEXADECIMAL = 16
-#endif
 };
 
 /*!
@@ -585,12 +324,6 @@ public:
     read,      /*!< Lectura */
     update,    /*!< Lectura y escritura. */
     create     /*!< Creación */
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    Read   = read,     /*!< Lectura */
-    Update = update,   /*!< Lectura y escritura. */
-    Create = create    /*!< Creación */
- #endif
   };
 
   /*!
@@ -603,14 +336,6 @@ public:
     save_ok,
     success,
     failure
-#ifdef TL_ENABLE_DEPRECATED_METHODS
-    ,
-    OPEN_OK   = open_ok,
-    OPEN_FAIL = open_fail,
-    SAVE_OK   = save_ok,
-    SUCCESS   = success,
-    FAILURE   = failure
-#endif
   };
 
 protected:
@@ -651,7 +376,7 @@ public:
 
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
 
 
 } // End namespace tl

@@ -33,16 +33,16 @@ namespace tl
 Licence::Licence() = default;
 
 Licence::Licence(std::string productName, 
-                 std::string type)
+                 std::string text)
   : mProductName(std::move(productName)),
-    mType(std::move(type))
+    mText(std::move(text))
 {
     
 }
 
 bool Licence::empty() const
 {
-  return mProductName.empty() && mType.empty();
+  return mProductName.empty() && mText.empty();
 }
 
 std::string Licence::productName() const
@@ -54,14 +54,14 @@ void Licence::setProductName(const std::string &productName)
 {
   mProductName = productName;
 }
-std::string Licence::type() const
+std::string Licence::text() const
 {
-  return mType;
+  return mText;
 }
 
-void Licence::setType(const std::string &type)
+void Licence::setText(const std::string &text)
 {
-  mType = type;
+  mText = text;
 }
 
 std::string Licence::version() const

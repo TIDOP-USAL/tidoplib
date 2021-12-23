@@ -40,7 +40,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -878,7 +878,7 @@ BoundingBox<Point3_t> MultiPolygon3D<Point3_t>::boundingBox() const
 }
 
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

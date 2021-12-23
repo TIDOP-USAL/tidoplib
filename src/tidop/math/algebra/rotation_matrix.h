@@ -39,17 +39,17 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
+/*! \addtogroup algebra
+ *  \{
+ */
 
- /*! \addtogroup Algebra
-  *
-  * Algebra
-  *
-  *  \{
-  */
+/*! \defgroup rotations Rotations
+ *  \{
+ */
 
 
 /*!
@@ -95,10 +95,11 @@ RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
 {
 }
 
+/*! \} */ // end of rotation
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

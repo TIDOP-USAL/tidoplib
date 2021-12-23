@@ -33,10 +33,6 @@ namespace tl
 namespace experimental
 {
 
-/*! \defgroup DesingPatterns Patrones de diseño
- *
- *  \{
- */
 
 //class Singleton
 //{
@@ -62,7 +58,6 @@ namespace experimental
 //  virtual Singleton *create() = 0;
 //};
 
-/*! \} */ // DesingPatterns
 
 } // End namespace experimental
 

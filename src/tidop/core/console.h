@@ -45,23 +45,23 @@
 #include "tidop/core/licence.h"
 #include "tidop/core/path.h"
 
+
 namespace tl
 {
 
-/* ---------------------------------------------------------------------------------- */
-
-/*! \addtogroup utilities
+/*! \addtogroup core
  *  \{
  */
 
-/*! \defgroup Console Utilidades de consola
- *  
- * Utilidades para aplicaciones en modo consola que comprenden la apariencia de 
- * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso 
- * para procesos
- *
- *  \{
- */
+ /*! \defgroup Console Utilidades de consola
+  *
+  * Utilidades para aplicaciones en modo consola que comprenden la apariencia de
+  * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso
+  * para procesos
+  *
+  *  \{
+  */
+
 
 
 /*!
@@ -1635,15 +1635,29 @@ private:
 };
 
 
-
 /*! \} */ // end of Console
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
+
 
 
 } // End namespace tl
 
-/* Macros para la creación de los argumentos */
+
+/*! \addtogroup core
+ *  \{
+ */
+
+ /*! \defgroup Console Utilidades de consola
+  *
+  * Utilidades para aplicaciones en modo consola que comprenden la apariencia de
+  * la consola (tamaño de texto, color, etc), parseo de comandos y barra de progreso
+  * para procesos
+  *
+  *  \{
+  */
+
+  /* Macros para la creación de los argumentos */
 
 # define CreateArgumentIntegerRequired(...) std::make_shared<tl::ArgumentIntegerRequired>(__VA_ARGS__)
 # define CreateArgumentIntegerOptional(...) std::make_shared<tl::ArgumentIntegerOptional>(__VA_ARGS__)
@@ -1658,5 +1672,8 @@ private:
 # define CreateArgumentPathRequired(...) std::make_shared<tl::ArgumentPathRequired>(__VA_ARGS__)
 # define CreateArgumentPathOptional(...) std::make_shared<tl::ArgumentPathOptional>(__VA_ARGS__)
 
+/*! \} */ // end of Console
+
+/*! \} */ // end of core
 
 #endif // TL_CORE_CONSOLE_H

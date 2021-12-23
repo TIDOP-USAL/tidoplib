@@ -44,7 +44,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -574,7 +574,7 @@ Window<typename std::iterator_traits<It>::value_type> boundingWindow(It begin, I
   return window;
 }
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace TL
 

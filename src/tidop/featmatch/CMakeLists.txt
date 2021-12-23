@@ -133,14 +133,14 @@ if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
     set(HAVE_TL_FEAT_MATCH YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_featmatch enabled")
+    message(STATUS "  TidopLib::tl_featmatch enabled")
   
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
     if(NOT HAVE_OPENCV)
-        message(STATUS "TidopLib::tl_featmatch disabled [OPENCV not found]")
+        message(STATUS "  TidopLib::tl_featmatch disabled [OPENCV not found]")
     else()
-        message(STATUS "TidopLib::tl_featmatch disabled")
+        message(STATUS "  TidopLib::tl_featmatch disabled")
     endif()
 
 endif()

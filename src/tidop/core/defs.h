@@ -71,6 +71,13 @@
 #endif
 
 
+/*!
+ * \defgroup core Core module
+ *
+ * \{
+ */
+
+
 /* Límites maximos y minimos de tipos numéricos */
 
 #define TL_INT_MAX std::numeric_limits<int>().max()
@@ -191,17 +198,6 @@
 #endif
 
 
-
-// __FUNCTION__ no es estandar (Es de Visual Studio).
-// __func__ es valida a partir de C99 / C++11
-//#if defined (__GNUC__) || __cplusplus >= 201103L
-//#  define TL_FUNCTION __func__
-//#elif defined _MSC_VER
-//#  define TL_FUNCTION __FUNCTION__
-//#else
-//#  define TL_FUNCTION ""
-//#endif
-//__FUNCSIG__
 
 // __FUNCTION__ no es estandar (Es de Visual Studio).
 // __func__ es valida a partir de C99 / C++11
@@ -355,5 +351,7 @@ constexpr auto roundToInteger(T n) {
 
 
 #define TL_ROUND_TO_INT(n)  tl::roundToInteger(n)
+
+/*! \} */ // end of core
 
 #endif // TL_CORE_DEFS_H

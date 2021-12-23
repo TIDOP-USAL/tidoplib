@@ -39,18 +39,17 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
+/*! \addtogroup algebra
+ *  \{
+ */
 
- /*! \addtogroup Algebra
-  *
-  * Algebra
-  *
-  *  \{
-  */
-
+/*! \defgroup rotations Rotations
+ *  \{
+ */
 
 /*!
  * \brief Clase para convertir entre diferentes sistemas de rotación
@@ -977,10 +976,11 @@ void RotationConverter<T>::convert(const AxisAngle<T> &axisAngle,
   convert(rotationMatrix, eulerAngles);
 }
 
+/*! \} */ // end of rotation
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 
 } // Fin namespace math

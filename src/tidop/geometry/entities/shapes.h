@@ -38,7 +38,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -642,7 +642,7 @@ double Rectangle<T>::area() const
 }
 
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -37,10 +37,8 @@ namespace tl
 {
 
 /*!
- * \addtogroup utilities Utilidades
+ * \addtogroup core
  *
- * Utilidades de proposito general como manipulación de cadenas, información de la
- * aplicación etc
  * \{
  */
 
@@ -271,7 +269,7 @@ private:
 };
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
 
 } // End namespace tl
 

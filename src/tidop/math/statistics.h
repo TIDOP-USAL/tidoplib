@@ -39,12 +39,12 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \defgroup Statistics Estadistica
+/*! \defgroup statistics Statistics
  *  \{
  */
 
@@ -176,7 +176,7 @@ typename T::value_type mode(const T &container)
 /*! \} */ // end of Measure of Central Tendency
 
 
-/*! \defgroup Dispersion
+/*! \defgroup dispersion Statistical dispersion
  *  \{
  */
 
@@ -1205,9 +1205,9 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
   return confussionMatrix;
 }
 
-/*! \} */ // end of Statistic
+/*! \} */ // end of statistic
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // End namespace math
 

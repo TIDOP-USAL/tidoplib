@@ -11,14 +11,14 @@ if(BUILD_DOC)
 
     set(DOXYFILE  ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
     set(ROOTFILE  ${CMAKE_CURRENT_SOURCE_DIR}/root.markdown)
-    set(TUTORIALS ${CMAKE_CURRENT_SOURCE_DIR}/tutorials.markdown)
+    #set(TUTORIALS ${CMAKE_CURRENT_SOURCE_DIR}/tutorials.markdown)
     set(DOC_OUT   ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
     configure_file(${DOXYFILE}  ${DOC_OUT} @ONLY)
     #configure_file(${ROOTFILE}  ${DOC_OUT} @ONLY)
     #configure_file(${TUTORIALS} ${DOC_OUT} @ONLY)
 
-    message("Doxygen build started.")
+    message(STATUS "Doxygen build started.")
 
     #add_custom_target(doxygen
     #  COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
@@ -41,7 +41,7 @@ if(BUILD_DOC)
         COMPONENT "docs" OPTIONAL)
         
   else (DOXYGEN_FOUND)
-    message("Doxygen need to be installed to generate the doxygen documentation")
+    message(WARNING "Doxygen need to be installed to generate the doxygen documentation")
   endif(DOXYGEN_FOUND)
 
 endif(BUILD_DOC)

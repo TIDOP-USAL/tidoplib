@@ -51,12 +51,12 @@ namespace math
 
 constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \defgroup Algebra Algebra
+/*! \defgroup algebra Algebra
  *  
  * Algebra
  *
@@ -3476,9 +3476,9 @@ MatrixBlock<T> operator - (const MatrixBlock<T> &block)
   return r;
 }
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

@@ -36,8 +36,7 @@ namespace tl
 {
 
 
-/*! \addtogroup GeometricEntities Entidades geométricas
- *  Puntos, lineas, ...
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -203,7 +202,7 @@ Entities3D<Entity_t> &Entities3D<Entity_t>::operator=(Entities3D<Entity_t> &&ent
 }
 
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

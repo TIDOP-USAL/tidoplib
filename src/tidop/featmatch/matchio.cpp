@@ -28,6 +28,7 @@
 #include "tidop/core/exception.h"
 
 #include <stdexcept>
+#include <fstream>
 
 namespace tl
 {

@@ -79,12 +79,12 @@ if (BUILD_TL_VECT)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(HAVE_TL_VECT YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::${PROJECT_NAME} enabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
  
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
 
-    message(STATUS "TidopLib::tl_vect disabled")
-    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_vect that is deactivated]")
+    message(STATUS "  TidopLib::tl_vect disabled")
+    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_vect that is deactivated]")
 
 endif(BUILD_TL_VECT)
   

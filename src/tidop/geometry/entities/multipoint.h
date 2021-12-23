@@ -41,7 +41,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -372,7 +372,7 @@ typedef MultiPoint3D<Point3<float>> MultiPoint3dF;
 
 
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -47,12 +47,12 @@ namespace math
 constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \addtogroup Algebra
+/*! \addtogroup algebra
  *  \{
  */
 
@@ -951,18 +951,6 @@ Vector<T, _size> operator + (const Vector<T, _size> &v0,
   return v += v1;
 }
 
-//template<typename T, size_t _size>
-//Vector<T, _size> &operator += (Vector<T, _size> &v0, 
-//                               const Vector<T, _size> &v1)
-//{
-//  TL_ASSERT(v0.size() == v1.size(), "")
-//
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] += v1[i];
-//  }
-//  return v0;
-//}
-
 template<typename T, size_t _size>
 Vector<T, _size> operator - (const Vector<T, _size> &v0,
                              const Vector<T, _size> &v1)
@@ -970,18 +958,6 @@ Vector<T, _size> operator - (const Vector<T, _size> &v0,
   Vector<T, _size> v = v0;
   return v -= v1;
 }
-
-//template<typename T, size_t _size>
-//Vector<T, _size> &operator -= (Vector<T, _size> &v0, 
-//                               const Vector<T, _size> &v1)
-//{
-//  TL_ASSERT(v0.size() == v1.size(), "")
-//
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] -= v1[i];
-//  }
-//  return v0;
-//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (const Vector<T, _size> &v0,
@@ -1035,18 +1011,6 @@ Vector<T, _size> operator / (const Vector<T, _size> &v0,
   Vector<T, _size> result = v0;
   return result /= v1;
 }
-
-//template<typename T, size_t _size>
-//Vector<T, _size> &operator /= (Vector<T, _size> &v0, 
-//                               const Vector<T, _size> &v1)
-//{
-//  TL_ASSERT(v0.size() == v1.size(), "")
-//
-//  for (size_t i = 0; i < v0.size(); i++) {
-//    v0[i] /= v1[i];
-//  }
-//  return v0;
-//}
 
 template<typename T, size_t _size>
 Vector<T, _size> operator * (const Vector<T, _size> &vector, 
@@ -1112,37 +1076,6 @@ double dotProduct(const Vector<T, _size> &v1,
 }
 
 
-//template<typename T, size_t _rows, size_t _dim> inline  static
-//Vector<T, _dim> operator * (const Matrix<T, _rows, _dim> &matrix,
-//                            const Vector<T, _dim> &vector)
-//{
-//  Vector<T, _dim> vect = Vector<T, _dim>::zero();
-//  for (size_t r = 0; r < _rows; r++) {
-//    for (size_t c = 0; c < _dim; c++) {
-//        vect.at(r) += matrix.at(r, c) * vector.at(c);
-//    }
-//  }
-//  return vect;
-//}
-//
-//template<typename T> inline  static
-//Vector<T> operator * (const Matrix<T> &matrix,
-//                      const Vector<T> &vector)
-//{
-//  size_t rows = matrix.rows();
-//  size_t dim1 = matrix.cols();
-//  size_t dim2 = vector.size();
-//  TL_ASSERT(dim1 == dim2, "Matrix columns != Vector size")
-//
-//  Vector<T> vect = Matrix<T>::zero(rows, dim1);
-//  for (size_t r = 0; r < rows; r++) {
-//    for (size_t c = 0; c < dim1; c++) {
-//      vect.at(r) += matrix.at(r, c) * vector.at(c);
-//    }
-//  }
-//  return vect;
-//}
-
 
 
 template<typename T, size_t _size>
@@ -1165,9 +1098,9 @@ std::ostream &operator<< (std::ostream &os, const Vector<T, _size> *vector)
   return os;
 }
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

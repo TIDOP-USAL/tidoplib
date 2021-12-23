@@ -30,6 +30,7 @@
 #include "tidop/core/utils.h"
 
 #include <memory>
+#include <map>
 
 namespace tl
 {

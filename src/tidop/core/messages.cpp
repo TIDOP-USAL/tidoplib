@@ -150,40 +150,6 @@ void MessageManager::release(const Message &message)
                           message.file(),
                           message.line(),
                           message.function());
-//  MessageManager::instance();
-//  
-//  if (sStopHandler) return;
-//
-//  std::lock_guard<std::mutex> lck(MessageManager::sMutex);
-//  std::string msg_out;
-//  if (message.line() == -1 && message.file().compare("") == 0 && message.function().compare("") == 0) {
-//    msg_out = message.message();
-//  } else {
-//    char buf[1000];
-//#if defined _MSC_VER
-//    sprintf_s(buf, 1000, "%s (%s:%u, %s)", message.message(), message.file(), message.line(), message.function());
-//#else
-//    snprintf(buf, 1000, "%s (%s:%u, %s)", message.message(), message.file(), message.line(), message.function());
-//#endif
-//    msg_out =  std::string(buf);
-//  }
-//
-//  switch (message.level()) {
-//  case MessageLevel::msg_debug:
-//    sObjMessage->onDebug(msg_out.c_str(), message.date());
-//    break;
-//  case MessageLevel::msg_info:
-//    sObjMessage->onInfo(msg_out.c_str(), message.date());
-//    break;
-//  case MessageLevel::msg_warning:
-//    sObjMessage->onWarning(msg_out.c_str(), message.date());
-//    break;
-//  case MessageLevel::msg_error:
-//    sObjMessage->onError(msg_out.c_str(), message.date());
-//    break;
-//  default:
-//    break;
-//  }
 }
 
 void MessageManager::removeListener(Listener *listener)

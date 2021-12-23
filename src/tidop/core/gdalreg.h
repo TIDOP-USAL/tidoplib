@@ -32,9 +32,13 @@
 #include <memory>
 #include <mutex>
 
+
 namespace tl
 {
 
+/*! \addtogroup core
+ *  \{
+ */
 
 #ifdef HAVE_GDAL
 
@@ -72,7 +76,9 @@ public:
 
 #endif // HAVE_GDAL
 
+/*! \} */ // end of core
 
 } // End namespace tl
+
 
 #endif // TL_CORE_UTILS_GDAL_H

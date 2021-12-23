@@ -33,8 +33,14 @@
 #include "tidop/core/defs.h"
 #include "tidop/core/messages.h"
 
+
 namespace tl
 {
+
+/*! \addtogroup core
+ *  \{
+ */
+
 
 /*!
  * Clase para el manejo de excepciones
@@ -107,9 +113,14 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 
 #endif
 
+/*! \} */ // end of core
 
 } // fin namespace tl
 
+
+/*! \addtogroup core
+ *  \{
+ */
 
 /*!
  * \brief Macro para crear una excepción
@@ -128,5 +139,6 @@ TL_EXPORT std::string formatWindowsErrorMsg(DWORD errorCode);
 
 #define TL_ASSERT(EXPRESSION, MESSAGE) if(!(EXPRESSION)) { TL_THROW_EXCEPTION( "Assertion '" #EXPRESSION "' failed. " MESSAGE); }
 
+/*! \} */ // end of core
 
 #endif // TL_CORE_EXCEPTION_H

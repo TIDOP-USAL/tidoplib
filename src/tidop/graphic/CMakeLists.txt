@@ -97,13 +97,13 @@ if (BUILD_TL_GRAPHIC)
   set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
   set(HAVE_TL_GRAPHIC YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::${PROJECT_NAME} enabled")
+  message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
    
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
-    message(STATUS "TidopLib::tl_graphic disabled")
-    message(STATUS "TidopLib::tl_imgprocess disabled   [Module dependent on tl_graphic that is deactivated]") 
-    message(STATUS "TidopLib::tl_vect disabled         [Module dependent on tl_graphic that is deactivated]") 
-    message(STATUS "TidopLib::tl_experimental disabled [Module dependent on tl_graphic that is deactivated]")
+    message(STATUS "  TidopLib::tl_graphic disabled")
+    message(STATUS "  TidopLib::tl_imgprocess disabled   [Module dependent on tl_graphic that is deactivated]") 
+    message(STATUS "  TidopLib::tl_vect disabled         [Module dependent on tl_graphic that is deactivated]") 
+    message(STATUS "  TidopLib::tl_experimental disabled [Module dependent on tl_graphic that is deactivated]")
 
 endif(BUILD_TL_GRAPHIC)

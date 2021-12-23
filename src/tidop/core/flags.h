@@ -32,8 +32,14 @@
 #include <type_traits>
 #include <utility>
 
+
 namespace tl
 {
+
+/*! \addtogroup core
+ *  \{
+ */
+
 
 /*!
  * \brief Clase Flag de enums
@@ -577,6 +583,9 @@ T Flags<T>::flags() const
   return static_cast<T>(mFlag);
 }
 
+/*! \} */ // end of core
+
 } // End namespace tl
+
 
 #endif // TL_CORE_FLAGS_H

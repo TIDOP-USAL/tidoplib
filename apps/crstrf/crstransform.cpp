@@ -24,6 +24,7 @@
  
 #include <stdio.h>
 #include <memory>
+#include <fstream>
 
 #include <tidop/core/console.h>
 #include <tidop/core/messages.h>

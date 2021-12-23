@@ -91,11 +91,11 @@ if(BUILD_TL_IMG)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(HAVE_TL_IMG YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_img enabled")
+    message(STATUS "  TidopLib::tl_img enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH AND BUILD_TL_GEOMETRY AND BUILD_TL_GRAPHIC)  
 
-    message(STATUS "TidopLib::tl_img disabled")
-    message(STATUS "TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
+    message(STATUS "  TidopLib::tl_img disabled")
+    message(STATUS "  TidopLib::tl_geospatial disabled [Module dependent on tl_img that is deactivated]") 
 
 endif(BUILD_TL_IMG)

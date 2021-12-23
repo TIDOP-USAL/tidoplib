@@ -107,14 +107,14 @@ if(BUILD_TL_GEOMETRY)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
   
     set(HAVE_TL_GEOMETRY YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_geom enabled")
+    message(STATUS "  TidopLib::tl_geom enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_MATH) 
 
-    message(STATUS "TidopLib::tl_geom disabled")
-    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_geom that is deactivated]") 
-    message(STATUS "TidopLib::tl_graphic disabled      [Module dependent on tl_geom that is deactivated]") 
-    message(STATUS "TidopLib::tl_featmatch disabled    [Module dependent on tl_geom that is deactivated]")
-    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_geom that is deactivated]")
+    message(STATUS "  TidopLib::tl_geom disabled")
+    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_geom that is deactivated]") 
+    message(STATUS "  TidopLib::tl_graphic disabled      [Module dependent on tl_geom that is deactivated]") 
+    message(STATUS "  TidopLib::tl_featmatch disabled    [Module dependent on tl_geom that is deactivated]")
+    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_geom that is deactivated]")
 
 endif(BUILD_TL_GEOMETRY)

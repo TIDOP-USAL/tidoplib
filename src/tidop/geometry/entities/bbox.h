@@ -36,7 +36,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -488,7 +488,7 @@ OrientedBoundingBox<Point_t<P, T>>::OrientedBoundingBox()
 {
 }
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

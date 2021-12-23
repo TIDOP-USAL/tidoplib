@@ -23,10 +23,12 @@
  **************************************************************************/
 
 #include "tidop/core/log.h"
+#include "tidop/core/app.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/chrono.h"
 #include "tidop/core/path.h"
 
+#include <fstream>
 
 namespace tl
 {
@@ -140,7 +142,7 @@ void Log::_write(const std::string &message,
 {
   if (sLogFile.empty()) {
     // Log por defecto
-    Path log_path(getRunfile());
+    Path log_path(App::instance().path());
     log_path.replaceExtension(".log");
     sLogFile = log_path.toString();
   }

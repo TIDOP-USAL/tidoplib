@@ -43,12 +43,12 @@ namespace math
 {
 
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \addtogroup Algebra
+/*! \addtogroup algebra
  *  \{
  */
 
@@ -79,6 +79,13 @@ typename std::enable_if<
 /*!
  * \brief Factorización Cholesky
  * 
+ * Cualquier matriz cuadrada A con pivotes no nulos puede ser escrita como el producto
+ * de una matriz triangular inferior L y una matriz triangular superior U; esto recibe
+ * el nombre de factorización LU. Sin embargo, si A es simétrica y definida positiva,
+ * se pueden escoger los factores tales que U es la transpuesta de L, y esto se llama
+ * la descomposición o factorización de Cholesky.
+ *
+ * La matriz A tiene que ser simétrica y definida positiva.
  */
 template<typename T>
 class CholeskyDecomposition;
@@ -230,9 +237,9 @@ inline Matrix<T, _rows, _cols> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>:
   return L;
 }
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

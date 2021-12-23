@@ -48,12 +48,12 @@ double degreesToGradians(int degrees, int minutes, double seconds)
   return decimalDegreesToGradians(degreesToDecimalDegrees(degrees, minutes, seconds));
 }
 
-void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, double *seconds)
+void decimalDegreesToDegrees(double decimalDegrees, int &degrees, int &minutes, double &seconds)
 {
-  *degrees = static_cast<int>(decimalDegrees);
-  double min = fabs(decimalDegrees - *degrees) * consts::degrees_to_minutes;
-  *minutes = static_cast<int>(min);
-  *seconds = fabs(min - *minutes) * consts::minutes_to_seconds;
+  degrees = static_cast<int>(decimalDegrees);
+  double min = fabs(decimalDegrees - degrees) * consts::degrees_to_minutes;
+  minutes = static_cast<int>(min);
+  seconds = fabs(min - minutes) * consts::minutes_to_seconds;
 }
 
 double decimalDegreesToRadians(double decimalDegrees)
@@ -66,7 +66,7 @@ double decimalDegreesToGradians(double decimalDegrees)
   return decimalDegrees * consts::deg_to_grad<double>;
 }
 
-void radiansToDegrees(double rad, int *degrees, int *minutes, double *seconds)
+void radiansToDegrees(double rad, int &degrees, int &minutes, double &seconds)
 {
   decimalDegreesToDegrees(radiansToDecimalDegrees(rad), degrees, minutes, seconds);
 }
@@ -81,7 +81,7 @@ double radiansToGradians(double radians)
   return radians * consts::rad_to_grad<double>;
 }
 
-void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seconds)
+void gradiansToDegrees(double gradians, int &degrees, int &minutes, double &seconds)
 {
   decimalDegreesToDegrees(gradiansToDecimalDegrees(gradians), degrees, minutes, seconds);
 }
@@ -99,4 +99,4 @@ double gradiansToRadians(double gradians)
 
 } // Fin namespace math
 
-} // Fin namespace TL
+} // Fin namespace tl

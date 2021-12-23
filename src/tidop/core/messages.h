@@ -40,7 +40,7 @@ namespace tl
 {
 
 
-/*! \addtogroup utilities
+/*! \addtogroup core
  *  \{
  */
 
@@ -473,7 +473,7 @@ private:
 /*! \} */ // end of Messages
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
 
 
 } // End namespace tl

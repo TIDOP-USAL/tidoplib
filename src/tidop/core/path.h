@@ -35,6 +35,9 @@
 
 #include "tidop/core/defs.h"
 
+
+
+
 namespace tl
 {
 
@@ -43,12 +46,8 @@ namespace internal
 class Path;
 }
 
-/*!
- * \defgroup utilities Utilidades
- *
- * Utilidades de proposito general como manipulación de cadenas, información de la
- * aplicación etc
- * \{
+/*! \addtogroup core
+ *  \{
  */
 
 class TL_EXPORT Path
@@ -170,11 +169,10 @@ private:
 
 TL_EXPORT std::ostream &operator<< (std::ostream &os, const Path &path);
 
-
-
-/*! \} */ // end of utilities
-
+/*! \} */ // end of core
 
 } // End namespace tl
+
+
 
 #endif // TL_CORE_PATH_H

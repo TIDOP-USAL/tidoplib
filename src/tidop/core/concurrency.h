@@ -38,19 +38,28 @@ namespace tl
 {
 
 
-/*! \addtogroup utilities
+/*! \addtogroup core
  *  \{
  */
 
+ /*!
+  * \defgroup concurrency Concurrency
+  *
+  * \{
+  */
+
+ /*!
+  * \brief Optimal number of threads
+  */
 TL_EXPORT uint32_t optimalNumberOfThreads();
 
 
-/*!
- * \brief Ejecuta una función en paralelo
- * \param[in] ini
- * \param[in] end
- * \param[in] f Función o lambda
- */
+ /*!
+  * \brief Iterates over a range of indices and executes a function in parallel
+  * \param[in] ini Initial index
+  * \param[in] end End index
+  * \param[in] f Function or lambda
+  */
 TL_EXPORT void parallel_for(size_t ini, 
                             size_t end, 
                             const std::function<void(size_t)> &f);
@@ -58,12 +67,11 @@ TL_EXPORT void parallel_for(size_t ini,
 
 
 /*!
- * \brief Ejecuta una función en paralelo
- * Método sobrecargado para trabajar con contenedores
- * \param[in] it_begin
- * \param[in] it_end
- * \param[out] it_out_begin 
- * \param[in] f Función o lambda
+ * \brief Iterate over containers and execute a function in parallel
+ * \param[in] it_begin Input iterator to the beginning of the first range of elements
+ * \param[in] it_end Input iterator to the end of the first range of elements
+ * \param[out] it_out_begin Output iterator to the beginning of the second range of elements
+ * \param[in] f Function or lambda
  */
 template<typename itIn, typename itOut> inline
 void parallel_for(itIn it_begin, 
@@ -98,7 +106,9 @@ void parallel_for(itIn it_begin,
 /*--------------------------------------------------------------------------------*/
 
 
-
+/*!
+ * \brief Multi-producer multi-consumer queue
+ */
 template<typename T>
 class QueueMPMC
 {
@@ -114,8 +124,22 @@ public:
   void operator=(const QueueMPMC &) = delete;
   void operator=(QueueMPMC &&) = delete;
 
+  /*!
+   * \brief Inserts element at the end
+   * \param[in] value
+   */
   void push(const T &value);
+
+  /*!
+   * \brief Removes the first element
+   * \param[in] value
+   */
   void pop(T &value);
+
+  /*!
+   * \brief Returns the number of elements
+   * \return Number of elements
+   */
   size_t size() const;
 
 private:
@@ -174,16 +198,15 @@ inline size_t QueueMPMC<T>::size() const
 
 
 
-
-/*--------------------------------------------------------------------------------*/
-
-
+/*!
+ * \brief Interface Producer
+ */
 template<typename T>
 class Producer
 {
 public:
 
-  explicit Producer(QueueMPMC<T> *queue);
+  explicit Producer(QueueMPMC<T> *queue) : mQueue(queue){}
   Producer(const Producer &) = delete;
   Producer(Producer &&) = delete;
   ~Producer() = default;
@@ -200,19 +223,16 @@ private:
 
 };
 
-template<typename T>
-Producer<T>::Producer(QueueMPMC<T> *queue)
-  : mQueue(queue) 
-{
-}
 
-
+/*!
+ * \brief Interface Consumer
+ */
 template<typename T>
 class Consumer
 {
 public:
 
-  explicit Consumer(QueueMPMC<T> *queue);
+  explicit Consumer(QueueMPMC<T> *queue) : mQueue(queue){}
   Consumer(const Consumer &) = delete;
   Consumer(Consumer &&) = delete;
   ~Consumer() = default;
@@ -228,11 +248,7 @@ private:
 
 };
 
-template<typename T>
-Consumer<T>::Consumer(QueueMPMC<T> *queue)
-  : mQueue(queue) 
-{
-}
+
 
 
 
@@ -246,7 +262,9 @@ TL_EXPORT uint32_t getOptimalNumberOfThreads();
 #endif // TL_ENABLE_DEPRECATED_METHODS
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of concurrency
+
+/*! \} */ // end of core
 
 
 } // End namespace tl

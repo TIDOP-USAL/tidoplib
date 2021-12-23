@@ -37,7 +37,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -621,7 +621,7 @@ BoundingBox<Point3_t> MultiLineString3D<Point3_t>::boundingBox() const
   return bounding_box;
 }
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // Fin namespace tl
 

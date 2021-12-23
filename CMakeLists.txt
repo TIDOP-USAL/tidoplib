@@ -550,6 +550,11 @@ endif()
 
 ##########################################################################
 
+# Directorio con la documentación
+add_subdirectory(doc)
+
+
+
 message(STATUS "\nTidop modules:\n")
 
 # include del directorio principal
@@ -570,12 +575,10 @@ add_subdirectory(src)
 
 add_subdirectory(apps)
 
-# Directorio con la documentación
-add_subdirectory(doc)
-
 # Se incluye el directorio con los test
 add_subdirectory(test)
 
+message("\n")
 
 # TidopLib config file
 configure_file("cmake/config_tl.h.in" "${PROJECT_BINARY_DIR}/config_tl.h")

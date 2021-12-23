@@ -40,15 +40,16 @@ namespace math
 {
 
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \addtogroup Algebra
- *  
- * Algebra
- *
+/*! \addtogroup algebra
+ *  \{
+ */
+
+/*! \defgroup rotations Rotations
  *  \{
  */
 
@@ -164,10 +165,11 @@ EulerAngles<T> operator - (const EulerAngles<T> &eulerAngles)
 }
 
 
+/*! \} */ // end of rotation
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

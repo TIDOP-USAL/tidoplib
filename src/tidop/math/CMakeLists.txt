@@ -33,7 +33,6 @@ if(BUILD_TL_MATH)
                 angles.cpp
                 angles.h
                 statistics.h
-                mathutils.cpp
                 mathutils.h
                 algebra/quaternion.h
                 algebra/euler_angles.h
@@ -89,13 +88,13 @@ if(BUILD_TL_MATH)
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
     set(HAVE_TL_MATH YES CACHE INTERNAL "")
-    message(STATUS "TidopLib::tl_math enabled")
+    message(STATUS "  TidopLib::tl_math enabled")
 
 elseif(BUILD_TL_CORE)
     
-    message(STATUS "TidopLib::tl_math disabled")
-    message(STATUS "TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
-    message(STATUS "TidopLib::tl_img disabled          [Module dependent on tl_math that is deactivated]") 
-    message(STATUS "TidopLib::tl_geospatial disabled   [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "  TidopLib::tl_math disabled")
+    message(STATUS "  TidopLib::tl_geom disabled         [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "  TidopLib::tl_img disabled          [Module dependent on tl_math that is deactivated]") 
+    message(STATUS "  TidopLib::tl_geospatial disabled   [Module dependent on tl_math that is deactivated]") 
 
 endif(BUILD_TL_MATH)

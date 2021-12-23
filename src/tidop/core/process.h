@@ -42,13 +42,9 @@ namespace tl
 class Progress;
 
 /*!
- * \addtogroup utilities Utilidades
- *
- * Utilidades de proposito general como manipulación de cadenas, información de la
- * aplicación etc
+ * \addtogroup core
  * \{
  */
-
 
 
 class TL_EXPORT Process
@@ -291,7 +287,7 @@ private:
 };
 
 
-/*! \} */ // end of utilities
+/*! \} */ // end of core
 
 
 

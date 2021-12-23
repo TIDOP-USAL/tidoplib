@@ -86,10 +86,10 @@ if (BUILD_TL_EXPERIMENTAL)
   set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
   set(HAVE_TL_EXPERIMENTAL YES CACHE INTERNAL "")
-  message(STATUS "TidopLib::${PROJECT_NAME} enabled")
+  message(STATUS "  TidopLib::${PROJECT_NAME} enabled")
 
 elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
      
-    message(STATUS "TidopLib::${PROJECT_NAME} disabled")
+    message(STATUS "  TidopLib::${PROJECT_NAME} disabled")
 
 endif()

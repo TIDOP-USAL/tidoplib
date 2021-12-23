@@ -47,12 +47,12 @@ namespace math
 //template<typename T, size_t _rows, size_t _cols>
 //class Matrix;
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
 
-/*! \addtogroup Algebra
+/*! \addtogroup algebra
  *  \{
  */
 
@@ -335,9 +335,9 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() c
 
 
 
-/*! \} */ // end of Algebra
+/*! \} */ // end of algebra
 
-/*! \} */ // end of Math
+/*! \} */ // end of math
 
 } // Fin namespace math
 

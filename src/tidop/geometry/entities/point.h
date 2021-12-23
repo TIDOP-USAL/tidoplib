@@ -34,7 +34,7 @@
 namespace tl
 {
 
-/*! \addtogroup GeometricEntities
+/*! \addtogroup geometry
  *  \{
  */
 
@@ -875,7 +875,7 @@ operator / (const Point3<T1>& pt, T2 b)
                     static_cast<T1>(pt.z / b));
 }
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

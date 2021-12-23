@@ -35,16 +35,11 @@ namespace tl
 namespace math
 {
 
-/*! \addtogroup Math
+/*! \addtogroup math
  *  \{
  */
 
-/*! \defgroup angleConversion Conversión de ángulos
- *  
- * Conversiones entre los diferentes formatos ángulares. 
- * - grados sexagesimales.
- * - grados centesimales
- * - radianes
+/*! \addtogroup angleConversion
  * \{
  */
 
@@ -55,111 +50,115 @@ inline int isNegative(T t)
 }
 
 /*!
- * \brief Conversión de grados sexagesimales a grados sexagesimales en notación decimal
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return Grados sexagesimales en notación decimal
+ * \brief Convert from degrees, minutes and seconds to decimal degrees
+ * \param[in] degrees Degrees
+ * \param[in] minutes Minutes
+ * \param[in] seconds Seconds
+ * \return Decimal degrees
  */
 TL_EXPORT double degreesToDecimalDegrees(int degrees, int minutes, double seconds);
 
 
 /*!
- * \brief Conversión de grados sexagesimales a radianes
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return radianes
+ * \brief Convert from degrees, minutes and seconds to radians
+ * \param[in] degrees Degrees
+ * \param[in] minutes Minutes
+ * \param[in] seconds Seconds
+ * \return radians
  */
 TL_EXPORT double degreesToRadians(int degrees, int minutes, double seconds);
 
 /*!
- * \brief Conversión de grados sexagesimales a grados centesimales
- * \param[in] degrees Grados
- * \param[in] minutes Minutos
- * \param[in] seconds Segundos
- * \return Grados centesimales
+ * \brief Convert from degrees, minutes and seconds to gradians
+ * \param[in] degrees Degrees
+ * \param[in] minutes Minutes
+ * \param[in] seconds Seconds
+ * \return Gradians
  */
 TL_EXPORT double degreesToGradians(int degrees, int minutes, double seconds);
 
 /*!
- * \brief Conversión de grados sexagesimales en notación decimal a grados, minutos y segundos
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
+ * \brief Convert from decimal degrees to degrees, minutes and seconds
+ * \param[in] decimalDegrees Decimal degrees
+ * \param[out] degrees Degrees
+ * \param[out] minutes Minutes
+ * \param[out] seconds Seconds
  *
  *
- * <h4>Ejemplo</h4>
+ * <h4>Example</h4>
  * \code
  * int degrees, minutes, seconds;
- * decimalDegreesToDegrees(55.666, &degrees, &minutes, &seconds);
+ * decimalDegreesToDegrees(55.666, degrees, minutes, seconds);
  * \endcode
  */
-TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int *degrees, int *minutes, double *seconds);
+TL_EXPORT void decimalDegreesToDegrees(double decimalDegrees, int &degrees, int &minutes, double &seconds);
 
 /*!
- * \brief Conversión de grados sexagesimales en notación decimal a radianes
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
+ * \brief Convert from decimal degrees to radians
+ * \param[in] decimalDegrees Decimal degrees
  * \return Radianes
  */
 TL_EXPORT double decimalDegreesToRadians(double decimalDegrees);
 
 /*!
- * \brief Conversión de grados sexagesimales en notación decimal a grados centesimales
- * \param[in] decimalDegrees Grados sexagesimales en notación decima
- * \return Grados centesimales
+ * \brief Convert from decimal degrees to gradians
+ * \param[in] decimalDegrees Decimal degrees
+ * \return Gradians
  */
 TL_EXPORT double decimalDegreesToGradians(double decimalDegrees);
 
 /*!
- * \brief Conversión de radianes a grados, minutos y segundos
- * \param[in] radians Radianes
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
+ * \brief Convert from  radians to degrees, minutes and seconds
+ * \param[in] radians Radians
+ * \param[out] degrees Degrees
+ * \param[out] minutes Minutes
+ * \param[out] seconds Seconds
  */
-TL_EXPORT void radiansToDegrees(double radians, int *degrees, int *minutes, double *seconds);
+TL_EXPORT void radiansToDegrees(double radians, int &degrees, int &minutes, double &seconds);
 
 /*!
- * \brief Conversión de radianes a grados sexagesimales en notación decimal
- * \param[in] radians Radianes
- * \return Grados sexagesimales en notación decimal
+ * \brief Convert from  radians to Degrees
+ * \param[in] radians Radians
+ * \return Degrees
  */
 TL_EXPORT double radiansToDecimalDegrees(double radians);
 
 /*!
- * \brief radiansToGradians
- * \param[in] radians Radianes
- * \return Grados centesimales
+ * \brief Convert from radians to gradians
+ * \param[in] radians Radians
+ * \return Gradians
  */
 TL_EXPORT double radiansToGradians(double radians);
 
 /*!
- * \brief Conversión de grados centesimales a grados, minutos y segundos
- * \param[in] gradians Grados centesimales
- * \param[out] degrees Puntero a entero que recibe como valor los grados
- * \param[out] minutes Puntero a entero que recibe como valor los minutos
- * \param[out] seconds Puntero a entero que recibe como valor los segundos
+ * \brief Convert from gradians to degrees, minutes and seconds
+ * \param[in] gradians Gradians
+ * \param[out] degrees Degrees
+ * \param[out] minutes Minutes
+ * \param[out] seconds Seconds
  */
-TL_EXPORT void gradiansToDegrees(double gradians, int *degrees, int *minutes, double *seconds);
+TL_EXPORT void gradiansToDegrees(double gradians, int &degrees, int &minutes, double &seconds);
 
 /*!
- * \brief Conversión de grados centesimales a grados sexagesimales en notación decimal
- * \param[in] gradians Grados centesimales
- * \return Grados sexagesimales en notación decimal
+ * \brief Convert from gradians to Degrees
+ * \param[in] gradians Gradians
+ * \return Degrees
  */
 TL_EXPORT double gradiansToDecimalDegrees(double gradians);
 
 /*!
- * \brief Conversión de grados centesimales a radianes
- * \param[in] gradians Grados centesimales
- * \return Radianes
+ * \brief Convert from gradians to radians
+ * \param[in] gradians Gradians
+ * \return radians
  */
 TL_EXPORT double gradiansToRadians(double gradians);
 
 
 
+
+/*!
+ * \brief Angle interface
+ */
 class Angle
 {
 
@@ -180,12 +179,28 @@ public:
   Angle() = default;
   virtual ~Angle() = default;
 
+  /*!
+   * \brief Angle unit
+   * \see Unit
+   */
   virtual Unit unit() const = 0;
+
+  /*!
+   * \brief normalize angle 
+   */
   virtual void normalize() = 0;
+
+  /*!
+   * \brief normalize angle positive
+   */
   virtual void normalizePositive() = 0;
 };
 
 
+
+/*!
+ * \brief Angle Base class
+ */
 template<typename T>
 class AngleBase
   : public Angle 
@@ -217,7 +232,163 @@ private:
 
 
 
-/// Implementación AngleBase
+/*!
+ * \brief Radians class
+ *
+ */
+template<typename T>
+class Radians
+  : public AngleBase<T>
+{
+
+public:
+
+  Radians();
+  Radians(double angle);
+  Radians(const Radians &radians);
+  Radians(Radians &&radians) TL_NOEXCEPT;
+  ~Radians() override = default;
+
+  Radians &operator=(const Radians &radians);
+  Radians &operator=(Radians &&radians) TL_NOEXCEPT;
+
+  void normalize() override;
+  void normalizePositive() override;
+
+};
+
+
+
+/*!
+ * \brief Gradians class
+ *
+ */
+template<typename T>
+class Gradians
+  : public AngleBase<T>
+{
+
+public:
+
+  Gradians();
+  Gradians(T value);
+  Gradians(const Gradians &gradians);
+  Gradians(Gradians &&gradians) TL_NOEXCEPT;
+  ~Gradians() override = default;
+
+  Gradians &operator=(const Gradians &gradians);
+  Gradians &operator=(Gradians &&gradians) TL_NOEXCEPT;
+
+  void normalize() override;
+  void normalizePositive() override;
+
+  int degrees() const;
+  int minutes() const;
+  T seconds() const;
+
+};
+
+
+
+/*!
+ * \brief Degrees class
+ *
+ */
+template<typename T>
+class Degrees
+  : public AngleBase<T>
+{
+
+public:
+
+  Degrees();
+  Degrees(T value);
+  Degrees(const Degrees &degrees);
+  Degrees(Degrees &&degrees) TL_NOEXCEPT;
+  Degrees(int degrees, int minutes, T seconds);
+  ~Degrees() override = default;
+
+  Degrees &operator=(const Degrees &degrees);
+  Degrees &operator=(Degrees &&degrees) TL_NOEXCEPT;
+
+  void normalize() override;
+  void normalizePositive() override;
+
+  int degrees() const;
+  int minutes() const;
+  T seconds() const;
+};
+
+
+
+/*!
+ * \brief AngleConverter class
+ *
+ */
+template <typename T>
+class AngleConverter
+{
+
+private:
+
+  AngleConverter() = default;
+
+public:
+
+  /*!
+   * \brief Convert from degrees to radians
+   * \param[in] degrees Degrees
+   * \param[ou] radians Radians
+   */
+  static void convert(const Degrees<T> &degrees,
+                      Radians<T> &radians);
+
+  /*!
+   * \brief Convert from degrees to gradians
+   * \param[in] degrees Degrees
+   * \param[ou] gradians Gradians
+   */
+  static void convert(const Degrees<T> &degrees,
+                      Gradians<T> &gradians);
+
+  /*!
+   * \brief Convert from gradians to radians
+   * \param[in] gradians Gradians
+   * \param[ou] radians Radians
+   */
+  static void convert(const Gradians<T> &gradians,
+                      Radians<T> &radians);
+
+  /*!
+   * \brief Convert from gradians to degrees
+   * \param[in] gradians Gradians
+   * \param[ou] degrees Degrees
+   */
+  static void convert(const Gradians<T> &gradians,
+                      Degrees<T> &degrees);
+
+  /*!
+   * \brief Convert from radians to degrees
+   * \param[in] radians Radians
+   * \param[ou] Degrees degrees
+   */
+  static void convert(const Radians<T> &radians,
+                      Degrees<T> &degrees);
+
+  /*!
+   * \brief Convert from radians to gradians
+   * \param[in] radians Radians
+   * \param[ou] gradians Gradians
+   */
+  static void convert(const Radians<T> &radians,
+                      Gradians<T> &gradians);
+
+};
+
+
+
+
+/* AngleBase implementation */
 
 template<typename T>
 AngleBase<T>::AngleBase(Unit unit)
@@ -297,36 +468,13 @@ Angle::Unit AngleBase<T>::unit() const
 
 
 
-
-/* Radians */
-
-
-template<typename T>
-class Radians
-  : public AngleBase<T>
-{
-
-public:
-
-  Radians();
-  Radians(double angle);
-  Radians(const Radians &radians);
-  Radians(Radians &&radians) TL_NOEXCEPT;
-  ~Radians() override = default;
-
-  Radians &operator=(const Radians &radians);
-  Radians &operator=(Radians &&radians) TL_NOEXCEPT;
-
-  void normalize() override;
-  void normalizePositive() override;
-
-};
-
+/* Radians implementation */
 
 template<typename T> inline
 Radians<T>::Radians()
   : AngleBase<T>(Angle::Unit::radians)
-{}
+{
+}
 
 template<typename T> inline
 Radians<T>::Radians(double angle)
@@ -374,7 +522,7 @@ void Radians<T>::normalize()
 
     if (value <= consts::zero<T>)
       value += consts::pi<T>;
-    else 
+    else
       value -= consts::pi<T>;
 
     this->setValue(value);
@@ -398,42 +546,15 @@ void Radians<T>::normalizePositive()
 
 
 
-/* Gradians */
+/* Gradians implementation */
 
-
-template<typename T>
-class Gradians
-  : public AngleBase<T>
-{
-
-public:
-
-  Gradians();
-  Gradians(T value);
-  Gradians(const Gradians &gradians);
-  Gradians(Gradians &&gradians) TL_NOEXCEPT;
-  ~Gradians() override = default;
-
-  Gradians &operator=(const Gradians &gradians);
-  Gradians &operator=(Gradians &&gradians) TL_NOEXCEPT;
-
-  void normalize() override;
-  void normalizePositive() override;
-
-  int degrees() const;
-  int minutes() const;
-  T seconds() const;
-
-};
-
-
-template<typename T> inline 
+template<typename T> inline
 Gradians<T>::Gradians()
   : AngleBase<T>(Angle::Unit::gradians)
 {
 }
 
-template<typename T> inline 
+template<typename T> inline
 Gradians<T>::Gradians(T value)
   : AngleBase<T>(Angle::Unit::gradians, value)
 {
@@ -481,7 +602,7 @@ inline void Gradians<T>::normalize()
 
     if (value <= consts::zero<T>)
       value += static_cast<T>(consts::half_circle_grad);
-    else 
+    else
       value -= static_cast<T>(consts::half_circle_grad);
 
     this->setValue(value);
@@ -526,35 +647,7 @@ T Gradians<T>::seconds() const
 
 
 
-
-/* Degrees */
-
-
-template<typename T>
-class Degrees
-  : public AngleBase<T>
-{
-
-public:
-
-  Degrees();
-  Degrees(T value);
-  Degrees(const Degrees &degrees);
-  Degrees(Degrees &&degrees) TL_NOEXCEPT;
-  Degrees(int degrees, int minutes, T seconds);
-  ~Degrees() override = default;
-
-  Degrees &operator=(const Degrees &degrees);
-  Degrees &operator=(Degrees &&degrees) TL_NOEXCEPT;
-
-  void normalize() override;
-  void normalizePositive() override;
-
-  int degrees() const;
-  int minutes() const;
-  T seconds() const;
-};
-
+/* Degrees implementation */
 
 template<typename T> inline
 Degrees<T>::Degrees()
@@ -668,37 +761,6 @@ T Degrees<T>::seconds() const
 
 
 /* Angle Converter */
-
-template <typename T>
-class AngleConverter
-{
-
-private:
-
-  AngleConverter() = default;
-
-public:
-
-  static void convert(const Degrees<T> &degrees, 
-                      Radians<T> &radians);
-
-  static void convert(const Degrees<T> &degrees, 
-                      Gradians<T> &gradians);
-
-  static void convert(const Gradians<T> &gradians, 
-                      Radians<T> &radians);
-
-  static void convert(const Gradians<T> &gradians, 
-                      Degrees<T> &degrees);
-
-  static void convert(const Radians<T> &radians, 
-                      Degrees<T> &degrees);
-
-  static void convert(const Radians<T> &radians, 
-                      Gradians<T> &gradians);
-
-};
-
 
 template<typename T>
 inline void AngleConverter<T>::convert(const Degrees<T> &degrees, 

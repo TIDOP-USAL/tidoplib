@@ -32,10 +32,6 @@
 #include <numeric>
 #include <vector>
 
-//#ifdef HAVE_OPENCV
-//#include "opencv2/core/core.hpp"
-//#endif
-
 #include "tidop/core/defs.h"
 #include "tidop/core/flags.h"
 
@@ -43,7 +39,7 @@ namespace tl
 {
 
 
-/*! \defgroup GeometricEntities Entidades geométricas
+/*! \defgroup geometry Geometric Entities
  *  Puntos, lineas, ...
  *  \{
  */
@@ -604,7 +600,7 @@ typename EntityContainer<Entity_t>::iterator EntityContainer<Entity_t>::erase(co
 }
 
 
-/*! \} */ // end of GeometricEntities
+/*! \} */ // end of geometry
 
 } // End namespace tl
 
