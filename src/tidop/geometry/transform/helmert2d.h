@@ -40,11 +40,13 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 /*! \addtogroup trfGroup
  *  \{
  */
-
 
 /*! \addtogroup trf2DGroup
  *  \{
@@ -667,6 +669,7 @@ void Helmert2D<Point_t>::updateInv()
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -29,10 +29,6 @@
 
 #include "config_tl.h"
 
-//#ifdef HAVE_OPENCV
-//#include "opencv2/core/core.hpp"
-//#endif
-
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
@@ -40,7 +36,6 @@
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/window.h"
 #include "tidop/geometry/algorithms.h"
-//#include "tidop/math/algebra/vectors.h"
 
 namespace tl
 {

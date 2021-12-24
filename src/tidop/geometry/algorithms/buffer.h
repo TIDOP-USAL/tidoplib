@@ -35,6 +35,13 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
 
 /*!
  * \brief Crea un buffer entorno a una linea
@@ -61,6 +68,9 @@ Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
   return buff;
 }
 
+/*! \} */ // end of geometry_algorithms
+
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -38,6 +38,10 @@ namespace tl
 {
 
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
 /*! \addtogroup trfGroup
  *  \{
  */
@@ -387,6 +391,7 @@ Scaling<Point_t>::operator Affine<Point_t2>() const
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

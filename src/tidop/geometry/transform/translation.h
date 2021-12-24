@@ -37,6 +37,9 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 /*! \addtogroup trfGroup
  *  \{
@@ -342,6 +345,7 @@ Translation<Point_t>::operator Affine<Point_t2>() const
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

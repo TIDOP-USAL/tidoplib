@@ -32,10 +32,6 @@
 #include <cmath>
 #include <utility>
 
-//#ifdef HAVE_OPENCV
-//#include "opencv2/core/core.hpp"
-//#endif // HAVE_OPENCV
-
 #include "tidop/core/defs.h"
 #include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/entities/point.h"

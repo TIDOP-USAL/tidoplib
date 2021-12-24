@@ -36,6 +36,14 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
+
 /*!
  * \brief Devuelve el ángulo entre dos vectores
  * \param[in] v1 Vector 1
@@ -124,6 +132,11 @@ double azimut(const Point_t &pt1, const Point_t &pt2)
   if (azimut < 0.) azimut += math::consts::two_pi<double>;
   return azimut;
 }
+
+
+/*! \} */ // end of geometry_algorithms
+
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

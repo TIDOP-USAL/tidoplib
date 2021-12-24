@@ -34,6 +34,9 @@ namespace tl
 {
 
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 /*! \addtogroup trfGroup
  *  \{
@@ -212,6 +215,7 @@ Point_t PolynomialTransform<Point_t>::transform(const Point_t &ptIn,
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

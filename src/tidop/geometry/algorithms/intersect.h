@@ -38,6 +38,14 @@ namespace tl
 /// Clase Intersection que a partir de dos geometrias calcule su intersección
 
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
+
 /*!
  * \brief Intersect de dos segmentos de línea
  * \param ln1 Primer segmento
@@ -118,6 +126,9 @@ bool linePlaneIntersection(const std::array<double, 4> &plane, const Segment<Poi
   //planePoint->z = point.z + plane[2] * t;
 }
 
+/*! \} */ // end of geometry_algorithms
+
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -39,6 +39,11 @@
 namespace tl
 {
 
+
+/*! \addtogroup geometry
+ *  \{
+ */
+
 /*! \defgroup trfGroup Transformaciones
  *  Transformaciones geométricas
  *  \{
@@ -815,6 +820,7 @@ public:
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

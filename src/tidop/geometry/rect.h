@@ -38,6 +38,9 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 template<typename T>
 class Rect
@@ -311,6 +314,7 @@ Rect<T> intersect(const Rect<T> &rect1,
   return rect;
 }
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

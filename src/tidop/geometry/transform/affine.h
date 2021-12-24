@@ -37,6 +37,9 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 /*! \addtogroup trfGroup
  *  \{
@@ -680,11 +683,11 @@ void Affine<Point_t>::updateInv()
   }
 }
 
-
 /*! \} */ // end of trf2DGroup
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -33,6 +33,13 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
 
 /*!
  * \brief Vector entre dos puntos
@@ -134,6 +141,7 @@ double module3D(const Point3_t &v)
     return sqrt(dotProduct3D(v, v));
 }
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

@@ -29,6 +29,13 @@
 #include "tidop/geometry/algorithms/angle.h"
 #include "tidop/geometry/algorithms/intersect.h"
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \defgroup geometry_algorithms Geometry algorithms
+ *  \{
+ */
 
 /*!
  * \brief Comprueba si un punto esta a la derecha o izquierda de una linea
@@ -47,7 +54,9 @@ int isLeft(Point_t ln_pt1, Point_t ln_pt2, Point_t pt)
   return r_value;
 }
 
+/*! \} */ // end of geometry_algorithms
 
+/*! \} */ // end of geometry
 
 
 #endif // TL_GEOMETRY_ALGORITHMS_H

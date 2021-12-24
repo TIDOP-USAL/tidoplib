@@ -36,6 +36,15 @@ namespace tl
 template<typename T> class Segment;
 template<typename T> class Segment3D;
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
+
+
 /*!
  * \brief Projecta un punto en un segmento de recta.
  * Si no hay punto de proyección en el segmento se devuelve nulo
@@ -100,6 +109,9 @@ int projectPointInSegment(const Segment3D<Point_t> &ln, const Point_t &pt, Point
   return iret;
 }
 
+/*! \} */ // end of geometry_algorithms
+
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

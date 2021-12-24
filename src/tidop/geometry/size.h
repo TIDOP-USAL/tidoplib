@@ -38,6 +38,11 @@ namespace tl
 {
 
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+
 template<typename T>
 class Size
 {
@@ -226,6 +231,7 @@ Size<T> operator / (const Size<T> &size, T scalar)
                  size.height / scalar);
 }
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

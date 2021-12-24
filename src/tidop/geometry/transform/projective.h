@@ -36,6 +36,9 @@
 namespace tl
 {
 
+/*! \addtogroup geometry
+ *  \{
+ */
 
 /*! \addtogroup trfGroup
  *  \{
@@ -558,6 +561,7 @@ void Projective<Point_t>::update()
 
 /*! \} */ // end of trfGroup
 
+/*! \} */ // end of geometry
 
 } // End namespace tl
 

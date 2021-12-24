@@ -40,6 +40,14 @@ template<typename T> class Segment3D;
 template<typename T> class Polygon;
 template<typename T> class Polygon3D;
 
+/*! \addtogroup geometry
+ *  \{
+ */
+
+/*! \addtogroup geometry_algorithms
+ *  \{
+ */
+
 /*!
  * \brief Distancia entre dos puntos
  * \param[in] pt1 Punto 1
@@ -214,6 +222,10 @@ double distantePointToPlane(const Point_t &pt, const std::array<double, 4> &plan
   if (normal == 0.) throw std::runtime_error("3 puntos alineados");
   return(num / normal);
 }
+
+/*! \} */ // end of geometry_algorithms
+
+/*! \} */ // end of geometry
 
 } // End namespace tl
 
