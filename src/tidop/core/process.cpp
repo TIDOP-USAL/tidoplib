@@ -35,7 +35,7 @@
 #include <locale>
 #include <codecvt>
 #include <utility>
-
+#include <cstring>
 
 #ifndef WIN32
 extern char **environ;
@@ -533,10 +533,10 @@ unsigned long readFromPipe(void *)
 }
 #endif
 
-ExternalProcess::ExternalProcess(std::string commandText, 
-                                 Priority priority)
-  : mCommandText(std::move(commandText)),
-    mPriority(priority)
+ExternalProcess::ExternalProcess(std::string commandText/*,
+                                 Priority priority*/)
+  : mCommandText(std::move(commandText))/*,
+    mPriority(priority)*/
 #ifdef WIN32
     ,
     mThreadHandle(nullptr)

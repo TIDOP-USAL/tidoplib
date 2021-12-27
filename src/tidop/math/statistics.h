@@ -110,6 +110,67 @@ mean(It first, It last)
 }
 
 /*!
+ * \brief Quantile
+ * \param[in] first Iterador al inicio
+ * \param[in] last Iterador al final
+ * \param[in] p [0,1]
+ * \return
+ */
+template<typename It> inline
+typename std::enable_if<
+  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
+  double>::type
+quantile(It first, It last, double p)
+{
+  double q;
+
+  auto n = std::distance(first, last);
+  std::vector<typename std::iterator_traits<It>::value_type> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n+1) * p - 1.;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = static_cast<double>(sort_vector[idx_1]);
+  } else {
+    q = static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+  }
+
+  return q;
+}
+
+template<typename It> inline
+typename std::enable_if<
+  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
+  typename std::iterator_traits<It>::value_type>::type
+quantile(It first, It last, double p)
+{
+  using T = typename std::iterator_traits<It>::value_type;
+
+  T q;
+
+  auto n = std::distance(first, last);
+  std::vector<T> sort_vector(n);
+  std::copy(first, last, sort_vector.begin());
+  std::sort(sort_vector.begin(), sort_vector.end());
+
+  double idx = static_cast<double>(n + 1) * p - 1.;
+  size_t idx_1 = static_cast<size_t>(std::floor(idx));
+  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
+
+  if (idx_1 == idx_2) {
+    q = sort_vector[idx_1];
+  } else {
+    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
+  }
+
+  return q;
+}
+
+/*!
  * \brief La Mediana es el valor de la variable que toma la posición central de la distribución.
  * Es el valor que verifica que el 50% de las variables son mayores o iguales
  * que él y que el otro 50% son menores.
@@ -446,7 +507,6 @@ medianAbsoluteDeviation(It first, It last)
   if (n <= 1) return consts::zero<double>;
 
   double _median = median(first, last);
-  double sum{};
 
   std::vector<double> x(n);
   auto x_it = x.begin();
@@ -651,71 +711,6 @@ biweightMidvariance(It first, It last)
 /*! \} */ // end of Dispersion
 
 
-/*!
- * \brief Quantile
- * \param[in] first Iterador al inicio
- * \param[in] last Iterador al final
- * \param[in] p [0,1]
- * \return
- */
-template<typename It> inline
-typename std::enable_if<
-  std::is_integral<typename std::iterator_traits<It>::value_type>::value,
-  double>::type
-quantile(It first, It last, double p)
-{
-  double q;
-
-  auto n = std::distance(first, last);
-  std::vector<typename std::iterator_traits<It>::value_type> sort_vector(n);
-  std::copy(first, last, sort_vector.begin());
-  std::sort(sort_vector.begin(), sort_vector.end());
-
-  double idx = static_cast<double>(n+1) * p - 1.;
-  size_t idx_1 = static_cast<size_t>(std::floor(idx));
-  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
-
-  if (idx_1 == idx_2) {
-    q = static_cast<double>(sort_vector[idx_1]);
-  } else {
-    q = static_cast<double>(sort_vector[idx_1]) + static_cast<double>(sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
-  }
-
-  return q;
-}
-
-template<typename It> inline
-typename std::enable_if<
-  std::is_floating_point<typename std::iterator_traits<It>::value_type>::value,
-  typename std::iterator_traits<It>::value_type>::type
-quantile(It first, It last, double p)
-{
-  using T = typename std::iterator_traits<It>::value_type;
-
-  T q;
-
-  auto n = std::distance(first, last);
-  std::vector<T> sort_vector(n);
-  std::copy(first, last, sort_vector.begin());
-  std::sort(sort_vector.begin(), sort_vector.end());
-
-  double idx = static_cast<double>(n + 1) * p - 1.;
-  size_t idx_1 = static_cast<size_t>(std::floor(idx));
-  size_t idx_2 = static_cast<size_t>(std::ceil(idx));
-
-  if (idx_1 == idx_2) {
-    q = sort_vector[idx_1];
-  } else {
-    q = sort_vector[idx_1] + (sort_vector[idx_2] - sort_vector[idx_1]) * fabs(idx - static_cast<int>(idx));
-  }
-
-  return q;
-}
-
-
-
-
-
 
 /*!
  * \brief covariance
@@ -845,23 +840,25 @@ enum class tukey_k
   far_out
 };
 
-template<typename itIn, typename itOut> inline
-std::vector<bool> tukey(itIn in_first, itIn in_last, tukey_k k = tukey_k::outlier)
+template<typename It> inline
+std::vector<bool> tukey(It first, It last, tukey_k k = tukey_k::outlier)
 {
+  using T = typename std::iterator_traits<It>::value_type;
+
   T q1 = tl::math::quantile(first, last, 0.25);
   T q3 = tl::math::quantile(first, last, 0.75);
 
   T interquartile_range = q3 - q1;
 
-  T _k = k == tukey_k::outlier ? static_cast<T>(1.5) : static_cast<T>(3);
+  T _k = (k == tukey_k::outlier) ? static_cast<T>(1.5) : static_cast<T>(3);
 
   T el1 = q1 - interquartile_range * _k;
   T el2 = q3 + interquartile_range * _k;
 
-  std::vector<bool> inliers(std::distance(in_first, in_last), false);
+  std::vector<bool> inliers(std::distance(first, last), false);
   auto out = inliers.begin();
-  while (in_first != in_last) {
-    T temp = *in_first++;
+  while (first != last) {
+    T temp = *first++;
     *out++ = el1 < temp && temp > el2;
   }
 

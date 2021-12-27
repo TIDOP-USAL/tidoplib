@@ -334,7 +334,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
       flag = true;
       
       for (l = k; l >= 0; l--) { //Test for splitting.
-        nm = l - consts::one<int>; //Note that rv1[1] is always zero.
+        nm = static_cast<size_t>(l) - consts::one<int>; //Note that rv1[1] is always zero.
         if (l == 0 || abs(rv1[l]) <= eps * anorm) {
           flag = false;
           break;
@@ -375,7 +375,7 @@ inline void SingularValueDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
 
       if (its == 29) throw std::runtime_error("no convergence in 30 iterations");
       x = W[l]; //Shift from bottom 2-by-2 minor.
-      nm = k - consts::one<int>;
+      nm = static_cast<size_t>(k - consts::one<int>);
       y = W[nm];
       g = rv1[nm];
       h = rv1[k];

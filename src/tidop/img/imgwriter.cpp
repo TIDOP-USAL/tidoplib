@@ -83,7 +83,7 @@ public:
       mDataType(DataType::TL_8U),
       mImageOptions(nullptr),
       mImageMetadata(nullptr),
-#if _DEBUG
+#ifdef _DEBUG
       mSpatialReference((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
 #else
       mSpatialReference(new OGRSpatialReference(nullptr))
@@ -92,12 +92,12 @@ public:
     RegisterGdal::init();
   }
 
-  ~ImageWriterGdal()
+  ~ImageWriterGdal() override
   {
     this->close();
 
     if (mSpatialReference) {
-#if _DEBUG
+#ifdef _DEBUG
       OSRDestroySpatialReference(mSpatialReference);
 #else
       OGRSpatialReference::DestroySpatialReference(mSpatialReference);
@@ -206,7 +206,7 @@ public:
       if (!isOpen()) open(); // Se trata de abrir el archivo si no esta abierto.
 
       mDataType = type;
-      TL_ASSERT(checkDataType(), "Data Type not supported");
+      TL_ASSERT(checkDataType(), "Data Type not supported")
     
       if (mDataset) {
         GDALClose(mDataset);
@@ -377,7 +377,7 @@ public:
 
     try {
 
-      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method")
 
       rows = mDataset->GetRasterYSize();
     
@@ -411,7 +411,7 @@ public:
 
     try {
 
-      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
+      TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method")
       
       channels = mDataset->GetRasterCount();
 
@@ -468,7 +468,7 @@ public:
 //  }
 //#endif
 
-  void setNoDataValue(double nodata)
+  void setNoDataValue(double nodata) override
   {
     if (mDataset) {
       mDataset->GetRasterBand(1)->SetNoDataValue(nodata);

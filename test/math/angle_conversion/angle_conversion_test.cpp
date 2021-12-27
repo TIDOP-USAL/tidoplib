@@ -591,21 +591,21 @@ struct AngleConvertion
 
 BOOST_FIXTURE_TEST_CASE(degrees_to_decimal_degrees, AngleConvertion) 
 {
-  for (int i = 0; i < dms.size(); i++) {
+  for (size_t i = 0; i < dms.size(); i++) {
     BOOST_CHECK_CLOSE(decimalDegrees[i], degreesToDecimalDegrees(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
   }
 }
 
 BOOST_FIXTURE_TEST_CASE(degrees_to_radians, AngleConvertion) 
 {
-  for (int i = 0; i < dms.size(); i++) {
+  for (size_t i = 0; i < dms.size(); i++) {
     BOOST_CHECK_CLOSE(radians[i], degreesToRadians(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
   }
 }
 
 BOOST_FIXTURE_TEST_CASE(degrees_to_gradians, AngleConvertion)
 {
-  for (int i = 0; i < dms.size(); i++) {
+  for (size_t i = 0; i < dms.size(); i++) {
     BOOST_CHECK_CLOSE(gradians[i], degreesToGradians(dms[i][0], dms[i][1], static_cast<double>(dms[i][2])), 0.1);
   }
 }
@@ -615,8 +615,8 @@ BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_degrees, AngleConvertion)
 {
   int degrees, minutes;
   double seconds;
-  for (int i = 0; i < decimalDegrees.size(); i++) {
-    decimalDegreesToDegrees(decimalDegrees[i], &degrees, &minutes, &seconds);
+  for (size_t i = 0; i < decimalDegrees.size(); i++) {
+    decimalDegreesToDegrees(decimalDegrees[i], degrees, minutes, seconds);
     BOOST_CHECK_EQUAL(dms[i][0], degrees);
     BOOST_CHECK_EQUAL(dms[i][1], minutes);
     BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
@@ -625,13 +625,13 @@ BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_degrees, AngleConvertion)
 
 BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_radians, AngleConvertion)
 {
-  for (int i = 0; i < decimalDegrees.size(); i++) {
+  for (size_t i = 0; i < decimalDegrees.size(); i++) {
     BOOST_CHECK_CLOSE(radians[i], decimalDegreesToRadians(decimalDegrees[i]), 0.1);
   }
 }
 
 BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_gradians, AngleConvertion) {
-  for (int i = 0; i < decimalDegrees.size(); i++) {
+  for (size_t i = 0; i < decimalDegrees.size(); i++) {
     BOOST_CHECK_CLOSE(gradians[i], decimalDegreesToGradians(decimalDegrees[i]), 0.1);
   }
 }
@@ -639,8 +639,8 @@ BOOST_FIXTURE_TEST_CASE(decimal_degrees_to_gradians, AngleConvertion) {
 BOOST_FIXTURE_TEST_CASE(radians_to_degrees, AngleConvertion) {
   int degrees, minutes;
   double seconds;
-  for (int i = 0; i < radians.size(); i++) {
-    radiansToDegrees(radians[i], &degrees, &minutes, &seconds);
+  for (size_t i = 0; i < radians.size(); i++) {
+    radiansToDegrees(radians[i], degrees, minutes, seconds);
     BOOST_CHECK_EQUAL(dms[i][0], degrees);
     BOOST_CHECK_EQUAL(dms[i][1], minutes);
     BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
@@ -648,13 +648,13 @@ BOOST_FIXTURE_TEST_CASE(radians_to_degrees, AngleConvertion) {
 }
 
 BOOST_FIXTURE_TEST_CASE(radians_to_decimal_degrees, AngleConvertion) {
-  for (int i = 0; i < radians.size(); i++) {
+  for (size_t i = 0; i < radians.size(); i++) {
     BOOST_CHECK_CLOSE(decimalDegrees[i], radiansToDecimalDegrees(radians[i]), 0.1);
   }
 }
 
 BOOST_FIXTURE_TEST_CASE(radians_to_gradians, AngleConvertion) {
-  for (int i = 0; i < radians.size(); i++) {
+  for (size_t i = 0; i < radians.size(); i++) {
     BOOST_CHECK_CLOSE(gradians[i], radiansToGradians(radians[i]), 0.1);
   }
 }
@@ -663,8 +663,8 @@ BOOST_FIXTURE_TEST_CASE(radians_to_gradians, AngleConvertion) {
 BOOST_FIXTURE_TEST_CASE(gradians_to_degrees, AngleConvertion) {
   int degrees, minutes;
   double seconds;
-  for (int i = 0; i < gradians.size(); i++) {
-    gradiansToDegrees(gradians[i], &degrees, &minutes, &seconds);
+  for (size_t i = 0; i < gradians.size(); i++) {
+    gradiansToDegrees(gradians[i], degrees, minutes, seconds);
     BOOST_CHECK_EQUAL(dms[i][0], degrees);
     BOOST_CHECK_EQUAL(dms[i][1], minutes);
     BOOST_CHECK_EQUAL(dms[i][2], TL_ROUND_TO_INT(seconds));
@@ -672,13 +672,13 @@ BOOST_FIXTURE_TEST_CASE(gradians_to_degrees, AngleConvertion) {
 }
 
 BOOST_FIXTURE_TEST_CASE(gradians_to_decimalDegrees, AngleConvertion) {
-  for (int i = 0; i < gradians.size(); i++) {
+  for (size_t i = 0; i < gradians.size(); i++) {
     BOOST_CHECK_CLOSE(decimalDegrees[i], gradiansToDecimalDegrees(gradians[i]), 0.1);
   }
 }
 
 BOOST_FIXTURE_TEST_CASE(gradians_to_radians, AngleConvertion) {
-  for (int i = 0; i < gradians.size(); i++) {
+  for (size_t i = 0; i < gradians.size(); i++) {
     BOOST_CHECK_CLOSE(radians[i], gradiansToRadians(gradians[i]), 0.1);
   }
 }

@@ -27,9 +27,10 @@
 
 #include "config_tl.h"
 
+#include "tidop/core/exception.h"
 #include "tidop/geometry/transform/transform.h"
 #include "tidop/math/algebra/rotation_convert.h"
-#include "tidop/core/exception.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -359,10 +360,10 @@ Helmert3D<Point_t>::Helmert3D(double tx,
   math::EulerAngles<double> eulerAngles;
   eulerAngles.axes = math::EulerAngles<double>::Axes::xyz;
   math::RotationConverter<double>::convert(rotation, eulerAngles);
-  mOmega = eulerAngles.omega;
-  mPhi = eulerAngles.phi;
-  mKappa = eulerAngles.kappa;
-  //eulerAngles(mR, &mOmega, &mPhi, &mKappa);
+  mOmega = eulerAngles.x;
+  mPhi = eulerAngles.y;
+  mKappa = eulerAngles.z;
+
   update();
 }
 
@@ -406,46 +407,84 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
   size_t m = n1 * static_cast<size_t>(this->mDimensions);
   size_t n = 7;
 
-  double *A = nullptr;
-  double *L = nullptr;
-  double *C = nullptr;
+//  double *A = nullptr;
+//  double *L = nullptr;
+//  double *C = nullptr;
 
   try {
 
-    A = new double[m * n];
-    double *pa = A;
-    L = new double[m];
-    double *pl = L;
-    C = new double[n];
+    math::Matrix<double> A(m, n, 0);
+    math::Vector<double> B(m);
 
-    for (int i = 0; i < n1; i++) {
-      *pa++ = pts1[i].x;
-      *pa++ = 0;
-      *pa++ = -pts1[i].z;
-      *pa++ = pts1[i].y;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pl++ = pts2[i].x;
-      *pa++ = pts1[i].y;
-      *pa++ = pts1[i].z;
-      *pa++ = 0;
-      *pa++ = -pts1[i].x;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pa++ = 0;
-      *pl++ = pts2[i].y;
-      *pa++ = pts1[i].z;
-      *pa++ = -pts1[i].y;
-      *pa++ = pts1[i].x;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = 0;
-      *pa++ = 1;
-      *pl++ = pts2[i].z;
+//    A = new double[m * n];
+//    double *pa = A;
+//    L = new double[m];
+//    double *pl = L;
+//    C = new double[n];
+
+    for (size_t i = 0, r = 0; i < n1; i++, r++) {
+      //*pa++ = pts1[i].x;
+      A.at(r, 0) = pts1[i].x;
+      //*pa++ = 0;
+      //A.at(r, 1) = 0;
+      //*pa++ = -pts1[i].z;
+      A.at(r, 2) = -pts1[i].z;
+      //*pa++ = pts1[i].y;
+      A.at(r, 3) = pts1[i].y;
+      //*pa++ = 1;
+      A.at(r, 4) = 1;
+      //*pa++ = 0;
+      //A.at(r, 5) = 0;
+      //*pa++ = 0;
+      //A.at(r, 6) = 0;
+
+      //*pl++ = pts2[i].x;
+      B[r] = pts2[i].x;
+
+      r++;
+
+      //*pa++ = pts1[i].y;
+      A.at(r, 0) = pts1[i].y;
+      //*pa++ = pts1[i].z;
+      A.at(r, 1) = pts1[i].z;
+      //*pa++ = 0;
+      //A.at(r, 2) = 0;
+      //*pa++ = -pts1[i].x;
+      A.at(r, 3) = -pts1[i].x;
+      //*pa++ = 0;
+      //A.at(r, 4) = 0;
+      //*pa++ = 1;
+      A.at(r, 5) = 1;
+      //*pa++ = 0;
+      //A.at(r, 6) = 0;
+
+      //*pl++ = pts2[i].y;
+      B[r] = pts2[i].y;
+
+      r++;
+
+      //*pa++ = pts1[i].z;
+      A.at(r, 0) = pts1[i].z;
+      //*pa++ = -pts1[i].y;
+      A.at(r, 1) = -pts1[i].y;
+      //*pa++ = pts1[i].x;
+      A.at(r, 2) = pts1[i].x;
+      //*pa++ = 0;
+      //A.at(r, 3) = 0;
+      //*pa++ = 0;
+      //A.at(r, 4) = 0;
+      //*pa++ = 0;
+      //A.at(r, 5) = 0;
+      //*pa++ = 1;
+      A.at(r, 6) = 1;
+
+      //*pl++ = pts2[i].z;
+      B[r] = pts2[i].z;
     }
 
-    solveSVD(m, n, A, L, C);
+    //solveSVD(m, n, A, L, C);
+    math::SingularValueDecomposition<math::Matrix<double>> svd(A);
+    math::Vector<double> C = svd.solve(B);
 
     mScale = C[0];
     mOmega = C[1];
@@ -466,9 +505,9 @@ Transform::Status Helmert3D<Point_t>::compute(const std::vector<Point_t> &pts1,
     status = Transform::Status::failure;
   }
 
-  delete[] A;
-  delete[] L;
-  delete[] C;
+//  delete[] A;
+//  delete[] L;
+//  delete[] C;
 
   return status;
 }

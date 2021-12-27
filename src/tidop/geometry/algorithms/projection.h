@@ -29,6 +29,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"
+#include "tidop/geometry/algorithms/vector.h"
 
 namespace tl
 {

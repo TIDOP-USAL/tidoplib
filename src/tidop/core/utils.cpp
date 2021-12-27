@@ -28,7 +28,7 @@
 #include "tidop/core/exception.h"
 
 #include <boost/algorithm/string.hpp>
-
+#include <sstream>
 
 namespace tl
 {

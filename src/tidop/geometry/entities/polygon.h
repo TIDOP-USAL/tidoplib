@@ -441,6 +441,7 @@ Polygon3DHole<Point3_t>::Polygon3DHole()
 
 template<typename Point3_t> inline
 Polygon3DHole<Point3_t>::Polygon3DHole(typename Polygon3DHole<Point3_t>::size_type size)
+  : Entities3D<Point3_t>(size)
 {
 }
 

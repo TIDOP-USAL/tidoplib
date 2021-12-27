@@ -78,6 +78,9 @@ private:
   Vector<T, 3> mAxis;
 };
 
+
+/* AxisAngle implementation */
+
 template<typename T>
 AxisAngle<T>::AxisAngle()
   : RotationBase<T>(Rotation::Type::axis_angle),

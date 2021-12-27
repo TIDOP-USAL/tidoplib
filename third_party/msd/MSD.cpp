@@ -29,6 +29,7 @@
 #include <opencv2/imgproc.hpp>
 
 //#include <boost/thread.hpp>
+#include <thread>
 
 struct sortByStrength
 {

@@ -188,7 +188,11 @@ Transform::Status PolynomialTransform<Point_t>::transform(const Point_t &ptIn,
                                                           Transform::Order trfOrder) const
 {
   Transform::Status r_status = Transform::Status::success;
+
+  using sub_type = typename Point_t::value_type;
+
   sub_type x_aux = ptIn.x;
+
   try {
     //...
   } catch (std::exception &e ) {

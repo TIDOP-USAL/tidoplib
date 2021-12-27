@@ -248,8 +248,8 @@ public:
 
 public:
 
-  ExternalProcess(std::string commandText, 
-                  Priority priority = Priority::normal);
+  ExternalProcess(std::string commandText/*,
+                  Priority priority = Priority::normal*/);
   ~ExternalProcess() override;
 
 #ifdef WIN32

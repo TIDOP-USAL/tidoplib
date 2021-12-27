@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(split_string)
 {
   std::vector<std::string> out;
   std::vector<std::string> v = split("");
-  BOOST_CHECK_EQUAL(0, v.size());
+  BOOST_CHECK_EQUAL(1, v.size());
 
 }
 

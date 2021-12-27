@@ -47,7 +47,7 @@ class Shape
 
 public:
 
-  Shape() {}
+  Shape() = default;
   virtual ~Shape() = default;
 
   virtual double area() const = 0;

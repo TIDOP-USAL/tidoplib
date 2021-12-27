@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -74,7 +74,7 @@ public:
 
 private:
 
-  std::string driverFromExt(std::string &extension) const;
+  std::string driverFromExt(const std::string &extension) const;
   OGRLayer *createLayer(const std::string &layerName);
   void writePoint(OGRFeature *ogrFeature, const GPoint *gPoint);
   void writePoint(OGRFeature *ogrFeature, const GPoint3D *gPoint3D);
@@ -232,7 +232,7 @@ void VectorWriterGdal::write(const GLayer &layer)
 
       if (std::shared_ptr<TableRegister> data = entity->data()) {
         for (size_t i = 0; i < data->size(); i++) {
-          TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
+          TL_TODO("En funciÃ³n del tipo de dato. Por ahora sÃ³lo cadenas")
             ogrFeature->SetField(static_cast<int>(i), data->value(static_cast<int>(i)).c_str());
         }
       }
@@ -337,12 +337,12 @@ void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr,
 {
   OGRStyleTool *ogrStyleTool = nullptr;
 
-  TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo está activo");
+  TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo estÃ¡ activo");
 
   delete ogrStyleTool;
 }
 
-std::string VectorWriterGdal::driverFromExt(std::string &extension) const
+std::string VectorWriterGdal::driverFromExt(const std::string &extension) const
 {
   std::string format;
   if (compareInsensitiveCase(extension, ".dxf" ))
@@ -380,7 +380,7 @@ OGRLayer *VectorWriterGdal::createLayer(const std::string &layerName)
     const char *driver_name = mDataset->GetDriverName();
     if (strcmp(driver_name, "DXF") == 0 || strcmp(driver_name, "DGN") == 0) {
       if (mDataset->GetLayerCount() == 0) {
-        /// Sólo soportan la creación de una capa con lo cual se añadir siempre a la capa "0"
+        /// SÃ³lo soportan la creaciÃ³n de una capa con lo cual se aÃ±adir siempre a la capa "0"
         layer = mDataset->CreateLayer("0", 
                                       mSpatialReference, 
                                       static_cast<OGRwkbGeometryType>(wkbUnknown), 

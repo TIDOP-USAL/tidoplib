@@ -543,7 +543,7 @@ void PRCurve<T>::compute()
 
   this->mCurve.resize(0);
 
-  for (auto &data : mData) {
+  for (auto &data : this->mData) {
 
     std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
 
@@ -631,7 +631,7 @@ void ROCCurve<T>::compute()
 
   this->mCurve.resize(0);
 
-  for (auto &data : mData) {
+  for (auto &data : this->mData) {
     std::map<typename PRCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
     double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives], 
                                          confussionMatrix[PRCurve<T>::Classification::true_negatives]);
@@ -717,7 +717,7 @@ void DETCurve<T>::compute()
 
   this->mCurve.resize(0);
 
-  for (auto &data : mData) {
+  for (auto &data : this->mData) {
     std::map<typename DETCurve<T>::Classification, size_t> confussionMatrix = this->confusionMatrix(data.first);
     double fpr = this->falsePositiveRate(confussionMatrix[PRCurve<T>::Classification::false_positives],
                                          confussionMatrix[PRCurve<T>::Classification::true_negatives]);

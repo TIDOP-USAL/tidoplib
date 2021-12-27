@@ -28,6 +28,7 @@
 #include "config_tl.h"
 
 #include "tidop/core/defs.h"
+#include "tidop/math/math.h"
 
 #ifdef HAVE_TL_SIMD_INTRINSICS
 
@@ -35,6 +36,8 @@
 #include <immintrin.h>
 #elif defined HAVE_TL_SSE4_1
 #include <smmintrin.h>
+#elif defined HAVE_TL_SSE3
+#include <pmmintrin.h>
 #elif defined HAVE_TL_SSE2
 #include <emmintrin.h>
 #endif
@@ -219,15 +222,8 @@ public:
 
 public:
 
-  PackedBase()
-  {
-  }
-
-  PackedBase(const simd_type &packed)
-    : mValue(packed)
-  {
-  }
-
+  PackedBase() = default;
+  PackedBase(const simd_type &packed);
 
   simd_type &loadAligned(const value_type *src);
   simd_type &loadUnaligned(const value_type *src);
@@ -238,24 +234,14 @@ public:
    * \brief  Assignment operator
    * Assign from intrinsic type
    */
-  T &operator=(const simd_type &packed)
-  {
-    mValue = packed;
-    return *this;
-  }
+  T &operator=(const simd_type &packed);
 
   /*!
    * \brief Type cast operator to convert to intrinsic type
    */
-  operator simd_type() const
-  {
-    return mValue;
-  }
+  operator simd_type() const;
 
-  static constexpr size_t size()
-  {
-    return PackedTraits<T>::size;
-  }
+  static constexpr size_t size();
 
 private:
 
@@ -271,77 +257,24 @@ class Packed
 
 public:
 
-  Packed() : PackedBase<Packed<T>>()
-  {
-  }
+  Packed();
+  Packed(const typename PackedTraits<Packed<T>>::simd_type &packed);
+  Packed(typename PackedTraits<Packed<T>>::value_type scalar);
 
-  Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
-    : PackedBase<Packed<T>>(packed)
-  {
-  }
+  Packed<T> &operator+=(const Packed<T> &packed);
+  Packed<T> &operator-=(const Packed<T> &packed);
+  Packed<T> &operator*=(const Packed<T> &packed);
+  Packed<T> &operator/=(const Packed<T> &packed);
 
-  Packed(value_type scalar)
-    : PackedBase<Packed<T>>(set(scalar))
-  {
-  }
-
-  Packed<T> &operator+=(const Packed<T> &packed)
-  {
-    *this = *this + packed;
-    return *this;
-  }
-
-  Packed<T> &operator-=(const Packed<T> &packed)
-  {
-    *this = *this - packed;
-    return *this;
-  }
-
-  Packed<T> &operator*=(const Packed<T> &packed)
-  {
-    *this = *this * packed;
-    return *this;
-  }
-
-  Packed<T> &operator/=(const Packed<T> &packed)
-  {
-    *this = *this / packed;
-    return *this;
-  }
-
-  Packed<T> operator++(int)
-  {
-    Packed<T> packet = *this;
-    *this += consts::one<T>;
-    return *packet;
-  }
-
-  Packed<T> &operator++()
-  {
-    *this += consts::one<T>;
-    return *this;
-  }
-
-  Packed<T> operator--(int)
-  {
-    Packed<T> packet = *this;
-    *this -= consts::one<T>;
-    return *packet;
-  }
-
-  Packed<T> &operator--()
-  {
-    *this -= consts::one<T>;
-    return *this;
-  }
+  Packed<T> operator++(int);
+  Packed<T> &operator++();
+  Packed<T> operator--(int);
+  Packed<T> &operator--();
 
   /*!
    * \brief Suma de los elementos de un vector
    */
-  T sum()
-  {
-    return horizontal_sum(*this);
-  }
+  T sum();
 };
 
 
@@ -388,7 +321,7 @@ typename std::enable_if<
 loadPackedAligned(const T *data)
 {
   using P = Packed<typename std::remove_cv<T>::type>;
-  using simd_type = P::simd_type;
+  using simd_type = typename P::simd_type;
 
   P r;
 
@@ -442,7 +375,7 @@ typename std::enable_if<
 loadPackedUnaligned(const T *data)
 {
   using P = Packed<typename std::remove_cv<T>::type>;
-  using simd_type = P::simd_type;
+  using simd_type = typename P::simd_type;
 
   P r;
 
@@ -487,7 +420,7 @@ typename std::enable_if<
 storePackedAligned(T *data, U &result)
 {
   using P = Packed<typename std::remove_cv<T>::type>;
-  using simd_type = P::simd_type;
+  using simd_type = typename P::simd_type;
 
 #ifdef HAVE_TL_AVX
   _mm256_store_si256(reinterpret_cast<simd_type *>(data), result);
@@ -496,10 +429,10 @@ storePackedAligned(T *data, U &result)
 #endif
 }
 
-template<typename T> inline
+template<typename T, typename U> inline
 typename std::enable_if<
   std::is_same<float, typename std::remove_cv<T>::type>::value, void>::type
-storePackedUnaligned(T *data, Packed<T> &result)
+storePackedUnaligned(T *data, U &result)
 {
 #ifdef HAVE_TL_AVX
   _mm256_storeu_ps(data, result);
@@ -508,10 +441,10 @@ storePackedUnaligned(T *data, Packed<T> &result)
 #endif
 }
 
-template<typename T> inline
+template<typename T, typename U> inline
 typename std::enable_if<
   std::is_same<double, typename std::remove_cv<T>::type>::value, void>::type
-storePackedUnaligned(T *data, Packed<T> &result)
+storePackedUnaligned(T *data, U &result)
 {
 #ifdef HAVE_TL_AVX
   _mm256_storeu_pd(data, result);
@@ -520,14 +453,14 @@ storePackedUnaligned(T *data, Packed<T> &result)
 #endif
 }
 
-template<typename T> inline
+template<typename T, typename U> inline
 typename std::enable_if<
   std::is_integral<typename std::remove_cv<T>::type>::value,
   void>::type
-storePackedUnaligned(T *data, Packed<T> &result)
+storePackedUnaligned(T *data, U &result)
 {
   using P = Packed<typename std::remove_cv<T>::type>;
-  using simd_type = P::simd_type;
+  using simd_type = typename P::simd_type;
 
 #ifdef HAVE_TL_AVX
   _mm256_storeu_si256(reinterpret_cast<simd_type *>(data), result);
@@ -565,28 +498,28 @@ template<typename T> inline
 typename std::enable_if<
   std::is_integral<typename std::remove_cv<T>::type>::value,
   Packed<T>>::type
-set(T *data, Packed<T> &result)
+set(T data)
 {
   using P = Packed<typename std::remove_cv<T>::type>;
-  using simd_type = P::simd_type;
+  //using simd_type = typename P::simd_type;
 
 #ifdef HAVE_TL_AVX
-  if (packed1.size() == 32)
+  if (P::size() == 32)
     return _mm256_set1_epi8(data);
-  else if (packed1.size() == 16)
+  else if (P::size() == 16)
     return _mm256_set1_epi16(data);
-  else if (packed1.size() == 8)
+  else if (P::size() == 8)
     return _mm256_set1_epi32(data);
-  else if (packed1.size() == 4)
+  else if (P::size() == 4)
     return __mm256_set1_epi64(data);
 #elif defined HAVE_TL_SSE2
-  if (packed1.size() == 16)
+  if (P::size() == 16)
     return _mm_set1_epi8(data);
-  else if (packed1.size() == 8)
+  else if (P::size() == 8)
     return _mm_set1_epi16(data);
-  else if (packed1.size() == 4)
+  else if (P::size() == 4)
     return _mm_set1_epi32(data);
-  else if (packed1.size() == 2)
+  else if (P::size() == 2)
     _mm_set1_epi64x(data);
 #endif
 }
@@ -976,27 +909,27 @@ typename std::enable_if<
   /// Apache License version 2.0 or later.
 
 #ifdef HAVE_TL_AVX
-  if (packed1.size() == 32) {
+  if (packed.size() == 32) {
     __m256i sum1 = _mm256_sad_epu8(packed, _mm256_setzero_si256());
     __m256i sum2 = _mm256_shuffle_epi32(sum1, 2);
     __m256i sum3 = _mm256_add_epi16(sum1, sum2);
     __m128i sum4 = _mm256_extracti128_si256(sum3, 1);
     __m128i sum5 = _mm_add_epi16(_mm256_castsi256_si128(sum3), sum4);
     sum = static_cast<T>(_mm_cvtsi128_si32(sum5));
-  } else if (packed1.size() == 16) {
+  } else if (packed.size() == 16) {
     // The hadd instruction is inefficient, and may be split into two instructions for faster decoding
     __m128i sum1 = _mm_add_epi16(_mm256_extracti128_si256(packed, 1), _mm256_castsi256_si128(packed));
     __m128i sum2 = _mm_add_epi16(sum1, _mm_unpackhi_epi64(sum1, sum1));
     __m128i sum3 = _mm_add_epi16(sum2, _mm_shuffle_epi32(sum2, 1));
     __m128i sum4 = _mm_add_epi16(sum3, _mm_shufflelo_epi16(sum3, 1));
     sum = static_cast<T>(_mm_cvtsi128_si32(sum4));               // truncate to 16 bits
-  } else if (packed1.size() == 8) {
+  } else if (packed.size() == 8) {
     // The hadd instruction is inefficient, and may be split into two instructions for faster decoding
     __m128i sum1 = _mm_add_epi32(_mm256_extracti128_si256(packed, 1), _mm256_castsi256_si128(packed));
     __m128i sum2 = _mm_add_epi32(sum1, _mm_unpackhi_epi64(sum1, sum1));
     __m128i sum3 = _mm_add_epi32(sum2, _mm_shuffle_epi32(sum2, 1));
     sum = static_cast<T>(_mm_cvtsi128_si32(sum3));
-  } else if (packed1.size() == 4) {
+  } else if (packed.size() == 4) {
     __m256i sum1 = _mm256_shuffle_epi32(packed, 0x0E);                // high element
     __m256i sum2 = _mm256_add_epi64(packed, sum1);                    // sum
     __m128i sum3 = _mm256_extracti128_si256(sum2, 1);                 // get high part
@@ -1015,12 +948,12 @@ typename std::enable_if<
 #endif
   }
 #elif defined HAVE_TL_SSE2
-  if (packed1.size() == 16) {
+  if (packed.size() == 16) {
     __m128i sum1 = _mm_sad_epu8(packed, _mm_setzero_si128());
     __m128i sum2 = _mm_unpackhi_epi64(sum1, sum1);
     __m128i sum3 = _mm_add_epi16(sum1, sum2);
     sum = static_cast<T>(_mm_cvtsi128_si32(sum3));
-  } else if (packed1.size() == 8) {
+  } else if (packed.size() == 8) {
 #if defined HAVE_TL_SSSE3
     __m128i sum1 = _mm_hadd_epi16(packed, packed);                   // horizontally add 8 elements in 3 steps
     __m128i sum2 = _mm_hadd_epi16(sum1, sum1);
@@ -1035,7 +968,7 @@ typename std::enable_if<
     __m128i sum6 = _mm_add_epi16(sum4, sum5);              // 1 sum
     sum = static_cast<T>(_mm_cvtsi128_si32(sum6));         // 16 bit sum
 #endif
-  } else if (packed1.size() == 4) {
+  } else if (packed.size() == 4) {
 #if defined HAVE_TL_SSSE3
     // The hadd instruction is inefficient, and may be split into two instructions for faster decoding
     __m128i sum1 = _mm_hadd_epi32(packed, packed);                   // horizontally add 4 elements in 2 steps
@@ -1048,7 +981,7 @@ typename std::enable_if<
     __m128i sum4 = _mm_add_epi32(sum2, sum3);              // 2 sums
     sum = static_cast<T>(_mm_cvtsi128_si32(sum4));         // 32 bit sum
 #endif
-  } else if (packed1.size() == 2) {
+  } else if (packed.size() == 2) {
     __m128i sum1 = _mm_unpackhi_epi64(packed, packed);               // high element
     __m128i sum2 = _mm_add_epi64(packed, sum1);                 // sum
 #ifdef __x86_64__
@@ -1074,6 +1007,12 @@ typename std::enable_if<
 
 
 /* PackedBase Implementation */
+
+template<typename T>
+PackedBase<T>::PackedBase(const PackedBase<T>::simd_type &packed)
+  : mValue(packed)
+{
+}
 
 template<typename T> inline
 typename PackedBase<T>::simd_type &PackedBase<T>::loadAligned(const value_type *src)
@@ -1101,10 +1040,24 @@ void PackedBase<T>::storeUnaligned(value_type *dst) const
   storePackedUnaligned(dst, mValue);
 }
 
+template<typename T> inline
+T &PackedBase<T>::operator=(const PackedBase<T>::simd_type &packed)
+{
+  mValue = packed;
+  return *this;
+}
 
+template<typename T> inline
+constexpr size_t PackedBase<T>::size()
+{
+  return PackedTraits<T>::size;
+}
 
-
-
+template<typename T> inline
+PackedBase<T>::operator simd_type() const
+{
+  return mValue;
+}
 
 //template<typename T>
 //inline PackedBase<T> operator+(const PackedBase<T> &packed,
@@ -1145,38 +1098,38 @@ operator - (const Packed<T> &packet)
   return _mm_xor_pd(packet, _mm_castsi128_pd(_mm_setr_epi32(0, 0x80000000, 0, 0x80000000)));
 }
 
-template<typename T>
-inline Packed<T> operator+(const Packed<T> &packed1, const Packed<T> &packed2)
+template<typename T> inline
+Packed<T> operator+(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   return add(packed1, packed2);
 }
 
-template<typename T>
-inline Packed<T> operator+(const Packed<T> &packed, T scalar)
+template<typename T> inline
+Packed<T> operator+(const Packed<T> &packed, T scalar)
 {
   return packed + Packed<T>(scalar);
 }
 
-template<typename T>
-inline Packed<T> operator+(T scalar, const Packed<T> &packed)
+template<typename T> inline
+Packed<T> operator+(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) + packed;
 }
 
-template<typename T>
-inline Packed<T> operator-(const Packed<T> &packed1, const Packed<T> &packed2)
+template<typename T> inline
+Packed<T> operator-(const Packed<T> &packed1, const Packed<T> &packed2)
 {
   return sub(packed1, packed2);
 }
 
-template<typename T>
-inline Packed<T> operator-(const Packed<T> &packed, T scalar)
+template<typename T> inline
+Packed<T> operator-(const Packed<T> &packed, T scalar)
 {
   return packed - Packed<T>(scalar);
 }
 
-template<typename T>
-inline Packed<T> operator-(T scalar, const Packed<T> &packed)
+template<typename T> inline
+Packed<T> operator-(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) - packed;
 }
@@ -1187,14 +1140,14 @@ Packed<T> operator*(const Packed<T> &packed1, const Packed<T> &packed2)
   return mul(packed1, packed2);
 }
 
-template<typename T>
-inline Packed<T> operator*(const Packed<T> &packed, T scalar)
+template<typename T> inline
+Packed<T> operator*(const Packed<T> &packed, T scalar)
 {
   return packed * Packed<T>(scalar);
 }
 
-template<typename T>
-inline Packed<T> operator*(T scalar, const Packed<T> &packed)
+template<typename T> inline
+Packed<T> operator*(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) * packed;
 }
@@ -1205,17 +1158,101 @@ Packed<T> operator/(const Packed<T> &packed1, const Packed<T> &packed2)
   return div(packed1, packed2);
 }
 
-template<typename T>
-inline Packed<T> operator/(const Packed<T> &packed, T scalar)
+template<typename T> inline
+Packed<T> operator/(const Packed<T> &packed, T scalar)
 {
   return packed / Packed<T>(scalar);
 }
 
-template<typename T>
-inline Packed<T> operator/(T scalar, const Packed<T> &packed)
+template<typename T> inline
+Packed<T> operator/(T scalar, const Packed<T> &packed)
 {
   return Packed<T>(scalar) / packed;
 }
+
+template<typename T> inline
+Packed<T>::Packed() : PackedBase<Packed<T>>()
+{
+}
+
+template<typename T> inline
+Packed<T>::Packed(const typename PackedTraits<Packed<T>>::simd_type &packed)
+  : PackedBase<Packed<T>>(packed)
+{
+}
+
+template<typename T> inline
+Packed<T>::Packed(typename PackedTraits<Packed<T>>::value_type scalar)
+  : PackedBase<Packed<T>>(set(scalar))
+{
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator+=(const Packed<T> &packed)
+{
+  *this = *this + packed;
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator-=(const Packed<T> &packed)
+{
+  *this = *this - packed;
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator*=(const Packed<T> &packed)
+{
+  *this = *this * packed;
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator/=(const Packed<T> &packed)
+{
+  *this = *this / packed;
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> Packed<T>::operator++(int)
+{
+  Packed<T> packet = *this;
+  *this += consts::one<T>;
+  return *packet;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator++()
+{
+  *this += consts::one<T>;
+  return *this;
+}
+
+template<typename T> inline
+Packed<T> Packed<T>::operator--(int)
+{
+  Packed<T> packet = *this;
+  *this -= consts::one<T>;
+  return *packet;
+}
+
+template<typename T> inline
+Packed<T> &Packed<T>::operator--()
+{
+  *this -= consts::one<T>;
+  return *this;
+}
+
+template<typename T> inline
+T Packed<T>::sum()
+{
+  return horizontal_sum(*this);
+}
+
+
+
 
 //template<typename P, size_t _size = PackedTraits<P>::size>
 //class PacketMul

@@ -666,10 +666,10 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 
       for (size_t c = 0; c < max_vector; c += packed_b_d.size()) {
 
-        packed_b_d.loadAligned(&matrix2[i][c]);
-        packed_c.loadAligned(&mat[r][c]);
+        packed_b_d.loadUnaligned(&matrix2[i][c]);
+        packed_c.loadUnaligned(&mat[r][c]);
         packed_c += a * packed_b_d;
-        packed_c.storeAligned(&mat[r][c]);
+        packed_c.storeUnaligned(&mat[r][c]);
       }
 
       for (size_t c = max_vector; c < matrix2.cols(); c++) {

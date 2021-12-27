@@ -58,7 +58,7 @@ struct akaze_properties
 int main(int argc, char** argv)
 {
 
-  Path app_path = argv[0];
+  Path app_path(argv[0]);
   std::string cmd_name = app_path.baseName().toString();
 
   /// Consola
@@ -151,7 +151,7 @@ int main(int argc, char** argv)
     if (!input_path.exists()) TL_THROW_EXCEPTION("Image doesn't exist: %s", input_path.fileName().toString().c_str());
 
     cv::Mat img = cv::imread(input_path.toString(), cv::IMREAD_IGNORE_ORIENTATION | cv::IMREAD_GRAYSCALE);
-    if (img.empty()) TL_THROW_EXCEPTION("Could not load image: %s", input_path.toString());
+    if (img.empty()) TL_THROW_EXCEPTION("Could not load image: %s", input_path.toString().c_str());
 
     msgInfo("Searching Keypoints for image %s", input_path.toString().c_str());
 

@@ -105,6 +105,7 @@ void parallel_for(itIn it_begin,
 
 /*--------------------------------------------------------------------------------*/
 
+constexpr auto QueueMPMCDefaultCapacity = 256;
 
 /*!
  * \brief Multi-producer multi-consumer queue
@@ -144,7 +145,7 @@ public:
 
 private:
 
-  size_t mCapacity{256};
+  size_t mCapacity{QueueMPMCDefaultCapacity};
   std::queue<T> mBuffer;
   mutable std::mutex mMutex;
   std::condition_variable mConditionVariable;

@@ -36,6 +36,11 @@ target_link_libraries(${PROJECT_NAME}
                       tl_core
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME}
+                          -lpthread)
+endif()
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
                       OUTPUT_NAME ${PROJECT_NAME}
                       PROJECT_LABEL "(TEST) ${PROJECT_NAME}")

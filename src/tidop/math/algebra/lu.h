@@ -228,12 +228,12 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
     x[i] = sum;
   }
 
-  for (int i = static_cast<int>(mRows) - 1; i >= 0; i--) {
+  for (int i = static_cast<int>(mRows) - consts::one<int>; i >= 0; i--) {
 
     sum = x[i];
     T luii = LU[i][i];
     
-    for (j = i + 1; j < mRows; j++) 
+    for (j = static_cast<size_t>(i) + consts::one<size_t>; j < mRows; j++)
       sum -= LU[i][j] * x[j];
 
     x[i] = sum / luii;

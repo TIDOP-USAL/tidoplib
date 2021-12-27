@@ -56,11 +56,11 @@ private:
   /*!
    * \brief Constructor privado
    */
-  RegisterGdal() {}
+  RegisterGdal() = default;
 
 public:
 
-  ~RegisterGdal() {}
+  ~RegisterGdal() = default;
 
   RegisterGdal(const RegisterGdal &) = delete;
   RegisterGdal(RegisterGdal &&) = delete;

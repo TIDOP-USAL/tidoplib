@@ -148,7 +148,7 @@ template<
 inline Vector<T, _rows> CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<T, _rows> &b)
 {
   /// Resolver con matrices...
-  TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky");
+  TL_ASSERT(b.size() == mRows, "bad lengths in Cholesky")
 
   T sum;
   Vector<T, _rows> x(b);
@@ -200,7 +200,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
       }
 
       if (i == j) {
-        TL_ASSERT(sum > 0.0, "Cholesky failed");
+        TL_ASSERT(sum > 0.0, "Cholesky failed")
         L[i][i] = sqrt(sum);
       } else {
         L[j][i] = sum / lii;

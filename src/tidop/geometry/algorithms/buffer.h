@@ -31,6 +31,7 @@
 #include "tidop/geometry/entities/point.h"
 #include "tidop/geometry/entities/polygon.h"
 #include "tidop/geometry/algorithms/angle.h"
+#include "tidop/math/math.h"
 
 namespace tl
 {
@@ -57,8 +58,8 @@ Polygon<Point_t> buffer(const Segment<Point_t> &ln, int size)
   Point_t pt1 = ln.pt1;
   Point_t pt2 = ln.pt2;
   double acimut = azimut(pt1, pt2);
-  double dx = size * sin(acimut + TL_PI_2);
-  double dy = size * cos(acimut + TL_PI_2);
+  double dx = size * sin(acimut + math::consts::half_pi<typename Point_t::value_type>);
+  double dy = size * cos(acimut + math::consts::half_pi<typename Point_t::value_type>);
 
   buff[0] = Point_t(pt1.x + dx, pt1.y + dy);
   buff[1] = Point_t(pt2.x + dx, pt2.y + dy);

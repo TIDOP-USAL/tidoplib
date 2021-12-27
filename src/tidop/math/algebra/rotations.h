@@ -70,7 +70,7 @@ public:
 
 public:
 
-  Rotation() {}
+  Rotation() = default;
   virtual ~Rotation() = default;
 
   /*!

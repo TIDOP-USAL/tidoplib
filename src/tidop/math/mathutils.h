@@ -34,6 +34,7 @@
 #include "tidop/core/messages.h"
 #include "tidop/math/algebra/matrix.h"
 #include "tidop/math/algebra/vector.h"
+#include "tidop/math/algebra/svd.h"
 
 namespace tl
 {
@@ -179,53 +180,53 @@ double regressionLinearXY(const std::vector<Point_t> &pts, double *m, double *b)
  *
  * \endcode
  */
-template<typename Point_t> inline 
-double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bool YX = true)
-{
-  double corr = 0.0;
-  size_t size = pts.size();
-  if (size >= 2) {
-    size_t _m = size * 2;
-    size_t _n = 2;
-    double *_a = new double[_m*_n];
-    double *pa = _a;
-    double *_b = new double[_m];
-    double *pb = _b;
-    double *_c = new double[_n];
-    double sum_sx = 0.;
-    double sum_sy = 0.;
-    double sum_sx2 = 0.;
-    double sum_sy2 = 0.;
-    double sum_sxy = 0.;
-    double sx = 0.;
-    double sy = 0.;
-    double sx2 = 0.;
-    double sy2 = 0.;
-    double sxy = 0.;
-    for (size_t i = 0; i < size; i++) {
-      sum_sx += (sx = pts[i].x);
-      sum_sy += (sy = pts[i].y);
-      sum_sx2 += (sx2 = pts[i].x * pts[i].x);
-      sum_sy2 += (sy2 = pts[i].y * pts[i].y);
-      sum_sxy += (sxy = pts[i].x * pts[i].y );
-      *pa++ = YX ? sx2 : sy2;
-      *pa++ = YX ? sx : sy;
-      *pb++ = sxy;
-      *pa++ = YX ? sx : sy;
-      *pa++ = 1;
-      *pb++ = YX ? sy : sx;
-    }
-
-    solveSVD(_m, _n, _a, _b, _c);
-    *m = _c[0];
-    *b = _c[1];
-    double div = YX ? (sum_sy2 - sum_sy*sum_sy / size) : (sum_sx2 - sum_sx*sum_sx / size);
-    if (div != 0.) {
-      corr = sqrt(*m * (sum_sxy - sum_sx*sum_sy / size) / div);
-    }
-  }
-  return(corr);
-}
+//template<typename Point_t> inline
+//double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bool YX = true)
+//{
+//  double corr = 0.0;
+//  size_t size = pts.size();
+//  if (size >= 2) {
+//    size_t _m = size * 2;
+//    size_t _n = 2;
+//    double *_a = new double[_m*_n];
+//    double *pa = _a;
+//    double *_b = new double[_m];
+//    double *pb = _b;
+//    double *_c = new double[_n];
+//    double sum_sx = 0.;
+//    double sum_sy = 0.;
+//    double sum_sx2 = 0.;
+//    double sum_sy2 = 0.;
+//    double sum_sxy = 0.;
+//    double sx = 0.;
+//    double sy = 0.;
+//    double sx2 = 0.;
+//    double sy2 = 0.;
+//    double sxy = 0.;
+//    for (size_t i = 0; i < size; i++) {
+//      sum_sx += (sx = pts[i].x);
+//      sum_sy += (sy = pts[i].y);
+//      sum_sx2 += (sx2 = pts[i].x * pts[i].x);
+//      sum_sy2 += (sy2 = pts[i].y * pts[i].y);
+//      sum_sxy += (sxy = pts[i].x * pts[i].y );
+//      *pa++ = YX ? sx2 : sy2;
+//      *pa++ = YX ? sx : sy;
+//      *pb++ = sxy;
+//      *pa++ = YX ? sx : sy;
+//      *pa++ = 1;
+//      *pb++ = YX ? sy : sx;
+//    }
+//
+//    solveSVD(_m, _n, _a, _b, _c);
+//    *m = _c[0];
+//    *b = _c[1];
+//    double div = YX ? (sum_sy2 - sum_sy*sum_sy / size) : (sum_sx2 - sum_sx*sum_sx / size);
+//    if (div != 0.) {
+//      corr = sqrt(*m * (sum_sxy - sum_sx*sum_sy / size) / div);
+//    }
+//  }
+//  return(corr);
+//}
 
 /*!
  * \brief Regresión exponencial
@@ -254,9 +255,9 @@ double linearFittingLS(const std::vector<Point_t> &pts, double *m, double *b, bo
  * \param[out] A
  * \param[out] r
  */
-template<typename Point_t> inline
-void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
-{
+//template<typename Point_t> inline
+//void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
+//{
 //  std::vector<geometry::PointD> ptsLog(pts.size());
 //  std::transform(pts.begin(), pts.end(), ptsLog.begin(), 
 //                 [](Point_t pt) -> geometry::PointD {
@@ -268,7 +269,7 @@ void expRegression(const std::vector<Point_t> &pts, double *A, double *r)
 //  regressionLinearYX<geometry::PointD>(ptsLog, &m, &b);
 //  *A = pow(10, b);
 //  *r = pow(10, m);
-}
+//}
 
 
 /*!
@@ -315,148 +316,148 @@ double threePointsPlane(const std::array<T, 3> &points, std::array<double, 4> &p
  * \param[in] normalize Si es verdadero normaliza la ecuación del plano
  * \return Normal al plano
  */
-template<typename Point_t> inline 
-double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> &plane, bool normalize = false)
-{
-  double N = 0.;
-  size_t size = points.size();
-
-  if (size < 3) {
-    return 0.; // O devolver error
-  }
-
-  if (size == 3) {
-    std::array<Point_t, 3> _points;
-    std::copy_n(points.begin(), 3, _points.begin());
-    threePointsPlane(_points, plane, normalize);
-  } else {
-    size_t m = size * 3;
-    size_t n = 3;
-    double *_a = new double[m*n];
-    double *pa = _a;
-    double *_b = new double[m];
-    double *pb = _b;
-    double *_c = new double[n];
-    try {
-      for (size_t i = 0; i < size; i++) {
-        *pa++ = points[i].x*points[i].x;
-        *pa++ = points[i].x*points[i].y;
-        *pa++ = points[i].x;
-        *pb++ = points[i].x*points[i].z;
-        *pa++ = points[i].x*points[i].y;
-        *pa++ = points[i].y*points[i].y;
-        *pa++ = points[i].y;
-        *pb++ = points[i].z*points[i].y;
-        *pa++ = points[i].x;
-        *pa++ = points[i].y;
-        *pa++ = 1;
-        *pb++ = points[i].z;
-      }
-
-      solveSVD(m, n, _a, _b, _c);
-      
-      plane[0] = _c[0];
-      plane[1] = _c[1];
-      plane[2] = -1;
-      plane[3] = _c[2];
-
-      // Por si me interesase devolver el error
-      double dz = 0.;
-      double sumErr = 0.;
-      for (size_t i = 0; i < size; i++) {
-        dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
-        sumErr += dz*dz;
-      }
-
-      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
-
-      if ( N != 0. && normalize ) {
-        plane[0] /= N;
-        plane[1] /= N;
-        plane[2] /= N;
-        plane[3] /= N;
-      }
-      
-    } catch (std::exception &e) {
-      msgError(e.what());
-    }
-
-  }
-  return N ;
-}
+//template<typename Point_t> inline
+//double nPointsPlaneLS(const std::vector<Point_t> &points, std::array<double, 4> &plane, bool normalize = false)
+//{
+//  double N = 0.;
+//  size_t size = points.size();
+//
+//  if (size < 3) {
+//    return 0.; // O devolver error
+//  }
+//
+//  if (size == 3) {
+//    std::array<Point_t, 3> _points;
+//    std::copy_n(points.begin(), 3, _points.begin());
+//    threePointsPlane(_points, plane, normalize);
+//  } else {
+//    size_t m = size * 3;
+//    size_t n = 3;
+//    double *_a = new double[m*n];
+//    double *pa = _a;
+//    double *_b = new double[m];
+//    double *pb = _b;
+//    double *_c = new double[n];
+//    try {
+//      for (size_t i = 0; i < size; i++) {
+//        *pa++ = points[i].x*points[i].x;
+//        *pa++ = points[i].x*points[i].y;
+//        *pa++ = points[i].x;
+//        *pb++ = points[i].x*points[i].z;
+//        *pa++ = points[i].x*points[i].y;
+//        *pa++ = points[i].y*points[i].y;
+//        *pa++ = points[i].y;
+//        *pb++ = points[i].z*points[i].y;
+//        *pa++ = points[i].x;
+//        *pa++ = points[i].y;
+//        *pa++ = 1;
+//        *pb++ = points[i].z;
+//      }
+//
+//      solveSVD(m, n, _a, _b, _c);
+//
+//      plane[0] = _c[0];
+//      plane[1] = _c[1];
+//      plane[2] = -1;
+//      plane[3] = _c[2];
+//
+//      // Por si me interesase devolver el error
+//      double dz = 0.;
+//      double sumErr = 0.;
+//      for (size_t i = 0; i < size; i++) {
+//        dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
+//        sumErr += dz*dz;
+//      }
+//
+//      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
+//
+//      if ( N != 0. && normalize ) {
+//        plane[0] /= N;
+//        plane[1] /= N;
+//        plane[2] /= N;
+//        plane[3] /= N;
+//      }
+//
+//    } catch (std::exception &e) {
+//      msgError(e.what());
+//    }
+//
+//  }
+//  return N ;
+//}
 
 //Lo mismo pero con contenedores
-template<typename it> inline 
-double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool normalize = false)
-{
-  double N = 0.;
-  typename std::iterator_traits<it>::difference_type size = std::distance(it_begin, it_end);
-  typedef typename std::iterator_traits<it>::value_type Point3_t;
+//template<typename it> inline
+//double nPointsPlaneLS(it it_begin, it it_end, std::array<double, 4> &plane, bool normalize = false)
+//{
+//  double N = 0.;
+//  typename std::iterator_traits<it>::difference_type size = std::distance(it_begin, it_end);
+//  typedef typename std::iterator_traits<it>::value_type Point3_t;
 
-  if (size < 3) {
-    return 0.; // O devolver error
-  }
+//  if (size < 3) {
+//    return 0.; // O devolver error
+//  }
 
-  if (size == 3) {
-    std::array<Point3_t, 3> _points;
-    std::copy_n(it_begin, 3, _points.begin());
-    threePointsPlane(_points, plane, normalize);
-  } else {
-    size_t m = size * 3;
-    size_t n = 3;
-    double *_a = new double[m*n];
-    double *pa = _a;
-    double *_b = new double[m];
-    double *pb = _b;
-    double *_c = new double[n];
-    try {
-      for (int i = 0; i < size; i++, it_begin++) {
-        *pa++ = it_begin->x*it_begin->x;
-        *pa++ = it_begin->x*it_begin->y;
-        *pa++ = it_begin->x;
-        *pb++ = it_begin->x*it_begin->z;
-        *pa++ = it_begin->x*it_begin->y;
-        *pa++ = it_begin->y*it_begin->y;
-        *pa++ = it_begin->y;
-        *pb++ = it_begin->z*it_begin->y;
-        *pa++ = it_begin->x;
-        *pa++ = it_begin->y;
-        *pa++ = 1;
-        *pb++ = it_begin->z;
+//  if (size == 3) {
+//    std::array<Point3_t, 3> _points;
+//    std::copy_n(it_begin, 3, _points.begin());
+//    threePointsPlane(_points, plane, normalize);
+//  } else {
+//    size_t m = size * 3;
+//    size_t n = 3;
+//    double *_a = new double[m*n];
+//    double *pa = _a;
+//    double *_b = new double[m];
+//    double *pb = _b;
+//    double *_c = new double[n];
+//    try {
+//      for (int i = 0; i < size; i++, it_begin++) {
+//        *pa++ = it_begin->x*it_begin->x;
+//        *pa++ = it_begin->x*it_begin->y;
+//        *pa++ = it_begin->x;
+//        *pb++ = it_begin->x*it_begin->z;
+//        *pa++ = it_begin->x*it_begin->y;
+//        *pa++ = it_begin->y*it_begin->y;
+//        *pa++ = it_begin->y;
+//        *pb++ = it_begin->z*it_begin->y;
+//        *pa++ = it_begin->x;
+//        *pa++ = it_begin->y;
+//        *pa++ = 1;
+//        *pb++ = it_begin->z;
 
-      }
+//      }
 
-      solveSVD(m, n, _a, _b, _c);
+//      solveSVD(m, n, _a, _b, _c);
       
-      plane[0] = _c[0];
-      plane[1] = _c[1];
-      plane[2] = -1;
-      plane[3] = _c[2];
+//      plane[0] = _c[0];
+//      plane[1] = _c[1];
+//      plane[2] = -1;
+//      plane[3] = _c[2];
 
-      //// Por si me interesase devolver el error
-      //double dz = 0.;
-      //double sumErr = 0.;
-      //for (int i = 0; i < size; i++) {
-      //  dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
-      //  sumErr += dz*dz;
-      //}
+//      //// Por si me interesase devolver el error
+//      //double dz = 0.;
+//      //double sumErr = 0.;
+//      //for (int i = 0; i < size; i++) {
+//      //  dz = points[i].z - (plane[0]*points[i].x + plane[1]*points[i].y + plane[3]);
+//      //  sumErr += dz*dz;
+//      //}
 
-      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
+//      N = sqrt(plane[0]*plane[0] + plane[1]*plane[1] + 1);
 
-      if ( N != 0. && normalize ) {
-        plane[0] /= N;
-        plane[1] /= N;
-        plane[2] /= N;
-        plane[3] /= N;
-      }
+//      if ( N != 0. && normalize ) {
+//        plane[0] /= N;
+//        plane[1] /= N;
+//        plane[2] /= N;
+//        plane[3] /= N;
+//      }
       
-    } catch (std::exception &e) {
-      msgError(e.what());
-    }
+//    } catch (std::exception &e) {
+//      msgError(e.what());
+//    }
 
-  }
-  return N ;
-}
+//  }
+//  return N ;
+//}
 
 /*! \} */ // end of math
 

@@ -35,7 +35,7 @@
 #include <cstdio>
 #include <iostream>
 #include <fstream>
-
+#include <cstring>
 
 
 namespace tl

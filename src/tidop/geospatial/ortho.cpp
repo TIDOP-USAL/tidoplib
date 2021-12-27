@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de OÒa Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de O√±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -496,7 +496,7 @@ cv::Mat Orthorectification::undistort(const cv::Mat &image)
 {
   cv::Mat img_undistort;
 
-  TL_TODO("No deberÌa calcular la c·mara y los coeficientes de distorsiÛn cada vez")
+  TL_TODO("No deber√≠a calcular la c√°mara y los coeficientes de distorsi√≥n cada vez")
 
   try {
 
@@ -723,7 +723,7 @@ void ZBuffer::run()
 
 
           /// Estoy expandiendo despues de comprobar si se sale de los limites de la imagen... Solucionar cuando refactorice
-          /// HabrÌa que calcular la intersecciÛn de window_aux con la ventana imagen total.
+          /// Habr√≠a que calcular la intersecci√≥n de window_aux con la ventana imagen total.
           WindowI window_aux = tl::expandWindow(window_image_in, 1);
           if (rect_image.contains(window_aux.pt1) &&
             rect_image.contains(window_aux.pt2)) {
@@ -852,7 +852,7 @@ Orthoimage::~Orthoimage()
 
 void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 {
-  TL_TODO("Comprobar que visibilityMap tenga el tamaÒo adecuado")
+  TL_TODO("Comprobar que visibilityMap tenga el tama√±o adecuado")
 
   try {
 
@@ -958,7 +958,7 @@ void Orthoimage::run(const Path &ortho, const cv::Mat &visibilityMap)
 
 
           /// Estoy expandiendo despues de comprobar si se sale de los limites de la imagen... Solucionar cuando refactorice
-          /// HabrÌa que calcular la intersecciÛn de window_aux con la ventana imagen total.
+          /// Habr√≠a que calcular la intersecci√≥n de window_aux con la ventana imagen total.
           WindowI window_aux = tl::expandWindow(window_image_in, 1);
           if (rect_image.contains(window_aux.pt1) &&
             rect_image.contains(window_aux.pt2)) {
@@ -1097,7 +1097,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
 
       double scale = mScale;
       if (mScale == -1) {
-        /// Calculo de transformaciÛn afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
+        /// Calculo de transformaci√≥n afin entre coordenadas terreno e imagen para la orto para determinar una escala optima
         std::vector<PointD> t_coor;
         t_coor.push_back(entity->at(0));
         t_coor.push_back(entity->at(1));
@@ -1116,7 +1116,7 @@ void OrthoimageProcess::execute(Progress *progressBar)
         scale = (affine_terrain_image.scaleY() + affine_terrain_image.scaleX()) / 2.;
       }
 
-      // Se reserva tamaÒo para la orto
+      // Se reserva tama√±o para la orto
       Window<PointD> window_ortho_terrain = orthorectification.footprint().window();
       window_ortho_terrain = expandWindow(window_ortho_terrain,
                                           window_ortho_terrain.width() * (mCrop - 1.) / 2.,
@@ -1279,7 +1279,7 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 //              //    polygon2->isInner(polygon->at(1)) || 
 //              //    polygon2->isInner(polygon->at(2)) || 
 //              //    polygon2->isInner(polygon->at(3))) {
-//              /// No se si ser· suficiente o tengo que seleccionar todas las imagenes que intersecten...
+//              /// No se si ser√° suficiente o tengo que seleccionar todas las imagenes que intersecten...
 //              if (polygon2->isInner(center)) {
 //                orthos.push_back(orto);
 //                windows.push_back(polygon2->window());
@@ -1296,7 +1296,7 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 //          umat_orthos.resize(n_orthos);
 //          mat_orthos.resize(n_orthos);
 //
-//          /// Aplicar un factor de escala para el calculo de la compensaciÛn de exposiciÛn
+//          /// Aplicar un factor de escala para el calculo de la compensaci√≥n de exposici√≥n
 //          for (size_t i = 0; i < n_orthos; i++) {
 //
 //            std::unique_ptr<ImageReader> image_reader = ImageReaderFactory::createReader(orthos[i]);
@@ -1310,7 +1310,7 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 //            corners[i].x = (windows[i].pt1.x - window_all.pt1.x) * exposure_compensator_factor / scale;
 //            corners[i].y = (window_all.pt2.y - windows[i].pt2.y) * exposure_compensator_factor / scale;
 //
-//            /// La mascara deberÌa leerse si se creÛ en la generaciÛn del MDS.
+//            /// La mascara deber√≠a leerse si se cre√≥ en la generaci√≥n del MDS.
 //            ortho_masks[i].create(image.size(), CV_8U);
 //            cv::Mat gray;
 //            cv::cvtColor(image, gray, cv::COLOR_BGR2GRAY);
