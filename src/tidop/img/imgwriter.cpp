@@ -24,20 +24,20 @@
 
 #include "tidop/img/imgwriter.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include "tidop/img/formats.h"
 #include "tidop/img/metadata.h"
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 namespace tl
@@ -65,7 +65,7 @@ void ImageWriter::windowWrite(const WindowI &window,
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 class ImageWriterGdal
   : public ImageWriter
@@ -459,7 +459,7 @@ public:
     }
   }
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  void setCRS(const geospatial::Crs &crs) override
 //  {
 //    if (mDataset && crs.isValid()) {
@@ -475,7 +475,7 @@ public:
     }
   }
 
-//#ifdef HAVE_TL_GRAPHIC
+//#ifdef TL_HAVE_GRAPHIC
 //  void setColor(const graph::Color &nodata)
 //  {
 //    int channels = this->channels();
@@ -537,11 +537,11 @@ private:
   OGRSpatialReference *mSpatialReference;
 };
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
 
 class ImageWriterCanon
   : public ImageWriter
@@ -596,7 +596,7 @@ public:
 
 };
 
-#endif // HAVE_EDSDK
+#endif // TL_HAVE_EDSDK
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -609,12 +609,12 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
   
     std::string extension = file.extension().toString();
   
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
     if (gdalValidExtensions(extension)) {
       image_writer = std::make_unique<ImageWriterGdal>(file);
     } else
 #endif
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
     if (compareInsensitiveCase(extension, ".CR2")) {
       image_writer = std::make_unique<ImageWriterCanon>(fileName);
     } else
@@ -633,4 +633,4 @@ std::unique_ptr<ImageWriter> ImageWriterFactory::createWriter(const Path &file)
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

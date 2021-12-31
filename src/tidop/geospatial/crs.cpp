@@ -26,7 +26,7 @@
 
 #include "tidop/core/messages.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "ogr_spatialref.h"
 TL_DEFAULT_WARNINGS
@@ -41,7 +41,7 @@ namespace geospatial
 
 
 Crs::Crs() 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 #if _DEBUG
     /// Por ahora...
   : mCrs((OGRSpatialReference *)OSRNewSpatialReference(nullptr))
@@ -58,7 +58,7 @@ Crs::Crs(const std::string &epsg,
   : mEpsg(epsg), 
     mGrid(grid), 
     mGeoid(geoid)
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   ,
 #if _DEBUG
     /// Por ahora...
@@ -75,7 +75,7 @@ Crs::Crs(const Crs &crs)
   : mEpsg(crs.mEpsg),
     mGrid(crs.mGrid),
     mGeoid(crs.mGeoid)
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   ,
 #if _DEBUG
 /// Por ahora...
@@ -91,7 +91,7 @@ Crs::Crs(const Crs &crs)
 
 Crs::~Crs()
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   if (mCrs) {
 #if _DEBUG
     OSRDestroySpatialReference(mCrs);
@@ -120,7 +120,7 @@ std::string Crs::toProjFormat() const
   
   std::string s_prj;
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
   char *c_prj = nullptr;
 
@@ -143,7 +143,7 @@ std::string Crs::toProjFormat() const
 
 void Crs::fromProjFormat(const std::string &proj)
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   try {
     OGRErr err = mCrs->importFromProj4(proj.c_str());
     if (err != 0) {
@@ -159,7 +159,7 @@ void Crs::fromProjFormat(const std::string &proj)
 
 std::string Crs::toWktFormat() const
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   char *c_wtk = nullptr;
   mCrs->exportToWkt(&c_wtk);
   std::string s_wkt(c_wtk);
@@ -172,7 +172,7 @@ std::string Crs::toWktFormat() const
 
 void Crs::fromWktFormat(const std::string &wkt)
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   try {
     OGRErr err = mCrs->importFromWkt(wkt.c_str());
     if (err != 0) {
@@ -188,7 +188,7 @@ void Crs::fromWktFormat(const std::string &wkt)
 
 bool Crs::isGeocentric() const
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   return mCrs->IsGeocentric() != 0;
 #else
   return false;
@@ -197,7 +197,7 @@ bool Crs::isGeocentric() const
 
 bool Crs::isGeographic() const
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   return mCrs->IsGeographic() != 0;
 #else
   return false;
@@ -206,7 +206,7 @@ bool Crs::isGeographic() const
 
 bool Crs::isValid() const
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   OGRErr err = mCrs->Validate();
   return err == 0;
 #else
@@ -214,7 +214,7 @@ bool Crs::isValid() const
 #endif
 }
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 OGRSpatialReference *Crs::getOGRSpatialReference()
 {
   return mCrs;
@@ -223,7 +223,7 @@ OGRSpatialReference *Crs::getOGRSpatialReference()
 
 void Crs::initFromEpsg()
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   try {
     if (mEpsg.size() <= 5) return;
     OGRErr err = mCrs->importFromEPSG(std::stoi(mEpsg.substr(5)));
@@ -243,7 +243,7 @@ void Crs::initFromEpsg()
 
 void Crs::initGrid()
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   if (mGrid.empty() == false) {
     char *cprj = nullptr;
     mCrs->exportToProj4(&cprj);
@@ -256,7 +256,7 @@ void Crs::initGrid()
 
 void Crs::initGeoid()
 {
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   if (mGeoid.empty() == false) {
     char *prjin = nullptr;
     mCrs->exportToProj4(&prjin);

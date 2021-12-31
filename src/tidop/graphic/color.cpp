@@ -33,9 +33,9 @@
 #include "tidop/core/exception.h"
 #include "tidop/core/utils.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/imgproc/imgproc.hpp"
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 namespace tl
 {

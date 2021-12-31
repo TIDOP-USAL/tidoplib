@@ -27,7 +27,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/core/concurrency.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include <opencv2/imgproc.hpp>
 

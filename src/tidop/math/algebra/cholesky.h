@@ -27,9 +27,9 @@
 
 #include <algorithm>
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 #include <lapacke.h>
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
@@ -54,7 +54,7 @@ namespace math
 
 
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 
 template<typename T> inline
 typename std::enable_if<
@@ -74,7 +74,7 @@ typename std::enable_if<
   return info;
 }
 
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 /*!
  * \brief Factorización Cholesky
@@ -107,9 +107,9 @@ public:
 private:
 
   void decompose();
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
   void lapackeDecompose();
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 protected:
 
@@ -128,11 +128,11 @@ CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::CholeskyDecomposition(const Ma
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
   this->lapackeDecompose();
 #else
   this->decompose();
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
   for (size_t i = 0; i < mRows; i++) {
     for (size_t j = 0; j < i; j++) {
@@ -210,7 +210,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::decompose()
   }
 }
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t>
@@ -226,7 +226,7 @@ inline void CholeskyDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 
 }
 
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 

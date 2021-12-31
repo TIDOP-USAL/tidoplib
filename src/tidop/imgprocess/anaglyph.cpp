@@ -37,7 +37,7 @@
 #include "tidop/core/concurrency.h"
 #include "tidop/core/exception.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include <opencv2/core.hpp>
 #include <opencv2/calib3d.hpp>

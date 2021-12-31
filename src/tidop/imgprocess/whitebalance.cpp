@@ -27,7 +27,7 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/concurrency.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>
 
 #include <cstdarg>
@@ -144,4 +144,4 @@ double WhitePatch::scaleBlue(const cv::Mat &blue) const
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

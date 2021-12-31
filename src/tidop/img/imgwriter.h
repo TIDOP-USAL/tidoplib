@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include <string>
 #include <memory>
@@ -41,10 +41,10 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#ifdef HAVE_TL_GEOSPATIAL 
+//#ifdef TL_HAVE_GEOSPATIAL 
 //#include "tidop/geospatial/crs.h"
 //#endif
-//#ifdef HAVE_TL_GRAPHIC
+//#ifdef TL_HAVE_GRAPHIC
 //#include "tidop/graphic/color.h"
 //#endif
 
@@ -184,7 +184,7 @@ public:
    */
   virtual void setCRS(const std::string &crs) = 0;
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  /*!
 //   * \brief Set the Coordinate Reference System
 //   * \param[in] crs geospatial::Crs object
@@ -194,7 +194,7 @@ public:
   
   virtual void setNoDataValue(double nodata) = 0;
 
-//#ifdef HAVE_TL_GRAPHIC
+//#ifdef TL_HAVE_GRAPHIC
 //  virtual void setNoDataValue(const graph::Color &nodata) = 0;
 //#endif
 
@@ -207,7 +207,7 @@ protected:
 
   Path mFile;
   Affine<PointD> mAffine;
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  geospatial::Crs mCRS;
 //#endif
 };
@@ -232,6 +232,6 @@ public:
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_IMAGE_WRITER_H

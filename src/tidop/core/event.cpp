@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "event.h"
+#include "tidop/core/event.h"
 
 
 namespace tl

@@ -50,7 +50,7 @@ namespace internal
 class CoordinateTransformation;
 }
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
 ///TODO: controlar cuando es altura elipsoidal y ortométrica
 
@@ -258,7 +258,7 @@ private:
 //  return *sCrsCache;
 //}
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 class EcefToEnu

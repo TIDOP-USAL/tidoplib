@@ -652,7 +652,7 @@ public:
    */
   void add(const Line &line);
 
-//#ifdef HAVE_OPENCV
+//#ifdef TL_HAVE_OPENCV
 //
 //  /*!
 //   * \brief Añade una línea

@@ -28,7 +28,7 @@
 #include <tidop/math/algebra/vector.h>
 #include <tidop/math/algebra/matrix.h>
 
-#ifdef HAVE_TL_SIMD_INTRINSICS
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
 using namespace tl::math;
 using namespace simd;
@@ -786,4 +786,4 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif HAVE_TL_SIMD_INTRINSICS
+#endif TL_HAVE_SIMD_INTRINSICS

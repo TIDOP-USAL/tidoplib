@@ -24,7 +24,7 @@
 
 #include "imgtransform.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 
 namespace tl
@@ -187,4 +187,4 @@ void ResizeCanvas::update()
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

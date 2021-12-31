@@ -92,11 +92,11 @@ PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_ma
 }
 
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
 
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 } // End namespace  geospatial

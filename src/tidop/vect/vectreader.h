@@ -33,7 +33,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef HAVE_TL_GEOSPATIAL 
+//#ifdef TL_HAVE_GEOSPATIAL 
 //#include "tidop/geospatial/crs.h"
 //#endif
 
@@ -78,7 +78,7 @@ public:
    */
   virtual std::string crsWkt() const = 0;
 
-//#if defined HAVE_TL_GEOSPATIAL
+//#if defined TL_HAVE_GEOSPATIAL
 //  /*!
 //   * \brief Sistema de referencia
 //   */

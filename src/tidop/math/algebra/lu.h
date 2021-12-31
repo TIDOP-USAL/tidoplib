@@ -29,9 +29,9 @@
 
 #include <algorithm>
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 #include <lapacke.h>
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
@@ -55,7 +55,7 @@ namespace math
  */
 
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 
 template<typename T> inline
 typename std::enable_if<
@@ -93,7 +93,7 @@ lapackeGETRS(lapack_int rows, lapack_int nrhs, T *a, lapack_int lda, lapack_int 
   return info;
 }
 
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 
 
@@ -134,14 +134,14 @@ private:
 
   void decompose();
   tl::math::Vector<T, _rows> findMaxElementsByRows();
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
   void lapackeDecompose();
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 private:
 
   Matrix<T, _rows, _cols> LU;
-#ifndef HAVE_OPENBLAS 
+#ifndef TL_HAVE_OPENBLAS 
   Vector<size_t, _rows> mPivotIndex;
 #else
   lapack_int *mPivotIndex;
@@ -157,7 +157,7 @@ template<
 >
 LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _rows, _cols> &a)
   : LU(a),
-#ifndef HAVE_OPENBLAS 
+#ifndef TL_HAVE_OPENBLAS 
     mPivotIndex(a.rows()),
 #else
     mPivotIndex(new lapack_int[a.rows()]),
@@ -166,11 +166,11 @@ LuDecomposition<Matrix_t<T, _rows, _cols>>::LuDecomposition(const Matrix_t<T, _r
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
   this->lapackeDecompose();
 #else
   this->decompose();
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 }
 
@@ -180,7 +180,7 @@ template<
 >
 LuDecomposition<Matrix_t<T, _rows, _cols>>::~LuDecomposition()
 {
-#ifdef HAVE_OPENBLAS 
+#ifdef TL_HAVE_OPENBLAS 
   if (mPivotIndex){
     delete[] mPivotIndex;
   }
@@ -197,7 +197,7 @@ Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Vector<
 
   Vector<T, _rows> x(b);
 
-#ifdef HAVE_OPENBLAS 
+#ifdef TL_HAVE_OPENBLAS 
 
   lapack_int nrhs = 1;
   lapack_int lda = mRows;
@@ -254,7 +254,7 @@ Matrix<T> LuDecomposition<Matrix_t<T, _rows, _cols>>::solve(const Matrix<T> &b) 
   
   Matrix<T> x(b);
 
-#ifdef HAVE_OPENBLAS    
+#ifdef TL_HAVE_OPENBLAS    
   lapack_int info;
   lapack_int nrhs = b.cols();
   lapack_int lda = mRows;
@@ -364,7 +364,7 @@ tl::math::Vector<T, _rows> LuDecomposition<Matrix_t<T, _rows, _cols>>::findMaxEl
   return max_elements;
 }
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 
@@ -381,7 +381,7 @@ inline void LuDecomposition<Matrix_t<T, _rows, _cols>>::lapackeDecompose()
 
 }
 
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 template<
   template<typename, size_t, size_t> 

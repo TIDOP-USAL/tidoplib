@@ -29,9 +29,9 @@
 
 #include <algorithm>
 
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //#include <lapacke.h>
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
 
 #include "tidop/math/math.h"
 #include "tidop/core/messages.h"
@@ -58,7 +58,7 @@ namespace math
 
 //https://www.math.usm.edu/lambers/mat610/sum10/lecture9.pdf
 
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //
 //template<typename T> inline
 //  typename std::enable_if<
@@ -79,7 +79,7 @@ namespace math
 //}
 //
 //
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
 
 
 //https://rosettacode.org/wiki/QR_decomposition#C.2B.2B
@@ -126,17 +126,17 @@ private:
   //Householder
   void decompose();
 
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //  void lapackeDecompose();
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
 
 private:
 
   Matrix<T, _rows, _cols> Q_t;
   Matrix<T, _rows, _cols> R;
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //  Matrix<T, _rows, _cols> QR;
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
   bool singular;
   size_t mRows;
 };
@@ -149,7 +149,7 @@ template<
 QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _rows, _cols> &a)
   : Q_t(Matrix<T, _rows, _cols>::identity(a.rows(), a.rows())),
     R(a),
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //    QR(a),
 //#endif
     singular(false),
@@ -157,11 +157,11 @@ QRDecomposition<Matrix_t<T, _rows, _cols>>::QRDecomposition(const Matrix_t<T, _r
 {
   static_assert(std::is_floating_point<T>::value, "Integral type not supported");
 
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //  this->lapackeDecompose();
 //#else
   this->decompose();
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
 
 }
 
@@ -307,7 +307,7 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() c
   return R;
 }
 
-//#ifdef HAVE_OPENBLAS
+//#ifdef TL_HAVE_OPENBLAS
 //
 //template<
 //  template<typename, size_t, size_t>
@@ -331,7 +331,7 @@ inline Matrix<T, _rows, _cols> QRDecomposition<Matrix_t<T, _rows, _cols>>::r() c
 //
 //}
 //
-//#endif // HAVE_OPENBLAS
+//#endif // TL_HAVE_OPENBLAS
 
 
 

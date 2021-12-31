@@ -926,7 +926,7 @@ public:
   {
   }
 
-//#ifdef HAVE_GDAL
+//#ifdef TL_HAVE_GDAL
 //  
 //  ///TODO: creo que seria mejor una clase ReaderStyles 
 //  /*!
@@ -996,7 +996,7 @@ public:
 
 private:
 
-//#ifdef HAVE_GDAL
+//#ifdef TL_HAVE_GDAL
 //
 //  /*!
 //   * \brief Lee el estilo de pincel

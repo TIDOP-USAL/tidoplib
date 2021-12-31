@@ -25,7 +25,7 @@
 # Test modulo Core
 
 
-if(HAVE_TL_CORE)
+if(TL_HAVE_CORE)
 add_subdirectory(argument)
 add_subdirectory(console)
 add_subdirectory(flag)

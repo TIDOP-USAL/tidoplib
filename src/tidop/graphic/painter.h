@@ -27,9 +27,9 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/geometry/entities/point.h"

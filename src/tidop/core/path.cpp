@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "path.h"
+#include "tidop/core/path.h"
 
 #include "tidop/core/messages.h"
 #include "tidop/core/console.h"
@@ -384,19 +384,23 @@ Path Path::tempPath()
 
 Path Path::tempDirectory()
 {
+  std::string temp_path;
 
-  std::string temp_path = fs::temp_directory_path().string();
+#ifdef WIN32
+  temp_path = std::tmpnam(nullptr);
+#else
+  temp_path = fs::temp_directory_path().string();
   temp_path.append("/tlXXXXXX");
   std::vector<char> c_path(temp_path.begin(), temp_path.end());
   c_path.push_back('\0');
   int file_descriptor = mkstemp(c_path.data());
-  if(file_descriptor != -1) {
-   temp_path.assign(c_path.begin(), c_path.end() - 1);
+  if (file_descriptor != -1) {
+    temp_path.assign(c_path.begin(), c_path.end() - 1);
   } else {
     temp_path = "";
     TL_TODO("devolver error?")
   }
-  //std::string dir = std::tmpnam(nullptr);
+#endif
 
   return Path(temp_path);
 }

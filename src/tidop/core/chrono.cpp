@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "chrono.h"
+#include "tidop/core/chrono.h"
 
 #include "tidop/core/messages.h"
 

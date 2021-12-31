@@ -24,7 +24,7 @@
 
 #include "filters.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include "tidop/core/messages.h"
 
@@ -395,4 +395,4 @@ void Canny::setParameters(double threshold1, double threshold2)
 
 }
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

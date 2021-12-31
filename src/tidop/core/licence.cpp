@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "licence.h"
+#include "tidop/core/licence.h"
 
 #include <utility>
 

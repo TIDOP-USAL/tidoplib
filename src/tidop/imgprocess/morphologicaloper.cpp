@@ -26,7 +26,7 @@
 
 #include "tidop/core/messages.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>
 
 #include <cstdarg>
@@ -194,4 +194,4 @@ BlackHat::BlackHat(int size,
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

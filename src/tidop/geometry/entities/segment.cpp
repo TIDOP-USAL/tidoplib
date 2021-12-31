@@ -56,7 +56,7 @@ void GroupLines::add(const Line &line)
   bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
 }
 
-//#ifdef HAVE_OPENCV
+//#ifdef TL_HAVE_OPENCV
 //
 //void GroupLines::add(const cv::Vec4i &lvect)
 //{

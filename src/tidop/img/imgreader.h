@@ -28,7 +28,7 @@
 #include "config_tl.h"
 
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 
 #include <string>
@@ -43,10 +43,10 @@
 #include "tidop/geometry/transform/affine.h"
 #include "tidop/geometry/rect.h"
 #include "tidop/img/img.h"
-//#ifdef HAVE_TL_GEOSPATIAL 
+//#ifdef TL_HAVE_GEOSPATIAL 
 //#include "tidop/geospatial/crs.h"
 //#endif
-//#ifdef HAVE_TL_GRAPHIC
+//#ifdef TL_HAVE_GRAPHIC
 //#include "tidop/graphic/color.h"
 //#endif
 
@@ -184,7 +184,7 @@ public:
    */
   virtual std::string crsWkt() const = 0;
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  /*!
 //   * \brief Sistema de referencia
 //   */
@@ -200,7 +200,7 @@ public:
 
   virtual double noDataValue(bool *exist = nullptr) const = 0;
 
-//#ifdef HAVE_TL_GRAPHIC
+//#ifdef TL_HAVE_GRAPHIC
 //  virtual graph::Color noDataValue() const = 0;
 //#endif
 
@@ -234,6 +234,6 @@ public:
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_IMAGE_READER_H

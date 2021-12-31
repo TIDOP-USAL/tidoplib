@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "progress.h"
+#include "tidop/core/progress.h"
 
 #include "tidop/core/messages.h"
 #include "tidop/core/console.h"

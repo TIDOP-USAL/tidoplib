@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "app.h"
+#include "tidop/core/app.h"
 
 #if defined __linux__ || defined __GNUC__
 #include <unistd.h>

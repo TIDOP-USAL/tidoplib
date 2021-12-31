@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
@@ -171,6 +171,6 @@ private:
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_IMGPROCESS_COLOR_CONVERSION_H

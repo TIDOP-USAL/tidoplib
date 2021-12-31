@@ -28,7 +28,7 @@
 #include "config_tl.h"
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 TL_DISABLE_WARNING(TL_WARNING_DEPRECATED)
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>

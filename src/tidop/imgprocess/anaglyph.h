@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 
 

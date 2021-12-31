@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(HAVE_TL_GEOSPATIAL)
+if(TL_HAVE_GEOSPATIAL)
 
   project(test)
 
@@ -47,7 +47,7 @@ if(HAVE_TL_GEOSPATIAL)
                           tl_geospatial
                           ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                           $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
                           ${OpenCV_LIBS})
 

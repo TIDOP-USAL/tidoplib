@@ -33,9 +33,9 @@
 #include <valarray>
 #endif
 
-#ifdef HAVE_OPENBLAS
+#ifdef TL_HAVE_OPENBLAS
 #include <lapacke.h>
-#endif // HAVE_OPENBLAS
+#endif // TL_HAVE_OPENBLAS
 
 #include "tidop/math/math.h"
 #include "tidop/math/algebra/vector.h"
@@ -3226,59 +3226,101 @@ MatrixRow<T> operator - (const MatrixRow<T> &row)
 /* Operaciones binarias para filas */
 
 template<typename T>
-MatrixRow<T> operator + (const MatrixRow<T> &r0,
-                         const MatrixRow<T> &r1)
+Vector<T> operator + (const MatrixRow<T> &r0,
+                      const MatrixRow<T> &r1)
 {
-  MatrixRow<T> r = r0;
-  return r += r1;
+  size_t size = r0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = r0[i] + r1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator - (const MatrixRow<T> &r0,
-                         const MatrixRow<T> &r1)
+Vector<T> operator - (const MatrixRow<T> &r0,
+                      const MatrixRow<T> &r1)
 {
-  MatrixRow<T> r = r0;
-  return r -= r1;
+  size_t size = r0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = r0[i] - r1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator*(const MatrixRow<T> &r0,
-                       const MatrixRow<T> &r1)
+Vector<T> operator*(const MatrixRow<T> &r0,
+                    const MatrixRow<T> &r1)
 {
-  MatrixRow<T> result = r0;
-  return result *= r1;
+  size_t size = r0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = r0[i] * r1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator / (const MatrixRow<T> &r0,
-                         const MatrixRow<T> &r1)
+Vector<T> operator / (const MatrixRow<T> &r0,
+                      const MatrixRow<T> &r1)
 {
-  MatrixRow<T> result = r0;
-  return result /= r1;
+  size_t size = r0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = r0[i] / r1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator * (const MatrixRow<T> &row,
-                         T scalar)
+Vector<T> operator * (const MatrixRow<T> &row,
+                      T scalar)
 {
-  MatrixRow<T> r = row;
-  return r *= scalar;
+  size_t size = row.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = row[i] * scalar;
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator * (T scalar,
-                         const MatrixRow<T> &row)
+Vector<T> operator * (T scalar,
+                      const MatrixRow<T> &row)
 {
-  MatrixRow<T> r = row;
-  return r *= scalar;
+  size_t size = row.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = row[i] * scalar;
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixRow<T> operator / (const MatrixRow<T> &row,
-                         T scalar)
+Vector<T> operator / (const MatrixRow<T> &row,
+                      T scalar)
 {
-  MatrixRow<T> r = row;
-  return r /= scalar;
+  size_t size = row.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = row[i] / scalar;
+  }
+
+  return v;
 }
 
 
@@ -3306,59 +3348,101 @@ MatrixCol<T> operator - (const MatrixCol<T> &col)
 /* Operaciones binarias para columnas */
 
 template<typename T>
-MatrixCol<T> operator + (const MatrixCol<T> &c0,
-                         const MatrixCol<T> &c1)
+Vector<T> operator + (const MatrixCol<T> &c0,
+                      const MatrixCol<T> &c1)
 {
-  MatrixCol<T> c = c0;
-  return c += c1;
+  size_t size = c0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = c0[i] + c1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator - (const MatrixCol<T> &c0,
+Vector<T> operator - (const MatrixCol<T> &c0,
                          const MatrixCol<T> &c1)
 {
-  MatrixCol<T> c = c0;
-  return c -= c1;
+  size_t size = c0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = c0[i] - c1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator*(const MatrixCol<T> &c0,
+Vector<T> operator*(const MatrixCol<T> &c0,
                        const MatrixCol<T> &c1)
 {
-  MatrixCol<T> result = c0;
-  return result *= c1;
+  size_t size = c0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = c0[i] * c1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator / (const MatrixCol<T> &c0,
+Vector<T> operator / (const MatrixCol<T> &c0,
                          const MatrixCol<T> &c1)
 {
-  MatrixCol<T> result = c0;
-  return result /= c1;
+  size_t size = c0.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = c0[i] / c1[i];
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator * (const MatrixCol<T> &col,
-                         T scalar)
+Vector<T> operator * (const MatrixCol<T> &col,
+                      T scalar)
 {
-  MatrixCol<T> c = col;
-  return c *= scalar;
+  size_t size = col.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = col[i] * scalar;
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator * (T scalar,
-                         const MatrixCol<T> &col)
+Vector<T> operator * (T scalar,
+                      const MatrixCol<T> &col)
 {
-  MatrixCol<T> c = col;
-  return c *= scalar;
+  size_t size = col.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = col[i] * scalar;
+  }
+
+  return v;
 }
 
 template<typename T>
-MatrixCol<T> operator / (const MatrixCol<T> &col,
-                         T scalar)
+Vector<T> operator / (const MatrixCol<T> &col,
+                      T scalar)
 {
-  MatrixCol<T> c = col;
-  return c /= scalar;
+  size_t size = col.size();
+  Vector<T> v(size);
+
+  for (size_t i = 0; i < size; i++) {
+    v[i] = col[i] / scalar;
+  }
+
+  return v;
 }
 
 

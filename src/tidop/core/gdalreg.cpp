@@ -28,17 +28,17 @@
 #include "tidop/core/console.h"
 #include "tidop/core/exception.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 namespace tl
 {
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 
 std::unique_ptr<RegisterGdal> RegisterGdal::sRegisterGdal;

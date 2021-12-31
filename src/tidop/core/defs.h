@@ -37,11 +37,11 @@
 #include <cstdio>
 #endif // __GNUC__
 
-#ifdef HAVE_VLD
+#ifdef TL_HAVE_VLD
 #ifdef VISUAL_LEAK_DETECTOR
 #include <vld.h>
 #endif
-#endif // HAVE_VLD
+#endif // TL_HAVE_VLD
 
 
 #if defined _MSC_VER && _MSC_VER < 1600

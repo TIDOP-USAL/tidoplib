@@ -539,6 +539,7 @@ ExternalProcess::ExternalProcess(std::string commandText/*,
     mPriority(priority)*/
 #ifdef WIN32
     ,
+    mPriority(Priority::normal),
     mThreadHandle(nullptr)
 #endif
 {

@@ -40,7 +40,7 @@ namespace tl
  *  \{
  */
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 /*!
  * \brief Clase para registrar los drivers de GDAL
@@ -74,7 +74,7 @@ public:
 
 };
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 /*! \} */ // end of core
 

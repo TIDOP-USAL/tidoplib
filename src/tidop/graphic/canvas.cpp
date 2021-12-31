@@ -26,13 +26,13 @@
 
 #include "tidop/geometry/entities/point.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #include "ogrsf_frmts.h"
 #endif
 
@@ -48,7 +48,7 @@ namespace graph
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 CanvasCV::CanvasCV()
   : Canvas(),
@@ -292,7 +292,7 @@ cv::Scalar CanvasCV::colorToCvScalar(const Color &color)
 }
 
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 
 /* ---------------------------------------------------------------------------------- */

@@ -39,8 +39,8 @@
 #include "tidop/graphic/datamodel.h"
 #include "tidop/vect/vectreader.h"
 
-#ifdef HAVE_OPENCV
-
+#ifdef TL_HAVE_OPENCV
+#include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/stitching.hpp>
@@ -1549,4 +1549,4 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

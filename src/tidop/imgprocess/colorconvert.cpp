@@ -26,7 +26,7 @@
 #include "tidop/graphic/color.h"
 #include "tidop/core/concurrency.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/highgui.hpp>
 
 namespace tl
@@ -394,4 +394,4 @@ void ColorConversion::setOutputColorModel(ColorModel modelOut)
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

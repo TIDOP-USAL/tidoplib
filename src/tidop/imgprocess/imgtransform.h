@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 #include <opencv2/core.hpp>
 
@@ -295,6 +295,6 @@ void transform(const cv::Mat &in, cv::Mat out, TransformBase<Point_t> *trf, Tran
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_IMGPROCESS_TRANSFORM_H

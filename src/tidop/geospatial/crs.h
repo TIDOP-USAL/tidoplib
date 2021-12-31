@@ -84,7 +84,7 @@ public:
 
 protected:
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   OGRSpatialReference *getOGRSpatialReference( );
 #endif
 
@@ -119,7 +119,7 @@ private:
   /*!
    * \brief Objeto OGRSpatialReference de Gdal
    */
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
   OGRSpatialReference *mCrs;
 #endif
 };

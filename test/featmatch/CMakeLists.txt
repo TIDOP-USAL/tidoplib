@@ -24,7 +24,7 @@
 
 # Test modulo featmatch
 
-if(HAVE_TL_FEAT_MATCH)
+if(TL_HAVE_FEAT_MATCH)
 
 add_subdirectory(agast)
 add_subdirectory(akaze)

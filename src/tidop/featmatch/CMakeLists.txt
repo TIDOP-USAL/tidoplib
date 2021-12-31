@@ -24,7 +24,7 @@
 
 # Modulo featmatch de la librería TIDOP que incluye detectores/descriptores y matching
 
-if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
+if (BUILD_TL_FEAT_MATCH AND TL_HAVE_OPENCV)
   
     project(tl_featmatch)
   
@@ -100,7 +100,7 @@ if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           tl_core 
                           tl_geom
-                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>
                           ${OpenCV_LIBS})
 
     set_property(TARGET ${PROJECT_NAME}
@@ -132,12 +132,12 @@ if (BUILD_TL_FEAT_MATCH AND HAVE_OPENCV)
   
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
 
-    set(HAVE_TL_FEAT_MATCH YES CACHE INTERNAL "")
+    set(TL_HAVE_FEAT_MATCH YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::tl_featmatch enabled")
   
 elseif(BUILD_TL_CORE AND BUILD_TL_GEOMETRY)
 
-    if(NOT HAVE_OPENCV)
+    if(NOT TL_HAVE_OPENCV)
         message(STATUS "  TidopLib::tl_featmatch disabled [OPENCV not found]")
     else()
         message(STATUS "  TidopLib::tl_featmatch disabled")

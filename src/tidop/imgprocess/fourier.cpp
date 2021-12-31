@@ -27,7 +27,7 @@
 #include "tidop/core/utils.h"
 #include "tidop/math/mathutils.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 namespace tl
 {

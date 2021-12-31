@@ -27,6 +27,7 @@
 
 #include "tidop/core/utils.h"
 
+#include <fstream>
 
 namespace tl
 {

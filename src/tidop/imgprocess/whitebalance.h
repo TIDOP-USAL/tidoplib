@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #ifdef HAVE_OPENCV_XPHOTO
@@ -152,6 +152,6 @@ private:
 
 } // End namespace TL
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_IMGPROCESS_WHITE_BALANCE_H

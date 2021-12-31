@@ -24,7 +24,7 @@
 
 #include "crstransf.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "ogr_spatialref.h"
 #include "ogr_p.h"
@@ -41,7 +41,7 @@ namespace geospatial
 namespace internal
 {
 
-#if defined HAVE_GDAL && defined HAVE_PROJ4
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
 class CoordinateTransformation
 {
@@ -200,7 +200,7 @@ void CrsTransform::init()
   OSRCleanup();
 }
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 Point3<double> EcefToEnu::direct(const Point3<double> &ecef,

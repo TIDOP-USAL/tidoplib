@@ -43,7 +43,7 @@
 #include "tidop/geospatial/crs.h"
 #include "tidop/graphic/entities/polygon.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 namespace tl
 {
@@ -349,6 +349,6 @@ private:
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #endif // TL_GEOSPATIAL_CRS_H

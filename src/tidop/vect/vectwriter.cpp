@@ -31,11 +31,11 @@
 #include "tidop/graphic/entities/linestring.h"
 #include "tidop/graphic/entities/polygon.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "ogrsf_frmts.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 namespace tl
 {
@@ -50,7 +50,7 @@ VectorWriter::VectorWriter(Path file)
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 class VectorWriterGdal
   : public VectorWriter
@@ -68,7 +68,7 @@ public:
   void write(const GLayer &layer) override;
   void setCRS(const std::string &crs) override;
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  void setCRS(const geospatial::Crs &crs) override;
 //#endif
 
@@ -319,7 +319,7 @@ void VectorWriterGdal::setCRS(const std::string &crs)
   }
 }
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //void VectorWriterGdal::setCRS(const geospatial::Crs &crs)
 //{
 //  if (mDataset) {
@@ -766,7 +766,7 @@ std::unique_ptr<VectorWriter> VectorWriterFactory::createWriter(const Path &file
   try {
 
     std::string extension = file.extension().toString();
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
     if (compareInsensitiveCase(extension, ".dxf") ||
         compareInsensitiveCase(extension, ".dwg") ||
         compareInsensitiveCase(extension, ".dgn") ||

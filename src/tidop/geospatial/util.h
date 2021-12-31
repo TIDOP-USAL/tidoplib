@@ -27,7 +27,7 @@
 
 #include "tidop/core/defs.h"
 
-//#ifdef HAVE_GDAL
+//#ifdef TL_HAVE_GDAL
 //TL_SUPPRESS_WARNINGS
 //#include "ogr_spatialref.h"
 //TL_DEFAULT_WARNINGS

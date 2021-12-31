@@ -33,7 +33,7 @@
 
 #include "tidop/core/defs.h"
 #include "tidop/core/path.h"
-//#ifdef HAVE_TL_GEOSPATIAL 
+//#ifdef TL_HAVE_GEOSPATIAL 
 //#include "tidop/geospatial/crs.h"
 //#endif
 
@@ -78,7 +78,7 @@ public:
    */
   virtual void setCRS(const std::string &epsgCode) = 0;
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  /*!
 //   * \brief Set the Coordinate Reference System
 //   * \param[in] crs geospatial::Crs object

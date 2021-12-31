@@ -24,7 +24,7 @@
 
 #include "linedetector.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #ifdef HAVE_OPENCV_XIMGPROC
 #include <opencv2/ximgproc.hpp>
 #endif // HAVE_OPENCV_XIMGPROC

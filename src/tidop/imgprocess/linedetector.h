@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #if defined( USE_LSWMS )
@@ -489,6 +489,6 @@ public:
 
 } // End namespace tl
 
-#endif //HAVE_OPENCV
+#endif //TL_HAVE_OPENCV
 
 #endif // TL_IMGPROCESS_LINE_DETECTOR_H
