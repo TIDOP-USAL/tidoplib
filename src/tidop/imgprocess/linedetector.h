@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -27,7 +27,7 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #if defined( USE_LSWMS )
@@ -489,6 +489,6 @@ public:
 
 } // End namespace tl
 
-#endif //HAVE_OPENCV
+#endif //TL_HAVE_OPENCV
 
 #endif // TL_IMGPROCESS_LINE_DETECTOR_H

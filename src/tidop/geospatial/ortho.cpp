@@ -16,13 +16,13 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
 
-#include "ortho.h"
+#include "tidop/geospatial/ortho.h"
 
 #include "tidop/core/chrono.h"
 #include "tidop/core/progress.h"
@@ -39,8 +39,8 @@
 #include "tidop/graphic/datamodel.h"
 #include "tidop/vect/vectreader.h"
 
-#ifdef HAVE_OPENCV
-
+#ifdef TL_HAVE_OPENCV
+#include <opencv2/calib3d.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/stitching.hpp>
@@ -1549,4 +1549,4 @@ cv::Mat OrthoimageProcess::visibilityMap(const Orthorectification &orthorectific
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

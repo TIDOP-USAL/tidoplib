@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -34,9 +34,9 @@
 #include <typeinfo>
 #include <functional>
 
-//#ifdef HAVE_OPENCV
+//#ifdef TL_HAVE_OPENCV
 //#include "opencv2/core/core.hpp"
-//#endif // HAVE_OPENCV
+//#endif // TL_HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/core/exception.h"
@@ -59,7 +59,7 @@ namespace tl
 //  } else if (typeid(T) == typeid(int)) {
 //    color = mColor;
 //  }
-//#ifdef HAVE_OPENCV
+//#ifdef TL_HAVE_OPENCV
 //  else if (typeid(T) == typeid(cv::Scalar)) {
 //    *(cv::Scalar *)_color = cv::Scalar(getBlue(), getGreen(), getRed());
 //  }

@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -37,11 +37,11 @@
 #include <cstdio>
 #endif // __GNUC__
 
-#ifdef HAVE_VLD
+#ifdef TL_HAVE_VLD
 #ifdef VISUAL_LEAK_DETECTOR
 #include <vld.h>
 #endif
-#endif // HAVE_VLD
+#endif // TL_HAVE_VLD
 
 
 #if defined _MSC_VER && _MSC_VER < 1600

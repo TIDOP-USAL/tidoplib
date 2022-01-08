@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(HAVE_TL_GEOMETRY)
+if(TL_HAVE_GEOMETRY)
 
   MACRO(DEFINE_TEST name srcs)
 

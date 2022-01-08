@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -615,7 +615,7 @@ public:
   {
     TL_ASSERT(this->size() == vector.size(), "")
 
-#ifndef HAVE_TL_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
     for (size_t i = 0; i < this->size(); ++i) {
       (*this)[i] += vector[i];
     }
@@ -650,7 +650,7 @@ public:
   {
     TL_ASSERT(this->size() == vector.size(), "")
 
-#ifndef HAVE_TL_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
     for (size_t i = 0; i < this->size(); ++i) {
       (*this)[i] -= vector[i];
     }
@@ -685,7 +685,7 @@ public:
   {
     TL_ASSERT(this->size() == vector.size(), "")
 
-#ifndef HAVE_TL_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
       for (size_t i = 0; i < this->size(); ++i) {
         (*this)[i] *= vector[i];
       }
@@ -720,7 +720,7 @@ public:
   {
     TL_ASSERT(this->size() == vector.size(), "")
 
-#ifndef HAVE_TL_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
     for (size_t i = 0; i < this->size(); ++i) {
       (*this)[i] /= vector[i];
     }
@@ -968,7 +968,7 @@ Vector<T, _size> operator * (const Vector<T, _size> &v0,
 
   Vector<T, _size> result(v0);
 
-#ifndef HAVE_TL_SIMD_INTRINSICS
+#ifndef TL_HAVE_SIMD_INTRINSICS
   
   for (size_t i = 0; i < v0.size(); i++) {
     result[i] *= v1[i];

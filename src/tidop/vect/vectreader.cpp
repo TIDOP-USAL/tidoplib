@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -34,11 +34,11 @@
 #include "tidop/graphic/entities/polygon.h"
 
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "ogrsf_frmts.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 namespace tl
 {
@@ -54,7 +54,7 @@ VectorReader::VectorReader(Path file)
 /* ---------------------------------------------------------------------------------- */
 
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 class VectorReaderGdal
   : public VectorReader
@@ -180,7 +180,7 @@ public:
     return crs_wkt;
   }
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  geospatial::Crs crs() const override
 //  {
 //    geospatial::Crs crs;
@@ -1257,7 +1257,7 @@ void VectorReaderGdal::readData(OGRFeature *ogrFeature,
   }
 }
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 
 /* ---------------------------------------------------------------------------------- */
@@ -1270,7 +1270,7 @@ std::unique_ptr<VectorReader> VectorReaderFactory::createReader(const Path &file
   try {
 
     std::string extension = file.extension().toString();
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
     if (VectorReaderGdal::isExtensionSupported(extension)) {
       vector_reader = std::make_unique<VectorReaderGdal>(file);
     } else

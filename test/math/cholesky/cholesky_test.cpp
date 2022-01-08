@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -46,6 +46,7 @@ struct CholeskyTest
 
   void setup()
   {
+    //https://atozmath.com/MatrixEv.aspx?q=choleskydecomp
     A = Matrix<double>(3,3);
     A[0][0] = 6;
     A[0][1] = 15;

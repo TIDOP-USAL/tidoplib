@@ -42,59 +42,56 @@
 /* Muestra las clases y funciones marcados como obsoletos */
 #cmakedefine TL_ENABLE_DEPRECATED_METHODS 
 
-#cmakedefine HAVE_TL_CORE
-#cmakedefine HAVE_TL_MATH
-#cmakedefine HAVE_TL_GEOMETRY
-#cmakedefine HAVE_TL_IMG
-#cmakedefine HAVE_TL_IMG_PROCESS
-#cmakedefine HAVE_TL_FEAT_MATCH
-#cmakedefine HAVE_TL_GRAPHIC
-#cmakedefine HAVE_TL_GEOSPATIAL
-#cmakedefine HAVE_TL_VECT
+#cmakedefine TL_HAVE_CORE
+#cmakedefine TL_HAVE_MATH
+#cmakedefine TL_HAVE_GEOMETRY
+#cmakedefine TL_HAVE_IMG
+#cmakedefine TL_HAVE_IMG_PROCESS
+#cmakedefine TL_HAVE_FEAT_MATCH
+#cmakedefine TL_HAVE_GRAPHIC
+#cmakedefine TL_HAVE_GEOSPATIAL
+#cmakedefine TL_HAVE_VECT
 
 // OpenCV
-#cmakedefine HAVE_OPENCV
+#cmakedefine TL_HAVE_OPENCV
 
 // GDAL
-#cmakedefine HAVE_GDAL
+#cmakedefine TL_HAVE_GDAL
 
-#cmakedefine HAVE_PROJ4
+#cmakedefine TL_HAVE_PROJ4
 
 // libraw: Lectura de formato raw
-#cmakedefine HAVE_LIBRAW
-#cmakedefine HAVE_EDSDK
+#cmakedefine TL_HAVE_LIBRAW
+#cmakedefine TL_HAVE_EDSDK
 
 // Eigen Lib
-#cmakedefine HAVE_EIGEN
+#cmakedefine TL_HAVE_EIGEN
 
 // OpenMP
-#cmakedefine HAVE_OPENMP
+#cmakedefine TL_HAVE_OPENMP
 
 // Parallel Patterns Library
 // https://msdn.microsoft.com/es-es/library/dd492418.aspx
-#cmakedefine HAVE_PPL
+#cmakedefine TL_HAVE_PPL
 
 // Visual Leak Detector
-#cmakedefine HAVE_VLD
+#cmakedefine TL_HAVE_VLD
 
 // minizip
-#cmakedefine HAVE_MINIZIP
+#cmakedefine TL_HAVE_MINIZIP
 
-// boost
-#cmakedefine HAVE_BOOST
-
-#cmakedefine HAVE_OPENBLAS
+#cmakedefine TL_HAVE_OPENBLAS
 
 
 // SIMD INTRINSICS
-#cmakedefine HAVE_TL_SSE 
-#cmakedefine HAVE_TL_SSE2
-#cmakedefine HAVE_TL_SSE3
-#cmakedefine HAVE_TL_SSE4_1
-#cmakedefine HAVE_TL_SSE4_2
-#cmakedefine HAVE_TL_AVX
-#cmakedefine HAVE_TL_AVX2
-#cmakedefine HAVE_TL_AVX512
-#cmakedefine HAVE_TL_SIMD_INTRINSICS
+#cmakedefine TL_HAVE_SSE 
+#cmakedefine TL_HAVE_SSE2
+#cmakedefine TL_HAVE_SSE3
+#cmakedefine TL_HAVE_SSE4_1
+#cmakedefine TL_HAVE_SSE4_2
+#cmakedefine TL_HAVE_AVX
+#cmakedefine TL_HAVE_AVX2
+#cmakedefine TL_HAVE_AVX512
+#cmakedefine TL_HAVE_SIMD_INTRINSICS
 
 #endif // TL_CONFIG_H

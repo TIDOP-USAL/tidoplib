@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -24,16 +24,16 @@
 
 #include "tidop/graphic/painter.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 #include "ogr_core.h"
 #include "ogr_featurestyle.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"

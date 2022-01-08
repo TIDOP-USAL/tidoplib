@@ -68,8 +68,8 @@ if(BUILD_TL_CORE)
     target_link_libraries(${PROJECT_NAME} PUBLIC
                           ${Boost_FILESYSTEM_LIBRARY} 
                           ${Boost_SYSTEM_LIBRARY}
-                          $<$<BOOL:${HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
-                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>)
+                          $<$<BOOL:${TL_HAVE_OPENMP}>:OpenMP::OpenMP_CXX>
+                          $<$<BOOL:${TL_HAVE_GDAL}>:${GDAL_LIBRARY}>)
     
     set_property(TARGET ${PROJECT_NAME}
                  PROPERTY FOLDER "modules")
@@ -102,7 +102,7 @@ if(BUILD_TL_CORE)
     
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
-    set(HAVE_TL_CORE YES CACHE INTERNAL "")
+    set(TL_HAVE_CORE YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::tl_core enabled")
     
 else()

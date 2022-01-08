@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -26,13 +26,13 @@
 
 #include "tidop/geometry/entities/point.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #endif
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #include "ogrsf_frmts.h"
 #endif
 
@@ -48,7 +48,7 @@ namespace graph
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 CanvasCV::CanvasCV()
   : Canvas(),
@@ -292,7 +292,7 @@ cv::Scalar CanvasCV::colorToCvScalar(const Color &color)
 }
 
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 
 /* ---------------------------------------------------------------------------------- */

@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -56,7 +56,7 @@ void GroupLines::add(const Line &line)
   bbox = (bbox.isEmpty() ) ? window : joinWindow(bbox, window);
 }
 
-//#ifdef HAVE_OPENCV
+//#ifdef TL_HAVE_OPENCV
 //
 //void GroupLines::add(const cv::Vec4i &lvect)
 //{

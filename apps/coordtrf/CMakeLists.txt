@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(HAVE_TL_CORE AND HAVE_TL_GEOMETRY)
+if(TL_HAVE_CORE AND TL_HAVE_GEOMETRY)
 
     project(coordtransform LANGUAGES CXX)
     
@@ -50,7 +50,7 @@ if(HAVE_TL_CORE AND HAVE_TL_GEOMETRY)
                           tl_geom
                           tl_img
                           $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${HAVE_PROJ4}>:${PROJ4_LIBRARY}>
+                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
                           ${OpenCV_LIBS}
                           $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
     					  

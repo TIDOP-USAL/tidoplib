@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -27,16 +27,16 @@
 #include <tidop/core/flags.h>
 #include <tidop/core/utils.h>
 
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
 #include "EDSDK.h"
 #ifndef HAVE_RAW
 #  define HAVE_RAW
 #endif
-#endif // HAVE_EDSDK
+#endif // TL_HAVE_EDSDK
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 
 namespace tl
@@ -255,7 +255,7 @@ std::string gdalDriverFromExtension(const std::string &extension)
 }
 
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 DataType gdalConvertDataType(GDALDataType dataType)
 {
@@ -324,9 +324,9 @@ GDALDataType dataTypeToGdalDataType(DataType dataType)
   return ret;
 }
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 int dataTypeToOpenCVDataType(DataType dataType)
 {
@@ -397,12 +397,12 @@ DataType openCVDataTypeToDataType(int dataType)
   return data_type;
 }
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 std::vector<int> gdalBandOrder(int channels)
 {
   std::vector<int> panBandMap;
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
   if (channels == 1) 
     panBandMap = { 1 };
   else if (channels == 3) 
@@ -421,7 +421,7 @@ std::vector<int> gdalBandOrder(int channels)
   return panBandMap;
 }
 
-#if defined HAVE_OPENCV && defined HAVE_GDAL
+#if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
 
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
@@ -489,10 +489,10 @@ GDALDataType openCvToGdal(int cvdt)
   return(ret);
 }
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
 
 std::unique_ptr<RegisterEDSDK> RegisterEDSDK::sRegisterEDSDK;
 std::mutex RegisterEDSDK::sMutex;
@@ -517,6 +517,6 @@ void RegisterEDSDK::init()
   }
 }
 
-#endif // HAVE_EDSDK
+#endif // TL_HAVE_EDSDK
 
 } // End namespace tl

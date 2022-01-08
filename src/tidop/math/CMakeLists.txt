@@ -34,6 +34,8 @@ if(BUILD_TL_MATH)
                 angles.h
                 statistics.h
                 mathutils.h
+                simd.h
+                statistics.h
                 algebra/quaternion.h
                 algebra/euler_angles.h
                 algebra/rotations.h
@@ -52,12 +54,12 @@ if(BUILD_TL_MATH)
     endif(MSVC)
 
     target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
+                               $<$<BOOL:${TL_HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
+                               $<$<BOOL:${TL_HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
 
     target_link_libraries(${PROJECT_NAME} PUBLIC 
                           tl_core
-                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
+                          $<$<BOOL:${TL_HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>)
        
     set_property(TARGET ${PROJECT_NAME} 
                  PROPERTY FOLDER "modules")
@@ -87,7 +89,7 @@ if(BUILD_TL_MATH)
             
     set(TidopLib_LIBRARIES ${TidopLib_LIBRARIES} ${PROJECT_NAME})
     
-    set(HAVE_TL_MATH YES CACHE INTERNAL "")
+    set(TL_HAVE_MATH YES CACHE INTERNAL "")
     message(STATUS "  TidopLib::tl_math enabled")
 
 elseif(BUILD_TL_CORE)

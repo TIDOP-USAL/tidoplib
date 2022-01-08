@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -31,11 +31,11 @@
 
 #include <vector>
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal_priv.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 #include "tidop/core/utils.h"
 
@@ -138,7 +138,7 @@ public:
     ccittfax3,
     ccittfax4,
     lzma,
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
     zstd,
 #endif
@@ -147,7 +147,7 @@ public:
     lerc_deflate,
     lerc_zstd,
 #endif
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
     webp,
     none
   };
@@ -300,7 +300,7 @@ public:
   uint8_t zLevel() const;
   void setZLevel(uint8_t zLevel);
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
 
   std::string title() const;
@@ -323,7 +323,7 @@ public:
   void setNBits(int nBits);
 
 #endif
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 private:
 
@@ -334,7 +334,7 @@ private:
 
   std::pair<bool, bool> bWorldFile;
   std::pair<uint8_t, uint8_t> mZLevel;
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_MAJOR >= 2
   std::pair<std::string, std::string> mTitle;
   std::pair<std::string, std::string> mDescription;
@@ -344,7 +344,7 @@ private:
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,1,0)
   std::pair<int, int> mNBits;
 #endif
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 };
 
@@ -398,12 +398,12 @@ public:
   //Whether to write EXIF_xxxx metadata items in a EXIF segment. 
   //Default to YES.
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 #if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(2,3,0)
   bool writeExifMetadata() const;
   void setWriteExifMetadata(bool writeExifMetadata);
 #endif
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 private:
 

@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(HAVE_TL_GEOSPATIAL AND HAVE_GDAL AND HAVE_PROJ4)
+if(TL_HAVE_GEOSPATIAL AND TL_HAVE_GDAL AND TL_HAVE_PROJ4)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)

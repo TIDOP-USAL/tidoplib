@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -28,15 +28,15 @@
 #include "tidop/core/messages.h"
 #include "tidop/core/gdalreg.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 #include <utility>
 
@@ -71,7 +71,7 @@ tl::Path ImageReader::file() const
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 class ImageReaderGdal
   : public ImageReader
@@ -465,7 +465,7 @@ public:
     return crs_wkt;
   }
 
-//#ifdef HAVE_TL_GEOSPATIAL
+//#ifdef TL_HAVE_GEOSPATIAL
 //  geospatial::Crs crs() const override
 //  {
 //    geospatial::Crs crs;
@@ -547,11 +547,11 @@ private:
   Affine<PointD> mAffine;
 };
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 /* ---------------------------------------------------------------------------------- */
 
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
 
 class ImageReaderCanon
   : public ImageReader
@@ -748,7 +748,7 @@ private:
   int mColorDepth;
 };
 
-#endif // HAVE_EDSDK
+#endif // TL_HAVE_EDSDK
 
 /* ---------------------------------------------------------------------------------- */
 
@@ -760,12 +760,12 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
   try {
     
     std::string extension = file.extension().toString();
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
     if (gdalValidExtensions(extension)) {
       image_reader = std::make_unique<ImageReaderGdal>(file);
     } else
 #endif
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
     if (compareInsensitiveCase(extension, ".CR2")) {
       image_reader = std::make_unique<ImageReaderCanon>(file);
     } else
@@ -784,4 +784,4 @@ std::unique_ptr<ImageReader> ImageReaderFactory::createReader(const Path &file)
 
 } // End namespace tl
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV

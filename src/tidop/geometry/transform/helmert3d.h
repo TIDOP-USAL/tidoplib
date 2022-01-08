@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -664,18 +664,6 @@ void Helmert3D<Point_t>::update()
                                         math::EulerAngles<double>::Axes::xyz);
   math::RotationConverter<double>::convert(eulerAngles, mR);
   mRinv = mR.inverse();
-//  rotationMatrix(mOmega, mPhi, mKappa, &mR);
-//#ifdef HAVE_OPENCV
-//  cv::Mat inv = cv::Mat(3, 3, CV_64F, mR.data()).inv();
-//  for (int i = 0; i < 3; i++) {
-//    for (int j = 0; j < 3; j++) {
-//      mRinv[i][j] = inv.at<double>(i, j);
-//    }
-//  }
-//#elif HAVE_EIGEN
-//  Eigen::Map<Matrix<double, 3, 3, RowMajor> > mat(mR.data());
-//  mat = mat.inverse();
-//#endif
 }
 
 template<typename Point_t> inline

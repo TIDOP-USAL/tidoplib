@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -27,9 +27,9 @@
 
 #include "config_tl.h"
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 #include "tidop/core/defs.h"
 #include "tidop/graphic/color.h"
@@ -140,7 +140,7 @@ public:
   //virtual void setPicture(const cv::Mat &bmp) = 0;
 };
 
-#ifdef HAVE_OPENCV
+#ifdef TL_HAVE_OPENCV
 
 class TL_EXPORT CanvasCV
   : public Canvas
@@ -247,7 +247,7 @@ inline void CanvasCV::setBackgroundColor(const Color &color)
   update();
 }
 
-#endif // HAVE_OPENCV
+#endif // TL_HAVE_OPENCV
 
 } // Fin namespace graph
 

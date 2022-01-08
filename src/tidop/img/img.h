@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -29,11 +29,11 @@
 
 #include "tidop/core/defs.h"
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 TL_SUPPRESS_WARNINGS
 #include "gdal.h"
 TL_DEFAULT_WARNINGS
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 #include <string>
 #include <vector>
@@ -69,19 +69,19 @@ TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
  */
 TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
 
-#ifdef HAVE_GDAL
+#ifdef TL_HAVE_GDAL
 
 TL_EXPORT DataType gdalConvertDataType(GDALDataType dataType);
 TL_EXPORT GDALDataType dataTypeToGdalDataType(DataType dataType);
 
-#endif // HAVE_GDAL
+#endif // TL_HAVE_GDAL
 
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
 
 TL_EXPORT std::vector<int> gdalBandOrder(int channels);
 
-#if defined HAVE_OPENCV && defined HAVE_GDAL
+#if defined TL_HAVE_OPENCV && defined TL_HAVE_GDAL
 
 /*!
  * \brief Obtiene el tipo de dato de OpenCV
@@ -103,7 +103,7 @@ GDALDataType openCvToGdal(int cvdt);
 
 
 
-#ifdef HAVE_EDSDK
+#ifdef TL_HAVE_EDSDK
 
 /*!
  * \brief Clase singleton para registrar la API de canon
@@ -137,7 +137,7 @@ private:
   static std::mutex sMutex;
 };
 
-#endif // HAVE_EDSDK
+#endif // TL_HAVE_EDSDK
 
 
 } // End namespace tl

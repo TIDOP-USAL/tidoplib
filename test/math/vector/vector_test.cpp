@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -99,7 +99,7 @@ struct VectorTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, VectorTest)
 {
-  double ini_value = -std::numeric_limits<double>().max();
+  constexpr double ini_value = -std::numeric_limits<double>().max();
 
   for (size_t i = 0; i < _vect_def_3.size(); i++){
     BOOST_CHECK_EQUAL(ini_value, _vect_def_3[i]);

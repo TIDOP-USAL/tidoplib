@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -28,7 +28,7 @@
 #include <tidop/math/algebra/vector.h>
 #include <tidop/math/algebra/matrix.h>
 
-#ifdef HAVE_TL_SIMD_INTRINSICS
+#ifdef TL_HAVE_SIMD_INTRINSICS
 
 using namespace tl::math;
 using namespace simd;
@@ -786,4 +786,4 @@ BOOST_FIXTURE_TEST_CASE(matrix_mul_double, PackedTest)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif HAVE_TL_SIMD_INTRINSICS
+#endif TL_HAVE_SIMD_INTRINSICS

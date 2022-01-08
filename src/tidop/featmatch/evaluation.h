@@ -16,7 +16,7 @@
  * GNU Lesser General Public License for more details.                    *
  *                                                                        *
  * You should have received a copy of the GNU Lesser General Public       *
- * License along with Foobar. If not, see <http://www.gnu.org/licenses/>. *
+ * License along with TidopLib. If not, see <http://www.gnu.org/licenses>.*
  *                                                                        *
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
@@ -39,7 +39,7 @@ namespace tl
 {
 
 ///TODO: No esta preparado para trabajar con enteros 
-
+///TODO: ConfusionMatrix movido a statistic. Duplicado por ahora
 
 template<typename T>
 class Curve

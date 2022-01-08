@@ -30,7 +30,7 @@
 #include "opencv2/core/core.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-
+#include <fstream>
 #include <ctime>
 
 namespace tl
