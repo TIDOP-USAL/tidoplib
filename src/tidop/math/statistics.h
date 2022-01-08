@@ -977,10 +977,10 @@ public:
    */
   double falseNegativeRate(T threshold) const;
 
-  static double truePositiveRate(size_t tp, size_t positives);
-  static double falsePositiveRate(size_t fp, size_t negatives);
-  static double trueNegativeRate(size_t tn, size_t negatives);
-  static double falseNegativeRate(size_t fn, size_t positives);
+  static double truePositiveRate(size_t tp, size_t fn);
+  static double falsePositiveRate(size_t fp, size_t tn);
+  static double trueNegativeRate(size_t tn, size_t fp);
+  static double falseNegativeRate(size_t fn, size_t tp);
   static double positivePredictiveValue(size_t tp, size_t fp);
   static double negativePredictiveValue(size_t fn, size_t tn);
   static double accuracy(size_t tp, size_t tn, size_t positives, size_t negatives);
@@ -1069,7 +1069,7 @@ double ConfusionMatrix<T>::accuracy(T threshold) const
 {
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
 
-  return (mPositives + mNegatives) ?
+  return (mPositives + mNegatives) > consts::zero<size_t> ?
     static_cast<double>(confussionMatrix[Classification::true_positives] + confussionMatrix[Classification::true_negatives])
     / static_cast<double>(mPositives + mNegatives) : -consts::one<double>;
 }
@@ -1080,7 +1080,7 @@ double ConfusionMatrix<T>::positivePredictiveValue(T threshold) const
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double tp = confussionMatrix[Classification::true_positives];
   double fp = confussionMatrix[Classification::false_positives];
-  return ((tp + fp) > 0.) ? tp / (tp + fp) : -consts::one<double>;
+  return ((tp + fp) > consts::zero<size_t>) ? tp / (tp + fp) : -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1089,7 +1089,7 @@ double ConfusionMatrix<T>::negativePredictiveValue(T threshold) const
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double fn = confussionMatrix[Classification::false_negatives];
   double tn = confussionMatrix[Classification::true_negatives];
-  return (fn + tn > 0.) ? tn / (fn + tn) : -consts::one<double>;
+  return (fn + tn > consts::zero<size_t>) ? tn / (fn + tn) : -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1097,7 +1097,7 @@ double ConfusionMatrix<T>::truePositiveRate(T threshold) const
 {
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double tp = confussionMatrix[Classification::true_positives];
-  return mPositives ? tp / static_cast<double>(mPositives) : -consts::one<double>;
+  return mPositives > consts::zero<size_t> ? tp / static_cast<double>(mPositives) : -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1105,7 +1105,7 @@ double ConfusionMatrix<T>::falsePositiveRate(T threshold) const
 {
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double fp = confussionMatrix[Classification::false_positives];
-  return mNegatives ? static_cast<double>(fp) / static_cast<double>(mNegatives) : -consts::one<double>;
+  return mNegatives > consts::zero<size_t> ? static_cast<double>(fp) / static_cast<double>(mNegatives) : -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1113,7 +1113,7 @@ double ConfusionMatrix<T>::trueNegativeRate(T threshold) const
 {
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double tn = confussionMatrix[Classification::true_negatives];
-  return mNegatives ? static_cast<double>(tn) / static_cast<double>(mNegatives) : -consts::one<double>;
+  return mNegatives > consts::zero<size_t> ? static_cast<double>(tn) / static_cast<double>(mNegatives) : -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1121,51 +1121,55 @@ double ConfusionMatrix<T>::falseNegativeRate(T threshold) const
 {
   std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
   double fn = confussionMatrix[Classification::false_negatives];
-  return mPositives ? static_cast<double>(fn) / static_cast<double>(mPositives) : -consts::one<double>;
+  return mPositives > consts::zero<size_t> ? static_cast<double>(fn) / static_cast<double>(mPositives) : -consts::one<double>;
 }
 
 template<typename T> inline
-double ConfusionMatrix<T>::truePositiveRate(size_t tp, size_t positives)
+double ConfusionMatrix<T>::truePositiveRate(size_t tp, size_t fn)
 {
-  return positives ? static_cast<double>(tp) / static_cast<double>(positives) : -consts::one<double>;
+  size_t positives = tp + fn;
+  return positives > consts::zero<size_t> ? static_cast<double>(tp) / static_cast<double>(positives) : -consts::one<double>;
 }
 
 template<typename T> inline
-double ConfusionMatrix<T>::falsePositiveRate(size_t fp, size_t negatives)
+double ConfusionMatrix<T>::falsePositiveRate(size_t fp, size_t tn)
 {
-  return negatives ? static_cast<double>(fp) / static_cast<double>(negatives) : -consts::one<double>;
+  size_t negatives = fp + tn;
+  return negatives > consts::zero<size_t> ? static_cast<double>(fp) / static_cast<double>(negatives) : -consts::one<double>;
 }
 
 template<typename T> inline
-double ConfusionMatrix<T>::trueNegativeRate(size_t tn, size_t negatives)
+double ConfusionMatrix<T>::trueNegativeRate(size_t tn, size_t fp)
 {
-  return negatives ? static_cast<double>(tn) / static_cast<double>(negatives) : -consts::one<double>;
+  size_t negatives = fp + tn;
+  return negatives > consts::zero<size_t> ? static_cast<double>(tn) / static_cast<double>(negatives) : -consts::one<double>;
 }
 
 template<typename T> inline
-double ConfusionMatrix<T>::falseNegativeRate(size_t fn, size_t positives)
+double ConfusionMatrix<T>::falseNegativeRate(size_t fn, size_t tp)
 {
-  return positives ? static_cast<double>(fn) / static_cast<double>(positives) : -consts::one<double>;
+  size_t positives = fn + tp;
+  return positives > consts::zero<size_t> ? static_cast<double>(fn) / static_cast<double>(positives) : -consts::one<double>;
 }
 
 template<typename T> inline
 double ConfusionMatrix<T>::positivePredictiveValue(size_t tp, size_t fp)
 {
-  return ( (tp + fp) > static_cast<size_t>(0)) ? tp / static_cast<double>(tp + fp) : -consts::one<double>;
+  return ( (tp + fp) > consts::zero<size_t>) ? tp / static_cast<double>(tp + fp) : -consts::one<double>;
 }
 
 template<typename T> inline
 double ConfusionMatrix<T>::negativePredictiveValue(size_t fn, size_t tn)
 {
-  return (fn + tn > static_cast<size_t>(0)) ? tn / static_cast<double>(fn + tn) : -consts::one<double>;
+  return (fn + tn > consts::zero<size_t>) ? tn / static_cast<double>(fn + tn) : -consts::one<double>;
 }
 
 template<typename T> inline
 double ConfusionMatrix<T>::accuracy(size_t tp, size_t tn, size_t positives, size_t negatives)
 {
-  return (positives + negatives) ?
-    static_cast<double>(tp+tn)
-      / static_cast<double>(positives + negatives) : -consts::one<double>;
+  return (positives + negatives) > consts::zero<size_t> ?
+    static_cast<double>(tp+tn) / static_cast<double>(positives + negatives) :
+    -consts::one<double>;
 }
 
 template<typename T> inline
@@ -1183,8 +1187,7 @@ std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>
         false_negatives++;
       else
         true_negatives++;
-    }
-    else {
+    } else {
       if (mData[j].second == 0)
         false_positives++;
       else

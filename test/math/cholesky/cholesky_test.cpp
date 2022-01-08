@@ -46,6 +46,7 @@ struct CholeskyTest
 
   void setup()
   {
+    //https://atozmath.com/MatrixEv.aspx?q=choleskydecomp
     A = Matrix<double>(3,3);
     A[0][0] = 6;
     A[0][1] = 15;

@@ -39,7 +39,7 @@ namespace tl
 {
 
 ///TODO: No esta preparado para trabajar con enteros 
-
+///TODO: ConfusionMatrix movido a statistic. Duplicado por ahora
 
 template<typename T>
 class Curve
