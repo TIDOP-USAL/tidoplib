@@ -36,7 +36,11 @@ BOOST_AUTO_TEST_SUITE(PathTestSuite)
 struct PathTest
 {
   PathTest()
+#if defined WIN32
     : path(new Path("D:\\Desarrollo\\Libs"))
+#else
+    : path(new Path("/home/user/Libs"))
+#endif
   {
   }
 
@@ -50,9 +54,13 @@ struct PathTest
 
   void setup()
   {
+#if defined WIN32
     path_file.setPath("C:\\temp\\file.txt");
-
     path2.setPath("C:\\temp\\áñ.txt");
+#else
+    path_file.setPath("/home/user/file.txt");
+    path2.setPath("/home/user/áñ.txt");
+#endif
   }
 
   void teardown()
@@ -77,7 +85,11 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, PathTest)
 
 BOOST_FIXTURE_TEST_CASE(Constructor, PathTest)
 {
+#if defined WIN32
   BOOST_CHECK_EQUAL("D:\\Desarrollo\\Libs", path->toString());
+#else
+  BOOST_CHECK_EQUAL("/home/user/Libs", path->toString());
+#endif
   BOOST_CHECK_EQUAL(Path("Libs"), path->fileName());
   BOOST_CHECK_EQUAL(Path("Libs"), path->baseName());
   BOOST_CHECK_EQUAL(Path(""), path->extension());
@@ -86,20 +98,36 @@ BOOST_FIXTURE_TEST_CASE(Constructor, PathTest)
 
 BOOST_FIXTURE_TEST_CASE(set_path, PathTest)
 {
+#if defined WIN32
   BOOST_CHECK_EQUAL("C:\\temp\\file.txt", path_file.toString());
+#else
+  BOOST_CHECK_EQUAL("/home/user/file.txt", path_file.toString());
+#endif
   BOOST_CHECK_EQUAL(Path("file.txt"), path_file.fileName());
   BOOST_CHECK_EQUAL(Path("file"), path_file.baseName());
   BOOST_CHECK_EQUAL(Path(".txt"), path_file.extension());
   BOOST_CHECK_EQUAL(false, path_file.empty());
 
+#if defined WIN32
   BOOST_CHECK_EQUAL("C:\\temp\\áñ.txt", path2.toString());
+#else
+  BOOST_CHECK_EQUAL("/home/user/áñ.txt", path2.toString());
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\file.xyz");
+#else
+  Path path("/home/user/file.xyz");
+#endif
   path.replaceExtension("csv");
+#if defined WIN32
   BOOST_CHECK_EQUAL(Path("C:\\temp\\file.csv"), path.toString());
+#else
+  BOOST_CHECK_EQUAL(Path("/home/user/file.csv"), path.toString());
+#endif
   BOOST_CHECK_EQUAL(Path("file.csv"), path.fileName());
   BOOST_CHECK_EQUAL(Path("file"), path.baseName());
   BOOST_CHECK_EQUAL(Path(".csv"), path.extension());
@@ -108,20 +136,33 @@ BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
 
 BOOST_FIXTURE_TEST_CASE(replace_file_name, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\file.xyz");
   path.replaceFileName("file2.txt");
   BOOST_CHECK_EQUAL("C:\\temp\\file2.txt", path.toString());
+#else
+  Path path("/home/temp/file.xyz");
+  path.replaceFileName("file2.txt");
+  BOOST_CHECK_EQUAL("/home/temp/file2.txt", path.toString());
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(replace_base_name, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\file.xyz");
   path.replaceBaseName("file2");
   BOOST_CHECK_EQUAL("C:\\temp\\file2.xyz", path.toString());
+#else
+  Path path("/home/temp/file.xyz");
+  path.replaceBaseName("file2");
+  BOOST_CHECK_EQUAL("/home/temp/file2.xyz", path.toString());
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(parent_path, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\dir1\\dir2");
   Path path1 = path.parentPath();
   BOOST_CHECK_EQUAL("C:\\temp\\dir1", path1.toString());
@@ -129,18 +170,37 @@ BOOST_FIXTURE_TEST_CASE(parent_path, PathTest)
   BOOST_CHECK_EQUAL("C:\\temp", path2.toString());
   Path path3 = path2.parentPath();
   BOOST_CHECK_EQUAL("C:\\", path3.toString());
+#else
+  Path path("/home/temp/dir1/dir2");
+  Path path1 = path.parentPath();
+  BOOST_CHECK_EQUAL("/home/temp/dir1", path1.toString());
+  Path path2 = path1.parentPath();
+  BOOST_CHECK_EQUAL("/home/temp", path2.toString());
+  Path path3 = path2.parentPath();
+  BOOST_CHECK_EQUAL("/home", path3.toString());
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(append, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\dir1");
   Path path1 = path.append("dir2");
   BOOST_CHECK_EQUAL("C:\\temp\\dir1\\dir2", path1.toString());
+#else
+  Path path("/home/temp/dir1");
+  Path path1 = path.append("dir2");
+  BOOST_CHECK_EQUAL("/home/temp/dir1/dir2", path1.toString());
+#endif
 }
 
 BOOST_FIXTURE_TEST_CASE(clear, PathTest)
 {
+#if defined WIN32
   Path path("C:\\temp\\dir1");
+#else
+  Path path("/home/temp/dir1");
+#endif
   BOOST_CHECK_EQUAL(false, path.empty());
   path.clear();
   BOOST_CHECK_EQUAL(true, path.empty());
