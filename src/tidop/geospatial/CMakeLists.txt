@@ -38,14 +38,15 @@ if (BUILD_TL_GEOSPATIAL)
                 crstransf.h
                 util.cpp
                 util.h
-                ortho.cpp
-                ortho.h
+                #ortho.cpp
+                #ortho.h
                 diffrect.cpp
                 diffrect.h
-                camera.cpp
-                camera.h
-                photo.cpp
-                photo.h)
+                #camera.cpp
+                #camera.h
+                #photo.cpp
+                #photo.h
+				)
 
     target_include_directories(${PROJECT_NAME} PRIVATE ${GDAL_INCLUDE_DIR})
     

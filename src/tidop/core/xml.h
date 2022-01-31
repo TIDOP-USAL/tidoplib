@@ -22,35 +22,83 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_UTIL_H
-#define TL_GEOSPATIAL_UTIL_H
+#ifndef TL_CORE_UTILS_XML_H
+#define TL_CORE_UTILS_XML_H
+
+#include "config_tl.h"
 
 #include "tidop/core/defs.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+
+#include <memory>
+#include <mutex>
+
 
 namespace tl
 {
 
-namespace geospatial
+namespace internal
+{
+struct Node;
+}
+
+/*! \addtogroup core
+ *  \{
+ */
+
+
+class XmlNode
 {
 
-TL_EXPORT int utmZoneFromLongitude(double longitude);
+public:
 
-TL_EXPORT Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
-                                        const Point3D &camera_position,
-                                        const PointD &coordinates_image,
-                                        double focal,
-                                        double z);
+	XmlNode();
+  XmlNode(const XmlNode &node);
+	~XmlNode();
 
-TL_EXPORT PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
-                                       const Point3D &camera_position,
-                                       const Point3D &coordinates_terrain,
-                                       double focal);
+  XmlNode next();
+  XmlNode child();
 
-} // End namespace geospatial
+private:
+
+  std::shared_ptr<internal::Node> *mNode;
+};
+
+
+
+
+/*!
+ * \brief XMLReader
+ *
+ */
+class TL_EXPORT XMLReader
+{
+
+public:
+  
+  XMLReader();
+  ~XMLReader() = default;
+
+};
+
+
+/*!
+ * \brief XMLReader
+ *
+ */
+class TL_EXPORT XMLWriter
+{
+
+public:
+  
+  XMLWriter();
+  ~XMLWriter() = default;
+
+};
+
+
+/*! \} */ // end of core
 
 } // End namespace tl
 
 
-#endif // TL_GEOSPATIAL_UTIL_H
+#endif // TL_CORE_UTILS_GDAL_H

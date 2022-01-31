@@ -22,35 +22,75 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef TL_GEOSPATIAL_UTIL_H
-#define TL_GEOSPATIAL_UTIL_H
+#include "tidop/core/xml.h"
 
-#include "tidop/core/defs.h"
-#include "tidop/geometry/entities/point.h"
-#include "tidop/math/algebra/rotation_matrix.h"
+#include "tidop/core/messages.h"
+#include "tidop/core/console.h"
+#include "tidop/core/exception.h"
+
+#ifdef TL_HAVE_GDAL
+TL_SUPPRESS_WARNINGS
+#include "gdal.h"
+TL_DEFAULT_WARNINGS
+#endif // TL_HAVE_GDAL
+
 
 namespace tl
 {
 
-namespace geospatial
+//#ifdef TL_HAVE_GDAL
+
+namespace internal
 {
 
-TL_EXPORT int utmZoneFromLongitude(double longitude);
+struct Node
+{
+	CPLXMLNode *mCplXmlNode;
+	friend class XmlNode;
+};
 
-TL_EXPORT Point3D projectPhotoToTerrain(const tl::math::RotationMatrix<double> &rotation_matrix,
-                                        const Point3D &camera_position,
-                                        const PointD &coordinates_image,
-                                        double focal,
-                                        double z);
+}
 
-TL_EXPORT PointD projectTerrainToPhoto(const tl::math::RotationMatrix<double> &rotation_matrix,
-                                       const Point3D &camera_position,
-                                       const Point3D &coordinates_terrain,
-                                       double focal);
 
-} // End namespace geospatial
+XmlNode::XmlNode()
+{
+}
+
+XmlNode::XmlNode(const XmlNode &node)
+	: mNode(node.mNode)
+{
+}
+
+XmlNode::~XmlNode()
+{
+}
+
+XmlNode XmlNode::next()
+{
+	XmlNode node;
+	return node;
+}
+
+XmlNode XmlNode::child()
+{
+	return XmlNode();
+}
+
+
+
+
+XMLReader::XMLReader()
+{
+}
+
+
+
+
+
+XMLWriter::XMLWriter()
+{
+}
+
 
 } // End namespace tl
 
-
-#endif // TL_GEOSPATIAL_UTIL_H

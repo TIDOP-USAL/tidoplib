@@ -58,7 +58,9 @@ if(BUILD_TL_CORE)
                 concurrency.cpp
                 concurrency.h
                 path.cpp
-                path.h)
+                path.h
+                xml.cpp
+                xml.h)
     
     target_include_directories(${PROJECT_NAME} PUBLIC
                                $<BUILD_INTERFACE:${TidopLib_SOURCE_DIR}/src>
