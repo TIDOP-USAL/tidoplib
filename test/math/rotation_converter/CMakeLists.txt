@@ -32,7 +32,7 @@ set(test_target "${test_name}")
 
 add_executable(${test_target} 
                ${test_filename})
-target_link_libraries(${test_target} tl_core)
+target_link_libraries(${test_target} tl_core tl_math)
 target_link_libraries(${test_target} 
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
