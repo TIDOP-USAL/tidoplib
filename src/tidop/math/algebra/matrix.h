@@ -3363,7 +3363,7 @@ Vector<T> operator + (const MatrixCol<T> &c0,
 
 template<typename T>
 Vector<T> operator - (const MatrixCol<T> &c0,
-                         const MatrixCol<T> &c1)
+                      const MatrixCol<T> &c1)
 {
   size_t size = c0.size();
   Vector<T> v(size);

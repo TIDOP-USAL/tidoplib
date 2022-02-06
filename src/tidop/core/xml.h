@@ -32,21 +32,42 @@
 #include <memory>
 #include <mutex>
 
+#include "tidop/core/path.h"
 
 namespace tl
 {
 
 namespace internal
 {
-struct Node;
+class XmlNode;
 }
 
 /*! \addtogroup core
  *  \{
  */
 
+class TL_EXPORT XmlNodeValue
+{
 
-class XmlNode
+public:
+
+  XmlNodeValue(std::string value);
+  ~XmlNodeValue();
+
+  std::string toString();
+  int toInteger();
+  float toFloat();
+  double toDouble();
+
+private:
+
+  std::string mValue;
+};
+
+
+
+
+class TL_EXPORT XmlNode
 {
 
 public:
@@ -55,14 +76,14 @@ public:
   XmlNode(const XmlNode &node);
 	~XmlNode();
 
-  XmlNode next();
-  XmlNode child();
+  XmlNode &next();
+  XmlNode &child();
+  XmlNodeValue value();
 
 private:
 
-  std::shared_ptr<internal::Node> *mNode;
+  std::shared_ptr<internal::XmlNode> mNode;
 };
-
 
 
 
@@ -75,8 +96,13 @@ class TL_EXPORT XMLReader
 
 public:
   
-  XMLReader();
+  explicit XMLReader();
   ~XMLReader() = default;
+
+  void parse(const tl::Path &file);
+
+private:
+
 
 };
 
@@ -90,7 +116,7 @@ class TL_EXPORT XMLWriter
 
 public:
   
-  XMLWriter();
+  XMLWriter(std::string file);
   ~XMLWriter() = default;
 
 };

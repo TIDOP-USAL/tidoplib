@@ -984,8 +984,6 @@ Vector<T, _size> operator * (const Vector<T, _size> &v0,
   constexpr size_t packed_size = packed_a.size();
   size_t max_vector = (vector_size / packed_size) * packed_size;
 
-  
-
   for (size_t i = 0; i < max_vector; i += packed_size) {
 
     packed_a.loadAligned(&result[i]);

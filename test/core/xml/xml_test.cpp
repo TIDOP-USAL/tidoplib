@@ -21,129 +21,51 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
 
-#include "tidop/core/xml.h"
-
-#include "tidop/core/messages.h"
-#include "tidop/core/console.h"
-#include "tidop/core/exception.h"
-
-#ifdef TL_HAVE_GDAL
-TL_SUPPRESS_WARNINGS
-#include "gdal.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+#define BOOST_TEST_MODULE Tidop xml test
+#include <boost/test/unit_test.hpp>
+#include <tidop/core/xml.h>
 
 
-namespace tl
+using namespace tl;
+
+BOOST_AUTO_TEST_SUITE(XmlTestSuite)
+
+
+struct XmlTest
 {
+  XmlTest()
+  {
+  }
 
-//#ifdef TL_HAVE_GDAL
+  ~XmlTest()
+  {
+  }
 
-namespace internal
-{
+  void setup()
+  {
+    text = "<Nodo1>"
+           "  <Nodo2>"
+           "  </Nodo2>"
+           "</Nodo1>";
+  }
 
-class XmlNode
-{
+  void teardown()
+  {
 
-public:
+  }
 
-	CPLXMLNode *mCplXmlNode;
-	friend class XmlNode;
+  std::string text;
 };
 
-}
-
-
-
-
-XmlNodeValue::XmlNodeValue(std::string value)
-	: mValue(std::move(value))
+BOOST_FIXTURE_TEST_CASE(default_constructor, XmlTest)
 {
 }
 
-XmlNodeValue::~XmlNodeValue()
+BOOST_FIXTURE_TEST_CASE(next, XmlTest)
 {
+
 }
 
-std::string XmlNodeValue::toString()
-{
-	return std::string();
-}
-
-int XmlNodeValue::toInteger()
-{
-	return 0;
-}
-
-float XmlNodeValue::toFloat()
-{
-	return 0.0f;
-}
-
-double XmlNodeValue::toDouble()
-{
-	return 0.0;
-}
-
-
-
-
-XmlNode::XmlNode()
-{
-}
-
-XmlNode::XmlNode(const XmlNode &node)
-	: mNode(node.mNode)
-{
-}
-
-XmlNode::~XmlNode()
-{
-}
-
-XmlNode &XmlNode::next()
-{
-	//internal::XmlNode node{};
-	//node.mCplXmlNode = this->mNode->mCplXmlNode->psNext;
-	XmlNode node{};
-	node.mNode->mCplXmlNode = this->mNode->mCplXmlNode->psNext;
-
-	return node;
-}
-
-XmlNode &XmlNode::child()
-{
-	XmlNode node{};
-	node.mNode->mCplXmlNode = this->mNode->mCplXmlNode->psChild;
-	return node;
-}
-
-XmlNodeValue XmlNode::value()
-{
-	return XmlNodeValue(this->mNode->mCplXmlNode->pszValue);
-}
-
-
-
-
-XMLReader::XMLReader(const tl::Path &file)
-{
-	CPLXMLNode *xml_node = CPLParseXMLFile(file.toString().c_str());
-}
-
-XMLReader::XMLReader(const std::string &text)
-{
-}
-
-
-
-
-
-XMLWriter::XMLWriter(std::string file)
-{
-}
-
-
-} // End namespace tl
-
+BOOST_AUTO_TEST_SUITE_END()

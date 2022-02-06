@@ -473,11 +473,11 @@ BOOST_FIXTURE_TEST_CASE(division_double, VectorTest)
 {
   Vector<double, 3> v1 = {1., 0., 3.};
   Vector<double, 3> v2 = {-1., 4., 2.};
-  //Vector<double, 3> v3 = v1 / v2;
+  Vector<double, 3> v3 = v1 / v2;
 
-  //BOOST_CHECK_EQUAL(-1., v3[0]);
-  //BOOST_CHECK_EQUAL( 0., v3[1]);
-  //BOOST_CHECK_EQUAL( 1.5, v3[2]);
+  BOOST_CHECK_EQUAL(-1., v3[0]);
+  BOOST_CHECK_EQUAL( 0., v3[1]);
+  BOOST_CHECK_EQUAL( 1.5, v3[2]);
 
   v1 /= v2;
 
