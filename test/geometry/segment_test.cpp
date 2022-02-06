@@ -128,10 +128,10 @@ BOOST_AUTO_TEST_CASE(Segment_empty)
 {
   Segment<Point<double>> segment(PointD(56.23, 123.5), PointD(96.2, 34.4));
 
-  BOOST_CHECK(false == segment.empty());
+  BOOST_CHECK(false == segment.isEmpty());
 
   Segment<Point<double>> segment2;
-  BOOST_CHECK(segment2.empty());
+  BOOST_CHECK(segment2.isEmpty());
 }
 
 BOOST_AUTO_TEST_CASE(Segment_length)

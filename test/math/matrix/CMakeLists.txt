@@ -31,9 +31,8 @@ get_filename_component(test_name ${test_filename} NAME_WE)
 set(test_target "${test_name}")
 
 add_executable(${test_target} 
-               ${test_filename}
-               ${CMAKE_SOURCE_DIR}/src/tidop/math/algebra/matrix.h)
-target_link_libraries(${test_target} tl_core)
+               ${test_filename})
+target_link_libraries(${test_target} tl_core tl_math)
 target_link_libraries(${test_target} 
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}
