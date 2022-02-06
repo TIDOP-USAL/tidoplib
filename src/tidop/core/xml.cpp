@@ -127,22 +127,23 @@ XmlNodeValue XmlNode::value()
 
 
 
-XMLReader::XMLReader(const tl::Path &file)
+XMLReader::XMLReader()
+{
+	
+}
+
+void XMLReader::parse(const tl::Path &file)
 {
 	CPLXMLNode *xml_node = CPLParseXMLFile(file.toString().c_str());
 }
 
-XMLReader::XMLReader(const std::string &text)
+
+
+XMLWriter::XMLWriter(const std::string &file)
 {
 }
 
 
-
-
-
-XMLWriter::XMLWriter(std::string file)
-{
-}
 
 
 } // End namespace tl

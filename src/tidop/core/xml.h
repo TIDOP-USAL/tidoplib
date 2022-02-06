@@ -96,7 +96,7 @@ class TL_EXPORT XMLReader
 
 public:
   
-  explicit XMLReader();
+  XMLReader();
   ~XMLReader() = default;
 
   void parse(const tl::Path &file);
@@ -116,7 +116,7 @@ class TL_EXPORT XMLWriter
 
 public:
   
-  XMLWriter(std::string file);
+  XMLWriter(const std::string &file);
   ~XMLWriter() = default;
 
 };
