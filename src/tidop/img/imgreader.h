@@ -34,7 +34,7 @@
 #include <string>
 #include <memory>
 
-#include "opencv2/core/core.hpp"
+#include <opencv2/core/core.hpp>
 
 #include "tidop/core/defs.h"
 #include "tidop/core/utils.h"
