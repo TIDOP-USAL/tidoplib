@@ -163,7 +163,15 @@ public:
       TL_ASSERT(isOpen(), "The file has not been opened. Try to use VectorReaderGdal::open() method");
 
 #if GDAL_VERSION_MAJOR >= 3
-      if (const OGRSpatialReference *spatialReference = mDataset->GetSpatialRef()) {
+      const OGRSpatialReference *spatialReference = nullptr;
+
+      spatialReference = mDataset->GetSpatialRef();
+      if (spatialReference == nullptr) {
+        if (OGRLayer *ogrLayer = mDataset->GetLayer(0))
+          spatialReference = ogrLayer->GetSpatialRef();
+      }
+      
+      if (spatialReference) {
         char *wkt = nullptr;
         spatialReference->exportToWkt(&wkt);
         crs_wkt = std::string(wkt);

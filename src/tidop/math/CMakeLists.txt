@@ -16,7 +16,7 @@
 # GNU Lesser General Public License for more details.                    #
 #                                                                        #
 # You should have received a copy of the GNU Lesser General Public       #
-# License along with Foobar. If not, see <http://www.gnu.org/licenses/>. #
+# License along with TidopLib. If not, see <http://www.gnu.org/licenses>.#
 #                                                                        #
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
@@ -35,7 +35,8 @@ if(BUILD_TL_MATH)
                 statistics.h
                 mathutils.h
                 simd.h
-                statistics.h
+                statistic/series.h
+                statistic/descriptive.h
                 algebra/quaternion.h
                 algebra/euler_angles.h
                 algebra/rotations.h
