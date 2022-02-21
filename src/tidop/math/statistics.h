@@ -82,11 +82,11 @@ typename std::enable_if<
     double>::type
 mean(It first, It last)
 {
-  double x = 0.;
-  double i = 1.;
+  double x{0};
+  double i{1};
+
   while(first != last) {
-    x += (static_cast<double>(*first++) - x)/i;
-    i++;
+    x += (static_cast<double>(*first++) - x) / i++;
   }
   return x;
 }
@@ -103,9 +103,9 @@ mean(It first, It last)
   T i{1};
 
   while(first != last) {
-    x += (*first++ - x)/i;
-    i++;
+    x += (*first++ - x)/i++;
   }
+
   return x;
 }
 
@@ -541,6 +541,35 @@ medianAbsoluteDeviation(It first, It last)
   }
 
   return median(x.begin(), x.end());
+}
+
+template<typename It> inline
+double sumOfSquares(It first, It last)
+{
+  double _mean = mean(first, last);
+  double sum{};
+
+  while (first != last) {
+    double dif = static_cast<double>(*first++) - _mean;
+    sum += dif * dif;
+  }
+
+  return sum;
+}
+
+template<typename It> inline
+double rootMeanSquare(It first, It last)
+{
+  double sum{};
+  double i{1};
+  double x{};
+
+  while (first != last) {
+    x = *first++;
+    sum += (x * x - sum) / i++;
+  }
+
+  return std::sqrt(sum);
 }
 
 

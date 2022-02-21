@@ -50,7 +50,8 @@ public:
   CoordinateTransformation(OGRSpatialReference *epsgIn,
                            OGRSpatialReference *epsgOut)
     : mTransform(OGRCreateCoordinateTransformation(epsgIn, epsgOut))
-  { }
+  { 
+  }
 
   ~CoordinateTransformation()
   {

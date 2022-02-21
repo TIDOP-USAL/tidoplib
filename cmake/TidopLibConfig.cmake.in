@@ -62,11 +62,22 @@ if(@TL_HAVE_PROJ4@)
   else()
     set(TL_HAVE_PROJ4 YES)
     include_directories(${PROJ4_INCLUDE})
-	  message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
+	message(STATUS "  Include : ${PROJ4_INCLUDE_DIRS}")
     message(STATUS "  Library : ${PROJ4_LIBRARIES}")
   endif()
 endif()
 
+if(@TL_HAVE_OPENCV@)
+  find_package(OpenCV QUIET)
+  
+  if(NOT OPENCV_FOUND)
+    set(TL_HAVE_OPENCV NO)
+  else()
+    set(TL_HAVE_OPENCV YES)
+	message(STATUS "  OpenCV version: ${OpenCV_VERSION}")
+  endif()
+endif()
+	
 if(@TL_HAVE_OPENBLAS@)
   find_package(OpenBLAS QUIET)
   

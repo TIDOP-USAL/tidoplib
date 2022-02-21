@@ -28,6 +28,78 @@
 
 namespace tl
 {
+
+
+MetadataItemBase::MetadataItemBase(const std::string &name,
+                                   const std::string &defValue)
+  : MetadataItem(),
+    mName(name),
+    mDefaultValue(defValue), 
+    bActive(false)
+{
+}
+
+std::string MetadataItemBase::value() const
+{
+  return mValue;
+}
+
+void MetadataItemBase::setValue(const std::string &value)
+{
+  bActive = true;
+  mValue = value;
+}
+
+std::string MetadataItemBase::defaultValue() const
+{
+  return mDefaultValue;
+}
+
+void MetadataItemBase::setDefaultValue(const std::string &defValue)
+{
+  mDefaultValue = defValue;
+}
+
+bool MetadataItemBase::isActive() const
+{
+  return bActive;
+}
+
+
+
+MetadataItemNumber::MetadataItemNumber(const std::string &name,
+                                       const std::string &defValue)
+  : MetadataItemBase(name, defValue)
+{
+}
+
+void MetadataItemNumber::parseValue(const std::string &value)
+{
+  size_t pos1 = value.find("(");
+  size_t pos2 = value.find(")");
+
+  if (pos1 != std::string::npos && pos2 != std::string::npos) {
+    setValue(value.substr(pos1 + 1, pos2 - pos1 + 1));
+  }
+}
+
+
+
+MetadataItemText::MetadataItemText(const std::string &name,
+                                   const std::string &defValue)
+  : MetadataItemBase(name, defValue)
+{
+}
+
+void MetadataItemText::parseValue(const std::string &value)
+{
+  setValue(value);
+}
+
+
+
+
+
 ImageMetadata::ImageMetadata(Format format)
   : mFormat(format)
 {
@@ -63,8 +135,10 @@ public:
 
   }
     
-  std::string metadata(const std::string &name, bool &active) const override;
-  void setMetadata(const std::string &name, const std::string &value) override;
+  std::string metadata(const std::string &name, 
+                       bool &active) const override;
+  void setMetadata(const std::string &name, 
+                   const std::string &value) override;
 
   std::map<std::string, std::string> metadata() const override
   {
@@ -637,6 +711,9 @@ std::shared_ptr<ImageMetadata> ImageMetadataFactory::create(const std::string &f
 
   return imageMetadata;
 }
+
+
+
 
 
 } // End namespace tl
