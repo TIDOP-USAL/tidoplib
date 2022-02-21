@@ -1763,25 +1763,29 @@ MatrixBlock<T> Matrix<T, _rows, _cols>::block(size_t iniRow,
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-const MatrixBlock<const T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow, size_t endRow) const
+const MatrixBlock<const T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow,
+                                                             size_t endRow) const
 {
   return block(iniRow, endRow, 0, this->cols() - 1);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixBlock<T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow, size_t endRow)
+MatrixBlock<T> Matrix<T, _rows, _cols>::rowBlock(size_t iniRow,
+                                                 size_t endRow)
 {
   return block(iniRow, endRow, 0, this->cols() - 1);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-const MatrixBlock<const T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol, size_t endCol) const
+const MatrixBlock<const T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol,
+                                                             size_t endCol) const
 {
   return block(0, this->rows() - 1, iniCol, endCol);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-MatrixBlock<T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol, size_t endCol)
+MatrixBlock<T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol,
+                                                 size_t endCol)
 {
   return block(0, this->rows() - 1, iniCol, endCol);
 }
@@ -1830,7 +1834,6 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
     }
 
     matrix[i] /= pivotElement;
-    //matrix[i] = matrix[i] / pivotElement;
 
     for (size_t r = i + 1; r < rows; ++r) {
       T scale = matrix[r][i];
