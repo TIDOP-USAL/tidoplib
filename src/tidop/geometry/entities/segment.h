@@ -601,7 +601,7 @@ bool Segment3D<Point3_t>::isEmpty() const
 template<typename Point3_t> inline
 double Segment3D<Point3_t>::length() const 
 { 
-  return distance(pt1, pt2); 
+  return distance3D(pt1, pt2); 
 }
 
 template<typename Point3_t> inline
