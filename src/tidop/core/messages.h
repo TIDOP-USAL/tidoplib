@@ -55,7 +55,7 @@ namespace tl
  */
 enum class MessageLevel : int8_t {
   msg_debug   = 1 << 0,                               /*!< Información extra para depuración. */
-  msg_error   = 1 << 1,                               /*!< Sólo errores. */
+  msg_error   = 1 << 1,                               /*!< Errores. */
   msg_warning = 1 << 2,                               /*!< Warnings */
   msg_info    = 1 << 3,                               /*!< Otra información. */
   msg_verbose = msg_error | msg_warning | msg_info    /*!< Todos los mensajes. */

@@ -39,6 +39,8 @@ if(BUILD_TL_MATH)
         simd.h
         statistic/series.h
         statistic/descriptive.h
+        statistic/confmat.h
+        statistic/tukeyfences.h
         algebra/quaternion.h
         algebra/euler_angles.h
         algebra/rotations.h
