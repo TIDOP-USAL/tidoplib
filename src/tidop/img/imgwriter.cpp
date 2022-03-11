@@ -308,6 +308,47 @@ public:
       int nLineSpace = nPixelSpace * image_to_write.cols;
       int nBandSpace = static_cast<int>(image_to_write.elemSize1());
 
+      //GDALRasterBand *band = nullptr;
+
+      //std::vector<cv::Mat> channels;
+      //cv::split(image_to_write, channels);
+
+      //CPLErr cerr{};
+      //if (image_to_write.channels() == 1 || image_to_write.channels() == 2) {
+      //  band = mDataset->GetRasterBand(1);
+      //  cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                 channels[0].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //  band->SetColorInterpretation(GDALColorInterp::GCI_GrayIndex);
+      //  if (image_to_write.channels() == 2) {
+      //    band = mDataset->GetRasterBand(2);
+      //    cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                   channels[1].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //    band->SetColorInterpretation(GDALColorInterp::GCI_AlphaBand);
+      //  }
+      //} else if (image_to_write.channels() == 3 || image_to_write.channels() == 4) {
+      //  band = mDataset->GetRasterBand(1);
+      //  band->SetColorInterpretation(GDALColorInterp::GCI_RedBand);
+      //  cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                 channels[2].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //  band = mDataset->GetRasterBand(2);
+      //  band->SetColorInterpretation(GDALColorInterp::GCI_GreenBand);
+      //  cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                 channels[1].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //  
+      //  band = mDataset->GetRasterBand(3);
+      //  band->SetColorInterpretation(GDALColorInterp::GCI_BlueBand);
+      //  cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                 channels[0].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //  
+      //  if (image_to_write.channels() == 4) {
+      //    band = mDataset->GetRasterBand(4);
+      //    band->SetColorInterpretation(GDALColorInterp::GCI_AlphaBand);
+      //    cerr = band->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, rect_to_write.width, rect_to_write.height,
+      //                   channels[3].ptr(), image_to_write.cols, image_to_write.rows, gdal_data_type, 0, 0);
+      //    
+      //  }
+      //}
+
       CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y, 
                                        rect_to_write.width, rect_to_write.height, buff, 
                                        image_to_write.cols, image_to_write.rows, 

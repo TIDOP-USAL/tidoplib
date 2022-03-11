@@ -405,6 +405,8 @@ std::vector<int> gdalBandOrder(int channels)
 #ifdef TL_HAVE_OPENCV
   if (channels == 1) 
     panBandMap = { 1 };
+  if (channels == 2)
+    panBandMap = {1, 2};
   else if (channels == 3) 
     panBandMap = { 3, 2, 1 };   // Orden de bandas de OpenCV
   else if (channels == 4) 

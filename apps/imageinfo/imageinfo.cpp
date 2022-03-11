@@ -29,6 +29,7 @@
 #include <tidop/core/messages.h>
 #include <tidop/core/chrono.h>
 #include <tidop/img/imgreader.h>
+#include <tidop/img/imgwriter.h>
 #include <tidop/img/metadata.h>
 
 using namespace tl;
@@ -95,6 +96,12 @@ int main(int argc, char** argv)
         value = it->second;
         msgInfo("  %s: %s", name.c_str(), value.c_str());
       }
+
+      cv::Mat mat = imageReader->read();
+      std::unique_ptr<ImageWriter> image_writer = ImageWriterFactory::createWriter(img.replaceBaseName("out"));
+      image_writer->create(imageReader->rows(), imageReader->cols(), imageReader->channels(), imageReader->dataType());
+      image_writer->write(mat);
+      image_writer->close();
 
       imageReader->close();
     } else {
