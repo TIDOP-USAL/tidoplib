@@ -349,6 +349,19 @@ constexpr auto roundToInteger(T n) {
   return static_cast<int>(round(n));
 }
 
+template<typename ...Args>
+constexpr size_t args_size(Args&&...)
+{
+  return sizeof...(Args);
+}
+
+template<typename ...Args>
+constexpr size_t args_empty(Args&&...)
+{
+  return sizeof...(Args) == 0;
+}
+
+
 }
 
 

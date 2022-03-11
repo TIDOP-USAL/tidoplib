@@ -45,7 +45,6 @@ struct SeriesTest
     s2 = Series<double>({{"A", 2.}, {"B", 5.}});
     s3 = Series<double>({{3, 2.}, {7, 3.}});
 
-
   }
 
   void teardown()
@@ -278,6 +277,15 @@ BOOST_FIXTURE_TEST_CASE(kurtosis, DescriptiveStatisticsTest)
   BOOST_CHECK_CLOSE(6.14113079, stat_3.kurtosis(), 0.1);
 
   BOOST_CHECK_CLOSE(2.48341231, stat_1_population.kurtosis(), 0.1);
+}
+
+BOOST_FIXTURE_TEST_CASE(kurtosisExcess, DescriptiveStatisticsTest)
+{
+  BOOST_CHECK_CLOSE(0.158880584, stat_1.kurtosisExcess(), 0.1);
+  BOOST_CHECK_CLOSE(0.2625, stat_2.kurtosisExcess(), 0.1);
+  BOOST_CHECK_CLOSE(-0.108869212, stat_3.kurtosisExcess(), 0.1);
+
+  BOOST_CHECK_CLOSE(-0.516587694, stat_1_population.kurtosisExcess(), 0.1);
 }
 
 BOOST_FIXTURE_TEST_CASE(biweightMidvariance, DescriptiveStatisticsTest)

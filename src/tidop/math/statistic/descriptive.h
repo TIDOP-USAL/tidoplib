@@ -104,65 +104,44 @@ private:
 
 public:
 
+  /*!
+   * \brief 
+   * \param[in] method
+   * \see SkewnessMethod
+   * \return 
+  */
   static std::shared_ptr<Skewness<T>> create(SkewnessMethod method);
 };
 
 
-template<typename T>
-class Kurtosis
-  : public Algorithm<T>
-{
-
-public:
-
-  Kurtosis()
-  {
-  }
-  ~Kurtosis() override
-  {
-  }
-
-};
-
-/*!
- * \brief 
- * 
- *  https://stats.stackexchange.com/questions/61740/differences-in-kurtosis-definition-and-their-interpretation
- * 
- * The first formula and the typical definition used in many textbooks is:
- * 
- * \f[ g_{2}=\frac{m_{4}}{m_{2}^{2}} \f]
- * 
- * where mr denotes the sample moments:
- * 
- * \f[ m_{r}=\frac{1}{n}\sum(x_{i}-\bar{x})^{r} \f]
- * 
- * The second formula is (used by SAS, SPSS and MS Excel):
- * 
- * \f[ G_{2} = \frac{k_{4}}{k_{2}^{2}}= \frac{n-1}{(n-2)(n-3)}\left[(n+1)g_{2}+6\right] \f]
- *
- * where g2 is the kurtosis as defined in the first formula.
- * The third formula is (used by MINITAB and BMDP):
- * 
- * \f[ b_{2}=\frac{m_{4}}{s^{4}}-3=\left(\frac{n-1}{n}\right)^{2}\frac{m_{4}}{m_{2}^{2}}-3 \f]
- * 
- * where s2 is the unbiased sample variance:
- *
- * \f[ s^2=\frac{1}{n-1}\sum(x_{i}-\bar{x})^2 \f]
- * 
- */
-template<typename T>
-class KurtosisFactory
-{
-
-private:
-
-  KurtosisFactory() = default;
-
-public:
-
-  static std::shared_ptr<Kurtosis<T>> create(KurtosisMethod method);
-};
+//template<typename T>
+//class Kurtosis
+//  : public Algorithm<T>
+//{
+//
+//public:
+//
+//  Kurtosis()
+//  {
+//  }
+//  ~Kurtosis() override
+//  {
+//  }
+//
+//};
+//
+//template<typename T>
+//class KurtosisFactory
+//{
+//
+//private:
+//
+//  KurtosisFactory() = default;
+//
+//public:
+//
+//  static std::shared_ptr<Kurtosis<T>> create(KurtosisMethod method);
+//};
 
 
 template<typename T>
@@ -194,43 +173,81 @@ public:
   Series<T> data();
 
   /*!
-   * \brief min
-   * \return
+   * \brief Return the smallest value
+   * \f[ \text{min} = \text{min}(x_i)_{i=1}^{n} \f]
+   * \return Minimun value
    */
   T min();
 
   /*!
-   * \brief max
-   * \return
+   * \brief Returns the greatest value
+   * \f[ \text{max} = \text{max}(x_i)_{i=1}^{n} \f]
+   * \return Maximum value
    */
   T max();
 
   /*!
-   * \brief Summation
+   * \brief Total of all data values
+   * \f[ \text{sum} = \sum_{i=1}^{n}x_i \f]
    * \return
    */
   T sum();
 
   /*!
-   * \brief mean
+   * \brief The arithmetic mean or arithmetic average, 
+   * or simply just the mean or the average, is the sum 
+   * of a collection of numbers divided by the count of 
+   * numbers in the collection.
+   * 
+   * For a population:
+   * 
+   * \f[ \mu = \frac{\sum_{i=1}^{n}x_i}{n} \f]
+   * 
+   * For a sample:
+   * 
+   * \f[ \overline{x} = \frac{\sum_{i=1}^{n}x_i}{n} \f]
+   * 
    * \return
    */
   double mean();
 
   /*!
-   * \brief median
+   * \brief The median is the value separating the higher half from 
+   * the lower half of a data sample, a population, or a probability
+   * distribution.
    * \return
    */
   T median();
 
   /*!
-   * \brief variance
+   * \brief Variance measures dispersion of data from the mean. 
+   * The formula for variance is the sum of squared differences from the 
+   * mean divided by the size of the data set.
+   *
+   * For a population:
+   *
+   * \f[ \sigma^{2} = \frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n} \f]
+   *
+   * For a sample:
+   *
+   * \f[ s^{2} = \frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1} \f]
+   *
    * \return
    */
   double variance();
 
   /*!
-   * \brief standarDeviation
+   * \brief The standard deviation is a measure of the amount of variation 
+   * or dispersion of a set of values.
+   * 
+   * For a population:
+   *
+   * \f[ \sigma = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \mu)^{2}}{n}} \f]
+   * 
+   * For a sample:
+   * 
+   * \f[ s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \overline{x})^{2}}{n - 1}} \f]
+   * 
    * \return
    */
   double standarDeviation();
@@ -242,8 +259,11 @@ public:
   double mode();
 
   /*!
-   * \brief range
-   * \return
+   * \brief The range of a set of data is the difference between
+   * the largest and smallest values. 
+   * \f[ \text{range} = x_n - x_1 \f]
+   * \return Range
+   * \see min, max
    */
   T range();
 
@@ -267,12 +287,22 @@ public:
 
   /*!
    * \brief Interquartile Range
+   * \f[ IQR = Q_3 - Q_1 \f]
    * \return
    */
   double interquartileRange();
 
   /*!
    * \brief Mean Absolute Deviation
+   * 
+   * For a Population:
+   * 
+   * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \mu|}{n} \f]
+   * 
+   * For a Sample:
+   * 
+   * \f[ MAD = \frac{\sum_{i=1}^{n}|x_i - \overline{x}|}{n}  \f]
+   * 
    * \return
    */
   double meanAbsoluteDeviation();
@@ -285,12 +315,30 @@ public:
 
   /*!
    * \brief Sum of Squares
+   * The sum of squares is the sum of the squared differences between 
+   * data values and the mean.
+   * 
+   * For a Population:
+   * 
+   * \f[ SS = \sum_{i=1}^{n}(x_i - \mu)^{2} \f]
+   * 
+   * For a Sample:
+   * 
+   * \f[ SS = \sum_{i=1}^{n}(x_i - \overline{x})^{2}  \f]
+   * 
    * \return
    */
   double sumOfSquares();
 
   /*!
    * \brief Root Mean Square
+   * 
+   * The root mean square describes the magnitude of a set of numbers. 
+   * The formula for root mean square is the square root of the sum of 
+   * the squared data values divided by n.
+   * 
+   * \f[ RMS = \sqrt{\frac{\sum_{i=1}^{n}x_i^{2}}{n}} \f]
+   * 
    * \return
    */
   double rootMeanSquare();
@@ -307,9 +355,22 @@ public:
    */
   double kurtosis();
 
+  double kurtosisExcess();
+
   /*!
    * \brief Coefficient of Variation (CV) or Relative Standard Deviation (RSD)
-   * \f[ C_V = \frac{\sigma}{|\bar{x}|} \f]
+   * The coefficient of variation describes dispersion of data around the mean. 
+   * It is the ratio of the standard deviation to the mean. The coefficient of 
+   * variation is calculated as the standard deviation divided by the mean.
+   * 
+   * For a Population:
+   * 
+   * \f[ C_V = \frac{\sigma}{\mu} \f]
+   * 
+   * For a Sample:
+   * 
+   * \f[ C_V = \frac{\sigma}{\bar{x}} \f]
+   * 
    * \return
    */
   double coefficientOfVariation();
@@ -660,6 +721,21 @@ double DescriptiveStatistics<T>::kurtosis()
   return _kurtosis;
 }
 
+template<typename T>
+inline double DescriptiveStatistics<T>::kurtosisExcess()
+{
+  int n = size();
+  double kurtosis_excess{};
+
+  if (mConfig.sample) {
+    kurtosis_excess = this->kurtosis() - 3. * (n - 1)*(n - 1) / ((n - 2) * (n - 3));
+  } else {
+    kurtosis_excess = this->kurtosis() - 3.;
+  }
+
+  return kurtosis_excess;
+}
+
 template<typename T> inline
 double DescriptiveStatistics<T>::coefficientOfVariation()
 {
@@ -846,6 +922,7 @@ void DescriptiveStatistics<T>::computeThirdQuartile()
 }
 
 
+/// \cond
 
 namespace internal
 {
@@ -947,8 +1024,30 @@ public:
 
 };
 
+
+//template<typename T>
+//class KurtosisB2
+//  : public Kurtosis<T>
+//{
+//
+//public:
+//
+//  KurtosisB2() : Kurtosis<T>()
+//  {
+//  }
+//  ~KurtosisB2() override = default;
+//
+//  double eval(DescriptiveStatistics<T> *stat) override
+//  {
+//    return 0.0;
+//  }
+//
+//};
+
+
 } // internal
 
+/// \endcond
 
 template<typename T> inline
 std::shared_ptr<Skewness<T>> SkewnessFactory<T>::create(SkewnessMethod method)
@@ -974,13 +1073,13 @@ std::shared_ptr<Skewness<T>> SkewnessFactory<T>::create(SkewnessMethod method)
 }
 
 
-template<typename T> inline
-std::shared_ptr<Kurtosis<T>> KurtosisFactory<T>::create(KurtosisMethod method)
-{
-  std::shared_ptr<Kurtosis<T>> skew;
-
-  return skew;
-}
+//template<typename T> inline
+//std::shared_ptr<Kurtosis<T>> KurtosisFactory<T>::create(KurtosisMethod method)
+//{
+//  std::shared_ptr<Kurtosis<T>> skew;
+//
+//  return skew;
+//}
 
 
 /*! \} */ // end of statistic
