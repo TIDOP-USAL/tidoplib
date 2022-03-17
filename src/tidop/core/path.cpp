@@ -223,7 +223,7 @@ std::list<Path> Path::list(const std::string &extension)
 
     if (compareInsensitiveCase(extension_found, extension)) {
 
-      list.push_back(it->path().filename().string());
+      list.emplace_back(it->path().filename().string());
     }
   }
 
@@ -247,7 +247,7 @@ std::list<Path> Path::list(const std::regex &filter)
 
     if (!std::regex_match(fname, what, filter)) continue;
 
-    list.push_back(fname);
+    list.emplace_back(fname);
   }
 
   return list;

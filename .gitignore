@@ -3,3 +3,5 @@ build
 
 #ignorar copias de ficheros
 * - copia.*
+
+CMakeLists.txt.user
