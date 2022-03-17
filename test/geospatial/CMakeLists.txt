@@ -16,66 +16,14 @@
 # GNU Lesser General Public License for more details.                    #
 #                                                                        #
 # You should have received a copy of the GNU Lesser General Public       #
-# License along with Foobar. If not, see <http://www.gnu.org/licenses/>. #
+# License along with TidopLib. If not, see <http://www.gnu.org/licenses>.#
 #                                                                        #
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
 
 if(TL_HAVE_GEOSPATIAL)
-
-  project(test)
-
-
-  MACRO(DEFINE_TEST name srcs)
-
-    include_directories(${CMAKE_BUILD_DIR})
-    include_directories(${CMAKE_SOURCE_DIR}/src)
-	
-    project(${name} LANGUAGES CXX)
-
-    add_executable(${PROJECT_NAME} ${srcs})
-	
-    target_compile_definitions(${PROJECT_NAME} PUBLIC
-                               $<$<BOOL:${HAVE_OPENBLAS}>:HAVE_LAPACK_CONFIG_H>
-                               $<$<BOOL:${HAVE_OPENBLAS}>:LAPACK_COMPLEX_STRUCTURE>)
-
-
-    target_link_libraries(${PROJECT_NAME}
-                          tl_core 
-                          tl_geom 
-                          tl_geospatial
-                          ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-                          $<$<BOOL:${HAVE_GDAL}>:${GDAL_LIBRARY}>
-                          $<$<BOOL:${TL_HAVE_PROJ4}>:${PROJ4_LIBRARY}>
-                          $<$<BOOL:${HAVE_OPENBLAS}>:OpenBLAS::OpenBLAS>
-                          ${OpenCV_LIBS})
-
-    if (UNIX)
-        target_link_libraries(${PROJECT_NAME} -lpthread -ldl -lexpat -ljasper -ljpeg -ltiff -lpng -lm -lrt -lpcre)
-    endif()
-
-    set_property(TARGET ${PROJECT_NAME} PROPERTY FOLDER "test/geospatial")
-
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-                          OUTPUT_NAME ${PROJECT_NAME}
-                          PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
-
-    if(ENABLE_SOLUTION_FOLDERS)
-      set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "test/geospatial")
-    endif()
-	
-	add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
-	
-  ENDMACRO()
-
-  file(GLOB_RECURSE cpp_test RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
-  
-
-  foreach(test_filename ${cpp_test})
-    get_filename_component(test ${test_filename} NAME_WE)
-    DEFINE_TEST(${test}  ${test_filename})
-  endforeach()
-
-
+add_subdirectory(crs)
+add_subdirectory(crs_transform)
+add_subdirectory(util)
 endif()

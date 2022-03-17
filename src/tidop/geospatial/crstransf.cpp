@@ -38,10 +38,10 @@ namespace tl
 namespace geospatial
 {
 
+#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
+
 namespace internal
 {
-
-#if defined TL_HAVE_GDAL && defined TL_HAVE_PROJ4
 
 class CoordinateTransformation
 {
@@ -50,7 +50,8 @@ public:
   CoordinateTransformation(OGRSpatialReference *epsgIn,
                            OGRSpatialReference *epsgOut)
     : mTransform(OGRCreateCoordinateTransformation(epsgIn, epsgOut))
-  { }
+  { 
+  }
 
   ~CoordinateTransformation()
   {

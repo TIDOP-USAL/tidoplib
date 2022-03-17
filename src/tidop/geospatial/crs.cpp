@@ -68,6 +68,7 @@ Crs::Crs(const std::string &epsg,
 #endif
 #endif
 {
+  mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   initFromEpsg();
 }
 
@@ -85,6 +86,7 @@ Crs::Crs(const Crs &crs)
 #endif
 #endif
 {
+  mCrs->SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
   fromWktFormat(crs.toWktFormat());
 }
 

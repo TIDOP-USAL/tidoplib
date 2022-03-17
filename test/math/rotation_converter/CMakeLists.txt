@@ -16,7 +16,7 @@
 # GNU Lesser General Public License for more details.                    #
 #                                                                        #
 # You should have received a copy of the GNU Lesser General Public       #
-# License along with Foobar. If not, see <http://www.gnu.org/licenses/>. #
+# License along with TidopLib. If not, see <http://www.gnu.org/licenses>.#
 #                                                                        #
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
@@ -32,7 +32,7 @@ set(test_target "${test_name}")
 
 add_executable(${test_target} 
                ${test_filename})
-target_link_libraries(${test_target} tl_core)
+target_link_libraries(${test_target} tl_core tl_math)
 target_link_libraries(${test_target} 
                       ${Boost_FILESYSTEM_LIBRARY}
                       ${Boost_SYSTEM_LIBRARY}

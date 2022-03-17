@@ -35,6 +35,75 @@
 namespace tl
 {
 
+
+class TL_EXPORT MetadataItem
+{
+
+public:
+
+  MetadataItem() = default;
+  virtual ~MetadataItem() = default;
+
+  virtual void parseValue(const std::string &value) = 0;
+
+};
+
+
+class TL_EXPORT MetadataItemBase
+  : public MetadataItem
+{
+
+public:
+
+  MetadataItemBase(const std::string &name, 
+                   const std::string &defValue = "");
+  ~MetadataItemBase() override = default;
+
+  std::string value() const;
+  void setValue(const std::string &value);
+  std::string defaultValue() const;
+  void setDefaultValue(const std::string &defValue);
+  bool isActive() const;
+
+private:
+
+  std::string mName;
+  std::string mDefaultValue;
+  std::string mValue;
+  bool bActive;
+};
+
+
+class MetadataItemNumber
+  : public MetadataItemBase
+{
+
+public:
+
+  MetadataItemNumber(const std::string &name,
+                     const std::string &defValue = "");
+  ~MetadataItemNumber() override = default;
+
+  void parseValue(const std::string &value) override;
+
+};
+
+class MetadataItemText
+  : public MetadataItemBase
+{
+
+public:
+
+  MetadataItemText(const std::string &name,
+                     const std::string &defValue = "");
+  ~MetadataItemText() override = default;
+
+  void parseValue(const std::string &value) override;
+
+};
+
+
+
 class TL_EXPORT ImageMetadata
 {
 

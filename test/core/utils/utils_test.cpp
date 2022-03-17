@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop utils test
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/utils.h>
-
+#include <tidop/core/exception.h>
 
 using namespace tl;
 
@@ -152,4 +152,20 @@ BOOST_AUTO_TEST_CASE(split_separator)
   BOOST_CHECK_EQUAL("cad1", out[0]);
   BOOST_CHECK_EQUAL("cad2", out[1]);
   BOOST_CHECK_EQUAL("cad3", out[2]);
+}
+
+
+BOOST_AUTO_TEST_CASE(_args_size)
+{
+  BOOST_CHECK_EQUAL(4, tl::args_size(1, 2, 3, 4));
+
+  std::string arg1("1");
+  int arg2 = 2;
+  BOOST_CHECK_EQUAL(2, tl::args_size(arg1, arg2));
+}
+
+BOOST_AUTO_TEST_CASE(_args_empty)
+{
+  BOOST_CHECK(tl::args_empty());
+  BOOST_CHECK_EQUAL(false, tl::args_empty(1, 3));
 }

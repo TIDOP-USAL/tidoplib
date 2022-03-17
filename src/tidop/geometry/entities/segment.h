@@ -157,7 +157,7 @@ public:
    * \brief Comprueba si el segmento esta vacio pt1 = (0, 0) ; pt2 = (0, 0)
    * \return Verdadero si esta vacio
    */
-  bool empty() const;
+  bool isEmpty() const;
 
   /*!
    * \brief Comprueba si dos segmentos están próximos
@@ -331,7 +331,7 @@ Window<Point_t> Segment<Point_t>::window() const
 }
 
 template<typename Point_t> inline
-bool Segment<Point_t>::empty() const
+bool Segment<Point_t>::isEmpty() const
 {
   using sub_type = typename Point_t::value_type;
   return (pt1.x == math::consts::zero<sub_type> && 
@@ -601,7 +601,7 @@ bool Segment3D<Point3_t>::isEmpty() const
 template<typename Point3_t> inline
 double Segment3D<Point3_t>::length() const 
 { 
-  return distance(pt1, pt2); 
+  return distance3D(pt1, pt2); 
 }
 
 template<typename Point3_t> inline

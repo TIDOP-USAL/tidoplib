@@ -82,11 +82,11 @@ typename std::enable_if<
     double>::type
 mean(It first, It last)
 {
-  double x = 0.;
-  double i = 1.;
+  double x{0};
+  double i{1};
+
   while(first != last) {
-    x += (static_cast<double>(*first++) - x)/i;
-    i++;
+    x += (static_cast<double>(*first++) - x) / i++;
   }
   return x;
 }
@@ -103,9 +103,9 @@ mean(It first, It last)
   T i{1};
 
   while(first != last) {
-    x += (*first++ - x)/i;
-    i++;
+    x += (*first++ - x)/i++;
   }
+
   return x;
 }
 
@@ -543,6 +543,35 @@ medianAbsoluteDeviation(It first, It last)
   return median(x.begin(), x.end());
 }
 
+template<typename It> inline
+double sumOfSquares(It first, It last)
+{
+  double _mean = mean(first, last);
+  double sum{};
+
+  while (first != last) {
+    double dif = static_cast<double>(*first++) - _mean;
+    sum += dif * dif;
+  }
+
+  return sum;
+}
+
+template<typename It> inline
+double rootMeanSquare(It first, It last)
+{
+  double sum{};
+  double i{1};
+  double x{};
+
+  while (first != last) {
+    x = *first++;
+    sum += (x * x - sum) / i++;
+  }
+
+  return std::sqrt(sum);
+}
+
 
 /*!
  * \brief Coefficient of variation (CV) or Relative Standard Deviation (RSD)
@@ -604,8 +633,8 @@ quartileCoefficientOfDispersion(It first, It last)
 
 
 /*!
- * \brief Quartile coefficient of dispersion
- * \f[ \frac{Q_3-Q_1}{Q_3+Q_1} \f]
+ * \brief Quartile Deviation
+ * \f[ \frac{Q_3-Q_1}{2} \f]
  * \param[in] first Iterador al inicio
  * \param[in] last Iterador al final
  */
@@ -834,376 +863,10 @@ void zScore(itIn in_first, itIn in_last, itOut out_first)
   }
 }
 
-enum class tukey_k
-{
-  outlier,
-  far_out
-};
 
-template<typename It> inline
-std::vector<bool> tukey(It first, It last, tukey_k k = tukey_k::outlier)
-{
-  using T = typename std::iterator_traits<It>::value_type;
 
-  T q1 = tl::math::quantile(first, last, 0.25);
-  T q3 = tl::math::quantile(first, last, 0.75);
 
-  T interquartile_range = q3 - q1;
 
-  T _k = (k == tukey_k::outlier) ? static_cast<T>(1.5) : static_cast<T>(3);
-
-  T el1 = q1 - interquartile_range * _k;
-  T el2 = q3 + interquartile_range * _k;
-
-  std::vector<bool> inliers(std::distance(first, last), false);
-  auto out = inliers.begin();
-  while (first != last) {
-    T temp = *first++;
-    *out++ = el1 < temp && temp > el2;
-  }
-
-  return inliers;
-}
-
-
-
-template<typename T>
-class ConfusionMatrix
-{
-
-public:
-
-  enum class Classification
-  {
-    true_positives,
-    false_positives,
-    true_negatives,
-    false_negatives
-  };
-
-public:
-
-  ConfusionMatrix(const std::vector<std::pair<T, int>> &data);
-  virtual ~ConfusionMatrix() = default;
-
-  /*!
-   * \brief positives
-   * positives = TP + FN
-   * \return
-   */
-  size_t positives() const;
-
-  /*!
-   * \brief negatives
-   * negatives = FP + TN
-   * \return
-   */
-  size_t negatives() const;
-
-  /*!
-   * \brief True Positives
-   * \param[in] threshold
-   * \return
-   */
-  size_t truePositives(T threshold) const;
-
-  /*!
-   * \brief False Positives
-   * \param[in] threshold
-   * \return
-   */
-  size_t falsePositives(T threshold) const;
-
-  /*!
-   * \brief True Negatives
-   * \param[in] threshold
-   * \return
-   */
-  size_t trueNegatives(T threshold) const;
-
-  /*!
-   * \brief False Negatives
-   * \param[in] threshold
-   * \return
-   */
-  size_t falseNegatives(T threshold) const;
-
-  /*!
-   * \brief accuracy
-   * \param[in] threshold
-   * \return
-   */
-  double accuracy(T threshold) const;
-
-  /*!
-   * \brief Precision or Positive Predictive Value
-   * \param[in] threshold
-   * \return
-   */
-  double positivePredictiveValue(T threshold) const;
-
-  /*!
-   * \brief Negative Predictive Value
-   * \param[in] threshold
-   * \return
-   */
-  double negativePredictiveValue(T threshold) const;
-
-  /*!
-   * \brief True Positive Rate, Recall or Sensitivity
-   * \param[in] threshold
-   * \return
-   */
-  double truePositiveRate(T threshold) const;
-
-  /*!
-   * \brief False Positive Rate or Fall-out
-   * \param[in] threshold
-   * \return
-   */
-  double falsePositiveRate(T threshold) const;
-
-  /*!
-   * \brief True Negative Rate or Specificity
-   * \param[in] threshold
-   * \return
-   */
-  double trueNegativeRate(T threshold) const;
-
-  /*!
-   * \brief False Negative Rate
-   * \param[in] threshold
-   * \return
-   */
-  double falseNegativeRate(T threshold) const;
-
-  static double truePositiveRate(size_t tp, size_t fn);
-  static double falsePositiveRate(size_t fp, size_t tn);
-  static double trueNegativeRate(size_t tn, size_t fp);
-  static double falseNegativeRate(size_t fn, size_t tp);
-  static double positivePredictiveValue(size_t tp, size_t fp);
-  static double negativePredictiveValue(size_t fn, size_t tn);
-  static double accuracy(size_t tp, size_t tn, size_t positives, size_t negatives);
-
-private:
-
-  /*!
-   * \brief Confussion matrix for the specified threshold
-   * \param[in] threshold
-   * \return Confussion Matrix
-   */
-  std::map<Classification, size_t> compute(T threshold) const;
-
-private:
-
-  std::vector<std::pair<T, int>> mData;
-  size_t mPositives;
-  size_t mNegatives;
-
-};
-
-
-template<typename T>
-ConfusionMatrix<T>::ConfusionMatrix(const std::vector<std::pair<T, int>> &data)
-  : mData(data),
-    mPositives(0),
-    mNegatives(0)
-{
-  std::sort(mData.begin(), mData.end(),
-            [](const std::pair<T, int> &data1,
-               const std::pair<T, int> &data2) {
-              return data1.first < data2.first; });
-
-  for (const auto &data : mData) {
-    if (data.second == 1) {
-      mPositives++;
-    } else {
-      mNegatives++;
-    }
-  }
-
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::positives() const
-{
-  return mPositives;
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::negatives() const
-{
-  return mNegatives;
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::truePositives(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  return confussionMatrix[Classification::true_positives];
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::falsePositives(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  return confussionMatrix[Classification::false_positives];
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::trueNegatives(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  return confussionMatrix[Classification::true_negatives];
-}
-
-template<typename T> inline
-size_t ConfusionMatrix<T>::falseNegatives(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  return confussionMatrix[Classification::false_negatives];
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::accuracy(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-
-  return (mPositives + mNegatives) > consts::zero<size_t> ?
-    static_cast<double>(confussionMatrix[Classification::true_positives] + confussionMatrix[Classification::true_negatives])
-    / static_cast<double>(mPositives + mNegatives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::positivePredictiveValue(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double tp = confussionMatrix[Classification::true_positives];
-  double fp = confussionMatrix[Classification::false_positives];
-  return ((tp + fp) > consts::zero<size_t>) ? tp / (tp + fp) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::negativePredictiveValue(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double fn = confussionMatrix[Classification::false_negatives];
-  double tn = confussionMatrix[Classification::true_negatives];
-  return (fn + tn > consts::zero<size_t>) ? tn / (fn + tn) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::truePositiveRate(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double tp = confussionMatrix[Classification::true_positives];
-  return mPositives > consts::zero<size_t> ? tp / static_cast<double>(mPositives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::falsePositiveRate(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double fp = confussionMatrix[Classification::false_positives];
-  return mNegatives > consts::zero<size_t> ? static_cast<double>(fp) / static_cast<double>(mNegatives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::trueNegativeRate(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double tn = confussionMatrix[Classification::true_negatives];
-  return mNegatives > consts::zero<size_t> ? static_cast<double>(tn) / static_cast<double>(mNegatives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::falseNegativeRate(T threshold) const
-{
-  std::map<Classification, size_t> confussionMatrix = this->compute(threshold);
-  double fn = confussionMatrix[Classification::false_negatives];
-  return mPositives > consts::zero<size_t> ? static_cast<double>(fn) / static_cast<double>(mPositives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::truePositiveRate(size_t tp, size_t fn)
-{
-  size_t positives = tp + fn;
-  return positives > consts::zero<size_t> ? static_cast<double>(tp) / static_cast<double>(positives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::falsePositiveRate(size_t fp, size_t tn)
-{
-  size_t negatives = fp + tn;
-  return negatives > consts::zero<size_t> ? static_cast<double>(fp) / static_cast<double>(negatives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::trueNegativeRate(size_t tn, size_t fp)
-{
-  size_t negatives = fp + tn;
-  return negatives > consts::zero<size_t> ? static_cast<double>(tn) / static_cast<double>(negatives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::falseNegativeRate(size_t fn, size_t tp)
-{
-  size_t positives = fn + tp;
-  return positives > consts::zero<size_t> ? static_cast<double>(fn) / static_cast<double>(positives) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::positivePredictiveValue(size_t tp, size_t fp)
-{
-  return ( (tp + fp) > consts::zero<size_t>) ? tp / static_cast<double>(tp + fp) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::negativePredictiveValue(size_t fn, size_t tn)
-{
-  return (fn + tn > consts::zero<size_t>) ? tn / static_cast<double>(fn + tn) : -consts::one<double>;
-}
-
-template<typename T> inline
-double ConfusionMatrix<T>::accuracy(size_t tp, size_t tn, size_t positives, size_t negatives)
-{
-  return (positives + negatives) > consts::zero<size_t> ?
-    static_cast<double>(tp+tn) / static_cast<double>(positives + negatives) :
-    -consts::one<double>;
-}
-
-template<typename T> inline
-std::map<typename ConfusionMatrix<T>::Classification, size_t> ConfusionMatrix<T>::compute(T threshold) const
-{
-  size_t true_positives = 0;
-  size_t false_positives = 0;
-  size_t true_negatives = 0;
-  size_t false_negatives = 0;
-
-  for (size_t j = 0; j < mData.size(); j++) {
-
-    if (mData[j].first < threshold) {
-      if (mData[j].second == 1)
-        false_negatives++;
-      else
-        true_negatives++;
-    } else {
-      if (mData[j].second == 0)
-        false_positives++;
-      else
-        true_positives++;
-    }
-
-  }
-
-  std::map<Classification, size_t> confussionMatrix;
-  confussionMatrix[Classification::true_positives] = true_positives;
-  confussionMatrix[Classification::false_positives] = false_positives;
-  confussionMatrix[Classification::true_negatives] = true_negatives;
-  confussionMatrix[Classification::false_negatives] = false_negatives;
-
-  return confussionMatrix;
-}
 
 /*! \} */ // end of statistic
 

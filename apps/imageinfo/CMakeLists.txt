@@ -16,13 +16,13 @@
 # GNU Lesser General Public License for more details.                    #
 #                                                                        #
 # You should have received a copy of the GNU Lesser General Public       #
-# License along with Foobar. If not, see <http://www.gnu.org/licenses/>. #
+# License along with TidopLib. If not, see <http://www.gnu.org/licenses>.#
 #                                                                        #
 # @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         #
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND HAVE_GDAL AND TL_HAVE_PROJ4)
+if(BUILD_TL_CORE AND BUILD_TL_GEOMETRY AND BUILD_TL_GEOSPATIAL AND TL_HAVE_GDAL AND TL_HAVE_PROJ4)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)

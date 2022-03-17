@@ -50,10 +50,14 @@ double degreesToGradians(int degrees, int minutes, double seconds)
 
 void decimalDegreesToDegrees(double decimalDegrees, int &degrees, int &minutes, double &seconds)
 {
-  degrees = static_cast<int>(decimalDegrees);
-  double min = fabs(decimalDegrees - degrees) * consts::degrees_to_minutes;
-  minutes = static_cast<int>(min);
-  seconds = fabs(min - minutes) * consts::minutes_to_seconds;
+  seconds = decimalDegrees * consts::degrees_to_seconds;
+  int s = static_cast<int>(seconds);
+  seconds -= s;
+  degrees = s / consts::degrees_to_seconds;
+  s = std::abs(s % 3600);
+  minutes = s / consts::minutes_to_seconds;
+  s %= 60;
+  seconds += s;
 }
 
 double decimalDegreesToRadians(double decimalDegrees)
