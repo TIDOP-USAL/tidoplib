@@ -49,6 +49,14 @@ namespace tl
 namespace math
 {
 
+
+//TODO: Expression templates:
+//      Por ahora no se implementan las operaciones entre matrices con 
+//      expressions templates. En su lugar se emplea cuando es posible
+//      el operador de movimiento para minimizar en lo posible la creación 
+//      de objetos temporales. 
+
+
 constexpr auto DynamicMatrix = std::numeric_limits<size_t>::max();
 
 /*! \addtogroup math
@@ -75,6 +83,9 @@ class MatrixBlock;
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBase;
 
+/*!
+ * \brief Static MatrixBase
+ */
 template<typename T, size_t _rows, size_t _cols>
 class MatrixBase
 {
@@ -169,12 +180,33 @@ public:
    * \endcode
    */
   reference operator()(size_t position);
+
+  /*!
+   * \brief Referencia constante al elemento
+   * La posición del elemento se determina como:
+   *   r * this->cols() + c
+   * \param[in] position Posición del elemento de la matriz
+   * \return Valor de la matriz en dicha posición
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(4) = 1.5;
+   * double value = matrix(4); // value == 1.5
+   * \endcode
+   */
   const_reference operator()(size_t position) const;
 
-  void operator=(T value)
-  {
-    mData.fill(value);
-  }
+  /*!
+   * \brief Asigna el mismo valor a toda la matriz
+   * \param[in] value Valor escalar que se asigna a todos los elementos de la matriz
+   * 
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix = 1.5;
+   * \endcode
+   */
+  void operator=(T value);
 
   /*!
    * \brief Número de filas de la matriz
@@ -188,23 +220,23 @@ public:
    */
   size_t cols() const;
 
+  /*!
+   * \brief Intercambia dos filas
+   * \param[in] i Primera fila a intercambiar
+   * \param[in] j Segunda fila a intercambiar
+   */
   void swapRows(size_t i, size_t j);
 
-  pointer data()
-  {
-    return mData.data();
-  }
-    
-  const_pointer data() const
-  {
-    return mData.data();
-  }
+  pointer data();
+  const_pointer data() const;
 
 private:
 
   std::array<T, _rows * _cols> mData;
 };
 
+
+/* Static MatrixBase implementation */
 
 template<typename T, size_t _rows, size_t _cols> inline 
 MatrixBase<T, _rows, _cols>::MatrixBase()
@@ -341,6 +373,12 @@ const T &MatrixBase<T, _rows, _cols>::operator()(size_t position) const
   return mData[position];
 }
 
+template<typename T, size_t _rows, size_t _cols> inline
+void MatrixBase<T, _rows, _cols>::operator=(T value)
+{
+  mData.fill(value);
+}
+
 template<typename T, size_t _rows, size_t _cols> inline 
 size_t MatrixBase<T, _rows, _cols>::rows() const
 {
@@ -361,6 +399,18 @@ void MatrixBase<T, _rows, _cols>::swapRows(size_t i, size_t j)
   }
 }
 
+template<typename T, size_t _rows, size_t _cols> inline
+T *MatrixBase<T, _rows, _cols>::data()
+{
+  return mData.data();
+}
+
+template<typename T, size_t _rows, size_t _cols> inline
+const T *MatrixBase<T, _rows, _cols>::data() const
+{
+  return mData.data();
+}
+
 
 
 #define MATRIX_STD_VECTOR 1
@@ -368,6 +418,9 @@ void MatrixBase<T, _rows, _cols>::swapRows(size_t i, size_t j)
 
 #ifdef MATRIX_STD_VECTOR
 
+/*!
+ * \brief Dynamic MatrixBase
+ */
 template<typename T>
 class MatrixBase<T, DynamicMatrix, DynamicMatrix>
 {
@@ -396,39 +449,127 @@ public:
   MatrixBase &operator = (const MatrixBase &matrix);
   MatrixBase &operator = (MatrixBase &&matrix) TL_NOEXCEPT;
 
+  /*!
+   * \brief Referencia al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila de la matriz
+   * \param[in] c Columna de la matriz
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix.at(0, 0) = 1.5;
+   * double value = matrix.at(0, 0);
+   * \endcode
+   */
   reference at(size_t r, size_t c);
+
+  /*!
+   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila
+   * \param[in] c Columna
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * double value = matrix.at(0, 0);
+   * \endcode
+   */
   const_reference at(size_t r, size_t c) const;
 
+  /*!
+   * \brief Referencia al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila de la matriz
+   * \param[in] c Columna de la matriz
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(0, 0) = 1.5;
+   * double value = matrix(0, 0);
+   * \endcode
+   */
   reference operator()(size_t r, size_t c);
+
+  /*!
+   * \brief Referencia constante al elemento en la posición fila (r) y columna (c)
+   * \param[in] r Fila
+   * \param[in] c Columna
+   * \return Valor de la matriz en la posición fila y columna
+   * <h4>Ejemplo</h4>
+   * \code
+   * double value = matrix(0, 0);
+   * \endcode
+   */
   const_reference operator()(size_t r, size_t c) const;
 
+  /*!
+   * \brief Referencia al elemento
+   * La posición del elemento se determina como:
+   *   r * this->cols() + c
+   * \param[in] position Posición del elemento de la matriz
+   * \return Valor de la matriz en dicha posición
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(4) = 1.5;
+   * double value = matrix(4); // value == 1.5
+   * \endcode
+   */
   reference operator()(size_t position);
+
+  /*!
+   * \brief Referencia constante al elemento
+   * La posición del elemento se determina como:
+   *   r * this->cols() + c
+   * \param[in] position Posición del elemento de la matriz
+   * \return Valor de la matriz en dicha posición
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix(4) = 1.5;
+   * double value = matrix(4); // value == 1.5
+   * \endcode
+   */
   const_reference operator()(size_t position) const;
 
+  /*!
+   * \brief Asigna el mismo valor a toda la matriz
+   * \param[in] value Valor escalar que se asigna a todos los elementos de la matriz
+   *
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix<double,3,3> matrix;
+   * matrix = 1.5;
+   * \endcode
+   */
   void operator=(T value)
   {
     std::fill(mData.begin(), mData.end(), value);
   }
 
+  /*!
+   * \brief Número de filas de la matriz
+   * \return Número de filas
+   */
   size_t rows() const;
+
+  /*!
+   * \brief Número de columnas de la matriz
+   * \return Número de columnas
+   */
   size_t cols() const;
 
+  /*!
+   * \brief Intercambia dos filas
+   * \param[in] i Primera fila a intercambiar
+   * \param[in] j Segunda fila a intercambiar
+   */
   void swapRows(size_t i, size_t j);
 
-  pointer data()
-  {
-    return mData.data();
-  }
-  
-  const_pointer data() const
-  {
-    return mData.data();
-  }
+  pointer data();
+  const_pointer data() const;
 
 private:
 
-  //template<typename T> friend class MatrixRow;
-  //template<typename T> friend class MatrixCol;
   std::vector<T> mData;
   size_t mRows{0};
   size_t mCols{0};
@@ -551,18 +692,6 @@ const T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::at(size_t r,
   return mData.at(r * mCols + c);
 }
 
-//template<typename T> inline
-//const MatrixRow<const T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position) const
-//{
-//  return MatrixRow<const T>(this->data(), position, cols());
-//}
-//
-//template<typename T> inline
-//MatrixRow<T> MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator[](size_t position)
-//{
-//  return MatrixRow<T>(this->data(), position, cols());
-//}
-
 template<typename T> inline
 T &MatrixBase<T, DynamicMatrix, DynamicMatrix>::operator()(size_t r,
                                                            size_t c) 
@@ -610,7 +739,17 @@ void MatrixBase<T, DynamicMatrix, DynamicMatrix>::swapRows(size_t i,
   }
 }
 
+template<typename T> inline
+T *MatrixBase<T, DynamicMatrix, DynamicMatrix>::data()
+{
+  return mData.data();
+}
 
+template<typename T> inline
+const T *MatrixBase<T, DynamicMatrix, DynamicMatrix>::data() const
+{
+  return mData.data();
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1293,6 +1432,35 @@ public:
    */
   Matrix &operator -=(const Matrix &matrix);
 
+  /*!
+   * \brief Multiplicación de un escalar por una matriz
+   *
+   * \f[ C = s * A \f]
+   *
+   * \f[
+   * A=\begin{bmatrix}
+   * a1 & a2 & a3 \\
+   * a4 & a5 & a6 \\
+   * a7 & a8 & a9 \\
+   * \end{bmatrix}
+   *
+   * C=\begin{bmatrix}
+   * s*a1 & s*a2 & s*a3 \\
+   * s*a4 & s*a5 & s*a6 \\
+   * s*a7 & s*a8 & s*a9 \\
+   * \end{bmatrix}
+   * \f]
+   *
+   * <h4>Ejemplo</h4>
+   * \code
+   * Matrix2x2i A{1, 4,
+   *              3, 2};
+   * int s = 2;
+   * A *= s;
+   * \endcode
+   */
+  Matrix &operator *=(T scalar);
+
 private:
 
 
@@ -1308,13 +1476,6 @@ private:
   Matrix adjoint3x3() const;
   Matrix adjoint4x4() const;
   Matrix adjointnxn() const;
-
-  /// por referencia
-  void adjoint2x2(Matrix<T, _rows, _cols> &matrix) const;
-  void adjoint3x3(Matrix<T, _rows, _cols> &matrix) const;
-  void adjoint4x4(Matrix<T, _rows, _cols> &matrix) const;
-  void adjointnxn(Matrix<T, _rows, _cols> &matrix) const;
-  void cofactorMatrix(Matrix<T, _rows, _cols> &matrix) const;
 
 };
 
@@ -1427,10 +1588,10 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse2x2(bool *invertibility)
 
   T det = determinant2x2();
   if (det != consts::zero<T>) {
-    matrix[0][0] =  this->operator()(1,1) / det;
-    matrix[0][1] = -this->operator()(0,1) / det;
-    matrix[1][0] = -this->operator()(1,0) / det;
-    matrix[1][1] =  this->operator()(0,0) / det;
+    matrix[0][0] =  (*this)(1,1) / det;
+    matrix[0][1] = -(*this)(0,1) / det;
+    matrix[1][0] = -(*this)(1,0) / det;
+    matrix[1][1] =  (*this)(0,0) / det;
     if (invertibility) *invertibility = true;
   } else {
     if (invertibility) *invertibility = false;
@@ -1445,9 +1606,9 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse3x3(bool *invertibility)
   Matrix<T, _rows, _cols> matrix(*this);
 
   Matrix<T, _rows, _cols> adj = this->adjoint3x3();
-  T det = this->operator()(0,0) * adj.operator()(0, 0) 
-        + this->operator()(0,1) * adj.operator()(1, 0) 
-        + this->operator()(0,2) * adj.operator()(2, 0);
+  T det = (*this)(0,0) * adj(0, 0) 
+        + (*this)(0,1) * adj(1, 0) 
+        + (*this)(0,2) * adj(2, 0);
 
   if (det != consts::zero<T>) {
 
@@ -1466,22 +1627,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::inverse4x4(bool *invertibility)
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T m00 = this->operator()(0,0);
-  T m01 = this->operator()(0,1);
-  T m02 = this->operator()(0,2);
-  T m03 = this->operator()(0,3);
-  T m10 = this->operator()(1,0);
-  T m11 = this->operator()(1,1);
-  T m12 = this->operator()(1,2);
-  T m13 = this->operator()(1,3);
-  T m20 = this->operator()(2,0);
-  T m21 = this->operator()(2,1);
-  T m22 = this->operator()(2,2);
-  T m23 = this->operator()(2,3);
-  T m30 = this->operator()(3,0);
-  T m31 = this->operator()(3,1);
-  T m32 = this->operator()(3,2);
-  T m33 = this->operator()(3,3);
+  T m00 = (*this)(0,0);
+  T m01 = (*this)(0,1);
+  T m02 = (*this)(0,2);
+  T m03 = (*this)(0,3);
+  T m10 = (*this)(1,0);
+  T m11 = (*this)(1,1);
+  T m12 = (*this)(1,2);
+  T m13 = (*this)(1,3);
+  T m20 = (*this)(2,0);
+  T m21 = (*this)(2,1);
+  T m22 = (*this)(2,2);
+  T m23 = (*this)(2,3);
+  T m30 = (*this)(3,0);
+  T m31 = (*this)(3,1);
+  T m32 = (*this)(3,2);
+  T m33 = (*this)(3,3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1555,7 +1716,7 @@ Matrix<T, _cols, _rows> Matrix<T, _rows, _cols>::transpose() const
 
   for (size_t r = 0; r < rows; r++) {
     for (size_t c = 0; c < cols; c++) {
-      matrix[c][r] = this->operator()(r, c);
+      matrix[c][r] = (*this)(r, c);
     }
   }
 
@@ -1573,13 +1734,13 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjugate() const
   Matrix<T, _rows, _cols> matrix(*this);
 
   if (rows == 2) {
-    adjoint2x2(matrix);
+    matrix = adjoint2x2();
   } else if (rows == 3) {
-    adjoint3x3(matrix);
+    matrix = adjoint3x3();
   } else if (rows == 4) {
-    adjoint4x4(matrix);
+    matrix = adjoint4x4();
   } else {
-    adjointnxn(matrix);
+    matrix = adjointnxn();
   }
 
   return matrix;
@@ -1602,15 +1763,15 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint3x3() const
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T m00 = this->operator()(0, 0);
-  T m01 = this->operator()(0, 1);
-  T m02 = this->operator()(0, 2);
-  T m10 = this->operator()(1, 0);
-  T m11 = this->operator()(1, 1);
-  T m12 = this->operator()(1, 2);
-  T m20 = this->operator()(2, 0);
-  T m21 = this->operator()(2, 1);
-  T m22 = this->operator()(2, 2);
+  T m00 = (*this)(0, 0);
+  T m01 = (*this)(0, 1);
+  T m02 = (*this)(0, 2);
+  T m10 = (*this)(1, 0);
+  T m11 = (*this)(1, 1);
+  T m12 = (*this)(1, 2);
+  T m20 = (*this)(2, 0);
+  T m21 = (*this)(2, 1);
+  T m22 = (*this)(2, 2);
 
   matrix(0, 0) = m11 * m22 - m12 * m21;
   matrix(0, 1) = m02 * m21 - m01 * m22;
@@ -1630,22 +1791,22 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjoint4x4() const
 {
   Matrix<T, _rows, _cols> matrix(*this);
 
-  T m00 = this->operator()(0, 0);
-  T m01 = this->operator()(0, 1);
-  T m02 = this->operator()(0, 2);
-  T m03 = this->operator()(0, 3);
-  T m10 = this->operator()(1, 0);
-  T m11 = this->operator()(1, 1);
-  T m12 = this->operator()(1, 2);
-  T m13 = this->operator()(1, 3);
-  T m20 = this->operator()(2, 0);
-  T m21 = this->operator()(2, 1);
-  T m22 = this->operator()(2, 2);
-  T m23 = this->operator()(2, 3);
-  T m30 = this->operator()(3, 0);
-  T m31 = this->operator()(3, 1);
-  T m32 = this->operator()(3, 2);
-  T m33 = this->operator()(3, 3);
+  T m00 = (*this)(0, 0);
+  T m01 = (*this)(0, 1);
+  T m02 = (*this)(0, 2);
+  T m03 = (*this)(0, 3);
+  T m10 = (*this)(1, 0);
+  T m11 = (*this)(1, 1);
+  T m12 = (*this)(1, 2);
+  T m13 = (*this)(1, 3);
+  T m20 = (*this)(2, 0);
+  T m21 = (*this)(2, 1);
+  T m22 = (*this)(2, 2);
+  T m23 = (*this)(2, 3);
+  T m30 = (*this)(3, 0);
+  T m31 = (*this)(3, 1);
+  T m32 = (*this)(3, 2);
+  T m33 = (*this)(3, 3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -1685,96 +1846,6 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::adjointnxn() const
 {
   Matrix<T, _rows, _cols> matrix = this->cofactorMatrix();
   return matrix.transpose();
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-void Matrix<T, _rows, _cols>::adjoint2x2(Matrix<T, _rows, _cols> &matrix) const
-{
-  std::swap(matrix(0, 0), matrix(1, 1));
-  matrix(0, 1) = -matrix(0, 1);
-  matrix(1, 0) = -matrix(1, 0);
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-void Matrix<T, _rows, _cols>::adjoint3x3(Matrix<T, _rows, _cols> &matrix) const
-{
-  T m00 = this->operator()(0,0);
-  T m01 = this->operator()(0,1);
-  T m02 = this->operator()(0,2);
-  T m10 = this->operator()(1,0);
-  T m11 = this->operator()(1,1);
-  T m12 = this->operator()(1,2);
-  T m20 = this->operator()(2,0);
-  T m21 = this->operator()(2,1);
-  T m22 = this->operator()(2,2);
-
-  matrix(0, 0) = m11 * m22 - m12 * m21;
-  matrix(0, 1) = m02 * m21 - m01 * m22;
-  matrix(0, 2) = m01 * m12 - m02 * m11;
-  matrix(1, 0) = m12 * m20 - m10 * m22;
-  matrix(1, 1) = m00 * m22 - m02 * m20;
-  matrix(1, 2) = m02 * m10 - m00 * m12;
-  matrix(2, 0) = m10 * m21 - m11 * m20;
-  matrix(2, 1) = m01 * m20 - m00 * m21;
-  matrix(2, 2) = m00 * m11 - m01 * m10;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline
-void Matrix<T, _rows, _cols>::adjoint4x4(Matrix<T, _rows, _cols> &matrix) const
-{
-  T m00 = this->operator()(0,0);
-  T m01 = this->operator()(0,1);
-  T m02 = this->operator()(0,2);
-  T m03 = this->operator()(0,3);
-  T m10 = this->operator()(1,0);
-  T m11 = this->operator()(1,1);
-  T m12 = this->operator()(1,2);
-  T m13 = this->operator()(1,3);
-  T m20 = this->operator()(2,0);
-  T m21 = this->operator()(2,1);
-  T m22 = this->operator()(2,2);
-  T m23 = this->operator()(2,3);
-  T m30 = this->operator()(3,0);
-  T m31 = this->operator()(3,1);
-  T m32 = this->operator()(3,2);
-  T m33 = this->operator()(3,3);
-
-  T a0 = m00 * m11 - m01 * m10;
-  T a1 = m00 * m12 - m02 * m10;
-  T a2 = m00 * m13 - m03 * m10;
-  T a3 = m01 * m12 - m02 * m11;
-  T a4 = m01 * m13 - m03 * m11;
-  T a5 = m02 * m13 - m03 * m12;
-  T b0 = m20 * m31 - m21 * m30;
-  T b1 = m20 * m32 - m22 * m30;
-  T b2 = m20 * m33 - m23 * m30;
-  T b3 = m21 * m32 - m22 * m31;
-  T b4 = m21 * m33 - m23 * m31;
-  T b5 = m22 * m33 - m23 * m32;
-
-  matrix[0][0] =  m11 * b5 - m12 * b4 + m13 * b3;
-  matrix[0][1] = -m01 * b5 + m02 * b4 - m03 * b3;
-  matrix[0][2] =  m31 * a5 - m32 * a4 + m33 * a3;
-  matrix[0][3] = -m21 * a5 + m22 * a4 - m23 * a3;
-  matrix[1][0] = -m10 * b5 + m12 * b2 - m13 * b1;
-  matrix[1][1] =  m00 * b5 - m02 * b2 + m03 * b1;
-  matrix[1][2] = -m30 * a5 + m32 * a2 - m33 * a1;
-  matrix[1][3] =  m20 * a5 - m22 * a2 + m23 * a1;
-  matrix[2][0] =  m10 * b4 - m11 * b2 + m13 * b0;
-  matrix[2][1] = -m00 * b4 + m01 * b2 - m03 * b0;
-  matrix[2][2] =  m30 * a4 - m31 * a2 + m33 * a0;
-  matrix[2][3] = -m20 * a4 + m21 * a2 - m23 * a0;
-  matrix[3][0] = -m10 * b3 + m11 * b1 - m12 * b0;
-  matrix[3][1] =  m00 * b3 - m01 * b1 + m02 * b0;
-  matrix[3][2] = -m30 * a3 + m31 * a1 - m32 * a0;
-  matrix[3][3] =  m20 * a3 - m21 * a1 + m22 * a0;
-}
-
-template<typename T, size_t _rows, size_t _cols> inline 
-void Matrix<T, _rows, _cols>::adjointnxn(Matrix<T, _rows, _cols> &matrix) const
-{
-  this->cofactorMatrix(matrix);
-  matrix = matrix.transpose();
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
@@ -1876,23 +1947,6 @@ MatrixBlock<T> Matrix<T, _rows, _cols>::colBlock(size_t iniCol, size_t endCol)
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
-void Matrix<T, _rows, _cols>::cofactorMatrix(Matrix<T, _rows, _cols> &matrix) const
-{
-  static_assert(_rows == _cols, "Non-Square Matrix");
-
-  size_t rows = this->rows();
-  size_t cols = this->cols();
-  TL_ASSERT(rows == cols, "Non-Square Matrix")
-
-  for (size_t r = 0; r < rows; r++) {
-    for (size_t c = 0; c < cols; c++) {
-      matrix[r][c] = cofactor(r, c);
-    }
-  }
-}
-
-
-template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
 {
   size_t rows = this->rows();
@@ -1919,7 +1973,6 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::rowEchelonForm() const
     }
 
     matrix[i] /= pivotElement;
-    //matrix[i] = matrix[i] / pivotElement;
 
     for (size_t r = i + 1; r < rows; ++r) {
       T scale = matrix[r][i];
@@ -1980,22 +2033,22 @@ T Matrix<T, _rows, _cols>::determinant() const
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant2x2() const
 {
-  T det = this->operator()(0,0) * this->operator()(1,1) - this->operator()(0,1) * this->operator()(1,0);
+  T det = (*this)(0,0) * (*this)(1,1) - (*this)(0,1) * (*this)(1,0);
   return det;
 }
 
 template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant3x3() const
 {
-  T m00 = this->operator()(0, 0);
-  T m01 = this->operator()(0, 1);
-  T m02 = this->operator()(0, 2);
-  T m10 = this->operator()(1, 0);
-  T m11 = this->operator()(1, 1);
-  T m12 = this->operator()(1, 2);
-  T m20 = this->operator()(2, 0);
-  T m21 = this->operator()(2, 1);
-  T m22 = this->operator()(2, 2);
+  T m00 = (*this)(0, 0);
+  T m01 = (*this)(0, 1);
+  T m02 = (*this)(0, 2);
+  T m10 = (*this)(1, 0);
+  T m11 = (*this)(1, 1);
+  T m12 = (*this)(1, 2);
+  T m20 = (*this)(2, 0);
+  T m21 = (*this)(2, 1);
+  T m22 = (*this)(2, 2);
 
   T c00 = m11 * m22 - m12 * m21;
   T c10 = m12 * m20 - m10 * m22;
@@ -2010,22 +2063,22 @@ template<typename T, size_t _rows, size_t _cols> inline
 T Matrix<T, _rows, _cols>::determinant4x4() const
 {
   TL_TODO("codigo repetido con adjoint4x4")
-  T m00 = this->operator()(0,0);
-  T m01 = this->operator()(0,1);
-  T m02 = this->operator()(0,2);
-  T m03 = this->operator()(0,3);
-  T m10 = this->operator()(1,0);
-  T m11 = this->operator()(1,1);
-  T m12 = this->operator()(1,2);
-  T m13 = this->operator()(1,3);
-  T m20 = this->operator()(2,0);
-  T m21 = this->operator()(2,1);
-  T m22 = this->operator()(2,2);
-  T m23 = this->operator()(2,3);
-  T m30 = this->operator()(3,0);
-  T m31 = this->operator()(3,1);
-  T m32 = this->operator()(3,2);
-  T m33 = this->operator()(3,3);
+  T m00 = (*this)(0,0);
+  T m01 = (*this)(0,1);
+  T m02 = (*this)(0,2);
+  T m03 = (*this)(0,3);
+  T m10 = (*this)(1,0);
+  T m11 = (*this)(1,1);
+  T m12 = (*this)(1,2);
+  T m13 = (*this)(1,3);
+  T m20 = (*this)(2,0);
+  T m21 = (*this)(2,1);
+  T m22 = (*this)(2,2);
+  T m23 = (*this)(2,3);
+  T m30 = (*this)(3,0);
+  T m31 = (*this)(3,1);
+  T m32 = (*this)(3,2);
+  T m33 = (*this)(3,3);
 
   T a0 = m00 * m11 - m01 * m10;
   T a1 = m00 * m12 - m02 * m10;
@@ -2097,7 +2150,7 @@ T Matrix<T, _rows, _cols>::trace() const
 
   T trace = consts::zero<T>;
   for (size_t r = 0; r < rows; r++) {
-    trace += this->operator()(r, r);
+    trace += (*this)(r, r);
   }
   return trace;
 }
@@ -2148,7 +2201,7 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
     for (size_t row = 0; row < rows; row++) {
       for (size_t col = 0; col < cols; col++) {
         if (row != r && col != c) {
-          matrix[i][j++] = this->operator()(row,col);
+          matrix[i][j++] = (*this)(row,col);
           if (j == rows - 1) {
             j = 0;
             i++;
@@ -2162,7 +2215,7 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
     for (size_t row = 0; row < rows; row++) {
       for (size_t col = 0; col < cols; col++) {
         if (row != r && col != c) {
-          matrix[i][j++] = this->operator()(row, col);
+          matrix[i][j++] = (*this)(row, col);
           if (j == rows - 1) {
             j = 0;
             i++;
@@ -2179,21 +2232,15 @@ T Matrix<T, _rows, _cols>::firstMinor(size_t r, size_t c) const
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero()
 {
-  Matrix<T, _rows, _cols> matrix;
+  static_assert(_rows != DynamicMatrix || _cols != DynamicMatrix, "Not supported for dinamic matrix");
 
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix(r, c) = consts::zero<T>;
-    }
-  }
-
-  return matrix;
+  return Matrix<T, _rows, _cols>(_rows, _cols, consts::zero<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Not supported for static matrix");
 
   return Matrix<T>(rows, cols, consts::zero<T>);
 }
@@ -2201,21 +2248,15 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::zero(size_t rows, size_t cols)
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones()
 {
-  Matrix<T, _rows, _cols> matrix;
+  static_assert(_rows != DynamicMatrix || _cols != DynamicMatrix, "Not supported for dinamic matrix");
 
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix(r, c) = consts::one<T>;
-    }
-  }
-
-  return matrix;
+  return Matrix<T, _rows, _cols>(_rows, _cols, consts::one<T>);
 }
 
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Not supported for static matrix");
 
   return Matrix<T>(rows, cols, consts::one<T>);
 }
@@ -2223,6 +2264,8 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::ones(size_t rows, size_t cols)
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 {
+  static_assert(_rows != DynamicMatrix || _cols != DynamicMatrix, "Not supported for dinamic matrix");
+
   Matrix<T, _rows, _cols> matrix;
 
   for (size_t r = 0; r < matrix.rows(); r++) {
@@ -2241,7 +2284,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity()
 template<typename T, size_t _rows, size_t _cols> inline 
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Not supported for static matrix");
 
   Matrix<T> matrix(rows, cols);
 
@@ -2261,16 +2304,18 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::identity(size_t rows, size_t co
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon()
 {
+  static_assert(_rows != DynamicMatrix || _cols != DynamicMatrix, "Not supported for dinamic matrix");
+
   Matrix<T, _rows, _cols> matrix;
 
   std::random_device rd;
   std::mt19937 random_number_engine(rd());
   std::uniform_real_distribution<> distribution(0.0, 99.0);
 
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix(r, c) = distribution(random_number_engine);
-    }
+  constexpr size_t size = _rows * _cols;
+
+  for (size_t i = 0; i < size; ++i) {
+    matrix(i) = static_cast<T>(distribution(random_number_engine));
   }
 
   return matrix;
@@ -2279,7 +2324,7 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon()
 template<typename T, size_t _rows, size_t _cols> inline
 Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon(size_t rows, size_t cols)
 {
-  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Dynamic Matrix not support resize");
+  static_assert(_rows == DynamicMatrix || _cols == DynamicMatrix, "Not supported for static matrix");
 
   Matrix<T> matrix(rows, cols);
 
@@ -2287,10 +2332,10 @@ Matrix<T, _rows, _cols> Matrix<T, _rows, _cols>::randon(size_t rows, size_t cols
   std::mt19937 random_number_engine(rd());
   std::uniform_real_distribution<> distribution(0.0, 99.0);
 
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix(r, c) = distribution(random_number_engine);
-    }
+  size_t size = matrix.rows() * matrix.cols();
+
+  for (size_t i = 0; i < size; ++i) {
+    matrix(i) = static_cast<T>(distribution(random_number_engine));
   }
 
   return matrix;
@@ -2391,12 +2436,54 @@ Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator -=(const Matrix<T, _r
   return  *this;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline
+Matrix<T, _rows, _cols> &Matrix<T, _rows, _cols>::operator *= (T scalar)
+{
+  size_t size = this->rows() * this->cols();
 
+#ifndef TL_HAVE_SIMD_INTRINSICS
+
+  for (size_t i = 0; i < size; ++i) {
+    (*this)(i) *= scalar;
+  }
+
+#else
+
+  using namespace simd;
+
+  Packed<T> packed_a;
+  Packed<T> packed_b(scalar);
+
+  constexpr size_t packed_size = packed_a.size();
+  size_t max_size = size - size % packed_size;
+
+  size_t i{0};
+  for (; i < max_size; i += packed_size) {
+
+    packed_a.loadUnaligned(&(*this)(i));
+    packed_a *= packed_b;
+    packed_a.storeUnaligned(&(*this)(i));
+  }
+
+  for (; i < size; ++i) {
+    (*this)(i) *= scalar;
+  }
+
+#endif
+
+  return *this;
+}
 
 /* Operaciones unarias */
 
 template<typename T, size_t _rows, size_t _cols> inline  static
 Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix)
+{
+  return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline  static
+Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix)
 {
   return matrix;
 }
@@ -2430,15 +2517,28 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix)
 
   Matrix<T, _rows, _cols> _m(matrix);
 
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      _m(r, c) = -_m(r, c);
-    }
+  size_t size = matrix.rows() * matrix.cols();
+
+  for (size_t i = 0; i < size; ++i) {
+    _m(i) = -_m(i);
   }
 
   return _m;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix)
+{
+  static_assert(std::is_signed<T>::value, "Requires signed type");
+
+  size_t size = matrix.rows() * matrix.cols();
+
+  for (size_t i = 0; i < size; ++i) {
+    matrix(i) = -matrix(i);
+  }
+
+  return matrix;
+}
 
 /* Operaciones binarias entre matrices */
 
@@ -2490,6 +2590,13 @@ Matrix<T, _rows, _cols> operator + (const Matrix<T, _rows, _cols> &matrix1,
   return matrix;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator + (Matrix<T, _rows, _cols> &&matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  matrix1 += matrix2;
+  return matrix1;
+}
 
 /*!
  * \brief Resta de matrices 
@@ -2536,6 +2643,14 @@ Matrix<T, _rows, _cols> operator - (const Matrix<T, _rows, _cols> &matrix1,
   Matrix<T, _rows, _cols> matrix = matrix1;
   matrix -= matrix2;
   return matrix;
+}
+
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator - (Matrix<T, _rows, _cols> &&matrix1,
+                                    const Matrix<T, _rows, _cols> &matrix2)
+{
+  matrix1 -= matrix2;
+  return matrix1;
 }
 
 /*!
@@ -2678,6 +2793,7 @@ Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _dim> &matrix1,
     for (size_t i = 0; i < _dim; i++) {
 
       T a = matrix1(r, i);
+      packed_a.setScalar(a);
 
       for (size_t c = 0; c < max_vector; c += packed_size) {
 
@@ -2862,13 +2978,20 @@ Matrix<T> operator * (const Matrix<T> &matrix1,
  */
 template<typename T, size_t _rows, size_t _cols> inline static
 Matrix<T, _rows, _cols> operator * (const Matrix<T, _rows, _cols> &matrix,
-                                     T scalar)
+                                    T scalar)
 {
   Matrix<T, _rows, _cols> _matrix = matrix;
   _matrix *= scalar;
   return _matrix;
 }
 
+template<typename T, size_t _rows, size_t _cols> inline static
+Matrix<T, _rows, _cols> operator * (Matrix<T, _rows, _cols> &&matrix,
+                                    T scalar)
+{
+  matrix *= scalar;
+  return matrix;
+}
 
 /*!
  * \brief Multiplicación de un escalar por una matriz
@@ -2907,16 +3030,23 @@ Matrix<T, _rows, _cols> operator * (T scalar, const Matrix<T, _rows, _cols> &mat
 }
 
 template<typename T, size_t _rows, size_t _cols> inline static
-Matrix<T, _rows, _cols> &operator *= (Matrix<T, _rows, _cols> &matrix, T scalar)
+Matrix<T, _rows, _cols> operator * (T scalar, Matrix<T, _rows, _cols> &&matrix)
 {
-  for (size_t r = 0; r < matrix.rows(); r++) {
-    for (size_t c = 0; c < matrix.cols(); c++) {
-      matrix(r, c) *= scalar;
-    }
-  }
-
+  matrix *= scalar;
   return matrix;
 }
+
+//template<typename T, size_t _rows, size_t _cols> inline static
+//Matrix<T, _rows, _cols> &operator *= (Matrix<T, _rows, _cols> &matrix, T scalar)
+//{
+//  for (size_t r = 0; r < matrix.rows(); r++) {
+//    for (size_t c = 0; c < matrix.cols(); c++) {
+//      matrix(r, c) *= scalar;
+//    }
+//  }
+//
+//  return matrix;
+//}
 
 /*!
  * \brief División de una matriz por un escalar
@@ -3023,11 +3153,41 @@ Vector<T, _rows> operator * (const Matrix<T, _rows, _dim> &matrix,
 {
   Vector<T, _rows> vect = Vector<T, _rows>::zero();
 
+//#ifndef TL_HAVE_SIMD_INTRINSICS
+
   for (size_t r = 0; r < _rows; r++) {
     for (size_t c = 0; c < _dim; c++) {
         vect[r] += matrix(r, c) * vector[c];
     }
   }
+
+//#else
+//
+//  using namespace simd;
+//
+//  Packed<T> packed_a;
+//  Packed<T> packed_b;
+//  Packed<T> packed_c;
+//
+//  constexpr size_t packed_size = packed_a.size();
+//  constexpr size_t max_vector = _dim - _dim % packed_size;
+//
+//  for (size_t r = 0; r < _rows; r++) {
+//    for (size_t i = 0; i < max_vector; i += packed_size) {
+//
+//      packed_a.setScalar(vector[i]);
+//      packed_b.loadUnaligned(&matrix(r, i));
+//      packed_c.loadUnaligned(&vect[r]);
+//      packed_c += packed_a * packed_b;
+//      packed_c.storeUnaligned(&vect[r]);
+//    }
+//
+//    for (size_t i = max_vector; i < _dim; i++) {
+//      vect[r] += matrix(r, i) * vector[r];
+//    }
+//  }
+//
+//#endif
 
   return vect;
 }

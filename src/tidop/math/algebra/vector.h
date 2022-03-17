@@ -60,6 +60,9 @@ constexpr auto DynamicVector = std::numeric_limits<size_t>::max();
 template<typename T, size_t _size>
 class VectorBase;
 
+/*!
+ * \brief Static VectorBase
+ */
 template<typename T, size_t _size>
 class VectorBase
 {
@@ -337,7 +340,9 @@ bool VectorBase<T, _size>::operator >= (const VectorBase<T, _size> &vector) cons
 
 
 
-
+/*!
+ * \brief Dynamic VectorBase
+ */
 template<typename T>
 class VectorBase<T, DynamicVector>
 {

@@ -1004,6 +1004,15 @@ BOOST_FIXTURE_TEST_CASE(plus, MatrixTest)
       BOOST_CHECK_EQUAL(mat2.at(r,c), _mat_dyn_3x3_d->at(r, c));
     }
   }
+
+  /// R Value move
+  Matrix<int, 3, 3> mat3 = +Matrix<int, 3, 3>::ones();
+  for (size_t r = 0; r < mat3.rows(); r++) {
+    for (size_t c = 0; c < mat3.cols(); c++) {
+      BOOST_CHECK_EQUAL(mat3.at(r, c), 1);
+    }
+  }
+
 }
 
 BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
@@ -1019,6 +1028,14 @@ BOOST_FIXTURE_TEST_CASE(minus, MatrixTest)
   for (size_t r = 0; r < mat2.rows(); r++){
     for (size_t c = 0; c < mat2.cols(); c++){
       BOOST_CHECK_EQUAL(-mat2.at(r,c), _mat_dyn_3x3_d->at(r, c));
+    }
+  }
+
+  /// R Value move
+  Matrix<int, 3, 3> mat3 = -Matrix<int, 3, 3>::ones();
+  for (size_t r = 0; r < mat3.rows(); r++) {
+    for (size_t c = 0; c < mat3.cols(); c++) {
+      BOOST_CHECK_EQUAL(mat3.at(r, c), -1);
     }
   }
 
@@ -1661,6 +1678,17 @@ BOOST_FIXTURE_TEST_CASE(matrix_scalar, MatrixTest)
   BOOST_CHECK_EQUAL(60, _mat_dyn_2x3_i->at(1, 1));
   BOOST_CHECK_EQUAL(20, _mat_dyn_2x3_i->at(1, 2));
 
+  Matrix<int, 2, 2> mat3 = Matrix<int, 2, 2>::ones() * 10;
+  BOOST_CHECK_EQUAL(10, mat3[0][0]);
+  BOOST_CHECK_EQUAL(10, mat3[0][1]);
+  BOOST_CHECK_EQUAL(10, mat3[1][0]);
+  BOOST_CHECK_EQUAL(10, mat3[1][1]);
+
+  Matrix<int> mat4 = Matrix<int>::ones(2, 2) * 20;
+  BOOST_CHECK_EQUAL(20, mat4[0][0]);
+  BOOST_CHECK_EQUAL(20, mat4[0][1]);
+  BOOST_CHECK_EQUAL(20, mat4[1][0]);
+  BOOST_CHECK_EQUAL(20, mat4[1][1]);
 }
 
 /// Multiplicación de un escalar por una matriz
@@ -1684,6 +1712,18 @@ BOOST_FIXTURE_TEST_CASE(scalar_matrix, MatrixTest)
   BOOST_CHECK_EQUAL(90, mat2[1][0]);
   BOOST_CHECK_EQUAL(60, mat2[1][1]);
   BOOST_CHECK_EQUAL(20, mat2[1][2]);
+
+  Matrix<int, 2, 2> mat3 = 10 * Matrix<int, 2, 2>::ones();
+  BOOST_CHECK_EQUAL(10, mat3[0][0]);
+  BOOST_CHECK_EQUAL(10, mat3[0][1]);
+  BOOST_CHECK_EQUAL(10, mat3[1][0]);
+  BOOST_CHECK_EQUAL(10, mat3[1][1]);
+
+  Matrix<int> mat4 = 20 * Matrix<int>::ones(2, 2);
+  BOOST_CHECK_EQUAL(20, mat4[0][0]);
+  BOOST_CHECK_EQUAL(20, mat4[0][1]);
+  BOOST_CHECK_EQUAL(20, mat4[1][0]);
+  BOOST_CHECK_EQUAL(20, mat4[1][1]);
 }
 
 /// Multiplicación de un vector por una matriz
